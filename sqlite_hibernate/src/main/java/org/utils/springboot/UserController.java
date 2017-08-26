@@ -48,8 +48,8 @@ public class UserController {
 		if (targetUser.getNickName() != null) {
 			user.setNickName(targetUser.getNickName());
 		}
-		if (targetUser.getUserSex() != null) {
-			user.setUserSex(targetUser.getUserSex());
+		if (targetUser.getUserGender() != null) {
+			user.setUserGender(targetUser.getUserGender());
 		}
 		return userRepository.saveAndFlush(user);
 	}
@@ -70,21 +70,20 @@ public class UserController {
 		}
 	}
 
-	// form-data
+	// x-form-data
 	@RequestMapping(value = "/addUser", method = RequestMethod.POST)
 	@ResponseBody
 	public String addUser(@RequestParam("userName") String userName,
 			@RequestParam("password") String password,
-			@RequestParam("confirm") String confirmPassword,
-			@RequestParam("sex") org.utils.springboot.UserSexEnum sex,
-			@RequestParam("nickName") String nickName) {
+			@RequestParam("confirmPassword") String confirmPassword,
+			@RequestParam("gender") UserGenderEnum gender,
+			@RequestParam(name = "nickName", required = false) String nickName) {
 		if (!(password.equals(confirmPassword))) {
 			return "Password and confirmPassword do not match!";
-		} else if (nickName.length() < 5) {
+		} else if (nickName != null && nickName.length() < 5) {
 			return "nickName must be more 4 characters";
 		} else {
-			userRepository.save(
-					new User(userName, password, org.utils.springboot.UserSexEnum.MAN));
+			userRepository.save(new User(userName, password, gender));
 			return "User added";
 		}
 	}

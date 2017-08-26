@@ -14,18 +14,18 @@ public class User implements Serializable {
 	private Long id;
 	private String userName;
 	private String passWord;
-	private UserSexEnum userSex;
+	private UserGenderEnum userGender;
 	private String nickName;
 
 	public User() {
 		super();
 	}
 
-	public User(String userName, String passWord, UserSexEnum userSex) {
+	public User(String userName, String passWord, UserGenderEnum userGender) {
 		super();
 		this.passWord = passWord;
 		this.userName = userName;
-		this.userSex = userSex;
+		this.userGender = userGender;
 	}
 
 	public Long getId() {
@@ -52,12 +52,12 @@ public class User implements Serializable {
 		this.passWord = passWord;
 	}
 
-	public UserSexEnum getUserSex() {
-		return userSex;
+	public UserGenderEnum getUserGender() {
+		return userGender;
 	}
 
-	public void setUserSex(UserSexEnum userSex) {
-		this.userSex = userSex;
+	public void setUserGender(UserGenderEnum userGender) {
+		this.userGender = userGender;
 	}
 
 	public String getNickName() {
@@ -70,8 +70,8 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "userName " + this.userName + ", pasword " + this.passWord + "sex "
-				+ userSex.name();
+		return "userName " + this.userName + ", pasword " + this.passWord + "gender "
+				+ userGender.name();
 	}
 
 }
