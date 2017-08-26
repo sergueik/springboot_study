@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.slf4j.Logger;
@@ -58,9 +60,9 @@ public class UserController {
 		userRepository.delete(user);
 	}
 
-	// TODO: provide proper implementation
-	@PostMapping("/addUser")
-	public User addUser(@RequestBody User newUser) {
+	// "Content-Type": "application/json"
+	@PostMapping("/addUserObject")
+	public User addUserObject(@RequestBody User newUser) {
 		try {
 			return userRepository.saveAndFlush(newUser);
 		} catch (Exception e) {
@@ -68,4 +70,22 @@ public class UserController {
 		}
 	}
 
+	// form-data
+	@RequestMapping(value = "/addUser", method = RequestMethod.POST)
+	@ResponseBody
+	public String addUser(@RequestParam("userName") String userName,
+			@RequestParam("password") String password,
+			@RequestParam("confirm") String confirmPassword,
+			@RequestParam("sex") org.utils.springboot.UserSexEnum sex,
+			@RequestParam("nickName") String nickName) {
+		if (!(password.equals(confirmPassword))) {
+			return "Password and confirmPassword do not match!";
+		} else if (nickName.length() < 5) {
+			return "nickName must be more 4 characters";
+		} else {
+			userRepository.save(
+					new User(userName, password, org.utils.springboot.UserSexEnum.MAN));
+			return "User added";
+		}
+	}
 }
