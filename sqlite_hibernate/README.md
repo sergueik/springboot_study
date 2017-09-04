@@ -1,5 +1,7 @@
 ### Info
 
 This directory contains a basic springboot hibernate on sqlite project based on
-[spring-rest-service-oauth](https://github.com/royclarkson/spring-rest-service-oauth)
+[restart1025/Spring-Boot-SQLite](https://github.com/restart1025/Spring-Boot-SQLite)
 
+See also 
+[diyfr/sqlite-dialect](https://github.com/diyfr/sqlite-dialect)
