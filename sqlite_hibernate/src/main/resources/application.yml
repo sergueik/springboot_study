@@ -4,11 +4,11 @@ spring:
     active: dev
   datasource:
     driver-class-name: org.sqlite.JDBC
-    url: jdbc:sqlite:${USERPROFILE}\\sqlite\\springboot.db
+    url: 'jdbc:sqlite::memory:'
     username:
     password:
   jpa:
     database-platform: org.utils.sqlite.SQLiteDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true

@@ -126,13 +126,13 @@ public class SQLiteDialect extends Dialect {
 		uniqueDelegate = new SQLiteUniqueDelegate(this);
 	}
 	// IDENTITY support ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/*
- 	@Override
-    	public IdentityColumnSupport getIdentityColumnSupport() {
-        	return new SQLiteDialectIdentityColumnSupport(this);
-    	}
-*/
-      
+	/*
+	@Override
+	  	public IdentityColumnSupport getIdentityColumnSupport() {
+	      	return new SQLiteDialectIdentityColumnSupport(this);
+	  	}
+	*/
+
 	public boolean supportsIdentityColumns() {
 		return true;
 	}
@@ -273,7 +273,7 @@ public class SQLiteDialect extends Dialect {
 	// DDL support ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	@Override
 	public boolean canCreateSchema() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -352,8 +352,8 @@ public class SQLiteDialect extends Dialect {
 		return true;
 	}
 
-  @Override
-  public boolean supportsIfExistsBeforeTableName() {
+	@Override
+	public boolean supportsIfExistsBeforeTableName() {
 		return true;
 	}
 
