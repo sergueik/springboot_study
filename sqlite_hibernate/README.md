@@ -76,4 +76,5 @@ If you need to create schema before starting the app, add the `src/main/resource
 and uncomment DDL code in `SpringbootApplication.java`
 
 ### See also 
-[diyfr/sqlite-dialect](https://github.com/diyfr/sqlite-dialect)
+* [diyfr/sqlite-dialect](https://github.com/diyfr/sqlite-dialect)
+* [Spring Boot Reference Guide](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-build.html)
