@@ -32,7 +32,7 @@ public class FunctionalWebApplicationTests {
 	public void jsonPage_WhenRequested_SaysHello() {
 		webTestClient.get().uri("/json").exchange().expectStatus().is2xxSuccessful()
 				.expectHeader().contentType(APPLICATION_JSON).expectBody(Hello.class)
-				.isEqualTo(new Hello("world"));
+				.isEqualTo(new Hello("world", 2));
 	}
 
 }
