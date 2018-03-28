@@ -2,6 +2,12 @@ package example;
 
 import org.apache.log4j.Category;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -15,7 +21,13 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+// import example.ChoiceItem;
+import example.ChoicesDialog;
+import example.ConfigFormEx;
 
 import name.antonsmirnov.javafx.dialog.Dialog;
 
@@ -25,14 +37,16 @@ public class FlowPaneEx extends AbstractJavaFxApplicationSupport {
 	@SuppressWarnings("deprecation")
 	static final Category logger = Category.getInstance(FlowPaneEx.class);
 	static Stage stage = null;
+	String configFilePath = null;
+	Scene scene = null;
 
 	@Override
 	public void start(Stage stage) {
 		this.stage = stage;
-		stage.setTitle("SWET/javafx");
+		stage.setTitle("SWET/javaFx");
 		stage.setWidth(500);
 		stage.setHeight(160);
-		Scene scene = new Scene(new Group());
+		scene = new Scene(new Group());
 
 		VBox vbox = new VBox();
 
@@ -57,7 +71,34 @@ public class FlowPaneEx extends AbstractJavaFxApplicationSupport {
 			public void handle(ActionEvent event) {
 				System.out.println("generate step!");
 				for (int i = 0; i < 20; i++) {
-					flow.getChildren().add(new Button(String.format("Step %d", i)));
+					Button stepButton = new Button(String.format("Step %d", i));
+					stepButton.setOnAction(new EventHandler<ActionEvent>() {
+						@Override
+						public void handle(ActionEvent event) {
+							// ComplexFormEx
+							Map<String, String> inputData = new HashMap<>();
+							Button button = (Button) event.getTarget();
+
+							inputData.put("dummy", "42");
+							inputData.put("title",
+									String.format("%s element Locators", button.getText()));
+							Map<String, Map> inputs = new HashMap<>();
+							inputs.put("inputs", inputData); // TODO: JSON
+							scene.setUserData(inputs);
+							logger.info(
+									"launching complexFormEx for " + inputData.get("title"));
+
+							ComplexFormEx complexFormEx = new ComplexFormEx();
+							complexFormEx.setScene(scene);
+							try {
+								complexFormEx.start(new Stage());
+							} catch (Exception e) {
+							}
+						}
+					});
+
+					flow.getChildren().add(stepButton);
+
 				}
 			}
 		});
@@ -72,6 +113,57 @@ public class FlowPaneEx extends AbstractJavaFxApplicationSupport {
 				getClass().getClassLoader().getResourceAsStream("open_32.png"));
 		loadButton.setGraphic(new ImageView(loadImage));
 		loadButton.setTooltip(new Tooltip("Load session"));
+		loadButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				// https://docs.oracle.com/javafx/2/ui_controls/file-chooser.htm
+				FileChooser fileChooser = new FileChooser();
+				if (configFilePath != null) {
+					logger.info("Loading recording from: " + configFilePath);
+					try {
+						fileChooser.setInitialDirectory(new File(configFilePath));
+					} catch (IllegalArgumentException e) {
+						logger.info("Exception (ignored): " + e.toString());
+					}
+				}
+				// Set extension filter
+				fileChooser.getExtensionFilters()
+						.add(new FileChooser.ExtensionFilter("YAML file", "*.yaml"));
+				fileChooser.setTitle("Open Recording");
+				File file = fileChooser.showOpenDialog(stage);
+				if (file != null) {
+					logger.info("Load recording: " + file.getPath());
+					configFilePath = file.getParent();
+					openRecordingFile(file);
+				}
+			}
+		});
+
+		Button testsuiteButton = new Button();
+		Image testsuiteImage = new Image(
+				getClass().getClassLoader().getResourceAsStream("excel_gen_32.png"));
+		testsuiteButton.setGraphic(new ImageView(testsuiteImage));
+		testsuiteButton.setTooltip(new Tooltip("Generate Excel TestSuite"));
+		testsuiteButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+
+				// Stage stage = new Stage();
+				Map<String, String> inputData = new HashMap<>();
+				inputData.put("dummy", "42");
+				inputData.put("title", "Step detail");
+				Map<String, Map> inputs = new HashMap<>();
+				inputs.put("inputs", inputData); // TODO: JSON
+				scene.setUserData(inputs);
+
+				TableEditorEx tableEditorEx = new TableEditorEx();
+				tableEditorEx.setScene(scene);
+				try {
+					tableEditorEx.start(new Stage());
+				} catch (Exception e) {
+				}
+			}
+		});
 
 		Button saveButton = new Button();
 		Image saveImage = new Image(
@@ -82,12 +174,30 @@ public class FlowPaneEx extends AbstractJavaFxApplicationSupport {
 			@Override
 			public void handle(ActionEvent event) {
 				try {
-					testFunction();
+					System.err.println("Exercise exception");
+					testException();
 				} catch (Exception e) {
-
 					Dialog.showThrowable("Exception", "Exception thrown",
 							(Exception) e /* e.getCause()*/, stage);
 				}
+
+				// save
+
+				// https://docs.oracle.com/javafx/2/ui_controls/file-chooser.htm
+				FileChooser fileChooser = new FileChooser();
+				if (configFilePath != null) {
+					logger.info("Saving recording to: " + configFilePath);
+					try {
+						fileChooser.setInitialDirectory(new File(configFilePath));
+					} catch (IllegalArgumentException e) {
+						logger.info("Exception (ignored): " + e.toString());
+					}
+				}
+				// Set extension filter
+				fileChooser.getExtensionFilters()
+						.add(new FileChooser.ExtensionFilter("YAML file", "*.yaml"));
+				fileChooser.setTitle("Save Recording");
+				File file = fileChooser.showSaveDialog(stage);
 			}
 		});
 
@@ -125,7 +235,7 @@ public class FlowPaneEx extends AbstractJavaFxApplicationSupport {
 
 		HBox toolbarHbox = new HBox();
 		toolbarHbox.getChildren().addAll(launchButton, injectButton, generateButton,
-				loadButton, saveButton, configButton, quitButton);
+				loadButton, testsuiteButton, saveButton, configButton, quitButton);
 
 		Label statusLabel = new Label();
 		statusLabel.setText("Status");
@@ -146,17 +256,20 @@ public class FlowPaneEx extends AbstractJavaFxApplicationSupport {
 	public static void main(String[] args) {
 		// launch(args);
 		launchApp(FlowPaneEx.class, args);
+
 	}
 
 	public void confirmClose() {
 
-		ChoiceItem[] items = new ChoiceItem[] {
-				new ChoiceItem("Exit and save my project", 2),
-				new ChoiceItem("Exit and don't save", 1),
-				new ChoiceItem("Don't exit", 10), };
+		Map<String, Integer> inputData = new HashMap<>();
+		inputData.put("Exit and save my project", 2);
+		inputData.put("Exit and don't save", 1);
+		inputData.put("Don't exit", 10);
+		Map<String, Map<String, Integer>> inputs = new HashMap<>();
+		inputs.put("inputs", inputData); // TODO: JSON
+		scene.setUserData(inputs);
 
-		ChoicesDialog choicesDialog = new ChoicesDialog(stage, items);
-		choicesDialog.setChoices(items);
+		ChoicesDialog choicesDialog = new ChoicesDialog(new Stage(), scene);
 		// choicesDialog.initStyle(StageStyle.UNDECORATED);
 		choicesDialog.sizeToScene();
 		// optionally hide self
@@ -167,15 +280,23 @@ public class FlowPaneEx extends AbstractJavaFxApplicationSupport {
 		}
 		*/
 		choicesDialog.showAndWait();
-		int code = Integer.parseInt(choicesDialog.getResult());
+		@SuppressWarnings("unchecked")
+		Map<String, String> data = (Map<String, String>) choicesDialog.getScene()
+				.getUserData();
+		int code = Integer.parseInt(data.get("result"));
 		logger.info("Exit app with code: " + code);
+		// code = Integer.parseInt(choicesDialog.getResult());
+		// logger.info("Exit app with code: " + code);
 		if (code == 1 || code == 2) {
 			stage.close();
 		}
 
 	}
 
-	private static void testFunction() throws Exception {
+	private static void openRecordingFile(File file) {
+	}
+
+	private static void testException() throws Exception {
 		throw new Exception("This is a test exception.");
 	}
 }

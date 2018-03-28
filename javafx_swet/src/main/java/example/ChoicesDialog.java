@@ -1,94 +1,77 @@
 package example;
 
-
-
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
-import javafx.scene.Group;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.Scene;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Category;
 
-import example.ChoiceItem;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 @SuppressWarnings("restriction")
 // see also: https://github.com/4ntoine/JavaFxDialog/wiki
 //
 public class ChoicesDialog extends Stage {
 
-	private Stage stage;
-	// NOTE: can't do that
-	// private static final Map<String, String> userData = new HashMap<>();
+	@SuppressWarnings("deprecation")
 	static final Category logger = Category.getInstance(ChoicesDialog.class);
 	public static String result = null;
+	private Stage stage;
 	private Scene scene;
-	private ChoiceItem[] choices;
-
-	public ChoiceItem[] getChoices() {
-		return choices;
-	}
-
-	public void setChoices(ChoiceItem... choices) {
-		if (choices.length < 1) {
-			throw new IllegalArgumentException(
-					"You must provide at least one choice");
-		}
-		this.choices = choices;
-	}
-
 	private Image image;
-
-	public Image getImage() {
-		return image;
-	}
-
 	private String message;
+	private List<ChoiceItem> choices = new ArrayList<>();
 
-	public String getMessage() {
-		return message;
+	public void addChoice(String text, int index) {
+		this.choices.add(new ChoiceItem(text, index));
 	}
 
 	public void setMessage(String data) {
 		this.message = data;
 	}
 
-	// https://stackoverflow.com/questions/34118025/javafx-pass-values-from-child-to-parent
-	public String getResult() {
-		return result;
-	}
-
 	// https://stackoverflow.com/questions/12830402/javafx-2-buttons-size-fill-width-and-are-each-same-width
-	@SuppressWarnings("restriction")
-	public ChoicesDialog(Stage stage, ChoiceItem... choices) {
+	@SuppressWarnings({ "restriction", "unchecked" })
+	public ChoicesDialog(Stage stage, Scene scene) {
 		super();
-		if (choices.length < 1) {
+		this.stage = stage;
+		// Scene scene = stage.getScene();
+		Map<String, Integer> inputData = new HashMap<>();
+		try {
+			Map<String, Object> inputs = (Map<String, Object>) scene.getUserData();
+			inputData = (Map<String, Integer>) inputs.get("inputs");
+			logger.info("Loaded " + inputData.toString());
+		} catch (ClassCastException e) {
+			logger.info("Exception (ignored) " + e.toString());
+		} catch (Exception e) {
+			throw e;
+		}
+		if (inputData.keySet().size() == 0) {
 			throw new IllegalArgumentException(
 					"You must provide at least one choice");
 		}
-		this.stage = stage;
+		Iterator<Entry<String, Integer>> inputIterator = inputData.entrySet()
+				.iterator();
+		while (inputIterator.hasNext()) {
+			Map.Entry<String, Integer> inputEntry = inputIterator.next();
+			this.addChoice(inputEntry.getKey(), inputEntry.getValue());
+		}
 		initOwner(stage);
 		setTitle("title");
 		initModality(Modality.APPLICATION_MODAL);
@@ -100,7 +83,14 @@ public class ChoicesDialog extends Stage {
 
 		scene = new Scene(root, 300, 200);
 		setScene(scene);
-
+		// passing parameters is messy
+		// https://stackoverflow.com/questions/34118025/javafx-pass-values-from-child-to-parent
+		// https://stackoverflow.com/questions/14187963/passing-parameters-javafx-fxml
+		scene.setUserData(new HashMap<String, String>() {
+			{
+				put("result", null);
+			}
+		});
 		VBox outerVBox = new VBox();
 		outerHBox.getChildren().add(outerVBox);
 		outerHBox.setSpacing(12);
@@ -115,7 +105,7 @@ public class ChoicesDialog extends Stage {
 		outerVBox.getChildren().addAll(labelHBox);
 
 		int index = 0;
-		for (ChoiceItem item : choices) {
+		for (ChoiceItem item : this.choices) {
 			index++;
 			HBox buttonHBox = new HBox();
 			Button button = new Button();
@@ -126,6 +116,19 @@ public class ChoicesDialog extends Stage {
 			int itemIndex = item.getIndex();
 			userData.put("index",
 					String.format("%d", (itemIndex != 0 ? itemIndex : index)));
+			// unlike SWT where supported widget data with every widget and offers
+			// setData / getData methods to supply additional data that can later be
+			// accessed
+			// org.eclipse.swt.widgets.Widget.setData(String key, Object value)
+			//
+			// the almost all JavaFX objects javaFx only "recommends"
+			// to limit it to controls which can be toggled between selected and
+			// non-selected states.
+			// it with stateful widgets
+			// https://stackoverflow.com/questions/24615911/proper-uses-of-javafx-setuserdata
+			//
+			// https://docs.oracle.com/javase/8/javafx/api/javafx/scene/Scene.html
+
 			button.setUserData(userData);
 			button.setOnAction(new buttonHandler());
 			buttonHBox.setHgrow(button, Priority.ALWAYS);
@@ -138,10 +141,6 @@ public class ChoicesDialog extends Stage {
 		}
 
 		outerVBox.setSpacing(12);
-		/*
-		outerVBox.getChildren().addAll(labelHBox, buttonHBox1, buttonHBox2,
-				buttonHBox3);
-				*/
 	}
 
 	private static class buttonHandler implements EventHandler<ActionEvent> {
@@ -160,7 +159,36 @@ public class ChoicesDialog extends Stage {
 					+ (eventData == null ? "no user data was received" : eventData));
 			Stage stage = (Stage) button.getScene().getWindow();
 			result = eventData;
+
+			logger.info("Returned: " + result);
+			Map<String, String> sceneData = new HashMap<>();
+			sceneData.put("result", result);
+			Scene scene = button.getScene();
+			scene.setUserData(sceneData);
 			stage.close();
+		}
+	}
+
+	// origin: https://github.com/prasser/swtchoices
+	public static class ChoiceItem {
+
+		private int index;
+		private String text;
+
+		public ChoiceItem(String text, int index) {
+			if (text == null) {
+				throw new IllegalArgumentException("Null is not a valid argument");
+			}
+			this.text = text;
+			this.index = index;
+		}
+
+		public int getIndex() {
+			return index;
+		}
+
+		public String getText() {
+			return text;
 		}
 
 	}

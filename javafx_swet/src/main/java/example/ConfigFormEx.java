@@ -13,41 +13,33 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.Group;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import org.controlsfx.tools.Borders.Border;
-
+@SuppressWarnings("restriction")
 public class ConfigFormEx extends Application {
 
 	private static Map<String, String> configData = new HashMap<>();
 	private static Map<String, Map<String, String>> configOptions = new HashMap<>();
 	private static Map<String, String> templates = new HashMap<>();
-
-	// [ERROR] Failed to execute goal
-	// org.springframework.boot:spring-boot-maven-plugin:1.2.5.RELEASE:run
-	// (default-cli) on project swet-javafx: Execution default-cli of goal
-	// org.springframework.boot:spring-boot-maven-plugin:1.2.5.RELEASE:run failed:
-	// Unable to find a single main class from the following candidates
-	// [example.FlowPaneEx, example.ConfigFormEx, example.ComplexFormEx] -> [Help
-	// 1]
+	
 	/*
+	// NOTE: Execution default-cli of goal org.springframework.boot:spring-boot-maven-plugin:1.2.5.RELEASE:run failed: 
+	// Unable to find a single main class
 	public static void main(String[] args) {
 		Application.launch(args);
 	}
-	
 	*/
 	@SuppressWarnings("restriction")
 
