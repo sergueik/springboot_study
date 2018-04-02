@@ -1,9 +1,11 @@
 ### Info
 
 This directory contains a springboot wrapped version of [SWET JavaFx project](https://github.com/sergueik/selenium_java/tree/master/javafx_example)
-based on  [Skeleton SpringBoot + JavaFx](https://github.com/ruslanys/sample-spring-boot-javafx).
+based on [Skeleton SpringBoot + JavaFx](https://github.com/ruslanys/sample-spring-boot-javafx).
 
 The SWET JavaFx in turn is the JavaFx port of [SWT based Selenum recorder](https://github.com/sergueik/SWET).
+
+![icon](https://github.com/sergueik/springboot_study/tree/master/javafx_swet/screenshots/swet_javafx.png)
 
 ### Run application
 
@@ -13,7 +15,7 @@ mvn clean spring-boot:run
 ```
 Note: on Linux to run the javaFx 2.x application one needs to [install javafx-java](https://stackoverflow.com/questions/9294646/javafx-2-as-a-maven-dependency) system-wide
 ```sh
-sudo ap-get instll -qqy libopenjfx-java
+sudo apt-get install -qqy libopenjfx-java
 ```
 To prevent the
 ```sh
