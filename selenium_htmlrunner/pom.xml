@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <name>selenium_htmlrunner</name>
+  <groupId>org.github.example</groupId>
+  <artifactId>selenium_htmlrunner</artifactId>
+  <version>0.0.2-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <description>Selenium HTMLLauncher with Spring Boot</description>
+  <properties>
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- NOTE: selenium.version can not be upgraded to 3.x.x -->
+    <selenium.version>2.53.1</selenium.version>
+    <springboot.version>1.3.3.RELEASE</springboot.version>
+  </properties>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <!-- NOTE: does not seem to use properties for parent project version: 
+         Non-resolvable parent POM
+         Failure to find org.springframework.boot:spring-boot-starter-pa
+rent:pom:${springboot.version} in https://repo.maven.apache.org/maven2
+    -->
+    <!--
+    <version>${springboot.version}</version>
+    -->
+    <version>1.3.3.RELEASE</version>
+    <relativePath/>
+  </parent>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-firefox-driver</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-server</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <defaultGoal>clean spring-boot:run</defaultGoal>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <executable>true</executable>
+          <requiresUnpack>
+            <dependency>
+              <groupId>org.seleniumhq.selenium</groupId>
+              <artifactId>selenium-server</artifactId>
+            </dependency>
+          </requiresUnpack>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
