@@ -83,4 +83,12 @@ public class JDBCDao implements Dao {
 		}
 		return result;
 	}
+  
+  // mysql ecxample
+  // required connectionn string patch 
+  // String fix = "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+  // dataSource.setUrl("jdbc:mysql://localhost:3306/userdb" + fix);
+  // dataSource.setUrl("jdbc:mysql://localhost:3306/userdb" + fix);
+  // https://github.com/Pragmatists/JUnitParams
+  // http://www.cyberforum.ru/java-j2ee/thread2160223.html
 }
