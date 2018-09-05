@@ -1,5 +1,7 @@
 package org.utils.springboot;
 
+import javax.persistence.Column;
+import javax.persistence.ColumnResult;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -12,8 +14,11 @@ public class User implements Serializable {
 	@Id
 	@GeneratedValue
 	private Long id;
+	@Column(name = "name")
 	private String userName;
+	@Column(name = "password")
 	private String passWord;
+	@Column(name = "gender")
 	private UserGenderEnum userGender;
 	private String nickName;
 
@@ -70,8 +75,8 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "userName " + this.userName + ", pasword " + this.passWord + "gender "
-				+ userGender.name();
+		return "userName " + this.userName + ", pasword " + this.passWord
+				+ "gender " + userGender.name();
 	}
 
 }

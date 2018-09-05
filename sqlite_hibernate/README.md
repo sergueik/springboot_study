@@ -5,22 +5,35 @@ This directory contains a basic springboot hibernate on sqlite project based on
 
 ### Run application
 
-Compile and start appplication
+Compile and start as a regular spring-boot appplication
 ```sh
 mvn clean spring-boot:run
 ```
-Access application in Postman or command line
+To verify it works, access application in Postman or curl
 ```sh
 curl http://localhost:8080/springboot/getUsers
 ```
+will output something like
+
+```json
+[{
+        "id": 5,
+        "userName ": null,
+        "passWord ": null,
+        "
+        "userGender ": null,
+        "nickName ": null
+    },
+}]
+```
 ```sh
-$ curl -X POST -H "" -d 'userName=Alex&password=secret&confirmPassword=secret&gender=MAN' http://localhost:8080/springboot/addUser
+$ curl -X POST -H "" -d "userName=Alex&password=secret&confirmPassword=secret&gender=MAN" http://localhost:8080/springboot/addUser
 ```
 #### Database Settings
 
-To run with persistent database, set in `application.yaml`
+To run with persistent database, set in `application.yml`
 ```yaml
-datasource:
+  datasource:
     driver-class-name: org.sqlite.JDBC
     url: jdbc:sqlite:${USERPROFILE}\\sqlite\\springboot.db
     username:
@@ -75,6 +88,12 @@ If you need to create schema before starting the app, add the `src/main/resource
 ```
 and uncomment DDL code in `SpringbootApplication.java`
 
-### See also 
+### See also
+
+* [Hibernate/DAO basics](https://habrahabr.ru/post/255829/) (in russian)
 * [diyfr/sqlite-dialect](https://github.com/diyfr/sqlite-dialect)
 * [Spring Boot Reference Guide](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-build.html)
+* [xerial/sqlite-jdbc](https://bitbucket.org/xerial/sqlite-jdbc)
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

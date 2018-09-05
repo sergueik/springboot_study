@@ -2,13 +2,18 @@
 spring:
   profiles:
     active: dev
+#  datasource:
+#    driver-class-name: org.sqlite.JDBC
+#    url: 'jdbc:sqlite::memory:'
+#    username:
+#    password:
   datasource:
     driver-class-name: org.sqlite.JDBC
-    url: 'jdbc:sqlite::memory:'
+    url: jdbc:sqlite:${USERPROFILE}\\sqlite\\springboot.db
     username:
     password:
   jpa:
     database-platform: org.utils.sqlite.SQLiteDialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
