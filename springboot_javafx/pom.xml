@@ -6,26 +6,22 @@
   <version>0.0.1</version>
   <packaging>jar</packaging>
   <name>spring-boot-javafx</name>
-  <description>Как подружить Spring Boot и JavaFX</description>
+  <description>Как подружить Spring Boot и JavaFX (russian)</description>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.2.5.RELEASE</version>
+    <version>1.5.4.RELEASE</version>
     <relativePath/>
-    <!-- lookup parent from repository -->
   </parent>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
   </properties>
   <dependencies>
-    <!-- Web -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
     </dependency>
-    <!-- /Web -->
-    <!-- БД -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -35,14 +31,11 @@
       <artifactId>h2</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <!-- /БД -->
-    <!-- Тесты -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- /Тесты -->
   </dependencies>
   <build>
     <plugins>
