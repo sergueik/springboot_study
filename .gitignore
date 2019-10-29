@@ -5,6 +5,7 @@
 **/.gitignore
 **/work/**
 **/target/**
+**/.mvn/**
 **/*.log
 **/src/**/*.jar
 **/build/**
