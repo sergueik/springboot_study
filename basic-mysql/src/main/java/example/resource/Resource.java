@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/all")
+@RequestMapping("/")
 public class Resource {
 
 	private UserRepository usersRepository;
@@ -21,12 +21,12 @@ public class Resource {
 
 	// handle errors with HTTP errors
 	// https://www.baeldung.com/spring-response-status-exception
-	@GetMapping("/users/{id}")
+	@GetMapping("/fail/{id}")
 	public Users getUsers(@PathVariable("id") int id) {
 		// https://github.com/spring-projects/spring-framework/blob/master/spring-web/src/main/java/org/springframework/http/HttpStatus.java
 		System.err.println("in custom exception handler");
 		/* need to be an error status */
-		throw new ResponseStatusException(HttpStatus.NO_CONTENT, /* HttpStatus.NOT_FOUND HttpStatus.NO_CONTENT, */
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND,
 				String.format("This is what actually happened with that id %d.", id), null);
 	}
 
@@ -39,22 +39,20 @@ public class Resource {
 		}
 	}
 
-	@GetMapping("/")
+	@GetMapping("/all")
 	public List<Users> all() {
 		return usersRepository.findAll();
 	}
 
 	// for the sake of example all properties are hard coded
-	@GetMapping("/create")
-	public List<Users> users() {
+	@GetMapping("/create/{id}")
+	public List<Users> createUser(@PathVariable("id") int id) {
 		Users users = new Users();
-		users.setId(1);
-		users.setName("Bill");
+		users.setId(id);
+		users.setName("Smith");
 		users.setSalary(30);
 		users.setTeamName("Development");
-
 		usersRepository.save(users);
-
 		return usersRepository.findAll();
 	}
 }
