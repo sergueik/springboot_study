@@ -58,6 +58,72 @@ Hibernate: select users0_.id as id1_0_, users0_.name as name2_0_, users0_.salary
 ```sh
 curl http://localhost:8086/all/create
 ```
+### Custom Error Handler Exercise
+
+
+Add error handler
+```java
+@GetMapping("/user/{id}")
+public Users getOne(@PathVariable("id") int id) {
+	try {
+		return usersRepository.getOne(id);
+	} catch (Exception e) {
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Id Not Found", e);
+	}
+}
+
+```
+and a simplified version since the basic-mysql project repository does not have enough features:
+
+```java
+public Users getUsers(@PathVariable("id") int id) {
+  // https://github.com/spring-projects/spring-framework/blob/master/spring-web/src/main/java/org/springframework/http/HttpStatus.java
+  throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+      String.format("this is what actually happened with id %d.", id),
+      new Exception(""));
+}
+
+```
+Rebuild package and image and test the route:
+
+```sh
+curl -I http://localhost:8086/users/42
+```
+```sh
+HTTP/1.1 404 
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 06 Nov 2019 17:22:34 GMT
+```
+
+responds with custom HTTP status exception details:
+```sh
+curl http://localhost:86/all/users/123 2>/dev/null|jq '.'
+{
+  "timestamp": "2019-11-06T17:16:51.703+0000",
+  "status": 404,
+  "error": "Not Found",
+  "message": "This is what actually happened with that id 123.",
+  "path": "/all/users/123"
+}
+```
+
+Note: one cannot use an successful HTTP statuses,
+E.g. when set to `HttpStatus.NO_CONTENT` (204)
+
+The application returns with  the custom HTTP status 
+```sh
+curl -I http://localhost:8086/all/users/123
+HTTP/1.1 204 
+Content-Type: application/json;charset=UTF-8
+Date: Wed, 06 Nov 2019 18:14:29 GMT
+```
+
+but no details will be available
+```sh
+curl http://localhost:8086/all/users/123
+```
+(no output)
 ### Cleanup
 ```sh
 docker stop mysql-server
