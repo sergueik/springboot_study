@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.utils.entity.Result;
 import org.utils.entity.Student;
+import org.utils.entity.Name;
 import org.utils.service.BaseService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,5 +36,16 @@ public class Controller {
 	@PostMapping("/delStudentById")
 	public Result delStudentById(@RequestParam("id") String id) {
 		return service.delStudentById(id);
+	}
+
+	@PostMapping("/findStudentById")
+	public Result findStudentById(@RequestParam("id") String id) {
+		return service.findStudentById(id);
+	}
+
+	@PostMapping("/findStudentByName") // post name inside the body json
+	public Result getStudentById(@RequestBody Name studentName) {
+		String name = studentName.getName();
+		return service.findStudentByName(name);
 	}
 }

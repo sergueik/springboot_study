@@ -65,4 +65,28 @@ public class ServiceImpl implements BaseService {
 		}
 		return result;
 	}
+
+	@Override
+	public Result findStudentById(String id) {
+		Result result = new Result();
+		try {
+			Student res = dao.findStudentById(Long.parseLong(id));
+			result.setData(res);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, null, e);
+		}
+		return result;
+	}
+
+	@Override
+	public Result findStudentByName(String name) {
+		Result result = new Result();
+		try {
+			Student res = dao.findStudentByName(name);
+			result.setData(res);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, null, e);
+		}
+		return result;
+	}
 }

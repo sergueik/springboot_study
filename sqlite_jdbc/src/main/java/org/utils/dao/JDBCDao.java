@@ -3,6 +3,7 @@ package org.utils.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,12 +84,55 @@ public class JDBCDao implements Dao {
 		}
 		return result;
 	}
-  
-  // mysql ecxample
-  // required connectionn string patch 
-  // String fix = "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-  // dataSource.setUrl("jdbc:mysql://localhost:3306/userdb" + fix);
-  // dataSource.setUrl("jdbc:mysql://localhost:3306/userdb" + fix);
-  // https://github.com/Pragmatists/JUnitParams
-  // http://www.cyberforum.ru/java-j2ee/thread2160223.html
+
+	@Override
+	public Student findStudentById(long id) {
+		List<?> results = null;
+		Student result = null;
+		String sql = "SELECT * FROM student WHERE id = ?";
+		try {
+			PreparedStatement preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setLong(1, id);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			results = JDBCUtils.TranverseToList(resultSet, Student.class);
+			if (results != null && results.size() != 0) {
+				result = (Student) results.get(0);
+			} else {
+
+			}
+		} catch (SQLException | InstantiationException | IllegalAccessException e) {
+			logger.log(Level.SEVERE, null, e);
+		}
+		return result;
+	}
+
+	@Override
+	public Student findStudentByName(String name) {
+		List<?> results = null;
+		Student result = null;
+		String sql = "SELECT * FROM student WHERE name = ?";
+		try {
+			PreparedStatement preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setString(1, name);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			results = JDBCUtils.TranverseToList(resultSet, Student.class);
+			if (results != null && results.size() != 0) {
+				result = (Student) results.get(0);
+			} else {
+
+			}
+		} catch (SQLException | InstantiationException | IllegalAccessException e) {
+			logger.log(Level.SEVERE, null, e);
+		}
+		return result;
+	}
+
+	// mysql ecxample
+	// required connectionn string patch
+	// String fix =
+	// "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
+	// dataSource.setUrl("jdbc:mysql://localhost:3306/userdb" + fix);
+	// dataSource.setUrl("jdbc:mysql://localhost:3306/userdb" + fix);
+	// https://github.com/Pragmatists/JUnitParams
+	// http://www.cyberforum.ru/java-j2ee/thread2160223.html
 }

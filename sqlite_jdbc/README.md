@@ -27,6 +27,7 @@ Verify it works via Postman or curl (needs the POST)
 ```sh
 curl -X POST http://127.0.0.1:8181/test/student/findAllStudent
 ```
+returns
 ```json
 {
     "status": 1,
@@ -41,7 +42,37 @@ curl -X POST http://127.0.0.1:8181/test/student/findAllStudent
     }]
 }
 ```
-The other supported routes are `updateStudent`, `delStudentById`, `addStudent`.
+```sh
+curl -X POST -H "application/x-www-form-urlencoded" -d "id=2" http://127.0.0.1:8181/test/student/findStudentById
+```
+returns
+```json
+{
+  "status":0,
+  "data":{
+    "id":2,
+    "name":"John",
+    "course":"Music"
+  }
+}
+```
+and
+
+```sh
+curl -X POST -H "Content-Type: application/json" -d '{"name":"John"}' http://127.0.0.1:8181/test/student/findStudentByName
+returns
+```json
+{
+  "status":0,
+  "data":{
+    "id":2,
+    "name":"John",
+    "course":"Music"
+  }
+}
+```
+
+Other supported routes are `updateStudent`, `delStudentById`, `addStudent`.
 
 
 For SQLite Hibernate project example, see [restart1025/Spring-Boot-SQLite](https://github.com/restart1025/Spring-Boot-SQLite)
