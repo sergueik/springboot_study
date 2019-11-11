@@ -10,10 +10,8 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <!-- need Spring 5.x -->
-    <!--
-    <version>1.5.4.RELEASE</version>
--->
+    <!-- need Spring 5.x: the package org.springframework.web.server does not exist in the spring 4.x dependency jars collected by spring-boot-starter-parent 1.5.22.RELEASE -->
+    <!-- <version>1.5.22.RELEASE</version> -->
     <version>2.1.2.RELEASE</version>
     <relativePath/>
   </parent>
