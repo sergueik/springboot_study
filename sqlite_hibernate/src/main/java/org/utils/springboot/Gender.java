@@ -1,5 +1,5 @@
 package org.utils.springboot;
 
-public enum UserGenderEnum {
+public enum Gender {
 	MAN, WOMAN
 }

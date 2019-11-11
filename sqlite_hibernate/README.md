@@ -27,7 +27,20 @@ will output something like
 }]
 ```
 ```sh
-$ curl -X POST -H "" -d "userName=Alex&password=secret&confirmPassword=secret&gender=MAN" http://localhost:8080/springboot/addUser
+curl -X POST -H "application/x-www-form-urlencoded" -d "userName=Michael&nickName=michaeljackson&gender=MAN&password=thriller&confirmPassword=thriller" http://localhost:8080/springboot/addUser
+```
+will reply with
+```sh
+User added
+```
+while the
+```sh
+curl -X POST -H "Content-Type: application/json" -d '{"userName":"John", "password":"beatles", "gender":"MAN"}' http://localhost:8080/springboot/addUserObject
+```
+would response with
+```
+{"id":10,"userName":"John","password":"beatles","gender":"MAN","nickName":null}
+
 ```
 #### Database Settings
 

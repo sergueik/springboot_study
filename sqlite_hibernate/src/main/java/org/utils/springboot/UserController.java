@@ -41,14 +41,14 @@ public class UserController {
 		if (targetUser.getUserName() != null) {
 			user.setUserName(targetUser.getUserName());
 		}
-		if (targetUser.getPassWord() != null) {
-			user.setPassWord(targetUser.getPassWord());
+		if (targetUser.getPassword() != null) {
+			user.setPassword(targetUser.getPassword());
 		}
 		if (targetUser.getNickName() != null) {
 			user.setNickName(targetUser.getNickName());
 		}
-		if (targetUser.getUserGender() != null) {
-			user.setUserGender(targetUser.getUserGender());
+		if (targetUser.getGender() != null) {
+			user.setGender(targetUser.getGender());
 		}
 		return userRepository.saveAndFlush(user);
 	}
@@ -75,7 +75,7 @@ public class UserController {
 	public String addUser(@RequestParam("userName") String userName,
 			@RequestParam("password") String password,
 			@RequestParam("confirmPassword") String confirmPassword,
-			@RequestParam("gender") UserGenderEnum gender,
+			@RequestParam("gender") Gender gender,
 			@RequestParam(name = "nickName", required = false) String nickName) {
 		if (!(password.equals(confirmPassword))) {
 			return "Password and confirmPassword do not match!";

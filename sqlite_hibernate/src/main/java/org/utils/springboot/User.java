@@ -14,23 +14,41 @@ public class User implements Serializable {
 	@Id
 	@GeneratedValue
 	private Long id;
+
 	@Column(name = "name")
+	// turn out both "user_name" and "name" columns are there in the "user" table:
+	/*
+	 sqlite3.exe
+	
+	sqlite> .open c:/Users/Serguei/sqlite/springboot.db
+	sqlite> .tables
+	student  user
+	
+	sqlite> .schema user
+	CREATE TABLE user (id  integer, nick_name varchar, pass_word varchar, user_name
+	varchar, user_sex integer, user_gender integer, password varchar, gender integer
+	, name varchar, primary key (id));
+	 */
+	// possibly result of a bad migration
 	private String userName;
+
 	@Column(name = "password")
-	private String passWord;
+	private String password;
+
 	@Column(name = "gender")
-	private UserGenderEnum userGender;
+	private Gender gender;
+
 	private String nickName;
 
 	public User() {
 		super();
 	}
 
-	public User(String userName, String passWord, UserGenderEnum userGender) {
+	public User(String userName, String password, Gender gender) {
 		super();
-		this.passWord = passWord;
+		this.password = password;
 		this.userName = userName;
-		this.userGender = userGender;
+		this.gender = gender;
 	}
 
 	public Long getId() {
@@ -49,20 +67,20 @@ public class User implements Serializable {
 		this.userName = userName;
 	}
 
-	public String getPassWord() {
-		return passWord;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setPassWord(String passWord) {
-		this.passWord = passWord;
+	public void setPassword(String data) {
+		this.password = data;
 	}
 
-	public UserGenderEnum getUserGender() {
-		return userGender;
+	public Gender getGender() {
+		return gender;
 	}
 
-	public void setUserGender(UserGenderEnum userGender) {
-		this.userGender = userGender;
+	public void setGender(Gender data) {
+		this.gender = data;
 	}
 
 	public String getNickName() {
@@ -75,8 +93,8 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "userName " + this.userName + ", pasword " + this.passWord
-				+ "gender " + userGender.name();
+		return "userName: " + this.userName + ", pasword: " + this.password
+				+ "gender: " + gender.name();
 	}
 
 }
