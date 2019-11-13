@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.utils</groupId>
-  <artifactId>springboot_jdbc</artifactId>
+  <groupId>example</groupId>
+  <artifactId>sqlite_jdbc</artifactId>
   <version>0.3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <parent>
@@ -25,6 +25,7 @@
     <mybatis.version>2.1.1</mybatis.version>
     <spring-jdbc.version>5.2.0.RELEASE</spring-jdbc.version>
     <sqlite-jdbc.version>3.28.0</sqlite-jdbc.version>
+    <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <dependencies>
     <dependency>
@@ -69,6 +70,7 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <executable>true</executable>
+          <finalName>${finalName}</finalName>
         </configuration>
       </plugin>
       <plugin>

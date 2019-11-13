@@ -1,4 +1,4 @@
-### Info
+### Ifo
 
 This directory contains a skeleton spring/sqlite JDBC project based on
 [Spring Boot MVC Demo with JDBC and SqlServer](https://github.com/wuwei1024/SpringBoot-MVC-JDBC-SqlServer) but with SQLite
@@ -71,6 +71,8 @@ returns
   }
 }
 ```
+
+
 #### On Spring 4.X
 ```sh
 curl -X POST http://127.0.0.1:8181/test/student/findAllStudent
@@ -121,7 +123,77 @@ returns
 ```
 
 Other supported routes are `updateStudent`, `delStudentById`, `addStudent`.
+### Docker Exercise
 
+### Shell Version
+```sh
+docker build -f Dockerfile.shell -t sqlite-shell .
+```
+ 
+```sh
+docker run -it -v ${HOME}/Desktop/:/db sqlite-shell
+```
+```sh
+sqlite> .tables
+student  user   
+
+sqlite> .schema user
+CREATE TABLE user 
+  ( 
+     id          INTEGER, 
+     nick_name   VARCHAR, 
+     user_sex    INTEGER, 
+     user_gender INTEGER, 
+     password    VARCHAR, 
+     name        VARCHAR, 
+     PRIMARY KEY (id) 
+  );
+sqlite> select count(1) from user;
+3
+.quit
+```
+#### Java Version
+* uncoment the relevant path in `spring.datasource.url` in `src/main/resources/application.properties`:
+```
+spring.datasource.url=jdbc:sqlite:/db/springboot.db
+
+```
+* repackage
+```sh
+mvn clean package
+```
+```sh
+docker build -f Dockerfile.jdbc -t sqlite-jdbc .
+```
+* run Docker container
+```sh
+docker run -it -v ${HOME}/Desktop/:/db -p 8181:8181 sqlite-jdbc
+```
+* verify
+```sh
+curl -X POST http://127.0.0.1:8181/student/findAllStudent 2>/dev/null |jq '.'
+```
+returns
+```json
+{
+  "status": 1,
+  "data": [
+    {
+      "id": 2,
+      "name": "John",
+      "course": "Music"
+    },
+    {
+...
+```
+* cleanup
+```sh
+docker container ls -a | grep sqlite | cut -d ' ' -f 1 | xargs -IX docker container rm X
+```
+```sh
+docker image rm -f sqlite-shell sqlite-jdbc
+docker image ls |  grep '<none>' | awk '{print $3}' | xargs -IX  docker image rm -f X
+```
 ### See Also
 
 For SQLite Hibernate project example, see [restart1025/Spring-Boot-SQLite](https://github.com/restart1025/Spring-Boot-SQLite)

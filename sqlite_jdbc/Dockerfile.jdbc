@@ -1,0 +1,8 @@
+FROM jolokia/alpine-jre-8
+RUN apk add --update sqlite
+RUN mkdir /db
+WORKDIR /
+
+ADD target/example.sqlite_jdbc.jar example.sqlite_jdbc.jar
+EXPOSE 8181
+ENTRYPOINT ["java", "-jar", "example.sqlite_jdbc.jar"]
