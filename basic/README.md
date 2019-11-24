@@ -7,14 +7,20 @@ Springboot Docker basic project extracted from [springboot mySQL Docker containe
 ```sh
 mvn clean spring-boot:run
 ```
+* test locally
+```sh
+curl http://localhost:8085/basic
+Hello basic
+```
 * run in container
 ```sh
 mvn clean package
 docker build -f Dockerfile -t basic-example . 
-docker run -p 8085:8085 basic-example
+docker run -p 8086:8085 basic-example
 ```
+test dockerized
 ```sh
-curl http://localhost:8085/basic
+curl http://localhost:8086/basic
 Hello basic
 ```
 - need to manually destroy all started containers and image afterwards
