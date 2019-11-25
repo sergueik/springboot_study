@@ -1,5 +1,6 @@
-FROM openjdk:8-jdk-alpine
-RUN apk update && apk add libc6-compat
+FROM jolokia/alpine-jre-8
+# FROM openjdk:8-jdk-alpine
+# RUN apk update && apk add libc6-compat
 VOLUME /tmp
 ADD target/portafolio-0.0.1.jar  app.jar
 ENV JAVA_OPTS=""

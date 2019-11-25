@@ -5,6 +5,10 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>1.5.9.RELEASE</version>
+<!-- Attempt to switch to 2.1.2.RELEASE results in run error:
+The Class-Path manifest attribute in /home/sergueik/.m2/repository/org/glassfish/hk2/hk2/2.5.0-b42/hk2-2.5.0-b42.jar referenced one or more files that do not exist:
+-->
+    <!-- <version>2.1.2.RELEASE</version> -->
     <relativePath/>
     <!-- lookup parent from repository -->
   </parent>
