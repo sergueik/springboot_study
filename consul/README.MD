@@ -2,13 +2,13 @@
 
 This directory contains a replica of [consul springboot microservices project](https://github.com/guedim/spring-projects/tree/master/consul-microservice-discovery-sample)
 ### Testing
-
+ 
 The cluster is bootstrapped successfully via
 step-by-step packaging of both api service applications
 ```sh
-cd portofolio
+cd portafolio
 mvn clean package
-docker build -f Dockerfile  -t 'test/portofolio' .
+docker build -f Dockerfile  -t 'test/portafolio' .
 ```
 ```sh
 cd pricing
@@ -19,6 +19,24 @@ followed by the
 ```sh
 docker-componse -f docker-compose.yml up
 ```
+which logs to console
+
+```sh
+sergueik@sergueik71:~/src/springboot_study/consul$ docker-compose -f docker-compose.yml  up
+Creating network "consul_default" with the default driver
+Creating consul_consul_1 ... done
+Creating consul_portafolio_test_1 ... done
+Creating consul_pricing_test_1    ... done
+Attaching to consul_consul_1, consul_portafolio_test_1, consul_pricing_test_1
+consul_1           | ==> WARNING: Bootstrap mode enabled! Do not enable unless necessary
+consul_1           | ==> WARNING: It is highly recommended to set GOMAXPROCS higher than 1
+consul_1           | ==> Starting raft data migration...
+consul_1           | ==> Starting Consul agent...
+consul_1           | ==> Starting Consul agent RPC...
+consul_1           | ==> Consul agent running!
+
+```
+followed with the massive burst of usual Spring messages
 followed by consul check
 ```sh
 2>/dev/null curl http://127.0.0.1:8500/v1/health/checks/portfolio-service | jq '.'
@@ -53,7 +71,32 @@ curl http://localhost:57216/pricing/customer/1/portfolio/1 | jq '.'
   "UTX 23432 110.120000 2580331.840000"
 ]
 
-```	
+```
+followed by consul artifact check
+```sh
+for N in 'consul_consul' ; do docker container ls | grep $N | awk '{print $1}' | xargs -I{} docker exec -t {} /bin/sh -c  'ps -a | grep consu[l]'; done
+```
+```sh
+ 1 root       0:03 /bin/consul agent -config-dir=/config -server -bootstrap -advertise 192.168.99.100
+```
+```sh
+for N in 'consul_consul' ; do docker container ls | grep $N | awk '{print $1}' | xargs -I{} docker exec -t {} /bin/sh -c  'cat /config/consul.json'; done 
+{
+	"data_dir": "/data",
+	"ui_dir": "/ui",
+	"client_addr": "0.0.0.0",
+	"ports": {
+		"dns": 53
+	},
+	"recursor": "8.8.8.8",
+	"disable_update_check": true
+}
+```
+```sh
+for N in 'test/portafolio' ; do docker container ls | grep $N | awk '{print $1}' | xargs -I{} docker exec -t {} /bin/sh -c 'kill -STOP $(pgrep java)'  ; done
+```
+followed by observing the service health change in consul ui:
+  
 NOTE: some project refactoring  performed to get certain Docker is not downloading the images
 from the parent project docker hub instead of using the local freshly built ones.
 
