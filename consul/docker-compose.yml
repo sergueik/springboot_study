@@ -11,8 +11,8 @@ services:
       - "8500:8500"
       - "8600:53/udp"
 
-  portafolio-service:
-    image: guedim/portafolio:0.0.1
+  portafolio_test:
+    image: test/portafolio
     ports:
       - "57116:57116"
     environment:
@@ -22,8 +22,9 @@ services:
       - consul
     links:
       - consul
-  pricing-service:
-    image: guedim/pricing:0.0.1
+  pricing_test:
+    image: test/pricing
+
     ports:
       - "57216:57216"
     environment:
@@ -31,7 +32,7 @@ services:
       DISCOVERY_ENABLED: "true"
     depends_on:
       - consul
-      - portafolio-service
+      - portafolio_test
     links:
       - consul
-      - portafolio-service
+      - portafolio_test
