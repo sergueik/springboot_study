@@ -25,16 +25,16 @@ which logs to console
 ```sh
 sergueik@sergueik71:~/src/springboot_study/consul$ docker-compose -f docker-compose.yml  up
 Creating network "consul_default" with the default driver
-Creating consul_consul_1 ... done
-Creating consul_portafolio_test_1 ... done
-Creating consul_pricing_test_1    ... done
-Attaching to consul_consul_1, consul_portafolio_test_1, consul_pricing_test_1
-consul_1           | ==> WARNING: Bootstrap mode enabled! Do not enable unless necessary
-consul_1           | ==> WARNING: It is highly recommended to set GOMAXPROCS higher than 1
-consul_1           | ==> Starting raft data migration...
-consul_1           | ==> Starting Consul agent...
-consul_1           | ==> Starting Consul agent RPC...
-consul_1           | ==> Consul agent running!
+Creating consul_discovery_1 ... done
+Creating consul_portafolio_api_1 ... done
+Creating consul_pricing_api_1    ... done
+Attaching to consul_discovery_1, consul_portafolio_api_1, consul_pricing_api_1
+discovery_1           | ==> WARNING: Bootstrap mode enabled! Do not enable unless necessary
+discovery_1           | ==> WARNING: It is highly recommended to set GOMAXPROCS higher than 1
+discovery_1           | ==> Starting raft data migration...
+discovery_1           | ==> Starting Consul agent...
+discovery_1           | ==> Starting Consul agent RPC...
+discovery_1           | ==> Consul agent running!
 
 ```
 followed with the massive burst of usual Spring messages
@@ -47,13 +47,13 @@ docker container ls
 to show
 ```
 CONTAINER ID        IMAGE                    COMMAND                  CREATED             STATUS              PORTS                                                                                                                                NAMES
-7233fbe257ae        test/pricing             "sh -c 'java $JAVA_O…"   9 minutes ago       Up 7 minutes        57116/tcp, 0.0.0.0:57216->57216/tcp                                                                                                  consul_pricing_test_1
-2d8a3192aa56        test/portafolio          "sh -c 'java $JAVA_O…"   9 minutes ago       Up 7 minutes        0.0.0.0:57116->57116/tcp                                                                                                             consul_portafolio_test_1
-11f78b075506        progrium/consul:latest   "/bin/start -server …"   19 hours ago        Up 7 minutes        53/tcp, 0.0.0.0:8300->8300/tcp, 0.0.0.0:8400->8400/tcp, 8301-8302/tcp, 0.0.0.0:8500->8500/tcp, 8301-8302/udp, 0.0.0.0:8600->53/udp   consul_consul_1
+7233fbe257ae        test/pricing             "sh -c 'java $JAVA_O…"   9 minutes ago       Up 7 minutes        57116/tcp, 0.0.0.0:57216->57216/tcp                                                                                                  consul_pricing_api_1
+2d8a3192aa56        test/portafolio          "sh -c 'java $JAVA_O…"   9 minutes ago       Up 7 minutes        0.0.0.0:57116->57116/tcp                                                                                                             consul_portafolio_api_1
+11f78b075506        progrium/consul:latest   "/bin/start -server …"   19 hours ago        Up 7 minutes        53/tcp, 0.0.0.0:8300->8300/tcp, 0.0.0.0:8400->8400/tcp, 8301-8302/tcp, 0.0.0.0:8500->8500/tcp, 8301-8302/udp, 0.0.0.0:8600->53/udp   consul_discovery_1
 ```
 connecting to the `consul` container
 ```sh
-docker exec -it $(docker container ls | grep 'consul_consul' |awk '{print $1}') '/bin/bash'
+docker exec -it $(docker container ls | grep 'consul_discovery' |awk '{print $1}') '/bin/bash'
 ```
 one can find the consul configuration in `/config/consul.json` 
 ```sh
@@ -85,7 +85,7 @@ followed by consul check
 ```sh
 [
   {
-    "Node": "127.0.0.1.xip.io",
+    "CONTAINER": "127.0.0.1.xip.io",
     "CheckID": "service:portfolio-service-57116",
     "Name": "Service 'portfolio-service' check",
     "Status": "passing",
@@ -115,13 +115,15 @@ curl http://localhost:57216/pricing/customer/1/portfolio/1 | jq '.'
 ```
 followed by consul artifact check
 ```sh
-for N in 'consul_consul' ; do docker container ls | grep $N | awk '{print $1}' | xargs -I{} docker exec -t {} /bin/sh -c  'ps -a | grep consu[l]'; done
+ROLES='discovery'
+for CONTAINER in $ROLES ; do docker container ls | grep $CONTAINER | awk '{print $1}' | xargs -I{} docker exec -t {} /bin/sh -c  'ps -a | grep consu[l]'; done
 ```
 ```sh
  1 root       0:03 /bin/consul agent -config-dir=/config -server -bootstrap -advertise 192.168.99.100
 ```
 ```sh
-for N in 'consul_consul' ; do docker container ls | grep $N | awk '{print $1}' | xargs -I{} docker exec -t {} /bin/sh -c  'cat /config/consul.json'; done 
+ROLES='discovery'
+for CONTAINER in ROLES ; do docker container ls | grep $CONTAINER | awk '{print $1}' | xargs -I{} docker exec -t {} /bin/sh -c  'cat /config/consul.json'; done 
 {
 	"data_dir": "/data",
 	"ui_dir": "/ui",
@@ -134,7 +136,8 @@ for N in 'consul_consul' ; do docker container ls | grep $N | awk '{print $1}' |
 }
 ```
 ```sh
-for N in 'test/portafolio' ; do docker container ls | grep $N | awk '{print $1}' | xargs -I{} docker exec -t {} /bin/sh -c 'kill -STOP $(pgrep java)'  ; done
+ROLES=pricing_api
+for CONTAINER in $ROLES ; do docker container ls | grep $CONTAINER | awk '{print $1}' | xargs -I{} docker exec -t {} /bin/sh -c 'kill -STOP $(pgrep java)'  ; done
 ```
 followed by observing the service health change in consul ui:
   
@@ -146,7 +149,7 @@ Attempt of bootstrapping the cluster via single springboot style command
 export CONSUL_HOST=consul
 mvn sprint-boot:run
 ```
-has been failing with host resolution by api nodes, regardless of consul container was run or not:
+has been failing with host resolution by api CONTAINERs, regardless of consul container was run or not:
 
 ```sh
 ERROR 18217 --- [  restartedMain] o.s.boot.SpringApplication: Application startup failed
@@ -156,17 +159,23 @@ this was not looked into any further.
 ### Cleanup
 
 ```sh
-for N in  consul 'test/pricing' 'test/portafolio' ; do docker container ls | grep $N | awk '{print $1}' | xargs -IX docker container stop X; done
-for N in  consul 'test/pricing' 'test/portafolio' ; do docker container ls -a | grep $N | awk '{print $1}' | xargs -IX docker container rm X; done
-
+ROLES='discovery pricing_api portafolio_api'
+for CONTAINER in $ROLES  ; do docker container ls | grep $CONTAINER | awk '{print $1}' | xargs -IX docker container stop X; done
+for CONTAINER in $ROLES ; do docker container ls -a | grep $CONTAINER | awk '{print $1}' | xargs -IX docker container rm X; done
 ```
 ```sh
-for I in 'test/pricing' 'test/portafolio' ; do docker image ls | grep $I | awk '{print $3}' | xargs  docker image rm {} ; done
+IMAGES='test/pricing test/portafolio'
+for IMAGE in $IMAGES ; do docker image ls | grep $IMAGE | awk '{print $3}' | xargs  docker image rm {} ; done
 ```
 ignoring
 ```sh
 Error response from daemon: invalid reference format	
 ```
+followed by
+```sh
+echo Y |docker image prune
+```
+
 ### See also
 
   * original [Getting Started with Microservices in SpringBoot](https://www.infoq.com/articles/Microservices-SpringBoot) article.

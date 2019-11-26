@@ -1,7 +1,7 @@
 version: '2.1'
 
 services:
-  consul:
+  discovery:
     command: -server -bootstrap -advertise 192.168.99.100
     image: progrium/consul:latest
     hostname: 127.0.0.1.xip.io
@@ -11,28 +11,28 @@ services:
       - "8500:8500"
       - "8600:53/udp"
 
-  portafolio_test:
+  portafolio_api:
     image: test/portafolio
     ports:
       - "57116:57116"
     environment:
-      CONSUL_HOST: consul
+      CONSUL_HOST: discovery
       DISCOVERY_ENABLED: "true"
     depends_on:
-      - consul
+      - discovery
     links:
-      - consul
-  pricing_test:
+      - discovery
+  pricing_api:
     image: test/pricing
 
     ports:
       - "57216:57216"
     environment:
-      CONSUL_HOST: consul
+      CONSUL_HOST: discovery
       DISCOVERY_ENABLED: "true"
     depends_on:
-      - consul
-      - portafolio_test
+      - discovery
+      - portafolio_api
     links:
-      - consul
-      - portafolio_test
+      - discovery
+      - portafolio_api
