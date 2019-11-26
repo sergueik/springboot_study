@@ -3,8 +3,6 @@ spring:
     name: portfolio-service
   cloud:
     consul:
-#      setting directly has no effect 
-#      host: consul-microservice-discovery-sample_consul_1
       host: ${CONSUL_HOST}
       port: 8500
 

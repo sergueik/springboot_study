@@ -1,6 +1,7 @@
 ### Info
 
-This directory contains a replica of [consul springboot microservices project](https://github.com/guedim/spring-projects/tree/master/consul-microservice-discovery-sample)
+This directory contains a replica of [consul springboot microservices project](https://github.com/guedim/spring-projects/tree/master/consul-microservice-discovery-sample) used to dissect how exactly `org.springframework.cloud.cient.discovery.DiscoveryClient` does consul service definition and booostrap.
+
 ### Testing
  
 The cluster is bootstrapped successfully via
@@ -17,7 +18,7 @@ docker build -f Dockerfile  -t 'test/pricing' .
 ```
 followed by the
 ```sh
-docker-componse -f docker-compose.yml up
+docker-compose -f docker-compose.yml up
 ```
 which logs to console
 
@@ -37,6 +38,46 @@ consul_1           | ==> Consul agent running!
 
 ```
 followed with the massive burst of usual Spring messages
+
+### Validation
+Observed the cluster to be up 
+```sh
+docker container ls
+```
+to show
+```
+CONTAINER ID        IMAGE                    COMMAND                  CREATED             STATUS              PORTS                                                                                                                                NAMES
+7233fbe257ae        test/pricing             "sh -c 'java $JAVA_O…"   9 minutes ago       Up 7 minutes        57116/tcp, 0.0.0.0:57216->57216/tcp                                                                                                  consul_pricing_test_1
+2d8a3192aa56        test/portafolio          "sh -c 'java $JAVA_O…"   9 minutes ago       Up 7 minutes        0.0.0.0:57116->57116/tcp                                                                                                             consul_portafolio_test_1
+11f78b075506        progrium/consul:latest   "/bin/start -server …"   19 hours ago        Up 7 minutes        53/tcp, 0.0.0.0:8300->8300/tcp, 0.0.0.0:8400->8400/tcp, 8301-8302/tcp, 0.0.0.0:8500->8500/tcp, 8301-8302/udp, 0.0.0.0:8600->53/udp   consul_consul_1
+```
+connecting to the `consul` container
+```sh
+docker exec -it $(docker container ls | grep 'consul_consul' |awk '{print $1}') '/bin/bash'
+```
+one can find the consul configuration in `/config/consul.json` 
+```sh
+{
+	"data_dir": "/data",
+	"ui_dir": "/ui",
+	"client_addr": "0.0.0.0",
+	"ports": {
+		"dns": 53
+	},
+	"recursor": "8.8.8.8",
+	"disable_update_check": true
+}
+
+```
+and just-generated service definitions in `/data/services/`:
+
+```sh
+find  /data/services -type f -exec cat {} \;
+{"Token":"","Service":{"ID":"pricing-service-57216","Service":"pricing-service","Tags":[],"Address":"7233fbe257ae","Port":57216}}
+{"Token":"","Service":{"ID":"portfolio-service-57116","Service":"portfolio-service","Tags":[],"Address":"2d8a3192aa56","Port":57116}}
+```
+
+### Additional Testing
 followed by consul check
 ```sh
 2>/dev/null curl http://127.0.0.1:8500/v1/health/checks/portfolio-service | jq '.'

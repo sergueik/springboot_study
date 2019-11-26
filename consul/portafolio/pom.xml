@@ -2,14 +2,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.guedim</groupId>
+    <groupId>example</groupId>
     <artifactId>consul-microservice-discovery-sample</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
   </parent>
+  <groupId>example</groupId>
   <artifactId>portafolio</artifactId>
   <name>portafolio</name>
   <description>Portafolio Microservice discovery service using Spring Boot and consul</description>
   <url>http://maven.apache.org</url>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <finalName>${project.groupId}.${project.artifactId}</finalName>
+    <java.version>1.8</java.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

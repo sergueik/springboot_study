@@ -1,4 +1,4 @@
-package com.guedim.consul.discovery;
+package example;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,14 +29,12 @@ public class PricingEndpoint implements InitializingBean {
 
 	@ApiOperation(value = "Retrieves a fully priced portfolio", notes = "Retrieves fully priced portfolio given customer id and portfolio id")
 	@GetMapping("/customer/{customer-id}/portfolio/{portfolio-id}")
-	public List<String> getPricedPortfolio(
-			@PathVariable("customer-id") Integer customerId,
+	public List<String> getPricedPortfolio(@PathVariable("customer-id") Integer customerId,
 			@PathVariable("portfolio-id") Integer portfolioId) {
 		List<ServiceInstance> instances = client.getInstances("portfolio-service");
-		ServiceInstance instance = instances.stream().findFirst()
-				.orElseThrow(() -> new RuntimeException("not found"));
-		String url = String.format("%s/portfolios/customer/%d/portfolio/%d",
-				instance.getUri(), customerId, portfolioId);
+		ServiceInstance instance = instances.stream().findFirst().orElseThrow(() -> new RuntimeException("not found"));
+		String url = String.format("%s/portfolios/customer/%d/portfolio/%d", instance.getUri(), customerId,
+				portfolioId);
 		// query for the portfolios, returned as an array of List
 		// of size 2, containing a ticker and a position (# of shares)
 		Object[] portfolio = restTemplate.getForObject(url, Object[].class);

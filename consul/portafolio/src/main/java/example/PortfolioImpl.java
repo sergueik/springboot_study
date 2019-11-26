@@ -1,4 +1,4 @@
-package com.guedim.consul.discovery;
+package example;
 
 import javax.annotation.PostConstruct;
 

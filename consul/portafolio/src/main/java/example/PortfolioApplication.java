@@ -1,4 +1,4 @@
-package com.guedim.consul.discovery;
+package example;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,8 +6,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class PricingApplication {
+public class PortfolioApplication {
+
 	public static void main(String[] args) {
-		SpringApplication.run(PricingApplication.class, args);
+		SpringApplication.run(PortfolioApplication.class, args);
 	}
 }
