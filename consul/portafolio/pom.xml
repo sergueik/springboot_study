@@ -28,6 +28,9 @@
     <plugins>
       <plugin>
         <groupId>com.spotify</groupId>
+        <!-- https://github.com/spotify/docker-maven-plugin 
+       NOTE: currently inactive
+        -->
         <artifactId>dockerfile-maven-plugin</artifactId>
         <version>${version.dockerfile-maven}</version>
         <executions>

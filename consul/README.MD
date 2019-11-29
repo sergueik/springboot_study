@@ -179,10 +179,16 @@ echo Y |docker image prune
 ### See also
 
   * original [Getting Started with Microservices in SpringBoot](https://www.infoq.com/articles/Microservices-SpringBoot) article.
-  * [Russian transtation (in russian)](https://habr.com/company/otus/blog/413567/)
+  * [transtation](https://habr.com/company/otus/blog/413567/) (in russian)
   * [using consul for service discovery and beyond (in russian)](https://eax.me/consul/)
   * [using consul with sping microservice service discovery](http://cloud.spring.io/spring-cloud-consul/1.3.x/multi/multi_spring-cloud-consul-discovery.html)
+      
   * [jq intro](https://www.youtube.com/watch?v=NzqBhHVJMDI)
   * [spring-cloud/spring-cloud-consul](https://github.com/spring-cloud/spring-cloud-consul)
   * [core Docker compose example](https://examples.javacodegeeks.com/devops/docker/docker-compose-example/)
+    also https://www.javacodegeeks.com/2017/12/microservices-implementation-example-spring-boot.html
   * [Docker maven archetype example](http://geekyplatypus.com/packaging-and-serving-your-java-application-with-docker/)
+  * Spring Boot app [consul integration](https://github.com/spring-cloud/spring-cloud-consul) with autoconfiguration and binding.
+  * Another [spring-cloud-consul-example](https://github.com/yidongnan/spring-cloud-consul-example) project
+  * [Eureka Consul Adapter](https://github.com/twinformatics/eureka-consul-adapter) springboot discovery class.
+  * Yet another [spring-boot-starter-consul](https://github.com/markramach/spring-boot-starter-consul) project.
