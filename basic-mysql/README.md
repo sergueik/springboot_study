@@ -1,7 +1,6 @@
 ### Info
 
-Spring Boot on Docker basic extracted from [Springboot mySQL Docker container](https://github.com/TechPrimers/docker-mysql-spring-boot-example)
-upgraded to MySQL __8.0__
+Spring Boot on Docker basic extracted from [Springboot mySQL Docker container](https://github.com/TechPrimers/docker-mysql-spring-boot-example) converted too use openjdk jre alpine base image, upgraded to MySQL __8.0__
 
 ### Setup
 Edit `pom.xml` and specify the __8.0__ version of mysql-connector-java jar:
@@ -38,7 +37,7 @@ mvn clean package
 ```
 * Build the `mysql-example` Docker image
 ```sh
-docker build -f Dockerfile -t mysql-example . 
+docker build -f Dockerfile -t mysql-example .
 ```
 * Lanch the `mysql-example` backed Docker container
 ```sh
@@ -57,7 +56,7 @@ Started ExampleApplication in 21.678 seconds (JVM running for 23.016)
 ```sh
 curl http://localhost:8086/all/
 ```
-would respond with the list of users added so far, starting with an empty list 
+would respond with the list of users added so far, starting with an empty list
 ```sh
 []
 ```
@@ -123,9 +122,9 @@ public Users getUsers(@PathVariable("id") int id) {
 ```sh
 curl -I http://localhost:8086/demo_error/42
 ```
-respond with a HTTP status 404 now 
+respond with a HTTP status 404 now
 ```sh
-HTTP/1.1 404 
+HTTP/1.1 404
 Content-Type: application/json;charset=UTF-8
 Transfer-Encoding: chunked
 Date: Wed, 06 Nov 2019 17:22:34 GMT
@@ -149,10 +148,10 @@ will show
 Note: one cannot use an successful [HTTP status](https://github.com/spring-projects/spring-framework/blob/master/spring-web/src/main/java/org/springframework/http/HttpStatus.java),
 e.g. when set to `HttpStatus.NO_CONTENT` (204)
 
-The application returns with  the custom HTTP status 
+The application returns with  the custom HTTP status
 ```sh
 curl -I http://localhost:8086/all/users/123
-HTTP/1.1 204 
+HTTP/1.1 204
 Content-Type: application/json;charset=UTF-8
 Date: Wed, 06 Nov 2019 18:14:29 GMT
 ```
@@ -164,13 +163,14 @@ curl http://localhost:8086/all/users/123
 (no output)
 ### Cleanup
 ```sh
-docker stop mysql-server
-```
-```sh
-ID=$(docker container ls | grep mysql-example | awk '{print $1}')
+CONTAINER='mysql-example'
+ID=$(docker ps | grep $CONTAINER | awk '{print $1}')
 docker stop $ID
 docker rm $ID
 ```
 ```sh
-docker stop mysql-server
+CONTAINER='mysql-server'
+docker stop $CONTAINER
+ID=$(docker container ls -a| grep $CONTAINER | awk '{print $1}')
+docker rm $ID
 ```

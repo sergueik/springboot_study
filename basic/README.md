@@ -1,6 +1,6 @@
 ### Info
 
-Springboot Docker basic project extracted from [springboot mySQL Docker container](https://github.com/TechPrimers/docker-mysql-spring-boot-example)
+Springboot Docker basic project extracted from [springboot mySQL Docker container](https://github.com/TechPrimers/docker-mysql-spring-boot-example) converted too use openjdk jre alpine base image.
 ### Test
 
 * run locally
