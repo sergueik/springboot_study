@@ -1,6 +1,9 @@
 ### Info
 
-This directory contains a fragment replica of [javaagent-bytebuddy](https://github.com/ShehanPerera/javaagent-bytebuddy) project by ShehanPerera: bare bones Java Agent agent using [byte-buddy](https://bytebuddy.net/#/) code generation and manipulation library for attaching an agent to the "business application" jar and Maven [shade plugin](https://maven.apache.org/plugins/maven-shade-plugin/).
+This directory contains a fragment replica of [javaagent-bytebuddy](https://github.com/ShehanPerera/javaagent-bytebuddy) project by ShehanPerera: bare bones Java Agent agent
+that uses [byte-buddy](https://bytebuddy.net/#/) code generation and manipulation library for attaching an agent to the "business application" jar and
+Maven [shade plugin](https://maven.apache.org/plugins/maven-shade-plugin/usage.html) `org.apache.maven.plugins.shade.resource.ManifestResourceTransformer` 
+to write the main manifest `MANIFEST.MF` entries (to prevent from "no main manifest attribute, in target application jar" error).
 
 This is a work in progress experiment the same with Docker linked to dedicated Docker insance serving for agent messages sink and to replace a vanilla app jar with an equally vanilla Springboot REST server.
 
@@ -22,9 +25,9 @@ popd
 ```
  * Deploy both jars into Docker container together (work in progress)
  * run instrumented application bundle:
-```sh
 
-java -javaagent:agent/target/get-methods-1.0-SNAPSHOT.jar -jar application/target/app-0.1-SNAPSHOT.jar
+```sh
+java -javaagent:agent/target/get-methods-1.0-SNAPSHOT.jar -jar application/target/application.jar
 ```
 This will print a lot of detailed instrumentation logging to the console. Connecting to the linked Docker image to publish on vanilla WEB server is work in progress
 
