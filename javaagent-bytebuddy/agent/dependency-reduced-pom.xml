@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.github.shehanperera.allmethods</groupId>
+  <groupId>javaagent</groupId>
   <artifactId>get-methods</artifactId>
   <name>get-methods</name>
   <version>1.0-SNAPSHOT</version>
-  <url>https://github.com/ShehanPerera/javaagent-bytebuddy</url>
   <build>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>${maven-shade-plugin.version}</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -21,7 +20,7 @@
               <transformers>
                 <transformer>
                   <manifestEntries>
-                    <Premain-Class>com.github.shehanperera.allmethods.Agent</Premain-Class>
+                    <Premain-Class>javaagent.Agent</Premain-Class>
                   </manifestEntries>
                 </transformer>
               </transformers>
@@ -64,6 +63,8 @@
     </dependency>
   </dependencies>
   <properties>
+    <byte-buddy.version>1.10.5</byte-buddy.version>
+    <maven-shade-plugin.version>3.1.0</maven-shade-plugin.version>
     <junit.version>4.12</junit.version>
   </properties>
 </project>
