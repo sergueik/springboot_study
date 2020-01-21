@@ -26,7 +26,25 @@ observe the successful start log message in `mysql-server` container:
 docker logs mysql-server
 ```
 ```sh
+[Server] /usr/sbin/mysqld (mysqld 8.0.18) initializing of server in progress as process 45
+...
 [Server] /usr/sbin/mysqld: ready for connections. Version: '8.0.18'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.
+
+[Server] /usr/sbin/mysqld: ready for connections. Version: '8.0.18'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.
+[Server] X Plugin ready for connections. Socket: '/var/run/mysqld/mysqlx.sock' bind-address: '::' port: 33060
+```
+
+verify the console connection:
+```sh
+docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "set @var = '1'; select @var ;"
+```
+```sh
+mysql: [Warning] Using a password on the command line interface can be insecure.
++------+
+| @var |
++------+
+| 1    |
++------+
 ```
 NOTE: the mysqld and java processes will be visible on host
 
@@ -161,7 +179,13 @@ but no details will be available
 curl http://localhost:8086/all/users/123
 ```
 (no output)
+
 ### Cleanup
+
+```sh
+docker container prune -f
+```
+If the `prune` command is not desirable, stop and clean individual container by name
 ```sh
 CONTAINER='mysql-example'
 ID=$(docker ps | grep $CONTAINER | awk '{print $1}')
