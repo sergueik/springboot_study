@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/basic")
 public class BasicResource {
-
+	// https://www.baeldung.com/spring-properties-file-outside-jar
 	@GetMapping
 	public String Hello() {
 		return "Hello basic";

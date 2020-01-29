@@ -12,12 +12,29 @@ mvn clean spring-boot:run
 curl http://localhost:8085/basic
 Hello basic
 ```
+Copy outside of the project directory
+```sh
+cp src/main/resources/application.properties ~/Desktop/
+```
+Modify the setting in the loose property file
+``` sh
+sed -i 's|8085|8080|' ~/Desktop/application.properties
+```
+
 * run in container
+
 ```sh
 mvn clean package
 docker build -f Dockerfile -t basic-example . 
-docker run -p 8086:8085 basic-example
+docker run -v ${HOME}/Desktop/:/var/properties -p 8086:8080 basic-example
 ```
+
+Observe the message:
+```sh
+s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080 (http)
+```
+in the console
+
 test dockerized
 ```sh
 curl http://localhost:8086/basic
