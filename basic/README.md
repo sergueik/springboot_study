@@ -41,6 +41,21 @@ curl http://localhost:8086/basic
 Hello basic
 ```
 - need to manually destroy all started containers and image afterwards
+```sh
+docker contained prune -f
+```
+
+### Note 
+With passing the parameyters, need to consider
+```sh
+echo 'a=b c=d e=f g=h'|base64  |base64 -d
+```
+
+```sh
+a=b c=d e=f g=h
+```
 
 ### See Also
-  * [package springboot as standalone jar](https://www.baeldung.com/spring-boot-run-maven-vs-executable-jar)
+  * package Springboot as [standalone jar](https://www.baeldung.com/spring-boot-run-maven-vs-executable-jar)
+  * move Spring properties File [outside the jar](https://www.baeldung.com/spring-properties-file-outside-jar)
+  * parameter-heavy rabbitmq Docker [entrypoint](https://github.com/docker-library/rabbitmq/blob/master/3.8/alpine/docker-entrypoint.sh)
