@@ -11,11 +11,10 @@ import org.springframework.core.env.SimpleCommandLinePropertySource;
 public class CommandLineConfiguration {
 	private static final Logger logger = LoggerFactory
 			.getLogger(CommandLineConfiguration.class);
-	// every annotated recognized autowired parameter must be listed here
-	@Value("${appname}")
-	private String appname;
-	@Value("${status}")
-	private Boolean status;
+	// every recognized autowired parameter must be annotated and listed here
+	// making one like to be conservative
+	@Value("${params}")
+	private String params;
 
 	public CommandLineConfiguration() {
 	}
