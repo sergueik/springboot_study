@@ -8,18 +8,22 @@ Springboot Docker basic argument exercise project cloned from
 #### Run Locally
 
 ```sh
-mvn clean spring-boot:run -Dappname="my application"
+mvn clean  -Drun.arguments="--appname=my application" -Dstatus=true spring-boot:run
 ```
 * test locally
 ```sh
 curl http://localhost:8080/basic
-This is my application
+This is my application. The status is: true
 ```
 
+```sh
+mvn -Dmaven.test.skip=true clean package
+java -Dappname="my application" -Dstatus=true -jar target/example.basic-args.jar 
+```
 #### Run on container
 
 ```sh
-mvn -Dappname="my application" test
+mvn -Dappname="my application" -Dstatus=true test
 mvn -Dmaven.test.skip=true clean package
 docker build -f Dockerfile -t basic-args-example . 
 docker run -p 8080:8080 basic-args-example
@@ -61,3 +65,4 @@ mvn clean spring-boot:run -DDATA=eyJuYW1lIjoidmFsdWUiLCAic3VjY2VzcyI6dHJ1ZSwicmV
 ### See Also
    * [tutorial](https://howtodoinjava.com/spring-boot2/application-arguments/) for dealing with the application runtime arguments in a `@Component`
    * discussion of [shell entrypoints](https://stackoverflow.com/questions/37904682/how-do-i-use-docker-environment-variable-in-entrypoint-array) passing in environments
+   * https://www.logicbig.com/tutorials/spring-framework/spring-boot/app-args.html

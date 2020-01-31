@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>basic-args</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>basic</name>
   <description>Demo Springboot Docker-hosted app with *basic and advanced argument processing for Docker hosted </description>
@@ -25,11 +25,12 @@
     <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <dependencies>
-    <dependency>
-      <groupId>org.apache.directory.studio</groupId>
-      <artifactId>org.apache.commons.codec</artifactId>
-      <version>${commons-codec.version}</version>
-    </dependency>
+<dependency>
+    <groupId>org.apache.directory.studio</groupId>
+    <artifactId>org.apache.commons.codec</artifactId>
+    <version>${commons-codec.version}</version>
+</dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>

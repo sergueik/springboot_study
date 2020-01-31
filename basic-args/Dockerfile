@@ -2,5 +2,4 @@ FROM openjdk:8-jre-alpine3.9
 ARG app_jar="example.basic-args.jar"
 ADD "target/${app_jar}" app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-Dappname=my docker appication", "-jar", "app.jar" ]
-
+ENTRYPOINT ["java", "-Dappname=my docker appication", "-Dstatus=true",  "-jar", "app.jar" ]
