@@ -37,7 +37,7 @@ This will print a lot of detailed instrumentation logging to the console. Connec
   * https://docs.oracle.com/javase/7/docs/api/java/lang/instrument/package-summary.html
   * https://docs.appdynamics.com/display/PRO45/Install+the+Java+Agent
   * https://www.oracle.com/technetwork/articles/java/javamanagement-140525.html
-
+  * [multiple services in a Docker container](https://docs.docker.com/config/containers/multi-service_container/)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/basic")
-public class BasicResource {
-
+public class Worker {
+	
 	@GetMapping
 	public String Hello() {
 		return "Hello basic";

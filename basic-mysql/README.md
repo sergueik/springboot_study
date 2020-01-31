@@ -1,6 +1,6 @@
 ### Info
 
-Spring Boot on Docker basic extracted from [Springboot mySQL Docker container](https://github.com/TechPrimers/docker-mysql-spring-boot-example) converted too use openjdk jre alpine base image, upgraded to MySQL __8.0__
+SpringBoot Docker basic example extracted from [Springboot mySQL Docker container](https://github.com/TechPrimers/docker-mysql-spring-boot-example) converted too use alpine openjdk jre base image, upgraded to MySQL __8.0__
 
 ### Setup
 Edit `pom.xml` and specify the __8.0__ version of mysql-connector-java jar:

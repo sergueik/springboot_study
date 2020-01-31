@@ -2,7 +2,7 @@
 
 Springboot Docker basic argument exercise project cloned from
 [lordoftheflies/example-spring-boot-with-command-line-arguments](https://github.com/lordoftheflies/example-spring-boot-with-command-line-arguments)
-Modified to enable passing an arbirtary data structure wrapped in json and subsequntly base 64 encoded, through  SpringBoot
+Modified to pass an arbirtary data structure wrapped in json and subsequntly base 64 encoded, through  SpringBoot - hopefully
 eliminating modifying low level details of the stack delivery engine when there is a business application signature change
 
 ### Basic
@@ -54,12 +54,24 @@ test dockerized
 curl http://localhost:8080/basic
 This is my docker application
 ```
-- may like to destroy all started containers and images afterwards
+destroy all started containers and images
 ```sh
 docker contained prune -f
+docker image prune -f
+```
+If the `prune` command is not desirable, stop and clean individual container by name
+```sh
+CONTAINER='basic-args'
+ID=$(docker ps | grep $CONTAINER | awk '{print $1}')
+docker stop $ID
+docker rm $ID
+docker image prune -f
 ```
 
 ### See Also
    * [tutorial](https://howtodoinjava.com/spring-boot2/application-arguments/) for dealing with the application runtime arguments in a `@Component`
    * discussion of [shell entrypoints](https://stackoverflow.com/questions/37904682/how-do-i-use-docker-environment-variable-in-entrypoint-array) passing in environments
    * spring boot application [dealing with](https://www.logicbig.com/tutorials/spring-framework/spring-boot/app-args.html) application arguments
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
