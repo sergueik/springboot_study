@@ -1,34 +1,18 @@
 package example;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.codec.binary.Base64;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
 
-import org.apache.commons.codec.binary.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @Component
 public class Params {
@@ -61,15 +45,13 @@ public class Params {
 	}
 
 	// TODO: Params.toString()
-	
+
 	// parse the value
 	private Map<String, Object> parseValue() {
 
-		readSideData(decodePropertyArgument(this.value),
-				Optional.<Map<String, Object>> empty(), paramKeysValidator);
+		readSideData(decodePropertyArgument(this.value), Optional.<Map<String, Object>>empty(), paramKeysValidator);
 		Map<String, Object> params = new HashMap<String, Object>();
-		readSideData(decodePropertyArgument(this.value), Optional.of(params),
-				paramKeysValidator);
+		readSideData(decodePropertyArgument(this.value), Optional.of(params), paramKeysValidator);
 		return params;
 	}
 
@@ -103,17 +85,14 @@ public class Params {
 		return decodedData;
 	}
 
-	private String readSideData(String payload,
-			Optional<Map<String, Object>> parameters, String acceptedKeys) {
+	private String readSideData(String payload, Optional<Map<String, Object>> parameters, String acceptedKeys) {
 		if (debug) {
 			System.err.println("Accepted keys: " + acceptedKeys);
 		}
 
-		Map<String, Object> collector = (parameters.isPresent()) ? parameters.get()
-				: new HashMap<>();
+		Map<String, Object> collector = (parameters.isPresent()) ? parameters.get() : new HashMap<>();
 
-		String data = (payload == null)
-				? "{\"foo\":\"bar\", \"result\":true,\"id\":42 }" : payload;
+		String data = (payload == null) ? "{\"foo\":\"bar\", \"result\":true,\"id\":42 }" : payload;
 		if (debug) {
 			System.err.println("Processing payload: " + data.replaceAll(",", ",\n"));
 		}
@@ -136,8 +115,7 @@ public class Params {
 					String propertyVal = (String) elementObj.getString(propertyKey);
 					// logger.info(propertyKey + ": " + propertyVal);
 					if (debug) {
-						System.err
-								.println("Loaded string: " + propertyKey + ": " + propertyVal);
+						System.err.println("Loaded string: " + propertyKey + ": " + propertyVal);
 					}
 					collector.put(propertyKey, propertyVal);
 					found = true;
@@ -148,8 +126,7 @@ public class Params {
 					continue;
 				}
 				try {
-					org.json.JSONArray propertyArrayVal = elementObj
-							.getJSONArray(propertyKey);
+					org.json.JSONArray propertyArrayVal = elementObj.getJSONArray(propertyKey);
 					int length = propertyArrayVal.length();
 					if (debug) {
 						System.err.println("Can process array of size: " + length);
@@ -161,8 +138,7 @@ public class Params {
 							System.err.println("Can process object: " + rowObject.toString());
 						}
 						// "comment,id,value,command,target"
-						readSideData(rowObject.toString(),
-								Optional.<Map<String, Object>> empty(),
+						readSideData(rowObject.toString(), Optional.<Map<String, Object>>empty(),
 								"(?:comment|id|value|command|target)");
 
 						Iterator<String> rowObjectIterator = rowObject.keys();

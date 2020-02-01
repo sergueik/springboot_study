@@ -84,7 +84,7 @@ java -Dparams=eyJuYW1lIjoibXkgcGFyYW1ldGVyaXplZCBzcHJpbmcgYXBwbGljYXRpb24iLCAic3
 This will be useful when dockerizing the same - eliminating the need to tune 'deployment' details after business requirement change.
 
 #### Run on container
-Pass in dummy params during the test
+Package the jar (NOTE: one can pass in dummy params during the test)
 ```sh
 echo '{"id":0}' | base64
 ```
@@ -94,14 +94,37 @@ eyJpZCI6MH0K
 ```sh
 mvn -Dparams=eyJpZCI6MH0K test
 mvn -Dmaven.test.skip=true clean package
+```
+modify params 
+```sh
+echo '{"name":"my dockerized hparameterized spring application", "success":true,"result":42,"id":0 }' | base64 | tr -d '\n' | tee /tmp/params.$$
+```
+
+```sh
+eyJuYW1lIjoibXkgZG9ja2VyaXplZCBocGFyYW1ldGVyaXplZCBzcHJpbmcgYXBwbGljYXRpb24iLCAic3VjY2VzcyI6dHJ1ZSwicmVzdWx0Ijo0MiwiaWQiOjAgfQo=
+```
+```sh
 docker build -f Dockerfile -t basic-args-example .
+```
+would log progress injecting the params
+```sh
+ ---> ae0422b3d00d
+Step 5/5 : ENTRYPOINT ["java", "-Dparams=eyJuYW1lIjoibXkgZG9ja2VyaXplZCBocGFyYW1ldGVyaXplZCBzcHJpbmcgYXBwbGljYXRpb24iLCAic3VjY2VzcyI6dHJ1ZSwicmVzdWx0Ijo0MiwiaWQiOjAgfQo=",  "-jar", "app.jar" ]
+ ---> Running in 40f5044869cf
+Removing intermediate container 40f5044869cf
+ ---> f9ae39e64c3b
+Successfully built f9ae39e64c3b
+Successfully tagged basic-args-example:latest
+```
+and run it 
+```sh
 docker run -p 8080:8080 basic-args-example
 ```
 
 test dockerized
 ```sh
 curl http://localhost:8080/basic
-This is my docker application
+This is my dockerized hparameterized spring application and the result is: 42
 ```
 destroy all started containers and images
 ```sh
@@ -116,6 +139,27 @@ docker stop $ID
 docker rm $ID
 docker image prune -f
 ```
+### Note
+
+Cannot currently use `ARG` to define parameters through a `params` macro in the `Dockerfile`:
+```
+ARG params="eyJuYW1lIjoibXkgZG9ja2VyaXplZCBocGFyYW1ldGVyaXplZCBzcHJpbmcgYXBwbGljYXRpb24iLCAic3VjY2VzcyI6dHJ1ZSwicmVzdWx0Ijo0MiwiaWQiOjAgfQo="
+ENTRYPOINT ["java", "-Dparams=${params}",  "-jar", "app.jar" ]
+```
+
+Observig runtime error:
+```sh
+Application startup failed
+org.springframework.beans.factory.UnsatisfiedDependencyException: 
+Error creating bean with name 'launcher': 
+Unsatisfied dependency expressed through field 'params'; nested exception is
+org.springframework.beans.factory.BeanCreationException: 
+Error creating bean with name 'params': 
+Injection of autowired dependencies failed; nested exception is 
+java.lang.IllegalArgumentException: 
+Circular placeholder reference 'params' in property definitions
+```
+May need to use shell entrypoint. 
 
 ### See Also
    * [tutorial](https://howtodoinjava.com/spring-boot2/application-arguments/) for dealing with the application runtime arguments in a `@Component`
