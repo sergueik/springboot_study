@@ -24,8 +24,8 @@ public class Launcher implements ApplicationRunner {
 		SpringApplication.run(Launcher.class, args);
 	}
 
-	@Value("${params}")
-	private String params;
+	@Autowired
+	private Params params;
 
 	@Autowired
 	private Application app;

@@ -1,7 +1,17 @@
 package example;
 
-import static java.lang.System.err;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Optional;
 
+import org.apache.commons.codec.binary.Base64;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,27 +31,41 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Component
-@RestController
-@RequestMapping("/basic")
-public class Application {
+public class Params {
+
 	private static final boolean debug = false;
 
-	@Autowired
-	private Params params;
+	@Value("${params}")
+	private String value;
 
 	// hidden
 	private String appname;
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(CommandLineConfiguration.class);
+	public String getAppname() {
+		if (appname == null) {
+			// parse the value
+			readSideData(decodePropertyArgument(this.value),
+					Optional.<Map<String, Object>> empty(), "(?:id|name|success|result)");
+			Map<String, Object> result = new HashMap<String, Object>();
+			readSideData(decodePropertyArgument(this.value), Optional.of(result),
+					"(?:id|name|success|result)");
 
-	public void logConfiguration() {
-		logger.info("Loaded with params: " + params);
+			appname = (String) result.get("name");
+		}
+		return appname;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String data) {
+		this.value = data;
 	}
 
 	// based on:
 	// https://www.programcreek.com/java-api-examples/org.apache.commons.codec.binary.Base64
-	public String decodePropertyArgument(String rawData) {
+	private String decodePropertyArgument(String rawData) {
 		String decodedData = null;
 		if (rawData != null) {
 			try {
@@ -53,7 +77,7 @@ public class Application {
 		return decodedData;
 	}
 
-	public String readSideData(String payload,
+	private String readSideData(String payload,
 			Optional<Map<String, Object>> parameters, String acceptedKeys) {
 		if (debug) {
 			System.err.println("Accepted keys: " + acceptedKeys);
@@ -138,16 +162,4 @@ public class Application {
 		return (String) collector.get("id");
 	}
 
-	@GetMapping
-	public String Hello() {
-		/*
-		readSideData(decodePropertyArgument(params.getValue()),
-				Optional.<Map<String, Object>> empty(), "(?:id|name|success|result)");
-		Map<String, Object> result = new HashMap<String, Object>();
-		readSideData(decodePropertyArgument(params.getValue()), Optional.of(result),
-				"(?:id|name|success|result)");
-		return "This is " + result.get("name");
-		*/
-		return "This is " + params.getAppname();
-	}
 }
