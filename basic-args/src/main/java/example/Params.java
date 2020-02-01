@@ -33,24 +33,50 @@ import org.springframework.web.bind.annotation.RestController;
 @Component
 public class Params {
 
-	private static final boolean debug = false;
+	private static final boolean debug = true;
+	private static final String paramKeysValidator = "(?:id|name|success|result)";
 
 	@Value("${params}")
 	private String value;
 
 	// hidden
 	private String appname;
+	private int id = -1;
+	private int result = -1;
+
+	public int getId() {
+		if (id == -1) {
+			Map<String, Object> params = parseValue();
+			id = Integer.parseInt((String) params.get("id"));
+		}
+		return id;
+	}
+
+	public int getResult() {
+		if (result == -1) {
+			Map<String, Object> params = parseValue();
+			result = Integer.parseInt((String) params.get("result"));
+		}
+		return result;
+	}
+
+	// TODO: Params.toString()
+	
+	// parse the value
+	private Map<String, Object> parseValue() {
+
+		readSideData(decodePropertyArgument(this.value),
+				Optional.<Map<String, Object>> empty(), paramKeysValidator);
+		Map<String, Object> params = new HashMap<String, Object>();
+		readSideData(decodePropertyArgument(this.value), Optional.of(params),
+				paramKeysValidator);
+		return params;
+	}
 
 	public String getAppname() {
 		if (appname == null) {
-			// parse the value
-			readSideData(decodePropertyArgument(this.value),
-					Optional.<Map<String, Object>> empty(), "(?:id|name|success|result)");
-			Map<String, Object> result = new HashMap<String, Object>();
-			readSideData(decodePropertyArgument(this.value), Optional.of(result),
-					"(?:id|name|success|result)");
-
-			appname = (String) result.get("name");
+			Map<String, Object> params = parseValue();
+			appname = (String) params.get("name");
 		}
 		return appname;
 	}

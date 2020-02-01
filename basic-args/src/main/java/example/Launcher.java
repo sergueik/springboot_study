@@ -39,7 +39,7 @@ public class Launcher implements ApplicationRunner {
 			logger.info("arg-" + name + "=" + args.getOptionValues(name));
 		}
 		// NOTE: not reached when run through maven spring-boot:run
-		logger.info(String.format("Params passed by MAIN: %s", params));
+		// logger.info(String.format("Params passed by MAIN: %d", params.getId()));
 
 		if (args.getOptionValues("params") != null) {
 			logger.info("Defined params: " + args.getOptionValues("params").get(0));

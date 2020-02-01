@@ -9,6 +9,7 @@ eliminating modifying low level details of the stack delivery engine when there 
 
 #### Pack parameters
 ```sh
+
 echo '{"name":"my parameterized spring application", "success":true,"result":42,"id":0 }' | base64
 ```
 ```sh
@@ -26,14 +27,62 @@ mvn clean \
 * test locally
 ```sh
 curl http://localhost:8080/basic
-This is my parameterized spring application
 ```
+You will notice the console to show
+```
+Processing payload:
+{
+  "name":"my parameterized spring application",
+  "success":true,
+  "result":42,
+  "id":0
+}
+
+Accepted keys: (?:id|name|success|result)
+
+```
+followed by
+```sh
+
+Processing key: result
+Loaded string: result: 42
+Processing key: success
+Loaded string: success: true
+Processing key: name
+Loaded string: name: my parameterized spring application
+Processing key: id
+Loaded string: id: 0
+
+```
+and the `Application` class processing the `GET` request 
+
+```java
+	@Autowired
+	// not exposed about that params is linked to ApplicationArguments
+	private Params params;
+
+	@GetMapping
+	public String Hello() {
+		final String appname = params.getAppname();
+		final int result = params.getResult();
+		return "This is " + appname + " and the result is: " + result;
+	}
+```
+now already has its specific `appName`, `result`
+and whatelse internally passed into it via the base 64 encoded JSON  of `params` commandline argument:
+```sh
+This is my parameterized spring application and the result is: 42
+```
+Alternarively one can quit reelying on Maven life cycles and run it straight like a jar with the same effect:
 
 ```sh
 mvn -Dmaven.test.skip=true clean package
 java -Dparams=eyJuYW1lIjoibXkgcGFyYW1ldGVyaXplZCBzcHJpbmcgYXBwbGljYXRpb24iLCAic3VjY2VzcyI6dHJ1ZSwicmVzdWx0Ijo0MiwiaWQiOjAgfQo= \
  -jar target/example.basic-args.jar
 ```
+
+This will be useful when dockerizing the same - eliminating the need to tune 'deployment' details after business requirement change.
+
 #### Run on container
 Pass in dummy params during the test
 ```sh
