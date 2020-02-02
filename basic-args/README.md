@@ -104,15 +104,22 @@ echo '{"name":"my dockerized hparameterized spring application", "success":true,
 eyJuYW1lIjoibXkgZG9ja2VyaXplZCBocGFyYW1ldGVyaXplZCBzcHJpbmcgYXBwbGljYXRpb24iLCAic3VjY2VzcyI6dHJ1ZSwicmVzdWx0Ijo0MiwiaWQiOjAgfQo=
 ```
 ```sh
-docker build -f Dockerfile -t basic-args-example .
+docker build -f Dockerfile -t basic-args-example --build-arg "params=eyJuYW1lIjoibXkgZG9ja2VyaXplZCBocGFyYW1ldGVyaXplZCBzcHJpbmcgYXBwbGljYXRpb24iLCAic3VjY2VzcyI6dHJ1ZSwicmVzdWx0Ijo0MiwiaWQiOjAgfQo=" .
 ```
 would log progress injecting the params
 ```sh
- ---> ae0422b3d00d
-Step 5/5 : ENTRYPOINT ["java", "-Dparams=eyJuYW1lIjoibXkgZG9ja2VyaXplZCBocGFyYW1ldGVyaXplZCBzcHJpbmcgYXBwbGljYXRpb24iLCAic3VjY2VzcyI6dHJ1ZSwicmVzdWx0Ijo0MiwiaWQiOjAgfQo=",  "-jar", "app.jar" ]
- ---> Running in 40f5044869cf
-Removing intermediate container 40f5044869cf
- ---> f9ae39e64c3b
+Step 5/7 : ARG params
+ ---> Running in bd695783d98c
+Removing intermediate container bd695783d98c
+ ---> 4557226a40c4
+Step 6/7 : ENV params_env=$params
+ ---> Running in 400dc16497a9
+Removing intermediate container 400dc16497a9
+ ---> d4f6dee2cf88
+Step 7/7 : ENTRYPOINT ["java", "-Dparams=${params_env}", "-jar", "app.jar" ]
+ ---> Running in 46365ccd45f0
+Removing intermediate container 46365ccd45f0
+ ---> 548da92f039e
 Successfully built f9ae39e64c3b
 Successfully tagged basic-args-example:latest
 ```
@@ -139,32 +146,12 @@ docker stop $ID
 docker rm $ID
 docker image prune -f
 ```
-### Note
-
-Cannot currently use `ARG` to define parameters through a `params` macro in the `Dockerfile`:
-```
-ARG params="eyJuYW1lIjoibXkgZG9ja2VyaXplZCBocGFyYW1ldGVyaXplZCBzcHJpbmcgYXBwbGljYXRpb24iLCAic3VjY2VzcyI6dHJ1ZSwicmVzdWx0Ijo0MiwiaWQiOjAgfQo="
-ENTRYPOINT ["java", "-Dparams=${params}",  "-jar", "app.jar" ]
-```
-
-Observig runtime error:
-```sh
-Application startup failed
-org.springframework.beans.factory.UnsatisfiedDependencyException: 
-Error creating bean with name 'launcher': 
-Unsatisfied dependency expressed through field 'params'; nested exception is
-org.springframework.beans.factory.BeanCreationException: 
-Error creating bean with name 'params': 
-Injection of autowired dependencies failed; nested exception is 
-java.lang.IllegalArgumentException: 
-Circular placeholder reference 'params' in property definitions
-```
-May need to use shell entrypoint. 
-
 ### See Also
    * [tutorial](https://howtodoinjava.com/spring-boot2/application-arguments/) for dealing with the application runtime arguments in a `@Component`
    * discussion of [shell entrypoints](https://stackoverflow.com/questions/37904682/how-do-i-use-docker-environment-variable-in-entrypoint-array) passing in environments
    * spring boot application [dealing with](https://www.logicbig.com/tutorials/spring-framework/spring-boot/app-args.html) application arguments
+   * [stackoverflow](https://stackoverflow.com/questions/34324277/how-to-pass-arg-value-to-entrypoint)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
