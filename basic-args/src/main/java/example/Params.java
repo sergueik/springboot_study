@@ -6,13 +6,19 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.codec.binary.Base64;
+
 import java.io.UnsupportedEncodingException;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonObject.Member;
+import com.eclipsesource.json.JsonValue;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.JsonObject.Member;
 
 @Component
 public class Params {
@@ -30,16 +36,16 @@ public class Params {
 
 	public int getId() {
 		if (id == -1) {
-			Map<String, Object> params = parseValue();
-			id = Integer.parseInt((String) params.get("id"));
+			Map<String, JsonValue> params = parseValue();
+			id = params.get("id").asInt();
 		}
 		return id;
 	}
 
 	public int getResult() {
 		if (result == -1) {
-			Map<String, Object> params = parseValue();
-			result = Integer.parseInt((String) params.get("result"));
+			Map<String, JsonValue> params = parseValue();
+			result = params.get("result").asInt();
 		}
 		return result;
 	}
@@ -47,18 +53,18 @@ public class Params {
 	// TODO: Params.toString()
 
 	// parse the value
-	private Map<String, Object> parseValue() {
+	private Map<String, JsonValue> parseValue() {
 
-		readSideData(decodePropertyArgument(this.value), Optional.<Map<String, Object>>empty(), paramKeysValidator);
-		Map<String, Object> params = new HashMap<String, Object>();
-		readSideData(decodePropertyArgument(this.value), Optional.of(params), paramKeysValidator);
+		Map<String, JsonValue> params = new HashMap<>();
+		readSideData(decodePropertyArgument(this.value), Optional.of(params),
+				paramKeysValidator);
 		return params;
 	}
 
 	public String getAppname() {
 		if (appname == null) {
-			Map<String, Object> params = parseValue();
-			appname = (String) params.get("name");
+			Map<String, JsonValue> params = parseValue();
+			appname = (String) params.get("name").asString();
 		}
 		return appname;
 	}
@@ -85,83 +91,50 @@ public class Params {
 		return decodedData;
 	}
 
-	private String readSideData(String payload, Optional<Map<String, Object>> parameters, String acceptedKeys) {
+	private String readSideData(String payload,
+			Optional<Map<String, JsonValue>> parameters, String acceptedKeys) {
 		if (debug) {
 			System.err.println("Accepted keys: " + acceptedKeys);
 		}
+		Map<String, JsonValue> collector = (parameters.isPresent())
+				? parameters.get() : new HashMap<>();
 
-		Map<String, Object> collector = (parameters.isPresent()) ? parameters.get() : new HashMap<>();
+		String data = (payload == null)
+				? "{\"foo\":\"bar\", \"result\":true,\"id\":42 }" : payload;
 
-		String data = (payload == null) ? "{\"foo\":\"bar\", \"result\":true,\"id\":42 }" : payload;
 		if (debug) {
-			System.err.println("Processing payload: " + data.replaceAll(",", ",\n"));
+			// System.err.println("Processing payload: " + data.replaceAll(",",
+			// ",\n"));
+			System.err.println("Processing payload: [ " + data + "]");
 		}
-		try {
-			JSONObject elementObj = new JSONObject(data);
-			@SuppressWarnings("unchecked")
-			Iterator<String> propIterator = elementObj.keys();
-			while (propIterator.hasNext()) {
 
-				String propertyKey = propIterator.next();
-				if (!propertyKey.matches(acceptedKeys /* "(?:id|name|url|tests)" */)) {
-					System.err.println("Ignoring key: " + propertyKey);
-					continue;
-				}
-				if (debug) {
-					System.err.println("Processing key: " + propertyKey);
-				}
-				Boolean found = false;
-				try {
-					String propertyVal = (String) elementObj.getString(propertyKey);
-					// logger.info(propertyKey + ": " + propertyVal);
-					if (debug) {
-						System.err.println("Loaded string: " + propertyKey + ": " + propertyVal);
-					}
-					collector.put(propertyKey, propertyVal);
-					found = true;
-				} catch (JSONException e) {
-					System.err.println("Exception (ignored, continue): " + e.toString());
-				}
-				if (found) {
-					continue;
-				}
-				try {
-					org.json.JSONArray propertyArrayVal = elementObj.getJSONArray(propertyKey);
-					int length = propertyArrayVal.length();
-					if (debug) {
-						System.err.println("Can process array of size: " + length);
-					}
-					StringBuffer innerData = new StringBuffer();
-					for (int index = 0; index < length; index++) {
-						JSONObject rowObject = propertyArrayVal.getJSONObject(index);
-						if (debug) {
-							System.err.println("Can process object: " + rowObject.toString());
-						}
-						// "comment,id,value,command,target"
-						readSideData(rowObject.toString(), Optional.<Map<String, Object>>empty(),
-								"(?:comment|id|value|command|target)");
+		JsonObject jsonObject = JsonObject.readFrom(data);
+		Iterator<Member> jsonObjectIterator = jsonObject.iterator();
 
-						Iterator<String> rowObjectIterator = rowObject.keys();
-
-						while (rowObjectIterator.hasNext()) {
-							String rowObjectKey = rowObjectIterator.next();
-							innerData.append(String.format("%s,", rowObjectKey));
-							if (debug) {
-								System.err.println("Processing Row key: " + rowObjectKey);
-							}
-						}
-					}
-					collector.put(propertyKey, innerData.toString());
-					found = true;
-				} catch (JSONException e) {
-					System.err.println("Exception (ignored, continue): " + e.toString());
-				}
+		while (jsonObjectIterator.hasNext()) {
+			Member jsonObjectMember = jsonObjectIterator.next();
+			System.err.println("Found member: " + jsonObjectMember.getName());
+			String propertyKey = jsonObjectMember.getName();
+			if (!propertyKey.matches(acceptedKeys)) {
+				System.err.println("Ignoring key: " + propertyKey);
+				continue;
 			}
-		} catch (JSONException e) {
-			System.err.println("Exception (ignored, aborting): " + e.toString());
-			return null;
+			if (debug) {
+				System.err.println("Processing key: " + propertyKey);
+			}
+			Boolean found = false;
+			try {
+				JsonValue propertyVal = jsonObject.get(propertyKey);
+				if (debug) {
+					System.err
+							.println("Loaded string: " + propertyKey + ": " + propertyVal);
+				}
+				collector.put(propertyKey, propertyVal);
+				found = true;
+			} catch (Exception e) {
+				System.err.println("Exception (ignored, continue): " + e.toString());
+			}
 		}
-		return (String) collector.get("id");
+		return Integer.toString(collector.get("id").asInt());
 	}
-
 }

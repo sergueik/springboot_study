@@ -22,7 +22,7 @@ public class Launcher implements ApplicationRunner {
 	private Params params;
 
 	@Autowired
-	private Application app;
+	private Worker app;
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
