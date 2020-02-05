@@ -22,4 +22,9 @@ public class Article {
 	public String getCategory() {
 		return category;
 	}
+
+	public String toString() {
+		return "Article: " + articleId + " \"" + this.getTitle() + "\"";
+
+	}
 }

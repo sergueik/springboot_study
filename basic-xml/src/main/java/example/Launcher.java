@@ -13,6 +13,6 @@ public class Launcher {
 	public static void main(String[] args) {
 		ApplicationContext applicationContext = SpringApplication.run(Launcher.class, args);
 		ArticleService articleService = applicationContext.getBean(ArticleService.class);
-		System.err.println("After run: " + articleService.getAllArticles());
+		System.err.println(articleService.processMsg());
 	}
 }
