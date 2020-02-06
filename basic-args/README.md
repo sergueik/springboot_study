@@ -151,7 +151,8 @@ docker image prune -f
    * discussion of [shell entrypoints](https://stackoverflow.com/questions/37904682/how-do-i-use-docker-environment-variable-in-entrypoint-array) passing in environments
    * spring boot application [dealing with](https://www.logicbig.com/tutorials/spring-framework/spring-boot/app-args.html) application arguments
    * [stackoverflow](https://stackoverflow.com/questions/34324277/how-to-pass-arg-value-to-entrypoint)
-
+  * [guide to spring @Value]( https://www.baeldung.com/spring-value-annotation) annotations
+ 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

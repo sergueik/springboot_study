@@ -25,8 +25,9 @@ public class Params {
 
 	private static final boolean debug = true;
 	private static final String paramKeysValidator = "(?:id|name|success|result)";
-
-	@Value("${params}")
+	
+	// system property
+	@Value("${params:eyJpZCI6MH0K}") // {"id": 0}
 	private String value;
 
 	// hidden
