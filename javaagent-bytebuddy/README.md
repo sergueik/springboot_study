@@ -27,10 +27,33 @@ popd
  * run instrumented application bundle:
 
 ```sh
-java -javaagent:agent/target/get-methods-1.0-SNAPSHOT.jar -jar application/target/application.jar
+java -javaagent:agent/target/agent.jar -jar application/target/application.jar
 ```
-This will print a lot of detailed instrumentation logging to the console. Connecting to the linked Docker image to publish on vanilla WEB server is work in progress
 
+
+This will print a lot of detailed instrumentation logging to the console.
+Connecting to the linked Docker image to publish on vanilla WEB server is work in progress
+
+### Run on Docker
+
+* repackage  or use already packaged earlier
+```sh
+pushd  agent
+mvn package
+cd  ../appplication
+mvn package
+popd
+```
+
+* containerize
+```sh
+docker build -t 'application-agent' .
+```
+* launch and remove container
+```sh
+docker run --rm 'application-agent'
+docker image rm 'application-agent'
+```
 
 ### See Also
 

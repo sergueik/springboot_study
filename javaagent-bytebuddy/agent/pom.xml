@@ -54,6 +54,8 @@
                   </excludes>
                 </filter>
               </filters>
+              <finalName>agent</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </execution>
         </executions>
