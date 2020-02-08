@@ -27,13 +27,30 @@ popd
  * run instrumented application bundle:
 
 ```sh
-java -javaagent:agent/target/agent.jar -jar application/target/application.jar
+java -javaagent:agent/target/agent.jar -jar application/target/application.jar 8085
 ```
 
 
-This will print a lot of detailed instrumentation logging to the console.
-Connecting to the linked Docker image to publish on vanilla WEB server is work in progress
+This will print a  detailed instrumentation about a specific method `processRequest` in the instrumented class to the console:
+```java
+	private final static String methodName = "processRequest";
+	private final static String methodMatcher = ".*" + "( |\\.)" + methodName + "\\(" + ".*";
+	@Advice.OnMethodEnter
+	static long enter(@Advice.Origin String method) throws Exception {
 
+		if (method.matches(methodMatcher)) {
+			long start = System.currentTimeMillis();
+    ...
+```
+```java    
+	@Advice.OnMethodExit
+	static void exit(@Advice.Origin String method, @Advice.Enter long start) throws Exception {
+		if (method.matches(methodMatcher)) {
+			long end = System.currentTimeMillis();
+			System.out.println(method +  " took " + (end - start) + " milliseconds ");
+		}
+		...
+```
 ### Run on Docker
 
 * repackage  or use already packaged earlier
@@ -51,10 +68,46 @@ docker build -t 'application-agent' .
 ```
 * launch and remove container
 ```sh
-docker run --rm 'application-agent'
+docker run -p 8085 --rm 'application-agent'
 docker image rm 'application-agent'
 ```
+invoke the web server
 
+```sh
+curl http://localhost:8085/index.html
+```
+```
+<html>
+<body></body>
+</html>
+```
+* observe the istrumentation taking place:
+```sh
+
+Agent for time measure
+httpServer running on port 8085
+New connection accepted /127.0.0.1:57168
+GET /index.html HTTP/1.1
+HTTP/1.0 200 OK
+
+```
+```sh
+private void example.httpRequestHandler.processRequest() throws java.lang.Exception 
+took 23 milliseconds
+```
+* terminate from another terminal:
+```sh
+docker container ls -a |  grep 'application-agent' | awk '{print $1}' | xargs -IX docker stop X
+```
+```sh
+2e646c47acd0
+```
+```sh
+
+docker container prune -f 
+docker image prune -f  
+docker image rm application-agent
+```
 ### See Also
 
   * https://docs.oracle.com/javase/7/docs/api/java/lang/instrument/package-summary.html
