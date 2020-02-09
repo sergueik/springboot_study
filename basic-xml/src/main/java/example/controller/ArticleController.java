@@ -1,5 +1,6 @@
 package example.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,8 @@ public class ArticleController {
 
 	@GetMapping("articles")
 	public List<Article> getAllArticles() {
-		List<Article> list = articleService.getAllArticles();
+		List<Article> list = new ArrayList<>();
+		list.add(articleService.getArticle());
 		return list;
 	}
 }

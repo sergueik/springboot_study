@@ -7,24 +7,23 @@ import example.entity.Article;
 
 public class ArticleService {
 	private MessageService messageService;
+	private Article article;
 
-	public List<Article> getAllArticles() {
-		List<Article> list = new ArrayList<Article>();
-		list.add(new Article(1, "Java Concurrency", "Java"));
-		list.add(new Article(2, "Hibernate HQL", "Hibernate"));
-		list.add(new Article(3, "Spring MVC with Hibernate", "Spring"));
-		return list;
+	public Article getArticle() {
+		return article;
 	}
 
-	public void setMessageService(MessageService messageService) {
-		this.messageService = messageService;
+	public void setArticle(Article data) {
+		this.article = data;
+	}
+
+	public void setMessageService(MessageService data) {
+		this.messageService = data;
 	}
 
 	public String processMsg() {
 		List<Object> data = new ArrayList<>();
-		for (Article article : getAllArticles()) {
-			data.add((Object) article);
-		}
+		data.add((Object) article);
 		return messageService.sendData(data);
 	}
 }

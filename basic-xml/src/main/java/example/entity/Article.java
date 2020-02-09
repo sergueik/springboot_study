@@ -1,18 +1,12 @@
 package example.entity;
 
 public class Article {
-	private int articleId;
 	private String title;
 	private String category;
 
-	public Article(int articleId, String title, String category) {
-		this.articleId = articleId;
+	public Article(String title, String category) {
 		this.title = title;
 		this.category = category;
-	}
-
-	public int getArticleId() {
-		return articleId;
 	}
 
 	public String getTitle() {
@@ -24,7 +18,6 @@ public class Article {
 	}
 
 	public String toString() {
-		return "Article: " + articleId + " \"" + this.getTitle() + "\"";
-
+		return "Article: " + category + " \"" + this.getTitle() + "\"";
 	}
 }

@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="         http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans.xsd         http://www.springframework.org/schema/mvc         http://www.springframework.org/schema/mvc/spring-mvc.xsd">
   <bean class="example.service.ArticleService">
-  <property name="messageService" ref="MessageServiceImpl"></property>
+    <property name="messageService" ref="MessageServiceImpl"/>
+    <property name="article" ref="Article"/>
   </bean>
-  
+  <bean class="example.entity.Article" name="Article">
+    <constructor-arg index="0" value="${title}"/>
+    <constructor-arg index="1" value="${category}"/>
+  </bean>
   <bean name="jackson2ObjectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
     <property name="indentOutput" value="true"/>
   </bean>
@@ -14,7 +18,5 @@
       </bean>
     </mvc:message-converters>
   </mvc:annotation-driven>
-   <bean id="MessageServiceImpl"
-  class="example.service.MessageServiceImpl" />
-  
+  <bean id="MessageServiceImpl" class="example.service.MessageServiceImpl"/>
 </beans>
