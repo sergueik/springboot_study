@@ -6,5 +6,5 @@ ARG title
 ENV title_env=$title 
 ARG category
 ENV category_env=$category 
-ENTRYPOINT ["java", "-Dtitle=${title_env} -Dcategory=${category_env}", "-jar", "app.jar" ]
+ENTRYPOINT ["java", "-Dtitle=${title_env}", "-Dcategory=${category_env}", "-jar", "app.jar" ]
 
