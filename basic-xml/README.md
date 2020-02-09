@@ -16,34 +16,35 @@ access via GET request:
 curl http://localhost:8080/user/articles
 ```
 ```sh
-[ {
-  "title" : "Java Spring",
-  "category" : "Programming"
-} ]
-
+[
+  {
+    "title" : "Java Spring",
+    "category" : "Programming"
+  }
+]
 ```
-### Dockerized test
+### Dockerized Test
 
 * package the jar
 ```sh
 mvn -Dmaven.test.skip=true clean package
 ```
-* build the image
+* build the image (note somewhat nonstandard way of dealing with white space in values):
 ```sh
-docker build -f Dockerfile -t basic-xml-example --build-arg "title=\"Java Spring\"" --build-arg "category=Programming" .
+docker build -f Dockerfile -t basic-xml-example --build-arg "title=Docker Containers" --build-arg "category=Programming" .
 
 ```
 * inspect the image
 ```sh
 docker image inspect basic-xml-example | jq '.[].ContainerConfig.Cmd'
 ```
+``` sh
 [
 
   "/bin/sh",
   "-c",
   "#(nop) ",
-  "ENTRYPOINT [\"java\" \"-Dtitle=${title_env} -Dcategory=${category_env}\" \"-jar\" \"app.jar\"]"
-]
+ "ENTRYPOINT [\"java\" \"-Dtitle=${title_env}\" \"-Dcategory=${category_env}\" \"-jar\" \"app.jar\"]"]
 ```
 
 
@@ -57,42 +58,58 @@ docker image inspect basic-xml-example | jq '.[].ContainerConfig.Env'
   "JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk/jre",
   "JAVA_VERSION=8u212",
   "JAVA_ALPINE_VERSION=8.212.04-r0",
-  "title_env=\"Java Spring\"",
+  "title_env=Docker Containers",
   "category_env=Programming"
 ]
 ```
 * run docker container
 
 ```sh
-docker run --rm -p 8080 basic-xml-example
+docker run --rm -p 8080:8080 basic-xml-example
 ```
 
-* in console observe the debugging message listing the injected params:
+* in console observe the debugging message coming from Java `ArticleService` class instance and listing the injected params:
 ```java
 @SpringBootApplication
 @ImportResource("classpath:app-config.xml")
 public class Launcher {
   public static void main(String[] args) {
-                ApplicationContext applicationContext = SpringApplication.run(Launcher.class, args);
-                ArticleService articleService = applicationContext.getBean(ArticleService.class);
+    ApplicationContext applicationContext = SpringApplication.run(Launcher.class, args);
+   ArticleService articleService = applicationContext.getBean(ArticleService.class);
+   System.err.println(articleService.processMsg());
 
-System.err.println(articleService.processMsg());
 ```
 ```sh
 Started Launcher in 13.282 seconds (JVM running for 27.857)
-Article: Programming "Java Spring"
+Article: Programming "Docker Containers"
 ```
+repeat the web access test
 ```sh
 curl http://localhost:8080/user/articles
 ```
+```sh
+[ 
+  {
+    "title" : "Docker Containers",
+    "category" : "Programming"
+  }
+]
+```
+* stop container from another terminal
+```sh
+ID=$(docker container list --filter "ancestor=basic-xml-example"  --format {{.ID}})
+docker container stop $ID
+```
+```sh
+3ecbc9003922
+```
+* clean up
+```sh
+docker image prune -f
+docker image rm basic-xml-example
+```
+
 ### See Also:
 
-https://www.springboottutorial.com/spring-boot-java-xml-context-configuration
-https://www.javaguides.net/2018/09/spring-boot-xml-configuration-example.html
-https://stackoverflow.com/questions/46877559/read-system-properties-in-spring-xml-config-application-with-expression-language
-https://stackoverflow.com/questions/55261848/spring-load-command-line-arguments-from-xml-application-context
-
-After run: [example.entity.Article@226884dc, example.entity.Article@62d06d22, example.entity.Article@2afc2de0]
-
-https://www.baeldung.com/properties-with-spring
-https://www.baeldung.com/constructor-injection-in-spring
+  * [Properties with Spring and Spring Boot](https://www.baeldung.com/properties-with-spring)
+  * [Constructor Dependency Injection in Spring](https://www.baeldung.com/constructor-injection-in-spring)
