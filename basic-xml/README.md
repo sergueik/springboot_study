@@ -114,17 +114,53 @@ curl http://localhost:8080/user/articles
   "category" : "Administration"
 } ]
 ```
+### Runtime Argument test (alternative)
+* test shell script processing whitespace sensitive arguments locally: 
+```sh
+export target_jar_env=target/example.basic-xml.jar
+./process_args.sh  -Dtitle="Bash scripting" -Dcategory="Unix shell"
+```
+* build Docker image featuring launcher shell script
+```sh
+docker build -f Dockerfile.processargs -t basic-xml-example .
+```
+* run Docker container
+```sh
+docker run -it --rm -p 8080:8080 basic-xml-example "-Dtitle=Bash Scripting" "-Dcategory=Unix Shell"
+```
+or
+```sh
+docker run -it --rm -p 8080:8080 basic-xml-example -Dtitle="Bash Scripting" -Dcategory="Unix Shell"
+```
 
-* stop container from another terminal
+either one will log the correctly reformat arguments launch command:
+```sh
+java  -Dtitle="Bash Scripting" -Dcategory="Unix Shell" -jar app.jar
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+```
+the rest is as before.
+
+### Cleanup
+* stop container from another terminal, if running
 ```sh
 ID=$(docker container list --filter "ancestor=basic-xml-example"  --format {{.ID}})
-docker container stop $ID
+[ -z $ID] || docker container stop $ID
 ```
 ```sh
 3ecbc9003922
 ```
+```sh
+docker container prune -f
+```
 * clean up
 ```sh
+docker container prune -f 
 docker image prune -f
 docker image rm basic-xml-example
 ```
