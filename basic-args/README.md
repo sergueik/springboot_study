@@ -180,6 +180,7 @@ This is my parameterized at run time and the result is: 17
    * spring boot application [dealing with](https://www.logicbig.com/tutorials/spring-framework/spring-boot/app-args.html) application arguments
    * [stackoverflow](https://stackoverflow.com/questions/34324277/how-to-pass-arg-value-to-entrypoint)
   * [guide to spring @Value]( https://www.baeldung.com/spring-value-annotation) annotations
+  * improved code to [preserve double quotes](https://stackoverflow.com/questions/3755772/how-to-preserve-double-quotes-in-in-a-shell-script) of needed elements of $@ in a shell script
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

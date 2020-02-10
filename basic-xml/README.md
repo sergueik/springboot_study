@@ -15,7 +15,7 @@ access via GET request:
 ```sh
 curl http://localhost:8080/user/articles
 ```
-```sh
+```json
 [
   {
     "title" : "Java Spring",
@@ -32,7 +32,6 @@ mvn -Dmaven.test.skip=true clean package
 * build the image (note somewhat nonstandard way of dealing with white space in values):
 ```sh
 docker build -f Dockerfile -t basic-xml-example --build-arg "title=Docker Containers" --build-arg "category=Programming" .
-
 ```
 * inspect the image
 ```sh
@@ -87,7 +86,7 @@ repeat the web access test
 ```sh
 curl http://localhost:8080/user/articles
 ```
-```sh
+```json
 [ 
   {
     "title" : "Docker Containers",
@@ -95,6 +94,27 @@ curl http://localhost:8080/user/articles
   }
 ]
 ```
+### Runtime Argument test
+build 
+```sh
+docker build -f Dockerfile.noargs -t basic-args-example  .
+```
+run
+```sh
+docker run -it  -p 8080:8080 basic-xml-example _ -Dtitle="Bash scripting" -Dcategory="Unix Administration"
+```
+```
+* verify
+```sh
+curl http://localhost:8080/user/articles
+```
+```json
+[ {
+  "title" : "Bash scripting",
+  "category" : "Administration"
+} ]
+```
+
 * stop container from another terminal
 ```sh
 ID=$(docker container list --filter "ancestor=basic-xml-example"  --format {{.ID}})
@@ -113,3 +133,4 @@ docker image rm basic-xml-example
 
   * [Properties with Spring and Spring Boot](https://www.baeldung.com/properties-with-spring)
   * [Constructor Dependency Injection in Spring](https://www.baeldung.com/constructor-injection-in-spring)
+  * [Docker command reference](https://docs.docker.com/engine/reference/commandline/ps/)
