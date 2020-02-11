@@ -17,12 +17,12 @@ for arg in "${@}" ; do
   _argc=$(expr $_argc + 1)
   if [ $? -eq 0 ] ; then
     if [ $DEBUG = 'true' ] ; then
-      echo "the argument needed quotes: \"${arg}\""
+      echo "the argument needed quotes: [${arg}]"
     fi
     # use double quotes around java property setting
-    arg=$(echo $arg|sed "s/\\(-D[a-z0-9_][a-z0-9_]*\\)=\\(.*\\)$/\\1=\"\\2\"/")
+    arg=$(echo $arg|sed 's/\(-D[a-z0-9_][a-z0-9_]*\)=\(.*\)$/\1="\2"/')
     if [ $DEBUG = 'true' ] ; then
-      echo "the argument becomes: \"${arg}\""
+      echo "the argument becomes: [${arg}]"
     fi
   fi
   _args[$_argc]=$arg
