@@ -1,6 +1,4 @@
-#!/bin/sh
-# NOTE: alpine's busybox's ash is actually debian
-# https://linux.die.net/man/1/dash
+#!/bin/bash
 
 # Like to perform own argument processing, better than
 # java "$@" -jar ${target_jar_env}
@@ -10,28 +8,29 @@
 if [ -z $DEBUG ] ; then
   DEBUG=false
 fi
+
+declare -a _args
+_args[0]=''
 for arg in "${@}" ; do
   # figure out if quoting is required for the next argument
-  echo $arg | grep -qE '\s'
+  _argc=${#_args[*]}
+  _argc=$(expr $_argc + 1)
   if [ $? -eq 0 ] ; then
     if [ $DEBUG = 'true' ] ; then
       echo "the argument needed quotes: \"${arg}\""
     fi
-    # use single quotes around java property setting
-    arg=$(echo $arg|sed "s|\\(-D[a-z0-9_][a-z0-9_]*\\)=\\(.*\\)$|\\1=\\'\\2\\'|i")
+    # use double quotes around java property setting
+    arg=$(echo $arg|sed "s/\\(-D[a-z0-9_][a-z0-9_]*\\)=\\(.*\\)$/\\1=\"\\2\"/")
     if [ $DEBUG = 'true' ] ; then
       echo "the argument becomes: \"${arg}\""
     fi
   fi
-  args=$args' '$arg
+  _args[$_argc]=$arg
 done
-echo "java $args -jar ${target_jar_env}"
-# NOTE: cannot run directly: whitespace-containing arguments get broken apart
-# java $args -jar ${target_jar_env} -jar ${target_jar_env}
-
+echo "java ${_args[@]} -jar ${target_jar_env}"
+# the whitespace-containing arguments still get broken apart
 if [ $DEBUG = 'true' ] ; then
   exit 0
 fi
-# workaround:
-eval "java ${args} -jar ${target_jar_env}"
 
+eval "java ${_args[@]} -jar ${target_jar_env}"

@@ -170,3 +170,4 @@ docker image rm basic-xml-example
   * [Properties with Spring and Spring Boot](https://www.baeldung.com/properties-with-spring)
   * [Constructor Dependency Injection in Spring](https://www.baeldung.com/constructor-injection-in-spring)
   * [Docker command reference](https://docs.docker.com/engine/reference/commandline/ps/)
+  * [Dockerfile DSL reference](https://docs.docker.com/engine/reference/builder/)
