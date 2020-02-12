@@ -19,15 +19,12 @@ public class Launcher implements ApplicationRunner {
 	}
 
 	@Autowired
-	private Params params;
-
-	@Autowired
 	private Worker app;
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		for (String name : args.getOptionNames()) {
-			logger.info("arg-" + name + "=" + args.getOptionValues(name));
+			logger.info("Option: " + name + "=" + args.getOptionValues(name));
 		}
 
 		app.logConfiguration();
