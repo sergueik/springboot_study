@@ -22,15 +22,22 @@ public class Launcher {
 	@Bean
 	@ConditionalOnProperty(name = "spring.config.location", matchIfMissing = false)
 	public PropertiesConfiguration propertiesConfiguration(
-			// now loaded via commandline property
-			@Value("${spring.config.location}") String path,
+			// now loaded via command line property, fall back to default location
+			// see also https://www.concretepage.com/spring-5/spring-value-default
+			@Value("${spring.config.location:appliction.properties}") String path,
+			// NOTE: not reached via maven spring-boot:run goal phase
 			@Value("${spring.properties.refreshDelay}") long refreshDelay) throws Exception {
 		// assume standard protocol notation
-// NOTE: using string method - need full path 
-		String filePath = (path.matches("^file://.*$")) ? path.substring("file://".length()) : path;
-		System.err.println("applicaation properties file path: " + filePath);
-//        PropertiesConfiguration configuration = new PropertiesConfiguration(new File(filePath).getCanonicalPath());
-		PropertiesConfiguration configuration = new PropertiesConfiguration(new File(filePath));
+		String filePath = null;
+		PropertiesConfiguration configuration = null;
+		if (path.matches("^file://.*$")) {
+			filePath = path.substring("file://".length());
+			configuration = new PropertiesConfiguration(new File(filePath));
+		} else {
+			filePath = path;
+			configuration = new PropertiesConfiguration(new File(filePath).getCanonicalPath());
+		}
+		System.err.println("application properties file path: " + filePath);
 		FileChangedReloadingStrategy fileChangedReloadingStrategy = new FileChangedReloadingStrategy();
 		fileChangedReloadingStrategy.setRefreshDelay(refreshDelay);
 		configuration.setReloadingStrategy(fileChangedReloadingStrategy);

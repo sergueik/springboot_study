@@ -8,6 +8,7 @@ Springboot Docker basic project based on [springboot mySQL Docker container](htt
 ```sh
 mvn clean spring-boot:run
 ```
+will not fail, but unlikely to be loading the `application.properties`, so proceed to the next step.
 * run locally as jar
 ```sh
 mvn package
@@ -15,10 +16,9 @@ mvn package
 ```sh
 cp src/main/resources/application.properties ~/Desktop/
 ```
-```
+```sh
 java -jar target/example.basic-properties.jar --spring.config.location=file:///home/sergueik/Desktop/application.properties
 ```
-
 * test locally
 ```sh
 curl http://localhost:8085/basic
