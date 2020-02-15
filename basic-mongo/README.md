@@ -34,13 +34,17 @@ spring.data.mongo.repositories.enabled=true
 docker container stop mongo-service
 docker container rm mongo-service
 ```
+* package the app
+```sh
+mvn clean package
+```
 * run the cluster
 ```sh
 docker-compose -f docker-compose.yaml up
 ```
 test 
 ```sh
-curl http://localhost:8085/mongo/repo
+curl http://localhost:8085/mongo/all
 ```
 this will respond with an empty collection. 
 ```
@@ -49,11 +53,11 @@ this will respond with an empty collection.
 
 * add few values
 ```
-for VALUE in test1 test2  test3 ; do curl http://localhost:8085/mongo/repo/$VALUE; done
+for VALUE in test1 test2  test3 ; do curl http://localhost:8085/mongo/insert/$VALUE; done
 ```
 get it back
 ```sh
-curl http://localhost:8085/mongo/repo |jq '.' -
+curl http://localhost:8085/mongo/all |jq '.' -
 ```
 this will respond with
 ```js

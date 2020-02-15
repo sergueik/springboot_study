@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Component
 @RestController
 @RequestMapping("/mongo")
-public class MongoController {
+public class Worker {
 
 	@Autowired
 	private ModelMongoRepository mongoRepository;
@@ -21,29 +21,17 @@ public class MongoController {
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
-	@RequestMapping(path = "/repo", method = RequestMethod.GET)
+	@RequestMapping(path = "/all", method = RequestMethod.GET)
 	public Iterable<Model> findByRepo() throws IOException {
 		return mongoRepository.findAll();
 	}
 
-	@RequestMapping(path = "/template", method = RequestMethod.GET)
-	public Iterable<Model> findByTemplate() throws IOException {
-		return mongoTemplate.findAll(Model.class);
-	}
-
-	@RequestMapping(value = "/repo/{value}", method = RequestMethod.GET)
+	@RequestMapping(value = "/insert/{value}", method = RequestMethod.GET)
 	public void saveByRepo(@PathVariable String value) {
 		Model model = new Model();
 		model.setId(System.currentTimeMillis());
 		model.setValue(value);
 		mongoRepository.save(model);
 	}
-
-	@RequestMapping(value = "/template/{value}", method = RequestMethod.GET)
-	public void saveByTemplate(@PathVariable String value) {
-		Model model = new Model();
-		model.setId(System.currentTimeMillis());
-		model.setValue(value);
-		mongoTemplate.save(model);
-	}
 }
+
