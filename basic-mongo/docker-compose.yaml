@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  app:
+    container_name: basic-mongo-app
+    build: .
+    # /home/$USER/src/springboot_study/basic-mongo
+    volumes:
+      # NOTE: invalid interpolation format
+      # - /home/$(whoami)/Desktop:/var/properties
+      - /home/$USER/Desktop:/var/properties
+    ports:
+      - 8085:8085
+    working_dir: '/'
+    restart: always
+    tty: true
+    networks:
+      - myapp
+  mongo:
+    container_name: mongo-service
+    image: mvertes/alpine-mongo
+    ports:
+      # NOTE: the basic-mongo-app has to use the genuine port
+      - 27017:27017
+    networks:
+      - myapp
+networks:
+  myapp:
+    driver: bridge
