@@ -4,11 +4,26 @@ Springboot Docker basic project based on [springboot mySQL Docker container](htt
 
 ### Test
 
-* run locally - may no longer work after turning on trimmed down `application.property` magic
+* run locally
+```sh
+mvn -Dspring.config.location=src/main/resources/application.properties spring-boot:run
+```
+Note: - after turning on trimmed down `application.property` magic the default command no longer works
 ```sh
 mvn clean spring-boot:run
 ```
-will not fail, but unlikely to be loading the `application.properties`, so proceed to the next step.
+followed by
+
+```sh
+curl http://localhost:8085/basic
+```
+will result in
+
+```sh
+Hello null
+```
+Thus the maven command does not fail, but apprently is not loading the `application.properties`, so proceed to the next step.
+
 * run locally as jar
 ```sh
 mvn package
@@ -48,8 +63,7 @@ change port
 sed -i 's|8085|8080|' ~/Desktop/application.properties
 sed -i 's|some value|yet another value|' ~/Desktop/application.properties
 ```
-and
-MAke sure the `ENTRYPOINT` uses  java option to pass the propertie file locatio n to the spring app:
+and make sure the `ENTRYPOINT` sets `--spring.config.location` java option to pass the properties file location to the spring app:
 ```
 "java", "-jar", "app.jar", "--spring.config.location=file:///var/properties/application.properties"
 

@@ -24,7 +24,7 @@ public class Launcher {
 	public PropertiesConfiguration propertiesConfiguration(
 			// now loaded via command line property, fall back to default location
 			// see also https://www.concretepage.com/spring-5/spring-value-default
-			@Value("${spring.config.location:appliction.properties}") String path,
+			@Value("${spring.config.location:src/main/resources/appliction.properties}") String path,
 			// NOTE: not reached via maven spring-boot:run goal phase
 			@Value("${spring.properties.refreshDelay}") long refreshDelay) throws Exception {
 		// assume standard protocol notation
