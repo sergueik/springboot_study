@@ -18,12 +18,11 @@ docker build -f Dockerfile  -t 'test/pricing' .
 ```
 followed by the
 ```sh
-docker-compose -f docker-compose.yml up
+docker-compose -f docker-compose.yaml up
 ```
 which logs to console
 
 ```sh
-sergueik@sergueik71:~/src/springboot_study/consul$ docker-compose -f docker-compose.yml  up
 Creating network "consul_default" with the default driver
 Creating consul_discovery_1 ... done
 Creating consul_portafolio_api_1 ... done

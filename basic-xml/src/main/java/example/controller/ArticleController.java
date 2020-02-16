@@ -14,9 +14,25 @@ import example.service.ArticleService;
 @RestController
 @RequestMapping("user")
 public class ArticleController {
-	@Autowired
 	private ArticleService articleService;
 
+	public void setArticleService(ArticleService data) {
+		this.articleService = data;
+	}
+
+	/*
+	 * NOTE: failing in runtime: Error creating bean with name
+	 * 'org.springframework.web.servlet.mvc.method.annotation.
+	 * RequestMappingHandlerMapping': Invocation of init method failed; nested
+	 * exception is java.lang.IllegalStateException: Ambiguous mapping. Cannot map
+	 * 'example.controller.ArticleController#0' method public
+	 * java.util.List<example.entity.Article>
+	 * example.controller.ArticleController.getAllArticles() to
+	 * {[/user/articles],methods=[GET]}: There is already 'articleController' bean
+	 * method public java.util.List<example.entity.Article>
+	 * example.controller.ArticleController.getAllArticles() mapped.
+	 * 
+	 */
 	@GetMapping("articles")
 	public List<Article> getAllArticles() {
 		List<Article> list = new ArrayList<>();

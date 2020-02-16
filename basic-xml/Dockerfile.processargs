@@ -1,0 +1,10 @@
+FROM openjdk:8-jre-alpine3.9
+ARG source_jar="example.basic-xml.jar"
+ENV target_jar_env=app.jar
+ADD "target/${source_jar}" app.jar
+EXPOSE 8080
+WORKDIR /
+ADD process_args.sh process_args.sh
+RUN chmod +x /process_args.sh
+# NOTE: not referencing the "$@" explicitly - they will be passed dy Docker
+ENTRYPOINT ["/process_args.sh"]

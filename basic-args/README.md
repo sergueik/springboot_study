@@ -54,7 +54,7 @@ Processing key: id
 Loaded string: id: 0
 
 ```
-and the `Application` class processing the `GET` request 
+and the `Application` class processing the `GET` request
 
 ```java
 	@Autowired
@@ -95,7 +95,7 @@ eyJpZCI6MH0K
 mvn -Dparams=eyJpZCI6MH0K test
 mvn -Dmaven.test.skip=true clean package
 ```
-modify params 
+modify params
 ```sh
 echo '{"name":"my dockerized hparameterized spring application", "success":true,"result":42,"id":0 }' | base64 | tr -d '\n' | tee /tmp/params.$$
 ```
@@ -123,7 +123,7 @@ Removing intermediate container 46365ccd45f0
 Successfully built f9ae39e64c3b
 Successfully tagged basic-args-example:latest
 ```
-and run it 
+and run it
 ```sh
 docker run -p 8080:8080 basic-args-example
 ```
@@ -146,13 +146,42 @@ docker stop $ID
 docker rm $ID
 docker image prune -f
 ```
+#### Passing Arguments with run command
+
+Alternatively one can omit the java property definition arguments from `Dockerfile` and replace with a vanilla shell script passing the run arguments to java command:
+
+```sh
+java $* -jar app.jar
+```
+- see `Dockerfile.noargs`. No parameters are needed when building the image
+```sh
+docker build -f Dockerfile.noargs  -t basic-args-example .
+```
+and instead define every `-D` options as the `docker run` command argument together with a dummy one:
+```sh
+echo '{"name":"my parameterized at run time", "success":true,"result":17,"id":1 }' | base64
+```
+```sh
+docker run -it -d -p 8080:8080 --rm basic-args-example _ -Dparams=eyJuYW1lIjoibXkgcGFyYW1ldGVyaXplZCBhdCBydW4gdGltZSIsICJzdWNjZXNzIjp0cnVlLCJyZXN1bHQiOjE3LCJpZCI6MSB9Cg==
+```
+```sh
+curl http://localhost:8080/basic
+```
+```sh
+This is my parameterized at run time and the result is: 17
+```
+
+
+
+
 ### See Also
    * [tutorial](https://howtodoinjava.com/spring-boot2/application-arguments/) for dealing with the application runtime arguments in a `@Component`
    * discussion of [shell entrypoints](https://stackoverflow.com/questions/37904682/how-do-i-use-docker-environment-variable-in-entrypoint-array) passing in environments
    * spring boot application [dealing with](https://www.logicbig.com/tutorials/spring-framework/spring-boot/app-args.html) application arguments
    * [stackoverflow](https://stackoverflow.com/questions/34324277/how-to-pass-arg-value-to-entrypoint)
   * [guide to spring @Value]( https://www.baeldung.com/spring-value-annotation) annotations
- 
+  * improved code to [preserve double quotes](https://stackoverflow.com/questions/3755772/how-to-preserve-double-quotes-in-in-a-shell-script) of needed elements of $@ in a shell script
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

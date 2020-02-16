@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  app:
+    container_name: basic-mongo-app
+    build: .
+    volumes:
+      - /home/$USER/Desktop:/var/properties
+    ports:
+      - 8085:8085
+    working_dir: '/'
+    restart: always
+    tty: true
+    networks:
+      - myapp
+  mongo:
+    container_name: mongo-service
+    image: mvertes/alpine-mongo
+    networks:
+      - myapp
+networks:
+  myapp:
+    driver: bridge
