@@ -15,11 +15,11 @@ Edit `pom.xml` and specify the __8.0__ version of mysql-connector-java jar:
 Pull the collaborator Docker image:
 
 ```sh
-docker pull mysql:8.0
+docker pull mysql:8.0.18
 ```
 and run it with environments matching the `application.properties`:
 ```sh
-docker run --name mysql-server -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=java -e MYSQL_DATABASE=test -e MYSQL_PASSWORD=password -d mysql:8.0
+docker run --name mysql-server -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=java -e MYSQL_DATABASE=test -e MYSQL_PASSWORD=password -d mysql:8.0.18
 ```
 observe the successful start log message in `mysql-server` container:
 ```sh
@@ -66,7 +66,11 @@ docker run -p 8086:8086 --link mysql-server -d mysql-example
 ```sh
 docker logs $(docker container ls | grep mysql-example | awk '{print $1}')
 ```
-will display usual Spring launch logs and eventually show
+will display usual verbose Spring launch logs
+```sh
+org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+```
+and eventually show
 ```sh
 Started ExampleApplication in 21.678 seconds (JVM running for 23.016)
 ```
@@ -97,6 +101,38 @@ would respond with
 ```sh
 Hibernate: select users0_.id as id1_0_, users0_.name as name2_0_, users0_.salary as salary3_0_, users0_.team_name as team_nam4_0_ from users users0_
 ```
+* Alternatively bring both containers up via `docker-compose.yaml`(slower and less reliable):
+```sh
+export COMPOSE_HTTP_TIMEOUT=600
+docker-compose  -f docker-compose.yaml up --build
+```
+The ordering does not appear to work well:
+```sh
+caused by: java.net.ConnectException: Connection refused (Connection refused)
+```
+This is sometimes cured by the `docker-compose` rerun, alterntively one may launch and attache the exited container:
+```sh
+ID=$(docker container ls -a | grep 'basic-mysql_app'| grep -i exited| awk '{print $1}')
+docker start $ID
+docker attach $ID
+```
+at which point the console running the `docker-compose` will show the console  log of the `basic-mysql_app_1` container  that exited earlier.
+NOTE: this process is prone to fail and leave behind the unfinished images blocking its repeated runs:
+
+```
+```
+the only proven way to troubleshoot those is
+```sh
+docker-compose stop
+docker container ls -a | awk '{print $1}' | xargs -IX docker container stop X
+docker container  prune -f
+docker image prune -f -a
+sudo killall docker-compose
+sudo systemctl stop docker
+sudo systemctl start docker
+```
+NOTE: the disk usage seems to show some shortge after this cycle.
+
 ### Exercise Custom Error Handler
 
 * Add error handler. Note that current implementation is very basic and in particular it fails to show the already added user:
