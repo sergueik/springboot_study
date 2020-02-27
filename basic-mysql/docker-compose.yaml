@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+
+  mysql-server:
+    image: mysql:8.0
+    restart: always
+    # NOTE: the official MySQL container would execute files with extensions .sh, init.sql and init.sql.gz that are found in /docker-entrypoint-initdb.d on first launch
+    # command: --init-file /data/application/init.sql
+    # volumes:
+    #  - ./db/init.sql:/data/application/init.sql
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=java
+      - MYSQL_DATABASE=test
+      - MYSQL_PASSWORD=password
+    networks:
+      - example
+
+  app:
+    depends_on:
+      - mysql-server
+    build: .
+    image: openjdk:8-jre-alpine3.9
+    ports:
+      - 8086:8086
+    environment:
+      - MYSQL_USER=java
+      - MYSQL_DATABASE=test
+      - MYSQL_PASSWORD=password
+    networks:
+      - example
+    volumes:
+      - microservice-logs:/opt/com/treadstone_system/logs
+
+volumes:
+  microservice-logs:
+
+networks:
+  example:
