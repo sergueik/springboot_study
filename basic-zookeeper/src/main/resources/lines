@@ -1,0 +1,150 @@
+//下载
+wget https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-3.4.14/zookeeper-3.4.14.tar.gz
+//解压
+tar -xvzf zookeeper-3.4.14.tar.gz
+//重命名配置文件
+mv ./conf/zoo_sample.cfg ./conf/zoo.cfg
+
+
+--独裁模式
+//zoo.cfg中修改data目录地址
+dataDir=/home/zhouhao/zookeeper-3.4.14
+//启动服务器
+bin/zkServer.sh start
+//启动客户端
+bin/zkCli.sh -server 127.0.0.1:2181
+//查看root下所有节点
+ls /
+//创建workers节点
+create /workers ""
+//删除workers节点
+delete /workers
+//退出客户端
+quit
+//关闭服务器
+bin/zkServer.sh stop
+
+
+--仲裁模式
+
+//创建3个文件夹及其data文件夹
+mkdir 2222 3333 4444
+mkdir 2222/data
+mkdir 3333/data
+mkdir 4444/data
+
+//添加一下三项配置，表示3个服务器，其中127.0.0.1表示IP，2222表示服务端口号，2223表示服务器间的通讯端口
+server.1=127.0.0.1:2222:2223
+server.2=127.0.0.1:3333:3334
+server.3=127.0.0.1:4444:4445
+
+//配置文件中修改数据地址，
+dataDir=/home/zhouhao/zookeeper/2222/data
+dataDir=/home/zhouhao/zookeeper/3333/data
+dataDir=/home/zhouhao/zookeeper/4444/data
+//修改服务端口号，在三个不同的配置文件中
+clientPort=2181
+clientPort=2182
+clientPort=2183
+
+//创建myid文件给指定服务器命名
+echo 1 > 2222/data/myid
+echo 2 > 3333/data/myid
+echo 3 > 4444/data/myid
+
+//启动三个服务器
+bin/zkServer.sh start ../zookeeper/2222/z2222.cfg
+bin/zkServer.sh start ../zookeeper/3333/z3333.cfg
+bin/zkServer.sh start ../zookeeper/4444/z4444.cfg
+
+
+//客户端连接服务器
+bin/zkCli.sh -server 127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183
+//创建主节点
+create -e /master "master.example.com:2223"
+//查看节点属性并添加监视点
+stat /master true
+
+
+//高级配置
+
+//基本配置
+clientPort      -客户端监听端口号
+dataDir     -数据树路径
+dataLogDir      -事务日志路径
+tickTime        -超时单位时间
+
+//存储配置
+preAllocSize        -预分配事务日志文件大小
+snapCount       -每次快照之间的事务数量
+autopurge.snapRetainCount       -Zookeeper会定期对事务日志和快照进行垃圾回收，此参数指定了需要保留的快照数量
+autopurge.purgeInterval     -垃圾回收时间间隔数量，单位为小时
+fsync.warningthressholdms       -存储同步时间超时警告阀值
+weitht.x=n      -群首投票权重
+traceFile       -持续跟踪Zookeeper的操作并记录在日志中，此为路径。还需设置requestTraceFile参数
+
+//网络配置
+globalOutStandingLimit      -待处理请求最大值
+maxClientCnxns      -每个IP最大socket连接数量
+clientPortAddress       -限制客户端连接到指定的接收信息的地址上
+minSessionTimeout       -最小会话超时时间
+maxSessionTimeout       -最大会话超时时间
+
+//集群配置
+initLimit       -追随者刚连接到群首时的超时值，单位为tick时间
+syncLimit       -追随者与群首同步数据的超时值
+leaderServes        -yes/no 群首是否为客户端提供服务，默认为yes
+server.x=[hostname]:n:n[:observer]      -x为服务器序号，hostname为IP地址，第一个n为事务发送端口号，第二个n为群首选举端口号，最后表示开启观察者模式
+cnxTimeout      -群首选举打开一个新的连接的超时值
+electionAlg     -选举算法配置，不可修改
+
+//非安全配置
+forceSync       -yes/or 控制是否将数据信息同步到存储设备
+jute.maxbuffer      -仅适用java系统属性配置，对znode节点数据的大小进行检查
+skepACL     -跳过所有ACL检查
+readonlymode.enabled        -ture/false 开启只读模式
+
+//日志配置，使用了log4j，所以以下配置都是log4j的配置文件中的配置
+zookeeper.root.logger=INFO, CONSOLE①
+zookeeper.console.threshold=INFO
+zookeeper.log.dir=.
+zookeeper.log.file=zookeeper.log
+zookeeper.log.threshold=DEBUG
+zookeeper.tracelog.dir=.
+zookeeper.tracelog.file=zookeeper_trace.log
+log4j.rootLogger=${zookeeper.root.logger}
+
+//集群配置
+group.x=n[:n]       -组同样适用于多数原则，组内也适用于多数原则
+//观察者
+peerType=observer       -需要则集群配置信息中声明observer，例如server.1=127.0.0.1:2181:3181:observer
+
+//重配置，不适用于独立模式
+dynamicConfigFile=./dyn.cfg
+
+//重配置文件格式，其中participant表示参与者（群首或从节点）也可以是observer，
+server.id=host:n:n[:role];[client_address:]client_port
+-服务器配置，例如：
+server.1=127.0.0.1:2222:2223:participant;2181
+server.2=127.0.0.1:3333:3334:participant;2182
+server.3=127.0.0.1:4444:4445:participant;2183
+
+//重配置命令，移除服务器2,3，并添加服务器4,5。重配置文件会更新
+reconfig -remove 2,3 -add \
+server.4=127.0.0.1:5555:5556:participant;2184,\
+server.5=127.0.0.1:6666:6667:participant;2185
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

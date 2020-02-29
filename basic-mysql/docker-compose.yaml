@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  mysql:
+    image: mysql:8.0.18
+    restart: always
+    # NOTE: official MySQL container on first launch executes .sh, init.sql and init.sql.gz found in /docker-entrypoint-initdb.d
+    # command: --init-file /data/application/init.sql
+    environment:
+      # NOTE the credentials need to match setting in application.properties
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=java
+      - MYSQL_DATABASE=test
+      - MYSQL_PASSWORD=password
+    networks:
+      - example
+  app:
+    depends_on:
+      # the db server name needs to match setting in application.properties
+      - mysql
+    build: .
+    image: openjdk:8-jre-alpine3.9
+    ports:
+      # NOTE the port needs to match setting in application.properties
+      - 8086:8086
+    environment:
+      - MYSQL_USER=java
+      - MYSQL_DATABASE=test
+      - MYSQL_PASSWORD=password
+    networks:
+      - example
+networks:
+  example:
