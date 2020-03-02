@@ -28,13 +28,19 @@ public class Worker {
 	}
 
 	@RequestMapping(path = "/any", method = RequestMethod.GET)
-	public Model findOneByRepo() throws IOException {
+	public Model findAnyByRepo() throws IOException {
 		Iterator<Model> m = mongoRepository.findAll().iterator();
-		if (m.hasNext()) {
-			Model obj = m.next();
-			obj.setId(1);
-			return obj;
-		} else {
+		return (m.hasNext()) ? m.next() : null;
+	}
+
+	@RequestMapping(path = "/get/{value}", method = RequestMethod.GET)
+	public Model findOneByRepo(@PathVariable String value) throws IOException {
+		// Retrieves entity by its id.
+		// https://docs.spring.io/autorepo/docs/spring-data-commons/1.5.1.RELEASE/api/org/springframework/data/repository/CrudRepository.html
+		try {
+			long id = Long.parseLong(value);
+			return mongoRepository.findOne(value);
+		} catch (NumberFormatException e) {
 			return null;
 		}
 	}

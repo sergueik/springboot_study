@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,29 +55,58 @@ public class WorkerTests {
 	@MockBean
 	Worker worker;
 
-	private final String URL = "/mongo/any";
-
 	@Test
-	public void test() throws Exception {
-		// prepare data and mock's behaviour
-		Model modelStub = new Model();
-		when(worker.findOneByRepo()).thenReturn(modelStub);
-		// execute
-		MvcResult result = mockMvc.perform(
-				MockMvcRequestBuilders.get(URL).accept(MediaType.APPLICATION_JSON_UTF8))
-				.andReturn();
+	public void testAny() throws Exception {
+		// Arrange
+		when(worker.findAnyByRepo()).thenReturn(new Model(1, "stub"));
+		// Act
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/mongo/any")
+				.accept(MediaType.APPLICATION_JSON_UTF8)).andReturn();
 
-		// verify status is OK
+		// Assert
 		assertEquals("Incorrect Response Status", HttpStatus.OK.value(),
 				result.getResponse().getStatus());
-		// verify that mapped method was called
-		verify(worker).findOneByRepo();
 
-		// verify that expected type was serialized in response
-		Model resultModel = jsonToObject(result.getResponse().getContentAsString(),
+		verify(worker).findAnyByRepo();
+
+		// verify that an of expected type is returned
+		assertNotNull(
+				jsonToObject(result.getResponse().getContentAsString(), Model.class));
+
+		// deserialize the response JSON and
+		// inspect instance of Model returned
+		Model response = jsonToObject(result.getResponse().getContentAsString(),
 				Model.class);
-		assertNotNull(resultModel);
+		// NOTE: not the real instance but a mock will be executed
+		assertEquals(1, response.getId());
+	}
 
+	@Test
+	public void testOne() throws Exception {
+		// Arrange
+		when(worker.findOneByRepo(any(String.class)))
+				.thenReturn(new Model(1, "stub"));
+		// Act
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+				.get("/mongo/get/1").accept(MediaType.APPLICATION_JSON_UTF8))
+				.andReturn();
+
+		// Assert
+		assertEquals("Incorrect Response Status", HttpStatus.OK.value(),
+				result.getResponse().getStatus());
+
+		verify(worker).findOneByRepo(any(String.class));
+
+		// verify that an of expected type is returned
+		assertNotNull(
+				jsonToObject(result.getResponse().getContentAsString(), Model.class));
+
+		// deserialize the response JSON and
+		// inspect instance of Model returned
+		Model response = jsonToObject(result.getResponse().getContentAsString(),
+				Model.class);
+		// NOTE: not the real instance but a mock will be executed
+		assertEquals(1, response.getId());
 	}
 
 	@SuppressWarnings("rawtypes")

@@ -7,9 +7,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Model {
 
-	public Model() {
-	}
-
 	@Id
 	private long id;
 
@@ -19,16 +16,24 @@ public class Model {
 		return id;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public void setId(long data) {
+		id = data;
 	}
 
 	public String getValue() {
 		return value;
 	}
 
-	public void setValue(String value) {
+	public void setValue(String data) {
+		value = value;
+	}
+
+	public Model(long id, String value) {
+		this.id = id;
 		this.value = value;
+	}
+
+	public Model() {
 	}
 
 }
