@@ -1,6 +1,7 @@
 package example;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,8 +23,20 @@ public class Worker {
 	private MongoTemplate mongoTemplate;
 
 	@RequestMapping(path = "/all", method = RequestMethod.GET)
-	public Iterable<Model> findByRepo() throws IOException {
+	public Iterable<Model> findAllByRepo() throws IOException {
 		return mongoRepository.findAll();
+	}
+
+	@RequestMapping(path = "/any", method = RequestMethod.GET)
+	public Model findOneByRepo() throws IOException {
+		Iterator<Model> m = mongoRepository.findAll().iterator();
+		if (m.hasNext()) {
+			Model obj = m.next();
+			obj.setId(1);
+			return obj;
+		} else {
+			return null;
+		}
 	}
 
 	@RequestMapping(value = "/insert/{value}", method = RequestMethod.GET)
@@ -34,4 +47,3 @@ public class Worker {
 		mongoRepository.save(model);
 	}
 }
-
