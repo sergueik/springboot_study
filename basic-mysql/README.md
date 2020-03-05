@@ -21,6 +21,10 @@ and run it with environments matching the `application.properties`:
 ```sh
 docker run --name mysql-server -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=java -e MYSQL_DATABASE=test -e MYSQL_PASSWORD=password -d mysql:8.0.18
 ```
+The enviroment entries `MYSQL_ROOT_PASSWORD`, `MYSQL_USER`,`MYSQL_DATABASE`, `MYSQL_PASSWORD` are required by Mysql docker image.
+It will take the Docker instance  quite some time to launch. 
+One can safely start building and runing Spring app container while database initializes itself.
+Eventually
 observe the successful start log message in `mysql-server` container:
 ```sh
 docker logs mysql-server
@@ -61,6 +65,53 @@ docker build -f Dockerfile -t mysql-example .
 ```sh
 docker run -p 8086:8086 --link mysql-server -d mysql-example
 ```
+It will execute the delayed launch script:
+```sh
+#!/bin/sh
+
+DB_HOST='mysql-server'
+DB_PORT='3306'
+APP='app.jar'
+while true
+do
+nc -z $DB_HOST $DB_PORT
+if [ $? -eq 0 ]
+then
+break
+fi
+echo "Waiting on the ${DB_HOST} ${DB_PORT}"
+sleep 10
+done
+
+java -jar $APP
+```
+thus prevnting it from failing to launch Spring when no connection bean dependencyis ready.
+```sh
+docker logs mysql-server
+```
+```sh
+Waiting on the mysql-server 3306
+Waiting on the mysql-server 3306
+Waiting on the mysql-server 3306
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.1.2.RELEASE)
+
+
+```
+
+NOTE:
+One cannot modify the [stock image](https://github.com/docker-library/mysql/blob/master/8.0/Dockerfile) `CMD` or `ENTRYPOINT` - 
+ to establish some synhronization betwen slowly bootstrapping docker-hosted
+applications - they are already finished vendor commands and would attempt to interpret the added command is an argument e.g.:
+```
+# [ERROR] [MY-010147] [Server] Too many arguments (first extra is 'sh -c "while true; do netstat -ant | grep -q 3036; if [ $$? -eq 0  ] ; then break ;  fi ;  echo \"x\"; sleep 10;  done"').
+``
 
 * Confirm the app started through the log
 ```sh

@@ -2,10 +2,13 @@ version: '3.7'
 
 services:
   mysql:
+    container_name: mysql-server
+    hostname: mysql-server
     image: mysql:8.0.18
     restart: always
     # NOTE: official MySQL container on first launch executes .sh, init.sql and init.sql.gz found in /docker-entrypoint-initdb.d
     # command: --init-file /data/application/init.sql
+    # https://github.com/docker-library/mysql/blob/master/8.0/Dockerfile
     environment:
       # NOTE the credentials need to match setting in application.properties
       - MYSQL_ROOT_PASSWORD=password
