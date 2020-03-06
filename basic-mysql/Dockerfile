@@ -4,4 +4,3 @@ ADD "/delayed_start.sh" "delayed_start.sh"
 ADD "target/${app_jar}" app.jar
 EXPOSE 8086
 ENTRYPOINT ["sh", "/delayed_start.sh"]
-# ENTRYPOINT ["java", "-jar", "app.jar"]
