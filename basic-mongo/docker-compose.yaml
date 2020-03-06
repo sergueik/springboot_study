@@ -12,7 +12,10 @@ services:
     tty: true
     networks:
       - myapp
+    depends_on:
+      - mongo
   mongo:
+    hostname: mongo-service
     container_name: mongo-service
     image: mvertes/alpine-mongo
     networks:

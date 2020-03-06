@@ -95,6 +95,7 @@ docker image rm 'basic-mongo_app'
 
 ### See Also
   * [original post](https://qna.habr.com/q/714443)(in Russian)
+  * [custom code to sync wait for lagging containers](https://qna.habr.com/q/726237)(also in Russian, not found the answer
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
