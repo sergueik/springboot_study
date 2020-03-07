@@ -45,7 +45,7 @@ mvn package
 cp src/main/resources/application.properties ~/Desktop/
 ```
 ```sh
-java -jar target/example.basic-properties.jar --spring.config.location=file:///home/sergueik/Desktop/application.properties
+java -jar target/example.basic-properties.jar --spring.config.location=file:///home/$(whoami)/Desktop/application.properties
 ```
 * test locally
 ```sh

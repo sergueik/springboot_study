@@ -1,14 +1,17 @@
 #!/bin/sh
-
-DB_HOST='mongo-service'
-DB_PORT='27017'
+if [ -z "${SERVICE_HOST}" ] ; then
+  SERVICE_HOST='mongo-service'
+fi
+if [ -z "${SERVICE_PORT}" ] ; then
+  SERVICE_PORT='27017'
+fi
 DELAY='60'
 APP='app.jar'
 
 while true
 do
-  echo "Waiting on the ${DB_HOST} ${DB_PORT}"
-  nc -z $DB_HOST $DB_PORT
+  echo "Waiting on the ${SERVICE_HOST} ${SERVICE_PORT}"
+  nc -z $SERVICE_HOST $SERVICE_PORT
   if [ $? -eq 0 ]
   then
     echo 'Got Response'

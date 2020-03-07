@@ -1,4 +1,4 @@
-### Info 
+## Info 
 
 Beam server
 
@@ -14,4 +14,5 @@ received QUIT
 ```sh
 sh delayed_start.sh
 ```
-
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

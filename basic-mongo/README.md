@@ -38,19 +38,43 @@ docker container rm mongo-service
 ```sh
 mvn clean package
 ```
+* build run the application node
+```sh
+docker build -f Dockerfile -t mongo-example .
+```
+```sh
+docker run -p 8085:8085 --link mongo-service -d mongo-example
+```
+or
 * run the cluster
 ```sh
 docker-compose -f docker-compose.yaml up
 ```
-test 
+* test
 ```sh
 curl http://localhost:8085/mongo/all
 ```
-this will respond with an empty collection. 
+this will respond with an empty collection.
 ```
 []
 ```
-
+the error
+```sh
+curl: (56) Recv failure: Connection reset by peer
+```
+indicates the app has not launched yet
+the error
+```json
+{
+  "timestamp": 1583505069867,
+  "status": 500,
+  "error": "Internal Server Error",
+  "exception": "org.springframework.dao.DataAccessResourceFailureException",
+  "message": "Timed out after 30000 ms while waiting for a server that matches ReadPreferenceServerSelector{readPreference=primary}. Client view of cluster state is {type=UNKNOWN, servers=[{address=mongo:27017, type=UNKNOWN, state=CONNECTING, exception={com.mongodb.MongoSocketException: mongo}, caused by {java.net.UnknownHostException: mongo}}]; nested exception is com.mongodb.MongoTimeoutException: Timed out after 30000 ms while waiting for a server that matches ReadPreferenceServerSelector{readPreference=primary}. Client view of cluster state is {type=UNKNOWN, servers=[{address=mongo:27017, type=UNKNOWN, state=CONNECTING, exception={com.mongodb.MongoSocketException: mongo}, caused by {java.net.UnknownHostException: mongo}}]",
+  "path": "/mongo/all"
+}
+```
+indicate the problem with inter container networking
 * add few values
 ```
 for VALUE in test1 test2  test3 ; do curl http://localhost:8085/mongo/insert/$VALUE; done
@@ -76,7 +100,7 @@ this will respond with
   },
 ]
 ```
-Note: 
+Note:
 there may be replicas if the insert was run multiple times -  the application assigns a unique `id` in every insert.
 More realistic support of CRUD is a WIP.
 
@@ -95,7 +119,8 @@ docker image rm 'basic-mongo_app'
 
 ### See Also
   * [original post](https://qna.habr.com/q/714443)(in Russian)
-  * [custom code to sync wait for lagging containers](https://qna.habr.com/q/726237)(also in Russian, not found the answer
-
+  * [custom code to sync wait for lagging containers](https://qna.habr.com/q/726237)(also in Russian, not considered the answer acceptable possibly too complex
+  * Docker [variables](https://docs.docker.com/compose/environment-variables/)
 ### Author
+ 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

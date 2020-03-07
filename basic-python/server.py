@@ -9,7 +9,8 @@ import re
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-port = getenv('PORT')
+
+port = getenv('SERVICE_PORT')
 
 if port == None :
   port = 10000
