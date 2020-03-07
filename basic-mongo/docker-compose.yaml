@@ -2,6 +2,9 @@ version: '3.7'
 services:
   app:
     container_name: example-mongo
+    environment:
+      SERVICE_PORT: 27017
+      SERVICE_HOST: 'mongo-service'
     build:
       context: .
       dockerfile: Dockerfile
@@ -17,9 +20,6 @@ services:
     depends_on:
       - mongo
   mongo:
-    environment:
-      SERVICE_PORT: 27017
-      SERVICE_HOST: 'mongo-service'
     hostname: mongo-service
     container_name: mongo-service
     image: mvertes/alpine-mongo

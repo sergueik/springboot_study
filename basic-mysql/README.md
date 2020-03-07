@@ -69,23 +69,23 @@ It will execute the delayed launch script:
 ```sh
 #!/bin/sh
 
-DB_HOST='mysql-server'
-DB_PORT='3306'
+SERVICE_HOST='mysql-server'
+SERVICE_PORT='3306'
 APP='app.jar'
 while true
 do
-nc -z $DB_HOST $DB_PORT
+nc -z $SERVICE_HOST $SERVICE_PORT
 if [ $? -eq 0 ]
 then
 break
 fi
-echo "Waiting on the ${DB_HOST} ${DB_PORT}"
+echo "Waiting on the ${SERVICE_HOST} ${SERVICE_PORT}"
 sleep 10
 done
 
 java -jar $APP
 ```
-thus prevnting it from failing to launch Spring when no connection bean dependencyis ready.
+thus preventing it from failing to launch Spring when no connection bean dependency is not yet ready.
 ```sh
 docker logs mysql-server
 ```

@@ -6,11 +6,14 @@
 
 # Name of the service provider node or the node equipped with the beam server
 # configured to start after completion of a lengthy setup process
-SERVICE_HOST='127.0.0.1'
+if [ -z "${SERVICE_HOST}" ] ; then
+  SERVICE_HOST='127.0.0.1' 
+fi
 
 # Public TCP port of the service or custom TCP port of the beam server
-SERVICE_PORT='10000'
-
+if [ -z "${SERVICE_PORT}" ] ; then
+  SERVICE_PORT='10000'
+fi
 DELAY='60'
 
 while true

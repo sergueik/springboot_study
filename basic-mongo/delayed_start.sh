@@ -1,4 +1,5 @@
 #!/bin/sh
+
 if [ -z "${SERVICE_HOST}" ] ; then
   SERVICE_HOST='mongo-service'
 fi

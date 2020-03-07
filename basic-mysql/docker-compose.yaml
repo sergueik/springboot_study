@@ -27,6 +27,8 @@ services:
       # NOTE the port needs to match setting in application.properties
       - 8086:8086
     environment:
+      SERVICE_PORT: 3306
+      SERVICE_HOST: 'mysql-server'
       - MYSQL_USER=java
       - MYSQL_DATABASE=test
       - MYSQL_PASSWORD=password

@@ -1,14 +1,19 @@
 #!/bin/sh
 
-DB_HOST='mysql-server'
-DB_PORT='3306'
-DELAY='60'
 APP='app.jar'
+
+if [ -z "${SERVICE_HOST}" ] ; then
+  SERVICE_HOST='mysql-server'
+fi
+if [ -z "${SERVICE_PORT}" ] ; then
+  SERVICE_PORT='3306'
+fi
+DELAY='60'
 
 while true
 do
-  echo "Waiting on the ${DB_HOST} ${DB_PORT}"
-  nc -z $DB_HOST $DB_PORT
+  echo "Waiting on the ${SERVICE_HOST} ${SERVICE_PORT}"
+  nc -z $SERVICE_HOST $SERVICE_PORT
   if [ $? -eq 0 ]
   then
     echo 'Got Response'
