@@ -2,15 +2,31 @@
 #
 # origin: https://pymotw.com/2/socket/tcp.html
 # see also: http://www.java2s.com/Tutorial/Python/0420__Network/EchoServer.htm
+# based on: http://sebastiandahlgren.se/2014/06/27/running-a-method-as-a-background-thread-in-python/
+
+from threading import Thread
+from time import sleep
+from os import getenv
 import socket
 import sys
-from os import getenv
 import re
+
+class BackgroundServer(object):
+
+  def __init__(self, bound, port = 10000, debug = False):
+    self.port = port
+    self.debug = debug
+
+    thread = Thread(target = self.run, args = ())
+    thread.daemon = bound
+    thread.start()
+
+  def run(self):
+    server = Server(self.port, self.debug)
 
 class Server(object):
 
   def __init__(self, port , debug = False):
-    # Create a TCP/IP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     server_address = ('0.0.0.0', port )
@@ -26,6 +42,7 @@ class Server(object):
         print('accepted a connection from {}'.format(client_address))
 
       data = connection.recv(4096)
+      # echo to caller message
       if len(data):
         connection.sendall(data)
         text = data.decode('utf-8')
@@ -33,8 +50,12 @@ class Server(object):
           print('received {}'.format(text))
         if re.match(r'QUIT', text):
           break
-      # echo arriving message indicating accepted connection
       connection.close()
+
+if getenv('BOUND')!= None and getenv('BOUND').lower() in ['true', '1', 't', 'y', 'yes']:
+  bound = True
+else:
+  bound = False
 
 if getenv('DEBUG')!= None and getenv('DEBUG').lower() in ['true', '1', 't', 'y', 'yes']:
   debug = True
@@ -46,4 +67,5 @@ port = getenv('SERVICE_PORT')
 if port == None :
   port = 10000
 
-server = Server(int(port), debug)
+example = BackgroundServer(bound, int(port), debug)
+print('Main exit')

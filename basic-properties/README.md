@@ -127,5 +127,6 @@ docker image prune -f
   * parameter-heavy rabbitmq Docker [entrypoint](https://github.com/docker-library/rabbitmq/blob/master/3.8/alpine/docker-entrypoint.sh)
   * auto-reloading the Spring application when a proferty file change detected via `PropertiesConfiguration` that periodically checks for the [file modifications](https://www.baeldung.com/spring-reloading-properties) every poll interval
   * как перечитывать настройки после изменения properties файла [(in Russian](https://qna.habr.com/q/713981)
+  * overriding SptingBoot `application.properties` during [test run](https://fooobar.com/questions/85477/override-default-spring-boot-applicationproperties-settings-in-junit-test) (in Russian)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

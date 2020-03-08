@@ -3,7 +3,9 @@ FROM jfloff/alpine-python
 #
 # beam server docker example
 COPY server.py server.py
+COPY background_server.py background_server.py
 ARG SERVICE_PORT=8080
 ENV SERVICE_PORT=$SERVICE_PORT 
 EXPOSE $SERVICE_PORT
-ENTRYPOINT ["python", "/server.py"]
+ENTRYPOINT ["python", "/background_server.py"]
+# ENTRYPOINT ["python", "/server.py"]
