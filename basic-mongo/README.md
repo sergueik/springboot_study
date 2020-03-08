@@ -14,7 +14,7 @@ docker run -d --name 'mongo-service' -i 'mvertes/alpine-mongo'
 ```
 * drop into mongo shell on the service container
 ```sh
-docker exec -it mongo-service mongo
+docker exec -it 'mongo-service' mongo
 ```
 * simply quit the shell
 ```sh
@@ -28,11 +28,6 @@ mongo_host=mongo
 mongo_db=mydb
 spring.data.mongodb.uri=mongodb://${mongo_host}:27017/${mongo_db}
 spring.data.mongo.repositories.enabled=true
-```
-* remove the loose container
-```sh
-docker container stop mongo-service
-docker container rm mongo-service
 ```
 * package the app
 ```sh
@@ -56,7 +51,16 @@ The only way to make it work is to embed (or pass through argument) the original
 ```sh
 docker run -e DEBUG_DELAYED_START=true -e SERVICE_PORT=27017 -p 8085:8085 --link mongo-service -d mongo-example
 ```
-or
+```sh
+docker container ls | grep mongo-example | awk '{print $1}' |xargs -IX docker attach X
+```
+or use `docker-compose`:
+* remove the loose container
+```sh
+docker container stop mongo-service
+docker container rm mongo-service
+```
+
 * run the cluster
 ```sh
 docker-compose -f docker-compose.yaml up
@@ -114,8 +118,8 @@ Got Response
 ```
 
 * add few values
-```
-for VALUE in test1 test2  test3 ; do curl http://localhost:8085/mongo/insert/$VALUE; done
+```sh
+for VALUE in test1 test2 test3 ; do curl http://localhost:8085/mongo/insert1/$VALUE; done
 ```
 get it back
 ```sh
@@ -138,10 +142,39 @@ this will respond with
   },
 ]
 ```
+```sh
+for VALUE in test4 test5 test6 ; do curl http://localhost:8085/mongo/insert2/$VALUE; done
+```
+
 Note:
 there may be replicas if the insert was run multiple times -  the application assigns a unique `id` in every insert.
 More realistic support of CRUD is a WIP.
 
+Note:
+
+the REST call to get value back
+```sh
+curl http://localhost:8085/mongo/get/1583701210532
+```
+is currently failing (nothing is returned)
+```sh
+docker exec -it 'mongo-service' mongo
+```
+followed by
+```sh
+> use mydb
+switched to db mydb
+> 
+> db.model.find({"_id":1583701210532}).pretty();
+```
+returns 
+```json
+{
+	"_id" : NumberLong("1583701210532"),
+	"_class" : "example.Model",
+	"value" : "test5"
+}
+```
 ### Cleanup
 
 destroy all started containers and image afterwards

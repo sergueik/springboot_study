@@ -9,7 +9,6 @@ public class Model {
 
 	@Id
 	private long id;
-
 	private String value;
 
 	public long getId() {
@@ -25,7 +24,7 @@ public class Model {
 	}
 
 	public void setValue(String data) {
-		value = value;
+		value = data;
 	}
 
 	public Model(long id, String value) {

@@ -101,7 +101,7 @@ public class WorkerTests {
 		assertNotNull(
 				jsonToObject(result.getResponse().getContentAsString(), Model.class));
 
-		// deserialize the response JSON and
+		// de-serialize the response JSON and
 		// inspect instance of Model returned
 		Model response = jsonToObject(result.getResponse().getContentAsString(),
 				Model.class);

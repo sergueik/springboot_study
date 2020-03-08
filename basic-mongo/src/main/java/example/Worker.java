@@ -31,6 +31,7 @@ public class Worker {
 	public Model findAnyByRepo() throws IOException {
 		Iterator<Model> m = mongoRepository.findAll().iterator();
 		return (m.hasNext()) ? m.next() : null;
+		// NOTE: will always pick first
 	}
 
 	@RequestMapping(path = "/get/{value}", method = RequestMethod.GET)
@@ -39,17 +40,29 @@ public class Worker {
 		// https://docs.spring.io/autorepo/docs/spring-data-commons/1.5.1.RELEASE/api/org/springframework/data/repository/CrudRepository.html
 		try {
 			long id = Long.parseLong(value);
+			System.err.println(String.format("Find:\"%s\"", value));
+			// NOTE: finds nothing, though querying mongodb node direct succeeds
+			// use mydb
+			// db.model.find({"_id":1583701210532});
 			return mongoRepository.findOne(value);
-		} catch (NumberFormatException e) {
+
+		} catch (IllegalArgumentException e) {
+			System.err.println("Exception : " + e.getMessage());
 			return null;
 		}
 	}
 
-	@RequestMapping(value = "/insert/{value}", method = RequestMethod.GET)
-	public void saveByRepo(@PathVariable String value) {
+	@RequestMapping(value = "/insert2/{value}", method = RequestMethod.GET)
+	public void save2ByRepo(@PathVariable String value) {
 		Model model = new Model();
 		model.setId(System.currentTimeMillis());
 		model.setValue(value);
+		mongoRepository.save(model);
+	}
+
+	@RequestMapping(value = "/insert1/{value}", method = RequestMethod.GET)
+	public void save1ByRepo(@PathVariable String value) {
+		Model model = new Model(System.currentTimeMillis(), value);
 		mongoRepository.save(model);
 	}
 }
