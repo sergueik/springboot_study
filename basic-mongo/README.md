@@ -42,8 +42,19 @@ mvn clean package
 ```sh
 docker build -f Dockerfile -t mongo-example .
 ```
+Note: if the `delayed_shart.sh` is set to run via `CMD` 
 ```sh
-docker run -p 8085:8085 --link mongo-service -d mongo-example
+CMD delayed_start.sh
+```
+followed by vanilla `ENTRYPOINT`
+```
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
+the shell script will be silently skipped having no effect on blocking the 
+`ENRYPOINT` command until `SERVICE_PORT` is available  on the `SERVICE_HOST` node. 
+The only way to make it work is to embed (or pass through argument) the original `ENTRYPOINT` command in the `delayed_start.sh`
+```sh
+docker run -e DEBUG=true -e SERVICE_PORT=27017 -p 8085:8085 --link mongo-service -d mongo-example
 ```
 or
 * run the cluster
@@ -75,6 +86,32 @@ the error
 }
 ```
 indicate the problem with inter container networking
+
+Alternatively run with `DEBUG` enabled
+```sh
+docker run -e DEBUG=true -e SERVICE_PORT=27017 -p 8085:8085 --link mongo-service -d mongo-example
+```
+and once started inspec the log file:
+```sh
+docker container ls | grep 'mongo-example' | awk '{print $1}' | xargs -IX docker exec X ls /tmp
+```
+and see
+```
+debug.log
+hsperfdata_root
+tomcat-docbase.3966690493895183356.8085
+tomcat.8344236035599407589.8085
+```
+and
+```sh
+docker container ls | grep 'mongo-example' | awk '{print $1}' | xargs -IX docker exec X cat /tmp/debug.log
+```
+and read logged execution details:
+```sh
+Waiting on the mongo-service 27017
+Got Response
+```
+
 * add few values
 ```
 for VALUE in test1 test2  test3 ; do curl http://localhost:8085/mongo/insert/$VALUE; done
@@ -108,9 +145,11 @@ More realistic support of CRUD is a WIP.
 
 destroy all started containers and image afterwards
 ```sh
-docker container ls -a | awk '{print $1}' |xargs -IX docker container stop X
+docker container ls -a | grep mongo | awk '{print $1}' |xargs -IX docker container stop X
 docker container prune -f
 docker image prune -f
+docker image rm mongo-example
+
 ```
 when rebuilding the application, force the application image recycle (name is assigned by docker-compose)
 ```sh
