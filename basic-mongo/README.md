@@ -54,7 +54,7 @@ the shell script will be silently skipped having no effect on blocking the
 `ENRYPOINT` command until `SERVICE_PORT` is available  on the `SERVICE_HOST` node. 
 The only way to make it work is to embed (or pass through argument) the original `ENTRYPOINT` command in the `delayed_start.sh`
 ```sh
-docker run -e DEBUG=true -e SERVICE_PORT=27017 -p 8085:8085 --link mongo-service -d mongo-example
+docker run -e DEBUG_DELAYED_START=true -e SERVICE_PORT=27017 -p 8085:8085 --link mongo-service -d mongo-example
 ```
 or
 * run the cluster
@@ -87,9 +87,10 @@ the error
 ```
 indicate the problem with inter container networking
 
-Alternatively run with `DEBUG` enabled
+Alternatively run with `DEBUG_DELAED_START` enabled
 ```sh
-docker run -e DEBUG=true -e SERVICE_PORT=27017 -p 8085:8085 --link mongo-service -d mongo-example
+docker run -e DEBUG_DELAYED_START=true -e SERVICE_PORT=27017 -p 8085:8085 --link mongo-service -d mongo-example
+
 ```
 and once started inspec the log file:
 ```sh
@@ -149,7 +150,6 @@ docker container ls -a | grep mongo | awk '{print $1}' |xargs -IX docker contain
 docker container prune -f
 docker image prune -f
 docker image rm mongo-example
-
 ```
 when rebuilding the application, force the application image recycle (name is assigned by docker-compose)
 ```sh

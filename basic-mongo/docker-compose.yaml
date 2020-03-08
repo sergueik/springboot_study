@@ -5,6 +5,8 @@ services:
     environment:
       SERVICE_PORT: 27017
       SERVICE_HOST: 'mongo-service'
+      DEBUG_DELAYED_START: 'true'
+      # NOTE: needs to be stringified to prevent invalid compose file error 
     build:
       context: .
       dockerfile: Dockerfile
