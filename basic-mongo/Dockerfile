@@ -3,9 +3,5 @@
 FROM openjdk:8-jre-alpine3.9
 ARG app_jar="example.basic-mongo-app.jar"
 ADD "target/${app_jar}" app.jar
-COPY delayed_start.sh delayed_start.sh
 EXPOSE 8085
-ENTRYPOINT ["sh", "/delayed_start.sh"]
-# NOTE: cannot use CMD and vanilla ENTRYPOINT
-# CMD delayed_start.sh
-# ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh",  "-c", "echo \"Try service on $SERVICE_HOST $SERVICE_PORT\";while !( nc -z $SERVICE_HOST $SERVICE_PORT ) ; do echo \"Wait for service on $SERVICE_HOST $SERVICE_PORT\";sleep 10;  done ; java -jar app.jar"]

@@ -49,7 +49,7 @@ the shell script will be silently skipped having no effect on blocking the
 `ENRYPOINT` command until `SERVICE_PORT` is available  on the `SERVICE_HOST` node. 
 The only way to make it work is to embed (or pass through argument) the original `ENTRYPOINT` command in the `delayed_start.sh`
 ```sh
-docker run -e DEBUG_DELAYED_START=true -e SERVICE_PORT=27017 -p 8085:8085 --link mongo-service -d mongo-example
+docker run -e DEBUG_DELAYED_START=true -e SERVICE_PORT=27017 -e SERVICE_HOST=mongo-service -p 8085:8085 --link mongo-service -d mongo-example
 ```
 ```sh
 docker container ls | grep mongo-example | awk '{print $1}' |xargs -IX docker attach X
@@ -189,6 +189,10 @@ when rebuilding the application, force the application image recycle (name is as
 docker image rm 'basic-mongo_app'
 ```
 
+### Full Cleanup
+```
+docker image ls | grep  mongo | awk '{print $3}' |xargs -IX docker image rm X -f 
+```
 ### See Also
   * [original post](https://qna.habr.com/q/714443)(in Russian)
   * [custom code to sync wait for lagging containers](https://qna.habr.com/q/726237)(also in Russian, not considered the answer acceptable possibly too complex
