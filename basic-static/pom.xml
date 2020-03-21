@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>static_page</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>static_page</name>
   <description>Springboot static page Demo project</description>
@@ -18,7 +18,6 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
-    <commons-configuration.version>1.10</commons-configuration.version>
   </properties>
   <dependencies>
     <dependency>
@@ -30,6 +29,13 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+<dependency>
+     <groupId>org.owasp.antisamy</groupId>
+    <artifactId>antisamy</artifactId>
+    <version>1.5.9</version>
+
+</dependency>
+
   </dependencies>
   <build>
     <plugins>
