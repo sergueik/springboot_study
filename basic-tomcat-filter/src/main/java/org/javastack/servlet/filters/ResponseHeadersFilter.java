@@ -15,13 +15,19 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 public final class ResponseHeadersFilter implements Filter {
+
 	private List<Header> earlyHeaders = null;
 	private List<Header> lateHeaders = null;
+	private final boolean debug = true;
 
 	@Override
 	public void init(final FilterConfig filterConfig) throws ServletException {
-		final List<Header> earlyHeaders = new ArrayList<Header>();
-		final List<Header> lateHeaders = new ArrayList<Header>();
+
+		if (debug) {
+			System.err.println("init");
+		}
+		final List<Header> earlyHeaders = new ArrayList<>();
+		final List<Header> lateHeaders = new ArrayList<>();
 		final Enumeration<String> e = filterConfig.getInitParameterNames();
 		while (e.hasMoreElements()) {
 			final String name = e.nextElement();
@@ -87,6 +93,9 @@ public final class ResponseHeadersFilter implements Filter {
 
 	@Override
 	public void destroy() {
+		if (debug) {
+			System.err.println("destroy");
+		}
 	}
 
 	private static enum TAG {
