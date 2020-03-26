@@ -1,9 +1,10 @@
-package org.javastack.servlet.filters;
+package example;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.servlet.Filter;
@@ -18,31 +19,44 @@ public final class ResponseHeadersFilter implements Filter {
 
 	private List<Header> earlyHeaders = null;
 	private List<Header> lateHeaders = null;
-	private final boolean debug = true;
+	private final boolean debug = false;
 
 	@Override
 	public void init(final FilterConfig filterConfig) throws ServletException {
 
-		if (debug) {
-			System.err.println("init");
-		}
 		final List<Header> earlyHeaders = new ArrayList<>();
 		final List<Header> lateHeaders = new ArrayList<>();
-		final Enumeration<String> e = filterConfig.getInitParameterNames();
-		while (e.hasMoreElements()) {
-			final String name = e.nextElement();
-			final String[] nt = name.split(":");
-			final String value = filterConfig.getInitParameter(name);
-			final TAG tag = ((nt.length < 2) ? TAG.SET : TAG.getTag(nt[1]));
-			final TYPE type = ((nt.length < 3) ? TYPE.EARLY : TYPE.getType(nt[2]));
-			if (type == TYPE.LATE) {
-				lateHeaders.add(new Header(nt[0], tag, value));
-			} else {
-				earlyHeaders.add(new Header(nt[0], tag, value));
+		final Enumeration<String> initParameterNames = filterConfig
+				.getInitParameterNames();
+		if (initParameterNames != null) {
+			while (initParameterNames.hasMoreElements()) {
+				final String initParameterName = initParameterNames.nextElement();
+				final String[] nt = initParameterName.split(":");
+				final String value = filterConfig.getInitParameter(initParameterName);
+				final TAG tag = ((nt.length < 2) ? TAG.SET : TAG.getTag(nt[1]));
+				final TYPE type = ((nt.length < 3) ? TYPE.EARLY : TYPE.getType(nt[2]));
+				if (type == TYPE.LATE) {
+					lateHeaders.add(new Header(nt[0], tag, value));
+				} else {
+					earlyHeaders.add(new Header(nt[0], tag, value));
+				}
 			}
 		}
 		this.earlyHeaders = Collections.unmodifiableList(earlyHeaders);
 		this.lateHeaders = Collections.unmodifiableList(lateHeaders);
+	}
+
+	// based on:
+	// http://www.java2s.com/example/java-src/pkg/info/magnolia/cms/util/servletutil-c19c6.html
+	public static LinkedHashMap<String, String> initParametersToMap(
+			FilterConfig config) {
+		LinkedHashMap<String, String> initParameters = new LinkedHashMap<>();
+		Enumeration<String> parameterNames = config.getInitParameterNames();
+		while (parameterNames.hasMoreElements()) {
+			String parameterName = (String) parameterNames.nextElement();
+			initParameters.put(parameterName, config.getInitParameter(parameterName));
+		}
+		return initParameters;
 	}
 
 	@Override
@@ -52,10 +66,16 @@ public final class ResponseHeadersFilter implements Filter {
 		if (response instanceof HttpServletResponse) {
 			final HttpServletResponse res = ((HttpServletResponse) response);
 			for (final Header e : earlyHeaders) {
+				if (debug) {
+					System.err.println("Processing header: " + e.name);
+				}
 				processHeader(res, e);
 			}
 			chain.doFilter(request, response);
 			for (final Header e : lateHeaders) {
+				if (debug) {
+					System.err.println("Processing header: " + e.name);
+				}
 				processHeader(res, e);
 			}
 		} else {

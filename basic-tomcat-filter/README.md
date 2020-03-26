@@ -1,6 +1,6 @@
 ### Info
 
-This directory contins a replica of the project  [](https://github.com/ggrandes/headers-servlet-filter)
+This directory contins a replica of the [Headers Servlet Filter](https://github.com/ggrandes/headers-servlet-filter) project
 
 It is used with Docker basic tomcat image - the build places the filter jar into catalina lib and updates the `web.xml` then runs the test
 
@@ -57,44 +57,34 @@ docker cp $CONTAINER:/opt/tomcat/conf/web.xml .
 * modify the `web.xml` (manually  - automation is work in prorgess)
 
 ```sh
-xmllint --xpath '//*[local-name()="filter-name"  and text() = "ResponseHeadersFiltezr"]' web.xml
+xmllint --xpath '//*[local-name()="filter-name"  and text() = "responseHeadersFiltezr"]' web.xml
 ```
 will respond
 
 ```
 XPath set is empty
 ```
-```
-xmllint --xpath '//*[local-name()="filter-name" or local-name()="filter-mapping"][text() = "ResponseHeadersFilter"]/..' web.xml
+* Add filter configuration
+```sh
+python modify_web_xml.py web.xml new.xml
 ```
 
+```sh
+xmllint --xpath '//*[local-name()="filter-name" or local-name()="filter-mapping"][text() = "responseHeadersFilter"]/..' new.xml
+```
 
 ```xml
 <filter>
-    <filter-name>ResponseHeadersFilter</filter-name>
-    <filter-class>org.javastack.servlet.filters.ResponseHeadersFilter</filter-class>
-    <!-- headers are set, replacing any previous header with his name -->
-    <!-- Cache Control / Expiration -->
-    <init-param>
-        <param-name>Expires</param-name>
-        <param-value>0</param-value>
-    </init-param>
-    <init-param>
-        <param-name>Cache-Control</param-name>
-        <param-value>no-cache, no-store, must-revalidate, max-age=0</param-value>
-    </init-param>
-    <!-- SSL/TLS Security -->
-    <init-param>
-        <param-name>Strict-Transport-Security</param-name>
-        <param-value>max-age=15638400</param-value>
-    </init-param>
-    <init-param>
-        <param-name>Public-Key-Pins</param-name>
-        <param-value>pin-sha256="base64+primary=="; pin-sha256="b64+backup=="; max-age=604800</param-value>
-    </init-param>
-</filter><filter-mapping>
-    <filter-name>ResponseHeadersFilter</filter-name>
-    <url-pattern>/*</url-pattern>
+  <filter-name>responseHeadersFilter</filter-name>
+  <filter-class>example.ResponseHeadersFilter</filter-class>
+  <init-param>
+    <param-name>Expires</param-name>
+    <param-value>0</param-value>
+  </init-param>
+</filter>
+  <filter-mapping>
+  <filter-name>responseHeadersFilter</filter-name>
+  <url-pattern>/*</url-pattern>
 </filter-mapping>
 ```
 * (re)build the image and run
@@ -110,7 +100,7 @@ ps ax | grep org.apache.catalina.startup.Bootstrap
     1 root :05 /opt/jdk/bin/java -Djava.util.logging.config.file=/opt/tomcat/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -classpath /opt/tomcat/bin/bootstrap.jar:/opt/tomcat/bin/tomcat-juli.jar -Dcatalina.base=/opt/tomcat -Dcatalina.home=/opt/tomcat -Djava.io.tmpdir=/opt/tomcat/temp org.apache.catalina.startup.Bootstrap start
 ```
 
-Manual add a dummy war:
+Manually deploy a dummy war (may choose to deploy a real application):
 ```show
 pushd webapps
 mvn clean package
@@ -144,11 +134,11 @@ docker image rm -f $NAME; docker image prune -f
 ```
 ### See  Also
 
-  * `davidcaste/alpine-tomcat` [Dockerfile]https://github.com/davidcaste/docker-alpine-tomcat/blob/master/tomcat8/Dockerfile.jre8
+  * `davidcaste/alpine-tomcat` [Dockerfile](https://github.com/davidcaste/docker-alpine-tomcat/blob/master/tomcat8/Dockerfile.jre8)
   * https://www.journaldev.com/1933/java-servlet-filter-example-tutorial
   * http://www.avajava.com/tutorials/lessons/what-is-a-filter-and-how-do-i-use-it.html%3Fpage%3D2?page=1
   * https://www.moreofless.co.uk/static-content-web-pages-images-tomcat-outside-war/
-
+  * [dummy catalina war](https://github.com/deepak2717/TomcatDockerWar)  project
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
