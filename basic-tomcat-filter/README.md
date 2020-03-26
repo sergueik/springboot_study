@@ -40,16 +40,6 @@ Date: Wed, 25 Mar 2020 22:32:02 GMT
 mvn clean package
 ```
 
-* build image
-```sh
-export NAME='example-tomcat-filter'
-export CONTAINER=$(docker container ls | grep $NAME| awk '{print $1}')
-```
-
-```sh
-docker build -t $NAME -f Dockerfile .
-docker run -p 8080:8080 -d -t $NAME
-```
 * collect vanilla `web.xml` from inside the image:
 ```
 docker cp $CONTAINER:/opt/tomcat/conf/web.xml .
@@ -61,18 +51,18 @@ xmllint --xpath '//*[local-name()="filter-name"  and text() = "responseHeadersFi
 ```
 will respond
 
-```
+```sh
 XPath set is empty
 ```
 * Add filter configuration
 ```sh
 python modify_web_xml.py web.xml new.xml
 ```
-
+* confirm the configuration
 ```sh
 xmllint --xpath '//*[local-name()="filter-name" or local-name()="filter-mapping"][text() = "responseHeadersFilter"]/..' new.xml
 ```
-
+it will print the injected XML (it will be whitespace-colapsed)
 ```xml
 <filter>
   <filter-name>responseHeadersFilter</filter-name>
@@ -87,27 +77,28 @@ xmllint --xpath '//*[local-name()="filter-name" or local-name()="filter-mapping"
   <url-pattern>/*</url-pattern>
 </filter-mapping>
 ```
-* (re)build the image and run
+* build image
+```sh
+export NAME='example-tomcat-filter'
+export CONTAINER=$(docker container ls | grep $NAME| awk '{print $1}')
+```
 
 ```sh
-docker exec -it $CONTAINER sh
-```
-in the instance
-```
-pgrep -l java
-1 /opt/jdk/bin/java
-ps ax | grep org.apache.catalina.startup.Bootstrap
-    1 root :05 /opt/jdk/bin/java -Djava.util.logging.config.file=/opt/tomcat/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -classpath /opt/tomcat/bin/bootstrap.jar:/opt/tomcat/bin/tomcat-juli.jar -Dcatalina.base=/opt/tomcat -Dcatalina.home=/opt/tomcat -Djava.io.tmpdir=/opt/tomcat/temp org.apache.catalina.startup.Bootstrap start
+docker build -t $NAME -f Dockerfile .
+docker run -p 8080:8080 -d -t $NAME
 ```
 
-Manually deploy a dummy war (may choose to deploy a real application):
+Alternatively one can run Java class on the instance injecting the filter class XML servlet configuration into the tomcat `web.xml` during the Docker build (work in progress).
+
+* Manually deploy a dummy war (may choose to deploy a real application):
 ```show
 pushd webapps
 mvn clean package
+popd
 ```
 
 ```sh
-docker cp target/dummy.war $CONTAINER:/opt/tomcat/webapps/
+docker cp webapp/starget/dummy.war $CONTAINER:/opt/tomcat/webapps/
 ```
 
 ```
@@ -126,6 +117,22 @@ Content-Type: text/html;charset=ISO-8859-1
 Transfer-Encoding: chunked
 Date: Wed, 25 Mar 2020 22:32:10 GMT
 ```
+#### Debugging
+
+* (re)build the image and run
+```sh
+export NAME='example-tomcat-filter'
+export CONTAINER=$(docker container ls | grep $NAME| awk '{print $1}')
+docker exec -it $CONTAINER sh
+```
+in the instance
+```
+pgrep -l java
+1 /opt/jdk/bin/java
+ps ax | grep org.apache.catalina.startup.Bootstrap
+    1 root :05 /opt/jdk/bin/java -Djava.util.logging.config.file=/opt/tomcat/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -classpath /opt/tomcat/bin/bootstrap.jar:/opt/tomcat/bin/tomcat-juli.jar -Dcatalina.base=/opt/tomcat -Dcatalina.home=/opt/tomcat -Djava.io.tmpdir=/opt/tomcat/temp org.apache.catalina.startup.Bootstrap start
+```
+
 
 * cleanup
 ```
