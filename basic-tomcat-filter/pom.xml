@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.javastack</groupId>
-  <artifactId>headers-servlet-filter</artifactId>
-  <version>0.2.0</version>
+  <groupId>example</groupId>
+  <artifactId>headers-filter</artifactId>
+  <version>0.3.0</version>
+  <name>${project.groupId}:${project.artifactId}</name>
   <description>HTTP-Header Servlet Filter</description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -12,7 +13,6 @@
     <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <dependencies>
-    <!-- Servlets -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
@@ -20,14 +20,6 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  <name>${project.groupId}:${project.artifactId}</name>
-  <url>https://github.com/ggrandes/${project.artifactId}</url>
-  <licenses>
-    <license>
-      <name>The Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-    </license>
-  </licenses>
   <build>
     <plugins>
       <plugin>
@@ -43,7 +35,7 @@
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.3.1</version>
         <configuration>
-          <finalName>${project.artifactId}-${project.version}</finalName>
+          <finalName>${finalName}</finalName>
           <forceCreation>true</forceCreation>
           <archive>
             <manifestEntries>

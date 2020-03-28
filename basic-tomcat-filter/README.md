@@ -98,7 +98,7 @@ popd
 ```
 
 ```sh
-docker cp webapp/starget/dummy.war $CONTAINER:/opt/tomcat/webapps/
+docker cp webapp/target/dummy.war $CONTAINER:/opt/tomcat/webapps/
 ```
 
 ```
@@ -117,7 +117,31 @@ Content-Type: text/html;charset=ISO-8859-1
 Transfer-Encoding: chunked
 Date: Wed, 25 Mar 2020 22:32:10 GMT
 ```
-#### Debugging
+
+### Building and running Setup Tool
+
+With the help of [setup tool](https://github.com/sergueik/selenium_java/tree/master/xslt-example) 
+```sh
+setuptool/pom.xml
+setuptool/src/main/java/example
+setuptool/src/main/java/example/CommandLineParser.java
+setuptool/src/main/java/example/MergeDocumentFragments.java
+setuptool/src/main/resources/fragment.xml
+```
+one may avoid copying of `web.xml` from / to the image and modify it in place:
+```sh
+pushd setuptool
+mvn clean package
+popd
+```
+```cmd
+ARG setuptool_jar="example.setuptool.jar"
+ADD "setuptool/target/${setuptool_jar}" /tmp
+CMD java -cp /tmp/${setuptool_jar} example.MergeDocumentFragments -in /opt/tomcat/conf/web.xmll -out /tmp/new.xml
+CMD cp /tmp/new.xml /opt/tomcat/conf/web.xml
+```
+Note: for removal of the filter configuration one need a separate command, availale in the original setuptool project directory, not covered in this project.
+### Debugging
 
 * (re)build the image and run
 ```sh
