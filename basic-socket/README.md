@@ -1,0 +1,20 @@
+### Info
+
+This directory contins a replica of the Java native [socket library](https://github.com/jnr/jnr-unixsocket)
+project test code
+added as a maven dependency [maven repository](https://mvnrepository.com/artifact/com.github.jnr/jnr-unixsocket)
+
+It is used with Docker basic image - the build  exercises socket sharing.
+
+### See  Also
+ * basics of [user id changes](https://www.jujens.eu/posts/en/2017/Feb/15/docker-unix-socket/) to make socket file available on both host and container(s)
+ * Java socket library [source](https://github.com/mcfunley/juds)
+ * Java socket library [maven repo](https://mvnrepository.com/artifact/uk.co.caprica/juds)
+ * another Java [socket library](https://github.com/jnr/jnr-unixsocket) and [maven repository](https://mvnrepository.com/artifact/com.github.jnr/jnr-unixsocket)
+ * yet another Java [socket library](https://github.com/kohlschutter/junixsocket) and [maven artifacts](https://mvnrepository.com/artifact/com.kohlschutter.junixsocket)
+ * anothed explanation of constructing and using [unix socket in the container](https://medium.com/better-programming/about-var-run-docker-sock-3bfd276e12fd)
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
+
