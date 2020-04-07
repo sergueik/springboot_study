@@ -6,6 +6,7 @@ import jnr.unixsocket.UnixSocketChannel;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -28,7 +29,12 @@ import static org.junit.Assert.fail;
 
 public class BasicFunctionalityTest {
 	private static final String DATA = "message";
-	private final int timeout = 10000;
+	// private static final boolean useExternalClient =
+	// Boolean.getBoolean(System.getenv("EXTERNALCLIENT"));
+	private static final boolean useExternalClient = (System.getenv("EXTERNAL_CLIENT") != null
+			|| System.getProperty("useExternalClient", null) != null);
+
+	private final int timeout = 120000;
 	private UnixSocketPair socketPair;
 	private Thread server;
 	private volatile Exception serverException;
@@ -44,35 +50,10 @@ public class BasicFunctionalityTest {
 	}
 
 	@Test
-	public void doubleBindTest() throws Exception {
-		UnixSocketChannel ch = UnixSocketChannel.open().bind(null);
-		try {
-			ch.bind(null);
-			fail("Should have thrown AlreadyBoundException");
-		} catch (AlreadyBoundException abx) {
-			try {
-				ch.socket().bind(null);
-				fail("Should have thrown SocketException");
-			} catch (SocketException sx) {
-				assertEquals("exception message", sx.getMessage(), "already bound");
-			}
-		}
-	}
-
-	@Test
-	public void pairTest() throws Exception {
-		UnixSocketChannel[] sp = UnixSocketChannel.pair();
-		for (final UnixSocketChannel ch : sp) {
-			assertTrue("Channel is connected", ch.isConnected());
-			// assertTrue("Channel is bound", ch.isBound());
-			assertFalse("Channel's socket is not closed", ch.socket().isClosed());
-		}
-	}
-
-	@Test
 	public void basicOperation() throws Exception {
 		// Arrange
 		// server logic
+		System.err.println("useExternalClient: " + useExternalClient);
 		final UnixServerSocketChannel channel = UnixServerSocketChannel.open();
 		final Selector sel = NativeSelectorProvider.getInstance().openSelector();
 		channel.configureBlocking(false);
@@ -103,29 +84,40 @@ public class BasicFunctionalityTest {
 			}
 		};
 
+		if (useExternalClient) {
+			server.setDaemon(true);
+		}
 		server.start();
+		if (useExternalClient) {
+			try {
+				System.err.println("Sleep: " + timeout + " m/sec");
+				Thread.sleep(timeout);
+			} catch (InterruptedException e) {
+			}
+		} else {
+			// client logic
+			UnixSocketChannel channel2 = UnixSocketChannel.open(socketPair.socketAddress());
 
-		// client logic
-		UnixSocketChannel channel2 = UnixSocketChannel.open(socketPair.socketAddress());
+			assertEquals(socketPair.socketAddress(), channel2.getRemoteSocketAddress());
 
-		assertEquals(socketPair.socketAddress(), channel2.getRemoteSocketAddress());
+			Channels.newOutputStream(channel2).write(DATA.getBytes(UTF_8));
+			System.err.println("Sent: " + DATA);
 
-		Channels.newOutputStream(channel2).write(DATA.getBytes(UTF_8));
-		System.err.println("Sent: " + DATA);
+			InputStreamReader r = new InputStreamReader(Channels.newInputStream(channel2), UTF_8);
+			CharBuffer result = CharBuffer.allocate(1024);
+			r.read(result);
 
-		InputStreamReader r = new InputStreamReader(Channels.newInputStream(channel2), UTF_8);
-		CharBuffer result = CharBuffer.allocate(1024);
-		r.read(result);
+			assertEquals(DATA.length(), result.position());
 
-		assertEquals(DATA.length(), result.position());
+			result.flip();
 
-		result.flip();
+			assertEquals(DATA, result.toString());
+			System.err.println("Received: " + result.rewind());
 
-		assertEquals(DATA, result.toString());
-		System.err.println("Received: " + result.rewind());
-
-		if (serverException != null)
+		}
+		if (serverException != null) {
 			throw serverException;
+		}
 	}
 
 	static interface Actor {
@@ -146,12 +138,9 @@ public class BasicFunctionalityTest {
 				UnixSocketChannel client = channel.accept();
 
 				if (client == null) {
-					// nonblocking result
 					return false;
 				}
 				assertEquals(socketPair.socketAddress(), client.getLocalSocketAddress());
-				// assertEquals("", client.getRemoteSocketAddress().getStruct().getPath());
-				// method not visible
 				client.configureBlocking(false);
 				client.register(selector, SelectionKey.OP_READ, new ClientActor(client));
 
@@ -173,18 +162,12 @@ public class BasicFunctionalityTest {
 			try {
 				ByteBuffer buf = ByteBuffer.allocate(1024);
 				int n = channel.read(buf);
-				// assertEquals("", channel.getRemoteSocketAddress().getStruct().getPath());
-				// method not visible
-				assertEquals(DATA.length(), n);
 
+				// assertEquals(DATA.length(), n);
+				// message size assert not useful when communicating with socat
 				if (n > 0) {
 					buf.flip();
 					System.err.println("Processed: " + new String(buf.array(), "UTF-8"));
-					try {
-						System.err.println("Sleep: " + timeout + " m/sec");
-						Thread.sleep(timeout);
-					} catch (InterruptedException e) {
-					}
 					channel.write(buf);
 					return true;
 				} else if (n < 0) {

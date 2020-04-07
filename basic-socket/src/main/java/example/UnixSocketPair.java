@@ -19,7 +19,7 @@ class UnixSocketPair extends TestSocketPair {
 
 	private final File file;
 	private final UnixSocketAddress address;
-	private final String fileName = "/tmp/xxx/test" + ((int) (Math.random() * 100)) + ".sock";
+	private final String fileName = "/tmp/xxx/" + "test" + ((int) (Math.random() * 100)) + ".sock";
 	private UnixServerSocketChannel serverSocketChannel;
 	private UnixSocketChannel serverChannel;
 	private UnixSocketChannel clientChannel;
@@ -30,12 +30,6 @@ class UnixSocketPair extends TestSocketPair {
 		address = new UnixSocketAddress(file);
 		serverSocketChannel = UnixServerSocketChannel.open();
 		System.err.println("Opened socket: " + fileName);
-		try {
-			System.err.println("Sleep: " + timeout + " m/sec");
-			Thread.sleep(timeout);
-		} catch (InterruptedException e) {
-		}
-
 	}
 
 	@Override
