@@ -10,7 +10,7 @@ import jnr.unixsocket.UnixSocketAddress;
 import jnr.unixsocket.UnixSocketChannel;
 
 class UnixSocketPair extends TestSocketPair {
-	static String socketDir = "/tmp/xxx";
+	static String socketDir = getEnv("socket_dir", "/tmp");
 	static final Factory FACTORY = new Factory() {
 		@Override
 		TestSocketPair createUnconnected() throws IOException {
@@ -79,5 +79,14 @@ class UnixSocketPair extends TestSocketPair {
 		closeQuietly(serverChannel);
 		closeQuietly(clientChannel);
 		file.delete();
+	}
+
+	public static String getEnv(String name, String defaultValue) {
+		String value = System.getenv(name);
+		if (value == null || value.length() == 0) {
+			value = defaultValue;
+		}
+
+		return value;
 	}
 }

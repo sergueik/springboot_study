@@ -44,7 +44,7 @@ plase into the container
 ```sh
 export IMAGE='basic-socket'
 export NAME='example-socket'
-docker build -t $IMAGE -f Dockerfile .
+docker build -t $IMAGE -f Dockerfile --build-arg "socket_dir=/tmp" .
 docker run --name $NAME -d $IMAGE
 ```
 
@@ -76,14 +76,13 @@ does not handle messages beyong the very first one.
 mount the volume across
 
 ```sh
-mkdir /tmp/xxx
-rm -f /tmp/xxx/*
+mkdir /tmp/socket
+rm -f /tmp/socket/*
 
 export IMAGE='basic-socket'
 export NAME='example-socket'
-docker build -t $IMAGE -f Dockerfile .
-
-docker run --name $NAME --volume "/tmp/xxx/:/tmp/xxx/:rw" -d $IMAGE
+docker build -t $IMAGE -f Dockerfile --build-arg "socket_dir=/tmp/unused" .
+docker run --name $NAME -e "socket_dir=/tmp/socket" --volume "/tmp/socket/:/tmp/socket/:rw" -d $IMAGE
 ```
 to avoid the ownership tweaks one can simply interact with socket file in mounted volume as root:
 
@@ -91,7 +90,7 @@ to avoid the ownership tweaks one can simply interact with socket file in mounte
 sudo -s
 ```
 ```sh
-echo -e "message\n" | socat unix-connect:/tmp/xxx/test26.sock STDIO
+echo -e "message\n" | socat unix-connect:/tmp/socket/test61.sock STDIO
 ```
 thiis will respond with
 ```sh
