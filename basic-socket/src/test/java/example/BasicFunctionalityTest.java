@@ -1,4 +1,3 @@
-
 package example;
 
 import jnr.enxio.channels.NativeSelectorProvider;
@@ -28,8 +27,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class BasicFunctionalityTest {
-	private static final String DATA = "blah blah";
-
+	private static final String DATA = "message";
+	private final int timeout = 10000;
 	private UnixSocketPair socketPair;
 	private Thread server;
 	private volatile Exception serverException;
@@ -72,6 +71,7 @@ public class BasicFunctionalityTest {
 
 	@Test
 	public void basicOperation() throws Exception {
+		// Arrange
 		// server logic
 		final UnixServerSocketChannel channel = UnixServerSocketChannel.open();
 		final Selector sel = NativeSelectorProvider.getInstance().openSelector();
@@ -79,8 +79,6 @@ public class BasicFunctionalityTest {
 		channel.socket().bind(socketPair.socketAddress());
 		channel.register(sel, SelectionKey.OP_ACCEPT, new ServerActor(channel, sel));
 
-		// TODO: This is ugly but simple enough. Many failures on server side will cause
-		// client to hang.
 		server = new Thread("server side") {
 			public void run() {
 				try {
@@ -113,6 +111,7 @@ public class BasicFunctionalityTest {
 		assertEquals(socketPair.socketAddress(), channel2.getRemoteSocketAddress());
 
 		Channels.newOutputStream(channel2).write(DATA.getBytes(UTF_8));
+		System.err.println("Sent: " + DATA);
 
 		InputStreamReader r = new InputStreamReader(Channels.newInputStream(channel2), UTF_8);
 		CharBuffer result = CharBuffer.allocate(1024);
@@ -123,6 +122,7 @@ public class BasicFunctionalityTest {
 		result.flip();
 
 		assertEquals(DATA, result.toString());
+		System.err.println("Received: " + result.rewind());
 
 		if (serverException != null)
 			throw serverException;
@@ -179,6 +179,12 @@ public class BasicFunctionalityTest {
 
 				if (n > 0) {
 					buf.flip();
+					System.err.println("Processed: " + new String(buf.array(), "UTF-8"));
+					try {
+						System.err.println("Sleep: " + timeout + " m/sec");
+						Thread.sleep(timeout);
+					} catch (InterruptedException e) {
+					}
 					channel.write(buf);
 					return true;
 				} else if (n < 0) {

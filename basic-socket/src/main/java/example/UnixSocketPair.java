@@ -19,15 +19,23 @@ class UnixSocketPair extends TestSocketPair {
 
 	private final File file;
 	private final UnixSocketAddress address;
-
+	private final String fileName = "/tmp/xxx/test" + ((int) (Math.random() * 100)) + ".sock";
 	private UnixServerSocketChannel serverSocketChannel;
 	private UnixSocketChannel serverChannel;
 	private UnixSocketChannel clientChannel;
+	private final int timeout = 10000;
 
 	UnixSocketPair() throws IOException {
-		file = new File("/tmp/jnr-unixsocket-test" + UUID.randomUUID() + ".sock");
+		file = new File(fileName);
 		address = new UnixSocketAddress(file);
 		serverSocketChannel = UnixServerSocketChannel.open();
+		System.err.println("Opened socket: " + fileName);
+		try {
+			System.err.println("Sleep: " + timeout + " m/sec");
+			Thread.sleep(timeout);
+		} catch (InterruptedException e) {
+		}
+
 	}
 
 	@Override
