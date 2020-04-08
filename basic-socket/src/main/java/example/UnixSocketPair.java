@@ -10,6 +10,7 @@ import jnr.unixsocket.UnixSocketAddress;
 import jnr.unixsocket.UnixSocketChannel;
 
 class UnixSocketPair extends TestSocketPair {
+	static String socketDir = getEnv("socket_dir", "/tmp");
 	static final Factory FACTORY = new Factory() {
 		@Override
 		TestSocketPair createUnconnected() throws IOException {
@@ -19,7 +20,7 @@ class UnixSocketPair extends TestSocketPair {
 
 	private final File file;
 	private final UnixSocketAddress address;
-	private final String fileName = "/tmp/xxx/" + "test" + ((int) (Math.random() * 100)) + ".sock";
+	private final String fileName = socketDir + "/" + "test" + ((int) (Math.random() * 100)) + ".sock";
 	private UnixServerSocketChannel serverSocketChannel;
 	private UnixSocketChannel serverChannel;
 	private UnixSocketChannel clientChannel;
@@ -78,5 +79,14 @@ class UnixSocketPair extends TestSocketPair {
 		closeQuietly(serverChannel);
 		closeQuietly(clientChannel);
 		file.delete();
+	}
+
+	public static String getEnv(String name, String defaultValue) {
+		String value = System.getenv(name);
+		if (value == null || value.length() == 0) {
+			value = defaultValue;
+		}
+
+		return value;
 	}
 }

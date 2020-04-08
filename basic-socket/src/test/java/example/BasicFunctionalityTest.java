@@ -31,9 +31,11 @@ public class BasicFunctionalityTest {
 	private static final String DATA = "message";
 	// private static final boolean useExternalClient =
 	// Boolean.getBoolean(System.getenv("EXTERNALCLIENT"));
-	private static final boolean useExternalClient = (System.getenv("EXTERNAL_CLIENT") != null
-			|| System.getProperty("useExternalClient", null) != null);
 
+	// private static final boolean useExternalClient =
+	// (System.getenv("EXTERNAL_CLIENT") != null
+	// || System.getProperty("useExternalClient", null) != "");
+	private static final boolean useExternalClient = false;
 	private final int timeout = 120000;
 	private UnixSocketPair socketPair;
 	private Thread server;
