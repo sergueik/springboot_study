@@ -114,6 +114,7 @@ docker image prune -f ;
  * yet another Java [socket library](https://github.com/kohlschutter/junixsocket) and [maven artifacts](https://mvnrepository.com/artifact/com.kohlschutter.junixsocket)
  * anothed explanation of constructing and using [unix socket in the container](https://medium.com/better-programming/about-var-run-docker-sock-3bfd276e12fd)
  * https://superuser.com/questions/834307/can-curl-send-requests-t:qo-sockets 
+ * JNA Adaptation of the JUnixSocket projet for simple [Unix Domain Socket](https://github.com/xderoche/JNAUnixSocket) - not published in [maven central](https://mvnrepository.com/search?q=JNAUnixSocket)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
