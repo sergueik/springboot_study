@@ -51,7 +51,14 @@ public class EnvironmentPrinter {
 	}
 
 	public static void main(String[] args) {
-		(new EnvironmentPrinter()).printEnvironment();
-		(new EnvironmentPrinter()).printProperties();
+		if (args.length == 0) {
+			(new EnvironmentPrinter()).printEnvironment();
+			(new EnvironmentPrinter()).printProperties();
+		} else {
+			String key = args[0];
+			System.err.println("Environment " + key + " = " + System.getenv(key));
+			System.err.println("Property " + key + " = " + System.getProperty(key));
+
+		}
 	}
 }
