@@ -26,7 +26,7 @@ public class TodoController {
 	@GetMapping("/todo-list/")
 	public List<Todo> list() {
 		Iterable<Todo> todoIterable = todoRepository.findAll();
-		ArrayList<Todo> todoList = new ArrayList<>();
+		List<Todo> todoList = new ArrayList<>();
 		for (Todo todo : todoIterable) {
 			todoList.add(todo);
 		}

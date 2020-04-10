@@ -38,7 +38,7 @@ Empty set (0.00 sec)
 ```
 Will need to create a empty table there:
 ```sh
-CREATE TABLE todo (id INTEGER, name VARCHAR(20), description VARCHAR(20), date DATE); 
+CREATE TABLE todo (id INTEGER PRIMARY KEY, name VARCHAR(20), description VARCHAR(20), date DATE); 
 ```
 ```
 Query OK, 0 rows affected (0.44 sec)
@@ -46,11 +46,19 @@ mysql> \q
 ```
 * Build the `todolist-example` Docker image
 ```sh
-docker build -f Dockerfile -t todolist-example .
+export IMAGE='basic-todolist'
+export NAME='todolist-example'
+docker build -t $IMAGE -f Dockerfile .
+docker run --name $NAME --rm -it $IMAGE
 ```
 * Lanch the `todolist-example` backed Docker container
 ```sh
-docker run -p 8086:8086 -e "SERVICE-PORT=3306" --link mysql-server -d todolist-example
+docker run -p 8086:8086  --name $NAME -e "SERVICE-PORT=3306" --link mysql-server -d $IMAGE
+docker logs $NAME
+```
+it will eventually print
+```sh
+Started Main in 21.842 seconds (JVM running for 24.224)
 ```
 
 The attempt to open `http://127.0.0.1:8086/todo-list/` in the browser leads to a unmasked exeption
@@ -67,21 +75,45 @@ SQL [n/a]; nested exception is org.hibernate.exception.SQLGrammarException:
 could not extract ResultSet] with root cause
 java.sql.SQLSyntaxErrorException: Table 'todolist.todo' doesn't exist
 ```
-or
+
+or when
 ```sh
 org.hibernate.HibernateException: The database returned no natively generated identity value
-
 ```
-That iplies the table was not created.
+the `PRIMARY KEY` was not set.
+That implies the table was not created.
 If `http://127.0.0.1:8086/todo-list/`shows
 ```sh
 []
 ```
-this implies it builds as REST not WEB project
+this is normal - route `index.html` still awaits formatting.
+
 If error [](https://stackoverflow.com/questions/49813666/table-dbname-hibernate-sequence-doesnt-exist)
 ```
 java.sql.SQLSyntaxErrorException: Table 'todolist.hibernate_sequence
 ```
-is thrown on insert
+switch from
+`@GeneratedValue(strategy = GenerationType.AUTO)` to	`@GeneratedValue(strategy = GenerationType.IDENTITY)`
+in the model.
+when
+```sh
+java.sql.SQLException: Field 'id' doesn't have a default value
+```
+is thrown on insert, switch from 
+```sh
+CREATE TABLE todo (id INTEGER PRIMARY KEY, name VARCHAR(20), description VARCHAR(20), date DATE); 
+```
+to
+```sh
+CREATE TABLE todo (`ID` int(11) NOT NULL AUTO_INCREMENT, name VARCHAR(20), description VARCHAR(20), date DATE, PRIMARY KEY (`ID`)); 
+```
+
+### Cleanup
+```sh
+docker stop $NAME
+docker container prune -f
+docker image rm $IMAGE
+docker image prune -f
+```
 ### See Also
   * original [post](https://habr.com/ru/post/496386/) (in Russian). 

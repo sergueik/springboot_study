@@ -11,8 +11,8 @@ public class Todo {
 	@Id
 	// https://stackoverflow.com/questions/49813666/table-dbname-hibernate-sequence-doesnt-exist
 	// https://vladmihalcea.com/why-should-not-use-the-auto-jpa-generationtype-with-mysql-and-hibernate/
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	// @GeneratedValue(strategy = GenerationType.IDENTITY)
+	// @GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String name;
 	private String description;

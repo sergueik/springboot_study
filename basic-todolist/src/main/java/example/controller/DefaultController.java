@@ -9,6 +9,7 @@ import example.model.Todo;
 import example.model.TodoRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class DefaultController {
@@ -18,7 +19,7 @@ public class DefaultController {
 	@RequestMapping("/")
 	public String index(Model model) {
 		Iterable<Todo> todoIterable = todoRepository.findAll();
-		ArrayList<Todo> todoList = new ArrayList<>();
+		List<Todo> todoList = new ArrayList<>();
 		for (Todo todo : todoIterable) {
 			todoList.add(todo);
 		}
