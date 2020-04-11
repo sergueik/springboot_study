@@ -51,7 +51,6 @@ OK - Stopped application at context path /demo
 ```
 * start the demo application
 ```sh
-
 curl -u admin:password http://localhost:8080/manager/text/start?path=/demo
 ```
 Check the manager logs
@@ -71,7 +70,13 @@ public void destroy() {
 }
 ```
 not seeing any message in console, nor in `catalina.out`
+### Use Springboot application war packaging
+failing to start in Tomcat:
+```sh
+FAIL - Application at context path /demo could not be started
+FAIL - Encountered exception org.apache.catalina.LifecycleException: Failed to start component [StandardEngine[Catalina].StandardHost[localhost].StandardContext[/demo]]
 
+```
 ### Cleanup
 ```sh
 docker stop $NAME
@@ -82,4 +87,4 @@ docker image rm $IMAGE
 
   * [Guide to Tomcat Manager Application](https://www.baeldung.com/tomcat-manager-app)
   * `HttpServlet`  [life cycle](https://www.mulesoft.com/tcat/tomcat-servlet)
-
+  * [packaging springboot app in war](https://mkyong.com/spring-boot/spring-boot-deploy-war-file-to-tomcat/)
