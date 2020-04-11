@@ -1,7 +1,5 @@
-<!DOCTYPE web-app PUBLIC
- "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
- "http://java.sun.com/dtd/web-app_2_3.dtd" >
-
+<?xml version="1.0"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
   <display-name>demo java web app</display-name>
   <welcome-file-list>
@@ -12,14 +10,21 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
-
   <servlet>
-     <servlet-name>Hello</servlet-name>
-     <servlet-class>Hello</servlet-class>
+    <servlet-name>DemoServlet</servlet-name>
+    <servlet-class>example.DemoServlet</servlet-class>
+    <init-param>
+      <param-name>delay</param-name>
+      <param-value>123456</param-value>
+    </init-param>
   </servlet>
+<!--
+  <listener>
+    <listener-class>example.LoggingListener</listener-class>
+  </listener>
+-->
   <servlet-mapping>
-     <servlet-name>Hello</servlet-name>
-     <url-pattern>/Hello</url-pattern>
+    <servlet-name>DemoServlet</servlet-name>
+    <url-pattern>/Demo</url-pattern>
   </servlet-mapping>
-
 </web-app>

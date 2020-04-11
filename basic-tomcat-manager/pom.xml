@@ -4,10 +4,10 @@
   <groupId>example</groupId>
   <artifactId>demo</artifactId>
   <packaging>war</packaging>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <name>demo web app</name>
   <properties>
-    <java.version>1.8</java.version>
+    <java.version>1.7</java.version>
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
     <junit.version>4.12</junit.version>
     <log4j.version>1.2.17</log4j.version>
@@ -57,8 +57,7 @@
     <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
-        <version>${javax.servlet-api.version}</version>
+        <version>${javax.servlet-api.version}</version>        
     </dependency>
   </dependencies>
 </project>
-
