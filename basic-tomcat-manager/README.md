@@ -88,3 +88,6 @@ docker image rm $IMAGE
   * [Guide to Tomcat Manager Application](https://www.baeldung.com/tomcat-manager-app)
   * `HttpServlet`  [life cycle](https://www.mulesoft.com/tcat/tomcat-servlet)
   * [packaging springboot app in war](https://mkyong.com/spring-boot/spring-boot-deploy-war-file-to-tomcat/)
+  * [tomcat logging](https://tomcat.apache.org/tomcat-8.5-doc/logging.html#Java_logging_API_—_java.util.logging)
+
+
