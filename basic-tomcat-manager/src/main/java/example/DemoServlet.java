@@ -33,15 +33,16 @@ public class DemoServlet extends HttpServlet {
 	}
 
 	@Override
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-// when no Log4j 2 configuration file is found in CLASSPATH, log4j consider itself not properly configured. with default configuration is logging only errors to the console
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// when no Log4j 2 configuration file is found in CLASSPATH, log4j consider
+		// itself not properly configured. with default configuration is logging only
+		// errors to the console
 		logger.error("responding to GET request=" + request);
+		logger.info("responding to GET request=" + request);
 
 		// message = FileUtils.readFileToString(new File(textFile));
 		String html = String.format(
-				"<html><head><title>Demo</title></head>" + "<body>You requested=[%s?%s]"
-						+ "<hr/>" + "%s</body></html>",
+				"<html><head><title>Demo</title></head>" + "<body>You requested=[%s?%s]" + "<hr/>" + "%s</body></html>",
 				request.getRequestURL(), request.getQueryString(), message);
 
 		response.setContentType("text/html");
@@ -49,8 +50,8 @@ public class DemoServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPost(final HttpServletRequest request,
-			final HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(final HttpServletRequest request, final HttpServletResponse response)
+			throws ServletException, IOException {
 		doGet(request, response);
 	}
 }

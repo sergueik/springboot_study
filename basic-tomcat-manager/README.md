@@ -17,19 +17,26 @@ docker run --name $NAME -p 8080:8080 -d $IMAGE
 ```
 connect to just deploued web application
 ```sh
-curl http://127.0.0.1:8080/demo
+curl http://127.0.0.1:8080/demo/Demo
 ```
 will print
 ```sh
 <html>
-<body>
-<div>index page</div>
+<head>
+<title>Demo</title>
+</head><body>You requested=[http://127.0.0.1:8080/demo/Demo?null]
+<hr/>
+opmessage
 </body>
 </html>
+
 ```
 * list applications in manager
 ```sh
 export CONTAINER=$(docker container ls -a| grep $NAME| awk '{print $1}')
+```
+```sh
+docker logs $CONTAINER
 ```
 ```sh
 curl -u admin:password http://localhost:8080/manager/text/list
@@ -81,7 +88,7 @@ FAIL - Encountered exception org.apache.catalina.LifecycleException: Failed to s
 ```
 ### All commands collapsed
 
-* rebuild and repackage container with the war 
+* rebuild and repackage container with the war
 ```sh
 docker stop $CONTAINER
 docker container prune -f
@@ -125,6 +132,61 @@ docker stop $NAME
 docker container prune -f
 docker image rm $IMAGE
 ```
+### TODO:
+
+Still not properly configured logging. With `log4j2.debug` set to `true` logs numwerous attempts to find configuration files
+
+```sh
+TRACE StatusLogger Trying to find [log4j2.xml] using context class loader WebappClassLoader
+  context: demo
+  delegate: false
+----------> Parent Classloader:
+java.net.URLClassLoader@32cd666f
+.
+TRACE StatusLogger Trying to find [log4j2.xml] using WebappClassLoader
+  context: demo
+  delegate: false
+----------> Parent Classloader:
+java.net.URLClassLoader@32cd666f
+ class loader.
+TRACE StatusLogger Trying to find [log4j2.xml] using WebappClassLoader
+  context: demo
+  delegate: false
+----------> Parent Classloader:
+java.net.URLClassLoader@32cd666f
+ class loader.
+TRACE StatusLogger Trying to find [log4j2.xml] using ClassLoader.getSystemResource().
+```
+culminated with
+```sh
+ERROR StatusLogger No Log4j 2 configuration file found.
+Using default configuration (logging only errors to the console),
+or user programmatically provided configurations.
+Set system property 'log4j2.debug' to show Log4j 2
+internal iinitialization loggi
+See https://logging.apache.org/log4j/2.x/manual/configuration.html
+for instructions on how to configure Log4j 2
+```
+the `/opt/tomcat/conf/logging.properties` coming with the base container needs to be removed and not referenced by the launcher:
+```sh
+ /usr/lib/jvm/java-1.7-openjdk/jre/bin/java
+ -Djava.util.logging.config.file=/opt/tomcat/conf/logging.properties
+ -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager
+ -Dlog4j2.debug=true
+ -Dapp.env=staging
+ -Dlog4j.configuration=/opt/tomcat/conf/log4j2.xml
+ -Djdk.tls.ephemeralDHKeySize=2048
+ -Djava.protocol.handler.pkgs=org.apache.catalina.webresources
+ -Dignore.endorsed.dirs=
+ -classpath /opt/tomcat/bin/bootstrap.jar:/opt/tomcat/bin/tomcat-juli.jar
+ -Dcatalina.base=/opt/tomcat
+ -Dcatalina.home=/opt/tomcat
+ -Djava.io.tmpdir=/opt/tomcat/temp
+ org.apache.catalina.startup.Bootstrap start
+```
+```sh
+docker run -e LOGGING_CONFIG="-Djava.util.logging.config.file=\$CATALINA_BASE/conf/log4j2.xml" --name $NAME -p 8080:8080 -d $IMAGE
+```
 ### See Also:
 
   * [Guide to Tomcat Manager Application](https://www.baeldung.com/tomcat-manager-app)
@@ -132,3 +194,4 @@ docker image rm $IMAGE
   * [packaging springboot app in war](https://mkyong.com/spring-boot/spring-boot-deploy-war-file-to-tomcat/)
   * [fixing](https://crunchify.com/java-how-to-configure-log4j-logger-property-correctly/) `ERROR StatusLogger No log4j2 configuration file found. Using default configuration: logging only errors to the console`
   * example project of watching the [ tomcat logging configuration](https://github.com/phoet/tomcat-logging) file
+  * log4j tutorial with [Tomcat](https://laliluna.com/articles/posts/log4j-tutorial.html)
