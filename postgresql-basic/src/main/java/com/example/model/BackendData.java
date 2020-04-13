@@ -1,6 +1,6 @@
 package com.example.model;
 
-public class Rest {
+public class BackendData {
 	private int id;
 	private int rand;
 	private String key, value;

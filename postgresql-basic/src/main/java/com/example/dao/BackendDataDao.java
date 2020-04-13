@@ -1,10 +1,10 @@
-package com.example.service;
+package com.example.dao;
 
 import com.example.model.BackendData;
 
 import java.util.List;
 
-public interface RestService {
+public interface BackendDataDao {
 	List<BackendData> getAll();
 	BackendData getBackendDataById(int id);
 	void addBackendData(BackendData rest);

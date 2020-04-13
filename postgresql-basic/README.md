@@ -36,13 +36,15 @@ mvn -Dmaven.test.skip=true clean spring-boot:run
 ```
 * test 
 ```sh
-curl -X POST -H "Content-Type: application/json" -d '{"key":"example", "value":"data", "rand":123}' http://127.0.0.1:8080/rest
+curl -X POST -H "Content-Type: application/json" -d '{"key":"some example", "value":"some data"}' http://127.0.0.1:8080/rest | jq '.'
 ```
 will respond with
 ```json
 {
-  "id":1,
-  "rand":35
+  "id": 1,
+  "rand": 21,
+  "key": "some example",
+  "value": "some data"
 }
 ```
 and then
@@ -54,7 +56,9 @@ shows
 [
   {
     "id": 1,
-    "rand": 35
+    "rand": 21,
+    "key": "some example",
+    "value": "some data"
   }
 ]
 ```
@@ -68,9 +72,22 @@ example=# select *  from rest;
 ```
 returns
 ```sh
- id |   key   | value | rand 
-----+---------+-------+------
-  1 | example | data  |   35
+ id | key          | value      | rand 
+----+--------------+------------+------
+  1 | some example | some data  |   21
+```
+and
+```sh
+curl -X PUT -H "Content-Type: application/json" -d '{"key":"example", "value":"new data"}' http://127.0.0.1:8080/rest/1 | jq '.'
+```
+will update:
+```json
+{
+  "id": 1,
+  "rand": 12,
+  "key": "example",
+  "value": "new data"
+}
 ```
 ### Run in Docker
 package jar 
@@ -156,6 +173,10 @@ leads to
 ",
   "path": "/rest/"
 }
+```
+### Cleanup
+```sh
+psql -h localhost -p 5432  --username postgres --dbname example --command "drop table rest;"
 ```
 ### See also
 

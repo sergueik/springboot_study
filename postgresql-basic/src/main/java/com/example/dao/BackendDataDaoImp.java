@@ -5,43 +5,44 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.model.Rest;
-import com.example.model.RestMapper;
+import com.example.model.BackendData;
+import com.example.model.BackendDataMapper;
 
 import java.util.List;
 import java.util.Random;
 
 @Transactional
 @Repository
-public class RestDaoImp implements RestDao {
+public class BackendDataDaoImp implements BackendDataDao {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
 	@Override
-	public List<Rest> getAll() {
-		return jdbcTemplate.query("select * from rest order by id asc", new RestMapper());
+	public List<BackendData> getAll() {
+		return jdbcTemplate.query("select * from rest order by id asc", new BackendDataMapper());
 	}
 
 	@Override
-	public Rest getRestById(int id) {
-		return jdbcTemplate.queryForObject("select * from rest where id = ?", new Object[] { id }, new RestMapper());
+	public BackendData getBackendDataById(int id) {
+		return jdbcTemplate.queryForObject("select * from rest where id = ?", new Object[] { id },
+				new BackendDataMapper());
 	}
 
 	@Override
-	public void addRest(Rest rest) {
+	public void addBackendData(BackendData rest) {
 		jdbcTemplate.update("INSERT INTO rest (key, value, rand) VALUES (?, ?, ?) ", rest.getKey(), rest.getValue(),
 				getRandomNumber());
 	}
 
 	@Override
-	public void updateRest(Rest rest, int id) {
+	public void updateBackendData(BackendData rest, int id) {
 		jdbcTemplate.update("update rest set key=?, value=? ,rand=? where id=?", rest.getKey(), rest.getValue(),
 				getRandomNumber(), id);
 	}
 
 	@Override
-	public void deleteRestById(int id) {
+	public void deleteBackendDataById(int id) {
 		jdbcTemplate.update("delete from rest where id=?", id);
 	}
 

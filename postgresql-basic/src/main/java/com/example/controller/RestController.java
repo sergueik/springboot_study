@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.model.Rest;
+import com.example.model.BackendData;
 import com.example.service.RestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,41 +11,41 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("rest")
+@RequestMapping("/rest")
 public class RestController {
 	@Autowired
 	RestService restService;
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Rest> getById(@PathVariable("id") int id) {
-		Rest rest = restService.getRestById(id);
-		return new ResponseEntity<Rest>(rest, HttpStatus.OK);
+	public ResponseEntity<BackendData> getById(@PathVariable("id") int id) {
+		BackendData data = restService.getBackendDataById(id);
+		return new ResponseEntity<BackendData>(data, HttpStatus.OK);
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Rest>> getAll() {
-		List<Rest> listRest = restService.getAll();
-		return new ResponseEntity<List<Rest>>(listRest, HttpStatus.OK);
+	public ResponseEntity<List<BackendData>> getAll() {
+		List<BackendData> listRest = restService.getAll();
+		return new ResponseEntity<List<BackendData>>(listRest, HttpStatus.OK);
 	}
 
 	@PostMapping
-	public ResponseEntity<Rest> addRest(@RequestBody Rest rest) {
-		restService.addRest(rest);
-		Rest rest2 = restService.getRestById(restService.latestInput());
-		return new ResponseEntity<Rest>(rest2, HttpStatus.OK);
+	public ResponseEntity<BackendData> addRest(@RequestBody BackendData data) {
+		restService.addBackendData(data);
+		BackendData data2 = restService.getBackendDataById(restService.latestInput());
+		return new ResponseEntity<BackendData>(data2, HttpStatus.OK);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Rest> updateRest(@PathVariable("id") int id, @RequestBody Rest rest) {
-		restService.updateRest(rest, id);
-		Rest rest2 = restService.getRestById(id);
-		return new ResponseEntity<Rest>(rest2, HttpStatus.OK);
+	public ResponseEntity<BackendData> updateRest(@PathVariable("id") int id, @RequestBody BackendData data) {
+		restService.updateBackendData(data, id);
+		BackendData updatedData = restService.getBackendDataById(id);
+		return new ResponseEntity<BackendData>(updatedData, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Rest> deleteRest(@PathVariable("id") int id) {
-		Rest rest2 = restService.getRestById(id);
-		restService.deleteRestById(id);
-		return new ResponseEntity<Rest>(rest2, HttpStatus.OK);
+	public ResponseEntity<BackendData> deleteRest(@PathVariable("id") int id) {
+		BackendData data = restService.getBackendDataById(id);
+		restService.deleteBackendDataById(id);
+		return new ResponseEntity<BackendData>(data, HttpStatus.OK);
 	}
 }

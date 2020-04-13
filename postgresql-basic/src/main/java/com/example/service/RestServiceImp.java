@@ -3,8 +3,8 @@ package com.example.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.dao.RestDao;
-import com.example.model.Rest;
+import com.example.dao.BackendDataDao;
+import com.example.model.BackendData;
 
 import java.util.List;
 
@@ -12,36 +12,36 @@ import java.util.List;
 public class RestServiceImp implements RestService {
 
 	@Autowired
-	private RestDao restDao;
+	private BackendDataDao backendDataDao;
 
 	@Override
-	public List<Rest> getAll() {
-		return restDao.getAll();
+	public List<BackendData> getAll() {
+		return backendDataDao.getAll();
 	}
 
 	@Override
-	public Rest getRestById(int id) {
-		return restDao.getRestById(id);
+	public BackendData getBackendDataById(int id) {
+		return backendDataDao.getBackendDataById(id);
 	}
 
 	@Override
-	public void addRest(Rest rest) {
-		restDao.addRest(rest);
+	public void addBackendData(BackendData rest) {
+		backendDataDao.addBackendData(rest);
 	}
 
 	@Override
-	public void updateRest(Rest rest, int id) {
-		restDao.updateRest(rest, id);
+	public void updateBackendData(BackendData rest, int id) {
+		backendDataDao.updateBackendData(rest, id);
 	}
 
 	@Override
-	public void deleteRestById(int id) {
-		restDao.deleteRestById(id);
+	public void deleteBackendDataById(int id) {
+		backendDataDao.deleteBackendDataById(id);
 	}
 
 	@Override
 	public int latestInput() {
-		return restDao.latestInput();
+		return backendDataDao.latestInput();
 	}
 
 }

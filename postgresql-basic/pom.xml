@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.example</groupId>
   <artifactId>postgresql</artifactId>
-  <version>0.3.0-SNAPSHOT</version>
+  <version>0.4.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>springboot-jdbc-postgres</name>
   <description>springboot postgresql jdbc</description>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.1.2.RELEASE</version>
+    <version>1.5.4.RELEASE</version>
     <relativePath/>
   </parent>
   <properties>
