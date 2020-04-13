@@ -3,7 +3,25 @@
 This project contains a [basic tomcat web app project](https://github.com/tongueroo/demo-java) modified to process the tomcat manager initialted shutdown event and placed into a basic alpine tomcat 8 Docker container.
 
 ### Usage
-*  build application
+* test application locally
+```sh
+mvn clean tomcat:run-war
+```
+open in the browser or console
+```sh
+curl http://localhost:8080/demo/Demo
+```
+will show
+```sh
+<html>
+<head>
+<title>Demo</title>
+</head>
+<body>You requested=[http://localhost:8080/demo/Demo?null]
+<hr/>message</body>
+</html>
+```
+* build application
 ```sh
 mvn package
 ```
