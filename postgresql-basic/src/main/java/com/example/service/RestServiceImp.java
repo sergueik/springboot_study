@@ -9,16 +9,6 @@ import com.example.model.RestResult;
 
 import java.util.List;
 
-/**
- * Created by IntelliJ IDEA.
- * Project : springboot-jdbc-postgres
- * User: hendisantika
- * Email: hendisantika@gmail.com
- * Telegram : @hendisantika34
- * Date: 2019-01-20
- * Time: 06:51
- * To change this template use File | Settings | File Templates.
- */
 @Service
 public class RestServiceImp implements RestService {
 

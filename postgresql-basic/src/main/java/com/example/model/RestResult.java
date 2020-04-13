@@ -1,9 +1,7 @@
 package com.example.model;
 
-
 public class RestResult {
 	private int id, rand;
-	// getter dan setter
 
 	public int getId() {
 		return id;
