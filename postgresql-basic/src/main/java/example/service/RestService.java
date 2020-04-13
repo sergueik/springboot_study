@@ -1,8 +1,8 @@
-package com.example.service;
-
-import com.example.model.BackendData;
+package example.service;
 
 import java.util.List;
+
+import example.model.BackendData;
 
 public interface RestService {
 	List<BackendData> getAll();

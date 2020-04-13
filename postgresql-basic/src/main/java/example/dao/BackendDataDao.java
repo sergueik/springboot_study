@@ -1,8 +1,8 @@
-package com.example.dao;
-
-import com.example.model.BackendData;
+package example.dao;
 
 import java.util.List;
+
+import example.model.BackendData;
 
 public interface BackendDataDao {
 	List<BackendData> getAll();

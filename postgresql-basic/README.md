@@ -94,6 +94,32 @@ package jar
 ```sh
 mvn -Dmaven.test.skip=true clean package
 ```
+pull smallest possible postgresql container image
+```
+docker pull kiasaki/alpine-postgres
+```
+
+launch the database named container
+```
+docker run --name postgres-database -e POSTGRES_PASSWORD=postgres -d kiasaki/alpine-postgres
+```
+rebuild the container
+```sh 
+pushd docker-alpine-postgres
+docker build -f Dockerfile -t postgres-example .
+```
+create database
+```sh
+docker exec -it postgres-database psql -h localhost -p 5432 --username postgres -c "create database example"
+```
+drop table
+```sh
+docker exec -it postgres-database psql -h localhost -p 5432 --username postgres --dbname example -c "drop table rest"
+```
+run aplication
+```sh
+docker run --link postgres-database -p 8080:8080 -d postgres-example
+```
 
 ### TODO:
 The bolierplate test class is incomplete:
@@ -176,13 +202,14 @@ leads to
 ```
 ### Cleanup
 ```sh
-psql -h localhost -p 5432  --username postgres --dbname example --command "drop table rest;"
+psql -h localhost -p 5432 --username postgres --dbname example --command "drop table rest;"
 ```
+
 ### See also
 
  * another basic [jdbc postgress example](https://github.com/christosperis/spring-jdbctemplate-postgresql-example)
  * [initialize default user and password in postgresql](https://chartio.com/resources/tutorials/how-to-set-the-default-user-password-in-postgresql/)
  * postgresql [command rederence](https://www.tutorialspoint.com/postgresql/postgresql_select_database.htm)
-
+ * Docker [image](https://hub.docker.com/r/kiasaki/alpine-postgres/) and [github repository](https://hub.docker.com/r/kiasaki/alpine-postgres/dockerfile)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

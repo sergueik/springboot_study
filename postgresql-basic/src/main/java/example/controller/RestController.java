@@ -1,7 +1,8 @@
-package com.example.controller;
+package example.controller;
 
-import com.example.model.BackendData;
-import com.example.service.RestService;
+import example.model.BackendData;
+import example.service.RestService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

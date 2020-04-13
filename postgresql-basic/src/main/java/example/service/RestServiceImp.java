@@ -1,10 +1,10 @@
-package com.example.service;
+package example.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.dao.BackendDataDao;
-import com.example.model.BackendData;
+import example.dao.BackendDataDao;
+import example.model.BackendData;
 
 import java.util.List;
 

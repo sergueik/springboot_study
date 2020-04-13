@@ -1,12 +1,12 @@
-package com.example.dao;
+package example.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.model.BackendData;
-import com.example.model.BackendDataMapper;
+import example.model.BackendData;
+import example.model.BackendDataMapper;
 
 import java.util.List;
 import java.util.Random;
