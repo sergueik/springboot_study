@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.model.Rest;
 import com.example.model.RestMapper;
-import com.example.model.RestResult;
 
 import java.util.List;
 import java.util.Random;
@@ -15,53 +14,43 @@ import java.util.Random;
 @Transactional
 @Repository
 public class RestDaoImp implements RestDao {
+
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
 	@Override
-	public List<RestResult> getAll() {
-		String sql = "select * from rest order by id asc";
-		List<RestResult> rest = jdbcTemplate.query(sql, new RestMapper());
-		return rest;
+	public List<Rest> getAll() {
+		return jdbcTemplate.query("select * from rest order by id asc", new RestMapper());
 	}
 
 	@Override
-	public RestResult getRestById(int id) {
-		String sql2 = "select * from rest where id = ?";
-		RestResult rest2 = jdbcTemplate.queryForObject(sql2, new Object[] { id },
-				new RestMapper());
-		return rest2;
+	public Rest getRestById(int id) {
+		return jdbcTemplate.queryForObject("select * from rest where id = ?", new Object[] { id }, new RestMapper());
 	}
 
 	@Override
 	public void addRest(Rest rest) {
-		String sql = "INSERT INTO rest (key, value, rand) VALUES (?, ?, ?) ";
-		jdbcTemplate.update(sql, rest.getKey(), rest.getValue(), getRandomNumber());
+		jdbcTemplate.update("INSERT INTO rest (key, value, rand) VALUES (?, ?, ?) ", rest.getKey(), rest.getValue(),
+				getRandomNumber());
 	}
 
 	@Override
 	public void updateRest(Rest rest, int id) {
-		int a = getRandomNumber();
-		String sql = "update rest set key=?, value=? ,rand=? where id=?";
-		jdbcTemplate.update(sql, rest.getKey(), rest.getValue(), a, id);
-
+		jdbcTemplate.update("update rest set key=?, value=? ,rand=? where id=?", rest.getKey(), rest.getValue(),
+				getRandomNumber(), id);
 	}
 
 	@Override
 	public void deleteRestById(int id) {
-		String sql = "delete from rest where id=?";
-		jdbcTemplate.update(sql, id);
+		jdbcTemplate.update("delete from rest where id=?", id);
 	}
 
 	private int getRandomNumber() {
-		Random rand = new Random();
-		return rand.nextInt(50);
+		return (new Random()).nextInt(50);
 	}
 
 	@Override
 	public int latestInput() {
-		String sql2 = "SELECT currval(pg_get_serial_sequence('rest','id'))";
-		int id = jdbcTemplate.queryForObject(sql2, Integer.class);
-		return id;
+		return jdbcTemplate.queryForObject("SELECT currval(pg_get_serial_sequence('rest','id'))", Integer.class);
 	}
 }

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.dao.RestDao;
 import com.example.model.Rest;
-import com.example.model.RestResult;
 
 import java.util.List;
 
@@ -16,12 +15,12 @@ public class RestServiceImp implements RestService {
 	private RestDao restDao;
 
 	@Override
-	public List<RestResult> getAll() {
+	public List<Rest> getAll() {
 		return restDao.getAll();
 	}
 
 	@Override
-	public RestResult getRestById(int id) {
+	public Rest getRestById(int id) {
 		return restDao.getRestById(id);
 	}
 

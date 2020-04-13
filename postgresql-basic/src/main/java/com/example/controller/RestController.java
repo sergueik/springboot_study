@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import com.example.model.Rest;
-import com.example.model.RestResult;
 import com.example.service.RestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,36 +17,35 @@ public class RestController {
 	RestService restService;
 
 	@GetMapping("/{id}")
-	public ResponseEntity<RestResult> getById(@PathVariable("id") int id) {
-		RestResult rest = restService.getRestById(id);
-		return new ResponseEntity<RestResult>(rest, HttpStatus.OK);
+	public ResponseEntity<Rest> getById(@PathVariable("id") int id) {
+		Rest rest = restService.getRestById(id);
+		return new ResponseEntity<Rest>(rest, HttpStatus.OK);
 	}
 
 	@GetMapping
-	public ResponseEntity<List<RestResult>> getAll() {
-		List<RestResult> listRest = restService.getAll();
-		return new ResponseEntity<List<RestResult>>(listRest, HttpStatus.OK);
+	public ResponseEntity<List<Rest>> getAll() {
+		List<Rest> listRest = restService.getAll();
+		return new ResponseEntity<List<Rest>>(listRest, HttpStatus.OK);
 	}
 
 	@PostMapping
-	public ResponseEntity<RestResult> addRest(@RequestBody Rest rest) {
+	public ResponseEntity<Rest> addRest(@RequestBody Rest rest) {
 		restService.addRest(rest);
-		RestResult rest2 = restService.getRestById(restService.latestInput());
-		return new ResponseEntity<RestResult>(rest2, HttpStatus.OK);
+		Rest rest2 = restService.getRestById(restService.latestInput());
+		return new ResponseEntity<Rest>(rest2, HttpStatus.OK);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<RestResult> updateRest(@PathVariable("id") int id,
-			@RequestBody Rest rest) {
+	public ResponseEntity<Rest> updateRest(@PathVariable("id") int id, @RequestBody Rest rest) {
 		restService.updateRest(rest, id);
-		RestResult rest2 = restService.getRestById(id);
-		return new ResponseEntity<RestResult>(rest2, HttpStatus.OK);
+		Rest rest2 = restService.getRestById(id);
+		return new ResponseEntity<Rest>(rest2, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<RestResult> deleteRest(@PathVariable("id") int id) {
-		RestResult rest2 = restService.getRestById(id);
+	public ResponseEntity<Rest> deleteRest(@PathVariable("id") int id) {
+		Rest rest2 = restService.getRestById(id);
 		restService.deleteRestById(id);
-		return new ResponseEntity<RestResult>(rest2, HttpStatus.OK);
+		return new ResponseEntity<Rest>(rest2, HttpStatus.OK);
 	}
 }
