@@ -267,6 +267,29 @@ curl http://localhost:8086/all/users/123
 ```
 (no output)
 
+
+### Build Docker Image Locally
+
+* build the alpine based  mysql 5.x Docker image:
+
+```sh
+export SERVER_IMAGE=alpine-mysql
+docker build -f Dockerfile.alpine-mysql -t $SERVER_IMAGE .
+```
+* run it with environments matching the `application.properties`:
+```sh
+export SERVER_NAME=mysql-server
+docker run --name $SERVER_NAME -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=java -e MYSQL_DATABASE=test -e MYSQL_PASSWORD=password -d $SERVER_IMAGE
+```
+* observe the successful start log message in `mysql-server` container:
+```sh
+docker logs $SERVER_NAME
+```
+* verify the console connection:
+```sh
+docker exec -it $SERVER_NAME mysql -P 3306 -h localhost -u java -ppassword -e "set @var = '1'; select @var ;"
+```
+
 ### Cleanup
 
 ```sh
