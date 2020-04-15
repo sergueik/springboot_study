@@ -49,7 +49,7 @@ will respond with
 ```
 and then
 ```sh
-curl http://127.0.0.1:8080/rest/  | jq '.'
+curl http://127.0.0.1:8080/rest/ | jq '.'
 ```
 shows
 ```json
@@ -98,29 +98,46 @@ pull smallest possible postgresql container image
 ```
 docker pull kiasaki/alpine-postgres
 ```
-
 launch the database named container
+```sh
+SERVER_NAME=postgres-database
+docker run --name $SERVER_NAME -e POSTGRES_PASSWORD=postgres -d kiasaki/alpine-postgres
 ```
-docker run --name postgres-database -e POSTGRES_PASSWORD=postgres -d kiasaki/alpine-postgres
-```
+- will fail
+
 rebuild the container
-```sh 
-pushd docker-alpine-postgres
-docker build -f Dockerfile -t postgres-example .
-```
-create database
 ```sh
-docker exec -it postgres-database psql -h localhost -p 5432 --username postgres -c "create database example"
+SERVER_IMAGE=alpine-postgres
+docker build -f Dockerfile.alpine-postgres -t $SERVER_IMAGE .
 ```
-drop table
+run contained from the built image
 ```sh
-docker exec -it postgres-database psql -h localhost -p 5432 --username postgres --dbname example -c "drop table rest"
-```
-run aplication
-```sh
-docker run --link postgres-database -p 8080:8080 -d postgres-example
+SERVER_NAME=postgres-database
+docker run --name $SERVER_NAME -e POSTGRES_PASSWORD=postgres -d $SERVER_IMAGE
 ```
 
+* create database
+```sh
+docker exec -it $SERVER_NAME psql -h localhost -p 5432 --username postgres -c "create database example"
+```
+* drop table
+```sh
+docker exec -it $SERVER_NAME psql -h localhost -p 5432 --username postgres --dbname example -c "drop table rest"
+```
+* optionlly rebuild the java container
+```
+IMAGE=postgres-example
+docker build -f Dockerfile -t $IMAGE .
+```
+* run aplication
+```sh
+NAME=example-postgres
+docker run --name $NAME --link $SERVER_NAME -p 8080:8080 -d $IMAGE
+```
+* monitor logs:
+```sh
+docker logs $NAME
+```
 ### TODO:
 The bolierplate test class is incomplete:
 
@@ -204,7 +221,14 @@ leads to
 ```sh
 psql -h localhost -p 5432 --username postgres --dbname example --command "drop table rest;"
 ```
+```
+docker stop $NAME
+docker container rm $NAME
+docker container prune -f
+docker image rm $IMAGE -f
+docker image prune -f
 
+```
 ### See also
 
  * another basic [jdbc postgress example](https://github.com/christosperis/spring-jdbctemplate-postgresql-example)
