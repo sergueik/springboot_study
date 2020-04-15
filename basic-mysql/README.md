@@ -63,7 +63,7 @@ docker build -f Dockerfile -t mysql-example .
 ```
 * Lanch the `mysql-example` backed Docker container
 ```sh
-docker run -p 8086:8086 -e SERVICE-PORT 3306 --link mysql-server -d mysql-example
+docker run -p 8086:8086 -e "SERVICE-PORT=3306" --link mysql-server -d mysql-example
 ```
 It will execute the delayed launch script:
 ```sh
@@ -285,3 +285,5 @@ docker stop $CONTAINER
 ID=$(docker container ls -a| grep $CONTAINER | awk '{print $1}')
 docker rm $ID
 ```
+### See also
+  * mysql docker image `Dockerfile` based on [alpine](https://hub.docker.com/r/wangxian/alpine-mysql)
