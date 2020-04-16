@@ -9,19 +9,18 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.Servlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import example.Utils;
 
 // https://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpServlet.html
 // 
 @SuppressWarnings("serial")
 public class DemoServlet extends HttpServlet implements Servlet {
 	private static final Logger logger = LogManager.getLogger(DemoServlet.class);
-	private String message;
-	private final String textFile = "readme.textile";
+	private String message = "message";
 
 	@Override
 	public void init() throws ServletException {
-		message = "message";
-		logger.info("init()");
+		logger.debug("init()");
 	}
 
 	// inherited from class javax.servlet.GenericServlet
@@ -39,14 +38,16 @@ public class DemoServlet extends HttpServlet implements Servlet {
 		// itself not properly configured. with default configuration is logging
 		// only
 		// errors to the console
-		logger.error("responding to GET request=" + request);
-		logger.info("responding to GET request=" + request);
+		logger
+				.error("GET request=" + request + " " + Utils.getHeadersInfo(request));
+		// no effect
+		logger.info("GET request=" + request);
 
-		// message = FileUtils.readFileToString(new File(textFile));
 		String html = String.format(
 				"<html><head><title>Demo</title></head>" + "<body>You requested=[%s?%s]"
-						+ "<hr/>" + "%s</body></html>",
-				request.getRequestURL(), request.getQueryString(), message);
+						+ "<hr/>" + "%s " + "<hr/>" + "%s " + "</body></html>",
+				request.getRequestURL(), request.getQueryString(), message,
+				Utils.printHeadersInfo(Utils.getHeadersInfo(request)));
 
 		response.setContentType("text/html");
 		response.getOutputStream().println(html);

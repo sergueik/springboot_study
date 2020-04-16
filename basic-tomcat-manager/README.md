@@ -3,6 +3,7 @@
 This project contains a [basic tomcat web app project](https://github.com/tongueroo/demo-java) modified to process the tomcat manager initialted shutdown event and placed into a basic alpine tomcat 8 Docker container.
 
 ### Usage
+
 * test application locally
 ```sh
 mvn clean tomcat:run-war
@@ -12,15 +13,46 @@ open in the browser or console
 curl http://localhost:8080/demo/Demo
 ```
 will show
-```sh
-<html>
-<head>
-<title>Demo</title>
-</head>
-<body>You requested=[http://localhost:8080/demo/Demo?null]
-<hr/>message</body>
-</html>
+```html
+<body>
+You requested=[http://127.0.0.1:8080/demo/Demo?null]
+<hr>message
+<hr>
+<table>
+  <tbody>
+    <tr>
+      <td>accept-language</td>
+      <td>en-US,en;q=0.9</td>
+    </tr>
+    <tr>
+      <td>host</td>
+      <td>127.0.0.1:8080</td>
+    </tr>
+    <tr>
+      <td>upgrade-insecure-requests</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>connection</td>
+      <td>keep-alive</td>
+    </tr>
+    <tr>
+      <td>accept-encoding</td>
+      <td>gzip, deflate, br</td>
+    </tr>
+    <tr>
+      <td>user-agent</td>
+      <td>Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.105 Safari/537.36 Vivaldi/2.4.1488.40</td>
+    </tr>
+    <tr>
+      <td>accept</td>
+      <td>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8</td>
+    </tr>
+  </tbody>
+</table>
 ```
+### Testing with Docker Container
+
 * build application
 ```sh
 mvn package
@@ -33,21 +65,21 @@ export NAME='example-tomcat'
 docker build -t $IMAGE -f Dockerfile .
 docker run --name $NAME -p 8080:8080 -d $IMAGE
 ```
-connect to just deploued web application
+* connect to web application
 ```sh
-curl http://127.0.0.1:8080/demo/Demo
+curl http://127.0.0.1:8080/demo/Demo | lynx -stdin -dump
 ```
 will print
-```sh
-<html>
-<head>
-<title>Demo</title>
-</head><body>You requested=[http://127.0.0.1:8080/demo/Demo?null]
-<hr/>
-opmessage
-</body>
-</html>
-
+```
+You requested=[http://127.0.0.1:8080/demo/Demo?null]
+message
+accept-language	en-US,en;q=0.9
+host	127.0.0.1:8080
+upgrade-insecure-requests	1
+connection	keep-alive
+accept-encoding	gzip, deflate, br
+user-agent	Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.105 Safari/537.36 Vivaldi/2.4.1488.40
+accept	text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
 ```
 * list applications in manager
 ```sh
@@ -126,7 +158,17 @@ docker logs $CONTAINER
 ```
 will show
 ```sh
-21:33:04.412 [http-apr-8080-exec-1] ERROR example.DemoServlet - responding to GET request=org.apache.catalina.connector.RequestFacade@2ee23f1d
+ERROR example.DemoServlet - GET request=org.apache.catalina.connector.RequestFacade@29cd287d 
+{
+accept-language=en-US,en;q=0.9, 
+host=127.0.0.1:8080, 
+upgrade-insecure-requests=1, 
+connection=keep-alive, 
+accept-encoding=gzip, deflate, br, 
+user-agent=Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.105 Safari/537.36 Vivaldi/2.4.1488.40, 
+accept=text/html, application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;
+q=0.8
+}
 ```
 * stop the demo application
 ```sh
@@ -213,3 +255,4 @@ docker run -e LOGGING_CONFIG="-Djava.util.logging.config.file=\$CATALINA_BASE/co
   * [fixing](https://crunchify.com/java-how-to-configure-log4j-logger-property-correctly/) `ERROR StatusLogger No log4j2 configuration file found. Using default configuration: logging only errors to the console`
   * example project of watching the [ tomcat logging configuration](https://github.com/phoet/tomcat-logging) file
   * log4j tutorial with [Tomcat](https://laliluna.com/articles/posts/log4j-tutorial.html)
+
