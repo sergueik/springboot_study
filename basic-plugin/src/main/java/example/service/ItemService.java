@@ -1,4 +1,4 @@
-package com.example.service;
+package example.service;
 
 import java.util.List;
 
@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.entity.Item;
-import com.example.repository.ItemRepository;
+import example.entity.Item;
+import example.repository.ItemRepository;
 
 @Service
 public class ItemService {

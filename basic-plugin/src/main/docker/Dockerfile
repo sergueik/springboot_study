@@ -6,4 +6,4 @@ ADD maven/app.jar app.jar
 ADD maven/start.sh /start.sh
 ADD  maven/wait-for-it.sh /wait-for-it.sh
 RUN sh -c 'touch app.jar'
-# ENTRYPOINT ["./start.sh"]
+ENTRYPOINT ["/start.sh"]
