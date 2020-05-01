@@ -34,5 +34,14 @@ services:
       - MYSQL_PASSWORD=password
     networks:
       - example
+    command: >
+      /bin/bash -c "
+        while ! nc -z  mysql-server 3306;
+        do
+          echo sleeping;
+          sleep 1;
+        done;
+        echo Connected!;
+      "
 networks:
   example:
