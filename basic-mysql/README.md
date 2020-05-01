@@ -308,7 +308,53 @@ docker stop $CONTAINER
 ID=$(docker container ls -a| grep $CONTAINER | awk '{print $1}')
 docker rm $ID
 ```
+### Dedicated Node
+
+One can compose `docker-compose.yaml` with separate dependency waiter node e.g. based on bare alpine:
+```yaml
+  delayed_start:
+    container_name: delayed_start
+    image: dadarek/wait-for-dependencies
+    depends_on:
+      - mysql-server
+    # NOTE: when node does not recognize hostname, check the networks
+    # nc: bad address 'mysql-server'
+    command: mysql-server:3306
+    networks:
+      - example
+  app:
+    depends_on:
+      # the db server name needs to match setting in application.properties
+      - delayed_start
+```
+or one may use an alpine-jre base image which is likely to be used by appplication image anyway and be able to perform data specific probe, e.g. through JDBC:
+```yaml
+  delayed_start:
+    container_name: delayed_start
+    build:
+      context: .
+      dockerfile: Dockerfile.delayed_start
+    image: openjdk:8-jre-alpine3.9
+    depends_on:
+      - mysql-server
+    environment:
+      SERVICE_PORT: 3306
+      SERVICE_HOST: 'mysql-server'
+    networks:
+      - example
+  app:
+    depends_on:
+      # NOTE: db server name has to match application.properties
+      - delayed_start
+```
+with the `Dockerfile.delated_start` hosting the same operations as before:
+```sh
+FROM openjdk:8-jre-alpine3.9
+ADD "target/${app_jar}" app.jar
+ENTRYPOINT ["sh", "/delayed_start.sh"]
+```
 ### See also
   * mysql docker image `Dockerfile` based on [alpine](https://hub.docker.com/r/wangxian/alpine-mysql)
   * best practices of [startup/shutdown order](https://docs.docker.com/compose/startup-order/) and [wait for dependencies](https://8thlight.com/blog/dariusz-pasciak/2016/10/17/docker-compose-wait-for-dependencies.html) in __docker-compose__
-  * [k8n](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) __liveness__, __readiness__ and _startup__ Probes
+  * [k8n](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) __liveness__, __readiness__ and __startup__ Probes
+  * standalone [dependency waiter](dadarek/wait-for-dependencies) image.

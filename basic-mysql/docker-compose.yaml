@@ -17,18 +17,20 @@ services:
       - MYSQL_PASSWORD=password
     networks:
       - example
-  start_dependencies:
-    container_name: start_dependencies
+  delayed_start:
+    container_name: delayed_start
     image: dadarek/wait-for-dependencies
     depends_on:
       - mysql-server
-    # NOTE: does not recoize hostname
+    # NOTE: when node does not recognize hostname, check the networks
     # nc: bad address 'mysql-server'
     command: mysql-server:3306
+    networks:
+      - example
   app:
     depends_on:
       # the db server name needs to match setting in application.properties
-      - start_dependencies
+      - delayed_start
     build: .
     image: openjdk:8-jre-alpine3.9
     ports:
