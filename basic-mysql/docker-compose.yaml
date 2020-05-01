@@ -17,22 +17,27 @@ services:
       - MYSQL_PASSWORD=password
     networks:
       - example
-  start_dependencies:
-    container_name: start_dependencies
-    image: dadarek/wait-for-dependencies
+  delayed_start:
+    container_name: delayed_start
+    build:
+      context: .
+      dockerfile: Dockerfile.delayed_start
+    image: openjdk:8-jre-alpine3.9
     depends_on:
       - mysql-server
-    # NOTE: does not recoize hostname
-    # nc: bad address 'mysql-server'
-    command: mysql-server:3306
+    environment:
+      SERVICE_PORT: 3306
+      SERVICE_HOST: 'mysql-server'
+    networks:
+      - example
   app:
     depends_on:
-      # the db server name needs to match setting in application.properties
-      - start_dependencies
+      # NOTE: db server name has to match application.properties
+      - delayed_start
     build: .
     image: openjdk:8-jre-alpine3.9
     ports:
-      # NOTE the port needs to match setting in application.properties
+      # NOTE port has to match application.properties
       - 8086:8086
     environment:
       SERVICE_PORT: 3306

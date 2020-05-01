@@ -1,0 +1,4 @@
+# NOTE: jre-alpine3.9 to allow JDBC and other content-specific probes
+FROM openjdk:8-jre-alpine3.9
+ADD delayed_start.sh delayed_start.sh
+ENTRYPOINT ["sh", "/delayed_start.sh"]
