@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-  mysql:
+  mysql-server:
     container_name: mysql-server
     hostname: mysql-server
     image: mysql:8.0.18
@@ -17,10 +17,18 @@ services:
       - MYSQL_PASSWORD=password
     networks:
       - example
+  start_dependencies:
+    container_name: start_dependencies
+    image: dadarek/wait-for-dependencies
+    depends_on:
+      - mysql-server
+    # NOTE: does not recoize hostname
+    # nc: bad address 'mysql-server'
+    command: mysql-server:3306
   app:
     depends_on:
       # the db server name needs to match setting in application.properties
-      - mysql
+      - start_dependencies
     build: .
     image: openjdk:8-jre-alpine3.9
     ports:
@@ -29,19 +37,10 @@ services:
     environment:
       SERVICE_PORT: 3306
       SERVICE_HOST: 'mysql-server'
-      - MYSQL_USER=java
-      - MYSQL_DATABASE=test
-      - MYSQL_PASSWORD=password
+      MYSQL_USER: java
+      MYSQL_DATABASE: test
+      MYSQL_PASSWORD: password
     networks:
       - example
-    command: >
-      /bin/bash -c "
-        while ! nc -z  mysql-server 3306;
-        do
-          echo sleeping;
-          sleep 1;
-        done;
-        echo Connected!;
-      "
 networks:
   example:
