@@ -44,7 +44,7 @@ public class CommandLineParser {
 	}
 
 	public String getFlagValue(String flagName) {
-		return (String) flags.get(flagName);
+		return flags.get(flagName);
 	}
 
 	public int getNumberOfArguments() {
@@ -89,10 +89,40 @@ public class CommandLineParser {
 				regularArgs.add(args[n]);
 		}
 
-		arguments = (String[]) regularArgs.toArray(new String[regularArgs.size()]);
+		arguments = regularArgs.toArray(new String[regularArgs.size()]);
 	}
 
 	public void saveFlagValue(String flagName) {
 		flagsWithValues.add(flagName);
 	}
+
+	private static final String keyValueSeparator = ":";
+	private static final String entrySeparator = ",";
+
+	// Example data:
+	// -argument "{count:0, type:navigate, size:100, flag:true}"
+	// NOTE: not using org.json to reduce size
+	public Map<String, String> extractExtraArgs(String argument) throws IllegalArgumentException {
+
+		final Map<String, String> extraArgData = new HashMap<>();
+		argument = argument.trim().substring(1, argument.length() - 1);
+		if (argument.indexOf("{") > -1 || argument.indexOf("}") > -1) {
+			if (debug) {
+				System.err.println("Found invalid nested data");
+			}
+			throw new IllegalArgumentException("Nested JSON athuments not supprted");
+		}
+		final String[] pairs = argument.split(entrySeparator);
+
+		for (String pair : pairs) {
+			String[] values = pair.split(keyValueSeparator);
+
+			if (debug) {
+				System.err.println("Collecting: " + pair);
+			}
+			extraArgData.put(values[0].trim(), values[1].trim());
+		}
+		return extraArgData;
+	}
+
 }
