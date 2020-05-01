@@ -55,6 +55,30 @@ docker image rm $IMAGE
 docker image ls | grep $TAG | awk '{print $3}' | xargs -IX docker image rm X
 docker system prune -f
 ```
+### Setup on Xenial
+
+It appears the only quick way of installing Docker on 16.04 is through direct downloads from https://download.docker.com:
+
+```sh
+sudo apt-get install libcurl3-gnutls=7.47.0-1ubuntu2
+sudo apt-get update
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+```
+The below versions are pinned:
+```sh
+curl -O https://download.docker.com/linux/ubuntu/dists/xenial/pool/edge/amd64/containerd.io_1.2.6-3_amd64.deb  
+curl -O https://download.docker.com/linux/ubuntu/dists/xenial/pool/edge/amd64/docker-ce-cli_19.03.8~3-0~ubuntu-xenial_amd64.deb 
+curl -O https://download.docker.com/linux/ubuntu/dists/xenial/pool/edge/amd64/docker-ce_19.03.8~3-0~ubuntu-xenial_amd64.deb  
+ 
+sudo dpkg -i containerd.io_1.2.6-3_amd64.deb
+sudo dpkg -i docker-ce-cli_19.03.8~3-0~ubuntu-xenial_amd64.deb 
+```
+### See also
+
+  * https://www.vultr.com/docs/installing-docker-ce-on-ubuntu-16-04
+  * https://askubuntu.com/questions/908567/need-help-installing-curl-on-xubuntu-16-04
+  * https://askubuntu.com/questions/1180060/getting-error-while-installing-docker-docker-ce-depends-containerd-io-1
+  * https://download.docker.com/linux/ubuntu/dists/xenial/pool/edge/amd64/
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

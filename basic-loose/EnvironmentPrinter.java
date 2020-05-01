@@ -1,4 +1,4 @@
-package example;
+// use default package
 
 // based on: http://www.java2s.com/Tutorial/Java/0120__Development/GetEnvironmentVariables.htm
 import java.util.Iterator;
