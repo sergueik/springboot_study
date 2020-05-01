@@ -45,7 +45,14 @@ LANG:
 HOME:
         "/root"
 ```
-the entry `X:"Y"` above has been set on the command line
+the entry `X:"Y"` above has been set on the command line:
+filtered output shows that:
+```sh
+docker run --rm -e "X=Y" -it $IMAGE  2>&1  | grep 'X = '
+```
+```sh
+X = Y
+```
 ### Cleanup
 
 ```sh
@@ -66,13 +73,17 @@ sudo apt-get install apt-transport-https ca-certificates curl software-propertie
 ```
 The below versions are pinned:
 ```sh
-curl -O https://download.docker.com/linux/ubuntu/dists/xenial/pool/edge/amd64/containerd.io_1.2.6-3_amd64.deb  
-curl -O https://download.docker.com/linux/ubuntu/dists/xenial/pool/edge/amd64/docker-ce-cli_19.03.8~3-0~ubuntu-xenial_amd64.deb 
-curl -O https://download.docker.com/linux/ubuntu/dists/xenial/pool/edge/amd64/docker-ce_19.03.8~3-0~ubuntu-xenial_amd64.deb  
- 
+curl -O https://download.docker.com/linux/ubuntu/dists/xenial/pool/edge/amd64/containerd.io_1.2.6-3_amd64.deb
+curl -O https://download.docker.com/linux/ubuntu/dists/xenial/pool/edge/amd64/docker-ce-cli_19.03.8~3-0~ubuntu-xenial_amd64.deb
+curl -O https://download.docker.com/linux/ubuntu/dists/xenial/pool/edge/amd64/docker-ce_19.03.8~3-0~ubuntu-xenial_amd64.deb
+
 sudo dpkg -i containerd.io_1.2.6-3_amd64.deb
-sudo dpkg -i docker-ce-cli_19.03.8~3-0~ubuntu-xenial_amd64.deb 
+sudo dpkg -i docker-ce-cli_19.03.8~3-0~ubuntu-xenial_amd64.deb
+sudo dpkg -i docker-ce_19.03.8~3-0~ubuntu-xenial_amd64.deb
+sudo curl -L https://github.com/docker/compose/releases/download/1.25.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
 ```
+
 ### See also
 
   * https://www.vultr.com/docs/installing-docker-ce-on-ubuntu-16-04

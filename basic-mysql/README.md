@@ -59,7 +59,8 @@ mvn clean package
 ```
 * Build the `mysql-example` Docker image
 ```sh
-docker build -f Dockerfile -t mysql-example .
+# docker build -f Dockerfile -t mysql-example .
+docker build -f Dockerfile.with_delayed_start -t mysql-example .
 ```
 * Lanch the `mysql-example` backed Docker container
 ```sh
@@ -154,6 +155,7 @@ Hibernate: select users0_.id as id1_0_, users0_.name as name2_0_, users0_.salary
 ```
 * Alternatively bring both containers up via `docker-compose.yaml`(slower and less reliable):
 ```sh
+mvn clean package
 export COMPOSE_HTTP_TIMEOUT=600
 docker-compose  -f docker-compose.yaml up --build
 ```

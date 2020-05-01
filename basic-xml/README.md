@@ -97,11 +97,11 @@ curl http://localhost:8080/user/articles
 ### Runtime Argument test
 build 
 ```sh
-docker build -f Dockerfile.noargs -t basic-args-example  .
+docker build -f Dockerfile.noargs -t basic-args-example .
 ```
 run
 ```sh
-docker run -it  -p 8080:8080 basic-xml-example _ -Dtitle="Bash scripting" -Dcategory="Unix Administration"
+docker run -it -p 8080:8080 basic-xml-example -Dtitle="Bash scripting" -Dcategory="Unix Administration"
 ```
 ```
 * verify
