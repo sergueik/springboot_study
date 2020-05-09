@@ -110,7 +110,7 @@ public class CommandLineParser {
 			if (debug) {
 				System.err.println("Found invalid nested data");
 			}
-			throw new IllegalArgumentException("Nested JSON athuments not supprted");
+			throw new IllegalArgumentException("Nested JSON arguments not supported");
 		}
 		final String[] pairs = argument.split(entrySeparator);
 

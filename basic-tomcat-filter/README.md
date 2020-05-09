@@ -15,13 +15,12 @@ docker pull davidcaste/alpine-tomcat
 docker run -p 8080:8080 -it --rm davidcaste/alpine-tomcat /opt/tomcat/bin/catalina.sh run
 ```
 then it will be running
-```
+```sh
 netstat -antp | grep 8080
 ```
 will show
-```
+```sh
 tcp6       0      0 :::8080   :::*  LISTEN      4159/docker-proxy
-
 ```
 but it has no context (no war deployed)
 ```sh
@@ -33,6 +32,37 @@ HTTP/1.1 404
 Transfer-Encoding: chunked
 Date: Wed, 25 Mar 2020 22:32:02 GMT
 ```
+* deploy dummy tomcat application into the container:
+
+```sh
+pushd webapp
+mvn clean package
+popd
+```
+
+```sh
+docker cp webapp/target/dummy.war $(docker ps -q):/opt/tomcat/webapps/
+```
+confirm app deployed:
+```sh
+curl http://localhost:8080/dummy/
+```
+```xml
+<?xml version="1.0"?>
+<html>
+  <body>
+    <h2>Dummy</h2>
+  </body>
+</html>
+```
+but  regular response headers:
+```sh
+curl -I http://localhost:8080/dummy/
+HTTP/1.1 200 
+Set-Cookie: JSESSIONID=E3470D4339275A2EFE071E98928519BD;path=/dummy/;HttpOnly
+Content-Type: text/html;charset=ISO-8859-1
+Transfer-Encoding: chunked
+```
 ### Run Dockerized Filter class
 
 * build app
@@ -42,19 +72,20 @@ mvn clean package
 
 * collect vanilla `web.xml` from inside the image:
 ```
+export CONTAINER=$(docker ps -q)
 docker cp $CONTAINER:/opt/tomcat/conf/web.xml .
 ```
-* modify the `web.xml` (manually  - automation is work in prorgess)
+* modify the `web.xml` manually (automation of this step is work in prorgess)
 
 ```sh
-xmllint --xpath '//*[local-name()="filter-name"  and text() = "responseHeadersFiltezr"]' web.xml
+xmllint --xpath '//*[local-name()="filter-name" and text() = "responseHeadersFiltezr"]' web.xml
 ```
 will respond
 
 ```sh
 XPath set is empty
 ```
-* Add filter configuration
+* Add filter to `web.xml` configuration
 ```sh
 python modify_web_xml.py web.xml new.xml
 ```
@@ -78,21 +109,28 @@ it will print the injected XML (it will be whitespace-colapsed)
 </filter-mapping>
 ```
 * build image
+build utility
 ```sh
-export NAME='example-tomcat-filter'
-export CONTAINER=$(docker container ls | grep $NAME| awk '{print $1}')
+pushd setuptool
+mvn clean package
+popd
 ```
-
 ```sh
+export CONTAINER=$(docker ps -q)
+docker stop $CONTAINER
+export NAME='example-tomcat-filter'
 docker build -t $NAME -f Dockerfile .
 docker run -p 8080:8080 -d -t $NAME
 ```
+```sh
+export CONTAINER=$(docker container ls | grep $NAME| awk '{print $1}')
+```
 
-Alternatively one can run Java class on the instance injecting the filter class XML servlet configuration into the tomcat `web.xml` during the Docker build (work in progress).
+Alternatively one can run Java class from [setuptool](https://github.com/sergueik/springboot_study/tree/master/basic-tomcat-filter/setuptool) on the instance injecting the filter class XML servlet configuration into the tomcat `web.xml` during the Docker build.
 
 * Manually deploy a dummy war (may choose to deploy a real application):
-```show
-pushd webapps
+```sh
+pushd webapp
 mvn clean package
 popd
 ```
@@ -116,6 +154,27 @@ Set-Cookie: JSESSIONID=F063ED0B6E963189B2AB5B0D38A28B42;path=/dummy/;HttpOnly
 Content-Type: text/html;charset=ISO-8859-1
 Transfer-Encoding: chunked
 Date: Wed, 25 Mar 2020 22:32:10 GMT
+```
+if if does not show the extra headers, connect to the container
+```sh
+docker run -it $CONTAINER sh
+```
+and run  the configuration setup tool there:
+```sh
+setuptool_jar="example.setuptool.jar"
+java -cp /tmp/${setuptool_jar} example.MergeDocumentFragments -in /opt/tomcat/conf/web.xml -out /tmp/new.xml
+```
+if it fails, e.g. with
+
+```sh
+Loaded: file:///opt/tomcat/conf/web.xml
+Testing local file: jar:file:/tmp/example.setuptool.jar!/fragment.xml
+Exception in thread "main" java.lang.ClassCastException: com.sun.org.apache.xerces.internal.dom.DeferredCommentImpl cannot be cast to org.w3c.dom.Element
+	at example.MergeDocumentFragments.insertNode(MergeDocumentFragments.java:131)
+	at example.MergeDocumentFragments.main(MergeDocumentFragments.java:77)
+```
+test it locally
+```
 ```
 
 ### Building and running Setup Tool
@@ -169,7 +228,8 @@ docker image rm -f $NAME; docker image prune -f
   * https://www.journaldev.com/1933/java-servlet-filter-example-tutorial
   * http://www.avajava.com/tutorials/lessons/what-is-a-filter-and-how-do-i-use-it.html%3Fpage%3D2?page=1
   * https://www.moreofless.co.uk/static-content-web-pages-images-tomcat-outside-war/
-  * [dummy catalina war](https://github.com/deepak2717/TomcatDockerWar)  project
+  * [dummy catalina war](https://github.com/deepak2717/TomcatDockerWar) project
+  * Log4j [tutorial](https://laliluna.com/articles/posts/log4j-tutorial.html) with Tomcat examples
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
