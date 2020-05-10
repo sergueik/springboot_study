@@ -7,9 +7,9 @@ ARG CATALINA_HOME="/opt/tomcat"
 RUN mkdir /opt && ln -s /usr/local/tomcat  ${CATALINA_HOME}
 ADD "target/${app_war}" ${CATALINA_HOME}/webapps/demo.war
 ADD tomcat-users.xml ${CATALINA_HOME}/conf/tomcat-users.xml
-ADD log4j2.xml ${CATALINA_HOME}/conf/log4j2.xml
-ADD log4j.dtd ${CATALINA_HOME}/conf/log4j.dtd
-# RUN echo "export JAVA_OPTS=\"-Dlog4j2.debug=true -Dapp.env=staging -Dlog4j.configuration=file://\$CATALINA_BASE/conf/log4j2.xml\"" | tee ${CATALINA_HOME}/bin/setenv.sh
+ADD src/main/resources/log4j2.xml ${CATALINA_HOME}/conf/log4j2.xml
+#  the following line critical for logging. The launcher configuration is incomplete and conf/log4j2.xml is ignored 
+ADD src/main/resources/log4j2.xml ${CATALINA_HOME}/lib
 RUN echo "export JAVA_OPTS=\"-Dlog4j2.debug=true -Dapp.env=staging -Dlog4j.configuration=\$CATALINA_BASE/conf/log4j2.xml\"" | tee ${CATALINA_HOME}/bin/setenv.sh
 
 EXPOSE 8080

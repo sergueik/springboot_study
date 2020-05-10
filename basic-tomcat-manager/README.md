@@ -12,7 +12,7 @@ open in the browser or console
 ```sh
 curl http://localhost:8080/demo/Demo
 ```
-will show
+will respond with
 ```html
 <body>
 You requested=[http://127.0.0.1:8080/demo/Demo?null]
@@ -51,6 +51,18 @@ You requested=[http://127.0.0.1:8080/demo/Demo?null]
   </tbody>
 </table>
 ```
+the console will show log:
+```sh
+17:19:14.341 [http-8080-1] DEBUG example.DemoServlet - init()
+17:19:14.380 [http-8080-1] DEBUG example.DemoServlet - GET request=org.apache.catalina.connector.RequestFacade@762a5269 {host=localhost:8080, user-agent=curl/7.58.0, accept=*/*}
+17:19:14.381 [http-8080-1] INFO  example.DemoServlet - GET request=org.apache.catalina.connector.RequestFacade@762a5269
+```
+interrupt the application through
+`^C`
+if will log before closing
+```sh
+17:19:23.009 [Thread-2] DEBUG example.DemoServlet - destroy()
+```
 ### Testing with Docker Container
 
 * build application
@@ -67,20 +79,34 @@ docker run --name $NAME -p 8080:8080 -d $IMAGE
 ```
 * connect to web application
 ```sh
-curl http://127.0.0.1:8080/demo/Demo | lynx -stdin -dump
+curl http://127.0.0.1:8080/demo/Demo?dummy 2>/dev/null| lynx -stdin -dump
 ```
 will print
-```
-You requested=[http://127.0.0.1:8080/demo/Demo?null]
+```sh
+You requested=[http://127.0.0.1:8080/demo/Demo?dummy]
 message
+ message
+     __________________________________________________________________
+
+   host       127.0.0.1:8080
+   accept     */*
+   user-agent curl/7.58.0
+```
+if open the url in the browser, additional headers will be logged:
+```sh
+You requested=[http://127.0.0.1:8080/demo/Demo?dummy]
+message
+sec-fetch-user	?1
+connection	keep-alive
 accept-language	en-US,en;q=0.9
 host	127.0.0.1:8080
-upgrade-insecure-requests	1
-connection	keep-alive
+sec-fetch-mode	navigate
+accept	text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3
+user-agent	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.121 Safari/537.36 Vivaldi/2.8.1664.44
 accept-encoding	gzip, deflate, br
-user-agent	Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.105 Safari/537.36 Vivaldi/2.4.1488.40
-accept	text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
-```
+sec-fetch-site	none
+upgrade-insecure-requests	1
+```  
 * list applications in manager
 ```sh
 export CONTAINER=$(docker container ls -a| grep $NAME| awk '{print $1}')
@@ -147,28 +173,24 @@ docker image rm $IMAGE
 docker build -t $IMAGE -f Dockerfile .
 docker run --name $NAME -p 8080:8080 -d $IMAGE
 ```
-* invoke the servlet
+inspect console log:
 ```sh
-curl http://localhost:8080/demo/Demo?foo=bar
-```
-inspect console log (temporarily using `error` logging):
-```sh
+docker container prune -f
 export CONTAINER=$(docker container ls -a| grep $NAME| awk '{print $1}')
 docker logs $CONTAINER
 ```
-will show
+will observe
 ```sh
-ERROR example.DemoServlet - GET request=org.apache.catalina.connector.RequestFacade@29cd287d 
-{
-accept-language=en-US,en;q=0.9, 
-host=127.0.0.1:8080, 
-upgrade-insecure-requests=1, 
-connection=keep-alive, 
-accept-encoding=gzip, deflate, br, 
-user-agent=Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.105 Safari/537.36 Vivaldi/2.4.1488.40, 
-accept=text/html, application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;
-q=0.8
-}
+15:26:48.335 [http-apr-8080-exec-1] DEBUG example.DemoServlet - init()
+```
+* repeat curl command to invoke the servlet
+```sh
+curl http://localhost:8080/demo/Demo?foo=bar
+```
+will see
+```sh
+15:31:59.319 [http-apr-8080-exec-5] INFO  example.DemoServlet - GET request=org.apache.catalina.connector.RequestFacade@3605e6af
+15:32:17.721 [http-apr-8080-exec-7] DEBUG example.DemoServlet - GET request=org.apache.catalina.connector.RequestFacade@3605e6af {host=127.0.0.1:8080, accept=*/*, user-agent=curl/7.58.0}
 ```
 * stop the demo application
 ```sh
@@ -176,7 +198,7 @@ curl -u admin:password http://localhost:8080/manager/text/stop?path=/demo
 ```
 console log will show:
 ```sh
-21:33:33.404 [http-apr-8080-exec-3] ERROR example.DemoServlet - destroy()
+15:37:01.959 [http-apr-8080-exec-2] DEBUG example.DemoServlet - destroy()
 ```
 * inspect log files
 ```
@@ -186,6 +208,29 @@ in the container shell
 ```
 vi /opt/tomcat/logs/catalina.`date +"%Y-%m-%d"`.log
 ```
+remove the `log4j2.xml` from application container
+```sh
+docker exec -it $CONTAINER sh
+#
+rm -f /opt/tomcat/webapps/demo/WEB-INF/classes/log4j2.xml
+```
+then in the host
+```sh
+curl -u admin:password http://localhost:8080/manager/text/stop?path=/demo
+curl -u admin:password http://localhost:8080/manager/text/start?path=/demo
+```
+and repeat the servlet invocation:
+```sh
+curl http://localhost:8080/demo/Demo?foo=bar
+```
+observe the logging to stop.
+
+copy the  `log4j2.xml` into container lib:
+  
+```sh
+docker cp src/main/resources/log4j2.xml $CONTAINER:/opt/tomcat/lib
+```
+observe the logging to resume
 ### Cleanup
 ```sh
 docker stop $NAME
@@ -255,4 +300,4 @@ docker run -e LOGGING_CONFIG="-Djava.util.logging.config.file=\$CATALINA_BASE/co
   * [fixing](https://crunchify.com/java-how-to-configure-log4j-logger-property-correctly/) `ERROR StatusLogger No log4j2 configuration file found. Using default configuration: logging only errors to the console`
   * example project of watching the [ tomcat logging configuration](https://github.com/phoet/tomcat-logging) file
   * log4j tutorial with [Tomcat](https://laliluna.com/articles/posts/log4j-tutorial.html)
-
+  * log4j config [migration](https://logging.apache.org/log4j/2.x/manual/migration.html)

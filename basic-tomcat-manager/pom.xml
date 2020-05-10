@@ -4,15 +4,16 @@
   <groupId>example</groupId>
   <artifactId>demo</artifactId>
   <packaging>war</packaging>
-  <version>0.6.0-SNAPSHOT</version>
-  <name>demo web app</name>
+  <version>0.7.0-SNAPSHOT</version>
+  <name>demo web app with log4j2 logging</name>
   <properties>
     <java.version>1.7</java.version>
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
     <junit.version>4.12</junit.version>
+    <log4j.version>1.2.17</log4j.version>
     <log4j-core.version>2.11.1</log4j-core.version>
     <tomcat.version>8.5.30</tomcat.version>
-    <tomcat-maven-plugin.version>2.2</tomcat-maven-plugin.version>
+    <tomcat8-maven-plugin.version>3.0-r1756463</tomcat8-maven-plugin.version>
     <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
     <maven-war-plugin.version>3.0.0</maven-war-plugin.version>
   </properties>
@@ -51,6 +52,11 @@
       <version>${log4j-core.version}</version>
     </dependency>
     <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <version>${javax.servlet-api.version}</version>
@@ -74,7 +80,7 @@
       <plugin>
         <groupId>org.apache.tomcat.maven</groupId>
         <artifactId>tomcat8-maven-plugin</artifactId>
-        <version>${tomcat-maven-plugin.version}</version>
+        <version>${tomcat8-maven-plugin.version}</version>
         <configuration>
           <path>/</path>
         </configuration>
