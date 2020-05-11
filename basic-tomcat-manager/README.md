@@ -6,6 +6,8 @@ This project contains a [basic tomcat web app project](https://github.com/tongue
 
 * test application locally
 ```sh
+mkdir -p src/main/resources
+cp log4j2.xml src/main/resources/log4j2.xml
 mvn clean tomcat:run-war
 ```
 open in the browser or console
@@ -63,6 +65,19 @@ if will log before closing
 ```sh
 17:19:23.009 [Thread-2] DEBUG example.DemoServlet - destroy()
 ```
+
+Move the `log4j2.xml` away from resorces directoty into root and repackage and relaunch explicitly passing the configuration information:
+on Windows host
+```cmd
+move /y src\main\resources\log4j2.xml .
+mvn -Dlog4j.configurationFile=%CD%\log4j2.xml clean tomcat:run-war
+```
+on Linux host
+```sh
+mv src/main/resources/log4j2.xml .
+mvn -Dlog4j.configurationFile=$(pwd)/log4j2.xml clean tomcat:run-war
+```
+confirm the logging continues to work
 ### Testing with Docker Container
 
 * build application
@@ -301,3 +316,4 @@ docker run -e LOGGING_CONFIG="-Djava.util.logging.config.file=\$CATALINA_BASE/co
   * example project of watching the [ tomcat logging configuration](https://github.com/phoet/tomcat-logging) file
   * log4j tutorial with [Tomcat](https://laliluna.com/articles/posts/log4j-tutorial.html)
   * log4j config [migration](https://logging.apache.org/log4j/2.x/manual/migration.html)
+
