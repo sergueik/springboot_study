@@ -82,8 +82,17 @@ confirm the logging continues to work
 
 * build application
 ```sh
-mvn package
+rm -f src/main/resources/log4j2.xml
 ```
+NOTE: we do now want the `log4j2.xml` to be installed by tomcat into application's `WEB-INF/classes` - the purpose of this project is to explore overriding the default locations
+```sh
+mvn clean package
+```
+verify the log4j configuration was not included:
+```sh
+jar tvf target/demo.war | grep log4j2.xml
+```
+the above command should print nothing
 * build and deploy Docker image
 
 ```sh
@@ -91,6 +100,15 @@ export IMAGE='basic-tomcat'
 export NAME='example-tomcat'
 docker build -t $IMAGE -f Dockerfile .
 docker run --name $NAME -p 8080:8080 -d $IMAGE
+```
+* verify there is just one instance of `log4j2.xml` configuration file in tomcat in the container:
+```sh
+docker exec -it $CONTAINER sh
+#
+```
+```sh
+find /opt/tomcat/ -iname 'log4j2.xml'
+/opt/tomcat/conf/log4j2.xml
 ```
 * connect to web application
 ```sh
@@ -306,6 +324,12 @@ the `/opt/tomcat/conf/logging.properties` coming with the base container needs t
 ```
 ```sh
 docker run -e LOGGING_CONFIG="-Djava.util.logging.config.file=\$CATALINA_BASE/conf/log4j2.xml" --name $NAME -p 8080:8080 -d $IMAGE
+```
+
+```sh
+docker exec -it $CONTAINER sh
+env | grep log4j.configurationFile=
+log4j.configurationFile=/conf/log4j2.xm
 ```
 ### See Also:
 
