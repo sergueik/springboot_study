@@ -1,0 +1,19 @@
+FROM openjdk:8-jre-alpine3.9
+
+ARG SELENIUM_DOWNLOADED_JAR="selenium-server-standalone.jar"
+
+ARG SELENIUM_DIR="/selenium"
+ARG SELENIUM_JAR="selenium-server-standalone.jar"
+
+WORKDIR /selenium
+
+COPY stop_trap.sh /selenium
+ADD ${SELENIUM_DOWNLOADED_JAR} "/selenium/${SELENIUM_JAR}"
+# ARG SELENIUM_HUB_PORT="4444"
+
+# EXPOSE ${SELENIUM_HUB_PORT}
+EXPOSE 4444 
+
+COPY entrypoint.sh /selenium
+# NOTE: was "./entrypoint.sh"
+ENTRYPOINT ["/selenium/entrypoint.sh"]
