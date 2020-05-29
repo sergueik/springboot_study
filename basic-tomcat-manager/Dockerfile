@@ -9,10 +9,15 @@ ADD "target/${app_war}" ${CATALINA_HOME}/webapps/demo.war
 ADD tomcat-users.xml ${CATALINA_HOME}/conf/tomcat-users.xml
 ADD log4j2.xml ${CATALINA_HOME}/conf/log4j2.xml
 RUN echo "export JAVA_OPTS=\"-Dlog4j2.debug=true -Dapp.env=staging -Dlog4j.configurationFile=\$CATALINA_BASE/conf/log4j2.xml\"" | tee ${CATALINA_HOME}/bin/setenv.sh
-ENV log4j.configurationFile=$CATALINA_BASE/conf/log4j2.xml
+# NOTE: There is no alternative to tweaking the setenv.sh
+# setting the environment variable like
+# ENV log4j.configurationFile=$CATALINA_BASE/conf/log4j2.xml 
+# alone does not work
+# to confirm, need to uncomment and comment two statements
 EXPOSE 8080
 # https://stackoverflow.com/questions/37904682/how-do-i-use-docker-environment-variable-in-entrypoint-array
-# NOTE: collapsed original arguments into one token past "-c"
+# NOTE: when switching exec to shell syntax 
+# one has to collapse original arguments into one token past "-c"
 # ENTRYPOINT [ "sh" ,"-c", "${CATALINA_HOME}/bin/catalina.sh ru $@"]
 # alternatively
 ENTRYPOINT ${CATALINA_HOME}/bin/catalina.sh run $@
