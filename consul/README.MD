@@ -179,6 +179,7 @@ echo Y |docker image prune
 
   * original [Getting Started with Microservices in SpringBoot](https://www.infoq.com/articles/Microservices-SpringBoot) article.
   * [transtation](https://habr.com/company/otus/blog/413567/) (in russian)
+  * HashiCorp Consul [alternatives/competitors](https://www.g2.com/products/hashicorp-consul/competitors/alternatives)
   * [using consul for service discovery and beyond (in russian)](https://eax.me/consul/)
   * [using consul with sping microservice service discovery](http://cloud.spring.io/spring-cloud-consul/1.3.x/multi/multi_spring-cloud-consul-discovery.html)
       
