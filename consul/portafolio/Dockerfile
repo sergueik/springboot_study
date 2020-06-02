@@ -1,4 +1,5 @@
-FROM jolokia/alpine-jre-8
+## FROM jolokia/alpine-jre-8
+FROM openjdk:8-jre-alpine3.9
 VOLUME /tmp
 ADD target/example.portafolio.jar app.jar
 ENV JAVA_OPTS=""

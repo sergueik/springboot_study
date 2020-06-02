@@ -24,7 +24,6 @@ services:
       - discovery
   pricing_api:
     image: test/pricing
-
     ports:
       - "57216:57216"
     environment:

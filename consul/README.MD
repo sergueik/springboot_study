@@ -117,6 +117,7 @@ followed by consul artifact check
 ROLES='discovery'
 for CONTAINER in $ROLES ; do docker container ls | grep $CONTAINER | awk '{print $1}' | xargs -I{} docker exec -t {} /bin/sh -c  'ps -a | grep consu[l]'; done
 ```
+which will show
 ```sh
  1 root       0:03 /bin/consul agent -config-dir=/config -server -bootstrap -advertise 192.168.99.100
 ```
@@ -140,7 +141,7 @@ for CONTAINER in $ROLES ; do docker container ls | grep $CONTAINER | awk '{print
 ```
 followed by observing the service health change in consul ui:
   
-NOTE: some project refactoring  performed to get certain Docker is not downloading the images
+NOTE: some project refactoring  performed to get certain Docker is not downloading the imagesi
 from the parent project docker hub instead of using the local freshly built ones.
 
 Attempt of bootstrapping the cluster via single springboot style command
@@ -161,10 +162,12 @@ this was not looked into any further.
 ROLES='discovery pricing_api portafolio_api'
 for CONTAINER in $ROLES  ; do docker container ls | grep $CONTAINER | awk '{print $1}' | xargs -IX docker container stop X; done
 for CONTAINER in $ROLES ; do docker container ls -a | grep $CONTAINER | awk '{print $1}' | xargs -IX docker container rm X; done
+docker container prune -f
 ```
 ```sh
 IMAGES='test/pricing test/portafolio'
-for IMAGE in $IMAGES ; do docker image ls | grep $IMAGE | awk '{print $3}' | xargs  docker image rm {} ; done
+for IMAGE in $IMAGES ; do docker image ls | grep $IMAGE | awk '{print $3}' | xargs docker image rm {} ; done
+docker image prune -f
 ```
 ignoring
 ```sh
@@ -179,6 +182,9 @@ echo Y |docker image prune
 
   * original [Getting Started with Microservices in SpringBoot](https://www.infoq.com/articles/Microservices-SpringBoot) article.
   * [transtation](https://habr.com/company/otus/blog/413567/) (in russian)
+  * HashiCorp Consul [alternatives/competitors](https://www.g2.com/products/hashicorp-consul/competitors/alternatives)
+  * consul [overview](https://xakep.ru/2016/04/18/consul/)(in Russian)
+  * consul [intro](https://habr.com/ru/post/266139/)(in Russian)
   * [using consul for service discovery and beyond (in russian)](https://eax.me/consul/)
   * [using consul with sping microservice service discovery](http://cloud.spring.io/spring-cloud-consul/1.3.x/multi/multi_spring-cloud-consul-discovery.html)
       
