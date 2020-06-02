@@ -197,3 +197,5 @@ echo Y |docker image prune
   * Another [spring-cloud-consul-example](https://github.com/yidongnan/spring-cloud-consul-example) project
   * [Eureka Consul Adapter](https://github.com/twinformatics/eureka-consul-adapter) springboot discovery class.
   * Yet another [spring-boot-starter-consul](https://github.com/markramach/spring-boot-starter-consul) project.
+  * docker-compse.yml] [intro](https://habr.com/ru/company/ruvds/blog/486682/) (in Russian)
+  * docker-compse.yml] [intro 2](https://habr.com/ru/company/infobox/blog/263001/) (in Russian)
