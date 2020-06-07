@@ -1,0 +1,29 @@
+db:
+  image: mysql:8.0.18
+  # NORE: NEVER start with the 'latest'
+  # image: mysql:latest
+  environment:
+    MYSQL_ROOT_PASSWORD: nimda
+    MYSQL_DATABASE: example_db
+    MYSQL_USER: example_db_user
+    MYSQL_PASSWORD: example_db_pass
+#  ports:
+#    - "3306:3306"
+  volumes:
+   - ./db:/docker-entrypoint-initdb.d
+
+web:
+  # image: tomcat:latest
+  image: tomcat:8.0-alpine
+  # TODO: poor synchronization: 
+  # Environment variables do not get loaded during first launch of catalina
+  environment:
+    JDBC_URL: jdbc:mysql://db:3306/example_db?connectTimeout=0&amp;socketTimeout=0&amp;autoReconnect=true
+    JDBC_USER: example_db_user
+    JDBC_PASS: example_db_pass
+  ports:
+   - "80:8080"
+  volumes:
+   - ./tomcat/webapps:/usr/local/tomcat/webapps
+  links:
+    - db
