@@ -4,14 +4,14 @@ SpringBoot Docker basic example extracted from [Springboot mySQL Docker containe
 
 ### Setup
 Edit `pom.xml` and specify the __8.0__ version of mysql-connector-java jar:
-
+.
 ```xml
 <dependency>
   <groupId>mysql</groupId>
   <artifactId>mysql-connector-java</artifactId>
   <version>8.0.18</version>
 </dependency>
-```
+```.p
 Pull the collaborator Docker image:
 
 ```sh
@@ -291,12 +291,47 @@ docker logs $SERVER_NAME
 ```sh
 docker exec -it $SERVER_NAME mysql -P 3306 -h localhost -u java -ppassword -e "set @var = '1'; select @var ;"
 ```
+### Plain docker-compose test
 
+
+```sh
+docker-compose -f docker-compose.plain.yaml  stop
+
+
+export COMPOSE_HTTP_TIMEOUT=600
+docker-compose -f  docker-compose.plain.yaml up --build
+docker-compose -f docker-compose.plain.yaml up
+```
+
+then observe only one node to be running
+```sh
+docker ps
+```
+observe the error logs
+```
+ID=$(docker container ls -a | grep '_app_' | awk '{print $1}')
+docker logs  $ID
+docker container rm $ID
+```
+
+followed
+by re-running compose
+```sh
+docker-compose -f  docker-compose.plain.yaml up --build
+```
+- this will rebuild the `_app_` node with Java app 
+and  seeing healty response to REST API
+```sh
+curl http://localhost:8086/all/
+```
+```sh
+[]
+```
 ### Cleanup
 
 ```sh
 docker container prune -f
-```
+``
 If the `prune` command is not desirable, stop and clean individual container by name
 ```sh
 CONTAINER='mysql-example'
@@ -349,7 +384,7 @@ or one may use an alpine-jre base image which is likely to be used by appplicati
       # NOTE: db server name has to match application.properties
       - delayed_start
 ```
-with the `Dockerfile.delated_start` hosting the same operations as before:
+with the `Dockerfile.delayed_start` hosting the same operations as before:
 ```sh
 FROM openjdk:8-jre-alpine3.9
 ADD "target/${app_jar}" app.jar

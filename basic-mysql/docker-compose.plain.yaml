@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+  mysql-server:
+    container_name: mysql-server
+    hostname: mysql-server
+    image: mysql:8.0.18
+    restart: always
+    environment:
+      # NOTE the credentials need to match setting in application.properties
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=java
+      - MYSQL_DATABASE=test
+      - MYSQL_PASSWORD=password
+    networks:
+      - example
+  app:
+    depends_on:
+      - mysql-server
+    build: .
+    image: openjdk:8-jre-alpine3.9
+    ports:
+      # NOTE port has to match application.properties
+      - 8086:8086
+    environment:
+      SERVICE_PORT: 3306
+      SERVICE_HOST: 'mysql-server'
+      MYSQL_USER: java
+      MYSQL_DATABASE: test
+      MYSQL_PASSWORD: password
+    networks:
+      - example
+networks:
+  example:
