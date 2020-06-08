@@ -52,7 +52,8 @@ CONTAINER ID        IMAGE                    COMMAND                  CREATED   
 ```
 connecting to the `consul` container
 ```sh
-docker exec -it $(docker container ls | grep 'consul_discovery' |awk '{print $1}') '/bin/bash'
+NAME='consul_discovery'
+docker exec -it $(docker container ls | grep  $NAME |awk '{print $1}') '/bin/bash'
 ```
 one can find the consul configuration in `/config/consul.json` 
 ```sh
@@ -197,5 +198,5 @@ echo Y |docker image prune
   * Another [spring-cloud-consul-example](https://github.com/yidongnan/spring-cloud-consul-example) project
   * [Eureka Consul Adapter](https://github.com/twinformatics/eureka-consul-adapter) springboot discovery class.
   * Yet another [spring-boot-starter-consul](https://github.com/markramach/spring-boot-starter-consul) project.
-  * docker-compse.yml] [intro](https://habr.com/ru/company/ruvds/blog/486682/) (in Russian)
-  * docker-compse.yml] [intro 2](https://habr.com/ru/company/infobox/blog/263001/) (in Russian)
+  * docker-compose.yml] [intro](https://habr.com/ru/company/ruvds/blog/486682/) (in Russian)
+  * docker-compose.yml] [intro 2](https://habr.com/ru/company/infobox/blog/263001/) (in Russian)
