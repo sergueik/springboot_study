@@ -39,4 +39,9 @@ do
   fi
   sleep $DELAY
 done
-java -jar $APP
+
+which java
+if [ $? -eq 0 ]
+then
+  java -jar $APP
+fi
