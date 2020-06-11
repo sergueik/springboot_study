@@ -1,8 +1,9 @@
-version: '2'
+version: '3.7'
 
 services:
   mysql_db:
-    # container_name: mysql_db
+    container_name: mysql_db
+    hostname: mysql_db
     image: mysql:8.0.18
     # NODE: it probably isn't worth risk to use 'latest'
     environment:
@@ -25,8 +26,6 @@ services:
     command: mysql_db:3306 
     # NOTE: docker dns not working:
     # nc: bad address 'mysql_db'
-    networks:
-      - example
   web:
     # image: tomcat:latest
     image: tomcat:8.0-alpine
@@ -46,7 +45,5 @@ services:
      - ./tomcat/webapps:/usr/local/tomcat/webapps
     links:
       - mysql_db
-    networks:
-      - example
 networks:
   example:
