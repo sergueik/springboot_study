@@ -4,9 +4,11 @@
 # beam server checker Docker ENTRYPOINT wrapper example
 
 if [ -z "${SERVICE_HOST}" ] ; then
+  echo 'Using default service host'
   SERVICE_HOST='mysql-server'
 fi
 if [ -z "${SERVICE_PORT}" ] ; then
+  echo 'Using default service port'
   SERVICE_PORT='3306'
 fi
 DELAY='60'
@@ -40,8 +42,9 @@ do
   sleep $DELAY
 done
 
-which java
+/usr/bin/which java
 if [ $? -eq 0 ]
 then
+  echo 'found java'
   java -jar $APP
 fi

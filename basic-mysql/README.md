@@ -153,11 +153,11 @@ would respond with
 ```sh
 Hibernate: select users0_.id as id1_0_, users0_.name as name2_0_, users0_.salary as salary3_0_, users0_.team_name as team_nam4_0_ from users users0_
 ```
-* Alternatively bring both containers up via `docker-compose.yaml`(slower and less reliable):
+* Alternatively bring both containers up via `docker-compose.delayed_start.yaml`(slower and less reliable):
 ```sh
 mvn clean package
 export COMPOSE_HTTP_TIMEOUT=600
-docker-compose  -f docker-compose.yaml up --build
+docker-compose  -f docker-compose.delayed_start.yaml up --build
 ```
 The ordering does not appear to work well:
 ```sh
