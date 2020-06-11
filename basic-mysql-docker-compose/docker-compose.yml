@@ -11,28 +11,36 @@ services:
       - 'MYSQL_USER=example_db_user'
       - 'MYSQL_DATABASE=example_db'
       - 'MYSQL_PASSWORD=example_db_pass'
-  #  ports:
-  #    - "3306:3306"
+    ports:
+      - "3306:3306"
     volumes:
      - ./db:/docker-entrypoint-initdb.d
-  
-  wait-for-dependencies:
-    # container_name: wait-for-dependencies
-    image: dadarek/wait-for-dependencies
-    depends_on:
-      - mysql_db
     networks:
       - example
-    command: mysql_db:3306 
-    # NOTE: docker dns not working:
-    # nc: bad address 'mysql_db'
+  delayed_start:
+    container_name: delayed_start
+    build:
+      context: .
+      dockerfile: Dockerfile.delayed_start
+    image: alpine:3.9
+    depends_on:
+      - mysql_db
+    environment:
+      SERVICE_PORT: 3306
+      SERVICE_HOST: mysql_db
+      # NOTE - Docker dns hostname: setting in the dependency container
+    networks:
+      - example
   web:
-    # image: tomcat:latest
     image: tomcat:8.0-alpine
+    # image: tomcat:latest
+    # Note:  java 7
+    # image: davidcaste/alpine-tomcat:jre8tomcat8
     # TODO: poor synchronization: 
     # Environment variables do not get loaded during first launch of catalina
     depends_on:
-      - wait-for-dependencies
+      - delayed_start
+      - mysql_db
     networks:
       - example
     environment:
