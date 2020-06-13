@@ -4,7 +4,9 @@ services:
   mysql-server:
     container_name: mysql-server
     hostname: mysql-server
-    image: mysql:8.0.18
+    image: mysql:5.7
+    # the 8 jdbc implies java 8+
+    # image: mysql:8.0.18
     restart: always
     # NOTE: official MySQL container on first launch executes .sh, init.sql and init.sql.gz found in /docker-entrypoint-initdb.d
     # command: --init-file /data/application/init.sql
