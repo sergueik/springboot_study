@@ -1,10 +1,12 @@
 version: '3.7'
 
 services:
-  mysql_db:
-    container_name: mysql_db
-    hostname: mysql_db
-    image: mysql:8.0.18
+  mysql-server:
+    container_name: mysql-server
+    hostname: mysql-server
+    image: mysql:5.7
+    # the 8 jdbc implies java 8+
+    # image: mysql:8.0.18
     # NODE: it probably isn't worth risk to use 'latest'
     environment:
       - 'MYSQL_ROOT_PASSWORD=nimda'
@@ -24,10 +26,10 @@ services:
       dockerfile: Dockerfile.delayed_start
     image: alpine:3.9
     depends_on:
-      - mysql_db
+      - mysql-server
     environment:
       SERVICE_PORT: 3306
-      SERVICE_HOST: mysql_db
+      SERVICE_HOST: mysql-server
       # NOTE - Docker dns hostname: setting in the dependency container
     networks:
       - example
@@ -40,11 +42,11 @@ services:
     # Environment variables do not get loaded during first launch of catalina
     depends_on:
       - delayed_start
-      - mysql_db
+      - mysql-server
     networks:
       - example
     environment:
-      - 'JDBC_URL=jdbc:mysql://mysql_db:3306/example_db?connectTimeout=0&amp;socketTimeout=0&amp;autoReconnect=true'
+      - 'JDBC_URL=jdbc:mysql://mysql-server:3306/example_db?connectTimeout=0&amp;socketTimeout=0&amp;autoReconnect=true'
       - 'JDBC_USER=example_db_user'
       - 'JDBC_PASS=example_db_pass'
     ports:
@@ -52,6 +54,6 @@ services:
     volumes:
      - ./tomcat/webapps:/usr/local/tomcat/webapps
     links:
-      - mysql_db
+      - mysql-server
 networks:
   example:

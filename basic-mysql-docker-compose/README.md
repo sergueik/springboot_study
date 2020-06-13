@@ -91,7 +91,46 @@ delayed_start    | Waiting on the mysql_db 3306
 delayed_start    | Got Response
 delayed_start exited with code 0
 ```
+### To Run Without docker-compose
 
+* pull base images
+```sh
+docker pull mysql:5.7
+```
+```sh
+docker pull tomcat:8.0-alpine 
+```
+
+modify the 
+`tomcat/webapps/example-webapp/META-INF/context.xml`
+with the chosen dns name of the database server.
+
+* notice: this project is mapped into the containers:
+
+```sh
+docker run --name mysql-server -e MYSQL_ROOT_PASSWORD=nimda -e MYSQL_USER=example_db_user -e MYSQL_DATABASE=example_db -e MYSQL_PASSWORD=example_db_pass -v db:/docker-entrypoint-initdb.d  -d mysql:5.7
+```
+and
+```sh
+docker run --link mysql-server --name web-server -e JDBC_URL='jdbc:mysql://mysql-server:3306/example_db?connectTimeout=0&amp;socketTimeout=0&amp;autoReconnect=true' -e JDBC_USER=example_db_user -e JDBC_PASS=example_db_pass -p 80:8080  -v $(pwd)/tomcat/webapps:/usr/local/tomcat/webapps -d tomcat:8.0-alpine
+```
+* verify
+```sh
+ curl http://localhost:80/example-webapp/test-jndi.jsp
+```
+```html
+<html>
+<body>
+<pre>
+DataSource: org.apache.tomcat.dbcp.dbcp2.BasicDataSource@5a04602f
+Connection: 1615708347, URL=jdbc:mysql://mysql-server:3306/example_db?connectTimeout=0&socketTimeout=0&autoReconnect=true, UserName=example_db_user@172.17.0.3, MySQL Connector Java
+</pre>
+</body>
+</html>
+```
+```sh
+java.sql.SQLException: null,  message from server: "Host '172.18.0.3' is not allowed to connect to this MySQL server
+```
 ### Cleanup
 ```sh
 for N in web db ; do docker stop $(docker ps  | grep _${N}_ |awk '{print $1}'); done
