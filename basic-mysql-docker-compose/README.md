@@ -6,14 +6,24 @@ Basic docker-compose tomcat8 with pre-built pure jsp tomcat application interact
 ### Usage
 
 ```sh
- docker-compose up
+export COMPOSE_HTTP_TIMEOUT=600
+docker-compose up
+docker container stop $(docker container ls | grep '_web_' | awk '{print $1}') 
+docker-compose up
 ```
 followed by
 ```sh
 lynx http://localhost/example-webapp
 ```
 
-currentlly shows `500 – Internal Server Error` on JSP Datasource and JNI  pages because not properly configured
+The __Datasource__ and __JNI__ pages work on the second launch but __JDBC__ shows `500 – Internal Server Error`
+```sh
+java.sql.SQLException: The url cannot be null
+```
+presumably because the environment settings  from `docker-compose.yaml` not properly proparated into tomcat application.
+
+On a first launch all 3 pages: __JDBC__, __JNI__ and __DataSource__  show 500 with similar error.
+
 
 To troubleshoot poor thing
 

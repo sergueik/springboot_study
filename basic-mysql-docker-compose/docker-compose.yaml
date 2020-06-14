@@ -5,9 +5,8 @@ services:
     container_name: mysql-server
     hostname: mysql-server
     image: mysql:5.7
-    # the 8 jdbc implies java 8+
-    # image: mysql:8.0.18
-    # NODE: it probably isn't worth risk to use 'latest'
+    # NOTE: myslq:8 jdbc requires java 8+ thus conflicts with tomcat:8.0-alpine
+    # that has java 7
     environment:
       - 'MYSQL_ROOT_PASSWORD=nimda'
       - 'MYSQL_USER=example_db_user'
@@ -35,11 +34,10 @@ services:
       - example
   web:
     image: tomcat:8.0-alpine
-    # image: tomcat:latest
-    # Note:  java 7
+    # NOTE: has java 7
     # image: davidcaste/alpine-tomcat:jre8tomcat8
     # TODO: poor synchronization: 
-    # Environment variables do not get loaded during first launch of catalina
+    # Environment variables aren't loaded during first launch of catalina
     depends_on:
       - delayed_start
       - mysql-server
