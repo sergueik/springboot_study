@@ -9,7 +9,7 @@ System.err.println(propertyKey + " = " + System.getProperty(propertyKey));
 ```
 and
 ```java
-String envKey ="setting_env";
+String envKey = "setting_env";
 System.err.println(envKey + " = " + System.getenv(envKey));
 ```
 ### Testing
@@ -35,16 +35,20 @@ will show
 setting_env = dockerfile_value
 ```
 #### Override value at build time 
-```
+```sh
 docker image rm -f $IMAGE
 docker build -t $IMAGE -f Dockerfile --build-arg "setting_arg=build_time_value" .
-docker run --name $NAME --rm -it $IMAGE
 ```
-will get the build time value:
+then
+```sh
+docker run --name $NAME --rm -it $IMAGE
+
+```
+will print the value defined at image build time:
 ```sh
 setting_env = build_time_value
 ```
-#### Override at container time
+#### Override at container time (use same container as before)
 ```sh
 2>&1 docker run --name $NAME --rm -e "setting_env=runtime_value" -it $IMAGE | grep $SETTING
 ```
@@ -100,6 +104,7 @@ Property ${setting_name} = null
   * [Docker ARG, ENV and .env - a Complete Guide](https://vsupalov.com/docker-arg-env-variable-guide/)
   * [Understanding Docker Build Args, Environment Variables and Docker Compose Variables](https://vsupalov.com/docker-env-vars/)
   * [stackoverflow](https://stackoverflow.com/questions/30494050/how-do-i-pass-environment-variables-to-docker-containers)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
