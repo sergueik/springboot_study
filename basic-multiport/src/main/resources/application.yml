@@ -1,0 +1,29 @@
+server:
+  port: ${appPort:8880}
+  additionalPorts: 8882,8883
+
+# Spring MVC actuator endpoints available via /admin/info, /admin/health, ...
+server.servlet-path: /
+management:
+  context-path: /admin
+  port: 8881
+
+javaMelodyPort: 8883
+
+# http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-endpoints
+
+endpoints:
+  enabled: false
+  info:
+    enabled: true
+  health:
+    enabled: true
+  metrics:
+    enabled: true
+
+info:
+  app:
+    name: @project.artifactId@
+  build:
+    version: @project.version@
+
