@@ -26,17 +26,11 @@ public class FiltersConfiguration {
 
 			@Override
 			protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-
 					FilterChain filterChain) throws ServletException, IOException {
-
 				if (!javaMelodyPortOnly || request.getLocalPort() == javaMelodyPort) {
-
 					filterChain.doFilter(request, response);
-
 				} else {
-
 					response.sendError(404);
-
 				}
 
 			}

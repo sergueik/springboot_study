@@ -19,17 +19,14 @@ import net.bull.javamelody.SessionListener;
 import net.bull.javamelody.SpringDataSourceBeanPostProcessor;
 
 @Configuration
-
 public class JavaMelodyConfiguration implements ServletContextInitializer {
 
 	@Override
-
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		servletContext.addListener(new SessionListener());
 	}
 
 	@Bean(name = "javaMelodyFilter")
-
 	public FilterRegistrationBean javaMelodyFilter() {
 		final FilterRegistrationBean javaMelody = new FilterRegistrationBean();
 		javaMelody.setFilter(new MonitoringFilter());
@@ -39,21 +36,14 @@ public class JavaMelodyConfiguration implements ServletContextInitializer {
 		javaMelody.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
 		javaMelody.addUrlPatterns("/*");
 		javaMelody.addInitParameter("monitoring-path", "/monitoring");
-
 		return javaMelody;
-
 	}
 
 	// Note: if you have auto-proxy issues, you can add the following dependency
-
 	// in your pom.xml:
-
 	// <dependency>
-
 	// <groupId>org.aspectj</groupId>
-
-	// <artifactId>aspectjweaver</artifactId>	
-
+	// <artifactId>aspectjweaver</artifactId>
 	// </dependency>
 
 	@Bean
