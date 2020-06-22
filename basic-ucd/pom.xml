@@ -6,18 +6,66 @@
   <artifactId>ibm-ucdeploy-publisher</artifactId>
   <version>0.1.SNAPSHOT</version>
   <packaging>jar</packaging>
+  <properties>
+    <java.version>1.8</java.version>
+    <commons-lang3.version>3.3.1</commons-lang3.version>
+    <commons-httpclient.version>4.3.3</commons-httpclient.version>
+    <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+    <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+    <maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
+    <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
+  </properties>
   <build>
-    <directory>${project.basedir}/dist</directory>
-    <outputDirectory>${project.basedir}/dist</outputDirectory>
-    <finalName>${project.artifactId}-${project.version}</finalName>
+    <outputDirectory>${project.basedir}/target</outputDirectory>
+    <finalName>${project.groupId}-${project.artifactId}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <goals>
+          <goal>compile</goal>
+        </goals>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <encoding>utf-8</encoding>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>${maven-dependency-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven-jar-plugin.version}</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>${project.groupId}.${mainClass}</mainClass>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
-  <!-- get every artifact through maven.glassfish.org, which proxies all the artifacts that we need -->
-  <repositories>
-    <repository>
-      <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
-    </repository>
-  </repositories>
   <dependencies>
     <dependency>
       <groupId>uc-uDeployRestClient</groupId>
@@ -78,22 +126,22 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.3.3</version>
+      <version>${commons-httpclient.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <version>4.3.3</version>
+      <version>${commons-httpclient.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-cache</artifactId>
-      <version>4.3.3</version>
+      <version>${commons-httpclient.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpmime</artifactId>
-      <version>4.3.3</version>
+      <version>${commons-httpclient.version}</version>
     </dependency>
     <dependency>
       <groupId>com.kenai.nbpwr</groupId>
@@ -119,7 +167,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.1</version>
+      <version>${commons-lang3.version}</version>
     </dependency>
   </dependencies>
 </project>
