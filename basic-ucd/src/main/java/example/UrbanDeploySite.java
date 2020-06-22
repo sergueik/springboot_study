@@ -1,4 +1,4 @@
-package com.urbancode.ds.jenkins.plugins.urbandeploypublisher;
+package example;
 
 import com.urbancode.commons.util.IO;
 import com.urbancode.ud.client.UDRestClient;
