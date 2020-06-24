@@ -117,6 +117,36 @@ https://localhost:8443
 (use the target machine ip if it is not accessed locally)
 as __admin__/__admin__
 
+```sh
+docker start $(docker container ls -a | grep 'ucd-server' | awk '{print $1}')
+```
+this will restore port mapping
+
+
+#### Test Rest Client
+
+*  copy dependency jars into current  directory
+```sh
+JARS='uc-uDeployRestClient-1.0-SNAPSHOT.jar commons-codec-1.5.jar uc-jettison-1.0-SNAPSHOT.jar'
+for JAR in $JARS; do cp WEB-INF/lib/$JAR . ; done
+```
+*  compile
+```sh
+javac -cp uc-uDeployRestClient-1.0-SNAPSHOT.jar:commons-codec-1.5.jar:uc-jettison-1.0-SNAPSHOT.jar BasicAgentClientTest.java
+```
+*  run
+```sh
+java -cp uc-uDeployRestClient-1.0-SNAPSHOT.jar:commons-codec-1.5.jar:uc-jettison-1.0-SNAPSHOT.jar:. BasicAgentClientTes
+```
+when  invalid credentials provided one will get an exception (converted to Runtme one):
+
+```
+```
+when credentials are correct the excetion will become
+```sh
+Exception in thread "main" java.io.IOException: 404
+No agent with id/name dummy
+```
 
 ### See Also
 
