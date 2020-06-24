@@ -17,7 +17,11 @@ This directory contains subset of classes extracted from IBM
   uc-replicated-codestation-1.0-SNAPSHOT.jar
   uc-uDeployRestClient-1.0-SNAPSHOT.jar
 ```
+
 and may be useful to follow best practices instead of re-inventing a wrapper around __UrbanCode Deploy Rest client__.
+Note: UrbanCode Deploy Rest client is not published to Maven repository - 
+`https://mvnrepository.com/search?q=uDeployRestClient` will return nothing, so one has to build it oneself.
+
 
 The dependencies have never been published into Maven central, so to have them locally
 Download and extract  the hpi from `https://www.urbancode.com/uc-downloads/plugins/ibmucd/jenkins-ud-plugin/`:
@@ -117,6 +121,8 @@ as __admin__/__admin__
 ### See Also
 
   * https://github.com/UrbanCode/UCD-Docker-Images
-  * https://www.urbancode.com/plugin/jenkins/
-  * https://www.urbancode.com/plugin/jenkins-pipeline/
+  * REST client [ucd](https://github.com/UrbanCode/uDeployRestClient)
+  * Jenkins pipeline [ucd plugin](https://github.com/UrbanCode/jenkins-pipeline-ucd-plugin) source code
+  * Usage of __component\_deployment__ and __version\_import__  into [ucd](https://www.urbancode.com/plugindoc/jenkins-pipeline#tab-usage) from Jenkins, Pipeline syntax 
   * https://github.com/UrbanCode/Jenkins-Job-Manager-UCD
+  
