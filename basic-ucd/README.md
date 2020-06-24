@@ -147,7 +147,16 @@ when credentials are correct the excetion will become
 Exception in thread "main" java.io.IOException: 404
 No agent with id/name dummy
 ```
-
+### Building as and Using Package
+* adding one exta class solely to parse commandline arguments, makes it sometimes easier to
+package into `jar` with manifest 
+```sh
+mvn clean package
+```
+followed by
+```sh
+java -cp target/example.ucdclient.jar:target/lib/*  example.BasicAgentClientTest  -debug -agent dummy
+```
 ### See Also
 
   * https://github.com/UrbanCode/UCD-Docker-Images
