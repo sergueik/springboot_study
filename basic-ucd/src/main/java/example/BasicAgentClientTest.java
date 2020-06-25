@@ -26,22 +26,23 @@ public class BasicAgentClientTest {
 
 	public static void main(String[] args) throws URISyntaxException, IOException, JSONException {
 		commandLineParser = new CommandLineParser();
-		commandLineParser.saveFlagValue("user");
-		commandLineParser.saveFlagValue("password");
+		commandLineParser.flagsWithValues.add("user");
+		commandLineParser.flagsWithValues.add("password");
 		commandLineParser.saveFlagValue("agent");
 
 		commandLineParser.parse(args);
 
-		if (commandLineParser.hasFlag("debug")) {
+		if (commandLineParser.flags.containsKey("debug")) {
 			debug = true;
 		}
-		String user = commandLineParser.getFlagValue("user");
+		// static inner allows accessing private members from enclosing class directly
+		String user = commandLineParser.flags.get("user");
 		if (user == null) {
 			System.err.println("Missing required argument: user - assuming default");
 			user = "admin";
 			// return;
 		}
-		String password = commandLineParser.getFlagValue("password");
+		String password = commandLineParser.flags.get("password");
 		if (password == null) {
 			System.err.println("Missing required argument: password - assuming default");
 			password = "admin";
@@ -58,6 +59,7 @@ public class BasicAgentClientTest {
 			throw new RuntimeException(String.format("failed to connect as %s / password %s", user, password));
 		} else {
 			data = client.getAgent(agent);
+			System.out.println(data);
 		}
 	}
 

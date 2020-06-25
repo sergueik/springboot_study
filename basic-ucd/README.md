@@ -18,6 +18,8 @@ This directory contains subset of classes extracted from IBM
   uc-uDeployRestClient-1.0-SNAPSHOT.jar
 ```
 
+![IBM Urbancode Udeploy Server Example](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/agent.png)
+
 and may be useful to follow best practices instead of re-inventing a wrapper around __UrbanCode Deploy Rest client__.
 Note: UrbanCode Deploy Rest client is not published to Maven repository - 
 `https://mvnrepository.com/search?q=uDeployRestClient` will return nothing, so one has to build it oneself.
@@ -62,14 +64,18 @@ version which has more functionality in particular publishes versions. It also h
 
 ### Accessing UCD Server
 
-We intend to  be interacting with a vanilla trial version of the [UrbanCode Deploy Server](https://hub.docker.com/r/ibmcom/ucds/) Docker container
+We intend to  be interacting with a vanilla trial version of the [IBM UrbanCode Deploy Server](https://hub.docker.com/r/ibmcom/ucds/)
+and [IBM UrbanCode Deploy Agent](https://hub.docker.com/r/ibmcom/ucda/)
+Docker containers
 To create one
+
 ### Usage
+* pull and launch server
 ```sh
 docker pull ibmcom/ucds
 ```
-NOTE: Docker image is heavy (1.03GB per docker image after pull, 1.7 Gb consumed after the install finished)
-and initial run is *very* time-consuming
+NOTE: The Docker image is heavy (1.03GB per docker image after pull, 1.7 Gb consumed after the install finished)
+and initial auto-bootstrap run is *very* time-consuming
 
 ```sh
 NAME='ucd-server'
@@ -118,7 +124,8 @@ https://localhost:8443
 as __admin__/__admin__
 
 ```sh
-docker start $(docker container ls -a | grep 'ucd-server' | awk '{print $1}')
+NAME='ucd-server'
+docker start $(docker container ls -a | grep $NAME | awk '{print $1}')
 ```
 this will restore port mapping
 
@@ -136,18 +143,103 @@ javac -cp uc-uDeployRestClient-1.0-SNAPSHOT.jar:commons-codec-1.5.jar:uc-jettiso
 ```
 *  run
 ```sh
-java -cp uc-uDeployRestClient-1.0-SNAPSHOT.jar:commons-codec-1.5.jar:uc-jettison-1.0-SNAPSHOT.jar:. BasicAgentClientTes
+java -cp uc-uDeployRestClient-1.0-SNAPSHOT.jar:commons-codec-1.5.jar:uc-jettison-1.0-SNAPSHOT.jar:. BasicAgentClientTest  --agent dummy
 ```
 when  invalid credentials provided one will get an exception (converted to Runtme one):
 
 ```
 ```
-when credentials are correct the excetion will become
-```sh
+when credentials are correct the exception will become
+``sh
 Exception in thread "main" java.io.IOException: 404
 No agent with id/name dummy
 ```
-### Building as and Using Package
+
+* pull and launch ucd agent
+```sh
+IMAGE='ibmcom/ucda'
+docker pull $IMAGE
+```
+then bind it to the Server
+
+```sh
+docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(  docker container ls | grep $NAME | awk '{print $1}' )
+```
+* collect the value manually (temporarily)
+
+```
+export UCD_SERVER_IP=172.17.0.2
+docker run -d --add-host="ucd-server:$UCD_SERVER_IP" -t $IMAGE
+```
+* open server `https://172.17.0.2:8443` in browser
+and observe agent (`agent-c0336485ef9d`) discovered
+
+* run the agent inventory
+```sh
+java -cp target/example.ucdclient.jar:target/lib/*  example.BasicAgentClientTest  -debug -agent agent-c0336485ef9d 2>/dev/null | jq '.'
+```
+this will produce
+```json
+{
+  "id": "172ebdc2-8423-fc4e-a0f8-20a2be97f2b9",
+  "securityResourceId": "172ebdc2-822c-aab3-4762-3a688629aece",
+  "name": "agent-c0336485ef9d",
+  "active": true,
+  "licensed": false,
+  "licenseType": "NONE",
+  "status": "ONLINE",
+  "version": "6.2.7.1.960390",
+  "lastContact": 1593095454348,
+  "dateCreated": 1593094973506,
+  "workingDirectory": "/opt/ibm-ucd/agent/var/work/",
+  "impersonationPassword": "****",
+  "impersonationUseSudo": false,
+  "impersonationForce": false,
+  "tags": [],
+  "security": {
+    "read": true,
+    "execute": true,
+    "Add to Agent Pool": true,
+    "Create Resources": true,
+    "Delete": true,
+    "Edit Basic Settings": true,
+    "Execute on Agents": true,
+    "Install Remote Agents": true,
+    "Manage Impersonation": true,
+    "Manage Properties": true,
+    "Manage Teams": true,
+    "Manage Version Imports": true,
+    "Upgrade Agents": true,
+    "View Agents": true
+  },
+  "propSheet": {
+    "id": "172ebdc2-8433-3be7-1e08-78efe59afc49",
+    "path": "agents/172ebdc2-8423-fc4e-a0f8-20a2be97f2b9/propSheet",
+    "version": 2,
+    "versionCount": 2,
+    "commit": 4,
+    "versioned": true
+  },
+  "extendedSecurity": {
+    "read": true,
+    "execute": true,
+    "Add to Agent Pool": true,
+    "Create Resources": true,
+    "Delete": true,
+    "Edit Basic Settings": true,
+    "Execute on Agents": true,
+    "Install Remote Agents": true,
+    "Manage Impersonation": true,
+    "Manage Properties": true,
+    "Manage Teams": true,
+    "Manage Version Imports": true,
+    "Upgrade Agents": true,
+    "View Agents": true,
+    "teams": []
+  }
+}
+```
+### Building Agent Client as and running package
 * adding one exta class solely to parse commandline arguments, makes it sometimes easier to
 package into `jar` with manifest 
 ```sh
