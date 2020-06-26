@@ -7,8 +7,10 @@ import java.net.URISyntaxException;
 
 import org.apache.commons.codec.EncoderException;
 import com.urbancode.ud.client.AgentClient;
+import com.urbancode.ud.client.ResourceClient;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,8 +61,16 @@ public class BasicAgentClientTest {
 			throw new RuntimeException(String.format("failed to connect as %s / password %s", user, password));
 		} else {
 			data = client.getAgent(agent);
-			System.out.println(data);
+			// System.out.println(data);
 		}
+		// explore resource hierarchy	
+		ResourceClient r = new ResourceClient(new URI("https://localhost:8443"), user, password);
+		String id ="172ecdb3-50a2-e489-6b50-1399b396b6fb";
+		JSONArray ce = r.getResourceChildren(id);
+		// System.out.println("{\"" + id + "\": "+ ce + " }");
+		String id1 = "172ecdb9-54f7-c269-9cca-fd8bd9ee6341";
+		JSONArray ce1= r.getResourceChildren(id1);
+		System.out.println("{\"" + id1 + "\": "+ ce1 + " }");
 	}
 
 	private static class CommandLineParser {

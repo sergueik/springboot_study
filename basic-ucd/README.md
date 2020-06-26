@@ -240,7 +240,7 @@ this will produce
 }
 ```
 ### Building Agent Client as and running package
-* adding one exta class solely to parse commandline arguments, makes it sometimes easier to
+* adding one extra class solely to parse commandline arguments, makes it sometimes easier to
 package into `jar` with manifest 
 ```sh
 mvn clean package
@@ -249,6 +249,73 @@ followed by
 ```sh
 java -cp target/example.ucdclient.jar:target/lib/*  example.BasicAgentClientTest  -debug -agent dummy
 ```
+After associating Component with Agent in UCD, the agent inventory JSON does not show any change.
+However the call to
+```java
+// explore resource hierarchy
+ ResourceClient r = new ResourceClient(new URI("https://localhost:8443"), user, password);
+ String id ="172ecdb3-50a2-e489-6b50-1399b396b6fb";
+ JSONArray children = r.getResourceChildren(id);
+ // System.out.println("{\"" + id + "\": "+ children + " }");
+ id = "172ecdb9-54f7-c269-9cca-fd8bd9ee6341";
+ children= r.getResourceChildren(id);
+ System.out.println("{\"" + id1 + "\": "+ children + " }");
+```
+ reveal the hoerarchy of resources:
+```json
+{
+  "172ecdb3-50a2-e489-6b50-1399b396b6fb": [
+    {
+      "id": "172ecdb9-54f7-c269-9cca-fd8bd9ee6341",
+      "securityResourceId": "172ecdb9-52fc-88a4-0788-62af12e10242",
+      "name": "agent-c0336485ef9d",
+      "path": "/TEST/agent-c0336485ef9d",
+      "active": true,
+      "description": "",
+      "inheritTeam": true,
+      "discoveryFailed": false,
+      "prototype": false,
+      "impersonationPassword": "****",
+      "impersonationUseSudo": false,
+      "impersonationForce": false,
+      "type": "agent",
+      "status": "ONLINE",
+      "hasAgent": true,
+      "tags": []
+    }
+  ]
+}
+```
+and
+```json
+{
+  "172ecdb9-54f7-c269-9cca-fd8bd9ee6341": [
+    {
+      "id": "172ecdca-be2c-f177-95d1-cec08fe9e760",
+      "securityResourceId": "172ecdca-bdf6-b68b-a846-195a84def8fe",
+      "name": "Dummy Component",
+      "path": "/TEST/agent-c0336485ef9d/Dummy Component",
+      "active": true,
+      "description": "",
+      "inheritTeam": true,
+      "discoveryFailed": false,
+      "prototype": false,
+      "impersonationPassword": "****",
+      "impersonationUseSudo": false,
+      "impersonationForce": false,
+      "type": "subresource",
+      "status": "ONLINE",
+      "hasAgent": true,
+      "tags": []
+    }
+  ]
+}
+
+```
+
+![IBM Urbancode Udeploy Server Example](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/configured_agent_capture.png)
+
+
 ### See Also
 
   * https://github.com/UrbanCode/UCD-Docker-Images
