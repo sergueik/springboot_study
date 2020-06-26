@@ -261,15 +261,15 @@ However the call to
  children= r.getResourceChildren(id);
  System.out.println("{\"" + id1 + "\": "+ children + " }");
 ```
- reveal the hoerarchy of resources:
-```json
+reveal the hoerarchy of resources:
+```js
 {
-  "172ecdb3-50a2-e489-6b50-1399b396b6fb": [
+  "172f2041-bfa1-c87d-e2cd-f0f9bb270040": [
     {
-      "id": "172ecdb9-54f7-c269-9cca-fd8bd9ee6341",
-      "securityResourceId": "172ecdb9-52fc-88a4-0788-62af12e10242",
-      "name": "agent-c0336485ef9d",
-      "path": "/TEST/agent-c0336485ef9d",
+      "id": "172f2046-3c18-c275-a13d-8e0f77475303",
+      "securityResourceId": "172f2046-3be0-2e16-1428-af4094c36d48",
+      "name": "Component  2",
+      "path": "/TEST/agent-14401f33ae44/Component  2",
       "active": true,
       "description": "",
       "inheritTeam": true,
@@ -278,23 +278,36 @@ However the call to
       "impersonationPassword": "****",
       "impersonationUseSudo": false,
       "impersonationForce": false,
-      "type": "agent",
+      "type": "subresource",
       "status": "ONLINE",
       "hasAgent": true,
       "tags": []
     }
-  ]
-}
-```
-and
-```json
-{
-  "172ecdb9-54f7-c269-9cca-fd8bd9ee6341": [
+  ],
+  "172f1c3c-8bcd-ca06-0e12-1331c3c8a0c1": [
     {
-      "id": "172ecdca-be2c-f177-95d1-cec08fe9e760",
-      "securityResourceId": "172ecdca-bdf6-b68b-a846-195a84def8fe",
+      "id": "172f1d46-ba77-1d34-73d1-149e8b2c6a80",
+      "securityResourceId": "172f1d46-b8c6-c626-715f-834d913ee701",
+      "name": "Component  2",
+      "path": "/TEST/agent-2181a1920431/Component  2",
+      "active": true,
+      "description": "",
+      "inheritTeam": true,
+      "discoveryFailed": false,
+      "prototype": false,
+      "impersonationPassword": "****",
+      "impersonationUseSudo": false,
+      "impersonationForce": false,
+      "type": "subresource",
+      "status": "ONLINE",
+      "hasAgent": true,
+      "tags": []
+    },
+    {
+      "id": "172f1c98-4dda-04c7-e61c-92b6d9e2a9d6",
+      "securityResourceId": "172f1c98-4bb6-5693-ef34-7d91c929466d",
       "name": "Dummy Component",
-      "path": "/TEST/agent-c0336485ef9d/Dummy Component",
+      "path": "/TEST/agent-2181a1920431/Dummy Component",
       "active": true,
       "description": "",
       "inheritTeam": true,
@@ -310,7 +323,6 @@ and
     }
   ]
 }
-
 ```
 
 ![IBM Urbancode Udeploy Server Example](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/configured_agent_capture.png)
@@ -323,4 +335,3 @@ and
   * Jenkins pipeline [ucd plugin](https://github.com/UrbanCode/jenkins-pipeline-ucd-plugin) source code
   * Usage of __component\_deployment__ and __version\_import__  into [ucd](https://www.urbancode.com/plugindoc/jenkins-pipeline#tab-usage) from Jenkins, Pipeline syntax 
   * https://github.com/UrbanCode/Jenkins-Job-Manager-UCD
-  

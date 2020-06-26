@@ -26,7 +26,8 @@ public class BasicAgentClientTest {
 	private static AgentClient client;
 	private static JSONObject data;
 
-	public static void main(String[] args) throws URISyntaxException, IOException, JSONException {
+	public static void main(String[] args)
+			throws URISyntaxException, IOException, JSONException {
 		commandLineParser = new CommandLineParser();
 		commandLineParser.flagsWithValues.add("user");
 		commandLineParser.flagsWithValues.add("password");
@@ -37,7 +38,8 @@ public class BasicAgentClientTest {
 		if (commandLineParser.flags.containsKey("debug")) {
 			debug = true;
 		}
-		// static inner allows accessing private members from enclosing class directly
+		// static inner allows accessing private members from enclosing class
+		// directly
 		String user = commandLineParser.flags.get("user");
 		if (user == null) {
 			System.err.println("Missing required argument: user - assuming default");
@@ -46,7 +48,8 @@ public class BasicAgentClientTest {
 		}
 		String password = commandLineParser.flags.get("password");
 		if (password == null) {
-			System.err.println("Missing required argument: password - assuming default");
+			System.err
+					.println("Missing required argument: password - assuming default");
 			password = "admin";
 			// return;
 		}
@@ -58,19 +61,27 @@ public class BasicAgentClientTest {
 		}
 		client = new AgentClient(new URI("https://localhost:8443"), user, password);
 		if (client == null) {
-			throw new RuntimeException(String.format("failed to connect as %s / password %s", user, password));
+			throw new RuntimeException(String
+					.format("failed to connect as %s / password %s", user, password));
 		} else {
 			data = client.getAgent(agent);
 			// System.out.println(data);
 		}
-		// explore resource hierarchy	
-		ResourceClient r = new ResourceClient(new URI("https://localhost:8443"), user, password);
-		String id ="172ecdb3-50a2-e489-6b50-1399b396b6fb";
-		JSONArray ce = r.getResourceChildren(id);
-		// System.out.println("{\"" + id + "\": "+ ce + " }");
-		String id1 = "172ecdb9-54f7-c269-9cca-fd8bd9ee6341";
-		JSONArray ce1= r.getResourceChildren(id1);
-		System.out.println("{\"" + id1 + "\": "+ ce1 + " }");
+		// explore resource hierarchy
+		ResourceClient r = new ResourceClient(new URI("https://localhost:8443"),
+				user, password);
+		// TODO: get id
+		String id = "172ecdb3-50a2-e489-6b50-1399b396b6fb";
+		JSONArray jsonArray = r.getResourceChildren(id);
+		// System.out.println("{\"" + id + "\": "+ jsonArray + " }");
+
+		for (int index = 0; index != jsonArray.length(); index++) {
+			JSONObject childObject = jsonArray.getJSONObject(index);
+			String id1 = childObject.getString("id");
+			JSONArray ce1 = r.getResourceChildren(id1);
+			// String id1 = "172ecdb9-54f7-c269-9cca-fd8bd9ee6341";
+			System.out.println("{\"" + id1 + "\": " + ce1 + " }");
+		}
 	}
 
 	private static class CommandLineParser {
@@ -164,7 +175,8 @@ public class BasicAgentClientTest {
 		// Example data:
 		// -argument "{count:0, type:navigate, size:100, flag:true}"
 		// NOTE: not using org.json to reduce size
-		public Map<String, String> extractExtraArgs(String argument) throws IllegalArgumentException {
+		public Map<String, String> extractExtraArgs(String argument)
+				throws IllegalArgumentException {
 
 			final Map<String, String> extraArgData = new HashMap<>();
 			argument = argument.trim().substring(1, argument.length() - 1);
@@ -172,7 +184,8 @@ public class BasicAgentClientTest {
 				if (debug) {
 					System.err.println("Found invalid nested data");
 				}
-				throw new IllegalArgumentException("Nested JSON athuments not supprted");
+				throw new IllegalArgumentException(
+						"Nested JSON athuments not supprted");
 			}
 			final String[] pairs = argument.split(entrySeparator);
 
@@ -189,3 +202,4 @@ public class BasicAgentClientTest {
 
 	}
 }
+
