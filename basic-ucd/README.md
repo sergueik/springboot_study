@@ -176,10 +176,28 @@ docker run -d --add-host="ucd-server:$UCD_SERVER_IP" -t $IMAGE
 and observe agent (`agent-c0336485ef9d`) discovered
 
 * run the agent inventory
+from linux machine
 ```sh
-java -cp target/example.ucdclient.jar:target/lib/*  example.BasicAgentClientTest  -debug -agent agent-c0336485ef9d 2>/dev/null | jq '.'
+# use environment to pass password
+export my_password=admin
+java -cp target/example.ucdclient.jar:target/lib/* example.BasicAgentClientTest -env '172ecdb3-50a2-e489-6b50-1399b396b6fb' -password env:secret_password
 ```
+from Windows machine
+```cmd
+set SECRET_PASSWORD=admin
+java -cp target\example.ucdclient.jar;target\lib\* example.BasicAgentClientTest -env "172ecdb3-50a2-e489-6b50-1399b396b6fb" -server https://192.168.0.64:8443 -password env:SECRET_PASSWORD
+```
+can use any name you like instead of `SECRET_PASSWORD`, as long as it is consistent between the command setting it and the argument name retriveing it
+
+
 this will produce
+
+```sh
+ - agent-ad84625cbc4b
+   - Component  2
+   - Dummy Component
+```      
+and when `debug` flag is set, more raw json like:      
 ```json
 {
   "id": "172ebdc2-8423-fc4e-a0f8-20a2be97f2b9",

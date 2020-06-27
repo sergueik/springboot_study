@@ -32,8 +32,8 @@ public class BasicAgentClientTest {
 		commandLineParser = new CommandLineParser();
 		commandLineParser.flagsWithValues.add("user");
 		commandLineParser.flagsWithValues.add("password");
-		commandLineParser.saveFlagValue("agent");
 		commandLineParser.saveFlagValue("server");
+		commandLineParser.saveFlagValue("env");
 
 		commandLineParser.parse(args);
 
@@ -57,16 +57,11 @@ public class BasicAgentClientTest {
 			server = "https://localhost:8443";
 			System.err.println("Missing argument: server - using default");
 		}
-		String agent = commandLineParser.getFlagValue("agent");
-		if (agent == null) {
-			System.err.println("Missing required argument: agent");
-			return;
-		}
 		// TODO: get env id legitimately
 		String env = commandLineParser.getFlagValue("env");
 		if (env == null) {
-			env = "172ecdb3-50a2-e489-6b50-1399b396b6fb";
-			System.err.println("Missing argument: env - using default");
+			// env = "172ecdb3-50a2-e489-6b50-1399b396b6fb";
+			System.err.println("Missing required argument: env");
 		}
 
 		// explore resource hierarchy
@@ -98,29 +93,6 @@ public class BasicAgentClientTest {
 				System.out.println("    - " + childObject1.getString("name"));
 			}
 		}
-		// 405 method not allowed
-		// JSONArray resourceTree = resourceClient.getResourceTree();
-		/*
-		System.err.println("TEST:" + resourceClient
-				.getResourceProperty("172ecdb3-50a2-e489-6b50-1399b396b6fb", "Name"));
-		*/
-		// NOTE: cannot feed the agent id to resourceClient
-		/*
-				client = new AgentClient(new URI(server), user, password);
-				if (client == null) {
-					throw new RuntimeException(String
-							.format("failed to connect as %s / password %s", user, password));
-				}
-				data = client.getAgent(agent);
-				String agentId = data.getString("id");
-				if (debug) {
-					System.out.println(data);
-				}
-				
-				JSONArray ce1 = resourceClient.getResourceChildren(agentId);
-				// String id1 = "172ecdb9-54f7-c269-9cca-fd8bd9ee6341";
-				System.out.println("{\"" + agentId + "\": " + ce1 + " }");
-		*/
 	}
 
 	private static class CommandLineParser {
@@ -184,7 +156,11 @@ public class BasicAgentClientTest {
 						System.err.println("Examine: " + name);
 					}
 					if (flagsWithValues.contains(name) && n < args.length - 1) {
-						value = args[++n];
+						String data = args[++n];
+						// https://www.baeldung.com/java-case-insensitive-string-matching
+						value = data.matches("(?i)^env:[a-z_0-9]+")
+								? System.getenv(data.replaceFirst("(?i)^env:", "")) : data;
+
 						if (debug) {
 							System.err.println("Collect value for: " + name + " = " + value);
 						}
@@ -193,7 +169,6 @@ public class BasicAgentClientTest {
 							System.err.println("Ignore the value for " + name);
 						}
 					}
-
 					flags.put(name, value);
 				}
 
@@ -241,4 +216,3 @@ public class BasicAgentClientTest {
 
 	}
 }
-
