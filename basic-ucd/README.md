@@ -157,7 +157,7 @@ No agent with id/name dummy
 
 * pull and launch ucd agent
 ```sh
-IMAGE='ibmcom/ucda'
+NAME='ucd-server'
 docker pull $IMAGE
 ```
 then bind it to the Server
@@ -168,7 +168,8 @@ docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}
 * collect the value manually (temporarily)
 
 ```
-export UCD_SERVER_IP=172.17.0.2
+IMAGE='ibmcom/ucda'
+export UCD_SERVER_IP=172.17.0.3
 docker run -d --add-host="ucd-server:$UCD_SERVER_IP" -t $IMAGE
 ```
 * open server `https://172.17.0.2:8443` in browser
