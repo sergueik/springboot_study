@@ -1,0 +1,9 @@
+---
+john:
+  firstName: "John"
+  lastName: "Lennon"
+  plays: "guitar"
+paul:
+  firstName: "Paul"
+  lastName: "McCartney"
+  plays: "guitar"
