@@ -12,9 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 // NOTE: SpringBootApplication cannot be put in default package
 @SpringBootApplication
+// @EnableConfigurationProperties(ApplicationProperties.class)
 @RestController
+
 @RequestMapping("/basic")
 public class ExampleApplication {
 
@@ -32,8 +34,8 @@ public class ExampleApplication {
 	@Autowired
 	private Environment environment;
 
-	@Value("${name}")
-	private String name;
+	@Autowired
+	private ApplicationProperties properties;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ExampleApplication.class, args);
@@ -41,7 +43,7 @@ public class ExampleApplication {
 
 	@GetMapping
 	public String hello() {
-		return "Hello basic";
+		return "Hello " + properties.getArtistName();
 	}
 
 	@PostConstruct
@@ -52,7 +54,8 @@ public class ExampleApplication {
 		Map<String, Object> configuration = yaml.load(inputStream);
 		LOG.info("Loaded Env Default Profiles: ",
 				Arrays.asList(environment.getDefaultProfiles()));
-		LOG.info("Loaded name: " + name, name);
+		LOG.info("Loaded name: " + properties.getArtistName(),
+				properties.getArtistName());
 		// second argument does not work
 		LOG.info("Loaded configuration: " + configuration, configuration);
 	}

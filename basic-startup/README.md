@@ -8,7 +8,8 @@ The example defines a simple key `name` in SpringBoot fashion, in `application.p
 For a bookstrapped configuration loading sample code from [YAML with SnakeYAML](https://www.baeldung.com/java-snake-yaml) is used
 
 ### See also:
-  https://qna.habr.com/q/801303
-
+  [forum](https://qna.habr.com/q/801303)(in Russian) where the topic was discussed
+  [details of AppProperties](https://www.baeldung.com/properties-with-spring)
+  [Guide to @ConfigurationProperties in Spring Boot](https://www.baeldung.com/configuration-properties-in-spring-boot) 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
