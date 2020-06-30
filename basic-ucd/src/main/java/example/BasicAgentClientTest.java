@@ -150,7 +150,8 @@ public class BasicAgentClientTest {
 					if (debug) {
 						System.err.println("Examine: " + name);
 					}
-					if (flagsWithValues.contains(name) && n < args.length - 1) {
+					if (flagsWithValues.contains(name) && n < args.length - 1
+							&& !args[n + 1].matches("^-")) {
 						String data = args[++n];
 						// https://www.baeldung.com/java-case-insensitive-string-matching
 						value = data.matches("(?i)^env:[a-z_0-9]+")
