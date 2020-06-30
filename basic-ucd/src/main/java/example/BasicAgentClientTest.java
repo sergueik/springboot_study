@@ -1,6 +1,5 @@
 package example;
 
-// import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -60,8 +59,8 @@ public class BasicAgentClientTest {
 		// TODO: get env id legitimately
 		String env = commandLineParser.getFlagValue("env");
 		if (env == null) {
-			// env = "172ecdb3-50a2-e489-6b50-1399b396b6fb";
 			System.err.println("Missing required argument: env");
+			return;
 		}
 
 		// explore resource hierarchy
@@ -72,19 +71,15 @@ public class BasicAgentClientTest {
 					.format("failed to connect as %s / password %s", user, password));
 		}
 		JSONArray jsonArray = resourceClient.getResourceChildren(env);
-		for (int index = 0; index != jsonArray.length(); index++) {
-			JSONObject childObject = jsonArray.getJSONObject(index);
-			System.out.println("  - " + childObject.getString("name"));
-		}
 		if (debug) {
 			System.out.println("{\"" + env + "\": " + jsonArray + " }");
 		}
 		for (int index = 0; index != jsonArray.length(); index++) {
 			JSONObject childObject = jsonArray.getJSONObject(index);
+			System.out.println("  - " + childObject.getString("name"));
 			String id1 = childObject.getString("id");
 
 			JSONArray ce1 = resourceClient.getResourceChildren(id1);
-			// String id1 = "172ecdb9-54f7-c269-9cca-fd8bd9ee6341";
 			if (debug) {
 				System.out.println("{\"" + id1 + "\": " + ce1 + " }");
 			}
@@ -162,7 +157,14 @@ public class BasicAgentClientTest {
 								? System.getenv(data.replaceFirst("(?i)^env:", "")) : data;
 
 						if (debug) {
-							System.err.println("Collect value for: " + name + " = " + value);
+							if (data.matches("(?i)^env:[a-z_0-9]+")) {
+								System.err
+										.println("Evaluate value for: " + name + " = " + value);
+
+							} else {
+								System.err
+										.println("Collect value for: " + name + " = " + value);
+							}
 						}
 					} else {
 						if (debug) {
