@@ -7,20 +7,28 @@ import java.net.URISyntaxException;
 import org.apache.commons.codec.EncoderException;
 import com.urbancode.ud.client.AgentClient;
 import com.urbancode.ud.client.ResourceClient;
+import com.urbancode.ud.client.ComponentClient;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class BasicAgentClientTest {
+	private static final List<String> fields = Arrays.asList("id", "name",
+			"description");
+
 	private static boolean debug = false;
+	private static boolean verbose = false;
+
 	private static CommandLineParser commandLineParser;
 
 	private static AgentClient client;
@@ -38,6 +46,9 @@ public class BasicAgentClientTest {
 
 		if (commandLineParser.flags.containsKey("debug")) {
 			debug = true;
+		}
+		if (commandLineParser.flags.containsKey("verbose")) {
+			verbose = true;
 		}
 		// static inner allows accessing private members from enclosing class
 		// directly
@@ -63,7 +74,10 @@ public class BasicAgentClientTest {
 			return;
 		}
 
+		ComponentClient componentClient = new ComponentClient(new URI(server), user,
+				password);
 		// explore resource hierarchy
+
 		ResourceClient resourceClient = new ResourceClient(new URI(server), user,
 				password);
 		if (resourceClient == null) {
@@ -76,16 +90,33 @@ public class BasicAgentClientTest {
 		}
 		for (int index = 0; index != jsonArray.length(); index++) {
 			JSONObject childObject = jsonArray.getJSONObject(index);
-			System.out.println("  - " + childObject.getString("name"));
+			System.out.println("  - ");
+			for (String field : fields) {
+				System.out.println(
+						String.format("  %s: \"%s\"", field, childObject.getString(field)));
+			}
 			String id1 = childObject.getString("id");
 
 			JSONArray ce1 = resourceClient.getResourceChildren(id1);
-			if (debug) {
+			if (verbose) {
 				System.out.println("{\"" + id1 + "\": " + ce1 + " }");
 			}
 			for (int index1 = 0; index1 != ce1.length(); index1++) {
 				JSONObject childObject1 = ce1.getJSONObject(index1);
-				System.out.println("    - " + childObject1.getString("name"));
+				System.out.println("    - ");
+				for (String field : fields) {
+					System.out.println(String.format("    %s: \"%s\"", field,
+							childObject1.getString(field)));
+				}
+				UUID id2 = componentClient.getComponentUUID("Component  2");
+				System.out.println("component uuid:" + id2);
+				// TODO: how to get it
+				/// id2 = "172f1d3c-35f2-7aa1-a9a3-d2fb56513b79";
+				// Component Properties
+				Map<String, String> p1 = componentClient
+						.getComponentProperties(id2.toString());
+				System.out.println(p1.keySet());
+
 			}
 		}
 	}
