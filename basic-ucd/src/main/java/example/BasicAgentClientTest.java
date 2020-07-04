@@ -82,53 +82,61 @@ public class BasicAgentClientTest {
 			System.err.println("Missing required argument: env");
 			return;
 		}
+		// explore resource hierarchy
 
 		componentClient = new ComponentClient(new URI(server), user, password);
-		// explore resource hierarchy
 		agentClient = new AgentClient(new URI(server), user, password);
 		resourceClient = new ResourceClient(new URI(server), user, password);
-		if (resourceClient == null) {
-			throw new RuntimeException(String
-					.format("failed to connect as %s / password %s", user, password));
-		}
-		JSONArray jsonArray = resourceClient.getResourceChildren(env);
-		if (debug) {
-			System.out.println("{\"" + env + "\": " + jsonArray + " }");
-		}
-		for (int index = 0; index != jsonArray.length(); index++) {
-			JSONObject childObject = jsonArray.getJSONObject(index);
-			/*
-			*/
-			JSONObject agentObject = agentClient
-					.getAgent(childObject.getString("name"));
-			// System.out.println("agent obect: " + agentObject);
 
-			String result = agentClient.setAgentProperty(
-					childObject.getString("name"), "description", newname, false);
-			System.out.println(
-					"setting agent description: " + newname + ". Result is: " + result);
+		if (resourceClient == null || agentClient == null
+				|| componentClient == null) {
+			throw new RuntimeException(String.format(
+					"failed to connect to server %s as user: %s / password: %s", server,
+					user, password));
+		}
+		// String resourceName = "TEST";
+		// JSONObject resourceJSONObject = resourceClient
+		// .getResourceRoleByName(resourceName);
+		JSONArray resourceChildrenJsonArray = resourceClient
+				.getResourceChildren(env);
+		if (debug) {
+			System.out
+					.println("{\"" + env + "\": " + resourceChildrenJsonArray + " }");
+		}
+		for (int index = 0; index != resourceChildrenJsonArray.length(); index++) {
+			JSONObject resourceChildObject = resourceChildrenJsonArray
+					.getJSONObject(index);
+
 			System.out.println("  - ");
 			for (String field : fields) {
-				System.out.println(
-						String.format("  %s: \"%s\"", field, childObject.getString(field)));
-			}
-			String id1 = childObject.getString("id");
-
-			JSONArray ce1 = resourceClient.getResourceChildren(id1);
-			if (verbose) {
-				System.out.println("{\"" + id1 + "\": " + ce1 + " }");
-			}
-			for (int index1 = 0; index1 != ce1.length(); index1++) {
-				JSONObject childObject1 = ce1.getJSONObject(index1);
-				System.out.println("    - ");
-				/*
-				 *  properties, but not the right
-				for (String field : fields) {
-					System.out.println(String.format("    %s: \"%s\"", field,
-							childObject1.getString(field)));
+				if (resourceChildObject.getString(field) != null
+						&& resourceChildObject.getString(field) != "") {
+					System.out.println(String.format("  %s: \"%s\"", field,
+							resourceChildObject.getString(field)));
 				}
-				*/
-				String componentName = childObject1.getString("name");
+			}
+			String resourceChildId = resourceChildObject.getString("id");
+
+			JSONArray resourceGrandChildrenJsonArray = resourceClient
+					.getResourceChildren(resourceChildId);
+			if (verbose) {
+				System.out.println("{\"" + resourceChildId + "\": "
+						+ resourceGrandChildrenJsonArray + " }");
+			}
+			for (int index1 = 0; index1 != resourceGrandChildrenJsonArray
+					.length(); index1++) {
+				JSONObject resourceGrandChild = resourceGrandChildrenJsonArray
+						.getJSONObject(index1);
+				System.out.println("    - ");
+				for (String field : fields) {
+					if (resourceGrandChild.getString(field) != null
+							&& resourceGrandChild.getString(field) != "") {
+						System.out.println(String.format("    %s: \"%s\"", field,
+								resourceGrandChild.getString(field)));
+					}
+				}
+
+				String componentName = resourceGrandChild.getString("name");
 				// System.out.println("Examine component name:" + componentName);
 
 				// getResourceProperty
@@ -156,12 +164,28 @@ public class BasicAgentClientTest {
 				JSONArray propDefsArray = resourceRole.getJSONArray("propDefs");
 				for (int index2 = 0; index2 != propDefsArray.length(); index2++) {
 					JSONObject propertyObject = propDefsArray.getJSONObject(index2);
-					System.out.println("      - ");
+					System.out.println("      # property definitions");
+					System.out.println("      -");
 					for (String field3 : fields2) {
-						System.out.println(String.format("    %s: \"%s\"", field3,
-								propertyObject.getString(field3)));
+						if (propertyObject.getString(field3) != null
+								&& propertyObject.getString(field3) != "") {
+							System.out.println(String.format("      %s: \"%s\"", field3,
+									propertyObject.getString(field3)));
+						}
 					}
 				}
+
+				String id3 = "172f1d3c-3665-6fd2-1c71-f0e67ec633c5";
+				System.out.println(
+						"Calling for " + id3 + " " + resourceGrandChild.getString("id"));
+				JSONArray xxx = resourceClient.getResourceRoleProperties(id3,
+						resourceGrandChild.getString("id"));
+				JSONObject yyy = xxx.getJSONObject(0).getJSONObject("propValue");
+				System.out.println(yyy);
+				// need to call
+				// curl
+				// 'https://192.168.0.64:8443/rest/resource/resource/1730c2d2-6a32-aff4-f7a1-9915402a8a58/propertiesForRole/172f1d3c-3665-6fd2-1c71-f0e67ec633c5?rowsPerPage=10&pageNumber=1&sortType=asc'
+				// \
 				// System.out.println("Component objects:" + data);
 				/*
 				resourceClient.getResourceProperty(childObject1.getString("id"),
