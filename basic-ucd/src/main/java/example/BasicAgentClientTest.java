@@ -25,13 +25,16 @@ import java.util.UUID;
 public class BasicAgentClientTest {
 	private static final List<String> fields = Arrays.asList("id", "name",
 			"description");
+	private static final List<String> fields2 = Arrays.asList("name",
+			"description", "value");
 
 	private static boolean debug = false;
 	private static boolean verbose = false;
 
 	private static CommandLineParser commandLineParser;
-
-	private static AgentClient client;
+	private static ResourceClient resourceClient;
+	private static ComponentClient componentClient;
+	private static AgentClient agentClient;
 	private static JSONObject data;
 
 	public static void main(String[] args)
@@ -40,6 +43,7 @@ public class BasicAgentClientTest {
 		commandLineParser.flagsWithValues.add("user");
 		commandLineParser.flagsWithValues.add("password");
 		commandLineParser.saveFlagValue("server");
+		commandLineParser.saveFlagValue("newname");
 		commandLineParser.saveFlagValue("env");
 
 		commandLineParser.parse(args);
@@ -62,6 +66,11 @@ public class BasicAgentClientTest {
 			password = "admin";
 			System.err.println("Missing argument: password - using default");
 		}
+		String newname = commandLineParser.flags.get("newname");
+		if (newname == null) {
+			newname = "brand new agent";
+			System.err.println("Missing argument: newname - using default");
+		}
 		String server = commandLineParser.getFlagValue("server");
 		if (server == null) {
 			server = "https://localhost:8443";
@@ -74,12 +83,10 @@ public class BasicAgentClientTest {
 			return;
 		}
 
-		ComponentClient componentClient = new ComponentClient(new URI(server), user,
-				password);
+		componentClient = new ComponentClient(new URI(server), user, password);
 		// explore resource hierarchy
-
-		ResourceClient resourceClient = new ResourceClient(new URI(server), user,
-				password);
+		agentClient = new AgentClient(new URI(server), user, password);
+		resourceClient = new ResourceClient(new URI(server), user, password);
 		if (resourceClient == null) {
 			throw new RuntimeException(String
 					.format("failed to connect as %s / password %s", user, password));
@@ -90,6 +97,16 @@ public class BasicAgentClientTest {
 		}
 		for (int index = 0; index != jsonArray.length(); index++) {
 			JSONObject childObject = jsonArray.getJSONObject(index);
+			/*
+			*/
+			JSONObject agentObject = agentClient
+					.getAgent(childObject.getString("name"));
+			// System.out.println("agent obect: " + agentObject);
+
+			String result = agentClient.setAgentProperty(
+					childObject.getString("name"), "description", newname, false);
+			System.out.println(
+					"setting agent description: " + newname + ". Result is: " + result);
 			System.out.println("  - ");
 			for (String field : fields) {
 				System.out.println(
@@ -104,19 +121,52 @@ public class BasicAgentClientTest {
 			for (int index1 = 0; index1 != ce1.length(); index1++) {
 				JSONObject childObject1 = ce1.getJSONObject(index1);
 				System.out.println("    - ");
+				/*
+				 *  properties, but not the right
 				for (String field : fields) {
 					System.out.println(String.format("    %s: \"%s\"", field,
 							childObject1.getString(field)));
 				}
-				UUID id2 = componentClient.getComponentUUID("Component  2");
-				System.out.println("component uuid:" + id2);
+				*/
+				String componentName = childObject1.getString("name");
+				// System.out.println("Examine component name:" + componentName);
+
+				// getResourceProperty
+				UUID componentUUID = componentClient.getComponentUUID(componentName);
+				// System.out.println("Converted to component uuid:" + componentUUID);
 				// TODO: how to get it
 				/// id2 = "172f1d3c-35f2-7aa1-a9a3-d2fb56513b79";
-				// Component Properties
-				Map<String, String> p1 = componentClient
-						.getComponentProperties(id2.toString());
-				System.out.println(p1.keySet());
-
+				// Component Properties, not what we need
+				/*
+				Map<String, String> propMap = componentClient
+						.getComponentProperties(componentUUID.toString());
+				for (String propName : propMap.keySet()) {
+					System.out
+							.println(String.format("%s=%s", propName, propMap.get(propName)));
+				}
+				*/
+				/*
+				JSONObject data = componentClient
+						.getComponentVersionPropSheetDef(componentUUID.toString());
+				System.out.println("Component prop sheet def:" + data);
+				*/
+				JSONObject componentObject = componentClient
+						.getComponent(componentUUID.toString());
+				JSONObject resourceRole = componentObject.getJSONObject("resourceRole");
+				JSONArray propDefsArray = resourceRole.getJSONArray("propDefs");
+				for (int index2 = 0; index2 != propDefsArray.length(); index2++) {
+					JSONObject propertyObject = propDefsArray.getJSONObject(index2);
+					System.out.println("      - ");
+					for (String field3 : fields2) {
+						System.out.println(String.format("    %s: \"%s\"", field3,
+								propertyObject.getString(field3)));
+					}
+				}
+				// System.out.println("Component objects:" + data);
+				/*
+				resourceClient.getResourceProperty(childObject1.getString("id"),
+						"test_property");
+				*/
 			}
 		}
 	}
