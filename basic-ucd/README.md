@@ -157,24 +157,34 @@ No agent with id/name dummy
 
 * pull and launch ucd agent
 ```sh
-NAME='ucd-server'
+export NAME='ucd-server'
 docker pull $IMAGE
 ```
 then bind it to the Server
 
 ```sh
-docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(  docker container ls | grep $NAME | awk '{print $1}' )
+ID=$( docker container ls | grep $NAME | awk '{print $1}')
+docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $ID
 ```
 * collect the value manually (temporarily)
 
+
 ```
-IMAGE='ibmcom/ucda'
-export UCD_SERVER_IP=172.17.0.3
+export IMAGE='ibmcom/ucda'
+export UCD_SERVER_IP=172.17.0.2
 docker run -d --add-host="ucd-server:$UCD_SERVER_IP" -t $IMAGE
 ```
 * open server `https://172.17.0.2:8443` in browser
 and observe agent (`agent-c0336485ef9d`) discovered
+```sh
+curl -k https://admin:admin@localhost:8443/rest/resource/resource 2>/dev/null| jq '.'
+```
+or (may not work)
 
+```sh
+curl -H 'Authorization: Basic YWRtaW46YWRtaW4K' -k https://localhost:8443/rest/resource/resource
+```
+https://www.ibm.com/support/knowledgecenter/SS4GSP_7.0.5/com.ibm.udeploy.tutorial.doc/topics/quickstart_abstract.html
 * run the agent inventory
 from linux machine
 ```sh
@@ -197,7 +207,7 @@ this will produce
    - Component  2
    - Dummy Component
 ```      
-and when `debug` flag is set, more raw json like:      
+and when `debug` flag is set, more raw json like:
 ```json
 {
   "id": "172ebdc2-8423-fc4e-a0f8-20a2be97f2b9",
