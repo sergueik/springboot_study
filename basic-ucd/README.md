@@ -1,22 +1,32 @@
 ### Info
 
-
 This directory contains subset of classes extracted from IBM
 [ibm-ucdeploy-publisher.hpi](https://www.ibm.com/support/pages/how-integrate-urbancode-deploy-jenkins-continuous-integration)
 [source code repo](https://github.com/UrbanCode/jenkins-publisher-ucd-plugin) , which has a number of type helpers, packaged as dependency jars
 
+
 ```sh
-  uc-codestation-aggregate-1.0-SNAPSHOT.jar
-  uc-commons-fileutils-1.0-SNAPSHOT.jar
-  uc-commons-util-1.0-SNAPSHOT.jar
-  uc-httpcomponents-util-1.0-SNAPSHOT.jar
-  uc-jersey-client-1.0-SNAPSHOT.jar
-  uc-jersey-core-1.0-SNAPSHOT.jar
-  uc-jettison-1.0-SNAPSHOT.jar
-  uc-jsr311-api-1.0-SNAPSHOT.jar
-  uc-replicated-codestation-1.0-SNAPSHOT.jar
-  uc-uDeployRestClient-1.0-SNAPSHOT.jar
+uc-codestation-aggregate-1.0-SNAPSHOT.jar
+uc-commons-fileutils-1.0-SNAPSHOT.jar
+uc-commons-util-1.0-SNAPSHOT.jar
+uc-httpcomponents-util-1.0-SNAPSHOT.jar
+uc-jersey-client-1.0-SNAPSHOT.jar
+uc-jersey-core-1.0-SNAPSHOT.jar
+uc-jettison-1.0-SNAPSHOT.jar
+uc-jsr311-api-1.0-SNAPSHOT.jar
+uc-replicated-codestation-1.0-SNAPSHOT.jar
+uc-uDeployRestClient-1.0-SNAPSHOT.jar
 ```
+
+for building a simple inventory client not all of the above is needed, just the
+```sh
+uc-uDeployRestClient-1.0-SNAPSHOT.jar
+commons-codec-1.5.jar
+uc-jettison-1.0-SNAPSHOT.jar
+```
+
+For UCD web interface see [Simple UrbanCode Deploy tutorial](https://www.ibm.com/support/knowledgecenter/SS4GSP_7.0.5/com.ibm.udeploy.tutorial.doc/topics/quickstart_abstract.html)
+
 
 ![IBM Urbancode Udeploy Server Example](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/agent.png)
 
@@ -184,7 +194,6 @@ or (may not work)
 ```sh
 curl -H 'Authorization: Basic YWRtaW46YWRtaW4K' -k https://localhost:8443/rest/resource/resource
 ```
-https://www.ibm.com/support/knowledgecenter/SS4GSP_7.0.5/com.ibm.udeploy.tutorial.doc/topics/quickstart_abstract.html
 * run the agent inventory
 from linux machine
 ```sh
@@ -357,6 +366,20 @@ reveal the hoerarchy of resources:
 ![IBM Urbancode Udeploy Server Example](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/configured_agent_capture.png)
 
 
+On the agent create  directory to mock up the version import functionality:
+```sh
+export IMAGE='ibmcom/ucda'
+ID=$( docker container ls | grep $IMAGE | awk '{print $1}')
+docker exec -it $ID sh
+```
+
+```sh
+for V in 1 2 3 ; do mkdir -p /tmp/hello_World/$V.0 ; touch /tmp/hello_World/$V.0/data.txt; done
+find /tmp/hello_World/ -type f
+```
+Then import version via Component menu. This will allow selection ofversions via process component dialog:
+![Udeploy Selection Component Version](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/vertion_selection.png)
+
 ### See Also
 
   * https://github.com/UrbanCode/UCD-Docker-Images
@@ -364,3 +387,4 @@ reveal the hoerarchy of resources:
   * Jenkins pipeline [ucd plugin](https://github.com/UrbanCode/jenkins-pipeline-ucd-plugin) source code
   * Usage of __component\_deployment__ and __version\_import__  into [ucd](https://www.urbancode.com/plugindoc/jenkins-pipeline#tab-usage) from Jenkins, Pipeline syntax 
   * https://github.com/UrbanCode/Jenkins-Job-Manager-UCD
+  * https://freddysf.wordpress.com/2013/12/05/urbancode-deploy-agent-based-source-config-types/
