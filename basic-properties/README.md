@@ -21,7 +21,7 @@ will result in
 Hello null
 ```
 The argument-less build and run via maven plugin command does not fail,
-but apprently is not loading the `application.properties`, passing the argument 
+but apprently is not loading the `application.properties`, passing the argument
 va define solves the issue:
 ```sh
 mvn -Dspring.config.location=src/main/resources/application.properties spring-boot:run
@@ -37,7 +37,7 @@ Hello some value
 and updates instantly when `application.properties` is changed
 so proceed to the next step of dockerizing the app.
 
-#### Run Jar Locally 
+#### Run Jar Locally
 ```sh
 mvn package
 ```
@@ -47,6 +47,29 @@ cp src/main/resources/application.properties ~/Desktop/
 ```sh
 java -jar target/example.basic-properties.jar --spring.config.location=file:///home/$(whoami)/Desktop/application.properties
 ```
+
+NOTE: if the URI syntax is not followed like
+```sh
+java -jar target/example.basic-properties.jar --spring.config.location=file:/home/$(whoami)/Desktop/application.properties
+```
+the appliction will fail to launch:
+```sh
+UnatisfiedDependencyException:
+Error creating bean with name 'properties' defined in example.Launcher:
+Unsatisfied dependency expressed through method 'properties' parameter 0;
+	... 27 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException:
+Error creating bean with name 'propertiesConfiguration' defined in
+example.Launcher:
+Bean instantiation via factory method failed; nested exception is
+org.springframework.beans.BeanInstantiationException:
+Failed to instantiate [org.apache.commons.configuration.PropertiesConfiguration]:
+Factory method 'propertiesConfiguration' threw exception;
+nested exception is org.apache.commons.configuration.ConfigurationException:
+Cannot locate configuration source
+/home/sergueik/workspace/springboot_study/basic-properties/file:/home/sergueik/Desktop/application.properties
+```
+ - the JVM apparently prepends   the incorrectly formatted URI with a `System.getProperty("user.dir")`
 * test locally
 ```sh
 curl http://localhost:8085/basic
@@ -58,8 +81,8 @@ sed -i 's|some value|some other value|' ~/Desktop/application.properties
 ```
 * observe application reload being logged:
 ```sh
-o.a.c.c.PropertiesConfiguration: 
-Reloading configuration. 
+o.a.c.c.PropertiesConfiguration:
+Reloading configuration.
 URL is file:/home/sergueik/Desktop/application.properties
 ```
 * verify
@@ -74,11 +97,11 @@ Hello some other value
 cp src/main/resources/application.properties ~/Desktop/
 ```
 * modify the setting in the loose property file changing port to be certain to interact with the application running in the container
-```sh 
+```sh
 sed -i 's|8085|8080|' ~/Desktop/application.properties
 ```
 * make sure the `ENTRYPOINT` in the `Dockerfile` has
-the `--spring.config.location` java option set 
+the `--spring.config.location` java option set
 to pass the properties file location of the mapped directory path to the Spring app:
 ```
 "java", "-jar", "app.jar", "--spring.config.location=file:///var/properties/application.properties"
@@ -109,7 +132,7 @@ Hello new value
 ```
 * observe the message in Docker console:
 ```sh
-o.a.c.c.PropertiesConfiguration: 
+o.a.c.c.PropertiesConfiguration:
 Reloading configuration. URL is file:/var/properties/application.properties
 ```
 
