@@ -72,10 +72,14 @@ Cannot locate configuration source
  - the JVM apparently prepends   the incorrectly formatted URI with a `System.getProperty("user.dir")`
 * test locally
 ```sh
-curl http://localhost:8085/basic
+curl http://localhost:$(sed -n '/server.port/s/server.port=//p' ~/Desktop/application.properties)/basic
+```
+will reply with
+```
 Hello some value
 ```
-* change property
+
+* after application already launched and running, change the property
 ```sh
 sed -i 's|some value|some other value|' ~/Desktop/application.properties
 ```
@@ -88,6 +92,9 @@ URL is file:/home/sergueik/Desktop/application.properties
 * verify
 ```sh
 curl http://localhost:8085/basic
+```
+will now respond with
+```
 Hello some other value
 ```
 #### Dockerized App Tests
