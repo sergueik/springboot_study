@@ -159,7 +159,7 @@
               <mainClass>${mainClass}</mainClass>
             </manifest>
           </archive>
-    <finalName>${finalName}</finalName>
+          <finalName>${finalName}</finalName>
         </configuration>
       </plugin>
     </plugins>

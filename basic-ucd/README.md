@@ -81,25 +81,27 @@ To create one
 
 ### Usage
 * pull and launch server
+
 ```sh
-docker pull ibmcom/ucds
+SERVER_IMAGE='ibmcom/ucds'
+docker pull $SERVER_IMAGE
 ```
 NOTE: The Docker image is heavy (1.03GB per docker image after pull, 1.7 Gb consumed after the install finished)
 and initial auto-bootstrap run is *very* time-consuming
 
 ```sh
-NAME='ucd-server'
-IMAGE='ibmcom/ucds'
-IMAGE_ID=$(docker image ls | grep $IMAGE |awk '{print $3}')
+SERVER_NAME='ucd-server'
+SERVER_IMAGE='ibmcom/ucds'
+SERVER_ID=$(docker image ls -a | grep $SERVER_IMAGE |awk '{print $3}')
 ```
 NOTE: IBM documentation is slightly incorrect by advising run container daemonized.
 
 ```sh
-docker run --name $NAME -d -p 8443:8443 -p 7918:7918 -p 8080:8080 -t $IMAGE_ID
+docker run --name $SERVER_NAME -d -p 8443:8443 -p 7918:7918 -p 8080:8080 -t $SERVERR_ID
 ```
 when done so, subsequent call
 ```sh
-docker logs $NAME
+docker logs $SERVER_NAME
 ```
 reveals
 ```sh
@@ -112,30 +114,30 @@ Enter the directory of the server to upgrade(leave blank for installing to a cle
 ```
 and subsquent check
 ```sh
-while true ; do docker logs $NAME ; sleep 60 ; done
+while true ; do docker logs $SERVER_NAME ; sleep 60 ; done
 ```
 reveals no progress beyond that point. It needs an interactive run!
 
 ```sh
-docker container stop $NAME
-docker container rm $NAME
+docker container stop $SERVER_NAME
+docker container rm $SERVER_NAME
 docker container prune -f
 ```
 - may need an extra retry
 ```sh
-docker run --name $NAME -it -p 8443:8443 -p 7918:7918 -p 8080:8080 -t $IMAGE_ID
+docker run --name $SERVER_NAME -it -p 8443:8443 -p 7918:7918 -p 8080:8080 -t $SERVER_ID
 ```
 May need to enter if there is no progess visible in the console
 first an iteractive login and password change is required
 ```sh
 https://localhost:8443
 ```
-(use the target machine ip if it is not accessed locally)
+(use the host machine ip address if it is not accessed locally)
 as __admin__/__admin__
 
 ```sh
-NAME='ucd-server'
-docker start $(docker container ls -a | grep $NAME | awk '{print $1}')
+SERVER_NAME='ucd-server'
+docker start $(docker container ls -a | grep $SERVER_NAME | awk '{print $1}')
 ```
 this will restore port mapping
 
@@ -157,32 +159,128 @@ java -cp uc-uDeployRestClient-1.0-SNAPSHOT.jar:commons-codec-1.5.jar:uc-jettison
 ```
 when  invalid credentials provided one will get an exception (converted to Runtme one):
 
-```
+```sh
+TBD
 ```
 when credentials are correct the exception will become
-``sh
+```sh
 Exception in thread "main" java.io.IOException: 404
 No agent with id/name dummy
 ```
 
 * pull and launch ucd agent
 ```sh
-export NAME='ucd-server'
-docker pull $IMAGE
+export CLIENT_IMAGE='ibmcom/ucda'
+docker pull $CLIENT_IMAGE
+export SERVER_NAME='ucd-server'
 ```
 then bind it to the Server
 
 ```sh
-ID=$( docker container ls | grep $NAME | awk '{print $1}')
-docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $ID
+SERVER_ID=$( docker container ls -a| grep $SERVER_NAME | awk '{print $1}')
+docker start $SERVER_ID
+docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $SERVER_ID
 ```
-* collect the value manually (temporarily)
+* export the value manually (temporarily)
 
-
-```
-export IMAGE='ibmcom/ucda'
+```sh
 export UCD_SERVER_IP=172.17.0.2
-docker run -d --add-host="ucd-server:$UCD_SERVER_IP" -t $IMAGE
+```
+to examine the earlier launched agent, e.g. to inspect nstalled jars, start it and launch shell there
+```sh
+CLIENT_ID=$( docker container ls -a| grep $CLIENT_IMAGE | awk '{print $1}')
+docker start $CLIENT_ID
+docker exec -it $CLIENT_ID sh
+```
+* in the local shell there
+```sh
+ps ax| grep agen[t].sh
+```
+this shows the entrypoint shell script to be `/entrypoint-ibm-ucd-agent.sh`  
+and 
+```sh
+ps ax| grep com.urbancode.ai[r] | sed 's|  *|\n|g'
+```
+
+will see that the main class name is `com.urbancode.air.agent.AgentWorker` and the classpath is
+in defined in `/opt/ibm-ucd/agent/bin/classpath.conf` as
+```sh
+dir /opt/ibm-ucd/agent/conf/agent
+dir /opt/ibm-ucd/agent/conf
+set /opt/ibm-ucd/agent/lib
+nativedir /opt/ibm-ucd/agent/native/x64
+```
+
+the `/opt/ibm-ucd/agent/lib` dir has the following dependency jars:
+```sh
+ActiveMQTransport.jar
+Commons-Validation.jar
+CommonsFileUtils.jar
+CommonsUtil.jar
+CommonsXml.jar
+HttpComponents-Util.jar
+NativeProcess.jar
+SSHClient.jar
+SandboxedJSRuntime.jar
+WinAPI.jar
+activemq-core-5.6.0.jar
+air-agent.jar
+air-agentmanager.jar
+air-devilfish.jar
+air-diagnostics.jar
+air-keytool.jar
+air-net.jar
+air-plugin-command.jar
+air-propertyresolver.jar
+air-service-event.jar
+anthill3-logic.jar
+bcpkix-jdk15on-147.jar
+bcprov-jdk15on-147.jar
+bridge-method-annotation.jar
+bridge-method-injector.jar
+bsf.jar
+commons-codec.jar
+commons-collections.jar
+commons-detection.jar
+commons-io.jar
+commons-lang.jar
+commons-lang3.jar
+commons-logfile.jar
+commons-logfiletool.jar
+commons-logging.jar
+fluent-hc.jar
+geronimo-j2ee-management_1.1_spec-1.0.1.jar
+groovy-all-1.8.8.jar
+httpclient-cache.jar
+httpclient.jar
+httpcore.jar
+httpmime.jar
+jcl-over-slf4j.jar
+jettison-1.1.jar
+jms.jar
+js.jar
+jsch.jar
+log4j.jar
+netty-all.jar
+securedata.jar
+shell.jar
+slf4j-api.jar
+slf4j-log4j12.jar
+spring-beans.jar
+spring-context.jar
+spring-core.jar
+spring-jdbc.jar
+spring-tx.jar
+xbean-spring.jar
+```
+
+these jars can be used in custom scripting (there isn't much)
+
+* otherwise just restart it
+```sh
+export UCD_SERVER_IP=172.17.0.2
+docker prune -f
+docker run -d --add-host="ucd-server:$UCD_SERVER_IP" -t $CLIENT_IMAGE
 ```
 * open server `https://172.17.0.2:8443` in browser
 and observe agent (`agent-c0336485ef9d`) discovered
