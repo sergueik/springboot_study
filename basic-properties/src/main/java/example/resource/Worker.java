@@ -7,15 +7,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Properties;
+import example.configs.ReloadableProperties;
 
+import java.util.Properties;
 
 @Component
 @RestController
-@RequestMapping("/basic")
+// NOTE: cannot share the request mapping
+@RequestMapping("/worker")
 public class Worker {
 	private Properties properties;
 
+	// TODO: public Worker(@Autowired ReloadableProperties properties)
 	public Worker(@Autowired Properties properties) {
 		this.properties = properties;
 	}

@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/basic")
 public class ExampleApplication {
 
-	private static final Logger LOG = LoggerFactory
+	private static final Logger logger = LoggerFactory
 			.getLogger(ExampleApplication.class);
 
 	@Autowired
@@ -52,12 +52,13 @@ public class ExampleApplication {
 		InputStream inputStream = this.getClass().getClassLoader()
 				.getResourceAsStream("configuration.yaml");
 		Map<String, Object> configuration = yaml.load(inputStream);
-		LOG.info("Loaded Env Default Profiles: ",
+		logger.info("Loaded Env Default Profiles: {}",
 				Arrays.asList(environment.getDefaultProfiles()));
-		LOG.info("Loaded name: " + properties.getArtistName(),
+		logger.info("Loaded lean configuration: application.artist_name: {}",
 				properties.getArtistName());
-		// second argument does not work
-		LOG.info("Loaded configuration: " + configuration, configuration);
+		// TODO: second argument does not work
+
+		logger.info("Loaded configuration: {}", configuration);
 	}
 
 }
