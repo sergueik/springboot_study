@@ -7,9 +7,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.DefaultPropertySourceFactory;
 import org.springframework.core.io.support.EncodedResource;
 
-public class ReloadablePropertySourceFactory extends DefaultPropertySourceFactory {
+public class ReloadablePropertySourceFactory
+		extends DefaultPropertySourceFactory {
 	@Override
-	public PropertySource<?> createPropertySource(String s, EncodedResource encodedResource) throws IOException {
+	public PropertySource<?> createPropertySource(String s,
+			EncodedResource encodedResource) throws IOException {
 		Resource internal = encodedResource.getResource();
 		return super.createPropertySource(s, encodedResource);
 	}

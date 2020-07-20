@@ -9,11 +9,20 @@ import java.util.Properties;
 
 import javax.naming.OperationNotSupportedException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+// @Component
 public class ReloadableProperties extends Properties {
+	// TODO: add code toresolve:
+	// org.springframework.beans.factory.NoSuchBeanDefinitionException:
+	// No qualifying bean of type
+	// 'org.apache.commons.configuration.PropertiesConfiguration' available:
+	// @Autowired
 	private PropertiesConfiguration propertiesConfiguration;
 
-	public ReloadableProperties(PropertiesConfiguration propertiesConfiguration) throws IOException {
+	public ReloadableProperties(PropertiesConfiguration propertiesConfiguration)
+			throws IOException {
 		super.load(new FileReader(propertiesConfiguration.getFile()));
 		this.propertiesConfiguration = propertiesConfiguration;
 	}

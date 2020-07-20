@@ -3,10 +3,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>startup</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>basic</name>
-  <description>Demo Springboot Docker-hosted app with Custom code in PostConstruct </description>
+  <description>Demo Springboot Docker-hosted app with custom code in PostConstruct</description>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
