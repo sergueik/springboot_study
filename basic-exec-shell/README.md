@@ -31,6 +31,26 @@ rm -f $LOGFILE $CLASS.class
 ```
 note, `$LOGFILE` and `$CLASS.class` in the current directory will be owned by the root user.
 
+### JDBC Example
+```sh
+CLASS=MySQLJDBCMultiQueriesTest
+NAME=mysql-server
+ID=$(docker container ls -a | grep $NAME |awk '{print $1}')
+docker container start $ID
+
+IMAGE=openjdk:8-jdk-alpine3.9
+WORKDIR=/tmp/app
+JAR=mysql-connector-java-8.0.21.jar
+SCRIPT="java -cp $JAR:. $CLASS"
+javac $CLASS.java
+docker run --name $NAME -w $WORKDIR -i -v $(pwd):$WORKDIR $IMAGE /bin/sh -c "$SCRIPT"
+```
+```sh
+docker container exec -it $ID sh 
+```
+```sh
+grep  $(hostname) /etc/hosts | cut -f 1
+```
 ### See Also
   * https://devconnected.com/docker-exec-command-with-examples/
   * [java 11 specific commands Dockerfile examples](https://stackoverflow.com/questions/53669151/java-11-application-as-lightweight-docker-image)
