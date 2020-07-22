@@ -27,6 +27,8 @@ public class BasicAgentClientTest {
 			"description");
 	private static final List<String> fields2 = Arrays.asList("name",
 			"description", "value");
+	private static final List<String> fields3 = Arrays.asList("name", "path",
+			"description");
 
 	private static boolean debug = false;
 	private static boolean verbose = false;
@@ -129,10 +131,14 @@ public class BasicAgentClientTest {
 						.getJSONObject(index1);
 				System.out.println("    - ");
 				for (String field : fields) {
-					if (resourceGrandChild.getString(field) != null
-							&& resourceGrandChild.getString(field) != "") {
-						System.out.println(String.format("    %s: \"%s\"", field,
-								resourceGrandChild.getString(field)));
+					try {
+						if (resourceGrandChild.getString(field) != null
+								&& resourceGrandChild.getString(field) != "") {
+							System.out.println(String.format("    %s: \"%s\"", field,
+									resourceGrandChild.getString(field)));
+						}
+					} catch (JSONException e) {
+						// totally ignore for now
 					}
 				}
 
@@ -140,41 +146,60 @@ public class BasicAgentClientTest {
 				// System.out.println("Examine component name:" + componentName);
 
 				// getResourceProperty
-				UUID componentUUID = componentClient.getComponentUUID(componentName);
-				// System.out.println("Converted to component uuid:" + componentUUID);
-				// TODO: how to get it
-				/// id2 = "172f1d3c-35f2-7aa1-a9a3-d2fb56513b79";
-				// Component Properties, not what we need
-				/*
-				Map<String, String> propMap = componentClient
-						.getComponentProperties(componentUUID.toString());
-				for (String propName : propMap.keySet()) {
-					System.out
-							.println(String.format("%s=%s", propName, propMap.get(propName)));
-				}
-				*/
-				/*
-				JSONObject data = componentClient
-						.getComponentVersionPropSheetDef(componentUUID.toString());
-				System.out.println("Component prop sheet def:" + data);
-				*/
-				JSONObject componentObject = componentClient
-						.getComponent(componentUUID.toString());
-				JSONObject resourceRole = componentObject.getJSONObject("resourceRole");
-				JSONArray propDefsArray = resourceRole.getJSONArray("propDefs");
-				for (int index2 = 0; index2 != propDefsArray.length(); index2++) {
-					JSONObject propertyObject = propDefsArray.getJSONObject(index2);
-					System.out.println("      # property definitions");
-					System.out.println("      -");
-					for (String field3 : fields2) {
-						if (propertyObject.getString(field3) != null
-								&& propertyObject.getString(field3) != "") {
-							System.out.println(String.format("      %s: \"%s\"", field3,
-									propertyObject.getString(field3)));
+				try {
+					UUID componentUUID = componentClient.getComponentUUID(componentName);
+					// System.out.println("Converted to component uuid:" + componentUUID);
+					// TODO: how to get it
+					/// id2 = "172f1d3c-35f2-7aa1-a9a3-d2fb56513b79";
+					// Component Properties, not what we need
+					/*
+					Map<String, String> propMap = componentClient
+							.getComponentProperties(componentUUID.toString());
+					for (String propName : propMap.keySet()) {
+						System.out
+								.println(String.format("%s=%s", propName, propMap.get(propName)));
+					}
+					*/
+					/*
+					JSONObject data = componentClient
+							.getComponentVersionPropSheetDef(componentUUID.toString());
+					System.out.println("Component prop sheet def:" + data);
+					*/
+					JSONObject componentObject = componentClient
+							.getComponent(componentUUID.toString());
+					JSONObject resourceRole = componentObject
+							.getJSONObject("resourceRole");
+					JSONArray propDefsArray = resourceRole.getJSONArray("propDefs");
+					for (int index2 = 0; index2 != propDefsArray.length(); index2++) {
+						JSONObject propertyObject = propDefsArray.getJSONObject(index2);
+						System.out.println("      # property definitions");
+						System.out.println("      -");
+						for (String field3 : fields2) {
+							if (propertyObject.getString(field3) != null
+									&& propertyObject.getString(field3) != "") {
+								System.out.println(String.format("      %s: \"%s\"", field3,
+										propertyObject.getString(field3)));
+							}
 						}
 					}
-				}
+				} catch (IOException e) {
+					// print information and continue
+					System.out.println("Exception during examine component "
+							+ componentName + " (ignored) " + e.toString());
+					if (debug) {
+						System.out.println("Object: " + resourceChildObject);
 
+					} else {
+						for (String field4 : fields3) {
+							if (resourceChildObject.getString(field4) != null
+									&& resourceChildObject.getString(field4) != "") {
+								System.out.println(String.format("      %s: \"%s\"", field4,
+										resourceChildObject.getString(field4)));
+							}
+						}
+
+					}
+				}
 				String id3 = "172f1d3c-3665-6fd2-1c71-f0e67ec633c5";
 				System.out.println(
 						"Calling for " + id3 + " " + resourceGrandChild.getString("id"));
