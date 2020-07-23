@@ -31,7 +31,7 @@ For UCD web interface see [Simple UrbanCode Deploy tutorial](https://www.ibm.com
 ![IBM Urbancode Udeploy Server Example](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/agent.png)
 
 and may be useful to follow best practices instead of re-inventing a wrapper around __UrbanCode Deploy Rest client__.
-Note: UrbanCode Deploy Rest client is not published to Maven repository - 
+Note: UrbanCode Deploy Rest client is not published to Maven repository -
 `https://mvnrepository.com/search?q=uDeployRestClient` will return nothing, so one has to build it oneself.
 
 
@@ -97,7 +97,7 @@ SERVER_ID=$(docker image ls -a | grep $SERVER_IMAGE |awk '{print $3}')
 NOTE: IBM documentation is slightly incorrect by advising run container daemonized.
 
 ```sh
-docker run --name $SERVER_NAME -d -p 8443:8443 -p 7918:7918 -p 8080:8080 -t $SERVERR_ID
+docker run --name $SERVER_NAME -d -p 8443:8443 -p 7918:7918 -p 8080:8080 -t $SERVER_ID
 ```
 when done so, subsequent call
 ```sh
@@ -188,16 +188,24 @@ export UCD_SERVER_IP=172.17.0.2
 ```
 to examine the earlier launched agent, e.g. to inspect nstalled jars, start it and launch shell there
 ```sh
+docker run -d $CLIENT_IMAGE
 CLIENT_ID=$( docker container ls -a| grep $CLIENT_IMAGE | awk '{print $1}')
-docker start $CLIENT_ID
+```
+if it is the first time it is run,
+```sh
+docker logs $CLIENT_ID
 docker exec -it $CLIENT_ID sh
+```
+otherwise
+```sh
+docker start $CLIENT_ID
 ```
 * in the local shell there
 ```sh
 ps ax| grep agen[t].sh
 ```
-this shows the entrypoint shell script to be `/entrypoint-ibm-ucd-agent.sh`  
-and 
+this shows the entrypoint shell script to be `/entrypoint-ibm-ucd-agent.sh`
+and
 ```sh
 ps ax| grep com.urbancode.ai[r] | sed 's|  *|\n|g'
 ```
@@ -276,6 +284,7 @@ xbean-spring.jar
 
 these jars can be used in custom scripting (there isn't much)
 
+
 * otherwise just restart it
 ```sh
 export UCD_SERVER_IP=172.17.0.2
@@ -313,7 +322,7 @@ this will produce
  - agent-ad84625cbc4b
    - Component  2
    - Dummy Component
-```      
+```
 and when `debug` flag is set, more raw json like:
 ```json
 {
@@ -377,7 +386,7 @@ and when `debug` flag is set, more raw json like:
 ```
 ### Building Agent Client as and running package
 * adding one extra class solely to parse commandline arguments, makes it sometimes easier to
-package into `jar` with manifest 
+package into `jar` with manifest
 ```sh
 mvn clean package
 ```
@@ -478,11 +487,27 @@ find /tmp/hello_World/ -type f
 Then import version via Component menu. This will allow selection ofversions via process component dialog:
 ![Udeploy Selection Component Version](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/vertion_selection.png)
 
+
+### Elementary Tests
+These can run from either Linux or Windows node
+```sh
+mvn package
+java -cp target\example.ucdclient.jar;target\lib\* example.GetResourceRoleByName -path 173792cf-acfd-bfc9-7df1-f3d8a190d6b7  -server https://192.168.0.64:8443/
+```
+this will reply
+```
+id: "173792cf-acfd-bfc9-7df1-f3d8a190d6b7"
+name: "TEST"
+path: "/TEST"
+description: "Test group"
+```
+
 ### See Also
 
   * https://github.com/UrbanCode/UCD-Docker-Images
   * REST client [ucd](https://github.com/UrbanCode/uDeployRestClient)
   * Jenkins pipeline [ucd plugin](https://github.com/UrbanCode/jenkins-pipeline-ucd-plugin) source code
-  * Usage of __component\_deployment__ and __version\_import__  into [ucd](https://www.urbancode.com/plugindoc/jenkins-pipeline#tab-usage) from Jenkins, Pipeline syntax 
+  * Usage of __component\_deployment__ and __version\_import__  into [ucd](https://www.urbancode.com/plugindoc/jenkins-pipeline#tab-usage) from Jenkins, Pipeline syntax
   * https://github.com/UrbanCode/Jenkins-Job-Manager-UCD
   * https://freddysf.wordpress.com/2013/12/05/urbancode-deploy-agent-based-source-config-types/
+  * https://db.apache.org/derby/

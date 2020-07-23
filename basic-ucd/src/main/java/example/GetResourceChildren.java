@@ -6,28 +6,21 @@ package example;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
-import org.apache.commons.codec.EncoderException;
-import com.urbancode.ud.client.AgentClient;
-import com.urbancode.ud.client.ResourceClient;
-import com.urbancode.ud.client.ComponentClient;
-
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.codehaus.jettison.json.JSONArray;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import com.urbancode.ud.client.AgentClient;
+import com.urbancode.ud.client.ComponentClient;
+import com.urbancode.ud.client.ResourceClient;
 
 /*
  * */
-public class GetResourceChildren {
+public class GetResourceChildren extends Common {
 	private static final List<String> fields = Arrays.asList("id", "name",
 			"description");
 	private static final List<String> fields2 = Arrays.asList("name",
@@ -35,10 +28,8 @@ public class GetResourceChildren {
 	private static final List<String> fields3 = Arrays.asList("name", "path",
 			"description");
 
-	private static boolean debug = false;
-	private static boolean verbose = false;
+	private static String env;
 
-	private static CommandLineParser commandLineParser;
 	private static ResourceClient resourceClient;
 	private static ComponentClient componentClient;
 	private static AgentClient agentClient;
@@ -46,45 +37,17 @@ public class GetResourceChildren {
 
 	public static void main(String[] args)
 			throws URISyntaxException, IOException, JSONException {
-		commandLineParser = new CommandLineParser();
-		commandLineParser.saveFlagValue("user");
-		commandLineParser.saveFlagValue("password");
-		commandLineParser.saveFlagValue("server");
-		commandLineParser.saveFlagValue("newname");
+
+		configure(args);
+
+		// can repeatedly parse
+		commandLineParser.parse(args);
 		commandLineParser.saveFlagValue("env");
 
 		commandLineParser.parse(args);
 
-		if (commandLineParser.hasFlag("debug")) {
-			debug = true;
-		}
-		if (commandLineParser.hasFlag("verbose")) {
-			verbose = true;
-		}
-		// static inner allows accessing private members from enclosing class
-		// directly
-		String user = commandLineParser.getFlagValue("user");
-		if (user == null) {
-			user = "admin";
-			System.err.println("Missing argument: user - using default");
-		}
-		String password = commandLineParser.getFlagValue("password");
-		if (password == null) {
-			password = "admin";
-			System.err.println("Missing argument: password - using default");
-		}
-		String newname = commandLineParser.getFlagValue("newname");
-		if (newname == null) {
-			newname = "brand new agent";
-			System.err.println("Missing argument: newname - using default");
-		}
-		String server = commandLineParser.getFlagValue("server");
-		if (server == null) {
-			server = "https://localhost:8443";
-			System.err.println("Missing argument: server - using default");
-		}
 		// TODO: get env id legitimately
-		String env = commandLineParser.getFlagValue("env");
+		env = commandLineParser.getFlagValue("env");
 		if (env == null) {
 			System.err.println("Missing required argument: env");
 			return;
@@ -101,9 +64,7 @@ public class GetResourceChildren {
 					"failed to connect to server %s as user: %s / password: %s", server,
 					user, password));
 		}
-		// String resourceName = "TEST";
-		// JSONObject resourceJSONObject = resourceClient
-		// .getResourceRoleByName(resourceName);
+
 		JSONArray resourceChildrenJsonArray = resourceClient
 				.getResourceChildren(env);
 		if (debug) {

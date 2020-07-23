@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-
-
 public class BasicAgentClientTest {
 	private static final List<String> fields = Arrays.asList("id", "name",
 			"description");
@@ -37,6 +35,11 @@ public class BasicAgentClientTest {
 
 	private static boolean debug = false;
 	private static boolean verbose = false;
+
+	private static String user;
+	private static String password;
+	private static String server;
+	private static String env;
 
 	private static CommandLineParser commandLineParser;
 	private static ResourceClient resourceClient;
@@ -63,12 +66,12 @@ public class BasicAgentClientTest {
 		}
 		// static inner allows accessing private members from enclosing class
 		// directly
-		String user = commandLineParser.flags.get("user");
+		user = commandLineParser.flags.get("user");
 		if (user == null) {
 			user = "admin";
 			System.err.println("Missing argument: user - using default");
 		}
-		String password = commandLineParser.flags.get("password");
+		password = commandLineParser.flags.get("password");
 		if (password == null) {
 			password = "admin";
 			System.err.println("Missing argument: password - using default");
@@ -78,7 +81,7 @@ public class BasicAgentClientTest {
 			newname = "brand new agent";
 			System.err.println("Missing argument: newname - using default");
 		}
-		String server = commandLineParser.getFlagValue("server");
+		server = commandLineParser.getFlagValue("server");
 		if (server == null) {
 			server = "https://localhost:8443";
 			System.err.println("Missing argument: server - using default");
