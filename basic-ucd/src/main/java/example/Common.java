@@ -5,6 +5,8 @@ package example;
  */
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.codehaus.jettison.json.JSONException;
 
@@ -19,8 +21,7 @@ public class Common {
 
 	protected static CommandLineParser commandLineParser;
 
-	public static void configure(String[] args)
-			throws URISyntaxException, IOException, JSONException {
+	public static void configure(String[] args) throws URISyntaxException, IOException, JSONException {
 		commandLineParser = new CommandLineParser();
 		commandLineParser.saveFlagValue("user");
 		commandLineParser.saveFlagValue("password");
@@ -47,9 +48,61 @@ public class Common {
 			System.err.println("Missing argument: password - using default");
 		}
 		server = commandLineParser.getFlagValue("server");
+
 		if (server == null) {
-			server = "https://localhost:8443";
-			System.err.println("Missing argument: server - using default");
+			server = String.format("https://%s:8443", getEnv("UCD_SERVER_IP", "localhost"));
+			System.err.println("Missing argument: server - using default " + server);
 		}
 	}
+
+	public static String getEnv(String name, String defaultValue) {
+		String value = null;
+		if (debug) {
+			System.err.println("Trying environment " + name);
+		}
+		value = System.getenv(name);
+		if (value == null) {
+			if (debug) {
+				System.err.println("Nothing found for " + name);
+			}
+			value = defaultValue;
+		}
+		return value;
+	}
+
+	public String getPropertyEnv(String name, String defaultValue) {
+		String value = System.getProperty(name);
+		if (debug) {
+			System.err.println("Getting propety or environment: " + name);
+		}
+		// compatible with
+		// org.apache.commons.configuration.PropertiesConfiguration.interpolatedConfiguration
+		// https://commons.apache.org/proper/commons-configuration/userguide_v1.10/howto_utilities.html
+		if (value == null) {
+
+			Pattern p = Pattern.compile("^(\\w+:)(\\w+)$");
+			Matcher m = p.matcher(name);
+			if (m.find()) {
+				String propertyName = m.replaceFirst("$2");
+				if (debug) {
+					System.err.println("Interpolating " + propertyName);
+				}
+				value = System.getProperty(propertyName);
+			}
+			if (value == null) {
+				if (debug) {
+					System.err.println("Trying environment " + name);
+				}
+				value = System.getenv(name);
+				if (value == null) {
+					if (debug) {
+						System.err.println("Nothing found for " + name);
+					}
+					value = defaultValue;
+				}
+			}
+		}
+		return value;
+	}
+
 }

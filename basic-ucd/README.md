@@ -1,6 +1,6 @@
 ### Info
 
-This directory contains subset of classes extracted from IBM
+This directory ocontains subset of classes extracted from IBM
 [ibm-ucdeploy-publisher.hpi](https://www.ibm.com/support/pages/how-integrate-urbancode-deploy-jenkins-continuous-integration)
 [source code repo](https://github.com/UrbanCode/jenkins-publisher-ucd-plugin) , which has a number of type helpers, packaged as dependency jars
 
@@ -301,6 +301,37 @@ or (may not work)
 ```sh
 curl -H 'Authorization: Basic YWRtaW46YWRtaW4K' -k https://localhost:8443/rest/resource/resource
 ```
+
+### Elementary Tests
+These can run from either Linux or Windows node
+```sh
+mvn package
+```
+```sh
+java -cp target/example.ucdclient.jar:target/lib/* example.GetResourceByPath -path "/TEST"
+java -cp target/example.ucdclient.jar:target/lib/* example.GetResourceByPath -id 173792cf-acfd-bfc9-7df1-f3d8a190d6b7
+java -cp target/example.ucdclient.jar:target/lib/* example.GetResourceByPath -path 173792cf-acfd-bfc9-7df1-f3d8a190d6b7
+```
+will all reply
+```sh
+id: "173792cf-acfd-bfc9-7df1-f3d8a190d6b7"
+name: "TEST"
+path: "/TEST"
+description: "Test group"
+```
+on Windows client modify the command line and provide the `server` parameter:
+```cmd
+java -cp target\example.ucdclient.jar;target\lib\* example.GetResourceByPath -path 173792cf-acfd-bfc9-7df1-f3d8a190d6b7 -server https://192.168.0.64:8443/
+```
+this will reply
+```sh
+id: "173792cf-acfd-bfc9-7df1-f3d8a190d6b7"
+name: "TEST"
+path: "/TEST"
+description: "Test group"
+```
+
+### Resource Tests
 * run the agent inventory
 from linux machine
 ```sh
@@ -488,26 +519,12 @@ Then import version via Component menu. This will allow selection ofversions via
 ![Udeploy Selection Component Version](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/vertion_selection.png)
 
 
-### Elementary Tests
-These can run from either Linux or Windows node
-```sh
-mvn package
-java -cp target\example.ucdclient.jar;target\lib\* example.GetResourceRoleByName -path 173792cf-acfd-bfc9-7df1-f3d8a190d6b7  -server https://192.168.0.64:8443/
-```
-this will reply
-```
-id: "173792cf-acfd-bfc9-7df1-f3d8a190d6b7"
-name: "TEST"
-path: "/TEST"
-description: "Test group"
-```
-
 ### See Also
 
   * https://github.com/UrbanCode/UCD-Docker-Images
   * REST client [ucd](https://github.com/UrbanCode/uDeployRestClient)
   * Jenkins pipeline [ucd plugin](https://github.com/UrbanCode/jenkins-pipeline-ucd-plugin) source code
-  * Usage of __component\_deployment__ and __version\_import__  into [ucd](https://www.urbancode.com/plugindoc/jenkins-pipeline#tab-usage) from Jenkins, Pipeline syntax
+  * Usage of __component\_deployment__ and __version\_import__ into [ucd](https://www.urbancode.com/plugindoc/jenkins-pipeline#tab-usage) from Jenkins, Pipeline syntax
   * https://github.com/UrbanCode/Jenkins-Job-Manager-UCD
   * https://freddysf.wordpress.com/2013/12/05/urbancode-deploy-agent-based-source-config-types/
   * https://db.apache.org/derby/
