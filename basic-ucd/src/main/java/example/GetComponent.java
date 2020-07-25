@@ -16,8 +16,10 @@ import com.urbancode.ud.client.ComponentClient;
 
 /*
  * This example exercises
- * ResourceClient.getResourceByPath
- * ResourceClient.getResourceById
+ * ComponentClient.getComponent
+ * ComponentClient.getComponentApplications
+ * ComponentClient.importComponentVersions
+ * ComponentClient.getComponentProperties
  * file:///home/sergueik/src/springboot_study/basic-ucd/uDeployRestClient/docs/index.html
  * */
 public class GetComponent extends Common {
@@ -48,6 +50,14 @@ public class GetComponent extends Common {
 					"failed to connect to server %s as user: %s / password: %s", server,
 					user, password));
 		}
+		/*
+		 for any UCD component e.g.
+		 id: "173654d7-5339-e9cf-b472-391dcba9b9eb"
+		name: "test_component"
+		description: "test component"
+		either "name" or "id" can be passes as a valid "component" argument in the following call
+		 */
+
 		data = componentClient.getComponent(component);
 
 		if (debug) {
