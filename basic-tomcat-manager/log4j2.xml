@@ -6,13 +6,15 @@
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </Console>
-    <File name="A1" fileName="App.log" append="false">
+    <!-- not specifying the fileOwner and fileGroup -->
+    <File name="A1" fileName="App.log" append="true" filePermissions="rw-r-----">
       <PatternLayout pattern="%-5p %d{yyyy-MM-dd HH:mm:ss} %F [%c{1}] - [%M] - %m%n"/>
     </File>
   </Appenders>
   <Loggers>
     <Root level="debug">
       <AppenderRef ref="Console"/>
+      <AppenderRef ref="A1"/>
     </Root>
   </Loggers>
 </Configuration>

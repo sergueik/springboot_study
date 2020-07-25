@@ -34,13 +34,14 @@ public class DemoServlet extends HttpServlet implements Servlet {
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// when no Log4j 2 configuration file is found in CLASSPATH, log4j consider
-		// itself not properly configured. switches to default configuration and 
-		// only logging the errors to console
-		logger
-				.debug("GET request=" + request.getContextPath() + " " + request.getQueryString() + " " + Utils.getHeadersInfo(request));
+		// when no Log4j 2 configuration file found in CLASSPATH, log4j considers
+		// itself not configured and switches to default configuration: logging the
+		// errors to console only
+		logger.debug("GET request=" + request.getContextPath() + " "
+				+ request.getQueryString() + " " + Utils.getHeadersInfo(request));
 
-		logger.info("GET request=" + request.getContextPath() + " " + request.getQueryString());
+		logger.info("GET request=" + request.getContextPath() + " "
+				+ request.getQueryString());
 		// @formatter:off
 		String html = String.format("<html><head><title>Demo</title></head>" 
 			+ "<body>You requested=[%s?%s]"				
@@ -63,3 +64,4 @@ public class DemoServlet extends HttpServlet implements Servlet {
 		doGet(request, response);
 	}
 }
+

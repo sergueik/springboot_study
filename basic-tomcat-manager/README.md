@@ -7,6 +7,7 @@ This project contains a [basic tomcat web app project](https://github.com/tongue
 * test application locally
 ```sh
 mkdir -p src/main/resources
+rm App.log
 cp log4j2.xml src/main/resources/log4j2.xml
 mvn clean tomcat:run-war
 ```
@@ -14,7 +15,11 @@ open in the browser or console
 ```sh
 curl http://localhost:8080/demo/Demo
 ```
-will respond with
+if run from the same machine or
+```sh
+curl http://192.168.0.64:8080/demo/Demo
+```
+Application will respond with
 ```html
 <body>
 You requested=[http://127.0.0.1:8080/demo/Demo?null]
@@ -59,22 +64,27 @@ the console will show log:
 17:19:14.380 [http-8080-1] DEBUG example.DemoServlet - GET request=org.apache.catalina.connector.RequestFacade@762a5269 {host=localhost:8080, user-agent=curl/7.58.0, accept=*/*}
 17:19:14.381 [http-8080-1] INFO  example.DemoServlet - GET request=org.apache.catalina.connector.RequestFacade@762a5269
 ```
-interrupt the application through
+the App.log will show similar messages and file permissions will be
+```
+-rw-r----- 1 sergueik sergueik   808 Jul 25 19:06 App.log
+```
+* interrupt the application through
 `^C`
-if will log before closing
+if will produce the log message from the `destroy()` method before closing
 ```sh
 17:19:23.009 [Thread-2] DEBUG example.DemoServlet - destroy()
 ```
 
-Move the `log4j2.xml` away from resorces directoty into root and repackage and relaunch explicitly passing the configuration information:
+Move the `log4j2.xml` away from resorces directory (the one in the project root is checked in)
+and repackage and relaunch explicitly passing the configuration information:
 on Windows host
 ```cmd
-move /y src\main\resources\log4j2.xml .
+del /q src\main\resources\log4j2.xml
 mvn -Dlog4j.configurationFile=%CD%\log4j2.xml clean tomcat:run-war
 ```
 on Linux host
 ```sh
-mv src/main/resources/log4j2.xml .
+rm -f src/main/resources/log4j2.xml
 mvn -Dlog4j.configurationFile=$(pwd)/log4j2.xml clean tomcat:run-war
 ```
 confirm the logging continues to work
@@ -102,8 +112,10 @@ docker build -t $IMAGE -f Dockerfile .
 docker run --name $NAME -p 8080:8080 -d $IMAGE
 ```
 * verify there is just one instance of `log4j2.xml` configuration file in tomcat in the container:
+
 ```sh
-docker exec -it $CONTAINER sh
+export CONTAINER_ID=$(docker container ls -a| grep $NAME| awk '{print $1}')
+docker exec -it $CONTAINER_ID sh
 #
 ```
 ```sh
@@ -139,14 +151,31 @@ user-agent	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko
 accept-encoding	gzip, deflate, br
 sec-fetch-site	none
 upgrade-insecure-requests	1
-```  
+```
+* reconnect into container shell and  examine permissions of the log:
+```
+docker exec -it $CONTAINER_ID sh
+```
+then confirm tomcat uses the configuration file we confirmed the location earlier (the `/opt/tomcat/conf/log4j2.xml`)
+```sh
+ps axww  |  grep tomcat
+```
+```
+1 root      0:13 /usr/lib/jvm/java-1.7-openjdk/jre/bin/java -Djava.util.logging.config.file=/opt/tomcat/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Dlog4j2.debug=true -Dapp.env=staging -Dlog4j.configurationFile=/opt/tomcat/conf/log4j2.xml -Djdk.tls.ephemeralDHKeySize=2048 -Djava.protocol.handler.pkgs=org.apache.catalina.webresources -Dignore.endorsed.dirs= -classpath /opt/tomcat/bin/bootstrap.jar:/opt/tomcat/bin/tomcat-juli.jar -Dcatalina.base=/opt/tomcat -Dcatalina.home=/opt/tomcat -Djava.io.tmpdir=/opt/tomcat/temp org.apache.catalina.startup.Bootstrap start
+```
+and the log file is present with the intendet permissions
+```
+find / -iname 'App.log' -exec stat  -c "%a %U %G %n" {} \;
+```
+this will display
+```sh
+640 root root /usr/local/tomcat/App.log
+```
 * list applications in manager
 ```sh
-export CONTAINER=$(docker container ls -a| grep $NAME| awk '{print $1}')
+docker logs $CONTAINER_ID
 ```
-```sh
-docker logs $CONTAINER
-```
+this will show similar logs alreday seen during maven target run
 ```sh
 curl -u admin:password http://localhost:8080/manager/text/list
 ```
@@ -259,7 +288,7 @@ curl http://localhost:8080/demo/Demo?foo=bar
 observe the logging to stop.
 
 copy the  `log4j2.xml` into container lib:
-  
+
 ```sh
 docker cp src/main/resources/log4j2.xml $CONTAINER:/opt/tomcat/lib
 ```
@@ -340,4 +369,13 @@ log4j.configurationFile=/conf/log4j2.xm
   * example project of watching the [ tomcat logging configuration](https://github.com/phoet/tomcat-logging) file
   * log4j tutorial with [Tomcat](https://laliluna.com/articles/posts/log4j-tutorial.html)
   * log4j config [migration](https://logging.apache.org/log4j/2.x/manual/migration.html)
+  * the Rolling File Appenders `org.apache.log4j.RollingFileAppender` [properties tutorial](https://www.baeldung.com/java-logging-rolling-file-appenders)
+  * class [javadoc](https://logging.apache.org/log4j/2.x/manual/appenders.html) -  make sure to browse the correct version. The `filePermissions` property only appears in __2.9__
+  * managing [log file permissions](https://stackoverflow.com/questions/7893511/permissions-on-log-files-created-by-log4j-rollingfileappender) - besides via `umask` e.f. of `0137` for `640`
+  * https://howtodoinjava.com/log4j/log4j-rolling-file-appender/
+### License
+This project is licensed under the terms of the MIT license.
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
