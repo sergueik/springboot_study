@@ -68,7 +68,8 @@ public class GetResourceRoleProperties extends Common {
 		JSONArray xxx = resourceClient.getResourceRoleProperties(id3,
 				resourceJSONObject.getString("id"));
 		JSONObject yyy = xxx.getJSONObject(0).getJSONObject("propValue");
-		System.out.println(yyy);
+		System.out.println(prettyPrint(yyy));
+
 		// need to call
 		// curl
 		// 'https://192.168.0.64:8443/rest/resource/resource/1730c2d2-6a32-aff4-f7a1-9915402a8a58/propertiesForRole/172f1d3c-3665-6fd2-1c71-f0e67ec633c5?rowsPerPage=10&pageNumber=1&sortType=asc'
