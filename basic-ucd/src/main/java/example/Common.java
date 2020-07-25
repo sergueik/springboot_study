@@ -9,11 +9,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 public class Common {
 
 	protected static boolean debug = false;
 	protected static boolean verbose = false;
+	private static final int spacesToIndentEachLevel = 2;
 
 	protected static String user;
 	protected static String password;
@@ -21,7 +23,8 @@ public class Common {
 
 	protected static CommandLineParser commandLineParser;
 
-	public static void configure(String[] args) throws URISyntaxException, IOException, JSONException {
+	public static void configure(String[] args)
+			throws URISyntaxException, IOException, JSONException {
 		commandLineParser = new CommandLineParser();
 		commandLineParser.saveFlagValue("user");
 		commandLineParser.saveFlagValue("password");
@@ -50,7 +53,8 @@ public class Common {
 		server = commandLineParser.getFlagValue("server");
 
 		if (server == null) {
-			server = String.format("https://%s:8443", getEnv("UCD_SERVER_IP", "localhost"));
+			server = String.format("https://%s:8443",
+					getEnv("UCD_SERVER_IP", "localhost"));
 			System.err.println("Missing argument: server - using default " + server);
 		}
 	}
@@ -105,4 +109,21 @@ public class Common {
 		return value;
 	}
 
+	// based on:
+	// https://stackoverflow.com/questions/6185337/how-do-i-pretty-print-existing-json-data-with-java
+	protected static String prettyPrint(JSONObject data) {
+		try {
+			return new JSONObject(data.toString()).toString(spacesToIndentEachLevel);
+		} catch (JSONException e) {
+			return null;
+		}
+	}
+
+	protected static String prettyPrint(String data) {
+		try {
+			return new JSONObject(data).toString(spacesToIndentEachLevel);
+		} catch (JSONException e) {
+			return null;
+		}
+	}
 }

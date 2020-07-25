@@ -21,14 +21,16 @@ import com.urbancode.ud.client.ResourceClient;
  * file:///home/sergueik/src/springboot_study/basic-ucd/uDeployRestClient/docs/index.html
  * */
 public class GetResourceByIdOrPath extends Common {
-	private static final List<String> fields = Arrays.asList("id", "name", "path", "description");
+	private static final List<String> fields = Arrays.asList("id", "name", "path",
+			"description");
 
 	private static ResourceClient resourceClient;
 	private static JSONObject data;
 	private static String path;
 	private static String id;
 
-	public static void main(String[] args) throws URISyntaxException, IOException, JSONException {
+	public static void main(String[] args)
+			throws URISyntaxException, IOException, JSONException {
 
 		configure(args);
 		// TODO: vararg
@@ -47,19 +49,21 @@ public class GetResourceByIdOrPath extends Common {
 		resourceClient = new ResourceClient(new URI(server), user, password);
 
 		if (resourceClient == null) {
-			throw new RuntimeException(
-					String.format("failed to connect to server %s as user: %s / password: %s", server, user, password));
+			throw new RuntimeException(String.format(
+					"failed to connect to server %s as user: %s / password: %s", server,
+					user, password));
 		}
-		data = (id != null) ? resourceClient.getResourceById(id) :
-				resourceClient.getResourceByPath(path);
+		data = (id != null) ? resourceClient.getResourceById(id)
+				: resourceClient.getResourceByPath(path);
 
 		if (debug) {
-			System.out.println(path + ":\n" + data);
+			System.out.println(path + ":\n" + prettyPrint(data));
 		}
 		for (String field : fields) {
 			try {
 				if (data.getString(field) != null && data.getString(field) != "") {
-					System.out.println(String.format("%s: \"%s\"", field, data.getString(field)));
+					System.out.println(
+							String.format("%s: \"%s\"", field, data.getString(field)));
 				}
 			} catch (JSONException e) {
 				// ignore

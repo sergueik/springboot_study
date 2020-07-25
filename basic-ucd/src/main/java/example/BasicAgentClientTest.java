@@ -7,15 +7,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.codec.EncoderException;
-import com.urbancode.ud.client.AgentClient;
-import com.urbancode.ud.client.ResourceClient;
-import com.urbancode.ud.client.ComponentClient;
-
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-import org.codehaus.jettison.json.JSONArray;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,10 +16,28 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
+import com.urbancode.ud.client.AgentClient;
+import com.urbancode.ud.client.ComponentClient;
+import com.urbancode.ud.client.ResourceClient;
+
+/*
+ * This example exercises
+ * ResourceClient.getResourceByPath
+ * ResourceClient.getResourceChildren
+ * ComponentClient.getComponentUUID
+ * file:///C:/developer/sergueik/springboot_study/basic-ucd/uDeployRestClient/docs/index.html
+ */
 public class BasicAgentClientTest {
-	private static final List<String> fields = Arrays.asList("id", "name", "description");
-	private static final List<String> fields2 = Arrays.asList("name", "description", "value");
-	private static final List<String> fields3 = Arrays.asList("name", "path", "description");
+	private static final List<String> fields = Arrays.asList("id", "name",
+			"description");
+	private static final List<String> fields2 = Arrays.asList("name",
+			"description", "value");
+	private static final List<String> fields3 = Arrays.asList("name", "path",
+			"description");
 
 	private static boolean debug = false;
 	private static boolean verbose = false;
@@ -45,7 +54,8 @@ public class BasicAgentClientTest {
 	private static ComponentClient componentClient;
 	private static AgentClient agentClient;
 
-	public static void main(String[] args) throws URISyntaxException, IOException, JSONException {
+	public static void main(String[] args)
+			throws URISyntaxException, IOException, JSONException {
 		commandLineParser = new CommandLineParser();
 		commandLineParser.flagsWithValues.add("user");
 		commandLineParser.flagsWithValues.add("password");
@@ -94,41 +104,55 @@ public class BasicAgentClientTest {
 		agentClient = new AgentClient(new URI(server), user, password);
 		resourceClient = new ResourceClient(new URI(server), user, password);
 
-		if (resourceClient == null || agentClient == null || componentClient == null) {
-			throw new RuntimeException(
-					String.format("failed to connect to server %s as user: %s / password: %s", server, user, password));
+		if (resourceClient == null || agentClient == null
+				|| componentClient == null) {
+			throw new RuntimeException(String.format(
+					"failed to connect to server %s as user: %s / password: %s", server,
+					user, password));
 		}
 
-		JSONObject data = (id != null) ? resourceClient.getResourceById(id) : resourceClient.getResourceByPath(path);
-		env = data.getString("id");
-
-		JSONArray resourceChildrenJsonArray = resourceClient.getResourceChildren(env);
+		// JSONObject data = (id != null) ? resourceClient.getResourceById(id) :
+		// resourceClient.getResourceByPath(path);
+		// env = data.getString("id");
+		env = (id != null) ? id
+				: resourceClient.getResourceByPath(path).getString("id");
+		JSONArray resourceChildrenJsonArray = resourceClient
+				.getResourceChildren(env);
 		if (debug) {
-			System.out.println("{\"" + env + "\": " + resourceChildrenJsonArray + " }");
+			System.out
+					.println("{\"" + env + "\": " + resourceChildrenJsonArray + " }");
 		}
 		for (int index = 0; index != resourceChildrenJsonArray.length(); index++) {
-			JSONObject resourceChildObject = resourceChildrenJsonArray.getJSONObject(index);
+			JSONObject resourceChildObject = resourceChildrenJsonArray
+					.getJSONObject(index);
 
 			System.out.println("  - ");
 			for (String field : fields) {
-				if (resourceChildObject.getString(field) != null && resourceChildObject.getString(field) != "") {
-					System.out.println(String.format("  %s: \"%s\"", field, resourceChildObject.getString(field)));
+				if (resourceChildObject.getString(field) != null
+						&& resourceChildObject.getString(field) != "") {
+					System.out.println(String.format("  %s: \"%s\"", field,
+							resourceChildObject.getString(field)));
 				}
 			}
 			String resourceChildId = resourceChildObject.getString("id");
 
-			JSONArray resourceGrandChildrenJsonArray = resourceClient.getResourceChildren(resourceChildId);
+			JSONArray resourceGrandChildrenJsonArray = resourceClient
+					.getResourceChildren(resourceChildId);
 			if (verbose) {
-				System.out.println("{\"" + resourceChildId + "\": " + resourceGrandChildrenJsonArray + " }");
+				System.out.println("{\"" + resourceChildId + "\": "
+						+ resourceGrandChildrenJsonArray + " }");
 			}
-			for (int index1 = 0; index1 != resourceGrandChildrenJsonArray.length(); index1++) {
-				JSONObject resourceGrandChild = resourceGrandChildrenJsonArray.getJSONObject(index1);
+			for (int index1 = 0; index1 != resourceGrandChildrenJsonArray
+					.length(); index1++) {
+				JSONObject resourceGrandChild = resourceGrandChildrenJsonArray
+						.getJSONObject(index1);
 				System.out.println("    - ");
 				for (String field : fields) {
 					try {
-						if (resourceGrandChild.getString(field) != null && resourceGrandChild.getString(field) != "") {
-							System.out.println(
-									String.format("    %s: \"%s\"", field, resourceGrandChild.getString(field)));
+						if (resourceGrandChild.getString(field) != null
+								&& resourceGrandChild.getString(field) != "") {
+							System.out.println(String.format("    %s: \"%s\"", field,
+									resourceGrandChild.getString(field)));
 						}
 					} catch (JSONException e) {
 						// totally ignore for now
@@ -141,26 +165,32 @@ public class BasicAgentClientTest {
 				// getResourceProperty
 				try {
 					UUID componentUUID = componentClient.getComponentUUID(componentName);
-					JSONObject componentObject = componentClient.getComponent(componentUUID.toString());
-					JSONObject resourceRole = componentObject.getJSONObject("resourceRole");
+					JSONObject componentObject = componentClient
+							.getComponent(componentUUID.toString());
+					JSONObject resourceRole = componentObject
+							.getJSONObject("resourceRole");
 					JSONArray propDefsArray = resourceRole.getJSONArray("propDefs");
 					for (int index2 = 0; index2 != propDefsArray.length(); index2++) {
 						JSONObject propertyObject = propDefsArray.getJSONObject(index2);
 						System.out.println("      # property definitions");
 						System.out.println("      -");
 						for (String field3 : fields2) {
-							if (propertyObject.getString(field3) != null && propertyObject.getString(field3) != "") {
-								System.out.println(
-										String.format("      %s: \"%s\"", field3, propertyObject.getString(field3)));
+							if (propertyObject.getString(field3) != null
+									&& propertyObject.getString(field3) != "") {
+								System.out.println(String.format("      %s: \"%s\"", field3,
+										propertyObject.getString(field3)));
 							}
 						}
 					}
 				} catch (IOException e) {
 					// print information and continue
-					System.out.println(
-							"Exception during examine component " + componentName + " (ignored) " + e.toString());
+					System.out.println("Exception during examine component "
+							+ componentName + " (ignored) " + e.toString());
 					if (debug) {
-						System.out.println("Defective object: " + resourceChildObject);
+						int spacesToIndentEachLevel = 2;
+						System.out.println("Defective object:\n"
+								+ new JSONObject(resourceChildObject.toString())
+										.toString(spacesToIndentEachLevel));
 					} else {
 						for (String field4 : fields3) {
 							if (resourceChildObject.getString(field4) != null
@@ -235,18 +265,21 @@ public class BasicAgentClientTest {
 					if (debug) {
 						System.err.println("Examine: " + name);
 					}
-					if (flagsWithValues.contains(name) && n < args.length - 1 && !args[n + 1].matches("^-")) {
+					if (flagsWithValues.contains(name) && n < args.length - 1
+							&& !args[n + 1].matches("^-")) {
 						String data = args[++n];
 						// https://www.baeldung.com/java-case-insensitive-string-matching
-						value = data.matches("(?i)^env:[a-z_0-9]+") ? System.getenv(data.replaceFirst("(?i)^env:", ""))
-								: data;
+						value = data.matches("(?i)^env:[a-z_0-9]+")
+								? System.getenv(data.replaceFirst("(?i)^env:", "")) : data;
 
 						if (debug) {
 							if (data.matches("(?i)^env:[a-z_0-9]+")) {
-								System.err.println("Evaluate value for: " + name + " = " + value);
+								System.err
+										.println("Evaluate value for: " + name + " = " + value);
 
 							} else {
-								System.err.println("Collect value for: " + name + " = " + value);
+								System.err
+										.println("Collect value for: " + name + " = " + value);
 							}
 						}
 					} else {
@@ -274,7 +307,8 @@ public class BasicAgentClientTest {
 		// Example data:
 		// -argument "{count:0, type:navigate, size:100, flag:true}"
 		// NOTE: not using org.json to reduce size
-		public Map<String, String> extractExtraArgs(String argument) throws IllegalArgumentException {
+		public Map<String, String> extractExtraArgs(String argument)
+				throws IllegalArgumentException {
 
 			final Map<String, String> extraArgData = new HashMap<>();
 			argument = argument.trim().substring(1, argument.length() - 1);
@@ -282,7 +316,8 @@ public class BasicAgentClientTest {
 				if (debug) {
 					System.err.println("Found invalid nested data");
 				}
-				throw new IllegalArgumentException("Nested JSON athuments not supprted");
+				throw new IllegalArgumentException(
+						"Nested JSON athuments not supprted");
 			}
 			final String[] pairs = argument.split(entrySeparator);
 
