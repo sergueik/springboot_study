@@ -7,8 +7,8 @@ This project contains a [basic tomcat web app project](https://github.com/tongue
 * test application locally
 ```sh
 mkdir -p src/main/resources
-rm App.log
-cp log4j2.xml src/main/resources/log4j2.xml
+rm App.log App.log*gz
+cp log4j2.xml src/main/resources/
 mvn clean tomcat:run-war
 ```
 open in the browser or console
@@ -17,7 +17,7 @@ curl http://localhost:8080/demo/Demo
 ```
 if run from the same machine or
 ```sh
-curl http://192.168.0.64:8080/demo/Demo
+for i in $(seq 1 20); do curl http://192.168.0.64:8080/demo/Demo ; done
 ```
 Application will respond with
 ```html
@@ -64,9 +64,12 @@ the console will show log:
 17:19:14.380 [http-8080-1] DEBUG example.DemoServlet - GET request=org.apache.catalina.connector.RequestFacade@762a5269 {host=localhost:8080, user-agent=curl/7.58.0, accept=*/*}
 17:19:14.381 [http-8080-1] INFO  example.DemoServlet - GET request=org.apache.catalina.connector.RequestFacade@762a5269
 ```
-the App.log will show similar messages and file permissions will be
-```
--rw-r----- 1 sergueik sergueik   808 Jul 25 19:06 App.log
+the App.log will show similar messages and file permissions will be (on a Linux host)
+```sh
+-rw-r----- 1 sergueik sergueik   183 Jul 26 01:30 App.1.log.gz
+-rw-r----- 1 sergueik sergueik   176 Jul 26 01:30 App.2.log.gz
+-rw-r----- 1 sergueik sergueik   176 Jul 26 01:30 App.3.log.gz
+-rw-r----- 1 sergueik sergueik   337 Jul 26 01:30 App.log
 ```
 * interrupt the application through
 `^C`
@@ -75,7 +78,7 @@ if will produce the log message from the `destroy()` method before closing
 17:19:23.009 [Thread-2] DEBUG example.DemoServlet - destroy()
 ```
 
-Move the `log4j2.xml` away from resorces directory (the one in the project root is checked in)
+Move the `log4j2.xml` away from resources directory (the one in the project root is checked in)
 and repackage and relaunch explicitly passing the configuration information:
 on Windows host
 ```cmd
@@ -369,13 +372,15 @@ log4j.configurationFile=/conf/log4j2.xm
   * example project of watching the [ tomcat logging configuration](https://github.com/phoet/tomcat-logging) file
   * log4j tutorial with [Tomcat](https://laliluna.com/articles/posts/log4j-tutorial.html)
   * log4j config [migration](https://logging.apache.org/log4j/2.x/manual/migration.html)
-  * the Rolling File Appenders `org.apache.log4j.RollingFileAppender` [properties tutorial](https://www.baeldung.com/java-logging-rolling-file-appenders)
+  * the `org.apache.log4j.RollingFileAppender` [tutorial](https://www.baeldung.com/java-logging-rolling-file-appenders)
   * class [javadoc](https://logging.apache.org/log4j/2.x/manual/appenders.html) -  make sure to browse the correct version. The `filePermissions` property only appears in __2.9__
   * managing [log file permissions](https://stackoverflow.com/questions/7893511/permissions-on-log-files-created-by-log4j-rollingfileappender) - besides via `umask` e.f. of `0137` for `640`
-  * https://howtodoinjava.com/log4j/log4j-rolling-file-appender/
+  * https://howtodoinjava.com/log4j2/log4j2-rollingfileappender-example/
+  
 ### License
 This project is licensed under the terms of the MIT license.
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 
