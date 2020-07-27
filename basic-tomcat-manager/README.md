@@ -105,13 +105,14 @@ verify the log4j configuration was not included:
 ```sh
 jar tvf target/demo.war | grep log4j2.xml
 ```
-the above command should print nothing
+the above command should print nothing. if log4j2.xml inside the jar, repackage clean
 * build and deploy Docker image
 
 ```sh
 export IMAGE='basic-tomcat'
 export NAME='example-tomcat'
 docker build -t $IMAGE -f Dockerfile .
+docker container rm -f $(docker container ls -a | grep $NAME | awk '{print $1}')
 docker run --name $NAME -p 8080:8080 -d $IMAGE
 ```
 * verify there is just one instance of `log4j2.xml` configuration file in tomcat in the container:
@@ -173,6 +174,16 @@ find / -iname 'App.log' -exec stat  -c "%a %U %G %n" {} \;
 this will display
 ```sh
 640 root root /usr/local/tomcat/App.log
+```
+similarly 
+```sh
+find / -iname 'App.*.log*' -exec stat  -c "%a %U %G %n" {} ;
+```
+will report
+```sh
+640 root root /usr/local/tomcat/App.3.log.gz
+640 root root /usr/local/tomcat/App.2.log.gz
+640 root root /usr/local/tomcat/App.1.log.gz
 ```
 * list applications in manager
 ```sh
@@ -362,6 +373,13 @@ docker run -e LOGGING_CONFIG="-Djava.util.logging.config.file=\$CATALINA_BASE/co
 docker exec -it $CONTAINER sh
 env | grep log4j.configurationFile=
 log4j.configurationFile=/conf/log4j2.xm
+```
+
+### Cleanup
+```sh
+docker container stop $CONTAINER_ID
+docker container rm -f $CONTAINER_ID
+docker image prune -f
 ```
 ### See Also:
 
