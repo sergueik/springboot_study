@@ -8,16 +8,22 @@ This project contains a [basic tomcat web app project](https://github.com/tongue
 ```sh
 mkdir -p src/main/resources
 rm App.log App.log*gz
+
 cp log4j2.xml src/main/resources/
 mvn clean tomcat:run-war
 ```
-open in the browser or console
+alternatively 
 ```sh
-curl http://localhost:8080/demo/Demo
+chmod o+r App.log*gz
+```
+* open in the browser or console
+```sh
+TARGET=localhost
 ```
 if run from the same machine or
 ```sh
-for i in $(seq 1 20); do curl http://192.168.0.64:8080/demo/Demo ; done
+TARGET=192.168.0.64
+for i in $(seq 1 20); do curl http://$TARGET:8080/demo/Demo ; done
 ```
 Application will respond with
 ```html
