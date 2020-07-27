@@ -2,7 +2,7 @@ package example;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
+// https://qna.habr.com/q/734991
 @SpringBootApplication
 public class Launcher {
 

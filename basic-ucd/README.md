@@ -528,3 +528,6 @@ Then import version via Component menu. This will allow selection ofversions via
   * https://github.com/UrbanCode/Jenkins-Job-Manager-UCD
   * https://freddysf.wordpress.com/2013/12/05/urbancode-deploy-agent-based-source-config-types/
   * https://db.apache.org/derby/
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

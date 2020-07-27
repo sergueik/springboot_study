@@ -181,6 +181,7 @@ This is my parameterized at run time and the result is: 17
    * [stackoverflow](https://stackoverflow.com/questions/34324277/how-to-pass-arg-value-to-entrypoint)
   * [guide to spring @Value]( https://www.baeldung.com/spring-value-annotation) annotations
   * improved code to [preserve double quotes](https://stackoverflow.com/questions/3755772/how-to-preserve-double-quotes-in-in-a-shell-script) of needed elements of $@ in a shell script
+  * another [example application](https://github.com/lordoftheflies/example-spring-boot-with-command-line-arguments)  for demonstration the usage of command line arguments with Spring Boot
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
