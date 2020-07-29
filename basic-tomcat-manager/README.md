@@ -399,6 +399,7 @@ docker image prune -f
   * the `org.apache.log4j.RollingFileAppender` [tutorial](https://www.baeldung.com/java-logging-rolling-file-appenders)
   * class [javadoc](https://logging.apache.org/log4j/2.x/manual/appenders.html) -  make sure to browse the correct version. The `filePermissions` property only appears in __2.9__
   * managing [log file permissions](https://stackoverflow.com/questions/7893511/permissions-on-log-files-created-by-log4j-rollingfileappender) - besides via `umask` e.f. of `0137` for `640`
+  * [umask](https://stackoverflow.com/questions/41975808/set-umask-for-tomcat8-via-tomcat-service) setting in systemd unit and `catalina.sh` 
   * https://howtodoinjava.com/log4j2/log4j2-rollingfileappender-example/
   
 ### License
