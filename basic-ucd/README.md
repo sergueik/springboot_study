@@ -181,6 +181,19 @@ SERVER_ID=$( docker container ls -a| grep $SERVER_NAME | awk '{print $1}')
 docker start $SERVER_ID
 docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $SERVER_ID
 ```
+alternaively,
+```sh
+docker exec -t $ID /bin/sh -c '/sbin/ip address show eth0 |grep inet'
+```
+or
+```sh
+docker exec -t $ID /bin/sh -c '/sbin/ifconfig eth0|grep inet'
+```
+or
+```sh
+docker inspect $ID | jq '.[]|.NetworkSettings.Networks.bridge.IPAddress'
+```
+
 * export the value manually (temporarily)
 
 ```sh
@@ -531,3 +544,4 @@ Then import version via Component menu. This will allow selection ofversions via
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
