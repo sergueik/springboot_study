@@ -191,6 +191,50 @@ will report
 640 root root /usr/local/tomcat/App.2.log.gz
 640 root root /usr/local/tomcat/App.1.log.gz
 ```
+
+NOTE: verified explicitly  that without the log4j2.xml `filePermssions` attribute the `UMASK=0027` fully governs the log permissions:
+with `opt/tomcat/bin/setenv.sh`
+```sh
+export JAVA_OPTS="-Dlog4j2.debug=true -Dapp.env=staging -Dlog4j.configurationFile=$CATALINA_BASE/conf/log4j2.xml"
+export UMASK=0027
+```
+one gets
+
+```sh
+-rw-r-----    1 root     root           179 Jul 31 18:34 /usr/local/tomcat/App.1.log.gz
+-rw-r-----    1 root     root           177 Jul 31 18:34 /usr/local/tomcat/App.2.log.gz
+-rw-r-----    1 root     root           184 Jul 31 18:34 /usr/local/tomcat/App.3.log.gz
+-rw-r-----    1 root     root           582 Jul 31 18:34 /usr/local/tomcat/App.log
+```
+
+with `opt/tomcat/bin/setenv.sh`
+```sh
+export JAVA_OPTS="-Dlog4j2.debug=true -Dapp.env=staging -Dlog4j.configurationFile=$CATALINA_BASE/conf/log4j2.xml"
+export UMASK=0022
+```
+one gets
+
+```sh
+-rw-r--r--    1 root     root           182 Jul 31 18:47 /usr/local/tomcat/App.1.log.gz
+-rw-r--r--    1 root     root           177 Jul 31 18:47 /usr/local/tomcat/App.2.log.gz
+-rw-r--r--    1 root     root           184 Jul 31 18:47 /usr/local/tomcat/App.3.log.gz
+-rw-r--r--    1 root     root           582 Jul 31 18:47 /usr/local/tomcat/App.log
+```
+while with
+`opt/tomcat/bin/setenv.sh`
+```sh
+export JAVA_OPTS="-Dlog4j2.debug=true -Dapp.env=staging -Dlog4j.configurationFile=$CATALINA_BASE/conf/log4j2.xml"
+export UMASK=0077
+```
+one gets
+
+```sh
+-rw-------    1 root     root           184 Jul 31 18:54 /usr/local/tomcat/App.1.log.gz
+-rw-------    1 root     root           177 Jul 31 18:54 /usr/local/tomcat/App.2.log.gz
+-rw-------    1 root     root           177 Jul 31 18:54 /usr/local/tomcat/App.3.log.gz
+-rw-------    1 root     root           582 Jul 31 18:54 /usr/local/tomcat/App.log
+```
+
 * list applications in manager
 ```sh
 docker logs $CONTAINER_ID
@@ -407,5 +451,3 @@ This project is licensed under the terms of the MIT license.
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
-

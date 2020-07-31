@@ -11,10 +11,14 @@ ADD tomcat-users.xml ${CATALINA_HOME}/conf/tomcat-users.xml
 ADD log4j2.xml ${CATALINA_HOME}/conf/log4j2.xml
 ADD catalina.sh ${CATALINA_HOME}/bin/catalina.sh 
 RUN echo "export JAVA_OPTS=\"-Dlog4j2.debug=true -Dapp.env=staging -Dlog4j.configurationFile=\$CATALINA_BASE/conf/log4j2.xml\"" | tee ${CATALINA_HOME}/bin/setenv.sh
+
 # ash - does not recognize ANSI-C quoting
+# 
+ARG UMASK=0027
 RUN printf "\n\
-export UMASK=0027\n\
-">>${CATALINA_HOME}/bin/setenv.sh
+export UMASK=${UMASK}\n\
+" >> ${CATALINA_HOME}/bin/setenv.sh
+
 # NOTE: There is no alternative to tweaking the setenv.sh
 # setting the environment variable like
 # ENV log4j.configurationFile=$CATALINA_BASE/conf/log4j2.xml 
