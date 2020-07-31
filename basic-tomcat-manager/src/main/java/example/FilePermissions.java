@@ -1,5 +1,6 @@
 package example;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,20 +17,28 @@ public class FilePermissions {
 	private static PosixFileAttributeView posixView;
 	private static String posixFilePermissions;
 
-	public static void main(String[] argv) throws Exception {
+	public static void main(String[] argv) {
 		if (argv.length == 0) {
 			return;
 		}
 		Path filePath = Paths.get(argv[0]);
 		posixView = Files.getFileAttributeView(filePath,
 				PosixFileAttributeView.class);
-		PosixFileAttributes posixFileAttributes = posixView.readAttributes();
-		permissions = posixFileAttributes.permissions();
-		posixFilePermissions = PosixFilePermissions.toString(permissions);
-		System.out.println("Current permissons: " + posixFilePermissions);
+		PosixFileAttributes posixFileAttributes;
+		try {
+			posixFileAttributes = posixView.readAttributes();
+			permissions = posixFileAttributes.permissions();
+			posixFilePermissions = PosixFilePermissions.toString(permissions);
+			System.out.println("Current permissons: " + posixFilePermissions);
+		} catch (IOException e1) {
+		}
 		posixFilePermissions = argv.length > 1 ? argv[1] : "rw-r-----";
-		// observe no effect of umask
-		permissions = PosixFilePermissions.fromString(posixFilePermissions);
-		posixView.setPermissions(permissions);
+		try {
+			permissions = PosixFilePermissions.fromString(posixFilePermissions);
+			// observe no effect of umask
+			posixView.setPermissions(permissions);
+		} catch (IllegalArgumentException | IOException e) {
+
+		}
 	}
 }
