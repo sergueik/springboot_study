@@ -1,15 +1,17 @@
 FROM openjdk:8-jre-alpine3.9
-ARG apps_dir="/opt/apps"
-ARG project="springboot_study"
+ARG APPS_DIR="/opt/apps"
+ARG PROJECT="springboot_study"
+ARG LATEST_HASH=""
 EXPOSE 8085
-RUN mkdir ${apps_dir}
+RUN mkdir ${APPS_DIR}
 RUN git --version &>/dev/null; if [ $? -ne 0 ] ; then \
 apk update && apk upgrade && \
 apk add --no-cache git ; fi
 # execute command which will lead to rebuilding 
-RUN if [ -d ${apps_dir}/${project}.git ] ; then echo $(git --git-dir= ${apps_dir}/${project}.git rev-parse --short HEAD); else echo 'No workspace' ;fi
+RUN echo "latest hash is ${LATEST_HASH}"
+RUN if [ -d ${APPS_DIR}/${PROJECT}/.git ] ; then echo ${LATEST_HASH}; echo $(git --git-dir= ${APPS_DIR}/${PROJECT}/.git rev-parse --short HEAD); else echo 'No workspace' ;fi
 
-RUN cd ${apps_dir} && git clone https://github.com/sergueik/${project}
+RUN cd ${APPS_DIR} && git clone https://github.com/sergueik/${PROJECT}
 CMD tail -f /dev/null
 
 #

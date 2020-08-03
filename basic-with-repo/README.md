@@ -39,5 +39,14 @@ Step 9/9 : CMD tail -f /dev/null
 Successfully built c85ea0d82c14
 Successfully tagged basic-example:latest
 ```
+To make example work use environment
+
+```sh
+export PROJECT=springboot_study
+export APPS_DIR=/$HOME/src
+export LATEST_HASH=$(git --git-dir=${APPS_DIR}/${PROJECT}/.git rev-parse --short HEAD)
+docker build -f Dockerfile --build-arg "LATEST_HASH=$(git --git-dir=${APPS_DIR}/${PROJECT}/.git rev-parse --short HEAD)" -t basic-example .
+_
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
