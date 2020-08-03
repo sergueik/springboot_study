@@ -4,7 +4,7 @@
   <groupId>example</groupId>
   <artifactId>jdbc</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.1.1-SNAPSHOT</version>
   <developers>
     <developer>
       <name>Serguei Kouzmine</name>
@@ -16,6 +16,7 @@
   <properties>
     <java.version>1.8</java.version>
     <mysql-connector-java.version>8.0.18</mysql-connector-java.version>
+    <slf4j.version>1.7.30</slf4j.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <parent>
@@ -24,6 +25,11 @@
     <version>1.5.4.RELEASE</version>
   </parent>
   <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>

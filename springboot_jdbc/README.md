@@ -22,19 +22,51 @@ Run
 ```sh
 docker exec -it mysql-server mysql -P 3306 -h localhost -u root -ppassword
 ```
-paste the `DB/users.sql`, then paste `DB/tables.sql`. 
+paste the `DB/users.sql`, then paste `DB/tables.sql`.
 
 * Build the `mysql-example` Docker image
+
+* uncomment the following line in `src/main.resources/datasource.properties`:
+```sh
+jdbc.server=mysql-server
+```
+Note: maven command line option
+```sh
+mvn clean -Djdbc.server=mysql-server package
+```
+is ignored
 ```sh
 docker build -f Dockerfile -t jdbc-example .
 ```
-* Lanch the `mysql-example` backed Docker container
+* launch the `mysql-example` backed Docker container
 ```sh
-docker run -p 8080:8080 --link mysql-server -d jdbc-example
+NAME=jdbc-example
+docker run  --name $NAME -p 8080:8080 --link mysql-server -d jdbc-example
+docker logs $NAME
 ```
-Test 
+this will show , along with other logs,
+```sh
+INFO  example.config.JdbcConfiguration - Datasource URL: jdbc:mysql://mysql-server:3306/cardb?characterEncoding=UTF-8&rewriteBatchedStatements=true
+```
+if the following is shown
+```sh
+INFO  example.config.JdbcConfiguration - Datasource URL: jdbc:mysql://127.0.0.1:3306/cardb?characterEncoding=UTF-8&rewriteBatchedStatements=true
+```
+this will lead to `com.mysql.cj.jdbc.exceptions.CommunicationsException`
+ exception connecting to the server. 
+* testing
 ```sh
 curl "http://192.168.0.64:8080/public/getCars?make=ford&startYear=2020&endYear=2020"
+```
+this should return no excceptions - it will likely print back an empty array:
+```sh
+[]
+```
+### Cleanup
+```sh
+docker container stop $NAME
+docker container rm $NAME
+docker image prune -f 
 ```
 ### See Also
  * https://github.com/simplechen/SpringJdbcTemplateExample

@@ -2,6 +2,9 @@ package example.config;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,23 +16,15 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 @Configuration
 public class JdbcConfiguration {
 
+	private static Logger logger = LoggerFactory.getLogger(JdbcConfiguration.class);
+
+	@SuppressWarnings("resource")
 	@Bean
 	public DataSource dataSource() {
-		/*
-		 * ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-		 * "classpath:applicationContext.xml");
-		 * 
-		 * // @Autowired DriverManagerDataSource dataSource = (DriverManagerDataSource)
-		 * applicationContext .getBean("dataSource");
-		 */
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:applicationContext.xml");
+		DriverManagerDataSource dataSource = (DriverManagerDataSource) applicationContext.getBean("dataSource");
+		logger.info("Datasource URL: " + dataSource.getUrl());
 
-		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-		// should use mysql-server
-		// dataSource.setUrl("jdbc:mysql://localhost:3306/cardb");
-		dataSource.setUrl("jdbc:mysql://mysql-server:3306/cardb");
-		dataSource.setUsername("cardbuser");
-		dataSource.setPassword("123test321");
 		return dataSource;
 	}
 
