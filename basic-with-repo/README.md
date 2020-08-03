@@ -1,52 +1,87 @@
 ### Info
 
-Vanilla Docker basic project based on [Dockerising a Perl application](https://robn.io/docker-perl/) note converted to run on alpine openjdk jre base image, exploring the latest committed hash to trigger git pull
-### Test
-* Build and run container 2 times
-```sh
-docker build -f Dockerfile -t basic-example . 
-docker run -p 8080:8080 basic-example
-```
-the second build will all be using caches:
-```sh
+Docker project with some repository hosted in the Docker image based on [Dockerising a Perl application](https://robn.io/docker-perl/) exploring the latest committed hash in the target repository to trigger git pull into the image converted to run on alpine openjdk jre base image, with the conditional git apk update
 
- Step 1/9 : FROM openjdk:8-jre-alpine3.9
- ---> f7a292bbb70c
-Step 2/9 : ARG apps_dir="/opt/apps"
- ---> Using cache
- ---> a6a0519601b6
-Step 3/9 : ARG project="springboot_study"
- ---> Using cache
- ---> 1084fd822cfb
-Step 4/9 : EXPOSE 8085
- ---> Using cache
- ---> fd04c2fe8791
-Step 5/9 : RUN mkdir ${apps_dir}
- ---> Using cache
- ---> cf71f71e4f0d
-Step 6/9 : RUN git --version &>/dev/null; if [ $? -ne 0 ] ; then apk update && apk upgrade && apk add --no-cache git ; fi
- ---> Using cache
- ---> 2111184d509d
-Step 7/9 : RUN if [ -d ${apps_dir}/${project}.git ] ; then echo $(git --git-dir= ${apps_dir}/${project}.git rev-parse --short HEAD); else echo 'No workspace' ;fi
- ---> Using cache
- ---> 75bf09ee470b
-Step 8/9 : RUN cd ${apps_dir} && git clone https://github.com/sergueik/${project}
- ---> Using cache
- ---> e7d6e247dc33
-Step 9/9 : CMD tail -f /dev/null
- ---> Using cache
- ---> c85ea0d82c14
-Successfully built c85ea0d82c14
-Successfully tagged basic-example:latest
+### Usage
+
+* Build the container 2 times
+```sh
+docker build -f Dockerfile -t basic-example .
 ```
-To make example work use environment
+the second iteration will skip every step with `Using cache` verdict ignoring the possible stale state of the repository workspace burned into the image.
+Adding the argument and passing the latest hash via build arg command line option does not force Docker to re-run the step in question
 
 ```sh
 export PROJECT=springboot_study
 export APPS_DIR=/$HOME/src
 export LATEST_HASH=$(git --git-dir=${APPS_DIR}/${PROJECT}/.git rev-parse --short HEAD)
-docker build -f Dockerfile --build-arg "LATEST_HASH=$(git --git-dir=${APPS_DIR}/${PROJECT}/.git rev-parse --short HEAD)" -t basic-example .
-_
 ```
+this will ignore the hash change:
+```
+docker build -f Dockerfile --build-arg "LATEST_HASH=$(git --git-dir=${APPS_DIR}/${PROJECT}/.git rev-parse --short HEAD)" -t basic-example .
+```
+
+the only way is to update the `Dockerfile` directly:
+```sh
+sed -i "s|LATEST_HASH=\".*\"|LATEST_HASH=\"${LATEST_HASH}\"|" Dockerfile
+docker build -f Dockerfile -t basic-example .
+```
+This will lead to the line
+
+```sh
+
+ARG LATEST_HASH=""
+RUN echo "latest hash is ${LATEST_HASH}"
+RUN echo "Pulling hash ${LATEST_HASH}" && cd ${APPS_DIR} && git clone https://github.com/sergueik/${PROJECT}
+```
+be reappled
+```sh
+Step 10/11 : RUN echo "Pulling hash ${LATEST_HASH}" &&     cd ${APPS_DIR} &&     git clone https://github.com/sergueik/${PROJECT}
+ ---> Running in 5dc6d4df9f40
+Pulling hash abcd
+Cloning into 'springboot_study'...
+Removing intermediate container 5dc6d4df9f40
+ ---> 89623d0015f0
+```
+Note: separating the lines
+```sh
+ARG LATEST_HASH=""
+RUN echo "latest hash is ${LATEST_HASH}"
+RUN cd ${APPS_DIR} && git clone https://github.com/sergueik/${PROJECT}
+```
+
+is also possible:
+```sh
+export LATEST_HASH='efgh'
+sed -i "s|LATEST_HASH=\".*\"|LATEST_HASH=\"${LATEST_HASH}\"|" Dockerfile
+docker build -f Dockerfile -t basic-example .
+```
+leads
+```sh
+Step 8/11 : ARG LATEST_HASH="efgh"
+ ---> Running in 8fd9e2a64364
+Removing intermediate container 8fd9e2a64364
+ ---> 26d0ae873524
+Step 9/11 : RUN echo "latest hash is ${LATEST_HASH}"
+ ---> Running in 585e6e09dbef
+latest hash is efgh
+Removing intermediate container 585e6e09dbef
+ ---> e8bc081e0890
+Step 10/11 : RUN cd ${APPS_DIR} && git clone https://github.com/sergueik/${PROJECT}
+ ---> Running in 07aad4d43910
+Cloning into 'springboot_study'...
+Removing intermediate container 07aad4d43910
+ ---> e8fdcf455178
+```
+the container can be expored or used per its original purpose:
+```sh
+docker run -p 8080:8080 basic-example
+```
+### Cleanup
+destroy all orphaned images afterwards
+```sh
+docker image prune -f
+```
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
