@@ -1,7 +1,9 @@
 CREATE DATABASE cardb;
 
-CREATE USER 'cardbuser'@'localhost' IDENTIFIED BY '123test321';
+-- not just @'localhost'
 
-GRANT ALL PRIVILEGES ON cardb.* TO 'cardbuser'@'localhost';
+CREATE USER 'cardbuser'@'' IDENTIFIED BY '123test321';
+
+GRANT ALL PRIVILEGES ON cardb.* TO 'cardbuser'@'%';
 
 FLUSH PRIVILEGES;

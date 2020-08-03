@@ -30,7 +30,7 @@ docker build -f Dockerfile -t jdbc-example .
 ```
 * Lanch the `mysql-example` backed Docker container
 ```sh
-docker run -p 8080:8080 -e "SERVICE-PORT=3306" --link mysql-server -d jdbc-example
+docker run -p 8080:8080 --link mysql-server -d jdbc-example
 ```
 Test 
 ```sh

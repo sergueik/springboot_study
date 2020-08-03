@@ -15,22 +15,21 @@ public class JdbcConfiguration {
 
 	@Bean
 	public DataSource dataSource() {
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-				"classpath:applicationContext.xml");
-
-		// @Autowired
-		DriverManagerDataSource dataSource = (DriverManagerDataSource) applicationContext
-				.getBean("dataSource");
-
 		/*
+		 * ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
+		 * "classpath:applicationContext.xml");
+		 * 
+		 * // @Autowired DriverManagerDataSource dataSource = (DriverManagerDataSource)
+		 * applicationContext .getBean("dataSource");
+		 */
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		
+
 		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-		dataSource.setUrl("jdbc:mysql://localhost:3306/cardb");
+		// should use mysql-server
+		// dataSource.setUrl("jdbc:mysql://localhost:3306/cardb");
+		dataSource.setUrl("jdbc:mysql://mysql-server:3306/cardb");
 		dataSource.setUsername("cardbuser");
-		dataSource.setPassword("	");
-		
-		*/
+		dataSource.setPassword("123test321");
 		return dataSource;
 	}
 
