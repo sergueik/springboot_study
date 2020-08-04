@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -18,6 +20,7 @@ import example.models.CarModel;
 public class CarRepository {
 	@Autowired
 	private NamedParameterJdbcTemplate sqlDao;
+	private static Logger logger = LoggerFactory.getLogger(CarRepository.class);
 
 	private final String addCar_sql = "INSERT INTO carinfo (yearofmanufacture, model, make, suggestedretailprice, fullprice, rebateamount, createdate, updatedate)"
 			+ " VALUES (:yearOfManufacture, :model, :make, :suggestedRetailPrice, :fullPrice, :rebateAmount, :createdDate, :updatedDate)";
@@ -30,7 +33,7 @@ public class CarRepository {
 	@Transactional
 	public void addCar(CarModel carToAdd) {
 		if (carToAdd != null) {
-			Map<String, Object> parameters = new HashMap<String, Object>();
+			Map<String, Object> parameters = new HashMap<>();
 
 			Date dateNow = new Date();
 
@@ -44,20 +47,23 @@ public class CarRepository {
 			parameters.put("createdDate", dateNow);
 			parameters.put("updatedDate", dateNow);
 
+			logger.info("Update SQL: {}, parameters: {}", addCar_sql, parameters);
+
 			int retVal = sqlDao.update(addCar_sql, parameters);
-			System.out.println("Rows updated: " + retVal);
+			logger.info("Rows updated: {}", retVal);
 		} else {
-			System.out.println("Car to add is invalid. Null Object.");
+			logger.info("Car to add is invalid. Null Object.");
 		}
 	}
 
 	@Transactional
 	public List<CarModel> findCar(String make, int startYear, int endYear) {
+		// something wrong with quotes
 		List<CarModel> foundObjs = sqlDao.query(getCars_sql,
-				(new MapSqlParameterSource("make", make))
+				(new MapSqlParameterSource("make", "'" + make + "'"))
 						.addValue("startYear", startYear).addValue("endYear", endYear),
 				(rs) -> {
-					List<CarModel> retVal = new ArrayList<CarModel>();
+					List<CarModel> retVal = new ArrayList<>();
 					if (rs != null) {
 						while (rs.next()) {
 							CarModel cm = new CarModel();
@@ -70,10 +76,10 @@ public class CarRepository {
 							retVal.add(cm);
 						}
 					}
-
 					return retVal;
 				});
 
 		return foundObjs;
 	}
 }
+

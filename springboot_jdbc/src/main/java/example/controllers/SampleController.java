@@ -1,7 +1,9 @@
 package example.controllers;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +22,19 @@ public class SampleController {
 	@Autowired
 	private CarRepository carRepo;
 
-	@RequestMapping(value = "/public/addCar", method = RequestMethod.POST)
+	private CarModel carToAdd;
+
+	// https://stackoverflow.com/questions/33796218/content-type-application-x-www-form-urlencodedcharset-utf-8-not-supported-for
+	@RequestMapping(value = "/public/addCar", method = RequestMethod.POST, produces = {
+			"application/json",
+			"application/xml" }, consumes = { "application/x-www-form-urlencoded" })
 	public ResponseEntity<GenericResponse> addCar(
-			@RequestBody CarModel carToAdd) {
+			@RequestParam Map<String, String> body) {
+		carToAdd = new CarModel();
+		carToAdd.setModel(body.get("model"));
+		carToAdd.setMaker(body.get("maker"));
+		carToAdd.setYearOfManufacturing(
+				Integer.parseInt(body.get("yearOfManufacturing")));
 		GenericResponse retMsg = new GenericResponse();
 		if (carToAdd != null) {
 			try {
@@ -61,3 +73,4 @@ public class SampleController {
 		return retVal;
 	}
 }
+

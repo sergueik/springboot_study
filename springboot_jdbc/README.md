@@ -20,6 +20,11 @@ The enviroment entries `MYSQL_ROOT_PASSWORD`, `MYSQL_USER`,`MYSQL_DATABASE`, `MY
 Note, it will take the Docker instance  quite some time to launch.
 Run
 ```sh
+SERVER_ID=$(docker container ls -a | grep mysql-server | awk '{print $1}')
+docker start $SERVER_ID
+```
+if this is the first time, then
+```sh
 docker exec -it mysql-server mysql -P 3306 -h localhost -u root -ppassword
 ```
 paste the `DB/users.sql`, then paste `DB/tables.sql`.
@@ -53,23 +58,40 @@ if the following is shown
 INFO  example.config.JdbcConfiguration - Datasource URL: jdbc:mysql://127.0.0.1:3306/cardb?characterEncoding=UTF-8&rewriteBatchedStatements=true
 ```
 this will lead to `com.mysql.cj.jdbc.exceptions.CommunicationsException`
- exception connecting to the server. 
+ exception connecting to the server.
 * testing
 ```sh
-curl "http://192.168.0.64:8080/public/getCars?make=ford&startYear=2020&endYear=2020"
+curl "http://192.168.0.64:8080/public/getCars?make=VM&startYear=2020&endYear=2020"
 ```
 this should return no excceptions - it will likely print back an empty array:
 ```sh
 []
 ```
+* add rows to database table:
+```sh
+curl -d "model=jetta&maker=VW&yearOfManufacturing=2020" -X POST "http://192.168.0.64:8080/public/addCar" 2>/dev/null
+```
+this will respond with
+```sh
+"success":true,"statusMsg":"Operation is successful."}
+```
+* connect to validate
+
+```sh
+docker exec -it mysql-server mysql -P 3306 -h localhost -u cardbuser -p123test321
+```
+```sh
+springboot http status 415 error":"Unsupported Media Type","exception":"org.springframework.web.HttpMediaTypeNotSupportedException","message":"Content type 'application/x-www-form-urlencoded;charset=UTF-8' not supported"
+```
 ### Cleanup
 ```sh
 docker container stop $NAME
 docker container rm $NAME
-docker image prune -f 
+docker image prune -f
 ```
 ### See Also
  * https://github.com/simplechen/SpringJdbcTemplateExample
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
