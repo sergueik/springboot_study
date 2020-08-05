@@ -1,7 +1,12 @@
 package example.controllers;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import example.config.JdbcConfiguration;
 import example.models.CarModel;
 import example.models.GenericResponse;
 import example.repository.CarRepository;
@@ -20,9 +26,11 @@ public class SampleController {
 	@Autowired
 	private CarRepository carRepo;
 
-	@RequestMapping(value = "/public/addCar", method = RequestMethod.POST)
-	public ResponseEntity<GenericResponse> addCar(
-			@RequestBody CarModel carToAdd) {
+	private CarModel carToAdd;
+	private static Logger logger = LoggerFactory
+			.getLogger(SampleController.class);
+
+	private GenericResponse addCar(CarModel carToAdd) {
 		GenericResponse retMsg = new GenericResponse();
 		if (carToAdd != null) {
 			try {
@@ -40,8 +48,34 @@ public class SampleController {
 			retMsg.setStatusMsg("No valid car model object to be added");
 		}
 
-		ResponseEntity<GenericResponse> retVal;
-		retVal = ResponseEntity.ok(retMsg);
+		return retMsg;
+	}
+
+	// strongly typed
+	@RequestMapping(value = "/public/addCarJSON", method = RequestMethod.POST)
+	public ResponseEntity<GenericResponse> addCarJSON(
+			@RequestBody CarModel data) {
+		logger.info("processing CarModel json: {}", data);
+		CarModel carToAdd = data;
+		ResponseEntity<GenericResponse> retVal = ResponseEntity
+				.ok(addCar(carToAdd));
+		return retVal;
+	}
+
+	// https://stackoverflow.com/questions/33796218/content-type-application-x-www-form-urlencodedcharset-utf-8-not-supported-for
+	@RequestMapping(value = "/public/addCar", method = RequestMethod.POST, produces = {
+			"application/json", "application/xml" }, consumes = {
+					"application/x-www-form-urlencoded", "application/json" })
+	public ResponseEntity<GenericResponse> addCarBody(
+			@RequestParam Map<String, String> body) {
+		logger.info("processing body: {}", body);
+		carToAdd = new CarModel();
+		carToAdd.setModel(body.get("model"));
+		carToAdd.setMaker(body.get("maker"));
+		carToAdd.setYearOfManufacturing(
+				Integer.parseInt(body.get("yearOfManufacturing")));
+		ResponseEntity<GenericResponse> retVal = ResponseEntity
+				.ok(addCar(carToAdd));
 		return retVal;
 	}
 
