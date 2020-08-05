@@ -24,11 +24,19 @@ public class CarRepository {
 
 	private final String addCar_sql = "INSERT INTO carinfo (yearofmanufacture, model, make, suggestedretailprice, fullprice, rebateamount, createdate, updatedate)"
 			+ " VALUES (:yearOfManufacture, :model, :make, :suggestedRetailPrice, :fullPrice, :rebateAmount, :createdDate, :updatedDate)";
-
+	/*
+		private final String getCars_sql = "SELECT id," + " yearofmanufacture,"
+				+ " model," + " make," + " suggestedretailprice," + " fullprice,"
+				+ " rebateamount," + " createdate,"
+				+ " updatedate FROM carinfo WHERE make = :make AND yearofmanufacture >= :startYear AND yearofmanufacture <= :endYear";
+	*/
 	private final String getCars_sql = "SELECT id," + " yearofmanufacture,"
 			+ " model," + " make," + " suggestedretailprice," + " fullprice,"
 			+ " rebateamount," + " createdate,"
-			+ " updatedate FROM carinfo WHERE make = :make AND yearofmanufacture >= :startYear AND yearofmanufacture <= :endYear";
+			+ " updatedate FROM carinfo WHERE make = :make";
+	private final String getAllCars_sql = "SELECT id," + " yearofmanufacture,"
+			+ " model," + " make," + " suggestedretailprice," + " fullprice,"
+			+ " rebateamount," + " createdate," + " updatedate FROM carinfo";
 
 	@Transactional
 	public void addCar(CarModel carToAdd) {
@@ -57,12 +65,38 @@ public class CarRepository {
 	}
 
 	@Transactional
+	public List<CarModel> getAllCars() {
+
+		List<CarModel> foundObjs = sqlDao.query(getAllCars_sql, (rs) -> {
+			List<CarModel> retVal = new ArrayList<>();
+			if (rs != null) {
+				while (rs.next()) {
+					CarModel cm = new CarModel();
+					cm.setYearOfManufacturing(rs.getInt("yearOfManufacture"));
+					cm.setMaker(rs.getString("make"));
+					cm.setModel(rs.getString("model"));
+					cm.setSuggestedRetailPrice(rs.getFloat("suggestedretailprice"));
+					cm.setFullPrice(rs.getFloat("fullprice"));
+					cm.setRebateAmount(rs.getFloat("rebateamount"));
+					retVal.add(cm);
+				}
+			}
+
+			return retVal;
+		});
+
+		return foundObjs;
+	}
+
+	@Transactional
 	public List<CarModel> findCar(String make, int startYear, int endYear) {
-		// something wrong with quotes
 		List<CarModel> foundObjs = sqlDao.query(getCars_sql,
+				/*
 				(new MapSqlParameterSource("make", make))
 						.addValue("startYear", startYear).addValue("endYear", endYear),
-				(rs) -> {
+						
+						*/
+				new MapSqlParameterSource("make", make), (rs) -> {
 					List<CarModel> retVal = new ArrayList<>();
 					if (rs != null) {
 						while (rs.next()) {

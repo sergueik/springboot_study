@@ -94,4 +94,17 @@ public class SampleController {
 		retVal = ResponseEntity.ok(foundCars);
 		return retVal;
 	}
+
+	@RequestMapping(value = "/public/getAllCars", method = RequestMethod.GET)
+	public ResponseEntity<List<CarModel>> getAllCars() {
+		List<CarModel> allCars = carRepo.getAllCars();
+
+		if (allCars == null) {
+			allCars = new ArrayList<CarModel>();
+		}
+		logger.info("found: {} objects", allCars.size());
+
+		ResponseEntity<List<CarModel>> retVal = ResponseEntity.ok(allCars);
+		return retVal;
+	}
 }
