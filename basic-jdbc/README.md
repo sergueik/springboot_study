@@ -61,15 +61,45 @@ this will lead to `com.mysql.cj.jdbc.exceptions.CommunicationsException`
  exception connecting to the server.
 * testing
 ```sh
-curl "http://192.168.0.64:8080/public/getCars?make=VM&startYear=2020&endYear=2020"
+curl "http://192.168.0.64:8080/public/getCars?make=VW&startYear=2020&endYear=2020" |jq -r "." | tee result.json
 ```
-this should return no excceptions - it will likely print back an empty array:
+this should return no exceptions - initially will print back an empty array:
 ```sh
 []
 ```
+when data is available, it is printed :
+```json
+[
+  {
+    "yearOfManufacturing": 2020,
+    "model": "jetta",
+    "maker": "VW",
+    "suggestedRetailPrice": 0,
+    "fullPrice": 0,
+    "rebateAmount": 0
+  },
+  {
+    "yearOfManufacturing": 2020,
+    "model": "passat",
+    "maker": "VW",
+    "suggestedRetailPrice": 0,
+    "fullPrice": 0,
+    "rebateAmount": 0
+  }
+]
+```
+The proper csv conversion is a work in progress:
+```sh
+jq -r '. | map(.maker), map(.model),map(.yearOfManufacturing) | @csv' result.json
+```
+```sh
+"VW","VW"
+"jetta","passat"
+2020,2020
+```
 * add rows to database table:
 ```sh
-curl -d "model=jetta&maker=VW&yearOfManufacturing=2020" -H "Content-Type: application/x-www-form-urlencoded" -X POST "http://192.168.0.64:8080/public/addCar" 2>/dev/null
+curl -d "model=passat&maker=VW&yearOfManufacturing=2020" -H "Content-Type: application/x-www-form-urlencoded" -X POST "http://192.168.0.64:8080/public/addCar" 2>/dev/null
 ```
 this will respond with
 ```sh
@@ -86,6 +116,30 @@ springboot http status 415 error":"Unsupported Media Type",
 "exception":"org.springframework.web.HttpMediaTypeNotSupportedException",
 "message":"Content type 'application/x-www-form-urlencoded;charset=UTF-8' not supported"
 ```
+
+### Debugging the SQL
+
+* connect to `mysql_server` Docker container Mysql shell as root
+```sh
+SERVER_ID=$(docker container ls -a | grep mysql-server | awk '{print $1}')
+docker exec -it $SERVER_ID mysql -P 3306 -h localhost -u root -ppassword
+```
+* enable file logging:
+```sh
+SET GLOBAL log_output = "FILE";
+SET GLOBAL general_log_file = "/tmp/mysql.log";
+SET GLOBAL general_log = 'ON';
+```
+* connect to `mysql_server` Docker container ash shell as root
+```sh
+SERVER_ID=$(docker container ls -a | grep mysql-server | awk '{print $1}')
+docker exec -it $SERVER_ID sh
+```
+and inspect the logs
+```sh
+more /tmp/mysql.log
+```
+(NOTE: base image has no standard editors installed)
 ### Cleanup
 ```sh
 docker container stop $NAME
@@ -94,7 +148,8 @@ docker image prune -f
 ```
 ### See Also
  * https://github.com/simplechen/SpringJdbcTemplateExample
-
+ * https://unix.stackexchange.com/questions/163845/using-jq-to-extract-values-and-format-in-csv/227950
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 

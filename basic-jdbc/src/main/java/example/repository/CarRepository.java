@@ -24,16 +24,12 @@ public class CarRepository {
 
 	private final String addCar_sql = "INSERT INTO carinfo (yearofmanufacture, model, make, suggestedretailprice, fullprice, rebateamount, createdate, updatedate)"
 			+ " VALUES (:yearOfManufacture, :model, :make, :suggestedRetailPrice, :fullPrice, :rebateAmount, :createdDate, :updatedDate)";
-	/*
-		private final String getCars_sql = "SELECT id," + " yearofmanufacture,"
-				+ " model," + " make," + " suggestedretailprice," + " fullprice,"
-				+ " rebateamount," + " createdate,"
-				+ " updatedate FROM carinfo WHERE make = :make AND yearofmanufacture >= :startYear AND yearofmanufacture <= :endYear";
-	*/
+
 	private final String getCars_sql = "SELECT id," + " yearofmanufacture,"
 			+ " model," + " make," + " suggestedretailprice," + " fullprice,"
 			+ " rebateamount," + " createdate,"
-			+ " updatedate FROM carinfo WHERE make = :make";
+			+ " updatedate FROM carinfo WHERE make = :make AND yearofmanufacture >= :startYear AND yearofmanufacture <= :endYear";
+
 	private final String getAllCars_sql = "SELECT id," + " yearofmanufacture,"
 			+ " model," + " make," + " suggestedretailprice," + " fullprice,"
 			+ " rebateamount," + " createdate," + " updatedate FROM carinfo";
@@ -90,14 +86,10 @@ public class CarRepository {
 
 	@Transactional
 	public List<CarModel> findCar(String make, int startYear, int endYear) {
-		// something wrong with quotes
 		List<CarModel> foundObjs = sqlDao.query(getCars_sql,
-				/*
 				(new MapSqlParameterSource("make", make))
 						.addValue("startYear", startYear).addValue("endYear", endYear),
-						
-						*/
-				new MapSqlParameterSource("make", make), (rs) -> {
+				(rs) -> {
 					List<CarModel> retVal = new ArrayList<>();
 					if (rs != null) {
 						while (rs.next()) {
