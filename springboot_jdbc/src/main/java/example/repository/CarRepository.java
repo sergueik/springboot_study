@@ -90,6 +90,7 @@ public class CarRepository {
 
 	@Transactional
 	public List<CarModel> findCar(String make, int startYear, int endYear) {
+		// something wrong with quotes
 		List<CarModel> foundObjs = sqlDao.query(getCars_sql,
 				/*
 				(new MapSqlParameterSource("make", make))
@@ -110,10 +111,10 @@ public class CarRepository {
 							retVal.add(cm);
 						}
 					}
-
 					return retVal;
 				});
 
 		return foundObjs;
 	}
 }
+
