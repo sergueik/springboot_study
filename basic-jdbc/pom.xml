@@ -18,7 +18,7 @@
     <mysql-connector-java.version>8.0.18</mysql-connector-java.version>
     <slf4j.version>1.7.30</slf4j.version>
     <log4j.version>1.2.17</log4j.version>
-    <log4j-core.version>2.11.1</log4j-core.version>
+    <log4j-core.version>2.13.3</log4j-core.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <parent>
