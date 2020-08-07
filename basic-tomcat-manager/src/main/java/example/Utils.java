@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 // based on: https://mkyong.com/java/how-to-get-http-request-header-in-java/
 @SuppressWarnings("serial")
-public class Utils {
+public class Utils {	
 	public static Map<String, String> getHeadersInfo(HttpServletRequest request) {
 
 		Map<String, String> map = new HashMap<>();

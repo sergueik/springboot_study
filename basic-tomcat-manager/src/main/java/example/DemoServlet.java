@@ -16,7 +16,7 @@ import example.Utils;
 @SuppressWarnings("serial")
 public class DemoServlet extends HttpServlet implements Servlet {
 	private static final Logger logger = LogManager.getLogger(DemoServlet.class);
-	private String message = "message";
+	private String message = null;
 
 	@Override
 	public void init() throws ServletException {
@@ -34,34 +34,74 @@ public class DemoServlet extends HttpServlet implements Servlet {
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// when no Log4j 2 configuration file found in CLASSPATH, log4j considers
-		// itself not configured and switches to default configuration: logging the
-		// errors to console only
-		logger.debug("GET request=" + request.getContextPath() + " "
-				+ request.getQueryString() + " " + Utils.getHeadersInfo(request));
+		logger.debug(request.getMethod().toUpperCase() + " request: "
+				+ request.getContextPath() + " " + request.getQueryString());
+		processRequest(request, response);
 
-		logger.info("GET request=" + request.getContextPath() + " "
-				+ request.getQueryString());
-		// @formatter:off
-		String html = String.format("<html><head><title>Demo</title></head>" 
-			+ "<body>You requested=[%s?%s]"				
-			+ "<hr/>" 
-			+ "%s " 
-			+ "<hr/>" 
-			+ "%s " 
-			+ "</body></html>",
-				request.getRequestURL(), request.getQueryString(), message,
-				Utils.printHeadersInfo(Utils.getHeadersInfo(request)));
-		// @formatter:on
+	}
 
-		response.setContentType("text/html");
-		response.getOutputStream().println(html);
+	// https://stackoverflow.com/questions/8100634/get-the-post-request-body-from-httpservletrequest
+	// note: a more compact code is possible with Java 8 / Tomcat 8.5+
+	protected String doPayload(final HttpServletRequest request) {
+		BufferedReader bufferedReader = null;
+		StringBuffer stringBuffer = new StringBuffer();
+		try {
+			bufferedReader = request.getReader();
+			char[] charBuffer = new char[128];
+			int bytesRead;
+			while ((bytesRead = bufferedReader.read(charBuffer)) != -1) {
+				stringBuffer.append(charBuffer, 0, bytesRead);
+			}
+		} catch (IOException ex) {
+			// throw ex;
+		} finally {
+			if (bufferedReader != null) {
+				try {
+					bufferedReader.close();
+				} catch (IOException ex) {
+					// throw ex;
+				}
+			}
+		}
+
+		if (message == null) {
+			message = stringBuffer.toString();
+		}
+		return message;
 	}
 
 	@Override
 	protected void doPost(final HttpServletRequest request,
 			final HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
-}
 
+		logger.debug(request.getMethod().toUpperCase() + " request: "
+				+ request.getContextPath() + " " + doPayload(request));
+		processRequest(request, response);
+	}
+
+	protected void processRequest(final HttpServletRequest request,
+			final HttpServletResponse response) throws ServletException, IOException {
+		// @formatter:off
+		message = doPayload(request);
+		String html = String.format(
+				"<html><head><title>Demo</title></head>" + "<body>You requested=[%s?%s]"
+						+ "<hr/>"
+						+ "%s "
+						+ "<hr/>"
+						+ "%s "
+						+ "</body></html>",
+		// @formatter:on
+
+				request.getRequestURL(), request.getQueryString(), message,
+				Utils.printHeadersInfo(Utils.getHeadersInfo(request)));
+
+		// NOTE: when no Log4j2 configuration file found in CLASSPATH, log4j
+		// considers
+		// itself not configured and switches to default configuration: logging the
+		// errors to console only
+		response.setContentType("text/html");
+		response.getOutputStream().println(html);
+
+	}
+
+}

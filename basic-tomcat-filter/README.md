@@ -231,8 +231,11 @@ docker image rm -f $NAME; docker image prune -f
   * https://www.journaldev.com/1933/java-servlet-filter-example-tutorial
   * http://www.avajava.com/tutorials/lessons/what-is-a-filter-and-how-do-i-use-it.html%3Fpage%3D2?page=1
   * https://www.moreofless.co.uk/static-content-web-pages-images-tomcat-outside-war/
+  * Java Servlet Filter [basics](https://www.codejava.net/java-ee/servlet/how-to-create-java-servlet-filter)
+
   * [dummy catalina war](https://github.com/deepak2717/TomcatDockerWar) project
   * Log4j [tutorial](https://laliluna.com/articles/posts/log4j-tutorial.html) with Tomcat examples
+  * filter in [tomcat configured though code](https://www.baeldung.com/tomcat-programmatic-setup)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
