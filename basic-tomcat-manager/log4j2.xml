@@ -7,8 +7,9 @@
       <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
     </Console>
     <!-- not specifying the fileOwner and fileGroup -->
-    <RollingFile name="FileLogger" fileName="App.log" append="true" filePattern="App.%i.log.gz">
-      <!-- filePermissions="rw-r-----" -->
+    <RollingFile name="FileLogger" fileName="App.log" append="true" filePattern="App.%i.log.gz" filePermissions="rw-r--r--">
+<!-- Double hyphen within comment eror if placing unix file mask into comment.  Keep rw- for owner,group and other while inside the XML comment, then update accordingly after convertingto real attribute -->
+      <!-- filePermissions="rw-rw-rw-" -->
       <PatternLayout pattern="%-5p %d{yyyy-MM-dd HH:mm:ss} %F [%c{1}] - [%M] - %m%n"/>
       <Policies>
         <SizeBasedTriggeringPolicy size="1KB"/>

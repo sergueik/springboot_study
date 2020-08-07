@@ -2,8 +2,8 @@ package example.config;
 
 import javax.sql.DataSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -16,8 +16,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 @Configuration
 public class JdbcConfiguration {
 
-	private static Logger logger = LoggerFactory.getLogger(JdbcConfiguration.class);
-
+	private static final Logger logger = LogManager.getLogger(JdbcConfiguration.class);
 	@SuppressWarnings("resource")
 	@Bean
 	public DataSource dataSource() {

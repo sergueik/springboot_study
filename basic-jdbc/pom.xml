@@ -4,7 +4,7 @@
   <groupId>example</groupId>
   <artifactId>jdbc</artifactId>
   <packaging>jar</packaging>
-  <version>0.4.0-SNAPSHOT</version>
+  <version>0.5.0-SNAPSHOT</version>
   <developers>
     <developer>
       <name>Serguei Kouzmine</name>
@@ -17,6 +17,8 @@
     <java.version>1.8</java.version>
     <mysql-connector-java.version>8.0.18</mysql-connector-java.version>
     <slf4j.version>1.7.30</slf4j.version>
+    <log4j.version>1.2.17</log4j.version>
+    <log4j-core.version>2.11.1</log4j-core.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <parent>
@@ -29,6 +31,26 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4j-core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${log4j-core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-web</artifactId>
+      <version>${log4j-core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${log4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

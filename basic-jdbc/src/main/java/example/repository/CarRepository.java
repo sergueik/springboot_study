@@ -6,9 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -20,7 +21,7 @@ import example.models.CarModel;
 public class CarRepository {
 	@Autowired
 	private NamedParameterJdbcTemplate sqlDao;
-	private static Logger logger = LoggerFactory.getLogger(CarRepository.class);
+	private static final Logger logger = LogManager.getLogger(CarRepository.class);
 
 	private final String addCar_sql = "INSERT INTO carinfo (yearofmanufacture, model, make, suggestedretailprice, fullprice, rebateamount, createdate, updatedate)"
 			+ " VALUES (:yearOfManufacture, :model, :make, :suggestedRetailPrice, :fullPrice, :rebateAmount, :createdDate, :updatedDate)";
