@@ -1,4 +1,7 @@
-use cardb;
+-- CREATE DATABASE cardb;
+-- error in h2:
+--- org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "CREATE DATABASE[*] CARDB "; 
+-- use cardb;
 
 DROP TABLE IF EXISTS carinfo;
 
