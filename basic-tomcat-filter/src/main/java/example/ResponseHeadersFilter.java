@@ -59,6 +59,7 @@ public final class ResponseHeadersFilter implements Filter {
 		return initParameters;
 	}
 
+	// see also: http://www.java2s.com/Tutorial/Java/0400__Servlet/0340__Filter.htm
 	@Override
 	public void doFilter(final ServletRequest request,
 			final ServletResponse response, final FilterChain chain)

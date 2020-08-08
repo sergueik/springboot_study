@@ -1,15 +1,16 @@
 package example;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.Servlet;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import example.Utils;
 
 // https://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpServlet.html
 
@@ -52,18 +53,20 @@ public class DemoServlet extends HttpServlet implements Servlet {
 			while ((bytesRead = bufferedReader.read(charBuffer)) != -1) {
 				stringBuffer.append(charBuffer, 0, bytesRead);
 			}
-		} catch (IOException ex) {
-			// throw ex;
+		} catch (IOException e) {
+			// ignore
 		} finally {
 			if (bufferedReader != null) {
 				try {
 					bufferedReader.close();
-				} catch (IOException ex) {
-					// throw ex;
+				} catch (IOException e) {
+					// ignore
 				}
 			}
 		}
 
+		// NOTE: getReader() only returns the payload the first time is called:
+		// subsequent calls produce null
 		if (message == null) {
 			message = stringBuffer.toString();
 		}
