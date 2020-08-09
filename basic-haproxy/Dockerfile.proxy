@@ -1,5 +1,3 @@
 FROM haproxy:1.8-alpine
-COPY docker-entrypoint.sh /
-
-ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["-f", "/usr/local/etc/haproxy/haproxy.cfg"]
+EXPOSE 8080
+ENTRYPOINT ["haproxy", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]
