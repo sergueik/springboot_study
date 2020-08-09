@@ -1,0 +1,5 @@
+FROM haproxy:1.8-alpine
+COPY docker-entrypoint.sh /
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["-f", "/usr/local/etc/haproxy/haproxy.cfg"]
