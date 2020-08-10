@@ -24,10 +24,9 @@ public class RandomRedirectServlet extends HttpServlet {
 	private static String baseUrl = "http://" + redirectHost + ":" + redirectPort;
 
 	public void init() throws ServletException {
-		apps.addElement("/Code");
-		apps.addElement("/Contact");
+		apps.addElement("/Admin");
 		apps.addElement("/About");
-		apps.addElement("/Product");
+		apps.addElement("/Products");
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response)

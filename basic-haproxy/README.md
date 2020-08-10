@@ -69,6 +69,56 @@ doker stop application-server
 doker start application-server
 ```
 * connect to proxy which will redirect to the application server
+```sh
+curl http://localhost:8080/products/index.jsp
+```
+
+```sh
+curl http://localhost:8080/
+```
+The page will display a lot of information:
+
+```sh
+Server:939cffb58551
+Request URL: http://localhost:8080/products/index.jsp
+PATH = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/jdk/bin
+JAVA_HOME = /opt/jdk
+CATALINA_OUT = /dev/null
+CATALINA_HOME = /opt/tomcat
+XFILESEARCHPATH = /usr/dt/app-defaults/%L/Dt
+GLIBC_VERSION = 2.23-r3
+LANG = C.UTF-8
+JAVA_VERSION_MAJOR = 8
+TOMCAT_MAJOR = 8
+TOMCAT_VERSION = 8.5.3
+HOSTNAME = 939cffb58551
+NLSPATH = /usr/dt/lib/nls/msg/%L/%N.cat
+JAVA_VERSION_MINOR = 92
+TOMCAT_HOME = /opt/tomcat
+PWD = /
+JAVA_PACKAGE = server-jre
+JAVA_VERSION_BUILD = 14
+HOME = /root
+SHLVL = 1
+Request Parameters
+******************
+
+Request Headers
+***************
+Name  : 'host'
+Class : java.lang.String
+String: 'localhost:8080'
+
+Name  : 'user-agent'
+Class : java.lang.String
+String: 'curl/7.58.0'
+
+Name  : 'accept'
+Class : java.lang.String
+String: '*/*'
+```
+
+in particular the hostname of the application-server (evaluated through `System.getenv().get("HOTsNAME")` and `java.net.InetAddress.getLocalHost().getHostName()`. This helps tracking the load balancing (booting additional application servers and integrating with frontend node is work in progress).
 
 ### See Also
  * [haproxy load balanced web application server cluster](https://github.com/ianblenke/tutum-docker-clusterproxy) with discovery implemented in custom Python script
