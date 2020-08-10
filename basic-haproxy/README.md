@@ -31,10 +31,14 @@ curl -I http://localhost:8080/redirector/index.html
 this will redirect to randomly chosen app path on `REDIRECT_HOST`:
 ```sh
 HTTP/1.1 302 Found
-Server: Apache-Coyote/1.1
 Location: http://other_host:8080/About
-Content-Type: text/html
-Content-Length: 0
+```
+```sh
+curl -I http://localhost:8080/redirector/index.html
+```
+```sh
+HTTP/1.1 302 Found
+Location: http://other_host:8080/Contact
 ```
 * build the proxy node container
 ```sh
@@ -52,7 +56,7 @@ docker build -t $IMAGE -f Dockerfile.$IMAGE .
 ```sh
 CONTAINER='proxy-example'
 docker rm -f $CONTAINER
-docker run --name $CONTAINER -p 8080:8080 --link application-server -v $(pwd)/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro -d $IMAGE
+docker run --name $CONTAINER -p 8086:8080 --link application-server -v $(pwd)/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro -d $IMAGE
 docker logs $CONTAINER
 ```			
 * build Application war(s) and install on application server(s)
@@ -63,18 +67,19 @@ popd
 ```
 ```sh
 docker cp webapp/target/dummy.war application-server:/opt/tomcat/webapps/ROOT.war
+docker cp webapp/target/dummy.war application-server:/opt/tomcat/webapps/products.war
 ```
 ```sh
-doker stop application-server
-doker start application-server
+docker stop application-server
+docker start application-server
 ```
 * connect to proxy which will redirect to the application server
 ```sh
-curl http://localhost:8080/products/index.jsp
+curl http://localhost:8086/products/index.jsp
 ```
 
 ```sh
-curl http://localhost:8080/
+curl http://localhost:8086/
 ```
 The page will display a lot of information:
 
@@ -118,12 +123,27 @@ Class : java.lang.String
 String: '*/*'
 ```
 
-in particular the hostname of the application-server (evaluated through `System.getenv().get("HOTsNAME")` and `java.net.InetAddress.getLocalHost().getHostName()`. This helps tracking the load balancing (booting additional application servers and integrating with frontend node is work in progress).
+in particular the hostname of the application-server (evaluated through `System.getenv().get("HOSTNAME")` and `java.net.InetAddress.getLocalHost().getHostName()`. This helps tracking the load balancing (booting additional application servers and integrating with frontend node is work in progress).
 
+
+* rebuild the `frontend-example` container linking it to `proxy-example`:
+```sh
+IMAGE='frontend'
+docker build -t $IMAGE -f Dockerfile.$IMAGE .
+CONTAINER='frontend-example'
+docker rm -f $CONTAINER
+docker run --name $CONTAINER --link proxy-example --link application-server -p 8080:8080 -e REDIRECT_HOST=proxy-example -d $IMAGE
+```
+then execute curl request to 
+```sh
+curl  -k  http://localhost:8080/redirector/index.html
+```
+these will get redirected to `proxy_example` port `8080` and routed to whatever is configured in `haproxy.conf` there (this is work in progress:  a lot of empty response observed)
 ### See Also
  * [haproxy load balanced web application server cluster](https://github.com/ianblenke/tutum-docker-clusterproxy) with discovery implemented in custom Python script
  * consul-template haproxy round-robin scalable [setup](https://github.com/camptocamp/docker-consul-demo)
  * haproxy with rsyslog [project](https://github.com/mminks/haproxy-docker-logging) 
+ * introduction to [HAProxy Logging](https://www.haproxy.com/blog/introduction-to-haproxy-logging/)	
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
