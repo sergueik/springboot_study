@@ -46,7 +46,7 @@ docker pull haproxy:1.8-alpine
 ```
 create blank application server(s)
 ```sh
-docker run -p 8085:8080 -d --name application-server davidcaste/alpine-tomcat /opt/tomcat/bin/catalina.sh run
+for NUM in $(seq 1 1 3) ; do APP_SERVER="application-server${NUM}"; docker container stop $APP_SERVER;  docker container rm -f $APP_SERVER; docker run -p 808${NUM}:8080 -d --env "APP_SERVER=${APP_SERVER}" --name $APP_SERVER davidcaste/alpine-tomcat /opt/tomcat/bin/catalina.sh run ; done
 ```
 pull and build the proxy
 ```sh
@@ -56,72 +56,63 @@ docker build -t $IMAGE -f Dockerfile.$IMAGE .
 ```sh
 CONTAINER='proxy-example'
 docker rm -f $CONTAINER
-docker run --name $CONTAINER -p 8086:8080 --link application-server -v $(pwd)/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro -d $IMAGE
+docker run --name $CONTAINER -p 8086:8080 --link application-server1 --link application-server2 --link application-server3 -v $(pwd)/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro -d $IMAGE
 docker logs $CONTAINER
 ```			
 * build Application war(s) and install on application server(s)
 ```sh
-pushd webapp 
+pushd application 
 mvn clean package
 popd
 ```
 ```sh
-docker cp webapp/target/dummy.war application-server:/opt/tomcat/webapps/ROOT.war
-docker cp webapp/target/dummy.war application-server:/opt/tomcat/webapps/products.war
+for NUM in $(seq 1 1 3) ; do APPDIR="app${NUM}";APP_SERVER="application-server${NUM}"; docker cp application/target/dummy.war $APP_SERVER:/opt/tomcat/webapps/${APPDIR}.war ; done
 ```
+
 ```sh
-docker stop application-server
-docker start application-server
+for NUM in $(seq 1 1 3) ; do APP_SERVER="application-server${NUM}"; docker stop $APP_SERVER; docker start $APP_SERVER; done
 ```
+
+verify connecting directly
+
+```sh
+curl -k http://localhost:8082/app2/index.jsp
+```
+or
+```sh
+curl -k http://localhost:8083/app3/
+```
+
 * connect to proxy which will redirect to the application server
 ```sh
-curl http://localhost:8086/products/index.jsp
+curl -k  http://localhost:8086/app1/index.jsp
 ```
+
+this will reponse with:
+
+
+
 
 ```sh
-curl http://localhost:8086/
+<html><body><pre>Server:82b062bc16e4
+Request URL: http://localhost:8086/app1/
+APP_SERVER = application-server1
+</pre></body></html>
 ```
-The page will display a lot of information:
+and
+```sh
+curl -k  http://localhost:8086/app2/
+```
+
 
 ```sh
-Server:939cffb58551
-Request URL: http://localhost:8080/products/index.jsp
-PATH = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/jdk/bin
-JAVA_HOME = /opt/jdk
-CATALINA_OUT = /dev/null
-CATALINA_HOME = /opt/tomcat
-XFILESEARCHPATH = /usr/dt/app-defaults/%L/Dt
-GLIBC_VERSION = 2.23-r3
-LANG = C.UTF-8
-JAVA_VERSION_MAJOR = 8
-TOMCAT_MAJOR = 8
-TOMCAT_VERSION = 8.5.3
-HOSTNAME = 939cffb58551
-NLSPATH = /usr/dt/lib/nls/msg/%L/%N.cat
-JAVA_VERSION_MINOR = 92
-TOMCAT_HOME = /opt/tomcat
-PWD = /
-JAVA_PACKAGE = server-jre
-JAVA_VERSION_BUILD = 14
-HOME = /root
-SHLVL = 1
-Request Parameters
-******************
 
-Request Headers
-***************
-Name  : 'host'
-Class : java.lang.String
-String: 'localhost:8080'
-
-Name  : 'user-agent'
-Class : java.lang.String
-String: 'curl/7.58.0'
-
-Name  : 'accept'
-Class : java.lang.String
-String: '*/*'
+<html><body><pre>Server:ec50d1fce7ca
+Request URL: http://localhost:8086/app2/
+APP_SERVER = application-server2
+</pre></body></html>
 ```
+
 
 in particular the hostname of the application-server (evaluated through `System.getenv().get("HOSTNAME")` and `java.net.InetAddress.getLocalHost().getHostName()`. This helps tracking the load balancing (booting additional application servers and integrating with frontend node is work in progress).
 
@@ -144,6 +135,9 @@ these will get redirected to `proxy_example` port `8080` and routed to whatever 
  * consul-template haproxy round-robin scalable [setup](https://github.com/camptocamp/docker-consul-demo)
  * haproxy with rsyslog [project](https://github.com/mminks/haproxy-docker-logging) 
  * introduction to [HAProxy Logging](https://www.haproxy.com/blog/introduction-to-haproxy-logging/)	
+ * [HAProxy Crash Course](https://www.youtube.com/watch?v=qYnA2DFEELw)
+ * [Proxy vs. Reverse Proxy](https://www.youtube.com/watch?v=ozhe__GdWC8)
+ * [Load Balancing Strategies with NGINX/HAProxy and Consul](https://www.youtube.com/watch?v=ZvKPAug-IgA)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
