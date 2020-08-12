@@ -58,7 +58,11 @@ CONTAINER='proxy-example'
 docker rm -f $CONTAINER
 docker run --name $CONTAINER -p 8086:8080 --link application-server1 --link application-server2 --link application-server3 -v $(pwd)/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro -d $IMAGE
 docker logs $CONTAINER
-```			
+```
+will say
+```sh
+Proxy http started.
+```	
 * build Application war(s) and install on application server(s)
 ```sh
 pushd application 
@@ -101,10 +105,10 @@ APP_SERVER = application-server1
 ```
 and log the haproxy operation like
 ```sh
- docker logs $CONTAINER
+docker logs $CONTAINER
 ```
 ```sh
- Proxy http started.
+Proxy http started.
 172.17.0.1:42696 [12/Aug/2020:03:32:13.199] http appservers/appserver1 0/0/0/5/5 200 350 - - ---- 1/1/0/0/0 0/0 "GET /app1/index.jsp HTTP/1.1"
 ```
 and
@@ -131,13 +135,24 @@ IMAGE='frontend'
 docker build -t $IMAGE -f Dockerfile.$IMAGE .
 CONTAINER='frontend-example'
 docker rm -f $CONTAINER
-docker run --name $CONTAINER --link proxy-example --link application-server -p 8080:8080 -e REDIRECT_HOST=proxy-example -d $IMAGE
+docker run --name $CONTAINER --link proxy-example --link application-server1 --link application-server2 --link application-server3 -p 8080:8080 -e REDIRECT_HOST=localhost -e REDIRECT_PORT=8086 -d $IMAGE
 ```
 then execute curl request to 
 ```sh
-curl  -k  http://localhost:8080/redirector/index.html
+curl -L -k  http://localhost:8080/redirector/index.html
 ```
-these will get redirected to `proxy_example` port `8080` and routed to whatever is configured in `haproxy.conf` there (this is work in progress:  a lot of empty response observed)
+this will reditect to a random `app1`,`app2`,`app3` on proxy server which will load balance e.g.
+```sh
+
+
+<html><body><pre>Server:90ee030d8bb5
+Request URL: http://localhost:8086/app1/index.jsp
+APP_SERVER = application-server1
+</pre></body></html>
+
+```
+these will get redirected to `proxy_example` port `8080` and routed to whatever is configured in `haproxy.conf` there
+(this is work in progress:  a lot of empty response observed)
 ### See Also
  * [haproxy load balanced web application server cluster](https://github.com/ianblenke/tutum-docker-clusterproxy) with discovery implemented in custom Python script
  * consul-template haproxy round-robin scalable [setup](https://github.com/camptocamp/docker-consul-demo)
@@ -147,3 +162,4 @@ these will get redirected to `proxy_example` port `8080` and routed to whatever 
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
