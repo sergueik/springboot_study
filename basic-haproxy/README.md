@@ -99,6 +99,14 @@ Request URL: http://localhost:8086/app1/
 APP_SERVER = application-server1
 </pre></body></html>
 ```
+and log the haproxy operation like
+```sh
+ docker logs $CONTAINER
+```
+```sh
+ Proxy http started.
+172.17.0.1:42696 [12/Aug/2020:03:32:13.199] http appservers/appserver1 0/0/0/5/5 200 350 - - ---- 1/1/0/0/0 0/0 "GET /app1/index.jsp HTTP/1.1"
+```
 and
 ```sh
 curl -k  http://localhost:8086/app2/
@@ -136,8 +144,6 @@ these will get redirected to `proxy_example` port `8080` and routed to whatever 
  * haproxy with rsyslog [project](https://github.com/mminks/haproxy-docker-logging) 
  * introduction to [HAProxy Logging](https://www.haproxy.com/blog/introduction-to-haproxy-logging/)	
  * [HAProxy Crash Course](https://www.youtube.com/watch?v=qYnA2DFEELw)
- * [Proxy vs. Reverse Proxy](https://www.youtube.com/watch?v=ozhe__GdWC8)
- * [Load Balancing Strategies with NGINX/HAProxy and Consul](https://www.youtube.com/watch?v=ZvKPAug-IgA)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
