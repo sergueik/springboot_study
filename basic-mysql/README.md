@@ -42,6 +42,7 @@ verify the console connection:
 ```sh
 docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "set @var = '1'; select @var ;"
 ```
+
 ```sh
 mysql: [Warning] Using a password on the command line interface can be insecure.
 +------+
@@ -49,6 +50,28 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 +------+
 | 1    |
 +------+
+```
+Alternatively one relaunch the `mysql-server` contanetr with port `3306` exposed to host:
+```sh
+CONTAINER='mysql-server'
+docker container rm -f $CONTAINER
+docker run -p 3306:3306 --name $CONTAINER -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=java -e MYSQL_DATABASE=test -e MYSQL_PASSWORD=password -d mysql:8.0.18
+```
+and conect to dockerized mysql instance from the host:
+```sh
+mysql -P 3306 -h 127.0.0.1 -u java -ppassword -e "set @doc = '{\"Bart\": \"Simpson\"}';  SELECT JSON_SEARCH(@doc, 'one', 'Simpson') Result;"
+```
+this will [respond with](https://database.guide/json_search-find-the-path-to-a-string-in-a-json-document-in-mysql/)
+```sh
++----------+
+| Result   |
++----------+
+| "$.Bart" |
++----------+
+```
+on a Mys1l 5.x server it will return an error:
+```sh
+ERROR 1305 (42000): FUNCTION JSON_SEARCH does not exist
 ```
 NOTE: the mysqld and java processes will be visible on host
 
@@ -395,3 +418,7 @@ ENTRYPOINT ["sh", "/delayed_start.sh"]
   * best practices of [startup/shutdown order](https://docs.docker.com/compose/startup-order/) and [wait for dependencies](https://8thlight.com/blog/dariusz-pasciak/2016/10/17/docker-compose-wait-for-dependencies.html) in __docker-compose__
   * [k8n](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) __liveness__, __readiness__ and __startup__ Probes
   * standalone ash script dependency waiter [dadarek/wait-for-dependencies](https://github.com/dadarek/docker-wait-for-dependencies) alpine image doing `nc -z` loop
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
