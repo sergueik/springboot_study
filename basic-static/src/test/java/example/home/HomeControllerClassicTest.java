@@ -9,22 +9,22 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import example.home.HomeController;
+import example.controller.HomeController;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = HomeController.class)
 public class HomeControllerClassicTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
-    @Test
-    public void verifiesHomePageLoads() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/"))
-                .andExpect(MockMvcResultMatchers.model().hasNoErrors())
-                .andExpect(MockMvcResultMatchers.model().attributeExists("now"))
-                .andExpect(MockMvcResultMatchers.view().name("index"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
+	@Test
+	public void verifiesHomePageLoads() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/"))
+				.andExpect(MockMvcResultMatchers.model().hasNoErrors())
+				.andExpect(MockMvcResultMatchers.model().attributeExists("now"))
+				.andExpect(MockMvcResultMatchers.view().name("index"))
+				.andExpect(MockMvcResultMatchers.status().isOk());
+	}
 
 }

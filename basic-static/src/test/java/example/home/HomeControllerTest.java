@@ -28,6 +28,7 @@ public class HomeControllerTest {
 		homePage = PageFactory.initElements(driver, HomePage.class);
 	}
 
+	@Ignore
 	@Test
 	public void containsActuatorLinks() {
 		homePage.assertThat()
