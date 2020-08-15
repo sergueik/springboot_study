@@ -23,7 +23,7 @@ see also
 <body ng-controller="FileUploadCtrl">
   <div class="row">
     <label for="fileToUpload">Select a File to Upload</label><br />
-    <input type="file" ng-model-instant id="fileToUpload" multiple onchange="angular.element(this).scope().setFiles(this)" />
+    <input style="visibility:hidden" type="file" ng-model-instant id="fileToUpload" multiple onchange="angular.element(this).scope().setFiles(this)" />
   </div>
   <div id="dropbox" class="dropbox" ng-class="dropClass"><span>{{dropText}}</span></div>
   <div ng-show="files.length">
