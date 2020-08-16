@@ -9,6 +9,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -23,16 +24,24 @@ import java.time.LocalDateTime;
 
 // origin: https://github.com/kolorobot/spring-boot-thymeleaf
 @Controller
+@RequestMapping("/${application}")
 public class HomeController {
 	private String envKey = "APP_SERVER";
 	private StringBuffer sb = new StringBuffer();
 
+	@Value("${application}")
+	// application is a reserved name
+	private String variable;
+
 	private Log log = LogFactory.getLog(HomeController.class);
 
-	@GetMapping("/")
+	@GetMapping
 	String index(Model model) {
 		model.addAttribute("now", LocalDateTime.now());
 		model.addAttribute("hostname", showHostName());
+		// https://stackoverflow.com/questions/56102116/access-application-properties-value-in-thymeleaf-template
+		model.addAttribute("variable", variable);
+
 		return "index";
 	}
 
