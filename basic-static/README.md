@@ -1,6 +1,6 @@
 ### Info
 
-Basic Springboot application hosting static page rendered by thymeleaf spring framework with a Angular JS and Bootstrap loaded, and few static resources loaded with unit test on HTTP status and page content validations (partially working) dded
+Basic Springboot application hosting static page rendered by thymeleaf spring framework with a Angular JS and Bootstrap loaded, and few static resources loaded with unit test on HTTP status and page content validations (partially working) added
 
 ### Testing
 ```sh
@@ -36,6 +36,8 @@ nested exception is java.lang.IllegalStateException:
 Invalid mapping on handler class [example.controllers.DesignTacoController]: public java.lang.String example.controllers.DesignTacoController.showDesignForm(org.springframework.ui.Model)
 ```
 ### See Also
+
+  * [original project](https://github.com/kolorobot/spring-boot-thymeleaf)
   * [linking the thymeleaft page resources stored in local directory](https://stackoverflow.com/questions/29460618/inserting-an-image-from-local-directory-in-thymeleaf-spring-framework-with-mave)
   * [thymeleaf in a Spring MVC application](https://www.baeldung.com/thymeleaf-in-spring-mvc)
   * [properties](https://www.baeldung.com/properties-with-spring) with Spring and Spring Boot

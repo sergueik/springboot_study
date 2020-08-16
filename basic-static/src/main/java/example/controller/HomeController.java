@@ -30,7 +30,7 @@ public class HomeController {
 	private StringBuffer sb = new StringBuffer();
 
 	@Value("${application}")
-	// application is a reserved name
+	// NOTE: application is a reserved variable name
 	private String variable;
 
 	private Log log = LogFactory.getLog(HomeController.class);
@@ -38,10 +38,11 @@ public class HomeController {
 	@GetMapping
 	String index(Model model) {
 		model.addAttribute("now", LocalDateTime.now());
-		model.addAttribute("hostname", showHostName());
 		// https://stackoverflow.com/questions/56102116/access-application-properties-value-in-thymeleaf-template
 		model.addAttribute("variable", variable);
-
+		log.info("Setting text from property " + "application" + ":" + variable);
+		model.addAttribute("hostname", showHostName());
+		log.info("Setting text from environment " + "hostname" + ":" + showHostName());
 		return "index";
 	}
 
