@@ -1,9 +1,12 @@
 ### Info
 
 ### Usage
+#### Front End (optional)
 * tesh locally
 ```sh
+pushd frontend
 mvn clean tomcat:run-war
+popd
 curl -I http://localhost:8080/redirector/index.html
 ```
 this will redirect to application:
@@ -40,13 +43,19 @@ curl -I http://localhost:8080/redirector/index.html
 HTTP/1.1 302 Found
 Location: http://other_host:8080/Contact
 ```
-* build the proxy node container
-```sh
-docker pull haproxy:1.8-alpine
-```
-create blank application server(s)
+#### Application Servers
+create blank application server(s) with a vanilla tomcat intending to deploy war(s) inside later
 ```sh
 for NUM in $(seq 1 1 3) ; do APP_SERVER="application-server${NUM}"; docker container stop $APP_SERVER;  docker container rm -f $APP_SERVER; docker run -p 808${NUM}:8080 -d --env "APP_SERVER=${APP_SERVER}" --name $APP_SERVER davidcaste/alpine-tomcat /opt/tomcat/bin/catalina.sh run ; done
+```
+- the application servers must be resolvable for haproxy to lauch.
+* alternatively may run basic Springboot Spring MVC with a basic Thymeleaf layout (see `../basic-static` proejct directory).
+
+
+#### Proxy
+* build the proxy node container
+```sh
+docker pull haproxy:2.1.7-alpine
 ```
 pull and build the proxy
 ```sh
@@ -63,6 +72,7 @@ will say
 ```sh
 Proxy http started.
 ```	
+#### Deploy Applications
 * build Application war(s) and install on application server(s)
 ```sh
 pushd application 
@@ -72,7 +82,7 @@ popd
 ```sh
 for NUM in $(seq 1 1 3) ; do APPDIR="app${NUM}";APP_SERVER="application-server${NUM}"; docker cp application/target/dummy.war $APP_SERVER:/opt/tomcat/webapps/${APPDIR}.war ; done
 ```
-
+* restart aplication containers
 ```sh
 for NUM in $(seq 1 1 3) ; do APP_SERVER="application-server${NUM}"; docker stop $APP_SERVER; docker start $APP_SERVER; done
 ```
@@ -105,6 +115,7 @@ APP_SERVER = application-server1
 ```
 and log the haproxy operation like
 ```sh
+CONTAINER=haproxy-example
 docker logs $CONTAINER
 ```
 ```sh
@@ -153,6 +164,53 @@ APP_SERVER = application-server1
 ```
 these will get redirected to `proxy_example` port `8080` and routed to whatever is configured in `haproxy.conf` there
 (this is work in progress:  a lot of empty response observed)
+
+#### Headers
+Pass request headers:
+```sh
+curl -k -I  -H "x-application: something" -k  http://localhost:8086/app2/index.jsp
+```
+this will produce
+```sh
+HTTP/1.1 404
+transfer-encoding: chunked
+date: Mon, 17 Aug 2020 23:48:52 GMT
+```
+because on the `application-server3` there is no `/app2` application, and the acl
+```sh
+  acl acl4 req.hdr(x-application) -m found
+  use_backend app3 if acl4
+```
+seems to intruct haproxy to direct to backend `app3`.
+* build and deploy `app2` to `application-server3`:
+```sh
+docker cp application/target/dummy.war  application-server3:/opt/tomcat/webapps/app2.war
+docker stop application-server3; docker start application-server3
+```
+* verify the application response by directly accessing it:
+```sh
+curl -k -I  -H "x-application: something" -k  http://localhost:8083/app2/index.jsp
+```
+this will respond now with
+```sh
+HTTP/1.1 200
+Set-Cookie: JSESSIONID=772EF4D6C2F8A284DFCC5A8ED70EF92B;path=/app2/;HttpOnly
+Content-Type: text/html;charset=ISO-8859-1
+Transfer-Encoding: chunked
+Date: Tue, 18 Aug 2020 00:03:26 GMT
+```
+* repeat through haproxy:
+```sh
+curl -k -I  -H "x-application: something" -k  http://localhost:8086/app2/index.jsp
+```
+result will be the same
+```sh
+HTTP/1.1 200
+set-cookie: JSESSIONID=80651A23B54355CC504ADEE6B024E6C2;path=/app2/;HttpOnly
+content-type: text/html;charset=ISO-8859-1
+transfer-encoding: chunked
+date: Tue, 18 Aug 2020 00:03:34 GMT
+```
 ### See Also
  * [haproxy load balanced web application server cluster](https://github.com/ianblenke/tutum-docker-clusterproxy) with discovery implemented in custom Python script
  * consul-template haproxy round-robin scalable [setup](https://github.com/camptocamp/docker-consul-demo)
