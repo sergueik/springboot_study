@@ -1,5 +1,6 @@
 ### Info
-
+This directory contains toy cluster to prectice the haproxy
+[ACLs](https://www.haproxy.com/blog/introduction-to-haproxy-acls/
 ### Usage
 #### Front End (optional)
 * tesh locally
@@ -13,9 +14,9 @@ this will redirect to application:
 ```sh
 HTTP/1.1 302 Moved Temporarily
 Server: Apache-Coyote/1.1
-Location: http://localhost:8080/About
+Location: http://localhost:8080/app1/index.jsp
 ```
-build UI frontend into Docker container based on tomcat image:
+* build UI frontend into Docker container based on tomcat image:
 
 ```sh
 IMAGE='frontend'
@@ -34,26 +35,19 @@ curl -I http://localhost:8080/redirector/index.html
 this will redirect to randomly chosen app path on `REDIRECT_HOST`:
 ```sh
 HTTP/1.1 302 Found
-Location: http://other_host:8080/About
+Location: http://other_host:8080/app3/index.jsp
 ```
-```sh
-curl -I http://localhost:8080/redirector/index.html
-```
-```sh
-HTTP/1.1 302 Found
-Location: http://other_host:8080/Contact
-```
-#### Application Servers
-create blank application server(s) with a vanilla tomcat intending to deploy war(s) inside later
+#### Application Container Server Farm
+* create blank application container server(s) with a vanilla tomcat intending to deploy war(s) inside later
 ```sh
 for NUM in $(seq 1 1 3) ; do APP_SERVER="application-server${NUM}"; docker container stop $APP_SERVER;  docker container rm -f $APP_SERVER; docker run -p 808${NUM}:8080 -d --env "APP_SERVER=${APP_SERVER}" --name $APP_SERVER davidcaste/alpine-tomcat /opt/tomcat/bin/catalina.sh run ; done
 ```
-- the application servers must be resolvable for haproxy to lauch.
+- the application servers must be resolvable for proxy container to launch.
 * alternatively may run basic Springboot Spring MVC with a basic Thymeleaf layout (see `../basic-static` proejct directory).
 
 
 #### Proxy
-* build the proxy node container
+* build the proxy container
 ```sh
 docker pull haproxy:2.1.7-alpine
 ```
@@ -65,7 +59,7 @@ docker build -t $IMAGE -f Dockerfile.$IMAGE .
 ```sh
 CONTAINER='proxy-example'
 docker rm -f $CONTAINER
-docker run --name $CONTAINER -p 8086:8080 --link application-server1 --link application-server2 --link application-server3 -v $(pwd)/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro -d $IMAGE
+docker run --name $CONTAINER -p 8086:8080 -p 1936:1936 --link application-server1 --link application-server2 --link application-server3 -v $(pwd)/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro -d $IMAGE
 docker logs $CONTAINER
 ```
 will say
@@ -75,7 +69,7 @@ Proxy http started.
 #### Deploy Applications
 * build Application war(s) and install on application server(s)
 ```sh
-pushd application 
+pushd application
 mvn clean package
 popd
 ```
@@ -105,8 +99,6 @@ curl -k  http://localhost:8086/app1/index.jsp
 this will reponse with:
 
 
-
-
 ```sh
 <html><body><pre>Server:82b062bc16e4
 Request URL: http://localhost:8086/app1/
@@ -124,20 +116,17 @@ Proxy http started.
 ```
 and
 ```sh
-curl -k  http://localhost:8086/app2/
+curl -k  http://localhost:8086/app2/ 2>/dev/null| lynx -stdin -dump | head -10
 ```
-
 
 ```sh
-
-<html><body><pre>Server:ec50d1fce7ca
+Server:ec50d1fce7ca
 Request URL: http://localhost:8086/app2/
 APP_SERVER = application-server2
-</pre></body></html>
 ```
-
-
-in particular the hostname of the application-server (evaluated through `System.getenv().get("HOSTNAME")` and `java.net.InetAddress.getLocalHost().getHostName()`. This helps tracking the load balancing (booting additional application servers and integrating with frontend node is work in progress).
+in particular the hostname of the application server servicing the request,
+evaluated through `System.getenv().get("HOSTNAME")` or
+`java.net.InetAddress.getLocalHost().getHostName()`. This helps tracking the load balancing (booting additional application servers and integrating with frontend node is work in progress).
 
 
 * rebuild the `frontend-example` container linking it to `proxy-example`:
@@ -148,11 +137,11 @@ CONTAINER='frontend-example'
 docker rm -f $CONTAINER
 docker run --name $CONTAINER --link proxy-example --link application-server1 --link application-server2 --link application-server3 -p 8080:8080 -e REDIRECT_HOST=localhost -e REDIRECT_PORT=8086 -d $IMAGE
 ```
-then execute curl request to 
+then execute curl request to
 ```sh
 curl -L -k  http://localhost:8080/redirector/index.html
 ```
-this will reditect to a random `app1`,`app2`,`app3` on proxy server which will load balance e.g.
+this will redirect to a random `app1`,`app2`,`app3` on proxy server which will load balance e.g.
 ```sh
 
 
@@ -212,11 +201,13 @@ transfer-encoding: chunked
 date: Tue, 18 Aug 2020 00:03:34 GMT
 ```
 ### See Also
- * [haproxy load balanced web application server cluster](https://github.com/ianblenke/tutum-docker-clusterproxy) with discovery implemented in custom Python script
  * consul-template haproxy round-robin scalable [setup](https://github.com/camptocamp/docker-consul-demo)
- * haproxy with rsyslog [project](https://github.com/mminks/haproxy-docker-logging) 
- * introduction to [HAProxy Logging](https://www.haproxy.com/blog/introduction-to-haproxy-logging/)	
- * [HAProxy Crash Course](https://www.youtube.com/watch?v=qYnA2DFEELw)
+ * haproxy with rsyslog [project](https://github.com/mminks/haproxy-docker-logging)
+ * introduction to haproxy [logging](https://www.haproxy.com/blog/introduction-to-haproxy-logging/)	
+ * haproxy [crash course](https://www.youtube.com/watch?v=qYnA2DFEELw)
+ * container node [](https://github.com/andrewmunsell/haproxy-ui)
+ * haproxy [stats](https://www.haproxy.com/blog/exploring-the-haproxy-stats-page/)
+ * [haproxy load balanced web application server cluster](https://github.com/ianblenke/tutum-docker-clusterproxy) with discovery implemented in custom Python script
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
