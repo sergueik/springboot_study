@@ -208,6 +208,9 @@ date: Tue, 18 Aug 2020 00:03:34 GMT
  * container node [](https://github.com/andrewmunsell/haproxy-ui)
  * haproxy [stats](https://www.haproxy.com/blog/exploring-the-haproxy-stats-page/)
  * [haproxy load balanced web application server cluster](https://github.com/ianblenke/tutum-docker-clusterproxy) with discovery implemented in custom Python script
+ * configuring [logging](https://stackoverflow.com/questions/44137797/how-to-get-logs-in-a-haproxy1-5-alpine-docker-container) in older HAProxy builds
+ * haproxy documentation [memo](https://habr.com/ru/company/ostrovok/blog/438966/) (in Russian)
+ * `haproxy.conf` [documentation](https://habr.com/ru/sandbox/34354/)(in Russian)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
