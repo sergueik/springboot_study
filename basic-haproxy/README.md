@@ -67,10 +67,16 @@ will say
 Proxy http started.
 ```	
 #### Deploy Applications
-* build Application war(s) and install on application server(s)
+* build [basic JSP Tomcat]() or Spring MVC Thymeleaf application:
 ```sh
-pushd application
+cd ../basic-jsp 
 mvn clean package
+```
+* copy just built Application war(s) locally and install on application server(s)
+```sh
+mkdir application
+pushd application
+cp -R ../../basic-jsp/target .
 popd
 ```
 ```sh
