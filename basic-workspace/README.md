@@ -6,25 +6,25 @@ Docker project with some repository hosted in the Docker image based on [Dockeri
 
 * Build the container 2 times
 ```sh
-docker build -f Dockerfile -t basic-example .
+docker build -f Dockerfile -t basic-workspace .
 ```
 the second iteration will skip every step with `Using cache` verdict ignoring the possible stale state of the repository workspace burned into the image.
 Adding the argument and passing the latest hash via build arg command line option does not force Docker to re-run the step in question
 
 ```sh
-export PROJECT=springboot_study
-export APPS_DIR=/$HOME/src
-export LATEST_HASH=$(git --git-dir=${APPS_DIR}/${PROJECT}/.git rev-parse --short HEAD)
+PROJECT=springboot_study
+APPS_DIR=/$HOME/src
+LATEST_HASH=$(git --git-dir=${APPS_DIR}/${PROJECT}/.git rev-parse --short HEAD)
 ```
 this will ignore the hash change:
-```
-docker build -f Dockerfile --build-arg "LATEST_HASH=$(git --git-dir=${APPS_DIR}/${PROJECT}/.git rev-parse --short HEAD)" -t basic-example .
+```sh
+docker build -f Dockerfile --build-arg "LATEST_HASH=$(git --git-dir=${APPS_DIR}/${PROJECT}/.git rev-parse --short HEAD)" -t basic-workspace .
 ```
 
 the only way is to update the `Dockerfile` directly:
 ```sh
 sed -i "s|LATEST_HASH=\".*\"|LATEST_HASH=\"${LATEST_HASH}\"|" Dockerfile
-docker build -f Dockerfile -t basic-example .
+docker build -f Dockerfile -t basic-workspace .
 ```
 This will lead to the line
 
@@ -52,9 +52,9 @@ RUN cd ${APPS_DIR} && git clone https://github.com/sergueik/${PROJECT}
 
 is also possible:
 ```sh
-export LATEST_HASH='efgh'
+LATEST_HASH='efgh'
 sed -i "s|LATEST_HASH=\".*\"|LATEST_HASH=\"${LATEST_HASH}\"|" Dockerfile
-docker build -f Dockerfile -t basic-example .
+docker build -f Dockerfile -t basic-workspace .
 ```
 leads
 ```sh
@@ -73,10 +73,29 @@ Cloning into 'springboot_study'...
 Removing intermediate container 07aad4d43910
  ---> e8fdcf455178
 ```
-the container can be expored or used per its original purpose:
+the container can be exported or used per its original purpose:
+
 ```sh
-docker run -p 8080:8080 basic-example
+docker run basic-workspace
 ```
+
+and used for one command like
+```sh
+IMAGE_NAME='basic-workspace'
+PROJECT='springboot_study'
+USER=...
+PASSWORD=...
+# TODO: url encode
+docker exec -it $(docker container ls | grep $IMAGE_NAME | head -1 | awk '{print $1}') sh -c "cd /opt/apps/$PROJECT ; git pull https://${USER}:${PASSWORD}@github.com/${PROJECT}"
+```
+alternatively use the shell script variation to specifyarbitrary branch `$BRANCH`:
+```sh
+git remote remove origin; git remove add origin "https://${USER}:${PASSWORD}@github.com/${PROJECT}"
+git pull origin $BRANCH
+git remove remove origin
+```
+(all concatenated into shell argument) 
+
 ### Cleanup
 destroy all orphaned images afterwards
 ```sh

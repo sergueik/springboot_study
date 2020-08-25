@@ -1,7 +1,6 @@
-FROM openjdk:8-jre-alpine3.9
+FROM alpine:3.9
 ARG APPS_DIR="/opt/apps"
 ARG PROJECT="springboot_study"
-EXPOSE 8080
 RUN mkdir ${APPS_DIR}
 # try to avoid upgrading git to a latest release if some exist (lacking from base image)
 RUN git --version &>/dev/null; if [ $? -ne 0 ] ; then \
