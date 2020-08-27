@@ -86,8 +86,16 @@ PROJECT='springboot_study'
 USER=...
 PASSWORD=...
 # TODO: url encode
-docker exec -it $(docker container ls | grep $IMAGE_NAME | head -1 | awk '{print $1}')  sh -c "cd /opt/apps/$PROJECT ; git pull https://$USER:$PASSWORD@github.com/$PROJECT"
+docker exec -it $(docker container ls | grep $IMAGE_NAME | head -1 | awk '{print $1}') sh -c "cd /opt/apps/$PROJECT ; git pull https://${USER}:${PASSWORD}@github.com/${PROJECT}"
 ```
+alternatively use the shell script variation to specifyarbitrary branch `$BRANCH`:
+```sh
+git remote remove origin
+git remove add origin "https://${USER}:${PASSWORD}@github.com/${PROJECT}"
+git pull origin $BRANCH
+git remove remove origin
+```
+(all concatenated into shell argument) 
 
 ### Cleanup
 destroy all orphaned images afterwards
