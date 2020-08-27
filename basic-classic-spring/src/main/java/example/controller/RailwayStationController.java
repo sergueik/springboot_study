@@ -1,4 +1,4 @@
-package com.xvitcoder.springmvcangularjs.controller;
+package example.controller;
 
 import java.util.List;
 
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.xvitcoder.springmvcangularjs.beans.RailwayStation;
-import com.xvitcoder.springmvcangularjs.service.RailwayStationServiceImpl;
+import example.beans.RailwayStation;
+import example.service.RailwayStationServiceImpl;
 
 @Controller
 @RequestMapping("/railwaystations")

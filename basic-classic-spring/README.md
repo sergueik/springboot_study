@@ -1,7 +1,7 @@
 ### Info
 
 
-Basic Classic Spring MVC project cloned from [basic Spring MVC with AngularJS and Thymeleaf]( https://github.com/xvitcoder/spring-mvc-angularjs)
+Basic Classic Spring MVC project cloned from [basic Spring MVC with AngularJS and Thymeleaf](https://github.com/xvitcoder/spring-mvc-angularjs)
 converted to run on alpine tomcat base Docker image.
 Note: this application features no `web.xml` - the base url configuration is done though  `finalName` in `pom.xml` and code `@RequestMapping` annotations .
 

@@ -1,10 +1,9 @@
-package com.xvitcoder.springmvcangularjs.config;
+package example.config;
 
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Created by xvitcoder on 12/24/15.
- */
+// origin: https://github.com/xvitcoder/spring-mvc-angularjs
+
 @Configuration
 public class AppConfig {
 }

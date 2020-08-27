@@ -1,7 +1,9 @@
-package com.xvitcoder.springmvcangularjs.controller;
+package example.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+// origin: https://github.com/xvitcoder/spring-mvc-angularjs
 
 @Controller
 @RequestMapping("/")

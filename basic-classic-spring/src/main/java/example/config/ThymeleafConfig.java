@@ -1,4 +1,4 @@
-package com.xvitcoder.springmvcangularjs.config;
+package example.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -6,9 +6,8 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
-/**
- * Created by xvitcoder on 12/24/15.
- */
+// origin: https://github.com/xvitcoder/spring-mvc-angularjs
+
 @Configuration
 public class ThymeleafConfig {
 
