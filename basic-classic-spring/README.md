@@ -67,15 +67,22 @@ docker build -t $IMAGE_NAME -f Dockerfile .
 CONTAINER_NAME=basic-spring-mvc-app
 docker run -d -p 8080:8080 --name $CONTAINER_NAME $IMAGE_NAME
 ```
+open the tomcat manager page `http://$(hostname -f):8080/manager/html`
+with admin:admin  and observe 
+the __/demo__ one listed and running. Open it in the browser `http://$(hostname -f):8080/demo/`
 
-
+### Cleanup
+```sh
+docker container rm -f  $CONTAINER_NAME
+docker image rm -f $IMAGE_NAME
+```
 ### See Also
 
- * [base Spring MVC based application project template](https://github.com/dev9com/sample-spring-webapp) with test etc, but with very old spring version
- * https://github.com/spring-projects/spring-mvc-showcase
- * https://stackoverflow.com/questions/14430122/how-to-define-conditional-properties-in-maven/14430203
- * Syntax of [referring to environment variables](https://www.baeldung.com/maven-env-variables) in `pom.xml`
- * Maven Properties schema [reference](https://books.sonatype.com/mvnref-book/reference/resource-filtering-sect-properties.html)
+  * [base Spring MVC based application project template](https://github.com/dev9com/sample-spring-webapp) with test etc, but with very old spring version
+  * https://github.com/spring-projects/spring-mvc-showcase
+  * https://stackoverflow.com/questions/14430122/how-to-define-conditional-properties-in-maven/14430203
+  * Syntax of [referring to environment variables](https://www.baeldung.com/maven-env-variables) in `pom.xml`
+  * Maven Properties schema [reference](https://books.sonatype.com/mvnref-book/reference/resource-filtering-sect-properties.html)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
