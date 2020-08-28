@@ -1,16 +1,22 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.xvitcoder.springmvcangularjs</groupId>
+  <groupId>example</groupId>
   <artifactId>basic-classic-spring</artifactId>
   <packaging>war</packaging>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <name>basic spring mvc angular app</name>
   <url>http://maven.apache.org</url>
   <properties>
-    <!-- https://stackoverflow.com/questions/14430122/how-to-define-conditional-properties-in-maven/14430203 -->
+    <finalName>${FINAL_NAME}</finalName>
+    <finalName.default>spring-mvc-angularjs</finalName.default>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <java.version>1.8</java.version>
     <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
-    <finalName>spring-mvc-angularjs</finalName>
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>    
+    <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
+    <tomcat7-maven-plugin.version>2.2</tomcat7-maven-plugin.version>
   </properties>
   <dependencies>
     <dependency>
@@ -42,23 +48,20 @@
   </dependencies>
   <build>
     <finalName>${finalName}</finalName>
-    <!-- TODO:  explore conditional -->
-    <!--
-	<finalName>${project.groupId}.${project.artifactId}</finalName>
-	-->
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <version>${maven-compiler-plugin.version}</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.5</version>
+        <version>${maven-war-plugin.version}</version>
         <configuration>
           <failOnMissingWebXml>false</failOnMissingWebXml>
         </configuration>
@@ -66,16 +69,16 @@
       <plugin>
         <groupId>org.apache.tomcat.maven</groupId>
         <artifactId>tomcat7-maven-plugin</artifactId>
-        <version>2.2</version>
+        <version>${tomcat7-maven-plugin.version}</version>
         <configuration>
           <port>8080</port>
-          <path>/spring-mvc-angularjs</path>
+          <path>/${finalName}</path>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.8</version>
+        <version>${maven-antrun-plugin.version}</version>
         <executions>
           <execution>
             <phase>generate-resources</phase>
@@ -87,20 +90,20 @@
               <target>
                 <!--  NOTE:  platform dependent . Exported envronment is visible on Linux but only system environment appear visible on Windows: e.g. USERPFILE will be seen  but say MYFLAG will not be seen -->
                 <property environment="env"/>
-                <condition property="flag_system" value="${env.USERPROFILE}" else="${finalName}">
+                <condition property="var" value="${env.USERPROFILE}" else="not set">
                   <isset property="env.USERPROFILE"/>
                 </condition>
-                <echo message="flag_system=${flag_system}"/>
-                <!-- is it limited to one target ? -->
+                <echo message="var=${var}"/>
+                <!-- the antrun plugin appears to be limited to one target -->
                 <!--
                 </target>
 		<target>
 			-->
                 <property environment="env"/>
-                <condition property="flag_user" value="${env.MYFLAG}" else="${finalName}">
-                  <isset property="env.MYFLAG"/>
+                <condition property="finalName.custom" value="${env.FINAL_NAME}" else="not set">
+                  <isset property="env.FINAL_NAME"/>
                 </condition>
-                <echo message="flag_user=${flag_user}"/>
+                <echo message="finalName.custom=${finalName.custom}"/>
               </target>
             </configuration>
           </execution>
@@ -118,20 +121,15 @@
     </pluginManagement>
   </build>
   <profiles>
-    <!-- https://stackoverflow.com/questions/14430122/how-to-define-conditional-properties-in-maven/14430203 -->
     <profile>
-      <id>test_profile</id>
+      <id>default_name</id>
       <activation>
         <property>
-          <!-- the below can only be settable on the command line -->
-          <name>flag</name>
-          <!--
-	  <value>value</value>
-	  -->
+          <name>!env.FINAL_NAME</name>
         </property>
       </activation>
       <properties>
-        <finalName>${flag}</finalName>
+        <finalName>${finalName.default}</finalName>
       </properties>
     </profile>
   </profiles>
