@@ -55,6 +55,19 @@ curl http://localhost:8080/demo
 
 ```
 * run in container - work in progress
+```sh
+export FINAL_NAME=demo
+mvn clean package
+```
+```sh
+IMAGE_NAME=basic-spring-mvc 
+docker build -t $IMAGE_NAME -f Dockerfile .
+```
+```sh
+CONTAINER_NAME=basic-spring-mvc-app
+docker run -d -p 8080:8080 --name $CONTAINER_NAME $IMAGE_NAME
+```
+
 
 ### See Also
 
