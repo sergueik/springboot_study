@@ -217,7 +217,8 @@ date: Tue, 18 Aug 2020 00:03:34 GMT
  * configuring [logging](https://stackoverflow.com/questions/44137797/how-to-get-logs-in-a-haproxy1-5-alpine-docker-container) in older HAProxy builds
  * haproxy documentation [memo](https://habr.com/ru/company/ostrovok/blog/438966/) (in Russian)
  * `haproxy.conf` [documentation](https://habr.com/ru/sandbox/34354/)(in Russian)
-
+ * some obscure [fine tuning](https://habr.com/ru/company/ostrovok/blog/438966/) haproxy options (in Russian)
+ * another obscure [fine tuning](https://habr.com/ru/company/ostrovok/blog/436992/) haproxy options (in Russian)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

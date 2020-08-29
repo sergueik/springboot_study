@@ -76,6 +76,21 @@ the __/demo__ one listed and running. Open it in the browser `http://$(hostname 
 docker container rm -f  $CONTAINER_NAME
 docker image rm -f $IMAGE_NAME
 ```
+### Tomcat 8.5 
+```sh
+docker pull tomcat:8.5.27-jre8-alpine
+```
+```sh
+mvn -Ptomcat85 clean package
+```
+```sh
+IMAGE_NAME=basic-tomcat85-spring-mvn
+docker build -t $IMAGE_NAME -f Dockerfile.tomcat85 .
+```
+```sh
+CONTAINER_NAME=basic-tomcat85-spring-mvc-app
+docker run -d -p 8080:8080 --name $CONTAINER_NAME $IMAGE_NAME
+
 ### See Also
 
   * [base Spring MVC based application project template](https://github.com/dev9com/sample-spring-webapp) with test etc, but with very old spring version

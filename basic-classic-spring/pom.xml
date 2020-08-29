@@ -12,7 +12,7 @@
     <finalName.default>spring-mvc-angularjs</finalName.default>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.8</java.version>
+    <java.version>1.7</java.version>
     <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>    
     <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
@@ -130,6 +130,14 @@
       </activation>
       <properties>
         <finalName>${finalName.default}</finalName>
+      </properties>
+    </profile>
+    <profile>
+      <id>tomcat85</id>
+      <!-- no silent activation. only explicit -->
+      <properties>
+        <java.version>1.8</java.version>
+        <finalName>demo</finalName>
       </properties>
     </profile>
   </profiles>
