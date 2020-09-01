@@ -1,6 +1,5 @@
 ### Info
 
-
 Basic Classic Spring MVC project cloned from [basic Spring MVC with AngularJS and Thymeleaf](https://github.com/xvitcoder/spring-mvc-angularjs)
 converted to run on alpine tomcat base Docker image.
 Note: this application features no `web.xml` - the base url configuration is done though  `finalName` in `pom.xml` and code `@RequestMapping` annotations .
@@ -92,7 +91,7 @@ CONTAINER_NAME=basic-tomcat85-spring-mvc-app
 docker run -d -p 8080:8080 --name $CONTAINER_NAME $IMAGE_NAME
 
 ### See Also
-
+  * [step by step](https://github.com/in28minutes/SpringIn28Minutes) Spring tutorial
   * [base Spring MVC based application project template](https://github.com/dev9com/sample-spring-webapp) with test etc, but with very old spring version
   * https://github.com/spring-projects/spring-mvc-showcase
   * https://stackoverflow.com/questions/14430122/how-to-define-conditional-properties-in-maven/14430203
