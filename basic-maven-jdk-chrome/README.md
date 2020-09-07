@@ -5,13 +5,18 @@ This directory contains a replica of the project
 
 ### Usage
 
-Using [original](https://hub.docker.com/r/markhobson/maven-chrome/) Dockerfile, one may compile and test the sample project interactively:
+Using the genuine [markhobson/maven-chrome:latest](https://hub.docker.com/r/markhobson/maven-chrome/) `Dockerfile`, one may compile and test the sample project interactively:
 
 ```sh
 IMAGE=basic-maven-jdk
 CONTAINER=basic-chrome-maven
 docker build -t $IMAGE -f Dockerfile.ORIGINAL .
 docker run --name $CONTAINER -it $IMAGE sh
+```
+or
+```sh
+DOCKER_IMAGE='markhobson/maven-chrome:latest'
+docker run --name $CONTAINER -it $DOCKER_IMAGE sh 	
 ```
 open a second terminal
 ```sh
