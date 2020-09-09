@@ -11,14 +11,22 @@
   <property name="FILENAME" value="App"/>
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <!-- can use ${APP_HOME} -->
-    <file>logs/${FILENAME}.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+    <file>${FILENAME}.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+<!--
+<timeBasedFileNamingAndTriggeringPolicy
+          class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+<maxFileSize>1KB</maxFileSize>
+         </timeBasedFileNamingAndTriggeringPolicy> -->
       <!-- keep 3 days worth of history -->
-      <fileNamePattern>logs/${FILENAME}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <fileNamePattern>${FILENAME}.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
       <maxHistory>3</maxHistory>
-      <maxFileSize>1KB</maxFileSize>
-      <totalSizeCap>40KB</totalSizeCap>
+      <totalSizeCap>1KB</totalSizeCap>
     </rollingPolicy>
+<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+        <maxFileSize>1KB</maxFileSize>
+    </triggeringPolicy>
+
     <encoder>
       <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
     </encoder>

@@ -7,11 +7,26 @@ This project contains [minimal demo code of logback example](http://logback.qos.
 * test application locally
 ```sh
 mvn clean package
-java -cp target\logback-0.0.1-SNAPSHOT.jar;target\lib\*;target\conf example.Example
+java -jar target/example.logback.jar
 ```
-Note: it does not appear that logback's `RollingFileAppender` [class](https://github.com/qos-ch/logback/blob/master/logback-core/src/main/java/ch/qos/logback/core/rolling/RollingFileAppender.java)
+
+__Note__: it does not appear that logback's `RollingFileAppender` [class](https://github.com/qos-ch/logback/blob/master/logback-core/src/main/java/ch/qos/logback/core/rolling/RollingFileAppender.java)
 supports configuring log file permissions.
-### Testing Springboot App 
+
+__Note__: launching the class with classpath
+```
+java -cp target/example.logback.jar:target/lib/*:target/conf example.Example
+```
+or
+```cmd
+java -cp target\example.logback.jar;target\lib\*;target\conf example.Example
+```
+does not appear to work:
+```java
+Error: Could not find or load main class example.Example
+```
+
+### Testing Springboot App
 ```sh
 mvn spring-boot:run
 ```
@@ -28,18 +43,37 @@ and
 in `App.log` only
 then
 ```sh
-curl http://localhost:8080/example?data=42
+for cnt in $(seq 10 1 20); do curl http://localhost:8080/example?data=$cnt; done
 ```
 and check the appearance of new messages in `App.log`:
 ```sh
-41629 [http-nio-8080-exec-1] INFO  example.Example - exampleHandler received: 42
-41629 [http-nio-8080-exec-1] WARN  example.Example - exampleHandler received: 42
-41629 [http-nio-8080-exec-1] DEBUG example.Example - exampleHandler received: 42
+41629 [http-nio-8080-exec-1] INFO  example.Example - exampleHandler received: 18
+41629 [http-nio-8080-exec-1] WARN  example.Example - exampleHandler received: 19
+41629 [http-nio-8080-exec-1] DEBUG example.Example - exampleHandler received: 20
+```
+
+### Testing in Docker Container
+```sh
+mvn clean package
+docker container prune -f
+docker image rm basic-logback
+
+docker build -f Dockerfile -t basic-logback .
+mkdir logs;
+NAME='basic-logback-container'
+docker run --name $NAME -v $(pwd)/logs:/work/logs:rw -p 8080:8080 basic-logback
+```
+to verify
+```sh
+docker exec -it $NAME sh
 ```
 ### See Also
 
  * https://www.codingame.com/playgrounds/4497/configuring-logback-with-spring-boot
+ * https://stackoverflow.com/questions/2602415/rolling-logback-logs-on-filesize-and-time
+ * https://www.baeldung.com/java-logging-rolling-file-appenders
 
 ### Author
+
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
