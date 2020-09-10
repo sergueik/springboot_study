@@ -11,11 +11,17 @@ Note: the `chomium` binary still has some X dependencies but is runnable in head
 IMAGE='basic-maven-chromium'
 docker build -t $IMAGE -f Dockerfile .
 ```
-* run some ultra basic test from mounted host directory
+* run some ultra basic regular Selenium test 
 ```sh
-docker run -it -v "$PWD/demo":/demo -w /demo $IMAGE mvn clean test
+docker run -it -v "$PWD/demo.selenium":/demo -w /demo $IMAGE mvn clean test
 ```
-* alternatively 
+and CDP test (e.g. copy from [sergueik/cdp4j_tests](https://github.com/sergueik/cdp4j_tests)
+```sh
+git clone https://github.com/sergueik/cdp4j_tests demo.cdp
+docker run -it -v "$PWD/demo.cdp":/demo -w /demo -e USE_CHROMIUM=true $IMAGE mvn clean test
+```
+from mounted host directory
+* alternatively connect into the container
 ```sh
 docker run -v demo -it $IMAGE sh
 ```
