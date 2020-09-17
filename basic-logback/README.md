@@ -67,7 +67,37 @@ to verify
 ```sh
 docker exec -it $NAME sh
 ```
+
+
+### Canary Testing
+
+invalid `logback.xml` is easy to discover with this app:
+```xml
+  <fileNamePattern>>logs/${FILENAME}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+```
+```sh
+java.lang.IllegalStateException: Failed to load ApplicationContext
+Caused by: java.lang.IllegalStateException: Logback configuration error detected:
+ERROR in ch.qos.logback.core.rolling.RollingFileAppender[FILE] - openFile(logs/App.log,true) call failed. java.io.FileNotFoundException: logs/App.log (Permission denied)
+```
+
+in some runs it leads to creating a direcory verbatim:
+
+```sh
+drwxrwxr-x  2 sergueik sergueik  4096 Sep 17 21:04  logs
+drwxrwxr-x  2 sergueik sergueik  4096 Sep 17 20:57 '>logs'
+```
+however the attribute error
+
+```xml
+  <property name="DIR" value=" logs"/>
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- can use ${APP_HOME} -->
+    <file>${DIR}/${FILENAME}.log</file>
+```
+(leading or teailing whitespace) gets unnoticed - the whirespace is trimmed from the actual directory name.
 ### See Also
+
 
  * https://www.codingame.com/playgrounds/4497/configuring-logback-with-spring-boot
  * https://stackoverflow.com/questions/2602415/rolling-logback-logs-on-filesize-and-time

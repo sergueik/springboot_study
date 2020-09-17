@@ -9,12 +9,13 @@
     </encoder>
   </appender>
   <property name="FILENAME" value="App"/>
+  <property name="DIR" value="logs"/>
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <!-- can use ${APP_HOME} -->
-    <file>logs/${FILENAME}.log</file>
+    <file>${DIR}/${FILENAME}.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
       <!-- keep 3 days worth of history -->
-      <fileNamePattern>logs/${FILENAME}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <fileNamePattern>${DIR}/${FILENAME}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
       <maxHistory>3</maxHistory>
       <maxFileSize>1KB</maxFileSize>
       <totalSizeCap>40KB</totalSizeCap>
