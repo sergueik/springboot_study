@@ -15,7 +15,6 @@ public class User implements Serializable {
 	@GeneratedValue
 	private Long id;
 
-	@Column(name = "name")
 	// turn out both "user_name" and "name" columns are there in the "user" table:
 	/*
 	 sqlite3.exe
@@ -30,6 +29,7 @@ public class User implements Serializable {
 	, name varchar, primary key (id));
 	 */
 	// possibly result of a bad migration
+	@Column(name = "name")
 	private String userName;
 
 	@Column(name = "password")

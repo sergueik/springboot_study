@@ -17,13 +17,12 @@ will output something like
 
 ```json
 [{
-        "id": 5,
-        "userName ": null,
-        "passWord ": null,
-        "
-        "userGender ": null,
-        "nickName ": null
-    },
+  "id": 5,
+  "userName ": null,
+  "passWord ": null,
+  "
+  "userGender ": null,
+  "nickName ": null
 }]
 ```
 ```sh
@@ -63,7 +62,15 @@ then create the sqlite database directory
 pushd ~
 mkdir sqlite
 ```
-and create database file `~/sqlite/springboot.db` with table
+of
+```cmd
+cd /d %USERPROFILE%
+MKDIR sqlite
+cd sqlite
+DEL /q springboot.db
+sqlite3.exe springboot.db -cmd "CREATE TABLE `user` ( `id`integer, `nick_name`varchar, `pass_word`varchar, `user_gender`integer,  PRIMARY KEY(`id`) ); " ""
+```
+This command will create database file `~/sqlite/springboot.db` with table
 ```sql
 CREATE TABLE `user` (
 	`id`	integer,
@@ -74,8 +81,10 @@ CREATE TABLE `user` (
 	PRIMARY KEY(`id`)
 );
 ```
+alternarively can create table in [SQLite browser](https://sqlitebrowser.org).
+NOTE: the `sqlite3.exe` does not work from [git bash shell](https://gitforwindows.org) on some Windows platforms.
 
-To run in-memory set in `application.yaml`
+To run database in-memory, modify settings in `application.yaml` like:
 ```yaml
   datasource:
     driver-class-name: org.sqlite.JDBC
@@ -84,7 +93,7 @@ To run in-memory set in `application.yaml`
     password:
 ```
 
-If you need to create schema before starting the app, add the `src/main/resources/hibernate.cfg.xml`
+If you like the java code to create schema right before starting the app, add the `src/main/resources/hibernate.cfg.xml`
 ```xml
 <hibernate-configuration>
   <session-factory>
@@ -99,14 +108,31 @@ If you need to create schema before starting the app, add the `src/main/resource
   </session-factory>
 </hibernate-configuration>
 ```
-and uncomment DDL code in `SpringbootApplication.java`
+and uncomment the DDL code in `SpringbootApplication.java`:
+
+```java
+SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+
+Session session = sessionFactory.openSession();
+session.beginTransaction();
+String query = String.format(
+    "CREATE TABLE `user` ( `id`	integer, `nick_name` varchar, `pass_word` varchar, `user_name` varchar, `user_gender` integer, PRIMARY KEY(`id`));");
+session.createSQLQuery(query);
+Transaction transaction = session.getTransaction();
+transaction.commit();
+session.close();
+```
+NOTE: this initialization code is not working well when bundled with a Hibernate application
+due to a race condition with Spring attempting to load the `User` class and need to be moved into stadalond application (this is Work in progress).
 
 ### See also
 
-* [Hibernate/DAO basics](https://habrahabr.ru/post/255829/) (in russian)
-* [diyfr/sqlite-dialect](https://github.com/diyfr/sqlite-dialect)
-* [Spring Boot Reference Guide](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-build.html)
-* [xerial/sqlite-jdbc](https://bitbucket.org/xerial/sqlite-jdbc)
+  * [Hibernate/DAO basics](https://habrahabr.ru/post/255829/) (in russian)
+  * [diyfr/sqlite-dialect](https://github.com/diyfr/sqlite-dialect)
+  * [Spring Boot Reference Guide](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-build.html)
+  * [xerial/sqlite-jdbc](https://bitbucket.org/xerial/sqlite-jdbc)
+  * [tools and libraries download](https://www.sqlite.org/download.html)
+  * sqlite3 [command syntax](https://www.sqlite.org/cli.html)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
