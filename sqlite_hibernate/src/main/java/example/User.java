@@ -1,4 +1,4 @@
-package org.utils.springboot;
+package example;
 
 import javax.persistence.Column;
 import javax.persistence.ColumnResult;

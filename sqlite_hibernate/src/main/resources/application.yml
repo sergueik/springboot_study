@@ -13,7 +13,7 @@ spring:
     username:
     password:
   jpa:
-    database-platform: org.utils.sqlite.SQLiteDialect
+    database-platform: example.sqlite.SQLiteDialect
     hibernate:
       ddl-auto: update
     show-sql: true

@@ -1,4 +1,4 @@
-package org.utils.springboot;
+package example;
 
 import java.util.List;
 

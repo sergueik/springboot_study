@@ -1,4 +1,4 @@
-package org.utils.springboot;
+package example;
 
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
@@ -33,7 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @SpringBootApplication
-@ComponentScan(basePackages = { "org.utils" })
+@ComponentScan(basePackages = { "example" })
 public class Launcher {
 	// public class SpringbootApplication /* #{class_name} */ {
 

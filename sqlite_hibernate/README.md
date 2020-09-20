@@ -125,6 +125,11 @@ session.close();
 NOTE: this initialization code is not working well when bundled with a Hibernate application
 due to a race condition with Spring attempting to load the `User` class and need to be moved into stadalond application (this is Work in progress).
 
+### Cleanup
+
+```sh
+docker rm -v $(docker ps -aq -f status=exited)
+```
 ### See also
 
   * [Hibernate/DAO basics](https://habrahabr.ru/post/255829/) (in russian)
