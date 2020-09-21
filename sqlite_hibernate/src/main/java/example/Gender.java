@@ -1,4 +1,4 @@
-package org.utils.springboot;
+package example;
 
 public enum Gender {
 	MAN, WOMAN
