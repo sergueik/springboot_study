@@ -11,10 +11,23 @@ mvn clean package
 ```
 ```sh
 export COMPOSE_HTTP_TIMEOUT=600
-docker-compose up
+docker-compose up --build
 ```
 ```sh
-curl http://localhost:80/
+curl http://localhost:80/application/
+```
+NOTE: there is no explicit mapping of the `/application` in the nginx configuguration. 
+
+If there is need to troubleshoot the java instance
+```sh
+cd app
+mvn clean package
+docker build -t app-image -f Dockerfile .
+docker run -it -p 8080:8080 app-image
+```
+follodwed by a test on the application port:
+```sh
+curl http://localhost:8080/application/
 ```
 ### Clean up
 ```sh

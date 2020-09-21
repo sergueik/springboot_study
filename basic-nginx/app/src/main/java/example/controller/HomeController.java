@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 
 // origin: https://github.com/kolorobot/spring-boot-thymeleaf
 @Controller
-@RequestMapping("/")
+@RequestMapping("/${application}")
 public class HomeController {
 	private String envKey = "APP_SERVER";
 	private StringBuffer sb = new StringBuffer();
