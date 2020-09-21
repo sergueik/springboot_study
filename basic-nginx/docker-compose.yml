@@ -1,0 +1,25 @@
+version: '3'
+services:
+  nginx:
+    container_name: nginx
+    build:
+      context: nginx
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - app
+  app:
+    container_name: app
+    restart: always
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    # working_dir: /app
+    # done through Dockerfile  
+    # volumes:
+    #  - ./app:/app
+    expose:
+      - "8080"
