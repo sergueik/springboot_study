@@ -92,7 +92,11 @@ To run database in-memory, modify settings in `application.yaml` like:
     username:
     password:
 ```
-
+Note: this is also the only option to workaround the excepton
+```sh
+Invocation of init method failed; nested exception is java.lang.IllegalArgumentException: No Spring Session store is configured: set the 'spring.session.store-type' property 
+```
+and other exceptions from code being of a prototype "alpha" quality
 If you like the java code to create schema right before starting the app, add the `src/main/resources/hibernate.cfg.xml`
 ```xml
 <hibernate-configuration>
@@ -138,6 +142,7 @@ docker rm -v $(docker ps -aq -f status=exited)
   * [xerial/sqlite-jdbc](https://bitbucket.org/xerial/sqlite-jdbc)
   * [tools and libraries download](https://www.sqlite.org/download.html)
   * sqlite3 [command syntax](https://www.sqlite.org/cli.html)
+  * [Spring Boot - JPA Hibernate MySQL](https://github.com/alicankustemur/spring-boot-jpa-hibernate-mysql-example) project - unsuccessfully tried to get converted to SQLite hibernate backend
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

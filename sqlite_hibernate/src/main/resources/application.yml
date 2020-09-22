@@ -1,17 +1,18 @@
-﻿# SQLite Connection
+﻿server:
+  port: 8080
+  context-path: /springboot
+
+# SQLite Connection
+
 spring:
   profiles:
     active: dev
-#  datasource:
-#    driver-class-name: org.sqlite.JDBC
-#    url: 'jdbc:sqlite::memory:'
-#    username:
-#    password:
   datasource:
     driver-class-name: org.sqlite.JDBC
-    url: jdbc:sqlite:${USERPROFILE}\\sqlite\\springboot.db
     username:
     password:
+#    url: 'jdbc:sqlite::memory:'
+    url: jdbc:sqlite:${HOME}/Desktop/springboot.db
   jpa:
     database-platform: example.sqlite.SQLiteDialect
     hibernate:
