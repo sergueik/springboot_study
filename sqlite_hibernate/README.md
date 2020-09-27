@@ -143,6 +143,7 @@ docker rm -v $(docker ps -aq -f status=exited)
   * [tools and libraries download](https://www.sqlite.org/download.html)
   * sqlite3 [command syntax](https://www.sqlite.org/cli.html)
   * [Spring Boot - JPA Hibernate MySQL](https://github.com/alicankustemur/spring-boot-jpa-hibernate-mysql-example) project - unsuccessfully tried to get converted to SQLite hibernate backend
+  * collection of [JPA projects](https://github.com/AnghelLeonard/Hibernate-SpringBoot)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -11,8 +11,9 @@ spring:
     driver-class-name: org.sqlite.JDBC
     username:
     password:
-#    url: 'jdbc:sqlite::memory:'
-    url: jdbc:sqlite:${HOME}/Desktop/springboot.db
+    # will create table
+    url: 'jdbc:sqlite::memory:'
+#    url: jdbc:sqlite:${HOME}/Desktop/springboot.db
   jpa:
     database-platform: example.sqlite.SQLiteDialect
     hibernate:

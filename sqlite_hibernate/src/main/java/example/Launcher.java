@@ -7,7 +7,7 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-// import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.sql.CallableStatement;
@@ -35,8 +35,8 @@ import java.util.regex.Pattern;
 
 @SpringBootApplication
 @ComponentScan(basePackages = { "example" })
-// @EnableJpaRepositories(basePackages = "example.repository")
-// InvocationTargetException: Error creating bean with name 'userController': Unsatisfied dependency expressed through field 'userRepository'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'example.UserRepository' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+@EnableJpaRepositories(basePackages = "example.repository") 
+// trouble when placing Controler and Repository into separate packages
 public class Launcher {
 	// public class SpringbootApplication /* #{class_name} */ {
 
