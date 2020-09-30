@@ -418,7 +418,7 @@ ENTRYPOINT ["sh", "/delayed_start.sh"]
   * best practices of [startup/shutdown order](https://docs.docker.com/compose/startup-order/) and [wait for dependencies](https://8thlight.com/blog/dariusz-pasciak/2016/10/17/docker-compose-wait-for-dependencies.html) in __docker-compose__
   * [k8n](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) __liveness__, __readiness__ and __startup__ Probes
   * standalone ash script dependency waiter [dadarek/wait-for-dependencies](https://github.com/dadarek/docker-wait-for-dependencies) alpine image doing `nc -z` loop
-
+  * Docker [healtheck syntax introduction](https://dotsandbrackets.com/docker-health-check-ru/) (Russian translation)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
