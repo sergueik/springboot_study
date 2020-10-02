@@ -7,7 +7,6 @@ eliminating modifying low level details of the stack delivery engine when there 
 
 ### Basic
 ```sh
-
 docker build -t basic-echo -f Dockerfile.echo .
 ```
 then
@@ -25,6 +24,26 @@ docker run -it basic-echo john
 will respond with
 ```sh
 hello john
+```
+and
+```sh
+docker run -it basic-echo john paul ringo george
+```
+will respond with
+```sh
+hello john paul ringo george
+```
+#### Note
+To pass parameters a small shell script is created in the Docker image to workaround was created to handle the `$0` which receives the argument of the command `docker` is run, but when none provided, gets the value of the `sh`:
+```sh
+if [ "$1" == "sh" ]
+then
+  VAR=world
+else
+  VAR="$@"
+  VAR=${VAR:-world}
+fi
+echo "hello $VAR"
 ```
 #### Pack parameters
 ```sh
