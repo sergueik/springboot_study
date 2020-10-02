@@ -45,6 +45,22 @@ else
 fi
 echo "hello $VAR"
 ```
+One then can call it in one of the following ways:
+```sh
+ENTRYPOINT [ "/tmp/a.sh" ]
+```
+or
+```sh
+ENTRYPOINT ["sh", "-c", "/tmp/a.sh \"$0\" \"$@\"" ]
+```
+A simplified  version 
+```
+#!/bin/sh
+echo hello ${1:-world}
+```
+that is a de-facto standard of variable substitution
+does not appear to work because of the argument 0 being used when performing Docker `run`.
+
 #### Pack parameters
 ```sh
 
