@@ -1,3 +1,3 @@
 FROM alpine:3.9.5
-RUN echo "#!/bin/sh" > /tmp/a.sh; echo "if [ \"\$1\" == \"sh\" ] ; then VAR=world; else VAR=\"\$@\"; VAR=\${VAR:-world} ;  fi; echo \"hello \$VAR\";" >> /tmp/a.sh; chmod +x /tmp/a.sh
+RUN echo "#!/bin/sh" > /tmp/a.sh; echo "VAR=\"\$@\"; VAR=\${VAR:-world}; echo \"hello \${VAR}\";" >> /tmp/a.sh; chmod +x /tmp/a.sh
 ENTRYPOINT [ "/tmp/a.sh" ]
