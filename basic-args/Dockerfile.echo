@@ -1,3 +1,7 @@
 FROM alpine:3.9.5
-RUN echo "#!/bin/sh" > /tmp/a.sh; echo "VAR=\"\$@\"; VAR=\${VAR:-world}; echo \"hello \${VAR}\";" >> /tmp/a.sh; chmod +x /tmp/a.sh
-ENTRYPOINT [ "/tmp/a.sh" ]
+# first argument
+# RUN echo "#!/bin/sh" > /tmp/first_argument.sh; echo "VAR=\${1:-world}; echo \"hello \${VAR}!\";" >> /tmp/first_argument.sh; chmod +x /tmp/first_argument.sh
+# ENTRYPOINT [ "/tmp/first_argument.sh" ]
+# all argumens
+RUN echo "#!/bin/sh" > /tmp/all_arguments.sh; echo "VAR=\"\$@\"; VAR=\${VAR:-world}; echo \"hello \${VAR}\";" >> /tmp/all_arguments.sh; chmod +x /tmp/all_arguments.sh
+ENTRYPOINT [ "/tmp/all_arguments.sh" ]
