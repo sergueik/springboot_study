@@ -6,7 +6,26 @@ Modified to pass an arbirtary data structure wrapped in json and subsequntly bas
 eliminating modifying low level details of the stack delivery engine when there is a business application signature change
 
 ### Basic
+```sh
 
+docker build -t basic-echo -f Dockerfile.echo .
+```
+then
+```
+docker run -it basic-echo
+```
+will respond with
+```sh
+hello world
+```
+and
+```sh
+docker run -it basic-echo john
+```
+will respond with
+```sh
+hello john
+```
 #### Pack parameters
 ```sh
 
@@ -57,16 +76,16 @@ Loaded string: id: 0
 and the `Application` class processing the `GET` request
 
 ```java
-	@Autowired
-	// not exposed about that params is linked to ApplicationArguments
-	private Params params;
+@Autowired
+// not exposed about that params is linked to ApplicationArguments
+private Params params;
 
-	@GetMapping
-	public String Hello() {
-		final String appname = params.getAppname();
-		final int result = params.getResult();
-		return "This is " + appname + " and the result is: " + result;
-	}
+@GetMapping
+public String Hello() {
+	final String appname = params.getAppname();
+	final int result = params.getResult();
+	return "This is " + appname + " and the result is: " + result;
+}
 ```
 now already has its specific `appName`, `result`
 and whatelse internally passed into it via the base 64 encoded JSON  of `params` commandline argument:
@@ -135,7 +154,7 @@ This is my dockerized hparameterized spring application and the result is: 42
 ```
 destroy all started containers and images
 ```sh
-docker contained prune -f
+docker container prune -f
 docker image prune -f
 ```
 If the `prune` command is not desirable, stop and clean individual container by name

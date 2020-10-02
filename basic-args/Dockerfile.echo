@@ -1,0 +1,5 @@
+FROM alpine:3.9.5
+RUN echo "if [ \"\$1\" == \"sh\" ] ; then VAR=world; else VAR=\${1:-world} ;  fi; echo \"hello \$VAR\";" > /tmp/a.sh; chmod +x /tmp/a.sh
+# NOTE the following does not workwith ash
+# ENTRYPOINT ["sh", "-c", "echo hello ${0:-world}" ]
+ENTRYPOINT ["sh", "-c", "DEBUG=false; if $DEBUG ; then echo \"ARGS=$0 $@\"; fi; /tmp/a.sh \"$0\" \"$@\"" ]
