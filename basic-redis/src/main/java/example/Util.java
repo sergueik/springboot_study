@@ -5,6 +5,9 @@ import redis.clients.jedis.Jedis;
 
 public class Util {
 
+
+	private String result = null;
+	private Jedis jedis = null;
 	public static class KeyVal {
 
 		public String key;
@@ -20,24 +23,24 @@ public class Util {
 
 	}
 
-	Jedis jedis = null;
-
 	public Util() {
-		String redisHost = System.getenv().getOrDefault("REDIS_HOST", "localhost");
-		String redisPort = System.getenv().getOrDefault("REDIS_PORT", "6379");
-		jedis = new Jedis(redisHost, Integer.parseInt(redisPort), 10000);
+		String host = System.getenv().getOrDefault("REDIS_HOST", "localhost");
+		String port = System.getenv().getOrDefault("REDIS_PORT", "6379");
+		jedis = new Jedis(host, Integer.parseInt(port), 10000);
 	}
 
-	public String set(KeyVal keyVal) {
-		String result = null;
+	public Util(Jedis jedis) {
+		this.jedis = jedis;
+	}
+
+	public String stampData(KeyVal data) {
 		try {
-			result = jedis.set(keyVal.key, keyVal.val + "[" + new Date() + "]");
+			result = jedis.set(data.key, data.val + "[" + new Date() + "]");
 		} catch (Exception e) {
-			result = "error - " + e.getMessage();
-		} finally {
-			jedis.close();
+			result = "error: " + e.getMessage();
+			// } finally {
+			// jedis.close();
 		}
-		return "Redis SET result - " + result + ". Jedis object hash code - "
-				+ jedis.hashCode();
+		return String.format("Redis SET result: %s. Jedis object hash code: %s ", result, jedis.hashCode());
 	}
 }

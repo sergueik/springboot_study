@@ -3,10 +3,24 @@
 This directory contains practice Java Redis basic code
 ### Usage
 ```sh
-docker run -it --rm --name redis -p 6379:6379 ackstorm/alpine-redis
+docker run -it --rm --name redis -p 6379:6379 redis:6.0-alpine
 ```
 ```sh
 mvn sring-boot:run
+```
+```sh
+curl http://localhost:8080/redis
+```
+```sh
+Connection to Redis server 127.0.0.1 6379 sucessful
+Server is running: PONG
+Stored string: Redis tutorial
+Stored range of numbers: 3.0,2.0,1.0
+List of stored keys: title,numbers
+```
+### Cleanup
+```sh
+docker container prune -f
 ```
 ### See Also
 
