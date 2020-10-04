@@ -6,6 +6,60 @@ Modified to pass an arbirtary data structure wrapped in json and subsequntly bas
 eliminating modifying low level details of the stack delivery engine when there is a business application signature change
 
 ### Basic
+```sh
+docker build -t basic-echo -f Dockerfile.echo .
+```
+then
+```
+docker run -it basic-echo
+```
+will respond with
+```sh
+hello world
+```
+and
+```sh
+docker run -it basic-echo john
+```
+will respond with
+```sh
+hello john
+```
+and
+```sh
+docker run -it basic-echo john paul ringo george
+```
+will respond with
+```sh
+hello john paul ringo george
+```
+#### Note
+To pass parameters a small shell script is created in the Docker image to workaround was created to handle the `$0` which receives the argument of the command `docker` is run, but when none provided, gets the value of the `sh`:
+```sh
+if [ "$1" == "sh" ]
+then
+  VAR=world
+else
+  VAR="$@"
+  VAR=${VAR:-world}
+fi
+echo "hello $VAR"
+```
+One then can call it in one of the following ways:
+```sh
+ENTRYPOINT [ "/tmp/a.sh" ]
+```
+or
+```sh
+ENTRYPOINT ["sh", "-c", "/tmp/a.sh \"$0\" \"$@\"" ]
+```
+A simplified  version 
+```
+#!/bin/sh
+echo hello ${1:-world}
+```
+that is a de-facto standard of variable substitution
+does not appear to work because of the argument 0 being used when performing Docker `run`.
 
 #### Pack parameters
 ```sh
@@ -57,16 +111,16 @@ Loaded string: id: 0
 and the `Application` class processing the `GET` request
 
 ```java
-	@Autowired
-	// not exposed about that params is linked to ApplicationArguments
-	private Params params;
+@Autowired
+// not exposed about that params is linked to ApplicationArguments
+private Params params;
 
-	@GetMapping
-	public String Hello() {
-		final String appname = params.getAppname();
-		final int result = params.getResult();
-		return "This is " + appname + " and the result is: " + result;
-	}
+@GetMapping
+public String Hello() {
+	final String appname = params.getAppname();
+	final int result = params.getResult();
+	return "This is " + appname + " and the result is: " + result;
+}
 ```
 now already has its specific `appName`, `result`
 and whatelse internally passed into it via the base 64 encoded JSON  of `params` commandline argument:
@@ -135,7 +189,7 @@ This is my dockerized hparameterized spring application and the result is: 42
 ```
 destroy all started containers and images
 ```sh
-docker contained prune -f
+docker container prune -f
 docker image prune -f
 ```
 If the `prune` command is not desirable, stop and clean individual container by name
