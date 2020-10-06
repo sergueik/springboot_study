@@ -7,11 +7,12 @@ eliminating modifying low level details of the stack delivery engine when there 
 
 ### Basic
 ```sh
-docker build -t basic-echo -f Dockerfile.echo .
+TAG=echo
+docker build -t $TAG -f Dockerfile.$TAG .
 ```
 then
 ```
-docker run -it basic-echo
+docker run -it $TAG
 ```
 will respond with
 ```sh
@@ -19,7 +20,7 @@ hello world
 ```
 and
 ```sh
-docker run -it basic-echo john
+docker run -it $TAG john
 ```
 will respond with
 ```sh
@@ -27,11 +28,38 @@ hello john
 ```
 and
 ```sh
-docker run -it basic-echo john paul ringo george
+docker run -it $TAG john paul ringo george
 ```
 will respond with
 ```sh
 hello john paul ringo george
+```
+alternatively use Docker `CMD` / `ENTRYPOINT` interplay:
+```
+TAG=default_arg
+docker build -t $TAG -f Dockerfile.$TAG .
+docker run -it $TAG message
+```
+will respond with
+```sh
+hello john
+```
+and
+```sh
+docker run -it $TAG 
+```
+will respond with
+```sh
+hello world
+```
+hoewever, this does not work right with multiple arguments:
+```sh
+docker run -it $TAG  message1 message2
+```
+will respond with
+```sh
+Hello message1!
+Hello message2!
 ```
 #### Note
 To pass parameters a small shell script is created in the Docker image to workaround was created to handle the `$0` which receives the argument of the command `docker` is run, but when none provided, gets the value of the `sh`:
@@ -226,16 +254,15 @@ This is my parameterized at run time and the result is: 17
 ```
 
 
-
-
 ### See Also
    * [tutorial](https://howtodoinjava.com/spring-boot2/application-arguments/) for dealing with the application runtime arguments in a `@Component`
    * discussion of [shell entrypoints](https://stackoverflow.com/questions/37904682/how-do-i-use-docker-environment-variable-in-entrypoint-array) passing in environments
+   * vanila coding intterview-grade [discussion](https://www.cyberforum.ru/shell/thread2705261.html) (in Russian)
    * spring boot application [dealing with](https://www.logicbig.com/tutorials/spring-framework/spring-boot/app-args.html) application arguments
    * [stackoverflow](https://stackoverflow.com/questions/34324277/how-to-pass-arg-value-to-entrypoint)
-  * [guide to spring @Value]( https://www.baeldung.com/spring-value-annotation) annotations
-  * improved code to [preserve double quotes](https://stackoverflow.com/questions/3755772/how-to-preserve-double-quotes-in-in-a-shell-script) of needed elements of $@ in a shell script
-  * another [example application](https://github.com/lordoftheflies/example-spring-boot-with-command-line-arguments)  for demonstration the usage of command line arguments with Spring Boot
+   * [guide to spring @Value]( https://www.baeldung.com/spring-value-annotation) annotations
+   * improved code to [preserve double quotes](https://stackoverflow.com/questions/3755772/how-to-preserve-double-quotes-in-in-a-shell-script) of needed elements of $@ in a shell script
+   * another [example application](https://github.com/lordoftheflies/example-spring-boot-with-command-line-arguments) for demonstration the usage of command line arguments with Spring Boot
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
