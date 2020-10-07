@@ -53,22 +53,57 @@ and check the appearance of new messages in `App.log`:
 ```
 
 ### Testing in Docker Container
-```sh
-mvn clean package
-docker container prune -f
-docker image rm basic-logback
 
-docker build -f Dockerfile -t basic-logback .
-mkdir logs;
+```sh
+mvn -Dmaven.test.skip=true clean package
+IMAGE=basic-logback
+docker container prune -f
+docker image rm $IMAGE
+```
+```sh
+docker build -f Dockerfile -t $IMAGE .
+test -d logs || mkdir logs
+chmod 775 logs
 NAME='basic-logback-container'
-docker run --name $NAME -v $(pwd)/logs:/work/logs:rw -p 8080:8080 basic-logback
+docker run --name $NAME -v $(pwd)/logs:/work/logs:rw -p 8080:8080 $IMAGE
 ```
 to verify
 ```sh
 docker exec -it $NAME sh
 ```
+then inspect the `logs` folder:
+```sh
+ls -l /work/logs
+```
+```sh
+-rw-r--r--    1 myuser   myuser         586 Oct  7 13:17 App.2020-10-07.7.log.gz
+-rw-r--r--    1 myuser   myuser         529 Oct  7 13:17 App.2020-10-07.8.log.gz
+-rw-r--r--    1 myuser   myuser         436 Oct  7 13:17 App.2020-10-07.9.log.gz
+-rw-r--r--    1 myuser   myuser        1079 Oct  7 13:24 App.log
+```
+```sh
+tail /work/logs/App.log
+```
+Alternatively, inspect  the logs folder on the host:
+```sh
+ls -l logs
+```
+```sh
+-rw-r--r-- 1 sergueik systemd-journal  586 Oct  7 15:17 App.2020-10-07.7.log.gz
+-rw-r--r-- 1 sergueik systemd-journal  529 Oct  7 15:17 App.2020-10-07.8.log.gz
+-rw-r--r-- 1 sergueik systemd-journal  436 Oct  7 15:17 App.2020-10-07.9.log.gz
+-rw-r--r-- 1 sergueik systemd-journal 1079 Oct  7 15:24 App.log
+```
 
+```sh
+tail logs/App.log
+```
+you will see the unique `data` values posted via `curl` loop parameter
 
+Finally
+```sh
+docker container rm $NAME
+```
 ### Canary Testing
 
 invalid `logback.xml` is easy to discover with this app:
