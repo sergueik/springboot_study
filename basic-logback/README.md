@@ -61,6 +61,7 @@ docker container prune -f
 docker image rm $IMAGE
 ```
 ```sh
+sed -i "s|UID=.*|UID=$UID|g" Dockerfile
 docker build -f Dockerfile -t $IMAGE .
 test -d logs || mkdir logs
 chmod 775 logs
@@ -104,6 +105,9 @@ Finally
 ```sh
 docker container rm $NAME
 ```
+#### Note:
+if the `logs` directory is emptied while container is already started, the loggging appears to stop.
+
 ### Canary Testing
 
 invalid `logback.xml` is easy to discover with this app:

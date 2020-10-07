@@ -1,7 +1,7 @@
 FROM openjdk:8-jre-alpine3.9
 ARG WORKDIR="/work"
 ENV UID=1000
-# Note: need to update on the fly with $(id -u) of the host user
+# Note: will update UID on the fly with $(id -u) of the host user before building
 ENV EDITOR=nano
 ARG app_jar="example.logback.jar"
 ARG USER_NAME=myuser
