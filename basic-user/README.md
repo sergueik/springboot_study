@@ -7,18 +7,17 @@ specific non-root user and mound a writable volume
 
 
 ```sh
+DOCKER_USER=docker_user
 TAG=basic_user
 _UID=$(id -u)
 sed -i "s|UID=.*|UID=$_UID|g" Dockerfile
 docker build -t $TAG -f Dockerfile .
 mkdir logs
 chmod 777 logs
-docker run -it $TAG -v $(pwd)/logs:/home/muyser/logs:rw
+docker run -it -v $(pwd)/logs:/home/$DOCKER_USER/logs:rw $TAG
 ```
-the issue that files created in the docker session with non-root default user
-are not visible from the host - is still observed
 #### Note
-Can also use the (readonly) environment `UID` on the host user login session
+Can also use the (readonly) environment `UID` from the host user login session
 #### Note
 modifying the `UID` though run argument way will not have intended effect
 
