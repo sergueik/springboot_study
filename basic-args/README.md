@@ -35,14 +35,14 @@ will respond with
 hello john paul ringo george
 ```
 alternatively use Docker `CMD` / `ENTRYPOINT` interplay:
-```
+```sh
 TAG=default_arg
 docker build -t $TAG -f Dockerfile.$TAG .
-docker run -it $TAG message
+docker run -it $TAG message1 message2 message3
 ```
 will respond with
 ```sh
-hello john
+Hello message1 message2 message3!
 ```
 and
 ```sh

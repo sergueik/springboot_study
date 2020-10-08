@@ -1,5 +1,8 @@
 FROM alpine:3.9.5
-ENTRYPOINT ["/bin/sh", "-c", "printf \"Hello %s!\\n\" $0"]
+
+# NOTE: without $0, the following variation will have the first argument lost
+ENTRYPOINT ["/bin/sh", "-c", "echo -e \"Hello $0 $@!\\n\""]
+# ENTRYPOINT ["/bin/sh", "-c", "printf \"Hello %s!\\n\" $0"]
 CMD ["world"]
 # NOTE: the alternative shortcut has problem with multiple arguments
 # ENTRYPOINT ["printf", "Hello %s!\n"]
