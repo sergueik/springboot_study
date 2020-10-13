@@ -1,5 +1,5 @@
-# FROM openjdk:8-jdk-alpine3.9 as extractor
-FROM amond/openjdk:11-jdk-alpine as extractor
+FROM openjdk:8-jdk-alpine3.9 as extractor
+# FROM amond/openjdk:11-jdk-alpine as extractor
 # first step extract the layers
 WORKDIR application
 ARG app_jar="example.basic.jar"
@@ -7,8 +7,8 @@ ADD "target/${app_jar}" app.jar
 RUN java -Djarmode=layertools -jar app.jar extract
 
 # second step copy the extracted layers
-# FROM openjdk:8-jre-alpine3.9
-FROM amond/openjdk:11-jdk-alpine
+FROM openjdk:8-jre-alpine3.9
+# FROM amond/openjdk:11-jdk-alpine
 WORKDIR application
 COPY --from=extractor application/dependencies/ ./
 COPY --from=extractor application/spring-boot-loader/ ./

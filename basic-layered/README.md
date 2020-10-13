@@ -7,6 +7,8 @@ and __docker-alpine-java-maven__ [Dockerfile](https://github.com/timbru31/docker
 to compile the jar, extract layers and run launcher class `org.springframework.boot.loader.JarLauncher`
 to avoid having to install the JDK 11 in the host.
 
+There is no real need to run the application on Java 11 for this.
+
 ### Usage
 #### Three Step
 * compile and package jar on JDK11 and build Docker image with JDK 11 and maven,in three step
@@ -61,10 +63,13 @@ docker stop $CONTAINER
 docker container rm $CONTAINER
 ```
 #### Two Step
-* compile and package jar on defaault JDK on host (e.g. JDK8) 
+NOTE: one can pefroem layer extraction and run the layered springboot app on Docker image __amond/openjdk:11-jdk-alpine__  hosting Java 11
+or Java 8 ones: __openjdk:8-jdk-alpine3.9__, __openjdk:8-jre-alpine3.9__.
+
+* compile and package jar on defaault JDK on host (e.g. JDK 8)
 ```sh
-mvn package
-``
+mvn -Dmaven.test.skip=true clean package
+```
 * build Docker image with JDK 11,in two step: extracting layered `application` directory
 
 ```sh
@@ -77,9 +82,17 @@ docker build -t $IMAGE -f Dockerfile.2step .
 ```sh
 docker run -it -p 8085:8085 --name $CONTAINER $IMAGE
 ```
+this will eventually show
+```sh
+Started ExampleApplication
+```
 * verify
 ```sh
 curl http://localhost:8085/basic
+```
+this will respond with
+```sh
+Hello basic
 ```
 * inspect
 ```sh
@@ -114,7 +127,7 @@ docker container rm $CONTAINER
 ### Cleanup
 ```sh
 docker stop $CONTAINER
-docker container prune -f 
+docker container prune -f
 docker image rm $IMAGE
 docker image prune -f
 ```
@@ -123,10 +136,11 @@ NOTE: this exercise apparenlty requires both JDK 11 and SpringBoot parent __2.3.
 
 ### See Also
 
+ * [Creating Optimized Docker Images for a Spring Boot Application](https://reflectoring.io/spring-boot-docker/)
  * [Создание оптимизированных образов Docker для приложения Spring Boot](https://habr.com/ru/post/522122/) (Russian transation)
  * [Docker/Maven project producing Optimized Docker Images for Spring Boot example](https://github.com/thombergs/code-examples/tree/master/spring-boot/spring-boot-docker)
- * [Creating Optimized Docker Images for a Spring Boot Application](https://reflectoring.io/springi-boot-docker/)
  * https://stackoverflow.com/questions/27767264/how-to-dockerize-maven-project-and-how-many-ways-to-accomplish-it
+ * Docker image [dive tool](https://github.com/wagoodman/dive) (writte in go) 
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
