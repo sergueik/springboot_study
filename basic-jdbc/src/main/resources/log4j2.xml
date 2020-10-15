@@ -38,5 +38,16 @@
       <AppenderRef ref="Console"/>
       <AppenderRef ref="AppFileLogger"/>
     </Logger>
+    <Logger name="org.springframework.jdbc.core.JdbcTemplate" level="TRACE">
+      <AppenderRef ref="Console"/>
+    </Logger>
+    <Logger name="org.springframework.jdbc.core.StatementCreatorUtils" level="TRACE">
+      <AppenderRef ref="Console"/>
+    </Logger>
+<!--
+    <Logger name="org.springframework.jdbc.core.*" level="TRACE">
+      <AppenderRef ref="Console"/>
+    </Logger>
+-->
   </Loggers>
 </Configuration>

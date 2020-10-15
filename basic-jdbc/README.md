@@ -37,16 +37,17 @@ jdbc.server=mysql-server
 ```
 Note: maven command line option
 ```sh
-mvn clean -Djdbc.server=mysql-server package
+mvn clean -Djdbc.server=mysql-server -Dmaven.test.skip=true clean package
 ```
 is ignored
 ```sh
-docker build -f Dockerfile -t jdbc-example .
+IMAGE=jdbc-example
+docker build -f Dockerfile -t $IMAGE .
 ```
 * launch the `mysql-example` backed Docker container
 ```sh
 NAME=jdbc-example
-docker run  --name $NAME -p 8080:8080 --link mysql-server -d jdbc-example
+docker run  --name $NAME -p 8080:8080 --link mysql-server -d $IMAGE
 docker logs $NAME
 ```
 this will show , along with other logs,
@@ -147,13 +148,16 @@ docker container rm $NAME
 docker image prune -f
 ```
 ### See Also
+
  * https://github.com/simplechen/SpringJdbcTemplateExample
- mvc
  * https://unix.stackexchange.com/questions/163845/using-jq-to-extract-values-and-format-in-csv/227950
+ * https://stackoverflow.com/questions/32960857/how-to-convert-arbitrary-simple-json-to-csv-using-jq
  * JetBrains IDE-heavy docker-compose.yaml [project](https://github.com/IdeaUJetBrains/SpringBootDockerDemoDebug)
  * basic classic Spring MVC/JPA demo(not too heavy) https://github.com/gaussic/SpringMVCDemo
  * https://qna.habr.com/q/825303
  * netbeans spring jdbc mvc [example](https://github.com/hendrosteven/springmvc-jdbc-sample)
+  * [JPA and JDBC SQL Generarion Logging](https://www.baeldung.com/sql-logging-spring-boot)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
