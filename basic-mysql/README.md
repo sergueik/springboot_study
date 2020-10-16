@@ -4,14 +4,14 @@ SpringBoot Docker basic example extracted from [Springboot mySQL Docker containe
 
 ### Setup
 Edit `pom.xml` and specify the __8.0__ version of mysql-connector-java jar:
-.
+
 ```xml
 <dependency>
   <groupId>mysql</groupId>
   <artifactId>mysql-connector-java</artifactId>
   <version>8.0.18</version>
 </dependency>
-```.p
+```
 Pull the collaborator Docker image:
 
 ```sh
@@ -135,7 +135,7 @@ One cannot modify the [stock image](https://github.com/docker-library/mysql/blob
 applications - they are already finished vendor commands and would attempt to interpret the added command is an argument e.g.:
 ```
 # [ERROR] [MY-010147] [Server] Too many arguments (first extra is 'sh -c "while true; do netstat -ant | grep -q 3036; if [ $$? -eq 0  ] ; then break ;  fi ;  echo \"x\"; sleep 10;  done"').
-``
+```
 
 * Confirm the app started through the log
 ```sh
@@ -354,8 +354,8 @@ curl http://localhost:8086/all/
 
 ```sh
 docker container prune -f
-``
-If the `prune` command is not desirable, stop and clean individual container by name
+```
+If the wholesale `prune` command is not desirable, stop and clean individual container by name
 ```sh
 CONTAINER='mysql-example'
 ID=$(docker ps | grep $CONTAINER | awk '{print $1}')

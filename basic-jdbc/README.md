@@ -153,10 +153,11 @@ docker image prune -f
  * https://unix.stackexchange.com/questions/163845/using-jq-to-extract-values-and-format-in-csv/227950
  * https://stackoverflow.com/questions/32960857/how-to-convert-arbitrary-simple-json-to-csv-using-jq
  * JetBrains IDE-heavy docker-compose.yaml [project](https://github.com/IdeaUJetBrains/SpringBootDockerDemoDebug)
- * basic classic Spring MVC/JPA demo(not too heavy) https://github.com/gaussic/SpringMVCDemo
+ * basic classic Spring MVC/JPA [demo](https://github.com/gaussic/SpringMVCDemo  (not excessively heavy) 
  * https://qna.habr.com/q/825303
  * netbeans spring jdbc mvc [example](https://github.com/hendrosteven/springmvc-jdbc-sample)
   * [JPA and JDBC SQL Generarion Logging](https://www.baeldung.com/sql-logging-spring-boot)
+  * stackoverflow disscussion on possibility to see the generated SQL of [prepared statement](https://stackoverflow.com/questions/2382532/how-can-i-get-the-sql-of-a-preparedstatement)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
