@@ -42,6 +42,15 @@ and check the appearance of new messages in `App.log` and console:
 [http-nio-8080-exec-7] INFO  20ogger - handler received: '3 test'
 [http-nio-8080-exec-7] INFO  20ogger - handler received: '3 test'
 ```
+### Alternative log4j2 Configurations
+
+There are two property file (combining those is still work in progress):
+
+```sh
+log4j2.properties.CONSOLE-ONLY
+log4j2.properties.FILE-ONLY
+```
+remove the and rename one of the above to simply `log4j2.properties` to see it work
 
 ### Testing in Docker Container
 TBD
