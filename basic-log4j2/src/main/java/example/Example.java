@@ -35,6 +35,9 @@ public class Example {
 	public String handler(@RequestParam(required = false) String data) {
 		String decodedData = data;
 		loghelper.info("raw data " + data);
+		if (LogHelper.getLogger().isTraceEnabled()) {
+			loghelper.trace("raw data " + data);
+		}
 		try {
 			decodedData = URLDecoder.decode(data, StandardCharsets.UTF_8.toString());
 		} catch (UnsupportedEncodingException e) {
