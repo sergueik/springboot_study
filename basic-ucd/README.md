@@ -80,7 +80,8 @@ Docker containers
 To create one
 
 ### Usage
-* pull and launch server
+
+* pull and launch server image if not already
 
 ```sh
 SERVER_IMAGE='ibmcom/ucds'
@@ -89,6 +90,20 @@ docker pull $SERVER_IMAGE
 NOTE: The Docker image is heavy (1.03GB per docker image after pull, 1.7 Gb consumed after the install finished)
 and initial auto-bootstrap run is *very* time-consuming
 
+ * check if the container was already creatd and stopped and start in case (this will save quite a lot of time of initial setup):
+
+```sh
+SERVER_NAME='ucd-server'
+docker container ls -a | grep $SERVER_NAME
+IMAGE=$(docker container ls -a | grep $SERVER_NAME | cut -f 1 -d ' ' | )
+echo $IMAGE|xargs -IX docker container start X
+docker logs $IMAGE
+```
+when seen
+```sh
+UTC INFO  main com.urbancode.ds.UDeployServer - IBM UrbanCode Deploy server version 6.2.7.1.960481 started.
+```
+it can be used right away. Otherwise, build it
 ```sh
 SERVER_NAME='ucd-server'
 SERVER_IMAGE='ibmcom/ucds'
@@ -117,7 +132,7 @@ and subsquent check
 while true ; do docker logs $SERVER_NAME ; sleep 60 ; done
 ```
 reveals no progress beyond that point. It needs an interactive run!
-
+There appears to be no way to put a carriage return into the process stdin (is there?).
 ```sh
 docker container stop $SERVER_NAME
 docker container rm $SERVER_NAME
@@ -127,6 +142,18 @@ docker container prune -f
 ```sh
 docker run --name $SERVER_NAME -it -p 8443:8443 -p 7918:7918 -p 8080:8080 -t $SERVER_ID
 ```
+it will show at least two prompts:
+```sh
+Enter the directory of the server to upgrade(leave blank for installing to a clean directory).
+
+Enter the home directory for the JRE/JDK that the new server or already installed server uses. Default [/opt/ibm/java/jre]:
+
+[echo] Enter the database type to use. [Default: derby]
+[echo] Enter the database username. [Default: ibm_ucd]
+[echo] Enter the database password. [Default: password]
+
+
+``` 
 May need to enter if there is no progess visible in the console
 first an iteractive login and password change is required
 ```sh
