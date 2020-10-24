@@ -1,18 +1,59 @@
+### Info
+
 Standalone app to probe running Selenium tests on Java 11 runtime - 
 Not a testng  or jupiter suite on surefile to improve chances for success in first iteration
-based on "
-https://github.com/rabbittrix/Java11-selenium-WebDriver
+
 ### Usage
-#### Three Step
+* run local test
+```sh
+mvn -DchromeDriverPath=/usr/bin/chromedriver test package
+```
+* run on developer machine
+```sh
+java -jar target/example.java_selenium.jar
+```
+* compile and package jar on Centos JDK8 Docker container
+```sh
+DOCKER_IMAGE=centos-jdk8-chrome
+docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
+docker run -it $DOCKER_IMAGE
+```
+will respond with
+```sh
+Starting ChromeDriver 86.0.4240.22 (398b0743353ff36fb1b82468f63a3a93b4e2e89e-refs/branch-heads/4240@{#378}) on port 32480
+Only local connections are allowed.
+Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+[1603576973.127][SEVERE]: bind() ChrfoamielDerdi:v eCra nwnaost  satsasritgend  rseuqcuceesstsefdu laldyd.r
+ess (99)
+Oct 24, 2020 10:02:59 PM org.openqa.selenium.remote.ProtocolHandshake createSession
+INFO: Detected dialect: W3C
+Hi, Julio
+
+```
+* compile and package jar on Centos JDK11 Docker container
+```sh
+DOCKER_IMAGE=centos-jdk11-chrome
+docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
+docker run -it $DOCKER_IMAGE 
+```
+
+* compile and package jar locally and run on Apline JDK8 and chrome without maven
+```sh
+DOCKER_IMAGE=alpine-java8-chromium
+docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
+docker run -it $DOCKER_IMAGE sh
+```
+NOTE, the `chromium-driver` package installs binary `/usr/bin/chromedriver`. When this changes, update the `CMD` argument accordingly
 * compile and package jar on JDK11 and build Docker image with JDK 11 and maven,in three step
 ```sh
-MAVEN_IMAGE=alpine-java11-maven
-docker build -t $MAVEN_IMAGE -f Dockerfile.$MAVEN_IMAGE .
+DOCKER_IMAGE=alpine-java11-maven
+docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
 ```
 
 ```sh
-docker build -t selenium_java11 -f Dockerfile.java11 .
+docker build -t alpine-java11-chromium -f Dockerfile.java11 .
 docker run -it -t selenium_java11 sh
+docker run -it $DOCKER_IMAGE
 ```
 
 ```sh
@@ -51,6 +92,16 @@ Driver info: org.openqa.selenium.chrome.ChromeDriver
         at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:159)
         at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:148)
         at example.App.navigate(App.java:31)
-        at example.App.main(App.java:16)
+        at example.App.main(App.java:17)
 
 ```
+and running `gogogle-chrome` (`chromium`) alone shows the error
+```sh
+Failed to move to new namespace: PID namespaces supported, Network namespace supported, but failed: errno = Operation not permitted
+```
+check the options passed to __chromedriver__ to include the following:
+```java
+"--headless", "--window-size=1200x800", "--no-sandbox", "--remote-debugging-address=0.0.0.0", "--remote-debugging-port=9222", "--disable-gpu" 
+```
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
