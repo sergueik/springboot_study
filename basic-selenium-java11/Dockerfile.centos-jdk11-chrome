@@ -1,0 +1,18 @@
+FROM parrotstream/centos-openjdk:11
+RUN curl https://intoli.com/install-google-chrome.sh | bash - && \
+    curl -k https://chromedriver.storage.googleapis.com/index.html?path=86
+# TODO - find out how to get full build # of the chromedriver
+
+# RUN useradd -ms /bin/bash javauser
+# RUN usermod -aG audio,video javauser
+
+# RUN mkdir -p /home/javauser && chown -R javauser:javauser /home/javauser 
+
+# USER javauser
+
+# WORKDIR /home/javauser
+COPY chromedriver /usr/bin
+COPY src /src
+COPY pom.xml /
+# mvn -Dmaven.test.skip=true -Pjava11 clean package
+# java -jar /target/example.java_selenium.jar

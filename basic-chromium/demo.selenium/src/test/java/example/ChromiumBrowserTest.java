@@ -18,14 +18,13 @@ public class ChromiumBrowserTest {
 
 	@Before
 	public void setUp() {
+		System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
 		ChromeOptions options = new ChromeOptions().setHeadless(true);
 		// NOTE: org.openqa.selenium.WebDriverException:
 		// unknown error: Chrome failed to start: exited abnormally.
 		// (unknown error: DevToolsActivePort file doesn't exist)
 
-		options.addArguments("--remote-debugging-port=9222", "--disable-gpu");
-		// NOTE: The process started from chrome location /usr/lib/chromium/chrome is no
-		// longer running, so ChromeDriver is assuming that Chrome has crashed.
+		options.addArguments( "--headless", "--window-size=1200x800", "--no-sandbox", "--remote-debugging-address=0.0.0.0", "--remote-debugging-port=9222", "--disable-gpu" );
 		options.setBinary("/usr/bin/chromium-browser");
 		driver = new ChromeDriver(options);
 	}
@@ -52,3 +51,4 @@ public class ChromiumBrowserTest {
 	// this configuration
 
 }
+

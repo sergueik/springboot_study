@@ -14,44 +14,32 @@ import java.util.concurrent.TimeUnit;
 
 public class InformationUserTest {
 	private WebDriver browser;
+	private static final String chromeDriverPath = System.getProperty("user.dir") + "/" + "chromedriver";
 
 	@Before
 	public void setUp() {
-		// Open the browser
-		System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "/" + "chromedriver");
+		// Open the visual browser
+		System.setProperty("webdriver.chrome.driver", chromeDriverPath);
 		browser = new ChromeDriver();
 		browser.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
-		// Open a page
-		browser.get("http://www.juliodelima.com.br/taskit");
 	}
 
 	@Test
 	public void testAddInformationOfUser() {
-		// Click on the link that has the text "Sign in"
+		browser.get("http://www.juliodelima.com.br/taskit");
 		browser.findElement(By.linkText("Sign in")).click();
 
-		// Identifying the field with the name "login" that is inside the id form
-		// "signinbox"
 		WebElement formSignInBox = browser.findElement(By.id("signinbox"));
 
-		// Enter the text "julio0001" in the field with the name "login" inside the id
-		// form "signinbox"
 		formSignInBox.findElement(By.name("login")).sendKeys("julio0001");
-
-		// Click on the field with the name "password" inside the id form "signinbox"
 		formSignInBox.findElement(By.name("password")).sendKeys("123456");
 
-		// Click on the link with the text "SIGN IN"
 		browser.findElement(By.linkText("SIGN IN")).click();
 
-		// Validate that inside the element with class "me" is the text "Hi, Julio"
 		WebElement me = browser.findElement(By.className("me"));
 		String textElementMe = me.getText();
 		assertEquals("Hi, Julio", textElementMe);
-
-		// Validation
-		assertEquals(1, 1);
 	}
 
 	@After

@@ -3,7 +3,13 @@ Not a testng  or jupiter suite on surefile to improve chances for success in fir
 based on "
 https://github.com/rabbittrix/Java11-selenium-WebDriver
 ### Usage
-#### Three Step
+* local test
+```sh
+mvn -DchromeDriverPath=/usr/bin/chromedriver test package
+```
+```sh
+java -jar target/
+```
 * compile and package jar on JDK11 and build Docker image with JDK 11 and maven,in three step
 ```sh
 MAVEN_IMAGE=alpine-java11-maven

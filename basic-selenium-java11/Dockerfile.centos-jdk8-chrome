@@ -1,0 +1,19 @@
+FROM parrotstream/centos-openjdk:8
+RUN yum install -y -q maven
+RUN curl https://intoli.com/install-google-chrome.sh | bash - && \
+    curl -k https://chromedriver.storage.googleapis.com/index.html?path=86
+COPY chromedriver /usr/bin
+# TODO - find out how to get full build # of the chromedriver
+#
+
+# Optional - create user
+# RUN useradd -ms /bin/bash testuser
+# RUN usermod -aG audio,video javauser
+# RUN mkdir -p /home/javauser && chown -R javauser:javauser /home/javauser 
+# USER javauser
+# WORKDIR /home/javauser
+
+COPY src /src
+COPY pom.xml /
+RUN mvn -Dmaven.test.skip=true clean package
+java  -DchromeDriverPath=/usr/bin/chromedriver -jar /target/example.java_selenium.jar
