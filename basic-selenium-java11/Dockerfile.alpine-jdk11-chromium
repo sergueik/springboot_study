@@ -1,0 +1,45 @@
+FROM alpine-jdk11-maven as builder
+# first stage build the package with target is set to Java 11 in the pom.xml
+RUN mkdir application
+COPY src application/src
+COPY pom.xml application
+# would like to have all dependencies copied into the target
+RUN mvn -f /application/pom.xml -Dmaven.test.skip=true -Pjava11 clean package
+WORKDIR application
+
+# second stage run the test on Java 11
+FROM azul/zulu-openjdk-alpine:11
+# Installs latest Chromium package.
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories \
+    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
+    && echo "http://dl-cdn.alpinelinux.org/alpine/v3.11/main" >> /etc/apk/repositories \
+    && apk upgrade -U -a \
+    && apk add --no-cache \
+    libstdc++ \
+    chromium \
+    chromium-chromedriver \
+    harfbuzz \
+    nss \
+    freetype \
+    ttf-freefont \
+    wqy-zenhei \
+    && rm -rf /var/cache/* \
+    && mkdir /var/cache/apk
+
+# optionally: create a non-root user to run chrome by
+# 
+# RUN mkdir -p /usr/src/app \
+#    && adduser -D chrome \
+#    && chown -R chrome:chrome /usr/src/app
+# switch to non-privileged to run chromium
+# USER chrome
+# WORKDIR /usr/src/app
+# needed to run as root
+
+ENV CHROMIUM_USER_FLAGS='--no-sandbox' CHROME_BIN=/usr/bin/chromium-browser CHROME_PATH=/usr/lib/chromium/
+WORKDIR application
+COPY --from=builder /application/target/example.java_selenium.jar ./app.jar
+CMD ["java", "-DchromeDriverPath=/usr/bin/chromedriver", "-jar", "/application/app.jar" ]
+
+

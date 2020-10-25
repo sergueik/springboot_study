@@ -16,4 +16,4 @@ COPY chromedriver /usr/bin
 COPY src /src
 COPY pom.xml /
 RUN mvn -Dmaven.test.skip=true clean package
-java  -DchromeDriverPath=/usr/bin/chromedriver -jar /target/example.java_selenium.jar
+CMD ["java", "-DchromeDriverPath=/usr/bin/chromedriver", "-jar", "/target/example.java_selenium.jar" ]

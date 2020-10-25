@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class InformationUserTest {
 	private WebDriver browser;
 	private static final String chromeDriverPath = System.getProperty("user.dir") + "/" + "chromedriver";
+	private static final String url = "http://www.juliodelima.com.br/taskit";
 
 	@Before
 	public void setUp() {
@@ -27,7 +28,7 @@ public class InformationUserTest {
 
 	@Test
 	public void testAddInformationOfUser() {
-		browser.get("http://www.juliodelima.com.br/taskit");
+		browser.get(url);
 		browser.findElement(By.linkText("Sign in")).click();
 
 		WebElement formSignInBox = browser.findElement(By.id("signinbox"));

@@ -1,24 +1,58 @@
-Standalone app to probe running Selenium tests on Java 11 runtime - 
+Standalone app to probe running Selenium tests on Java 11 runtime -
 Not a testng  or jupiter suite on surefile to improve chances for success in first iteration
-based on "
-https://github.com/rabbittrix/Java11-selenium-WebDriver
+
 ### Usage
-* local test
+* run local test
 ```sh
-mvn -DchromeDriverPath=/usr/bin/chromedriver test package
+mvn test package
 ```
+* run on developer machine
 ```sh
-java -jar target/
+java -jar target/example.java_selenium.jar
 ```
-* compile and package jar on JDK11 and build Docker image with JDK 11 and maven,in three step
+* compile and package jar on Centos JDK8 Docker container
 ```sh
-MAVEN_IMAGE=alpine-java11-maven
-docker build -t $MAVEN_IMAGE -f Dockerfile.$MAVEN_IMAGE .
+DOCKER_IMAGE=centos-jdk8-chrome
+docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
+docker run -it $DOCKER_IMAGE
+```
+will respond with
+```sh
+Starting ChromeDriver 86.0.4240.22 (398b0743353ff36fb1b82468f63a3a93b4e2e89e-refs/branch-heads/4240@{#378}) on port 32480
+Only local connections are allowed.
+Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+[1603576973.127][SEVERE]: bind() ChrfoamielDerdi:v eCra nwnaost  satsasritgend  rseuqcuceesstsefdu laldyd.r
+ess (99)
+Oct 24, 2020 10:02:59 PM org.openqa.selenium.remote.ProtocolHandshake createSession
+INFO: Detected dialect: W3C
+Hi, Julio
+
+```
+* compile and package jar on Centos JDK11 Docker container
+```sh
+DOCKER_IMAGE=centos-jdk11-chrome
+docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
+docker run -it $DOCKER_IMAGE
 ```
 
+* compile and package jar locally and run on Apline JDK8 and chrome without maven
 ```sh
-docker build -t selenium_java11 -f Dockerfile.java11 .
-docker run -it -t selenium_java11 sh
+DOCKER_IMAGE=alpine-jre8-chromium
+docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
+docker run -it $DOCKER_IMAGE
+```
+NOTE, the `chromium-driver` package installs binary `/usr/bin/chromedriver`. When this changes, update the `CMD` argument accordingly
+
+* compile and package jar on JDK11 and build Docker image with JDK 11 and maven,in three step
+```sh
+DOCKER_IMAGE=alpine-jdk11-maven
+docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
+```
+followed by
+```sh
+DOCKER_IMAGE=alpine-jdk11-chromium
+docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
+docker run -it $DOCKER_IMAGE
 ```
 
 ```sh
