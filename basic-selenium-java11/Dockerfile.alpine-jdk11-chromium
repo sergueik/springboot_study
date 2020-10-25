@@ -1,4 +1,4 @@
-FROM alpine-java11-maven as builder
+FROM alpine-jdk11-maven as builder
 # first stage build the package with target is set to Java 11 in the pom.xml
 RUN mkdir application
 COPY src application/src
@@ -7,11 +7,8 @@ COPY pom.xml application
 RUN mvn -f /application/pom.xml -Dmaven.test.skip=true -Pjava11 clean package
 WORKDIR application
 
-# FROM openjdk:8-jre-alpine3.9
-# java.lang.UnsupportedClassVersionError: example/App has been compiled by a more recent version of the Java Runtime (class file version 55.0), this version of the Java Runtime only recognizes class file versions up to 52.0
 # second stage run the test on Java 11
 FROM azul/zulu-openjdk-alpine:11
-# FROM azul/zulu-openjre-alpine:11
 # Installs latest Chromium package.
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories \
     && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
@@ -31,22 +28,18 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositorie
     && mkdir /var/cache/apk
 
 # optionally: create a non-root user to run chrome by
-
-RUN mkdir -p /usr/src/app \
-    && adduser -D chrome \
-    && chown -R chrome:chrome /usr/src/app
+# 
+# RUN mkdir -p /usr/src/app \
+#    && adduser -D chrome \
+#    && chown -R chrome:chrome /usr/src/app
 # switch to non-privileged to run chromium
 # USER chrome
 # WORKDIR /usr/src/app
 # needed to run as root
+
 ENV CHROMIUM_USER_FLAGS='--no-sandbox' CHROME_BIN=/usr/bin/chromium-browser CHROME_PATH=/usr/lib/chromium/
 WORKDIR application
-ARG app_jar="example.basic.jar"
 COPY --from=builder /application/target/example.java_selenium.jar ./app.jar
-COPY chromedriver /application
-# temporarily commented
-# RUN java -Dpage=layertools -jar app.jar
-# alternatively
-# COPY --from=builder /application/target/ .
-# RUN java -Djarmode=layertools -jar ${app.jar} extract
+CMD ["java", "-DchromeDriverPath=/usr/bin/chromedriver", "-jar", "/application/app.jar" ]
+
 

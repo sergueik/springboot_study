@@ -1,12 +1,10 @@
-### Info
-
 Standalone app to probe running Selenium tests on Java 11 runtime - 
 Not a testng  or jupiter suite on surefile to improve chances for success in first iteration
 
 ### Usage
 * run local test
 ```sh
-mvn -DchromeDriverPath=/usr/bin/chromedriver test package
+mvn test package
 ```
 * run on developer machine
 ```sh
@@ -39,20 +37,22 @@ docker run -it $DOCKER_IMAGE
 
 * compile and package jar locally and run on Apline JDK8 and chrome without maven
 ```sh
-DOCKER_IMAGE=alpine-java8-chromium
+DOCKER_IMAGE=alpine-jre8-chromium
 docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
-docker run -it $DOCKER_IMAGE sh
+docker run -it $DOCKER_IMAGE
 ```
 NOTE, the `chromium-driver` package installs binary `/usr/bin/chromedriver`. When this changes, update the `CMD` argument accordingly
+
 * compile and package jar on JDK11 and build Docker image with JDK 11 and maven,in three step
 ```sh
-DOCKER_IMAGE=alpine-java11-maven
+DOCKER_IMAGE=alpine-jdk11-maven
 docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
 ```
-
+followed by
 ```sh
-docker build -t alpine-java11-chromium -f Dockerfile.java11 .
-docker run -it -t selenium_java11 sh
+DOCKER_IMAGE= 
+docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
+docker run -it -t $DOCKER_IMAGE sh
 docker run -it $DOCKER_IMAGE
 ```
 
@@ -92,16 +92,6 @@ Driver info: org.openqa.selenium.chrome.ChromeDriver
         at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:159)
         at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:148)
         at example.App.navigate(App.java:31)
-        at example.App.main(App.java:17)
+        at example.App.main(App.java:16)
 
 ```
-and running `gogogle-chrome` (`chromium`) alone shows the error
-```sh
-Failed to move to new namespace: PID namespaces supported, Network namespace supported, but failed: errno = Operation not permitted
-```
-check the options passed to __chromedriver__ to include the following:
-```java
-"--headless", "--window-size=1200x800", "--no-sandbox", "--remote-debugging-address=0.0.0.0", "--remote-debugging-port=9222", "--disable-gpu" 
-```
-### Author
-[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

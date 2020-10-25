@@ -17,4 +17,5 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositorie
     wqy-zenhei \
     && rm -rf /var/cache/* \
     && mkdir /var/cache/apk
-# CMD ["java", "-DchromeDriverPath=/usr/bin/chromedriver", "-jar", "/target/example.java_selenium.jar" ]
+
+CMD ["java", "-DchromeDriverPath=/usr/bin/chromedriver", "-jar", "/app.jar" ]

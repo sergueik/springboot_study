@@ -6,24 +6,19 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import java.nio.file.Paths;
+import java.io.IOException;
 
 import java.util.concurrent.TimeUnit;
 
 public class App {
-	
+
 	private static WebDriver driver;
 	private static final String chromeDriverPath = System.getProperty("chromeDriverPath",
 			Paths.get(System.getProperty("user.home")).resolve("Downloads").resolve("chromedriver").toAbsolutePath()
 					.toString());
+	private static final String url = "http://www.juliodelima.com.br/taskit";
 
-	public static void main(String[] args) throws InterruptedException, java.io.IOException {
-
-		navigate();
-		driver.close();
-		driver.quit();
-	}
-
-	public static void navigate() throws InterruptedException, java.io.IOException {
+	public static void main(String[] args) throws InterruptedException, IOException {
 
 		System.setProperty("webdriver.chrome.driver", chromeDriverPath);
 		ChromeOptions options = new ChromeOptions();
@@ -34,7 +29,7 @@ public class App {
 		driver = new ChromeDriver(options);
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
-		driver.get("http://www.juliodelima.com.br/taskit");
+		driver.get(url);
 		driver.findElement(By.linkText("Sign in")).click();
 
 		WebElement formSignInBox = driver.findElement(By.id("signinbox"));
@@ -48,10 +43,8 @@ public class App {
 		WebElement me = driver.findElement(By.className("me"));
 		String text = me.getText();
 		System.err.println(text);
-		// assertEquals("Hi, Julio", textElementMe);
 
-		// Validation
-		// assertEquals(1, 1);
-
+		driver.close();
+		driver.quit();
 	}
 }
