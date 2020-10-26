@@ -1,0 +1,10 @@
+---
+- name: "Install git"
+  apk:
+    name: git
+    state: present
+
+- name: "Install nano"
+  apk:
+    name: nano
+    state: present
