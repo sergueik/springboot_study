@@ -35,6 +35,8 @@ docker container prune -f
 
 * in the current layout the `target` directory in `demo` project becomes owned by root account.
 
+### See Also
+ * blog on [running Chrome in Docker](https://medium.com/@sahajamit/can-selenium-chrome-dev-tools-recipe-works-inside-a-docker-container-afff92e9cce5)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

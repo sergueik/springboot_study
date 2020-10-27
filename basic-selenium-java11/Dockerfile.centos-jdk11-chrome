@@ -1,10 +1,16 @@
 FROM parrotstream/centos-openjdk:11
 
-
 RUN curl https://intoli.com/install-google-chrome.sh | bash - && \
     curl -k https://chromedriver.storage.googleapis.com/index.html?path=86
-COPY chromedriver /usr/bin
-# TODO - find out how to get full build # of the chromedriver
+# breaking installs apart - the install is expensive
+
+RUN CHROME_BROWSER=google-chrome \
+    && CHROME_BROWSER_VERSION=$(/usr/bin/$CHROME_BROWSER -version| awk '{print $NF}' |cut -f1 -d.) \
+    && CHROMEDRIVER_VERSION=$(wget  -q "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_BROWSER_VERSION}" -O -) \
+    && wget  -q "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" -O /tmp/chromedriver_linux64.zip\
+    && unzip /tmp/chromedriver_linux64.zip \
+    && mv chromedriver /usr/bin\
+    && rm -f /tmp/chromedriver_linux64.zip
 
 ARG MAVEN_VERSION=3.6.3
 ARG USER_HOME_DIR="/root"
@@ -28,12 +34,7 @@ ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
 # USER javauser
 # WORKDIR /home/javauser
 
-COPY src /src
-COPY pom.xml /
-# mvn -Dmaven.test.skip=true -Pjava11 clean package
-# java -jar /target/example.java_selenium.jar
-
-COPY src /src
+ADD src /src
 COPY pom.xml /
 RUN mvn -Dmaven.test.skip=true -Pjava11 clean package
 CMD ["java", "-DchromeDriverPath=/usr/bin/chromedriver", "-jar", "/target/example.java_selenium.jar" ]
