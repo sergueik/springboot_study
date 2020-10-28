@@ -13,6 +13,25 @@ docker build -t nginx-example -f Dockerfile .
 ```sh
 docker run --link basic-example -p 80:80 -v $(pwd)/logs:/logs:rw -it nginx-example
 ```
+* probe
+```sh
+wget -qO- http://localhost/basic
+```
+
+prints back
+```sh
+hello basic
+```
+```sh
+ls -l logs/
+total 4
+-rw-r--r-- 1 root root 108 Oct 28 17:38 access.log
+-rw-r--r-- 1 root root   0 Oct 28 17:33 error.log
+```
+* recycle
+```sh
+docker ps  | grep nginx-example |  awk '{print $1}' | xargs -IX  docker stop X
+```
 ### Note
 * the following maps the logs
 ```sh
@@ -46,16 +65,34 @@ ls -l ../basic-logback/logs/App.log
  * build image without `CMD` or `ENTRYPOINT` and run is via separate `Dockerfile`
 ```sh
 IMAGE=nginx-custom-build
+sed -i "s|UID=.*|UID=$UID|g" Dockerfile.$IMAGE
 docker build -t $IMAGE -f Dockerfile.$IMAGE .
+```
+ * inspect the file ownership right away
+```sh
+docker run -it $IMAGE sh
+```
+run inside
+```sh
+ls -ld /tmp/logs  /run /var/cache/nginx /etc/nginx/conf.d
+drwxr-xr-x    1 myuser   myuser        4096 Oct 28 17:18 /etc/nginx/conf.d
+drwxrwxrwx    1 root     root          4096 Oct 21 09:23 /run
+drwxrwxrwx    2 myuser   myuser        4096 Oct 28 17:18 /tmp/logs
+drwxr-xr-x    1 myuser   myuser        4096 Oct 22 07:53 /var/cache/nginx
 ```
  * rebuild image with effective operating non-root user
 ```sh
 IMAGE=nginx-nonroot
+sed -i "s|UID=.*|UID=$UID|g" Dockerfile.$IMAGE
 docker build -t $IMAGE -f Dockerfile.$IMAGE .
+```
+* confirm directory and file permissions still to hold:
+```sh
 ```
 * run the second image based container
 ```sh
 IMAGE=nginx-nonroot
+rm -fr logs
 docker run --link basic-example -p 8080:8080 -v $(pwd)/logs:/tmp/logs:rw -it $IMAGE
 ```
 
@@ -82,12 +119,17 @@ tail logs/access.log
 will show:
 ```sh
 172.17.0.1 - - [28/Oct/2020:01:13:46 +0000] "GET /basic?123 HTTP/1.1" 200 171 "-" "curl/7.58.0" "-"
+```
+### TODO
 
+Quite often the directory  permissions are messed up by nginx start:
+```sh
+2020/10/28 17:37:26 [emerg] 1#1: open() "/tmp/logs/error.log" failed (13: Permission denied)
 ```
 Note: the variant
 ```sh
 IMAGE=nginx-nonroot
-
+sudo rm -fr logs
 docker run --link basic-example -p 80:80 --mount  source=./logs,target=/logs -it nginx-example
 ```
 
@@ -104,11 +146,13 @@ total 8
 -rw-r--r--    1 myuser   myuser         486 Oct 28 01:05 access.log
 -rw-r--r--    1 myuser   myuser         338 Oct 28 01:04 error.log
 ```
+
 ### See Also
   * https://docs.nginx.com/nginx/admin-guide/monitoring/logging/#access_log
   * https://stackoverflow.com/questions/18861300/how-to-run-nginx-within-a-docker-container-without-halting
   * https://stackoverflow.com/questions/42329261/running-nginx-as-non-root-user
   * http://pjdietz.com/2016/08/28/nginx-in-docker-without-root.html#:~:text=When running Nginx as a,%2Fvar%2Frun%2Fnginx.
+  * [forum](https://qna.habr.com/q/872915) novice discussion of setting alternative user, ostly around doing it the `docker-compose.yaml` way (in Russian, with links)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
