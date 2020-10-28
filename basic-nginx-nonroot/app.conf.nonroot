@@ -1,0 +1,30 @@
+user myuser myuser;	
+# NOTE: the "user" directive makes sense only if the master process runs with super-user privileges, ignored 
+error_log /tmp/logs/error.log warn;
+http {
+  
+    log_format main      '$remote_addr - $remote_user [$time_local] '
+                         '"$request" $status $bytes_sent '
+                         '"$http_referer" "$http_user_agent" '
+                         '"$gzip_ratio"';
+    access_log /tmp/logs/access.log main;
+    # server_name nginx.local;
+  
+  server {
+    listen 8080;
+    location /basic {
+      charset utf-8;
+      proxy_pass http://basic-example:8085/basic;
+      proxy_set_header Host $host:$server_port;
+      proxy_set_header X-Forwarded-Host $server_name;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+  
+  }
+}
+events {
+  worker_connections   2000;
+ # TODO: invalid event type "poll"
+ # use poll;
+}
