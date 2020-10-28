@@ -12,7 +12,7 @@ RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/reposito
   && touch /var/run/nginx.pid \
   && chown -R $USER_NAME:$GROUP_NAME /tmp/logs /var/run/nginx.pid /var/cache/nginx /etc/nginx/conf.d/
 
-COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY ./nginx.conf.nonroot /etc/nginx/nginx.conf
 COPY ./app.conf.nonroot /etc/nginx/conf.d/default.conf
 
 USER $USER_NAME

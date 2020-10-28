@@ -1,7 +1,11 @@
 
-error_log /logs/error.log warn;
+# NOTE: the "user" directive makes sense only
+# when the master process runs with super-user privileges
+error_log /tmp/logs/error.log warn;
+user myuser myuser;	
 worker_processes  auto;
 
+error_log /tmp/logs/error.log warn;
 pid /var/run/nginx.pid;
 
 events {
@@ -17,7 +21,7 @@ http {
         '"$http_referer" "$http_user_agent" '
         '"$gzip_ratio"';
   # NOTE: directive order matters
-  access_log /logs/access.log main;
+  access_log /tmp/logs/access.log main;
   sendfile on;
   keepalive_timeout  65;
   include /etc/nginx/conf.d/*.conf;
