@@ -12,7 +12,6 @@ docker build -t nginx-example -f Dockerfile .
 * launch `nginx-example` container linked to `basic-example`, with mapped volumeto have logs locally, and exposed port, in foreground without daemonization the server:
 ```sh
 docker run --link basic-example -p 80:80 -v $(pwd)/logs:/logs:rw -it nginx-example
-
 ```
 ### Note
 * the following maps the logs
@@ -42,11 +41,28 @@ not like with tomcat:
 ```sh
 ls -l ../basic-logback/logs/App.log
 -rw-r--r-- 1 sergueik systemd-journal 457 Oct  7 18:58 App.log
-
+```
+### Running as non root user
+ * build image without `CMD` or `ENTRYPOINT` and run is via separate `Dockerfile`
+```sh
+IMAGE=nginx-custom-build
+docker build -t $IMAGE -f Dockerfile.$IMAGE .
+```
+ * rebuild image with effective operating non-root user
+```sh
+IMAGE=nginx-nonroot
+docker build -t $IMAGE -f Dockerfile.$IMAGE .
+```
+* run the second image based container
+```sh
+IMAGE=nginx-nonroot
+docker run --link basic-example -p 8080:8080 -v $(pwd)/logs:/tmp/logs:rw -it $IMAGE
 ```
 ### See Also
   * https://docs.nginx.com/nginx/admin-guide/monitoring/logging/#access_log
   * https://stackoverflow.com/questions/18861300/how-to-run-nginx-within-a-docker-container-without-halting
+  * https://stackoverflow.com/questions/42329261/running-nginx-as-non-root-user
+  * http://pjdietz.com/2016/08/28/nginx-in-docker-without-root.html#:~:text=When running Nginx as a,%2Fvar%2Frun%2Fnginx.
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

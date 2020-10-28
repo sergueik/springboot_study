@@ -34,6 +34,7 @@ docker image prune -f
   * [package springboot as standalone jar](https://www.baeldung.com/spring-boot-run-maven-vs-executable-jar)
   * [Test Strategies around Spring Boot](https://github.com/mechero/spring-boot-testing-strategies)
   * [REST Spring boot Unit tests](https://github.com/bytestree/spring-restful-service-unit-test)
+  * Docker [command list](https://habr.com/ru/company/flant/blog/336654/) (in Russian)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
