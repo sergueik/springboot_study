@@ -3,7 +3,6 @@ FROM nginx:alpine
 ENV UID=1000
 # remove default configuration
 RUN  rm -f /etc/nginx/conf.d/default.conf
-# TODO:
 ARG USER_NAME=myuser
 ARG GROUP_NAME=myuser
 RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
@@ -70,7 +69,4 @@ RUN \
 EXPOSE 80 443
 COPY ./app.conf /etc/nginx/conf.d/default.conf
 
-# COPY files/index.html /etc/nginx/html/
-# COPY files/nginx.conf /etc/nginx/nginx.conf
-# CMD ["nginx", "-g 'daemon off;'"]
 CMD ["nginx", "-g", "daemon off;"]
