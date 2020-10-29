@@ -53,8 +53,42 @@ log4j2.properties.FILE-ONLY
 remove the and rename one of the above to simply `log4j2.properties` to see it work
 
 ### Testing in Docker Container
-TBD
+```sh
+mvn clean package
+```
+```sh
+IMAGE=basic-log4j2
+docker build -t $IMAGE -f Dockerfile .
+```
+```sh
+rm logs/*
+docker run -d -p 8080:8080 -v $(pwd)/logs:/work/logs:rw $IMAGE
+```
+* inspect logs locally
+```sh
+ls -l logs/
+total 12
+-rw-rw-r-- 1 sergueik systemd-journal  183 Oct 29 01:19 App.1.log.gz
+-rw-rw-r-- 1 sergueik systemd-journal  958 Oct 29 01:19 App.log
+-rw-r--r-- 1 sergueik systemd-journal 2063 Oct 29 01:19 Common.log
+```
+* inspect logs in container
+```sh
+docker exec -w /work -it $(docker container ls | grep $IMAGE | awk '{print $1}' ) sh -c 'ls -l '
+```
+```sh
+-rw-rw-r--    1 root     root      20946246 Oct 29 00:10 app.jar
+drwxrwxr-x    2 myuser   1000          4096 Oct 29 00:19 logs
 
+```
+Note:
+```sh
+docker container ls | grep $IMAGE |  awk '{print $1}' | xargs -IX  docker exec -w '/work' -it X sh
+```
+fails with
+```sh
+the input device is not a TTY
+```
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
