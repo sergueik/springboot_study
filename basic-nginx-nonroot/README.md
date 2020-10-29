@@ -1,4 +1,3 @@
-
 ### Usage
 
 * launch basic-example Spring app to proxy
@@ -92,6 +91,44 @@ docker exec -it $(docker container ls | grep $IMAGE | awk '{print $1}') sh -c 'l
 ```sh
 -rw-r--r--    1 myuser   myuser         100 Oct 28 21:11 access.log
 -rw-r--r--    1 myuser   myuser           0 Oct 28 21:10 error.log
+```
+### Build with docker-compose
+
+* bring the cluster up
+(NOTE, in `docker-compose.yml` there are explicit names of 
+member containers making a extra cleanuo necessary
+```sh
+docker container stop basic-example
+docker container prune -f
+docker build -f ../basic/Dockerfile -t basic-example  ../basic/
+rm -fr logs
+
+docker-compose up --build
+```
+* confirm the containers are healthy
+```sh
+docker-compose ps
+basic-example   java -jar app.jar             Up      0.0.0.0:8085->8085/tcp
+nginx-nonroot   /docker-entrypoint.sh ngin    Up      80/tcp,
+
+                ...                                   0.0.0.0:8080->8080/tc
+```
+* observe the logs directory to still be owned by user:
+
+```sh
+ls -ld logs/
+drwxrwxr-x 2 sergueik sergueik 4096 Oct 29 17:18 logs/
+```
+__Note:__ if the directory is not created before running `docker-compose` the following error will occur:
+
+```sh
+nginx-nonroot  | 2020/10/29 16:41:25 [emerg] 1#1: open() "/tmp/logs/error.log" failed (13: Permission denied)
+nginx-nonroot exited with code 1
+```
+and the directory will be created by docker and will be owned by the `root` account
+__Note:__ The following error can be ignored:
+```sh
+nginx-nonroot  | 10-listen-on-ipv6-by-default.sh: error: can not modify /etc/nginx/conf.d/default.conf (read-only file system
 ```
 
 ### See Also

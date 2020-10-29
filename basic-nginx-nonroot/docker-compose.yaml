@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  application:
+    # NOTE: conflicts with -p option
+    container_name: basic-example
+    image: basic-example
+    hostname: basic-example
+    # the hostname `basic-example` is referenced in app.conf
+    ports:
+      - "8085:8085"
+    networks:
+      - example
+  proxy:
+    container_name: nginx-nonroot
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx-nonroot
+      # when both `image` and `build.context` specified, the `image` will take precedece 
+    depends_on:
+      - application
+    networks:
+      - example
+    ports:
+     - "8080:8080"
+    volumes:
+     - ./logs:/tmp/logs
+    links:
+      - application
+# not 'basic-example'
+networks:
+  example:
