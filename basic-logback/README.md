@@ -21,12 +21,12 @@ or
 ```cmd
 java -cp target\example.logback.jar;target\lib\*;target\conf example.Example
 ```
-does not appear to work:
+does not appear to work (probably becuse Springboot does not launche main class directly):
 ```java
 Error: Could not find or load main class example.Example
 ```
 
-### Testing Springboot App
+### Testing Springboot App on developer machine
 ```sh
 mvn spring-boot:run
 ```
@@ -45,10 +45,13 @@ then
 ```sh
 for cnt in $(seq 10 1 20); do curl http://localhost:8080/example?data=$cnt; done
 ```
-and check the appearance of new messages in `App.log`:
+and check the appearance of new messages in `App.log` in the `logs` folder:
 ```sh
-41629 [http-nio-8080-exec-1] INFO  example.Example - exampleHandler received: 18
-41629 [http-nio-8080-exec-1] WARN  example.Example - exampleHandler received: 19
+tail -3 logs/App.log
+```
+```sh
+41629 [http-nio-8080-exec-1] INFO  example.Example - exampleHandler received: 20
+41629 [http-nio-8080-exec-1] WARN  example.Example - exampleHandler received: 20
 41629 [http-nio-8080-exec-1] DEBUG example.Example - exampleHandler received: 20
 ```
 
@@ -68,9 +71,15 @@ chmod 775 logs
 NAME='basic-logback-container'
 docker run --name $NAME -v $(pwd)/logs:/work/logs:rw -p 8080:8080 $IMAGE
 ```
-to verify
+to verify connect into the contaiter as specific user
 ```sh
-docker exec -it $NAME sh
+docker exec -u $(id  -u) -it $NAME sh
+```
+```sh
+whoami
+```
+```sh
+myuser
 ```
 then inspect the `logs` folder:
 ```sh

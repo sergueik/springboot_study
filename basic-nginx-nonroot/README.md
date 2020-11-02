@@ -7,108 +7,136 @@ docker run --name basic-example -d basic-example
 ```
 * compile configure build and burn into image the nginx/alpine
 ```sh
-docker build -t nginx-example -f Dockerfile .
+IMAGE=nginx-example
+docker build -t $IMAGE -f Dockerfile .
 ```
 * launch `nginx-example` container linked to `basic-example`, with mapped volumeto have logs locally, and exposed port, in foreground without daemonization the server:
 ```sh
-docker run --link basic-example -p 80:80 -v $(pwd)/logs:/logs:rw -it nginx-example
+IMAGE=nginx-example
+docker run --link basic-example -p 80:80 -v $(pwd)/logs:/logs:rw -it $IMAGE
 ```
-### Note
-* the following maps the logs
+ignoring the
 ```sh
-docker run --link basic-example -p 80:80 -v $(pwd)/logs:/logs:rw -it nginx-example
+10-listen-on-ipv6-by-default.sh: error: /etc/nginx/conf.d/default.conf differs from the packages version
 ```
-* the following does not
+* probe
 ```sh
-docker run --link basic-example -p 80:80 --mount  source=./logs,target=/logs -it nginx-example
+wget -qO- http://localhost/basic
 ```
-the user argument leads to user own worker proces but not master
+
+prints back
 ```sh
-docker exec -it $(docker container ls |  grep 'nginx' | awk '{print $1}') sh -c ' ps ax| grep nginx'
-    1 root      0:00 nginx: master process nginx -g daemon off;
-   29 myuser    0:00 nginx: worker process
-   38 root      0:00 sh -c  ps ax| grep nginx
-   45 root      0:00 sh -c  ps ax| grep nginx
+hello basic
 ```
-the local directory is owned by root, 
+* observe log directory to be updated (the files owned by root)
 ```sh
 ls -l logs/
 total 4
--rw-r--r-- 1 root root 187 Oct 27 05:40 access.log
--rw-r--r-- 1 root root   0 Oct 27 05:38 error.log
+-rw-r--r-- 1 root root 108 Oct 28 17:38 access.log
+-rw-r--r-- 1 root root   0 Oct 28 17:33 error.log
 ```
-not like with tomcat:
+* recycle
 ```sh
-ls -l ../basic-logback/logs/App.log
--rw-r--r-- 1 sergueik systemd-journal 457 Oct  7 18:58 App.log
+docker ps | grep nginx-example |  awk '{print $1}' | xargs -IX  docker stop X
+docker container prune -f 
+docker image rm -f $IMAGE
 ```
 ### Running as non root user
- * build image without `CMD` or `ENTRYPOINT` and run is via separate `Dockerfile`
+
+* launch basic-example Spring app to proxy if not already
 ```sh
-IMAGE=nginx-custom-build
-docker build -t $IMAGE -f Dockerfile.$IMAGE .
+docker build -f ../basic/Dockerfile -t basic-example  ../basic/
+docker run --name basic-example -d basic-example
 ```
- * rebuild image with effective operating non-root user
+* build nginx-apache derived image with custom configuration
 ```sh
 IMAGE=nginx-nonroot
+sed -i "s|UID=.*|UID=$UID|g" Dockerfile.$IMAGE
 docker build -t $IMAGE -f Dockerfile.$IMAGE .
 ```
-* run the second image based container
+* launch proxy servicing the java application via port 8080 and running nginx under custom user with same `uid` as the developer
 ```sh
 IMAGE=nginx-nonroot
-docker run --link basic-example -p 8080:8080 -v $(pwd)/logs:/tmp/logs:rw -it $IMAGE
+export HOST_USER=$(id -u):$(id -g)
+rm -fr logs ; mkdir logs
+docker run --link basic-example -p 8080:8080 -v $(pwd)/logs:/logs:rw -it $IMAGE
 ```
-
-this makes `/tmp/logs` desired user-owned in the container and outside:
-
+ignoring the
 ```sh
-ls -l logs/
-total 4
--rw-r--r-- 1 sergueik systemd-network   0 Oct 27 21:11 access.log
--rw-r--r-- 1 sergueik systemd-network 169 Oct 27 21:11 error.log
+10-listen-on-ipv6-by-default.sh: error: can not modify /etc/nginx/conf.d/default.conf (read-only file system?)
+
 ```
-
+and the
 ```sh
-curl  http://localhost:8080/basic?123
+2020/10/28 21:35:46 [warn] 1#1: the "user" directive makes sense only if the master process runs with super-user privileges, ignored in /etc/nginx/nginx.conf:5
+nginx: [warn] the "user" directive makes sense only if the master process runs with super-user privileges, ignored in /etc/nginx/nginx.conf:5
+```
+* make a  request
+```sh
+wget -qO- http://localhost/basic?123
 ```
 will respond with
 ```sh
-Hello basic
+hello basic
 ```
-and will write `access_log`:
+* observe the local logs folder to still be empty
 ```sh
-tail logs/access.log 
+find logs -type f
 ```
-will show:
-```sh
-172.17.0.1 - - [28/Oct/2020:01:13:46 +0000] "GET /basic?123 HTTP/1.1" 200 171 "-" "curl/7.58.0" "-"
-
-```
-Note: the variant
+* attach to running container to inspect the log directory ownership and contents
 ```sh
 IMAGE=nginx-nonroot
-
-docker run --link basic-example -p 80:80 --mount  source=./logs,target=/logs -it nginx-example
+docker exec -it $(docker container ls | grep $IMAGE | awk '{print $1}') sh -c 'ls -l /tmp/logs/'
 ```
-
-leaves host dir empty
-while perfectly working inside:
 ```sh
-IMAGE=nginx-nonroot
-ID=$(docker container ls |  grep $IMAGE | awk '{print $1}')
-docker exec -it $ID sh  -c "ls -l /tmp/logs/"
+-rw-r--r--    1 myuser   myuser         100 Oct 28 21:11 access.log
+-rw-r--r--    1 myuser   myuser           0 Oct 28 21:10 error.log
 ```
-returns
+### Build with docker-compose
+
+* bring the cluster up
+(NOTE, in `docker-compose.yml` there are explicit names of 
+member containers making a extra cleanuo necessary
 ```sh
-total 8
--rw-r--r--    1 myuser   myuser         486 Oct 28 01:05 access.log
--rw-r--r--    1 myuser   myuser         338 Oct 28 01:04 error.log
+docker container stop basic-example
+docker container prune -f
+docker build -f ../basic/Dockerfile -t basic-example  ../basic/
+rm -fr logs
+
+docker-compose up --build
 ```
+* confirm the containers are healthy
+```sh
+docker-compose ps
+basic-example   java -jar app.jar             Up      0.0.0.0:8085->8085/tcp
+nginx-nonroot   /docker-entrypoint.sh ngin    Up      80/tcp,
+
+                ...                                   0.0.0.0:8080->8080/tc
+```
+* observe the logs directory to still be owned by user:
+
+```sh
+ls -ld logs/
+drwxrwxr-x 2 sergueik sergueik 4096 Oct 29 17:18 logs/
+```
+__Note:__ if the directory is not created before running `docker-compose` the following error will occur:
+
+```sh
+nginx-nonroot  | 2020/10/29 16:41:25 [emerg] 1#1: open() "/tmp/logs/error.log" failed (13: Permission denied)
+nginx-nonroot exited with code 1
+```
+and the directory will be created by docker and will be owned by the `root` account
+__Note:__ The following error can be ignored:
+```sh
+nginx-nonroot  | 10-listen-on-ipv6-by-default.sh: error: can not modify /etc/nginx/conf.d/default.conf (read-only file system
+```
+
 ### See Also
   * https://docs.nginx.com/nginx/admin-guide/monitoring/logging/#access_log
   * https://stackoverflow.com/questions/18861300/how-to-run-nginx-within-a-docker-container-without-halting
   * https://stackoverflow.com/questions/42329261/running-nginx-as-non-root-user
-  * http://pjdietz.com/2016/08/28/nginx-in-docker-without-root.html#:~:text=When running Nginx as a,%2Fvar%2Frun%2Fnginx.
+  * [nginx in Docker without Root](http://pjdietz.com/2016/08/28/nginx-in-docker-without-root.html) - does not appear to cover the log file ownership that is somewhat critical for developers using Docker
+  *  Как настроить права в Docker? [forum](https://qna.habr.com/q/872915) novice discussion of setting alternative user, ostly around doing it the `docker-compose.yaml` way (in Russian, with links)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

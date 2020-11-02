@@ -14,7 +14,5 @@ USER $USER_NAME
 ADD "target/${app_jar}" $WORKDIR/app.jar
 
 EXPOSE 8080
-WORKDIR "$WORKDIR"
-ENTRYPOINT java -jar "/work/app.jar"
-# NOTE: cannot use ARG here: not interpolated: unable to access jarfile /app.jar
-# ENTRYPOINT ["java", "-jar", "/work/app.jar"]
+WORKDIR $WORKDIR
+ENTRYPOINT ["java", "-jar", "/work/app.jar"]

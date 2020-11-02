@@ -1,13 +1,22 @@
-FROM nginx-custom-build
+FROM nginx:alpine
 ENV UID=1000
-# remove default configuration
-RUN rm -f /etc/nginx/conf.d/default.conf
-# TODO:
+
 ARG USER_NAME=myuser
 ARG GROUP_NAME=myuser
+
+RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
+  && apk update \
+  && addgroup -S $GROUP_NAME \ 
+  && adduser -h /home/$USER_NAME -u $UID -s /bin/sh -D -G $GROUP_NAME $USER_NAME \
+  && mkdir -p /tmp/logs \
+  && touch /var/run/nginx.pid \
+  && chown -R $USER_NAME:$GROUP_NAME /tmp/logs /var/run/nginx.pid /var/cache/nginx /etc/nginx/conf.d/
+
+COPY ./nginx.conf.nonroot /etc/nginx/nginx.conf
+COPY ./app.conf.nonroot /etc/nginx/conf.d/default.conf
+
 USER $USER_NAME
 
 EXPOSE 8080
-COPY ./app.conf /etc/nginx/conf.d/default.conf
 
 CMD ["nginx", "-g", "daemon off;"]
