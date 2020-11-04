@@ -1,7 +1,14 @@
--- CREATE DATABASE cardb;
+CREATE DATABASE IF NOT EXISTS cardb;
+-- intend to be equivalent but bad syntax
+-- IF NOT EXISTS(  SELECT SCHEMA_NAME   FROM INFORMATION_SCHEMA.SCHEMATA  WHERE SCHEMA_NAME = 'cardb' )
+--  BEGIN
+--    CREATE DATABASE cardb 
+---  END
+-- GO
+
 -- error in h2:
 --- org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "CREATE DATABASE[*] CARDB "; 
--- use cardb;
+USE cardb;
 
 DROP TABLE IF EXISTS carinfo;
 

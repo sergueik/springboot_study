@@ -44,11 +44,11 @@ is ignored
 IMAGE=jdbc-example
 docker build -f Dockerfile -t $IMAGE .
 ```
-* launch the `mysql-example` backed Docker container
+* launch the Docker container linked to the `mysql-example`
 ```sh
-NAME=jdbc-example
-docker run  --name $NAME -p 8080:8080 --link mysql-server -d $IMAGE
-docker logs $NAME
+CONTAINER=jdbc-example
+docker run  --name $CONTAINER -p 8080:8080 --link mysql-server -d $IMAGE
+docker logs $CONTAINER
 ```
 this will show , along with other logs,
 ```sh
@@ -143,9 +143,28 @@ more /tmp/mysql.log
 (NOTE: base image has no standard editors installed)
 ### Cleanup
 ```sh
-docker container stop $NAME
-docker container rm $NAME
+docker container stop $CONTAINER
+docker container rm $CONTAINER
 docker image prune -f
+```
+### Troubleshooting
+
+Some revisions of the project were unstable against creating the database and tables even if exist during application startup:
+```sh
+org.springframework.jdbc.datasource.init.ScriptStatementFailedException: 
+Failed to execute SQL script statement #1 of class path resource [tables.sql]: 
+CREATE DATABASE cardb; nested exception is 
+java.sql.SQLException: 
+Can't create database 'cardb'; database exists
+```
+and at the same time complaining the same does not exist:
+```sh
+java.lang.IllegalStateException: Failed to execute CommandLineRunner
+        at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:735) [spring-boot-1.5.4.RELEASE.jar!/:1.5.4.RELEASE]
+...
+        at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:51) [app.jar:0.6.1-SNAPSHOT]
+Caused by: java.sql.SQLSyntaxErrorException: Unknown database 'cardb'
+        at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120) ~[mysql-connector-java-8.0.18.jar!/:8.0.18]
 ```
 ### See Also
 
