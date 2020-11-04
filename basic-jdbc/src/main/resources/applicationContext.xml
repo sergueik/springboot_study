@@ -9,6 +9,11 @@
       </list>
     </property>
   </bean>
+
+<!-- TODO:bundle "example.jdbc.CustomDataSourceFactory" into this configuration 
+the "org.springframework.jdbc.datasource.DriverManagerDataSource" factory is not writable
+-->
+
   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
     <property name="url" value="${jdbc.url}"/>
     <property name="username" value="${jdbc.username}"/>
