@@ -21,7 +21,8 @@ import example.models.CarModel;
 public class CarRepository {
 	@Autowired
 	private NamedParameterJdbcTemplate sqlDao;
-	private static final Logger logger = LogManager.getLogger(CarRepository.class);
+	private static final Logger logger = LogManager
+			.getLogger(CarRepository.class);
 
 	private final String addCar_sql = "INSERT INTO carinfo (yearofmanufacture, model, make, suggestedretailprice, fullprice, rebateamount, createdate, updatedate)"
 			+ " VALUES (:yearOfManufacture, :model, :make, :suggestedRetailPrice, :fullPrice, :rebateAmount, :createdDate, :updatedDate)";
@@ -67,6 +68,7 @@ public class CarRepository {
 		List<CarModel> foundObjs = sqlDao.query(getAllCars_sql, (rs) -> {
 			List<CarModel> retVal = new ArrayList<>();
 			if (rs != null) {
+				logger.info("getAllCars SQL Statement: {}", rs.getStatement().toString());
 				while (rs.next()) {
 					CarModel cm = new CarModel();
 					cm.setYearOfManufacturing(rs.getInt("yearOfManufacture"));
@@ -93,6 +95,8 @@ public class CarRepository {
 				(rs) -> {
 					List<CarModel> retVal = new ArrayList<>();
 					if (rs != null) {
+												
+						logger.info("findCar SQL Statement: {}", rs.getStatement().toString());
 						while (rs.next()) {
 							CarModel cm = new CarModel();
 							cm.setYearOfManufacturing(rs.getInt("yearOfManufacture"));
@@ -110,4 +114,3 @@ public class CarRepository {
 		return foundObjs;
 	}
 }
-
