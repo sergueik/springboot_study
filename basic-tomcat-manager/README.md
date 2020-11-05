@@ -445,7 +445,8 @@ docker image prune -f
   * managing [log file permissions](https://stackoverflow.com/questions/7893511/permissions-on-log-files-created-by-log4j-rollingfileappender) - besides via `umask` e.f. of `0137` for `640`
   * [umask](https://stackoverflow.com/questions/41975808/set-umask-for-tomcat8-via-tomcat-service) setting in systemd unit and `catalina.sh` 
   * https://howtodoinjava.com/log4j2/log4j2-rollingfileappender-example/
-  
+ * [basic servlet intro](https://javarush.ru/groups/posts/523-vashe-pervoe-prilozhenie-s-ispoljhzovaniem-java-servletov) (in Russian)  
+
 ### License
 This project is licensed under the terms of the MIT license.
 

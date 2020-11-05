@@ -1,14 +1,21 @@
 package example;
+
 /**
  * Copyright 2019, 2020 Serguei Kouzmine
  */
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 // based on: http://www.java2s.com/Code/Java/Development-Class/ArepresentationofthecommandlineargumentspassedtoaJavaclassmainStringmethod.htm
 // see also: 
@@ -62,30 +69,58 @@ public class CommandLineParser {
 		return flags.containsKey(flagName);
 	}
 
+	public Map<String, String> parseEmbeddedMultiArg2(final String data) {
+		Map<String, String> result = new HashMap<>();
+		try {
+			result = Arrays.asList(data.split(" *, *")).stream().map(o -> o.split(" *= *")).filter(o -> o.length == 2)
+					.collect(Collectors.toMap(o -> o[0], o -> o[1]));
+		} catch (IllegalStateException e) {
+			System.err.println("Duplicate embedded argument(s) detected, aborting");
+			result = null;
+		}
+		return result;
+	}
+
 	// contains no constructor nor logic to discover unknown flags
 	public void parse(String[] args) {
 		List<String> regularArgs = new ArrayList<>();
-
+		// TODO: recognize special args like k8-style "-apply" [filename]
+		// TODO: add a warning that -apply only work with a file argument
 		for (int n = 0; n < args.length; ++n) {
+			String name = null;
+			String value = null;
 			if (args[n].charAt(0) == '-') {
-				String name = args[n].replaceFirst("-", "");
-				String value = null;
+				name = args[n].replaceFirst("-", "");
+				value = null;
 				// remove the dash
 				if (debug) {
 					System.err.println("Examine: " + name);
 				}
-				if (flagsWithValues.contains(name) && n < args.length - 1
-						&& !args[n + 1].matches("^-")) {
-					String data = args[++n];
+				if (flagsWithValues.contains(name) && n < args.length - 1 && !args[n + 1].matches("^-")) {
 					// https://www.baeldung.com/java-case-insensitive-string-matching
-					value = data.matches("(?i)^env:[a-z_0-9]+")
-							? System.getenv(data.replaceFirst("(?i)^env:", "")) : data;
+					String data = args[++n];
 
-					if (debug) {
-						if (data.matches("(?i)^env:[a-z_0-9]+")) {
+					// https://www.baeldung.com/java-case-insensitive-string-matching
+					if (data.matches("(?i)^env:[a-z_0-9]+")) {
+						value = System.getenv(data.replaceFirst("(?i)^env:", ""));
+						if (debug) {
 							System.err.println("Evaluate value for: " + name + " = " + value);
+						}
+					} else if (data.matches("(?i)^@[a-z_0-9.]+")) {
+						String datafilePath = Paths.get(System.getProperty("user.dir"))
+								.resolve(data.replaceFirst("^@", "")).toAbsolutePath().toString();
+						if (debug) {
+							System.err.println("Reading value for: " + name + " from " + datafilePath);
+						}
+						try {
+							value = readFile(datafilePath, Charset.forName("UTF-8")).replaceAll(" *\\r?\\n *", ",");
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
 
-						} else {
+					} else {
+						value = data;
+						if (debug) {
 							System.err.println("Collect value for: " + name + " = " + value);
 						}
 					}
@@ -114,8 +149,7 @@ public class CommandLineParser {
 	// Example data:
 	// -argument "{count:0, type:navigate, size:100, flag:true}"
 	// NOTE: not using org.json to reduce size
-	public Map<String, String> extractExtraArgs(String argument)
-			throws IllegalArgumentException {
+	public Map<String, String> extractExtraArgs(String argument) throws IllegalArgumentException {
 
 		final Map<String, String> extraArgData = new HashMap<>();
 		argument = argument.trim().substring(1, argument.length() - 1);
@@ -138,4 +172,8 @@ public class CommandLineParser {
 		return extraArgData;
 	}
 
+	static String readFile(String path, Charset encoding) throws IOException {
+		byte[] encoded = Files.readAllBytes(Paths.get(path));
+		return new String(encoded, encoding);
+	}
 }
