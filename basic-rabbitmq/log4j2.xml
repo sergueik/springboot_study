@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-<Configuration status="WARN" strict="true">
+<Configuration status="WARN">
   <!-- https://logging.apache.org/log4j/2.x/manual/migration.html -->
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
@@ -10,23 +10,23 @@
     <File name="RootFileLogger" fileName="logs/Common.log" append="true">
       <PatternLayout pattern="%-5p %d{yyyy-MM-dd HH:mm:ss} %F [%c{1}] - [%M] - %m%n"/>
     </File>
-    <MyAppender name="Rabbitmq" class="example.appenders.RabbitMQAppender">
-      <param name="identifier" value="identifier"/>
-      <param name="host" value="localhost"/>
-      <param name="port" value="5672"/>
-      <param name="username" value="guest"/>
-      <param name="password" value="guest"/>
-      <param name="virtualHost" value="/"/>
-      <param name="exchange" value="log4j22-exchange"/>
-      <param name="type" value="direct"/>
-      <param name="durable" value="false"/>
-      <param name="queue" value="log4j2-queue"/>
-      <param name="routingKey" value=""/>
-      <layout class="example.layouts.JSONLayout">
-        <param name="index" value="logging"/>
-        <param name="type" value="errors"/>
-      </layout>
-    </MyAppender>
+    <AMQP name="Rabbitmq" class="example.appenders.RabbitMQAppender">
+        <param name="identifier" value="identifier"/>
+        <param name="host" value="localhost"/>
+        <param name="port" value="5672"/>
+        <param name="username" value="guest"/>
+        <param name="password" value="guest"/>
+        <param name="virtualHost" value="/"/>
+        <param name="exchange" value="log4j22-exchange"/>
+        <param name="type" value="direct"/>
+        <param name="durable" value="false"/>
+        <param name="queue" value="log4j2-queue"/>
+        <param name="routingKey" value=""/>
+        <layout class="example.layouts.JSONLayout">
+            <param name="index" value="logging" />
+            <param name="type" value="errors" />
+        </layout>
+    </AMQLP>
     <RollingFile name="AppFileLogger" fileName="logs/App.log" append="true" filePattern="logs/App.%i.log.gz" filePermissions="rw-rw-r--">
       <!-- Double hyphen within comment eror if placing unix file mask into comment.  Keep rw- for owner,group and other while inside the XML comment, then update accordingly after convertingto real attribute -->
       <!-- filePermissions="rw-rw-rw-" -->
