@@ -1,7 +1,6 @@
 ### Info
 
-This project contains minimal demo code of __log4j__ logging
-
+This project contains [minimal demo code of log4j example]
 ### Usage
 
 #### Testing Locally
@@ -13,7 +12,7 @@ java -Dlog4j.configuration=log4j.xml -cp /home/sergueik/.m2/repository/log4j/log
 ```
 * run standalone spring boot app
 ```sh
-mvn -Dlog4j.configuration=log4j.xml spring-boot:run
+mvn -Dlog4j.configuration=log4.xml spring-boot:run
 ```
 and check the messages in `logs/App.log` and to console:
 ```sh
@@ -33,9 +32,16 @@ curl http://localhost:8080/example?data=12345
 ```
 this will be logged:
 ```sh
-INFO  LogHelper - INFO: raw data: 123
-INFO  LogHelper - INFO: handler received: 123
 ```
+### Adding Rabbitmq
+* run standalone basic example
+```sh
+mvn compile
+
+java -Dlog4j.configuration=log4j.xml -cp /home/sergueik/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar:src/main/resources/example.rabbitmq-appender-0.1.0-SNAPSHOT.jar:/home/sergueik/.m2/repository/com/rabbitmq/amqp-client/5.8.0/amqp-client-5.8.0.jar:/home/sergueik/.m2/repository/org/slf4j/slf4j-log4j12/1.7.5/slf4j-log4j12-1.7.5.jar:/home/sergueik/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar:/home/sergueik/.m2/repository/org/json/json/20160810/json-20160810.jar:target/classes example.Basic
+```
+
+
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
