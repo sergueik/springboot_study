@@ -177,7 +177,11 @@ Caused by: java.sql.SQLSyntaxErrorException: Unknown database 'cardb'
  * netbeans spring jdbc mvc [example](https://github.com/hendrosteven/springmvc-jdbc-sample)
   * [JPA and JDBC SQL Generarion Logging](https://www.baeldung.com/sql-logging-spring-boot)
   * stackoverflow disscussion on possibility to see the generated SQL of [prepared statement](https://stackoverflow.com/questions/2382532/how-can-i-get-the-sql-of-a-preparedstatement)
-
+  * JDBC driver that logs all SQL queries [source repository](https://github.com/rbloom/jdbcLogDriver) - not deployed to Maven central or other public repository
+  * enable MySQL Query Log [on the server](https://stackoverflow.com/questions/6479107/how-to-enable-mysql-query-log)
+  * is it possible to get [SQL of a PreparedStatement](https://stackoverflow.com/questions/2382532/how-can-i-get-the-sql-of-a-preparedstatement)
+  * https://www.journaldev.com/2509/java-datasource-jdbc-datasource-example
+  * https://www.baeldung.com/spring-boot-configure-data-source-programmatic
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
