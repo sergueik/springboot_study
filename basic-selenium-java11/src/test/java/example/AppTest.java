@@ -1,34 +1,35 @@
 package example;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.*;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-import java.nio.file.Paths;
-import java.io.IOException;
-
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import java.util.concurrent.TimeUnit;
 
-public class App {
-
-	private static WebDriver driver;
-	private static final String chromeDriverPath = System.getProperty("chromeDriverPath",
-			Paths.get(System.getProperty("user.home")).resolve("Downloads").resolve("chromedriver").toAbsolutePath()
-					.toString());
-	private static String url = null;
+public class AppTest {
+	private WebDriver driver;
+	private static final String chromeDriverPath = System.getProperty("user.home") + "/Downloads/" + "chromedriver";
+	private static String url = "http://www.juliodelima.com.br/taskit";
 	private static final List<String> plugins_disabled = new ArrayList<>();
 	static {
 		plugins_disabled.add("Chrome PDF Viewer");
 	};
-	private static Map<String, Object> prefs = new HashMap<>();
 	private static final String downloadDirectory = System.getenv("DOWNLOAD_DIRECTORY");
+	private static Map<String, Object> prefs = new HashMap<>();
 	static {
 		prefs.put("profile.default_content_settings.popups", 0);
 		prefs.put("download.default_directory", downloadDirectory != null ? downloadDirectory : "/tmp");
@@ -39,17 +40,33 @@ public class App {
 		prefs.put("plugins.plugins_disabled", plugins_disabled);
 	};
 
-	public static void main(String[] args) throws InterruptedException, IOException {
-
+	@Before
+	public void setUp() {
+		// Open the visual driver
 		System.setProperty("webdriver.chrome.driver", chromeDriverPath);
 		ChromeOptions chromeOptions = new ChromeOptions();
-		for (String optionAgrument : (new String[] { "--headless", "--window-size=1200x800", "--no-sandbox",
-				"--remote-debugging-address=0.0.0.0", "--remote-debugging-port=9222", "--disable-gpu" })) {
-			chromeOptions.addArguments(optionAgrument);
-		}
 		chromeOptions.setExperimentalOption("prefs", prefs);
 		driver = new ChromeDriver(chromeOptions);
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+	}
+
+	@Test
+	public void downloadPDF() {
+		url = "http://www.africau.edu/images/default/sample.pdf";
+		driver.get(url);
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+		}
+		String downloadDirectoryUsed = downloadDirectory != null ? downloadDirectory : "/tmp";
+		File file = new File(downloadDirectoryUsed + "/" + "sample.pdf");
+		assertThat("download file expected to exist", file.exists(), is(true));
+		file = new File(downloadDirectoryUsed + "/" + "sample.pdf.crdownload");
+		assertThat("partially download file expected to exist", file.exists(), is(true));
+	}
+
+	@Test
+	public void testAddInformationOfUser() {
 		url = "http://www.juliodelima.com.br/taskit";
 		driver.get(url);
 		driver.findElement(By.linkText("Sign in")).click();
@@ -57,18 +74,18 @@ public class App {
 		WebElement formSignInBox = driver.findElement(By.id("signinbox"));
 
 		formSignInBox.findElement(By.name("login")).sendKeys("julio0001");
-
 		formSignInBox.findElement(By.name("password")).sendKeys("123456");
 
 		driver.findElement(By.linkText("SIGN IN")).click();
 
 		WebElement me = driver.findElement(By.className("me"));
-		String text = me.getText();
-		System.err.println(text);
-		url = "http://www.africau.edu/images/default/sample.pdf";
-		driver.get(url);
+		String textElementMe = me.getText();
+		assertEquals("Hi, Julio", textElementMe);
+	}
 
-		driver.close();
+	@After
+	public void tearDow() {
+		// Close the driver
 		driver.quit();
 	}
 }

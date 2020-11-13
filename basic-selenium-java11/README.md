@@ -6,12 +6,23 @@ Note, there is no testng  or jupiter suite on surefile in here, to improve chanc
 ### Usage
 * run locally the test
 ```sh
+rm /tmp/sample*
 mvn test
 ```
+Note: the file may not download fully:
+
+```sh
+/tmp/sample.pdf.crdownload
+```
+The test performs assertions that either fully or partially download file to be present, and one of the assertions will be failing.
 * run on developer machine in  standalone app
 ```sh
+mvn -Dmaven.test.skip=true  package
+rm -f /tmp/sample.pdf*
 java -jar target/example.java_selenium.jar
 ```
+* observe the file to be created (NOTE: the pdf dowload code is unstable)
+
 * compile and package jar on Centos JDK8 Docker container
 ```sh
 DOCKER_IMAGE=centos-jdk8-chrome
