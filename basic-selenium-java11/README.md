@@ -40,6 +40,24 @@ Oct 24, 2020 10:02:59 PM org.openqa.selenium.remote.ProtocolHandshake createSess
 INFO: Detected dialect: W3C
 Hi, Julio
 ```
+* inspect the dowloaded files
+```sh
+ID=$(docker container ls -a | grep $DOCKER_IMAGE | cut -f 1 -d ' ')
+docker start $ID; docker exec -it  $ID sh
+```
+followed by
+```sh
+find  / -iname '*pdf'
+```
+NOTE:
+
+the following will not work
+```sh
+echo $ID | xargs -IX docker exec -it  X sh
+```
+```sh
+the input device is not a TTY
+```
 * compile and package jar on Centos JDK11 Docker container (aio)
 ```sh
 DOCKER_IMAGE=centos-jdk11-chrome
@@ -54,6 +72,7 @@ docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
 docker run -it $DOCKER_IMAGE
 ```
 NOTE, the `chromium-driver` package installs binary `/usr/bin/chromedriver`. When this changes, update the `CMD` argument accordingly
+
 
 * compile and package jar on JDK11/Maven "builder" container and copy the jar into a searate Docker image with JDK 11 and chromium:
 ```sh
