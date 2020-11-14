@@ -17,22 +17,19 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
 
-import com.mongodb.DB;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoIterable;
 import com.mongodb.MongoClient;
 import org.bson.Document;
+
 public class BasicTest {
 
 	private static MongoClient mongoClient;
 
 	@Before
 	public void setUp() throws UnknownHostException {
-		try {
 
-			mongoClient = new MongoClient("localhost", 27717);
-
-		} catch (UnknownHostException ex) {
-			ex.printStackTrace();
-		}
+		mongoClient = new MongoClient("localhost", 27717);
 
 	}
 
@@ -43,32 +40,34 @@ public class BasicTest {
 
 	@Test
 	public void listDatabases() {
-		List<String> databases = mongoClient.getDatabaseNames();
+
+		MongoIterable<String> databases = mongoClient.listDatabaseNames();
 		assertThat(databases, notNullValue());
 		for (String dbName : databases) {
 			System.out.println("- Database: " + dbName);
 
-			DB db = mongoClient.getDB(dbName);
+			MongoDatabase db = mongoClient.getDatabase(dbName);
 			assertThat(db, notNullValue());
 
-			Set<String> collections = db.getCollectionNames();
+			MongoIterable<String> collections = db.listCollectionNames();
 			assertThat(collections, notNullValue());
-			if (collections.size() == 0){
+			if (!collections.iterator().hasNext()) {
 				System.out.println("No collections in: " + dbName);
 
 			} else {
-			for (String colName : collections) {
-				System.out.println("\t + Collection: " + colName);
+				for (String colName : collections) {
+					System.out.println("\t + Collection: " + colName);
+				}
 			}
-}
 		}
 
 	}
+
 	@Test
 	public void createDatabase() {
-String dbName = "myUserDb";
-			DB db = mongoClient.getDB(dbName);
-db.getCollection("agents").insertOne(new Document().append("name", "James"));
+		String dbName = "myUserDb";
+		MongoDatabase db = mongoClient.getDatabase(dbName);
+		db.getCollection("agents").insertOne(new Document().append("name", "James"));
 
 	}
 
