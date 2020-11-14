@@ -10,27 +10,51 @@ docker pull mvertes/alpine-mongo
 ```
 * run mongo standalone
 ```sh
-docker run -d --name 'mongo-service' -i 'mvertes/alpine-mongo'
+IMAGE='mvertes/alpine-mongo'
+CONTAINER=mongo-serviceo:14
+docker container prune -f
+# docker run -d --name $CONTAINER -i $IMAGE
+docker run -d --name $CONTAINER -p 27717:27017 -i $IMAGE
+```
+* alternatively
+```sh
+IMAGE=mongodb
+CONTAINER=mongo-service
+docker build -t $IMAGE -f Dockerfile.$IMAGE .
+docker container prune -f
+docker run -d --name $CONTAINER -p 27717:27017 -i $IMAGE
+docker logs $CONTAINER
+```
+* verify ports
+```sh
+netstat -ant | grep LISTEN | grep 27717
+```
+```sh
+tcp6       0      0 :::27717                :::*                    LISTEN
 ```
 * drop into mongo shell on the service container
 ```sh
-docker exec -it 'mongo-service' mongo
+docker exec -it $CONTAINER mongo
 ```
 * simply quit the shell
 ```sh
 > quit()
 ```
-### Test
-* configure Springboot `application.properties` to use default port `27017` on the node named `mongo`
+### Testing Plain Java Application in a Developer host
+
+### Testing SpringBoot Application in a Linked Docker Container
+
+* configure Springboot  `sping/src/main/resources/application.properties` to use default port `27017` on the node named `mongo`
 
 ```java
-mongo_host=mongo
+mongo_host=mongo-service
 mongo_db=mydb
 spring.data.mongodb.uri=mongodb://${mongo_host}:27017/${mongo_db}
 spring.data.mongo.repositories.enabled=true
 ```
 * package the app
 ```sh
+cd spring
 mvn clean package
 ```
 * build run the application node
@@ -190,13 +214,15 @@ docker image rm 'basic-mongo_app'
 ```
 
 ### Full Cleanup
-```
+
+```sh
 docker image ls | grep  mongo | awk '{print $3}' |xargs -IX docker image rm X -f 
 ```
 ### See Also
+
   * [original post](https://qna.habr.com/q/714443)(in Russian)
   * [custom code to sync wait for lagging containers](https://qna.habr.com/q/726237)(also in Russian, not considered the answer acceptable possibly too complex
   * Docker [variables](https://docs.docker.com/compose/environment-variables/)
 ### Author
- 
+  * https://github.com/trishagee/mongodb-getting-started 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
