@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
 
@@ -47,7 +48,6 @@ public class BasicTest {
 	private static String dbName = "myUserDb";
 
 	private static final Logger logger = Logger.getLogger(BasicTest.class);
-
 	@Before
 	public void setUp() {
 		ConnectionString connectionString = new ConnectionString(
