@@ -225,4 +225,12 @@ docker image ls | grep  mongo | awk '{print $3}' |xargs -IX docker image rm X -f
   * Docker [variables](https://docs.docker.com/compose/environment-variables/)
 ### Author
   * https://github.com/trishagee/mongodb-getting-started 
+  * https://www.baeldung.com/java-mongodb (plain)
+  * https://www.baeldung.com/spring-data-mongodb-guide
+  * https://www.codejava.net/java-se/jdbc/java-connecting-to-mongodb-database-examples
+  * https://github.com/BunnyAndOak0/MongoDB
+  * https://www.baeldung.com/java-mongodb-aggregations
+  * https://www.baeldung.com/queries-in-spring-data-mongodb
+  * https://mongodb.github.io/mongo-java-driver/3.9/driver/getting-started/quick-start/  
+
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -1,12 +1,11 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.mycompany.app</groupId>
-  <artifactId>app</artifactId>
+  <groupId>example</groupId>
   <packaging>jar</packaging>
-  <version>1.1-SNAPSHOT</version>
-  <name>app</name>
-  <url>http://maven.apache.org</url>
+  <version>0.3-SNAPSHOT</version>
+  <name>mongodb</name>
+  <artifactId>mongodb</artifactId>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <commons-exec.version>1.3</commons-exec.version>
@@ -14,8 +13,9 @@
     <commons-lang.version>2.6</commons-lang.version>
     <java.version>1.8</java.version> 
     <junit.version>4.12</junit.version>
+    <log4j.version>1.2.17</log4j.version>
     <mongo.version>2.12.1</mongo.version>
-    <mongo.version>3.9.1</mongo.version><!-- for org.bso.Document -->
+    <mongo.version>3.9.1</mongo.version>
     <bson.version>${mongo.version}</bson.version>
     <hamcrest-all.version>1.3</hamcrest-all.version>
     <hamcrest.version>1.3</hamcrest.version>
@@ -27,6 +27,11 @@
     <artifactId>bson</artifactId>
     <version>${bson.version}</version>
 </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
@@ -106,3 +111,4 @@
     </plugins>
   </build>
 </project>
+
