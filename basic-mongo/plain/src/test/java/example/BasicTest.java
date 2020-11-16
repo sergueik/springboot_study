@@ -1,4 +1,3 @@
-
 package example;
 
 import java.util.ArrayList;
@@ -10,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -80,11 +80,13 @@ public class BasicTest {
 		mongoClient = MongoClients.create(connectionString);
 	}
 
+	@Ignore
 	@Test
 	public void dummyTest() {
 		assertThat(true, is(true));
 	}
 
+	@Ignore
 	@Test
 	public void listDatabases() {
 
@@ -110,6 +112,7 @@ public class BasicTest {
 
 	}
 
+	@Ignore
 	@Test
 	public void createDocument() {
 		db = mongoClient.getDatabase(dbName);
@@ -117,6 +120,7 @@ public class BasicTest {
 				.insertOne(new Document().append("name", "James"));
 	}
 
+	@Ignore
 	@Test
 	public void insertManyDocuments() {
 		db = mongoClient.getDatabase(dbName);
@@ -148,6 +152,7 @@ public class BasicTest {
 	}
 
 	// http://www.java2s.com/example/java-api/com/mongodb/client/model/projections/fields-1-0.html
+	@Ignore
 	@Test
 	public void projections() {
 		db = mongoClient.getDatabase(dbName);
@@ -170,6 +175,7 @@ public class BasicTest {
 	// based on:
 	// https://examples.javacodegeeks.com/software-development/mongodb/java-mongodb-query-document-example/
 	// https://mongodb.github.io/mongo-java-driver/3.9/driver/getting-started/quick-start/
+	@Ignore
 	@Test
 	public void filterDocumentsTest() {
 		db = mongoClient.getDatabase(dbName);
@@ -183,6 +189,7 @@ public class BasicTest {
 	}
 
 	@SuppressWarnings("deprecation")
+	@Ignore
 	@Test
 	public void filterStaticBuilderTest() {
 		db = mongoClient.getDatabase(dbName);
@@ -198,6 +205,7 @@ public class BasicTest {
 		find.forEach(codeBlock);
 	}
 
+	@Ignore
 	@Test
 	public void findDocumentArgumentTest() {
 		db = mongoClient.getDatabase(dbName);
@@ -247,6 +255,7 @@ public class BasicTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void findByKey() {
 		db = mongoClient.getDatabase(dbName);
@@ -258,6 +267,7 @@ public class BasicTest {
 	}
 
 	@SuppressWarnings("serial")
+	@Ignore
 	@Test
 	public void findByDocumentArgument() {
 		db = mongoClient.getDatabase(dbName);
@@ -272,6 +282,29 @@ public class BasicTest {
 		find = collection.find(search, Document.class);
 		assertThat(find, notNullValue());
 		document = find.first();
+		assertThat(document, notNullValue());
+		logger.info(document.toJson());
+	}
+
+	@Test
+	public void findByExample() {
+		db = mongoClient.getDatabase(dbName);
+		collection = db.getCollection("agents");
+		collection.insertOne(new Document("name",
+				new Document("first", "James").append("last", "Bond")));
+		document = collection
+				.find(new Document("name.first", "James"), Document.class).first();
+		assertThat(document, notNullValue());
+		logger.info(document.toJson());
+
+		document = collection.find(new Document("name.first",
+				new Document("$regex", "^j.*").append("$options", "i"))).first();
+		assertThat(document, notNullValue());
+		logger.info(document.toJson());
+		document = collection
+				.find(new Document("name.first",
+						new Document("$regex", "^j.*").append("$options", "i")))
+				.projection(new Document("name", 1)).first();
 		assertThat(document, notNullValue());
 		logger.info(document.toJson());
 	}
