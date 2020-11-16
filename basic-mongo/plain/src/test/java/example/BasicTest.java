@@ -1,19 +1,24 @@
+
 package example;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
@@ -27,15 +32,23 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
+import com.mongodb.client.model.UpdateOptions;
+
+import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.UpdateResult;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.or;
 import static com.mongodb.client.model.Filters.and;
 
 import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Projections.fields;
 
+import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.apache.log4j.Logger;
 
 public class BasicTest {
@@ -45,9 +58,20 @@ public class BasicTest {
 	private static MongoCollection<Document> collection;
 	private static FindIterable<Document> find;
 	private static MongoCursor<Document> cursor;
+	private static Document document;
+	private static UpdateResult result;
+	private static Document search;
+	private static BasicDBObject basicDBObject;
+	private static ObjectId documentId;
 	private static String dbName = "myUserDb";
+	private static final Map<String, String> nameChange = new HashMap<>();
+	static {
+		nameChange.put("James", "Fred");
+		nameChange.put("Fred", "James");
+	};
 
 	private static final Logger logger = Logger.getLogger(BasicTest.class);
+
 	@Before
 	public void setUp() {
 		ConnectionString connectionString = new ConnectionString(
@@ -98,7 +122,7 @@ public class BasicTest {
 		db = mongoClient.getDatabase(dbName);
 		List<Document> list = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {
-			Document document = new Document();
+			document = new Document();
 			document.append("name", "name " + i).append("age", 20 + i).append(
 					"topics", Arrays.asList(new String[] { "music", "travel", "eat" }));
 			list.add(document);
@@ -112,7 +136,7 @@ public class BasicTest {
 		collection = db.getCollection("agents");
 		find = collection.find(new Document());
 		assertThat(find, notNullValue());
-		cursor = find.iterator();
+		cursor = find.sort(Sorts.ascending("name")).limit(2).iterator();
 		assertThat(cursor.hasNext(), is(true));
 		try {
 			while (cursor.hasNext()) {
@@ -130,7 +154,7 @@ public class BasicTest {
 		collection = db.getCollection("agents");
 		find = collection.find(new Document());
 		assertThat(find, notNullValue());
-		boolean excludeId = false;
+
 		cursor = find.projection(fields(include("name"), Projections.excludeId()))
 				.iterator();
 		assertThat(cursor.hasNext(), is(true));
@@ -153,7 +177,7 @@ public class BasicTest {
 		Bson filter = Filters.eq("name", "James");
 		find = collection.find(filter);
 		assertThat(find, notNullValue());
-		Document document = find.first();
+		document = find.first();
 		assertThat(document, notNullValue());
 		logger.info(document.toJson());
 	}
@@ -163,7 +187,7 @@ public class BasicTest {
 	public void filterStaticBuilderTest() {
 		db = mongoClient.getDatabase(dbName);
 		collection = db.getCollection("agents");
-		find = collection.find(and(eq("name", "James"), eq("name", "James")));
+		find = collection.find(or(eq("name", "James"), eq("name", "Fred")));
 
 		Block<Document> codeBlock = new Block<Document>() {
 			@Override
@@ -181,18 +205,75 @@ public class BasicTest {
 		find = collection
 				.find(new Document("age", new Document("$gte", 20).append("$lt", 30)));
 		assertThat(find, notNullValue());
-		Document document = find.first();
+		document = find.first();
 		assertThat(document, notNullValue());
 		logger.info(document.toJson());
+	}
+
+	// https://docs.mongodb.com/manual/reference/operator/query-comparison/
+	// https://docs.mongodb.com/manual/reference/operator/query/where/
+	@Test
+	public void updateDocumentTest() {
+		db = mongoClient.getDatabase(dbName);
+		collection = db.getCollection("agents");
+		List<Document> d1 = new ArrayList<>();
+		// com.mongodb.MongoWriteException: unknown top level operator: $eq
+		d1.add(new Document("name", new Document("$eq", "James")));
+		d1.add(new Document("name", new Document("$eq", "Fred")));
+		search = new Document();
+		search.put("$or", d1);
+		document = collection.find(search).first();
+		logger.info(document.toJson());
+		documentId = document.get("_id", ObjectId.class);
+		logger.info("Save id: " + documentId.toString());
+
+		String newName = nameChange
+				.get(collection.find(search).first().get("name", String.class));
+		result = collection.updateOne(search, Updates.set("name", newName),
+				new UpdateOptions().upsert(true).bypassDocumentValidation(true));
+		assertThat(result, notNullValue());
+		long count = result.getModifiedCount();
+		assertThat(count, anyOf(equalTo(1L), equalTo(0L)));
+		if (count > 0) {
+			// NOTE: getUpsertedId is not the id of the document
+			BsonValue id = result.getUpsertedId();
+			logger.info("upsertedid: " + id);
+			// convert to String to illustrate the recommended calling DSL
+			document = collection.find(eq("_id", new ObjectId(documentId.toString())))
+					.first();
+			assertThat(document, notNullValue());
+			assertThat(document.get("name", String.class), is(newName));
+			logger.info(document.toJson());
+		}
 	}
 
 	@Test
 	public void findByKey() {
 		db = mongoClient.getDatabase(dbName);
 		collection = db.getCollection("agents");
-		BasicDBObject basicDBObject = new BasicDBObject();
+
+		basicDBObject = new BasicDBObject();
 		basicDBObject.put("name", "James");
 		find = collection.find(basicDBObject, Document.class);
+	}
+
+	@SuppressWarnings("serial")
+	@Test
+	public void findByDocumentArgument() {
+		db = mongoClient.getDatabase(dbName);
+		collection = db.getCollection("agents");
+
+		search = new Document("$or", new ArrayList<Document>() {
+			{
+				add(new Document("name", new Document("$eq", "James")));
+				add(new Document("name", new Document("$eq", "Fred")));
+			}
+		});
+		find = collection.find(search, Document.class);
+		assertThat(find, notNullValue());
+		document = find.first();
+		assertThat(document, notNullValue());
+		logger.info(document.toJson());
 	}
 
 	// Query and Critera are defined in SpringData, not core MongoDB
