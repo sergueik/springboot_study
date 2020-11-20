@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import java.util.concurrent.TimeUnit;
+import org.openqa.selenium.net.PortProber;
 
 public class App {
 
@@ -49,6 +50,18 @@ public class App {
 		}
 		chromeOptions.setExperimentalOption("prefs", prefs);
 		driver = new ChromeDriver(chromeOptions);
+		// add code that was failing in JDK 8
+		//  the exception cannot be handled without upgrading
+		//  Exception in thread "main" java.lang.NoSuchMethodError: java.io.FileReader.<init>(Ljava/io/File;Ljava/nio/charset/Charset;)V
+		// at org.openqa.selenium.net.LinuxEphemeralPortRangeDetector.getInstance(LinuxEphemeralPortRangeDetector.java:36)
+		// at org.openqa.selenium.net.PortProber.<clinit>(PortProber.java:42)
+
+		try {
+			int port =  PortProber.findFreePort() ;
+			System.err.println("PortProber findFreePort -> " + port);
+		} catch (Exception e){
+			System.err.println("Exception: " + e.toString());
+		}
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 		url = "http://www.juliodelima.com.br/taskit";
 		driver.get(url);
