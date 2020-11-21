@@ -73,8 +73,18 @@ docker run -it $DOCKER_IMAGE
 ```
 NOTE, the `chromium-driver` package installs binary `/usr/bin/chromedriver`. When this changes, update the `CMD` argument accordingly
 
-
+* verify the project has JDK-sensitive code
+```sh
+mvn clean -Dmaven.test.skip=true package
+java -cp target/java_selenium-0.3.0-SNAPSHOT.jar:target/lib/* example.App
+```
+the exception cannot be handled
+```sh
+Exception in thread "main" java.lang.NoSuchMethodError: java.io.FileReader.<init>(Ljava/io/File;Ljava/nio/charset/Charset;)V
+```
 * compile and package jar on JDK11/Maven "builder" container and copy the jar into a searate Docker image with JDK 11 and chromium:
+
+
 ```sh
 DOCKER_IMAGE=alpine-jdk11-maven
 docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
@@ -85,7 +95,14 @@ DOCKER_IMAGE=alpine-jdk11-chromium
 docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
 docker run -it $DOCKER_IMAGE
 ```
-
+which logs
+```sh
+WARNING: Unable to find an exact match for CDP version 86, so returning the closest version found: 84
+Nov 20, 2020 2:57:34 AM org.openqa.selenium.devtools.CdpVersionFinder findNearestMatch
+INFO: Found CDP implementation for version 86 of 84
+PortProber findFreePort -> 9973
+Hi, Julio
+```
 ### See Also
 
   * https://www.cyberciti.biz/faq/10-alpine-linux-apk-command-examples/
