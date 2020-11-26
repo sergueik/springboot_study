@@ -558,6 +558,39 @@ find /tmp/hello_World/ -type f
 Then import version via Component menu. This will allow selection ofversions via process component dialog:
 ![Udeploy Selection Component Version](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/vertion_selection.png)
 
+### Snapshot Versions (Mockup data)
+
+```cmd
+mvn package
+java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshotVersions -data file:///c:/devloper/sergueik/springboot_study/basic-ucd/snapshot.json
+```
+or
+```sh
+java -cp target/example.ucdclient.jar:target/lib/* example.GetApplicationSnapshotVersions -data file://$(pwd)/snapshot.json
+```
+will produce the following output
+```sh
+Missing argument: user - using default
+Missing argument: password - using default
+Missing argument: server - using default https://localhost:8443
+  -
+  -
+  id: "172f1d3c-35f2-7aa1-a9a3-d2fb56513b79"
+  name: "version 1"
+  created: "1593195086676"
+  id: "172f1d3c-3650-453c-0c06-279d5cbb3582"
+  name: "Component 2"
+  description: "Component 2 description"
+ -
+  id: "172f1d3c-35f2-7aa1-a9a3-d2fb56513b79"
+  name: "version 2"
+  created: "1593195086676"
+  description: "version 2 description"
+  id: "172f1d3c-3650-453c-0c06-279d5cbb3582"
+  name: "Component 3"
+  description: "Component 3 description"
+```
+used the `snapshot.json` JSON file for snapshot mockup
 
 ### See Also
 
@@ -568,7 +601,7 @@ Then import version via Component menu. This will allow selection ofversions via
   * https://github.com/UrbanCode/Jenkins-Job-Manager-UCD
   * https://freddysf.wordpress.com/2013/12/05/urbancode-deploy-agent-based-source-config-types/
   * https://db.apache.org/derby/
-
+  * https://stedolan.github.io/jq/manual/#ConditionalsandComparisons
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
