@@ -43,19 +43,23 @@ public class Common {
 		user = commandLineParser.getFlagValue("user");
 		if (user == null) {
 			user = "admin";
-			System.err.println("Missing argument: user - using default");
+			if (debug)
+				System.err.println("Missing argument: user - using default");
 		}
 		password = commandLineParser.getFlagValue("password");
 		if (password == null) {
 			password = "admin";
-			System.err.println("Missing argument: password - using default");
+			if (debug)
+				System.err.println("Missing argument: password - using default");
 		}
 		server = commandLineParser.getFlagValue("server");
 
 		if (server == null) {
 			server = String.format("https://%s:8443",
 					getEnv("UCD_SERVER_IP", "localhost"));
-			System.err.println("Missing argument: server - using default " + server);
+			if (debug)
+				System.err
+						.println("Missing argument: server - using default " + server);
 		}
 	}
 

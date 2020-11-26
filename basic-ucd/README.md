@@ -24,6 +24,12 @@ uc-uDeployRestClient-1.0-SNAPSHOT.jar
 commons-codec-1.5.jar
 uc-jettison-1.0-SNAPSHOT.jar
 ```
+to enable intellisense in Eclipse add the following to the `.classpath`:
+```xml
+<classpathentry kind="lib" path="WEB-INF/lib/uc-uDeployRestClient-1.0-SNAPSHOT.jar"/>
+<classpathentry kind="lib" path="WEB-INF/lib/uc-jettison-1.0-SNAPSHOT.jar"/>
+```
+and `commons-codec` to `pom.xml`
 
 For UCD web interface see [Simple UrbanCode Deploy tutorial](https://www.ibm.com/support/knowledgecenter/SS4GSP_7.0.5/com.ibm.udeploy.tutorial.doc/topics/quickstart_abstract.html)
 
@@ -562,7 +568,7 @@ Then import version via Component menu. This will allow selection ofversions via
 
 ```cmd
 mvn package
-java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshotVersions -data file:///c:/devloper/sergueik/springboot_study/basic-ucd/snapshot.json
+java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshotVersions -data file:///c:/developer/sergueik/springboot_study/basic-ucd/snapshot.json
 ```
 or
 ```sh
@@ -570,10 +576,6 @@ java -cp target/example.ucdclient.jar:target/lib/* example.GetApplicationSnapsho
 ```
 will produce the following output
 ```sh
-Missing argument: user - using default
-Missing argument: password - using default
-Missing argument: server - using default https://localhost:8443
-  -
   -
   id: "172f1d3c-35f2-7aa1-a9a3-d2fb56513b79"
   name: "version 1"
@@ -592,6 +594,37 @@ Missing argument: server - using default https://localhost:8443
 ```
 used the `snapshot.json` JSON file for snapshot mockup
 
+### List and Confirm Snapshots (Mockup data)
+
+```cmd
+java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshots -data file:///c:/developer/sergueik/springboot_study/basic-ucd/snapshots.json -op list -snapshot "Snapshot 3"
+```
+```cmd
+Snapshot 1
+Snapshot 2
+Snapshot 3
+```
+
+```cmd
+java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshots -data file:///c:/developer/sergueik/springboot_study/basic-ucd/snapshots.json -op confirm -snapshot Snapshot_3 -application dummy
+```
+this will print
+
+```cmd
+Snapshot "Snapshot_3" is not valid
+Status: false
+```
+and set the exit status to 1
+```cmd
+
+java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshots -data file:///c:/developer/sergueik/springboot_study/basic-ucd/snapshots.json -op confirm -snapshot "Snapshot 3" -application dummy
+```
+this will print
+```cmd
+Snapshot "Snapshot 3" confirmed to be valid
+Status: true
+```
+and set the exit status to 0
 ### See Also
 
   * https://github.com/UrbanCode/UCD-Docker-Images
@@ -602,6 +635,7 @@ used the `snapshot.json` JSON file for snapshot mockup
   * https://freddysf.wordpress.com/2013/12/05/urbancode-deploy-agent-based-source-config-types/
   * https://db.apache.org/derby/
   * https://stedolan.github.io/jq/manual/#ConditionalsandComparisons
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

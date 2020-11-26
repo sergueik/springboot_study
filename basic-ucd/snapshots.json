@@ -1,0 +1,34 @@
+[
+  {
+    "id": "12345678-aaaa-eeee-123456789abc",
+    "name": "Snapshot 1",
+    "created": 1593195086676,
+    "description": "Snapshot 1 description",
+    "applicationId": "12345678-aaaa-bbbb-123456789abc",
+    "active": true,
+    "configLocked": false,
+    "versionLocked": false,
+    "user": "user@domain.com"
+  },
+  {
+    "id": "12345678-aaaa-eeee-123456789abc",
+    "name": "Snapshot 2",
+    "created": 1605805980277,
+    "description": "",
+    "applicationId": "12345678-aaaa-bbbb-123456789abc",
+    "active": true,
+    "configLocked": false,
+    "versionLocked": false,
+    "user": "user@domain.com"
+  },
+  {
+    "id": "12345678-aaaa-eeee-123456789abc",
+    "name": "Snapshot 3",
+    "created": 1605805980320,
+    "applicationId": "12345678-aaaa-bbbb-123456789abc",
+    "active": true,
+    "configLocked": false,
+    "versionLocked": false,
+    "user": "user@domain.com"
+  }
+]
