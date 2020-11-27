@@ -13,7 +13,9 @@ Compile and start appplication
 ```sh
 mvn clean spring-boot:run
 ```
-Note: on Linux to run the javaFx 2.x application one needs to [install javafx-java](https://stackoverflow.com/questions/9294646/javafx-2-as-a-maven-dependency) system-wide
+
+#### Note for Linux Platform
+On Linux to run the javaFx 2.x application one needs to [install javafx-java](https://stackoverflow.com/questions/9294646/javafx-2-as-a-maven-dependency) system-wide
 ```sh
 sudo apt-get install -qqy libopenjfx-java
 ```
@@ -40,15 +42,15 @@ sudo update-alternatives --install /usr/bin/mvn mvn /usr/lib/jvm/apache-maven-3.
 ```
 - on ubuntu or centos maven is bound to depend on `opendjk-jre`.
 The Oracle java can be downloaded from [Oracle Technology Network](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
-```
-mvn clean spring-boot:run
-```
 
 ### See also
-  *  [SpringBoot + JavaFx publication](https://habrahabr.ru/post/265511/) (in russian)
-  *  [javaFx spring day 1](https://dzone.com/articles/javafx-spring-day-1-–)
-  *  [javaFx Spring ay 3](https://dzone.com/articles/javafx-spring-day-3-–)
-  *  [javafx2 with spring](http://koenserneels.blogspot.com/2012/11/javafx-2-with-spring.html)
+
+  * Integration of JavaFX and Spring technologies on the client and server [demo roject](https://github.com/steveonjava/javafx-spring)
+  * [Javafx2 with spring](http://koenserneels.blogspot.com/2012/11/javafx-2-with-spring.html)
+  *  [SpringBoot + JavaFx publication](https://habrahabr.ru/post/265511) (in russian)
+  * [JavaFX and classic Spring](https://habr.com/ru/post/203960) (in Russian) 
+  * [JavaFX and classic Spring](https://habr.com/ru/post/348850) (in Russian) 
+  * [JavaFx + Spring Boot + Gradle: Project Setup guide and test](https://better-coding.com/javafx-spring-boot-gradle-project-setup-guide-and-test/)
 
 
 ### Author
