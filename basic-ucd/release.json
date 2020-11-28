@@ -1,0 +1,12 @@
+{
+  "versions":
+  [
+    {"component_one": "version_one"},
+    {"component_two": "version_two"},
+    {"component_three": "version_three"},
+    {"component_4": "version_4"},
+    {"component_5": "version_5"},
+    {"component_6": "version_6"}
+  ]
+}
+
