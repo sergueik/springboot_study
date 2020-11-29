@@ -42,6 +42,10 @@ public class GetApplicationSnapshotVersions extends Common {
 	private static int index;
 	private static int index2;
 
+	private static JSONArray jsonArray = null;
+	private static String text;
+	private static boolean debug = false;
+
 	private static String data;
 	private static String application;
 	private static String snapshot;
@@ -93,7 +97,7 @@ public class GetApplicationSnapshotVersions extends Common {
 			if (versionDataArray.length() == 0) {
 				continue;
 			}
-			for (index2 = 0; index2 != versionDataArray.length(); index2 ++) {
+			for (index2 = 0; index2 != versionDataArray.length(); index2++) {
 				versionData = versionDataArray.getJSONObject(index2);
 				for (String field : versionFields) {
 					try {
@@ -120,10 +124,6 @@ public class GetApplicationSnapshotVersions extends Common {
 			}
 		}
 	}
-
-	private static JSONArray jsonArray = null;
-	private static String text;
-	private static boolean debug = false;
 
 	public static String readRawJSON(String url) throws IOException {
 		InputStream is = new URL(url).openStream();

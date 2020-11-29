@@ -16,7 +16,7 @@ mv $TMP_FILE $RESULT_FILE
 SNAPSHOT_API_RESPONSE='snapshot.json'
 echo "Processing API response file ${SNAPSHOT_API_RESPONSE}"
 
-SNAPSHOT_COMPONENT_NAMES=($(jq '.[]|.name' $SNAPSHOT_API_RESPONSE|jq -cr '.'))
+SNAPSHOT_COMPONENT_NAMES=($(jq -cr '.[]|.name' $SNAPSHOT_API_RESPONSE))
 RESULT_FILE='snapshot_components.txt'
 echo "All snapshot components in ${RESULT_FILE}"
 (
@@ -24,7 +24,7 @@ for NAME in "${SNAPSHOT_COMPONENT_NAMES[@]}"; do echo $NAME; done
 ) |sort|tee $TMP_FILE >/dev/null
 mv $TMP_FILE $RESULT_FILE
 # component names with embedded desiredVersions document
-VERSIONED_COMPONENT_NAMES=($(jq '.[]|select( .desiredVersions|length == 1)|.name' $SNAPSHOT_API_RESPONSE|jq -cr '.'))
+VERSIONED_COMPONENT_NAMES=($(jq -cr '.[]|select( .desiredVersions|length == 1)|.name' $SNAPSHOT_API_RESPONSE))
 RESULT_FILE='versioned_components.txt'
 echo "Versioned components in ${RESULT_FILE}"
 
@@ -35,7 +35,7 @@ for NAME in "${VERSIONED_COMPONENT_NAMES[@]}"; do echo $NAME; done
 mv $TMP_FILE $RESULT_FILE
 
 # 0 for version-less components
-VERSIONLESS_COMPONENT_NAMES=($(jq '.[]|select( .desiredVersions|length == 0)|.name' $SNAPSHOT_API_RESPONSE|jq -cr '.'))
+VERSIONLESS_COMPONENT_NAMES=($(jq -cr '.[]|select( .desiredVersions|length == 0)|.name' $SNAPSHOT_API_RESPONSE))
 
 # https://stackabuse.com/array-loops-in-bash/
 # https://tldp.org/LDP/abs/html/subshells.html
