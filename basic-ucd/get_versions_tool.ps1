@@ -91,7 +91,7 @@ $snapshots = get-content -path $SNAPSHOTS_API_RESPONSE | convertfrom-json
 
 $snapshot_names = @()
 $snapshots | foreach-object {
-	$snapshot = $_
+    $snapshot = $_
     if ($debug) {
       if ($cnt -eq 1 ){
         write-output $snapshot| get-member -type NoteProperty
@@ -106,20 +106,22 @@ write-output $snapshot_names
 # https://stackoverflow.com/questions/27951561/use-invoke-webrequest-with-a-username-and-password-for-basic-authentication-on-t
 <#
 $cred = get-Credential
-Invoke-WebRequest -Uri 'https://whatever' -ContentType 'text/json' -Credential $cred
-$user = 'user'
+$BASE_URL = 'http://localhost:8443'
+# NOTE: not really REST API
+Invoke-WebRequest -Uri "$BASE_URL/rest/deploy/application/${APPLICATION}/snapshots/false" -ContentType 'text/json' -Credential $cred
+$username = 'user'
 
-$pass = 'pass'
+$password = 'pass'
 
-$pair = "$($user):$($pass)"
+$pair = "${username}:${password}"
 
 $encodedCreds = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes($pair))
 
-$basicAuthValue = "Basic $encodedCreds"
+$basic_auth = "Basic $encodedCreds"
 
 $Headers = @{
-    Authorization = $basicAuthValue
+    Authorization = $basic_auth
 }
 
-Invoke-WebRequest -Uri 'https://whatever' -ContentType 'text/json' -Headers $Headers
+Invoke-WebRequest -Uri "$BASE_URL/cli/snapshot/getSnapshotVersions?application=${APPLICATION}&snapshot=${SNAPSHOT}" -ContentType 'text/json' -Headers $Headers
 #>

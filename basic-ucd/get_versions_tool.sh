@@ -13,6 +13,16 @@ for NAME in "${RELEASE_COMPONENT_NAMES[@]}"; do echo $NAME; done
 ) |sort|tee $TMP_FILE >/dev/null
 mv $TMP_FILE $RESULT_FILE
 
+# read -sp "Enter user: " USERNAME
+# read -sp "Enter password: " PASSWORD
+# AUTHENTICATION="-u $USERNAME:$PASSWORD" 
+# BASE_URL="http://localhost:8443"
+# curl -k $AUTHENTICATION "$BASE_URL/rest/deploy/application/${APPLICATION}/snapshots/false" | jq '.' | tee $TMP_FILE > /dev/null
+SNAPSHOTS_API_RESPONSE='snapshots.json'
+echo "Processing API response file ${SNAPSHOTS_API_RESPONSE}"
+
+
+# curl -k $AUTHENTICATION "$BASE_URL/cli/snapshot/getSnapshotVersions?application=${APPLICATION}&snapshot=${SNAPSHOT}" | jq '.' | tee $TMP_FILE > /dev/null
 SNAPSHOT_API_RESPONSE='snapshot.json'
 echo "Processing API response file ${SNAPSHOT_API_RESPONSE}"
 
@@ -50,11 +60,10 @@ mv $TMP_FILE $RESULT_FILE
 echo "Check of release components missing from snapshot"
 RESULT_FILE='snapshot_components.txt'
 (
-for NAME in "${RELEASE_COMPONENT_NAMES[@]}";
-do
-if ! grep -q $NAME $RESULT_FILE; then
-  echo $NAME
-fi
+for NAME in "${RELEASE_COMPONENT_NAMES[@]}"; do
+  if ! grep -q $NAME $RESULT_FILE; then
+    echo $NAME
+  fi
 done
 ) |sort|tee $TMP_FILE >/dev/null
 RESULT_FILE='check1.txt'
@@ -65,11 +74,10 @@ cat $RESULT_FILE
 echo "Check of release components with missing snapshot versions"
 RESULT_FILE='versionless_components.txt'
 (
-for NAME in "${RELEASE_COMPONENT_NAMES[@]}";
-do
-if grep -q $NAME $RESULT_FILE; then
-  echo $NAME
-fi
+for NAME in "${RELEASE_COMPONENT_NAMES[@]}"; do
+  if grep -q $NAME $RESULT_FILE; then
+    echo $NAME
+  fi
 done
 ) |sort|tee $TMP_FILE >/dev/null
 RESULT_FILE='check2.txt'
@@ -80,11 +88,10 @@ cat $RESULT_FILE
 echo "Check of release components with existing snapshot versions"
 RESULT_FILE='versioned_components.txt'
 (
-for NAME in "${RELEASE_COMPONENT_NAMES[@]}";
-do
-if grep -q $NAME $RESULT_FILE; then
-  echo $NAME
-fi
+for NAME in "${RELEASE_COMPONENT_NAMES[@]}"; do
+  if grep -q $NAME $RESULT_FILE; then
+    echo $NAME
+  fi
 done
 ) |sort|tee $TMP_FILE >/dev/null
 RESULT_FILE='check3.txt'
