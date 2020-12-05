@@ -58,7 +58,7 @@ public void downloadPDF() {
 }
 ```
 ```sh
-docker run -e DOWNLOAD_DIRECTORY=/tmp -it -v "$PWD/demo.selenium":/demo -w /demo $IMAGE mvn clean test ;  CONTAINER=$(docker container ls -a |grep 'basic-maven-chromium' | head -1 | cut -f1 -d ' '); docker container start $CONTAINER;docker exec -it $CONTAINER sh -c "find / -iname '*pdf' 2>/dev/null"
+docker run -e DOWNLOAD_DIRECTORY=/tmp -it -v "$PWD/demo.selenium":/demo -w /demo $IMAGE mvn clean test ;  CONTAINER=$(docker container ls -a |grep $IMAGE | head -1 | cut -f1 -d ' '); docker container start $CONTAINER;docker exec -it $CONTAINER sh -c "find / -iname '*pdf' 2>/dev/null"
 ```
 ```sh
 fe728cfc1b7e

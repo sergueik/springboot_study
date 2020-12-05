@@ -46,6 +46,9 @@ public class ChromiumBrowserTest {
 	@Before
 	public void setUp() {
 		System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
+		// https://stackoverflow.com/questions/55844788/how-to-fix-severe-bind-failed-cannot-assign-requested-address-99-while
+		System.setProperty("webdriver.chrome.whitelistedIps", "");
+
 		ChromeOptions options = new ChromeOptions().setHeadless(true);
 		// NOTE: org.openqa.selenium.WebDriverException:
 		// unknown error: Chrome failed to start: exited abnormally.
