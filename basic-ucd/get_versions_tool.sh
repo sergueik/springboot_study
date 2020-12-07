@@ -21,7 +21,7 @@ mv $TMP_FILE $RESULT_FILE
 SNAPSHOTS_API_RESPONSE='snapshots.json'
 echo "Processing API response file ${SNAPSHOTS_API_RESPONSE}"
 
-
+# TODO: use --data-urlencode
 # curl -k $AUTHENTICATION "$BASE_URL/cli/snapshot/getSnapshotVersions?application=${APPLICATION}&snapshot=${SNAPSHOT}" | jq '.' | tee $TMP_FILE > /dev/null
 SNAPSHOT_API_RESPONSE='snapshot.json'
 echo "Processing API response file ${SNAPSHOT_API_RESPONSE}"

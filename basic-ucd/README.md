@@ -157,9 +157,11 @@ Enter the home directory for the JRE/JDK that the new server or already installe
 [echo] Enter the database type to use. [Default: derby]
 [echo] Enter the database username. [Default: ibm_ucd]
 [echo] Enter the database password. [Default: password]
-
-
-``` 
+```
+After a long runnning install process eventually culminated with
+```sh
+INFO  main com.urbancode.ds.UDeployServer - IBM UrbanCode Deploy server version 6.2.7.1.960481 started.
+```
 May need to enter if there is no progess visible in the console
 first an iteractive login and password change is required
 ```sh
@@ -211,20 +213,24 @@ then bind it to the Server
 
 ```sh
 SERVER_ID=$( docker container ls -a| grep $SERVER_NAME | awk '{print $1}')
+docker ps | grep $SERVER_ID
+```
+if not shown as running, start it
+```sh
 docker start $SERVER_ID
 docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $SERVER_ID
 ```
-alternaively,
+alternaively (`/sbin/ip` may actually be unavailable on ucd-server),
 ```sh
-docker exec -t $ID /bin/sh -c '/sbin/ip address show eth0 |grep inet'
+docker exec -t $SERVER_ID /bin/sh -c '/sbin/ip address show eth0 |grep inet'
 ```
 or
 ```sh
-docker exec -t $ID /bin/sh -c '/sbin/ifconfig eth0|grep inet'
+docker exec -t $SERVER_ID /bin/sh -c '/sbin/ifconfig eth0|grep inet'
 ```
 or
 ```sh
-docker inspect $ID | jq '.[]|.NetworkSettings.Networks.bridge.IPAddress'
+docker inspect $SERVER_ID | jq -r '.[]|.NetworkSettings.Networks.bridge.IPAddress'
 ```
 
 * export the value manually (temporarily)
@@ -232,7 +238,7 @@ docker inspect $ID | jq '.[]|.NetworkSettings.Networks.bridge.IPAddress'
 ```sh
 export UCD_SERVER_IP=172.17.0.2
 ```
-to examine the earlier launched agent, e.g. to inspect nstalled jars, start it and launch shell there
+to examine the earlier launched agent, e.g. to inspect installed jars, start it and launch shell there
 ```sh
 docker run -d $CLIENT_IMAGE
 CLIENT_ID=$( docker container ls -a| grep $CLIENT_IMAGE | awk '{print $1}')
@@ -241,6 +247,10 @@ if it is the first time it is run,
 ```sh
 docker logs $CLIENT_ID
 docker exec -it $CLIENT_ID sh
+```
+there
+```sh
+hostname -i
 ```
 otherwise
 ```sh
@@ -334,13 +344,68 @@ these jars can be used in custom scripting (there isn't much)
 * otherwise just restart it
 ```sh
 export UCD_SERVER_IP=172.17.0.2
-docker prune -f
-docker run -d --add-host="ucd-server:$UCD_SERVER_IP" -t $CLIENT_IMAGE
+docker stop $CLIENT_ID
+# docker prune -f
+docker run -d  --name 'ucd_agent' --add-host="ucd-server:$UCD_SERVER_IP" -t $CLIENT_IMAGE
 ```
 * open server `https://172.17.0.2:8443` in browser
 and observe agent (`agent-c0336485ef9d`) discovered
 ```sh
-curl -k https://admin:admin@localhost:8443/rest/resource/resource 2>/dev/null| jq '.'
+curl -k -u admin:admin https://172.17.0.2:8443/rest/resource/resource | \
+jq -cr '.[]|select(.description == "Agent")|.name'
+```
+this will give:
+```text
+agent-09fcc2c48575
+```
+
+or inspect agent properties
+```sh
+RESOURCE_PATH=/TEST/agent-09fcc2c48575
+curl -X GET -k -u admin:admin https://172.17.0.2:8443/cli/resource/getProperties?resource=$RESOURCE_PATH| jq '.'
+```
+- this is assuming some properties and components were added to that agent:
+
+![IBM Urbancode Udeploy Agent Properties](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/agent_properties.png)
+```json
+[
+  {
+    "id": "1763af4e-e018-d41c-0aa4-5220b78d0710",
+    "name": "property_name_1",
+    "value": "value_1",
+    "description": "",
+    "secure": false
+  }
+]
+```
+* or just the value:
+```sh
+ curl -X GET -k -u admin:admin "https://172.17.0.2:8443/cli/resource/getProperty?resource=$RESOURCE_PATH&name=property_name_1"
+```
+```text
+value_1
+```
+* to see components
+```sh
+curl -k -u admin:admin "https://172.17.0.2:8443/cli/resource?parent=$RESOURCE_PATH" | jq -r '.[]|"name = " + .name + "\n" + "path = " + .path'
+```
+this will give:
+
+```text
+name = component_1
+path = /TEST/agent-09fcc2c48575/component_1
+name = component_2
+path = /TEST/agent-09fcc2c48575/component_2
+name = component_3
+path = /TEST/agent-09fcc2c48575/component_3
+```
+this matches the configured components:
+![IBM Urbancode Udeploy Agent Properties](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/agent_components.png)
+
+* one can also remove those component "resources" in a REST-like fashion:
+
+```sh
+curl -k -u admin:admin -X DELETE "https://172.17.0.2:8443/cli/resource/deleteResource?resource=/TEST/agent-09fcc2c48575/component_1"
 ```
 or (may not work)
 
