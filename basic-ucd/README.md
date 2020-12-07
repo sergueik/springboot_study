@@ -241,7 +241,7 @@ export UCD_SERVER_IP=172.17.0.2
 to examine the earlier launched agent, e.g. to inspect installed jars, start it and launch shell there
 ```sh
 docker run -d $CLIENT_IMAGE
-CLIENT_ID=$( docker container ls -a| grep $CLIENT_IMAGE | awk '{print $1}')
+C=$( docker container ls -a| grep $CLIENT_IMAGE | awk '{print $1}')
 ```
 if it is the first time it is run,
 ```sh
@@ -359,14 +359,11 @@ this will give:
 agent-09fcc2c48575
 ```
 
-or inspect agent properties
+or (assuming some properties and components were added to that agent):
 ```sh
 RESOURCE_PATH=/TEST/agent-09fcc2c48575
 curl -X GET -k -u admin:admin https://172.17.0.2:8443/cli/resource/getProperties?resource=$RESOURCE_PATH| jq '.'
 ```
-- this is assuming some properties and components were added to that agent:
-
-![IBM Urbancode Udeploy Agent Properties](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/agent_properties.png)
 ```json
 [
   {
@@ -378,32 +375,31 @@ curl -X GET -k -u admin:admin https://172.17.0.2:8443/cli/resource/getProperties
   }
 ]
 ```
-* or just the value:
+and
 ```sh
  curl -X GET -k -u admin:admin "https://172.17.0.2:8443/cli/resource/getProperty?resource=$RESOURCE_PATH&name=property_name_1"
 ```
 ```text
 value_1
 ```
-* to see components
 ```sh
-curl -k -u admin:admin "https://172.17.0.2:8443/cli/resource?parent=$RESOURCE_PATH" | jq -r '.[]|"name = " + .name + "\n" + "path = " + .path'
+curl -k -u admin:admin "https://172.17.0.2:8443/cli/resource?parent=$RESOURCE_PATH" | jq -r '.[]|"name= " +.name + "\n" + "path= " + .path'
 ```
 this will give:
 
 ```text
-name = component_1
-path = /TEST/agent-09fcc2c48575/component_1
-name = component_2
-path = /TEST/agent-09fcc2c48575/component_2
-name = component_3
-path = /TEST/agent-09fcc2c48575/component_3
+name= component_1
+path= /TEST/agent-09fcc2c48575/component_1
+name= component_2
+path= /TEST/agent-09fcc2c48575/component_2
+name= component_3
+path= /TEST/agent-09fcc2c48575/component_3
 ```
-this matches the configured components:
-![IBM Urbancode Udeploy Agent Properties](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/agent_components.png)
+```
+curl -k -u admin:admin "https://172.17.0.2:8443/cli/resource?parent=$RESOURCE_PATH" | jq '.
+```
 
-* one can also remove those component "resources" in a REST-like fashion:
-
+one can also remove those resources in a REST fashion:
 ```sh
 curl -k -u admin:admin -X DELETE "https://172.17.0.2:8443/cli/resource/deleteResource?resource=/TEST/agent-09fcc2c48575/component_1"
 ```
@@ -586,110 +582,20 @@ reveal the hoerarchy of resources:
       "impersonationUseSudo": false,
       "impersonationForce": false,
       "type": "subresource",
-      "status": "ONLINE",
-      "hasAgent": true,
-      "tags": []
-    },
-    {
-      "id": "172f1c98-4dda-04c7-e61c-92b6d9e2a9d6",
-      "securityResourceId": "172f1c98-4bb6-5693-ef34-7d91c929466d",
-      "name": "Dummy Component",
-      "path": "/TEST/agent-2181a1920431/Dummy Component",
-      "active": true,
-      "description": "",
-      "inheritTeam": true,
-      "discoveryFailed": false,
-      "prototype": false,
-      "impersonationPassword": "****",
-      "impersonationUseSudo": false,
-      "impersonationForce": false,
-      "type": "subresource",
-      "status": "ONLINE",
-      "hasAgent": true,
-      "tags": []
-    }
-  ]
-}
-```
+    $ial run of Udeply server is remarkably time consuming and the docker image isabout to exprie Feb 11 2021.
+There is no out of the box say to preserve
 
-![IBM Urbancode Udeploy Server Example](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/configured_agent_capture.png)
-
-
-On the agent create  directory to mock up the version import functionality:
+* Create a [backup](https://docs.docker.com/engine/reference/commandline/save/)
 ```sh
-export IMAGE='ibmcom/ucda'
-ID=$( docker container ls | grep $IMAGE | awk '{print $1}')
-docker exec -it $ID sh
+docker start $CLIENT_ID $SERVER_ID
+CLIENT_IMAGE=$(docker container inspect $CLIENT_ID | jq -r '.[0]|.Name')
+SERVER_IMAGE=$(docker container inspect $SERVER_ID | jq -r '.[0]|.Name')
 ```
-
 ```sh
-for V in 1 2 3 ; do mkdir -p /tmp/hello_World/$V.0 ; touch /tmp/hello_World/$V.0/data.txt; done
-find /tmp/hello_World/ -type f
+docker export --output ucd_agent.tar "$CLIENT_IMAGE"
+docker export -o ucd_server.tar $SERVER_ID
+gzip -9 ucd_agent.tar ucd_server.tar
 ```
-Then import version via Component menu. This will allow selection ofversions via process component dialog:
-![Udeploy Selection Component Version](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/vertion_selection.png)
-
-### Snapshot Versions (Mockup data)
-
-```cmd
-mvn package
-java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshotVersions -data file:///c:/developer/sergueik/springboot_study/basic-ucd/snapshot.json
-```
-or
-```sh
-java -cp target/example.ucdclient.jar:target/lib/* example.GetApplicationSnapshotVersions -data file://$(pwd)/snapshot.json
-```
-will produce the following output
-```sh
-  -
-  id: "172f1d3c-35f2-7aa1-a9a3-d2fb56513b79"
-  name: "version 1"
-  created: "1593195086676"
-  id: "172f1d3c-3650-453c-0c06-279d5cbb3582"
-  name: "Component 2"
-  description: "Component 2 description"
- -
-  id: "172f1d3c-35f2-7aa1-a9a3-d2fb56513b79"
-  name: "version 2"
-  created: "1593195086676"
-  description: "version 2 description"
-  id: "172f1d3c-3650-453c-0c06-279d5cbb3582"
-  name: "Component 3"
-  description: "Component 3 description"
-```
-used the `snapshot.json` JSON file for snapshot mockup
-
-### List and Confirm Snapshots (Mockup data)
-
-```cmd
-java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshots -data file:///c:/developer/sergueik/springboot_study/basic-ucd/snapshots.json -op list -snapshot "Snapshot 3"
-```
-```cmd
-Snapshot 1
-Snapshot 2
-Snapshot 3
-```
-
-```cmd
-java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshots -data file:///c:/developer/sergueik/springboot_study/basic-ucd/snapshots.json -op confirm -snapshot Snapshot_3 -application dummy
-```
-this will print
-
-```cmd
-Snapshot "Snapshot_3" is not valid
-Status: false
-```
-and set the exit status to 1
-```cmd
-
-java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshots -data file:///c:/developer/sergueik/springboot_study/basic-ucd/snapshots.json -op confirm -snapshot "Snapshot 3" -application dummy
-```
-this will print
-```cmd
-Snapshot "Snapshot 3" confirmed to be valid
-Status: true
-```
-and set the exit status to 0
 ### See Also
 
   * https://github.com/UrbanCode/UCD-Docker-Images
