@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -21,7 +23,7 @@ import com.urbancode.ud.client.ResourceClient;
 /*
  * */
 public class GetResourceChildren extends Common {
-	private static final List<String> fields = Arrays.asList("id", "name",
+	private static final List<String> fields = Arrays.asList("id", "name", "type",
 			"description");
 	private static final List<String> fields2 = Arrays.asList("name",
 			"description", "value");
@@ -30,7 +32,7 @@ public class GetResourceChildren extends Common {
 
 	private static String env;
 
-	private static ResourceClient resourceClient;
+	private static CustomResourceClient resourceClient;
 	private static ComponentClient componentClient;
 	private static AgentClient agentClient;
 	private static JSONObject data;
@@ -56,7 +58,7 @@ public class GetResourceChildren extends Common {
 
 		componentClient = new ComponentClient(new URI(server), user, password);
 		agentClient = new AgentClient(new URI(server), user, password);
-		resourceClient = new ResourceClient(new URI(server), user, password);
+		resourceClient = new CustomResourceClient(new URI(server), user, password);
 
 		if (resourceClient == null || agentClient == null
 				|| componentClient == null) {
@@ -167,5 +169,24 @@ public class GetResourceChildren extends Common {
 				}
 			}
 		}
+	}
+
+	public static class CustomResourceClient extends ResourceClient {
+		public CustomResourceClient(URI url, String clientUser,
+				String clientPassword) {
+			super(url, clientUser, clientPassword);
+		}
+
+		public JSONArray getProperties(String resource)
+				throws IOException, JSONException {
+
+			// NOTE: invokeMethod is protected in UDRestClient
+			// HttpResponse response = invokeMethod(method);
+			// String body = getBody((CloseableHttpResponse) invokeMethod(method));
+			return new JSONArray(
+					getBody((CloseableHttpResponse) invokeMethod(new HttpGet(url
+							+ "/cli/resource/" + encodePath(resource) + "/getProperties"))));
+		}
+
 	}
 }
