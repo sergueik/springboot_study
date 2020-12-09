@@ -352,13 +352,22 @@ docker run -d  --name 'ucd_agent' --add-host="ucd-server:$UCD_SERVER_IP" -t $CLI
 and observe agent (`agent-c0336485ef9d`) discovered
 ```sh
 curl -k -u admin:admin https://172.17.0.2:8443/rest/resource/resource | \
-jq -cr '.[]|select(.description == "Agent")|.name'
+jq -cr '.[]|select(.type == "agent")|.name'
 ```
 this will give:
 ```text
 agent-09fcc2c48575
 ```
+ for subsequent `/rest/resource/resource` or `/` calls, extract `path` instead of the`name`. Usually the `path` would include the bredcrump but that confguration is installation-specific.
+For real life scenation the jq  querying willbe used:
+```sh
+curl -k "$AUTHENTICATION" $UCD_SERVER/cli/resource/?parent=$ENVIRONMENT_ID" | tee $TEMP_FILE 1>/dev/null
+jq -cr '.[]|select(.type="agent")|select(.name|test("$HOSTNAME"))|.name' < TEMP_FILE | while read DATA; do
+  echo $DATA
+done
+```
 
+Note:  this will not work in team-shared environment due to likely access error  in browsing the root
 or inspect agent properties
 ```sh
 RESOURCE_PATH=/TEST/agent-09fcc2c48575
@@ -681,7 +690,6 @@ Status: false
 ```
 and set the exit status to 1
 ```cmd
-
 java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshots -data file:///c:/developer/sergueik/springboot_study/basic-ucd/snapshots.json -op confirm -snapshot "Snapshot 3" -application dummy
 ```
 this will print
@@ -693,6 +701,7 @@ and set the exit status to 0
 ### See Also
 
   * https://github.com/UrbanCode/UCD-Docker-Images
+  * [REST commands for the IBM UrbanCode Deploy server](https://www.ibm.com/support/knowledgecenter/en/SS4GSP_6.2.0/com.ibm.udeploy.reference.doc/topics/rest_api_ref_commands.html)
   * REST client [ucd](https://github.com/UrbanCode/uDeployRestClient)
   * Jenkins pipeline [ucd plugin](https://github.com/UrbanCode/jenkins-pipeline-ucd-plugin) source code
   * Usage of __component\_deployment__ and __version\_import__ into [ucd](https://www.urbancode.com/plugindoc/jenkins-pipeline#tab-usage) from Jenkins, Pipeline syntax
@@ -700,7 +709,7 @@ and set the exit status to 0
   * https://freddysf.wordpress.com/2013/12/05/urbancode-deploy-agent-based-source-config-types/
   * https://db.apache.org/derby/
   * https://stedolan.github.io/jq/manual/#ConditionalsandComparisons
-
+  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

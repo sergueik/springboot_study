@@ -168,7 +168,7 @@ docker exec -it $CONTAINER_ID sh
 ```
 then confirm tomcat uses the configuration file we confirmed the location earlier (the `/opt/tomcat/conf/log4j2.xml`)
 ```sh
-ps axww  |  grep tomcat
+ps axww | grep tomcat
 ```
 ```
 1 root      0:13 /usr/lib/jvm/java-1.7-openjdk/jre/bin/java -Djava.util.logging.config.file=/opt/tomcat/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Dlog4j2.debug=true -Dapp.env=staging -Dlog4j.configurationFile=/opt/tomcat/conf/log4j2.xml -Djdk.tls.ephemeralDHKeySize=2048 -Djava.protocol.handler.pkgs=org.apache.catalina.webresources -Dignore.endorsed.dirs= -classpath /opt/tomcat/bin/bootstrap.jar:/opt/tomcat/bin/tomcat-juli.jar -Dcatalina.base=/opt/tomcat -Dcatalina.home=/opt/tomcat -Djava.io.tmpdir=/opt/tomcat/temp org.apache.catalina.startup.Bootstrap start
@@ -288,7 +288,7 @@ failing to start in Tomcat:
 FAIL - Application at context path /demo could not be started
 FAIL - Encountered exception org.apache.catalina.LifecycleException: Failed to start component [StandardEngine[Catalina].StandardHost[localhost].StandardContext[/demo]]
 ```
-### All commands collapsed
+### All commands combined
 
 * rebuild and repackage container with the war
 ```sh
@@ -398,7 +398,7 @@ internal iinitialization loggi
 See https://logging.apache.org/log4j/2.x/manual/configuration.html
 for instructions on how to configure Log4j 2
 ```
-the `/opt/tomcat/conf/logging.properties` coming with the base container needs to be removed and not referenced by the launcher:
+the `/opt/tomcat/conf/logging.properties` coming with the base container needs to be removed and not referenced in the launcher command:
 ```sh
  /usr/lib/jvm/java-1.7-openjdk/jre/bin/java
  -Djava.util.logging.config.file=/opt/tomcat/conf/logging.properties
@@ -432,7 +432,7 @@ docker container rm -f $CONTAINER_ID
 docker image prune -f
 ```
 ### See Also:
-
+  * official [HOWTO](https://tomcat.apache.org/tomcat-8.5-doc/manager-howto.html#Stop_an_Existing_Application)
   * [Guide to Tomcat Manager Application](https://www.baeldung.com/tomcat-manager-app)
   * `HttpServlet`  [life cycle](https://www.mulesoft.com/tcat/tomcat-servlet)
   * [packaging springboot app in war](https://mkyong.com/spring-boot/spring-boot-deploy-war-file-to-tomcat/)
