@@ -31,6 +31,7 @@ import org.codehaus.jettison.json.JSONObject;
 
 import com.urbancode.ud.client.ApplicationClient;
 import com.urbancode.ud.client.ComponentClient;
+import com.urbancode.ud.client.ResourceClient;
 
 /*
  * This example exercises
@@ -46,6 +47,9 @@ public class GetApplicationSnapshots extends Common {
 	private static final List<String> versionFields = Arrays.asList("id", "name",
 			"created", "description");
 
+	// NOTE: similar situation with /cli/resource/getPrroperties "REST" API
+	// missing from
+	// com.urbancode.ud.client.ResourceClient class
 	private static CustomApplicationClient applicationClient;
 	private static JSONObject componentData;
 	private static JSONArray componentDataArray;
