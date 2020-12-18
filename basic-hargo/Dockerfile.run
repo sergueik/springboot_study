@@ -1,0 +1,28 @@
+FROM alpine:3.9.5 
+WORKDIR /
+ENV PATH=/
+
+COPY ca-certificates.crt /etc/ssl/certs/
+COPY hargo /
+
+# Metadata params
+ARG VERSION
+ARG BUILD_DATE
+ARG VCS_URL
+ARG VCS_REF
+ARG NAME
+ARG VENDOR
+
+# Metadata
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.name=$NAME \
+      org.label-schema.description="hargo" \
+      org.label-schema.url="https://markrichman.com" \
+      org.label-schema.vcs-url=https://github.com/mrichman/$VCS_URL \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vendor=$VENDOR \
+      org.label-schema.version=$VERSION \
+      org.label-schema.docker.schema-version="1.0" \
+      org.label-schema.docker.cmd="docker run --rm hargo"
+
+CMD ["./hargo"]
