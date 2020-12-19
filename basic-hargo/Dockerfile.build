@@ -16,4 +16,5 @@ ENV GOOS=linux
 RUN apk add -U --no-cache ca-certificates
 
 RUN go build -ldflags "-s -w -X main.Version=$VERSION -X main.CommitHash=$HASH -X 'main.CompileDate=$DATE'" -o hargo ./cmd/hargo
+RUN GOOS=windows GOARCH=amd64 go build  -ldflags "-s -w -X main.Version=$VERSION -X main.CommitHash=$HASH -X 'main.CompileDate=$DATE'" -o hargo.exe ./cmd/hargo
 
