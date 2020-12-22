@@ -102,17 +102,22 @@ exit 0
 
 
 UCD_URL=https://localhost:8443
+# read -sp "Enter user: " USERNAME
+# read -sp "Enter password: " PASSWORD
+# AUTHENTICATION="-u $USERNAME:$PASSWORD" 
 #
-curl -k $AUTH "$UCD_URL/rest/deploy/component/$COMPONENT_NAME/versions/false"
+
+#
+curl -k $AUTHENTICATION "${UCD_URL}/rest/deploy/component/${COMPONENT_NAME}/versions/false"
 # NOTE:
 # parameter naming
 # "packing" filterFields parameter values
 # into following parameter names
 # filterValue_XX,filterType_XX,filtetClass_XX
 COMPONENT_ID=''
-curl -k $AUTH "$UCD_URL/rest/deploy/version?rowsPerPage=10&pageNumber=1&orderField=dateCreated&sortType=desc&filterFields=component.id&filterFields=active&filterValue._component.id=$COMPONENT_ID&filterType_component.id=eq&fiterClass_component.id=UUID&filterValue_active=true&filterType_active=eq&filterClass_active=Boolean&outputType=BASIC&outputType=LINKED" | jq '.' | tee $TMP_FILE
+curl -k $AUTHENTICATION "${UCD_URL}/rest/deploy/version?rowsPerPage=10&pageNumber=1&orderField=dateCreated&sortType=desc&filterFields=component.id&filterFields=active&filterValue._component.id=$COMPONENT_ID&filterType_component.id=eq&fiterClass_component.id=UUID&filterValue_active=true&filterType_active=eq&filterClass_active=Boolean&outputType=BASIC&outputType=LINKED" | jq '.' | tee $TMP_FILE
 exit 0
 
 # based on: https://gist.github.com/moyashi/4063894
 # see also https://stackoverflow.com/questions/32273446/encode-url-variable-with-curl 
-awk -v VAR='a-$%/\\' -e ' BEGIN{ for (I = 0; I <= 255; I++) { ord[sprintf("%c", I)] = I; } } function escape(DATA, c, len, res) { len = length(DATA) ; res = "" ; for (i = 1; i <= len; i++) { c = substr(DATA, i, 1); if (c ~ /[0-9A-Za-z]/)  { res = res c ; } else {  res = res "%" sprintf("%02X", ord[c]) ; } } return res ; }  END{ print escape(VAR); }'  /dev/null
+awk -v VAR='a-$%/\\' -e ' BEGIN{ for (I = 0; I <= 255; I++) { ord[sprintf("%c", I)] = I; } } function escape(DATA, c, len, res) { len = length(DATA) ; res = ""; for (i = 1; i <= len; i++) { c = substr(DATA, i, 1); if(c ~ /[0-9A-Za-z]/){ res = res c; } else { res = res "%" sprintf("%02X", ord[c]); } } return res; } END{ print escape(VAR); }' /dev/null

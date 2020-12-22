@@ -6,6 +6,7 @@ package example;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +31,9 @@ public class GetResourceRoleProperties extends Common {
 	private static JSONObject data;
 	private static String env;
 	private static String agent;
+	private static int index;
+	private static final List<JSONObject> defs = new ArrayList<>();
+	private static final List<JSONObject> values = new ArrayList<>();
 
 	public static void main(String[] args)
 			throws URISyntaxException, IOException, JSONException {
@@ -61,14 +65,32 @@ public class GetResourceRoleProperties extends Common {
 					user, password));
 		}
 		// TODO: switch to agentClient.
-		JSONObject resourceJSONObject = resourceClient.getResourceRoleByName(agent);
+		// NOTE: following additional API available
+		// getResourceChildren
+		// getResourceRoles
+		// getResourceRolePropertyForResource
+		// getResourceRolesAsStrings
+		// setResourceRoleProperty
+		JSONObject roleJSONObject = resourceClient.getResourceRoleByName(agent);
 		String id3 = "172f1d3c-3665-6fd2-1c71-f0e67ec633c5";
-		System.out.println(
-				"Calling for " + id3 + " " + resourceJSONObject.getString("id"));
-		JSONArray xxx = resourceClient.getResourceRoleProperties(id3,
-				resourceJSONObject.getString("id"));
-		JSONObject yyy = xxx.getJSONObject(0).getJSONObject("propValue");
-		System.out.println(prettyPrint(yyy));
+		System.out
+				.println("Calling for " + id3 + " " + roleJSONObject.getString("id"));
+		JSONArray propertiesForRoleJSONArray = resourceClient
+				.getResourceRoleProperties(id3, roleJSONObject.getString("id"));
+		for (index = 0; index < propertiesForRoleJSONArray.length(); index++) {
+			JSONObject propertiesForRoleJSONObject = propertiesForRoleJSONArray
+					.getJSONObject(index);
+			//
+			JSONObject propDefJSONObject = propertiesForRoleJSONObject
+					.getJSONObject("propDef");
+			JSONObject propValueJSONObject = propertiesForRoleJSONObject
+					.getJSONObject("propValue");
+			defs.add(propDefJSONObject);
+			values.add(propValueJSONObject);
+
+			// System.out.println(prettyPrint(propDefJSONObject));
+			// System.out.println(prettyPrint(propValueJSONObject));
+		}
 
 		// need to call
 		// curl
