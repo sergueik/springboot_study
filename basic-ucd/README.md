@@ -656,9 +656,9 @@ Status: true
 ```
 ### See Also
 
-  * https://github.com/UrbanCode/UCD-Docker-Images
+  * UCD [Docker images](https://github.com/UrbanCode/UCD-Docker-Images)
   * [REST commands for the IBM UrbanCode Deploy server](https://www.ibm.com/support/knowledgecenter/en/SS4GSP_6.2.0/com.ibm.udeploy.reference.doc/topics/rest_api_ref_commands.html)
-  * REST client [ucd](https://github.com/UrbanCode/uDeployRestClient)
+  * uDeployRestClient [github repository](https://github.com/UrbanCode/uDeployRestClient)
   * Jenkins pipeline [ucd plugin](https://github.com/UrbanCode/jenkins-pipeline-ucd-plugin) source code
   * Usage of __component\_deployment__ and __version\_import__ into [ucd](https://www.urbancode.com/plugindoc/jenkins-pipeline#tab-usage) from Jenkins, Pipeline syntax
   * https://github.com/UrbanCode/Jenkins-Job-Manager-UCD
@@ -668,4 +668,3 @@ Status: true
   
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-

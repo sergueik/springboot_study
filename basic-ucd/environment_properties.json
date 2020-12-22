@@ -1,0 +1,44 @@
+[
+  {
+    "propDef": {
+      "id": "12345678-aaaa-bbbb-cccc-1234567890ab",
+      "name": "parameter1",
+      "type": "TEXT",
+      "label": "parameter1",
+      "value": "",
+      "required": false,
+      "description": "description of the parameter1",
+      "pattern": "",
+      "placeholder": ""
+    },
+    "propValue": {
+      "id": "12345678-aaaa-bbbb-cccc-1234567890ab",
+      "name": "parameter1",
+      "secure": false,
+      "value": "value1",
+      "usingDefaiult": false,
+      "description": ""
+    }
+  },
+  {
+    "propDef": {
+      "id": "12345678-aaaa-bbbb-cccc-1234567890ab",
+      "name": "parameter2",
+      "type": "TEXT",
+      "label": "parameter2",
+      "value": "",
+      "required": false,
+      "description": "description of the parameter2",
+      "pattern": "",
+      "placeholder": ""
+    },
+    "propValue": {
+      "id": "12345678-aaaa-bbbb-cccc-1234567890ab",
+      "name": "parameter2",
+      "secure": false,
+      "value": "value2",
+      "usingDefaiult": false,
+      "description": ""
+    }
+  }
+]

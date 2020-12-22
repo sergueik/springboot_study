@@ -9,13 +9,19 @@ echo "DEBUG=${DEBUG}"
 HOSTNAME=${1:-host1}
 QUERY=".[]|select(.type=\"agent\")|select(.name|match(\"$HOSTNAME.\"))|.name"
 # for chained calls, '.path' at the end will be more useful
+
 UCD_URL=https://localhost:8443
+# read -sp "Enter user: " USERNAME
+# read -sp "Enter password: " PASSWORD
+# AUTHENTICATION="-u $USERNAME:$PASSWORD" 
+#
+
 RESOURCE_ID='/TEST'
 TEMP_FILE1=/tmp/a.txt
 TEMP_FILE2=/tmp/b.txt
 cat /dev/null > $TEMP_FILE2
 if [[ "$CALL_API" != "" ]] ; then
-  curl -K $AUTH "$UCD_URL/cli/resource/?parent=$RESURCE_ID" | tee $TEMP_FILE1
+  curl -K $AUTHENTICATION "${UCD_URL}/cli/resource/?parent=${RESURCE_ID}" | tee $TEMP_FILE1
 else 
   cat <<EOF>$TEMP_FILE1
 [ 
