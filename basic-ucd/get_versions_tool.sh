@@ -1,5 +1,21 @@
 #!/bin/bash
 
+rawurlencode() {
+# based on: https://gist.github.com/moyashi/4063894
+# see also https://stackoverflow.com/questions/32273446/encode-url-variable-with-curl
+
+local INPUT_STRING="${1}"
+# NOTE debug printout need to be redirected to STDERR
+# 1>&2 echo "Processing $INPUT_STRING"
+INPUT_STRING_URLENCODED=$(
+awk -v VAR="$INPUT_STRING" -e ' BEGIN{ for (I = 0; I <= 255; I++) { ord[sprintf("%c", I)] = I; } } function escape(DATA, c, len, res) { len = length(DATA) ; res = ""; for (i = 1; i <= len; i++) { c = substr(DATA, i, 1); if(c ~ /[0-9A-Za-z]/){ res = res c; } else { res = res "%" sprintf("%02X", ord[c]); } } return res; } END{ print escape(VAR); }' /dev/null
+)
+echo $INPUT_STRING_URLENCODED
+}
+# DATA='A-B-C/D\E'
+# DATA_URLENCODED=$(rawurlencode $DATA)
+# echo $DATA_URLENCODED
+# exit
 # extract RELEASE_COMPONENT_NAMES into bash array variable from release descriptor custom JSON rowset keys
 DEFAULT_RELEASE_DESCRIPTOR='release.json'
 RELEASE_DESCRIPTOR=${1-$DEFAULT_RELEASE_DESCRIPTOR}
@@ -15,7 +31,7 @@ mv $TMP_FILE $RESULT_FILE
 
 # read -sp "Enter user: " USERNAME
 # read -sp "Enter password: " PASSWORD
-# AUTHENTICATION="-u $USERNAME:$PASSWORD" 
+# AUTHENTICATION="-u $USERNAME:$PASSWORD"
 # BASE_URL="http://localhost:8443"
 # curl -k $AUTHENTICATION "$BASE_URL/rest/deploy/application/${APPLICATION}/snapshots/false" | jq '.' | tee $TMP_FILE > /dev/null
 SNAPSHOTS_API_RESPONSE='snapshots.json'
@@ -104,7 +120,7 @@ exit 0
 UCD_URL=https://localhost:8443
 # read -sp "Enter user: " USERNAME
 # read -sp "Enter password: " PASSWORD
-# AUTHENTICATION="-u $USERNAME:$PASSWORD" 
+# AUTHENTICATION="-u $USERNAME:$PASSWORD"
 #
 
 #
@@ -115,9 +131,9 @@ curl -k $AUTHENTICATION "${UCD_URL}/rest/deploy/component/${COMPONENT_NAME}/vers
 # into following parameter names
 # filterValue_XX,filterType_XX,filtetClass_XX
 COMPONENT_ID=''
-curl -k $AUTHENTICATION "${UCD_URL}/rest/deploy/version?rowsPerPage=10&pageNumber=1&orderField=dateCreated&sortType=desc&filterFields=component.id&filterFields=active&filterValue._component.id=$COMPONENT_ID&filterType_component.id=eq&fiterClass_component.id=UUID&filterValue_active=true&filterType_active=eq&filterClass_active=Boolean&outputType=BASIC&outputType=LINKED" | jq '.' | tee $TMP_FILE
+# COMPONENT_ID_URLENCODED=$(rawurlencode $COMPONENT_ID)
+# echo $COMPONENT_ID_URLENCODED
+curl -k $AUTHENTICATION "${UCD_URL}/rest/deploy/version?rowsPerPage=10&pageNumber=1&orderField=dateCreated&sortType=desc&filterFields=component.id&filterFields=active&filterValue._component.id=$COMPONENT_ID_URLENCODED&filterType_component.id=eq&fiterClass_component.id=UUID&filterValue_active=true&filterType_active=eq&filterClass_active=Boolean&outputType=BASIC&outputType=LINKED" | jq '.' | tee $TMP_FILE
 exit 0
 
-# based on: https://gist.github.com/moyashi/4063894
-# see also https://stackoverflow.com/questions/32273446/encode-url-variable-with-curl 
-awk -v VAR='a-$%/\\' -e ' BEGIN{ for (I = 0; I <= 255; I++) { ord[sprintf("%c", I)] = I; } } function escape(DATA, c, len, res) { len = length(DATA) ; res = ""; for (i = 1; i <= len; i++) { c = substr(DATA, i, 1); if(c ~ /[0-9A-Za-z]/){ res = res c; } else { res = res "%" sprintf("%02X", ord[c]); } } return res; } END{ print escape(VAR); }' /dev/null
+
