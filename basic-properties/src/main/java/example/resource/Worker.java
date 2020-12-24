@@ -24,7 +24,8 @@ public class Worker {
 	}
 
 	public String getValue() {
-		return properties.getProperty("application.property");
+		final String value = properties.getProperty("value.property");
+		return value == null ? "unknown" : value;
 	}
 
 	@GetMapping

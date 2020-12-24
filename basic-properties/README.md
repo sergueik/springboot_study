@@ -8,7 +8,7 @@ Later modified to include ReloadableProperties class sample from [collection of 
 ### Test
 
 #### Local execution
-Note: - after turning on trimmed down `application.property` magic the default command no longer works
+Note: - after turning on trimmed down `value.property` magic the default command no longer works
 ```sh
 mvn clean spring-boot:run
 ```
@@ -32,7 +32,7 @@ Hello null
 ```
 The argument-less build and run via maven plugin command does not fail,
 but apprently is not loading the `application.properties`, passing the argument 
-va define solves the issue:
+via define solves the issue:
 ```sh
 mvn -Dspring.config.location=src/main/resources/application.properties spring-boot:run
 ```
@@ -41,10 +41,32 @@ now
 curl http://localhost:8085/worker
 ```
 returns
-```
+```sh
 Hello some value
 ```
-and updates instantly when `application.properties` is changed
+
+
+and updates instantly when `application.properties` is changed.
+
+
+It is also possible to pass the absolute path outside the project dir:
+
+```sh
+cp src/main/resources/application.properties /tmp
+sed -i 's|some value|tmp value|' /tmp/application.properties
+```
+
+```powershell
+Out-File -LiteralPath C:\temp\application.properties -NoNewline -InputObject ([system.String]::Join("`n", (get-content -path .\src\main\resources\application.properties)).replace('some value','different value'))
+```
+note that one has to remove the drive letter from the path (assuming the configuration properfies file is on the same drive)
+```sh
+
+mvn -Dspring.config.location=file:///tmp/application.properties spring-boot:run
+```
+(in the absence of `file://` prefix the relative `application.properties` path will be attempted)
+```sh
+```
 so proceed to the next step of dockerizing the app.
 
 #### Run Jar Locally 
@@ -68,6 +90,7 @@ sed -i 's|some value|some other value|' ~/Desktop/application.properties
 ```
 * observe application reload being logged:
 ```sh
+...
 o.a.c.c.PropertiesConfiguration: 
 Reloading configuration. 
 URL is file:/home/sergueik/Desktop/application.properties
@@ -110,7 +133,7 @@ Hello some value
 ```
 * modify property file once again
 ```sh
-sed -i 's|\(application.property\)=.*$|\1=new value|' ~/Desktop/application.properties
+sed -i 's|\(value.property\)=.*$|\1=new value|' ~/Desktop/application.properties
 ```
 * confirm to reflect
 ```sh

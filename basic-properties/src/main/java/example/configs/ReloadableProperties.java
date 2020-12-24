@@ -9,12 +9,12 @@ import java.util.Properties;
 
 import javax.naming.OperationNotSupportedException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import java.lang.NullPointerException;
 
 // @Component
+@SuppressWarnings("serial")
 public class ReloadableProperties extends Properties {
-	// TODO: add code toresolve:
+	// TODO: add code to resolve:
 	// org.springframework.beans.factory.NoSuchBeanDefinitionException:
 	// No qualifying bean of type
 	// 'org.apache.commons.configuration.PropertiesConfiguration' available:
@@ -36,14 +36,19 @@ public class ReloadableProperties extends Properties {
 	@Override
 	public String getProperty(String key) {
 		String val = propertiesConfiguration.getString(key);
-		super.setProperty(key, val);
+		// super.setProperty(key, val);
 		return val;
 	}
 
 	@Override
 	public String getProperty(String key, String defaultValue) {
 		String val = propertiesConfiguration.getString(key, defaultValue);
-		super.setProperty(key, val);
+		// TODO:
+		try {
+			super.setProperty(key, val);
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 		return val;
 	}
 

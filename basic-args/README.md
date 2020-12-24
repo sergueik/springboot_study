@@ -1,6 +1,6 @@
 ### Info
 
-Springboot Docker basic argument exercise project cloned from
+Springboot Docker basic argument exercise project based on
 [lordoftheflies/example-spring-boot-with-command-line-arguments](https://github.com/lordoftheflies/example-spring-boot-with-command-line-arguments)
 Modified to pass an arbirtary data structure wrapped in json and subsequntly base 64 encoded, through  SpringBoot - hopefully
 eliminating modifying low level details of the stack delivery engine when there is a business application signature change
@@ -11,7 +11,7 @@ TAG=echo
 docker build -t $TAG -f Dockerfile.$TAG .
 ```
 then
-```
+```sh
 docker run -it $TAG
 ```
 will respond with

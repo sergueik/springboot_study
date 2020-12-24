@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 public class ReloadablePropertySource extends PropertySource {
 
 	PropertiesConfiguration propertiesConfiguration;
+	private final int refreshDelay = 1000;
 
 	public ReloadablePropertySource(String name,
 			PropertiesConfiguration propertiesConfiguration) {
@@ -21,7 +22,7 @@ public class ReloadablePropertySource extends PropertySource {
 		try {
 			this.propertiesConfiguration = new PropertiesConfiguration(path);
 			FileChangedReloadingStrategy strategy = new FileChangedReloadingStrategy();
-			strategy.setRefreshDelay(1000);
+			strategy.setRefreshDelay(refreshDelay);
 			this.propertiesConfiguration.setReloadingStrategy(strategy);
 		} catch (Exception e) {
 			throw new PropertiesException(e);
