@@ -47,22 +47,52 @@ Hello some value
 
 
 and updates instantly when `application.properties` is changed.
-
-
 It is also possible to pass the absolute path outside the project dir:
+```sh
+mvn -Dspring.config.location=$(pwd)/src/main/resources/application.properties spring-boot:run
+```
+
+one can place properties ouside of the project dir pass full path:
 
 ```sh
 cp src/main/resources/application.properties /tmp
-sed -i 's|some value|tmp value|' /tmp/application.properties
+sed -i 's|\(application.property\)=.*$|\1=different value|' /tmp/application.properties
+grep -E 'application.property' '/tmp/application.properties'
+mvn -Dspring.config.location=/tmp/application.properties spring-boot:run
 ```
-
+One can also use `file://` prefix with no harm.
+```sh
+mvn -Dspring.config.location=file:///tmp/application.properties spring-boot:run
+```
+followed by validation
+```sh
+curl -vk 192.168.0.64:8085/worker
+```
+on Windows there appears to be a problem 
 ```powershell
-Out-File -LiteralPath C:\temp\application.properties -NoNewline -InputObject ([system.String]::Join("`n", (get-content -path .\src\main\resources\application.properties)).replace('some value','different value'))
+out-File -LiteralPath C:\temp\application.properties -NoNewline -InputObject ([system.String]::Join("`n", (get-content -path .\src\main\resources\application.properties)).replace('some value','different value'))
 ```
+both
+```powershell
+mvn -Dspring.config.location=/temp/application.properties spring-boot:run
+```
+```
+mvn -Dspring.config.location=c:/temp/application.properties spring-boot:run
+```
+result in
+```sh
+curl http://localhost:8085/worker
+```
+returning 
+```sh
+Hello unknown
+```
+indicating that property file was not read.
+
 note that one has to remove the drive letter from the path (assuming the configuration properfies file is on the same drive)
 ```sh
 
-mvn -Dspring.config.location=file:///tmp/application.properties spring-boot:run
+mvn -Dspring.config.location=file:///temp/application.properties spring-boot:run
 ```
 (in the absence of `file://` prefix the relative `application.properties` path will be attempted)
 ```sh
