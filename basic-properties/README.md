@@ -68,9 +68,9 @@ followed by validation
 ```sh
 curl -vk 192.168.0.64:8085/worker
 ```
-on Windows there appears to be a problem 
+on Windows, make sure to set the file encoding to `ascii` or  `utf8`:
 ```powershell
-out-File -LiteralPath C:\temp\application.properties -NoNewline -InputObject ([system.String]::Join("`n", (get-content -path .\src\main\resources\application.properties)).replace('some value','different value'))
+out-File -literalpath C:\temp\application.properties -encoding utf8 -nonewline -inputobject ([System.String]::Join("`r`n", (get-content -path .\src\main\resources\application.properties)).replace('some value','different value'))
 ```
 both
 ```powershell
@@ -79,7 +79,12 @@ mvn -Dspring.config.location=/temp/application.properties spring-boot:run
 ```
 mvn -Dspring.config.location=c:/temp/application.properties spring-boot:run
 ```
-result in
+and
+
+```powershell
+mvn -Dspring.config.location=file:///c:/temp/application.properties spring-boot:run
+```
+If accidentally the properties file is savedv in UTF16 encoding, the test displays
 ```sh
 curl http://localhost:8085/worker
 ```
@@ -89,7 +94,7 @@ Hello unknown
 ```
 indicating that property file was not read.
 
-note that one has to remove the drive letter from the path (assuming the configuration properfies file is on the same drive)
+note that one can remove the drive letter from the path assuming the configuration properfies file is on the same drive
 ```sh
 
 mvn -Dspring.config.location=file:///temp/application.properties spring-boot:run
