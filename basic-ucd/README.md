@@ -652,7 +652,6 @@ this will print
 ```cmd
 Snapshot "Snapshot 3" confirmed to be valid
 Status: true
->>>>>>> 4929dfd917d99108de78632445b9f1a912a930f3
 ```
 ### See Also
 
