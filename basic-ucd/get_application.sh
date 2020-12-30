@@ -24,7 +24,7 @@ QUERY='.id'
 OPTIONS='-cr'
 # NOTE: need to avoid '//' from contatinating BASE_URL with API
 APPLICATION_ID=$(curl -k $AUTHENTICATION "${BASE_URL}${API}" 2>/dev/null| jq $OPTIONS $QUERY)
-echo "APPLICATION_ID:=${APPLICATION_ID}"
+echo "APPLICATION_ID (*): ${APPLICATION_ID}"
 
 TMP_FILE1=/tmp/a$$.json
 API="/cli/application/environmentsInApplication?application=${APPLICATION_NAME}"
