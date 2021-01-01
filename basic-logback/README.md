@@ -8,12 +8,13 @@ This project contains [minimal demo code of logback example](http://logback.qos.
 ```sh
 mvn clean package
 java -jar target/example.logback.jar
+curl -vk 127.0.0.1:8080/example
 ```
 
-__Note__: it does not appear that logback's `RollingFileAppender` [class](https://github.com/qos-ch/logback/blob/master/logback-core/src/main/java/ch/qos/logback/core/rolling/RollingFileAppender.java)
+It does not appear that logback's `RollingFileAppender` [class](https://github.com/qos-ch/logback/blob/master/logback-core/src/main/java/ch/qos/logback/core/rolling/RollingFileAppender.java)
 supports configuring log file permissions.
 
-__Note__: launching the class with classpath
+__NOTE__: launching the class with classpath
 ```
 java -cp target/example.logback.jar:target/lib/*:target/conf example.Example
 ```
@@ -21,10 +22,21 @@ or
 ```cmd
 java -cp target\example.logback.jar;target\lib\*;target\conf example.Example
 ```
-does not appear to work (probably becuse Springboot does not launche main class directly):
+does not work (probably because Springboot does not launch the main class directly):
 ```java
 Error: Could not find or load main class example.Example
 ```
+
+### Dependencies
+
+The dependencies are packeded in the final jar:
+
+```sh
+jar tvf target/example.logback.jar  | grep \\.jar | awk -F / '{print $NF}' |sort
+```
+
+shows the expected dependency jars.
+
 
 ### Testing Springboot App on developer machine
 ```sh
@@ -143,14 +155,17 @@ however the attribute error
     <!-- can use ${APP_HOME} -->
     <file>${DIR}/${FILENAME}.log</file>
 ```
-(leading or teailing whitespace) gets unnoticed - the whirespace is trimmed from the actual directory name.
+(leading or teailing whitespace) causes no harm as the whitespace is trimmed
+from the actual directory name.
+
 ### See Also
 
 
  * https://www.codingame.com/playgrounds/4497/configuring-logback-with-spring-boot
  * https://stackoverflow.com/questions/2602415/rolling-logback-logs-on-filesize-and-time
  * https://www.baeldung.com/java-logging-rolling-file-appenders
-
+ * [JSON logging](https://mathieularose.com/logback-json/)
+ * [hints](https://stackoverflow.com/questions/40576959/logback-jsonlayout-printing-all-logs-on-the-same-line) on parsing JSON logs from the log via `jq`
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
