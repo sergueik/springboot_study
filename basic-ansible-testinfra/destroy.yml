@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  tasks:
+    - docker_container:
+        name: example-play
+        state: absent

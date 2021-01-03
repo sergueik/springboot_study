@@ -1,0 +1,11 @@
+---
+# tasks file for docker-role
+- name: "Installing git using apk module"
+  apk:
+    name: git
+    state: present
+
+- name: "Installing Nano using apk module"
+  apk:
+    name: nano
+    state: present
