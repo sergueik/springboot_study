@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>log4j2</artifactId>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>example-log4j2</name>
   <url>http://maven.apache.org</url>
@@ -24,19 +24,15 @@
   </properties>
   <dependencies>
     <dependency>
-      <!-- NOTE: not functional yet:
-
+      <!-- NOTE: not fully functional yet:
 ERROR Appenders contains an invalid element or attribute "MyAppender"
 2020-11-07 16:38:40,311 main ERROR Unable to locate appender "Rabbitmq" for logger config "root"
 -->
-
       <groupId>example</groupId>
       <artifactId>rabbitmq-appender</artifactId>
       <version>${rabbitmq-appender.version}</version>
-      <!--
       <scope>system</scope>
       <systemPath>${project.basedir}/src/main/resources/example.rabbitmq-appender-${rabbitmq-appender.version}.jar</systemPath>
--->
       <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>
@@ -74,11 +70,6 @@ ERROR Appenders contains an invalid element or attribute "MyAppender"
       <version>${log4j-core.version}</version>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
     </dependency>
@@ -89,9 +80,6 @@ ERROR Appenders contains an invalid element or attribute "MyAppender"
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <!--
-        <scope>test</scope>
-      -->
     </dependency>
   </dependencies>
   <build>

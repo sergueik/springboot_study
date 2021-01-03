@@ -1,9 +1,19 @@
 ### Info
 
-This project contains [minimal demo code of log4j2 example]
+This directory contains log4j2 example demo project
+
 ### Usage
 
+#### Dependency project
+```sh
+pushd ../basic-rabbitmq-appender
+mvn package
+cp target/example.rabbitmq-appender-0.1.0-SNAPSHOT.jar  ../basic-log4j2/src/main/resources/
+popd
+```
 #### Testing Springboot App locally
+
+
 ```sh
 mvn spring-boot:run
 ```
@@ -89,6 +99,11 @@ fails with
 ```sh
 the input device is not a TTY
 ```
+
+### See Also
+
+ * [JSON logging](https://www.baeldung.com/java-log-json-output)
+ * [JSON layout](https://stackoverflow.com/questions/39590365/print-stacktrace-with-log4j2-in-json-with-jsonlayout-in-a-single-line)
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
