@@ -13,3 +13,8 @@ Docker::Error::TimeoutError:
        read timeout reached
 ```
 error, pre-build the image ahead of time
+
+
+### See Also:
+
+  * https://github.com/mnishikizawa/docker-serverspec/blob/master/spec/Dockerfile_spec.rb
