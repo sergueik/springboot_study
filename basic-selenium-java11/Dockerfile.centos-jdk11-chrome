@@ -1,8 +1,8 @@
 FROM parrotstream/centos-openjdk:11
 
-RUN curl https://intoli.com/install-google-chrome.sh | bash - && \
-    curl -k https://chromedriver.storage.googleapis.com/index.html?path=86
-# breaking installs apart - the install is expensive
+RUN curl https://intoli.com/install-google-chrome.sh | bash -
+
+# breaking installs apart: the install is expensive
 
 RUN CHROME_BROWSER=google-chrome \
     && CHROME_BROWSER_VERSION=$(/usr/bin/$CHROME_BROWSER -version| awk '{print $NF}' |cut -f1 -d.) \
