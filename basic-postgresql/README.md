@@ -5,14 +5,22 @@ This directory contains a basic springboot jdbc on postgresql project based on
 and alpine postgres basic Dockerfile from [github repository](https://hub.docker.com/r/kiasaki/alpine-postgres/dockerfile)
 
 ### Run application
-
+* install postgres locally 
+```sh
+sudo apt-get -qy install postgresql
+```
 * switch to password auth locally
 ```sh
 sudo -u postgres psql
 ```
 ```sh
 ALTER USER postgres PASSWORD 'postgres';
+```
+```sh
 ALTER ROLE
+```
+```sh
+\q
 ```
 * verify the credentials
 ```sh
@@ -21,16 +29,33 @@ psql -h localhost -p 5432 --username postgres --password
 ```sh
 postgres=# \c
 ```
+
+```sh
+Password:
+```
+```sh
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
+You are now connected to database "postgres" as user "postgres"
+```
 * create database and table locally
 ```sh
 sudo -u postgres psql
 ```
 ```sh
 postgres=# create database example;
+```
+```sh
 CREATE DATABASE
+```
+```sh
 postgres=# \c example
+```
+```
 You are now connected to database "example" as user "postgres".
-example=# CREATE TABLE rest ( id serial PRIMARY KEY NOT NULL, key varchar(100) NOT NULL, value varchar(250) NOT NULL, rand smallint NOT NULL);
+example=# 
+```
+```sh
+CREATE TABLE rest ( id serial PRIMARY KEY NOT NULL, key varchar(100) NOT NULL, value varchar(250) NOT NULL, rand smallint NOT NULL);
 ```
 * run locally
 ```sh
@@ -48,6 +73,28 @@ will respond with
   "key": "some example",
   "value": "some data"
 }
+```
+
+if there is an exception make sure to pass the `localhost` in properties:
+
+
+```sh
+sed -i 's|//\(.*\):5432|//localhost:5432|' src/main/resources/application.properties
+cat src/main/resources/application.properties
+mvn -Dmaven.test.skip=true clean spring-boot:run
+```
+note: `-Dspring.datasource.url='jdbc:postgresql://localhost:5432/example'` will have no effect
+
+and if the exception
+```sh
+nested exception is org.postgresql.util.PSQLException: ERROR: relation "rest" already exists
+```
+make  sure to drop the table:
+```sh
+psql -h localhost -p 5432 --username postgres --password exampl
+```
+```sh
+example=# drop table rest;
 ```
 and then
 ```sh
@@ -91,6 +138,8 @@ will update:
   "value": "new data"
 }
 ```
+can now uninstall postgresql
+
 ### Run in Docker
 * package the jar 
 ```sh
@@ -206,6 +255,6 @@ docker image prune -f
  * postgresql [command rederence](https://www.tutorialspoint.com/postgresql/postgresql_select_database.htm)
  * Docker [image](https://hub.docker.com/r/kiasaki/alpine-postgres/) and [github repository](https://hub.docker.com/r/kiasaki/alpine-postgres/dockerfile)
  * configuring "sticky" versions with [apk](https://superuser.com/questions/1055060/how-to-install-a-specific-package-version-in-alpine)
-
+  * [basics of installing postgresql in ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
