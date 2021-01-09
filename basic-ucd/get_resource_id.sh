@@ -18,8 +18,8 @@ APLICATION_PATH='/MAIN_APPLICTION'
 # TODO: real urlencode
 RESOURCE_PATH=$(cat "${APPLICTION_PATH}/${RESOURCE_NAME}" | sed '|/|%2F|g')
 UCD_URL=https://localhost:8443
-# read -sp "Enter user: " USERNAME
-# read -sp "Enter password: " PASSWORD
+# read -sp 'Enter user: ' USERNAME
+# read -sp 'Enter password: ' PASSWORD
 # AUTHENTICATION="-u $USERNAME:$PASSWORD" 
 
 # NOTE the REST calls underlying getResourceByPath and getResourceById 

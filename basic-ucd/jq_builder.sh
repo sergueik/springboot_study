@@ -11,8 +11,8 @@ QUERY=".[]|select(.type=\"agent\")|select(.name|match(\"$HOSTNAME.\"))|.name"
 # for chained calls, '.path' at the end will be more useful
 
 UCD_URL=https://localhost:8443
-# read -sp "Enter user: " USERNAME
-# read -sp "Enter password: " PASSWORD
+# read -sp 'Enter user: ' USERNAME
+# read -sp 'Enter password: ' PASSWORD
 # AUTHENTICATION="-u $USERNAME:$PASSWORD" 
 #
 

@@ -16,8 +16,8 @@
 # https://github.com/UrbanCode/uDeployRestClient/blob/master/src/main/java/com/urbancode/ud/client/ResourceClient.java#L379
 #
 UCD_URL=https://localhost:8443
-# read -sp "Enter user: " USERNAME
-# read -sp "Enter password: " PASSWORD
+# read -sp 'Enter user: ' USERNAME
+# read -sp 'Enter password: ' PASSWORD
 # AUTHENTICATION="-u $USERNAME:$PASSWORD" 
 
 # Extract the parameters of in 'Edit' dialog shown in resource tree

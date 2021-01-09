@@ -29,8 +29,8 @@ for NAME in "${RELEASE_COMPONENT_NAMES[@]}"; do echo $NAME; done
 ) |sort|tee $TMP_FILE >/dev/null
 mv $TMP_FILE $RESULT_FILE
 
-# read -sp "Enter user: " USERNAME
-# read -sp "Enter password: " PASSWORD
+# read -sp 'Enter user: ' USERNAME
+# read -sp 'Enter password: ' PASSWORD
 # AUTHENTICATION="-u $USERNAME:$PASSWORD"
 # BASE_URL="http://localhost:8443"
 # curl -k $AUTHENTICATION "$BASE_URL/rest/deploy/application/${APPLICATION}/snapshots/false" | jq '.' | tee $TMP_FILE > /dev/null
@@ -118,8 +118,8 @@ exit 0
 
 
 UCD_URL=https://localhost:8443
-# read -sp "Enter user: " USERNAME
-# read -sp "Enter password: " PASSWORD
+# read -sp 'Enter user: ' USERNAME
+# read -sp 'Enter password: ' PASSWORD
 # AUTHENTICATION="-u $USERNAME:$PASSWORD"
 #
 

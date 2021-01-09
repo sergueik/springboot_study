@@ -1,7 +1,7 @@
 #!/bin/sh
 UCD_URL=https://localhost:8443
-# read -sp "Enter user: " USERNAME
-# read -sp "Enter password: " PASSWORD
+# read -sp 'Enter user: ' USERNAME
+# read -sp 'Enter password: ' PASSWORD
 # AUTHENTICATION="-u $USERNAME:$PASSWORD" 
 #
 curl -k $AUTHENTICATION "${UCD_URL}/rest/deploy/component/${COMPONENT_NAME}/versions/false"

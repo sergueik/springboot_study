@@ -40,8 +40,8 @@ cat <<EOF>$DATA_FILE
 ]
 EOF
 UCD_URL=https://localhost:8443
-# read -sp "Enter user: " USERNAME
-# read -sp "Enter password: " PASSWORD
+# read -sp 'Enter user: ' USERNAME
+# read -sp 'Enter password: ' PASSWORD
 # AUTHENTICATION="-u $USERNAME:$PASSWORD" 
 
 RESULT1_JSON=/tmp/b.json

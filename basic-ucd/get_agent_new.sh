@@ -13,8 +13,8 @@ awk -v VAR="$INPUT_STRING" -e ' BEGIN{ for (I = 0; I <= 255; I++) { ord[sprintf(
 echo $INPUT_STRING_URLENCODED
 }
 # Auth
-read -sp "Enter user: " USERNAME
-read -sp "Enter password: " PASSWORD
+read -sp 'Enter user: ' USERNAME
+read -sp 'Enter password: ' PASSWORD
 AUTHENTICATION="-u $USERNAME:$PASSWORD"
 BASE_URL="http://localhost:8443"
 
