@@ -28,7 +28,6 @@ echo "APPLICATION_ID (*): ${APPLICATION_ID}"
 
 TMP_FILE1=/tmp/a$$.json
 API="/cli/application/environmentsInApplication?application=${APPLICATION_NAME}"
-
 curl -k $AUTHENTICATION "${BASE_URL}${API}" 2>/dev/null| jq $OPTIONS $QUERY| tee $TMP_FILE1 > /dev/null
 OPTIONS='-cr'
 QUERY='.[]|["id",.id]|join("=")'
@@ -52,10 +51,26 @@ echo 'CSV:'
 for CNT in $(seq 0 $MAX_INDEX) ; do
   NAME=$(echo ${NAMES[$CNT]} | cut -d '=' -f 2)
   VALUE=$(echo ${IDS[$CNT]} | cut -d '=' -f 2)
-  echo -e "$NAME\t$VALUE"
-done
+  # possible to execute the following
+  # it will return JSON with application GUID but not with the environment resource GUIT
+  API="/rest/deploy/environment/${VALUE}"
+  OPTIONS='-cr'
+  QUERY='.application|.id'
+  TMP_FILE2=/tmp/b$$.json
+  curl -k $AUTHENTICATION "${BASE_URL}${API}" 2>/dev/null| jq $OPTIONS $QUERY| tee $TMP_FILE2 > /dev/null
+  cat $TMP_FILE2
+  API="/rest/deploy/environment/${VALUE}/resources"
+  OPTIONS='-cr'
+  QUERY='.[]|.id'
+  TMP_FILE3=/tmp/c$$.json
+  curl -k $AUTHENTICATION "${BASE_URL}${API}" 2>/dev/null| jq $OPTIONS $QUERY| tee $TMP_FILE3 > /dev/null
 
+  ENVIREONMENT_RESOURCE_GUID=cat $TMP_FILE3
+  # echo "Environment resource GUID=${ENVIREONMENT_RESOURCE_GUID}"
+  echo -e "$NAME\t$VALUE\t$ENVIREONMENT_RESOURCE_GUID"
+done
 echo 'JSON'
+
 ARGLINE=''
 QUERY='.'
 for((CNT=0;CNT<$MAX_INDEX;CNT++)) ; do
@@ -64,6 +79,7 @@ for((CNT=0;CNT<$MAX_INDEX;CNT++)) ; do
   if [[ -z $VALUE ]]  ; then
     continue
   fi
+
   ARGLINE="${ARGLINE} --arg name${CNT} ${NAME} --arg val${CNT} ${VALUE}"
   QUERY="${QUERY} |.[\$name${CNT}]=\$val${CNT}"
 done
