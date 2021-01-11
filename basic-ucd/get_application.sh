@@ -65,9 +65,9 @@ for CNT in $(seq 0 $MAX_INDEX) ; do
   TMP_FILE3=/tmp/c$$.json
   curl -k $AUTHENTICATION "${BASE_URL}${API}" 2>/dev/null| jq $OPTIONS $QUERY| tee $TMP_FILE3 > /dev/null
 
-  ENVIREONMENT_RESOURCE_GUID=cat $TMP_FILE3
-  # echo "Environment resource GUID=${ENVIREONMENT_RESOURCE_GUID}"
-  echo -e "$NAME\t$VALUE\t$ENVIREONMENT_RESOURCE_GUID"
+  ENVIRONMENT_GUID=$(cat $TMP_FILE3)
+  # echo "Environment resource GUID=${ENVIRONMENT_GUID}"
+  echo -e "$NAME\t$VALUE\t$ENVIRONMENT_GUID"
 done
 echo 'JSON'
 
@@ -76,7 +76,13 @@ QUERY='.'
 for((CNT=0;CNT<$MAX_INDEX;CNT++)) ; do
   NAME=$(echo ${NAMES[$CNT]} | cut -d '=' -f 2)
   VALUE=$(echo ${IDS[$CNT]} | cut -d '=' -f 2)
+  # stop processing of entries with no value/ blank value
   if [[ -z $VALUE ]]  ; then
+    continue
+  fi
+  # limit the subsequent queries to the specific enironment
+  # this relies on UCD idiosyncracies in environment namings
+  if echo $NAME| grep -iEqv '^(dev|test|uat)\-(east|west)$' ; then
     continue
   fi
 
@@ -84,7 +90,6 @@ for((CNT=0;CNT<$MAX_INDEX;CNT++)) ; do
   QUERY="${QUERY} |.[\$name${CNT}]=\$val${CNT}"
 done
 
-# echo jq $ARGLINE "'$QUERY'" <<<'{}'
 jq $ARGLINE "$QUERY" <<<'{}'
 
 exit 0
