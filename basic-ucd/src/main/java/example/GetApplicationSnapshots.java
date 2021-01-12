@@ -2,7 +2,7 @@ package example;
 
 import java.io.BufferedReader;
 /**
- * Copyright 2020 Serguei Kouzmine
+ * Copyright 2020,2021 Serguei Kouzmine
  */
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,20 +18,11 @@ import java.util.List;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import com.urbancode.ud.client.ApplicationClient;
-import com.urbancode.ud.client.ComponentClient;
-import com.urbancode.ud.client.ResourceClient;
 
 /*
  * This example exercises
@@ -45,11 +36,9 @@ public class GetApplicationSnapshots extends Common {
 	private static String text;
 	private static boolean debug = false;
 
-	private static final List<String> componentFields = Arrays.asList("id",
-			"name", "description");
+	private static final List<String> componentFields = Arrays.asList("id", "name", "description");
 	// the "desiredVersions" processed separately
-	private static final List<String> versionFields = Arrays.asList("id", "name",
-			"created", "description");
+	private static final List<String> versionFields = Arrays.asList("id", "name", "created", "description");
 
 	// NOTE: similar situation with /cli/resource/getPrroperties "REST" API
 	// missing from
@@ -66,8 +55,7 @@ public class GetApplicationSnapshots extends Common {
 	private static final List<String> names = new ArrayList<>();
 	private static final List<String> ids = new ArrayList<>();
 
-	public static void main(String[] args)
-			throws URISyntaxException, IOException, JSONException {
+	public static void main(String[] args) throws URISyntaxException, IOException, JSONException {
 
 		configure(args);
 		commandLineParser.saveFlagValue("data");
@@ -89,13 +77,11 @@ public class GetApplicationSnapshots extends Common {
 				return;
 			}
 			// explore resource hierarchy
-			applicationClient = new CustomApplicationClient(new URI(server), user,
-					password);
+			applicationClient = new CustomApplicationClient(new URI(server), user, password);
 
 			if (applicationClient == null) {
-				throw new RuntimeException(String.format(
-						"failed to connect to server %s as user: %s / password: %s", server,
-						user, password));
+				throw new RuntimeException(String.format("failed to connect to server %s as user: %s / password: %s",
+						server, user, password));
 			}
 			if (op.equalsIgnoreCase("list")) {
 				componentDataArray = applicationClient.getSnapshots(application);
@@ -116,8 +102,7 @@ public class GetApplicationSnapshots extends Common {
 					// ignore the result details
 					applicationClient.getSnapshot(application, snapshot);
 					status = true;
-					System.err.println(
-							String.format("Snapshot \"%s\" confirmed to be valid", snapshot));
+					System.err.println(String.format("Snapshot \"%s\" confirmed to be valid", snapshot));
 				} catch (IOException e) {
 					System.err.println("Exception (collected): " + e.getMessage());
 					status = false;
@@ -141,37 +126,21 @@ public class GetApplicationSnapshots extends Common {
 				}
 				if (names.contains(snapshot)) {
 					status = true;
-					System.err.println(
-							String.format("Snapshot \"%s\" confirmed to be valid", snapshot));
+					System.err.println(String.format("Snapshot \"%s\" confirmed to be valid", snapshot));
 				} else {
-					System.err
-							.println(String.format("Snapshot \"%s\" is not valid", snapshot));
+					System.err.println(String.format("Snapshot \"%s\" is not valid", snapshot));
 					status = false;
 				}
 				System.err.println("Status: " + status);
 			}
 		}
-
-		/*
-				for (int i = 0; i < resultJSON.length(); i++) {
-						JSONObject snapshotJson = (JSONObject) resultJSON.get(i);
-						String resultName = (String) snapshotJson.get("name");
-						String resultId = (String) snapshotJson.get("id");
-						if (snapshot.equals(resultName) || snapshot.equals(resultId)) {
-							result = snapshotJson;
-							break;
-						}
-					}
-		
-		 * */
 	}
 
 	// TODO: move to Common
 	public static String readRawJSON(String url) throws IOException {
 		InputStream is = new URL(url).openStream();
 		try {
-			BufferedReader rd = new BufferedReader(
-					new InputStreamReader(is, Charset.forName("UTF-8")));
+			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 			text = readAll(rd);
 			if (debug)
 				System.err.println("Read JSON data: " + text);
@@ -182,8 +151,7 @@ public class GetApplicationSnapshots extends Common {
 	}
 
 	// TODO: move to Common
-	public static JSONArray readJSONArray(String url)
-			throws IOException, JSONException {
+	public static JSONArray readJSONArray(String url) throws IOException, JSONException {
 		text = readRawJSON(url);
 		if (debug)
 			System.err.println("Read JSON data: " + text);
@@ -202,13 +170,11 @@ public class GetApplicationSnapshots extends Common {
 	}
 
 	public static class CustomApplicationClient extends ApplicationClient {
-		public CustomApplicationClient(URI url, String clientUser,
-				String clientPassword) {
+		public CustomApplicationClient(URI url, String clientUser, String clientPassword) {
 			super(url, clientUser, clientPassword);
 		}
 
-		public JSONArray getSnapshots(String application)
-				throws IOException, JSONException {
+		public JSONArray getSnapshots(String application) throws IOException, JSONException {
 
 			// Final path parameter is true/false for inactive snapshots
 			// String uri = url + "/rest/deploy/application/" +
@@ -222,8 +188,7 @@ public class GetApplicationSnapshots extends Common {
 			// JSONArray resultJSON = new JSONArray(body);
 			// return resultJSON;
 			return new JSONArray(getBody((CloseableHttpResponse) invokeMethod(
-					new HttpGet(url + "/rest/deploy/application/"
-							+ encodePath(application) + "/snapshots/false"))));
+					new HttpGet(url + "/rest/deploy/application/" + encodePath(application) + "/snapshots/false"))));
 		}
 
 	}

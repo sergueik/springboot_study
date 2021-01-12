@@ -2,7 +2,7 @@ package example;
 
 import java.io.BufferedReader;
 /**
- * Copyright 2020 Serguei Kouzmine
+ * Copyright 2021 Serguei Kouzmine
  */
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,20 +18,11 @@ import java.util.List;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import com.urbancode.ud.client.ApplicationClient;
-import com.urbancode.ud.client.ComponentClient;
-import com.urbancode.ud.client.ResourceClient;
 
 /*
  * This example exercises
@@ -45,8 +36,7 @@ public class GetApplicationEnvironmentResources extends Common {
 	private static String text;
 	private static boolean debug = false;
 
-	private static final List<String> fields = Arrays.asList("id", "name",
-			"description");
+	private static final List<String> fields = Arrays.asList("id", "name", "description");
 
 	// NOTE: similar situation with /cli/resource/getPrroperties "REST" API
 	// missing from
@@ -60,8 +50,7 @@ public class GetApplicationEnvironmentResources extends Common {
 	private static final List<String> names = new ArrayList<>();
 	private static final List<String> ids = new ArrayList<>();
 
-	public static void main(String[] args)
-			throws URISyntaxException, IOException, JSONException {
+	public static void main(String[] args) throws URISyntaxException, IOException, JSONException {
 
 		configure(args);
 		commandLineParser.saveFlagValue("application");
@@ -81,30 +70,24 @@ public class GetApplicationEnvironmentResources extends Common {
 				return;
 			}
 			// explore resource hierarchy
-			applicationClient = new CustomApplicationClient(new URI(server), user,
-					password);
+			applicationClient = new CustomApplicationClient(new URI(server), user, password);
 
 			if (applicationClient == null) {
-				throw new RuntimeException(String.format(
-						"failed to connect to server %s as user: %s / password: %s", server,
-						user, password));
+				throw new RuntimeException(String.format("failed to connect to server %s as user: %s / password: %s",
+						server, user, password));
 			}
 			if (op.equalsIgnoreCase("list")) {
-				agentDataArray = applicationClient
-						.getApplicationEnvironments(application, "true", "false");
+				agentDataArray = applicationClient.getApplicationEnvironments(application, "true", "false");
 				for (index = 0; index < agentDataArray.length(); index++) {
 					names.add(agentDataArray.getJSONObject(index).getString("name"));
 					ids.add((String) agentDataArray.getJSONObject(index).get("id"));
 				}
 				System.err.println(String.join("\n", names));
 				for (String id : ids) {
-					JSONArray environmentResourceJsonArray = applicationClient
-							.getEnvironmentResources(id);
-
-					for (int index2 = 0; index2 != environmentResourceJsonArray
-							.length(); index2++) {
-						JSONObject environmentResourceObject = environmentResourceJsonArray
-								.getJSONObject(index2);
+					JSONArray environmentResourceJsonArray = applicationClient.getEnvironmentResources(id);
+					System.err.println("environment id: " + id);
+					for (int index = 0; index != environmentResourceJsonArray.length(); index++) {
+						JSONObject environmentResourceObject = environmentResourceJsonArray.getJSONObject(index);
 						for (String field : fields) {
 							if (environmentResourceObject.getString(field) != null
 									&& environmentResourceObject.getString(field) != "") {
@@ -117,27 +100,13 @@ public class GetApplicationEnvironmentResources extends Common {
 				}
 			}
 		}
-
-		/*
-				for (int i = 0; i < resultJSON.length(); i++) {
-						JSONObject snapshotJson = (JSONObject) resultJSON.get(i);
-						String resultName = (String) snapshotJson.get("name");
-						String resultId = (String) snapshotJson.get("id");
-						if (snapshot.equals(resultName) || snapshot.equals(resultId)) {
-							result = snapshotJson;
-							break;
-						}
-					}
-		
-		 * */
 	}
 
 	// TODO: move to Common
 	public static String readRawJSON(String url) throws IOException {
 		InputStream is = new URL(url).openStream();
 		try {
-			BufferedReader rd = new BufferedReader(
-					new InputStreamReader(is, Charset.forName("UTF-8")));
+			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 			text = readAll(rd);
 			if (debug)
 				System.err.println("Read JSON data: " + text);
@@ -148,8 +117,7 @@ public class GetApplicationEnvironmentResources extends Common {
 	}
 
 	// TODO: move to Common
-	public static JSONArray readJSONArray(String url)
-			throws IOException, JSONException {
+	public static JSONArray readJSONArray(String url) throws IOException, JSONException {
 		text = readRawJSON(url);
 		if (debug)
 			System.err.println("Read JSON data: " + text);
@@ -168,16 +136,13 @@ public class GetApplicationEnvironmentResources extends Common {
 	}
 
 	public static class CustomApplicationClient extends ApplicationClient {
-		public CustomApplicationClient(URI url, String clientUser,
-				String clientPassword) {
+		public CustomApplicationClient(URI url, String clientUser, String clientPassword) {
 			super(url, clientUser, clientPassword);
 		}
 
-		public JSONArray getEnvironmentResources(String environmentId)
-				throws IOException, JSONException {
+		public JSONArray getEnvironmentResources(String environmentId) throws IOException, JSONException {
 			JSONArray result = null;
-			String uri = url + "/rest/deploy/environment/" + encodePath(environmentId)
-					+ "/resources";
+			String uri = url + "/rest/deploy/environment/" + encodePath(environmentId) + "/resources";
 
 			HttpGet method = new HttpGet(uri);
 			CloseableHttpResponse response = invokeMethod(method);
