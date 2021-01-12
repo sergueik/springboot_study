@@ -40,29 +40,23 @@ import com.urbancode.ud.client.ResourceClient;
  * and own "extension" method CustomApplicationClient.getSnapshots
  * file:///home/sergueik/src/springboot_study/basic-ucd/uDeployRestClient/docs/index.html
  * */
-public class GetApplicationSnapshots extends Common {
+public class GetApplicationEnvironmentResources extends Common {
 	private static JSONArray jsonArray = null;
 	private static String text;
 	private static boolean debug = false;
 
-	private static final List<String> componentFields = Arrays.asList("id",
-			"name", "description");
-	// the "desiredVersions" processed separately
-	private static final List<String> versionFields = Arrays.asList("id", "name",
-			"created", "description");
+	private static final List<String> fields = Arrays.asList("id", "name",
+			"description");
 
 	// NOTE: similar situation with /cli/resource/getPrroperties "REST" API
 	// missing from
 	// com.urbancode.ud.client.ResourceClient class
 	private static CustomApplicationClient applicationClient;
-	private static JSONObject componentData;
-	private static JSONArray componentDataArray;
-	private static boolean status = false;
+	private static JSONArray agentDataArray;
 	private static int index;
-
+	private String id;
 	private static String data;
 	private static String application;
-	private static String snapshot;
 	private static final List<String> names = new ArrayList<>();
 	private static final List<String> ids = new ArrayList<>();
 
@@ -70,9 +64,7 @@ public class GetApplicationSnapshots extends Common {
 			throws URISyntaxException, IOException, JSONException {
 
 		configure(args);
-		commandLineParser.saveFlagValue("data");
 		commandLineParser.saveFlagValue("application");
-		commandLineParser.saveFlagValue("snapshot");
 		commandLineParser.saveFlagValue("op");
 		commandLineParser.parse(args);
 
@@ -98,57 +90,31 @@ public class GetApplicationSnapshots extends Common {
 						user, password));
 			}
 			if (op.equalsIgnoreCase("list")) {
-				componentDataArray = applicationClient.getSnapshots(application);
-				for (index = 0; index < componentDataArray.length(); index++) {
-					names.add(componentDataArray.getJSONObject(index).getString("name"));
-					ids.add((String) componentDataArray.getJSONObject(index).get("id"));
+				agentDataArray = applicationClient
+						.getApplicationEnvironments(application, "true", "false");
+				for (index = 0; index < agentDataArray.length(); index++) {
+					names.add(agentDataArray.getJSONObject(index).getString("name"));
+					ids.add((String) agentDataArray.getJSONObject(index).get("id"));
 				}
 				System.err.println(String.join("\n", names));
-			}
-			if (op.equalsIgnoreCase("confirm")) {
+				for (String id : ids) {
+					JSONArray environmentResourceJsonArray = applicationClient
+							.getEnvironmentResources(id);
 
-				snapshot = commandLineParser.getFlagValue("snapshot");
-				if (snapshot == null) {
-					System.err.println("Missing required argument: snapshot");
-					return;
+					for (int index2 = 0; index2 != environmentResourceJsonArray
+							.length(); index2++) {
+						JSONObject environmentResourceObject = environmentResourceJsonArray
+								.getJSONObject(index2);
+						for (String field : fields) {
+							if (environmentResourceObject.getString(field) != null
+									&& environmentResourceObject.getString(field) != "") {
+								System.out.println(String.format("      %s: \"%s\"", field,
+										environmentResourceObject.getString(field)));
+							}
+						}
+
+					}
 				}
-				try {
-					// ignore the result details
-					applicationClient.getSnapshot(application, snapshot);
-					status = true;
-					System.err.println(
-							String.format("Snapshot \"%s\" confirmed to be valid", snapshot));
-				} catch (IOException e) {
-					System.err.println("Exception (collected): " + e.getMessage());
-					status = false;
-				}
-				System.err.println("Status: " + status);
-			}
-		} else {
-			componentDataArray = readJSONArray(data);
-			for (index = 0; index < componentDataArray.length(); index++) {
-				names.add(componentDataArray.getJSONObject(index).getString("name"));
-				ids.add((String) componentDataArray.getJSONObject(index).get("id"));
-			}
-			if (op.equalsIgnoreCase("list")) {
-				System.err.println(String.join("\n", names));
-			}
-			if (op.equalsIgnoreCase("confirm")) {
-				snapshot = commandLineParser.getFlagValue("snapshot");
-				if (snapshot == null) {
-					System.err.println("Missing required argument: snapshot");
-					return;
-				}
-				if (names.contains(snapshot)) {
-					status = true;
-					System.err.println(
-							String.format("Snapshot \"%s\" confirmed to be valid", snapshot));
-				} else {
-					System.err
-							.println(String.format("Snapshot \"%s\" is not valid", snapshot));
-					status = false;
-				}
-				System.err.println("Status: " + status);
 			}
 		}
 
@@ -207,24 +173,16 @@ public class GetApplicationSnapshots extends Common {
 			super(url, clientUser, clientPassword);
 		}
 
-		public JSONArray getSnapshots(String application)
+		public JSONArray getEnvironmentResources(String environmentId)
 				throws IOException, JSONException {
+			JSONArray result = null;
+			String uri = url + "/rest/deploy/environment/" + encodePath(environmentId)
+					+ "/resources";
 
-			// Final path parameter is true/false for inactive snapshots
-			// String uri = url + "/rest/deploy/application/" +
-			// encodePath(application)
-			// + "/snapshots/false";
-			// HttpGet method = new HttpGet(uri);
-
-			// NOTE: invokeMethod is protected in UDRestClient
-			// HttpResponse response = invokeMethod(method);
-			// String body = getBody((CloseableHttpResponse) invokeMethod(method));
-			// JSONArray resultJSON = new JSONArray(body);
-			// return resultJSON;
-			return new JSONArray(getBody((CloseableHttpResponse) invokeMethod(
-					new HttpGet(url + "/rest/deploy/application/"
-							+ encodePath(application) + "/snapshots/false"))));
+			HttpGet method = new HttpGet(uri);
+			CloseableHttpResponse response = invokeMethod(method);
+			result = new JSONArray(getBody(response));
+			return result;
 		}
-
 	}
 }

@@ -125,6 +125,7 @@ public class GetApplicationSnapshotVersions extends Common {
 		}
 	}
 
+	// TODO: move to Common
 	public static String readRawJSON(String url) throws IOException {
 		InputStream is = new URL(url).openStream();
 		try {
@@ -139,6 +140,7 @@ public class GetApplicationSnapshotVersions extends Common {
 		}
 	}
 
+	// TODO: move to Common
 	public static JSONArray readJSONArray(String url)
 			throws IOException, JSONException {
 		text = readRawJSON(url);
@@ -148,6 +150,7 @@ public class GetApplicationSnapshotVersions extends Common {
 		return jsonArray;
 	}
 
+	// TODO: move to Common
 	private static String readAll(Reader rd) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		int cp;

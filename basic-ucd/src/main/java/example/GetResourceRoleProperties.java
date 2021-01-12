@@ -71,6 +71,8 @@ public class GetResourceRoleProperties extends Common {
 		// getResourceRolePropertyForResource
 		// getResourceRolesAsStrings
 		// setResourceRoleProperty
+		// in https://github.com/UrbanCode/uDeployRestClient/blob/master/src/main/java/com/urbancode/ud/client/ResourceClient.java
+
 		JSONObject roleJSONObject = resourceClient.getResourceRoleByName(agent);
 		String id3 = "172f1d3c-3665-6fd2-1c71-f0e67ec633c5";
 		System.out
