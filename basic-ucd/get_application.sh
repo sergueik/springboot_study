@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [[ -z "${DEBUG}" ]] ; then
+  # when DEBUG was not set explicitly, default it to false
+  DEBUG='false'
+fi
 rawurlencode() {
 # based on: https://gist.github.com/moyashi/4063894
 # see also https://stackoverflow.com/questions/32273446/encode-url-variable-with-curl
@@ -25,8 +29,10 @@ if [ -z "$AUTHENTICATION" ] ; then
     read -s PASSWORD
     echo ''
   fi
+# NOTE: when echo for debugging, need to add quote if the password contains special characters
 AUTHENTICATION="-u $USERNAME:$PASSWORD"
-fi 
+AUTHENTICATION_DISPLAY="-u '$USERNAME:$PASSWORD'"
+fi
 BASE_URL='https://localhost:8443'
 APPLICATION_NAME=${1:-Test_Application}
 echo "APPLICATION_NAME:=${APPLICATION_NAME}"
@@ -34,6 +40,11 @@ API="/cli/application/info?application=${APPLICATION_NAME}"
 OPTIONS='-cr'
 QUERY='.id'
 # NOTE: pay attention to avoid '//' after contatinating $BASE_URL with $API
+
+if [[ "${DEBUG}" = 'true' ]] ; then
+  echo "curl -k $AUTHENTICATION_DISPLAY \"${BASE_URL}${API}\" 2>/dev/null| jq $OPTIONS \"$QUERY\""
+fi
+echo
 APPLICATION_ID=$(curl -k $AUTHENTICATION "${BASE_URL}${API}" 2>/dev/null| jq $OPTIONS $QUERY)
 echo "APPLICATION_ID (*): ${APPLICATION_ID}"
 
@@ -99,7 +110,7 @@ for CNT in $(seq 0 $MAX_INDEX) ; do
     continue
   fi
   # additional REST calls
-  # it will return JSON with application GUID 
+  # it will return JSON with application GUID
   # but without the environment resource GUID
   API="/rest/deploy/environment/${VALUE}"
   # echo "API=${API}"
@@ -114,7 +125,7 @@ for CNT in $(seq 0 $MAX_INDEX) ; do
   # echo "API=${API}"
   OPTIONS='-cr'
   QUERY='.[]|.id'
-  # NOTE: the response may be empty - it will find top level group in the environment after it is added via 'Add Base Resource' 
+  # NOTE: the response may be empty - it will find top level group in the environment after it is added via 'Add Base Resource'
   # 'Environment: TEST-WEST for Test_Application '
   TMP_FILE3=/tmp/c$$.json
   curl -k $AUTHENTICATION "${BASE_URL}${API}" 2>/dev/null| jq $OPTIONS $QUERY| tee $TMP_FILE3 > /dev/null
