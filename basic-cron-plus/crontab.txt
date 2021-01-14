@@ -1,0 +1,2 @@
+# Run the cron every minute
+* * * * * /usr/local/bin/script.sh >> /var/log/script.log
