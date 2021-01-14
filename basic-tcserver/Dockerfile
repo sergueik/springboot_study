@@ -29,7 +29,7 @@ RUN cd ~
 RUN yum install -qy java-1.8.0-openjdk-devel
 # ENV JAVA_HOME /usr/java/jdk1.8.0_111/jre
 
-# TODO
+# TODO collect output of $(dirname $(/usr/bin/readlink /etc/alternatives/java))
 ENV JAVA_HOME /usr/lib/jvm/java-1.8.0-openjdk-1.8.0.275.b01-0.el7_9.x86_64/jre
 # install tcserver instance (01)
 RUN mkdir -p /web/tcserver
@@ -49,4 +49,4 @@ RUN /web/tcserver/01/bin/tcruntime-ctl.sh start /web/tcserver/01
 #CMD [ "/web/tcserver/01/bin/tcruntime-ctl.sh", "start", "/web/tcserver/01" ]
 
 # TODO: JAVA_HOME
-# CMD /web/tcserver/01/bin/tcruntime-ctl.sh start && tail -f /web/tcserver/01/logs/catalina.out
+CMD /web/tcserver/01/bin/tcruntime-ctl.sh start && tail -f /web/tcserver/01/logs/catalina.out
