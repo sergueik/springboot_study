@@ -1,8 +1,13 @@
 #!/bin/bash
 # Steps:
 # 1. /cli/resource/parent?=$ENVIRONMENT_RESOURCE_ID => $AGENT_NAME
+# 1a (alternative) /rest/resource/resource/$ENVIRONMENT_RESOURCE_ID/resources
+# This call is quite universal
+# /rest/resource/resource/resources | jq '.[]|.id'  => top level resources
+#- can have agents, pools, groups
 # 2. /cli/resource/parent?=$AGENT_NAME_URLECODED => $COMPONENT_ID based on $COMPONENT_NAME
 # 3. /rest/resource/resource/$COMPONENT_ID/roles => propDefs
+
 # 4. /rest/resource/resource/$COMPONENT_ID => JSON with several useful nodes:
 # QUERY='.role,.roleProperties'
 # OPTIONS=
@@ -19,6 +24,7 @@ UCD_URL=https://localhost:8443
 # read -sp 'Enter user: ' USERNAME
 # read -sp 'Enter password: ' PASSWORD
 # AUTHENTICATION="-u $USERNAME:$PASSWORD" 
+# AUTHENTICATION_DISPLAY="-u '$USERNAME:$PASSWORD'" 
 
 # Extract the parameters of in 'Edit' dialog shown in resource tree
 TMP_FILE=/tmp/a$$.txt
