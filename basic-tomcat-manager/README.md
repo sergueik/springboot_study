@@ -163,7 +163,7 @@ sec-fetch-site	none
 upgrade-insecure-requests	1
 ```
 * reconnect into container shell and  examine permissions of the log:
-```
+```sh
 docker exec -it $CONTAINER_ID sh
 ```
 then confirm tomcat uses the configuration file we confirmed the location earlier (the `/opt/tomcat/conf/log4j2.xml`)
@@ -357,12 +357,44 @@ copy the  `log4j2.xml` into container lib:
 docker cp src/main/resources/log4j2.xml $CONTAINER:/opt/tomcat/lib
 ```
 observe the logging to resume
-### Cleanup
+
+### Application Propeties
+
 ```sh
-docker stop $NAME
-docker container prune -f
-docker image rm $IMAGE
+docker container exec -it  $(docker container ls -a | grep $NAME | awk '{print $1}')  sh
 ```
+in the instance
+```
+find /opt/tomcat/webapps/demo -iname 'application.properties'
+```
+```sh
+/opt/tomcat/webapps/demo/WEB-INF/classes/application.properties
+```
+
+remove
+```sh
+rm /opt/tomcat/webapps/demo/WEB-INF/classes/application.properties
+```
+observe
+```sh
+curl -k  http://localhost:8080/demo/Demo?a=1
+```
+still be able to load properies:
+```html
+<hr/>properties: application.setting = value
+
+```
+NOTE: token expansion not taking place
+after placing
+```sh
+application.value = value
+application.setting = ${application.value
+```
+see the raw value w/o token expansion
+```html
+<hr/>properties: application.setting = ${application.value}
+```
+
 ### TODO:
 
 Still not properly configured logging. With `log4j2.debug` set to `true` logs numwerous attempts to find configuration files
@@ -425,12 +457,31 @@ env | grep log4j.configurationFile=
 log4j.configurationFile=/conf/log4j2.xm
 ```
 
+errors observed in
+```sh
+mvn tomcat:run-war
+```
+```sh
+INFO: validateJarFile(/home/sergueik/src/springboot_study/basic-tomcat-manager/target/example.managed_app/WEB-INF/lib/javax.servlet-api-3.1.0.jar) - jar not loaded. See Servlet Spec 2.3, section 9.7.2. Offending class: javax/servlet/Servlet.class
+```
+possibly contributing to
+```sh
+curl  -I -k  http://localhost:8080/demo/Demo?a=123
+HTTP/1.1 400 Bad Request
+Server: Apache-Coyote/1.1
+Transfer-Encoding: chunked
+Date: Fri, 15 Jan 2021 20:52:28 GMT
+Connection: close
+```
+
 ### Cleanup
 ```sh
 docker container stop $CONTAINER_ID
 docker container rm -f $CONTAINER_ID
 docker image prune -f
 ```
+### TODO:
+
 ### See Also:
   * official [HOWTO](https://tomcat.apache.org/tomcat-8.5-doc/manager-howto.html#Stop_an_Existing_Application)
   * [Guide to Tomcat Manager Application](https://www.baeldung.com/tomcat-manager-app)
@@ -452,3 +503,4 @@ This project is licensed under the terms of the MIT license.
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+

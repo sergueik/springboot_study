@@ -2,6 +2,8 @@ package example;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -86,25 +88,80 @@ public class DemoServlet extends HttpServlet implements Servlet {
 			final HttpServletResponse response) throws ServletException, IOException {
 		// @formatter:off
 		message = doPayload(request);
+		String properties = doProperties();
 		String html = String.format(
-				"<html><head><title>Demo</title></head>" + "<body>You requested=[%s?%s]"
-						+ "<hr/>"
-						+ "%s "
-						+ "<hr/>"
-						+ "%s "
-						+ "</body></html>",
+			"<html><head><title>Demo</title></head>" 
+			+ "<body>You requested=[%s?%s]\n"
+			+ "<hr/>"
+			+ "response: %s\n"
+			+ "<hr/>"
+			+ "properties: %s\n"
+			+ "<hr/>"
+			+ "headers %s\n"
+			+ "</body></html>",
 		// @formatter:on
 
-				request.getRequestURL(), request.getQueryString(), message,
+		request.getRequestURL(), request.getQueryString(), message, properties,
 				Utils.printHeadersInfo(Utils.getHeadersInfo(request)));
 
 		// NOTE: when no Log4j2 configuration file found in CLASSPATH, log4j
 		// considers
 		// itself not configured and switches to default configuration: logging the
 		// errors to console only
+
 		response.setContentType("text/html");
 		response.getOutputStream().println(html);
 
 	}
 
+	// Added method solely to execute property file loading exercise, needed for tcserver	
+	private String doProperties() {
+		String message = null;
+		BufferedReader bufferedReader = null;
+		StringBuffer stringBuffer = new StringBuffer();
+		Properties properties = new Properties();
+		InputStream input = null;
+		// TODO: define on the page, pass through taglib
+		String propertiesFile = "application.properties";
+		String propertiesPath = "/opt/tomcat/conf";
+		String propertyName = "application.setting";
+		try {
+			// TODO: prepend server root
+			// input = new FileInputStream(propertiesFile);
+			input = Thread.currentThread().getContextClassLoader()
+					.getResourceAsStream(propertiesFile);
+			if (input == null) {
+
+				System.err.println("Failed to get properties file resource as stream: "
+						+ propertiesFile);
+				stringBuffer.append("Failed to get properties file resource as stream: "
+						+ propertiesFile);
+			} else {
+				properties.load(input);
+				System.err.println(
+						propertyName + " = " + properties.getProperty(propertyName));
+				stringBuffer.append(
+						propertyName + " = " + properties.getProperty(propertyName));
+			}
+		} catch (IOException e) {
+			stringBuffer.append("Exception: " + e.toString());
+			System.err.println("Exception: " + e.toString());
+		} catch (Exception e) {
+			stringBuffer.append("Exception: " + e.toString());
+			System.err.println("Exception: " + e.toString());
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					stringBuffer.append("Exception: " + e.toString());
+					System.err.println("Exception: " + e.toString());
+				}
+			}
+		}
+		if (message == null) {
+			message = stringBuffer.toString();
+		}
+		return message;
+	}
 }
