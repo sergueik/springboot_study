@@ -37,6 +37,7 @@ out.println("Request URL: " + request.getRequestURL());
 Map<String, String> map = System.getenv();
 // TODO: define on the page, pass through taglib
 String key = "APP_SERVER";
+out.println("Environment: ");
 out.println(key + " = " + System.getenv(key));
 
 Properties properties = new Properties();
