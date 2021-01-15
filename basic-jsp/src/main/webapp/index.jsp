@@ -6,6 +6,11 @@
 <%@ page import="java.util.Set" %>
 <%@ page import="java.net.InetAddress" %>
 <%@ page import="java.net.UnknownHostException" %>
+<%@ page import="java.io.IOException" %>
+<%@ page import="java.util.Properties" %>
+<%@ page import="java.io.InputStream" %>
+<%@ page import="java.io.FileInputStream" %>
+<%@ page import="java.io.FileNotFoundException" %>
 <html><body><pre><%!
 
 public String getString(String name, Object value) {
@@ -14,7 +19,6 @@ public String getString(String name, Object value) {
   if (value != null) {
     sb.append("\nClass : ").append(value.getClass().getName());
     sb.append("\nString: '").append(String.valueOf(value)).append("'");
-
   } else {
     sb.append(" (null)");
   }
@@ -31,8 +35,62 @@ try {
 out.println("Request URL: " + request.getRequestURL());
 // print specific environment value
 Map<String, String> map = System.getenv();
+// TODO: define on the page, pass through taglib
 String key = "APP_SERVER";
 out.println(key + " = " + System.getenv(key));
+
+Properties properties = new Properties();
+InputStream input  = null;
+// TODO: define on the page, pass through taglib
+String propertiesFile = "application.properties";
+String propertiesPath = "/opt/tomcat/conf";
+String propertyName = "application.setting";
+try {
+  // TODO: prepend server root
+  // input = new FileInputStream(propertiesFile); 
+  input = Thread.currentThread().getContextClassLoader().getResourceAsStream(propertiesFile);
+  if (input == null ) { 
+    out.println("Failed to get properties file resource as stream: " + propertiesFile );
+  } else {
+    properties.load(input);
+    out.println(propertyName + " = " + properties.getProperty(propertyName));
+  }
+} catch (IOException e) {
+  out.println("Exception: " + e.toString());
+} catch (Exception e) {
+out.println("Exception: " + e.toString());
+} finally {
+  if (input != null) {
+    try {
+      input.close();
+    } catch (IOException e) {
+      out.println("Exception: " + e.toString());
+    }
+  }
+}
+
+try {
+  // TODO: prepend server root
+  input = new FileInputStream(propertiesPath + "/" + propertiesFile); 
+  if (input == null ) { 
+    out.println("Failed to load properties from local file: " + propertiesPath + "/" + propertiesFile);
+  } else {
+    properties.load(input);
+    out.println(propertyName + "(from file) = " + properties.getProperty(propertyName));
+  }
+} catch (IOException e) {
+  out.println("Exception: " + e.toString());
+} catch (Exception e) {
+out.println("Exception: " + e.toString());
+} finally {
+  if (input != null) {
+    try {
+      input.close();
+    } catch (IOException e) {
+      out.println("Exception: " + e.toString());
+    }
+  }
+}
 
 /*
   StringBuffer sb = new StringBuffer();

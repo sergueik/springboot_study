@@ -4,7 +4,7 @@
   <groupId>example</groupId>
   <artifactId>dummy</artifactId>
   <packaging>war</packaging>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <name>dummy</name>
   <url>http://maven.apache.org</url>
   <dependencies>
