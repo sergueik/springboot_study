@@ -4,8 +4,10 @@ Origin: [Centos7/JDK8 tcserver 3.5](https://github.com/rbosse/pivotal-tc-server)
 ### Usage
 ```sh
 export IMAGE_NAME=tcserver-orig
+export NAME='tcserver-container'
 docker build -t $IMAGE_NAME -f Dockerfile.orig .
-docker run -it -t $IMAGE_NAME
+docker run -d --name $NAME -t $IMAGE_NAME
+docker logs $NAME
 ```
 The original image has some issues with launching `tc_server`...
 
@@ -16,7 +18,8 @@ docker build -t $IMAGE_NAME -f Dockerfile .
 docker container ls -a | grep  $IMAGE_NAME | awk '{print $1}'  | xargs docker container rm
 ```
 ```sh
-docker run -it -p 8080:8080  -t $IMAGE_NAME
+docker run -d --name $NAME -t $IMAGE_NAME
+docker logs $NAME
 ```
 if it does not work, comment the
 ```sh
@@ -25,16 +28,26 @@ CMD /web/tcserver/01/bin/tcruntime-ctl.sh start && tail -f /web/tcserver/01/logs
  line and launch the tc_server  interactively:
 
 ```sh
-docker run -it -p 8080:8080  -t $IMAGE_NAME sh
+export NAME='tcserver-container'
+docker exec -it $NAME sh
 ```
 ```sh
 /web/tcserver/01/bin/tcruntime-ctl.sh start /web/tcserver/01
 ```
 and stay in the shell
 
-
-
-
+```sh
+docker cp dummy.war $NAME:/web/tcserver/01/webapps
+```
+and restart the server
+```sh
+export NAME='tcserver-container'
+docker exec -it $NAME sh
+```
+```sh
+/web/tcserver/01/bin/tcruntime-ctl.sh stop
+/web/tcserver/01/bin/tcruntime-ctl.sh start
+```
 
 ### See Also
 

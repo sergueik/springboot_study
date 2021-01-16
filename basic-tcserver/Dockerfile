@@ -12,10 +12,21 @@ RUN yum install -q -y pivotal-tc-server-standard-3.2.1-RELEASE
 # install tcserver instance (01)
 RUN mkdir -p /web/tcserver
 RUN /opt/pivotal/pivotal-tc-server-standard/tcruntime-instance.sh create -i /web/tcserver 01
-
 # add default manager.war
 ADD webapps/manager.war /web/tcserver/01/webapps
+# Add to CLASSPATH
+# NOTE: noticed high CPU load after adding
+# RUN echo "CLASSPATH=\"\$CLASSPATH\":/web/tcserver/01/conf" | tee -a /web/tcserver/01/bin/setenv.sh
+# RUN echo "CLASSPATH=/web/tcserver/01/conf" | tee -a /web/tcserver/01/bin/setenv.sh
+RUN printf "\n\
+if [ ! -z \"\$CLASSPATH\" ] ; then\n\
+  CLASSPATH=\$CLASSPATH:/web/tcserver/01/conf\n\
+else\n\
+  CLASSPATH=/web/tcserver/01/conf\n\
+fi\n\
+" | tee -a /web/tcserver/01/bin/setenv.sh
 
+ADD application.properties /web/tcserver/01/conf/
 # NOTE: the tcserver instance start command cannot be used as ENRTYPOINT
 # as it quits shortly
 RUN touch /web/tcserver/01/logs/catalina.out

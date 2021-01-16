@@ -9,7 +9,8 @@ RUN mkdir /opt && ln -s /usr/local/tomcat ${CATALINA_HOME}
 ADD "target/${app_war}" ${CATALINA_HOME}/webapps/demo.war
 ADD catalina.sh ${CATALINA_HOME}/bin/catalina.sh 
 ADD src/main/webapp/application.properties ${CATALINA_HOME}/conf/
-RUN echo "export CLASSPATH=\$CLASSPATH:/opt/tomcat/conf" | tee ${CATALINA_HOME}/bin/setenv.sh
+RUN echo "application.value = value" | tee -a ${CATALINA_HOME}/conf/catalina.properties
+RUN echo "export CLASSPATH=\$CLASSPATH:/opt/tomcat/conf" | tee -a ${CATALINA_HOME}/bin/setenv.sh
 
 EXPOSE 8080
 ENTRYPOINT ${CATALINA_HOME}/bin/catalina.sh run $@

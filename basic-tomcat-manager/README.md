@@ -388,7 +388,7 @@ NOTE: token expansion not taking place
 after placing
 ```sh
 application.value = value
-application.setting = ${application.value
+application.setting = ${application.value}
 ```
 see the raw value w/o token expansion
 ```html

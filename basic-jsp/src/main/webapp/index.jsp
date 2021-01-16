@@ -46,6 +46,8 @@ InputStream input  = null;
 String propertiesFile = "application.properties";
 String propertiesPath = "/opt/tomcat/conf";
 String propertyName = "application.setting";
+propertyName = "application.value";
+// TODO List<String>
 try {
   // TODO: prepend server root
   // input = new FileInputStream(propertiesFile); 
