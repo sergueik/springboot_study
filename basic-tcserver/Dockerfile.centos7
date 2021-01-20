@@ -1,0 +1,34 @@
+FROM parrotstream/centos-openjdk:8
+ARG ROOT_DIR="/web/tcserver"
+ARG SITE="01"
+
+EXPOSE 6969 8080 8443
+
+RUN yum install -q -y vim wget net-tools
+
+# configure yum repo
+RUN rpm --import http://packages.gopivotal.com/pub/rpm/rhel7/app-suite/RPM-GPG-KEY-PIVOTAL-APP-SUITE-EL7
+RUN yum-config-manager --add-repo http://packages.pivotal.io/pub/rpm/rhel7/app-suite/x86_64
+RUN yum install -q -y pivotal-tc-server-standard-3.2.1-RELEASE
+
+# install tcserver instance (01)
+RUN mkdir -p /web/tcserver
+RUN /opt/pivotal/pivotal-tc-server-standard/tcruntime-instance.sh create -i $ROOL_DIR $SITE
+# add default manager.war
+ADD webapps/manager.war $ROOT_DIR/01/webapps
+# Add to CLASSPATH
+# NOTE: noticed high CPU load after adding an empty entry to CLASSPATH
+# RUN echo "CLASSPATH=\"\$CLASSPATH\":$ROOT_DIR/$SITE/conf" | tee -a $ROOT_DIR/$SITE/bin/setenv.sh
+RUN printf "\n\
+if [ ! -z \"\$CLASSPATH\" ] ; then\n\
+  CLASSPATH=\$CLASSPATH:$ROOT_DIR/$SITE/conf\n\
+else\n\
+  CLASSPATH=$ROOT_DIR/$SITE/conf\n\
+fi\n\
+" | tee -a $ROOT_DIR/$SITE/bin/setenv.sh
+
+ADD application.properties $ROOT_DIR/$SITE/conf/
+# NOTE: the tcserver instance start command cannot be used as ENRTYPOINT
+# as it quits shortly
+RUN touch $ROOT_DIR/$SITE/logs/catalina.out
+CMD $ROOT_DIR/$SITE/bin/tcruntime-ctl.sh start && tail -f $ROOT_DIR/$SITE/logs/catalina.out
