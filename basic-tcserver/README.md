@@ -1,7 +1,11 @@
 ### Info
 
-Origin: [Centos7/JDK8 tcserver 3.5](https://github.com/rbosse/pivotal-tc-server)
+This directory contains [tcserver] (https://tcserver.docs.pivotal.io/4x/docs-tcserver/topics/tcserver-with-docker.html) images based on centos and alpine
+
 ### Usage
+
+### Centos based
+Origin: [Centos7/JDK8 tcserver 3.5](https://github.com/rbosse/pivotal-tc-server)
 ```sh
 export IMAGE_NAME=tcserver-orig
 export NAME='tcserver-container'
@@ -60,18 +64,27 @@ export NAME='tcserver-alpine-container'
 docker container rm $NAME
 ```
 ```sh
-docker run --name $NAME -it -t $IMAGE_NAME /bin/sh
+docker run --name $NAME -it -t $IMAGE_NAME
 ```
-follow the guide
+work in the container to finishe the settup following the [guide](https://tcserver.docs.pivotal.io/4x/docs-tcserver/topics/install-getting-started.html)
+
+
 ```sh
 export APP_DIR='/opt/pivotal/tcserver'
 export ROOT_DIR="$APP_DIR/instances"
-expoer SITE='demo-instance'
-mkdir $APP_DIR
+export SITE='demo-instance'
+mkdir -p $APP_DIR
 chdir $APP_DIR
-mv /tcserver.tar.gz/pivotal_tcserver/* .
+mv  /tcserver.tar.gz/pivotal-tc-server/* .
 export PATH=$PATH:$(pwd)/developer-4.1.5.RELEASE
-which tcserver
+```
+if there was interruption reausme as:
+```sh
+docker start $NAME
+docker exec -it $NAME sh
+```
+and continue
+```sh
 tcserver create $SITE
 mkdir $ROOT_DIR/$SITE/webapps/dummy
 ```
@@ -82,7 +95,7 @@ docker cp ../basic-jsp/src/main/webapp/application.properties  $NAME:/opt/pivota
 ```
 in the container
 ```sh
-sed -i "s|/opt/tomcat|$ROOT_DIR/$SITE|g' $ROOT_DIR/$SITE/webapps/dummy/index.jsp
+sed -i "s|/opt/tomcat|$ROOT_DIR/$SITE|g" $ROOT_DIR/$SITE/webapps/dummy/index.jsp
 echo "CLASSPATH=$ROOT_DIR/$SITE/conf" | tee -a $ROOT_DIR/$SITE/bin/setenv.sh
 ```
 ```sh
@@ -105,13 +118,16 @@ Environment:
 APP_SERVER = null
 application.value = some data
 application.value(from file) = some data
-</pre></body></html>
+</pre>
+</body></html>
 ```
+NOTE: the [encryption of the applicstion properties](ttps://tcserver.docs.pivotal.io/4x/docs-tcserver/topics/encoding-properties.html)
+still does not work (this is work in progrss). Switching from custom `application.properties` to default `catalina.properties` in `index.jsp` does not help
+the page shows the `pbkdf2://` prefixed data instead of the real password. 
+
 ### See Also
 
-  * https://tcserver.docs.pivotal.io/4x/docs-tcserver/topics/tcserver-with-docker.html
   * https://github.com/rbosse/pivotal-tc-server/blob/master/Dockerfile
   * https://dzone.com/articles/running-spring-boot-in-a-docker-container
   * https://phoenixnap.com/kb/install-java-on-centos
-  * https://stackshare.io/stackups/apache-httpd-vs-pivotal-web-services
-  * https://tcserver.docs.pivotal.io/3x/docs-tcserver/topics/intro-getting-started.html
+  * https://tcserver.docs.pivotal.io/4x/docs-tcserver/topics/intro-getting-started.html
