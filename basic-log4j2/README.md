@@ -62,7 +62,47 @@ log4j2.properties.FILE-ONLY
 ```
 remove the and rename one of the above to simply `log4j2.properties` to see it work
 
+
 ### Testing in Docker Container
+#### Basic permission check
+
+
+```sh
+IMAGE='centos:7'
+(docker container run --rm -v $(pwd)/logs:/work/logs:rw -u $(id -u ${USER}):$(id -g ${USER}) $IMAGE touch /work/logs/dummy_file ) ; ls -l logs/dummy_file
+```
+```sh
+-rw-r--r-- 1 sergueik sergueik 0 Jan 22 18:20 logs/dummy_file
+```
+NOTE: bare bones alpine images have `ENTRYPOINT`:
+
+```sh
+docker image inspect $IMAGE | jq '.[]|.Config|.Entrypoint'
+```
+```sh
+[
+  "/bin/sh",
+  "-c",
+  "[\"sh\", \"/wait_for.sh\", \"--host=${SERVICE_HOST}\" , \"--port=${SERVICE_\tPORT}\", \"--timeout=${TIMEOUT}\"]"
+]
+
+```
+this presumably is leading to the following error in the elementary command
+```sh
+IMAGE=alpine:3.9
+docker container run --rm -v $(pwd)/logs:/work/logs:rw -u $(id -u ${USER}):$(id -g ${USER}) $IMAGE touch /work/logs/dummy_file
+```
+```sh
+touch: line 1: syntax error: bad substitutio
+```
+which shows even in
+		
+```sh
+docker container run -it alpine:3.9
+```
+- compare with `centos:7` images where the same is blank
+#### Application Check
+
 ```sh
 mvn clean package
 ```
