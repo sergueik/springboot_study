@@ -16,7 +16,7 @@ func main() {
 
   log.Println("Reading " + logFilePath)
   // NOTE: no '-f' flag
-  cmd := exec.Command( "tail", "-f",  "-n 20", logFilePath)
+  cmd := exec.Command( "tail",  "-n 20", logFilePath)
   stdout, err := cmd.CombinedOutput()
 
   if err != nil {

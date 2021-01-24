@@ -19,7 +19,7 @@ docker cp $NAME:/app/example2 .
 ```sh
 IMAGE=basic-go-run
 docker build -t $IMAGE -f Dockerfile.run  .
-docker run -v /etc:/tmp/etc -it $IMAGE /usr/bin/tail -f /tmp/etc/lsb-release
+docker run -v /etc:/tmp/etc -it $IMAGE /usr/bin/tail -10 /tmp/etc/lsb-release
 ```
 ```sh
 DISTRIB_ID=Ubuntu
@@ -32,20 +32,20 @@ DISTRIB_DESCRIPTION="Ubuntu 18.04.5 LTS"
 docker run -v /etc:/tmp/etc -it $IMAGE /example1 /tmp/etc/lsb-release
 ```
 ```sh
-2021/01/24 21:53:13 Reading /tmp/etc/lsb-release
-2021/01/24 21:53:13 scanner exit
-2021/01/24 21:53:13 Waiting for command to finish...
-2021/01/24 21:53:13 cmd.Wait error: exit status 1
+2021/01/24 22:33:28 Reading /tmp/etc/lsb-release
+2021/01/24 22:33:28 failed to Start: exit status 1
 ```
 
 ```sh
 docker run -v /etc:/tmp/etc -it $IMAGE /example2 /tmp/etc/lsb-release
 ```
 ```sh
+2021/01/24 21:53:13 Reading /tmp/etc/lsb-release
+2021/01/24 21:53:13 scanner exit
+2021/01/24 21:53:13 Waiting for command to finish...
+2021/01/24 21:53:13 cmd.Wait error: exit status 1
 ```
-```sh
-docker image rm -f $NAME
-```
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
