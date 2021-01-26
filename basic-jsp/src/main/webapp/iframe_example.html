@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<html>
+  <head>
+    <title>iframe element example</title>
+  </head>
+  <!-- http://www.java2s.com/Code/HTMLCSSReference/HTML-Tag-Reference/iframeExample.htm -->
+  <body>
+    <p align="center">
+      <iframe id="frame1" frameborder="1" scrolling="yes" src="page_example.html" width="600" height="400">
+    </iframe>
+    </p>
+    <script>
+window.addEventListener('message', function(event) {
+  if (event.origin === window.location.protocol + '//' + window.location.hostname + ':' + window.location.port) {
+    confirmation_message = 'Received message: ' + event.data.message;
+  } else {
+    confirmation_message =  'Origin ' + event.origin + ' is not allowed. Need: '+window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
+  }
+  confirm(confirmation_message);
+  console.log(confirmation_message);
+  document.getElementById('messages').innerHTML += confirmation_message + '\n';
+}, false);
+    </script>
+    <br/>
+    <span id="messages"/>
+    <br/>
+    <p align="center">
+      <iframe id="frame2" frameborder="10" scrolling="yes" src="http://www.java2s.com" width="600" height="400">
+    </iframe>
+    </p>
+  </body>
+</html>

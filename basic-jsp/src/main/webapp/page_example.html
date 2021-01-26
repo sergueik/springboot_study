@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<html>
+<!-- https://stackoverflow.com/questions/935127/how-to-access-parent-iframe-from-javascript -->
+  <head>
+    <title>iframe child example</title>
+    <script>
+window.parent.postMessage({message: 'Hello world'}, window.parent.location.href ); 
+</script>
+  </head>
+  <body>
+text
+</body>
+</html>
