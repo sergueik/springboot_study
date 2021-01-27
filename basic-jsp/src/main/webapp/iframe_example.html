@@ -2,29 +2,22 @@
 <html>
   <head>
     <title>iframe element example</title>
-  </head>
-  <!-- http://www.java2s.com/Code/HTMLCSSReference/HTML-Tag-Reference/iframeExample.htm -->
-  <body>
-    <p align="center">
-      <iframe id="frame1" frameborder="1" scrolling="yes" src="page_example.html" width="600" height="400">
-    </iframe>
-    </p>
     <script>
       (function() {
 
 add_element = function() {
-    element = document.createElement('div');
-    element.id = 'messages';
-    element.style.display = 'none';
-    if (document.body != null) {
-        document.body.appendChild(element);
-    }
+  element = document.createElement('span');
+  element.id = 'messages';
+  element.style.display = 'none';
+  if (document.body != null) {
+    document.body.appendChild(element);
+  }
 }
 window.addEventListener('load', add_element);
 
 window.addEventListener('message', function(event) {
     if (event.origin === window.location.protocol + '//' + window.location.hostname + ':' + window.location.port) {
-        confirmation_message = 'Received message: ' + event.data.message;
+        confirmation_message = 'Parent received message: ' + event.data.message;
     } else {
         confirmation_message = 'Origin ' + event.origin + ' is not allowed. Need: ' + window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
     }
@@ -35,12 +28,13 @@ window.addEventListener('message', function(event) {
 }())
 
     </script>
-    <br/>
-    <span id="messages1" style="display:none"></span>
-    <br/>
+  </head>
+  <!-- http://www.java2s.com/Code/HTMLCSSReference/HTML-Tag-Reference/iframeExample.htm -->
+  <body>
     <p align="center">
-      <iframe id="frame2" frameborder="10" scrolling="yes" src="http://www.java2s.com" width="600" height="400">
+      <iframe id="frame1" frameborder="1" scrolling="yes" src="page_example.html" width="600" height="400">
     </iframe>
+    </p>
     </p>
   </body>
 </html>

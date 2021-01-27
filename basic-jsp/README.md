@@ -4,14 +4,14 @@ This directory containes basic JSP Tomcat application packaged into war file.
 ### Usage
 
 ```sh
-export IMAGE=basic-jsp
+IMAGE=basic-jsp
 mvn package
 ```
 ```sh
 docker container ls -a | grep $IMAGE| awk '{print $1}' | xargs docker container rm -f
 ```
 ```sh
-NAME='basic-jsp-container'; docker build -t $IMAGE -f Dockerfile . ;docker run --name $NAME -p 8080:8080 -d $IMAGE start
+IMAGE=basic-jsp; NAME='basic-jsp-container'; docker build -t $IMAGE -f Dockerfile . ; docker container rm -f $NAME ; docker run --name $NAME -p 8080:8080 -d $IMAGE start
 ```
 ```sh
 curl http://localhost:8080/demo
