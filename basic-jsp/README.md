@@ -11,9 +11,7 @@ mvn package
 docker container ls -a | grep $IMAGE| awk '{print $1}' | xargs docker container rm -f
 ```
 ```sh
-NAME='basic-jsp-container'
-docker build -t $IMAGE -f Dockerfile .
-docker run --name $NAME -p 8080:8080 -d $IMAGE start
+NAME='basic-jsp-container'; docker build -t $IMAGE -f Dockerfile . ;docker run --name $NAME -p 8080:8080 -d $IMAGE start
 ```
 ```sh
 curl http://localhost:8080/demo

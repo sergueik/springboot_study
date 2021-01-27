@@ -8,6 +8,15 @@
 
 // based on: https://github.com/sunnylost/navigation-timing
 (function() {
+    add_element = function() {
+        element = document.createElement('div');
+        element.id = 'data';
+        element.style.display = 'none';
+        if (document.body != null) {
+            document.body.appendChild(element);
+        }
+    }
+    window.addEventListener('load', add_element);
     get_load = function(options = {}) {
         var phases = [{
             name: 'Redirect',
@@ -83,17 +92,19 @@
         }
         data = JSON.stringify(phases);
         document.getElementById('data').innerHTML = data;
-        if (options['debug']) {
+        if (options['debug'] === true) {
             confirm(data);
         }
         //    return data;
     };
 
     window.addEventListener('load', get_load);
-}())</script>
+
+}())
+</script>
   <body>
 
-    <span id="data" style="display:none">
+    <span id="data1" style="display:none">
 </span>
 <form>
 <input type="button"
