@@ -72,7 +72,7 @@ Set-Cookie: JSESSIONID=E3470D4339275A2EFE071E98928519BD;path=/dummy/;HttpOnly
 Content-Type: text/html;charset=ISO-8859-1
 Transfer-Encoding: chunked
 ```
-curl http://localhost:8080/dummy/curl http://localhost:8080/dummy/curl http://localhost:8080/dummy/with a random `JSESSIONID`
+with a random `JSESSIONID`
 
 ### Run Dockerized Filter class
 
@@ -83,7 +83,7 @@ mvn clean package
 
 * collect vanilla `web.xml` from inside the image:
 ```sh
-export CONTAINER=$(docker ps -q)
+CONTAINER=$(docker ps -q)
 docker cp $CONTAINER:/usr/local/tomcat/conf/web.xml .
 ```
 * modify the `web.xml` manually (automation of this step is described below)
@@ -131,7 +131,7 @@ popd
 ```
 stop the conaianer (will be auto-removed)
 ```sh
-export CONTAINER=$(docker ps -q)
+CONTAINER=$(docker ps -q)
 docker stop $CONTAINER
 ```
 
@@ -151,6 +151,9 @@ mvn clean package
 popd
 ```
 
+export NAME='example-tomcat-filter'
+docker build -t $NAME -f Dockerfile .
+docker run -p 8080:8080 -d -t $NAME
 ```sh
 export CONTAINER=$(docker container ls | grep $NAME| awk '{print $1}')
 docker cp webapp/target/dummy.war $CONTAINER:/opt/tomcat/webapps/
@@ -248,9 +251,78 @@ ps ax | grep org.apache.catalina.startup.Bootstrap
 docker stop $CONTAINER; docker container rm -f $CONTAINER;docker container prune -f
 docker image rm -f $NAME; docker image prune -f
 ```
+
+
 ### TODO
 
+```sh
+export NAME='example-tomcat-filter'
+export CONTAINER=$(docker container ls | grep $NAME| awk '{print $1}')
+docker exec -it $CONTAINER sh
+```
+
+```sh
+ls -1 /opt/tomcat/lib/*jar /opt/tomcat/bin/*jar  |  while read F ; do cp $F /tmp ;done
+```
+
+```sh
+for F in annotations-api.jar bootstrap.jar catalina-ant.jar catalina-ha.jar catalina-storeconfig.jar catalina-tribes.jar catalina.jar commons-daemon.jar ecj-4.6.3.jar el-api.jar example.headers-filter.jar example.setuptool.jar jasper-el.jar jasper.jar jaspic-api.jar jsp-api.jar servlet-api.jar tomcat-api.jar tomcat-coyote.jar tomcat-dbcp.jar tomcat-i18n-es.jar tomcat-i18n-fr.jar tomcat-i18n-ja.jar tomcat-jdbc.jar tomcat-jni.jar tomcat-juli.jar tomcat-util-scan.jar tomcat-util.jar tomcat-websocket.jar websocket-api.jar ;do docker cp $CONTAINER:/tmp/$F jars ; done
+```
+```sh
+# docker cp $CONTAINER:/tmp/*jar jars
+# Error: No such container:path: f0ec8d0d00ad:/tmp/*jar
+```
+```sh
+for F  in $(ls jars ); do jar tvf jars/$F ; done
+```
+```sh
+for F  in $(ls jars ); do jar tvf jars/$F |  grep -i servlet | grep -q Filter && echo $F ;  done
+catalina.jar
+servlet-api.jar
+```
+Issue with tomcat __8.5.61__
+
+* build latest:
+```sh
+IMAGE=tomcat_8.5.61_jre8_alpine39
+docker build -t $IMAGE -f Dockerfile.build .
+```
+
+then rebuild the container
+With __8.5.61__ it is possible to perform environmenr expansion:
+```xml
+<filter> 
+  <filter-name>responseHeadersFilter</filter-name> 
+  <filter-class>example.ResponseHeadersFilter</filter-class> 
+  <init-param>
+   <param-name>Expires</param-name>
+   <param-value>${APP_SERVER}</param-value>
+  </init-param>
+</filter>
+```
+and the `setenv.sh`
+```sh 
+docker exec -t $CONTAINER cat /opt/tomcat/bin/setenv.sh
+```
+```sh
+export CLASSPATH=$CLASSPATH:/opt/tomcat/conf:/opt/tomcat/lib/servlet-api.jar:/opt/tomcat/lib/example.headers-filter.jar
+export APP_SERVER=value
+```
+
+will result in the header:
+```sh
+curl -k -I  http://localhost:8080/
+```
+```sh
+HTTP/1.1 200
+Expires: value
+Content-Type: text/html;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Fri, 29 Jan 2021 20:54:58 GMT
+```
+
 Upgrade  from __8.5.27__ to a later tomcat base image:
+
 ```sh
 docker cp $CONTAINER:/opt/tomcat/lib/tomcat-util-scan.jar .
 
@@ -281,3 +353,4 @@ head /opt/tomcat/logs/catalina.2021-01-29.log
   * https://stackoverflow.com/questions/60604514/inject-environment-variables-in-tomcat-catalina-properties-kubernetes
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+

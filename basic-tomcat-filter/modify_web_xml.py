@@ -35,13 +35,16 @@ def add_node(parent_document, parent_element, nodeData = None):
   parent_element.appendChild(child_node)
 
 # fragment of catalina web.xml modified to feature node attribute
+# NOTE: usage of the '${variable}' Powershell/Puppet notation 
+# instead of default '{variable}' Python notation
+
 filter_data = """
 <filter>
     <filter-name>${filter_name}</filter-name>
     <filter-class>${java_class}</filter-class>
     <init-param>
       <param-name>Expires</param-name>
-      <param-value>0</param-value>
+      <param-value>${value}</param-value>
     </init-param>
   </filter>
 """
@@ -58,6 +61,7 @@ parser.add_argument('--outputfile', '-o', help = 'output file', type = str, acti
 parser.add_argument('--filter_name', '-f', help = 'filter name', type = str, action = 'store')
 parser.add_argument('--java_class', '-c', help = 'java class', type = str, action = 'store')
 parser.add_argument('--url_pattern', '-u', help = 'url pattern', type = str, action = 'store')
+parser.add_argument('--value', '-v', help = 'test value', type = str, action = 'store')
 parser.add_argument('--debug', '-d', help = 'debug', action = 'store_const', const = True)
 #
 # TODO: load filter param via argument parse somehow
@@ -76,11 +80,13 @@ if args.filter_name == None :
 if args.url_pattern == None :
   args.url_pattern = '/*'
 if args.java_class == None:
-  args.java_class = 'example.responseHeadersFilter'
+  args.java_class = 'example.ResponseHeadersFilter'
+if args.value == None:
+  args.value = '${APP_SERVER}'
 
 # http://zetcode.com/python/create-dictionary/
 replacers = dict()
-replacers.update([('java_class', args.java_class),('filter_name',args.filter_name),('url_pattern', args.url_pattern)])
+replacers.update([('java_class', args.java_class),('filter_name',args.filter_name),('url_pattern', args.url_pattern), ('value', args.value)])
 xmldoc = minidom.parse(args.inputfile)
 dom_fragment_data = re.sub(r' +', ' ', re.sub(r'(\n+)', r' ', filter_data.strip()))
 child_node = minidom.parseString(replace_placeholders(dom_fragment_data, replacers)).documentElement
