@@ -72,7 +72,7 @@ Set-Cookie: JSESSIONID=E3470D4339275A2EFE071E98928519BD;path=/dummy/;HttpOnly
 Content-Type: text/html;charset=ISO-8859-1
 Transfer-Encoding: chunked
 ```
-with the random  `JSESSIONID`
+curl http://localhost:8080/dummy/curl http://localhost:8080/dummy/curl http://localhost:8080/dummy/with a random `JSESSIONID`
 
 ### Run Dockerized Filter class
 
@@ -86,10 +86,10 @@ mvn clean package
 export CONTAINER=$(docker ps -q)
 docker cp $CONTAINER:/usr/local/tomcat/conf/web.xml .
 ```
-* modify the `web.xml` manually (automation of this step is work in prorgess and described below)
+* modify the `web.xml` manually (automation of this step is described below)
 
 ```sh
-xmllint --xpath '//*[local-name()="filter-name" and text() = "responseHeadersFiltezr"]' web.xml
+xmllint --xpath '//*[local-name()="filter-name" and text() = "responseHeadersFilter"]' web.xml
 ```
 will respond with
 
@@ -200,9 +200,9 @@ if the filter fails to start
 ```
 connect to container
 ```sh
-docker exec -it $CONTAINER  sh
+docker exec -it $CONTAINER sh
 ```
-and examine sh
+and examine
 ### Building and running Setup Tool
 
 With the help of [setup tool](https://github.com/sergueik/selenium_java/tree/master/xslt-example)
@@ -248,6 +248,25 @@ ps ax | grep org.apache.catalina.startup.Bootstrap
 docker stop $CONTAINER; docker container rm -f $CONTAINER;docker container prune -f
 docker image rm -f $NAME; docker image prune -f
 ```
+### TODO
+
+Upgrade  from __8.5.27__ to a later tomcat base image:
+```sh
+docker cp $CONTAINER:/opt/tomcat/lib/tomcat-util-scan.jar .
+
+jar tvf tomcat-util-scan.jar |  grep -i digester |  grep -i proper
+org/apache/tomcat/util/digester/Digester$SystemPropertySource.class
+```
+
+leading to
+```sh
+head /opt/tomcat/logs/catalina.2021-01-29.log
+```
+```sh
+29-Jan-2021 03:21:51.447 SEVERE [main] org.apache.tomcat.util.digester.Digester.<clinit> Unable to load property source[org.apache.tomcat.util.digester.EnvironmentPropertySource].
+ java.lang.ClassNotFoundException: org.apache.tomcat.util.digester.EnvironmentPropertySource
+
+```
 ### See  Also
 
   * `davidcaste/alpine-tomcat` [Dockerfile](https://github.com/davidcaste/docker-alpine-tomcat/blob/master/tomcat8/Dockerfile.jre8)
@@ -259,6 +278,6 @@ docker image rm -f $NAME; docker image prune -f
   * [dummy catalina war](https://github.com/deepak2717/TomcatDockerWar) project
   * Log4j [tutorial](https://laliluna.com/articles/posts/log4j-tutorial.html) with Tomcat examples
   * filter in [tomcat configured though code](https://www.baeldung.com/tomcat-programmatic-setup)
-
+  * https://stackoverflow.com/questions/60604514/inject-environment-variables-in-tomcat-catalina-properties-kubernetes
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
