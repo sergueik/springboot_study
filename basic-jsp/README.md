@@ -30,6 +30,67 @@ application.setting(from file) = ${application.value}
 ### See Also
 
  * demo [app](https://github.com/vborrego/jsp-example) with bean / handler integration
+### Work in Progress
+
+Attempt to use native Tomcat [Property replacements](https://tomcat.apache.org/tomcat-8.5-doc/config/systemprops.html#Property_replacements) in custom application propetis file does not work.
+See Also:
+Note: some links still recommend using inner class
+https://stackoverflow.com/questions/53921375/tomcat-overriding-catalina-properties-from-commandline
+https://stackoverflow.com/questions/11926181/environment-system-variables-in-server-xml
+- references [inner class](https://github.com/apache/tomcat/blob/8.5.x/java/org/apache/tomcat/util/digester/Digester.java#L174). This is not needed because nothing is overriden by the inner class
+`java/org/apache/tomcat/util/digester/Digester$EnvironmentPropertySource`:
+ 
+
+# 
+```java 
+public static class EnvironmentPropertySource extends org.apache.tomcat.util.digester.EnvironmentPropertySource
+```
+however test are indicating the property expansion to not take place:
+
+With `application.properties`:
+```sh
+application.setting = ${APP_SERVER}
+```
+or
+```sh
+application.setting = ${application.value}
+application.value=${env:APP_SERVER}
+```
+the call
+```sh
+curl http://localhost:8080/demo/
+```
+shows
+```sh
+Request URL: http://localhost:8080/demo/
+Environment:
+APP_SERVER = value
+application.value = ${env:APP_SERVER}
+application.value(from file) = ${env:APP_SERVER}
+```
+Dropping the prefix does not help. Note: the regular token replacement works:
+```sh
+application.setting = ${application.value}
+application.value=${env:APP_SERVER} 
+```
+resolve `application.setting` to `${env:APP_SERVER}` (with or without prefix) verbatim.
+
+The desperate option is to explicitly include the call from into the applicationsince this is what tomcat itself is doing
+```java
+ @Override
+    public String getProperty(String key, ClassLoader classLoader) {
+        if (classLoader instanceof PermissionCheck) {
+            Permission p = new RuntimePermission("getenv." + key, null);
+            if (!((PermissionCheck) classLoader).check(p)) {
+                return null;
+            }
+        }
+        return System.getenv(key);
+    }
+```
+*  https://github.com/apache/tomcat/blob/8.5.x/java/org/apache/tomcat/util/digester/EnvironmentPropertySource.java
+#
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
