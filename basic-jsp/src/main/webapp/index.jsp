@@ -5,6 +5,7 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="java.net.InetAddress" %>
+<%@ page import="javax.servlet.ServletContext" %>
 <%@ page import="java.net.UnknownHostException" %>
 <%@ page import="java.io.IOException" %>
 <%@ page import="java.util.Properties" %>
@@ -25,35 +26,38 @@ public String getString(String name, Object value) {
   return sb.append("\n\n").toString();
 }
 %><%
-// print Server 
 try {
   String hostname = InetAddress.getLocalHost().getHostName();
   out.println("Server:" + hostname );
-} catch (UnknownHostException e) { 
+} catch (UnknownHostException e) {
 }
-// print request URL
 out.println("Request URL: " + request.getRequestURL());
-// print specific environment value
 Map<String, String> map = System.getenv();
-// TODO: define on the page, pass through taglib
-String key = "APP_SERVER";
+// TODO: define some paramters through the page through taglib
+// see also https://websphereportaltechies.wordpress.com/2013/11/26/reading-properties-file-in-jsp-using-jstl-taglib/
+List<String> keys = Arrays.asList("APP_SERVER", "CATALINA_HOME", "WINDIR", "CLASSPATH");
+// NOTE: cannot use any Java 8 semantics e.g.
+// foreach (key: keys) leads to
+// Syntax error, insert &quot;;&quot; to complete Statement
+// Lambda expressions cannot be on present on the jsp page even commented
+// see also https://stackoverflow.com/questions/40035001/lambda-expressions-in-jsp-files-will-not-compile
+// for web.xml setting
+Iterator<String> keysIterator = keys.iterator();
+String key = null;
 out.println("Environment: ");
-out.println(key + " = " + System.getenv(key));
-
+while (keysIterator.hasNext()) {
+  key = keysIterator.next();
+  out.println(key + " = " + System.getenv(key));
+}
 Properties properties = new Properties();
-InputStream input  = null;
-// TODO: define on the page, pass through taglib
 String propertiesFile = "application.properties";
-String propertiesPath = "/opt/tomcat/conf";
 String propertyName = "application.setting";
 propertyName = "application.value";
-// TODO List<String>
+InputStream input = null;
 try {
-  // TODO: prepend server root
-  // input = new FileInputStream(propertiesFile); 
   input = Thread.currentThread().getContextClassLoader().getResourceAsStream(propertiesFile);
-  if (input == null ) { 
-    out.println("Failed to get properties file resource as stream: " + propertiesFile );
+  if (input == null ) {
+    out.println("Failed to get properties file: " + propertiesFile );
   } else {
     properties.load(input);
     out.println(propertyName + " = " + properties.getProperty(propertyName));
@@ -61,7 +65,7 @@ try {
 } catch (IOException e) {
   out.println("Exception: " + e.toString());
 } catch (Exception e) {
-out.println("Exception: " + e.toString());
+  out.println("Exception: " + e.toString());
 } finally {
   if (input != null) {
     try {
@@ -72,19 +76,19 @@ out.println("Exception: " + e.toString());
   }
 }
 
+String propertiesPath = getServletContext().getRealPath(propertiesFile);
 try {
-  // TODO: prepend server root
-  input = new FileInputStream(propertiesPath + "/" + propertiesFile); 
-  if (input == null ) { 
-    out.println("Failed to load properties from local file: " + propertiesPath + "/" + propertiesFile);
+  input = new FileInputStream(propertiesPath);
+  if (input == null ) {
+    out.println("Failed to load properties file: " + propertiesPath );
   } else {
     properties.load(input);
-    out.println(propertyName + "(from file) = " + properties.getProperty(propertyName));
+    out.println("Property file \"" + propertiesPath  + "\" " + propertyName + " = " + properties.getProperty(propertyName));
   }
 } catch (IOException e) {
   out.println("Exception: " + e.toString());
 } catch (Exception e) {
-out.println("Exception: " + e.toString());
+  out.println("Exception: " + e.toString());
 } finally {
   if (input != null) {
     try {
@@ -113,5 +117,5 @@ out.println("Exception: " + e.toString());
   }
 
   out.println(sb.toString());
-*/  
+*/
 %></pre></body></html>
