@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>headers-filter</artifactId>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>HTTP-Header Servlet Filter</description>
   <properties>
@@ -16,7 +16,7 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>3.0.1</version>
+      <version>3.1.0</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
