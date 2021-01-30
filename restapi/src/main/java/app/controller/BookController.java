@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,15 @@ public class BookController {
 	@Autowired
 	private BookRepository bookRepository;
 
-	@RequestMapping(method = RequestMethod.POST)
+	@RequestMapping(value = "add", method = RequestMethod.POST)
+	public Map<String, Object> addBook(@Validated @RequestBody Book book) {
+		Map<String, Object> response = new LinkedHashMap<String, Object>();
+		response.put("message", "Book created successfully");
+		response.put("book", bookRepository.save(book));
+		return response;
+	}
+
+	@RequestMapping(value = "create", method = RequestMethod.POST)
 	public Map<String, Object> createBook(
 			@RequestBody Map<String, Object> bookMap) {
 		Book book = new Book(bookMap.get("name").toString(),

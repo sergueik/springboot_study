@@ -1,5 +1,8 @@
 package app.model;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 
 public class Book {
@@ -7,7 +10,11 @@ public class Book {
 	@Id
 	private String id;
 	private String name;
+
+	@NotNull(message = "idbn is missing")
+	@NotEmpty(message = "idbn is empty")
 	private String isbn;
+
 	private String author;
 	private int pages;
 
