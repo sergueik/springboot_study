@@ -27,7 +27,6 @@ application.setting(from file) = ${application.value}
 </pre></body></html>
 ```
 - no token expansion observed
-### See Also
 
  * demo [app](https://github.com/vborrego/jsp-example) with bean / handler integration
 ### Work in Progress
@@ -91,7 +90,13 @@ The desperate option is to explicitly include the call from into the application
 *  https://github.com/apache/tomcat/blob/8.5.x/java/org/apache/tomcat/util/digester/EnvironmentPropertySource.java
 #
 
+### See Also
 
+  * demo [app](https://github.com/vborrego/jsp-example) with bean / handler integration
+  * https://stackoverflow.com/questions/5386508/displaying-java-property-in-jsp
+  * https://tcserver.docs.pivotal.io/4x/docs-tcserver/topics/encoding-properties.html
+  * https://stackoverflow.com/questions/1140653/how-to-load-a-properties-file-into-a-jsp
+  * https://javaworld-abhinav.blogspot.com/2019/05/loading-configurationproperties-files.html
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
