@@ -17,22 +17,21 @@ window.addEventListener('load', add_element);
 
 window.addEventListener('message', function(event) {
     if (event.origin === window.location.protocol + '//' + window.location.hostname + ':' + window.location.port) {
-        confirmation_message = 'Parent received message: ' + event.data.message;
+        confirmation_message = 'Top page received message: ' + event.data.message;
     } else {
         confirmation_message = 'Origin ' + event.origin + ' is not allowed. Need: ' + window.location.protocol + '//' + window.location.hostname + ':' + window.location.port;
     }
     confirm(confirmation_message);
     console.log(confirmation_message);
-    document.getElementById('messages').innerHTML += confirmation_message + '\n';
+    document.getElementById('messages').innerHTML = confirmation_message + '\n';
 }, false);
 }())
 
     </script>
   </head>
-  <!-- http://www.java2s.com/Code/HTMLCSSReference/HTML-Tag-Reference/iframeExample.htm -->
   <body>
     <p align="center">
-      <iframe id="frame1" frameborder="1" scrolling="yes" src="child_page_example.html" width="600" height="400">
+      <iframe id="frame1" frameborder="1" scrolling="yes" src="nested_frame_example.html" width="600" height="400">
     </iframe>
     </p>
     </p>
