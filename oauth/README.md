@@ -10,3 +10,5 @@ This directory contains a replica of springboot/oath project from
   * Example [wingyplus/robotframework-serverspeclibrary](https://github.com/wingyplus/robotframework-serverspeclibrary)
   * [RESTful API with JWT](https://auth0.com/blog/implementing-jwt-authentication-on-spring-boot/)
   * [REST APIs with JWT](https://medium.com/@hantsy/protect-rest-apis-with-spring-security-and-jwt-5fbc90305cc5)
+  * [example project](https://github.com/hantsy/spring-webmvc-jwt-sample)
+  * JWT operation [diagram](https://www.javainuse.com/spring/boot-jwt)
