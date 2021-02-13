@@ -14,11 +14,19 @@ Hello basic
 ```
 * run in container
 ```sh
+IMAGE=basic-example
 mvn clean package
-docker build -f Dockerfile -t basic-example . 
-docker run -p 8086:8085 basic-example
+docker build -f Dockerfile -t $IMAGE .
+docker run -p 8086:8085 $IMAGE
 ```
-test dockerized
+* to also mount
+
+```sh
+CONTAINER=$(docker container ls | grep $IMAGE | awk '{print $1}')
+DESTINATION=$(docker inspect $CONTAINER | jq -cr '.[]|.Mounts|.[]|.Destination')
+docker exec -it $CONTAINER ls $DESTINATION
+```
+* test dockerized
 ```sh
 curl http://localhost:8086/basic
 Hello basic
