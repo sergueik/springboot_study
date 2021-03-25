@@ -2,7 +2,7 @@
 
 This directory contains a replica of [Demo client test logging project](https://github.com/dadoonet/elasticsearch-integration-tests) 
 
-indexing the test logs on ElasticSearch 7.7.1 [Virtual Box](https://app.vagrantup.com/demonium/boxes/u18-elk/versions/20191110/providers/virtualbox.box)
+indexing the test logs on ElasticSearch 7.7.1 [Virtual Box](https://app.vagrantup.com/demonium/boxes/u18-elk/versions/20191110/providers/virtualbox.box) via __ElasticSearch High Level Client__ [jar](https://www.elastic.co/guide/en/elasticsearch/client/java-rest/master/java-rest-high.html)
 
 ### Usage
 
