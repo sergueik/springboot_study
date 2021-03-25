@@ -8,24 +8,28 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.ActionRequestValidationException;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.main.MainResponse;
+// NOTE:  change ot package needed after upgrade to 7.6.1
+import org.elasticsearch.client.core.MainResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.WriteRequest;
+import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
+import static org.elasticsearch.client.RestClient.builder;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.bytes.BytesReference;
 // not available in 6.2.0
 import org.elasticsearch.client.indices.CreateIndexRequest;
-
 import org.elasticsearch.common.xcontent.XContentBuilder;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,6 +38,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.nio.file.attribute.AclEntry.Builder;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.io.FileInputStream;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -42,9 +49,12 @@ import static org.junit.Assert.assertThat;
 
 public class ElasticsearchTest {
 
-	private static final Logger logger = LogManager.getLogger(ElasticsearchTest.class);
-	private static RestHighLevelClient client;
+	private static final Logger logger = LogManager
+			.getLogger(ElasticsearchTest.class);
+	private static RestHighLevelClient client = null;
+	private static RestClient restClient = null;
 	private static final String INDEX = "scenario1";
+	private static final String INDEX2 = "scenario2";
 
 	@BeforeClass
 	public static void startElasticsearchRestClient() throws IOException {
@@ -54,36 +64,50 @@ public class ElasticsearchTest {
 		InputStream input = null;
 		String propertiesFile = "application.properties";
 		// TODO: prepend server root
-		input = new FileInputStream(
-				String.format("%s/src/test/resources/%s", System.getProperty("user.dir"), propertiesFile));
+		input = new FileInputStream(String.format("%s/src/test/resources/%s",
+				System.getProperty("user.dir"), propertiesFile));
 		properties.load(input);
-		int testClusterPort = Integer.parseInt(properties.getProperty("tests.cluster.port", "9200"));
+		int testClusterPort = Integer
+				.parseInt(properties.getProperty("tests.cluster.port", "9200"));
 		String testClusterHost = properties.getProperty("tests.cluster.host",
 				InetAddress.getLocalHost().getHostAddress());
-		String testClusterScheme = properties.getProperty("tests.cluster.scheme", "http");
-		String testClusterUser = properties.getProperty("tests.cluster.user", "elastic");
-		String testClusterPass = properties.getProperty("tests.cluster.pass", "changemenow");
+		String testClusterScheme = properties.getProperty("tests.cluster.scheme",
+				"http");
+		String testClusterUser = properties.getProperty("tests.cluster.user",
+				"elastic");
+		String testClusterPass = properties.getProperty("tests.cluster.pass",
+				"changemenow");
 
-		logger.info("Starting a client on {}://{}:{}", testClusterScheme, testClusterHost, testClusterPort);
+		logger.info("Starting a client on {}://{}:{}", testClusterScheme,
+				testClusterHost, testClusterPort);
 
 		// start a client
-		RestClientBuilder builder = getClientBuilder(new HttpHost(testClusterHost, testClusterPort, testClusterScheme),
+		RestClientBuilder builder = getClientBuilder(
+				new HttpHost(testClusterHost, testClusterPort, testClusterScheme),
 				testClusterUser, testClusterPass);
 
 		// Without xpack enabled the credentials are ignored
-		logger.info("Starting a request builder with credentials {}:{}", testClusterUser, testClusterPass);
+		logger.info("Starting a request builder with credentials {}:{}",
+				testClusterUser, testClusterPass);
 
 		client = new RestHighLevelClient(builder);
 
+		// create a plain RestClient
+		restClient = builder(
+				new HttpHost(testClusterHost, testClusterPort, testClusterScheme))
+						.build();
 		// make sure the cluster is running
 		try {
-			MainResponse info = client.info(RequestOptions.DEFAULT);
-			logger.info("Client is running against an elasticsearch cluster {}.", info.getVersion().toString());
+			RequestOptions options = RequestOptions.DEFAULT;
+			MainResponse info = client.info(options);
+			logger.info("Client is running against an elasticsearch cluster {}.",
+					info.getVersion().toString());
 		} catch (org.elasticsearch.client.ResponseException e) {
 			logger.error("Response Exception: {}", e);
-			// not reached
+			// not reached possibly becauer authentication failure is handled via
+			// RuntimeException
+			// https://stackoverflow.com/questions/2190161/difference-between-java-lang-runtimeexception-and-java-lang-exception
 			throw new RuntimeException(e);
-
 		}
 	}
 
@@ -97,12 +121,16 @@ public class ElasticsearchTest {
 
 	// see
 	// https://github.com/elastic/elasticsearch/blob/master/client/rest/src/main/java/org/elasticsearch/client/RestClientBuilder.java
-	private static RestClientBuilder getClientBuilder(HttpHost host, String username, String password) {
+	private static RestClientBuilder getClientBuilder(HttpHost host,
+			String username, String password) {
 		final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+		credentialsProvider.setCredentials(AuthScope.ANY,
+				new UsernamePasswordCredentials(username, password));
 
-		return RestClient.builder(host).setHttpClientConfigCallback(
-				httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
+		return RestClient.builder(host)
+				.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
+						.setDefaultCredentialsProvider(credentialsProvider));
+		// can use both lambda or anonymous class syntax here
 	}
 
 	@Test
@@ -110,7 +138,8 @@ public class ElasticsearchTest {
 		// remove existing index, to be sure in the number of entries found later
 		try {
 			logger.info("-> Removing index {}.", INDEX);
-			client.indices().delete(new DeleteIndexRequest(INDEX), RequestOptions.DEFAULT);
+			client.indices().delete(new DeleteIndexRequest(INDEX),
+					RequestOptions.DEFAULT);
 		} catch (ElasticsearchStatusException e) {
 			assertThat(e.status().getStatus(), is(404));
 		}
@@ -118,24 +147,28 @@ public class ElasticsearchTest {
 		// create a new index
 		// NOTE: needs 7.x
 		logger.info("-> Creating index {}.", INDEX);
-		client.indices().create(new CreateIndexRequest(INDEX), RequestOptions.DEFAULT);
+		client.indices().create(new CreateIndexRequest(INDEX),
+				RequestOptions.DEFAULT);
 
 		// index some documents
 		logger.info("-> Indexing one document in {}.", INDEX);
 		// NOTE: the data information appears to be ignored, need use some other API
-		XContentBuilder data = jsonBuilder().startObject().field("key", "data").endObject();
-		logger.info("Sending " + data.contentType() + " " + BytesReference.bytes(data).utf8ToString());
+		XContentBuilder data = jsonBuilder().startObject().field("key", "data")
+				.endObject();
+		Map<String, Object> payloadData = new HashMap<>();
+		payloadData.put("first", "string data");
+		payloadData.put("second", 100);
+		payloadData.put("third", true);
+		data = jsonBuilder().map(payloadData);
+		
+		
+		logger.info("Sending " + data.contentType() + " "
+				+ BytesReference.bytes(data).utf8ToString());
 
-		// https://github.com/elastic/elasticsearch/blob/master/server/src/main/java/org/elasticsearch/action/index/IndexRequest.java#L375
-		// https://github.com/elastic/elasticsearch/blob/v6.6.2/server/src/main/java/org/elasticsearch/action/index/IndexRequest.java#L389
-		// java.lang.IllegalArgumentException: The number of object passed must be
-		// even but was [1]
-		// filled the missing argument to have call go through
-		IndexRequest indexRequest = new IndexRequest(INDEX).source(data,
-				new Object[] { "information about the test", "more information", null, null });
-
+		IndexRequest indexRequest = new IndexRequest(INDEX).source(data);
 		try {
-			IndexResponse ir = client.index(indexRequest.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE),
+			IndexResponse ir = client.index(
+					indexRequest.setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE),
 					RequestOptions.DEFAULT);
 			logger.info("-> Document indexed with _id {}.", ir.getId());
 
@@ -145,12 +178,44 @@ public class ElasticsearchTest {
 
 		// search
 		try {
-			SearchResponse searchResponse = client.search(new SearchRequest(INDEX), RequestOptions.DEFAULT);
+			SearchResponse searchResponse = client.search(new SearchRequest(INDEX),
+					RequestOptions.DEFAULT);
 			logger.info("Response: {}", searchResponse);
 			assertThat(searchResponse.getHits().getTotalHits().value, is(1L));
 			assertThat(searchResponse.getHits().getAt(0).getIndex(), is("scenario1"));
 		} catch (ElasticsearchStatusException e) {
 			logger.info("Exception(ignored) {}", e.toString());
+		}
+	}
+
+	@Test
+	public void test5() throws IOException {
+		try {
+			Request request = new Request("PUT", INDEX2 + "/");
+			int statusCode = restClient.performRequest(request).getStatusLine()
+					.getStatusCode();
+			logger.info("-> Creating index status code {} .", statusCode);
+			assertThat(statusCode, is(200));
+		} catch (ResponseException e) {
+			assertThat(e.getResponse().getStatusLine().getStatusCode(), is(400));
+			logger.info("Got exception {}", e.getMessage());
+		}
+	}
+
+	// POST KQL
+	@Test
+	public void test6() throws IOException {
+		try {
+			Request request = new Request("POST",
+					INDEX2 + "/_update_by_query?conflicts=proceed&refresh");
+			request.setJsonEntity("{\"script\":{}, \"query\":{}}");
+			int statusCode = restClient.performRequest(request).getStatusLine()
+					.getStatusCode();
+			logger.info("-> Creating index status code {} .", statusCode);
+			assertThat(statusCode, is(200));
+		} catch (ResponseException e) {
+			assertThat(e.getResponse().getStatusLine().getStatusCode(), is(400));
+			logger.info("Got exception {}", e.getMessage());
 		}
 	}
 }
