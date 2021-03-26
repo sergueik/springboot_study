@@ -162,9 +162,9 @@ public class ElasticsearchTest {
 		payloadData.put("four", param1);
 		XContentBuilder data = jsonBuilder().map(payloadData);
 		// alternatively they have a set of chained methods
-		// XContentBuilder data = jsonBuilder().startObject().field("key", "data")
-		// .endObject();
-
+		// XContentBuilder data = jsonBuilder().startObject().field("key", "data").endObject();
+		
+		
 		logger.info("Sending " + data.contentType() + " "
 				+ BytesReference.bytes(data).utf8ToString());
 
