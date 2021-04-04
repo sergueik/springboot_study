@@ -5,22 +5,22 @@ This direcrory contains a replica of [alpine xvfb fluxbox](https://github.com/dr
 * build image
 ```sh
 IMAGE_NAME=alpine-xvfb-fluxbox
-docker build -t $IMAGE_NAME -f Dockerfile  .
+chmod +x bootstrap.sh
+docker build -t $IMAGE_NAME -f Dockerfile .
 ```
 * run container
 ```sh
 docker run -d $IMAGE_NAME
 ID=$(docker container ls | grep $IMAGE_NAME |awk '{print $1}')
-docker inspect $ID
 docker inspect $ID | jq '.[]|.NetworkSettings.Networks.bridge.IPAddress'
 ```
 * update the ipaddress of the server in connection file
 ```sh
 server=172.17.0.2:0
 ```
-* copy the connection file to
+* copy the connection file `connection.remmina` to
 ```sh
- ~/.local/share/remmina/
+/home/$(whoami)/.local/share/remmina/
 ```
 * destroy container
 ```sh
@@ -34,8 +34,11 @@ docker image rm $IMAGE_ID
 ![example](https://github.com/sergueik/springboot_study/blob/master/basic-xvfb-fluxbox/screenshots/capture.png)
 
 ### Note
-if the xvbf session starts and closes immediately, may need to adjust color depth
-
+* if the xvbf session starts and closes immediately, may need to adjust color depth
+* the config file named like
+```sh
+/home/$(whoami)/.local/share/remmina/1617557944381.remmina
+```
 ### See Also
 
 * https://github.com/FreeRDP/Remmina/wiki/Remmina-Usage-FAQ

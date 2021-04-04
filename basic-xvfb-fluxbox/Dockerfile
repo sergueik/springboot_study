@@ -6,8 +6,8 @@ RUN adduser -D -g users user
 RUN mkdir -p /home/user \
 	&& chown user:users /home/user
 
-# RUN [[ ! -d /opt ]] && mkdir -p /opt
-RUN mkdir -p /opt
+RUN sh -c 'test -d /opt || mkdir -p /opt'
+RUN test -d /opt || mkdir -p /opt
 COPY bootstrap.sh /opt
 RUN apk add xvfb x11vnc fluxbox xdpyinfo st vim terminus-font \
 	&& rm -vrf /var/cache/apk/*
