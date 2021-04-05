@@ -6,7 +6,7 @@ This direcrory contains a replica of [alpine xvfb fluxbox](https://github.com/dr
 ```sh
 IMAGE_NAME=alpine-xvfb-fluxbox
 chmod +x bootstrap.sh
-docker build -t $IMAGE_NAME -f Dockerfile .
+docker build -t $IMAGE_NAME -f Dockerfile.vanilla .
 ```
 * run container
 ```sh
@@ -21,6 +21,11 @@ server=172.17.0.2:0
 * copy the connection file `connection.remmina` to
 ```sh
 /home/$(whoami)/.local/share/remmina/
+```
+
+if you intend to run remmina from desktop or run is with the option:
+```
+remmina -c $(pwd)/connection.remmina
 ```
 * destroy container
 ```sh

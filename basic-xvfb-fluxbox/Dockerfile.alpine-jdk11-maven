@@ -1,0 +1,37 @@
+FROM azul/zulu-openjdk-alpine:11
+
+RUN adduser -D -g users user
+RUN mkdir -p /home/user \
+	&& chown user:users /home/user
+# hack for pull
+ARG REFRESHED_AT
+ENV REFRESHED_AT $REFRESHED_AT
+RUN test -d /opt || mkdir -p /opt
+
+ARG MAVEN_VERSION=3.6.3
+
+RUN apk --no-cache update
+RUN apk add --no-cache \
+  curl
+
+RUN mkdir -p /opt/maven /opt/maven/ref \
+  && curl -fsSL -o /tmp/apache-maven.tar.gz https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
+  && tar -xzf /tmp/apache-maven.tar.gz -C /opt/maven --strip-components=1 \
+  && rm -f /tmp/apache-maven.tar.gz \
+  && ln -s /opt/maven/bin/mvn /usr/bin/mvn
+# see also: https://medium.com/@migueldoctor/how-to-create-a-custom-docker-image-with-jdk8-maven-and-gradle-ddc90f41cee4
+ENV MAVEN_HOME /opt/maven
+ENV MAVEN_CONFIG "/root/.m2"
+COPY bootstrap.sh /opt
+RUN apk add xvfb x11vnc fluxbox xdpyinfo st vim terminus-font \
+	&& rm -vrf /var/cache/apk/*
+RUN sed -r -i "s/\[exec\] \(xterm\) \{xterm\}/\[exec\] \(st\) \{st -f 'xos4 Terminus-14'\}/" /usr/share/fluxbox/menu
+COPY gui /home/user/gui/
+COPY logic /home/user/logic/
+COPY pom.xml run.sh /home/user/
+RUN chown -R user /home/user
+USER user
+ENV HOME /home/user
+WORKDIR /home/user
+CMD ["/opt/bootstrap.sh"]
+
