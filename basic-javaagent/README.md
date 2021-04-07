@@ -19,11 +19,30 @@ popd
 ```
  * Build application
 ```sh
-pushd appplication
+pushd application
 mvn clean package
 popd
 ```
- * Deploy both jars into Docker container together (work in progress)
+ * run aplication directly: create a local file:
+
+```sh
+cat>index.html
+<html>
+<body></body>
+</html>
+^D
+```
+
+  * read the file it e.g.
+```sh
+curl -XGET http://localhost:8085/index.html
+```
+this will print the file back
+```html
+<html>
+<body></body>
+</html>
+```
  * run instrumented application bundle:
 
 ```sh
@@ -31,29 +50,32 @@ java -javaagent:agent/target/agent.jar -jar application/target/application.jar 8
 ```
 
 
-This will print a  detailed instrumentation about a specific method `processRequest` in the instrumented class to the console:
+This will invoke the following code that logs detailed instrumentation about a specific method matched my name `processRequest` when that method is called the instrumented class to the console:
 ```java
-	private final static String methodName = "processRequest";
-	private final static String methodMatcher = ".*" + "( |\\.)" + methodName + "\\(" + ".*";
-	@Advice.OnMethodEnter
-	static long enter(@Advice.Origin String method) throws Exception {
-
-		if (method.matches(methodMatcher)) {
-			long start = System.currentTimeMillis();
-    ...
+private final static String methodName = "processRequest";
+private final static String methodMatcher = ".*" + "( |\\.)" + methodName + "\\(" + ".*";
+@Advice.OnMethodEnter
+static long enter(@Advice.Origin String method) throws Exception {
+  if (method.matches(methodMatcher)) {
+    long start = System.currentTimeMillis();
 ```
 ```java    
-	@Advice.OnMethodExit
-	static void exit(@Advice.Origin String method, @Advice.Enter long start) throws Exception {
-		if (method.matches(methodMatcher)) {
-			long end = System.currentTimeMillis();
-			System.out.println(method +  " took " + (end - start) + " milliseconds ");
-		}
-		...
+@Advice.OnMethodExit
+static void exit(@Advice.Origin String method, @Advice.Enter long start) throws Exception {
+  if (method.matches(methodMatcher)) {
+    long end = System.currentTimeMillis();
+    System.out.println(method +  " took " + (end - start) + " milliseconds ");
+}
+}
+```
+this will print, together with application own logging messages, the following
+```sh
+private void example.httpRequestHandler.processRequest() X took 3 milliseconds
 ```
 ### Run on Docker
+* Deploy both jars into Docker container together (work in progress)
 
-* repackage  or use already packaged earlier
+* repackage or use already packaged earlier
 ```sh
 pushd  agent
 mvn package
@@ -83,17 +105,18 @@ curl http://localhost:8085/index.html
 ```
 * observe the istrumentation taking place:
 ```sh
-
-Agent for time measure
-httpServer running on port 8085
-New connection accepted /127.0.0.1:57168
-GET /index.html HTTP/1.1
-HTTP/1.0 200 OK
-
+Launched agent for time computation
+New connection accepted /127.0.0.1:41410
+input: GET /index.html HTTP/1.1
+requested path: ./index.html
+input: Host: localhost:8085
+input: User-Agent: curl/7.58.0
+input: Accept: */*
+input: 
 ```
+and the extra info from the agent:
 ```sh
-private void example.httpRequestHandler.processRequest() throws java.lang.Exception 
-took 23 milliseconds
+private void example.httpRequestHandler.processRequest() X took 23 milliseconds
 ```
 * terminate from another terminal:
 ```sh
