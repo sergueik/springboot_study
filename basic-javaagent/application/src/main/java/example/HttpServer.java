@@ -16,13 +16,8 @@ import java.util.StringTokenizer;
 
 public class HttpServer {
 	public static void main(String args[]) {
-		int port;
 		ServerSocket server_socket;
-		try {
-			port = Integer.parseInt(args[0]);
-		} catch (Exception e) {
-			port = 1500;
-		}
+		int port = (args.length > 0) ? Integer.parseInt(args[0]) : 8500;
 		try {
 			server_socket = new ServerSocket(port);
 			System.err.println("httpServer running on port " + server_socket.getLocalPort());
@@ -47,7 +42,6 @@ public class HttpServer {
 			}
 		} catch (IOException e) {
 			System.err.println("Exception opening socket:" + e.toString());
-			System.out.println(e);
 		}
 	}
 }
@@ -68,8 +62,8 @@ class httpRequestHandler implements Runnable {
 	String requestMethod = null;
 	String filePath = null;
 	boolean fileExists = true;
-	final String serverLine = "Server: Simple Java Http Server";
-	
+	final String serverLine = "Server: Simple Java Http Server" + CRLF;
+
 	public httpRequestHandler(Socket socket) throws Exception {
 		this.socket = socket;
 		input = socket.getInputStream();
@@ -81,7 +75,7 @@ class httpRequestHandler implements Runnable {
 		try {
 			processRequest();
 		} catch (Exception e) {
-			System.err.println("Exception :" + e);
+			System.err.println("Exception: " + e);
 		}
 	}
 
@@ -108,6 +102,7 @@ class httpRequestHandler implements Runnable {
 					try {
 						fileInputStream = new FileInputStream(filePath);
 					} catch (FileNotFoundException e) {
+						System.err.println("Exception (processed): " + e);
 						fileExists = false;
 					}
 
@@ -118,9 +113,10 @@ class httpRequestHandler implements Runnable {
 								+ CRLF;
 					} else {
 						statusLine = "HTTP/1.0 404 Not Found" + CRLF;
-						contentTypeLine = "text/html";
+						contentTypeLine = "Content-type: text/html" + CRLF;
 						errorPage = "<HTML>" + "<HEAD><TITLE>404 Not Found</TITLE></HEAD>" + "<BODY>404 Not Found"
 								+ "<br>usage:http://yourHostName:port/" + "fileName.html</BODY></HTML>";
+						contentLengthLine = String.format("Content-Length: %d%s", errorPage.length(), CRLF);
 					}
 
 					// HTTP status
@@ -136,9 +132,11 @@ class httpRequestHandler implements Runnable {
 					output.write(CRLF.getBytes());
 					// body
 					if (fileExists) {
+						System.err.println("returning page");
 						sendBytes(fileInputStream, output);
 						fileInputStream.close();
 					} else {
+						System.err.println("returning error page");
 						output.write(errorPage.getBytes());
 					}
 				}

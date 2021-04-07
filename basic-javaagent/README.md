@@ -32,10 +32,18 @@ cat>index.html
 </html>
 ^D
 ```
-
-  * read the file it e.g.
+  * start service
 ```sh
-curl -XGET http://localhost:8085/index.html
+java -jar application/target/application.jar
+```
+this will respond with
+```sh
+httpServer running on port 8500
+```
+  * read the file it e.g.
+
+```sh
+curl -XGET http://localhost:8500/index.html
 ```
 this will print the file back
 ```html
@@ -43,7 +51,7 @@ this will print the file back
 <body></body>
 </html>
 ```
- * run instrumented application bundle:
+ * run instrumented application bundle passing a different TCP port to listen:
 
 ```sh
 java -javaagent:agent/target/agent.jar -jar application/target/application.jar 8085
@@ -137,6 +145,8 @@ docker image rm application-agent
   * https://docs.appdynamics.com/display/PRO45/Install+the+Java+Agent
   * https://www.oracle.com/technetwork/articles/java/javamanagement-140525.html
   * [multiple services in a Docker container](https://docs.docker.com/config/containers/multi-service_container/)
+  * about [Mapped Diagnostic Context](http://logback.qos.ch/manual/mdc.html)
+  * about [log4j thread context](https://logging.apache.org/log4j/2.x/manual/thread-context.html)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
