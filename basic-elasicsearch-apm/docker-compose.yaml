@@ -1,11 +1,11 @@
 version: "3"
 services:
   apm-elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
+    image: blacktop/elasticsearch:7.1
     ports:
     - 9200
   kibana:
-    image: docker.elastic.co/kibana/kibana:6.4.2
+    image: docker.elastic.co/kibana/kibana:7.1.0
     environment:
       ELASTICSEARCH_URL: http://apm-elasticsearch:9200
     ports:
@@ -15,7 +15,7 @@ services:
     depends_on:
     - apm-elasticsearch
   elastic-apm-server:
-    image: docker.elastic.co/apm/apm-server:6.4.2
+    image: docker.elastic.co/apm/apm-server:7.1.0
     command: [
       "bash",
       "-c",
@@ -34,12 +34,12 @@ services:
       context: .
       dockerfile: Dockerfile.app
       args:
-      - JAR_FILE=target/example.basic.jar
+      - JAR_FILE=target/example.static_page.jar
     ports:
     - 8080:8080
     environment:
       ELASTIC_APM_SERVICE_NAME: app-server
-      ELASTIC_APM_APPLICATION_PACKAGES: example.basic
+      ELASTIC_APM_APPLICATION_PACKAGES: example.static_page
       ELASTIC_APM_SERVER_URLS: http://elastic-apm-server:8200
     links:
     - elastic-apm-server
