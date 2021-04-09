@@ -10,6 +10,9 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.StringTokenizer;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 // vanilla HTTP Server
 // origin: http://www.java2s.com/Code/Java/Tiny-Application/HttpServer.htm
@@ -20,12 +23,14 @@ public class HttpServer {
 		int port = (args.length > 0) ? Integer.parseInt(args[0]) : 8500;
 		try {
 			server_socket = new ServerSocket(port);
-			System.err.println("httpServer running on port " + server_socket.getLocalPort());
+			System.err.println(
+					"httpServer running on port " + server_socket.getLocalPort());
 
 			// server infinite loop
 			while (true) {
 				Socket socket = server_socket.accept();
-				System.err.println("New connection accepted " + socket.getInetAddress() + ":" + socket.getPort());
+				System.err.println("New connection accepted " + socket.getInetAddress()
+						+ ":" + socket.getPort());
 
 				// Construct handler to process the HTTP request message.
 				try {
@@ -63,12 +68,14 @@ class httpRequestHandler implements Runnable {
 	String filePath = null;
 	boolean fileExists = true;
 	final String serverLine = "Server: Simple Java Http Server" + CRLF;
+	StringBuilder headerLine = new StringBuilder();
 
 	public httpRequestHandler(Socket socket) throws Exception {
 		this.socket = socket;
 		input = socket.getInputStream();
 		output = socket.getOutputStream();
-		bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		bufferedReader = new BufferedReader(
+				new InputStreamReader(socket.getInputStream()));
 	}
 
 	public void run() {
@@ -109,14 +116,36 @@ class httpRequestHandler implements Runnable {
 					if (fileExists) {
 						statusLine = "HTTP/1.0 200 OK" + CRLF;
 						contentTypeLine = "Content-type: " + contentType(filePath) + CRLF;
-						contentLengthLine = "Content-Length: " + (new Integer(fileInputStream.available())).toString()
-								+ CRLF;
+						contentLengthLine = "Content-Length: "
+								+ (new Integer(fileInputStream.available())).toString() + CRLF;
+						Header header = new Header("some_name", "some_value");
+						// https://www.baeldung.com/java-method-reflection
+
+						for (final Method method : header.getClass().getMethods()) {
+							final String methodName = method.getName();
+							// System.err.println("inspecting method: " + methodName);
+							if (methodName.startsWith("get")
+									&& method.getParameters().length == 0) {
+								String name = methodName.substring("get".length())
+										.toLowerCase();
+								// https://docs.oracle.com/javase/tutorial/reflect/member/methodInvocation.html
+								System.err.println("getting value of field: " + name);
+								Object val = method.invoke(header);
+								System.err.println("received: " + val);
+
+								headerLine
+										.append(name + ": " + val.toString() + CRLF);
+							}
+						}
+
 					} else {
 						statusLine = "HTTP/1.0 404 Not Found" + CRLF;
 						contentTypeLine = "Content-type: text/html" + CRLF;
-						errorPage = "<HTML>" + "<HEAD><TITLE>404 Not Found</TITLE></HEAD>" + "<BODY>404 Not Found"
-								+ "<br>usage:http://yourHostName:port/" + "fileName.html</BODY></HTML>";
-						contentLengthLine = String.format("Content-Length: %d%s", errorPage.length(), CRLF);
+						errorPage = "<HTML>" + "<HEAD><TITLE>404 Not Found</TITLE></HEAD>"
+								+ "<BODY>404 Not Found" + "<br>usage:http://yourHostName:port/"
+								+ "fileName.html</BODY></HTML>";
+						contentLengthLine = String.format("Content-Length: %d%s",
+								errorPage.length(), CRLF);
 					}
 
 					// HTTP status
@@ -128,6 +157,12 @@ class httpRequestHandler implements Runnable {
 					// Content-Length
 					output.write(contentLengthLine.getBytes());
 
+					if (headerLine != null) {
+						// custom headers
+						System.err
+								.println("Sending custom header: " + headerLine.toString());
+						output.write(headerLine.toString().getBytes());
+					}
 					// blank line to indicate the end of the header
 					output.write(CRLF.getBytes());
 					// body
@@ -153,7 +188,8 @@ class httpRequestHandler implements Runnable {
 		}
 	}
 
-	private static void sendBytes(FileInputStream fileInputStream, OutputStream outputStream) throws Exception {
+	private static void sendBytes(FileInputStream fileInputStream,
+			OutputStream outputStream) throws Exception {
 
 		byte[] buffer = new byte[1024];
 		int bytes = 0;
@@ -164,7 +200,8 @@ class httpRequestHandler implements Runnable {
 	}
 
 	private static String contentType(String fileName) {
-		if (fileName.endsWith(".htm") || fileName.endsWith(".html") || fileName.endsWith(".txt")) {
+		if (fileName.endsWith(".htm") || fileName.endsWith(".html")
+				|| fileName.endsWith(".txt")) {
 			return "text/html";
 		} else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
 			return "image/jpeg";

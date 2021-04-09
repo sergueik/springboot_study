@@ -139,6 +139,100 @@ docker container prune -f
 docker image prune -f  
 docker image rm application-agent
 ```
+### Adding custom headers
+
+#### Non-Instrumented
+
+* launch
+```cmd
+java -jar application\target\application.jar 8085
+```
+* test
+
+```sh
+curl -i http://localhost:8500/index.html
+```
+produces
+```sh
+Server: Simple Java Http Server
+Content-type: text/html
+Content-Length: 32
+name: some_name
+val: some_value
+staticinfo: c7ff2b9a-d263-47c6-94f2-cec1d6537f20
+class: class example.Header
+
+<html>
+<body></body>
+</html>
+
+```
+#### Instrumented
+* launch
+```cmd
+java -javaagent:agent/target/agent.jar -jar application\target\application.jar 8085
+```
+* test
+```
+$ curl -i http://localhost:8085/index.html
+```
+(note the flags `curl` recongizes are platform-specfic)
+
+prints
+
+```sh
+Server: Simple Java Http Server
+Content-type: text/html
+Content-Length: 32
+name: new_name
+val: new_value
+staticinfo: bfa7d47c-265d-4959-b4d3-1b8beca52890
+class: class example.Header
+```
+```html
+<html>
+<body></body>
+</html>
+```
+it will also print debugging info as:
+
+```sh
+
+getting value of field: name
+This is new name: new_name
+received: new_name
+getting value of field: val
+This is new value: new_value
+received: new_value
+```
+
+This is achieved through the following method chain:
+```java
+
+		new AgentBuilder.Default()
+
+				.with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
+				.type((ElementMatchers.any()))
+				.transform((builder, typeDescription, classLoader, module) -> {
+
+					try {
+
+						return builder
+								.defineMethod("myGetVal", String.class, Visibility.PUBLIC)
+								.intercept(MethodDelegation.to(AddMethod.class))
+								.method(ElementMatchers.nameContains("getVal"))
+								.intercept(SuperMethodCall.INSTANCE.andThen(
+										MethodCall.invoke(Class.forName("javaagent.AddMethod")
+												.getMethod("myGetVal"))));
+					} catch (ClassNotFoundException | NoSuchMethodException e) {
+						System.err
+								.println("Exception in dynamic method call: " + e.toString());
+						return null;
+					}
+				}).installOn(instrumentation);
+
+
+```
 ### See Also
 
   * https://docs.oracle.com/javase/7/docs/api/java/lang/instrument/package-summary.html
