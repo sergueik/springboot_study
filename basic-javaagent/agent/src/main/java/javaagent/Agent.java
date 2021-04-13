@@ -19,6 +19,8 @@ import net.bytebuddy.matcher.ElementMatchers;
 
 public class Agent {
 
+	private static final String traceid = System.getProperty("traceid");
+
 	public static void premain(String arguments,
 			Instrumentation instrumentation) {
 
@@ -66,12 +68,12 @@ public class Agent {
 					try {
 
 						return builder
-								.defineMethod("myGetVal", String.class, Visibility.PUBLIC)
+								.defineMethod("myGetTraceID", String.class, Visibility.PUBLIC)
 								.intercept(MethodDelegation.to(AddMethod.class))
-								.method(ElementMatchers.nameContains("getVal"))
+								.method(ElementMatchers.nameContains("getTraceID"))
 								.intercept(SuperMethodCall.INSTANCE.andThen(
 										MethodCall.invoke(Class.forName("javaagent.AddMethod")
-												.getMethod("myGetVal"))));
+												.getMethod("myGetTraceID"))));
 					} catch (ClassNotFoundException | NoSuchMethodException e) {
 						System.err
 								.println("Exception in dynamic method call: " + e.toString());

@@ -19,13 +19,13 @@ import net.bytebuddy.matcher.ElementMatchers;
 
 public class AddMethod {
 
-	private final static String value = "new_value";
+	private final static String traceid = "new_value";
 
 	// static method to override some other method in the subject class
-	public static String myGetVal() throws Exception {
+	public static String myGetTraceID() throws Exception {
 
-		System.err.println("This is new value: " + value);
-		return value;
+		System.err.println("This is new value: " + traceid);
+		return traceid;
 
 	}
 }

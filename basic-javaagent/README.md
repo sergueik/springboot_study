@@ -234,10 +234,10 @@ This is achieved through the following method chain:
 
 ```
 
-### Passhrough traceid
+### Passthrough traceid
 NOTE: on Windows use regular curl.exe, not the `/mingw64/bin/curl` - the latter is too limited in options
 ```cmd
-c:\tools\curl.exe  -I -H "traceid: abcdef" -XGET http://localhost:8500/index.html
+c:\tools\curl.exe -I -H "traceid: abcdef" -XGET http://localhost:8500/index.html
 ```
 will reply preserving the caller's `traceid`:
 ```cmd
@@ -272,6 +272,20 @@ Sending custom header: staticinfo: 375e6f09-ec82-4f36-a2fe-df94c89f6807
 class: class example.Header
 ```
 ### Injecting traceid
+```sh
+java -javaagent:agent/target/agent.jar -jar application/target/application.jar
+```
+this time request will have traceid:
+```
+curl -I -XGET http://localhost:8500/index.html
+HTTP/1.0 200 OK
+Server: Simple Java Http Server
+Content-type: text/html
+Content-Length: 32
+traceid: new_value
+staticinfo: 84d5cd3c-7513-4179-a9ef-77400ede3aa2
+class: class example.Header
+```
 ### See Also
 
   * https://docs.oracle.com/javase/7/docs/api/java/lang/instrument/package-summary.html
