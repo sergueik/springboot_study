@@ -86,39 +86,49 @@ class httpRequestHandler implements Runnable {
 		}
 	}
 
-	private void processRequest() {
-
+	private void processRequest() throws Exception {
+		Header header = new Header(null);
 		while (true) {
 
 			try {
 				String line = bufferedReader.readLine();
-
-				// debug log processing of each input request
-				System.err.println("input: " + line);
-				if (line.equals(CRLF) || line.equals(""))
-					break;
-
-				stringTokenizer = new StringTokenizer(line);
-				requestMethod = stringTokenizer.nextToken();
-
-				if (requestMethod.equals("GET")) {
-
-					filePath = "." + stringTokenizer.nextToken();
-					System.err.println("requested path: " + filePath);
-
+				requestMethod = null;
+				if (!(line.equals(CRLF) || line.equals(""))) {
 					try {
-						fileInputStream = new FileInputStream(filePath);
-					} catch (FileNotFoundException e) {
-						System.err.println("Exception (processed): " + e);
-						fileExists = false;
+						stringTokenizer = new StringTokenizer(line);
+						requestMethod = stringTokenizer.nextToken();
+						// debug log processing of each input request
+						System.err.println("input: " + line + " request: " + requestMethod);
+					} catch (java.util.NoSuchElementException e) {
+						// ignore
 					}
+					if (requestMethod.equals("GET")) {
 
+						filePath = "." + stringTokenizer.nextToken();
+						System.err.println("requested path: " + filePath);
+
+						try {
+							fileInputStream = new FileInputStream(filePath);
+						} catch (FileNotFoundException e) {
+							System.err.println("Exception (processed): " + e);
+							fileExists = false;
+						}
+					}
+					// hack to detect and pass through traceId header
+					if (requestMethod.matches("^traceid.*")) {
+						String data = stringTokenizer.nextToken();
+						System.err
+								.println("detect and pass through traceid header: " + data);
+						header.setTraceID(data);
+					}
+					// done with headers
+				} else {
 					if (fileExists) {
 						statusLine = "HTTP/1.0 200 OK" + CRLF;
 						contentTypeLine = "Content-type: " + contentType(filePath) + CRLF;
 						contentLengthLine = "Content-Length: "
 								+ (new Integer(fileInputStream.available())).toString() + CRLF;
-						Header header = new Header("some_name", "some_value");
+						// not generating the traceID
 						// https://www.baeldung.com/java-method-reflection
 
 						for (final Method method : header.getClass().getMethods()) {
@@ -126,15 +136,18 @@ class httpRequestHandler implements Runnable {
 							// System.err.println("inspecting method: " + methodName);
 							if (methodName.startsWith("get")
 									&& method.getParameters().length == 0) {
-								String name = methodName.substring("get".length())
+								String field = methodName.substring("get".length())
 										.toLowerCase();
 								// https://docs.oracle.com/javase/tutorial/reflect/member/methodInvocation.html
-								System.err.println("getting value of field: " + name);
+								System.err.println("getting value of field: " + field);
 								Object val = method.invoke(header);
-								System.err.println("received: " + val);
-
-								headerLine
-										.append(name + ": " + val.toString() + CRLF);
+								if (val == null) {
+									System.err.println("Ignoring null value of: " + field);
+								} else {
+									System.err.println(
+											"Adding to response headers " + field + ": " + val);
+									headerLine.append(field + ": " + val.toString() + CRLF);
+								}
 							}
 						}
 
@@ -174,12 +187,17 @@ class httpRequestHandler implements Runnable {
 						System.err.println("returning error page");
 						output.write(errorPage.getBytes());
 					}
+					break;
 				}
 			} catch (Exception e) {
 				System.err.println("Exception (ignored) in processRequest:" + e);
+				throw (e);
+				// e.printStackTrace();
 			}
 		}
-		try {
+		try
+
+		{
 			output.close();
 			bufferedReader.close();
 			socket.close();
