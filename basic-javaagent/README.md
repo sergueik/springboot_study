@@ -233,6 +233,45 @@ This is achieved through the following method chain:
 
 
 ```
+
+### Passhrough traceid
+NOTE: on Windows use regular curl.exe, not the `/mingw64/bin/curl` - the latter is too limited in options
+```cmd
+c:\tools\curl.exe  -I -H "traceid: abcdef" -XGET http://localhost:8500/index.html
+```
+will reply preserving the caller's `traceid`:
+```cmd
+HTTP/1.0 200 OK
+Server: Simple Java Http Server
+Content-type: text/html
+Content-Length: 32
+traceid: abcdef
+staticinfo: e0e4c0fc-4196-4bc2-828f-4aad5a79a54b
+class: class example.Header
+```
+When no `traceid` is posted, none will be aded by vanilla app:
+```cmd
+java -jar application/target/application.jar
+```
+will log the requst processing details
+```sh
+httpServer running on port 8500
+New connection accepted /127.0.0.1:51803
+input: GET /index.html HTTP/1.1 request: GET
+requested path: ./index.html
+input: User-Agent: curl/7.40.0-DEV request: User-Agent:
+input: Host: localhost:8500 request: Host:
+input: Accept: */* request: Accept:
+getting value of field: staticinfo
+Adding to response headers staticinfo: 375e6f09-ec82-4f36-a2fe-df94c89f6807
+getting value of field: traceid
+Ignoring null value of: traceid
+getting value of field: class
+Adding to response headers class: class example.Header
+Sending custom header: staticinfo: 375e6f09-ec82-4f36-a2fe-df94c89f6807
+class: class example.Header
+```
+### Injecting traceid
 ### See Also
 
   * https://docs.oracle.com/javase/7/docs/api/java/lang/instrument/package-summary.html

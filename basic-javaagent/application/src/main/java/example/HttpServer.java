@@ -86,43 +86,13 @@ class httpRequestHandler implements Runnable {
 		}
 	}
 
-	private void processRequest() throws Exception {
+	private void processRequest() {
 		Header header = new Header(null);
 		while (true) {
-
 			try {
 				String line = bufferedReader.readLine();
-				requestMethod = null;
-				if (!(line.equals(CRLF) || line.equals(""))) {
-					try {
-						stringTokenizer = new StringTokenizer(line);
-						requestMethod = stringTokenizer.nextToken();
-						// debug log processing of each input request
-						System.err.println("input: " + line + " request: " + requestMethod);
-					} catch (java.util.NoSuchElementException e) {
-						// ignore
-					}
-					if (requestMethod.equals("GET")) {
-
-						filePath = "." + stringTokenizer.nextToken();
-						System.err.println("requested path: " + filePath);
-
-						try {
-							fileInputStream = new FileInputStream(filePath);
-						} catch (FileNotFoundException e) {
-							System.err.println("Exception (processed): " + e);
-							fileExists = false;
-						}
-					}
-					// hack to detect and pass through traceId header
-					if (requestMethod.matches("^traceid.*")) {
-						String data = stringTokenizer.nextToken();
-						System.err
-								.println("detect and pass through traceid header: " + data);
-						header.setTraceID(data);
-					}
+				if ((line.equals(CRLF) || line.equals(""))) {
 					// done with headers
-				} else {
 					if (fileExists) {
 						statusLine = "HTTP/1.0 200 OK" + CRLF;
 						contentTypeLine = "Content-type: " + contentType(filePath) + CRLF;
@@ -188,11 +158,38 @@ class httpRequestHandler implements Runnable {
 						output.write(errorPage.getBytes());
 					}
 					break;
+				} else {
+					requestMethod = null;
+					try {
+						stringTokenizer = new StringTokenizer(line);
+						requestMethod = stringTokenizer.nextToken();
+						// debug log processing of each input request
+						System.err.println("input: " + line + " request: " + requestMethod);
+					} catch (java.util.NoSuchElementException e) {
+						// ignore
+					}
+					if (requestMethod.equals("GET")) {
+
+						filePath = "." + stringTokenizer.nextToken();
+						System.err.println("requested path: " + filePath);
+
+						try {
+							fileInputStream = new FileInputStream(filePath);
+						} catch (FileNotFoundException e) {
+							System.err.println("Exception (processed): " + e);
+							fileExists = false;
+						}
+					}
+					// hack to detect and pass through traceId header
+					if (requestMethod.matches("^traceid.*")) {
+						String data = stringTokenizer.nextToken();
+						System.err
+								.println("detect and pass through traceid header: " + data);
+						header.setTraceID(data);
+					}
 				}
 			} catch (Exception e) {
 				System.err.println("Exception (ignored) in processRequest:" + e);
-				throw (e);
-				// e.printStackTrace();
 			}
 		}
 		try
