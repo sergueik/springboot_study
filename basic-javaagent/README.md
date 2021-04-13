@@ -2,7 +2,7 @@
 
 This directory contains a fragment replica of [javaagent-bytebuddy](https://github.com/ShehanPerera/javaagent-bytebuddy) project by ShehanPerera: bare bones Java Agent agent
 that uses [byte-buddy](https://bytebuddy.net/#/) code generation and manipulation library for attaching an agent to the "business application" jar and
-Maven [shade plugin](https://maven.apache.org/plugins/maven-shade-plugin/usage.html) `org.apache.maven.plugins.shade.resource.ManifestResourceTransformer` 
+Maven [shade plugin](https://maven.apache.org/plugins/maven-shade-plugin/usage.html) `org.apache.maven.plugins.shade.resource.ManifestResourceTransformer`
 to write the main manifest `MANIFEST.MF` entries (to prevent from "no main manifest attribute, in target application jar" error).
 
 This is a work in progress experiment the same with Docker linked to dedicated Docker insance serving for agent messages sink and to replace a vanilla app jar with an equally vanilla Springboot REST server.
@@ -67,7 +67,7 @@ static long enter(@Advice.Origin String method) throws Exception {
   if (method.matches(methodMatcher)) {
     long start = System.currentTimeMillis();
 ```
-```java    
+```java
 @Advice.OnMethodExit
 static void exit(@Advice.Origin String method, @Advice.Enter long start) throws Exception {
   if (method.matches(methodMatcher)) {
@@ -120,7 +120,7 @@ requested path: ./index.html
 input: Host: localhost:8085
 input: User-Agent: curl/7.58.0
 input: Accept: */*
-input: 
+input:
 ```
 and the extra info from the agent:
 ```sh
@@ -135,8 +135,8 @@ docker container ls -a |  grep 'application-agent' | awk '{print $1}' | xargs -I
 ```
 ```sh
 
-docker container prune -f 
-docker image prune -f  
+docker container prune -f
+docker image prune -f
 docker image rm application-agent
 ```
 ### Adding custom headers
@@ -249,9 +249,17 @@ traceid: abcdef
 staticinfo: e0e4c0fc-4196-4bc2-828f-4aad5a79a54b
 class: class example.Header
 ```
-When no `traceid` is posted, none will be aded by vanilla app:
+When no `traceid` is received from client, none will be aded by vanilla app:
 ```cmd
-java -jar application/target/application.jar
+curl -I -XGET http://localhost:8500/index.html
+```
+```sh
+HTTP/1.0 200 OK
+Server: Simple Java Http Server
+Content-type: text/html
+Content-Length: 32
+staticinfo: e0e4c0fc-4196-4bc2-828f-4aad5a79a54b
+class: class example.Header
 ```
 will log the requst processing details
 ```sh
@@ -286,6 +294,15 @@ traceid: new_value
 staticinfo: 84d5cd3c-7513-4179-a9ef-77400ede3aa2
 class: class example.Header
 ```
+one can pass in the desired `traceid` via java property:
+```cmd
+java -javaagent:agent/target/agent.jar -Dtraceid=abcdef-1234-5678-90 -jar application/target/application.jar
+```
+
+this will lead to response header
+```sh
+traceid: abcdef-1234-5678-90
+```
 ### See Also
 
   * https://docs.oracle.com/javase/7/docs/api/java/lang/instrument/package-summary.html
@@ -297,3 +314,4 @@ class: class example.Header
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+	

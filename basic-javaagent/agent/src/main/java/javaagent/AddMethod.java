@@ -19,7 +19,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 
 public class AddMethod {
 
-	private final static String traceid = "new_value";
+	private static final String traceid = System.getProperty("traceid");
 
 	// static method to override some other method in the subject class
 	public static String myGetTraceID() throws Exception {
