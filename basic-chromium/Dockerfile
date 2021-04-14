@@ -1,20 +1,21 @@
-FROM zenika/alpine-maven:latest
+FROM anapsix/alpine-java:8u202b08_jdk
+
+ENV MAVEN_VERSION 3.8.1
+ENV MAVEN_HOME /usr/lib/mvn
+ENV PATH $MAVEN_HOME/bin:$PATH
+
+RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz && \
+  tar -zxvf apache-maven-$MAVEN_VERSION-bin.tar.gz && \
+  rm apache-maven-$MAVEN_VERSION-bin.tar.gz && \
+  mv apache-maven-$MAVEN_VERSION /usr/lib/mvn
 
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories \
     && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
     && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
     && echo "http://dl-cdn.alpinelinux.org/alpine/v3.11/main" >> /etc/apk/repositories \
+    && apk update \
     && apk upgrade -U -a \
     && apk add --no-cache \
-    libstdc++ \
-    chromium \
-    chromium-chromedriver \
-    harfbuzz \
-    nss \
-    freetype \
-    ttf-freefont \
-    wqy-zenhei \
+    libstdc++ chromium chromium-chromedriver harfbuzz nss freetype ttf-freefont wqy-zenhei \
     && rm -rf /var/cache/* \
     && mkdir /var/cache/apk
-
-

@@ -4,7 +4,7 @@
   <groupId>example</groupId>
   <artifactId>chromium-demo</artifactId>
   <packaging>jar</packaging>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <name>Docker Maven Chromium Demo</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

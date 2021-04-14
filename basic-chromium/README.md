@@ -3,12 +3,27 @@
 This directory contains a `Dockerfile` from [zenika/alpine-chrome](https://github.com/Zenika/alpine-chrome/blob/master/Dockerfile) but switched to __maven/jdk8__ apline base [image]( https://hub.docker.com/r/zenika/alpine-maven/tags) with maven and chromium to run the test suites. Note: the `chromium` binary installs some X libraries but is runnable in headless mode in console mode.
 
 ### Usage
-* compile test project. Note the need to remove the target directory
+* install the `chromium-browser` locally
 ```sh
-sudo rm -fr demo.project/target
+apt-get install -q -y chomium-browser
+```
+* download and place into `/usr/bin` the `chromedriver`
+```sh
+wget https://chromedriver.storage.googleapis.com/89.0.4389.23/chromedriver_linux64.zip -O ~/Downloads/chromedriver_linux64.zip
+cd ~/Downloads
+unzip -f chromedriver_linux64.zip
+sudo mv chromedriver /usr/bin
+```
+* compile test project. Note the need to remove the target directory
+
+```sh
+cd demo.project
+sudo rm -fr target
 mvn test-compile
 mvn test
+cd ..
 ```
+- the test runs the chmromium headless and saves a pdf file into current directory
 * build the `chromium` and `chromium-driver` into the image
 ```sh
 IMAGE='basic-maven-chromium'
@@ -22,6 +37,17 @@ which returns
 ```sh
 Results :
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+```
+
+that is confirmed through
+```sh
+ID=$(docker container ls -a |grep $IMAGE| head -1 | awk '{print $1}')
+docker start $ID
+docker exec -it $ID sh -c 'test -f  /demo/sample.pdf && echo OK'
+```
+will print
+```sh
+OK
 ```
 and basic CDP test (e.g. copy from [sergueik/cdp4j_tests](https://github.com/sergueik/cdp4j_tests)
 ```sh
@@ -87,6 +113,23 @@ chromeOptions.setExperimentalOption("prefs", new HashMap<String, Object>() {
 
 ### See Also
  * blog on [running Chrome in Docker](https://medium.com/@sahajamit/can-selenium-chrome-dev-tools-recipe-works-inside-a-docker-container-afff92e9cce5)
+
+### NOTE
+
+* the issue observed occasionally
+```sh
+etch http://dl-cdn.alpinelinux.org/alpine/v3.11/main/x86_64/APKINDEX.tar.gz
+ERROR: unable to select packages:
+  /bin/sh (virtual):D	
+    provided by: busybox-1.33.0-r6
+                 busybox-1.31.1-r10
+```
+* in attempt to solve, replicate `Dockerfile` from [](https://github.com/Zenika/alpine-maven/blob/master/jdk8/Dockerfile) upgrade the base jdk to e.g. alpine3.9 and do a image cleanup with [dependency traversal](https://stackoverflow.com/questions/36584122/how-to-get-the-list-of-dependent-child-images-in-docker)
+```sh
+ID=$(docker image ls  |grep 'zenika/alpine-maven' | head -1| awk '{print $1}')
+docker inspect --format='{{.Id}} {{.Parent}}'     $(docker images --filter since=$ID --quiet)
+```
+and remove all and start over
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
