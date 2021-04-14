@@ -17,8 +17,14 @@ Hello basic
 IMAGE=basic-example
 mvn clean package
 docker build -f Dockerfile -t $IMAGE .
-docker run -p 8086:8085 $IMAGE
+docker run -p $(hostname -i):8086:8085 $IMAGE
 ```
+* NOTE: the `$(hostname -i):` argument was added as workaround of forced ipv6 switch
+```sh
+Error starting userland proxy: listen tcp6 [::]:8086:
+socket: address family not supported by protocol
+```
+observed in Docker version __20.10.6__ on a host where ipv6 was [turned off](https://linuxconfig.org/how-to-disable-ipv6-address-on-ubuntu-18-04-bionic-beaver-linux)
 * to also mount
 
 ```sh
@@ -43,6 +49,12 @@ docker image prune -f
   * [Test Strategies around Spring Boot](https://github.com/mechero/spring-boot-testing-strategies)
   * [REST Spring boot Unit tests](https://github.com/bytestree/spring-restful-service-unit-test)
   * Docker [command list](https://habr.com/ru/company/flant/blog/336654/) (in Russian)
-
+  * deal with [failing ipv6](https://stackoverflow.com/questions/30750271/disable-ip-v6-in-docker-container) in Docker
+  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
+
+ listen tcp6 [::]:8086: socket: address family not supported by protocol.
+ Docker version 20.10.6, build 370c289
+https://medium.com/@gauravsj9/how-to-install-specific-docker-version-on-linux-machine-d0ec2d4095

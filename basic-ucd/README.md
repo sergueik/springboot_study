@@ -664,6 +664,10 @@ Status: true
   * https://freddysf.wordpress.com/2013/12/05/urbancode-deploy-agent-based-source-config-types/
   * https://db.apache.org/derby/
   * https://stedolan.github.io/jq/manual/#ConditionalsandComparisons
-  
+
+### NOTE
+
+As of April 2021, the [UCD Server](https://hub.docker.com/r/ibmcom/ucds/) 
+[UCD Agent](https://hub.docker.com/r/ibmcom/ucda/) docker images appper to be removed (404)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
