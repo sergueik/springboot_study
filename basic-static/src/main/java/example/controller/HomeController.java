@@ -22,18 +22,20 @@ import org.springframework.stereotype.Controller;
 
 import java.time.LocalDateTime;
 
-// origin: https://github.com/kolorobot/spring-boot-thymeleaf
+// based on: https://github.com/kolorobot/spring-boot-thymeleaf
 @Controller
 @RequestMapping("/${application}")
 public class HomeController {
-	private String envKey = "APP_SERVER";
+
+	private String defaultEnvKey = "APP_SERVER";
 	private StringBuffer sb = new StringBuffer();
 
-	@Value("${application}")
 	// NOTE: application is a reserved variable name
+	@Value("${application}")
 	private String variable;
 
-	private Log log = LogFactory.getLog(HomeController.class);
+	private final String viewName = "index";
+	private Log log = LogFactory.getLog(this.getClass());
 
 	@GetMapping
 	String index(Model model) {
@@ -42,8 +44,9 @@ public class HomeController {
 		model.addAttribute("variable", variable);
 		log.info("Setting text from property " + "application" + ":" + variable);
 		model.addAttribute("hostname", showHostName());
-		log.info("Setting text from environment " + "hostname" + ":" + showHostName());
-		return "index";
+		log.info(
+				"Setting text from environment " + "hostname" + ":" + showHostName());
+		return viewName;
 	}
 
 	public String showHostName() {
@@ -57,7 +60,7 @@ public class HomeController {
 	}
 
 	public String showEnv() {
-		return showEnv(envKey);
+		return showEnv(defaultEnvKey);
 	}
 
 	// evaluate specific environment value

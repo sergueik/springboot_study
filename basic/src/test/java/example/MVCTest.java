@@ -1,41 +1,46 @@
 package example;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 public class MVCTest {
 
 	final static String route = "/basic";
 	final static String body = "Hello basic";
-	final static String contentType = "text/plain;charset=ISO-8859-1";
 	final static String charset = "ISO-8859-1";
+	private ResultActions resultActions;
 
-	private MockMvc mvc;
-	
-	@Before
-	public void setUp() {
+	private static MockMvc mvc;
+
+	@BeforeClass
+	public static void setUp() {
 		mvc = MockMvcBuilders.standaloneSetup(new ExampleApplication()).build();
 	}
 
 
+	@Before
+	public void beforeTest() throws Exception {
+		resultActions = mvc.perform(get(route));
+	}
+
 	@Test
 	public void statusTest() throws Exception {
-		mvc.perform(get(route)).andExpect(status().isOk());
+		resultActions.andExpect(status().isOk());
 	}
 
 	@Test
-	public void contentTest() throws Exception {
-		mvc.perform(get(route)).andExpect(content().string(body));
+	public void bodyTest() throws Exception {
+		resultActions.andExpect(content().string(body));
 	}
-
 
 	@Test
 	public void contentTypeTest() throws Exception {

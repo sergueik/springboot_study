@@ -35,115 +35,100 @@ public class Config implements WebMvcConfigurer {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+
 		registry.addResourceHandler("/images/**")
 				.addResourceLocations("classpath:/static/images/", String.format(
 						"file:///%s/src/main/resources/static/images/", projectPath));
 		registry.addResourceHandler("/css/**")
 				.addResourceLocations("classpath:/static/css/");
+
 	}
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> arg0) {
-		// TODO
 	}
 
 	@Override
 	public void addCorsMappings(CorsRegistry arg0) {
-		// TODO
 
 	}
 
 	@Override
 	public void addFormatters(FormatterRegistry arg0) {
-		// TODO
 
 	}
 
 	@Override
 	public void addInterceptors(InterceptorRegistry arg0) {
-		// TODO
 
 	}
 
 	@Override
 	public void addReturnValueHandlers(
 			List<HandlerMethodReturnValueHandler> arg0) {
-		// TODO
 
 	}
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry arg0) {
-		// TODO
 
 	}
 
 	@Override
 	public void configureAsyncSupport(AsyncSupportConfigurer arg0) {
-		// TODO
 
 	}
 
 	@Override
 	public void configureContentNegotiation(ContentNegotiationConfigurer arg0) {
-		// TODO
 
 	}
 
 	@Override
 	public void configureDefaultServletHandling(
 			DefaultServletHandlerConfigurer arg0) {
-		// TODO
 
 	}
 
 	@Override
 	public void configureHandlerExceptionResolvers(
 			List<HandlerExceptionResolver> arg0) {
-		// TODO
 
 	}
 
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> arg0) {
-		// TODO
 
 	}
 
 	@Override
 	public void configurePathMatch(PathMatchConfigurer arg0) {
-		// TODO
 
 	}
 
 	@Override
 	public void configureViewResolvers(ViewResolverRegistry arg0) {
-		// TODO
 
 	}
 
 	@Override
 	public void extendHandlerExceptionResolvers(
 			List<HandlerExceptionResolver> arg0) {
-		// TODO
 
 	}
 
 	@Override
 	public void extendMessageConverters(List<HttpMessageConverter<?>> arg0) {
-		// TODO
 
 	}
 
 	@Override
 	public MessageCodesResolver getMessageCodesResolver() {
-		// TODO
 		return null;
 	}
 
 	@Override
 	public Validator getValidator() {
-		// TODO
 		return null;
 	}
 }
