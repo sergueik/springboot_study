@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class Controller {
 
 	@Autowired
-	private Service service;
+	private ExampleService service;
 
-	public Controller(Service data) {
+	public Controller(ExampleService data) {
 		service = data;
 	}
 

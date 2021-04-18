@@ -2,7 +2,7 @@ package example;
 /**
  * Copyright 2021 Serguei Kouzmine
  */
-
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -21,8 +21,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// NOTE: @Runwith annotation with real classescrashes the JVM
+// NOTE: @Runwith annotation with real classes crashes the JVM
 // @RunWith(SpringJUnit4ClassRunner.class)
+@WebMvcTest
 public class MVCRealTest {
 
 	final static String route = "/basic";
@@ -33,7 +34,7 @@ public class MVCRealTest {
 
 	// initiaize real stuff
 	private static Application application = new Application();
-	private static Service service = new Service();
+	private static ExampleService service = new ExampleService();
 	private static Controller controller = new Controller(service);
 
 	@BeforeClass

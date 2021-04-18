@@ -1,0 +1,74 @@
+package example;
+
+import org.hamcrest.Matcher;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static org.hamcrest.CoreMatchers.containsString;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+
+// https://www.tutorialspoint.com/spring_boot/spring_boot_runners.htm
+// @RunWith(SpringRunner.class)
+// https://www.baeldung.com/integration-testing-in-spring (2.2.6.RELEASE
+// example)
+// https://www.baeldung.com/restclienttest-in-spring-boot
+// https://www.baeldung.com/spring-web-contexts
+// https://www.programcreek.com/java-api-examples/org.springframework.web.context.WebApplicationContext
+// https://reflectoring.io/spring-boot-web-controller-test/
+
+@RunWith(SpringJUnit4ClassRunner.class)
+public class MVC2IntegrationTest {
+	@MockBean
+	private ExampleService service;
+
+	@Autowired
+	private MockMvc mvc;
+
+	final static String route = "/basic";
+	final static String body = "Hello basic";
+	private ResultActions resultActions;
+	final static String charset = "UTF-8";
+
+	// examine HTTP status
+	// @Ignore
+	// Status expected:<200> but was:<404>
+	@Test
+	public void statusTest() throws Exception {
+		mvc.perform(get(route)).andExpect(status().isOk());
+	}
+
+	// assert the response body content with a Hamcrest Matcher
+	@Ignore
+	// Expected: a string containing "Hello basic"
+	// but: was ""
+	@Test
+	public void bodyContainsTextTest() throws Exception {
+		Matcher<String> matcher = containsString(body);
+		resultActions = mvc.perform(get(route));
+		resultActions.andExpect(content().string(matcher));
+	}
+
+	// examine response header
+	@Ignore
+	// Content type not set
+	@Test
+	public void contentTypeTest() throws Exception {
+		resultActions = mvc.perform(get(route));
+		resultActions.andExpect(
+				content().contentType(String.format("text/plain;charset=%s", charset)));
+	}
+
+}

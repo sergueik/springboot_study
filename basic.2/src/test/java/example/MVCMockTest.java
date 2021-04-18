@@ -16,13 +16,14 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -30,8 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.hamcrest.Matcher;
 
 // https://github.com/TechPrimers/test-controller-example
-
+// https://github.com/kriscfoster/spring-boot-testing-pyramid
 @RunWith(SpringJUnit4ClassRunner.class)
+// @WebMvcTest
 public class MVCMockTest {
 
 	final static String route = "/basic";
@@ -44,7 +46,7 @@ public class MVCMockTest {
 	private Application application;
 
 	@Mock
-	private Service service;
+	private ExampleService mockService;
 
 	@InjectMocks
 	private Controller controller;
@@ -53,7 +55,7 @@ public class MVCMockTest {
 	@Before
 	public void beforeTest() throws Exception {
 		matcher = containsString("mock: " + body);
-		when(service.hello()).thenReturn("mock: " + body);
+		when(mockService.hello()).thenReturn("mock: " + body);
 		mvc = MockMvcBuilders.standaloneSetup(controller).build();
 		resultActions = mvc.perform(get(route));
 	}
@@ -74,7 +76,7 @@ public class MVCMockTest {
 	// examine backend call
 	@Test
 	public void subjectMethodTest() throws Exception {
-		verify(service).hello();
+		verify(mockService).hello();
 	}
 
 	// examine response header
