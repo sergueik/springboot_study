@@ -1,4 +1,4 @@
-package example;
+package example.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -9,11 +9,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import example.service.ExampleService;
+import example.service.ExampleService;
+
+
 @RestController
 @RequestMapping("/basic")
 public class Controller {
 
-	@Autowired
+	// @Autowired
 	private ExampleService service;
 
 	public Controller(ExampleService data) {

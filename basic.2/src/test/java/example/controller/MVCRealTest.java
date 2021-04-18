@@ -1,4 +1,5 @@
-package example;
+package example.controller;
+
 /**
  * Copyright 2021 Serguei Kouzmine
  */
@@ -20,6 +21,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import example.controller.Controller;
+import example.service.ExampleService;
+import example.Application;
 
 // NOTE: @Runwith annotation with real classes crashes the JVM
 // @RunWith(SpringJUnit4ClassRunner.class)

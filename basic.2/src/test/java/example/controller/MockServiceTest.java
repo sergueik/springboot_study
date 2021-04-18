@@ -1,6 +1,10 @@
-package example;
+package example.controller;
 
 import org.mockito.Mockito;
+
+import example.controller.Controller;
+import example.service.ExampleService;
+
 import static org.mockito.Mockito.when;
 
 import static org.hamcrest.Matchers.is;

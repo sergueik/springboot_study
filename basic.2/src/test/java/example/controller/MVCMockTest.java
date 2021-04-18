@@ -1,8 +1,9 @@
-package example;
+package example.controller;
 
 /**
  * Copyright 2021 Serguei Kouzmine
  */
+
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -30,6 +31,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.hamcrest.Matcher;
 
+import example.controller.Controller;
+import example.service.ExampleService;
+
+import example.Application;
 // https://github.com/TechPrimers/test-controller-example
 // https://github.com/kriscfoster/spring-boot-testing-pyramid
 @RunWith(SpringJUnit4ClassRunner.class)

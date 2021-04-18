@@ -1,4 +1,4 @@
-package example;
+package example.controller;
 
 import org.hamcrest.Matcher;
 import org.junit.Before;
@@ -20,6 +20,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import example.service.ExampleService;
+
 // https://www.tutorialspoint.com/spring_boot/spring_boot_runners.htm
 // @RunWith(SpringRunner.class)
 // https://www.baeldung.com/integration-testing-in-spring (2.2.6.RELEASE
@@ -34,6 +36,13 @@ public class MVC2IntegrationTest {
 	@MockBean
 	private ExampleService service;
 
+	// Unsatisfied dependency expressed through field 'mvc'; nested exception is
+	// org.springframework.beans.factory.NoSuchBeanDefinitionException:
+	// No qualifying bean of type 'org.springframework.test.web.servlet.MockMvc'
+	// available:
+	// expected at least 1 bean which qualifies as autowire candidate.
+	// Dependency annotations:
+	// {@org.springframework.beans.factory.annotation.Autowired(required=true)}
 	@Autowired
 	private MockMvc mvc;
 
