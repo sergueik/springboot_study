@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 public class Service {
 
 	public String hello() {
-		return "Hello service";
+		return "Hello basic";
 	}
 }

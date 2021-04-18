@@ -1,26 +1,33 @@
 package example;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/hello")
-public class Resource {
+@RequestMapping("/basic")
+public class Controller {
 
+	@Autowired
 	private Service service;
 
-	public Resource(Service data) {
+	public Controller(Service data) {
 		service = data;
 	}
 
 	@GetMapping
-	public String helloWorld() {
+	public String hello() {
 		return service.hello();
 	}
 
 	@GetMapping(value = "/json", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Data json() {
-		return new Data("Hello basic");
+		return new Data(service.hello());
 	}
 
 	@PostMapping(value = "/post", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
