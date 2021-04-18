@@ -3,10 +3,20 @@ package example;
 /**
  * Copyright 2021 Serguei Kouzmine
  */
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import org.junit.runner.RunWith;
+
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -14,19 +24,27 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import org.hamcrest.Matcher;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-
+@RunWith(SpringJUnit4ClassRunner.class)
 public class MVCTest {
 
 	final static String route = "/basic";
 	final static String body = "Hello basic";
 	final static String charset = "ISO-8859-1";
 	private ResultActions resultActions;
-
 	private static MockMvc mvc;
+
+	@InjectMocks
+	private Resource resource;
+	
+	@Mock
+	private Service service;
+	
+	@InjectMocks
+	private ExampleApplication exampleApplication;
 
 	@BeforeClass
 	public static void setUp() {
@@ -47,6 +65,15 @@ public class MVCTest {
 	public void bodyTest() throws Exception {
 		Matcher<String> matcher = containsString(body);
 		resultActions.andExpect(content().string(matcher));
+	}
+
+	// https://github.com/TechPrimers/test-controller-example
+	@Test
+	public void subjectMethodTest() throws Exception {
+		when(service.hello()).thenReturn("mock: " + body);
+		Matcher<String> matcher = containsString(body);
+		mvc.perform(get("/hello")).andExpect(content().string(matcher));
+		verify(exampleApplication).hello();
 	}
 
 	@Test
