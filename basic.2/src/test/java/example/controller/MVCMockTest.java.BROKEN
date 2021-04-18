@@ -5,12 +5,14 @@ package example.controller;
  */
 
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+// import org.junit.Before;
+ // import org.junit.BeforeClass;
+// import org.junit.Ignore;
+// import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+//import org.junit.jupiter.api.Ignore;
+import org.junit.jupiter.api.Test;
 
-import org.junit.runner.RunWith;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -31,14 +33,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.hamcrest.Matcher;
 
-import example.controller.Controller;
+import example.controller.EampleController;
 import example.service.ExampleService;
 
 import example.Application;
 // https://github.com/TechPrimers/test-controller-example
+// https://www.baeldung.com/junit-5-runwith
 // https://github.com/kriscfoster/spring-boot-testing-pyramid
-@RunWith(SpringJUnit4ClassRunner.class)
-// @WebMvcTest
+
+// @RunWith(SpringJUnit4ClassRunner.class)
+@WebMvcTest
 public class MVCMockTest {
 
 	final static String route = "/basic";
@@ -54,10 +58,10 @@ public class MVCMockTest {
 	private ExampleService mockService;
 
 	@InjectMocks
-	private Controller controller;
+	private EampleController controller;
 	private static Matcher<String> matcher;
 
-	@Before
+	@BeforeEach
 	public void beforeTest() throws Exception {
 		matcher = containsString("mock: " + body);
 		when(mockService.hello()).thenReturn("mock: " + body);
@@ -85,7 +89,7 @@ public class MVCMockTest {
 	}
 
 	// examine response header
-	@Ignore
+	// @Ignore
 	// TODO: set up mock to produce desired headers
 	@Test
 	// NOTE: these expectations are Junit version sensitive

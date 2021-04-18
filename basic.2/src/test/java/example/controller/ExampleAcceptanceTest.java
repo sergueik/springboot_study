@@ -1,8 +1,11 @@
 package example.controller;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+// import org.junit.Before;
+// import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+// import org.junit.jupiter.api.Ignore;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -23,13 +26,13 @@ public class ExampleAcceptanceTest {
 	private RestTemplate restTemplate;
 	private String url;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		restTemplate = new RestTemplate();
 		url = "http://localhost:" + randomServerPort + "/basic";
 	}
 
-	@Ignore
+	// @Ignore
 	// ResourceAccess I/O error on GET request:
 	// org.springframework.web.client.ResourceAccessException: I/O error on GET
 	// request for "http://localhost:0/basic": connect: Address is invalid on

@@ -1,55 +1,62 @@
 package example.controller;
 
-/**
- * Copyright 2021 Serguei Kouzmine
- */
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import example.controller.Controller;
 import example.service.ExampleService;
-import example.Application;
 
-// NOTE: @Runwith annotation with real classes crashes the JVM
-// @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest
-public class MVCRealTest {
+public class ExampleMVCIntegrationTest {
+
+	@Autowired
+	private MockMvc mvc;
+
+	@MockBean
+	private ExampleService mockService;
 
 	final static String route = "/basic";
 	final static String body = "Hello basic";
-	final static String charset = "ISO-8859-1";
+	final static String charset = "UTF-8";
 	private ResultActions resultActions;
-	private static MockMvc mvc;
 
-	// initiaize real stuff
-	private static Application application = new Application();
-	private static ExampleService service = new ExampleService();
-	private static Controller controller = new Controller(service);
-
-	@BeforeClass
-	public static void setUp() {
-		mvc = MockMvcBuilders.standaloneSetup(controller).build();
+	@BeforeEach
+	public void beforeTest() throws Exception {
+		when(mockService.hello()).thenReturn(body);
+		resultActions = mvc.perform(get(route));
 	}
 
-	@Before
-	public void beforeTest() throws Exception {
-		resultActions = mvc.perform(get(route));
+	@Test
+	void alltest() throws Exception {
+		resultActions.andDo(print()).andExpect(status().isOk())
+				.andExpect(content().string(equalTo(body)));
+		verify(mockService).hello();
+	}
+
+	// examine backend call
+	@Test
+	public void subjectMethodTest() throws Exception {
+		verify(mockService).hello();
 	}
 
 	// examine HTTP status

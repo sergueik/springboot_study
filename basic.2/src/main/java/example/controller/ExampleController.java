@@ -15,12 +15,12 @@ import example.service.ExampleService;
 
 @RestController
 @RequestMapping("/basic")
-public class Controller {
+public class ExampleController {
 
 	// @Autowired
 	private ExampleService service;
 
-	public Controller(ExampleService data) {
+	public ExampleController(ExampleService data) {
 		service = data;
 	}
 
