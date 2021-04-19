@@ -1,5 +1,8 @@
 package example;
 
+/**
+ * Copyright 2021 Serguei Kouzmine
+ */
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,11 +24,11 @@ public class MVCTest {
 
 	private static MockMvc mvc;
 
+	// NOTE: these test are Springboot version sensitive. For Springboot 2.3.4.RELEASE / Junit 5 compatible tests see "basic.2"
 	@BeforeClass
 	public static void setUp() {
 		mvc = MockMvcBuilders.standaloneSetup(new ExampleApplication()).build();
 	}
-
 
 	@Before
 	public void beforeTest() throws Exception {
@@ -43,6 +46,7 @@ public class MVCTest {
 	}
 
 	@Test
+	// NOTE: these expectations are Junit version sensitive
 	public void contentTypeTest() throws Exception {
 		mvc.perform(get(route).accept(MediaType.TEXT_PLAIN)).andExpect(
 				content().contentType(String.format("text/plain;charset=%s", charset)));
