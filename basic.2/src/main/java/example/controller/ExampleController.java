@@ -1,23 +1,24 @@
 package example.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import java.util.Map;
 
+import org.springframework.http.MediaType;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import example.service.ExampleService;
 import example.service.ExampleService;
 
 @RestController
 @RequestMapping("/basic")
 public class ExampleController {
 
-	// @Autowired
+	@Autowired
 	private ExampleService service;
 
 	public ExampleController(ExampleService data) {
@@ -34,11 +35,28 @@ public class ExampleController {
 		return new Data(service.hello());
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "/post", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Data post(@RequestBody Data data) {
+	@RequestMapping(method = RequestMethod.POST, value = "/post/json", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Data postJson(@RequestBody Data data) {
+		@SuppressWarnings("unused")
 		Data dummy = service.handleData(data);
 		return data;
 
+	}
+
+	// see also examples in
+	// https://www.programcreek.com/java-api-examples/?class=org.springframework.http.MediaType&method=APPLICATION_FORM_URLENCODED_VALUE
+	
+	@RequestMapping(method = RequestMethod.POST, value = "/post/form", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Data postForm(
+
+			@RequestBody final MultiValueMap<String, String> param) {
+		Data data = new Data(param.get("name").get(0));
+		@SuppressWarnings("unused")
+		Data result = service.handleData(data);
+		System.err.println("Data from service: name=" + data.getName());
+		// not serialized ??
+		// return result;
+		return data;
 	}
 
 	public static class Data {
