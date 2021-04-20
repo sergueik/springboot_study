@@ -7,8 +7,9 @@ import example.controller.ExampleController;
 
 // @Component
 @Service
-// should not use the class 'Sevice': collision with stereotype:
-//  incompatible types: example.Service cannot be converted to java.lang.annotation.Annotation
+// NOTE: one should never use the class 'Service': collision with stereotype:
+// incompatible types: example.Service cannot be converted to
+// java.lang.annotation.Annotation
 
 public class ExampleService {
 

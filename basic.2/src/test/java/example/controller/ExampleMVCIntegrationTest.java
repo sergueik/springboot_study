@@ -17,7 +17,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import org.mockito.ArgumentMatcher;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -62,8 +61,6 @@ public class ExampleMVCIntegrationTest {
 	@BeforeEach
 	public void beforeTest() throws Exception {
 		when(mockService.hello()).thenReturn(body);
-		when(mockService.handleData(data)).thenReturn(data);
-
 		resultActions = mvc.perform(get(route));
 	}
 
@@ -146,6 +143,9 @@ public class ExampleMVCIntegrationTest {
 
 	@Test
 	void postFormTest() throws Exception {
+		// set up mock to respond with data to any argument of the signature
+		when(mockService.handleData(any(ExampleController.Data.class)))
+				.thenReturn(data);
 		// TODO: format argument Object as @RequestBody directly
 		params.add("name", data.getName());
 		mvc.perform(post(route + "/post/form")
