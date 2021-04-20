@@ -5,13 +5,13 @@ import org.springframework.http.MediaType;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import example.service.ExampleService;
 import example.service.ExampleService;
-
 
 @RestController
 @RequestMapping("/basic")
@@ -34,9 +34,11 @@ public class ExampleController {
 		return new Data(service.hello());
 	}
 
-	@PostMapping(value = "/post", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, value = "/post", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Data post(@RequestBody Data data) {
+		Data dummy = service.handleData(data);
 		return data;
+
 	}
 
 	public static class Data {
