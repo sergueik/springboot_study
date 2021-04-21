@@ -1,5 +1,7 @@
 package example.controller;
-
+/**
+ * Copyright 2021 Serguei Kouzmine
+ */
 import org.mockito.Mockito;
 
 import example.controller.ExampleController;

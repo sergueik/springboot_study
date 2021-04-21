@@ -1,5 +1,7 @@
 package example.service;
-
+/**
+ * Copyright 2021 Serguei Kouzmine
+ */
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 

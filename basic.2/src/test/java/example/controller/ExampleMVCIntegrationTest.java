@@ -1,5 +1,7 @@
 package example.controller;
-
+/**
+ * Copyright 2021 Serguei Kouzmine
+ */
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +40,7 @@ import com.google.gson.Gson;
 
 import example.service.ExampleService;
 
+// see also:
 // https://github.com/kriscfoster/spring-boot-testing-pyramid
 
 @WebMvcTest

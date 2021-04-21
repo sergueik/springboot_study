@@ -1,5 +1,8 @@
 package example.controller;
 
+/**
+ * Copyright 2021 Serguei Kouzmine
+ */
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +22,9 @@ import example.service.ExampleService;
 @RequestMapping("/basic")
 public class ExampleController {
 
-	@Autowired
+	// NOTE: one can skip annotation in favor of straight import and still have
+	// one's integration tests valid
+	// @Autowired
 	private ExampleService service;
 
 	public ExampleController(ExampleService data) {
