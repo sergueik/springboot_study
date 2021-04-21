@@ -1,7 +1,11 @@
 package example.controller;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,9 +46,23 @@ public class ExampleController {
 
 	// see also examples in
 	// https://www.programcreek.com/java-api-examples/?class=org.springframework.http.MediaType&method=APPLICATION_FORM_URLENCODED_VALUE
-	@RequestMapping(method = RequestMethod.POST, value = "/post/form", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Data postForm(@RequestBody final MultiValueMap<String, String> param) {
-		return service.handleData(new Data());
+	// https://www.baeldung.com/spring-request-method-not-supported-405
+	// returns HTTP 405 error code for GET
+	@RequestMapping(method = { RequestMethod.PUT,
+			RequestMethod.POST }, value = "/post/form", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Data> postForm(
+			@RequestBody final MultiValueMap<String, String> param /*, HttpServletResponse response */) {
+		if (param.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Data());
+			// Alternatively change the method signature to include
+			// HttpServletResponse response
+			// and then
+			// response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			// see also:
+			// https://stackoverflow.com/questions/16232833/how-to-respond-with-http-400-error-in-a-spring-mvc-responsebody-method-returnin
+		}
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(service.handleData(new Data()));
 	}
 
 	public static class Data {

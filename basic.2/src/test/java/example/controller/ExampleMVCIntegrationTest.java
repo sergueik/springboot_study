@@ -38,6 +38,8 @@ import com.google.gson.Gson;
 
 import example.service.ExampleService;
 
+// https://github.com/kriscfoster/spring-boot-testing-pyramid
+
 @WebMvcTest
 public class ExampleMVCIntegrationTest {
 
@@ -156,6 +158,25 @@ public class ExampleMVCIntegrationTest {
 				.andExpect(jsonPath("$.name", is(data.getName())));
 		verify(mockService).handleData(any(ExampleController.Data.class));
 
+	}
+
+	@Test
+	void gettFormTest() throws Exception {
+		params.add("name", data.getName());
+		mvc.perform(get(route + "/post/form")
+				.contentType("application/x-www-form-urlencoded")
+				.params(params)
+				.accept(MediaType.APPLICATION_JSON)).andDo(print())
+				.andExpect(status().isMethodNotAllowed());
+	}
+
+	@Test
+	void postEmptyParamFormTest() throws Exception {
+		mvc.perform(post(route + "/post/form")
+				.contentType("application/x-www-form-urlencoded")
+				.params(new LinkedMultiValueMap<String, String>())
+				.accept(MediaType.APPLICATION_JSON)).andDo(print())
+				.andExpect(status().isBadRequest());
 	}
 
 }
