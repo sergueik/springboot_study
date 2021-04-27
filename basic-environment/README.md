@@ -104,6 +104,8 @@ Property ${setting_name} = null
   * [Docker ARG, ENV and .env - a Complete Guide](https://vsupalov.com/docker-arg-env-variable-guide/)
   * [Understanding Docker Build Args, Environment Variables and Docker Compose Variables](https://vsupalov.com/docker-env-vars/)
   * [stackoverflow](https://stackoverflow.com/questions/30494050/how-do-i-pass-environment-variables-to-docker-containers)
+  * [Docker & ENV: Methods for Passing Variables through Docker-Compose](https://medium.com/@cybourgeoisie/docker-env-methods-for-passing-variables-through-docker-compose-801e6fdb4a75)
+  * stackoverflow [discussion](https://stackoverflow.com/questions/46057625/externalising-spring-boot-properties-when-deploying-to-docker) on best approach for yaml file configuration passthrough
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
