@@ -20,8 +20,10 @@
       </layout>
     </encoder>
   </appender>
+  <variable name="BASEDIR" value="${BASEDIR:-.}" />
+  <!-- https://www.cloudesire.com/configure-logback-log-level-via-environment-variables/ -->
   <property name="FILENAME" value="App"/>
-  <property name="DIR" value="logs"/>
+  <property name="DIR" value="${BASEDIR}/logs"/>
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <!-- can use ${APP_HOME} -->
     <file>${DIR}/${FILENAME}.log</file>

@@ -1,0 +1,13 @@
+---
+# predefined    
+logging:
+  level:
+    org.springframework: ERROR
+    com.mkyong: DEBUG
+
+# access log:
+tomcat:
+  accesslog:
+    directory: ${BASEDIR}/logs
+    enabled: true
+    pattern: common
