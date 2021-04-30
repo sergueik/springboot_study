@@ -20,7 +20,7 @@
       </layout>
     </encoder>
   </appender>
-  <variable name="BASEDIR" value="${BASEDIR:-.}" />
+  <variable name="BASEDIR" value="${BASEDIR:-.}"/>
   <!-- https://www.cloudesire.com/configure-logback-log-level-via-environment-variables/ -->
   <property name="FILENAME" value="App"/>
   <property name="DIR" value="${BASEDIR}/logs"/>
