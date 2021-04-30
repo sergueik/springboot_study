@@ -41,7 +41,7 @@ does not work (probably because Springboot does not launch the main class direct
 ```java
 Error: Could not find or load main class example.Example
 ```
-__NOTE__ Configuring the Tomcat access log directory through the `application.yaml` or `application.properties` does not currently work
+__NOTE__ Configuring the Tomcat access log directory through the `application.yaml` or `application.properties` does not currently work. In adition these configuration files suppress console logging, which is not a desired effect.
 
 __NOTE__: cannot run with the 2.3.4:
 ```sh
