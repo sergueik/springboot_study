@@ -24,6 +24,11 @@ Cannot convert value of type 'java.lang.Boolean' to required type 'org.springfra
 ```
 both `false` or `off`  lead to the error. The newer versions of  parent project do not have this issue
 
+### See Also
+
+ * https://www.baeldung.com/spring-boot-yaml-vs-properties
+ * https://www.baeldung.com/spring-yaml
+
 
 ### Author
 

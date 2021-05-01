@@ -4,9 +4,10 @@ Basic Springboot application hosting static page rendered by thymeleaf spring fr
 
 ### Testing
 ```sh
-mvn -Ddebug=true test
+mvn -Ddebug=true -Dapplication=application test
 ```
-`debug` flag will trigger printing additional debugging information
+
+The `debug` flag will trigger printing additional debugging information
 
 ### Running
 ```sh
@@ -98,7 +99,8 @@ Invalid mapping on handler class [example.controllers.DesignTacoController]: pub
   * [linking the thymeleaft page resources stored in local directory](https://stackoverflow.com/questions/29460618/inserting-an-image-from-local-directory-in-thymeleaf-spring-framework-with-mave)
   * [thymeleaf in a Spring MVC application](https://www.baeldung.com/thymeleaf-in-spring-mvc)
   * [properties](https://www.baeldung.com/properties-with-spring) with Spring and Spring Boot
-  * [static resources](https://www.baeldung.com/spring-mvc-static-resources)
+  * [static resources](https://www.baeldung.com/spring-mvc-static-resources) - customizing path to support legacy non-standard layouts
+  * [DAO patterns](https://www.baeldung.com/java-dao-pattern)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

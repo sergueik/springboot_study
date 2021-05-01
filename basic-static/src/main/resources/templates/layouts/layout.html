@@ -19,6 +19,8 @@
     <p> Property 'application': <span th:text="${@environment.getProperty('application')}"/></p>
     <p>Content goes here...</p>
   </div>
+  <!--  NOTE: no relative paths: e.g. "env" will become "/env" -->
+  <p><a href="/application/env/json">Get environment</a></p>
 </div>
 </body>
 </html>
