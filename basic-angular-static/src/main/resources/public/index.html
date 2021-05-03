@@ -1,18 +1,43 @@
 <!doctype html>
-<html>
+<html ng-app="myApp">
 <head>
 <meta charset="UTF-8">
 <title>Title</title>
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"> -->
 <script type="text/javascript" src="webjars/angularjs/1.5.8/angular.js">
 </script>
 <link rel="stylesheet" href="webjars/bootstrap/3.3.7/bootstrap.min.css"/>
 <link rel="stylesheet" href="/css/main.css"/>
 <script type="text/javascript" src="webjars/jquery/3.2.1/jquery.min.js">
 </script>
+<script type='text/javascript'>
+<!-- https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070 -->
+
+angular.module('myApp', []).controller('DataController', function($scope, $http) {
+    console.log("getting data");
+    $http({method: 'GET', url: "/data/json"}).success(
+        function(data) {
+            console.log("got raw data: " + data);
+            /*
+            data = {
+                "results": [{
+                    "text": "mockup data"
+                }]
+            };
+			*/
+            $scope.rows = data.results;
+            console.log(data.results);
+        });
+});
+</script>
 </head>
-<body ng-app>
-	<p>Enter Name: <input type="text" ng-model="myname"> </p>
-	<p>Hello {{myname}}!!</p>
+<body>
+	<p>Enter Name: <input type="text" ng-model="name"> </p>
+	<p>Hello {{name}}</p>
+	  <div ng-controller="DataController">
+       Data: <br />
+        <ul>
+            <li ng-repeat="row in rows">{{ row.text }}</li>
+        </ul>
+    </div>
 </body>
 </html>
