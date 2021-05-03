@@ -1,0 +1,53 @@
+package example.config;
+
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+// legacy SptingBoot 1.0 style code
+@Configuration
+@EnableAutoConfiguration
+public class CoreConfig {
+	@Bean
+	public WebMvcConfigurerAdapter initAdapter() {
+		return new WebMvcConfigurerAdapter() {
+			@Override
+			public void addResourceHandlers(ResourceHandlerRegistry registry) {
+				registry.addResourceHandler("/angular/**")
+						.addResourceLocations("/WEB-INF/assets/angular/");
+				registry.addResourceHandler("/app/**")
+						.addResourceLocations("/WEB-INF/assets/app/");
+				registry.addResourceHandler("/bootstrap/**")
+						.addResourceLocations("/WEB-INF/assets/bootstrap/");
+				registry.addResourceHandler("/img/**")
+						.addResourceLocations("/WEB-INF/assets/img/");
+				registry.addResourceHandler("/scripts/**")
+						.addResourceLocations("/WEB-INF/assets/scripts/");
+				registry.addResourceHandler("/styles/**")
+						.addResourceLocations("/WEB-INF/assets/styles/");
+				registry.addResourceHandler("/**")
+						.addResourceLocations("/WEB-INF/views/");
+			}
+		};
+	}
+
+	@Bean
+	public InternalResourceViewResolver getInternalResourceViewResolver() {
+		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+		resolver.setSuffix(".html");
+		return resolver;
+	}
+
+	@Bean
+	public EmbeddedServletContainerFactory servletContainer() {
+		JettyEmbeddedServletContainerFactory factory = new JettyEmbeddedServletContainerFactory();
+		// Port number that server will run.
+		factory.setPort(8888);
+		return factory;
+	}
+}
