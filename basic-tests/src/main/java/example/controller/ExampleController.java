@@ -22,11 +22,12 @@ import example.service.ExampleService;
 @RequestMapping("/basic")
 public class ExampleController {
 
-	// NOTE: one can skip annotation in favor of straight import and still have
-	// one's integration tests valid
-	// @Autowired
-	private ExampleService service;
+	// see also about writing SpringBoot application tests without relying on
+	// SpringBoot field injection
+	// https://reflectoring.io/unit-testing-spring-boot/
+	private final ExampleService service;
 
+	@Autowired
 	public ExampleController(ExampleService data) {
 		service = data;
 	}
@@ -56,7 +57,7 @@ public class ExampleController {
 	@RequestMapping(method = { RequestMethod.PUT,
 			RequestMethod.POST }, value = "/post/form", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Data> postForm(
-			@RequestBody final MultiValueMap<String, String> param /*, HttpServletResponse response */) {
+			@RequestBody final MultiValueMap<String, String> param /* , HttpServletResponse response */) {
 		if (param.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Data());
 			// Alternatively change the method signature to include
@@ -66,8 +67,7 @@ public class ExampleController {
 			// see also:
 			// https://stackoverflow.com/questions/16232833/how-to-respond-with-http-400-error-in-a-spring-mvc-responsebody-method-returnin
 		}
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(service.handleData(new Data(param.getFirst("name"))));
+		return ResponseEntity.status(HttpStatus.OK).body(service.handleData(new Data(param.getFirst("name"))));
 	}
 
 	public static class Data {
