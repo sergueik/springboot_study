@@ -1,7 +1,7 @@
 ### Info
 
 This directory contains a replica of 
-[angular code loaded from web jar](https://github.com/lsvidal/springboot-angular) and runs both MVC and REST controllers to host an Angular app in the static page pulling the data via `$http`.
+[angular code loaded from web jar](https://github.com/lsvidal/springboot-angular) and runs MVC  page controller returning models (currently just `index`) and RestController controller returning pages and a static Angular app pulling the data onto the page via `$http`.
 ### Testing
 
 ```sh

@@ -9,42 +9,7 @@
 <link rel="stylesheet" href="/css/main.css"/>
 <script type="text/javascript" src="webjars/jquery/3.2.1/jquery.min.js">
 </script>-
-<script type='text/javascript'>
-<!-- https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070 -->
-var app = angular.module('Application', []);
-app.controller('ListController', function($scope, $http) {
-    $http({
-        method: 'GET',
-        url: '/table'
-    }).success(
-        function(data) {
-            console.log("getting data");
-            try {
-                console.log("got raw data: " + data);
-                $scope.rows = data.results;
-            } catch (e) {
-                data = {
-                    "results": [{
-                        "text": "mockup data"
-                    }]
-                };
-            }
-            console.log(data.results);
-        });
-});
-
-app.controller('SelectController', function($scope, $http) {
-    $http({
-        method: 'GET',
-        url: '/select'
-    }).success(function(data) {
-        try {
-            $scope.names = data;
-        } catch (e) {
-            $scope.names = ["mockup"];
-        }
-    });
-});
+<script type="text/javascript" src="/js/script.js">
 </script>
 </head>
 <body>

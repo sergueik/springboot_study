@@ -2,50 +2,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
-  <version>1.0-SNAPSHOT</version>
+  <artifactId>angular-static</artifactId>
+  <version>2.0-SNAPSHOT</version>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>1.5.4.RELEASE</version>
   </parent>
+  <properties>
+    <java.version>1.8</java.version>
+    <gson.version>2.8.5</gson.version>
+    <start-class>example.Application</start-class>
+    <webjars.bootstrap.version>3.3.7</webjars.bootstrap.version>
+    <webjars.jquery.version>3.2.1</webjars.jquery.version>
+    <webjars.angular-version>1.5.8</webjars.angular-version>
+    <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
+  </properties>
   <dependencies>
-    <!--
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-tomcat</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jetty</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-web</artifactId>
-      <version>3.2.0.RELEASE</version>
-    ogson.version>2.8.5</gson.version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-core</artifactId>
-      <version>3.2.0.RELEASE</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-config</artifactId>
-      <version>3.2.0.RELEASE</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context-support</artifactId>
-      <version>4.0.1.RELEASE</version>
-    </dependency>
--->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
@@ -81,20 +54,26 @@
       <version>${gson.version}</version>
     </dependency>
   </dependencies>
-  <!-- Sprngboot 1.0 legacy style -->
-  <properties>
-    <java.version>1.8</java.version>
-    <gson.version>2.8.5</gson.version>
-    <start-class>example.Application</start-class>
-    <webjars.bootstrap.version>3.3.7</webjars.bootstrap.version>
-    <webjars.jquery.version>3.2.1</webjars.jquery.version>
-    <webjars.angular-version>1.5.8</webjars.angular-version>
-  </properties>
   <build>
     <plugins>
       <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <finalName>${finalName}</finalName>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>${maven-compiler-plugin.version}</version>
+        <goals>
+          <goal>compile</goal>
+        </goals>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
@@ -102,23 +81,4 @@
       </plugin>
     </plugins>
   </build>
-  <repositories>
-    <repository>
-      <id>spring-snapshots</id>
-      <url>http://repo.spring.io/libs-snapshot</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>spring-snapshots</id>
-      <url>http://repo.spring.io/libs-snapshot</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
-  <artifactId>angular-static</artifactId>
 </project>
