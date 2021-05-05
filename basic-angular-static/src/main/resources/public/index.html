@@ -1,43 +1,64 @@
 <!doctype html>
-<html ng-app="myApp">
+<html ng-app='Application'>
 <head>
 <meta charset="UTF-8">
 <title>Title</title>
 <script type="text/javascript" src="webjars/angularjs/1.5.8/angular.js">
 </script>
-<link rel="stylesheet" href="webjars/bootstrap/3.3.7/bootstrap.min.css"/>
+<link rel="stylesheet" href="webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
 <link rel="stylesheet" href="/css/main.css"/>
 <script type="text/javascript" src="webjars/jquery/3.2.1/jquery.min.js">
-</script>
+</script>-
 <script type='text/javascript'>
 <!-- https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070 -->
-
-angular.module('myApp', []).controller('DataController', function($scope, $http) {
-    console.log("getting data");
-    $http({method: 'GET', url: "/data/json"}).success(
+var app = angular.module('Application', []);
+app.controller('ListController', function($scope, $http) {
+    $http({
+        method: 'GET',
+        url: '/table'
+    }).success(
         function(data) {
-            console.log("got raw data: " + data);
-            /*
-            data = {
-                "results": [{
-                    "text": "mockup data"
-                }]
-            };
-			*/
-            $scope.rows = data.results;
+            console.log("getting data");
+            try {
+                console.log("got raw data: " + data);
+                $scope.rows = data.results;
+            } catch (e) {
+                data = {
+                    "results": [{
+                        "text": "mockup data"
+                    }]
+                };
+            }
             console.log(data.results);
         });
+});
+
+app.controller('SelectController', function($scope, $http) {
+    $http({
+        method: 'GET',
+        url: '/select'
+    }).success(function(data) {
+        try {
+            $scope.names = data;
+        } catch (e) {
+            $scope.names = ["mockup"];
+        }
+    });
 });
 </script>
 </head>
 <body>
-	<p>Enter Name: <input type="text" ng-model="name"> </p>
-	<p>Hello {{name}}</p>
-	  <div ng-controller="DataController">
-       Data: <br />
-        <ul>
-            <li ng-repeat="row in rows">{{ row.text }}</li>
-        </ul>
-    </div>
+<p>Enter Name: <input type="text" ng-model="name"> </p>
+<p>Hello {{name}}</p>
+<div ng-controller="ListController">
+  Data: <br />
+  <ul>
+    <li ng-repeat="row in rows">{{ row.text }}</li>
+  </ul>
+</div>
+<div ng-controller="SelectController">
+  <select ng-model="selectedName" ng-options="item for item in names"></select>
+</div>
+    
 </body>
 </html>

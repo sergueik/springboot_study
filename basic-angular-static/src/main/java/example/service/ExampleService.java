@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import example.controller.ExampleRestController;
 
-
 @Service
 public class ExampleService {
 

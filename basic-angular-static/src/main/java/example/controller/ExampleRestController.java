@@ -5,7 +5,9 @@ package example.controller;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +32,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 @RestController
-@RequestMapping("/data")
+@RequestMapping("/")
 public class ExampleRestController {
 
 	private static Gson gson = new Gson();
@@ -41,13 +43,29 @@ public class ExampleRestController {
 		service = data;
 	}
 
-	@GetMapping(value = "/json", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Map<String, List<Data>>> json() {
+	@SuppressWarnings("serial")
+	@GetMapping(value = "select", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<String>> select() {
+		List<String> results = new ArrayList<>();
+		// https://www.baeldung.com/java-initialize-hashset
+		results.addAll(new HashSet<String>() {
+			{
+				add("alice");
+				add("bob");
+				add("carl");
+			}
+		});
+		System.out.println("Returning: " + gson.toJson(results));
+		return ResponseEntity.status(HttpStatus.OK).body(results);
+	}
+
+	@GetMapping(value = "table", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<String, List<Data>>> table() {
 		List<Data> rows = new ArrayList<>();
 		rows.add(new Data(service.hello()));
 		Map<String, List<Data>> results = new HashMap<>();
 		results.put("results", rows);
-		System.out.println("Returning: " + gson.toJson( results));
+		System.out.println("Returning: " + gson.toJson(results));
 		return ResponseEntity.status(HttpStatus.OK).body(service.handleData(results));
 	}
 
