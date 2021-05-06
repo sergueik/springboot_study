@@ -1,4 +1,9 @@
 table { border-collapse: collapse; }
+th { padding: 5px; }
+td { padding-left: 4px; 
+    padding-right: 4px;
+    border-collapse: collapse; }
+
 .percent {
   position: absolute; width: 300px; height: 14px; z-index: 1; text-align: center; font-size: 0.8em; color: white;
 }

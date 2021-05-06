@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <title>Title</title>
-<script type="text/javascript" src="webjars/angularjs/1.5.8/angular.js">
+<script type="text/javascript" src="/webjars/angularjs/1.5.8/angular.js">
 </script>
-<link rel="stylesheet" href="webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
 <link rel="stylesheet" href="/css/main.css"/>
-<script type="text/javascript" src="webjars/jquery/3.2.1/jquery.min.js">
+<script type="text/javascript" src="/webjars/jquery/3.2.1/jquery.min.js">
 </script>-
 <script type="text/javascript" src="/js/script.js">
 </script>
@@ -25,5 +25,16 @@
   <select ng-model="selectedName" ng-options="item for item in names"></select>
 </div>
     
+
+
+<div ng-controller="TableController">
+<table class="table-bordered">
+  <tr data-ng-repeat="row in rows">
+    <td>{{ row.column1 }}</td>
+    <td>{{ row.column2 }}</td>
+    <td>{{ row.column3 }}</td>
+  </tr>
+</table>
+</div>
 </body>
 </html>

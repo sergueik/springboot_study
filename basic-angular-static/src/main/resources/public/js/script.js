@@ -3,7 +3,7 @@ var app = angular.module('Application', []);
 app.controller('ListController', function($scope, $http) {
     $http({
         method: 'GET',
-        url: '/table'
+        url: '/list'
     }).success(
         function(data) {
             console.log("getting data");
@@ -20,6 +20,28 @@ app.controller('ListController', function($scope, $http) {
             console.log(data.results);
         });
 });
+
+app.controller('TableController', function($scope, $http) {
+    $http({
+        method: 'GET',
+        url: '/table'
+    }).success(
+        function(data) {
+            console.log("getting data");
+            try {
+                console.log("got raw data: " + data);
+                $scope.rows = data.results;
+            } catch (e) {
+                data = {
+                    "results": [{
+                        "text": "mockup data"
+                    }]
+                };
+            }
+            console.log("got from /table:" + data.results);
+        });
+});
+
 
 app.controller('SelectController', function($scope, $http) {
     $http({

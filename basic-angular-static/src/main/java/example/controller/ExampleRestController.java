@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import example.model.DataRow;
 import example.service.ExampleService;
 
 import com.google.gson.Gson;
@@ -59,14 +60,31 @@ public class ExampleRestController {
 		return ResponseEntity.status(HttpStatus.OK).body(results);
 	}
 
-	@GetMapping(value = "table", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Map<String, List<Data>>> table() {
+	@GetMapping(value = "list", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<String, List<Data>>> list() {
 		List<Data> rows = new ArrayList<>();
 		rows.add(new Data(service.hello()));
 		Map<String, List<Data>> results = new HashMap<>();
 		results.put("results", rows);
 		System.out.println("Returning: " + gson.toJson(results));
-		return ResponseEntity.status(HttpStatus.OK).body(service.handleData(results));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(service.handleData(results));
+	}
+
+	@GetMapping(value = "table", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<String, List<DataRow>>> table() {
+		List<DataRow> rows = new ArrayList<>();
+		DataRow.DataRowBuilder rowBuilder = new DataRow.DataRowBuilder();
+		for (int cnt = 1; cnt != 5; cnt++) {
+			rowBuilder.withColumn1(String.format("row %d column 1", cnt));
+			rowBuilder.withColumn2(String.format("row %d column 2", cnt));
+			rowBuilder.withColumn3(String.format("row %d column 3", cnt));
+			rows.add(rowBuilder.build());
+		}
+		Map<String, List<DataRow>> results = new HashMap<>();
+		results.put("results", rows);
+		System.out.println("Returning: " + gson.toJson(results));
+		return ResponseEntity.status(HttpStatus.OK).body(results);
 	}
 
 	public static class Data {
@@ -88,4 +106,5 @@ public class ExampleRestController {
 		public Data() {
 		}
 	}
+	// NOTE: are nested static classes supported?
 }
