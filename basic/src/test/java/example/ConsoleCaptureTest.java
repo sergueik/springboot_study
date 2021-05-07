@@ -3,7 +3,7 @@ package example;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Rule;
-
+import org.junit.Assume;
 import org.springframework.boot.test.rule.OutputCapture;
 
 // NOTE: fragile and may conflict with other tests
@@ -25,6 +25,7 @@ public class ConsoleCaptureTest {
 
 	@Test
 	public void testName() throws Exception {
+		Assume.assumeTrue(true);
 		sut.hello();
 		assertThat(capture.toString(), containsString("basic"));
 	}

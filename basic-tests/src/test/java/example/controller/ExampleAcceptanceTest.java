@@ -5,12 +5,12 @@ package example.controller;
 // import org.junit.Before;
 
 import org.junit.jupiter.api.Assertions;
-
-// import org.junit.Test;
-
 import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Ignore;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -19,21 +19,21 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-
-import static org.springframework.http.HttpStatus.OK;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.assertj.core.util.Arrays;
-
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
 
 // NOTE: property annotations have no effect
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
@@ -80,9 +80,10 @@ public class ExampleAcceptanceTest {
 
 	@Test
 	public void test1() throws Exception {
+		Assumptions.assumeFalse(false);
 		url = "http://localhost:" + randomServerPort + route;
 		responseEntity = restTemplate.getForEntity(url, String.class);
-		assertThat(responseEntity.getStatusCode(), is(OK));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody(), is(body));
 	}
 
@@ -97,7 +98,7 @@ public class ExampleAcceptanceTest {
 		request = new HttpEntity<String>(data.toString(), headers);
 		responseEntity = restTemplate.postForEntity(url, request, String.class,
 				headers);
-		assertThat(responseEntity.getStatusCode(), is(OK));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		// code error: Expected: a string containing "Hello basic" but: was
 		// "{"name":null}"
 		// assertThat(responseEntity.getBody(), containsString(body));
@@ -117,8 +118,14 @@ public class ExampleAcceptanceTest {
 			HttpEntity<String> request = new HttpEntity<String>("", headers);
 			responseEntity = restTemplate.postForEntity(url, request, String.class,
 					headers);
-			assertThat(responseEntity.getStatusCode(), is(BAD_REQUEST));
+			assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 
 		});
 	}
+
+	@Disabled("Disabled until some reported problem is addressed")
+	@Test
+	public void test4() {
+	}
+
 }

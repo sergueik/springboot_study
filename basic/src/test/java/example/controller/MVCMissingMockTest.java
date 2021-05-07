@@ -24,16 +24,16 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.util.NestedServletException;
 
+import org.hamcrest.Matcher;
 import static org.hamcrest.Matchers.containsString;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-
-import org.hamcrest.Matcher;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 import example.controller.Controller;
 import example.service.ExampleService;
-
 import example.ExampleApplication;
 
 // https://github.com/TechPrimers/test-controller-example
@@ -68,7 +68,8 @@ public class MVCMissingMockTest {
 
 	@Test(expected = NestedServletException.class)
 	public void test1() throws Exception {
-		mvc.perform(get(route)).andExpect(status().isOk());
+		mvc.perform(get(route)).andExpect(status().isOk())
+				.andExpect(header().string("Content-Type", "text/plain"));
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -91,4 +92,3 @@ public class MVCMissingMockTest {
 	}
 
 }
-
