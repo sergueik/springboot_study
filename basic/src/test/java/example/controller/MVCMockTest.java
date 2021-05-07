@@ -34,9 +34,10 @@ import org.hamcrest.Matcher;
 import example.controller.Controller;
 import example.service.ExampleService;
 
-import example.Application;
+import example.ExampleApplication;
 // https://github.com/TechPrimers/test-controller-example
 // https://github.com/kriscfoster/spring-boot-testing-pyramid
+
 @RunWith(SpringJUnit4ClassRunner.class)
 // @WebMvcTest
 public class MVCMockTest {
@@ -48,7 +49,7 @@ public class MVCMockTest {
 	private MockMvc mvc;
 
 	@InjectMocks
-	private Application application;
+	private ExampleApplication application;
 
 	@Mock
 	private ExampleService mockService;

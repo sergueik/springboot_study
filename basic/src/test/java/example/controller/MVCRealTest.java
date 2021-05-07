@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import example.controller.Controller;
 import example.service.ExampleService;
-import example.Application;
+import example.ExampleApplication;
 
 // NOTE: @Runwith annotation with real classes crashes the JVM
 // @RunWith(SpringJUnit4ClassRunner.class)
@@ -33,12 +33,13 @@ public class MVCRealTest {
 
 	final static String route = "/basic";
 	final static String body = "Hello basic";
-        private static String charset = null;
+	private static String charset = null;
 	private ResultActions resultActions;
 	private static MockMvc mvc;
 
 	// initiaize real stuff
-	private static Application application = new Application();
+	@SuppressWarnings("unused")
+	private static ExampleApplication application = new ExampleApplication();
 	private static ExampleService service = new ExampleService();
 	private static Controller controller = new Controller(service);
 
@@ -75,15 +76,17 @@ public class MVCRealTest {
 	public void jsonTest2() throws Exception {
 		mvc.perform(get(route + "/json")).andExpect(jsonPath("$.*", hasSize(1)));
 	}
+
 	// examine response header
 	@Test
 	// NOTE: these expectations are Junit version sensitive
 	public void contentTypeTest() throws Exception {
-	charset = "ISO-8859-1";
+		charset = "ISO-8859-1";
 		mvc.perform(get(route).accept(MediaType.TEXT_PLAIN)).andExpect(
 				content().contentType(String.format("text/plain;charset=%s", charset)));
-	charset = "UTF-8";
+		charset = "UTF-8";
 		mvc.perform(get(route + "/json").accept(MediaType.APPLICATION_JSON))
-				.andExpect(content().contentType(String.format("application/json;charset=%s", charset)));
+				.andExpect(content().contentType(
+						String.format("application/json;charset=%s", charset)));
 	}
 }

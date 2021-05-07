@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>basic</artifactId>
-  <version>0.3.0-SNAPSHOT</version>
+  <version>0.4.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>basic</name>
   <description>Demo Springboot Docker-hosted app</description>
@@ -27,7 +27,9 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
+      <!-- for OutputCapture -->
+      <!-- 
+      <scope>test</scope> -->
     </dependency>
   </dependencies>
   <build>
@@ -42,4 +44,3 @@
     </plugins>
   </build>
 </project>
-
