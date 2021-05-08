@@ -13,7 +13,7 @@ To verify it works, access application in Postman or curl
 ```sh
 curl http://localhost:8080/springboot/getUsers
 ```
-will output something like
+initially it will respond with an empty array. after users added, as shhowb below,it will respond with something like
 
 ```json
 [{
