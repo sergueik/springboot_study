@@ -7,12 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -35,7 +37,7 @@ import java.time.LocalDateTime;
 @RequestMapping("/${application}")
 public class HomeController {
 
-	private String defaultEnvKey = "APP_SERVER";
+	private final String defaultEnvKey = "APP_SERVER";
 	private StringBuffer sb = new StringBuffer();
 
 	// NOTE: application is a reserved variable name
@@ -67,16 +69,42 @@ public class HomeController {
 		return sb.toString();
 	}
 
-	// dump environment as String
+	// https://www.baeldung.com/spring-request-param
+	@ResponseBody
+	@GetMapping("/env2")
+	public String showEnv2(@RequestParam(required = false) String name) {
+		return _showEnv(name);
+	}
+
+	@GetMapping("/env3")
+	@ResponseBody
+	// NOTE: as usual, the value for annotation attribute
+	// RequestParam.defaultValue must be a constant expression
+	public String getFoos(
+			@RequestParam(defaultValue = defaultEnvKey) String name) {
+		return _showEnv(name);
+	}
+
 	@ResponseBody
 	@GetMapping("/env")
-	public String showEnv() {
-		Map<String, String> systemEnvironment = System.getenv();
-		sb.setLength(0);
-		for (Entry<String, String> entry : systemEnvironment.entrySet()) {
-			sb.append(entry.getKey() + " = " + entry.getValue() + "<br/>");
+	public String showEnv(@RequestParam Optional<String> name) {
+		return _showEnv(name.isPresent() ? name.get() : null);
+	}
+
+	private String _showEnv(String name) {
+		if (name != null) {
+			// evaluate specific environment value
+			return String.format("%s = %s", name, System.getenv(name));
+		} else {
+			// dump environment as String
+			Map<String, String> systemEnvironment = System.getenv();
+			sb.setLength(0);
+			for (Entry<String, String> entry : systemEnvironment.entrySet()) {
+				sb.append(entry.getKey() + " = " + entry.getValue() + "<br/>");
+			}
+			return sb.toString();
 		}
-		return sb.toString();
+
 	}
 
 	// dump environment as JSON
@@ -91,19 +119,12 @@ public class HomeController {
 			String keyCheck = key;
 			if (keepKeys.contains(keyCheck.toUpperCase())) {
 				// continue;
-				log.info("Removing key: " + key);
+				log.info("Adding the key to show: " + key);
 				systemEnvironment.put(key, System.getenv(key));
 			}
 		}
 		log.info("Returning object from environment "
 				+ Arrays.asList(systemEnvironment.keySet()));
 		return ResponseEntity.status(HttpStatus.OK).body(systemEnvironment);
-
 	}
-
-	// evaluate specific environment value
-	public String showEnv(String key) {
-		return String.format("%s = %s", key, System.getenv(key));
-	}
-
 }

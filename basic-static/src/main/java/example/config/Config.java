@@ -1,5 +1,6 @@
 package example.config;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.SpringApplication;
@@ -30,18 +31,33 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class Config implements WebMvcConfigurer {
 
-	private static final String projectPath = System.getProperty("user.dir")
-			.replaceAll("\\\\", "/");
-
+	// optional: adding the default locations
+	// NOTE: every path has tobe mapped: non-mapped paths will be 404'ed
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		final String projectPath = System.getProperty("user.dir").replaceAll("\\\\",
+				"/");
 
+		for (String dir : Arrays.asList("images", "css", "js")) {
+			registry.addResourceHandler(String.format("/%s/**", dir))
+					.addResourceLocations(String.format("classpath:/static/%s/", dir),
+							String.format("file:///%s/src/main/resources/static/%s/",
+									projectPath, dir));
+
+		}
+		/*
 		registry.addResourceHandler("/images/**")
 				.addResourceLocations("classpath:/static/images/", String.format(
 						"file:///%s/src/main/resources/static/images/", projectPath));
+		
 		registry.addResourceHandler("/css/**")
-				.addResourceLocations("classpath:/static/css/");
-
+				.addResourceLocations("classpath:/static/css/", String
+						.format("file:///%s/src/main/resources/static/css/", projectPath));
+		
+		registry.addResourceHandler("/js/**").addResourceLocations(
+				"classpath:/static/js/",
+				String.format("file:///%s/src/main/resources/static/js/", projectPath));
+		*/
 	}
 
 	@Override
@@ -49,7 +65,7 @@ public class Config implements WebMvcConfigurer {
 	}
 
 	@Override
-	public void addCorsMappings(CorsRegistry arg0) {
+	public void addCorsMappings(CorsRegistry arg) {
 
 	}
 

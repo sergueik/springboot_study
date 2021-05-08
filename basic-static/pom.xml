@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>static_page</artifactId>
-  <version>0.6.0-SNAPSHOT</version>
+  <version>0.7.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>static_page</name>
+  <name>basic-static-page</name>
   <description>Springboot Template page Demo project</description>
   <parent>
     <groupId>org.springframework.boot</groupId>
