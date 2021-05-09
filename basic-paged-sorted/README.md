@@ -62,10 +62,36 @@ this will output a set
   "currentPage": 2
 }
 ```
+### Note
+
+With parent Springboot 1.5.4 the project does not compile:
+```sh
+Compilation failure:
+[ERROR] src/main/java/example/controller/TutorialController.java:[73,83] cannot find symbol
+[ERROR]   symbol:   method by(java.util.List<org.springframework.data.domain.Sort.Order>)
+[ERROR]   location: class org.springframework.data.domain.Sort
+[ERROR] src/main/java/example/controller/TutorialController.java:[109,78] cannot find symbol
+[ERROR]   symbol:   method by(java.util.List<org.springframework.data.domain.Sort.Order>)
+[ERROR]   location: class org.springframework.data.domain.Sort
+[ERROR] src/main/java/example/controller/TutorialController.java:[139,54] cannot find symbol
+[ERROR]   symbol:   method of(int,int)
+[ERROR]   location: class org.springframework.data.domain.PageRequest
+[ERROR] src/main/java/example/controller/TutorialController.java:[161,69] cannot find symbol
+[ERROR]   symbol:   method findById(long)
+[ERROR]   location: variable tutorialRepository of type example.repository.TutorialRepository
+[ERROR] src/main/java/example/controller/TutorialController.java:[185,69] cannot find symbol
+[ERROR] src/main/java/example/controller/TutorialController.java:[203,43] cannot find symbol
+[ERROR]   symbol:   method deleteById(long)
+[ERROR]   location: variable tutorialRepository of type example.repository.TutorialRepository
+```
+in addition there is no way to switch parent via profile:
+```sh
+Malformed POM. Unrecognised tag: 'parent'
+```
 ### See Also
 
   * [H2DB example](https://reflectoring.io/spring-boot-paging/)
-  * [](https://www.baeldung.com/spring-data-jpa-pagination-sorting)
+  * basics of [pagination and sorting using Spring Data JPA](https://www.baeldung.com/spring-data-jpa-pagination-sorting)
   * another [Spring boot pagination and sorting example](https://howtodoinjava.com/spring-boot2/pagination-sorting-example/) tutrial document
 
 ### Author
