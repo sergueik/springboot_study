@@ -37,6 +37,10 @@ public class TutorialController {
 	@Autowired
 	TutorialRepository tutorialRepository;
 
+	public TutorialController(TutorialRepository tutorialRepository) {
+		this.tutorialRepository = tutorialRepository;
+	}
+
 	private Sort.Direction getSortDirection(String direction) {
 		if (direction.equals("asc")) {
 			return Sort.Direction.ASC;
@@ -152,6 +156,8 @@ public class TutorialController {
 
 	@GetMapping("/tutorials/{id}")
 	public ResponseEntity<Tutorial> getTutorialById(@PathVariable("id") long id) {
+		System.err.println("about to find using " + tutorialRepository.toString());
+
 		Optional<Tutorial> tutorialData = tutorialRepository.findById(id);
 
 		if (tutorialData.isPresent()) {
