@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +37,8 @@ import java.time.LocalDateTime;
 @Controller
 @RequestMapping("/${application}")
 public class HomeController {
-
+	// NOTE: the value for annotation attribute
+	// RequestParam.defaultValue must be a constant expression
 	private final String defaultEnvKey = "APP_SERVER";
 	private StringBuffer sb = new StringBuffer();
 
@@ -71,24 +73,27 @@ public class HomeController {
 
 	// https://www.baeldung.com/spring-request-param
 	@ResponseBody
-	@GetMapping("/env2")
-	public String showEnv2(@RequestParam(required = false) String name) {
-		return _showEnv(name);
-	}
-
-	@GetMapping("/env3")
-	@ResponseBody
-	// NOTE: as usual, the value for annotation attribute
-	// RequestParam.defaultValue must be a constant expression
-	public String getFoos(
-			@RequestParam(defaultValue = defaultEnvKey) String name) {
-		return _showEnv(name);
-	}
-
-	@ResponseBody
 	@GetMapping("/env")
 	public String showEnv(@RequestParam Optional<String> name) {
+		log.info("showEnv name: " + (name.isPresent() ? name.get() : null));
 		return _showEnv(name.isPresent() ? name.get() : null);
+	}
+
+	@GetMapping("/env2")
+	@ResponseBody
+	public String showEnv2(
+			@RequestParam(defaultValue = defaultEnvKey) String name) {
+		log.info("showEnv2 name: " + name);
+		return _showEnv(name);
+	}
+
+	@ResponseBody
+	@GetMapping("/env3/{name}")
+	// NOTE: No mapping found for HTTP request with URI [/application/env3/]
+	// unclear what is the point of required attribute property here
+	public String showEnv3(@RequestParam(required = false) String name) {
+		log.info("showEnv3 name: " + name);
+		return _showEnv(name);
 	}
 
 	private String _showEnv(String name) {
