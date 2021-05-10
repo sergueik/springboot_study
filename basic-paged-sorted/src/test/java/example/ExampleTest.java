@@ -3,6 +3,7 @@ package example;
 /**
  * Copyright 2021 Serguei Kouzmine
  */
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -11,17 +12,24 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import org.hamcrest.collection.IsArrayWithSize;
-import org.json.JSONArray;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
+import org.json.JSONArray;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.InvalidPathException;
+
+import java.lang.AssertionError;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +72,9 @@ class ExampleTest {
 
 	Page<Tutorial> tutorialsPage = Mockito.mock(Page.class);
 
+	private Collection<String> jsonEntries;
+	private String page = null;
+
 	// https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Page.html
 	// https://www.codota.com/code/java/classes/org.springframework.data.domain.Page
 
@@ -74,19 +85,22 @@ class ExampleTest {
 				Arrays.asList(new Tutorial("title 1", "description 1", true),
 						new Tutorial("title 2", "description 2", true),
 						new Tutorial("title 3", "description 3", true),
-						new Tutorial("title 4", "description 4", true)));
+						new Tutorial("title 4", "description 4", true),
+						new Tutorial("title 5", "description 5", true)));
 		when(mockService.findAll(ArgumentMatchers.any(Sort.class))).thenReturn(
 				Arrays.asList(new Tutorial("title 1", "description 1", true),
 						new Tutorial("title 2", "description 2", true),
 						new Tutorial("title 3", "description 3", true),
-						new Tutorial("title 4", "description 4", true)));
+						new Tutorial("title 4", "description 4", true),
+						new Tutorial("title 5", "description 5", true)));
 		when(tutorialsPage.getTotalPages()).thenReturn(new Integer(1));
 		when(tutorialsPage.getTotalElements()).thenReturn(4L);
 		when(tutorialsPage.getContent()).thenReturn(
 				Arrays.asList(new Tutorial("title 1", "description 1", true),
 						new Tutorial("title 2", "description 2", true),
 						new Tutorial("title 3", "description 3", true),
-						new Tutorial("title 4", "description 4", true)));
+						new Tutorial("title 4", "description 4", true),
+						new Tutorial("title 5", "description 5", true)));
 		when(mockService.findAll(ArgumentMatchers.any(Pageable.class)))
 				.thenReturn(tutorialsPage);
 
@@ -109,7 +123,7 @@ class ExampleTest {
 					.andExpect(jsonPath("$.totalPages", is(1)))
 					.andExpect(jsonPath("$.currentPage", is(0)))
 					.andExpect(jsonPath("$.tutorials[0].title", is("title 1")))
-					.andExpect(jsonPath("$.tutorials.length()", is(4)));
+					.andExpect(jsonPath("$.tutorials.length()", is(5)));
 		} catch (NestedServletException e) {
 			System.err.println(e.getCause().toString());
 		}
@@ -127,7 +141,7 @@ class ExampleTest {
 	}
 
 	@Disabled
-	// need to set up a better mock - nopagination observed
+	// need to set up a better mock - no pagination observed
 	@Test
 	public void test3() throws Exception {
 		resultActions = mvc.perform(get("/api/tutorials?page=1&size=2"));
@@ -148,4 +162,56 @@ class ExampleTest {
 		}
 	}
 
+	// https://github.com/json-path/JsonPath/blob/master/README.md
+	@Test
+	public void test6() throws Exception {
+		page = "{\"totalItems\":4,\"tutorials\":[],\"totalPages\":1,\"currentPage\":0}";
+		jsonEntries = JsonPath.read(page, "$.keys()");
+		assertThat("Unexpected keys in JSON: " + jsonEntries, jsonEntries.size(),
+				is(4));
+		page = "{\"totalItems\":4,\"tutorials\":[{\"id\":0,\"title\":\"title 1\",\"description\":\"description 1\",\"published\":true},{\"id\":0,\"title\":\"title 2\",\"description\":\"description 2\",\"published\":true},{\"id\":0,\"title\":\"title 3\",\"description\":\"description 3\",\"published\":true},{\"id\":0,\"title\":\"title 4\",\"description\":\"description4\",\"published\":true}],\"totalPages\":1,\"currentPage\":0}";
+		jsonEntries = JsonPath.read(page, "$.keys()");
+		assertThat("Unexpected keys in JSON: " + jsonEntries, jsonEntries.size(),
+				is(4));
+	}
+
+	@Test
+	// NOTE: need json-path 2.5.0+
+	public void test5() throws Exception {
+		resultActions = mvc.perform(get("/api/tutorials"));
+		page = mvc.perform(get("/api/tutorials")).andReturn().getResponse()
+				.getContentAsString();
+		System.err.println("Examine page: " + page);
+		// Count Values
+		jsonEntries = JsonPath.read(page, "$.*");
+		assertThat("Unexpected values in JSON: " + jsonEntries, jsonEntries.size(),
+				is(4));
+		jsonEntries = JsonPath.read(page, "$..title");
+		assertThat("Unexpected values in JSON: " + jsonEntries, jsonEntries.size(),
+				is(5));
+
+		try {
+			jsonEntries = JsonPath.read(page, "$.keys()");
+			assertThat("Unexpected keys in JSON: " + jsonEntries, jsonEntries.size(),
+					is(4));
+		} catch (InvalidPathException e) {
+			// ExampleTest.test5:170 » InvalidPath Function with name: keys does not
+			throw (e);
+		}
+		try {
+			resultActions.andExpect(
+					jsonPath("$.keys()", is(IsArrayWithSize.arrayWithSize(4))));
+		} catch (AssertionError e) {
+			// No value at JSON path "$.keys()" - from pre-2.5.0
+			//
+			// Expected: is an array with size <4>
+			// but: was LinkedKeySet <[totalItems, tutorials, totalPages,
+			// currentPage]>
+			// from 2.5.0+
+			// throw (e);
+		}
+		resultActions.andExpect(jsonPath("$.keys()", hasSize(4)));
+
+	}
+	// https://stackoverflow.com/questions/55448188/spring-boot-pagination-mockito-repository-findallpageable-returns-null/55448614
 }

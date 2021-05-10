@@ -62,9 +62,9 @@ this will output a set
   "currentPage": 2
 }
 ```
-### Note
+### Notes
 
-With parent Springboot 1.5.4 the project does not compile:
+* with parent Springboot 1.5.4 the project does not compile:
 ```sh
 Compilation failure:
 [ERROR] src/main/java/example/controller/TutorialController.java:[73,83] cannot find symbol
@@ -88,6 +88,49 @@ in addition there is no way to switch parent via profile:
 ```sh
 Malformed POM. Unrecognised tag: 'parent'
 ```
+
+* latest 2.x release of [Maven Surefire Plugin](https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin) is __2.22.2__.
+The __2.20___ that is performing just fine in other projects, here leads to tests being completely skipped:
+```sh
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0
+```
+* observed conflict between [Maven Surefire Plugin](https://maven.apache.org/surefire/maven-surefire-plugin/) and [JaCoCo Maven Plugin](https://www.eclemma.org/jacoco/trunk/doc/maven.html) configurations :
+after uncommenting the `argLine` in `pom.xml`:
+```xml
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
+        <configuration>
+          <trimStackTrace>false</trimStackTrace>
+          <encoding>${project.build.sourceEncoding}</encoding>
+<!--
+          <argLine>-Dfile.encoding=${project.build.sourceEncoding} -DAPP_LOG_ROOT=c:/temp</argLine>
+-->
+        </configuration>
+      </plugin>
+
+```
+the code coverage is broken:
+```sh
+Skipping JaCoCo execution due to missing execution data file.
+```
+
+
+Normally one should see something like
+```sh
+[INFO] --- jacoco-maven-plugin:0.8.6:report (report) @ basic-paged-sorted ---
+[INFO] Loading execution data file target\jacoco.exec
+[INFO] Analyzed bundle 'basic-paged-sorted' with 8 classes
+```
+
+
+This is because `jacoco` itself modifies the `argLine`:
+```sh
+[INFO] --- jacoco-maven-plugin:0.8.6:prepare-agent (default) @ basic-paged-sorted ---
+[INFO] argLine set to -javaagent:C:\\Users\\Serguei\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.6\\org.jacoco.agent-0.8.6-runtime.jar=destfile=C:\\developer\\sergueik\\springboot_study\\basic-paged-sorted\\target\\jacoco.exec
+```
+
 ### See Also
 
   * [H2DB example](https://reflectoring.io/spring-boot-paging/)
