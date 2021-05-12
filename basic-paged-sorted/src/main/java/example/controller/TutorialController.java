@@ -83,52 +83,33 @@ public class TutorialController {
 		}
 	}
 
-	@GetMapping(value = "/tutorials")
-	public ResponseEntity<Map<String, Object>> getAllTutorialsPage(
-			@RequestParam(required = false) String title,
-			@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "3") int size,
-			@RequestParam(defaultValue = "id,desc") String[] sort) {
-
-		try {
-			List<Order> orders = new ArrayList<>();
-
-			if (sort[0].contains(",")) {
-				// will sort more than 2 fields
-				// sortOrder="field, direction"
-				for (String sortOrder : sort) {
-					String[] _sort = sortOrder.split(",");
-					orders.add(new Order(getSortDirection(_sort[1]), _sort[0]));
-				}
-			} else {
-				// sort=[field, direction]
-				orders.add(new Order(getSortDirection(sort[1]), sort[0]));
+	/*
+		@GetMapping(value = "/tutorials")
+		public ResponseEntity<Map<String, Object>> getAllTutorialsPage(
+				Pageable pagingSort, @RequestParam(required = false) String title) {
+			try {
+				List<Tutorial> tutorials = new ArrayList<>();
+				Page<Tutorial> pageTuts;
+				if (title == null)
+					pageTuts = tutorialRepository.findAll(pagingSort);
+				else
+					pageTuts = tutorialRepository.findByTitleContaining(title, pagingSort);
+	
+				tutorials = pageTuts.getContent();
+	
+				Map<String, Object> response = new HashMap<>();
+				response.put("tutorials", tutorials);
+				response.put("currentPage", pageTuts.getNumber());
+				response.put("totalItems", pageTuts.getTotalElements());
+				response.put("totalPages", pageTuts.getTotalPages());
+	
+				return ResponseEntity.status(HttpStatus.OK).body(response);
+				// new ResponseEntity<>(response, HttpStatus.OK);
+			} catch (Exception e) {
+				return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-
-			List<Tutorial> tutorials = new ArrayList<>();
-			Pageable pagingSort = PageRequest.of(page, size, Sort.by(orders));
-
-			Page<Tutorial> pageTuts;
-			if (title == null)
-				pageTuts = tutorialRepository.findAll(pagingSort);
-			else
-				pageTuts = tutorialRepository.findByTitleContaining(title, pagingSort);
-
-			tutorials = pageTuts.getContent();
-
-			Map<String, Object> response = new HashMap<>();
-			response.put("tutorials", tutorials);
-			response.put("currentPage", pageTuts.getNumber());
-			response.put("totalItems", pageTuts.getTotalElements());
-			response.put("totalPages", pageTuts.getTotalPages());
-
-			return ResponseEntity.status(HttpStatus.OK).body(response);
-			// new ResponseEntity<>(response, HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}
-
+	*/
 	@GetMapping("/tutorials/published")
 	public ResponseEntity<Map<String, Object>> findByPublished(
 			@RequestParam(defaultValue = "0") int page,
@@ -151,6 +132,51 @@ public class TutorialController {
 			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping(value = "/tutorials")
+	public ResponseEntity<Map<String, Object>> getAllTutorialsPageWithArgs(
+			@RequestParam(required = false) String title,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "3") int size,
+			@RequestParam(defaultValue = "id,desc") String[] sort) {
+
+		try {
+			List<Order> orders = new ArrayList<>();
+
+			if (sort[0].contains(",")) {
+				// will sort more than 2 fields
+				// sortOrder="field, direction"
+				for (String sortOrder : sort) {
+					String[] _sort = sortOrder.split(",");
+					orders.add(new Order(getSortDirection(_sort[1]), _sort[0]));
+				}
+			} else {
+				// sort=[field, direction]
+				orders.add(new Order(getSortDirection(sort[1]), sort[0]));
+			}
+
+			List<Tutorial> tutorials = new ArrayList<>();
+			Pageable pagingSort = PageRequest.of(page, size, Sort.by(orders));
+			Page<Tutorial> pageTuts;
+			if (title == null)
+				pageTuts = tutorialRepository.findAll(pagingSort);
+			else
+				pageTuts = tutorialRepository.findByTitleContaining(title, pagingSort);
+
+			tutorials = pageTuts.getContent();
+
+			Map<String, Object> response = new HashMap<>();
+			response.put("tutorials", tutorials);
+			response.put("currentPage", pageTuts.getNumber());
+			response.put("totalItems", pageTuts.getTotalElements());
+			response.put("totalPages", pageTuts.getTotalPages());
+
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+			// new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

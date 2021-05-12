@@ -131,11 +131,76 @@ This is because `jacoco` itself modifies the `argLine`:
 [INFO] argLine set to -javaagent:C:\\Users\\Serguei\\.m2\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.6\\org.jacoco.agent-0.8.6-runtime.jar=destfile=C:\\developer\\sergueik\\springboot_study\\basic-paged-sorted\\target\\jacoco.exec
 ```
 
+
+NOTE: replacing the method
+
+```java
+
+@GetMapping(value = "/tutorials")
+public ResponseEntity<Map<String, Object>> getAllTutorialsPage(
+	@RequestParam(required = false) String title,
+	@RequestParam(defaultValue = "0") int page,
+	@RequestParam(defaultValue = "3") int size,
+	@RequestParam(defaultValue = "id,desc") String[] sort) {
+	try {
+		List<Order> orders = new ArrayList<>();
+		if (sort[0].contains(",")) {
+			// will sort more than 2 fields
+			// sortOrder="field, direction"
+			for (String sortOrder : sort) {
+				String[] _sort = sortOrder.split(",");
+				orders.add(new Order(getSortDirection(_sort[1]), _sort[0]));
+			}
+		} else {
+			// sort=[field, direction]
+			orders.add(new Order(getSortDirection(sort[1]), sort[0]));
+		}
+		List<Tutorial> tutorials = new ArrayList<>();
+		Pageable pagingSort = PageRequest.of(page, size, Sort.by(orders));
+		Page<Tutorial> pageTuts;
+
+ // ...
+}
+```
+
+with
+```java
+@GetMapping(value = "/tutorials")
+public ResponseEntity<Map<String, Object>> getAllTutorialsPage(
+	Pageable pagingSort, @RequestParam(required = false) String title) {
+		try {
+			List<Tutorial> tutorials = new ArrayList<>();
+			Page<Tutorial> pageTuts;
+// rest of the method unchanged
+}
+
+```
+leads to test error:
+```txt
+org.springframework.web.util.NestedServletException: Request processing failed;
+nested exception is: java.lang.IllegalStateException: No primary or default constructor found for interface
+org.springframework.data.domain.Pageable
+at org.springframework.web.method.annotation.ModelAttributeMethodProcessor.createAttribute(ModelAttributeMethodProcessor.java:219)
+```
+
+adding both leads to compiation error:
+```txt
+org.springframework.beans.factory.BeanCreationException:
+Error creating bean with name 'requestMappingHandlerMapping' defined in class path resource
+[org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class]:
+Invocation of init method failed
+nested exception is java.lang.IllegalStateException:
+Ambiguous mapping. Cannot map 'tutorialController' method
+example.controller.TutorialController#getAllTutorialsPage(Pageable, String)
+to {GET /api/tutorials, produces [application/json]}:
+There is already 'tutorialController' bean method
+example.controller.TutorialController#getAllTutorialsPage(String, int, int, String[]) mapped.
+```
 ### See Also
 
   * [H2DB example](https://reflectoring.io/spring-boot-paging/)
   * basics of [pagination and sorting using Spring Data JPA](https://www.baeldung.com/spring-data-jpa-pagination-sorting)
   * another [Spring boot pagination and sorting example](https://howtodoinjava.com/spring-boot2/pagination-sorting-example/) tutrial document
-
+  * [discussion](https://stackoverflow.com/questions/52355490/no-primary-or-default-constructor-found-for-interface-org-springframework-data-d) of resolving the parameter resolution conflict arising with `Pageable`.
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -11,7 +11,7 @@
   </parent>
   <groupId>example</groupId>
   <artifactId>basic-paged-sorted</artifactId>
-  <version>0.2.1-SNAPSHOT</version>
+  <version>0.3.1-SNAPSHOT</version>
   <name>basic-paged-sorted</name>
   <description>Spring Boot REST Data JPA Paging and Sorting example</description>
   <properties>
