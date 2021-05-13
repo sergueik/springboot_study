@@ -1,4 +1,4 @@
-package example;
+package example.controller;
 
 import java.util.List;
 
@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import example.repository.UserRepository;
+
+import example.data.User;
+import example.data.Gender;
 
 @RestController
 public class UserController {

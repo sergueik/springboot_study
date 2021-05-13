@@ -17,6 +17,13 @@ Hello basic
 IMAGE=basic-example
 mvn clean package
 docker build -f Dockerfile -t $IMAGE .
+```
+followed by
+```sh
+docker run -p 8086:8085 $IMAGE
+```
+or
+```sh
 docker run -p $(hostname -i):8086:8085 $IMAGE
 ```
 * NOTE: the `$(hostname -i):` argument was added as workaround of forced ipv6 switch
@@ -53,8 +60,3 @@ docker image prune -f
   
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
-
- listen tcp6 [::]:8086: socket: address family not supported by protocol.
- Docker version 20.10.6, build 370c289
-https://medium.com/@gauravsj9/how-to-install-specific-docker-version-on-linux-machine-d0ec2d4095

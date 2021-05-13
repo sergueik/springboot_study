@@ -11,10 +11,10 @@ mvn package
 docker container ls -a | grep $IMAGE| awk '{print $1}' | xargs docker container rm -f
 ```
 ```sh
-IMAGE=basic-jsp; NAME='basic-jsp-container'; docker build -t $IMAGE -f Dockerfile . ; docker container rm -f $NAME ; docker run --name $NAME -p 8080:8080 -d $IMAGE start
+IMAGE=basic-jsp; NAME='basic-jsp-container'; docker build -t $IMAGE -f Dockerfile . ; docker container rm -f $NAME ; docker run --name $NAME -p 127.0.0.1:8080:8080 -d $IMAGE start
 ```
 ```sh
-curl http://localhost:8080/demo
+curl http://127.0.0.1:8080/demo
 ```
 will reply with
 

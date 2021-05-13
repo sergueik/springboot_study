@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
 import static org.hamcrest.CoreMatchers.containsString;
 
 import example.controller.HomeController;
@@ -36,8 +37,9 @@ public class MVCTest {
 	private ResultActions resultActions;
 	final static String charset = "UTF-8";
 	private final static String viewName = "index";
+
+	// NOTE: "application" is a reserved variable name
 	@Value("${application}")
-	// NOTE: application is a reserved variable name
 	private String variable;
 
 	// System.getProperty("application");

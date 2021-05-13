@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0  http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>example</groupId>
+  <artifactId>yaml</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>Spring Boot YAML Example</name>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <!-- <version>2.1.2.RELEASE</version> -->
+    <version>1.5.4.RELEASE</version>
+    <!-- Failed to convert property value of type 'java.lang.Boolean' to required type 'org.springframework.boot.Banner$Mode' 
+for property 'bannerMode'; nested exception is java.lang.IllegalStateException: Cannot convert value of type 'java.lang.Boolean' 
+			    to required type 'org.springframework.boot.Banner$Mode' for property 'bannerMode': no matching editors or conversion strategy found
+				    -->
+    <!-- <version>2.3.4.RELEASE</version> -->
+  </parent>
+  <properties>
+    <java.version>1.8</java.version>
+	     <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+	<version>${maven-surefire-plugin.version}</version>
+	<!-- <version>2.22.0</version> -->
+      </plugin>
+    </plugins>
+  </build>
+</project>

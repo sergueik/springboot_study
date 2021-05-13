@@ -311,6 +311,10 @@ traceid: abcdef-1234-5678-90
   * [multiple services in a Docker container](https://docs.docker.com/config/containers/multi-service_container/)
   * about [Mapped Diagnostic Context](http://logback.qos.ch/manual/mdc.html)
   * about [log4j thread context](https://logging.apache.org/log4j/2.x/manual/thread-context.html)
+  * [guide to access fields of a java Class using Reflection]https://www.baeldung.com/java-reflection-class-fields
+  * [guide to Java instrumentation](https://www.baeldung.com/java-instrumentation)
+  * [guide to bytebuddy](https://www.baeldung.com/byte-buddy)
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

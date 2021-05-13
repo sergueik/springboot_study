@@ -1,4 +1,5 @@
 package example.controller;
+
 /**
  * Copyright 2021 Serguei Kouzmine
  */
@@ -39,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.google.gson.Gson;
 
 import example.service.ExampleService;
-
+import example.controller.ExampleController.Data;
 // see also:
 // https://github.com/kriscfoster/spring-boot-testing-pyramid
 
@@ -55,8 +56,7 @@ public class ExampleMVCIntegrationTest {
 	private final static String route = "/basic";
 	private final static String body = "Hello basic";
 	private final static String charset = "UTF-8";
-	private final static ExampleController.Data data = new ExampleController.Data(
-			"data");
+	private final static Data data = new Data("data");
 	private ResultActions resultActions;
 	private static final Gson gson = new Gson();
 	private final static MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
@@ -71,8 +71,7 @@ public class ExampleMVCIntegrationTest {
 
 	@Test
 	void alltTest() throws Exception {
-		resultActions.andDo(print()).andExpect(status().isOk())
-				.andExpect(content().string(equalTo(body)));
+		resultActions.andDo(print()).andExpect(status().isOk()).andExpect(content().string(equalTo(body)));
 		verify(mockService).hello();
 	}
 
@@ -110,8 +109,8 @@ public class ExampleMVCIntegrationTest {
 	// NOTE: these expectations are Junit version sensitive
 	@Test
 	public void contentTypeTest() throws Exception {
-		mvc.perform(get(route).accept(MediaType.TEXT_PLAIN)).andExpect(
-				content().contentType(String.format("text/plain;charset=%s", charset)));
+		mvc.perform(get(route).accept(MediaType.TEXT_PLAIN))
+				.andExpect(content().contentType(String.format("text/plain;charset=%s", charset)));
 		mvc.perform(get(route + "/json").accept(MediaType.APPLICATION_JSON))
 				.andExpect(content().contentType("application/json"));
 	}
@@ -119,9 +118,8 @@ public class ExampleMVCIntegrationTest {
 	@Test
 	void postJSONTest() throws Exception {
 
-		mvc.perform(post(route + "/post/json").contentType("application/json")
-				.content(payload)).andDo(print()).andExpect(status().isOk())
-				.andExpect(jsonPath("$.name", is(data.getName())));
+		mvc.perform(post(route + "/post/json").contentType("application/json").content(payload)).andDo(print())
+				.andExpect(status().isOk()).andExpect(jsonPath("$.name", is(data.getName())));
 
 		// see also:
 		// https://www.baeldung.com/mockito-argument-matchers
@@ -133,30 +131,25 @@ public class ExampleMVCIntegrationTest {
 		// Wanted but not invoked:
 		// Actual invocations have different arguments:
 		/*
-		verify(mockService).handleData(argThat(new ArgumentMatcher<ExampleController.Data>() {
-			@Override
-			public boolean matches(ExampleController.Data argument) {
-				System.err.println("Simple name: " + argument.getClass().getSimpleName());
-				return argument.getClass().getSimpleName().equals("ExampleController.Data");
-			}
-		}));
-		// TODO: lambda
-		verify(mockService)
-				.handleData(argThat(argument -> argument.getClass().getSimpleName().equals("ExampleController.Data")));
-				*/
+		 * verify(mockService).handleData(argThat(new
+		 * ArgumentMatcher<ExampleController.Data>() {
+		 * 
+		 * @Override public boolean matches(ExampleController.Data argument) {
+		 * System.err.println("Simple name: " + argument.getClass().getSimpleName());
+		 * return argument.getClass().getSimpleName().equals("ExampleController.Data");
+		 * } })); // TODO: lambda verify(mockService) .handleData(argThat(argument ->
+		 * argument.getClass().getSimpleName().equals("ExampleController.Data")));
+		 */
 	}
 
 	@Test
 	void postFormTest() throws Exception {
 		// set up mock to respond with data to any argument of the signature
-		when(mockService.handleData(any(ExampleController.Data.class)))
-				.thenReturn(data);
+		when(mockService.handleData(any(ExampleController.Data.class))).thenReturn(data);
 		// TODO: format argument Object as @RequestBody directly
 		params.add("name", data.getName());
-		mvc.perform(post(route + "/post/form")
-				.contentType("application/x-www-form-urlencoded").params(params)
-				.accept(MediaType.APPLICATION_JSON)).andDo(print())
-				.andExpect(status().isOk())
+		mvc.perform(post(route + "/post/form").contentType("application/x-www-form-urlencoded").params(params)
+				.accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
 				.andExpect(content().string(containsString(responsePayload.toString())))
 				.andExpect(jsonPath("$.name", is(data.getName())));
 		verify(mockService).handleData(any(ExampleController.Data.class));
@@ -166,19 +159,14 @@ public class ExampleMVCIntegrationTest {
 	@Test
 	void gettFormTest() throws Exception {
 		params.add("name", data.getName());
-		mvc.perform(get(route + "/post/form")
-				.contentType("application/x-www-form-urlencoded")
-				.params(params)
-				.accept(MediaType.APPLICATION_JSON)).andDo(print())
-				.andExpect(status().isMethodNotAllowed());
+		mvc.perform(get(route + "/post/form").contentType("application/x-www-form-urlencoded").params(params)
+				.accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isMethodNotAllowed());
 	}
 
 	@Test
 	void postEmptyParamFormTest() throws Exception {
-		mvc.perform(post(route + "/post/form")
-				.contentType("application/x-www-form-urlencoded")
-				.params(new LinkedMultiValueMap<String, String>())
-				.accept(MediaType.APPLICATION_JSON)).andDo(print())
+		mvc.perform(post(route + "/post/form").contentType("application/x-www-form-urlencoded")
+				.params(new LinkedMultiValueMap<String, String>()).accept(MediaType.APPLICATION_JSON)).andDo(print())
 				.andExpect(status().isBadRequest());
 	}
 

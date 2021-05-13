@@ -1,4 +1,4 @@
-### Info
+	### Info
 
 This project contains [minimal demo code of logback example](http://logback.qos.ch/manual/appenders.html) converted to a regular springboot application logging initialization and operation
 
@@ -7,10 +7,25 @@ This project contains [minimal demo code of logback example](http://logback.qos.
 * test application locally
 ```sh
 mvn clean package
+mkdir dummy
+BASEDIR=$(pwd)/dummy
 java -jar target/example.logback.jar
-curl -vk 127.0.0.1:8080/example
+curl -vk $(hostname -i):8080/example
+tail logs/dummy/App.log
 ```
-
+or
+```cmd
+mvn clean package
+mkdir dummy
+set BASEDIR=%CD%\dummy
+java -jar target\example.logback.jar
+curl -vk 127.0.0.1:8080/example
+tail dummy\logs\App.log
+```
+to see the logging to take place
+```sh
+37266 [http-nio-8080-exec-2] DEBUG example.LogHelper - exampleHandler received: null
+```
 It does not appear that logback's `RollingFileAppender` [class](https://github.com/qos-ch/logback/blob/master/logback-core/src/main/java/ch/qos/logback/core/rolling/RollingFileAppender.java)
 supports configuring log file permissions.
 
@@ -26,6 +41,16 @@ does not work (probably because Springboot does not launch the main class direct
 ```java
 Error: Could not find or load main class example.Example
 ```
+__NOTE__ Configuring the Tomcat access log directory through the `application.yaml` or `application.properties` does not currently work. In adition these configuration files suppress console logging, which is not a desired effect.
+
+__NOTE__: cannot run with the 2.3.4:
+```sh
+org.springframework.context.ApplicationContextException: Unable to start web server;
+Caused by: org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'formContentFilter' defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration.class]
+Caused by: java.lang.NoClassDefFoundError: com/fasterxml/jackson/databind/exc/InvalidDefinitionException
+```
+
 
 ### Dependencies
 
@@ -161,12 +186,15 @@ from the actual directory name.
 ### See Also
 
 
- * https://www.codingame.com/playgrounds/4497/configuring-logback-with-spring-boot
- * https://stackoverflow.com/questions/2602415/rolling-logback-logs-on-filesize-and-time
- * https://www.baeldung.com/java-logging-rolling-file-appenders
- * [JSON logging](https://mathieularose.com/logback-json/)
- * [hints](https://stackoverflow.com/questions/40576959/logback-jsonlayout-printing-all-logs-on-the-same-line) on parsing JSON logs from the log via `jq`
+  * https://www.codingame.com/playgrounds/4497/configuring-logback-with-spring-boot
+  * https://stackoverflow.com/questions/2602415/rolling-logback-logs-on-filesize-and-time
+  * https://www.baeldung.com/java-logging-rolling-file-appenders
+  * [JSON logging](https://mathieularose.com/logback-json/)
+  * [hints](https://stackoverflow.com/questions/40576959/logback-jsonlayout-printing-all-logs-on-the-same-line) on parsing JSON logs from the log via `jq`
+
+
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 

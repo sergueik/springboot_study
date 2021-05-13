@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import example.service.ExampleService;
 import example.service.ExampleService;
 
-
 @RestController
 @RequestMapping("/basic")
 public class Controller {
@@ -24,7 +23,7 @@ public class Controller {
 		service = data;
 	}
 
-	@GetMapping
+	@GetMapping(produces =  MediaType.TEXT_PLAIN_VALUE )
 	public String hello() {
 		return service.hello();
 	}
