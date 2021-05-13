@@ -13,7 +13,7 @@ docker build -t $NAME -f Dockerfile .
 * run default commands
 
 ```sh
-mdir web
+mkdir web
 docker run -d -p 8080:80 -p 9443:443 -v $(pwd)/web:/web --name $NAME $NAME
 ```
 
@@ -70,7 +70,7 @@ Content-Type: application/json
 ```
 and
 ```sh
- docker exec $NAME /web/cgi-bin/table.cgi
+docker exec $NAME /web/cgi-bin/table.cgidocker exec $NAME /web/cgi-bin/table.cgi
 ```
 with
 ```json
@@ -121,7 +121,7 @@ curl http://localhost:8080/cgi-bin/list.cgi
 ```
 testing the page, console:
 ```sh
-curl  http://localhost:8080/inventory.html
+curl http://localhost:8080/inventory.html
 ```
 
 * this will show the plain page:
@@ -161,13 +161,12 @@ curl  http://localhost:8080/inventory.html
 </div>
 </body>
 </html>
-
 ```
  need to run in the browser to see
  
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture.png)
 
-
+ - opened developer tools tab shows that the Angular is doing polling the server
 ### Cleanup
 
 ```sh
@@ -175,8 +174,13 @@ docker stop $NAME
 docker container prune -f 
 docker image prune -f
 docker image rm $NAME
-
 ```
-  
+### See Also
+  * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
+  * https://stackoverflow.com/questions/13671031/server-polling-with-angularjs
+  * https://blog.guya.net/2016/08/08/simple-server-polling-in-angularjs-done-right/
+  * https://www.js-tutorials.com/angularjs-tutorial/simple-example-angularjs-interval-timeout/ 
+  * https://stackoverflow.com/questions/42701048/how-to-pass-vm-to-a-settimeout-in-angularjs-changes-to-scope-dont-update-dom-v
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
