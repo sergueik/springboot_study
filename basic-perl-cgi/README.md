@@ -35,12 +35,14 @@ docker cp js/script.js $NAME:web/html/js
 ```sh
 docker cp cgi-bin/list.cgi $NAME:web/cgi-bin
 docker cp cgi-bin/table.cgi $NAME:web/cgi-bin	
+docker cp cgi-bin/select.cgi $NAME:web/cgi-bin	
 docker cp JSON/PP.pm $NAME:web/cgi-bin/JSON
 docker cp YAML/Tiny.pm $NAME:web/cgi-bin/YAML
 ```
 ```sh
 docker exec $NAME chmod 775 /web/cgi-bin/list.cgi
 docker exec $NAME chmod 775 /web/cgi-bin/table.cgi
+docker exec $NAME chmod 775 /web/cgi-bin/select.cgi
 ```
 * run smoke test
 run cgi directly:

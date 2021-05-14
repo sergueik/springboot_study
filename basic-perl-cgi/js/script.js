@@ -52,7 +52,7 @@ app.controller('TableController', function($scope, $http) {
 app.controller('SelectController', function($scope, $http) {
     $http({
         method: 'GET',
-        url: '/select'
+        url: '/cgi-bin/select.cgi'
     }).success(function(data) {
         try {
             $scope.names = data;
