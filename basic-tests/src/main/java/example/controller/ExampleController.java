@@ -3,6 +3,7 @@ package example.controller;
 /**
  * Copyright 2021 Serguei Kouzmine
  */
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,8 @@ public class ExampleController {
 			// see also:
 			// https://stackoverflow.com/questions/16232833/how-to-respond-with-http-400-error-in-a-spring-mvc-responsebody-method-returnin
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(service.handleData(new Data(param.getFirst("name"))));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(service.handleData(new Data(param.getFirst("name"))));
 	}
 
 	public static class Data {

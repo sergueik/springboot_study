@@ -54,7 +54,8 @@ public class ExampleMVCIntegrationTest {
 	private ExampleService mockService;
 
 	private final static String route = "/basic";
-	private final static String body = "Hello basic";
+	// NOTE: execrising property file override
+	private final static String body = "Hello testdata"; // "Hello basic";
 	private final static String charset = "UTF-8";
 	private final static Data data = new Data("data");
 	private ResultActions resultActions;
@@ -71,7 +72,8 @@ public class ExampleMVCIntegrationTest {
 
 	@Test
 	void alltTest() throws Exception {
-		resultActions.andDo(print()).andExpect(status().isOk()).andExpect(content().string(equalTo(body)));
+		resultActions.andDo(print()).andExpect(status().isOk())
+				.andExpect(content().string(equalTo(body)));
 		verify(mockService).hello();
 	}
 
@@ -109,8 +111,8 @@ public class ExampleMVCIntegrationTest {
 	// NOTE: these expectations are Junit version sensitive
 	@Test
 	public void contentTypeTest() throws Exception {
-		mvc.perform(get(route).accept(MediaType.TEXT_PLAIN))
-				.andExpect(content().contentType(String.format("text/plain;charset=%s", charset)));
+		mvc.perform(get(route).accept(MediaType.TEXT_PLAIN)).andExpect(
+				content().contentType(String.format("text/plain;charset=%s", charset)));
 		mvc.perform(get(route + "/json").accept(MediaType.APPLICATION_JSON))
 				.andExpect(content().contentType("application/json"));
 	}
@@ -118,8 +120,9 @@ public class ExampleMVCIntegrationTest {
 	@Test
 	void postJSONTest() throws Exception {
 
-		mvc.perform(post(route + "/post/json").contentType("application/json").content(payload)).andDo(print())
-				.andExpect(status().isOk()).andExpect(jsonPath("$.name", is(data.getName())));
+		mvc.perform(post(route + "/post/json").contentType("application/json")
+				.content(payload)).andDo(print()).andExpect(status().isOk())
+				.andExpect(jsonPath("$.name", is(data.getName())));
 
 		// see also:
 		// https://www.baeldung.com/mockito-argument-matchers
@@ -145,11 +148,14 @@ public class ExampleMVCIntegrationTest {
 	@Test
 	void postFormTest() throws Exception {
 		// set up mock to respond with data to any argument of the signature
-		when(mockService.handleData(any(ExampleController.Data.class))).thenReturn(data);
+		when(mockService.handleData(any(ExampleController.Data.class)))
+				.thenReturn(data);
 		// TODO: format argument Object as @RequestBody directly
 		params.add("name", data.getName());
-		mvc.perform(post(route + "/post/form").contentType("application/x-www-form-urlencoded").params(params)
-				.accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk())
+		mvc.perform(post(route + "/post/form")
+				.contentType("application/x-www-form-urlencoded").params(params)
+				.accept(MediaType.APPLICATION_JSON)).andDo(print())
+				.andExpect(status().isOk())
 				.andExpect(content().string(containsString(responsePayload.toString())))
 				.andExpect(jsonPath("$.name", is(data.getName())));
 		verify(mockService).handleData(any(ExampleController.Data.class));
@@ -159,14 +165,18 @@ public class ExampleMVCIntegrationTest {
 	@Test
 	void gettFormTest() throws Exception {
 		params.add("name", data.getName());
-		mvc.perform(get(route + "/post/form").contentType("application/x-www-form-urlencoded").params(params)
-				.accept(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isMethodNotAllowed());
+		mvc.perform(get(route + "/post/form")
+				.contentType("application/x-www-form-urlencoded").params(params)
+				.accept(MediaType.APPLICATION_JSON)).andDo(print())
+				.andExpect(status().isMethodNotAllowed());
 	}
 
 	@Test
 	void postEmptyParamFormTest() throws Exception {
-		mvc.perform(post(route + "/post/form").contentType("application/x-www-form-urlencoded")
-				.params(new LinkedMultiValueMap<String, String>()).accept(MediaType.APPLICATION_JSON)).andDo(print())
+		mvc.perform(post(route + "/post/form")
+				.contentType("application/x-www-form-urlencoded")
+				.params(new LinkedMultiValueMap<String, String>())
+				.accept(MediaType.APPLICATION_JSON)).andDo(print())
 				.andExpect(status().isBadRequest());
 	}
 

@@ -60,7 +60,8 @@ public class ExampleAcceptanceTest {
 	// port is not valid on remote machine
 
 	private final String route = "/basic";
-	private final static String body = "Hello basic";
+	// NOTE: execrising property file override
+	private final static String body = "Hello testdata"; // "Hello basic";
 	private static final RestTemplate restTemplate = new RestTemplate();
 	private static ExampleController.Data data = new ExampleController.Data();
 	private String url = null;
