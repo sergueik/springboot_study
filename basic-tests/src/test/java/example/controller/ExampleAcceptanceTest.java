@@ -36,8 +36,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 
 // NOTE: property annotations have no effect
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
-		"serverPort=8085" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = { "serverPort=8085" })
 @PropertySource("classpath:application.properties")
 public class ExampleAcceptanceTest {
 
@@ -61,7 +60,7 @@ public class ExampleAcceptanceTest {
 
 	private final String route = "/basic";
 	// NOTE: execrising property file override
-	private final static String body = "Hello testdata"; // "Hello basic";
+	private final static String body = "Hello test data";
 	private static final RestTemplate restTemplate = new RestTemplate();
 	private static ExampleController.Data data = new ExampleController.Data();
 	private String url = null;
@@ -97,8 +96,7 @@ public class ExampleAcceptanceTest {
 		data.setName(body);
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		request = new HttpEntity<String>(data.toString(), headers);
-		responseEntity = restTemplate.postForEntity(url, request, String.class,
-				headers);
+		responseEntity = restTemplate.postForEntity(url, request, String.class, headers);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		// code error: Expected: a string containing "Hello basic" but: was
 		// "{"name":null}"
@@ -117,8 +115,7 @@ public class ExampleAcceptanceTest {
 			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
 			HttpEntity<String> request = new HttpEntity<String>("", headers);
-			responseEntity = restTemplate.postForEntity(url, request, String.class,
-					headers);
+			responseEntity = restTemplate.postForEntity(url, request, String.class, headers);
 			assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 
 		});
