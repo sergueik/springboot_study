@@ -7,13 +7,24 @@ package example.component;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import example.utils.Utils;
+
 @Component
-public class ExampleComponent {
-	@Value("${example.InstanceProperty:default value instance property}")
-	private String exampleInstanceProperty;
+public class Example1Component {
+	private static String osName = Utils.getOSName();
+
+	@Value("${example.Property1:property1 default value}")
+	private String property1;
+
+	@Value("${example.Property2:property2 default value}")
+	private String property2;
 
 	public String getExampleInstanceProperty() {
-		return exampleInstanceProperty;
+		if (osName.equals("windows"))
+			return property1;
+		else
+			return property2;
+
 	}
 
 	public static String examplesStaticProperty;
@@ -27,7 +38,7 @@ public class ExampleComponent {
 	// repeat the annotation verbatim
 	@Value("${example.StaticProperty:default value of static property}")
 	public void setExampleStaticProperty(String name) {
-		ExampleComponent.examplesStaticProperty = name;
+		Example1Component.examplesStaticProperty = name;
 	}
 
 }

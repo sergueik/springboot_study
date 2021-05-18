@@ -5,32 +5,23 @@ import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import example.utils.Utils;
+
 @Component
-public class InjectablePropertiesComponent {
+public class Example2Component {
 
 	private Properties properties;
+	private static String osName = Utils.getOSName();
 
-	public InjectablePropertiesComponent(@Autowired Properties properties) {
+	public Example2Component(@Autowired Properties properties) {
 		this.properties = properties;
 	}
 
-	protected static String osName = getOSName();
-
 	public String getSomeProperty() {
-		if (getOSName().equals("windows"))
+		if (osName.equals("windows"))
 			return (String) properties.get("example.firstProperty");
 		else
 			return (String) properties.get("example.secondProperty");
-	}
-
-	public static String getOSName() {
-		if (osName == null) {
-			osName = System.getProperty("os.name").toLowerCase();
-			if (osName.startsWith("windows")) {
-				osName = "windows";
-			}
-		}
-		return osName;
 	}
 
 }

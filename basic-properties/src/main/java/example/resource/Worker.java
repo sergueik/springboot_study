@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import example.configs.ReloadableProperties;
 
 import java.util.Properties;
-import example.component.ExampleComponent;
-import example.component.InjectablePropertiesComponent;
+import example.component.Example1Component;
+import example.component.Example2Component;
 import example.component.PropertiesParser;
 
 @Component
@@ -27,7 +27,7 @@ public class Worker {
 	}
 
 	public String getStaticValue() {
-		final String value = ExampleComponent.examplesStaticProperty;
+		final String value = Example1Component.examplesStaticProperty;
 		return value == null ? "unknown" : value;
 	}
 
@@ -37,7 +37,7 @@ public class Worker {
 	}
 
 	@Autowired
-	InjectablePropertiesComponent injectablePropertiesComponent = new InjectablePropertiesComponent(properties);
+	Example2Component injectablePropertiesComponent = new Example2Component(properties);
 
 	public String getInjectablePropertiesComponentInstanceValue() {
 		// unknown
@@ -51,7 +51,7 @@ public class Worker {
 	}
 
 	@Autowired
-	private ExampleComponent exampleComponent;
+	private Example1Component exampleComponent;
 
 	public String getInstanceValue() {
 		// unknown
