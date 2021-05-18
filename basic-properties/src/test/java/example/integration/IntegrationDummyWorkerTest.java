@@ -1,48 +1,56 @@
-package example.controller;
+package example.integration;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.junit.Before;
-import org.junit.Test;
 /**
  * Copyright 2021 Serguei Kouzmine
  */
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import example.component.PropertiesParser;
-import example.integration.DummyWorker;
+import example.resource.Worker;
 
 @WebMvcTest
-public class ControllerDummyWorkerTest {
+public class IntegrationDummyWorkerTest {
 
-	final static String route = "/dummy";
-	final static String body = "Hello dummy: other value";
+	@Autowired
+	private MockMvc mvc;
+
+	private final static String route = "/dummy";
+	private final static String body = "Hello dummy: other value";
 	private ResultActions resultActions;
 	private final String propertiesFileName = "application.properties";
 
 	@Before
 	public void beforeTest() throws Exception {
-		// initialize real stuff
 		final Properties properties = new Properties();
 		final InputStream stream = PropertiesParser.class.getClassLoader().getResourceAsStream(propertiesFileName);
 		properties.load(stream);
+		// String resourcePath =
+		// Thread.currentThread().getContextClassLoader().getResource("").getPath();
 		final DummyWorker worker = new DummyWorker(properties);
-
-		final MockMvc mvc = MockMvcBuilders.standaloneSetup(worker).build();
+		mvc = MockMvcBuilders.standaloneSetup(worker).build();
 		resultActions = mvc.perform(get(route));
 	}
 
 	@Test
 	public void test() throws Exception {
-		resultActions.andExpect(status().isOk()).andExpect(content().string(containsString(body)));
+		resultActions.andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString(body)));
 	}
+
 }

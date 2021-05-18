@@ -14,6 +14,7 @@ import java.util.Properties;
  * Copyright 2021 Serguei Kouzmine
  */
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -48,6 +49,7 @@ public class IntegrationTest {
 		resultActions = mvc.perform(get(route));
 	}
 
+	// @Ignore
 	@Test
 	public void test() throws Exception {
 		resultActions.andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString(body)));

@@ -7,11 +7,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import example.component.Example2Component;
+
 @RestController
 @RequestMapping("/dummy")
 public class DummyWorker {
 	@Autowired
 	private Properties properties;
+
+	public DummyWorker(@Autowired Properties properties) {
+		this.properties = properties;
+	}
 
 	public String getValue() {
 		final String value = properties.getProperty("value.property");
@@ -20,8 +26,7 @@ public class DummyWorker {
 
 	@GetMapping
 	public String Process() {
-		return "Hello dummy";
-		// + getValue();
+		return "Hello dummy: " + getValue();
 	}
 
 }
