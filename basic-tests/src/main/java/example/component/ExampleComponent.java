@@ -1,4 +1,4 @@
-package com.github.sergueik.example;
+package example.component;
 
 /**
  * Copyright 2021 Serguei Kouzmine

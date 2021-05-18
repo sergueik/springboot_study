@@ -196,5 +196,7 @@ docker image prune -f
   * auto-reloading the Spring application when a proferty file change detected via `PropertiesConfiguration` that periodically checks for the [file modifications](https://www.baeldung.com/spring-reloading-properties) every poll interval
   * как перечитывать настройки после изменения properties файла [(in Russian](https://qna.habr.com/q/713981)
   * overriding SptingBoot `application.properties` during [test run](https://fooobar.com/questions/85477/override-default-spring-boot-applicationproperties-settings-in-junit-test) (in Russian)
+  * [list of Common Spring Boot application properties](https://www.technicalkeeda.com/spring-boot-tutorials/spring-boot-list-of-common-application-properties)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

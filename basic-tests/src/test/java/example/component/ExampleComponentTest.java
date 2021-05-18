@@ -1,7 +1,6 @@
-package com.github.sergueik.example;
+package example.component;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
@@ -10,12 +9,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 
-import com.github.sergueik.example.ExampleComponent;
 
-@ContextConfiguration(classes = com.github.sergueik.example.ExampleComponent.class)
-@SpringBootTest(classes = com.github.sergueik.example.ExampleComponent.class)
+// https://stackoverflow.com/questions/17353327/populating-spring-value-during-unit-test
+// https://www.baeldung.com/spring-tests-override-properties
+
+@SpringBootTest
 public class ExampleComponentTest {
 
 	@Autowired
@@ -41,7 +40,6 @@ public class ExampleComponentTest {
 	}
 
 	@Test
-	// get public member directly
 	public void test4() {
 		property = sut.property5;
 		assertThat("unexpected value of property5: " + property, property, is("default"));
