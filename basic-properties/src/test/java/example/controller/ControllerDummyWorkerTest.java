@@ -17,21 +17,21 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import example.resource.Worker;
+import example.integration.DummyWorker;
 
 @WebMvcTest
-public class ControllerTest {
+public class ControllerDummyWorkerTest {
 
-	final static String route = "/worker";
-	final static String body = "Hello";
+	final static String route = "/dummy";
+	final static String body = "Hello dummy";
 	private ResultActions resultActions;
 
 	@Before
 	public void beforeTest() throws Exception {
 		// initialize real stuff
 		final Properties properties = new Properties();
-		final Worker worker = new Worker(properties);
-		worker.setTest(true);
+		final DummyWorker worker = new DummyWorker();
+
 		final MockMvc mvc = MockMvcBuilders.standaloneSetup(worker).build();
 		resultActions = mvc.perform(get(route));
 	}
