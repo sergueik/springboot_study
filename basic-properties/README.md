@@ -24,7 +24,7 @@ Hello basic
 ```
 but
 ```sh
-ttp://localhost:8085/worker
+http://localhost:8085/worker
 ```
 will print
 ```sh

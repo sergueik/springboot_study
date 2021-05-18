@@ -35,6 +35,7 @@ public class Worker {
 	public Worker(@Autowired Properties properties) {
 		this.properties = properties;
 		example2 = new Example2Component(this.properties);
+		// x = Example3Component.getInstance();
 	}
 
 	public String getStaticValue() {
