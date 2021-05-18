@@ -19,12 +19,8 @@ docker run -d -p 8080:80 -p 9443:443 -v $(pwd)/web:/web --name $NAME $NAME
 
 * tweak directory structure
 ```sh
-docker exec $NAME mkdir /web/html/css
-docker exec $NAME mkdir /web/html/js
-docker exec $NAME mkdir /web/cgi-bin
-docker exec $NAME mkdir /web/cgi-bin/JSON
-docker exec $NAME mkdir /web/cgi-bin/YAML
-```
+for D in /web/html/css /web/html/js /web/cgi-bin/JSON /web/cgi-bin/YAML ; do
+``
 * copy individual files: frontend
 ```
 docker cp html/inventory.html $NAME:web/html
@@ -98,6 +94,20 @@ Content-Type: application/json
    ]
 }
 ```
+and
+```sh
+docker exec $NAME /web/cgi-bin/select.cgi
+```
+```txt
+Content-Type: application/json
+
+[
+   "apple",
+   "pear",
+   "orange",
+   "plum"
+]
+```
 similar results (sans the header) as cgi-bin :
 ```sh
 curl http://localhost:8080/cgi-bin/list.cgi
@@ -119,7 +129,6 @@ curl http://localhost:8080/cgi-bin/list.cgi
       }
    ]
 }
-
 ```
 testing the page, console:
 ```sh
@@ -149,7 +158,7 @@ curl http://localhost:8080/inventory.html
 <div ng-controller="SelectController">
   <select ng-model="selectedName" ng-options="item for item in names"></select>
 </div>
-    
+
 
 
 <div ng-controller="TableController">
@@ -165,7 +174,7 @@ curl http://localhost:8080/inventory.html
 </html>
 ```
  need to run in the browser to see
- 
+
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture.png)
 
  - opened developer tools tab shows that the Angular is doing polling the server
@@ -173,7 +182,7 @@ curl http://localhost:8080/inventory.html
 
 ```sh
 docker stop $NAME
-docker container prune -f 
+docker container prune -f
 docker image prune -f
 docker image rm $NAME
 ```
@@ -181,7 +190,7 @@ docker image rm $NAME
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
   * https://stackoverflow.com/questions/13671031/server-polling-with-angularjs
   * https://blog.guya.net/2016/08/08/simple-server-polling-in-angularjs-done-right/
-  * https://www.js-tutorials.com/angularjs-tutorial/simple-example-angularjs-interval-timeout/ 
+  * https://www.js-tutorials.com/angularjs-tutorial/simple-example-angularjs-interval-timeout/
   * https://stackoverflow.com/questions/42701048/how-to-pass-vm-to-a-settimeout-in-angularjs-changes-to-scope-dont-update-dom-v
 
 ### Author
