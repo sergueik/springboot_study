@@ -18,8 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import example.component.PropertiesParser;
-import example.integration.DummyWorker;
+import example.component.ExplicitPropertiesParser;
+import example.integration.DummyController;
 
 @WebMvcTest
 public class ControllerDummyWorkerTest {
@@ -33,9 +33,9 @@ public class ControllerDummyWorkerTest {
 	public void beforeTest() throws Exception {
 		// initialize real stuff
 		final Properties properties = new Properties();
-		final InputStream stream = PropertiesParser.class.getClassLoader().getResourceAsStream(propertiesFileName);
+		final InputStream stream = ExplicitPropertiesParser.class.getClassLoader().getResourceAsStream(propertiesFileName);
 		properties.load(stream);
-		final DummyWorker worker = new DummyWorker(properties);
+		final DummyController worker = new DummyController(properties);
 
 		final MockMvc mvc = MockMvcBuilders.standaloneSetup(worker).build();
 		resultActions = mvc.perform(get(route));

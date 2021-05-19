@@ -26,33 +26,27 @@ import example.component.ExplicitPropertiesParser;
 import example.controller.Worker;
 
 @WebMvcTest
-public class IntegrationTest {
+public class ExplicitPropertiesParserTest {
 
 	@Autowired
 	private MockMvc mvc;
 
-	private final static String route = "/worker";
-	private final static String body = "Hello";
+	private final static String route = "/dummy/explicit";
+	private final static String body = "value: first property value" ;
 	private ResultActions resultActions;
 	private final String propertiesFileName = "application.properties";
 
 	@Before
 	public void beforeTest() throws Exception {
-		final Properties properties = new Properties();
-		final InputStream stream = ExplicitPropertiesParser.class.getClassLoader().getResourceAsStream(propertiesFileName);
-		properties.load(stream);
-		// String resourcePath =
-		// Thread.currentThread().getContextClassLoader().getResource("").getPath();
-		final Worker worker = new Worker(properties);
-		worker.setTest(true);
+		final ExplicitPropertiesParserController worker = new ExplicitPropertiesParserController();
 		mvc = MockMvcBuilders.standaloneSetup(worker).build();
 		resultActions = mvc.perform(get(route));
 	}
 
-	// @Ignore
 	@Test
 	public void test() throws Exception {
-		resultActions.andDo(print()).andExpect(status().isOk()).andExpect(content().string(containsString(body)));
+		resultActions.andDo(print()).andExpect(status().isOk())
+				.andExpect(content().string(containsString(body)));
 	}
 
 }

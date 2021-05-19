@@ -22,11 +22,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import example.component.PropertiesParser;
-import example.resource.Worker;
+import example.component.ExplicitPropertiesParser;
+import example.controller.Worker;
 
 @WebMvcTest
-public class IntegrationDummyWorkerTest {
+public class IntegrationDummyControllerTest {
 
 	@Autowired
 	private MockMvc mvc;
@@ -39,11 +39,11 @@ public class IntegrationDummyWorkerTest {
 	@Before
 	public void beforeTest() throws Exception {
 		final Properties properties = new Properties();
-		final InputStream stream = PropertiesParser.class.getClassLoader().getResourceAsStream(propertiesFileName);
+		final InputStream stream = ExplicitPropertiesParser.class.getClassLoader().getResourceAsStream(propertiesFileName);
 		properties.load(stream);
 		// String resourcePath =
 		// Thread.currentThread().getContextClassLoader().getResource("").getPath();
-		final DummyWorker worker = new DummyWorker(properties);
+		final DummyController worker = new DummyController(properties);
 		mvc = MockMvcBuilders.standaloneSetup(worker).build();
 		resultActions = mvc.perform(get(route));
 	}

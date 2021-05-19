@@ -8,14 +8,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import example.component.Example2Component;
+import example.component.ExplicitPropertiesParser;
 
 @RestController
 @RequestMapping("/dummy")
-public class DummyWorker {
+public class DummyController {
 	@Autowired
 	private Properties properties;
 
-	public DummyWorker(@Autowired Properties properties) {
+	public DummyController(@Autowired Properties properties) {
 		this.properties = properties;
 	}
 
@@ -27,6 +28,16 @@ public class DummyWorker {
 	@GetMapping
 	public String Process() {
 		return "Hello dummy: " + getValue();
+	}
+
+	public String getExplicitPropertyValue() {
+		final String value = ExplicitPropertiesParser.getSomeProperty();
+		return value == null ? "unknown" : value;
+	}
+
+	@GetMapping("/explicit")
+	public String ProcessExplicitProperty() {
+		return "Hello explicit property parser property: " + getValue();
 	}
 
 }

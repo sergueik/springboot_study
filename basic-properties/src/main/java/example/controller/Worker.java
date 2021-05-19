@@ -1,4 +1,4 @@
-package example.resource;
+package example.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Properties;
 import example.component.Example1Component;
 import example.component.Example2Component;
-import example.component.PropertiesParser;
+import example.component.ExplicitPropertiesParser;
 
 @Component
 @RestController
@@ -53,7 +53,7 @@ public class Worker {
 	}
 
 	public String getPropertiesParserStaticValue() {
-		final String value = PropertiesParser.getSomeProperty();
+		final String value = ExplicitPropertiesParser.getSomeProperty();
 		return value == null ? "unknown" : value;
 	}
 

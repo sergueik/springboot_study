@@ -1,4 +1,4 @@
-package example.resource;
+package example.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ import java.util.Properties;
 import example.component.Example1Component;
 import example.component.Example2Component;
 import example.component.Example3Component;
-import example.component.PropertiesParser;
+import example.component.ExplicitPropertiesParser;
 
 @RestController
 @RequestMapping("/")
@@ -39,7 +39,7 @@ public class Worker2 {
 				"Derived property # 2: " + component.getDerivedProperty2() + "\n");
 		response.append("Value property # 2: " + component.getProperty2() + "\n");
 		response.append("Value of static property: "
-				+ PropertiesParser.getSomeProperty() + "\n");
+				+ ExplicitPropertiesParser.getSomeProperty() + "\n");
 		return response.toString();
 	}
 

@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import example.resource.Worker;
+import example.controller.Worker;
 
 @WebMvcTest
 public class ControllerTest {

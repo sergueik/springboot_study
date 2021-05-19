@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class PropertiesParser {
+public class ExplicitPropertiesParser {
 
 	// will not be able to make a static reference to the non-static field
 	// properties, so the following is useless:
@@ -71,7 +71,7 @@ public class PropertiesParser {
 				if (debug)
 					System.err
 							.println(String.format("Reading properties file \"%s\" from the jar", propertiesFileName));
-				stream = PropertiesParser.class.getClassLoader().getResourceAsStream(propertiesFileName);
+				stream = ExplicitPropertiesParser.class.getClassLoader().getResourceAsStream(propertiesFileName);
 			} else if (fromThread) {
 				try {
 					resourcePath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
