@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import example.configs.ReloadableProperties;
-
 import java.util.Properties;
 import example.component.Example1Component;
 import example.component.Example2Component;
