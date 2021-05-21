@@ -49,6 +49,34 @@ destroy all started containers and image afterwards
 docker container prune -f
 docker image prune -f
 ```
+### Remote debugging
+
+use `Dockerfile.DEBUG` instead of plain `Dockerfile` to pass the [debugging server arguments](https://dzone.com/articles/how-debug-remote-java-applicat) to `ENTTRYPOINT` and map the debugger port (currently hardcoded to __8998__) as:
+```sh
+docker build -f Dockerfile.DEBUG -t $IMAGE .
+docker run -p 8085:8085  -p 8998:8998 $IMAGE
+```
+in the eclipse remote application debug configuration, use the IP address of the host
+the launch configuration `.basic.launch` from `$HOME\workspace\.metadata\.plugins\org.eclipse.debug.core\.launches` looks like this:
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.remoteJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/basic"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="4"/>
+</listAttribute>
+<booleanAttribute key="org.eclipse.jdt.launching.ALLOW_TERMINATE" value="true"/>
+<mapAttribute key="org.eclipse.jdt.launching.CONNECT_MAP">
+<mapEntry key="hostname" value="192.168.0.64"/>
+<mapEntry key="port" value="8998"/>
+</mapAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="basic"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_CONNECTOR_ID" value="org.eclipse.jdt.launching.socketAttachConnector"/>
+</launchConfiguration>
+
+```
 
 ### See Also
   * [step by step](https://github.com/in28minutes/SpringBootWebApplicationStepByStep) Web Application with Spring Boot

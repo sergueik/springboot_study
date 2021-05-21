@@ -1,0 +1,8 @@
+FROM openjdk:8-jre-alpine3.9
+ARG app_jar="example.basic.jar"
+ADD "target/${app_jar}" app.jar
+EXPOSE 8085
+ARG debug_arg1="-Xdebug" 
+ARG debug_arg2="-Xrunjdwp:transport=dt_socket,address=8998,server=y"
+ENV debug_env="$debug_arg1 $debug_arg2"
+ENTRYPOINT [ "sh", "-c", "java $debug_env -jar app.jar"]
