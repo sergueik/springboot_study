@@ -3,15 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <title>Title</title>
-<!-- 
-<script type="text/javascript" src="/webjars/angularjs/1.5.8/angular.js">
--->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js">
+<script type="text/javascript" src="/js/angular.js">
 </script>
-<link rel="stylesheet" href="/webjars/bootstrap/3.3.7/css/bootstrap.min.css"/>
+<!--
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+-->
+<link rel="stylesheet" href="/css/bootstrap.min.css"/>
 <link rel="stylesheet" href="/css/main.css"/>
-<script type="text/javascript" src="/webjars/jquery/3.2.1/jquery.min.js">
-</script>-
 <script type="text/javascript" src="/js/script.js">
 </script>
 </head>
@@ -27,15 +25,13 @@
 <div ng-controller="SelectController">
   <select ng-model="selectedName" ng-options="item for item in names"></select>
 </div>
-    
-
 
 <div ng-controller="TableController">
-<table class="table-bordered">
+<table class="table-bordered" style="width: 800px;">
   <tr data-ng-repeat="row in rows">
-    <td>{{ row.column1 }}</td>
-    <td>{{ row.column2 }}</td>
-    <td>{{ row.column3 }}</td>
+    <td style="width: 25%">{{ row.column1 }}</td>
+    <td style="width: 25%">{{ row.column2 }}</td>
+    <td style="width: 50%">{{ row.column3 }}</td>
   </tr>
 </table>
 </div>

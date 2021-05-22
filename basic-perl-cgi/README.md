@@ -13,32 +13,28 @@ docker build -t $NAME -f Dockerfile .
 * run default commands
 
 ```sh
-mkdir web
+test -d web || mkdir web
 docker run -d -p 8080:80 -p 9443:443 -v $(pwd)/web:/web --name $NAME $NAME
 ```
 
 * tweak directory structure
 ```sh
-for D in /web/html/css /web/html/js /web/cgi-bin/JSON /web/cgi-bin/YAML ; do
+for D in /web/html/css /web/html/js /web/cgi-bin/JSON /web/cgi-bin/YAML ; do docker exec $NAME mkdir $D; done
 ``
 * copy individual files: frontend
 ```
 docker cp html/inventory.html $NAME:web/html
-docker cp css/main.css $NAME:web/html/css
-docker cp js/script.js $NAME:web/html/js
+for F in $(ls -1 css) ; do docker cp css/$F $NAME:web/html/css; done
+for F in $(ls -1 js) ; do docker cp js/$F $NAME:web/html/js; done
 ```
 * backend
 ```sh
-docker cp cgi-bin/list.cgi $NAME:web/cgi-bin
-docker cp cgi-bin/table.cgi $NAME:web/cgi-bin	
-docker cp cgi-bin/select.cgi $NAME:web/cgi-bin	
+for F in $(ls -1 cgi-bin) ; do docker cp cgi-bin/$F $NAME:web/cgi-bin ;done
 docker cp JSON/PP.pm $NAME:web/cgi-bin/JSON
 docker cp YAML/Tiny.pm $NAME:web/cgi-bin/YAML
 ```
 ```sh
-docker exec $NAME chmod 775 /web/cgi-bin/list.cgi
-docker exec $NAME chmod 775 /web/cgi-bin/table.cgi
-docker exec $NAME chmod 775 /web/cgi-bin/select.cgi
+for F in $(ls -1 cgi-bin) ; do docker exec $NAME chmod 775 /web/cgi-bin/$F;done
 ```
 * run smoke test
 run cgi directly:
