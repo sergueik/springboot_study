@@ -19,13 +19,14 @@ docker run -d -p 8080:80 -p 9443:443 -v $(pwd)/web:/web --name $NAME $NAME
 
 * tweak directory structure
 ```sh
-for D in /web/html/css /web/html/js /web/cgi-bin/JSON /web/cgi-bin/YAML ; do docker exec $NAME mkdir $D; done
-``
-* copy individual files: frontend
+for D in /web/html /web/html/css /web/html/js /web/cgi-bin /web/cgi-bin/JSON /web/cgi-bin/YAML ; do docker exec $NAME mkdir $D; done
 ```
+* copy individual files: frontend
+
+```sh
 docker cp html/inventory.html $NAME:web/html
-for F in $(ls -1 css) ; do docker cp css/$F $NAME:web/html/css; done
-for F in $(ls -1 js) ; do docker cp js/$F $NAME:web/html/js; done
+for F in $(ls -1 html/css) ; do docker cp html/css/$F $NAME:web/html/css; done
+for F in $(ls -1 html/js) ; do docker cp html/js/$F $NAME:web/html/js; done
 ```
 * backend
 ```sh
@@ -182,6 +183,17 @@ docker container prune -f
 docker image prune -f
 docker image rm $NAME
 ```
+### Running Angular part from filesystem
+
+one can start the page in th browser from file explorer via:
+
+```cmd
+file:///C:/developer/sergueik/springboot_study/basic-perl-cgi/html/inventory.html
+```
+it will look slightly less data but enough for debugging the visual part.
+
+![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture_file.png)
+
 ### See Also
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
   * https://stackoverflow.com/questions/13671031/server-polling-with-angularjs
