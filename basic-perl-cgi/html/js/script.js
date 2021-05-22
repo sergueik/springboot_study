@@ -12,7 +12,7 @@ var listController = function ($scope, $http, $timeout) {
                 'text': 'mockup data'
             }]
         };
-        $scope.rows = data.results;
+        $scope.list_rows = data.results;
 
     } else {
 
@@ -25,14 +25,14 @@ var listController = function ($scope, $http, $timeout) {
                 console.log('getting list data');
                 try {
                     console.log('got raw data: ' + data);
-                    $scope.rows = data.results;
+                    $scope.list_rows = data.results;
                 } catch (e) {
                     data = {
                         'results': [{
                             'text': 'mockup data'
                         }]
                     };
-                    $scope.rows = data.results;
+                    $scope.list_rows = data.results;
                 }
                 console.log(data.results);
                 $timeout(getListData, 1000);
@@ -64,7 +64,7 @@ var tableController = function ($scope, $http, $timeout) {
             }]
 
         };
-        $scope.rows = data.results;
+        $scope.table_rows = data.results;
 
     } else {
         $scope.data = [];
@@ -76,7 +76,7 @@ var tableController = function ($scope, $http, $timeout) {
                 console.log('getting table data');
                 try {
                     console.log('got raw data: ' + data);
-                    $scope.rows = data.results;
+                    $scope.table_rows = data.results;
                 } catch (e) {
                     data = {
                         'results': [{
@@ -85,7 +85,7 @@ var tableController = function ($scope, $http, $timeout) {
                             'column3': 'server1 column 2',
                         }]
                     };
-                    $scope.rows = data.results;
+                    $scope.table_rows = data.results;
                 }
                 console.log(data.results);
                 $timeout(getTableData, 1000);

@@ -1,7 +1,6 @@
 ### Info
 
-Container based on [Alpine microcontainer with Apache2, perl5 and FCGI.pm](https://github.com/kjetillll/docker-alpine-apache-perl-fcgi) - only using the apache and Perl
-using pure perl YAML and JSON modules
+Vnilla Alpine continer installing the apache and Perl using some code from [Alpine microcontainer with Apache2, perl5 and FCGI.pm](https://github.com/kjetillll/docker-alpine-apache-perl-fcgi) - and launching httpd without using init.d of [nimmis/docker-alpine-micro](https://github.com/nimmis/docker-alpine-micro) and installing few pure Perl modules (YAML, XML and JSON) and Angular and Bootstrap toexplore Angular CGI-BIN pages
 
 ### Testing
 
@@ -13,34 +12,34 @@ docker build -t $NAME -f Dockerfile .
 * run default commands
 
 ```sh
-test -d web || mkdir web
-docker run -d -p 8080:80 -p 9443:443 -v $(pwd)/web:/web --name $NAME $NAME
+docker run -d -p 8080:80 -p 9443:443 --name $NAME $NAME
 ```
 
 * tweak directory structure
 ```sh
-for D in /web/html /web/html/css /web/html/js /web/cgi-bin /web/cgi-bin/JSON /web/cgi-bin/YAML ; do docker exec $NAME mkdir $D; done
+for D in css js ; do docker exec $NAME mkdir /var/www/localhost/htdocs/$D; done
+for D in JSON YAML ; do docker exec $NAME mkdir /var/www/localhost/cgi-bin/$D; done
 ```
 * copy individual files: frontend
 
 ```sh
-docker cp html/inventory.html $NAME:web/html
-for F in $(ls -1 html/css) ; do docker cp html/css/$F $NAME:web/html/css; done
-for F in $(ls -1 html/js) ; do docker cp html/js/$F $NAME:web/html/js; done
+docker cp html/inventory.html $NAME:/var/www/localhost/htdocs
+for F in $(ls -1 html/css) ; do docker cp html/css/$F $NAME:/var/www/localhost/htdocs/css; done
+for F in $(ls -1 html/js) ; do docker cp html/js/$F $NAME:/var/www/localhost/htdocs/js; done
 ```
 * backend
 ```sh
-for F in $(ls -1 cgi-bin) ; do docker cp cgi-bin/$F $NAME:web/cgi-bin ;done
-docker cp JSON/PP.pm $NAME:web/cgi-bin/JSON
-docker cp YAML/Tiny.pm $NAME:web/cgi-bin/YAML
+for F in $(ls -1 cgi-bin) ; do docker cp cgi-bin/$F $NAME:/var/www/localhost/cgi-bin ;done
+docker cp JSON/PP.pm $NAME:/var/www/localhost/cgi-bin/JSON
+docker cp YAML/Tiny.pm $NAME:/var/www/localhost/cgi-bin/YAML
 ```
 ```sh
-for F in $(ls -1 cgi-bin) ; do docker exec $NAME chmod 775 /web/cgi-bin/$F;done
+for F in $(ls -1 cgi-bin) ; do docker exec $NAME chmod 775 /var/www/localhost/cgi-bin/$F ; done
 ```
 * run smoke test
 run cgi directly:
 ```sh
-docker exec $NAME /web/cgi-bin/list.cgi
+docker exec $NAME /var/www/localhost/cgi-bin/list.cgi
 ```
 replies with
 ```json
@@ -65,7 +64,7 @@ Content-Type: application/json
 ```
 and
 ```sh
-docker exec $NAME /web/cgi-bin/table.cgidocker exec $NAME /web/cgi-bin/table.cgi
+docker exec $NAME /var/www/localhost/cgi-bin/table.cgi
 ```
 with
 ```json
@@ -93,7 +92,7 @@ Content-Type: application/json
 ```
 and
 ```sh
-docker exec $NAME /web/cgi-bin/select.cgi
+docker exec $NAME /var/www/localhost/cgi-bin/select.cgi
 ```
 ```txt
 Content-Type: application/json
@@ -182,6 +181,7 @@ docker stop $NAME
 docker container prune -f
 docker image prune -f
 docker image rm $NAME
+sudo rm -fr web/
 ```
 ### Running Angular part from filesystem
 
@@ -193,6 +193,14 @@ file:///C:/developer/sergueik/springboot_study/basic-perl-cgi/html/inventory.htm
 it will look slightly less data but enough for debugging the visual part.
 
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture_file.png)
+### Note
+
+if apache is run in debug modei:
+```sh
+/usr/sbin/httpd -X
+```
+only one of the polling controllers will be exercised:
+![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture_debug.png)
 
 ### See Also
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
