@@ -13,7 +13,7 @@ RUN apk update && apk upgrade && \
     rm -rf /var/cache/apk/*
 
 EXPOSE 80 443
+# NOTE: this is not shell scripting. 
+# No need to escape '$' inside double-quoted sting
 
-# NOTE: infinity is notsupported option on alpine
-# ENTRYPOINT ["sh", "-c", "/usr/sbin/httpd -k start; sleep infinity"]
-ENTRYPOINT ["sh", "-c", "PIDFILE='/run/apache2/httpd.pid';/usr/sbin/httpd -k start; echo $? ; while [ ! -f /run/apache2/httpd.pid ] ; do echo 'wait for apache pid'; sleep 1; done; while true ; do pgrep -P $(cat /run/apache2/httpd.pid) > /dev/null; if [ $? != 0 ] ; then echo 'apache is gone'; exit 0; fi ; sleep 10; done" ]
+ENTRYPOINT ["sh", "-c", "PIDFILE='/run/apache2/httpd.pid';/usr/sbin/httpd -k start; echo $?; while [ ! -f $PIDFILE ] ; do echo 'wait for apache pid'; sleep 1; done; echo 'apache is running with ID '$(cat $PIDFILE); while true ; do pgrep -P $(cat $PIDFILE) > /dev/null; if [ $? != 0 ] ; then echo 'apache is gone'; exit 0; fi ; sleep 10; done" ]

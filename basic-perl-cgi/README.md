@@ -13,7 +13,14 @@ docker build -t $NAME -f Dockerfile .
 
 ```sh
 docker run -d -p 8080:80 -p 9443:443 --name $NAME $NAME
+docker logs $NAME
 ```
+this will respond with
+```sh
+wait for apache pid
+apache is running with ID 7
+```
+(the id may vary)
 
 * tweak directory structure
 ```sh
