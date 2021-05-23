@@ -1,15 +1,15 @@
 ### Info
 
-Vnilla Alpine continer installing the apache and Perl using some code from [Alpine microcontainer with Apache2, perl5 and FCGI.pm](https://github.com/kjetillll/docker-alpine-apache-perl-fcgi) - and launching httpd without using init.d of [nimmis/docker-alpine-micro](https://github.com/nimmis/docker-alpine-micro) and installing few pure Perl modules (YAML, XML and JSON) and Angular and Bootstrap toexplore Angular CGI-BIN pages
+Plain Alpine 3.9 container installing the apache and Perl using some code from [Alpine microcontainer with Apache2, perl5 and FCGI.pm](https://github.com/kjetillll/docker-alpine-apache-perl-fcgi) - and launching httpd without using init.d of [nimmis/docker-alpine-micro](https://github.com/nimmis/docker-alpine-micro) and installing few pure Perl modules (YAML, XML and JSON) and Angular and Bootstrap to explore Angular CGI-BIN pages
 
 ### Testing
 
-* build image
+* build the image
 ```sh
 NAME=basic-perl-cgi-container
 docker build -t $NAME -f Dockerfile .
 ```
-* run default commands
+* start run default command
 
 ```sh
 docker run -d -p 8080:80 -p 9443:443 --name $NAME $NAME
@@ -37,7 +37,7 @@ docker cp YAML/Tiny.pm $NAME:/var/www/localhost/cgi-bin/YAML
 for F in $(ls -1 cgi-bin) ; do docker exec $NAME chmod 775 /var/www/localhost/cgi-bin/$F ; done
 ```
 * run smoke test
-run cgi directly:
+call cgi directly:
 ```sh
 docker exec $NAME /var/www/localhost/cgi-bin/list.cgi
 ```
@@ -66,7 +66,7 @@ and
 ```sh
 docker exec $NAME /var/www/localhost/cgi-bin/table.cgi
 ```
-with
+responds with
 ```json
 Content-Type: application/json
 
@@ -169,7 +169,7 @@ curl http://localhost:8080/inventory.html
 </body>
 </html>
 ```
- need to run in the browser to see
+one needs to run in the browser to see
 
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture.png)
 
@@ -195,7 +195,7 @@ it will look slightly less data but enough for debugging the visual part.
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture_file.png)
 ### Note
 
-if apache is run in debug modei:
+if apache is run in debug mode
 ```sh
 /usr/sbin/httpd -X
 ```
