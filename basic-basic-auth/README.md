@@ -62,3 +62,7 @@ curl --silent --user admin:password http://localhost:8080/employees/
   ]
 }
 ```
+alternatively use Powershell:
+```powershell
+. ./basic-auth_rest_client.ps1 -url http://localhost:8080/employees/
+```
