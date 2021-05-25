@@ -8,7 +8,7 @@
   <properties>
     <java.version>1.7</java.version>
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
-    <junit.version>4.12</junit.version>
+    <junit.version>4.13.1</junit.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <log4j.version>1.2.17</log4j.version>
