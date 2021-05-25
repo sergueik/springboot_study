@@ -16,7 +16,7 @@ docker-compose up --build
 ```sh
 curl http://localhost:80/application/
 ```
-NOTE: there is no explicit mapping of the `/application` in the nginx configuguration. 
+NOTE: there is no explicit mapping of the `/application` in the nginx configuration. 
 
 If there is need to troubleshoot the java instance
 ```sh
@@ -35,4 +35,4 @@ docker rm -v $(docker ps -aq -f status=exited)
 docker image prune -f
 ```
 ### See Also
-# https://github.com/opstree/spring3hibernate
+ * example with [mysql, spring hibernate, nginx](https://github.com/opstree/spring3hibernate)

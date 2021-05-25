@@ -1,31 +1,37 @@
 package example;
 
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.or;
+import static com.mongodb.client.model.Projections.fields;
+import static com.mongodb.client.model.Projections.include;
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.bson.BsonValue;
+import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.CoreMatchers.equalTo;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoClient;
 import com.mongodb.ConnectionString;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -34,23 +40,10 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.UpdateOptions;
-
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
 
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.or;
-import static com.mongodb.client.model.Filters.and;
-
-import static com.mongodb.client.model.Projections.include;
-import static com.mongodb.client.model.Projections.fields;
-
-import org.bson.BsonValue;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
-import org.apache.log4j.Logger;
-
+@SuppressWarnings("deprecation")
 public class BasicTest {
 
 	private static MongoClient mongoClient;
@@ -78,12 +71,6 @@ public class BasicTest {
 				// NOTE: not using default port
 				String.format("mongodb://%s:%d", "localhost", 27717));
 		mongoClient = MongoClients.create(connectionString);
-	}
-
-	@Ignore
-	@Test
-	public void dummyTest() {
-		assertThat(true, is(true));
 	}
 
 	@Ignore
@@ -188,7 +175,6 @@ public class BasicTest {
 		logger.info(document.toJson());
 	}
 
-	@SuppressWarnings("deprecation")
 	@Ignore
 	@Test
 	public void filterStaticBuilderTest() {
