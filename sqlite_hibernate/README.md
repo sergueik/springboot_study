@@ -81,7 +81,10 @@ CREATE TABLE `user` (
 	PRIMARY KEY(`id`)
 );
 ```
-alternarively can create table in [SQLite browser](https://sqlitebrowser.org).
+alternarively can create database e.g. `testUser.db` in [SQLite browser](https://sqlitebrowser.org), with table `user`:
+```sql
+CREATE TABLE `user` ( `id`	integer, `nick_name` varchar, `pass_word` varchar, `user_name` varchar, `user_gender` integer, PRIMARY KEY(`id`));
+```
 NOTE: the `sqlite3.exe` does not work from [git bash shell](https://gitforwindows.org) on some Windows platforms.
 
 To run database in-memory, modify settings in `application.yaml` like:
@@ -144,6 +147,7 @@ docker rm -v $(docker ps -aq -f status=exited)
   * sqlite3 [command syntax](https://www.sqlite.org/cli.html)
   * [Spring Boot - JPA Hibernate MySQL](https://github.com/alicankustemur/spring-boot-jpa-hibernate-mysql-example) project - unsuccessfully tried to get converted to SQLite hibernate backend
   * collection of [JPA projects](https://github.com/AnghelLeonard/Hibernate-SpringBoot)
+  * [externalize](https://mkyong.com/hibernate/how-to-load-hibernate-cfg-xml-from-different-directory/) the `hibernate.cfg.xml`
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

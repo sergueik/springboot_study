@@ -197,6 +197,7 @@ docker image prune -f
   * как перечитывать настройки после изменения properties файла [(in Russian](https://qna.habr.com/q/713981)
   * overriding SptingBoot `application.properties` during [test run](https://fooobar.com/questions/85477/override-default-spring-boot-applicationproperties-settings-in-junit-test) (in Russian)
   * [list of Common Spring Boot application properties](https://www.technicalkeeda.com/spring-boot-tutorials/spring-boot-list-of-common-application-properties)
-
+  * overview of [externalizing core application configuration data in Springboot app](https://springframework.guru/spring-external-configuration-data/)
+  * overview of [externalizing JPA onfiguration through Datasource of Springboot app](http://aerexu.github.io/java/2016/04/10/Use-external-configuration-to-get-Datasource-in-Spring-boot)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

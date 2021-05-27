@@ -17,16 +17,14 @@ public class User implements Serializable {
 
 	// turn out both "user_name" and "name" columns are there in the "user" table:
 	/*
-	 sqlite3.exe
-	
-	sqlite> .open c:/Users/Serguei/sqlite/springboot.db
-	sqlite> .tables
-	student  user
-	
-	sqlite> .schema user
-	CREATE TABLE user (id  integer, nick_name varchar, pass_word varchar, user_name
-	varchar, user_sex integer, user_gender integer, password varchar, gender integer
-	, name varchar, primary key (id));
+	 * sqlite3.exe
+	 * 
+	 * sqlite> .open c:/Users/Serguei/sqlite/springboot.db sqlite> .tables student
+	 * user
+	 * 
+	 * sqlite> .schema user CREATE TABLE user (id integer, nick_name varchar,
+	 * pass_word varchar, user_name varchar, user_sex integer, user_gender integer,
+	 * password varchar, gender integer , name varchar, primary key (id));
 	 */
 	// possibly result of a bad migration
 	@Column(name = "name")
@@ -72,7 +70,7 @@ public class User implements Serializable {
 	}
 
 	public void setPassword(String data) {
-		this.password = data;
+		password = data;
 	}
 
 	public Gender getGender() {
@@ -80,21 +78,20 @@ public class User implements Serializable {
 	}
 
 	public void setGender(Gender data) {
-		this.gender = data;
+		gender = data;
 	}
 
 	public String getNickName() {
 		return nickName;
 	}
 
-	public void setNickName(String nickName) {
-		this.nickName = nickName;
+	public void setNickName(String data) {
+		nickName = data;
 	}
 
 	@Override
 	public String toString() {
-		return "userName: " + this.userName + ", pasword: " + this.password
-				+ "gender: " + gender.name();
+		return "userName: " + this.userName + ", pasword: " + this.password + "gender: " + gender.name();
 	}
 
 }

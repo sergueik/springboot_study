@@ -3,7 +3,7 @@
   <session-factory>
     <property name="hibernate.dialect">example.sqlite.SQLiteDialect</property>
     <property name="hibernate.connection.driver_class">org.sqlite.JDBC</property>
-    <property name="hibernate.connection.url">jdbc:sqlite::memory:</property>
+    <property name="hibernate.connection.url">jdbc:sqlite:${HOME}/Desktop/testUser.db</property>
     <property name="hibernate.connection.username"/>
     <property name="hibernate.connection.password"/>
     <property name="hibernate.hbm2ddl.auto">create</property>
