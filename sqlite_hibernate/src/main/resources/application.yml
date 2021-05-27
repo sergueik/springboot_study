@@ -1,0 +1,20 @@
+server:
+  port: 8080
+  context-path: /springboot
+# SQLite Connection
+spring:
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    username:
+    password:
+    # will create table
+    # url: 'jdbc:sqlite::memory:'
+    # will expect table to be created
+    url: jdbc:sqlite:${HOME}/Desktop/springboot.db
+  jpa:
+    database-platform: example.sqlite.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  session:
+    store-type: none
