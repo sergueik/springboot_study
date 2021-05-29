@@ -66,3 +66,7 @@ alternatively use Powershell:
 ```powershell
 . ./basic-auth_rest_client.ps1 -url http://localhost:8080/employees/
 ```
+### See Also:
+
+  * https://www.baeldung.com/spring-security-basic-authentication
+  * https://www.javadevjournal.com/spring/basic-authentication-with-spring-security/
