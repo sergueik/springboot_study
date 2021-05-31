@@ -14,11 +14,12 @@ BEGIN {
         # TODO: set extra lib path in RELEASE
     }
     else {
+	chomp( my $script_dir = `dirname $0`);
+        unshift( @INC, $script_dir );
         unshift( @INC, `pwd` );
-        unshift( @INC, '.' );
-        unshift( @INC, '/web/cgi-bin' );
     }
 }
+
 use YAML::Tiny;
 use JSON::PP;
 my $data = {

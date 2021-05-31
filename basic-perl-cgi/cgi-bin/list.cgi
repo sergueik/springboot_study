@@ -9,14 +9,16 @@ BEGIN {
     use constant HOME    => (
         do { $_ = $ENV{HOME}; /\/([^\/]+)$/ }
     );
+    use constant SCRIPT_DIR => (
+        do { my $s = `dirname $0`; chomp $s; $s }
+    );
     if (RELEASE) {
 
         # TODO: set extra lib path in RELEASE
     }
     else {
+        unshift( @INC, SCRIPT_DIR );
         unshift( @INC, `pwd` );
-        unshift( @INC, '.' );
-        unshift( @INC, '/web/cgi-bin' );
     }
 }
 use YAML::Tiny;

@@ -145,38 +145,40 @@ curl http://localhost:8080/inventory.html
 <head>
 <meta charset="UTF-8">
 <title>Title</title>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js">
+<script type="text/javascript" src="js/angular.js">
 </script>
-<link rel="stylesheet" href="/css/main.css"/>
-</script>
-<script type="text/javascript" src="/js/script.js">
+<link rel="stylesheet" href="css/bootstrap.min.css"/>
+<link rel="stylesheet" href="css/main.css"/>
+<script type="text/javascript" src="js/script.js">
 </script>
 </head>
+<body>
+<p>Enter Name: <input type="text" ng-model="name"> </p>
+<p>Hello {{name}}</p>
+
 <div ng-controller="ListController">
-  Data: <br />
+Server Data: <br />
+
+<div ng-controller="TableController">
+<table class="table-bordered" style="width: 800px;">
+  <tr data-ng-repeat="row in table_rows">
+    <td style="width: 25%">{{ row.column1 }}</td>
+    <td style="width: 25%">{{ row.column2 }}</td>
+    <td style="width: 50%">{{ row.column3 }}</td>
+  </tr>
+</table>
   <ul>
-    <li ng-repeat="row in rows">{{ row.text }}</li>
+    <li ng-repeat="row in list_rows">{{ row.text }}</li>
   </ul>
 </div>
 <div ng-controller="SelectController">
   <select ng-model="selectedName" ng-options="item for item in names"></select>
 </div>
-
-
-
-<div ng-controller="TableController">
-<table class="table-bordered">
-  <tr data-ng-repeat="row in rows">
-    <td>{{ row.column1 }}</td>
-    <td>{{ row.column2 }}</td>
-    <td>{{ row.column3 }}</td>
-  </tr>
-</table>
 </div>
 </body>
 </html>
 ```
-one needs to run in the browser to see
+one needs to run in the browser to see  the dynamic data
 
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture.png)
 
