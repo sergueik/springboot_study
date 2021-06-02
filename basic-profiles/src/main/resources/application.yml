@@ -1,0 +1,6 @@
+---
+browser: '${browser.setting}'
+configuration:
+  browser: ${browser.setting}
+data:
+  ${browser.setting}: value    

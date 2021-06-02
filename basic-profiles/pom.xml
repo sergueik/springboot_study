@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>basic-profiles</artifactId>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
   <description></description>
@@ -30,6 +30,11 @@
     <testng.version>6.13.1</testng.version>
   </properties>
   <dependencies>
+    <dependency>
+  <groupId>example</groupId>
+  <artifactId>yaml_config_extend</artifactId>
+  <version>0.1.0-SNASHOT</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-io</artifactId>
