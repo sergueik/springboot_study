@@ -12,7 +12,7 @@ docker build -t $NAME -f Dockerfile .
 * start run default command
 
 ```sh
-docker run -d -p 8080:80 -p 9443:443 --name $NAME $NAME
+docker run -d -p $(hostname -i):8080:80 -p $(hostname -i):9443:443 --name $NAME $NAME
 docker logs $NAME
 ```
 this will respond with
@@ -20,7 +20,23 @@ this will respond with
 wait for apache pid
 apache is running with ID 7
 ```
-(the id may vary)
+(the value of `ID` varies)
+
+* verify the vanilla httpd to run in Docker
+```sh
+curl http://$(hostname -i):8080/
+```
+```html
+<html><body><h1>It works!</h1></body></html>
+```
+
+* NOTE: the `$(hostname -i):` argument added as workaround of forced ipv6 switch
+```sh
+Error starting userland proxy: listen tcp6 [::]:8086:
+socket: address family not supported by protocol
+```
+observed in Docker version __20.10.6__ on a host where ipv6 was [turned off](https://linuxconfig.org/how-to-disable-ipv6-address-on-ubuntu-18-04-bionic-beaver-linux)
+
 
 * tweak directory structure
 ```sh
@@ -34,12 +50,13 @@ docker cp html/inventory.html $NAME:/var/www/localhost/htdocs
 for F in $(ls -1 html/css) ; do docker cp html/css/$F $NAME:/var/www/localhost/htdocs/css; done
 for F in $(ls -1 html/js) ; do docker cp html/js/$F $NAME:/var/www/localhost/htdocs/js; done
 ```
-* backend
+* backend libraries
 ```sh
 for F in $(ls -1 cgi-bin) ; do docker cp cgi-bin/$F $NAME:/var/www/localhost/cgi-bin ;done
 docker cp JSON/PP.pm $NAME:/var/www/localhost/cgi-bin/JSON
 docker cp YAML/Tiny.pm $NAME:/var/www/localhost/cgi-bin/YAML
 ```
+* backend cgi-bin
 ```sh
 for F in $(ls -1 cgi-bin) ; do docker exec $NAME chmod 775 /var/www/localhost/cgi-bin/$F ; done
 ```
@@ -113,7 +130,7 @@ Content-Type: application/json
 ```
 similar results (sans the header) as cgi-bin :
 ```sh
-curl http://localhost:8080/cgi-bin/list.cgi
+curl http://$(hostname -i):8080/cgi-bin/list.cgi
 ```
 ```json
 {
@@ -135,7 +152,7 @@ curl http://localhost:8080/cgi-bin/list.cgi
 ```
 testing the page, console:
 ```sh
-curl http://localhost:8080/inventory.html
+curl http://$(hostname -i):8080/inventory.html
 ```
 
 * this will show the plain page:
@@ -199,16 +216,22 @@ one can start the page in th browser from file explorer via:
 ```cmd
 file:///C:/developer/sergueik/springboot_study/basic-perl-cgi/html/inventory.html
 ```
+on a Windows machine or
+```sh
+google-chrome file://$(pwd)/html/inventory.html & 
+```
+on a Linux machine
+
 it will look slightly less data but enough for debugging the visual part.
 
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture_file.png)
 ### Note
 
-if apache is run in debug mode
+if apache is started in debug mode
 ```sh
 /usr/sbin/httpd -X
 ```
-only one of the polling controllers will be exercised:
+only one of the polling controllers in the page `inventory.html` will be exercised:
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture_debug.png)
 
 ### See Also
