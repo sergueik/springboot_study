@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -36,25 +37,20 @@ import org.testng.annotations.Test;
 
 public class PropertyTest {
 	private final String key = "browser";
-	private final String value = System.getProperty(key);
+	private final String value = System.getProperty(key, "chrome");
 
 	@Test
 	public void test1() {
-		try {
-			assertThat(PropertiesParser
-					.getProperties("application.properties",
-							System.getProperty("user.dir") + "/target/classes/", false)
-					.get(key), is(value));
+		assertThat(PropertiesParser
+				.getProperties("application.properties", System.getProperty("user.dir") + "/target/classes/", false)
+				.get(key), is(value));
 
-		} catch (Exception e) {
-		}
 	}
 
 	@Test
 	public void test2() {
 		try {
-			assertThat(PropertiesParser.readProperty(key,
-					"../classes/" + "application.properties"), is(value));
+			assertThat(PropertiesParser.readProperty(key, "../classes/" + "application.properties"), is(value));
 		} catch (ConfigurationException e) {
 		}
 	}

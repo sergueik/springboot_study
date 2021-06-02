@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>basic-profiles</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
   <description></description>
@@ -11,8 +11,6 @@
     <browser.name>firefox</browser.name>
     <java.version>1.8</java.version>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
-    <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
-    <!-- runs ant build.xml scripts embedded in the POM -->
     <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
     <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
     <maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
@@ -92,15 +90,6 @@
 </filters>
     <sourceDirectory>src/main/java</sourceDirectory>
     <testSourceDirectory>src/test/java</testSourceDirectory>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <version>${maven-antrun-plugin.version}</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -145,37 +134,8 @@
               </systemPropertyVariables>
           <trimStackTrace>false</trimStackTrace>
           <encoding>${project.build.sourceEncoding}</encoding>
-          <argLine>-Dfile.encoding=${project.build.sourceEncoding} -DAPP_LOG_ROOT=c:/temp</argLine>
+          <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>
         </configuration>
-      </plugin>
-      <!-- https://cduu.wordpress.com/2012/10/17/echo-the-value-of-a-maven-property/ -->
-      <!-- inclusion of the following block leads to error when importing the pom.xml in eclipse:
-No marketplace entries found to handle maven-antrun-plugin:1.8:run in Eclipse. -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>${maven-antrun-plugin.version}</version>
-        <executions>
-          <execution>
-            <phase>test</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <systemPropertyVariables>
-                <webdriver.driver>${browser.name}</webdriver.driver>
-              </systemPropertyVariables>
-              <tasks>
-                <echo>Displaying value of 'webdriver.drivers' property</echo>
-                <echo>[webdriver.driver]: ${env.webdriver.driver}</echo>
-                <echo message="webdriver.driver = ${env.webdriver.driver}"/>
-                <echo>Displaying value of 'build_os' property</echo>
-                <echo>[build_os]: ${env.build_os}</echo>
-                <echo message="build_os = ${env.build_os}"/>
-              </tasks>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
