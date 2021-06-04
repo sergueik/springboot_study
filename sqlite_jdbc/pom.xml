@@ -18,7 +18,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <apache.httpclient.version>4.5.3</apache.httpclient.version>
+    <apache.httpclient.version>4.5.13</apache.httpclient.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <mssql-jdbc.version>6.1.0.jre8</mssql-jdbc.version>
