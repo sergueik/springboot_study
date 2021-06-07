@@ -38,28 +38,6 @@ socket: address family not supported by protocol
 observed in Docker version __20.10.6__ on a host where ipv6 was [turned off](https://linuxconfig.org/how-to-disable-ipv6-address-on-ubuntu-18-04-bionic-beaver-linux)
 
 
-* tweak directory structure
-```sh
-for D in css js ; do docker exec $NAME mkdir /var/www/localhost/htdocs/$D; done
-for D in JSON YAML ; do docker exec $NAME mkdir /var/www/localhost/cgi-bin/$D; done
-```
-* copy individual files: frontend
-
-```sh
-docker cp html/inventory.html $NAME:/var/www/localhost/htdocs
-for F in $(ls -1 html/css) ; do docker cp html/css/$F $NAME:/var/www/localhost/htdocs/css; done
-for F in $(ls -1 html/js) ; do docker cp html/js/$F $NAME:/var/www/localhost/htdocs/js; done
-```
-* backend libraries
-```sh
-for F in $(ls -1 cgi-bin) ; do docker cp cgi-bin/$F $NAME:/var/www/localhost/cgi-bin ;done
-docker cp JSON/PP.pm $NAME:/var/www/localhost/cgi-bin/JSON
-docker cp YAML/Tiny.pm $NAME:/var/www/localhost/cgi-bin/YAML
-```
-* backend cgi-bin
-```sh
-for F in $(ls -1 cgi-bin) ; do docker exec $NAME chmod 775 /var/www/localhost/cgi-bin/$F ; done
-```
 * run smoke test
 call cgi directly:
 ```sh
@@ -195,8 +173,13 @@ Server Data: <br />
 </body>
 </html>
 ```
-one needs to run in the browser to see  the dynamic data
-
+one needs to open page in the browser to see  the dynamic data. To verify, stop and rerun the container with default pors pusblsued as `8080` and `9443` on all network interfaces:
+```sh
+docker stop $NAME
+docker container rm $NAME
+docker run -d -p 8080:80 -p 9443:443 --name $NAME $NAME
+```
+and navigate to the url in the browser with ip address of the hosting node:
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture.png)
 
  - opened developer tools tab shows that the Angular is doing polling the server
