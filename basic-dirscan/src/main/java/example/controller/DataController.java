@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import example.model.DataRow;
+import example.model.HostDataRow;
+
 // based on: https://github.com/kolorobot/spring-boot-thymeleaf
 @Controller
 @RequestMapping("/")
@@ -31,19 +35,19 @@ public class DataController {
 	private StringBuffer sb = new StringBuffer();
 	private Log log = LogFactory.getLog(this.getClass());
 
-	private String directoryName = System.getProperty("os.name").toLowerCase().contains("windows")
+	private String baseDirectory = System.getProperty("os.name").toLowerCase().contains("windows")
 			? System.getenv("TEMP")
 			: "/tmp";
 
-	public String getDirectoryName() {
-		return directoryName;
+	public String getBaseDirectory() {
+		return baseDirectory;
 	}
 
-	public void setDirectoryName(String data) {
-		directoryName = data;
+	public void setBaseDirectory(String data) {
+		baseDirectory = data;
 	}
 
-	private void getFiles(String filename, List<String> files) throws RuntimeException {
+	private void getHostDirs(String filename, List<String> hostDirs) throws RuntimeException {
 		File file = null;
 		BufferedReader reader = null;
 		StringBuffer contents = new StringBuffer();
@@ -52,7 +56,7 @@ public class DataController {
 			file = new File(filename);
 			reader = new BufferedReader(new FileReader(file));
 			while ((text = reader.readLine()) != null) {
-				files.add(text.trim());
+				hostDirs.add(text.trim());
 				contents.append(text).append(System.getProperty("line.separator"));
 			}
 			reader.close();
@@ -68,22 +72,22 @@ public class DataController {
 		}
 	}
 
-	private void readFiles(final String directoryName, final List<String> files, final String key,
+	private void readHostDirs(final String baseDirectory, final List<String> hostDirs, final String key,
 			final Map<String, String> data) throws RuntimeException {
-		File dir = new File(directoryName);
-		String[] children = dir.list();
-		for (String filename : files) {
-			data.put(filename, null);
+		File dir = new File(baseDirectory);
+		String[] subdirs = dir.list();
+		for (String dirName : hostDirs) {
+			data.put(dirName, null);
 		}
-		if (children == null) {
-			log.info(String.format("%s does not exist or is not al directory", directoryName));
+		if (subdirs == null) {
+			log.info(String.format("%s does not exist or is not al directory", baseDirectory));
 			throw new RuntimeException("%s does not exist or is not al directory");
 			// return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
-		for (int i = 0; i < children.length; i++) {
-			String filename = children[i];
-			if (files.contains(filename)) {
-				String datafilename = String.format("%s/%s/data.txt", directoryName, filename);
+		for (int i = 0; i < subdirs.length; i++) {
+			String dirName = subdirs[i];
+			if (hostDirs.contains(dirName)) {
+				String datafilename = String.format("%s/%s/data.txt", baseDirectory, dirName);
 				StringBuffer contents = new StringBuffer();
 				BufferedReader reader = null;
 				try {
@@ -104,14 +108,14 @@ public class DataController {
 							textKey = m.group(1);
 							textValue = m.group(2);
 							if (textKey.equalsIgnoreCase(key)) {
-								data.put(filename, textValue);
+								data.put(dirName, textValue);
 							}
 						}
 					}
 					reader.close();
 					log.info(String.format("datafile %s contents: %s", datafilename, contents.toString()));
 				} catch (IOException e) {
-					data.put(filename, null);
+					// ignore
 				}
 			}
 		}
@@ -123,20 +127,45 @@ public class DataController {
 	public ResponseEntity<Map<String, String>> showData(@PathVariable("name") String name,
 			@PathVariable("key") String key) {
 
-		List<String> files = new ArrayList<>();
+		List<String> hostDirs = new ArrayList<>();
 		Map<String, String> data = new HashMap<>();
 
 		try {
 			log.info(String.format("Read hosts list from %s", name));
-			getFiles(String.format("%s/%s", directoryName, name), files);
-			log.info(String.format("Read hosts list: %s", files));
+			getHostDirs(String.format("%s/%s", baseDirectory, name), hostDirs);
+			log.info(String.format("Read hosts list: %s", hostDirs));
 		} catch (RuntimeException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		try {
 			log.info(String.format("Read key %s from hosts", key));
-			readFiles(directoryName, files, key, data);
+			readHostDirs(baseDirectory, hostDirs, key, data);
 			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).body(data);
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+	}
+
+	@ResponseBody
+	@GetMapping("/typeddata")
+	public ResponseEntity<List<DataRow>> showTypedData(@RequestParam String name, @RequestParam("key") String key) {
+
+		List<String> hostDirs = new ArrayList<>();
+		Map<String, String> data = new HashMap<>();
+
+		try {
+			log.info(String.format("Read hosts list from %s", name));
+			getHostDirs(String.format("%s/%s", baseDirectory, name), hostDirs);
+			log.info(String.format("Read hosts list: %s", hostDirs));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+		try {
+			log.info(String.format("Read key %s from hosts", key));
+			readHostDirs(baseDirectory, hostDirs, key, data);
+			List<DataRow> dataRows = new ArrayList<>();
+			formatData(data, key, dataRows);
+			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).body(dataRows);
 		} catch (RuntimeException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
@@ -146,15 +175,15 @@ public class DataController {
 	@GetMapping("/data")
 	public ResponseEntity<Map<String, String>> showData(@RequestParam Optional<String> name,
 			@RequestParam Optional<String> key) {
-		List<String> files = new ArrayList<>();
+		List<String> hostDirs = new ArrayList<>();
 		Map<String, String> data = new HashMap<>();
 
-		String mapName = name.isPresent() ? String.format("%s/%s", directoryName, name.get()) : null;
-		log.info(String.format("Read hosts list from %s", mapName));
+		String mapName = name.isPresent() ? String.format("%s/%s", baseDirectory, name.get()) : null;
+		log.info(String.format("Read hosts dir list from %s", mapName));
 		if (mapName != null) {
 			try {
-				getFiles(mapName, files);
-				log.info(String.format("Read hosts list: %s", files));
+				getHostDirs(mapName, hostDirs);
+				log.info(String.format("Read hosts list: %s", hostDirs));
 			} catch (RuntimeException e) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
@@ -162,9 +191,55 @@ public class DataController {
 
 		String dataKey = key.isPresent() ? key.get() : "default";
 		try {
-			readFiles(directoryName, files, dataKey, data);
+			readHostDirs(baseDirectory, hostDirs, dataKey, data);
 			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).body(data);
 
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+	}
+
+	private void formatData(final Map<String, String> data, final String key, final List<DataRow> rows) {
+		Iterator<String> hostIterator = data.keySet().iterator();
+		while (hostIterator.hasNext()) {
+			String hostname = hostIterator.next();
+			DataRow row = new DataRow();
+			rows.add(row.withHostname(hostname).withKey(key).withValue(data.get(hostname)));
+		}
+		return;
+	}
+
+	private void formatData(final Map<String, String> data, final String key, final Map<String, HostDataRow> rows) {
+		Iterator<String> hostIterator = data.keySet().iterator();
+		while (hostIterator.hasNext()) {
+			String hostname = hostIterator.next();
+			HostDataRow row = new HostDataRow();
+			rows.put(hostname, row.withKey(key).withValue(data.get(hostname)));
+		}
+		return;
+	}
+
+	@ResponseBody
+	@GetMapping("/typeddata_v2")
+	public ResponseEntity<Map<String, HostDataRow>> showTypedDataVersion2(@RequestParam String name,
+			@RequestParam("key") String key) {
+
+		List<String> hostDirs = new ArrayList<>();
+		Map<String, String> data = new HashMap<>();
+
+		try {
+			log.info(String.format("Read hosts list from %s", name));
+			getHostDirs(String.format("%s/%s", baseDirectory, name), hostDirs);
+			log.info(String.format("Read hosts list: %s", hostDirs));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+		try {
+			log.info(String.format("Read key %s from hosts", key));
+			readHostDirs(baseDirectory, hostDirs, key, data);
+			Map<String, HostDataRow> result = new HashMap<>();
+			formatData(data, key, result);
+			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).body(result);
 		} catch (RuntimeException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}

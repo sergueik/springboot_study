@@ -40,7 +40,7 @@ for H in $(cat hosts1) ;  do D=/tmp/$H; mkdir $D; touch $D/data.txt; K=datakey; 
 ```
 * test
 ```sh
-curl http://localhost:8080/data?name=hosts1&key=datakey' | jq '.'
+curl 'http://localhost:8080/data?name=hosts1&key=datakey' | jq '.'
 ```
 ```json
 {
@@ -50,7 +50,7 @@ curl http://localhost:8080/data?name=hosts1&key=datakey' | jq '.'
 }
 ```
 ```sh
-curl http://localhost:8080/data?name=hosts2&key=datakey' | jq '.'
+curl 'http://localhost:8080/data?name=hosts2&key=datakey' | jq '.'
 ```
 ```json
 {
@@ -61,7 +61,7 @@ curl http://localhost:8080/data?name=hosts2&key=datakey' | jq '.'
 ```
 
 ```sh
-curl http://localhost:8080/data?name=hosts3&key=datakey' | jq '.'
+curl 'http://localhost:8080/data?name=hosts3&key=datakey' | jq '.'
 ```
 ```json
 {
@@ -75,6 +75,38 @@ curl http://localhost:8080/data
 ```
 ```json
 {}
+```
+```sh
+curl 'http://localhost:8080/typeddata?name=hosts1&key=dataKey' | jq '.'
+```
+```json
+[
+  {
+    "hostname": "host1",
+    "key": "dataKey",
+    "value": "value for host1"
+  },
+  {
+    "hostname": "host2",
+    "key": "dataKey",
+    "value": "value for host2"
+  }
+]
+```
+```sh
+curl 'http://localhost:8080/typeddata_v2?name=hosts1&key=dataKey' | jq '.'
+```
+```json
+{
+  "host1": {
+    "key": "dataKey",
+    "value": "value for host1"
+  },
+  "host2": {
+    "key": "dataKey",
+    "value": "value for host2"
+  }
+}
 ```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
