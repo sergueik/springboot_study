@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,9 +28,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/")
 public class DataController {
+	private StringBuffer sb = new StringBuffer();
+	private Log log = LogFactory.getLog(this.getClass());
 
-	private String directoryName = System.getProperty("os.name").toLowerCase()
-			.contains("windows") ? System.getenv("TEMP") : "/tmp";
+	private String directoryName = System.getProperty("os.name").toLowerCase().contains("windows")
+			? System.getenv("TEMP")
+			: "/tmp";
 
 	public String getDirectoryName() {
 		return directoryName;
@@ -39,29 +43,23 @@ public class DataController {
 		directoryName = data;
 	}
 
-	private StringBuffer sb = new StringBuffer();
-
-	private Log log = LogFactory.getLog(this.getClass());
-
-	private void getFiles(String filename, List<String> files) {
+	private void getFiles(String filename, List<String> files) throws RuntimeException {
 		File file = null;
 		BufferedReader reader = null;
+		StringBuffer contents = new StringBuffer();
+		String text = null;
 		try {
 			file = new File(filename);
-			StringBuffer contents = new StringBuffer();
-
 			reader = new BufferedReader(new FileReader(file));
-			String text = null;
-
-			// repeat until all lines is read
 			while ((text = reader.readLine()) != null) {
 				files.add(text.trim());
 				contents.append(text).append(System.getProperty("line.separator"));
 			}
 			reader.close();
-			System.out.println(contents.toString());
+			// System.out.println(contents.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.info("Exception: " + e.getMessage());
+			throw new RuntimeException("Exception: " + e.getMessage());
 		} finally {
 			try {
 				reader.close();
@@ -70,72 +68,105 @@ public class DataController {
 		}
 	}
 
-	@ResponseBody
-	@GetMapping("/data")
-	public ResponseEntity<Map<String, String>> showData(
-			@RequestParam Optional<String> name, @RequestParam Optional<String> key) {
-		String mapName = name.isPresent()
-				? String.format("%s/%s", directoryName, name.get()) : null;
-		log.info(String.format("Read hosts list from %s", mapName));
-		List<String> files = new ArrayList<>();
-		if (mapName != null) {
-			getFiles(mapName, files);
-			log.info(String.format("Read hosts list: %s", files));
-		}
-		Map<String, String> data = new HashMap<>();
+	private void readFiles(final String directoryName, final List<String> files, final String key,
+			final Map<String, String> data) throws RuntimeException {
+		File dir = new File(directoryName);
+		String[] children = dir.list();
 		for (String filename : files) {
 			data.put(filename, null);
 		}
-		File dir = new File(directoryName);
-		String[] children = dir.list();
 		if (children == null) {
-			log.info(String.format("%s does not exist or is not al directory",
-					directoryName));
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		} else {
-			for (int i = 0; i < children.length; i++) {
-				// temporarily read all
-				String filename = children[i];
-				if (files.contains(filename)) {
-					String datafilename = String.format("%s/%s/data.txt", directoryName,
-							filename);
-					StringBuffer contents = new StringBuffer();
-					BufferedReader reader = null;
-					try {
-						log.info(String.format("reading datafile %s", datafilename));
-						reader = new BufferedReader(new FileReader(datafilename));
-						String text = null;
+			log.info(String.format("%s does not exist or is not al directory", directoryName));
+			throw new RuntimeException("%s does not exist or is not al directory");
+			// return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+		for (int i = 0; i < children.length; i++) {
+			String filename = children[i];
+			if (files.contains(filename)) {
+				String datafilename = String.format("%s/%s/data.txt", directoryName, filename);
+				StringBuffer contents = new StringBuffer();
+				BufferedReader reader = null;
+				try {
+					log.info(String.format("reading datafile %s", datafilename));
+					reader = new BufferedReader(new FileReader(datafilename));
+					String text = null;
 
-						// repeat until all lines is read
-						String textValue = null;
-						String textKey = null;
+					String textValue = null;
+					String textKey = null;
 
-						while ((text = reader.readLine()) != null) {
-							contents.append(text)
-									.append(System.getProperty("line.separator"));
-							Pattern p = Pattern.compile("^(\\S*):(.*)$");
-							Matcher m = p.matcher(text);
-							String dataKey = key.isPresent() ? key.get() : "default";
-							// reserved for future use
-							log.info("scanning for " + dataKey);
-							if (m.find()) {
-								textKey = m.group(1);
-								textValue = m.group(2);
-								if (textKey.equalsIgnoreCase(dataKey)) {
-									data.put(filename, textValue);
-								}
+					while ((text = reader.readLine()) != null) {
+						contents.append(text).append(System.getProperty("line.separator"));
+						Pattern p = Pattern.compile("^(\\S*):(.*)$");
+						Matcher m = p.matcher(text);
+						// reserved for future use
+						log.info("scanning for " + key);
+						if (m.find()) {
+							textKey = m.group(1);
+							textValue = m.group(2);
+							if (textKey.equalsIgnoreCase(key)) {
+								data.put(filename, textValue);
 							}
 						}
-						reader.close();
-						log.info(String.format("datafile %s contents: %s", datafilename,
-								contents.toString()));
-					} catch (IOException e) {
-						data.put(filename, null);
 					}
+					reader.close();
+					log.info(String.format("datafile %s contents: %s", datafilename, contents.toString()));
+				} catch (IOException e) {
+					data.put(filename, null);
 				}
 			}
-			return ResponseEntity.status(HttpStatus.OK)
-					.contentType(MediaType.APPLICATION_JSON_UTF8).body(data);
+		}
+		return;
+	}
+
+	@ResponseBody
+	@GetMapping("/data/{name}/{key:.+}")
+	public ResponseEntity<Map<String, String>> showData(@PathVariable("name") String name,
+			@PathVariable("key") String key) {
+
+		List<String> files = new ArrayList<>();
+		Map<String, String> data = new HashMap<>();
+
+		try {
+			log.info(String.format("Read hosts list from %s", name));
+			getFiles(String.format("%s/%s", directoryName, name), files);
+			log.info(String.format("Read hosts list: %s", files));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+		try {
+			log.info(String.format("Read key %s from hosts", key));
+			readFiles(directoryName, files, key, data);
+			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).body(data);
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+	}
+
+	@ResponseBody
+	@GetMapping("/data")
+	public ResponseEntity<Map<String, String>> showData(@RequestParam Optional<String> name,
+			@RequestParam Optional<String> key) {
+		List<String> files = new ArrayList<>();
+		Map<String, String> data = new HashMap<>();
+
+		String mapName = name.isPresent() ? String.format("%s/%s", directoryName, name.get()) : null;
+		log.info(String.format("Read hosts list from %s", mapName));
+		if (mapName != null) {
+			try {
+				getFiles(mapName, files);
+				log.info(String.format("Read hosts list: %s", files));
+			} catch (RuntimeException e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+		}
+
+		String dataKey = key.isPresent() ? key.get() : "default";
+		try {
+			readFiles(directoryName, files, dataKey, data);
+			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).body(data);
+
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
 

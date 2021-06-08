@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +42,27 @@ public class DataControllerTest {
 
 	@Before
 	public void beforeTest() throws Exception {
-		resultActions = mvc.perform(get(String.format("/data?name=%s&key=%s", variable, key))
-				.accept(MediaType.APPLICATION_JSON_UTF8_VALUE));
 	}
 
 	@Test
-	public void statusTest() throws Exception {
+	public void test1() throws Exception {
+		resultActions = mvc.perform(get(String.format("/data?name=%s&key=%s", variable, key))
+				.accept(MediaType.APPLICATION_JSON_UTF8_VALUE));
+		resultActions.andExpect(status().isOk());
+	}
+
+	// @Ignore
+	@Test
+	public void test2() throws Exception {
+		resultActions = mvc.perform(
+				get(String.format("/data?name=%s&key=%s", "dummy", key)).accept(MediaType.APPLICATION_JSON_UTF8_VALUE));
+		resultActions.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void test3() throws Exception {
+		resultActions = mvc.perform(
+				get(String.format("/data/%s/%s", variable, key)).accept(MediaType.APPLICATION_JSON_UTF8_VALUE));
 		resultActions.andExpect(status().isOk());
 	}
 }
