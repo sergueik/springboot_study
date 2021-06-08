@@ -27,9 +27,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/")
 public class DataController {
-	// NOTE: the value for annotation attribute
-	// RequestParam.defaultValue must be a constant expression
-	final static String directoryName = "/tmp";
+
+	private String directoryName = System.getProperty("os.name").toLowerCase()
+			.contains("windows") ? System.getenv("TEMP") : "/tmp";
+
+	public String getDirectoryName() {
+		return directoryName;
+	}
+
+	public void setDirectoryName(String data) {
+		directoryName = data;
+	}
+
 	private StringBuffer sb = new StringBuffer();
 
 	private Log log = LogFactory.getLog(this.getClass());
@@ -61,12 +70,12 @@ public class DataController {
 		}
 	}
 
-
 	@ResponseBody
 	@GetMapping("/data")
-	public ResponseEntity<Map<String, String>> showData(@RequestParam Optional<String> name,
-			@RequestParam Optional<String> key) {
-		String mapName = name.isPresent() ? String.format("%s/%s", directoryName, name.get()) : null;
+	public ResponseEntity<Map<String, String>> showData(
+			@RequestParam Optional<String> name, @RequestParam Optional<String> key) {
+		String mapName = name.isPresent()
+				? String.format("%s/%s", directoryName, name.get()) : null;
 		log.info(String.format("Read hosts list from %s", mapName));
 		List<String> files = new ArrayList<>();
 		if (mapName != null) {
@@ -80,14 +89,16 @@ public class DataController {
 		File dir = new File(directoryName);
 		String[] children = dir.list();
 		if (children == null) {
-			log.info(String.format("%s does not exist or is not al directory", directoryName));
+			log.info(String.format("%s does not exist or is not al directory",
+					directoryName));
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		} else {
 			for (int i = 0; i < children.length; i++) {
 				// temporarily read all
 				String filename = children[i];
 				if (files.contains(filename)) {
-					String datafilename = String.format("%s/%s/data.txt", directoryName, filename);
+					String datafilename = String.format("%s/%s/data.txt", directoryName,
+							filename);
 					StringBuffer contents = new StringBuffer();
 					BufferedReader reader = null;
 					try {
@@ -100,7 +111,8 @@ public class DataController {
 						String textKey = null;
 
 						while ((text = reader.readLine()) != null) {
-							contents.append(text).append(System.getProperty("line.separator"));
+							contents.append(text)
+									.append(System.getProperty("line.separator"));
 							Pattern p = Pattern.compile("^(\\S*):(.*)$");
 							Matcher m = p.matcher(text);
 							String dataKey = key.isPresent() ? key.get() : "default";
@@ -115,13 +127,15 @@ public class DataController {
 							}
 						}
 						reader.close();
-						log.info(String.format("datafile %s contents: %s", datafilename, contents.toString()));
+						log.info(String.format("datafile %s contents: %s", datafilename,
+								contents.toString()));
 					} catch (IOException e) {
 						data.put(filename, null);
 					}
 				}
 			}
-			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).body(data);
+			return ResponseEntity.status(HttpStatus.OK)
+					.contentType(MediaType.APPLICATION_JSON_UTF8).body(data);
 		}
 	}
 

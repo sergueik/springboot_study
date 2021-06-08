@@ -3,6 +3,9 @@ Plain directory file based data reporter
 
 ### Usage
 
+* NOTE: replace `/tmp` with `$env:TEMP` for Windows host.
+
+* set up few directories and datafiles
 ```sh
 echo 'host1' > /tmp/hosts1
 mkdir /tmp/host1
@@ -75,3 +78,4 @@ curl http://localhost:8080/data
 ```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
