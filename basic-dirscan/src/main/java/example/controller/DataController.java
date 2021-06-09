@@ -100,13 +100,13 @@ public class DataController {
 
 					while ((text = reader.readLine()) != null) {
 						contents.append(text).append(System.getProperty("line.separator"));
-						Pattern p = Pattern.compile("^(\\S*):(.*)$");
+						Pattern p = Pattern.compile("^(\\S*):  *(.*)$");
 						Matcher m = p.matcher(text);
 						// reserved for future use
 						log.info("scanning for " + key);
 						if (m.find()) {
 							textKey = m.group(1);
-							textValue = m.group(2);
+							textValue = m.group(2).trim()	;
 							if (textKey.equalsIgnoreCase(key)) {
 								data.put(dirName, textValue);
 							}

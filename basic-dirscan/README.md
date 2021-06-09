@@ -1,3 +1,4 @@
+
 ### Info
 Plain directory file based data reporter
 
@@ -37,6 +38,14 @@ host7
 * create data
 ```sh
 for H in $(cat hosts1) ;  do D=/tmp/$H; mkdir $D; touch $D/data.txt; K=datakey; echo -e "$K:value for $H\n" > $D/data.txt ;  done
+```
+or in Powershell:
+```powershell
+cd $env:TEMP
+mkdir host1,host2,host3
+'host1','host2','host3' | foreach-object { 'dataKey: value' | out-file -literalpath "$_/data.txt" -encoding ascii}
+remove-item 'hosts1' -force
+'host1','host2','host3','host4' | foreach-object { $_ | out-file -literalpath 'hosts1' -append -encoding ascii}
 ```
 * test
 ```sh
@@ -108,6 +117,9 @@ curl 'http://localhost:8080/typeddata_v2?name=hosts1&key=dataKey' | jq '.'
   }
 }
 ```
+### See Also
+  *  https://www.baeldung.com/spring-optional-path-variables
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 
