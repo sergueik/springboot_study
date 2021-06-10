@@ -37,13 +37,13 @@ host7
 ```
 * create data
 ```sh
-for H in $(cat hosts1) ;  do D=/tmp/$H; mkdir $D; touch $D/data.txt; K=datakey; echo -e "$K:value for $H\n" > $D/data.txt ;  done
+for H in $(cat /tmp/hosts1) ;  do D=/tmp/$H; mkdir $D; touch $D/data.txt; K=datakey; echo -e "$K: value for $H\n" > $D/data.txt ;  done
 ```
 or in Powershell:
 ```powershell
 cd $env:TEMP
 mkdir host1,host2,host3
-'host1','host2','host3' | foreach-object { 'dataKey: value' | out-file -literalpath "$_/data.txt" -encoding ascii}
+'host1','host2','host3' | foreach-object { ('dataKey: value for ' + $_) | out-file -literalpath "$_/data.txt" -encoding ascii}
 remove-item 'hosts1' -force
 'host1','host2','host3','host4' | foreach-object { $_ | out-file -literalpath 'hosts1' -append -encoding ascii}
 ```

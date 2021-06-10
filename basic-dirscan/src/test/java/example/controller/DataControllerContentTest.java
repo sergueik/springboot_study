@@ -52,14 +52,14 @@ public class DataControllerContentTest {
 
 	@Test
 	public void test2() throws Exception {
-		resultActions.andExpect(jsonPath("$.host1", is("value")));
+		resultActions.andExpect(jsonPath("$.host1", is("value for host1")));
 	}
 
 	@Test
 	public void test3() throws Exception {
 		resultActions.andExpect(jsonPath("$[*]", hasSize(4)))
-				.andExpect(jsonPath("$[*]", hasItems(new String[] { "value" })))
-				.andExpect(jsonPath("$.*", hasItems(new String[] { "value" })));
+				.andExpect(jsonPath("$[*]", hasItems(new String[] { "value for host1" })))
+				.andExpect(jsonPath("$.*", hasItems(new String[] { "value for host2" })));
 	}
 
 	@Ignore

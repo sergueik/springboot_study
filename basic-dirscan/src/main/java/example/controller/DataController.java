@@ -29,18 +29,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import example.model.DataRow;
 import example.model.HostDataRow;
 
-// based on: https://github.com/kolorobot/spring-boot-thymeleaf
 @Controller
 @RequestMapping("/")
 public class DataController {
-	private StringBuffer sb = new StringBuffer();
 	private Log log = LogFactory.getLog(this.getClass());
 
 	private String baseDirectory = System.getProperty("os.name").toLowerCase()
 			.contains("windows") ? System.getenv("TEMP") : "/tmp";
 
 	@ResponseBody
-	@GetMapping("/data/{name}/{key:.+}")
+	@GetMapping("/data/{name}/{key}")
 	public ResponseEntity<Map<String, String>> showData(
 			@PathVariable("name") String name, @PathVariable("key") String key) {
 
@@ -74,7 +72,6 @@ public class DataController {
 						Integer.parseInt(pathVariableMap.get("cnt")))
 				: showTypedData(pathVariableMap.get("name"),
 						pathVariableMap.get("key"));
-
 	}
 
 	@ResponseBody
