@@ -1,6 +1,7 @@
 FROM tomcat:8.0-alpine
 SHELL ["/bin/ash", "-c"]
-ARG app_war="dummy.war"
+ARG app_war="demo.war"
+# NOTE: the contents of the /opt/tomcat/webapps/demo may be misleading
 ENV CATALINA_HOME="/opt/tomcat"
 ARG CATALINA_HOME=${CATALINA_HOME}
 # Workaround of that the directory layout is different
