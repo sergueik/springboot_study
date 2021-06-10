@@ -22,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -64,7 +65,21 @@ public class DataController {
 	}
 
 	@ResponseBody
-	@GetMapping("/typeddata/{name}/{key:.+}/{cnt}")
+	@GetMapping(value = { "/data_param_map/{name}/{key}",
+			"/data_param_map/{name}/{key}/{cnt}" })
+	public ResponseEntity<List<DataRow>> showTypedData(
+			@PathVariable Map<String, String> pathVariableMap) {
+		return pathVariableMap.containsKey("cnt")
+				? showTypedData(pathVariableMap.get("name"), pathVariableMap.get("key"),
+						Integer.parseInt(pathVariableMap.get("cnt")))
+				: showTypedData(pathVariableMap.get("name"),
+						pathVariableMap.get("key"));
+
+	}
+
+	@ResponseBody
+	@RequestMapping(method = RequestMethod.GET, value = {
+			"/typeddata/{name}/{key}", "/typeddata/{name}/{key}/{cnt}" })
 	public ResponseEntity<List<DataRow>> showTypedData(
 			@PathVariable("name") String name, @PathVariable("key") String key,
 			@PathVariable(required = false) Integer cnt) {

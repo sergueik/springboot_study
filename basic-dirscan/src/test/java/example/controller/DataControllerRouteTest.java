@@ -78,38 +78,4 @@ public class DataControllerRouteTest {
 		resultActions.andExpect(status().isOk());
 	}
 
-	@Test
-	public void test5() throws Exception {
-		// make sure that there is at least 3 rows in hosts
-		final int rows = 2;
-		final int cnt = 3;
-		final String content = mvc
-				.perform(get(String.format("/typeddata/%s/%s/%d", variable, key, rows))
-						.accept(MediaType.APPLICATION_JSON_UTF8_VALUE))
-				.andReturn().getResponse().getContentAsString();
-
-		assertThat(content, notNullValue());
-		jsonContext = JsonPath.parse(content);
-		JSONArray entries = jsonContext.read("$.*");
-		assertThat(entries, notNullValue());
-		assertThat(entries.size(), is(rows));
-		JSONArray keys = jsonContext.read("$.*.keys()");
-		assertThat(keys, notNullValue());
-		System.err.println(keys.get(1).toString());
-		keys = JsonPath.parse(keys.get(1).toString()).read("$.*");
-		assertThat(keys.size(), is(cnt));
-
-	}
-
-	// test for empty
-	@Test
-	public void test6() throws Exception {
-		final int cnt = -1;
-		final String content = mvc
-				.perform(get(String.format("/typeddata/%s/%s/%d", variable, key, cnt))
-						.accept(MediaType.APPLICATION_JSON_UTF8_VALUE))
-				.andReturn().getResponse().getContentAsString();
-
-		assertThat(content.trim(), is("[]"));
-	}
 }
