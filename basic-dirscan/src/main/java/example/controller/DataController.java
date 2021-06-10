@@ -35,9 +35,149 @@ public class DataController {
 	private StringBuffer sb = new StringBuffer();
 	private Log log = LogFactory.getLog(this.getClass());
 
-	private String baseDirectory = System.getProperty("os.name").toLowerCase().contains("windows")
-			? System.getenv("TEMP")
-			: "/tmp";
+	private String baseDirectory = System.getProperty("os.name").toLowerCase()
+			.contains("windows") ? System.getenv("TEMP") : "/tmp";
+
+	@ResponseBody
+	@GetMapping("/data/{name}/{key:.+}")
+	public ResponseEntity<Map<String, String>> showData(
+			@PathVariable("name") String name, @PathVariable("key") String key) {
+
+		List<String> hostDirs = new ArrayList<>();
+		Map<String, String> data = new HashMap<>();
+
+		try {
+			log.info(String.format("Read hosts list from %s", name));
+			getHostDirs(String.format("%s/%s", baseDirectory, name), hostDirs);
+			log.info(String.format("Read hosts list: %s", hostDirs));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+		try {
+			log.info(String.format("Read key %s from hosts", key));
+			readHostDirs(baseDirectory, hostDirs, key, data);
+			return ResponseEntity.status(HttpStatus.OK)
+					.contentType(MediaType.APPLICATION_JSON_UTF8).body(data);
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+	}
+
+	@ResponseBody
+	@GetMapping("/typeddata/{name}/{key:.+}/{cnt}")
+	public ResponseEntity<List<DataRow>> showTypedData(
+			@PathVariable("name") String name, @PathVariable("key") String key,
+			@PathVariable(required = false) Integer cnt) {
+		if (cnt != null) {
+			List<String> hostDirs = new ArrayList<>();
+			Map<String, String> data = new HashMap<>();
+
+			try {
+				log.info(String.format("Read max %d hosts list from %s", cnt, name));
+				getHostDirs(String.format("%s/%s", baseDirectory, name), hostDirs, cnt);
+				log.info(String.format("Read hosts list: %s", hostDirs));
+			} catch (RuntimeException e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+			try {
+				log.info(String.format("Read key %s from hosts", key));
+				readHostDirs(baseDirectory, hostDirs, key, data);
+				List<DataRow> dataRows = new ArrayList<>();
+				formatData(data, key, dataRows);
+				return ResponseEntity.status(HttpStatus.OK)
+						.contentType(MediaType.APPLICATION_JSON_UTF8).body(dataRows);
+			} catch (RuntimeException e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+
+		} else {
+			return showTypedData(name, key);
+		}
+	}
+
+	@ResponseBody
+	@GetMapping("/typeddata")
+	public ResponseEntity<List<DataRow>> showTypedData(@RequestParam String name,
+			@RequestParam("key") String key) {
+
+		List<String> hostDirs = new ArrayList<>();
+		Map<String, String> data = new HashMap<>();
+
+		try {
+			log.info(String.format("Read hosts list from %s", name));
+			getHostDirs(String.format("%s/%s", baseDirectory, name), hostDirs);
+			log.info(String.format("Read hosts list: %s", hostDirs));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+		try {
+			log.info(String.format("Read key %s from hosts", key));
+			readHostDirs(baseDirectory, hostDirs, key, data);
+			List<DataRow> dataRows = new ArrayList<>();
+			formatData(data, key, dataRows);
+			return ResponseEntity.status(HttpStatus.OK)
+					.contentType(MediaType.APPLICATION_JSON_UTF8).body(dataRows);
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+	}
+
+	@ResponseBody
+	@GetMapping("/data")
+	public ResponseEntity<Map<String, String>> showData(
+			@RequestParam Optional<String> name, @RequestParam Optional<String> key) {
+		List<String> hostDirs = new ArrayList<>();
+		Map<String, String> data = new HashMap<>();
+
+		String mapName = name.isPresent()
+				? String.format("%s/%s", baseDirectory, name.get()) : null;
+		log.info(String.format("Read hosts dir list from %s", mapName));
+		if (mapName != null) {
+			try {
+				getHostDirs(mapName, hostDirs);
+				log.info(String.format("Read hosts list: %s", hostDirs));
+			} catch (RuntimeException e) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+		}
+
+		String dataKey = key.isPresent() ? key.get() : "default";
+		try {
+			readHostDirs(baseDirectory, hostDirs, dataKey, data);
+			return ResponseEntity.status(HttpStatus.OK)
+					.contentType(MediaType.APPLICATION_JSON_UTF8).body(data);
+
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+	}
+
+	@ResponseBody
+	@GetMapping("/typeddata_v2")
+	public ResponseEntity<Map<String, HostDataRow>> showTypedDataVersion2(
+			@RequestParam String name, @RequestParam("key") String key) {
+
+		List<String> hostDirs = new ArrayList<>();
+		Map<String, String> data = new HashMap<>();
+
+		try {
+			log.info(String.format("Read hosts list from %s", name));
+			getHostDirs(String.format("%s/%s", baseDirectory, name), hostDirs);
+			log.info(String.format("Read hosts list: %s", hostDirs));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+		try {
+			log.info(String.format("Read key %s from hosts", key));
+			readHostDirs(baseDirectory, hostDirs, key, data);
+			Map<String, HostDataRow> result = new HashMap<>();
+			formatData(data, key, result);
+			return ResponseEntity.status(HttpStatus.OK)
+					.contentType(MediaType.APPLICATION_JSON_UTF8).body(result);
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+	}
 
 	public String getBaseDirectory() {
 		return baseDirectory;
@@ -47,7 +187,13 @@ public class DataController {
 		baseDirectory = data;
 	}
 
-	private void getHostDirs(String filename, List<String> hostDirs) throws RuntimeException {
+	private void getHostDirs(String filename, List<String> hostDirs)
+			throws RuntimeException {
+		getHostDirs(filename, hostDirs, 0);
+	}
+
+	private void getHostDirs(String filename, List<String> hostDirs, Integer cnt)
+			throws RuntimeException {
 		File file = null;
 		BufferedReader reader = null;
 		StringBuffer contents = new StringBuffer();
@@ -56,11 +202,15 @@ public class DataController {
 			file = new File(filename);
 			reader = new BufferedReader(new FileReader(file));
 			while ((text = reader.readLine()) != null) {
-				hostDirs.add(text.trim());
 				contents.append(text).append(System.getProperty("line.separator"));
+				if (cnt != 0 && hostDirs.size() > cnt - 1) {
+					continue;
+				}
+				hostDirs.add(text.trim());
 			}
 			reader.close();
-			// System.out.println(contents.toString());
+			log.info("Read " + (cnt == 0 ? "" : "first " + cnt + " lines from ")
+					+ ": " + contents.toString());
 		} catch (IOException e) {
 			log.info("Exception: " + e.getMessage());
 			throw new RuntimeException("Exception: " + e.getMessage());
@@ -72,7 +222,8 @@ public class DataController {
 		}
 	}
 
-	private void readHostDirs(final String baseDirectory, final List<String> hostDirs, final String key,
+	private void readHostDirs(final String baseDirectory,
+			final List<String> hostDirs, final String key,
 			final Map<String, String> data) throws RuntimeException {
 		File dir = new File(baseDirectory);
 		String[] subdirs = dir.list();
@@ -80,14 +231,16 @@ public class DataController {
 			data.put(dirName, null);
 		}
 		if (subdirs == null) {
-			log.info(String.format("%s does not exist or is not al directory", baseDirectory));
+			log.info(String.format("%s does not exist or is not al directory",
+					baseDirectory));
 			throw new RuntimeException("%s does not exist or is not al directory");
 			// return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		for (int i = 0; i < subdirs.length; i++) {
 			String dirName = subdirs[i];
 			if (hostDirs.contains(dirName)) {
-				String datafilename = String.format("%s/%s/data.txt", baseDirectory, dirName);
+				String datafilename = String.format("%s/%s/data.txt", baseDirectory,
+						dirName);
 				StringBuffer contents = new StringBuffer();
 				BufferedReader reader = null;
 				try {
@@ -106,14 +259,15 @@ public class DataController {
 						log.info("scanning for " + key);
 						if (m.find()) {
 							textKey = m.group(1);
-							textValue = m.group(2).trim()	;
+							textValue = m.group(2).trim();
 							if (textKey.equalsIgnoreCase(key)) {
 								data.put(dirName, textValue);
 							}
 						}
 					}
 					reader.close();
-					log.info(String.format("datafile %s contents: %s", datafilename, contents.toString()));
+					log.info(String.format("datafile %s contents: %s", datafilename,
+							contents.toString()));
 				} catch (IOException e) {
 					// ignore
 				}
@@ -122,94 +276,20 @@ public class DataController {
 		return;
 	}
 
-	@ResponseBody
-	@GetMapping("/data/{name}/{key:.+}")
-	public ResponseEntity<Map<String, String>> showData(@PathVariable("name") String name,
-			@PathVariable("key") String key) {
-
-		List<String> hostDirs = new ArrayList<>();
-		Map<String, String> data = new HashMap<>();
-
-		try {
-			log.info(String.format("Read hosts list from %s", name));
-			getHostDirs(String.format("%s/%s", baseDirectory, name), hostDirs);
-			log.info(String.format("Read hosts list: %s", hostDirs));
-		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		}
-		try {
-			log.info(String.format("Read key %s from hosts", key));
-			readHostDirs(baseDirectory, hostDirs, key, data);
-			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).body(data);
-		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		}
-	}
-
-	@ResponseBody
-	@GetMapping("/typeddata")
-	public ResponseEntity<List<DataRow>> showTypedData(@RequestParam String name, @RequestParam("key") String key) {
-
-		List<String> hostDirs = new ArrayList<>();
-		Map<String, String> data = new HashMap<>();
-
-		try {
-			log.info(String.format("Read hosts list from %s", name));
-			getHostDirs(String.format("%s/%s", baseDirectory, name), hostDirs);
-			log.info(String.format("Read hosts list: %s", hostDirs));
-		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		}
-		try {
-			log.info(String.format("Read key %s from hosts", key));
-			readHostDirs(baseDirectory, hostDirs, key, data);
-			List<DataRow> dataRows = new ArrayList<>();
-			formatData(data, key, dataRows);
-			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).body(dataRows);
-		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		}
-	}
-
-	@ResponseBody
-	@GetMapping("/data")
-	public ResponseEntity<Map<String, String>> showData(@RequestParam Optional<String> name,
-			@RequestParam Optional<String> key) {
-		List<String> hostDirs = new ArrayList<>();
-		Map<String, String> data = new HashMap<>();
-
-		String mapName = name.isPresent() ? String.format("%s/%s", baseDirectory, name.get()) : null;
-		log.info(String.format("Read hosts dir list from %s", mapName));
-		if (mapName != null) {
-			try {
-				getHostDirs(mapName, hostDirs);
-				log.info(String.format("Read hosts list: %s", hostDirs));
-			} catch (RuntimeException e) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-			}
-		}
-
-		String dataKey = key.isPresent() ? key.get() : "default";
-		try {
-			readHostDirs(baseDirectory, hostDirs, dataKey, data);
-			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).body(data);
-
-		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		}
-	}
-
-	private void formatData(final Map<String, String> data, final String key, final List<DataRow> rows) {
+	private void formatData(final Map<String, String> data, final String key,
+			final List<DataRow> rows) {
 		Iterator<String> hostIterator = data.keySet().iterator();
 		while (hostIterator.hasNext()) {
 			String hostname = hostIterator.next();
 			DataRow row = new DataRow();
-			rows.add(row.withHostname(hostname).withKey(key).withValue(data.get(hostname)));
+			rows.add(row.withHostname(hostname).withKey(key)
+					.withValue(data.get(hostname)));
 		}
 		return;
 	}
 
-	private void formatData(final Map<String, String> data, final String key, final Map<String, HostDataRow> rows) {
+	private void formatData(final Map<String, String> data, final String key,
+			final Map<String, HostDataRow> rows) {
 		Iterator<String> hostIterator = data.keySet().iterator();
 		while (hostIterator.hasNext()) {
 			String hostname = hostIterator.next();
@@ -218,31 +298,4 @@ public class DataController {
 		}
 		return;
 	}
-
-	@ResponseBody
-	@GetMapping("/typeddata_v2")
-	public ResponseEntity<Map<String, HostDataRow>> showTypedDataVersion2(@RequestParam String name,
-			@RequestParam("key") String key) {
-
-		List<String> hostDirs = new ArrayList<>();
-		Map<String, String> data = new HashMap<>();
-
-		try {
-			log.info(String.format("Read hosts list from %s", name));
-			getHostDirs(String.format("%s/%s", baseDirectory, name), hostDirs);
-			log.info(String.format("Read hosts list: %s", hostDirs));
-		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		}
-		try {
-			log.info(String.format("Read key %s from hosts", key));
-			readHostDirs(baseDirectory, hostDirs, key, data);
-			Map<String, HostDataRow> result = new HashMap<>();
-			formatData(data, key, result);
-			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).body(result);
-		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		}
-	}
-
 }
