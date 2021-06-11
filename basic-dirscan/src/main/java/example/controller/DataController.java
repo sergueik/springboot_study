@@ -32,6 +32,12 @@ import example.model.HostDataRow;
 @Controller
 @RequestMapping("/")
 public class DataController {
+	private boolean debug = false;
+
+	public void setDebug(boolean data) {
+		debug = data;
+	}
+
 	private Log log = LogFactory.getLog(this.getClass());
 
 	private String baseDirectory = System.getProperty("os.name").toLowerCase()
@@ -234,6 +240,50 @@ public class DataController {
 		}
 	}
 
+	public void getHostDirs2(String filename, List<String> hostDirs)
+			throws RuntimeException {
+		File file = null;
+		List<String> lines = new ArrayList<>();
+		BufferedReader reader = null;
+		StringBuffer contents = new StringBuffer();
+		String text = null;
+		try {
+			file = new File(String.format("%s/%s", baseDirectory, filename));
+			reader = new BufferedReader(new FileReader(file));
+			while ((text = reader.readLine()) != null) {
+				contents.append(text).append(System.getProperty("line.separator"));
+				lines.add(text.trim());
+			}
+			reader.close();
+		} catch (IOException e) {
+			log.info("Exception: " + e.getMessage());
+			throw new RuntimeException("Exception: " + e.getMessage());
+		}
+		if (debug)
+			System.err.println("Loaded contents: " + contents);
+		for (int cnt = 0; cnt != lines.size(); cnt++) {
+			String line = lines.get(cnt);
+			if (line.matches("^# ") || line.isEmpty())
+				continue;
+			if (line.matches("#include (?:\\w+) *$")) {
+				Pattern pattern = Pattern.compile("#include (\\w+) *$",
+						Pattern.CASE_INSENSITIVE);
+				Matcher matcher = pattern.matcher(line);
+				if (matcher.find()) {
+					String filename2 = matcher.group(1);
+					getHostDirs2(filename2, hostDirs);
+				}
+			} else if (line.matches("#exec (?:[^ ]*) *$")) {
+				continue;
+			} else {
+				hostDirs.add(line);
+				if (debug)
+					System.err.println("Adding line: " + line);
+			}
+
+		}
+	}
+
 	private void readHostDirs(final String baseDirectory,
 			final List<String> hostDirs, final String key,
 			final Map<String, String> data) throws RuntimeException {
@@ -311,3 +361,4 @@ public class DataController {
 		return;
 	}
 }
+
