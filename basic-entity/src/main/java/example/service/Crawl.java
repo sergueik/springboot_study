@@ -1,8 +1,6 @@
-package com.example.crawler.service;
+package example.service;
 
-import com.example.crawler.model.Product;
-import com.example.crawler.repository.ProductRepository;
-import com.example.crawler.util.Translator;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,7 +16,10 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.example.crawler.util.Constants.*;
+import example.model.Product;
+import example.repository.ProductRepository;
+import example.util.Translator;
+import static example.util.Constants.*;
 
 @Service
 public class Crawl {

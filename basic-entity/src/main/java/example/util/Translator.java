@@ -1,10 +1,10 @@
-package com.example.crawler.util;
+package example.util;
 
-import com.example.crawler.model.Product;
+import static example.util.Constants.*;
 
 import java.util.Map;
 
-import static com.example.crawler.util.Constants.*;
+import example.model.Product;
 
 public class Translator {
 

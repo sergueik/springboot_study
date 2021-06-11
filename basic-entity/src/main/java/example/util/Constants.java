@@ -1,4 +1,4 @@
-package com.example.crawler.util;
+package example.util;
 
 public final class Constants {
 

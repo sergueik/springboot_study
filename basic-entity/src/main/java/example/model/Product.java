@@ -1,4 +1,4 @@
-package com.example.crawler.model;
+package example.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

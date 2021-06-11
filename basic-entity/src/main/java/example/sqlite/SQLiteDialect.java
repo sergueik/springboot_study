@@ -1,4 +1,4 @@
-package com.example.sqlite;
+package example.sqlite;
 
 import java.sql.Types;
 import java.sql.SQLException;
