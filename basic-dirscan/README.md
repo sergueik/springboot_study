@@ -47,6 +47,24 @@ mkdir host1,host2,host3
 remove-item 'hosts1' -force
 'host1','host2','host3','host4' | foreach-object { $_ | out-file -literalpath 'hosts1' -append -encoding ascii}
 ```
+alternartively start with the `hosts` file that may have some structure:
+```text
+$server_tag $hostname/$extra_server_info $additional_fields
+```
+iterate over items of inerest and mock up the data files:
+```powershell
+$F='hosts2'
+$K='datakey'
+$V='value'
+$T='server tag'
+get-content $F  | where-object {
+$_ -match $T -and  (-not ($_ -match '^#')) } | 
+foreach-object { 
+$fields = convertfrom-string $_; 
+$H = $fields.P2 -replace '/.*$', ''; 
+write-output $H; 
+mkdir "${env:TEMP}/$H" -erroraction silentlycontinue;"${K}: ${V}" | out-file -literalpath "${env:TEMP}/$H/data.txt" -encoding ascii }
+```
 * test
 ```sh
 curl 'http://localhost:8080/data?name=hosts1&key=datakey' | jq '.'
