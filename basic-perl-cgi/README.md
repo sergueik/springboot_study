@@ -190,7 +190,6 @@ docker stop $NAME
 docker container prune -f
 docker image prune -f
 docker image rm $NAME
-sudo rm -fr web/
 ```
 ### Running Angular part from filesystem
 
