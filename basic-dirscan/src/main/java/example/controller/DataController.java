@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import example.model.DataRow;
 import example.model.HostDataRow;
+import example.service.ServerService;
 
 @Controller
 @RequestMapping("/")
@@ -111,6 +113,18 @@ public class DataController {
 		} else {
 			return showTypedData(name, key);
 		}
+	}
+
+	private final ServerService service;
+
+	@Autowired
+	public DataController(ServerService data) {
+		service = data;
+	}
+
+	@GetMapping(value = "/servers", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<String> servers() {
+		return service.getServers();
 	}
 
 	@ResponseBody
@@ -361,4 +375,3 @@ public class DataController {
 		return;
 	}
 }
-
