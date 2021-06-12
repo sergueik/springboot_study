@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# copy index.html if html directory does not exists
-
-if [ ! -d /web/html ]; then
-  mkdir /web/html
-  cp -RpP /etc/apache2/html/* /web/html/
-  chown -R apache.www-data /web/html
-fi
