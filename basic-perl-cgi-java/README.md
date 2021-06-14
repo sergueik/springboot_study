@@ -50,7 +50,7 @@ the log will show:
 ```txt
 INFO 1 --- [io-8085-exec-10] example.service.ExampleService: Running the process: /var/www/localhost/cgi-bin//example.cgi -no-headers
 ```
-if the 'dummy' extension is not added, the `PathVariable` seems to fail capturing the script name:
+With old SpringBoot __1.5.4-RELEASE__ if the 'dummy' extension is not added, the `PathVariable` seems to fail capturing the script name:
 ```sh
 curl http://localhost:8085/bad/cgi-bin/example.cgi | jq '.'
 ```
@@ -72,6 +72,10 @@ to
 @GetMapping(value = "/cgi-bin/bad/{script:[a-z.0-9]+}"
 public String fixed(@PathVariable String script) {
 ...
+```
+This issue  is not reproduced with SpringBoot __2.3.4-RELEASE__ or later releases. To reproduce the problem use
+```sh
+mvn -f pom-broken-pathvariable.xml clean package
 ```
 * call cgi directly:
 ```sh
