@@ -261,6 +261,9 @@ public class DataController {
 		BufferedReader reader = null;
 		StringBuffer contents = new StringBuffer();
 		String text = null;
+		final String execRegexp = "#exec +([^ ]+)( +.+)?$";
+		final String includeRegexp = "#include (\\w+) *$";
+		final String commentRegexp = "^#(?:#| )";
 		try {
 			file = new File(String.format("%s/%s", baseDirectory, filename));
 			reader = new BufferedReader(new FileReader(file));
@@ -275,20 +278,29 @@ public class DataController {
 		}
 		if (debug)
 			System.err.println("Loaded contents: " + contents);
+
 		for (int cnt = 0; cnt != lines.size(); cnt++) {
 			String line = lines.get(cnt);
-			if (line.matches("^# ") || line.isEmpty())
+			if (line.matches(commentRegexp) || line.isEmpty())
 				continue;
-			if (line.matches("#include (?:\\w+) *$")) {
-				Pattern pattern = Pattern.compile("#include (\\w+) *$",
+			if (line.matches(includeRegexp)) {
+				Pattern pattern = Pattern.compile(includeRegexp,
 						Pattern.CASE_INSENSITIVE);
 				Matcher matcher = pattern.matcher(line);
 				if (matcher.find()) {
-					String filename2 = matcher.group(1);
-					getHostDirs2(filename2, hostDirs);
+					String included_filename = matcher.group(1);
+					getHostDirs2(included_filename, hostDirs);
 				}
-			} else if (line.matches("#exec (?:[^ ]*) *$")) {
-				continue;
+			} else if (line.matches(execRegexp)) {
+				// TODO: use same regexp
+				Pattern pattern = Pattern.compile(execRegexp, Pattern.CASE_INSENSITIVE);
+				Matcher matcher = pattern.matcher(line);
+				if (matcher.find()) {
+					String script = matcher.group(1);
+					String args = matcher.groupCount() > 1 ? matcher.group(2) : null;
+					// args captures all argument to script
+				}
+
 			} else {
 				hostDirs.add(line);
 				if (debug)
