@@ -36,6 +36,16 @@ public class DataControllerTest {
 				"host1", "host2", "host3", "host4", "host3", "hosts15" }));
 	}
 
+	@Test(expected = java.lang.IllegalArgumentException.class)
+	public void test6() throws Exception {
+		String file = "cyclic_hosts1";
+		ServerService service = new ServerService(file);
+		DataController sut = new DataController(service);
+		sut.setDebug(true);
+		List<String> data = new ArrayList<>();
+		sut.getHostDirs2(file, data);
+	}
+
 	@Test
 	public void test5() throws Exception {
 		String file = "hosts.txt";

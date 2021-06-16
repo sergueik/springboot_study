@@ -9,7 +9,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ServerComponent {
 	private List<String> servers = null;
+	Set<String> includeFilenames = new HashSet<>();
 
 	@Value("${example.ServerComponent.debug:false}")
 	private boolean debug = false;
@@ -41,6 +44,7 @@ public class ServerComponent {
 
 	public void getConfig(String filename, List<String> data)
 			throws RuntimeException {
+		includeFilenames.add(filename);
 		File file = null;
 		List<String> lines = new ArrayList<>();
 		BufferedReader reader = null;
@@ -68,8 +72,11 @@ public class ServerComponent {
 						Pattern.CASE_INSENSITIVE);
 				Matcher matcher = pattern.matcher(line);
 				if (matcher.find()) {
-					String filename2 = matcher.group(1);
-					getConfig(filename2, data);
+					String includedFilename = matcher.group(1);
+					if (includeFilenames.contains(includedFilename))
+						throw new IllegalArgumentException(
+								"cyclic #include detected in line " + line);
+					getConfig(includedFilename, data);
 				}
 			} else if (line.matches("#exec (?:[^ ]*) *$")) {
 				continue;

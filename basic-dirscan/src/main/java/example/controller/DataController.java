@@ -1,15 +1,20 @@
 package example.controller;
 
 import java.io.BufferedReader;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.IllegalArgumentException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,6 +49,12 @@ public class DataController {
 
 	private String baseDirectory = System.getProperty("os.name").toLowerCase()
 			.contains("windows") ? System.getenv("TEMP") : "/tmp";
+	private final ServerService service;
+
+	@Autowired
+	public DataController(ServerService data) {
+		service = data;
+	}
 
 	@ResponseBody
 	@GetMapping("/data/{name}/{key}")
@@ -115,17 +126,12 @@ public class DataController {
 		}
 	}
 
-	private final ServerService service;
-
-	@Autowired
-	public DataController(ServerService data) {
-		service = data;
-	}
-
 	@GetMapping(value = "/servers", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<String> servers() {
 		return service.getServers();
 	}
+
+	Set<String> includeFilenames = new HashSet<>();
 
 	@ResponseBody
 	@GetMapping("/typeddata")
@@ -256,6 +262,7 @@ public class DataController {
 
 	public void getHostDirs2(String filename, List<String> hostDirs)
 			throws RuntimeException {
+		includeFilenames.add(filename);
 		File file = null;
 		List<String> lines = new ArrayList<>();
 		BufferedReader reader = null;
@@ -288,8 +295,11 @@ public class DataController {
 						Pattern.CASE_INSENSITIVE);
 				Matcher matcher = pattern.matcher(line);
 				if (matcher.find()) {
-					String included_filename = matcher.group(1);
-					getHostDirs2(included_filename, hostDirs);
+					String includedFilename = matcher.group(1);
+					if (includeFilenames.contains(includedFilename))
+						throw new IllegalArgumentException(
+								"cyclic #include detected in line " + line);
+					getHostDirs2(includedFilename, hostDirs);
 				}
 			} else if (line.matches(execRegexp)) {
 				// TODO: use same regexp
