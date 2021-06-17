@@ -135,6 +135,14 @@ curl 'http://localhost:8080/typeddata_v2?name=hosts1&key=dataKey' | jq '.'
   }
 }
 ```
+### NOTE: 
+In the commit `cafa2c2deb6ed17a9baaab630b104851d40c48eb` introduces the following error
+```text
+org.springframework.beans.factory.NoSuchBeanDefinitionException: 
+No qualifying bean of type 'example.service.ServerService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+```
+The project copied to `basic-dirscan-services`, rollback of few latest commits pending.
+
 ### See Also
   *  https://www.baeldung.com/spring-optional-path-variables
 ### Author
