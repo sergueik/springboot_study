@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import example.model.DataRow;
 import example.model.HostDataRow;
-import example.service.ServerService;
 
 @Controller
 @RequestMapping("/")
@@ -44,17 +43,11 @@ public class DataController {
 	public void setDebug(boolean data) {
 		debug = data;
 	}
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 
 	private String baseDirectory = System.getProperty("os.name").toLowerCase()
 			.contains("windows") ? System.getenv("TEMP") : "/tmp";
-	private final ServerService service;
-
-	@Autowired
-	public DataController(ServerService data) {
-		service = data;
-	}
 
 	@ResponseBody
 	@GetMapping("/data/{name}/{key}")
@@ -124,11 +117,6 @@ public class DataController {
 		} else {
 			return showTypedData(name, key);
 		}
-	}
-
-	@GetMapping(value = "/servers", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<String> servers() {
-		return service.getServers();
 	}
 
 	Set<String> includeFilenames = new HashSet<>();
