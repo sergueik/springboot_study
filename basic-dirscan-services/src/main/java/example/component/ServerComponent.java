@@ -27,7 +27,7 @@ public class ServerComponent {
 			.contains("windows") ? System.getenv("TEMP") : "/tmp";
 
 	@Value("${example.ServerComponent.debug:false}")
-	private boolean debug = false;
+	private boolean debug = true;
 
 	public void setDebug(boolean data) {
 		debug = data;
@@ -79,10 +79,13 @@ public class ServerComponent {
 				Matcher matcher = pattern.matcher(line);
 				if (matcher.find()) {
 					String includedFilename = matcher.group(1);
-					if (includeFilenames.contains(includedFilename))
+					if (includeFilenames.contains(includedFilename)) {
+						if (debug)
+							System.err.println("cyclic #include detected in line " + line);
 						throw new IllegalArgumentException(
 								"cyclic #include detected in line " + line);
-					getConfig(includedFilename, data);
+					}
+						getConfig(includedFilename, data);
 				}
 			} else if (line.matches("#exec (?:[^ ]*) *$")) {
 				continue;
@@ -93,6 +96,6 @@ public class ServerComponent {
 			}
 
 		}
-	}
+}
 
 }
