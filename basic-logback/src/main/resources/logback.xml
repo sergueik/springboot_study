@@ -27,31 +27,16 @@
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <!-- can use ${APP_HOME} -->
     <file>${DIR}/${FILENAME}.log</file>
-    <!--
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
       <fileNamePattern>${DIR}/${FILENAME}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
       <maxHistory>3</maxHistory>
+      <totalSizeCap>10KB</totalSizeCap>
       <maxFileSize>1KB</maxFileSize>
-      <totalSizeCap>5KB</totalSizeCap>
     </rollingPolicy>
-    -->
+    <!-- specifying triggeringPolicy element alongside with rollingPolicy "SizeAndTimeBasedRollingPolicy" leads to runtime Logback configuration error and no logs at all -->
     <encoder>
       <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
     </encoder>
-    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <!-- cannot use date %d{yyyy-MM-dd} in the filename with this policy ? -->
-      <fileNamePattern>${DIR}/${FILENAME}.%i.log.gz</fileNamePattern>
-       <minIndex>1</minIndex>
-      <maxIndex>100</maxIndex>
-    </rollingPolicy>
-
-    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-      <maxFileSize>1KB</maxFileSize>
-    </triggeringPolicy>
-    <encoder>
-      <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-    </encoder>
-    
   </appender>
   <root level="WARN">
     <appender-ref ref="CONSOLE"/>
