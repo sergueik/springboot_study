@@ -10,7 +10,10 @@ mvn clean package
 mkdir dummy
 BASEDIR=$(pwd)/dummy
 java -jar target/example.logback.jar
-curl -vk $(hostname -i):8080/example
+```
+and in separate console
+```sh
+for C in $(seq 1 1 10) ; do curl -vk $(hostname -i):8080/example &>/dev/null ; done
 tail logs/dummy/App.log
 ```
 or
@@ -67,7 +70,7 @@ shows the expected dependency jars.
 ```sh
 mvn spring-boot:run
 ```
-and check the messages in `App.log` and console:
+sixeand check the messages in `App.log` and console:
 ```sh
 21:35:06.166 [main] INFO  o.s.b.c.e.t.TomcatEmbeddedServletContainer - Tomcat st
 arted on port(s): 8080 (http)
@@ -131,7 +134,7 @@ ls -l /work/logs
 ```sh
 tail /work/logs/App.log
 ```
-Alternatively, inspect  the logs folder on the host:
+Alternatively, inspect the logs folder on the host:
 ```sh
 ls -l logs
 ```
@@ -183,6 +186,31 @@ however the attribute error
 (leading or teailing whitespace) causes no harm as the whitespace is trimmed
 from the actual directory name.
 
+### Total Size Test
+
+ *  rerun the curl command with great number of repetitions:
+```sh
+for C in $(seq 1 1 5000) ; do curl -vk $(hostname -i):8080/example &>/dev/null ; done
+```
+then measure the logs
+```sh
+du -h logs/
+```
+```sh
+640K    logs/
+```
+it appears that `totalSizeCap` setting in `logback.xml` is notentirely  honored, but the numbers are not exacly:
+
+| totalSizeCap | `log` dir size  |
+|-------------------------|--------------|
+| 10KB         | 172K        |
+| 40KB         | 640K      |
+
+  
+ 
+
+Note: switching the __logback-clasic__ version to the `1.3.0-alpha5` leads to runtime errors.
+ 
 ### See Also
 
 
@@ -191,7 +219,7 @@ from the actual directory name.
   * https://www.baeldung.com/java-logging-rolling-file-appenders
   * [JSON logging](https://mathieularose.com/logback-json/)
   * [hints](https://stackoverflow.com/questions/40576959/logback-jsonlayout-printing-all-logs-on-the-same-line) on parsing JSON logs from the log via `jq`
-
+  * https://www.programmersought.com/article/95552030197/
 
 ### Author
 
