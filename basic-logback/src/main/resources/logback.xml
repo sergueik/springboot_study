@@ -39,8 +39,9 @@
       <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
     </encoder>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <!-- cannot use date %d{yyyy-MM-dd} in the filename with this policy ? -->
       <fileNamePattern>${DIR}/${FILENAME}.%i.log.gz</fileNamePattern>
-      <minIndex>1</minIndex>
+       <minIndex>1</minIndex>
       <maxIndex>100</maxIndex>
     </rollingPolicy>
 
