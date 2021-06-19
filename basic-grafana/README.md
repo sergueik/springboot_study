@@ -13,12 +13,21 @@ installed
 
 ```sh
 IMAGE=basic-grafana
+GRAFANA_VERSION=5.0.4
+wget https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-${GRAFANA_VERSION}.linux-x64.tar.gz .
 docker build -f Dockerfile -t $IMAGE .
 ```
 followed by
 ```sh
-docker run -d -p 3000:3000 $IMAGE
+docker run --name $IMAGE -d -p 3000:3000 $IMAGE
 docker logs $IMAGE
+```
+Open the dashboard in the browser and add datasources (still need to build sample backend first)
+
+### Troublshooting
+
+```sh
+docker run --entrypoint sh -p 3000:3000 -it $IMAGE
 ```
 ### Cleanup
 

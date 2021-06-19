@@ -11,6 +11,5 @@ if [ ! -z ${GF_INSTALL_PLUGINS} ]; then
 fi
 
 chown -R grafana:grafana /grafana
-exec su-exec grafana /usr/bin/grafana-server --homepath=/grafana restart
-
+# exec su-exec grafana /usr/bin/grafana-server --homepath=/grafana restart
 exec su-exec grafana /usr/bin/grafana-server --homepath=/grafana
