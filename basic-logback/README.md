@@ -199,20 +199,17 @@ du -h logs/
 ```sh
 640K    logs/
 ```
-it appears that `totalSizeCap` setting in `logback.xml` is notentirely  honored, but the numbers are not exacly:
+it appears that `totalSizeCap` setting in `logback.xml` is honored, but the numbers are not considered exactly:
 
 | totalSizeCap | `log` dir size  |
 |-------------------------|--------------|
 | 10KB         | 172K        |
 | 40KB         | 640K      |
 
-  
- 
-
 Note: switching the __logback-clasic__ version to the `1.3.0-alpha5` leads to runtime errors.
- 
+the workaround [solution](https://tridion.stackexchange.com/questions/253/logback-xml-limit-the-size-of-files) does not allow specifying the date `%d{yyyy-MM-dd}`
+to be part of the filename, only allows the counter `%i`.
 ### See Also
-
 
   * https://www.codingame.com/playgrounds/4497/configuring-logback-with-spring-boot
   * https://stackoverflow.com/questions/2602415/rolling-logback-logs-on-filesize-and-time
@@ -220,6 +217,8 @@ Note: switching the __logback-clasic__ version to the `1.3.0-alpha5` leads to ru
   * [JSON logging](https://mathieularose.com/logback-json/)
   * [hints](https://stackoverflow.com/questions/40576959/logback-jsonlayout-printing-all-logs-on-the-same-line) on parsing JSON logs from the log via `jq`
   * https://www.programmersought.com/article/95552030197/
+  * https://tridion.stackexchange.com/questions/253/logback-xml-limit-the-size-of-files 
+  * another combination of policies [example](https://stackify.com/logging-logback/) (non-working)
 
 ### Author
 
