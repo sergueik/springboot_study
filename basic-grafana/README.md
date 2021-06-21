@@ -7,14 +7,20 @@ base image with only JSON Datasource plugins
  * [simple-json](https://grafana.com/grafana/plugins/grafana-simple-json-datasource/) 
  * [simpod-json-datasource](https://grafana.com/grafana/plugins/simpod-json-datasource/)
  
-installed
+installed. 
+
+Note: the release __7.3.0__ is possible to installl, but the JSON datasources do not show in the UI.
+
 
 ### Testing
-
+* optionally pre-download grafana package (it seems to be ignored by Docker `ADD` instaruction)
+```sh
+GRAFANA_VERSION=7.3.0
+wget https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz .
+```
+* build the image
 ```sh
 IMAGE=basic-grafana
-GRAFANA_VERSION=5.0.4
-wget https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-${GRAFANA_VERSION}.linux-x64.tar.gz .
 docker build -f Dockerfile -t $IMAGE .
 ```
 followed by
@@ -40,9 +46,9 @@ docker image rm $IMAGE
 ### DataSource
 
 to support Grafana's simpleJson plugin, the back-end WebAPI implements 4 routes:
-  *  `/`: Returni HTTP 200, used for healthcheck
-  *  `/search`: Return all optional indicators
-  *  `/query`: Returns the time series points for specific indicator
+  *  `/`: return HTTP 200, used for healthcheck
+  *  `/search`: return all optional indicators
+  *  `/query`: return the time series points for specific indicator
   *  `/annotations`: return annotations
 
 ### See Also
