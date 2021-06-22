@@ -1,12 +1,12 @@
 FROM frolvlad/alpine-glibc:alpine-3.9_glibc-2.29
 ENV TIMEZONE US/New York
 
-ENV GRAFANA_VERSION 7.3.0
+ENV GRAFANA_VERSION 7.5.0
 
-# NOTE: use "," ase separator
-ENV GF_INSTALL_PLUGINS="simpod-json-datasource,grafana-simple-json-datasource"
+# NOTE: use "," as separator when installing mutple plugins
+ENV GF_INSTALL_PLUGINS="grafana-simple-json-datasource"
 
-RUN apk add --no-cache su-exec ca-certificates openssl
+RUN apk add --no-cache su-exec ca-certificates openssl curl
 RUN apk add --no-cache --virtual .build-deps fontconfig
 
 WORKDIR /scripts

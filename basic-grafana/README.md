@@ -1,21 +1,18 @@
 ### Info
 
-An __Grafana 5.0.4__  container based on [container-examples](https://github.com/container-examples/alpine-grafana) repository,
+An __7.5.0__ container based on [container-examples](https://github.com/container-examples/alpine-grafana) repository,
 switched to available [alpine 3.9 Docker image with glibc](https://hub.docker.com/r/frolvlad/alpine-glibc/)
 base image with only JSON Datasource plugins 
 
  * [simple-json](https://grafana.com/grafana/plugins/grafana-simple-json-datasource/) 
  * [simpod-json-datasource](https://grafana.com/grafana/plugins/simpod-json-datasource/)
  
-installed. 
-
-Note: the release __7.3.0__ is possible to installl, but the JSON datasources do not show in the UI.
-
+installed and a fake datarource with a trivial timeseries from [Jonnymcc/grafana-simplejson-datasource-example](https://github.com/Jonnymcc/grafana-simplejson-datasource-example/)
 
 ### Testing
-* optionally pre-download grafana package (it seems to be ignored by Docker `ADD` instaruction)
+* optionally pre-download grafana package (it seems to be ignored by Docker `ADD` instruction)
 ```sh
-GRAFANA_VERSION=7.3.0
+GRAFANA_VERSION=7.5.0
 wget https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz .
 ```
 * build the image
@@ -28,8 +25,36 @@ followed by
 docker run --name $IMAGE -d -p 3000:3000 $IMAGE
 docker logs $IMAGE
 ```
-Open the dashboard in the browser and add datasources (still need to build sample backend first)
 
+* run the `index.py` as flask application in tbe foreground on a separate terminal
+*  find the host ip address of `docker0` device to [use docker host from inside the container](https://stackoverflow.com/questions/31324981/how-to-access-host-port-from-docker-container):
+```sh
+ip address show docker0
+```
+*  confirm that the data source is OK:
+```sh
+docker exec -it $IMAGE  curl -XGET http://172.17.0.1:5000/
+```
+```sh
+OK
+```
+* add datasource in the browser and configure __Simple JSON__ datasource to use that url `http://172.17.0.1:5000`
+
+![datasource](https://github.com/sergueik/springboot_study/blob/master/basic-grafana/screenshots/capture_datasource.png)
+
+After clicking __Save & Test__ it will respond with __Data source is working__
+
+* add dashboard panel with this data source. 
+
+![dashboard](https://github.com/sergueik/springboot_study/blob/master/basic-grafana/screenshots/capture_dashbpoard.png)
+
+Of course it will be fake: no matter the time interval it will alwats diplay a straight line
+the query detauls will be logged in the flask application console:
+```sh
+172.17.0.2 - - [22/Jun/2021 02:45:25] "POST /query HTTP/1.1" 200 -
+/query:
+"{u'startTime': 1624322725047, u'rangeRaw': {u'to': u'now', u'from': u'now-6h'}, u'app': u'dashboard', u'interval': u'20s', u'scopedVars': {u'__interval': {u'text': u'20s', u'value': u'20s'}, u'__interval_ms': {u'text': u'20000', u'value': 20000}}, u'range': {u'to': u'2021-06-22T00:45:25.047Z', u'from': u'2021-06-21T18:45:25.046Z', u'raw': {u'to': u'now', u'from': u'now-6h'}}, u'timeInfo': u'', u'requestId': u'Q101', u'panelId': 23763571993, u'dashboardId': None, u'timezone': u'browser', u'adhocFilters': [], u'targets': [{u'type': u'timeserie', u'target': u'my_series', u'refId': u'A'}], u'maxDataPoints': 916, u'intervalMs': 20000}"
+```
 ### Troublshooting
 
 ```sh
