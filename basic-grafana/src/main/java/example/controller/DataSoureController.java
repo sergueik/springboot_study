@@ -1,22 +1,21 @@
 package example.controller;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Level;
-
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,91 +23,106 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import example.service.ExampleService;
-import example.service.ExampleService;
 
 @RestController
 @RequestMapping("/")
 public class DataSoureController {
 
+	private final static Long high = 42L;
+	private final static Long low = 26L;
+
 	// @Autowired
 	private ExampleService service;
 
+	// for mocking
 	public DataSoureController(ExampleService data) {
 		service = data;
 	}
 
-	private static final Logger logger = LogManager
-			.getLogger(DataSoureController.class);
+	private static final Logger logger = LogManager.getLogger(DataSoureController.class);
 
-	@RequestMapping(value = "/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
-	public Map<String, Object> ReturnTest(HttpServletResponse response) {
-		logger.info("g....../");
-		response.setHeader("Access-Control-Allow-Headers", "accept, content-type");
-		response.setHeader("Access-Control-Allow-Methods", "POST");
-		response.setHeader("Access-Control-Allow-Origin", "*");
+	public ResponseEntity<Object> heathcheck() {
+		logger.info("processing GET /");
 
-		Map<String, Object> map = new HashMap<>();
-		map.put("result", "200 ok");
-		return map;
+		return ResponseEntity.status(HttpStatus.OK).header("Access-Control-Allow-Headers", "accept, content-type")
+				.header("Access-Control-Allow-Methods", "POST").header("Access-Control-Allow-Origin", "*")
+				.contentType(MediaType.TEXT_PLAIN).body(null);
 	}
 
 	@RequestMapping(value = "/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public List<String> Search(HttpServletResponse response) {
-		logger.info("g....../search");
+		logger.info("processing POST /search");
 		response.setHeader("Access-Control-Allow-Headers", "accept, content-type");
 		response.setHeader("Access-Control-Allow-Methods", "POST");
 		response.setHeader("Access-Control-Allow-Origin", "*");
 
 		List<String> result = new ArrayList<String>();
-		result.add("DATA");
+		result.add("data series");
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/query", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public List Query(@RequestBody Map<String, Object> params,
-			HttpServletResponse response) {
-		logger.info("g....../query");
-		@SuppressWarnings("unchecked")
-		List<Map<String, String>> targetList = (List<Map<String, String>>) params
-				.get("targets");
-		List<Map<String, Object>> result = new ArrayList<>();
-		for (Map<String, String> targetMap : targetList) {
-			String target = (String) targetMap.get("target");
-			@SuppressWarnings("unchecked")
-			Map<String, Object> scopedVars = (Map<String, Object>) params
-					.get("scopedVars");
-			@SuppressWarnings("unchecked")
-			Map<String, String> IP = (Map<String, String>) scopedVars.get("IP");
-			String nodeIP = (String) IP.get("text");
-			switch (target) {
+	public ResponseEntity<List<Map<String, Object>>> Query(@RequestBody Map<String, Object> params) {
+		logger.info("processing POST /query");
+		List<Map<String, String>> targets = (List<Map<String, String>>) params.get("targets");
 
-			case "DATA":
-				result.add(service.getDataMap(nodeIP));
+		Map<String, String> range = (Map<String, String>) params.get("range");
+		String from = range.get("from");
+		String to = range.get("to");
+		Long fromEpochMillisec = 1000 * Instant.parse(from).getEpochSecond();
+		Long toEpochMillisecond = 1000 * Instant.parse(to).getEpochSecond();
+		List<Map<String, Object>> result = new ArrayList<>();
+		for (Map<String, String> targetMap : targets) {
+			String target = (String) targetMap.get("target");
+			Map<String, Object> resultRow = new HashMap<>();
+			List<Long> datapoint1 = new ArrayList<Long>();
+			datapoint1.add(high);
+			datapoint1.add(fromEpochMillisec);
+			List<Long> datapoint2 = new ArrayList<Long>();
+			datapoint2.add(low);
+			datapoint2.add(toEpochMillisecond);
+
+			List<List<Long>> datapoints = new ArrayList<>();
+			datapoints.add(datapoint1);
+			datapoints.add(datapoint2);
+			resultRow.put("datapoints", datapoints);
+
+			resultRow.put("target", target);
+			switch (target) {
+			case "data series":
+				result.add(resultRow);
 				break;
 			default:
 			}
 		}
-		response.setHeader("Access-Control-Allow-Headers", "accept, content-type");
-		response.setHeader("Access-Control-Allow-Methods", "POST");
-		response.setHeader("Access-Control-Allow-Origin", "*");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Access-Control-Allow-Headers", "accept, content-type");
+		headers.add("Access-Control-Allow-Methods", "POST");
+		headers.add("Access-Control-Allow-Origin", "*");
 		Collections.sort(result, (o1, o2) -> {
 			String name1 = String.valueOf(o1.get("target").toString());
 			String name2 = String.valueOf(o2.get("target").toString());
 			return name1.compareTo(name2);
 		});
-		return result;
+
+		return ResponseEntity.status(HttpStatus.OK).headers(headers).contentType(MediaType.TEXT_PLAIN).body(result);
+
 	}
 
-	@RequestMapping(value = "/annotations", method = RequestMethod.POST)
+	@RequestMapping(value = "/annotations", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public Map<String, Object> Annotations() {
-		logger.info("g....../annotations");
-		Map<String, Object> map = new HashMap<>();
-		map.put("result", "200 ok");
-		return map;
-	}
+	public ResponseEntity<Map<String, String>> annotations() {
+		logger.info("processing POST /annotations");
+		Map<String, String> data = new HashMap<>();
+		data.put("result", "OK");
 
+		return ResponseEntity.status(HttpStatus.OK).header("Access-Control-Allow-Headers", "accept, content-type")
+				.header("Access-Control-Allow-Methods", "POST").header("Access-Control-Allow-Origin", "*")
+				.contentType(MediaType.APPLICATION_JSON_UTF8).body(data);
+	}
 }

@@ -7,7 +7,8 @@ base image with only JSON Datasource plugins
  * [simple-json](https://grafana.com/grafana/plugins/grafana-simple-json-datasource/) 
  * [simpod-json-datasource](https://grafana.com/grafana/plugins/simpod-json-datasource/)
  
-installed and a fake datarource with a trivial timeseries from [Jonnymcc/grafana-simplejson-datasource-example](https://github.com/Jonnymcc/grafana-simplejson-datasource-example/)
+installed and a fake datarource with a trivial timeseries from [Jonnymcc/grafana-simplejson-datasource-example](https://github.com/Jonnymcc/grafana-simplejson-datasource-example/) and the springboot
+application with similar functionality
 
 ### Testing
 * optionally pre-download grafana package (it seems to be ignored by Docker `ADD` instruction)
@@ -27,6 +28,13 @@ docker logs $IMAGE
 ```
 
 * run the `index.py` as flask application in tbe foreground on a separate terminal
+```sh
+python index.py
+```
+alternatively run the supplied java appp:
+```sh
+mvn spring-boot:run
+```
 *  find the host ip address of `docker0` device to [use docker host from inside the container](https://stackoverflow.com/questions/31324981/how-to-access-host-port-from-docker-container):
 ```sh
 ip address show docker0
@@ -87,8 +95,10 @@ to support Grafana's simpleJson plugin, the back-end WebAPI implements 4 routes:
   * https://github.com/devcon5io/grafana-json-datasource
   * https://docs.docker.com/compose/networking/
   * https://github.com/signaflo/java-timeseries
+  * https://github.com/chrandgull/granfana-rest-demo
   * https://github.com/TKnudsen/timeSeries
   * https://github.com/tschm/ts-timeseries
+  * https://github.com/IBMStreams/samples
 
 ### Author
 
