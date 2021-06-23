@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,7 +47,6 @@ public class DataSoureController {
 	@ResponseBody
 	public ResponseEntity<Object> heathcheck() {
 		logger.info("processing GET /");
-
 		return ResponseEntity.status(HttpStatus.OK).header("Access-Control-Allow-Headers", "accept, content-type")
 				.header("Access-Control-Allow-Methods", "POST").header("Access-Control-Allow-Origin", "*")
 				.contentType(MediaType.TEXT_PLAIN).body(null);
@@ -67,8 +68,10 @@ public class DataSoureController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/query", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<List<Map<String, Object>>> Query(@RequestBody Map<String, Object> params) {
-		logger.info("processing POST /query");
+	public ResponseEntity<List<Map<String, Object>>> Query(@RequestBody Map<String, Object> params)
+			throws JSONException {
+
+		logger.info("processing POST /query\n" + new JSONObject(params).toString(4));
 		List<Map<String, String>> targets = (List<Map<String, String>>) params.get("targets");
 
 		Map<String, String> range = (Map<String, String>) params.get("range");

@@ -23,7 +23,7 @@ docker build -f Dockerfile -t $IMAGE .
 ```
 followed by
 ```sh
-docker run --name $IMAGE -d -p 3000:3000 $IMAGE
+docker container run --name $IMAGE -d -p 3000:3000 $IMAGE
 docker logs $IMAGE
 ```
 
@@ -57,11 +57,52 @@ After clicking __Save & Test__ it will respond with __Data source is working__
 ![dashboard](https://github.com/sergueik/springboot_study/blob/master/basic-grafana/screenshots/capture_dashbpoard.png)
 
 Of course it will be fake: no matter the time interval it will alwats diplay a straight line
-the query detauls will be logged in the flask application console:
+the query details will be logged in the flask application console (pretty-printed):
 ```sh
 172.17.0.2 - - [22/Jun/2021 02:45:25] "POST /query HTTP/1.1" 200 -
 /query:
-"{u'startTime': 1624322725047, u'rangeRaw': {u'to': u'now', u'from': u'now-6h'}, u'app': u'dashboard', u'interval': u'20s', u'scopedVars': {u'__interval': {u'text': u'20s', u'value': u'20s'}, u'__interval_ms': {u'text': u'20000', u'value': 20000}}, u'range': {u'to': u'2021-06-22T00:45:25.047Z', u'from': u'2021-06-21T18:45:25.046Z', u'raw': {u'to': u'now', u'from': u'now-6h'}}, u'timeInfo': u'', u'requestId': u'Q101', u'panelId': 23763571993, u'dashboardId': None, u'timezone': u'browser', u'adhocFilters': [], u'targets': [{u'type': u'timeserie', u'target': u'my_series', u'refId': u'A'}], u'maxDataPoints': 916, u'intervalMs': 20000}"
+{
+  "startTime": 1624322725047,
+  "rangeRaw": {
+    "to": "now",
+    "from": "now-6h"
+  },
+  "app": "dashboard",
+  "interval": "20s",
+  "scopedVars": {
+    "__interval": {
+      "text": "20s",
+      "value": "20s"
+    },
+    "__interval_ms": {
+      "text": "20000",
+      "value": 20000
+    }
+  },
+  "range": {
+    "to": "2021-06-22T00:45:25.047Z",
+    "from": "2021-06-21T18:45:25.046Z",
+    "raw": {
+      "to": "now",
+      "from": "now-6h"
+    }
+  },
+  "timeInfo": "",
+  "requestId": "Q101",
+  "panelId": 23763571993,
+  "dashboardId": null,
+  "timezone": "browser",
+  "adhocFilters": [],
+  "targets": [
+    {
+      "type": "timeserie",
+      "target": "my_series",
+      "refId": "A"
+    }
+  ],
+  "maxDataPoints": 916,
+  "intervalMs": 20000
+}
 ```
 ### Troublshooting
 
