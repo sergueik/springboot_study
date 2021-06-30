@@ -3,11 +3,21 @@
 logging:
   level:
     org.springframework: ERROR
-    com.mkyong: DEBUG
-
+    example: DEBUG
+spring:
+  profiles: 
+    active: development
 # access log:
 tomcat:
   accesslog:
     directory: ${BASEDIR}/logs
     enabled: true
     pattern: common
+---
+spring:
+  profiles: development
+suffix: dev
+---
+spring:
+  profiles: test
+suffix: test

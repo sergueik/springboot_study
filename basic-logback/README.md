@@ -209,6 +209,68 @@ it appears that `totalSizeCap` setting in `logback.xml` is honored, but the numb
 Note: switching the __logback-clasic__ version to the `1.3.0-alpha5` leads to runtime errors.
 the workaround [solution](https://tridion.stackexchange.com/questions/253/logback-xml-limit-the-size-of-files) does not allow specifying the date `%d{yyyy-MM-dd}`
 to be part of the filename, only allows the counter `%i`.
+### Note
+Specifying `triggeringPolicy` element alongside with `rollingPolicy` "SizeAndTimeBasedRollingPolicy" leads to runtime Logback configuration error and no logs created in log directory at all
+
+
+### Debugging Logback
+* leve just one `appender` in `logback.xml`
+*  run app with logbck debuging flag
+```sh
+mvn -Dlogback.debug=true spring-boot:run
+```
+
+### Processing environments
+
+the settings made in `application.yml` are not visilbe directly in `logback.xml` e.g.
+in `application.yml`
+```yaml
+spring:
+  profiles:
+    active: development
+---
+spring:
+  profiles: development
+suffix: dev
+```
+and in `logback.xml`
+```xml
+  <springProfile name="development">
+    <property name="SUFFIX" value="${suffix}"/>
+  </springProfile>
+  <property name="FILENAME" value="App-${SUFFIX}"/>
+
+```
+then the log names will not have expected suffix:
+```sh
+ls  logs/
+App-SUFFIX_IS_UNDEFINED.2021-06-29.0.log.gz  App-SUFFIX_IS_UNDEFINED.log
+```
+
+
+the solution is to make definition of `SUFFIX` in `logback.xml` and only expose the choice of the `profile`:
+```xml
+
+  <springProfile name="development">
+    <property name="SUFFIX" value="dev"/>
+  </springProfile>
+```
+
+this time the spring log will show
+```txt
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v1.5.4.RELEASE)
+
+23:12:56,589 |-INFO in c.q.l.co.rolling.helper.RenameUtil - Renaming file [...\dummy\logs\App-dev.log] to [...\dummy\logs\App-dev.2021-06-29.0.log46967852620284.tmp]
+23:12:56,597 |-INFO in ch.qos.logback.core.rolling.helper.Compressor - GZ compressing [...\dummy\logs\App-dev.2021-06-29.0.log46967852620284.tmp] as [...\dummy\logs\App-dev.2021-06-29.0.log.gz]
+```
+and the filenames in the `logs` directory will be like intended.
 ### See Also
 
   * https://www.codingame.com/playgrounds/4497/configuring-logback-with-spring-boot
@@ -217,9 +279,16 @@ to be part of the filename, only allows the counter `%i`.
   * [JSON logging](https://mathieularose.com/logback-json/)
   * [hints](https://stackoverflow.com/questions/40576959/logback-jsonlayout-printing-all-logs-on-the-same-line) on parsing JSON logs from the log via `jq`
   * https://www.programmersought.com/article/95552030197/
-  * https://tridion.stackexchange.com/questions/253/logback-xml-limit-the-size-of-files 
+  * https://tridion.stackexchange.com/questions/253/logback-xml-limit-the-size-of-files
   * another combination of policies [example](https://stackify.com/logging-logback/) (non-working)
+  * few more [examples](https://mkyong.com/logging/logback-xml-example/) including obsolete but stated to work one with `ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP`
 
+  * XML versus properties file - many places. also the consensus is the default file appender is size based (10MB) and cannot be overriden in application.properties alone
+  * https://howtodoinjava.com/spring-boot2/logging/profile-specific-logging/
+
+  * https://lankydan.dev/2019/01/09/configuring-logback-with-spring-boot
+  * https://stackoverflow.com/questions/29918323/how-to-configure-rolling-file-appender-within-spring-boots-application-yml
+  * https://mkyong.com/spring-boot/spring-boot-profile-based-properties-and-yaml-example/
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
