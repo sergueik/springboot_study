@@ -9,15 +9,18 @@
   <springProfile name="test">
     <property name="SUFFIX" value="test"/>
   </springProfile>
+  <!-- NOTE: cannot redefine property -->
+  <springProperty name="LOGGING_SUFFIX" source="logging.suffix"/>
+  <!-- follow the propery file naming nconvention -->
   <variable name="BASEDIR" value="${BASEDIR:-.}"/>
   <!-- https://www.cloudesire.com/configure-logback-log-level-via-environment-variables/ -->
-  <property name="FILENAME" value="App-${SUFFIX}"/>
+  <property name="FILENAME" value="App-SUFFIX-${SUFFIX}"/>
   <property name="DIR" value="${BASEDIR}/logs"/>
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <!-- can use ${APP_HOME} -->
     <file>${DIR}/${FILENAME}.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>${DIR}/${FILENAME}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <fileNamePattern>${DIR}/${FILENAME}-LOGGING_SUFFIX-${LOGGING_SUFFIX}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
       <maxFileSize>3KB</maxFileSize>
       <totalSizeCap>10KB</totalSizeCap>
       <maxHistory>1</maxHistory>

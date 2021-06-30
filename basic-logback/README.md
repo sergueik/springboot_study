@@ -21,7 +21,7 @@ java -Dspring.profiles.active=development -jar target/example.logback.jar
 ```
 and in separate console
 ```sh
-for CNT in $(seq 1 1 10) ; do curl -vk 127.0.0.1:8080/example ; done
+for CNT in $(seq 1 1 10) ; do wget --quiet -O /dev/null 127.0.0.1:8080/example ; done
 tail logs/dummy/App.log
 ```
 use `$(hostname -i)` instead of `localhost` when neededed
