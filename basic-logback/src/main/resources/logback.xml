@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds">
+  <include resource="/org/springframework/boot/logging/logback/base.xml"/>
+  <!-- this is to mask the problem with missing properties: SUFFIX_IS_UNDEFINED -->
+  <property name="SUFFIX" value="default"/>
   <springProfile name="development">
     <property name="SUFFIX" value="dev"/>
+  </springProfile>
+  <springProfile name="test">
+    <property name="SUFFIX" value="test"/>
   </springProfile>
   <variable name="BASEDIR" value="${BASEDIR:-.}"/>
   <!-- https://www.cloudesire.com/configure-logback-log-level-via-environment-variables/ -->

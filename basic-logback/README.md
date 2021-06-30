@@ -11,12 +11,21 @@ mkdir dummy
 BASEDIR=$(pwd)/dummy
 java -jar target/example.logback.jar
 ```
+or
+```sh
+mvn -Dspring.profiles.active=test spring-boot:ru
+```
+or even
+```sh
+java -Dspring.profiles.active=development -jar target/example.logback.jar
+```
 and in separate console
 ```sh
-for C in $(seq 1 1 10) ; do curl -vk $(hostname -i):8080/example &>/dev/null ; done
+for CNT in $(seq 1 1 10) ; do curl -vk 127.0.0.1:8080/example ; done
 tail logs/dummy/App.log
 ```
-or
+use `$(hostname -i)` instead of `localhost` when neededed
+or (windows)
 ```cmd
 mvn clean package
 mkdir dummy
@@ -214,8 +223,8 @@ Specifying `triggeringPolicy` element alongside with `rollingPolicy` "SizeAndTim
 
 
 ### Debugging Logback
-* leve just one `appender` in `logback.xml`
-*  run app with logbck debuging flag
+* leave just one `appender` in `logback.xml`
+*  run app with logback debuging flag
 ```sh
 mvn -Dlogback.debug=true spring-boot:run
 ```
@@ -271,6 +280,11 @@ this time the spring log will show
 23:12:56,597 |-INFO in ch.qos.logback.core.rolling.helper.Compressor - GZ compressing [...\dummy\logs\App-dev.2021-06-29.0.log46967852620284.tmp] as [...\dummy\logs\App-dev.2021-06-29.0.log.gz]
 ```
 and the filenames in the `logs` directory will be like intended.
+### TODO
+the logback configuration turns out to be somewhat fragile. Small tweaks to `logback.xml` and `application.yaml` lead logging to stopped and/or properties in the log filename to be filed with `UNDEFINED`:
+```sh
+
+```
 ### See Also
 
   * https://www.codingame.com/playgrounds/4497/configuring-logback-with-spring-boot

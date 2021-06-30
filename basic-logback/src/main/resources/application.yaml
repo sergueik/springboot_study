@@ -17,7 +17,11 @@ tomcat:
 spring:
   profiles: development
 suffix: dev
+logging:
+  suffix: dev
 ---
 spring:
   profiles: test
 suffix: test
+logging:
+  suffix: test
