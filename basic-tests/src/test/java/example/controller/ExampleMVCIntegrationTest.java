@@ -54,7 +54,7 @@ public class ExampleMVCIntegrationTest {
 	private ExampleService mockService;
 
 	private final static String route = "/basic";
-	// NOTE: execrising property file override
+	// NOTE: exercising property file override
 	private final static String body = "Hello test data";
 	private final static String charset = "UTF-8";
 	private final static Data data = new Data("data");

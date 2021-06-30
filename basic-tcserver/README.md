@@ -10,26 +10,32 @@ Origin: [Centos7/JDK8 tcserver 3.5](https://github.com/rbosse/pivotal-tc-server)
 export IMAGE_NAME=tcserver-orig
 export NAME='tcserver-container'
 docker build -t $IMAGE_NAME -f Dockerfile.orig .
-docker run -d --name $NAME -t $IMAGE_NAME
+docker run -d --name $NAME -p 8080:8080 -p 8443:8443 -t $IMAGE_NAME
 docker logs $NAME
 ```
-The original image has some issues with launching `tc_server`...
+verify by running
+```sh
+curl -I http://localhost:8080/
+```
+### Custom Image
+
+at some time the original image had run into trouble launching `tc_server`
 
 * build image
 ```sh
 export IMAGE_NAME='tcserver-try2'
 docker build -t $IMAGE_NAME -f Dockerfile.centos7 .
-docker container ls -a | grep  $IMAGE_NAME | awk '{print $1}'  | xargs docker container rm
+docker container ls -a | grep  $IMAGE_NAME | awk '{print $1}' | xargs docker container rm
 ```
 ```sh
 docker run -d --name $NAME -t $IMAGE_NAME
 docker logs $NAME
 ```
-if it does not work, comment the
+if it does not work, comment the line
 ```sh
 CMD /web/tcserver/01/bin/tcruntime-ctl.sh start && tail -f /web/tcserver/01/logs/catalina.out
 ```
- line and launch the tc_server  interactively:
+and launch the tc_server  interactively:
 
 ```sh
 export NAME='tcserver-container'
@@ -66,8 +72,8 @@ docker container rm $NAME
 ```sh
 docker run --name $NAME -it -t $IMAGE_NAME
 ```
-work in the container to finishe the settup following the [guide](https://tcserver.docs.pivotal.io/4x/docs-tcserver/topics/install-getting-started.html)
-
+work in the container following the
+[guide](https://tcserver.docs.pivotal.io/4x/docs-tcserver/topics/install-getting-started.html)
 
 ```sh
 export APP_DIR='/opt/pivotal/tcserver'
@@ -75,10 +81,11 @@ export ROOT_DIR="$APP_DIR/instances"
 export SITE='demo-instance'
 mkdir -p $APP_DIR
 chdir $APP_DIR
-mv  /tcserver.tar.gz/pivotal-tc-server/* .
+mv /tcserver.tar.gz/pivotal-tc-server/* .
 export PATH=$PATH:$(pwd)/developer-4.1.5.RELEASE
 ```
-if there was interruption reausme as:
+to finish the setup.
+if there was interruption resume via:
 ```sh
 docker start $NAME
 docker exec -it $NAME sh
@@ -90,8 +97,8 @@ mkdir $ROOT_DIR/$SITE/webapps/dummy
 ```
 copy the jsp from the host:
 ```sh
-docker cp ../basic-jsp/src/main/webapp/index.jsp  $NAME:/opt/pivotal/tcserver/instances/demo-instance/webapps/dummy
-docker cp ../basic-jsp/src/main/webapp/application.properties  $NAME:/opt/pivotal/tcserver/instances/demo-instance/conf
+docker cp ../basic-jsp/src/main/webapp/index.jsp $NAME:/opt/pivotal/tcserver/instances/demo-instance/webapps/dummy
+docker cp ../basic-jsp/src/main/webapp/application.properties $NAME:/opt/pivotal/tcserver/instances/demo-instance/conf
 ```
 in the container
 ```sh
@@ -131,3 +138,4 @@ the page shows the `pbkdf2://` prefixed data instead of the real password.
   * https://dzone.com/articles/running-spring-boot-in-a-docker-container
   * https://phoenixnap.com/kb/install-java-on-centos
   * https://tcserver.docs.pivotal.io/4x/docs-tcserver/topics/intro-getting-started.html
+

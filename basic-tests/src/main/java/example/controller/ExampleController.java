@@ -1,5 +1,8 @@
 package example.controller;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Copyright 2021 Serguei Kouzmine
  */
@@ -51,6 +54,19 @@ public class ExampleController {
 
 	}
 
+	@RequestMapping(method = RequestMethod.POST, value = "/post/set", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Set<Data>> postSet(@RequestBody Set<String> inputs) {
+
+		Set<Data> result = new HashSet<>();
+		for (String input : inputs) {
+			@SuppressWarnings("unused")
+			Data data = new Data(input);
+			result.add(data);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(result);
+
+	}
+
 	// see also examples in
 	// https://www.programcreek.com/java-api-examples/?class=org.springframework.http.MediaType&method=APPLICATION_FORM_URLENCODED_VALUE
 	// https://www.baeldung.com/spring-request-method-not-supported-405
@@ -68,8 +84,7 @@ public class ExampleController {
 			// see also:
 			// https://stackoverflow.com/questions/16232833/how-to-respond-with-http-400-error-in-a-spring-mvc-responsebody-method-returnin
 		}
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(service.handleData(new Data(param.getFirst("name"))));
+		return ResponseEntity.status(HttpStatus.OK).body(service.handleData(new Data(param.getFirst("name"))));
 	}
 
 	public static class Data {

@@ -16,10 +16,11 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.8</java.version>
-    <slf4j.version>1.7.30</slf4j.version>
-    <log4j-core.version>2.13.2</log4j-core.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
+    <java.version>1.8</java.version>
+    <json.version>20170516</json.version>
+    <log4j-core.version>2.13.2</log4j-core.version>
+    <slf4j.version>1.7.30</slf4j.version>
   </properties>
   <dependencies>
     <dependency>
@@ -49,6 +50,11 @@
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-web</artifactId>
       <version>${log4j-core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>${json.version}</version>
     </dependency>
   </dependencies>
   <build>
