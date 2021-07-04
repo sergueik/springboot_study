@@ -128,6 +128,19 @@ curl http://$(hostname -i):8080/cgi-bin/list.cgi
    ]
 }
 ```
+and use `form.cgi` to post the data:
+```sh
+curl -X POST -d 'a=b&c=d' http://$(hostname -i):8080/cgi-bin/form.cgi
+```
+this will echo data back as a JSON
+```sh
+Content-Type: application/json
+
+{
+   "c" : "d",
+   "a" : "b"
+}
+```
 testing the page, console:
 ```sh
 curl http://$(hostname -i):8080/inventory.html
