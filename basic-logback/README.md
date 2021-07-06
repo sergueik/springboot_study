@@ -1,4 +1,4 @@
-	### Info
+### Info
 
 This project contains [minimal demo code of logback example](http://logback.qos.ch/manual/appenders.html) converted to a regular springboot application logging initialization and operation
 
@@ -13,11 +13,12 @@ java -jar target/example.logback.jar
 ```
 or
 ```sh
-mvn -Dspring.profiles.active=test spring-boot:ru
+mvn -Dspring.profiles.active=test spring-boot:run
 ```
 or even
 ```sh
-java -Dspring.profiles.active=development -jar target/example.logback.jar
+mvn package
+java -Dspring.profiles.active=development -Dlogback.debug=true -jar target/example.logback.jar
 ```
 and in separate console
 ```sh
@@ -285,6 +286,28 @@ the logback configuration turns out to be somewhat fragile. Small tweaks to `log
 ```sh
 
 ```
+NOTE:
+using "phantom include"
+```xml/UND
+<include resource="org/springframework/boot/logging/logback/base.xml">
+```
+instead of
+```xml
+<include resource="org/springframework/boot/logging/logback/defaults.xml">
+```
+or adding the
+```xml
+ <include resource="/org/springframework/boot/logging/logback/file-appender.xml"/>
+```
+in `logback.xml` may cause __logback__ to instantiate an additional `FILE` logger with its own default settings for file (values like `LOG_FILE_IS_UNDEFINED` and`/tmp/springboot.log`  are possible) and rotation policy (10Mb in size)
+```sh
+72c4 - URL [jar:file:/home/sergueik/src/springboot_study/basic-logback/target/example.logback.jar!/BOOT-INF/lib/spring-boot-1.5.4.RELEASE.jar!/org/springframework/boot/logging/logback/file-appender.xml] is not of type file
+22:53:18,293 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [ch.qos.logback.core.rolling.RollingFileAppender]
+22:53:18,294 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [FILE]
+22:53:18,295 |-INFO in ch.qos.logback.core.joran.action.NestedComplexPropertyIA - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+22:53:18,298 |-INFO in ch.qos.logback.core.rolling.FixedWindowRollingPolicy@16b3fc9e - No compression will be used
+22:53:18,300 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[FILE] - Active log file name: LOG_FILE_IS_UNDEFINED
+```
 ### See Also
 
   * https://www.codingame.com/playgrounds/4497/configuring-logback-with-spring-boot
@@ -306,5 +329,3 @@ the logback configuration turns out to be somewhat fragile. Small tweaks to `log
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
-

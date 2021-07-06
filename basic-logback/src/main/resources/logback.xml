@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds">
-  <include resource="/org/springframework/boot/logging/logback/base.xml"/>
+  <include resource="/org/springframework/boot/logging/logback/defaults.xml"/>
+  <!-- NOTE: should be commented 
+  <include resource="/org/springframework/boot/logging/logback/file-appender.xml"/>
+-->
   <!-- this is to mask the problem with missing properties: SUFFIX_IS_UNDEFINED -->
   <property name="SUFFIX" value="default"/>
   <springProfile name="development">
