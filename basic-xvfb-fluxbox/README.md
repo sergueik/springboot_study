@@ -44,10 +44,39 @@ docker image rm $IMAGE_ID
 ```sh
 /home/$(whoami)/.local/share/remmina/1617557944381.remmina
 ```
+### Connecting from Remote Host
+
+To be able to connect remotely add the port argument. First check what port framebuffer listen to
+```sh
+docker exec -it $ID netstat -ant
+```
+```sh
+tcp        0      0 0.0.0.0:5900            0.0.0.0:*               LISTEN
+tcp        0      0 :::5900                 :::*                    LISTEN
+```
+then publish it
+```sh
+docker stop $ID
+docker run -p 5900:5900 -d $IMAGE_NAME
+```
+
+
+this will make it possible to connect into the container using any stock vnc client app, e.g. TightVNC Viewer on Windows machine.
+
+
+![example](https://github.com/sergueik/springboot_study/blob/master/basic-xvfb-fluxbox/screenshots/capture_tightvnc_viewer.png)
+
+### Note
+* if the xvbf session starts and closes immediately, may need to adjust color depth
+* the config file named like
+```sh
+/home/$(whoami)/.local/share/remmina/1617557944381.remmina
+```
 ### See Also
 
 * https://github.com/FreeRDP/Remmina/wiki/Remmina-Usage-FAQ
 * https://github.com/gros777/fluxbox
+* http://blog.fx.lv/2017/08/running-gui-apps-in-docker-containers-using-vnc/
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
