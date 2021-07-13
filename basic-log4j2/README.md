@@ -148,8 +148,40 @@ java -javaagent:elastic-apm-agent-1.24.0.jar -Delastic.apm.application_packages=
 ```sh
 2021-07-12 22:04:53,375 [elastic-apm-server-reporter] ERROR co.elastic.apm.agent.report.IntakeV2ReportingEventHandler - Failed to handle event of type JSON_WRITER with this error: Connection refused (Connection refused)
 2021-07-12 22:04:53,375 [elastic-apm-server-reporter] INFO  co.elastic.apm.agent.report.IntakeV2ReportingEventHandler - Backing off for 36 seconds (+/-10%)
-
 ```
+Alternatively
+Download specific ELK APM agent kjar version of the jar from `https://search.maven.org/artifact/co.elastic.apm/elastic-apm-agent/1.24.0/jar` interactively, download ready Virtual Box ELK image e.g. from [bitnami](https://bitnami.com/stack/elk/virtual-machine)
+and launch logstash following their [instructions](https://docs.bitnami.com/virtual-machine/apps/elk/get-started/get-started/)
+
+copy `elastic-apm-agent.jar`and `example.log4j2.jar` to the instance and run locally
+```sh
+java -javaagent:elastic-apm-agent-1.24.0.jar -Delastic.apm.server_urls=http://127.0.0.1:9200 -Delastic.apm.application_packages=example -Delastic.apm.enable_log_correlation=true -jar target/example.log4j2.jar
+```
+unfortunately after Spring application launches, and attempt to trigger logging is made, APM reports the following failure (formatted for better readability):
+```sh
+2021-07-13 03:47:53.424 [apm-reporter] INFO co.elastic.apm.report.IntakeV2ReportingEventHandler - Backing off for 0 seconds (±10%)
+2021-07-13 03:47:53.424 [apm-reporter] WARN co.elastic.apm.report.IntakeV2ReportingEventHandler - Server returned HTTP response code: 400 for URL: http://127.0.0.1:9200/intake/v2/events
+2021-07-13 03:47:53.434 [apm-reporter] WARN co.elastic.apm.report.IntakeV2ReportingEventHandler - 
+{
+  "error": {
+    "root_cause": [
+      {
+        "type": "mapper_parsing_exception",
+        "reason": "failed to parse"
+      }
+    ],
+    "type": "mapper_parsing_exception",
+    "reason": "failed to parse",
+    "caused_by": {
+      "type": "illegal_argument_exception",
+      "reason": "Malformed content, found extra data after parsing: START_OBJECT"
+    }
+  },
+  "status": 400
+}
+```
+and no logging occured (the APM appears to completely block the application logging).
+
 ### See Also
 
  * [JSON logging](https://www.baeldung.com/java-log-json-output)
@@ -160,6 +192,11 @@ java -javaagent:elastic-apm-agent-1.24.0.jar -Delastic.apm.application_packages=
  * some [intro](https://blog.frankel.ch/logging-additional-metadata/) to MDC in ELK context
  * https://slacker.ro/2020/09/02/monitoring-java-applications-with-elastic-getting-started-with-the-elastic-apm-java-agent/
  * https://levelup.gitconnected.com/how-to-integrate-elastic-apm-java-agent-with-spring-boot-7ce8388a206e
+ * https://github.com/gapperdan/hello-springboot-mdc
+ * https://github.com/TiantianUpup/springboot-log/tree/master/springboot-trace (somewhat more complex than one would expect?)
+ * https://github.com/VivyTeam/mdc-logger
+ * https://github.com/sonamsamdupkhangsar/mdc-webapp-example
+
 
 ### Author
 
