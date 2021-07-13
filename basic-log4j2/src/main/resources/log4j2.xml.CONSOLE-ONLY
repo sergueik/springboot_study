@@ -3,7 +3,7 @@
 <Configuration status="WARN" strict="true">
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
-	    <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %X{trace.id} [%t] - %-5p %msg%n"/>
+	    <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %X{trace.id} [%t] - %-5p %msg%n trace.id=%X{trace.id}"/>
     </Console>
   </Appenders>
   <Loggers>

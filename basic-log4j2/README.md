@@ -20,7 +20,7 @@ mvn spring-boot:run
 and check the messages in `App.log` and console:
 ```sh
 21:35:06.166 [main] INFO o.s.b.c.e.t.TomcatEmbeddedServletContainer - Tomcat st
-arted on port(s): 8080 (http)
+arted on port(s): 8085 (http)
 ```
 and
 ```sh
@@ -31,26 +31,26 @@ and
 in `App.log` only
 then
 ```sh
-for cnt in $(seq 0 1 3); do curl "http://localhost:8080/example?data='${cnt}+test'"; done
+for cnt in $(seq 0 1 3); do curl "http://localhost:8085/example?data='${cnt}+test'"; done
 ```
 and check the appearance of new messages in `App.log` and console:
 ```sh
-[http-nio-8080-exec-10] INFO 20ogger - raw data '0 test'
-[http-nio-8080-exec-10] INFO 20ogger - raw data '0 test'
-[http-nio-8080-exec-10] INFO 20ogger - handler received: '0 test'
-[http-nio-8080-exec-10] INFO 20ogger - handler received: '0 test'
-[http-nio-8080-exec-9] INFO 20ogger - raw data '1 test'
-[http-nio-8080-exec-9] INFO 20ogger - raw data '1 test'
-[http-nio-8080-exec-9] INFO 20ogger - handler received: '1 test'
-[http-nio-8080-exec-9] INFO 20ogger - handler received: '1 test'
-[http-nio-8080-exec-8] INFO 20ogger - raw data '2 test'
-[http-nio-8080-exec-8] INFO 20ogger - raw data '2 test'
-[http-nio-8080-exec-8] INFO 20ogger - handler received: '2 test'
-[http-nio-8080-exec-8] INFO 20ogger - handler received: '2 test'
-[http-nio-8080-exec-7] INFO 20ogger - raw data '3 test'
-[http-nio-8080-exec-7] INFO 20ogger - raw data '3 test'
-[http-nio-8080-exec-7] INFO 20ogger - handler received: '3 test'
-[http-nio-8080-exec-7] INFO 20ogger - handler received: '3 test'
+[http-nio-8085-exec-10] INFO 20ogger - raw data '0 test'
+[http-nio-8085-exec-10] INFO 20ogger - raw data '0 test'
+[http-nio-8085-exec-10] INFO 20ogger - handler received: '0 test'
+[http-nio-8085-exec-10] INFO 20ogger - handler received: '0 test'
+[http-nio-8085-exec-9] INFO 20ogger - raw data '1 test'
+[http-nio-8085-exec-9] INFO 20ogger - raw data '1 test'
+[http-nio-8085-exec-9] INFO 20ogger - handler received: '1 test'
+[http-nio-8085-exec-9] INFO 20ogger - handler received: '1 test'
+[http-nio-8085-exec-8] INFO 20ogger - raw data '2 test'
+[http-nio-8085-exec-8] INFO 20ogger - raw data '2 test'
+[http-nio-8085-exec-8] INFO 20ogger - handler received: '2 test'
+[http-nio-8085-exec-8] INFO 20ogger - handler received: '2 test'
+[http-nio-8085-exec-7] INFO 20ogger - raw data '3 test'
+[http-nio-8085-exec-7] INFO 20ogger - raw data '3 test'
+[http-nio-8085-exec-7] INFO 20ogger - handler received: '3 test'
+[http-nio-8085-exec-7] INFO 20ogger - handler received: '3 test'
 ```
 ### Alternative log4j2 Configurations
 
@@ -112,7 +112,7 @@ docker build -t $IMAGE -f Dockerfile .
 ```
 ```sh
 rm logs/*
-docker run -d -p 8080:8080 -v $(pwd)/logs:/work/logs:rw $IMAGE
+docker run -d -p 8085:8085 -v $(pwd)/logs:/work/logs:rw $IMAGE
 ```
 * inspect logs locally
 ```sh
@@ -140,28 +140,48 @@ fails with
 the input device is not a TTY
 ```
 ### DMC
+* download a prebuilt Virtual Box ELK image e.g. from [bitnami](https://bitnami.com/stack/elk/virtual-machine)
+and launch following their [instructions](https://docs.bitnami.com/virtual-machine/apps/elk/get-started/get-started/)
 
-NOTE: the APM agent *has* to be able co communicate with the server before it is operational:
-```sh
-java -javaagent:elastic-apm-agent-1.24.0.jar -Delastic.apm.application_packages=example -Delastic.apm.enable_log_correlation=true -jar target/example.log4j2.jar 
-```
-```sh
-2021-07-12 22:04:53,375 [elastic-apm-server-reporter] ERROR co.elastic.apm.agent.report.IntakeV2ReportingEventHandler - Failed to handle event of type JSON_WRITER with this error: Connection refused (Connection refused)
-2021-07-12 22:04:53,375 [elastic-apm-server-reporter] INFO  co.elastic.apm.agent.report.IntakeV2ReportingEventHandler - Backing off for 36 seconds (+/-10%)
-```
-Alternatively
-Download specific ELK APM agent kjar version of the jar from `https://search.maven.org/artifact/co.elastic.apm/elastic-apm-agent/1.24.0/jar` interactively, download ready Virtual Box ELK image e.g. from [bitnami](https://bitnami.com/stack/elk/virtual-machine)
-and launch logstash following their [instructions](https://docs.bitnami.com/virtual-machine/apps/elk/get-started/get-started/)
+* download specific ELK APM agent jar version from `https://search.maven.org/artifact/co.elastic.apm/elastic-apm-agent/1.24.0/jar` interactively.
 
-copy `elastic-apm-agent.jar`and `example.log4j2.jar` to the instance and run locally
+* build application jar locally
 ```sh
-java -javaagent:elastic-apm-agent-1.24.0.jar -Delastic.apm.server_urls=http://127.0.0.1:9200 -Delastic.apm.application_packages=example -Delastic.apm.enable_log_correlation=true -jar target/example.log4j2.jar
+mvn clean package
 ```
-unfortunately after Spring application launches, and attempt to trigger logging is made, APM reports the following failure (formatted for better readability):
+* launch the bitnami ELK image. NOTE: the only stable networking choice appears to be NAT.
+* copy application jar and elastic agent jar into the VM:
+```sh
+scp -P 2222 target/example.log4j2.jar  bitnami@localhost:
+scp  -P 2222 elastic-apm-agent-1.24.0.jar  bitnami@localhost:
+```
+Log on to the VM
+```sh
+ssh -p 2222 bitnami@localhost
+```
+* run the jar locally
+```sh
+sudo -s
+java -javaagent:elastic-apm-agent-1.24.0.jar -Delastic.apm.application_packages=example -Delastic.apm.server_urls=http://127.0.0.1:9200 -Delastic.apm.enable_log_correlation=true -Ddisable_send=true -jar example.log4j2.jar
+```
+* ssh to a separate session on the VM, access the appliction web interface locally from the VM
+```sh
+ssh -p 2222 bitnami@localhost
+sudo -s
+root@debian:/home/bitnami# curl "http://localhost:8085/example?data=1234"
+```
+in the console you will see
+```
+2021-07-13 21:15:18 trace.id=7e5cfd8005ffbb28347940aecb376019 INFO  LogHelper:24 - raw data 1234
+2021-07-13 21:15:18 trace.id=7e5cfd8005ffbb28347940aecb376019 INFO  LogHelper:24 - handler received: 1234
+```
+These are two log lines from two different API in the toy application. The `trace.id` value is "sticky".
+
+Note, when there is no real APM server running on port 9200, APM re-attempts to connect but reports the following failure (formatted for better readability):
 ```sh
 2021-07-13 03:47:53.424 [apm-reporter] INFO co.elastic.apm.report.IntakeV2ReportingEventHandler - Backing off for 0 seconds (±10%)
 2021-07-13 03:47:53.424 [apm-reporter] WARN co.elastic.apm.report.IntakeV2ReportingEventHandler - Server returned HTTP response code: 400 for URL: http://127.0.0.1:9200/intake/v2/events
-2021-07-13 03:47:53.434 [apm-reporter] WARN co.elastic.apm.report.IntakeV2ReportingEventHandler - 
+2021-07-13 03:47:53.434 [apm-reporter] WARN co.elastic.apm.report.IntakeV2ReportingEventHandler -
 {
   "error": {
     "root_cause": [
@@ -180,8 +200,7 @@ unfortunately after Spring application launches, and attempt to trigger logging 
   "status": 400
 }
 ```
-and no logging occured (the APM appears to completely block the application logging).
-
+this is cured by installing the real APM server
 ### See Also
 
  * [JSON logging](https://www.baeldung.com/java-log-json-output)
