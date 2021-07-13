@@ -8,7 +8,7 @@ This directory contains log4j2 example demo project
 ```sh
 pushd ../basic-rabbitmq-appender
 mvn package
-cp target/example.rabbitmq-appender-0.1.0-SNAPSHOT.jar  ../basic-log4j2/src/main/resources/
+cp target/example.rabbitmq-appender-0.1.0-SNAPSHOT.jar ../basic-log4j2/src/main/resources/
 popd
 ```
 #### Testing Springboot App locally
@@ -19,14 +19,14 @@ mvn spring-boot:run
 ```
 and check the messages in `App.log` and console:
 ```sh
-21:35:06.166 [main] INFO  o.s.b.c.e.t.TomcatEmbeddedServletContainer - Tomcat st
+21:35:06.166 [main] INFO o.s.b.c.e.t.TomcatEmbeddedServletContainer - Tomcat st
 arted on port(s): 8080 (http)
 ```
 and
 ```sh
-[main] INFO  22ogger - init message
-[main] INFO  22ogger - init message
-[main] WARN  23ogger - init message
+[main] INFO 22ogger - init message
+[main] INFO 22ogger - init message
+[main] WARN 23ogger - init message
 ```
 in `App.log` only
 then
@@ -35,22 +35,22 @@ for cnt in $(seq 0 1 3); do curl "http://localhost:8080/example?data='${cnt}+tes
 ```
 and check the appearance of new messages in `App.log` and console:
 ```sh
-[http-nio-8080-exec-10] INFO  20ogger - raw data '0 test'
-[http-nio-8080-exec-10] INFO  20ogger - raw data '0 test'
-[http-nio-8080-exec-10] INFO  20ogger - handler received: '0 test'
-[http-nio-8080-exec-10] INFO  20ogger - handler received: '0 test'
-[http-nio-8080-exec-9] INFO  20ogger - raw data '1 test'
-[http-nio-8080-exec-9] INFO  20ogger - raw data '1 test'
-[http-nio-8080-exec-9] INFO  20ogger - handler received: '1 test'
-[http-nio-8080-exec-9] INFO  20ogger - handler received: '1 test'
-[http-nio-8080-exec-8] INFO  20ogger - raw data '2 test'
-[http-nio-8080-exec-8] INFO  20ogger - raw data '2 test'
-[http-nio-8080-exec-8] INFO  20ogger - handler received: '2 test'
-[http-nio-8080-exec-8] INFO  20ogger - handler received: '2 test'
-[http-nio-8080-exec-7] INFO  20ogger - raw data '3 test'
-[http-nio-8080-exec-7] INFO  20ogger - raw data '3 test'
-[http-nio-8080-exec-7] INFO  20ogger - handler received: '3 test'
-[http-nio-8080-exec-7] INFO  20ogger - handler received: '3 test'
+[http-nio-8080-exec-10] INFO 20ogger - raw data '0 test'
+[http-nio-8080-exec-10] INFO 20ogger - raw data '0 test'
+[http-nio-8080-exec-10] INFO 20ogger - handler received: '0 test'
+[http-nio-8080-exec-10] INFO 20ogger - handler received: '0 test'
+[http-nio-8080-exec-9] INFO 20ogger - raw data '1 test'
+[http-nio-8080-exec-9] INFO 20ogger - raw data '1 test'
+[http-nio-8080-exec-9] INFO 20ogger - handler received: '1 test'
+[http-nio-8080-exec-9] INFO 20ogger - handler received: '1 test'
+[http-nio-8080-exec-8] INFO 20ogger - raw data '2 test'
+[http-nio-8080-exec-8] INFO 20ogger - raw data '2 test'
+[http-nio-8080-exec-8] INFO 20ogger - handler received: '2 test'
+[http-nio-8080-exec-8] INFO 20ogger - handler received: '2 test'
+[http-nio-8080-exec-7] INFO 20ogger - raw data '3 test'
+[http-nio-8080-exec-7] INFO 20ogger - raw data '3 test'
+[http-nio-8080-exec-7] INFO 20ogger - handler received: '3 test'
+[http-nio-8080-exec-7] INFO 20ogger - handler received: '3 test'
 ```
 ### Alternative log4j2 Configurations
 
@@ -139,11 +139,28 @@ fails with
 ```sh
 the input device is not a TTY
 ```
+### DMC
 
+NOTE: the APM agent *has* to be able co communicate with the server before it is operational:
+```sh
+java -javaagent:elastic-apm-agent-1.24.0.jar -Delastic.apm.application_packages=example -Delastic.apm.enable_log_correlation=true -jar target/example.log4j2.jar 
+```
+```sh
+2021-07-12 22:04:53,375 [elastic-apm-server-reporter] ERROR co.elastic.apm.agent.report.IntakeV2ReportingEventHandler - Failed to handle event of type JSON_WRITER with this error: Connection refused (Connection refused)
+2021-07-12 22:04:53,375 [elastic-apm-server-reporter] INFO  co.elastic.apm.agent.report.IntakeV2ReportingEventHandler - Backing off for 36 seconds (+/-10%)
+
+```
 ### See Also
 
  * [JSON logging](https://www.baeldung.com/java-log-json-output)
  * [JSON layout](https://stackoverflow.com/questions/39590365/print-stacktrace-with-log4j2-in-json-with-jsonlayout-in-a-single-line)
+ * Logback MDC [manual](http://logback.qos.ch/manual/mdc.html)
+ * [ELK APM MDC configuration bug](https://github.com/elastic/apm-agent-java/issues/499) - contains valuable information covering how things should be set
+ * [log4j Pattern Layout](http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html) - note the format is similar for lof4j2 but the good documentation link is yet to be found.
+ * some [intro](https://blog.frankel.ch/logging-additional-metadata/) to MDC in ELK context
+ * https://slacker.ro/2020/09/02/monitoring-java-applications-with-elastic-getting-started-with-the-elastic-apm-java-agent/
+ * https://levelup.gitconnected.com/how-to-integrate-elastic-apm-java-agent-with-spring-boot-7ce8388a206e
+
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
