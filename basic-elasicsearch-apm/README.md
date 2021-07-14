@@ -20,7 +20,7 @@ docker logs $ELASTICSEARCH_SERVER
 
 ```
 ```sh
-APM_SERVER_BASE_IMAGE=docker.elastic.co/apm/apm-server:6.4.2
+APM_SERVER_BASE_IMAGE=docker.elastic.co/apm/apm-server:7.8.0
 docker pull $APM_SERVER_BASE_IMAGE
 ```
 and run it with environments matching the `application.properties`:
@@ -39,6 +39,12 @@ docker build -f Dockerfile.app -t app_server .
 * Lanch the `mysql-example` backed Docker container, using [Environment variables configuration]() option supported by APM Agent.
 ```sh
 docker run -d -p 8086:8085 -e ELASTIC_APM_SERVICE_NAME=app_server -e ELASTIC_APM_APPLICATION_PACKAGES=example.basic -e ELASTIC_APM_SERVER_URLS=http://$APM_SERVER:8200 --link $APM_SERVER app_server
+```
+
+you may try to install the APM agent into the App container in which case thefollowing argument update will be needed:
+
+```sh
+docker run -d -p 8086:8085 -e ELASTIC_APM_SERVICE_NAME=app_server -e ELASTIC_APM_APPLICATION_PACKAGES=example.basic -e ELASTIC_APM_SERVER_URLS=http://localhost:8200 --link $ELASTICSEARCH_SERVER app_server
 ```
  will also need link to the elasticsearch running: the app_server loops with
 ```sh
@@ -74,6 +80,22 @@ in the current environment cannot yet browse the data in kibana:
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-elasicsearch-apm/screenshots/capture_kibana.png)
  
 probably due to some licensing problem, kibana itself loads but refuses to show elasticsearch.
+
+### Speed up building ELK docker container image 
+
+it helps caching the binaries in the workspace
+```sh
+VERSION=7.2.0
+ES_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${VERSION}-linux-x86_64.tar.gz"
+LS_URL="https://artifacts.elastic.co/downloads/logstash/logstash-${VERSION}.tar.gz"
+K_URL="https://artifacts.elastic.co/downloads/kibana/kibana-${VERSION}-linux-x86_64.tar.gz"
+```
+```sh
+wget -q $ES_URL -O elasticsearch.tar.gz 
+wget -q $LS_URL -O logstash.tar.gz 
+wget -q  $K_URL -O kibana.tar.gz
+```
+and replace the RUN commands in `Dockerfile.elk` with the COPY commands 
 ### See Also
 
  * https://github.com/elastic/apm-agent-java/blob/master/CONTRIBUTING.md
@@ -89,5 +111,10 @@ probably due to some licensing problem, kibana itself loads but refuses to show 
   * [blacktop/docker-elasticsearch-alpine](https://github.com/blacktop/docker-elasticsearch-alpine/blob/master/6.4/Dockerfile)
   * [blacktop/docker-elastic-stack](https://github.com/blacktop/docker-elastic-stack/blob/master/docker-compose.yml) based on Alpine
   * [](https://github.com/cosminseceleanu/tutorials/blob/master/elastic-apm-java/docs/index.md) Docker hoster APM agent / server scenario 
+  * Elasticsearch, Logstash and Kibana 7.x single [image](https://github.com/githubcdr/docker-elk7)
+  * https://slacker.ro/2020/09/02/monitoring-java-applications-with-elastic-getting-started-with-the-elastic-apm-java-agent/
+  * interactively download apm jar [link](https://search.maven.org/artifact/co.elastic.apm/elastic-apm-agent/1.20.0/jar)
+  * https://discuss.elastic.co/t/will-there-eventually-be-alpine-based-docker-images-for-logstash-6-x/163623/4
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

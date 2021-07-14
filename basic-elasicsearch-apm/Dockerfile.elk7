@@ -1,0 +1,61 @@
+# origin: https://github.com/githubcdr/docker-elk7
+# required for full openssl support
+# FROM alpine:3.9
+FROM openjdk:8-jre-alpine3.9
+
+# changeables
+ENV VERSION=7.2.0
+ENV PKGS="s6 ca-certificates openssl wget unzip git tar nodejs coreutils"
+ENV ES_URL="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${VERSION}-linux-x86_64.tar.gz"
+ENV LS_URL="https://artifacts.elastic.co/downloads/logstash/logstash-${VERSION}.tar.gz"
+ENV  K_URL="https://artifacts.elastic.co/downloads/kibana/kibana-${VERSION}-linux-x86_64.tar.gz"
+# TODO: get rid of
+ENV GEOCITY_URL="http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz"
+
+# do all in /tmp
+WORKDIR	/tmp
+
+# all-in-one RUN creates nice small images
+RUN apk add --update --no-cache ${PKGS} \
+	&& mkdir -p /opt/elasticsearch /opt/kibana /opt/logstash/patterns /opt/logstash/databases /var/lib/elasticsearch \
+	&& adduser -D -h /opt/elasticsearch elasticsearch \
+	&& adduser -D -h /opt/logstash logstash \
+	&& adduser -D -h /opt/kibana kibana
+
+RUN	wget -q $ES_URL -O elasticsearch.tar.gz \
+	&& wget -q $LS_URL -O logstash.tar.gz \
+	&& wget -q  $K_URL -O kibana.tar.gz
+# RUN     wget -q $GEOCITY_URL -O geocity.gz
+
+RUN	tar -zxf elasticsearch.tar.gz --strip-components=1 -C /opt/elasticsearch \
+	&& tar -zxf logstash.tar.gz --strip-components=1 -C /opt/logstash \
+	&& tar -zxf kibana.tar.gz --strip-components=1 -C /opt/kibana
+
+# RUN	unzip -c geocity.gz > /opt/logstash/databases/GeoLiteCity.dat
+
+RUN	git clone https://github.com/logstash-plugins/logstash-patterns-core.git \
+	&& cp -a logstash-patterns-core/patterns/* /opt/logstash/patterns/ 
+# fails since bash is missing
+#	RUN /opt/logstash/bin/logstash-plugin install logstash-input-beats
+
+# RUN     ln -s /opt/jdk/bin/java /usr/bin/java
+	RUN rm -rf /tmp/*
+
+# add files, this also creates the layout for the filesystem
+COPY files/root/ /
+
+# fix permissions, note that each run file also resets permissions at start
+RUN	   chmod a+x /service/*/run
+
+# open following network ports
+# 5601 kibana
+# 9200 elasticsearch rest
+# 9300 elasticsearch nodes
+# 5044 filebeat plugin
+EXPOSE 5601/tcp 9200/tcp 9300/tcp 5044/tcp
+
+# volumes
+VOLUME /var/lib/elasticsearch
+
+# manage with s6
+ENTRYPOINT ["/bin/s6-svscan","/service"]
