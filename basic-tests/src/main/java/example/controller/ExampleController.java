@@ -29,11 +29,16 @@ public class ExampleController {
 	// see also about writing SpringBoot application tests without relying on
 	// SpringBoot field injection
 	// https://reflectoring.io/unit-testing-spring-boot/
-	private final ExampleService service;
+	@Autowired
+	private ExampleService service;
 
 	@Autowired
 	public ExampleController(ExampleService data) {
 		service = data;
+	}
+
+	public ExampleController() {
+
 	}
 
 	@GetMapping
@@ -49,7 +54,9 @@ public class ExampleController {
 	@RequestMapping(method = RequestMethod.POST, value = "/post/json", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Data postJson(@RequestBody Data data) {
 		@SuppressWarnings("unused")
-		Data dummy = service.handleData(data);
+		Data result = service.handleData(data);
+		// TODO: return result leads to postJSONTest failure
+		// return result;
 		return data;
 
 	}
@@ -84,7 +91,8 @@ public class ExampleController {
 			// see also:
 			// https://stackoverflow.com/questions/16232833/how-to-respond-with-http-400-error-in-a-spring-mvc-responsebody-method-returnin
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(service.handleData(new Data(param.getFirst("name"))));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(service.handleData(new Data(param.getFirst("name"))));
 	}
 
 	public static class Data {

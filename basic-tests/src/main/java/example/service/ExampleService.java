@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import example.component.ExampleComponent;
 import example.controller.ExampleController;
 
-
 @Service
 // NOTE: one should never name the class 'Service': collision with stereotype:
 // incompatible types: example.Service cannot be converted to
@@ -29,5 +28,9 @@ public class ExampleService {
 
 	public ExampleController.Data handleData(ExampleController.Data data) {
 		return data;
+	}
+
+	public ExampleController.Data handleData(Object data) {
+		return null;
 	}
 }
