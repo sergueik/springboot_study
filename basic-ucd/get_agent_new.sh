@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# for base64 one pipes the data e.g.: 
+# $(echo -n "example=$1&log=$result" | base64)
+
 rawurlencode() {
 # based on: https://gist.github.com/moyashi/4063894
 # see also https://stackoverflow.com/questions/32273446/encode-url-variable-with-curl

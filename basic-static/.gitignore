@@ -19,3 +19,4 @@
 *.uncrustify
 *~
 application.properties
+/target/

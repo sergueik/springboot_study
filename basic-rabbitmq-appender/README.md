@@ -5,10 +5,13 @@ updated to work with latest amqp-client, java 8.
 ### Usage
 
 * local testing
+
 ```sh
 wget -O - "https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey" | sudo apt-key add -
 ```
+* intall the jar locally in `.m2/repository` and build a project with log4j2.
 
 A simple log4j appender to publish messages to a RabbitMQ queue.  The appender includes a layout which converts all log messages to JSON objects.
 
 https://www.baeldung.com/log4j2-custom-appender
+https://github.com/vipstone/rabbitmq-java

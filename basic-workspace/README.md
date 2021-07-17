@@ -8,20 +8,22 @@ Docker project with some repository hosted in the Docker image based on [Dockeri
 ```sh
 docker build -f Dockerfile -t basic-workspace .
 ```
-the second iteration will skip every step with `Using cache` verdict ignoring the possible stale state of the repository workspace burned into the image.
-Adding the argument and passing the latest hash via build arg command line option does not force Docker to re-run the step in question
+the second iteration will skip every step with `Using cache` verdict
+and creating a potentially stale state of the repository workspace burned into the image.
+
+Adding the following argument and passing the latest hash via build arg command line option does not force Docker to re-run the step in question
 
 ```sh
 PROJECT=springboot_study
-APPS_DIR=/$HOME/src
+APPS_DIR=/$HOME/workspace
 LATEST_HASH=$(git --git-dir=${APPS_DIR}/${PROJECT}/.git rev-parse --short HEAD)
 ```
-this will ignore the hash change:
+this aparenrently ignores the hash change:
 ```sh
 docker build -f Dockerfile --build-arg "LATEST_HASH=$(git --git-dir=${APPS_DIR}/${PROJECT}/.git rev-parse --short HEAD)" -t basic-workspace .
 ```
 
-the only way is to update the `Dockerfile` directly:
+the only way seems to update the `Dockerfile` directly:
 ```sh
 sed -i "s|LATEST_HASH=\".*\"|LATEST_HASH=\"${LATEST_HASH}\"|" Dockerfile
 docker build -f Dockerfile -t basic-workspace .
@@ -88,7 +90,8 @@ PASSWORD=...
 # TODO: url encode
 docker exec -it $(docker container ls | grep $IMAGE_NAME | head -1 | awk '{print $1}') sh -c "cd /opt/apps/$PROJECT ; git pull https://${USER}:${PASSWORD}@github.com/${PROJECT}"
 ```
-alternatively use the shell script variation to specifyarbitrary branch `$BRANCH`:
+alternatively use the shell script variation to specify 
+an arbitrary branch `$BRANCH`:
 ```sh
 git remote remove origin
 git remove add origin "https://${USER}:${PASSWORD}@github.com/${PROJECT}"
@@ -97,6 +100,32 @@ git remove remove origin
 ```
 (all concatenated into shell argument) 
 
+### Use Github API
+* generate a new token through __Settings/Developer settings__ [Personal access tokens](https://github.com/settings/tokens)
+
+*  use it with `curl`:
+```sh
+curl -O -J -L -u ${TOKEN}:x-oauth-basic https://github.com/$USER/${PROJECT}/archive/${LATEST_HASH}.zip
+```
+will download the selected commit of the workspace.
+NOTE: it will save under a name it chooses, ignoring the `-O` argument e.g.:
+```sh
+curl: Saved to filename 'springboot_study-4cc172c5cb4bc7d72641ff9466b8b909a78773ed.zip'
+```
+NOTE: the variant
+```sh
+USER=...
+PASSWORD=...
+
+LATEST_HASH=$(git --git-dir=${APPS_DIR}/${PROJECT}/.git rev-parse --short HEAD)
+curl -O -J -L -u "${USER}:${PASSWORD}" https://github.com/$USER/${PROJECT}/archive/${LATEST_HASH}.zip
+```
+will lead to 
+```text
+Deprecated authentication method. Create a Personal Access Token to access: https://github.com/settings/token
+```
+be written into
+`${LATEST_HASH}.zip`
 ### Cleanup
 destroy all orphaned images afterwards
 ```sh

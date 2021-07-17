@@ -419,6 +419,9 @@ ENTRYPOINT ["sh", "/delayed_start.sh"]
   * [k8n](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) __liveness__, __readiness__ and __startup__ Probes
   * standalone ash script dependency waiter [dadarek/wait-for-dependencies](https://github.com/dadarek/docker-wait-for-dependencies) alpine image doing `nc -z` loop
   * Docker [healtheck syntax introduction](https://dotsandbrackets.com/docker-health-check-ru/) (Russian translation)
+  * [shell script](https://github.com/Dmitry-Shweikus/wait-for-it/blob/master/wait-for-it.sh) to wait for specified `HOST` and `PORT` with `TIMEOUT` (cloned locally)
+
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
