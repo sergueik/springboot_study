@@ -6,6 +6,7 @@ import example.mapper.Mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,7 +30,8 @@ public class UserDetailsServiceDAO implements UserDetailsService {
 	private static final String ROLE_PREFIX = "ROLE_";
 
 	@Override
-	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(final String username)
+			throws UsernameNotFoundException {
 		User user = loadUserEntityByUsername(username);
 		if (user == null) {
 			throw new UsernameNotFoundException(username + " not found");
@@ -97,7 +99,8 @@ public class UserDetailsServiceDAO implements UserDetailsService {
 	}
 
 	public void saveUser(User user) throws Exception {
-		jdbcTemplate.update(Queries.INSERT_NEW_USER, user.getUsername(), user.getPassword(), ROLE.USER.toString());
+		jdbcTemplate.update(Queries.INSERT_NEW_USER, user.getUsername(),
+				user.getPassword(), ROLE.USER.toString());
 	}
 
 	public void deleteUser(String username) throws Exception {
@@ -105,7 +108,8 @@ public class UserDetailsServiceDAO implements UserDetailsService {
 	}
 
 	public User loadUserEntityByUsername(String username) {
-		List<User> users = jdbcTemplate.query(Queries.LOAD_USER_BY_USERNAME, mapper::mapUser, username);
+		List<User> users = jdbcTemplate.query(Queries.LOAD_USER_BY_USERNAME,
+				mapper::mapUser, username);
 		if (users == null || users.size() < 1) {
 			return null;
 		} else {
@@ -118,7 +122,14 @@ public class UserDetailsServiceDAO implements UserDetailsService {
 	}
 
 	public void updateUser(User user) throws Exception {
-		jdbcTemplate.update(Queries.UPDATE_USER_BY_USERNAME, user.getPassword(), user.getRole(), user.getUsername());
+		jdbcTemplate.update(Queries.UPDATE_USER_BY_USERNAME, user.getPassword(),
+				user.getRole(), user.getUsername());
 	}
 
+	public boolean loadUserEntity(String username, String password) {
+		SqlRowSet result = jdbcTemplate.queryForRowSet(Queries.LOAD_USER, username,
+				password);
+		return (result == null || !result.last() || result.getRow() == 0) ? false
+				: true;
+	}
 }

@@ -1,10 +1,21 @@
 package example.entity;
 
+import example.dao.UserDetailsServiceDAO;
+
 public class User {
 
 	private String username;
 	private String password;
 	private String role;
+
+	public User() {
+	}
+
+	public User(String username, String password) {
+		this.password = password;
+		this.username = username;
+		this.role = UserDetailsServiceDAO.ROLE.USER.toString();
+	}
 
 	public String getUsername() {
 		return username;

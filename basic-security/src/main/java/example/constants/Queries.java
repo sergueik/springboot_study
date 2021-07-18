@@ -8,5 +8,5 @@ public interface Queries {
 	String DELETE_USER_BY_USERNAME = "DELETE FROM users WHERE username=?;";
 	String LOAD_ALL_USERS = "SELECT * FROM users;"; // will work without spaces too
 	String LOAD_USER_BY_USERNAME = "SELECT * FROM users WHERE username=?;";
-
+	String LOAD_USER = "SELECT * FROM users WHERE username=? AND password=?;";
 }
