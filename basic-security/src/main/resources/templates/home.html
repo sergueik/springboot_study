@@ -19,7 +19,7 @@
         <div class="navbar-header">
             <a name="header" class="navbar-brand" href="#">
                 Logged as :
-                <span sec:authentication="name"></span>
+                <span sec:authentication="username"></span>
                 Role :
                 <span sec:authorize="hasRole('ROLE_ADMIN')">admin</span>
                 <span sec:authorize="hasRole('ROLE_USER')">user</span>
@@ -83,7 +83,6 @@
             </div>
         </div>
     </div>
-
 </div>
 </body>
 <script src="webjars/jquery/2.1.1/jquery.min.js"></script>

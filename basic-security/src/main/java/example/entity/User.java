@@ -10,24 +10,24 @@ public class User {
 		return username;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUsername(String data) {
+		username = data;
 	}
 
 	public String getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setPassword(String data) {
+		password = data;
 	}
 
 	public String getRole() {
 		return role;
 	}
 
-	public void setRole(String role) {
-		this.role = role;
+	public void setRole(String data) {
+		role = data;
 	}
 
 }

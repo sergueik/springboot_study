@@ -6,13 +6,17 @@ spring:
     username:
     password:
     # in-memory applicaton will need create table in code
+    # currently does not work
     # url: 'jdbc:sqlite::memory:'
     # application expects the database to be present on disk and table created
     url: jdbc:sqlite:${HOME}/Desktop/login.db
   jpa:
     database-platform: example.sqlite.SQLiteDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: 
+        # - update
+        # triggers numerous errors, a not of needed methods are missing from SQLiteDialect.java 
+        - create
     show-sql: true
   session:
     store-type: none
