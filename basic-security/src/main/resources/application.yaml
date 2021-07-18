@@ -1,0 +1,22 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    username:
+    password:
+    # in-memory applicaton will need create table in code
+    # url: 'jdbc:sqlite::memory:'
+    # application expects the database to be present on disk and table created
+    url: jdbc:sqlite:${HOME}/Desktop/login.db
+  jpa:
+    database-platform: example.sqlite.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  session:
+    store-type: none
+
+# NOTE: requires https://github.com/jsixface/YamlConfig
+# or https://github.com/sergueik/selenium_java/tree/master/yaml_config_extend
+# to use yaml properties
