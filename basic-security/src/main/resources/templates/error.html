@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title><span th:text="${#httpServletRequest.getAttribute('javax.servlet.error.status_code')}" th:remove="tag"></span></title>
+  <head>
+    <title>
+      <span th:text="${#httpServletRequest.getAttribute('javax.servlet.error.status_code')}" th:remove="tag"/>
+    </title>
     <meta charset="utf-8"/>
-</head>
-<body>
+  </head>
+  <body>
     <h3>
-        Message : <span th:text="${#httpServletRequest.getAttribute('javax.servlet.error.message')}"></span>
-        Code : <span th:text="${#httpServletRequest.getAttribute('javax.servlet.error.status_code')}"></span>
+        Message : <span th:text="${#httpServletRequest.getAttribute('javax.servlet.error.message')}"/>
+        Code : <span th:text="${#httpServletRequest.getAttribute('javax.servlet.error.status_code')}"/>
     </h3>
-<a href="/" th:href="@{/}">Back to Home Page</a>
-</body>
+    <a href="/" th:href="@{/}">Back to Home Page</a>
+  </body>
 </html>
