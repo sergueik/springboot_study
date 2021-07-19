@@ -1,11 +1,19 @@
 spring:
   datasource:
-    url: ${JDBC_DATABASE_URL}
-    username: ${JDBC_DATABASE_USERNAME}
-    password: ${JDBC_DATABASE_PASSWORD}
+    driver-class-name: org.sqlite.JDBC
+    username:
+    password:
+    # application expects the database to be present on disk and table created
+    url: jdbc:sqlite:${HOME}/Desktop/login.db
   jpa:
+    database-platform: example.sqlite.SQLiteDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: 
+        - update
+        - validate
+    show-sql: true
+  session:
+    store-type: none
 
 security:
   jwt:
@@ -14,6 +22,6 @@ security:
       expire-length: 8640000
 
 application:
-  version: 0.0.1
+  version: 0.1.0
   admin: admin@admin.com
   develop-mode: false

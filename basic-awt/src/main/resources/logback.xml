@@ -6,7 +6,7 @@
             </pattern>
         </encoder>
     </appender>
-    <logger name="org.example.ua" level="ALL"/>
+    <logger name="example" level="ALL"/>
     <logger name="org.springframework" level="INFO"/>
     <logger name="com.zaxxer.hikari" level="OFF"/>
     <logger name="org.hibernate" level="OFF"/>
