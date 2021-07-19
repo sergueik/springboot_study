@@ -1,36 +1,32 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
-<head>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4" lang="en">
+  <head>
     <meta charset="UTF-8"/>
     <title>Spring Boot</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link href="webjars/bootstrap/3.2.0/css/bootstrap.min.css"
-          rel="stylesheet" media="screen"/>
-    <link href="../static/css/styles.css"
-          th:href="@{css/styles.css}"
-          rel="stylesheet"
-          media="screen"/>
-</head>
-<body>
-<nav class="navbar">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a name="header" class="navbar-brand" href="#">
-                Logged as :
-                <span sec:authentication="username"></span>
-                Role :
-                <span sec:authorize="hasRole('ROLE_ADMIN')">admin</span>
-                <span sec:authorize="hasRole('ROLE_USER')">user</span>
-            </a>
-        </div>
-        <ul class="navbar-header pull-right">
-            <a name="header" href="profile" class="navbar-brand"><span class="glyphicon glyphicon-user"></span> Profile</a>
-            <a name="header" href="logout" class="navbar-brand"><span class="glyphicon glyphicon-log-in"></span> Logout</a>
-        </ul>
+    <link href="webjars/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+    <link href="../static/css/styles.css" th:href="@{css/styles.css}" rel="stylesheet" media="screen"/>
+  </head>
+  <body>
+  
+  <nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a name="header" class="navbar-brand" href="#">Logged as : <span sec:authentication="username"/>Role :<span sec:authorize="hasRole('ROLE_ADMIN')">admin</span><span sec:authorize="hasRole('ROLE_USER')">user</span></a>
     </div>
+    <ul class="nav navbar-nav pull-right">
+      <li class="active"><a href="#">Home</a></li>
+      <li>
+          <a name="header" th:href="@{profile}" class="nav-brand"><span class="glyphicon glyphicon-user"></span> Profile</a>
+      </li>
+      <li>
+          <a name="header" href="logout" class="nav-brand"><span class="glyphicon glyphicon-log-in"></span> Logout</a>
+      </li>
+    </ul>
+  </div>
 </nav>
-</body>
-<script src="webjars/jquery/2.1.1/jquery.min.js"></script>
-<script src="webjars/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-<script src="../static/js/home.js" th:src="@{js/home.js}"></script>
+
+  </body>
+  <script src="webjars/jquery/2.1.1/jquery.min.js"/>
+  <script src="webjars/bootstrap/3.2.0/js/bootstrap.min.js"/>
 </html>
