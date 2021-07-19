@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: ${JDBC_DATABASE_URL}
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+security:
+  jwt:
+    token:
+      secret-key: springBootJwt
+      expire-length: 8640000
+
+application:
+  version: 0.0.1
+  admin: admin@admin.com
+  develop-mode: false
