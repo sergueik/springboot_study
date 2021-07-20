@@ -1,31 +1,36 @@
 version: '3.3'
 
 services:
-  mongo:
-    image: 'bitnami/mongodb'
+  mongodb:
+    image: 'clutteredcode/mongo-alpine'
+    # envrironment part does not appear to work
     ports:
       - '27017:27017'
+    volumes:
+      - ./data:/data/db
+    # ERROR: Named volume "data:/data/db:rw" is used in service "mongo" but no declaration was found in the volumes section.
     environment:
       - MONGODB_USERNAME=test
       - MONGODB_PASSWORD=test
-      - MONGODB_DATABASE=test
-  spring-boot-microservices-docker:
+      # this image does not support specifying the database
+      - MONGODB_DATABASE=admin
+  app:
     build:
       context: .
       dockerfile: ./Dockerfile.app
     image: spring-boot-microservices-docker
     links:
-      - mongo
+      - mongodb
     environment:
       - ADDITIONAL_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
-      - MONGODB_HOST=mongo
+      - MONGODB_HOST=mongodb
       - MONGODB_PORT=27017
-      - MONGODB_DATABASE=test
+      - MONGODB_DATABASE=admin
       - MONGODB_USERNAME=test
       - MONGODB_PASSWORD=test
 
     depends_on:
-      - mongo
+      - mongodb
     ports:
       - "5005:5005"
       - "8080:8080"
