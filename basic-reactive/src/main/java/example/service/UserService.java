@@ -1,7 +1,8 @@
-package br.com.rbarbioni.docker.service;
+package example.service;
 
-import br.com.rbarbioni.docker.model.User;
-import br.com.rbarbioni.docker.repository.UserRepository;
+import example.model.User;
+import example.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,24 +21,24 @@ public class UserService {
     }
 
     public Flux<User> findAll(){
-        return this.userRepository.findAll();
+        return userRepository.findAll();
     }
 
     public Mono<User> findById(String id){
-        return this.userRepository.findById(id)
+        return userRepository.findById(id)
                 .switchIfEmpty(Mono.error(new HttpServerErrorException(HttpStatus.NOT_FOUND)));
     }
 
     public Mono<User> save(User data){
-        return this.userRepository.save(data);
+        return userRepository.save(data);
     }
 
     public Mono<User> update(String id, User data){
-        return this.userRepository.save(data);
+        return userRepository.save(data);
     }
 
 
     public Mono<Void> delete (String id){
-        return this.userRepository.deleteById(id);
+        return userRepository.deleteById(id);
     }
 }

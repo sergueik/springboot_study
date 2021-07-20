@@ -1,11 +1,8 @@
-package br.com.rbarbioni.docker.repository;
+package example.repository;
 
-import br.com.rbarbioni.docker.model.User;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
-/**
- * Created by renan on 23/05/17.
- */
+import example.model.User;
 
 public interface UserRepository extends ReactiveMongoRepository<User, String> {
 

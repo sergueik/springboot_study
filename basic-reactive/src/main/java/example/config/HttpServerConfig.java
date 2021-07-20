@@ -1,4 +1,4 @@
-package br.com.rbarbioni.docker.config;
+package example.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -12,23 +12,20 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import reactor.ipc.netty.http.server.HttpServer;
 
-/**
- * Created by renan on 23/05/17.
- */
 @Configuration
 @EnableAutoConfiguration
-@EnableReactiveMongoRepositories(basePackages = "br.com.rbarbioni.docker")
+
+// NOTE: the package rename in Eclipse misses updating this property
+@EnableReactiveMongoRepositories(basePackages = "example")
 public class HttpServerConfig {
 
-    @Autowired
-    private Environment environment;
+	@Autowired
+	private Environment environment;
 
-    @Bean
-    public HttpServer httpServer(RouterFunction<?> routerFunction) {
-        HttpHandler httpHandler = RouterFunctions.toHttpHandler(routerFunction);
-        ReactorHttpHandlerAdapter adapter = new ReactorHttpHandlerAdapter(httpHandler);
-        HttpServer server = HttpServer.create();
-        server.newHandler(adapter);
-        return server;
-    }
+	@Bean
+	public HttpServer httpServer(RouterFunction<?> routerFunction) {
+		HttpServer server = HttpServer.create();
+		server.newHandler(new ReactorHttpHandlerAdapter(RouterFunctions.toHttpHandler(routerFunction)));
+		return server;
+	}
 }

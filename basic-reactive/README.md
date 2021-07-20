@@ -2,7 +2,7 @@
 
 This directory contains a rearranged example
 [basic reactive CRUD](https://github.com/rbarbioni/spring-boot-microservices-docker) example project
-converted to maven. 
+converted to maven. Note: there is no reactive programming in this project, only direect `Controller` =&gt; `Service` =&gt; `Reposiory`
 
 ### TODO
 
@@ -18,12 +18,12 @@ and a vanilla mongo [container](https://github.com/bitnami/bitnami-docker-mongod
 build
 ```sh
 mvn clean package
-docker build -f Dockerfile.mongodb .
+docker pull 'bitnami/mongodb'
 docker-compose -f docker-compose.yml up --build
 ```
 * create user
 ```sh
-curl -X POST http://localhost:8080/api/user -H 'Content-Type: application/json' -d '{ "name":"demouser", "email": "user@email.com"}'
+
 ```
 * get back the user
 

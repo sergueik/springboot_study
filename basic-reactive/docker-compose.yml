@@ -2,10 +2,7 @@ version: '3.3'
 
 services:
   mongo:
-    # image: 'alpine:3.9'
-    build:
-      context: .
-      dockerfile: ./Dockerfile.mongodb
+    image: 'bitnami/mongodb'
     ports:
       - '27017:27017'
     environment:
