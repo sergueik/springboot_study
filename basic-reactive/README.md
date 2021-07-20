@@ -1,18 +1,25 @@
 ### Info
 
 This directory contains a rearranged example
-[reactive Microservices Api with docker](https://github.com/rbarbioni/spring-boot-microservices-docker) example project
-comverted to maven (still uses the original version ofspringboot parent and vanilla mongo base image)
+[basic reactive CRUD](https://github.com/rbarbioni/spring-boot-microservices-docker) example project
+converted to maven. 
 
 ### TODO
 
-This project uses __2.0.4.RELEASE__ version of springboot parent due to build problems with __2.3.4.RELEASE__
+NOTE:
+still uses the original version of springboot parent __2.0.4.RELEASE__ 
+due to compilation problems after attempting to ugrade to __2.3.4.RELEASE__:
+```sh
+
+```
+and a vanilla mongo [container](https://github.com/bitnami/bitnami-docker-mongodb)
 ### Usage
 
 build
 ```sh
 mvn clean package
-docker-compose -f docker-compose.yml up
+docker build -f Dockerfile.mongodb .
+docker-compose -f docker-compose.yml up --build
 ```
 * create user
 ```sh
@@ -40,13 +47,22 @@ this will create additional rows (it will print back the created object):
 ```json
 {"id":"60f5f8726344590001f6706d","name":"demouser","email":"user@other.email.com"}
 ```
+### Cleanup
 
+```sh
+docker-compose -f docker-compose.yml stop 
+docker-compose -f docker-compose.yml rm  -f
+docker image rm spring-boot-microservices-docker
+docker image rm 'bitnami/mongodb'
+```
 ### Work in progress
 
 #### Switch to alpine mongo cluster member `mvertes/alpine-mongo` or to the one
 in the sibling project (the user and database name are unclear)
+
 ### See Also
 
    * another [spring-webflux-reactive-rest-api-demo](https://github.com/callicoder/spring-webflux-reactive-rest-api-demo) 
    * https://www.baeldung.com/spring-boot-reactor-netty
    * https://github.com/spring-projects/spring-boot/issues/9690
+	

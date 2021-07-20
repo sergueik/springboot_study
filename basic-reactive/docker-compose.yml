@@ -2,7 +2,10 @@ version: '3.3'
 
 services:
   mongo:
-    image: 'bitnami/mongodb:latest'
+    # image: 'alpine:3.9'
+    build:
+      context: .
+      dockerfile: ./Dockerfile.mongodb
     ports:
       - '27017:27017'
     environment:
@@ -20,9 +23,9 @@ services:
       - ADDITIONAL_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
       - MONGODB_HOST=mongo
       - MONGODB_PORT=27017
+      - MONGODB_DATABASE=test
       - MONGODB_USERNAME=test
       - MONGODB_PASSWORD=test
-      - MONGODB_DATABASE=test
 
     depends_on:
       - mongo
