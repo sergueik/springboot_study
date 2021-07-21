@@ -55,5 +55,4 @@ public class User implements Serializable {
 		email = data;
 	}
 
-
 }

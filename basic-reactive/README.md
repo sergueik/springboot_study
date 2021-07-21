@@ -43,12 +43,50 @@ this will return
 ```
 * modify user
 ```sh
+curl hurl -X PUT http://localhost:8080/api/user/$ID -H 'Content-Type: application/json' -d "{\"id\": \"$ID\", \"email\": \"user@other.email.com\", \"name\": \"demousernewname\"}"
+```
+
+Note, the original code
+```java
+
+public Mono<ServerResponse> update(ServerRequest serverRequest) {
+	
+	return userRepository.findById(serverRequest.pathVariable("id"))
+			.flatMap(user -> ServerResponse.ok()
+					.body(userRepository.save(serverRequest.bodyToMono(User.class).block()), User.class))
+			.switchIfEmpty(ServerResponse.notFound().build());
+}
+	
+```
+was leading to the following problem: if the `id` is lacking from the body of the PUT request:
+
+```sh
 curl -X PUT http://localhost:8080/api/user/$ID -H 'Content-Type: application/json' -d '{"email": "user@other.email.com", "name": "demouser"}'
 ```
-this will create additional rows (it will print back the created object):
+the command will result in creation of  additional rows (it will print back the created object):
 ```json
 {"id":"60f5f8726344590001f6706d","name":"demouser","email":"user@other.email.com"}
 ```
+the version which sets all fields excwept the id:
+```java
+public Mono<ServerResponse> update(ServerRequest serverRequest) {
+	String id = serverRequest.pathVariable("id");
+	User user = serverRequest.bodyToMono(User.class).toProcessor().peek();
+;
+	return userRepository.findById(id).flatMap(o -> {
+		o.setName(user.getName());
+		o.setEmail(user.getEmail());
+		return userRepository.save(o);
+	}).flatMap(o -> ServerResponse.ok().body(Mono.just(o), User.class))
+		.switchIfEmpty(ServerResponse.notFound().build());
+}
+```
+is free from that error.
+* if no user is found it will return
+```sh
+HTTP/1.1 404 Not Found
+```
+ocker container stop $APPLICATION- can be seen by providing `-v` option in curl command
 ### Cleanup
 ```sh
 docker container stop $APPLICATION $MONGODB_SERVER
@@ -79,6 +117,6 @@ Failed to bind properties under 'spring.data.mongodb.port' to java.lang.Integer:
    * https://github.com/spring-projects/spring-boot/issues/9690
    * https://github.com/netifi/webflux-rxjava2-jdbc-example - looks good
    * https://github.com/chang-chao/spring-webflux-reactive-jdbc-sample
-   * https://github.com/whnqwe/spring-boot-jdbc (incomplete?) 
+   * https://github.com/whnqwe/spring-boot-jdbc (incomplete?)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
