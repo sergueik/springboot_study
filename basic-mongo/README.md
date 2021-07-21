@@ -41,7 +41,19 @@ docker exec -it $CONTAINER mongo
 > quit()
 ```
 ### Testing Plain Java Application in a Developer host
-
+```sh
+mvn package
+java -Dmongo_host=127.0.0.1 -Dmongo_db=test -Dmongo_port=27717 -jar target/example.basic-mongo-app.jar
+```
+alternatively
+```sh
+java -Dspring.data.mongodb.uri=mongodb://127.0.0.1:27717/test -jar target/example.basic-mongo-app.jar
+```
+alternatively,
+```sh
+java -Dspring.data.mongo.host=localhost -Dspring.data.mongo.port=27717 -Dspring.data.mongo.database=test -jar target/example.basic-mongo-app.jar
+```
+then after a sucessful launch run CRUD commands through curl
 ### Testing SpringBoot Application in a Linked Docker Container
 
 * configure Springboot  `sping/src/main/resources/application.properties` to use default port `27017` on the node named `mongo`
@@ -120,7 +132,7 @@ Alternatively run with `DEBUG_DELAED_START` enabled
 docker run -e DEBUG_DELAYED_START=true -e SERVICE_PORT=27017 -p 8085:8085 --link mongo-service -d mongo-example
 
 ```
-and once started inspec the log file:
+and once started inspect the log file:
 ```sh
 docker container ls | grep 'mongo-example' | awk '{print $1}' | xargs -IX docker exec X ls /tmp
 ```
@@ -198,6 +210,21 @@ returns
 	"_class" : "example.Model",
 	"value" : "test5"
 }
+```
+
+### Testing SpringBoot Application with credentials
+```sh
+IMAGE=mongodb
+CONTAINER=mongo-service
+docker build -t $IMAGE -f Dockerfile.$IMAGE .
+docker container prune -f
+docker run -d --name $CONTAINER -p 27017:27017 -e MONGO_USERNAME=test -e MONGO_PASSWORD=test -e MONGODB_DATABASE=admin $IMAGE
+docker logs $CONTAINER
+```
+uncomment the lines in `src/main/resources/application.properties` of the springboot app project
+```java
+spring.data.mongodb.username=${MONGODB_USERNAME:test}
+spring.data.mongodb.password=${MONGODB_PASSWORD:test}
 ```
 ### Cleanup
 
