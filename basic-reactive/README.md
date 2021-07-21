@@ -73,10 +73,12 @@ Failed to bind properties under 'spring.data.mongodb.port' to java.lang.Integer:
   Reason: failed to convert java.lang.String to java.lang.Integer
 ```
 ### See Also
-
+   * [Spring WebFlux: Getting Started](https://app.pluralsight.com/library/courses/getting-started-spring-webflux/)
    * another [spring-webflux-reactive-rest-api-demo](https://github.com/callicoder/spring-webflux-reactive-rest-api-demo)
    * https://www.baeldung.com/spring-boot-reactor-netty
    * https://github.com/spring-projects/spring-boot/issues/9690
-
+   * https://github.com/netifi/webflux-rxjava2-jdbc-example - looks good
+   * https://github.com/chang-chao/spring-webflux-reactive-jdbc-sample
+   * https://github.com/whnqwe/spring-boot-jdbc (incomplete?) 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

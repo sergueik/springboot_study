@@ -43,4 +43,17 @@ public class User implements Serializable {
 	public String getEmail() {
 		return email;
 	}
+	public void setId(String data) {
+		id = data;
+	}
+
+	public void setName(String data) {
+		name = data;
+	}
+
+	public void setEmail(String data) {
+		email = data;
+	}
+
+
 }
