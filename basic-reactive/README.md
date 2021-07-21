@@ -21,7 +21,7 @@ docker pull clutteredcode/mongo-alpine
 ```
  * build the backend server
 ```sh
-export MONGODB_SERVER=mongodb-server
+MONGODB_SERVER=mongodb-server
 sudo rm -fr data/*
 mkdir data
 docker run -d --name $MONGODB_SERVER -e MONGO_USERNAME=test -e MONGO_PASSWORD=test -p 27017:27017 -v data:/data/db clutteredcode/mongo-alpine
@@ -39,7 +39,32 @@ wait until see the launch to happen:
 Started Launcher in 11.74 seconds (JVM running for 13.109)
 ```
 * NOTE if changing credentials make sure to also remove the `$MONGODB_SERVER` container and `clutteredcode/mongo-alpine` image
+* alternatively, without authentication on mongod side:
 
+```sh
+IMAGE=mongodb
+CONTAINER=mongo-service
+docker build -t $IMAGE -f Dockerfile.$IMAGE .
+docker container prune -f
+docker run -d --name $CONTAINER -p 27717:27017 -i $IMAGE
+docker logs $CONTAINER
+```
+comment the credentials in `application.properties`:
+```java
+# spring.data.mongodb.username=${MONGODB_USERNAME:test}
+# spring.data.mongodb.password=${MONGODB_PASSWORD:test}
+```
+* then build application
+```sh
+mvn clean package
+IMAGE=app
+MONGODB_SERVER=mongo-service
+
+docker build -t $IMAGE -f Dockerfile.$IMAGE .
+docker run --name $IMAGE --link $MONGODB_SERVER -p 8080:8080 -e MONGODB_HOST=$MONGODB_SERVER -e MONGODB_DATABASE=mydb -d $IMAGE
+docker logs $IMAGE
+```
+then after a sucessful launch run CRUD commands through curl
 #### with `docker-compose.yml`
  * add another vanilla [mongo container](https://github.com/bitnami/bitnami-docker-mongodb)
 

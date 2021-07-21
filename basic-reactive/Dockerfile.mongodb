@@ -1,20 +1,10 @@
-# origin: https://github.com/cluttered-code/docker-mongo-alpine/blob/master/Dockerfile
-FROM alpine:3.9
-# does not accept environment from docker-compose.yaml
-ENV MONGO_USERNAME test
-ENV MONGO_PASSWORD test
+FROM alpine:3.9.5
+# based on: https://github.com/mvertes/docker-alpine-mongo
+RUN apk add --no-cache mongodb
 
-RUN apk update &&\
-    apk upgrade &&\
-    apk add --no-cache mongodb
-
-COPY entrypoint.sh /entrypoint.sh
-COPY mongod.conf /etc/mongod.conf
-RUN chmod +x /entrypoint.sh
-RUN mkdir -p /data/db
-# VOLUME /data/db
-
+VOLUME /data/db
 EXPOSE 27017 28017
 
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["mongod", "--bind_ip_all"]
+COPY run.sh /root
+ENTRYPOINT [ "/root/run.sh" ]
+CMD [ "mongod", "--bind_ip", "0.0.0.0" ]
