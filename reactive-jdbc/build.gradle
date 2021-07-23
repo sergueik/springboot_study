@@ -1,0 +1,51 @@
+plugins {
+    id 'com.gradle.build-scan' version '2.0.2'
+    id 'java'
+    id 'application'
+    id 'org.flywaydb.flyway' version '4.2.0'
+    id 'com.github.hierynomus.license' version '0.14.0'
+    id 'org.springframework.boot' version '2.0.2.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.5.RELEASE'
+}
+
+// buildScan {
+//    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
+//    licenseAgree = 'yes'
+//    publishAlways()
+//}
+
+group = 'io.netifi.asynchdb.webflux'
+version = '0.1.0'
+sourceCompatibility = 1.8
+mainClassName = 'io.netifi.asynchdb.webflux.Main'
+
+dependencyManagement {
+    imports {
+        mavenBom "io.spring.platform:platform-bom:Cairo-SR1"
+    }
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.springframework.boot:spring-boot-starter-webflux'
+    compile 'com.github.davidmoten:rxjava2-jdbc:0.1-RC35'
+    compile 'com.h2database:h2:1.4.196'
+}
+
+flyway {
+    url = 'jdbc:h2:./build/mydatabase'
+    user = 'sa'
+    password = 'sa'
+}
+clean.dependsOn(flywayClean)
+build.dependsOn(flywayMigrate)
+run.dependsOn(build)
+
+license {
+    header rootProject.file('codequality/HEADER')
+    strictCheck true
+}
