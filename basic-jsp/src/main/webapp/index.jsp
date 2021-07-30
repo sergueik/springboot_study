@@ -2,16 +2,21 @@
 <%@ page import="java.io.File" %>
 <%@ page import="java.util.*" %>
 <%@ page import="java.util.Iterator" %>
+
+<%@ page import="java.util.ArrayList" %>
+<!-- The import java.util.Arrays cannot be resolved -->
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="java.net.InetAddress" %>
 <%@ page import="javax.servlet.ServletContext" %>
 <%@ page import="java.net.UnknownHostException" %>
 <%@ page import="java.io.IOException" %>
+<%@ page import="java.io.*" %>
 <%@ page import="java.util.Properties" %>
 <%@ page import="java.io.InputStream" %>
 <%@ page import="java.io.FileInputStream" %>
 <%@ page import="java.io.FileNotFoundException" %>
+
 <html><body><pre><%!
 
 public String getString(String name, Object value) {
@@ -35,8 +40,15 @@ out.println("Request URL: " + request.getRequestURL());
 Map<String, String> map = System.getenv();
 // TODO: define some paramters through the page through taglib
 // see also https://websphereportaltechies.wordpress.com/2013/11/26/reading-properties-file-in-jsp-using-jstl-taglib/
-List<String> keys = Arrays.asList("APP_SERVER", "CATALINA_HOME", "WINDIR", "CLASSPATH");
+// List<String> keys = Arrays.asList("APP_SERVER", "CATALINA_HOME", "WINDIR", "CLASSPATH");
+
+List<String> keys = new ArrayList<String>();
+keys.add("APP_SERVER");
+keys.add("CATALINA_HOME");
+keys.add("WINDIR");
+keys.add("CLASSPATH");
 // NOTE: cannot use any Java 8 semantics e.g.
+
 // foreach (key: keys) leads to
 // Syntax error, insert &quot;;&quot; to complete Statement
 // Lambda expressions cannot be on present on the jsp page even commented
