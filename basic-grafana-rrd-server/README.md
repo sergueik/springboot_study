@@ -6,18 +6,60 @@ a replica of [grafana rrd server](https://github.com/doublemarket/grafana-rrd-se
 
 * compile and conteinerise app
 ```sh
-IMAGE=basic-example
-docker build -f Dockerfile -t $IMAGE .
+RRD_SERVER=basic-rrd
+docker build -f Dockerfile -t $RRD_SERVER .
 ```
 * run in container
 followed by
 ```sh
-docker run --name $IMAGE -v $(pwd)/sample/:/sample -p 9000:9000 -d $IMAGE
+docker run --name $RRD_SERVER -v $(pwd)/sample/:/sample -p 9000:9000 -d $RRD_SERVER
 ```
+ * check via curl call
+```sh
+ curl -s http://192.168.0.29:9000/search | jq
+```
+if outouts an empty  result
+```json
+[]
+```
+investigate (seeing it with Dockerizd instances)
+otherwise if shows expected data catalog e.g. for sample.rrd embeded in the upstream project, if
+
+```json
+[
+  "percent-idle:value",
+  "percent-user:value",
+  "sample:ClientGlideRunning",
+  "sample:ClientGlideTotal",
+  "sample:StatusIdle",
+  "sample:StatusWait",
+  "sample:ClientGlideIdle",
+  "sample:ClientInfoAge",
+  "sample:ClientJobsRunning",
+  "sample:ReqIdle",
+  "sample:StatusIdleOther",
+  "sample:ClientJobsIdle",
+  "sample:StatusHeld",
+  "sample:StatusRunning",
+  "sample:ReqMaxRun",
+  "sample:StatusPending",
+  "sample:StatusStageIn",
+  "sample:StatusStageOut"
+]
+```
+proceed
+* launch grafana container linked to the above:
+
+```sh
+GRAFANA=basic-grafana
+docker build -f Dockerfile -t $GRAFANA .
+docker container run --link $RRD_SERVER --name $GRAFANA -d -p 3000:3000 $GRAFANA
+```
+
 * cleaup
 ```sh
-docker container stop $IMAGE
-docker container rm $IMAGE
+docker container stop $RRD_SERVER
+docker container rm $RRD_SERVER
 ```
 
 
