@@ -22,7 +22,7 @@ docker container rm $IMAGE
 
 
 it should process https://grafana.com/grafana/plugins/grafana-simple-json-datasource/
-### Installion on the host
+### Installon the host
 
 ```sh
 wget -O grafana-rrd-server_linux_amd64.gz https://github.com/doublemarket/grafana-rrd-server/releases/download/v0.0.5/grafana-rrd-server_linux_amd64.gz
@@ -30,10 +30,10 @@ gunzip  grafana-rrd-server_linux_amd64.gz
 chmod +x grafana-rrd-server_linux_amd64
 sudo mv grafana-rrd-server_linux_amd64 /usr/local/bin/grafana-rrd-server
 ```
-
 then point  grafana docker image to host ip addess as usual
 
 ![Dashboard Example](https://github.com/sergueik/springboot_study/blob/master/basic-grafana-rrd-server/screenshots/capture-grafana.png)
+
 ### Challenges
 
 * intermittent error when building
@@ -62,7 +62,15 @@ sudo -s
 cd /usr/lib/x86_64-linux-gnu/
 ln -fs librrd.so.4.3.5  librrd.so.8
 ```
-
+* alternatively  can copy the  needed libs from `/usr/lib/x86_64-linux-gnu` to a non standard lib directory e.g. `lib` and provide the `LD_LIBRARY_PATH` setting:
+```sh
+mkdir lib
+cp -R /usr/lib/x86_64-linux-gnu/librrd* ./lib
+cd lib/
+ln -fs librrd.so.4.3.5  librrd.so.8
+export LD_LIBRARY_PATH=$(pwd)
+cd ..
+```
 * dockerized
 when processing the query
 ```sh
@@ -77,10 +85,15 @@ and an empty response
 ```json
 []
 ```
-no problem when running application standlone on the host
+This is caused by not selecting the relevant date range
+to find out what data is available use command
+```sh
+rrdtool dump sample/sample.rrd
+```
+
 ### See Also
 
   * java time series data browser with JavaFx [app](https://github.com/binjr/binjr) backed by RRD
    * java port of rrdtool - [rrd4j](https://github.com/rrd4j/rrd4j)
-
+   * RRDTool [tutorial](https://oss.oetiker.ch/rrdtool/tut/index.en.html)
 
