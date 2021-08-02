@@ -22,7 +22,7 @@ docker container rm $IMAGE
 
 
 it should process https://grafana.com/grafana/plugins/grafana-simple-json-datasource/
-### Installon the host
+### Installion on the host
 
 ```sh
 wget -O grafana-rrd-server_linux_amd64.gz https://github.com/doublemarket/grafana-rrd-server/releases/download/v0.0.5/grafana-rrd-server_linux_amd64.gz
@@ -30,6 +30,10 @@ gunzip  grafana-rrd-server_linux_amd64.gz
 chmod +x grafana-rrd-server_linux_amd64
 sudo mv grafana-rrd-server_linux_amd64 /usr/local/bin/grafana-rrd-server
 ```
+
+then point  grafana docker image to host ip addess as usual
+
+![Dashboard Example](https://github.com/sergueik/springboot_study/blob/master/basic-grafana-rrd-server/screenshots/capture-grafana.png)
 ### Challenges
 
 * intermittent error when building
