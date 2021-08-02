@@ -2,7 +2,30 @@
 
 This directory containes basic JSP Tomcat application packaged into war file.
 ### Usage
-
+* test locally
+```sh
+mvn tomcat:run-war
+```
+NOTE: currently the JSP page request is leading to Internal Server Error:
+```sh
+ curl -I http://localhost:8080/demo/
+```
+```sh
+HTTP/1.1 500 Internal Server Error
+Server: Apache-Coyote/1.1
+Content-Type: text/html;charset=utf-8
+Content-Length: 2200
+Date: Fri, 30 Jul 2021 00:37:14 GMT
+Connection: close
+``` 
+but the  static web works fine:
+```sh
+curl -I http://localhost:8080/demo/top_example.html
+```
+```sh
+HTTP/1.1 200 OK
+```
+* package for deployment in container
 ```sh
 IMAGE=basic-jsp
 mvn package
@@ -11,19 +34,29 @@ mvn package
 docker container ls -a | grep $IMAGE| awk '{print $1}' | xargs docker container rm -f
 ```
 ```sh
-IMAGE=basic-jsp; NAME='basic-jsp-container'; docker build -t $IMAGE -f Dockerfile . ; docker container rm -f $NAME ; docker run --name $NAME -p 127.0.0.1:8080:8080 -d $IMAGE start
+IMAGE=basic-jsp 
+NAME='basic-jsp-container'
+docker build -t $IMAGE -f Dockerfile . 
+docker container rm -f $NAME
+docker run --name $NAME -p 127.0.0.1:8080:8080 -d $IMAGE start
+docker logs $NAME
 ```
+* open the index page (note the trailing slash)
 ```sh
-curl http://127.0.0.1:8080/demo
+curl http://127.0.0.1:8080/demo/
 ```
 will reply with
 
 ```html
-<html><body><pre>Server:a8de1a512b97
-Request URL: http://localhost:8080/demo/
-APP_SERVER = null
-application.setting = ${application.value}
-application.setting(from file) = ${application.value}
+html><body><pre>Server:f774929da86b
+Request URL: http://127.0.0.1:8080/demo/
+Environment:
+APP_SERVER = value
+CATALINA_HOME = /opt/tomcat
+WINDIR = null
+CLASSPATH = :/opt/tomcat/conf:/opt/tomcat/bin/bootstrap.jar:/opt/tomcat/bin/tomcat-juli.jar
+application.value = ${env:APP_SERVER}
+Property file "/usr/local/tomcat/webapps/demo/application.properties" application.value = ${env:APP_SERVER}
 </pre></body></html>
 ```
 - no token expansion observed
@@ -57,7 +90,8 @@ application.value=${env:APP_SERVER}
 ```
 the call
 ```sh
-curl http://localhost:8080/demo/
+curl http://localhost:8080/demo/top_example.html
+
 ```
 shows
 ```sh
