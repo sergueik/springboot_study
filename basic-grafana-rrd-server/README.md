@@ -138,4 +138,9 @@ rrdtool dump sample/sample.rrd
   * java time series data browser with JavaFx [app](https://github.com/binjr/binjr) backed by RRD
    * java port of rrdtool - [rrd4j](https://github.com/rrd4j/rrd4j)
    * RRDTool [tutorial](https://oss.oetiker.ch/rrdtool/tut/index.en.html)
-
+   * [post](https://medium.com/@raghavendrasamant/simplejson-datasource-implementation-in-grafana-using-sparkjava-81e2274b1cfa) about java based simpleJSON backend 
+  * https://github.com/OpenNMS/jrrd - mixed Java / C wrapper
+  * [RRDtool Tutorial - Part 1](https://www.youtube.com/watch?v=JaK-IctEyWs)
+  * [RRDtool Tutorial - Part 2](https://www.youtube.com/watch?v=m_qeVVB2yzw)
+  * https://github.com/sysmo-nms/rrdio
+  * probably moves data the other direction https://github.com/nitinka/JMetrics

@@ -140,6 +140,7 @@ to support Grafana's simpleJson plugin, the back-end WebAPI implements 4 routes:
   * https://github.com/TKnudsen/timeSeries
   * https://github.com/tschm/ts-timeseries
   * https://github.com/IBMStreams/samples
+  * https://oznetnerd.com/2018/04/17/writing-a-grafana-backend-using-the-simple-json-datasource-flask/
 
 ### Author
 
