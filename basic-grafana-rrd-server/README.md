@@ -75,6 +75,87 @@ sudo mv grafana-rrd-server_linux_amd64 /usr/local/bin/grafana-rrd-server
 then point  grafana docker image to host ip addess as usual
 
 ![Dashboard Example](https://github.com/sergueik/springboot_study/blob/master/basic-grafana-rrd-server/screenshots/capture-grafana.png)
+* alternatively query the RRD data source directly:
+```sh
+curl -X POST http://localhost:9000/query -d '
+{
+  "timezone": "browser",
+  "panelId": 2,
+  "range": {
+    "from": "2010-03-02T04:57:48.126Z",
+    "to": "2010-03-02T05:42:32.733Z",
+    "raw": {
+      "from": "2010-03-02T04:57:48.126Z",
+      "to": "2010-03-02T05:42:32.733Z"
+    }
+  },
+  "rangeRaw": {
+    "from": "2010-03-02T04:57:48.126Z",
+    "to": "2010-03-02T05:42:32.733Z"
+  },
+  "interval": "2s",
+  "intervalMs": 2000,
+  "targets": [
+    {
+      "target": "sample:ClientJobsRunning",
+      "refId": "A",
+      "type": "timeserie"
+    }
+  ],
+  "maxDataPoints": 928,
+  "scopedVars": {
+    "__interval": {
+      "text": "2s",
+      "value": "2s"
+    },
+    "__interval_ms": {
+      "text": 2000,
+      "value": 2000
+    }
+  }
+}
+'
+
+```
+it will respond with
+```json
+[
+  {
+    "target": "sample:ClientJobsRunning",
+    "datapoints": [
+      [
+        164381.51527777777,
+        1267502400000
+      ],
+      [
+        144435.16694444444,
+        1267506000000
+      ]
+    ]
+  }
+]
+```
+Note: even with incomplete query payload
+```sh
+[
+  {
+    "target": "sample:ClientJobsRunning",
+    "datapoints": null
+  }
+]
+
+```
+the RRD Grafana Server will still respond  meaningfully:
+```json
+[
+  {
+    "target": "sample:ClientJobsRunning",
+    "datapoints": null
+  }
+]
+```
+
+when no data is available for specified target, a null response will be returned. The query is the same as sent by the Grafana UI, with few details omitted
 
 ### Challenges
 
