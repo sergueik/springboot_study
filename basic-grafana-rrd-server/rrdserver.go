@@ -194,6 +194,7 @@ func search(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	target := searchRequest.Target
+	fmt.Printf("Target: %s\n", target)
 
 	var result = []string{}
 
