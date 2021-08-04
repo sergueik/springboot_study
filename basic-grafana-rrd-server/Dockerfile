@@ -11,4 +11,5 @@ RUN go build -o grafana-rrd-server
 FROM alpine:3.9
 RUN apk add rrdtool rrdtool-dev
 COPY --from=builder /build/grafana-rrd-server /grafana-rrd-server
+WORKDIR /
 ENTRYPOINT [ "/grafana-rrd-server" ]

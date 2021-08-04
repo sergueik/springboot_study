@@ -12,18 +12,61 @@ docker build -f Dockerfile -t $RRD_SERVER .
 * run in container
 followed by
 ```sh
-docker run --name $RRD_SERVER -v $(pwd)/sample/:/sample -p 9000:9000 -d $RRD_SERVER
+docker run --name $RRD_SERVER -v $(pwd)/sample/:/sample -p 9001:9000 -d $RRD_SERVER
 ```
  * check via curl call
 ```sh
- curl -s http://192.168.0.29:9000/search | jq
+curl -s http://localhost:9000/search | jq
 ```
-if outouts an empty  result
+or if like to limit the files to scan, with POST request
+```sh
+curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "sample" }' http://localhost:9000/search
+```
+it will show only matching 
+
+```go
+func search(w http.ResponseWriter, r *http.Request) {
+...
+target := searchRequest.Target
+for _, path := range searchCache.Get() {
+  if strings.Contains(path, target) {
+    result = append(result, path)
+  }
+```
+files
+```json
+[
+  "sample:ClientInfoAge",
+  "sample:ClientJobsRunning",
+  "sample:ReqMaxRun",
+  "sample:ClientGlideIdle",
+  "sample:ClientGlideRunning",
+  "sample:ClientGlideTotal",
+  "sample:StatusStageIn",
+  "sample:StatusRunning",
+  "sample:ClientJobsIdle",
+  "sample:ReqIdle",
+  "sample:StatusIdle",
+  "sample:StatusPending",
+  "sample:StatusHeld",
+  "sample:StatusIdleOther",
+  "sample:StatusStageOut",
+  "sample:StatusWait"
+]
+```
+if outputs an empty result
 ```json
 []
 ```
-investigate (seeing it with Dockerizd instances)
-otherwise if shows expected data catalog e.g. for sample.rrd embeded in the upstream project, if
+investigate (seeing it with Dockerized instances)
+when configured correctly it shows "target" metric catalog e.g. for `sample` directory 
+```sh
+annotations.csv
+percent-idle.rrd
+percent-user.rrd
+sample.rrd
+```
+embeded in the upstream project:
 
 ```json
 [
@@ -179,7 +222,35 @@ rrdserver.go:19:2: cannot find package "github.com/ziutek/rrd" in any of:
 grafana-rrd-server -h
 grafana-rrd-server: error while loading shared libraries: librrd.so.8: cannot open shared object file: No such file or directory
 ```
-see soft link [suggestion](https://github.com/doublemarket/grafana-rrd-server/issues/44):
+The required version of the shared library was found through system wide scan by root user
+inside several overlayy directories of the dockerised container:
+```sh
+sudo -s
+find / -iname 'librrd*' 2>/dev/null | tee /tmp/a.log
+```
+```sh
+/var/lib/docker/overlay2/b1bc4e07c66d52d8b73db2c4404b0a7e40d7f8b5562ffd71e6e49d67c608c47c/diff/usr/lib/librrd.so.8
+```
+To verify extract the buld portion of the Dockerfile
+build
+```sh
+RRD_SERVER_BUILD=xxx
+docker build -t $RRD_SERVER_BUILD -f Dockerfile.build .
+```
+and investigate
+```sh
+docker run -it $RRD_SERVER_BUILD
+```
+to see
+```sh
+cd /build
+ls -l lib/librrd.so.8
+lrwxrwxrwx    1 root     root            15 Aug  2 22:15 lib/librrd.so.8 -> librrd.so.4.3.5
+readlink lib/librrd.so.8
+librrd.so.4.3.5
+```
+
+This issue is discussed - see soft link [suggestion](https://github.com/doublemarket/grafana-rrd-server/issues/44):
 ```sh
 sudo -s
 cd /usr/lib/x86_64-linux-gnu/
@@ -219,7 +290,7 @@ rrdtool dump sample/sample.rrd
   * java time series data browser with JavaFx [app](https://github.com/binjr/binjr) backed by RRD
    * java port of rrdtool - [rrd4j](https://github.com/rrd4j/rrd4j)
    * RRDTool [tutorial](https://oss.oetiker.ch/rrdtool/tut/index.en.html)
-   * [post](https://medium.com/@raghavendrasamant/simplejson-datasource-implementation-in-grafana-using-sparkjava-81e2274b1cfa) about java based simpleJSON backend 
+   * [post](https://medium.com/@raghavendrasamant/simplejson-datasource-implementation-in-grafana-using-sparkjava-81e2274b1cfa) about java based simpleJSON backend
   * https://github.com/OpenNMS/jrrd - mixed Java / C wrapper
   * [RRDtool Tutorial - Part 1](https://www.youtube.com/watch?v=JaK-IctEyWs)
   * [RRDtool Tutorial - Part 2](https://www.youtube.com/watch?v=m_qeVVB2yzw)
