@@ -1,0 +1,49 @@
+### Info
+replca of [Spring Boot jsp example](https://github.com/hellokoding/springboot-jsp) with tests
+
+### Usage
+* real run
+```sh
+mvn -Dmaven.test.ski p=true clean spring-boot:run
+```
+* test run (like accpetnce test)
+```sh
+mvn test
+```
+
+### TODO
+
+* add `WebConfig` class
+to prevent erors
+```sh
+DEBUG org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder$StaticRequestMappingHandlerMapping - Looking up handler method for path /
+DEBUG org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder$StaticRequestMappingHandlerMapping -
+Did not find handler method for [/]
+WARN org.springframework.web.servlet.PageNotFound - No mapping found for HTTP request with URI [/] in DispatcherServlet with name ''
+```
+* fix the content to prevent runtime and test time error
+```java
+{
+  "timestamp": 1628111654428,
+  "status": 500,
+  "error": "Internal Server Error",
+  "exception": "javax.servlet.ServletException",
+  "message": "Circular view path [/hello.jsp]: would dispatch back to the current handler URL [/hello.jsp] again. Check your ViewResolver setup! (Hint: This may be the result of an unspecified view, due to default view name generation.)",
+  "path": "/hello"
+}
+```
+when controller returns the view with the same name as route:
+```java
+
+public class HelloController {
+	@RequestMapping("/hello")
+	public String hello(Model model,
+			@RequestParam(value = "name", required = false, defaultValue = "World") String name) {
+		model.addAttribute("name", name);
+		return "hello";
+	}
+}
+
+```
+### See Also
+  * https://www.baeldung.com/integration-testing-in-spring -  with full
