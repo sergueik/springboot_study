@@ -11,6 +11,22 @@ mvn -Dmaven.test.ski p=true clean spring-boot:run
 ```sh
 mvn test
 ```
+* test run illustrating effect of initializing too early
+```sh
+BADTEST=true mvn test
+```
+
+this will show
+```text
+org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://localhost:8085/": Connection refused (Connection refused);
+nested exception is java.net.ConnectException: Connection refused (Connection refused)
+	at example.controller.BrokenAcceptanceTest.test1(BrokenAcceptanceTest.java:79)
+...
+INFO] Results:
+[INFO]
+[ERROR] Errors:
+[ERROR]   BrokenAcceptanceTest.test1:79 » ResourceAccess I/O error on GET request for "h...
+```
 
 ### TODO
 * add a Junit4 variant
@@ -48,6 +64,6 @@ public class HelloController {
 ### See Also
 
   * https://www.baeldung.com/integration-testing-in-spring -  with full
-  * https://htmlunit.sourceforge.io/gettingStarted.html 
-  * https://htmlunit.sourceforge.io/faq.html 
+  * https://htmlunit.sourceforge.io/gettingStarted.html
+  * https://htmlunit.sourceforge.io/faq.html
   * https://stackoverflow.com/questions/6136435/how-to-create-htmlunit-htmlpage-object-from-string
