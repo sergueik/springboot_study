@@ -61,6 +61,11 @@ public class HelloController {
 	}
 }
 ```
+
+The same code fails under Junit4 with `java.net.ConnectException Connection refused` error (broken version saved in commit ``)
+```sh
+
+```
 ### See Also
 
   * https://www.baeldung.com/integration-testing-in-spring -  with full

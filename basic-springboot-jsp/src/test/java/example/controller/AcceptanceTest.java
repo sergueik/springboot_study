@@ -3,12 +3,10 @@ package example.controller;
  * Copyright 2021 Serguei Kouzmine
  */
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.Rule;
+import org.junit.Assume;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,6 +50,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 // NOTE: property annotations have no effect
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = { "serverPort=8085" })
+
 @PropertySource("classpath:application.properties")
 public class AcceptanceTest {
 
@@ -72,7 +71,7 @@ public class AcceptanceTest {
 	private ResponseEntity<String> responseEntity = null;
 	private static HtmlPage page;
 
-	@BeforeEach
+	@Before
 	public void setUp() {
 		url =  "http://localhost:" + serverPort + route;
 	}
