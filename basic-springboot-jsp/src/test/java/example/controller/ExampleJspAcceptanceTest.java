@@ -29,12 +29,27 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
+
+import com.gargoylesoftware.htmlunit.StringWebResponse;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebResponseData;
+import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.gargoylesoftware.htmlunit.html.DomNodeList;
+import com.gargoylesoftware.htmlunit.html.HTMLParser;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+// import com.gargoylesoftware.htmlunit.javascript.host.URL;
 
 // NOTE: property annotations have no effect
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
@@ -66,13 +81,10 @@ public class ExampleJspAcceptanceTest {
 	private static final RestTemplate restTemplate = new RestTemplate();
 	private String url = null;
 	private final String url2 = "http://localhost:" + randomServerPort + route;
-	// cannot cast
-	// private final List<MediaType> mediaTypes = new
-	// ArrayList<MediaType>(Arrays.asList(new MediaType[] {
-	// MediaType.APPLICATION_JSON })));
 	private HttpHeaders headers = new HttpHeaders();
 	private HttpEntity<String> request = null;
 	private ResponseEntity<String> responseEntity = null;
+	private static HtmlPage page;
 
 	@BeforeEach
 	public void setUp() {
@@ -110,7 +122,16 @@ public class ExampleJspAcceptanceTest {
 		String name = "value";
 		url = "http://localhost:" + randomServerPort + route + "?name=" + name;
 		responseEntity = restTemplate.getForEntity(url, String.class);
-		assertThat(responseEntity.getBody(), is(""));
+
+		// assertThat(responseEntity.getBody(), is(""));
+		StringWebResponse response = new StringWebResponse(responseEntity.getBody(),
+				new URL(url));
+		WebClient client = new WebClient();
+		page = HTMLParser.parseHtml(response, client.getCurrentWindow());
+		assertThat(page, notNullValue());
+		DomElement element = (page.getElementsById("0").get(0));
+		assertThat(element, notNullValue());
+		assertThat(element.getTextContent(), containsString(name));
 	}
 
 }

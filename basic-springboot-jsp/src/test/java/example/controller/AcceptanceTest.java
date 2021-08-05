@@ -98,10 +98,4 @@ public class AcceptanceTest {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 	}
 
-	@Test
-	public void test4() throws Exception {
-		responseEntity = restTemplate.getForEntity(url, String.class);
-		assertThat(responseEntity.getBody(), is(""));
-	}
-
 }

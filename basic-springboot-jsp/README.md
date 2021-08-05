@@ -1,20 +1,21 @@
 ### Info
-replca of [Spring Boot jsp example](https://github.com/hellokoding/springboot-jsp) with tests
+
+In this directory replica of a basic __Springboot jsp__ page with tests
 
 ### Usage
 * real run
 ```sh
 mvn -Dmaven.test.ski p=true clean spring-boot:run
 ```
-* test run (like accpetnce test)
+* test run (like acceptance test)
 ```sh
 mvn test
 ```
 
 ### TODO
-
+* add a Junit4 variant
 * add `WebConfig` class
-to prevent erors
+to prevent erors showing when enablied `HelloControllerTest`
 ```sh
 DEBUG org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder$StaticRequestMappingHandlerMapping - Looking up handler method for path /
 DEBUG org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder$StaticRequestMappingHandlerMapping -
@@ -43,7 +44,10 @@ public class HelloController {
 		return "hello";
 	}
 }
-
 ```
 ### See Also
+
   * https://www.baeldung.com/integration-testing-in-spring -  with full
+  * https://htmlunit.sourceforge.io/gettingStarted.html 
+  * https://htmlunit.sourceforge.io/faq.html 
+  * https://stackoverflow.com/questions/6136435/how-to-create-htmlunit-htmlpage-object-from-string
