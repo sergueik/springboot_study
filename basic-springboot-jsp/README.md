@@ -62,7 +62,7 @@ public class HelloController {
 }
 ```
 
-The same code fails under Junit4 with `java.net.ConnectException Connection refused` error (broken version saved in commit ``)
+The same code fails under Junit4 with `java.net.ConnectException Connection refused` error (broken version saved in commit [555b8f9](https://github.com/sergueik/springboot_study/commit/555b8f9c33b550313214b5ea4420ec78c31007a6))
 ```sh
 
 ```
