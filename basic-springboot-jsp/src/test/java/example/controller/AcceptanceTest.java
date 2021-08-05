@@ -66,15 +66,18 @@ public class AcceptanceTest {
 	private final static String body = "Hello World";
 	private static final RestTemplate restTemplate = new RestTemplate();
 	// cannot initialize too early ?
-	private String url = null; 
+	private String url = null;
 	private HttpHeaders headers = new HttpHeaders();
 	private HttpEntity<String> request = null;
 	private ResponseEntity<String> responseEntity = null;
 	private static HtmlPage page;
+	private static HtmlElement documentElement;
+	private static HtmlElement element;
+	private static DomElement domElement;
 
 	@BeforeEach
 	public void setUp() {
-		url =  "http://localhost:" + serverPort + route;
+		url = "http://localhost:" + serverPort + route;
 	}
 
 	@Test
@@ -105,8 +108,12 @@ public class AcceptanceTest {
 		responseEntity = restTemplate.getForEntity(url, String.class);
 		page = getHtmlPage(responseEntity.getBody());
 		assertThat(page, notNullValue());
-		DomElement element = (page.getElementsById(id).get(0));
-		assertThat(element, notNullValue());
+		domElement = page.getElementsById(id).get(0);
+		assertThat(domElement, notNullValue());
+		assertThat(domElement.getTextContent(), containsString(body));
+		assertThat(page.getDocumentElement(), notNullValue());
+		documentElement = page.getDocumentElement();
+		element = documentElement.getElementsByTagName("div").get(0);
 		assertThat(element.getTextContent(), containsString(body));
 	}
 

@@ -30,6 +30,7 @@ INFO] Results:
 
 ### TODO
 * add a Junit4 variant
+* update the code as needed to run with  latest HtlmUnit (signature  and location of the HtmlParser has changed between __2.32__ and __2.52.0__
 * add `WebConfig` class
 to prevent erors showing when enablied `HelloControllerTest`
 ```sh
@@ -60,11 +61,6 @@ public class HelloController {
 		return "hello";
 	}
 }
-```
-
-The same code fails under Junit4 with `java.net.ConnectException Connection refused` error (broken version saved in commit [555b8f9](https://github.com/sergueik/springboot_study/commit/555b8f9c33b550313214b5ea4420ec78c31007a6))
-```sh
-
 ```
 ### See Also
 
