@@ -11,7 +11,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 // servlet for static resources
 import org.springframework.web.servlet.view.JstlView;
 
-import example.HelloController;
+import example.controller.HelloController;
 
 @Configuration
 @EnableWebMvc
@@ -22,7 +22,7 @@ public class AppConfig {
 	public ViewResolver viewResolver() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 		viewResolver.setViewClass(JstlView.class);
-		// the HelloController not mapped
+		// NOTE: HelloController is not mapped
 		viewResolver.setPrefix("/");
 		viewResolver.setSuffix(".jsp");
 		return viewResolver;

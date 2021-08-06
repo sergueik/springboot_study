@@ -1,11 +1,11 @@
-### Info
+﻿### Info
 
 In this directory replica of a basic __Springboot jsp__ page with tests
 
 ### Usage
 * real run
 ```sh
-mvn -Dmaven.test.ski p=true clean spring-boot:run
+mvn -Dmaven.test.skip=true clean spring-boot:run
 ```
 * test run (like acceptance test)
 ```sh

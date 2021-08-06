@@ -35,7 +35,8 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = { "serverPort=8085" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
+		"serverPort=8085" })
 @PropertySource("classpath:application.properties")
 public class BrokenAcceptanceTest {
 
@@ -58,12 +59,13 @@ public class BrokenAcceptanceTest {
 	// connect: Address is invalid on local machine, or
 	// port is not valid on remote machine
 
-	private final String route = "/";
+	private final String route = "/model";
 	private static final RestTemplate restTemplate = new RestTemplate();
 	private String url = "http://localhost:" + serverPort + route;
 	private HttpHeaders headers = new HttpHeaders();
 	private HttpEntity<String> request = null;
-	private final boolean badtest = Boolean.parseBoolean(System.getenv("BADTEST"));
+	private final boolean badtest = Boolean
+			.parseBoolean(System.getenv("BADTEST"));
 	private ResponseEntity<String> responseEntity = null;
 
 	@BeforeEach
@@ -71,17 +73,15 @@ public class BrokenAcceptanceTest {
 		if (!badtest) {
 			url = "http://localhost:" + serverPort + route;
 		}
+		// when BADTEST is set, test fail with
+		// error: org.springframework.web.client.ResourceAccessException:
+		// I/O error on GET request for "http://localhost:8085/model":
+		// Connection refused: connect;
 	}
 
-	// @Disabled
 	@Test
 	public void test1() throws Exception {
 		responseEntity = restTemplate.getForEntity(url, String.class);
-		// error: org.springframework.web.client.ResourceAccessException:
-		// I/O error on GET request for
-		// "http://localhost:8085/": Connection refused: connect;
-		// nested exception is java.net.ConnectException: Connection refused:
-		// connect
 		assertThat(responseEntity.getBody(), containsString("Hello World"));
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 	}

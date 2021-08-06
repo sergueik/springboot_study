@@ -51,7 +51,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 // NOTE: property annotations have no effect
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = { "serverPort=8085" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
+		"serverPort=8085" })
 @PropertySource("classpath:application.properties")
 public class AcceptanceTest {
 
@@ -61,7 +62,7 @@ public class AcceptanceTest {
 	@LocalServerPort
 	private int serverPort = 8085;
 
-	private final String route = "/";
+	private final String route = "/model";
 	// NOTE: exercising property file override
 	private final static String body = "Hello World";
 	private static final RestTemplate restTemplate = new RestTemplate();
@@ -98,12 +99,25 @@ public class AcceptanceTest {
 	public void test3() throws Exception {
 		// Assumptions.assumeFalse(false);
 		String name = "value";
-		responseEntity = restTemplate.getForEntity(url + "?name=" + name, String.class);
-		assertThat(responseEntity.getBody(), containsString(String.format("Hello %s", name)));
+		responseEntity = restTemplate.getForEntity(url + "?name=" + name,
+				String.class);
+		assertThat(responseEntity.getBody(),
+				containsString(String.format("Hello %s", name)));
 	}
 
 	@Test
 	public void test4() throws Exception {
+		// Assumptions.assumeFalse(false);
+		String name = "value";
+		responseEntity = restTemplate.getForEntity(
+				"http://localhost:" + serverPort + "/generate?name=" + name,
+				String.class);
+		assertThat(responseEntity.getBody(),
+				containsString(String.format("hello %s", name)));
+	}
+
+	@Test
+	public void test5() throws Exception {
 		String id = "0";
 		responseEntity = restTemplate.getForEntity(url, String.class);
 		page = getHtmlPage(responseEntity.getBody());

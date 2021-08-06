@@ -28,6 +28,9 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.io.IOError;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 
@@ -36,13 +39,13 @@ import org.hamcrest.Matcher;
 import example.ExampleApplication;
 // https://github.com/TechPrimers/test-controller-example
 // https://github.com/kriscfoster/spring-boot-testing-pyramid
-import example.HelloController;
+import example.controller.HelloController;
 
 // @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest
 public class ServiceModelTest {
 
-	final static String route = "/";
+	final static String route = "/model";
 	final static String content = "";
 	final static String forwardedUrl = "hello";
 	final static String charset = "ISO-8859-1";
@@ -65,19 +68,31 @@ public class ServiceModelTest {
 	// examine HTTP status
 	@Test
 	public void statusTest() throws Exception {
+		// Confirm HTTP status is not 30x
+		Assertions.assertThrows(AssertionError.class, () -> {
+			resultActions.andExpect(status().is3xxRedirection());
+		});
 		resultActions.andExpect(status().isOk());
 	}
 
-	// examine body
-	@Test
-	public void bodyTest() throws Exception {
-		matcher = is(content);
-		resultActions.andExpect(content().string(matcher));
-	}
-
+	// examine redirect URL
 	@Test
 	public void forwardUrlTest() throws Exception {
 		resultActions.andExpect(forwardedUrl(forwardedUrl));
+	}
+
+	// examine body - non-blank. To examine JSP page, see AcceptanceTest
+	@Test
+	public void bodyTextTest() throws Exception {
+		matcher = containsString("hello example");
+		mvc.perform(get("/generate?name=example"))
+				.andExpect(content().string(matcher));
+	}
+
+	// examine body to be blank
+	@Test
+	public void noBodyTest() throws Exception {
+		resultActions.andExpect(content().string(is("")));
 	}
 
 	// examine response header
