@@ -68,3 +68,7 @@ public class HelloController {
   * https://htmlunit.sourceforge.io/gettingStarted.html
   * https://htmlunit.sourceforge.io/faq.html
   * https://stackoverflow.com/questions/6136435/how-to-create-htmlunit-htmlpage-object-from-string
+  * https://docs.spring.io/spring-framework/docs/current/reference/html/web.html
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

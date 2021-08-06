@@ -5,7 +5,7 @@
   <name>springboot-jsp</name>
   <description>springboot-jsp</description>
   <groupId>example</groupId>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
