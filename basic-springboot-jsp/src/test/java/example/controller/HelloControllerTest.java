@@ -43,7 +43,7 @@ import example.controller.HelloController;
 
 // @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest
-public class ServiceModelTest {
+public class HelloControllerTest {
 
 	final static String route = "/model";
 	final static String content = "";
