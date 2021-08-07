@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.5min.apitest</groupId>
-  <artifactId>5min-apitest</artifactId>
+  <groupId>example</groupId>
+  <artifactId>restassured</artifactId>
   <version>1.0-SNAPSHOT</version>
   <properties>
     <encoding>UTF-8</encoding>
@@ -11,7 +11,7 @@
     <hamcrest-all.version>1.3</hamcrest-all.version>
     <java.version>1.8</java.version>
     <junit.version>4.13.2</junit.version>
-    <rest-assured.version>2.8.0</rest-assured.version>
+    <rest-assured.version>4.3.0</rest-assured.version>
   </properties>
   <dependencies>
     <dependency>
@@ -20,17 +20,17 @@
       <version>${junit.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.jayway.restassured</groupId>
-      <artifactId>rest-assured</artifactId>
-      <version>${rest-assured.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.jayway.restassured</groupId>
+      <groupId>io.rest-assured</groupId>
       <artifactId>json-path</artifactId>
       <version>${rest-assured.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.jayway.restassured</groupId>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>${rest-assured.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
       <artifactId>json-schema-validator</artifactId>
       <version>${rest-assured.version}</version>
     </dependency>
