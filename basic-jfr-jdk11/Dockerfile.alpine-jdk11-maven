@@ -1,0 +1,19 @@
+# origin: https://github.com/timbru31/docker-alpine-java-maven/blob/master/Dockerfile
+FROM azul/zulu-openjdk-alpine:11
+
+ARG REFRESHED_AT
+ENV REFRESHED_AT $REFRESHED_AT
+
+ARG MAVEN_VERSION=3.6.3
+
+RUN apk add --no-cache curl 
+
+# Install Maven
+RUN mkdir -p /usr/share/maven /usr/share/maven/ref \
+  && curl -fsSL -o /tmp/apache-maven.tar.gz https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
+  && tar -xzf /tmp/apache-maven.tar.gz -C /usr/share/maven --strip-components=1 \
+  && rm -f /tmp/apache-maven.tar.gz \
+  && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
+
+ENV MAVEN_HOME /usr/share/maven
+ENV MAVEN_CONFIG "/root/.m2"

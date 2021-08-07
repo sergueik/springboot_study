@@ -1,0 +1,281 @@
+=======
+Changes in version 3.8 - 8 dec 2020.
+-------------------------------
+
+Slightly improving time parser, with better tests. 4 digits year can now be any year. For two digits year, 38 is used as a pivot. Before that, it means 20xx, after 19xx.
+
+Extending SI prefixes to the set: 'y', 'z', 'a', 'f', 'p', 'n', 'µ', 'm', ' ', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'
+
+* Fixed Issue 141: Setting graph property "start" seems broken in 3.7.
+
+Changes in version 3.7 - 16 Aug 2020.
+-------------------------------
+
+The font used by RRD4J can now be defined a set of properties. See the introduction of the class RrdGraphConstants for more details.
+
+Improving URI normalization used internally by the pool, to ensure that same RRD opened using different path are indeed resolved as the same.
+
+Added a RrdDbPool.lockEmpty method to wait for an empty pool and lock it.
+
+The RrdDb.Builder.setPool now automatically enable the pool usage.
+
+Plottable usages are all replaced by an IPlottable interface, so lambda can be used instead. This class is now marked as deprecated.
+
+Changes in version 3.6 - 06 Apr 2020.
+-------------------------------
+
+Adding source for background or overlay image. They can be now an URL or even a custom generated image.
+
+An image can also be added in the canvas (the area where the plot are drawn).
+
+Dropped java 1.7 support.
+
+Build settings to compile with latest JVM, but still able to run on the officially support JVM.
+
+A new pool, using features from Java 8. They were some rare leaks in the old one and using modern java features should reduce locking.
+It contains some assert so it might help discover problems early. All the public requestRrdDb are not deprecated any more, as they provide
+a convenient way to get RrdDb using a pool.
+
+* Fixed Issue 135: ByteBufferBackend.get fails with BufferUnderflow.
+
+Changes in version 3.5 - 10 Feb 2019.
+------------------------------------
+
+This version include minor tunings, that should slightly reduce memory usage.
+
+RrdGraph can now take a custom ImageWriter and ImageWriteParam for better control of generated image.
+
+The class DataImporter is now public, it allows to define custom importer.
+
+RrdDb are now made using a Builder, because of the explosion of parameters. The builder can also be used to define the use of a pool.
+
+A RrdDb now remember if it was open directly or from the pool, so calling RrdDbPool.release is not needed any more.
+
+The RrdDbPool is not restricted any more to files.
+
+* Fixed Issue 123: Char arrays duplicates with ConsoleFun values in memory.
+* Fixed Issue 124: RRD4j 3.4 increasing number of open files.
+
+Changes in version 3.4 - 27 Dec 2018.
+------------------------------------
+
+This version is an important version, with many internal rewrite and code cleaning. 
+
+Lots of changes in the RrdBackendFactory. Much finer control is provided, a generic close method is provided and backend factories now implement Closeable. Accessing factories
+using the name is deprecated, and active backend should be used instead.
+Many final was also removed. People using their own backend should have a look at the new code.
+Backends now use more of Java's NIO and ByteBuffer API.
+RrdBerkleyDbBackendFactory was the only backend factory whose creator auto-register as default. That's not the case any more.
+
+Both LinearInterpolator and elements colors (in RrdGraphDef.setColor) now uses an enum instead of int.
+
+All exceptions thrown by RRD4J are now subclass of org.rrd4j.core.RrdException, for finer exception handling.
+But RrdException is a subclass of IOException anyway, so this release will not brake existing code. It fixes https://github.com/rrd4j/rrd4j/issues/102.
+
+Added OSGi metadata to the main rrd4j jar. This is not supported on jdk 1.7. Added in https://github.com/rrd4j/rrd4j/pull/120.
+
+A finalize override was removed in RrdDb, as it's considered a bad practice and now uses PhantomReference instead. It should reduce GC time, feedback is welcome.
+
+In NIO backend, the sync threads pool is now optional. It was never really useful as the operation system take care of that anyway.
+
+Changes in version 3.3.1 - 5 Oct 2018
+------------------------------------
+
+A rebuild of 3.3. Since Java 9, it's dangerous to build pre-9 java without checking against the old runtime.
+
+Changes in version 3.3 - 28 Sep 2018
+------------------------------------
+
+Updated NIO backend to work on java 9+.
+A few update to code from sonarcloud recommendations.
+
+Changes in version 3.2 - 11 Nov 2017
+------------------------------------
+
+Better management of multiple backend of the same kind. To do that, URI can be used instead of path and the RrdBackendFactory can take a list of active backend that will be checked in order.
+Each backend managed and generate URI using different kind of scheme. 
+As URI is used internally now, it's dangerous to change the default backend once some rrd are used because it can change the internally generated URI. To avoid that,
+either change the default factory once at the beginning or only use URI for rrd's path.
+
+Allows longer that 20 characters in datasource names, the new limit is now 65535 characters.
+A offset is encoded in the datasource name, using the private use area from unicode (https://en.wikipedia.org/wiki/Private_Use_Areas). So if a long name is used and the rrd read
+by an old library, the name returned will be the long name reduced to about 17 or 18 characters, depending of the length of the file, with a 
+few undisplayable characters appended. But if this area is already used for some custom usage, some strange results will happens.
+
+RrdBackend.setFactory should not be public it's not to be used by end user. But to late to make it private and final as it should be.
+
+MongoDB backed end updated to 3.5.0.
+
+Adding an experimental features, that try to downsample before rendering, see http://skemman.is/en/item/view/1946/15343 for rational. It's used
+by calling RrdGraphDef.setDownsampler(). It must be given an implementation of DownSampler. Two example one, eu.bengreen.data.utility.LargestTriangleThreeBuckets and
+eu.bengreen.data.utility.LargestTriangleThreeBucketsTime are given.
+
+Findbugs run resolve somes bugs.
+
+RrdDb is now java.io.Closeable.
+
+Not yet ready for Java 9.
+
+Changes in version 3.1 - 1 Jan 2017
+----------------------------------
+
+Added improved control on time label, by using custom instance of org.rrd4j.graph.TimeLabelFormat instances, thanks to brharrington (https://github.com/brharrington).
+Added support for MAXNAN, MINNAN
+The XML export format date use an ISO8601 like format, and output time in UTC.
+
+* Fixed Issue 80: Error with resolution in fetch requests
+* Fixed Issue 65: Fix crash when requested time is outside of archive range (for rrdtool archives).
+
+Changes in version 3 - 15 Aug 2016
+----------------------------------
+
+Dropped support for Java 6.
+Removed gradle and ant build.
+Improved the RPN calculator performance.
+Added support for VDEF like datasources. They are functions that take a datasource and output a single value. They can be user defined by implementing the abstract 
+class org.rrd4j.data.Variable. A Variable class return a Value that can contain both a numerical value and a time stamp ; it's useful for functions like Max 
+that can return both an maximum value and when it occurred. They deprecated old aggregation functions.
+More precise font selection, with more configurable elements.
+gprint can take any previously defined datasource that is a defined from a Variable.
+Line, vrule and hrule can be defined using a java's Stroke, not just a float width.
+Line and Area can be stacked at will, without the needs of a stack.
+
+* Fix imageio*.tmp not cleaned up in temporary dir when graphing
+* Initialize more values when creating a rrd, allow .rrd file reuse without breaking (cf issue #75).
+* Merge pull 71: Request Added hashCode method to DsDef class
+* Fixed Issue 58: Glue marker doesn't work correctly
+* Fixed Issue 60: Expose org.rrd4j.core.jrrd.DataChunk internals
+
+Changes in version 2.2.1 - 14 may 2015
+----------------------------------------
+Except for some added RPN and default version for rrd, this is strictly a bug fix release.
+A new faster and deadlock free pool.
+Javadoc is no longer in the source repository.
+Default version for rrd file is 2.
+Added a lot of missing RPN operator.
+
+* Fixed Issue 63: Fail to create RrdDb instance from a XML created by RRDatabase instance and a test case for it.
+* Fixed Issue 61: Rewrite jrrd.RRDFile to use MappedByteBuffer
+* Fixed Issue 59: ArcDef - please override hashcode
+* Fixed Issue 56: ImageWriterTest.testGif fails
+* Fixed Issue 52: Normalizer is broken when input data are sparse
+* Fixed Issue 49:   Graph: clipping region is off in x dimension by 1, so data point at t0 does not show on graph
+* Fixed Issue 48: Graph: out of range values forced to min & max give the illusion of data at those values when there is none
+* Fixed Issue 45: ADDNAN patch for rrd4j
+and many more bugs.
+
+Changes in version 2.2 - 4 Nov 2013
+----------------------------------------
+* Fixed Issue 24: Less intrusive grid
+* Fixed Issue 26: please expose RrdNioBackendFactory.close() to shut down the syncer pool. Added a setSyncThreadPool to RrdNioBackendFactory, see Javadoc for more details.
+* Fixed Issue 28: RrdPool requestRrdDb not freeing RrdEntry on error
+* Fixed Issue 29: add support for horizontal and vertical spans
+* Fixed Issue 31: improve support for logarithmic axis
+* Fixed Issue 32: Error adding datasources when rrd file is not is the the same filesystem as /tmp
+* Fixed Issue 34: add option to set x-axis color
+* Fixed Issue 37: when stacking data sources, having data with NaN creates a broken graph
+* Fixed Issue 38: Data Wrong in XML
+* Fixed Issue 39: Data Wrong in XML
+* Fixed Issue 39: RPN TIME operator does not return the time for the timeslot.
+* A few improvements to graph rendering
+
+Changes in version 2.1.1 - 6 Dec 2011
+----------------------------------------
+* Invalid rrdtools file import
+
+Changes in version 2.1 - 24 Nov 2011
+----------------------------------------
+* Fixed Issue 1: Key colours don't match the graph when using transparency
+* Fixed Issue 10: some parts of this code has GPL license?
+* Fixed Issue 12: Make RrdMemoryBackend better extensible
+* Fixed Issue 13: RrdGraphConstants FontConstructor should close InputStream
+* Fixed Issue 16: Released *.jar contain no class files
+* Fixed Issue 11: rrdDb.createFetchRequest.fetchData.getAggregate(Total) does not return the correct value for step sizes other than 1.
+* Implemented Issue 15: Support for version 0003
+* Minor fixes and improvements.
+
+Changes in version 2.0.7 - 22 March 2011
+----------------------------------------
+
+* Added RrdToolkit.addDataSources(..)
+* Various minor fixes
+* Added support for ATAN, ATAN2, DEG2RAD, RAD2DEG, NE.
+* Added a n-th percentile in RrdGraphDef (Bacchella Fabrice)
+* Fixed issue 9
+* Fixed issue with fetch request resolution (Patrick Lightbody)
+
+ Changes in version 2.0.6 - 12 Jan 2011
+--------------------------------------
+Major changes:
+
+* Migrated to Google Code (http://code.google.com/p/rrd4j)
+* Changed license to Apache License, Version 2.0
+* Requires JDK 1.6
+* Fixed aggregation of TOTAL
+* MongoDB backend (see http://www.mongodb.org/)
+* Removed JDK selection logic for the default factory - NIO is the default one
+
+Minor changes:
+
+* Added RrdDbPoolNew with better concurrency (Fabrice Bacchella) + fixed issue 11
+* RrdNioBackend uses ScheduledExecutorService instead of Timer (and spawns daemon, named threads)
+* Fixed minor issue in FetchRequest
+* Fixed caching bug (Christophe Roudet)
+* Fixed various typos
+* Beautified RRD File Inspector
+* Changed source dir to src/main/java
+* Gradle (build.gradle) build script
+* BerkeleyBD factory accepts a Berkeley Database object in it's constructor
+
+How to use the MongoDB backend (for more information see http://www.mongodb.org/display/DOCS/Java+Language+Center):
+
+    // connect to localhost:27017
+    Mongo mongo = new Mongo();
+    mongo.setWriteConcern(WriteConcern.SAFE); // syncs write operations
+    DBCollection coll = mongo.getDB("my-rrd4j-db").getCollection("my-rrds");
+
+    RrdMongoDBBackendFactory factory = new RrdMongoDBBackendFactory(coll); // automatically set as default factory
+    RrdDb rrdDb = ...
+
+Changes in version 2.0.5
+------------------------
+* Reverted changes to Sample in 2.0.3 (binary searching broke storage)
+
+Changes in version 2.0.4
+------------------------
+* RrdSafeFileBackend uses AtomicLong to track it's lock counters
+* Fixed bugreport 2: in org.rrd4j.data.Aggregates.getAggregate(), the MIN case statement is missing. As
+a result, gprint statements cannot display the minimum value of a data series as an aggregate function.
+* Other minor changes
+
+Changes in version 2.0.3
+------------------------
+* Major performance and locking improvements with the BerkeleyDB backend
+* 10% performance improvement in the Sample class (now uses binary searching to get the correct datasource)
+* JRobin RRD file compability
+* Less synchronization in RrdBackendFactory
+* Other minor changes
+
+Changes in version 2.0.2
+------------------------
+* Minor improvements to RrdBerkeleyDbBackendFactory
+
+* Applied patch from Renaud Bruyeron:
+RrdGraphDefTemplate.resolveColors destroys COLOR_NAMES constant array, which breaks the parsing
+of XML template file. Another issue fixed by the patch is that Util.Xml.getChildNodes() does not
+filter out nodes that are not of type Node.ELEMENT_NODE - this breaks pretty much all the parsing
+code in the *Template classes.
+
+Changes in version 2.0.1
+------------------------
+* Bugfix in TimeAxis where drawing area <= 0 would throw exceptions (Ronny Standtke)
+* Bugfix in Archive.accumulate (break was missing)
+
+Changes in version 2.0 (JDK 1.5 migration)
+------------------------------------------
+* Bugfix in TimeAxis miscalculated when width was smaller then the endtime
+* Improvement: ConsolFun and DsType are now JDK 1.5 Enum's
+* Removed RrdException, replaced by IllegalArgumentException in most places
+* Usage of StringBuilder to improve performance
+* Sleepycat Berkeley DB backend (see http://www.sleepycat.com)
+* Varargs where usefull
