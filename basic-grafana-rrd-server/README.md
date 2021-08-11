@@ -1,6 +1,6 @@
 ### Info
 
-a replica of [grafana rrd server](https://github.com/doublemarket/grafana-rrd-server) pinned to specific alpine version
+a replica of [grafana rrd server](https://github.com/doublemarket/grafana-rrd-server) pinned to specific alpine version. Allows accessing the [RRDTool files](https://oss.oetiker.ch/rrdtool/) as SimpleJSON grafana data sorrces over `/search`, `query`, `annotations` [protocol](https://grafana.com/grafana/plugins/grafana-simple-json-datasource/)
 
 ### Usage
 
@@ -22,7 +22,7 @@ or if like to limit the files to scan, with POST request
 ```sh
 curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "sample" }' http://localhost:9000/search
 ```
-it will show only matching 
+it will show only matching
 
 ```go
 func search(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +59,7 @@ if outputs an empty result
 []
 ```
 investigate (seeing it with Dockerized instances)
-when configured correctly it shows "target" metric catalog e.g. for `sample` directory 
+when configured correctly it shows "target" metric catalog e.g. for `sample` directory
 ```sh
 annotations.csv
 percent-idle.rrd
@@ -287,12 +287,21 @@ rrdtool dump sample/sample.rrd
 
 ### See Also
 
-  * java time series data browser with JavaFx [app](https://github.com/binjr/binjr) backed by RRD
-   * java port of rrdtool - [rrd4j](https://github.com/rrd4j/rrd4j)
+  * Standalone pure Java time series data browser with JavaFx [app](https://github.com/binjr/binjr) featuring plugin RRD4J Data source. NOTE: latest releases require Java 11 and recent JavaFX controls to handle RRD4J target selection and use gradle.
+   * java port of rrdtool - [rrd4j](https://github.com/rrd4j/rrd4j) - last updated in __2020__ - still need to locate the data querying API.
    * RRDTool [tutorial](https://oss.oetiker.ch/rrdtool/tut/index.en.html)
    * [post](https://medium.com/@raghavendrasamant/simplejson-datasource-implementation-in-grafana-using-sparkjava-81e2274b1cfa) about java based simpleJSON backend
   * https://github.com/OpenNMS/jrrd - mixed Java / C wrapper
+  * https://github.com/OpenNMS/jrrd2 - successor of __jrrd__ - uses [jni](https://docs.oracle.com/javase/8/docs/technotes/guides/jni/)
+  * https://github.com/caseylucas/rrdtool-java another jni java call frontend
+  * https://oss.stamfest.net/wordpress/rrdtool-java-interface
+  * https://github.com/didfet/rrdclient - wrapper, uses `java.nio.channels.Channels`
   * [RRDtool Tutorial - Part 1](https://www.youtube.com/watch?v=JaK-IctEyWs)
   * [RRDtool Tutorial - Part 2](https://www.youtube.com/watch?v=m_qeVVB2yzw)
   * https://github.com/sysmo-nms/rrdio
+  * [rrdtool backed grafana simple JSON](https://github.com/famzah/rrd-json-grafana-ds) using PHP and CachingRRD
   * probably moves data the other direction https://github.com/nitinka/JMetrics
+  * basic implementation of [SimpleJSON REST server](https://github.com/IsmetKh/grafana-simplejson-datasource) - has ASP.Net dependencies , can be used to prototype `/query`, `/search`,`/annotations`, `/tag-keys`, `tag-alues` payloads then using some prototype ASP.Net clean [REST famework](https://github.com/sachabarber/REST/tree/master/RESTServer/RESTServer) also discussed in [codeproject article](https://www.codeproject.com/Articles/826383/REST-A-Simple-REST-framework)
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
