@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import example.controller.DataSoureController;
+import example.controller.SearchController;
 import example.service.ExampleService;
 import example.Application;
 import example.component.SearchRequest;
@@ -54,8 +54,7 @@ public class SearchRequestTest {
 	@SuppressWarnings("unused")
 	private static Application application = new Application();
 	private static ExampleService service = new ExampleService();
-	private static DataSoureController controller = new DataSoureController(
-			service);
+	private static SearchController controller = new SearchController(service);
 
 	@BeforeClass
 	public static void setUp() {

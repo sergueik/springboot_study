@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import example.controller.DataSoureController;
+import example.controller.SearchController;
 import example.service.ExampleService;
 import example.Application;
 import example.component.SearchRequest;
@@ -35,7 +35,7 @@ import com.google.gson.Gson;
 
 // NOTE: uncommenting the @Runwith annotation will crash the JVM
 // with massive  IllegalState Failed to load ApplicationContext
-// Parameter 0 of constructor in example.controller.DataSoureController required a bean of type 'example.service.ExampleService' that could not be found.
+// Parameter 0 of constructor in example.controller.SearchController required a bean of type 'example.service.ExampleService' that could not be found.
 // @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest
 public class Search2RequestTest {
@@ -53,8 +53,7 @@ public class Search2RequestTest {
 	@SuppressWarnings("unused")
 	private static Application application = new Application();
 	private static ExampleService service = new ExampleService();
-	private static DataSoureController controller = new DataSoureController(
-			service);
+	private static SearchController controller = new SearchController(service);
 
 	@BeforeClass
 	public static void setUp() {

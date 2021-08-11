@@ -40,8 +40,7 @@ public class HealthCheckTest {
 	@Test
 	public void test() throws Exception {
 		final String route = "/";
-		MockMvcBuilders
-				.standaloneSetup(new DataSoureController(new ExampleService())).build()
+		MockMvcBuilders.standaloneSetup(new HealthCheckController()).build()
 				.perform(get(route)).andExpect(status().isOk());
 	}
 }

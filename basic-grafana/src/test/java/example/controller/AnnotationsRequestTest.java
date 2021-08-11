@@ -58,7 +58,7 @@ public class AnnotationsRequestTest {
 	@SuppressWarnings("unused")
 	private static Application application = new Application();
 	private static ExampleService service = new ExampleService();
-	private static DataSoureController controller = new DataSoureController(
+	private static AnnotationsController controller = new AnnotationsController(
 			service);
 
 	@BeforeClass
