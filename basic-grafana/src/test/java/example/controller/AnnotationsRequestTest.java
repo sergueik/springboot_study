@@ -30,6 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import example.controller.DataSoureController;
 import example.service.ExampleService;
 import example.Application;
+import example.component.Annotation;
+import example.component.AnnotationRequest;
+import example.component.Range;
 import example.component.SearchRequest;
 import com.google.gson.Gson;
 
@@ -38,16 +41,18 @@ import com.google.gson.Gson;
 // Parameter 0 of constructor in example.controller.DataSoureController required a bean of type 'example.service.ExampleService' that could not be found.
 // @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest
-public class SearchRequestTest {
+public class AnnotationsRequestTest {
 
-	final static String route = "/search";
-	final static String body = "test";
+	final static String route = "/annotations";
+	final static String body = "annotation";
 	private static String charset = null;
 	private static final Gson gson = new Gson();
 	private ResultActions resultActions;
 	private static MockMvc mvc;
 
-	private final SearchRequest searchRequest = new SearchRequest();
+	private final AnnotationRequest annotationRequest = new AnnotationRequest();
+	private final Annotation annotation = new Annotation();
+	private final Range range = new Range();
 
 	// initiaize real stuff
 	@SuppressWarnings("unused")
@@ -63,10 +68,16 @@ public class SearchRequestTest {
 
 	@Before
 	public void beforeTest() throws Exception {
+		annotation.setDatasource("data");
+		annotation.setEnable(true);
+		annotation.setName("name");
+		annotationRequest.setAnnotation(annotation);
+		range.setFrom("from");
+		range.setTo("to");
 
-		searchRequest.setTarget("dummy");
+		annotationRequest.setRange(range);
 		resultActions = mvc.perform(post(route).accept(MediaType.APPLICATION_JSON)
-				.content(gson.toJson(searchRequest))
+				.content(gson.toJson(annotationRequest))
 				.contentType(MediaType.APPLICATION_JSON));
 	}
 
@@ -82,17 +93,16 @@ public class SearchRequestTest {
 		resultActions.andExpect(content().string(containsString(body)));
 	}
 
-	// TODO: Applies for other API than /search
-	@Ignore
 	@Test
 	public void jsonTest() throws Exception {
-		resultActions.andExpect(jsonPath("$.name", is(body)));
+		resultActions.andExpect(jsonPath("$[0].annotation.name", is("name")));
 	}
 
 	// count nodes
+	// TODO: No value at JSON path "$.*", exception: json can not be null or empty
 	@Test
 	public void jsonTest2() throws Exception {
-		resultActions.andExpect(jsonPath("$.*", hasSize(1)));
+		resultActions.andExpect(jsonPath("$.*", hasSize(2)));
 	}
 
 	@Test

@@ -127,10 +127,7 @@ public class DataSoureController {
 			default:
 			}
 		}
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Access-Control-Allow-Headers", "accept, content-type");
-		headers.add("Access-Control-Allow-Methods", "POST");
-		headers.add("Access-Control-Allow-Origin", "*");
+		final HttpHeaders headers = new HttpHeaders();
 		Collections.sort(result, (o1, o2) -> {
 			String name1 = String.valueOf(o1.get("target").toString());
 			String name2 = String.valueOf(o2.get("target").toString());
@@ -146,6 +143,11 @@ public class DataSoureController {
 	public List<AnnotationResponseRow> postAnnotationRequest(
 			@RequestBody AnnotationRequest data) {
 		List<AnnotationResponseRow> response = new ArrayList<>();
+		AnnotationResponseRow row = new AnnotationResponseRow();
+		row.setAnnotation(data.getAnnotation());
+		response.add(row);
+		// adding an empty row
+		response.add(new AnnotationResponseRow());
 		return response;
 
 	}
