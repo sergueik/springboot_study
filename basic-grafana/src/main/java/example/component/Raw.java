@@ -1,17 +1,8 @@
 package example.component;
 
-public class Range {
+public class Raw {
 	private String from;
 	private String to;
-	private Raw raw;
-
-	public Raw getRaw() {
-		return raw;
-	}
-
-	public void setRaw(Raw data) {
-		raw = data;
-	}
 
 	public String getFrom() {
 		return from;

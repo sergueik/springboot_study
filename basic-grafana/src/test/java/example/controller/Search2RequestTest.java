@@ -37,12 +37,11 @@ import com.google.gson.Gson;
 // with massive  IllegalState Failed to load ApplicationContext
 // Parameter 0 of constructor in example.controller.DataSoureController required a bean of type 'example.service.ExampleService' that could not be found.
 // @RunWith(SpringJUnit4ClassRunner.class)
-
 @WebMvcTest
-public class SearchRequestTest {
+public class Search2RequestTest {
 
-	final static String route = "/search";
-	final static String body = "test";
+	final static String route = "/search2";
+	final static String body = "text data";
 	private static String charset = null;
 	private static final Gson gson = new Gson();
 	private ResultActions resultActions;
@@ -106,7 +105,7 @@ public class SearchRequestTest {
 	@Test
 	public void rejectionsTest() throws Exception {
 		mvc.perform(post(route).contentType(MediaType.TEXT_PLAIN))
-				.andExpect(status().isOk());
+				.andExpect(status().isUnsupportedMediaType());
 		mvc.perform(post(route).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
 		charset = "UTF-8";
@@ -116,6 +115,8 @@ public class SearchRequestTest {
 	}
 
 	// examine response header
+	// Content type not set
+	@Ignore
 	@Test
 	public void contentTypeTest() throws Exception {
 		charset = "UTF-8";

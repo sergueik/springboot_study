@@ -7,8 +7,8 @@ base image with only JSON Datasource plugins
  * [simple-json](https://grafana.com/grafana/plugins/grafana-simple-json-datasource/) 
  * [simpod-json-datasource](https://grafana.com/grafana/plugins/simpod-json-datasource/)
  
-installed and a fake datarource with a trivial timeseries from [Jonnymcc/grafana-simplejson-datasource-example](https://github.com/Jonnymcc/grafana-simplejson-datasource-example/) and the springboot
-application with similar functionality
+installed and a fake datasource with a trivial timeseries from [Jonnymcc/grafana-simplejson-datasource-example](https://github.com/Jonnymcc/grafana-simplejson-datasource-example/)
+and the springboot application with similar functionality
 
 ### Testing
 * optionally pre-download grafana package (it seems to be ignored by Docker `ADD` instruction)
@@ -125,6 +125,73 @@ to support Grafana's simpleJson plugin, the back-end WebAPI implements 4 routes:
   *  `/query`: return the time series points for specific indicator
   *  `/annotations`: return annotations
 
+### Strongly-typed Implementation
+```sh
+mvn test
+```
+```sh
+mvn -Dmaven.test.skip=true spring-boot:run
+```
+
+```sh
+curl -s -X POST  http://localhost:5000/search2
+```
+```json
+{
+  "timestamp": 1628720447913,
+  "status": 415,
+  "error": "Unsupported Media Type",
+  "exception": "org.springframework.web.HttpMediaTypeNotSupportedException",
+  "message": "Content type 'null' not supported",
+  "path": "/search2"
+}
+```
+
+```sh
+curl -s -X POST  -H "Content-Type: application/json" http://localhost:5000/search2 2>& 1 | /c/tools/jq-win64.exe  '.'
+
+```
+```json
+{
+  "timestamp": 1628719457372,
+  "status": 400,
+  "error": "Bad Request",
+  "exception": "org.springframework.http.converter.HttpMessageNotReadableException",
+  "message": "Required request body is missing: public org.springframework.http.ResponseEntity<java.util.List<example.component.SearchResponseRow>> example.controller.DataSoureController.postSearch2Request(example.component.SearchRequest)",
+  "path": "/search2"
+}
+
+```
+```sh
+ curl -v -s -X POST  -H "Content-Type: application/json" -d '{"target":"dummy"}' http://localhost:5000/search2 2>& 1
+
+```
+```text
+[{"text":"text data","value":"value data"}]
+* Uses proxy env variable no_proxy == '192.168.99.100'
+*   Trying 127.0.0.1:5000...
+* Connected to localhost (127.0.0.1) port 5000 (#0)
+> POST /search2 HTTP/1.1
+> Host: localhost:5000
+> User-Agent: curl/7.74.0
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 18
+>
+} [18 bytes data]
+* upload completely sent off: 18 out of 18 bytes
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 200
+< Access-Control-Allow-Headers: accept, content-type
+< Access-Control-Allow-Methods: POST
+< Access-Control-Allow-Origin: *
+< Content-Type: application/json
+< Transfer-Encoding: chunked
+< Date: Wed, 11 Aug 2021 22:15:57 GMT
+<
+{ [49 bytes data]
+* Connection #0 to host localhost left intact
+```
 ### See Also
 
   * https://github.com/grafana/grafana-docker/blob/master/Dockerfile
@@ -141,6 +208,7 @@ to support Grafana's simpleJson plugin, the back-end WebAPI implements 4 routes:
   * https://github.com/tschm/ts-timeseries
   * https://github.com/IBMStreams/samples
   * https://oznetnerd.com/2018/04/17/writing-a-grafana-backend-using-the-simple-json-datasource-flask/
+  * basic implementation of [SimpleJSON REST server](https://github.com/IsmetKh/grafana-simplejson-datasource) - has ASP.Net dependencies , can be used to prototype `/query`, `/search`,`/annotations`, `/tag-keys`, `tag-alues` payloads then using some prototype ASP.Net clean [REST famework](https://github.com/sachabarber/REST/tree/master/RESTServer/RESTServer) also discussed in [codeproject article](https://www.codeproject.com/Articles/826383/REST-A-Simple-REST-framework)
 
 ### Author
 

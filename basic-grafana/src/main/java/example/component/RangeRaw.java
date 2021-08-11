@@ -8,15 +8,15 @@ public class RangeRaw {
 		return from;
 	}
 
-	public void setFrom(String from) {
-		this.from = from;
+	public void setFrom(String data) {
+		from = data;
 	}
 
 	public String getTo() {
 		return to;
 	}
 
-	public void setTo(String to) {
-		this.to = to;
+	public void setTo(String data) {
+		to = data;
 	}
 }
