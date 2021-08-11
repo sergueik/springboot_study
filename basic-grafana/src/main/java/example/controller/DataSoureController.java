@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,6 +26,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import example.component.AnnotationRequest;
+import example.component.AnnotationResponseRow;
+import example.component.SearchRequest;
 import example.service.ExampleService;
 
 @RestController
@@ -41,25 +46,42 @@ public class DataSoureController {
 		service = data;
 	}
 
-	private static final Logger logger = LogManager.getLogger(DataSoureController.class);
+	private static final Logger logger = LogManager
+			.getLogger(DataSoureController.class);
 
 	@RequestMapping(value = "/", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
 	public ResponseEntity<Object> heathcheck() {
 		logger.info("processing GET /");
-		return ResponseEntity.status(HttpStatus.OK).header("Access-Control-Allow-Headers", "accept, content-type")
-				.header("Access-Control-Allow-Methods", "POST").header("Access-Control-Allow-Origin", "*")
+		HttpHeaders headers = addResponseHeaders();
+		return ResponseEntity.status(HttpStatus.OK).headers(headers)
 				.contentType(MediaType.TEXT_PLAIN).body(null);
+		/*
+		return ResponseEntity.status(HttpStatus.OK).headers(headers)
+				.header("Access-Control-Allow-Headers", "accept, content-type")
+				.header("Access-Control-Allow-Methods", "POST")
+				.header("Access-Control-Allow-Origin", "*")
+				.contentType(MediaType.TEXT_PLAIN).body(null);
+				*/
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<String> postSearchRequest(@RequestBody SearchRequest data) {
+		List<String> result = new ArrayList<>();
+		result.add("test");
+		return result;
 	}
 
 	@RequestMapping(value = "/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public List<String> Search(HttpServletResponse response) {
 		logger.info("processing POST /search");
+		addResponseHeaders(response);
+		/*
 		response.setHeader("Access-Control-Allow-Headers", "accept, content-type");
 		response.setHeader("Access-Control-Allow-Methods", "POST");
 		response.setHeader("Access-Control-Allow-Origin", "*");
-
+		*/
 		List<String> result = new ArrayList<String>();
 		result.add("data series");
 		return result;
@@ -68,11 +90,13 @@ public class DataSoureController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/query", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<List<Map<String, Object>>> Query(@RequestBody Map<String, Object> params)
-			throws JSONException {
+	public ResponseEntity<List<Map<String, Object>>> Query(
+			@RequestBody Map<String, Object> params) throws JSONException {
 
-		logger.info("processing POST /query\n" + new JSONObject(params).toString(4));
-		List<Map<String, String>> targets = (List<Map<String, String>>) params.get("targets");
+		logger
+				.info("processing POST /query\n" + new JSONObject(params).toString(4));
+		List<Map<String, String>> targets = (List<Map<String, String>>) params
+				.get("targets");
 
 		Map<String, String> range = (Map<String, String>) params.get("range");
 		String from = range.get("from");
@@ -113,7 +137,16 @@ public class DataSoureController {
 			return name1.compareTo(name2);
 		});
 
-		return ResponseEntity.status(HttpStatus.OK).headers(headers).contentType(MediaType.TEXT_PLAIN).body(result);
+		return ResponseEntity.status(HttpStatus.OK).headers(headers)
+				.contentType(MediaType.TEXT_PLAIN).body(result);
+
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "/annotations", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<AnnotationResponseRow> postAnnotationRequest(
+			@RequestBody AnnotationRequest data) {
+		List<AnnotationResponseRow> response = new ArrayList<>();
+		return response;
 
 	}
 
@@ -124,8 +157,26 @@ public class DataSoureController {
 		Map<String, String> data = new HashMap<>();
 		data.put("result", "OK");
 
-		return ResponseEntity.status(HttpStatus.OK).header("Access-Control-Allow-Headers", "accept, content-type")
-				.header("Access-Control-Allow-Methods", "POST").header("Access-Control-Allow-Origin", "*")
+		return ResponseEntity.status(HttpStatus.OK)
+				.header("Access-Control-Allow-Headers", "accept, content-type")
+				.header("Access-Control-Allow-Methods", "POST")
+				.header("Access-Control-Allow-Origin", "*")
 				.contentType(MediaType.APPLICATION_JSON_UTF8).body(data);
+	}
+
+	private HttpHeaders addResponseHeaders() {
+		final HttpHeaders headers = new HttpHeaders();
+		headers.add("Access-Control-Allow-Headers", "accept, content-type");
+		headers.add("Access-Control-Allow-Methods", "POST");
+		headers.add("Access-Control-Allow-Origin", "*");
+		return headers;
+
+	}
+
+	private void addResponseHeaders(final HttpServletResponse response) {
+		final HttpHeaders headers = addResponseHeaders();
+		for (Entry<String, List<String>> entry : headers.entrySet()) {
+			response.setHeader(entry.getKey(), entry.getValue().get(0));
+		}
 	}
 }
