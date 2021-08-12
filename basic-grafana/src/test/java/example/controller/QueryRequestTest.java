@@ -1,8 +1,11 @@
 package example.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -10,6 +13,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -31,6 +37,7 @@ import example.Application;
 import example.component.Annotation;
 import example.component.AnnotationRequest;
 import example.component.QueryRequest;
+import example.component.QueryTimeserieResponse;
 import example.component.Range;
 import example.component.TargetObj;
 import example.service.ExampleService;
@@ -90,10 +97,32 @@ public class QueryRequestTest {
 	public void jsonTest() throws Exception {
 		resultActions
 				.andExpect(jsonPath("$[0].datapoints[0][0]", greaterThan((double) 0)));
-		// TODO: finish examine extracted JSON
-		String result = resultActions.andReturn().getResponse()
+
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void payloadDeserializeTest() throws Exception {
+		String payload = resultActions.andReturn().getResponse()
 				.getContentAsString();
 
+		List<Map<String, Object>> payloadObj = (List<Map<String, Object>>) gson
+				.fromJson(payload, java.util.List.class);
+		assertThat(payloadObj, notNullValue());
+		assertThat(payloadObj.size(), greaterThan(0));
+		Map<String, Object> payloadRowObj = (Map<String, Object>) payloadObj.get(0);
+		assertThat(payloadRowObj, notNullValue());
+		assertThat(
+				payloadRowObj.keySet().containsAll(
+						new HashSet<Object>(Arrays.asList("target", "datapoints"))),
+				is(true));
+		assertThat(payloadRowObj.keySet().contains("other key"), is(false));
+		List<Object> payloadRowDataPointsObj = (List<Object>) payloadRowObj
+				.get("datapoints");
+		assertThat(payloadRowDataPointsObj.size(), greaterThan(0));
+		List<Double> data = (List<Double>) payloadRowDataPointsObj.get(0);
+		assertThat(data.size(), is(2));
+		assertThat(data.get(0), greaterThan((double) 0));
 	}
 
 	// count nodes
