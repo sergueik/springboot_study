@@ -6,6 +6,7 @@ public class QueryTimeserieResponse {
 	private String target;
 	private List<List<Double>> datapoints;
 
+	// Metric value as a float , unixtimestamp in milliseconds
 	public String getTarget() {
 		return target;
 	}
