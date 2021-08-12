@@ -43,6 +43,7 @@ public class SearchController {
 	// array response
 	@RequestMapping(method = RequestMethod.POST, value = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<String> postSearchRequest(@RequestBody SearchRequest data) {
+		logger.info("processing POST /search array response");
 		List<String> result = new ArrayList<>();
 		result.add("test");
 		return result;
@@ -53,6 +54,8 @@ public class SearchController {
 	@RequestMapping(method = RequestMethod.POST, value = "/search2", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<SearchResponseRow>> postSearch2Request(
 			@RequestBody SearchRequest data) {
+
+		logger.info("processing POST /search map response");
 		List<SearchResponseRow> result = new ArrayList<>();
 		SearchResponseRow row = new SearchResponseRow();
 		row.setText("text data");
@@ -64,16 +67,12 @@ public class SearchController {
 
 	}
 
+	// not strongly typed legacy code
 	@RequestMapping(value = "/search", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public List<String> Search(HttpServletResponse response) {
 		logger.info("processing POST /search");
 		Utils.addResponseHeaders(response);
-		/*
-		response.setHeader("Access-Control-Allow-Headers", "accept, content-type");
-		response.setHeader("Access-Control-Allow-Methods", "POST");
-		response.setHeader("Access-Control-Allow-Origin", "*");
-		*/
 		List<String> result = new ArrayList<String>();
 		result.add("data series");
 		return result;

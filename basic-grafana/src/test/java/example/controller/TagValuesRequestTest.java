@@ -1,56 +1,44 @@
 package example.controller;
+
 /**
  * Copyright 2021 Serguei Kouzmine
  */
 
-
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-
-import com.google.gson.Gson;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-
 import example.Application;
-import example.component.SearchRequest;
 import example.service.ExampleService;
 
-// NOTE: uncommenting the @Runwith annotation will crash the JVM
-// with massive  IllegalState Failed to load ApplicationContext
-// Parameter 0 of constructor in example.controller.SearchController required a bean of type 'example.service.ExampleService' that could not be found.
-// @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest
-public class Search2RequestTest {
+public class TagValuesRequestTest {
 
-	final static String route = "/search2";
-	final static String body = "text data";
+	final static String route = "/tag-values";
+	final static String body = "one";
 	private static String charset = null;
-	private static final Gson gson = new Gson();
 	private ResultActions resultActions;
 	private static MockMvc mvc;
-
-	private final SearchRequest searchRequest = new SearchRequest();
-
 	@SuppressWarnings("unused")
 	private static Application application = new Application();
 	private static ExampleService service = new ExampleService();
-	private static SearchController controller = new SearchController(service);
+	private static TagController controller = new TagController(service);
 
 	@BeforeClass
 	public static void setUp() {
@@ -60,10 +48,8 @@ public class Search2RequestTest {
 	@Before
 	public void beforeTest() throws Exception {
 
-		searchRequest.setTarget("dummy");
 		resultActions = mvc.perform(post(route).accept(MediaType.APPLICATION_JSON)
-				.content(gson.toJson(searchRequest))
-				.contentType(MediaType.APPLICATION_JSON));
+				.content("{}").contentType(MediaType.APPLICATION_JSON));
 	}
 
 	// examine HTTP status
@@ -88,7 +74,7 @@ public class Search2RequestTest {
 	// count nodes
 	@Test
 	public void jsonTest2() throws Exception {
-		resultActions.andExpect(jsonPath("$.*", hasSize(1)));
+		resultActions.andExpect(jsonPath("$.*", hasSize(3)));
 	}
 
 	@Test
@@ -98,28 +84,30 @@ public class Search2RequestTest {
 		mvc.perform(get(route)).andExpect(status().isMethodNotAllowed());
 	}
 
+	// Required request body is missing:
 	@Test
 	public void rejectionsTest() throws Exception {
 		mvc.perform(post(route).contentType(MediaType.TEXT_PLAIN))
 				.andExpect(status().isUnsupportedMediaType());
 		mvc.perform(post(route).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest());
+		mvc.perform(
+				post(route).contentType(MediaType.APPLICATION_JSON).content("{}"))
+				.andExpect(status().isOk());
 		charset = "UTF-8";
 		mvc.perform(post(route)
-				.contentType(String.format("application/json;charset=%s", charset)))
-				.andExpect(status().isBadRequest());
+				.contentType(String.format("application/json;charset=%s", charset))
+				.content("{\"key\": \"city\"}")).andExpect(status().isOk());
 	}
 
 	// examine response header
-	// NOTE: Content type not set
-	@Ignore
 	@Test
 	public void contentTypeTest() throws Exception {
 		charset = "UTF-8";
-		// NOTE: these expectations are Springboot version sensitive
-		mvc.perform(post(route).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-				.andExpect(content().contentType(
-						String.format("application/json;charset=%s", charset)));
+		// NOTE: these expectations are Junit version sensitive
+		mvc.perform(post(route).contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON).content("{}"))
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
 	}
 
 	@Test(expected = AssertionError.class)

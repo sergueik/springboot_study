@@ -1,13 +1,21 @@
 package example.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -28,28 +36,31 @@ import com.google.gson.Gson;
 import example.Application;
 import example.component.Annotation;
 import example.component.AnnotationRequest;
+import example.component.QueryRequest;
+import example.component.QueryTimeserieResponse;
 import example.component.Range;
+import example.component.TargetObj;
 import example.service.ExampleService;
+import static org.hamcrest.Matchers.greaterThan;
 
 @WebMvcTest
-public class AnnotationsRequestTest {
+public class QueryRequestTest {
 
-	final static String route = "/annotations";
-	final static String body = "annotation";
+	final static String route = "/query";
+	final static String body = "target";
 	private static String charset = null;
 	private static final Gson gson = new Gson();
 	private ResultActions resultActions;
 	private static MockMvc mvc;
 
-	private final AnnotationRequest annotationRequest = new AnnotationRequest();
-	private final Annotation annotation = new Annotation();
+	private final QueryRequest queryRequest = new QueryRequest();
+	private final TargetObj targetObj = new TargetObj();
 	private final Range range = new Range();
 
 	@SuppressWarnings("unused")
 	private static Application application = new Application();
 	private static ExampleService service = new ExampleService();
-	private static AnnotationsController controller = new AnnotationsController(
-			service);
+	private static QueryController controller = new QueryController(service);
 
 	@BeforeClass
 	public static void setUp() {
@@ -58,16 +69,15 @@ public class AnnotationsRequestTest {
 
 	@Before
 	public void beforeTest() throws Exception {
-		annotation.setDatasource("data");
-		annotation.setEnable(true);
-		annotation.setName("name");
-		annotationRequest.setAnnotation(annotation);
+
+		targetObj.setTarget(body);
+		queryRequest.setTargets(Arrays.asList(targetObj));
 		range.setFrom("from");
 		range.setTo("to");
 
-		annotationRequest.setRange(range);
+		queryRequest.setRange(range);
 		resultActions = mvc.perform(post(route).accept(MediaType.APPLICATION_JSON)
-				.content(gson.toJson(annotationRequest))
+				.content(gson.toJson(queryRequest))
 				.contentType(MediaType.APPLICATION_JSON));
 	}
 
@@ -85,51 +95,41 @@ public class AnnotationsRequestTest {
 
 	@Test
 	public void jsonTest() throws Exception {
-		resultActions.andExpect(jsonPath("$[0].annotation.name", is("name")));
+		resultActions
+				.andExpect(jsonPath("$[0].datapoints[0][0]", greaterThan((double) 0)));
+
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void payloadDeserializeTest() throws Exception {
+		String payload = resultActions.andReturn().getResponse()
+				.getContentAsString();
+
+		List<Map<String, Object>> payloadObj = (List<Map<String, Object>>) gson
+				.fromJson(payload, java.util.List.class);
+		assertThat(payloadObj, notNullValue());
+		assertThat(payloadObj.size(), greaterThan(0));
+		Map<String, Object> payloadRowObj = (Map<String, Object>) payloadObj.get(0);
+		assertThat(payloadRowObj, notNullValue());
+		assertThat(
+				payloadRowObj.keySet().containsAll(
+						new HashSet<Object>(Arrays.asList("target", "datapoints"))),
+				is(true));
+		assertThat(payloadRowObj.keySet().contains("other key"), is(false));
+		List<Object> payloadRowDataPointsObj = (List<Object>) payloadRowObj
+				.get("datapoints");
+		assertThat(payloadRowDataPointsObj.size(), greaterThan(0));
+		List<Double> data = (List<Double>) payloadRowDataPointsObj.get(0);
+		assertThat(data.size(), is(2));
+		assertThat(data.get(0), greaterThan((double) 0));
 	}
 
 	// count nodes
 	// TODO: No value at JSON path "$.*", exception: json can not be null or empty
 	@Test
 	public void jsonTest2() throws Exception {
-		resultActions.andExpect(jsonPath("$.*", hasSize(2)));
-	}
-
-	@Test
-	// TODO : confirm rejections
-	// NOTE: these expectations are Junit version sensitive
-	public void rejectedMethodTest() throws Exception {
-		charset = "ISO-8859-1";
-		mvc.perform(get(route)).andExpect(status().isMethodNotAllowed());
-	}
-
-	@Test
-	public void rejectionsTest() throws Exception {
-		mvc.perform(post(route).contentType(MediaType.TEXT_PLAIN))
-				.andExpect(status().isOk());
-		mvc.perform(post(route).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
-		charset = "UTF-8";
-		mvc.perform(post(route)
-				.contentType(String.format("application/json;charset=%s", charset)))
-				.andExpect(status().isBadRequest());
-	}
-
-	// examine response header
-	@Test
-	public void contentTypeTest() throws Exception {
-		charset = "UTF-8";
-		// NOTE: these expectations are Junit version sensitive
-		mvc.perform(post(route).accept(MediaType.APPLICATION_JSON))
-				.andExpect(content().contentType(
-						String.format("application/json;charset=%s", charset)));
-	}
-
-	@Test(expected = AssertionError.class)
-	// application/json;charset=UTF-8
-	public void contentTypeCharsetTest() throws Exception {
-		mvc.perform(post(route).accept(MediaType.APPLICATION_JSON))
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON));
+		resultActions.andExpect(jsonPath("$.*", hasSize(1)));
 	}
 
 }
