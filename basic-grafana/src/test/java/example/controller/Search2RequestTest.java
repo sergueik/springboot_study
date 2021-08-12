@@ -116,7 +116,7 @@ public class Search2RequestTest {
 	@Test
 	public void contentTypeTest() throws Exception {
 		charset = "UTF-8";
-		// NOTE: these expectations are Junit version sensitive
+		// NOTE: these expectations are Springboot version sensitive
 		mvc.perform(post(route).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andExpect(content().contentType(
 						String.format("application/json;charset=%s", charset)));
