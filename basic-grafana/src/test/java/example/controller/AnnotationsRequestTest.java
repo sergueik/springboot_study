@@ -1,45 +1,36 @@
 package example.controller;
 
-/**
- * Copyright 2021 Serguei Kouzmine
- */
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import example.controller.DataSoureController;
-import example.service.ExampleService;
+import org.junit.Before;
+import org.junit.BeforeClass;
+// import org.junit.Ignore;
+import org.junit.Test;
+
+/**
+ * Copyright 2021 Serguei Kouzmine
+ */
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import com.google.gson.Gson;
+
 import example.Application;
 import example.component.Annotation;
 import example.component.AnnotationRequest;
 import example.component.Range;
-import example.component.SearchRequest;
-import com.google.gson.Gson;
+import example.service.ExampleService;
 
-// NOTE: uncommenting the @Runwith annotation will crash the JVM
-// with massive  IllegalState Failed to load ApplicationContext
-// Parameter 0 of constructor in example.controller.DataSoureController required a bean of type 'example.service.ExampleService' that could not be found.
-// @RunWith(SpringJUnit4ClassRunner.class)
 @WebMvcTest
 public class AnnotationsRequestTest {
 
@@ -54,7 +45,6 @@ public class AnnotationsRequestTest {
 	private final Annotation annotation = new Annotation();
 	private final Range range = new Range();
 
-	// initiaize real stuff
 	@SuppressWarnings("unused")
 	private static Application application = new Application();
 	private static ExampleService service = new ExampleService();
