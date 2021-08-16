@@ -285,12 +285,46 @@ to find out what data is available use command
 rrdtool dump sample/sample.rrd
 ```
 
+### Use RRD Inspector
+
+* clone [rrd4j](https://github.com/rrd4j/rrd4j)
+
+* to avoid being stopped by failing test and debigging build clean errors,
+
+```sh
+biz.aQute.bnd:bnd-maven-plugin:5.2.0:bnd-process (bnd-process) on project rrd4j: Classes found in the wrong directory: {META-INF/target/classes/org/rrd4j/core/Util.class=org.rrd4j.core.Util... followed by long list of clases
+```
+
+build via
+```sh
+mvn -Dmaven.test.skip=true clean package
+```
+* invoke
+```sh
+java -Xmx512m -jar target/rrd4j-3.9-SNAPSHOT-inspector.jar &
+```
+Note the heap setting to avoid out of memory erorr in runtime if tested on am emory-constrained VM
+
+NOTE: on Windows need to first
+```cmd
+mkdir \tmp
+```
+* there is a lot of sample `rrd` files in the project.
+
+![Inspector Example](https://github.com/sergueik/springboot_study/blob/master/basic-grafana-rrd-server/screenshots/rd-inspector-capture.png)
+Alternarively one can build or download __binjr__ [app](https://github.com/binjr/binjr)  and examine code that can be used to build the search and query result set
+![Binjr Example](https://github.com/sergueik/springboot_study/blob/master/basic-grafana-rrd-server/screenshots/binjr-capture.png)
+
+
 ### See Also
 
+  * java port of rrdtool - [rrd4j](https://github.com/rrd4j/rrd4j)
+  * [rrd4j RRD files inspector GUI (Swing)](https://github.com/rrd4j/rrd4j/blob/master/src/main/java/org/rrd4j/inspector/RrdInspector.java) - part of the rr4dj project, has a own jar on [maven repository](https://mvnrepository.com/artifact/org.rrd4j/inspector/2.0.5)
+  * [rrd4-guide](https://github.com/harp077/rrd4j-guide)
   * Standalone pure Java time series data browser with JavaFx [app](https://github.com/binjr/binjr) featuring plugin RRD4J Data source. NOTE: latest releases require Java 11 and recent JavaFX controls to handle RRD4J target selection and use gradle.
-   * java port of rrdtool - [rrd4j](https://github.com/rrd4j/rrd4j) - last updated in __2020__ - still need to locate the data querying API.
-   * RRDTool [tutorial](https://oss.oetiker.ch/rrdtool/tut/index.en.html)
-   * [post](https://medium.com/@raghavendrasamant/simplejson-datasource-implementation-in-grafana-using-sparkjava-81e2274b1cfa) about java based simpleJSON backend
+  * RRDTool [tutorial](https://oss.oetiker.ch/rrdtool/tut/index.en.html)
+  * [rrdtool backed grafana simple JSON](https://github.com/famzah/rrd-json-grafana-ds) using PHP and CachingRRD
+  * [post](https://medium.com/@raghavendrasamant/simplejson-datasource-implementation-in-grafana-using-sparkjava-81e2274b1cfa) about java based simpleJSON backend
   * https://github.com/OpenNMS/jrrd - mixed Java / C wrapper
   * https://github.com/OpenNMS/jrrd2 - successor of __jrrd__ - uses [jni](https://docs.oracle.com/javase/8/docs/technotes/guides/jni/)
   * https://github.com/caseylucas/rrdtool-java another jni java call frontend
@@ -299,9 +333,9 @@ rrdtool dump sample/sample.rrd
   * [RRDtool Tutorial - Part 1](https://www.youtube.com/watch?v=JaK-IctEyWs)
   * [RRDtool Tutorial - Part 2](https://www.youtube.com/watch?v=m_qeVVB2yzw)
   * https://github.com/sysmo-nms/rrdio
-  * [rrdtool backed grafana simple JSON](https://github.com/famzah/rrd-json-grafana-ds) using PHP and CachingRRD
   * probably moves data the other direction https://github.com/nitinka/JMetrics
   * basic implementation of [SimpleJSON REST server](https://github.com/IsmetKh/grafana-simplejson-datasource) - has ASP.Net dependencies , can be used to prototype `/query`, `/search`,`/annotations`, `/tag-keys`, `tag-alues` payloads then using some prototype ASP.Net clean [REST famework](https://github.com/sachabarber/REST/tree/master/RESTServer/RESTServer) also discussed in [codeproject article](https://www.codeproject.com/Articles/826383/REST-A-Simple-REST-framework)
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
