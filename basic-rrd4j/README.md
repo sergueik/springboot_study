@@ -31,7 +31,7 @@ mkdir \tmp
 
 As suggested on [stackoverflow](https://community.openhab.org/t/rrd4j-and-tools-to-read-rrd-files/4655/4)  one can downgrade to version __2.1.1__ to gain support of regular RRDtool files.
 
-*fetch
+* fetch
 ```sh
 mkdir upstream
 cd upstream/
@@ -56,6 +56,21 @@ java.io.IOException: Invalid file header. File [some.rrd] is not a RRD4J RRD fil
 ```
 
 - kept for later examination
+The __Rrd4J__ offers a conversion utility class to convert `RRD 003` files created with RRDTool 1.0.x to its own native RRD format `RRD4J, version 0.1`
+```cmd
+java -jar target\rrd4j-3.9-SNAPSHOT-converter.jar sample/*rrd
+```
+```cmd
+=======================================================================
+Converting RRDTool files to Rrd4j native format.
+Original RRDTool files will not be modified in any way
+RRD4J files created during the process will have a .jrb suffix
+=======================================================================
+0001/0003 percent-idle.rrd [OK, 0.221 sec]
+0002/0003 percent-user.rrd [OK, 0.024 sec]
+0003/0003 sample.rrd [OK, 0.021 sec]
+=======================================================================
+```
 ### See Also
 
   * https://github.com/OpenNMS/jrrd - mixed Java / C wrapper

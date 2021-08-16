@@ -99,7 +99,7 @@ docker build -f Dockerfile -t $GRAFANA .
 docker container run --link $RRD_SERVER --name $GRAFANA -d -p 3000:3000 $GRAFANA
 ```
 
-* cleaup
+* cleanup
 ```sh
 docker container stop $RRD_SERVER
 docker container rm $RRD_SERVER
@@ -107,7 +107,7 @@ docker container rm $RRD_SERVER
 
 
 it should process https://grafana.com/grafana/plugins/grafana-simple-json-datasource/
-### Installon the host
+### Install on the host
 
 ```sh
 wget -O grafana-rrd-server_linux_amd64.gz https://github.com/doublemarket/grafana-rrd-server/releases/download/v0.0.5/grafana-rrd-server_linux_amd64.gz
@@ -309,9 +309,28 @@ NOTE: on Windows need to first
 ```cmd
 mkdir \tmp
 ```
-* there is a lot of sample `rrd` files in the project.
+* there is a lot of sample `rrd` files in the project. Unfortunately it appears that RRD4J is unable to read files produced by the regular RRDTool:
+```cmd
+java.io.IOException: Invalid file header. File [some.rrd] is not a RRD4J RRD file
+```
 
-![Inspector Example](https://github.com/sergueik/springboot_study/blob/master/basic-grafana-rrd-server/screenshots/rd-inspector-capture.png)
+The __Rrd4J__ offers a conversion utility class to convert `RRD 003` files created with RRDTool 1.0.x to its own native RRD format `RRD4J, version 0.1`
+```cmd
+java -jar target\rrd4j-3.9-SNAPSHOT-converter.jar sample/*rrd
+```
+```cmd
+=======================================================================
+Converting RRDTool files to Rrd4j native format.
+Original RRDTool files will not be modified in any way
+RRD4J files created during the process will have a .jrb suffix
+=======================================================================
+0001/0003 percent-idle.rrd [OK, 0.221 sec]
+0002/0003 percent-user.rrd [OK, 0.024 sec]
+0003/0003 sample.rrd [OK, 0.021 sec]
+=======================================================================
+```
+
+![Inspector Example](https://github.com/sergueik/springboot_study/blob/master/basic-grafana-rrd-server/screenshots/rrd-inspector-capture.png)
 Alternarively one can build or download __binjr__ [app](https://github.com/binjr/binjr)  and examine code that can be used to build the search and query result set
 ![Binjr Example](https://github.com/sergueik/springboot_study/blob/master/basic-grafana-rrd-server/screenshots/binjr-capture.png)
 
