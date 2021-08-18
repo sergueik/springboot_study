@@ -27,8 +27,10 @@ docker logs mysql-server
 *  compile go program and copy locally
 
 ```sh
+export IMAGE=basic-builder
+docker build -t $IMAGE -f Dockerfile.builder .
+
 export IMAGE=basic-go-build
-docker image rm -f $IMAGE
 docker build -t $IMAGE -f Dockerfile.build .
 export NAME=basic-go-build
 docker container rm $NAME
