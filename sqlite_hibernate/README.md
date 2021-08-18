@@ -1,4 +1,4 @@
-### Info
+m### Info
 
 This directory contains a basic springboot hibernate on sqlite project based on
 [restart1025/Spring-Boot-SQLite](https://github.com/restart1025/Spring-Boot-SQLite)
@@ -7,28 +7,30 @@ This directory contains a basic springboot hibernate on sqlite project based on
 
 Compile and start as a regular spring-boot appplication
 ```sh
-mvn clean spring-boot:run
+mvn -Dmaven.test.skip=true clean spring-boot:run
 ```
 To verify it works, access application in Postman or curl
 ```sh
 curl http://localhost:8080/springboot/getUsers
 ```
-initially it will respond with an empty array. after users added, as shhowb below,it will respond with something like
+initially it will respond with an empty array. 
+After user(s) added, as shown below, it begins responding with something like
 
 ```json
 [{
   "id": 5,
-  "userName ": null,
-  "passWord ": null,
+  "userName ": name,
+  "passWord ": password,
   "
-  "userGender ": null,
-  "nickName ": null
+  "userGender ": gender,
+  "nickName ": 	null
 }]
 ```
+where `name`, `passord`, `gender` will match what is inserted
 ```sh
 curl -X POST -H "application/x-www-form-urlencoded" -d "userName=Michael&nickName=michaeljackson&gender=MAN&password=thriller&confirmPassword=thriller" http://localhost:8080/springboot/addUser
 ```
-will reply with
+will respond with
 ```sh
 User added
 ```
@@ -137,6 +139,50 @@ due to a race condition with Spring attempting to load the `User` class and need
 ```sh
 docker rm -v $(docker ps -aq -f status=exited)
 ```
+### Unit Testing
+```sh
+mvn clean test
+```
+Note: the combination of setup
+
+```java
+@Mock
+private UserRepository mockRepository;
+
+@InjectMocks
+private UserController controller;
+
+when(mockRepository.findAll()).thenReturn(Arrays.asList(new User[] { user }));
+```
+and expectation
+
+```java
+mvc.perform(get(route)).andExpect(content().string(containsString(new Gson().toJson(user))));
+```
+
+is a bit fragile: reles on serialization. E.g. the following is possible:
+```
+Expected: a string containing 
+"{
+  \"userName\": \"name\",
+  \"password\": \"password\",
+  \"gender\": \"MAN\",
+  \"nickName\": \"nickname\",
+  \"id\": 42
+}"
+but: 
+was "[
+  {
+    \"id\": 42,
+    \"userName\": \"name\",
+    \"password\": \"password\",
+    \"gender\": \"MAN\",
+    \"nickName\": \"nickname\"
+  }
+]"
+```
+- note a subtle differnce in JSON keys order
+
 ### See also
 
   * [Hibernate/DAO basics](https://habrahabr.ru/post/255829/) (in russian)
