@@ -1,0 +1,16 @@
+FROM golang:alpine3.9
+ADD . /app
+WORKDIR /app
+RUN git --version &>/dev/null; if [ $? -ne 0 ] ; then \
+apk update && apk upgrade && \
+apk add --no-cache git ; fi
+
+ENV GOOS=linux
+ENV GOARCH=amd64
+ENV CGO_ENABLED=0
+COPY example.go /app/
+RUN go mod init .
+RUN go get github.com/go-sql-driver/mysql
+RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example example.go
+
+
