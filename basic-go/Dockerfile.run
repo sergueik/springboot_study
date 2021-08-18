@@ -1,6 +1,6 @@
 FROM alpine:3.9.5 
 WORKDIR /
 
-COPY example1 example2 /
+COPY example1 example2 example3 /
 
 # ENTRYPOINT ./example $0

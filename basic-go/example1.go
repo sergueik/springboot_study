@@ -14,14 +14,15 @@ func main() {
   }
   logFilePath := os.Args[1]
 
-  log.Println("Reading " + logFilePath)
+  log.Println("Reading " + "\"" + logFilePath + "\"")
   // NOTE: no '-f' flag
-  cmd := exec.Command( "tail",  "-n 20", logFilePath)
+  // NOTE: provied full path
+  cmd := exec.Command( "/usr/bin/tail",  "-n 20", logFilePath)
   stdout, err := cmd.CombinedOutput()
 
   if err != nil {
     log.Fatal("failed to Start: " + err.Error())
-  } else {
+  }  else {
     fmt.Printf("Started pid=%d\n" , cmd.Process.Pid)
     fmt.Printf(string(stdout))
     time.Sleep(1000 *  time.Millisecond)

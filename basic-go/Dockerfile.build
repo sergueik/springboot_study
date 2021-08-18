@@ -10,4 +10,7 @@ RUN go run example1.go /etc/alpine-release || exit 0
 RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example1 example1.go
 RUN go run example2.go /etc/alpine-release || exit 0
 RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example2 example2.go
+RUN go run example3.go || exit 0
+RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example3 example3.go
+
 
