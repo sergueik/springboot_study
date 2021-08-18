@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,6 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import org.hamcrest.Matcher;
 
@@ -69,10 +71,10 @@ public class MVCMockTest {
 
 	@Before
 	public void beforeTest() throws Exception {
-		// user.setId(0L);
+		// the User class has no constructor with id and nickname
+		user.setId(0L);
 		user.setNickName("nickname");
 		when(mockRepository.findAll()).thenReturn(Arrays.asList(new User[] { user }));
-		matcher = containsString(new Gson().toJson(user));
 		mvc = MockMvcBuilders.standaloneSetup(controller).build();
 		resultActions = mvc.perform(get(route));
 	}
@@ -86,8 +88,15 @@ public class MVCMockTest {
 	// examine body
 	@Test
 	public void bodyTest() throws Exception {
+		matcher = containsString(new Gson().toJson(user));
 		resultActions.andExpect(content().string(matcher));
-		mvc.perform(get(route)).andExpect(content().string(matcher));
+	}
+
+	// examine body
+	@Test
+	public void bodyTest2() throws Exception {
+		matcher = containsString(new Gson().toJson(Arrays.asList(new User[] { user })));
+		resultActions.andExpect(content().string(matcher));
 	}
 
 	// examine backend call
@@ -107,4 +116,11 @@ public class MVCMockTest {
 		mvc.perform(get(route + "/json").accept(MediaType.APPLICATION_JSON))
 				.andExpect(content().contentType("application/json"));
 	}
+
+	// explore the content details
+	@Test
+	public void jsonTest() throws Exception {
+		mvc.perform(get(route)).andExpect(jsonPath("$[0].userName", is("name")));
+	}
+
 }

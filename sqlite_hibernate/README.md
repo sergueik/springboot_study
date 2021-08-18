@@ -151,16 +151,30 @@ private UserRepository mockRepository;
 
 @InjectMocks
 private UserController controller;
-
+mvc = MockMvcBuilders.standaloneSetup(controller).build();
+```
+define the  collaborator behavior
+```java
 when(mockRepository.findAll()).thenReturn(Arrays.asList(new User[] { user }));
 ```
-and expectation
-
+and define expectation that call to collaborator is taking place:
 ```java
-mvc.perform(get(route)).andExpect(content().string(containsString(new Gson().toJson(user))));
+```
+when in `UserController` the mapping is
+```java
+@GetMapping("/getUsers")
+public List<User> getUsers() {
+	return userRepository.findAll();
+}
+
+```
+then the following would be successful
+```java
+mvc.perform(get("/getUsers")).andExpect(content().string(containsString(new Gson().toJson(user))));
 ```
 
-is a bit fragile: reles on serialization. E.g. the following is possible:
+NOTE: with complex `User` object such test is a bit fragile: relies on serialization. 
+E.g. the following is possible:
 ```
 Expected: a string containing 
 "{
@@ -194,6 +208,7 @@ was "[
   * [Spring Boot - JPA Hibernate MySQL](https://github.com/alicankustemur/spring-boot-jpa-hibernate-mysql-example) project - unsuccessfully tried to get converted to SQLite hibernate backend
   * collection of [JPA projects](https://github.com/AnghelLeonard/Hibernate-SpringBoot)
   * [externalize](https://mkyong.com/hibernate/how-to-load-hibernate-cfg-xml-from-different-directory/) the `hibernate.cfg.xml`
+  * another [solution](https://stackoverflow.com/questions/27508327/design-for-hibernate-external-config-for-app-server-and-local-eclipse)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
