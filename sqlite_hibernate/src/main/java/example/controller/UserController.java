@@ -24,14 +24,14 @@ import example.data.Gender;
 @RestController
 public class UserController {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(UserController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
 	@Autowired
 	private UserRepository userRepository;
 
 	@GetMapping("/getUsers")
 	public List<User> getUsers() {
+		LOGGER.info("processing \"/getUsers\"");
 		return userRepository.findAll();
 	}
 
@@ -77,10 +77,8 @@ public class UserController {
 	// x-form-data
 	@RequestMapping(value = "/addUser", method = RequestMethod.POST)
 	@ResponseBody
-	public String addUser(@RequestParam("userName") String userName,
-			@RequestParam("password") String password,
-			@RequestParam("confirmPassword") String confirmPassword,
-			@RequestParam("gender") Gender gender,
+	public String addUser(@RequestParam("userName") String userName, @RequestParam("password") String password,
+			@RequestParam("confirmPassword") String confirmPassword, @RequestParam("gender") Gender gender,
 			@RequestParam(name = "nickName", required = false) String nickName) {
 		if (!(password.equals(confirmPassword))) {
 			return "Password and confirmPassword do not match!";

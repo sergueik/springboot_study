@@ -1,6 +1,6 @@
 ### Info
 
-a replica of [grafana rrd server](https://github.com/doublemarket/grafana-rrd-server) pinned to specific alpine version
+a replica of [grafana rrd server](https://github.com/doublemarket/grafana-rrd-server) pinned to specific alpine version. Allows accessing the [RRDTool files](https://oss.oetiker.ch/rrdtool/) as SimpleJSON grafana data sorrces over `/search`, `query`, `annotations` [protocol](https://grafana.com/grafana/plugins/grafana-simple-json-datasource/)
 
 ### Usage
 
@@ -22,7 +22,7 @@ or if like to limit the files to scan, with POST request
 ```sh
 curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "sample" }' http://localhost:9000/search
 ```
-it will show only matching 
+it will show only matching
 
 ```go
 func search(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +59,7 @@ if outputs an empty result
 []
 ```
 investigate (seeing it with Dockerized instances)
-when configured correctly it shows "target" metric catalog e.g. for `sample` directory 
+when configured correctly it shows "target" metric catalog e.g. for `sample` directory
 ```sh
 annotations.csv
 percent-idle.rrd
@@ -99,7 +99,7 @@ docker build -f Dockerfile -t $GRAFANA .
 docker container run --link $RRD_SERVER --name $GRAFANA -d -p 3000:3000 $GRAFANA
 ```
 
-* cleaup
+* cleanup
 ```sh
 docker container stop $RRD_SERVER
 docker container rm $RRD_SERVER
@@ -107,7 +107,7 @@ docker container rm $RRD_SERVER
 
 
 it should process https://grafana.com/grafana/plugins/grafana-simple-json-datasource/
-### Installon the host
+### Install on the host
 
 ```sh
 wget -O grafana-rrd-server_linux_amd64.gz https://github.com/doublemarket/grafana-rrd-server/releases/download/v0.0.5/grafana-rrd-server_linux_amd64.gz
@@ -285,14 +285,76 @@ to find out what data is available use command
 rrdtool dump sample/sample.rrd
 ```
 
+### Use RRD Inspector
+
+* clone [rrd4j](https://github.com/rrd4j/rrd4j)
+
+* to avoid being stopped by failing test and debigging build clean errors,
+
+```sh
+biz.aQute.bnd:bnd-maven-plugin:5.2.0:bnd-process (bnd-process) on project rrd4j: Classes found in the wrong directory: {META-INF/target/classes/org/rrd4j/core/Util.class=org.rrd4j.core.Util... followed by long list of clases
+```
+
+build via
+```sh
+mvn -Dmaven.test.skip=true clean package
+```
+* invoke
+```sh
+java -Xmx512m -jar target/rrd4j-3.9-SNAPSHOT-inspector.jar &
+```
+Note the heap setting to avoid out of memory erorr in runtime if tested on am emory-constrained VM
+
+NOTE: on Windows need to first
+```cmd
+mkdir \tmp
+```
+* there is a lot of sample `rrd` files in the project. Unfortunately it appears that RRD4J is unable to read files produced by the regular RRDTool:
+```cmd
+java.io.IOException: Invalid file header. File [some.rrd] is not a RRD4J RRD file
+```
+
+The __Rrd4J__ offers a conversion utility class to convert `RRD 003` files created with RRDTool 1.0.x to its own native RRD format `RRD4J, version 0.1`
+```cmd
+java -jar target\rrd4j-3.9-SNAPSHOT-converter.jar sample/*rrd
+```
+```cmd
+=======================================================================
+Converting RRDTool files to Rrd4j native format.
+Original RRDTool files will not be modified in any way
+RRD4J files created during the process will have a .jrb suffix
+=======================================================================
+0001/0003 percent-idle.rrd [OK, 0.221 sec]
+0002/0003 percent-user.rrd [OK, 0.024 sec]
+0003/0003 sample.rrd [OK, 0.021 sec]
+=======================================================================
+```
+
+![Inspector Example](https://github.com/sergueik/springboot_study/blob/master/basic-grafana-rrd-server/screenshots/rrd-inspector-capture.png)
+Alternarively one can build or download __binjr__ [app](https://github.com/binjr/binjr)  and examine code that can be used to build the search and query result set
+![Binjr Example](https://github.com/sergueik/springboot_study/blob/master/basic-grafana-rrd-server/screenshots/binjr-capture.png)
+
+
 ### See Also
 
-  * java time series data browser with JavaFx [app](https://github.com/binjr/binjr) backed by RRD
-   * java port of rrdtool - [rrd4j](https://github.com/rrd4j/rrd4j)
-   * RRDTool [tutorial](https://oss.oetiker.ch/rrdtool/tut/index.en.html)
-   * [post](https://medium.com/@raghavendrasamant/simplejson-datasource-implementation-in-grafana-using-sparkjava-81e2274b1cfa) about java based simpleJSON backend
+  * java port of rrdtool - [rrd4j](https://github.com/rrd4j/rrd4j)
+  * [rrd4j RRD files inspector GUI (Swing)](https://github.com/rrd4j/rrd4j/blob/master/src/main/java/org/rrd4j/inspector/RrdInspector.java) - part of the rr4dj project, has a own jar on [maven repository](https://mvnrepository.com/artifact/org.rrd4j/inspector/2.0.5)
+  * [rrd4-guide](https://github.com/harp077/rrd4j-guide)
+  * Standalone pure Java time series data browser with JavaFx [app](https://github.com/binjr/binjr) featuring plugin RRD4J Data source. NOTE: latest releases require Java 11 and recent JavaFX controls to handle RRD4J target selection and use gradle.
+  * RRDTool [tutorial](https://oss.oetiker.ch/rrdtool/tut/index.en.html)
+  * [rrdtool backed grafana simple JSON](https://github.com/famzah/rrd-json-grafana-ds) using PHP and CachingRRD
+  * [post](https://medium.com/@raghavendrasamant/simplejson-datasource-implementation-in-grafana-using-sparkjava-81e2274b1cfa) about java based simpleJSON backend
   * https://github.com/OpenNMS/jrrd - mixed Java / C wrapper
+  * https://github.com/OpenNMS/jrrd2 - successor of __jrrd__ - uses [jni](https://docs.oracle.com/javase/8/docs/technotes/guides/jni/)
+  * https://github.com/caseylucas/rrdtool-java another jni java call frontend
+  * https://oss.stamfest.net/wordpress/rrdtool-java-interface
+  * https://github.com/didfet/rrdclient - wrapper, uses `java.nio.channels.Channels`
   * [RRDtool Tutorial - Part 1](https://www.youtube.com/watch?v=JaK-IctEyWs)
   * [RRDtool Tutorial - Part 2](https://www.youtube.com/watch?v=m_qeVVB2yzw)
   * https://github.com/sysmo-nms/rrdio
   * probably moves data the other direction https://github.com/nitinka/JMetrics
+  * basic implementation of [SimpleJSON REST server](https://github.com/IsmetKh/grafana-simplejson-datasource) - has ASP.Net dependencies , can be used to prototype `/query`, `/search`,`/annotations`, `/tag-keys`, `tag-alues` payloads then using some prototype ASP.Net clean [REST famework](https://github.com/sachabarber/REST/tree/master/RESTServer/RESTServer) also discussed in [codeproject article](https://www.codeproject.com/Articles/826383/REST-A-Simple-REST-framework)
+
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

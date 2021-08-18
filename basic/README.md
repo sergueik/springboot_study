@@ -46,6 +46,7 @@ Hello basic
 ```
 destroy all started containers and image afterwards
 ```sh
+docker container stop $(docker container ls |  grep $IMAGE | awk '{print $1}')
 docker container prune -f
 docker image prune -f
 ```

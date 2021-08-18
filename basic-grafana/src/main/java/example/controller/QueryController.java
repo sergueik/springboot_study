@@ -5,6 +5,7 @@ package example.controller;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -24,12 +25,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import example.component.QueryRequest;
+import example.component.QueryTimeserieResponse;
+import example.component.SearchRequest;
 import example.service.ExampleService;
 
 // https://grafana.com/grafana/plugins/grafana-simple-json-datasource/
 @RestController
 @RequestMapping("/")
-public class DataSoureController {
+public class QueryController {
 
 	private final static Long high = 42L;
 	private final static Long low = 26L;
@@ -38,15 +42,41 @@ public class DataSoureController {
 	private ExampleService service;
 
 	// for mocking
-	public DataSoureController(ExampleService data) {
+	public QueryController(ExampleService data) {
 		service = data;
 	}
 
-	private static final Logger logger = LogManager
-			.getLogger(DataSoureController.class);
+	// array response
+	@RequestMapping(method = RequestMethod.POST, value = "query", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<QueryTimeserieResponse> postSearchRequest(
+			@RequestBody QueryRequest request) {
+		logger.info("processing POST /query");
+		List<QueryTimeserieResponse> result = new ArrayList<>();
+		QueryTimeserieResponse row = new QueryTimeserieResponse();
+		List<List<Double>> datapoints = new ArrayList<>();
+		List<Double> datapoint = Arrays.asList((double) 622.0,
+				(double) 1450754160000.0);
+		String target = request.getTargets().get(0).getTarget();
+		datapoints.add(datapoint);
+		result.add(row);
+		row.setTarget(target);
+		row.setDatapoints(datapoints);
+		return result;
+	}
 
+	/*
+	 java.lang.IllegalStateException: Ambiguous mapping. Cannot map 'example.controller.QueryController@6db66836' method 
+	public java.util.List<example.component.QueryTimeserieResponse> example.controller.QueryController.postSearchRequest(example.component.QueryRequest)
+	to {[/query],methods=[POST],consumes=[application/json],produces=[application/json]}: There is already 'example.controller.QueryController@6db66836' bean method
+	public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<java.lang.String, java.lang.Object>>> example.controller.QueryController.Query(java.util.Map<java.lang.String, java.lang.Object>) throws org.json.JSONException mapped.	
+	 */
+	private static final Logger logger = LogManager
+			.getLogger(QueryController.class);
+
+	// not strongly typed legacy code.
+	// NOTE: Need to map to different route
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/query", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "query_legacy", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<List<Map<String, Object>>> Query(
 			@RequestBody Map<String, Object> params) throws JSONException {
@@ -96,4 +126,5 @@ public class DataSoureController {
 				.contentType(MediaType.TEXT_PLAIN).body(result);
 
 	}
+
 }
