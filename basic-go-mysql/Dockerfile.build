@@ -1,26 +1,9 @@
-# FROM golang:alpine3.9
-# FROM golang:1.16-alpine AS builder
 FROM basic-builder
-ADD . /app
-WORKDIR /app
 
-ENV GOOS=linux
-ENV GOARCH=amd64
-ENV CGO_ENABLED=0
-COPY example.go /app/
-# malformed import path "/app": empty path element
-# RUN go mod init .
-RUN go get github.com/go-sql-driver/mysql
-RUN go get github.com/gocarina/gocsv
-RUN go get github.com/mattn/go-zglob
-# TODO: /go/src/github.com/ziutek/rrd/rrd.go:110:12: undefined: cstring
-RUN go get -u github.com/ziutek/rrd
-# TODO: cannot use path@version syntax in GOPATH mode
-RUN go get github.com/go-sql-driver/mysql@v1.6.0
-RUN go get github.com/gocarina/gocsv@v0.0.0-20200330101823-46266ca37bd3
-RUN go get github.com/mattn/go-zglob@v0.0.3
-RUN go get -u github.com/ziutek/rrd@v0.0.3
-
+WORKDIR /build
+COPY . .
+# RUN go build -o example example.go
+#
 RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example example.go
 
 

@@ -35,7 +35,7 @@ docker build -t $IMAGE -f Dockerfile.build .
 export NAME=basic-go-build
 docker container rm $NAME
 docker run -d --name=$NAME $IMAGE
-docker cp $NAME:/app/example .
+docker cp $NAME:/build/example .
 ``
 ```sh
 IMAGE=basic-go-run
