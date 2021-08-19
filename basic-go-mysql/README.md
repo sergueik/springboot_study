@@ -126,8 +126,66 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 ```
 if the connection works the hard coded credentials may be out of sync in `example.go`
 
+
+### Dependency Management
+
+the grafaa-rrd-server dependencies are very specicic version of the 
+
+Not using `go.sum` , `go.mod` from that project the leads to compile error in the build phase (see `Dockerfile.build-broken`)
+
+```sh
+docker build -t $IMAGE -f Dockerfile.build-broken .
+```
+```text
+/go/src/github.com/ziutek/rrd/rrd.go:110:12: undefined: cstring
+```
+replacing 
+```sh
+ RUN go get -u github.com/ziutek/rrd@v0.0.3
+```
+with
+```sh
+ RUN go get -u github.com/ziutek/rrd@552b878b2633c1e8031c30a9e7d1d3aa18517061
+```
+or  other commits does not fix the error 
+Apparently some specific commit do, but finding which has is needed is labor intensive:
+
+```sh
+export IMAGE=basic-go-build
+docker image rm -f $IMAGE
+docker build -t $IMAGE -f Dockerfile.build .
+export NAME=basic-go-build
+docker container rm $NAME
+docker run -it --name=$NAME $IMAGE sh
+
+```
+explore the build container:
+```sh
+cd /go/pkg/mod/github.com/ziutek/rrd@v0.0.3
+ls -la
+```
+```sh
+ls -la
+total 60
+dr-x------    2 root     root          4096 Aug 19 15:28 .
+drwxr-xr-x    3 root     root          4096 Aug 19 15:28 ..
+-r--r--r--    1 root     root          1394 Aug 19 15:28 LICENSE
+-r--r--r--    1 root     root           481 Aug 19 15:28 README.md
+-r--r--r--    1 root     root            38 Aug 19 15:28 go.mod
+-r--r--r--    1 root     root         10357 Aug 19 15:28 rrd.go
+-r--r--r--    1 root     root         12273 Aug 19 15:28 rrd_c.go
+-r--r--r--    1 root     root          4469 Aug 19 15:28 rrd_test.go
+-r--r--r--    1 root     root          1715 Aug 19 15:28 rrdfunc.c
+-r--r--r--    1 root     root           721 Aug 19 15:28 rrdfunc.h
+```
+(unfinshed)
 ### See Also
 
-  * [sqlite](https://github.com/bvinc/go-sqlite-lite)
-  * another custom [mysql driver](https://github.com/s1s1ty/go-mysql-crud)
+   * [sqlite](https://github.com/bvinc/go-sqlite-lite)
+   * another custom [mysql driver](https://github.com/s1s1ty/go-mysql-crud)
    * https://stackoverflow.com/questions/47577385/error-non-standard-import-github-com-go-sql-driver-mysql-in-standard-package/67431068#67431068
+   * https://stackoverflow.com/questions/53682247/how-to-point-go-module-dependency-in-go-mod-to-a-latest-commit-in-a-repo/
+   * https://github.com/golang/go/wiki/Modules#how-to-upgrade-and-downgrade-dependencies
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
