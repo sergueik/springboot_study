@@ -42,6 +42,7 @@ docker cp $NAME:/build/example .
 ```sh
 IMAGE=basic-go-run
 docker build -t $IMAGE -f Dockerfile.run  .
+docker container rm -f $IMAGE
 docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -d $IMAGE
 ```
 this will start web server
