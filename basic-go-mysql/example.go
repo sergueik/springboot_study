@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"math"
-	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -135,31 +134,23 @@ func (w *SearchCache) Get() []string {
 	db, err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
 
 	if err != nil { panic(err.Error()) }
-
-	err = db.Ping()
-	// do something here
-	if err != nil { panic(err.Error()) }
-	fmt.Println("ping succeeds")
-
 	defer db.Close()
 	fmt.Println("querying the cache table")
 	rows, err := db.Query("SELECT DISTINCT fname,ds FROM cache_table")
 
 	if err != nil { panic(err.Error()) }
-	fmt.Println("returned rows: ")
 	for rows.Next() {
 		var tag Tag
-		// for each row, load columns
 		err = rows.Scan(&tag.Fname,&tag.Ds)
 		if err != nil { panic(err.Error()) }
-		fmt.Println(tag.Fname + ":" + tag.Ds)
+		fmt.Println("item: " + tag.Fname + ":" + tag.Ds)
 		newItems = append(newItems, tag.Fname + ":" + tag.Ds)
 	}
 	defer db.Close()
 	w.m.Lock()
 	defer w.m.Unlock()
 	w.items = newItems
-	// original implementation - passes back full cache
+	// TODO: support legacy flag to switch to original implementation
 	return w.items
 }
 
@@ -190,18 +181,16 @@ func (w *SearchCache) Update() {
 				fmt.Println(err)
 			}
 			for ds, _ := range infoRes["ds.index"].(map[string]interface{}) {
+
+				// TODO: support legacy flag
 				// newItems = append(newItems, fName+":"+ds)
-				fmt.Println("new item:" + "\"" + fName + ":" + ds + "\"")
+
 				// perform a db.Query insert
-				s1 := rand.NewSource(time.Now().UnixNano())
-				// go compiler error: r1 declared and not used
-				r1 := rand.New(s1)
-				insert, err := db.Query("INSERT INTO `cache_table` (id, ins_date, fname, ds) VALUES ( ?, now(), ?,  ? )", r1.Intn(100000), fName, ds)
-				fmt.Println("Inserted into database.")
+				fmt.Println("Inserted into database:" + "\"" + fName + ":" + ds + "\"")
+				insert, err := db.Query("INSERT INTO `cache_table` (ins_date, fname, ds) VALUES ( now(), ?,  ? )", fName, ds)
 
 				if err != nil { panic(err.Error()) }
 
-				// defer close query is important if transactions are used
 				defer insert.Close()
 			}
 
