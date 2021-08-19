@@ -21,62 +21,12 @@ import (
 
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
-	"io"
 )
 
 type Tag struct {
   ID   int  `json:"id"`
   Fname string `json:"fname"`
   Ds string `json:"ds"`
-}
-func main_UNUSED() {
-  db, err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
-
-  if err != nil { panic(err.Error()) }
-  err = db.Ping()
-  // do something here
-  if err != nil { panic(err.Error()) }
-  fmt.Println("ping succeeds")
-
-  defer db.Close()
-  // NOTE: `rowsect` is language word
-  rows, err := db.Query("SELECT id, fname,ds FROM cache_table")
-
-  if err != nil { panic(err.Error()) }
-  for rows.Next() {
-    var tag Tag
-    // for each row, load columns
-    err = rows.Scan(&tag.ID, &tag.Fname,&tag.Ds)
-    if err != nil { panic(err.Error()) }
-    fmt.Println(tag.Fname + ":" + tag.Ds)
-  }
-
-  // defer close query is important if transactions are used
-  defer rows.Close()
-  var tag Tag
-  // Execute and discard the query
-  err = db.QueryRow("SELECT id, fname, ds FROM cache_table where fname = ?", "fname-1").Scan(&tag.ID, &tag.Fname, &tag.Ds)
-  if err != nil { panic(err.Error()) }
-
-  fmt.Println(tag.ID)
-  fmt.Println(tag.Fname)
-  fmt.Println(tag.Ds)
-
-  // perform a db.Query delete
-  op, err := db.Query("DELETE  FROM `cache_table` WHERE id = ?", 42)
-  if err != nil { panic(err.Error()) }
-
-  // defer close query is important if transactions are used
-  defer op.Close()
-
-  // perform a db.Query insert
-  insert, err := db.Query("INSERT INTO `cache_table` (id, ins_date, fname, ds) VALUES ( 42, now(),  'fname-42', 'ds-1')")
-
-  if err != nil { panic(err.Error()) }
-
-  // defer close query is important if transactions are used
-  defer insert.Close()
-
 }
 var  (
 	buildCacheFlag bool = false
@@ -292,65 +242,6 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, result)
 }
 
-// example := func(w http.ResponseWriter, req *http.Request) {
-// syntax error: non-declaration statement outside function body
-func example(w http.ResponseWriter, req *http.Request) {
-  io.WriteString(w, "querying the cache table\n")
-  db, err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
-
-  if err != nil { panic(err.Error()) }
-  err = db.Ping()
-  // do something here
-  if err != nil { panic(err.Error()) }
-  io.WriteString(w, "ping succeeds\n")
-
-  defer db.Close()
-
-  // NOTE: `rowsect` is language word
-  rows, err := db.Query("SELECT id, fname, ds FROM cache_table")
-
-  if err != nil { panic(err.Error()) }
-  for rows.Next() {
-    var tag Tag
-    // for each row, load columns
-    err = rows.Scan(&tag.ID, &tag.Fname, &tag.Ds)
-    if err != nil { panic(err.Error()) }
-    io.WriteString(w, tag.Fname)
-    io.WriteString(w, "\n" )
-    io.WriteString(w, tag.Ds)
-    io.WriteString(w, "\n" )
-  }
-
-  // defer close query is important if transactions are used
-  defer rows.Close()
-  var tag Tag
-  // Execute and discard the query
-  err = db.QueryRow("SELECT id, fname, ds FROM cache_table where fname = ?", "fname-1").Scan(&tag.ID, &tag.Fname, &tag.Ds)
-  if err != nil { panic(err.Error()) }
-
-  io.WriteString(w,strconv.Itoa( tag.ID ))
-  io.WriteString(w, "\n" )
-  io.WriteString(w, tag.Fname)
-  io.WriteString(w, "\n" )
-  io.WriteString(w, tag.Ds)
-  io.WriteString(w, "\n" )
-
-  // perform a db.Query delete
-  op, err := db.Query("DELETE  FROM `cache_table` WHERE id = ?", 42)
-  if err != nil { panic(err.Error()) }
-
-  // defer close query is important if transactions are used
-  defer op.Close()
-
-  // perform a db.Query insert
-  insert, err := db.Query("INSERT INTO `cache_table` (id, ins_date, fname, ds) VALUES ( 42, now(),  'fname-42', 'ds-1')")
-
-  if err != nil { panic(err.Error()) }
-
-  // defer close query is important if transactions are used
-  defer insert.Close()
-
-}
 func search(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var searchRequest SearchRequest
@@ -503,30 +394,20 @@ func SetArgs() {
 	flag.Int64Var(&config.Server.SearchCache, "c", 600, "Search cache in seconds.")
 	flag.StringVar(&config.Server.AnnotationFilePath, "a", "", "Path for a file that has annotations.")
 	flag.IntVar(&config.Server.Multiplier, "m", 1, "Value multiplier.")
-	// https://pkg.go.dev/flag#Bool
 	flag.BoolVar(&buildCacheFlag, "update", false, "update cache")
 	_ = buildCacheFlag
 	flag.Parse()
-	fmt.Printf("SetArgs() build cache: %s\n", strconv.FormatBool(buildCacheFlag))
+	// fmt.Printf("SetArgs() build cache: %s\n", strconv.FormatBool(buildCacheFlag))
 }
 
 func main() {
 	SetArgs()
-	fmt.Printf("main() build cache: %s\n", strconv.FormatBool(buildCacheFlag))
 	if (buildCacheFlag) { 
-	fmt.Println("perfirming searchCache.Update")
-	// TODO: what is the purpose of IIFE golang style here ?
-	//	go func() {
-			for {
-				searchCache.Update()
-				return
-				// time.Sleep(time.Duration(config.Server.SearchCache) * time.Second)
-			}
-	//	}()
+		searchCache.Update()
+		return
 	} else {
 		http.HandleFunc("/search", search)
 		http.HandleFunc("/query", query)
-		http.HandleFunc("/mysql", example)
 		http.HandleFunc("/annotations", annotations)
 		http.HandleFunc("/", hello)
 		err := http.ListenAndServe(config.Server.IpAddr+":"+strconv.Itoa(config.Server.Port), nil)

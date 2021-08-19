@@ -54,9 +54,6 @@ docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9
 
 this will log to console
 ```sh
-SetArgs() build cache: true
-main() build cache: true
-perfirming searchCache.Update
 Updating search cache.
 Connected to database.
 new item:"percent-idle:value"
@@ -64,37 +61,7 @@ Inserted into database.
 new item:"percent-user:value"
 Inserted into database.
 new item:"sample:ClientInfoAge"
-Inserted into database.
-new item:"sample:StatusHeld"
-Inserted into database.
-new item:"sample:ClientGlideRunning"
-Inserted into database.
-new item:"sample:ClientJobsIdle"
-Inserted into database.
-new item:"sample:ClientJobsRunning"
-Inserted into database.
-new item:"sample:ReqMaxRun"
-Inserted into database.
-new item:"sample:StatusIdle"
-Inserted into database.
-new item:"sample:StatusIdleOther"
-Inserted into database.
-new item:"sample:StatusPending"
-Inserted into database.
-new item:"sample:StatusStageIn"
-Inserted into database.
-new item:"sample:StatusStageOut"
-Inserted into database.
-new item:"sample:StatusWait"
-Inserted into database.
-new item:"sample:StatusRunning"
-Inserted into database.
-new item:"sample:ClientGlideIdle"
-Inserted into database.
-new item:"sample:ClientGlideTotal"
-Inserted into database.
-new item:"sample:ReqIdle"
-Inserted into database.
+...
 Closed database connection.
 Finished updating search cache.
 ```
@@ -131,6 +98,9 @@ this will respond with
 ```
 while logging shows the data was produced by DB select:
 ```sh
+docker logs $IMAGE
+```
+```sh
 ping succeeds
 querying the cache table
 returned rows:
@@ -147,18 +117,7 @@ percent-idle:value
 sample:StatusHeld
 sample:ClientJobsIdle
 sample:ClientJobsRunning
-percent-user:value
-sample:StatusStageIn
-sample:StatusStageOut
-sample:ClientGlideIdle
-sample:ReqIdle
-sample:StatusIdle
-sample:StatusRunning
-sample:ClientGlideRunning
-sample:ClientGlideTotal
-sample:StatusWait
-sample:ClientInfoAge
-sample:StatusIdleOther
+...
 ```
 
 to confirm explicitly one may simply issue `/search` with the target attribute "fname" which is not in file system but was added to `cache_table`:
@@ -176,70 +135,6 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "fname" }' ht
   "fname-42:ds-1"
 ]
 ```
-One still can call sample added url:
-```sh
-curl http://localhost:9001/mysql
-```
-this will connect to DB running on `mysql-server`, perform various basic CRUD operations and print the results
-```text
-querying the cache table
-ping succeeds
-fname-1
-ds-1
-fname-1
-ds-2
-fname-1
-ds-3
-fname-2
-ds-4
-fname-2
-ds-5
-fname-3
-ds-5
-fname-42
-ds-1
-sample
-ClientGlideIdle
-sample
-StatusPending
-sample
-ClientJobsRunning
-sample
-ClientGlideTotal
-sample
-ClientInfoAge
-percent-user
-value
-percent-idle
-value
-sample
-StatusWait
-sample
-ClientGlideRunning
-sample
-ClientJobsIdle
-sample
-ReqIdle
-sample
-StatusHeld
-sample
-StatusIdleOther
-sample
-ReqMaxRun
-sample
-StatusRunning
-sample
-StatusStageOut
-sample
-StatusIdle
-sample
-StatusStageIn
-1
-fname-1
-ds-1
-```
-
-
 ### Initialize DB
 ```sh
 docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e " source /tmp/app/mysql-init.sql"
