@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"math"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -25,7 +26,8 @@ import (
 
 type Tag struct {
   ID   int  `json:"id"`
-  Name string `json:"name"`
+  Fname string `json:"fname"`
+  Ds string `json:"ds"`
 }
 func main_UNUSED() {
   db, err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
@@ -38,36 +40,37 @@ func main_UNUSED() {
 
   defer db.Close()
   // NOTE: `rowsect` is language word
-  rows, err := db.Query("SELECT id, name FROM example_table")
+  rows, err := db.Query("SELECT id, fname,ds FROM cache_table")
 
   if err != nil { panic(err.Error()) }
   for rows.Next() {
     var tag Tag
     // for each row, load columns
-    err = rows.Scan(&tag.ID, &tag.Name)
+    err = rows.Scan(&tag.ID, &tag.Fname,&tag.Ds)
     if err != nil { panic(err.Error()) }
-    fmt.Println(tag.Name)
+    fmt.Println(tag.Fname + ":" + tag.Ds)
   }
 
   // defer close query is important if transactions are used
   defer rows.Close()
   var tag Tag
   // Execute and discard the query
-  err = db.QueryRow("SELECT id, name FROM example_table where id = ?", 2).Scan(&tag.ID, &tag.Name)
+  err = db.QueryRow("SELECT id, fname, ds FROM cache_table where fname = ?", "fname-1").Scan(&tag.ID, &tag.Fname, &tag.Ds)
   if err != nil { panic(err.Error()) }
 
   fmt.Println(tag.ID)
-  fmt.Println(tag.Name)
+  fmt.Println(tag.Fname)
+  fmt.Println(tag.Ds)
 
   // perform a db.Query delete
-  op, err := db.Query("DELETE  FROM `example_table` WHERE id = ?", 42)
+  op, err := db.Query("DELETE  FROM `cache_table` WHERE id = ?", 42)
   if err != nil { panic(err.Error()) }
 
   // defer close query is important if transactions are used
   defer op.Close()
 
   // perform a db.Query insert
-  insert, err := db.Query("INSERT INTO `example_table` (id, INS_DATE, NAME, VALUE) VALUES ( 42, now(), 'my example', 'new value')")
+  insert, err := db.Query("INSERT INTO `cache_table` (id, ins_date, fname, ds) VALUES ( 42, now(),  'fname-42', 'ds-1')")
 
   if err != nil { panic(err.Error()) }
 
@@ -75,7 +78,10 @@ func main_UNUSED() {
   defer insert.Close()
 
 }
-var config Config
+var  (
+	buildCacheFlag bool = false
+	config Config
+)
 
 type QueryResponse struct {
 	Target     string      `json:"target"`
@@ -173,9 +179,37 @@ func NewSearchCache() *SearchCache {
 }
 
 func (w *SearchCache) Get() []string {
+	newItems := []string{}
+
+
+	db, err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
+
+	if err != nil { panic(err.Error()) }
+
+	err = db.Ping()
+	// do something here
+	if err != nil { panic(err.Error()) }
+	fmt.Println("ping succeeds")
+
+	defer db.Close()
+	fmt.Println("querying the cache table")
+	rows, err := db.Query("SELECT DISTINCT fname,ds FROM cache_table")
+
+	if err != nil { panic(err.Error()) }
+	fmt.Println("returned rows: ")
+	for rows.Next() {
+		var tag Tag
+		// for each row, load columns
+		err = rows.Scan(&tag.Fname,&tag.Ds)
+		if err != nil { panic(err.Error()) }
+		fmt.Println(tag.Fname + ":" + tag.Ds)
+		newItems = append(newItems, tag.Fname + ":" + tag.Ds)
+	}
+	defer db.Close()
 	w.m.Lock()
 	defer w.m.Unlock()
-
+	w.items = newItems
+	// original implementation - passes back full cache
 	return w.items
 }
 
@@ -183,7 +217,11 @@ func (w *SearchCache) Update() {
 	newItems := []string{}
 
 	fmt.Println("Updating search cache.")
-	err := filepath.Walk(strings.TrimRight(config.Server.RrdPath, "/")+"/",
+        db, db_err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
+        if db_err != nil { panic(db_err.Error()) }
+	// go compiler error: no new variables on left side of := 
+	fmt.Println("Connected to database.")
+   	err := filepath.Walk(strings.TrimRight(config.Server.RrdPath, "/")+"/",
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -202,7 +240,19 @@ func (w *SearchCache) Update() {
 				fmt.Println(err)
 			}
 			for ds, _ := range infoRes["ds.index"].(map[string]interface{}) {
-				newItems = append(newItems, fName+":"+ds)
+				// newItems = append(newItems, fName+":"+ds)
+				fmt.Println("new item:" + "\"" + fName + ":" + ds + "\"")
+				// perform a db.Query insert
+				s1 := rand.NewSource(time.Now().UnixNano())
+				// go compiler error: r1 declared and not used
+				r1 := rand.New(s1)
+				insert, err := db.Query("INSERT INTO `cache_table` (id, ins_date, fname, ds) VALUES ( ?, now(), ?,  ? )", r1.Intn(100000), fName, ds)
+				fmt.Println("Inserted into database.")
+
+				if err != nil { panic(err.Error()) }
+
+				// defer close query is important if transactions are used
+				defer insert.Close()
 			}
 
 			return nil
@@ -216,7 +266,10 @@ func (w *SearchCache) Update() {
 	w.m.Lock()
 	defer w.m.Unlock()
 	w.items = newItems
+	defer db.Close()
+	fmt.Println("Closed database connection.")
 	fmt.Println("Finished updating search cache.")
+
 }
 
 var searchCache *SearchCache = NewSearchCache()
@@ -242,7 +295,7 @@ func hello(w http.ResponseWriter, r *http.Request) {
 // example := func(w http.ResponseWriter, req *http.Request) {
 // syntax error: non-declaration statement outside function body
 func example(w http.ResponseWriter, req *http.Request) {
-		io.WriteString(w, "Hello, world!\n")
+  io.WriteString(w, "querying the cache table\n")
   db, err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
 
   if err != nil { panic(err.Error()) }
@@ -252,16 +305,19 @@ func example(w http.ResponseWriter, req *http.Request) {
   io.WriteString(w, "ping succeeds\n")
 
   defer db.Close()
+
   // NOTE: `rowsect` is language word
-  rows, err := db.Query("SELECT id, name FROM example_table")
+  rows, err := db.Query("SELECT id, fname, ds FROM cache_table")
 
   if err != nil { panic(err.Error()) }
   for rows.Next() {
     var tag Tag
     // for each row, load columns
-    err = rows.Scan(&tag.ID, &tag.Name)
+    err = rows.Scan(&tag.ID, &tag.Fname, &tag.Ds)
     if err != nil { panic(err.Error()) }
-    io.WriteString(w, tag.Name)
+    io.WriteString(w, tag.Fname)
+    io.WriteString(w, "\n" )
+    io.WriteString(w, tag.Ds)
     io.WriteString(w, "\n" )
   }
 
@@ -269,23 +325,25 @@ func example(w http.ResponseWriter, req *http.Request) {
   defer rows.Close()
   var tag Tag
   // Execute and discard the query
-  err = db.QueryRow("SELECT id, name FROM example_table where id = ?", 2).Scan(&tag.ID, &tag.Name)
+  err = db.QueryRow("SELECT id, fname, ds FROM cache_table where fname = ?", "fname-1").Scan(&tag.ID, &tag.Fname, &tag.Ds)
   if err != nil { panic(err.Error()) }
 
   io.WriteString(w,strconv.Itoa( tag.ID ))
   io.WriteString(w, "\n" )
-  io.WriteString(w, tag.Name)
+  io.WriteString(w, tag.Fname)
+  io.WriteString(w, "\n" )
+  io.WriteString(w, tag.Ds)
   io.WriteString(w, "\n" )
 
   // perform a db.Query delete
-  op, err := db.Query("DELETE  FROM `example_table` WHERE id = ?", 42)
+  op, err := db.Query("DELETE  FROM `cache_table` WHERE id = ?", 42)
   if err != nil { panic(err.Error()) }
 
   // defer close query is important if transactions are used
   defer op.Close()
 
   // perform a db.Query insert
-  insert, err := db.Query("INSERT INTO `example_table` (id, INS_DATE, NAME, VALUE) VALUES ( 42, now(), 'my example', 'new value')")
+  insert, err := db.Query("INSERT INTO `cache_table` (id, ins_date, fname, ds) VALUES ( 42, now(),  'fname-42', 'ds-1')")
 
   if err != nil { panic(err.Error()) }
 
@@ -445,28 +503,37 @@ func SetArgs() {
 	flag.Int64Var(&config.Server.SearchCache, "c", 600, "Search cache in seconds.")
 	flag.StringVar(&config.Server.AnnotationFilePath, "a", "", "Path for a file that has annotations.")
 	flag.IntVar(&config.Server.Multiplier, "m", 1, "Value multiplier.")
+	// https://pkg.go.dev/flag#Bool
+	flag.BoolVar(&buildCacheFlag, "update", false, "update cache")
+	_ = buildCacheFlag
 	flag.Parse()
+	fmt.Printf("SetArgs() build cache: %s\n", strconv.FormatBool(buildCacheFlag))
 }
 
 func main() {
 	SetArgs()
-
-	http.HandleFunc("/search", search)
-	http.HandleFunc("/query", query)
-	http.HandleFunc("/mysql", example)
-	http.HandleFunc("/annotations", annotations)
-	http.HandleFunc("/", hello)
-
-	go func() {
-		for {
-			searchCache.Update()
-			time.Sleep(time.Duration(config.Server.SearchCache) * time.Second)
+	fmt.Printf("main() build cache: %s\n", strconv.FormatBool(buildCacheFlag))
+	if (buildCacheFlag) { 
+	fmt.Println("perfirming searchCache.Update")
+	// TODO: what is the purpose of IIFE golang style here ?
+	//	go func() {
+			for {
+				searchCache.Update()
+				return
+				// time.Sleep(time.Duration(config.Server.SearchCache) * time.Second)
+			}
+	//	}()
+	} else {
+		http.HandleFunc("/search", search)
+		http.HandleFunc("/query", query)
+		http.HandleFunc("/mysql", example)
+		http.HandleFunc("/annotations", annotations)
+		http.HandleFunc("/", hello)
+		err := http.ListenAndServe(config.Server.IpAddr+":"+strconv.Itoa(config.Server.Port), nil)
+		if err != nil {
+			fmt.Println("ERROR:", err)
+			os.Exit(1)
 		}
-	}()
-
-	err := http.ListenAndServe(config.Server.IpAddr+":"+strconv.Itoa(config.Server.Port), nil)
-	if err != nil {
-		fmt.Println("ERROR:", err)
-		os.Exit(1)
 	}
 }
+

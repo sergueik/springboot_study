@@ -6,7 +6,7 @@ and subject [Wiki](https://github.com/go-sql-driver/mysql/wiki/Example)
 ### Usage
 *  have mysql container up
 ```sh
-docke rpull mysql:8.0.18
+docker pull mysql:8.0.18
 ```
 and run it with environmenti variables matching the hard-coded values in `example.go`:
 ```sh
@@ -30,7 +30,8 @@ docker logs mysql-server
 export IMAGE=basic-builder
 docker image rm -f $IMAGE
 docker build -t $IMAGE -f Dockerfile.builder .
-
+```
+```sh
 export IMAGE=basic-go-build
 docker image rm -f $IMAGE
 docker build -t $IMAGE -f Dockerfile.build .
@@ -38,35 +39,207 @@ export NAME=basic-go-build
 docker container rm $NAME
 docker run -d --name=$NAME $IMAGE
 docker cp $NAME:/build/example .
-``
+```
+build run image
 ```sh
 IMAGE=basic-go-run
 docker build -t $IMAGE -f Dockerfile.run  .
 docker container rm -f $IMAGE
+```
+
+* build cache
+```sh
+docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE -update
+```
+
+this will log to console
+```sh
+SetArgs() build cache: true
+main() build cache: true
+perfirming searchCache.Update
+Updating search cache.
+Connected to database.
+new item:"percent-idle:value"
+Inserted into database.
+new item:"percent-user:value"
+Inserted into database.
+new item:"sample:ClientInfoAge"
+Inserted into database.
+new item:"sample:StatusHeld"
+Inserted into database.
+new item:"sample:ClientGlideRunning"
+Inserted into database.
+new item:"sample:ClientJobsIdle"
+Inserted into database.
+new item:"sample:ClientJobsRunning"
+Inserted into database.
+new item:"sample:ReqMaxRun"
+Inserted into database.
+new item:"sample:StatusIdle"
+Inserted into database.
+new item:"sample:StatusIdleOther"
+Inserted into database.
+new item:"sample:StatusPending"
+Inserted into database.
+new item:"sample:StatusStageIn"
+Inserted into database.
+new item:"sample:StatusStageOut"
+Inserted into database.
+new item:"sample:StatusWait"
+Inserted into database.
+new item:"sample:StatusRunning"
+Inserted into database.
+new item:"sample:ClientGlideIdle"
+Inserted into database.
+new item:"sample:ClientGlideTotal"
+Inserted into database.
+new item:"sample:ReqIdle"
+Inserted into database.
+Closed database connection.
+Finished updating search cache.
+```
+* start server
+```sh
+docker container rm -f $IMAGE
 docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -d $IMAGE
 ```
 this will start web server
+* try search
+```sh
+curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "sample" }' http://localhost:9001/search |jq '.'
+```
+this will respond with
+```json
+[
+  "sample:ClientJobsIdle",
+  "sample:ReqIdle",
+  "sample:ReqMaxRun",
+  "sample:StatusIdleOther",
+  "sample:StatusStageOut",
+  "sample:ClientGlideIdle",
+  "sample:ClientGlideRunning",
+  "sample:ClientInfoAge",
+  "sample:StatusHeld",
+  "sample:StatusPending",
+  "sample:StatusRunning",
+  "sample:ClientJobsRunning",
+  "sample:StatusIdle",
+  "sample:ClientGlideTotal",
+  "sample:StatusStageIn",
+  "sample:StatusWait"
+]
+```
+while logging shows the data was produced by DB select:
+```sh
+ping succeeds
+querying the cache table
+returned rows:
+fname-1:ds-1
+fname-1:ds-2
+fname-1:ds-3
+fname-2:ds-4
+fname-2:ds-5
+fname-3:ds-5
+fname-42:ds-1
+sample:ReqMaxRun
+sample:StatusPending
+percent-idle:value
+sample:StatusHeld
+sample:ClientJobsIdle
+sample:ClientJobsRunning
+percent-user:value
+sample:StatusStageIn
+sample:StatusStageOut
+sample:ClientGlideIdle
+sample:ReqIdle
+sample:StatusIdle
+sample:StatusRunning
+sample:ClientGlideRunning
+sample:ClientGlideTotal
+sample:StatusWait
+sample:ClientInfoAge
+sample:StatusIdleOther
+```
 
-call sample added url:
+to confirm explicitly one may simply issue `/search` with the target attribute "fname" which is not in file system but was added to `cache_table`:
+```sh
+curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "fname" }' http://localhost:9001/search |jq '.'
+```
+```json
+[
+  "fname-1:ds-1",
+  "fname-1:ds-2",
+  "fname-1:ds-3",
+  "fname-2:ds-4",
+  "fname-2:ds-5",
+  "fname-3:ds-5",
+  "fname-42:ds-1"
+]
+```
+One still can call sample added url:
 ```sh
 curl http://localhost:9001/mysql
 ```
 this will connect to DB running on `mysql-server`, perform various basic CRUD operations and print the results
 ```text
+querying the cache table
 ping succeeds
-example-1
-example-2
-example-3
-example-4
-example-5
-example-6
-example-7
-example-8
-example-9
-my example
-2
-example-2
+fname-1
+ds-1
+fname-1
+ds-2
+fname-1
+ds-3
+fname-2
+ds-4
+fname-2
+ds-5
+fname-3
+ds-5
+fname-42
+ds-1
+sample
+ClientGlideIdle
+sample
+StatusPending
+sample
+ClientJobsRunning
+sample
+ClientGlideTotal
+sample
+ClientInfoAge
+percent-user
+value
+percent-idle
+value
+sample
+StatusWait
+sample
+ClientGlideRunning
+sample
+ClientJobsIdle
+sample
+ReqIdle
+sample
+StatusHeld
+sample
+StatusIdleOther
+sample
+ReqMaxRun
+sample
+StatusRunning
+sample
+StatusStageOut
+sample
+StatusIdle
+sample
+StatusStageIn
+1
+fname-1
+ds-1
 ```
+
+
 ### Initialize DB
 ```sh
 docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e " source /tmp/app/mysql-init.sql"
@@ -125,7 +298,7 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 +------+
 ```
 if the connection works the hard coded credentials may be out of sync in `example.go`
-
+The other frequent error is docker used the cache too aggressively
 
 ### Dependency Management
 
@@ -186,6 +359,8 @@ drwxr-xr-x    3 root     root          4096 Aug 19 15:28 ..
    * https://stackoverflow.com/questions/47577385/error-non-standard-import-github-com-go-sql-driver-mysql-in-standard-package/67431068#67431068
    * https://stackoverflow.com/questions/53682247/how-to-point-go-module-dependency-in-go-mod-to-a-latest-commit-in-a-repo/
    * https://github.com/golang/go/wiki/Modules#how-to-upgrade-and-downgrade-dependencies
-
+   * https://stackoverflow.com/questions/21743841/how-to-avoid-annoying-error-declared-and-not-used
+	
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+

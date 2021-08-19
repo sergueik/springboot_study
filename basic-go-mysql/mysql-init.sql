@@ -3,37 +3,33 @@
 use test;
 
 --
--- Table structure for table `example_table`
+-- Table structure for table `cache_table`
 --
 
-DROP TABLE IF EXISTS `example_table`;
+DROP TABLE IF EXISTS `cache_table`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `example_table` (
+CREATE TABLE `cache_table` (
   `id`        bigint(20)   NOT NULL,
-  `INS_DATE`  datetime     NOT NULL,
-  `NAME`      varchar(255) NOT NULL,
-  `VALUE`     varchar(255) DEFAULT NULL,
+  `ins_date`  datetime     NOT NULL,
+  `fname`     varchar(255) NOT NULL,
+  `ds`        varchar(255) NOT NULL,
+  `comment`   varchar(255) DEFAULT NULL,
+  INDEX(`FNAME`),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `EXAMPLE_TABLE`
+-- Dumping data for table `CACHE_TABLE`
 --
 
-LOCK TABLES `example_table` WRITE;
-/*!40000 ALTER TABLE `example_table` DISABLE KEYS */;
-INSERT INTO `example_table` (id, INS_DATE, NAME, VALUE)
+INSERT INTO `cache_table` (id, ins_date, fname, ds)
 VALUES
-( 1, now(), 'example-1', 'value-1'), 
-( 2, now(), 'example-2', 'value-2'), 
-( 3, now(), 'example-3', 'value-3'), 
-( 4, now(), 'example-4', 'value-4'), 
-( 5, now(), 'example-5', 'value-5'), 
-( 6, now(), 'example-6', 'value-6'), 
-( 7, now(), 'example-7', 'value-7'), 
-( 8, now(), 'example-8', 'value-8'), 
-( 9, now(), 'example-9', 'value-9');
-/*!40000 ALTER TABLE `example_table` ENABLE KEYS */;
-UNLOCK TABLES;
+( 1, now(), 'fname-1', 'ds-1'), 
+( 2, now(), 'fname-1', 'ds-2'), 
+( 3, now(), 'fname-1', 'ds-3'), 
+( 4, now(), 'fname-2', 'ds-4'), 
+( 5, now(), 'fname-2', 'ds-5'), 
+( 6, now(), 'fname-3', 'ds-5');
+
