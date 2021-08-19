@@ -176,9 +176,37 @@ func NewSearchCache() *SearchCache {
 }
 
 func (w *SearchCache) Get() []string {
+	newItems := []string{}
+
+
+	db, err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
+
+	if err != nil { panic(err.Error()) }
+
+	err = db.Ping()
+	// do something here
+	if err != nil { panic(err.Error()) }
+	fmt.Println("ping succeeds")
+
+	defer db.Close()
+	fmt.Println("querying the cache table")
+	rows, err := db.Query("SELECT DISTINCT fname,ds FROM cache_table")
+
+	if err != nil { panic(err.Error()) }
+	fmt.Println("returned rows: ")
+	for rows.Next() {
+		var tag Tag
+		// for each row, load columns
+		err = rows.Scan(&tag.Fname,&tag.Ds)
+		if err != nil { panic(err.Error()) }
+		fmt.Println(tag.Fname + ":" + tag.Ds)
+		newItems = append(newItems, tag.Fname + ":" + tag.Ds)
+	}
+	defer db.Close()
 	w.m.Lock()
 	defer w.m.Unlock()
-
+	w.items = newItems
+	// original implementation - passes back full cache
 	return w.items
 }
 
@@ -209,7 +237,7 @@ func (w *SearchCache) Update() {
 				fmt.Println(err)
 			}
 			for ds, _ := range infoRes["ds.index"].(map[string]interface{}) {
-				newItems = append(newItems, fName+":"+ds)
+				// newItems = append(newItems, fName+":"+ds)
 				fmt.Println("new item:" + "\"" + fName + ":" + ds + "\"")
 				// perform a db.Query insert
 				s1 := rand.NewSource(time.Now().UnixNano())

@@ -154,6 +154,78 @@ StatusStageIn
 fname-1
 ds-1
 ```
+
+```sh
+curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "sample" }' http://localhost:9001/search |jq '.'
+```
+this will respond with
+```json
+[
+  "sample:ClientJobsIdle",
+  "sample:ReqIdle",
+  "sample:ReqMaxRun",
+  "sample:StatusIdleOther",
+  "sample:StatusStageOut",
+  "sample:ClientGlideIdle",
+  "sample:ClientGlideRunning",
+  "sample:ClientInfoAge",
+  "sample:StatusHeld",
+  "sample:StatusPending",
+  "sample:StatusRunning",
+  "sample:ClientJobsRunning",
+  "sample:StatusIdle",
+  "sample:ClientGlideTotal",
+  "sample:StatusStageIn",
+  "sample:StatusWait"
+]
+```
+while logging shows the data was produced by DB select:
+```sh
+ping succeeds
+querying the cache table
+returned rows:
+fname-1:ds-1
+fname-1:ds-2
+fname-1:ds-3
+fname-2:ds-4
+fname-2:ds-5
+fname-3:ds-5
+fname-42:ds-1
+sample:ReqMaxRun
+sample:StatusPending
+percent-idle:value
+sample:StatusHeld
+sample:ClientJobsIdle
+sample:ClientJobsRunning
+percent-user:value
+sample:StatusStageIn
+sample:StatusStageOut
+sample:ClientGlideIdle
+sample:ReqIdle
+sample:StatusIdle
+sample:StatusRunning
+sample:ClientGlideRunning
+sample:ClientGlideTotal
+sample:StatusWait
+sample:ClientInfoAge
+sample:StatusIdleOther
+```
+
+to confirm explicitly one may simply issue `/search` with the target attribute "fname" which is not in file system but was added to `cache_table`:
+```sh
+curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "fname" }' http://localhost:9001/search |jq '.'
+```
+```json
+[
+  "fname-1:ds-1",
+  "fname-1:ds-2",
+  "fname-1:ds-3",
+  "fname-2:ds-4",
+  "fname-2:ds-5",
+  "fname-3:ds-5",
+  "fname-42:ds-1"
+]
+```
 ### Initialize DB
 ```sh
 docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e " source /tmp/app/mysql-init.sql"
@@ -216,7 +288,7 @@ The other frequent error is docker used the cache too aggressively
 
 ### Dependency Management
 
-the `grafaa-rrd-server` dependencies are very specicic version of the `ziutek/rrd`
+the grafaa-rrd-server dependencies are very specicic version of the 
 
 Not using `go.sum` , `go.mod` from that project the leads to compile error in the build phase (see `Dockerfile.build-broken`)
 
@@ -228,13 +300,13 @@ docker build -t $IMAGE -f Dockerfile.build-broken .
 ```
 replacing 
 ```sh
-RUN go get -u github.com/ziutek/rrd@v0.0.3
+ RUN go get -u github.com/ziutek/rrd@v0.0.3
 ```
 with
 ```sh
-RUN go get -u github.com/ziutek/rrd@552b878b2633c1e8031c30a9e7d1d3aa18517061
+ RUN go get -u github.com/ziutek/rrd@552b878b2633c1e8031c30a9e7d1d3aa18517061
 ```
-or other commits does not fix the error 
+or  other commits does not fix the error 
 Apparently some specific commit do, but finding which has is needed is labor intensive:
 
 ```sh
