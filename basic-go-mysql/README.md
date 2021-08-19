@@ -6,7 +6,7 @@ and subject [Wiki](https://github.com/go-sql-driver/mysql/wiki/Example)
 ### Usage
 *  have mysql container up
 ```sh
-docke rpull mysql:8.0.18
+docker pull mysql:8.0.18
 ```
 and run it with environmenti variables matching the hard-coded values in `example.go`:
 ```sh
@@ -46,26 +46,58 @@ docker container rm -f $IMAGE
 docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -d $IMAGE
 ```
 this will start web server
-
+The bootstrap cache popultion will be logged
+```sh
+docker logs $IMAGE
+```
+```sh
+ docker logs $IMAGE
+Updating search cache.
+new item:"percent-idle:value"
+new item:"percent-user:value"
+new item:"sample:ClientGlideTotal"
+new item:"sample:ClientInfoAge"
+new item:"sample:ClientJobsIdle"
+new item:"sample:ReqMaxRun"
+new item:"sample:StatusHeld"
+new item:"sample:StatusPending"
+new item:"sample:StatusStageOut"
+new item:"sample:StatusIdle"
+new item:"sample:StatusRunning"
+new item:"sample:StatusStageIn"
+new item:"sample:StatusWait"
+new item:"sample:ClientGlideIdle"
+new item:"sample:ClientGlideRunning"
+new item:"sample:StatusIdleOther"
+new item:"sample:ClientJobsRunning"
+new item:"sample:ReqIdle"
+Finished updating search cache.
+```
 call sample added url:
 ```sh
 curl http://localhost:9001/mysql
 ```
 this will connect to DB running on `mysql-server`, perform various basic CRUD operations and print the results
 ```text
+querying the cache table
 ping succeeds
-example-1
-example-2
-example-3
-example-4
-example-5
-example-6
-example-7
-example-8
-example-9
-my example
-2
-example-2
+fname-1
+ds-1
+fname-1
+ds-2
+fname-1
+ds-3
+fname-2
+ds-4
+fname-2
+ds-5
+fname-3
+ds-5
+fname-42
+ds-1
+1
+fname-1
+ds-1
 ```
 ### Initialize DB
 ```sh
@@ -125,7 +157,7 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 +------+
 ```
 if the connection works the hard coded credentials may be out of sync in `example.go`
-
+The other frequent error is docker used the cache too aggressively
 
 ### Dependency Management
 
@@ -189,3 +221,4 @@ drwxr-xr-x    3 root     root          4096 Aug 19 15:28 ..
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+

@@ -25,7 +25,8 @@ import (
 
 type Tag struct {
   ID   int  `json:"id"`
-  Name string `json:"name"`
+  Fname string `json:"fname"`
+  Ds string `json:"ds"`
 }
 func main_UNUSED() {
   db, err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
@@ -38,36 +39,37 @@ func main_UNUSED() {
 
   defer db.Close()
   // NOTE: `rowsect` is language word
-  rows, err := db.Query("SELECT id, name FROM example_table")
+  rows, err := db.Query("SELECT id, fname,ds FROM cache_table")
 
   if err != nil { panic(err.Error()) }
   for rows.Next() {
     var tag Tag
     // for each row, load columns
-    err = rows.Scan(&tag.ID, &tag.Name)
+    err = rows.Scan(&tag.ID, &tag.Fname,&tag.Ds)
     if err != nil { panic(err.Error()) }
-    fmt.Println(tag.Name)
+    fmt.Println(tag.Fname + ":" + tag.Ds)
   }
 
   // defer close query is important if transactions are used
   defer rows.Close()
   var tag Tag
   // Execute and discard the query
-  err = db.QueryRow("SELECT id, name FROM example_table where id = ?", 2).Scan(&tag.ID, &tag.Name)
+  err = db.QueryRow("SELECT id, fname, ds FROM cache_table where fname = ?", "fname-1").Scan(&tag.ID, &tag.Fname, &tag.Ds)
   if err != nil { panic(err.Error()) }
 
   fmt.Println(tag.ID)
-  fmt.Println(tag.Name)
+  fmt.Println(tag.Fname)
+  fmt.Println(tag.Ds)
 
   // perform a db.Query delete
-  op, err := db.Query("DELETE  FROM `example_table` WHERE id = ?", 42)
+  op, err := db.Query("DELETE  FROM `cache_table` WHERE id = ?", 42)
   if err != nil { panic(err.Error()) }
 
   // defer close query is important if transactions are used
   defer op.Close()
 
   // perform a db.Query insert
-  insert, err := db.Query("INSERT INTO `example_table` (id, INS_DATE, NAME, VALUE) VALUES ( 42, now(), 'my example', 'new value')")
+  insert, err := db.Query("INSERT INTO `cache_table` (id, ins_date, fname, ds) VALUES ( 42, now(),  'fname-42', 'ds-1')")
 
   if err != nil { panic(err.Error()) }
 
@@ -203,6 +205,7 @@ func (w *SearchCache) Update() {
 			}
 			for ds, _ := range infoRes["ds.index"].(map[string]interface{}) {
 				newItems = append(newItems, fName+":"+ds)
+				fmt.Println("new item:" + "\"" + fName + ":" + ds + "\"")
 			}
 
 			return nil
@@ -242,7 +245,7 @@ func hello(w http.ResponseWriter, r *http.Request) {
 // example := func(w http.ResponseWriter, req *http.Request) {
 // syntax error: non-declaration statement outside function body
 func example(w http.ResponseWriter, req *http.Request) {
-		io.WriteString(w, "Hello, world!\n")
+  io.WriteString(w, "querying the cache table\n")
   db, err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
 
   if err != nil { panic(err.Error()) }
@@ -252,16 +255,19 @@ func example(w http.ResponseWriter, req *http.Request) {
   io.WriteString(w, "ping succeeds\n")
 
   defer db.Close()
+
   // NOTE: `rowsect` is language word
-  rows, err := db.Query("SELECT id, name FROM example_table")
+  rows, err := db.Query("SELECT id, fname, ds FROM cache_table")
 
   if err != nil { panic(err.Error()) }
   for rows.Next() {
     var tag Tag
     // for each row, load columns
-    err = rows.Scan(&tag.ID, &tag.Name)
+    err = rows.Scan(&tag.ID, &tag.Fname, &tag.Ds)
     if err != nil { panic(err.Error()) }
-    io.WriteString(w, tag.Name)
+    io.WriteString(w, tag.Fname)
+    io.WriteString(w, "\n" )
+    io.WriteString(w, tag.Ds)
     io.WriteString(w, "\n" )
   }
 
@@ -269,23 +275,25 @@ func example(w http.ResponseWriter, req *http.Request) {
   defer rows.Close()
   var tag Tag
   // Execute and discard the query
-  err = db.QueryRow("SELECT id, name FROM example_table where id = ?", 2).Scan(&tag.ID, &tag.Name)
+  err = db.QueryRow("SELECT id, fname, ds FROM cache_table where fname = ?", "fname-1").Scan(&tag.ID, &tag.Fname, &tag.Ds)
   if err != nil { panic(err.Error()) }
 
   io.WriteString(w,strconv.Itoa( tag.ID ))
   io.WriteString(w, "\n" )
-  io.WriteString(w, tag.Name)
+  io.WriteString(w, tag.Fname)
+  io.WriteString(w, "\n" )
+  io.WriteString(w, tag.Ds)
   io.WriteString(w, "\n" )
 
   // perform a db.Query delete
-  op, err := db.Query("DELETE  FROM `example_table` WHERE id = ?", 42)
+  op, err := db.Query("DELETE  FROM `cache_table` WHERE id = ?", 42)
   if err != nil { panic(err.Error()) }
 
   // defer close query is important if transactions are used
   defer op.Close()
 
   // perform a db.Query insert
-  insert, err := db.Query("INSERT INTO `example_table` (id, INS_DATE, NAME, VALUE) VALUES ( 42, now(), 'my example', 'new value')")
+  insert, err := db.Query("INSERT INTO `cache_table` (id, ins_date, fname, ds) VALUES ( 42, now(),  'fname-42', 'ds-1')")
 
   if err != nil { panic(err.Error()) }
 
@@ -470,3 +478,4 @@ func main() {
 		os.Exit(1)
 	}
 }
+
