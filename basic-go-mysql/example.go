@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"math"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -185,7 +186,11 @@ func (w *SearchCache) Update() {
 	newItems := []string{}
 
 	fmt.Println("Updating search cache.")
-	err := filepath.Walk(strings.TrimRight(config.Server.RrdPath, "/")+"/",
+        db, db_err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
+        if db_err != nil { panic(db_err.Error()) }
+	// go compiler error: no new variables on left side of := 
+	fmt.Println("Connected to database.")
+   	err := filepath.Walk(strings.TrimRight(config.Server.RrdPath, "/")+"/",
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -206,6 +211,17 @@ func (w *SearchCache) Update() {
 			for ds, _ := range infoRes["ds.index"].(map[string]interface{}) {
 				newItems = append(newItems, fName+":"+ds)
 				fmt.Println("new item:" + "\"" + fName + ":" + ds + "\"")
+				// perform a db.Query insert
+				s1 := rand.NewSource(time.Now().UnixNano())
+				// go compiler error: r1 declared and not used
+				r1 := rand.New(s1)
+				insert, err := db.Query("INSERT INTO `cache_table` (id, ins_date, fname, ds) VALUES ( ?, now(), ?,  ? )", r1.Intn(100000), fName, ds)
+				fmt.Println("Inserted into database.")
+
+				if err != nil { panic(err.Error()) }
+
+				// defer close query is important if transactions are used
+				defer insert.Close()
 			}
 
 			return nil
@@ -219,7 +235,10 @@ func (w *SearchCache) Update() {
 	w.m.Lock()
 	defer w.m.Unlock()
 	w.items = newItems
+	defer db.Close()
+	fmt.Println("Closed database connetion.")
 	fmt.Println("Finished updating search cache.")
+
 }
 
 var searchCache *SearchCache = NewSearchCache()

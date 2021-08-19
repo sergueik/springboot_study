@@ -38,7 +38,7 @@ export NAME=basic-go-build
 docker container rm $NAME
 docker run -d --name=$NAME $IMAGE
 docker cp $NAME:/build/example .
-``
+```
 ```sh
 IMAGE=basic-go-run
 docker build -t $IMAGE -f Dockerfile.run  .
@@ -51,26 +51,45 @@ The bootstrap cache popultion will be logged
 docker logs $IMAGE
 ```
 ```sh
- docker logs $IMAGE
 Updating search cache.
+Connected to database.
 new item:"percent-idle:value"
+Inserted into database.
 new item:"percent-user:value"
-new item:"sample:ClientGlideTotal"
+Inserted into database.
 new item:"sample:ClientInfoAge"
-new item:"sample:ClientJobsIdle"
-new item:"sample:ReqMaxRun"
+Inserted into database.
 new item:"sample:StatusHeld"
-new item:"sample:StatusPending"
-new item:"sample:StatusStageOut"
-new item:"sample:StatusIdle"
+Inserted into database.
 new item:"sample:StatusRunning"
-new item:"sample:StatusStageIn"
-new item:"sample:StatusWait"
+Inserted into database.
 new item:"sample:ClientGlideIdle"
+Inserted into database.
 new item:"sample:ClientGlideRunning"
-new item:"sample:StatusIdleOther"
+Inserted into database.
+new item:"sample:ReqMaxRun"
+Inserted into database.
+new item:"sample:StatusIdle"
+Inserted into database.
+new item:"sample:ClientJobsIdle"
+Inserted into database.
 new item:"sample:ClientJobsRunning"
+Inserted into database.
+new item:"sample:StatusPending"
+Inserted into database.
+new item:"sample:StatusWait"
+Inserted into database.
+new item:"sample:ClientGlideTotal"
+Inserted into database.
+new item:"sample:StatusIdleOther"
+Inserted into database.
+new item:"sample:StatusStageOut"
+Inserted into database.
 new item:"sample:ReqIdle"
+Inserted into database.
+new item:"sample:StatusStageIn"
+Inserted into database.
+Closed database connetion.
 Finished updating search cache.
 ```
 call sample added url:
@@ -95,6 +114,42 @@ fname-3
 ds-5
 fname-42
 ds-1
+sample
+ClientGlideIdle
+sample
+StatusPending
+sample
+ClientJobsRunning
+sample
+ClientGlideTotal
+sample
+ClientInfoAge
+percent-user
+value
+percent-idle
+value
+sample
+StatusWait
+sample
+ClientGlideRunning
+sample
+ClientJobsIdle
+sample
+ReqIdle
+sample
+StatusHeld
+sample
+StatusIdleOther
+sample
+ReqMaxRun
+sample
+StatusRunning
+sample
+StatusStageOut
+sample
+StatusIdle
+sample
+StatusStageIn
 1
 fname-1
 ds-1
@@ -161,7 +216,7 @@ The other frequent error is docker used the cache too aggressively
 
 ### Dependency Management
 
-the grafaa-rrd-server dependencies are very specicic version of the 
+the `grafaa-rrd-server` dependencies are very specicic version of the `ziutek/rrd`
 
 Not using `go.sum` , `go.mod` from that project the leads to compile error in the build phase (see `Dockerfile.build-broken`)
 
@@ -173,13 +228,13 @@ docker build -t $IMAGE -f Dockerfile.build-broken .
 ```
 replacing 
 ```sh
- RUN go get -u github.com/ziutek/rrd@v0.0.3
+RUN go get -u github.com/ziutek/rrd@v0.0.3
 ```
 with
 ```sh
- RUN go get -u github.com/ziutek/rrd@552b878b2633c1e8031c30a9e7d1d3aa18517061
+RUN go get -u github.com/ziutek/rrd@552b878b2633c1e8031c30a9e7d1d3aa18517061
 ```
-or  other commits does not fix the error 
+or other commits does not fix the error 
 Apparently some specific commit do, but finding which has is needed is labor intensive:
 
 ```sh
