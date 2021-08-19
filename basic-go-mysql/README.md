@@ -6,7 +6,7 @@ and subject [Wiki](https://github.com/go-sql-driver/mysql/wiki/Example)
 ### Usage
 *  have mysql container up
 ```sh
-docker pull mysql:8.0.18
+docke rpull mysql:8.0.18
 ```
 and run it with environmenti variables matching the hard-coded values in `example.go`:
 ```sh
@@ -28,9 +28,11 @@ docker logs mysql-server
 
 ```sh
 export IMAGE=basic-builder
+docker image rm -f $IMAGE
 docker build -t $IMAGE -f Dockerfile.builder .
 
 export IMAGE=basic-go-build
+docker image rm -f $IMAGE
 docker build -t $IMAGE -f Dockerfile.build .
 export NAME=basic-go-build
 docker container rm $NAME
@@ -40,7 +42,13 @@ docker cp $NAME:/build/example .
 ```sh
 IMAGE=basic-go-run
 docker build -t $IMAGE -f Dockerfile.run  .
-docker run --link mysql-server -it $IMAGE /example
+docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -d $IMAGE
+```
+this will start web server
+
+call sample added url:
+```sh
+curl http://localhost:9001/mysql
 ```
 this will connect to DB running on `mysql-server`, perform various basic CRUD operations and print the results
 ```text

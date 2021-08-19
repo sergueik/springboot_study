@@ -3,5 +3,6 @@ RUN apk update && apk add rrdtool rrdtool-dev
 WORKDIR /
 
 COPY example /
+WORKDIR /
+ENTRYPOINT [ "/example" ]
 
-# ENTRYPOINT ./example $0

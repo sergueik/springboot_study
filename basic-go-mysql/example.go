@@ -18,15 +18,16 @@ import (
 	"github.com/mattn/go-zglob"
 	"github.com/ziutek/rrd"
 
-  "database/sql"
-  _ "github.com/go-sql-driver/mysql"
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
+	"io"
 )
 
 type Tag struct {
   ID   int  `json:"id"`
   Name string `json:"name"`
 }
-func main() {
+func main_UNUSED() {
   db, err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
 
   if err != nil { panic(err.Error()) }
@@ -238,6 +239,11 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, result)
 }
 
+// example := func(w http.ResponseWriter, req *http.Request) {
+// syntax error: non-declaration statement outside function body
+func example(w http.ResponseWriter, req *http.Request) {
+		io.WriteString(w, "Hello, world!\n")
+}
 func search(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var searchRequest SearchRequest
@@ -393,11 +399,12 @@ func SetArgs() {
 	flag.Parse()
 }
 
-func maini_UNUSED() {
+func main() {
 	SetArgs()
 
 	http.HandleFunc("/search", search)
 	http.HandleFunc("/query", query)
+	http.HandleFunc("/mysql", example)
 	http.HandleFunc("/annotations", annotations)
 	http.HandleFunc("/", hello)
 
