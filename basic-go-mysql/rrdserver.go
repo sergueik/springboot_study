@@ -23,13 +23,14 @@ import (
 )
 
 type Tag struct {
-  ID   int  `json:"id"`
-  Fname string `json:"fname"`
-  Ds string `json:"ds"`
+	ID   int  `json:"id"`
+ 	Fname string `json:"fname"`
+ 	Ds string `json:"ds"`
 }
 var  (
 	buildCacheFlag bool = false
 	config Config
+	databaseConfig DatabaseConfig
 )
 
 type QueryResponse struct {
@@ -114,6 +115,14 @@ type ServerConfig struct {
 	Multiplier         int
 }
 
+type DatabaseConfig struct {
+	User     string
+	Password string
+	Database string
+	Server   string
+	Port     int
+}
+
 type ErrorResponse struct {
 	Message string `json:"message"`
 }
@@ -131,7 +140,8 @@ func (w *SearchCache) Get() []string {
 	newItems := []string{}
 
 
-	db, err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
+	// db, err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
+  db, err := sql.Open("mysql", databaseConfig.User + ":" + databaseConfig.Password + "@tcp(" + databaseConfig.Server + ":" +  strconv.Itoa(databaseConfig.Port)  +  ")/" + databaseConfig.Database )
 
 	if err != nil { panic(err.Error()) }
 	defer db.Close()
@@ -158,11 +168,13 @@ func (w *SearchCache) Update() {
 	newItems := []string{}
 
 	fmt.Println("Updating search cache.")
-        db, db_err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
-        if db_err != nil { panic(db_err.Error()) }
+	// db, db_err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
+  db, db_err := sql.Open("mysql", databaseConfig.User + ":" + databaseConfig.Password + "@tcp(" + databaseConfig.Server + ":" +  strconv.Itoa(databaseConfig.Port)  +  ")/" + databaseConfig.Database )
+
+	if db_err != nil { panic(db_err.Error()) }
 	// go compiler error: no new variables on left side of := 
 	fmt.Println("Connected to database.")
-   	err := filepath.Walk(strings.TrimRight(config.Server.RrdPath, "/")+"/",
+	err := filepath.Walk(strings.TrimRight(config.Server.RrdPath, "/")+"/",
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -326,7 +338,7 @@ func query(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	respondJSON(w, result)
-}
+} 
 
 func annotations(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "OPTIONS" {
@@ -376,6 +388,13 @@ func annotations(w http.ResponseWriter, r *http.Request) {
 }
 
 func SetArgs() {
+  
+	flag.StringVar(&databaseConfig.User, "u", "java", "DB User.")
+	flag.StringVar(&databaseConfig.Password, "v", "password", "DB User Password.")
+	flag.StringVar(&databaseConfig.Database, "w", "test", "Database.")
+	flag.StringVar(&databaseConfig.Server, "x", "mysql-server", "DB Server.")
+ 	flag.IntVar(&databaseConfig.Port, "y", 3306, "DB Server port.")
+ 
 	flag.StringVar(&config.Server.IpAddr, "i", "", "Network interface IP address to listen on. (default: any)")
 	flag.IntVar(&config.Server.Port, "p", 9000, "Server port.")
 	flag.StringVar(&config.Server.RrdPath, "r", "./sample/", "Path for a directory that keeps RRD files.")

@@ -1,7 +1,13 @@
 ###  Info
+
 Combination of two docker containers to practice the examples from [golang MySQL Tutorial](https://tutorialedge.net/golang/golang-mysql-tutorial/)
 
 and subject [Wiki](https://github.com/go-sql-driver/mysql/wiki/Example)
+with [grafana rrd server](https://github.com/doublemarket/grafana-rrd-server) 
+
+Changing the code loading cache for later accessing the data in 
+[RRDTool files](https://oss.oetiker.ch/rrdtool/) and implement 
+SimpleJSON grafana data sources over `/search`, `query`, `annotations` [protocol](https://grafana.com/grafana/plugins/grafana-simple-json-datasource/)
 
 ### Usage
 *  have mysql container up
@@ -13,7 +19,10 @@ and run it with environmenti variables matching the hard-coded values in `exampl
 docker run -v $(pwd):/tmp/app --name mysql-server -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=java -e MYSQL_DATABASE=test -e MYSQL_PASSWORD=password -d mysql:8.0.18
 ```
 The required enviroment entries `MYSQL_ROOT_PASSWORD`, `MYSQL_USER`,`MYSQL_DATABASE`, `MYSQL_PASSWORD` are described in Mysql docker image.
-
+Alternatively,
+```sh
+docker container start mysql-server
+```
 NOTE: The server Docker instance will take quite some time to launch.
 One can safely start building and runing golang app container while database initializes itself.
 Eventually one
@@ -46,10 +55,14 @@ IMAGE=basic-go-run
 docker build -t $IMAGE -f Dockerfile.run  .
 docker container rm -f $IMAGE
 ```
+* Initialize DB
+```sh
+docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e " source /tmp/app/mysql-init.sql"
+```
 
 * build cache
 ```sh
-docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE -update
+docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE -update -u java -v password -w test -x mysql-server -y 3306
 ```
 
 this will log to console
@@ -65,10 +78,57 @@ new item:"sample:ClientInfoAge"
 Closed database connection.
 Finished updating search cache.
 ```
+
+followed by checks
+```sh
+docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e  "use test; show tables;";
+```
+```text
++----------------+
+| Tables_in_test |
++----------------+
+| cache_table    |
++----------------+
+```
+and
+```sh
+2>/dev/null docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "use test; SELECT * FROM cache_table";
+```
+```text
++----+---------------------+--------------+--------------------+---------+
+| id | ins_date            | fname        | ds                 | comment |
++----+---------------------+--------------+--------------------+---------+
+|  1 | 2021-08-20 17:26:44 | fname-1      | ds-1               | NULL    |
+|  2 | 2021-08-20 17:26:44 | fname-1      | ds-2               | NULL    |
+|  3 | 2021-08-20 17:26:44 | fname-1      | ds-3               | NULL    |
+|  4 | 2021-08-20 17:26:44 | fname-2      | ds-4               | NULL    |
+|  5 | 2021-08-20 17:26:44 | fname-2      | ds-5               | NULL    |
+|  6 | 2021-08-20 17:26:44 | fname-3      | ds-5               | NULL    |
+|  7 | 2021-08-20 17:27:13 | percent-idle | value              | NULL    |
+|  8 | 2021-08-20 17:27:13 | percent-user | value              | NULL    |
+|  9 | 2021-08-20 17:27:13 | sample       | StatusStageOut     | NULL    |
+| 10 | 2021-08-20 17:27:13 | sample       | ClientJobsIdle     | NULL    |
+| 11 | 2021-08-20 17:27:13 | sample       | ReqIdle            | NULL    |
+| 12 | 2021-08-20 17:27:13 | sample       | ClientGlideRunning | NULL    |
+| 13 | 2021-08-20 17:27:13 | sample       | ClientGlideTotal   | NULL    |
+| 14 | 2021-08-20 17:27:13 | sample       | ClientInfoAge      | NULL    |
+| 15 | 2021-08-20 17:27:13 | sample       | StatusRunning      | NULL    |
+| 16 | 2021-08-20 17:27:13 | sample       | StatusIdle         | NULL    |
+| 17 | 2021-08-20 17:27:13 | sample       | StatusIdleOther    | NULL    |
+| 18 | 2021-08-20 17:27:14 | sample       | StatusPending      | NULL    |
+| 19 | 2021-08-20 17:27:14 | sample       | StatusHeld         | NULL    |
+| 20 | 2021-08-20 17:27:14 | sample       | StatusStageIn      | NULL    |
+| 21 | 2021-08-20 17:27:14 | sample       | StatusWait         | NULL    |
+| 22 | 2021-08-20 17:27:14 | sample       | ClientGlideIdle    | NULL    |
+| 23 | 2021-08-20 17:27:14 | sample       | ClientJobsRunning  | NULL    |
+| 24 | 2021-08-20 17:27:14 | sample       | ReqMaxRun          | NULL    |
++----+---------------------+--------------+--------------------+---------+
+```
+
 * start server
 ```sh
 docker container rm -f $IMAGE
-docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -d $IMAGE
+docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -d $IMAGE  -u java -v password -w test -x mysql-server -y 3306
 ```
 this will start web server
 * try search
@@ -134,41 +194,6 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "fname" }' ht
   "fname-3:ds-5",
   "fname-42:ds-1"
 ]
-```
-### Initialize DB
-```sh
-docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e " source /tmp/app/mysql-init.sql"
-```
-followed by checks
-```sh
-docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e  "use test; show tables;";
-```
-```text
-+----------------+
-| Tables_in_test |
-+----------------+
-| example_table  |
-+----------------+
-```
-and
-```sh
-2>/dev/null docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "use test; SELECT * FROM example_table";
-```
-```text
-+----+---------------------+-----------+---------+
-| id | INS_DATE            | NAME      | VALUE   |
-+----+---------------------+-----------+---------+
-|  1 | 2021-08-18 20:36:18 | example-1 | value-1 |
-|  2 | 2021-08-18 20:36:18 | example-2 | value-2 |
-|  3 | 2021-08-18 20:36:18 | example-3 | value-3 |
-|  4 | 2021-08-18 20:36:18 | example-4 | value-4 |
-|  5 | 2021-08-18 20:36:18 | example-5 | value-5 |
-|  6 | 2021-08-18 20:36:18 | example-6 | value-6 |
-|  7 | 2021-08-18 20:36:18 | example-7 | value-7 |
-|  8 | 2021-08-18 20:36:18 | example-8 | value-8 |
-|  9 | 2021-08-18 20:36:18 | example-9 | value-9 |
-+----+---------------------+-----------+---------+
-
 ```
 ### Troubleshooting
 
