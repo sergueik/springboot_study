@@ -16,10 +16,12 @@ docker pull mysql:8.0.18
 ```
 and run it with environmenti variables matching the hard-coded values in `example.go`:
 ```sh
-docker run -v $(pwd):/tmp/app --name mysql-server -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=java -e MYSQL_DATABASE=test -e MYSQL_PASSWORD=password -d mysql:8.0.18
+docker run -v $(pwd):/tmp/app -p 3306:3306 --name mysql-server -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=java -e MYSQL_DATABASE=test -e MYSQL_PASSWORD=password -d mysql:8.0.18
 ```
+- published default port `3306` locally, but will not be using it directly
 The required enviroment entries `MYSQL_ROOT_PASSWORD`, `MYSQL_USER`,`MYSQL_DATABASE`, `MYSQL_PASSWORD` are described in Mysql docker image.
-Alternatively,
+
+Alternatively, it the container is already present but was stopped
 ```sh
 docker container start mysql-server
 ```
@@ -48,6 +50,7 @@ export NAME=basic-go-build
 docker container rm $NAME
 docker run -d --name=$NAME $IMAGE
 docker cp $NAME:/build/example .
+docker cp $NAME:/build/mysql_client .
 ```
 build run image
 ```sh
@@ -191,7 +194,7 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "fname" }' ht
   "fname-1:ds-3",
   "fname-2:ds-4",
   "fname-2:ds-5",
-  "fname-3:ds-5",
+locall  "fname-3:ds-5",
   "fname-42:ds-1"
 ]
 ```
@@ -240,7 +243,7 @@ with
 ```sh
  RUN go get -u github.com/ziutek/rrd@552b878b2633c1e8031c30a9e7d1d3aa18517061
 ```
-or  other commits does not fix the error 
+or other commits does not fix the error 
 Apparently some specific commit do, but finding which has is needed is labor intensive:
 
 ```sh
@@ -272,14 +275,165 @@ drwxr-xr-x    3 root     root          4096 Aug 19 15:28 ..
 -r--r--r--    1 root     root           721 Aug 19 15:28 rrdfunc.h
 ```
 (unfinshed)
+
+### Building Locally
+#### Binary built in alpine 
+* the mysql_client copied from the alpine container, can not run on host
+```sh
+ ldd mysql_client
+	linux-vdso.so.1 =>  (0x00007ffcd0762000)
+	libc.musl-x86_64.so.1 => not found
+``` 
+#### Binary built locally
+debian package too old version of go (`go1.6.1`) on Ubuntu __xenial__
+install locally go 1.14:
+
+```sh
+pushd ~/Downloads/
+curl -sO https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+tar xf go1.14.1.linux-amd64.tar.gz
+export GOROOT=$(pwd)/go
+export PATH=${GOROOT}/bin:$PATH
+```
+```sh
+export GOPATH=$(pwd)
+export GOOS=linux
+export GOARCH=amd64
+export CGO_ENABLED=0
+export GO111MODULE=on
+sudo rm -fr github.com github.com.tar
+rm -f go.mod
+rm rrdserver.go
+go mod init github.com/sergueik/basic-go-mysql
+git checkout rrdserver.go
+```
+
+```sh
+GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o mysql_client mysql_client.go
+```
+```sh
+ldd mysql_client
+	not a dynamic executable
+
+```
+```sh
+./mysql_client
+```
+accesses the database:
+```sh
+User: java
+Database: test
+Server: 127.0.0.1
+Table: cache_table
+Port: 3306
+
+ping succeeds
+fname-1
+fname-1
+fname-1
+fname-2
+fname-2
+fname-3
+my example
+2
+fname-1
+```
+* for rrdserver situation is a bit complicated 
+* collect the dependencies
+```sh
+export IMAGE=basic-go-build
+docker image rm -f $IMAGE
+docker build -t $IMAGE -f Dockerfile.build .
+export NAME=basic-go-build
+docker container rm $NAME
+```
+```sh
+export NAME=basic-go-build
+docker run -it --name=$NAME $IMAGE sh
+```
+
+```ssh
+cd /go/pkg/mod/
+tar cvf /github.com.tar github.com/
+```
+
+```sh
+export NAME=basic-go-build
+docker cp $NAME:/github.com.tar .
+mkdir src
+cd src 
+tar xvf ../github.com.tar 
+cd ..
+```
+
+#### Attempt to Build the Original Package
+```sh
+git clone https://github.com/doublemarket/grafana-rrd-server grafana-rrd-server
+cd  grafana-rrd-server
+rm go.mod 
+go mod init github.com/sergueik/grafana-rrd-server
+```
+
+then
+```sh
+go build rrdserver.go
+```
+
+this fails with multiple compiler errors in dependency:
+```sh
+# github.com/ziutek/rrd
+../../../go/pkg/mod/github.com/ziutek/rrd@v0.0.3/rrd.go:46:8: undefined: i64toa
+../../../go/pkg/mod/github.com/ziutek/rrd@v0.0.3/rrd.go:104:10: c.create undefined (type *Creator has no field or method create, but does have Create)
+../../../go/pkg/mod/github.com/ziutek/rrd@v0.0.3/rrd.go:110:12: undefined: cstring
+../../../go/pkg/mod/github.com/ziutek/rrd@v0.0.3/rrd.go:111:12: undefined: cstring
+../../../go/pkg/mod/github.com/ziutek/rrd@v0.0.3/rrd.go:113:10: undefined: cstring
+../../../go/pkg/mod/github.com/ziutek/rrd@v0.0.3/rrd.go:117:26: undefined: newCstring
+../../../go/pkg/mod/github.com/ziutek/rrd@v0.0.3/rrd.go:132:15: undefined: newCstring
+../../../go/pkg/mod/github.com/ziutek/rrd@v0.0.3/rrd.go:138:26: undefined: newCstring
+../../../go/pkg/mod/github.com/ziutek/rrd@v0.0.3/rrd.go:146:9: undefined: newCstring
+../../../go/pkg/mod/github.com/ziutek/rrd@v0.0.3/rrd.go:147:11: u.update undefined (type *Updater has no field or method update, but does have Update)
+../../../go/pkg/mod/github.com/ziutek/rrd@v0.0.3/rrd.go:147:11: too many errors
+```
+
+to build it in ubuntu container
+```sh
+docker pull partlab/ubuntu-golang
+docker pull 
+```
+(note the 600 MB size). The `partlab/ubuntu-golang` has go version `1.6.2`
+give up
+```sh
+export IMAGE=basic-builder-ubuntu
+docker image rm -f $IMAGE
+docker build -t $IMAGE -f Dockerfile.builder-ubuntu .
+```
+```sh
+export IMAGE=go-ubuntu
+docker image rm -f $IMAGE
+docker build -t $IMAGE  -f Dockerfile.build-ubuntu .
+export NAME=basic-go-build
+docker container rm $NAME
+docker run -d --name=$NAME $IMAGE
+docker cp $NAME:/build/example .
+```
+confirm it to work
+```sh
+./example -update -u java -v password -w test -x 127.0.0.1 -y 3306
+```
+
+it logs the same successful messages as before and creates database table rows
+
 ### See Also
 
-   * [sqlite](https://github.com/bvinc/go-sqlite-lite)
-   * another custom [mysql driver](https://github.com/s1s1ty/go-mysql-crud)
    * https://stackoverflow.com/questions/47577385/error-non-standard-import-github-com-go-sql-driver-mysql-in-standard-package/67431068#67431068
    * https://stackoverflow.com/questions/53682247/how-to-point-go-module-dependency-in-go-mod-to-a-latest-commit-in-a-repo/
    * https://github.com/golang/go/wiki/Modules#how-to-upgrade-and-downgrade-dependencies
    * https://stackoverflow.com/questions/21743841/how-to-avoid-annoying-error-declared-and-not-used
+   * another custom [mysql driver](https://github.com/s1s1ty/go-mysql-crud)
+   * another possible alternative to avoid extra server during developmenrt [sqlite](https://github.com/bvinc/go-sqlite-lite)
+   * https://www.digitalocean.com/community/tutorials/how-to-install-go-and-set-up-a-local-programming-environment-on-ubuntu-18-04
+   * [building Go без доступа в Интернет](https://www.cyberforum.ru/go/thread2792276.html) (in Russian)
+   * https://jfrog.com/blog/why-goproxy-matters-and-which-to-pick/
 	
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

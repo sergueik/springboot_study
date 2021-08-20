@@ -1,0 +1,16 @@
+FROM basic-builder-ubuntu
+
+ENV GOOS=linux
+ENV GOARCH=amd64
+# ENV CGO_ENABLED=0
+ENV GO111MODULE=on
+RUN apt-get install -y pkg-config librrd-dev golang-rrd-dev
+
+WORKDIR /build
+COPY . .
+# build dummy mysql client example
+RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o mysql_client mysql_client.go
+# build main app
+RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example rrdserver.go
+
+
