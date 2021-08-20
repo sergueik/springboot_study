@@ -161,8 +161,8 @@ while logging shows the data was produced by DB select:
 docker logs $IMAGE
 ```
 ```sh
-ping succeeds
-querying the cache table
+Target: sample
+querying the cache_table table: SELECT DISTINCT fname,ds FROM cache_table WHERE fname = ?
 returned rows:
 fname-1:ds-1
 fname-1:ds-2

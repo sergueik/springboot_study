@@ -119,6 +119,7 @@ type DatabaseConfig struct {
 	User     string
 	Password string
 	Database string
+	Table    string
 	Server   string
 	Port     int
 }
@@ -136,19 +137,23 @@ func NewSearchCache() *SearchCache {
 	return &SearchCache{}
 }
 
-func (w *SearchCache) Get() []string {
+func (w *SearchCache) Get(target string) []string {
 	newItems := []string{}
-
-
-	// db, err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
   db, err := sql.Open("mysql", databaseConfig.User + ":" + databaseConfig.Password + "@tcp(" + databaseConfig.Server + ":" +  strconv.Itoa(databaseConfig.Port)  +  ")/" + databaseConfig.Database )
 
 	if err != nil { panic(err.Error()) }
 	defer db.Close()
-	fmt.Println("querying the cache table")
-	rows, err := db.Query("SELECT DISTINCT fname,ds FROM cache_table")
+  var query string
+  
+  if target != "" {
+    query = "SELECT DISTINCT fname,ds FROM " + databaseConfig.Table + " WHERE fname = ?"
+  } else { 
+    query = "SELECT DISTINCT fname,ds FROM " + databaseConfig.Table 
+  }
+	fmt.Println("querying the " + databaseConfig.Table + " table: " + query)
 
-	if err != nil { panic(err.Error()) }
+  rows, err := db.Query(query, target)
+  if err != nil { panic(err.Error()) }
 	for rows.Next() {
 		var tag Tag
 		err = rows.Scan(&tag.Fname,&tag.Ds)
@@ -199,7 +204,7 @@ func (w *SearchCache) Update() {
 
 				// perform a db.Query insert
 				fmt.Println("Inserted into database:" + "\"" + fName + ":" + ds + "\"")
-				insert, err := db.Query("INSERT INTO `cache_table` (ins_date, fname, ds) VALUES ( now(), ?,  ? )", fName, ds)
+				insert, err := db.Query("INSERT INTO `" + databaseConfig.Table + "` (ins_date, fname, ds) VALUES ( now(), ?,  ? )", fName, ds)
 
 				if err != nil { panic(err.Error()) }
 
@@ -259,7 +264,7 @@ func search(w http.ResponseWriter, r *http.Request) {
 	var result = []string{}
 
 	if target != "" {
-		for _, path := range searchCache.Get() {
+		for _, path := range searchCache.Get(target) {
 			if strings.Contains(path, target) {
 				result = append(result, path)
 			}
@@ -395,6 +400,7 @@ func SetArgs() {
 	flag.StringVar(&databaseConfig.Server, "x", "mysql-server", "DB Server.")
  	flag.IntVar(&databaseConfig.Port, "y", 3306, "DB Server port.")
  
+	flag.StringVar(&databaseConfig.Table, "z", "cache_table", "Table.")
 	flag.StringVar(&config.Server.IpAddr, "i", "", "Network interface IP address to listen on. (default: any)")
 	flag.IntVar(&config.Server.Port, "p", 9000, "Server port.")
 	flag.StringVar(&config.Server.RrdPath, "r", "./sample/", "Path for a directory that keeps RRD files.")
@@ -405,7 +411,6 @@ func SetArgs() {
 	flag.BoolVar(&buildCacheFlag, "update", false, "update cache")
 	_ = buildCacheFlag
 	flag.Parse()
-	// fmt.Printf("SetArgs() build cache: %s\n", strconv.FormatBool(buildCacheFlag))
 }
 
 func main() {
