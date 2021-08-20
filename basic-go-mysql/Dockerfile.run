@@ -4,5 +4,6 @@ WORKDIR /
 
 COPY example /
 WORKDIR /
-ENTRYPOINT [ "/example" ]
 
+RUN echo "#!/bin/sh" > /tmp/all_arguments.sh; echo "VAR=\"\$@\"; /example \$VAR" >> /tmp/all_arguments.sh; chmod +x /tmp/all_arguments.sh
+ENTRYPOINT [ "/tmp/all_arguments.sh" ]
