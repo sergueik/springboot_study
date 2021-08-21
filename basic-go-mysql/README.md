@@ -97,7 +97,9 @@ docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e " 
 
 * build cache
 ```sh
-docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE -update -u java -v password -w test -x mysql-server -y 3306
+docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE \
+-u java -v password -w test -x mysql-server -y 3306 \
+-update 
 ```
 
 this will log to console

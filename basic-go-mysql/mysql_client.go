@@ -37,23 +37,30 @@ func (c *DbConfig) getConf(configFile string) *DbConfig {
     }
 }
 var  (
-	dbConfig DbConfig  
+	dbConfig DbConfig
 )
 
+var configFile string
+
 func main() {
-  
-	fmt.Println("process config file")
-  dbConfig.getConf("config.yaml")  
-	fmt.Println("User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
-  // this also prints the loaded settings
+
   fmt.Println("process command line args")
   // to get help about defined arg pass an invalid arg, e.g. -h
+	flag.StringVar(&configFile, "c", "config.yaml", "Config File.")
+	fmt.Println("process config file: " + configFile)
+  // NOTE: this will not work:
+  // flag provided but not defined: -u
+  // to introuduce command line argument precedence
+  // a different approach is required
+	// flag.Parse()
+  dbConfig.getConf(configFile)
+	fmt.Println("config file:" + "\n" + "User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
+
 	flag.StringVar(&dbConfig.User, "u", "java", "DB User.")
 	flag.StringVar(&dbConfig.Password, "v", "password", "DB User Password.")
 	flag.StringVar(&dbConfig.Database, "w", "test", "Database.")
 	flag.StringVar(&dbConfig.Server, "x", "127.0.0.1", "DB Server.")
  	flag.IntVar(&dbConfig.Port, "y", 3306, "DB Server port.")
-
 	flag.StringVar(&dbConfig.Table, "z", "cache_table", "Table.")
 	flag.Parse()
 	fmt.Println("User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
