@@ -3,10 +3,10 @@
 Combination of two docker containers to practice the examples from [golang MySQL Tutorial](https://tutorialedge.net/golang/golang-mysql-tutorial/)
 
 and subject [Wiki](https://github.com/go-sql-driver/mysql/wiki/Example)
-with [grafana rrd server](https://github.com/doublemarket/grafana-rrd-server) 
+with [grafana rrd server](https://github.com/doublemarket/grafana-rrd-server)
 
-Changing the code loading cache for later accessing the data in 
-[RRDTool files](https://oss.oetiker.ch/rrdtool/) and implement 
+Changing the code loading cache for later accessing the data in
+[RRDTool files](https://oss.oetiker.ch/rrdtool/) and implement
 SimpleJSON grafana data sources over `/search`, `query`, `annotations` [protocol](https://grafana.com/grafana/plugins/grafana-simple-json-datasource/)
 
 ### Usage
@@ -21,7 +21,7 @@ docker run -v $(pwd):/tmp/app -p 3306:3306 --name mysql-server -e MYSQL_ROOT_PAS
 - published default port `3306` locally, but will not be using it directly
 The required enviroment entries `MYSQL_ROOT_PASSWORD`, `MYSQL_USER`,`MYSQL_DATABASE`, `MYSQL_PASSWORD` are described in Mysql docker image.
 
-Alternatively, it the container is already present but was stopped
+Alternatively, if the container is already present but was stopped
 ```sh
 docker container start mysql-server
 ```
@@ -35,6 +35,7 @@ docker logs mysql-server
 ```text
 [Server] X Plugin ready for connections. Socket: '/var/run/mysqld/mysqlx.sock' bind-address: '::' port: 33060
 ```
+
 *  compile go program and copy locally
 
 ```sh
@@ -58,6 +59,19 @@ IMAGE=basic-go-run
 docker build -t $IMAGE -f Dockerfile.run  .
 docker container rm -f $IMAGE
 ```
+* verify can connect locally on `mysql-server`:
+```sh
+docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "set @var = '1'; select @var;"
+```
+```sh
+mysql: [Warning] Using a password on the command line interface can be insecure.
++------+
+| @var |
++------+
+| 1    |
++------+
+```
+
 * Initialize DB
 ```sh
 docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e " source /tmp/app/mysql-init.sql"
@@ -194,99 +208,21 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "fname" }' ht
   "fname-1:ds-3",
   "fname-2:ds-4",
   "fname-2:ds-5",
-locall  "fname-3:ds-5",
+  "fname-3:ds-5",
   "fname-42:ds-1"
 ]
 ```
-### Troubleshooting
 
-```sh
-panic: Error 1045: Access denied for user 'user'@'172.17.0.3' (using password: YES)
+### Release Binaries
 
-goroutine 1 [running]:
-main.main()
-        /app/example.go:18 +0x17d
-
-```
-* verify can connect locally on `mysql-server`:
-```sh
-docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "set @var = '1'; select @var;"
-```
-```sh
-mysql: [Warning] Using a password on the command line interface can be insecure.
-+------+
-| @var |
-+------+
-| 1    |
-+------+
-```
-if the connection works the hard coded credentials may be out of sync in `example.go`
-The other frequent error is docker used the cache too aggressively
-
-### Dependency Management
-
-the grafaa-rrd-server dependencies are very specicic version of the 
-
-Not using `go.sum` , `go.mod` from that project the leads to compile error in the build phase (see `Dockerfile.build-broken`)
-
-```sh
-docker build -t $IMAGE -f Dockerfile.build-broken .
-```
-```text
-/go/src/github.com/ziutek/rrd/rrd.go:110:12: undefined: cstring
-```
-replacing 
-```sh
- RUN go get -u github.com/ziutek/rrd@v0.0.3
-```
-with
-```sh
- RUN go get -u github.com/ziutek/rrd@552b878b2633c1e8031c30a9e7d1d3aa18517061
-```
-or other commits does not fix the error 
-Apparently some specific commit do, but finding which has is needed is labor intensive:
-
-```sh
-export IMAGE=basic-go-build
-docker image rm -f $IMAGE
-docker build -t $IMAGE -f Dockerfile.build .
-export NAME=basic-go-build
-docker container rm $NAME
-docker run -it --name=$NAME $IMAGE sh
-
-```
-explore the build container:
-```sh
-cd /go/pkg/mod/github.com/ziutek/rrd@v0.0.3
-ls -la
-```
-```sh
-ls -la
-total 60
-dr-x------    2 root     root          4096 Aug 19 15:28 .
-drwxr-xr-x    3 root     root          4096 Aug 19 15:28 ..
--r--r--r--    1 root     root          1394 Aug 19 15:28 LICENSE
--r--r--r--    1 root     root           481 Aug 19 15:28 README.md
--r--r--r--    1 root     root            38 Aug 19 15:28 go.mod
--r--r--r--    1 root     root         10357 Aug 19 15:28 rrd.go
--r--r--r--    1 root     root         12273 Aug 19 15:28 rrd_c.go
--r--r--r--    1 root     root          4469 Aug 19 15:28 rrd_test.go
--r--r--r--    1 root     root          1715 Aug 19 15:28 rrdfunc.c
--r--r--r--    1 root     root           721 Aug 19 15:28 rrdfunc.h
-```
-(unfinshed)
-
-### Building Locally
-#### Binary built in alpine 
-* the mysql_client copied from the alpine container, can not run on host
+* binaries built in alpine container, cannot run on host
 ```sh
  ldd mysql_client
 	linux-vdso.so.1 =>  (0x00007ffcd0762000)
 	libc.musl-x86_64.so.1 => not found
-``` 
-#### Binary built locally
-debian package too old version of go (`go1.6.1`) on Ubuntu __xenial__
-install locally go 1.14:
+```
+* Binaries problematic to build locally, even after upgrade
+ go from archaic apt version __1.6.1__ to __1.14__ on Ubuntu __xenial__:
 
 ```sh
 pushd ~/Downloads/
@@ -303,83 +239,13 @@ export CGO_ENABLED=0
 export GO111MODULE=on
 sudo rm -fr github.com github.com.tar
 rm -f go.mod
-rm rrdserver.go
 go mod init github.com/sergueik/basic-go-mysql
-git checkout rrdserver.go
 ```
-
-```sh
-GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o mysql_client mysql_client.go
-```
-```sh
-ldd mysql_client
-	not a dynamic executable
-
-```
-```sh
-./mysql_client
-```
-accesses the database:
-```sh
-User: java
-Database: test
-Server: 127.0.0.1
-Table: cache_table
-Port: 3306
-
-ping succeeds
-fname-1
-fname-1
-fname-1
-fname-2
-fname-2
-fname-3
-my example
-2
-fname-1
-```
-* for rrdserver situation is a bit complicated 
-* collect the dependencies
-```sh
-export IMAGE=basic-go-build
-docker image rm -f $IMAGE
-docker build -t $IMAGE -f Dockerfile.build .
-export NAME=basic-go-build
-docker container rm $NAME
-```
-```sh
-export NAME=basic-go-build
-docker run -it --name=$NAME $IMAGE sh
-```
-
-```ssh
-cd /go/pkg/mod/
-tar cvf /github.com.tar github.com/
-```
-
-```sh
-export NAME=basic-go-build
-docker cp $NAME:/github.com.tar .
-mkdir src
-cd src 
-tar xvf ../github.com.tar 
-cd ..
-```
-
-#### Attempt to Build the Original Package
-```sh
-git clone https://github.com/doublemarket/grafana-rrd-server grafana-rrd-server
-cd  grafana-rrd-server
-rm go.mod 
-go mod init github.com/sergueik/grafana-rrd-server
-```
-
-then
 ```sh
 go build rrdserver.go
 ```
 
-this fails with multiple compiler errors in dependency:
+fails with multiple compiler errors in dependency:
 ```sh
 # github.com/ziutek/rrd
 ../../../go/pkg/mod/github.com/ziutek/rrd@v0.0.3/rrd.go:46:8: undefined: i64toa
@@ -395,13 +261,8 @@ this fails with multiple compiler errors in dependency:
 ../../../go/pkg/mod/github.com/ziutek/rrd@v0.0.3/rrd.go:147:11: too many errors
 ```
 
-to build it in ubuntu container
-```sh
-docker pull partlab/ubuntu-golang
-docker pull 
-```
-(note the 600 MB size). The `partlab/ubuntu-golang` has go version `1.6.2`
-give up
+* build it in custom Golang Ubuntu container
+
 ```sh
 export IMAGE=basic-builder-ubuntu
 docker image rm -f $IMAGE
@@ -418,11 +279,24 @@ docker cp $NAME:/build/example .
 ```
 confirm it to work
 ```sh
+sudo apt-get install -q librrd-dev
 ./example -update -u java -v password -w test -x 127.0.0.1 -y 3306
 ```
 
-it logs the same successful messages as before and creates database table rows
+it logs to the console the same successful messages as the containerized did before and creates database table rows - see the validation steps above
+NOTE: the same approach will not work with __bionic__ due to shared library version dependency:
 
+```sh
+./example -update -u java -v password -w test -x 127.0.0.1 -y 3306
+./example: error while loading shared libraries: librrd.so.4: cannot open shared object file: No such file or directory
+```
+```sh
+sudo apt-get install -q librrd-dev
+Reading package lists...
+Building dependency tree...
+Reading state information...
+librrd-dev is already the newest version (1.7.0-1build1).
+```
 ### See Also
 
    * https://stackoverflow.com/questions/47577385/error-non-standard-import-github-com-go-sql-driver-mysql-in-standard-package/67431068#67431068
@@ -437,4 +311,5 @@ it logs the same successful messages as before and creates database table rows
 	
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 

@@ -28,9 +28,10 @@ type Tag struct {
  	Ds string `json:"ds"`
 }
 var  (
-	buildCacheFlag bool = false
+	buildCache bool = false 
+	legacyCache bool = false
 	config Config
-	databaseConfig DatabaseConfig
+	dbConfig DbConfig
 )
 
 type QueryResponse struct {
@@ -115,7 +116,7 @@ type ServerConfig struct {
 	Multiplier         int
 }
 
-type DatabaseConfig struct {
+type DbConfig struct {
 	User     string
 	Password string
 	Database string
@@ -139,34 +140,37 @@ func NewSearchCache() *SearchCache {
 
 func (w *SearchCache) Get(target string) []string {
 	newItems := []string{}
-  db, err := sql.Open("mysql", databaseConfig.User + ":" + databaseConfig.Password + "@tcp(" + databaseConfig.Server + ":" +  strconv.Itoa(databaseConfig.Port)  +  ")/" + databaseConfig.Database )
+  if legacyCache { 
+    // support legacy flag
+    w.m.Lock()
+    defer w.m.Unlock()
+    return w.items
+  } else {
+    db, err := sql.Open("mysql", dbConfig.User + ":" + dbConfig.Password + "@tcp(" + dbConfig.Server + ":" +  strconv.Itoa(dbConfig.Port)  +  ")/" + dbConfig.Database )
 
-	if err != nil { panic(err.Error()) }
-	defer db.Close()
-  var query string
-  
-  if target != "" {
-    query = "SELECT DISTINCT fname,ds FROM " + databaseConfig.Table + " WHERE fname = ?"
-  } else { 
-    query = "SELECT DISTINCT fname,ds FROM " + databaseConfig.Table 
+    if err != nil { panic(err.Error()) }
+    defer db.Close()
+    var query string
+    
+    if target != "" {
+      query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table + " WHERE fname = ?"
+    } else { 
+      query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table 
+    }
+    fmt.Println("querying the " + dbConfig.Table + " table: " + query)
+
+    rows, err := db.Query(query, target)
+    if err != nil { panic(err.Error()) }
+    for rows.Next() {
+      var tag Tag
+      err = rows.Scan(&tag.Fname,&tag.Ds)
+      if err != nil { panic(err.Error()) }
+      fmt.Println("item: " + tag.Fname + ":" + tag.Ds)
+      newItems = append(newItems, tag.Fname + ":" + tag.Ds)
+    }
+    defer db.Close()
+    return newItems
   }
-	fmt.Println("querying the " + databaseConfig.Table + " table: " + query)
-
-  rows, err := db.Query(query, target)
-  if err != nil { panic(err.Error()) }
-	for rows.Next() {
-		var tag Tag
-		err = rows.Scan(&tag.Fname,&tag.Ds)
-		if err != nil { panic(err.Error()) }
-		fmt.Println("item: " + tag.Fname + ":" + tag.Ds)
-		newItems = append(newItems, tag.Fname + ":" + tag.Ds)
-	}
-	defer db.Close()
-	w.m.Lock()
-	defer w.m.Unlock()
-	w.items = newItems
-	// TODO: support legacy flag to switch to original implementation
-	return w.items
 }
 
 func (w *SearchCache) Update() {
@@ -174,7 +178,7 @@ func (w *SearchCache) Update() {
 
 	fmt.Println("Updating search cache.")
 	// db, db_err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
-  db, db_err := sql.Open("mysql", databaseConfig.User + ":" + databaseConfig.Password + "@tcp(" + databaseConfig.Server + ":" +  strconv.Itoa(databaseConfig.Port)  +  ")/" + databaseConfig.Database )
+  db, db_err := sql.Open("mysql", dbConfig.User + ":" + dbConfig.Password + "@tcp(" + dbConfig.Server + ":" +  strconv.Itoa(dbConfig.Port)  +  ")/" + dbConfig.Database )
 
 	if db_err != nil { panic(db_err.Error()) }
 	// go compiler error: no new variables on left side of := 
@@ -200,15 +204,17 @@ func (w *SearchCache) Update() {
 			for ds, _ := range infoRes["ds.index"].(map[string]interface{}) {
 
 				// TODO: support legacy flag
-				// newItems = append(newItems, fName+":"+ds)
+        if legacyCache {
+          newItems = append(newItems, fName+":"+ds)
+        } else {
+          // perform a db.Query insert
+          fmt.Println("Inserted into database:" + "\"" + fName + ":" + ds + "\"")
+          insert, err := db.Query("INSERT INTO `" + dbConfig.Table + "` (ins_date, fname, ds) VALUES ( now(), ?,  ? )", fName, ds)
 
-				// perform a db.Query insert
-				fmt.Println("Inserted into database:" + "\"" + fName + ":" + ds + "\"")
-				insert, err := db.Query("INSERT INTO `" + databaseConfig.Table + "` (ins_date, fname, ds) VALUES ( now(), ?,  ? )", fName, ds)
+          if err != nil { panic(err.Error()) }
 
-				if err != nil { panic(err.Error()) }
-
-				defer insert.Close()
+          defer insert.Close()
+        }
 			}
 
 			return nil
@@ -394,13 +400,13 @@ func annotations(w http.ResponseWriter, r *http.Request) {
 
 func SetArgs() {
   
-	flag.StringVar(&databaseConfig.User, "u", "java", "DB User.")
-	flag.StringVar(&databaseConfig.Password, "v", "password", "DB User Password.")
-	flag.StringVar(&databaseConfig.Database, "w", "test", "Database.")
-	flag.StringVar(&databaseConfig.Server, "x", "mysql-server", "DB Server.")
- 	flag.IntVar(&databaseConfig.Port, "y", 3306, "DB Server port.")
+	flag.StringVar(&dbConfig.User, "u", "java", "DB User.")
+	flag.StringVar(&dbConfig.Password, "v", "password", "DB User Password.")
+	flag.StringVar(&dbConfig.Database, "w", "test", "Database.")
+	flag.StringVar(&dbConfig.Server, "x", "mysql-server", "DB Server.")
+ 	flag.IntVar(&dbConfig.Port, "y", 3306, "DB Server port.")
  
-	flag.StringVar(&databaseConfig.Table, "z", "cache_table", "Table.")
+	flag.StringVar(&dbConfig.Table, "z", "cache_table", "Table.")
 	flag.StringVar(&config.Server.IpAddr, "i", "", "Network interface IP address to listen on. (default: any)")
 	flag.IntVar(&config.Server.Port, "p", 9000, "Server port.")
 	flag.StringVar(&config.Server.RrdPath, "r", "./sample/", "Path for a directory that keeps RRD files.")
@@ -408,14 +414,16 @@ func SetArgs() {
 	flag.Int64Var(&config.Server.SearchCache, "c", 600, "Search cache in seconds.")
 	flag.StringVar(&config.Server.AnnotationFilePath, "a", "", "Path for a file that has annotations.")
 	flag.IntVar(&config.Server.Multiplier, "m", 1, "Value multiplier.")
-	flag.BoolVar(&buildCacheFlag, "update", false, "update cache")
-	_ = buildCacheFlag
+	flag.BoolVar(&buildCache, "update", false, "update cache")
+	_ = buildCache
+	flag.BoolVar(&legacyCache, "legacy", false, "use legacy cache")
+	_ = legacyCache
 	flag.Parse()
 }
 
 func main() {
 	SetArgs()
-	if (buildCacheFlag) { 
+	if (buildCache) { 
 		searchCache.Update()
 		return
 	} else {
@@ -430,4 +438,5 @@ func main() {
 		}
 	}
 }
+
 
