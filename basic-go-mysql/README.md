@@ -69,6 +69,7 @@ export NAME=basic-go-build
 docker container rm $NAME
 docker run -d --name=$NAME $IMAGE
 docker cp $NAME:/build/example .
+docker cp $NAME:/build/mysql_client .
 ```
 build run image
 ```sh
@@ -339,9 +340,11 @@ librrd-dev is already the newest version (1.7.0-1build1).
    * another custom [mysql driver](https://github.com/s1s1ty/go-mysql-crud)
    * another possible alternative to avoid extra server during developmenrt [sqlite](https://github.com/bvinc/go-sqlite-lite)
    * https://www.digitalocean.com/community/tutorials/how-to-install-go-and-set-up-a-local-programming-environment-on-ubuntu-18-04
-   * [building Go без доступа в Интернет](https://www.cyberforum.ru/go/thread2792276.html) (in Russian)
+   * [building Go без доступа в Интернет](https://www.cyberforum.ru/go/thread2792276.html)(in Russian)
    * [MySQL transactions in Golang](https://www.sohamkamani.com/golang/sql-transactions/)
-	
+   * [blog](https://dev.to/ilyakaznacheev/a-clean-way-to-pass-configs-in-a-go-application-1g64) on __go__ way doing application configs
+   * another [blog](https://peter.bourgon.org/go-best-practices-2016/#configuration) on __go__ idiosyncracies
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
