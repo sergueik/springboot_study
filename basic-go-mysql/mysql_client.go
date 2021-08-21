@@ -24,8 +24,17 @@ type DbConfig struct {
 	Server   string `yaml:"server"`
 	Port     int `yaml:"port"`
 }
+type AppConfig struct {
+  Database DbConfig `yaml:"database"`
+  Folders FolderScan `yaml:"folders"`
+}
 
-func (c *DbConfig) getConf(configFile string) *DbConfig {
+type FolderScan struct {
+  Collect []string `yaml:"collect"`
+  Reject  []string `yaml:"reject"`
+}
+
+func (c *AppConfig) getConf(configFile string) *AppConfig {
     if _, err := os.Stat(configFile); err == nil {
       yamlFile, err := ioutil.ReadFile(configFile)
       if err != nil { panic(err.Error()) }
@@ -37,24 +46,33 @@ func (c *DbConfig) getConf(configFile string) *DbConfig {
     }
 }
 var  (
+  configFile string
+  appConfig AppConfig
 	dbConfig DbConfig
+  folderConfig FolderScan
 )
-
-var configFile string
 
 func main() {
 
   fmt.Println("process command line args")
-  // to get help about defined arg pass an invalid arg, e.g. -h
+  // to get help about accepted arg pass an invalid one e.g. -h
 	flag.StringVar(&configFile, "c", "config.yaml", "Config File.")
 	fmt.Println("process config file: " + configFile)
-  // NOTE: this will not work:
-  // flag provided but not defined: -u
-  // to introuduce command line argument precedence
-  // a different approach is required
-	// flag.Parse()
-  dbConfig.getConf(configFile)
-	fmt.Println("config file:" + "\n" + "User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
+  appConfig.getConf(configFile)
+  dbConfig = appConfig.Database
+	fmt.Println("database config:" + "\n" + "User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
+
+  folderConfig = appConfig.Folders
+  fmt.Println("folder scan config:")
+  fmt.Println("collect:")
+  for _, v := range folderConfig.Collect {
+		fmt.Println(v)
+	}
+  fmt.Println("reject:")
+
+  for _, v := range folderConfig.Reject {
+		fmt.Println(v)
+	}
 
 	flag.StringVar(&dbConfig.User, "u", "java", "DB User.")
 	flag.StringVar(&dbConfig.Password, "v", "password", "DB User Password.")
