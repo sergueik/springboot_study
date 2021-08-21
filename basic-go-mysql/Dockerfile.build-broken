@@ -6,7 +6,7 @@ ENV GOOS=linux
 ENV GOARCH=amd64
 ENV CGO_ENABLED=0
 ENV GO111MODULE=on
-COPY example.go /app/
+COPY rrdserver.go /app/
 RUN go get -u github.com/go-sql-driver/mysql@v1.3.0
 RUN go get -u github.com/gocarina/gocsv
 RUN go get -u github.com/mattn/go-zglob
@@ -15,6 +15,6 @@ RUN go get -u github.com/mattn/go-zglob
 # RUN go get -u github.com/ziutek/rrd
 RUN go get -u github.com/ziutek/rrd@8cc70573061296467b381cd621ca2cdba82512c9
 
-RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example example.go
+RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example rrdserver.go 
 
 

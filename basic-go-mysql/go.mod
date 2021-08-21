@@ -6,4 +6,5 @@ require (
 	github.com/gocarina/gocsv v0.0.0-20200330101823-46266ca37bd3
 	github.com/mattn/go-zglob v0.0.3
 	github.com/ziutek/rrd v0.0.3
+        github.com/go-sql-driver/mysql v1.6.0
 )
