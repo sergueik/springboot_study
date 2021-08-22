@@ -69,7 +69,6 @@ export NAME=basic-go-build
 docker container rm $NAME
 docker run -d --name=$NAME $IMAGE
 docker cp $NAME:/build/example .
-docker cp $NAME:/build/mysql_client .
 ```
 build run image
 ```sh
@@ -248,7 +247,65 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "fname" }' ht
   "fname-42:ds-1"
 ]
 ```
+### Config file
+The application supports `config.yaml` to have the following format:
+```yaml
+---
+database:
+  user: 'java'
+  password: 'password'
+  database: 'test'
+  table: 'cache_table'
+  server: 'mysql_server'
+  port: 3306
+folders:
+  collect:
+    - a
+    - b
+  reject:
+    - c
+    - d
+```
+To test, uncomment the lines compiling and copying the `mysql_client` app then:
+```sh
+docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE -u java -v password -w test -x mysql-server -y 3306
+```
+outputs
+```sh
+process command line args
+process config file: config.yaml
+database config:
+User: java
+Database: test
+Server: mysql_server
+Table: cache_table
+Port: 3306
 
+folder scan config:
+collect:
+a
+b
+reject:
+c
+d
+User: java
+Database: test
+Server: mysql-server
+Table: cache_table
+Port: 3306
+
+connect to the database
+ping succeeds
+fname-1
+fname-1
+fname-1
+fname-2
+fname-2
+fname-3
+my example
+2
+fname-1
+```
 ### Release Binaries
 
 * binaries built in alpine container, cannot run on host

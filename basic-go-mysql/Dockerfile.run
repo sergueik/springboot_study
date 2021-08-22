@@ -6,7 +6,7 @@ COPY config.yaml /
 COPY example /
 WORKDIR /
 
-RUN echo "#!/bin/sh" > /tmp/all_arguments.sh; \
-    echo "VAR=\"\$@\"; /mysql_client \$VAR" >> /tmp/all_arguments.sh; \
+RUN echo "#!/bin/sh" | tee /tmp/all_arguments.sh; \
+    echo "VAR=\"\$@\"; /example \$VAR" | tee -a /tmp/all_arguments.sh; \
     chmod +x /tmp/all_arguments.sh
 ENTRYPOINT [ "/tmp/all_arguments.sh" ]

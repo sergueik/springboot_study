@@ -29,6 +29,8 @@ type AppConfig struct {
   Folders FolderScan `yaml:"folders"`
 }
 
+// line 33
+// NOTE: [...] can only be used w/array literal declaration
 type FolderScan struct {
   Collect []string `yaml:"collect"`
   Reject  []string `yaml:"reject"`
@@ -45,10 +47,11 @@ func (c *AppConfig) getConf(configFile string) *AppConfig {
       return nil
     }
 }
+
 var  (
   configFile string
   appConfig AppConfig
-	dbConfig DbConfig
+  dbConfig DbConfig
   folderConfig FolderScan
 )
 
@@ -66,13 +69,13 @@ func main() {
   fmt.Println("folder scan config:")
   fmt.Println("collect:")
   for _, v := range folderConfig.Collect {
-		fmt.Println(v)
-	}
+    fmt.Println(v)
+  }
   fmt.Println("reject:")
 
   for _, v := range folderConfig.Reject {
-		fmt.Println(v)
-	}
+    fmt.Println(v)
+  }
 
 	flag.StringVar(&dbConfig.User, "u", "java", "DB User.")
 	flag.StringVar(&dbConfig.Password, "v", "password", "DB User Password.")
