@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"gopkg.in/yaml.v2"
+	"errors"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -133,13 +134,13 @@ type DbConfig struct {
 }
 
 type FolderScan struct {
-  Collect []string `yaml:"collect"`
-  Reject  []string `yaml:"reject"`
+	Collect []string `yaml:"collect"`
+	Reject  []string `yaml:"reject"`
 }
 
 type AppConfig struct {
-  Database DbConfig `yaml:"database"`
-  Folders FolderScan `yaml:"folders"`
+	Database DbConfig `yaml:"database"`
+	Folders FolderScan `yaml:"folders"`
 }
 
 func (c *AppConfig) getConf(configFile string) *AppConfig {
@@ -202,6 +203,30 @@ func (w *SearchCache) Get(target string) []string {
   }
 }
 
+// https://ispycode.com/GO/Collections/Arrays/Check-if-item-is-in-array
+func contains(a []string, e string) bool {
+	fmt.Println("Inspecting if " + strings.Join(a,",") + " contains " + e)
+	for _, t := range a {
+		if t == e {
+			return true
+		}
+	}
+	return false
+}
+
+func lacks(a []string, e string) bool {
+	fmt.Println("Inspecting if " + strings.Join(a,",")  + " len: " + strconv.Itoa(len(a)) + " lacks " + e)
+	if len(a) == 0 {
+		return false
+	}
+	for _, t := range a {
+		if t == e {
+			return false
+		}
+	}
+	return true
+}
+var SkipDir = errors.New("skip this directory")
 func (w *SearchCache) Update() {
 	newItems := []string{}
 
@@ -211,17 +236,38 @@ func (w *SearchCache) Update() {
 	if db_err != nil { panic(db_err.Error()) }
 	// go compiler error: no new variables on left side of := 
 	fmt.Println("Connected to database.")
-	err := filepath.Walk(strings.TrimRight(config.Server.RrdPath, "/")+"/",
+
+	err := filepath.Walk(strings.TrimRight(config.Server.RrdPath, "/") + "/",
+		// https://pkg.go.dev/path/filepath#WalkFunc
 		func(path string, info os.FileInfo, err error) error {
+			fmt.Println("Inspect entry name:"  + info.Name() + " is directory: " + strconv.FormatBool(info.IsDir()))
 			if err != nil {
 				return err
 			}
-
-			if info.IsDir() || !strings.Contains(info.Name(), ".rrd") {
+			// TODO: SkipDir err is never cleared
+			// NOTE:  differences between
+			// https://cs.opensource.google/go/go/+/refs/tags/go1.14:src/path/filepath/path.go
+			// https://cs.opensource.google/go/go/+/refs/tags/go1.17:src/path/filepath/path.go
+			/*		
+				if err == SkipDir && d.IsDir() {
+					// Successfully skipped directory.
+					err = nil
+				}
+			*/
+			if info.IsDir() {
+				fmt.Println("Inspect directory: " + info.Name())
+				if contains(folderConfig.Reject,info.Name()) || lacks(folderConfig.Collect, info.Name()) { 
+					return SkipDir
+				} else { 
+					return nil
+				}
+			}
+			if !strings.Contains(info.Name(), ".rrd") {
 				return nil
 			}
 			rel, _ := filepath.Rel(config.Server.RrdPath, path)
 			fName := strings.Replace(rel, ".rrd", "", 1)
+			// convert to Apple III/ MacOS style path separators
 			fName = strings.Replace(fName, "/", ":", -1)
 
 			infoRes, err := rrd.Info(path)
@@ -476,22 +522,23 @@ func SetArgs() {
 	fmt.Println("User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
 	fmt.Println("folder scan config:")
 	fmt.Println("collectFlag: " + collectFlag)
-	folderConfig.Collect = strings.Split(collectFlag, ",")
 	fmt.Println("collect:")
-	if len(folderConfig.Collect ) == 0 {
+	if len(collectFlag) == 0 {
+		folderConfig.Collect = []string{}
 		fmt.Println("none")
 	} else {
+		folderConfig.Collect = strings.Split(collectFlag, ",")
 		for _, v := range folderConfig.Collect {
 			fmt.Println(v)
 		}
 	}
 	fmt.Println("rejectFlag: " + rejectFlag)
-	folderConfig.Reject = strings.Split(rejectFlag, ",")
 	fmt.Println("reject:")
-	if len(folderConfig.Reject ) == 0 {
+	if len(rejectFlag ) == 0 {
+		folderConfig.Reject = []string{}
 		fmt.Println("none")
 	} else {
-
+		folderConfig.Reject = strings.Split(rejectFlag, ",")
 		for _, v := range folderConfig.Reject {
 			fmt.Println(v)
 		}
@@ -516,6 +563,4 @@ func main() {
 		}
 	}
 }
-
-
 

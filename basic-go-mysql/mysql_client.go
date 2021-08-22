@@ -90,17 +90,26 @@ func main() {
 	fmt.Println("User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
 	fmt.Println("folder scan config:")
 	fmt.Println("collectFlag: " + collectFlag)
-	folderConfig.Collect = strings.Split(collectFlag, ",")
 	fmt.Println("collect:")
-	for _, v := range folderConfig.Collect {
-		fmt.Println(v)
+	if len(collectFlag) == 0 {
+		folderConfig.Collect = []string{}
+		fmt.Println("none")
+	} else {
+		folderConfig.Collect = strings.Split(collectFlag, ",")
+		for _, v := range folderConfig.Collect {
+			fmt.Println(v)
+		}
 	}
 	fmt.Println("rejectFlag: " + rejectFlag)
-	folderConfig.Reject = strings.Split(rejectFlag, ",")
 	fmt.Println("reject:")
-
-	for _, v := range folderConfig.Reject {
-		fmt.Println(v)
+	if len(rejectFlag ) == 0 {
+		folderConfig.Reject = []string{}
+		fmt.Println("none")
+	} else {
+		folderConfig.Reject = strings.Split(rejectFlag, ",")
+		for _, v := range folderConfig.Reject {
+			fmt.Println(v)
+		}
 	}
 
 	fmt.Println("connect to the database")
