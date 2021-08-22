@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"strconv"
 	"strings"
 	"sync"
@@ -31,7 +33,12 @@ var  (
 	buildCache bool = false 
 	legacyCache bool = false
 	config Config
+	configFile string
+	appConfig AppConfig
 	dbConfig DbConfig
+	folderConfig FolderScan
+	rejectFlag string
+	collectFlag string
 )
 
 type QueryResponse struct {
@@ -123,6 +130,28 @@ type DbConfig struct {
 	Table    string
 	Server   string
 	Port     int
+}
+
+type FolderScan struct {
+  Collect []string `yaml:"collect"`
+  Reject  []string `yaml:"reject"`
+}
+
+type AppConfig struct {
+  Database DbConfig `yaml:"database"`
+  Folders FolderScan `yaml:"folders"`
+}
+
+func (c *AppConfig) getConf(configFile string) *AppConfig {
+    if _, err := os.Stat(configFile); err == nil {
+      yamlFile, err := ioutil.ReadFile(configFile)
+      if err != nil { panic(err.Error()) }
+      err = yaml.Unmarshal(yamlFile, &c)
+      if err != nil { panic(err.Error()) }
+      return c
+    } else {
+      return nil
+    }
 }
 
 type ErrorResponse struct {
@@ -402,6 +431,26 @@ func annotations(w http.ResponseWriter, r *http.Request) {
 
 func SetArgs() {
   
+	// to get help about accepted arg pass an invalid one e.g. -h
+	flag.StringVar(&configFile, "f", "config.yaml", "Config File.")
+	// NOTE: order is intentionally incorrect here: 
+	// configFile value is still the default one
+	appConfig.getConf(configFile)
+	dbConfig = appConfig.Database
+	fmt.Println("database config:" + "\n" + "User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
+
+	folderConfig = appConfig.Folders
+	fmt.Println("folder scan config:")
+	fmt.Println("collect:")
+	for _, v := range folderConfig.Collect {
+		fmt.Println(v)
+	}
+	fmt.Println("reject:")
+
+	for _, v := range folderConfig.Reject {
+		fmt.Println(v)
+	}
+
 	flag.StringVar(&dbConfig.User, "u", "java", "DB User.")
 	flag.StringVar(&dbConfig.Password, "v", "password", "DB User Password.")
 	flag.StringVar(&dbConfig.Database, "w", "test", "Database.")
@@ -420,7 +469,34 @@ func SetArgs() {
 	_ = buildCache
 	flag.BoolVar(&legacyCache, "legacy", false, "use legacy cache")
 	_ = legacyCache
+	// NOTE: default values for collect and reject flags are blank
+	flag.StringVar(&collectFlag, "collect", "", "Folders to collect.")
+	flag.StringVar(&rejectFlag, "reject", "", "Folders to reject.")
 	flag.Parse()
+	fmt.Println("User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
+	fmt.Println("folder scan config:")
+	fmt.Println("collectFlag: " + collectFlag)
+	folderConfig.Collect = strings.Split(collectFlag, ",")
+	fmt.Println("collect:")
+	if len(folderConfig.Collect ) == 0 {
+		fmt.Println("none")
+	} else {
+		for _, v := range folderConfig.Collect {
+			fmt.Println(v)
+		}
+	}
+	fmt.Println("rejectFlag: " + rejectFlag)
+	folderConfig.Reject = strings.Split(rejectFlag, ",")
+	fmt.Println("reject:")
+	if len(folderConfig.Reject ) == 0 {
+		fmt.Println("none")
+	} else {
+
+		for _, v := range folderConfig.Reject {
+			fmt.Println(v)
+		}
+	}
+
 }
 
 func main() {

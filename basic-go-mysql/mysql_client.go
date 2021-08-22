@@ -2,10 +2,11 @@ package main
 import (
 	"fmt"
 	"flag"
-  "gopkg.in/yaml.v2"
-  "io/ioutil"
-  // "log"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
+	// "log"
 	"strconv"
+	"strings"
 	"os"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
@@ -29,8 +30,6 @@ type AppConfig struct {
   Folders FolderScan `yaml:"folders"`
 }
 
-// line 33
-// NOTE: [...] can only be used w/array literal declaration
 type FolderScan struct {
   Collect []string `yaml:"collect"`
   Reject  []string `yaml:"reject"`
@@ -49,33 +48,35 @@ func (c *AppConfig) getConf(configFile string) *AppConfig {
 }
 
 var  (
-  configFile string
-  appConfig AppConfig
-  dbConfig DbConfig
-  folderConfig FolderScan
+	configFile string
+	appConfig AppConfig
+	dbConfig DbConfig
+	folderConfig FolderScan
+	rejectFlag string
+	collectFlag string
 )
 
 func main() {
 
-  fmt.Println("process command line args")
-  // to get help about accepted arg pass an invalid one e.g. -h
-	flag.StringVar(&configFile, "c", "config.yaml", "Config File.")
+	fmt.Println("process command line args")
+	// to get help about accepted arg pass an invalid one e.g. -h
+	flag.StringVar(&configFile, "f", "config.yaml", "Config File.")
 	fmt.Println("process config file: " + configFile)
-  appConfig.getConf(configFile)
-  dbConfig = appConfig.Database
+	appConfig.getConf(configFile)
+	dbConfig = appConfig.Database
 	fmt.Println("database config:" + "\n" + "User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
 
-  folderConfig = appConfig.Folders
-  fmt.Println("folder scan config:")
-  fmt.Println("collect:")
-  for _, v := range folderConfig.Collect {
-    fmt.Println(v)
-  }
-  fmt.Println("reject:")
+	folderConfig = appConfig.Folders
+	fmt.Println("folder scan config:")
+	fmt.Println("collect:")
+	for _, v := range folderConfig.Collect {
+		fmt.Println(v)
+	}
+	fmt.Println("reject:")
 
-  for _, v := range folderConfig.Reject {
-    fmt.Println(v)
-  }
+	for _, v := range folderConfig.Reject {
+		fmt.Println(v)
+	}
 
 	flag.StringVar(&dbConfig.User, "u", "java", "DB User.")
 	flag.StringVar(&dbConfig.Password, "v", "password", "DB User Password.")
@@ -83,9 +84,26 @@ func main() {
 	flag.StringVar(&dbConfig.Server, "x", "127.0.0.1", "DB Server.")
  	flag.IntVar(&dbConfig.Port, "y", 3306, "DB Server port.")
 	flag.StringVar(&dbConfig.Table, "z", "cache_table", "Table.")
+	flag.StringVar(&collectFlag, "collect", "a,b", "Folders to collect.")
+	flag.StringVar(&rejectFlag, "reject", "c,d", "Folders to reject.")
 	flag.Parse()
 	fmt.Println("User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
-  fmt.Println("connect to the database")
+	fmt.Println("folder scan config:")
+	fmt.Println("collectFlag: " + collectFlag)
+	folderConfig.Collect = strings.Split(collectFlag, ",")
+	fmt.Println("collect:")
+	for _, v := range folderConfig.Collect {
+		fmt.Println(v)
+	}
+	fmt.Println("rejectFlag: " + rejectFlag)
+	folderConfig.Reject = strings.Split(rejectFlag, ",")
+	fmt.Println("reject:")
+
+	for _, v := range folderConfig.Reject {
+		fmt.Println(v)
+	}
+
+	fmt.Println("connect to the database")
 
 	db, err := sql.Open("mysql", dbConfig.User + ":" + dbConfig.Password + "@tcp(" + dbConfig.Server + ":" +  strconv.Itoa(dbConfig.Port)  +  ")/" + dbConfig.Database )
 
@@ -109,7 +127,6 @@ func main() {
 		fmt.Println(tag.Fname)
 	}
 
-	// defer close query is important if transactions are used
 	defer rows.Close()
 	var tag Tag
 	// Execute and discard the query
@@ -136,3 +153,20 @@ func main() {
 	defer insert.Close()
 
 }
+/*
+To run this, use 
+git checkout 273b61ceb49554f5bcc8571dd0336969d0e5fd30 Dockerfile.build
+git checkout 273b61ceb49554f5bcc8571dd0336969d0e5fd30 Dockerfile.run
+
+export IMAGE=basic-go-build
+docker build -t $IMAGE -f Dockerfile.build .
+export NAME=basic-go-build
+docker container rm $NAME
+docker run -d --name=$NAME $IMAGE
+docker cp $NAME:/build/mysql_client .
+IMAGE=basic-go-run
+docker build -t $IMAGE -f Dockerfile.run  .
+docker container rm -f $IMAGE
+docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE -u java -v password -w test -x mysql-server -y 3306  -reject x,y,z
+
+*/

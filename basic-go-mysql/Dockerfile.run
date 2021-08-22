@@ -1,12 +1,12 @@
 FROM alpine:3.9.5
 RUN apk update && apk add rrdtool rrdtool-dev 
 WORKDIR /
-COPY mysql_client /
+ARG APP='example'
 COPY config.yaml / 
-COPY example /
+COPY $APP /
 WORKDIR /
 
 RUN echo "#!/bin/sh" | tee /tmp/all_arguments.sh; \
-    echo "VAR=\"\$@\"; /example \$VAR" | tee -a /tmp/all_arguments.sh; \
+    echo "VAR=\"\$@\"; /$APP \$VAR" | tee -a /tmp/all_arguments.sh; \
     chmod +x /tmp/all_arguments.sh
 ENTRYPOINT [ "/tmp/all_arguments.sh" ]
