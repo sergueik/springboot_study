@@ -177,8 +177,7 @@ func (w *SearchCache) Update() {
 	newItems := []string{}
 
 	fmt.Println("Updating search cache.")
-	// db, db_err := sql.Open("mysql", "java:password@tcp(mysql-server:3306)/test")
-  db, db_err := sql.Open("mysql", dbConfig.User + ":" + dbConfig.Password + "@tcp(" + dbConfig.Server + ":" +  strconv.Itoa(dbConfig.Port)  +  ")/" + dbConfig.Database )
+	db, db_err := sql.Open("mysql", dbConfig.User + ":" + dbConfig.Password + "@tcp(" + dbConfig.Server + ":" +  strconv.Itoa(dbConfig.Port)  +  ")/" + dbConfig.Database )
 
 	if db_err != nil { panic(db_err.Error()) }
 	// go compiler error: no new variables on left side of := 
@@ -201,22 +200,25 @@ func (w *SearchCache) Update() {
 				fmt.Println("ERROR: Cannot retrieve information from ", path)
 				fmt.Println(err)
 			}
-			for ds, _ := range infoRes["ds.index"].(map[string]interface{}) {
-
-				// TODO: support legacy flag
-        if legacyCache {
-          newItems = append(newItems, fName+":"+ds)
-        } else {
-          // perform a db.Query insert
-          fmt.Println("Inserted into database:" + "\"" + fName + ":" + ds + "\"")
-          insert, err := db.Query("INSERT INTO `" + dbConfig.Table + "` (ins_date, fname, ds) VALUES ( now(), ?,  ? )", fName, ds)
-
-          if err != nil { panic(err.Error()) }
-
-          defer insert.Close()
-        }
+			if ! legacyCache {
+				// perform a db.Query delete
+				fmt.Println("Delete from database:" + "\"" + fName + "\"")
+				op, err := db.Query("DELETE FROM `" + dbConfig.Table + "` WHERE fname = ?", fName )
+				if err != nil { panic(err.Error()) }
+				defer op.Close()
 			}
+			for ds, _ := range infoRes["ds.index"].(map[string]interface{}) {
+				if legacyCache {
+					newItems = append(newItems, fName+":"+ds)
+				} else {
+					// perform a db.Query insert
+					fmt.Println("Inserted into database:" + "\"" + fName + ":" + ds + "\"")
+					insert, err := db.Query("INSERT INTO `" + dbConfig.Table + "` (ins_date, fname, ds) VALUES ( now(), ?,  ? )", fName, ds)
 
+					if err != nil { panic(err.Error()) }
+					defer insert.Close()
+				}
+			}
 			return nil
 		})
 
@@ -438,5 +440,6 @@ func main() {
 		}
 	}
 }
+
 
 

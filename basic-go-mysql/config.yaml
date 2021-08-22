@@ -1,0 +1,15 @@
+---
+database:
+  user: 'java'
+  password: 'password'
+  database: 'test'
+  table: 'cache_table'
+  server: 'mysql_server'
+  port: 3306
+folders:
+  collect:
+    - a
+    - b
+  reject:
+    - c
+    - d

@@ -9,6 +9,24 @@ Changing the code loading cache for later accessing the data in
 [RRDTool files](https://oss.oetiker.ch/rrdtool/) and implement
 SimpleJSON grafana data sources over `/search`, `query`, `annotations` [protocol](https://grafana.com/grafana/plugins/grafana-simple-json-datasource/)
 
+One advantage the database provides is using __index__ one can update and retriee information one file at a time, not loading or deleting the hash fully on `Get(target)` or`Update()`. 
+
+![filesystem](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/files_capture.jpg)
+
+![database table](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/table_capture.jpg)
+
+The table schema could easily incorporate additional fields for sophisticated Update policies if necessary
+```SQL
+CREATE TABLE `cache_table` (
+  `id`        mediumint    NOT NULL AUTO_INCREMENT,
+  `ins_date`  datetime     NOT NULL,
+  `fname`     varchar(255) NOT NULL,
+  `ds`        varchar(255) NOT NULL,
+  `comment`   varchar(255) DEFAULT NULL,
+  INDEX(`FNAME`),
+  PRIMARY KEY (`id`)
+) 
+```
 ### Usage
 *  have mysql container up
 ```sh
@@ -51,7 +69,6 @@ export NAME=basic-go-build
 docker container rm $NAME
 docker run -d --name=$NAME $IMAGE
 docker cp $NAME:/build/example .
-docker cp $NAME:/build/mysql_client .
 ```
 build run image
 ```sh
@@ -79,18 +96,36 @@ docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e " 
 
 * build cache
 ```sh
-docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE -update -u java -v password -w test -x mysql-server -y 3306
+docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE \
+-u java -v password -w test -x mysql-server -y 3306 \
+-update 
 ```
 
 this will log to console
 ```sh
 Updating search cache.
 Connected to database.
-new item:"percent-idle:value"
-Inserted into database.
-new item:"percent-user:value"
-Inserted into database.
-new item:"sample:ClientInfoAge"
+Delete from database:"percent-idle"
+Inserted into database:"percent-idle:value"
+Delete from database:"percent-user"
+Inserted into database:"percent-user:value"
+Delete from database:"sample"
+Inserted into database:"sample:ClientInfoAge"
+Inserted into database:"sample:StatusHeld"
+Inserted into database:"sample:StatusPending"
+Inserted into database:"sample:StatusRunning"
+Inserted into database:"sample:StatusStageIn"
+Inserted into database:"sample:ClientGlideRunning"
+Inserted into database:"sample:ClientGlideTotal"
+Inserted into database:"sample:StatusIdle"
+Inserted into database:"sample:StatusIdleOther"
+Inserted into database:"sample:ClientGlideIdle"
+Inserted into database:"sample:ClientJobsRunning"
+Inserted into database:"sample:ReqIdle"
+Inserted into database:"sample:ReqMaxRun"
+Inserted into database:"sample:ClientJobsIdle"
+Inserted into database:"sample:StatusStageOut"
+Inserted into database:"sample:StatusWait"
 ...
 Closed database connection.
 Finished updating search cache.
@@ -212,7 +247,65 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "fname" }' ht
   "fname-42:ds-1"
 ]
 ```
+### Config file
+The application supports `config.yaml` to have the following format:
+```yaml
+---
+database:
+  user: 'java'
+  password: 'password'
+  database: 'test'
+  table: 'cache_table'
+  server: 'mysql_server'
+  port: 3306
+folders:
+  collect:
+    - a
+    - b
+  reject:
+    - c
+    - d
+```
+To test, uncomment the lines compiling and copying the `mysql_client` app then:
+```sh
+docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE -u java -v password -w test -x mysql-server -y 3306
+```
+outputs
+```sh
+process command line args
+process config file: config.yaml
+database config:
+User: java
+Database: test
+Server: mysql_server
+Table: cache_table
+Port: 3306
 
+folder scan config:
+collect:
+a
+b
+reject:
+c
+d
+User: java
+Database: test
+Server: mysql-server
+Table: cache_table
+Port: 3306
+
+connect to the database
+ping succeeds
+fname-1
+fname-1
+fname-1
+fname-2
+fname-2
+fname-3
+my example
+2
+fname-1
+```
 ### Release Binaries
 
 * binaries built in alpine container, cannot run on host
@@ -306,10 +399,13 @@ librrd-dev is already the newest version (1.7.0-1build1).
    * another custom [mysql driver](https://github.com/s1s1ty/go-mysql-crud)
    * another possible alternative to avoid extra server during developmenrt [sqlite](https://github.com/bvinc/go-sqlite-lite)
    * https://www.digitalocean.com/community/tutorials/how-to-install-go-and-set-up-a-local-programming-environment-on-ubuntu-18-04
-   * [building Go без доступа в Интернет](https://www.cyberforum.ru/go/thread2792276.html) (in Russian)
-   * https://jfrog.com/blog/why-goproxy-matters-and-which-to-pick/
-	
+   * [building Go без доступа в Интернет](https://www.cyberforum.ru/go/thread2792276.html)(in Russian)
+   * [MySQL transactions in Golang](https://www.sohamkamani.com/golang/sql-transactions/)
+   * [blog](https://dev.to/ilyakaznacheev/a-clean-way-to-pass-configs-in-a-go-application-1g64) on __go__ way doing application configs
+   * another [blog](https://peter.bourgon.org/go-best-practices-2016/#configuration) on __go__ idiosyncracies
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 
 
