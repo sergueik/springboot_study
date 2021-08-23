@@ -245,9 +245,10 @@ func (w *SearchCache) Update() {
 				return err
 			}
 			// TODO: SkipDir err is never cleared
+			// https://golang.org/doc/go1.16#fs
 			// NOTE:  differences between
 			// https://cs.opensource.google/go/go/+/refs/tags/go1.14:src/path/filepath/path.go
-			// https://cs.opensource.google/go/go/+/refs/tags/go1.17:src/path/filepath/path.go
+			// https://cs.opensource.google/go/go/+/refs/tags/go1.16:src/path/filepath/path.go
 			/*		
 				if err == SkipDir && d.IsDir() {
 					// Successfully skipped directory.
@@ -257,7 +258,8 @@ func (w *SearchCache) Update() {
 			if info.IsDir() {
 				fmt.Println("Inspect directory: " + info.Name())
 				if contains(folderConfig.Reject,info.Name()) || lacks(folderConfig.Collect, info.Name()) { 
-					return SkipDir
+					// return SkipDir
+					return filepath.SkipDir
 				} else { 
 					return nil
 				}

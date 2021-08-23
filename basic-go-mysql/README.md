@@ -390,6 +390,219 @@ Building dependency tree...
 Reading state information...
 librrd-dev is already the newest version (1.7.0-1build1).
 ```
+
+### Folder Selection
+* clear db 
+```sh
+docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e " source /tmp/app/mysql-init.sql"
+```
+* create additional `app` and `web` and `db/server` folders and copy `sample.rrd` file there
+```sh
+mkdir -p sample/{web,app,db/server}
+for f in web app db/server; do cp sample/sample.rrd sample/$f; done
+```
+* populate, rejecting the `app` folder
+```sh
+IMAGE=basic-go-run
+docker container rm -f $IMAGE
+docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE -u java -v password -w test -x mysql-server -y 3306 -update  -reject app
+```
+```sh
+database config:
+User: java
+Database: test
+Server: mysql_server
+Table: cache_table
+Port: 3306
+
+folder scan config:
+collect:
+a
+b
+reject:
+c
+d
+User: java
+Database: test
+Server: mysql-server
+Table: cache_table
+Port: 3306
+
+folder scan config:
+collectFlag:
+collect:
+none
+rejectFlag: app
+reject:
+app
+```
+```sh
+Updating search cache.
+Connected to database.
+Inspect entry name:sample is directory: true
+Inspect directory: sample
+Inspecting if app contains sample
+Inspecting if  len: 0 lacks sample
+Inspect entry name:annotations.csv is directory: false
+Inspect entry name:app is directory: true
+Inspect directory: app
+Inspecting if app contains app
+Inspect entry name:db is directory: true
+Inspect directory: db
+Inspecting if app contains db
+Inspecting if  len: 0 lacks db
+Inspect entry name:server is directory: true
+Inspect directory: server
+Inspecting if app contains server
+Inspecting if  len: 0 lacks server
+Inspect entry name:sample.rrd is directory: false
+Delete from database:"db:server:sample"
+Inserted into database:"db:server:sample:StatusPending"
+Inserted into database:"db:server:sample:StatusRunning"
+Inserted into database:"db:server:sample:ClientGlideRunning"
+Inserted into database:"db:server:sample:ClientJobsIdle"
+Inserted into database:"db:server:sample:ClientJobsRunning"
+Inserted into database:"db:server:sample:ReqIdle"
+Inserted into database:"db:server:sample:StatusHeld"
+Inserted into database:"db:server:sample:StatusIdleOther"
+Inserted into database:"db:server:sample:ClientGlideTotal"
+Inserted into database:"db:server:sample:ClientInfoAge"
+Inserted into database:"db:server:sample:ReqMaxRun"
+Inserted into database:"db:server:sample:StatusStageIn"
+Inserted into database:"db:server:sample:StatusStageOut"
+Inserted into database:"db:server:sample:StatusWait"
+Inserted into database:"db:server:sample:ClientGlideIdle"
+Inserted into database:"db:server:sample:StatusIdle"
+Inspect entry name:percent-idle.rrd is directory: false
+Delete from database:"percent-idle"
+Inserted into database:"percent-idle:value"
+Inspect entry name:percent-user.rrd is directory: false
+Delete from database:"percent-user"
+Inserted into database:"percent-user:value"
+Inspect entry name:sample.rrd is directory: false
+Delete from database:"sample"
+Inserted into database:"sample:ClientInfoAge"
+Inserted into database:"sample:StatusRunning"
+Inserted into database:"sample:StatusStageOut"
+Inserted into database:"sample:ClientGlideTotal"
+Inserted into database:"sample:ReqIdle"
+Inserted into database:"sample:StatusIdle"
+Inserted into database:"sample:StatusIdleOther"
+Inserted into database:"sample:StatusStageIn"
+Inserted into database:"sample:ClientGlideRunning"
+Inserted into database:"sample:ClientJobsRunning"
+Inserted into database:"sample:ReqMaxRun"
+Inserted into database:"sample:StatusWait"
+Inserted into database:"sample:ClientGlideIdle"
+Inserted into database:"sample:ClientJobsIdle"
+Inserted into database:"sample:StatusHeld"
+Inserted into database:"sample:StatusPending"
+Inspect entry name:web is directory: true
+Inspect directory: web
+Inspecting if app contains web
+Inspecting if  len: 0 lacks web
+Inspect entry name:sample.rrd is directory: false
+Delete from database:"web:sample"
+Inserted into database:"web:sample:ClientJobsIdle"
+Inserted into database:"web:sample:StatusHeld"
+Inserted into database:"web:sample:StatusPending"
+Inserted into database:"web:sample:StatusRunning"
+Inserted into database:"web:sample:StatusWait"
+Inserted into database:"web:sample:ClientGlideTotal"
+Inserted into database:"web:sample:ClientInfoAge"
+Inserted into database:"web:sample:StatusIdle"
+Inserted into database:"web:sample:StatusStageIn"
+Inserted into database:"web:sample:ClientGlideRunning"
+Inserted into database:"web:sample:ReqMaxRun"
+Inserted into database:"web:sample:ClientJobsRunning"
+Inserted into database:"web:sample:StatusIdleOther"
+Inserted into database:"web:sample:StatusStageOut"
+Inserted into database:"web:sample:ClientGlideIdle"
+Inserted into database:"web:sample:ReqIdle"
+Closed database connection.
+Finished updating search cache.
+```
+ - prints some debugging info while processing
+
+* inspect db. NOTE, relative  paths are stored, and path separators converted to Classic MacOS style:
+```sh
+2>/dev/null docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "use test; SELECT * FROM cache_table";
+```
+```sh
++----+---------------------+------------------+--------------------+---------+
+| id | ins_date            | fname            | ds                 | comment |
++----+---------------------+------------------+--------------------+---------+
+|  1 | 2021-08-23 00:43:36 | fname-1          | ds-1               | NULL    |
+|  2 | 2021-08-23 00:43:36 | fname-1          | ds-2               | NULL    |
+|  3 | 2021-08-23 00:43:36 | fname-1          | ds-3               | NULL    |
+|  4 | 2021-08-23 00:43:36 | fname-2          | ds-4               | NULL    |
+|  5 | 2021-08-23 00:43:36 | fname-2          | ds-5               | NULL    |
+|  6 | 2021-08-23 00:43:36 | fname-3          | ds-5               | NULL    |
+|  7 | 2021-08-23 00:43:49 | db:server:sample | StatusPending      | NULL    |
+|  8 | 2021-08-23 00:43:49 | db:server:sample | StatusRunning      | NULL    |
+|  9 | 2021-08-23 00:43:49 | db:server:sample | ClientGlideRunning | NULL    |
+| 10 | 2021-08-23 00:43:50 | db:server:sample | ClientJobsIdle     | NULL    |
+| 11 | 2021-08-23 00:43:50 | db:server:sample | ClientJobsRunning  | NULL    |
+| 12 | 2021-08-23 00:43:50 | db:server:sample | ReqIdle            | NULL    |
+| 13 | 2021-08-23 00:43:50 | db:server:sample | StatusHeld         | NULL    |
+| 14 | 2021-08-23 00:43:50 | db:server:sample | StatusIdleOther    | NULL    |
+| 15 | 2021-08-23 00:43:50 | db:server:sample | ClientGlideTotal   | NULL    |
+| 16 | 2021-08-23 00:43:50 | db:server:sample | ClientInfoAge      | NULL    |
+| 17 | 2021-08-23 00:43:50 | db:server:sample | ReqMaxRun          | NULL    |
+| 18 | 2021-08-23 00:43:50 | db:server:sample | StatusStageIn      | NULL    |
+| 19 | 2021-08-23 00:43:50 | db:server:sample | StatusStageOut     | NULL    |
+| 20 | 2021-08-23 00:43:50 | db:server:sample | StatusWait         | NULL    |
+| 21 | 2021-08-23 00:43:50 | db:server:sample | ClientGlideIdle    | NULL    |
+| 22 | 2021-08-23 00:43:50 | db:server:sample | StatusIdle         | NULL    |
+| 23 | 2021-08-23 00:43:50 | percent-idle     | value              | NULL    |
+| 24 | 2021-08-23 00:43:50 | percent-user     | value              | NULL    |
+| 25 | 2021-08-23 00:43:50 | sample           | ClientInfoAge      | NULL    |
+| 26 | 2021-08-23 00:43:50 | sample           | StatusRunning      | NULL    |
+| 27 | 2021-08-23 00:43:50 | sample           | StatusStageOut     | NULL    |
+| 28 | 2021-08-23 00:43:50 | sample           | ClientGlideTotal   | NULL    |
+| 29 | 2021-08-23 00:43:50 | sample           | ReqIdle            | NULL    |
+| 30 | 2021-08-23 00:43:50 | sample           | StatusIdle         | NULL    |
+| 31 | 2021-08-23 00:43:50 | sample           | StatusIdleOther    | NULL    |
+| 32 | 2021-08-23 00:43:50 | sample           | StatusStageIn      | NULL    |
+| 33 | 2021-08-23 00:43:51 | sample           | ClientGlideRunning | NULL    |
+| 34 | 2021-08-23 00:43:51 | sample           | ClientJobsRunning  | NULL    |
+| 35 | 2021-08-23 00:43:51 | sample           | ReqMaxRun          | NULL    |
+| 36 | 2021-08-23 00:43:51 | sample           | StatusWait         | NULL    |
+| 37 | 2021-08-23 00:43:51 | sample           | ClientGlideIdle    | NULL    |
+| 38 | 2021-08-23 00:43:51 | sample           | ClientJobsIdle     | NULL    |
+| 39 | 2021-08-23 00:43:51 | sample           | StatusHeld         | NULL    |
+| 40 | 2021-08-23 00:43:51 | sample           | StatusPending      | NULL    |
+| 41 | 2021-08-23 00:43:51 | web:sample       | ClientJobsIdle     | NULL    |
+| 42 | 2021-08-23 00:43:51 | web:sample       | StatusHeld         | NULL    |
+| 43 | 2021-08-23 00:43:51 | web:sample       | StatusPending      | NULL    |
+| 44 | 2021-08-23 00:43:51 | web:sample       | StatusRunning      | NULL    |
+| 45 | 2021-08-23 00:43:51 | web:sample       | StatusWait         | NULL    |
+| 46 | 2021-08-23 00:43:51 | web:sample       | ClientGlideTotal   | NULL    |
+| 47 | 2021-08-23 00:43:51 | web:sample       | ClientInfoAge      | NULL    |
+| 48 | 2021-08-23 00:43:51 | web:sample       | StatusIdle         | NULL    |
+| 49 | 2021-08-23 00:43:51 | web:sample       | StatusStageIn      | NULL    |
+| 50 | 2021-08-23 00:43:51 | web:sample       | ClientGlideRunning | NULL    |
+| 51 | 2021-08-23 00:43:51 | web:sample       | ReqMaxRun          | NULL    |
+| 52 | 2021-08-23 00:43:51 | web:sample       | ClientJobsRunning  | NULL    |
+| 53 | 2021-08-23 00:43:51 | web:sample       | StatusIdleOther    | NULL    |
+| 54 | 2021-08-23 00:43:51 | web:sample       | StatusStageOut     | NULL    |
+| 55 | 2021-08-23 00:43:52 | web:sample       | ClientGlideIdle    | NULL    |
+| 56 | 2021-08-23 00:43:52 | web:sample       | ReqIdle            | NULL    |
++----+---------------------+------------------+--------------------+---------+
+```
+- there is no `app` 
+
+* repeat, excluding `web` folder - left as exercise
+
+* now collect `app`. NOTE, should also include the parent folder name (`sample`):
+
+```sh
+IMAGE=basic-go-run
+docker container rm -f $IMAGE
+docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE -u java -v password -w test -x mysql-server -y 3306 -update  -collect app,sample
+```
+- console logs not shown
+
 ### See Also
 
    * https://stackoverflow.com/questions/47577385/error-non-standard-import-github-com-go-sql-driver-mysql-in-standard-package/67431068#67431068
@@ -406,6 +619,4 @@ librrd-dev is already the newest version (1.7.0-1build1).
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
-
 
