@@ -9,7 +9,7 @@ Changing the code loading cache for later accessing the data in
 [RRDTool files](https://oss.oetiker.ch/rrdtool/) and implement
 SimpleJSON grafana data sources over `/search`, `query`, `annotations` [protocol](https://grafana.com/grafana/plugins/grafana-simple-json-datasource/)
 
-One advantage the database provides is using __index__ one can update and retriee information one file at a time, not loading or deleting the hash fully on `Get(target)` or`Update()`. 
+One advantage the database provides is using __index__ one can update and retriee information one file at a time, not loading or deleting the hash fully on `Get(target)` or`Update()`.
 
 ![filesystem](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/files_capture.jpg)
 
@@ -22,10 +22,11 @@ CREATE TABLE `cache_table` (
   `ins_date`  datetime     NOT NULL,
   `fname`     varchar(255) NOT NULL,
   `ds`        varchar(255) NOT NULL,
+  `folder`    tinyint(1)   DEFAULT 0, -- for folder info
   `comment`   varchar(255) DEFAULT NULL,
   INDEX(`FNAME`),
   PRIMARY KEY (`id`)
-) 
+);
 ```
 ### Usage
 *  have mysql container up
@@ -91,14 +92,14 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 
 * Initialize DB
 ```sh
-docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e " source /tmp/app/mysql-init.sql"
+docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "source /tmp/app/mysql-init.sql"
 ```
 
 * build cache
 ```sh
 docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE \
 -u java -v password -w test -x mysql-server -y 3306 \
--update 
+-update
 ```
 
 this will log to console
@@ -247,6 +248,13 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "fname" }' ht
   "fname-42:ds-1"
 ]
 ```
+### Request Details
+
+Alternatively can send GET request:
+```
+curl  http://localhost:9001/search?target=sample |jq '.'
+```
+but it is not handling `GET` requests for `/search`. When  Grafana interacts with SimpleJSON server it is sending `POST` requests.
 ### Config file
 The application supports `config.yaml` to have the following format:
 ```yaml
@@ -392,7 +400,7 @@ librrd-dev is already the newest version (1.7.0-1build1).
 ```
 
 ### Folder Selection
-* clear db 
+* clear db
 ```sh
 docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e " source /tmp/app/mysql-init.sql"
 ```
@@ -439,90 +447,66 @@ app
 ```sh
 Updating search cache.
 Connected to database.
-Inspect entry name:sample is directory: true
-Inspect directory: sample
-Inspecting if app contains sample
-Inspecting if  len: 0 lacks sample
-Inspect entry name:annotations.csv is directory: false
-Inspect entry name:app is directory: true
-Inspect directory: app
-Inspecting if app contains app
-Inspect entry name:db is directory: true
-Inspect directory: db
-Inspecting if app contains db
-Inspecting if  len: 0 lacks db
-Inspect entry name:server is directory: true
-Inspect directory: server
-Inspecting if app contains server
-Inspecting if  len: 0 lacks server
-Inspect entry name:sample.rrd is directory: false
+Skip directory: app
 Delete from database:"db:server:sample"
-Inserted into database:"db:server:sample:StatusPending"
-Inserted into database:"db:server:sample:StatusRunning"
-Inserted into database:"db:server:sample:ClientGlideRunning"
 Inserted into database:"db:server:sample:ClientJobsIdle"
-Inserted into database:"db:server:sample:ClientJobsRunning"
-Inserted into database:"db:server:sample:ReqIdle"
-Inserted into database:"db:server:sample:StatusHeld"
-Inserted into database:"db:server:sample:StatusIdleOther"
-Inserted into database:"db:server:sample:ClientGlideTotal"
-Inserted into database:"db:server:sample:ClientInfoAge"
 Inserted into database:"db:server:sample:ReqMaxRun"
-Inserted into database:"db:server:sample:StatusStageIn"
+Inserted into database:"db:server:sample:StatusHeld"
 Inserted into database:"db:server:sample:StatusStageOut"
-Inserted into database:"db:server:sample:StatusWait"
 Inserted into database:"db:server:sample:ClientGlideIdle"
+Inserted into database:"db:server:sample:ClientJobsRunning"
 Inserted into database:"db:server:sample:StatusIdle"
-Inspect entry name:percent-idle.rrd is directory: false
+Inserted into database:"db:server:sample:ClientInfoAge"
+Inserted into database:"db:server:sample:StatusPending"
+Inserted into database:"db:server:sample:StatusWait"
+Inserted into database:"db:server:sample:ReqIdle"
+Inserted into database:"db:server:sample:ClientGlideTotal"
+Inserted into database:"db:server:sample:StatusIdleOther"
+Inserted into database:"db:server:sample:StatusRunning"
+Inserted into database:"db:server:sample:StatusStageIn"
+Inserted into database:"db:server:sample:ClientGlideRunning"
 Delete from database:"percent-idle"
 Inserted into database:"percent-idle:value"
-Inspect entry name:percent-user.rrd is directory: false
 Delete from database:"percent-user"
 Inserted into database:"percent-user:value"
-Inspect entry name:sample.rrd is directory: false
 Delete from database:"sample"
-Inserted into database:"sample:ClientInfoAge"
-Inserted into database:"sample:StatusRunning"
-Inserted into database:"sample:StatusStageOut"
-Inserted into database:"sample:ClientGlideTotal"
-Inserted into database:"sample:ReqIdle"
+Inserted into database:"sample:StatusWait"
+Inserted into database:"sample:StatusHeld"
 Inserted into database:"sample:StatusIdle"
 Inserted into database:"sample:StatusIdleOther"
-Inserted into database:"sample:StatusStageIn"
+Inserted into database:"sample:StatusPending"
+Inserted into database:"sample:ReqIdle"
+Inserted into database:"sample:ClientGlideIdle"
 Inserted into database:"sample:ClientGlideRunning"
+Inserted into database:"sample:ClientInfoAge"
+Inserted into database:"sample:ClientJobsIdle"
+Inserted into database:"sample:ClientGlideTotal"
+Inserted into database:"sample:StatusRunning"
+Inserted into database:"sample:StatusStageOut"
 Inserted into database:"sample:ClientJobsRunning"
 Inserted into database:"sample:ReqMaxRun"
-Inserted into database:"sample:StatusWait"
-Inserted into database:"sample:ClientGlideIdle"
-Inserted into database:"sample:ClientJobsIdle"
-Inserted into database:"sample:StatusHeld"
-Inserted into database:"sample:StatusPending"
-Inspect entry name:web is directory: true
-Inspect directory: web
-Inspecting if app contains web
-Inspecting if  len: 0 lacks web
-Inspect entry name:sample.rrd is directory: false
+Inserted into database:"sample:StatusStageIn"
 Delete from database:"web:sample"
-Inserted into database:"web:sample:ClientJobsIdle"
-Inserted into database:"web:sample:StatusHeld"
-Inserted into database:"web:sample:StatusPending"
-Inserted into database:"web:sample:StatusRunning"
-Inserted into database:"web:sample:StatusWait"
 Inserted into database:"web:sample:ClientGlideTotal"
-Inserted into database:"web:sample:ClientInfoAge"
-Inserted into database:"web:sample:StatusIdle"
+Inserted into database:"web:sample:StatusHeld"
 Inserted into database:"web:sample:StatusStageIn"
-Inserted into database:"web:sample:ClientGlideRunning"
-Inserted into database:"web:sample:ReqMaxRun"
 Inserted into database:"web:sample:ClientJobsRunning"
-Inserted into database:"web:sample:StatusIdleOther"
+Inserted into database:"web:sample:StatusIdle"
 Inserted into database:"web:sample:StatusStageOut"
 Inserted into database:"web:sample:ClientGlideIdle"
+Inserted into database:"web:sample:ClientGlideRunning"
+Inserted into database:"web:sample:ClientInfoAge"
 Inserted into database:"web:sample:ReqIdle"
+Inserted into database:"web:sample:StatusWait"
+Inserted into database:"web:sample:ClientJobsIdle"
+Inserted into database:"web:sample:ReqMaxRun"
+Inserted into database:"web:sample:StatusIdleOther"
+Inserted into database:"web:sample:StatusPending"
+Inserted into database:"web:sample:StatusRunning"
 Closed database connection.
 Finished updating search cache.
 ```
- - prints some debugging info while processing
+ - printing some debugging info while processing
 
 * inspect db. NOTE, relative  paths are stored, and path separators converted to Classic MacOS style:
 ```sh
@@ -590,7 +574,7 @@ Finished updating search cache.
 | 56 | 2021-08-23 00:43:52 | web:sample       | ReqIdle            | NULL    |
 +----+---------------------+------------------+--------------------+---------+
 ```
-- there is no `app` 
+- there is no `app`
 
 * repeat, excluding `web` folder - left as exercise
 
@@ -602,6 +586,171 @@ docker container rm -f $IMAGE
 docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE -u java -v password -w test -x mysql-server -y 3306 -update  -collect app,sample
 ```
 - console logs not shown
+
+Golang can link with legacy native tools such as RRDTool (librrd-dev)
+which java support is not possible, which typically have Perl of Python bindings
+but Perl is considered outdated and gradually harder to support and Python is considered s	low
+
+
+http://mirror.mia.velocihost.net/centos/7.9.2009/os/x86_64/Packages/dejavu-sans-mono-fonts-2.33-6.el7.noarch.rpm: [Errno 14] HTTP Error 403 - Forbidden
+Trying other mirror.
+
+mysql --defaults-extra-file=/etc/mysql/debian.cn
+
+### Build Binaries for Centos / RHEL
+```
+docker run --name $RRD_SERVER -v $(pwd)/sample/:/sample -p 9002:9000 -d $RRD_SERVER
+curl  http://localhost:9002/search?target=sample |jq '.'
+```
+*  build builder image
+```sh
+export IMAGE=builder-centos
+docker image rm -f $IMAGE
+docker build -t $IMAGE -f Dockerfile.$IMAGE .
+```
+ignore error
+```sh
+http://mirror.mia.velocihost.net/centos/7.9.2009/os/x86_64/Packages/dejavu-sans-mono-fonts-2.33-6.el7.noarch.rpm: [Errno 14] HTTP Error 403 - Forbidden
+Trying other mirror.
+```
+* build application
+```sh
+export IMAGE=build-centos
+docker image rm -f $IMAGE
+docker build -t $IMAGE -f Dockerfile.$IMAGE .
+export NAME=build-centos
+docker container rm $NAME
+docker run -d --name=$NAME $IMAGE
+docker cp $NAME:/build/example .
+```
+* copy to vanilla Centos 7 with  rrdtool and mysql installed
+* binary
+```sh
+scp example vagrant@192.168.99.100:
+```
+* RRd file(s)
+```sh
+scp sample/sample.rrd vagrant@192.168.99.100:sample:
+```
+* create / update user on mariadb
+(from https://www.digitalocean.com/community/tutorials/how-to-reset-your-mysql-or-mariadb-root-password)
+
+```sh
+sudo systemctl stop mariadb
+sudo mysqld_safe --skip-grant-tables --skip-networking &
+mysql -u root
+```
+in mysql shell
+```sql
+FLUSH PRIVILEGES;
+SET PASSWORD FOR 'java'@'localhost' = PASSWORD('password');
+```
+
+if the user `java` did not exist
+```sh
+CREATE USER 'java'@'localhost' IDENTIFIED BY 'password';
+```
+restore auth
+```sh
+sudo kill $(sudo cat /var/run/mariadb/mariadb.pid)
+sudo systemctl start mariadb
+```
+create DB
+```sh
+mysql -u java -ppassword test
+```
+in mysql shell
+
+```sql
+CREATE TABLE `cache_table` (
+  `id`        mediumint    NOT NULL AUTO_INCREMENT,
+  `ins_date`  datetime     NOT NULL,
+  `fname`     varchar(255) NOT NULL,
+  `ds`        varchar(255) NOT NULL,
+  `folder`    tinyint(1)   DEFAULT 0, -- for folder info
+  `comment`   varchar(255) DEFAULT NULL,
+  INDEX(`FNAME`),
+  PRIMARY KEY (`id`)
+);
+
+```
+
+* Build cache
+```sh
+./example -update -u java -v password -w test -x 127.0.0.1 -y 3306
+database config:
+User:
+Database:
+Server:
+Table:
+Port: 0
+
+folder scan config:
+collect:
+reject:
+User: java
+Database: test
+Server: 127.0.0.1
+Table: cache_table
+Port: 3306
+
+folder scan config:
+collectFlag:
+collect:
+none
+rejectFlag:
+reject:
+none
+Updating search cache.
+Connected to database.
+Delete from database:"sample"
+Inserted into database:"sample:ReqIdle"
+Inserted into database:"sample:StatusIdleOther"
+Inserted into database:"sample:StatusPending"
+Inserted into database:"sample:StatusRunning"
+Inserted into database:"sample:StatusStageIn"
+Inserted into database:"sample:StatusStageOut"
+Inserted into database:"sample:StatusWait"
+Inserted into database:"sample:ReqMaxRun"
+Inserted into database:"sample:StatusIdle"
+Inserted into database:"sample:ClientGlideTotal"
+Inserted into database:"sample:ClientInfoAge"
+Inserted into database:"sample:ClientJobsRunning"
+Inserted into database:"sample:ClientGlideIdle"
+Inserted into database:"sample:ClientGlideRunning"
+Inserted into database:"sample:ClientJobsIdle"
+Inserted into database:"sample:StatusHeld"
+Closed database connection.
+Finished updating search cache.
+```
+verify from another terminal:
+```sh
+curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "sample" }' http://localhost:9000/search |jq '.'
+```
+```json
+[
+  "sample:ReqIdle",
+  "sample:StatusIdleOther",
+  "sample:StatusPending",
+  "sample:StatusRunning",
+  "sample:StatusStageIn",
+  "sample:StatusStageOut",
+  "sample:StatusWait",
+  "sample:ReqMaxRun",
+  "sample:StatusIdle",
+  "sample:ClientGlideTotal",
+  "sample:ClientInfoAge",
+  "sample:ClientJobsRunning",
+  "sample:ClientGlideIdle",
+  "sample:ClientGlideRunning",
+  "sample:ClientJobsIdle",
+  "sample:StatusHeld"
+]
+```
+
+### TODO
+
+To better support Updating the cache one may chooise to store the folder information in `cache_table` alongside with the RRD data by adding a column `folder` to the table schema
 
 ### See Also
 
@@ -616,7 +765,10 @@ docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9
    * [MySQL transactions in Golang](https://www.sohamkamani.com/golang/sql-transactions/)
    * [blog](https://dev.to/ilyakaznacheev/a-clean-way-to-pass-configs-in-a-go-application-1g64) on __go__ way doing application configs
    * another [blog](https://peter.bourgon.org/go-best-practices-2016/#configuration) on __go__ idiosyncracies
+   * java `Files.walk` [example](https://github.com/mkyong/core-java/blob/master/java-io/src/main/java/com/mkyong/io/api/FilesWalkExample.java)
+   * [documentation](https://docs.oracle.com/javase/tutorial/essential/io/walk.html)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 

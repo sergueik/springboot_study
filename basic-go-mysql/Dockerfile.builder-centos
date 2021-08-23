@@ -1,0 +1,4 @@
+FROM jelastic/golang:1.14.9
+
+RUN yum install -q -y rrdtool-devel
+
