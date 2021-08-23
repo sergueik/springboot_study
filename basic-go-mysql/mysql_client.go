@@ -4,7 +4,6 @@ import (
 	"flag"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	// "log"
 	"strconv"
 	"strings"
 	"os"
@@ -113,10 +112,14 @@ func main() {
 	}
 
 	fmt.Println("connect to the database")
+	var (
+		tag Tag
+		query string
+		id int
+	)
 
 	db, err := sql.Open("mysql", dbConfig.User + ":" + dbConfig.Password + "@tcp(" + dbConfig.Server + ":" +  strconv.Itoa(dbConfig.Port)  +  ")/" + dbConfig.Database )
 
-	var query string
 	if err != nil { panic(err.Error()) }
 
 	err = db.Ping()
@@ -124,33 +127,32 @@ func main() {
 	fmt.Println("ping succeeds")
 
 	defer db.Close()
-	query = "SELECT DISTINCT id,fname,ds FROM " + dbConfig.Table
+	query = "SELECT DISTINCT id, fname, ds FROM " + dbConfig.Table
 	rows, err := db.Query(query)
 
 	if err != nil { panic(err.Error()) }
+
 	for rows.Next() {
-		var tag Tag
+	
 		// for each row, load columns
 		err = rows.Scan(&tag.ID, &tag.Fname, &tag.Ds)
 		if err != nil { panic(err.Error()) }
-		fmt.Println(tag.Fname)
+    id,_ = fmt.Printf("%d", tag.ID)
+		fmt.Println("ID: " + strconv.Itoa(id) + " Name: " + tag.Fname)
 	}
 
 	defer rows.Close()
-	var tag Tag
 	// Execute and discard the query
-    	query = "SELECT DISTINCT id,fname,ds FROM " + dbConfig.Table + " where id = ?"
-	err = db.QueryRow(query, 2).Scan(&tag.ID, &tag.Fname,&tag.Ds)
+	err = db.QueryRow("SELECT DISTINCT id, fname, ds FROM " + dbConfig.Table + " ORDER BY id DESC LIMIT 1").Scan(&tag.ID, &tag.Fname, &tag.Ds)
 	if err != nil { panic(err.Error()) }
 
 	fmt.Println(tag.ID)
 	fmt.Println(tag.Fname)
 
-	// perform a db.Query delete
-	op, err := db.Query("DELETE FROM `" + dbConfig.Table + "` WHERE fname = ?", "my example")
+	// perform a db.Query delete one row
+	op, err := db.Query("DELETE FROM `" + dbConfig.Table + "` WHERE ID = ?", tag.ID)
 	if err != nil { panic(err.Error()) }
 
-	// defer close query is important if transactions are used
 	defer op.Close()
 
 	// perform a db.Query insert
@@ -163,7 +165,7 @@ func main() {
 
 }
 /*
-To run this, use 
+To run this, use
 git checkout 273b61ceb49554f5bcc8571dd0336969d0e5fd30 Dockerfile.build
 git checkout 273b61ceb49554f5bcc8571dd0336969d0e5fd30 Dockerfile.run
 
