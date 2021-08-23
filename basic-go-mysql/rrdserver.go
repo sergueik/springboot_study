@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"gopkg.in/yaml.v2"
-	"errors"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -205,7 +204,6 @@ func (w *SearchCache) Get(target string) []string {
 
 // https://ispycode.com/GO/Collections/Arrays/Check-if-item-is-in-array
 func contains(a []string, e string) bool {
-	fmt.Println("Inspecting if " + strings.Join(a,",") + " contains " + e)
 	for _, t := range a {
 		if t == e {
 			return true
@@ -215,7 +213,6 @@ func contains(a []string, e string) bool {
 }
 
 func lacks(a []string, e string) bool {
-	fmt.Println("Inspecting if " + strings.Join(a,",")  + " len: " + strconv.Itoa(len(a)) + " lacks " + e)
 	if len(a) == 0 {
 		return false
 	}
@@ -226,39 +223,24 @@ func lacks(a []string, e string) bool {
 	}
 	return true
 }
-var SkipDir = errors.New("skip this directory")
 func (w *SearchCache) Update() {
 	newItems := []string{}
 
 	fmt.Println("Updating search cache.")
-	db, db_err := sql.Open("mysql", dbConfig.User + ":" + dbConfig.Password + "@tcp(" + dbConfig.Server + ":" +  strconv.Itoa(dbConfig.Port)  +  ")/" + dbConfig.Database )
+	db, err := sql.Open("mysql", dbConfig.User + ":" + dbConfig.Password + "@tcp(" + dbConfig.Server + ":" +  strconv.Itoa(dbConfig.Port)  +  ")/" + dbConfig.Database )
 
-	if db_err != nil { panic(db_err.Error()) }
-	// go compiler error: no new variables on left side of := 
+	if err != nil { panic(err.Error()) }
 	fmt.Println("Connected to database.")
 
-	err := filepath.Walk(strings.TrimRight(config.Server.RrdPath, "/") + "/",
+	err = filepath.Walk(strings.TrimRight(config.Server.RrdPath, "/") + "/",
 		// https://pkg.go.dev/path/filepath#WalkFunc
 		func(path string, info os.FileInfo, err error) error {
-			fmt.Println("Inspect entry name:"  + info.Name() + " is directory: " + strconv.FormatBool(info.IsDir()))
 			if err != nil {
 				return err
 			}
-			// TODO: SkipDir err is never cleared
-			// https://golang.org/doc/go1.16#fs
-			// NOTE:  differences between
-			// https://cs.opensource.google/go/go/+/refs/tags/go1.14:src/path/filepath/path.go
-			// https://cs.opensource.google/go/go/+/refs/tags/go1.16:src/path/filepath/path.go
-			/*		
-				if err == SkipDir && d.IsDir() {
-					// Successfully skipped directory.
-					err = nil
-				}
-			*/
 			if info.IsDir() {
-				fmt.Println("Inspect directory: " + info.Name())
 				if contains(folderConfig.Reject,info.Name()) || lacks(folderConfig.Collect, info.Name()) { 
-					// return SkipDir
+					fmt.Println("Skip directory: " + info.Name())
 					return filepath.SkipDir
 				} else { 
 					return nil
