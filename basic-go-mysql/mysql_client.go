@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"strconv"
 	"strings"
+	"math/rand"
+	"time"
 	"os"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
@@ -116,6 +118,8 @@ func main() {
 		tag Tag
 		query string
 		id int
+		fname string
+		ds string
 	)
 
 	db, err := sql.Open("mysql", dbConfig.User + ":" + dbConfig.Password + "@tcp(" + dbConfig.Server + ":" +  strconv.Itoa(dbConfig.Port)  +  ")/" + dbConfig.Database )
@@ -133,11 +137,11 @@ func main() {
 	if err != nil { panic(err.Error()) }
 
 	for rows.Next() {
-	
+
 		// for each row, load columns
 		err = rows.Scan(&tag.ID, &tag.Fname, &tag.Ds)
 		if err != nil { panic(err.Error()) }
-    id,_ = fmt.Printf("%d", tag.ID)
+		id,_ = fmt.Printf("%d", tag.ID)
 		fmt.Println("ID: " + strconv.Itoa(id) + " Name: " + tag.Fname)
 	}
 
@@ -156,7 +160,13 @@ func main() {
 	defer op.Close()
 
 	// perform a db.Query insert
-	insert, err := db.Query("INSERT INTO `" + dbConfig.Table + "` (INS_DATE, FNAME, DS) VALUES ( now(), 'my example', 'new value')")
+	// insert, err := db.Query("INSERT INTO `" + dbConfig.Table + "` (INS_DATE, fname, DS) VALUES ( now(), 'my example', 'new value')")
+	r1 := rand.New(rand.NewSource(time.Now().UnixNano()))
+	id = r1.Intn(100000)
+	fname = "my example"
+	ds = "new value"
+	insert, err := db.Query("INSERT INTO `cache_table` (id, ins_date, fname, ds) VALUES ( ?, now(), ?,  ? )", id, fname ,ds )
+	fmt.Println("Inserted into database:" + "\"" + fname + ":" + ds + "\" " + " Id: " + strconv.Itoa(id))
 
 	if err != nil { panic(err.Error()) }
 
