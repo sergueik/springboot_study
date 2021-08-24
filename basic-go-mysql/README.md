@@ -232,8 +232,67 @@ sample:ClientJobsIdle
 sample:ClientJobsRunning
 ...
 ```
+one can still execute `/query` requests:
+```sh
+curl -X POST http://localhost:9001/query -d '
+{
+  "timezone": "browser",
+  "panelId": 2,
+  "range": {
+    "from": "2010-03-02T04:57:48.126Z",
+    "to": "2010-03-02T05:42:32.733Z",
+    "raw": {
+      "from": "2010-03-02T04:57:48.126Z",
+      "to": "2010-03-02T05:42:32.733Z"
+    }
+  },
+  "rangeRaw": {
+    "from": "2010-03-02T04:57:48.126Z",
+    "to": "2010-03-02T05:42:32.733Z"
+  },
+  "interval": "2s",
+  "intervalMs": 2000,
+  "targets": [
+    {
+      "target": "sample:ClientJobsRunning",
+      "refId": "A",
+      "type": "timeserie"
+    }
+  ],
+  "maxDataPoints": 928,
+  "scopedVars": {
+    "__interval": {
+      "text": "2s",
+      "value": "2s"
+    },
+    "__interval_ms": {
+      "text": 2000,
+      "value": 2000
+    }
+  }
+}
+'
 
-to confirm explicitly one may simply issue `/search` with the target attribute "fname" which is not in file system but was added to `cache_table`:
+```
+this will return
+```json
+[
+  {
+    "target": "sample:ClientJobsRunning",
+    "datapoints": [
+      [
+        164381.51527777777,
+        1267502400000
+      ],
+      [
+        144435.16694444444,
+        1267506000000
+      ]
+    ]
+  }
+]
+```
+* to confirm explicitly one may simply issue `/search` with the target attribute "fname" which is not in file system but was added to `cache_table`:
 ```sh
 curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "fname" }' http://localhost:9001/search |jq '.'
 ```
@@ -751,6 +810,36 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "sample" }' h
 ### TODO
 
 To better support Updating the cache one may chooise to store the folder information in `cache_table` alongside with the RRD data by adding a column `folder` to the table schema
+To read headers
+one may also use the [rrd4j/rrd4j](https://github.com/rrd4j/rrd4j) `ConverterTest` derivative:
+```java
+	@Test
+	public void testDsNames(String dataFilePath) throws IOException {
+
+			final String dataFileUri = System.getProperty("os.name").toLowerCase().startsWith("windows")
+					? "file:///" + dataFilePath.replaceAll("\\\\", "/")
+					: "file://" + dataFilePath;
+			URL url = new URL(dataFileUri);
+			try {
+				System.err.println("Reading : " + url.getFile());
+				RrdDb rrd = RrdDb.getBuilder().setPath("test")
+						.setRrdToolImporter(url.getFile())
+						.setBackendFactory(new RrdMemoryBackendFactory()).build();
+				for (int cnt = 0; cnt != rrd.getDsCount(); cnt++) {
+					String ds = rrd.getDatasource(cnt).getName();
+					System.err.println("ds: " + ds);
+					Assert.assertTrue(ds != null);
+				}
+			} catch (IllegalArgumentException e) {
+				System.err.println("Skipping invalid file: " + dataFilePath);
+			}
+		}
+	}
+
+
+```
+and use a potentially faster java code for directory traversal.
+
 
 ### See Also
 
@@ -771,5 +860,6 @@ To better support Updating the cache one may chooise to store the folder informa
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 
 
