@@ -32,6 +32,7 @@ type Tag struct {
 var  (
 	buildCache bool = false 
 	legacyCache bool = false
+	verbose bool = false
 	config Config
 	configFile string
 	appConfig AppConfig
@@ -169,37 +170,39 @@ func NewSearchCache() *SearchCache {
 
 func (w *SearchCache) Get(target string) []string {
 	newItems := []string{}
-  if legacyCache { 
-    // support legacy flag
-    w.m.Lock()
-    defer w.m.Unlock()
-    return w.items
-  } else {
-    db, err := sql.Open("mysql", dbConfig.User + ":" + dbConfig.Password + "@tcp(" + dbConfig.Server + ":" +  strconv.Itoa(dbConfig.Port)  +  ")/" + dbConfig.Database )
+	if legacyCache { 
+		w.m.Lock()
+		defer w.m.Unlock()
+		return w.items
+	} else {
+		db, err := sql.Open("mysql", dbConfig.User + ":" + dbConfig.Password + "@tcp(" + dbConfig.Server + ":" +	strconv.Itoa(dbConfig.Port)	+	")/" + dbConfig.Database )
 
-    if err != nil { panic(err.Error()) }
-    defer db.Close()
-    var query string
-    
-    if target != "" {
-      query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table + " WHERE fname = ?"
-    } else { 
-      query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table 
-    }
-    fmt.Println("querying the " + dbConfig.Table + " table: " + query)
-
-    rows, err := db.Query(query, target)
-    if err != nil { panic(err.Error()) }
-    for rows.Next() {
-      var tag Tag
-      err = rows.Scan(&tag.Fname,&tag.Ds)
-      if err != nil { panic(err.Error()) }
-      fmt.Println("item: " + tag.Fname + ":" + tag.Ds)
-      newItems = append(newItems, tag.Fname + ":" + tag.Ds)
-    }
-    defer db.Close()
-    return newItems
-  }
+		if err != nil { panic(err.Error()) }
+		defer db.Close()
+		var query string
+		
+		if target != "" {
+			query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table + " WHERE fname = ?"
+		} else { 
+			query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table 
+		}
+		if verbose {
+			fmt.Println("querying the " + dbConfig.Table + " table: " + query)
+		}
+		rows, err := db.Query(query, target)
+		if err != nil { panic(err.Error()) }
+		for rows.Next() {
+			var tag Tag
+			err = rows.Scan(&tag.Fname,&tag.Ds)
+			if err != nil { panic(err.Error()) }
+			if verbose {
+				fmt.Println("item: " + tag.Fname + ":" + tag.Ds)
+			}
+			newItems = append(newItems, tag.Fname + ":" + tag.Ds)
+		}
+		defer db.Close()
+		return newItems
+	}
 }
 
 // https://ispycode.com/GO/Collections/Arrays/Check-if-item-is-in-array
@@ -225,13 +228,15 @@ func lacks(a []string, e string) bool {
 }
 func (w *SearchCache) Update() {
 	newItems := []string{}
-
-	fmt.Println("Updating search cache.")
+	if verbose {
+   		fmt.Println("Updating search cache.")
+	}
 	db, err := sql.Open("mysql", dbConfig.User + ":" + dbConfig.Password + "@tcp(" + dbConfig.Server + ":" +  strconv.Itoa(dbConfig.Port)  +  ")/" + dbConfig.Database )
 
 	if err != nil { panic(err.Error()) }
-	fmt.Println("Connected to database.")
-
+	if verbose {
+		fmt.Println("Connected to database.")
+	}
 	err = filepath.Walk(strings.TrimRight(config.Server.RrdPath, "/") + "/",
 		// https://pkg.go.dev/path/filepath#WalkFunc
 		func(path string, info os.FileInfo, err error) error {
@@ -240,7 +245,9 @@ func (w *SearchCache) Update() {
 			}
 			if info.IsDir() {
 				if contains(folderConfig.Reject,info.Name()) || lacks(folderConfig.Collect, info.Name()) { 
-					fmt.Println("Skip directory: " + info.Name())
+					if verbose {
+          					fmt.Println("Skip directory: " + info.Name())
+					}
 					return filepath.SkipDir
 				} else { 
 					return nil
@@ -261,7 +268,9 @@ func (w *SearchCache) Update() {
 			}
 			if ! legacyCache {
 				// perform a db.Query delete
-				fmt.Println("Delete from database:" + "\"" + fName + "\"")
+				if verbose {
+					fmt.Println("Delete from database:" + "\"" + fName + "\"")
+				}	
 				op, err := db.Query("DELETE FROM `" + dbConfig.Table + "` WHERE fname = ?", fName )
 				if err != nil { panic(err.Error()) }
 				defer op.Close()
@@ -270,8 +279,11 @@ func (w *SearchCache) Update() {
 				if legacyCache {
 					newItems = append(newItems, fName+":"+ds)
 				} else {
+					// TODO: compare file stat with ins_date and skip update if file is older
 					// perform a db.Query insert
-					fmt.Println("Inserted into database:" + "\"" + fName + ":" + ds + "\"")
+					if verbose {
+						fmt.Println("Inserted into database:" + "\"" + fName + ":" + ds + "\"")
+					}
 					insert, err := db.Query("INSERT INTO `" + dbConfig.Table + "` (ins_date, fname, ds) VALUES ( now(), ?,  ? )", fName, ds)
 
 					if err != nil { panic(err.Error()) }
@@ -290,9 +302,10 @@ func (w *SearchCache) Update() {
 	defer w.m.Unlock()
 	w.items = newItems
 	defer db.Close()
-	fmt.Println("Closed database connection.")
-	fmt.Println("Finished updating search cache.")
-
+	if verbose {
+		fmt.Println("Closed database connection.")
+		fmt.Println("Finished updating search cache.")
+	}
 }
 
 var searchCache *SearchCache = NewSearchCache()
@@ -496,6 +509,7 @@ func SetArgs() {
 	flag.StringVar(&config.Server.AnnotationFilePath, "a", "", "Path for a file that has annotations.")
 	flag.IntVar(&config.Server.Multiplier, "m", 1, "Value multiplier.")
 	flag.BoolVar(&buildCache, "update", false, "update cache")
+	flag.BoolVar(&verbose, "verbose", false, "verbose")
 	_ = buildCache
 	flag.BoolVar(&legacyCache, "legacy", false, "use legacy cache")
 	_ = legacyCache

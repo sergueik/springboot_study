@@ -767,6 +767,7 @@ To better support Updating the cache one may chooise to store the folder informa
    * another [blog](https://peter.bourgon.org/go-best-practices-2016/#configuration) on __go__ idiosyncracies
    * java `Files.walk` [example](https://github.com/mkyong/core-java/blob/master/java-io/src/main/java/com/mkyong/io/api/FilesWalkExample.java)
    * [documentation](https://docs.oracle.com/javase/tutorial/essential/io/walk.html)
+   * [Golang: Walk Directory](http://xahlee.info/golang/golang_walk_dir.html)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
