@@ -3,7 +3,16 @@ package org.rrd4j.converter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -149,6 +158,60 @@ public class ConverterTest {
 	}
 
 	@Test
+	public void listFilesDsNames() throws IOException {
+
+		Path basePath = Paths.get(String.format("%s%ssrc%stest%sresources%srrdtool",
+				(osName.equals("windows")
+						? System.getProperty("user.dir").replaceAll("/", "\\")
+						: System.getProperty("user.dir")),
+				File.separator, File.separator, File.separator, File.separator));
+		System.err.println("Scanning path: " + basePath.toString());
+		List<Path> result;
+		// origin:
+		// https://github.com/mkyong/core-java/blob/master/java-io/src/main/java/com/mkyong/io/api/FilesWalkExample.java
+		try (Stream<Path> walk = Files.walk(basePath)) {
+			result = walk.filter(Files::isRegularFile)
+					.filter(o -> o.getFileName().toString().matches(".*rrd$"))
+					.collect(Collectors.toList());
+		}
+		// NOTE: streams are not meant to be reused
+		final boolean debug = false;
+		if (debug)
+			System.err.println("RRD File paths: "
+					+ result.stream().map(o -> o.toAbsolutePath().toString())
+							.collect(Collectors.toList()).toString());
+
+		Map<String, List<String>> dsMap = new HashMap<>();
+
+		result.stream().forEach(o -> {
+			try {
+				List<String> dsList = new ArrayList<>();
+				final String key = o.getFileName().toString();
+				final String dataFilePath = o.toAbsolutePath().toString();
+				final String dataFileUri = osName.equals("windows")
+						? "file:///" + dataFilePath.replaceAll("\\\\", "/")
+						: "file://" + dataFilePath;
+				URL url = new URL(dataFileUri);
+				System.err.println("Reading RRD file: " + url.getFile());
+				RrdDb rrd = RrdDb.getBuilder().setPath("test")
+						.setRrdToolImporter(url.getFile())
+						.setBackendFactory(new RrdMemoryBackendFactory()).build();
+				for (int cnt = 0; cnt != rrd.getDsCount(); cnt++) {
+					String ds = rrd.getDatasource(cnt).getName();
+					System.err.println(String.format("ds[%d]= \"%s\"", cnt, ds));
+					Assert.assertTrue(ds != null);
+					dsList.add(ds);
+				}
+				dsMap.put(key, dsList);
+			} catch (IllegalArgumentException | IOException e) {
+				System.err.println("Exception (ignored): " + e.toString());
+			}
+		});
+		Assert.assertTrue(dsMap != null);
+
+	}
+
+	@Test
 	public void testNames() throws IOException {
 
 		String resourcePath = String.format("%s%ssrc%stest%sresources",
@@ -166,7 +229,7 @@ public class ConverterTest {
 					: "file://" + dataFilePath;
 			URL url = new URL(dataFileUri);
 			try {
-				System.err.println("Reading : " + dataFilePath);
+				System.err.println("Reading : " + url.getFile());
 				RrdDb rrd = RrdDb.getBuilder().setPath("test")
 						.setRrdToolImporter(url.getFile())
 						.setBackendFactory(new RrdMemoryBackendFactory()).build();
