@@ -186,6 +186,11 @@ docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9
 this will start web server
 * try search
 ```sh
+curl -s http://localhost:9001/search
+```
+this will be processing in the same way as a POST request with a `target` parameter by the latest revision.
+
+```sh
 curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "sample" }' http://localhost:9001/search |jq '.'
 ```
 this will respond with
