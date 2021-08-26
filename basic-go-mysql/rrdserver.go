@@ -21,6 +21,7 @@ import (
 	"github.com/ziutek/rrd"
 
 	"database/sql"
+	// "reflect"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -30,7 +31,7 @@ type Tag struct {
  	Ds string `json:"ds"`
 }
 var  (
-	buildCache bool = false 
+	buildCache bool = false
 	legacyCache bool = false
 	verbose bool = false
 	config Config
@@ -170,7 +171,7 @@ func NewSearchCache() *SearchCache {
 
 func (w *SearchCache) Get(target string) []string {
 	newItems := []string{}
-	if legacyCache { 
+	if legacyCache {
 		w.m.Lock()
 		defer w.m.Unlock()
 		return w.items
@@ -180,17 +181,17 @@ func (w *SearchCache) Get(target string) []string {
 		if err != nil { panic(err.Error()) }
 		defer db.Close()
 		var query string
-		
+		var rows *sql.Rows
+
 		if target != "" {
 			query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table + " WHERE fname = ?"
-		} else { 
-			query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table 
+			rows, err = db.Query(query, target)
+		} else {
+			query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table
+			rows, err = db.Query(query)
 		}
-		if verbose {
-			fmt.Println("querying the " + dbConfig.Table + " table: " + query)
-		}
-		rows, err := db.Query(query, target)
 		if err != nil { panic(err.Error()) }
+		// fmt.Println(reflect.TypeOf(rows))
 		for rows.Next() {
 			var tag Tag
 			err = rows.Scan(&tag.Fname,&tag.Ds)
@@ -329,25 +330,29 @@ func hello(w http.ResponseWriter, r *http.Request) {
 }
 
 func search(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
 	var searchRequest SearchRequest
-	err := decoder.Decode(&searchRequest)
-	if err != nil {
-		fmt.Println("ERROR: Cannot decode the request")
-		fmt.Println(err)
+	var target string
+	switch r.Method {
+		case "GET":
+			target = ""
+		case "POST":
+			decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&searchRequest)
+		if err != nil {
+			fmt.Println("ERROR: Cannot decode the request")
+			fmt.Println(err)
+		}
+		defer r.Body.Close()
+		target = searchRequest.Target
+		fmt.Printf("Target: %s\n", target)
+		default:
+			fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
-	defer r.Body.Close()
-
-	target := searchRequest.Target
-	fmt.Printf("Target: %s\n", target)
-
 	var result = []string{}
 
-	if target != "" {
-		for _, path := range searchCache.Get(target) {
-			if strings.Contains(path, target) {
-				result = append(result, path)
-			}
+	for _, path := range searchCache.Get(target) {
+		if strings.Contains(path, target) {
+			result = append(result, path)
 		}
 	}
 
