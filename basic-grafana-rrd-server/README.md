@@ -6,13 +6,14 @@ a replica of [grafana rrd server](https://github.com/doublemarket/grafana-rrd-se
 
 * compile and conteinerise app
 ```sh
-RRD_SERVER=basic-rrd
-docker build -f Dockerfile -t $RRD_SERVER .
+IMAGE=basic-rrd
+docker build -f Dockerfile -t $IMAGE .
 ```
 * run in container
 followed by
 ```sh
-docker run --name $RRD_SERVER -v $(pwd)/sample/:/sample -p 9001:9000 -d $RRD_SERVER
+docker container rm $IMAGE
+docker run --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -d $IMAGE
 ```
  * check via curl call
 ```sh
@@ -96,13 +97,13 @@ proceed
 ```sh
 GRAFANA=basic-grafana
 docker build -f Dockerfile -t $GRAFANA .
-docker container run --link $RRD_SERVER --name $GRAFANA -d -p 3000:3000 $GRAFANA
+docker container run --link $IMAGE --name $GRAFANA -d -p 3000:3000 $GRAFANA
 ```
 
 * cleanup
 ```sh
-docker container stop $RRD_SERVER
-docker container rm $RRD_SERVER
+docker container stop $IMAGE
+docker container rm $IMAGE
 ```
 
 
@@ -158,7 +159,6 @@ curl -X POST http://localhost:9000/query -d '
   }
 }
 '
-
 ```
 it will respond with
 ```json
@@ -197,7 +197,7 @@ the RRD Grafana Server will still respond  meaningfully:
   }
 ]
 ```
-
+this usually leads to having some health checks like in the checked in `health_check.sh` script, where the payload is examined via [jq](https://stedolan.github.io/jq/) or python.
 when no data is available for specified target, a null response will be returned. The query is the same as sent by the Grafana UI, with few details omitted
 
 ### Challenges
@@ -234,12 +234,12 @@ find / -iname 'librrd*' 2>/dev/null | tee /tmp/a.log
 To verify extract the buld portion of the Dockerfile
 build
 ```sh
-RRD_SERVER_BUILD=xxx
-docker build -t $RRD_SERVER_BUILD -f Dockerfile.build .
+IMAGE_BUILD=xxx
+docker build -t $IMAGE_BUILD -f Dockerfile.build .
 ```
 and investigate
 ```sh
-docker run -it $RRD_SERVER_BUILD
+docker run -it $IMAGE_BUILD
 ```
 to see
 ```sh
