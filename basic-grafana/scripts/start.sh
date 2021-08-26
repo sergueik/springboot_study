@@ -1,11 +1,14 @@
 #!/bin/sh
+# NOTE: line endings-sensitive
 set -e
 
-if [ ! -z ${GF_INSTALL_PLUGINS} ]; then
+if [ ! -z "$GF_INSTALL_PLUGINS" ]; then
   OLDIFS=$IFS
   IFS=','
-  for plugin in ${GF_INSTALL_PLUGINS}; do
-    grafana-cli plugins install ${plugin}
+  echo "Installing $GF_INSTALL_PLUGINS"
+  for PLUGIN in $GF_INSTALL_PLUGINS
+  do
+    grafana-cli plugins install $PLUGIN
   done
   IFS=$OLDIFS
 fi
