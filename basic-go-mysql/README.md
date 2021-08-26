@@ -190,6 +190,15 @@ curl -s http://localhost:9001/search
 ```
 this will be processing in the same way as a POST request with a `target` parameter by the latest revision.
 
+* without servicing `GET` request with `/search` the grafana list box is empty. It is likely not even rendered by some releases (to be confirmed)
+![broken listbox](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/broken_listbox_capture.png)
+
+*  the free hand entry is still possible in which case when the parameters are correct the data appets shown
+
+![freehand entry](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/freehand_entry_capture.png)
+
+* after servicing  the `GET` request with `/search` the list box is populated
+![fixed listbox](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/fixed_listbox_capture.png)
 ```sh
 curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "sample" }' http://localhost:9001/search |jq '.'
 ```
