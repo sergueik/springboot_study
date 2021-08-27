@@ -13,7 +13,7 @@ and the springboot application with similar functionality
 ### Testing
 * optionally pre-download grafana package (it seems to be ignored by Docker `ADD` instruction)
 ```sh
-GRAFANA_VERSION=7.5.0
+GRAFANA_VERSION=7.3.4
 wget https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz .
 ```
 * build the image
@@ -26,7 +26,10 @@ followed by
 docker container run --name $IMAGE -d -p 3000:3000 $IMAGE
 docker logs $IMAGE
 ```
-
+eventually it will show
+```text
+lvl=info msg="HTTP Server Listen" logger=http.server address=[::]:3000 protocol=http subUrl= socket=
+```
 * run the `index.py` as flask application in tbe foreground on a separate terminal
 ```sh
 python index.py
