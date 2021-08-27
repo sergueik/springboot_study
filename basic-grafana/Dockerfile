@@ -1,7 +1,7 @@
 FROM frolvlad/alpine-glibc:alpine-3.9_glibc-2.29
 ENV TIMEZONE US/New York
 
-ENV GRAFANA_VERSION 7.5.0
+ENV GRAFANA_VERSION 7.3.4
 
 # NOTE: use "," as separator when installing mutple plugins
 ENV GF_INSTALL_PLUGINS="grafana-simple-json-datasource"

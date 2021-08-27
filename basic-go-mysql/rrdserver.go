@@ -181,7 +181,10 @@ func (w *SearchCache) Get(target string) []string {
 		if err != nil { panic(err.Error()) }
 		defer db.Close()
 		var query string
+		// NOTE: syntax error: unexpected & at end of statement if put the value in the initialization line
 		var rows *sql.Rows
+		// NOTE: no new variables on left side of :=
+                rows = &sql.Rows {}
 
 		if target != "" {
 			query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table + " WHERE fname = ?"
@@ -202,6 +205,7 @@ func (w *SearchCache) Get(target string) []string {
 			newItems = append(newItems, tag.Fname + ":" + tag.Ds)
 		}
 		defer db.Close()
+		// fmt.Errorf("fname %s not found, ", fname )
 		return newItems
 	}
 }
@@ -245,12 +249,12 @@ func (w *SearchCache) Update() {
 				return err
 			}
 			if info.IsDir() {
-				if contains(folderConfig.Reject,info.Name()) || lacks(folderConfig.Collect, info.Name()) { 
+				if contains(folderConfig.Reject,info.Name()) || lacks(folderConfig.Collect, info.Name()) {
 					if verbose {
           					fmt.Println("Skip directory: " + info.Name())
 					}
 					return filepath.SkipDir
-				} else { 
+				} else {
 					return nil
 				}
 			}
@@ -428,7 +432,7 @@ func query(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	respondJSON(w, result)
-} 
+}
 
 func annotations(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "OPTIONS" {
@@ -478,10 +482,10 @@ func annotations(w http.ResponseWriter, r *http.Request) {
 }
 
 func SetArgs() {
-  
+
 	// to get help about accepted arg pass an invalid one e.g. -h
 	flag.StringVar(&configFile, "f", "config.yaml", "Config File.")
-	// NOTE: order is intentionally incorrect here: 
+	// NOTE: order is intentionally incorrect here:
 	// configFile value is still the default one
 	appConfig.getConf(configFile)
 	dbConfig = appConfig.Database
@@ -504,7 +508,7 @@ func SetArgs() {
 	flag.StringVar(&dbConfig.Database, "w", "test", "Database.")
 	flag.StringVar(&dbConfig.Server, "x", "mysql-server", "DB Server.")
  	flag.IntVar(&dbConfig.Port, "y", 3306, "DB Server port.")
- 
+
 	flag.StringVar(&dbConfig.Table, "z", "cache_table", "Table.")
 	flag.StringVar(&config.Server.IpAddr, "i", "", "Network interface IP address to listen on. (default: any)")
 	flag.IntVar(&config.Server.Port, "p", 9000, "Server port.")
@@ -551,7 +555,7 @@ func SetArgs() {
 
 func main() {
 	SetArgs()
-	if (buildCache) { 
+	if (buildCache) {
 		searchCache.Update()
 		return
 	} else {
