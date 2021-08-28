@@ -184,10 +184,7 @@ func (w *SearchCache) Get(target string) []string {
 		if err != nil { panic(err.Error()) }
 		defer db.Close()
 		var query string
-		// NOTE: syntax error: unexpected & at end of statement if put the value in the initialization line
-		var rows *sql.Rows
-		// NOTE: no new variables on left side of :=
-                rows = &sql.Rows {}
+		var rows *sql.Rows = &sql.Rows {}
 
 		if target != "" {
 			query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table + " WHERE fname = ? ORDER BY fname"
@@ -197,14 +194,11 @@ func (w *SearchCache) Get(target string) []string {
 			rows, err = db.Query(query, target)
 		} else {
 			if data != "" {
-				// TODO: debug - appears that passing param to LIKE placeholder needs some work
 				query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table + " WHERE fname LIKE ? ORDER BY fname"
-				query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table + " WHERE fname LIKE '"+  data + "%" + "' ORDER BY fname"
 				if verbose {
 					fmt.Println("query: " + query)
 				}
-				// rows, err = db.Query(query, data + "%")
-				rows, err = db.Query(query)
+				rows, err = db.Query(query, data + "%")
 			} else {
 				query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table + " ORDER BY fname"
 			if verbose {
@@ -349,6 +343,12 @@ func respondJSON(w http.ResponseWriter, result interface{}) {
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
+	if verbose {
+		// TODO: echo header back
+		for k, v := range r.Header {
+			fmt.Printf( "Header field %q, Value %q\n", k, v)
+		}
+	}
 	result := ErrorResponse{Message: "hello"}
 	respondJSON(w, result)
 }
@@ -376,12 +376,6 @@ func search(w http.ResponseWriter, r *http.Request) {
 	data = r.Header.Get(key)
 	if verbose {
 		fmt.Println("Got: " + key + " = " + data)
-	}
-	// TODO: echo header back
-	if verbose {
-		for k, v := range r.Header {
-			fmt.Printf( "Header field %q, Value %q\n", k, v)
-		}
 	}
 	var result = []string{}
 

@@ -113,20 +113,6 @@ Inserted into database:"percent-user:value"
 Delete from database:"sample"
 Inserted into database:"sample:ClientInfoAge"
 Inserted into database:"sample:StatusHeld"
-Inserted into database:"sample:StatusPending"
-Inserted into database:"sample:StatusRunning"
-Inserted into database:"sample:StatusStageIn"
-Inserted into database:"sample:ClientGlideRunning"
-Inserted into database:"sample:ClientGlideTotal"
-Inserted into database:"sample:StatusIdle"
-Inserted into database:"sample:StatusIdleOther"
-Inserted into database:"sample:ClientGlideIdle"
-Inserted into database:"sample:ClientJobsRunning"
-Inserted into database:"sample:ReqIdle"
-Inserted into database:"sample:ReqMaxRun"
-Inserted into database:"sample:ClientJobsIdle"
-Inserted into database:"sample:StatusStageOut"
-Inserted into database:"sample:StatusWait"
 ...
 Closed database connection.
 Finished updating search cache.
@@ -182,8 +168,6 @@ and
 ```sh
 docker container rm -f $IMAGE
 docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -d $IMAGE  -u java -v password -w test -x mysql-server -y 3306 -verbose
-```
-```sh
 docker logs $IMAGE
 ```
 this will start web server
@@ -427,9 +411,10 @@ this will reduce the response to only
 ```
 
 Note, the custom header is not shown as header in Chrome Developer Tools detail
-of the `http://localhost:3000/datasources/edit/1/` request, that is posted from the browser by Grafana to itself
+of neither the `http://localhost:3000/datasources/edit/1/` nor the `http://localhost:3000/api/datasources/proxy/1/search` requests, that are
+posted from the browser by Grafana to itself and only later get to SimpleJSON Data Source server
 
-To change the name of the additional parameter, use `-param` flag of the `rrdserver` application
+To change the name of the additional parameter, use `-param` flag of the `grafana-rrd-server` application
 
 ## Release Binaries
 
