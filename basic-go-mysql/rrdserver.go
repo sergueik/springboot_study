@@ -33,6 +33,9 @@ type Tag struct {
 var  (
 	buildCache bool = false
 	legacyCache bool = false
+	param string = "param"
+	data string = ""
+	debug bool = false
 	verbose bool = false
 	config Config
 	configFile string
@@ -187,11 +190,28 @@ func (w *SearchCache) Get(target string) []string {
                 rows = &sql.Rows {}
 
 		if target != "" {
-			query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table + " WHERE fname = ?"
+			query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table + " WHERE fname = ? ORDER BY fname"
+			if verbose {
+				fmt.Println("query: " + query)
+			}
 			rows, err = db.Query(query, target)
 		} else {
-			query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table
+			if data != "" {
+				// TODO: debug - appears that passing param to LIKE placeholder needs some work
+				query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table + " WHERE fname LIKE ? ORDER BY fname"
+				query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table + " WHERE fname LIKE '"+  data + "%" + "' ORDER BY fname"
+				if verbose {
+					fmt.Println("query: " + query)
+				}
+				// rows, err = db.Query(query, data + "%")
+				rows, err = db.Query(query)
+			} else {
+				query = "SELECT DISTINCT fname,ds FROM " + dbConfig.Table + " ORDER BY fname"
+			if verbose {
+				fmt.Println("query: " + query)
+			}
 			rows, err = db.Query(query)
+			}
 		}
 		if err != nil { panic(err.Error()) }
 		// fmt.Println(reflect.TypeOf(rows))
@@ -351,6 +371,17 @@ func search(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Target: %s\n", target)
 		default:
 			fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
+	}
+	var key string = strings.Title(strings.ToLower(param))
+	data = r.Header.Get(key)
+	if verbose {
+		fmt.Println("Got: " + key + " = " + data)
+	}
+	// TODO: echo header back
+	if verbose {
+		for k, v := range r.Header {
+			fmt.Printf( "Header field %q, Value %q\n", k, v)
+		}
 	}
 	var result = []string{}
 
@@ -522,6 +553,7 @@ func SetArgs() {
 	_ = buildCache
 	flag.BoolVar(&legacyCache, "legacy", false, "use legacy cache")
 	_ = legacyCache
+	flag.StringVar(&param, "param", "param", "Parameter to read from request headers")
 	// NOTE: default values for collect and reject flags are blank
 	flag.StringVar(&collectFlag, "collect", "", "Folders to collect.")
 	flag.StringVar(&rejectFlag, "reject", "", "Folders to reject.")

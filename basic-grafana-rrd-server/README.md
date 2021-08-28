@@ -1,6 +1,9 @@
 ### Info
 
-a replica of [grafana rrd server](https://github.com/doublemarket/grafana-rrd-server) pinned to specific alpine version. Allows accessing the [RRDTool files](https://oss.oetiker.ch/rrdtool/) as SimpleJSON grafana data sorrces over `/search`, `query`, `annotations` [protocol](https://grafana.com/grafana/plugins/grafana-simple-json-datasource/)
+a replica of [grafana rrd server](https://github.com/doublemarket/grafana-rrd-server) pinned to specific alpine version. Allows accessing the [RRDTool files](https://oss.oetiker.ch/rrdtool/) as a 
+SimpleJSON grafana data sources over 
+`/search`, `query`, `annotations` 
+[protocol](https://grafana.com/grafana/plugins/grafana-simple-json-datasource/)
 
 ### Usage
 

@@ -181,12 +181,15 @@ and
 * start server
 ```sh
 docker container rm -f $IMAGE
-docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -d $IMAGE  -u java -v password -w test -x mysql-server -y 3306
+docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -d $IMAGE  -u java -v password -w test -x mysql-server -y 3306 -verbose
+```
+```sh
+docker logs $IMAGE
 ```
 this will start web server
 * try search
 ```sh
-curl -s http://localhost:9001/search
+gcurl -s http://localhost:9001/search
 ```
 this will be processing in the same way as a POST request with a `target` parameter by the latest revision.
 
@@ -387,7 +390,48 @@ my example
 2
 fname-1
 ```
-### Release Binaries
+### Additional Query Parameters
+
+In order to reduce the response to `/search` request one may define additonal headers in the custom Simple JSON Dataource
+```sh
+Header field "Param", Value ["app"]
+```
+Note that grafana shows the additional headers as password input fields:
+![custom input](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/custom_input_capture.png)
+
+and modify the query to make use of that (taken from console logs):
+```SQL
+query: SELECT DISTINCT fname,ds FROM cache_table WHERE fname LIKE 'app%' ORDER BY fname
+```
+
+this will reduce the response to only
+```json
+[
+  "app:sample:ClientGlideIdle",
+  "app:sample:ClientGlideRunning",
+  "app:sample:ClientGlideTotal",
+  "app:sample:ClientInfoAge",
+  "app:sample:ClientJobsIdle",
+  "app:sample:ClientJobsRunning",
+  "app:sample:ReqIdle",
+  "app:sample:ReqMaxRun",
+  "app:sample:StatusHeld",
+  "app:sample:StatusIdle",
+  "app:sample:StatusIdleOther",
+  "app:sample:StatusPending",
+  "app:sample:StatusRunning",
+  "app:sample:StatusStageIn",
+  "app:sample:StatusStageOut",
+  "app:sample:StatusWait"
+]
+```
+
+Note, the custom header is not shown as header in Chrome Developer Tools detail
+of the `http://localhost:3000/datasources/edit/1/` request, that is posted from the browser by Grafana to itself
+
+To change the name of the additional parameter, use `-param` flag of the `rrdserver` application
+
+## Release Binaries
 
 * binaries built in alpine container, cannot run on host
 ```sh

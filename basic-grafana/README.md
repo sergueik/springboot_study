@@ -26,6 +26,12 @@ followed by
 docker container run --name $IMAGE -d -p 3000:3000 $IMAGE
 docker logs $IMAGE
 ```
+* or when there is a server to link
+```sh
+SERVER=basic-go-run
+docker container run --name $IMAGE --link $SERVER -d -p 3000:3000 $IMAGE
+
+```
 eventually it will show
 ```text
 lvl=info msg="HTTP Server Listen" logger=http.server address=[::]:3000 protocol=http subUrl= socket=
