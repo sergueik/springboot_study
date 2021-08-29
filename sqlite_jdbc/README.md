@@ -34,7 +34,7 @@ INSERT INTO student(name,course) VALUES ('Tom','Computer');
 ``` 
 and build and start project as regular springboot application
 ```cmd
-mvn clean spring-boot:run
+mvn -Dmaven.test.skip=true clean  spring-boot:run
 ```
 
 ### Testing
@@ -46,7 +46,7 @@ The application was originally designed with Spring 4 and is being convered to S
 #### On Spring 5.x
 
 ```sh
-curl -X POST http://127.0.0.1:8181/student/findAllStudent
+curl -X POST http://127.0.0.1:8181/student/findAllStudent |jq
 ```
 returns
 ```json
@@ -82,7 +82,7 @@ returns
 
 #### On Spring 4.X
 ```sh
-curl -X POST http://127.0.0.1:8181/test/student/findAllStudent
+curl -X POST http://127.0.0.1:8181/test/student/findAllStudent | jq
 ```
 returns
 ```json
@@ -100,7 +100,7 @@ returns
 }
 ```
 ```sh
-curl -X POST -H "application/x-www-form-urlencoded" -d "id=2" http://127.0.0.1:8181/test/student/findStudentById
+curl -X POST -H "application/x-www-form-urlencoded" -d "id=2" http://127.0.0.1:8181/test/student/findStudentById |jq
 ```
 returns
 ```json
