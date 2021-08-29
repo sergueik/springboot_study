@@ -18,13 +18,20 @@ mkdir sqlite
 ```
 and create database `~/sqlite/springboot.db` with a table
 ```sql
-CREATE TABLE `student` (
-  `id`  INTEGER,
-  `name`  TEXT NOT NULL,
-  `course`  TEXT NOT NULL,
-  PRIMARY KEY(`id`)
+DROP TABLE IF EXISTS `student`;
+CREATE TABLE IF NOT EXISTS `student` (
+	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+	`name`	TEXT NOT NULL,,
+	`course`	TEXT NOT NULL,,
+	`addtime`	datetime NOT NULL DEFAULT current_timestamp
 );
 ```
+alternatively create table at desktop and update `src/main/resources/application.properties`
+and insert some data
+```sql
+INSERT INTO student(name,course) VALUES ('Jack','Chinese');
+INSERT INTO student(name,course) VALUES ('Tom','Computer');
+``` 
 and build and start project as regular springboot application
 ```cmd
 mvn clean spring-boot:run
@@ -58,7 +65,7 @@ returns
 ```
 and
 ```sh
-curl -X POST -H "application/x-www-form-urlencoded" -d "id=2" http://127.0.0.1:8181/student/findStudentById
+curl -X POST -H 'application/x-www-form-urlencoded' -d 'id=2' http://127.0.0.1:8181/student/findStudentById | jq
 ```
 returns
 ```json
@@ -126,6 +133,8 @@ Other supported routes are `updateStudent`, `delStudentById`, `addStudent`.
 ### Docker Exercise
 
 ### Shell Version
+
+* update `src/main/resources/application.properties` and repackage
 ```sh
 docker build -f Dockerfile.shell -t sqlite-shell .
 ```

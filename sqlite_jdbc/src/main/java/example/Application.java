@@ -1,4 +1,4 @@
-package org.utils;
+package example;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 @SpringBootApplication
-@MapperScan(basePackages = "org.utils.dao")
+@MapperScan(basePackages = "example.dao")
 public class Application {
 
 	public static void main(String[] args) {

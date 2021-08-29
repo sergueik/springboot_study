@@ -1,11 +1,10 @@
-package org.utils.entity;
+package example.entity;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+@SuppressWarnings("serial")
 public class Student implements Serializable {
-
-	private static final long serialVersionUID = 6973576143316146251L;
 
 	private long id;
 	private String name;
@@ -37,16 +36,12 @@ public class Student implements Serializable {
 	}
 
 	/*
-		public Timestamp getAddtime() {
-			return addtime;
-		}
-		public void setAddtime(Timestamp addtime) {
-			this.addtime = addtime;
-		}	
-	*/
+	 * public Timestamp getAddtime() { return addtime; } public void
+	 * setAddtime(Timestamp addtime) { this.addtime = addtime; }
+	 */
 	@Override
 	public String toString() {
 		return "Student{" + "id=" + id + ", name=" + name + ", course=" + course
-		/*+ ", addtime=" + addtime */ + '}';
+		/* + ", addtime=" + addtime */ + '}';
 	}
 }

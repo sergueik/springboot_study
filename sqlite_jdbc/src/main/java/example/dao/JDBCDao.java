@@ -1,4 +1,4 @@
-package org.utils.dao;
+package example.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,8 +10,9 @@ import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
-import org.utils.entity.Student;
-import org.utils.util.JDBCUtils;
+
+import example.entity.Student;
+import example.util.JDBCUtils;
 
 @Repository("JdbcDao")
 public class JDBCDao implements Dao {
@@ -127,12 +128,12 @@ public class JDBCDao implements Dao {
 		return result;
 	}
 
-	// mysql ecxample
-	// required connectionn string patch
-	// String fix =
-	// "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-	// dataSource.setUrl("jdbc:mysql://localhost:3306/userdb" + fix);
-	// dataSource.setUrl("jdbc:mysql://localhost:3306/userdb" + fix);
+	// mysql required connectionn string patch:
+	// dataSource.setUrl("jdbc:mysql://localhost:3306/userdb" + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
 	// https://github.com/Pragmatists/JUnitParams
 	// http://www.cyberforum.ru/java-j2ee/thread2160223.html
+        // for custom DAO implementing security tokens see
+	// https://github.com/sebasv89/spring-boot-examples/tree/master/src/main/java/co/svelez/springbootexample/domain 
+	// see also: ttps://stackoverflow.com/questions/36261216/how-to-rename-the-table-persistent-logins-in-spring-security
+	// https://qna.habr.com/q/855545
 }
