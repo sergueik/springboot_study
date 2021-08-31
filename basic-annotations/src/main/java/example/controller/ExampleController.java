@@ -1,4 +1,4 @@
-package example;
+package example.controller;
 
 import java.util.List;
 import java.util.Map;
@@ -37,11 +37,12 @@ public class ExampleController {
 	@GetMapping("employee")
 	public String employeeInfo() {
 		try {
-			logger.info("staticValue=" + staticValue + " message=" + message);
+			logger.info("staticValue=" + staticValue + " message=" + message + " property with defaul value="
+					+ defValueProperty);
 			return toString();
 		} catch (NullPointerException e) {
 			// TODO: provide properties definition under test
-			logger.info("Exception (ignored)" + e.toString());
+			logger.info("Exception (ignored): " + e.toString());
 			return null;
 		}
 	}

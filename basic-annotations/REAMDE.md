@@ -21,12 +21,18 @@ getting nothing in logging:
 ```
 is logging during test run
 ```sh
-15:56:29.824 [main] INFO example.ExampleController - staticValue=null message=null
+15:56:29.824 [main] INFO example.ExampleController -
+staticValue=null
+message=null
+property with defaul value=null
 ```
 
 and real run
 ```
-2021-08-31 16:01:40.776  INFO 17480 --- [nio-8080-exec-2] example.ExampleController                : staticValue=null message=message from properties file
+2021-08-31 16:01:40.776  INFO 17480 --- [nio-8080-exec-2] example.ExampleController:
+staticValue=null
+message=message from properties file
+property with defaul value= default value
 
 ```
 
