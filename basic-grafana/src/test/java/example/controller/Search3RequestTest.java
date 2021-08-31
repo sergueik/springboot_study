@@ -6,6 +6,11 @@ package example.controller;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
 
 import com.google.gson.Gson;
 
@@ -13,12 +18,18 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.HashMap;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -48,8 +59,11 @@ public class Search3RequestTest {
 
 	@SuppressWarnings("unused")
 	private static Application application = new Application();
-	private static ExampleService service = new ExampleService();
-	private static SearchController controller = new SearchController(service);
+	@Mock
+	private static ExampleService mockService = Mockito.mock(ExampleService.class);
+
+	@InjectMocks
+	private static SearchController controller = new SearchController(mockService);
 
 	@BeforeClass
 	public static void setUp() {
@@ -58,6 +72,8 @@ public class Search3RequestTest {
 
 	@Before
 	public void beforeTest() throws Exception {
+		when(mockService.getDataMap(value)).thenReturn(new HashMap<String, Object>());
+
 	}
 
 	// examine response headers
@@ -65,7 +81,7 @@ public class Search3RequestTest {
 	public void test1() throws Exception {
 		route = "/search3";
 		resultActions = mvc.perform(post(route).accept(MediaType.APPLICATION_JSON).content("{}")
-				.header(param, Base64Utils.encodeToString(value.getBytes())).contentType(MediaType.APPLICATION_JSON));
+				.header(param, encoddValue).contentType(MediaType.APPLICATION_JSON));
 		resultActions.andExpect(header().string(param, encoddValue));
 	}
 
@@ -74,7 +90,7 @@ public class Search3RequestTest {
 	public void test2() throws Exception {
 		route = "/search4";
 		resultActions = mvc.perform(post(route).accept(MediaType.APPLICATION_JSON).content("{}")
-				.header(capitalize(param), encoddValue).contentType(MediaType.APPLICATION_JSON));
+				.header(param, encoddValue).contentType(MediaType.APPLICATION_JSON));
 		resultActions.andExpect(header().string(param, encoddValue));
 	}
 
@@ -86,6 +102,13 @@ public class Search3RequestTest {
 		resultActions = mvc.perform(
 				post(route).accept(MediaType.APPLICATION_JSON).content("{}").contentType(MediaType.APPLICATION_JSON));
 		resultActions.andExpect(header().doesNotExist(param));
+	}
+
+	@Test
+	public void test5() throws Exception {
+		resultActions = mvc.perform(
+				post(route).accept(MediaType.APPLICATION_JSON).content("{}").contentType(MediaType.APPLICATION_JSON));
+		verify(mockService, atLeast(1)).getDataMap(any());
 	}
 
 	private static String capitalize(final String string) {
