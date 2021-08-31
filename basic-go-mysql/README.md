@@ -725,7 +725,7 @@ docker container rm $NAME
 docker run -d --name=$NAME $IMAGE
 docker cp $NAME:/build/example .
 ```
-* copy to vanilla Centos 7 with  rrdtool and mysql installed
+* copy to vanilla Centos 7 with rrdtool and mysql installed
 * binary
 ```sh
 scp example vagrant@192.168.99.100:
@@ -779,7 +779,7 @@ CREATE TABLE `cache_table` (
 
 * Build cache
 ```sh
-./example -update -u java -v password -w test -x 127.0.0.1 -y 3306
+./example -update -u java -v password -w test -x 127.0.0.1 -y 3306 -verbose
 database config:
 User:
 Database:
@@ -825,6 +825,10 @@ Inserted into database:"sample:StatusHeld"
 Closed database connection.
 Finished updating search cache.
 ```
+* Run the server
+```sh
+./example -u java -v password -w test -x 127.0.0.1 -y 3306 -verbose
+
 verify from another terminal:
 ```sh
 curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "sample" }' http://localhost:9000/search |jq '.'
@@ -848,6 +852,38 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "sample" }' h
   "sample:ClientJobsIdle",
   "sample:StatusHeld"
 ]
+```
+* test  new header processing
+```sh
+curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "" }' \
+ -H "Param: db" http://localhost:9000/search |jq '.'
+```
+```json
+[
+  "db:sample:ClientGlideIdle",
+  "db:sample:ClientGlideRunning",
+  "db:sample:ClientGlideTotal",
+  "db:sample:ClientInfoAge",
+  "db:sample:ClientJobsIdle",
+  "db:sample:ClientJobsRunning",
+  "db:sample:ReqIdle",
+  "db:sample:ReqMaxRun",
+  "db:sample:StatusHeld",
+  "db:sample:StatusIdle",
+  "db:sample:StatusIdleOther",
+  "db:sample:StatusPending",
+  "db:sample:StatusRunning",
+  "db:sample:StatusStageIn",
+  "db:sample:StatusStageOut",
+  "db:sample:StatusWait"
+]
+```
+```sh
+curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "" }' \
+ -H "Param: other" http://localhost:9000/search |jq '.'
+```
+```json
+[]
 ```
 
 ### TODO
@@ -903,6 +939,4 @@ and use a potentially faster java code for directory traversal.
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
-
 
