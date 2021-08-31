@@ -1,0 +1,7 @@
+version: '3.7'
+
+services:
+  example:
+    image: alpine:3.9
+    environment:
+      - VAR

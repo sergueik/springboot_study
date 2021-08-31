@@ -12,12 +12,68 @@ and
 String envKey = "setting_env";
 System.err.println(envKey + " = " + System.getenv(envKey));
 ```
+
+
+### Basics
+```sh
+docker run -it -e VAR=value alpine:3.9 sh
+```
+in the container
+```sh
+/ # echo $VAR
+value
+```
+alteratively
+```sh
+export VAR=value
+docker run -it -e VAR alpine:3.9 sh
+```
+in the container
+
+```sh
+/ # echo $VAR
+value
+```
+
+with `docker-compose.yml`
+```yaml
+version: '3.7'
+
+services:
+  example:
+    image: alpine:3.9
+    environment:
+      - VAR
+```
+```sh
+export VAR=value
+ docker-compose run  -e VAR  example sh
+```
+in the container
+```sh
+/ # echo $VAR
+value
+```
+alternativey define `VAR` in `.env` 
+```sh
+VAR=default
+```
+and then no need to set it as command argument 
+```sh
+docker-compose run  example sh
+```
+in the container
+```sh
+/ # echo $VAR
+value
+```
+The host enviroment value, if set, still overrides the one in `.env`
 ### Testing
-### Build App
+* build app
 ```sh
 mvn package
 ```
-#### Setting from Dockerfile
+* setting from Dockerfile
 
 ```sh
 export IMAGE='basic-environment'
@@ -34,7 +90,7 @@ will show
 ```sh
 setting_env = dockerfile_value
 ```
-#### Override value at build time 
+* override value at build time 
 ```sh
 docker image rm -f $IMAGE
 docker build -t $IMAGE -f Dockerfile --build-arg "setting_arg=build_time_value" .
@@ -48,7 +104,7 @@ will print the value defined at image build time:
 ```sh
 setting_env = build_time_value
 ```
-#### Override at container time (use same container as before)
+* override at container time (use same container as before)
 ```sh
 2>&1 docker run --name $NAME --rm -e "setting_env=runtime_value" -it $IMAGE | grep $SETTING
 ```
@@ -68,7 +124,7 @@ setting = ${setting_env}
 ```
 need fix the interpolation to take place.
 e.g. adding an argument to the class 
-```
+```java
 ```
 and
 

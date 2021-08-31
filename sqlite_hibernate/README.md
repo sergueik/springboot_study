@@ -197,6 +197,22 @@ was "[
 ```
 - note a subtle differnce in JSON keys order
 
+### TODO
+
+* after conversion to spring boot parent __2.3.4.RELEASE__ along with many 
+tricky API changes the project passes tests but fails in runtime with
+```text
+org.springframework.transaction.CannotCreateTransactionException: 
+Could not open JPA EntityManager for transaction; nested exception is 
+java.lang.NoSuchMethodError: 
+org.springframework.orm.jpa.JpaTransactionManager$JpaTransactionObject.setReadOnly(Z)V] 
+with root cause
+java.lang.NoSuchMethodError: 
+org.springframework.orm.jpa.JpaTransactionManager$JpaTransactionObject.setReadOnly(Z)V
+	at org.springframework.orm.jpa.JpaTransactionManager.doBegin(JpaTransactionManager.java:405) 
+  ~[spring-orm-5.2.9.RELEASE.jar:5.2.9.RELEASE]
+```
+
 ### See also
 
   * [Hibernate/DAO basics](https://habrahabr.ru/post/255829/) (in russian)
