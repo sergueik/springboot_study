@@ -30,7 +30,6 @@ docker logs $IMAGE
 ```sh
 SERVER=basic-go-run
 docker container run --name $IMAGE --link $SERVER -d -p 3000:3000 $IMAGE
-
 ```
 eventually it will show
 ```text

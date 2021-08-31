@@ -184,6 +184,9 @@ func (w *SearchCache) Get(target string) []string {
 		if err != nil { panic(err.Error()) }
 		defer db.Close()
 		var query string
+		// var rows *sql.Rows
+		// NOTE: no new variables on left side of :=
+                // rows = &sql.Rows {}
 		var rows *sql.Rows = &sql.Rows {}
 
 		if target != "" {
