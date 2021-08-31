@@ -72,11 +72,10 @@ public class SearchController {
 		Enumeration<String> headerNames = request.getHeaderNames();
 		while (headerNames.hasMoreElements()) {
 			name = headerNames.nextElement();
-			value = request.getHeader(name);
-			// value = Base64Utils.decodeFromString(request.getHeader(name)).toString();
 			if (name.equalsIgnoreCase(param)) {
-				logger.info("postSearch4Request adding response header: " + param + ":" + value);
-				responseHeaders.add(name, value /* Base64Utils.encodeToString(value.getBytes()) */ );
+				value = new String(Base64Utils.decodeFromString(request.getHeader(name)));
+				logger.info("postSearch4Request adding response header: " + name + ":" + value);
+				responseHeaders.add(name, Base64Utils.encodeToString(value.getBytes()));
 			}
 		}
 		return ResponseEntity.status(HttpStatus.OK).headers(responseHeaders).contentType(MediaType.APPLICATION_JSON)
@@ -101,19 +100,10 @@ public class SearchController {
 		logger.info("postSearch3Request processing request headers" + requestHeaders.toString());
 		if (requestHeaders.containsKey(param)) {
 
-			value = requestHeaders.get(param);
+			value = new String(Base64Utils.decodeFromString(requestHeaders.get(param)));
 
-			logger.info("postSearch3Request found special header: " + param + " = " + requestHeaders.get(param));
-			/*
-			 * byte[] rawData = Base64Utils.decodeFromString(requestHeaders.get(param));
-			 * logger.info("postSearch3Request rawData: " + rawData.toString()); rawData =
-			 * Base64Utils.decode(requestHeaders.get(param).getBytes());
-			 * logger.info("postSearch3Request rawData: " + rawData.toString()); value =
-			 * rawData.toString();
-			 */
-			logger.info("postSearch3Request adding response header: " + param + ":" + value);
-			responseHeaders.add(param, value /* Base64Utils.encodeToString(value.getBytes()) */ );
-
+			logger.info("postSearch3Request found special header: " + param + " = " + value);
+			responseHeaders.add(param, Base64Utils.encodeToString(value.getBytes()));
 		}
 		service.getDataMap(value);
 		return ResponseEntity.status(HttpStatus.OK).headers(responseHeaders).contentType(MediaType.APPLICATION_JSON)
@@ -122,7 +112,6 @@ public class SearchController {
 	}
 
 	// map response
-	// NOTE: currently cannot distinguish
 	@RequestMapping(method = RequestMethod.POST, value = "/search2", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<SearchResponseRow>> postSearch2Request(@RequestBody SearchRequest data) {
 
