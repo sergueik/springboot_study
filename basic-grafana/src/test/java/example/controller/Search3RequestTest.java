@@ -53,7 +53,7 @@ public class Search3RequestTest {
 	final static String body = "text data";
 	private final static String param = capitalize("param");
 	private final static String value = "foo:bar";
-	private final static String encoddValue = Base64Utils.encodeToString(value.getBytes());
+	// private final static String encoddValue = Base64Utils.encodeToString(value.getBytes());
 	private static MockMvc mvc;
 	private ResultActions resultActions;
 
@@ -81,8 +81,8 @@ public class Search3RequestTest {
 	public void test1() throws Exception {
 		route = "/search3";
 		resultActions = mvc.perform(post(route).accept(MediaType.APPLICATION_JSON).content("{}")
-				.header(param, encoddValue).contentType(MediaType.APPLICATION_JSON));
-		resultActions.andExpect(header().string(param, encoddValue));
+				.header(param, value).contentType(MediaType.APPLICATION_JSON));
+		resultActions.andExpect(header().string(param, value));
 	}
 
 	// examine response headers
@@ -90,8 +90,8 @@ public class Search3RequestTest {
 	public void test2() throws Exception {
 		route = "/search4";
 		resultActions = mvc.perform(post(route).accept(MediaType.APPLICATION_JSON).content("{}")
-				.header(param, encoddValue).contentType(MediaType.APPLICATION_JSON));
-		resultActions.andExpect(header().string(param, encoddValue));
+				.header(param, value).contentType(MediaType.APPLICATION_JSON));
+		resultActions.andExpect(header().string(param, value));
 	}
 
 	// examine response headers

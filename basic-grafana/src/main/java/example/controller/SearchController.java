@@ -72,10 +72,11 @@ public class SearchController {
 		Enumeration<String> headerNames = request.getHeaderNames();
 		while (headerNames.hasMoreElements()) {
 			name = headerNames.nextElement();
-			value = Base64Utils.decodeFromString(request.getHeader(name)).toString();
+			value = request.getHeader(name);
+			// value = Base64Utils.decodeFromString(request.getHeader(name)).toString();
 			if (name.equalsIgnoreCase(param)) {
 				logger.info("postSearch4Request adding response header: " + param + ":" + value);
-				responseHeaders.add(name, Base64Utils.encodeToString(value.getBytes()));
+				responseHeaders.add(name, value /* Base64Utils.encodeToString(value.getBytes()) */ );
 			}
 		}
 		return ResponseEntity.status(HttpStatus.OK).headers(responseHeaders).contentType(MediaType.APPLICATION_JSON)
@@ -99,14 +100,19 @@ public class SearchController {
 		final HttpHeaders responseHeaders = Utils.addResponseHeaders();
 		logger.info("postSearch3Request processing request headers" + requestHeaders.toString());
 		if (requestHeaders.containsKey(param)) {
+
+			value = requestHeaders.get(param);
+
 			logger.info("postSearch3Request found special header: " + param + " = " + requestHeaders.get(param));
-			byte[] rawData = Base64Utils.decodeFromString(requestHeaders.get(param));
-			logger.info("postSearch3Request rawData: " + rawData.toString());
-			rawData = Base64Utils.decode(requestHeaders.get(param).getBytes());
-			logger.info("postSearch3Request rawData: " + rawData.toString());
-			value = rawData.toString();
+			/*
+			 * byte[] rawData = Base64Utils.decodeFromString(requestHeaders.get(param));
+			 * logger.info("postSearch3Request rawData: " + rawData.toString()); rawData =
+			 * Base64Utils.decode(requestHeaders.get(param).getBytes());
+			 * logger.info("postSearch3Request rawData: " + rawData.toString()); value =
+			 * rawData.toString();
+			 */
 			logger.info("postSearch3Request adding response header: " + param + ":" + value);
-			responseHeaders.add(param, Base64Utils.encodeToString(value.getBytes()));
+			responseHeaders.add(param, value /* Base64Utils.encodeToString(value.getBytes()) */ );
 
 		}
 		service.getDataMap(value);
