@@ -10,13 +10,10 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <!-- check  if application works on Spring 5.x ? - seems to have problems with findOne in interface org.springframework.data.repository.query.QueryByExampleExecutor<T> cannot be applied to given types; required: org.springframework.data.domain.Example<S> found: java.lang.Long reason: cannot infer type-variable(s) S
-    -->
-
-    <version>1.5.4.RELEASE</version> 
 <!--
-    <version>2.3.4.RELEASE</version>
+    <version>1.5.4.RELEASE</version> 
 -->
+    <version>2.3.4.RELEASE</version>
     <relativePath/>
   </parent>
   <properties>
@@ -50,9 +47,6 @@
     <dependency>
       <groupId>org.springframework.session</groupId>
       <artifactId>spring-session</artifactId>
-      <!-- with Spring 5.0 getting error:
-    'dependencies.dependency.version' for org.springframework.session:spring-session:jar is missing.
-    -->
       <version>${spring-session.version}</version>
     </dependency>
     <dependency>
@@ -64,11 +58,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.jayway.jsonpath</groupId>
-      <artifactId>json-path</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

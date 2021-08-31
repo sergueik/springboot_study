@@ -1,7 +1,7 @@
-package org.utils.service;
+package example.service;
 
-import org.utils.entity.Result;
-import org.utils.entity.Student;
+import example.entity.Result;
+import example.entity.Student;
 
 public interface BaseService {
 

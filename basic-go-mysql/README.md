@@ -113,20 +113,6 @@ Inserted into database:"percent-user:value"
 Delete from database:"sample"
 Inserted into database:"sample:ClientInfoAge"
 Inserted into database:"sample:StatusHeld"
-Inserted into database:"sample:StatusPending"
-Inserted into database:"sample:StatusRunning"
-Inserted into database:"sample:StatusStageIn"
-Inserted into database:"sample:ClientGlideRunning"
-Inserted into database:"sample:ClientGlideTotal"
-Inserted into database:"sample:StatusIdle"
-Inserted into database:"sample:StatusIdleOther"
-Inserted into database:"sample:ClientGlideIdle"
-Inserted into database:"sample:ClientJobsRunning"
-Inserted into database:"sample:ReqIdle"
-Inserted into database:"sample:ReqMaxRun"
-Inserted into database:"sample:ClientJobsIdle"
-Inserted into database:"sample:StatusStageOut"
-Inserted into database:"sample:StatusWait"
 ...
 Closed database connection.
 Finished updating search cache.
@@ -181,12 +167,13 @@ and
 * start server
 ```sh
 docker container rm -f $IMAGE
-docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -d $IMAGE  -u java -v password -w test -x mysql-server -y 3306
+docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -d $IMAGE  -u java -v password -w test -x mysql-server -y 3306 -verbose
+docker logs $IMAGE
 ```
 this will start web server
 * try search
 ```sh
-curl -s http://localhost:9001/search
+gcurl -s http://localhost:9001/search
 ```
 this will be processing in the same way as a POST request with a `target` parameter by the latest revision.
 
@@ -387,7 +374,49 @@ my example
 2
 fname-1
 ```
-### Release Binaries
+### Additional Query Parameters
+
+In order to reduce the response to `/search` request one may define additonal headers in the custom Simple JSON Dataource
+```sh
+Header field "Param", Value ["app"]
+```
+Note that grafana shows the additional headers as password input fields:
+![custom input](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/custom_input_capture.png)
+
+and modify the query to make use of that (taken from console logs):
+```SQL
+query: SELECT DISTINCT fname,ds FROM cache_table WHERE fname LIKE 'app%' ORDER BY fname
+```
+
+this will reduce the response to only
+```json
+[
+  "app:sample:ClientGlideIdle",
+  "app:sample:ClientGlideRunning",
+  "app:sample:ClientGlideTotal",
+  "app:sample:ClientInfoAge",
+  "app:sample:ClientJobsIdle",
+  "app:sample:ClientJobsRunning",
+  "app:sample:ReqIdle",
+  "app:sample:ReqMaxRun",
+  "app:sample:StatusHeld",
+  "app:sample:StatusIdle",
+  "app:sample:StatusIdleOther",
+  "app:sample:StatusPending",
+  "app:sample:StatusRunning",
+  "app:sample:StatusStageIn",
+  "app:sample:StatusStageOut",
+  "app:sample:StatusWait"
+]
+```
+
+Note, the custom header is not shown as header in Chrome Developer Tools detail
+of neither the `http://localhost:3000/datasources/edit/1/` nor the `http://localhost:3000/api/datasources/proxy/1/search` requests, that are
+posted from the browser by Grafana to itself and only later get to SimpleJSON Data Source server
+
+To change the name of the additional parameter, use `-param` flag of the `grafana-rrd-server` application
+
+## Release Binaries
 
 * binaries built in alpine container, cannot run on host
 ```sh

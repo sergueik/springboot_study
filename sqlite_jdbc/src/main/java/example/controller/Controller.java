@@ -1,13 +1,15 @@
-package org.utils.controller;
+package example.controller;
 
 import javax.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.utils.entity.Result;
-import org.utils.entity.Student;
-import org.utils.entity.Name;
-import org.utils.service.BaseService;
+
+import example.entity.Name;
+import example.entity.Result;
+import example.entity.Student;
+import example.service.BaseService;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 

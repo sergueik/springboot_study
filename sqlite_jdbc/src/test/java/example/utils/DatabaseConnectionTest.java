@@ -1,13 +1,14 @@
-package org.utils.test;
+package example.utils;
 
 import java.sql.*;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.utils.entity.Student;
-import org.utils.util.JDBCUtils;
+import example.entity.Student;
+import example.util.JDBCUtils;
 
+// NOTE: not a test
 public class DatabaseConnectionTest {
 
 	public static void main(String[] args) {
@@ -26,10 +27,8 @@ public class DatabaseConnectionTest {
 				Student student = (Student) list.get(i);
 				System.out.println(student);
 			}
-		} catch (SQLException | InstantiationException
-				| IllegalAccessException ex) {
-			Logger.getLogger(DatabaseConnectionTest.class.getName()).log(Level.SEVERE,
-					null, ex);
+		} catch (SQLException | InstantiationException | IllegalAccessException ex) {
+			Logger.getLogger(DatabaseConnectionTest.class.getName()).log(Level.SEVERE, null, ex);
 		} finally {
 			JDBCUtils.close();
 		}

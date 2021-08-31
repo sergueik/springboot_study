@@ -1,10 +1,9 @@
-package org.utils.entity;
+package example.entity;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class Result implements Serializable {
-
-	private static final long serialVersionUID = 7086445730263059369L;
 
 	private int status;
 	private Object data;

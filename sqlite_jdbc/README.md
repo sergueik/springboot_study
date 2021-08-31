@@ -18,16 +18,23 @@ mkdir sqlite
 ```
 and create database `~/sqlite/springboot.db` with a table
 ```sql
-CREATE TABLE `student` (
-  `id`  INTEGER,
-  `name`  TEXT NOT NULL,
-  `course`  TEXT NOT NULL,
-  PRIMARY KEY(`id`)
+DROP TABLE IF EXISTS `student`;
+CREATE TABLE IF NOT EXISTS `student` (
+	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+	`name`	TEXT NOT NULL,,
+	`course`	TEXT NOT NULL,,
+	`addtime`	datetime NOT NULL DEFAULT current_timestamp
 );
 ```
+alternatively create table at desktop and update `src/main/resources/application.properties`
+and insert some data
+```sql
+INSERT INTO student(name,course) VALUES ('Jack','Chinese');
+INSERT INTO student(name,course) VALUES ('Tom','Computer');
+``` 
 and build and start project as regular springboot application
 ```cmd
-mvn clean spring-boot:run
+mvn -Dmaven.test.skip=true clean  spring-boot:run
 ```
 
 ### Testing
@@ -39,7 +46,7 @@ The application was originally designed with Spring 4 and is being convered to S
 #### On Spring 5.x
 
 ```sh
-curl -X POST http://127.0.0.1:8181/student/findAllStudent
+curl -X POST http://127.0.0.1:8181/student/findAllStudent |jq
 ```
 returns
 ```json
@@ -58,7 +65,7 @@ returns
 ```
 and
 ```sh
-curl -X POST -H "application/x-www-form-urlencoded" -d "id=2" http://127.0.0.1:8181/student/findStudentById
+curl -X POST -H 'application/x-www-form-urlencoded' -d 'id=2' http://127.0.0.1:8181/student/findStudentById | jq
 ```
 returns
 ```json
@@ -75,7 +82,7 @@ returns
 
 #### On Spring 4.X
 ```sh
-curl -X POST http://127.0.0.1:8181/test/student/findAllStudent
+curl -X POST http://127.0.0.1:8181/test/student/findAllStudent | jq
 ```
 returns
 ```json
@@ -93,7 +100,7 @@ returns
 }
 ```
 ```sh
-curl -X POST -H "application/x-www-form-urlencoded" -d "id=2" http://127.0.0.1:8181/test/student/findStudentById
+curl -X POST -H "application/x-www-form-urlencoded" -d "id=2" http://127.0.0.1:8181/test/student/findStudentById |jq
 ```
 returns
 ```json
@@ -126,6 +133,8 @@ Other supported routes are `updateStudent`, `delStudentById`, `addStudent`.
 ### Docker Exercise
 
 ### Shell Version
+
+* update `src/main/resources/application.properties` and repackage
 ```sh
 docker build -f Dockerfile.shell -t sqlite-shell .
 ```

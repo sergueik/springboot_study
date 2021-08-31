@@ -1,13 +1,14 @@
-package org.utils.service;
+package example.service;
 
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
-import org.utils.dao.Dao;
-import org.utils.entity.Result;
-import org.utils.entity.Student;
+
+import example.dao.Dao;
+import example.entity.Result;
+import example.entity.Student;
 
 @Service
 public class ServiceImpl implements BaseService {
