@@ -1,6 +1,8 @@
 package example.component;
 
 public class SearchRequest {
+	
+
 	private String target;
 
 	public String getTarget() {
