@@ -943,7 +943,9 @@ permission denied, make sure you have write access to plugin dir
 
 The other option is to configure grafana from the elevated account cmd window
 NOTE, after the install
-
+```sh
+installing grafana-simple-json-datasource @ 1.4.2
+```
 one has to restart grafana via `services.msc`
 ![service control app](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/service-control-capture.jpg)
 ```cmd
@@ -965,8 +967,8 @@ one still need see the firewall access dialog.
 
 ![firewall access prompt](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/firewall-prompt-capture.jpg)
 
-For local development and testing one can click 'Cancel' and the grafana will still be launched sucessfully. In the enterprise environment it will not be so easy
-![firewall allpwed applications overview](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/firewall-overview-capture.jpg)
+For local development and testing one can click 'Cancel' and the grafana will still be launched sucessfully. In the enterprise environment it will not be so easy!
+[firewall allowed applications overview](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/firewall-overview-capture.jpg)
 
 Note,To stop server will need to close the console window. 
 Even running the `stop` command in separate console window
@@ -988,6 +990,54 @@ is saved in the `data_source` table in `data\grafana.db` which is an sqlite data
 ```cmd
 sqlite3.exe ..\data\grafana.db "select * from data_source"
 1|1|1|grafana-simple-json-datasource|SimpleJson|proxy|||||0|||1|{}|2021-09-01 22:43:04|2021-09-01 22:43:04|0|{}|0|yiPsAB4nk
+```
+NOTE: the build __1.4.0__ of 
+[Grafana Simple JSON Datasource](https://github.com/grafana/simple-json-datasource) plugin has a defect making it useless with __grafana-rrd-server__ 
+
+[broken listbox](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/broken_listbox_capture.png)
+- make sure to install  at least version __1.4.1__
+(version __1.4.2__ is the latest available at the time of this development sprint)
+
+
+the verson can be found in `data\plugins\grafana-simple-json-datasource\dist\plugin.json` or `data\plugins\grafana-simple-json-datasource\plugin.json`  (file location has changed with release)
+```json
+{
+  "name": "SimpleJson",
+  "id": "grafana-simple-json-datasource",
+  "type": "datasource",
+  "partials": {
+    "config": "public/app/plugins/datasource/simplejson/partials/config.html"
+  },
+  "metrics": true,
+  "annotations": true,
+  "info": {
+    "description": "simple json datasource",
+    "author": {
+      "name": "Grafana Labs",
+      "url": "https://grafana.com"
+    },
+    "logos": {
+      "small": "img/simpleJson_logo.svg",
+      "large": "img/simpleJson_logo.svg"
+    },
+    "links": [
+      {
+        "name": "GitHub",
+        "url": "https://github.com/grafana/simple-json-datasource"
+      },
+      {
+        "name": "MIT License",
+        "url": "https://github.com/grafana/simple-json-datasource/blob/master/LICENSE"
+      }
+    ],
+    "version": "1.4.2",
+    "updated": "2020-07-31"
+  },
+  "dependencies": {
+    "grafanaVersion": "3.x.x",
+    "plugins": []
+  }
+}
 ```
 ### See Also
 
