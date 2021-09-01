@@ -14,7 +14,7 @@ CREATE TABLE `cache_table` (
   `ins_date`  datetime     NOT NULL,
   `fname`     varchar(255) NOT NULL,
   `ds`        varchar(255) NOT NULL,
-  `folder`    tinyint(1)   DEFAULT 0,
+  `expose`    varchar(255) DEFAULT NULL,
   `comment`   varchar(255) DEFAULT NULL,
   INDEX(`FNAME`),
   PRIMARY KEY (`id`)

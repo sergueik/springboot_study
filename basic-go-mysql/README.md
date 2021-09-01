@@ -22,12 +22,18 @@ CREATE TABLE `cache_table` (
   `ins_date`  datetime     NOT NULL,
   `fname`     varchar(255) NOT NULL,
   `ds`        varchar(255) NOT NULL,
-  `folder`    tinyint(1)   DEFAULT 0, -- for folder info
+  `expose`    varchar(255) DEFAULT NULL,
   `comment`   varchar(255) DEFAULT NULL,
   INDEX(`FNAME`),
   PRIMARY KEY (`id`)
 );
 ```
+The column `expose` is serving the needs of sharng the RRD data of different kilds and return lists of files selected by
+```sql
+expose LIKE ?```
+query template
+where the value of the `expose` string determined from the request header (more about it below).
+
 ### Usage
 *  have mysql container up
 ```sh
@@ -97,9 +103,11 @@ docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "s
 
 * build cache
 ```sh
+ln -fs ../basic-grafana-rrd-server/sample sample
+
 docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -i $IMAGE \
 -u java -v password -w test -x mysql-server -y 3306 \
--update
+-update -verbose
 ```
 
 this will log to console
@@ -131,39 +139,28 @@ docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e  "
 ```
 and
 ```sh
-2>/dev/null docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "use test; SELECT * FROM cache_table";
+2>/dev/null docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "use test; SELECT * FROM cache_table LIMIT 10";
 ```
 ```text
-+----+---------------------+--------------+--------------------+---------+
-| id | ins_date            | fname        | ds                 | comment |
-+----+---------------------+--------------+--------------------+---------+
-|  1 | 2021-08-20 17:26:44 | fname-1      | ds-1               | NULL    |
-|  2 | 2021-08-20 17:26:44 | fname-1      | ds-2               | NULL    |
-|  3 | 2021-08-20 17:26:44 | fname-1      | ds-3               | NULL    |
-|  4 | 2021-08-20 17:26:44 | fname-2      | ds-4               | NULL    |
-|  5 | 2021-08-20 17:26:44 | fname-2      | ds-5               | NULL    |
-|  6 | 2021-08-20 17:26:44 | fname-3      | ds-5               | NULL    |
-|  7 | 2021-08-20 17:27:13 | percent-idle | value              | NULL    |
-|  8 | 2021-08-20 17:27:13 | percent-user | value              | NULL    |
-|  9 | 2021-08-20 17:27:13 | sample       | StatusStageOut     | NULL    |
-| 10 | 2021-08-20 17:27:13 | sample       | ClientJobsIdle     | NULL    |
-| 11 | 2021-08-20 17:27:13 | sample       | ReqIdle            | NULL    |
-| 12 | 2021-08-20 17:27:13 | sample       | ClientGlideRunning | NULL    |
-| 13 | 2021-08-20 17:27:13 | sample       | ClientGlideTotal   | NULL    |
-| 14 | 2021-08-20 17:27:13 | sample       | ClientInfoAge      | NULL    |
-| 15 | 2021-08-20 17:27:13 | sample       | StatusRunning      | NULL    |
-| 16 | 2021-08-20 17:27:13 | sample       | StatusIdle         | NULL    |
-| 17 | 2021-08-20 17:27:13 | sample       | StatusIdleOther    | NULL    |
-| 18 | 2021-08-20 17:27:14 | sample       | StatusPending      | NULL    |
-| 19 | 2021-08-20 17:27:14 | sample       | StatusHeld         | NULL    |
-| 20 | 2021-08-20 17:27:14 | sample       | StatusStageIn      | NULL    |
-| 21 | 2021-08-20 17:27:14 | sample       | StatusWait         | NULL    |
-| 22 | 2021-08-20 17:27:14 | sample       | ClientGlideIdle    | NULL    |
-| 23 | 2021-08-20 17:27:14 | sample       | ClientJobsRunning  | NULL    |
-| 24 | 2021-08-20 17:27:14 | sample       | ReqMaxRun          | NULL    |
-+----+---------------------+--------------+--------------------+---------+
++----+---------------------+------------+--------------------+--------+---------+
+| id | ins_date            | fname      | ds                 | expose | comment |
++----+---------------------+------------+--------------------+--------+---------+
+|  1 | 2021-09-01 23:43:19 | fname-1    | ds-1               | NULL   | NULL    |
+|  2 | 2021-09-01 23:43:19 | fname-1    | ds-2               | NULL   | NULL    |
+|  3 | 2021-09-01 23:43:19 | fname-1    | ds-3               | NULL   | NULL    |
+|  4 | 2021-09-01 23:43:19 | fname-2    | ds-4               | NULL   | NULL    |
+|  5 | 2021-09-01 23:43:19 | fname-2    | ds-5               | NULL   | NULL    |
+|  6 | 2021-09-01 23:43:19 | fname-3    | ds-5               | NULL   | NULL    |
+|  7 | 2021-09-01 23:48:31 | app:sample | ClientGlideRunning | NULL   | NULL    |
+|  8 | 2021-09-01 23:48:31 | app:sample | ClientJobsRunning  | NULL   | NULL    |
+|  9 | 2021-09-01 23:48:31 | app:sample | ReqIdle            | NULL   | NULL    |
+| 10 | 2021-09-01 23:48:31 | app:sample | StatusHeld         | NULL   | NULL    |
++----+---------------------+------------+--------------------+--------+---------+
 ```
-
+Mark all `web` rows qualify to expose as `data`:
+```sh
+2>/dev/null docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "use test; UPDATE cache_table SET expose = 'data' WHERE fname LIKE 'web%'";
+```
 * start server
 ```sh
 docker container rm -f $IMAGE
@@ -178,7 +175,7 @@ gcurl -s http://localhost:9001/search
 this will be processing in the same way as a POST request with a `target` parameter by the latest revision.
 
 * without servicing `GET` request with `/search` the grafana list box is empty. It is likely not even rendered by some releases (to be confirmed)
-![broken listbox](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/broken_listbox_capture.png)
+![broken listbox](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/broken_listbox_capture.jpg)
 
 *  the free hand entry is still possible in which case when the parameters are correct the data appets shown
 
@@ -994,7 +991,7 @@ sqlite3.exe ..\data\grafana.db "select * from data_source"
 NOTE: the build __1.4.0__ of 
 [Grafana Simple JSON Datasource](https://github.com/grafana/simple-json-datasource) plugin has a defect making it useless with __grafana-rrd-server__ 
 
-[broken listbox](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/broken_listbox_capture.png)
+![broken listbox](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/broken_listbox_capture.png)
 - make sure to install  at least version __1.4.1__
 (version __1.4.2__ is the latest available at the time of this development sprint)
 
