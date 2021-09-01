@@ -48,7 +48,7 @@ public class QueryController {
 
 	// array response
 	@RequestMapping(method = RequestMethod.POST, value = "query", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<QueryTimeserieResponse> postSearchRequest(
+	public List<QueryTimeserieResponse> postQueryRequest(
 			@RequestBody QueryRequest request) {
 		logger.info("processing POST /query");
 		List<QueryTimeserieResponse> result = new ArrayList<>();

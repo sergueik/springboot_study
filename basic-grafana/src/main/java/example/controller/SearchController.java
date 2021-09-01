@@ -15,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.springframework.util.Base64Utils;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -27,6 +26,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
 import example.component.SearchRequest;
 import example.component.SearchResponseRow;
@@ -37,10 +40,16 @@ import example.service.ExampleService;
 @RequestMapping("/")
 public class SearchController {
 
+	@Autowired
+	Environment environment;
+
 	// @Autowired
 	private ExampleService service;
 	private static final Logger logger = LogManager.getLogger(SearchController.class);
-	private static final String param = capitalize("param");
+
+	@Value("param")
+	private String param;
+	// private static final String param = capitalize("param");
 
 	// for mocking
 	public SearchController(ExampleService data) {
@@ -53,89 +62,8 @@ public class SearchController {
 		logger.info("postSearchRequest processing POST /search array response");
 		List<String> result = new ArrayList<>();
 		result.add("test");
+		service.getDataMap("test");
 		return result;
-	}
-
-	@RequestMapping(method = RequestMethod.POST, value = "/search4", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<SearchResponseRow>> postSearch4Request(HttpServletRequest request,
-			@RequestBody SearchRequest data) {
-
-		logger.info("postSearch4Request processing POST /search map response");
-		List<SearchResponseRow> result = new ArrayList<>();
-		SearchResponseRow row = new SearchResponseRow();
-		row.setText("text data");
-		row.setValue("value data");
-		result.add(row);
-		final HttpHeaders responseHeaders = Utils.addResponseHeaders();
-		String name;
-		String value;
-		Enumeration<String> headerNames = request.getHeaderNames();
-		while (headerNames.hasMoreElements()) {
-			name = headerNames.nextElement();
-			value = request.getHeader(name);
-			// value = Base64Utils.decodeFromString(request.getHeader(name)).toString();
-			if (name.equalsIgnoreCase(param)) {
-				logger.info("postSearch4Request adding response header: " + param + ":" + value);
-				responseHeaders.add(name, value /* Base64Utils.encodeToString(value.getBytes()) */ );
-			}
-		}
-		return ResponseEntity.status(HttpStatus.OK).headers(responseHeaders).contentType(MediaType.APPLICATION_JSON)
-				.body(result);
-
-	}
-
-	// map response
-	// NOTE: currently cannot distinguish
-	@RequestMapping(method = RequestMethod.POST, value = "/search3", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<SearchResponseRow>> postSearch3Request(@RequestHeader Map<String, String> requestHeaders,
-			@RequestBody SearchRequest data) {
-		String value = null;
-		logger.info("postSearch3Request processing POST /search map response");
-		List<SearchResponseRow> result = new ArrayList<>();
-		SearchResponseRow row = new SearchResponseRow();
-		row.setText("text data");
-		row.setValue("value data");
-		result.add(row);
-
-		final HttpHeaders responseHeaders = Utils.addResponseHeaders();
-		logger.info("postSearch3Request processing request headers" + requestHeaders.toString());
-		if (requestHeaders.containsKey(param)) {
-
-			value = requestHeaders.get(param);
-
-			logger.info("postSearch3Request found special header: " + param + " = " + requestHeaders.get(param));
-			/*
-			 * byte[] rawData = Base64Utils.decodeFromString(requestHeaders.get(param));
-			 * logger.info("postSearch3Request rawData: " + rawData.toString()); rawData =
-			 * Base64Utils.decode(requestHeaders.get(param).getBytes());
-			 * logger.info("postSearch3Request rawData: " + rawData.toString()); value =
-			 * rawData.toString();
-			 */
-			logger.info("postSearch3Request adding response header: " + param + ":" + value);
-			responseHeaders.add(param, value /* Base64Utils.encodeToString(value.getBytes()) */ );
-
-		}
-		service.getDataMap(value);
-		return ResponseEntity.status(HttpStatus.OK).headers(responseHeaders).contentType(MediaType.APPLICATION_JSON)
-				.body(result);
-
-	}
-
-	// map response
-	// NOTE: currently cannot distinguish
-	@RequestMapping(method = RequestMethod.POST, value = "/search2", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<SearchResponseRow>> postSearch2Request(@RequestBody SearchRequest data) {
-
-		logger.info("processing POST /search map response");
-		List<SearchResponseRow> result = new ArrayList<>();
-		SearchResponseRow row = new SearchResponseRow();
-		row.setText("text data");
-		row.setValue("value data");
-		result.add(row);
-		final HttpHeaders headers = Utils.addResponseHeaders();
-		return ResponseEntity.status(HttpStatus.OK).headers(headers).contentType(MediaType.APPLICATION_JSON)
-				.body(result);
-
 	}
 
 	// not strongly typed legacy code
@@ -157,4 +85,76 @@ public class SearchController {
 
 		return Character.toUpperCase(string.charAt(0)) + string.substring(1);
 	}
+
+	// map response
+	@RequestMapping(method = RequestMethod.POST, value = "/search2", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<SearchResponseRow>> postSearch2Request(@RequestBody SearchRequest data) {
+
+		logger.info("processing POST /search map response");
+		List<SearchResponseRow> result = new ArrayList<>();
+		SearchResponseRow row = new SearchResponseRow();
+		row.setText("text data");
+		row.setValue("value data");
+		result.add(row);
+		final HttpHeaders headers = Utils.addResponseHeaders();
+		return ResponseEntity.status(HttpStatus.OK).headers(headers).contentType(MediaType.APPLICATION_JSON)
+				.body(result);
+
+	}
+
+	// map response
+	// NOTE: currently cannot distinguish
+	@RequestMapping(method = RequestMethod.POST, value = "/search3", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<SearchResponseRow>> postSearch3Request(@RequestHeader Map<String, String> requestHeaders,
+			@RequestBody SearchRequest data) {
+		String value = null;
+		logger.info("postSearch3Request processing POST /search map response");
+		List<SearchResponseRow> result = new ArrayList<>();
+		SearchResponseRow row = new SearchResponseRow();
+		row.setText("text data");
+		row.setValue("value data");
+		result.add(row);
+
+		logger.info("postSearch3Request looking for " + param);
+		final HttpHeaders responseHeaders = Utils.addResponseHeaders();
+		logger.info("postSearch3Request processing request headers" + requestHeaders.toString());
+		if (requestHeaders.containsKey(capitalize(param))) {
+			value = new String(Base64Utils.decodeFromString(requestHeaders.get(capitalize(param))));
+			logger.info("postSearch3Request found special header: " + param + " = " + value);
+			responseHeaders.add(param, Base64Utils.encodeToString(value.getBytes()));
+		}
+		service.getDataMap(value);
+		return ResponseEntity.status(HttpStatus.OK).headers(responseHeaders).contentType(MediaType.APPLICATION_JSON)
+				.body(result);
+
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "/search4", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<SearchResponseRow>> postSearch4Request(HttpServletRequest request,
+			@RequestBody SearchRequest data) {
+
+		logger.info("postSearch4Request processing POST /search map response");
+		List<SearchResponseRow> result = new ArrayList<>();
+		SearchResponseRow row = new SearchResponseRow();
+		row.setText("text data");
+		row.setValue("value data");
+		result.add(row);
+		final HttpHeaders responseHeaders = Utils.addResponseHeaders();
+
+		Enumeration<String> headerNames = request.getHeaderNames();
+		logger.info("postSearch4Request looking for " + param);
+
+		while (headerNames.hasMoreElements()) {
+			String name = headerNames.nextElement();
+			if (name.equalsIgnoreCase(param)) {
+				String value = new String(Base64Utils.decodeFromString(request.getHeader(name)));
+				logger.info("postSearch4Request adding response header: " + name + ":" + value);
+				responseHeaders.add(name, Base64Utils.encodeToString(value.getBytes()));
+			}
+		}
+		return ResponseEntity.status(HttpStatus.OK).headers(responseHeaders).contentType(MediaType.APPLICATION_JSON)
+				.body(result);
+
+	}
+
 }

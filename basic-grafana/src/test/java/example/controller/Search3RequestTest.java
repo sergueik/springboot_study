@@ -5,6 +5,7 @@ package example.controller;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.atLeast;
@@ -37,6 +38,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.Base64Utils;
+import java.util.Base64;
 
 import example.Application;
 import example.component.SearchRequest;
@@ -53,7 +55,7 @@ public class Search3RequestTest {
 	final static String body = "text data";
 	private final static String param = capitalize("param");
 	private final static String value = "foo:bar";
-	// private final static String encoddValue = Base64Utils.encodeToString(value.getBytes());
+	private final static String encodedValue = Base64Utils.encodeToString(value.getBytes());
 	private static MockMvc mvc;
 	private ResultActions resultActions;
 
@@ -81,8 +83,8 @@ public class Search3RequestTest {
 	public void test1() throws Exception {
 		route = "/search3";
 		resultActions = mvc.perform(post(route).accept(MediaType.APPLICATION_JSON).content("{}")
-				.header(param, value).contentType(MediaType.APPLICATION_JSON));
-		resultActions.andExpect(header().string(param, value));
+				.header(param, encodedValue).contentType(MediaType.APPLICATION_JSON));
+		resultActions.andExpect(header().string(param, encodedValue));
 	}
 
 	// examine response headers
@@ -90,8 +92,8 @@ public class Search3RequestTest {
 	public void test2() throws Exception {
 		route = "/search4";
 		resultActions = mvc.perform(post(route).accept(MediaType.APPLICATION_JSON).content("{}")
-				.header(param, value).contentType(MediaType.APPLICATION_JSON));
-		resultActions.andExpect(header().string(param, value));
+				.header(param, encodedValue).contentType(MediaType.APPLICATION_JSON));
+		resultActions.andExpect(header().string(param, encodedValue));
 	}
 
 	// examine response headers
@@ -109,6 +111,19 @@ public class Search3RequestTest {
 		resultActions = mvc.perform(
 				post(route).accept(MediaType.APPLICATION_JSON).content("{}").contentType(MediaType.APPLICATION_JSON));
 		verify(mockService, atLeast(1)).getDataMap(any());
+	}
+
+	// https://www.baeldung.com/java-base64-encode-and-decode
+	@Test
+	public void test6() throws Exception {
+		byte[] rawData = Base64.getDecoder().decode(encodedValue);
+		assertThat(String.format("Cannot decode \"%s\" to \"%s\"", encodedValue, value), new String(rawData),
+				is(value));
+
+		rawData = Base64Utils.decode(encodedValue.getBytes());
+		assertThat(String.format("Cannot decode  \"%s\" to \"%s\"", encodedValue, value), new String(rawData),
+				is(value));
+
 	}
 
 	private static String capitalize(final String string) {

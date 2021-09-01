@@ -30,7 +30,6 @@ docker logs $IMAGE
 ```sh
 SERVER=basic-go-run
 docker container run --name $IMAGE --link $SERVER -d -p 3000:3000 $IMAGE
-
 ```
 eventually it will show
 ```text
@@ -218,7 +217,8 @@ curl -s -X POST  -H "Content-Type: application/json" http://localhost:5000/searc
   * https://github.com/IBMStreams/samples
   * https://oznetnerd.com/2018/04/17/writing-a-grafana-backend-using-the-simple-json-datasource-flask/
   * basic implementation of [SimpleJSON REST server](https://github.com/IsmetKh/grafana-simplejson-datasource) - has ASP.Net dependencies , can be used to prototype `/query`, `/search`,`/annotations`, `/tag-keys`, `tag-alues` payloads then using some prototype ASP.Net clean [REST famework](https://github.com/sachabarber/REST/tree/master/RESTServer/RESTServer) also discussed in [codeproject article](https://www.codeproject.com/Articles/826383/REST-A-Simple-REST-framework)
-
+  * [populating Spring @Value during Unit Test](https://newbedev.com/populating-spring-value-during-unit-test)
+i  * another [snippet](https://gist.github.com/danlangford/3418696) od dealing with @Value annotations in test runner
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
