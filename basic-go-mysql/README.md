@@ -1,4 +1,4 @@
-###  Info
+﻿###  Info
 
 Combination of two docker containers to practice the examples from [golang MySQL Tutorial](https://tutorialedge.net/golang/golang-mysql-tutorial/)
 
@@ -886,6 +886,10 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "" }' \
 []
 ```
 
+This is useful to limit the listbox to show rrd files from a specific subdirectory. To find out count breakdown by directory use the following query:
+```SQL
+SELECT DISTINCT(SUBSTRING(fname,1,LOCATE(':',fname))) AS fdir, COUNT(1) FROM cache_table GROUP BY fdir;
+```
 ### TODO
 
 To better support Updating the cache one may chooise to store the folder information in `cache_table` alongside with the RRD data by adding a column `folder` to the table schema
@@ -919,7 +923,72 @@ one may also use the [rrd4j/rrd4j](https://github.com/rrd4j/rrd4j) `ConverterTes
 ```
 and use a potentially faster java code for directory traversal.
 
+### Windows Install
 
+* The  vanilla OSS Grafana 7.3.10 https://grafana.com/grafana/download/7.3.10?edition=oss&platform=windows
+comes without [SimpleJSON plugin]() which is a basically an npm package. To install one
+
+To install plugin on a Windows machine it is useful to relocate the install to %APPDATA%
+```cmd
+cd "c:\Program Files\GrafanaLabs\grafana\bin"
+grafana-cli.exe plugins install grafana-simple-json-datasource
+```
+fails with the error:
+```CMD
+←[31mError←[0m: ←[31m✗←[0m 
+failed to extract plugin archive: 
+could not create "..\\data\\plugins\\grafana-simple-json-datasource", 
+permission denied, make sure you have write access to plugin dir
+```
+
+The other option is to configure grafana from the elevated account cmd window
+NOTE, after the install
+
+one has to restart grafana via `services.msc`
+![service control app](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/service-control-capture.jpg)
+```cmd
+mkdir %localappdata%\GrafanaLabs\grafana
+robocopy "c:\Program Files\GrafanaLabs\grafana"  %localappdata%\GrafanaLabs\grafana /s
+```
+ 
+edit configuration file `conf\defaults.ini` modify port:
+```text
+# The http port to use
+http_port = 3001
+```
+When launching grafana server from user owned directory
+```
+cd  %localappdata%\GrafanaLabs\grafana\bin
+grafana-server.exe -config ..\\conf\defaults.ini start
+```
+one still need see the firewall access dialog. 
+
+![firewall access prompt](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/firewall-prompt-capture.jpg)
+
+For local development and testing one can click 'Cancel' and the grafana will still be launched sucessfully. In the enterprise environment it will not be so easy
+![firewall allpwed applications overview](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/firewall-overview-capture.jpg)
+
+Note,To stop server will need to close the console window. 
+Even running the `stop` command in separate console window
+```cmd
+cd  %localappdata%\GrafanaLabs\grafana\bin
+grafana-server.exe -config ..\\conf\defaults.ini stop
+```
+does not stop it
+
+The information about the plugin
+```cmd
+%LOCALAPPDATA%\GrafanaLabs\grafana\data\plugins\grafana-simple-json-datasource
+├───css
+├───img
+└───partials
+```
+
+is saved in the `data_source` table in `data\grafana.db` which is an sqlite database, and the mechanism of generating the `uid` column value `yiPsAB4nk` is unknown.
+```cmd
+sqlite3.exe ..\data\grafana.db "select * from data_source"
+1|1|1|grafana-simple-json-datasource|SimpleJson|proxy|||||0|||1|{}|2021-09-01 22:43:04|2021-09-01 22:43:04|0|{}|0|yiPsAB4nk
+```
 ### See Also
 
    * https://stackoverflow.com/questions/47577385/error-non-standard-import-github-com-go-sql-driver-mysql-in-standard-package/67431068#67431068

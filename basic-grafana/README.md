@@ -16,6 +16,8 @@ and the springboot application with similar functionality
 GRAFANA_VERSION=7.3.4
 wget https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz .
 ```
+NOTE, the download link can be pasted into browser address. To find the link, first browse the download page, e.g. for version __7.3.4__ it is [https://grafana.com/grafana/download/7.3.4?edition=oss](https://grafana.com/grafana/download/7.3.4?edition=oss). For change logs see [https://github.com/grafana/grafana/releases?after=v7.3.7](https://github.com/grafana/grafana/releases?after=v7.3.7)
+
 * build the image
 ```sh
 IMAGE=basic-grafana
@@ -218,7 +220,7 @@ curl -s -X POST  -H "Content-Type: application/json" http://localhost:5000/searc
   * https://oznetnerd.com/2018/04/17/writing-a-grafana-backend-using-the-simple-json-datasource-flask/
   * basic implementation of [SimpleJSON REST server](https://github.com/IsmetKh/grafana-simplejson-datasource) - has ASP.Net dependencies , can be used to prototype `/query`, `/search`,`/annotations`, `/tag-keys`, `tag-alues` payloads then using some prototype ASP.Net clean [REST famework](https://github.com/sachabarber/REST/tree/master/RESTServer/RESTServer) also discussed in [codeproject article](https://www.codeproject.com/Articles/826383/REST-A-Simple-REST-framework)
   * [populating Spring @Value during Unit Test](https://newbedev.com/populating-spring-value-during-unit-test)
-i  * another [snippet](https://gist.github.com/danlangford/3418696) od dealing with @Value annotations in test runner
+  * another [snippet](https://gist.github.com/danlangford/3418696) od dealing with @Value annotations in test runner
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
