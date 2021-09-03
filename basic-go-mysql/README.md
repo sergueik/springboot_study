@@ -97,6 +97,13 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 ```
 
 * Initialize DB
+* NOTE: after any schema change need to relaunch the container because of volume (the first run takes some setup time)
+```sh
+docker container rm -f mysql-server
+docker run -v $(pwd):/tmp/app -p 3306:3306 --name mysql-server -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=java -e MYSQL_DATABASE=test -e MYSQL_PASSWORD=password -d mysql:8.0.18
+docker logs mysql-server
+
+```
 ```sh
 docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "source /tmp/app/mysql-init.sql"
 ```
@@ -125,7 +132,11 @@ Inserted into database:"sample:StatusHeld"
 Closed database connection.
 Finished updating search cache.
 ```
-
+if the file in the `data` directory is matching filename mask but is not a valid rrd, it is skipped, exception logged:
+```sh
+ERROR: Cannot retrieve information from  sample/web/badlink.rrd
+opening 'sample/web/badlink.rrd': No such file or directory
+```
 followed by checks
 ```sh
 docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e  "use test; show tables;";
@@ -157,9 +168,14 @@ and
 | 10 | 2021-09-01 23:48:31 | app:sample | StatusHeld         | NULL   | NULL    |
 +----+---------------------+------------+--------------------+--------+---------+
 ```
-Mark all `web` rows qualify to expose as `data`:
+Mark all rows with ds containing `Client` set `expose` to `data`:
+
 ```sh
-2>/dev/null docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "use test; UPDATE cache_table SET expose = 'data' WHERE fname LIKE 'web%'";
+2>/dev/null docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "use test; UPDATE cache_table SET expose = 'data' WHERE ds LIKE '%Client%'";
+```
+and rows with ds containing `Status` set `expose` as `other`
+```sh
+2>/dev/null docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e "use test; UPDATE cache_table SET expose = 'other' WHERE ds LIKE '%status%'";
 ```
 * start server
 ```sh
@@ -170,7 +186,7 @@ docker logs $IMAGE
 this will start web server
 * try search
 ```sh
-gcurl -s http://localhost:9001/search
+curl -s http://localhost:9001/search
 ```
 this will be processing in the same way as a POST request with a `target` parameter by the latest revision.
 
@@ -292,17 +308,13 @@ this will return
 ```
 * to confirm explicitly one may simply issue `/search` with the target attribute "fname" which is not in file system but was added to `cache_table`:
 ```sh
-curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "fname" }' http://localhost:9001/search |jq '.'
+curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "fname-1" }' http://localhost:9001/search |jq '.'
 ```
 ```json
 [
   "fname-1:ds-1",
   "fname-1:ds-2",
-  "fname-1:ds-3",
-  "fname-2:ds-4",
-  "fname-2:ds-5",
-  "fname-3:ds-5",
-  "fname-42:ds-1"
+  "fname-1:ds-3"
 ]
 ```
 ### Request Details
@@ -311,7 +323,8 @@ Alternatively can send GET request:
 ```
 curl  http://localhost:9001/search?target=sample |jq '.'
 ```
-but it is not handling `GET` requests for `/search`. When  Grafana interacts with SimpleJSON server it is sending `POST` requests.
+but it is not taking into account query string of the `GET` request for `/search`. When  Grafana interacts with SimpleJSON server it is sending `POST` requests.
+
 ### Config file
 The application supports `config.yaml` to have the following format:
 ```yaml
@@ -727,7 +740,7 @@ docker cp $NAME:/build/example .
 ```sh
 scp example vagrant@192.168.99.100:
 ```
-* RRd file(s)
+* also copy RRd file(s) (optional)
 ```sh
 scp sample/sample.rrd vagrant@192.168.99.100:sample:
 ```
@@ -758,15 +771,16 @@ create DB
 ```sh
 mysql -u java -ppassword test
 ```
-in mysql shell
+in mysql shell (re) create the table:
 
 ```sql
+DROP TABLE IF EXISTS `cache_table`;
 CREATE TABLE `cache_table` (
   `id`        mediumint    NOT NULL AUTO_INCREMENT,
   `ins_date`  datetime     NOT NULL,
   `fname`     varchar(255) NOT NULL,
   `ds`        varchar(255) NOT NULL,
-  `folder`    tinyint(1)   DEFAULT 0, -- for folder info
+  `expose`    varchar(255) DEFAULT NULL,
   `comment`   varchar(255) DEFAULT NULL,
   INDEX(`FNAME`),
   PRIMARY KEY (`id`)
@@ -822,6 +836,12 @@ Inserted into database:"sample:StatusHeld"
 Closed database connection.
 Finished updating search cache.
 ```
+* mark few entries as `data` through mysql shell:
+```sh
+
+UPDATE cache_table SET expose= '';
+UPDATE cache_table SET expose='data' where ds like '%CLIENT%';
+```
 * Run the server
 ```sh
 ./example -u java -v password -w test -x 127.0.0.1 -y 3306 -verbose
@@ -852,32 +872,40 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "sample" }' h
 ```
 * test  new header processing
 ```sh
-curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "" }' \
- -H "Param: db" http://localhost:9000/search |jq '.'
+curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "" }' -H "Param: data" http://localhost:9001/search | jq '.'
 ```
+
 ```json
 [
-  "db:sample:ClientGlideIdle",
-  "db:sample:ClientGlideRunning",
-  "db:sample:ClientGlideTotal",
-  "db:sample:ClientInfoAge",
-  "db:sample:ClientJobsIdle",
-  "db:sample:ClientJobsRunning",
-  "db:sample:ReqIdle",
-  "db:sample:ReqMaxRun",
-  "db:sample:StatusHeld",
-  "db:sample:StatusIdle",
-  "db:sample:StatusIdleOther",
-  "db:sample:StatusPending",
-  "db:sample:StatusRunning",
-  "db:sample:StatusStageIn",
-  "db:sample:StatusStageOut",
-  "db:sample:StatusWait"
+  "sample:ClientGlideIdle",
+  "sample:ClientGlideRunning",
+  "sample:ClientGlideTotal",
+  "sample:ClientInfoAge",
+  "sample:ClientJobsIdle",
+  "sample:ClientJobsRunning"
 ]
 ```
 ```sh
 curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "" }' \
  -H "Param: other" http://localhost:9000/search |jq '.'
+```
+```json
+[
+  "sample:StatusHeld",
+  "sample:StatusIdle",
+  "sample:StatusIdleOther",
+  "sample:StatusPending",
+  "sample:StatusRunning",
+  "sample:StatusStageIn",
+  "sample:StatusStageOut",
+  "sample:StatusWait"
+]
+
+```
+if post request header has some other value, the result will be empty;
+```sh
+curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "" }' \
+ -H "Param: something" http://localhost:9000/search |jq '.'
 ```
 ```json
 []
@@ -886,6 +914,19 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "" }' \
 This is useful to limit the listbox to show rrd files from a specific subdirectory. To find out count breakdown by directory use the following query:
 ```SQL
 SELECT DISTINCT(SUBSTRING(fname,1,LOCATE(':',fname))) AS fdir, COUNT(1) FROM cache_table GROUP BY fdir;
+```
+ further invenory will require nested selects:
+
+```SQL
+```
+one can specify alternative name of the custom hease at server start:
+```sh
+docker container rm -f $IMAGE
+docker run --link mysql-server --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -d $IMAGE  -u java -v password -w test -x mysql-server -y 3306 -verbose -param custom
+```
+then invoke it with approptiate header:
+```sh
+curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "" }'  -H "Custom: data" http://localhost:9001/search |jq '.'
 ```
 ### TODO
 
@@ -932,9 +973,9 @@ grafana-cli.exe plugins install grafana-simple-json-datasource
 ```
 fails with the error:
 ```CMD
-←[31mError←[0m: ←[31m✗←[0m 
-failed to extract plugin archive: 
-could not create "..\\data\\plugins\\grafana-simple-json-datasource", 
+←[31mError←[0m: ←[31m✗←[0m
+failed to extract plugin archive:
+could not create "..\\data\\plugins\\grafana-simple-json-datasource",
 permission denied, make sure you have write access to plugin dir
 ```
 
@@ -949,7 +990,7 @@ one has to restart grafana via `services.msc`
 mkdir %localappdata%\GrafanaLabs\grafana
 robocopy "c:\Program Files\GrafanaLabs\grafana"  %localappdata%\GrafanaLabs\grafana /s
 ```
- 
+
 edit configuration file `conf\defaults.ini` modify port:
 ```text
 # The http port to use
@@ -960,14 +1001,14 @@ When launching grafana server from user owned directory
 cd  %localappdata%\GrafanaLabs\grafana\bin
 grafana-server.exe -config ..\\conf\defaults.ini start
 ```
-one still need see the firewall access dialog. 
+one still need see the firewall access dialog.
 
 ![firewall access prompt](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/firewall-prompt-capture.jpg)
 
 For local development and testing one can click 'Cancel' and the grafana will still be launched sucessfully. In the enterprise environment it will not be so easy!
 [firewall allowed applications overview](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/firewall-overview-capture.jpg)
 
-Note,To stop server will need to close the console window. 
+Note,To stop server will need to close the console window.
 Even running the `stop` command in separate console window
 ```cmd
 cd  %localappdata%\GrafanaLabs\grafana\bin
@@ -988,8 +1029,8 @@ is saved in the `data_source` table in `data\grafana.db` which is an sqlite data
 sqlite3.exe ..\data\grafana.db "select * from data_source"
 1|1|1|grafana-simple-json-datasource|SimpleJson|proxy|||||0|||1|{}|2021-09-01 22:43:04|2021-09-01 22:43:04|0|{}|0|yiPsAB4nk
 ```
-NOTE: the build __1.4.0__ of 
-[Grafana Simple JSON Datasource](https://github.com/grafana/simple-json-datasource) plugin has a defect making it useless with __grafana-rrd-server__ 
+NOTE: the build __1.4.0__ of
+[Grafana Simple JSON Datasource](https://github.com/grafana/simple-json-datasource) plugin has a defect making it useless with __grafana-rrd-server__
 
 ![broken listbox](https://github.com/sergueik/springboot_study/blob/master/basic-go-mysql/screenshots/broken_listbox_capture.png)
 - make sure to install  at least version __1.4.1__

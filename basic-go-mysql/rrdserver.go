@@ -287,12 +287,15 @@ func (w *SearchCache) Update() {
 			if err != nil {
 				fmt.Println("ERROR: Cannot retrieve information from ", path)
 				fmt.Println(err)
+				// e.g. after
+				// opening 'badlink.rrd': No such file or directory
+				return nil
 			}
 			if ! legacyCache {
 				// perform a db.Query delete
 				if verbose {
 					fmt.Println("Delete from database:" + "\"" + fName + "\"")
-				}	
+				}
 				op, err := db.Query("DELETE FROM `" + dbConfig.Table + "` WHERE fname = ?", fName )
 				if err != nil { panic(err.Error()) }
 				defer op.Close()
