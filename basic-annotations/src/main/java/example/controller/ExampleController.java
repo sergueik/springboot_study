@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -17,6 +18,8 @@ public class ExampleController {
 	private static final Logger logger = LogManager.getLogger(ExampleController.class);
 
 	@Value("static value")
+	// NOTE: ignoring the warning:
+	// Autowired annotation is not supported on static fields
 	private static String staticValue;
 
 	@Value("fixed value")
@@ -34,6 +37,7 @@ public class ExampleController {
 	@Value("#{${object.details}}")
 	private Map<String, String> complexObjectProperty;
 
+	@ResponseBody
 	@GetMapping("employee")
 	public String employeeInfo() {
 		try {
