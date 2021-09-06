@@ -1,9 +1,10 @@
 // <https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
 var app = angular.module('Application', []);
 app.controller('ListController', function($scope, $http) {
+    const total = 3;
     $http({
         method: 'GET',
-        url: '/list'
+        url: '/list?total=' + total
     }).success(
         function(data) {
             console.log("getting data");

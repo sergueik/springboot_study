@@ -16,17 +16,17 @@
 <p>Enter Name: <input type="text" ng-model="name"> </p>
 <p>Hello {{name}}</p>
 <div ng-controller="ListController">
-  Data: <br />
+  Dynamic List: <br />
   <ul>
     <li ng-repeat="row in rows">{{ row.text }}</li>
   </ul>
 </div>
+
 <div ng-controller="SelectController">
-  <select ng-model="selectedName" ng-options="item for item in names"></select>
+<label for="select"> Dynamic select</label>
+  <select id="select" ng-model="selectedName" ng-options="item for item in names"></select>
 </div>
     
-
-
 <div ng-controller="TableController">
 <table class="table-bordered">
   <tr data-ng-repeat="row in rows">

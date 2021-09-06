@@ -11,6 +11,7 @@ public class ExamplePageController {
 
 	@GetMapping
 	public String welcome() {
+		// returns static page, no servlet nor jsp processing will take place
 		return "index";
 	}
 

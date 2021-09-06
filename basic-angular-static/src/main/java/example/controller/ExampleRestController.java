@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import example.model.DataRow;
@@ -61,9 +62,12 @@ public class ExampleRestController {
 	}
 
 	@GetMapping(value = "list", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Map<String, List<Data>>> list() {
+	public ResponseEntity<Map<String, List<Data>>> list(
+			@RequestParam Integer total) {
 		List<Data> rows = new ArrayList<>();
-		rows.add(new Data(service.hello()));
+		for (int cnt = 0; cnt != total; cnt++) {
+			rows.add(new Data(String.format("%s %d", service.hello(), cnt + 1)));
+		}
 		Map<String, List<Data>> results = new HashMap<>();
 		results.put("results", rows);
 		System.out.println("Returning: " + gson.toJson(results));
