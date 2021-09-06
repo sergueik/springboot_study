@@ -12,6 +12,8 @@ Unable to start EmbeddedWebApplicationContext
 due to missing EmbeddedServletContainerFactory bean.
 ```
   * switch from `javax.servlet.jstl` to more traditional jsp
+  * migrate to later springboot-parent - experiencing `cannot find symbol class SpringBootServletInitializer` with __2.3.4-RELEASE__ -  found the solution in https://www.py4u.net/discuss/583812
+
 ### See Also
    * https://www.journaldev.com/2090/jstl-tutorial-jstl-tags-example
    * https://github.com/alphabetY/springboot-angularjs
