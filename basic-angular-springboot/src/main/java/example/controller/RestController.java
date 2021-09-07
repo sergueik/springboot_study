@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import example.model.Customer;
 
 @Controller
-public class CreditController {
+public class RestController {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -44,3 +44,4 @@ public class CreditController {
 	}
 
 }
+
