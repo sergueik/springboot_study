@@ -1,44 +1,57 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -z "${DEBUG}" ]; then
   DEBUG=false
   1>&2 echo 'Setting DEBUG to ' $DEBUG
-else 
+else
   DEBUG=true
 fi
 BASE_URL='http://localhost:9001'
 
-RANGE=${1:-current}
-if [ "$RANGE" = 'current' ]; then
-  # when RRD feed s live the health check needs to query the recent dates
-  # and be consistent with the format
-
+RANGE=${1:-recent}
+# NOTE: pass arbitrary on-empty arg to override 'recent'
+echo "RANGE=${RANGE}"
+if [ "${RANGE}" == 'recent' ]; then
+  # when RRD feed is live the health check needs to calculate the recent date times for query
+  # and be consistent with the Grafana datetime format
   DATE_FORMAT='%Y-%m-%dT%H:%M:%SZ'
-  DATE_TO=$(date +"$DATE_FORMAT")
+  END_DATETIME=$(date -u +"$DATE_FORMAT")
   INTERVAL=12
-  DATE_FROM=$(date -d "$DATE_TO -$INTERVAL hours")
+  START_DATETIME=$(date -d "$END_DATETIME -$INTERVAL hours" -u +"$DATE_FORMAT")
+  START_EPOCH=$(date -d "$START_DATETIME" +%s)
 else
   # when the RRD data is frozen need relevant date range
-  DATE_FROM='2010-03-02T04:57:48.126Z'
-  DATE_TO='2010-03-02T05:42:32.733Z'
+  START_DATETIME='2010-03-02T04:57:48.126Z'
+  END_DATETIME='2010-03-02T05:42:32.733Z'
 fi
-
+echo "querying $START_DATETIME ... $END_DATETIME"
 TARGET='sample:ClientJobsRunning'
+# Copied grom Grafana Simple JSON Datasource dashboard.
+# Replaced relative values in range.raw and rangeRaw
+#    "raw": {
+#      "from": "now-${INTERVAL}h",
+#      "to": "now"
+#    }
+# with copy of range
+# removed the .startTime: $START_EPOCH
+# argument
 PAYLOAD=$(cat << EOF
 {
+  "app": "dashboard",
+  "requestId": "Q100",
   "timezone": "browser",
   "panelId": 2,
   "range": {
-    "from": "$DATE_FROM",
-    "to": "$DATE_TO",
+    "from": "$START_DATETIME",
+    "to": "$END_DATETIME",
     "raw": {
-      "from": "$DATE_FROM",
-      "to": "$DATE_TO"
+      "from": "$START_DATETIME",
+      "to": "$END_DATETIME"
     }
   },
   "rangeRaw": {
-    "from": "$DATE_FROM",
-    "to": "$DATE_TO"
+    "from": "$START_DATETIME",
+    "to": "$END_DATETIME"
   },
   "interval": "2s",
   "intervalMs": 2000,
@@ -49,7 +62,7 @@ PAYLOAD=$(cat << EOF
       "type": "timeserie"
     }
   ],
-  "maxDataPoints": 928,
+  "maxDataPoints": 100,
   "scopedVars": {
     "__interval": {
       "text": "2s",
@@ -59,7 +72,8 @@ PAYLOAD=$(cat << EOF
       "text": 2000,
       "value": 2000
     }
-  }
+  },
+  "adhocFilters": []
 }
 EOF
 )
@@ -106,3 +120,4 @@ EOF
 )
 python -c "$SCRIPT" $LOGFILE
 rm -f $LOGFILE
+
