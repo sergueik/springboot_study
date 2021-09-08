@@ -11,7 +11,6 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
 @Configuration
 @EnableWebMvc
@@ -23,7 +22,6 @@ public class AppConfiguration extends WebMvcConfigurerAdapter {
 	@Override
 	public void configureViewResolvers(ViewResolverRegistry registry) {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-		viewResolver.setViewClass(JstlView.class);
 		viewResolver.setPrefix("/templates/");
 		viewResolver.setSuffix(".jsp");
 		registry.viewResolver(viewResolver);
@@ -36,16 +34,14 @@ public class AppConfiguration extends WebMvcConfigurerAdapter {
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
 		for (String dir : Arrays.asList("images", "css", "js")) {
-			logger.info(
-					String.format("Mapped resource handler \"%s\", \"%s\" to \"%s\"",
-							String.format("classpath:/static/%s/", dir),
-							System.getProperty("user.dir").replaceAll("\\\\", "/"), dir),
-					dir);
+			logger.info(String.format("Mapped resource handler \"%s\", \"%s\" to \"%s\"",
+					String.format("classpath:/static/%s/", dir), System.getProperty("user.dir").replaceAll("\\\\", "/"),
+					dir), dir);
 
-			registry.addResourceHandler(String.format("/%s/**", dir))
-					.addResourceLocations(String.format("classpath:/static/%s/", dir),
-							String.format("file:///%s/src/main/resources/static/%s/",
-									System.getProperty("user.dir").replaceAll("\\\\", "/"), dir));
+			registry.addResourceHandler(String.format("/%s/**", dir)).addResourceLocations(
+					String.format("classpath:/static/%s/", dir),
+					String.format("file:///%s/src/main/resources/static/%s/",
+							System.getProperty("user.dir").replaceAll("\\\\", "/"), dir));
 
 		}
 	}

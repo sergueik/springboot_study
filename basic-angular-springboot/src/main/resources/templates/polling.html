@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html ng-app="plunker">
+<!-- origin: origin: https://blog.guya.net/2016/08/08/simple-server-polling-in-angularjs-done-right/ -->
+  <head>
+    <meta charset="utf-8" />
+    <title>Simple Server Polling in AngularJS Done Right</title>
+    <script>document.write('<base href="' + document.location + '" />');</script>
+    <link rel="stylesheet" href="/css/style.css" />
+    <script data-require="angulra.js@1.5.x" src="https://code.angularjs.org/1.5.8/angular.min.js" data-semver="1.5.8"></script>
+    <script src="https://code.angularjs.org/1.5.8/angular-animate.min.js"></script>
+    <script src="/js/app.js"></script>
+  </head>
+
+  <body ng-controller="MainCtrl">
+    <p>
+      <a href="https://blog.guya.net/2016/08/08/simple-server-polling-in-angularjs-done-right/" target="_blank">https://blog.guya.net/2016/08/08/simple-server-polling-in-angularjs-done-right/</a>
+    </p>
+    
+    <div>Server response: 
+      <div class="response-container">
+        <div ng-animate-swap="data" class="response-text swap-animation">{{ data }}</div>
+      </div>
+    </div>
+  </body>
+
+</html>

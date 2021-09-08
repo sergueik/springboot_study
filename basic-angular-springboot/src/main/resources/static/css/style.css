@@ -1,0 +1,30 @@
+.response-container {
+  display: inline-block;
+  height: 29px;
+  width: 200px;
+  position: relative;
+  overflow: hidden;
+}
+.response-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  font-size: 15px;
+  line-height: 42px;
+}
+.swap-animation.ng-enter, .swap-animation.ng-leave {
+  transition: 0.5s linear all;
+}
+.swap-animation.ng-enter {
+  top: -29px;
+}
+.swap-animation.ng-enter-active {
+  top :0px;
+}
+.swap-animation.ng-leave {
+  top: 0px;
+}
+.swap-animation.ng-leave-active {
+  top: 29px;
+}
