@@ -26,8 +26,7 @@ COPY bootstrap.sh /opt
 RUN apk add xvfb x11vnc fluxbox xdpyinfo st vim terminus-font \
 	&& rm -vrf /var/cache/apk/*
 RUN sed -r -i "s/\[exec\] \(xterm\) \{xterm\}/\[exec\] \(st\) \{st -f 'xos4 Terminus-14'\}/" /usr/share/fluxbox/menu
-COPY gui /home/user/gui/
-COPY logic /home/user/logic/
+COPY src /home/user/src/
 COPY pom.xml run.sh /home/user/
 RUN chown -R user /home/user
 USER user
