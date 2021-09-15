@@ -8,7 +8,8 @@ else
 fi
 BASE_URL='http://localhost:9001'
 
-RANGE=${1:-recent}
+RANGE=${1}
+INTERVAL=${2:-6}
 # NOTE: pass arbitrary on-empty arg to override 'recent'
 echo "RANGE=${RANGE}"
 if [ "${RANGE}" == 'recent' ]; then

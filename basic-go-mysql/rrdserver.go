@@ -451,6 +451,11 @@ func query(w http.ResponseWriter, r *http.Request) {
 				if !math.IsNaN(value) {
 					product := float64(config.Server.Multiplier) * value
 					points = append(points, []float64{product, float64(timestamp.Unix()) * 1000})
+				} else {
+					if verbose {
+						// NOTE: golang date format "2021-09-15 22:05:00 +0000 UTC" is different from grafana's ""
+						fmt.Println("Ignored missing data at " + timestamp.String() + " " + fmt.Sprintf("%f", float64(timestamp.Unix()) * 1000 ) )
+					}
 				}
 				timestamp = timestamp.Add(fetchRes.Step)
 			}
@@ -520,10 +525,11 @@ func SetArgs() {
 	// configFile value is still the default one
 	appConfig.getConf(configFile)
 	dbConfig = appConfig.Database
-	fmt.Println("database config:" + "\n" + "User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
+	//  fmt.Println("database config:" + "\n" + "User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
 
 	folderConfig = appConfig.Folders
-	fmt.Println("folder scan config:")
+	// fmt.Println("folder scan config:")
+	/*
 	fmt.Println("collect:")
 	for _, v := range folderConfig.Collect {
 		fmt.Println(v)
@@ -533,7 +539,7 @@ func SetArgs() {
 	for _, v := range folderConfig.Reject {
 		fmt.Println(v)
 	}
-
+	*/
 	flag.StringVar(&dbConfig.User, "u", "java", "DB User.")
 	flag.StringVar(&dbConfig.Password, "v", "password", "DB User Password.")
 	flag.StringVar(&dbConfig.Database, "w", "test", "Database.")
@@ -558,31 +564,43 @@ func SetArgs() {
 	flag.StringVar(&collectFlag, "collect", "", "Folders to collect.")
 	flag.StringVar(&rejectFlag, "reject", "", "Folders to reject.")
 	flag.Parse()
-	fmt.Println("User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
-	fmt.Println("folder scan config:")
-	fmt.Println("collectFlag: " + collectFlag)
-	fmt.Println("collect:")
-	if len(collectFlag) == 0 {
-		folderConfig.Collect = []string{}
-		fmt.Println("none")
+	if verbose {
+		fmt.Println("User: " + dbConfig.User + "\n" + "Database: " + dbConfig.Database + "\n" + "Server: " + dbConfig.Server + "\n" + "Table: " + dbConfig.Table + "\n" + "Port: " + strconv.Itoa(dbConfig.Port) + "\n" )
+		fmt.Println("folder scan config:")
+		fmt.Println("collectFlag: " + collectFlag)
+		fmt.Println("collect:")
+		if len(collectFlag) == 0 {
+			folderConfig.Collect = []string{}
+			fmt.Println("none")
+		} else {
+			folderConfig.Collect = strings.Split(collectFlag, ",")
+			for _, v := range folderConfig.Collect {
+				fmt.Println(v)
+			}
+		}
+		fmt.Println("rejectFlag: " + rejectFlag)
+		fmt.Println("reject:")
+		if len(rejectFlag ) == 0 {
+			folderConfig.Reject = []string{}
+			fmt.Println("none")
+		} else {
+			folderConfig.Reject = strings.Split(rejectFlag, ",")
+			for _, v := range folderConfig.Reject {
+				fmt.Println(v)
+			}
+		}
 	} else {
-		folderConfig.Collect = strings.Split(collectFlag, ",")
-		for _, v := range folderConfig.Collect {
-			fmt.Println(v)
+		if len(collectFlag) == 0 {
+			folderConfig.Collect = []string{}
+		} else {
+			folderConfig.Collect = strings.Split(collectFlag, ",")
+		}
+		if len(rejectFlag ) == 0 {
+			folderConfig.Reject = []string{}
+		} else {
+			folderConfig.Reject = strings.Split(rejectFlag, ",")
 		}
 	}
-	fmt.Println("rejectFlag: " + rejectFlag)
-	fmt.Println("reject:")
-	if len(rejectFlag ) == 0 {
-		folderConfig.Reject = []string{}
-		fmt.Println("none")
-	} else {
-		folderConfig.Reject = strings.Split(rejectFlag, ",")
-		for _, v := range folderConfig.Reject {
-			fmt.Println(v)
-		}
-	}
-
 }
 
 func main() {
