@@ -11,8 +11,8 @@ docker pull mysql:8.0.18
 ```
 and run it with environments matching the `application.properties`:
 ```sh
-export MYSQL_USER='cardbuser'
-export MYSQL_PASSWORD='123test321'
+export MYSQL_USER='java'
+export MYSQL_PASSWORD='password'
 docker run --name mysql-server -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=$MYSQL_USER -e MYSQL_DATABASE=test -e MYSQL_PASSWORD=$MYSQL_PASSWORD -d mysql:8.0.18
 ```
 Note: one does not need to specify the `-p 3306:3306` argument.  Note: same user and password is used in `DB/users.sql` and java `database.properties`
@@ -47,6 +47,7 @@ docker build -f Dockerfile -t $IMAGE .
 * launch the Docker container linked to the `mysql-example`
 ```sh
 CONTAINER=jdbc-example
+docker container rm -f $CONTAINER
 docker run  --name $CONTAINER -p 8080:8080 --link mysql-server -d $IMAGE
 docker logs $CONTAINER
 ```
@@ -62,7 +63,7 @@ this will lead to `com.mysql.cj.jdbc.exceptions.CommunicationsException`
  exception connecting to the server.
 * testing
 ```sh
-curl "http://192.168.0.64:8080/public/getCars?make=VW&startYear=2020&endYear=2020" |jq -r "." | tee result.json
+curl "http://$(hostname -i):8080/public/getCars?make=VW&startYear=2020&endYear=2020" |jq -r "." | tee result.json
 ```
 this should return no exceptions - initially will print back an empty array:
 ```sh
@@ -100,7 +101,7 @@ jq -r '. | map(.maker), map(.model),map(.yearOfManufacturing) | @csv' result.jso
 ```
 * add rows to database table:
 ```sh
-curl -d "model=passat&maker=VW&yearOfManufacturing=2020" -H "Content-Type: application/x-www-form-urlencoded" -X POST "http://192.168.0.64:8080/public/addCar" 2>/dev/null
+curl -d "model=passat&maker=VW&yearOfManufacturing=2020" -H "Content-Type: application/x-www-form-urlencoded" -X POST "http://$(hostname -i):8080/public/addCar" 2>/dev/null
 ```
 this will respond with
 ```sh
@@ -109,7 +110,7 @@ this will respond with
 alternatively
 
 ```sh
-curl -d "{\"model\":\"jetta\",\"maker\":\"VW\",\"yearOfManufacturing\":\"2020\"}" -H "Content-Type: application/json" -X POST "http://192.168.0.64:8080/public/addCarJSON" 2>/dev/null
+curl -d "{\"model\":\"jetta\",\"maker\":\"VW\",\"yearOfManufacturing\":\"2020\"}" -H "Content-Type: application/json" -X POST "http://$(hostname -i):8080/public/addCarJSON" 2>/dev/null
 ```
 NOTE: with regular form, possibly throws an exception:
 ```sh

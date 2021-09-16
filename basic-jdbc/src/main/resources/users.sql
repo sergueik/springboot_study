@@ -1,7 +1,7 @@
 -- not just @'localhost'
 
-CREATE USER 'cardbuser'@'' IDENTIFIED BY '123test321';
+CREATE USER 'java'@'' IDENTIFIED BY 'password';
 
-GRANT ALL PRIVILEGES ON cardb.* TO 'cardbuser'@'%';
+GRANT ALL PRIVILEGES ON cardb.* TO 'java'@'%';
 
 FLUSH PRIVILEGES;
