@@ -4,7 +4,7 @@
   <groupId>example</groupId>
   <artifactId>jdbc</artifactId>
   <packaging>jar</packaging>
-  <version>0.7.0-SNAPSHOT</version>
+  <version>0.8.0-SNAPSHOT</version>
   <developers>
     <developer>
       <name>Serguei Kouzmine</name>
@@ -17,7 +17,6 @@
     <java.version>1.8</java.version>
     <mysql-connector-java.version>8.0.18</mysql-connector-java.version>
     <slf4j.version>1.7.30</slf4j.version>
-    <log4j.version>1.2.17</log4j.version>
     <log4j-core.version>2.13.2</log4j-core.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
@@ -27,11 +26,27 @@
     <version>1.5.4.RELEASE</version>
   </parent>
   <dependencies>
+    <!--
+commended to prevent runtime error from multiple slf4j bindings:
+java.lang.ExceptionInInitializerError
+        at org.slf4j.impl.StaticLoggerBinder.
+
+Caused by: java.lang.IllegalStateException: Detected both log4j-over-slf4j.jar AND bound slf4j-log4j12.jar on the class path, preempting StackOverflowError. See also http://www.slf4j.org/codes.html#log4jDelegationLoop for more details.
+        at org.slf4j.impl.Log4jLoggerFactory.<clinit>(Log4jLoggerFactory.java:54)
+
+-->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
+    <!--
+ <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
+        </dependency>
+-->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
@@ -48,11 +63,6 @@
       <version>${log4j-core.version}</version>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
@@ -65,23 +75,23 @@
       <artifactId>mysql-connector-java</artifactId>
       <version>${mysql-connector-java.version}</version>
     </dependency>
-<dependency>
-    <groupId>com.h2database</groupId>
-    <artifactId>h2</artifactId>
-    <scope>runtime</scope>
-</dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <!-- <scope>test</scope> -->
     </dependency>
     <dependency>
-			<groupId>com.jayway.restassured</groupId>
-			<artifactId>rest-assured</artifactId>
-			<version>2.8.0</version>
-			<!--
+      <groupId>com.jayway.restassured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>2.8.0</version>
+      <!--
 			<scope>test</scope> -->
-		</dependency>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
