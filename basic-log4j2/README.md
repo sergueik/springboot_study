@@ -215,6 +215,7 @@ this is cured by installing the real APM server
  * https://github.com/TiantianUpup/springboot-log/tree/master/springboot-trace (somewhat more complex than one would expect?)
  * https://github.com/VivyTeam/mdc-logger
  * https://github.com/sonamsamdupkhangsar/mdc-webapp-example
+ * [example](https://www.toolbox.com/tech/programming/question/how-to-implement-log4j-in-java-application-050809/) adding `log4j2` without `slf4j`
 
 
 ### Author

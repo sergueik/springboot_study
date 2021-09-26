@@ -1,0 +1,65 @@
+<html>
+<head>
+    <title>Chatter</title>
+    <link href="content/main.css" rel="stylesheet" type="text/css"/>
+    <link href="public/bower/bootstrap/dist/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="public/bower/bootstrap/dist/css/bootstrap-theme.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<section id="page">
+
+    <header id="heading">
+        <form id="join-message">
+            <input type="text" placeholder="User Name" data-bind="textInput: userName"/>
+            <input type="text" placeholder="Room Name" data-bind="textInput: roomName"/>
+            <button data-bind="click: join, disable: joined">Join</button>
+            <input id="imageName" type="file" placeholder="upload image" data-bind="textInput: userImage"/>
+            <span data-bind="text: _userImage"></span>
+            <button data-bind="click: uploadImage, enable: joined">Upload</button>
+            <img id="photo" width="30px" height="30px"/>
+        </form>
+    </header>
+    <div id="chat-area">
+        <ul id="messages" class="messages" data-bind="foreach: messages">
+            <li class="list-header date-header" data-bind="visible: isDate">
+                <div class="content" data-bind="text: timeSentDateDisplay"><a class="info" href="#"></a>
+                </div>
+            </li>
+            <li class="message clearfix" data-bind="visible: isFirst">
+                <div class="left">
+                    <div class="name" data-bind="text: userName"></div>
+                </div>
+                <div class="middle first" data-bind="text: message"></div>
+                <div class="right first"><span class="time" data-bind="attr: {title: timeSentFullDisplay()}, text: timeSentTimeDisplay()"></span></div>
+            </li>
+            <li class="message clearfix"  data-bind="visible: !isFirst">
+                <div class="left">
+                </div>
+                <div class="middle" data-bind="text: message"></div>
+                <div class="right"><span class="time" data-bind="attr: {title: timeSentFullDisplay()}, text: timeSentTimeDisplay()"></span></div>
+            </li>
+        </ul>
+        <div id="user-list" class="users">
+            <ul id="active-users" data-bind="foreach: users">
+                <li data-bind="text: name, css: me ? 'highlight-user' : ''"></li>
+            </ul>
+        </div>
+        <div id="roomTopic-aspnetvnext" class="roomTopic current">
+            Home Chat Room
+        </div>
+    </div>
+    <form id="send-message">
+        <input type="text" placeholder="Message" data-bind="textInput: message"/>
+        <button data-bind="click: sendMessage, enable: enableSendMessage">Send</button>
+    </form>
+</section>
+
+<script src="public/bower/jquery/dist/jquery.js"></script>
+<script src="public/bower/json2/json2.js"></script>
+<script src="public/bower/knockoutjs/dist/knockout.debug.js"></script>
+<script src="public/bower/momentjs/moment.js"></script>
+<script src="scripts/ChatViewModel.js"></script>
+<script src="scripts/chat.js"></script>
+<script src="scripts/main.js"></script>
+</body>
+</html>
