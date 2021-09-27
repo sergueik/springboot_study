@@ -30,13 +30,15 @@
 
 <script th:src="@{/js/jquery.js}"></script>
 <script type="text/javascript">
-    $(function () {  //生成验证码
+ 	// enerate verification code
+    $(function () {  
         $('#kaptchaImage').click(function () {
             $(this).hide().attr('src', '/kaptcha.jpg?' + Math.floor(Math.random() * 10000)).fadeIn();
         });
     });
 
-    function changeCode() {  //刷新
+	// Refresh
+    function changeCode() {
         $('#kaptchaImage').hide().attr('src', '/kaptcha.jpg?' + Math.floor(Math.random() * 10000)).fadeIn();
         event.cancelBubble = true;
     }
