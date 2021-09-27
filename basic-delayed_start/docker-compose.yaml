@@ -1,0 +1,36 @@
+version: '3.5'
+services:
+  the_database:
+    hostname: the_database
+    image: alpine:3.9
+    command: >
+      /bin/sh -c "
+        sleep 5;
+        nc -lk 0.0.0.0 5432;
+      "
+  another_service:
+    hostname: another_service
+    image: alpine:3.9
+    command: >
+      /bin/sh -c "
+        sleep 8;
+        nc -lk 0.0.0.0 5555;
+      "
+
+  the_web_server:
+    image: alpine:3.9
+    depends_on:
+      - the_database
+      - another_service
+    command: >
+      /bin/sh -c "
+        nc -z the_database 5432 &&
+        echo Connected to DB and started!
+      "
+
+  start_dependencies:
+    image: dadarek/wait-for-dependencies
+    depends_on:
+      - the_database
+      - another_service
+    command: the_database:5432 another_service:5555

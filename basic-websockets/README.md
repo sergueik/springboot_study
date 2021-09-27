@@ -8,6 +8,7 @@
 mvn spring-boot:run
 ```
 open the chat langing page `http://localhost:8080` in two or more browser instances.
+![Example](https://github.com/sergueik/springboot_study/blob/master/basic-websockets/screenshots/handshake-capture.jpg)
 * Docker run
 ```sh
 mvn clean package
@@ -55,3 +56,4 @@ docker image prune -f
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
