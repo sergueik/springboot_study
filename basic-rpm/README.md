@@ -48,3 +48,8 @@ docker run -it --name=$RPM_IMAGE --volumes-from $APP_IMAGE $RPM_IMAGE
 
   * [guide](https://www.baeldung.com/spring-task-scheduler) to the Spring Task Scheduler
   * another [demo project](https://github.com/JavaInUse/springboot-taskscheduler) 
+  * Russian [translation](https://ru.wikibooks.org/wiki/RRDtool) of the originalRRDTool [WIKI](https://oss.oetiker.ch/rrdtool/doc/index.en.html)
+  * [rrd based metric monitoring and predictions](https://habr.com/ru/post/134599/) (in Russian0
+  * [practical example of rrd feed](https://www.codeproject.com/Articles/867463/Monitoring-Lync-with-MRTG)
+  * [practical example of rrd feed (part 2?)](https://www.codeproject.com/Articles/1016359/Monitoring-Lync-with-MRTG-2)
+  * [.net native rrd produced](https://www.codeproject.com/Articles/28763/C-Hooks-For-RRDtool)

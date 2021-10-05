@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.h2.tools.DeleteDbFiles;
 
@@ -22,42 +24,84 @@ public class ExampleApplication {
 			DeleteDbFiles.execute("~", "test", true);
 			createWithStatement();
 			insertWithStatement();
-			DeleteDbFiles.execute("~", "test", true);
+			// DeleteDbFiles.execute("~", "test", true);
 			insertWithPreparedStatement();
+			queryWithPreparedStatement();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
+	private static void queryWithPreparedStatement() throws SQLException {
+		Connection connection = getDBConnection();
+		PreparedStatement statement = null;
+
+		String query = "SELECT employee_id, employee_firstname, employee_lastname, department_name FROM employee e "
+				+ "JOIN department d ON e.department_id = d.department_id "
+				+ "WHERE employee_firstname = ? AND " + "employee_lastname = ?";
+		List<String> employee = Arrays.asList("Bob", "Smith");
+		try {
+			connection.setAutoCommit(false);
+			statement = connection.prepareStatement(query);
+
+			statement.setString(1, employee.get(0));
+			statement.setString(2, employee.get(1));
+
+			ResultSet rs = statement.executeQuery();
+			System.out.println("H2 Database queried through PreparedStatement");
+			while (rs.next()) {
+				System.out.println("Id: " + rs.getInt("employee_id") + " First Name: "
+						+ rs.getString("employee_firstname") + " Last Name: "
+						+ rs.getString("employee_lastname") + " Department name: "
+						+ rs.getString("department_name"));
+			}
+			statement.close();
+			connection.commit();
+		} catch (SQLException e) {
+			System.out.println("Exception Message " + e.getLocalizedMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			connection.close();
+		}
+	}
+
 	private static void insertWithPreparedStatement() throws SQLException {
 		Connection connection = getDBConnection();
-		PreparedStatement createPreparedStatement = null;
 		PreparedStatement insertPreparedStatement = null;
 		PreparedStatement selectPreparedStatement = null;
 
-		String CreateQuery = "CREATE TABLE PERSON(id int primary key, name varchar(255))";
-		String InsertQuery = "INSERT INTO PERSON" + "(id, name) values" + "(?,?)";
-		String SelectQuery = "select * from PERSON";
+		String InsertQuery = "INSERT INTO employee (employee_id, employee_firstname, employee_lastname, department_id) VALUES (?,?,?,?)";
+		String SelectQuery = "select * from employee";
+		List<ArrayList<Object>> data = new ArrayList<>(Arrays.asList(
+				new ArrayList<Object>(Arrays.asList(1, "Bob", "Smith", 4)),
+				new ArrayList<Object>(Arrays.asList(2, "John", "Green", 1)),
+				new ArrayList<Object>(Arrays.asList(3, "Sally", "Wilson", 3)),
+				new ArrayList<Object>(Arrays.asList(4, "Harold", "Smith", 2)),
+				new ArrayList<Object>(Arrays.asList(5, "Joe", "White", 5)),
+				new ArrayList<Object>(Arrays.asList(6, "Arnold", "Shoemaker", 4))));
 		try {
 			connection.setAutoCommit(false);
-
-			createPreparedStatement = connection.prepareStatement(CreateQuery);
-			createPreparedStatement.executeUpdate();
-			createPreparedStatement.close();
-
 			insertPreparedStatement = connection.prepareStatement(InsertQuery);
-			insertPreparedStatement.setInt(1, 1);
-			insertPreparedStatement.setString(2, "Jose");
-			insertPreparedStatement.executeUpdate();
+
+			for (List<Object> row : data) {
+				insertPreparedStatement.setInt(1, (int) row.get(0));
+				insertPreparedStatement.setString(2, row.get(1).toString());
+				insertPreparedStatement.setString(3, row.get(2).toString());
+				insertPreparedStatement.setInt(4, (int) row.get(3));
+				insertPreparedStatement.executeUpdate();
+			}
 			insertPreparedStatement.close();
 
 			selectPreparedStatement = connection.prepareStatement(SelectQuery);
 			ResultSet rs = selectPreparedStatement.executeQuery();
 			System.out.println("H2 Database inserted through PreparedStatement");
 			while (rs.next()) {
-				System.out
-						.println("Id " + rs.getInt("id") + " Name " + rs.getString("name"));
+				System.out.println("Id: " + rs.getInt("employee_id") + " First Name: "
+						+ rs.getString("employee_firstname") + " Last Name: "
+						+ rs.getString("employee_lastname") + " Department Id: "
+						+ rs.getInt("department_id"));
 			}
 			selectPreparedStatement.close();
 
@@ -76,13 +120,13 @@ public class ExampleApplication {
 		Statement stmt = null;
 		try {
 			connection.setAutoCommit(false);
+			stmt = connection.createStatement();
 			for (String dml : Arrays.asList(
 					"CREATE TABLE department ( department_id INT AUTO_INCREMENT PRIMARY KEY, department_name VARCHAR(100) NOT NULL); ",
 					"CREATE TABLE employee ( employee_id INT AUTO_INCREMENT PRIMARY KEY, employee_firstname VARCHAR (100) NOT NULL, employee_lastname VARCHAR (100) NOT NULL, department_id INT NOT NULL, FOREIGN KEY (department_id) REFERENCES department (department_id) );")) {
-				stmt = connection.createStatement();
 				stmt.execute(dml);
-				stmt.close();
 			}
+			stmt.close();
 		} catch (SQLException e) {
 			System.err.println("Exception: " + e.getLocalizedMessage());
 		} catch (Exception e) {
@@ -94,22 +138,27 @@ public class ExampleApplication {
 	}
 
 	private static void insertWithStatement() throws SQLException {
+
+		String[] departments = new String[] { "Sales", "Marketing",
+				"Human Resources", "Manufacturing", "Accounting" };
+
 		Connection connection = getDBConnection();
 		Statement stmt = null;
 		try {
 			connection.setAutoCommit(false);
 			stmt = connection.createStatement();
-			stmt.execute(
-					"CREATE TABLE PERSON(id int primary key, name varchar(255))");
-			stmt.execute("INSERT INTO PERSON(id, name) VALUES(1, 'Anju')");
-			stmt.execute("INSERT INTO PERSON(id, name) VALUES(2, 'Sonia')");
-			stmt.execute("INSERT INTO PERSON(id, name) VALUES(3, 'Asha')");
+			for (int cnt = 0; cnt != departments.length; cnt++) {
+				// numbering from 1
+				stmt.execute(String.format(
+						"INSERT INTO department (department_id, department_name) VALUES (%d, '%s')",
+						cnt + 1, departments[cnt]));
+			}
 
-			ResultSet rs = stmt.executeQuery("select * from PERSON");
+			ResultSet rs = stmt.executeQuery("select * from department");
 			System.out.println("H2 Database inserted through Statement");
 			while (rs.next()) {
-				System.out
-						.println("Id " + rs.getInt("id") + " Name " + rs.getString("name"));
+				System.out.println("Id " + rs.getInt("department_id") + " Name "
+						+ rs.getString("department_name"));
 			}
 			stmt.close();
 			connection.commit();

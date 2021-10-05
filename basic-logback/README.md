@@ -326,6 +326,8 @@ in `logback.xml` may cause __logback__ to instantiate an additional `FILE` logge
   * https://lankydan.dev/2019/01/09/configuring-logback-with-spring-boot
   * https://stackoverflow.com/questions/29918323/how-to-configure-rolling-file-appender-within-spring-boots-application-yml
   * https://mkyong.com/spring-boot/spring-boot-profile-based-properties-and-yaml-example/
+  * https://www.baeldung.com/spring-boot-disable-console-logging
+
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

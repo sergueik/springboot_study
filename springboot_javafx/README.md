@@ -16,5 +16,5 @@ mvn clean spring-boot:run
 * [javaFx spring day 1](https://dzone.com/articles/javafx-spring-day-1-–)
 * [javaFx Spring ay 3](https://dzone.com/articles/javafx-spring-day-3-–)
 * [javafx2 with spring](http://koenserneels.blogspot.com/2012/11/javafx-2-with-spring.html)
-
+* [springboot security javafx form](https://github.com/emorgado/javafx-springboot-springsecurity)
 

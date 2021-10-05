@@ -9,7 +9,7 @@ This directory contains a replica of
 ```sh
 MONGODB_SERVER=mongodb
 docker build -t $MONGODB_SERVER -f Dockerfile.$MONGODB_SERVER .
-docker container prune -f
+docker container rm -f $MONGODB_SERVER
 docker run -d --name $MONGODB_SERVER -p 27717:27017 -i $MONGODB_SERVER
 docker logs $MONGODB_SERVER
 ```

@@ -357,7 +357,7 @@ Alternarively one can build or download __binjr__ [app](https://github.com/binjr
   * https://github.com/sysmo-nms/rrdio
   * probably moves data the other direction https://github.com/nitinka/JMetrics
   * basic implementation of [SimpleJSON REST server](https://github.com/IsmetKh/grafana-simplejson-datasource) - has ASP.Net dependencies , can be used to prototype `/query`, `/search`,`/annotations`, `/tag-keys`, `tag-alues` payloads then using some prototype ASP.Net clean [REST famework](https://github.com/sachabarber/REST/tree/master/RESTServer/RESTServer) also discussed in [codeproject article](https://www.codeproject.com/Articles/826383/REST-A-Simple-REST-framework)
-
-
+  * [fbacchella/jrds](https://github.com/fbacchella/jrds) - another __rd4j-backed monitorng application 
+  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
