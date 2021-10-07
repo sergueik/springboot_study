@@ -5,7 +5,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,8 +25,11 @@ public class Controller {
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public void upload(@RequestParam("file") MultipartFile file)
+	public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file)
 			throws IOException {
+		if (file.isEmpty()) {
+			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+		}
 		System.err.println("Processing " + file.getOriginalFilename());
 		InputStream in = file.getInputStream();
 		File currDir = new File(".");
@@ -38,5 +43,6 @@ public class Controller {
 		}
 		f.flush();
 		f.close();
+		return new ResponseEntity<String>(HttpStatus.OK);
 	}
 }

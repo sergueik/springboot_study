@@ -46,27 +46,24 @@ IsSuccessStatusCode : True
 . .\client2.ps1 -filepath C:\temp\pstest.txt -url 'http://localhost:8085/basic/upload'
 ```
 ```text
-Invoke-RestMethod -Uri http://localhost:8085/basic/upload -Method Post -ContentT
-ype "multipart/form-data; boundary=`"a1abe753-03af-4116-b5b5-799781773e42`"" -Bo
-dy --a1abe753-03af-4116-b5b5-799781773e42
+Invoke-RestMethod -Uri http://localhost:8085/basic/upload -Method Post -ContentType "multipart/form-data; boundary=`"a1abe753-03af-4116-b5b5-799781773e42`"" -Body --a1abe753-03af-4116-b5b5-799781773e42
 Content-Disposition: form-data; name="file"; filename="temp.txt"
 Content-Type: application/octet-stream
+
+test data
+
+--1ec7a4ed-92ea-496b-81da-3afda4355c7f--
+
+
 ```
 
 
-see in all three cases the backend prints and saves the file:
+* see in all three cases the backend prints and saves the file:
 ```text
-2021-10-06 21:22:45.676  INFO 9728 --- [           main] example.ExampleApplicat
-ion               : Started ExampleApplication in 3.965 seconds (JVM running for
- 15.892)
-2021-10-06 21:22:49.905  INFO 9728 --- [nio-8085-exec-1] o.a.c.c.C.[Tomcat].[loc
-alhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
-2021-10-06 21:22:49.908  INFO 9728 --- [nio-8085-exec-1] o.s.web.servlet.Dispatc
-herServlet        : FrameworkServlet 'dispatcherServlet': initialization started
-
-2021-10-06 21:22:49.994  INFO 9728 --- [nio-8085-exec-1] o.s.web.servlet.Dispatc
-herServlet        : FrameworkServlet 'dispatcherServlet': initialization complet
-ed in 83 ms
+2021-10-06 21:22:45.676  INFO 9728 --- [           main] example.ExampleApplication               : Started ExampleApplication in 3.965 seconds (JVM running for 15.892)
+2021-10-06 21:22:49.905  INFO 9728 --- [nio-8085-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2021-10-06 21:22:49.908  INFO 9728 --- [nio-8085-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+2021-10-06 21:22:49.994  INFO 9728 --- [nio-8085-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 83 ms
 
 
 Processing pstest.txt
@@ -79,6 +76,12 @@ test data
 ```
 
 with only difference is how Powershell client scripts transmit the file.
+
+### See Also
+
+  * [Multipart Request Handling in Spring](https://www.baeldung.com/sprint-boot-multipart-requests)
+  * [testing a Spring Multipart POST Request](https://www.baeldung.com/spring-multipart-post-request-test)
+  * [MockMvcRequestBuilders class methods](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/test/web/servlet/request/MockMvcRequestBuilders.html)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

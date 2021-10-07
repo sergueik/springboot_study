@@ -1,0 +1,47 @@
+package example.controller;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.Rule;
+import org.junit.Assume;
+import org.springframework.boot.test.rule.OutputCapture;
+
+
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
+@WebMvcTest
+public class ConsoleCaptureTest {
+	final static String route = "/basic/upload";
+	private static MockMvc mvc;
+
+	private static Controller controller = new Controller();
+	private static MockMultipartFile file;
+
+	@BeforeClass
+	public static void setUp() {
+		mvc = MockMvcBuilders.standaloneSetup(controller).build();
+		file = new MockMultipartFile("file", "test.txt", MediaType.TEXT_PLAIN_VALUE,
+				"Hello, World!".getBytes());
+	}
+
+	@Rule
+	public OutputCapture capture = new OutputCapture();
+
+	@Test
+	public void testName() throws Exception {
+		Assume.assumeTrue(true);
+		sut.hello();
+		assertThat(capture.toString(), containsString("basic"));
+	}
+}
