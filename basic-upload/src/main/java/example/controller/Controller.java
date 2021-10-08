@@ -25,24 +25,28 @@ public class Controller {
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file)
-			throws IOException {
+	public ResponseEntity<String> upload(
+			@RequestParam("file") MultipartFile file) {
 		if (file.isEmpty()) {
-			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
-		System.err.println("Processing " + file.getOriginalFilename());
-		InputStream in = file.getInputStream();
-		File currDir = new File(".");
-		String path = currDir.getAbsolutePath();
-		FileOutputStream f = new FileOutputStream(
-				path.substring(0, path.length() - 1) + file.getOriginalFilename());
-		int ch = 0;
-		while ((ch = in.read()) != -1) {
-			f.write(ch);
-			System.err.print(String.format("%c", ch));
+		try {
+			System.err.println("Processing " + file.getOriginalFilename());
+			InputStream in = file.getInputStream();
+			String currDirPath = new File(".").getAbsolutePath();
+			FileOutputStream f = new FileOutputStream(
+					currDirPath.substring(0, currDirPath.length() - 1)
+							+ file.getOriginalFilename());
+			int ch = 0;
+			while ((ch = in.read()) != -1) {
+				f.write(ch);
+				System.err.print(String.format("%c", ch));
+			}
+			f.flush();
+			f.close();
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
-		f.flush();
-		f.close();
-		return new ResponseEntity<String>(HttpStatus.OK);
+		return ResponseEntity.status(HttpStatus.OK).body(null);
 	}
 }
