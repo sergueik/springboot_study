@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -40,11 +42,12 @@ public class BadControllerTest {
 	@Before
 	public void beforeTest() throws Exception {
 		resultActions = mvc.perform(post(route).characterEncoding("utf-8")
-				.contentType("multipart/form-data")
-				.content(
-						"--e7b7173e-70e0-418d-9982-35ae63b17c4a\r\nContent-Disposition: form-data; name=\"file\"; filename=\"temp.txt\"\r\nContent-Type: application/octet-stream\r\n\r\ntest data\r\n\r\n--e7b7173e-70e0-418d-9982-35ae63b17c4a--\r\n")
-				.header("ContentType", new Object[] { "multipart/form-data",
-						"boundary=\"a1abe753-03af-4116-b5b5-799781773e42\"" }));
+				.content(String.join("\r\n",
+						Arrays.asList("--boundary",
+								"Content-Disposition: form-data; name=\"file\"; filename=\"temp.txt\"",
+								"Content-Type: application/octet-stream", "", "test data", "",
+								"--boundary--", "")))
+				.contentType("multipart/form-data; boundary=\"boundary\""));
 	}
 
 	// DEBUG
@@ -61,13 +64,13 @@ public class BadControllerTest {
 		resultActions.andExpect(status().isBadRequest());
 	}
 
-	// examine exception - none thrown 
+	// examine exception - none is thrown
 	@Test
 	public void exceptionTest() {
 		try {
 			resultActions.andExpect(content().string(""));
 		} catch (Exception e) {
-		//	System.err.println("Exception: " + e.toString());
+			// System.err.println("Exception: " + e.toString());
 		}
 	}
 

@@ -45,6 +45,7 @@ public class Controller {
 			f.flush();
 			f.close();
 		} catch (IOException e) {
+			System.err.print("Exception (caught):" + e.toString());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(null);
