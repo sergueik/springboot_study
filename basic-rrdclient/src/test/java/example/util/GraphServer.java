@@ -1,13 +1,16 @@
-package info.fetter.rrdclient.util;
+package example.util;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GraphServer extends PseudoServer {
 	File image;
+	private static final Logger logger = LoggerFactory.getLogger(GraphServer.class);
 
 	public GraphServer(int port, File image) throws IOException {
 		super(port);

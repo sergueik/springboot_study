@@ -1,4 +1,4 @@
-package info.fetter.rrdclient;
+package example;
 
 /*
  * Copyright 2013 Didier Fetter

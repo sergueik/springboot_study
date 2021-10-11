@@ -1,4 +1,4 @@
-package info.fetter.rrdclient;
+package example;
 
 @SuppressWarnings("serial")
 public class RRDToolError extends RuntimeException {

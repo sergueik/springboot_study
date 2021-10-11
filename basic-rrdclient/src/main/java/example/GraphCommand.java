@@ -1,4 +1,4 @@
-package info.fetter.rrdclient;
+package example;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -33,14 +33,10 @@ public class GraphCommand extends RRDCommand {
 	private boolean isOutputParsed = false;
 	private BufferedImage image;
 
-	/**
-	 * Create a wrapper object for the RRD graph command.
-	 * 
-	 * @param args
-	 */
 	public GraphCommand(String... args) {
 		try {
 			this.args = args;
+			@SuppressWarnings("deprecation")
 			CommandLineParser parser = new PosixParser();
 			Options options = new Options();
 			options.addOption("a", "imgformat", true, "image format");
