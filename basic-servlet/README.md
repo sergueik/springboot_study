@@ -1,6 +1,6 @@
 ### Info
 
- * basic tomcat servlet example running on Alpine Tomcat 8.
+ * basic tomcat servlet example running on Alpine [Tomcat 8.0](https://hub.docker.com/layers/tomcat/library/tomcat/8.0-alpine/images/sha256-65e0ad209ec9ef5ab03fa7bff6f6e1374ce3d7cd7baad00e72162ede7505feb8?context=explore) and [Tomcat 8.5](https://hub.docker.com/layers/tomcat/library/tomcat/8.5-alpine/images/sha256-8b8b1eb786b54145731e1cd36e1de208d10defdbb0b707617c3e7ddb9d6d99c8?context=explore)
 
 ### Usage
 *  build
@@ -64,21 +64,37 @@ alternarively can open the URL in the browser `http://192.168.0.29:8080/demo/` a
 ### Troubleshooting
 * connect to container
 ```sh
-docker exec -it $NAME  sh
+docker exec -it $NAME sh
 ```
 * inspect webapps
 
 ### Issues
 
 
-if switched to Java __1.8__ or later, will fail in runtime
+if switched to Java __1.8__ or later, the Tomcat 8.0 will fail in runtime
 ```
 java.lang.UnsupportedClassVersionError: example/HelloServlet : Unsupported major.minor version 52.0 (unable to load class example.HelloServlet)
 ```
-similarly there is 
+towork with tomcat 8.0 image use `java7` profile
+```sh
+mvn -Pjava7 clean package
+```
+and `Dockerfile.tomcat8.0`:
+```
+export IMAGE='basic-servlet'
+export NAME='example-servlet'
+docker container rm -f $(docker container ls -a | grep $NAME | awk '{print $1}')
+docker image prune -f
+docker image rm -f $IMAGE
+docker build -t $IMAGE -f Dockerfile.tomcat8.0 .
+docker run --name $NAME -p 8080:8080 -d $IMAGE
+```
+
+can also use the `Dockerfile.tomcat8.5` instead of `Dockerfile` for java 1.8 / tomcat 8.5 test
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 
 
 
