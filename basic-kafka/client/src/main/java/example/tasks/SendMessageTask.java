@@ -1,8 +1,8 @@
-package com.layo.kafkaexample.tasks;
+package example.tasks;
 
-import com.layo.kafkaexample.engine.Producer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -10,6 +10,8 @@ import org.springframework.util.concurrent.ListenableFuture;
 
 import java.time.LocalDate;
 import java.util.concurrent.ExecutionException;
+
+import example.engine.Producer;
 
 @Component
 public class SendMessageTask {
@@ -21,12 +23,15 @@ public class SendMessageTask {
 		this.producer = producer;
 	}
 
+	@Value("${example.topic}")
+	private String topic;
+
 	// run every 3 sec
 	@Scheduled(fixedRateString = "3000")
 	public void send() throws ExecutionException, InterruptedException {
 
 		ListenableFuture<SendResult<String, String>> listenableFuture = this.producer
-				.sendMessage("test-topic", "subject", LocalDate.now().toString());
+				.sendMessage(topic, "subject", LocalDate.now().toString());
 
 		SendResult<String, String> result = listenableFuture.get();
 		logger.info(String.format(

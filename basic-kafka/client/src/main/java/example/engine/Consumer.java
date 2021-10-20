@@ -1,4 +1,4 @@
-package com.layo.kafkaexample.engine;
+package example.engine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ public class Consumer {
 
 	private final Logger logger = LoggerFactory.getLogger(Producer.class);
 
-	@KafkaListener(topics = { "test-topic" })
+	@KafkaListener(topics = { "${example.topic}" })
 	public void consume(final @Payload String message,
 			final @Header(KafkaHeaders.OFFSET) Integer offset,
 			final @Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) String key,

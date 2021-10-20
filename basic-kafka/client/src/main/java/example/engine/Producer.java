@@ -1,4 +1,4 @@
-package com.layo.kafkaexample.engine;
+package example.engine;
 
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
