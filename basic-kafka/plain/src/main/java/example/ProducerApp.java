@@ -1,6 +1,7 @@
 package example;
 
 import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.text.*;
 import java.util.*;
@@ -14,11 +15,13 @@ public class ProducerApp {
 
 		final Properties properties = new Properties();
 		properties.put("bootstrap.servers", String.format("%s:9092", hostname));
-		properties.put("key.serializer",
-				"org.apache.kafka.common.serialization.StringSerializer");
-		properties.put("value.serializer",
-				"org.apache.kafka.common.serialization.StringSerializer");
-		properties.put("acks", "-1");
+		// ack from leader and all "in-sync" replicas
+		properties.put("acks", "all");
+		properties.put("enable.idempotence", "1");
+
+		// no security protocol specified in this demo
+		// not providing "sasl.jaas.config" information for locally hosted kafka
+		// cluster
 		properties.put("buffer.memory", 33554432);
 		properties.put("compression.type", "none");
 		properties.put("retries", 0);
@@ -35,7 +38,7 @@ public class ProducerApp {
 		properties.put("retry.backoff.ms", 5);
 
 		final KafkaProducer<String, String> producer = new KafkaProducer<>(
-				properties);
+				properties, new StringSerializer(), new StringSerializer());
 
 		System.out
 				.println("created kafka producer: " + producer.getClass().getName());
@@ -46,12 +49,18 @@ public class ProducerApp {
 		System.out.println("producing messages");
 		for (int cnt = 0; cnt != maxCnt; cnt++) {
 			try {
-				producer.send(new ProducerRecord<String, String>(topic,
-						String.format("Message # %s", Integer.toString(cnt))));
+				// send synchronously
+				RecordMetadata metadata = producer
+						.send(new ProducerRecord<String, String>(topic,
+								String.format("Message # %s", Integer.toString(cnt))))
+						.get();
 				System.out.println(
-						String.format("Message # %s sent at %s", Integer.toString(cnt),
+						String.format("Message # %s sent at %s to partition %s offset %s",
+								Integer.toString(cnt),
 								new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS")
-										.format(new Date())));
+										.format(new Date()),
+								Integer.toString(metadata.partition()),
+								Long.toString(metadata.offset())));
 				Thread.sleep(interval);
 			} catch (Exception e) {
 				e.printStackTrace();

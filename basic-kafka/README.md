@@ -36,6 +36,78 @@ this will print
 ```text
 Created topic test-topic.
 ```
+* run plain client
+```sh
+cd plain
+mvn package
+```
+then run in two terminals
+```sh
+java -cp target/example.plain-kafka.jar:target/lib/* example.ProducerApp
+```
+and
+```java
+java -cp target/examplelain-kafka.jar:target/lib/* example.BatchProducerApp
+```
+and
+```sh
+java -cp target/example.plain-kafka.jar:target/lib/* example.ConsumerApp
+```
+and
+```sh
+java -cp target/examplelain-kafka.jar:target/lib/* example.ConsumerGroupApp
+```
+
+the console logs will illustrate the execution:
+
+```txt
+created kafka producer: org.apache.kafka.clients.producer.KafkaProducer
+producing messages
+Message # 0 sent at 2021/10/21 15:13:12:561 to partition 0 offset 100
+Message # 1 sent at 2021/10/21 15:13:13:579 to partition 0 offset 101
+Message # 2 sent at 2021/10/21 15:13:14:584 to partition 0 offset 102
+Message # 3 sent at 2021/10/21 15:13:15:592 to partition 0 offset 103
+Message # 4 sent at 2021/10/21 15:13:16:597 to partition 0 offset 104
+Message # 5 sent at 2021/10/21 15:13:17:602 to partition 0 offset 105
+Message # 6 sent at 2021/10/21 15:13:18:611 to partition 0 offset 106
+Message # 7 sent at 2021/10/21 15:13:19:617 to partition 0 offset 107
+Message # 8 sent at 2021/10/21 15:13:20:621 to partition 0 offset 108
+Message # 9 sent at 2021/10/21 15:13:21:626 to partition 0 offset 109
+Message # 10 sent at 2021/10/21 15:13:22:630 to partition 0 offset 110
+```
+
+```text
+assigned to partitions:
+Partition: 0 in Topic: test-topic
+Topic: test-topic, Partition: 0, Offset: 100, Key: null, Value: Message # 0
+Topic: test-topic, Partition: 0, Offset: 101, Key: null, Value: Message # 1
+Topic: test-topic, Partition: 0, Offset: 102, Key: null, Value: Message # 2
+Topic: test-topic, Partition: 0, Offset: 103, Key: null, Value: Message # 3
+Topic: test-topic, Partition: 0, Offset: 104, Key: null, Value: Message # 4
+Topic: test-topic, Partition: 0, Offset: 105, Key: null, Value: Message # 5
+Topic: test-topic, Partition: 0, Offset: 106, Key: null, Value: Message # 6
+Topic: test-topic, Partition: 0, Offset: 107, Key: null, Value: Message # 7
+Topic: test-topic, Partition: 0, Offset: 108, Key: null, Value: Message # 8
+Topic: test-topic, Partition: 0, Offset: 109, Key: null, Value: Message # 9
+Topic: test-topic, Partition: 0, Offset: 110, Key: null, Value: Message # 10
+```
+and 
+```text
+subscribed to the following topics:
+test-topic
+Topic: test-topic, Partition: 0, Offset: 111, Key: null, Value: Message # 0
+Topic: test-topic, Partition: 0, Offset: 112, Key: null, Value: Message # 1
+Topic: test-topic, Partition: 0, Offset: 113, Key: null, Value: Message # 2
+Topic: test-topic, Partition: 0, Offset: 114, Key: null, Value: Message # 3
+Topic: test-topic, Partition: 0, Offset: 115, Key: null, Value: Message # 4
+Topic: test-topic, Partition: 0, Offset: 116, Key: null, Value: Message # 5
+Topic: test-topic, Partition: 0, Offset: 117, Key: null, Value: Message # 6
+Topic: test-topic, Partition: 0, Offset: 118, Key: null, Value: Message # 7
+Topic: test-topic, Partition: 0, Offset: 119, Key: null, Value: Message # 8
+Topic: test-topic, Partition: 0, Offset: 120, Key: null, Value: Message # 9
+Topic: test-topic, Partition: 0, Offset: 121, Key: null, Value: Message # 10
+```
+(the offset will grow)
 
 * run springboot client
 ```sh

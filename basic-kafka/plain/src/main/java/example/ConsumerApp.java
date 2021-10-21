@@ -1,6 +1,7 @@
 package example;
 
 import org.apache.kafka.common.*;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.clients.consumer.*;
 
 import java.util.*;
@@ -15,10 +16,6 @@ public class ConsumerApp {
 
 		final Properties properties = new Properties();
 		properties.put("bootstrap.servers", String.format("%s:9092", hostname));
-		properties.put("key.deserializer",
-				"org.apache.kafka.common.serialization.StringDeserializer");
-		properties.put("value.deserializer",
-				"org.apache.kafka.common.serialization.StringDeserializer");
 		properties.put("fetch.min.bytes", 1);
 		properties.put("group.id", "");
 		properties.put("heartbeat.interval.ms", 3000);
@@ -39,7 +36,8 @@ public class ConsumerApp {
 		properties.put("retry.backoff.ms", 100);
 		properties.put("client.id", "");
 
-		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
+		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties,
+				new StringDeserializer(), new StringDeserializer());
 
 		ArrayList<TopicPartition> partitions = new ArrayList<>();
 		partitions.add(new TopicPartition(topic, 0));
