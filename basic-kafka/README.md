@@ -1,11 +1,12 @@
 ### Info
 
-this directory containes
-
-a trimmed down replica of Kafka Alpine based [Docker configuration](https://github.com/blacktop/docker-kafka-alpine/blob/master/2.3/Dockerfile)
+this directory containes a trimmed down replica of Kafka Alpine based [Docker configuration](https://github.com/blacktop/docker-kafka-alpine/blob/master/2.3/Dockerfile)
 with kafka stack and zookeeper in one image with updated release variable it pulls from [mirror](https://dlcdn.apache.org/kafka/)
  and a standalone ultra basic SpringBoot Kafka application messaging with itself
+from [example Kafka Springboot project](https://github.com/layonez/kafka-example/tree/master/src/main/java/com/layo/kafkaexample) (sans its Docker part)
 
+ and a plain java Kafka client example from
+__Getting Started with Apache Kafka__ [course](https://app.pluralsight.com/library/courses/2802039d-8e70-4d95-a366-0f91744db191/table-of-contents)
 
 ### Usage
 
