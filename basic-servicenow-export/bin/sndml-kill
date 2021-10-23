@@ -1,0 +1,17 @@
+#!/bin/bash
+source sndml-setup $1
+SNDML_PIDFILE=$SNDML_CONFIG/daemon.pid
+if [[ ! -f $SNDML_PIDFILE ]]
+then
+  echo $SNDML_PIDFILE not found
+  exit -1
+fi
+SNDML_PID=`cat $SNDML_PIDFILE`
+ps -p $SNDML_PID
+status=$?
+if [[ $status -ne 0 ]]
+then
+  echo Process not found
+  exit -1
+fi
+kill $SNDML_PID

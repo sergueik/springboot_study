@@ -1,0 +1,103 @@
+# Usage:
+#   source sndml-setup <dir>
+#
+# Defines the following environment variables:
+#   SNDML_CONFIG
+#   SNDML_CONFIGS
+#   SNDML_JAR
+#   SNDML_PROFILE
+#   SNDML_VERSION
+#
+# Assumes SNDML_HOME is predefined and structured as follows:
+#   pom.xml                       <- Maven Project Object Model
+#   src/                          <- location of source code
+#   target/                       <- location of jar files
+#   configs/                      <- SNDML_CONFIGS excluded in .gitignore
+#   configs/xxxxx/                <- SNDML_CONFIG
+#   configs/xxxxx/.sndml_profile  <- SNDML_PROFILE
+#   configs/xxxxx/yaml/           <- location of yaml files
+#   configs/xxxxx/metrics/        <- location of metrics files
+#   configs/xxxxx/log/            <- location of log files
+#
+
+sndml_setup_args() {
+  if [[ -z "$SNDML_HOME" ]]
+  then
+    echo SNDML_HOME not defined
+    return 1
+  fi
+  if [[ -z "$SNDML_CONFIGS" ]]
+  then
+    export SNDML_CONFIGS=$SNDML_HOME/configs
+  fi
+  if [[ -z "$1" ]]
+  then
+    export SNDML_CONFIG=`pwd`
+  else
+	if [[ -d "$1" ]]
+	then
+	  cd $1
+	  export SNDML_CONFIG=`pwd`
+	else
+	  export SNDML_CONFIG=$SNDML_CONFIGS/$1
+	  cd $SNDML_CONFIG
+	fi
+  fi
+  export SNDML_PROFILE=$SNDML_CONFIG/.sndml_profile
+  if [[ ! -r "$SNDML_PROFILE" ]]
+  then
+    echo File not found: $SNDML_PROFILE
+    return 1
+  fi
+  if [[ -n "$2" ]]
+  then
+      if [[ -f "$2" ]]
+      then
+        export SNDML_YAML=$2
+      else
+        export SNDML_YAML=$SNDML_CONFIG/yaml/$2.yaml
+      fi
+  fi
+  sndml_determine_jar
+}
+
+sndml_set_log() {
+  timestamp=`date +%Y%m%d%H%M%S`
+  ybase=${1##*/}
+  yname=${ybase%.*}
+  export SNDML_LOG=$SNDML_CONFIG/log/$yname-$timestamp.log
+}
+
+sndml_determine_version() {
+  # look in pom.xml to find the latest version
+  local vpath='/*[local-name()="project"]/*[local-name()="version"]/text()'
+  export SNDML_VERSION=`xmllint --xpath $vpath $SNDML_HOME/pom.xml`
+}
+
+sndml_determine_jar() {
+  if [[ -z "$SNDML_VERSION" ]]; then
+    sndml_determine_version
+  fi
+  local url=`awk -F= '/^datamart.url/{print $2}' <$SNDML_PROFILE`
+  if [[ -z "$url" ]]; then
+    echo datamart.url not found in $SNDML_PROFILE
+    return 1
+  fi
+  local db=`echo $url | awk -F: '{print $2}'`
+  local suffix
+  case $db in
+  oracle)     suffix=ora ;;
+  postgresql) suffix=pg ;;
+  mysql)      suffix=mysql ;;
+  sqlserver)  suffix=mssql ;;
+  sqlite)     suffix=sqlite ;;
+  esac
+  export SNDML_JAR=$SNDML_HOME/target/sndml-$SNDML_VERSION-$suffix.jar
+  if [[ ! -r $SNDML_JAR ]]; then
+    echo File not found: $SNDML_JAR
+    return 1
+  fi
+  return 0
+}
+
+sndml_setup_args $@
