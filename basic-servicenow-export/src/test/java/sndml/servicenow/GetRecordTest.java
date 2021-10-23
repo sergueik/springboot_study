@@ -5,6 +5,11 @@ import java.io.IOException;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import sndml.servicenow.RecordKey;
+import sndml.servicenow.TableRecord;
+import sndml.servicenow.Session;
+import sndml.servicenow.Table;
+
 public class GetRecordTest {
 
 	Session session;

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import java.util.Properties;
 import org.junit.Test;
 
+import sndml.datamart.DateCalculator;
 import sndml.servicenow.*;
 
 public class DateTimeFactoryTest {
