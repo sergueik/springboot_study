@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Appenders>
+    <Console name="Console">
+      <Filters>
+        <ThresholdFilter level="info" />
+        <MarkerFilter marker="SCHEMA" onMatch="NEUTRAL" onMismatch="NEUTRAL" />
+        <ContextMapFilter onMatch="NEUTRAL" onMismatch="NEUTRAL">
+          <KeyValuePair key="table" value="sys_db_object"/>
+          <KeyValuePair key="table" value="sys_dictionary"/>
+        </ContextMapFilter>
+      </Filters>
+      <PatternLayout>
+        <Pattern>%d{HH:mm:ss} %level %marker %logger{1} %X{job}[%X{table}]: %msg%n</Pattern>  
+      </PatternLayout>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="Console" />
+    </Root>
+    <Logger name="sndml" level="trace" />>
+  </Loggers>
+</Configuration>
