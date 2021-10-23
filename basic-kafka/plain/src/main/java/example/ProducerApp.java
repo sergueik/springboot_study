@@ -8,12 +8,15 @@ import java.util.*;
 
 public class ProducerApp {
 
-	private final static String hostname = "localhost";
+	private final static String hostname = "192.168.0.113";
 	private final static String topic = "test-topic";
+	private final static String username = "user";
+	private final static String password = "78S3fBujz9NB";
 
 	public static void main(String[] args) {
 
 		final Properties properties = new Properties();
+
 		properties.put("bootstrap.servers", String.format("%s:9092", hostname));
 		// ack from leader and all "in-sync" replicas
 		properties.put("acks", "all");
@@ -36,10 +39,23 @@ public class ProducerApp {
 		properties.put("timeout.ms", 30000);
 		properties.put("max.in.flight.requests.per.connection", 5);
 		properties.put("retry.backoff.ms", 5);
+		properties.put("security.protocol", "SASL_PLAINTEXT");
+		properties.put("jaas.enabled", "true");
+		properties.put("sasl.mechanism", "PLAIN");
+		properties.put("sasl.jaas.config",
+				String.format(
+						"org.apache.kafka.common.security.plain.PlainLoginModule required username='%s' password='%s';",
+						username, password));
 
 		final KafkaProducer<String, String> producer = new KafkaProducer<>(
 				properties, new StringSerializer(), new StringSerializer());
+		// Caused by: java.lang.IllegalArgumentException: Could not find a
+		// 'KafkaClient' entry in the JAAS configuration.
+		// System property 'java.security.auth.login.config' is not set
+		// see also:
 
+		// https://github.com/CloudKarafka/java-kafka-example/blob/master/src/main/java/KafkaExample.java
+		// https://commandstech.com/solvedcould-not-find-a-kafkaclient-entry-in-the-jaas-configuration-in-kafka-cluster-kafkaerror/
 		System.out
 				.println("created kafka producer: " + producer.getClass().getName());
 

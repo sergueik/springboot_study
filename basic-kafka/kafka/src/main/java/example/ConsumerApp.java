@@ -1,14 +1,13 @@
 package example;
 
 import org.apache.kafka.common.*;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.clients.consumer.*;
 
 import java.util.*;
 
 public class ConsumerApp {
 
-	private final static String hostname = "192.168.0.113";
+	private final static String hostname = "localhost";
 	private final static String topic = "test-topic";
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -16,6 +15,10 @@ public class ConsumerApp {
 
 		final Properties properties = new Properties();
 		properties.put("bootstrap.servers", String.format("%s:9092", hostname));
+		properties.put("key.deserializer",
+				"org.apache.kafka.common.serialization.StringDeserializer");
+		properties.put("value.deserializer",
+				"org.apache.kafka.common.serialization.StringDeserializer");
 		properties.put("fetch.min.bytes", 1);
 		properties.put("group.id", "");
 		properties.put("heartbeat.interval.ms", 3000);
@@ -36,10 +39,7 @@ public class ConsumerApp {
 		properties.put("retry.backoff.ms", 100);
 		properties.put("client.id", "");
 
-		properties.put("username", "user");
-		properties.put("password", "78S3fBujz9NB");
-		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties,
-				new StringDeserializer(), new StringDeserializer());
+		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);
 
 		ArrayList<TopicPartition> partitions = new ArrayList<>();
 		partitions.add(new TopicPartition(topic, 0));

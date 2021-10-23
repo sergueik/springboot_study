@@ -247,4 +247,32 @@ e available.
 ```
 ### See Also
 
- * basic Golang client [example](https://github.com/blacktop/docker-kafka-alpine/tree/master/test/src)
+  * Kafka quickstart [documentation](https://kafka.apache.org/quickstart) 
+  * basic Golang client [example](https://github.com/blacktop/docker-kafka-alpine/tree/master/test/src)
+  * long [post](https://rmoff.net/2018/08/02/kafka-listeners-explained/) of challenges in Kafka network configuration, in particular explaining that Docker hosted instance will not be available to clients external to Docker host machine wants to connect
+  * [stackoverflow thread](https://stackoverflow.com/questions/28146409/kafka-unable-to-send-a-message-to-a-remote-server-using-java) about the same problem
+  * [discussion](https://stackoverflow.com/questions/23436613/how-can-i-convert-a-docker-image-into-a-vagrant-virtualbox-box) concertning wrong answers suggesting export binary image data to converting Dockerfile to Vagrantfile scenarios
+
+
+### .Net Client
+
+
+* Use prebuilt Vagrant box with Kafka and zookeeper hosted on the same vm, e.g. from [bitnami](https://docs.bitnami.com/virtual-machine/infrastructure/kafka/administration/run-producer-consumer/)
+* Look for third party pure c# Client libraries e.g. [Jroland/kafka-net](https://github.com/Jroland/kafka-net) or [ntent/kafka4net](https://github.com/ntent/kafka4net) or [criteo/kafka-sharp](https://github.com/criteo/kafka-sharp) - many implementations are simply C# wrapper around the librdkafka native library. There may be version compatibility issues because underlying protocol changes
+
+### See Also
+
+  Misc Bitnami configuration documents:
+
+  *  https://docs.bitnami.com/virtual-machine/faq/get-started/find-credentials/
+  *  https://docs.bitnami.com/virtual-machine/faq/get-started/connect-ssh/
+  *  https://docs.bitnami.com/virtual-machine/faq/get-started/enable-ssh/
+  *  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/
+  *  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/administration/control-services/
+  *  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/administration/connect-remotely/
+  *  https://docs.bitnami.com/virtual-machine/faq/administration/use-firewall/
+  *  2181
+  *  9092
+  *  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/administration/run-producer-consumer/
+  *  https://docs.bitnami.com/virtual-machine/faq/get-started/enable-ssh-password/
+  *  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/administration/run-producer-consumer/

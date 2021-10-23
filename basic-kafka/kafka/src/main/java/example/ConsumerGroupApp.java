@@ -1,23 +1,26 @@
 package example;
 
-import org.apache.kafka.common.*;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.clients.consumer.*;
 
 import java.util.*;
 
-public class ConsumerApp {
+public class ConsumerGroupApp {
 
-	private final static String hostname = "192.168.0.113";
+	private final static String hostname = "localhost";
 	private final static String topic = "test-topic";
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("rawtypes")
 	public static void main(String[] args) {
 
 		final Properties properties = new Properties();
 		properties.put("bootstrap.servers", String.format("%s:9092", hostname));
+		properties.put("key.deserializer",
+				"org.apache.kafka.common.serialization.StringDeserializer");
+		properties.put("value.deserializer",
+				"org.apache.kafka.common.serialization.StringDeserializer");
 		properties.put("fetch.min.bytes", 1);
-		properties.put("group.id", "");
+		properties.put("group.id", "my-group");
+		// required property when subscribing to topics
 		properties.put("heartbeat.interval.ms", 3000);
 		properties.put("max.partition.fetch.bytes", 1048576);
 		properties.put("session.timeout.ms", 30000);
@@ -36,19 +39,16 @@ public class ConsumerApp {
 		properties.put("retry.backoff.ms", 100);
 		properties.put("client.id", "");
 
-		properties.put("username", "user");
-		properties.put("password", "78S3fBujz9NB");
-		KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties,
-				new StringDeserializer(), new StringDeserializer());
+		final KafkaConsumer<String, String> consumer = new KafkaConsumer<>(
+				properties);
 
-		ArrayList<TopicPartition> partitions = new ArrayList<>();
-		partitions.add(new TopicPartition(topic, 0));
-		// partitions.add(new TopicPartition(topic, 1));
-		consumer.assign(partitions);
+		final ArrayList<String> topics = new ArrayList<>();
+		topics.add(topic);
+		consumer.subscribe(topics);
 
-		Set<TopicPartition> assignedPartitions = consumer.assignment();
+		Set<String> subscribedTopics = consumer.subscription();
 
-		printSet(assignedPartitions);
+		printSet(subscribedTopics);
 
 		try {
 			while (true) {
@@ -61,14 +61,13 @@ public class ConsumerApp {
 
 	}
 
-	private static void printSet(Set<TopicPartition> collection) {
+	private static void printSet(Set<String> collection) {
 		if (collection.isEmpty()) {
-			System.out.println("not assigned to any partitions");
+			System.out.println("I am not subscribed to anything yet...");
 		} else {
-			System.out.println("assigned to partitions:");
-			for (TopicPartition partition : collection) {
-				System.out.println(String.format("Partition: %s in Topic: %s",
-						Integer.toString(partition.partition()), partition.topic()));
+			System.out.println("I am subscribed to the following topics:");
+			for (String item : collection) {
+				System.out.println(item);
 			}
 		}
 	}
