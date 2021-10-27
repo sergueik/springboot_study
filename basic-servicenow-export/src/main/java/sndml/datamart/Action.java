@@ -8,7 +8,6 @@ public enum Action {
 	SYNC, 
 	PRUNE, 
 	EXECUTE, // Execute an SQL command
-	SINGLE, // Synchronize a single record
 	CREATE,  // Create a table
 	DROPTABLE, // Used for JUnit tests
 	LOAD,    // Alias for INSERT 
@@ -24,12 +23,9 @@ public enum Action {
 			EnumSet.of(INSERT, UPDATE, PRUNE, LOAD, REFRESH);
 
 	public static EnumSet<Action> ANY_TABLE_ACTION =
-			EnumSet.of(INSERT, UPDATE, SYNC, PRUNE, CREATE, DROPTABLE, LOAD, REFRESH, SINGLE);
+			EnumSet.of(INSERT, UPDATE, SYNC, PRUNE, CREATE, DROPTABLE, LOAD, REFRESH);
 
 	public static EnumSet<Action> EXECUTE_ONLY =
 			EnumSet.of(EXECUTE);
-	
-	public static EnumSet<Action> SINGLE_ONLY =
-			EnumSet.of(SINGLE);
 	
 }
