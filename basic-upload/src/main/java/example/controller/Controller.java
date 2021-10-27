@@ -25,29 +25,33 @@ public class Controller {
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public ResponseEntity<String> upload(
-			@RequestParam("file") MultipartFile file) {
-		if (file.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
-		try {
-			System.err.println("Processing " + file.getOriginalFilename());
-			InputStream in = file.getInputStream();
-			String currDirPath = new File(".").getAbsolutePath();
-			FileOutputStream f = new FileOutputStream(
-					currDirPath.substring(0, currDirPath.length() - 1)
-							+ file.getOriginalFilename());
-			int ch = 0;
-			while ((ch = in.read()) != -1) {
-				f.write(ch);
-				System.err.print(String.format("%c", ch));
+	public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file,
+			@RequestParam("operation") String operation) {
+		if (!operation.equals("send")) {
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(null);
+		} else {
+			if (file.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 			}
-			f.flush();
-			f.close();
-		} catch (IOException e) {
-			System.err.print("Exception (caught):" + e.toString());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			try {
+				System.err.println("Processing " + file.getOriginalFilename());
+				InputStream in = file.getInputStream();
+				String currDirPath = new File(".").getAbsolutePath();
+				FileOutputStream f = new FileOutputStream(
+						currDirPath.substring(0, currDirPath.length() - 1)
+								+ file.getOriginalFilename());
+				int ch = 0;
+				while ((ch = in.read()) != -1) {
+					f.write(ch);
+					System.err.print(String.format("%c", ch));
+				}
+				f.flush();
+				f.close();
+			} catch (IOException e) {
+				System.err.print("Exception (caught):" + e.toString());
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+			return ResponseEntity.status(HttpStatus.OK).body(null);
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(null);
 	}
 }

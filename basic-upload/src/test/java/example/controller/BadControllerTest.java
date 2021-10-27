@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import example.ExampleApplication;
+import example.Application;
 
 @WebMvcTest
 public class BadControllerTest {

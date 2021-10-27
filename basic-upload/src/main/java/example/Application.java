@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 // NOTE: SpringBootApplication cannot be default package
 
 @SpringBootApplication
-public class ExampleApplication {
+public class Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ExampleApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 }

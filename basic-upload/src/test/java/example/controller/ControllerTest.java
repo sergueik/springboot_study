@@ -48,17 +48,12 @@ public class ControllerTest {
 				"Hello, World!".getBytes());
 	}
 
-	// TODO: set up the failing scrnario
-
-	@Before
-	public void beforeTest() throws Exception {
-		resultActions = mvc
-				.perform(multipart(route).file(file).characterEncoding("utf-8"));
-	}
-
 	// examine response status and body
 	@Test
 	public void test1() throws Exception {
+		resultActions = mvc
+				.perform(multipart(route).file(file).characterEncoding("utf-8")
+						.param("operation", new String[] { "send" }));
 		resultActions.andExpect(status().isOk()).andExpect(content().string(""));
 	}
 
@@ -69,6 +64,9 @@ public class ControllerTest {
 	// request.
 	@Test
 	public void test2() throws Exception {
+		resultActions = mvc
+				.perform(multipart(route).file(file).characterEncoding("utf-8")
+						.param("operation", new String[] { "send" }));
 		result = resultActions.andReturn();
 		request = result.getRequest();
 		assertThat(request.getContentAsString(), nullValue());
@@ -83,12 +81,19 @@ public class ControllerTest {
 		}
 		assertThat(String.join(",", headers), is("Content-Type"));
 		// not what was expected ?
-
 	}
 
-	// NOTE: cannot perform console capture test dure to spring boot version
-	// conflicts:
-	// in older one there is no multipart method,
-	// in newer no capture
+	// examine response status and body
+	@Test
+	public void test3() throws Exception {
+		resultActions = mvc
+				.perform(multipart(route).file(file).characterEncoding("utf-8")
+						.param("operation", new String[] { "unknown" }));
+		resultActions.andExpect(status().isMethodNotAllowed());
+	}
+
+	// NOTE: version conflicts:
+	// in older spring boot there is no multipart method,
+	// in newer spring boot there is no console capture
 	// class
 }
