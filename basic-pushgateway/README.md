@@ -33,7 +33,7 @@ This will log in the container console
 
  * [usage documentation](https://prometheus.io/docs/instrumenting/pushing/)
  * [spring-boot example](https://github.com/ramesh-dev/prometheus-pushgateway-demo) - demonstrates configuring credentials parameters
-
+ * https://www.reddit.com/r/docker/comments/m9l5k2/noob_question_what_is_the_difference_between/ 
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
