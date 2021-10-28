@@ -16,6 +16,7 @@ function sendfile {
     [string]$filePath = (resolve-path 'data.txt'),
     [string]$boundary = [System.Guid]::NewGuid().ToString(),
     [string]$url = 'http://localhost:8085/basic/upload',
+    [bool]$debug = $false,
     [System.Collections.Hashtable]$params = @{
       'operation' = 'send';
       'another'   = 'data';
@@ -50,13 +51,16 @@ function sendfile {
 
   # NOTE: Powershell does not allow dash in variables names
   $content_type = ('multipart/form-payload; boundary="{0}"' -f $boundary)
-  # write-host ('invoke-restmethod -uri {0} -method Post -contenttype "{1}" -body {2}' -f $uri, $content_type, "`n" + $body)
+  if ($debug)  {
+    write-host ('invoke-restmethod -uri {0} -method Post -contenttype "{1}" -body {2}' -f $uri, $content_type, "`n" + $body)
+  }
   # quotes aroung content_type arguments are optional
 
   $result = invoke-restmethod -uri $URL -method Post -contenttype "$content_type" -body $body
   return $result
 }
-$result = sendfile -url $url -filePath $datafile
+[bool]$debug_flag = [bool]$psboundparameters['debug'].ispresent
+$result = sendfile -url $url -filePath $datafile -debug $debug_flag
 # NOTE: the following code may only be correct processing with WCF derived REST services that favor XML
 if ([bool]$psboundparameters['print'].ispresent) {
   write-output ('The sendfile result is: {0}' -f $result)
