@@ -41,7 +41,7 @@ function sendfile {
     $body_lines += $val
     $body_lines += $B
   }
-  $body_lines += ('Content-Disposition: form-data; name="file"; filename="${0}"' -f $filename)
+  $body_lines += ('Content-Disposition: form-data; name="file"; filename="{0}"' -f $filename)
   $body_lines += 'Content-Type: application/octet-stream'
   $body_lines += ''
   $body_lines += $payload

@@ -51,9 +51,9 @@ public class ControllerTest {
 	// examine response status and body
 	@Test
 	public void test1() throws Exception {
-		resultActions = mvc
-				.perform(multipart(route).file(file).characterEncoding("utf-8")
-						.param("operation", new String[] { "send" }));
+		resultActions = mvc.perform(multipart(route).file(file)
+				.characterEncoding("utf-8").param("operation", new String[] { "send" })
+				.param("param", new String[] { "non empty" }));
 		resultActions.andExpect(status().isOk()).andExpect(content().string(""));
 	}
 
@@ -64,9 +64,9 @@ public class ControllerTest {
 	// request.
 	@Test
 	public void test2() throws Exception {
-		resultActions = mvc
-				.perform(multipart(route).file(file).characterEncoding("utf-8")
-						.param("operation", new String[] { "send" }));
+		resultActions = mvc.perform(multipart(route).file(file)
+				.characterEncoding("utf-8").param("operation", new String[] { "send" })
+				.param("param", new String[] { "non empty" }));
 		result = resultActions.andReturn();
 		request = result.getRequest();
 		assertThat(request.getContentAsString(), nullValue());
@@ -83,13 +83,32 @@ public class ControllerTest {
 		// not what was expected ?
 	}
 
-	// examine response status and body
+	// examine response status
 	@Test
 	public void test3() throws Exception {
+		resultActions = mvc.perform(
+				multipart(route).file(file).characterEncoding("utf-8")
+						.param("operation", new String[] { "unknown" }).param("param",
+								new String[] { "non empty" }));
+		resultActions.andExpect(status().isMethodNotAllowed());
+	}
+
+	// examine response status
+	@Test
+	public void test4() throws Exception {
 		resultActions = mvc
 				.perform(multipart(route).file(file).characterEncoding("utf-8")
 						.param("operation", new String[] { "unknown" }));
-		resultActions.andExpect(status().isMethodNotAllowed());
+		resultActions.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void test5() throws Exception {
+		resultActions = mvc.perform(
+				multipart(route).file(file).characterEncoding("utf-8")
+						.param("operation", new String[] { "unknown" }).param("param",
+								new String[] { "" }));
+		resultActions.andExpect(status().isBadRequest());
 	}
 
 	// NOTE: version conflicts:
