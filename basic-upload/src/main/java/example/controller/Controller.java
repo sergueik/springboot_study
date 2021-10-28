@@ -25,8 +25,9 @@ public class Controller {
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file,
-			@RequestParam("operation") String operation) {
+	public ResponseEntity<String> upload(
+			@RequestParam("operation") String operation,
+			@RequestParam("file") MultipartFile file) {
 		if (!operation.equals("send")) {
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(null);
 		} else {
@@ -51,7 +52,7 @@ public class Controller {
 				System.err.print("Exception (caught):" + e.toString());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
-			return ResponseEntity.status(HttpStatus.OK).body(null);
+			return ResponseEntity.status(HttpStatus.OK).body("test response");
 		}
 	}
 }
