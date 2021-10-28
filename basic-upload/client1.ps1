@@ -4,20 +4,22 @@
 param(
   [string]$datafile = (resolve-path 'data.txt'),
   [switch]$print,
+  [switch]$debug,
   [string]$url = 'http://localhost:8085/basic/upload'
 )
 
 function sendfile {
   param(
     [string]$filePath = (resolve-path 'data.txt'),
-    [string]$url = 'http://localhost:8085/basic/upload'
+    [string]$url = 'http://localhost:8085/basic/upload',
+    [System.Collections.Hashtable]$params = @{
+      'operation' = 'send';
+      'another'   = 'data';
+   }
   )
   $result = $null
   $ErrorActionPreference = 'Stop'
   $fieldName = 'file'
-  $params = @{
-    'operation' = 'send';
-  }
   # NOTE: try catch everything is considered bad practice
   try {
     add-type -assemblyname 'System.Net.Http'
@@ -44,13 +46,13 @@ function sendfile {
     # https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpresponsemessage?view=netframework-4.5
     # https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpresponsemessage.ensuresuccessstatuscode?view=netframework-4.5
     [System.Net.Http.HttpResponseMessage]$responseMessage = $resultObj.EnsureSuccessStatusCode()
-    write-host ('Status: {0}' -f $responseMessage.StatusCode)
+    # write-host ('Status: {0}' -f $responseMessage.StatusCode)
     # https://docs.microsoft.com/en-us/dotnet/api/system.net.http.streamcontent?view=netframework-4.5
     [System.Net.Http.StreamContent]$responseContent = $responseMessage.Content
     # NOTE $responseResult is a generic System.Threading.Tasks.Task
     $responseResult = $responseContent.ReadAsStringAsync()
     $result = $responseResult.Result
-    write-host ('Result: {0}' -f $result)
+    #write-host ('Result: {0}' -f $result)
     # NOTE: unclear how to do it the below way, may be worth trying
     # [System.Net.Http.FormUrlEncodedContent] $arg = new-object System.Net.Http.FormUrlEncodedContent($params)
     # see also: https://www.codeproject.com/Questions/1228835/How-to-post-file-and-data-to-api-using-httpclient
