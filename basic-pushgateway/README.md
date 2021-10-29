@@ -22,7 +22,7 @@ mvn package
 ```
 post one fake job metrics (setting the last argument to `true` indicates if the job has failures )
 ```sh
-java :-cp target/pushgateway-client-0.1.0-SNAPSHOT.jar:target/lib/* example.App false
+java -cp target/example.pushgateway-client.jar:target/lib/* example.App false
 ```
 This will log in the container console
 ```sh
@@ -34,6 +34,8 @@ This will log in the container console
  * [usage documentation](https://prometheus.io/docs/instrumenting/pushing/)
  * [spring-boot example](https://github.com/ramesh-dev/prometheus-pushgateway-demo) - demonstrates configuring credentials parameters
  * https://www.reddit.com/r/docker/comments/m9l5k2/noob_question_what_is_the_difference_between/ 
-
+ * Prometheus client libraries [metric types](https://prometheus.io/docs/concepts/metric_types/) - note `Info` is not covered
+ * [Instrumenting Applications with Metrics for Prometheus]()pluralsight course, mentions  producing `Info` metric and merging it with operational metric using orin
+in the __Recording application infomation using a custom metric__ slide.
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
