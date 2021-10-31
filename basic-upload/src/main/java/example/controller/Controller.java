@@ -1,10 +1,9 @@
 package example.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,6 +24,8 @@ public class Controller {
 		return ResponseEntity.status(HttpStatus.OK).body(null);
 	}
 
+	private static final StringBuilder data = new StringBuilder();
+
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public ResponseEntity<String> upload(
 			@RequestParam("operation") String operation,
@@ -38,26 +39,27 @@ public class Controller {
 			if (file.isEmpty()) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 			}
-			String value = null;
 			try {
-				System.err.println("Processing file:" + file.getOriginalFilename());
-				String datafilePath = Paths.get(".").resolve(file.getOriginalFilename())
-						.toAbsolutePath().toString();
-
-				value = readFile(datafilePath, Charset.forName("UTF-8"));
-				System.err.print(value);
+				System.err.println("Processing " + file.getOriginalFilename());
+				data.setLength(0);
+				InputStream in = file.getInputStream();
+				String currDirPath = new File(".").getAbsolutePath();
+				FileOutputStream f = new FileOutputStream(
+						currDirPath.substring(0, currDirPath.length() - 1)
+								+ file.getOriginalFilename());
+				int ch = 0;
+				while ((ch = in.read()) != -1) {
+					f.write(ch);
+					data.append(new Character((char) ch).toString());
+				}
+				f.flush();
+				f.close();
+				System.err.print(data.toString());
 			} catch (IOException e) {
 				System.err.print("Exception (caught):" + e.toString());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
-			return ResponseEntity.status(HttpStatus.OK).body(value);
+			return ResponseEntity.status(HttpStatus.OK).body(data.toString());
 		}
 	}
-
-	public static String readFile(String path, Charset encoding)
-			throws IOException {
-		byte[] encoded = Files.readAllBytes(Paths.get(path));
-		return new String(encoded, encoding);
-	}
-
 }

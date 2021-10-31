@@ -40,7 +40,7 @@ import static org.hamcrest.Matchers.greaterThan;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
 		"serverPort=8086" })
 @PropertySource("classpath:application.properties")
-public class ExampleAcceptanceTest {
+public class AcceptanceTest {
 
 	// NOTE:
 	// BeanPostProcessor : Autowired annotation is not supported on static fields:
