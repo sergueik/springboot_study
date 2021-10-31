@@ -1,9 +1,10 @@
 package example.controller;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,8 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class Controller {
 
 	@GetMapping(produces = MediaType.TEXT_PLAIN_VALUE)
-	public String hello() {
-		return "hello";
+	public ResponseEntity<String> hello() {
+		return ResponseEntity.status(HttpStatus.OK).body(null);
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
@@ -37,26 +38,26 @@ public class Controller {
 			if (file.isEmpty()) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 			}
+			String value = null;
 			try {
-				System.err.println("Processing " + file.getOriginalFilename());
-				InputStream in = file.getInputStream();
-				String currDirPath = new File(".").getAbsolutePath();
-				FileOutputStream f = new FileOutputStream(
-						currDirPath.substring(0, currDirPath.length() - 1)
-								+ file.getOriginalFilename());
-				int ch = 0;
-				while ((ch = in.read()) != -1) {
-					f.write(ch);
-					System.err.print(String.format("%c", ch));
-				}
-				f.flush();
-				f.close();
+				System.err.println("Processing file:" + file.getOriginalFilename());
+				String datafilePath = Paths.get(".").resolve(file.getOriginalFilename())
+						.toAbsolutePath().toString();
+
+				value = readFile(datafilePath, Charset.forName("UTF-8"));
+				System.err.print(value);
 			} catch (IOException e) {
 				System.err.print("Exception (caught):" + e.toString());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
-			return ResponseEntity.status(HttpStatus.OK).body("");
-			// TODO: provide some response and update the tests
+			return ResponseEntity.status(HttpStatus.OK).body(value);
 		}
 	}
+
+	public static String readFile(String path, Charset encoding)
+			throws IOException {
+		byte[] encoded = Files.readAllBytes(Paths.get(path));
+		return new String(encoded, encoding);
+	}
+
 }
