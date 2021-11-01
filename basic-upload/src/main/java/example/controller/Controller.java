@@ -21,7 +21,7 @@ public class Controller {
 
 	@GetMapping(produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> hello() {
-		return ResponseEntity.status(HttpStatus.OK).body(null);
+		return ResponseEntity.ok().build();
 	}
 
 	private static final StringBuilder data = new StringBuilder();
