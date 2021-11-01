@@ -15,7 +15,7 @@ function sendfile {
     [bool]$debug = $false,
     [System.Collections.Hashtable]$params = @{
       'operation' = 'send';
-      'another'   = 'data';
+      'param'   = 'data';
    }
   )
   $result = $null
@@ -105,4 +105,5 @@ if ([bool]$psboundparameters['print'].ispresent) {
     write-output $result.SelectSingleNode('//*/text()').payload
   }
 }
+
 

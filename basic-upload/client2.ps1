@@ -19,14 +19,11 @@ function sendfile {
     [bool]$debug = $false,
     [System.Collections.Hashtable]$params = @{
       'operation' = 'send';
-      'another'   = 'data';
+      'param'   = 'data';
     }
   )
   $date = get-date -format 'yyyy-MM-dd HH:mm'
   $filename = ($filePath -replace '^.*\\', '') + '_' + ($date -replace '[\-: ]', '_')
-  $inputs = @{
-    "operation" = "send";
-  }
   $payload = [System.Text.Encoding]::GetEncoding('UTF-8').GetString([System.IO.File]::ReadAllBytes($filePath))
 
   $LF = "`r`n";
@@ -68,4 +65,3 @@ if ([bool]$psboundparameters['print'].ispresent) {
     write-output $result.SelectSingleNode('//*/text()').payload
   }
 }
-

@@ -34,6 +34,7 @@ public class Controller {
 		if (param.isEmpty())
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		if (!operation.equals("send")) {
+			System.err.println("invalid operation: " + operation);
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(null);
 		} else {
 			if (file.isEmpty()) {
@@ -63,3 +64,4 @@ public class Controller {
 		}
 	}
 }
+
