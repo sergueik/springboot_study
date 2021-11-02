@@ -20,34 +20,48 @@ import org.springframework.web.multipart.MultipartFile;
 public class Controller {
 
 	@GetMapping(produces = MediaType.TEXT_PLAIN_VALUE)
-	public String hello() {
-		return "hello";
+	public ResponseEntity<String> hello() {
+		return ResponseEntity.ok().build();
 	}
+
+	private static final StringBuilder data = new StringBuilder();
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public ResponseEntity<String> upload(
+			@RequestParam("operation") String operation,
+			@RequestParam("param") String param,
 			@RequestParam("file") MultipartFile file) {
-		if (file.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
-		try {
-			System.err.println("Processing " + file.getOriginalFilename());
-			InputStream in = file.getInputStream();
-			String currDirPath = new File(".").getAbsolutePath();
-			FileOutputStream f = new FileOutputStream(
-					currDirPath.substring(0, currDirPath.length() - 1)
-							+ file.getOriginalFilename());
-			int ch = 0;
-			while ((ch = in.read()) != -1) {
-				f.write(ch);
-				System.err.print(String.format("%c", ch));
-			}
-			f.flush();
-			f.close();
-		} catch (IOException e) {
-			System.err.print("Exception (caught):" + e.toString());
+		if (param.isEmpty())
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		if (!operation.equals("send")) {
+			System.err.println("invalid operation: " + operation);
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(null);
+		} else {
+			if (file.isEmpty()) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+			}
+			try {
+				System.err.println("Processing " + file.getOriginalFilename());
+				data.setLength(0);
+				InputStream in = file.getInputStream();
+				String currDirPath = new File(".").getAbsolutePath();
+				FileOutputStream f = new FileOutputStream(
+						currDirPath.substring(0, currDirPath.length() - 1)
+								+ file.getOriginalFilename());
+				int ch = 0;
+				while ((ch = in.read()) != -1) {
+					f.write(ch);
+					data.append(new Character((char) ch).toString());
+				}
+				f.flush();
+				f.close();
+				System.err.print(data.toString());
+			} catch (IOException e) {
+				System.err.print("Exception (caught):" + e.toString());
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+			return ResponseEntity.status(HttpStatus.OK).body(data.toString());
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(null);
 	}
 }
+
