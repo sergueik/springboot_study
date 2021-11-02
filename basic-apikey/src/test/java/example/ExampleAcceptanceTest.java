@@ -17,10 +17,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
 
 @PropertySource("classpath:application.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
@@ -41,6 +41,7 @@ public class ExampleAcceptanceTest {
 	private final String host = "http://localhost:" + port;
 	private String url = null;
 	private HttpHeaders headers = new HttpHeaders();
+	private HttpEntity<String> request = null;
 	private ResponseEntity<String> responseEntity = null;
 
 	@Test
@@ -69,9 +70,9 @@ public class ExampleAcceptanceTest {
 		headers = new HttpHeaders();
 		headers.add(headerName, headerValue);
 
-		HttpEntity<String> request = new HttpEntity<String>("", headers);
-		ResponseEntity<String> responseEntity = restTemplate.exchange(url,
-				HttpMethod.GET, request, String.class);
+		request = new HttpEntity<String>("", headers);
+		responseEntity = restTemplate.exchange(url, HttpMethod.GET, request,
+				String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 	}
 
@@ -82,11 +83,46 @@ public class ExampleAcceptanceTest {
 			headers = new HttpHeaders();
 			headers.add(headerName, "wrong key");
 
-			HttpEntity<String> request = new HttpEntity<String>("", headers);
-			ResponseEntity<String> responseEntity = restTemplate.exchange(url,
-					HttpMethod.GET, request, String.class);
+			request = new HttpEntity<String>("", headers);
+			responseEntity = restTemplate.exchange(url, HttpMethod.GET, request,
+					String.class);
 			assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 		});
 	}
+
+	@Test
+	public void test6() throws Exception {
+		url = host + route2;
+		headers = new HttpHeaders();
+		headers.add(headerName, headerValue);
+		request = new HttpEntity<String>("", headers);
+		responseEntity = restTemplate.postForEntity(url, request, String.class,
+				headers);
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+	}
+
+	@Test
+	public void test7() throws Exception {
+		url = host + route1;
+		request = new HttpEntity<String>("");
+		responseEntity = restTemplate.postForEntity(url, request, String.class,
+				headers);
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+	}
+	
+	@Test
+	public void test8() throws Exception {
+		Assertions.assertThrows(HttpClientErrorException.class, () -> {
+			url = host + route2;
+			headers = new HttpHeaders();
+			headers.add(headerName, "wrong key");
+
+			request = new HttpEntity<String>("", headers);
+			responseEntity = restTemplate.postForEntity(url, request, String.class,
+					headers);
+			assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+		});
+	}
+
 
 }
