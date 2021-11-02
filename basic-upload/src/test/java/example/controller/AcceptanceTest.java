@@ -89,7 +89,6 @@ public class AcceptanceTest {
 						"send", 
 						"--boundary",
 						"Content-Disposition: form-data; name=\"file\"; filename=\"data.txt\"",
-						"", 
 						"Content-Type: application/octet-stream", 
 						"", 
 						"Line1: one",
