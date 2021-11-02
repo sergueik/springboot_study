@@ -39,6 +39,13 @@ Processed request: /api/v1/secure
   * `API_KEY` with credentials database [springboot example](https://github.com/gregwhitaker/springboot-apikey-example)
   * * `API_KEY` with credentials database [springboot webflux example](https://github.com/gregwhitaker/springboot-webflux-apikey-example)
   * https://learning.postman.com/docs/writing-scripts/script-references/test-examples/#asserting-a-response-value-against-a-variable
+
+#### Postman Resources
+  * [discussion of test iterations in Postman](https://automated-testing.info/t/posledovatelnost-zaprosov-s-menyayushhimisya-parametrami-v-postman/21884/3)(in Russian)
+  * [basic Postman terminology](https://gb.ru/posts/kak-testirovat-api-ili-postman-dlya-chajnikov) (in Russian) 
   * https://community.postman.com/t/test-if-response-body-include-any-of-values/24290
+  * https://www.postman.com/cloudy-station-145681/workspace/e358eb9c-1956-4820-9dd8-8e73734fb917
+  * https://fooobar.com/questions/2403780/postman-how-to-loop-request-until-i-get-a-specific-response  (in Russian)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
