@@ -4,7 +4,9 @@ This directory contains log4j2 example demo project
 
 ### Usage
 
-#### Dependency project
+#### Dependency project (optional)
+
+To have the rabbitmq logger turned on sync to commit `655a47663f84ee842a6f3b61cb98a3ce39cf606a`. Otherwise you need not build that logger explicitly - it was dissabled
 ```sh
 pushd ../basic-rabbitmq-appender
 mvn package
@@ -139,6 +141,18 @@ fails with
 ```sh
 the input device is not a TTY
 ```
+one needs to use two lines:
+```sh
+ID=$(docker container ls | grep $IMAGE |  awk '{print $1}')
+docker exec -it $ID sh
+```
+repeat curl command
+
+```sh
+for cnt in $(seq 0 1 3); do curl "http://localhost:8085/example?data='${cnt}+test'"; done
+```
+
+
 ### DMC
 * download a prebuilt Virtual Box ELK image e.g. from [bitnami](https://bitnami.com/stack/elk/virtual-machine)
 and launch following their [instructions](https://docs.bitnami.com/virtual-machine/apps/elk/get-started/get-started/)
@@ -221,4 +235,5 @@ this is cured by installing the real APM server
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 
