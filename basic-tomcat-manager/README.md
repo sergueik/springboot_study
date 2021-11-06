@@ -358,7 +358,7 @@ docker cp src/main/resources/log4j2.xml $CONTAINER:/opt/tomcat/lib
 ```
 observe the logging to resume
 
-### Application Propeties
+### Application Properties
 
 ```sh
 docker container exec -it  $(docker container ls -a | grep $NAME | awk '{print $1}')  sh
@@ -397,7 +397,7 @@ see the raw value w/o token expansion
 
 ### TODO:
 
-Still not properly configured logging. With `log4j2.debug` set to `true` logs numwerous attempts to find configuration files
+Still not properly configured logging. With `log4j2.debug` set to `true` logs numerous attempts to find configuration files
 
 ```sh
 TRACE StatusLogger Trying to find [log4j2.xml] using context class loader WebappClassLoader
@@ -479,6 +479,15 @@ Connection: close
 docker container stop $CONTAINER_ID
 docker container rm -f $CONTAINER_ID
 docker image prune -f
+```
+
+### Runtime Errors
+```text
+INFO: validateJarFile(/home/sergueik/src/springboot_study/basic-tomcat-manager/target/example.managed_app/WEB-INF/lib/javax.servlet-api-3.1.0.jar) - jar not loaded. See Servlet Spec 2.3, section 9.7.2. Offending class: javax/servlet/Servlet.class
+```
+thr upgrade to the latest available does not resolve the issue
+```text
+INFO: validateJarFile(/home/sergueik/src/springboot_study/basic-tomcat-manager/target/example.managed_app/WEB-INF/lib/javax.servlet-api-4.0.1.jar) - jar not loaded. See Servlet Spec 2.3, section 9.7.2. Offending class: javax/servlet/Servlet.class
 ```
 ### TODO:
 
