@@ -1,5 +1,6 @@
 package example.controller;
 
+import org.mockito.InjectMocks;
 /**
  *	 Copyright 2021 Serguei Kouzmine
  */
@@ -29,11 +30,12 @@ import com.google.gson.Gson;
 // https://stackoverflow.com/questions/61088682/is-there-any-special-configuration-to-use-springrunner-with-junit5
 // https://www.baeldung.com/java-spring-mockito-mock-mockbean
 @SpringBootTest
-public class ExampleServiceMockBeanUnitTest {
+public class ServiceInjectMocksUnitTest {
 
 	@Autowired
 	ApplicationContext context;
 
+	@InjectMocks
 	ExampleController controller;
 
 	@MockBean
@@ -74,7 +76,9 @@ public class ExampleServiceMockBeanUnitTest {
 
 	@Test
 	public void test3() {
+		// NOTE: strongly-typed "is"
 		assertThat(controller.postJson(data), is(data));
+		assertThat(controller.postJson(data).getName(), is("data"));
 	}
 
 	@Test

@@ -19,7 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Ignore;
 import org.junit.jupiter.api.Test;
 
-public class ExampleServiceUnitTest {
+public class ServiceUnitTest {
 
 	ExampleController controller;
 	ExampleService mockService;

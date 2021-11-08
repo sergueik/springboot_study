@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 // https://www.baeldung.com/spring-tests-override-properties
 
 @SpringBootTest
-public class ExampleComponentTest {
+public class ComponentTest {
 
 	@Autowired
 	private ExampleComponent sut;
