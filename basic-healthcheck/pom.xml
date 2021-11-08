@@ -6,24 +6,21 @@
   <version>0.1.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>spring-boot-heartbeat</name>
-  <description>Demo project for Spring Boot Heartbeat</description>
+  <description>Demo project for Spring Boot Heartbeat health Indicators in Spring Boot</description>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <!--
-    <version>1.5.4.RELEASE</version>
-    <version>2.0.5.RELEASE</version>
--->
-   <version>2.2.1.RELEASE</version> 
+    <version>2.2.1.RELEASE</version> 
+    -->
+    <version>2.3.4.RELEASE</version> 
     <relativePath/>
-    <!-- lookup parent from repository -->
   </parent>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
     <slf4j.version>1.7.30</slf4j.version>
-    <log4j.version>1.2.17</log4j.version>
     <log4j-core.version>2.13.2</log4j-core.version>
   </properties>
   <dependencies>
@@ -64,11 +61,6 @@
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-web</artifactId>
       <version>${log4j-core.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${log4j.version}</version>
     </dependency>
   </dependencies>
   <build>
