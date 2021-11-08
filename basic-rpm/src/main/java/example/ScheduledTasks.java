@@ -65,8 +65,9 @@ public class ScheduledTasks {
 
 	@Scheduled(fixedRate = 120000)
 	public void fixedRateTask() {
-		logger.info("Fixed rate task performed at " + dateFormat.format(new Date())
-				+ " on thread " + Thread.currentThread().getName());
+		logger.log(Level.INFO,
+				"Fixed rate task performed at " + dateFormat.format(new Date())
+						+ " on thread " + Thread.currentThread().getName());
 	}
 
 }
