@@ -9,4 +9,5 @@ Recent versions of prometheus exporter expose the metrics themselves
 
 
 ### See Also 
- [minimal prometheus conter example](https://github.com/njanor/spring-boot-prometheus-demo) - uses older Springboot and cannot compile
+ * [minimal prometheus conter example](https://github.com/njanor/spring-boot-prometheus-demo) - uses older Springboot and cannot compile
+ *  [stepby step springboot monitoring dashboard example](https://github.com/rishant/springboot-monitoring-dashboard-example)
