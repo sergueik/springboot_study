@@ -68,4 +68,5 @@ requests_latency_seconds_sum 0.0
  *  [stepby step springboot monitoring dashboard example](https://github.com/rishant/springboot-monitoring-dashboard-example)
  * old [MVC example](https://github.com/ConSol/springboot-monitoring-example)
 with a static page links to generated metrics, the application handles the `/metrics` route on its own. 
-
+  * Spring Boot metrics monitoring using Prometheus & Grafana [blog](https://aboullaite.me/spring-boot-monitoring-prometheus-grafana/) - relies on `@EnablePrometheusEndpoint` and `@EnableSpringBootMetricsCollector` annotations which do not work yet in this project 
+ * core [metrics Collection in Spring Boot With Micrometer and Prometheus](https://www.codeprimers.com/metrics-collection-in-spring-boot-with-micrometer-and-prometheus/) documentatiton 

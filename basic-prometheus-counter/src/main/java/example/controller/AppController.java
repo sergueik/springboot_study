@@ -34,14 +34,14 @@ public class AppController {
 
 	@RequestMapping("hello")
 	public String sayHello() {
-		logger.info("incrementinge requestsTotal");
+		logger.info("increment requests_total");
 		requestsTotal.inc();
 		logger.info("creating the time");
 		Histogram.Timer requestTimer = requestTimet.startTimer();
 		try {
 			return "Hello World";
 		} finally {
-			logger.info("recording the time duration");
+			logger.info("recording the requests_latency_seconds time duration");
 			requestTimer.observeDuration();
 		}
 	}

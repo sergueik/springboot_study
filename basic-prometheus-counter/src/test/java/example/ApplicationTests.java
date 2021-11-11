@@ -52,6 +52,8 @@ public class ApplicationTests {
 	@Value("${serverPort:8080}")
 	private int managementPort;
 
+	// TODO: explore the
+	// EndpointLinksResolver: Exposing 14 endpoint(s) beneath base path '/actuator'
 	@Test
 	public void prometheus() {
 		ResponseEntity<String> entity = restTemplate
