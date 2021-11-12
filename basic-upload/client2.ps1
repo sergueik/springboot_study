@@ -49,7 +49,7 @@ function sendfile {
   # NOTE: Powershell does not allow dash in variables names
   $content_type = ('multipart/form-payload; boundary="{0}"' -f $boundary)
   if ($debug)  {
-    write-host ('invoke-restmethod -uri {0} -method Post -contenttype "{1}" -body {2}' -f $uri, $content_type, "`n" + $body)
+    write-host ('invoke-restmethod -uri {0} -method Post -contenttype "{1}" -body {2}' -f $uri, $content_type, [char]10 + $body)
   }
   # quotes aroung content_type arguments are optional
 
