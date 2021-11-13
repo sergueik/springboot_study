@@ -1,13 +1,19 @@
 package example.controller;
+/**
+ * Copyright 2021 Serguei Kouzmine
+ */
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,15 +25,42 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/basic")
 public class Controller {
 
+	private static final StringBuilder data = new StringBuilder();
+	private final static String default_value = "default_value";
+	private final static String default_name = "default_name";
+
 	@GetMapping(produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> hello() {
 		return ResponseEntity.ok().build();
 	}
 
-	private static final StringBuilder data = new StringBuilder();
+	@GetMapping("/init")
+	public ResponseEntity<String> setCookie() {
+
+		ResponseCookie resCookie = ResponseCookie
+				.from(default_name, "c2FtLnNtaXRoQGV4YW1wbGUuY29t").httpOnly(true)
+				.secure(true).path("/").maxAge(1 * 24 * 60 * 60).domain("localhost")
+				.build();
+		return ResponseEntity.ok()
+				.header(HttpHeaders.SET_COOKIE, resCookie.toString()).build();
+
+	}
+
+	// see also
+	// https://github.com/thombergs/code-examples/blob/master/spring-boot/cookie-demo/src/main/java/io/reflectoring/cookie/controllers/SpringCookieController.java
+	// https://www.baeldung.com/cookies-java
+	@GetMapping("/clear")
+	public ResponseEntity<String> deleteCookie() {
+
+		// create a cookie
+		ResponseCookie resCookie = ResponseCookie.from(default_name, null).build();
+		return ResponseEntity.ok()
+				.header(HttpHeaders.SET_COOKIE, resCookie.toString()).build();
+	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public ResponseEntity<String> upload(
+			@CookieValue(name = default_name, defaultValue = default_value) String cookie,
 			@RequestParam("operation") String operation,
 			@RequestParam("param") String param,
 			@RequestParam("file") MultipartFile file) {
@@ -64,4 +97,3 @@ public class Controller {
 		}
 	}
 }
-
