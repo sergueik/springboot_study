@@ -1,68 +1,123 @@
-package example.rest;
+package example.controller;
+/**
+ * Copyright 2021 Serguei Kouzmine
+ */
+// import org.junit.Before;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-// notavailable prior to
-// import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.http.HttpStatus;
+
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-// @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
+
+// NOTE: property annotations have no effect
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
+		"serverPort=8085" })
+@PropertySource("classpath:application.properties")
 public class ApplicationTests {
-	// @LocalServerPort
-	static final int randomServerPort = 8080;
-	final static String baseUrl = "http://localhost:" + randomServerPort
-			+ "/employees/";
-	URI uri;
-	// Timeout value in milliseconds
-	int timeout = 10_000;
-	ResponseEntity<String> result;
 
-	public RestTemplate restTemplate;
+	// NOTE:
+	// BeanPostProcessor : Autowired annotation is not supported on static fields:
 
-	@Before
+	@LocalServerPort
+	private int randomServerPort = 8085;
+
+	private final String route = "/employees/";
+	// NOTE: execrising property file override
+	private final static String body = "Hello test data";
+	private static final RestTemplate restTemplate = new RestTemplate();
+	private String url = null;
+	private final String url2 = "https://localhost:" + randomServerPort + route;
+	// cannot cast
+	// private final List<MediaType> mediaTypes = new
+	// ArrayList<MediaType>(Arrays.asList(new MediaType[] {
+	// MediaType.APPLICATION_JSON })));
+	private HttpHeaders headers = new HttpHeaders();
+	private final static String username = "admin";
+	private final static String password = "password";
+	private HttpEntity<String> request = null;
+	private ResponseEntity<String> responseEntity = null;
+
+	@BeforeEach
 	public void setUp() {
-		restTemplate = new RestTemplate(getClientHttpRequestFactory());
-	}
 
-	private HttpComponentsClientHttpRequestFactory getClientHttpRequestFactory() {
-
-		HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
-		// Connect timeout
-		clientHttpRequestFactory.setConnectTimeout(timeout);
-
-		// Read timeout
-		clientHttpRequestFactory.setReadTimeout(timeout);
-		return clientHttpRequestFactory;
 	}
 
 	@Test
-	public void test1() throws URISyntaxException {
-		uri = new URI(baseUrl);
-		result = restTemplate.getForEntity(uri, String.class);
+	public void test1() throws Exception {
 
-		// Verify request succeed
-		Assert.assertEquals(200, result.getStatusCodeValue());
+		url = "http://localhost:" + randomServerPort + route;
+		try {
+			responseEntity = restTemplate.getForEntity(url, String.class);
+			assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+		} catch (HttpClientErrorException e) {
+			System.err.println(e.getMessage());
+		}
 	}
 
 	@Test
-	public void test2() throws URISyntaxException {
-		uri = new URI(baseUrl);
-		result = restTemplate.getForEntity(uri, String.class);
-
-		// Verify response
-		Assert.assertEquals(true, result.getBody().contains("employees"));
+	public void test2() throws Exception {
+		url = "http://localhost:" + randomServerPort + route;
+		headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		headers.setBasicAuth(username, password);
+		System.err.println("Authorization:" + headers.get("Authorization"));
+		// echo 'YWRtaW46cGFzc3dvcmQ=' | base64 -d -
+		// admin:password
+		try {
+			responseEntity = restTemplate.getForEntity(url, String.class);
+			assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+			assertThat(responseEntity.getBody(), is(body));
+		} catch (HttpClientErrorException e) {
+			System.err.println(e.getMessage());
+		}
 	}
+	@Test
+	public void test3() throws Exception {
+		url = "http://localhost:" + randomServerPort + route;
+		headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		headers.setBasicAuth("YWRtaW46cGFzc3dvcmQ=");
+		System.err.println("Authorization:" + headers.get("Authorization"));
+		// echo 'YWRtaW46cGFzc3dvcmQ=' | base64 -d -
+		// admin:password
+		try {
+			responseEntity = restTemplate.getForEntity(url, String.class);
+			assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+			assertThat(responseEntity.getBody(), is(body));
+		} catch (HttpClientErrorException e) {
+			System.err.println(e.getMessage());
+		}
+	}
+
+	// https://www.baeldung.com/spring-resttemplate-post-json
+	// if switching to https atempted:
+	// java.lang.IllegalArgumentException: Invalid character found in method name
+	// [0x160x030x03...].
+	// HTTP method names must be tokens
 }
