@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,18 +36,25 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 
+import org.apache.commons.codec.binary.Base64;
+
 // NOTE: property annotations have no effect
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
 		"serverPort=8085" })
 @PropertySource("classpath:application.properties")
 public class ApplicationTests {
 
+	// NOTE:
+	// BeanPostProcessor : Autowired annotation is not supported on static fields:
+
 	@LocalServerPort
 	private int randomServerPort = 8085;
 
-	private final String route = "/employees";
+	private final String route = "/employees/";
+	// NOTE: execrising property file override
+	private final static String body = "Hello test data";
 	private static final RestTemplate restTemplate = new RestTemplate();
-	private final String url = "http://localhost:" + randomServerPort + route;
+	private String url = null;
 	private HttpHeaders headers = new HttpHeaders();
 	private final static String username = "admin";
 	private final static String password = "password";
@@ -55,7 +63,7 @@ public class ApplicationTests {
 
 	@BeforeEach
 	public void setUp() {
-
+		url = "http://localhost:" + randomServerPort + route;
 	}
 
 	@Test
@@ -75,12 +83,9 @@ public class ApplicationTests {
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		headers.setBasicAuth(username, password);
 		System.err.println("Authorization:" + headers.get("Authorization"));
-		// echo 'YWRtaW46cGFzc3dvcmQ=' | base64 -d -
-		// admin:password
 		try {
 			responseEntity = restTemplate.getForEntity(url, String.class);
 			assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-			// assertThat(responseEntity.getBody(), is(body));
 		} catch (HttpClientErrorException e) {
 			System.err.println(e.getMessage());
 		}
@@ -90,14 +95,20 @@ public class ApplicationTests {
 	public void test3() throws Exception {
 		headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		headers.setBasicAuth("YWRtaW46cGFzc3dvcmQ=");
+		String encodedCredentials = null;
+		try {
+			encodedCredentials = new String(Base64.encodeBase64(
+					String.format("%s:%s", username, password).getBytes("UTF8")));
+		} catch (UnsupportedEncodingException e) {
+			System.err.println("Exception (ignored): " + e.toString());
+		}
+
+		headers.setBasicAuth(encodedCredentials);
+
 		System.err.println("Authorization:" + headers.get("Authorization"));
-		// echo 'YWRtaW46cGFzc3dvcmQ=' | base64 -d -
-		// admin:password
 		try {
 			responseEntity = restTemplate.getForEntity(url, String.class);
 			assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-			assertThat(responseEntity.getBody(), is(body));
 		} catch (HttpClientErrorException e) {
 			System.err.println(e.getMessage());
 		}
