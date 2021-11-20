@@ -25,16 +25,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.httpBasic().authenticationEntryPoint(basicAuthenticationPoint);
 	}
 
-	/*
-	 	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable().authorizeRequests().anyRequest().authenticated().and()
-				.httpBasic();
-	}
-	
-	 */
-	// java.lang.IllegalArgumentException: There is no PasswordEncoder mapped for
-	// the id "null"
 	// https://spring.io/blog/2017/11/01/spring-security-5-0-0-rc1-released#password-storage-format
 	// https://stackoverflow.com/questions/49654143/spring-security-5-there-is-no-passwordencoder-mapped-for-the-id-null
 	@Autowired

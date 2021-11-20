@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Component
 public class BasicAuthenticationPoint extends BasicAuthenticationEntryPoint {
+	private static final String realName = "user";
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
@@ -28,14 +29,9 @@ public class BasicAuthenticationPoint extends BasicAuthenticationEntryPoint {
 
 	}
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-	}
-
 	@Override
 	public void afterPropertiesSet() {
-		setRealmName("Marc");
+		setRealmName(realName);
 		super.afterPropertiesSet();
 	}
 
