@@ -25,18 +25,23 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.hamcrest.Matchers.is;
+// import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 
 // NOTE: property annotations have no effect
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = { "serverPort=8085" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
+		"serverPort=8085" })
 @PropertySource("classpath:application.properties")
 public class AcceptanceTest {
 
@@ -96,7 +101,8 @@ public class AcceptanceTest {
 		data.setName(body);
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		request = new HttpEntity<String>(data.toString(), headers);
-		responseEntity = restTemplate.postForEntity(url, request, String.class, headers);
+		responseEntity = restTemplate.postForEntity(url, request, String.class,
+				headers);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		// code error: Expected: a string containing "Hello basic" but: was
 		// "{"name":null}"
@@ -115,7 +121,8 @@ public class AcceptanceTest {
 			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
 			HttpEntity<String> request = new HttpEntity<String>("", headers);
-			responseEntity = restTemplate.postForEntity(url, request, String.class, headers);
+			responseEntity = restTemplate.postForEntity(url, request, String.class,
+					headers);
 			assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 
 		});
@@ -124,6 +131,26 @@ public class AcceptanceTest {
 	@Disabled("Disabled until some reported problem is addressed")
 	@Test
 	public void test4() {
+	}
+
+	@Test
+	public void test5() {
+
+		final List<UUID> uuids = Arrays.asList(
+				UUID.fromString("3dd25fab-b689-4693-a589-625a637d10a7"),
+				UUID.fromString("b3901787-1396-47e8-aa4f-6f5ae74b887a"));
+		String query = String.join("&",
+				uuids.stream().map(o -> String.format("uuids=%s", o.toString()))
+						.collect(Collectors.toList()));
+		url = "http://localhost:" + randomServerPort + route + "/list" + "?"
+				+ query;
+
+		responseEntity = restTemplate.getForEntity(url, String.class);
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		String responseBody = responseEntity.getBody();
+		uuids.stream()
+				.forEach(o -> assertThat(responseBody, containsString(o.toString())));
+
 	}
 
 }

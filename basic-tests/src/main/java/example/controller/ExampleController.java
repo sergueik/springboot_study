@@ -1,12 +1,13 @@
 package example.controller;
-
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Copyright 2021 Serguei Kouzmine
  */
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import example.service.ExampleService;
@@ -59,6 +61,15 @@ public class ExampleController {
 		// return result;
 		return data;
 
+	}
+
+	// see also: https://qna.habr.com/q/1079162
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	public ResponseEntity<String> list(
+			@RequestParam final Collection<UUID> uuids) {
+		String data = String.join(" ",
+				uuids.stream().map(o -> o.toString()).collect(Collectors.toList()));
+		return ResponseEntity.status(HttpStatus.OK).body(data);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/post/set", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
