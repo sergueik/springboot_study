@@ -39,8 +39,6 @@ import static org.hamcrest.Matchers.greaterThan;
 
 import org.apache.commons.codec.binary.Base64;
 
-// NOTE: property annotations have no effect for serverPort
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
 		"serverPort=8086" })
 @PropertySource("classpath:application.properties")
@@ -53,7 +51,6 @@ public class BasicAuthTests {
 
 	private final String route = "/employees/";
 	private String url = null;
-	private HttpHeaders headers = new HttpHeaders();
 	private ResponseEntity<String> responseEntity = null;
 	private final static String body = "McDonald";
 

@@ -53,12 +53,14 @@ Currently all 3 tests (no authentication,valid and invalid authentication) are f
 ```
 ### See Also:
 
-  * [basics of ispring Security with basic authentication](https://www.baeldung.com/spring-security-basic-authentication)
+  * [basics of spring Security with basic authentication](https://www.baeldung.com/spring-security-basic-authentication)
+  * [overview of Spring Security](https://ru.wikibooks.org/wiki/Spring_Security/Технический_обзор_Spring_Security) (in Russian)
   * [handling basic authentication with RestTemplate](https://www.baeldung.com/how-to-use-resttemplate-with-basic-authentication-in-spring)
   * https://www.javadevjournal.com/spring/basic-authentication-with-spring-security/
   * HTTP/1.1 [demos](https://jigsaw.w3.org/HTTP/) page demonstrating various common scenarios including basic auth
   * explanation of jigsaw *vintage* [document](https://www.w3.org/Jigsaw/Doc/User/authentication.html) 
   * [Marc B. McDonald](https://en.wikipedia.org/wiki/Marc_McDonald) was Microsoft's first salaried employee
+  * [basic testng springboot test](https://www.javainuse.com/spring/springboot_testng) (note: ad-heavy blog).
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
