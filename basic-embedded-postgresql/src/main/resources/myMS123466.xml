@@ -1,0 +1,65 @@
+<ObjectDefinition>
+  <information>
+    <icon>none</icon>
+    <description/>
+    <displayField>none</displayField>
+    <order>0</order>
+    <visibility>0</visibility>
+    <configType/>
+    <createTemplateId>0</createTemplateId>
+    <createTemplateObject/>
+    <defaultDisplay>false</defaultDisplay>
+    <dynamic>false</dynamic>
+    <importIfMandatoryPresent>false</importIfMandatoryPresent>
+    <maxInstances>0</maxInstances>
+    <relatedObjects/>
+    <name>myMS123466</name>
+    <group>Default</group>
+    <importonce>false</importonce>
+    <importrank>0</importrank>
+    <reorderinstances>false</reorderinstances>
+    <sortascending>false</sortascending>
+    <sortauto>false</sortauto>
+    <sortnumerical>false</sortnumerical>
+    <sortvariable>param._order</sortvariable>
+  </information>
+  <variables frozen="0">
+    <variable displayName="view_name" name="params.view_name" startIncrement="0" type="String" mandatoryArray="false" visible="true" groupSeparator="" groupDisplayName="" displayOrder="0" increment="1" refServiceURI="" refDeviceIdVar="" keepOnImport="false" editable="true" onlyDetailView="true" localVarNameMatch="" remoteVarNameMatch="" arrayCanAdd="true" arrayCanRemove="true" arrayCanMove="true" arrayCanEdit="true" selector="false" displayNameHeader="view_name" fullDisplayName="view_name" default="L3" isMandatory="true" isUserLocked="true" isGrouped="true" isSearchable="false" isUniqueGlobal="false">
+      <values>
+        <value displayValue="val1_disp">111</value>
+      </values>
+      <behaviors>
+        <behaviour displayName="new_var0" displayOrder="0" maxLength="100" name="params.new_var0" selectorValue="selector_val1" startIncrement="false" type="String"/>
+        <behaviour displayName="new_var2" displayOrder="0" maxLength="100" name="params.new_var2" selectorValue="selector_val1" startIncrement="false" type="String"/>
+      </behaviors>
+      <sections>
+        <section>String</section>
+        <section>mysection</section>
+      </sections>
+      <classes>
+        <class>string</class>
+        <class>myclass</class>
+      </classes>
+    </variable>
+    <variable displayName="object_id" name="params.object_id" startIncrement="0" type="String" mandatoryArray="false" visible="true" groupSeparator="" groupDisplayName="" displayOrder="0" increment="1" refServiceURI="" refDeviceIdVar="" keepOnImport="false" editable="true" onlyDetailView="false" localVarNameMatch="" remoteVarNameMatch="" arrayCanAdd="true" arrayCanRemove="true" arrayCanMove="true" arrayCanEdit="true" selector="false" displayNameHeader="object_id" fullDisplayName="object_id" default="L3" isMandatory="false" isUserLocked="true" isGrouped="false" isSearchable="false" isUniqueGlobal="false">
+      <values>
+        <value displayValue="val1_disp">111</value>
+      </values>
+      <behaviors>
+        <behaviour displayName="new_var0" displayOrder="0" maxLength="100" name="params.new_var0" selectorValue="selector_val1" startIncrement="false" type="String"/>
+        <behaviour displayName="new_var2" displayOrder="0" maxLength="100" name="params.new_var2" selectorValue="selector_val1" startIncrement="false" type="String"/>
+      </behaviors>
+      <sections>
+        <section>String</section>
+        <section>mysection</section>
+      </sections>
+      <classes>
+        <class>string</class>
+        <class>myclass</class>
+      </classes>
+    </variable>
+  </variables>
+  <example>
+    <content>none</content>
+  </example>
+</ObjectDefinition>
