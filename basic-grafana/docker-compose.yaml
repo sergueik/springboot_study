@@ -1,0 +1,19 @@
+version: '3.7'
+services:
+  app:
+    container_name: example-grafana
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    working_dir: '/scripts'
+    restart: always
+    tty: false
+    networks:
+      - myapp
+    extra_hosts:
+      - "host.docker.internal:192.168.0.64"
+networks:
+  myapp:
+    driver: bridge
