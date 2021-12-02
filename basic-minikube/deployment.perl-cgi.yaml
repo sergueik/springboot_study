@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: perl-app
+spec:
+  selector:
+    matchLabels:
+      app: perl-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: perl-app
+    spec:
+      containers:
+      - name: perl-app
+        image: basic-perl-cgi-container 
+        # https://www.tutorialworks.com/kubernetes-imagepullbackoff/
+        # image: hashicorp/http-echo:0.2.3
+        # https://sysdig.com/blog/debug-kubernetes-crashloopbackoff/
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
