@@ -1,4 +1,4 @@
-### Info
+﻿### Info
 
 contains example sources of the [Spring Boot app on HTTPS using Self-Signed server Certificate ](https://www.baeldung.com/spring-boot-https-self-signed-certificate) application and test combined with minimal basic-auth code to illustrate the  client code for the same
 
@@ -57,7 +57,7 @@ This creates `basic.p12`
 Make sure to put the password filename and alias into `application.properties`.
 
 ```sh
-mvn spring-boot:run
+mvn  -Dtest.skip=true spring-boot:run
 ```
 ```sh
 curl -v https://localhost:8443/welcome
@@ -69,78 +69,66 @@ curl: (60) SSL certificate problem: self signed certificate
 curl -k -v https://localhost:8443/welcome
 ```
 ```text
+welcome
+```
+
+```sh
+curl -k -v https://localhost:8443/employees
+```
+```text
 HTTP Status 401 - Full authentication is required to access this resource
 ```
 ```
-curl -u user:password -k -v https://localhost:8443/welcome
+curl -u user:password -k -v https://localhost:8443/employees
 ```
 ```text
 HTTP Status 401 - Bad credentials
 ```
 ```sh
-curl -u admin:password -k -v https://localhost:8443/welcome
+curl -u admin:password -k -v https://localhost:8443/employees
 ```
 ```text
-* Connected to localhost (127.0.0.1) port 8443 (#0)
-* ALPN, offering h2
-* ALPN, offering http/1.1
-* successfully set certificate verify locations:
-*  CAfile: C:/Program Files/Git/mingw64/ssl/certs/ca-bundle.crt
-*  CApath: none
-} [5 bytes data]
-* TLSv1.3 (OUT), TLS handshake, Client hello (1):
-} [512 bytes data]
-* TLSv1.3 (IN), TLS handshake, Server hello (2):
-{ [81 bytes data]
-* TLSv1.2 (IN), TLS handshake, Certificate (11):
-{ [881 bytes data]
-* TLSv1.2 (IN), TLS handshake, Server key exchange (12):
-{ [333 bytes data]
-* TLSv1.2 (IN), TLS handshake, Server finished (14):
-{ [4 bytes data]
-* TLSv1.2 (OUT), TLS handshake, Client key exchange (16):
-} [70 bytes data]
-* TLSv1.2 (OUT), TLS change cipher, Change cipher spec (1):
-} [1 bytes data]
-* TLSv1.2 (OUT), TLS handshake, Finished (20):
-} [16 bytes data]
-* TLSv1.2 (IN), TLS handshake, Finished (20):
-{ [16 bytes data]
-* SSL connection using TLSv1.2 / ECDHE-RSA-AES128-GCM-SHA256
-* ALPN, server did not agree to a protocol
-* Server certificate:
-*  subject: C=US; ST=FL; L=Miami; O=example; OU=example; CN=test user
-*  start date: Dec  4 07:59:34 2021 GMT
-*  expire date: Dec  2 07:59:34 2031 GMT
-*  issuer: C=US; ST=FL; L=Miami; O=example; OU=example; CN=test user
-*  SSL certificate verify result: self signed certificate (18), continuing anyway.
-* Server auth using Basic with user 'admin'
-} [5 bytes data]
-> GET /welcome HTTP/1.1
-> Host: localhost:8443
-> Authorization: Basic YWRtaW46cGFzc3dvcmQ=
-> User-Agent: curl/7.74.0
-> Accept: */*
->
-{ [5 bytes data]
-* Mark bundle as not supporting multiuse
-< HTTP/1.1 200
-< Set-Cookie: JSESSIONID=CAAEF2A6AA642CCD49F74A12DF7D041C; Path=/; Secure; HttpOnly
-< X-Content-Type-Options: nosniff
-< X-XSS-Protection: 1; mode=block
-< Cache-Control: no-cache, no-store, max-age=0, must-revalidate
-< Pragma: no-cache
-< Expires: 0
-< Strict-Transport-Security: max-age=31536000 ; includeSubDomains
-< X-Frame-Options: DENY
-< Content-Type: text/plain;charset=UTF-8
-< Content-Length: 7
-< Date: Sat, 04 Dec 2021 06:34:27 GMT
-<
-{ [7 bytes data]
-
-welcome
-
+{}
 ```
-https://www.baeldung.com/spring-boot-https-self-signed-certificate
-https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-web-boot-2/WebContent/META-INF/MANIFEST.MF
+### Unit Testing
+
+Currently can only enable one of 3 tests which exercise Basic Authentication over HTTPS:
+```text
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.952 s - in example.BasicAuthTests
+```
+```text
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.425 s - in example.WrongCredentialsTests
+```
+```text
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.176 s - in example.PlainIntegrationTest
+```
+when run together:
+```text
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+Web server failed to start. Port 8443 was already in use.
+Action:
+Identify and stop the process that's listening on port 8443 or configure this application to listen on another port.
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+Web server failed to start. Port 8443 was already in use.
+Action:
+Identify and stop the process that's listening on port 8443 or configure this application to listen on another port.
+[ERROR]   PlainIntegrationTest.test1 » IllegalState Failed to load ApplicationContext
+[ERROR]   WrongCredentialsTests.test3 » IllegalState Failed to load ApplicationContext
+```
+the `@Disabled` attribute does not help.
+
+### See Also
+
+  * https://www.baeldung.com/spring-boot-https-self-signed-certificate
+  * https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-web-boot-2/WebContent/META-INF/MANIFEST.MF
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

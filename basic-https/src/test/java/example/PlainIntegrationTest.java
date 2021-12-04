@@ -45,9 +45,12 @@ public class PlainIntegrationTest {
 	@Value("${trust.store.password}")
 	private String trustStorePassword;
 
+	// NOTE: Disabled attribute does not protect from encountering the error:
+	// Web server failed to start. Port 8443 was already in use
+	// @Disabled("Disabled...")
 	@Test
-	public void whenGETanHTTPSResource_thenCorrectResponse() throws Exception {
-		ResponseEntity<String> response = restTemplate().getForEntity(url,
+	public void test1() throws Exception {
+		ResponseEntity<String> response = customRestTemplate().getForEntity(url,
 				String.class, Collections.emptyMap());
 		// Certificate for <localhost> doesn't match any of the subject alternative
 		// names: []
@@ -56,7 +59,7 @@ public class PlainIntegrationTest {
 		assertThat(response.getStatusCode(), is(HttpStatus.OK));
 	}
 
-	private RestTemplate restTemplate() throws Exception {
+	private RestTemplate customRestTemplate() throws Exception {
 		SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(
 				trustStore.getURL(), trustStorePassword.toCharArray()).build();
 		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
