@@ -98,6 +98,18 @@ public class BasicAuthTests {
 
 	}
 
+	@Test
+	public void test3() throws Exception {
+		url = "http://localhost:" + randomServerPort + "/echo";
+		restTemplate.getInterceptors()
+				.add(new BasicAuthorizationInterceptor(username, password));
+		responseEntity = restTemplate.getForEntity(url, String.class);
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody(),
+				containsString(username + ":" + password));
+
+	}
+
 	// if switching to https atempted:
 	// java.lang.IllegalArgumentException: Invalid character found in method name
 	// [0x160x030x03...].
