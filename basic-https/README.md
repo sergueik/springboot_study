@@ -123,11 +123,16 @@ Identify and stop the process that's listening on port 8443 or configure this ap
 [ERROR]   PlainIntegrationTest.test1 » IllegalState Failed to load ApplicationContext
 [ERROR]   WrongCredentialsTests.test3 » IllegalState Failed to load ApplicationContext
 ```
-the `@Disabled` attribute does not help.
-
+the `@Disabled` attribute does not help . Changing the `@SpringBootTest` properties
+```
+@SpringBootTest(classes = example.Launcher.class, 
+ webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
+"serverPort=8445" } )
+```
+or cloning and referencing alternative `applicatiton.properties` does not override the HTTPS port 8443.
 ### See Also
 
-  * https://www.baeldung.com/spring-boot-https-self-signed-certificate
+  * [hint](https://stackoverflow.com/questions/50928061/certificate-for-localhost-doesnt-match-any-of-the-subject-alternative-names) for solving `Certificate for <localhost> doesn't match any of the subject alternative names: []`
   * https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-web-boot-2/WebContent/META-INF/MANIFEST.MF
 
 ### Author
