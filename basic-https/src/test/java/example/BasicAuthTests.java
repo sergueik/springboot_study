@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.is;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,6 +51,7 @@ public class BasicAuthTests {
 	}
 
 	@Test
+	@Tag("Group1")
 	void test1() {
 
 		HttpClientErrorException exception = Assertions
@@ -66,6 +68,7 @@ public class BasicAuthTests {
 	// see also:
 	// https://stackoverflow.com/questions/39651097/how-to-add-basic-auth-to-autowired-testresttemplate-in-springboottest-spring-bo
 	@Test
+	@Tag("Group1")
 	public void test2() throws Exception {
 		restTemplate.getInterceptors()
 				.add(new BasicAuthorizationInterceptor(username, password));

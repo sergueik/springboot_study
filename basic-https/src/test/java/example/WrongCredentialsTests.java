@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.is;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +21,7 @@ import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-@SuppressWarnings("deprecation")
+	@SuppressWarnings("deprecation")
 @SpringBootTest(classes = example.Launcher.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
 		"serverPort=8443" })
 @PropertySource("classpath:application.properties")
@@ -54,6 +55,7 @@ public class WrongCredentialsTests {
 	}
 
 	@Test
+	@Tag("Group3")
 	public void test3() throws Exception {
 		@SuppressWarnings("deprecation")
 		HttpClientErrorException exception = Assertions

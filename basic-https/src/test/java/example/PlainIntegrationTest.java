@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,6 +41,7 @@ public class PlainIntegrationTest {
 	}
 
 	@Test
+	@Tag("Group2")
 	public void test1() throws Exception {
 		ResponseEntity<String> response = restTemplate.getForEntity(url,
 				String.class, Collections.emptyMap());

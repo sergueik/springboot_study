@@ -129,11 +129,18 @@ the `@Disabled` attribute does not help . Changing the `@SpringBootTest` propert
  webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
 "serverPort=8445" } )
 ```
-or cloning and referencing alternative `applicatiton.properties` does not override the HTTPS port 8443.
+or cloning and referencing alternative `applicatiton.properties` does not override the HTTPS port 8443. This is currently solved through [tagging and filtering](https://www.baeldung.com/junit-filtering-tests) with __Junit 5__:
+
+```sh
+mvn -Pgroup1 clean test
+mvn -Pgroup2 clean test
+mvn -Pgroup2 clean test
+```
 ### See Also
 
   * [hint](https://stackoverflow.com/questions/50928061/certificate-for-localhost-doesnt-match-any-of-the-subject-alternative-names) for solving `Certificate for <localhost> doesn't match any of the subject alternative names: []`
   * https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-web-boot-2/WebContent/META-INF/MANIFEST.MF
-
+  * https://javabydeveloper.com/junit-5-tag-and-filtering-tags-with-examples/
+  * https://stackoverflow.com/questions/64810671/spring-boot-random-sslexception-connection-reset-in-kubernetes-with-jdk11
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
