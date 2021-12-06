@@ -1,0 +1,18 @@
+FROM openjdk:8-jdk-alpine3.9 as builder
+WORKDIR application
+ARG JAR_FILE=target/*.jar
+# When using COPY with more than one source file, the destination must be a directory and end with a /
+
+ARG JAR_FILE=target/example.buildimage.jar 
+
+COPY ${JAR_FILE} application.jar
+RUN java -Djarmode=layertools -jar application.jar extract
+
+FROM openjdk:8-jre-alpine3.9
+WORKDIR application
+COPY --from=builder application/dependencies/ ./
+COPY --from=builder application/snapshot-dependencies/ ./
+# COPY --from=builder application/resources/ ./
+# COPY failed: stat /var/lib/docker/overlay2/cebd03e0500ae2bc37a272b242da8990e7bfa13f379fee5ab725584b670b9191/merged/application/resources: no such file or directory
+COPY --from=builder application/application/ ./
+ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
