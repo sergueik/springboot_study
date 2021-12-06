@@ -10,28 +10,19 @@ RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/ap
   rm apache-maven-$MAVEN_VERSION-bin.tar.gz && \
   mv apache-maven-$MAVEN_VERSION /usr/lib/mvn
 
-COPY pom.xml $WORKDIR
-# COPY src $WORKDIR/src
-# NOTE COPY src $WORKDIR/src
-# does not work -  ended up with /src
+COPY pom.xml /application
 COPY src /application/src
-# 
-ARG JAR_FILE=$WORKDIR/target/*.jar
-# When using COPY with more than one source file, the destination must be a directory and end with a /
-
 ARG JAR_FILE=/application/target/example.buildimage.jar 
 RUN mvn clean package
-# COPY ${JAR_FILE} application.jar
 RUN java -Djarmode=layertools -jar $JAR_FILE extract
 
 FROM azul/zulu-openjdk-alpine:11
 WORKDIR application
 COPY --from=builder /application/dependencies/ ./
 COPY --from=builder /application/snapshot-dependencies/ ./
-COPY --from=builder /application/spring-boot-loader ./
 # COPY --from=builder /application/resources/ ./
 # TODO: explain
 # COPY failed: stat /var/lib/docker/overlay2/cebd03e0500ae2bc37a272b242da8990e7bfa13f379fee5ab725584b670b9191/merged/application/resources: no such file or directory
+COPY --from=builder /application/spring-boot-loader ./
 COPY --from=builder application/application/ ./
 ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
-# org.springframework.boot.loader.JarLauncher

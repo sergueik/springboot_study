@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk-alpine:11 as builder
+FROM azul/zulu-openjdk-alpine:11
 WORKDIR application
 
 ENV MAVEN_VERSION 3.8.1
@@ -10,16 +10,10 @@ RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/ap
   rm apache-maven-$MAVEN_VERSION-bin.tar.gz && \
   mv apache-maven-$MAVEN_VERSION /usr/lib/mvn
 
-COPY pom.xml $WORKDIR
+COPY pom.xml.jdk11 /application
+RUN mv pom.xml.jdk11 pom.xml
 COPY src /application/src
-# NOTE COPY src $WORKDIR/src
-# does not work -  ended up with /src
-# 
-ARG JAR_FILE=/application/target/*.jar
-# When using COPY with more than one source file, the destination must be a directory and end with a /
-
 ARG JAR_FILE=/application/target/example.buildimage.jar 
 
 RUN mvn clean package
-# COPY ${JAR_FILE} application.jar
 RUN java -Djarmode=layertools -jar $JAR_FILE extract

@@ -80,6 +80,18 @@ fully timed clear run, including image downloads | 15+ min
 rerun with no changes  |  50.255 s
 rebuild modified  | 01:17 min
 
+### Manual Build in Steps
+build with `Dockerfile.builder` / `Dockerifile.runner`
+```sh
+docker build -t builder -f Dockerfile.builder
+```
+
+```sh
+docker build -t runner -f Dockerfile.runner .
+```
+```sh
+docker run -d -p 8080:8080 runner
+```
 ### Cleanup
 
 ```sh
@@ -88,7 +100,12 @@ docker image rm $(docker image ls | grep paketobuildpacks | awk '{print $3}')
 docker stop $(docker container ls | grep $IMAGE | awk '{print $1}' )
 docker container rm  $(docker container ls -a | grep $IMAGE | awk '{print $1}' )
 docker image rm $IMAGE
+
 docker image prune -f
+
+docker container rm  $(docker container ls -a | grep runner | awk '{print $1}' )
+docker image rm builder runner
+
 ```
 
 ### See Also
