@@ -1,4 +1,4 @@
-### Install
+﻿### Install
 
 * follow the [steps](https://phoenixnap.com/kb/install-minikube-on-ubuntu) listed gfor bionic
 
@@ -22,7 +22,10 @@ sudo chmod 755 /usr/local/bin/kubectl
 ```sh
 minikube start --driver=virtualbox
 ```
-of (on Linux host)
+```cmd
+minikube.exe start --driver=virtualbox
+```
+or (on Linux host)
 ```sh
 minikube start --driver=docker
 ```
@@ -103,7 +106,7 @@ on Windows pay attention to setting the `PATH` to `kibectl.exe` directory
 ```cmd
 minikube start --driver=virtualbox
 PATH=%PATH%;%USERPROFILE%
-fOR /f "tokens=*" %. IN ('minikube.exe -p minikube docker-env --shell cmd') do %.
+for /f "tokens=*" %. IN ('minikube.exe -p minikube docker-env --shell cmd') do %.
 ```
 build custom image inside minikube  docker to [make it accessible](https://minikube.sigs.k8s.io/docs/handbook/pushing/) to minikube kubernetes cluster
 
@@ -111,7 +114,12 @@ build custom image inside minikube  docker to [make it accessible](https://minik
 NAME=basic-perl-cgi
 docker build -t $NAME ../$NAME
 docker image ls | grep $NAME
+```
 
+```cmd
+set NAME=basic-perl-cgi
+docker build -t %NAME% ..\%NAME%
+docker image ls | find %NAME%
 ```
 NOTE: do not provide `-f Dockerfile` argument - confuses Docker.
  
@@ -134,19 +142,30 @@ DEPLOYMENT_NAME=perl-app
 
 kubectl apply -f deployment.$DEPLOYMENT_NAME.yaml 
 ```
+```cmd
+set DEPLOYMENT_NAME=perl-app
+kubectl apply -f deployment.%DEPLOYMENT_NAME%.yaml 
+```
+
 * see
 
 ```text
 kubectl get pod | grep $DEPLOYMENT_NAME
 perl-app-858d8d56fc-dqldl   1/1     Running   0          8s
 ```
-```
-
+```sh
 kubectl expose deployment $DEPLOYMENT_NAME --type=NodePort --port=8080 --target-port=80
+```
+```cmd
+kubectl expose deployment %DEPLOYMENT_NAME% --type=NodePort --port=8080 --target-port=80
 ```
 
 ```sh
-curl $(minikube service perl-app --url)/cgi-bin/list.cgi
+curl $(minikube service $DEPLOYMENT_NAME --url)/cgi-bin/list.cgi
+```
+
+```cmd
+for /f "tokens=*" %. IN ('minikube.exe service %DEPLOYMENT_NAME% --url') do "c:\Program Files\Git\mingw64\bin\curl.exe" %./cgi-bin/list.cgi
 ```
 
 ```json
@@ -172,7 +191,7 @@ curl $(minikube service perl-app --url)/cgi-bin/list.cgi
 ```
 alternatively  check `$DOCKER_HOST` and the port assiged 
 ```sh
-kubectl get  service $DEPLOYMENT_NAME
+kubectl get service $DEPLOYMENT_NAME
 ```
 ```text
 NAME       TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
@@ -181,6 +200,13 @@ perl-app   NodePort   10.100.74.243   <none>        8080:32497/TCP   9s
 ```
 if anything 
 
+```cmd
+for /f "tokens=*" %. IN ('kubectl.exe get pod -o name ^| findstr %DEPLOYMENT_NAME%') do @kubectl.exe exec -it %. -- sh  
+```
+```sh
+docker exec -it $(kubectl.exe get pod -o name | grep $DEPLOYMENT_NAME) -- sh
+```
+alternatively
 ```sh
 docker container ls | grep $IMAGE_NAME
 ```
@@ -243,7 +269,9 @@ speeding up
 ```sh
 ln -s -T  '/media/sergueik/Windows8_OS/Virtual Machines/disk.vmdk' disk.vmdk
 ```
+### NOTE
 
+To use Docker commands in Minukube VM easiest (with __8.1__ and older Windows) is to install the [Docker ToolBox](https://github.com/docker-archive/toolbox)
 ### See Also
 
    * https://github.com/DanWahlin/DockerAndKubernetesCourseCode/tree/main/samples
