@@ -1,6 +1,8 @@
 package example.controller;
 
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import example.service.ExampleService;
 import example.service.ExampleService;
 
 @RestController
@@ -46,18 +47,29 @@ public class Controller {
 
 	private static final RestTemplate restTemplate = new RestTemplate();
 
+	@Value("${server.port:8085}")
+	private int port;
+	// the @Value annotation is not working
+	// private int port = 8085;
+
 	@ResponseBody
-	@PostMapping(value = "/page", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+	// 406 Not Acceptable client error response
+	// 415 Unsupported Media Type
+	@PostMapping(value = "/page" /*, consumes = MediaType.TEXT_PLAIN_VALUE */, produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> page(@RequestParam String name) {
-		final String url = "http://localhost:/post";
+		final String url = String.format("http://localhost:%d/basic/post", port);
 		// perform API call to localhost
 
 		final HttpHeaders headers = new HttpHeaders();
-
+		headers.setContentType(MediaType.APPLICATION_JSON);
 		final Data input = new Data();
 		input.setName(name);
-		final HttpEntity<String> request = new HttpEntity<String>(input.toString(),
-				headers);
+		final Gson gson = new Gson();
+
+		final String payload = gson.toJson(input);
+		System.err
+				.println(String.format("POSTING %s to %s", payload.toString(), url));
+		final HttpEntity<String> request = new HttpEntity<String>(payload, headers);
 		final ResponseEntity<Data> responseEntity = restTemplate.postForEntity(url,
 				request, Data.class, headers);
 		final String result = responseEntity.getBody().getName();
