@@ -1,0 +1,12 @@
+FROM azul/zulu-openjdk-alpine:11
+WORKDIR application
+
+WORKDIR application
+COPY --from=builder /application/dependencies/ ./
+COPY --from=builder /application/snapshot-dependencies/ ./
+# COPY --from=builder /application/resources/ ./
+# TODO: explain
+# COPY failed: stat /var/lib/docker/overlay2/cebd03e0500ae2bc37a272b242da8990e7bfa13f379fee5ab725584b670b9191/merged/application/resources: no such file or directory
+COPY --from=builder /application/spring-boot-loader ./
+COPY --from=builder application/application/ ./
+ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
