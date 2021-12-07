@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,7 +37,7 @@ import example.ExampleApplication;
 @WebMvcTest
 public class MVCRealTest {
 
-	final static String route = "/hello";
+	final static String route = "/basic";
 	final static String body = "Hello basic";
 	private static String charset = null;
 	private ResultActions resultActions;
@@ -101,4 +102,13 @@ public class MVCRealTest {
 				.andExpect(content().contentType(
 						String.format("application/json;charset=%s", charset)));
 	}
+
+	// count nodes
+	// TODO: No value at JSON path "$.*", exception: json can not be null or empty
+	@Test
+	public void postTest() throws Exception {
+		mvc.perform(post(route + "/page").param("name", new String[] { "name" }))
+				.andExpect(content().string(containsString("name")));
+	}
+
 }
