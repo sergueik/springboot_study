@@ -142,5 +142,8 @@ mvn -Pgroup2 clean test
   * https://github.com/eugenp/tutorials/blob/master/spring-security-modules/spring-security-web-boot-2/WebContent/META-INF/MANIFEST.MF
   * https://javabydeveloper.com/junit-5-tag-and-filtering-tags-with-examples/
   * https://stackoverflow.com/questions/64810671/spring-boot-random-sslexception-connection-reset-in-kubernetes-with-jdk11
+  * [junit 5 and junit4 test tagging](https://www.baeldung.com/junit-filtering-tests)
+
 ### Author
+
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -7,10 +7,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
@@ -21,13 +23,17 @@ import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
-		"serverPort=8443" })
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = { "serverPort=8443" })
 @PropertySource("classpath:application.properties")
 @SuppressWarnings("deprecation")
 public class BasicAuthTests {
 
-	private static final String url = "https://localhost:8443/employees/";
+	// does not get resolved through @Value annotation
+	// @Value("${server.port:8443}")
+	private int serverPort = 8443;
+
+	private String url = String.format("https://localhost:%d/employees/", serverPort);
 
 	@Value("${trust.store}")
 	private Resource trustStore;
@@ -44,37 +50,32 @@ public class BasicAuthTests {
 	private String password;
 	private RestTemplate restTemplate;
 
-	@BeforeEach
-	public void beforeEach() throws Exception {
-		restTemplate = CustomRestTemplateHelper.customRestTemplate(trustStore,
-				trustStorePassword);
-	}
-
-	@Test
-	@Tag("Group1")
-	void test1() {
-
-		HttpClientErrorException exception = Assertions
-				.assertThrows(HttpClientErrorException.class, () -> {
-					responseEntity = restTemplate.getForEntity(url, String.class);
-					// the following line is not reached
-					assertThat(responseEntity.getStatusCode(),
-							is(HttpStatus.UNAUTHORIZED));
-				});
-		assertThat(exception.getMessage(), containsString(
-				"Full authentication is required to access this resource"));
+	@Before
+	public void before() throws Exception {
+		restTemplate = CustomRestTemplateHelper.customRestTemplate(trustStore, trustStorePassword);
 	}
 
 	// see also:
 	// https://stackoverflow.com/questions/39651097/how-to-add-basic-auth-to-autowired-testresttemplate-in-springboottest-spring-bo
 	@Test
-	@Tag("Group1")
 	public void test2() throws Exception {
-		restTemplate.getInterceptors()
-				.add(new BasicAuthorizationInterceptor(username, password));
+		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(username, password));
 		responseEntity = restTemplate.getForEntity(url, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody(), containsString("{}"));
 
+	}
+
+	@Test
+	public void test1() throws Exception {
+
+		try {
+			responseEntity = restTemplate.getForEntity(url, String.class);
+			// the following line is not reached, but keep the assertion
+			assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
+		} catch (Exception e) {
+			System.err.println("Exception: " + e.toString());
+			assertThat(e.getMessage(), containsString("Full authentication is required to access this resource"));
+		}
 	}
 }
