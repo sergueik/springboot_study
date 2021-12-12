@@ -28,7 +28,7 @@ import org.springframework.web.client.RestTemplate;
 		"serverPort=8443" })
 @PropertySource("classpath:application.yaml")
 @SuppressWarnings("deprecation")
-public class BasicAuthTests {
+public class PlainRestTemplateTests {
 
 	// does not get resolved through @Value annotation
 	// @Value("${server.port:8443}")
@@ -36,15 +36,6 @@ public class BasicAuthTests {
 
 	private String url = String.format("https://localhost:%d/employees/",
 			serverPort);
-
-	@Value("${trust.store}")
-	private Resource trustStore;
-
-	// @Value("${trust.store.password}")
-	// trouble with converting application.properties with trust.store and
-	// trust.store.password to YAML
-	@Value("${trust.password}")
-	private String trustStorePassword;
 
 	private ResponseEntity<String> responseEntity = null;
 
@@ -57,34 +48,23 @@ public class BasicAuthTests {
 
 	@Before
 	public void before() throws Exception {
-		restTemplate = CustomRestTemplateHelper.customRestTemplate(trustStore,
-				trustStorePassword);
+		restTemplate = new RestTemplate();
 	}
 
 	// see also:
 	// https://stackoverflow.com/questions/39651097/how-to-add-basic-auth-to-autowired-testresttemplate-in-springboottest-spring-bo
 	@Test
-	public void test2() throws Exception {
-		restTemplate.getInterceptors()
-				.add(new BasicAuthorizationInterceptor(username, password));
-		System.err.println("Credentials: " + username + "/" + password);
-		responseEntity = restTemplate.getForEntity(url, String.class);
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody(), containsString("{}"));
-
-	}
-
-	@Test
-	public void test1() throws Exception {
+	public void test() throws Exception {
 
 		try {
+			restTemplate.getInterceptors()
+					.add(new BasicAuthorizationInterceptor(username, password));
+			System.err.println("Credentials: " + username + "/" + password);
 			responseEntity = restTemplate.getForEntity(url, String.class);
-			// the following line is not reached, but keep the assertion
-			assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 		} catch (Exception e) {
 			System.err.println("Exception: " + e.toString());
 			assertThat(e.getMessage(), containsString(
-					"Full authentication is required to access this resource"));
+					"unable to find valid certification path to requested target"));
 		}
 	}
 }

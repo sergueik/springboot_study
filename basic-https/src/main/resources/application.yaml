@@ -12,7 +12,12 @@ server:
     key-store-password: password
     key-alias: basic
 
+# adding the following hack get is past lint but still fail to run test:
+# org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'example.BasicAuthTests': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'trust.store.password' in value "${trust.store.password}"
+trust.store:
+  password: password
 
+trust.store.password: password
 trust:
   store: classpath:keystore/basic.p12
   password: password
