@@ -24,8 +24,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = { "serverPort=8443" })
-@PropertySource("classpath:application.properties")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
+		"serverPort=8443" })
+@PropertySource("classpath:application.yaml")
 @SuppressWarnings("deprecation")
 public class BasicAuthTests {
 
@@ -33,12 +34,16 @@ public class BasicAuthTests {
 	// @Value("${server.port:8443}")
 	private int serverPort = 8443;
 
-	private String url = String.format("https://localhost:%d/employees/", serverPort);
+	private String url = String.format("https://localhost:%d/employees/",
+			serverPort);
 
 	@Value("${trust.store}")
 	private Resource trustStore;
 
-	@Value("${trust.store.password}")
+	// @Value("${trust.store.password}")
+	// trouble with converting application.properties with trust.store and
+	// trust.store.password to YAML
+	@Value("${trust.password}")
 	private String trustStorePassword;
 
 	private ResponseEntity<String> responseEntity = null;
@@ -52,14 +57,16 @@ public class BasicAuthTests {
 
 	@Before
 	public void before() throws Exception {
-		restTemplate = CustomRestTemplateHelper.customRestTemplate(trustStore, trustStorePassword);
+		restTemplate = CustomRestTemplateHelper.customRestTemplate(trustStore,
+				trustStorePassword);
 	}
 
 	// see also:
 	// https://stackoverflow.com/questions/39651097/how-to-add-basic-auth-to-autowired-testresttemplate-in-springboottest-spring-bo
 	@Test
 	public void test2() throws Exception {
-		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(username, password));
+		restTemplate.getInterceptors()
+				.add(new BasicAuthorizationInterceptor(username, password));
 		responseEntity = restTemplate.getForEntity(url, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody(), containsString("{}"));
@@ -75,7 +82,8 @@ public class BasicAuthTests {
 			assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 		} catch (Exception e) {
 			System.err.println("Exception: " + e.toString());
-			assertThat(e.getMessage(), containsString("Full authentication is required to access this resource"));
+			assertThat(e.getMessage(), containsString(
+					"Full authentication is required to access this resource"));
 		}
 	}
 }
