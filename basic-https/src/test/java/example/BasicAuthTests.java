@@ -67,6 +67,7 @@ public class BasicAuthTests {
 	public void test2() throws Exception {
 		restTemplate.getInterceptors()
 				.add(new BasicAuthorizationInterceptor(username, password));
+		System.err.println("Credentials: " + username + "/" + password);
 		responseEntity = restTemplate.getForEntity(url, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody(), containsString("{}"));

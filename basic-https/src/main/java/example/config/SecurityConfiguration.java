@@ -1,6 +1,7 @@
 package example.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,8 +12,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	private final static String username = "admin";
-	private final static String password = "password";
+	@Value("${test.username}")
+	private String username;
+
+	@Value("${test.password}")
+	private String password;
 
 	@Autowired
 	private BasicAuthenticationPoint basicAuthenticationPoint;
@@ -25,7 +29,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers("/", "/api/**").permitAll()
 				.anyRequest().authenticated();
 		http.httpBasic().authenticationEntryPoint(basicAuthenticationPoint);
-		
+
 	}
 
 	// https://spring.io/blog/2017/11/01/spring-security-5-0-0-rc1-released#password-storage-format
@@ -33,6 +37,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth)
 			throws Exception {
+		System.err.println("Exect credentials: " + username + "/" + password);
 		auth.inMemoryAuthentication().withUser(username)
 				.password(String.format("{noop}%s", password)).roles("USER");
 	}

@@ -5,10 +5,7 @@ server:
   ssl:
     enabled: true
     key-store-type: PKCS12
-    # key-store: classpath:keystore/domain-specific-key.p12
-    # does not have to be present for test to pass
     key-store: classpath:keystore/basic.p12
-    # key-alias: domain-specific
     key-store-password: password
     key-alias: basic
 
@@ -18,5 +15,5 @@ trust:
   password: password
 test:
   username: admin
-  password: password
+  password: test password
 
