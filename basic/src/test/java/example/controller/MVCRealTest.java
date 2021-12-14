@@ -1,15 +1,15 @@
 package example.controller;
 
-/**
- * Copyright 2021 Serguei Kouzmine
- */
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.PropertySource;
+
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.springframework.http.MediaType;
@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,10 +34,11 @@ import example.ExampleApplication;
 
 // NOTE: @Runwith annotation with real classes crashes the JVM
 // @RunWith(SpringJUnit4ClassRunner.class)
+@PropertySource("classpath:application.properties")
 @WebMvcTest
 public class MVCRealTest {
 
-	final static String route = "/hello";
+	final static String route = "/basic";
 	final static String body = "Hello basic";
 	private static String charset = null;
 	private ResultActions resultActions;
@@ -101,4 +103,13 @@ public class MVCRealTest {
 				.andExpect(content().contentType(
 						String.format("application/json;charset=%s", charset)));
 	}
+
+	@Ignore
+	@Test
+	public void postTest() throws Exception {
+		mvc.perform(post(route + "/page").contentType(MediaType.TEXT_PLAIN)
+				.param("name", new String[] { "name" }))
+				.andExpect(content().string(containsString("name")));
+	}
+
 }

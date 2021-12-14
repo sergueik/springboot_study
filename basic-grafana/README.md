@@ -57,6 +57,13 @@ docker exec -it $IMAGE  curl -XGET http://172.17.0.1:5000/
 OK
 ```
 * add datasource in the browser and configure __Simple JSON__ datasource to use that url `http://172.17.0.1:5000`
+* alternatively if `docker-compose.yaml` is used add the setting:
+```yaml
+extra_hosts:
+  - "developer:$( hostname -I | awk '{print $1}')"
+```
+- replace with actual ip address of the developer host
+there and use `http://developer:5000` in grafana. See also [the documentation](https://docs.docker.com/compose/compose-file/compose-file-v3/)
 
 ![datasource](https://github.com/sergueik/springboot_study/blob/master/basic-grafana/screenshots/capture_datasource.png)
 

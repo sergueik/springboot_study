@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>log4j2</artifactId>
-  <version>0.3.0-SNAPSHOT</version>
+  <version>0.4.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>example-log4j2</name>
   <url>http://maven.apache.org</url>
@@ -18,38 +18,10 @@
     <java.version>1.8</java.version>
     <slf4j.version>1.7.30</slf4j.version>
     <log4j.version>1.2.17</log4j.version>
-    <log4j-core.version>2.13.2</log4j-core.version>
+    <log4j-core.version>2.15.0</log4j-core.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
-    <rabbitmq-appender.version>0.1.0-SNAPSHOT</rabbitmq-appender.version>
   </properties>
   <dependencies>
-      <!-- NOTE: not fully functional yet:
-ERROR Appenders contains an invalid element or attribute "MyAppender"
-2020-11-07 16:38:40,311 main ERROR Unable to locate appender "Rabbitmq" for logger config "root"
--->
-   <!--
-    <dependency>
-      <groupId>example</groupId>
-      <artifactId>rabbitmq-appender</artifactId>
-      <version>${rabbitmq-appender.version}</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/src/main/resources/example.rabbitmq-appender-${rabbitmq-appender.version}.jar</systemPath>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency> -->
-    <dependency>
-      <groupId>com.rabbitmq</groupId>
-      <artifactId>amqp-client</artifactId>
-      <version>5.8.0</version>
-    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>

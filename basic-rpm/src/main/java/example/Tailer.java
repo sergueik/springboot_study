@@ -1,11 +1,7 @@
 package example;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 // based on: https://docs.oracle.com/javase/6/docs/api/java/io/RandomAccessFile.html

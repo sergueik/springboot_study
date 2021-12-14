@@ -51,9 +51,13 @@ curl http://localhost:8080/demo
 <script src="resources/js/directives.js"></script>
 </body>
 </html>
-
 ```
-* run in container - work in progress
+* NOTE: errors when upgrading jackson, see errors in maven run:
+```text
+SEVERE: Unable to process Jar entry [META-INF/versions/11/module-info.class] from Jar [jar:file:/home/sergueik/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.13.0/jackson-core-2.13.0.jar!/] for annotations
+```
+but the page is rendered successfully
+* run in container
 ```sh
 export FINAL_NAME=demo
 mvn clean package
@@ -97,6 +101,7 @@ docker run -d -p 8080:8080 --name $CONTAINER_NAME $IMAGE_NAME
   * https://stackoverflow.com/questions/14430122/how-to-define-conditional-properties-in-maven/14430203
   * Syntax of [referring to environment variables](https://www.baeldung.com/maven-env-variables) in `pom.xml`
   * Maven Properties schema [reference](https://books.sonatype.com/mvnref-book/reference/resource-filtering-sect-properties.html)
-
+  * https://www.baeldung.com/spring-httpmessageconverter-rest
+  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

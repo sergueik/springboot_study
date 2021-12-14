@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import example.util.Constants;
+
 // @Entity(name = "#{com.example.crawler.repository.ProductRepositoryCustom.getEntityName()}")
 // SQL error or missing database (unrecognized token: "#")
 // @Entity(name = "product")
@@ -28,17 +30,18 @@ public class Product {
 	private Long id;
 	@Column(name = "NAME")
 	private String name;
-	@Column(name = "PRICE")
+	@Column(name = Constants.PRICE)
 	private String price;
-	@Column(name = "DESCRIPTION")
+	@Column(name = Constants.DESCRIPTION)
 	private String description;
-	@Column(name = "EXTRA_INFORMATION")
+	@Column(name = Constants.EXTRA_INFORMATION)
 	private String extraInformation;
 
 	public Product() {
 	}
 
-	public Product(String name, String price, String description, String extraInformation) {
+	public Product(String name, String price, String description,
+			String extraInformation) {
 		this.name = name;
 		this.price = price;
 		this.description = description;

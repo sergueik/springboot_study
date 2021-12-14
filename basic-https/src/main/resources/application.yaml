@@ -1,0 +1,27 @@
+http: 
+  port: 8080
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store-type: PKCS12
+    # key-store: classpath:keystore/domain-specific-key.p12
+    # does not have to be present for test to pass
+    key-store: classpath:keystore/basic.p12
+    # key-alias: domain-specific
+    key-store-password: password
+    key-alias: basic
+
+# adding the following hack get is past lint but still fail to run test:
+# org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'example.BasicAuthTests': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'trust.store.password' in value "${trust.store.password}"
+trust.store:
+  password: password
+
+trust.store.password: password
+trust:
+  store: classpath:keystore/basic.p12
+  password: password
+test:
+  username: admin
+  password: password
+

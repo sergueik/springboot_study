@@ -7,14 +7,17 @@
 ```sh
 mvn spring-boot:run
 ```
-* will log to console two tasks, round-robin:
+
+* launch healt check monitoring
+```sh
+while true; do curl -v http://localhost:8085/task-scheduler/healthcheck  ; sleep  60; done
+```
+* will log to console two tasks, round-robin, and health check messages
 ```text
-2021-10-03 14:00:00  [ThreadPoolTaskScheduler2] - INFO  Cron task performed at 10/03/2021 14:00:00 on thread ThreadPoolTaskScheduler2
-2021-10-03 14:01:58  [ThreadPoolTaskScheduler4] - INFO  Fixed rate task performed at 10/03/2021 14:01:58 on thread ThreadPoolTaskScheduler4
-2021-10-03 14:02:00  [ThreadPoolTaskScheduler1] - INFO  Cron task performed at 10/03/2021 14:02:00 on thread ThreadPoolTaskScheduler1
-2021-10-03 14:03:58  [ThreadPoolTaskScheduler5] - INFO  Fixed rate task performed at 10/03/2021 14:03:58 on thread ThreadPoolTaskScheduler5
-2021-10-03 14:04:00  [ThreadPoolTaskScheduler3] - INFO  Cron task performed at 10/03/2021 14:04:00 on thread ThreadPoolTaskScheduler3
-2021-10-03 14:05:58  [ThreadPoolTaskScheduler2] - INFO  Fixed rate task performed at 10/03/2021 14:05:58 on thread ThreadPoolTaskScheduler2
+2021-11-07 18:30:53  [http-nio-8085-exec-8] - INFO  respond to healthcheck
+2021-11-07 18:31:02  [ThreadPoolTaskScheduler1] - INFO  Fixed rate task performed at 11/07/2021 18:31:02 on thread ThreadPoolTaskScheduler1
+2021-11-07 18:31:53  [http-nio-8085-exec-10] - INFO  respond to healthcheck
+2021-11-07 18:32:00  [ThreadPoolTaskScheduler3] - INFO  Cron task performed at 11/07/2021 18:32:00 on thread ThreadPoolTaskScheduler3
 ```
 * create volume to share data across Docker containers
 
