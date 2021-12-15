@@ -15,15 +15,20 @@ System.err.println(envKey + " = " + System.getenv(envKey));
 
 
 ### Basics
+
+* pass through commandline
 ```sh
 docker run -it -e VAR=value alpine:3.9 sh
 ```
 in the container
 ```sh
-/ # echo $VAR
+/ # echo $var
+```
+will show
+```text
 value
 ```
-alteratively
+* pass via caller environment
 ```sh
 export VAR=value
 docker run -it -e VAR alpine:3.9 sh
@@ -32,10 +37,26 @@ in the container
 
 ```sh
 / # echo $VAR
+```
+will show
+```text
 value
 ```
+* wih environment file
 
-with `docker-compose.yml`
+```sh
+echo VAR=value>env.txt
+docker run -it --env-file=$(pwd)/env.txt alpine:3.9 sh
+```
+in the container
+```sh
+/ # echo $var
+```
+will show
+```text
+value
+```
+* with `docker-compose.yml`
 ```yaml
 version: '3.7'
 
@@ -47,24 +68,30 @@ services:
 ```
 ```sh
 export VAR=value
- docker-compose run  -e VAR  example sh
+docker-compose run  -e VAR  example sh
 ```
 in the container
 ```sh
-/ # echo $VAR
+/ # echo $var
+```
+will show
+```text
 value
 ```
-alternativey define `VAR` in `.env` 
+alternativey define `VAR` in predefined filename `.env` 
 ```sh
 VAR=default
 ```
 and then no need to set it as command argument 
 ```sh
-docker-compose run  example sh
+docker-compose run example sh
 ```
 in the container
 ```sh
-/ # echo $VAR
+/ # echo $var
+```
+will show
+```text
 value
 ```
 The host enviroment value, if set, still overrides the one in `.env`
