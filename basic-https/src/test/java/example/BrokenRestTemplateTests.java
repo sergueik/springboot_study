@@ -28,7 +28,7 @@ import org.springframework.web.client.RestTemplate;
 		"serverPort=8443" })
 @PropertySource("classpath:application.yaml")
 @SuppressWarnings("deprecation")
-public class PlainRestTemplateTests {
+public class BrokenRestTemplateTests {
 
 	// does not get resolved through @Value annotation
 	// @Value("${server.port:8443}")
@@ -48,19 +48,16 @@ public class PlainRestTemplateTests {
 
 	@Before
 	public void before() throws Exception {
-		restTemplate = new RestTemplate();
+		restTemplate = BrokenRestTemplateHelper.customRestTemplate();
 	}
 
-	// see also:
-	// https://stackoverflow.com/questions/39651097/how-to-add-basic-auth-to-autowired-testresttemplate-in-springboottest-spring-bo
 	@Test
-	public void test() throws Exception {
+	public void test1() throws Exception {
 
 		try {
-			restTemplate.getInterceptors()
-					.add(new BasicAuthorizationInterceptor(username, password));
-			System.err.println("Credentials: " + username + "/" + password);
 			responseEntity = restTemplate.getForEntity(url, String.class);
+			// the following line is not reached, but keep the assertion
+			assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 		} catch (Exception e) {
 			assertThat(e.getMessage(), containsString(
 					"unable to find valid certification path to requested target"));

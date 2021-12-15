@@ -20,23 +20,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-public class CustomRestTemplateHelper {
-	public static RestTemplate customRestTemplate(final Resource trustStore,
-			final String trustStorePassword) throws Exception {
+public class BrokenRestTemplateHelper {
+	public static RestTemplate customRestTemplate() throws Exception {
 		final int maxTotal = 10;
 		final int defaultMaxPerRoute = 10;
-		return customRestTemplate(trustStore, trustStorePassword, maxTotal,
-				defaultMaxPerRoute);
+		return customRestTemplate(maxTotal, defaultMaxPerRoute);
 	}
 
-	public static RestTemplate customRestTemplate(final Resource trustStore,
-			final String trustStorePassword, final int maxTotal,
+	public static RestTemplate customRestTemplate(final int maxTotal,
 			final int defaultMaxPerRoute) throws Exception {
-
-		SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(
-				trustStore.getURL(), trustStorePassword.toCharArray()).build();
-		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
-				sslContext);
 
 		// establish "connection reuse" strategy
 		// origin:
@@ -44,18 +36,24 @@ public class CustomRestTemplateHelper {
 		final Registry<ConnectionSocketFactory> schemeRegistry = RegistryBuilder
 				.<ConnectionSocketFactory> create()
 				.register("http", PlainConnectionSocketFactory.getSocketFactory())
-				.register("https", socketFactory).build();
-		final PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager(
-				schemeRegistry);
+				.register("https", SSLConnectionSocketFactory.getSocketFactory())
+				.build();
 
+		// https://hc.apache.org/httpcomponents-client-4.5.x/current/httpclient/apidocs/org/apache/http/impl/conn/PoolingHttpClientConnectionManager.html#PoolingHttpClientConnectionManager(long,%20java.util.concurrent.TimeUnit)
+		// NOTE: this constructor is failing to cope with the SSL trafic encryption
+		final long timeToLive = 10;
+		final TimeUnit timeUnit = TimeUnit.SECONDS;
+		final PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager(
+				timeToLive, timeUnit);
 		poolingHttpClientConnectionManager.setMaxTotal(maxTotal);
 		poolingHttpClientConnectionManager
 				.setDefaultMaxPerRoute(defaultMaxPerRoute);
 
-		CloseableHttpClient httpClient = HttpClients.custom()
-				.setSSLSocketFactory(socketFactory)
+		final CloseableHttpClient httpClient = HttpClients.custom()
 				.setConnectionReuseStrategy(NoConnectionReuseStrategy.INSTANCE)
 				.setConnectionManager(poolingHttpClientConnectionManager).build();
+		// .setConnectTimeout(connectTimeout)
+		// .setSocketTimeout(readTimeout)
 
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(
 				httpClient);

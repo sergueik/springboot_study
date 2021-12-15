@@ -44,7 +44,7 @@ public class CustomRestTemplateTests {
 	// trouble with converting application.properties with trust.store and
 	// trust.store.password to YAML
 	// see 'application.yaml' for detail
-  @Value("${trust.password}")
+	@Value("${trust.password}")
 	private String trustStorePassword;
 
 	private ResponseEntity<String> responseEntity = null;
@@ -83,9 +83,9 @@ public class CustomRestTemplateTests {
 			// the following line is not reached, but keep the assertion
 			assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
 		} catch (Exception e) {
-			System.err.println("Exception: " + e.toString());
 			assertThat(e.getMessage(), containsString(
 					"Full authentication is required to access this resource"));
+			System.err.println("Exception (expected): " + e.toString());
 		}
 	}
 }
