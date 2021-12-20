@@ -10,13 +10,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
-// import com.rationaleemotions.ExecutionBuilder;
-// import com.rationaleemotions.SshKnowHow;
-// import com.rationaleemotions.pojo.EnvVariable;
-// import com.rationaleemotions.pojo.ExecResults;
-// import com.rationaleemotions.pojo.SSHUser;
-// import com.rationaleemotions.pojo.SSHUser.Builder;
-
 @Service
 public class ExampleService {
 
@@ -24,12 +17,16 @@ public class ExampleService {
 
 	private final static String scriptDir = "/var/www/localhost/cgi-bin";
 	private final String options = "-no-headers";
+	protected static String osName = getOSName();
 
 	public String runScript(final String script) {
 		return runProcess(String.format("%s/%s %s", scriptDir, script, options));
 	}
 
-	protected static String osName = getOSName();
+	public String runScript(final String script, String[] commandlineArgs) {
+		// ignore command line args for now
+		return runProcess(String.format("%s/%s %s", scriptDir, script, options));
+	}
 
 	// https://www.javaworld.com/article/2071275/core-java/when-runtime-exec---won-t.html?page=2
 	public String runProcess(String processName) {
@@ -42,16 +39,19 @@ public class ExampleService {
 		if (processName.isEmpty()) {
 			return null;
 		}
-		String command = String.format((osName.equals("windows")) ? "perl.exe %s" : "/usr/bin/perl %s",
+		String command = String.format(
+				(osName.equals("windows")) ? "perl.exe %s" : "/usr/bin/perl %s",
 				processName.trim());
 		try {
 			Runtime runtime = Runtime.getRuntime();
 			Process process = runtime.exec(command);
 			// process.redirectErrorStream( true);
 
-			stdoutBufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			stdoutBufferedReader = new BufferedReader(
+					new InputStreamReader(process.getInputStream()));
 
-			stderrBufferedReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+			stderrBufferedReader = new BufferedReader(
+					new InputStreamReader(process.getErrorStream()));
 			String line = null;
 
 			while ((line = stdoutBufferedReader.readLine()) != null) {

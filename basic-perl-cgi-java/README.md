@@ -93,6 +93,16 @@ Content-Type: application/json
     "plum"
   ]
 }
+
+### Legacy Application Arguments
+Some legacy `cgi-bin` apps do not follow `?key=value&...` format but expect simply a freehand commandline: `?-foo%20-bar=baz`. 
+Spring RestController can access these arguments via `RequestEntity` and the web request
+```sh
+curl http://localhost:8085/cgi-bin/legacy-script?-a%20b%20-c%20d
+```
+will be translated to running cgi-bin script: `legacy-script` with `args[]` string array:
+```sh
+-a,b,-c,d
 ```
 ### Cleanup
 ```sh
