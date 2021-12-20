@@ -8,6 +8,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.CDL;
+
 // TODO: mvn case
 // @Controller
 @RestController
@@ -16,12 +25,12 @@ public class WelcomeController {
 	private final Logger logger = LoggerFactory
 			.getLogger(WelcomeController.class);
 
-	// @ResponseBody
-
+	// NOTE: Rest Controller does not return the model even when
+	// @ResponseBody is omitted
+	@ResponseBody
 	@GetMapping(path = "/welcome")
 	public String welcome() {
 		logger.info("called");
 		return "welcome";
 	}
-
 }

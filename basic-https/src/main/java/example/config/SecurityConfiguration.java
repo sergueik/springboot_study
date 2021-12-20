@@ -25,6 +25,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable();
 		http.authorizeRequests().antMatchers("/welcome").permitAll();
+		http.authorizeRequests().antMatchers("/svrinfo").permitAll();
 		http.authorizeRequests().antMatchers("/upload").permitAll();
 		http.authorizeRequests().antMatchers("/", "/api/**").permitAll()
 				.anyRequest().authenticated();
