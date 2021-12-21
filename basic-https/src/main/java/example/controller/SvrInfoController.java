@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.json.CDL;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 // TODO: mvn case
 // @Controller
@@ -35,8 +37,15 @@ public class SvrInfoController {
 		// Apparently CDL cannot convert this:
 		String dataRowsJSON = "{\"rows\": [[\"one\", \"E\", true, true],[\"two\", \"E\", true, true]]}";
 
-		// can convert this, but unknown how to make headers disappear:
+		dataRowsJSON = "[[\"one\", \"E\", true, true],[\"two\", \"E\", true, true]]";
+
+		dataRowsJSON = "[{\"name\":\"one\", \"datacenter\":\"E\", \"status\": true, \"primary\":true},{\"name\":\"two\", \"datacenter\":\"E\", \"status\": true, \"primary\":true}]";
+		final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		Data[] data = gson.fromJson(dataRowsJSON, Data[].class);
+		logger.info(String.format("Deserialized data %d rows", data.length));
+
 		dataRowsJSON = "{\"rows\": [{\"name\":\"one\", \"datacenter\":\"E\", \"status\": true, \"primary\":true},{\"name\":\"two\", \"datacenter\":\"E\", \"status\": true, \"primary\":true}]}";
+		// can convert this via CDL, but unknown how to make headers disappear:
 		try {
 			result = dumpJSONCsv(new JSONObject(dataRowsJSON).getJSONArray("rows"));
 		} catch (JSONException e) {

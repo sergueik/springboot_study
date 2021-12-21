@@ -1,0 +1,8 @@
+Line1: ONE
+Line2: two
+Line3: three
+entry: value
+UPTIME:  9hours 48 min
+Version: 6.3.9600
+Computer: SERGUEIK53
+Line5: five
