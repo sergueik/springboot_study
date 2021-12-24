@@ -14,7 +14,7 @@ import sys, time, datetime, os
 
 host = 'selenium'
 hub = 'http://{}:4444/wd/hub'.format(host)
-hub = 'http://{}:4444'.format(host)
+# hub = 'http://{}:4444'.format(host)
 options = webdriver.ChromeOptions()
 options.add_argument('headless')
 options.add_argument('--ignore-certificate-errors')

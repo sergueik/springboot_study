@@ -8,10 +8,14 @@ this directory contains basic Python Selenium __4.x__ project on docker compose 
 docker pull python:3.8.12
 docker pull selenium/standalone-chrome
 ```
+for __3.x__ tests, also
 ```sh
+docker pull selenium/standalone-chrome:3.141.59-vanadium
 ```
-docker run --name selenium -p 4444:4444 selenium/standalone-chrome
+note, these are 300+ Mb / image and may be time consuming to pull
 ```sh
+docker run --name selenium -p 4444:4444 selenium/standalone-chrome
+```
 ```sh
 docker build -t 'selenium-client' -f Dockerfile  .
 docker run --link selenium -it selenium-client sh
@@ -55,6 +59,12 @@ and enentually to
 basic-selenium4-grid_app_1 exited with code 1
 Aborting on container exit...
 Stopping basic-selenium4-grid_selenium_1 ... done
+```
+### Cleanup
+
+```sh
+docker containr prune -f
+docker image rm selenium-client selenium/standalone-chrome selenium/standalone-chrome  selenium/standalone-chrome:3.141.59-vanadium basic-selenium4-grid_app python:3.8.12
 ```
 ### See Also
 
