@@ -12,7 +12,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-
+import org.openqa.selenium.net.PortProber;
+// observed exception in setup:
+// java.lang.NoClassDefFoundError: Could not initialize class org.openqa.selenium.net.PortProber
+// Exception in thread "main" java.lang.NoSuchMethodError: java.io.FileReader.<init>(Ljava/io/File;Ljava/nio/charset/Charset;)V
+// https://www.programcreek.com/java-api-examples/?api=org.openqa.selenium.net.PortProber
+// https://github.com/SeleniumHQ/selenium/issues/7089
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +51,7 @@ public class AppTest {
 		System.setProperty("webdriver.chrome.driver", chromeDriverPath);
 		ChromeOptions chromeOptions = new ChromeOptions();
 		chromeOptions.setExperimentalOption("prefs", prefs);
+		PortProber.findFreePort();
 		driver = new ChromeDriver(chromeOptions);
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 	}
@@ -86,6 +92,7 @@ public class AppTest {
 	@After
 	public void tearDow() {
 		// Close the driver
-		driver.quit();
+		if (driver != null)
+			driver.quit();
 	}
 }

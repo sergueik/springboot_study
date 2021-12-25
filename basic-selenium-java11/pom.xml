@@ -3,10 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>java_selenium</artifactId>
-  <version>0.3.0-SNAPSHOT</version>
+  <version>0.4.0-SNAPSHOT</version>
   <properties>
     <mainClass>App</mainClass>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <guava.version>30.0-jre</guava.version>
     <java.version>11</java.version>
     <junit.version>4.13.1</junit.version>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
@@ -31,22 +32,49 @@
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-api</artifactId>
       <version>${selenium.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
       <version>${selenium.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+<!--
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-devtools</artifactId>
       <version>${selenium.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+-->
+<!-- the latest available version of selenium-devtools is 4.0.0-rc-1 -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
+    </dependency>
+    <!--
     <dependency>
       <groupId>org.easetech</groupId>
       <artifactId>easytest-core</artifactId>
       <version>1.4.0</version>
-    </dependency>
+    </dependency> -->
   </dependencies>
   <build>
     <plugins>
@@ -125,8 +153,7 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <selenium.version>3.13.0</selenium.version>
-        <selenium.version>4.0.0-alpha-7</selenium.version>
+        <selenium.version>4.1.1</selenium.version>
       </properties>
     </profile>
     <profile>
@@ -141,8 +168,7 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <selenium.version>3.13.0</selenium.version>
-        <selenium.version>4.0.0-alpha-7</selenium.version>
+        <selenium.version>4.1.1</selenium.version>
       </properties>
     </profile>
     <profile>
@@ -154,7 +180,7 @@
         <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <selenium.version>4.0.0-alpha-7</selenium.version>
+        <selenium.version>4.1.1</selenium.version>
       </properties>
     </profile>
   </profiles>

@@ -1,9 +1,31 @@
 ### Info
 
-This directory contains a basi Selenium compiled as standalone app to practice running Selenium tests on Java 11 runtime -
+This directory contains a basic Selenium compiled as standalone app to practice running Selenium tests on Java 11 runtime -
 Note, there is no testng  or jupiter suite on surefile in here, to improve chances for success in first iteration
 
 ### Usage
+
+* check the versions on Chromium and chromium driver on the host
+```sh
+sudo apt-get install chromium-browser chromium-chromedriver
+```
+the versions of the driver may vary with the OS
+e.g. 
+
+```text
+Version 95.0.4638.69 (Official Build) Built on Ubuntu , running on Ubuntu 18.04 (64-bit)
+```
+
+additionally download chromedriver to `~/Downloads`
+```sh
+chromedriver -v
+```
+```sh
+pushd ~/Downloads
+wget -q https://chromedriver.storage.googleapis.com/index.html?path=$(chromedriver -v | awk '{print $2}')/chromedriver_linux64.zip
+unzip -ou chromedriver_linux64.zip
+popd
+```
 * run locally the test
 ```sh
 rm /tmp/sample*
@@ -71,16 +93,18 @@ DOCKER_IMAGE=alpine-jre8-chromium
 docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
 docker run -it $DOCKER_IMAGE
 ```
-NOTE, the `chromium-driver` package installs binary `/usr/bin/chromedriver`. When this changes, update the `CMD` argument accordingly
+NOTE, the `chromium-driver` package installs binary `/usr/bin/chromedriver`.
+When this changes, update the `CMD` argument in the `Dockerfile.alpine-jre8-chromium` accordingly
 
 * verify the project has JDK-sensitive code
 ```sh
 mvn clean -Dmaven.test.skip=true package
 java -cp target/java_selenium-0.3.0-SNAPSHOT.jar:target/lib/* example.App
 ```
-the exception cannot be handled
-```sh
-Exception in thread "main" java.lang.NoSuchMethodError: java.io.FileReader.<init>(Ljava/io/File;Ljava/nio/charset/Charset;)V
+the exception that was observed with Selenium `4.0.0-alpha-7` cannot be handled
+```text
+Exception in thread "main" java.lang.NoSuchMethodError:
+java.io.FileReader.<init>(Ljava/io/File;Ljava/nio/charset/Charset;)V
 ```
 * compile and package jar on JDK11/Maven "builder" container and copy the jar into a searate Docker image with JDK 11 and chromium:
 
