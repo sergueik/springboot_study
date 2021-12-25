@@ -41,7 +41,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableScheduling
 public class HttpClientConfig {
 
-	private static final Logger LOGGER = LoggerFactory
+	private static final Logger logger = LoggerFactory
 			.getLogger(HttpClientConfig.class);
 
 	// Determines the timeout in milliseconds until a connection is established.
@@ -63,14 +63,15 @@ public class HttpClientConfig {
 		try {
 			builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
 		} catch (NoSuchAlgorithmException | KeyStoreException e) {
-			LOGGER.error("Init exception: " + e.getMessage(), e);
+			logger.error("Init exception: " + e.getMessage(), e);
 		}
 
 		SSLConnectionSocketFactory sslsf = null;
 		try {
 			sslsf = new SSLConnectionSocketFactory(builder.build());
+			logger.info("initialized Custom SSL Connection Socket Factory");
 		} catch (KeyManagementException | NoSuchAlgorithmException e) {
-			LOGGER.error("Init exception: " + e.getMessage(), e);
+			logger.error("Init exception: " + e.getMessage(), e);
 		}
 
 		Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder
@@ -89,12 +90,13 @@ public class HttpClientConfig {
 			@Override
 			public long getKeepAliveDuration(HttpResponse response,
 					HttpContext context) {
-				HeaderElementIterator it = new BasicHeaderElementIterator(
+				logger.info("reading keealive header");
+				HeaderElementIterator headerElementIterator = new BasicHeaderElementIterator(
 						response.headerIterator(HTTP.CONN_KEEP_ALIVE));
-				while (it.hasNext()) {
-					HeaderElement he = it.nextElement();
-					String param = he.getName();
-					String value = he.getValue();
+				while (headerElementIterator.hasNext()) {
+					HeaderElement headerElement = headerElementIterator.nextElement();
+					String param = headerElement.getName();
+					String value = headerElement.getValue();
 
 					if (value != null && param.equalsIgnoreCase("timeout")) {
 						return Long.parseLong(value) * 1000;
@@ -126,15 +128,15 @@ public class HttpClientConfig {
 			public void run() {
 				try {
 					if (connectionManager != null) {
-						LOGGER.trace("Closing expired and idle connections...");
+						logger.trace("Closing expired and idle connections...");
 						connectionManager.closeExpiredConnections();
 						connectionManager.closeIdleConnections(
 								CLOSE_IDLE_CONNECTION_WAIT_TIME_SECS, TimeUnit.SECONDS);
 					} else {
-						LOGGER.trace("Http Client Connection manager is not initialized");
+						logger.trace("Http Client Connection manager is not initialized");
 					}
 				} catch (Exception e) {
-					LOGGER.error("Exception msg={}, e={}", e.getMessage(), e);
+					logger.error("Exception msg={}, e={}", e.getMessage(), e);
 				}
 			}
 		};
