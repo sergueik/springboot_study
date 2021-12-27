@@ -272,6 +272,20 @@ ln -s -T  '/media/sergueik/Windows8_OS/Virtual Machines/disk.vmdk' disk.vmdk
 ### NOTE
 
 To use Docker commands in Minukube VM easiest (with __8.1__ and older Windows) is to install the [Docker ToolBox](https://github.com/docker-archive/toolbox)
+
+### Helm
+
+to practice Helm
+
+```sh
+minikube addons enable ingress
+```
+
+### Errors
+
+```text
+X Exiting due to K8S_UNHEALTHY_CONTROL_PLANE: wait 6m0s for node: wait for healthy API server: controlPlane never updated to v1.22.3
+```
 ### See Also
 
    * https://github.com/DanWahlin/DockerAndKubernetesCourseCode/tree/main/samples
@@ -279,7 +293,10 @@ To use Docker commands in Minukube VM easiest (with __8.1__ and older Windows) i
    * https://kubernetes.io/docs/concepts/containers/images/
    * https://www.tutorialworks.com/kubernetes-imagepullbackoff/
    * https://sysdig.com/blog/debug-kubernetes-crashloopbackoff/
-
+   * [Kubernetes Tutorials](https://github.com/mrbobbytables/k8s-intro-tutorials)
+   * __Packaging Applitions with Helm for Kubernetes__ [example source](https://github.com/phcollignon/helm3)
+   * __Deploying Statefull Application to Kubernetes__ [example source](https://github.com/phcollignon/kubernetes_storage)
+   * [kubernetes in docker](https://github.com/phcollignon/kind)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
