@@ -286,6 +286,44 @@ minikube addons enable ingress
 ```text
 X Exiting due to K8S_UNHEALTHY_CONTROL_PLANE: wait 6m0s for node: wait for healthy API server: controlPlane never updated to v1.22.3
 ```
+solved by rerunning the command
+
+### Minikube NFS Volume
+* boot and connect to alpine nfs server
+```sh
+docker pull phico/nfs-server
+```
+* install nfs-server with volume mounted against `/var/nfs`
+* enable ingress
+```sh
+minikube addons enable ingress
+```
+* create network
+```sh
+docker network connect minikube nfs-server 
+```
+* create deployment
+```sh
+kubectl apply -f deployment-alpine-volume.yaml 
+```
+confirm the log is being appended:
+```sh
+tail -f /var/nfs/exports/log.txt
+```
+* install helm
+```sh
+wget https://get.helm.sh/helm-v3.7.2-linux-amd64.tar.gz
+tar xzvf helm-v3.7.2-linux-amd64.tar.gz
+sudo cp linux-amd64/helm /usr/local/bin/helm
+sudo chmod +x /usr/local/bin/helm
+```
+for configuring the alpine nts-server __itsthenetwork/nfs-server-alpine__ to work the way __phico/nfs-server__ does, see 'nfs-server.run.sh'
+* cleanup
+```sh
+docker container stop nfs-server
+docker container rm nfs-server
+minikube stop
+```
 ### See Also
 
    * https://github.com/DanWahlin/DockerAndKubernetesCourseCode/tree/main/samples
@@ -296,6 +334,7 @@ X Exiting due to K8S_UNHEALTHY_CONTROL_PLANE: wait 6m0s for node: wait for healt
    * [Kubernetes Tutorials](https://github.com/mrbobbytables/k8s-intro-tutorials)
    * __Packaging Applitions with Helm for Kubernetes__ [example source](https://github.com/phcollignon/helm3)
    * __Deploying Statefull Application to Kubernetes__ [example source](https://github.com/phcollignon/kubernetes_storage)
+    * [NFS server conected to minukube cluster](https://github.com/phcollignon/nfs-server-minikube)
    * [kubernetes in docker](https://github.com/phcollignon/kind)
 
 ### Author

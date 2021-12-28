@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  nfs-server:
+    image: itsthenetwork/nfs-server-alpine:latest
+    container_name: nfs-server
+    restart: unless-stopped
+    privileged: true
+    environment:
+      - SHARED_DIRECTORY=/nfsshare
+    volumes:
+      - /scratch:/nfsshare
+    ports:
+      - 2049:2049
+
+
