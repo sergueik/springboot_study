@@ -1,0 +1,4 @@
+FROM python:4.8.2-alpine
+ARG FILENAME_ARG
+ENV FILENAME = $FILENAME_ARG
+CMD python temp/${FILENAME}
