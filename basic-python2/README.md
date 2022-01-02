@@ -14,9 +14,10 @@ python_runner_container exited with code 0
 ```
 * another way to reuse the container after a failed run
 ```sh
+unset FILENAME
 docker-compose up
 ```
-ignore that no environment was set and the container will quit immediately
+the key environment var was set and the container quits immediately
 ```text
 WARNING: The FILENAME variable is not set. Defaulting to a blank string.
 Starting python_runner_container ... done

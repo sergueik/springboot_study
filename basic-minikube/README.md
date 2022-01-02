@@ -336,6 +336,7 @@ minikube stop
    * __Deploying Statefull Application to Kubernetes__ [example source](https://github.com/phcollignon/kubernetes_storage)
     * [NFS server conected to minukube cluster](https://github.com/phcollignon/nfs-server-minikube)
    * [kubernetes in docker](https://github.com/phcollignon/kind)
+   * [repository](https://github.com/scriptcamp/vagrant-kubeadm-kubernetes) `Vagrantfile` to Setup Kubernetes 3 node pod Cluster on Ubuntu 18.05 Vagrant VMs (a little resource requirement heavy)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
