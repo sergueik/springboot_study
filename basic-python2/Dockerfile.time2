@@ -1,0 +1,5 @@
+FROM python:3.8.2-alpine
+ARG FILENAME_ARG
+ENV FILENAME $FILENAME_ARG
+ENV TIME '%u'
+CMD time python temp/${FILENAME} 2>&1 

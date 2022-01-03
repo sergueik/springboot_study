@@ -1,0 +1,5 @@
+FROM python:3.8.2-alpine
+ARG FILENAME_ARG
+ENV FILENAME $FILENAME_ARG
+# time on alpine does not recognize a long --format argument
+CMD time -f '%U' python temp/${FILENAME} 2>&1
