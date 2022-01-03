@@ -1,0 +1,8 @@
+# virtual machine cache
+hs_err_pid*
+/.vagrant/
+*console.log
+# K8 machine generated config
+hs_err_pid*
+/configs/***
+

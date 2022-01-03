@@ -1,36 +1,52 @@
+# -*- mode: ruby -*-
+# # vi: set ft=ruby :
+basedir = ENV.fetch('HOME', ENV.fetch('USERPROFILE', '') ).gsub('\\', '/')
+debug = ENV.fetch('DEBUG', false)
+debug = true if debug =~ /^(?:true|yes|1)$/i
 Vagrant.configure("2") do |config|
-    config.vm.provision "shell", inline: <<-SHELL
+
+  image_name = 'ubuntu-18.04-server-custom'
+  image_filename ='aspyatkin-ubuntu-18.04-server.box'
+  # NOTE: found that the box
+  # fails to establish networking in the cluster
+  # https://app.vagrantup.com/aspyatkin/boxes/ubuntu-18.04-server
+  image_name = 'ubuntu-bionic64'
+  image_filename = 'bionic-server-cloudimg-amd64-vagrant.box'
+  # https://app.vagrantup.com/ubuntu/boxes/bionic64
+
+  image_url = "file://#{basedir}/Downloads/#{image_filename}"
+    config.vm.provision 'shell', inline: <<-SHELL
         apt-get update -y
-        echo "10.0.0.10  master-node" >> /etc/hosts
-        echo "10.0.0.11  worker-node01" >> /etc/hosts
-        echo "10.0.0.12  worker-node02" >> /etc/hosts
+        echo '10.0.0.10  master-node' >> /etc/hosts
+        echo '10.0.0.11  worker-node01' >> /etc/hosts
+        echo '10.0.0.12  worker-node02' >> /etc/hosts
     SHELL
-    
-    config.vm.define "master" do |master|
-      master.vm.box = "bento/ubuntu-18.04"
-      master.vm.hostname = "master-node"
-      master.vm.network "private_network", ip: "10.0.0.10"
-      master.vm.provider "virtualbox" do |vb|
+
+    config.vm.define 'master' do |master|
+      master.vm.box = image_name
+      master.vm.box_url = image_url
+      master.vm.hostname = 'master-node'
+      master.vm.network 'private_network', ip: "10.0.0.10"
+      master.vm.provider 'virtualbox' do |vb|
           vb.memory = 4048
           vb.cpus = 2
       end
-      master.vm.provision "shell", path: "scripts/common.sh"
-      master.vm.provision "shell", path: "scripts/master.sh"
+      master.vm.provision 'shell', path: 'scripts/common.sh'
+      master.vm.provision 'shell', path: 'scripts/master.sh'
     end
 
     (1..2).each do |i|
-  
-    config.vm.define "node0#{i}" do |node|
-      node.vm.box = "bento/ubuntu-18.04"
-      node.vm.hostname = "worker-node0#{i}"
-      node.vm.network "private_network", ip: "10.0.0.1#{i}"
-      node.vm.provider "virtualbox" do |vb|
-          vb.memory = 2048
-          vb.cpus = 1
+      config.vm.define "node0#{i}" do |node|
+        node.vm.box = image_name
+        node.vm.box_url = image_url
+        node.vm.hostname = "worker-node0#{i}"
+        node.vm.network 'private_network', ip: "10.0.0.1#{i}"
+        node.vm.provider 'virtualbox' do |vb|
+            vb.memory = 2048
+            vb.cpus = 1
       end
-      node.vm.provision "shell", path: "scripts/common.sh"
-      node.vm.provision "shell", path: "scripts/node.sh"
-    end
-    
+      node.vm.provision 'shell', path: 'scripts/common.sh'
+      node.vm.provision 'shell', path: 'scripts/node.sh'
     end
   end
+end
