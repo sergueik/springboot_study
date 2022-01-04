@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.cassandra.exceptions.ConfigurationException;
+import com.datastax.driver.core.exceptions.InvalidQueryException;
+
 import org.apache.thrift.transport.TTransportException;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import org.junit.AfterClass;
@@ -140,8 +142,7 @@ public class BookRepositoryIntegrationTest {
 		assertTrue(books.stream().anyMatch(b -> b.getTitle().equals("Effective Java")));
 		assertTrue(books.stream().anyMatch(b -> b.getTitle().equals("Clean Code")));
 	}
-
-	@Test
+	@Test(expected = InvalidQueryException.class)
 	public void whenDeletingABookByTitle_thenBookIsDeleted() {
 		bookRepository.deleteTable(BOOKS_BY_TITLE);
 		bookRepository.createTableBooksByTitle();

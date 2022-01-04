@@ -9,43 +9,39 @@ import com.datastax.driver.core.Host;
 import com.datastax.driver.core.Metadata;
 import com.datastax.driver.core.Session;
 
-/**
- * 
- * This is an implementation of a simple Java client.
- *
- */
 public class CassandraConnector {
-    private static final Logger LOG = LoggerFactory.getLogger(CassandraConnector.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CassandraConnector.class);
 
-    private Cluster cluster;
+	private Cluster cluster;
 
-    private Session session;
+	private Session session;
 
-    public void connect(final String node, final Integer port) {
+	public void connect(final String node, final Integer port) {
 
-        Builder b = Cluster.builder().addContactPoint(node);
+		Builder b = Cluster.builder().addContactPoint(node);
 
-        if (port != null) {
-            b.withPort(port);
-        }
-        cluster = b.build();
+		if (port != null) {
+			b.withPort(port);
+		}
+		cluster = b.build();
 
-        Metadata metadata = cluster.getMetadata();
-        LOG.info("Cluster name: " + metadata.getClusterName());
+		Metadata metadata = cluster.getMetadata();
+		LOG.info("Cluster name: " + metadata.getClusterName());
 
-        for (Host host : metadata.getAllHosts()) {
-            LOG.info("Datacenter: " + host.getDatacenter() + " Host: " + host.getAddress() + " Rack: " + host.getRack());
-        }
+		for (Host host : metadata.getAllHosts()) {
+			LOG.info(
+					"Datacenter: " + host.getDatacenter() + " Host: " + host.getAddress() + " Rack: " + host.getRack());
+		}
 
-        session = cluster.connect();
-    }
+		session = cluster.connect();
+	}
 
-    public Session getSession() {
-        return this.session;
-    }
+	public Session getSession() {
+		return this.session;
+	}
 
-    public void close() {
-        session.close();
-        cluster.close();
-    }
+	public void close() {
+		session.close();
+		cluster.close();
+	}
 }

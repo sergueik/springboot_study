@@ -1,0 +1,10 @@
+FROM python:3.8.2-alpine
+
+RUN apk add --update \
+    curl \
+    py-pip
+
+RUN pip install cqlsh && \
+    mkdir /root/.cassandra
+
+COPY ["cqlshrc", "/root/.cassandra/cqlshrc"]
