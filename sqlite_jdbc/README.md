@@ -10,33 +10,82 @@ instead  of MS SQL Server accessed through JDBC.
 This project operates the SQLite database through straight SQL - not using JPA
 plain JDBC static methods `JDBCUtils.getConnection()`, `JDBCUtils.TranverseToList()` etc.
 
-Create the sqlite database directory
+Create the sqlite database directory on Desktop
 
 ```sh
 pushd ~
-mkdir sqlite
+sqlite3 Desktop/springboot.db
 ```
-and create database `~/sqlite/springboot.db` with a table
+and create database `~/Desktop/springboot.db` with a table
 ```sql
 DROP TABLE IF EXISTS `student`;
 CREATE TABLE IF NOT EXISTS `student` (
 	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
-	`name`	TEXT NOT NULL,,
-	`course`	TEXT NOT NULL,,
+	`name`	TEXT NOT NULL,
+	`course`	TEXT NOT NULL,
 	`addtime`	datetime NOT NULL DEFAULT current_timestamp
 );
+.quit
 ```
-alternatively create table at desktop and update `src/main/resources/application.properties`
+update `src/main/resources/application.properties` to point to it:
+```java
+spring.datasource.url=jdbc:sqlite:${HOME}/Desktop/springboot.db
+```
+for Linux host
+alternatively also
+
+```java
+spring.datasource.url=jdbc:sqlite:${USERPROFILE}\\Desktop\\springboot.db
+```
+for Windows host
 and insert some data
 ```sql
 INSERT INTO student(name,course) VALUES ('Jack','Chinese');
 INSERT INTO student(name,course) VALUES ('Tom','Computer');
+.quit
 ``` 
-and build and start project as regular springboot application
-```cmd
-mvn -Dmaven.test.skip=true clean  spring-boot:run
+alternatively use [SQLIteBrowser](https://sqlitebrowser.org)
+* verify 
+```sh
+sqlite3 ~/Desktop/springboot.db
+SQLite version 3.22.0 2018-01-22 18:45:57
+Enter ".help" for usage hints.
+sqlite> .table student
 ```
+```text
+student
+```
+```sh
+.schema student
+```
+```sql
+CREATE TABLE `student` (
+        `id`    INTEGER PRIMARY KEY AUTOINCREMENT,
+        `name`  NVARCHAR(30) NOT NULL,
+        `course`        NVARCHAR(30) NOT NULL,
+        `addtime`       datetime NOT NULL DEFAULT current_timestamp
+);
+```
+and build and start project as regular springboot application
 
+```cmd
+mvn -Dmaven.test.skip=true clean spring-boot:run
+```
+* NOTE: test is currently failing on Windows host:
+```text
+[ERROR] org.apache.maven.surefire.booter.SurefireBooterForkException: The forked
+ VM terminated without properly saying goodbye. VM crash or System.exit called?
+[ERROR] Process Exit Code: 0
+[ERROR] Crashed tests:
+[ERROR] example.controller.FailingTest
+```
+while pass on Linux host:
+```sh
+mvn clean test
+```
+```text
+[WARNING] Tests run: 7, Failures: 0, Errors: 0, Skipped: 1
+```
 ### Testing
 
 Verify it works via Postman or curl (one will need to specify POST method in all requests).
@@ -48,6 +97,7 @@ The application was originally designed with Spring 4 and is being convered to S
 ```sh
 curl -X POST http://127.0.0.1:8181/student/findAllStudent |jq
 ```
+alternatively can use the external IP address (`$(hostname -i)`) of the host the maven is run:
 returns
 ```json
 {
@@ -134,7 +184,7 @@ Other supported routes are `updateStudent`, `delStudentById`, `addStudent`.
 
 ### Shell Version
 
-* update `src/main/resources/application.properties` and repackage
+* update `src/main/resources/application.properties` to point to database under absolute path `/db` and repackage
 ```sh
 docker build -f Dockerfile.shell -t sqlite-shell .
 ```
@@ -163,13 +213,12 @@ sqlite> select count(1) from user;
 ```
 #### Java Version
 * uncoment the relevant path in `spring.datasource.url` in `src/main/resources/application.properties`:
-```
+```java
 spring.datasource.url=jdbc:sqlite:/db/springboot.db
-
 ```
 * repackage
 ```sh
-mvn clean package
+mvn clean -Dmaven.test.skip=true package
 ```
 ```sh
 docker build -f Dockerfile.jdbc -t sqlite-jdbc .
@@ -210,3 +259,4 @@ or [CherryYu/springboot-sqlite](https://github.com/CherryYu/springboot-sqlite)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
