@@ -283,6 +283,7 @@ sudo sh -c 'echo "deb https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/$(lsb_
 ```sh
 sudo apt install pgadmin4-desktop
 ```
+![PG Admin 4](https://github.com/sergueik/springboot_study/blob/master/basic-postgresql/screenshots/capture_pgadmin_4.png)
 
 ignore the warning on __Xenial__
 ```text
@@ -301,6 +302,7 @@ sudo apt-get install libpq5 pgadmin3-data postgresql-client postgresql-client-9.
 sudo dpkg -i pgadmin3*
 ```
 turns out one cannot connect to a newer PostgreSQL from older PG Admin
+TODO: One can install [docker container](https://hub.docker.com/r/dpage/pgadmin4/tags) with based web client pg admin 4 on xenial. Alternatiely pick a smalleralpine based [image](https://hub.docker.com/layers/huggla/sam-pgadmin/4.20/images/sha256-8867f605c49e9ccdbb52858decd15258c144c7b183dd2532964bed48bcb0dcc5?context=explore)	
 
 ### See also
 
@@ -311,6 +313,7 @@ turns out one cannot connect to a newer PostgreSQL from older PG Admin
  * configuring "sticky" versions with [apk](https://superuser.com/questions/1055060/how-to-install-a-specific-package-version-in-alpine)
   * [basics of installing postgresql in ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04)
   * [pgadmin](https://www.pgadmin.org/download/)
+  * Cluster conriguration [instructions](https://linuxhint.com/postgresql_docker/)  for `dpage/pgadmin4` and `postgres`
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
