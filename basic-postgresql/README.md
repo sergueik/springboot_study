@@ -91,7 +91,7 @@ nested exception is org.postgresql.util.PSQLException: ERROR: relation "rest" al
 ```
 make  sure to drop the table:
 ```sh
-psql -h localhost -p 5432 --username postgres --password exampl
+psql -h localhost -p 5432 --username postgres --password example
 ```
 ```sh
 example=# drop table rest;
@@ -108,7 +108,13 @@ shows
     "rand": 21,
     "key": "some example",
     "value": "some data"
-  }
+  },
+  {
+    "id": 2,
+    "rand": 0,
+    "key": "another example",
+    "value": "some more data"
+  }  
 ]
 ```
 and
@@ -145,7 +151,9 @@ can now uninstall postgresql
 ```sh
 mvn -Dmaven.test.skip=true clean package
 ```
-__NOTE:__ This currenlty is failing with apk specific dependency conflict
+__NOTE:__ The tests in this project are currenlty failing with apk specific dependency conflict:
+```text
+```
 
 * pull smallest possible postgresql container image 
 ```
@@ -158,16 +166,31 @@ docker run --name $SERVER_NAME -e POSTGRES_PASSWORD=postgres -d kiasaki/alpine-p
 ```
 - will fail
 
-rebuild the container
+change `SERVER_IMAGE` and rebuild the container from plain alpine:
 ```sh
 SERVER_IMAGE=alpine-postgres
-docker build -f Dockerfile.alpine-postgres -t $SERVER_IMAGE .
+docker build -f Dockerfile.$SERVER_IMAGE -t $SERVER_IMAGE .
 ```
 run contained from the built image
 ```sh
 SERVER_NAME=postgres-database
 docker run --name $SERVER_NAME -e POSTGRES_PASSWORD=postgres -d $SERVER_IMAGE
+
 ```
+run
+```sh
+docker logs $SERVER_NAME
+```
+a few times before able to connect from PGAdmin (PGAdmin III on Xenial).
+
+```text
+database system is ready to accept connections
+```
+confirm the warming dialog
+
+![PG Admin III](https://github.com/sergueik/springboot_study/blob/master/basic-postgresql/screenshots/capture_pgadmin_iii.png)
+
+- turns out one cannot use PG Admin III wit Postresql 12.x, so for desktop testing one needs bionic or later
 
 * create database
 ```sh
@@ -182,7 +205,7 @@ docker exec -it $SERVER_NAME psql -h localhost -p 5432 --username postgres --dbn
 IMAGE=postgres-example
 docker build -f Dockerfile -t $IMAGE .
 ```
-* run aplication
+* run application
 ```sh
 NAME=example-postgres
 docker run --name $NAME --link $SERVER_NAME -p 8080:8080 -d $IMAGE
@@ -240,14 +263,45 @@ raises the exception
 ```sh
 psql -h localhost -p 5432 --username postgres --dbname example --command "drop table rest;"
 ```
-```
+```sh
 docker stop $NAME
 docker container rm $NAME
 docker container prune -f
 docker image rm $IMAGE -f
 docker image prune -f
-
 ```
+
+### Install PG Admin
+
+Follow the Debuan system install [steps](https://www.pgadmin.org/download/pgadmin-4-apt/)
+```sh
+curl -l -k -o - https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo apt-key add
+```
+```sh
+sudo sh -c 'echo "deb https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/$(lsb_release -cs) pgadmin4 main" > /etc/apt/sources.list.d/pgadmin4.list && apt-get update'
+```
+```sh
+sudo apt install pgadmin4-desktop
+```
+
+ignore the warning on __Xenial__
+```text
+W: The repository 'https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/xenial pgadmin4 Release' does not have a Release file.
+N: Data from such a repository can't be authenticated and is therefore potentially dangerous to use.
+N: See apt-secure(8) manpage for repository creation and user configuration details.
+E: Failed to fetch https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/xenial/dists/pgadmin4/main/binary-amd64/Packages  server certificate verification failed. CAfile: /etc/ssl/certs/ca-certificates.crt CRLfile: none
+E: Some index files failed to download. They have been ignored, or old ones used instead.
+```
+if the error remains, install via pip following the [steps](https://wpcademy.com/how-to-install-pgadmin-on-ubuntu-16-04-lts/)
+
+alternatively install legacy version
+```sh
+apt-get download pgadmin3
+sudo apt-get install libpq5 pgadmin3-data postgresql-client postgresql-client-9.5 postgresql-client-common
+sudo dpkg -i pgadmin3*
+```
+turns out one cannot connect to a newer PostgreSQL from older PG Admin
+
 ### See also
 
  * another basic [jdbc postgress example](https://github.com/christosperis/spring-jdbctemplate-postgresql-example)
@@ -256,5 +310,7 @@ docker image prune -f
  * Docker [image](https://hub.docker.com/r/kiasaki/alpine-postgres/) and [github repository](https://hub.docker.com/r/kiasaki/alpine-postgres/dockerfile)
  * configuring "sticky" versions with [apk](https://superuser.com/questions/1055060/how-to-install-a-specific-package-version-in-alpine)
   * [basics of installing postgresql in ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04)
+  * [pgadmin](https://www.pgadmin.org/download/)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
