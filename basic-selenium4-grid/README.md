@@ -13,11 +13,16 @@ for __3.x__ tests, also
 docker pull selenium/standalone-chrome:3.141.59-vanadium
 ```
 note, these are 300+ Mb / image and may be time consuming to pull
+* Run selenium container in foreground
 ```sh
 docker run --name selenium -p 4444:4444 selenium/standalone-chrome
 ```
+* build a sample python client script container
 ```sh
-docker build -t 'selenium-client' -f Dockerfile  .
+docker build -t 'selenium-client' -f Dockerfile .
+```
+* run it launching browser in the first container
+```
 docker run --link selenium -it selenium-client sh
 ```
 
@@ -42,7 +47,7 @@ NOTE: replacing the hub url
 ```python
 hub = 'http://{}:4444'.format(host)
 ```
- with a __3.X__  style one
+with a __3.X__ style one
 ```python
 hub = 'http://{}:4444/wd/hub'.format(host)
 ```
@@ -63,8 +68,9 @@ Stopping basic-selenium4-grid_selenium_1 ... done
 ### Cleanup
 
 ```sh
-docker containr prune -f
-docker image rm selenium-client selenium/standalone-chrome selenium/standalone-chrome  selenium/standalone-chrome:3.141.59-vanadium basic-selenium4-grid_app python:3.8.12
+docker container prune -f
+docker container rm selenium
+docker image rm selenium-client selenium/standalone-chrome selenium/standalone-chrome selenium/standalone-chrome:3.141.59-vanadium basic-selenium4-grid_app python:3.8.12
 ```
 ### See Also
 

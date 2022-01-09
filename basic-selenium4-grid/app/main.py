@@ -34,6 +34,16 @@ driver.get('https://www.wikipedia.org')
 time.sleep(2)
 print(driver.page_source)
 
-print("Take screenshot")
-driver.save_screenshot("firstpagescreenshot.png")
+# Selenium 3.x calling method semantics
+element = driver.find_element_by_class_name('svg-search-icon')
+print('{}'.format(element.get_attribute('innerHTML') ))
 
+# Selenium 4.x calling method semantics
+driver.find_element(By.CLASS_NAME,'svg-search-icon')
+print('{}'.format(element.get_attribute('innerHTML') ))
+
+print('Take screenshot')
+driver.save_screenshot('firstpagescreenshot.png')
+# close driver - not happening automatically
+driver.close()
+driver.quit()

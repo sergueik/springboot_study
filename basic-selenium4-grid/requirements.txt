@@ -1,1 +1,2 @@
+# https://pypi.org/project/selenium/
 selenium~=4.1.0
