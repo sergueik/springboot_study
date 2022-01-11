@@ -59,7 +59,7 @@ CREATE TABLE rest ( id serial PRIMARY KEY NOT NULL, key varchar(100) NOT NULL, v
 ```
 * run locally
 ```sh
-mvn -Dmaven.test.skip=true clean spring-boot:run
+mvn clean spring-boot:run
 ```
 * test 
 ```sh
@@ -149,10 +149,7 @@ can now uninstall postgresql
 ### Run in Docker
 * package the jar 
 ```sh
-mvn -Dmaven.test.skip=true clean package
-```
-__NOTE:__ The tests in this project are currenlty failing with apk specific dependency conflict:
-```text
+mvn clean package
 ```
 
 * pull smallest possible postgresql container image 
@@ -216,12 +213,8 @@ docker logs $NAME
 ```
 * run aplication linked to postgres container
 * repeat the curl checks
-### TODO:
-The bolierplate test class is incomplete:
 
-```sh
-java.lang.IllegalStateException: Unable to find a @SpringBootConfiguration, you need to use @ContextConfiguration or @SpringBootTest(classes=...) with your test
-```
+### TODO
 
 The current configuration  does now allow `application/x-www-form-urlencoded` form posts
 ```sh
