@@ -1,4 +1,4 @@
-package com.example.datarest;
+package example;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,13 +19,13 @@ import lombok.RequiredArgsConstructor;
 @NoArgsConstructor
 public class Person {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
 
-  @NonNull
-  private String firstName;
-  @NonNull
-  private String lastName;
+	@NonNull
+	private String firstName;
+	@NonNull
+	private String lastName;
 
 }

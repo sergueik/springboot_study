@@ -4,6 +4,7 @@ This directory contains a replica of [Yugabyte Spring Data Rest/JPA](https://git
 project. The setup is documented in [YugabyteDB Documentation](https://docs.yugabyte.com/latest/quick-start/create-local-cluster/docker/)
 ### Usage
 
+#### Local Run
 
 * install yugabyte fillowing the [steps](https://docs.yugabyte.com/latest/quick-start/install/linux)
 
@@ -14,7 +15,6 @@ cd ./yugabyte-2.11.1.0-b305-el8-aarch64
 
 ```
 
-#### Local Run
 ```text
 ./bin/yugabyted start
 ```
@@ -115,9 +115,12 @@ Hibernate: insert into person (first_name, last_name, id) values (?, ?, ?)
 ```
 
 ![yb-master Admin UI](https://github.com/sergueik/springboot_study/blob/master/basic-yugabytedb/screenshots/yb_master_admin_capture.png)
-
+run the app
+```sh
+mvn -Dmaven.test.skip=true spring-boot:run
+```
 	
-and console test is successful:
+and obsevre console test successful:
 ```sh
 curl localhost:8080/people
 ```
@@ -190,6 +193,13 @@ public interface PersonRepository extends PagingAndSortingRepository<Person, Lon
 
 }
 ```
+the standard Spring Controller example can be found  in [MikeQin/yugabyte-spring](https://github.com/MikeQin/yugabyte-spring)
 
+### See Also
+
+ * [introduction to HikariCP](https://www.baeldung.com/hikaricp)
+ * [configuring a Hikari JDBC Connection Pool with Spring Boot](https://www.baeldung.com/spring-boot-hikari)
+ 
+ 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
