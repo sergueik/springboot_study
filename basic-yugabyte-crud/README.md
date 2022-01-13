@@ -52,7 +52,7 @@ curl -q http://localhost:8080/ | jq '.'
 }
 
 ```
-explore the data (oiginally there is none):
+explore the data (originally there is none):
 ```sh
 curl -s http://localhost:8080/users | jq '.'
 ```
