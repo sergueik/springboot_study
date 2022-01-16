@@ -27,7 +27,7 @@ if this is the first time, then
 ```sh
 docker exec -it mysql-server mysql -P 3306 -h localhost -u root -ppassword
 ```
-paste the `DB/users.sql`, then paste `DB/tables.sql`.
+paste the `src/main/resources/users.sql`, then paste `src/main/resources/tables.sql`.
 
 * Build the `mysql-example` Docker image
 
