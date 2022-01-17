@@ -77,7 +77,7 @@ public class ProductController {
 		} else {
 			System.err.println("invalid operation: " + db);
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-					.body(new ArrayList<Poduct>());
+					.body(new ArrayList<Product>());
 		}
 	}
 

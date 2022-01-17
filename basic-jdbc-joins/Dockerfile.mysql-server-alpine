@@ -1,0 +1,13 @@
+FROM alpine:3.9.5
+
+WORKDIR /app
+RUN test -d /app || mkdir /app
+# VOLUME /app
+COPY startup.sh /startup.sh
+
+RUN apk add --update mysql mysql-client && rm -f /var/cache/apk/*
+COPY my.cnf /etc/mysql/my.cnf
+COPY mariadb-server.cnf /etc/my.cnf.d/mariadb-server.cnf 
+
+EXPOSE 3306
+CMD ["/startup.sh"]
