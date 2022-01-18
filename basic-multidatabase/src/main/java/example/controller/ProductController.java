@@ -61,9 +61,7 @@ public class ProductController {
 	public ResponseEntity<List<? extends Product>> getProducts(
 			@RequestParam(value = "db", required = false, defaultValue = "mysql") String db) {
 		// avoid explicit List of supertype conversion
-		mongoRepository.findAll().stream()
-				.map(o -> new Product(o.getId(), o.getName(), o.getQty(), o.getPrice()))
-				.collect(Collectors.toList());
+		// mongoRepository.findAll().stream().map(o -> new Product(o.getId(), o.getName(), o.getQty(), o.getPrice())).collect(Collectors.toList());
 
 		if (db.equalsIgnoreCase("mongo")) {
 			List<MongoProduct> data = mongoRepository.findAll();
