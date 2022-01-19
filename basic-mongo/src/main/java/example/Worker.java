@@ -1,11 +1,12 @@
 package example;
 
-/**
+/**	
  * Copyright 2021, 2022 Serguei Kouzmine
  */
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -48,16 +49,21 @@ public class Worker {
 		// https://docs.spring.io/autorepo/docs/spring-data-commons/1.5.1.RELEASE/api/org/springframework/data/repository/CrudRepository.html
 		try {
 			long id = Long.parseLong(value);
-			System.err.println(String.format("Searching:\"%s\" with findOne", value));
-			// NOTE: returns empty body, though querying mongodb node direct succeeds
+			System.err.println(String.format("Searching: \"%s\"", value));
+			// NOTE: returns empty body, though querying mongodb node directly in
+			// console succeeds:
 			// use mydb
 			// db.model.find({"_id":1583701210532});
-			// the findById does not exist in Springboot 1.5.4
-			// https://stackoverflow.com/questions/44101061/missing-crudrepositoryfindone-method
-			Model result = mongoRepository.findOne(value);
-			System.err.println(String.format("Result: \"%s\"", result));
-			return ResponseEntity.status(HttpStatus.OK).body(result);
 
+			// https://stackoverflow.com/questions/44101061/missing-crudrepositoryfindone-method
+			Optional<Model> result = mongoRepository.findById(value);
+			if (result.isPresent()) {
+				System.err.println(String.format("Result: \"%s\"", result));
+				return ResponseEntity.status(HttpStatus.OK).body(result.get());
+			} else {
+				System.err.println("Nothing found.");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+			}
 		} catch (IllegalArgumentException e) {
 			System.err.println("Exception : " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

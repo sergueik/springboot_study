@@ -59,13 +59,18 @@ then after a sucessful launch run CRUD commands through curl
 
 ### Testing SpringBoot Application in a Linked Docker Container
 
-* configure Springboot  `sping/src/main/resources/application.properties` to use default port `27017` on the node named `mongo`
-
+* configure Springboot  `spring/src/main/resources/application.properties` to use default port `27017` on the node named `mongo`:
+change from
 ```java
 mongo_host=mongo-service
 mongo_db=mydb
 spring.data.mongodb.uri=mongodb://${mongo_host}:27017/${mongo_db}
 spring.data.mongo.repositories.enabled=true
+```
+to
+```java
+mongo_host=127.0.0.1
+spring.data.mongodb.uri=mongodb://127.0.0.1:27717/test
 ```
 * package the app
 ```sh
