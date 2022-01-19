@@ -29,7 +29,7 @@ docker logs $CONTAINER
 ```sh
 netstat -ant | grep LISTEN | grep 27717
 ```
-```sh
+```text
 tcp6       0      0 :::27717                :::*                    LISTEN
 ```
 * drop into mongo shell on the service container
@@ -54,6 +54,9 @@ alternatively,
 java -Dspring.data.mongo.host=localhost -Dspring.data.mongo.port=27717 -Dspring.data.mongo.database=test -jar target/example.basic-mongo-app.jar
 ```
 then after a sucessful launch run CRUD commands through curl
+
+
+
 ### Testing SpringBoot Application in a Linked Docker Container
 
 * configure Springboot  `sping/src/main/resources/application.properties` to use default port `27017` on the node named `mongo`
@@ -155,11 +158,11 @@ Got Response
 
 * add few values
 ```sh
-for VALUE in test1 test2 test3 ; do curl http://localhost:8085/mongo/insert1/$VALUE; done
+for VALUE in test1 test2 test3 ; do curl -s http://localhost:8085/mongo/insert1/$VALUE; done
 ```
 get it back
 ```sh
-curl http://localhost:8085/mongo/all |jq '.' -
+curl -s http://localhost:8085/mongo/all |jq '.' -
 ```
 this will respond with
 ```js
@@ -179,7 +182,7 @@ this will respond with
 ]
 ```
 ```sh
-for VALUE in test4 test5 test6 ; do curl http://localhost:8085/mongo/insert2/$VALUE; done
+for VALUE in test4 test5 test6 ; do curl -s http://localhost:8085/mongo/insert2/$VALUE; done
 ```
 
 Note:
@@ -190,9 +193,30 @@ Note:
 
 the REST call to get value back
 ```sh
-curl http://localhost:8085/mongo/get/1583701210532
+ID=$(curl -s  http://localhost:8085/mongo/all| jq -r  '.[0]|.id')
+curl  -s http://localhost:8085/mongo/get/$ID
 ```
-is currently failing (nothing is returned)
+is currently prnting nothing (an empty page is returned
+though the server response status is OK:
+```sh
+curl  -v -s http://localhost:8085/mongo/get/$ID
+```
+```text
+*   Trying 127.0.0.1...
+* Connected to localhost (127.0.0.1) port 8085 (#0)
+> GET /mongo/get/1642535883618 HTTP/1.1
+> Host: localhost:8085
+> User-Agent: curl/7.47.0
+> Accept: */*
+>
+< HTTP/1.1 200
+< Content-Length: 0
+< Date: Tue, 18 Jan 2022 20:00:11 GMT
+<
+* Connection #0 to host localhost left intact
+
+```
+it is WIP to debug what is causing empry response body
 ```sh
 docker exec -it 'mongo-service' mongo
 ```

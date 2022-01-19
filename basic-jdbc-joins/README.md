@@ -16,7 +16,8 @@ and run it with environments matching the `application.properties`:
 ```sh
 export MYSQL_USER='java'
 export MYSQL_PASSWORD='password'
-docker run -p 3306:3306 --name mysql-server -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=$MYSQL_USER -e MYSQL_DATABASE=join_check -e MYSQL_PASSWORD=$MYSQL_PASSWORD -d mysql:8.0.18
+export MYSQL_DATABASE='join_check'
+docker run -p 3306:3306 --name mysql-server -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=$MYSQL_USER -e MYSQL_DATABASE=${MYSQL_DATABASE} -e MYSQL_PASSWORD=$MYSQL_PASSWORD -d mysql:8.0.18
 ```
 ### build Mysql Server Image
 
@@ -28,7 +29,8 @@ make sure to not provide volume argument `-v $(pwd):/app` (in the orginal projec
 ```sh
 export MYSQL_USER='java'
 export MYSQL_PASSWORD='password'
-docker run -d --name mysql-server-alpine -p 3306:3306 -e MYSQL_DATABASE=join_check -e MYSQL_USER=$MYSQL_USER -e MYSQL_PASSWORD=${MYSQL_PASSWORD} -e MYSQL_ROOT_PASSWORD=password mysql-server-alpine
+export MYSQL_DATABASE='join_check'
+docker run -d --name mysql-server-alpine -p 3306:3306 -e MYSQL_USER=$MYSQL_USER -e MYSQL_DATABASE=${MYSQL_DATABASE} -e MYSQL_PASSWORD=${MYSQL_PASSWORD} -e MYSQL_ROOT_PASSWORD=password mysql-server-alpine
 ```
 connect and [check it remote accesss allowed](https://mariadb.com/kb/en/configuring-mariadb-for-remote-client-access/):
 ```sh

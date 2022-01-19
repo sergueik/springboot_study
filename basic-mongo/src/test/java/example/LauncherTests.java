@@ -13,10 +13,11 @@ public class LauncherTests {
 	@MockBean
 	ModelMongoRepository mongoRepository;
 
-	// TODO: mock the mongo backend
-	// Exception in monitor thread while connecting to server mongo:27017
+	// NOTE: the mongo backend is not mocked in this test
+	// if docker container is not operational 
+	// exception in monitor thread while connecting to server mongo:27017 will be observed
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void contextLoads() {
 	}

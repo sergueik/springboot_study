@@ -1,10 +1,17 @@
 package example;
 
+/**
+ * Copyright 2021, 2022 Serguei Kouzmine
+ */
+
 import java.io.IOException;
 import java.util.Iterator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,21 +41,26 @@ public class Worker {
 		// NOTE: will always pick first
 	}
 
-	@RequestMapping(path = "/get/{value}", method = RequestMethod.GET)
-	public Model findOneByRepo(@PathVariable String value) throws IOException {
+	@RequestMapping(path = "/get/{value}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Model> findOneByRepo(@PathVariable String value)
+			throws IOException {
 		// Retrieves entity by its id.
 		// https://docs.spring.io/autorepo/docs/spring-data-commons/1.5.1.RELEASE/api/org/springframework/data/repository/CrudRepository.html
 		try {
 			long id = Long.parseLong(value);
-			System.err.println(String.format("Find:\"%s\"", value));
-			// NOTE: finds nothing, though querying mongodb node direct succeeds
+			System.err.println(String.format("Searching:\"%s\" with findOne", value));
+			// NOTE: returns empty body, though querying mongodb node direct succeeds
 			// use mydb
 			// db.model.find({"_id":1583701210532});
-			return mongoRepository.findOne(value);
+			// the findById does not exist in Springboot 1.5.4
+			// https://stackoverflow.com/questions/44101061/missing-crudrepositoryfindone-method
+			Model result = mongoRepository.findOne(value);
+			System.err.println(String.format("Result: \"%s\"", result));
+			return ResponseEntity.status(HttpStatus.OK).body(result);
 
 		} catch (IllegalArgumentException e) {
 			System.err.println("Exception : " + e.getMessage());
-			return null;
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 	}
 
@@ -66,3 +78,4 @@ public class Worker {
 		mongoRepository.save(model);
 	}
 }
+

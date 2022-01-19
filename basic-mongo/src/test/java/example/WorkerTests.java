@@ -1,4 +1,7 @@
 package example;
+/**
+ * Copyright 2021, 2022 Serguei Kouzmine
+ */
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -16,7 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import org.springframework.test.web.servlet.MockMvc;
@@ -84,8 +87,8 @@ public class WorkerTests {
 	@Test
 	public void testOne() throws Exception {
 		// Arrange
-		when(worker.findOneByRepo(any(String.class)))
-				.thenReturn(new Model(1, "stub"));
+		when(worker.findOneByRepo(any(String.class))).thenReturn(
+				new ResponseEntity<Model>(new Model(1, "stub"), HttpStatus.OK));
 		// Act
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders
 				.get("/mongo/get/1").accept(MediaType.APPLICATION_JSON_UTF8))
@@ -125,3 +128,4 @@ public class WorkerTests {
 		return gson.fromJson(json, classOf);
 	}
 }
+
