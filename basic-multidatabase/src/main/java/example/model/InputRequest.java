@@ -1,12 +1,5 @@
 package example.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class InputRequest {
 	public int getId() {
 		return id;
@@ -45,3 +38,4 @@ public class InputRequest {
 	private int qty;
 	private double price;
 }
+

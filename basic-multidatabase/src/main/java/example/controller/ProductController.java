@@ -45,14 +45,17 @@ public class ProductController {
 	@PostMapping(value = "/products", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> postProducts(
 			@RequestBody InputRequest request) {
+		logger.info("Processing post request intp products with:" + " id: "
+				+ request.getId() + " name: " + request.getName() + " qty: "
+				+ request.getQty() + " price: " + request.getPrice());
 
-	mySqlRepository.save(new MySqlProduct(request.getId(), request.getName(),
+		mySqlRepository.save(new MySqlProduct(request.getId(), request.getName(),
 				request.getQty(), request.getPrice()));
 		logger.info("product added on MySQL db");
-	mongoRepository.save(new MongoProduct(request.getId(), request.getName(),
+		mongoRepository.save(new MongoProduct(request.getId(), request.getName(),
 				request.getQty(), request.getPrice()));
 		logger.info("product added on Mongo db");
-			return ResponseEntity.ok().build();
+		return ResponseEntity.ok().build();
 	}
 
 	// https://stackoverflow.com/questions/29612083/casting-a-list-of-an-object-to-a-list-of-super-types/29612111
@@ -61,7 +64,8 @@ public class ProductController {
 	public ResponseEntity<List<? extends Product>> getProducts(
 			@RequestParam(value = "db", required = false, defaultValue = "mysql") String db) {
 		// avoid explicit List of supertype conversion
-		// mongoRepository.findAll().stream().map(o -> new Product(o.getId(), o.getName(), o.getQty(), o.getPrice())).collect(Collectors.toList());
+		// mongoRepository.findAll().stream().map(o -> new Product(o.getId(),
+		// o.getName(), o.getQty(), o.getPrice())).collect(Collectors.toList());
 
 		if (db.equalsIgnoreCase("mongo")) {
 			List<MongoProduct> data = mongoRepository.findAll();
@@ -80,3 +84,4 @@ public class ProductController {
 	}
 
 }
+
