@@ -15,4 +15,7 @@ public class MongoProduct extends Product {
 
 	@Id
 	private int id;
+	public MongoProduct(){
+		super();
+	}
 }

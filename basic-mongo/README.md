@@ -119,7 +119,19 @@ this will respond with an empty collection.
 ```
 the error
 ```sh
-curl: (56) Recv failure: Connection reset by peer
+curl: (56) Recv failurng 127.0.0.1...
+* Connected to localhost (127.0.0.1) port 8085 (#0)
+> GET /mongo/get/1642535883087 HTTP/1.1
+> Host: localhost:8085
+> User-Agent: curl/7.47.0
+> Accept: */*
+>
+< HTTP/1.1 404
+< Content-Length: 0
+< Date: Wed, 19 Jan 2022 22:44:49 GMT
+<
+* Connection #0 to host localhost left intact
+e: Connection reset by peer
 ```
 indicates the app has not launched yet
 the error
@@ -199,10 +211,11 @@ Note:
 the REST call to get value back
 ```sh
 ID=$(curl -s  http://localhost:8085/mongo/all| jq -r  '.[0]|.id')
+echo "ID=${ID}"
 curl  -s http://localhost:8085/mongo/get/$ID
 ```
 is currently prnting nothing (an empty page is returned
-though the server response status is OK:
+and the server response status is 404 NOT FOUND:
 ```sh
 curl  -v -s http://localhost:8085/mongo/get/$ID
 ```

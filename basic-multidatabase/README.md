@@ -42,23 +42,35 @@ curl http://localhost:8080/products?db=mysql
 ```sh
 curl http://localhost:8080/products?db=mongo
 ```
+
 ```text
-Cluster description not yet available. Waiting for 30000 ms before timing out
-
-
-{java.net.ConnectException: Connection refused (Connection refused)}}]","path":"/products"}s
-
-{
-"timestamp":"2022-01-18T02:41:27.739+00:00","status":500,"error":"Internal Server Error",
-"trace":"org.springframework.dao.DataAccessResourceFailureException: Timed out after 30000 ms while waiting to connect. Client view of cluster state is 
-{
-type=UNKNOWN, 
-servers=[
-{
-address=localhost:27017, type=UNKNOWN, state=CONNECTING, exception={com.mongodb.MongoSocketOpenException: Exception opening socket}, 
-caused by {java.net.ConnectException: Connection refused (Connection refused)}}]
+[]
 ```
-- need configuration
+* add product
+```sh
+curl -X POST -H 'Content-Type: application/json'  http://localhost:8080/products -d '{
+  "id": 123,
+  "qty": 1,
+  "price": 1000,
+  "name": "product"
+}
+
+```
+
+repeat queries:
+```ssh
+curl http://localhost:8080/products?db=mongo
+```
+```json
+[{"id":123,"name":"product","qty":1,"price":1000.0}]
+```
+```sh
+curl http://localhost:8080/products?db=mysql
+```
+```json
+[{"id":0,"name":null,"qty":0,"price":0.0}]
+```
+-  need a fix
 ### See Also
 
 

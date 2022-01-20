@@ -14,4 +14,7 @@ public class MySqlProduct extends Product {
 	public MySqlProduct(int id, String name, int qty, double price) {
 		super(id, name, qty, price);
 	}
+	public MySqlProduct(){
+		super();
+	}
 }

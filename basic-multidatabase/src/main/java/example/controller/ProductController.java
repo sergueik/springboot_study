@@ -46,13 +46,13 @@ public class ProductController {
 	public ResponseEntity<String> postProducts(
 			@RequestBody InputRequest request) {
 
-		mongoRepository.save(new MongoProduct(request.getId(), request.getName(),
-				request.getQty(), request.getPrice()));
-		logger.info("product added on Mongo db");
-		mySqlRepository.save(new MySqlProduct(request.getId(), request.getName(),
+	mySqlRepository.save(new MySqlProduct(request.getId(), request.getName(),
 				request.getQty(), request.getPrice()));
 		logger.info("product added on MySQL db");
-		return ResponseEntity.ok().build();
+	mongoRepository.save(new MongoProduct(request.getId(), request.getName(),
+				request.getQty(), request.getPrice()));
+		logger.info("product added on Mongo db");
+			return ResponseEntity.ok().build();
 	}
 
 	// https://stackoverflow.com/questions/29612083/casting-a-list-of-an-object-to-a-list-of-super-types/29612111
