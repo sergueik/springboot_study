@@ -237,17 +237,21 @@ curl  -v -s http://localhost:8085/mongo/get/$ID
 it is WIP to debug what is causing empry response body
 after fix is  made,
 
-container log will show
+container log will showi slighhtly different implementation details . For __2.3.4.RELEASE__ it will be
 ```text
 Searching: "1642535883087"
 Result: "Optional[example.Model@2d5eb373]"
 ```
-
-curl command response will show (naturally the `ID` will be different):
+or, with  __1.5.4.RELESE__ will show
+```text
+Searching: "1642535883087"
+Result: "example.Model@304f9b26"
+```
+curl command response will show:
 ```text
 {"id":1642535883087,"value":"test1"}
 ```
-
+naturally the `ID` will be different. One can confirm in console:
 ```sh
 docker exec -it 'mongo-service' mongo
 ```

@@ -87,7 +87,7 @@ public class WorkerTests {
 	@Test
 	public void testOne() throws Exception {
 		// Arrange
-		when(worker.findOneByRepo(any(String.class))).thenReturn(
+		when(worker.findOneByRepo(any(Long.class))).thenReturn(
 				new ResponseEntity<Model>(new Model(1, "stub"), HttpStatus.OK));
 		// Act
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders
@@ -98,7 +98,7 @@ public class WorkerTests {
 		assertEquals("Incorrect Response Status", HttpStatus.OK.value(),
 				result.getResponse().getStatus());
 
-		verify(worker).findOneByRepo(any(String.class));
+		verify(worker).findOneByRepo(any(Long.class));
 
 		// verify that an of expected type is returned
 		assertNotNull(
