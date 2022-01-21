@@ -50,13 +50,8 @@ public class Worker {
 		try {
 			long id = Long.parseLong(value);
 			System.err.println(String.format("Searching: \"%s\"", value));
-			// NOTE: returns empty body, though querying mongodb node directly in
-			// console succeeds:
-			// use mydb
-			// db.model.find({"_id":1583701210532});
-
 			// https://stackoverflow.com/questions/44101061/missing-crudrepositoryfindone-method
-			Optional<Model> result = mongoRepository.findById(value);
+			Optional<Model> result = mongoRepository.findById(id);
 			if (result.isPresent()) {
 				System.err.println(String.format("Result: \"%s\"", result));
 				return ResponseEntity.status(HttpStatus.OK).body(result.get());

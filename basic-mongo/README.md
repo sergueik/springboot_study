@@ -235,6 +235,19 @@ curl  -v -s http://localhost:8085/mongo/get/$ID
 
 ```
 it is WIP to debug what is causing empry response body
+after fix is  made,
+
+container log will show
+```text
+Searching: "1642535883087"
+Result: "Optional[example.Model@2d5eb373]"
+```
+
+curl command response will show (naturally the `ID` will be different):
+```text
+{"id":1642535883087,"value":"test1"}
+```
+
 ```sh
 docker exec -it 'mongo-service' mongo
 ```
