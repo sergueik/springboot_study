@@ -24,4 +24,4 @@ spring:
   profiles: test
 suffix: test
 logging:
-  suffix: test
+  suffix: dummy

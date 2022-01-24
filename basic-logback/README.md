@@ -42,6 +42,8 @@ to see the logging to take place
 It does not appear that logback's `RollingFileAppender` [class](https://github.com/qos-ch/logback/blob/master/logback-core/src/main/java/ch/qos/logback/core/rolling/RollingFileAppender.java)
 supports configuring log file permissions.
 
+* alternatively open `http://localhost:8080/example?data=123` in the browser
+
 __NOTE__: launching the class with classpath
 ```
 java -cp target/example.logback.jar:target/lib/*:target/conf example.Example
@@ -288,7 +290,7 @@ the logback configuration turns out to be somewhat fragile. Small tweaks to `log
 ```
 NOTE:
 using "phantom include"
-```xml/UND
+```xml
 <include resource="org/springframework/boot/logging/logback/base.xml">
 ```
 instead of
@@ -319,6 +321,9 @@ in `logback.xml` may cause __logback__ to instantiate an additional `FILE` logge
   * https://tridion.stackexchange.com/questions/253/logback-xml-limit-the-size-of-files
   * another combination of policies [example](https://stackify.com/logging-logback/) (non-working)
   * few more [examples](https://mkyong.com/logging/logback-xml-example/) including obsolete but stated to work one with `ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP`
+  * http://logback.qos.ch/manual/appenders.html
+  * https://springframework.guru/using-logback-spring-boot/
+  * https://springframework.guru/using-yaml-in-spring-boot-to-configure-logback/
 
   * XML versus properties file - many places. also the consensus is the default file appender is size based (10MB) and cannot be overriden in application.properties alone
   * https://howtodoinjava.com/spring-boot2/logging/profile-specific-logging/

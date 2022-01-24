@@ -12,8 +12,11 @@
   <springProfile name="test">
     <property name="SUFFIX" value="test"/>
   </springProfile>
+  <!--  TODO: explore NTEventLogAppender -->
   <!-- NOTE: cannot redefine property -->
   <springProperty name="LOGGING_SUFFIX" source="logging.suffix"/>
+  <!--  ERROR in org.springframework.boot.logging.logback.SpringPropertyAction -
+  The "name" and "source" attributes of <springProperty> must be set  -->
   <!-- follow the propery file naming nconvention -->
   <variable name="BASEDIR" value="${BASEDIR:-.}"/>
   <!-- https://www.cloudesire.com/configure-logback-log-level-via-environment-variables/ -->

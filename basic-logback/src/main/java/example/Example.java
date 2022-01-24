@@ -1,9 +1,5 @@
 package example;
 
-import javax.annotation.PostConstruct;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,9 +27,7 @@ public class Example {
 	// https://www.baeldung.com/spring-request-param
 	@GetMapping
 	public String exampleHandler(@RequestParam(required = false) String data) {
-		// these logs are configured to be available only in the file
-
-		loghelper.logAll(String.format("exampleHandler received: %s", data));
-		return ("exampleHandler received: " + data);
+		loghelper.logAll(String.format("request processed: %s", data));
+		return ("request processed: " + data);
 	}
 }

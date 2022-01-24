@@ -13,12 +13,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 // Spring Framwork Release sensitive area
 // @RunWith(SpringJUnit4ClassRunner.class)
+// @ExtendWidth(SpringRunner.class) 
+// for Junit 5
 // @SpringApplicationConfiguration(classes = Example.class)
 // @WebAppConfiguration
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ExampleTest {
-	@Ignore
+	// @Ignore
 	// commented for 2.4.3 IllegalState Failed to load ApplicationContext
 	@Test
 	public void contextLoads() {
