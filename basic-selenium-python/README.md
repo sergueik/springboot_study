@@ -11,7 +11,7 @@ docker pull joyzoursky/python-chromedriver:3.9-alpine-selenium
 
 run the test script launching Chromium headless and examining the version  via [CDP]() call:
 ```sh
-docker run  -w /usr/workspace -v $(pwd):/usr/workspace -it joyzoursky/python-chromedriver:3.9-alpine-selenium sh
+docker run -w /usr/workspace -v $(pwd):/usr/workspace -it joyzoursky/python-chromedriver:3.9-alpine-selenium sh
 ```
 in the container prompt `/usr/workspace #`, proceed with
 
@@ -291,6 +291,14 @@ libcrypto.so.1.1 => /lib/libcrypto.so.1.1 (0x7fcf16314000)
 libmd.so.0 => /usr/lib/libmd.so.0 (0x7fcf16308000)
 libgomp.so.1 => /usr/lib/libgomp.so.1 (0x7fcf162c8000)
 Error relocating /usr/lib/libpango-1.0.so.0: g_memdup2: symbol not found
+
+```
+### Note
+```sh
+pip install PIL
+```
+```text
+ERROR: Could not find a version that satisfies the requirement PIL (from versions: none)
 
 ```
 ### See Also

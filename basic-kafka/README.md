@@ -41,7 +41,7 @@ Created topic test-topic.
 cd plain
 mvn package
 ```
-then run in two terminals
+then run in two terminals side-by-side
 ```sh
 java -cp target/example.plain-kafka.jar:target/lib/* example.ProducerApp
 ```
