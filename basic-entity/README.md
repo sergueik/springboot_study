@@ -58,4 +58,4 @@ sqlite3 "products.db" "select *  from product;"
 https://stackoverflow.com/questions/59900419/inject-collection-name-in-document-from-spring-data-mongodb-in-using-a-property
 https://shekhargulati.com/2018/01/09/programmatically-generating-database-schema-with-hibernate-5/
 https://stackoverflow.com/questions/49148172/table-name-configured-with-external-properties-file
-
+https://github.com/mmushfiq/springboot-sqlite-mini-website

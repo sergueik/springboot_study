@@ -217,7 +217,6 @@ org.springframework.orm.jpa.JpaTransactionManager$JpaTransactionObject.setReadOn
 
   * [Hibernate/DAO basics](https://habrahabr.ru/post/255829/) (in russian)
   * [diyfr/sqlite-dialect](https://github.com/diyfr/sqlite-dialect)
-  * [Spring Boot Reference Guide](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-build.html)
   * [xerial/sqlite-jdbc](https://bitbucket.org/xerial/sqlite-jdbc)
   * [tools and libraries download](https://www.sqlite.org/download.html)
   * sqlite3 [command syntax](https://www.sqlite.org/cli.html)
@@ -225,6 +224,9 @@ org.springframework.orm.jpa.JpaTransactionManager$JpaTransactionObject.setReadOn
   * collection of [JPA projects](https://github.com/AnghelLeonard/Hibernate-SpringBoot)
   * [externalize](https://mkyong.com/hibernate/how-to-load-hibernate-cfg-xml-from-different-directory/) the `hibernate.cfg.xml`
   * another [solution](https://stackoverflow.com/questions/27508327/design-for-hibernate-external-config-for-app-server-and-local-eclipse)
+  * https://www.programcreek.com/java-api-examples/?api=org.springframework.data.domain.Example
+  * https://www.baeldung.com/spring-data-query-by-example
+  * [Spring Boot Reference Guide](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-build.html)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

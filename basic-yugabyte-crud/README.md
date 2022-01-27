@@ -3,8 +3,22 @@
 This directory contains  a replica of [Yugabyte Spring CRUD demo](https://github.com/MikeQin/yugabyte-spring)
 
 ### Usage
-* use the setup from the project []()
 
+* use the setup from the project [basic-yugabyte-rest](https://github.com/sergueik/springboot_study/tree/master/basic-yugabyte-rest)
+```sh
+docker pull yugabytedb/yugabyte:2.5.0.0-b2
+```
+```sh
+ docker run -d --name yugabyte  -p 7000:7000 -p 9000:9000 -p 5433:5433 -p9042:9042 yugabytedb/yugabyte:2.5.0.0-b2 bin/yugabyted start --daemon=false
+```
+```sh
+docker logs -f yugabyte
+```
+shows after a while
+```text
+Starting yugabyted...
+✅ System checks
+```
 * launch the app
 
 ```sh
@@ -13,13 +27,13 @@ mvn -Dmaven.test.skip=true spring-boot:run
 alternarively can abbreviate the options
 and build the server package
 ```sh
-$ mvn -DskipTests package
+mvn -DskipTests package
 ```
 
 * run the REST API server:
 
 ```
-$ mvn spring-boot:run
+mvn spring-boot:run
 ```
 
 get interfaces information:

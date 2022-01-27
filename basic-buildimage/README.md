@@ -103,13 +103,11 @@ docker image rm $IMAGE
 
 docker image prune -f
 
-docker container rm  $(docker container ls -a | grep runner | awk '{print $1}' )
+docker container rm -f $(docker container ls -a | grep runner | awk '{print $1}' )
 docker image rm builder runner
-
 ```
 
 ### See Also
 
-  * https://www.baeldung.com/spring-boot-docker-images
-  * https://www.baeldung.com/spring-boot-main-class
-
+  * [collection](https://www.baeldung.com/spring-boot-docker-images) of containerized spring app build optimization options
+  * official __Spring Boot Docker__ [documentation](https://spring.io/guides/topicals/spring-boot-docker/), see in partcular the __Spring Boot Layer Index__ section

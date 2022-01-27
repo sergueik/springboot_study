@@ -88,6 +88,8 @@ the launch configuration `.basic.launch` from `$HOME\workspace\.metadata\.plugin
   * Docker [command list](https://habr.com/ru/company/flant/blog/336654/) (in Russian)
   * deal with [failing ipv6](https://stackoverflow.com/questions/30750271/disable-ip-v6-in-docker-container) in Docker
   * [using Docker environment variables in build phase](https://vsupalov.com/docker-build-pass-environment-variables/)
-  * [Docker commands](https://habr.com/ru/company/ruvds/blog/440660/) (in Russian)  
+  * [Docker commands](https://habr.com/ru/company/ruvds/blog/440660/) (in Russian)
+  * official __Spring Boot Docker__ [documentation](https://spring.io/guides/topicals/spring-boot-docker/)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

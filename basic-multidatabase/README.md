@@ -73,7 +73,7 @@ curl http://localhost:8080/products?db=mysql
 -  need a fix
 ### See Also
 
-
+  * [discussion of multi-database Hibernate App fix](https://qna.habr.com/q/1104464) (in Russian)
   * https://www.javacodegeeks.com/2018/12/java-streaming-jdbc-resultset-csv.html
   * https://narayanatutorial.com/java-tutorial/java-opencsv/csv-file-writing-resultset
   * [MySQL alpine](https://github.com/ipburger/mysql-alpine.docker/blob/master/Dockerfile)

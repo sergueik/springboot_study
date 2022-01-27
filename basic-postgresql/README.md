@@ -266,7 +266,7 @@ docker image prune -f
 
 ### Install PG Admin
 
-Follow the Debuan system install [steps](https://www.pgadmin.org/download/pgadmin-4-apt/)
+Follow the Debian system install [steps](https://www.pgadmin.org/download/pgadmin-4-apt/)
 ```sh
 curl -l -k -o - https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo apt-key add
 ```
