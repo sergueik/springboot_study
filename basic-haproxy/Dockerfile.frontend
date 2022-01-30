@@ -9,5 +9,5 @@ ADD log4j2.xml ${CATALINA_HOME}/conf/log4j2.xml
 RUN echo "export JAVA_OPTS=\"-Dlog4j2.debug=true -Dapp.env=staging -Dlog4j.configurationFile=\$CATALINA_BASE/conf/log4j2.xml\"" | tee ${CATALINA_HOME}/bin/setenv.sh
 
 EXPOSE 8080
-# ENTRYPOINT ["${CATALINA_HOME}/bin/catalina.sh", "run"
+# ENTRYPOINT ["${CATALINA_HOME}/bin/catalina.sh", "run" ]
 ENTRYPOINT ${CATALINA_HOME}/bin/catalina.sh run

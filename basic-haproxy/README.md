@@ -1,6 +1,6 @@
 ### Info
-This directory contains toy cluster to prectice the haproxy
-[ACLs](https://www.haproxy.com/blog/introduction-to-haproxy-acls/
+This directory contains toy cluster to prectice the haproxy [ACLs](https://www.haproxy.com/blog/introduction-to-haproxy-acls/
+
 ### Usage
 #### Front End (optional)
 * tesh locally
@@ -10,7 +10,7 @@ mvn clean tomcat:run-war
 popd
 curl -I http://localhost:8080/redirector/index.html
 ```
-this will redirect to application:
+this will redirect to applications `app1`,`app2` or `app3`: 
 ```sh
 HTTP/1.1 302 Moved Temporarily
 Server: Apache-Coyote/1.1
@@ -36,6 +36,11 @@ this will redirect to randomly chosen app path on `REDIRECT_HOST`:
 ```sh
 HTTP/1.1 302 Found
 Location: http://other_host:8080/app3/index.jsp
+```
+
+check logs
+```sh
+docker logs $CONTAINER
 ```
 #### Application Container Server Farm
 * create blank application container server(s) with a vanilla tomcat intending to deploy war(s) inside later
@@ -219,6 +224,8 @@ date: Tue, 18 Aug 2020 00:03:34 GMT
  * `haproxy.conf` [documentation](https://habr.com/ru/sandbox/34354/)(in Russian)
  * some obscure [fine tuning](https://habr.com/ru/company/ostrovok/blog/438966/) haproxy options (in Russian)
  * another obscure [fine tuning](https://habr.com/ru/company/ostrovok/blog/436992/) haproxy options (in Russian)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 
