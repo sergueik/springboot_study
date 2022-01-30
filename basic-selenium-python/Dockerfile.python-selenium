@@ -1,0 +1,4 @@
+FROM joyzoursky/python-chromedriver:3.9-alpine-selenium
+# install additional packages used alongside with Selenium python
+RUN pip install bs4
+

@@ -162,14 +162,14 @@ libgomp.so.1 => /usr/lib/libgomp.so.1 (0x7f3a1c70d000)
 ### Usage
 the container used to run the scripts from mapped directory, currently as root.
 ```sh
-IMAGE=python-selenium 
-docker build -f Dockerfile -t $IMAGE .
+IMAGE=python-selenium
+docker build -f Dockerfile.${IMAGE}.BROKEN -t $IMAGE .
 ```
 ```sh
 docker run -it -w /usr/workspace -v $(pwd):/usr/workspace $IMAGE sh
 ```
 ```sh
-python test_script.py
+python chromium_ex.py
 ```
 is failing with glibc related errors:
 ```text
@@ -291,7 +291,36 @@ libcrypto.so.1.1 => /lib/libcrypto.so.1.1 (0x7fcf16314000)
 libmd.so.0 => /usr/lib/libmd.so.0 (0x7fcf16308000)
 libgomp.so.1 => /usr/lib/libgomp.so.1 (0x7fcf162c8000)
 Error relocating /usr/lib/libpango-1.0.so.0: g_memdup2: symbol not found
+```
 
+* repeat with -based `Dockerfile`:
+```
+IMAGE=python-selenium
+docker build -f Dockerfile.$IMAGE -t $IMAGE .
+```
+```sh
+docker container rm $(docker container ls -a | grep $IMAGE | head -1 | awk '{print $1}' )
+docker run -it -w /usr/workspace -v $(pwd):/usr/workspace $IMAGE sh
+```
+in the container
+```text
+/usr/workspace #
+```
+run again
+```sh
+python chromium_ex.py
+```
+this will produce
+```text
+Browser.getVersion:
+POST to http://127.0.0.1:37707/session/1ba35990216b59ce840e5f3d8cad52ee/chromium/send_command_and_get_result
+params: {"cmd": "Browser.getVersion", "params": {}}
+dict_keys(['value'])
+dict_keys(['jsVersion', 'product', 'protocolVersion', 'revision', 'userAgent'])
+jsVersion: 9.1.269.36
+product: HeadlessChrome/91.0.4472.101
+revision: @af52a90bf87030dd1523486a1cd3ae25c5d76c9b
+userAgent: "Chromium 95.0.4638.69"
 ```
 ### Note
 ```sh
@@ -299,10 +328,17 @@ pip install PIL
 ```
 ```text
 ERROR: Could not find a version that satisfies the requirement PIL (from versions: none)
-
 ```
+there may be a bogus `"` directory, in need of removal before container rebuild
+```sh
+sudo rm -fr '"'
+```
+it was created by incorrectly provided chrome options
 ### See Also
- 
+
   * https://github.com/joyzoursky/docker-python-chromedriver/blob/master/deprecated/py3.6-xvfb-selenium/Dockerfile
   * https://github.com/joyzoursky/docker-python-chromedriver/blob/master/py-alpine/3.8-alpine-selenium/Dockerfile
   * https://github.com/cypress-io/cypress/issues/419
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
