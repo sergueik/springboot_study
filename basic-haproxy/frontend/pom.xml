@@ -12,7 +12,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <log4j.version>1.2.17</log4j.version>
-    <log4j-core.version>2.11.1</log4j-core.version>
+    <log4j-core.version>2.17.1</log4j-core.version>
     <tomcat.version>8.5.30</tomcat.version>
     <tomcat8-maven-plugin.version>3.0-r1756463</tomcat8-maven-plugin.version>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
