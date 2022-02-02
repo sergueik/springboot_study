@@ -14,6 +14,26 @@ mvn spring-boot:run
 ``sh
 curl -X POST http://localhost:8080/cancel  -H 'Content-Type: application/json'
 ```
+or if `curl.exe` is not available, custom Powershell tweaked `System.Net.WebRequest` call:
+```powershell
+.\cancel.ps1 -url http://localhost:8080/cancel -debug
+```
+the script will print the status:
+```text
+POST to http://localhost:8080/cancel
+Response status code: 200/OK
+Reading response
+Response:
+OK
+```
+or, in case of a failure
+```text
+POST to http://localhost:8080/cancel
+Exception:
+Status: ConnectFailure
+StatusCode:
+Message: Unable to connect to the remote server
+```
 * the app will report being canceled:
 ```text
 2022-01-31 19:31:40.626 ERROR 9164 --- [ main] o.s.boot.SpringApplication: Application run failed
