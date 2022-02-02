@@ -16,11 +16,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
+
 import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -63,7 +67,7 @@ public class BasicTest {
 		nameChange.put("Fred", "James");
 	};
 
-	private static final Logger logger = Logger.getLogger(BasicTest.class);
+	private static final Logger logger = LogManager.getLogger(BasicTest.class);
 
 	@Before
 	public void setUp() {
@@ -73,7 +77,6 @@ public class BasicTest {
 		mongoClient = MongoClients.create(connectionString);
 	}
 
-	@Ignore
 	@Test
 	public void listDatabases() {
 
@@ -92,14 +95,13 @@ public class BasicTest {
 
 			} else {
 				for (String colName : collections) {
-					logger.info("\t + Collection: " + colName);
+					logger.log(Level.ALL, "\t + Collection: {}", colName);
 				}
 			}
 		}
 
 	}
 
-	@Ignore
 	@Test
 	public void createDocument() {
 		db = mongoClient.getDatabase(dbName);
@@ -107,7 +109,6 @@ public class BasicTest {
 				.insertOne(new Document().append("name", "James"));
 	}
 
-	@Ignore
 	@Test
 	public void insertManyDocuments() {
 		db = mongoClient.getDatabase(dbName);
@@ -139,7 +140,6 @@ public class BasicTest {
 	}
 
 	// http://www.java2s.com/example/java-api/com/mongodb/client/model/projections/fields-1-0.html
-	@Ignore
 	@Test
 	public void projections() {
 		db = mongoClient.getDatabase(dbName);
@@ -162,7 +162,6 @@ public class BasicTest {
 	// based on:
 	// https://examples.javacodegeeks.com/software-development/mongodb/java-mongodb-query-document-example/
 	// https://mongodb.github.io/mongo-java-driver/3.9/driver/getting-started/quick-start/
-	@Ignore
 	@Test
 	public void filterDocumentsTest() {
 		db = mongoClient.getDatabase(dbName);
@@ -175,7 +174,6 @@ public class BasicTest {
 		logger.info(document.toJson());
 	}
 
-	@Ignore
 	@Test
 	public void filterStaticBuilderTest() {
 		db = mongoClient.getDatabase(dbName);
@@ -191,7 +189,6 @@ public class BasicTest {
 		find.forEach(codeBlock);
 	}
 
-	@Ignore
 	@Test
 	public void findDocumentArgumentTest() {
 		db = mongoClient.getDatabase(dbName);
@@ -204,6 +201,8 @@ public class BasicTest {
 		logger.info(document.toJson());
 	}
 
+	// NOTE: commenting other tests will lead this one to fail with NPE
+	// @Ignore
 	// https://docs.mongodb.com/manual/reference/operator/query-comparison/
 	// https://docs.mongodb.com/manual/reference/operator/query/where/
 	@Test
@@ -241,7 +240,6 @@ public class BasicTest {
 		}
 	}
 
-	@Ignore
 	@Test
 	public void findByKey() {
 		db = mongoClient.getDatabase(dbName);
@@ -253,7 +251,6 @@ public class BasicTest {
 	}
 
 	@SuppressWarnings("serial")
-	@Ignore
 	@Test
 	public void findByDocumentArgument() {
 		db = mongoClient.getDatabase(dbName);
@@ -301,4 +298,3 @@ public class BasicTest {
 		mongoClient.close();
 	}
 }
-

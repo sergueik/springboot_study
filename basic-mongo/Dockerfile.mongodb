@@ -5,6 +5,7 @@ RUN apk add --no-cache mongodb
 VOLUME /data/db
 EXPOSE 27017 28017
 
+# NOTE: Windows Line endings sensitive
 COPY run.sh /root
 ENTRYPOINT [ "/root/run.sh" ]
 CMD [ "mongod", "--bind_ip", "0.0.0.0" ]

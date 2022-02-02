@@ -16,7 +16,7 @@ docker container prune -f
 # docker run -d --name $CONTAINER -i $IMAGE
 docker run -d --name $CONTAINER -p 27717:27017 -i $IMAGE
 ```
-* alternatively
+* alternatively, build from scratch
 ```sh
 IMAGE=mongodb
 CONTAINER=mongo-service
@@ -25,6 +25,7 @@ docker container prune -f
 docker run -d --name $CONTAINER -p 27717:27017 -i $IMAGE
 docker logs $CONTAINER
 ```
+in the normal course of events the container log will be empty
 * verify ports
 ```sh
 netstat -ant | grep LISTEN | grep 27717
@@ -40,7 +41,122 @@ docker exec -it $CONTAINER mongo
 ```sh
 > quit()
 ```
+if the error is observed
+```text
+``` 
+
+simply connect to plain shell and start mongod in a conteiner:
+```sh
+docker exec -it $CONTAINER sh
+```
+```sh
+#
+```
+```sh
+mongod
+```
+- more profound troubleshooting is a work in progress
+
 ### Testing Plain Java Application in a Developer host
+
+* run test
+```sh
+pushd plain
+mvn test
+```
+this will show 
+```text
+
+Running example.BasicTest
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+2022-02-02 03:48:49  [main] - INFO  - Database: admin
+ trace.id=2022-02-02 03:48:49  [main] - INFO  - Database: config
+ trace.id=2022-02-02 03:48:49  [main] - INFO  - Database: local
+ trace.id=2022-02-02 03:48:49  [main] - INFO  - Database: myUserDb
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "James" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 0" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 1" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 2" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 3" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 4" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "James" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 0" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 1" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 2" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 3" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 4" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "James" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 0" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 1" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 2" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 3" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 4" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "James" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 0" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 1" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 2" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 3" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 4" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "James" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 0" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 1" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 2" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 3" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 4" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "James" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 0" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 1" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 2" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 3" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 4" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "James" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 0" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 1" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 2" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 3" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "name 4" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "name" : "James" }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "_id" : { "$oid" : "61f9f009f249701a4ff205bf" }, "name" : "name 0", "age" : 20, "topics" : ["music", "travel", "eat"] }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "_id" : { "$oid" : "61f9eb9af249701722823b9a" }, "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "_id" : { "$oid" : "61f9eb9af249701722823b9a" }, "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "_id" : { "$oid" : "61f9eb9af249701722823b9a" }, "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2022-02-02 03:48:49  [main] - INFO  { "_id" : { "$oid" : "61f9efbff2497019f2bb35a1" }, "name" : "James" }
+ trace.id=2022-02-02 03:48:50  [main] - INFO  { "_id" : { "$oid" : "61f9f009f249701a4ff205c5" }, "name" : "James" }
+ trace.id=2022-02-02 03:48:50  [main] - INFO  { "_id" : { "$oid" : "61f9f02bf249701a9ce33b29" }, "name" : "James" }
+ trace.id=2022-02-02 03:48:50  [main] - INFO  { "_id" : { "$oid" : "61f9f046f249701af48aa033" }, "name" : "James" }
+ trace.id=2022-02-02 03:48:50  [main] - INFO  { "_id" : { "$oid" : "61f9f062f249701b48b7d8f0" }, "name" : "James" }
+ trace.id=2022-02-02 03:48:50  [main] - INFO  { "_id" : { "$oid" : "61f9f079f249701ba01c5f10" }, "name" : "James" }
+ trace.id=2022-02-02 03:48:50  [main] - INFO  { "_id" : { "$oid" : "61f9f0d3f249701bfb114787" }, "name" : "James" }
+ trace.id=2022-02-02 03:48:50  [main] - INFO  { "_id" : { "$oid" : "61f9f0f2f249701c5a2a8488" }, "name" : "James" }
+ trace.id=2022-02-02 03:48:50  [main] - INFO  { "_id" : { "$oid" : "61f9efbff2497019f2bb35a1" }, "name" : "James" }
+ trace.id=2022-02-02 03:48:50  [main] - INFO  { "_id" : { "$oid" : "61f9efbff2497019f2bb35a1" }, "name" : "James" }
+ trace.id=2022-02-02 03:48:50  [main] - INFO  Save id: 61f9efbff2497019f2bb35a1
+ trace.id=2022-02-02 03:48:50  [main] - INFO  upsertedid: null
+ trace.id=2022-02-02 03:48:50  [main] - INFO  { "_id" : { "$oid" : "61f9efbff2497019f2bb35a1" }, "name" : "Fred" }
+ trace.id=2022-02-02 03:48:50  [main] - INFO  { "_id" : { "$oid" : "61f9efbff2497019f2bb35a1" }, "name" : "Fred" }
+ trace.id=2022-02-02 03:48:50  [main] - INFO  { "_id" : { "$oid" : "61f9f009f249701a4ff205c5" }, "name" : "James" }
+ trace.id=2022-02-02 03:48:50  [main] - INFO  { "_id" : { "$oid" : "61f9efbff2497019f2bb35a1" }, "name" : "Fred" }
+ trace.id=Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.285 sec
+
+Results :
+
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
+```
 ```sh
 mvn package
 java -Dmongo_host=127.0.0.1 -Dmongo_db=test -Dmongo_port=27717 -jar target/example.basic-mongo-app.jar
@@ -51,7 +167,7 @@ java -Dspring.data.mongodb.uri=mongodb://127.0.0.1:27717/test -jar target/exampl
 ```
 alternatively,
 ```sh
-java -Dspring.data.mongo.host=localhost -Dspring.data.mongo.port=27717 -Dspring.data.mongo.database=test -jar target/example.basic-mongo-app.jar
+java -Dspring.data.mongo.host=local:host -Dspring.data.mongo.port=27717 -Dspring.data.mongo.database=test -jar target/example.basic-mongo-app.jar
 ```
 then after a sucessful launch run CRUD commands through curl
 
