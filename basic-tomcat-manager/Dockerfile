@@ -12,10 +12,9 @@ ADD tomcat-users.xml ${CATALINA_HOME}/conf/tomcat-users.xml
 ADD log4j2.xml ${CATALINA_HOME}/conf/log4j2.xml
 ADD src/main/resources/application.properties ${CATALINA_HOME}/conf/application.properties
 ADD catalina.sh ${CATALINA_HOME}/bin/catalina.sh 
-# Remove CRLF to prevent the
-# ': No such file or directory 
-# error
-RUN sed -i 's|\r||' ${CATALINA_HOME}/bin/catalina.sh
+# TODO: RUN  sed -i 's|\r||' ${CATALINA_HOME}/bin/catalina.sh
+# to avoid the
+# ': No such file or directory
 RUN echo "export JAVA_OPTS=\"-Dlog4j2.debug=true -Dapp.env=staging -Dlog4j.configurationFile=\$CATALINA_BASE/conf/log4j2.xml\"" | tee ${CATALINA_HOME}/bin/setenv.sh
 RUN echo "export CLASSPATH=\$CLASSPATH:/opt/tomcat/conf" | tee -a ${CATALINA_HOME}/bin/setenv.sh
 

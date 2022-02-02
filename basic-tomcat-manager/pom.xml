@@ -4,14 +4,13 @@
   <groupId>example</groupId>
   <artifactId>managed_app</artifactId>
   <packaging>war</packaging>
-  <version>0.11.0-SNAPSHOT</version>
+  <version>0.12.0-SNAPSHOT</version>
   <name>demo web servlet with log4j2 logging</name>
   <properties>
     <java.version>1.7</java.version>
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
     <junit.version>4.13.1</junit.version>
-    <log4j.version>1.2.17</log4j.version>
-    <log4j-core.version>2.11.1</log4j-core.version>
+    <log4j-core.version>2.17.1</log4j-core.version>
     <tomcat.version>8.5.30</tomcat.version>
     <tomcat8-maven-plugin.version>3.0-r1756463</tomcat8-maven-plugin.version>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
@@ -50,11 +49,6 @@
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-web</artifactId>
       <version>${log4j-core.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${log4j.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
