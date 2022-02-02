@@ -28,7 +28,9 @@ at example.controller.Controller.cancel
 
 ### See Also
 
-https://howtodoinjava.com/spring-boot2/rest/async-rest-controller-callable/
+  * https://howtodoinjava.com/spring-boot2/rest/async-rest-controller-callable/
+  * http://www.avajava.com/tutorials/lessons/how-do-i-run-another-application-from-java.html?page=2
+  * https://www.baeldung.com/java-create-jar
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

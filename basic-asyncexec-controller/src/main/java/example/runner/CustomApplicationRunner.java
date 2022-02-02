@@ -38,6 +38,7 @@ public class CustomApplicationRunner implements CommandLineRunner {
 	}
 
 	public void cancel() {
+		logger.info("Processing cancel method");
 		final boolean mayInterruptIfRunning = true;
 		page1.cancel(mayInterruptIfRunning);
 		page2.cancel(mayInterruptIfRunning);
