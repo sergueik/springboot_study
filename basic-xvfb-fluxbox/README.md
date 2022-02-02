@@ -190,9 +190,10 @@ docker exec -e DISPLAY=:1.0 -it $ID ./run.sh
 ```
 ### See Also
 
-* https://github.com/FreeRDP/Remmina/wiki/Remmina-Usage-FAQ
-* https://github.com/gros777/fluxbox
-* http://blog.fx.lv/2017/08/running-gui-apps-in-docker-containers-using-vnc/
+  * https://github.com/FreeRDP/Remmina/wiki/Remmina-Usage-FAQ
+  * https://github.com/gros777/fluxbox
+  * http://blog.fx.lv/2017/08/running-gui-apps-in-docker-containers-using-vnc/
+  * ubuntu based [docker container](https://github.com/samgiles/docker-xvfb) with Xvfb launching as a service
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
