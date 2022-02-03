@@ -1,5 +1,9 @@
 package example.controller;
 
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
 import example.runner.CustomApplicationRunner;
 import example.state.Data;
 
@@ -24,11 +29,35 @@ public class CustomController {
 
 	private Data data = null;
 
-	@GetMapping(value = "/data", produces = MediaType.APPLICATION_JSON_VALUE)
-	public String json() {
+	@GetMapping(value = "/data", produces = MediaType.TEXT_PLAIN_VALUE)
+	public String data() {
+
 		data = Data.getInstance();
 		final CustomApplicationRunner runner = data.getApplicationRunner();
-		return (runner != null) ? runner.toString() : "";
+		final String payload = (runner != null) ? runner.toString() : "";
+		logger.info("returning: " + payload);
+		return payload;
+
+	}
+
+	@GetMapping(value = "/json", produces = MediaType.APPLICATION_JSON_VALUE)
+	public CustomApplicationRunner json() {
+
+		data = Data.getInstance();
+		final CustomApplicationRunner runner = data.getApplicationRunner();
+
+		logger.info("returning: " + runner.toString());
+		// NOTE: java.lang.StackOverflowError when serializng the object instance by
+		// hand
+		/*
+		try {
+			final Gson gson = new Gson();
+			final String payload = gson.toJson(runner);
+		} catch (java.lang.StackOverflowError e) {
+			logger.info("caught (ingored) " + e.toString());
+		}
+		*/
+		return (runner != null) ? runner : null;
 	}
 
 	@PostMapping(value = "/cancel", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -42,6 +71,5 @@ public class CustomController {
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
-
 	}
 }

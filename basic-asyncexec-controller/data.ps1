@@ -19,12 +19,13 @@
 #THE SOFTWARE.
 param(
   [switch]$debug,
-  [string]$url = 'http://localhost:8080/cancel'
+  [string]$url = 'http://localhost:8080/data'
 )
 
-function cancel {
+
+function get_data {
   param(
-    [string]$url = 'http://localhost:8080/cancel',
+    [string]$url = 'http://localhost:8080/data',
 
     # currently unused - kept for possible future use
     [System.Collections.Hashtable]$params = @{
@@ -43,7 +44,7 @@ function cancel {
   [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
 
   $webRequest = [System.Net.WebRequest]::Create($url)
-  $webRequest.Method = 'POST'
+  $webRequest.Method = 'GET'
   $content_type = 'application/json'
 
   $webRequest.ContentType = $content_type
@@ -71,8 +72,7 @@ function cancel {
     }
     if ($statusCode.value__ -eq 200){
       [System.IO.StreamReader] $responseStream = new-object System.IO.StreamReader($response.GetResponseStream())
-      # the response content will likely be empty
-      # $result = $responseStream.ReadToEnd()
+      $result = $responseStream.ReadToEnd()
       $responseStream.Close()
       if ($debug)  {
         write-host ('Response:{0}{1}' -f [char]10, $result )
@@ -93,7 +93,12 @@ function cancel {
 }
 
 [bool]$debug_flag = [bool]$psboundparameters['debug'].ispresent
-$result = cancel -url $url -debug $debug_flag
+
+# NOTE: 'data' is reserved word. If named function just 'data' get run time error
+# The "url" parameter of the Data section is not valid. The valid Data section
+# parameter is SupportedCommand.
+
+$result = get_data -url $url -debug $debug_flag
 if ($debug_flag) {
   write-output ('The result is:{1}{0}' -f $result,[char]10)
 }
@@ -101,4 +106,5 @@ if ($debug_flag) {
 # possible result values:
 # ConnectFailure
 # ProtocolError
-# OK
+# raw content: 
+# example.runner.CustomApplicationRunner@6f95cd51
