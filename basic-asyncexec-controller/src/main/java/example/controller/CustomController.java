@@ -79,4 +79,46 @@ public class CustomController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 	}
+
+	@GetMapping(value = "/dummyData", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<DummyData> dummyData() {
+
+		DummyData dummyData = new DummyData();
+		dummyData.setName("my name");
+
+		// if (dummyData != null) {
+			logger.info("dummyData() method returning: " + dummyData.toString());
+			return ResponseEntity.ok(dummyData);
+			// NOTE: "else"block willbe identified as dead code
+			// NOTE: with commented, fails with This method must return a result of
+			// type ResponseEntity<CustomController.DummyData>
+			/*
+			} else {
+			logger.info("returning: null");
+			return null;
+			*/
+		// }
+
+	}
+
+	public static class DummyData {
+
+		private String name;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String DummyData) {
+			name = DummyData;
+		}
+
+		public DummyData(String name) {
+			this.name = name;
+		}
+
+		public DummyData() {
+		}
+	}
+
 }

@@ -108,3 +108,6 @@ if ($debug_flag) {
 # ProtocolError
 # raw content: 
 # example.runner.CustomApplicationRunner@6f95cd51
+# Also try
+# data.ps1 debug -url http://localhost:8080/json
+# data.ps1 -debug -url http://localhost:8080/dummyData
