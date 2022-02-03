@@ -40,11 +40,12 @@ public class CustomController {
 
 	}
 
+	@SuppressWarnings("unused")
 	@GetMapping(value = "/json", produces = MediaType.APPLICATION_JSON_VALUE)
-	public CustomApplicationRunner json() {
+	public ResponseEntity<CustomApplicationRunner> json() {
 
 		data = Data.getInstance();
-		final CustomApplicationRunner runner = data.getApplicationRunner();
+		CustomApplicationRunner runner = data.getApplicationRunner();
 
 		logger.info("returning: " + runner.toString());
 		// NOTE: java.lang.StackOverflowError when serializng the object instance by
@@ -57,7 +58,13 @@ public class CustomController {
 			logger.info("caught (ingored) " + e.toString());
 		}
 		*/
-		return (runner != null) ? runner : null;
+		if (runner != null) {
+			logger.info("json() method returning: " + runner.toString());
+			return ResponseEntity.ok(runner);
+		} else {
+			logger.info("returning: null");
+			return null;
+		}
 	}
 
 	@PostMapping(value = "/cancel", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
