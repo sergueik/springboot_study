@@ -1,12 +1,14 @@
 FROM alpine:3.9.5
 RUN apk update && apk add wget
 WORKDIR /
-ARG VERSION='1.4.2'
+ARG VERSION=1.4.2
 ENV VERSION=$VERSION
-RUN wget -q https://github.com/prometheus/pushgateway/releases/download/v$VERSION/pushgateway-$VERSION.linux-amd64.tar.gz \
-&& tar xf /pushgateway-$VERSION.linux-amd64.tar.gz \
-&& mv /pushgateway-$VERSION.linux-amd64/pushgateway /bin \
-&& rm -rf /pushgateway-$VERSION.linux-amd64.tar.gz /pushgateway-$VERSION.linux-amd64
+# NOTE: wget exit code: 8 is likely a 404 server response
+RUN wget https://github.com/prometheus/pushgateway/releases/download/v$VERSION/pushgateway-$VERSION.linux-amd64.tar.gz \
+&& tar xf pushgateway-$VERSION.linux-amd64.tar.gz \
+&& mv pushgateway-$VERSION.linux-amd64/pushgateway /bin \
+&& rm -rf pushgateway-$VERSION.linux-amd64.tar.gz pushgateway-$VERSION.linux-amd64
+
 EXPOSE 9091
 RUN mkdir -p /pushgateway && chown nobody:nobody /pushgateway
 WORKDIR /pushgateway
