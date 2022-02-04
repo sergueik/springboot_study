@@ -7,8 +7,8 @@
   <version>2.4.4</version>
   <name>SpringHibernateExample</name>
   <properties>
-	  <!--    <finalName>${FINAL_NAME}</finalName> -->
-            <finalName>demo</finalName>
+    <!--    <finalName>${FINAL_NAME}</finalName> -->
+    <finalName>demo</finalName>
     <springframework.version>4.0.6.RELEASE</springframework.version>
     <hibernate.version>4.3.6.Final</hibernate.version>
     <spring-jdbc.version>4.3.10.RELEASE</spring-jdbc.version>
@@ -16,11 +16,11 @@
     <joda-time.version>2.3</joda-time.version>
     <testng.version>6.9.4</testng.version>
     <mockito.version>1.10.19</mockito.version>
-    <h2.version>1.4.187</h2.version>
+    <h2.version>2.1.210</h2.version>
     <dbunit.version>2.2</dbunit.version>
-    <java.version>1.7</java.version>
+    <java.version>1.8</java.version>
     <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
-    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>    
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     <tomcat7-maven-plugin.version>2.2</tomcat7-maven-plugin.version>
   </properties>
   <dependencies>
@@ -29,12 +29,11 @@
       <artifactId>hibernate-core</artifactId>
       <version>5.0.12.Final</version>
     </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-ehcache</artifactId>
-        <version>5.0.12.Final</version>
-      </dependency>
-
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-ehcache</artifactId>
+      <version>5.0.12.Final</version>
+    </dependency>
     <!-- Spring -->
     <dependency>
       <groupId>org.springframework</groupId>
