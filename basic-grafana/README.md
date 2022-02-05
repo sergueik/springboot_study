@@ -49,13 +49,39 @@ mvn spring-boot:run
 ```sh
 ip address show docker0
 ```
-*  confirm that the data source is OK:
+this will show something like
+
+```text
+3: docker0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
+    link/ether 02:42:4d:f1:51:2e brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+```
+*  confirm that the data source is visible from grafana `$IMAGE` container:
 ```sh
 docker exec -it $IMAGE  curl -XGET http://172.17.0.1:5000/
 ```
+will reply
 ```sh
 OK
 ```
+alternatively can try use `host.docker.internal` predefined hostname:
+```sh
+docker exec -it $IMAGE  curl -XGET http://host.docker.internal:5000/
+```
+it is [not guaranteed to work](https://github.com/docker/for-mac/issues/2965)
+
+```text
+nslookup: can't resolve 'host.docker.internal': Name does not resolve
+```
+in fact it may fail with older versions of Ubuntu - too recent versions of Docker required to install to have this feature working.
+
+alternatively one can extract the external ip address of the host 
+
+```sh
+IP=$(ip -4 route list match 0/0 | awk '{print $3}')
+```
+
 * add datasource in the browser and configure __Simple JSON__ datasource to use that url `http://172.17.0.1:5000`
 * alternatively if `docker-compose.yaml` is used add the setting:
 ```yaml
@@ -228,6 +254,9 @@ curl -s -X POST  -H "Content-Type: application/json" http://localhost:5000/searc
   * basic implementation of [SimpleJSON REST server](https://github.com/IsmetKh/grafana-simplejson-datasource) - has ASP.Net dependencies , can be used to prototype `/query`, `/search`,`/annotations`, `/tag-keys`, `tag-alues` payloads then using some prototype ASP.Net clean [REST famework](https://github.com/sachabarber/REST/tree/master/RESTServer/RESTServer) also discussed in [codeproject article](https://www.codeproject.com/Articles/826383/REST-A-Simple-REST-framework)
   * [populating Spring @Value during Unit Test](https://newbedev.com/populating-spring-value-during-unit-test)
   * another [snippet](https://gist.github.com/danlangford/3418696) od dealing with @Value annotations in test runner
+
+   * [discussion](https://stackoverflow.com/questions/48546124/what-is-linux-equivalent-of-host-docker-internal/61001152) about the linux equivalent of "host.docker.internal"
+
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
