@@ -10,14 +10,51 @@ Curious case of failing unit tests
 ```sh
 mvn -Dmaven.test.skip=true clean package
 ```
-
+ * get request, HTML
 ```sh
-java -jar target/example.java-curl.jar -k https://httpbin.org/json
+java -jar target/example.java-curl.jar -k https://httpbin.org/html
 ```
 ```text
 [ERR] [2022-02-04 20:02:32.069] Load default trust manager
 [ERR] [2022-02-04 20:02:32.987] Skip TLS validation
 ```
+```html
+
+[ERR] [2022-02-05 02:24:26.325] Load default trust manager
+[ERR] [2022-02-05 02:24:26.928] Skip TLS validation
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+      <h1>Herman Melville - Moby-Dick</h1>
+
+      <div>
+Availing himself of the mild, summer-cool weather ...
+```
+this can be processed with Powershell:
+```powerhell
+$rawresult = invoke-expression -command "java.exe -jar target\example.java-curl.jar -k https://httpbin.org/html"
+
+[xml]$result_object = ( $rawresult -join '')
+write-output $result_object.html.body.h1
+```
+```text
+Herman Melville - Moby-Dick div
+```
+or
+```powershell
+write-output $result_object.html.body.selectNodes('//h1[1]').'#text'
+```
+```text
+Herman Melville - Moby-Dick
+```
+* get request returning JSON:
+```sh
+java -jar target/example.java-curl.jar -k https://httpbin.org/json
+```
+
+
 ```json
 {
   "slideshow": {
@@ -40,6 +77,12 @@ java -jar target/example.java-curl.jar -k https://httpbin.org/json
     "title": "Sample Slide Show"
   }
 }
+```
+* this can be processed by `jq`:
+```sh
+java -jar target/example.java-curl.jar -k https://httpbin.org/json| jq '.slideshow.title'
+```
+"Sample Slide Show"
 ```
 * post
 ```sh
