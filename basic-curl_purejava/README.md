@@ -151,6 +151,25 @@ java -jar target/example.java-curl.jar -F hello=world -F foo=bar -F data=@a.txt 
 }
 ```
 
+* run in verbose mode
+
+```sh
+java -jar target/example.java-curl.jar -k https://httpbin.org/html --verbose --head
+```
+```text
+[ERR] [2022-02-04 22:49:44.993] Load default trust manager
+[ERR] [2022-02-04 22:49:45.681] Prepare open connection - URL.openConnection()
+[ERR] [2022-02-04 22:49:45.886] Done prepare open connection
+[ERR] [2022-02-04 22:49:45.889] Skip TLS validation
+[ERR] [2022-02-04 22:49:45.891] Prepare headers
+[ERR] [2022-02-04 22:49:45.894] Done preparing headers
+[ERR] [2022-02-04 22:49:45.898] Get HTTP Response Code.
+[ERR] [2022-02-04 22:49:47.536] Set response code: 200
+[ERR] [2022-02-04 22:49:47.542] HTTP Response Code: 200
+[ERR] [2022-02-04 22:49:47.543] Getting input stream
+[ERR] [2022-02-04 22:49:47.545] Start reading output
+[ERR] [2022-02-04 22:49:47.547] Done reading output
+```
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

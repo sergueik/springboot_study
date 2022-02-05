@@ -21,8 +21,7 @@ import java.text.DateFormat;
  * * To use HTTPS Proxy Authorization, due to the HTTPS tunnel BASIC authentication has been disabled by default since JDK8u111, you may need to add "-Djdk.http.auth.tunneling.disabledSchemes=" in JVM argument
  * * To add JVM arguments In TOMCAT, modify catalina.bat/catalina.sh
  */
-@SuppressWarnings({ "rawtypes", "unchecked", "serial", "UnusedReturnValue",
-		"WeakerAccess", "unused", "JavaDoc" })
+@SuppressWarnings({ "rawtypes", "unchecked", "serial", "javadoc" })
 public final class CUrl {
 	private static final String VERSION = "1.2.2";
 	private static final String DEFAULT_USER_AGENT = "Java-CURL version "
@@ -56,66 +55,95 @@ public final class CUrl {
 	}
 
 	private static final Map<String, Integer> optMap = Util.mapPut(
-			new LinkedHashMap<String, Integer>(), "-E", 32, "--cert", 32, // <certificate[:password]>
-																																		// Client
-																																		// certificate
-																																		// file and
-																																		// password
-			"--compressed", 1, // Request compressed response (using deflate or gzip)
-			"--connect-timeout", 2, // SECONDS Maximum time allowed for connection
-			"-b", 3, "--cookie", 3, // STRING/FILE Read cookies from STRING/FILE (H)
-			"-c", 4, "--cookie-jar", 4, // FILE Write cookies to FILE after operation
-																	// (H)
-			"-d", 5, "--data", 5, // DATA HTTP POST data (H)
-			"--data-ascii", 5, // DATA HTTP POST ASCII data (H)
-			"--data-raw", 51, // DATA HTTP POST raw data (H)
-			"--data-binary", 52, // DATA HTTP POST binary data (H)
-			"--data-urlencode", 53, // DATA HTTP POST data url encoded (H)
-			"-D", 6, "--dump-header", 6, // FILE Write the headers to FILE
-			"-F", 7, "--form", 7, // CONTENT Specify HTTP multipart POST data (H)
-			"--form-string", 71, // STRING Specify HTTP multipart POST data (H)
-			"-G", 8, "--get", 8, // Send the -d data with a HTTP GET (H)
-			"-H", 10, "--header", 10, // LINE Pass custom header LINE to server (H)
-			"-I", 11, "--head", 11, // Show document info only
-			// "--ignore-content-length", 12, // Ignore the HTTP Content-Length header
-			"-k", 31, "--insecure", 31, // Allow insecure server connections when
-																	// using SSL
-			"-L", 13, "--location", 13, // Follow redirects (H)
-			"-m", 14, "--max-time", 14, // SECONDS Maximum time allowed for the
-																	// transfer
-			// "--no-keepalive", 15, // Disable keepalive use on the connection
-			"-o", 16, "--output", 16, // FILE Write to FILE instead of stdout
-			"-x", 17, "--proxy", 17, // [PROTOCOL://]HOST[:PORT] Use proxy on given
-																// port
-			"-U", 18, "--proxy-user", 18, // USER[:PASSWORD] Proxy user and password
-			"-e", 19, "--referer", 19, // Referer URL (H)
-			"--retry", 20, // NUM Retry request NUM times if transient problems occur
-			"--retry-delay", 21, // SECONDS Wait SECONDS between retries
-			"--retry-max-time", 22, // SECONDS Retry only within this period
-			"-s", 23, "--silent", 23, // Silent mode (don't output anything)
-			"--stderr", 24, // FILE Where to redirect stderr (use "-" for stdout)
-			"-u", 28, "--user", 28, // USER[:PASSWORD] Server user and password
-			"--url", 25, // URL URL to work with
-			"-A", 26, "--user-agent", 26, // STRING Send User-Agent STRING to server
-																		// (H)
-			"-X", 27, "--request", 27, // COMMAND Specify request command to use
-			"--x-max-download", 29, // BYTES Maximum bytes allowed for the download
-			"--x-tags", 30, // DATA extra key-value pairs, storage only
-			"--verbose", 33, // Verbose
-			"-v", 33, // Verbose
-			"", 0 // placeholder
-	);
+			new LinkedHashMap<String, Integer>(),
+			// <certificate[:password]> Client certificate file and password
+			"-E", 32, "--cert", 32,
+			// Request compressed response (using deflate or gzip)
+			"--compressed", 1,
+			// SECONDS Maximum time allowed for connection
+			"--connect-timeout", 2,
+			// STRING/FILE Read cookies from STRING/FILE (H)
+			"-b", 3, "--cookie", 3,
+			// FILE Write cookies to FILE after operation (H)
+			"-c", 4, "--cookie-jar", 4,
+			// DATA HTTP POST data (H)
+			"-d", 5, "--data", 5,
+			// DATA HTTP POST ASCII data (H)
+			"--data-ascii", 5,
+			// raw data for HTTP POST (H)
+			"--data-raw", 51,
+			// DATA HTTP POST binary data (H)
+			"--data-binary", 52,
+			// DATA HTTP POST data url encoded (H)
+			"--data-urlencode", 53,
+			// Filename to Write the headers into
+			"-D", 6, "--dump-header", 6,
+			// CONTENT Specify HTTP multipart POST data (H)
+			"-F", 7, "--form", 7,
+			// STRING Specify HTTP multipart POST data (H)
+			"--form-string", 71,
+			// Send the -d data with a HTTP GET (H)
+			"-G", 8, "--get", 8,
+			// LINE Pass custom header LINE to server (H)
+			"-H", 10, "--header", 10,
+			// Show document info only
+			"-I", 11, "--head", 11,
+			// Ignore the HTTP Content-Length header
+			"--ignore-content-length", 12,
+			// Allow insecure server connections when using SSL
+			"-k", 31, "--insecure", 31,
+			// Follow redirects (H)
+			"-L", 13, "--location", 13,
+			// SECONDS Maximum time allowed for the transfer
+			"-m", 14, "--max-time", 14,
+			// Disable keepalive use on the connection
+			"--no-keepalive", 15,
+			// FILE Write to FILE instead of stdout.
+			// Can specify -o NUL on Windows and
+			// -o /dev/null on Unix
+			"-o", 16, "--output", 16,
+			// [PROTOCOL://]HOST[:PORT] Use proxy on given host, port
+			"-x", 17, "--proxy", 17,
+			// USER[:PASSWORD] Proxy user and password
+			"-U", 18, "--proxy-user", 18,
+			// Referer URL (H)
+			"-e", 19, "--referer", 19,
+			// NUM Retry request NUM times if transient problems occur
+			"--retry", 20,
+			// SECONDS Wait SECONDS between retries
+			"--retry-delay", 21,
+			// SECONDS Retry only within this period
+			"--retry-max-time", 22,
+			// Silent mode (don't output anything)
+			"-s", 23, "--silent", 23,
+			// FILE Where to redirect stderr (use "-" for stdout)
+			"--stderr", 24,
+			// USER[:PASSWORD] Server user and password (basic auth)
+			"-u", 28, "--user", 28,
+			// URL to work with
+			"--url", 25,
+			// User-Agent header to send to server
+			"-A", 26, "--user-agent", 26,
+			// Specify request command to use
+			"-X", 27, "--request", 27,
+			// BYTES Maximum bytes allowed for the download
+			"--x-max-download", 29,
+			// DATA extra key-value pairs, storage only
+			"--x-tags", 30,
+			// Verbose
+			"--verbose", 33, "-v", 33,
+			// placeholder
+			"", 0);
 
 	private static final String BOUNDARY = "------------aia113jBkadk7289";
 	private static final byte[] NEWLINE = "\r\n".getBytes();
 
-	private final List<String> options = new ArrayList<String>();
-	private final Map<String, IO> iomap = new HashMap<String, IO>();
-	private final Map<String, String> tags = new LinkedHashMap<String, String>();
-	private final Map<String, String> headers = new LinkedHashMap<String, String>();
-	private final List<List<String[]>> responseHeaders = new ArrayList<List<String[]>>(
-			4);
-	private final List<URL> locations = new ArrayList<URL>(4);
+	private final List<String> options = new ArrayList<>();
+	private final Map<String, IO> iomap = new HashMap<>();
+	private final Map<String, String> tags = new LinkedHashMap<>();
+	private final Map<String, String> headers = new LinkedHashMap<>();
+	private final List<List<String[]>> responseHeaders = new ArrayList<>(4);
+	private final List<URL> locations = new ArrayList<>(4);
 	private long startTime;
 	private long execTime;
 	private int httpCode;
@@ -142,6 +170,7 @@ public final class CUrl {
 		return this;
 	}
 
+	// intend to allow method chaining
 	public final CUrl url(String url) {
 		return opt("--url", url);
 	}
@@ -228,18 +257,17 @@ public final class CUrl {
 
 	/**
 	 * Add post data. The data among multiple calls will be joined with '&amp;'
-	 * @param data 如果data以'@'开头且raw=false，则后面部分作为文件名，数据由该文件读入
-	 * @param raw 如为真则不对'@'做特殊处理
+	 * @param data processed the leading '@' and raw=false, the rest is considered the file name to load
+	 * @param raw true, do not do interpret the "@" as file resorce 
 	 */
 	public final CUrl data(String data, boolean raw) {
 		return opt(raw ? "--data-raw" : "-d", data);
 	}
 
 	/**
-	 * 从input中读取数据作为post数据
-	 * Read data from input and use as post data
+	 * read data from input stream 
 	 * @param input
-	 * @param binary 如为真则读取数据中的回车换行符会保留，否则会被删除
+	 * @param binary preserve carriage return and line feed in the data 
 	 */
 	public final CUrl data(IO input, boolean binary) {
 		String key;
@@ -620,6 +648,7 @@ public final class CUrl {
 		locations.clear();
 		execTime = 0;
 		httpCode = -1;
+		// NOTE: not aways set
 		rawStdout = null;
 		Proxy proxy = Proxy.NO_PROXY;
 		String url = null, redirect = null, method = null, cookie = null,
@@ -647,18 +676,24 @@ public final class CUrl {
 				opt = "--data-urlencode";
 			}
 			switch (Util.mapGet(optMap, opt, -1)) {
-			case 32: // --cert <certificate[:password]> Client certificate file and
-								// password
+			// "--cert" <certificate[:password]>
+			// Client certificate file and password
+			case 32:
 				cert = options.get(++i);
 				break;
-			case 1: // --compressed Request compressed response (using deflate or
-							// gzip)
+			// "--compressed"
+			// Request compressed response, using deflate or gzip
+			case 1:
 				headers.put("Accept-Encoding", "gzip, deflate");
 				break;
-			case 2: // --connect-timeout SECONDS Maximum time allowed for connection
+			// --connect-timeout SECONDS
+			// Maximum time allowed for connection
+			case 2:
 				connectTimeout = Float.parseFloat(options.get(++i));
 				break;
-			case 3: // --cookie STRING/FILE Read cookies from STRING/FILE (H)
+			// --cookie STRING/FILE
+			// Read cookies from STRING/FILE (H)
+			case 3:
 				cookie = options.get(++i);
 				break;
 			case 4: // --cookie-jar FILE Write cookies to FILE after operation (H)
@@ -722,6 +757,7 @@ public final class CUrl {
 				break;
 			case 6: // --dump-header FILE Write the headers to FILE
 				dumpHeader = getIO(options.get(++i));
+
 				break;
 			case 7: // --form CONTENT Specify HTTP multipart POST data (H)
 				data = options.get(++i);
@@ -734,7 +770,9 @@ public final class CUrl {
 					form.put(pair[0], new Util.Ref<String>(pair[1]));
 				}
 				break;
-			case 8: // --get Send the -d data with a HTTP GET (H)
+			// --get
+			// Send the -d data with a HTTP GET (H)
+			case 8:
 				method = "GET";
 				break;
 			case 10: // --header LINE Pass custom header LINE to server (H)
@@ -892,7 +930,7 @@ public final class CUrl {
 					responseHeaders.add(new ArrayList<String[]>());
 				}
 				if (verbose) {
-					Util.logStderr("Prepare open connection - URL.openConnection()");
+					Util.logStderr("Prepare open connection");
 				}
 				HttpURLConnection con = (HttpURLConnection) urlObj
 						.openConnection(proxy);
@@ -998,15 +1036,44 @@ public final class CUrl {
 							Util.logStderr("Done sending data");
 						}
 					} catch (Exception ex) { // connect timeout
+						if (verbose) {
+							// exception handler
+
+							// the following walks the stack, useful to discover the caller
+							// https://stackoverflow.com/questions/4065518/java-how-to-get-the-caller-function-name/46590924
+							// https://toster.ru/q/684867
+
+							for (StackTraceElement stackTrace : ex.getStackTrace()) {
+								Util.logStderr(String.format("Adding stack trace: %s",
+										stackTrace.toString()));
+
+							}
+							for (StackTraceElement stackTraceElement : Thread.currentThread()
+									.getStackTrace()) {
+								Util.logStderr(String.format("Adding stack trace element: %s",
+										stackTraceElement.toString()));
+							}
+
+							Util.logStderr("processing exception: " + ex.toString()
+									+ ex.getStackTrace().toString());
+						}
 						throw new Recoverable(ex, -1);
 					}
 				}
 				redirect = null;
+				// NOTE: is response code tried TOO early ?
 				if (verbose) {
-					Util.logStderr(
-							"Get HTTP Response Code - HttpURLConnection.getResponseCode()");
+					Util.logStderr("Get HTTP Response Code.");
 				}
-				httpCode = con.getResponseCode();
+				try {
+					httpCode = con.getResponseCode();
+				} catch (Exception e) {
+					Util.logStderr("ignoring exception while getting HTTP Response Code: "
+							+ e.toString());
+				}
+				// not reached
+				if (verbose) {
+				}
 				if (httpCode >= 300 && httpCode < 400)
 					redirect = con.getHeaderField("Location");
 				if (verbose) {
@@ -1410,7 +1477,7 @@ public final class CUrl {
 		 * @return
 		 */
 		public Map<String, String> parseDumpedHeader() {
-			Map<String, String> result = new LinkedHashMap<String, String>();
+			Map<String, String> result = new LinkedHashMap<>();
 			String s = Util.b2s(this.toByteArray(), null, null);
 			for (String l : s.split("[\r\n]+")) {
 				if (l.trim().length() == 0)
@@ -1446,7 +1513,7 @@ public final class CUrl {
 		protected final Map<String, List<HttpCookie>> cookiesMap;
 
 		public CookieIO() {
-			cookiesMap = new HashMap<String, List<HttpCookie>>();
+			cookiesMap = new HashMap<>();
 		}
 
 		protected Map<String, List<HttpCookie>> getCookiesMap() {
@@ -1486,7 +1553,7 @@ public final class CUrl {
 
 		@Override
 		public List<HttpCookie> getCookies() {
-			List<HttpCookie> result = new ArrayList<HttpCookie>();
+			List<HttpCookie> result = new ArrayList<>();
 			for (List<HttpCookie> cc : getCookiesMap().values()) {
 				for (ListIterator<HttpCookie> it = cc.listIterator(); it.hasNext();)
 					if (it.next().hasExpired())
@@ -1498,7 +1565,7 @@ public final class CUrl {
 
 		@Override
 		public List<URI> getURIs() {
-			Set<URI> result = new HashSet<URI>();
+			Set<URI> result = new HashSet<>();
 			for (HttpCookie cookie : getCookies()) {
 				String scheme = cookie.getSecure() ? "https" : "http";
 				String domain = cookie.getDomain();
@@ -1579,9 +1646,7 @@ public final class CUrl {
 		}
 	}
 
-	@SuppressWarnings({ "WeakerAccess", "JavaDoc", "ConstantConditions",
-			"ResultOfMethodCallIgnored", "StatementWithEmptyBody",
-			"UnusedReturnValue", "SuspiciousMethodCalls" })
+	@SuppressWarnings({ "javadoc" })
 	final static class Util {
 
 		public static boolean empty(String s) {
