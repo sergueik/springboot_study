@@ -1,4 +1,4 @@
-### Info
+#pm-elasticsearch## Info
 
 This directory contains standard Docker example of creating the container with
 specific non-root user `docker_user`, cloning the invoking user UID, mount that container user home directory as  writable volume mapped to project directory and launch the editor in docker
@@ -13,11 +13,11 @@ DOCKER_USER=docker_user
 TAG=basic_user
 sed -i "s|UID=[0-9][0-9]*|UID=$UID|g" Dockerfile
 docker build -t $TAG -f Dockerfile .
-docker run -u $UID -it -v $(pwd):/home/$DOCKER_USER:rw $TAG
+docker run -u $DOCKER_USER -it -v $(pwd):/home/$DOCKER_USER:rw $TAG
 ```
-alternatively provide `UID` arguments when run the container:
+alternatively provide arguments
 ```sh
-docker run -it -e UID -e GID=$(echo $GROUPS | cut -f 1 -d ' ') -v $(pwd):/home/$DOCKER_USER:rw $TAG
+docker run -it -e UID -e GID=$(id -G| cut -f 1 -d ' ')  -u $DOCKER_USER -v $(pwd):/home/$DOCKER_USER:rw $TAG
 ```
 
 
@@ -41,14 +41,29 @@ in a sibling shell inspect the home directory of the default user:
 ```sh
 docker exec -it $(docker container ls | grep "$TAG" | cut -f 1 -d' ') sh
 ```
+alternatively change the entrypoint and run another container:
+```sh
+docker run -it -e UID -e GID=$(id -G| cut -f 1 -d ' ')  -u $DOCKER_USER -v $(pwd):/home/$DOCKER_USER:rw --entrypoint sh $TAG
+```
+### Docker Compose
+
+* build
 ```sh
 export COMPOSE_HTTP_TIMEOUT=600
 docker-compose build
 ```
+* run
 ```sh
 docker-compose run user-nano
 ```
+
+Note, after the file is saved it does not appear to be visible, 
+
 ### Cleanup
+
+```sh
+docker-compose rm -f user-nano
+```
 ```sh
 docker container rm $(docker container ls -a | grep "$TAG" | cut -f 1 -d' ')
 docker container prune -f

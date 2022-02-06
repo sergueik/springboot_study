@@ -8,11 +8,13 @@ ENV EDITOR=nano
 
 ARG USER_NAME=docker_user
 ARG GROUP_NAME=docker_user
-RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && apk update && apk add --no-cache $EDITOR shadow
-RUN addgroup -S $GROUP_NAME && \
-RUN adduser -h /home/$USER_NAME -u $UID -s /bin/sh -D -G $GROUP_NAME $USER_NAME && \
-  mkdir -p /home/$USER_NAME && chown -R $USER_NAME:$GROUP_NAME /home/$USER_NAME
+RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && apk update && apk add --no-cache $EDITOR
+RUN getent group $GROUP_NAME >/dev/null || addgroup -S $GROUP_NAME
+# solving
+RUN getent passwd $UID || adduser -h /home/$USER_NAME -u $UID -s /bin/sh -D -G $GROUP_NAME $USER_NAME 
+RUN mkdir -p /home/$USER_NAME && chown -R $USER_NAME:$GROUP_NAME /home/$USER_NAME
 
+# NOTE: There sppears no need to specify USER through Dockerfile
 USER $USER_NAME
 # NOTE: There is no need to specify VOLUME through Dockerfile, except for documenting the project
 VOLUME /home/$USER_NAME
