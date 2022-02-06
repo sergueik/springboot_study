@@ -124,7 +124,7 @@ public final class CUrl {
 			"--url", 25,
 			// User-Agent header to send to server
 			"-A", 26, "--user-agent", 26,
-			// Specify request command to use
+			// Specify request method
 			"-X", 27, "--request", 27,
 			// BYTES Maximum bytes allowed for the download
 			"--x-max-download", 29,
@@ -276,15 +276,14 @@ public final class CUrl {
 	}
 
 	/**
-	 * 添加urlencode的post数据
 	 * Add URL-encoded post data
-	 * @param data, 语法如下/syntax:
-	 *  "content": 如content中不包含'=', '@'，则直接把整个content作为数据整体进行urlencode
-	 *  "=content": '='后面的content整体进行urlencode，不处理特殊字符，第一个'='不包含在数据内容中
-	 *  "name1=value1[&amp;name2=value2...]": 按照'&amp;'拆分后，对每个值进行urlencode，注意键不进行处理
-	 *  "@filename": '@'后面的部分作为文件名，从文件中读取内容并进行urlencode，回车换行保留
-	 *  "name@filename": 读取'@'后面的文件内容作为值进行urlencode，并以name为键
-	 * @param charset urlencode使用的字符集，如为null则默认使用"UTF-8"
+	 * @param data, syntax is
+	 *  "content": If the content does not contain '=' or '@', the entire content will be urlencoded
+	 *  "=content": '='content is urlencoded as a whole, special characters are not processed, and the first '=' is not included
+	 *  "name1=value1[&amp;name2=value2...]": After splitting by '&amp;'s, urlencode each value, keys remain unchanged
+	 *  "@filename": '@' file content is read from and urlencode is performed, carriage return and line feed are preserved
+	 *  "name@filename": Read the filename contents as value for name as key
+	 * @param charset encoding to convert to, default is UTF-8 
 	 */
 	public final CUrl data(String data, String charset) {
 		return opt("--data-urlencode" + (charset != null ? "-" + charset : ""),
@@ -292,21 +291,20 @@ public final class CUrl {
 	}
 
 	/**
-	 * 发起post文件上传，添加一个表单项
 	 * Issue a form based upload and add a form item
-	 * @param name 表单项名
-	 * @param content 如首字母为'@'或'&lt;'则从指定的文件读取数据进行上传。
-	 *  '@'和'&lt;'的区别在于，'@'的文件内容作为文件附件上传，'&lt;'的文件内容作为普通表单项
+	 * @param name key
+	 * @param content if first letter is '@' or '&lt;', the parameter is processed as filename as described below
+	 * when '@' is used , the file content is uploaded as a file attachment
+	 * when '&lt;' is used, the file content of becomes  a normal form input value
 	 */
 	public final CUrl form(String name, String content) {
 		return opt("-F", name + "=" + content);
 	}
 
 	/**
-	 * 发起post文件上传，添加一个文件上传的表单项
 	 * Issue a form based upload and add a file item
-	 * @param name 表单项名
-	 * @param input 上传的数据IO
+	 * @param name key
+	 * @param input stream to load
 	 */
 	public final CUrl form(String name, IO input) {
 		String key;
@@ -315,26 +313,24 @@ public final class CUrl {
 	}
 
 	/**
-	 * 发起post文件上传，添加1~N个非文件表单项，注意此方法不对'@'进行特殊处理
-	 * @param formString 语法为"name1=value1[&amp;name2=value2...]"
+	 * this method does not perform special processing on '@'
+	 * @param formString expression in the form "name1=value1[&amp;name2=value2...]"
 	 */
 	public final CUrl form(String formString) {
 		return opt("--form-string", formString);
 	}
 
 	/**
-	 * 输出Cookie到给定的文件
 	 * Output Cookie to given file path
-	 * @param output 文件路径，使用'-'表示输出到标准输出。默认不输出
+	 * @param output File path, use '-' to output to standard output. No output is default
 	 */
 	public final CUrl cookieJar(String output) {
 		return opt("-c", output);
 	}
 
 	/**
-	 * 输出Cookie到给定的数据IO
 	 * Output Cookie to given IO object
-	 * @param output 数据IO，注意cookieJar的输出会清除output中的原有内容
+	 * @param output Data IO, note that the original content will be cleared
 	 */
 	public final CUrl cookieJar(IO output) {
 		String key;
@@ -343,19 +339,17 @@ public final class CUrl {
 	}
 
 	/**
-	 * 添加请求Cookie
 	 * Add custom Cookies in request
-	 * @param input 格式为"NAME1=VALUE1; NAME2=VALUE2"的Cookie键值对。
-	 *  如字串中不包含'='则作为输入文件名；
-	 *  如传入空字符串则仅清空当前线程的Cookie
-	 */
+	 * @param input in the form "NAME1=VALUE1; NAME2=VALUE2" 
+	 * If the string does not contain '=', it will be used as the input file name;
+	 * If an empty string is passed in, only the Cookie of the current thread will be cleared	 
+	 * */
 	public final CUrl cookie(String input) {
 		return opt("-b", input);
 	}
 
 	/**
-	 * 读取数据IO并添加请求Cookie。
-	 * 注意CUrl会自动为同一线程内的多次请求维持Cookie
+	 * Read data IO and add request cookies.	 
 	 * @param input
 	 * @return
 	 */
@@ -366,16 +360,15 @@ public final class CUrl {
 	}
 
 	/**
-	 * 倾印原始响应头到给定的文件
 	 * Dump raw response headers to specified file path
-	 * @param output 输出文件的路径，使用'-'表示输出到标准输出。默认不输出。
+	 * @param output path to the output file, use '-' for standard output. No output by default.
 	 */
 	public final CUrl dumpHeader(String output) {
 		return opt("-D", output);
 	}
 
 	/**
-	 * 倾印原始响应头到给定的数据IO
+	 * Dump raw response headers to given data IO
 	 * @param output
 	 */
 	public final CUrl dumpHeader(IO output) {
@@ -391,17 +384,15 @@ public final class CUrl {
 	}
 
 	/**
-	 * 重定向标准错误输出到给定的文件
-	 * Redirect stderr to specified file path, use '-' for stdout
-	 * @param output 输出文件路径。使用'-'表示输出到标准输出。默认输出到标准输出。
+	 * Redirect standard error to the specified file path, use '-' for stdout
 	 */
 	public final CUrl stderr(String output) {
-		return opt("--stderr", output); // output can be an
-																		// OutputStream/File/path_to_file
+		// output can be an OutputStream, File, filepath String
+		return opt("--stderr", output);
 	}
 
 	/**
-	 * 重定向标准错误输出到给定的数据IO
+	 * Redirect standard error output to the given data IO
 	 * @param output
 	 */
 	public final CUrl stderr(IO output) {
@@ -411,16 +402,16 @@ public final class CUrl {
 	}
 
 	/**
-	 * 输出应答数据到给定文件。注意标准输出默认即为exec方法的返回值。
 	 * Output response data to specified fila path
-	 * @param output 输出文件路径。使用'-'表示输出到标准输出。默认输出到标准输出。
+	 * Note that the standard output defaults to the return value of the exec method.
+	 * @param output Output file path. Use '-' to indicate output to standard output (the default)
 	 */
 	public final CUrl output(String output) {
 		return opt("-o", output); // output can be an OutputStream/File/path_to_file
 	}
 
 	/**
-	 * 输出应答数据到给定数据IO
+	 * Output response data to given data IO
 	 * @param output
 	 */
 	public final CUrl output(IO output) {
@@ -430,7 +421,7 @@ public final class CUrl {
 	}
 
 	/**
-	 * 添加一个数据IO，可作为数据输入或数据输出，在--data等参数值中引用
+	 * Add a data IO, which can be used as data input or data output, referenced in parameter values such as --data
 	 * @param key
 	 * @param io
 	 * @return
@@ -615,30 +606,30 @@ public final class CUrl {
 	}
 
 	/**
-	 * 解析参数，执行请求，并将标准输出以给定的encoding解码为字符串
-	 * Parse options and execute the request。Decode the raw response to String with given character-encoding
-	 * @param encoding，如传入null则默认使用"UTF-8"
-	 * @return 标准输出数据，以encoding编码为字符串
+	 * Parse the parameters, execute the request, and decode the standard output 
+	 * to a string with the requested encoding
+	 * @param encoding. default is UTF-8
+	 * @return byte convertred to string of encoding
 	 */
 	public final String exec(String encoding) {
 		return exec(encoding != null ? new ToStringResolver(encoding) : UTF8, null);
 	}
 
 	/**
-	 * 解析参数，执行请求，返回原始字节数组
-	 * Parse options and execute the request, return raw response.
-	 * @return 标准输出数据
+	 * Parse the parameters, execute the request, and return a raw byte array
+	 * @return output data
 	 */
 	public final byte[] exec() {
 		return exec(RAW, null);
 	}
 
 	/**
-	 * 解析参数并执行请求
-	 * 默认仅包含应答数据。指定"--silent"参数则不输出。
-	 * @param resolver 输出解析器
-	 * @param fallback 默认返回值
-	 * @return 将标准输出中的数据使用解析器转换为对象。如失败，则返回fallback
+	 * Parse the parameters and execute the request
+	 * By default only response data is included. 
+	 * Specify the "--silent" parameter to not output.	 
+	 * @param resolver output parser
+	 * @param fallback Default return value
+	 * @return Convert data from standard output to an object using a parser. If it fails, return the fallback
 	 */
 	public final <T> T exec(Resolver<T> resolver, T fallback) {
 		startTime = System.currentTimeMillis();
@@ -676,13 +667,11 @@ public final class CUrl {
 				opt = "--data-urlencode";
 			}
 			switch (Util.mapGet(optMap, opt, -1)) {
-			// "--cert" <certificate[:password]>
-			// Client certificate file and password
+			// --cert <certificate[:password]> Client certificate file and password
 			case 32:
 				cert = options.get(++i);
 				break;
-			// "--compressed"
-			// Request compressed response, using deflate or gzip
+			// --compressed - Request compressed response, using deflate or gzip
 			case 1:
 				headers.put("Accept-Encoding", "gzip, deflate");
 				break;
@@ -696,10 +685,12 @@ public final class CUrl {
 			case 3:
 				cookie = options.get(++i);
 				break;
-			case 4: // --cookie-jar FILE Write cookies to FILE after operation (H)
+			// --cookie-jar FILE Write cookies to FILE after operation (H)
+			case 4:
 				cookieJar = getIO(options.get(++i));
 				break;
-			case 5: // --data DATA HTTP POST data (H)
+			// --data DATA HTTP POST data (H)
+			case 5:
 				String data = options.get(++i);
 				if (data.startsWith("@"))
 					data = Util.b2s(readInput(getIO(data.substring(1))), null, null)
@@ -707,23 +698,27 @@ public final class CUrl {
 				mergeData = dataSb.length() > 0;
 				dataSb.append(mergeData ? "&" : "").append(data);
 				break;
-			case 51: // --data-raw DATA not handle "@"
+			// --data-raw DATA not handle "@"
+			case 51:
 				mergeData = dataSb.length() > 0;
 				dataSb.append(mergeData ? "&" : "").append(options.get(++i));
 				break;
-			case 52: // --data-binary DATA not stripping CR/LF
+			// --data-binary DATA not stripping CR/LF
+			case 52:
 				data = options.get(++i);
 				if (data.startsWith("@"))
 					data = Util.b2s(readInput(getIO(data.substring(1))), null, null);
 				mergeData = dataSb.length() > 0;
 				dataSb.append(mergeData ? "&" : "").append(data);
 				break;
-			case 53: // --data-urlencode
+			// --data-urlencode
+			case 53:
 				mergeData = dataSb.length() > 0;
 				data = options.get(++i);
 				int idx, atIdx;
 				switch (idx = data.indexOf("=")) {
-				case -1: // no '='
+				// no equal sign '=' found
+				case -1:
 					if ((atIdx = data.indexOf("@")) >= 0) { // [name]@filename
 						String prefix = atIdx > 0 ? data.substring(0, atIdx) + "=" : "";
 						try {
@@ -734,15 +729,18 @@ public final class CUrl {
 							lastEx = e;
 						}
 						break;
-					} // else fall through
-				case 0: // =content
+					}
+					// else fall through
+					// processing =content expression
+				case 0:
 					try {
 						data = URLEncoder.encode(data.substring(idx + 1), charset);
 					} catch (Exception e) {
 						lastEx = e;
 					}
 					break;
-				default: // name=content
+				// name=content
+				default:
 					Map<String, String> m = Util.split(data, "&", "=",
 							new LinkedHashMap<String, String>());
 					for (Map.Entry<String, String> en : m.entrySet()) {
@@ -755,17 +753,20 @@ public final class CUrl {
 				}
 				dataSb.append(mergeData ? "&" : "").append(data);
 				break;
-			case 6: // --dump-header FILE Write the headers to FILE
+			// --dump-header FILE Write the headers to FILE
+			case 6:
 				dumpHeader = getIO(options.get(++i));
 
 				break;
-			case 7: // --form CONTENT Specify HTTP multipart POST data (H)
+			// --form CONTENT Specify HTTP multipart POST data (H)
+			case 7:
 				data = options.get(++i);
 				idx = data.indexOf('=');
 				form.put(data.substring(0, idx),
 						new Util.Ref<String>(1, data.substring(idx + 1)));
 				break;
-			case 71: // --form-string STRING Specify HTTP multipart POST data (H)
+			// --form-string STRING Specify HTTP multipart POST data (H)
+			case 71:
 				for (String[] pair : Util.split(options.get(++i), "&", "=")) {
 					form.put(pair[0], new Util.Ref<String>(pair[1]));
 				}
@@ -775,43 +776,51 @@ public final class CUrl {
 			case 8:
 				method = "GET";
 				break;
-			case 10: // --header LINE Pass custom header LINE to server (H)
+			// --header LINE Pass custom header LINE to server (H)
+			case 10:
 				String[] hh = options.get(++i).split(":", 2);
 				String name = hh[0].trim();
 				if (hh.length == 1 && name.endsWith(";")) { // "X-Custom-Header;"
 					headers.put(name.substring(0, name.length() - 1), "");
 				} else if (hh.length == 1 || Util.empty(hh[1])) { // "Host:"
 					headers.remove(name);
-				} else { // "Host: baidu.com"
+				} else {
+					// "Host: baidu.com"
 					headers.put(name, hh[1].trim());
 				}
 				break;
-			case 11: // --head Show document info only
+			// --head Show document info only
+			case 11:
 				method = "HEAD";
 				break;
-			// case 12: // --ignore-content-length Ignore the HTTP Content-Length
-			// header
-			// ignoreContentLength = true;
-			// break;
+			// --ignore-content-length Ignore the HTTP Content-Length header
+			case 12:
+				//
+				// ignoreContentLength = true;
+				break;
 			case 13: // --location Follow redirects (H)
 				location = true;
 				break;
 			case 14: // --max-time SECONDS Maximum time allowed for the transfer
 				maxTime = Float.parseFloat(options.get(++i));
 				break;
-			// case 15: // --no-keepalive Disable keepalive use on the connection
-			// noKeepAlive = true;
-			// break;
-			case 16: // --output FILE Write to FILE instead of stdout
+			// --no-keepalive Disable keepalive use on the connection
+			case 15:
+				// noKeepAlive = true;
+				break;
+			// --output FILE Write to FILE instead of stdout
+			case 16:
 				output = getIO(options.get(++i));
 				break;
-			case 17: // --proxy [PROTOCOL://]HOST[:PORT] Use proxy on given port
+			// --proxy [PROTOCOL://]HOST[:PORT] Use proxy on given port
+			case 17:
 				String[] pp = options.get(++i).split(":");
 				InetSocketAddress addr = new InetSocketAddress(pp[0],
 						pp.length > 1 ? Integer.parseInt(pp[1]) : 1080);
 				proxy = new Proxy(Proxy.Type.HTTP, addr);
 				break;
-			case 18: // --proxy-user USER[:PASSWORD] Proxy user and password
+			// --proxy-user USER[:PASSWORD] Proxy user and password
+			case 18:
 				final String proxyAuth = options.get(++i);
 				headers.put("Proxy-Authorization",
 						"Basic " + Util.base64Encode(proxyAuth.getBytes()));
@@ -824,48 +833,61 @@ public final class CUrl {
 					}
 				});
 				break;
-			case 19: // --referer Referer URL (H)
+			// --referer Referer URL (H)
+			case 19:
 				headers.put("Referer", options.get(++i));
 				break;
-			case 20: // --retry NUM Retry request NUM times if transient problems
-								// occur
+			// --retry NUM Retry request NUM times if transient problems occur
+			case 20:
 				retry = Integer.parseInt(options.get(++i));
 				break;
-			case 21: // --retry-delay SECONDS Wait SECONDS between retries
+			// --retry-delay SECONDS Wait SECONDS between retries
+			case 21:
 				retryDelay = Float.parseFloat(options.get(++i));
 				break;
-			case 22: // --retry-max-time SECONDS Retry only within this period
+			// --retry-max-time SECONDS Retry only within this period
+			case 22:
 				retryMaxTime = Float.parseFloat(options.get(++i));
 				break;
-			case 23: // --silent Silent mode (don't output anything)
+			// --silent Silent mode (don't output anything)
+			case 23:
 				silent = true;
 				break;
-			case 24: // --stderr FILE Where to redirect stderr (use "-" for stdout)
+			// --stderr FILE Where to redirect stderr (use "-" for stdout)
+			case 24:
 				stderr = getIO(options.get(++i));
 				break;
-			case 25: // --url URL URL to work with
+			// --url URL URL to work with
+			case 25:
 				url = options.get(++i);
 				break;
-			case 26: // --user-agent STRING Send User-Agent STRING to server (H)
+			// --user-agent STRING Send User-Agent STRING to server (H)
+			case 26:
 				headers.put("User-Agent", options.get(++i));
 				break;
-			case 27: // --request COMMAND Specify request command to use
+			// --request COMMAND Specify request command to use
+			case 27:
 				method = options.get(++i);
 				break;
-			case 28: // -u, --user USER[:PASSWORD] Server user and password
+			// -u, --user USER[:PASSWORD] Server user and password
+			case 28:
 				headers.put("Authorization",
 						"Basic " + Util.base64Encode(options.get(++i).getBytes()));
 				break;
-			case 29: // --x-max-download BYTES Maximum bytes allowed for the download
+			// --x-max-download BYTES Maximum bytes allowed for the download
+			case 29:
 				maxDownload = Integer.parseInt(options.get(++i));
 				break;
-			case 30: // --x-tags DATA extra key-value pairs, storage only
+			// --x-tags DATA extra key-value pairs, storage only
+			case 30:
 				Util.split(options.get(++i), "&", "=", tags);
 				break;
-			case 31: //
+			// --insecure - Allow insecure server connections when using SSL
+			case 31:
 				insecure = true;
 				break;
-			case 33: //
+			// --verbose
+			case 33:
 				verbose = true;
 				break;
 			default:
@@ -899,7 +921,8 @@ public final class CUrl {
 		if (method == null)
 			method = "GET";
 		// if (!noKeepAlive) headers.put("Connection", "keep-alive");
-		if (cookie != null) { // --cookie '' will clear the CookieStore
+		// --cookie '' will clear the CookieStore
+		if (cookie != null) {
 			cookieStore.removeAll();
 			if (cookie.indexOf('=') > 0) {
 				parseCookies(url, cookie);
@@ -1148,7 +1171,6 @@ public final class CUrl {
 		return error(stdout, stderr, lastEx, silent, resolver, fallback);
 	}
 
-	/** 根据key获取对应IO，如果iomap中没有，则key作为文件路径创建一个FileIO  */
 	private IO getIO(String key) {
 		IO io;
 		return (io = iomap.get(key)) == null ? new FileIO(key) : io;
@@ -1188,9 +1210,11 @@ public final class CUrl {
 	private static void fillResponseHeaders(HttpURLConnection con,
 			List<String[]> headers) {
 		headers.clear();
-		Object responses = Util.getField(con, null, "responses", null, true); // sun.net.www.MessageHeader
-		if (responses == null) { // con is
-															// sun.net.www.protocol.https.HttpsURLConnectionImpl
+		// sun.net.www.MessageHeader
+		Object responses = Util.getField(con, null, "responses", null, true);
+
+		// con is sun.net.www.protocol.https.HttpsURLConnectionImpl
+		if (responses == null) {
 			Object delegate = Util.getField(con, null, "delegate", null, true);
 			if (delegate != null)
 				responses = Util.getField(delegate, null, "responses", null, true);
@@ -1230,7 +1254,7 @@ public final class CUrl {
 		writeOutput(dumpHeader, bos.toByteArray(), false);
 	}
 
-	/** 读取IO中的数据，如不适用或无数据则返回空数组 */
+	/** Read the data from IO into byte array, if not applicable or no data, return an empty array*/
 	private static byte[] readInput(IO in) {
 		InputStream is = in.getInputStream();
 		byte[] bb;
@@ -1240,7 +1264,7 @@ public final class CUrl {
 		return bb;
 	}
 
-	/** 把数据输出到IO，如不适用则直接返回。如append为true则向数据IO添加，否则覆盖。*/
+	/** Output data to IO, and return directly if not applicable */
 	private static void writeOutput(IO out, byte[] bb, boolean append) {
 		out.setAppend(append);
 		OutputStream os = out.getOutputStream();
@@ -1388,7 +1412,6 @@ public final class CUrl {
 		}
 	}
 
-	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public static final class FileIO implements IO {
 		private File f;
 		private transient InputStream is;
