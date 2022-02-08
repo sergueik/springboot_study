@@ -1,6 +1,6 @@
 ### Info
 
-Plain Alpine 3.9 container installing Perl and installing few pure Perl modules (YAML, XML and JSON) and a replica of [Net::Prometheus::Pushgateway](https://metacpan.org/release/VRAG/Net-Prometheus-Pushgateway-0.03) module with [HTTP::Request](https://metacpan.org/pod/HTTP::Request) replaced with [HTTP::Tiny](https://metacpan.org/pod/HTTP::Tiny) which is part of core Perl and is pure Perl
+Plain Alpine 3.9 container installing Perl and installing a pure Perl module replica of [Net::Prometheus::Pushgateway](https://metacpan.org/release/VRAG/Net-Prometheus-Pushgateway-0.03) module with [HTTP::Request](https://metacpan.org/pod/HTTP::Request) replaced with [HTTP::Tiny](https://metacpan.org/pod/HTTP::Tiny) which is part of core Perl and is pure Perl and [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent) removed to avoid introducing compiled cpan module dependencies
 
 ### Usage
 
@@ -48,11 +48,11 @@ This is perl 5, version 26, subversion 3 (v5.26.3) built for x86_64-linux-thread
 ```sh
 perl -I . test.pl
 ```
-* confrm that the metric was recorded (from the host):
+* confirm that the metric was recorded (run the command from the host):
 ```sh
 curl http://localhost:9091/metrics
 ```
-(among other metrics shown)
+(along with other metrics)
 ```text
 # TYPE pushgateway_http_requests_total counter
 pushgateway_http_requests_total{code="200",handler="push",method="post"} 2
