@@ -1,0 +1,11 @@
+FROM alpine:3.9.5
+
+RUN apk update && apk upgrade && \
+    apk add perl && \
+    rm -rf /var/cache/apk/* 
+WORKDIR /root
+COPY JSON /root/JSON
+COPY YAML /root/YAML
+COPY XML /root/XML
+COPY Pushgateway /root/Pushgateway
+
