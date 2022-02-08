@@ -22,6 +22,21 @@ apache is running with ID 7
 ```
 (the value of `ID` varies)
 
+* connect to container  and check verion of Perl
+```sh
+docker exec -it $NAME sh
+```
+```text
+/ # 
+```
+```sh
+perl -v
+```
+```text
+This is perl 5, version 26, subversion 3 (v5.26.3) built for x86_64-linux-thread-multi
+```
+
+
 * verify the vanilla httpd to run in Docker
 ```sh
 curl http://$(hostname -i):8080/
@@ -235,6 +250,5 @@ only one of the polling controllers in the page `inventory.html` will be exercis
   * https://blog.guya.net/2016/08/08/simple-server-polling-in-angularjs-done-right/
   * https://www.js-tutorials.com/angularjs-tutorial/simple-example-angularjs-interval-timeout/
   * https://stackoverflow.com/questions/42701048/how-to-pass-vm-to-a-settimeout-in-angularjs-changes-to-scope-dont-update-dom-v
-
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
