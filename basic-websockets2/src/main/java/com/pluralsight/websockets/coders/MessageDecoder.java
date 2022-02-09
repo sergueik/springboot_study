@@ -1,6 +1,9 @@
 package com.pluralsight.websockets.coders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import com.pluralsight.websockets.message.*;
 
 import javax.json.Json;
@@ -22,22 +25,27 @@ public class MessageDecoder implements Decoder.Text<Message> {
 			try {
 				int type = getMessageType(msg);
 				ObjectMapper mapper = new ObjectMapper();
+				final Gson gson = new GsonBuilder().create();
 
 				switch (type) {
 				case MessageType.JOIN:
-					message = mapper.readValue(msg, JoinMessage.class);
+
+					message = gson.fromJson(msg, JoinMessage.class);
+					// message = mapper.readValue(msg, JoinMessage.class);
 					break;
 				case MessageType.MESSAGE:
-					message = mapper.readValue(msg, ChatMessage.class);
+					message = gson.fromJson(msg, ChatMessage.class);
+					// message = mapper.readValue(msg, ChatMessage.class);
 					break;
 				case MessageType.GETUSERS:
-					message = mapper.readValue(msg, GetUsersMessage.class);
+					message = gson.fromJson(msg, GetUsersMessage.class);
+					// message = mapper.readValue(msg, GetUsersMessage.class);
 					break;
 				default:
 					System.out.println(String.format("Unknown message type found [%s]",type));
 					break;
 				}
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

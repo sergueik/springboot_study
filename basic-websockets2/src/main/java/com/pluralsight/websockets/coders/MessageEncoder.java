@@ -8,6 +8,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pluralsight.websockets.message.Message;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 public class MessageEncoder implements Encoder.Text<Message>{
 
 	@Override
