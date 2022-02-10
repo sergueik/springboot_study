@@ -10,7 +10,7 @@
     <!--    <finalName>${FINAL_NAME}</finalName> -->
     <finalName>demo</finalName>
     <springframework.version>4.0.6.RELEASE</springframework.version>
-    <hibernate.version>4.3.6.Final</hibernate.version>
+    <hibernate.version>5.4.24.Final</hibernate.version>
     <spring-jdbc.version>4.3.10.RELEASE</spring-jdbc.version>
     <sqlite-jdbc.version>3.23.1</sqlite-jdbc.version>
     <joda-time.version>2.3</joda-time.version>
@@ -27,7 +27,7 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-      <version>5.0.12.Final</version>
+      <version>5.4.24.Final</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
