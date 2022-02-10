@@ -12,7 +12,7 @@
     <finalName>demo</finalName>
     <java.version>1.8</java.version>
     <springframework.version>4.3.2.RELEASE</springframework.version>
-    <hibernate.version>4.3.6.Final</hibernate.version>
+    <hibernate.version>5.4.24.Final</hibernate.version>
     <hibernate-validator.version>4.3.0.Final</hibernate-validator.version> 
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
     <maven.compiler.source>1.8</maven.compiler.source>
