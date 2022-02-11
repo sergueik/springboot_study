@@ -1,0 +1,7 @@
+# terraform cache
+
+.terraform
+terraform.tfstate*
+*box
+*out
+.terraform.lock.*
