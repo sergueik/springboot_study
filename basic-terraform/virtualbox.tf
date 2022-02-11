@@ -17,6 +17,7 @@ resource "virtualbox_vm" "node" {
 
   network_adapter {
     type           = "hostonly"
-    host_interface = "vboxnet0"
+   # can one simply skip specifying the host_iterface? - it is host specific
+   # host_interface = "vboxnet0"
   }
 }
