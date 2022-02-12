@@ -43,3 +43,6 @@ curl  http://localhost:8881/admin/info 2>/dev/null | jq
 
  * https://stackoverflow.com/questions/51876390/spring-boot-multiple-ports
  * https://stackoverflow.com/questions/36357135/configure-spring-boot-with-two-ports
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
