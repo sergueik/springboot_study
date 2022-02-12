@@ -1,2 +1,0 @@
-tables:
-- {name: incident, target: incident_2017, minrows: green}

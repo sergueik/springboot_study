@@ -1,2 +1,0 @@
-tables:
-- {name: incident, truncate: true, created: 2020-01-01, columns: sys_id number state}

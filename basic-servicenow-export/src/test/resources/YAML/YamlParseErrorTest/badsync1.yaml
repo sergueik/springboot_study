@@ -1,2 +1,0 @@
-tables:
-- {name: incident, action: sync, since: 2018-01-01}

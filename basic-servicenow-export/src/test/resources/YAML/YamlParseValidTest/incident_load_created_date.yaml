@@ -1,2 +1,0 @@
-tables:
-- {source: incident, action: load, created: [2019-01-01, 2020-01-01]}

@@ -1,7 +1,0 @@
-#!/bin/bash
-# 
-# Run JUnit Tests
-#
-cd $SNDML_HOME
-mvn surefire:test -P test.api
-mvn surefire:test -P test.datamart

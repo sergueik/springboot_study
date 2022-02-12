@@ -1,4 +1,0 @@
-tables:
-- name: incident
-  action: load
-  partition: month
