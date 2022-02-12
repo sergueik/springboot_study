@@ -17,7 +17,8 @@ resource "virtualbox_vm" "node" {
 
   network_adapter {
     type           = "hostonly"
-   # can one simply skip specifying the host_iterface? - it is host specific
-   # host_interface = "vboxnet0"
+    # NOTE: one cannot simply skip specifying the host_iterface, which is host-specific. the error is: 'host_interface' property not set for '#0' network adapter
+    # the configuration vill pass validation
+    host_interface = "vboxnet0"
   }
 }

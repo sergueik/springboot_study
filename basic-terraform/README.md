@@ -95,7 +95,7 @@ terraform plan -out a.out
 ```
 ```sh
 export TF_LOG=info
-terraform apply virtualbox.out
+terraform apply a.out
 ```
 
 this will fail with the version 0.22 of the virtualbox provider with
@@ -137,6 +137,37 @@ if a log was set fo info, there will be some more low level information:
 2022-02-11T17:01:36.843-0500 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr=60%...70%...80%...100%
 2022-02-11T17:01:36.893-0500 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stdout="Clone medium created in format 'VMDK'. UUID: 87afba8f-66a1-4593-bdd8-f522664e0387"
 2022-02-11T17:01:57.275-0500 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stdout="Waiting for VM "node-02" to power on...VM "node-02" has been successfully started."
+```
+
+after a failed run terraform may fail to recognize virtual box images were  still created:
+
+
+```sh
+vboxmanage list vms |grep node\-0
+```
+
+```text
+"node-01" {db01bdea-5681-4d13-9ecd-a27346f0c85f}
+"node-02" {b9b0cd97-508d-4559-92aa-c98124adcb4e}
+```
+yet
+```sh
+terraform plan -destroy
+```
+states
+```text
+No changes. No objects need to be destroyed.
+```
+
+and
+```sh
+terraform plan -out a.out 
+terraform apply a.out 
+```
+fails with
+```text
+Error: [ERROR] Create virtualbox VM node-01: machine already exists
+Error: [ERROR] Create virtualbox VM node-02: machine already exists
 ```
 ### Cleanup
 ```sh
