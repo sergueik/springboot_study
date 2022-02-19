@@ -1,0 +1,5 @@
+databaseChangeLog:
+
+  # Migrate db
+  - include:
+      file: db/changelog/schema/001-init.sql
