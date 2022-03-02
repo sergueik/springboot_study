@@ -1,4 +1,4 @@
-package Pushgateway::Tiny;
+package Pushgateway::TinyActiveState;
 
 use 5.14.2;
 use strict;
@@ -6,7 +6,8 @@ use warnings;
 use utf8;
 use Carp qw/croak carp/;
 # use LWP::UserAgent;
-use HTTP::Tiny;
+use Data::Dumper;
+use Net::HTTP;
 
 our $VERSION    = '0.01';
 
@@ -20,13 +21,14 @@ my %METRIC_VALID_TYPES = (
 
 sub new {
     my ($class, %opt) = @_;
+    print Dumper(\%opt);
     my $self = {};
+
     $self->{'host'}         = $opt{'-host'}     // croak "You must specify '-host' param";
     $self->{'port'}         = $opt{'-port'}     // croak "You must specify '-port' param";
     my $path                = $opt{'-path'};
+    $self->{'instance_name'} = $opt{'instance_name'};
     my $timeout             = $opt{'-timeout'}  // 5;
-    # $self->{'ua'}           = LWP::UserAgent->new();
-    # $self->{'ua'}->timeout($timeout);
     $self->{'url'} = 'http://' . $self->{host} . ':' . $self->{'port'} . $path;
 
     return bless $self, $class;
@@ -35,6 +37,7 @@ sub new {
 sub add {
     my $self = shift;
     my $raw_str = $self->_add(@_);
+
     return $self->_send_to_prometheus($raw_str);
 }
 
@@ -119,18 +122,17 @@ sub _prepare_raw_metric {
 sub _send_to_prometheus {
     my ($self, $str) = @_;
 
-    # https://metacpan.org/pod/HTTP::Tiny#request
+    my $s = Net::HTTP->new(Host => $self->{'host'}. ':' .$self->{'port'}) || die "Error: " . $@;
 
-    my $response = HTTP::Tiny->new->request('POST', $self->{'url'}, { 'content' => $str });
-    return 1 if $response->{success};
-    croak "Can't send POST request to '$self->{'url'}'. MSG: " . $response->{reason}. " Code: " . $response->{status};
- 
- #   while (my ($k, $v) = each %{$response->{headers}}) {
- #       for (ref $v eq 'ARRAY' ? @$v : $v) {
- #           print "$k: $_\n";
- #       }
- #   }
- 
+    my %headers = ();
+    $s->write_request('POST', $self->{'url'},  %headers, $str);
+    my($code, $mess, %h) = $s->read_response_headers;
+
+    return 0 if $code =~ /200/;
+    croak "Can't send POST request to '$self->{'url'}'". ' Code: "' . $code .'"';
+  
 }
 
 1;
+
+

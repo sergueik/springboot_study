@@ -73,6 +73,15 @@ scottw/alpine-perl   latest    7e64285ecabb   14 months ago   291MB
 ```
 Alternatively (not tested) is [melopt/alpine-perl-devel](https://hub.docker.com/r/melopt/alpine-perl-devel)
 
+### Note
+
+For a 32 bit Windows one can download __ActivePerl__ without registration from e.g. [Programming Software Download Center (PSDC)](https://www.bookofnetwork.com/2598/psdc/Download-ActivePerl-5-26-3-software-for-windows-pc) - the __ActiveState__ now charges for it.
+
+
+It comes with Perl Package Manager and `Net::HTTP` and `Data::Dumper` among other packages.
+
+This can be a good starting point for Powershell / .Net version of the same.
+
 
 ### See Also
   * Python [example](https://www.devopsschool.com/blog/prometheus-pushgateway-installation-configuration-and-using-tutorials/)
