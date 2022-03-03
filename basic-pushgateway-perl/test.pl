@@ -1,6 +1,8 @@
 use Pushgateway::Tiny;
 use Sys::Hostname;
 use Socket;
+use Data::Dumper;
+use strict;
 # NOTE non-standard param key names inherited from Net::Prometheus::Pushgateway
 
 my $job_name = 'my_custom_metrics';
@@ -26,4 +28,11 @@ my $custom = {
  # '/test'  404
  # '/'      405
  # 'test'   599
+
 $o -> add(%$custom);
+print STDERR "\n" . 'Payload:' . "\n" . $o->{raw_str};
+
+
+$o->summary(-metric_name => 'perl_metric_summary', -label => {'perl_label' => 5}, -value => 15);
+print STDERR "\n" . 'Payload:' . "\n" . $o->{raw_str};
+__END__

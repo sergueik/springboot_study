@@ -8,7 +8,7 @@ use Carp qw/croak carp/;
 # use LWP::UserAgent;
 use HTTP::Tiny;
 
-our $VERSION    = '0.01';
+our $VERSION    = '0.0.2';
 
 my %METRIC_VALID_TYPES = (
     'untyped'       => 1,
@@ -21,49 +21,50 @@ my %METRIC_VALID_TYPES = (
 sub new {
     my ($class, %opt) = @_;
     my $self = {};
-    $self->{'host'}         = $opt{'-host'}     // croak "You must specify '-host' param";
-    $self->{'port'}         = $opt{'-port'}     // croak "You must specify '-port' param";
+    $self->{host}         = $opt{'-host'}     // croak "You must specify '-host' param";
+    $self->{port}         = $opt{'-port'}     // croak "You must specify '-port' param";
     my $path                = $opt{'-path'};
     my $timeout             = $opt{'-timeout'}  // 5;
-    # $self->{'ua'}           = LWP::UserAgent->new();
-    # $self->{'ua'}->timeout($timeout);
-    $self->{'url'} = 'http://' . $self->{host} . ':' . $self->{'port'} . $path;
+    # $self->{ua}           = LWP::UserAgent->new();
+    # $self->{ua}->timeout($timeout);
+    $self->{raw_str}      = undef;
+    $self->{url} = 'http://' . $self->{host} . ':' . $self->{port} . $path;
 
     return bless $self, $class;
 }
 
 sub add {
     my $self = shift;
-    my $raw_str = $self->_add(@_);
-    return $self->_send_to_prometheus($raw_str);
+    $self->{raw_str} = $self->_add(@_);
+    return $self->_send_to_prometheus($self->{raw_str});
 }
 
 sub increment {
     my $self = shift;
-    my $raw_str = $self->_add(
+    $self->{raw_str} = $self->_add(
         @_,
         '-value'    => 1,
         '-type'     => 'counter',
     );
-    return $self->_send_to_prometheus($raw_str);
+    return $self->_send_to_prometheus($self->{raw_str});
 }
 
 sub summary {
     my $self = shift;
-    my $raw_str = $self->_add(
+    $self->{raw_str} = $self->_add(
         @_,
         '-type'     => 'summary',
     );
-    return $self->_send_to_prometheus($raw_str);
+    return $self->_send_to_prometheus($self->{raw_str});
 }
 
 sub gauge {
     my $self = shift;
-    my $raw_str = $self->_add(
+    $self->{raw_str} = $self->_add(
         @_,
         '-type'     => 'gauge',
     );
-    return $self->_send_to_prometheus($raw_str);
+    return $self->_send_to_prometheus($self->{raw_str});
 }
 
 sub histogram {
@@ -108,12 +109,12 @@ sub _add {
 
 sub _prepare_raw_metric {
     my ($self, $metric_name, $label, $value) = @_;
-    my $raw_str = $metric_name;
+    $self->{raw_str} = $metric_name;
     if ($label) {
-        $raw_str .= '{' . join (', ', map {$_ . '="' . $label->{$_} . '"'} keys %$label) . '}';
+        $self->{raw_str} .= '{' . join (', ', map {$_ . '="' . $label->{$_} . '"'} keys %$label) . '}';
     }
-    $raw_str .= " $value\n";
-    return $raw_str;
+    $self->{raw_str} .= " $value\n";
+    return $self->{raw_str};
 }
 
 sub _send_to_prometheus {
@@ -121,9 +122,9 @@ sub _send_to_prometheus {
 
     # https://metacpan.org/pod/HTTP::Tiny#request
 
-    my $response = HTTP::Tiny->new->request('POST', $self->{'url'}, { 'content' => $str });
+    my $response = HTTP::Tiny->new->request('POST', $self->{url}, { 'content' => $str });
     return 1 if $response->{success};
-    croak "Can't send POST request to '$self->{'url'}'. MSG: " . $response->{reason}. " Code: " . $response->{status};
+    croak "Can't send POST request to " . $self->{url} . 'MSG: ' . $response->{reason}. ' Code: ' . $response->{status};
  
  #   while (my ($k, $v) = each %{$response->{headers}}) {
  #       for (ref $v eq 'ARRAY' ? @$v : $v) {

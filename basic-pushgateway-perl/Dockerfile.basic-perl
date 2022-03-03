@@ -4,8 +4,6 @@ RUN apk update && apk upgrade && \
     apk add perl && \
     rm -rf /var/cache/apk/* 
 WORKDIR /root
-COPY JSON /root/JSON
-COPY YAML /root/YAML
-COPY XML /root/XML
+# alternaitively, pack in tar and have Docker expand automatically via ADD
 COPY Pushgateway /root/Pushgateway
 

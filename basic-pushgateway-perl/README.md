@@ -1,31 +1,45 @@
 ### Info
 
-Plain Alpine 3.9 container installing Perl and installing a pure Perl module replica of [Net::Prometheus::Pushgateway](https://metacpan.org/release/VRAG/Net-Prometheus-Pushgateway-0.03) module with [HTTP::Request](https://metacpan.org/pod/HTTP::Request) replaced with [HTTP::Tiny](https://metacpan.org/pod/HTTP::Tiny) which is part of core Perl and is pure Perl and [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent) removed to avoid introducing compiled cpan module dependencies
+Plain Alpine 3.9 container installing Perl and installing a pure Perl module replica of [Net::Prometheus::Pushgateway](https://metacpan.org/release/VRAG/Net-Prometheus-Pushgateway-0.03/view/lib/Net/Prometheus/Pushgateway.pm) module with [HTTP::Request](https://metacpan.org/pod/HTTP::Request) replaced with [HTTP::Tiny](https://metacpan.org/pod/HTTP::Tiny) which is part of core Perl and is pure Perl and [LWP::UserAgent](https://metacpan.org/pod/LWP::UserAgent) removed to avoid introducing compiled cpan module dependencies
 
 ### Usage
 
 * build the images
 
 ```sh
-IMAGE1=pushgateway
-docker build --build-arg VERSION=1.4.2 -t $IMAGE1 -f Dockerfile.$IMAGE1 .
+PUSHGATEWAY=pushgateway
+docker build --build-arg VERSION=1.4.2 -t $PUSHGATEWAY -f Dockerfile.$PUSHGATEWAY .
 ```
 ```sh
-docker run --name $IMAGE1 -p 9091:9091 -d $IMAGE1
+docker run --name $PUSHGATEWAY -p 9091:9091 -d $PUSHGATEWAY
 ```
-best done in separate console:
+verify the applicartion launches:
 ```sh
-IMAGE2=basic-perl
-docker build -t $IMAGE2 -f Dockerfile.$IMAGE2 .
+docker logs $PUSHGATEWAY
+```
+```text
+{"caller":"level.go:63","level":"info","msg":"starting pushgateway","ts":"2022-03-03T02:37:41.715Z","version":"(version=1.4.2, branch=HEAD, revision=99981d7be923ab18d45873e9eaa3d2c77477b1ef)"}
+
+```
+testing best done in separate console:
+```sh
+sudo rm -f .ash_history
+```
+```sh
+BASIC_PERL=basic-perl
+docker build -t $BASIC_PERL -f Dockerfile.$BASIC_PERL .
 ```
 * start run default command
 
 ```sh
-docker run -it --link $IMAGE1 --name $IMAGE2 $IMAGE2 sh
+docker container rm $BASIC_PERL
+```
+```sh
+docker run -it --link $PUSHGATEWAY --name $BASIC_PERL -v $(pwd):/root $BASIC_PERL sh
 ```
 * connect to container  and check verion of Perl
 ```sh
-docker exec -it $NAME sh
+docker exec -it $BASIC_PERL sh
 ```
 ```text
 / #
@@ -43,12 +57,62 @@ This is perl 5, version 26, subversion 3 (v5.26.3) built for x86_64-linux-thread
 ```text
 0.070/
 ```
+The installed Perl Modules are in 
+`/usr/share/perl5/core_perl` and `/usr/lib/perl5/core_perl`
+
+__NOTE:__ The `Getopt::Long` is also available but for some reason does not print its `$VERSION`
+
+```sh
+perl -MData::Dumper -e 'print $Data::Dumper::VERSION'
+```
+```text
+2.167
+```
+
+* verify installed Pure Perl modules to be available
+
+```sh
+perl -I. -MYAML::Tiny -e 'print $YAML::Tiny::VERSION;'
+```
+```text
+1.73
+```
+```sh
+perl -I. -MJSON::PP -e 'print $JSON::PP::VERSION;'
+```
+```text
+4.06
+```
+```sh
+perl -I. -MXML::TreePP -e 'print $XML::TreePP::VERSION;'
+```
+```text
+
+0.43
+```
+
 * post sample data to pushgteway:
 
 ```sh
 perl -I . test.pl
 ```
+this will print to console:
+```text
+# TYPE test untyped
+test{} 42
+```
+* confirm checking the pushgateway logs that the request was processed successfuly:
+
+```sh
+docker container logs $PUSHGATEWAY
+```
+```text
+{"caller":"level.go:63","file":"/pushgateway/history.log","level":"info","msg":"metrics persisted","ts":"2022-03-03T03:17:37.621Z"}
+
+
+```
 * confirm that the metric was recorded (run the command from the host):
+
 ```sh
 curl http://localhost:9091/metrics
 ```
@@ -57,12 +121,25 @@ curl http://localhost:9091/metrics
 # TYPE pushgateway_http_requests_total counter
 pushgateway_http_requests_total{code="200",handler="push",method="post"} 2
 ```
-and the actual mertic
+and the actual metric
 ```text
 # TYPE test untyped
 test{instance="4db5808908fe(172.17.0.3)",job="my_custom_metrics",team="test"} 42
 ```
+### Note
 
+the `/api/ui/metric`
+```perl
+my $opt =  {
+  '-host' => 'pushgateway',
+  '-port' => 9091,
+  '-path' => '/api/ui/metrics'
+  # 404 
+  };
+my $o = Pushgateway::Tiny->new(%$opt ); 
+
+```
+calls currently do not work and return a __404__
 ### Note
 Alternatively can install a cpan capable Docker Alpine Perl [scottw/alpine-perl](https://hub.docker.com/r/scottw/alpine-perl/dockerfile) base image - at a cost of slight size increase
 

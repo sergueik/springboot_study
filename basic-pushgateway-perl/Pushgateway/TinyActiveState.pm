@@ -6,7 +6,7 @@ use warnings;
 use utf8;
 use Carp qw/croak carp/;
 # use LWP::UserAgent;
-use Data::Dumper;
+use JSON;
 use Net::HTTP;
 
 our $VERSION    = '0.01';
@@ -21,52 +21,50 @@ my %METRIC_VALID_TYPES = (
 
 sub new {
     my ($class, %opt) = @_;
-    print Dumper(\%opt);
     my $self = {};
-
-    $self->{'host'}         = $opt{'-host'}     // croak "You must specify '-host' param";
-    $self->{'port'}         = $opt{'-port'}     // croak "You must specify '-port' param";
+    $self->{host}         = $opt{'-host'}     // croak "You must specify '-host' param";
+    $self->{port}         = $opt{'-port'}     // croak "You must specify '-port' param";
     my $path                = $opt{'-path'};
-    $self->{'instance_name'} = $opt{'instance_name'};
+    $self->{instance_name} = $opt{instance_name};
     my $timeout             = $opt{'-timeout'}  // 5;
-    $self->{'url'} = 'http://' . $self->{host} . ':' . $self->{'port'} . $path;
+    $self->{url} = 'http://' . $self->{host} . ':' . $self->{port} . $path;
+    $self->{raw_str}      = undef;
 
     return bless $self, $class;
 }
 
 sub add {
     my $self = shift;
-    my $raw_str = $self->_add(@_);
-
-    return $self->_send_to_prometheus($raw_str);
+    $self->{raw_str} = $self->_add(@_);
+    return $self->_send_to_prometheus($self->{raw_str});
 }
 
 sub increment {
     my $self = shift;
-    my $raw_str = $self->_add(
+    $self->{raw_str} = $self->_add(
         @_,
         '-value'    => 1,
         '-type'     => 'counter',
     );
-    return $self->_send_to_prometheus($raw_str);
+    return $self->_send_to_prometheus($self->{raw_str});
 }
 
 sub summary {
     my $self = shift;
-    my $raw_str = $self->_add(
+    $self->{raw_str} = $self->_add(
         @_,
         '-type'     => 'summary',
     );
-    return $self->_send_to_prometheus($raw_str);
+    return $self->_send_to_prometheus($self->{raw_str});
 }
 
 sub gauge {
     my $self = shift;
-    my $raw_str = $self->_add(
+    $self->{raw_str} = $self->_add(
         @_,
         '-type'     => 'gauge',
     );
-    return $self->_send_to_prometheus($raw_str);
+    return $self->_send_to_prometheus($self->{raw_str});
 }
 
 sub histogram {
@@ -111,25 +109,25 @@ sub _add {
 
 sub _prepare_raw_metric {
     my ($self, $metric_name, $label, $value) = @_;
-    my $raw_str = $metric_name;
+    $self->{raw_str} = $metric_name;
     if ($label) {
-        $raw_str .= '{' . join (', ', map {$_ . '="' . $label->{$_} . '"'} keys %$label) . '}';
+        $self->{raw_str} .= '{' . join (', ', map {$_ . '="' . $label->{$_} . '"'} keys %$label) . '}';
     }
-    $raw_str .= " $value\n";
-    return $raw_str;
+    $self->{raw_str} .= " $value\n";
+    return $self->{raw_str};
 }
 
 sub _send_to_prometheus {
     my ($self, $str) = @_;
 
-    my $s = Net::HTTP->new(Host => $self->{'host'}. ':' .$self->{'port'}) || die "Error: " . $@;
+    my $s = Net::HTTP->new(Host => $self->{'host'}. ':' .$self->{'port'}) || die $@;
 
     my %headers = ();
     $s->write_request('POST', $self->{'url'},  %headers, $str);
     my($code, $mess, %h) = $s->read_response_headers;
 
     return 0 if $code =~ /200/;
-    croak "Can't send POST request to '$self->{'url'}'". ' Code: "' . $code .'"';
+    croak "Can't send POST request to ". $self->{url} . ' Code: '. $code ;
   
 }
 
