@@ -1,4 +1,3 @@
-
 package example;
 
 // origin:
@@ -8,6 +7,28 @@ package example;
 import java.util.*;
 import example.DaemonLock;
 import example.ThreadPool;
+
+import java.io.PrintStream;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
+import com.sun.jna.Native;
+import com.sun.jna.platform.win32.Pdh;
+import com.sun.jna.platform.win32.PdhMsg;
+import com.sun.jna.platform.win32.WinError;
+import com.sun.jna.platform.win32.Pdh.PDH_COUNTER_PATH_ELEMENTS;
+import com.sun.jna.platform.win32.Pdh.PDH_RAW_COUNTER;
+import com.sun.jna.platform.win32.PdhUtil.PdhEnumObjectItems;
+import com.sun.jna.platform.win32.PdhUtil.PdhException;
+import com.sun.jna.platform.win32.WinDef.DWORD;
+import com.sun.jna.platform.win32.WinDef.DWORDByReference;
+import com.sun.jna.platform.win32.WinNT.HANDLE;
+import com.sun.jna.platform.win32.WinNT.HANDLEByReference;
 
 public class JobScheduler implements Runnable {
 
@@ -40,9 +61,67 @@ public class JobScheduler implements Runnable {
 			}
 		};
 		Runnable r4 = new Runnable() {
-			public void run() {
-				System.out.print("4");
+			private final Pdh pdh = Pdh.INSTANCE;
+
+			private String makeCounterPath(Pdh pdh,
+					PDH_COUNTER_PATH_ELEMENTS pathElements) {
+				DWORDByReference pcchBufferSize = new DWORDByReference();
+				int status = pdh.PdhMakeCounterPath(pathElements, null, pcchBufferSize,
+						0);
+
+				DWORD bufSize = pcchBufferSize.getValue();
+				int numChars = bufSize.intValue();
+
+				char[] szFullPathBuffer = new char[numChars + 1 /* the \0 */];
+				pcchBufferSize.setValue(new DWORD(szFullPathBuffer.length));
+
+				return Native.toString(szFullPathBuffer);
 			}
+
+			public void run() {
+				PDH_COUNTER_PATH_ELEMENTS elems = new PDH_COUNTER_PATH_ELEMENTS();
+
+				elems.szObjectName = "System";
+				elems.szInstanceName = null;
+				elems.szCounterName = "Processor Queue Length";
+				String counterName = makeCounterPath(pdh, elems);
+
+				HANDLEByReference ref = new HANDLEByReference();
+				pdh.PdhOpenQuery(null, null, ref);
+
+				HANDLE hQuery = ref.getValue();
+				try {
+					ref.setValue(null);
+					pdh.PdhAddEnglishCounter(hQuery, counterName, null, ref);
+
+					HANDLE hCounter = ref.getValue();
+					try {
+
+						pdh.PdhCollectQueryData(hQuery);
+
+						DWORDByReference lpdwType = new DWORDByReference();
+						PDH_RAW_COUNTER rawCounter = new PDH_RAW_COUNTER();
+						pdh.PdhGetRawCounterValue(hCounter, lpdwType, rawCounter);
+
+						showRawCounterData(System.out, counterName, rawCounter);
+					} finally {
+						pdh.PdhRemoveCounter(hCounter);
+					}
+				} finally {
+					pdh.PdhCloseQuery(hQuery);
+				}
+			}
+
+			private void showRawCounterData(PrintStream out, String counterName,
+					PDH_RAW_COUNTER rawCounter) {
+				out.append('\t').append(counterName).append(" ")
+						.append(String.valueOf(rawCounter.TimeStamp.toDate()))
+						.append(" 1st=").append(String.valueOf(rawCounter.FirstValue))
+						.append(" 2nd=").append(String.valueOf(rawCounter.SecondValue))
+						.append(" multi=").append(String.valueOf(rawCounter.MultiCount))
+						.println();
+			}
+
 		};
 
 		JobScheduler js = new JobScheduler(0);
@@ -50,7 +129,7 @@ public class JobScheduler implements Runnable {
 
 		for (int cnt = 0; cnt != 10; cnt++) {
 			Thread.sleep(1000);
-			js.execute(r1);
+			js.execute(r4);
 		}
 		// Test 1 - General Test
 		// System.err.println("General Test: execute and repeat running two jobs");
