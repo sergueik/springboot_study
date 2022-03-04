@@ -29,6 +29,9 @@ import com.sun.jna.platform.win32.WinDef.DWORD;
 import com.sun.jna.platform.win32.WinDef.DWORDByReference;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.platform.win32.WinNT.HANDLEByReference;
+import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class JobScheduler implements Runnable {
 
@@ -87,28 +90,46 @@ public class JobScheduler implements Runnable {
 				String counterName = makeCounterPath(pdh, elems);
 
 				HANDLEByReference ref = new HANDLEByReference();
-				pdh.PdhOpenQuery(null, null, ref);
+				assertErrorSuccess("PdhOpenQuery", pdh.PdhOpenQuery(null, null, ref),
+						true);
 
 				HANDLE hQuery = ref.getValue();
 				try {
 					ref.setValue(null);
-					pdh.PdhAddEnglishCounter(hQuery, counterName, null, ref);
+					assertErrorSuccess("PdhAddEnglishCounter",
+							pdh.PdhAddEnglishCounter(hQuery, counterName, null, ref), true);
 
 					HANDLE hCounter = ref.getValue();
 					try {
-
-						pdh.PdhCollectQueryData(hQuery);
+						assertErrorSuccess("PdhCollectQueryData",
+								pdh.PdhCollectQueryData(hQuery), true);
 
 						DWORDByReference lpdwType = new DWORDByReference();
 						PDH_RAW_COUNTER rawCounter = new PDH_RAW_COUNTER();
-						pdh.PdhGetRawCounterValue(hCounter, lpdwType, rawCounter);
-
+						assertErrorSuccess("PdhGetRawCounterValue",
+								pdh.PdhGetRawCounterValue(hCounter, lpdwType, rawCounter),
+								true);
+						assertEquals("Counter data status", WinError.ERROR_SUCCESS,
+								rawCounter.CStatus);
 						showRawCounterData(System.out, counterName, rawCounter);
 					} finally {
-						pdh.PdhRemoveCounter(hCounter);
+						assertErrorSuccess("PdhRemoveCounter",
+								pdh.PdhRemoveCounter(hCounter), true);
 					}
 				} finally {
-					pdh.PdhCloseQuery(hQuery);
+					assertErrorSuccess("PdhCloseQuery", pdh.PdhCloseQuery(hQuery), true);
+				}
+			}
+
+			public void assertErrorSuccess(String message, int statusCode,
+					boolean showHex) {
+				if (showHex) {
+					if (statusCode != WinError.ERROR_SUCCESS) {
+						fail(message + " - failed - hr=0x"
+								+ Integer.toHexString(statusCode));
+					}
+				} else {
+					assertEquals(message, WinError.ERROR_SUCCESS, statusCode);
 				}
 			}
 
