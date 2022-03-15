@@ -21,8 +21,7 @@ mvn spring-boot:run
 ```
 and check the messages in `App.log` and console:
 ```sh
-21:35:06.166 [main] INFO o.s.b.c.e.t.TomcatEmbeddedServletContainer - Tomcat st
-arted on port(s): 8085 (http)
+21:35:06.166 [main] INFO o.s.b.c.e.t.TomcatEmbeddedServletContainer - Tomcat started on port(s): 8085 (http)
 ```
 and
 ```sh
@@ -105,17 +104,77 @@ docker container run -it alpine:3.9
 - compare with `centos:7` images where the same is blank
 #### Application Check
 
+* modify the `log4j2.properties` to include the `logs` folder:
+```java
+
+# adjust log file path as per your need
+property.filename = logs/App.log
+appender.rolling.filePattern = logs/App-%d{MM-dd-yy-HH-mm-ss}-%i.log.gz
+```
+* repackage the jar
 ```sh
 mvn clean package
 ```
+* build basic alpine image
 ```sh
 IMAGE=basic-log4j2
 docker build -t $IMAGE -f Dockerfile .
 ```
+* run without volume map:
+```sh
+```
+
+* repeat curl command 
+* list logs in container
+```sh
+docker exec -w /work -it $(docker container ls | grep $IMAGE | awk '{print $1}' ) sh -c 'ls -l logs'
+```
+```text
+total 24
+-rw-r--r--    1 myuser   myuser          98 Mar 15 15:30 App-03-15-22-15-20-59-1.log.gz
+-rw-r--r--    1 myuser   myuser         118 Mar 15 15:30 App-03-15-22-15-30-06-1.log.gz
+-rw-r--r--    1 myuser   myuser         101 Mar 15 15:30 App-03-15-22-15-30-07-1.log.gz
+-rw-r--r--    1 myuser   myuser         126 Mar 15 15:30 App-03-15-22-15-30-10-1.log.gz
+-rw-r--r--    1 myuser   myuser         126 Mar 15 15:30 App-03-15-22-15-30-11-1.log.gz
+-rw-r--r--    1 myuser   myuser         508 Mar 15 15:30 App.log
+
+```
+*  stop container
+```sh
+CONTAINER=$(docker container ls | grep $IMAGE | awk '{print $1}' )
+docker stop $CONTAINER
+docker rm $CONTAINER
+```
+* run with volume mapped
 ```sh
 rm logs/*
 docker run -d -p 8085:8085 -v $(pwd)/logs:/work/logs:rw $IMAGE
 ```
+* check container console logs for errors
+```sh
+CONTAINER=$(docker container ls | grep $IMAGE | awk '{print $1}' )
+docker logs $CONTAINER |less
+```
+```text
+
+2022-03-15 15:34:22,854 main ERROR Unable to create file logs/App.log java.io.IOException: Permission denied
+        at java.io.UnixFileSystem.createFileExclusively(Native Method)
+        at java.io.File.createNewFile(File.java:1012)
+        at org.apache.logging.log4j.core.appender.rolling.RollingFileManager$RollingFileManagerFactory.createManager(RollingFileManager.java:733)
+        at org.apache.logging.log4j.core.appender.rolling.RollingFileManager$RollingFileManagerFactory.createManager(RollingFileManager.java:716)
+        at org.apache.logging.log4j.core.appender.AbstractManager.getManager(AbstractManager.java:114)
+        at org.apache.logging.log4j.core.appender.OutputStreamManager.getManager(OutputStreamManager.java:100)
+        at org.apache.logging.log4j.core.appender.rolling.RollingFileManager.getFileManager(RollingFileManager.java:217)
+        at org.apache.logging.log4j.core.appender.RollingFileAppender$Builder.build(RollingFileAppender.java:146)
+        at org.apache.logging.log4j.core.appender.RollingFileAppender$Builder.build(RollingFileAppender.java:62)
+        at org.apache.logging.log4j.core.config.plugins.util.PluginBuilder.build(PluginBuilder.java:122)
+
+```
+* update `logs` permission to `777`:
+```sh
+sudo chmod 777 logs
+```
+* recycle continer, run again, confirm no erros in console logs
 * inspect logs locally
 ```sh
 ls -l logs/
@@ -129,8 +188,9 @@ total 12
 docker exec -w /work -it $(docker container ls | grep $IMAGE | awk '{print $1}' ) sh -c 'ls -l '
 ```
 ```sh
--rw-rw-r--    1 root     root      20946246 Oct 29 00:10 app.jar
-drwxrwxr-x    2 myuser   1000          4096 Oct 29 00:19 logs
+-rw-rw-r--    1 root     root      20547868 Mar 15 15:18 app.jar
+-rw-rw-r--    1 root     root          1801 Mar 15 15:17 log4j2.properties
+drwxrwxrwx    2 root     root          4096 Mar 15 15:39 logs
 
 ```
 Note:

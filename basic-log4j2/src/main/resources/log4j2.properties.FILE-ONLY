@@ -7,7 +7,7 @@ rootLogger.appenderRefs = stdout
 rootLogger.appenderRef.stdout.ref = STDOUT
 
 # adjust log file path as per your need
-property.filename = App.log
+property.filename = logs/App.log
  
 filters = threshold
  
@@ -19,7 +19,7 @@ appenders = console,rolling
 appender.rolling.type = RollingFile
 appender.rolling.name = RollingFile
 appender.rolling.fileName = ${filename}
-appender.rolling.filePattern = App-%d{MM-dd-yy-HH-mm-ss}-%i.log.gz
+appender.rolling.filePattern = logs/App-%d{MM-dd-yy-HH-mm-ss}-%i.log.gz
 appender.rolling.layout.type = PatternLayout
 appender.rolling.layout.pattern = %d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
 appender.rolling.policies.type = Policies
