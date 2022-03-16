@@ -251,7 +251,7 @@ func lacks(a []string, e string) bool {
 func (w *SearchCache) Update() {
 	newItems := []string{}
 	if verbose {
-   		fmt.Println("Updating search cache.")
+		fmt.Println("Updating search cache.")
 	}
 	db, err := sql.Open("mysql", dbConfig.User + ":" + dbConfig.Password + "@tcp(" + dbConfig.Server + ":" +  strconv.Itoa(dbConfig.Port)  +  ")/" + dbConfig.Database )
 

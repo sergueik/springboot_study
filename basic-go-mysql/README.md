@@ -1077,6 +1077,20 @@ the verson can be found in `data\plugins\grafana-simple-json-datasource\dist\plu
   }
 }
 ```
+### Note
+
+review the [history](https://github.com/golang/go/commits/master/src/path/filepath/path.go) of `path.go` on github. The `WalkDir` was just added in late 2020 with few attempts.
+
+* committed on Nov 6, 2020
+  path/filepath: `add WalkDir`
+
+* Commits on Nov 5, 2020
+  path/filepath: `revert "add WalkDir"`
+
+* Commits on Nov 4, 2020
+  path/filepath: `add WalkDir`
+
+
 ### See Also
 
    * https://stackoverflow.com/questions/47577385/error-non-standard-import-github-com-go-sql-driver-mysql-in-standard-package/67431068#67431068
