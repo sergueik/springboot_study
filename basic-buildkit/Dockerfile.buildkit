@@ -1,0 +1,22 @@
+# syntax=docker/dockerfile:1.3-labs
+FROM alpine:3.9
+
+RUN <<EOF
+apk update
+
+adduser -D -g users user
+mkdir -p /home/user \
+chown user:users /home/user
+
+test -d /opt || mkdir -p /opt
+apk add xvfb x11vnc fluxbox xdpyinfo st vim terminus-font
+rm -vrf /var/cache/apk/*
+sed -r -i "s/\[exec\] \(xterm\) \{xterm\}/\[exec\] \(st\) \{st -f 'xos4 Terminus-14'\}/" /usr/share/fluxbox/menu
+
+EOF
+COPY bootstrap.sh /opt
+USER user
+ENV HOME /home/user
+WORKDIR /home/user
+CMD ["/opt/bootstrap.sh"]
+
