@@ -5,7 +5,7 @@ basic project based on code from [codeprojec article](https://www.codeproject.co
 
 ### Usage
 
-NOTE: repository debian /1packages on Ununtu are somewhat old, __1.10.x__ for  Bionic __18.04LTS__ and  __1.6.x__ for Xenial __16.04__, archive based installs are easily doable
+NOTE: repository debian/packages on Ununtu are somewhat old, __1.10.x__ for  Bionic __18.04LTS__ and  __1.6.x__ for Xenial __16.04__, archive based installs are easily doable
 
 ```sh
 export GOOS=linux
@@ -16,7 +16,7 @@ go build -ldflags '-s -w' -o example example.go
 ```
  * execute
 ```sh
- ./example  -db example.db
+ ./example -db example.db
 ```
 ```sh
 2021/08/29 05:44:55 Creating database file: example.db
@@ -74,6 +74,7 @@ select  * from data  group by name, code having  max (printf('%s-%s-%s', substr(
 
 ### See Also
   * [PSSQLite PowerShell Module](https://github.com/RamblingCookieMonster/PSSQLite) - used `System.Data.SQLite.dll` and `SQLite.Interop.dll` internally, so is platform-dependent
+  * [golang sqlite3 driver](https://github.com/mattn/go-sqlite3)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

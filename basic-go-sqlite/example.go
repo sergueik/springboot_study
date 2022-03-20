@@ -14,7 +14,7 @@ var  (
 	database string = ""
 	debug bool = false
 )
-
+// see also: https://github.com/mattn/go-sqlite3/blob/master/_example/simple/simple.go
 func main() {
 	flag.StringVar(&database, "db", "sqlite-database.db", "Database.")
 	// TODO: regexp
@@ -67,6 +67,7 @@ func insertStudent(db *sql.DB, code string, name string, program string) {
 	if err != nil { panic(err.Error()) }
 	_, err = statement.Exec(code, name, program)
 	if err != nil { panic(err.Error()) }
+	defer statement.Close()
 }
 
 func displayStudents(db *sql.DB) {
