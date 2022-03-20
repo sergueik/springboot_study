@@ -2,6 +2,7 @@ package example;
 
 // origin:
 // http://www.java2s.com/Code/Java/Threads/BusyFlag.htm
+// (together with BusyFlag.java)
 // Copyright (c) 1997-1999 Scott Oaks and Henry Wong.
 
 public class CondVar {
