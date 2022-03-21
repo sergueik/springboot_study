@@ -5,7 +5,7 @@
   <name>springboot-jsp</name>
   <description>springboot-jsp</description>
   <groupId>example</groupId>
-  <version>0.4.0-SNAPSHOT</version>
+  <version>0.6.0-SNAPSHOT</version>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -17,7 +17,8 @@
     <javax.el.version>3.0.1-b09</javax.el.version>
     <javax.version>4.0.1</javax.version>
     <javax-servlet-api.version>2.3.3</javax-servlet-api.version>
-    <htmlunit.version>2.32</htmlunit.version>
+    <!-- https://htmlunit.sourceforge.io -->
+    <htmlunit.version>2.37.0</htmlunit.version>
     <json-path.version>2.4.0</json-path.version>
     <commons-lang.version>2.6</commons-lang.version>
     <commons-lang3.version>3.11</commons-lang3.version>
@@ -72,6 +73,7 @@
     </dependency>
     <dependency>
       <groupId>net.sourceforge.htmlunit</groupId>
+      <!-- com.gargoylesoftware.htmlunit -->
       <artifactId>htmlunit</artifactId>
       <version>${htmlunit.version}</version>
       <exclusions>

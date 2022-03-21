@@ -40,11 +40,19 @@ import static org.hamcrest.Matchers.greaterThan;
 
 import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.WebResponseData;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
-import com.gargoylesoftware.htmlunit.html.HTMLParser;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+// import com.gargoylesoftware.htmlunit.html.HTMLParser;
+//the HTMLParser() is no longer static past 2.36
+//see also 
+//https://javadoc.io/static/net.sourceforge.htmlunit/htmlunit/2.36.0/com/gargoylesoftware/htmlunit/html/HTMLParser.html
+//https://javadoc.io/doc/net.sourceforge.htmlunit/htmlunit/2.37.0/com/gargoylesoftware/htmlunit/WebResponse.html
+import com.gargoylesoftware.htmlunit.html.parser.HTMLParser;
+import com.gargoylesoftware.htmlunit.html.parser.neko.HtmlUnitNekoHtmlParser;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
@@ -134,6 +142,9 @@ public class AcceptanceTest {
 	private HtmlPage getHtmlPage(String page) throws IOException {
 		StringWebResponse response = new StringWebResponse(page, new URL(url));
 		WebClient client = new WebClient();
-		return HTMLParser.parseHtml(response, client.getCurrentWindow());
+		HtmlPage htmlPage = new HtmlUnitNekoHtmlParser()
+				.parseHtml((WebResponse) response, client.getCurrentWindow());
+		client.close();
+		return htmlPage;
 	}
 }
