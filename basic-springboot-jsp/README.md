@@ -94,6 +94,7 @@ No script object associated with the Page. class: 'com.gargoylesoftware.htmlunit
 </html>
         at example.controller.AcceptanceTest.getHtmlPage(AcceptanceTest.java:150
 ```
+the latest  version supporting `parseHtml(WebResponse webResponse, WebWindow webWindow)` which is also the latest with which this project is working is __2.42.0__ 
 ### See Also
 
   * https://www.baeldung.com/integration-testing-in-spring -  with full

@@ -49,10 +49,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 // import com.gargoylesoftware.htmlunit.html.HTMLParser;
 //the HTMLParser() is no longer static past 2.36
 //see also 
-// https://javadoc.io/static/net.sourceforge.htmlunit/htmlunit/2.36.0/com/gargoylesoftware/htmlunit/html/HTMLParser.html
-// https://javadoc.io/doc/net.sourceforge.htmlunit/htmlunit/2.37.0/com/gargoylesoftware/htmlunit/html/parser/HTMLParser.html
-// https://javadoc.io/doc/net.sourceforge.htmlunit/htmlunit/2.50.0/com/gargoylesoftware/htmlunit/html/parser/HTMLParser.html
-// https://javadoc.io/doc/net.sourceforge.htmlunit/htmlunit/2.60.0/com/gargoylesoftware/htmlunit/html/parser/HTMLParser.html
+//https://javadoc.io/static/net.sourceforge.htmlunit/htmlunit/2.36.0/com/gargoylesoftware/htmlunit/html/HTMLParser.html
+//https://javadoc.io/doc/net.sourceforge.htmlunit/htmlunit/2.37.0/com/gargoylesoftware/htmlunit/WebResponse.html
 import com.gargoylesoftware.htmlunit.html.parser.HTMLParser;
 import com.gargoylesoftware.htmlunit.html.parser.neko.HtmlUnitNekoHtmlParser;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
@@ -61,7 +59,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 // NOTE: property annotations have no effect
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = { "serverPort=8085" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
+		"serverPort=8085" })
 @PropertySource("classpath:application.properties")
 public class AcceptanceTest {
 
@@ -108,17 +107,21 @@ public class AcceptanceTest {
 	public void test3() throws Exception {
 		// Assumptions.assumeFalse(false);
 		String name = "value";
-		responseEntity = restTemplate.getForEntity(url + "?name=" + name, String.class);
-		assertThat(responseEntity.getBody(), containsString(String.format("Hello %s", name)));
+		responseEntity = restTemplate.getForEntity(url + "?name=" + name,
+				String.class);
+		assertThat(responseEntity.getBody(),
+				containsString(String.format("Hello %s", name)));
 	}
 
 	@Test
 	public void test4() throws Exception {
 		// Assumptions.assumeFalse(false);
 		String name = "value";
-		responseEntity = restTemplate.getForEntity("http://localhost:" + serverPort + "/generate?name=" + name,
+		responseEntity = restTemplate.getForEntity(
+				"http://localhost:" + serverPort + "/generate?name=" + name,
 				String.class);
-		assertThat(responseEntity.getBody(), containsString(String.format("hello %s", name)));
+		assertThat(responseEntity.getBody(),
+				containsString(String.format("hello %s", name)));
 	}
 
 	@Test
@@ -128,29 +131,28 @@ public class AcceptanceTest {
 		page = getHtmlPage(responseEntity.getBody());
 		assertThat(page, notNullValue());
 		domElement = page.getElementsById(id).get(0);
-
 		assertThat(domElement, notNullValue());
 		assertThat(domElement.getTextContent(), containsString(body));
 		assertThat(page.getDocumentElement(), notNullValue());
 		documentElement = page.getDocumentElement();
 		element = documentElement.getElementsByTagName("div").get(0);
-		// assertThat(element.getTextContent(), containsString(body));
+		assertThat(element.getTextContent(), containsString(body));
 
-		DomNodeList<DomNode> domList = page.querySelectorAll(String.format("div#%s", id));
-		assertThat(domList, notNullValue());
-		DomNode domNode = domList.get(0);
-		assertThat(domNode, notNullValue());
-		assertThat(domNode.getTextContent(), containsString("Hello World"));
+
+               DomNodeList<DomNode> domList = page.querySelectorAll(String.format("div#%s", id));
+               assertThat(domList, notNullValue());
+               DomNode domNode = domList.get(0);
+               assertThat(domNode, notNullValue());
+               assertThat(domNode.asText(), containsString(body));
+
 	}
 
 	private HtmlPage getHtmlPage(String payload) throws IOException {
 		StringWebResponse response = new StringWebResponse(payload, new URL(url));
 		WebClient client = new WebClient();
-		HtmlPage page = new HtmlPage((WebResponse) response, client.getCurrentWindow());
-		new HtmlUnitNekoHtmlParser().parse((WebResponse) response,  page, true);
+		HtmlPage page = new HtmlUnitNekoHtmlParser()
+				.parseHtml((WebResponse) response, client.getCurrentWindow());
 		client.close();
-		// java.lang.IllegalStateException:
-		// No script object associated with the Page.
 		return page;
 	}
 }
