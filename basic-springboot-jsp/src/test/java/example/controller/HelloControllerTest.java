@@ -1,7 +1,7 @@
 package example.controller;
 
 /**
- * Copyright 2021 Serguei Kouzmine
+ * Copyright 2021,2022 Serguei Kouzmine
  */
 
 import org.junit.jupiter.api.Assertions;

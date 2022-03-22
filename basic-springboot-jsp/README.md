@@ -62,6 +62,38 @@ public class HelloController {
 	}
 }
 ```
+### TODO
+* fix TLD scan error - slows the test considerably
+```text
+
+2022-03-22 02:03:37.773  WARN 3690 --- [           main] o.a.tomcat.util.scan.StandardJarScanner  : Failed to scan [file:/home/sergueik/.m2/repository/xalan/xalan/2.7.2/xercesImpl.jar] from classloader hierarchy
+
+
+2022-03-22 02:00:47.367  WARN 3440 --- [           main] o.a.tomcat.util.scan.StandardJarScanner  : Failed to scan [file:/home/sergueik/.m2/repository/xalan/serializer/2.7.2/xml-apis.jar] from classloader hierarchy
+
+2022-03-22 02:03:37.823  WARN 3690 --- [           main] o.a.tomcat.util.scan.StandardJarScanner  : Failed to scan [file:/home/sergueik/.m2/repository/xalan/xalan/2.7.2/serializer.jar] from classloader hierarchy
+
+
+```
+* error with HtmlUnit  __2.50.0__,__2.60.0__:
+```text
+java.lang.IllegalStateException:
+No script object associated with the Page. class: 'com.gargoylesoftware.htmlunit
+.html.HtmlPage' url: 'http://localhost:8080/model' content: <!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello</title>
+</head>
+<body>
+  <div id="0">
+    Hello World
+  </div>
+</body>
+</html>
+        at example.controller.AcceptanceTest.getHtmlPage(AcceptanceTest.java:150
+```
 ### See Also
 
   * https://www.baeldung.com/integration-testing-in-spring -  with full
