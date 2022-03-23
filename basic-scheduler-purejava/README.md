@@ -48,7 +48,10 @@ java -cp target\scheduler.jar example.PerformanceCounterJobScheduler
 \System\Processor Queue Length Fri Mar 18 15:58:59 EDT 2022 1st=23 2nd=0 multi=1
 ```
 ### See Also
-https://www.baeldung.com/thread-pool-java-and-guava
+   * https://www.baeldung.com/thread-pool-java-and-guava
+   * https://www.baeldung.com/mockito-void-methods
+   * https://stackoverflow.com/questions/32319640/how-to-test-spring-scheduled/49930983
+   * https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#4
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
