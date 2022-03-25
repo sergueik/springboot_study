@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!--
+ Example HTML/javascript file that display the
+ content of a RRD archive file in a graph
+ using the Flot libraries
+ Part of the javascriptRRD package
+ Copyright (c) 2010 Frank Wuerthwein, fkw@ucsd.edu
+                    Igor Sfiligoi, isfiligoi@ucsd.edu
+
+ Original repository: http://javascriptrrd.sourceforge.net/
+ 
+ MIT License [http://www.opensource.org/licenses/mit-license.php]
+
+-->
+
+<!--
+ This page requires Flot.
+
+ Repository: http://www.flotcharts.org/
+ [Previous repository: http://code.google.com/p/flot/]
+
+-->
+
+<html>
+  
+    <script type="text/javascript" src="../lib/javascriptrrd.wlibs.js"></script>
+    <!-- the above script replaces the rrdfFlotAsync,rrdFlotMatrix, rrdFlotSelection, rrdFile, binaryXHR and all the jquery libraries -->
+  <head>
+    <title>Graph multiple RRDs with Flot</title>
+  </head>
+
+  <body>
+     <h1 id="title">Graph multiple RRDs with Flot</h1>
+
+     RRD group: <select id="input_fname" onchange="fname_update()"></select>
+     <button onclick="fname_update()">Update</button>
+    <hr>
+
+    <table id="infotable" border=1>
+        <tr><td colspan="21"><b>Javascript needed for this page to work</b></td></tr>
+	<tr><td><b>RRD file</b></td><td id="fname" colspan="5">None</td></tr>
+    </table>
+
+    <div id="mygraph"></div>
+
+    <script type="text/javascript">
+
+      // Remove the Javascript warning
+      document.getElementById("infotable").deleteRow(0);
+
+      {
+        var form_el=document.getElementById('input_fname');
+        form_el.appendChild(new Option("example4","example4"));
+       }
+    
+
+      flot_obj=new rrdFlotMatrixAsync("mygraph",null,null,null,{legend:{position:'ne'}},{'s2':{checked:false},'s1':{title:'First rrd'}});
+
+      // this function is invoked when the RRD file name changes
+      function fname_update() {
+        var base_el=document.getElementById("mygraph");
+        // First clean up anything in the element
+        while (base_el.lastChild!=null) base_el.removeChild(base_el.lastChild);
+
+        fname_group=document.getElementById("input_fname").value;
+        fname1=fname_group+"_s1.rrd";
+        fname2=fname_group+"_s2.rrd";
+        fname3=fname_group+"_s3.rrd";
+
+        flot_obj.reload([['s1',fname1],['s2',fname2],['s3',fname3]]);
+        document.getElementById("fname").firstChild.data=fname_group;
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>rrdFlot module</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 3.0  (Linux)">
+	<META NAME="Info 1" CONTENT="">
+	<META NAME="Info 2" CONTENT="">
+	<META NAME="Info 3" CONTENT="">
+	<META NAME="Info 4" CONTENT="">
+	<STYLE TYPE="text/css">
+	<!--
+		@page { margin: 0.79in }
+		TD P { margin-bottom: 0.08in }
+		H1 { margin-bottom: 0.08in }
+		H1.western { font-family: "Liberation Sans", sans-serif; font-size: 22pt }
+		P { margin-bottom: 0.08in }
+		H2.heading-2-western { font-family: "Liberation Serif", serif; font-size: 16pt }
+		TH P { margin-bottom: 0.08in }
+		A:link { so-language: zxx }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<H1 CLASS="western">rrdFlot module</H1>
+<TABLE WIDTH=50% CELLPADDING=2 CELLSPACING=2>
+	<TR>
+		<TD>
+			<HR>
+			<P>The <A HREF="../../src/lib/rrdFlot.js">rrdFlot Javascript
+			module</A> implements a class used to represents a
+			<A HREF="http://oss.oetiker.ch/rrdtool/">RDD archive</A> 
+	                as a <A HREF="http://www.flotcharts.org/">Flot</A> plot.
+                        Tooltips are provided by the <A HREF="https://github.com/krzysu/flot.tooltip/">tooltip plugin</A>.
+                        </P>
+			<HR>
+		</TD>
+	</TR>
+</TABLE>
+<H2 CLASS="heading-2-western">Overview</H2>
+<P>This module provide a single class: <A HREF="#rrdFlot">rrdFlot</A>.</P>
+<P>Given a 
+<A HREF="rrdFile_js.html#RRDFile">RRDFile</A> object, this class
+creates an interactive
+<A HREF="http://www.flotcharts.org/">Flot</A> plot.</P>
+
+<P>In order to use this module, you also need to include:
+<UL>
+ <LI><A HREF="rrdFlotSupport_js.html">rrdFlotSupport.js</A>
+ <LI><A HREF="http://www.flotcharts.org/">jquery.flot.js</A>
+ <LI><A HREF="http://jquery.com/">jquery.js</A>
+</UL></P>
+
+<H2 CLASS="heading-2-western"><A NAME="rrdFlot"></A>Class rrdFlot</H2>
+<P>The rrdFlot constructor has two to four arguments:</P>
+<DIV ALIGN=RIGHT>
+	<TABLE WIDTH=90% BORDER=1 CELLPADDING=2 CELLSPACING=3>
+		<COL WIDTH=51*>
+		<COL WIDTH=205*>
+		<THEAD>
+			<TR VALIGN=TOP>
+				<TH WIDTH=20%>
+					<P ALIGN=LEFT>Argument</P>
+				</TH>
+				<TH WIDTH=80%>
+					<P ALIGN=LEFT>Description</P>
+				</TH>
+			</TR>
+		</THEAD>
+		<TBODY>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>html_id</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>ID of a HTML element, possibly a DIV.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>rrd_file</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>An object of type <A HREF="rrdFile_js.html#RRDFile">RRDFile</A>, or equivalent.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>graph_options (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>Global graphing options. See
+				           <A HREF="http://www.flotcharts.org/">Flot documentation</A>
+		                           and
+                                           <A HREF="https://github.com/krzysu/flot.tooltip/">tooltip plugin documentation</A>
+				           for more details.</P>
+                                        <P>The recognized elements and the default values are:
+<PRE>
+  graph_options = {
+    legend: {position:"nw",noColumns:3},
+    lines: { show:true },
+    yaxis: { autoscaleMargin: 0.20},
+    tooltip: true,
+    tooltipOpts: { content: "&lth4&gt%s&lt/h4&gt Value: %y.3" }, // %s: series text, %y.3: y-value toPrecision(3)
+  };
+</PRE></P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>ds_graph_options (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>Dictionary of graphing options. This must be a dictionary of DS_id.
+				           Each element of the dictionary contains graphing options. See
+				           <A HREF="http://www.flotcharts.org/">Flot documentation</A>
+				           for more details.</P>
+                                        <P>The recognized elements and the default values are:
+<PRE>
+   {
+     title: label  or ds_name     // this is what is displayed in the checkboxes
+     checked: first_ds_in_list?   // boolean
+     label: title or ds_name      // this is what is displayed in the legend
+     color: ds_index              // see Flot docs for details
+     lines: { show:true }         // see Flot docs for details
+     yaxis: 1                     // can be 1 or 2
+     stack: 'none'                // other options are 'positive' and 'negative'
+   }
+</PRE></P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>rrdflot_defaults (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>Dictionary of rrd_flot options. All are optional. 
+                                        <P>The recognized elements and the default values are:
+<PRE>
+   {
+     graph_only: false        // If true, limit the display to the graph only
+     legend: "Top"            //Starting location of legend. Options are: 
+                              //   "Top","Bottom","TopRight","BottomRight","None".
+     num_cb_rows: 12          //How many rows of DS checkboxes per column.
+     use_elem_buttons: false  //To be used in conjunction with num_cb_rows: This option
+                              //    creates a button above every column, which selects
+                              //    every element in the column. 
+     multi_ds: false          //"true" appends the name of the aggregation function to the 
+                              //    name of the DS element. 
+     multi_rra: false         //"true" appends the name of the RRA consolidation function (CF) 
+                              //    (AVERAGE, MIN, MAX or LAST) to the name of the RRA. Useful 
+                              //    for RRAs over the same interval with different CFs.  
+     use_checked_DSs: false   //Use the list checked_DSs below.
+     checked_DSs: []          //List of elements to be checked by default when graph is loaded. 
+                              //    Overwrites graph options. 
+     use_rra: false           //Whether to use the rra index specified below.
+     rra: 0                   //RRA (rra index in rrd) to be selected when graph is loaded. 
+     use_windows: false       //Whether to use the window zoom specifications below.
+     window_min: 0            //Sets minimum for window zoom. X-axis usually in unix time. 
+     window_max: 0            //Sets maximum for window zoom.
+     graph_height: "300px"    //Height of main graph. 
+     graph_width: "500px"     //Width of main graph.
+     scale_height: "110px"    //Height of small scaler graph.
+     scale_width: "250px"     //Width of small scaler graph.
+     timezone: local time     //Timezone to plot. Options are -11 through +12
+  } 
+</PRE></P>
+See the <A HREF=:../../src/examples/rrdJFlotDefaults.html">rrdflot_defaults in action.</A>
+				</TD>
+			</TR>
+      </TABLE>
+</DIV>
+<P>Once instatiated, the object will automatically draw the plot and handle user interaction.</P>
+<TABLE WIDTH=50% CELLPADDING=2 CELLSPACING=2>
+        <TR>
+                <TD>
+                        <HR>
+                        <P>This module is part of the <A HREF="index.html">javascriptRRD
+                        package</A> hosted at <A HREF="http://javascriptrrd.sourceforge.net/">http://javascriptrrd.sourceforge.net</A>.
+                        <BR>It is licensed under the <A HREF="http://www.opensource.org/licenses/mit-license.php">MIT
+                        license</A>.
+                        </P>
+                        <HR>
+                </TD>
+        </TR>
+</TABLE>
+
+</BODY>
+</HTML>

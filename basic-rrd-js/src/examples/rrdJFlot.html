@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!--
+ Example HTML/javascript file that display the
+ content of a RRD archive file in a graph
+ using the Flot libraries
+ Part of the javascriptRRD package
+ Copyright (c) 2010 Frank Wuerthwein, fkw@ucsd.edu
+                    Igor Sfiligoi, isfiligoi@ucsd.edu
+
+ Original repository: http://javascriptrrd.sourceforge.net/
+ 
+ MIT License [http://www.opensource.org/licenses/mit-license.php]
+
+-->
+
+<!--
+ This page requires Flot.
+
+ Repository: http://www.flotcharts.org/
+ [Previous repository: http://code.google.com/p/flot/]
+
+-->
+
+<html>
+  
+    <script type="text/javascript" src="../lib/javascriptrrd.wlibs.js"></script>
+    <!-- the above script replaces the rrdfFlotAsync,rrdFlot, rrdFlotSelection, rrdFile, binaryXHR and all the jquery libraries -->
+  <head>
+    <title>RRD Graphs with Flot</title>
+  </head>
+
+  <body>
+    <h1 id="title">RRD Graphs with Flot</h1>
+
+    RRD URL:
+    <input type="text" id="input_fname" value="example1.rrd"
+           onchange="fname_update()">
+     <button onclick="fname_update()">Update</button>
+    <hr>
+
+    <table id="infotable" border=1>
+        <tr><td colspan="21"><b>Javascript needed for this page to work</b></td></tr>
+	<tr><td><b>RRD file</b></td><td id="fname" colspan="5">None</td></tr>
+    </table>
+
+    <div id="mygraph"></div>
+
+    <script type="text/javascript">
+
+      // Remove the Javascript warning
+      document.getElementById("infotable").deleteRow(0);
+
+      var graph_opts={legend: { noColumns:4}};
+      var ds_graph_opts={'Oscilator':{ color: "#ff8000", 
+                                       lines: { show: true, fill: true, fillColor:"#ffff80"} },
+                         'Idle':{ label: 'IdleJobs', color: "#00c0c0", 
+                                  lines: { show: true, fill: true} },
+                         'Running':{color: "#000000",yaxis:2}};
+
+      flot_obj=new rrdFlotAsync("mygraph",null,null,graph_opts,ds_graph_opts);
+
+      // this function is invoked when the RRD file name changes
+      function fname_update() {
+        var fname=document.getElementById("input_fname").value;
+        flot_obj.reload(fname);
+        document.getElementById("fname").firstChild.data=fname;
+      }
+
+    </script>
+  </body>
+</html>

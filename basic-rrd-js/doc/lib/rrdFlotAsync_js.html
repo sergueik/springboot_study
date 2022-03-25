@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>rrdFlotAsync module</TITLE>
+	<META NAME="GENERATOR" CONTENT="LibreOffice 3.6  (Linux)">
+	<META NAME="CREATED" CONTENT="0;0">
+	<META NAME="CHANGED" CONTENT="20131107;21435000">
+	<META NAME="Info 1" CONTENT="">
+	<META NAME="Info 2" CONTENT="">
+	<META NAME="Info 3" CONTENT="">
+	<META NAME="Info 4" CONTENT="">
+	<STYLE TYPE="text/css">
+	<!--
+		@page { margin: 0.79in }
+		TD P { margin-bottom: 0.08in }
+		H1 { margin-bottom: 0.08in }
+		H1.western { font-family: "Liberation Sans", sans-serif; font-size: 22pt }
+		P { margin-bottom: 0.08in }
+		H2.heading-2-western { font-family: "Liberation Serif", serif; font-size: 16pt }
+		TH P { margin-bottom: 0.08in }
+		A:link { so-language: zxx }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<H1 CLASS="western">rrdFlotAsync module</H1>
+<TABLE WIDTH=50% CELLPADDING=2 CELLSPACING=2>
+	<TR>
+		<TD STYLE="border: none; padding: 0in">
+			<HR>
+			<P>The <A HREF="../../src/lib/rrdFlotAsync.js">rrdFlotAsync
+			Javascript module</A> implements a class used to represents a <A HREF="http://oss.oetiker.ch/rrdtool/">RDD
+			archive</A> as a <A HREF="http://www.flotcharts.org/">Flot</A>
+			plot. Tooltips are provided by the <A HREF="https://github.com/krzysu/flot.tooltip/">tooltip
+			plugin</A>. 
+			</P>
+			<HR>
+		</TD>
+	</TR>
+</TABLE>
+<H2 CLASS="heading-2-western">Overview</H2>
+<P>This module provide three classes:
+<UL>
+	<LI><A HREF="#rrdFlotAsync">rrdFlotAsync</A>
+	<LI><A HREF="#rrdFlotSumAsync">rrdFlotSumAsync</A>
+	<LI><A HREF="#rrdFlotMatrixAsync">rrdFlotMatrixAsync</A>
+</UL>
+</P>
+<P>Given one or more URLs, these classes asynchronously load the
+files, and when all are loaded, create an interactive <A HREF="http://www.flotcharts.org/">Flot</A>
+plot.</P>
+<P>In order to use this module, you also need to include (along with
+their dependencies): 
+<UL>
+	<LI><A HREF="rrdFile_js.html">rrdFile.js</A>
+	or <A HREF="rrdMultiFile_js.html">rrdMultiFile.js</A> 
+	<LI><A HREF="rrdFlot_js.html">rrdFlot.js</A>
+	or <A HREF="rrdFlotMatrix_js.html">rrdFlotMatrix.js</A> 
+	<LI><A HREF="rrdFilter_js.html">rrdFilter.js</A> 
+</UL>
+<P>
+<H2 CLASS="heading-2-western"><A NAME="rrdFlotAsync"></A>Class rrdFlotAsync</H2>
+<P>This class creates a graph out of single file.</P>
+<P>The rrdFlotAsync constructor has two to nine arguments:</P>
+<DIV ALIGN=RIGHT>
+	<TABLE WIDTH=90% CELLPADDING=2 CELLSPACING=0 BORDER=1>
+		<COL WIDTH=51*>
+		<COL WIDTH=205*>
+		<THEAD>
+			<TR VALIGN=TOP>
+				<TH WIDTH=20%>
+					<P ALIGN=LEFT>Argument</P>
+				</TH>
+				<TH WIDTH=80%>
+					<P ALIGN=LEFT>Description</P>
+				</TH>
+			</TR>
+		</THEAD>
+		<TBODY>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>html_id</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>ID of a HTML element, possibly a DIV.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>url</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>A string pointing to the file to load.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>file_options (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>See <A HREF="rrdFile_js.html#RRDFile">RRDFile</A> constructor
+					for details.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>graph_options (optional)</P>
+				</TD>
+				<TD ROWSPAN=3 WIDTH=80%>
+					<P>See <A HREF="rrdFlot_js.html#rrdFlot">rrdFlot</A>
+					constructor for details.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>ds_graph_options (optional)</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>rrdflot_defaults (optional)</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>ds_op_list (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>If present, will wrap the data in <A HREF="rrdFilter_js.html#RRDFilterOp">RRDFilterOp</A></P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>rrd_op_list (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>If present, will wrap the data in <A HREF="rrdFilter_js.html#RRDRRAFilterAvg">RRDRRAFilterAvg</A></P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>customization_callback (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>If present, will be called after the data has been loaded and
+					before the graph is drawn</P>
+				</TD>
+			</TR>
+		</TBODY>
+	</TABLE>
+</DIV>
+<P>Once instantiated, the object will automatically draw the plot and
+handle user interaction.</P>
+<H2 CLASS="heading-2-western"><A NAME="rrdFlotSumAsync"></A>Class rrdFlotSumAsync</H2>
+<P>This class creates a graph out of a set of files, using 
+<A HREF="rrdMultiFile_js.html#RRDFileSum">RRDFileSum</A> to glue them
+together.</P>
+<P>The rrdFlotSumAsync constructor has two to ten arguments:</P>
+<DIV ALIGN=RIGHT>
+	<TABLE WIDTH=90% CELLPADDING=2 CELLSPACING=0 BORDER=1>
+		<COL WIDTH=51*>
+		<COL WIDTH=205*>
+		<THEAD>
+			<TR VALIGN=TOP>
+				<TH WIDTH=20%>
+					<P ALIGN=LEFT>Argument</P>
+				</TH>
+				<TH WIDTH=80%>
+					<P ALIGN=LEFT>Description</P>
+				</TH>
+			</TR>
+		</THEAD>
+		<TBODY>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>html_id</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>ID of a HTML element, possibly a DIV.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>url_list</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>A list of strings pointing to the files to load.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>file_options (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>See <A HREF="rrdFile_js.html#RRDFile">RRDFile</A> constructor
+					for details.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>sumfile_options (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>See <A HREF="rrdMultiFile_js.html#RRDFileSum">RRDFileSum</A>
+					constructor for details.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>graph_options (optional)</P>
+				</TD>
+				<TD ROWSPAN=3 WIDTH=80%>
+					<P>See <A HREF="rrdFlot_js.html#rrdFlot">rrdFlot</A>
+					constructor for details.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>ds_graph_options (optional)</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>rrdflot_defaults (optional)</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>ds_op_list (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>If present, will wrap the data in <A HREF="rrdFilter_js.html#RRDFilterOp">RRDFilterOp</A></P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>rrd_op_list (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>If present, will wrap the data in <A HREF="rrdFilter_js.html#RRDRRAFilterAvg">RRDRRAFilterAvg</A></P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>customization_callback (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>If present, will be called after the data has been loaded and
+					before the graph is drawn</P>
+				</TD>
+			</TR>
+		</TBODY>
+	</TABLE>
+</DIV>
+<P>Once instantiated, the object will automatically draw the plot and
+handle user interaction.</P>
+<H2 CLASS="heading-2-western"><A NAME="rrdFlotMatrixAsync"></A>Class rrdFlotMatrixAsync</H2>
+<P>This class creates a graph out of a set of files, using
+<A HREF="rrdFlotMatrix_js.html#rrdFlotMatrix">rrdFlotMatrix</A> to
+glue them together.</P>
+<P>The rrdFlotMatrixAsync constructor has two to ten arguments:</P>
+<DIV ALIGN=RIGHT>
+	<TABLE WIDTH=90% CELLPADDING=2 CELLSPACING=0 BORDER=1>
+		<COL WIDTH=51*>
+		<COL WIDTH=205*>
+		<THEAD>
+			<TR VALIGN=TOP>
+				<TH WIDTH=20%>
+					<P ALIGN=LEFT>Argument</P>
+				</TH>
+				<TH WIDTH=80%>
+					<P ALIGN=LEFT>Description</P>
+				</TH>
+			</TR>
+		</THEAD>
+		<TBODY>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>html_id</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>ID of a HTML element, possibly a DIV.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>url_list</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>A list of tuples pointing to the files to load. Each tuple
+					must be [file_id, file_url].</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>file_options (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>See <A HREF="rrdFile_js.html#RRDFile">RRDFile</A> constructor
+					for details.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>ds_list (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>See <A HREF="rrdFlotMatrix_js.html#rrdFlotMatrix">rrdFlotMatrix</A>
+					constructor for details.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>graph_options (optional)</P>
+				</TD>
+				<TD ROWSPAN=3 WIDTH=80%>
+					<P>See <A HREF="rrdFlotMatrix_js.html#rrdFlotMatrix">rrdFlotMatrix</A>
+					constructor for details.</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>ds_graph_options (optional)</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>rrdflot_defaults (optional)</P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>ds_op_list (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>If present, will wrap the data in <A HREF="rrdFilter_js.html#RRDFilterOp">RRDFilterOp</A></P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>rrd_op_list (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>If present, will wrap the data in <A HREF="rrdFilter_js.html#RRDRRAFilterAvg">RRDRRAFilterAvg</A></P>
+				</TD>
+			</TR>
+			<TR VALIGN=TOP>
+				<TD WIDTH=20%>
+					<P>customization_callback (optional)</P>
+				</TD>
+				<TD WIDTH=80%>
+					<P>If present, will be called after the data has been loaded and
+					before the graph is drawn</P>
+				</TD>
+			</TR>
+		</TBODY>
+	</TABLE>
+</DIV>
+<P>Once instantiated, the object will automatically draw the plot and
+handle user interaction.</P>
+<TABLE WIDTH=50% CELLPADDING=2 CELLSPACING=2>
+	<TR>
+		<TD>
+			<HR>
+			<P>This module is part of the <A HREF="index.html">javascriptRRD
+			package</A> hosted at <A HREF="http://javascriptrrd.sourceforge.net/">http://javascriptrrd.sourceforge.net</A>.
+			<BR>It is licensed under the <A HREF="http://www.opensource.org/licenses/mit-license.php">MIT
+			license</A>. 
+			</P>
+			<HR>
+		</TD>
+	</TR>
+</TABLE>
+<P><BR><BR>
+</P>
+</BODY>
+</HTML>

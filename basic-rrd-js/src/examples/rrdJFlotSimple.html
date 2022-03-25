@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!--
+ Example HTML/javascript file that display the
+ content of a RRD archive file in a graph
+ using the Flot libraries
+ Part of the javascriptRRD package
+ Copyright (c) 2010 Frank Wuerthwein, fkw@ucsd.edu
+                    Igor Sfiligoi, isfiligoi@ucsd.edu
+
+ Original repository: http://javascriptrrd.sourceforge.net/
+ 
+ MIT License [http://www.opensource.org/licenses/mit-license.php]
+
+-->
+
+<!--
+ This page requires Flot.
+
+ Repository: http://www.flotcharts.org/
+ [Previous repository: http://code.google.com/p/flot/]
+
+-->
+
+<html>
+  
+    <script type="text/javascript" src="../lib/javascriptrrd.wlibs.js"></script>
+    <!-- the above script replaces the rrdfFlotAsync,rrdFlot, rrdFlotSelection, rrdFile, binaryXHR and all the jquery libraries -->
+
+  <head>
+    <title>RRD Graphs with Flot - Simplified version</title>
+  </head>
+
+  <body>
+    <h1 id="title">RRD Graphs with Flot - Simplified version</h1>
+
+    RRD URL: example3.rrd
+    <br>
+    <table width="100%">
+    <tr><td width="50%">
+    DS: SignChanger
+    <br>
+    RRA: 1
+    </td>
+    <td>
+    DS: Oscilator
+    <br>
+    RRA: 0
+    </td></tr>
+    </table>
+    <hr>
+
+    <table id="infotable" border=1>
+        <tr><td colspan="21"><b>Javascript needed for this page to work</b></td></tr>
+    </table>
+
+    <table width="100%">
+    <tr><td width="50%">
+    <div id="mygraph1"></div>
+    </td>
+    <td>
+    <div id="mygraph2"></div>
+    </td></tr>
+    </table>
+
+    <script type="text/javascript">
+
+      // Remove the Javascript warning
+      document.getElementById("infotable").deleteRow(0);
+
+      var ds_graph_opts={'Oscilator':{ color: "#ff8000", 
+                                       lines: { show: true, fill: true, fillColor:"#ffff80"} }}
+
+      var graph_opts1={legend: { noColumns:4}, yaxis:{max:250,min:-200}};
+      var rrdflot_defaults1={graph_only:true,use_checked_DSs:true,checked_DSs:['SignChanger'],use_rra:true,rra:1}
+      // the rrdFlotAsync object creates and handles the graph
+      var f1=new rrdFlotAsync("mygraph1","example3.rrd",null,graph_opts1,ds_graph_opts,rrdflot_defaults1);
+
+      var graph_opts2={legend: { noColumns:4}, yaxis:{min:100},tooltipOpts:{content:"MyValue: %y.3"}};
+      var rrdflot_defaults2={graph_only:true,use_checked_DSs:true,checked_DSs:['Oscilator'],use_rra:true,rra:0}
+      // the rrdFlotAsync object creates and handles the graph
+      var f2=new rrdFlotAsync("mygraph2","example3.rrd",null,graph_opts2,ds_graph_opts,rrdflot_defaults2);
+    </script>
+  </body>
+</html>
