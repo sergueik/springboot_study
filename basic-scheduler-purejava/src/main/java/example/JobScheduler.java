@@ -36,6 +36,18 @@ import static org.junit.Assert.fail;
 public class JobScheduler implements Runnable {
 
 	private final static int interval = 1000;
+	final public static int ONCE = 1;
+	final public static int FOREVER = -1;
+	// happening every minute
+	// https://english.stackexchange.com/questions/3091/weekly-daily-hourly-minutely#:~:text=The%20use%20of%20'minutely'%20in%20the%20sense%20of%20%22minute,retained%20for%20general%20technical%20use.
+
+	final public static long PER_MINUTE = (long) 60 * 1000;
+	final public static long PER_SECOND = (long) 1000;
+	final public static long HOURLY = (long) 60 * 60 * 1000;
+	final public static long DAILY = 24 * HOURLY;
+	final public static long WEEKLY = 7 * DAILY;
+	final public static long MONTHLY = -1;
+	final public static long YEARLY = -2;
 
 	public static void main(String[] args) throws Exception {
 		Runnable r1 = new Runnable() {
@@ -97,20 +109,13 @@ public class JobScheduler implements Runnable {
 		// js.cancel(r2);
 
 		// Test 3 - Interval Test
+		// js.executeInAndRepeat(r3, 10000L, JobScheduler.PER_MINUTE);
 		// js.executeInAndRepeat(r3, 10000L, JobScheduler.HOURLY);
 		// js.executeInAndRepeat(r3, 10000L, JobScheduler.DAILY);
 		// js.executeInAndRepeat(r3, 10000L, JobScheduler.WEEKLY);
 		// js.executeInAndRepeat(r3, 10000L, JobScheduler.MONTHLY);
 		// js.executeInAndRepeat(r3, 10000L, JobScheduler.YEARLY);
 	}
-
-	final public static int ONCE = 1;
-	final public static int FOREVER = -1;
-	final public static long HOURLY = (long) 60 * 60 * 1000;
-	final public static long DAILY = 24 * HOURLY;
-	final public static long WEEKLY = 7 * DAILY;
-	final public static long MONTHLY = -1;
-	final public static long YEARLY = -2;
 
 	private class JobNode {
 		public Runnable job;

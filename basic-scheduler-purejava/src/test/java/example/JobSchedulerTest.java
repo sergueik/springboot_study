@@ -27,7 +27,8 @@ public class JobSchedulerTest {
 	private Runnable task;
 	private JobScheduler sut;
 	private final long interval = 5000L;
-	private final Date laterDate = new Date(System.currentTimeMillis() + interval);
+	private final Date laterDate = new Date(
+			System.currentTimeMillis() + interval);
 
 	@BeforeClass
 	public static void setUpClass() {
@@ -99,11 +100,11 @@ public class JobSchedulerTest {
 	@Test
 	public void test6() {
 		sut.executeIn(task, interval);
-		sut.executeAtAndRepeat(task, laterDate, interval);
+		sut.executeAtAndRepeat(task, laterDate, JobScheduler.PER_SECOND);
 		try {
-			Thread.sleep(3 * interval);
+			Thread.sleep(interval + JobScheduler.PER_MINUTE);
 		} catch (InterruptedException e) {
 		}
-		verify(task, atLeast(2)).run();
+		verify(task, atLeast(59)).run();
 	}
 }
