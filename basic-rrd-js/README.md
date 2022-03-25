@@ -19,16 +19,16 @@ docker run -d -p 8080:80 --name $NAME $NAME
 
 * open demo page [http://127.0.0.1:8080/src/examples/index.html](http://127.0.0.1:8080/src/examples/index.html) in the browser
 
-![Sample Header Information](https://github.com/sergueik/springboot_study/blob/master/basic-yugabytedb/screenshots/rrd_header_capture.png)
+![Sample Header Information](https://github.com/sergueik/springboot_study/blob/master/basic-rrd-js/screenshots/rrd_header_capture.png)
 
-![Sample Graph with Flot](https://github.com/sergueik/springboot_study/blob/master/basic-yugabytedb/screenshots/rrd_graph_capture.png)
+![Sample Graph with Flot](https://github.com/sergueik/springboot_study/blob/master/basic-rrd-js/screenshots/rrd_graph_capture.png)
 Use absolute path to access procided sample `rrd` files:
 ```sh
 /data/example_rrds/example4.rrd
 ```
 ### Cleanup
 
-``sh
+```sh
 docker rm -f $NAME
 ```
 
