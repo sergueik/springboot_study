@@ -1,40 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true">
-  <appender name="console" class="org.apache.log4j.ConsoleAppender">
-    <param name="Target" value="System.err"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%-5p %c{1} - %m%n"/>
-    </layout>
-  </appender>
-  <appender name="file" class="org.apache.log4j.FileAppender">
-    <param name="File" value="logs/App.log"/>
-    <param name="Append" value="true"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%t %-5p %c{2} - %m%n"/>
-    </layout>
-  </appender>
-  <appender name="rabbitmq" class="example.appenders.RabbitMQAppender">
-    <param name="identifier" value="identifier"/>
-    <param name="host" value="localhost"/>
-    <param name="port" value="5672"/>
-    <param name="username" value="guest"/>
-    <param name="password" value="guest"/>
-    <param name="virtualHost" value="/"/>
-    <param name="exchange" value="log4j-exchange"/>
-    <param name="type" value="direct"/>
-    <param name="durable" value="false"/>
-    <param name="queue" value="log4j-queue"/>
-    <param name="routingKey" value=""/>
-    <layout class="example.layouts.ElasticSearchJSONLayout">
-      <param name="index" value="logging"/>
-      <param name="type" value="errors"/>
-    </layout>
-  </appender>
-  <root>
-    <level value="DEBUG"/>
-    <appender-ref ref="file"/>
-    <appender-ref ref="console"/>
-    <appender-ref ref="rabbitmq"/>
-  </root>
+<!DOCTYPE log4j:configuration SYSTEM "log4j2.dtd">
+<!-- Unclear if it is possible to convert -->
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+	debug="true">
+	<appender name="console" class="org.apache.log4j2.ConsoleAppender">
+		<param name="Target" value="System.err" />
+		<layout class="org.apache.log4j2.PatternLayout">
+			<param name="ConversionPattern" value="%-5p %c{1} - %m%n" />
+		</layout>
+	</appender>
+	<appender name="file" class="org.apache.log4j2.FileAppender">
+		<param name="File" value="logs/App.log" />
+		<param name="Append" value="true" />
+		<layout class="org.apache.log4j2.PatternLayout">
+			<param name="ConversionPattern" value="%t %-5p %c{2} - %m%n" />
+		</layout>
+	</appender>
+	<appender name="rabbitmq" class="example.appenders.RabbitMQAppender">
+		<param name="identifier" value="identifier" />
+		<param name="host" value="localhost" />
+		<param name="port" value="5672" />
+		<param name="username" value="guest" />
+		<param name="password" value="guest" />
+		<param name="virtualHost" value="/" />
+		<param name="exchange" value="log4j-exchange" />
+		<param name="type" value="direct" />
+		<param name="durable" value="false" />
+		<param name="queue" value="log4j-queue" />
+		<param name="routingKey" value="" />
+		<layout class="example.layouts.ElasticSearchJSONLayout">
+			<param name="index" value="logging" />
+			<param name="type" value="errors" />
+		</layout>
+	</appender>
+	<root>
+		<level value="DEBUG" />
+		<appender-ref ref="file" />
+		<appender-ref ref="console" />
+		<appender-ref ref="rabbitmq" />
+	</root>
 </log4j:configuration>

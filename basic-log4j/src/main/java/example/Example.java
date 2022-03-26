@@ -32,16 +32,23 @@ public class Example {
 	@GetMapping
 	public String handler(@RequestParam(required = false) String data) {
 		String decodedData = data;
-		loghelper.info("raw data: " + data);
-		if (LogHelper.getLogger().isTraceEnabled()) {
-			loghelper.trace("raw data: " + data);
+		if (data != null) {
+			loghelper.info("raw data: " + data);
+			if (LogHelper.getLogger().isTraceEnabled()) {
+				loghelper.trace("raw data: " + data);
+			}
+			try {
+				decodedData = URLDecoder.decode(data,
+						StandardCharsets.UTF_8.toString());
+			} catch (UnsupportedEncodingException e) {
+				// ignore
+			}
+			loghelper.info(String.format("handler received: %s", decodedData));
+			return ("handler received: " + decodedData);
+		} else {
+			loghelper.info("handler received: no data");
+			return ("handler received: no data");
+
 		}
-		try {
-			decodedData = URLDecoder.decode(data, StandardCharsets.UTF_8.toString());
-		} catch (UnsupportedEncodingException e) {
-			// ignore
-		}
-		loghelper.info(String.format("handler received: %s", decodedData));
-		return ("handler received: " + decodedData);
 	}
 }

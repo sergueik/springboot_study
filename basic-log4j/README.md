@@ -1,6 +1,7 @@
 ### Info
 
-This project contains [minimal demo code of log4j example]
+This project contains minimal demo code of log4j example. Since the Apache Log4j 1.2 reached end of life in August 2015, the log4j dependency is replaced in this project with a log4j2 one, while illustrating how to keep the configuration file `log4j.xml`
+
 ### Usage
 
 #### Testing Locally
