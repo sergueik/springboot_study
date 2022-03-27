@@ -3,7 +3,7 @@ ARG WORKDIR="/work"
 ENV UID=1000
 # Note: will update UID on the fly with $(id -u) of the host user before building
 ENV EDITOR=nano
-ARG app_jar="example.log4j2.jar"
+ARG app_jar="example.log4j.jar"
 ARG USER_NAME=myuser
 ARG GROUP_NAME=myuser
 RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
@@ -12,7 +12,7 @@ RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/reposito
   mkdir -p $WORKDIR/logs && chown -R $USER_NAME:$GROUP_NAME $WORKDIR/logs
 USER $USER_NAME
 ADD "target/${app_jar}" $WORKDIR/app.jar
-
+ADD src/main/resources/log4j.properties $WORKDIR/src/main/resources/
 EXPOSE 8080
 WORKDIR $WORKDIR
 ENTRYPOINT ["java", "-jar", "/work/app.jar"]
