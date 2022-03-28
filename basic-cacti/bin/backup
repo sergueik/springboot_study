@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Grab some env from root
+. /root/.bashrc
+
+# Clean up first (We don't delete these after backup because they could come in hand later.)
+rm -f /tmp/mysql-conf.tgz /tmp/cacti-data.tgz /tmp/apache-conf.tgz /tmp/php-conf.tgz /tmp/mysql-data.sql
+
+# Create a rolling 24-hour backup.
+DATESTAMP=$(date +%H-%M)
+
+# MySQL data
+mysqldump -ubackups -p${BACKUPS} --all-databases --add-locks --single-transaction --flush-privileges --max_allowed_packet=1073741824 > /tmp/mysql-data.sql
+
+# MySQL configs
+cd /etc/mysql
+tar -zcf /tmp/mysql-conf.tgz ./*
+
+# Cacti data
+cd /var/lib/cacti/rra
+tar -zcf /tmp/cacti-data.tgz ./*
+
+# Apache configs
+cd /etc/apache2
+tar -zcf /tmp/apache-conf.tgz ./*
+
+# PHP configs
+cd /etc/php7
+tar -zcf /tmp/php-conf.tgz ./*
+
+# Bundle it all up, and link it to the latest.
+tar -zcf /var/backups/cacti-backup-${DATESTAMP}.tgz -C /tmp mysql-data.sql mysql-conf.tgz cacti-data.tgz apache-conf.tgz php-conf.tgz
+rm -f /var/backups/cacti-backup-latest.tgz
+ln -s /var/backups/cacti-backup-${DATESTAMP}.tgz /var/backups/cacti-backup-latest.tgz

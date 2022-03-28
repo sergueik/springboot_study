@@ -1,0 +1,406 @@
+#!/bin/bash -x
+
+# Check for passwords at container startup
+# Fail to start the container if not provided
+if [[ -z "$MYSQL" ]]
+then
+    echo "Password for MySQL/MariaDB root user was not provided."
+    exit 1
+fi
+
+# Create new passwords for cacti and backups users
+echo "Creating passwords for cactiuser and backups."
+CACTI=$(base64 /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 27 | head -n1)
+export BACKUPS=$(base64 /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 27 | head -n1)
+
+# All the default confgs from package installtion are here.
+# If any are missing from their normal locations at startup,
+# the steps below will restore them.
+BACKUPDIR="/root/default-configs"
+
+# It's who we are
+export CACTI_FQDN=$(hostname)
+# It's when we are
+TIMESTAMP=$(date +%Y-%m-%d-%H%M%S)
+
+# Set the container timezone, for Spine
+rm -f /etc/localtime
+ln -s /usr/share/zoneinfo/${TZ} /etc/localtime
+
+# Look for the main httpd.conf
+# If it's missing, the rest doesn't matter and will be moved to bak.
+echo "Setting up Apache configs."
+if [[ ! -f /etc/apache2/httpd.conf ]]
+then
+    # We don't want anything else that might be in there either
+    mkdir -p /etc/apache2/bak/${TIMESTAMP}
+    cd /etc/apache2
+    EXISTING_DATA=$(ls -1 | grep -v bak)
+    if [[ ! -z ${EXISTING_DATA} ]]
+    then
+        mv ${EXISTING_DATA} /etc/apache2/bak/${TIMESTAMP}/
+    fi
+    # Copy in the defaults
+    cp -rpf ${BACKUPDIR}/apache/* /etc/apache2/
+fi
+
+# Set the Apache listening port
+if [[ ! -z "${OLD_PORT}" ]]
+then
+    sed -i "s|Listen ${OLD_PORT}|Listen 80|" ${BACKUPDIR}/apache/httpd.conf
+fi
+sed -i "s|Listen 80|Listen ${PORT}|" ${BACKUPDIR}/apache/httpd.conf
+
+# Drop the current host name into a config file so Apache doesn't complain about it at startup
+echo "ServerName ${CACTI_FQDN}" > /etc/apache2/conf.d/fqdn.conf
+
+# Look for the main php.ini file
+# If it's missing, the rest doesn't matter and will be moved to bak.
+echo "Setting up PHP configs and modifications."
+if [[ ! -f /etc/php7/php.ini ]]
+then
+    mkdir -p /etc/php7/bak/${TIMESTAMP}
+    cd /etc/php7
+    EXISTING_DATA=$(ls -1 | grep -v bak)
+    if [[ ! -z ${EXISTING_DATA} ]]
+    then
+        mv -f ${EXISTING_DATA} /etc/php7/bak/${TIMESTAMP}/
+    fi
+    sed -i "s|\;date.timezone =|date.timezone = \"${TZ}\"|" ${BACKUPDIR}/php7/php.ini
+    sed -i "s|memory_limit = 128M|memory_limit = 512M|" ${BACKUPDIR}/php7/php.ini
+    sed -i "s|max_execution_time = 30|max_execution_time = 60|" ${BACKUPDIR}/php7/php.ini
+    cp -rpf ${BACKUPDIR}/php7/* /etc/php7/
+fi
+
+# Look for main my.cnf file
+# If it's mising, the rest doesn't matter
+# Everything else will be moved to bak.
+echo "Setting up MariaDB configs."
+if [[ ! -f /etc/my.cnf ]] || [[ ! -f /etc/my.cnf.d/mariadb-server.cnf ]]
+then
+    mkdir -p /etc/mysql/bak/${TIMESTAMP}
+    cd /etc
+    EXISTING_DATA=$(ls -1 | grep -v bak | grep my)
+    if [[ ! -z ${EXISTING_DATA} ]]
+    then
+        mv ${EXISTING_DATA} /etc/mysql/bak/${TIMESTAMP}/
+    fi
+    cp -rpf ${BACKUPDIR}/mysql/my* /etc/
+    # Then set our config
+    cat > /etc/my.cnf.d/mariadb-server.cnf <<EOF
+[client]
+default-character-set=utf8mb4
+
+[mysql]
+default-character-set=utf8mb4
+
+[mysqld]
+collation-server = utf8mb4_unicode_ci
+init-connect='SET NAMES utf8mb4'
+character-set-server = utf8mb4
+
+[mariadb]
+collation_server = utf8mb4_unicode_ci
+character_set_server = utf8mb4
+character_set_client_handshake = utf8mb4
+max_connections = 100
+max_heap_table_size = 768M
+table_cache = 200
+max_allowed_packet = 16M
+tmp_table_size = 1024M
+join_buffer_size = 1536M
+innodb_file_per_table = ON
+innodb_buffer_pool_size = 12288M
+innodb_buffer_pool_instances = 64
+innodb_doublewrite = OFF
+innodb_lock_wait_timeout = 50
+innodb_flush_log_at_timeout = 3
+innodb_flush_log_at_trx_commit = 2
+innodb_io_capacity = 5000
+innodb_io_capacity_max = 10000
+innodb_read_io_threads = 34
+innodb_write_io_threads = 17
+innodb_file_format = Barracuda
+innodb_large_prefix = 1
+net_read_timeout = 120
+net_write_timeout = 120
+EOF
+fi
+
+cat > /root/.my.cnf <<EOF
+[mysqladmin]
+user=root
+password=${MYSQL}
+[mysql]
+user=root
+password=${MYSQL}
+EOF
+chmod -R 0700 /root/.my.cnf
+
+# This is used below in two different contexts.
+function user_perms(){
+    # Set up cacti application access to the database
+    # The success of all this depends on the correct MySQL root password being provided.
+    # Clear out old user tables entries
+    echo "Setting up MariaDB users and permissions."
+    mysql <<EOF
+DROP USER IF EXISTS 'cactiuser'@'localhost';
+DROP USER IF EXISTS 'backups'@'localhost';
+DELETE FROM mysql.user WHERE User='cactiuser' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+DELETE FROM mysql.user WHERE User='backups' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+FLUSH PRIVILEGES;
+
+CREATE USER 'cactiuser'@'${CACTI_FQDN}' IDENTIFIED BY '${CACTI}';
+CREATE USER 'backups'@'${CACTI_FQDN}' IDENTIFIED BY '${BACKUPS}';
+CREATE USER 'cactiuser'@'localhost' IDENTIFIED BY '${CACTI}';
+CREATE USER 'backups'@'localhost' IDENTIFIED BY '${BACKUPS}';
+
+GRANT LOCK TABLES, SELECT ON *.* TO 'backups'@'${CACTI_FQDN}' IDENTIFIED BY '${BACKUPS}';
+GRANT LOCK TABLES, SELECT ON *.* TO 'backups'@'localhost' IDENTIFIED BY '${BACKUPS}';
+
+GRANT ALL ON cacti.* TO 'cactiuser'@'${CACTI_FQDN}' IDENTIFIED BY '${CACTI}';
+GRANT ALL ON cacti.* TO 'cactiuser'@'localhost' IDENTIFIED BY '${CACTI}';
+
+GRANT SELECT ON mysql.time_zone_name TO 'cactiuser'@'${CACTI_FQDN}' IDENTIFIED BY '${CACTI}';
+GRANT SELECT ON mysql.time_zone_name TO 'cactiuser'@'localhost' IDENTIFIED BY '${CACTI}';
+
+FLUSH PRIVILEGES;
+EOF
+}
+
+# Check for the presence of a cacti database folder in the mysql data
+# If it's missing, initialize MySQL/MariaDB.
+# Everything else will be moved to bak.
+echo "Setting up cacti database."
+if [[ ! -d /var/lib/mysql/cacti ]]
+then
+    # Start from fresh
+    # Move any existing files out of the way
+    mkdir -p /var/lib/mysql/bak/${TIMESTAMP}
+    cd /var/lib/mysql
+    EXISTING_DATA=$(ls -1 | grep -v bak)
+    if [[ ! -z ${EXISTING_DATA} ]]
+    then
+        mv ${EXISTING_DATA} /var/lib/mysql/bak/${TIMESTAMP}/
+    fi
+    # Initialize the database
+    echo "Initializing MariaDB. This is a first-time run."
+    /etc/init.d/mariadb setup
+    # Start MySQL/MariaDB
+    nohup /usr/bin/mysqld_safe --datadir="/var/lib/mysql" &
+    sleep 3
+    # Set the MySQL root password
+    mysqladmin -uroot password ${MYSQL}
+    # Clean up for production
+    echo "Removing unwanted accounts from MariaDB."
+    mysql <<EOF
+DELETE FROM mysql.user WHERE User='';
+DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
+DROP DATABASE IF EXISTS test;
+DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
+FLUSH PRIVILEGES;
+EOF
+    # Ingest timezone data from the O/S
+    echo "Setting up timezone info."
+    mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql mysql
+    # Set the current timezone for MySQL
+    echo 'default-time-zone = '$TZ >> /etc/my.cnf.d/mariadb-server.cnf
+    # Refresh the running MySQL server
+    mysqladmin shutdown
+    nohup /usr/bin/mysqld_safe --datadir="/var/lib/mysql" &
+    sleep 3
+    # Create the cacti database
+    echo "Creating the cacti database."
+    mysqladmin create cacti
+    # Ingest the cacti initialization script
+    mysql cacti < /opt/cacti/cacti.sql
+    # Add one-minute polling RRAs
+    # https://www.tolaris.com/2013/07/09/cacti-and-1-minute-polling/comment-page-1/
+    # Add the default admin user's startup preferences
+     echo "Modifying cacti DB to handle one-minute polling."
+     mysql cacti <<EOF
+INSERT INTO data_source_profiles VALUES (3,'48f01ca42a88cfc169d019312cb6f70f','One-Minute Polling',60,120,0.5,'');
+INSERT INTO data_source_profiles_cf VALUES (3,1),(3,2),(3,3),(3,4);
+INSERT INTO data_source_profiles_rra VALUES (9,3,'Hourly (1-Minute Average @ 1-Minute Interval)',1,10080,3600);
+INSERT INTO data_source_profiles_rra VALUES (10,3,'Daily (5-Minute Average @ 1-Minute Interval)',5,8640,86400);
+INSERT INTO data_source_profiles_rra VALUES (11,3,'Weekly (30-Minute Average @ 1-Minute Interval)',30,4320,604800);
+INSERT INTO data_source_profiles_rra VALUES (12,3,'Monthly (2-Hour Average @ 1-Minute Interval)',120,2160,2618784);
+INSERT INTO data_source_profiles_rra VALUES (13,3,'Yearly (1-Day Average @ 1-Minute Interval)',1440,1461,31536000);
+INSERT INTO settings_user VALUES (1,'allow_graph_dates_in_future','on'),(1,'axis_font',''),(1,'axis_size','8'),(1,'custom_fonts',''),
+(1,'day_shift_end','18:00'),(1,'day_shift_start','07:00'),(1,'default_date_format','3'),(1,'default_datechar','1'),(1,'default_height','100'),
+(1,'default_rra_id','9'),(1,'default_timeshift','7'),(1,'default_timespan','1'),(1,'default_tree_id','1'),(1,'default_view_mode','1'),
+(1,'default_width','300'),(1,'expand_hosts',''),(1,'first_weekdayid','1'),(1,'graph_template_id','0'),(1,'hide_disabled','on'),
+(1,'legend_font',''),(1,'legend_size','10'),(1,'num_columns','3'),(1,'num_columns_tree','3'),(1,'page_refresh','300'),
+(1,'preview_graphs_per_page','24'),(1,'selected_theme','modern'),(1,'show_graph_title',''),(1,'thumbnail_section_preview',''),
+(1,'thumbnail_section_tree_2','on'),(1,'title_font',''),(1,'title_size','12'),(1,'treeview_graphs_per_page','24'),(1,'unit_font',''),
+(1,'unit_size','8'),(1,'user_language','en-US');
+INSERT INTO settings VALUES ('poller_interval', 60);
+INSERT INTO settings VALUES ('cron_interval', 60);
+INSERT INTO settings VALUES ('poller_type', 2);
+INSERT INTO settings VALUES ('path_spine_config', '/usr/local/spine/etc/spine.conf');
+EOF
+
+    user_perms
+
+    # Set the DB info for cacti.
+    # Many characters can disrupt this.
+    # Avoid & and ! and possibly others in passwords.
+    echo "Setting cacti DB password in cacti."
+    #sed -i "s/database_hostname = 'localhost'/database_hostname = '${CACTI_FQDN}'/" /usr/share/webapps/cacti/include/config.php
+    sed -i "s/database_password = 'cactiuser'/database_password = '${CACTI}'/" /opt/cacti/include/config.php
+
+    # # Set the startup wizard template imports to use the one-minute poller profile
+    # echo "Modifying cacti installer to use one-minute poller profile."
+    #sed -i "s|\['filename'\], 1|\['filename'\], 3|g" /usr/share/webapps/cacti/install/index.php
+
+    # # Set the startup wizard to use the My unRAID Server template instead of the default Local Linux Machine template
+    # # Allow setting the community string
+    # echo "Modifying cacti installer to use our unRAID host instead of the \"Local Linux Machine\" template."
+    SNMP_COMMUNITY=${SNMP_COMMUNITY:-public}
+    sed -i "s|\$hash = '2d3e47f416738c2d22c87c40218cc55e';|\
+\/\/ Custom first host by ChestersGarage\n\t\t\t\
+\$hash = '788bb9d0eaf8c99cd581e544641f5808';|" /opt/cacti/lib/installer.php
+    sed -i "s|ip           = 'localhost'|ip           = '${UNRAID_HOST}'|" /opt/cacti/lib/installer.php
+    sed -i "s|community    = 'public'|community    = '${SNMP_COMMUNITY}'|" /opt/cacti/lib/installer.php
+    sed -i "s|description  = 'Local Linux Machine'|description  = 'unRAID Server'|" /opt/cacti/lib/installer.php
+    sed -i "s|version      = 0|version      = 2|" /opt/cacti/lib/installer.php
+    sed -i "s|avail        = 'none'|avail        = 'snmp'|" /opt/cacti/lib/installer.php
+
+    # Drop some customizations into the startup wizard
+    # Ingest our custom templates!
+    # Set poller and cron intervals to 60 seconds
+    # Set poller to spine
+    echo "Importing custom templates."
+    sed -i "s|\$this->setProgress(Installer::PROGRESS_TEMPLATES_END)|\
+\/\/ Custom template imports by ChestersGarage\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/unRAID-Server.xml --profile-id=3')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/Host-MIB-Available-Disk-Space.xml --profile-id=3 --remove-orphans')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/Host-MIB-Logged-in-Users.xml --profile-id=3 --remove-orphans')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/Host-MIB-Processes.xml --profile-id=3 --remove-orphans')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Available-Disk-Space.xml --profile-id=3 --remove-orphans')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Context-Switches.xml --profile-id=3 --remove-orphans')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-CPU-Utilization.xml --profile-id=3 --remove-orphans')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Disk-IO-Bytes.xml --profile-id=3 --remove-orphans')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Interrupts.xml --profile-id=3 --remove-orphans')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Load-Average.xml --profile-id=3 --remove-orphans')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Memory-Usage.xml --profile-id=3 --remove-orphans')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Total-SCSI-Disk-IO-Bytes.xml --profile-id=3 --remove-orphans')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Total-SCSI-Disk-IOs.xml --profile-id=3 --remove-orphans')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/SNMP-Traffic-BitSec-95th.xml --profile-id=3 --remove-orphans')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/SNMP-Traffic-BitSec.xml --profile-id=3 --remove-orphans')\;\n\t\t\
+shell_exec('/usr/bin/php /opt/cacti/cli/import_template.php --filename=/Unix-Ping-Latency.xml --profile-id=3 --remove-orphans')\;\n\n\t\t\
+\$this->setProgress(Installer::PROGRESS_TEMPLATES_END)|" /opt/cacti/lib/installer.php
+
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/Host-MIB-Available-Disk-Space.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/Host-MIB-Logged-in-Users.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/Host-MIB-Processes.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Available-Disk-Space.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Context-Switches.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-CPU-Utilization.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Disk-IO-Bytes.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Interrupts.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Load-Average.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Memory-Usage.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Total-SCSI-Disk-IO-Bytes.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/Net-SNMP-Total-SCSI-Disk-IOs.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/SNMP-Traffic-BitSec-95th.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/SNMP-Traffic-BitSec.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/Unix-Ping-Latency.xml --profile-id=3 --remove-orphans
+    # /usr/bin/php /opt/cacti/cli/import_template.php --filename=/unRAID-Server.xml --profile-id=3
+
+else
+    # Set the DB info for cacti.
+    # Many characters can disrupt this.
+    # Avoid & and ! and possibly others in passwords.
+    echo "Setting cacti DB password in cacti."
+    #sed -i "s/database_hostname = 'localhost'/database_hostname = '${CACTI_FQDN}'/" /opt/webapps/cacti/include/config.php
+    sed -i "s/database_password = 'cactiuser'/database_password = '${CACTI}'/" /opt/cacti/include/config.php
+
+    # With exising data, just start the database so we can set up non-root user access.
+    echo "Using existing cacti database."
+    nohup /usr/bin/mysqld_safe --datadir="/var/lib/mysql" &
+    sleep 3
+
+    user_perms
+fi
+
+# Verify provided MySQL root password is valid.
+echo "exit" | mysql -uroot -p${MYSQL}
+if [[ "$?" != "0" ]]
+then
+    echo "Cannot connect to MySQL with the provided root password."
+    exit 1
+fi
+
+# Need to figure out the new way to do this.
+#UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE User = 'cactiuser';
+#UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE User = 'backups';
+#UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE User = 'root';
+
+# Shut down MySQL before transitioning to service startup.
+mysqladmin shutdown
+
+# Set the spine.conf with current info
+# The docs say to use DB_Password, but actually DB_Pass is correct.
+# https://www.cacti.net/downloads/docs/html/unix_configure_spine.html
+echo "Setting cacti spine configuration."
+cat > /usr/local/spine/etc/spine.conf <<EOF
+DB_Host ${CACTI_FQDN}
+DB_Database cacti
+DB_User cactiuser
+DB_Pass ${CACTI}
+DB_Port 3306
+EOF
+
+# Set the default backup schedule, if not provided
+CRON_PATTERN=${CRON_PATTERN:-2 * * * *}
+echo "Setting the backup schedule in root's crontab. \"${CRON_PATTERN} /backup > /dev/null 2>&1\""
+echo "${CRON_PATTERN} /backup > /dev/null 2>&1" >> /var/spool/cron/crontabs/root
+
+# If you use /bin/sh, make sure you source this file after logging in.
+cat >> /root/.bashrc <<EOF
+export BACKUPS=${BACKUPS}
+alias ll='ls -l'
+EOF
+
+# This gets reset to root:root for some reason, so I set it back.
+# Probably caused by host permissions. (to-do)
+echo "Setting some misc file system permissions."
+chown -R mysql:mysql /var/lib/mysql
+
+# Last few location setups, pulled out of the Dockerfile, so that logs can be mounted externally
+mkdir -p /var/log/cacti
+rm -rf /opt/cacti/log
+ln -s /var/log/cacti /opt/cacti/log
+touch /var/log/cacti/cacti.log /var/log/cacti/cacti_stderr.log
+chown -R apache:apache /var/log/cacti
+
+export MIBDIRS=/usr/share/snmp/mibs:/usr/share/snmp/mibs/iana:/usr/share/snmp/mibs/ietf:/usr/local/share/snmp/mibs
+
+# Now start all the services.
+# This is as bare-bones as you can get.
+# Individual service failures are not caught.
+# Terminate the container to recover from such issues.
+# User-provided configs can cause container failures. Make sure your configs are solid.
+# To do: make this robust, maybe with a supervisor.
+
+# Start MySQL/MariaDB
+echo "Starting MariaDB."
+nohup /usr/bin/mysqld_safe --datadir="/var/lib/mysql" &
+sleep 3
+
+# Start cron
+# The cacti package installation left a cron file at: /etc/crontabs/cacti
+# Also see: /var/spool/cron/crontabs/root, or just crontab -e
+echo "Starting cron."
+crond -L /var/log/cron
+
+# Start Apache
+echo "Starting Apache."
+/usr/sbin/httpd -k start -f /etc/apache2/httpd.conf
+
+# Set the cacti poller cron job to one minute
+echo "* * * * * php /opt/cacti/poller.php >/dev/null 2>&1" > /etc/crontabs/apache
+
+# Hold open the session
+tail -F /var/log/apache2/error.log /var/log/apache2/access.log /var/log/cron /var/log/cacti/cacti.log /var/log/cacti/cacti_stderr.log /var/lib/mysql/${CACTI_FQDN}.err

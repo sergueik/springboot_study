@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# Grab root's shell env
+. /root/.bashrc
+
+# Check for whether a backup file was specified
+if [[ $1 ]]
+then
+	RESTOREFILE=$1
+	if [[ -f /var/backups/${RESTOREFILE} ]]
+	then
+		# Clean up first
+		rm -f /tmp/mysql-data.sql /tmp/mysql-conf.tgz /tmp/cacti-data.tgz /tmp/apache-conf.tgz /tmp/php-conf.tgz
+
+		# Unpack the dated backup
+		tar -zxvf /var/backups/${RESTOREFILE} -C /tmp
+	else
+		echo "Backup ${RESTOREFILE} could not be found."
+		echo "Please make sure it exists inside the container under /var/backups."
+		exit 1
+	fi
+else
+	echo "No restore file name provided."
+	echo "Must be a file located under /var/backups inside the container."
+	echo "Specify the file name without any path."
+	exit 1
+fi
+
+# MySQL data
+if [[ -f /tmp/mysql-data.sql ]]
+then
+	mysql -uroot -p${MYSQL} < /tmp/mysql-data.sql
+fi
+
+# MySQL configs
+if [[ -f /tmp/mysql-conf.tgz ]]
+then
+	rm -rf /etc/mysql/*
+	tar -zxvf /tmp/mysql-conf.tgz -C /etc/mysql/
+fi
+
+# Cacti data
+if [[ -f /tmp/cacti-data.tgz ]]
+then
+	rm -rf /var/lib/cacti/rra/*
+	tar -zxvf /tmp/cacti-data.tgz -C /var/lib/cacti/rra/
+fi
+
+# Apache configs
+if [[ -f /tmp/apache-conf.tgz ]]
+then
+	rm -rf /etc/apache2/*
+	tar -zxvf /tmp/apache-conf.tgz -C /etc/apache2/
+fi
+
+# PHP configs
+if [[ -f /tmp/php-conf.tgz ]]
+then
+	rm -rf /etc/php7/*
+	tar -zxvf /tmp/php-conf.tgz -C /etc/php7/
+fi
+
+chown -R cacti:cacti /usr/share/webapps/cacti/
+chown -R cacti:cacti /var/lib/cacti/
+chown -R apache:apache /usr/share/webapps/cacti/cache/
+chown -R apache:apache /usr/share/webapps/cacti/resource/
+chown -R apache:apache /usr/share/webapps/cacti/scripts/
+chown -R apache:apache /var/log/cacti/
+
+# Stop everything to make it obvious the container needs a reset
+/usr/sbin/httpd -k stop
+mysqladmin -uroot -p${MYSQL} shutdown
+
+echo "Please stop and remove the container. Then re-run it."

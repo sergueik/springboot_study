@@ -3,9 +3,9 @@ FROM alpine:3.12
 
 # Lock versions of critical packages for more predictable container behavior.
 ENV CACTI_VERSION 1.2.14
-ENV APACHE_VERSION 2.4.46-r0
-ENV PHP_VERSION 7.3.23-r0
-ENV MARIADB_VERSION 10.4.13-r0
+ENV APACHE_VERSION 2.4.53-r0
+ENV PHP_VERSION 7.3.33-r0
+ENV MARIADB_VERSION 10.4.24-r0
 ENV SNMP_VERSION 5.8-r3
 
 # Install all the things we need, to do everything.
@@ -88,7 +88,7 @@ RUN /sbin/apk --quiet --no-cache add \
     net-snmp-tools=${SNMP_VERSION} \
     net-snmp-perl=${SNMP_VERSION} \
     net-snmp-openrc=${SNMP_VERSION} \
-    openrc=0.42.1-r11 \
+    openrc=0.42.1-r13 \
     pango \
     patch \
     pcre \
@@ -137,7 +137,7 @@ RUN BACKUPDIR="/root/default-configs" && \
 
 # Install Cacti
 RUN wget -q https://www.cacti.net/downloads/cacti-${CACTI_VERSION}.tar.gz -O /opt/cacti-${CACTI_VERSION}.tar.gz && \
-    tar -xvf /opt/cacti-${CACTI_VERSION}.tar.gz -C /opt/ && \
+    tar -xf /opt/cacti-${CACTI_VERSION}.tar.gz -C /opt/ && \
     rm -f /opt/cacti-${CACTI_VERSION}.tar.gz && \
     mv /opt/cacti-${CACTI_VERSION} /opt/cacti && \
     ln -s /opt/cacti /var/www/localhost/htdocs/cacti && \
@@ -148,7 +148,7 @@ ADD cacti-templates/* /opt/cacti/install/templates/
 # Naturally, spine's version is locked to cacti's version, because versioning.
 # https://www.cacti.net/downloads/docs/html/unix_configure_spine.html
 RUN wget -q http://www.cacti.net/downloads/spine/cacti-spine-${CACTI_VERSION}.tar.gz -O /opt/cacti-spine-${CACTI_VERSION}.tar.gz && \
-    tar -zxvf /opt/cacti-spine-${CACTI_VERSION}.tar.gz -C /opt/ && \
+    tar -zxf /opt/cacti-spine-${CACTI_VERSION}.tar.gz -C /opt/ && \
     cd /opt/cacti-spine-${CACTI_VERSION} && \
     /usr/bin/aclocal && \
     /usr/bin/libtoolize --force && \
@@ -177,7 +177,7 @@ RUN echo "mibs +ALL" >> /etc/snmp/snmpd.conf && \
 # https://www.cyberciti.biz/tips/howto-monitor-hard-drive-temperature.html
 #RUN cd /tmp && \
 #    wget http://download-mirror.savannah.gnu.org/releases/hddtemp/hddtemp-0.3-beta15.tar.bz2 && \
-#    tar -jxvf hddtemp-0.3-beta15.tar.bz2 && \
+#    tar -jxf hddtemp-0.3-beta15.tar.bz2 && \
 #    cd hddtemp-0.3-beta15 && \
 #    ./configure && \
 #    make && \
@@ -189,5 +189,10 @@ RUN echo "mibs +ALL" >> /etc/snmp/snmpd.conf && \
 # Add our stuff
 ADD bin /
 ADD cacti-templates /
+RUN chmod +x /init
+# ignore cannot create directory ‘/var/log/apache2’: File exists
+RUN mkdir -p /var/log/apache2 && chown apache:apache /var/log/apache2
+
+# Error: starting container process caused: exec: "/init": permission denied: unknown.
 
 ENTRYPOINT ["/init"]
