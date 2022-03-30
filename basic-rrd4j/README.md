@@ -10,7 +10,7 @@ This contains replica of [rrd4j/rrd4j](https://github.com/rrd4j/rrd4j)
 biz.aQute.bnd:bnd-maven-plugin:5.2.0:bnd-process (bnd-process) on project rrd4j: Classes found in the wrong directory: {META-INF/target/classes/org/rrd4j/core/Util.class=org.rrd4j.core.Util... followed by long list of clases
 ```
 
-build via
+build with explicitly suppressing tests from run
 ```sh
 mvn -Dmaven.test.skip=true clean package
 ```
@@ -29,7 +29,8 @@ mkdir \tmp
 
 ### Suppport RRDTool `.rrd` files
 
-As suggested on [stackoverflow](https://community.openhab.org/t/rrd4j-and-tools-to-read-rrd-files/4655/4)  one can downgrade to version __2.1.1__ to gain support of regular RRDtool files.
+As suggested on [stackoverflow](https://community.openhab.org/t/rrd4j-and-tools-to-read-rrd-files/4655/4)
+one can downgrade to version __2.1.1__ to gain support of regular RRDtool files directly.
 
 * fetch
 ```sh
@@ -47,7 +48,7 @@ mvn -Dmaven.test.skip=true clean package
 ```
 * invoke
 ```cmd
-java -Xmx4096m -jar target/rrd4j-2.2.1-inspector.jar
+java -Xmx4096m -jar target/rrd4j-3.9-SNAPSHOT-inspector.jar
 ```
 
 Does not clear the exception
@@ -57,20 +58,28 @@ java.io.IOException: Invalid file header. File [some.rrd] is not a RRD4J RRD fil
 
 - kept for later examination
 The __Rrd4J__ offers a conversion utility class to convert `RRD 003` files created with RRDTool 1.0.x to its own native RRD format `RRD4J, version 0.1`
+For example render the Cacti process data imported from Docker container
 ```cmd
-java -jar target\rrd4j-3.9-SNAPSHOT-converter.jar sample/*rrd
+mkdir sample
+cp ../basic-cacti/example_proc_1.rrd sample/
+java -jar target/rrd4j-3.9-SNAPSHOT-converter.jar sample\*rrd
 ```
+
+
 ```cmd
 =======================================================================
 Converting RRDTool files to Rrd4j native format.
 Original RRDTool files will not be modified in any way
 RRD4J files created during the process will have a .jrb suffix
 =======================================================================
-0001/0003 percent-idle.rrd [OK, 0.221 sec]
-0002/0003 percent-user.rrd [OK, 0.024 sec]
-0003/0003 sample.rrd [OK, 0.021 sec]
+0001/0001 example_proc_1.rrd [OK, 0.185 sec]
 =======================================================================
+Finished: 1 total, 1 OK, 0 failed
+Conversion took 0.199 sec
+Average per-file conversion time: 0.199 sec
 ```
+![Display CACTI results](https://github.com/sergueik/springboot_study/blob/master/basic-rrd4j/screenshots/capture_convered_rrd.png)
+
 ### See Also
 
   * https://github.com/OpenNMS/jrrd - mixed Java / C wrapper
