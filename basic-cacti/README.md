@@ -341,6 +341,8 @@ https://www.youtube.com/watch?v=0MhNu0WxOy0)
     + [installing the Cactid Systemd Daemon](https://www.youtube.com/watch?v=Ggpwvd2GV1E)
     + [Installing Cacti On Ubuntu/Debian](https://www.youtube.com/watch?v=-ihZe5cA4Ps)
     + [Javascript Flot renderer of RRDTool datafile](https://www.youtube.com/watch?v=yY9rbOHxwyg) and __JavascriptRRD__ [project page](https://sourceforge.net/projects/javascriptrrd/)
+  * `rrd4n.Core` [examples](https://csharp.hotexamples.com/examples/rrd4n.Core/RrdDef/-/php-rrddef-class-examples.html)
+  * write `rrd` files without `rrdtool`/`librrd` - https://github.com/huhaibo/rrd4net - automatic exported workspace from [rrd4net](https://code.google.com/archive/p/rrd4net/source/default/source?page=7)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

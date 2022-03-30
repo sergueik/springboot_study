@@ -1107,7 +1107,12 @@ review the [history](https://github.com/golang/go/commits/master/src/path/filepa
    * java `Files.walk` [example](https://github.com/mkyong/core-java/blob/master/java-io/src/main/java/com/mkyong/io/api/FilesWalkExample.java)
    * [documentation](https://docs.oracle.com/javase/tutorial/essential/io/walk.html)
    * [Golang: Walk Directory](http://xahlee.info/golang/golang_walk_dir.html)
-
+   * [gomock](https://github.com/golang/mock) testing framework for golang
+   * [materials](https://github.com/sgreben/testing-with-gomock) for the blog post "Testing with GoMock"
+   * [sample](https://github.com/golang-samples/gomock) of `github.com/golang/mock`
+   * [gomock](https://code.google.com/p/gomock/) from `https://code.google.com/p/gomock/`
+   * [Sql mock driver](https://github.com/DATA-DOG/go-sqlmock) for golang to test database interactions
+   * [learn-go-sqlmock](https://github.com/mrgleam/learn-go-sqlmock)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
