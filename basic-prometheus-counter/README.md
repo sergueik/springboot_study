@@ -108,6 +108,7 @@ docker build -t $IMAGE -f Dockerfile .
 
 ```sh
 NAME=application
+docker container rm $NAME
 docker run --name $NAME -p 8080:8080 -d $IMAGE
 ```
 * pull `prom2json` image. NOTE: pick a specific version to prevent polluting the images
