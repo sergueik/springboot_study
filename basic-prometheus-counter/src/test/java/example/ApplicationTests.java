@@ -21,6 +21,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Arrays;
+
 // Caused by: org.springframework.context.ApplicationContextException: Unable to start embedded container; nested exception is org.springframework.context.ApplicationContextException: Unable to start EmbeddedWebApplicationContext due to missing EmbeddedServletContainerFactory bean.
 @RunWith(SpringRunner.class)
 @SpringBootTest(
@@ -53,7 +55,8 @@ public class ApplicationTests {
 	private int managementPort;
 
 	// TODO: explore the
-	// EndpointLinksResolver: Exposing 14 endpoint(s) beneath base path '/actuator'
+	// EndpointLinksResolver: Exposing 14 endpoint(s) beneath base path
+	// '/actuator'
 	@Test
 	public void prometheus() {
 		ResponseEntity<String> entity = restTemplate
@@ -61,9 +64,12 @@ public class ApplicationTests {
 		// ResponseEntity<String> entity = restTemplate.getForEntity(
 		// "http://localhost:{port}/metrics", String.class, managementPort);
 		assertThat(entity.getStatusCodeValue()).isEqualTo(200);
-		assertThat(entity.getBody())
-				.contains("# HELP jvm_memory_used_bytes The amount of used memory");
-		assertThat(entity.getBody()).contains("# TYPE jvm_memory_used_bytes gauge");
+		for (String text : Arrays.asList(
+				"# HELP jvm_memory_used_bytes The amount of used memory",
+				"# TYPE jvm_memory_used_bytes gauge")) {
+			assertThat(entity.getBody()).contains(text);
+
+		}
 	}
 
 	@Test
@@ -73,14 +79,14 @@ public class ApplicationTests {
 		assertThat(entity.getStatusCodeValue()).isEqualTo(200);
 		assertThat(entity.getHeaders().get("Content-Type")
 				.equals(MediaType.TEXT_PLAIN_VALUE));
-		assertThat(entity.getBody())
-				.contains("# HELP requests_total Total number of requests.");
-		assertThat(entity.getBody()).contains("# TYPE requests_total counter");
-		assertThat(entity.getBody()).contains("requests_total"); // TODO: regexp
-		assertThat(entity.getBody()).contains(
-				"# HELP requests_latency_seconds Request latency in seconds.");
-		assertThat(entity.getBody())
-				.contains("# TYPE requests_latency_seconds histogram");
+		for (String text : Arrays.asList(
+				"# HELP requests_total Total number of requests.",
+				"# TYPE requests_total counter", "requests_total",
+				"# HELP requests_latency_seconds Request latency in seconds.",
+				"# TYPE requests_latency_seconds histogram")) {
+			assertThat(entity.getBody()).contains(text);
+			// TODO: regexp
+		}
 	}
 
 }

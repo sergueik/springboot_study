@@ -30,7 +30,7 @@ public class ApplicationConfiguration {
 	private static final Logger logger = LoggerFactory
 			.getLogger(ApplicationConfiguration.class);
 
-	// NOTE: uncommenting the method leads to
+	// NOTE: uncommenting the following method leads to
 	// disappearance of core metrics:
 	// curl -sIv http://localhost:8080/actuator/prometheus
 	// 	HTTP/1.1 200

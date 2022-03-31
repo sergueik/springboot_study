@@ -1,6 +1,9 @@
 package example.controller;
 
 import org.springframework.web.bind.annotation.RestController;
+
+// import ch.qos.logback.classic.Level;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -14,16 +17,21 @@ import io.prometheus.client.Histogram;
 import io.prometheus.client.exporter.common.TextFormat;
 
 import java.io.Writer;
+import java.util.Random;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import org.apache.logging.log4j.Level;
 
 @RestController
 @RequestMapping("/")
 public class AppController {
-	private static final Logger logger = LoggerFactory
+	private static final Logger logger = LogManager
 			.getLogger(AppController.class);
 
 	static final Counter requestsTotal = Counter.build().name("requests_total")
@@ -32,11 +40,31 @@ public class AppController {
 			.name("requests_latency_seconds").help("Request latency in seconds.")
 			.register();
 
+	private static Random random = new Random();
+
+	private static final Counter buildStatus = Counter.build()
+			.name("build_status_counter").labelNames("status")
+			.help("A simple Counter to illustrate custom build status and Prometheus")
+			.register();
+
+	@RequestMapping("/build")
+	public void endpoint() {
+		if (random.nextInt(2) > 0) {
+			logger.log(org.apache.logging.log4j.Level.INFO,
+					"incremented successful build counter");
+			buildStatus.labels("success").inc();
+		} else {
+			logger.log(org.apache.logging.log4j.Level.INFO,
+					"incremented failed build counter");
+			buildStatus.labels("error").inc();
+		}
+	}
+
 	@RequestMapping("hello")
 	public String sayHello() {
 		logger.info("increment requests_total");
 		requestsTotal.inc();
-		logger.info("creating the time");
+		logger.info("creating the timer");
 		Histogram.Timer requestTimer = requestTimet.startTimer();
 		try {
 			return "Hello World";
