@@ -77,7 +77,7 @@ perl -I. -MPushgateway::Tiny -e 'print $Pushgateway::Tiny::VERSION;'
 * post sample data to pushgteway:
 
 ```sh
-perl -I . test.pl
+perl -I . test.pl -value 5
 ```
 this will print to console:
 ```text
@@ -97,13 +97,13 @@ docker container logs $IMAGE1
 * confirm that the metric was recorded (run the command from the host):
 
 ```sh
-curl http://localhost:9091/metrics | grep perl_metric_summary
+curl http://localhost:9091/metrics | grep perl_counter
 ```
 - focusing on custom mettic just added - there is a big number of other metrics
 ```text
-# TYPE perl_metric_summary summary
-perl_metric_summary_count{instance="f9fab499033c(172.17.0.4)",job="my_custom_metrics",perl_label="5",team="test"} 0
-test{instance="4db5808908fe(172.17.0.3)",job="my_custom_metrics",team="test"} 42
+100  8455    0# TYPE perl_counter counter
+ perl_counter{instance="f9fab499033c(172.17.0.4)",job="my_custom_metrics",perl_label="custom label",team="test"} 5
+
 ```
 
 also one can use the [prom2json](https://hub.docker.com/r/prom/prom2json):
@@ -113,34 +113,36 @@ docker pull prom/prom2json:$VERSION
 ```
 * and dump the metrics
 ```sh
-docker run --link $NAME1 prom/prom2json:$VERSION http://$NAME1:9091/metrics | jq -cr '.[].name|select(.| contains("perl"))'
+NAME1=pushgateway
+VERSION=v1.3.0
+docker run --link $NAME1 prom/prom2json:$VERSION http://$NAME1:9091/metrics | jq -cr '.[].name|select(.| contains("perli_counter"))'
 ```
 ```text
-perl_metric_summary
+perl_counter
 ```
 
 ```sh
-docker run --link $NAME1 prom/prom2json:$VERSION http://$NAME1:9091/metrics | jq -r '.|.[]|select(.name| contains("perl"))'
+NAME1=pushgateway
+VERSION=v1.3.0
+docker run --link $NAME1 prom/prom2json:$VERSION http://$NAME1:9091/metrics | jq -r '.|.[]|select(.name| contains("perl_counter"))'
 ```
 ```json
 {
-  "name": "perl_metric_summary",
+  "name": "perl_counter",
   "help": "",
-  "type": "SUMMARY",
+  "type": "COUNTER",
   "metrics": [
     {
       "labels": {
         "instance": "f9fab499033c(172.17.0.4)",
         "job": "my_custom_metrics",
-        "perl_label": "5",
+        "perl_label": "custom label",
         "team": "test"
       },
-      "count": "0",
-      "sum": "0"
+      "value": "5"
     }
   ]
 }
-
 ```
 ### Note
 

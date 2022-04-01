@@ -1,8 +1,17 @@
 use Pushgateway::Tiny;
+use Getopt::Long;
 use Sys::Hostname;
 use Socket;
 use Data::Dumper;
 use strict;
+
+
+my $value      = 1;
+
+GetOptions(
+ 'value=s'  => \$value
+);
+
 # NOTE non-standard param key names inherited from Net::Prometheus::Pushgateway
 
 my $job_name = 'my_custom_metrics';
@@ -32,7 +41,8 @@ my $custom = {
 $o -> add(%$custom);
 print STDERR "\n" . 'Payload:' . "\n" . $o->{raw_str};
 
-
-$o->summary(-metric_name => 'perl_metric_summary', -label => {'perl_label' => 5}, -value => 15);
+$o->{value} = $value;
+$o->increment(-metric_name => 'perl_counter', -label => {'perl_label' => 'custom label'}, -value => 15); 
+# the -value does not work
 print STDERR "\n" . 'Payload:' . "\n" . $o->{raw_str};
 __END__

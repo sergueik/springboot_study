@@ -7,7 +7,7 @@ use utf8;
 use Carp qw/croak carp/;
 # use LWP::UserAgent;
 use HTTP::Tiny;
-
+use Data::Dumper;
 our $VERSION    = '0.0.2';
 
 my %METRIC_VALID_TYPES = (
@@ -41,9 +41,28 @@ sub add {
 
 sub increment {
     my $self = shift;
+    # NORE: cannot change signature:
+    # my $value = shift;
+    # Odd number of elements in hash assignment at Pushgateway/Tiny.pm line 98.
+    # You must specify '-value' param at test.pl line 36
+    my $value = $self -> {value};
+    $value = 1 unless defined($value);
+#    print STDERR Dumper( \@_);
+# $VAR1 = [
+#          '-metric_name',
+#          'perl_counter',
+#          '-label',
+#          {
+#            'perl_label' => 'custom label'
+#          },
+#          '-value',
+#          15
+#        ];
+my %arg = @_;
+print STDERR $arg{'-value'};
     $self->{raw_str} = $self->_add(
         @_,
-        '-value'    => 1,
+        '-value'    => $value,
         '-type'     => 'counter',
     );
     return $self->_send_to_prometheus($self->{raw_str});
