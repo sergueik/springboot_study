@@ -41,8 +41,6 @@ my $custom = {
 $o -> add(%$custom);
 print STDERR "\n" . 'Payload:' . "\n" . $o->{raw_str};
 
-$o->{value} = $value;
-$o->increment(-metric_name => 'perl_counter', -label => {'perl_label' => 'custom label'}, -value => 15); 
-# the -value does not work
+$o->increment(-metric_name => 'perl_counter', -label => {'perl_label' => 'custom label'}, -value => $value); 
 print STDERR "\n" . 'Payload:' . "\n" . $o->{raw_str};
 __END__

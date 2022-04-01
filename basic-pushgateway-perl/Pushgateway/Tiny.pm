@@ -41,28 +41,11 @@ sub add {
 
 sub increment {
     my $self = shift;
-    # NORE: cannot change signature:
-    # my $value = shift;
-    # Odd number of elements in hash assignment at Pushgateway/Tiny.pm line 98.
-    # You must specify '-value' param at test.pl line 36
-    my $value = $self -> {value};
-    $value = 1 unless defined($value);
-#    print STDERR Dumper( \@_);
-# $VAR1 = [
-#          '-metric_name',
-#          'perl_counter',
-#          '-label',
-#          {
-#            'perl_label' => 'custom label'
-#          },
-#          '-value',
-#          15
-#        ];
-my %arg = @_;
-print STDERR $arg{'-value'};
+    # NOTE: fix to pass the value - the array and hash do not merge as intended
+    my %args = @_;
     $self->{raw_str} = $self->_add(
         @_,
-        '-value'    => $value,
+        '-value'    => $args{'-value'},
         '-type'     => 'counter',
     );
     return $self->_send_to_prometheus($self->{raw_str});
