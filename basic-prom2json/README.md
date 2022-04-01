@@ -214,7 +214,7 @@ tomcat_sessions_rejected_sessions_total
 ```
 or specific metric names
 ```sh
-docker run --rm  $IMAGE http://192.168.0.64:8080/actuator/prometheus | jq -cr '.[].name|select(.| contains("jvm"))
+docker run --rm  $IMAGE http://192.168.0.64:8080/actuator/prometheus | jq -cr '.[].name|select(.| contains("jvm"))'
 ```
 ```text
 jvm_threads_daemon_threads

@@ -7,44 +7,40 @@ Plain Alpine 3.9 container installing Perl and installing a pure Perl module rep
 * build the images
 
 ```sh
-PUSHGATEWAY=pushgateway
-docker build --build-arg VERSION=1.4.2 -t $PUSHGATEWAY -f Dockerfile.$PUSHGATEWAY .
+IMAGE1=pushgateway
+VERSION=1.4.2
+docker build --build-arg VERSION=$VERSION -t $IMAGE1 -f Dockerfile.$IMAGE1 .
 ```
 ```sh
-docker run --name $PUSHGATEWAY -p 9091:9091 -d $PUSHGATEWAY
+NAME1=pushgateway
+docker run --name $NAME1 -p 9091:9091 -d $IMAGE1
 ```
-verify the applicartion launches:
+verify the application launches:
 ```sh
-docker logs $PUSHGATEWAY
+docker logs $IMAGE1
 ```
 ```text
 {"caller":"level.go:63","level":"info","msg":"starting pushgateway","ts":"2022-03-03T02:37:41.715Z","version":"(version=1.4.2, branch=HEAD, revision=99981d7be923ab18d45873e9eaa3d2c77477b1ef)"}
 
 ```
-testing best done in separate console:
+testing is easiers to perform from a separate console:
 ```sh
 sudo rm -f .ash_history
 ```
 ```sh
-BASIC_PERL=basic-perl
-docker build -t $BASIC_PERL -f Dockerfile.$BASIC_PERL .
+IMAGE2=basic-perl
+docker build -t $IMAGE2 -f Dockerfile.$IMAGE2 .
 ```
 * start run default command
 
 ```sh
-docker container rm $BASIC_PERL
+NAME2=basic-perl
+docker container rm $NAME2
+docker run -it --link $NAME1 --name $NAME2 -v $(pwd):/root $IMAGE2 sh
 ```
+* in the container check the verion of Perl
 ```sh
-docker run -it --link $PUSHGATEWAY --name $BASIC_PERL -v $(pwd):/root $BASIC_PERL sh
-```
-* connect to container  and check verion of Perl
-```sh
-docker exec -it $BASIC_PERL sh
-```
-```text
-/ #
-```
-```sh
+~ #
 perl -v
 ```
 ```text
@@ -52,10 +48,10 @@ This is perl 5, version 26, subversion 3 (v5.26.3) built for x86_64-linux-thread
 ```
 * verify the custom module to be healthy:
 ```sh
- perl -MHTTP::Tiny -e 'print $HTTP::Tiny::VERSION'
+perl -MHTTP::Tiny -e 'print $HTTP::Tiny::VERSION'
 ```
 ```text
-0.070/
+0.070
 ```
 The installed Perl Modules are in 
 `/usr/share/perl5/core_perl` and `/usr/lib/perl5/core_perl`
@@ -69,26 +65,13 @@ perl -MData::Dumper -e 'print $Data::Dumper::VERSION'
 2.167
 ```
 
-* verify installed Pure Perl modules to be available
+* verify the copy-installed Pure Perl module to be available
 
 ```sh
-perl -I. -MYAML::Tiny -e 'print $YAML::Tiny::VERSION;'
+perl -I. -MPushgateway::Tiny -e 'print $Pushgateway::Tiny::VERSION;'
 ```
 ```text
-1.73
-```
-```sh
-perl -I. -MJSON::PP -e 'print $JSON::PP::VERSION;'
-```
-```text
-4.06
-```
-```sh
-perl -I. -MXML::TreePP -e 'print $XML::TreePP::VERSION;'
-```
-```text
-
-0.43
+0.0.2
 ```
 
 * post sample data to pushgteway:
@@ -104,7 +87,7 @@ test{} 42
 * confirm checking the pushgateway logs that the request was processed successfuly:
 
 ```sh
-docker container logs $PUSHGATEWAY
+docker container logs $IMAGE1
 ```
 ```text
 {"caller":"level.go:63","file":"/pushgateway/history.log","level":"info","msg":"metrics persisted","ts":"2022-03-03T03:17:37.621Z"}
@@ -114,17 +97,50 @@ docker container logs $PUSHGATEWAY
 * confirm that the metric was recorded (run the command from the host):
 
 ```sh
-curl http://localhost:9091/metrics
+curl http://localhost:9091/metrics | grep perl_metric_summary
 ```
-(along with other metrics)
+- focusing on custom mettic just added - there is a big number of other metrics
 ```text
-# TYPE pushgateway_http_requests_total counter
-pushgateway_http_requests_total{code="200",handler="push",method="post"} 2
-```
-and the actual metric
-```text
-# TYPE test untyped
+# TYPE perl_metric_summary summary
+perl_metric_summary_count{instance="f9fab499033c(172.17.0.4)",job="my_custom_metrics",perl_label="5",team="test"} 0
 test{instance="4db5808908fe(172.17.0.3)",job="my_custom_metrics",team="test"} 42
+```
+
+also one can use the [prom2json](https://hub.docker.com/r/prom/prom2json):
+```sh
+VERSION=v1.3.0
+docker pull prom/prom2json:$VERSION
+```
+* and dump the metrics
+```sh
+docker run --link $NAME1 prom/prom2json:$VERSION http://$NAME1:9091/metrics | jq -cr '.[].name|select(.| contains("perl"))'
+```
+```text
+perl_metric_summary
+```
+
+```sh
+docker run --link $NAME1 prom/prom2json:$VERSION http://$NAME1:9091/metrics | jq -r '.|.[]|select(.name| contains("perl"))'
+```
+```json
+{
+  "name": "perl_metric_summary",
+  "help": "",
+  "type": "SUMMARY",
+  "metrics": [
+    {
+      "labels": {
+        "instance": "f9fab499033c(172.17.0.4)",
+        "job": "my_custom_metrics",
+        "perl_label": "5",
+        "team": "test"
+      },
+      "count": "0",
+      "sum": "0"
+    }
+  ]
+}
+
 ```
 ### Note
 
@@ -145,7 +161,7 @@ Alternatively can install a cpan capable Docker Alpine Perl [scottw/alpine-perl]
 
 
 ```sh
-REPOSITORY           TAG       IMAGE ID       CREATED         SIZE
+REPOSITORY           TAG       IMAGE1 ID       CREATED         SIZE
 scottw/alpine-perl   latest    7e64285ecabb   14 months ago   291MB
 ```
 Alternatively (not tested) is [melopt/alpine-perl-devel](https://hub.docker.com/r/melopt/alpine-perl-devel)
@@ -166,6 +182,7 @@ This can be a good starting point for Powershell / .Net version of the same.
 NOTE: the [cpanminus](https://github.com/miyagawa/cpanminus) repo directory layout has changes and single binary release that is needed for `https://hub.docker.com/r/scottw/alpine-perl/dockerfile` is not available
 
   * https://stackoverflow.com/questions/35586898/is-there-any-way-to-fetch-web-pages-in-pure-perl?rq=1
+  * [python gauge exaple](https://gist.github.com/codersquid/17f61049c1a817f26da250a4bd2df16d)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
