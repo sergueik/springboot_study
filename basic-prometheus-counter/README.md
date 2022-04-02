@@ -28,11 +28,11 @@ replace `localhost` with the ip of the developer host if accessed from another
 
 * access the application
 ```sh
-curl -s http://localhost:8080/hello
+for C in $(seq 1 1 5) ; do curl -s http://localhost:8080/hello > /dev/null; done
 ```
 * run the "build" (there will be no output)
 ```sh
-curl -s http://localhost:8080/build
+for C in $(seq 1 1 5) ; do curl -s http://localhost:8080/build ; done
 ```
 
 the application console will log the metrics producting ativities

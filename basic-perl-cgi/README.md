@@ -6,13 +6,14 @@ Plain Alpine 3.9 container installing the apache and Perl using some code from [
 
 * build the image
 ```sh
-NAME=basic-perl-cgi-container
-docker build -t $NAME -f Dockerfile .
+IMAGE=basic-perl-apache
+docker build -t $IMAGE -f Dockerfile .
 ```
 * start run default command
 
 ```sh
-docker run -d -p $(hostname -i):8080:80 -p $(hostname -i):9443:443 --name $NAME $NAME
+NAME=basic-perl-cgi
+docker run -d -p $(hostname -i):8080:80 -p $(hostname -i):9443:443 --name $NAME $IMAGE
 docker logs $NAME
 ```
 this will respond with
@@ -20,7 +21,7 @@ this will respond with
 wait for apache pid
 apache is running with ID 7
 ```
-(the value of `ID` varies)
+the value of `ID` varies. Sometimes the script output is not shown immediately, re-running the `logs` command shows it
 
 * connect to container  and check verion of Perl
 ```sh
@@ -36,11 +37,12 @@ perl -v
 This is perl 5, version 26, subversion 3 (v5.26.3) built for x86_64-linux-thread-multi
 ```
 
-
-* verify the vanilla httpd to run in Docker
+exit the container
+* verify the vanilla httpd to run inside Docker
 ```sh
 curl http://$(hostname -i):8080/
 ```
+it will print the default apache welcome page
 ```html
 <html><body><h1>It works!</h1></body></html>
 ```
@@ -54,7 +56,7 @@ observed in Docker version __20.10.6__ on a host where ipv6 was [turned off](htt
 
 
 * run smoke test
-call cgi directly:
+call cgi inside container directly:
 ```sh
 docker exec $NAME /var/www/localhost/cgi-bin/list.cgi
 ```
@@ -121,9 +123,10 @@ Content-Type: application/json
    "plum"
 ]
 ```
-similar results (sans the header) as cgi-bin :
+verify web server to run cgi inside container. Basically will observe same output 
+results (sans the header) as cgi-bin :
 ```sh
-curl http://$(hostname -i):8080/cgi-bin/list.cgi
+curl -s http://$(hostname -i):8080/cgi-bin/list.cgi
 ```
 ```json
 {
@@ -143,7 +146,7 @@ curl http://$(hostname -i):8080/cgi-bin/list.cgi
    ]
 }
 ```
-and use `form.cgi` to post the data:
+post the data to `form.cgi`:
 ```sh
 curl -X POST -d 'a=b&c=d' http://$(hostname -i):8080/cgi-bin/form.cgi
 ```
@@ -156,7 +159,7 @@ Content-Type: application/json
    "a" : "b"
 }
 ```
-testing the page, console:
+testing the AJAX page in console:
 ```sh
 curl http://$(hostname -i):8080/inventory.html
 ```
@@ -201,23 +204,28 @@ Server Data: <br />
 </body>
 </html>
 ```
-one needs to open page in the browser to see  the dynamic data. To verify, stop and rerun the container with default pors pusblsued as `8080` and `9443` on all network interfaces:
+one needs to open page in the browser to see the dynamic data being pulled. To verify, stop and rerun the container with default pors pusblsued as `8080` and `9443` on all network interfaces:
 ```sh
 docker stop $NAME
 docker container rm $NAME
-docker run -d -p 8080:80 -p 9443:443 --name $NAME $NAME
+docker run -d -p 8080:80 -p 9443:443 --name $NAME $IMAGE
 ```
 and navigate to the url in the browser with ip address of the hosting node:
+```sh
+chromium-browser http://$(hostname -i):8080/inventory.html &
+```
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture.png)
 
- - opened developer tools tab shows that the Angular is doing polling the server
+ - open developer tools tab eeto that the Angular does poll the server
+![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture.png)
+
 ### Cleanup
 
 ```sh
 docker stop $NAME
 docker container prune -f
 docker image prune -f
-docker image rm $NAME
+docker image rm $IMAGE
 ```
 ### Running Angular part from filesystem
 

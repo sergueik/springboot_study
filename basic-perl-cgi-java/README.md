@@ -9,7 +9,7 @@ for serving CGI-BIN pages
 ### Testing
 
 * build the appp
-```
+```sh
 mvn package
 ```
 * build the image
