@@ -15,7 +15,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import io.prometheus.client.CollectorRegistry;
-
 import io.prometheus.client.Gauge;
 import io.prometheus.client.exporter.PushGateway;
 
@@ -53,6 +52,7 @@ public class App {
 
 	void executeBatchJob(Boolean status) throws Exception {
 		CollectorRegistry collectorRegistry = new CollectorRegistry();
+
 		if (debug) {
 			System.err
 					.println("get CollectorRegistry: " + collectorRegistry.hashCode());
@@ -74,11 +74,15 @@ public class App {
 						+ jobInfo.describe());
 			}
 			try {
+				// jobInfo.inc();
+				// https://github.com/prometheus/client_java/blob/parent-0.10.0/simpleclient/src/main/java/io/prometheus/client/Gauge.java#L247
 				jobInfo.set((double) 1);
+				// https://github.com/prometheus/client_java/blob/parent-0.10.0/simpleclient/src/main/java/io/prometheus/client/Gauge.java#L265
 			} catch (NullPointerException e) {
 				// ignore
+				
 				System.err.println("Exception (ignored): " + e.toString());
-
+				e.printStackTrace();
 			}
 
 			if (debug) {
@@ -103,8 +107,7 @@ public class App {
 					.help("Last successful job run").register(collectorRegistry);
 			lastSuccess.setToCurrentTime();
 			if (debug) {
-				System.err.println(
-						"Set job success timestamp gauge: " + lastSuccess.hashCode());
+				System.err.println("Set job success gauge: " + lastSuccess.describe());
 			}
 		} catch (JobException e) {
 			if (debug) {
@@ -116,11 +119,13 @@ public class App {
 					.help("Last failed job run").register(collectorRegistry);
 			lastFailure.setToCurrentTime();
 			if (debug) {
-				System.err.println(
-						"Set job failure timestamp gauge: " + lastFailure.hashCode());
+				System.err.println("Set job failure gauge: " + lastFailure.describe());
 			}
 		} finally {
 			durationTimer.setDuration();
+			if (debug) {
+				System.err.println("Sending job info");
+			}
 			new PushGateway(gateway).pushAdd(collectorRegistry, name);
 		}
 	}
@@ -203,4 +208,3 @@ public class App {
 		}
 	}
 }
-

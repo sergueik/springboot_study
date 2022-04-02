@@ -38,7 +38,6 @@
       <artifactId>simpleclient</artifactId>
       <version>${prometheus.version}</version>
     </dependency>
-    <!-- The client -->
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>simpleclient_pushgateway</artifactId>
