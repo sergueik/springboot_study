@@ -40,30 +40,30 @@ sub add {
 }
 
 sub increment {
-    my $self = shift;
-    # NOTE: fix to pass the value - the array and hash do not merge as intended
-    my %args = @_;
+    my ($self, %opt) = @_;
+    my $value = $opt{'-value'};
+    $value = 1 unless defined($value);
     $self->{raw_str} = $self->_add(
-        @_,
-        '-value'    => $args{'-value'},
+        %opt,
+        '-value'    => $value,
         '-type'     => 'counter',
     );
     return $self->_send_to_prometheus($self->{raw_str});
 }
 
 sub summary {
-    my $self = shift;
+    my ($self, %opt) = @_;
     $self->{raw_str} = $self->_add(
-        @_,
+        %opt,
         '-type'     => 'summary',
     );
     return $self->_send_to_prometheus($self->{raw_str});
 }
 
 sub gauge {
-    my $self = shift;
+    my ($self, %opt) = @_;
     $self->{raw_str} = $self->_add(
-        @_,
+        %opt,
         '-type'     => 'gauge',
     );
     return $self->_send_to_prometheus($self->{raw_str});
