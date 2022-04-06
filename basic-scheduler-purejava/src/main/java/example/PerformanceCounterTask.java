@@ -1,6 +1,9 @@
 package example;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.Pdh;
@@ -15,6 +18,8 @@ import com.sun.jna.platform.win32.WinNT.HANDLEByReference;
 
 public class PerformanceCounterTask implements Runnable {
 	private static final Pdh pdh = Pdh.INSTANCE;
+	private static List<DataEntry> list = Collections
+			.synchronizedList(new ArrayList<DataEntry>());
 
 	@Override
 	public void run() {
@@ -46,6 +51,7 @@ public class PerformanceCounterTask implements Runnable {
 						pdh.PdhGetRawCounterValue(hCounter, lpdwType, rawCounter));
 				assertErrorSuccess("Counter data status", rawCounter.CStatus);
 				showRawCounterData(System.out, counterName, rawCounter);
+
 			} finally {
 				assertErrorSuccess("PdhRemoveCounter", pdh.PdhRemoveCounter(hCounter));
 			}
@@ -85,11 +91,18 @@ public class PerformanceCounterTask implements Runnable {
 
 	private static void showRawCounterData(PrintStream out, String counterName,
 			PDH_RAW_COUNTER rawCounter) {
-		out.append('\t').append(counterName).append(" ")
-				.append(String.valueOf(rawCounter.TimeStamp.toDate())).append(" 1st=")
-				.append(String.valueOf(rawCounter.FirstValue)).append(" 2nd=")
+		int cnt = 0;
+		long value = rawCounter.FirstValue;
+		synchronized (list) {
+			list.add(new DataEntry(value));
+			cnt = list.size();
+		}
+		out.append('\t').append(" # ").append(String.valueOf(cnt))
+				.append(counterName).append(" ").append(counterName).append(" 1st=")
+				.append(String.valueOf(value)).append(" 2nd=")
 				.append(String.valueOf(rawCounter.SecondValue)).append(" multi=")
 				.append(String.valueOf(rawCounter.MultiCount)).println();
+
 	}
 
 }

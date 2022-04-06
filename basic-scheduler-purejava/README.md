@@ -15,7 +15,7 @@ and its dependency classes
 mvn clean package
 
 ```
-```
+```sh
 java -jar target/scheduler.jar
 ```
 ```text

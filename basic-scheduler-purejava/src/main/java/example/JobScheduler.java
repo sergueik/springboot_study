@@ -4,6 +4,10 @@ package example;
 // http://www.java2s.com/Code/Java/Threads/JobScheduler.htm
 // Copyright (c) 1997-1999 Scott Oaks and Henry Wong.
 
+/**
+ * changes copyright 2021, 2022 Serguei Kouzmine
+ */
+
 import java.util.*;
 import example.DaemonLock;
 import example.ThreadPool;
@@ -41,9 +45,9 @@ public class JobScheduler implements Runnable {
 	// happening every minute
 	// https://english.stackexchange.com/questions/3091/weekly-daily-hourly-minutely#:~:text=The%20use%20of%20'minutely'%20in%20the%20sense%20of%20%22minute,retained%20for%20general%20technical%20use.
 
-	final public static long PER_MINUTE = (long) 60 * 1000;
 	final public static long PER_SECOND = (long) 1000;
-	final public static long HOURLY = (long) 60 * 60 * 1000;
+	final public static long PER_MINUTE = (long) 60 * PER_SECOND;
+	final public static long HOURLY = (long) 60 * PER_MINUTE;
 	final public static long DAILY = 24 * HOURLY;
 	final public static long WEEKLY = 7 * DAILY;
 	final public static long MONTHLY = -1;
@@ -75,16 +79,7 @@ public class JobScheduler implements Runnable {
 				System.out.print("3");
 			}
 		};
-		Runnable r4 = new PerformanceCounterTask();
-
-		JobScheduler js = new JobScheduler(0);
-		Thread.sleep(1000);
-
-		for (int cnt = 0; cnt != 10; cnt++) {
-			Thread.sleep(1000);
-			js.execute(r4);
-		}
-		// Test 1 - General Test
+			// Test 1 - General Test
 		// System.err.println("General Test: execute and repeat running two jobs");
 		// js.executeInAndRepeat(r1, 10000, 3000, 10);
 		// js.executeInAndRepeat(r2, 20000, 1000, 10);
