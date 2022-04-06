@@ -1,8 +1,8 @@
 package example;
 
-// origin:
-// http://www.java2s.com/Code/Java/Threads/JobScheduler.htm
-// Copyright (c) 1997-1999 Scott Oaks and Henry Wong.
+/**
+ * Copyright 2021, 2022 Serguei Kouzmine
+ */
 
 import java.util.*;
 import example.DaemonLock;
@@ -34,12 +34,12 @@ public class PerformanceCounterJobScheduler {
 	private final static int interval = 1000;
 
 	public static void main(String[] args) throws Exception {
+
 		Runnable performanceCounterTask = new PerformanceCounterTask();
 
-		for (int cnt = 0; cnt != 10; cnt++) {
-			Thread.sleep(interval);
-			performanceCounterTask.run();
-		}
+		JobScheduler jobScheduler = new JobScheduler(0);
+		jobScheduler.executeInAndRepeat(performanceCounterTask, interval,
+				JobScheduler.PER_SECOND);
 	}
 
 }
