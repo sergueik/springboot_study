@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import com.sun.jna.Native;
@@ -92,6 +93,17 @@ public class PerformanceCounterTask implements Runnable {
 					message + " - failed - hr=0x" + Integer.toHexString(statusCode));
 		}
 	}
+	// http://www.java2s.com/example/java/java.util/add-minutes-to-date.html
+
+	static final long ONE_MINUTE_IN_MILLIS = 60000;
+
+	public static Date minutesBeforeDate(int minutes, Date beforeTime) {
+
+		long curTimeInMs = beforeTime.getTime();
+		Date afterAddingMins = new Date(
+				curTimeInMs - (minutes * ONE_MINUTE_IN_MILLIS));
+		return afterAddingMins;
+	}
 
 	private static void showRawCounterData(PrintStream out, String counterName,
 			PDH_RAW_COUNTER rawCounter) {
@@ -107,6 +119,16 @@ public class PerformanceCounterTask implements Runnable {
 		synchronized (list) {
 			list.add(new DataEntry(value));
 			cnt = list.size();
+			int minutes = 2;
+			Date currentDate = new Date();
+			Date checkDate = minutesBeforeDate(minutes, currentDate);
+			if (cnt == 0) {
+				DataEntry[] data = (DataEntry[]) list.toArray();
+				Arrays.asList(data).stream()
+						.filter(o -> o.getDate().after(checkDate)).map(o -> String
+								.format("%s %d\n", o.getTimestampString(), o.getValue()))
+						.forEach(o -> out.append(o));
+			}
 		}
 		out.append('\t').append(" # ").append(String.valueOf(cnt))
 				.append(counterName).append(" ").append(counterName).append(" 1st=")
