@@ -19,39 +19,58 @@ mvn clean package
 java -jar target/scheduler.jar
 ```
 ```text
-\System\Processor Queue Length Fri Mar 18 15:46:48 EDT 2022 1st=3 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:46:49 EDT 2022 1st=4 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:46:50 EDT 2022 1st=0 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:46:51 EDT 2022 1st=0 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:46:52 EDT 2022 1st=0 2nd=0 multi=1 
-\System\Processor Queue Length Fri Mar 18 15:46:53 EDT 2022 1st=0 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:46:54 EDT 2022 1st=0 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:46:55 EDT 2022 1st=0 2nd=0 multi=1 
-\System\Processor Queue Length Fri Mar 18 15:46:56 EDT 2022 1st=0 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:46:57 EDT 2022 1st=0 2nd=0 multi=1
+
+ # 1\System\Processor Queue Length \System\Processor Queue Length 1st=3 2nd=0 multi=1
+ # 2\System\Processor Queue Length \System\Processor Queue Length 1st=4 2nd=0 multi=1
+ # 3\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 4\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 5\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 6\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 7\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 8\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 9\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 0\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 1\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 2\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 3\System\Processor Queue Length \System\Processor Queue Length 1st=13 2nd=0 multi=1
+ # 4\System\Processor Queue Length \System\Processor Queue Length 1st=50 2nd=0 multi=1
+ # 5\System\Processor Queue Length \System\Processor Queue Length 1st=33 2nd=0 multi=1
+ # 6\System\Processor Queue Length \System\Processor Queue Length 1st=21 2nd=0 multi=1
+ # 7\System\Processor Queue Length \System\Processor Queue Length 1st=24 2nd=0 multi=1
+ # 8\System\Processor Queue Length \System\Processor Queue Length 1st=20 2nd=0 multi=1
+ # 9\System\Processor Queue Length \System\Processor Queue Length 1st=31 2nd=0 multi=1
+ # 0\System\Processor Queue Length \System\Processor Queue Length 1st=26 2nd=0 multi=1
+ # 1\System\Processor Queue Length \System\Processor Queue Length 1st=25 2nd=0 multi=1
 ```
 
-
+same will be shown if the class is run via classpath command
 ```cmd
 java -cp target\scheduler.jar example.PerformanceCounterJobScheduler
 ```
 ```text
-\System\Processor Queue Length Fri Mar 18 15:58:48 EDT 2022 1st=13 2nd=0  multi=1
-\System\Processor Queue Length Fri Mar 18 15:58:50 EDT 2022 1st=50 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:58:51 EDT 2022 1st=33 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:58:52 EDT 2022 1st=21 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:58:53 EDT 2022 1st=24 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:58:54 EDT 2022 1st=20 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:58:55 EDT 2022 1st=31 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:58:56 EDT 2022 1st=26 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:58:58 EDT 2022 1st=25 2nd=0 multi=1
-\System\Processor Queue Length Fri Mar 18 15:58:59 EDT 2022 1st=23 2nd=0 multi=1
+ # 0\System\Processor Queue Length Fri Mar 18 15:58:48 EDT 2022 1st=13 2nd=0  multi=1
+ # 1\System\Processor Queue Length Fri Mar 18 15:58:50 EDT 2022 1st=50 2nd=0 multi=1
+ # 2\System\Processor Queue Length Fri Mar 18 15:58:51 EDT 2022 1st=33 2nd=0 multi=1
+ # 3\System\Processor Queue Length Fri Mar 18 15:58:52 EDT 2022 1st=21 2nd=0 multi=1
+ # 4\System\Processor Queue Length Fri Mar 18 15:58:53 EDT 2022 1st=24 2nd=0 multi=1
+ # 5\System\Processor Queue Length Fri Mar 18 15:58:54 EDT 2022 1st=20 2nd=0 multi=1
+ # 6\System\Processor Queue Length Fri Mar 18 15:58:55 EDT 2022 1st=31 2nd=0 multi=1
+ # 7\System\Processor Queue Length Fri Mar 18 15:58:56 EDT 2022 1st=26 2nd=0 multi=1
+ # 8\System\Processor Queue Length Fri Mar 18 15:58:58 EDT 2022 1st=25 2nd=0 multi=1
+ # 9\System\Processor Queue Length Fri Mar 18 15:58:58 EDT 2022 1st=25 2nd=0 multi=1
+ # 0\Sys # 0tem\Processor Queue Length Fri Mar 18 15:58:59 EDT 2022 1st=23 2nd=0 multi=1
 ```
+- the data is stores in a custom `CircularList` of size 10 which implements a `List<DataEntry>`
+which allows using a factory `synchronizedList`
+method of `Collections` class to make thread safe apppends. Note, the `size` method of the `CircularList` is used to
+return the index the next element will be written to (only used for logging).
+
 ### See Also
    * https://www.baeldung.com/thread-pool-java-and-guava
    * https://www.baeldung.com/mockito-void-methods
    * https://stackoverflow.com/questions/32319640/how-to-test-spring-scheduled/49930983
    * https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#4
-
+   * https://www.baeldung.com/java-ring-buffer
+   * https://www.geeksforgeeks.org/java-program-to-implement-circular-buffer/
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

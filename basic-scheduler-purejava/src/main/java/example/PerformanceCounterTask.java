@@ -1,7 +1,11 @@
 package example;
+/**
+ * Copyright 2021, 2022 Serguei Kouzmine
+ */
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,7 +23,7 @@ import com.sun.jna.platform.win32.WinNT.HANDLEByReference;
 public class PerformanceCounterTask implements Runnable {
 	private static final Pdh pdh = Pdh.INSTANCE;
 	private static List<DataEntry> list = Collections
-			.synchronizedList(new ArrayList<DataEntry>());
+			.synchronizedList(new CircularList(10));
 
 	@Override
 	public void run() {
@@ -91,6 +95,13 @@ public class PerformanceCounterTask implements Runnable {
 
 	private static void showRawCounterData(PrintStream out, String counterName,
 			PDH_RAW_COUNTER rawCounter) {
+		/*
+		String[] x = new String[] { "a", "b", "c", "e", "f" };
+		String[] y = new String[] { "a", "d", "e", "f" };
+		List<String> x1 = Arrays.asList(x);
+		List<String> y1 = Arrays.asList(y);
+		out.append("test:").append(String.valueOf(x1.containsAll(y1)));
+		*/
 		int cnt = 0;
 		long value = rawCounter.FirstValue;
 		synchronized (list) {
