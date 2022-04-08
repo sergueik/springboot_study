@@ -67,8 +67,7 @@ public class AcceptanceTest {
 				containsString(String.format("hello %s", name)));
 	}
 
-	@Disabled("")
-	
+	@Disabled("this test is added to fail and let show the response body")
 	@Test
 	public void test5() throws Exception {
 		// Assumptions.assumeFalse(false);

@@ -1,6 +1,6 @@
 package example.controller;
 /**
- * Copyright 2021,2022 Serguei Kouzmine
+ * Copyright 2022 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.notNullValue;
