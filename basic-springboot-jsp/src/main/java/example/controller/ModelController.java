@@ -8,12 +8,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class HelloController {
+public class ModelController {
 
-	@GetMapping("/generate")
-	@ResponseBody
-	public String direct(
-			@RequestParam(value = "name", required = true) String name) {
-		return "hello " + name;
+	@RequestMapping("/model")
+	public String jsp(Model model,
+			@RequestParam(value = "name", required = false, defaultValue = "World") String name) {
+		model.addAttribute("name", name);
+		model.addAttribute("id", "0");
+		return "hello";
 	}
 }

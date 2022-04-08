@@ -3,60 +3,21 @@ package example.controller;
  * Copyright 2021,2022 Serguei Kouzmine
  */
 
-import org.junit.jupiter.api.Assertions;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.net.URL;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import java.io.IOException;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThan;
-
-import com.gargoylesoftware.htmlunit.StringWebResponse;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.WebResponse;
-import com.gargoylesoftware.htmlunit.WebResponseData;
-import com.gargoylesoftware.htmlunit.html.DomElement;
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.DomNodeList;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-// import com.gargoylesoftware.htmlunit.html.HTMLParser;
-//the HTMLParser() is no longer static past 2.36
-//see also 
-//https://javadoc.io/static/net.sourceforge.htmlunit/htmlunit/2.36.0/com/gargoylesoftware/htmlunit/html/HTMLParser.html
-//https://javadoc.io/doc/net.sourceforge.htmlunit/htmlunit/2.37.0/com/gargoylesoftware/htmlunit/WebResponse.html
-import com.gargoylesoftware.htmlunit.html.parser.HTMLParser;
-import com.gargoylesoftware.htmlunit.html.parser.neko.HtmlUnitNekoHtmlParser;
-import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlInput;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 // NOTE: property annotations have no effect
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
@@ -66,93 +27,55 @@ public class AcceptanceTest {
 
 	// NOTE: BeanPostProcessor :
 	// Autowired annotation is not supported on static fields:
-
 	@LocalServerPort
 	private int serverPort = 8085;
 
 	private final String route = "/model";
+	private String base_url = null;
 	// NOTE: exercising property file override
 	private final static String body = "Hello World";
 	private static final RestTemplate restTemplate = new RestTemplate();
 	// cannot initialize too early ?
-	private String url = null;
-	private HttpHeaders headers = new HttpHeaders();
-	private HttpEntity<String> request = null;
 	private ResponseEntity<String> responseEntity = null;
-	private static HtmlPage page;
-	private static HtmlElement documentElement;
-	private static HtmlElement element;
-	private static DomElement domElement;
 
 	@BeforeEach
 	public void setUp() {
-		url = "http://localhost:" + serverPort + route;
+		base_url = "http://localhost:" + serverPort + route;
 	}
 
 	@Test
 	public void test1() throws Exception {
 		// Assumptions.assumeFalse(false);
-		responseEntity = restTemplate.getForEntity(url, String.class);
+		responseEntity = restTemplate.getForEntity(base_url, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 	}
 
 	@Test
 	public void test2() throws Exception {
 		// Assumptions.assumeFalse(false);
-		responseEntity = restTemplate.getForEntity(url, String.class);
+		responseEntity = restTemplate.getForEntity(base_url, String.class);
 		assertThat(responseEntity.getBody(), containsString(body));
-	}
-
-	@Test
-	public void test3() throws Exception {
-		// Assumptions.assumeFalse(false);
-		String name = "value";
-		responseEntity = restTemplate.getForEntity(url + "?name=" + name,
-				String.class);
-		assertThat(responseEntity.getBody(),
-				containsString(String.format("Hello %s", name)));
 	}
 
 	@Test
 	public void test4() throws Exception {
 		// Assumptions.assumeFalse(false);
 		String name = "value";
-		responseEntity = restTemplate.getForEntity(
-				"http://localhost:" + serverPort + "/generate?name=" + name,
-				String.class);
+		String url = "http://localhost:" + serverPort + "/generate?name=" + name;
+		responseEntity = restTemplate.getForEntity(url, String.class);
 		assertThat(responseEntity.getBody(),
 				containsString(String.format("hello %s", name)));
 	}
 
+	@Disabled("")
+	
 	@Test
 	public void test5() throws Exception {
-		String id = "0";
+		// Assumptions.assumeFalse(false);
+		String name = "value";
+		String url = "http://localhost:" + serverPort + "/model";
 		responseEntity = restTemplate.getForEntity(url, String.class);
-		page = getHtmlPage(responseEntity.getBody());
-		assertThat(page, notNullValue());
-		domElement = page.getElementsById(id).get(0);
-		assertThat(domElement, notNullValue());
-		assertThat(domElement.getTextContent(), containsString(body));
-		assertThat(page.getDocumentElement(), notNullValue());
-		documentElement = page.getDocumentElement();
-		element = documentElement.getElementsByTagName("div").get(0);
-		assertThat(element.getTextContent(), containsString(body));
-
-
-               DomNodeList<DomNode> domList = page.querySelectorAll(String.format("div#%s", id));
-               assertThat(domList, notNullValue());
-               DomNode domNode = domList.get(0);
-               assertThat(domNode, notNullValue());
-               assertThat(domNode.asText(), containsString(body));
-
+		assertThat(responseEntity.getBody(), is(""));
 	}
 
-	private HtmlPage getHtmlPage(String payload) throws IOException {
-		StringWebResponse response = new StringWebResponse(payload, new URL(url));
-		WebClient client = new WebClient();
-		HtmlPage page = new HtmlUnitNekoHtmlParser()
-				.parseHtml((WebResponse) response, client.getCurrentWindow());
-		client.close();
-		return page;
-	}
 }
