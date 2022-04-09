@@ -25,45 +25,54 @@ public class PerformanceCounterTask implements Runnable {
 	private static final Pdh pdh = Pdh.INSTANCE;
 	private static List<DataEntry> list = Collections
 			.synchronizedList(new CircularList(10));
+	private MessageType task = MessageType.COLLECT;
+
+	public void setTask(MessageType task) {
+		this.task = task;
+	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		PDH_COUNTER_PATH_ELEMENTS elems = new PDH_COUNTER_PATH_ELEMENTS();
 
-		elems.szObjectName = "System";
-		elems.szInstanceName = null;
-		elems.szCounterName = "Processor Queue Length";
-		String counterName = makeCounterPath(pdh, elems);
+		if (task.equals(MessageType.COLLECT)) {
+			PDH_COUNTER_PATH_ELEMENTS elems = new PDH_COUNTER_PATH_ELEMENTS();
 
-		HANDLEByReference ref = new HANDLEByReference();
-		assertErrorSuccess("PdhOpenQuery", pdh.PdhOpenQuery(null, null, ref));
+			elems.szObjectName = "System";
+			elems.szInstanceName = null;
+			elems.szCounterName = "Processor Queue Length";
+			String counterName = makeCounterPath(pdh, elems);
 
-		HANDLE hQuery = ref.getValue();
-		try {
-			ref.setValue(null);
-			assertErrorSuccess("PdhAddEnglishCounter",
-					pdh.PdhAddEnglishCounter(hQuery, counterName, null, ref));
+			HANDLEByReference ref = new HANDLEByReference();
+			assertErrorSuccess("PdhOpenQuery", pdh.PdhOpenQuery(null, null, ref));
 
-			HANDLE hCounter = ref.getValue();
+			HANDLE hQuery = ref.getValue();
 			try {
-				assertErrorSuccess("PdhCollectQueryData",
-						pdh.PdhCollectQueryData(hQuery));
+				ref.setValue(null);
+				assertErrorSuccess("PdhAddEnglishCounter",
+						pdh.PdhAddEnglishCounter(hQuery, counterName, null, ref));
 
-				DWORDByReference lpdwType = new DWORDByReference();
-				PDH_RAW_COUNTER rawCounter = new PDH_RAW_COUNTER();
-				assertErrorSuccess("PdhGetRawCounterValue",
-						pdh.PdhGetRawCounterValue(hCounter, lpdwType, rawCounter));
-				assertErrorSuccess("Counter data status", rawCounter.CStatus);
-				showRawCounterData(System.out, counterName, rawCounter);
+				HANDLE hCounter = ref.getValue();
+				try {
+					assertErrorSuccess("PdhCollectQueryData",
+							pdh.PdhCollectQueryData(hQuery));
 
+					DWORDByReference lpdwType = new DWORDByReference();
+					PDH_RAW_COUNTER rawCounter = new PDH_RAW_COUNTER();
+					assertErrorSuccess("PdhGetRawCounterValue",
+							pdh.PdhGetRawCounterValue(hCounter, lpdwType, rawCounter));
+					assertErrorSuccess("Counter data status", rawCounter.CStatus);
+					showRawCounterData(System.out, counterName, rawCounter);
+
+				} finally {
+					assertErrorSuccess("PdhRemoveCounter",
+							pdh.PdhRemoveCounter(hCounter));
+				}
 			} finally {
-				assertErrorSuccess("PdhRemoveCounter", pdh.PdhRemoveCounter(hCounter));
+				assertErrorSuccess("PdhCloseQuery", pdh.PdhCloseQuery(hQuery));
 			}
-		} finally {
-			assertErrorSuccess("PdhCloseQuery", pdh.PdhCloseQuery(hQuery));
+		} else {
+			showAverage(System.out);
 		}
-
 	}
 
 	private static String makeCounterPath(Pdh pdh,
@@ -105,30 +114,29 @@ public class PerformanceCounterTask implements Runnable {
 		return afterAddingMins;
 	}
 
+	private static void showAverage(PrintStream out) {
+		int cnt = 0;
+		synchronized (list) {
+			cnt = list.size();
+			int minutes = 2;
+			Date currentDate = new Date();
+			Date checkDate = minutesBeforeDate(minutes, currentDate);
+
+			DataEntry[] data = (DataEntry[]) list.toArray();
+			Arrays.asList(data).stream()
+					.filter(o -> o.getDate().after(checkDate)).map(o -> String
+							.format("%s %d\n", o.getTimestampString(), o.getValue()))
+					.forEach(o -> out.append(o));
+		}
+	}
+
 	private static void showRawCounterData(PrintStream out, String counterName,
 			PDH_RAW_COUNTER rawCounter) {
-		/*
-		String[] x = new String[] { "a", "b", "c", "e", "f" };
-		String[] y = new String[] { "a", "d", "e", "f" };
-		List<String> x1 = Arrays.asList(x);
-		List<String> y1 = Arrays.asList(y);
-		out.append("test:").append(String.valueOf(x1.containsAll(y1)));
-		*/
 		int cnt = 0;
 		long value = rawCounter.FirstValue;
 		synchronized (list) {
 			list.add(new DataEntry(value));
 			cnt = list.size();
-			int minutes = 2;
-			Date currentDate = new Date();
-			Date checkDate = minutesBeforeDate(minutes, currentDate);
-			if (cnt == 0) {
-				DataEntry[] data = (DataEntry[]) list.toArray();
-				Arrays.asList(data).stream()
-						.filter(o -> o.getDate().after(checkDate)).map(o -> String
-								.format("%s %d\n", o.getTimestampString(), o.getValue()))
-						.forEach(o -> out.append(o));
-			}
 		}
 		out.append('\t').append(" # ").append(String.valueOf(cnt))
 				.append(counterName).append(" ").append(counterName).append(" 1st=")
