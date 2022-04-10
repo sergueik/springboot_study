@@ -18,6 +18,10 @@ public class DataEntry {
 		return value;
 	}
 
+	public Date getDate() {
+		return date;
+	}
+
 	public String getTimestampString() {
 		return formatter.format(this.date);
 	}

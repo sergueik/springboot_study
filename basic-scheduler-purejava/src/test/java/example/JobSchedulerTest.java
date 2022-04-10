@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -97,6 +98,7 @@ public class JobSchedulerTest {
 	}
 
 	// NOTE: Time-consuming
+	@Ignore
 	@Test
 	public void test6() {
 		sut.executeIn(task, interval);

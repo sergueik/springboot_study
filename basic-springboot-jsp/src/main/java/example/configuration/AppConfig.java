@@ -11,7 +11,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 // servlet for static resources
 import org.springframework.web.servlet.view.JstlView;
 
-import example.controller.HelloController;
+import example.controller.AppController;
 
 @Configuration
 @EnableWebMvc

@@ -6,7 +6,7 @@
     <title>Hello</title>
 </head>
 <body>
-  <div id="0">
+  <div id="${id}">
     Hello ${name}
   </div>  
 </body>
