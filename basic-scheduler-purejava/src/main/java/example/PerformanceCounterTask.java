@@ -71,8 +71,10 @@ public class PerformanceCounterTask implements Runnable {
 					assertErrorSuccess("PdhGetRawCounterValue",
 							pdh.PdhGetRawCounterValue(hCounter, lpdwType, rawCounter));
 					assertErrorSuccess("Counter data status", rawCounter.CStatus);
-					showRawCounterData(System.out, counterName, rawCounter);
-
+					// showRawCounterData(System.out, counterName, rawCounter);
+					Map<String, Object> counterData = collectCounterData(counterName,
+							rawCounter);
+					showRawCounterData(counterData, System.out);
 				} finally {
 					assertErrorSuccess("PdhRemoveCounter",
 							pdh.PdhRemoveCounter(hCounter));
@@ -182,6 +184,39 @@ public class PerformanceCounterTask implements Runnable {
 
 	}
 
+	private Map<String, Object> collectCounterData(String counterName,
+			PDH_RAW_COUNTER rawCounter) {
+		long firstValue = rawCounter.FirstValue;
+		int cnt = 0;
+		synchronized (list) {
+			list.add(new DataEntry(firstValue));
+			cnt = list.size();
+		}
+		Map<String, Object> counterData = new HashMap<>();
+		counterData.put("cnt", cnt);
+		counterData.put("firstValue", firstValue);
+		counterData.put("counterName", counterName);
+		counterData.put("secondValue", rawCounter.SecondValue);
+		counterData.put("multiCount", rawCounter.MultiCount);
+		return counterData;
+	}
+
+	private static void showRawCounterData(Map<String, Object> counterData,
+			PrintStream out) {
+		String counterName = (String) counterData.get("counterName");
+		long firstValue = (long) counterData.get("firstValue");
+		long secondValue = (long) counterData.get("secondValue");
+		int multiCount = (int) counterData.get("multiCount");
+		int cnt = (int) counterData.get("cnt");
+		out.append('\t').append(" # ").append(String.valueOf(cnt))
+				.append(counterName).append(" ").append(counterName).append(" 1st=")
+				.append(String.valueOf(firstValue)).append(" 2nd=")
+				.append(String.valueOf(secondValue)).append(" multi=")
+				.append(String.valueOf(multiCount)).println();
+
+	}
+
+	@SuppressWarnings("unused")
 	private static void showRawCounterData(PrintStream out, String counterName,
 			PDH_RAW_COUNTER rawCounter) {
 		int cnt = 0;
@@ -195,7 +230,6 @@ public class PerformanceCounterTask implements Runnable {
 				.append(String.valueOf(value)).append(" 2nd=")
 				.append(String.valueOf(rawCounter.SecondValue)).append(" multi=")
 				.append(String.valueOf(rawCounter.MultiCount)).println();
-
 	}
 
 }
