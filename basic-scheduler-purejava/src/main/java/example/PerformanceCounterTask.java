@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.Pdh;
@@ -22,9 +23,16 @@ import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.platform.win32.WinNT.HANDLEByReference;
 
 public class PerformanceCounterTask implements Runnable {
+	private boolean debug = false;
+	private static int size = 120;
+
+	public void setDebug(boolean value) {
+		debug = value;
+	}
+
 	private static final Pdh pdh = Pdh.INSTANCE;
 	private static List<DataEntry> list = Collections
-			.synchronizedList(new CircularList(10));
+			.synchronizedList(new CircularList(size));
 	private MessageType task = MessageType.COLLECT;
 
 	public void setTask(MessageType task) {
@@ -102,31 +110,76 @@ public class PerformanceCounterTask implements Runnable {
 					message + " - failed - hr=0x" + Integer.toHexString(statusCode));
 		}
 	}
+
 	// http://www.java2s.com/example/java/java.util/add-minutes-to-date.html
-
-	static final long ONE_MINUTE_IN_MILLIS = 60000;
-
 	public static Date minutesBeforeDate(int minutes, Date beforeTime) {
-
+		final long ONE_MINUTE_IN_MILLIS = 60000;
 		long curTimeInMs = beforeTime.getTime();
 		Date afterAddingMins = new Date(
 				curTimeInMs - (minutes * ONE_MINUTE_IN_MILLIS));
 		return afterAddingMins;
 	}
 
-	private static void showAverage(PrintStream out) {
+	private void showAverage(PrintStream out) {
 		int cnt = 0;
+		double averageValue = 0;
+		List<Long> values = new ArrayList<>();
+		long entryCount = 0;
+		List<DataEntry> dataList = new ArrayList<>();
+		DataEntry[] data = {};
 		synchronized (list) {
 			cnt = list.size();
+			if (cnt == 0) {
+				cnt = size;
+			}
+			if (debug) {
+				out.append(String.format("averaging of %d values", cnt));
+			}
 			int minutes = 2;
 			Date currentDate = new Date();
 			Date checkDate = minutesBeforeDate(minutes, currentDate);
 
-			DataEntry[] data = (DataEntry[]) list.toArray();
-			Arrays.asList(data).stream()
-					.filter(o -> o.getDate().after(checkDate)).map(o -> String
-							.format("%s %d\n", o.getTimestampString(), o.getValue()))
-					.forEach(o -> out.append(o));
+			data = (DataEntry[]) list.toArray();
+			dataList = Arrays.asList(data);
+			if (debug) {
+				// safety against NPE in the first run
+				dataList.stream().filter(o -> o != null)
+						.filter(o -> o.getDate().after(checkDate)).map(o -> String
+								.format("%s %d\n", o.getTimestampString(), o.getValue()))
+						.forEach(o -> out.append(o));
+			}
+
+			values = Arrays.asList(data).stream().filter(o -> o != null)
+					.filter(o -> o.getDate().after(checkDate)).map(o -> {
+						long v = 0;
+						try {
+							v = o.getValue();
+						} catch (Exception e) {
+							out.append("ignoring exception");
+
+						}
+						return v;
+					}).collect(Collectors.toList());
+			entryCount = values.size();
+
+			averageValue = 0;
+			for (long value : values)
+				averageValue += (double) value;
+			averageValue /= entryCount;
+			out.append(String.format("%,2f (%d/%d)", averageValue, entryCount, cnt));
+
+			// https://docs.oracle.com/javase/tutorial/collections/streams/index.html
+			// NOTE: The method average() is undefined for the type Stream<Long>
+			// NPE in average
+
+			averageValue = Arrays.asList(data).stream().filter(o -> o != null)
+					.filter(o -> o.getDate().after(checkDate))
+					.mapToLong(DataEntry::getValue).average().getAsDouble();
+			// http://www.java2s.com/Tutorials/Java/Java_Stream/0250__Java_Stream_Count.htm
+			entryCount = dataList.stream().filter(o -> o != null)
+					.filter(o -> o.getDate().after(checkDate)).count();
+			out.append(String.format("%,2f (%d/%d)", averageValue, entryCount, cnt));
+
 		}
 	}
 
@@ -143,7 +196,6 @@ public class PerformanceCounterTask implements Runnable {
 				.append(String.valueOf(value)).append(" 2nd=")
 				.append(String.valueOf(rawCounter.SecondValue)).append(" multi=")
 				.append(String.valueOf(rawCounter.MultiCount)).println();
-
 	}
 
 }

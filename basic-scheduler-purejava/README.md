@@ -72,5 +72,6 @@ return the index the next element will be written to (only used for logging).
    * https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#4
    * https://www.baeldung.com/java-ring-buffer
    * https://www.geeksforgeeks.org/java-program-to-implement-circular-buffer/
+   * https://stackoverflow.com/questions/44942493/multiple-aggregate-functions-in-java-8-stream-api
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
