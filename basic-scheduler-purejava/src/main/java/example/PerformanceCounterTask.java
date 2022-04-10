@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.sun.jna.Native;
@@ -79,7 +81,9 @@ public class PerformanceCounterTask implements Runnable {
 				assertErrorSuccess("PdhCloseQuery", pdh.PdhCloseQuery(hQuery));
 			}
 		} else {
-			showAverage(System.out);
+			debug = true;
+			Map<String, Object> result = computeAverage();
+			showAverage(result, System.out);
 		}
 	}
 
@@ -120,67 +124,62 @@ public class PerformanceCounterTask implements Runnable {
 		return afterAddingMins;
 	}
 
-	private void showAverage(PrintStream out) {
-		int cnt = 0;
-		double averageValue = 0;
-		List<Long> values = new ArrayList<>();
-		long entryCount = 0;
-		List<DataEntry> dataList = new ArrayList<>();
-		DataEntry[] data = {};
+	private Map<String, Object> computeAverage() {
+		int minutes = 1;
+		return computeAverage(minutes);
+	}
+
+	private Map<String, Object> computeAverage(int minutes) {
+		Map<String, Object> result = new HashMap<>();
+		result.put("count", 0);
+		result.put("cnt", 0);
+		result.put("average", 0f);
 		synchronized (list) {
-			cnt = list.size();
+			int cnt = list.size();
 			if (cnt == 0) {
 				cnt = size;
 			}
 			if (debug) {
-				out.append(String.format("averaging of %d values", cnt));
+				System.err.println(String.format("averaging of %d values", cnt));
 			}
-			int minutes = 2;
 			Date currentDate = new Date();
 			Date checkDate = minutesBeforeDate(minutes, currentDate);
 
-			data = (DataEntry[]) list.toArray();
-			dataList = Arrays.asList(data);
+			List<DataEntry> dataList = Arrays.asList((DataEntry[]) list.toArray());
+
 			if (debug) {
-				// safety against NPE in the first run
+				// NOTE: safety against NPE in the first run
 				dataList.stream().filter(o -> o != null)
 						.filter(o -> o.getDate().after(checkDate)).map(o -> String
 								.format("%s %d\n", o.getTimestampString(), o.getValue()))
-						.forEach(o -> out.append(o));
+						.forEach(o -> System.err.println(o));
 			}
-
-			values = Arrays.asList(data).stream().filter(o -> o != null)
-					.filter(o -> o.getDate().after(checkDate)).map(o -> {
-						long v = 0;
-						try {
-							v = o.getValue();
-						} catch (Exception e) {
-							out.append("ignoring exception");
-
-						}
-						return v;
-					}).collect(Collectors.toList());
-			entryCount = values.size();
-
-			averageValue = 0;
-			for (long value : values)
-				averageValue += (double) value;
-			averageValue /= entryCount;
-			out.append(String.format("%,2f (%d/%d)", averageValue, entryCount, cnt));
 
 			// https://docs.oracle.com/javase/tutorial/collections/streams/index.html
 			// NOTE: The method average() is undefined for the type Stream<Long>
-			// NPE in average
-
-			averageValue = Arrays.asList(data).stream().filter(o -> o != null)
+			// NOTE: safety against NPE in the first run
+			double averageValue = dataList.stream().filter(o -> o != null)
 					.filter(o -> o.getDate().after(checkDate))
 					.mapToLong(DataEntry::getValue).average().getAsDouble();
-			// http://www.java2s.com/Tutorials/Java/Java_Stream/0250__Java_Stream_Count.htm
-			entryCount = dataList.stream().filter(o -> o != null)
-					.filter(o -> o.getDate().after(checkDate)).count();
-			out.append(String.format("%,2f (%d/%d)", averageValue, entryCount, cnt));
 
+			// http://www.java2s.com/Tutorials/Java/Java_Stream/0250__Java_Stream_Count.htm
+			// NOTE: safety against NPE in the first run
+			long entryCount = dataList.stream().filter(o -> o != null)
+					.filter(o -> o.getDate().after(checkDate)).count();
+			result.put("count", entryCount);
+			result.put("cnt", cnt);
+			result.put("average", averageValue);
 		}
+		return result;
+	}
+
+	private void showAverage(Map<String, Object> result, PrintStream out) {
+		double averageValue = (double) result.get("average");
+		long entryCount = (long) result.get("count");
+		int cnt = (int) result.get("cnt");
+		out.append(String.format("%,2f (%d/%d)", averageValue, entryCount, cnt))
+				.println();
+
 	}
 
 	private static void showRawCounterData(PrintStream out, String counterName,
