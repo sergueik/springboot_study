@@ -26,15 +26,19 @@ import com.sun.jna.platform.win32.WinNT.HANDLEByReference;
 
 public class PerformanceCounterTask implements Runnable {
 	private boolean debug = false;
-	private static int size = 120;
+	private boolean verbose = false;
+	private static int size = 120; // 5 min is too long
 
 	public void setDebug(boolean value) {
 		debug = value;
 	}
 
+	public void setVerbose(boolean value) {
+		verbose = value;
+	}
+
 	private static final Pdh pdh = Pdh.INSTANCE;
-	private static List<DataEntry> list = Collections
-			.synchronizedList(new CircularList(size));
+	private static List<DataEntry> list = Collections.synchronizedList(new CircularList(size));
 	private MessageType task = MessageType.COLLECT;
 
 	public void setTask(MessageType task) {
@@ -63,29 +67,28 @@ public class PerformanceCounterTask implements Runnable {
 
 				HANDLE hCounter = ref.getValue();
 				try {
-					assertErrorSuccess("PdhCollectQueryData",
-							pdh.PdhCollectQueryData(hQuery));
+					assertErrorSuccess("PdhCollectQueryData", pdh.PdhCollectQueryData(hQuery));
 
 					DWORDByReference lpdwType = new DWORDByReference();
 					PDH_RAW_COUNTER rawCounter = new PDH_RAW_COUNTER();
 					assertErrorSuccess("PdhGetRawCounterValue",
 							pdh.PdhGetRawCounterValue(hCounter, lpdwType, rawCounter));
 					assertErrorSuccess("Counter data status", rawCounter.CStatus);
-					// showRawCounterData(System.out, counterName, rawCounter);
-					Map<String, Object> counterData = collectCounterData(counterName,
-							rawCounter);
-					showRawCounterData(counterData, System.out);
+					Map<String, Object> counterData = collectCounterData(counterName, rawCounter);
+					if (verbose) {
+						showRawCounterData(counterData, System.out);
+					}
 				} finally {
-					assertErrorSuccess("PdhRemoveCounter",
-							pdh.PdhRemoveCounter(hCounter));
+					assertErrorSuccess("PdhRemoveCounter", pdh.PdhRemoveCounter(hCounter));
 				}
 			} finally {
 				assertErrorSuccess("PdhCloseQuery", pdh.PdhCloseQuery(hQuery));
 			}
 		} else {
-			debug = true;
 			Map<String, Object> result = computeAverage();
-			showAverage(result, System.out);
+			if (verbose) {
+				showAverage(result, System.out);
+			}
 		}
 	}
 
@@ -105,7 +108,7 @@ public class PerformanceCounterTask implements Runnable {
 		char[] szFullPathBuffer = new char[numChars + 1 /* the \0 */];
 		pcchBufferSize.setValue(new DWORD(szFullPathBuffer.length));
 		assertErrorSuccess("PdhMakeCounterPath", pdh
-				.PdhMakeCounterPath(pathElements, szFullPathBuffer, pcchBufferSize, 0));
+			.PdhMakeCounterPath(pathElements, szFullPathBuffer, pcchBufferSize, 0));
 
 		return Native.toString(szFullPathBuffer);
 	}
@@ -113,7 +116,7 @@ public class PerformanceCounterTask implements Runnable {
 	private static final void assertErrorSuccess(String message, int statusCode) {
 		if (statusCode != WinError.ERROR_SUCCESS) {
 			throw new RuntimeException(
-					message + " - failed - hr=0x" + Integer.toHexString(statusCode));
+				message + " - failed - hr=0x" + Integer.toHexString(statusCode));
 		}
 	}
 
@@ -121,8 +124,7 @@ public class PerformanceCounterTask implements Runnable {
 	public static Date minutesBeforeDate(int minutes, Date beforeTime) {
 		final long ONE_MINUTE_IN_MILLIS = 60000;
 		long curTimeInMs = beforeTime.getTime();
-		Date afterAddingMins = new Date(
-				curTimeInMs - (minutes * ONE_MINUTE_IN_MILLIS));
+		Date afterAddingMins = new Date( curTimeInMs - (minutes * ONE_MINUTE_IN_MILLIS));
 		return afterAddingMins;
 	}
 
@@ -152,22 +154,22 @@ public class PerformanceCounterTask implements Runnable {
 			if (debug) {
 				// NOTE: safety against NPE in the first run
 				dataList.stream().filter(o -> o != null)
-						.filter(o -> o.getDate().after(checkDate)).map(o -> String
-								.format("%s %d\n", o.getTimestampString(), o.getValue()))
-						.forEach(o -> System.err.println(o));
+					.filter(o -> o.getDate().after(checkDate)).map(o -> String
+					.format("%s %d\n", o.getTimestampString(), o.getValue()))
+					.forEach(o -> System.err.println(o));
 			}
 
 			// https://docs.oracle.com/javase/tutorial/collections/streams/index.html
 			// NOTE: The method average() is undefined for the type Stream<Long>
 			// NOTE: safety against NPE in the first run
 			double averageValue = dataList.stream().filter(o -> o != null)
-					.filter(o -> o.getDate().after(checkDate))
-					.mapToLong(DataEntry::getValue).average().getAsDouble();
+				.filter(o -> o.getDate().after(checkDate))
+				.mapToLong(DataEntry::getValue).average().getAsDouble();
 
 			// http://www.java2s.com/Tutorials/Java/Java_Stream/0250__Java_Stream_Count.htm
 			// NOTE: safety against NPE in the first run
 			long entryCount = dataList.stream().filter(o -> o != null)
-					.filter(o -> o.getDate().after(checkDate)).count();
+				.filter(o -> o.getDate().after(checkDate)).count();
 			result.put("count", entryCount);
 			result.put("cnt", cnt);
 			result.put("average", averageValue);
@@ -180,7 +182,7 @@ public class PerformanceCounterTask implements Runnable {
 		long entryCount = (long) result.get("count");
 		int cnt = (int) result.get("cnt");
 		out.append(String.format("%,2f (%d/%d)", averageValue, entryCount, cnt))
-				.println();
+			.println();
 
 	}
 
@@ -209,27 +211,9 @@ public class PerformanceCounterTask implements Runnable {
 		int multiCount = (int) counterData.get("multiCount");
 		int cnt = (int) counterData.get("cnt");
 		out.append('\t').append(" # ").append(String.valueOf(cnt))
-				.append(counterName).append(" ").append(counterName).append(" 1st=")
-				.append(String.valueOf(firstValue)).append(" 2nd=")
-				.append(String.valueOf(secondValue)).append(" multi=")
-				.append(String.valueOf(multiCount)).println();
-
+			.append(counterName).append(" ").append(counterName).append(" 1st=")
+			.append(String.valueOf(firstValue)).append(" 2nd=")
+			.append(String.valueOf(secondValue)).append(" multi=")
+			.append(String.valueOf(multiCount)).println();
 	}
-
-	@SuppressWarnings("unused")
-	private static void showRawCounterData(PrintStream out, String counterName,
-			PDH_RAW_COUNTER rawCounter) {
-		int cnt = 0;
-		long value = rawCounter.FirstValue;
-		synchronized (list) {
-			list.add(new DataEntry(value));
-			cnt = list.size();
-		}
-		out.append('\t').append(" # ").append(String.valueOf(cnt))
-				.append(counterName).append(" ").append(counterName).append(" 1st=")
-				.append(String.valueOf(value)).append(" 2nd=")
-				.append(String.valueOf(rawCounter.SecondValue)).append(" multi=")
-				.append(String.valueOf(rawCounter.MultiCount)).println();
-	}
-
 }

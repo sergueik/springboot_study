@@ -12,13 +12,13 @@ and its dependency classes
 
 ### Usage
 ```sh
-mvn clean package
-
+mvn test
+mvn clean -Dmaven.test.skip=true package
 ```
 ```sh
 java -jar target/scheduler.jar
 ```
-* set the size of `CircularList`  to 10 to see the index rollover:
+* set the size of `CircularList` to 10 to see the index rollover quickly:
 ```text
 
  # 1\System\Processor Queue Length \System\Processor Queue Length 1st=3 2nd=0 multi=1
@@ -44,11 +44,26 @@ java -jar target/scheduler.jar
  # 1\System\Processor Queue Length \System\Processor Queue Length 1st=25 2nd=0 multi=1
 ```
 
-Run two schedules to collect valyes and compute average:
+Run two schedules to collect values and compute average (in verbose mode):
+```java
+JobScheduler jobScheduler = new JobScheduler(0);
+
+PerformanceCounterTask collectorTask = new PerformanceCounterTask();
+collectorTask.setTask(MessageType.COLLECT);
+collectorTask.setVerbose(false);
+jobScheduler.executeInAndRepeat(collectorTask, interval, JobScheduler.PER_SECOND);
+
+PerformanceCounterTask computeTask = new PerformanceCounterTask();
+computeTask.setVerbose(true);
+computeTask.setDebug(true);
+computeTask.setTask(MessageType.COMPUTE);
+jobScheduler.executeInAndRepeat(computeTask, interval * 10, 30 * JobScheduler.PER_SECOND);
+
+```
 ```text
 ...
-         # 68\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 69\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 68\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 69\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
 averaging of 69 values
 04/10/2022 01:11:30.863 2
 04/10/2022 01:11:31.521 0
@@ -111,36 +126,36 @@ averaging of 69 values
 04/10/2022 01:12:28.506 0
 04/10/2022 01:12:29.508 0
 5.016667 (60/69)
-         # 70\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 71\System\Processor Queue Length \System\Processor Queue Length 1st=13 2nd=0 multi=1
-         # 72\System\Processor Queue Length \System\Processor Queue Length 1st=8 2nd=0 multi=1
-         # 73\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 74\System\Processor Queue Length \System\Processor Queue Length 1st=5 2nd=0 multi=1
-         # 75\System\Processor Queue Length \System\Processor Queue Length 1st=8 2nd=0 multi=1
-         # 76\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 77\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 78\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 79\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 80\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 81\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 82\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 83\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 84\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 85\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 86\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 87\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 88\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 89\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 90\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 91\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 92\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 93\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 94\System\Processor Queue Length \System\Processor Queue Length 1st=48 2nd=0 multi=1
-         # 95\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 96\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 97\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 98\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
-         # 99\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 70\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 71\System\Processor Queue Length \System\Processor Queue Length 1st=13 2nd=0 multi=1
+ # 72\System\Processor Queue Length \System\Processor Queue Length 1st=8 2nd=0 multi=1
+ # 73\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 74\System\Processor Queue Length \System\Processor Queue Length 1st=5 2nd=0 multi=1
+ # 75\System\Processor Queue Length \System\Processor Queue Length 1st=8 2nd=0 multi=1
+ # 76\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 77\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 78\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 79\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 80\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 81\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 82\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 83\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 84\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 85\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 86\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 87\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 88\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 89\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 90\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 91\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 92\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 93\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 94\System\Processor Queue Length \System\Processor Queue Length 1st=48 2nd=0 multi=1
+ # 95\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 96\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 97\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 98\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
+ # 99\System\Processor Queue Length \System\Processor Queue Length 1st=0 2nd=0 multi=1
 averaging of 99 values
 ...
 ```
@@ -166,6 +181,21 @@ which allows using a factory `synchronizedList`
 method of `Collections` class to make thread safe apppends. Note, the `size` method of the `CircularList` is used to
 return the index the next element will be written to (only used for logging).
 
+### Note:
+occassionally see failing test:
+```cmd
+mvn test
+```
+```text
+[ERROR] Tests run: 6, Failures: 1, Errors: 0, Skipped: 1, Time elapsed: 23.813 s
+ <<< FAILURE! - in example.JobSchedulerTest
+[ERROR] test1(example.JobSchedulerTest)  Time elapsed: 0.922 s  <<< FAILURE!
+Wanted but not invoked:
+runnable.run();
+-> at example.JobSchedulerTest.test1(JobSchedulerTest.java:61)
+Actually, there were zero interactions with this mock.
+```
+usually error disappears in a rerun
 ### See Also
    * https://www.baeldung.com/thread-pool-java-and-guava
    * https://www.baeldung.com/mockito-void-methods

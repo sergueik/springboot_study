@@ -6,8 +6,10 @@ public class PerformanceCounterJobScheduler {
 
 	public static void main(String[] args) throws Exception {
 
-		Runnable collectorTask = new PerformanceCounterTask();
+		PerformanceCounterTask collectorTask = new PerformanceCounterTask();
+		collectorTask.setVerbose(false);
 		PerformanceCounterTask computeTask = new PerformanceCounterTask();
+		computeTask.setVerbose(true);
 		computeTask.setTask(MessageType.COMPUTE);
 		JobScheduler jobScheduler = new JobScheduler(0);
 		jobScheduler.executeInAndRepeat(collectorTask, interval,

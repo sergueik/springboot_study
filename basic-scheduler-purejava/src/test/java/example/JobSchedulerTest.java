@@ -58,6 +58,10 @@ public class JobSchedulerTest {
 	@Test
 	public void test1() {
 		sut.execute(task);
+		try{ 
+		  Thread.sleep(500);
+		} catch (InterruptedException e){
+		}
 		verify(task, times(1)).run();
 	}
 
