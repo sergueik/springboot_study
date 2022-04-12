@@ -38,7 +38,8 @@ public class PerformanceCounterTask implements Runnable {
 	}
 
 	private static final Pdh pdh = Pdh.INSTANCE;
-	private static List<DataEntry> list = Collections.synchronizedList(new CircularList(size));
+	private static List<DataEntry> list = Collections
+			.synchronizedList(new CircularList(size));
 	private MessageType task = MessageType.COLLECT;
 
 	public void setTask(MessageType task) {
@@ -67,27 +68,29 @@ public class PerformanceCounterTask implements Runnable {
 
 				HANDLE hCounter = ref.getValue();
 				try {
-					assertErrorSuccess("PdhCollectQueryData", pdh.PdhCollectQueryData(hQuery));
+					assertErrorSuccess("PdhCollectQueryData",
+							pdh.PdhCollectQueryData(hQuery));
 
 					DWORDByReference lpdwType = new DWORDByReference();
 					PDH_RAW_COUNTER rawCounter = new PDH_RAW_COUNTER();
 					assertErrorSuccess("PdhGetRawCounterValue",
 							pdh.PdhGetRawCounterValue(hCounter, lpdwType, rawCounter));
 					assertErrorSuccess("Counter data status", rawCounter.CStatus);
-					Map<String, Object> counterData = collectCounterData(counterName, rawCounter);
+					CounterData counterData = collectCounterData(counterName, rawCounter);
 					if (verbose) {
 						showRawCounterData(counterData, System.out);
 					}
 				} finally {
-					assertErrorSuccess("PdhRemoveCounter", pdh.PdhRemoveCounter(hCounter));
+					assertErrorSuccess("PdhRemoveCounter",
+							pdh.PdhRemoveCounter(hCounter));
 				}
 			} finally {
 				assertErrorSuccess("PdhCloseQuery", pdh.PdhCloseQuery(hQuery));
 			}
 		} else {
-			Map<String, Object> result = computeAverage();
+			ComputedResult computedResult = computeAverage();
 			if (verbose) {
-				showAverage(result, System.out);
+				showAverage(computedResult, System.out);
 			}
 		}
 	}
@@ -108,7 +111,7 @@ public class PerformanceCounterTask implements Runnable {
 		char[] szFullPathBuffer = new char[numChars + 1 /* the \0 */];
 		pcchBufferSize.setValue(new DWORD(szFullPathBuffer.length));
 		assertErrorSuccess("PdhMakeCounterPath", pdh
-			.PdhMakeCounterPath(pathElements, szFullPathBuffer, pcchBufferSize, 0));
+				.PdhMakeCounterPath(pathElements, szFullPathBuffer, pcchBufferSize, 0));
 
 		return Native.toString(szFullPathBuffer);
 	}
@@ -116,7 +119,7 @@ public class PerformanceCounterTask implements Runnable {
 	private static final void assertErrorSuccess(String message, int statusCode) {
 		if (statusCode != WinError.ERROR_SUCCESS) {
 			throw new RuntimeException(
-				message + " - failed - hr=0x" + Integer.toHexString(statusCode));
+					message + " - failed - hr=0x" + Integer.toHexString(statusCode));
 		}
 	}
 
@@ -124,24 +127,22 @@ public class PerformanceCounterTask implements Runnable {
 	public static Date minutesBeforeDate(int minutes, Date beforeTime) {
 		final long ONE_MINUTE_IN_MILLIS = 60000;
 		long curTimeInMs = beforeTime.getTime();
-		Date afterAddingMins = new Date( curTimeInMs - (minutes * ONE_MINUTE_IN_MILLIS));
+		Date afterAddingMins = new Date(
+				curTimeInMs - (minutes * ONE_MINUTE_IN_MILLIS));
 		return afterAddingMins;
 	}
 
-	private Map<String, Object> computeAverage() {
+	private ComputedResult computeAverage() {
 		int minutes = 1;
 		return computeAverage(minutes);
 	}
 
-	private Map<String, Object> computeAverage(int minutes) {
-		Map<String, Object> result = new HashMap<>();
-		result.put("count", 0);
-		result.put("cnt", 0);
-		result.put("average", 0f);
+	private ComputedResult computeAverage(int minutes) {
+		ComputedResult result = new ComputedResult();
 		synchronized (list) {
 			int cnt = list.size();
 			if (cnt == 0) {
-				cnt = size;
+				cnt = PerformanceCounterTask.size;
 			}
 			if (debug) {
 				System.err.println(String.format("averaging of %d values", cnt));
@@ -154,66 +155,70 @@ public class PerformanceCounterTask implements Runnable {
 			if (debug) {
 				// NOTE: safety against NPE in the first run
 				dataList.stream().filter(o -> o != null)
-					.filter(o -> o.getDate().after(checkDate)).map(o -> String
-					.format("%s %d\n", o.getTimestampString(), o.getValue()))
-					.forEach(o -> System.err.println(o));
+						.filter(o -> o.getDate().after(checkDate)).map(o -> String
+								.format("%s %d\n", o.getTimestampString(), o.getValue()))
+						.forEach(o -> System.err.println(o));
 			}
 
 			// https://docs.oracle.com/javase/tutorial/collections/streams/index.html
 			// NOTE: The method average() is undefined for the type Stream<Long>
 			// NOTE: safety against NPE in the first run
 			double averageValue = dataList.stream().filter(o -> o != null)
-				.filter(o -> o.getDate().after(checkDate))
-				.mapToLong(DataEntry::getValue).average().getAsDouble();
+					.filter(o -> o.getDate().after(checkDate))
+					.mapToLong(DataEntry::getValue).average().getAsDouble();
 
 			// http://www.java2s.com/Tutorials/Java/Java_Stream/0250__Java_Stream_Count.htm
 			// NOTE: safety against NPE in the first run
 			long entryCount = dataList.stream().filter(o -> o != null)
-				.filter(o -> o.getDate().after(checkDate)).count();
-			result.put("count", entryCount);
-			result.put("cnt", cnt);
-			result.put("average", averageValue);
+					.filter(o -> o.getDate().after(checkDate)).count();
+
+			result.minutes = minutes;
+			result.entryCount = entryCount;
+			result.size = cnt;
+			result.averageValue = averageValue;
 		}
 		return result;
 	}
 
-	private void showAverage(Map<String, Object> result, PrintStream out) {
-		double averageValue = (double) result.get("average");
-		long entryCount = (long) result.get("count");
-		int cnt = (int) result.get("cnt");
-		out.append(String.format("%,2f (%d/%d)", averageValue, entryCount, cnt))
-			.println();
+	private void showAverage(ComputedResult result, PrintStream out) {
+		// double averageValue = result.averageValue;
+		// long entryCount = result.entryCount;
+		// int size = result.size;
+		// int minutes = result.minutes;
+		out.append(String.format("%d %,2f (%d/%d)", result.minutes,
+				result.averageValue, result.entryCount, result.size)).println();
 
 	}
 
-	private Map<String, Object> collectCounterData(String counterName,
+	private CounterData collectCounterData(String counterName,
 			PDH_RAW_COUNTER rawCounter) {
-		long firstValue = rawCounter.FirstValue;
+		CounterData counterData = new CounterData();
+
+		counterData.firstValue = rawCounter.FirstValue;
+		counterData.counterName = counterName;
+		counterData.secondValue = rawCounter.SecondValue;
+		counterData.multiCount = rawCounter.MultiCount;
 		int cnt = 0;
 		synchronized (list) {
-			list.add(new DataEntry(firstValue));
+			list.add(new DataEntry(rawCounter.FirstValue));
 			cnt = list.size();
 		}
-		Map<String, Object> counterData = new HashMap<>();
-		counterData.put("cnt", cnt);
-		counterData.put("firstValue", firstValue);
-		counterData.put("counterName", counterName);
-		counterData.put("secondValue", rawCounter.SecondValue);
-		counterData.put("multiCount", rawCounter.MultiCount);
+		counterData.cnt = cnt;
+
 		return counterData;
 	}
 
-	private static void showRawCounterData(Map<String, Object> counterData,
+	private static void showRawCounterData(CounterData counterData,
 			PrintStream out) {
-		String counterName = (String) counterData.get("counterName");
-		long firstValue = (long) counterData.get("firstValue");
-		long secondValue = (long) counterData.get("secondValue");
-		int multiCount = (int) counterData.get("multiCount");
-		int cnt = (int) counterData.get("cnt");
+		String counterName = counterData.counterName;
+		long firstValue = counterData.firstValue;
+		long secondValue = counterData.secondValue;
+		int multiCount = counterData.multiCount;
+		int cnt = counterData.cnt;
 		out.append('\t').append(" # ").append(String.valueOf(cnt))
-			.append(counterName).append(" ").append(counterName).append(" 1st=")
-			.append(String.valueOf(firstValue)).append(" 2nd=")
-			.append(String.valueOf(secondValue)).append(" multi=")
-			.append(String.valueOf(multiCount)).println();
+				.append(counterName).append(" ").append(counterName).append(" 1st=")
+				.append(String.valueOf(firstValue)).append(" 2nd=")
+				.append(String.valueOf(secondValue)).append(" multi=")
+				.append(String.valueOf(multiCount)).println();
 	}
 }

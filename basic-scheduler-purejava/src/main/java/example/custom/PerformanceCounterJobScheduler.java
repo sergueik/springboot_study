@@ -9,7 +9,7 @@ public class PerformanceCounterJobScheduler {
 	public static void main(String[] args) throws Exception {
 
 		PerformanceCounterTask collectorTask = new PerformanceCounterTask();
-		collectorTask.setVerbose(false);
+		collectorTask.setVerbose(true);
 		PerformanceCounterTask computeTask = new PerformanceCounterTask();
 		computeTask.setVerbose(true);
 		computeTask.setTask(MessageType.COMPUTE);
