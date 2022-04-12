@@ -15,8 +15,19 @@ and its dependency classes
 mvn test
 mvn clean -Dmaven.test.skip=true package
 ```
+add confg file (currently only the `collect` section is being processed):
+```YAML
+collect:
+ interval: 1000
+ debug: false
+ verbose: false
+compute:
+ - interval: 1
+   debug: false
+   verbose: false
+```
 ```sh
-java -jar target/scheduler.jar
+java -jar target/scheduler.jar -config config.yaml
 ```
 * set the size of `CircularList` to 10 to see the index rollover quickly:
 ```text

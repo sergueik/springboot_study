@@ -1,0 +1,6 @@
+collect:
+ interval: 1000
+ debug: false
+ verbose: false 
+compute:
+ - interval: 1
