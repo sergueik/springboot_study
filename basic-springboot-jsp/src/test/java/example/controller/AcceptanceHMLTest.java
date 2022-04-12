@@ -86,7 +86,7 @@ public class AcceptanceHMLTest {
 	public void setUp() throws IOException {
 		base_url = "http://localhost:" + serverPort + route;
 		responseEntity = restTemplate.getForEntity(base_url, String.class);
-		page = getHtmlPage(base_url, responseEntity.getBody());
+		page = getHtmlPage(responseEntity.getBody());
 	}
 
 	@Test
@@ -142,10 +142,11 @@ public class AcceptanceHMLTest {
 		Map<String, String> param = new HashMap<>();
 		param.put("name", name);
 		param.put("id", id);
-		HttpEntity<Map<String, String>> request = new HttpEntity<>(param, headers);
+		// NOTE: cannot use plain Map here
 		// org.springframework.web.client.RestClientException: No
 		// HttpMessageConverter for java.util.HashMap and content type
 		// "application/x-www-form-urlencoded"
+		HttpEntity<Map<String, String>> request = new HttpEntity<>(param, headers);
 		responseEntity = restTemplate.postForEntity(base_url, request,
 				String.class);
 		assertThat(responseEntity.getBody(),
@@ -154,7 +155,26 @@ public class AcceptanceHMLTest {
 
 	@Test
 	public void test6() throws Exception {
-		// Assumptions.assumeFalse(false);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		String name = "value";
+		String id = "1";
+
+		MultiValueMap<String, String> param = new LinkedMultiValueMap<>();
+		param.add("name", name);
+		param.add("id", id);
+		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(param,
+				headers);
+
+		responseEntity = restTemplate.postForEntity(base_url, request,
+				String.class);
+
+		assertThat(responseEntity.getBody(),
+				containsString(String.format("Hello %s", name)));
+	}
+
+	@Test
+	public void test7() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		String name = "value";
@@ -169,11 +189,17 @@ public class AcceptanceHMLTest {
 
 		responseEntity = restTemplate.postForEntity(base_url, request,
 				String.class);
-		assertThat(responseEntity.getBody(),
+		page = getHtmlPage(responseEntity.getBody());
+
+		domElement = page.getElementsById(id).get(0);
+		assertThat(domElement, notNullValue());
+		assertThat(domElement.getTextContent(),
 				containsString(String.format("Hello %s", name)));
+
 	}
 
-	private HtmlPage getHtmlPage(String url, String payload) throws IOException {
+	// NOTE: not using the url parameter
+	private HtmlPage getHtmlPage(String payload) throws IOException {
 		StringWebResponse response = new StringWebResponse(payload,
 				new URL("http://localhost:8080"));
 		WebClient client = new WebClient();
