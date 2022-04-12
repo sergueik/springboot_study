@@ -6,9 +6,12 @@ package example.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrlTemplate;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.hamcrest.Matcher;
@@ -66,13 +69,16 @@ public class AppControllerTest {
 		resultActions.andExpect(status().isOk());
 	}
 
-	// examine redirect URL
-	// @Disabled("this test is impementation-sensitive: when HelloControler and
-	// ModelController aremerged into AppController the test passes. When
-	// separated the test fails")
+	// examine response headers
+	// @Disabled
 	@Test
 	public void test2() throws Exception {
-		resultActions.andExpect(forwardedUrl(forwardedUrl));
+		Assertions.assertThrows(AssertionError.class, () -> {
+			mvc.perform(get(route).accept(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())
+					.andExpect(content().contentType("application/json"));
+		});
+		resultActions.andExpect(status().isOk());
 	}
 
 	// examine body - non-blank. To examine JSP page, see AcceptanceTest
@@ -98,16 +104,27 @@ public class AppControllerTest {
 				.andExpect(content().contentType("application/json"));
 	}
 
-	// examine response headers
-	// @Disabled
+	// examine redirect URL
+	// @Disabled("this test is impementation-sensitive")
+	// when the /hello" and "/model" Controllers are inside same class say
+	// AppController
+	// the test passes.
+	// when the controller methods are in indvidual classes
+	// the test fails
 	@Test
 	public void test6() throws Exception {
-		Assertions.assertThrows(AssertionError.class, () -> {
-			mvc.perform(get(route).accept(MediaType.APPLICATION_JSON))
-					.andExpect(status().isOk())
-					.andExpect(content().contentType("application/json"));
-		});
-		resultActions.andExpect(status().isOk());
+		resultActions.andExpect(forwardedUrl(forwardedUrl));
+	}
+
+	@Test
+	public void test7() throws Exception {
+		resultActions.andExpect(forwardedUrlTemplate(forwardedUrl));
+	}
+
+	@Test
+	public void test8() throws Exception {
+		mvc.perform(post("/model_with_default_param").param("name", "test"))
+				.andExpect(forwardedUrlTemplate(forwardedUrl));
 	}
 
 }

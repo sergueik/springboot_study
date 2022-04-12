@@ -10,9 +10,12 @@ import static org.hamcrest.Matchers.greaterThan;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +24,10 @@ import org.springframework.context.annotation.PropertySource;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.gargoylesoftware.htmlunit.StringWebResponse;
@@ -122,6 +128,47 @@ public class AcceptanceHMLTest {
 		String name = "value";
 		String url = base_url + "?name=" + name;
 		responseEntity = restTemplate.getForEntity(url, String.class);
+		assertThat(responseEntity.getBody(),
+				containsString(String.format("Hello %s", name)));
+	}
+
+	@Disabled("BadRequest 400, wrong arguments")
+	@Test
+	public void test5() throws Exception {
+		String name = "value";
+		String id = "1";
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		Map<String, String> param = new HashMap<>();
+		param.put("name", name);
+		param.put("id", id);
+		HttpEntity<Map<String, String>> request = new HttpEntity<>(param, headers);
+		// org.springframework.web.client.RestClientException: No
+		// HttpMessageConverter for java.util.HashMap and content type
+		// "application/x-www-form-urlencoded"
+		responseEntity = restTemplate.postForEntity(base_url, request,
+				String.class);
+		assertThat(responseEntity.getBody(),
+				containsString(String.format("Hello %s", name)));
+	}
+
+	@Test
+	public void test6() throws Exception {
+		// Assumptions.assumeFalse(false);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		String name = "value";
+		String id = "1";
+
+		MultiValueMap<String, String> param = new LinkedMultiValueMap<>();
+		param.add("name", name);
+		param.add("id", id);
+		// HttpEntity<Map<String, String>> request = new HttpEntity<>(param);
+		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(param,
+				headers);
+
+		responseEntity = restTemplate.postForEntity(base_url, request,
+				String.class);
 		assertThat(responseEntity.getBody(),
 				containsString(String.format("Hello %s", name)));
 	}
