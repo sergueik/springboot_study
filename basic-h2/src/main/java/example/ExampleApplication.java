@@ -1,5 +1,7 @@
 package example;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -9,6 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 import org.h2.tools.DeleteDbFiles;
 
@@ -27,6 +30,19 @@ public class ExampleApplication {
 			// DeleteDbFiles.execute("~", "test", true);
 			insertWithPreparedStatement();
 			queryWithPreparedStatement();
+
+			System.out.println("Press Enter to quit");
+			// https://www.baeldung.com/java-console-input-output
+			// this expects a string - plain Enter is not accepted
+			/*
+			Scanner scanner = new Scanner(System.in);
+			String dummy = scanner.next();
+			*/
+
+			BufferedReader buffReader = new BufferedReader(
+					new InputStreamReader(System.in));
+
+			buffReader.readLine();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
