@@ -24,6 +24,6 @@ public class ApplicationTest
 
 		scheduler.scheduleJob(jobDetail, trigger);
 
-		Thread.sleep(120000);
+		Thread.sleep(10000);
 	}
 }
