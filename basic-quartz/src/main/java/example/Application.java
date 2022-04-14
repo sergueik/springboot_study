@@ -1,4 +1,4 @@
-package com.kaviddiss.bootquartz;
+package example;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
