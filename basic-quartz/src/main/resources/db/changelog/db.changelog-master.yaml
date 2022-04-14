@@ -1,0 +1,14 @@
+---
+# https://docs.liquibase.com/concepts/changelogs/yaml-format.html
+databaseChangeLog:
+# NOTE: Liquidbase somewhat picky to YAML format
+# see also: https://stackoverflow.com/questions/39841043/liquibase-seems-to-be-trying-to-insert-null-id-into-changeset-table
+  - changeSet:
+      id: 'quartz_tables_h2'
+      author: david
+      dbms: h2
+      sqlFile:
+        encoding: utf8
+        path: db/changelog/sql/quartz_tables_h2.sql
+        splitStatements: yes
+        stripComments: true
