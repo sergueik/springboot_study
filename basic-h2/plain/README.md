@@ -40,7 +40,7 @@ This will launch the default browser and navigate to [h2 database browser page](
 Enter `jdbc:h2:file:~/test` into the __JDBC URL__ input field and connect. Browse __EMPLOYEE__ or __DEPARTMENT__ table:
 
 
-![h2 database in the h2 browser](https://github.com/sergueik/springboot_study/blob/master/basic-h2/screenshots/h2_browser_query_capture.png)
+![h2 database in the h2 browser](https://github.com/sergueik/springboot_study/blob/master/basic-h2/plain/screenshots/h2_browser_query_capture.png)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
