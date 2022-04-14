@@ -26,7 +26,7 @@
       <quartz.version>2.3.2</quartz.version>
     <h2.version>2.1.210</h2.version>
     <testng.version>6.14.3</testng.version>
-    <liquidbase.version>3.8.9</liquidbase.version><!-- 
+    <liquidbase.version>4.8.0</liquidbase.version><!-- 
 	    TODO: 	
 	    java.lang.NoClassDefFoundError: liquibase/servicelocator/PackageScanClassResolver after  upgrading to 4.8.0
 	    -->
