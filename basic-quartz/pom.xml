@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>quartz</artifactId>
-  <version>0.3.0-SNAPSHOT</version>
+  <version>0.5.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>quartz</name>
   <description>springboot quartz example</description>
@@ -11,15 +11,11 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>2.3.4.RELEASE</version>
-    <!--
-    <version>1.5.4.RELEASE</version>
-    <version>1.3.5.RELEASE</version>
-      -->
     <relativePath/>
   </parent>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <start-class>com.kaviddiss.bootquartz.Application</start-class>
+    <start-class>${project.groupId}.Application</start-class>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <junit-platform.version>1.2.0</junit-platform.version>
@@ -29,14 +25,6 @@
     <h2.version>2.1.210</h2.version>
     <testng.version>6.14.3</testng.version>
     <liquidbase.version>4.8.0</liquidbase.version>
-    <!-- 
-    <liquidbase.version>4.8.0</liquidbase.version>
-    <liquidbase.version>3.8.9</liquidbase.version>
-		    NOTE: compatibility issues between spring boot and liquidbase verions
-	    e.g.
-	    java.lang.NoClassDefFoundError: liquibase/servicelocator/PackageScanClassResolver after  upgrading to 4.8.0
-		and if upgraded springboot to 2.3.4.RELEASE but kept liquidbase at 3.8.9
-	    -->
     <java.version>1.8</java.version>
   </properties>
   <dependencies>
