@@ -1,0 +1,16 @@
+FROM centos/perl-524-centos7
+USER root
+# TODO: handle
+# http://mirror.mia.velocihost.net/centos/7.9.2009/os/x86_64/repodata/repomd.xml: [Errno 14] HTTP Error 403 - Forbidden
+# Trying other mirror...
+
+RUN yum install -q -y cpan
+# TODO (optional)
+# RUN yum install -q -y cpanm
+# RUN perl -MCPAN -e "print $CPAN:VERSION; use CPAN ; install 'LWP::UserAgent'" || exit 0
+# hide cpan error to retry interactively
+RUN PERL_MM_USE_DEFAULT=1 perl -MCPAN -e "print $CPAN:VERSION; use CPAN ; install 'App::cpanminus'" 
+RUN cpanm --install LWP::UserAgent
+WORKDIR /root
+COPY Net /root/Net
+
