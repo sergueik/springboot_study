@@ -1,9 +1,7 @@
-#pm-elasticsearch## Info
+### Info
 
 This directory contains standard Docker example of creating the container with
-specific non-root user `docker_user`, cloning the invoking user UID, mount that container user home directory as  writable volume mapped to project directory and launch the editor in docker
-er build -t $TAG -f Dockerfile .
-
+specific non-root user `docker_user`, cloning the invoking user UID, mount that container user home directory as writable volume mapped to project directory and launch the editor in docker
 
 #### Note
 
@@ -93,6 +91,7 @@ docker image rm alpine:3.9.5
   * [Docker user contfiguration](https://habr.com/ru/post/448480/) (in  Russian)
   * [bash environment variables](https://www.shell-tips.com/bash/environment-variables/)
   * https://unix.stackexchange.com/questions/397232/adduser-addgroup-group-in-use
+  * https://arkit.co.in/four-ways-non-interactively-set-passwords-linux/
  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
