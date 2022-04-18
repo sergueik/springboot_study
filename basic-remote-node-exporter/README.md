@@ -145,5 +145,17 @@ curl http://localhost:10002/metrics | tee worker2.txt
 ```
 docker container prune -f
 ```
+
+### See Also 
+
+  * [Kubernetes: monitoring with Prometheus – exporters, a Service Discovery, and its roles](https://rtfm.co.ua/en/kubernetes-monitoring-with-prometheus-exporters-a-service-discovery-and-its-roles/)
+  * [Kubernetes monitoring with Prometheus, the ultimate guide](https://sysdig.com/blog/kubernetes-monitoring-prometheus/)
+  * [Kubernetes Service Discovery for Prometheus](https://alexandrev.medium.com/kubernetes-service-discovery-for-prometheus-fcab74237db6)
+  * [How to set up auto-discovery of Kubernetes endpoint services in Prometheus](https://www.acagroup.be/en/blog/auto-discovery-of-kubernetes-endpoint-services-prometheus)
+  * [Discover applications running on Kubernetes with Prometheus](https://blog.sebastian-daschner.com/entries/prometheus-kubernetes-discovery)
+  * [Intro to monitoring Kubernetes with Grafana Cloud](https://grafana.com/go/webinar/intro-to-monitoring-kubernetes/?src=ggl-s&mdm=cpc&camp=nb-kubernetes-exact&cnt=137839432452&trm=kubernetes%20application%20metrics&device=c&gclid=Cj0KCQjwmPSSBhCNARIsAH3cYgY0gYIL2McGmC2DKyhRMszDBpP33OBxvtH0g8pxMlPVyBJNTl-_dosaAsCSEALw_wcB)
+  * [Monitoring Your Apps in Kubernetes Environment with Prometheus](https://medium.com/kubernetes-tutorials/monitoring-your-kubernetes-deployments-with-prometheus-5665eda54045)
+
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
