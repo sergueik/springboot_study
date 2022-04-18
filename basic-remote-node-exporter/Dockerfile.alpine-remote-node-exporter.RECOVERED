@@ -1,0 +1,16 @@
+FROM worker
+ARG VERSION=0.12.0
+ENV VERSION=$VERSION
+RUN apt update && apk add wget &&  \
+    wget https://github.com/phuslu/remote_node_exporter/releases/download/v$VERSION/remote_node_exporter-$VERSION.linux-amd64.tar.gz  && \
+  tar xvf remote_node_exporter-$VERSION.linux-amd64.tar.gz && \
+  rm remote_node_exporter-$VERSION.linux-amd64.tar.gz  && \
+  ls remote_node_exporter-$VERSION.linux-amd64 && \
+  cp remote_node_exporter-$VERSION.linux-amd64/remote_node_exporter /usr/bin/ &&\
+  cp remote_node_exporter-$VERSION.linux-amd64/remote_textfile_script.sh . && \
+  cp remote_node_exporter-$VERSION.linux-amd64/remote_node_exporter.yml . && \
+  rm -fr remote_node_exporter-$VERSION.linux-amd64
+WORKDIR /remote_node_exporter
+COPY remote_node_exporter.yml .
+EXPOSE 9101
+CMD ["/usr/bin/remote_node_exporter"]

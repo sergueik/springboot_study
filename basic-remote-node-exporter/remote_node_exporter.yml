@@ -1,0 +1,25 @@
+exporter:
+  - host: worker1
+    port: 22
+    user: root
+    pass: TeStP_w0rD
+    local: 10001
+  - host: worker2
+    port: 22
+    user: root
+    pass: TeStP_w0rD
+    local: 10002
+#
+#  - host: example.org
+#    port: 22
+#    user: foobar
+#    key: /home/foobar/.ssh/id_rsa
+#    local: 10002
+#
+#forward:
+#  - host: example.org
+#    port: 22
+#    user: root
+#    pass: username
+#    local: 13306
+#    remote: 127.0.0.1:3306
