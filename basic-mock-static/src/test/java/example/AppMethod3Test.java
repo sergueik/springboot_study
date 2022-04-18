@@ -1,9 +1,16 @@
 package example;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import static org.mockito.Mockito.when;
 
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -18,8 +25,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.greaterThan;
 
-// https://qna.habr.com/q/1142084
-@RunWith(MockitoJUnitRunner.class)
 public class AppMethod3Test {
 
 	// @Spy
@@ -29,23 +34,21 @@ public class AppMethod3Test {
 	private final static String value = "test";
 	private Utils mockUtils = Mockito.mock(Utils.class);
 
-	@Before
+	@BeforeEach
 	public void setUp() {
-		utils = Mockito.mockStatic(Utils.class);
-		utils.when(Utils::getInstance).thenReturn(mockUtils);
 		when(mockUtils.operation()).thenReturn("mock: " + value);
-
-		sut = new App();
 	}
 
-	@After
-	public void close() {
-		utils.close();
-	}
-
+	@Disabled
 	@Test
 	public void test1() throws Exception {
+		utils = Mockito.mockStatic(Utils.class);
+		utils.when(Utils::getInstance).thenReturn(mockUtils);
+		sut = new App();
 		assertThat(sut.getUtilsOperation(), containsString(value));
+		// To create a new mock, the existing static mock registration must be
+		// deregistered
+		utils.close();
 	}
 
 }

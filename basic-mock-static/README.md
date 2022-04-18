@@ -2,7 +2,17 @@
 
   This directory  contains  a practice code based on the [article](https://www.baeldung.com/mockito-mock-static-methods)
 
+### Note
 
+The project is barely working with __Junit 5__: the most annoying error is:
+```text
+org.mockito.exceptions.base.MockitoException:
+
+The static mock created at 
+-> at example.AppMethod2Test.test1(AppMethod2Test.java:37)
+is already resolved and cannot longer be used
+```
+the error shows even when there is just one test class /test method (everything else temporarily removed). After switching back to __Junit 4__  the tests magically begin to work
 
 ### See Also
 

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-public class AppMethod1Test {
+public class AppMethod1BrokenTest {
 
 	// @Spy
 	private App sut;
@@ -19,15 +19,23 @@ public class AppMethod1Test {
 
 	private final static String value = "test";
 
+	@BeforeEach
+	public void setUp() {
+		utils = Mockito.mockStatic(Utils.class);
+	}
+
+	@AfterEach
+	// To create a new mock, the existing static mock registration must be
+	// deregistered
+	public void closeMock() {
+		utils.close();
+	}
+
 	@Disabled
 	@Test
 	public void test1() throws Exception {
-		utils = Mockito.mockStatic(Utils.class);
 		utils.when(Utils::name).thenReturn(value);
 		sut = new App();
 		assertThat(sut.getValue(), is(value));
-		// To create a new mock, the existing static mock registration must be
-		// deregistered
-		utils.close();
 	}
 }

@@ -1,13 +1,15 @@
 package example;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.MockedStatic;
 
 import static org.mockito.Mockito.when;
@@ -18,40 +20,43 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.greaterThan;
 
-// https://qna.habr.com/q/1142084
-@RunWith(MockitoJUnitRunner.class)
+// NOTE: no need in @ExtendWith(...) for Junit 5.x
 public class AppTest {
 
 	// @Spy
 	private App sut;
-	MockedStatic<Utils> utils;
 
 	private final static String value = "test";
 	private Helper helper = Mockito.mock(Helper.class);
 
-	@Before
+	@BeforeAll
 	public void setUp() {
 		when(helper.operation()).thenReturn("mock: " + value);
 	}
-
+	
+	@Disabled
 	@Test
 	public void test1() throws Exception {
-		utils = Mockito.mockStatic(Utils.class);
+		MockedStatic<Utils> utils = Mockito.mockStatic(Utils.class);
 		utils.when(Utils::name).thenReturn(value);
 		sut = new App();
 		assertThat(sut.getValue(), is(value));
+		// To create a new mock, the existing static mock registration must be
+		// deregistered
 		utils.close();
 
 	}
 
+	@Disabled
 	@Test
 	public void test2() throws Exception {
-		utils = Mockito.mockStatic(Utils.class);
+		MockedStatic<Utils> utils = Mockito.mockStatic(Utils.class);
 		utils.when(Utils::getHelper).thenReturn(helper);
 		sut = new App();
 		assertThat(sut.getHelperOperation(), containsString(value));
+		// To create a new mock, the existing static mock registration must be
+		// deregistered
 		utils.close();
-
 	}
 
 }
