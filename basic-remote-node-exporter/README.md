@@ -151,7 +151,24 @@ docker container prune -f
 
 ![relabel config](https://github.com/sergueik/springboot_study/blob/master/basic-remote-node-exporter/screenshots/capture-relabel-connfig.png)
 
+
+
+In the flowchart above,
+
+![node exporter](https://github.com/sergueik/springboot_study/blob/master/basic-remote-node-exporter/screenshots/capture-node-exporter.png) node exporter, push gateway or prometheus client (same from prometheus point of view)
+
+![propetheus](https://github.com/sergueik/springboot_study/blob/master/basic-remote-node-exporter/screenshots/capture-prometheus.png) the prometheus prometheus server
+
+![grafana](https://github.com/sergueik/springboot_study/blob/master/basic-remote-node-exporter/screenshots/capture-grafana.png) grafana UI
+
+![monitored host](https://github.com/sergueik/springboot_study/blob/master/basic-remote-node-exporter/screenshots/capture-monitored-host.png) monitored host
+
+The question mark ![monitored host](https://github.com/sergueik/springboot_study/blob/master/basic-remote-node-exporter/screenshots/capture-relabel-configs-process.png) represents the relabel configs process which taks place before loading the merics
+
+### Deck of Cards Analogy
+
 ![deck of cards](https://github.com/sergueik/springboot_study/blob/master/basic-remote-node-exporter/screenshots/capture-cards.png)
+
 
 
 
@@ -178,8 +195,11 @@ docker container prune -f
   * file service discovery configurations a.k.a. `file_sd_configs` [](https://github.com/prometheus/prometheus/blob/c0fd228badaa726e3549b5e9a5ab8351aa25cb13/docs/configuration/configuration.md#file_sd_config) - also is used during (note - not in [master](https://github.com/prometheus/prometheus/blob/master/docs/configuration/configuration.md) for some reason?)
   * [File based Service Discovery with Prometheus](https://ikod.medium.com/file-based-service-discovery-with-prometheus-65c8241aee03) - not really constructing any new targets, merely performing the fallback to static configs
   * [Use file-based service discovery to discover scrape targets ](https://prometheus.io/docs/guides/file-sd/) - again, does not generate targets, stops at descriging the static configs manipulation
-  * slides of __Relabeling__ [presenrtation](https://promcon.io/2018-munich/slides/taking-advantage-of-relabeling.pdf) - covers adding targets, but not entirely clear
+  * slides of __Relabeling__ [presentation](https://promcon.io/2018-munich/slides/taking-advantage-of-relabeling.pdf) - covers adding targets, but not entirely clear
   * [adding label to target](https://albersdevelopment.net/2019/08/28/prometheus-adding-a-label-to-a-target/) - what one likes to achieve is overwriting the `__address__` predefined label (?)
-
+  * [relabel config rules](https://blog.freshtracks.io/prometheus-relabel-rules-and-the-action-parameter-39c71959354a)
+  * another [blog](https://brendonmatheson.com/2021/04/03/using-prometheus-relabeling-to-attach-custom-metadata.html) on __Using Prometheus Relabeling to Attach Custom Metadata__ (advanced)
+  
+  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
