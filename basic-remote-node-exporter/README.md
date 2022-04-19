@@ -155,7 +155,18 @@ docker container prune -f
   * [Discover applications running on Kubernetes with Prometheus](https://blog.sebastian-daschner.com/entries/prometheus-kubernetes-discovery)
   * [Intro to monitoring Kubernetes with Grafana Cloud](https://grafana.com/go/webinar/intro-to-monitoring-kubernetes/?src=ggl-s&mdm=cpc&camp=nb-kubernetes-exact&cnt=137839432452&trm=kubernetes%20application%20metrics&device=c&gclid=Cj0KCQjwmPSSBhCNARIsAH3cYgY0gYIL2McGmC2DKyhRMszDBpP33OBxvtH0g8pxMlPVyBJNTl-_dosaAsCSEALw_wcB)
   * [Monitoring Your Apps in Kubernetes Environment with Prometheus](https://medium.com/kubernetes-tutorials/monitoring-your-kubernetes-deployments-with-prometheus-5665eda54045)
-
+  * [Monitoring Kubernetes with Prometheus & Grafana - 1/5](https://www.youtube.com/watch?v=bErGEHf6GCc) - illustratees "static configs" classic scenario - not showng the synthetic targets
+  * [how relabeling works](https://grafana.com/blog/2022/03/21/how-relabeling-in-prometheus-works/)
+  * [relabeling phase](https://github.com/prometheus/prometheus/blob/c0fd228badaa726e3549b5e9a5ab8351aa25cb13/docs/configuration/configuration.md#relabel_config) - NOTE, `relabel_config` is referring to target relabel configurations too, peer Prometheus documentation
+  * [same](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config) on `prometheus.io`
+  * [metric relabel config](https://github.com/prometheus/prometheus/blob/c0fd228badaa726e3549b5e9a5ab8351aa25cb13/docs/configuration/configuration.md#metric_relabel_configs)
+  * [same](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs) on `prometheus.io`
+  * [relabel_configs vs metric_relabel_configs](https://www.robustperception.io/relabel_configs-vs-metric_relabel_configs)
+  * [taking advantage of Prometheus relabeling](https://www.slideshare.net/roidelapluie/taking-advantage-of-prometheus-relabeling-109483749)
+  * [relabeling stepp by step](https://nsrc.org/workshops/2021/sanog37/nmm/netmgmt/en/prometheus/ex-relabeling.htm)
+  * [relabeling tricks](https://medium.com/quiq-blog/prometheus-relabeling-tricks-6ae62c56cbda) - not covering target relabeling
+  * [Relabeling in Prometheus and VictoriaMetrics](https://valyala.medium.com/how-to-use-relabeling-in-prometheus-and-victoriametrics-8b90fc22c4b2) - not covering target relabeling
+  * file service discovery configurations a.k.a. `file_sd_configs` [](https://github.com/prometheus/prometheus/blob/c0fd228badaa726e3549b5e9a5ab8351aa25cb13/docs/configuration/configuration.md#file_sd_config) - also is used during (note - not in [master](https://github.com/prometheus/prometheus/blob/master/docs/configuration/configuration.md) for some reason?)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
