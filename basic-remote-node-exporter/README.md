@@ -1,7 +1,5 @@
-### Info
- Copy of
-
-agentless prometheus/node_exporter
+﻿### Info
+Copy of agentless prometheus/node_exporter
 [remote_node_exporter](https://github.com/phuslu/remote_node_exporter)
 linked to twodummy nodes running `gotechnies/alpine-ssh` [image](https://github.com/arvindr226/alpine-ssh), upgraced to Alpine __3.9.5__ base image
 ### Usage
@@ -145,6 +143,17 @@ curl http://localhost:10002/metrics | tee worker2.txt
 ```
 docker container prune -f
 ```
+### What We Really Need
+
+![static configs](https://github.com/sergueik/springboot_study/blob/master/basic-remote-node-exporter/screenshots/capture-static-configs.png)
+
+![remote node exporter](https://github.com/sergueik/springboot_study/blob/master/basic-remote-node-exporter/screenshots/capture-remote-node-exporter.png)
+
+![relabel config](https://github.com/sergueik/springboot_study/blob/master/basic-remote-node-exporter/screenshots/capture-relabel-connfig.png)
+
+![deck of cards](https://github.com/sergueik/springboot_study/blob/master/basic-remote-node-exporter/screenshots/capture-cards.png)
+
+
 
 ### See Also 
 
@@ -167,6 +176,10 @@ docker container prune -f
   * [relabeling tricks](https://medium.com/quiq-blog/prometheus-relabeling-tricks-6ae62c56cbda) - not covering target relabeling
   * [Relabeling in Prometheus and VictoriaMetrics](https://valyala.medium.com/how-to-use-relabeling-in-prometheus-and-victoriametrics-8b90fc22c4b2) - not covering target relabeling
   * file service discovery configurations a.k.a. `file_sd_configs` [](https://github.com/prometheus/prometheus/blob/c0fd228badaa726e3549b5e9a5ab8351aa25cb13/docs/configuration/configuration.md#file_sd_config) - also is used during (note - not in [master](https://github.com/prometheus/prometheus/blob/master/docs/configuration/configuration.md) for some reason?)
+  * [File based Service Discovery with Prometheus](https://ikod.medium.com/file-based-service-discovery-with-prometheus-65c8241aee03) - not really constructing any new targets, merely performing the fallback to static configs
+  * [Use file-based service discovery to discover scrape targets ](https://prometheus.io/docs/guides/file-sd/) - again, does not generate targets, stops at descriging the static configs manipulation
+  * slides of __Relabeling__ [presenrtation](https://promcon.io/2018-munich/slides/taking-advantage-of-relabeling.pdf) - covers adding targets, but not entirely clear
+  * [adding label to target](https://albersdevelopment.net/2019/08/28/prometheus-adding-a-label-to-a-target/) - what one likes to achieve is overwriting the `__address__` predefined label (?)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
