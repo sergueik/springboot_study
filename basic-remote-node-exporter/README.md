@@ -172,7 +172,7 @@ The question mark ![monitored host](https://github.com/sergueik/springboot_study
 
 
 
-### See Also 
+### See Also
 
   * [Kubernetes: monitoring with Prometheus – exporters, a Service Discovery, and its roles](https://rtfm.co.ua/en/kubernetes-monitoring-with-prometheus-exporters-a-service-discovery-and-its-roles/)
   * [Kubernetes monitoring with Prometheus, the ultimate guide](https://sysdig.com/blog/kubernetes-monitoring-prometheus/)
@@ -199,7 +199,7 @@ The question mark ![monitored host](https://github.com/sergueik/springboot_study
   * [adding label to target](https://albersdevelopment.net/2019/08/28/prometheus-adding-a-label-to-a-target/) - what one likes to achieve is overwriting the `__address__` predefined label (?)
   * [relabel config rules](https://blog.freshtracks.io/prometheus-relabel-rules-and-the-action-parameter-39c71959354a)
   * another [blog](https://brendonmatheson.com/2021/04/03/using-prometheus-relabeling-to-attach-custom-metadata.html) on __Using Prometheus Relabeling to Attach Custom Metadata__ (advanced)
-  
-  
+  * [Prometheus - 12. Configuration : Relabel and Filtres](https://youtu.be/kUWzQp0qLes?t=962) - example changing the host:port in the static config-style target on the fly through relabel (in French)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
