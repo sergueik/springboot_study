@@ -20,12 +20,12 @@ scrape_configs:
       - targets:
         # NOTE: port        
         - "metrics:9100"
-    relabel_configs:
-      - source_labels: [__address__]
-        regex: "metrics:(.*)"
-        target_label: __address__
-        replacement: 'monitored_host:$1'
-        action: replace
+#   relabel_configs:
+#     - source_labels: [__address__]
+#       regex: "metrics:(.*)"
+#       target_label: __address__
+#       replacement: 'monitored_host:$1'
+#       action: replace
     metric_relabel_configs:
       - source_labels: ['__name__', 'lone']
         separator: ';'

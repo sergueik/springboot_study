@@ -76,6 +76,22 @@ This does have effect but it the effect is opposite to what was intended:
 ![relabel_address](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-relabel-config/screenshots/capture-relabel_address.png) 
 
 Apparentlty Prometheus does replace the address and failed in attempt to read metrics from the new address directly - the `monitored_host` is not neither is not supposed to be resolvable
+### Simple Label
+* adding ad-hoc gauge example mertic with an `instance` label
+
+```text
+test_gauge{instance="node1"} 23
+test_gauge{instance="node2"} 30
+```
+observed the label to become renamed  tp `exported_instance` while the original `instance` filled with job `static_confgs.target` and `job_name` attributes from `prometheus.yml`:
+
+```text
+test_gauge{exported_instance="node1", instance="metrics:9100", job="static-metrics"}
+test_gauge{exported_instance="node2", instance="metrics:9100", job="static-metrics"}
+
+```
+
+![relabel_address](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-relabel-config/screenshots/capture_gauges.png) 
 ### Troubleshooting 
 
 if any, the error  is likely to be reported by prometheus server:

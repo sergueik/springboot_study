@@ -11,3 +11,6 @@ sample_counter_two{lone="foo", ltwo="bar"} 2
 sample_counter_two{lone="foo", ltwo="far"} 2
 sample_counter_two{lone="boo", ltwo="bar"} 2
 sample_counter_two{lone="boo", ltwo="far"} 2
+
+test_gauge{instance="node1"} 23
+test_gauge{instance="node2"} 30
