@@ -42,10 +42,12 @@ repeat with `docker-compose`
 export COMPOSE_HTTP_TIMEOUT=600
 docker-compose up
 ```
-### Initial State
+### Baseline
 
+Aside for `localhost` theree is just one target, the `metrics`.
+![baseline](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-relabel-config/screenshots/capture-baseline.png) 
 
-
+Relabeling the configs will be illustrated next
 ### Relabel Exercise
 
 * the cluster consists of `prometheus`  prometheus server and a `metrics` node. The latter runs node exporter reading metrics from static file:
@@ -74,7 +76,23 @@ This does have effect but it the effect is opposite to what was intended:
 ![relabel_address](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-relabel-config/screenshots/capture-relabel_address.png) 
 
 Apparentlty Prometheus does replace the address and failed in attempt to read metrics from the new address directly - the `monitored_host` is not neither is not supposed to be resolvable
+### Troubleshooting 
 
+if any, the error  is likely to be reported by prometheus server:
+```sh
+SERVICE=prometheus_
+CONTAINER=$(docker container ls -a | grep $SERVICE | awk '{print $NF}')
+docker logs $CONTAINER
+docker exec -it $CONTAINER sh
+```
+```
+SERVICE=metrics_
+```
+### Cleanup
+```sh
+docker-compose stop
+docker-compose rm -f
+```
 ### See Also
 
 * https://prometheus.io/docs/instrumenting/exposition_formats/#text-format-example
