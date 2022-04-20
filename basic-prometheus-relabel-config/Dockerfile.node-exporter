@@ -1,0 +1,11 @@
+ARG EXPORTER_VERSION v1.3.1
+# FROM prom/node-exporter:${EXPORTER_VERSION}
+# invalid reference format
+FROM prom/node-exporter:v1.3.1
+EXPOSE 9100
+# USER nobody
+# USER ROOT
+RUN mkdir /tmp/metrics    
+COPY  static-metrics.prom /tmp/metrics/
+
+ENTRYPOINT [ "/bin/node_exporter", "--collector.textfile.directory", "/tmp/metrics" ]

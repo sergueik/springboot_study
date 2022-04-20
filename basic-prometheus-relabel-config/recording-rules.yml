@@ -1,0 +1,5 @@
+groups:
+  - name: example
+    rules:
+      - record: foo_sample_counter
+        expr: sample_counter_one{lone="foo"}

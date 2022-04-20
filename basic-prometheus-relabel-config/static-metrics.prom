@@ -1,0 +1,13 @@
+# HELP sample_counter_one just a sample counter thats always 1 ( except for when you change it )
+# TYPE sample_counter_one counter
+sample_counter_one{lone="foo", ltwo="bar"} 1
+sample_counter_one{lone="foo", ltwo="far"} 1
+sample_counter_one{lone="boo", ltwo="bar"} 1
+sample_counter_one{lone="boo", ltwo="far"} 1
+
+# HELP sample_counter_two just a sample counter thats always 2
+# TYPE sample_counter_two counter
+sample_counter_two{lone="foo", ltwo="bar"} 2
+sample_counter_two{lone="foo", ltwo="far"} 2
+sample_counter_two{lone="boo", ltwo="bar"} 2
+sample_counter_two{lone="boo", ltwo="far"} 2
