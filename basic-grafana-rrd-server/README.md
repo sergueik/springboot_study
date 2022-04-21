@@ -19,9 +19,19 @@ docker container rm $IMAGE
 docker run --name $IMAGE -v $(pwd)/sample/:/sample -p 9001:9000 -d $IMAGE
 ```
  * check via curl call
+just the status:
+```sh
+curl -s -o /dev/null -w "%{http_code}" http://localhost:9001/
+```
+which will show
+```sh
+200
+```
+response JSON payload
 ```sh
 curl -s http://localhost:9000/search | jq
 ```
+NOTE: the `grafana-rrd-server` currentlt rejects one `GET` request to `/search`, serving only `POST` requests:
 or if like to limit the files to scan, with POST request
 ```sh
 curl -s -X POST -H 'Content-Type: application/json' -d '{"target": "sample" }' http://localhost:9000/search
@@ -96,11 +106,14 @@ embeded in the upstream project:
 ```
 proceed
 * launch grafana container linked to the above:
-
+This is best done by running the commands in the sibling `basic-grafana` project 
 ```sh
+pushd ../basic-grafana
 GRAFANA=basic-grafana
 docker build -f Dockerfile -t $GRAFANA .
+docker container rm $GRAFANA
 docker container run --link $IMAGE --name $GRAFANA -d -p 3000:3000 $GRAFANA
+popd
 ```
 
 * cleanup

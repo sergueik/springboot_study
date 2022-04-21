@@ -144,8 +144,10 @@ PRGDIR=`dirname "$PRG"`
 CLASSPATH=
 
 if [ -r "$CATALINA_BASE/bin/setenv.sh" ]; then
+  1>2 echo "Loading $CATALINA_BASE/bin/setenv.sh"
   . "$CATALINA_BASE/bin/setenv.sh"
 elif [ -r "$CATALINA_HOME/bin/setenv.sh" ]; then
+   1>2 echo "Loading $CATALINA_HOME/bin/setenv.sh"
   . "$CATALINA_HOME/bin/setenv.sh"
 fi
 
@@ -351,6 +353,7 @@ if [ "$1" = "debug" ] ; then
         echo "Using Security Manager"
       fi
       shift
+      1>2 echo "JAVA_OPTS=$JAVA_OPTS"
       exec "$_RUNJDB" "$LOGGING_CONFIG" $LOGGING_MANAGER $JAVA_OPTS $CATALINA_OPTS \
         -D$ENDORSED_PROP="$JAVA_ENDORSED_DIRS" \
         -classpath "$CLASSPATH" \

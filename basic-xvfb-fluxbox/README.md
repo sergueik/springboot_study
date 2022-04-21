@@ -1,6 +1,6 @@
 ### Info
 
-This direcrory contains a replica of [alpine xvfb fluxbox](https://github.com/drcrane/xvfb-alpine-docker) Docker project
+This directory contains a replica of [alpine xvfb fluxbox](https://github.com/drcrane/xvfb-alpine-docker) Docker project
 with an Javafx app built for JDK11.
 
 ### Usage

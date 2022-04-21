@@ -6,12 +6,8 @@ WORKDIR /app
 ENV GOOS=linux
 ENV GOARCH=amd64
 ENV CGO_ENABLED=0
-COPY example1.go example2.go example3.go /app/
-RUN go run example1.go /etc/alpine-release || exit 0
-RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example1 example1.go
-RUN go run example2.go /etc/alpine-release || exit 0
-RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example2 example2.go
-RUN go run example3.go || exit 0
-RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example3 example3.go
+COPY example4.go test.json /app/
+RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example4 example4.go
+RUN go run example4.go || exit 0
 
 

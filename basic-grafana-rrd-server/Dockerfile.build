@@ -1,0 +1,8 @@
+FROM golang:alpine3.9 as builder
+
+RUN apk update && apk add pkgconfig rrdtool-dev gcc libc-dev git
+
+WORKDIR /build
+COPY . .
+RUN go build -o grafana-rrd-server
+
