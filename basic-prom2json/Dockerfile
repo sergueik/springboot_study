@@ -2,13 +2,6 @@
 # FROM golang:alpine3.9
 # often there is no real need in go 13+. this one does need
 FROM golang:1.13-alpine
-WORKDIR /prom2json
-# NOTE: avoid "COPY . "
-# - will trigger rebuilding the image after any modification of the Dockerfile
-COPY go.mod /prom2json
-COPY go.sum /prom2json
-COPY prom2json.go /prom2json/
-COPY prom2json_test.go /prom2json/
 ARG ARCH="amd64"
 ENV GOOS=linux
 ARG OS="linux"
@@ -16,13 +9,20 @@ ARG OS="linux"
 
 ENV GO111MODULE=on
 ENV GOPROXY=https://proxy.golang.org
+WORKDIR /prom2json
+# NOTE: avoid "COPY . "
+# - will trigger rebuilding the image after any modification of the Dockerfile
+COPY go.mod /prom2json
+COPY go.sum /prom2json
+COPY prom2json.go /prom2json/
+COPY prom2json_test.go /prom2json/
+COPY cmd /prom2json/cmd
+COPY vendor /prom2json/vendor
 # NOTE: the next instruction is enormously time-consuming 
 # RUN go mod download
 
 RUN apk add -U --no-cache ca-certificates
 
-COPY cmd /prom2json/cmd
-COPY vendor /prom2json/vendor
 # alternatively
 # RUN cd cmd/prom2json; go build -ldflags "-s -w" -o ../../prom2json .
 RUN go build -mod vendor -o prom2json cmd/prom2json/main.go

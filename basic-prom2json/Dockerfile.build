@@ -1,0 +1,13 @@
+FROM basic-builder
+
+ENV GOOS=linux
+ENV GOARCH=amd64
+# ENV CGO_ENABLED=0
+ENV GO111MODULE=on
+
+WORKDIR /build
+COPY ./prom2json.go .
+# build dummy mysql client example
+# RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o mysql_client mysql_client.go
+
+

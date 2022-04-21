@@ -4,7 +4,7 @@ Docker container with a replica of [prom2json](https://github.com/prometheus/pro
 
 ### NOTE
 
-docker build times ican be very long, if the build process is not correctly defined.
+docker build times can be very long, if the build process is not correctly defined.
 The [image](https://hub.docker.com/r/prom/prom2json) on docker hub is tiny: 6 Mb compressed.
 The purpose of this repository is to build and test customized exporters
 
@@ -156,5 +156,61 @@ docker image rm prom/prom2json
 docker image rm prom/prom2json:v1.3.0
 docker image rm prom/prometheus:v2.27.0
 ```
+### Building From Source
+* compile go program and copy locally
+
+```sh
+export IMAGE=basic-builder
+docker image rm -f $IMAGE
+docker build -t $IMAGE -f Dockerfile.builder .
+```
+```sh
+export IMAGE=basic-go-build
+docker image rm -f $IMAGE
+docker build -t $IMAGE -f Dockerfile.build .
+export NAME=basic-go-build
+docker container rm $NAME
+docker run -d --name=$NAME $IMAGE
+docker cp $NAME:/build/example .
+```
+build run image
+```sh
+IMAGE=basic-prom2json-run
+docker build -t $IMAGE -f Dockerfile.run  .
+docker container rm -f $IMAGE
+```
+### Building From Source
+* alternarrively to using the upstream `go.mod` can build one oneself:
+* compile go program and copy locally
+
+```sh	
+export IMAGE=builder
+docker image rm -f $IMAGE
+docker build -t $IMAGE -f Dockerfile.builder .
+```
+```sh
+export IMAGE=build
+docker image rm -f $IMAGE
+docker build -t $IMAGE -f Dockerfile.build .
+```
+```
+launch the build container
+```sh
+docker run -it build sh
+```
+then in the build container:
+```sh
+go mod init "github.com/sergueik/prom2json"
+go mod tidy
+```
+
+NOTE: time-consuming
+
+then copy to workspace
+```sh
+docker cp build:/build.go.mod .
+```
+NOTE: it may be different from the checked in one
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

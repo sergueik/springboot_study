@@ -113,11 +113,12 @@ docker run --name $NAME -p 8080:8080 -d $IMAGE
 ```
 * pull `prom2json` image. NOTE: pick a specific version to prevent polluting the images
 ```sh
-docker pull prom/prom2json:v1.3.0
+VERSION=v1.3.0
+docker pull prom/prom2json:$VERSION
 ```
 * dump the metrics
 ```sh
-docker run --link $NAME prom/prom2json:v1.3.0 http://$NAME:8080/metrics |jq
+docker run --link $NAME prom/prom2json:$VERSION http://$NAME:8080/metrics |jq
 ```
 ```json
 [
@@ -181,8 +182,15 @@ docker run --link $NAME prom/prom2json:v1.3.0 http://$NAME:8080/metrics |jq
 ]
 
 ```
+alternatiely build if for alpine as shown in [basic-prom2json](https://github.com/sergueik/springboot_study/tree/master/basic-prom2json)
 ### NOTE
-occationally observerd challenge with numbered version image container to hang. Drop the `:v1.3.0` specified in this case and repeat
+
+occasionally observerd challenge with numbered version image container to hang. 
+
+```text
+Error response from daemon: Get https://registry-1.docker.io/v2/: dial tcp: lookup registry-1.docker.io on [::1]:53: read udp [::1]:55749->[::1]:53: read: connection refused
+```
+Drop the `:v1.3.0` specified in this case and repeat
 
 ###  Connect metrics to Prometheus
 
