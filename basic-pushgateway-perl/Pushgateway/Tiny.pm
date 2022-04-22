@@ -6,10 +6,9 @@ use warnings;
 use utf8;
 use Carp qw/croak carp/;
 
-# use LWP::UserAgent;
 use HTTP::Tiny;
 use Data::Dumper;
-our $VERSION = '0.0.2';
+our $VERSION = '0.3.0';
 
 my %METRIC_VALID_TYPES = (
     'untyped'   => 1,
@@ -24,12 +23,14 @@ sub new {
     my $self = {};
     $self->{host} = $opt{'-host'} // croak "You must specify '-host' param";
     $self->{port} = $opt{'-port'} // croak "You must specify '-port' param";
+    $self->{defer} = $opt{'-defer'}; # follow the funny way of specifying options
     my $path = $opt{'-path'};
     my $timeout = $opt{'-timeout'} // 5;
 
     # $self->{ua}           = LWP::UserAgent->new();
     # $self->{ua}->timeout($timeout);
     $self->{raw_str} = undef;
+    $self->{raw_data} = [];
     $self->{url}     = 'http://' . $self->{host} . ':' . $self->{port} . $path;
 
     return bless $self, $class;
@@ -135,7 +136,9 @@ sub _prepare_raw_metric {
 
 sub _send_to_prometheus {
     my ( $self, $str ) = @_;
-
+    push @{$self->{raw_data}}, $str;
+    return if $self->{defer};
+    print STDERR "sending";
     # https://metacpan.org/pod/HTTP::Tiny#request
 
     my $response =

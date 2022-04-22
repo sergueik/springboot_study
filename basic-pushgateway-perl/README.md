@@ -268,6 +268,18 @@ my $o = Pushgateway::Tiny->new(%$opt );
 
 ```
 calls currently do not work and return a __404__
+### Batch Post
+the  `Pushgateway::Tiny` __0.3.0__ supports `defer` option ( which probably willbe better named batch). When the test is run with `-defer` option
+```sh
+perl -I . test.pl -defer
+```
+ the combined payload needs to be sent expicitly:
+```perl
+my $raw_data = join "\n", @{$o->{raw_data}};
+print STDERR "\n" . 'Payload:' . "\n" . $raw_data if $debug; 
+$o->{defer} = 0;
+o->_send_to_prometheus($raw_data);
+```
 ### Note
 Alternatively can install a cpan capable Docker Alpine Perl [scottw/alpine-perl](https://hub.docker.com/r/scottw/alpine-perl/dockerfile) base image - at a cost of slight size increase
 
