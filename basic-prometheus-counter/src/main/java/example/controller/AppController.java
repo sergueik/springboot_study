@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Counter;
+import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.exporter.common.TextFormat;
 
@@ -33,6 +34,11 @@ import org.apache.logging.log4j.Level;
 public class AppController {
 	private static final Logger logger = LogManager
 			.getLogger(AppController.class);
+
+	// custom metric setting the instance
+	// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.html
+	private static final String instance = "hostname";
+	private CollectorRegistry registry;
 
 	static final Counter requestsTotal = Counter.build().name("requests_total")
 			.help("Total number of requests.").register();
@@ -83,13 +89,24 @@ public class AppController {
 		logger.info("Starting reporting metrics");
 		Writer writer = new StringWriter();
 		try {
-			TextFormat.write004(writer,
-					CollectorRegistry.defaultRegistry.metricFamilySamples());
+			registry = CollectorRegistry.defaultRegistry;
+			// TODO: add logic
+			exampleGauge();
+			TextFormat.write004(writer, registry.metricFamilySamples());
 		} catch (IOException e) {
 			logger.error("Exception (caught):" + e.toString());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(writer.toString());
+	}
+
+	private void exampleGauge() {
+		Gauge example = Gauge
+				.build("instance_metric_value", "Value of metric from instance")
+				.labelNames("instance").register(registry);
+		long value = 42;
+		example.labels(instance).set(value);
+		logger.info("Added example gauge: " + example.labels(instance).get());
 	}
 
 	// index page
