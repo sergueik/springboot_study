@@ -16,12 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
-import com.sun.el.stream.Stream;
-
 import io.prometheus.client.CollectorRegistry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-// import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.is;
@@ -119,21 +116,23 @@ public class ApplicationTests {
 		}
 	}
 
-	// repeated REST calls do not fail with
+	// subsequent REST calls do not
+	// java.lang.IllegalArgumentException:
+	// Collector already registered that provides name:
+	// instance_metric_value
+	// NOTE: the restTemplate test does not receive that exception,
+	// but fail with HttpStatus.INTERNAL_SERVER_ERROR
 	@Test
 	public void metrics2() {
 		ResponseEntity<String> entity = restTemplate.getForEntity("/metrics",
 				String.class);
 		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
-		// HttpStatus.INTERNAL_SERVER_ERROR
-
 	}
 
 	@Test
 	public void metrics3() {
 		ResponseEntity<String> entity = restTemplate.getForEntity("/metrics",
 				String.class);
-		// NOTE: using org.assertj.core.api.Assertions.assertThat all around
 		String entryPattern = "instance_metric_value\\{instance=\\\"hostname[0-9]+\\\",\\} [0-9.]+";
 		List<String> entries = Arrays.asList(entity.getBody().split("\n")).stream()
 				.filter(o -> o.contains("hostname")).collect(Collectors.toList());
@@ -141,5 +140,7 @@ public class ApplicationTests {
 			assertThat(line, matchesPattern(entryPattern));
 			System.err.println("inspected line: " + line);
 		}
+		// count
+		assertThat(entries.size(), is(10));
 	}
 }

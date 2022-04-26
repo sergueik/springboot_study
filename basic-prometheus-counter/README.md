@@ -75,7 +75,7 @@ requests_latency_seconds_count 2.0
 requests_latency_seconds_sum 9.373410000000001E-4...
 ```
 
-* access appliction defined metrics to see the custom metrics
+* access application defined metrics to see the custom metrics
 ```sh
 curl -s http://localhost:8080/metrics
 ```
@@ -93,6 +93,23 @@ requests_latency_seconds_bucket{le="+Inf",} 0.0
 requests_latency_seconds_count 0.0
 requests_latency_seconds_sum 0.0
 ```
+along with custom  metrics
+```text
+# HELP instance_metric_value Value of metric from instance
+# TYPE instance_metric_value gauge
+instance_metric_value{instance="hostname09",} 12.0
+instance_metric_value{instance="hostname08",} 33.0
+instance_metric_value{instance="hostname07",} 15.0
+instance_metric_value{instance="hostname06",} 12.0
+instance_metric_value{instance="hostname01",} 27.0
+instance_metric_value{instance="hostname00",} 42.0
+instance_metric_value{instance="hostname05",} 20.0
+instance_metric_value{instance="hostname04",} 9.0
+instance_metric_value{instance="hostname03",} 38.0
+instance_metric_value{instance="hostname02",} 37.0
+```
+the values are random
+
 ### Feed to Prometheus
 
 * place the app into Docker container
@@ -202,12 +219,15 @@ scrape_configs:
   - job_name:       'node'
 
     # Override the global default and scrape targets from this job every 5 seconds.
-    scrape_interval: 5s
+    scrape_interval: 60s
+    metrics_path: /metrics
+    honor_labels: true
 
     static_configs:
       - targets: ['application:8080']
         labels:
           group: 'application'
+
 ```
 * run
 ```sh
@@ -280,6 +300,10 @@ docker image rm prom/prometheus:v2.27.0
   * core [metrics Collection in Spring Boot With Micrometer and Prometheus](https://www.codeprimers.com/metrics-collection-in-spring-boot-with-micrometer-and-prometheus/) documentatiton
   * [collection of alerting rules for Prometheus](https://awesome-prometheus-alerts.grep.to)
   * plain Java (non-Spring) [prometheus pushgateway metric push demo application](https://github.com/binhhq/prometheus-pushgateway-demo)
+  * https://www.tabnine.com/code/java/methods/io.prometheus.client.Collector$MetricFamilySamples$Sample/%3Cinit%3E
+  * https://www.tabnine.com/code/java/methods/io.prometheus.client.CollectorRegistry/register
+  * https://prometheus.github.io/client_java/io/prometheus/client/Collector.MetricFamilySamples.Sample.html
+  * https://prometheus.github.io/client_java/io/prometheus/client/Collector.MetricFamilySamples.html
   * Prometheus [metric types](https://prometheus.io/docs/concepts/metric_types/)  
 
 ### Author
