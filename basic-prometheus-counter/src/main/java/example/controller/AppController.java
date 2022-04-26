@@ -2,11 +2,10 @@ package example.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-// import ch.qos.logback.classic.Level;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,16 +15,17 @@ import io.prometheus.client.Counter;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.exporter.common.TextFormat;
 
+// import io.micrometer.core.annotation.Timed;
+// import io.micrometer.core.instrument.Counter;
+// import io.micrometer.core.instrument.MeterRegistry;
+
 import java.io.Writer;
 import java.util.Random;
 import java.io.IOException;
 import java.io.StringWriter;
 
-// import org.slf4j.Logger;
-// import org.slf4j.LoggerFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import org.apache.logging.log4j.Level;
 
 @RestController
@@ -75,6 +75,8 @@ public class AppController {
 	}
 
 	// application hosted metrics
+	// see also:
+	// https://www.tabnine.com/code/java/methods/io.prometheus.client.CollectorRegistry/metricFamilySamples
 	@ResponseBody
 	@GetMapping(value = "metrics", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> metrics() {

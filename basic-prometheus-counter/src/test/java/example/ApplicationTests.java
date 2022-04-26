@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.PropertySource;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,10 @@ import java.util.Arrays;
 @PropertySource("classpath:application.properties")
 public class ApplicationTests {
 
+
+	@Value("${serverPort:8080}")
+	private int managementPort;
+
 	@Autowired
 	private TestRestTemplate restTemplate;
 
@@ -50,9 +55,6 @@ public class ApplicationTests {
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
-
-	@Value("${serverPort:8080}")
-	private int managementPort;
 
 	// TODO: explore the
 	// EndpointLinksResolver: Exposing 14 endpoint(s) beneath base path

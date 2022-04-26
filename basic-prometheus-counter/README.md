@@ -1,9 +1,7 @@
 ### Info
 
 
-this directory contains a replica of a
-[simple Spring Boot application](https://github.com/arun-gupta/spring-boot-prometheus) that computes and exposes Proemtheus metrics
-relying on springboot actuator to handle the endpoint that returns
+this directory contains a replica of a [simple Spring Boot application](https://github.com/arun-gupta/spring-boot-prometheus) that computes and exposes Prometheus metrics relying on springboot actuator to handle the endpoint that returns
 prometheus metrics. Currently generates but does not export the appication specific metrics
 
 ### Usage
@@ -231,17 +229,35 @@ requests_latency_seconds_count{group="application", instance="application:8080",
 ```
 interact with application and see the counts getting updated
 
+### Connect Application to Prometheus Directly
+use the approach from [basic-pushgateway](https://github.com/sergueik/springboot_study/tree/master/basic-pushgateway) project:
 
-### See Also
+* add the following onfiguration to  prometheus:
 
-  * Prometheus [prom2json](https://hub.docker.com/r/prom/prom2json) Docker hub link
-  * Prometheus [prometheus](https://hub.docker.com/r/prom/prometheus) Docker ub lik
-  * [minimal prometheus counter example](https://github.com/njanor/spring-boot-prometheus-demo) - uses older Springboot and currently does not compile, integrated the `build status` counter from the example
-  * [step by step springboot monitoring dashboard example](https://github.com/rishant/springboot-monitoring-dashboard-example)
-  * old [MVC example](https://github.com/ConSol/springboot-monitoring-example) with static page links to generated metrics, the application handles the `/metrics` route on its own.
- * Spring Boot metrics monitoring using Prometheus & Grafana [blog](https://aboullaite.me/spring-boot-monitoring-prometheus-grafana/) - relies on `@EnablePrometheusEndpoint` and `@EnableSpringBootMetricsCollector` annotations which do not work yet in this project
-  * core [metrics Collection in Spring Boot With Micrometer and Prometheus](https://www.codeprimers.com/metrics-collection-in-spring-boot-with-micrometer-and-prometheus/) documentatiton
-  * [collection of alerting rules for Prometheus](https://awesome-prometheus-alerts.grep.to)
+```YAML
+- job_name: application
+  honor_labels: true
+  honor_timestamps: true
+  scrape_interval: 15s
+  scrape_timeout: 1s
+  metrics_path: /metrics
+  scheme: http
+  follow_redirects: true
+  static_configs:
+  - targets:
+    - application:8080
+```
+```sh
+NETWORK='example_pushgateway'
+docker network create $NETWORK
+
+NAME=application
+export IMAGE=application
+docker run --network=$NETWORK --name $NAME  -p 8080:8080 -d $IMAGE
+
+PROMETHEUS_VERSION=v2.27.0
+docker run -d -p 9090:9090 --name=prometheus -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml --link application --network=$NETWORK prom/prometheus:$PROMETHEUS_VERSION
+```
 ### Cleanup
 
 ```sh
@@ -252,5 +268,20 @@ docker image rm prom/prom2json
 docker image rm prom/prom2json:v1.3.0
 docker image rm prom/prometheus:v2.27.0
 ```
+
+### See Also
+
+  * Prometheus [prom2json](https://hub.docker.com/r/prom/prom2json) Docker hub link
+  * Prometheus [prometheus](https://hub.docker.com/r/prom/prometheus) Docker ub lik
+  * [minimal prometheus counter example](https://github.com/njanor/spring-boot-prometheus-demo) - uses older Springboot and currently does not compile, integrated the `build status` counter from the example
+  * [step by step springboot monitoring dashboard example](https://github.com/rishant/springboot-monitoring-dashboard-example)
+  * [example](https://github.com/ramesh-lingappan/prometheus-pushgateway-demo) - demonstrates `PushGatewayConfiguration`  and `PushGatewayCredentials` bolierplate code
+  * old [MVC example](https://github.com/ConSol/springboot-monitoring-example) with static page links to generated metrics, the application handles the `/metrics` route on its own.
+  * Spring Boot metrics monitoring using Prometheus & Grafana [blog](https://aboullaite.me/spring-boot-monitoring-prometheus-grafana/) - relies on `@EnablePrometheusEndpoint` and `@EnableSpringBootMetricsCollector` annotations which do not work yet in this project
+  * core [metrics Collection in Spring Boot With Micrometer and Prometheus](https://www.codeprimers.com/metrics-collection-in-spring-boot-with-micrometer-and-prometheus/) documentatiton
+  * [collection of alerting rules for Prometheus](https://awesome-prometheus-alerts.grep.to)
+  * plain Java (non-Spring) [prometheus pushgateway metric push demo application](https://github.com/binhhq/prometheus-pushgateway-demo)
+  * Prometheus [metric types](https://prometheus.io/docs/concepts/metric_types/)  
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

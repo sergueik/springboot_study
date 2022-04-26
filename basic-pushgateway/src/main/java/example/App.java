@@ -123,12 +123,32 @@ public class App {
 			}
 		} finally {
 			durationTimer.setDuration();
+			// TODO: add logic
+			setExampleValue(collectorRegistry);
 			if (debug) {
 				System.err.println("Sending job info");
 			}
-			new PushGateway(gateway).pushAdd(collectorRegistry, name);
+
+			// new PushGateway(gateway).pushAdd(collectorRegistry, name);
+			PushGateway pg = new PushGateway(gateway);
+			pg.pushAdd(collectorRegistry, name);
+			pg.pushAdd(collectorRegistry, "instance_metric_value");
+
 		}
 	}
+
+	//
+	// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.html
+	private static final String INSTANCE = "hostname";
+
+	private static void setExampleValue(CollectorRegistry registry) {
+		Gauge example = Gauge
+				.build("instance_metric_value", "Value of metric from instance")
+				.labelNames("instance").register(registry);
+		long value = 42;
+		example.labels(INSTANCE).set(value);
+	}
+
 
 	public static void main(String[] args) {
 		String name = null;

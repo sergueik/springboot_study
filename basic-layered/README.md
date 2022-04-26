@@ -141,6 +141,6 @@ NOTE: this exercise apparenlty requires both JDK 11 and SpringBoot parent __2.3.
  * [Docker/Maven project producing Optimized Docker Images for Spring Boot example](https://github.com/thombergs/code-examples/tree/master/spring-boot/spring-boot-docker)
  * https://stackoverflow.com/questions/27767264/how-to-dockerize-maven-project-and-how-many-ways-to-accomplish-it
  * Docker image [dive tool](https://github.com/wagoodman/dive) (writte in go) 
-
+ * __Developing Java Apps with Docker__ pluralsight [training](https://app.pluralsight.com/library/courses/java-apps-docker-developing/table-of-contents)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

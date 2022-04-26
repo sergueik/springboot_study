@@ -1,5 +1,5 @@
 ### Info
-directory contains elementary  API key-auth security example based on
+directory contains elementary API key-auth security example based on
 [springboot-keyauth](https://github.com/manyu235/springboot-keyauth)
 
 ### Usage
@@ -42,10 +42,13 @@ Processed request: /api/v1/secure
 
 #### Postman Resources
   * [discussion of test iterations in Postman](https://automated-testing.info/t/posledovatelnost-zaprosov-s-menyayushhimisya-parametrami-v-postman/21884/3)(in Russian)
-  * [basic Postman terminology](https://gb.ru/posts/kak-testirovat-api-ili-postman-dlya-chajnikov) (in Russian) 
   * https://community.postman.com/t/test-if-response-body-include-any-of-values/24290
   * https://www.postman.com/cloudy-station-145681/workspace/e358eb9c-1956-4820-9dd8-8e73734fb917
   * https://fooobar.com/questions/2403780/postman-how-to-loop-request-until-i-get-a-specific-response  (in Russian)
+  * [big Postman guide](https://testengineer.ru/gajd-po-testirovaniyu-v-postman/) (in Russian)
+  * [intro to Postman](https://habr.com/ru/company/kolesa/blog/351250/) (in Russian)
+  * https://github.com/poynt/postman-runner - standalone runner
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
