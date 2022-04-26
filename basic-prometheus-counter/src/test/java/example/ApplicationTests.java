@@ -1,18 +1,21 @@
 package example;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.PropertySource;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,6 +25,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.is;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,23 +45,24 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.ArrayUtils;
 
 // Caused by: org.springframework.context.ApplicationContextException: Unable to start embedded container; nested exception is org.springframework.context.ApplicationContextException: Unable to start EmbeddedWebApplicationContext due to missing EmbeddedServletContainerFactory bean.
-@RunWith(SpringRunner.class)
-@SpringBootTest(
-		/* classes = example.ApplicationTests,  */
-		webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-				"serverPort=8080" })
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
+		"serverPort=8085" })
 @PropertySource("classpath:application.properties")
 public class ApplicationTests {
 
-	@Value("${serverPort:8080}")
-	private int managementPort;
+	@LocalServerPort
+	private int randomServerPort = 8085;
+
+	private String url = null;
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
 	@Test
 	public void index() {
-		ResponseEntity<String> entity = restTemplate.getForEntity("/",
+		url = "http://localhost:" + randomServerPort + "/";
+		ResponseEntity<String> entity = restTemplate.getForEntity(url,
 				String.class);
 		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
 
@@ -63,7 +75,8 @@ public class ApplicationTests {
 
 	@Test
 	public void contextLoads() {
-		ResponseEntity<String> entity = restTemplate.getForEntity("/hello",
+		url = "http://localhost:" + randomServerPort + "/hello";
+		ResponseEntity<String> entity = restTemplate.getForEntity(url,
 				String.class);
 		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
 	}
@@ -73,8 +86,9 @@ public class ApplicationTests {
 	// '/actuator'
 	@Test
 	public void prometheus() {
-		ResponseEntity<String> entity = restTemplate
-				.getForEntity("/actuator/prometheus", String.class);
+		url = "http://localhost:" + randomServerPort + "/actuator/prometheus";
+		ResponseEntity<String> entity = restTemplate.getForEntity(url,
+				String.class);
 		// ResponseEntity<String> entity = restTemplate.getForEntity(
 		// "http://localhost:{port}/metrics", String.class, managementPort);
 		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
@@ -88,7 +102,8 @@ public class ApplicationTests {
 
 	@Test
 	public void metrics1() {
-		ResponseEntity<String> entity = restTemplate.getForEntity("/metrics",
+		url = "http://localhost:" + randomServerPort + "/metrics";
+		ResponseEntity<String> entity = restTemplate.getForEntity(url,
 				String.class);
 		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
 		// assertThat(entity.getHeaders().get("Content-Type"),
@@ -124,14 +139,16 @@ public class ApplicationTests {
 	// but fail with HttpStatus.INTERNAL_SERVER_ERROR
 	@Test
 	public void metrics2() {
-		ResponseEntity<String> entity = restTemplate.getForEntity("/metrics",
+		url = "http://localhost:" + randomServerPort + "/metrics";
+		ResponseEntity<String> entity = restTemplate.getForEntity(url,
 				String.class);
 		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
 	}
 
 	@Test
 	public void metrics3() {
-		ResponseEntity<String> entity = restTemplate.getForEntity("/metrics",
+		url = "http://localhost:" + randomServerPort + "/metrics";
+		ResponseEntity<String> entity = restTemplate.getForEntity(url,
 				String.class);
 		String entryPattern = "instance_metric_value\\{instance=\\\"hostname[0-9]+\\\",\\} [0-9.]+";
 		List<String> entries = Arrays.asList(entity.getBody().split("\n")).stream()

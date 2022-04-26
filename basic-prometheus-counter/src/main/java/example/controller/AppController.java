@@ -1,5 +1,9 @@
 package example.controller;
 
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
+
 import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.web.bind.annotation.GetMapping;
