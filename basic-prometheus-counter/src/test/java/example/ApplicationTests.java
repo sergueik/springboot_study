@@ -20,8 +20,11 @@ import com.sun.el.stream.Stream;
 
 import io.prometheus.client.CollectorRegistry;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+// import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,6 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.ArrayUtils;
 
 // Caused by: org.springframework.context.ApplicationContextException: Unable to start embedded container; nested exception is org.springframework.context.ApplicationContextException: Unable to start EmbeddedWebApplicationContext due to missing EmbeddedServletContainerFactory bean.
@@ -50,16 +55,20 @@ public class ApplicationTests {
 	public void index() {
 		ResponseEntity<String> entity = restTemplate.getForEntity("/",
 				String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getHeaders().get("Content-Type")
-				.equals(MediaType.TEXT_HTML_VALUE));
+		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
+
+		// assertThat(entity.getHeaders().get("Content-Type"),
+		// is(MediaType.TEXT_PLAIN));
+		// Expected: is "text/html"
+		// but: was "text/html;charset=UTF-8"
+
 	}
 
 	@Test
 	public void contextLoads() {
 		ResponseEntity<String> entity = restTemplate.getForEntity("/hello",
 				String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
 	}
 
 	// TODO: explore the
@@ -71,11 +80,11 @@ public class ApplicationTests {
 				.getForEntity("/actuator/prometheus", String.class);
 		// ResponseEntity<String> entity = restTemplate.getForEntity(
 		// "http://localhost:{port}/metrics", String.class, managementPort);
-		assertThat(entity.getStatusCodeValue()).isEqualTo(200);
+		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
 		for (String text : Arrays.asList(
 				"# HELP jvm_memory_used_bytes The amount of used memory",
 				"# TYPE jvm_memory_used_bytes gauge")) {
-			assertThat(entity.getBody()).contains(text);
+			assertThat(entity.getBody(), containsString(text));
 
 		}
 	}
@@ -84,9 +93,9 @@ public class ApplicationTests {
 	public void metrics1() {
 		ResponseEntity<String> entity = restTemplate.getForEntity("/metrics",
 				String.class);
-		assertThat(entity.getStatusCodeValue()).isEqualTo(200);
-		assertThat(entity.getHeaders().get("Content-Type")
-				.equals(MediaType.TEXT_PLAIN_VALUE));
+		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
+		// assertThat(entity.getHeaders().get("Content-Type"),
+		// is(MediaType.TEXT_PLAIN));
 		// standard Prometheus metrics delivered by
 		// CollectorRegistry.defaultRegistry.metricFamilySamples
 		List<String> defaultMetrics = Arrays.asList(
@@ -98,27 +107,39 @@ public class ApplicationTests {
 		List<String> extraMetrics = Arrays.asList(
 				"# HELP instance_metric_value Value of metric from instance",
 				"# TYPE instance_metric_value gauge",
-				"instance_metric_value{instance=\"hostname\",} 42.0");
+				"instance_metric_value{instance=\"hostname00\",} 42.0");
 		// https://stackoverflow.com/questions/80476/how-can-i-concatenate-two-arrays-in-java
 		// https://stackoverflow.com/questions/189559/how-do-i-join-two-lists-in-java
 		List<String> metrics = new ArrayList<String>();
 		metrics.addAll(defaultMetrics);
 		metrics.addAll(extraMetrics);
 		for (String text : metrics) {
-			assertThat(entity.getBody()).contains(text);
+			assertThat(entity.getBody(), containsString(text));
 			// TODO: regexp
 		}
 	}
 
-	// @Ignore
-	// NOTE: repeating the REST call to /metrics leads to
-	// java.lang.IllegalArgumentException: Collector already registered that
-	// provides name: instance_metric_value
-	// the test does not receive that exception, but a HTTP status 500
+	// repeated REST calls do not fail with
 	@Test
-	public void metrics2Failing() {
+	public void metrics2() {
 		ResponseEntity<String> entity = restTemplate.getForEntity("/metrics",
 				String.class);
-		assertThat(entity.getStatusCodeValue()).isEqualTo(500);
+		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
+		// HttpStatus.INTERNAL_SERVER_ERROR
+
+	}
+
+	@Test
+	public void metrics3() {
+		ResponseEntity<String> entity = restTemplate.getForEntity("/metrics",
+				String.class);
+		// NOTE: using org.assertj.core.api.Assertions.assertThat all around
+		String entryPattern = "instance_metric_value\\{instance=\\\"hostname[0-9]+\\\",\\} [0-9.]+";
+		List<String> entries = Arrays.asList(entity.getBody().split("\n")).stream()
+				.filter(o -> o.contains("hostname")).collect(Collectors.toList());
+		for (String line : entries) {
+			assertThat(line, matchesPattern(entryPattern));
+			System.err.println("inspected line: " + line);
+		}
 	}
 }

@@ -23,8 +23,10 @@ import io.prometheus.client.exporter.common.TextFormat;
 // import io.micrometer.core.instrument.MeterRegistry;
 
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Random;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -41,6 +43,7 @@ public class AppController {
 
 	// custom metric setting the instance
 	// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.html
+	private static final boolean debug = false;
 	private static final String instance = "hostname";
 	private CollectorRegistry registry;
 	private Gauge example = null;
@@ -49,7 +52,7 @@ public class AppController {
 	static final Histogram requestTimet = Histogram.build()
 			.name("requests_latency_seconds").help("Request latency in seconds.")
 			.register();
-
+	private static final String counterName = "instance_metric_value";
 	private static Random random = new Random();
 	private static long value = 42;
 	private static final int length = 10;
@@ -109,52 +112,48 @@ public class AppController {
 	private void exampleGauge() {
 		Enumeration<MetricFamilySamples> metricFamilySamplesEnumeration = registry
 				.metricFamilySamples();
+		List<String> metricNames = new ArrayList<>();
 		int cnt = 0;
+		// https://www.tabnine.com/code/java/methods/io.prometheus.client.Collector$MetricFamilySamples$Sample/%3Cinit%3E
+		// https://prometheus.github.io/client_java/io/prometheus/client/Collector.MetricFamilySamples.Sample.html
+		// https://prometheus.github.io/client_java/io/prometheus/client/Collector.MetricFamilySamples.html
 		while (metricFamilySamplesEnumeration.hasMoreElements()) {
-			// https://www.tabnine.com/code/java/methods/io.prometheus.client.Collector$MetricFamilySamples$Sample/%3Cinit%3E
-			// https://prometheus.github.io/client_java/io/prometheus/client/Collector.MetricFamilySamples.Sample.html
 			MetricFamilySamples metricFamilySamples = metricFamilySamplesEnumeration
 					.nextElement();
-			// not working with 0.11.0 or earlier eleases
+			// getNames() was not available in 0.11.0 or earlier releases
 			String[] names = metricFamilySamples.getNames();
-			logger.info("Metric Family Samples names:"
-					+ Arrays.asList(names).toString() + "\n\n");
-			/*
-			 This is used in two places:
-			To check potential name collisions in CollectorRegistry.register(Collector).
-			To check if a collector may contain metrics matching the metric name filter in Collector.collect(Predicate).
-			Note that getNames() always includes the name without suffix, even though some metrics types (like Counter) will not have a Sample with that name. The reason is that the name without suffix is used in the metadata comments (# TYPE, # UNIT, # HELP), and as this name must be unique we include the name without suffix here as well 
-			 */
-			logger.info("Metric Family Samples element " + cnt + ":\n"
-					+ metricFamilySamples.toString() + "\n\n");
-			cnt++;
-
-			// unformatted - one needs an iterator
-
+			metricNames.addAll(Arrays.asList(names));
 		}
-		// cannot currently find if the metric was alreadyregistered
 
-		// try {
-		Builder builder = Gauge
-				.build("instance_metric_value", "Value of metric from instance")
-				.labelNames("instance");
+		if (debug)
+			logger.info("Metric Family Samples names:" + metricNames);
+
 		// https://www.tabnine.com/code/java/methods/io.prometheus.client.CollectorRegistry/register
-		// The only way to protect from IllegalArgumentException is to hold a value
-		// of example gauge in a property
-		// if (example == null)
-		example = builder.register(registry);
-		// fail with 500 and never update the values
-		value = 42;
-		example.labels(instance).set(value);
-		for (int i = 0; i < length; i++) {
-			value = random.nextInt(42);
-			example.labels(String.format("%s%02d", instance, i)).set(value);
+		try {
+			// check potential name collisions fbefore register
+			if (!metricNames.contains((Object) counterName)) {
+				Builder builder = Gauge
+						.build(counterName, "Value of metric from instance")
+						.labelNames("instance");
+				example = builder.register(registry);
+			}
+			value = 42;
+			example.labels(instance + "00").set(value);
+			for (int i = 1; i < length; i++) {
+				value = random.nextInt((int) value);
+				example.labels(String.format("%s%02d", instance, i)).set(value);
+			}
+			logger.info("Added example gauge: " + example.labels(instance).get());
+		} catch (Exception e) {
+			logger.error("skipping metric update - exception: " + e.getMessage());
+
+			// java.lang.IllegalArgumentException:
+			// Collector already registered that provides name:
+			// instance_metric_value
+			// NOTE: the restTemplate test does not receive that exception, but a HTTP
+			// status 500
+
 		}
-		logger.info("Added example gauge: " + example.labels(instance).get());
-		// } catch (Exception e) {
-		// logger.error(
-		// "Detected exception, skipping metric update: " + e.getMessage());
-		// }
 	}
 
 	// index page
