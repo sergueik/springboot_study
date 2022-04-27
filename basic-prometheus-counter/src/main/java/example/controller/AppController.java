@@ -56,7 +56,8 @@ public class AppController {
 	static final Histogram requestTimet = Histogram.build()
 			.name("requests_latency_seconds").help("Request latency in seconds.")
 			.register();
-	private static final String counterName = "instance_metric_value";
+	private static final List<String> counterNames = Arrays
+			.asList("instance_metric_value", "load_average", "cpu");
 	private static Random random = new Random();
 	private static long value = 42;
 	private static final int length = 10;
@@ -104,7 +105,10 @@ public class AppController {
 		try {
 			registry = CollectorRegistry.defaultRegistry;
 			// TODO: add logic
-			exampleGauge();
+			for (String counterName : counterNames) {
+				createGauge(counterName);
+				exampleGauge(counterName);
+			}
 			TextFormat.write004(writer, registry.metricFamilySamples());
 		} catch (IOException e) {
 			logger.error("Exception (caught):" + e.toString());
@@ -113,8 +117,8 @@ public class AppController {
 		return ResponseEntity.status(HttpStatus.OK).body(writer.toString());
 	}
 
-	private void exampleGauge() {
-		logger.info("Starting building custom metrics");
+	private void createGauge(String counterName) {
+
 		// NOTE: check potential name collisions before register
 		Enumeration<MetricFamilySamples> metricFamilySamplesEnumeration = registry
 				.metricFamilySamples();
@@ -137,20 +141,24 @@ public class AppController {
 						.labelNames("instance");
 				example = builder.register(registry);
 			}
-			example.labels(instance + "00").set(42);
-			for (int i = 1; i < length; i++) {
-				value = random.nextInt((int) 42);
-				String hostname = String.format("%s%02d", instance, i);
-				example.labels(hostname).set(value);
-				if (debug)
-					logger.info("Added example gauge " + hostname + " : "
-							+ example.labels(hostname).get());
-			}
-
 		} catch (Exception e) {
 			logger.error("skipping metric update - exception: " + e.getMessage());
 			// e.printStackTrace();
 		}
+	}
+
+	private void exampleGauge(String counterName) {
+		logger.info("Starting building custom metrics");
+		example.labels(instance + "00").set(42);
+		for (int i = 1; i < length; i++) {
+			value = random.nextInt((int) 42);
+			String hostname = String.format("%s%02d", instance, i);
+			example.labels(hostname).set(value);
+			if (debug)
+				logger.info("Added example gauge " + hostname + " : "
+						+ example.labels(hostname).get());
+		}
+
 	}
 
 	// index page

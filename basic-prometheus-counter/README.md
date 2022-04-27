@@ -10,7 +10,7 @@ prometheus metrics. Currently generates but does not export the appication speci
 ```sh
 mvn test
 ```
- * run application:
+* run application:
 
 ```sh
 mvn spring-boot:run
@@ -18,6 +18,7 @@ mvn spring-boot:run
 * open the index page `http://localhost:8080/` in the browser or in the console, using `curl -s` to reduce the logging
 
 ![Sample Page](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture-application.png)
+
 ```sh
 curl -s http://localhost:8080/
 ```
@@ -72,10 +73,12 @@ requests_latency_seconds_bucket{le="7.5",} 2.0
 requests_latency_seconds_bucket{le="10.0",} 2.0
 requests_latency_seconds_bucket{le="+Inf",} 2.0
 requests_latency_seconds_count 2.0
-requests_latency_seconds_sum 9.373410000000001E-4...
+requests_latency_seconds_sum 9.373410000000001E-4
+...
 ```
 
-* access application defined metrics to see the custom metrics
+* access application defined metrics on `/metrics` to see the custom metrics
+
 ```sh
 curl -s http://localhost:8080/metrics
 ```
@@ -108,7 +111,10 @@ instance_metric_value{instance="hostname04",} 9.0
 instance_metric_value{instance="hostname03",} 38.0
 instance_metric_value{instance="hostname02",} 37.0
 ```
-the values are random
+there are few: `load_average`, `cpu`, `instance_metric_value` with random values
+
+![Sample Mertrics Page](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture-metrics.png)
+
 
 ### Feed to Prometheus
 
