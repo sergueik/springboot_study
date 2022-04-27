@@ -49,6 +49,9 @@ public class AppController {
 	// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.html
 	private static final boolean debug = false;
 	private static final String instance = "hostname";
+	private static String domain = "domain";
+	private static String env = "env";
+
 	private CollectorRegistry registry;
 	private Gauge example = null;
 	static final Counter requestsTotal = Counter.build().name("requests_total")
@@ -138,7 +141,7 @@ public class AppController {
 			if (!metricNames.contains((Object) counterName)) {
 				Builder builder = Gauge
 						.build(counterName, "Value of metric from instance")
-						.labelNames("instance");
+						.labelNames("instance", "domain", "environment");
 				example = builder.register(registry);
 			}
 		} catch (Exception e) {
@@ -149,11 +152,11 @@ public class AppController {
 
 	private void exampleGauge(String counterName) {
 		logger.info("Starting building custom metrics");
-		example.labels(instance + "00").set(42);
+		example.labels(instance + "00", domain, env).set(42);
 		for (int i = 1; i < length; i++) {
 			value = random.nextInt((int) 42);
 			String hostname = String.format("%s%02d", instance, i);
-			example.labels(hostname).set(value);
+			example.labels(hostname, domain, env).set(value);
 			if (debug)
 				logger.info("Added example gauge " + hostname + " : "
 						+ example.labels(hostname).get());
