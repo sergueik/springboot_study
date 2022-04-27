@@ -1,4 +1,11 @@
 # NOTE: switch to jre-alpine3.9 to allow JDBC and other domain content-specific probes
 FROM alpine:3.9
-ADD wait_for.sh wait_for.sh
-ENTRYPOINT ["sh", "/wait_for.sh", "--host=${SERVICE_HOST}" , "--port=${SERVICE_	PORT}", "--timeout=${TIMEOUT}"]
+# see also https://github.com/Docker-Hub-frolvlad/docker-alpine-bash
+RUN apk add --no-cache bash gawk sed grep bc coreutils
+ADD wait_for_it.sh wait_for_it.sh
+
+ENTRYPOINT ["sh", "/wait_for_it.sh", "--host=${SERVICE_HOST}" , "--port=${SERVICE_PORT}", "--timeout=${TIMEOUT}"]
+# alternarive, embed wait_for_it.sh in the tomcat / spring boot container and chan in ENTRYPOINT
+
+# ENTRYPOINT ["/wait-for-it.sh", "${SERVICE_HOST}:${SERVICE_PORT}", "--timeout=${TIMEOUT}", "--", "catalina.sh", "run"]
+

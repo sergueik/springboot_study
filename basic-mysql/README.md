@@ -420,7 +420,8 @@ ENTRYPOINT ["sh", "/delayed_start.sh"]
   * standalone ash script dependency waiter [dadarek/wait-for-dependencies](https://github.com/dadarek/docker-wait-for-dependencies) alpine image doing `nc -z` loop
   * Docker [healtheck syntax introduction](https://dotsandbrackets.com/docker-health-check-ru/) (Russian translation)
   * [shell script](https://github.com/Dmitry-Shweikus/wait-for-it/blob/master/wait-for-it.sh) to wait for specified `HOST` and `PORT` with `TIMEOUT` (cloned locally)
-  * [variant](https://github.com/eficode/wait-for/blob/master/wait-for) of the same script with support of TCP / HTTP "protocol" argument 
+  * recommended pure bash [script](https://github.com/vishnubob/wait-for-it) to poll and wait on the availability of a TCP host and port
+  * [alternative script](https://github.com/eficode/wait-for/blob/master/wait-for) of the same script with support of TCP / HTTP "protocol" argument 
   * Docker Compose startup shutdown order [documentation](https://docs.docker.com/compose/startup-order/)
 
 ### Author

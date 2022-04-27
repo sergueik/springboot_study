@@ -1,6 +1,6 @@
 package example.controller;
 /**
- * Copyright 2021 Serguei Kouzmine
+ * Copyright 2021,2022 Serguei Kouzmine
  */
 // import org.junit.Before;
 
@@ -19,6 +19,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.web.client.HttpClientErrorException;
@@ -43,6 +44,7 @@ import static org.hamcrest.Matchers.greaterThan;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
 		"serverPort=8085" })
 @PropertySource("classpath:application.properties")
+
 public class AcceptanceTest {
 
 	// NOTE:

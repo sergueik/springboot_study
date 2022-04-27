@@ -1,11 +1,23 @@
-# origin: https://github.com/Dmitry-Shweikus/wait-for-it/blob/master/wait-for-it.sh
+#!/usr/bin/env bash
+ 
 
-#!/usr/bin/env sh
+
+# origin: https://github.com/vishnubob/wait-for-it
+# NOTE: the original script uses bash
+# on alpine (ash)
+# shell throws error on line 15 unable to parse the function syntax
+
 # this script will confirm if a specified TCP host/port are available or fail after timeout if one is specified
 
 cmdname=$(basename $0)
 
-echoerr() { if [[ $QUIET -ne 1 ]]; then echo "$@" 1>&2; fi }
+echoerr() 
+{ 
+if [[ $QUIET -ne 1 ]]
+then
+  echo "$@" 1>&2; 
+fi 
+}
 
 usage()
 {
