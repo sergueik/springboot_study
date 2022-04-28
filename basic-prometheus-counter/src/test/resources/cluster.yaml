@@ -1,0 +1,44 @@
+---
+  - host:
+    id: 2
+    hostname: host2
+    dc: west
+    app: database
+  - host:
+    id: 3
+    hostname: host3
+    dc: west
+    app: redis
+  - host:
+    id: 4
+    hostname: host4
+    dc: west
+    app: node
+  - host:
+    id: 5
+    hostname: host5
+    dc: west
+    app: ~
+  - host:
+    id: 6
+    hostname: host6
+    dc: west
+    app: ~
+  - host:
+    id: 7
+    hostname: host7
+    dc: west
+    app: node
+    # NOTE: leading zeros will make YAML assume the value of "id " is int "octal"
+    # but once see
+    # values like 008 etc. will consider id to be "double"
+  - host:
+    id: 8
+    hostname: host7
+    dc: east
+    app: node
+  - host:
+    id: 9
+    hostname: host8
+    dc: west
+    app: redis

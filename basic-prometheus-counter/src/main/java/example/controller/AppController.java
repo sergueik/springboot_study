@@ -51,6 +51,7 @@ public class AppController {
 	// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.html
 	private static final boolean debug = false;
 	private static final String instance = "hostname";
+	
 	private static String domain = "domain";
 	private static String env = "env";
 	private static Map<String, Gauge> metrics = new HashMap<>();
@@ -115,7 +116,7 @@ public class AppController {
 				String hostname = String.format("%s%02d", instance, i);
 				for (String counterName : counterNames) {
 					createGauge(counterName);
-					exampleGauge(counterName, hostname, 42);
+					exampleGauge(counterName, hostname, value);
 				}
 			}
 			TextFormat.write004(writer, registry.metricFamilySamples());
