@@ -3,5 +3,6 @@ ENV APP_DIR /demo
 WORKDIR ${APP_DIR}
 ARG app_jar="example.prometheus-counter.jar"
 ADD "target/${app_jar}" ${APP_DIR}/app.jar
+ADD src/test/resources/cluster.yaml  ${APP_DIR}/src/test/resources/cluster.yaml
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

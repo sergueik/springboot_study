@@ -284,7 +284,14 @@ docker run --link application  -p 9090:9090  -v $(pwd)/prometheus.yml:/etc/prome
 and click on __open the metrics explorer__ icon:
 
 ![Prometheus Page](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture-prometheus.png)
+One can do filtering first through [PQL]()
 
+```sh
+cpu{domain="west"}
+```
+also via mouse selecting individual graphs
+
+![Prometheus Page](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture-prometheus-filtered.png)
 one sees the metrics just added in the application code:
 `build_status_counter`,`requests_total`,`requests_latency_seconds` 
 
