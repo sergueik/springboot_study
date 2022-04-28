@@ -100,18 +100,59 @@ along with custom  metrics
 ```text
 # HELP cpu Value of metric from instance
 # TYPE cpu gauge
-cpu{instance="hostname06",domain="domain",environment="env",} 42.0
-cpu{instance="hostname05",domain="domain",environment="env",} 42.0
-cpu{instance="hostname08",domain="domain",environment="env",} 42.0
-cpu{instance="hostname07",domain="domain",environment="env",} 42.0
-cpu{instance="hostname09",domain="domain",environment="env",} 42.0
-cpu{instance="hostname00",domain="domain",environment="env",} 42.0
-cpu{instance="hostname02",domain="domain",environment="env",} 42.0
-cpu{instance="hostname01",domain="domain",environment="env",} 42.0
-cpu{instance="hostname04",domain="domain",environment="env",} 42.0
-cpu{instance="hostname03",domain="domain",environment="env",} 42.0
+# HELP cpu Value of metric from instance
+# TYPE cpu gauge
+cpu{instance="hostname00",domain="west",app="database",} 42.0
+cpu{instance="hostname04",domain="west",app="node",} 16.0
+cpu{instance="hostname07",domain="east",app="node",} 4.0
+cpu{instance="hostname03",domain="west",app="redis",} 20.0
+cpu{instance="hostname08",domain="west",app="redis",} 38.0
 ```
 there are few metric mockups: `load_average`, `cpu`, `disk` with random values
+The `domain` and `app` are read from cluster configuration YAML:
+```YAML
+---
+  - host:
+    id: 2
+    hostname: hostname00
+    dc: west
+    app: database
+  - host:
+    id: 3
+    hostname: hostname03
+    dc: west
+    app: redis
+  - host:
+    id: 4
+    hostname: hostname04
+    dc: west
+    app: node
+  - host:
+    id: 5
+    hostname: hostname05
+    dc: west
+    app: ~
+  - host:
+    id: 6
+    hostname: hostname06
+    dc: west
+    app: ~
+  - host:
+    id: 7
+    hostname: hostname07
+    dc: west
+    app: node
+  - host:
+    id: 8
+    hostname: hostname07
+    dc: east
+    app: node
+  - host:
+    id: 9
+    hostname: hostname08
+    dc: west
+    app: redis
+```
 
 ![Sample Mertrics Page](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture-metrics.png)
 

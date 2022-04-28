@@ -28,101 +28,22 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 import org.yaml.snakeyaml.Yaml;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 public class SnakeYamlReaderTest {
 
+	private SnakeYamlReader snakeYamlReader = new SnakeYamlReader();
 	Map<String, Host> info = new HashMap<>();
 	String fileName = "cluster.yaml";
 	String encoding = "UTF-8";
 
 	@Test
 	public void test() throws Exception {
-		try {
-			InputStream in = Files.newInputStream(
-					Paths.get(String.join(System.getProperty("file.separator"),
-							Arrays.asList(System.getProperty("user.dir"), "src", "test",
-									"resources", fileName))));
-			@SuppressWarnings("unchecked")
-			ArrayList<LinkedHashMap<Object, Object>> members = (ArrayList<LinkedHashMap<Object, Object>>) new Yaml()
-					.load(in);
-			for (LinkedHashMap<Object, Object> row : members) {
-				// NOTE: YAML may be confused by formating like "08" and assume double
-				int id = (int) row.get("id");
-				Host host = new Host(id, (String) row.get("hostname"),
-						(String) row.get("dc"), (String) row.get("app"));
-				@SuppressWarnings("unused")
-				String hostname = host.getHostname();
-				// filter what to (not) serialize
-
-				String app = host.getApp();
-				if (app != null && !app.isEmpty()) {
-					info.put(hostname, host);
-				}
-			}
-			System.err.println(info.keySet());
-		} catch (IOException e) {
-			System.err.println("Excption (ignored) " + e.toString());
-		}
+		snakeYamlReader.read(fileName);
+		info = snakeYamlReader.getInfo();
+		assertThat(info, notNullValue());
+		assertThat(info.keySet().size(), is(5));
 	}
-
-	public static class Host {
-
-		private String hostname;
-		private String app;
-		private String dc;
-		private static String staticInfo;
-		private int id;
-
-		public String getHostname() {
-			return hostname;
-		}
-
-		public void setHostname(String data) {
-			hostname = data;
-		}
-
-		public String getApp() {
-			return app;
-		}
-
-		public void setApp(String data) {
-			app = data;
-		}
-
-		public String getDc() {
-			return dc;
-		}
-
-		public void setDc(String data) {
-			dc = data;
-		}
-
-		public int getId() {
-			return id;
-		}
-
-		public void setId(int data) {
-			id = data;
-		}
-
-		public Host() {
-			staticInfo = UUID.randomUUID().toString();
-		}
-
-		public /* static */ String getStaticInfo() {
-			return Host.staticInfo;
-		}
-
-		public Host(int id, String hostname, String dc, String app) {
-			super();
-			if (Host.staticInfo == null) {
-				Host.staticInfo = UUID.randomUUID().toString();
-			}
-			this.hostname = hostname;
-			this.id = id;
-			this.dc = dc;
-			this.app = app;
-		}
-
-	}
-
 }

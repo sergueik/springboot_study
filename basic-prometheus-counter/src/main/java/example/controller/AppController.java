@@ -6,6 +6,9 @@ package example.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import example.utils.Host;
+import example.utils.SnakeYamlReader;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -47,13 +50,14 @@ public class AppController {
 	private static final Logger logger = LogManager
 			.getLogger(AppController.class);
 
+	private SnakeYamlReader snakeYamlReader = new SnakeYamlReader();
+
 	// custom metric setting the instance
 	// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.html
 	private static final boolean debug = false;
-	private static final String instance = "hostname";
-	
-	private static String domain = "domain";
-	private static String env = "env";
+	String fileName = "cluster.yaml";
+	Map<String, Host> info = new HashMap<>();
+
 	private static Map<String, Gauge> metrics = new HashMap<>();
 
 	private CollectorRegistry registry;
@@ -111,12 +115,15 @@ public class AppController {
 		Writer writer = new StringWriter();
 		try {
 			registry = CollectorRegistry.defaultRegistry;
-			for (int i = 0; i < length; i++) {
-				value = (i == 0) ? 42 : random.nextInt((int) 42);
-				String hostname = String.format("%s%02d", instance, i);
+
+			snakeYamlReader.read(fileName);
+			info = snakeYamlReader.getInfo();
+
+			for (String hostname : info.keySet()) {
+				value = (hostname.matches(".*00$")) ? 42 : random.nextInt((int) 42);
 				for (String counterName : counterNames) {
 					createGauge(counterName);
-					exampleGauge(counterName, hostname, value);
+					exampleGauge(counterName, info.get(hostname), value);
 				}
 			}
 			TextFormat.write004(writer, registry.metricFamilySamples());
@@ -150,7 +157,7 @@ public class AppController {
 			if (!metricNames.contains((Object) counterName)) {
 				Builder builder = Gauge
 						.build(counterName, "Value of metric from instance")
-						.labelNames("instance", "domain", "environment");
+						.labelNames("instance", "domain", "app");
 				example = builder.register(registry);
 				metrics.put(counterName, example);
 			}
@@ -161,14 +168,17 @@ public class AppController {
 	}
 
 	// exampleGauge(counterName, instance + "00", 42);
-	private void exampleGauge(String counterName, String hostname, long value) {
+	private void exampleGauge(String counterName, Host host, long value) {
 
+		String hostname = host.getHostname();
+		String domain = host.getDc();
+		String app = host.getApp();
 		Gauge gauge = metrics.get(counterName);
-		gauge.labels(hostname, domain, env).set(value);
+		gauge.labels(hostname, domain, app).set(value);
 		if (debug)
-			logger.info(
-					String.format("Adding custom metrics %s %s: ", counterName, hostname)
-							+ gauge.labels(hostname, domain, env).get());
+			logger.info(String.format("Adding custom metrics %s %s %s %s: ",
+					counterName, hostname, domain, app)
+					+ gauge.labels(hostname, domain, app).get());
 
 	}
 
