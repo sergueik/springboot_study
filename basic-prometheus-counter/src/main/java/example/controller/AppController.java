@@ -30,7 +30,9 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -51,6 +53,7 @@ public class AppController {
 	private static final String instance = "hostname";
 	private static String domain = "domain";
 	private static String env = "env";
+	private static Map<String, Gauge> metrics = new HashMap<>();
 
 	private CollectorRegistry registry;
 	private Gauge example = null;
@@ -59,8 +62,8 @@ public class AppController {
 	static final Histogram requestTimet = Histogram.build()
 			.name("requests_latency_seconds").help("Request latency in seconds.")
 			.register();
-	private static final List<String> counterNames = Arrays
-			.asList("instance_metric_value", "load_average", "cpu");
+	private static final List<String> counterNames = Arrays.asList("memory",
+			"load_average", "cpu", "disk");
 	private static Random random = new Random();
 	private static long value = 42;
 	private static final int length = 10;
@@ -107,10 +110,13 @@ public class AppController {
 		Writer writer = new StringWriter();
 		try {
 			registry = CollectorRegistry.defaultRegistry;
-			// TODO: add logic
-			for (String counterName : counterNames) {
-				createGauge(counterName);
-				exampleGauge(counterName);
+			for (int i = 0; i < length; i++) {
+				value = (i == 0) ? 42 : random.nextInt((int) 42);
+				String hostname = String.format("%s%02d", instance, i);
+				for (String counterName : counterNames) {
+					createGauge(counterName);
+					exampleGauge(counterName, hostname, 42);
+				}
 			}
 			TextFormat.write004(writer, registry.metricFamilySamples());
 		} catch (IOException e) {
@@ -121,7 +127,9 @@ public class AppController {
 	}
 
 	private void createGauge(String counterName) {
-
+		// cache the gauge objects
+		if (metrics.containsKey(counterName))
+			return;
 		// NOTE: check potential name collisions before register
 		Enumeration<MetricFamilySamples> metricFamilySamplesEnumeration = registry
 				.metricFamilySamples();
@@ -143,6 +151,7 @@ public class AppController {
 						.build(counterName, "Value of metric from instance")
 						.labelNames("instance", "domain", "environment");
 				example = builder.register(registry);
+				metrics.put(counterName, example);
 			}
 		} catch (Exception e) {
 			logger.error("skipping metric update - exception: " + e.getMessage());
@@ -150,17 +159,15 @@ public class AppController {
 		}
 	}
 
-	private void exampleGauge(String counterName) {
-		logger.info("Starting building custom metrics");
-		example.labels(instance + "00", domain, env).set(42);
-		for (int i = 1; i < length; i++) {
-			value = random.nextInt((int) 42);
-			String hostname = String.format("%s%02d", instance, i);
-			example.labels(hostname, domain, env).set(value);
-			if (debug)
-				logger.info("Added example gauge " + hostname + " : "
-						+ example.labels(hostname).get());
-		}
+	// exampleGauge(counterName, instance + "00", 42);
+	private void exampleGauge(String counterName, String hostname, long value) {
+
+		Gauge gauge = metrics.get(counterName);
+		gauge.labels(hostname, domain, env).set(value);
+		if (debug)
+			logger.info(
+					String.format("Adding custom metrics %s %s: ", counterName, hostname)
+							+ gauge.labels(hostname, domain, env).get());
 
 	}
 

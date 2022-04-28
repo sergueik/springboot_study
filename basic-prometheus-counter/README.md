@@ -98,20 +98,20 @@ requests_latency_seconds_sum 0.0
 ```
 along with custom  metrics
 ```text
-# HELP instance_metric_value Value of metric from instance
-# TYPE instance_metric_value gauge
-instance_metric_value{instance="hostname09",domain="domain",environment="env",} 12.0
-instance_metric_value{instance="hostname08",domain="domain",environment="env",} 33.0
-instance_metric_value{instance="hostname07",domain="domain",environment="env",} 15.0
-instance_metric_value{instance="hostname06",domain="domain",environment="env",} 12.0
-instance_metric_value{instance="hostname01",domain="domain",environment="env",} 27.0
-instance_metric_value{instance="hostname00",domain="domain",environment="env",} 42.0
-instance_metric_value{instance="hostname05",domain="domain",environment="env",} 20.0
-instance_metric_value{instance="hostname04",domain="domain",environment="env",} 9.0
-instance_metric_value{instance="hostname03",domain="domain",environment="env",} 38.0
-instance_metric_value{instance="hostname02",domain="domain",environment="env",} 37.0
+# HELP cpu Value of metric from instance
+# TYPE cpu gauge
+cpu{instance="hostname06",domain="domain",environment="env",} 42.0
+cpu{instance="hostname05",domain="domain",environment="env",} 42.0
+cpu{instance="hostname08",domain="domain",environment="env",} 42.0
+cpu{instance="hostname07",domain="domain",environment="env",} 42.0
+cpu{instance="hostname09",domain="domain",environment="env",} 42.0
+cpu{instance="hostname00",domain="domain",environment="env",} 42.0
+cpu{instance="hostname02",domain="domain",environment="env",} 42.0
+cpu{instance="hostname01",domain="domain",environment="env",} 42.0
+cpu{instance="hostname04",domain="domain",environment="env",} 42.0
+cpu{instance="hostname03",domain="domain",environment="env",} 42.0
 ```
-there are few: `load_average`, `cpu`, `instance_metric_value` with random values
+there are few metric mockups: `load_average`, `cpu`, `disk` with random values
 
 ![Sample Mertrics Page](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture-metrics.png)
 

@@ -57,7 +57,7 @@ public class ControllerTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	private static final String counterName = "instance_metric_value";
+	private static final String counterName = "cpu";
 
 	@Test
 	public void test1() {
