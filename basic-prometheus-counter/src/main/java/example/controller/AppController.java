@@ -68,7 +68,7 @@ public class AppController {
 			.name("requests_latency_seconds").help("Request latency in seconds.")
 			.register();
 	private static final List<String> counterNames = Arrays.asList("memory",
-			"load_average", "cpu", "disk");
+			"load_average", "cpu", "disk", "rpm");
 	private static Random random = new Random();
 	private static long value = 42;
 	private static final int length = 10;

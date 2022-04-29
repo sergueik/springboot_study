@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,11 +29,11 @@ public class SnakeYamlReader {
 	}
 
 	public void read(String fileName) {
+		Path filepPath = Paths.get(String.join(System.getProperty("file.separator"),
+				Arrays.asList(System.getProperty("user.dir"), "src", "test",
+						"resources", fileName)));
 		try {
-			InputStream in = Files.newInputStream(
-					Paths.get(String.join(System.getProperty("file.separator"),
-							Arrays.asList(System.getProperty("user.dir"), "src", "test",
-									"resources", fileName))));
+			InputStream in = Files.newInputStream(filepPath);
 			@SuppressWarnings("unchecked")
 			ArrayList<LinkedHashMap<Object, Object>> members = (ArrayList<LinkedHashMap<Object, Object>>) new Yaml()
 					.load(in);
