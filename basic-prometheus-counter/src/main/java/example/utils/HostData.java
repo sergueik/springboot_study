@@ -5,20 +5,22 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import org.apache.commons.collections4.CollectionUtils;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 
-// Class to read host metrics written by legacy moitoring applcation
+// Class to read host metrics written by legacy monitoring application
 public class HostData {
 	private boolean debug = false;
 	private String hostname = null;
@@ -38,6 +40,12 @@ public class HostData {
 
 	public void setMetrics(List<String> value) {
 		metrics = value;
+	}
+
+	private Map<String, String> metricTaker = new HashMap<>();
+
+	public void setMetricTaker(Map<String, String> value) {
+		metricTaker = value;
 	}
 
 	private Path filepPath;
@@ -75,12 +83,23 @@ public class HostData {
 			String line = null;
 			while ((line = bufferedReader.readLine()) != null) {
 				Pattern pattern = Pattern.compile( /* "(?:" to suppress capturing */
-						"(" + StringUtils.join(metrics, "|") + ")" + " " + "(.*)$");
+						"(" + StringUtils.join(metrics, "|") + ")" + ": " + "(.*)$");
 				Matcher matcher = pattern.matcher(line);
 				if (matcher.find()) {
 					key = matcher.group(1);
 					value = matcher.group(2);
 					data.put(key, value);
+				}
+
+				for (String mKey : metricTaker.keySet()) {
+					pattern = Pattern
+							.compile("(?:" + mKey + ")" + ": " + metricTaker.get(mKey));
+					matcher = pattern.matcher(line);
+					if (matcher.find()) {
+						key = mKey;
+						value = matcher.group(1);
+						data.put(key, value);
+					}
 				}
 			}
 			bufferedReader.close();
