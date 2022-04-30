@@ -7,6 +7,7 @@ package example.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import example.utils.Host;
+import example.utils.HostData;
 import example.utils.SnakeYamlReader;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,10 +68,15 @@ public class AppController {
 	static final Histogram requestTimet = Histogram.build()
 			.name("requests_latency_seconds").help("Request latency in seconds.")
 			.register();
+	private HostData hostData = null;
+	private List<String> metricLabels = new ArrayList<>();
+	private Map<String, String> data = new HashMap<>();
+	private Map<String, String> metricTaker = new HashMap<>(); // currently unused
+
 	private static final List<String> counterNames = Arrays.asList("memory",
 			"load_average", "cpu", "disk", "rpm");
 	private static Random random = new Random();
-	private static long value = 42;
+	private static float value = 42;
 	private static final int length = 10;
 
 	private static final Counter buildStatus = Counter.build()
@@ -120,9 +126,16 @@ public class AppController {
 			info = snakeYamlReader.getInfo();
 
 			for (String hostname : info.keySet()) {
-				value = (hostname.matches(".*00$")) ? 42 : random.nextInt((int) 42);
-				for (String counterName : counterNames) {
+				hostData = new HostData(hostname);
+				hostData.setMetrics(counterNames);
+				hostData.readData();
+				data = hostData.getData();
+
+				for (String counterName : data.keySet()) {
 					createGauge(counterName);
+					value = (hostname.matches(".*00$")) ? 42
+							: Float.parseFloat(data.get(counterName));
+
 					exampleGauge(counterName, info.get(hostname), value);
 				}
 			}
@@ -168,7 +181,7 @@ public class AppController {
 	}
 
 	// exampleGauge(counterName, instance + "00", 42);
-	private void exampleGauge(String counterName, Host host, long value) {
+	private void exampleGauge(String counterName, Host host, float value) {
 
 		String hostname = host.getHostname();
 		String domain = host.getDc();

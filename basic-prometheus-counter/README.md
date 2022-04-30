@@ -13,7 +13,7 @@ mvn test
 * run application:
 
 ```sh
-mvn spring-boot:run
+mvn -Dmaven.test.skip=true spring-boot:run
 ```
 * open the index page `http://localhost:8080/` in the browser or in the console, using `curl -s` to reduce the logging
 
@@ -161,7 +161,7 @@ The `domain` and `app` are read from cluster configuration YAML:
 
 * place the app into Docker container
 ```sh
-mvn package
+mvn -Dmaven.test.skip=true clean package
 ```
 ```sh
 export IMAGE=application
@@ -173,6 +173,28 @@ NAME=application
 docker container rm $NAME
 docker run --name $NAME -p 8080:8080 -d $IMAGE
 ```
+```sh
+docker logs $NAME
+```
+```text
+2022-04-29 23:58:56.422  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+```
+
+```sh
+docker exec $NAME find /demo/src/test/resources/data -type f
+```
+```text
+/demo/src/test/resources/data/hostname04/data.txt
+/demo/src/test/resources/data/hostname03/data.txt
+/demo/src/test/resources/data/hostname01/data.txt
+/demo/src/test/resources/data/hostname05/data.txt
+/demo/src/test/resources/data/hostname00/data.txt
+/demo/src/test/resources/data/hostname08/data.txt
+/demo/src/test/resources/data/hostname02/data.txt
+/demo/src/test/resources/data/hostname07/data.txt
+/demo/src/test/resources/data/hostname06/data.txt
+```
+
 * pull `prom2json` image. NOTE: pick a specific version to prevent polluting the images
 ```sh
 VERSION=v1.3.0
@@ -355,3 +377,4 @@ docker image rm prom/prometheus:v2.27.0
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
