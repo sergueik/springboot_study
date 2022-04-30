@@ -64,7 +64,7 @@ public class HostData {
 
 		filepPath = Paths.get(String.join(System.getProperty("file.separator"),
 				Arrays.asList(System.getProperty("user.dir"), "src", "test",
-						"resources", "data", hostname, "data.txt")));
+						"resources", "data", this.hostname, "data.txt")));
 	}
 
 	public Map<String, String> getData() {
@@ -76,14 +76,14 @@ public class HostData {
 			InputStream in = Files.newInputStream(filepPath);
 			BufferedReader bufferedReader = new BufferedReader(
 					new InputStreamReader(in));
-			List<String> res = new ArrayList<>();
 			String key = null;
 			String value = null;
 
 			String line = null;
 			while ((line = bufferedReader.readLine()) != null) {
+				// collect metrics witn non-blank values
 				Pattern pattern = Pattern.compile( /* "(?:" to suppress capturing */
-						"(" + StringUtils.join(metrics, "|") + ")" + ": " + "(.*)$");
+						"(" + StringUtils.join(metrics, "|") + ")" + ": " + "([^ ]*)$");
 				Matcher matcher = pattern.matcher(line);
 				if (matcher.find()) {
 					key = matcher.group(1);

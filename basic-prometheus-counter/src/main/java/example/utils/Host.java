@@ -6,7 +6,8 @@ public class Host {
 
 	private String hostname;
 	private String app;
-	private String dc;
+	private String domain;
+	private String environment;
 	private static String staticInfo;
 	private int id;
 
@@ -14,32 +15,40 @@ public class Host {
 		return hostname;
 	}
 
-	public void setHostname(String data) {
-		hostname = data;
+	public void setHostname(String value) {
+		hostname = value;
 	}
 
 	public String getApp() {
 		return app;
 	}
 
-	public void setApp(String data) {
-		app = data;
+	public void setApp(String value) {
+		app = value;
 	}
 
-	public String getDc() {
-		return dc;
+	public String getDomain() {
+		return domain;
 	}
 
-	public void setDc(String data) {
-		dc = data;
+	public void setDomain(String value) {
+		domain = value;
+	}
+
+	public String getEnvironment() {
+		return environment;
+	}
+
+	public void setEnvironment(String value) {
+		environment = value;
 	}
 
 	public int getId() {
 		return id;
 	}
 
-	public void setId(int data) {
-		id = data;
+	public void setId(int value) {
+		id = value;
 	}
 
 	public Host() {
@@ -50,14 +59,16 @@ public class Host {
 		return Host.staticInfo;
 	}
 
-	public Host(int id, String hostname, String dc, String app) {
+	public Host(int id, String hostname, String domain, String environment,
+			String app) {
 		super();
 		if (Host.staticInfo == null) {
 			Host.staticInfo = UUID.randomUUID().toString();
 		}
 		this.hostname = hostname;
 		this.id = id;
-		this.dc = dc;
+		this.domain = domain;
+		this.environment = environment;
 		this.app = app;
 	}
 

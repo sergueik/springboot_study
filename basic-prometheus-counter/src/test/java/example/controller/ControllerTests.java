@@ -77,9 +77,9 @@ public class ControllerTests {
 		// extra metrics
 		List<String> extraMetrics = Arrays.asList(
 				String.format("# HELP %s Value of metric from instance", counterName),
-				String.format("# TYPE %s gauge", counterName), String.format(
-
-						"%s{instance=\"hostname00\",domain=\"west\",app=\"database\",} 42.0",
+				String.format("# TYPE %s gauge", counterName),
+				String.format(
+						"%s{instance=\"hostname00\",domain=\"west\",app=\"database\",environment=\"qa\",} 42.0",
 						counterName));
 		// https://stackoverflow.com/questions/80476/how-can-i-concatenate-two-arrays-in-java
 		// https://stackoverflow.com/questions/189559/how-do-i-join-two-lists-in-java
@@ -112,9 +112,10 @@ public class ControllerTests {
 		ResponseEntity<String> entity = restTemplate.getForEntity(url,
 				String.class);
 
-		String entryPattern = String.format(
-				"%s\\{instance=\\\"hostname[0-9]+\\\",domain=\\\"\\w+\\\",app=\\\"\\w+\\\",\\} [0-9.]+",
-				counterName);
+		String entryPattern = String
+				.format("%s\\{" + "instance=\\\"hostname[0-9]+\\\"" + ","
+						+ "domain=\\\"\\w+\\\"" + "," + "app=\\\"\\w+\\\"" + ","
+						+ "environment=\\\"\\w+\\\"," + "\\} [0-9.]+", counterName);
 		List<String> entries = Arrays.asList(entity.getBody().split("\n")).stream()
 				.filter(o -> o.contains(counterName))
 				.filter(o -> o.contains("hostname")).collect(Collectors.toList());

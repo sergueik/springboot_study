@@ -32,9 +32,9 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class SnakeYamlReaderTest {
+public class ClusterConfigReaderTest {
 
-	private SnakeYamlReader snakeYamlReader = new SnakeYamlReader();
+	private ClusterConfigReader snakeYamlReader = new ClusterConfigReader();
 	Map<String, Host> info = new HashMap<>();
 	String fileName = "cluster.yaml";
 	String encoding = "UTF-8";

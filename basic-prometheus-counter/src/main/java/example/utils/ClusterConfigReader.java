@@ -21,7 +21,7 @@ import org.yaml.snakeyaml.representer.Representer;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.BaseConstructor;
 
-public class SnakeYamlReader {
+public class ClusterConfigReader {
 	private Map<String, Host> info = new HashMap<>();
 
 	public Map<String, Host> getInfo() {
@@ -41,10 +41,11 @@ public class SnakeYamlReader {
 				// NOTE: YAML may be confused by formating like "08" and assume double
 				int id = (int) row.get("id");
 				Host host = new Host(id, (String) row.get("hostname"),
-						(String) row.get("dc"), (String) row.get("app"));
-				@SuppressWarnings("unused")
+						(String) row.get("domain"), (String) row.get("environment"),
+						(String) row.get("app"));
 				String hostname = host.getHostname();
-				// filter what to (not) serialize
+
+				// inspect app property to filter what to (not) serialize
 
 				String app = host.getApp();
 				if (app != null && !app.isEmpty()) {

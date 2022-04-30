@@ -1,6 +1,6 @@
-cpu: 10
-memory: 20
-disk: 40.5
-load_average: 4
-rpm: 100
+cpu: 11
+memory: 21
+disk: 41.5
+load_average: 5
+rpm: 101
 uptime: 0

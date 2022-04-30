@@ -2,43 +2,50 @@
   - host:
     id: 2
     hostname: hostname00
-    dc: west
+    domain: west
+    environment: qa
     app: database
   - host:
     id: 3
     hostname: hostname03
-    dc: west
+    domain: west
+    environment: qa
     app: redis
   - host:
     id: 4
+    environment: qa
     hostname: hostname04
-    dc: west
+    domain: west
     app: node
   - host:
     id: 5
     hostname: hostname05
-    dc: west
     app: ~
   - host:
     id: 6
+    environment: qa
     hostname: hostname06
-    dc: west
+    domain: west
     app: ~
   - host:
     id: 7
     hostname: hostname07
-    dc: west
+    domain: west
     app: node
     # NOTE: leading zeros will make YAML assume the value of "id " is int "octal"
     # but once see
     # values like 008 etc. will consider id to be "double"
+    environment: prod
   - host:
     id: 8
     hostname: hostname07
-    dc: east
+    domain: east
     app: node
+    environment: prod
   - host:
     id: 9
     hostname: hostname08
-    dc: west
+    domain: west
     app: redis
+    environment: prod
+    

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import example.utils.Host;
 import example.utils.HostData;
-import example.utils.SnakeYamlReader;
+import example.utils.ClusterConfigReader;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,13 +51,13 @@ public class AppController {
 	private static final Logger logger = LogManager
 			.getLogger(AppController.class);
 
-	private SnakeYamlReader snakeYamlReader = new SnakeYamlReader();
+	private ClusterConfigReader snakeYamlReader = new ClusterConfigReader();
 
 	// custom metric setting the instance
 	// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.html
 	private static final boolean debug = false;
 	String fileName = "cluster.yaml";
-	Map<String, Host> info = new HashMap<>();
+	Map<String, Host> hostInfo = new HashMap<>();
 
 	private static Map<String, Gauge> metrics = new HashMap<>();
 
@@ -69,12 +69,12 @@ public class AppController {
 			.name("requests_latency_seconds").help("Request latency in seconds.")
 			.register();
 	private HostData hostData = null;
-	private List<String> metricLabels = new ArrayList<>();
 	private Map<String, String> data = new HashMap<>();
 	private Map<String, String> metricTaker = new HashMap<>(); // currently unused
 
-	private static final List<String> counterNames = Arrays.asList("memory",
+	private static final List<String> metricNames = Arrays.asList("memory",
 			"load_average", "cpu", "disk", "rpm");
+	// private List<String> metricNames = new ArrayList<>();
 	private static Random random = new Random();
 	private static float value = 42;
 	private static final int length = 10;
@@ -123,20 +123,20 @@ public class AppController {
 			registry = CollectorRegistry.defaultRegistry;
 
 			snakeYamlReader.read(fileName);
-			info = snakeYamlReader.getInfo();
+			hostInfo = snakeYamlReader.getInfo();
 
-			for (String hostname : info.keySet()) {
+			for (String hostname : hostInfo.keySet()) {
 				hostData = new HostData(hostname);
-				hostData.setMetrics(counterNames);
+				hostData.setMetrics(metricNames);
 				hostData.readData();
 				data = hostData.getData();
 
-				for (String counterName : data.keySet()) {
-					createGauge(counterName);
+				for (String metricName : data.keySet()) {
+					createGauge(metricName);
 					value = (hostname.matches(".*00$")) ? 42
-							: Float.parseFloat(data.get(counterName));
+							: Float.parseFloat(data.get(metricName));
 
-					exampleGauge(counterName, info.get(hostname), value);
+					exampleGauge(metricName, (Host) hostInfo.get(hostname), value);
 				}
 			}
 			TextFormat.write004(writer, registry.metricFamilySamples());
@@ -169,8 +169,8 @@ public class AppController {
 		try {
 			if (!metricNames.contains((Object) counterName)) {
 				Builder builder = Gauge
-						.build(counterName, "Value of metric from instance")
-						.labelNames("instance", "domain", "app");
+						.build(counterName, "Value of metric from instance").labelNames(
+								new String[] { "instance", "domain", "app", "environment" });
 				example = builder.register(registry);
 				metrics.put(counterName, example);
 			}
@@ -184,14 +184,33 @@ public class AppController {
 	private void exampleGauge(String counterName, Host host, float value) {
 
 		String hostname = host.getHostname();
-		String domain = host.getDc();
+		String domain = host.getDomain();
 		String app = host.getApp();
+		String environment = host.getEnvironment();
 		Gauge gauge = metrics.get(counterName);
-		gauge.labels(hostname, domain, app).set(value);
+		// invoke Prometheus variadic methods with a argument array set at
+		// compile-time
+		// can also pass the arguments explicitly as in
+		// gauge.labels(hostname,domain,app,environment).set(value);
+		// String[] labelArgs = new String[] {};
+		// java.lang.ArrayIndexOutOfBoundsException
+		String[] labelArgs = new String[4];
+		labelArgs[0] = hostname;
+		labelArgs[1] = domain;
+		labelArgs[2] = app;
+		labelArgs[3] = environment;
+
+		int index = 0;
+		String element = "memory";
+		/*
+		if (metricNames instanceof ArrayList<?>)
+			((ArrayList<String>) metricNames).set(index, element);
+		*/
+		gauge.labels(labelArgs).set(value);
+
 		if (debug)
-			logger.info(String.format("Adding custom metrics %s %s %s %s: ",
-					counterName, hostname, domain, app)
-					+ gauge.labels(hostname, domain, app).get());
+			logger.info(String.format("Adding custom metrics %s %s %s %s %s: ",
+					counterName, labelArgs) + gauge.labels(labelArgs).get());
 
 	}
 
