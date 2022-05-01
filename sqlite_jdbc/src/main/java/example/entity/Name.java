@@ -12,12 +12,12 @@ public class Name implements Serializable {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String value) {
+		name = value;
 	}
 
 	@Override
 	public String toString() {
-		return "Student{" + "name=" + name + '}';
+		return "Student{" + "name=" + this.name + '}';
 	}
 }

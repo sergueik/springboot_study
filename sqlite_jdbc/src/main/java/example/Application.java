@@ -11,7 +11,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Application {
 
 	public static void main(String[] args) {
-		ApplicationContext appContext = new ClassPathXmlApplicationContext("applicationContext.xml");
+		// ApplicationContext appContext = new ClassPathXmlApplicationContext("applicationContext.xml");
 		SpringApplication.run(Application.class, args);
 	}
 }

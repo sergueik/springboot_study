@@ -15,24 +15,24 @@ public class Student implements Serializable {
 		return id;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public void setId(long value) {
+		id = value;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String value) {
+		name = value;
 	}
 
 	public String getCourse() {
 		return course;
 	}
 
-	public void setCourse(String course) {
-		this.course = course;
+	public void setCourse(String value) {
+		course = value;
 	}
 
 	/*
@@ -41,7 +41,8 @@ public class Student implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return "Student{" + "id=" + id + ", name=" + name + ", course=" + course
-		/* + ", addtime=" + addtime */ + '}';
+		return "Student{" + "id=" + this.id + ", name=" + this.name + ", course="
+				+ this.course
+				/* + ", addtime=" + addtime */ + '}';
 	}
 }

@@ -32,7 +32,7 @@ update `src/main/resources/application.properties` to point to it:
 spring.datasource.url=jdbc:sqlite:${HOME}/Desktop/springboot.db
 ```
 for Linux host
-alternatively also
+and with
 
 ```java
 spring.datasource.url=jdbc:sqlite:${USERPROFILE}\\Desktop\\springboot.db
@@ -66,6 +66,28 @@ CREATE TABLE `student` (
         `addtime`       datetime NOT NULL DEFAULT current_timestamp
 );
 ```
+```cmd
+sqlite3.exe %userprofile%\Desktop\springboot.db
+```
+
+```text
+SQLite version 3.11.1 2016-03-03 16:17:53
+Enter ".help" for usage hints.
+sqlite>
+```
+enter
+```sql
+select * from student;
+```
+it will print something like
+```text
+2|John|Music|
+3|Ringo|Drums|
+```
+
+```sql
+.quit
+```
 and build and start project as regular springboot application
 
 ```cmd
@@ -86,8 +108,26 @@ mvn clean test
 ```text
 [WARNING] Tests run: 7, Failures: 0, Errors: 0, Skipped: 1
 ```
-### Testing
 
+On Windows,  redirection of the output to file, also makes the test pass:
+```cmd
+mvn test > a.log
+```
+
+```cmd
+type a.log
+```
+```text
+[WARNING] Tests run: 7, Failures: 0, Errors: 0, Skipped: 1
+[INFO]
+[INFO] ---------------------------------------------------
+[INFO] BUILD SUCCESS
+```
+### Running the App
+
+```sh
+mvn -Dmaven.test.skip=true spring-boot:run
+```
 Verify it works via Postman or curl (one will need to specify POST method in all requests).
 The application was originally designed with Spring 4 and is being convered to Spring 5.x to be able to test some packages which did not exist prior.
 
@@ -129,8 +169,16 @@ returns
 }
 ```
 
+if the error is returned
 
+```json
+{"status":1,"data":null}
+```
+
+check the console log - most likely the database is not present in the specific path the connection is attempted
 #### On Spring 4.X
+
+the only difference is in the endpoint 
 ```sh
 curl -X POST http://127.0.0.1:8181/test/student/findAllStudent | jq
 ```
@@ -167,6 +215,7 @@ and
 
 ```sh
 curl -X POST -H "Content-Type: application/json" -d '{"name":"John"}' http://127.0.0.1:8181/test/student/findStudentByName
+```
 returns
 ```json
 {
@@ -192,11 +241,16 @@ docker build -f Dockerfile.shell -t sqlite-shell .
 ```sh
 docker run -it -v ${HOME}/Desktop/:/db sqlite-shell
 ```
-```sh
+```sql
 sqlite> .tables
+```
+```text
 student  user   
-
+```
+```sql
 sqlite> .schema user
+```
+```text
 CREATE TABLE user 
   ( 
      id          INTEGER, 
@@ -207,11 +261,17 @@ CREATE TABLE user
      name        VARCHAR, 
      PRIMARY KEY (id) 
   );
+```
+```sql
 sqlite> select count(1) from user;
+```
+```text
 3
+```
+```sql
 .quit
 ```
-#### Java Version
+#### Testing in Docker
 * uncoment the relevant path in `spring.datasource.url` in `src/main/resources/application.properties`:
 ```java
 spring.datasource.url=jdbc:sqlite:/db/springboot.db
