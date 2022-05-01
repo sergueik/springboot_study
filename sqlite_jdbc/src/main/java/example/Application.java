@@ -11,6 +11,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Application {
 
 	public static void main(String[] args) {
+		// possibly not needed - kept for Spring 4 
 		// ApplicationContext appContext = new ClassPathXmlApplicationContext("applicationContext.xml");
 		SpringApplication.run(Application.class, args);
 	}

@@ -93,7 +93,7 @@ and build and start project as regular springboot application
 ```cmd
 mvn -Dmaven.test.skip=true clean spring-boot:run
 ```
-* NOTE: test is currently failing on Windows host:
+* NOTE: The `test` goal is failing on Windows host when run in foreground:
 ```text
 [ERROR] org.apache.maven.surefire.booter.SurefireBooterForkException: The forked
  VM terminated without properly saying goodbye. VM crash or System.exit called?

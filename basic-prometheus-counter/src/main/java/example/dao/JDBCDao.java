@@ -31,12 +31,12 @@ public class JDBCDao implements Dao {
 		int result = 0;
 		String sql = "INSERT INTO hosts(hostname,app,environment,domain) VALUES (?,?,?,?)";
 		try {
-			PreparedStatement pre = conn.prepareStatement(sql);
-			pre.setString(1, host.getHostname());
-			pre.setString(2, host.getApp());
-			pre.setString(3, host.getEnvironment());
-			pre.setString(4, host.getDomain());
-			result = pre.executeUpdate();
+			PreparedStatement preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setString(1, host.getHostname());
+			preparedStatement.setString(2, host.getApp());
+			preparedStatement.setString(3, host.getEnvironment());
+			preparedStatement.setString(4, host.getDomain());
+			result = preparedStatement.executeUpdate();
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, null, ex);
 		}
@@ -46,16 +46,16 @@ public class JDBCDao implements Dao {
 	@Override
 	public List<?> findAllHost() {
 		logger.info("datasourceUrl = " + datasourceUrl);
-		List<?> hosts = null;
+		List<?> results = null;
 		String sql = "SELECT * FROM hosts";
 		try {
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			ResultSet resultSet = preparedStatement.executeQuery();
-			hosts = JDBCUtils.TranverseToList(resultSet, Host.class);
+			results = JDBCUtils.TranverseToList(resultSet, Host.class);
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, null, ex);
 		}
-		return hosts;
+		return results;
 	}
 
 	@Override
@@ -63,14 +63,14 @@ public class JDBCDao implements Dao {
 		int result = 0;
 		String sql = "UPDATE hosts SET hostname = ?,app = ?, environment = ?, domain = ? WHERE id = ?";
 		try {
-			PreparedStatement pre = conn.prepareStatement(sql);
+			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 
-			pre.setString(1, host.getHostname());
-			pre.setString(2, host.getApp());
-			pre.setString(3, host.getEnvironment());
-			pre.setString(4, host.getDomain());
-			pre.setLong(3, host.getId());
-			result = pre.executeUpdate();
+			preparedStatement.setString(1, host.getHostname());
+			preparedStatement.setString(2, host.getApp());
+			preparedStatement.setString(3, host.getEnvironment());
+			preparedStatement.setString(4, host.getDomain());
+			preparedStatement.setLong(3, host.getId());
+			result = preparedStatement.executeUpdate();
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, null, ex);
 		}
@@ -82,9 +82,9 @@ public class JDBCDao implements Dao {
 		int result = 0;
 		String sql = "DELETE FROM hosts WHERE id = ?";
 		try {
-			PreparedStatement pre = conn.prepareStatement(sql);
-			pre.setLong(1, id);
-			result = pre.executeUpdate();
+			PreparedStatement preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setLong(1, id);
+			result = preparedStatement.executeUpdate();
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, null, ex);
 		}
@@ -101,10 +101,10 @@ public class JDBCDao implements Dao {
 			preparedStatement.setLong(1, id);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			results = JDBCUtils.TranverseToList(resultSet, Host.class);
-			if (results != null && results.size() != 0) {
+			// probably unnecesary, shown as example
+			// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
+			if (results != null && result instanceof List<?> && results.size() != 0) {
 				result = (Host) results.get(0);
-			} else {
-
 			}
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {
 			logger.log(Level.SEVERE, null, e);
@@ -122,10 +122,10 @@ public class JDBCDao implements Dao {
 			preparedStatement.setString(1, hostname);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			results = JDBCUtils.TranverseToList(resultSet, Host.class);
-			if (results != null && results.size() != 0) {
+			// probably unnecesary, shown as example
+			// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
+			if (results != null && result instanceof List<?> && results.size() != 0) {
 				result = (Host) results.get(0);
-			} else {
-
 			}
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {
 			logger.log(Level.SEVERE, null, e);

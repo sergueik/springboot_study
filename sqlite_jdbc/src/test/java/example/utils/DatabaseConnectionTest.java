@@ -27,8 +27,10 @@ public class DatabaseConnectionTest {
 				Student student = (Student) list.get(i);
 				System.out.println(student);
 			}
-		} catch (SQLException | InstantiationException | IllegalAccessException ex) {
-			Logger.getLogger(DatabaseConnectionTest.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (SQLException | InstantiationException
+				| IllegalAccessException ex) {
+			Logger.getLogger(DatabaseConnectionTest.class.getName()).log(Level.SEVERE,
+					null, ex);
 		} finally {
 			JDBCUtils.close();
 		}

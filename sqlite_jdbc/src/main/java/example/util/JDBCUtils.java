@@ -54,8 +54,9 @@ public class JDBCUtils {
 		datasourceUrl = prop.getProperty("spring.datasource.url");
 		String url = resolveEnvVars(datasourceUrl);
 
-		String username = "";
-		String password = "";
+		String username = prop.getProperty("spring.datasource.username");
+		String password = prop.getProperty("spring.datasource.password");
+
 		if (connection != null) {
 			return connection;
 		}

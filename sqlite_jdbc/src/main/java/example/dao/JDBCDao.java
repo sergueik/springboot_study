@@ -31,10 +31,10 @@ public class JDBCDao implements Dao {
 		int result = 0;
 		String sql = "INSERT INTO student(name,course) VALUES (?,?)";
 		try {
-			PreparedStatement pre = conn.prepareStatement(sql);
-			pre.setString(1, student.getName());
-			pre.setString(2, student.getCourse());
-			result = pre.executeUpdate();
+			PreparedStatement preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setString(1, student.getName());
+			preparedStatement.setString(2, student.getCourse());
+			result = preparedStatement.executeUpdate();
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, null, ex);
 		}
@@ -61,11 +61,11 @@ public class JDBCDao implements Dao {
 		int result = 0;
 		String sql = "UPDATE student SET name = ?,course = ? WHERE id = ?";
 		try {
-			PreparedStatement pre = conn.prepareStatement(sql);
-			pre.setString(1, student.getName());
-			pre.setString(2, student.getCourse());
-			pre.setLong(3, student.getId());
-			result = pre.executeUpdate();
+			PreparedStatement preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setString(1, student.getName());
+			preparedStatement.setString(2, student.getCourse());
+			preparedStatement.setLong(3, student.getId());
+			result = preparedStatement.executeUpdate();
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, null, ex);
 		}
@@ -77,9 +77,9 @@ public class JDBCDao implements Dao {
 		int result = 0;
 		String sql = "DELETE FROM student WHERE id = ?";
 		try {
-			PreparedStatement pre = conn.prepareStatement(sql);
-			pre.setLong(1, id);
-			result = pre.executeUpdate();
+			PreparedStatement preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setLong(1, id);
+			result = preparedStatement.executeUpdate();
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, null, ex);
 		}
@@ -96,10 +96,10 @@ public class JDBCDao implements Dao {
 			preparedStatement.setLong(1, id);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			results = JDBCUtils.TranverseToList(resultSet, Student.class);
-			if (results != null && results.size() != 0) {
+			// probably unnecesary, shown as example
+			// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
+			if (results != null && result instanceof List<?> && results.size() != 0) {
 				result = (Student) results.get(0);
-			} else {
-
 			}
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {
 			logger.log(Level.SEVERE, null, e);
@@ -117,10 +117,10 @@ public class JDBCDao implements Dao {
 			preparedStatement.setString(1, name);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			results = JDBCUtils.TranverseToList(resultSet, Student.class);
-			if (results != null && results.size() != 0) {
+			// probably unnecesary, shown as example
+			// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
+			if (results != null && result instanceof List<?> && results.size() != 0) {
 				result = (Student) results.get(0);
-			} else {
-
 			}
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {
 			logger.log(Level.SEVERE, null, e);
@@ -132,7 +132,7 @@ public class JDBCDao implements Dao {
 	// dataSource.setUrl("jdbc:mysql://localhost:3306/userdb" + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
 	// https://github.com/Pragmatists/JUnitParams
 	// http://www.cyberforum.ru/java-j2ee/thread2160223.html
-        // for custom DAO implementing security tokens see
+  // for custom DAO implementing security tokens see
 	// https://github.com/sebasv89/spring-boot-examples/tree/master/src/main/java/co/svelez/springbootexample/domain 
 	// see also: ttps://stackoverflow.com/questions/36261216/how-to-rename-the-table-persistent-logins-in-spring-security
 	// https://qna.habr.com/q/855545

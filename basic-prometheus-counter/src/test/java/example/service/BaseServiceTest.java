@@ -24,11 +24,15 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Resource;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.xml.sax.SAXException;
 import org.yaml.snakeyaml.Yaml;
 
+import example.dao.Dao;
 import example.entity.Result;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -37,15 +41,16 @@ import static org.hamcrest.Matchers.is;
 
 public class BaseServiceTest {
 
+	@Autowired
+	private Dao dao;
 	private BaseService service = new ServiceImpl();
 
+	// https://stackoverflow.com/questions/266370/how-do-i-unit-test-jdbc-code-in-java
+	@Disabled("incorrect DAO initialization attempt, receiving null")
 	@Test
 	public void test() throws Exception {
-		String name = "John";
-
-		// Result result = service.findStudentByName(name);
-		Result result = service.findAllStudent();
+		Result result = service.findAllHost();
 		assertThat(result, notNullValue());
-		assertThat(result.getData(), is(5));
+		assertThat(result.getData(), is(2));
 	}
 }
