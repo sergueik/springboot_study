@@ -6,7 +6,7 @@ package example.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import example.utils.Host;
+import example.entity.Host;
 import example.utils.HostData;
 import example.entity.Result;
 import example.service.BaseService;
@@ -49,6 +49,7 @@ import java.io.StringWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Level;
+import org.sqlite.SQLiteException;
 
 @RestController
 @RequestMapping("/")
@@ -127,11 +128,15 @@ public class AppController {
 	@GetMapping(value = "metrics", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> metrics() {
 
-		String name = "John";
-
-		Result result = service.findStudentByName(name);
-		logger.info("Loading database info: " + result.getData());
-
+		try {
+			String _hostname = "hostname00";
+			Result result = service.findHostByHostname(_hostname);
+			logger.info("Loading database info for host : " + result.getData());
+			// NOTE: org.sqlite.SQLiteException is not thrown to the code
+			// attempt to catch produces Unreachable catch block compiler error
+		} catch (Exception e) {
+			logger.info(" Ignoring exception: " + e.getMessage());
+		}
 		logger.info("Starting reporting metrics");
 		Writer writer = new StringWriter();
 		try {

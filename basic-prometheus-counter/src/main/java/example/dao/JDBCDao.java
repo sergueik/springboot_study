@@ -11,8 +11,8 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import example.entity.Student;
-import example.util.JDBCUtils;
+import example.entity.Host;
+import example.utils.JDBCUtils;
 
 @Repository("JdbcDao")
 public class JDBCDao implements Dao {
@@ -27,13 +27,15 @@ public class JDBCDao implements Dao {
 	private static final Connection conn = JDBCUtils.getConnection();
 
 	@Override
-	public int addStudent(Student student) {
+	public int addHost(Host host) {
 		int result = 0;
-		String sql = "INSERT INTO student(name,course) VALUES (?,?)";
+		String sql = "INSERT INTO hosts(hostname,app,environment,domain) VALUES (?,?,?,?)";
 		try {
 			PreparedStatement pre = conn.prepareStatement(sql);
-			pre.setString(1, student.getName());
-			pre.setString(2, student.getCourse());
+			pre.setString(1, host.getHostname());
+			pre.setString(2, host.getApp());
+			pre.setString(3, host.getEnvironment());
+			pre.setString(4, host.getDomain());
 			result = pre.executeUpdate();
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, null, ex);
@@ -42,29 +44,32 @@ public class JDBCDao implements Dao {
 	}
 
 	@Override
-	public List<?> findAllStudent() {
+	public List<?> findAllHost() {
 		logger.info("datasourceUrl = " + datasourceUrl);
-		List<?> students = null;
-		String sql = "SELECT * FROM student";
+		List<?> hosts = null;
+		String sql = "SELECT * FROM hosts";
 		try {
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			ResultSet resultSet = preparedStatement.executeQuery();
-			students = JDBCUtils.TranverseToList(resultSet, Student.class);
+			hosts = JDBCUtils.TranverseToList(resultSet, Host.class);
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, null, ex);
 		}
-		return students;
+		return hosts;
 	}
 
 	@Override
-	public int updateStudent(Student student) {
+	public int updateHost(Host host) {
 		int result = 0;
-		String sql = "UPDATE student SET name = ?,course = ? WHERE id = ?";
+		String sql = "UPDATE hosts SET hostname = ?,app = ?, environment = ?, domain = ? WHERE id = ?";
 		try {
 			PreparedStatement pre = conn.prepareStatement(sql);
-			pre.setString(1, student.getName());
-			pre.setString(2, student.getCourse());
-			pre.setLong(3, student.getId());
+
+			pre.setString(1, host.getHostname());
+			pre.setString(2, host.getApp());
+			pre.setString(3, host.getEnvironment());
+			pre.setString(4, host.getDomain());
+			pre.setLong(3, host.getId());
 			result = pre.executeUpdate();
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, null, ex);
@@ -73,9 +78,9 @@ public class JDBCDao implements Dao {
 	}
 
 	@Override
-	public int delStudentById(long id) {
+	public int delHostById(long id) {
 		int result = 0;
-		String sql = "DELETE FROM student WHERE id = ?";
+		String sql = "DELETE FROM hosts WHERE id = ?";
 		try {
 			PreparedStatement pre = conn.prepareStatement(sql);
 			pre.setLong(1, id);
@@ -87,17 +92,17 @@ public class JDBCDao implements Dao {
 	}
 
 	@Override
-	public Student findStudentById(long id) {
+	public Host findHostById(long id) {
 		List<?> results = null;
-		Student result = null;
-		String sql = "SELECT * FROM student WHERE id = ?";
+		Host result = null;
+		String sql = "SELECT * FROM hosts WHERE id = ?";
 		try {
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setLong(1, id);
 			ResultSet resultSet = preparedStatement.executeQuery();
-			results = JDBCUtils.TranverseToList(resultSet, Student.class);
+			results = JDBCUtils.TranverseToList(resultSet, Host.class);
 			if (results != null && results.size() != 0) {
-				result = (Student) results.get(0);
+				result = (Host) results.get(0);
 			} else {
 
 			}
@@ -108,17 +113,17 @@ public class JDBCDao implements Dao {
 	}
 
 	@Override
-	public Student findStudentByName(String name) {
+	public Host findHostByHostname(String hostname) {
 		List<?> results = null;
-		Student result = null;
-		String sql = "SELECT * FROM student WHERE name = ?";
+		Host result = null;
+		String sql = "SELECT * FROM hosts WHERE hostname = ?";
 		try {
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
-			preparedStatement.setString(1, name);
+			preparedStatement.setString(1, hostname);
 			ResultSet resultSet = preparedStatement.executeQuery();
-			results = JDBCUtils.TranverseToList(resultSet, Student.class);
+			results = JDBCUtils.TranverseToList(resultSet, Host.class);
 			if (results != null && results.size() != 0) {
-				result = (Student) results.get(0);
+				result = (Host) results.get(0);
 			} else {
 
 			}
@@ -129,11 +134,13 @@ public class JDBCDao implements Dao {
 	}
 
 	// mysql required connectionn string patch:
-	// dataSource.setUrl("jdbc:mysql://localhost:3306/userdb" + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
+	// dataSource.setUrl("jdbc:mysql://localhost:3306/userdb" +
+	// "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
 	// https://github.com/Pragmatists/JUnitParams
 	// http://www.cyberforum.ru/java-j2ee/thread2160223.html
-        // for custom DAO implementing security tokens see
-	// https://github.com/sebasv89/spring-boot-examples/tree/master/src/main/java/co/svelez/springbootexample/domain 
-	// see also: ttps://stackoverflow.com/questions/36261216/how-to-rename-the-table-persistent-logins-in-spring-security
+	// for custom DAO implementing security tokens see
+	// https://github.com/sebasv89/spring-boot-examples/tree/master/src/main/java/co/svelez/springbootexample/domain
+	// see also:
+	// ttps://stackoverflow.com/questions/36261216/how-to-rename-the-table-persistent-logins-in-spring-security
 	// https://qna.habr.com/q/855545
 }

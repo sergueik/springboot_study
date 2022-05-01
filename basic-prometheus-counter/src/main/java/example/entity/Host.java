@@ -1,7 +1,11 @@
-package example.utils;
+package example.entity;
 
 import java.util.UUID;
 
+import java.io.Serializable;
+import java.sql.Timestamp;
+
+@SuppressWarnings("serial")
 public class Host {
 
 	private String hostname;
@@ -70,6 +74,14 @@ public class Host {
 		this.domain = domain;
 		this.environment = environment;
 		this.app = app;
+	}
+
+	@Override
+	public String toString() {
+		return "Host{" + "id=" + this.id + ", hostname=" + this.hostname
+				+ ", domain=" + this.domain + ", environment=" + this.environment
+				+ ", app=" + this.app
+				/* + ", addtime=" + addtime */ + '}';
 	}
 
 }

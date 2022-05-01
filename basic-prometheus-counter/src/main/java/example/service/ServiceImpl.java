@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import example.dao.Dao;
 import example.entity.Result;
-import example.entity.Student;
+import example.entity.Host;
 
 @Service
 public class ServiceImpl implements BaseService {
@@ -19,10 +19,10 @@ public class ServiceImpl implements BaseService {
 			.getLogger(ServiceImpl.class.getName());
 
 	@Override
-	public Result addStudent(Student student) {
+	public Result addHost(Host host) {
 		Result result = new Result();
 		try {
-			int res = dao.addStudent(student);
+			int res = dao.addHost(host);
 			result.setStatus(res);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
@@ -31,12 +31,12 @@ public class ServiceImpl implements BaseService {
 	}
 
 	@Override
-	public Result findAllStudent() {
+	public Result findAllHost() {
 		Result result = new Result();
 		try {
-			List<?> students = dao.findAllStudent();
+			List<?> hosts = dao.findAllHost();
 			result.setStatus(1);
-			result.setData(students);
+			result.setData(hosts);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
 		}
@@ -44,10 +44,10 @@ public class ServiceImpl implements BaseService {
 	}
 
 	@Override
-	public Result updateStudent(Student student) {
+	public Result updateHost(Host hosts) {
 		Result result = new Result();
 		try {
-			int res = dao.updateStudent(student);
+			int res = dao.updateHost(hosts);
 			result.setStatus(res);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
@@ -56,10 +56,10 @@ public class ServiceImpl implements BaseService {
 	}
 
 	@Override
-	public Result delStudentById(String id) {
+	public Result delHostById(String id) {
 		Result result = new Result();
 		try {
-			int res = dao.delStudentById(Long.parseLong(id));
+			int res = dao.delHostById(Long.parseLong(id));
 			result.setStatus(res);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
@@ -68,10 +68,10 @@ public class ServiceImpl implements BaseService {
 	}
 
 	@Override
-	public Result findStudentById(String id) {
+	public Result findHostById(String id) {
 		Result result = new Result();
 		try {
-			Student res = dao.findStudentById(Long.parseLong(id));
+			Host res = dao.findHostById(Long.parseLong(id));
 			result.setData(res);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);
@@ -80,10 +80,10 @@ public class ServiceImpl implements BaseService {
 	}
 
 	@Override
-	public Result findStudentByName(String name) {
+	public Result findHostByHostname(String hostname) {
 		Result result = new Result();
 		try {
-			Student res = dao.findStudentByName(name);
+			Host res = dao.findHostByHostname(hostname);
 			result.setData(res);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);

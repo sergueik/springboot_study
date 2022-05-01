@@ -2,16 +2,16 @@ package example.dao;
 
 import java.util.List;
 
+import example.entity.Host;
 import example.entity.Result;
-import example.entity.Student;
 
 public interface Dao {
 
-	public int addStudent(Student student);
-	public List<?> findAllStudent();
-	public int updateStudent(Student student);
-	public int delStudentById(long id);
+	public int addHost(Host student);
+	public List<?> findAllHost();
+	public int updateHost(Host student);
+	public int delHostById(long id);
 	// NOTE: strongly typed
-	public Student findStudentById(long id);
-	public Student findStudentByName(String name);	
+	public Host findHostById(long id);
+	public Host findHostByHostname(String hostname);
 }
