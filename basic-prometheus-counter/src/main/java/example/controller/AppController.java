@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import example.utils.Host;
 import example.utils.HostData;
+import example.entity.Result;
+import example.service.BaseService;
 import example.utils.ClusterConfigReader;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +40,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import javax.annotation.Resource;
+
 import java.io.IOException;
 import java.io.StringWriter;
 
@@ -48,6 +53,10 @@ import org.apache.logging.log4j.Level;
 @RestController
 @RequestMapping("/")
 public class AppController {
+
+	@Resource
+	private BaseService service;
+
 	private static final Logger logger = LogManager
 			.getLogger(AppController.class);
 
@@ -117,6 +126,12 @@ public class AppController {
 	@ResponseBody
 	@GetMapping(value = "metrics", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> metrics() {
+
+		String name = "John";
+
+		Result result = service.findStudentByName(name);
+		logger.info("Loading database info: " + result.getData());
+
 		logger.info("Starting reporting metrics");
 		Writer writer = new StringWriter();
 		try {
@@ -200,9 +215,10 @@ public class AppController {
 		labelArgs[2] = app;
 		labelArgs[3] = environment;
 
+		// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
+		/*
 		int index = 0;
 		String element = "memory";
-		/*
 		if (metricNames instanceof ArrayList<?>)
 			((ArrayList<String>) metricNames).set(index, element);
 		*/
