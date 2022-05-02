@@ -159,8 +159,9 @@ public class AppController {
 		try {
 			if (!metricNames.contains((Object) counterName)) {
 				Builder builder = Gauge
-						.build(counterName, "Value of metric from instance").labelNames(
-								new String[] { "instance", "domain", "app", "environment" });
+						.build(counterName, "Value of metric from instance")
+						.labelNames(new String[] { "instance", "datacenter", "appid",
+								"environment" });
 				example = builder.register(registry);
 				metrics.put(counterName, example);
 			}
@@ -173,20 +174,20 @@ public class AppController {
 	private void exampleGauge(String counterName, Host host, float value) {
 
 		String hostname = host.getHostname();
-		String domain = host.getDomain();
-		String app = host.getApp();
+		String datacenter = host.getDatacenter();
+		String appid = host.getAppid();
 		String environment = host.getEnvironment();
 		Gauge gauge = metrics.get(counterName);
 		// invoke Prometheus variadic methods with a argument array set at
 		// compile-time
 		// can also pass the arguments explicitly as in
-		// gauge.labels(hostname,domain,app,environment).set(value);
+		// gauge.labels(hostname,datacenter,appid,environment).set(value);
 		// String[] labelArgs = new String[] {};
 		// java.lang.ArrayIndexOutOfBoundsException
 		String[] labelArgs = new String[4];
 		labelArgs[0] = hostname;
-		labelArgs[1] = domain;
-		labelArgs[2] = app;
+		labelArgs[1] = datacenter;
+		labelArgs[2] = appid;
 		labelArgs[3] = environment;
 
 		// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole

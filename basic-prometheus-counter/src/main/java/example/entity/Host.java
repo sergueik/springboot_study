@@ -9,8 +9,8 @@ import java.sql.Timestamp;
 public class Host {
 
 	private String hostname;
-	private String app;
-	private String domain;
+	private String appid;
+	private String datacenter;
 	private String environment;
 	private static String staticInfo;
 	private int id;
@@ -23,20 +23,20 @@ public class Host {
 		hostname = value;
 	}
 
-	public String getApp() {
-		return app;
+	public String getAppid() {
+		return appid;
 	}
 
-	public void setApp(String value) {
-		app = value;
+	public void setAppid(String value) {
+		appid = value;
 	}
 
-	public String getDomain() {
-		return domain;
+	public String getDatacenter() {
+		return datacenter;
 	}
 
-	public void setDomain(String value) {
-		domain = value;
+	public void setDatacenter(String value) {
+		datacenter = value;
 	}
 
 	public String getEnvironment() {
@@ -63,24 +63,24 @@ public class Host {
 		return Host.staticInfo;
 	}
 
-	public Host(int id, String hostname, String domain, String environment,
-			String app) {
+	public Host(int id, String hostname, String datacenter, String environment,
+			String appid) {
 		super();
 		if (Host.staticInfo == null) {
 			Host.staticInfo = UUID.randomUUID().toString();
 		}
 		this.hostname = hostname;
 		this.id = id;
-		this.domain = domain;
+		this.datacenter = datacenter;
 		this.environment = environment;
-		this.app = app;
+		this.appid = appid;
 	}
 
 	@Override
 	public String toString() {
 		return "Host{" + "id=" + this.id + ", hostname=" + this.hostname
-				+ ", domain=" + this.domain + ", environment=" + this.environment
-				+ ", app=" + this.app
+				+ ", datacenter=" + this.datacenter + ", environment=" + this.environment
+				+ ", appid=" + this.appid
 				/* + ", addtime=" + addtime */ + '}';
 	}
 

@@ -29,13 +29,13 @@ public class JDBCDao implements Dao {
 	@Override
 	public int addHost(Host host) {
 		int result = 0;
-		String sql = "INSERT INTO hosts(hostname,app,environment,domain) VALUES (?,?,?,?)";
+		String sql = "INSERT INTO hosts(hostname,appid,environment,datacenter) VALUES (?,?,?,?)";
 		try {
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setString(1, host.getHostname());
-			preparedStatement.setString(2, host.getApp());
+			preparedStatement.setString(2, host.getAppid());
 			preparedStatement.setString(3, host.getEnvironment());
-			preparedStatement.setString(4, host.getDomain());
+			preparedStatement.setString(4, host.getDatacenter());
 			result = preparedStatement.executeUpdate();
 		} catch (Exception ex) {
 			logger.log(Level.SEVERE, null, ex);
@@ -61,14 +61,14 @@ public class JDBCDao implements Dao {
 	@Override
 	public int updateHost(Host host) {
 		int result = 0;
-		String sql = "UPDATE hosts SET hostname = ?,app = ?, environment = ?, domain = ? WHERE id = ?";
+		String sql = "UPDATE hosts SET hostname = ?,appid = ?, environment = ?, datacenter = ? WHERE id = ?";
 		try {
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 
 			preparedStatement.setString(1, host.getHostname());
-			preparedStatement.setString(2, host.getApp());
+			preparedStatement.setString(2, host.getAppid());
 			preparedStatement.setString(3, host.getEnvironment());
-			preparedStatement.setString(4, host.getDomain());
+			preparedStatement.setString(4, host.getDatacenter());
 			preparedStatement.setLong(3, host.getId());
 			result = preparedStatement.executeUpdate();
 		} catch (Exception ex) {

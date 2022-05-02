@@ -43,14 +43,14 @@ public class ClusterConfigReader {
 				// NOTE: YAML may be confused by formating like "08" and assume double
 				int id = (int) row.get("id");
 				Host host = new Host(id, (String) row.get("hostname"),
-						(String) row.get("domain"), (String) row.get("environment"),
-						(String) row.get("app"));
+						(String) row.get("datacenter"), (String) row.get("environment"),
+						(String) row.get("appid"));
 				String hostname = host.getHostname();
 
 				// inspect app property to filter what to (not) serialize
 
-				String app = host.getApp();
-				if (app != null && !app.isEmpty()) {
+				String appid = host.getAppid();
+				if (appid != null && !appid.isEmpty()) {
 					info.put(hostname, host);
 				}
 			}
