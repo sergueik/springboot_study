@@ -98,7 +98,7 @@ public class JDBCDao implements Dao {
 			results = JDBCUtils.TranverseToList(resultSet, Student.class);
 			// probably unnecesary, shown as example
 			// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
-			if (results != null && result instanceof List<?> && results.size() != 0) {
+			if (results != null && results instanceof List<?> && results.size() != 0) {
 				result = (Student) results.get(0);
 			}
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {
@@ -119,7 +119,7 @@ public class JDBCDao implements Dao {
 			results = JDBCUtils.TranverseToList(resultSet, Student.class);
 			// probably unnecesary, shown as example
 			// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
-			if (results != null && result instanceof List<?> && results.size() != 0) {
+			if (results != null && results instanceof List<?> && results.size() != 0) {
 				result = (Student) results.get(0);
 			}
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {

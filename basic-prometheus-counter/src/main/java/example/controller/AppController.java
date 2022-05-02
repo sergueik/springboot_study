@@ -61,7 +61,7 @@ public class AppController {
 	private static final Logger logger = LogManager
 			.getLogger(AppController.class);
 
-	private ClusterConfigReader snakeYamlReader = new ClusterConfigReader();
+	private ClusterConfigReader clusterConfigReader = new ClusterConfigReader();
 
 	// custom metric setting the instance
 	// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.html
@@ -82,8 +82,8 @@ public class AppController {
 	private Map<String, String> data = new HashMap<>();
 	private Map<String, String> metricTaker = new HashMap<>(); // currently unused
 
-	private static final List<String> metricNames = Arrays.asList("memory",
-			"load_average", "cpu", "disk", "rpm");
+	private static final List<String> metricNames = Arrays.asList("memory", "cpu",
+			"disk", "rpm");
 	// private List<String> metricNames = new ArrayList<>();
 	private static Random random = new Random();
 	private static float value = 42;
@@ -96,28 +96,46 @@ public class AppController {
 	@GetMapping(value = "metrics", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> metrics() {
 
-		try {
-			String _hostname = "hostname00";
-			Result result = service.findHostByHostname(_hostname);
-			logger.info("Loading database info for host : " + result.getData());
-			// NOTE: org.sqlite.SQLiteException is not thrown to the code
-			// attempt to catch produces Unreachable catch block compiler error
-		} catch (Exception e) {
-			logger.info(" Ignoring exception: " + e.getMessage());
-		}
 		logger.info("Starting reporting metrics");
 		Writer writer = new StringWriter();
 		try {
 			registry = CollectorRegistry.defaultRegistry;
 
-			snakeYamlReader.read(fileName);
-			hostInfo = snakeYamlReader.getInfo();
+			clusterConfigReader.read(fileName);
+			hostInfo = clusterConfigReader.getInfo();
+			metricTaker.put("load_average",
+					"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
 
 			for (String hostname : hostInfo.keySet()) {
+				// YAAML
 				hostData = new HostData(hostname);
 				hostData.setMetrics(metricNames);
+				hostData.setMetricTaker(metricTaker);
 				hostData.readData();
 				data = hostData.getData();
+				// JDBC
+				try {
+
+					Result result = service.findHostByHostname(hostname);
+					Object dataObj = result.getData();
+					if (dataObj == null) {
+						logger.info("No info in database  for host : " + hostname);
+					} else {
+						logger.info("Loading database info for host : " + dataObj);
+						if (dataObj instanceof Host) {
+							Map<String, String> hostData = new HashMap<>();
+							hostData.put("hostname", ((Host) dataObj).getHostname());
+							hostData.put("environment", ((Host) dataObj).getEnvironment());
+							hostData.put("appid", ((Host) dataObj).getAppid());
+							hostData.put("datacenter", ((Host) dataObj).getDatacenter());
+							hostInfo.put(hostname, (Host) dataObj);
+						}
+					}
+					// NOTE: org.sqlite.SQLiteException is not thrown to the code
+					// attempt to catch produces Unreachable catch block compiler error
+				} catch (Exception e) {
+					logger.info(" Ignoring exception: " + e.getMessage());
+				}
 
 				for (String metricName : data.keySet()) {
 					createGauge(metricName);

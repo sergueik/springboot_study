@@ -27,7 +27,9 @@ public class HostDataTest {
 		metrics.add("rpm");
 		metrics.add("disk");
 		metrics.add("missing data");
-		metrics.add("load_average");
+		metricTaker.put("load_average",
+				"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
+		hostData.setMetricTaker(metricTaker);
 		hostData.setMetrics(metrics);
 		hostData.readData();
 		data = hostData.getData();

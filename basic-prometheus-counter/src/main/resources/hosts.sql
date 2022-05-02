@@ -20,5 +20,8 @@ datacenter	NVARCHAR(30) not null,
 addtime datetime not null default current_timestamp);
 
 -- Insert Sample data
-insert into hosts(hostname,appid,environment,datacenter) values('hostname00','redis','qa','west');
-insert into hosts(hostname,appid,environment,datacenter) values('hostname01','redis','prod','east');
+insert into hosts(hostname,appid,environment,datacenter) values('hostname10','redis','qa','west');
+insert into hosts(hostname,appid,environment,datacenter) values('hostname11','redis','prod','east');
+
+-- overlap with YAML cluster.yml
+insert into hosts(hostname,appid,environment,datacenter) values('hostname03','redis','prod','east');

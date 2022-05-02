@@ -103,7 +103,7 @@ public class JDBCDao implements Dao {
 			results = JDBCUtils.TranverseToList(resultSet, Host.class);
 			// probably unnecesary, shown as example
 			// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
-			if (results != null && result instanceof List<?> && results.size() != 0) {
+			if (results != null && results instanceof List<?> && results.size() != 0) {
 				result = (Host) results.get(0);
 			}
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {
@@ -116,15 +116,18 @@ public class JDBCDao implements Dao {
 	public Host findHostByHostname(String hostname) {
 		List<?> results = null;
 		Host result = null;
+		logger.info("Selecting data for " + hostname);
 		String sql = "SELECT * FROM hosts WHERE hostname = ?";
 		try {
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setString(1, hostname);
+			logger.info("in select");
 			ResultSet resultSet = preparedStatement.executeQuery();
 			results = JDBCUtils.TranverseToList(resultSet, Host.class);
+			logger.info("in select:  " + results);
 			// probably unnecesary, shown as example
 			// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
-			if (results != null && result instanceof List<?> && results.size() != 0) {
+			if (results != null && results instanceof List<?> && results.size() != 0) {
 				result = (Host) results.get(0);
 			}
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {
