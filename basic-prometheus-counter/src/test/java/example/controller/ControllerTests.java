@@ -126,30 +126,4 @@ public class ControllerTests {
 		// count
 		assertThat(entries.size(), is(5));
 	}
-
-	// TODO: explore the
-	// EndpointLinksResolver: Exposing 14 endpoint(s) beneath base path
-	// '/actuator'
-	@Test
-	public void test4() {
-		url = "http://localhost:" + port + "/actuator/prometheus";
-		ResponseEntity<String> entity = restTemplate.getForEntity(url,
-				String.class);
-		// ResponseEntity<String> entity = restTemplate.getForEntity(
-		// "http://localhost:{port}/metrics", String.class, managementPort);
-		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
-		for (String text : Arrays.asList(
-				"# HELP jvm_memory_used_bytes The amount of used memory",
-				"# TYPE jvm_memory_used_bytes gauge")) {
-			assertThat(entity.getBody(), containsString(text));
-		}
-	}
-
-	@Test
-	public void test5() {
-		url = "http://localhost:" + port + "/hello";
-		ResponseEntity<String> entity = restTemplate.getForEntity(url,
-				String.class);
-		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
-	}
 }

@@ -6,6 +6,50 @@ prometheus metrics. Currently generates but does not export the appication speci
 
 ### Usage
 
+Create the sqlite database on Desktop `springboot.db` 
+
+```sh
+pushd ~
+sqlite3 Desktop/springboot.db
+```
+with a table
+```sql
+DROP TABLE IF EXISTS `hosts`;
+CREATE TABLE "hosts" ( `id` INTEGER, `hostname` TEXT NOT NULL, `app` TEXT, `environment` TEXT, `domain` TEX, `addtime` TEXT, PRIMARY KEY(`id`) );
+.quit
+```
+update `src/main/resources/application.properties` to point to it:
+```java
+spring.datasource.url=jdbc:sqlite:${HOME}/Desktop/springboot.db
+```
+for Linux host
+and with
+
+```java
+spring.datasource.url=jdbc:sqlite:${USERPROFILE}\\Desktop\\springboot.db
+```
+for Windows host
+and insert some data
+```sql
+insert into hosts(hostname,app,environment,domain) values('hostname00','redis','qa','west');
+insert into hosts(hostname,app,environment,domain) values('hostname01','redis','prod','east');
+.quit
+``` 
+alternatively use [SQLIteBrowser](https://sqlitebrowser.org)
+* verify 
+```powershell
+sqlite3.exe $env:userprofile\Desktop\springboot.db
+```
+```text
+.table hosts
+```
+```sh
+.schema hosts
+```
+
+```sql
+select * from hosts;
+```
 * run test
 ```sh
 mvn test

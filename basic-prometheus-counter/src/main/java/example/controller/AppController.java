@@ -89,38 +89,6 @@ public class AppController {
 	private static float value = 42;
 	private static final int length = 10;
 
-	private static final Counter buildStatus = Counter.build()
-			.name("build_status_counter").labelNames("status")
-			.help("A simple Counter to illustrate custom build status and Prometheus")
-			.register();
-
-	@RequestMapping("/build")
-	public void endpoint() {
-		if (random.nextInt(2) > 0) {
-			logger.log(org.apache.logging.log4j.Level.INFO,
-					"incremented successful build counter");
-			buildStatus.labels("success").inc();
-		} else {
-			logger.log(org.apache.logging.log4j.Level.INFO,
-					"incremented failed build counter");
-			buildStatus.labels("error").inc();
-		}
-	}
-
-	@RequestMapping("hello")
-	public String sayHello() {
-		logger.info("increment requests_total");
-		requestsTotal.inc();
-		logger.info("creating the timer");
-		Histogram.Timer requestTimer = requestTimet.startTimer();
-		try {
-			return "Hello World";
-		} finally {
-			logger.info("recording the requests_latency_seconds time duration");
-			requestTimer.observeDuration();
-		}
-	}
-
 	// application hosted metrics
 	// see also:
 	// https://www.tabnine.com/code/java/methods/io.prometheus.client.CollectorRegistry/metricFamilySamples
@@ -153,8 +121,10 @@ public class AppController {
 
 				for (String metricName : data.keySet()) {
 					createGauge(metricName);
+					// generate random metrics
 					value = (hostname.matches(".*00$")) ? 42
-							: Float.parseFloat(data.get(metricName));
+							: Float
+									.parseFloat(data.get(metricName) + random.nextInt((int) 42));
 
 					exampleGauge(metricName, (Host) hostInfo.get(hostname), value);
 				}
@@ -200,7 +170,6 @@ public class AppController {
 		}
 	}
 
-	// exampleGauge(counterName, instance + "00", 42);
 	private void exampleGauge(String counterName, Host host, float value) {
 
 		String hostname = host.getHostname();
@@ -240,7 +209,6 @@ public class AppController {
 	@ResponseBody
 	public ResponseEntity<String> index() {
 		String body = "<html>" + "<head>" + "</head>" + "<body>"
-				+ "<a href=\"./hello\"\">Main applicaion controller</a><br/>"
 				+ "<a href=\"./metrics\"\">Application hosted metrics REST service</a><br/>"
 				+ "<a href=\"./actuator/prometheus\"\">Default System  metrics for prometheus</a>"
 				+ "</body>" + "</html>";
