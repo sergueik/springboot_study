@@ -121,6 +121,9 @@ docker-compose rm -f
   * [documentaton](https://grafana.github.io/grafonnet-lib/) on `grafonnet` library for crafting Grafana dashboards (uses the JSON extension DSL as source)
   * [blog](https://brendonmatheson.com/2021/04/03/using-prometheus-relabeling-to-attach-custom-metadata.html) on __Using Prometheus Relabeling to Attach Custom Metadata__ to construct operations-specific dashboard
   * __Building Dashboards from Prometheus Data in Grafana__ pluralsight [course](https://app.pluralsight.com/library/courses/prometheus-grafana-building-dashboards-data/table-of-contents)
+  * [comprehensive Prometheus documentation](https://habr.com/ru/company/southbridge/blog/455290/) (in Russian)
+  * [Prometheus Server installation and configuration](https://hamsterden.ru/prometheus/) (in Russian)
+  * [guide to Prometheus node exporter](https://www.opsramp.com/prometheus-monitoring/prometheus-node-exporter/)
 
 
 ### Author

@@ -2,37 +2,32 @@ package example.data;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import example.data.Address;
 
+// https://www.sqlite.org/datatype3.html
 @Entity
+@Table(name = "\"student\"")
 public class User implements Serializable {
-
+        private Address address;
 	@Id
 	@GeneratedValue
 	private Long id;
 
-	// turn out both "user_name" and "name" columns are there in the "user" table:
-	/*
-	 * sqlite3.exe
-	 * 
-	 * sqlite> .open c:/Users/Serguei/sqlite/springboot.db sqlite> .tables student
-	 * user
-	 * 
-	 * sqlite> .schema user CREATE TABLE user (id integer, nick_name varchar,
-	 * pass_word varchar, user_name varchar, user_sex integer, user_gender integer,
-	 * password varchar, gender integer , name varchar, primary key (id));
-	 */
-	// possibly result of a bad migration
-	@Column(name = "name")
+	@Column(name = "name", columnDefinition = "TEXT")
 	private String userName;
 
-	@Column(name = "password")
+	@Column(name = "password", columnDefinition = "BLOB")
 	private String password;
 
-	@Column(name = "gender")
+	@Column(name = "gender", columnDefinition = "INTEGER")
 	private Gender gender;
 
 	private String nickName;
@@ -41,11 +36,13 @@ public class User implements Serializable {
 		super();
 	}
 
-	public User(String userName, String password, Gender gender) {
+	public User(String userName, String password, Gender gender, 
+			Address address) {
 		super();
 		this.password = password;
 		this.userName = userName;
 		this.gender = gender;
+		this.address = address;
 	}
 
 	public Long getId() {
@@ -90,7 +87,17 @@ public class User implements Serializable {
 
 	@Override
 	public String toString() {
-		return "userName: " + this.userName + ", pasword: " + this.password + "gender: " + gender.name();
+		return "userName: " + this.userName + ", pasword: " + this.password
+				+ "gender: " + gender.name();
 	}
 
+	@Column(name = "address_id", columnDefinition = "INTEGER")
+	@OneToOne(cascade = CascadeType.ALL)
+	public Address getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
 }

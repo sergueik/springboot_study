@@ -1,7 +1,6 @@
 package example.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import example.repository.UserRepository;
 
 import example.data.User;
+import example.data.Address;
 import example.data.Gender;
-import org.springframework.data.domain.Example;
 
 @RestController
 public class UserController {
@@ -39,17 +38,12 @@ public class UserController {
 
 	@RequestMapping("/getUser")
 	public User getUser(Long id) {
-		User user = new User();
-		user.setId(id);
-		Optional<User> result = userRepository.findOne(Example.of(user));
-		return result.get();
+		return userRepository.findOne(id);
 	}
 
 	@PostMapping("/updateUser")
 	public User updateUser(@RequestBody User targetUser) {
-		// Support for query by example
-		Optional<User> result = userRepository.findOne(Example.of(targetUser));
-		User user = result.get();
+		User user = userRepository.findOne(targetUser.getId());
 		if (targetUser.getUserName() != null) {
 			user.setUserName(targetUser.getUserName());
 		}
@@ -67,10 +61,7 @@ public class UserController {
 
 	@DeleteMapping("/deleteUser")
 	public void deleteUser(Long id) {
-		User user = new User();
-		user.setId(id);
-		Optional<User> result = userRepository.findOne(Example.of(user));
-		user = result.get();
+		User user = userRepository.findOne(id);
 		userRepository.delete(user);
 	}
 
@@ -95,7 +86,8 @@ public class UserController {
 		} else if (nickName != null && nickName.length() < 5) {
 			return "nickName must be more 4 characters";
 		} else {
-			userRepository.save(new User(userName, password, gender));
+			Address address = new Address("street", "city", "state", "zip");
+			userRepository.save(new User(userName, password, gender,address));
 			return "User added";
 		}
 	}

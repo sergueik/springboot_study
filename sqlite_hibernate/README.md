@@ -74,14 +74,27 @@ sqlite3.exe springboot.db -cmd "CREATE TABLE `user` ( `id`integer, `nick_name`va
 ```
 This command will create database file `~/sqlite/springboot.db` with table
 ```sql
-CREATE TABLE `user` (
-	`id`	integer,
-	`nick_name`	varchar,
-	`pass_word`	varchar,
-	`user_name`	varchar,
-	`user_gender`	integer,
-	PRIMARY KEY(`id`)
+DROP TABLE IF EXISTS `student`;
+CREATE TABLE IF NOT EXISTS `student` (
+ `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+ `name` TEXT NOT NULL,
+ `password` BLOB,
+ `gender` INTEGER,
+ `address_id` INTEGER,
+ `addtime` datetime NOT NULL DEFAULT current_timestamp,
+  FOREIGN KEY(`address_id`) REFERENCES address(id)
 );
+```
+```sql
+DROP TABLE IF EXISTS `address`;
+CREATE TABLE IF NOT EXISTS `address` (
+ `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+ `city` TEXT NOT NULL,
+ `state` TEXT NOT NULL,
+ `zipcode` TEXT NOT NULL,
+ `street` TEXT NOT NULL
+);
+
 ```
 alternarively can create database e.g. `testUser.db` in [SQLite browser](https://sqlitebrowser.org), with table `user`:
 ```sql
@@ -199,24 +212,15 @@ was "[
 
 ### TODO
 
-* after conversion to spring boot parent __2.3.4.RELEASE__ along with many 
-tricky API changes the project passes tests but fails in runtime with
+fix the relationship annotation:
 ```text
-org.springframework.transaction.CannotCreateTransactionException: 
-Could not open JPA EntityManager for transaction; nested exception is 
-java.lang.NoSuchMethodError: 
-org.springframework.orm.jpa.JpaTransactionManager$JpaTransactionObject.setReadOnly(Z)V] 
-with root cause
-java.lang.NoSuchMethodError: 
-org.springframework.orm.jpa.JpaTransactionManager$JpaTransactionObject.setReadOnly(Z)V
-	at org.springframework.orm.jpa.JpaTransactionManager.doBegin(JpaTransactionManager.java:405) 
-  ~[spring-orm-5.2.9.RELEASE.jar:5.2.9.RELEASE]
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:1.5.4.RELEASE:run (default-cli) on project basic-sqlite-hibernate: An exception occurred while running. null: InvocationTargetException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaAutoConfiguration.class]: Invocation of init method failed; nested exception is javax.persistence.PersistenceException: [PersistenceUnit: default] Unable to build Hibernate SessionFactory: Could not determine type for: example.data.Address, at table: student, for columns: [org.hibernate.mapping.Column(address)] 
 ```
-
 ### See also
 
   * [Hibernate/DAO basics](https://habrahabr.ru/post/255829/) (in russian)
   * [diyfr/sqlite-dialect](https://github.com/diyfr/sqlite-dialect)
+  * [Spring Boot Reference Guide](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-build.html)
   * [xerial/sqlite-jdbc](https://bitbucket.org/xerial/sqlite-jdbc)
   * [tools and libraries download](https://www.sqlite.org/download.html)
   * sqlite3 [command syntax](https://www.sqlite.org/cli.html)
@@ -224,9 +228,7 @@ org.springframework.orm.jpa.JpaTransactionManager$JpaTransactionObject.setReadOn
   * collection of [JPA projects](https://github.com/AnghelLeonard/Hibernate-SpringBoot)
   * [externalize](https://mkyong.com/hibernate/how-to-load-hibernate-cfg-xml-from-different-directory/) the `hibernate.cfg.xml`
   * another [solution](https://stackoverflow.com/questions/27508327/design-for-hibernate-external-config-for-app-server-and-local-eclipse)
-  * https://www.programcreek.com/java-api-examples/?api=org.springframework.data.domain.Example
-  * https://www.baeldung.com/spring-data-query-by-example
-  * [Spring Boot Reference Guide](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-build.html)
+ * https://www.sqlite.org/foreignkeys.html
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -7,9 +7,11 @@ spring:
     driver-class-name: org.sqlite.JDBC
     username:
     password:
-    # will create table
+    # will create table (broken)
     # url: 'jdbc:sqlite::memory:'
     # will expect table to be created
+    # otherwise fail with
+    # org.sqlite.SQLiteException: [SQLITE_ERROR] SQL error or missing database (no such table: user)
     url: jdbc:sqlite:${HOME}/Desktop/springboot.db
   jpa:
     database-platform: example.sqlite.SQLiteDialect
