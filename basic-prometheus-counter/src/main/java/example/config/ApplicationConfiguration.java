@@ -1,12 +1,13 @@
 package example.config;
 
-import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
-import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
-import io.micrometer.core.instrument.binder.system.UptimeMetrics;
-import io.micrometer.prometheus.PrometheusConfig;
-import io.micrometer.prometheus.PrometheusMeterRegistry;
+//import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
+//import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
+//import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
+//import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
+//import io.micrometer.core.instrument.binder.system.UptimeMetrics;
+
+//import io.micrometer.prometheus.PrometheusConfig;
+//import io.micrometer.prometheus.PrometheusMeterRegistry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ import example.controller.AppController;
 /**
  * Configure Spring Rest applications with a Prometheus registry.
  */
-
+// the micromenter features are not used, but the class should be present
 @Configuration
 // @ComponentScan("example")
 public class ApplicationConfiguration {

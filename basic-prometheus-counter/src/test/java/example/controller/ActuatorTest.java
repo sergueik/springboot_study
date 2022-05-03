@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -33,6 +34,7 @@ public class ActuatorTest {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
+	@Disabled("removed micrometer dependency")
 	@Test
 	public void test() {
 		url = "http://localhost:" + port + "/actuator/prometheus";
