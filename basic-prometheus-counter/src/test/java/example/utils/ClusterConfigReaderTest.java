@@ -1,5 +1,8 @@
 package example.utils;
 
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -13,15 +16,14 @@ import example.entity.Host;
 
 public class ClusterConfigReaderTest {
 
-	private ClusterConfigReader snakeYamlReader = new ClusterConfigReader();
+	private ClusterConfigReader clusterConfigReader = new ClusterConfigReader();
 	Map<String, Host> info = new HashMap<>();
 	String fileName = "cluster.yaml";
-	String encoding = "UTF-8";
 
 	@Test
 	public void test() throws Exception {
-		snakeYamlReader.read(fileName);
-		info = snakeYamlReader.getInfo();
+		clusterConfigReader.read(fileName);
+		info = clusterConfigReader.getInfo();
 		assertThat(info, notNullValue());
 		assertThat(info.keySet().size(), is(5));
 	}

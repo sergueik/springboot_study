@@ -1,18 +1,25 @@
 package example.dao;
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import example.controller.AppController;
 import example.entity.Host;
 import example.utils.JDBCUtils;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
 
 @Repository("JdbcDao")
 public class JDBCDao implements Dao {
@@ -21,9 +28,9 @@ public class JDBCDao implements Dao {
 	// Autowired annotation is not supported on static fields
 	@Value("${spring.datasource.url}")
 	private String datasourceUrl;
-
-	private static final Logger logger = Logger
+	private static final Logger logger = LogManager
 			.getLogger(JDBCDao.class.getName());
+
 	private static final Connection conn = JDBCUtils.getConnection();
 
 	@Override
@@ -37,8 +44,8 @@ public class JDBCDao implements Dao {
 			preparedStatement.setString(3, host.getEnvironment());
 			preparedStatement.setString(4, host.getDatacenter());
 			result = preparedStatement.executeUpdate();
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE, null, ex);
+		} catch (Exception e) {
+			logger.error(e.toString());
 		}
 		return result;
 	}
@@ -52,8 +59,8 @@ public class JDBCDao implements Dao {
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			results = JDBCUtils.TranverseToList(resultSet, Host.class);
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE, null, ex);
+		} catch (Exception e) {
+			logger.error(e.toString());
 		}
 		return results;
 	}
@@ -71,8 +78,8 @@ public class JDBCDao implements Dao {
 			preparedStatement.setString(4, host.getDatacenter());
 			preparedStatement.setLong(3, host.getId());
 			result = preparedStatement.executeUpdate();
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE, null, ex);
+		} catch (Exception e) {
+			logger.error(e.toString());
 		}
 		return result;
 	}
@@ -85,8 +92,8 @@ public class JDBCDao implements Dao {
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			preparedStatement.setLong(1, id);
 			result = preparedStatement.executeUpdate();
-		} catch (Exception ex) {
-			logger.log(Level.SEVERE, null, ex);
+		} catch (Exception e) {
+			logger.error(e.toString());
 		}
 		return result;
 	}
@@ -101,13 +108,14 @@ public class JDBCDao implements Dao {
 			preparedStatement.setLong(1, id);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			results = JDBCUtils.TranverseToList(resultSet, Host.class);
-			// probably unnecesary, shown as example
+			// probably unnecessary, shown as example
 			// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
-			if (results != null && results instanceof List<?> && results.size() != 0) {
+			if (results != null && results instanceof List<?>
+					&& results.size() != 0) {
 				result = (Host) results.get(0);
 			}
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {
-			logger.log(Level.SEVERE, null, e);
+			logger.error(e.toString());
 		}
 		return result;
 	}
@@ -127,11 +135,12 @@ public class JDBCDao implements Dao {
 			logger.info("in select:  " + results);
 			// probably unnecesary, shown as example
 			// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
-			if (results != null && results instanceof List<?> && results.size() != 0) {
+			if (results != null && results instanceof List<?>
+					&& results.size() != 0) {
 				result = (Host) results.get(0);
 			}
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {
-			logger.log(Level.SEVERE, null, e);
+			logger.error(e.toString());
 		}
 		return result;
 	}

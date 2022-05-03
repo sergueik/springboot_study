@@ -107,7 +107,7 @@ public class AppController {
 					"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
 
 			for (String hostname : hostInfo.keySet()) {
-				// YAAML
+				// YAML
 				hostData = new HostData(hostname);
 				hostData.setMetrics(metricNames);
 				hostData.setMetricTaker(metricTaker);
@@ -229,7 +229,6 @@ public class AppController {
 	public ResponseEntity<String> index() {
 		String body = "<html>" + "<head>" + "</head>" + "<body>"
 				+ "<a href=\"./metrics\"\">Application hosted metrics REST service</a><br/>"
-				+ "<a href=\"./actuator/prometheus\"\">Default System  metrics for prometheus</a>"
 				+ "</body>" + "</html>";
 		return ResponseEntity.ok().body(body);
 	}

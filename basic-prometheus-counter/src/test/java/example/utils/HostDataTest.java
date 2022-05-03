@@ -1,5 +1,8 @@
 package example.utils;
 
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -12,12 +15,12 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 public class HostDataTest {
+
 	private HostData hostData = null;
 	private List<String> metrics = new ArrayList<>();
 	private Map<String, String> data = new HashMap<>();
 	private Map<String, String> metricTaker = new HashMap<>();
-
-	private String hostname = "hostname00";
+	private final String hostname = "hostname00";
 
 	@Test
 	public void test1() throws Exception {
@@ -27,6 +30,7 @@ public class HostDataTest {
 		metrics.add("rpm");
 		metrics.add("disk");
 		metrics.add("missing data");
+		// the fifth element
 		metricTaker.put("load_average",
 				"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
 		hostData.setMetricTaker(metricTaker);

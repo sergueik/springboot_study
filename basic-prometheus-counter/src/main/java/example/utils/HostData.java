@@ -81,7 +81,7 @@ public class HostData {
 
 			String line = null;
 			while ((line = bufferedReader.readLine()) != null) {
-				// collect metrics witn non-blank values
+				// collect metrics with non-blank values
 				Pattern pattern = Pattern.compile( /* "(?:" to suppress capturing */
 						"(" + StringUtils.join(metrics, "|") + ")" + ": " + "([^ ]*)$");
 				Matcher matcher = pattern.matcher(line);
