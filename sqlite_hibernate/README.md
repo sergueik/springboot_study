@@ -5,11 +5,14 @@ This directory contains a basic springboot hibernate on sqlite project based on
 
 ### Run application
 
-Compile and start as a regular spring-boot appplication
+* clear the databases
+```cmd
+```
+* compile and start as a regular spring-boot appplication
 ```sh
 mvn -Dmaven.test.skip=true clean spring-boot:run
 ```
-To verify it works, access application in Postman or curl
+* access application in Postman or curl
 ```sh
 curl http://localhost:8080/springboot/getUsers
 ```
@@ -17,16 +20,28 @@ initially it will respond with an empty array.
 After user(s) added, as shown below, it begins responding with something like
 
 ```json
-[{
-  "id": 5,
-  "userName ": name,
-  "passWord ": password,
-  "
-  "userGender ": gender,
-  "nickName ": 	null
-}]
+[
+  {
+    "address": {
+      "addressId": 1,
+      "street": "street",
+      "city": "city",
+      "state": "state",
+      "zipcode": "zip"
+    },
+    "id": 1,
+    "userName": "Michael",
+    "password": "thriller",
+    "gender": "MAN",
+    "nickName": null
+  }
+]
 ```
-where `name`, `passord`, `gender` will match what is inserted
+To show it on Windows use the pipe command (assuming `jq-win64.exe` is in the `PATH`)
+```sh
+curl.exe -s http://localhost:8080/springboot/getUsers | jq-win64.exe "."
+```
+in the response above the values of `name`, `password`, `gender` will match what is inserted. The
 ```sh
 curl -X POST -H "application/x-www-form-urlencoded" -d "userName=Michael&nickName=michaeljackson&gender=MAN&password=thriller&confirmPassword=thriller" http://localhost:8080/springboot/addUser
 ```
@@ -41,8 +56,8 @@ curl -X POST -H "Content-Type: application/json" -d '{"userName":"John", "passwo
 would response with
 ```
 {"id":10,"userName":"John","password":"beatles","gender":"MAN","nickName":null}
-
 ```
+When there are multiple users added, they will all share same address - the relationship it `@ManyToOne` and when inserting the code finds one `Address` and use it if found
 #### Database Settings
 
 To run with persistent database, set in `application.yml`
@@ -228,7 +243,15 @@ fix the relationship annotation:
   * collection of [JPA projects](https://github.com/AnghelLeonard/Hibernate-SpringBoot)
   * [externalize](https://mkyong.com/hibernate/how-to-load-hibernate-cfg-xml-from-different-directory/) the `hibernate.cfg.xml`
   * another [solution](https://stackoverflow.com/questions/27508327/design-for-hibernate-external-config-for-app-server-and-local-eclipse)
- * https://www.sqlite.org/foreignkeys.html
+  * https://www.sqlite.org/foreignkeys.html
+  * https://www.baeldung.com/hibernate-one-to-many
+  * [Multi-table relational mapping example repo](https://github.com/lewis007/hibernate-table-relationship) with examples
+    + one-to-one
+    + one-to-one-shared-pk
+    + one-to-many:
+    + many-to-many:
+    + many-to-many-extra-columns
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
