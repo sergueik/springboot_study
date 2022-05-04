@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import example.repository.AddressRepository;
 import example.repository.UserRepository;
 
 import example.data.User;
@@ -25,10 +26,16 @@ import example.data.Gender;
 @RestController
 public class UserController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+	private Address address = null;
+
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(UserController.class);
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private AddressRepository addressRepository;
 
 	@GetMapping("/getUsers")
 	public List<User> getUsers() {
@@ -78,17 +85,24 @@ public class UserController {
 	// x-form-data
 	@RequestMapping(value = "/addUser", method = RequestMethod.POST)
 	@ResponseBody
-	public String addUser(@RequestParam("userName") String userName, @RequestParam("password") String password,
-			@RequestParam("confirmPassword") String confirmPassword, @RequestParam("gender") Gender gender,
+	public String addUser(@RequestParam("userName") String userName,
+			@RequestParam("password") String password,
+			@RequestParam("confirmPassword") String confirmPassword,
+			@RequestParam("gender") Gender gender,
 			@RequestParam(name = "nickName", required = false) String nickName) {
 		if (!(password.equals(confirmPassword))) {
 			return "Password and confirmPassword do not match!";
 		} else if (nickName != null && nickName.length() < 5) {
 			return "nickName must be more 4 characters";
 		} else {
-			Address address = new Address("street", "city", "state", "zip");
-			userRepository.save(new User(userName, password, gender,address));
+			List<Address> addresses = addressRepository.findAll();
+			if (addresses.size() > 0)
+				address = addresses.get(0);
+			else
+				address = new Address("street", "city", "state", "zip");
+			userRepository.save(new User(userName, password, gender, address));
 			return "User added";
 		}
 	}
+
 }

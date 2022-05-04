@@ -16,7 +16,13 @@ import example.data.Address;
 @Entity
 @Table(name = "\"student\"")
 public class User implements Serializable {
-        private Address address;
+
+	// org.hibernate.AnnotationException:
+	// @Column(s) not allowed on a @OneToOne property
+	// @Column(name = "address_id", columnDefinition = "INTEGER")
+	@ManyToOne(cascade = CascadeType.ALL)
+	private Address address;
+
 	@Id
 	@GeneratedValue
 	private Long id;
@@ -36,7 +42,7 @@ public class User implements Serializable {
 		super();
 	}
 
-	public User(String userName, String password, Gender gender, 
+	public User(String userName, String password, Gender gender,
 			Address address) {
 		super();
 		this.password = password;
