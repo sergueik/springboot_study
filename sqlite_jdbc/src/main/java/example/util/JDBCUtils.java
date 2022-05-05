@@ -98,10 +98,12 @@ public class JDBCUtils {
 		List<Object> list = new ArrayList<>();
 		Field[] fields = targetClass.getDeclaredFields();
 		while (resultSet.next()) {
+			logger.log(Level.INFO, "Processing result ");
 			Object obj = targetClass.newInstance();
 			for (int column = 1; column <= columnCount; column++) {
 				Object value = resultSet.getObject(column);
 				for (Field field : fields) {
+					logger.log(Level.INFO, "Processing result column " + field.getName());
 					if (field.getName().equals(resultMetaData.getColumnName(column))) {
 						boolean flag = field.isAccessible();
 						field.setAccessible(true);

@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import example.dao.Dao;
+import example.dao.JDBCDao;
 import example.entity.Result;
 import example.entity.Student;
 
@@ -15,6 +16,7 @@ public class ServiceImpl implements BaseService {
 
 	@Resource(name = "JdbcDao")
 	private Dao dao;
+	
 	private static final Logger logger = Logger
 			.getLogger(ServiceImpl.class.getName());
 
@@ -86,6 +88,20 @@ public class ServiceImpl implements BaseService {
 			Student res = dao.findStudentByName(name);
 			result.setData(res);
 		} catch (Exception e) {
+			logger.log(Level.SEVERE, null, e);
+		}
+		return result;
+	}
+
+	// @Override
+	public Result all(String id) {
+		Result result = new Result();
+		try {
+			List<?> studentsaddresses = ((JDBCDao) dao).all(Long.parseLong(id));
+			result.setStatus(1);
+			result.setData(studentsaddresses);
+		} catch (Exception e) {
+			// TODO: switch logger
 			logger.log(Level.SEVERE, null, e);
 		}
 		return result;

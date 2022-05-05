@@ -10,13 +10,13 @@ instead  of MS SQL Server accessed through JDBC.
 This project operates the SQLite database through straight SQL - not using JPA
 plain JDBC static methods `JDBCUtils.getConnection()`, `JDBCUtils.TranverseToList()` etc.
 
-Create the sqlite database directory on Desktop
+Create the sqlite database on Desktop `springboot.db` 
 
 ```sh
 pushd ~
 sqlite3 Desktop/springboot.db
 ```
-and create database `~/Desktop/springboot.db` with a table
+with a table
 ```sql
 DROP TABLE IF EXISTS `student`;
 CREATE TABLE IF NOT EXISTS `student` (

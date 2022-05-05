@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import example.entity.Student;
+import example.entity.StudentAddress;
 import example.util.JDBCUtils;
 
 @Repository("JdbcDao")
@@ -98,7 +99,8 @@ public class JDBCDao implements Dao {
 			results = JDBCUtils.TranverseToList(resultSet, Student.class);
 			// probably unnecesary, shown as example
 			// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
-			if (results != null && results instanceof List<?> && results.size() != 0) {
+			if (results != null && results instanceof List<?>
+					&& results.size() != 0) {
 				result = (Student) results.get(0);
 			}
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {
@@ -119,7 +121,8 @@ public class JDBCDao implements Dao {
 			results = JDBCUtils.TranverseToList(resultSet, Student.class);
 			// probably unnecesary, shown as example
 			// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
-			if (results != null && results instanceof List<?> && results.size() != 0) {
+			if (results != null && results instanceof List<?>
+					&& results.size() != 0) {
 				result = (Student) results.get(0);
 			}
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {
@@ -128,12 +131,34 @@ public class JDBCDao implements Dao {
 		return result;
 	}
 
+	// TODO: scan two
+	public List<?> all(long id) {
+
+		logger.info("datasourceUrl = " + datasourceUrl);
+		List<?> students = null;
+		String sql = "SELECT name,password,zipcode,city,street,state FROM student join address";
+		logger.log(Level.INFO, "Run query:" + sql);
+		try {
+			PreparedStatement preparedStatement = conn.prepareStatement(sql);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			logger.log(Level.INFO, "got query result " + resultSet.getFetchSize());
+			students = JDBCUtils.TranverseToList(resultSet, StudentAddress.class);
+		} catch (Exception ex) {
+			logger.log(Level.SEVERE, null, ex);
+		}
+		return students;
+
+	}
+
 	// mysql required connectionn string patch:
-	// dataSource.setUrl("jdbc:mysql://localhost:3306/userdb" + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
+	// dataSource.setUrl("jdbc:mysql://localhost:3306/userdb" +
+	// "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
 	// https://github.com/Pragmatists/JUnitParams
 	// http://www.cyberforum.ru/java-j2ee/thread2160223.html
-  // for custom DAO implementing security tokens see
-	// https://github.com/sebasv89/spring-boot-examples/tree/master/src/main/java/co/svelez/springbootexample/domain 
-	// see also: ttps://stackoverflow.com/questions/36261216/how-to-rename-the-table-persistent-logins-in-spring-security
+	// for custom DAO implementing security tokens see
+	// https://github.com/sebasv89/spring-boot-examples/tree/master/src/main/java/co/svelez/springbootexample/domain
+	// see also:
+	// ttps://stackoverflow.com/questions/36261216/how-to-rename-the-table-persistent-logins-in-spring-security
 	// https://qna.habr.com/q/855545
+
 }

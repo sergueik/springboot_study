@@ -1,5 +1,8 @@
 package example.controller;
 
+import java.util.Iterator;
+import java.util.List;
+
 import javax.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,4 +53,12 @@ public class Controller {
 		String name = studentName.getName();
 		return service.findStudentByName(name);
 	}
+
+	// "Content-Type": "application/json"
+	@PostMapping("/all")
+	// TODO: optional param
+	public Result all() {
+		return service.all("0");
+	}
+
 }

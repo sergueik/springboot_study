@@ -11,4 +11,7 @@ public interface BaseService {
 	public Result delStudentById(String id);
 	public Result findStudentById(String id);
 	public Result findStudentByName(String name);
+	
+	// new method for joins
+	public Result all(String id);
 }
