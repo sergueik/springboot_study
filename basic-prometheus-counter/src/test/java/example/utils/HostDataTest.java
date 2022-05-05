@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class HostDataTest {
@@ -22,9 +23,14 @@ public class HostDataTest {
 	private Map<String, String> metricTaker = new HashMap<>();
 	private final String hostname = "hostname00";
 
+	@BeforeEach
+	public void before() {
+		hostData = new HostData(hostname);
+	}
+
 	@Test
 	public void test1() throws Exception {
-		hostData = new HostData(hostname);
+
 		metrics.add("cpu");
 		metrics.add("memory");
 		metrics.add("rpm");
@@ -48,7 +54,7 @@ public class HostDataTest {
 
 	@Test
 	public void test2() throws Exception {
-		hostData = new HostData(hostname);
+
 		metricTaker.put("disk", "([0-9.]+)");
 		hostData.setMetricTaker(metricTaker);
 		hostData.readData();
@@ -59,4 +65,16 @@ public class HostDataTest {
 		// NOTE: loading all metrics as strings
 		assertThat(data.get("disk"), is("40.5"));
 	}
+
+	@Test
+	public void test3() throws Exception {
+
+		hostData.loadData();
+		data = hostData.getData();
+
+		assertThat(data, notNullValue());
+		assertThat(data.keySet().size(), is(6));
+		assertThat(data.get("load_average"), is("1 2 3 4 6"));
+	}
+
 }

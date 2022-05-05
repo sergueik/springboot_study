@@ -63,12 +63,52 @@ public class HostData {
 		// TODO : examine and bail if not a soft link
 
 		filepPath = Paths.get(String.join(System.getProperty("file.separator"),
-				Arrays.asList(System.getProperty("user.dir"), "src", "test",
-						"resources", "data", this.hostname, "data.txt")));
+				Arrays.asList(dataDir, this.hostname, "data.txt")));
+	}
+
+	private String dataDir = String.join(System.getProperty("file.separator"),
+			Arrays.asList(System.getProperty("user.dir"), "src", "test", "resources",
+					"data"));
+
+	public void setDataDir(String value) {
+		dataDir = value;
+	}
+
+	public HostData() {
+
 	}
 
 	public Map<String, String> getData() {
 		return data;
+	}
+
+	// read file fully
+	public void loadData() {
+		try {
+			InputStream in = Files.newInputStream(filepPath);
+			BufferedReader bufferedReader = new BufferedReader(
+					new InputStreamReader(in));
+			String key = null;
+			String value = null;
+
+			String line = null;
+			while ((line = bufferedReader.readLine()) != null) {
+				// collect metrics with non-blank values
+				Pattern pattern = Pattern.compile("^(.*):  *(.*)$");
+				Matcher matcher = pattern.matcher(line);
+				if (matcher.find()) {
+					key = matcher.group(1);
+					value = matcher.group(2);
+					data.put(key, value);
+				}
+			}
+			bufferedReader.close();
+
+		} catch (FileNotFoundException e) {
+			System.err.println("Exception (ignored) " + e.toString());
+		} catch (IOException e) {
+			System.err.println("Exception (ignored) " + e.toString());
+		}
 	}
 
 	public void readData() {
