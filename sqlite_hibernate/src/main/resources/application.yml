@@ -12,7 +12,7 @@ spring:
     # will expect table to be created
     # otherwise fail with
     # org.sqlite.SQLiteException: [SQLITE_ERROR] SQL error or missing database (no such table: user)
-    url: jdbc:sqlite:${HOME}/Desktop/springboot.db
+    url: jdbc:sqlite:${USERPROFILE}/Desktop/springboot.db
   jpa:
     database-platform: example.sqlite.SQLiteDialect
     hibernate:

@@ -49,6 +49,12 @@ will respond with
 ```sh
 User added
 ```
+if the error is seen in the console log
+```sh
+org.sqlite.SQLiteException: [SQLITE_CONSTRAINT_NOTNULL]  A NOT NULL constraint failed (NOT NULL constraint failed: Address.ID)
+```
+the tables need to be created manually - it appears that Hibernate fail specifying `AUTOINCREMENT` of the primary keys
+
 while the
 ```sh
 curl -X POST -H "Content-Type: application/json" -d '{"userName":"John", "password":"beatles", "gender":"MAN"}' http://localhost:8080/springboot/addUserObject
@@ -251,7 +257,9 @@ fix the relationship annotation:
     + one-to-many:
     + many-to-many:
     + many-to-many-extra-columns
-
+  * https://www.onlinetutorialspoint.com/hibernate/hibernate-left-join-example.html
+  * https://www.baeldung.com/hibernate-select-all
+  *  https://examples.javacodegeeks.com/enterprise-java/hibernate/hibernate-join-example/
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -39,8 +39,8 @@ import org.hamcrest.Matcher;
 
 import example.controller.UserController;
 import example.data.Gender;
-import example.data.User;
-import example.repository.UserRepository;
+import example.data.Student;
+import example.repository.StudentRepository;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -57,12 +57,12 @@ public class MVCMockTest {
 	final static String charset = "ISO-8859-1";
 	private ResultActions resultActions;
 	private MockMvc mvc;
-	private final User user = new User("name", "password", Gender.MAN);
+	private final Student user = new Student("name", "password", Gender.MAN);
 	@InjectMocks
 	private Launcher application;
 
 	@Mock
-	private UserRepository mockRepository;
+	private StudentRepository mockRepository;
 
 	@InjectMocks
 	private UserController controller;
@@ -73,8 +73,9 @@ public class MVCMockTest {
 	public void beforeTest() throws Exception {
 		// the User class has no constructor with id and nickname
 		user.setId(0L);
-		user.setNickName("nickname");
-		when(mockRepository.findAll()).thenReturn(Arrays.asList(new User[] { user }));
+		// user.setNickName("nickname");
+		when(mockRepository.findAll())
+				.thenReturn(Arrays.asList(new Student[] { user }));
 		mvc = MockMvcBuilders.standaloneSetup(controller).build();
 		resultActions = mvc.perform(get(route));
 	}
@@ -95,7 +96,8 @@ public class MVCMockTest {
 	// examine body
 	@Test
 	public void bodyTest2() throws Exception {
-		matcher = containsString(new Gson().toJson(Arrays.asList(new User[] { user })));
+		matcher = containsString(
+				new Gson().toJson(Arrays.asList(new Student[] { user })));
 		resultActions.andExpect(content().string(matcher));
 	}
 

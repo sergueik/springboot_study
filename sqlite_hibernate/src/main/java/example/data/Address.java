@@ -3,6 +3,7 @@ package example.data;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -27,7 +28,7 @@ public class Address {
 	}
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "ID")
 	public long getAddressId() {
 		return this.addressId;
@@ -36,8 +37,8 @@ public class Address {
 	public void setAddressId(long addressId) {
 		this.addressId = addressId;
 	}
-	
-	@Column(name = "STREET", nullable = false, length=250)
+
+	@Column(name = "STREET", nullable = false, length = 250)
 	public String getStreet() {
 		return this.street;
 	}
@@ -46,7 +47,7 @@ public class Address {
 		this.street = street;
 	}
 
-	@Column(name = "CITY", nullable = false, length=50)
+	@Column(name = "CITY", nullable = false, length = 50)
 	public String getCity() {
 		return this.city;
 	}
@@ -55,7 +56,7 @@ public class Address {
 		this.city = city;
 	}
 
-	@Column(name = "STATE", nullable = false, length=50)
+	@Column(name = "STATE", nullable = false, length = 50)
 	public String getState() {
 		return this.state;
 	}
@@ -64,7 +65,7 @@ public class Address {
 		this.state = state;
 	}
 
-	@Column(name = "ZIPCODE", nullable = false, length=10)
+	@Column(name = "ZIPCODE", nullable = false, length = 10)
 	public String getZipcode() {
 		return this.zipcode;
 	}

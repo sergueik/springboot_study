@@ -1,5 +1,6 @@
 package example.controller;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -17,11 +18,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import example.repository.AddressRepository;
-import example.repository.UserRepository;
+import example.repository.StudentRepository;
 
-import example.data.User;
+import example.data.Student;
 import example.data.Address;
 import example.data.Gender;
+
+import example.utils.HibernateUtility;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
 @RestController
 public class UserController {
@@ -32,51 +39,49 @@ public class UserController {
 			.getLogger(UserController.class);
 
 	@Autowired
-	private UserRepository userRepository;
+	private StudentRepository studentRepository;
 
 	@Autowired
 	private AddressRepository addressRepository;
 
 	@GetMapping("/getUsers")
-	public List<User> getUsers() {
+	public List<Student> getUsers() {
 		LOGGER.info("processing \"/getUsers\"");
-		return userRepository.findAll();
+		return studentRepository.findAll();
 	}
 
 	@RequestMapping("/getUser")
-	public User getUser(Long id) {
-		return userRepository.findOne(id);
+	public Student getUser(Long id) {
+		return studentRepository.findOne(id);
 	}
 
 	@PostMapping("/updateUser")
-	public User updateUser(@RequestBody User targetUser) {
-		User user = userRepository.findOne(targetUser.getId());
+	public Student updateUser(@RequestBody Student targetUser) {
+		Student user = studentRepository.findOne(targetUser.getId());
 		if (targetUser.getUserName() != null) {
 			user.setUserName(targetUser.getUserName());
 		}
 		if (targetUser.getPassword() != null) {
 			user.setPassword(targetUser.getPassword());
 		}
-		if (targetUser.getNickName() != null) {
-			user.setNickName(targetUser.getNickName());
-		}
+
 		if (targetUser.getGender() != null) {
 			user.setGender(targetUser.getGender());
 		}
-		return userRepository.saveAndFlush(user);
+		return studentRepository.saveAndFlush(user);
 	}
 
 	@DeleteMapping("/deleteUser")
 	public void deleteUser(Long id) {
-		User user = userRepository.findOne(id);
-		userRepository.delete(user);
+		Student user = studentRepository.findOne(id);
+		studentRepository.delete(user);
 	}
 
 	// "Content-Type": "application/json"
 	@PostMapping("/addUserObject")
-	public User addUserObject(@RequestBody User newUser) {
+	public Student addUserObject(@RequestBody Student newUser) {
 		try {
-			return userRepository.saveAndFlush(newUser);
+			return studentRepository.saveAndFlush(newUser);
 		} catch (Exception e) {
 			return newUser;
 		}
@@ -88,20 +93,49 @@ public class UserController {
 	public String addUser(@RequestParam("userName") String userName,
 			@RequestParam("password") String password,
 			@RequestParam("confirmPassword") String confirmPassword,
-			@RequestParam("gender") Gender gender,
-			@RequestParam(name = "nickName", required = false) String nickName) {
+			@RequestParam("gender") Gender gender) {
 		if (!(password.equals(confirmPassword))) {
 			return "Password and confirmPassword do not match!";
-		} else if (nickName != null && nickName.length() < 5) {
-			return "nickName must be more 4 characters";
 		} else {
 			List<Address> addresses = addressRepository.findAll();
 			if (addresses.size() > 0)
 				address = addresses.get(0);
 			else
 				address = new Address("street", "city", "state", "zip");
-			userRepository.save(new User(userName, password, gender, address));
-			return "User added";
+			studentRepository.save(new Student(userName, password, gender, address));
+			return "Data added";
+		}
+	}
+
+	// "Content-Type": "application/json"
+	@PostMapping("/all")
+	public void all(Long id) {
+		try {
+			SessionFactory factory = HibernateUtility.getSessionFactory();
+			Session session = factory.openSession();
+			// org.hibernate.hql.internal.ast.QuerySyntaxException: student
+			// is not mapped
+			// https://stackoverflow.com/questions/23018836/org-hibernate-hql-internal-ast-querysyntaxexception-table-is-not-mapped
+
+			// org.hibernate.hql.internal.ast.QuerySyntaxException:
+			// Path expected for join!
+			Query qry = session.createQuery(
+					"select s.userName, s.gender, a.city, a.state from User s "
+							+ "left join Address a on a.id = s.address_id");
+			List l = qry.list();
+			Iterator it = l.iterator();
+			while (it.hasNext()) {
+				Object rows[] = (Object[]) it.next();
+				LOGGER
+						.info(rows[0] + " -- " + rows[1] + "--" + rows[2] + "--" + rows[3]);
+			}
+			session.clear();
+			session.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			LOGGER.error(e.toString());
 		}
 	}
 

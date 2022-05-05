@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hibernate-configuration>
+  <session-factory>
+    <property name="hibernate.dialect">example.sqlite.SQLiteDialect</property>
+    <property name="hibernate.connection.driver_class">org.sqlite.JDBC</property>
+    <property name="hibernate.connection.url">jdbc:sqlite:/c:/Users/Serguei/Desktop/springboot.db</property>
+    
+        
+    <!--
+    <property name="hibernate.connection.url">jdbc:sqlite:/c:/Users/Serguei/Desktop/springboot.db</property>
+    <property name="hibernate.connection.url">jdbc:sqlite:${USERPROFILE}/Desktop/springboot.db</property>
+    <property name="hibernate.connection.url">jdbc:sqlite:${env:USERPROFILE}/Desktop/springboot.db</property>
+    <property name="hibernate.connection.url">jdbc:sqlite:${HOME}/Desktop/springboot.db</property>
+    <property name="hibernate.connection.url">jdbc:sqlite::memory:</property>
+    -->
+    <property name="hibernate.connection.username"/>
+    <property name="hibernate.connection.password"/>
+    <property name="hibernate.hbm2ddl.auto">create</property>
+    <property name="hibernate.show_sql">true</property>
+    <mapping class="example.data.User"/>
+    <mapping class="example.data.Address"/>
+  </session-factory>
+</hibernate-configuration>
