@@ -11,10 +11,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.node-exporter
-      # NOTE: when both present, 'image' may ovrride
+      # NOTE: when both present, 'image' may override
     # image: prom/node-exporter:v1.3.1
     ports: 
       - "9100:9100"
+    # origin: https://stackoverflow.com/questions/34590317/disable-logging-for-one-container-in-docker-compose
+    logging:
+      driver: none
 #    volumes:
 #      - ./static-metrics.prom:/var/metrics/metrics.prom:Z
 #  node-exporter:

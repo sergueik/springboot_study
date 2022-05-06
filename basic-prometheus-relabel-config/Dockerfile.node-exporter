@@ -1,7 +1,9 @@
-ARG EXPORTER_VERSION v1.3.1
+# NOTE: the ARG appears to be ignored in FROM command. 
+# NOTE: this defects the purpose of pinnin
+# ARG EXPORTER_VERSION=v1.3.1
 # FROM prom/node-exporter:${EXPORTER_VERSION}
-# invalid reference format
 FROM prom/node-exporter:v1.3.1
+# invalid reference format
 EXPOSE 9100
 # USER nobody
 # USER ROOT

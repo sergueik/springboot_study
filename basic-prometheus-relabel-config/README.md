@@ -37,10 +37,28 @@ sample_counter_two{lone="boo",ltwo="far"} 2
 sample_counter_two{lone="foo",ltwo="bar"} 2
 sample_counter_two{lone="foo",ltwo="far"} 2
 ```
-repeat with `docker-compose`
+### Using Docker Compose
+
+* configure `metric` node (service) in `docker-compose.yml` to selectively disable console logging:
+```yaml
+  metrics:
+    build:
+      context: .
+      dockerfile: Dockerfile.node-exporter
+    ports: 
+      - "9100:9100"
+    logging:
+      driver: none
+```
+* repeat with `docker-compose`
 ```sh
 export COMPOSE_HTTP_TIMEOUT=600
-docker-compose up
+docker-compose up --build
+```
+* ignore the warning
+
+```text
+metrics_1     | WARNING: no logs are available with the 'none' log driver
 ```
 ### Baseline
 
