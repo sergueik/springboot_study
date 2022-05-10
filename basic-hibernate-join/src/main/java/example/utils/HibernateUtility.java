@@ -1,14 +1,15 @@
-package com.otp.hibernate.pojo;
+package example.utils;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-public class HibernateUtility{
+public class HibernateUtility {
 	private static SessionFactory factory;
 
 	private HibernateUtility() {
 	}
 
+	@SuppressWarnings("deprecation")
 	public synchronized static SessionFactory getSessionFactory() {
 		if (factory == null) {
 			factory = new Configuration().configure("hibernate.cfg.xml")

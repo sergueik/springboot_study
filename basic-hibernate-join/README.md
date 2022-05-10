@@ -117,10 +117,21 @@ select c.cname, c.ccity, i.iname,i.iprice from customer c inner join item i on c
 +---------+---------+-------+--------+
 ```
 
-* test from Hibernate 
+#### test from Hibernate
+* update the `connection.url` attribute with the nformation relevant for the mahine where mysql is run:
 ```sh
-java -cp target/Hibernate-LeftJoin-Example-0.0.1-SNAPSHOT.jar:target/lib/* Main
+xmllint -xpath "//property[@name='connection.url']/text()" src/main/resources/hibernate.cfg.xml
+```java
+jdbc:mysql://192.168.0.64:3306/test
 ```
+
+```sh
+java -cp target/example.hibernate-join.jar:target/lib/* example.Main
+```
+```cmd
+java -cp target/example.hibernate-join.jar;target/lib/* example.Main
+```
+
 ```text 
 May 10, 2022 6:34:52 PM org.hibernate.annotations.common.reflection.java.JavaReflectionManager <clinit>
 INFO: HCANN000001: Hibernate Commons Annotations {4.0.4.Final}
@@ -161,7 +172,14 @@ bill -- seattle--null--null
 cleared session
 closed session
 ```
+if the error is obsrved there is possibly a firewall between
 
+```text
+Exception in thread "main" org.hibernate.exception.JDBCConnectionException: Error calling Driver#connect
+Caused by:
+com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 

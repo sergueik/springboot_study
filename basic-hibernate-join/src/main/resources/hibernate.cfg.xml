@@ -2,12 +2,19 @@
 <!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
   <session-factory>
-    <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-    <property name="connection.url">jdbc:mysql://localhost:3306/test</property>
+    <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+    <!--  Loading class `com.mysql.jdbc.Driver'. This is deprecated. The new driver class
+is `com.mysql.cj.jdbc.Driver'. The driver is automatically registered via the SP
+I and manual loading of the driver class is generally unnecessary.  -->
+    <!-- 
+    <property name="connection.url">jdbc:mysql://192.168.0.64:3306/test</property>
+-->
+
+    <property name="connection.url">jdbc:mysql://localhost:3306/test</property> 
     <property name="connection.username">root</property>
     <property name="connection.password">password</property>
     <property name="show_sql">true</property>
-    <mapping class="com.otp.hibernate.pojo.Customer"/>
-    <mapping class="com.otp.hibernate.pojo.Item"/>
+    <mapping class="example.data.Customer"/>
+    <mapping class="example.data.Item"/>
   </session-factory>
 </hibernate-configuration>

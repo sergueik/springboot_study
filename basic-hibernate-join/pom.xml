@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.springframework.samples</groupId>
+  <groupId>example</groupId>
   <artifactId>hibernate-join</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -11,13 +11,14 @@
     <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
     <java.version>1.8</java.version>
+    <hibernate.version>5.4.24.Final</hibernate.version>
     <h2.version>2.1.210</h2.version>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-      <version>4.3.0.Final</version>
+      <version>${hibernate.version}</version>
     </dependency>
     <dependency>
       <groupId>mysql</groupId>
@@ -50,5 +51,6 @@
         </executions>
       </plugin>
     </plugins>
+    <finalName>${finalName}</finalName>
   </build>
 </project>
