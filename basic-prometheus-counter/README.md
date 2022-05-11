@@ -198,8 +198,28 @@ The `domain` and `app` are read from cluster configuration YAML:
     app: redis
 ```
 
-![Sample Mertrics Page](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture-metrics.png)
+![Sample Metrics Page](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture-metrics.png)
 
+
+for testing purposes we also have the API endpoint to show the data for selected host, filtered to show specific metrfic names
+```sh
+HOSTNAME=hostname00
+curl -s http://localhost:8080/hostdata/$HOSTNAME | jq '.'
+```
+
+```json
+{
+  "hostname": "hostname00",
+  "data": {
+    "disk": "40.5",
+    "memory": "20",
+    "load_average": "6",
+    "cpu": "10",
+    "rpm": "100"
+  }
+}
+```
+![Sample HostData Page](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture_hostdata_one_host.png)
 
 ### Feed to Prometheus
 

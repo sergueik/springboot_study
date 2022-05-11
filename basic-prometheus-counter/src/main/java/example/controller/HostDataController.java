@@ -7,8 +7,6 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import example.service.NodeExporter;
 import example.utils.HostData;
 
 @RestController
@@ -32,6 +29,8 @@ public class HostDataController {
 	private static final Logger logger = LogManager
 			.getLogger(HostDataController.class);
 
+	private final static List<String> metricNames = Arrays.asList("memory", "cpu",
+			"disk", "rpm");
 	private static final boolean debug = false;
 
 	@ResponseBody
@@ -42,7 +41,6 @@ public class HostDataController {
 		HostData hostData = new HostData(hostname);
 		Map<String, String> metricTaker = new HashMap<>(); // currently unused
 
-		List<String> metricNames = Arrays.asList("memory", "cpu", "disk", "rpm");
 		metricTaker.put("load_average",
 				"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
 

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>prometheus-counter</artifactId>
-  <version>0.18.0-SNAPSHOT</version>
+  <version>0.19.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -20,6 +20,8 @@
     <snakeyaml.version>1.26</snakeyaml.version>
     <spring-jdbc.version>5.2.0.RELEASE</spring-jdbc.version>
     <sqlite-jdbc.version>3.28.0</sqlite-jdbc.version>
+    <json-path.version>2.6.0</json-path.version>
+
     <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <dependencies>
@@ -43,6 +45,12 @@
           <artifactId>junit-vintage-engine</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+      <scope>test</scope>
+      <version>${json-path.version}</version>
     </dependency>
     <dependency>
       <groupId>org.yaml</groupId>
