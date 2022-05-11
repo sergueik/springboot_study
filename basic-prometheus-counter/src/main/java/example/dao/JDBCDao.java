@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import example.controller.AppController;
+import example.controller.NodeExporterController;
 import example.entity.Host;
 import example.utils.JDBCUtils;
 
