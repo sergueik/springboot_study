@@ -1,0 +1,15 @@
+package example.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import example.data.Customer;
+import example.data.Address;
+
+// NOTE: apparently cannot use JPA in plain Java projects 
+// The type org.springframework.data.repository.query.QueryByExampleExecutor
+//  cannot be resolved. 
+// It is indirectly referenced from required .class files
+public interface CustomerRepository extends JpaRepository<Customer, Integer> {
+
+}

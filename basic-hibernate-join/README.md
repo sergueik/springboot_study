@@ -179,6 +179,9 @@ Exception in thread "main" org.hibernate.exception.JDBCConnectionException: Erro
 Caused by:
 com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
 ```
+### See Also
+
+ * [similar project](https://github.com/ashokitschool/Hibernate-HQL-App-MultiTables) without `OneToMany` annotation in entity classes, similar `HQL`, moved implementation to custom method in the `Dao*` class
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
