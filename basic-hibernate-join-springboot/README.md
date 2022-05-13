@@ -181,9 +181,14 @@ Hibernate: alter table address add column astreet varchar(250) not null
 Hibernate: alter table address add column azipcode varchar(10) not null
 Hibernate: alter table item add constraint FK3n69su88aiehavpt9bm4cyw5j foreign key (cid) references customer (cid)
 ``` 
+
+add data to `address`:
+```sql
+insert into address (acity,astreet,astate,azipcode,aid,cid) values ('atlanta','','','',301,1001),('seatle','','','',302,1002);
+```
 NOTE:
 ```
-select c.cname,  i.iname,i.iprice from customer c left join item i;
+select c.cname, a.acity, i.iname,i.iprice from customer c left join item i join address a ;
 ```
 is failing in MySQL console attempt with error:
 ```
@@ -193,26 +198,26 @@ ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that 
 one has to specify the `on` part explicitly:
 ```sql
 use test;
-select c.cname, i.iname,i.iprice from customer c left join item i on c.cid = i.cid;
+select c.cname, a.acity, i.iname,i.iprice from customer c left join item i on c.cid = i.cid join address a  on c.cid = a.cid ;
 ```
 ```text
-+---------+-------+--------+
-| cname   | iname | iprice |
-+---------+-------+--------+
-| michael | test  |    123 |
-| bill    | NULL  |   NULL |
-+---------+-------+--------+
++---------+---------+-------+--------+
+| cname   | acity   | iname | iprice |
++---------+---------+-------+--------+
+| michael | atlanta | test  |    123 |
+| bill    | seatle  | NULL  |   NULL |
++---------+---------+-------+--------+
 ```
 
 ```sql
-select c.cname,  i.iname,i.iprice from customer c inner join item i on c.cid = i.cid;
+select c.cname, a.acity,  i.iname,i.iprice from customer c inner join item i on c.cid = i.cid join address a on c.cid = a.cid ;
 ```
 ```text
-+---------+-------+--------+
-| cname   | iname | iprice |
-+---------+-------+--------+
-| michael | test  |    123 |
-+---------+-------+--------+
++---------+---------+-------+--------+
+| cname   | acity   | iname | iprice |
++---------+---------+-------+--------+
+| michael | atlanta | test  |    123 |
++---------+---------+-------+--------+
 ```
 
 

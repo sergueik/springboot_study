@@ -45,8 +45,10 @@ public class CustomerRepositoryDao implements CustomerRepository {
 		@SuppressWarnings("unchecked")
 		Query<Object[]> query = session
 				.createQuery(
-						"select c.customerName, i.itemName,i.price from Customer c "
-								+ "join c.items i where c.customerId = :customerId")
+						"select c.customerName, a.city, i.itemName,i.price from Customer c "
+								+ " join c.items i "
+								+ " join c.address a on c.customerId = a.cid "
+								+ " where c.customerId = :customerId ")
 				.setParameter("customerId", customerId);
 		// TODO:
 		// https://docs.jboss.org/hibernate/orm/4.2/javadocs/org/hibernate/type/Type.html
@@ -56,10 +58,10 @@ public class CustomerRepositoryDao implements CustomerRepository {
 			CustomerItem customerItem = new CustomerItem();
 			Object rows[] = (Object[]) objectIterator.next();
 			customerItem.setCustomerName(rows[0].toString());
-			// customerItem.setCustomerCity(rows[1].toString());
-			customerItem.setItemName(rows[1].toString());
-			customerItem.setPrice(Integer.parseInt(rows[2].toString()));
-			logger.info(rows[0] + " -- " + rows[1] + "--" + rows[2]);
+			customerItem.setCustomerCity(rows[1].toString());
+			customerItem.setItemName(rows[2].toString());
+			customerItem.setPrice(Integer.parseInt(rows[3].toString()));
+			logger.info(rows[0] + " -- " + rows[1] + "--" + rows[2] + "--" + rows[3]);
 			data.add(customerItem);
 		}
 		session.clear();
@@ -81,20 +83,23 @@ public class CustomerRepositoryDao implements CustomerRepository {
 		// org.hibernate.QueryException: Named parameter not bound : customerId
 		@SuppressWarnings("unchecked")
 		Query<Object[]> query = session.createQuery(
-				"select c.customerName, i.itemName,i.price from Customer c "
-						+ "left join c.items i");
+				"select c.customerName, a.city, i.itemName,i.price from Customer c "
+						+ "left join c.items i " + " join c.address a");
+		// NOTE: cannot use "on c.customerId = a.cid" - leads to error in runtime:
+		// antlr.SemanticException: could not resolve property: cid of:
+		// example.model.Address
 		List<Object[]> objectList = query.list();
 		Iterator<Object[]> objectIterator = objectList.iterator();
 		while (objectIterator.hasNext()) {
 			CustomerItem customerItem = new CustomerItem();
 			Object rows[] = (Object[]) objectIterator.next();
 			customerItem.setCustomerName(rows[0].toString());
-			// customerItem.setCustomerCity(rows[1].toString());
-			if (rows[1] != null)
-				customerItem.setItemName(rows[1].toString());
+			customerItem.setCustomerCity(rows[1].toString());
 			if (rows[2] != null)
+				customerItem.setItemName(rows[2].toString());
+			if (rows[3] != null)
 				customerItem.setPrice(Integer.parseInt(rows[2].toString()));
-			logger.info(rows[0] + " -- " + rows[1] + "--" + rows[2]);
+			logger.info(rows[0] + " -- " + rows[1] + "--" + rows[2] + "--" + rows[3]);
 			data.add(customerItem);
 		}
 		session.clear();

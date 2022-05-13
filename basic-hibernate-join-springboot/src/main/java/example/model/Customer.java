@@ -24,6 +24,23 @@ public class Customer {
 	@JoinColumn(name = "cid", referencedColumnName = "cid")
 	private List<Item> items;
 
+	// NOTE: "OneToOne" will lead to invalid query:
+	/*
+	 Hibernate:
+	  select
+	      customer0_.cname as col_0_0_,
+	      address2_.acity as col_1_0_,
+	      items1_.iname as col_2_0_,
+	      items1_.iprice as col_3_0_
+	  from
+	      customer customer0_
+	  left outer join
+	      item items1_
+	          on customer0_.cid=items1_.cid
+	  inner join
+	      address address2_
+	          on customer0_.cid=address2_.aid
+	*/
 	@OneToOne(targetEntity = Address.class, cascade = CascadeType.ALL)
 	@JoinColumn(name = "cid", referencedColumnName = "cid")
 	private Address address;
