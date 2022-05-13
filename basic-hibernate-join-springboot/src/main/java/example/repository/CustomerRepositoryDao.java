@@ -1,23 +1,32 @@
 package example.repository;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import example.controller.ProductController;
 import example.model.Customer;
+import example.model.CustomerItem;
 import example.utils.HibernateUtility;
 
 @Component
 public class CustomerRepositoryDao implements CustomerRepository {
+
+	private static Logger logger = LoggerFactory
+			.getLogger(CustomerRepositoryDao.class);
 
 	// NOTE: naming matters
 	// otherwise:
@@ -26,168 +35,199 @@ public class CustomerRepositoryDao implements CustomerRepository {
 	// example.repository.CustomerRepository.findCustomerDetailsById(int)! No
 	// property id found for type Customer!
 
-	public void findCustomerDetailsByCustomerId(int customerId) {
+	public List<CustomerItem> findCustomerDetailsByCustomerId(int customerId) {
+		List<CustomerItem> data = new ArrayList<>();
+		logger.info(
+				"findCustomerDetailsByCustomerId processing customerId =" + customerId);
 		SessionFactory factory = HibernateUtility.getSessionFactory();
 		Session session = factory.openSession();
 		// HQL
-		Query query = session.createQuery(
-				"select c.customerName, c.customerCity, i.itemName,i.price from Customer c "
-						+ /* "left join c.items i" */ "join c.items i");
+		@SuppressWarnings("unchecked")
+		Query<Object[]> query = session
+				.createQuery(
+						"select c.customerName, c.customerCity, i.itemName,i.price from Customer c "
+								+ /* "left join c.items i" */ "join c.items i where c.customerId = :customerId")
+				.setParameter("customerId",
+						customerId /* TODO: https://docs.jboss.org/hibernate/orm/4.2/javadocs/org/hibernate/type/Type.html */);
 		List<Object[]> objectList = query.list();
 		Iterator<Object[]> objectIterator = objectList.iterator();
 		while (objectIterator.hasNext()) {
+			CustomerItem customerItem = new CustomerItem();
 			Object rows[] = (Object[]) objectIterator.next();
-			System.out.println(
-					rows[0] + " -- " + rows[1] + "--" + rows[2] + "--" + rows[3]);
+			customerItem.setCustomerName(rows[0].toString());
+			customerItem.setCustomerCity(rows[1].toString());
+			customerItem.setItemName(rows[2].toString());
+			customerItem.setPrice(Integer.parseInt(rows[3].toString()));
+			logger.info(rows[0] + " -- " + rows[1] + "--" + rows[2] + "--" + rows[3]);
+			data.add(customerItem);
 		}
 		session.clear();
-		System.err.println("cleared session");
 		session.close();
-		System.err.println("closed session");
+		return (data);
+	}
 
+	// NOTE: this method is using left join for illustration.
+	// it does not work - see the comment in the interface
+
+	public List<CustomerItem> findAllCustomerDetails() {
+		List<CustomerItem> data = new ArrayList<>();
+		logger.info("findAllCustomerDetails");
+		SessionFactory factory = HibernateUtility.getSessionFactory();
+		Session session = factory.openSession();
+		// HQL
+		// NOTE defining placeholder without filling with parameter will crash the
+		// app completely
+		// org.hibernate.QueryException: Named parameter not bound : customerId
+		@SuppressWarnings("unchecked")
+		Query<Object[]> query = session.createQuery(
+				"select c.customerName, c.customerCity, i.itemName,i.price from Customer c "
+						+ "left join c.items i");
+		List<Object[]> objectList = query.list();
+		Iterator<Object[]> objectIterator = objectList.iterator();
+		while (objectIterator.hasNext()) {
+			CustomerItem customerItem = new CustomerItem();
+			Object rows[] = (Object[]) objectIterator.next();
+			customerItem.setCustomerName(rows[0].toString());
+			customerItem.setCustomerCity(rows[1].toString());
+			if (rows[2] != null)
+				customerItem.setItemName(rows[2].toString());
+			if (rows[3] != null)
+				customerItem.setPrice(Integer.parseInt(rows[3].toString()));
+			logger.info(rows[0] + " -- " + rows[1] + "--" + rows[2] + "--" + rows[3]);
+			data.add(customerItem);
+		}
+		session.clear();
+		session.close();
+		return (data);
 	}
 
 	@Override
 	public void deleteAllInBatch() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void deleteInBatch(Iterable<Customer> arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public List<Customer> findAll() {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public List<Customer> findAll(Sort arg0) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public <S extends Customer> List<S> findAll(Example<S> arg0) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public <S extends Customer> List<S> findAll(Example<S> arg0, Sort arg1) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public List<Customer> findAllById(Iterable<Integer> arg0) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public void flush() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public Customer getOne(Integer arg0) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public <S extends Customer> List<S> saveAll(Iterable<S> arg0) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public <S extends Customer> S saveAndFlush(S arg0) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public Page<Customer> findAll(Pageable arg0) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public long count() {
-		// TODO Auto-generated method stub
+
 		return 0;
 	}
 
 	@Override
 	public void delete(Customer arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void deleteAll() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void deleteAll(Iterable<? extends Customer> arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void deleteById(Integer arg0) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public boolean existsById(Integer arg0) {
-		// TODO Auto-generated method stub
+
 		return false;
 	}
 
 	@Override
 	public Optional<Customer> findById(Integer arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public <S extends Customer> S save(S arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public <S extends Customer> long count(Example<S> arg0) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public <S extends Customer> boolean exists(Example<S> arg0) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public <S extends Customer> Page<S> findAll(Example<S> arg0, Pageable arg1) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public <S extends Customer> Optional<S> findOne(Example<S> arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

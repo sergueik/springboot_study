@@ -71,6 +71,91 @@ curl http://localhost:8080/products?db=mysql
 [{"id":0,"name":null,"qty":0,"price":0.0}]
 ```
 -  need a fix
+
+### Multi Table 
+```sh
+curl http://localhost:8080/cust/1001 | /c/tools/jq-win64.exe  '.'
+```
+
+```json
+[
+  {
+    "customerId": 0,
+    "customerName": "michael",
+    "customerCity": "atlanta",
+    "itemId": 0,
+    "itemName": "test",
+    "price": 123
+  }
+]
+```
+application log:
+```text
+positoryDao       : findCustomerDetailsByCustomerId processing customerId =1001
+Hibernate:
+    select
+        customer0_.cname as col_0_0_,
+        customer0_.ccity as col_1_0_,
+        items1_.iname as col_2_0_,
+        items1_.iprice as col_3_0_
+    from
+        customer customer0_
+    inner join
+        item items1_
+            on customer0_.cid=items1_.cid
+    where
+        customer0_.cid=?
+2022-05-12 20:41:18.852  INFO 6316 --- [nio-8080-exec-2] e.repository.CustomerRe
+positoryDao       : michael -- atlanta--test--123
+
+```
+
+```sh
+ curl -s http://localhost:8080/cust | /c/tools/jq-win64.exe  '.'
+```
+```JSON
+[
+  {
+    "customerId": 0,
+    "customerName": "michael",
+    "customerCity": "atlanta",
+    "itemId": 0,
+    "itemName": "test",
+    "price": 123
+  },
+  {
+    "customerId": 0,
+    "customerName": "bill",
+    "customerCity": "seattle",
+    "itemId": 0,
+    "itemName": null,
+    "price": 0
+  }
+]
+
+```
+application log:
+```text
+
+2022-05-12 20:42:52.098  INFO 6316 --- [nio-8080-exec-8] e.repository.CustomerRe
+positoryDao       : findAllCustomerDetails
+Hibernate:
+    select
+        customer0_.cname as col_0_0_,
+        customer0_.ccity as col_1_0_,
+        items1_.iname as col_2_0_,
+        items1_.iprice as col_3_0_
+    from
+        customer customer0_
+    left outer join
+        item items1_
+            on customer0_.cid=items1_.cid
+2022-05-12 20:42:52.147  INFO 6316 --- [nio-8080-exec-8] e.repository.CustomerRe
+positoryDao       : michael -- atlanta--test--123
+2022-05-12 20:42:52.148  INFO 6316 --- [nio-8080-exec-8] e.repository.CustomerRe
+positoryDao       : bill -- seattle--null--null
+
+```
 ### See Also
 
   * [discussion of multi-database Hibernate App fix](https://qna.habr.com/q/1104464) (in Russian)

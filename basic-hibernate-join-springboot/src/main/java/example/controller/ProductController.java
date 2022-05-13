@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,13 +63,23 @@ public class ProductController {
 		return ResponseEntity.ok().build();
 	}
 
-	// https://stackoverflow.com/questions/29612083/casting-a-list-of-an-object-to-a-list-of-super-types/29612111
+	// NOTE: should not name endpoint "customers"
+	// observed the wrong query being called for "/customers":
+	// Hibernate: select customer0_.cid as cid1_0_, customer0_.ccity as ccity2_0_,
+	// customer0_.cname as cname3_0_ from customer customer0_ where
+	// customer0_.cid=?
 	@RequestMapping(value = "/cust", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustomerItem>> getCustomers() {
-		List<CustomerItem> data = new ArrayList<>();
-		data.add(new CustomerItem());
-		logger.info("calling findCustomerDetailsByCustomerId");
-		customerRepository.findCustomerDetailsByCustomerId(0);
+		List<CustomerItem> data = customerRepository.findAllCustomerDetails();
+		return ResponseEntity.status(HttpStatus.OK).body(data);
+	}
+
+	@RequestMapping(value = "/cust/{customerId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<CustomerItem>> getCustomersWithCustomerId(
+			@PathVariable(name = "customerId") int customerId) {
+		logger.info("customerId = " + customerId);
+		List<CustomerItem> data = customerRepository
+				.findCustomerDetailsByCustomerId(customerId);
 		return ResponseEntity.status(HttpStatus.OK).body(data);
 	}
 
