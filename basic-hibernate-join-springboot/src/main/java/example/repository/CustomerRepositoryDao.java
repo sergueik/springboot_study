@@ -46,9 +46,10 @@ public class CustomerRepositoryDao implements CustomerRepository {
 		Query<Object[]> query = session
 				.createQuery(
 						"select c.customerName, c.customerCity, i.itemName,i.price from Customer c "
-								+ /* "left join c.items i" */ "join c.items i where c.customerId = :customerId")
-				.setParameter("customerId",
-						customerId /* TODO: https://docs.jboss.org/hibernate/orm/4.2/javadocs/org/hibernate/type/Type.html */);
+								+ "join c.items i where c.customerId = :customerId")
+				.setParameter("customerId", customerId);
+		// TODO:
+		// https://docs.jboss.org/hibernate/orm/4.2/javadocs/org/hibernate/type/Type.html
 		List<Object[]> objectList = query.list();
 		Iterator<Object[]> objectIterator = objectList.iterator();
 		while (objectIterator.hasNext()) {
@@ -68,8 +69,8 @@ public class CustomerRepositoryDao implements CustomerRepository {
 
 	// NOTE: this method is using left join for illustration.
 	// it does not work - see the comment in the interface
-
-	public List<CustomerItem> findAllCustomerDetails() {
+	// commenting the findCustomerDetailsByCustomerId dows not help
+	public List<CustomerItem> findAllCustomerItemsByCustomerId(int customerId) {
 		List<CustomerItem> data = new ArrayList<>();
 		logger.info("findAllCustomerDetails");
 		SessionFactory factory = HibernateUtility.getSessionFactory();

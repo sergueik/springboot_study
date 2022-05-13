@@ -70,7 +70,8 @@ public class ProductController {
 	// customer0_.cid=?
 	@RequestMapping(value = "/cust", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustomerItem>> getCustomers() {
-		List<CustomerItem> data = customerRepository.findAllCustomerDetails();
+		List<CustomerItem> data = customerRepository
+				.findAllCustomerItemsByCustomerId(-1);
 		return ResponseEntity.status(HttpStatus.OK).body(data);
 	}
 

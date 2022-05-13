@@ -11,9 +11,11 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
 	public List<CustomerItem> findCustomerDetailsByCustomerId(int customerId);
 
-	/// java.lang.IllegalArgumentException:
+	// java.lang.IllegalArgumentException:
 	// Failed to create query for method public abstract java.util.List
-	/// example.repository.CustomerRepository.findAllCustomerDetails()! No
-	/// property findAllCustomerDetails found for type Customer!
-	// public List<CustomerItem> findAllCustomerDetails();
+	// example.repository.CustomerRepository.findAllCustomerDetails()!
+	// No property findAllCustomerDetails found for type Customer!
+	// renaming with suffix ByCustomerId "fixes" the issue.
+	// Leave it this way for now
+	public List<CustomerItem> findAllCustomerItemsByCustomerId(int customerId);
 }
