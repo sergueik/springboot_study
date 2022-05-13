@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -23,38 +24,42 @@ public class Customer {
 
 	@OneToMany(targetEntity = Item.class, cascade = CascadeType.ALL)
 	@JoinColumn(name = "cid", referencedColumnName = "cid")
-	private List items;
+	private List<Item> items;
+
+	@OneToOne(targetEntity = Address.class, cascade = CascadeType.ALL)
+	@JoinColumn(name = "cid", referencedColumnName = "cid")
+	private List<Address> address;
 
 	public int getCustomerId() {
 		return customerId;
 	}
 
-	public void setCustomerId(int customerId) {
-		this.customerId = customerId;
+	public void setCustomerId(int value) {
+		customerId = value;
 	}
 
 	public String getCustomerName() {
 		return customerName;
 	}
 
-	public void setCustomerName(String customerName) {
-		this.customerName = customerName;
+	public void setCustomerName(String value) {
+		customerName = value;
 	}
 
 	public String getCustomerCity() {
 		return customerCity;
 	}
 
-	public void setCustomerCity(String customerCity) {
-		this.customerCity = customerCity;
+	public void setCustomerCity(String value) {
+		customerCity = value;
 	}
 
-	public List getItems() {
+	public List<Item> getItems() {
 		return items;
 	}
 
-	public void setItems(List items) {
-		this.items = items;
+	public void setItems(List<Item> value) {
+		items = value;
 	}
 
 }

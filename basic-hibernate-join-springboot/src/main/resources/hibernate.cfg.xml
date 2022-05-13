@@ -33,5 +33,6 @@ hibernate-configuration instead.  Support for obsolete DTD/XSD namespaces may be
     <property name="format_sql">true</property>
     <mapping class="example.model.Customer"/>
     <mapping class="example.model.Item"/>
+    <mapping class="example.model.Address"/>
   </session-factory>
 </hibernate-configuration>

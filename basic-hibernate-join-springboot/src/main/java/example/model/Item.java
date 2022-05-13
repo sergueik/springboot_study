@@ -20,24 +20,24 @@ public class Item {
 		return itemId;
 	}
 
-	public void setItemId(int itemId) {
-		this.itemId = itemId;
+	public void setItemId(int value) {
+		itemId = value;
 	}
 
 	public String getItemName() {
 		return itemName;
 	}
 
-	public void setItemName(String itemName) {
-		this.itemName = itemName;
+	public void setItemName(String value) {
+		itemName = value;
 	}
 
 	public int getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
-		this.price = price;
+	public void setPrice(int value) {
+		price = value;
 	}
 
 }

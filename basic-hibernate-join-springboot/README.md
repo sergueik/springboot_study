@@ -73,6 +73,150 @@ curl http://localhost:8080/products?db=mysql
 -  need a fix
 
 ### Multi Table 
+
+```sh
+docker build -t mysql-server-alpine -f Dockerfile.mysql-server-alpine .
+```
+and run it with environments matching the `application.properties`:
+```sh
+export MYSQL_USER='java'
+export MYSQL_PASSWORD='password'
+docker run --name mysql-server-alpine -p 3306:3306 -e MYSQL_DATABASE=join_check -e MYSQL_USER=$MYSQL_USER -e MYSQL_PASSWORD=${MYSQL_PASSWORD} -e MYSQL_ROOT_PASSWORD=password -d mysql-server-alpine
+```
+
+* create database and tables:
+```sh
+docker exec -it mysql-server-alpine mysql -P 3306 -h localhost -u java -ppassword 
+```
+
+if the container was already run you may enconter
+```text
+ERROR 1045 (28000): Access denied for user 'java'@'localhost' (using password: YES)
+```
+then
+
+```sh
+docker exec -it mysql-server-alpine mysql
+```
+```sql
+
+create database test;
+use test;
+```
+```sql
+drop table if exist customer;
+
+create table customer(
+  cid bigint primary key ,
+  cname NVARCHAR(30) not null,
+  ccity NVARCHAR(30) not null
+);
+```
+```sql
+drop table if exist item;
+
+create table item(
+  iid bigint primary key ,
+  iname NVARCHAR(30) not null,
+  iprice  bigint,
+  cid bigint,
+  CONSTRAINT fk_cid FOREIGN KEY (cid)
+   REFERENCES customer(cid)
+);
+```
+
+```sql
+drop table if exist address;
+
+create table address(
+  aid bigint primary key ,
+  astreet NVARCHAR(30) not null,
+  acity NVARCHAR(30) not null,
+  astate NVARCHAR(30) not null,
+  azipcode NVARCHAR(30) not null,
+  cid bigint,
+  CONSTRAINT fk_acid FOREIGN KEY (cid)
+   REFERENCES customer(cid)
+);
+
+```
+add data, with correct foreign key 
+```sql
+insert into customer(cname,cid,ccity)  values ('michael',1001,'atlanta');
+
+insert into item(iname,iid,cid,iprice)  values ('test',201,1001,123);
+
+select c.cname, c.cCity, i.iName,i.iprice from customer c  join item i;
+exit;
+```
+ follow with one more insert
+
+```sql
+use test;
+insert into customer(cname,cid,ccity)  values ('bill',1002,'seattle');
+```
+
+* verify
+```sql
+use test;
+select c.cname, c.ccity, i.iname,i.iprice from customer c join item i;
+```
+```text
+
++---------+---------+-------+--------+
+| cname   | ccity   | iname | iprice |
++---------+---------+-------+--------+
+| michael | atlanta | test  |    123 |
+| bill    | seattle | test  |    123 |
++---------+---------+-------+--------+
+```
+do not add rows to `address` table yet. Note its schema  will be updated by hibernate:
+
+```text
+
+2022-05-13 13:37:03.023  INFO 3656 --- [         task-1] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+Hibernate: alter table address add column aid bigint not null
+Hibernate: alter table address add column acity varchar(50) not null
+Hibernate: alter table address add column astate varchar(50) not null
+Hibernate: alter table address add column astreet varchar(250) not null
+Hibernate: alter table address add column azipcode varchar(10) not null
+Hibernate: alter table item add constraint FK3n69su88aiehavpt9bm4cyw5j foreign key (cid) references customer (cid)
+``` 
+NOTE:
+```
+select c.cname, c.ccity, i.iname,i.iprice from customer c left join item i;
+```
+is failing in MySQL console attempt with error:
+```
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+```
+
+one has to specify the `on` part explicitly:
+```sql
+use test;
+select c.cname, c.ccity, i.iname,i.iprice from customer c left join item i on c.cid = i.cid;
+```
+```text
++---------+---------+-------+--------+
+| cname   | ccity   | iname | iprice |
++---------+---------+-------+--------+
+| michael | atlanta | test  |    123 |
+| bill    | seattle | NULL  |   NULL |
++---------+---------+-------+--------+
+```
+
+```sql
+select c.cname, c.ccity, i.iname,i.iprice from customer c inner join item i on c.cid = i.cid;
+```
+```text
++---------+---------+-------+--------+
+| cname   | ccity   | iname | iprice |
++---------+---------+-------+--------+
+| michael | atlanta | test  |    123 |
++---------+---------+-------+--------+
+```
+
+
 ```sh
 curl http://localhost:8080/cust/1001 | /c/tools/jq-win64.exe  '.'
 ```
