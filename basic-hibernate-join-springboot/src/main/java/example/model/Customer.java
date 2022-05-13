@@ -19,8 +19,6 @@ public class Customer {
 	private int customerId;
 	@Column(name = "cname", length = 15)
 	private String customerName;
-	@Column(name = "ccity", length = 20)
-	private String customerCity;
 
 	@OneToMany(targetEntity = Item.class, cascade = CascadeType.ALL)
 	@JoinColumn(name = "cid", referencedColumnName = "cid")
@@ -28,7 +26,7 @@ public class Customer {
 
 	@OneToOne(targetEntity = Address.class, cascade = CascadeType.ALL)
 	@JoinColumn(name = "cid", referencedColumnName = "cid")
-	private List<Address> address;
+	private Address address;
 
 	public int getCustomerId() {
 		return customerId;
@@ -46,20 +44,20 @@ public class Customer {
 		customerName = value;
 	}
 
-	public String getCustomerCity() {
-		return customerCity;
-	}
-
-	public void setCustomerCity(String value) {
-		customerCity = value;
-	}
-
 	public List<Item> getItems() {
 		return items;
 	}
 
 	public void setItems(List<Item> value) {
 		items = value;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address value) {
+		address = value;
 	}
 
 }

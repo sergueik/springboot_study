@@ -104,16 +104,15 @@ create database test;
 use test;
 ```
 ```sql
-drop table if exist customer;
+drop table if exists customer;
 
 create table customer(
   cid bigint primary key ,
-  cname NVARCHAR(30) not null,
-  ccity NVARCHAR(30) not null
+  cname NVARCHAR(30) not null
 );
 ```
 ```sql
-drop table if exist item;
+drop table if exists item;
 
 create table item(
   iid bigint primary key ,
@@ -126,7 +125,7 @@ create table item(
 ```
 
 ```sql
-drop table if exist address;
+drop table if exists address;
 
 create table address(
   aid bigint primary key ,
@@ -142,33 +141,33 @@ create table address(
 ```
 add data, with correct foreign key 
 ```sql
-insert into customer(cname,cid,ccity)  values ('michael',1001,'atlanta');
+insert into customer(cname,cid)  values ('michael',1001);
 
 insert into item(iname,iid,cid,iprice)  values ('test',201,1001,123);
 
-select c.cname, c.cCity, i.iName,i.iprice from customer c  join item i;
+select c.cname, i.iName,i.iprice from customer c  join item i;
 exit;
 ```
  follow with one more insert
 
 ```sql
 use test;
-insert into customer(cname,cid,ccity)  values ('bill',1002,'seattle');
+insert into customer(cname,cid)  values ('bill',1002);
 ```
 
 * verify
 ```sql
 use test;
-select c.cname, c.ccity, i.iname,i.iprice from customer c join item i;
+select c.cname, i.iname,i.iprice from customer c join item i;
 ```
 ```text
 
-+---------+---------+-------+--------+
-| cname   | ccity   | iname | iprice |
-+---------+---------+-------+--------+
-| michael | atlanta | test  |    123 |
-| bill    | seattle | test  |    123 |
-+---------+---------+-------+--------+
++---------+-------+--------+
+| cname   | iname | iprice |
++---------+-------+--------+
+| michael | test  |    123 |
+| bill    | test  |    123 |
++---------+-------+--------+
 ```
 do not add rows to `address` table yet. Note its schema  will be updated by hibernate:
 
@@ -184,7 +183,7 @@ Hibernate: alter table item add constraint FK3n69su88aiehavpt9bm4cyw5j foreign k
 ``` 
 NOTE:
 ```
-select c.cname, c.ccity, i.iname,i.iprice from customer c left join item i;
+select c.cname,  i.iname,i.iprice from customer c left join item i;
 ```
 is failing in MySQL console attempt with error:
 ```
@@ -194,26 +193,26 @@ ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that 
 one has to specify the `on` part explicitly:
 ```sql
 use test;
-select c.cname, c.ccity, i.iname,i.iprice from customer c left join item i on c.cid = i.cid;
+select c.cname, i.iname,i.iprice from customer c left join item i on c.cid = i.cid;
 ```
 ```text
-+---------+---------+-------+--------+
-| cname   | ccity   | iname | iprice |
-+---------+---------+-------+--------+
-| michael | atlanta | test  |    123 |
-| bill    | seattle | NULL  |   NULL |
-+---------+---------+-------+--------+
++---------+-------+--------+
+| cname   | iname | iprice |
++---------+-------+--------+
+| michael | test  |    123 |
+| bill    | NULL  |   NULL |
++---------+-------+--------+
 ```
 
 ```sql
-select c.cname, c.ccity, i.iname,i.iprice from customer c inner join item i on c.cid = i.cid;
+select c.cname,  i.iname,i.iprice from customer c inner join item i on c.cid = i.cid;
 ```
 ```text
-+---------+---------+-------+--------+
-| cname   | ccity   | iname | iprice |
-+---------+---------+-------+--------+
-| michael | atlanta | test  |    123 |
-+---------+---------+-------+--------+
++---------+-------+--------+
+| cname   | iname | iprice |
++---------+-------+--------+
+| michael | test  |    123 |
++---------+-------+--------+
 ```
 
 
@@ -224,10 +223,8 @@ curl http://localhost:8080/cust/1001 | /c/tools/jq-win64.exe  '.'
 ```json
 [
   {
-    "customerId": 0,
     "customerName": "michael",
-    "customerCity": "atlanta",
-    "itemId": 0,
+    "customerCity": null,
     "itemName": "test",
     "price": 123
   }
@@ -239,7 +236,6 @@ positoryDao       : findCustomerDetailsByCustomerId processing customerId =1001
 Hibernate:
     select
         customer0_.cname as col_0_0_,
-        customer0_.ccity as col_1_0_,
         items1_.iname as col_2_0_,
         items1_.iprice as col_3_0_
     from
@@ -260,45 +256,32 @@ positoryDao       : michael -- atlanta--test--123
 ```JSON
 [
   {
-    "customerId": 0,
     "customerName": "michael",
-    "customerCity": "atlanta",
-    "itemId": 0,
+    "customerCity": null,
     "itemName": "test",
     "price": 123
   },
   {
-    "customerId": 0,
     "customerName": "bill",
-    "customerCity": "seattle",
-    "itemId": 0,
+    "customerCity": null,
     "itemName": null,
     "price": 0
   }
 ]
-
 ```
 application log:
 ```text
 
-2022-05-12 20:42:52.098  INFO 6316 --- [nio-8080-exec-8] e.repository.CustomerRe
-positoryDao       : findAllCustomerDetails
 Hibernate:
     select
         customer0_.cname as col_0_0_,
-        customer0_.ccity as col_1_0_,
-        items1_.iname as col_2_0_,
-        items1_.iprice as col_3_0_
+        items1_.iname as col_1_0_,
+        items1_.iprice as col_2_0_
     from
         customer customer0_
     left outer join
         item items1_
             on customer0_.cid=items1_.cid
-2022-05-12 20:42:52.147  INFO 6316 --- [nio-8080-exec-8] e.repository.CustomerRe
-positoryDao       : michael -- atlanta--test--123
-2022-05-12 20:42:52.148  INFO 6316 --- [nio-8080-exec-8] e.repository.CustomerRe
-positoryDao       : bill -- seattle--null--null
-
 ```
 ### See Also
 
