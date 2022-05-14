@@ -237,10 +237,10 @@ curl http://localhost:8080/cust/1001 | /c/tools/jq-win64.exe  '.'
 ```
 application log:
 ```text
-positoryDao       : findCustomerDetailsByCustomerId processing customerId =1001
 Hibernate:
     select
         customer0_.cname as col_0_0_,
+        addresses2_.acity as col_1_0_,
         items1_.iname as col_2_0_,
         items1_.iprice as col_3_0_
     from
@@ -248,11 +248,14 @@ Hibernate:
     inner join
         item items1_
             on customer0_.cid=items1_.cid
+    inner join
+        address addresses2_
+            on customer0_.cid=addresses2_.cid
     where
         customer0_.cid=?
-2022-05-12 20:41:18.852  INFO 6316 --- [nio-8080-exec-2] e.repository.CustomerRe
-positoryDao       : michael -- atlanta--test--123
-
+```
+```text
+Loading: michael|atlanta|test|123
 ```
 
 ```sh
@@ -262,13 +265,13 @@ positoryDao       : michael -- atlanta--test--123
 [
   {
     "customerName": "michael",
-    "customerCity": null,
+    "customerCity": "atlanta",
     "itemName": "test",
     "price": 123
   },
   {
     "customerName": "bill",
-    "customerCity": null,
+    "customerCity": "seatle",
     "itemName": null,
     "price": 0
   }
@@ -276,17 +279,25 @@ positoryDao       : michael -- atlanta--test--123
 ```
 application log:
 ```text
-
 Hibernate:
     select
         customer0_.cname as col_0_0_,
-        items1_.iname as col_1_0_,
-        items1_.iprice as col_2_0_
+        addresses2_.acity as col_1_0_,
+        items1_.iname as col_2_0_,
+        items1_.iprice as col_3_0_
     from
         customer customer0_
     left outer join
         item items1_
             on customer0_.cid=items1_.cid
+    inner join
+        address addresses2_
+            on customer0_.cid=addresses2_.cid
+            
+```
+```text
+Loading: michael|atlanta|test|123
+Loading: bill|seatle|null|null
 ```
 ### See Also
 

@@ -43,13 +43,22 @@ public class CustomerRepositoryDao implements CustomerRepository {
 		Session session = factory.openSession();
 		// HQL
 		@SuppressWarnings("unchecked")
-		Query<Object[]> query = session
-				.createQuery(
-						"select c.customerName, a.city, i.itemName,i.price from Customer c "
-								+ " join c.items i "
-								+ " join c.address a on c.customerId = a.cid "
-								+ " where c.customerId = :customerId ")
+		Query<Object[]> query = session.createQuery(
+				"select c.customerName, a.city, i.itemName,i.price from Customer c "
+						+ " join c.items i " + " join c.addresses a "
+						+ " where c.customerId = :customerId ")
+
 				.setParameter("customerId", customerId);
+		// NOTE:
+		// " on c.customerId = a.cid " leads to
+		// org.hibernate.hql.internal.ast.QuerySyntaxException: could not resolve
+		// property: cid of: example.model.Address [select c.customerName, a.city,
+		// i.itemName,i.price from example.model.Customer c join c.items i join
+		// c.addresses a on c.customerId = a.cid where c.customerId = :customerId ]
+
+
+		// if (a.city like 'atlanta', 'c', 's') city
+
 		// TODO:
 		// https://docs.jboss.org/hibernate/orm/4.2/javadocs/org/hibernate/type/Type.html
 		List<Object[]> objectList = query.list();
@@ -57,11 +66,12 @@ public class CustomerRepositoryDao implements CustomerRepository {
 		while (objectIterator.hasNext()) {
 			CustomerItem customerItem = new CustomerItem();
 			Object rows[] = (Object[]) objectIterator.next();
+			logger.info("Loading: " + rows[0] + "|" + rows[1] + "|" + rows[2] + "|"
+					+ rows[3]);
 			customerItem.setCustomerName(rows[0].toString());
 			customerItem.setCustomerCity(rows[1].toString());
 			customerItem.setItemName(rows[2].toString());
 			customerItem.setPrice(Integer.parseInt(rows[3].toString()));
-			logger.info(rows[0] + " -- " + rows[1] + "--" + rows[2] + "--" + rows[3]);
 			data.add(customerItem);
 		}
 		session.clear();
@@ -84,7 +94,7 @@ public class CustomerRepositoryDao implements CustomerRepository {
 		@SuppressWarnings("unchecked")
 		Query<Object[]> query = session.createQuery(
 				"select c.customerName, a.city, i.itemName,i.price from Customer c "
-						+ "left join c.items i " + " join c.address a");
+						+ "left join c.items i " + " join c.addresses a");
 		// NOTE: cannot use "on c.customerId = a.cid" - leads to error in runtime:
 		// antlr.SemanticException: could not resolve property: cid of:
 		// example.model.Address
@@ -93,13 +103,14 @@ public class CustomerRepositoryDao implements CustomerRepository {
 		while (objectIterator.hasNext()) {
 			CustomerItem customerItem = new CustomerItem();
 			Object rows[] = (Object[]) objectIterator.next();
+			logger.info("Loading: " + rows[0] + "|" + rows[1] + "|" + rows[2] + "|"
+					+ rows[3]);
 			customerItem.setCustomerName(rows[0].toString());
 			customerItem.setCustomerCity(rows[1].toString());
 			if (rows[2] != null)
 				customerItem.setItemName(rows[2].toString());
 			if (rows[3] != null)
-				customerItem.setPrice(Integer.parseInt(rows[2].toString()));
-			logger.info(rows[0] + " -- " + rows[1] + "--" + rows[2] + "--" + rows[3]);
+				customerItem.setPrice(Integer.parseInt(rows[3].toString()));
 			data.add(customerItem);
 		}
 		session.clear();

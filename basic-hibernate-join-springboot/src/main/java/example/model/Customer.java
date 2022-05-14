@@ -41,9 +41,9 @@ public class Customer {
 	      address address2_
 	          on customer0_.cid=address2_.aid
 	*/
-	@OneToOne(targetEntity = Address.class, cascade = CascadeType.ALL)
+	@OneToMany(targetEntity = Address.class, cascade = CascadeType.ALL)
 	@JoinColumn(name = "cid", referencedColumnName = "cid")
-	private Address address;
+	private List<Address> addresses;
 
 	public int getCustomerId() {
 		return customerId;
@@ -69,12 +69,12 @@ public class Customer {
 		items = value;
 	}
 
-	public Address getAddress() {
-		return address;
+	public List<Address> getAddresses() {
+		return addresses;
 	}
 
-	public void setAddress(Address value) {
-		address = value;
+	public void setAddresses(List<Address> value) {
+		addresses = value;
 	}
 
 }
