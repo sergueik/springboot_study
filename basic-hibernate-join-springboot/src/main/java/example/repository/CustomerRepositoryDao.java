@@ -3,21 +3,23 @@ package example.repository;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import example.controller.ProductController;
 import example.model.Customer;
 import example.model.CustomerItem;
 import example.utils.HibernateUtility;
@@ -35,6 +37,7 @@ public class CustomerRepositoryDao implements CustomerRepository {
 	// example.repository.CustomerRepository.findCustomerDetailsById(int)! No
 	// property id found for type Customer!
 
+	@SuppressWarnings("deprecation")
 	public List<CustomerItem> findCustomerDetailsByCustomerId(int customerId) {
 		List<CustomerItem> data = new ArrayList<>();
 		logger.info(
@@ -43,11 +46,11 @@ public class CustomerRepositoryDao implements CustomerRepository {
 		Session session = factory.openSession();
 		// HQL
 		@SuppressWarnings("unchecked")
-		Query<Object[]> query = session.createQuery(
-				"select c.customerName, a.city, i.itemName,i.price from Customer c "
-						+ " join c.items i " + " join c.addresses a "
-						+ " where c.customerId = :customerId ")
-
+		Query<Object[]> query = session
+				.createQuery(
+						"select c.customerName, a.city, i.itemName,i.price from Customer c "
+								+ " join c.items i " + " join c.addresses a "
+								+ " where c.customerId = :customerId ")
 				.setParameter("customerId", customerId);
 		// NOTE:
 		// " on c.customerId = a.cid " leads to
@@ -56,12 +59,48 @@ public class CustomerRepositoryDao implements CustomerRepository {
 		// i.itemName,i.price from example.model.Customer c join c.items i join
 		// c.addresses a on c.customerId = a.cid where c.customerId = :customerId ]
 
-
 		// if (a.city like 'atlanta', 'c', 's') city
 
+		// NOTE: cannot dynamically extract ressult metadata column names
+		// reuired to produce a targetClass instance
+		// with specicic properties set through reflection
+		// https://stackoverflow.com/questions/2605385/using-sql-column-names-in-hibernate-createsqlquery-result
+		// Note: This is said to work for SQLQuery
+		// Attent of using AliasToEntityMapResultTransformer on hql query without
+		// specifying aliases
+		// return index value as key
+		try {
+			Query query2 = session
+					.createSQLQuery(
+							"select c.customerName, a.city, i.itemName,i.price from Customer c "
+									+ " join c.items i " + " join c.addresses a "
+									+ " where c.customerId = :customerId ")
+					.setParameter("customerId", customerId);
+
+			query2.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			List<Map<String, Object>> aliasToValueMapList = query2.list();
+			logger.info("SQL Query key set: " + aliasToValueMapList.get(0).keySet());
+		} catch (Exception e) {
+			logger.info("exception (ignored): " + e.toString());
+			// javax.persistence.PersistenceException:
+			// could not extract ResultSet
+			logger.info("exception cause: " + e.getCause().toString());
+			// with root cause
+			// org.hibernate.exception.SQLGrammarException:
+			// could not extract ResultSet
+			logger.info("exception cause(2): " + e.getCause().getCause().toString());
+			// with root cause
+			// SQL Error: 1142, SQLState: 42000
+			// java.sql.SQLSyntaxErrorException:
+			// SELECT command denied to user 'java'@'192.168.0.25' for table 'items'
+			// in mysql logs see
+			// Aborted connection 52 to db: 'test' user: 'java' host: '192.168.0.25'
+			// (Got an error reading communication packets)
+		}
 		// TODO:
 		// https://docs.jboss.org/hibernate/orm/4.2/javadocs/org/hibernate/type/Type.html
 		List<Object[]> objectList = query.list();
+		logger.info("Query result list: " + query.getResultList());
 		Iterator<Object[]> objectIterator = objectList.iterator();
 		while (objectIterator.hasNext()) {
 			CustomerItem customerItem = new CustomerItem();
