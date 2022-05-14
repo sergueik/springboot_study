@@ -52,14 +52,45 @@ public class CustomerRepositoryDao implements CustomerRepository {
 								+ " join c.items i " + " join c.addresses a "
 								+ " where c.customerId = :customerId ")
 				.setParameter("customerId", customerId);
+
+		// NOTE:
+		// With mySQL query with string function
+		// if(a.city like 'atlanta', 'c', 's') city
+		// or
+		// regexp_replace(a.city, 'atlanta', 'a')
+		// "trim()" works
+		// works in plain JDBC
+		// "select if (a.acity like 'atlanta', 'c', 's') as city from address a "
+		// attempt to do the same through Hibernate with or without column alias
+		// "as city"
+		// leads to error in runtime:
+		// java.lang.IllegalArgumentException:
+		// org.hibernate.QueryException:
+		// No data type for node: org.hibernate.hql.internal.ast.tree.MethodNode
+		// with the ascii art presumable describing tne grammar lookahead parser
+		// stop condition building AST
+		// +-[METHOD_CALL] MethodNode: '('
+		// | +-[METHOD_NAME] IdentNode: 'if' {originalText=if}
+		// | \-[EXPR_LIST] SqlNode: 'exprList'
+		// [select c.customerName, if (a.city like 'atlanta', 'c', 's') as city,
+		// i.itemName,i.price from example.model.Customer c join c.items i join
+		// c.addresses a where c.customerId = :customerId ]] with root cause
+		//
+		// org.hibernate.QueryException: No data type for node:
+		// org.hibernate.hql.internal.ast.tree.MethodNode
+		// +-[METHOD_CALL] MethodNode: '('
+		// | +-[METHOD_NAME] IdentNode: 'if' {originalText=if}
+		// | \-[EXPR_LIST] SqlNode: 'exprList'
+		//
+		// at
+		// org.hibernate.hql.internal.ast.tree.SelectClause.initializeExplicitSelectClause(SelectClause.java:161)
+
 		// NOTE:
 		// " on c.customerId = a.cid " leads to
 		// org.hibernate.hql.internal.ast.QuerySyntaxException: could not resolve
 		// property: cid of: example.model.Address [select c.customerName, a.city,
 		// i.itemName,i.price from example.model.Customer c join c.items i join
 		// c.addresses a on c.customerId = a.cid where c.customerId = :customerId ]
-
-		// if (a.city like 'atlanta', 'c', 's') city
 
 		// NOTE: cannot dynamically extract ressult metadata column names
 		// reuired to produce a targetClass instance
