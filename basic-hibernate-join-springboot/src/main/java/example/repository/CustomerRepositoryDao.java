@@ -48,9 +48,11 @@ public class CustomerRepositoryDao implements CustomerRepository {
 		@SuppressWarnings("unchecked")
 		Query<Object[]> query = session
 				.createQuery(
-						"select c.customerName, a.city, i.itemName,i.price from Customer c "
-								+ " join c.items i " + " join c.addresses a "
-								+ " where c.customerId = :customerId ")
+	      " select c.customerName, a.city, i.itemName,i.price, 'A' from Customer c join c.items i"
+			+ " join c.addresses a  where c.customerId = :customerId"
+			+ " union all "
+			+ " select c.customerName, a.city, i.itemName, i.price, 'B' from Customer c join c.items i"
+			+ " join c.addresses a  where c.customerId = :customerId")
 				.setParameter("customerId", customerId);
 
 		// NOTE:

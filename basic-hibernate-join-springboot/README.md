@@ -1,6 +1,6 @@
-### Info 
+### Info
 
-this directory contains replica of skeleton project [multiple-db-connection](https://github.com/Java-Gyan-Mantra/multiple-db-connection) demonstrating how to configure  Springboot application to operate Mongo DB and SQLite simultaneously 
+this directory contains replica of skeleton project [multiple-db-connection](https://github.com/Java-Gyan-Mantra/multiple-db-connection) demonstrating how to configure  Springboot application to operate Mongo DB and SQLite simultaneously
 
 ### Testing
  * create mongo server container
@@ -72,7 +72,7 @@ curl http://localhost:8080/products?db=mysql
 ```
 -  need a fix
 
-### Multi Table 
+### Multi Table
 
 ```sh
 docker build -t mysql-server-alpine -f Dockerfile.mysql-server-alpine .
@@ -86,7 +86,7 @@ docker run --name mysql-server-alpine -p 3306:3306 -e MYSQL_DATABASE=join_check 
 
 * create database and tables:
 ```sh
-docker exec -it mysql-server-alpine mysql -P 3306 -h localhost -u java -ppassword 
+docker exec -it mysql-server-alpine mysql -P 3306 -h localhost -u java -ppassword
 ```
 
 if the container was already run you may enconter
@@ -139,7 +139,7 @@ create table address(
 );
 
 ```
-add data, with correct foreign key 
+add data, with correct foreign key
 ```sql
 insert into customer(cname,cid)  values ('michael',1001);
 
@@ -180,7 +180,7 @@ Hibernate: alter table address add column astate varchar(50) not null
 Hibernate: alter table address add column astreet varchar(250) not null
 Hibernate: alter table address add column azipcode varchar(10) not null
 Hibernate: alter table item add constraint FK3n69su88aiehavpt9bm4cyw5j foreign key (cid) references customer (cid)
-``` 
+```
 
 add data to `address`:
 ```sql
@@ -293,12 +293,78 @@ Hibernate:
     inner join
         address addresses2_
             on customer0_.cid=addresses2_.cid
-            
+
 ```
 ```text
 Loading: michael|atlanta|test|123
 Loading: bill|seatle|null|null
 ```
+
+### Valid SQL Failing as HQL
+
+#### Union
+* execute the following [valid](https://www.mysqltutorial.org/sql-union-mysql.aspx) query in mysql console (constructed from HQLgenerated queries)
+```sql
+use test;
+```
+```sql
+select
+  customer0_.cname as col_0_0_,addresses2_.acity as col_1_0_,items1_.iname as col_2_0_,items1_.iprice as col_3_0_,'A' as col_4_0_
+from
+  customer customer0_
+inner join
+  item items1_ on customer0_.cid=items1_.cid
+inner join
+  address addresses2_ on customer0_.cid=addresses2_.cid
+where
+  customer0_.cid = 1001
+union all
+select
+  customer0_.cname as col_0_0_,addresses2_.acity as col_1_0_,items1_.iname as col_2_0_,items1_.iprice as col_3_0_,'B' as col_4_0_
+from
+  customer customer0_
+inner join
+  item items1_ on customer0_.cid=items1_.cid
+inner join
+  address addresses2_ on customer0_.cid=addresses2_.cid
+where
+  customer0_.cid = 1001;
+```
+get back expected result
+```text
++----------+----------+----------+----------+----------+
+| col_0_0_ | col_1_0_ | col_2_0_ | col_3_0_ | col_4_0_ |
++----------+----------+----------+----------+----------+
+| michael  | atlanta  | test     |      123 | A        |
+| michael  | atlanta  | test     |      123 | B        |
++----------+----------+----------+----------+----------+
+```
+
+* attempt the equivalent in HQL:
+```java
+@SuppressWarnings("unchecked")
+Query<Object[]> query = session
+    .createQuery(
+    " select c.customerName, a.city, i.itemName, i.price, 'A' from Customer c join c.items i join c.addresses a where c.customerId = :customerId"
+  + " union all "
+  + " select c.customerName, a.city, i.itemName, i.price, 'B' from Customer c join c.items i join c.addresses a where c.customerId = :customerId")
+    .setParameter("customerId", customerId);
+```
+* run
+```sh
+mvn spring-boot:run
+```
+```sh
+curl http://localhost:8080/cust/1001
+```
+* get exception in runtime
+```
+org.hibernate.hql.internal.ast.QuerySyntaxException:
+unexpected token: union near line 1, column 155
+[ select c.customerName, a.city, i.itemName,i.price, 'A' from example.model.Customer c join c.items i join c.addresses a  where c.customerId = :customerId union all  select c.customerName, a.city, i.itemName, i.price, 'B' from example.model.Customer c join c.items i join c.addresses a  where c.customerId = :customerId]
+at org.hibernate.hql.internal.ast.QuerySyntaxException.convert(QuerySyntaxException.java:74)
+```
+#### Fnctions
 ### See Also
 
   * [discussion of multi-database Hibernate App fix](https://qna.habr.com/q/1104464) (in Russian)
