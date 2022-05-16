@@ -46,15 +46,10 @@ public class NodeExporter {
 	String fileName = "cluster.yaml";
 	Map<String, Host> hostInfo = new HashMap<>();
 
-	private static Map<String, Gauge> metrics = new HashMap<>();
+	private static Map<String, Gauge> gauges = new HashMap<>();
 
 	private CollectorRegistry registry;
 	private Gauge example = null;
-	static final Counter requestsTotal = Counter.build().name("requests_total")
-			.help("Total number of requests.").register();
-	static final Histogram requestTimet = Histogram.build()
-			.name("requests_latency_seconds").help("Request latency in seconds.")
-			.register();
 	private HostData hostData = null;
 	private Map<String, String> data = new HashMap<>();
 	private Map<String, String> metricTaker = new HashMap<>(); // currently unused
@@ -68,31 +63,31 @@ public class NodeExporter {
 
 	private void createGauge(String counterName) {
 		// cache the gauge objects
-		if (metrics.containsKey(counterName))
+		if (gauges.containsKey(counterName))
 			return;
 		// NOTE: check potential name collisions before register
 		Enumeration<MetricFamilySamples> metricFamilySamplesEnumeration = registry
 				.metricFamilySamples();
-		List<String> metricNames = new ArrayList<>();
+		List<String> definedMetricNames = new ArrayList<>();
 		while (metricFamilySamplesEnumeration.hasMoreElements()) {
 			MetricFamilySamples metricFamilySamples = metricFamilySamplesEnumeration
 					.nextElement();
 			// NOTE: getNames() was not available in 0.11.0 or earlier releases
 			String[] names = metricFamilySamples.getNames();
-			metricNames.addAll(Arrays.asList(names));
+			definedMetricNames.addAll(Arrays.asList(names));
 		}
 
 		if (debug)
-			logger.info("Metric Family Samples names:" + metricNames);
+			logger.info("Defined metric family sample names:" + definedMetricNames);
 
 		try {
-			if (!metricNames.contains((Object) counterName)) {
+			if (!definedMetricNames.contains(counterName)) {
 				Builder builder = Gauge
 						.build(counterName, "Value of metric from instance")
 						.labelNames(new String[] { "instance", "datacenter", "appid",
 								"environment" });
 				example = builder.register(registry);
-				metrics.put(counterName, example);
+				gauges.put(counterName, example);
 			}
 		} catch (Exception e) {
 			logger.error("skipping metric update - exception: " + e.getMessage());
@@ -106,7 +101,7 @@ public class NodeExporter {
 		String datacenter = host.getDatacenter();
 		String appid = host.getAppid();
 		String environment = host.getEnvironment();
-		Gauge gauge = metrics.get(counterName);
+		Gauge gauge = gauges.get(counterName);
 		// invoke Prometheus variadic methods with a argument array set at
 		// compile-time
 		// can also pass the arguments explicitly as in

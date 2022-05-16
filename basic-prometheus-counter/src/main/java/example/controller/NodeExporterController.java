@@ -44,14 +44,4 @@ public class NodeExporterController {
 				: ResponseEntity.status(HttpStatus.OK).body(payload);
 	}
 
-	// index page
-	@GetMapping(produces = MediaType.TEXT_HTML_VALUE)
-	@ResponseBody
-	public ResponseEntity<String> index() {
-		String body = "<html>" + "<head>" + "</head>" + "<body>"
-				+ "<a href=\"./metrics\"\">Application hosted metrics REST service</a><br/>"
-				+ "</body>" + "</html>";
-		return ResponseEntity.ok().body(body);
-	}
-
 }
