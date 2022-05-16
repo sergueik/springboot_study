@@ -4,6 +4,7 @@ public class CustomerItem {
 
 	private String customerName;
 	private String customerCity;
+	private String abbreviation;
 	private String itemName;
 	private int price;
 
@@ -21,6 +22,14 @@ public class CustomerItem {
 
 	public void setCustomerCity(String value) {
 		customerCity = value;
+	}
+
+	public String getAbbreviation() {
+		return abbreviation;
+	}
+
+	public void setAbbreviation(String value) {
+		abbreviation = value;
 	}
 
 	public String getItemName() {

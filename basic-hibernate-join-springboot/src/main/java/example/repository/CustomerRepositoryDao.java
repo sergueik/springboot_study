@@ -30,13 +30,6 @@ public class CustomerRepositoryDao implements CustomerRepository {
 	private static Logger logger = LoggerFactory
 			.getLogger(CustomerRepositoryDao.class);
 
-	// NOTE: naming matters
-	// otherwise:
-	// java.lang.IllegalArgumentException: Failed to create query for method
-	// public abstract void
-	// example.repository.CustomerRepository.findCustomerDetailsById(int)! No
-	// property id found for type Customer!
-
 	@SuppressWarnings("deprecation")
 	public List<CustomerItem> findCustomerDetailsByCustomerId(int customerId) {
 		List<CustomerItem> data = new ArrayList<>();
@@ -48,88 +41,10 @@ public class CustomerRepositoryDao implements CustomerRepository {
 		@SuppressWarnings("unchecked")
 		Query<Object[]> query = session
 				.createQuery(
-	      " select c.customerName, a.city, i.itemName,i.price, 'A' from Customer c join c.items i"
-			+ " join c.addresses a  where c.customerId = :customerId"
-			+ " union all "
-			+ " select c.customerName, a.city, i.itemName, i.price, 'B' from Customer c join c.items i"
-			+ " join c.addresses a  where c.customerId = :customerId")
+						" select c.customerName, a.city, i.itemName,i.price from Customer c join c.items i"
+								+ " join c.addresses a  where c.customerId = :customerId")
 				.setParameter("customerId", customerId);
 
-		// NOTE:
-		// With mySQL query with string function
-		// if(a.city like 'atlanta', 'c', 's') city
-		// or
-		// regexp_replace(a.city, 'atlanta', 'a')
-		// "trim()" works
-		// works in plain JDBC
-		// "select if (a.acity like 'atlanta', 'c', 's') as city from address a "
-		// attempt to do the same through Hibernate with or without column alias
-		// "as city"
-		// leads to error in runtime:
-		// java.lang.IllegalArgumentException:
-		// org.hibernate.QueryException:
-		// No data type for node: org.hibernate.hql.internal.ast.tree.MethodNode
-		// with the ascii art presumable describing tne grammar lookahead parser
-		// stop condition building AST
-		// +-[METHOD_CALL] MethodNode: '('
-		// | +-[METHOD_NAME] IdentNode: 'if' {originalText=if}
-		// | \-[EXPR_LIST] SqlNode: 'exprList'
-		// [select c.customerName, if (a.city like 'atlanta', 'c', 's') as city,
-		// i.itemName,i.price from example.model.Customer c join c.items i join
-		// c.addresses a where c.customerId = :customerId ]] with root cause
-		//
-		// org.hibernate.QueryException: No data type for node:
-		// org.hibernate.hql.internal.ast.tree.MethodNode
-		// +-[METHOD_CALL] MethodNode: '('
-		// | +-[METHOD_NAME] IdentNode: 'if' {originalText=if}
-		// | \-[EXPR_LIST] SqlNode: 'exprList'
-		//
-		// at
-		// org.hibernate.hql.internal.ast.tree.SelectClause.initializeExplicitSelectClause(SelectClause.java:161)
-
-		// NOTE:
-		// " on c.customerId = a.cid " leads to
-		// org.hibernate.hql.internal.ast.QuerySyntaxException: could not resolve
-		// property: cid of: example.model.Address [select c.customerName, a.city,
-		// i.itemName,i.price from example.model.Customer c join c.items i join
-		// c.addresses a on c.customerId = a.cid where c.customerId = :customerId ]
-
-		// NOTE: cannot dynamically extract ressult metadata column names
-		// reuired to produce a targetClass instance
-		// with specicic properties set through reflection
-		// https://stackoverflow.com/questions/2605385/using-sql-column-names-in-hibernate-createsqlquery-result
-		// Note: This is said to work for SQLQuery
-		// Attent of using AliasToEntityMapResultTransformer on hql query without
-		// specifying aliases
-		// return index value as key
-		try {
-			Query query2 = session
-					.createSQLQuery(
-							"select c.customerName, a.city, i.itemName,i.price from Customer c "
-									+ " join c.items i " + " join c.addresses a "
-									+ " where c.customerId = :customerId ")
-					.setParameter("customerId", customerId);
-
-			query2.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			List<Map<String, Object>> aliasToValueMapList = query2.list();
-			logger.info("SQL Query key set: " + aliasToValueMapList.get(0).keySet());
-		} catch (Exception e) {
-			logger.info("exception (ignored): " + e.toString());
-			// javax.persistence.PersistenceException:
-			// could not extract ResultSet
-			logger.info("exception cause: " + e.getCause().toString());
-			// with root cause
-			// org.hibernate.exception.SQLGrammarException:
-			// could not extract ResultSet
-			logger.info("exception cause(2): " + e.getCause().getCause().toString());
-			// with root cause
-			// SQL Error: 1142, SQLState: 42000
-			// java.sql.SQLSyntaxErrorException:
-			// SELECT command denied to user 'java'@'192.168.0.25' for table 'items'
-			// in mysql logs see
-			// Aborted connection 52 to db: 'test' user: 'java' host: '192.168.0.25'
-			// (Got an error reading communication packets)
-		}
 		// TODO:
 		// https://docs.jboss.org/hibernate/orm/4.2/javadocs/org/hibernate/type/Type.html
 		List<Object[]> objectList = query.list();
@@ -190,6 +105,45 @@ public class CustomerRepositoryDao implements CustomerRepository {
 		return (data);
 	}
 
+	@SuppressWarnings("deprecation")
+	public List<CustomerItem> findCustomerDetailsViaNativeSQLByCustomerId(
+			int customerId) {
+		List<CustomerItem> data = new ArrayList<>();
+		logger.info(
+				"findCustomerDetailsByCustomerId processing customerId =" + customerId);
+		SessionFactory factory = HibernateUtility.getSessionFactory();
+		Session session = factory.openSession();
+		// SQL
+		@SuppressWarnings("unchecked")
+		Query<Object[]> nativeQuery = session
+				.createNativeQuery(
+						" select c.cname, a.acity, i.iname,i.iprice, 'A' from customer c join item i on c.cid = i.cid "
+								+ " join address a on c.cid = a.cid where c.cid = :customerId"
+								+ " union all "
+								+ " select c.cname, a.acity, i.iname,i.iprice, 'B' from customer c join item i on c.cid = i.cid "
+								+ " join address a on c.cid = a.cid where c.cid = :customerId")
+				.setParameter("customerId", customerId);
+		List<Object[]> nativeQueryObjectList = nativeQuery.list();
+		Iterator<Object[]> nativeQueryObjectIterator = nativeQueryObjectList
+				.iterator();
+		while (nativeQueryObjectIterator.hasNext()) {
+			Object rows[] = (Object[]) nativeQueryObjectIterator.next();
+			logger.info("Loading: " + rows[0] + "|" + rows[1] + "|" + rows[2] + "|"
+					+ rows[3] + "|" + rows[4]);
+			CustomerItem customerItem = new CustomerItem();
+			customerItem.setCustomerName(rows[0].toString());
+			customerItem.setCustomerCity(rows[1].toString());
+			customerItem.setItemName(rows[2].toString());
+			customerItem.setPrice(Integer.parseInt(rows[3].toString()));
+			customerItem.setAbbreviation(rows[4].toString());
+			data.add(customerItem);
+		}
+		session.clear();
+		session.close();
+		return (data);
+	}
+
+	// dummy methods required b interface - not implementing
 	@Override
 	public void deleteAllInBatch() {
 	}

@@ -231,6 +231,7 @@ curl http://localhost:8080/cust/1001 | /c/tools/jq-win64.exe  '.'
     "customerName": "michael",
     "customerCity": null,
     "itemName": "test",
+    "abbreviation": null,
     "price": 123
   }
 ]
@@ -266,12 +267,14 @@ Loading: michael|atlanta|test|123
   {
     "customerName": "michael",
     "customerCity": "atlanta",
+    "abbreviation": null,
     "itemName": "test",
     "price": 123
   },
   {
     "customerName": "bill",
     "customerCity": "seatle",
+    "abbreviation": null,
     "itemName": null,
     "price": 0
   }
@@ -300,6 +303,69 @@ Loading: michael|atlanta|test|123
 Loading: bill|seatle|null|null
 ```
 
+### Native SQL
+
+```sh
+curl http://localhost:8080/nativecust/1001 | /c/tools/jq-win64.exe  '.'
+```
+
+will result in
+```JSON
+[
+  {
+    "customerName": "michael",
+    "customerCity": "atlanta",
+    "abbreviation": "A",
+    "itemName": "test",
+    "price": 123
+  },
+  {
+    "customerName": "michael",
+    "customerCity": "atlanta",
+    "abbreviation": "B",
+    "itemName": "test",
+    "price": 123
+  }
+]
+
+```
+and the native SQL will be logged to console:
+```text
+Hibernate:
+    select
+        c.cname,
+        a.acity,
+        i.iname,
+        i.iprice,
+        'A'
+    from
+        customer c
+    join
+        item i
+            on c.cid = i.cid
+    join
+        address a
+            on c.cid = a.cid
+    where
+        c.cid = ?
+    union
+    all  select
+        c.cname,
+        a.acity,
+        i.iname,
+        i.iprice,
+        'B'
+    from
+        customer c
+    join
+        item i
+            on c.cid = i.cid
+    join
+        address a
+            on c.cid = a.cid
+    where
+        c.cid = ?
+```
 ### Valid SQL Failing as HQL
 
 #### Union
@@ -364,10 +430,116 @@ unexpected token: union near line 1, column 155
 [ select c.customerName, a.city, i.itemName,i.price, 'A' from example.model.Customer c join c.items i join c.addresses a  where c.customerId = :customerId union all  select c.customerName, a.city, i.itemName, i.price, 'B' from example.model.Customer c join c.items i join c.addresses a  where c.customerId = :customerId]
 at org.hibernate.hql.internal.ast.QuerySyntaxException.convert(QuerySyntaxException.java:74)
 ```
-#### Fnctions
+
+#### String Functions with Arguments
+
+
+All but trivial mySQL String function e.g.
+```SQL
+if(a.city like 'atlanta', 'c', 's') city
+```
+or
+```SQL
+egexp_replace(a.city, 'atlanta', 'a')
+```
+ with or without computed column alias `as city` lead to error in runtime:
+ 
+ ```text
+java.lang.IllegalArgumentException:
+org.hibernate.QueryException:
+No data type for node: org.hibernate.hql.internal.ast.tree.MethodNode
+```
+with the following ASCII art presumable describing tne grammar lookahead parser state when stoped condition building AST
+```text
+ +-[METHOD_CALL] MethodNode: '('
+ | +-[METHOD_NAME] IdentNode: 'if' {originalText=if}
+ | \-[EXPR_LIST] SqlNode: 'exprList'
+ [select c.customerName, if (a.city like 'atlanta', 'c', 's') as city,
+ i.itemName,i.price from example.model.Customer c join c.items i join
+ c.addresses a where c.customerId = :customerId ]] with root cause
+```
+the trivial functions like `trim(a.city)` work in HQL
+
+#### If
+the construct
+```sql
+		// [select c.customerName, if (a.city like 'atlanta', 'c', 's') as city,
+		// i.itemName,i.price from example.model.Customer c join c.items i join
+		// c.addresses a where c.customerId = :customerId ]] 
+```
+leads to exception in runtime with root cause
+```text
+org.hibernate.QueryException: No data type for node:
+org.hibernate.hql.internal.ast.tree.MethodNode
++-[METHOD_CALL] MethodNode: '('
+| +-[METHOD_NAME] IdentNode: 'if' {originalText=if}
+| \-[EXPR_LIST] SqlNode: 'exprList'
+at
+org.hibernate.hql.internal.ast.tree.SelectClause.initializeExplicitSelectClause(SelectClause.java:161)
+```
+#### Specifying  Join column
+
+adding the join column information explicitly
+```sql
+on c.customerId = a.cid 
+```
+where `Address` is a property of `Customer` leads toexception in runtime
+```text
+ org.hibernate.hql.internal.ast.QuerySyntaxException: could not resolve
+ property: cid of: example.model.Address [select c.customerName, a.city, i.itemName,i.price from example.model.Customer c join c.items i join c.addresses a on c.customerId = a.cid where c.customerId = :customerId ]
+```
+
+#### Discovering Field Names
+Cannot dynamically extract result metadata column names required to produce a targetClass instance with specicic properties set through reflection.
+This is [said](https://stackoverflow.com/questions/2605385/using-sql-column-names-in-hibernate-createsqlquery-result) to work for SQLQuery
+(Attempt of using `AliasToEntityMapResultTransformer` on HQL query without specifying `aliases` returns index value as key)
+
+```java
+		try {
+			Query query2 = session
+					.createSQLQuery(
+							"select c.customerName, a.city, i.itemName,i.price from Customer c "
+									+ " join c.items i " + " join c.addresses a "
+									+ " where c.customerId = :customerId ")
+					.setParameter("customerId", customerId);
+
+			query2.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+			List<Map<String, Object>> aliasToValueMapList = query2.list();
+```
+
+The exception is:
+
+```text
+javax.persistence.PersistenceException:
+could not extract ResultSet
+
+with root cause
+org.hibernate.exception.SQLGrammarException:
+could not extract ResultSet
+
+with root cause
+SQL Error: 1142, SQLState: 42000
+java.sql.SQLSyntaxErrorException:
+ SELECT command denied to user 'java'@'192.168.0.25' for table 'items'
+```
+while in mysql logs  on server one sees
+```text
+Aborted connection 52 to db: 'test' user: 'java' host: '192.168.0.25'
+(Got an error reading communication packets)
+```
+
 ### See Also
 
   * [discussion of multi-database Hibernate App fix](https://qna.habr.com/q/1104464) (in Russian)
+  * [examples](https://www.programcreek.com/java-api-examples/?api=org.hibernate.query.NativeQuery) of Hibernate `NativeQuery`
+  * [discussion](https://stackoverflow.com/questions/18958614/union-to-jpa-query) of workaround solution for `UNION` which  SQL supports , but JPA 2.0 JPQL does not
   * https://www.javacodegeeks.com/2018/12/java-streaming-jdbc-resultset-csv.html
   * https://narayanatutorial.com/java-tutorial/java-opencsv/csv-file-writing-resultset
   * [MySQL alpine](https://github.com/ipburger/mysql-alpine.docker/blob/master/Dockerfile)
+  * https://github.com/mariuszs/spring-boot-querydsl
+  * https://github.com/okihouse/spring-jpa-querydsl-sample
+  * [projections](https://www.baeldung.com/jpa-hibernate-projections)
+  * [projections](https://www.baeldung.com/spring-data-jpa-projections)
+  * [documntation](https://www.baeldung.com/hibernate-query-to-custom-class) how to make JPA populate `Object[]` data into a custom class using  the fully qualified name of the `Result` class constructed just for the cause
+  * [hibernate projection example](https://www.onlinetutorialspoint.com/hibernate/hibernate-projection-example.html)
+  * https://thorben-janssen.com/hibernate-tip-left-join-fetch-join-criteriaquery/

@@ -84,6 +84,15 @@ public class ProductController {
 		return ResponseEntity.status(HttpStatus.OK).body(data);
 	}
 
+	@RequestMapping(value = "/nativecust/{customerId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<CustomerItem>> getCustomersWithCustomerIdViaNativeSQL	(
+			@PathVariable(name = "customerId") int customerId) {
+		logger.info("customerId = " + customerId);
+		List<CustomerItem> data = customerRepository
+				.findCustomerDetailsViaNativeSQLByCustomerId(customerId);
+		return ResponseEntity.status(HttpStatus.OK).body(data);
+	}
+
 	// https://stackoverflow.com/questions/29612083/casting-a-list-of-an-object-to-a-list-of-super-types/29612111
 	@RequestMapping(value = "/products", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<? extends Product>> getProducts(

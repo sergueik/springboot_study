@@ -11,6 +11,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
 	public List<CustomerItem> findCustomerDetailsByCustomerId(int customerId);
 
+	// NOTE: method naming is critical
+	// try define the method named findAllCustomerDetails to get an
 	// java.lang.IllegalArgumentException:
 	// Failed to create query for method public abstract java.util.List
 	// example.repository.CustomerRepository.findAllCustomerDetails()!
@@ -18,4 +20,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 	// renaming with suffix ByCustomerId "fixes" the issue.
 	// Leave it this way for now
 	public List<CustomerItem> findAllCustomerItemsByCustomerId(int customerId);
+
+	public List<CustomerItem> findCustomerDetailsViaNativeSQLByCustomerId(
+			int customerId);
 }
