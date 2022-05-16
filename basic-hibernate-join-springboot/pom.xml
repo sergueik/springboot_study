@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>hibernate-join-springboot</artifactId>
-  <version>0.8.0-SNAPSHOT</version>
+  <version>0.9.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>hibernate-join-springboot</name>
   <description>springboot join example</description>
@@ -17,6 +17,7 @@
     <finalName>${project.groupId}.${project.artifactId}</finalName>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <hibernate-core.version>5.4.24.Final</hibernate-core.version>
     <java.version>1.8</java.version>
     <junit.version>4.13.1</junit.version>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -25,6 +26,11 @@
     <sqlite-jdbc.version>3.28.0</sqlite-jdbc.version>
   </properties>
   <dependencies>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>${hibernate-core.version}</version>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

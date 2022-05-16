@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import example.model.CustomerItem;
+import example.projection.CustomerItem;
 import example.model.InputRequest;
 import example.model.MySqlProduct;
 import example.model.Product;
@@ -71,25 +71,7 @@ public class ProductController {
 	@RequestMapping(value = "/cust", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<CustomerItem>> getCustomers() {
 		List<CustomerItem> data = customerRepository
-				.findAllCustomerItemsByCustomerId(-1);
-		return ResponseEntity.status(HttpStatus.OK).body(data);
-	}
-
-	@RequestMapping(value = "/cust/{customerId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<CustomerItem>> getCustomersWithCustomerId(
-			@PathVariable(name = "customerId") int customerId) {
-		logger.info("customerId = " + customerId);
-		List<CustomerItem> data = customerRepository
-				.findCustomerDetailsByCustomerId(customerId);
-		return ResponseEntity.status(HttpStatus.OK).body(data);
-	}
-
-	@RequestMapping(value = "/nativecust/{customerId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<CustomerItem>> getCustomersWithCustomerIdViaNativeSQL	(
-			@PathVariable(name = "customerId") int customerId) {
-		logger.info("customerId = " + customerId);
-		List<CustomerItem> data = customerRepository
-				.findCustomerDetailsViaNativeSQLByCustomerId(customerId);
+				.findAllCustomerItemsViaAnnotationQueryByCustomerId(-1);
 		return ResponseEntity.status(HttpStatus.OK).body(data);
 	}
 

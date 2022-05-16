@@ -57,14 +57,11 @@ public class CustomerRepositoryDao implements CustomerRepository {
 		// "inner join" -
 		logger.info(String.format("found: %d rows", objectList.size()));
 		Iterator<CustomerItem> objectIterator = objectList.iterator();
-		int cnt = 0;
-		// NOTE: time consuming. added for illustration purpose only
 		while (objectIterator.hasNext()) {
 			Object row = (Object) objectIterator.next();
 
 			CustomerItem result = new CustomerItem();
-			logger.info(String.format("iterating row %d: %s", cnt, row.toString()));
-			cnt++;
+			logger.info(String.format("iterating row: %s", row.toString()));
 
 			Class<?> targetClass = CustomerItem.class;
 			Field[] targetFields = targetClass.getDeclaredFields();
@@ -92,12 +89,12 @@ public class CustomerRepositoryDao implements CustomerRepository {
 							break;
 						}
 					}
-					sourceField.setAccessible(sourceFieldFlag);
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					// NOTE: logging exceptions as info to see them
-					logger.info("Exception (ignored)" + e.toString());
-				}
 
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+
+					e.printStackTrace();
+				}
+				sourceField.setAccessible(sourceFieldFlag);
 			}
 
 			// java.lang.ClassCastException:
@@ -114,7 +111,6 @@ public class CustomerRepositoryDao implements CustomerRepository {
 				// NOTE: logging exceptions as info to see them
 				logger.info("Exception (ignored)" + e.toString());
 			}
-			data.add(result);
 		}
 		try {
 			// repeat with typing

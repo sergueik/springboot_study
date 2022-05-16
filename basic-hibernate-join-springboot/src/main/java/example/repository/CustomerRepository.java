@@ -3,24 +3,15 @@ package example.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
 import example.model.Customer;
-import example.model.CustomerItem;
-import example.model.Item;
+import example.projection.CustomerItem;
 
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
-	public List<CustomerItem> findCustomerDetailsByCustomerId(int customerId);
-
-	// NOTE: method naming is critical
-	// try define the method named findAllCustomerDetails to get an
-	// java.lang.IllegalArgumentException:
-	// Failed to create query for method public abstract java.util.List
-	// example.repository.CustomerRepository.findAllCustomerDetails()!
-	// No property findAllCustomerDetails found for type Customer!
-	// renaming with suffix ByCustomerId "fixes" the issue.
-	// Leave it this way for now
-	public List<CustomerItem> findAllCustomerItemsByCustomerId(int customerId);
-
-	public List<CustomerItem> findCustomerDetailsViaNativeSQLByCustomerId(
+	// @Query("select new example.projection.CustomerItem(c.customerName, a.city, i.itemName, i.price) from Customer c left join c.items i  join c.addresses a")
+	// No property findAllCustomerItemsViaAnnotationQuery found for type Customer!
+	public List<CustomerItem> findAllCustomerItemsViaAnnotationQueryByCustomerId(
 			int customerId);
 }
