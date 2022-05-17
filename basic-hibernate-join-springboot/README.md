@@ -557,7 +557,7 @@ Aborted connection 52 to db: 'test' user: 'java' host: '192.168.0.25'
 ```
 #### Limit
 
-Addding the 
+Addding the
 ```SQL
  limit ?1
 ```
@@ -620,6 +620,155 @@ insert into address (acity,astreet,astate,azipcode,aid,cid) values ('san francis
 
 ```
 
+### Loose SQL Schema
+
+```SQL
+create table instance(
+  iid bigint primary key ,
+  iname NVARCHAR(10) not null
+);
+```
+```SQL
+
+create table server(
+  sid bigint primary key ,
+  sname NVARCHAR(10) not null
+);
+
+
+```
+```SQL
+
+
+create table application(
+  aid bigint primary key ,
+  aname NVARCHAR(10) not null
+);
+
+
+```
+```SQL
+
+create table axixs(
+  sid bigint,
+  iid bigint,
+  aid bigint
+);
+
+```
+![Sample DB Browser](https://github.com/sergueik/springboot_study/blob/master/basic-hibernate-join-springboot/screenshots/capture_db_browser_sqlite.png)
+```SQL
+insert into server(sname,sid) values('server01',101);
+insert into server(sname,sid) values('server02',102);
+insert into server(sname,sid) values('server03',103);
+
+insert into application(aname,aid) values('application01',10001);
+insert into application(aname,aid) values('application02',10002);
+delete from application where aid = 10002;
+
+
+insert into instance(iname,iid) values('instance01',1001);
+insert into instance(iname,iid) values('instance02',1002);
+
+insert into instance(iname,iid) values('instance03',1003);
+
+insert into instance(iname,iid) values('instance04',1004);
+
+insert into instance(iname,iid) values('instance05',1005);
+
+insert into axixs(sid,iid,aid) values(101,1001,10001);
+insert into axixs(sid,iid,aid) values(101,1002,10001);
+insert into axixs(sid,iid,aid) values(102,1003,10001);
+insert into axixs(sid,iid,aid) values(102,1004,10001);
+insert into axixs(sid,iid,aid) values(102,1005,10002);
+
+```
+```SQL
+select sname,iname,aname from axixs x join server s on x.sid = s.sid join application a on x.aid = a.aid join instance i on x.iid = i.iid
+```
+
+* launch app
+```sh
+mvn springboot:run
+```
+* read the cluster info
+```sh
+curl http://localhost:8080/info | /c/tools/jq-win64.exe  '.'
+```
+will log
+```text
+select server1_.sname as col_0_0_, applicatio2_.aname as col_1_0_, instance3_.iname as col_2_0_ from axixs axixs0_ inner join server server1_ on (axixs0_.sid=server1_.sid) inner join application applicatio2_ on (axixs0_.aid=applicatio2_.aid) inner join instance instance3_ on (axixs0_.iid=instance3_.iid)
+```
+```JSON
+[
+  {
+    "serverName": "server01",
+    "instanceName": "application01",
+    "applicationName": "instance01"
+  },
+  {
+    "serverName": "server01",
+    "instanceName": "application01",
+    "applicationName": "instance02"
+  },
+  {
+    "serverName": "server02",
+    "instanceName": "application01",
+    "applicationName": "instance03"
+  },
+  {
+    "serverName": "server02",
+    "instanceName": "application01",
+    "applicationName": "instance04"
+  },
+  {
+    "serverName": "server02",
+    "instanceName": "application02",
+    "applicationName": "instance05"
+  }
+]
+```
+* verify in sqline3 shell
+```cmd
+sqlite3.exe %userprofile%\Desktop\data.db
+```
+```SQL
+SQLite version 3.11.1 2016-03-03 16:17:53
+Enter ".help" for usage hints.
+sqlite>
+```
+```SQL
+select sname,iname,aname from axixs x join server s on x.sid = s.sid join application a on x.aid = a.aid join instance i on x.iid = i.iid;
+server01|instance01|application01
+server01|instance02|application01
+server02|instance03|application01
+server02|instance04|application01
+server02|instance05|application02
+```
+```SQL
+select server1_.sname as col_0_0_, applicatio2_.aname as col_1_0_, instance3_.iname as col_2_0_ from axixs axixs0_ inner join server server1_ on (axixs0_.sid=server1_.sid) inner join application applicatio2_ on (axixs0_.aid=applicatio2_.aid) inner join instance instance3_ on (axixs0_.iid=instance3_.iid)
+```
+```SQL
+select sname,iname,aname from axixs x join server s on x.sid = s.sid join application a on x.aid = a.aid join instance i on x.iid = i.iid;
+server01|application01|instance01
+server01|application01|instance02
+server02|application01|instance03
+server02|application01|instance04
+server02|application02|instance05
+```
+* confirm that `axixs` does not have `xid` column:
+```SQL
+sqlite>
+```
+```SQL
+.schema axixs
+CREATE TABLE axixs(
+  sid bigint,
+  iid bigint,
+  aid bigint
+);
+```
+```
 ### See Also
 
   * [discussion of multi-database Hibernate App fix](https://qna.habr.com/q/1104464) (in Russian)

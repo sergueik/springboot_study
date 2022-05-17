@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import example.model.Customer;
 import example.projection.CustomerItem;
+import example.projection.ServerInstanceApplication;
+import example.repository.AxixsRepository;
 import example.repository.CustomerRepository;
 
 import org.slf4j.Logger;
@@ -40,11 +42,9 @@ public class ProductController {
 	@Autowired
 	private CustomerRepository customerRepository;
 
-	// NOTE: should not name endpoint "customers"
-	// observed the wrong query being called for "/customers":
-	// Hibernate: select customer0_.cid as cid1_0_, customer0_.ccity as ccity2_0_,
-	// customer0_.cname as cname3_0_ from customer customer0_ where
-	// customer0_.cid=?
+	@Autowired
+	private AxixsRepository axixsRepository;
+
 	@RequestMapping(value = "/data", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Object[]>> getUntypedDataWithNulls() {
 		List<Object[]> data = customerRepository.findAllUntypedDataWithNulls();
@@ -77,6 +77,13 @@ public class ProductController {
 	@RequestMapping(value = "/items", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Collection<CustomerItem>> getCustomerItems() {
 		Collection<CustomerItem> data = customerRepository.findAllCustomerItems();
+		logger.info("returned " + data.size() + " rows");
+		return ResponseEntity.status(HttpStatus.OK).body(data);
+	}
+
+	@RequestMapping(value = "/info", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Collection<ServerInstanceApplication>> findAxixes() {
+		Collection<ServerInstanceApplication> data = axixsRepository.findAxixes();
 		logger.info("returned " + data.size() + " rows");
 		return ResponseEntity.status(HttpStatus.OK).body(data);
 	}
