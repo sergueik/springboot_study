@@ -572,6 +572,54 @@ and
 java.lang.IllegalArgumentException: Validation failed for query for method public abstract java.util.Collection example.repository.CustomerRepository.findAllCustomers(int)!
 ```
 
+### SQLite
+
+* run SQL (minor syntax differences compared to MySQL) :
+
+```SQL
+create table customer(
+  cid bigint primary key ,
+  cname NVARCHAR(30) not null
+);
+```
+```SQL
+create table item(
+  iid bigint primary key ,
+  iname NVARCHAR(10) not null,
+  iprice  bigint,
+  cid bigint,
+  FOREIGN KEY(cid) REFERENCES customer(cid)
+);
+```
+```SQL
+create table address(
+  aid bigint primary key ,
+  astreet NVARCHAR(30) not null,
+  acity NVARCHAR(10) not null,
+  astate NVARCHAR(10) not null,
+  azipcode NVARCHAR(6) not null,
+  cid bigint,
+  FOREIGN KEY(cid) REFERENCES customer(cid)
+);
+
+```
+this will create tables
+* add similar data
+```sql
+insert into customer(cname,cid)  values ('michael',1001);
+
+insert into item(iname,iid,cid,iprice)  values ('test',201,1001,123);
+insert into customer(cname,cid)  values ('bill',1002);
+insert into address (acity,astreet,astate,azipcode,aid,cid) values ('atlanta','','','',301,1001),('seatle','','','',302,1002);
+
+insert into customer(cname,cid)  values ('steve',1003);
+
+insert into item(iname,iid,cid,iprice)  values ('mac',202,1003,456);
+
+insert into address (acity,astreet,astate,azipcode,aid,cid) values ('san francisco','','','',303,1003)
+
+```
+
 ### See Also
 
   * [discussion of multi-database Hibernate App fix](https://qna.habr.com/q/1104464) (in Russian)
