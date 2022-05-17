@@ -38,7 +38,7 @@ public class Address {
 		addressId = value;
 	}
 
-	@Column(name = "astreet", nullable = false, length = 250)
+	@Column(name = "astreet", nullable = false, length = 30)
 	public String getStreet() {
 		return street;
 	}
@@ -47,7 +47,7 @@ public class Address {
 		street = value;
 	}
 
-	@Column(name = "acity", nullable = false, length = 50)
+	@Column(name = "acity", nullable = false, length = 10)
 	public String getCity() {
 		return city;
 	}
@@ -56,7 +56,7 @@ public class Address {
 		city = value;
 	}
 
-	@Column(name = "astate", nullable = false, length = 50)
+	@Column(name = "astate", nullable = false, length = 10)
 	public String getState() {
 		return state;
 	}
@@ -65,7 +65,7 @@ public class Address {
 		state = value;
 	}
 
-	@Column(name = "azipcode", nullable = false, length = 10)
+	@Column(name = "azipcode", nullable = false, length = 6)
 	public String getZipcode() {
 		return zipcode;
 	}

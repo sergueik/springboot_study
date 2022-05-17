@@ -1,17 +1,8 @@
 ### Info
 
-this directory contains replica of skeleton project [multiple-db-connection](https://github.com/Java-Gyan-Mantra/multiple-db-connection) demonstrating how to configure  Springboot application to operate Mongo DB and SQLite simultaneously
+this directory contains JPA Hibernate table join example project with pure annotation based methods and also with concrete implementing class (one will have to check commit history)
 
 ### Testing
- * create mongo server container
-```sh
-IMAGE=mongodb
-CONTAINER=mongo-server
-docker build -t $IMAGE -f Dockerfile.$IMAGE .
-docker container prune -f
-docker run -d --name $CONTAINER -p 27717:27017 -i $IMAGE
-docker logs $CONTAINER
-```
 
 ```sh
 docker build -t mysql-server-alpine -f Dockerfile.mysql-server-alpine .
@@ -22,68 +13,10 @@ export MYSQL_USER='java'
 export MYSQL_PASSWORD='password'
 docker run --name mysql-server-alpine -p 3306:3306 -e MYSQL_DATABASE=join_check -e MYSQL_USER=$MYSQL_USER -e MYSQL_PASSWORD=${MYSQL_PASSWORD} -e MYSQL_ROOT_PASSWORD=password -d mysql-server-alpine
 ```
-* running app
+or simply
 ```sh
-mvn spring-boot:run
+docker start mysql-server-alpine
 ```
-* testing
-```sh
-curl http://localhost:8080/products?db=zzz
-```
-```text
-invalid operation: zzz
-```
-```sh
-curl http://localhost:8080/products?db=mysql
-```
-```text
-[]
-```
-```sh
-curl http://localhost:8080/products?db=mongo
-```
-
-```text
-[]
-```
-* add product
-```sh
-curl -X POST -H 'Content-Type: application/json'  http://localhost:8080/products -d '{
-  "id": 123,
-  "qty": 1,
-  "price": 1000,
-  "name": "product"
-}
-
-```
-
-repeat queries:
-```ssh
-curl http://localhost:8080/products?db=mongo
-```
-```json
-[{"id":123,"name":"product","qty":1,"price":1000.0}]
-```
-```sh
-curl http://localhost:8080/products?db=mysql
-```
-```json
-[{"id":0,"name":null,"qty":0,"price":0.0}]
-```
--  need a fix
-
-### Multi Table
-
-```sh
-docker build -t mysql-server-alpine -f Dockerfile.mysql-server-alpine .
-```
-and run it with environments matching the `application.properties`:
-```sh
-export MYSQL_USER='java'
-export MYSQL_PASSWORD='password'
-docker run --name mysql-server-alpine -p 3306:3306 -e MYSQL_DATABASE=join_check -e MYSQL_USER=$MYSQL_USER -e MYSQL_PASSWORD=${MYSQL_PASSWORD} -e MYSQL_ROOT_PASSWORD=password -d mysql-server-alpine
-```
-
 * create database and tables:
 ```sh
 docker exec -it mysql-server-alpine mysql -P 3306 -h localhost -u java -ppassword
@@ -116,7 +49,7 @@ drop table if exists item;
 
 create table item(
   iid bigint primary key ,
-  iname NVARCHAR(30) not null,
+  iname NVARCHAR(10) not null,
   iprice  bigint,
   cid bigint,
   CONSTRAINT fk_cid FOREIGN KEY (cid)
@@ -130,9 +63,9 @@ drop table if exists address;
 create table address(
   aid bigint primary key ,
   astreet NVARCHAR(30) not null,
-  acity NVARCHAR(30) not null,
-  astate NVARCHAR(30) not null,
-  azipcode NVARCHAR(30) not null,
+  acity NVARCHAR(10) not null,
+  astate NVARCHAR(10) not null,
+  azipcode NVARCHAR(6) not null,
   cid bigint,
   CONSTRAINT fk_acid FOREIGN KEY (cid)
    REFERENCES customer(cid)
@@ -220,91 +153,189 @@ select c.cname, a.acity,  i.iname,i.iprice from customer c inner join item i on 
 +---------+---------+-------+--------+
 ```
 
-
+* run app
 ```sh
-curl http://localhost:8080/cust/1001 | /c/tools/jq-win64.exe  '.'
+mvn spring-boot:run
 ```
 
+* test endpoints
+
+```sh
+curl -s  http://localhost:8080/data | /c/tools/jq-win64.exe '.'
+```
+will log SQL
+```SQL
+select customer0_.cname as col_0_0_, addresses2_.acity as col_1_0_, items1_.iname as col_2_0_, items1_.iprice as col_3_0_ from customer customer0_ left outer join item items1_ on customer0_.cid=items1_.cid inner join address addresses2_ on customer0_.cid=addresses2_.cid
+```
+and return JSON
 ```json
 [
-  {
-    "customerName": "michael",
-    "customerCity": null,
-    "itemName": "test",
-    "abbreviation": null,
-    "price": 123
-  }
+  [
+    "michael",
+    "atlanta",
+    "test",
+    123
+  ],
+  [
+    "bill",
+    "seatle",
+    null,
+    null
+  ]
 ]
 ```
-application log:
-```text
-Hibernate:
-    select
-        customer0_.cname as col_0_0_,
-        addresses2_.acity as col_1_0_,
-        items1_.iname as col_2_0_,
-        items1_.iprice as col_3_0_
-    from
-        customer customer0_
-    inner join
-        item items1_
-            on customer0_.cid=items1_.cid
-    inner join
-        address addresses2_
-            on customer0_.cid=addresses2_.cid
-    where
-        customer0_.cid=?
-```
-```text
-Loading: michael|atlanta|test|123
+```sh
+curl -s  http://localhost:8080/items | /c/tools/jq-win64.exe '.'
 ```
 
-```sh
- curl -s http://localhost:8080/cust | /c/tools/jq-win64.exe  '.'
+will log SQL
+```SQL
+select customer0_.cname as col_0_0_, addresses2_.acity as col_1_0_, items1_.iname as col_2_0_, items1_.iprice as col_3_0_ from customer customer0_ inner join item items1_ on customer0_.cid=items1_.cid inner join address addresses2_ on customer0_.cid=addresses2_.cid
 ```
+and return JSON
+
 ```JSON
 [
   {
     "customerName": "michael",
     "customerCity": "atlanta",
-    "abbreviation": null,
     "itemName": "test",
     "price": 123
+  }
+]
+
+```
+```sh
+curl -s  http://localhost:8080/names | /c/tools/jq-win64.exe '.'
+```
+will log SQL
+```SQL
+select customer0_.cname as col_0_0_ from customer customer0_
+```
+and return JSON
+```JSON
+[
+  [
+    "michael"
+  ],
+  [
+    "bill"
+  ]
+]
+```
+
+```sh
+curl -s  http://localhost:8080/customers | /c/tools/jq-win64.exe '.'
+```
+will log SQL:
+```text
+select customer0_.cid as cid1_1_, customer0_.cname as cname2_1_ from customer customer0_
+select items0_.cid as cid4_2_0_, items0_.iid as iid1_2_0_, items0_.iid as iid1_2_1_, items0_.iname as iname2_2_1_, items0_.iprice as iprice3_2_1_ from item items0_ where items0_.cid=?
+select addresses0_.cid as cid6_0_0_, addresses0_.aid as aid1_0_0_, addresses0_.aid as aid1_0_1_, addresses0_.acity as acity2_0_1_, addresses0_.astate as astate3_0_1_, addresses0_.astreet as astreet4_0_1_, addresses0_.azipcode as azipcode5_0_1_ from address addresses0_ where addresses0_.cid=?
+select items0_.cid as cid4_2_0_, items0_.iid as iid1_2_0_, items0_.iid as iid1_2_1_, items0_.iname as iname2_2_1_, items0_.iprice as iprice3_2_1_ from item items0_ where items0_.cid=?
+select addresses0_.cid as cid6_0_0_, addresses0_.aid as aid1_0_0_, addresses0_.aid as aid1_0_1_, addresses0_.acity as acity2_0_1_, addresses0_.astate as astate3_0_1_, addresses0_.astreet as astreet4_0_1_, addresses0_.azipcode as azipcode5_0_1_ from address addresses0_ where addresses0_.cid=?
+```
+- note the number of SQL queries performed by Hibernate in this case - two extra queries from `addresse` and `item` per every row returned from `customer` table
+
+and returns the JSON:
+```JSON
+[
+  {
+    "customerId": 1001,
+    "customerName": "michael",
+    "items": [
+      {
+        "itemId": 201,
+        "itemName": "test",
+        "price": 123
+      }
+    ],
+    "addresses": [
+      {
+        "addressId": 301,
+        "street": "",
+        "city": "atlanta",
+        "state": "",
+        "zipcode": ""
+      }
+    ]
   },
   {
+    "customerId": 1002,
     "customerName": "bill",
-    "customerCity": "seatle",
-    "abbreviation": null,
-    "itemName": null,
-    "price": 0
+    "items": [],
+    "addresses": [
+      {
+        "addressId": 302,
+        "street": "",
+        "city": "seatle",
+        "state": "",
+        "zipcode": ""
+      }
+    ]
   }
 ]
 ```
-application log:
+```sh
+curl http://localhost:8080/customer/1001| jq '.'
+```
+will log SQL:
+
 ```text
-Hibernate:
-    select
-        customer0_.cname as col_0_0_,
-        addresses2_.acity as col_1_0_,
-        items1_.iname as col_2_0_,
-        items1_.iprice as col_3_0_
-    from
-        customer customer0_
-    left outer join
-        item items1_
-            on customer0_.cid=items1_.cid
-    inner join
-        address addresses2_
-            on customer0_.cid=addresses2_.cid
+select customer0_.cid as cid1_1_, customer0_.cname as cname2_1_ fromcustomer customer0_ where customer0_.cid=?
+select items0_.cid as cid4_2_0_, items0_.iid as iid1_2_0_, items0_.iid as iid1_2_1_, items0_.iname as iname2_2_1_, items0_.iprice as iprice3_2_1_ from item items0_ where items0_.cid=?
+select addresses0_.cid as cid6_0_0_, addresses0_.aid as aid1_0_0_, addresses0_.aid as aid1_0_1_, addresses0_.acity as acity2_0_1_, addresses0_.astate as astate3_0_1_, addresses0_.astreet as astreet4_0_1_, addresses0_.azipcode asazipcode5_0_1_ from address addresses0_ where addresses0_.cid=?
+```
+- note the number of SQL queries performed by Hibernate in this case
+and return JSON:
+```JSON
+[
+  {
+    "customerId": 1001,
+    "customerName": "michael",
+    "items": [
+      {
+        "itemId": 201,
+        "itemName": "test",
+        "price": 123
+      }
+    ],
+    "addresses": [
+      {
+        "addressId": 301,
+        "street": "",
+        "city": "atlanta",
+        "state": "",
+        "zipcode": ""
+      }
+    ]
+  }
+]
 
 ```
-```text
-Loading: michael|atlanta|test|123
-Loading: bill|seatle|null|null
+#### Note
+
+* can not return collection of strongly typed objects from left join:
+replacing `inner join` token in `@Query` annotation below
+```java
+@Query("SELECT new example.projection.CustomerItem(c.customerName, a.city,i.itemName,i.price)"
+			+ " from Customer c left outer join c.items i join c.addresses a")
+	public List<CustomerItem> findAllCustomerItems();
 ```
+
+will lead the request
+```sh
+curl http://localhost:8080/items
+```
+to trigger exception:
+```text
+java.lang.IllegalArgumentException: org.hibernate.QueryException: could not instantiate class [example.projection.CustomerItem] from tuple
+```
+when serializing then null part of the join
 
 ### Native SQL
 
+* this was temporarily removed from hed revision
 ```sh
 curl http://localhost:8080/nativecust/1001 | /c/tools/jq-win64.exe  '.'
 ```
@@ -461,11 +492,10 @@ with the following ASCII art presumable describing tne grammar lookahead parser 
 the trivial functions like `trim(a.city)` work in HQL
 
 #### If
-the construct
+
+Adding the MySQL `if ...else` construct to HQL query string
 ```sql
-		// [select c.customerName, if (a.city like 'atlanta', 'c', 's') as city,
-		// i.itemName,i.price from example.model.Customer c join c.items i join
-		// c.addresses a where c.customerId = :customerId ]]
+select c.customerName, if (a.city like 'atlanta', 'c', 's') as city, i.itemName,i.price from example.model.Customer c join c.items i join c.addresses a where c.customerId = :customerId ]]
 ```
 leads to exception in runtime with root cause
 ```text
@@ -490,21 +520,19 @@ where `Address` is a property of `Customer` leads toexception in runtime
 ```
 
 #### Discovering Field Names
+
 Cannot dynamically extract result metadata column names required to produce a targetClass instance with specicic properties set through reflection.
 This is [said](https://stackoverflow.com/questions/2605385/using-sql-column-names-in-hibernate-createsqlquery-result) to work for SQLQuery
 (Attempt of using `AliasToEntityMapResultTransformer` on HQL query without specifying `aliases` returns index value as key)
 
 ```java
-		try {
-			Query query2 = session
-					.createSQLQuery(
-							"select c.customerName, a.city, i.itemName,i.price from Customer c "
-									+ " join c.items i " + " join c.addresses a "
-									+ " where c.customerId = :customerId ")
-					.setParameter("customerId", customerId);
+try {
+Query query = session.createSQLQuery(
+  "select c.customerName, a.city, i.itemName,i.price from Customer c join c.items i join c.addresses a where c.customerId = :customerId ")
+  .setParameter("customerId", customerId);
 
-			query2.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-			List<Map<String, Object>> aliasToValueMapList = query2.list();
+  query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+  List<Map<String, Object>> aliasToValueMapList = query.list();
 ```
 
 The exception is:
@@ -527,141 +555,22 @@ while in mysql logs  on server one sees
 Aborted connection 52 to db: 'test' user: 'java' host: '192.168.0.25'
 (Got an error reading communication packets)
 ```
+#### Limit
 
-
-### Pure Annotation
-
-```sh
-curl -s  http://localhost:8080/data | /c/tools/jq-win64.exe '.'
-```
-will log SQL
+Addding the 
 ```SQL
-select customer0_.cname as col_0_0_, addresses2_.acity as col_1_0_, items1_.iname as col_2_0_, items1_.iprice as col_3_0_ from customer customer0_ left outer join item items1_ on customer0_.cid=items1_.cid inner join address addresses2_ on customer0_.cid=addresses2_.cid
-```
-and return JSON
-```json
-[
-  [
-    "michael",
-    "atlanta",
-    "test",
-    123
-  ],
-  [
-    "bill",
-    "seatle",
-    null,
-    null
-  ]
-]
-```
-```sh
-curl -s  http://localhost:8080/items | /c/tools/jq-win64.exe '.'
+ limit ?1
 ```
 
-will log SQL
-```SQL
-select customer0_.cname as col_0_0_, addresses2_.acity as col_1_0_, items1_.iname as col_2_0_, items1_.iprice as col_3_0_ from customer customer0_ inner join item items1_ on customer0_.cid=items1_.cid inner join address addresses2_ on customer0_.cid=addresses2_.cid
-```
-and return JSON
-
-```JSON
-[
-  {
-    "customerName": "michael",
-    "customerCity": "atlanta",
-    "itemName": "test",
-    "price": 123
-  }
-]
-
-```
-```sh
-curl -s  http://localhost:8080/names | /c/tools/jq-win64.exe '.'
-```
-will log SQL
-```SQL
-select customer0_.cname as col_0_0_ from customer customer0_
-```
-and return JSON
-```JSON
-[
-  [
-    "michael"
-  ],
-  [
-    "bill"
-  ]
-]
-```
-
-```sh
-curl -s  http://localhost:8080/customers | /c/tools/jq-win64.exe '.'
-```
-will log SQL:
+to each of the HQL  queries annotations lead to errors in runtime during applicaion initizalization:
 ```text
-
-Hibernate: select addresses0_.cid as cid6_0_0_, addresses0_.aid as aid1_0_0_, addresses0_.aid as aid1_0_1_, addresses0_.acity as acity2_0_1_, addresses0_.astate as astate3_0_1_, addresses0_.astreet as astreet4_0_1_, addresses0_.azipcode as azipcode5_0_1_ from address addresses0_ where addresses0_.cid=?
+LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+antlr.NoViableAltException: unexpected token: limi
 ```
-and return JSON:
-```JSON
-[
-  {
-    "customerId": 1001,
-    "customerName": "michael",
-    "items": [
-      {
-        "itemId": 201,
-        "itemName": "test",
-        "price": 123
-      }
-    ],
-    "addresses": [
-      {
-        "addressId": 301,
-        "street": "",
-        "city": "atlanta",
-        "state": "",
-        "zipcode": ""
-      }
-    ]
-  },
-  {
-    "customerId": 1002,
-    "customerName": "bill",
-    "items": [],
-    "addresses": [
-      {
-        "addressId": 302,
-        "street": "",
-        "city": "seatle",
-        "state": "",
-        "zipcode": ""
-      }
-    ]
-  }
-]
-
-```
-#### Note
-
-* can not return collection of strongly typed objects from left join:
-replacing `inner join` token in `@Query` annotation below
-```java
-@Query("SELECT new example.projection.CustomerItem(c.customerName, a.city,i.itemName,i.price)"
-			+ " from Customer c left outer join c.items i join c.addresses a")
-	public List<CustomerItem> findAllCustomerItems();
-```
-
-will lead the request
-```sh
-curl http://localhost:8080/items
-```
-to trigger exception:
+and
 ```text
-java.lang.IllegalArgumentException: org.hibernate.QueryException: could not instantiate class [example.projection.CustomerItem] from tuple
+java.lang.IllegalArgumentException: Validation failed for query for method public abstract java.util.Collection example.repository.CustomerRepository.findAllCustomers(int)!
 ```
-when serializing then null part of the join
 
 ### See Also
 

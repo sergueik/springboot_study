@@ -14,7 +14,6 @@ public class CustomerItem {
 
 	public CustomerItem(String customerName, String customerCity, String itemName,
 			int price) {
-		// super();
 
 		this.customerName = customerName;
 		this.customerCity = customerCity;
@@ -39,13 +38,13 @@ public class CustomerItem {
 		customerCity = value;
 	}
 
-//	public String getAbbreviation() {
-//		return abbreviation;
-//	}
+	// public String getAbbreviation() {
+	// return abbreviation;
+	// }
 
-//	public void setAbbreviation(String value) {
-//		abbreviation = value;
-//	}
+	// public void setAbbreviation(String value) {
+	// abbreviation = value;
+	// }
 
 	public String getItemName() {
 		return itemName;

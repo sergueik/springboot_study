@@ -36,12 +36,18 @@ public class ProductController {
 	private static Logger logger = LoggerFactory
 			.getLogger(ProductController.class);
 
+	// NOTE - used implementing class instead of interface
 	@Autowired
 	private CustomerRepository customerRepository;
 
+	// NOTE: should not name endpoint "customers"
+	// observed the wrong query being called for "/customers":
+	// Hibernate: select customer0_.cid as cid1_0_, customer0_.ccity as ccity2_0_,
+	// customer0_.cname as cname3_0_ from customer customer0_ where
+	// customer0_.cid=?
 	@RequestMapping(value = "/data", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Object[]>> getUntypedDataWithNulls() {
-		List<Object[]> data = customerRepository.findAllUntypedDataWithNulls(-1);
+		List<Object[]> data = customerRepository.findAllUntypedDataWithNulls();
 		logger.info("returned " + data.size() + " rows");
 		return ResponseEntity.status(HttpStatus.OK).body(data);
 	}
@@ -53,9 +59,17 @@ public class ProductController {
 		return ResponseEntity.status(HttpStatus.OK).body(data);
 	}
 
+	@RequestMapping(value = "/customer/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Collection<Customer>> getCustomer(
+			@PathVariable(required = true) Integer id) {
+		Collection<Customer> data = customerRepository.findCustomer(id);
+		logger.info("returned " + data.size() + " rows");
+		return ResponseEntity.status(HttpStatus.OK).body(data);
+	}
+
 	@RequestMapping(value = "/names", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Collection<String[]>> getNames() {
-		Collection<String[]> data = customerRepository.findAllNames(-1);
+		Collection<String[]> data = customerRepository.findAllNames();
 		logger.info("returned " + data.size() + " rows");
 		return ResponseEntity.status(HttpStatus.OK).body(data);
 	}

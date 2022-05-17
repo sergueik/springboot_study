@@ -11,7 +11,8 @@ public class Item {
 	@Id
 	@Column(name = "iid")
 	private int itemId;
-	@Column(name = "iname")
+	
+	@Column(name = "iname", nullable = false, length = 10)
 	private String itemName;
 	@Column(name = "iprice")
 	private int price;
