@@ -201,6 +201,8 @@ The `domain` and `app` are read from cluster configuration YAML:
 ![Sample Metrics Page](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture-metrics.png)
 
 
+![Sample Servers Inventory Page](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture-servers.png)
+
 for testing purposes we also have the API endpoint to show the data for selected host, filtered to show specific metrfic names
 ```sh
 HOSTNAME=hostname00
