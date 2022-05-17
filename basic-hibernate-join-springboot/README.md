@@ -443,7 +443,7 @@ or
 egexp_replace(a.city, 'atlanta', 'a')
 ```
  with or without computed column alias `as city` lead to error in runtime:
- 
+
  ```text
 java.lang.IllegalArgumentException:
 org.hibernate.QueryException:
@@ -465,7 +465,7 @@ the construct
 ```sql
 		// [select c.customerName, if (a.city like 'atlanta', 'c', 's') as city,
 		// i.itemName,i.price from example.model.Customer c join c.items i join
-		// c.addresses a where c.customerId = :customerId ]] 
+		// c.addresses a where c.customerId = :customerId ]]
 ```
 leads to exception in runtime with root cause
 ```text
@@ -481,7 +481,7 @@ org.hibernate.hql.internal.ast.tree.SelectClause.initializeExplicitSelectClause(
 
 adding the join column information explicitly
 ```sql
-on c.customerId = a.cid 
+on c.customerId = a.cid
 ```
 where `Address` is a property of `Customer` leads toexception in runtime
 ```text
@@ -528,6 +528,141 @@ Aborted connection 52 to db: 'test' user: 'java' host: '192.168.0.25'
 (Got an error reading communication packets)
 ```
 
+
+### Pure Annotation
+
+```sh
+curl -s  http://localhost:8080/data | /c/tools/jq-win64.exe '.'
+```
+will log SQL
+```SQL
+select customer0_.cname as col_0_0_, addresses2_.acity as col_1_0_, items1_.iname as col_2_0_, items1_.iprice as col_3_0_ from customer customer0_ left outer join item items1_ on customer0_.cid=items1_.cid inner join address addresses2_ on customer0_.cid=addresses2_.cid
+```
+and return JSON
+```json
+[
+  [
+    "michael",
+    "atlanta",
+    "test",
+    123
+  ],
+  [
+    "bill",
+    "seatle",
+    null,
+    null
+  ]
+]
+```
+```sh
+curl -s  http://localhost:8080/items | /c/tools/jq-win64.exe '.'
+```
+
+will log SQL
+```SQL
+select customer0_.cname as col_0_0_, addresses2_.acity as col_1_0_, items1_.iname as col_2_0_, items1_.iprice as col_3_0_ from customer customer0_ inner join item items1_ on customer0_.cid=items1_.cid inner join address addresses2_ on customer0_.cid=addresses2_.cid
+```
+and return JSON
+
+```JSON
+[
+  {
+    "customerName": "michael",
+    "customerCity": "atlanta",
+    "itemName": "test",
+    "price": 123
+  }
+]
+
+```
+```sh
+curl -s  http://localhost:8080/names | /c/tools/jq-win64.exe '.'
+```
+will log SQL
+```SQL
+select customer0_.cname as col_0_0_ from customer customer0_
+```
+and return JSON
+```JSON
+[
+  [
+    "michael"
+  ],
+  [
+    "bill"
+  ]
+]
+```
+
+```sh
+curl -s  http://localhost:8080/customers | /c/tools/jq-win64.exe '.'
+```
+will log SQL:
+```text
+
+Hibernate: select addresses0_.cid as cid6_0_0_, addresses0_.aid as aid1_0_0_, addresses0_.aid as aid1_0_1_, addresses0_.acity as acity2_0_1_, addresses0_.astate as astate3_0_1_, addresses0_.astreet as astreet4_0_1_, addresses0_.azipcode as azipcode5_0_1_ from address addresses0_ where addresses0_.cid=?
+```
+and return JSON:
+```JSON
+[
+  {
+    "customerId": 1001,
+    "customerName": "michael",
+    "items": [
+      {
+        "itemId": 201,
+        "itemName": "test",
+        "price": 123
+      }
+    ],
+    "addresses": [
+      {
+        "addressId": 301,
+        "street": "",
+        "city": "atlanta",
+        "state": "",
+        "zipcode": ""
+      }
+    ]
+  },
+  {
+    "customerId": 1002,
+    "customerName": "bill",
+    "items": [],
+    "addresses": [
+      {
+        "addressId": 302,
+        "street": "",
+        "city": "seatle",
+        "state": "",
+        "zipcode": ""
+      }
+    ]
+  }
+]
+
+```
+#### Note
+
+* can not return collection of strongly typed objects from left join:
+replacing `inner join` token in `@Query` annotation below
+```java
+@Query("SELECT new example.projection.CustomerItem(c.customerName, a.city,i.itemName,i.price)"
+			+ " from Customer c left outer join c.items i join c.addresses a")
+	public List<CustomerItem> findAllCustomerItems();
+```
+
+will lead the request
+```sh
+curl http://localhost:8080/items
+```
+to trigger exception:
+```text
+java.lang.IllegalArgumentException: org.hibernate.QueryException: could not instantiate class [example.projection.CustomerItem] from tuple
+```
+when serializing then null part of the join
+
 ### See Also
 
   * [discussion of multi-database Hibernate App fix](https://qna.habr.com/q/1104464) (in Russian)
@@ -543,3 +678,8 @@ Aborted connection 52 to db: 'test' user: 'java' host: '192.168.0.25'
   * [documntation](https://www.baeldung.com/hibernate-query-to-custom-class) how to make JPA populate `Object[]` data into a custom class using  the fully qualified name of the `Result` class constructed just for the cause
   * [hibernate projection example](https://www.onlinetutorialspoint.com/hibernate/hibernate-projection-example.html)
   * https://thorben-janssen.com/hibernate-tip-left-join-fetch-join-criteriaquery/
+  * [documentation](https://www.baeldung.com/spring-data-jpa-query) on basics of Spring Data JPA `@Query`
+
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
