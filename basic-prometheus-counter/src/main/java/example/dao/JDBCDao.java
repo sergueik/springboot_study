@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import example.controller.NodeExporterController;
 import example.entity.Host;
+import example.projection.ServerInstanceApplication;
 import example.utils.JDBCUtils;
 
 import org.apache.logging.log4j.LogManager;
@@ -59,6 +60,23 @@ public class JDBCDao implements Dao {
 			PreparedStatement preparedStatement = conn.prepareStatement(sql);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			results = JDBCUtils.TranverseToList(resultSet, Host.class);
+		} catch (Exception e) {
+			logger.error(e.toString());
+		}
+		return results;
+	}
+
+	@Override
+	public List<?> findAllServerInstanceApplication() {
+		logger.info("datasourceUrl = " + datasourceUrl);
+		List<?> results = null;
+		String sql = "select server1_.sname as serverName, applicatio2_.aname as applicationName, instance3_.iname as instanceName"
+				+ " from axixs axixs0_ inner join server server1_ on (axixs0_.sid=server1_.sid) inner join application applicatio2_ on (axixs0_.aid=applicatio2_.aid) inner join instance instance3_ on (axixs0_.iid=instance3_.iid)";
+		try {
+			PreparedStatement preparedStatement = conn.prepareStatement(sql);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			results = JDBCUtils.TranverseToList(resultSet,
+					ServerInstanceApplication.class);
 		} catch (Exception e) {
 			logger.error(e.toString());
 		}

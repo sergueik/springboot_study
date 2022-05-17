@@ -658,9 +658,10 @@ create table axixs(
 ```
 ![Sample DB Browser](https://github.com/sergueik/springboot_study/blob/master/basic-hibernate-join-springboot/screenshots/capture_db_browser_sqlite.png)
 ```SQL
-insert into server(sname,sid) values('server01',101);
-insert into server(sname,sid) values('server02',102);
-insert into server(sname,sid) values('server03',103);
+delete from server;
+insert into server(sname,sid) values('hostname00',101);
+insert into server(sname,sid) values('hostname01',102);
+insert into server(sname,sid) values('hostname02',103);
 
 insert into application(aname,aid) values('application01',10001);
 insert into application(aname,aid) values('application02',10002);
@@ -749,7 +750,6 @@ server02|instance05|application02
 select server1_.sname as col_0_0_, applicatio2_.aname as col_1_0_, instance3_.iname as col_2_0_ from axixs axixs0_ inner join server server1_ on (axixs0_.sid=server1_.sid) inner join application applicatio2_ on (axixs0_.aid=applicatio2_.aid) inner join instance instance3_ on (axixs0_.iid=instance3_.iid)
 ```
 ```SQL
-select sname,iname,aname from axixs x join server s on x.sid = s.sid join application a on x.aid = a.aid join instance i on x.iid = i.iid;
 server01|application01|instance01
 server01|application01|instance02
 server02|application01|instance03
@@ -768,7 +768,7 @@ CREATE TABLE axixs(
   aid bigint
 );
 ```
-```
+
 ### See Also
 
   * [discussion of multi-database Hibernate App fix](https://qna.habr.com/q/1104464) (in Russian)

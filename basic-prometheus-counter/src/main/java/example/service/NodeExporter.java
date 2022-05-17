@@ -15,8 +15,10 @@ import javax.annotation.Resource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import example.dao.JDBCDao;
 import example.entity.Host;
 import example.entity.Result;
 import example.service.BaseService;
@@ -30,11 +32,15 @@ import io.prometheus.client.Gauge.Builder;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.exporter.common.TextFormat;
 
+
 @Service
 public class NodeExporter {
 	private static final Logger logger = LogManager.getLogger(NodeExporter.class);
 
 	private ClusterConfigReader clusterConfigReader = new ClusterConfigReader();
+
+	@Autowired
+	private JDBCDao dao;
 
 	// custom metric setting the instance
 	// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.html
