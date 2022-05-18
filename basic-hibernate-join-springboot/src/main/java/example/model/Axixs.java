@@ -11,7 +11,7 @@ import javax.persistence.Table;
 @Table(name = "axixs")
 public class Axixs {
 
-	// The identity coumn is defined but the database shema appears unchanged
+	// The identity column is defined but the database schema appears unchanged
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "xid")

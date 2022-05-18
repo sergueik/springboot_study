@@ -8,15 +8,13 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "item")
 public class Item {
-	@Id
-	@Column(name = "iid")
-	private int itemId;
-	
-	@Column(name = "iname", nullable = false, length = 10)
+
+	private int itemId;	
 	private String itemName;
-	@Column(name = "iprice")
 	private int price;
 
+	@Id
+	@Column(name = "iid")
 	public int getItemId() {
 		return itemId;
 	}
@@ -25,6 +23,7 @@ public class Item {
 		itemId = value;
 	}
 
+	@Column(name = "iname", nullable = false, length = 10)
 	public String getItemName() {
 		return itemName;
 	}
@@ -33,6 +32,7 @@ public class Item {
 		itemName = value;
 	}
 
+	@Column(name = "iprice")
 	public int getPrice() {
 		return price;
 	}

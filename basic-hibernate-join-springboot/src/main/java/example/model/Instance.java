@@ -11,12 +11,7 @@ import javax.persistence.Table;
 @Table(name = "instance")
 public class Instance {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "iid")
 	private int instanceId;
-
-	@Column(name = "iname", nullable = false, length = 10)
 	private String instanceName;
 
 	public Instance() {
@@ -26,6 +21,9 @@ public class Instance {
 		this.instanceName = instanceName;
 	}
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "iid")
 	public int getInstanceId() {
 		return instanceId;
 	}
@@ -34,6 +32,7 @@ public class Instance {
 		instanceId = value;
 	}
 
+	@Column(name = "iname", nullable = false, length = 10)
 	public String getInstanceName() {
 		return instanceName;
 	}

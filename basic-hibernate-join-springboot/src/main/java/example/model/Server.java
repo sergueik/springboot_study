@@ -11,12 +11,7 @@ import javax.persistence.Table;
 @Table(name = "server")
 public class Server {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "sid")
 	private int serverId;
-
-	@Column(name = "sname", nullable = false, length = 10)
 	private String serverName;
 
 	public Server() {
@@ -26,6 +21,9 @@ public class Server {
 		this.serverName = serverName;
 	}
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "sid")
 	public int getServerId() {
 		return serverId;
 	}
@@ -34,6 +32,7 @@ public class Server {
 		serverId = value;
 	}
 
+	@Column(name = "sname", nullable = false, length = 10)
 	public String getServerName() {
 		return serverName;
 	}

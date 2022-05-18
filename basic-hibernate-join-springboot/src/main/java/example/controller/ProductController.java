@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 @RestController
 public class ProductController {
 
+	private int picksize = 10;
 	private static Logger logger = LoggerFactory
 			.getLogger(ProductController.class);
 
@@ -45,11 +46,15 @@ public class ProductController {
 	@Autowired
 	private AxixsRepository axixsRepository;
 
-	@RequestMapping(value = "/data", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/customerdata", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Object[]>> getUntypedDataWithNulls() {
 		List<Object[]> data = customerRepository.findAllUntypedDataWithNulls();
+
 		logger.info("returned " + data.size() + " rows");
-		return ResponseEntity.status(HttpStatus.OK).body(data);
+		List<Object[]> result = data.stream().limit(picksize)
+				.collect(Collectors.toList());
+		logger.info("truncated to " + result.size() + " rows");
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
 	@RequestMapping(value = "/customers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -78,14 +83,24 @@ public class ProductController {
 	public ResponseEntity<Collection<CustomerItem>> getCustomerItems() {
 		Collection<CustomerItem> data = customerRepository.findAllCustomerItems();
 		logger.info("returned " + data.size() + " rows");
-		return ResponseEntity.status(HttpStatus.OK).body(data);
+		List<CustomerItem> result = data.stream().limit(picksize)
+				.collect(Collectors.toList());
+		logger.info("truncated to " + result.size() + " rows");
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
-	@RequestMapping(value = "/info", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Collection<ServerInstanceApplication>> findAxixes() {
-		Collection<ServerInstanceApplication> data = axixsRepository.findAxixes();
+	@RequestMapping(value = "/servers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Collection<ServerInstanceApplication>> getAllServerInstanceApplications() {
+		Collection<ServerInstanceApplication> data = axixsRepository
+				.findAllServerInstanceApplications();
 		logger.info("returned " + data.size() + " rows");
 		return ResponseEntity.status(HttpStatus.OK).body(data);
 	}
 
+	@RequestMapping(value = "/serverdata", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Collection<Object[]>> getAllData() {
+		Collection<Object[]> data = axixsRepository.findAllData();
+		logger.info("returned " + data.size() + " rows");
+		return ResponseEntity.status(HttpStatus.OK).body(data);
+	}
 }

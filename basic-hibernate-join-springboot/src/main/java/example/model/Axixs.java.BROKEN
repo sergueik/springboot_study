@@ -1,0 +1,71 @@
+package example.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "axixs")
+public class Axixs {
+
+	// The identity coumn is defined but the database shema appears unchanged
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "xid")
+	private int axixsId;
+
+	// NOTE: without primary key, unable to define an Entity:
+	// exception in runtime during startup
+	// org.springframework.beans.factory.BeanCreationException:
+	// Error creating bean with name 'jpaMappingContext':
+	// Invocation of init method failed; nested exception is
+	// org.hibernate.AnnotationException: No identifier specified for entity:
+	// example.model.Axixs
+
+	public Axixs() {
+	}
+
+	public Axixs(int instanceId, int applicationId, int serverId) {
+		this.instanceId = instanceId;
+	}
+
+	@Column(name = "iid")
+	public int getInstanceId() {
+		return instanceId;
+	}
+
+	public void setInstanceId(int value) {
+		instanceId = value;
+	}
+
+	// NOTE: with SQLite and MyQL 
+	// the attempt to apply the JPA best practices and refactor the class 
+	// to facilitate using getters over reflection by placing @Column annotations on getters
+	// leads to org.sqlite.SQLiteException: 
+	// [SQLITE_ERROR] SQL error or missing database (no such column: axixs0_.server_id)
+	@Column(name = "aid")
+	public int getApplicationId() {
+		return applicationId;
+	}
+
+	public void setApplicationId(int value) {
+		applicationId = value;
+	}
+
+	@Column(name = "sid")
+	public int getServerId() {
+		return serverId;
+	}
+
+	public void setServerId(int value) {
+		serverId = value;
+	}
+	private int instanceId;
+	private int applicationId;
+	private int serverId;
+
+
+}
