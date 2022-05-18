@@ -15,10 +15,13 @@ import javax.annotation.Resource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import example.dao.JDBCDao;
 import example.entity.Host;
 import example.entity.Result;
+import example.projection.ServerInstanceApplication;
 import example.service.BaseService;
 import example.utils.ClusterConfigReader;
 import example.utils.HostData;
@@ -35,6 +38,9 @@ public class NodeExporter {
 	private static final Logger logger = LogManager.getLogger(NodeExporter.class);
 
 	private ClusterConfigReader clusterConfigReader = new ClusterConfigReader();
+
+	@Autowired
+	private JDBCDao dao;
 
 	// custom metric setting the instance
 	// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.html
@@ -84,8 +90,8 @@ public class NodeExporter {
 			if (!definedMetricNames.contains(counterName)) {
 				Builder builder = Gauge
 						.build(counterName, "Value of metric from instance")
-						.labelNames(new String[] { "instance", "datacenter", "appid",
-								"environment" });
+						.labelNames(new String[] { "instance", "datacenter", "application",
+								"linborg_instance" });
 				example = builder.register(registry);
 				gauges.put(counterName, example);
 			}
@@ -95,12 +101,13 @@ public class NodeExporter {
 		}
 	}
 
-	private void exampleGauge(String counterName, Host host, float value) {
+	private void exampleGauge(String counterName, ServerInstanceApplication host,
+			float value) {
 
-		String hostname = host.getHostname();
-		String datacenter = host.getDatacenter();
-		String appid = host.getAppid();
-		String environment = host.getEnvironment();
+		String hostname = host.getServerName();
+		String datacenter = "dummy";
+		String application = host.getApplicationName();
+		String linborgInstance = host.getInstanceName();
 		Gauge gauge = gauges.get(counterName);
 		// invoke Prometheus variadic methods with a argument array set at
 		// compile-time
@@ -111,8 +118,8 @@ public class NodeExporter {
 		String[] labelArgs = new String[4];
 		labelArgs[0] = hostname;
 		labelArgs[1] = datacenter;
-		labelArgs[2] = appid;
-		labelArgs[3] = environment;
+		labelArgs[2] = application;
+		labelArgs[3] = linborgInstance;
 
 		// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
 		/*
@@ -141,49 +148,33 @@ public class NodeExporter {
 			metricTaker.put("load_average",
 					"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
 
-			for (String hostname : hostInfo.keySet()) {
-				// YAML
+			List<?> payload = dao.findAllServerInstanceApplication();
+			for (Object row : payload) {
+				ServerInstanceApplication serverInstance = (ServerInstanceApplication) row;
+				String hostname = serverInstance.getServerName();
 				hostData = new HostData(hostname);
 				hostData.setMetrics(metricNames);
 				hostData.setMetricTaker(metricTaker);
 				hostData.readData();
 				data = hostData.getData();
-				// JDBC
-				try {
-
-					Result result = service.findHostByHostname(hostname);
-					Object dataObj = result.getData();
-					if (dataObj == null) {
-						logger.info("No info in database  for host : " + hostname);
-					} else {
-						logger.info("Loading database info for host : " + dataObj);
-						if (dataObj instanceof Host) {
-							Map<String, String> hostData = new HashMap<>();
-							hostData.put("hostname", ((Host) dataObj).getHostname());
-							hostData.put("environment", ((Host) dataObj).getEnvironment());
-							hostData.put("appid", ((Host) dataObj).getAppid());
-							hostData.put("datacenter", ((Host) dataObj).getDatacenter());
-							hostInfo.put(hostname, (Host) dataObj);
-						}
-					}
-					// NOTE: org.sqlite.SQLiteException is not thrown to the code
-					// attempt to catch produces Unreachable catch block compiler error
-				} catch (Exception e) {
-					logger.info(" Ignoring exception: " + e.getMessage());
-				}
+				// obsolete JDBC
+				// Result result = service.findHostByHostname(hostname);
+				// Object dataObj = result.getData();
+				logger.info("Loading inventory info for host : " + hostname);
 
 				for (String metricName : data.keySet()) {
 					createGauge(metricName);
 					// generate random metrics
-					value = (hostname.matches(".*00$")) ? 42
-							: Float
-									.parseFloat(data.get(metricName) + random.nextInt((int) 42));
+					value = Float
+							.parseFloat(data.get(metricName) + random.nextInt((int) 42));
 
-					exampleGauge(metricName, (Host) hostInfo.get(hostname), value);
+					exampleGauge(metricName, serverInstance, value);
 				}
 			}
 			TextFormat.write004(writer, registry.metricFamilySamples());
-		} catch (IOException e) {
+		} catch (
+
+		IOException e) {
 			logger.error("Exception (caught):" + e.toString());
 			return null;
 		}
