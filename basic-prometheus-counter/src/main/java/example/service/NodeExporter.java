@@ -157,18 +157,21 @@ public class NodeExporter {
 				hostData.setMetricTaker(metricTaker);
 				hostData.readData();
 				data = hostData.getData();
-				// obsolete JDBC
-				// Result result = service.findHostByHostname(hostname);
-				// Object dataObj = result.getData();
-				logger.info("Loading inventory info for host : " + hostname);
+				if (data != null && !data.isEmpty()) {
+					logger.info(String.format("Loading %d metrics for host : %s",
+							data.keySet().size(), hostname));
 
-				for (String metricName : data.keySet()) {
-					createGauge(metricName);
-					// generate random metrics
-					value = Float
-							.parseFloat(data.get(metricName) + random.nextInt((int) 42));
+					for (String metricName : data.keySet()) {
+						createGauge(metricName);
+						// generate random metrics
+						value = Float
+								.parseFloat(data.get(metricName) + random.nextInt((int) 42));
 
-					exampleGauge(metricName, serverInstance, value);
+						exampleGauge(metricName, serverInstance, value);
+					}
+				} else {
+					logger.info(
+							String.format("no metrics found for %s, skipping", hostname));
 				}
 			}
 			TextFormat.write004(writer, registry.metricFamilySamples());
