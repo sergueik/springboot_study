@@ -1,0 +1,62 @@
+---
+  - host:
+    id: 2
+    hostname: hostname00
+    datacenter: west
+    environment: qa
+    platform:
+# the legacy "platform" is effectively the name of the configuration file e.g. "www-search.conf"
+# NOTE: Internal Server Error:
+# org.yaml.snakeyaml.scanner.ScannerException:
+# while scanning for the next token
+# found character '\t(TAB)' that cannot start any token. (Do not use \t(TAB) for indentation)   
+    appid: database
+# the appid requires SQL run to merge with other tags of the host 
+  - host:
+    id: 3
+    hostname: hostname03
+    datacenter: west
+    environment: qa
+    platform:
+    appid: redis
+  - host:
+    id: 4
+    hostname: hostname04
+    datacenter: west
+    environment: qa
+    platform:
+    appid: node
+  - host:
+    id: 5
+    hostname: hostname05
+    appid: ~
+  - host:
+    id: 6
+    hostname: hostname06
+    datacenter: west
+    environment: qa
+    platform:
+    appid: ~
+  - host:
+    id: 7
+    hostname: hostname07
+    datacenter: west
+    environment: prod
+    appid: node
+    # NOTE: leading zeros will make YAML assume the value of "id " is int "octal"
+    # but once see
+    # values like 008 etc. will consider id to be "double"
+  - host:
+    id: 8
+    hostname: hostname07
+    datacenter: east
+    environment: prod
+    appid: node
+    platform:
+  - host:
+    id: 9
+    hostname: hostname08
+    datacenter: west
+    environment: prod
+    appid: redis
+    
