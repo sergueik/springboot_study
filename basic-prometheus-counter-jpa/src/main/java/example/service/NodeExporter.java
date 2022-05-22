@@ -39,7 +39,7 @@ public class NodeExporter {
 
 	// custom metric setting the instance
 	// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.html
-	private static final boolean debug = false;
+	private static final boolean debug = true;
 
 	String fileName = "cluster.yaml";
 	Map<String, ServerInstanceApplication> hostInfo = new HashMap<>();
@@ -54,8 +54,6 @@ public class NodeExporter {
 
 	private static final List<String> metricNames = Arrays.asList("memory", "cpu",
 			"disk", "rpm");
-
-	private static final int length = 10;
 
 	private void createGauge(String counterName) {
 		// cache the gauge objects
@@ -118,10 +116,23 @@ public class NodeExporter {
 			((ArrayList<String>) metricNames).set(index, element);
 		*/
 		gauge.labels(labelArgs).set(value);
-
 		if (debug)
 			logger.info(String.format("Adding custom metrics %s %s %s %s %s: ",
 					counterName, labelArgs) + gauge.labels(labelArgs).get());
+
+	}
+
+	private void exampleGauge(String counterName, String[] labels, float value) {
+
+		Gauge gauge = gauges.get(counterName);
+
+		if (debug)
+			logger.info(String.format("Adding custom metrics %s %s: ", counterName,
+					Arrays.asList(labels)));
+		gauge.labels(labels).set(value);
+		if (debug)
+			logger.info(String.format("Added custom metrics %s %s: ", counterName,
+					Arrays.asList(labels)) + gauge.labels(labels).get());
 
 	}
 
@@ -135,25 +146,27 @@ public class NodeExporter {
 			metricTaker.put("load_average",
 					"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
 
-			List<ServerInstanceApplication> payload = dao
-					.findAllServerInstanceApplications();
-			for (Object row : payload) {
-				ServerInstanceApplication serverInstance = (ServerInstanceApplication) row;
-				String hostname = serverInstance.getServerName();
+			List<Object[]> payload = dao.findAllData();
+			for (Object[] row : payload) {
+
+				String hostname = row[0].toString();
 				hostData = new HostData(hostname);
 				hostData.setMetrics(metricNames);
 				hostData.setMetricTaker(metricTaker);
 				hostData.readData();
 				data = hostData.getData();
 				if (data != null && !data.isEmpty()) {
+					// copyOf
+					String[] labels = Arrays.copyOfRange(row, 0, row.length,
+							String[].class);
 					if (debug)
-						logger.info(
-								String.format("Loading inventory %d metrics info for host: %s",
-										data.keySet().size(), hostname));
+						logger.info(String.format(
+								"Loading inventory %d metrics for host: %s labels %s",
+								data.keySet().size(), hostname, Arrays.asList(row)));
 
 					for (String metricName : data.keySet()) {
 						createGauge(metricName);
-						exampleGauge(metricName, serverInstance,
+						exampleGauge(metricName, labels,
 								Float.parseFloat(data.get(metricName)));
 					}
 				} else {
