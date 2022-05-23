@@ -1,5 +1,6 @@
 package Pushgateway::Tiny;
 
+
 use 5.14.2;
 use strict;
 use warnings;
@@ -47,9 +48,10 @@ sub increment {
 
     # NOTE: fix to pass the value - the array and hash do not merge as intended
     my %args = @_;
+    my $value = $args{'-value'} || 1;
     $self->{raw_str} = $self->_add(
         @_,
-        '-value' => $args{'-value'},
+        '-value' => $value,
         '-type'  => 'counter',
     );
     return $self->_send_to_prometheus( $self->{raw_str} );
@@ -88,9 +90,7 @@ sub histogram {
         push @metrics,
           $self->_prepare_raw_metric(
             $metric_name . '_bucket',
-            { 
-              %$label, 'le' => $bucket 
-            },
+            { %$label, 'le' => $bucket },
             $value <= $bucket ? 1 : 0
           );
     }
@@ -138,7 +138,8 @@ sub _send_to_prometheus {
     my ( $self, $str ) = @_;
     push @{$self->{raw_data}}, $str;
     return if $self->{defer};
-    print STDERR "sending";
+    # print STDERR "sending";
+
     # https://metacpan.org/pod/HTTP::Tiny#request
 
     my $response =

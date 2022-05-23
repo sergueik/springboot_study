@@ -156,7 +156,7 @@ perl -v
 ```text
 This is perl 5, version 26, subversion 3 (v5.26.3) built for x86_64-linux-thread-multi
 ```
-* verify the custom module to be healthy:
+* verify the dependency module to be healthy:
 ```sh
 perl -MHTTP::Tiny -e 'print $HTTP::Tiny::VERSION'
 ```
@@ -187,7 +187,7 @@ perl -I. -MPushgateway::Tiny -e 'print $Pushgateway::Tiny::VERSION;'
 * post sample data to pushgteway:
 
 ```sh
-perl -I . test.pl -value 5
+perl -I . test-linux.pl -value 5
 ```
 this will print to console:
 ```text
@@ -268,12 +268,14 @@ my $o = Pushgateway::Tiny->new(%$opt );
 
 ```
 calls currently do not work and return a __404__
+
 ### Batch Post
-the  `Pushgateway::Tiny` __0.3.0__ supports `defer` option ( which probably willbe better named batch). When the test is run with `-defer` option
+
+From the version __0.3.0__ `Pushgateway::Tiny` supports `defer` option ( the ame of which probably should be `batch`). When the test is run with `-defer` option
 ```sh
-perl -I . test.pl -defer
+perl -I . test-linux.pl -defer
 ```
- the combined payload needs to be sent expicitly:
+the combined payload needs to be sent expicitly by clearing the option and performing a single bulk send calling `send_to_prometheus`:
 ```perl
 my $raw_data = join "\n", @{$o->{raw_data}};
 print STDERR "\n" . 'Payload:' . "\n" . $raw_data if $debug; 
@@ -296,9 +298,65 @@ For a 32 bit Windows one can download __ActivePerl__ without registration from e
 
 
 It comes with Perl Package Manager and `Net::HTTP` and `Data::Dumper` among other packages.
+Test data push can be executed as:
+```cmd
+perl.exe -I . test-windows.pl -debug -defer
+```
+and will print to console
+```text
+10.0.2.15sergueik42(10.0.2.15)
+Payload:
+# TYPE test untyped
+test{} 42
+
+Payload:
+# TYPE perl_counter counter
+perl_counter{perl_label="custom label"} 1
+
+Payload:
+# TYPE perl_gauge gauge
+perl_gauge{instance2="node1"} 10
+
+Payload:
+perl_metric_histogram_bucket{le="+Inf", perl_label="5"} 1
+
+Payload:
+# TYPE test untyped
+test{} 42
+
+# TYPE perl_counter counter
+perl_counter{perl_label="custom label"} 1
+
+# TYPE perl_gauge gauge
+perl_gauge{instance2="node1"} 10
+
+# TYPE perl_metric_histogram histogram
+perl_metric_histogram_count{perl_label="5"} 1
+perl_metric_histogram_sum{perl_label="5"} 15
+perl_metric_histogram_bucket{le="1", perl_label="5"} 0
+perl_metric_histogram_bucket{perl_label="5", le="2"} 0
+perl_metric_histogram_bucket{le="3", perl_label="5"} 0
+perl_metric_histogram_bucket{le="4", perl_label="5"} 0
+perl_metric_histogram_bucket{le="5", perl_label="5"} 0
+perl_metric_histogram_bucket{le="+Inf", perl_label="5"} 1
+```
 
 This can be a good starting point for Powershell / .Net version of the same.
+### Note
 
+One can use `test-linux.pl` on Windows - the version `HTTP::Tiny` available on Windows ActiveState is also __0.070__ 
+
+When the pushgateway host is not responding, e.g. due to misconfiguration the
+`PushGateway::Tiny` is returning the error from __POST__ operation:
+
+```text
+10.0.2.15sergueik42(10.0.2.15)Can't send POST request to http://pushgateway:9091
+/metrics/job/my_custom_metrics/instance/sergueik42(10.0.2.15)/team/test
+MSG: Internal Exception
+Code: 599
+at test-linux.pl line 53.
+```
+The HTTP Error code 599 is used when no HTTP response was received, e.g. for a timeout
 
 ### See Also
   * Python [example](https://www.devopsschool.com/blog/prometheus-pushgateway-installation-configuration-and-using-tutorials/)
