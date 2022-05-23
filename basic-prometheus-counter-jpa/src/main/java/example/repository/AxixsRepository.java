@@ -18,7 +18,7 @@ public interface AxixsRepository extends JpaRepository<Axixs, Integer> {
 	public List<ServerInstanceApplication> findAllServerInstanceApplications();
 
 	// NOTE: losely typed
-	@Query("select s.serverName as hostname, 'dummy' as dc, a.applicationName as application, i.instanceName as env from Axixs x join Server s on x.serverId = s.serverId join Application a on x.applicationId = a.applicationId join Instance i on x.instanceId = i.instanceId")
+	@Query("select s.serverName as hostname, 'dummy' as dc, a.applicationName as application, i.instanceName as env from Axixs x join Server s on x.serverId = s.serverId left join Application a on x.applicationId = a.applicationId join Instance i on x.instanceId = i.instanceId")
 	public List<Object[]> findAllData();
 
 }

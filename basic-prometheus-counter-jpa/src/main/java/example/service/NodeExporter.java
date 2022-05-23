@@ -54,8 +54,15 @@ public class NodeExporter {
 
 	private static final List<String> metricNames = Arrays.asList("memory", "cpu",
 			"disk", "rpm");
+	private static final String[] labelNames = new String[] { "instance", "dc",
+			"app", "env" };
 
 	private void createGauge(String counterName) {
+		createGauge(counterName, labelNames);
+	}
+
+	private void createGauge(String counterName, String[] labels) {
+
 		// cache the gauge objects
 		if (gauges.containsKey(counterName))
 			return;
@@ -68,17 +75,26 @@ public class NodeExporter {
 					.nextElement();
 			// NOTE: getNames() was not available in 0.11.0 or earlier releases
 			String[] names = metricFamilySamples.getNames();
+
 			definedMetricNames.addAll(Arrays.asList(names));
 		}
 
 		if (debug)
-			logger.info("Defined metric family sample names:" + definedMetricNames);
+			logger.info(
+					"Read already defined metric family names:" + definedMetricNames);
 
 		try {
+			// TODO: implement different number of labels
+			// for earlier defined metric name
 			if (!definedMetricNames.contains(counterName)) {
-				Builder builder = Gauge
-						.build(counterName, "Value of metric from instance")
-						.labelNames(new String[] { "instance", "dc", "app", "env" });
+				Builder builder = Gauge.build(counterName,
+						String.format("Value of metric from instance with labels %s",
+								Arrays.asList(labels)))
+						.labelNames(labels);
+
+				if (debug)
+					logger.info("Defined metric labels names: " + Arrays.asList(labels));
+
 				example = builder.register(registry);
 				gauges.put(counterName, example);
 			}
@@ -105,8 +121,12 @@ public class NodeExporter {
 		String[] labelArgs = new String[4];
 		labelArgs[0] = hostname;
 		labelArgs[1] = datacenter;
-		labelArgs[2] = application;
-		labelArgs[3] = env;
+		if (application != null) {
+			labelArgs[2] = application;
+			labelArgs[3] = env;
+		} else {
+			labelArgs[2] = env;
+		}
 
 		// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
 		/*
@@ -123,26 +143,83 @@ public class NodeExporter {
 	}
 
 	private void exampleGauge(String counterName, String[] labels, float value) {
-
+		String[] labelArgs;
+		if (labels[2] == null || labels[2] == "" /* blank application */) {
+			labelArgs = new String[3];
+			// Arrays.copyOfRange(labels, 0, 1, String[].class);
+			labelArgs[0] = labels[0];
+			labelArgs[1] = labels[0];
+			labelArgs[2] = labels[3];
+		} else {
+			labelArgs = labels;
+		}
 		Gauge gauge = gauges.get(counterName);
 
 		if (debug)
 			logger.info(String.format("Adding custom metrics %s %s: ", counterName,
-					Arrays.asList(labels)));
-		gauge.labels(labels).set(value);
+					Arrays.asList(labelArgs)));
+		gauge.labels(labelArgs).set(value);
 		if (debug)
 			logger.info(String.format("Added custom metrics %s %s: ", counterName,
 					Arrays.asList(labels)) + gauge.labels(labels).get());
 
 	}
 
-	public String metrics() {
+	public String metricsFromServerInstanceList() {
 
 		logger.info("Starting reporting metrics");
 		Writer writer = new StringWriter();
 		try {
 			registry = CollectorRegistry.defaultRegistry;
 
+			metricTaker.put("load_average",
+					"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
+
+			List<ServerInstanceApplication> payload = dao
+					.findAllServerInstanceApplications();
+			for (Object row : payload) {
+				ServerInstanceApplication serverInstance = (ServerInstanceApplication) row;
+				String hostname = serverInstance.getServerName();
+				hostData = new HostData(hostname);
+				hostData.setMetrics(metricNames);
+				hostData.setMetricTaker(metricTaker);
+				hostData.readData();
+				data = hostData.getData();
+				if (data != null && !data.isEmpty()) {
+					if (debug)
+						logger.info(
+								String.format("Loading inventory %d metrics info for host: %s",
+										data.keySet().size(), hostname));
+
+					for (String metricName : data.keySet()) {
+						createGauge(metricName);
+						// create separate gauge for blank app label
+						createGauge(metricName, new String[] { "instance", "dc", "env" });
+
+						exampleGauge(metricName, serverInstance,
+								Float.parseFloat(data.get(metricName)));
+					}
+				} else {
+					if (debug)
+						logger.info(String.format("No metrics for host: %s", hostname));
+				}
+			}
+			TextFormat.write004(writer, registry.metricFamilySamples());
+		} catch (
+
+		IOException e) {
+			logger.error("Exception (caught):" + e.toString());
+			return null;
+		}
+		return writer.toString();
+	}
+
+	public String metricsFromData() {
+
+		logger.info("Starting reporting metrics");
+		Writer writer = new StringWriter();
+		try {
+			registry = CollectorRegistry.defaultRegistry;
 			metricTaker.put("load_average",
 					"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
 
@@ -155,6 +232,7 @@ public class NodeExporter {
 				hostData.setMetricTaker(metricTaker);
 				hostData.readData();
 				data = hostData.getData();
+
 				if (data != null && !data.isEmpty()) {
 					// copyOf
 					String[] labels = Arrays.copyOfRange(row, 0, row.length,

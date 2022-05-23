@@ -40,7 +40,7 @@ public class NodeExporterController {
 	public ResponseEntity<String> metrics() {
 
 		logger.info("Starting reporting metrics");
-		String payload = nodeExporter.metrics();
+		String payload = nodeExporter.metricsFromData();
 
 		return (payload == null)
 				? ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
