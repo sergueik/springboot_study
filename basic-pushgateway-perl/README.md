@@ -344,7 +344,7 @@ perl_metric_histogram_bucket{le="+Inf", perl_label="5"} 1
 This can be a good starting point for Powershell / .Net version of the same.
 ### Note
 
-One can use `test-linux.pl` on Windows - the version `HTTP::Tiny` available on Windows ActiveState is also __0.070__ 
+One can use `test-linux.pl` on Windows - the version of `HTTP::Tiny` available on Windows ActiveState is __0.070__  and on Centos - the version of `HTTP::Tiny` available on Centos is __0.033__
 
 When the pushgateway host is not responding, e.g. due to misconfiguration the
 `PushGateway::Tiny` is returning the error from __POST__ operation:
@@ -358,6 +358,51 @@ at test-linux.pl line 53.
 ```
 The HTTP Error code 599 is used when no HTTP response was received, e.g. for a timeout
 
+to run in Centos
+```
+wget https://github.com/prometheus/pushgateway/releases/download/v0.8.0/pushgateway-0.8.0.linux-amd64.tar.gz
+tar -xvf pushgateway-0.8.0.linux-amd64.tar.gz
+./pushgateway-0.8.0.linux-amd64/pushgateway &
+perl -I . test-linux.pl -host 127.0.0.1 -port 9091 -debug -defer
+```
+this will print
+```text
+127.0.0.1linux.example.com(127.0.0.1)
+Payload:
+# TYPE test untyped
+test{} 42
+
+Payload:
+# TYPE perl_counter counter
+perl_counter{perl_label="custom label"} 1
+
+Payload:
+# TYPE perl_gauge gauge
+perl_gauge{instance2="node1"} 10
+
+Payload:
+# TYPE test untyped
+test{} 42
+
+# TYPE perl_counter counter
+perl_counter{perl_label="custom label"} 1
+
+# TYPE perl_gauge gauge
+perl_gauge{instance2="node1"} 10
+```
+
+before setting to a different ip e.g.:
+```sh
+ perl -I . test-linux.pl  -pushgateway 192.168.0.19 -debug  -defer
+```
+verify
+```sh
+nc 192.168.0.19 9091
+```
+it may fail due to firewall:
+```text
+Ncat: Connection timed out
+```
 ### See Also
   * Python [example](https://www.devopsschool.com/blog/prometheus-pushgateway-installation-configuration-and-using-tutorials/)
 

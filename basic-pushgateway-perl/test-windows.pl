@@ -9,10 +9,15 @@ my $value = 1;
 my $file  = undef;
 my $defer = undef;
 my $debug = undef;
+my $host = 'pushgateway';
+my $port = '9091';
+
 GetOptions(
     'value=s' => \$value,
     'file=s'  => \$file,
     'debug'   => \$debug,
+    'port=s'  => \$port,
+    'host=s'  => \$host,
     'defer'   => \$defer
 
 );
@@ -30,8 +35,8 @@ print STDERR $instance_name if $debug;
 my $team = 'test';
 my $opt  = {
     'instance_name' => $instance_name,
-    '-host'         => '192.168.0.64',
-    '-port'         => 9091,
+    '-host' => $host,
+    '-port' => $port,
     '-path' =>
       "/metrics/job/${job_name}/instance/${instance_name}/team/${team}",
     '-timeout' => 10
@@ -69,7 +74,7 @@ my $gauge = {
     }
 };
 
-# Send counter metric
+# Send gauge metric
 $o->gauge(%$gauge);
 print STDERR "\n" . 'Payload:' . "\n" . $o->{raw_str} if $debug;
 

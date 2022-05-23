@@ -9,10 +9,15 @@ my $value = 1;
 my $file  = undef;
 my $defer = undef;
 my $debug = undef;
+my $host = 'pushgateway';
+my $port = '9091';
+
 GetOptions(
     'value=s' => \$value,
     'file=s'  => \$file,
     'debug'   => \$debug,
+    'port=s'  => \$port,
+    'host=s'  => \$host,
     'defer'   => \$defer
 
 );
@@ -29,8 +34,8 @@ $instance_name =~ s/([^^A-Za-z0-9\-_.!~*'()])/ sprintf "%%%0x", ord $1 /eg;
 print STDERR $instance_name if $debug;
 my $team = 'test';
 my $opt  = {
-    '-host' => 'pushgateway',
-    '-port' => 9091,
+    '-host' => $host,
+    '-port' => $port,
     '-path' =>
       "/metrics/job/${job_name}/instance/${instance_name}/team/${team}",
     '-timeout' => 10
@@ -53,6 +58,7 @@ my $custom = {
 $o->add(%$custom);
 print STDERR "\n" . 'Payload:' . "\n" . $o->{raw_str} if $debug;
 
+# Send counter metric
 $o->increment(
     -metric_name => 'perl_counter',
     -label       => { 'perl_label' => 'custom label' },
@@ -66,6 +72,8 @@ my $gauge = {
         'instance2' => 'node1'
     }
 };
+
+# Send gauge metric
 $o->gauge(%$gauge);
 print STDERR "\n" . 'Payload:' . "\n" . $o->{raw_str} if $debug;
 
