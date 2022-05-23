@@ -61,6 +61,7 @@ public class NodeExporter {
 		createGauge(counterName, labelNames);
 	}
 
+	// NOTE: keep the code - it does not work the intended way, unable to create Gauge with same name as existing but with shorter array of labels
 	private void createGauge(String counterName, String[] labels) {
 
 		// cache the gauge objects
@@ -121,12 +122,8 @@ public class NodeExporter {
 		String[] labelArgs = new String[4];
 		labelArgs[0] = hostname;
 		labelArgs[1] = datacenter;
-		if (application != null) {
-			labelArgs[2] = application;
-			labelArgs[3] = env;
-		} else {
-			labelArgs[2] = env;
-		}
+		labelArgs[2] = (application != null) ? application : "";
+		labelArgs[3] = env;
 
 		// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
 		/*
@@ -144,21 +141,14 @@ public class NodeExporter {
 
 	private void exampleGauge(String counterName, String[] labels, float value) {
 		String[] labelArgs;
-		if (labels[2] == null || labels[2] == "" /* blank application */) {
-			labelArgs = new String[3];
-			// Arrays.copyOfRange(labels, 0, 1, String[].class);
-			labelArgs[0] = labels[0];
-			labelArgs[1] = labels[0];
-			labelArgs[2] = labels[3];
-		} else {
-			labelArgs = labels;
-		}
+		if (labels[2] == null /* blank application */)
+			labels[2] = "";
 		Gauge gauge = gauges.get(counterName);
 
 		if (debug)
 			logger.info(String.format("Adding custom metrics %s %s: ", counterName,
-					Arrays.asList(labelArgs)));
-		gauge.labels(labelArgs).set(value);
+					Arrays.asList(labels)));
+		gauge.labels(labels).set(value);
 		if (debug)
 			logger.info(String.format("Added custom metrics %s %s: ", counterName,
 					Arrays.asList(labels)) + gauge.labels(labels).get());
