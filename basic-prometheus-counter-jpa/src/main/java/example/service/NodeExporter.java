@@ -21,9 +21,12 @@ import org.springframework.stereotype.Service;
 import example.repository.AxixsRepository;
 import example.projection.ServerInstanceApplication;
 import example.utils.HostData;
+
 import example.projection.ServerInstanceApplication;
+
 import io.prometheus.client.Collector.MetricFamilySamples;
 import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.Collector.MetricFamilySamples.Sample;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.Gauge.Builder;
@@ -68,6 +71,8 @@ public class NodeExporter {
 		if (gauges.containsKey(counterName))
 			return;
 		// NOTE: check potential name collisions before register
+		// https://prometheus.github.io/client_java/io/prometheus/client/CollectorRegistry.html
+
 		Enumeration<MetricFamilySamples> metricFamilySamplesEnumeration = registry
 				.metricFamilySamples();
 		List<String> definedMetricNames = new ArrayList<>();
@@ -76,6 +81,17 @@ public class NodeExporter {
 					.nextElement();
 			// NOTE: getNames() was not available in 0.11.0 or earlier releases
 			String[] names = metricFamilySamples.getNames();
+
+			// NOTE: samples was not available in 0.11.0 or earlier releases
+			// NOTE: accessing the property directly
+			for (Sample sample : metricFamilySamples.samples) {
+				// NOTE: accessing the property directly
+				List<String> labelNames = sample.labelNames;
+				if (debug)
+					logger.info("Known metric " + sample.name + " label names: "
+							+ Arrays.asList(labelNames));
+
+			}
 
 			definedMetricNames.addAll(Arrays.asList(names));
 		}
@@ -140,7 +156,7 @@ public class NodeExporter {
 	}
 
 	private void exampleGauge(String counterName, String[] labels, float value) {
-		String[] labelArgs;
+
 		if (labels[2] == null /* blank application */)
 			labels[2] = "";
 		Gauge gauge = gauges.get(counterName);
@@ -234,6 +250,10 @@ public class NodeExporter {
 
 					for (String metricName : data.keySet()) {
 						createGauge(metricName);
+						// create separate gauge for blank app label -
+						// currently it will cease to create new metric in the registry
+						// keep for the future use
+						createGauge(metricName, new String[] { "instance", "dc", "env" });
 						exampleGauge(metricName, labels,
 								Float.parseFloat(data.get(metricName)));
 					}
