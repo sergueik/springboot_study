@@ -44,7 +44,6 @@ public class NodeExporter {
 	// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.html
 	private static final boolean debug = true;
 
-	String fileName = "cluster.yaml";
 	Map<String, ServerInstanceApplication> hostInfo = new HashMap<>();
 
 	private static Map<String, Gauge> gauges = new HashMap<>();
@@ -64,6 +63,9 @@ public class NodeExporter {
 
 	@Value("#{'${example.metricNames}'.split(',')}")
 	private String[] metricNames;
+
+	@Value("#{${example.extractedMetricNames}}")
+	private Map<String, String> extractedMetricNames;
 
 	private void createGauge(String counterName) {
 		createGauge(counterName, labelNames);
@@ -192,6 +194,7 @@ public class NodeExporter {
 				hostData = new HostData(hostname);
 				hostData.setMetrics(Arrays.asList(metricNames));
 				hostData.setMetricExtractors(metricExtractors);
+				hostData.setExtractedMetricNames(extractedMetricNames);
 				hostData.readData();
 				data = hostData.getData();
 				if (data != null && !data.isEmpty()) {
@@ -235,19 +238,11 @@ public class NodeExporter {
 
 				String hostname = row[0].toString();
 				hostData = new HostData(hostname);
+				hostData.setExtractedMetricNames(extractedMetricNames);
 				hostData.setMetrics(Arrays.asList(metricNames));
-				// TODO: debug storing regexp in "application.properties"
-				// cannot dynamically update the value anotated from
-				// "application.properties"
-				// metricExtractors.put("dummy", "value");
-				// java.lang.UnsupportedOperationException: null
-				// at java.util.Collections$UnmodifiableMap.put
-				// Map<String, String> metricExtractors2 = new HashMap<>();
-				// load_average: a b c d 6
-				// metricExtractors2.put("load_average",
-				//		"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
-				// hostData.setMetricExtractors(metricExtractors2);
-						hostData.setMetricExtractors(metricExtractors);
+				// NOTE: cannot dynamically update the value anotated via @Value
+				// it i java.util.Collections$UnmodifiableMap
+				hostData.setMetricExtractors(metricExtractors);
 				hostData.readData();
 				data = hostData.getData();
 
@@ -265,7 +260,8 @@ public class NodeExporter {
 						// create separate gauge for blank app label -
 						// currently it will cease to create new metric in the registry
 						// keep for the future use
-						// createGauge(metricName, new String[] { "instance", "dc", "env" });
+						// createGauge(metricName, new String[] { "instance", "dc", "env"
+						// });
 						exampleGauge(metricName, labels,
 								Float.parseFloat(data.get(metricName)));
 					}

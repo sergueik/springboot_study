@@ -71,7 +71,8 @@ public class NodeExporter {
 	@Value("#{'${example.metricNames}'.split(',')}")
 	private String[] metricNames;
 
-
+	@Value("#{${example.extractedMetricNames}}")
+	private Map<String, String> extractedMetricNames;
 
 	private static Random random = new Random();
 	private static float value = 42;
@@ -162,6 +163,7 @@ public class NodeExporter {
 				String hostname = serverInstance.getServerName();
 				hostData = new HostData(hostname);
 				hostData.setMetrics(Arrays.asList(metricNames));
+				hostData.setExtractedMetricNames(extractedMetricNames);
 				hostData.setMetricExtractors(metricExtractors);
 				hostData.readData();
 				data = hostData.getData();

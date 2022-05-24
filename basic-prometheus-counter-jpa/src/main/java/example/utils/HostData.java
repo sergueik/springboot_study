@@ -23,8 +23,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import example.service.NodeExporter;
+import org.springframework.beans.factory.annotation.Value;
+// import org.springframework.stereotype.Component;
+// import org.springframework.stereotype.Service;
 
+// @Component or @Service annotation does not help
 // Class to read host metrics written by legacy monitoring application
 public class HostData {
 
@@ -33,6 +36,13 @@ public class HostData {
 	private List<String> metrics = null;
 
 	private static final Logger logger = LogManager.getLogger(HostData.class);
+
+	@Value("#{${example.extractedMetricNames}}")
+	private Map<String, String> extractedMetricNames;
+
+	public void setExtractedMetricNames(Map<String, String> value) {
+		extractedMetricNames = value;
+	}
 
 	public boolean isDebug() {
 		return debug;
@@ -56,7 +66,7 @@ public class HostData {
 		metricExtractors = value;
 	}
 
-	private Path filepPath;
+	private Path filePath;
 	private Map<String, String> data = new HashMap<>();
 
 	// in a legacy application one has to process the metrics to extract the
@@ -70,8 +80,15 @@ public class HostData {
 
 		// TODO : examine and bail if not a soft link
 
-		filepPath = Paths.get(String.join(System.getProperty("file.separator"),
+		filePath = Paths.get(String.join(System.getProperty("file.separator"),
 				Arrays.asList(dataDir, this.hostname, "data.txt")));
+		// if (debug)
+		if (extractedMetricNames != null) {
+			logger.info("Known metric names: " + extractedMetricNames.keySet());
+		} else {
+			logger.info("No known metric names loaded");
+		}
+
 	}
 
 	private String dataDir = String.join(System.getProperty("file.separator"),
@@ -93,7 +110,7 @@ public class HostData {
 	// read file fully
 	public void loadData() {
 		try {
-			InputStream in = Files.newInputStream(filepPath);
+			InputStream in = Files.newInputStream(filePath);
 			BufferedReader bufferedReader = new BufferedReader(
 					new InputStreamReader(in));
 			String key = null;
@@ -121,7 +138,7 @@ public class HostData {
 
 	public void readData() {
 		try {
-			InputStream in = Files.newInputStream(filepPath);
+			InputStream in = Files.newInputStream(filePath);
 			BufferedReader bufferedReader = new BufferedReader(
 					new InputStreamReader(in));
 			String key = null;
@@ -136,22 +153,25 @@ public class HostData {
 				if (matcher.find()) {
 					key = matcher.group(1);
 					value = matcher.group(2);
-					data.put(key, value);
 				}
 
 				for (String mKey : metricExtractors.keySet()) {
 					logger.info(String.format("processing metric extractor: %s %s", mKey,
 							metricExtractors.get(mKey)));
+					// NOTE: do not bind to mkey verbatim
 					pattern = Pattern
-							.compile("(?:" + mKey + ")" + ": " + metricExtractors.get(mKey));
+							.compile("^\\s*(?:" + "\\w+" + ")" + ": " + metricExtractors.get(mKey));
 					matcher = pattern.matcher(line);
 					if (matcher.find()) {
 						key = mKey;
 						value = matcher.group(1);
-						logger.info(
-								String.format("Found data for metric %s: %s", mKey, value));
-						data.put(key, value);
 					}
+					String realKey = extractedMetricNames != null
+							&& extractedMetricNames.containsKey(key)
+									? extractedMetricNames.get(key) : key;
+					logger.info(String.format("Found data for metric %s(%s): %s", key,
+							realKey, value));
+					data.put(realKey, value);
 				}
 			}
 			bufferedReader.close();
