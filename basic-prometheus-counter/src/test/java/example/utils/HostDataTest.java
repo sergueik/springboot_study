@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class HostDataTest {
 	private HostData hostData = null;
 	private List<String> metrics = new ArrayList<>();
 	private Map<String, String> data = new HashMap<>();
-	private Map<String, String> metricTaker = new HashMap<>();
+	private Map<String, String> metricExtractors = new HashMap<>();
 	private final String hostname = "hostname00";
 
 	@BeforeEach
@@ -37,10 +38,11 @@ public class HostDataTest {
 		metrics.add("disk");
 		metrics.add("missing data");
 		// the fifth element
-		metricTaker.put("load_average",
+		metricExtractors.put("load_average",
 				"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
-		hostData.setMetricTaker(metricTaker);
 		hostData.setMetrics(metrics);
+		hostData.setMetricExtractors(metricExtractors);
+
 		hostData.readData();
 		data = hostData.getData();
 
@@ -55,8 +57,8 @@ public class HostDataTest {
 	@Test
 	public void test2() throws Exception {
 
-		metricTaker.put("disk", "([0-9.]+)");
-		hostData.setMetricTaker(metricTaker);
+		metricExtractors.put("disk", "([0-9.]+)");
+		hostData.setMetricExtractors(metricExtractors);
 		hostData.readData();
 		data = hostData.getData();
 

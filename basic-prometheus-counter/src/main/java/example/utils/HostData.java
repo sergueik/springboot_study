@@ -20,11 +20,19 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import example.service.NodeExporter;
+
 // Class to read host metrics written by legacy monitoring application
 public class HostData {
+
 	private boolean debug = false;
 	private String hostname = null;
 	private List<String> metrics = null;
+
+	private static final Logger logger = LogManager.getLogger(HostData.class);
 
 	public boolean isDebug() {
 		return debug;
@@ -42,10 +50,10 @@ public class HostData {
 		metrics = value;
 	}
 
-	private Map<String, String> metricTaker = new HashMap<>();
+	private Map<String, String> metricExtractors = new HashMap<>();
 
-	public void setMetricTaker(Map<String, String> value) {
-		metricTaker = value;
+	public void setMetricExtractors(Map<String, String> value) {
+		metricExtractors = value;
 	}
 
 	private Path filepPath;
@@ -131,13 +139,16 @@ public class HostData {
 					data.put(key, value);
 				}
 
-				for (String mKey : metricTaker.keySet()) {
+				for (String mKey : metricExtractors.keySet()) {
+					logger.info(String.format("processing metric extractor: %s %s", mKey,
+							metricExtractors.get(mKey)));
 					pattern = Pattern
-							.compile("(?:" + mKey + ")" + ": " + metricTaker.get(mKey));
-					matcher = pattern.matcher(line);
+							.compile("(?:" + mKey + ")" + ": " + metricExtractors.get(mKey));
 					if (matcher.find()) {
 						key = mKey;
 						value = matcher.group(1);
+						logger.info(
+								String.format("Found data for metric %s: %s", mKey, value));
 						data.put(key, value);
 					}
 				}

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +30,12 @@ public class HostDataController {
 	private static final Logger logger = LogManager
 			.getLogger(HostDataController.class);
 
-	private final static List<String> metricNames = Arrays.asList("memory", "cpu",
-			"disk", "rpm");
+	@Value("#{${example.metricExtractors}}")
+	private Map<String, String> metricExtractors;
+
+	@Value("#{'${example.metricNames}'.split(',')}")
+	private String[] metricNames;
+
 	private static final boolean debug = false;
 
 	@ResponseBody
@@ -44,8 +49,8 @@ public class HostDataController {
 		metricTaker.put("load_average",
 				"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
 
-		hostData.setMetrics(metricNames);
-		hostData.setMetricTaker(metricTaker);
+		hostData.setMetrics(Arrays.asList(metricNames));
+		hostData.setMetricExtractors(metricExtractors);
 		hostData.readData();
 
 		Map<String, String> data = hostData.getData();

@@ -16,6 +16,7 @@ import javax.annotation.Resource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import example.dao.JDBCDao;
@@ -58,11 +59,20 @@ public class NodeExporter {
 	private Gauge example = null;
 	private HostData hostData = null;
 	private Map<String, String> data = new HashMap<>();
-	private Map<String, String> metricTaker = new HashMap<>(); // currently unused
 
-	private static final List<String> metricNames = Arrays.asList("memory", "cpu",
-			"disk", "rpm");
-	// private List<String> metricNames = new ArrayList<>();
+	// https://stackoverflow.com/questions/26275736/how-to-pass-a-mapstring-string-with-application-properties
+	@Value("#{${example.metricExtractors}}")
+	private Map<String, String> metricExtractors;
+
+	// https://stackoverflow.com/questions/6212898/spring-properties-file-get-element-as-an-array
+	@Value("${example.labelNames}")
+	private String[] labelNames;
+
+	@Value("#{'${example.metricNames}'.split(',')}")
+	private String[] metricNames;
+
+
+
 	private static Random random = new Random();
 	private static float value = 42;
 	private static final int length = 10;
@@ -145,16 +155,14 @@ public class NodeExporter {
 
 			clusterConfigReader.read(fileName);
 			hostInfo = clusterConfigReader.getInfo();
-			metricTaker.put("load_average",
-					"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
 
 			List<?> payload = dao.findAllServerInstanceApplication();
 			for (Object row : payload) {
 				ServerInstanceApplication serverInstance = (ServerInstanceApplication) row;
 				String hostname = serverInstance.getServerName();
 				hostData = new HostData(hostname);
-				hostData.setMetrics(metricNames);
-				hostData.setMetricTaker(metricTaker);
+				hostData.setMetrics(Arrays.asList(metricNames));
+				hostData.setMetricExtractors(metricExtractors);
 				hostData.readData();
 				data = hostData.getData();
 				if (data != null && !data.isEmpty()) {

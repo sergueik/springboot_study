@@ -15,14 +15,14 @@ import javax.annotation.Resource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import example.repository.AxixsRepository;
 import example.projection.ServerInstanceApplication;
 import example.utils.HostData;
-
-import example.projection.ServerInstanceApplication;
 
 import io.prometheus.client.Collector.MetricFamilySamples;
 import io.prometheus.client.CollectorRegistry;
@@ -53,18 +53,24 @@ public class NodeExporter {
 	private Gauge example = null;
 	private HostData hostData = null;
 	private Map<String, String> data = new HashMap<>();
-	private Map<String, String> metricTaker = new HashMap<>(); // currently unused
 
-	private static final List<String> metricNames = Arrays.asList("memory", "cpu",
-			"disk", "rpm");
-	private static final String[] labelNames = new String[] { "instance", "dc",
-			"app", "env" };
+	// https://stackoverflow.com/questions/26275736/how-to-pass-a-mapstring-string-with-application-properties
+	@Value("#{${example.metricExtractors}}")
+	private Map<String, String> metricExtractors;
+
+	// https://stackoverflow.com/questions/6212898/spring-properties-file-get-element-as-an-array
+	@Value("${example.labelNames}")
+	private String[] labelNames;
+
+	@Value("#{'${example.metricNames}'.split(',')}")
+	private String[] metricNames;
 
 	private void createGauge(String counterName) {
 		createGauge(counterName, labelNames);
 	}
 
-	// NOTE: keep the code - it does not work the intended way, unable to create Gauge with same name as existing but with shorter array of labels
+	// NOTE: keep the code - it does not work the intended way, unable to create
+	// Gauge with same name as existing but with shorter array of labels
 	private void createGauge(String counterName, String[] labels) {
 
 		// cache the gauge objects
@@ -178,17 +184,14 @@ public class NodeExporter {
 		try {
 			registry = CollectorRegistry.defaultRegistry;
 
-			metricTaker.put("load_average",
-					"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
-
 			List<ServerInstanceApplication> payload = dao
 					.findAllServerInstanceApplications();
 			for (Object row : payload) {
 				ServerInstanceApplication serverInstance = (ServerInstanceApplication) row;
 				String hostname = serverInstance.getServerName();
 				hostData = new HostData(hostname);
-				hostData.setMetrics(metricNames);
-				hostData.setMetricTaker(metricTaker);
+				hostData.setMetrics(Arrays.asList(metricNames));
+				hostData.setMetricExtractors(metricExtractors);
 				hostData.readData();
 				data = hostData.getData();
 				if (data != null && !data.isEmpty()) {
@@ -226,16 +229,25 @@ public class NodeExporter {
 		Writer writer = new StringWriter();
 		try {
 			registry = CollectorRegistry.defaultRegistry;
-			metricTaker.put("load_average",
-					"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
 
 			List<Object[]> payload = dao.findAllData();
 			for (Object[] row : payload) {
 
 				String hostname = row[0].toString();
 				hostData = new HostData(hostname);
-				hostData.setMetrics(metricNames);
-				hostData.setMetricTaker(metricTaker);
+				hostData.setMetrics(Arrays.asList(metricNames));
+				// TODO: debug storing regexp in "application.properties"
+				// cannot dynamically update the value anotated from
+				// "application.properties"
+				// metricExtractors.put("dummy", "value");
+				// java.lang.UnsupportedOperationException: null
+				// at java.util.Collections$UnmodifiableMap.put
+				// Map<String, String> metricExtractors2 = new HashMap<>();
+				// load_average: a b c d 6
+				// metricExtractors2.put("load_average",
+				//		"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
+				// hostData.setMetricExtractors(metricExtractors2);
+						hostData.setMetricExtractors(metricExtractors);
 				hostData.readData();
 				data = hostData.getData();
 
@@ -253,7 +265,7 @@ public class NodeExporter {
 						// create separate gauge for blank app label -
 						// currently it will cease to create new metric in the registry
 						// keep for the future use
-						createGauge(metricName, new String[] { "instance", "dc", "env" });
+						// createGauge(metricName, new String[] { "instance", "dc", "env" });
 						exampleGauge(metricName, labels,
 								Float.parseFloat(data.get(metricName)));
 					}
