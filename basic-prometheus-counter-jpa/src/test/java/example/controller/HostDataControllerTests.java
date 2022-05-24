@@ -86,7 +86,7 @@ public class HostDataControllerTests {
 					is(2));
 			jsonEntries = JsonPath.read(page, "$.data.keys()");
 			assertThat("Unexpected data keys in JSON: " + jsonEntries,
-					jsonEntries.size(), is(5));
+					jsonEntries.size(), is(metricNames.size() + 1));
 			for (String metricName : metricNames) {
 				assertThat(String.format("missing metric %s", metricName), jsonEntries,
 						hasItem(metricName));
@@ -122,7 +122,7 @@ public class HostDataControllerTests {
 			jsonEntries = JsonPath.read(page, "$.data.*");
 
 			assertThat("Unexpected data values in JSON: " + jsonEntries,
-					jsonEntries.size(), is(5));
+					jsonEntries.size(), is(metricNames.size() + 1));
 		} catch (InvalidPathException e) {
 			throw (e);
 		}

@@ -96,7 +96,7 @@ public class NodeExporterControllerTests {
 
 		String entryPattern = String.format("%s\\{"
 				+ "instance=\\\"hostname[0-9]+\\\"" + "," + "dc=\\\"\\w+\\\"" + ","
-				+ "app=\\\"\\w+\\\"" + "," + "env=\\\"\\w+\\\"," + "\\} [0-9.]+",
+				+ "app=\\\"\\w*\\\"" + "," + "env=\\\"\\w+\\\"," + "\\} [0-9.]+",
 				counterName);
 		List<String> entries = Arrays.asList(entity.getBody().split("\n")).stream()
 				.filter(o -> o.contains(counterName))
@@ -106,6 +106,6 @@ public class NodeExporterControllerTests {
 			System.err.println("inspected line: " + line);
 		}
 		// count
-		assertThat(entries.size(), is(5));
+		assertThat(entries.size(), is(6));
 	}
 }

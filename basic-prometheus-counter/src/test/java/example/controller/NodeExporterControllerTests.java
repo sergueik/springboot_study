@@ -4,7 +4,6 @@ package example.controller;
  * Copyright 2022 Serguei Kouzmine
  */
 
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -60,12 +59,12 @@ public class NodeExporterControllerTests {
 				String.format("# HELP %s Value of metric from instance", counterName),
 				String.format("# TYPE %s gauge", counterName),
 				String.format(
-						"%s{instance=\"hostname00\",datacenter=\"west\",appid=\"database\",environment=\"qa\",} 42.0",
+						"%s{instance=\"hostname00\",datacenter=\"dummy\",application=\"application01\",linborg_instance=\"instance01\",}",
 						counterName));
 		// https://stackoverflow.com/questions/80476/how-can-i-concatenate-two-arrays-in-java
 		// https://stackoverflow.com/questions/189559/how-do-i-join-two-lists-in-java
 		List<String> metrics = new ArrayList<String>();
-		metrics.addAll(defaultMetrics);
+		// metrics.addAll(defaultMetrics);
 		metrics.addAll(extraMetrics);
 		for (String text : metrics) {
 			assertThat(entity.getBody(), containsString(text));
@@ -94,9 +93,11 @@ public class NodeExporterControllerTests {
 				String.class);
 
 		String entryPattern = String
-				.format("%s\\{" + "instance=\\\"hostname[0-9]+\\\"" + ","
-						+ "datacenter=\\\"\\w+\\\"" + "," + "appid=\\\"\\w+\\\"" + ","
-						+ "environment=\\\"\\w+\\\"," + "\\} [0-9.]+", counterName);
+				.format(
+						"%s\\{" + "instance=\\\"hostname[0-9]+\\\"" + ","
+								+ "datacenter=\\\"\\w*\\\"" + "," + "application=\\\"\\w+\\\""
+								+ "," + "linborg_instance=\\\"\\w+\\\"," + "\\} [0-9.]+",
+						counterName);
 		List<String> entries = Arrays.asList(entity.getBody().split("\n")).stream()
 				.filter(o -> o.contains(counterName))
 				.filter(o -> o.contains("hostname")).collect(Collectors.toList());

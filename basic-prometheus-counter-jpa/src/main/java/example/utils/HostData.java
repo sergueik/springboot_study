@@ -144,6 +144,7 @@ public class HostData {
 							metricExtractors.get(mKey)));
 					pattern = Pattern
 							.compile("(?:" + mKey + ")" + ": " + metricExtractors.get(mKey));
+					matcher = pattern.matcher(line);
 					if (matcher.find()) {
 						key = mKey;
 						value = matcher.group(1);
