@@ -423,6 +423,37 @@ docker image rm prom/prom2json
 docker image rm prom/prom2json:v1.3.0
 docker image rm prom/prometheus:v2.27.0
 ```
+### `HostData` Class
+
+* transforms legacy Java property-style metrics `data.txt`:
+```text
+cpu: 10
+memory: 20
+disk: 40.5
+load_average: 1 2 3 4 6
+rpm: 100
+uptime: 0
+```
+into TimeSeries metric Prometheus inputs tagged with an array of labels
+```text
+```
+
+configured to read the names of the labels from `application.properties` array
+```java
+example.labelNames = instance,dc,app,env
+```
+and of metrics from a combination of metric name array
+```java
+example.metricNames = memory,cpu,disk,load_average
+```
+and keys of `MetricExtracrors` map:
+```java
+example.metricExtractors = {'load_average':'\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*',rpm:'\\b(\\d+)\\b', rpm_custom_name:'\\b(\\d+)\\b'}
+```
+optionally renaming on the fly if the `example.extractedMetricNames` map is present in `applicatiion.properties`:
+```java
+example.extractedMetricNames = { 'load_average': 'cpu_load'}
+```
 ### See Also
 
   * Prometheus [prom2json](https://hub.docker.com/r/prom/prom2json) Docker hub link
@@ -440,6 +471,9 @@ docker image rm prom/prometheus:v2.27.0
   * https://prometheus.github.io/client_java/io/prometheus/client/Collector.MetricFamilySamples.Sample.html
   * https://prometheus.github.io/client_java/io/prometheus/client/Collector.MetricFamilySamples.html
   * Prometheus [metric types](https://prometheus.io/docs/concepts/metric_types/)  
+  * [stackoverflow](https://stackoverflow.com/questions/26275736/how-to-pass-a-mapstring-string-with-application-properties) on defining `Map<String,String>` through `application.properties` and `@Value` annotation
+  * [stackoverflow](https://stackoverflow.com/questions/6212898/spring-properties-file-get-element-as-an-array) on defining `Array<String>` through `application.properties` and `@Value` annotation
+  * [tutorial](https://www.baeldung.com/spring-yaml-inject-map)	 on defining `Map<String,String>` through `application.yml` YAML and `@Value` annotation
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

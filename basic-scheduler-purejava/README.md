@@ -9,6 +9,7 @@ and its dependency classes
   * `ThreadPool` : [java2s](http://www.java2s.com/Code/Java/Threads/ThreadPool2.htm)
   * `BusyFlag`, `CondVar`: [java2s](http://www.java2s.com/Code/Java/Threads/BusyFlag.htm)
 
+Runs the custom PDH class [](https://github.com/sergueik/selenium_java/tree/master/jna_pdh) collecting `System\Processor Queue Length` Windows performance metric 
 
 ### Usage
 ```sh
@@ -207,6 +208,8 @@ runnable.run();
 Actually, there were zero interactions with this mock.
 ```
 usually error disappears in a rerun
+
+
 ### See Also
    * https://www.baeldung.com/thread-pool-java-and-guava
    * https://www.baeldung.com/mockito-void-methods
@@ -217,5 +220,9 @@ usually error disappears in a rerun
    * https://stackoverflow.com/questions/44942493/multiple-aggregate-functions-in-java-8-stream-api
    * https://www.codejava.net/java-core/collections/java-stream-aggregate-functions-examples-intermediate-operations
    * https://docs.oracle.com/javase/tutorial/collections/streams/index.html
+   * [quartz](http://www.quartz-scheduler.org) Java Spring Scheduler documentation page
+    .NET [port](https://github.com/quartznet/quartznet) of Java Quartz and [related projects](https://github.com/search?q=Quartz.NET)
+
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
