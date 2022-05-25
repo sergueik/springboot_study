@@ -21,32 +21,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Value("${test.password}")
 	private String password;
 
-	@Autowired
-	private BasicAuthenticationPoint basicAuthenticationPoint;
-
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable();
 
-		for (String url : new ArrayList<String>(Arrays.asList(
-				new String[] { "/welcome", "/svrinfo", "/upload", "/metrics" }))) {
-			http.authorizeRequests().antMatchers(url).permitAll();
-		}
+		http.authorizeRequests().antMatchers("/metrics").permitAll();
 
-		http.authorizeRequests().antMatchers("/", "/api/**").permitAll()
-				.anyRequest().authenticated();
-		http.httpBasic().authenticationEntryPoint(basicAuthenticationPoint);
+		// http.httpBasic().authenticationEntryPoint(basicAuthenticationPoint);
 
-	}
-
-	// https://spring.io/blog/2017/11/01/spring-security-5-0-0-rc1-released#password-storage-format
-	// https://stackoverflow.com/questions/49654143/spring-security-5-there-is-no-passwordencoder-mapped-for-the-id-null
-	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth)
-			throws Exception {
-		System.err.println("Exect credentials: " + username + "/" + password);
-		auth.inMemoryAuthentication().withUser(username)
-				.password(String.format("{noop}%s", password)).roles("USER");
 	}
 
 }
