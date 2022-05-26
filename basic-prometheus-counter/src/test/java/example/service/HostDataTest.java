@@ -20,19 +20,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class HostDataTest {
 
-
 	private List<String> metrics = new ArrayList<>();
 	private Map<String, String> data = new HashMap<>();
 	private Map<String, String> metricExtractors = new HashMap<>();
 	private final String hostname = "hostname00";
 
-	@Autowired
-	private HostData hostData;
+	private HostData hostData = null;
 
 	@BeforeEach
 	public void before() {
-		// NOTE: HostDataTest.before:33 NullPointer
-		hostData.setHostname(hostname);
+		hostData = new HostData(hostname);
+		hostData.setDebug(true);
 	}
 
 	@Test
@@ -65,6 +63,7 @@ public class HostDataTest {
 
 		metricExtractors.put("disk", "\\b([0-9.]+)\\b");
 		hostData.setMetricExtractors(metricExtractors);
+		hostData.setDebug(true);
 		hostData.readData();
 		data = hostData.getData();
 

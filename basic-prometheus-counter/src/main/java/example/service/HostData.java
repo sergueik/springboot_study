@@ -23,28 +23,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-@Service
-
-// Class to read host metrics written by legacy monitoring application
 public class HostData {
 
-	private boolean debug = true;
+	private boolean debug = false;
 	private String hostname = null;
 	private List<String> metrics = null;
+	private Map<String, String> metricExtractors = new HashMap<>();
+	private Map<String, String> extractedMetricNames = new HashMap<>();
+
+	// in the legacy application one has to process the metrics to extract the
+	// therefor many columns will be hand crafted
+	// numeric values and publish to Prometheus
+	private Path filePath;
+	private Map<String, String> data = new HashMap<>();
 
 	private static final Logger logger = LogManager.getLogger(HostData.class);
-
-	// NOTE: experiencing failure to @Value annotation to evaluate to data defined
-	// in appliction.properties file
-	@Value("#{${example.extractedMetricNames}}")
-	private Map<String, String> extractedMetricNames;
-
-	public void setExtractedMetricNames(Map<String, String> value) {
-		extractedMetricNames = value;
-	}
 
 	public boolean isDebug() {
 		return debug;
@@ -62,40 +55,22 @@ public class HostData {
 		metrics = value;
 	}
 
-	private Map<String, String> metricExtractors = new HashMap<>();
-
 	public void setMetricExtractors(Map<String, String> value) {
 		metricExtractors = value;
 	}
 
-	private Path filePath;
-	private Map<String, String> data = new HashMap<>();
+	public void setExtractedMetricNames(Map<String, String> value) {
+		extractedMetricNames = value;
+	}
 
-	// in a legacy application one has to process the metrics to extract the
-	// therefor many columns will be hand crafted
-	// numeric values and publish to Prometheus
-	// removing the constuctor
-	/*
+	// relies on UNIX soft link making the fixed file path always point to
+	// latest results
 	public HostData(String hostname) {
 		this.hostname = hostname;
-	
-	}
-	*/
-	public String getHostname() {
-		return hostname;
-	}
-
-	public void setHostname(String value) {
-		hostname = value;
-		// relies on UNIX soft link making the fixed file path always point to
-		// latest results
-
-		// TODO : examine and bail if not a soft link
 
 		filePath = Paths.get(String.join(System.getProperty("file.separator"),
-				Arrays.asList(dataDir, hostname, "data.txt")));
-
-		data.clear();
+				Arrays.asList(dataDir, this.hostname, "data.txt")));
+		// TODO : examine and bail if not a soft link
 	}
 
 	private String dataDir = String.join(System.getProperty("file.separator"),
@@ -107,12 +82,6 @@ public class HostData {
 	}
 
 	public HostData() {
-		if (debug)
-			if (extractedMetricNames != null) {
-				logger.info("Known metric names: " + extractedMetricNames.keySet());
-			} else {
-				logger.info("No known metric names loaded");
-			}
 
 	}
 

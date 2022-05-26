@@ -19,13 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import example.dao.JDBCDao;
-import example.entity.Host;
-import example.entity.Result;
-import example.projection.ServerInstanceApplication;
-import example.service.BaseService;
-import example.utils.ClusterConfigReader;
-import example.service.HostData;
 import io.prometheus.client.Collector.MetricFamilySamples;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Counter;
@@ -33,6 +26,16 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.Gauge.Builder;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.exporter.common.TextFormat;
+
+
+import example.dao.JDBCDao;
+import example.entity.Host;
+import example.entity.Result;
+import example.projection.ServerInstanceApplication;
+import example.utils.ClusterConfigReader;
+
+import example.service.BaseService;
+import example.service.HostData;
 
 @Service
 public class NodeExporter {
@@ -58,8 +61,7 @@ public class NodeExporter {
 	private CollectorRegistry registry;
 	private Gauge example = null;
 
-	@Autowired
-	private HostData hostData;
+	private HostData hostData = null;
 
 	private Map<String, String> data = new HashMap<>();
 
@@ -164,7 +166,7 @@ public class NodeExporter {
 			for (Object row : payload) {
 				ServerInstanceApplication serverInstance = (ServerInstanceApplication) row;
 				String hostname = serverInstance.getServerName();
-				hostData.setHostname(hostname);
+				hostData = new HostData(hostname);
 				hostData.setMetrics(Arrays.asList(metricNames));
 				hostData.setExtractedMetricNames(extractedMetricNames);
 				hostData.setMetricExtractors(metricExtractors);

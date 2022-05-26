@@ -39,7 +39,6 @@ public class HostDataController {
 
 	private static final boolean debug = false;
 
-	@Autowired
 	private HostData hostData;
 
 	@ResponseBody
@@ -47,7 +46,7 @@ public class HostDataController {
 	public ResponseEntity<Map<String, Object>> hostdata(
 			@PathVariable String hostname) {
 		logger.info("process hostdata for " + hostname);
-		hostData.setHostname(hostname);
+		hostData = new HostData(hostname);
 		Map<String, String> metricTaker = new HashMap<>(); // currently unused
 
 		metricTaker.put("load_average",
