@@ -25,7 +25,7 @@ import example.entity.Result;
 import example.projection.ServerInstanceApplication;
 import example.service.BaseService;
 import example.utils.ClusterConfigReader;
-import example.utils.HostData;
+import example.service.HostData;
 import io.prometheus.client.Collector.MetricFamilySamples;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Counter;
@@ -57,7 +57,10 @@ public class NodeExporter {
 
 	private CollectorRegistry registry;
 	private Gauge example = null;
-	private HostData hostData = null;
+
+	@Autowired
+	private HostData hostData;
+
 	private Map<String, String> data = new HashMap<>();
 
 	// https://stackoverflow.com/questions/26275736/how-to-pass-a-mapstring-string-with-application-properties
@@ -161,7 +164,7 @@ public class NodeExporter {
 			for (Object row : payload) {
 				ServerInstanceApplication serverInstance = (ServerInstanceApplication) row;
 				String hostname = serverInstance.getServerName();
-				hostData = new HostData(hostname);
+				hostData.setHostname(hostname);
 				hostData.setMetrics(Arrays.asList(metricNames));
 				hostData.setExtractedMetricNames(extractedMetricNames);
 				hostData.setMetricExtractors(metricExtractors);
