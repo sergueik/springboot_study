@@ -1,4 +1,4 @@
-package example.utils;
+package example.service;
 
 /**
  * Copyright 2022 Serguei Kouzmine
@@ -16,6 +16,8 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import example.service.HostData;
 
 public class HostDataTest {
 

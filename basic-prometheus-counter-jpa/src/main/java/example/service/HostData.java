@@ -1,6 +1,7 @@
-package example.utils;
+package example.service;
 
 import java.io.BufferedReader;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,26 +24,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import org.springframework.beans.factory.annotation.Value;
-// import org.springframework.stereotype.Component;
-// import org.springframework.stereotype.Service;
-
-// @Component or @Service annotation does not help
 // Class to read host metrics written by legacy monitoring application
+// NOTE: Spring value-add features like @Value property annotations - do not work in this class
+
 public class HostData {
 
 	private boolean debug = false;
 	private String hostname = null;
 	private List<String> metrics = null;
+	private Map<String, String> metricExtractors = new HashMap<>();
+	private Map<String, String> extractedMetricNames = new HashMap<>();
+
+	private Path filePath;
+	private Map<String, String> data = new HashMap<>();
 
 	private static final Logger logger = LogManager.getLogger(HostData.class);
-
-	@Value("#{${example.extractedMetricNames}}")
-	private Map<String, String> extractedMetricNames;
-
-	public void setExtractedMetricNames(Map<String, String> value) {
-		extractedMetricNames = value;
-	}
 
 	public boolean isDebug() {
 		return debug;
@@ -60,35 +56,22 @@ public class HostData {
 		metrics = value;
 	}
 
-	private Map<String, String> metricExtractors = new HashMap<>();
-
 	public void setMetricExtractors(Map<String, String> value) {
 		metricExtractors = value;
 	}
 
-	private Path filePath;
-	private Map<String, String> data = new HashMap<>();
+	public void setExtractedMetricNames(Map<String, String> value) {
+		extractedMetricNames = value;
+	}
 
-	// in a legacy application one has to process the metrics to extract the
-	// therefor many columns will be hand crafted
-	// numeric values and publish to Prometheus
+	// relies on UNIX soft link making the fixed file path always point to
+	// latest results
 	public HostData(String hostname) {
 		this.hostname = hostname;
 
-		// relies on UNIX soft link making the fixed file path always point to
-		// latest results
-
-		// TODO : examine and bail if not a soft link
-
 		filePath = Paths.get(String.join(System.getProperty("file.separator"),
 				Arrays.asList(dataDir, this.hostname, "data.txt")));
-		// if (debug)
-		if (extractedMetricNames != null) {
-			logger.info("Known metric names: " + extractedMetricNames.keySet());
-		} else {
-			logger.info("No known metric names loaded");
-		}
-
+		// TODO : examine and bail if not a soft link
 	}
 
 	private String dataDir = String.join(System.getProperty("file.separator"),
@@ -137,15 +120,18 @@ public class HostData {
 	}
 
 	public void readData() {
+		String key = null;
+		String value = null;
+		String line = null;
 		try {
 			InputStream in = Files.newInputStream(filePath);
 			BufferedReader bufferedReader = new BufferedReader(
 					new InputStreamReader(in));
-			String key = null;
-			String value = null;
 
-			String line = null;
 			while ((line = bufferedReader.readLine()) != null) {
+
+				key = null;
+				value = null;
 				// collect metrics with non-blank values
 				Pattern pattern = Pattern.compile( /* "(?:" to suppress capturing */
 						"(" + StringUtils.join(metrics, "|") + ")" + ": " + "([^ ]*)$");
@@ -154,24 +140,31 @@ public class HostData {
 					key = matcher.group(1);
 					value = matcher.group(2);
 				}
-
+				// NOTE: "mKey" to prevent duplicate variable compiler error
 				for (String mKey : metricExtractors.keySet()) {
-					logger.info(String.format("processing metric extractor: %s %s", mKey,
-							metricExtractors.get(mKey)));
-					// NOTE: do not bind to mkey verbatim
-					pattern = Pattern
-							.compile("^\\s*(?:" + "\\w+" + ")" + ": " + metricExtractors.get(mKey));
+					if (debug)
+						logger.info(String.format("processing metric extractor: %s %s",
+								mKey, metricExtractors.get(mKey)));
+					pattern = Pattern.compile(
+							"^\\s*(?:" + mKey + ")" + ": " + metricExtractors.get(mKey));
 					matcher = pattern.matcher(line);
 					if (matcher.find()) {
 						key = mKey;
 						value = matcher.group(1);
+						if (debug)
+							logger.info(
+									String.format("Found data for metric %s: %s", key, value));
 					}
-					String realKey = extractedMetricNames != null
-							&& extractedMetricNames.containsKey(key)
-									? extractedMetricNames.get(key) : key;
-					logger.info(String.format("Found data for metric %s(%s): %s", key,
-							realKey, value));
-					data.put(realKey, value);
+					// NOTE: hack
+					if (value != null) {
+						String realKey = extractedMetricNames != null
+								&& extractedMetricNames.containsKey(key)
+										? extractedMetricNames.get(key) : key;
+						if (debug)
+							logger.info(String.format("Adding data for metric %s(%s): %s",
+									key, realKey, value));
+						data.put(realKey, value);
+					}
 				}
 			}
 			bufferedReader.close();

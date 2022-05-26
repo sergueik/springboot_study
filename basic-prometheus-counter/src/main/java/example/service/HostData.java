@@ -139,7 +139,7 @@ public class HostData {
 					key = matcher.group(1);
 					value = matcher.group(2);
 				}
-				// NOTE: duplicate variable
+				// NOTE: "mKey" to prevent duplicate variable compiler error
 				for (String mKey : metricExtractors.keySet()) {
 					if (debug)
 						logger.info(String.format("processing metric extractor: %s %s",

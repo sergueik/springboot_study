@@ -35,13 +35,27 @@ public class NodeExporterController {
 	// application hosted metrics
 	// see also:
 	// https://www.tabnine.com/code/java/methods/io.prometheus.client.CollectorRegistry/metricFamilySamples
+
 	@ResponseBody
-	@GetMapping(value = "metrics", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> metrics() {
+	@GetMapping(value = "rawmetrics", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> metricsFromData() {
 
-		logger.info("Starting reporting metrics");
-		String payload = nodeExporter.metricsFromData();
+		logger.info("Starting reporting raw metrics");
+		// String payload = nodeExporter.metricsFromData();
+		String payload = nodeExporter.metricsFromDataNative();
+		return (payload == null)
+				? ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
+				: ResponseEntity.status(HttpStatus.OK).body(payload);
+	}
 
+	@ResponseBody
+	@GetMapping(value = "typedmetrics", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> metricsViaServerInstanceApplications() {
+
+		logger.info("Starting reporting typed metrics");
+
+		String payload = nodeExporter.metricsFromServerInstanceList();
+		// String payload = nodeExporter.metricsFromServerInstanceListNative();
 		return (payload == null)
 				? ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
 				: ResponseEntity.status(HttpStatus.OK).body(payload);

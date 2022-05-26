@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 
 import example.repository.AxixsRepository;
 import example.projection.ServerInstanceApplication;
-import example.utils.HostData;
+import example.service.HostData;
 
 import io.prometheus.client.Collector.MetricFamilySamples;
 import io.prometheus.client.CollectorRegistry;
@@ -42,7 +42,7 @@ public class NodeExporter {
 
 	// custom metric setting the instance
 	// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.html
-	private static final boolean debug = true;
+	private static final boolean debug = false;
 
 	Map<String, ServerInstanceApplication> hostInfo = new HashMap<>();
 
@@ -180,8 +180,8 @@ public class NodeExporter {
 	}
 
 	public String metricsFromServerInstanceList() {
-
-		logger.info("Starting reporting metrics");
+		if (debug)
+			logger.info("Starting reporting metrics");
 		Writer writer = new StringWriter();
 		try {
 			registry = CollectorRegistry.defaultRegistry;
@@ -209,6 +209,110 @@ public class NodeExporter {
 						createGauge(metricName, new String[] { "instance", "dc", "env" });
 
 						exampleGauge(metricName, serverInstance,
+								Float.parseFloat(data.get(metricName)));
+					}
+				} else {
+					if (debug)
+						logger.info(String.format("No metrics for host: %s", hostname));
+				}
+			}
+			TextFormat.write004(writer, registry.metricFamilySamples());
+		} catch (
+
+		IOException e) {
+			logger.error("Exception (caught):" + e.toString());
+			return null;
+		}
+		return writer.toString();
+	}
+
+	// Native SQL, typed result
+	// failing - do not use
+	public String metricsFromServerInstanceListNative() {
+
+		if (debug)
+			logger.info("Starting reporting metrics");
+		Writer writer = new StringWriter();
+		try {
+			registry = CollectorRegistry.defaultRegistry;
+
+			List<ServerInstanceApplication> payload = dao
+					.findAllServerInstanceApplicationsNative();
+			for (Object row : payload) {
+				ServerInstanceApplication serverInstance = (ServerInstanceApplication) row;
+				String hostname = serverInstance.getServerName();
+				hostData = new HostData(hostname);
+				hostData.setMetrics(Arrays.asList(metricNames));
+				hostData.setMetricExtractors(metricExtractors);
+				hostData.setExtractedMetricNames(extractedMetricNames);
+				hostData.readData();
+				data = hostData.getData();
+				if (data != null && !data.isEmpty()) {
+					if (debug)
+						logger.info(
+								String.format("Loading inventory %d metrics info for host: %s",
+										data.keySet().size(), hostname));
+
+					for (String metricName : data.keySet()) {
+						createGauge(metricName);
+						// create separate gauge for blank app label
+						createGauge(metricName, new String[] { "instance", "dc", "env" });
+
+						exampleGauge(metricName, serverInstance,
+								Float.parseFloat(data.get(metricName)));
+					}
+				} else {
+					if (debug)
+						logger.info(String.format("No metrics for host: %s", hostname));
+				}
+			}
+			TextFormat.write004(writer, registry.metricFamilySamples());
+		} catch (
+
+		IOException e) {
+			logger.error("Exception (caught):" + e.toString());
+			return null;
+		}
+		return writer.toString();
+	}
+
+	public String metricsFromDataNative() {
+		if (debug)
+			logger.info("Starting reporting metrics");
+		Writer writer = new StringWriter();
+		try {
+			registry = CollectorRegistry.defaultRegistry;
+
+			List<Object[]> payload = dao.findAllDataNative();
+			for (Object[] row : payload) {
+
+				String hostname = row[0].toString();
+				hostData = new HostData(hostname);
+				hostData.setExtractedMetricNames(extractedMetricNames);
+				hostData.setMetrics(Arrays.asList(metricNames));
+				// NOTE: cannot dynamically update the value anotated via @Value
+				// it i java.util.Collections$UnmodifiableMap
+				hostData.setMetricExtractors(metricExtractors);
+				hostData.readData();
+				data = hostData.getData();
+
+				if (data != null && !data.isEmpty()) {
+					// copyOf
+					String[] labels = Arrays.copyOfRange(row, 0, row.length,
+							String[].class);
+					if (debug)
+						logger.info(String.format(
+								"Loading inventory %d metrics for host: %s labels %s",
+								data.keySet().size(), hostname, Arrays.asList(row)));
+
+					for (String metricName : data.keySet()) {
+						createGauge(metricName);
+						// create separate gauge for blank app label -
+						// currently it will cease to create new metric in the registry
+						// keep for the future use
+						// createGauge(metricName, new String[] { "instance", "dc", "env"
+						// });
+						exampleGauge(metricName, labels,
 								Float.parseFloat(data.get(metricName)));
 					}
 				} else {

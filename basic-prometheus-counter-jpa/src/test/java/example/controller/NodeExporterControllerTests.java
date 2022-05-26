@@ -43,7 +43,7 @@ public class NodeExporterControllerTests {
 	@Disabled
 	@Test
 	public void test1() {
-		url = "http://localhost:" + port + "/metrics";
+		url = "http://localhost:" + port + "/rawmetrics";
 		ResponseEntity<String> entity = restTemplate.getForEntity(url,
 				String.class);
 		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
@@ -82,7 +82,7 @@ public class NodeExporterControllerTests {
 	// but fail with HttpStatus.INTERNAL_SERVER_ERROR
 	@Test
 	public void test2() {
-		url = "http://localhost:" + port + "/metrics";
+		url = "http://localhost:" + port + "/rawmetrics";
 		ResponseEntity<String> entity = restTemplate.getForEntity(url,
 				String.class);
 		assertThat(entity.getStatusCode(), is(HttpStatus.OK));
@@ -90,7 +90,7 @@ public class NodeExporterControllerTests {
 
 	@Test
 	public void test3() {
-		url = "http://localhost:" + port + "/metrics";
+		url = "http://localhost:" + port + "/rawmetrics";
 		ResponseEntity<String> entity = restTemplate.getForEntity(url,
 				String.class);
 
@@ -107,5 +107,29 @@ public class NodeExporterControllerTests {
 		}
 		// count
 		assertThat(entries.size(), is(6));
+	}
+
+	@Disabled("needs interactive check")
+	@Test
+	public void test4() {
+		url = "http://localhost:" + port + "/typedmetrics";
+		ResponseEntity<String> entity = restTemplate.getForEntity(url,
+				String.class);
+
+		String entryPattern = String.format("%s\\{"
+				+ "instance=\\\"hostname[0-9]+\\\"" + "," + "dc=\\\"\\w+\\\"" + ","
+				+ "app=\\\"\\w*\\\"" + "," + "env=\\\"\\w+\\\"," + "\\} [0-9.]+",
+				counterName);
+		List<String> entries = Arrays.asList(entity.getBody().split("\n")).stream()
+				.filter(o -> o.contains(counterName))
+				.filter(o -> o.contains("hostname")).collect(Collectors.toList());
+		for (String line : entries) {
+			assertThat(line, matchesPattern(entryPattern));
+			System.err.println("inspected line: " + line);
+		}
+
+		// count
+		assertThat("Unexpected entries: " + String.join("\n", entries),
+				entries.size(), is(5));
 	}
 }

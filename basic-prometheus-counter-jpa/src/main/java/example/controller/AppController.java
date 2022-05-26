@@ -21,7 +21,8 @@ public class AppController {
 	@ResponseBody
 	public ResponseEntity<String> index() {
 		String body = "<html>" + "<head>" + "</head>" + "<body>"
-				+ "<a href=\"./metrics\"\">Application hosted metrics</a><br/>"
+				+ "<a href=\"./rawmetrics\"\">Application hosted metrics (untyped tag query)</a><br/>"
+				+ "<a href=\"./typedmetrics\"\">Application hosted metrics (strongly typed tag query)</a><br/>"
 				+ "<a href=\"./servers\"\">Server inventory DB query</a><br/>"
 				+ "<a href=\"./data\"\"> Untyped Server inventory DB query</a><br/>"
 				+ "</body>" + "</html>";

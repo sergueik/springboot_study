@@ -1,5 +1,9 @@
 package example.controller;
 
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -15,13 +19,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-/**
- * Copyright 2022 Serguei Kouzmine
- */
-
 import org.springframework.web.bind.annotation.RestController;
 
-import example.utils.HostData;
+import example.service.HostData;
 
 @RestController
 @RequestMapping("/")
@@ -42,7 +42,8 @@ public class HostDataController {
 	@GetMapping(value = "hostdata/{hostname}", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<Map<String, Object>> hostdata(
 			@PathVariable String hostname) {
-		logger.info("process hostdata for " + hostname);
+		if (debug)
+			logger.info("process hostdata for " + hostname);
 		HostData hostData = new HostData(hostname);
 		hostData.setMetrics(Arrays.asList(metricNames));
 		hostData.setMetricExtractors(metricExtractors);
