@@ -212,6 +212,9 @@ Get "https://application:8443/metrics": x509: certificate signed by unknown auth
 
 make sure to set Prometheus to ignore insecure keys. The other alternaive would be to copy the __CA__ info ???
 * open in the browser `http://192.168.0.64:9090/`
+
+![Sample Page](https://github.com/sergueik/springboot_study/blob/master/basic-https-prometheus-counter/screenshots/capture_https_metrics.png)
+
 ### See Also
 
   * [hint](https://stackoverflow.com/questions/50928061/certificate-for-localhost-doesnt-match-any-of-the-subject-alternative-names) for solving `Certificate for <localhost> doesn't match any of the subject alternative names: []`
