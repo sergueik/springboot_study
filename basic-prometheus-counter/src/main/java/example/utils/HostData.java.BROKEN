@@ -143,9 +143,6 @@ public class HostData {
 
 			String line = null;
 			while ((line = bufferedReader.readLine()) != null) {
-
-				key = null;
-				value = null;
 				// collect metrics with non-blank values
 				Pattern pattern = Pattern.compile( /* "(?:" to suppress capturing */
 						"(" + StringUtils.join(metrics, "|") + ")" + ": " + "([^ ]*)$");
@@ -159,26 +156,27 @@ public class HostData {
 					if (debug)
 						logger.info(String.format("processing metric extractor: %s %s",
 								mKey, metricExtractors.get(mKey)));
-					pattern = Pattern.compile(
-							"^\\s*(?:" + mKey + ")" + ": " + metricExtractors.get(mKey));
-					matcher = pattern.matcher(line);
-					if (matcher.find()) {
+					// NOTE: do not bind to mkey verbatim
+					// NOTE: this did not work too good
+					Pattern pattern1 = Pattern.compile("^" + mKey);
+					Pattern pattern2 = Pattern.compile(
+							"^\\s*(?:" + "\\w+" + ")" + ": " + metricExtractors.get(mKey));
+					Matcher matcher1 = pattern1.matcher(line);
+					Matcher matcher2 = pattern2.matcher(line);
+					if (matcher1.find() && matcher2.find()) {
 						key = mKey;
-						value = matcher.group(1);
+						value = matcher2.group(1);
 						if (debug)
 							logger.info(
 									String.format("Found data for metric %s: %s", key, value));
 					}
-					// NOTE: hack
-					if (value != null) {
-						String realKey = extractedMetricNames != null
-								&& extractedMetricNames.containsKey(key)
-										? extractedMetricNames.get(key) : key;
-						if (debug)
-							logger.info(String.format("Adding data for metric %s(%s): %s",
-									key, realKey, value));
-						data.put(realKey, value);
-					}
+					String realKey = extractedMetricNames != null
+							&& extractedMetricNames.containsKey(key)
+									? extractedMetricNames.get(key) : key;
+					if (debug)
+						logger.info(String.format("Adding data for metric %s(%s): %s", key,
+								realKey, value));
+					data.put(realKey, value);
 				}
 			}
 			bufferedReader.close();

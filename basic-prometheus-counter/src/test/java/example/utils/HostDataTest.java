@@ -57,13 +57,14 @@ public class HostDataTest {
 	@Test
 	public void test2() throws Exception {
 
-		metricExtractors.put("disk", "([0-9.]+)");
+		metricExtractors.put("disk", "\\b([0-9.]+)\\b");
 		hostData.setMetricExtractors(metricExtractors);
 		hostData.readData();
 		data = hostData.getData();
 
 		assertThat(data, notNullValue());
-		assertThat(data.keySet().size(), is(1));
+		assertThat(String.format("Found unexpected keys: %s", data.keySet()),
+				data.keySet().size(), is(1));
 		// NOTE: loading all metrics as strings
 		assertThat(data.get("disk"), is("40.5"));
 	}
@@ -74,9 +75,53 @@ public class HostDataTest {
 		hostData.loadData();
 		data = hostData.getData();
 
+		String metricName = "load_average";
 		assertThat(data, notNullValue());
 		assertThat(data.keySet().size(), is(6));
-		assertThat(data.get("load_average"), is("1 2 3 4 6"));
+		assertThat(data.containsKey(metricName), is(true));
+		assertThat(data.get(metricName), is("1 2 3 4 6"));
+	}
+
+	@Test
+	public void test4() throws Exception {
+
+		metricExtractors.put("load_average",
+				"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
+		hostData.setMetricExtractors(metricExtractors);
+		Map<String, String> extractedMetricNames = new HashMap<>();
+		extractedMetricNames.put("load_average", "cpu_load");
+		hostData.setExtractedMetricNames(extractedMetricNames);
+		hostData.readData();
+		data = hostData.getData();
+
+		String metricName = "cpu_load";
+		String dataTag = "load_average";
+		assertThat(data, notNullValue());
+		assertThat(data.keySet().size(), is(1));
+		assertThat(data.containsKey(metricName), is(true));
+		assertThat(data.containsKey(dataTag), is(false));
+		assertThat(data.get(metricName), is("6"));
+	}
+
+	@Test
+	public void test5() throws Exception {
+
+		metricExtractors.put("load_averag.",
+				"\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(?:\\S+)\\s\\s*(\\S+)\\s*");
+		hostData.setMetricExtractors(metricExtractors);
+		Map<String, String> extractedMetricNames = new HashMap<>();
+		extractedMetricNames.put("load_averag.", "cpu_load");
+		hostData.setExtractedMetricNames(extractedMetricNames);
+		hostData.readData();
+		data = hostData.getData();
+
+		String metricName = "cpu_load";
+		String dataTag = "load_average";
+		assertThat(data, notNullValue());
+		assertThat(data.keySet().size(), is(1));
+		assertThat(data.containsKey(metricName), is(true));
+		assertThat(data.containsKey(dataTag), is(false));
+		assertThat(data.get(metricName), is("6"));
 	}
 
 }

@@ -148,8 +148,8 @@ public class NodeExporter {
 	}
 
 	public String metrics() {
-
-		logger.info("Starting reporting metrics");
+		if (debug)
+			logger.info("Starting reporting metrics");
 		Writer writer = new StringWriter();
 		try {
 			registry = CollectorRegistry.defaultRegistry;
@@ -168,8 +168,9 @@ public class NodeExporter {
 				hostData.readData();
 				data = hostData.getData();
 				if (data != null && !data.isEmpty()) {
-					logger.info(String.format("Loading %d metrics for host : %s",
-							data.keySet().size(), hostname));
+					if (debug)
+						logger.info(String.format("Loading %d metrics for host : %s",
+								data.keySet().size(), hostname));
 
 					for (String metricName : data.keySet()) {
 						createGauge(metricName);
@@ -180,8 +181,9 @@ public class NodeExporter {
 						exampleGauge(metricName, serverInstance, value);
 					}
 				} else {
-					logger.info(
-							String.format("no metrics found for %s, skipping", hostname));
+					if (debug)
+						logger.info(
+								String.format("no metrics found for %s, skipping", hostname));
 				}
 			}
 			TextFormat.write004(writer, registry.metricFamilySamples());
