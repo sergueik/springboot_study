@@ -39,6 +39,9 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+/*
+ *  @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
+ */
 public class BaseServiceTest {
 
 	@Autowired

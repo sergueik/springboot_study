@@ -24,6 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import example.service.HostData;
 
+/*
+ *  @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
+ */
+
 @RestController
 @RequestMapping("/")
 public class HostDataController {
@@ -42,7 +46,7 @@ public class HostDataController {
 	private HostData hostData;
 
 	@ResponseBody
-	@GetMapping(value = "hostdata/{hostname}", produces = MediaType.TEXT_PLAIN_VALUE)
+	@GetMapping(value = "hostdata/{hostname}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> hostdata(
 			@PathVariable String hostname) {
 		logger.info("process hostdata for " + hostname);

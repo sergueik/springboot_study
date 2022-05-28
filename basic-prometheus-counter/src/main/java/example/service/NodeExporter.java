@@ -37,6 +37,10 @@ import example.utils.ClusterConfigReader;
 import example.service.BaseService;
 import example.service.HostData;
 
+/*
+ *  @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
+ */
+
 @Service
 public class NodeExporter {
 	private static final Logger logger = LogManager.getLogger(NodeExporter.class);

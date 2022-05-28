@@ -18,6 +18,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/*
+ *  @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
+ */
 public class HostDataTest {
 
 	private List<String> metrics = new ArrayList<>();
