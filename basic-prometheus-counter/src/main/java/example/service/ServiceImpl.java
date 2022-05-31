@@ -10,6 +10,9 @@ import example.dao.Dao;
 import example.entity.Result;
 import example.entity.Host;
 
+/*
+ *  @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
+ */
 @Service
 public class ServiceImpl implements BaseService {
 

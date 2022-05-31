@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>prometheus-counter</artifactId>
-  <version>0.21.0-SNAPSHOT</version>
+  <version>0.22.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -20,11 +20,16 @@
     <snakeyaml.version>1.26</snakeyaml.version>
     <spring-jdbc.version>5.2.0.RELEASE</spring-jdbc.version>
     <sqlite-jdbc.version>3.28.0</sqlite-jdbc.version>
+    <ini4j.version>0.5.4</ini4j.version>
     <json-path.version>2.6.0</json-path.version>
-
     <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <dependencies>
+    <dependency>
+      <groupId>org.ini4j</groupId>
+      <artifactId>ini4j</artifactId>
+      <version>${ini4j.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
@@ -89,7 +94,6 @@
       <artifactId>simpleclient_spring_boot</artifactId>
       <version>${prometheus.version}</version>
     </dependency>
-
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>simpleclient_hotspot</artifactId>
