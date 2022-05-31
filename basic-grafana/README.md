@@ -57,9 +57,60 @@ this will show something like
     inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
        valid_lft forever preferred_lft forever
 ```
+* alternatively list the networks:
+```sh
+docker network list
+```
+```text
+9af6b8700c5e   bridge                                    bridge    local
+38e910f2eda5   host                                      host      local
+90b8867ef029   none                                      null      local
+```
+unless specified otherwise the container will be on `bridge` network. Inspect that network gateway:
+```sh
+docker inspect bridge
+```
+and browse the output or provide a `format` argument:
+```sh
+docker inspect bridge --format '{{ json .IPAM.Config }}'
+```
+```JSON
+[
+  {
+    "Subnet": "172.17.0.0/16",
+    "Gateway": "172.17.0.1"
+  }
+]
+```
+alternatively can filter the output with `jq`:
+```sh
+docker inspect bridge | jq '.[].IPAM.Config'
+```
+then connect to the container and ping the `bridge` network gateway:
+```sh
+ping -c 1 172.17.0.1
+```
+
+```text
+PING 172.17.0.1 (172.17.0.1): 56 data bytes
+64 bytes from 172.17.0.1: seq=0 ttl=64 time=0.158 ms
+
+--- 172.17.0.1 ping statistics ---
+1 packets transmitted, 1 packets received, 0% packet loss
+round-trip min/avg/max = 0.158/0.158/0.158 ms
+
+```
+of test listening ports:
+```sh
+nc -z 172.17.0.1 22
+echo $?
+```
+```text
+0
+```
 *  confirm that the data source is visible from grafana `$IMAGE` container:
 ```sh
-docker exec -it $IMAGE  curl -XGET http://172.17.0.1:5000/
+docker exec -it $IMAGE curl -XGET http://172.17.0.1:5000/
 ```
 will reply
 ```sh
