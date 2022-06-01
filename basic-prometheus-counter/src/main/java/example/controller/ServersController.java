@@ -1,9 +1,7 @@
 package example.controller;
-
 /**
  * Copyright 2022 Serguei Kouzmine
  */
-
 
 import java.util.List;
 
@@ -16,11 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import example.dao.JDBCDao;
-import example.service.NodeExporter;
 
 /*
  *  @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
@@ -28,27 +24,22 @@ import example.service.NodeExporter;
 
 @RestController
 @RequestMapping("/")
-public class NodeExporterController {
+public class ServersController {
 
 	private static final Logger logger = LogManager
-			.getLogger(NodeExporterController.class);
+			.getLogger(ServersController.class);
 
 	@Autowired
 	private JDBCDao dao;
-
-	@Autowired
-	private NodeExporter nodeExporter;
+	
 	private static final boolean debug = false;
 
-	// application hosted metrics
-	// see also:
-	// https://www.tabnine.com/code/java/methods/io.prometheus.client.CollectorRegistry/metricFamilySamples
 	@ResponseBody
-	@GetMapping(value = "metrics", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> metrics() {
-
-		logger.info("Starting reporting metrics");
-		String payload = nodeExporter.metrics();
+	@GetMapping(value = "servers", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<?>> servers() {
+		if (debug)
+			logger.info("Starting reporting servers");
+		List<?> payload = dao.findAllServerInstanceApplication();
 
 		return (payload == null)
 				? ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
