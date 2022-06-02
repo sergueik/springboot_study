@@ -335,6 +335,14 @@ docker run --link $NAME prom/prom2json:$VERSION http://$NAME:8080/metrics |jq
 alternatiely build if for alpine as shown in [basic-prom2json](https://github.com/sergueik/springboot_study/tree/master/basic-prom2json)
 ### NOTE
 
+when building package for container, make sure to temporarily update the `application.properties`:
+```java
+spring.datasource.url=jdbc:sqlite:/demo/src/test/resources/data.db
+```
+and package skipping the tests - the database location is different between desktop and container runs
+```sh
+mvn -Dmaven.test.skip=true clean package
+```
 occasionally observerd challenge with numbered version image container to hang. 
 
 ```text
@@ -364,9 +372,32 @@ scrape_configs:
           group: 'application'
 
 ```
-* run
+* run with the [option flag required](https://www.robustperception.io/reloading-prometheus-configuration) to enable the `http://localhost:9090/-/reload` endpoint
 ```sh
-docker run --link application  -p 9090:9090  -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus:v2.27.0
+docker run --link application  -p 9090:9090  -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus:v2.27.0 --web.enable-lifecycle --config.file=/etc/prometheus/prometheus.yml
+```
+- note that together with `web.enable-lifecycle` one has to provide the `config.file` argument, to avoid  the error
+```text
+msg="Error loading config (--config.file=prometheus.yml)" err="open prometheus.yml: no such file or directory"
+```
+* NOTE when `prometheus.yml` is mapped via volume, changes made to the file in current directory after the container is starter may not propagate in `/etc/prometheus/prometheus.yml` - copy explicitly
+```sh
+IMAGE=$(docker ps | grep prom/prometheus | awk '{print $1}' )
+docker cp prometheus.yml  $IMAGE:/etc/prometheus/prometheus.yml
+```
+if seeing the response
+```text
+Error response from daemon: Error processing tar file(exit status 1): unlinkat /etc/prometheus/prometheus.yml: device or resource busy
+```
+rerun without the volume option
+* reload prometheus server
+```sh
+curl -X POST  http://localhost:9090/-/reload
+```
+confirm the configuration event in the logs
+```text
+level=info ts=2022-06-02T20:10:31.068Z caller=main.go:957 msg="Loading configuration file" filename=/etc/prometheus/prometheus.yml
+level=info ts=2022-06-02T20:10:31.069Z caller=main.go:988 msg="Completed loading of configuration file" filename=/etc/prometheus/prometheus.yml totalDuration=1.046178ms remote_storage=4.542탎 web_handler=1.061탎 query_engine=2.172탎 scrape=257.815탎 scrape_sd=115.097탎 notify=2.14탎 notify_sd=2.483탎 rules=3.04탎
 ```
 * open in the browser `http://192.168.0.64:9090/`
 and click on __open the metrics explorer__ icon:
