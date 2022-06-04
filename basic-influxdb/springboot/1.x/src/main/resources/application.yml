@@ -1,0 +1,5 @@
+influx:
+  url: 'http://192.168.0.29:8086'
+  # With influxDB 1.x will be ignored but should not be blank
+  password: 'user'
+  username: 'password'

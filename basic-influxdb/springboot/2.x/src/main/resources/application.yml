@@ -1,0 +1,5 @@
+influx:
+  influxUrl: 'http://192.168.0.29:8086'
+  bucket: 'tom'
+  org: 'my_influxdb'
+  token: 'TODO=='
