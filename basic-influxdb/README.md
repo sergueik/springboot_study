@@ -2,17 +2,150 @@
 
 this directory contains a minimally modified `InfluxDB::Client::Simple` Perl [module](https://metacpan.org/dist/InfluxDB-Client-Simple/source/lib/InfluxDB/Client/Simple.pm)
 
-tested interacting with an InfluxDB __1.8__ [hosted on alpine](https://hub.docker.com/r/woahbase/alpine-influxdb/). Note, this build does not have web interface:
+tested interacting with an InfluxDB __1.8__ [hosted on alpine](https://hub.docker.com/r/woahbase/alpine-influxdb/). Note, this build have web interface:
+```sh
+curl --silent -X POST http://192.168.0.29:8086/query?q=show%20databases | /c/tools/jq-win64.exe  '.' -
+```
+
+```JSON
+{
+  "results": [
+    {
+      "statement_id": 0,
+      "series": [
+        {
+          "name": "databases",
+          "columns": [
+            "name"
+          ],
+          "values": [
+            [
+              "_internal"
+            ],
+            [
+              "example"
+            ],
+            [
+              "influx_test"
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+
+```
+
+alternatively, query through Postman
+
+![setup Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-postman.png)
 
 ```sh
-http://192.168.0.29:8086/
+curl --silent -X POST "http://192.168.0.29:8086/query?q=select%20*%20from%20testing&db=example&pretty=true"
 ```
+```json
+{
+    "results": [
+        {
+            "statement_id": 0,
+            "series": [
+                {
+                    "name": "testing",
+                    "columns": [
+                        "time",
+                        "CPU",
+                        "Memory",
+                        "Server"
+                    ],
+                    "values": [
+                        [
+                            "2022-06-05T23:44:07.529619906Z",
+                            100,
+                            50,
+                            "SERGUEIK53"
+                        ],
+                        [
+                            "2022-06-05T23:44:12.551612791Z",
+                            100,
+                            50,
+                            "SERGUEIK53"
+                        ],
+                        [
+                            "2022-06-05T23:44:37.61060614Z",
+                            100,
+                            50,
+                            "SERGUEIK53"
+                        ]
+                    ]
+                }
+            ]
+        }
+    ]
+}
 
-is
+```
+NOTE: encoding agruments in command line loses prettiness:
+```sh
+curl --silent -X POST -v "http://192.168.0.29:8086/query" --data-urlencode "q=select * from testing" --data-urlencode "db=example" --data-urlencode "pretty=true"
+```
 ```text
-404 page not found
+{"results":[{"statement_id":0,"series":[{"name":"testing","columns":["time","CPU","Memory","Server"],"values":[["2022-06-05T23:44:07.529619906Z",100,50,"SERGUEIK53"],["2022-06-05T23:44:12.551612791Z",100,50,"SERGUEIK53"],["2022-06-05T23:44:37.61060614Z",100,50,"SERGUEIK53"]]}]}]}
+```
+but with `-G` flag it works as intended
+```sh
+curl --silent -X POST -G "http://192.168.0.29:8086/query" --data-urlencode "q=select * from testing" --data-urlencode "db=example" --data-urlencode "pretty=true"
+```
+produces
+```json
+{
+    "results": [
+        {
+            "statement_id": 0,
+            "series": [
+                {
+                    "name": "testing",
+                    "columns": [
+                        "time",
+                        "CPU",
+                        "Memory",
+                        "Server"
+                    ],
+                    "values": [
+                        [
+                            "2022-06-05T23:44:07.529619906Z",
+                            100,
+                            50,
+                            "SERGUEIK53"
+                        ],
+                        [
+                            "2022-06-05T23:44:12.551612791Z",
+                            100,
+                            50,
+                            "SERGUEIK53"
+                        ],
+                        [
+                            "2022-06-05T23:44:37.61060614Z",
+                            100,
+                            50,
+                            "SERGUEIK53"
+                        ]
+                    ]
+                }
+            ]
+        }
+    ]
+}
 ```
 
+one can also create and use database via similar request:
+```sh
+curl --silent -X POST "http://192.168.0.29:8086/query?q=CREATE%20database%20dummy"
+```
+```sh
+curl --silent -X POST "http://192.168.0.29:8086/query?q=SHOW%20databases"
+```
 ### Testing
 #### Run InfluxDB Server
 * pull the image
@@ -317,3 +450,4 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+	
