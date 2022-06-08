@@ -6,6 +6,7 @@ use warnings;
 
 use Carp;
 use IO::Socket::INET;
+# in ActiveState Perl, the closest match is IO-Socket-SSL
 use JSON::PP;
 # use JSON;
 use LWP::UserAgent;
@@ -42,7 +43,7 @@ InfluxDB::Client::Simple provides an easy way to interact with an InfluxDB serve
     print $result->{version};
 
     # Read
-    $result = $client->query('SELECT "severity_code" FROM "syslog" WHERE ("severity" = \'err\' AND "hostname" =~ /^(srv01|srv02)$/) AND time >= 1558878013531ms and time <= 1609886964827ms', database => 'grafana');
+F    $result = $client->query('SELECT "severity_code" FROM "syslog" WHERE ("severity" = \'err\' AND "hostname" =~ /^(srv01|srv02)$/) AND time >= 1558878013531ms and time <= 1609886964827ms', database => 'grafana');
 
     # Write
     $result = $client->write("testing,host=containment,repo=cadi-libs,file=testfile statement=42,pod=85", database => 'dbname');
@@ -115,12 +116,15 @@ sub new {
                  timeout  => 180,
                  @_,
     );
-    my ( $host, $port, $protocol, $strict_udp, $timeout ) = map { defined($_)?lc($_):'' } @args{ 'host', 'port', 'protocol', 'strict_udp', 'timeout' };
+    my ( $host, $port, $protocol, $strict_udp, $timeout ) =
+      map { defined($_) ? lc($_) : '' }
+      @args{ 'host', 'port', 'protocol', 'strict_udp', 'timeout' };
 
-    my $self = { host => $host,
-                 port => $port,
-                 protocol => $protocol,
-                 options => { database => $args{database} }
+    my $self = {
+        host     => $host,
+        port     => $port,
+        protocol => $protocol,
+        options  => { database => $args{database} }
     };
 
     if ( $protocol eq 'tcp' ) {
@@ -128,7 +132,8 @@ sub new {
         $ua->agent("InfluxDB-Client-Simple/$VERSION");
         $ua->timeout($timeout);
         $self->{lwp_user_agent} = $ua;
-    } else {
+    }
+    else {
         die "Unknown protocol: $protocol" unless $protocol eq "udp";
 
         my $socket = IO::Socket::INET->new( PeerAddr => "$host:$port",
@@ -170,23 +175,26 @@ version - The InfluxDB verstion returned by the server through the 'X-Influxdb-V
 
 =cut
 sub ping {
-    my ($self)   = @_;
-    my $uri      = $self->_get_influxdb_http_api_uri('ping');
+    my ($self) = @_;
+    my $uri = $self->_get_influxdb_http_api_uri('ping');
+
     # 'http://localhost:8086/ping'
     my $response = $self->{lwp_user_agent}->head( $uri->canonical() );
 
     if ( !$response->is_success() ) {
         my $error = $response->message();
-        return { raw     => $response,
-                 error   => $error,
-                 version => undef,
+        return {
+            raw     => $response,
+            error   => $error,
+            version => undef,
         };
     }
 
     my $version = $response->header('X-Influxdb-Version');
-    return { raw     => $response,
-             error   => undef,
-             version => $version,
+    return {
+        raw     => $response,
+        error   => undef,
+        version => $version,
     };
 }
 
@@ -241,12 +249,14 @@ sub query {
 
     my $uri = $self->_get_influxdb_http_api_uri('query');
 
-    $uri->query_form( q => $query,
-                      ( $database   ? ( db         => $database )   : () ),
-                      ( $chunk_size ? ( chunk_size => $chunk_size ) : () ),
-                      ( $epoch      ? ( epoch      => $epoch )      : () )
+    $uri->query_form(
+        q => $query,
+        ( $database   ? ( db         => $database )   : () ),
+        ( $chunk_size ? ( chunk_size => $chunk_size ) : () ),
+        ( $epoch      ? ( epoch      => $epoch )      : () )
     );
 
+    print Dumper( $uri->canonical() );
     my $response = $self->{lwp_user_agent}->post( $uri->canonical() );
 
     chomp( my $content = $response->content() );
@@ -265,18 +275,21 @@ sub query {
 
         if ( !$error ) {
             $data->{request_id} = $response->header('Request-Id');
-            return { raw   => $response,
-                     data  => $data,
-                     error => undef,
+            return {
+                raw   => $response,
+                data  => $data,
+                error => undef,
             };
         }
-    } else {
+    }
+    else {
         $error = $content;
     }
 
-    return { raw   => $response,
-             data  => undef,
-             error => $error,
+    return {
+        raw   => $response,
+        data  => undef,
+        error => $error,
     };
 }
 
@@ -335,6 +348,8 @@ sub write {
                       ( $retention_policy ? ( rp        => $retention_policy ) : () )
     );
 
+    print Dumper( $uri->canonical() );
+    print Dumper( {Content => $measurement } );
     my $response = $self->{lwp_user_agent}->post( $uri->canonical(), Content => $measurement );
 
     chomp( my $content = $response->content() );
@@ -347,15 +362,16 @@ sub write {
         my $error = $@;
         $error = $data->{error} if ( !$error && $data );
 
-        return { raw   => $response,
-                 error => $error,
-        };
+            return {
+                raw   => $response,
+                error => $error,
+            };
     }
 
-    return { raw   => $response,
-             error => undef,
-    };
-
+        return {
+            raw   => $response,
+            error => undef,
+        };
   } else {
 
     # Udp send
@@ -430,13 +446,22 @@ sub _get_influxdb_http_api_uri {
 
     die "Missing argument 'endpoint'" if !$endpoint;
 
-    my $uri = URI->new();
+    my $uri = {
+        scheme => 'http',
+        host   => $self->{host},
+        port   => $self->{port},
+        path   => $endpoint
+    };
+    print Dumper( \$uri );
+
+    #    my
+    $uri = URI->new();
 
     $uri->scheme('http');
     $uri->host( $self->{host} );
     $uri->port( $self->{port} );
     $uri->path($endpoint);
-    print Dumper($uri);
+    print Dumper(\$uri);
     return $uri;
 }
 
@@ -565,4 +590,5 @@ the same terms as the Perl 5 programming language system itself.
 =cut
 
 1;    # End of InfluxDB::Client::Simple
+
 
