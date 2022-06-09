@@ -707,13 +707,13 @@ BEGIN {
              : (!$octets[2]                ) ? 'UTF-32LE'
              : 'unknown';
     }
- use Data::Dumper;
+    # use Data::Dumper;
     sub PP_decode_json {
-        # my ($self, $want_offset);
-		
-        my ($self, $text, $want_offset) = @_;
-				print 'dumping text:' . "\n";
-				print Dumper( \$text);
+        my ($self, $want_offset);
+
+        ($self, $text, $want_offset) = @_;
+	#			print 'dumping text:' . "\n";
+	#			print Dumper( \$text);
  
         ($at, $ch, $depth) = (0, '', 0);
  

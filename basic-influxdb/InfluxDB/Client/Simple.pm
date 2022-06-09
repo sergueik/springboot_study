@@ -259,21 +259,21 @@ sub query {
 
     my $error;
     if ( $response->is_success() ) {
-        # our $json_pp = nJSON::PP->new->ascii->pretty->allow_nonref;
-				#our $json_pp = new JSON::PP;
-				our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref; 
+	our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref; 
         local $@;
         my $data = eval {
-        print 'processing response content' . "\n";
-				print Dumper($content);
-
-				my $result =  $json_pp->decode($content);
-				return $result;
-				};
+		print 'processing response content' . "\n";
+		print Dumper($content);
+		my $result =  $json_pp->decode($content);
+		return $result;
+	};
         $error = $@;
-				# malformed JSON string, neither array, object, number, string or atom, 
-				# at character offset 0 (before "JSON::PP=HASH(0x1fb2...") 
-				print $error;
+	# NOTE: seen error "malformed JSON string, neither array, object, number, string or atom, 
+	# at character offset 0 (before "JSON::PP=HASH(0x1fb2...")
+	# when calling ->decode_json() instead of ->decode()
+	# print $error;
+	# arising from trouble with passing $self into the subroutine
+	# It indicates that ->decode_json() is not, and ->decode () is the class method
         if ($data) {
           $error = $data->{error};
         }
@@ -367,7 +367,7 @@ sub write {
         local $@;
         print Dumper($content);
         our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
-        my $data = eval { $json_pp->decode_json($content) };
+        my $data = eval { $json_pp->decode($content) };
         my $error = $@;
         $error = $data->{error} if ( !$error && $data );
 
