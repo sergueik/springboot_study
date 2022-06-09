@@ -1,4 +1,4 @@
-package InfluxDB::Client::Simple;
+package InfluxDB::Client::SimpleAlpine;
 
 use 5.006;
 use strict;
@@ -7,11 +7,9 @@ use warnings;
 use Carp;
 use IO::Socket::INET;
 
-# in ActiveState Perl, the closest match is IO-Socket-SSL
 use JSON::PP;
+use HTTP::Tiny;
 
-# use JSON;
-use LWP::UserAgent;
 use URI;
 use Data::Dumper;
 
@@ -35,15 +33,15 @@ sub new {
         host     => $host,
         port     => $port,
         protocol => $protocol,
-				debug    => 0,
         options  => { database => $args{database} }
     };
 
     if ( $protocol eq 'tcp' ) {
-        my $ua = LWP::UserAgent->new();
-        $ua->agent("InfluxDB-Client-Simple/$VERSION");
-        $ua->timeout($timeout);
-        $self->{lwp_user_agent} = $ua;
+		    # TODO: add headers
+        # my $ua = LWP::UserAgent->new();
+        # $ua->agent("InfluxDB-Client-Simple/$VERSION");
+        # $ua->timeout($timeout);
+        # $self->{lwp_user_agent} = $ua;
     }
     else {
         die "Unknown protocol: $protocol" unless $protocol eq "udp";
@@ -65,10 +63,6 @@ sub new {
     return $self;
 }
 
-sub debug {
-  my ($self,$debug) = @_;
-	$self->{debug} = $debug;
-}
 sub ping {
     my ($self) = @_;
 
@@ -111,8 +105,7 @@ sub query {
     if ( ref($query) eq 'ARRAY' ) {
         $query = join( ';', @$query );
     }
-		
-    print Dumper( \$query ) if $self->{debug};
+    print Dumper( \$query );
 
     my $uri = $self->_get_influxdb_http_api_uri('query');
 
@@ -122,7 +115,7 @@ sub query {
         ( $chunk_size ? ( chunk_size => $chunk_size ) : () ),
         ( $epoch      ? ( epoch      => $epoch )      : () )
     );
-    print Dumper( $uri->canonical() ) if $self->{debug};
+    print Dumper( $uri->canonical() );
 
 # "http://". $self->{host} . ":" . $self->{port} .  "/query?" +
 # 'q=SELECT+*+FROM+testing' + '&' + 'db=' + $args{'database'} + '&'+ 'epoch=' . $args{epoch}
@@ -135,11 +128,9 @@ sub query {
         our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
         local $@;
         my $data = eval {
-            print 'Raw content' . "\n"  if $self->{debug};
-            print Dumper($content) if $self->{debug};
+            print 'processing response content' . "\n";
+            print Dumper($content);
             my $result = $json_pp->decode($content);
-            print 'Decoded content' . "\n"  if $self->{debug};
-            print Dumper($result)  if $self->{debug};
             return $result;
         };
         $error = $@;
@@ -157,7 +148,7 @@ sub query {
         if ( !$error ) {
             $data->{request_id} = $response->header('Request-Id');
 
-            print Dumper($data) if $self->{debug};
+            print Dumper($data);
             return {
                 raw   => $response,
                 data  => $data,
@@ -201,9 +192,9 @@ sub write {
 #                  ( $retention_policy ? ( rp        => $retention_policy ) : () )
 # );
 
-        # print Dumper( $uri->canonical() ); 
+        # print Dumper( $uri->canonical() );
         # "http://${host}:${port}/write?db=${database}"
-        print Dumper( { Content => $measurement } ) if $self->{debug};
+        print Dumper( { Content => $measurement } );
 
 # NOTE: $measurement is composed by the caller e.g.
 # "${metric},host=${reporting_host},env=${environment} value=${value}"
@@ -221,12 +212,9 @@ sub write {
 
         if ( $response->code() != 204 ) {
             local $@;
-						print 'Raw content:' . "\n" if $self->{debug};
-            print Dumper($content) if $self->{debug};
+            print Dumper($content);
             our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
             my $data = eval { $json_pp->decode($content) };
-						print 'Decoded content:' . "\n" if $self->{debug};
-						print Dumper($data) if $self->{debug};
             my $error = $@;
             $error = $data->{error} if ( !$error && $data );
 
@@ -282,7 +270,7 @@ sub _get_influxdb_http_api_uri {
         port   => $self->{port},
         path   => $endpoint
     };
-    print Dumper( \$uri ) if $self->{debug};
+    print Dumper( \$uri );
 
     #    my
     $uri = URI->new();
@@ -291,7 +279,7 @@ sub _get_influxdb_http_api_uri {
     $uri->host( $self->{host} );
     $uri->port( $self->{port} );
     $uri->path($endpoint);
-    print Dumper( \$uri ) if $self->{debug};
+    print Dumper( \$uri );
     return $uri;
 }
 
@@ -318,6 +306,7 @@ sub _format_value {
         $v =~ s/(["\\])/\\$1/g;
         $v = '"' . $v . '"';
     }
+
     return $v;
 }
 

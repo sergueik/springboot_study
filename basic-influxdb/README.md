@@ -2,7 +2,10 @@
 
 this directory contains a minimally modified `InfluxDB::Client::Simple` Perl [module](https://metacpan.org/dist/InfluxDB-Client-Simple/source/lib/InfluxDB/Client/Simple.pm)
 
-tested interacting with an InfluxDB __1.8__ [hosted on alpine](https://hub.docker.com/r/woahbase/alpine-influxdb/). Note, this build have web interface:
+tested interacting with an InfluxDB __1.8__ [hosted on alpine](https://hub.docker.com/r/woahbase/alpine-influxdb/). 
+
+
+Note, this build allows operating via REST (but not WEB) interface:
 ```sh
 curl --silent -X POST http://192.168.0.29:8086/query?q=show%20databases | /c/tools/jq-win64.exe  '.' -
 ```

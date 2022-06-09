@@ -6,22 +6,22 @@ use JSON::PP;
 use warnings;
 use strict;
 
-my $metric    = 'testing';
-my $value    = 1;
-my $database = 'example';
-my $defer    = undef;
-my $debug    = undef;
-my $host     = '192.168.0.29';
-my $port     = '8086';
+my $measurement = 'testing';
+my $value       = 1;
+my $database    = 'example';
+my $defer       = undef;
+my $debug       = undef;
+my $host        = '192.168.0.29';
+my $port        = '8086';
 
 GetOptions(
-    'value=s'    => \$value,
-    'database=s' => \$database,
-    'metric=s'   => \$metric,
-    'debug'      => \$debug,
-    'port=s'     => \$port,
-    'host=s'     => \$host,
-    'defer'      => \$defer
+    'value=s'       => \$value,
+    'database=s'    => \$database,
+    'measurement=s' => \$measurement,
+    'debug'         => \$debug,
+    'port=s'        => \$port,
+    'host=s'        => \$host,
+    'defer'         => \$defer
 
 );
 
@@ -31,32 +31,44 @@ my $client = InfluxDB::Client::Simple->new(
     protocol => 'tcp'
 ) or die "Can't instantiate client";
 
+$client->debug($debug);
+
 # Check server connectivity
+print 'Check server connectivity' . "\n";
 my $result = $client->ping();
-die "No pong" unless $result;
+die 'No response' unless $result;
 
 # get the server version
 print $result->{version};
 our $reporting_host = lc( $ENV{'COMPUTERNAME'} );
 our $environment    = 'UAT';
 
-print 'Write'. "\n";
 # Write
-$result = $client->write(
-    "${metric},host=${reporting_host},env=${environment} value=${value}",
-    database => $database );
+print 'Write' . "\n";
+$result = $client->write("${measurement},host=${reporting_host},env=${environment} value=${value}", database => $database );
 print Dumper($result);
 
+# Send Data
+print 'Send Data' . "\n";
+my $tags = { host => $reporting_host, env => $environment };
+my $fields = { value => $value };
+my %options = ( 'database' => $database, 'precision' => 's' );
+my $timestamp = time();
+
+$client->send_data( $measurement, $tags, $fields, $timestamp, %options );
+
 # Query
-print 'query'. "\n";
-$result = $client->query(["SELECT * FROM ${metric}"] , database => $database, epoch => 'm', chunksize => 0 );
+print 'query' . "\n";
+$result = $client->query(
+    ["SELECT * FROM ${measurement}"],
+    database  => $database,
+    epoch     => 'm',
+    chunksize => 0
+);
+print 'series:' . "\n";
 
-
-my $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
-
-local $@;
-my $data = eval { $json_pp->decode_json($result) };
-print Dumper($data);
+print Dumper($result->{data}->{results}->[0]->{series});
 
 # not trying UDP
 # may even remove to covert to pure Perl
+
