@@ -441,7 +441,7 @@ com.influxdb.exceptions.NotFoundException: null
    * introductory [documentation](https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/)
    * influxdb query language [documentation](https://docs.influxdata.com/influxdb/v1.7/query_language/)
    * advanced  InfluxDB client [module](https://metacpan.org/pod/InfluxDB) on CPAN
-   * `LineProtocol` [documentation](https://docs.influxdata.com/influxdb/v1.8/write_protocols/line_protocol_tutorial/)
+   * InfluxDB `LineProtocol` [tutorial](https://docs.influxdata.com/influxdb/v1.8/write_protocols/line_protocol_tutorial/)
    * Prometheus endpoint provided by influxdb [documentation](https://docs.influxdata.com/influxdb/v1.8/supported_protocols/prometheus/)
    * https://github.com/JonasProgrammer/docker-influxdb
    * https://www.influxdata.com/the-best-way-to-store-collect-analyze-time-series-data/
@@ -449,6 +449,25 @@ com.influxdb.exceptions.NotFoundException: null
    * https://github.com/influxdata/influxdb-java - official, too big
    * https://devconnected.com/how-to-create-a-database-on-influxdb-1-7-2-0/ - there apparently is a v2 / v1.x compatibility concern
 documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) and for [forward](https://docs.influxdata.com/influxdb/v2.0/reference/api/influxdb-1x/)
+  * [intro](https://habr.com/ru/company/selectel/blog/245515/) to TSDB, and InfluxDB (in Russian, with a number of valuable comments in discussion)
+  * InfluxDB Grafana data source [documentation](https://grafana.com/docs/grafana/latest/datasources/influxdb/) - note this covers InfluxQL (classic InfluxDB query) separately from [Flux](https://grafana.com/docs/grafana/latest/datasources/influxdb/influxdb-flux/) query language which apparently is supported but not required
+   * another InfluxDB Perl [module](https://metacpan.org/pod/InfluxDB) - JSON only (deprecated)
+   * an InfluxDB LineProtocol Perl [module](https://metacpan.org/pod/InfluxDB::LineProtocol)
+
+
+### Youtube Links
+
+
+  * [Nodered to InfluxDB to Grafana 2022](https://www.youtube.com/watch?v=HicgjmmL-T8)
+  * [Influxdb Querying Data with Powershell](https://www.youtube.com/watch?v=z7Y20toBjJs)
+  * [InfluxDB 2.0 - Complete Guide to Getting Started with InfluxDB 2](https://www.youtube.com/watch?v=-gF-Jsk85bQ)
+  * [Flux query language and Influxdb basics](https://www.youtube.com/watch?v=sjfBPPBw8k8)
+  * [Open Source Historian: Grafana & InfluxDB](https://www.youtube.com/watch?v=BBcj-ZoufMw)
+  * [Intro to Time Series Databases & Data](https://www.youtube.com/watch?v=OoCsY8odmpM)
+  * [How to turn Powershell data into dashboards with Influxdb and Grafana](https://www.youtube.com/watch?v=fVzkXwAV8hg)
+  * [How to instal Grafana on Ubuntu 16.04 and pull in data from InfluxDB](https://www.youtube.com/watch?v=oexrAKLQ_LI)
+  * [InfluxDB and Grafana: Installation and setup](https://www.youtube.com/watch?v=siyIExDV0fw)
+
 
 
 ### Author
