@@ -14,17 +14,19 @@ my $defer       = undef;
 my $debug       = undef;
 my $host        = '192.168.0.29';
 my $port        = '8086';
+my $appid       = 'FOO,BAR,BAZ';
 my $precision   = 's';
 
 GetOptions(
-    'value=s'       => \$value,
+    'appid=s'       => \$appid,
     'database=s'    => \$database,
-    'measurement=s' => \$measurement,
     'debug'         => \$debug,
+    'defer'         => \$defer,
+    'host=s'        => \$host,
+    'measurement=s' => \$measurement,
     'port=s'        => \$port,
     'precision=s'   => \$precision,
-    'host=s'        => \$host,
-    'defer'         => \$defer
+    'value=s'       => \$value,
 
 );
 
@@ -44,7 +46,8 @@ die 'No response' unless $result;
 # get the server version
 print $result->{version};
 
-our $reporting_host = exists $ENV{'COMPUTERNAME'} ? lc( $ENV{'COMPUTERNAME'} ) : hostname;
+our $reporting_host =
+  exists $ENV{'COMPUTERNAME'} ? lc( $ENV{'COMPUTERNAME'} ) : hostname;
 print "Reporting host: " . $reporting_host . $/;
 our $environment = 'UAT';
 
@@ -64,9 +67,6 @@ else {
     $timestamp = $timestamp_nanoseconds;
 }
 
-# Write
-print 'Write' . $/;
-
 # https://docs.influxdata.com/influxdb/v1.8/write_protocols/line_protocol_tutorial/
 # https://perldoc.perl.org/Time::HiRes
 # see also:
@@ -75,21 +75,38 @@ print 'Write' . $/;
 # using URL encoding protects from error in runtime (not really)
 # but the tag is not seen in the influx
 # my $tag_set = "host=${reporting_host},env=${environment},description=\"long%20description\"";
-my $tag_set   = "host=${reporting_host},env=${environment}";
+# NOTE attempt to add multiple tag values with same tag name, leads to the server status
+# 400  (BAD REQUEST)
+# unable to parse ... : duplicate tags'
 my $field_set = "value=${value}";
-$result = $client->write(
-    "${measurement},${tag_set} ${field_set} ${timestamp}",
-    database    => $database,
-    'precision' => $precision
-);
-print Dumper($result) if $debug;
+my $appid_tag;
+my $tag_set;
+foreach $appid_tag ( split( /,/, $appid ) ) {
+    $tag_set = "host=${reporting_host},env=${environment},appid=${appid_tag}";
 
-# Send Data
-print 'Send Data' . $/;
-$tag_set = { host => $reporting_host, env => $environment };
+    # Write
+    print 'Write' . $/;
+
+    $result = $client->write(
+        "${measurement},${tag_set} ${field_set} ${timestamp}",
+        database  => $database,
+        precision => $precision
+    );
+    print Dumper($result) if $debug;
+}
 $field_set = { value => $value };
 my %options = ( 'database' => $database, 'precision' => $precision );
-$client->send_data( $measurement, $tag_set, $field_set, $timestamp, %options );
+foreach $appid_tag ( split( /,/, $appid ) ) {
+
+    # Send Data
+    print 'Send Data' . $/;
+    $tag_set =
+      { host => $reporting_host, env => $environment, appid => $appid_tag };
+    $result =
+      $client->send_data( $measurement, $tag_set, $field_set, $timestamp,
+        %options );
+    print Dumper($result) if $debug;
+}
 
 # Query
 print 'Query' . $/;
