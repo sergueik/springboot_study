@@ -35,7 +35,7 @@ sub new {
         host     => $host,
         port     => $port,
         protocol => $protocol,
-				debug    => 0,
+        debug    => 0,
         options  => { database => $args{database} }
     };
 
@@ -66,9 +66,10 @@ sub new {
 }
 
 sub debug {
-  my ($self,$debug) = @_;
-	$self->{debug} = $debug;
+    my ( $self, $debug ) = @_;
+    $self->{debug} = $debug;
 }
+
 sub ping {
     my ($self) = @_;
 
@@ -111,7 +112,7 @@ sub query {
     if ( ref($query) eq 'ARRAY' ) {
         $query = join( ';', @$query );
     }
-		
+
     print Dumper( \$query ) if $self->{debug};
 
     my $uri = $self->_get_influxdb_http_api_uri('query');
@@ -135,21 +136,21 @@ sub query {
         our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
         local $@;
         my $data = eval {
-            print 'Raw content' . "\n"  if $self->{debug};
-            print Dumper($content) if $self->{debug};
+            print 'Raw content' . $/ if $self->{debug};
+            print Dumper($content)   if $self->{debug};
             my $result = $json_pp->decode($content);
-            print 'Decoded content' . "\n"  if $self->{debug};
-            print Dumper($result)  if $self->{debug};
+            print 'Decoded content' . $/ if $self->{debug};
+            print Dumper($result) if $self->{debug};
             return $result;
         };
         $error = $@;
 
-# NOTE: seen error "malformed JSON string, neither array, object, number, string or atom,
-# at character offset 0 (before "JSON::PP=HASH(0x1fb2...")
-# when calling ->decode_json() instead of ->decode()
-# print $error;
-# arising from trouble with passing $self into the subroutine
-# It indicates that ->decode_json() is not, and ->decode () is the class method
+# NOTE: seen error when calling ->decode_json() instead of ->decode()
+# "malformed JSON string, neither array, object, number, string or atom, at character offset 0 (before "JSON::PP=HASH(0x1fb2...")
+
+ # print $error;
+ # arising from trouble with passing $self into the subroutine
+ # It indicates that ->decode_json() is not, and ->decode () is the class method
         if ($data) {
             $error = $data->{error};
         }
@@ -201,7 +202,7 @@ sub write {
 #                  ( $retention_policy ? ( rp        => $retention_policy ) : () )
 # );
 
-        # print Dumper( $uri->canonical() ); 
+        # print Dumper( $uri->canonical() );
         # "http://${host}:${port}/write?db=${database}"
         print Dumper( { Content => $measurement } ) if $self->{debug};
 
@@ -221,12 +222,12 @@ sub write {
 
         if ( $response->code() != 204 ) {
             local $@;
-						print 'Raw content:' . "\n" if $self->{debug};
+            print 'Raw content:' . $/ if $self->{debug};
             print Dumper($content) if $self->{debug};
             our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
             my $data = eval { $json_pp->decode($content) };
-						print 'Decoded content:' . "\n" if $self->{debug};
-						print Dumper($data) if $self->{debug};
+            print 'Decoded content:' . $/ if $self->{debug};
+            print Dumper($data) if $self->{debug};
             my $error = $@;
             $error = $data->{error} if ( !$error && $data );
 

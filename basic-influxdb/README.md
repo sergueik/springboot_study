@@ -436,6 +436,38 @@ com.influxdb.exceptions.NotFoundException: null
   at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) ~[na:1.8.0_101]
   at java.lang.Thread.run(Thread.java:745) ~[na:1.8.0_101]
 ```
+
+### Line Protocol
+
+* the format is very elementary
+```text
+measurement|,tag_set| |field_set| |timestamp
+```
+* measurement and tag set are separated by a comma and no spaces
+
+* key-value pairs are joined with an equals sign = and no spaces
+```text
+<field_key>=<field_value>
+```
+* separate multiple tag-value pairs are joined with a comma and no spaces
+```text
+<tag_key>=<tag_value>,<tag_key>=<tag_value>
+```
+* the string field values are always expected to be double quoted
+* separate the field set and the optional timestamp with a whitespace (required by the protocol)
+* the timestamp for data point in nanosecond-precision Unix time unless
+
+```text
+```
+
+### Example Using Perl to Nanosecond Timestamp
+```sh
+perl -MTime::HiRes -e 'use Time::HiRes qw( gettimeofday); my ($s, $n) = gettimeofday(); print $s.$n. $/;my $t = time(); print $t. $/'
+```
+```text
+1655244130852723
+1655244130
+```
 ### See Also
 
    * introductory [documentation](https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/)
@@ -467,7 +499,7 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
   * [How to turn Powershell data into dashboards with Influxdb and Grafana](https://www.youtube.com/watch?v=fVzkXwAV8hg)
   * [How to instal Grafana on Ubuntu 16.04 and pull in data from InfluxDB](https://www.youtube.com/watch?v=oexrAKLQ_LI)
   * [InfluxDB and Grafana: Installation and setup](https://www.youtube.com/watch?v=siyIExDV0fw)
-
+  * https://github.com/ypvillazon/spring-boot-metrics-to-influxdb
 
 
 ### Author
