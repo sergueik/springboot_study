@@ -266,6 +266,9 @@ sub send_data {
     my $timestamp   = shift;
     my %options     = @_;
 
+    print Dumper($fields) if $self->{debug};
+    print Dumper("_line_protocol: " . _line_protocol( $measurement, $tags, $fields, $timestamp )) if $self->{debug};  
+
     return $self->write(
         _line_protocol( $measurement, $tags, $fields, $timestamp ), %options );
 

@@ -8,7 +8,7 @@ use warnings;
 use strict;
 
 my $measurement = 'testing';
-my $value       = 1;
+my $value       = '42.0';
 my $database    = 'example';
 my $defer       = undef;
 my $debug       = undef;
@@ -78,36 +78,52 @@ else {
 # NOTE attempt to add multiple tag values with same tag name, leads to the server status
 # 400  (BAD REQUEST)
 # unable to parse ... : duplicate tags'
+
 my $field_set = "value=${value}";
 my $appid_tag;
 my $tag_set;
+my $measurements = [];
 foreach $appid_tag ( split( /,/, $appid ) ) {
-    $tag_set = "host=${reporting_host},env=${environment},appid=${appid_tag}";
-
-    # Write
-    print 'Write' . $/;
-
-    $result = $client->write(
-        "${measurement},${tag_set} ${field_set} ${timestamp}",
-        database  => $database,
-        precision => $precision
-    );
-    print Dumper($result) if $debug;
+    $tag_set =
+"host=${reporting_host},env=${environment},appid=${appid_tag},operation=write";
+    push( @$measurements,
+        "${measurement},${tag_set} ${field_set} ${timestamp}" );
 }
+# Write
+print 'Write' . $/;
+my $do_write = 1;
+if ($do_write){
+$result = $client->write(
+    $measurements,
+    database  => $database,
+    precision => $precision
+);
+print Dumper($result) if $debug;
+
+
+}
+# 'partial write: field type conflict: input field "value" on measurement "testing" is type float, already exists as type integer dropped=3',
+
+my $do_send = 1;
+if ($do_send){
 $field_set = { value => $value };
 my %options = ( 'database' => $database, 'precision' => $precision );
 foreach $appid_tag ( split( /,/, $appid ) ) {
 
     # Send Data
     print 'Send Data' . $/;
-    $tag_set =
-      { host => $reporting_host, env => $environment, appid => $appid_tag };
+    $tag_set = {
+        host      => $reporting_host,
+        env       => $environment,
+        appid     => $appid_tag,
+        operation => 'send'
+    };
     $result =
       $client->send_data( $measurement, $tag_set, $field_set, $timestamp,
         %options );
     print Dumper($result) if $debug;
 }
-
+}
 # Query
 print 'Query' . $/;
 $result = $client->query(
@@ -120,6 +136,18 @@ print 'series:' . $/;
 
 print Dumper( $result->{data}->{results}->[0]->{series} );
 
+print 'count' . $/;
+foreach my $operation (qw|write send|) {
+$result = $client->query(
+    ["SELECT COUNT(*) FROM ${measurement} WHERE operation = '${operation}'"],
+    database  => $database,
+    epoch     => $precision,
+    chunksize => 0
+);
+print 'Result for '. $operation . ':'. $/;
+# print Dumper($result);
+print Dumper( $result->{data}->{results}->[0]->{series}->[0]->{values}->[0]->[1]);
+}
 # not trying UDP
 # may even remove to covert to pure Perl
 
