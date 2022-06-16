@@ -488,10 +488,7 @@ measurement|,tag_set| |field_set| |timestamp
 ```
 * the string field values are always expected to be double quoted
 * separate the field set and the optional timestamp with a whitespace (required by the protocol)
-* the timestamp for data point in nanosecond-precision Unix time unless
-
-```text
-```
+* the timestamp for data point in nanosecond-precision Unix time unless a different `precision` is provided 
 
 ### Example Using Perl to Nanosecond Timestamp
 ```sh
@@ -533,8 +530,8 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
   * [How to instal Grafana on Ubuntu 16.04 and pull in data from InfluxDB](https://www.youtube.com/watch?v=oexrAKLQ_LI)
   * [InfluxDB and Grafana: Installation and setup](https://www.youtube.com/watch?v=siyIExDV0fw)
   * https://github.com/ypvillazon/spring-boot-metrics-to-influxdb
-
-
+  * [intro](https://tproger.ru/translations/influxdb-guide/) to Time Series and InfluxDB (in Russian)
+ 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 	

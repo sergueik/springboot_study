@@ -4,6 +4,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -12,6 +14,10 @@ import org.influxdb.InfluxDBFactory;
 
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Pong;
+import org.influxdb.dto.Query;
+import org.influxdb.dto.QueryResult;
+import org.influxdb.dto.QueryResult.Result;
+import org.influxdb.dto.QueryResult.Series;
 import org.influxdb.dto.BatchPoints;
 
 public class App {
@@ -28,12 +34,13 @@ public class App {
 		System.err.println(pong.getVersion());
 		// clearAndCreateDatabase(influxDB, databaseName);
 		Random rand = new Random();
-		// NOTE: field is deprecated in favor of addField
+		// NOTE: field method is deprecated in favor of addField
+		// https://javadoc.io/static/org.influxdb/influxdb-java/2.20/org/influxdb/InfluxDB.html
+		// https://www.tabnine.com/code/java/methods/org.influxdb.InfluxDB/write
+
 		influxDB.setDatabase(databaseName);
 		Point point = Point.measurement(seriesName).tag("atag", "test")
 				.field("idle", 90L).field("usertime", 9L).field("system", 1L).build();
-		// https://javadoc.io/static/org.influxdb/influxdb-java/2.20/org/influxdb/InfluxDB.html
-		// https://www.tabnine.com/code/java/methods/org.influxdb.InfluxDB/write
 
 		point = Point.measurement(seriesName)
 				.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
@@ -41,7 +48,8 @@ public class App {
 				.build();
 
 		influxDB.write(point);
-
+		// NOTE: Enable Gzip compress for http request body
+		// is also possile, not tested
 		influxDB.enableBatch();
 		System.err.println("Starting");
 		Collection<Point> points = new HashSet<>();
@@ -64,10 +72,29 @@ public class App {
 		// org.influxdb.InfluxDBException$FieldTypeConflictException: partial
 		// write: field type conflict: input field "idle" on measurement "testing"
 		// is type integer, already exists as type float dropped=1
-
+		// seeing in Perl Client too
 		System.err.println("Done");
 		influxDB.flush();
+		// https://javadoc.io/static/org.influxdb/influxdb-java/2.17/org/influxdb/InfluxDB.html
+		// NOTE: support of streaming queries against a database available,not
+		// tested
+		influxDB.setLogLevel(InfluxDB.LogLevel.BASIC);
+
+		String queryString = "select * from testing";
+		Query query = new Query(queryString, databaseName);
+		QueryResult queryResult = influxDB.query(query);
+		List<Result> results = queryResult.getResults();
+		Iterator<Result> resultsIterator = results.iterator();
+		while (resultsIterator.hasNext()) {
+			Result result = resultsIterator.next();
+			List<Series> listSeries = result.getSeries();
+			Iterator<Series> listSeriesIterator = listSeries.iterator();
+			while (listSeriesIterator.hasNext()) {
+				Series series = listSeriesIterator.next();
+				System.err.println("columns: " + series.getColumns());
+				System.err.println("values: " + series.getValues());
+			}
+		}
 		influxDB.close();
 	}
 }
-
