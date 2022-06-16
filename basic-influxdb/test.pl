@@ -89,41 +89,43 @@ foreach $appid_tag ( split( /,/, $appid ) ) {
     push( @$measurements,
         "${measurement},${tag_set} ${field_set} ${timestamp}" );
 }
+
 # Write
 print 'Write' . $/;
 my $do_write = 1;
-if ($do_write){
-$result = $client->write(
-    $measurements,
-    database  => $database,
-    precision => $precision
-);
-print Dumper($result) if $debug;
-
+if ($do_write) {
+    $result = $client->write(
+        $measurements,
+        database  => $database,
+        precision => $precision
+    );
+    print Dumper($result) if $debug;
 
 }
+
 # 'partial write: field type conflict: input field "value" on measurement "testing" is type float, already exists as type integer dropped=3',
 
 my $do_send = 1;
-if ($do_send){
-$field_set = { value => $value };
-my %options = ( 'database' => $database, 'precision' => $precision );
-foreach $appid_tag ( split( /,/, $appid ) ) {
+if ($do_send) {
+    $field_set = { value => $value };
+    my %options = ( 'database' => $database, 'precision' => $precision );
+    foreach $appid_tag ( split( /,/, $appid ) ) {
 
-    # Send Data
-    print 'Send Data' . $/;
-    $tag_set = {
-        host      => $reporting_host,
-        env       => $environment,
-        appid     => $appid_tag,
-        operation => 'send'
-    };
-    $result =
-      $client->send_data( $measurement, $tag_set, $field_set, $timestamp,
-        %options );
-    print Dumper($result) if $debug;
+        # Send Data
+        print 'Send Data' . $/;
+        $tag_set = {
+            host      => $reporting_host,
+            env       => $environment,
+            appid     => $appid_tag,
+            operation => 'send'
+        };
+        $result =
+          $client->send_data( $measurement, $tag_set, $field_set, $timestamp,
+            %options );
+        print Dumper($result) if $debug;
+    }
 }
-}
+
 # Query
 print 'Query' . $/;
 $result = $client->query(
@@ -138,16 +140,21 @@ print Dumper( $result->{data}->{results}->[0]->{series} );
 
 print 'count' . $/;
 foreach my $operation (qw|write send|) {
-$result = $client->query(
-    ["SELECT COUNT(*) FROM ${measurement} WHERE operation = '${operation}'"],
-    database  => $database,
-    epoch     => $precision,
-    chunksize => 0
-);
-print 'Result for '. $operation . ':'. $/;
-# print Dumper($result);
-print Dumper( $result->{data}->{results}->[0]->{series}->[0]->{values}->[0]->[1]);
+    $result = $client->query(
+        [
+"SELECT COUNT(*) FROM ${measurement} WHERE operation = '${operation}'"
+        ],
+        database  => $database,
+        epoch     => $precision,
+        chunksize => 0
+    );
+    print 'Result for ' . $operation . ':' . $/;
+
+    # print Dumper($result);
+    print Dumper(
+        $result->{data}->{results}->[0]->{series}->[0]->{values}->[0]->[1] );
 }
+
 # not trying UDP
 # may even remove to covert to pure Perl
 

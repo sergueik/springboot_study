@@ -370,6 +370,39 @@ time                host       idle region system usertime
 1654382144165000000 sergueik53 90   region 1      9
 
 ```
+Aftert the run of Perl Client test, performing both `write` and `send_data` calls, the following `series` found in the `example` database:
+```text
+> use example
+Using database example
+> show series
+key
+---
+iterations,host=SERGUEIK53
+testing,appid=BAR,env=UAT,host=sergueik71,operation=send
+testing,appid=BAR,env=UAT,host=sergueik71,operation=write
+testing,appid=BAZ,env=UAT,host=sergueik71,operation=send
+testing,appid=BAZ,env=UAT,host=sergueik71,operation=write
+testing,appid=FOO,env=UAT,host=sergueik71,operation=send
+testing,appid=FOO,env=UAT,host=sergueik71,operation=write
+>
+
+```
+
+- the caller added the `operation` to tags. Query shows:
+```text
+ select * from  testing
+name: testing
+time       appid env host       operation value
+----       ----- --- ----       --------- -----
+1655256772 BAR   UAT sergueik71 send      42
+1655256772 BAR   UAT sergueik71 write     42
+1655256772 BAZ   UAT sergueik71 send      42
+1655256772 BAZ   UAT sergueik71 write     42
+1655256772 FOO   UAT sergueik71 send      42
+1655256772 FOO   UAT sergueik71 write     42
+1655256774 BAR   UAT sergueik71 send      42
+...
+```
 ### Spring Java Client
 ```cmd
 mvn spring-boot:run
