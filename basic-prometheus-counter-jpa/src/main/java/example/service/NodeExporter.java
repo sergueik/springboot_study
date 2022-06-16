@@ -282,8 +282,11 @@ public class NodeExporter {
 		Writer writer = new StringWriter();
 		try {
 			registry = CollectorRegistry.defaultRegistry;
-
+			// illustration how to use composition to implement additional
+			// functionality
+			List<Object[]> result = dao.customFind("select sname as hostname,'dummy' as dc,aname as application, iname as env from axixs x join server s on x.sid = s.sid left join application a on x.aid = a.aid join instance i on x.iid = i.iid");
 			List<Object[]> payload = dao.findAllDataNative();
+
 			for (Object[] row : payload) {
 
 				String hostname = row[0].toString();

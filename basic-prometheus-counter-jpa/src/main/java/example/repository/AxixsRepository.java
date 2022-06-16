@@ -10,7 +10,8 @@ import example.model.Axixs;
 import example.projection.ServerInstanceApplication;
 
 @Repository
-public interface AxixsRepository extends JpaRepository<Axixs, Integer> {
+public interface AxixsRepository
+		extends JpaRepository<Axixs, Integer>, AdditionalQueries {
 
 	// NOTE: strongly typed
 	@Query("select new example.projection.ServerInstanceApplication(s.serverName, a.applicationName,i.instanceName)"
@@ -28,7 +29,9 @@ public interface AxixsRepository extends JpaRepository<Axixs, Integer> {
 	// to type
 	// [example.projection.ServerInstanceApplication]
 	// and test expectations on row counts will not be satisfied
-// 	@Query(value = "select sname as hostname,aname as application, iname as env from axixs x join server s on x.sid = s.sid left join application a on x.aid = a.aid join instance i on x.iid = i.iid", nativeQuery = true)
+	// @Query(value = "select sname as hostname,aname as application, iname as env
+	// from axixs x join server s on x.sid = s.sid left join application a on
+	// x.aid = a.aid join instance i on x.iid = i.iid", nativeQuery = true)
 	@Query(value = "select new example.projection.ServerInstanceApplication(sname,aname,iname) from axixs x join server s on x.sid = s.sid join application a on x.aid = a.aid join instance i on x.iid = i.iid", nativeQuery = true)
 	public List<ServerInstanceApplication> findAllServerInstanceApplicationsNative();
 
