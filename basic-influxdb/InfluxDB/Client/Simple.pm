@@ -79,6 +79,7 @@ sub ping {
     # my $response = $self->{lwp_user_agent}->head( $uri->canonical() );
     my $response = $self->{lwp_user_agent}
       ->head( "http://" . $self->{host} . ":" . $self->{port} . "/ping" );
+    print Dumper( \$response ) if $self->{debug};
     if ( !$response->is_success() ) {
         my $error = $response->message();
         return {
