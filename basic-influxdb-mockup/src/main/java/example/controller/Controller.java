@@ -1,5 +1,9 @@
 package example.controller;
 
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,11 +33,17 @@ public class Controller {
 	private static final Utils utils = Utils.getInstance();
 	private static String result = null;
 
+	@RequestMapping(value = "/ping", method = RequestMethod.HEAD)
+	public ResponseEntity<Void> ping() {
+		return ResponseEntity.noContent().header("X-Influxdb-version", "OSS")
+				.build();
+	}
+
 	@ResponseBody
 	// 406 Not Acceptable client error response
 	// 415 Unsupported Media Type
 	@PostMapping(value = "write", /* consumes = MediaType.TEXT_PLAIN_VALUE, */ produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> page(@RequestParam String db,
+	public ResponseEntity<Void> write(@RequestParam String db,
 			@RequestBody String payload) throws UnsupportedEncodingException {
 		logger.info("body: " + payload);
 		String input = URLDecoder.decode(payload.replaceFirst("db=" + db + "&", ""),
@@ -40,7 +51,8 @@ public class Controller {
 		logger.info("input: " + input);
 		result = utils.parseLineProtocolLine(input);
 		logger.info("result: " + result);
-		return ResponseEntity.status(HttpStatus.OK).body(result);
+		return ResponseEntity.noContent().header("result", result).build();
+
 	}
 
 	@ExceptionHandler({ UnsupportedEncodingException.class })

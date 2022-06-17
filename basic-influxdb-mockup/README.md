@@ -17,32 +17,53 @@ mvn spring-boot:run
 ```
 * test with `curl`
 ```
-curl -s -X POST -d "test,foo=bar value=42 1655244130852723" http://localhost:8085/write?db=example
+curl -v -s -X POST -d "test,foo=bar value=42 1655244130852723" http://localhost:8085/write?db=example
 ```
 this will respond with
 ```text
-measurement=test
-tag_set=foo=bar
-field_set=value=42
-timestamp=1655244130852723
+  POST /write?db=example HTTP/1.1
+  Host: localhost:8085
+  User-Agent: curl/7.74.0
+  Accept: */*
+  Content-Length: 38
+  Content-Type: application/x-www-form-urlencoded
+ 
+ [38 bytes data]
+* upload completely sent off: 38 out of 38 bytes
+* Mark bundle as not supporting multiuse
+  HTTP/1.1 204
+  result: measurement=test tag_set=foo=bar field_set=value=42 timestamp=1655244130852723
+  Date: Fri, 17 Jun 2022 21:01:45 GMT
+ 
+* Connection #0 to host localhost left intact
 ```
+- imitating the genuine InfluxDB response plus the `result` headers
 
 and application logs 
 
 ```text
-2022-06-15 20:45:59.427  INFO 7896 --- [nio-8085-exec-3] example.controller.Cont
-roller            : body: db=example&test%2Cfoo=bar+value%3D42+1655244130852723
-2022-06-15 20:45:59.437  INFO 7896 --- [nio-8085-exec-3] example.controller.Cont
-roller            : input: test,foo=bar value=42 1655244130852723
-2022-06-15 20:45:59.451  INFO 7896 --- [nio-8085-exec-3] example.utils.Utils
-                  : input: test,foo=bar value=42 1655244130852723
-2022-06-15 20:45:59.470  INFO 7896 --- [nio-8085-exec-3] example.utils.Utils
-                  : Found match.
-2022-06-15 20:45:59.478  INFO 7896 --- [nio-8085-exec-3] example.controller.Cont
-roller            : result: measurement=test
-tag_set=foo=bar
-field_set=value=42
-timestamp=1655244130852723
+2022-06-15 20:45:59.427  INFO 7896 --- [nio-8085-exec-3] example.controller.Controller            : body: db=example&test%2Cfoo=bar+value%3D42+1655244130852723
+2022-06-15 20:45:59.437  INFO 7896 --- [nio-8085-exec-3] example.controller.Controller            : input: test,foo=bar value=42 1655244130852723
+2022-06-15 20:45:59.451  INFO 7896 --- [nio-8085-exec-3] example.utils.Utils                      : input: test,foo=bar value=42 1655244130852723
+2022-06-15 20:45:59.470  INFO 7896 --- [nio-8085-exec-3] example.utils.Utils: Found match.
+2022-06-15 20:45:59.478  INFO 7896 --- [nio-8085-exec-3] example.controller.Controller            : result: measurement=testtag_set=foo=barfield_set=value=42timestamp=1655244130852723
+```
+
+The `ping` request is also implemented:
+```sh
+curl -v -s -X HEAD http://localhost:8085/ping
+```
+responds with
+```text
+  HEAD /ping HTTP/1.1
+  Host: localhost:8085
+  User-Agent: curl/7.74.0
+  Accept: */*
+ 
+* Mark bundle as not supporting multiuse
+  HTTP/1.1 204
+  X-Influxdb-version: OSS
+  Date: Fri, 17 Jun 2022 21:03:36 GMT 
 ```
 * testing with [Perl InfluxDB Client](https://metacpan.org/pod/InfluxDB::Client::Simple)
 
@@ -103,7 +124,7 @@ measurement|,tag_set| |field_set| |timestamp
    * https://www.toptal.com/java/spring-boot-rest-api-error-handling
    * [custom error message handling for REST API](https://www.baeldung.com/global-error-handler-in-a-spring-rest-api)
    * [error handling for REST with Spring](https://www.baeldung.com/exception-handling-for-rest-with-spring)
-
+   * https://metacpan.org/pod/CGI#DEBUGGING
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
