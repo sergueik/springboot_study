@@ -33,7 +33,7 @@ public class Utils {
 	}
 
 	private final static String lineProtocolGrammar = "^([-a-z0-9_]+)(?:(?:,([-a-z0-9A-Z_=\"]+))*) (?:([-a-z.0-9_]+=[-a-z.0-9_\"]+)(?:,[-a-z0-9_]+=[-a-z.0-9_\"]+)*) ([0-9]+)$";
-	private final static String tagGrammar = "([-a-z0-9_]+)=([-a-zA-Z0-9_]+)(?:,([-a-zA-Z0-9_=\"]+)*)";
+	private final static String tagGrammar = ",?([-a-z0-9_]+)=([-a-zA-Z0-9_]+)";
 	private final static String fieldGrammar = "([-a-z0-9_]+)=([-a-zA-Z.0-9_]+)";
 
 	public String parseLineProtocolLine(String input) {
@@ -97,10 +97,8 @@ public class Utils {
 		while (m.find()) {
 			String tag_key = m.group(1);
 			String tag_value = m.group(2);
-			String tag_set = m.groupCount() > 2 ? m.group(3) : null;
 			sb.append(String.format("tag_key=%s\n", tag_key));
 			sb.append(String.format("tag_value=%s\n", tag_value));
-			sb.append(String.format("tag_set=%s\n", tag_set));
 		}
 		return sb.toString();
 	}

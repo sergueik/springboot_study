@@ -34,7 +34,6 @@ public class PropertiesTest {
 
 	private static String grammar = null;
 
-	// @Disabled
 	@Test
 	public void test2() {
 		payload = "test,foo=bar,baz=bam value=42.0 1655244130852723";
@@ -61,21 +60,38 @@ public class PropertiesTest {
 
 	@Test
 	public void test5() {
-		result = utils.resolveTags("foo=FOO,bar=BAR,baz=BAZ",
-				"([-a-z0-9_]+)=([-a-zA-Z0-9_]+)(?:,([-a-zA-Z0-9_=\"]+)*)");
-		assertThat(result, containsString("tag_key=foo"));
+		result = utils.resolveTags(",foo=FOO,bar=BAR,baz=BAZ");
+
+		for (String expression : new String[] { "tag_key=foo", "tag_value=FOO",
+				"tag_key=bar", "tag_value=BAR", "tag_key=baz", "tag_value=BAZ" }) {
+			assertThat(result, containsString(expression));
+		}
 	}
 
 	@Test
 	public void test6() {
+		result = utils.resolveTags(",foo=FOO,bar=BAR,baz=BAZ");
+
+		for (String expression : new String[] { "tag_key=foo", "tag_value=FOO",
+				"tag_key=bar", "tag_value=BAR", "tag_key=baz", "tag_value=BAZ" }) {
+			assertThat(result, containsString(expression));
+		}
+	}
+
+	@Disabled
+	@Test
+	public void test7() {
 		result = utils.parseLineProtocolLine(
 				"testing,appid=BAZ,env=UAT,host=sergueik71,operation=send value=42.0 1655341280");
 
-		assertThat(result, containsString("measurement=testing"));
+		for (String expression : new String[] { "measurement=testing",
+				"tag_set=,appid=BAZ,env=UAT,host=sergueik71,operation=send" }) {
+			assertThat(result, containsString(expression));
+		}
 	}
 
 	@Test
-	public void test7() {
+	public void test8() {
 		result = utils.resolveFields("foo=1 bar=2.0 baz=345",
 				"([-a-z0-9_]+)=([-a-zA-Z0-9_]+)");
 		for (String expression : new String[] { "field_key=foo", "field_value=1",
