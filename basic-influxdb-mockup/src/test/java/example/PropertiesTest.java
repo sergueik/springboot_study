@@ -18,6 +18,7 @@ public class PropertiesTest {
 	private static final Utils utils = Utils.getInstance();
 	private static String payload = null;
 	private static String result = null;
+	private static String grammar = null;
 
 	@BeforeEach
 	public void beforeTest() {
@@ -26,20 +27,24 @@ public class PropertiesTest {
 
 	@Test
 	public void test1() {
-		payload = "test,foo=bar,baz=bam value=42.0 1655244130852723";
+		payload = "test,foo=bar,baz=bam value=42.0 data=0 1655244130852723";
 		result = utils.parseLineProtocolLine(payload);
 		// NOTE: not the desired behavior
 		assertThat(result, containsString("tag_set=baz=bam"));
 	}
 
-	private static String grammar = null;
+	// TODO: replace the grammar in Utils class with this one
 
 	@Test
 	public void test2() {
-		payload = "test,foo=bar,baz=bam value=42.0 1655244130852723";
-		grammar = "^([-a-z0-9_]+)((?:,(?:[-a-z0-9A-Z_=\"]+))*) (?:([-a-z.0-9_]+=[-a-z.0-9_\"]+)(?:,[-a-z0-9_]+=[-a-z.0-9_\"]+)*) ([0-9]+)$";
+		payload = "test,foo=bar,baz=bam value=42.0 data=0 1655244130852723";
+		grammar = "^([-a-z0-9_]+)((?:,(?:[-a-z0-9A-Z_=\"]+))*) ((?:[-a-z.0-9_]+=[-a-z.0-9_\"]+)(?: [-a-z0-9_]+=[-a-z.0-9_\"]+)*) ([0-9]+)$";
 		result = utils.parseLineProtocolLine(payload, grammar);
-		assertThat(result, containsString("tag_set=,foo=bar,baz=bam"));
+		for (String expression : new String[] { "measurement=test",
+				"tag_set=,foo=bar,baz=bam", "field_set=value=42.0 data=0",
+				"timestamp=1655244130852723" }) {
+			assertThat(result, containsString(expression));
+		}
 	}
 
 	@Test

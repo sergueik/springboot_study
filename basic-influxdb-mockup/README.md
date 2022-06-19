@@ -120,11 +120,11 @@ measurement|,tag_set| |field_set| |timestamp
 
 ### See Also
 
-
+   * [intro to InfluxSB](https://tproger.ru/translations/influxdb-guide/) (in Russian)
    * https://www.toptal.com/java/spring-boot-rest-api-error-handling
    * [custom error message handling for REST API](https://www.baeldung.com/global-error-handler-in-a-spring-rest-api)
    * [error handling for REST with Spring](https://www.baeldung.com/exception-handling-for-rest-with-spring)
    * https://metacpan.org/pod/CGI#DEBUGGING
-
+  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
