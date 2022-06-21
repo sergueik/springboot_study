@@ -4,6 +4,20 @@ this directory contains a minimally modified `InfluxDB::Client::Simple` Perl [mo
 
 tested interacting with an InfluxDB __1.8__ [hosted on alpine](https://hub.docker.com/r/woahbase/alpine-influxdb/). 
 
+If switched to InfluxDB __2.x__ the only difference for [data ingestion command](https://docs.influxdata.com/influxdb/v2.2/write-data/developer-tools/influx-cli/)
+will be in the `org` and `bucket` in the url instead of the `database` query param and presence of the authoriaation token header
+
+```sh
+curl --request POST \
+"http://localhost:8086/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" \
+  --header "Authorization: Token $TOKEN" \
+  --header "Content-Type: text/plain; charset=utf-8" \
+  --header "Accept: application/json" \
+  --data-binary '
+    measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
+```
+NOTE - above command is just [example from documentation](https://docs.influxdata.com/influxdb/v2.0/write-data/developer-tools/api/) - not tested in current project
+
 
 Note, this build allows operating via REST (but not WEB) interface:
 ```sh
@@ -531,6 +545,7 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
   * [InfluxDB and Grafana: Installation and setup](https://www.youtube.com/watch?v=siyIExDV0fw)
   * https://github.com/ypvillazon/spring-boot-metrics-to-influxdb
   * [intro](https://tproger.ru/translations/influxdb-guide/) to Time Series and InfluxDB (in Russian)
+  * [migration from Influx v1 to v2](https://www.sqlpac.com/en/documents/influxdb-migration-procedure-v1-v2.html)
  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
