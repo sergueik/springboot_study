@@ -27,9 +27,9 @@ public class WriteTest {
 	// TODO: query params
 	private final static String database = "example";
 	private final static String route = "/write";
-	private final static String payload = "testing,host=lenovo120S,env=UAT,appid=FOO,operation=write value1=42.0 value2=10.0 1655496818";
+	private final static String payload = "testing,host=lenovo120S,env=UAT,appid=FOO,operation=write value1=42.0,value2=10.0 1655496818";
 	private final static String param = "result";
-	private final static String value = "measurement=testing\ntag_set=,host=lenovo120S,env=UAT,appid=FOO,operation=write\nfield_set=value1=42.0 value2=10.0\ntimestamp=1655496818\n";
+	private final static String value = "measurement=testing\ntag_set=,host=lenovo120S,env=UAT,appid=FOO,operation=write\nfield_set=value1=42.0,value2=10.0\ntimestamp=1655496818\n";
 
 	@BeforeEach
 	public void beforeTest() throws Exception {

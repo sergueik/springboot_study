@@ -35,9 +35,9 @@ public class Utils {
 		return instance;
 	}
 
-	private final static String lineProtocolGrammar = "^([-a-z0-9_]+)((?:,(?:[-a-z0-9A-Z_=\"]+))*) ((?:[-a-z.0-9_]+=[-a-z.0-9_\"]+)(?: [-a-z0-9_]+=[-a-z.0-9_\"]+)*) ([0-9]+)$";
+	private final static String lineProtocolGrammar = "^([-a-z0-9_]+)((?:,(?:[-a-z0-9A-Z_=\"]+))*) ((?:[-a-z.0-9_]+=[-a-z.0-9_\"]+)(?:,[-a-z0-9_]+=[-a-z.0-9_\"]+)*) ([0-9]+)$";
 	private final static String tagGrammar = ",?([-a-z0-9_]+)=([-a-zA-Z0-9_]+)";
-	private final static String fieldGrammar = "([-a-z0-9_]+)=([-a-zA-Z.0-9_]+)";
+	private final static String fieldGrammar = ",?([-a-z0-9_]+)=([-a-zA-Z.0-9_]+)";
 
 	public String parseLineProtocolLine(String input) {
 		return parseLineProtocolLine(input, lineProtocolGrammar);

@@ -27,10 +27,10 @@ public class PropertiesTest {
 
 	@Test
 	public void test1() {
-		payload = "test,foo=bar,baz=bam value=42.0 data=0 1655244130852723";
+		payload = "test,foo=bar,baz=bam value=42.0,data=0 1655244130852723";
 		result = utils.parseLineProtocolLine(payload);
 		for (String expression : new String[] { "measurement=test",
-				"tag_set=,foo=bar,baz=bam", "field_set=value=42.0 data=0",
+				"tag_set=,foo=bar,baz=bam", "field_set=value=42.0,data=0",
 				"timestamp=1655244130852723" }) {
 			assertThat(result, containsString(expression));
 		}
@@ -48,8 +48,7 @@ public class PropertiesTest {
 
 	@Test
 	public void test3() {
-		result = utils.resolveFields("foo=1 bar=2.0 baz=345",
-				"([-a-z0-9_]+)=([-a-zA-Z0-9_]+)");
+		result = utils.resolveFields("foo=1,bar=2.0,baz=345");
 		for (String expression : new String[] { "field_key=foo", "field_value=1",
 				"field_key=bar", "field_value=2", "field_key=baz", "field_value=345"
 
