@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>line_protocol</artifactId>
-  <version>0.8.0-SNAPSHOT</version>
+  <version>0.10.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>InfluxDB server fake for client testing in the restricted environment</description>

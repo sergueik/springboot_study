@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import examle.model.Point;
 import example.utils.LineProtocolParser;
 
 @RestController
@@ -30,8 +31,10 @@ public class Controller {
 
 	private final Logger logger = LoggerFactory.getLogger(Controller.class);
 
-	private static final LineProtocolParser utils = LineProtocolParser.getInstance();
-	private static String result = null;
+	private static final LineProtocolParser utils = LineProtocolParser
+			.getInstance();
+	private static String stringResult = null;
+	private static Point pointResult = null;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.HEAD)
 	public ResponseEntity<Void> ping() {
@@ -49,14 +52,36 @@ public class Controller {
 		String input = URLDecoder.decode(payload.replaceFirst("db=" + db + "&", ""),
 				"UTF-8");
 		logger.info("input: " + input);
-		result = utils.parseLineProtocolLine(input);
-		logger.info("result: " + result);
-		return ResponseEntity.noContent().header("result", result).build();
+		stringResult = utils.parseLineProtocolLine(input);
+		logger.info("stringResult: " + stringResult);
+		return ResponseEntity.noContent().header("result", stringResult).build();
+
+	}
+
+	// NOTE: temporarily keep both
+	@PostMapping(value = "write2", /* consumes = MediaType.TEXT_PLAIN_VALUE, */ produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Point> write2(@RequestParam String db,
+			@RequestParam String precision, @RequestBody String payload)
+			throws UnsupportedEncodingException {
+		logger.info("body: " + payload);
+
+		String input = URLDecoder.decode(payload.replaceAll(
+				"(?:" + "db=" + db + "|" + "precision=" + precision + ")" + "&", ""),
+				"UTF-8");
+		logger.info("input: " + input);
+		pointResult = utils.extractPointFromLineProtocolLine(input);
+		logger.info("pointResult: " + pointResult);
+		// to test Ethe global xception Handler,uncomment the following and comment
+		// last lines
+		// throw new UnsupportedEncodingException();
+		return ResponseEntity.status(HttpStatus.OK).body(pointResult);
 
 	}
 
 	@ExceptionHandler({ UnsupportedEncodingException.class })
-	public void handleException() {
-		// TODO
+	public ResponseEntity<String> handleException(Exception e) {
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+				.body("there was error: " + e.toString());
+
 	}
 }

@@ -49,6 +49,28 @@ and application logs
 2022-06-15 20:45:59.478  INFO 7896 --- [nio-8085-exec-3] example.controller.Controller            : result: measurement=testtag_set=foo=barfield_set=value=42timestamp=1655244130852723
 ```
 
+the additonal endpoint `write2` was implemented to reproduce the processing of `/write` but return the loaded `Data Point` object as JSON in response body:
+```sh
+PAYLOAD="test,foo=bar,baz=bam value=42,data=10 1655244130852723" 
+curl -s -X POST -d "${PAYLOAD}" "http://localhost:8085/write2?db=example&precision=s"| jq  '.'
+```
+which will  resspond with
+```JSON
+{
+  "measurement": "test",
+  "tags": {
+    "foo": "bar",
+    "baz": "bam"
+  },
+  "fields": {
+    "data": "10",
+    "value": "42"
+  },
+  "precision": "SECONDS",
+  "time": 1655244130852723
+}
+
+```
 The `ping` request is also implemented:
 ```sh
 curl -v -s -X HEAD http://localhost:8085/ping
@@ -121,7 +143,7 @@ measurement|,tag_set| |field_set| |timestamp
 ### See Also
 
    * [intro to InfluxSB](https://tproger.ru/translations/influxdb-guide/) (in Russian)
-   * https://www.toptal.com/java/spring-boot-rest-api-error-handling
+   * [guide to Spring Boot REST API Error Handling](https://www.toptal.com/java/spring-boot-rest-api-error-handling)
    * [custom error message handling for REST API](https://www.baeldung.com/global-error-handler-in-a-spring-rest-api)
    * [error handling for REST with Spring](https://www.baeldung.com/exception-handling-for-rest-with-spring)
    * https://metacpan.org/pod/CGI#DEBUGGING
