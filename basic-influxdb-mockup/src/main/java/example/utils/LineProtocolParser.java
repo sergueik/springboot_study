@@ -3,12 +3,14 @@ package example.utils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import examle.model.Point;
 import example.controller.Controller;
 
 /**
@@ -16,11 +18,12 @@ import example.controller.Controller;
  * @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
  */
 
-public class Utils {
+public class LineProtocolParser {
 
-	private final Logger logger = LoggerFactory.getLogger(Utils.class);
+	private final Logger logger = LoggerFactory
+			.getLogger(LineProtocolParser.class);
 
-	private static Utils instance = new Utils();
+	private static LineProtocolParser instance = new LineProtocolParser();
 
 	private boolean debug = false;
 
@@ -28,10 +31,10 @@ public class Utils {
 		debug = value;
 	}
 
-	private Utils() {
+	private LineProtocolParser() {
 	}
 
-	public static Utils getInstance() {
+	public static LineProtocolParser getInstance() {
 		return instance;
 	}
 
@@ -41,6 +44,40 @@ public class Utils {
 
 	public String parseLineProtocolLine(String input) {
 		return parseLineProtocolLine(input, lineProtocolGrammar);
+	}
+
+	public Point extractPointFromLineProtocolLine(String input) {
+		return extractPointFromLineProtocolLine(input, lineProtocolGrammar);
+	}
+
+	public Point extractPointFromLineProtocolLine(String input, String grammar) {
+		Point result = new Point();
+		logger.info("input: " + input);
+		if (null != input) {
+			Pattern p = Pattern.compile(grammar);
+			Matcher m = p.matcher(input);
+			StringBuffer sb = new StringBuffer();
+			if (m.find()) {
+				logger.info("Found match.");
+				String measurement = m.group(1);
+				String tag_set = m.groupCount() > 1 ? m.group(2) : null;
+				String field_set = m.groupCount() > 2 ? m.group(3) : null;
+				String timestamp = m.groupCount() > 3 ? m.group(4) : null;
+
+				Map<String, String> tags = unpackTags(tag_set, tagGrammar);
+				Map<String, String> fields = unpackTags(field_set, tagGrammar);
+				result = new Point();
+				// NOTE:
+				// convert field values to Object
+				// https://stackoverflow.com/questions/21037263/converting-mapstring-string-to-mapstring-object
+				result.setFields(fields);
+				result.setTags(tags);
+				result.setMeasurement(measurement);
+				result.setPrecision(TimeUnit.SECONDS);
+				result.setTime(Long.parseLong(timestamp));
+			}
+		}
+		return result;
 	}
 
 	public String parseLineProtocolLine(String input, String grammar) {
@@ -102,6 +139,10 @@ public class Utils {
 			sb.append(String.format("tag_value=%s\n", tag_value));
 		}
 		return sb.toString();
+	}
+
+	public Map<String, String> unpackTags(String input) {
+		return unpackTags(input, tagGrammar);
 	}
 
 	public Map<String, String> unpackTags(String input, String grammar) {

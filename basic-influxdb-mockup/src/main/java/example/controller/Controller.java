@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import example.utils.Utils;
+import example.utils.LineProtocolParser;
 
 @RestController
 @RequestMapping("/")
@@ -30,7 +30,7 @@ public class Controller {
 
 	private final Logger logger = LoggerFactory.getLogger(Controller.class);
 
-	private static final Utils utils = Utils.getInstance();
+	private static final LineProtocolParser utils = LineProtocolParser.getInstance();
 	private static String result = null;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.HEAD)
