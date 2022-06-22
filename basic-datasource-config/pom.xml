@@ -12,13 +12,14 @@
     <relativePath/>
   </parent>
   <properties>
+    <encoding>UTF-8</encoding>
+    <finalName>${project.groupId}.${project.artifactId}</finalName>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <failOnMissingWebXml>false</failOnMissingWebXml>
     <java.version>1.8</java.version>
+    <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
     <spring-jdbc.version>4.3.10.RELEASE</spring-jdbc.version>
     <sqlite-jdbc.version>3.23.1</sqlite-jdbc.version>
-    <encoding>UTF-8</encoding>
-    <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -71,7 +72,7 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.21</version>
+      <version>${mysql-connector-java.version}</version>
     </dependency>
   </dependencies>
   <build>

@@ -13,14 +13,14 @@
     <version>2.1.2.RELEASE</version>
   </parent>
   <properties>
+    <finalName>${project.groupId}.${project.artifactId}</finalName>
+    <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.8</java.version>
-    <maven.compiler.target>8</maven.compiler.target>
-    <maven.compiler.source>8</maven.compiler.source>
-    <mysql-connector-java.version>8.0.18</mysql-connector-java.version>
-    <finalName>${project.groupId}.${project.artifactId}</finalName>
     <junit.version>4.13.1</junit.version>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
+    <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
   </properties>
   <dependencies>
     <dependency>
