@@ -54,18 +54,25 @@ our $environment = 'UAT';
 my $timestamp;
 my $timestamp_seconds = time();
 my $periods = { 'm' => 60, 'h' => 3600 };
-if ( !$precision cmp 's' ) {
+if ( !($precision cmp 's') ) {
+    print 'using presision SECONDS' , $/;
     $timestamp = $timestamp_seconds;
+    print $timestamp , $/ if $debug;
 }
 elsif ( $precision =~ /\b(?:m|h)\b/ ) {
     my $period = $periods->{$precision};
     $timestamp = int( $timestamp_seconds / $period ) * $period;
+    print 'using presision MINUTES' , $/;
+    print $timestamp , $/ if $debug;
 }
 else {
     my ( $seconds, $microseconds ) = gettimeofday();
     my $timestamp_nanoseconds = $seconds . $microseconds;
+    print 'using presision NANOSECONDS' , $/;
     $timestamp = $timestamp_nanoseconds;
+    print $timestamp , $/ if $debug;
 }
+# exit 0;
 
 # https://docs.influxdata.com/influxdb/v1.8/write_protocols/line_protocol_tutorial/
 # https://perldoc.perl.org/Time::HiRes

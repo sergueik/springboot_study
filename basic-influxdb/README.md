@@ -52,9 +52,7 @@ curl --silent -X POST http://192.168.0.29:8086/query?q=show%20databases | /c/too
   ]
 }
 
-
 ```
-
 alternatively, query through Postman
 
 ![setup Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-postman.png)
@@ -512,6 +510,78 @@ perl -MTime::HiRes -e 'use Time::HiRes qw( gettimeofday); my ($s, $n) = gettimeo
 1655244130852723
 1655244130
 ```
+### Observed Defects
+when querying just inserted data via curl
+```sh
+HOST=192.168.0.29
+PORT=8086
+DATABASE=example
+QUERY="SELECT * FROM \"testing\""
+curl -G "http://$HOST:$PORT/query?pretty=true" --data-urlencode "db=$DATABASE" --data-urlencode "q=$QUERY"
+```
+```JSON
+   "results": [
+        {
+            "statement_id": 0,
+            "series": [
+                {
+                    "name": "testing",
+                    "columns": [
+                        "time",
+                        "appid",
+                        "env",
+                        "host",
+                        "idle",
+                        "operation",
+                        "region",
+                        "system",
+                        "usertime",
+                        "value"
+                    ],
+                    "values": [
+                        [
+                            "1970-01-01T00:00:01.655256772Z",
+                            "BAR",
+                            "UAT",
+                            "sergueik71",
+                            null,
+                            "write",
+                            null,
+                            null,
+                            null,
+                            42
+                        ],
+
+...
+```
+the `time` values are apparently badly miscalculated by the used version of InfluxDB. Compare to console run
+```text
+Connected to http://localhost:8086 version 1.7.11
+InfluxDB shell version: 1.7.11
+> use example
+Using database example
+> select * from testing
+name: testing
+time                appid env host       idle operation region system usertime value
+----                ----- --- ----       ---- --------- ------ ------ -------- -----
+V1655256772          BAR   UAT sergueik71      write                            42
+1655256772          BAR   UAT sergueik71      send                             42
+```
+
+To fix this itis sufficient to get to default precision when ingesting the data (?):
+```sh
+perl -I . test.pl  -precision ns
+```
+the query
+```sh
+curl -G "http://$HOST:$PORT/query?pretty=true&precision=s" --data-urlencode "db=$DATABASE" --data-urlencode "q=$QUERY"
+```
+
+it will return
+```JSON
+```
+
+https://docs.influxdata.com/influxdb/v1.7/guides/querying_data/
 ### See Also
 
    * introductory [documentation](https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/)
@@ -546,6 +616,7 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
   * https://github.com/ypvillazon/spring-boot-metrics-to-influxdb
   * [intro](https://tproger.ru/translations/influxdb-guide/) to Time Series and InfluxDB (in Russian)
   * [migration from Influx v1 to v2](https://www.sqlpac.com/en/documents/influxdb-migration-procedure-v1-v2.html)
+  * [querying v 1.7](https://docs.influxdata.com/influxdb/v1.7/guides/querying_data/)
  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
