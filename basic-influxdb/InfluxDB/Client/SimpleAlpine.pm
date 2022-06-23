@@ -38,11 +38,10 @@ sub new {
     };
 
     if ( $protocol eq 'tcp' ) {
-		    # TODO: add headers
-        # my $ua = LWP::UserAgent->new();
-        # $ua->agent("InfluxDB-Client-Simple/$VERSION");
-        # $ua->timeout($timeout);
-        # $self->{lwp_user_agent} = $ua;
+
+        # TODO: add timeout headers
+        my $agent = HTTP::Tiny->new("InfluxDB-Client-Simple/$VERSION");
+        $self->{agent} = $agent;
     }
     else {
         die "Unknown protocol: $protocol" unless $protocol eq "udp";
@@ -68,6 +67,7 @@ sub debug {
     my ( $self, $debug ) = @_;
     $self->{debug} = $debug;
 }
+
 sub ping {
     my ($self) = @_;
 
@@ -76,21 +76,22 @@ sub ping {
 
     # my $response = $self->{lwp_user_agent}->head( $uri->canonical() );
     my $response =
-      HTTP::Tiny->new->request( 'HEAD', "http://" . $self->{host} . ":" . $self->{port} . "/ping" );
+      $self->{agent}->request( 'HEAD',
+        'http://' . $self->{host} . ':' . $self->{port} . '/ping' );
 
-#    my $response = $self->{lwp_user_agent}
-#      ->head( "http://" . $self->{host} . ":" . $self->{port} . "/ping" );
+    #    my $response = $self->{lwp_user_agent}
+    #      ->head( 'http://' . $self->{host} . ':' . $self->{port} . '/ping' );
     if ( !$response->{success} ) {
-        my $error =  $response->{reason};
+        my $error = $response->{reason};
         return {
             raw     => $response,
             error   => $error,
             version => undef,
         };
     }
- print Dumper $response->{headers} if $self->{debug};
+    print Dumper $response->{headers} if $self->{debug};
     my $version = $response->{headers}->{'x-influxdb-version'};
-print "VERSION: ${version}" , $/ if $self->{debug};
+    print "VERSION: ${version}", $/ if $self->{debug};
     return {
         raw     => $response,
         error   => undef,
@@ -124,24 +125,24 @@ sub query {
         ( $chunk_size ? ( chunk_size => $chunk_size ) : () ),
         ( $epoch      ? ( epoch      => $epoch )      : () )
     );
-    print Dumper( $uri->canonical() );
+    print Dumper( $uri->canonical() ) if $self->{debug};
 
-# "http://". $self->{host} . ":" . $self->{port} .  "/query?" +
-# 'q=SELECT+*+FROM+testing' + '&' + 'db=' + $args{'database'} + '&'+ 'epoch=' . $args{epoch}
-   # my $response = $self->{lwp_user_agent}->post( $uri->canonical() );
+# 'http://'. $self->{host} . ':' . $self->{port} .  '/query?' + 'q=SELECT+*+FROM+testing' + '&' + 'db=' + $args{'database'} + '&'+ 'epoch=' . $args{epoch}
+# my $response = $self->{lwp_user_agent}->post( $uri->canonical() );
 
-    my $response = HTTP::Tiny->new->request( 'POST', $uri->canonical() , { } );
+    my $response = $self->{agent}->request( 'POST', $uri->canonical(), {} );
 
     chomp( my $content = $response->{content} );
-
 
     my $error;
     if ( $response->{success} ) {
         our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
         local $@;
         my $data = eval {
-            print 'processing response content' . "\n";
-            print Dumper($content);
+            if ( $self->{debug} ) {
+                print 'processing response content' . "\n";
+                print Dumper($content);
+            }
             my $result = $json_pp->decode($content);
             return $result;
         };
@@ -194,43 +195,37 @@ sub write {
 
         # my $uri = $self->_get_influxdb_http_api_uri('write');
 
-# $uri->query_form( db => $database,
-#                  ( $precision        ? ( precision => $precision )        : () ),
-#                  ( $retention_policy ? ( rp        => $retention_policy ) : () )
-# );
+        # TODO: use original code
+        #
+        # $uri->query_form(
+        #     db => $database,
+        #     ( $precision        ? ( precision => $precision )        : () ),
+        #     ( $retention_policy ? ( rp        => $retention_policy ) : () )
+        # );
 
         # print Dumper( $uri->canonical() );
         # "http://${host}:${port}/write?db=${database}"
-        print Dumper( { Content => $measurement } );
+        print Dumper( { Content => $measurement } ) if $self->{debug};
 
 # NOTE: $measurement is composed by the caller e.g.
 # "${metric},host=${reporting_host},env=${environment} value=${value}"
 # my $response = $self->{lwp_user_agent}->post( $uri->canonical(), Content => $measurement );
-    my $response =
-      HTTP::Tiny->new->request( 'POST', 
-
-            "http://"
-              . $self->{host} . ":"
+        my $response = $self->{agent}->request(
+            'POST',
+            'http://'
+              . $self->{host} . ':'
               . $self->{port}
-              . "/write?" . "db="
+              . '/write?' . 'db='
               . $database,
 
-, { 'content' =>$measurement} );
-
-#        my $response = $self->{lwp_user_agent}->post(
-#            "http://"
- #             . $self->{host} . ":"
-  #            . $self->{port}
-  #            . "/write?" . "db="
-  #            . $database,
-  #          Content => $measurement
-  #      );
+            , { 'content' => $measurement }
+        );
 
         chomp( my $content = $response->{content} );
 
         if ( $response->{status} != 204 ) {
             local $@;
-            print Dumper($content);
+            print Dumper($content) if $self->{debug};
             our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
             my $data = eval { $json_pp->decode($content) };
             my $error = $@;
@@ -258,7 +253,7 @@ sub write {
             raw   => undef,
             error => $bytes
             ? undef
-            : "Undefinded error while sending data (udp)",
+            : 'Undefinded error while sending data (udp)',
         };
     }
 }
@@ -280,24 +275,15 @@ sub send_data {
 sub _get_influxdb_http_api_uri {
     my ( $self, $endpoint ) = @_;
 
-    die "Missing argument 'endpoint'" if !$endpoint;
+    die 'Missing argument "endpoint"' if !$endpoint;
 
-    my $uri = {
-        scheme => 'http',
-        host   => $self->{host},
-        port   => $self->{port},
-        path   => $endpoint
-    };
-    print Dumper( \$uri );
-
-    #    my
-    $uri = URI->new();
+    my $uri = URI->new();
 
     $uri->scheme('http');
     $uri->host( $self->{host} );
     $uri->port( $self->{port} );
     $uri->path($endpoint);
-    print Dumper( \$uri );
+    print Dumper( \$uri ) if $self->{debug};
     return $uri;
 }
 
@@ -359,14 +345,13 @@ sub _line_protocol {
     my $field_string = join( ',', @fields );
 
     if ($timestamp) {
-        return sprintf( "%s,%s %s %s",
+        return sprintf( '%s,%s %s %s',
             $measurement, $tag_string, $field_string, $timestamp );
     }
     else {
-        return sprintf( "%s,%s %s", $measurement, $tag_string, $field_string );
+        return sprintf( '%s,%s %s', $measurement, $tag_string, $field_string );
     }
 }
 
 1;
-
 
