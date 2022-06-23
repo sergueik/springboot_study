@@ -568,20 +568,113 @@ V1655256772          BAR   UAT sergueik71      write                            
 1655256772          BAR   UAT sergueik71      send                             42
 ```
 
-To fix this itis sufficient to get to default precision when ingesting the data (?):
+To fix this itis sufficient to get to default precision when ingesting the data :
 ```sh
 perl -I . test.pl  -precision ns
 ```
-the query
+and provising similar argument in the query (it is called `epoch` there):
 ```sh
-curl -G "http://$HOST:$PORT/query?pretty=true&precision=s" --data-urlencode "db=$DATABASE" --data-urlencode "q=$QUERY"
+curl -G "http://$HOST:$PORT/query?pretty=true&epoch=ns" --data-urlencode "db=$DATABASE" --data-urlencode "q=$QUERY"
 ```
 
 it will return
 ```JSON
+{
+    "results": [
+        {
+            "statement_id": 0,
+            "series": [
+                {
+                    "name": "testing",
+                    "columns": [
+                        "time",
+                        "appid",
+                        "env",
+                        "host",
+                        "operation",
+                        "value"
+                    ],
+                    "values": [
+                        [
+                            1655949763540984,
+                            "BAR",
+                            "UAT",
+                            "lenovo120S",
+                            "send",
+                            42
+                        ],
+                        [
+                            1655949763540984,
+                            "BAR",
+                            "UAT",
+                            "lenovo120S",
+                            "write",
+                            42
+                        ],
+                        [
+                            1655949763540984,
+                            "BAZ",
+                            "UAT",
+                            "lenovo120S",
+                            "send",
+                            42
+                        ],
+                        [
+                            1655949763540984,
+                            "BAZ",
+                            "UAT",
+                            "lenovo120S",
+                            "write",
+                            42
+                        ],
+                        [
+                            1655949763540984,
+                            "FOO",
+                            "UAT",
+                            "lenovo120S",
+                            "send",
+                            42
+                        ],
+                        [
+                            1655949763540984,
+                            "FOO",
+                            "UAT",
+                            "lenovo120S",
+                            "write",
+                            42
+                        ]
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+```
+currently only default precision `ns` working acceptably.
+
+### Testing on Alpine 
+To 
+run on bare bones alpine perl container there is a `InfluxDB/Client/SimpleAlpine.pm` and `ingest-alpine.pl`. The `URI` module is a dependency of Influx::Client::Simple but is pure perl and can be downloaded from [CPAN](https://metacpan.org/pod/URI).
+```sh
+wget https://cpan.metacpan.org/authors/id/O/OA/OALDERS/URI-5.10.tar.gz
+tar zxvf URI-5.10.tar.gz
+cp -R URI-5.10/lib/* .
 ```
 
-https://docs.influxdata.com/influxdb/v1.7/guides/querying_data/
+
+```sh
+IMAGE=$(docker container ls --format='{{.Names}}\t{{.Image}}'| grep 'influxdb:1.7-alpine'| awk '{print $1}')
+echo $IMAGE
+```
+```sh
+docker run -it --link $IMAGE -v $(pwd):/tmp/xxx -w /tmp/xxx alpine-perl sh
+```
+you will need to paste the value of `$IMAGE` in the command run in the container:
+```sh
+perl -I . ingest-alpine.pl  -precision ns -host $IMAGE
+```
+
 ### See Also
 
    * introductory [documentation](https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/)
@@ -599,6 +692,8 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
   * InfluxDB Grafana data source [documentation](https://grafana.com/docs/grafana/latest/datasources/influxdb/) - note this covers InfluxQL (classic InfluxDB query) separately from [Flux](https://grafana.com/docs/grafana/latest/datasources/influxdb/influxdb-flux/) query language which apparently is supported but not required
    * another InfluxDB Perl [module](https://metacpan.org/pod/InfluxDB) - JSON only (deprecated)
    * an InfluxDB LineProtocol Perl [module](https://metacpan.org/pod/InfluxDB::LineProtocol)
+  * [querying v 1.7](https://docs.influxdata.com/influxdb/v1.7/guides/querying_data/)
+  * docker [formating arguments](https://docs.docker.com/config/formatting/) 
 
 
 ### Youtube Links
@@ -616,8 +711,6 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
   * https://github.com/ypvillazon/spring-boot-metrics-to-influxdb
   * [intro](https://tproger.ru/translations/influxdb-guide/) to Time Series and InfluxDB (in Russian)
   * [migration from Influx v1 to v2](https://www.sqlpac.com/en/documents/influxdb-migration-procedure-v1-v2.html)
-  * [querying v 1.7](https://docs.influxdata.com/influxdb/v1.7/guides/querying_data/)
- 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 	

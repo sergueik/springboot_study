@@ -22,6 +22,7 @@ sub new {
         host     => 'localhost',
         port     => 8086,
         protocol => 'tcp',
+        debug    => 0,
         timeout  => 180,
         @_,
     );
@@ -63,6 +64,10 @@ sub new {
     return $self;
 }
 
+sub debug {
+    my ( $self, $debug ) = @_;
+    $self->{debug} = $debug;
+}
 sub ping {
     my ($self) = @_;
 
@@ -70,18 +75,22 @@ sub ping {
     # 'http://localhost:8086/ping'
 
     # my $response = $self->{lwp_user_agent}->head( $uri->canonical() );
-    my $response = $self->{lwp_user_agent}
-      ->head( "http://" . $self->{host} . ":" . $self->{port} . "/ping" );
-    if ( !$response->is_success() ) {
-        my $error = $response->message();
+    my $response =
+      HTTP::Tiny->new->request( 'HEAD', "http://" . $self->{host} . ":" . $self->{port} . "/ping" );
+
+#    my $response = $self->{lwp_user_agent}
+#      ->head( "http://" . $self->{host} . ":" . $self->{port} . "/ping" );
+    if ( !$response->{success} ) {
+        my $error =  $response->{reason};
         return {
             raw     => $response,
             error   => $error,
             version => undef,
         };
     }
-
-    my $version = $response->header('X-Influxdb-Version');
+ print Dumper $response->{headers} if $self->{debug};
+    my $version = $response->{headers}->{'x-influxdb-version'};
+print "VERSION: ${version}" , $/ if $self->{debug};
     return {
         raw     => $response,
         error   => undef,
@@ -119,12 +128,15 @@ sub query {
 
 # "http://". $self->{host} . ":" . $self->{port} .  "/query?" +
 # 'q=SELECT+*+FROM+testing' + '&' + 'db=' + $args{'database'} + '&'+ 'epoch=' . $args{epoch}
-    my $response = $self->{lwp_user_agent}->post( $uri->canonical() );
+   # my $response = $self->{lwp_user_agent}->post( $uri->canonical() );
 
-    chomp( my $content = $response->content() );
+    my $response = HTTP::Tiny->new->request( 'POST', $uri->canonical() , { } );
+
+    chomp( my $content = $response->{content} );
+
 
     my $error;
-    if ( $response->is_success() ) {
+    if ( $response->{success} ) {
         our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
         local $@;
         my $data = eval {
@@ -135,20 +147,15 @@ sub query {
         };
         $error = $@;
 
-# NOTE: seen error "malformed JSON string, neither array, object, number, string or atom,
-# at character offset 0 (before "JSON::PP=HASH(0x1fb2...")
-# when calling ->decode_json() instead of ->decode()
-# print $error;
-# arising from trouble with passing $self into the subroutine
-# It indicates that ->decode_json() is not, and ->decode () is the class method
         if ($data) {
             $error = $data->{error};
         }
 
         if ( !$error ) {
-            $data->{request_id} = $response->header('Request-Id');
+            $data->{request_id} = $response->{headers}->{'request-id'};
 
-            print Dumper($data);
+            print Dumper($data) if $self->{debug};
+
             return {
                 raw   => $response,
                 data  => $data,
@@ -199,18 +206,29 @@ sub write {
 # NOTE: $measurement is composed by the caller e.g.
 # "${metric},host=${reporting_host},env=${environment} value=${value}"
 # my $response = $self->{lwp_user_agent}->post( $uri->canonical(), Content => $measurement );
-        my $response = $self->{lwp_user_agent}->post(
+    my $response =
+      HTTP::Tiny->new->request( 'POST', 
+
             "http://"
               . $self->{host} . ":"
               . $self->{port}
               . "/write?" . "db="
               . $database,
-            Content => $measurement
-        );
 
-        chomp( my $content = $response->content() );
+, { 'content' =>$measurement} );
 
-        if ( $response->code() != 204 ) {
+#        my $response = $self->{lwp_user_agent}->post(
+#            "http://"
+ #             . $self->{host} . ":"
+  #            . $self->{port}
+  #            . "/write?" . "db="
+  #            . $database,
+  #          Content => $measurement
+  #      );
+
+        chomp( my $content = $response->{content} );
+
+        if ( $response->{status} != 204 ) {
             local $@;
             print Dumper($content);
             our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
@@ -350,4 +368,5 @@ sub _line_protocol {
 }
 
 1;
+
 
