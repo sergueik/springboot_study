@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import example.model.Axixs;
+import example.model.Server;
 import example.projection.ServerInstanceApplication;
 
 @Repository
@@ -17,6 +18,23 @@ public interface AxixsRepository
 	@Query("select new example.projection.ServerInstanceApplication(s.serverName, a.applicationName,i.instanceName)"
 			+ " from Axixs x join Server s on x.serverId = s.serverId join Application a on x.applicationId = a.applicationId join Instance i on x.instanceId = i.instanceId")
 	public List<ServerInstanceApplication> findAllServerInstanceApplications();
+
+	// NOTE: strongly typed
+	// NOTE: cannot use *: unexpected token: *
+	// NOE: IllegalArgumentException in JPA are not reported verbosely
+	// NOTE: org.springframework.core.convert.ConversionFailedException:
+	// Failed to convert from type [java.lang.Object[]] to type
+	// [example.model.Server]
+	// for value '{101, hostname00}';
+	// nested exception is
+	// org.springframework.core.convert.ConverterNotFoundException:
+	// No converter found capable of converting from type [java.lang.Integer] to
+	// type [example.model.Server]] with root cause
+
+	// @Query("select s.serverId, s.serverName from Server s where s.serverName =
+	// ?1")
+	@Query("select new Server(s.serverId, s.serverName) from Server s where s.serverName LIKE ?1%")
+	public List<Server> findServer(String serverName);
 
 	// NOTE: strongly typed - watch the columns to match the constructor arguments
 	// NOTE: rows from left join with with null values

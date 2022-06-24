@@ -21,6 +21,11 @@ public class Server {
 		this.serverName = serverName;
 	}
 
+	public Server(int serverId, String serverName) {
+		this.serverId = serverId;
+		this.serverName = serverName;
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "sid")

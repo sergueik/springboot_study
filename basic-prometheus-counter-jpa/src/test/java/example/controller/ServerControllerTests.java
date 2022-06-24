@@ -35,7 +35,7 @@ import com.jayway.jsonpath.InvalidPathException;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
 		"serverPort=8085" })
 @PropertySource("classpath:application.properties")
-public class HostDataControllerTests {
+public class ServerControllerTests {
 
 	@LocalServerPort
 	private int port = 8085;
@@ -45,20 +45,25 @@ public class HostDataControllerTests {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	private static final String hostname = "hostname00";
-	private static final String counterName = "cpu";
+	private static final String hostnamePart = "hostname0";
 	private Collection<String> jsonEntries;
 	private String page = null;
-	private final static List<String> metricNames = Arrays.asList("memory", "cpu",
-			"disk", "rpm");
+	private final static List<String> hostnames = Arrays.asList("hostname00",
+			"hostname01", "hostname02", "hostname05");
+
+	private final static List<String> propertyNames = Arrays.asList("serverId",
+			"serverName");
+
 	private static ResponseEntity<String> entity;
 
 	@BeforeEach
 	public void before() {
-		url = "http://localhost:" + port + "/hostdata/" + hostname;
+		url = "http://localhost:" + port + "/server?server=" + hostnamePart;
 		entity = restTemplate.getForEntity(url, String.class);
 		page = entity.getBody();
 		// System.err.println("Examine page: " + page);
+		// JSON:
+		// [{"serverId":101,"serverName":"hostname00"},{"serverId":102,"serverName":"hostname01"},{"serverId":103,"serverName":"hostname02"},{"serverId":105,"serverName":"hostname05"}]
 	}
 
 	@Test
@@ -73,45 +78,41 @@ public class HostDataControllerTests {
 				is(MediaType.APPLICATION_JSON));
 	}
 
-	// JSON:
-	// {"hostname":"hostname00","data":{"disk":"40.5","memory":"20","load_average":"6","cpu":"10","rpm":"100"}}
 	// Count Values
 
 	@Test
 	public void test3() throws InvalidPathException {
-		jsonEntries = JsonPath.read(page, "$.keys()");
-		assertThat("Unexpected keys in JSON: " + jsonEntries, jsonEntries.size(),
-				is(2));
-		jsonEntries = JsonPath.read(page, "$.data.keys()");
-		assertThat("Unexpected data keys in JSON: " + jsonEntries,
-				jsonEntries.size(), is(metricNames.size() + 1));
-		for (String metricName : metricNames) {
-			assertThat(String.format("missing metric %s", metricName), jsonEntries,
-					hasItem(metricName));
-			// NOTE not asserting with "contains"
-			// [ERROR] HostDataControllerTests.test3:90 missing metric memory
-			// Expected: iterable containing ["memory"]
-			// but: item 0: was "disk"
-			assertThat(JsonPath.read(page, String.format("$.data.%s", metricName)),
+		int length = JsonPath.read(page, "$.length()");
+		assertThat("Unexpected count of rows: " + length, length,
+				is(hostnames.size()));
+	}
+
+	// https://stackoverflow.com/questions/9291435/parse-json-array-file-with-jsonpath
+	@Test
+	public void test4() throws InvalidPathException {
+		jsonEntries = JsonPath.read(page, "$[0].keys()");
+		assertThat("Unexpected columns in JSON: " + jsonEntries, jsonEntries.size(),
+				is(propertyNames.size()));
+		for (String propertyName : propertyNames) {
+			// TODO: regexp ?
+			assertThat(String.format("missing hostname %s", propertyName),
+					jsonEntries, hasItem(propertyName));
+			assertThat(JsonPath.read(page, String.format("$[0].%s", propertyName)),
 					notNullValue());
-			// TODO: regexp
-		}
-		for (String metricName : metricNames) {
-			assertThat(JsonPath.read(page, String.format("$.data.%s", metricName)),
-					notNullValue());
-			// TODO: regexp
 		}
 	}
 
 	@Test
-	public void test4() throws InvalidPathException {
-		jsonEntries = JsonPath.read(page, "$.*");
+	public void test5() throws InvalidPathException {
+		jsonEntries = JsonPath.read(page, "$[*]");
 		assertThat("Unexpected values in JSON: " + jsonEntries, jsonEntries.size(),
-				is(2));
-		jsonEntries = JsonPath.read(page, "$.data.*");
+				is(4));
+	}
 
+	@Test
+	public void test6() throws InvalidPathException {
+		jsonEntries = JsonPath.read(page, "$.*.serverName");
 		assertThat("Unexpected data values in JSON: " + jsonEntries,
-				jsonEntries.size(), is(metricNames.size() + 1));
-
+				jsonEntries.size(), is(hostnames.size()));
 	}
 }

@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import example.model.Server;
 import example.projection.ServerInstanceApplication;
 import example.repository.AxixsRepository;
 import example.service.NodeExporter;
@@ -36,9 +38,21 @@ public class ServerController {
 	@GetMapping(value = "servers", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ServerInstanceApplication>> servers() {
 
-		logger.info("Starting reporting metrics");
+		logger.info("Starting reporting server instance applications");
 		List<ServerInstanceApplication> payload = dao
 				.findAllServerInstanceApplications();
+
+		return (payload == null)
+				? ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
+				: ResponseEntity.status(HttpStatus.OK).body(payload);
+	}
+
+	@ResponseBody
+	@GetMapping(value = "server", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Server>> server(@RequestParam String server) {
+
+		logger.info("Starting reporting server " + server);
+		List<Server> payload = dao.findServer(server);
 
 		return (payload == null)
 				? ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
