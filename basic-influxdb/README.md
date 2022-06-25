@@ -288,7 +288,7 @@ docker run -d -p 8086:8086 influxdb:2.2.0-alpine
 With __2.x__ need to start in web interface `http://192.168.0.29:8086/`:
 
 ![setup Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-initial-setup.png)
-```
+
 
 Continue with configuring the connection to "Getting Started", "Data", "API Tokens":
 ![API Token Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-api-token.png)
@@ -302,11 +302,8 @@ it looks like base64 encoded text, but `base64` reports an error decoding it.
 export TOKEN=$(cat token.txt)
 export ORG=testuser
 export BUCKET=testbucket
-curl -v --request POST "http://localhost:8086/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8"  --header "Accept: application/json"  --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
-```
-```sh
 export BASE_URL="http://192.168.0.92:8086"
-curl -v --request POST "$BASE_URL/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8"  --header "Accept: application/json"  --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
+curl -v --request POST "$BASE_URL/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8" --header "Accept: application/json" --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
 ```
 ```
 export JQ=/c/tools/jq-win64.exe
@@ -323,7 +320,7 @@ will return user and system buckets:
 ```
 The query
 ```sh
-curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Authorization: Token $TOKEN"  -d '{"query": "from(bucket: \"testbucket\")\n  |> range(start: 1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == measurment)\n  |> filter(fn: (r) => r[\"_field\"] == \"load\" )\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")"}'
+curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Authorization: Token $TOKEN" -d '{"query": "from(bucket: \"testbucket\")\n  |> range(start: 1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == measurment)\n  |> filter(fn: (r) => r[\"_field\"] == \"load\" )\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")"}'
 ```
 is returning 
 ```JSON
@@ -338,7 +335,7 @@ ts=2022-06-25T01:19:03.717302Z lvl=warn msg="internal error not returned to clie
 This is solved by examining the appplication source code [here](https://github.com/influxdata/influxdb/blob/master/http/query.go#L26) and [here](https://github.com/influxdata/influxdb/blob/master/http/query.go#L136) and adding the JSON parameter `"type":"flux"` in the body
 
 ```sh
-curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Authorization: Token $TOKEN"  -d '{"type": "flux", "query": "from(bucket: \"testbucket\")\n  |> range(start: 1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == measurment)\n  |> filter(fn: (r) => r[\"_field\"] == \"load\" )\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")"}'
+curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Authorization: Token $TOKEN" -d '{"type": "flux", "query": "from(bucket: \"testbucket\")\n  |> range(start: 1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == measurment)\n  |> filter(fn: (r) => r[\"_field\"] == \"load\" )\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")"}'
 ```
 
 The response, though no longer an internal server error is still empty:
@@ -765,6 +762,7 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
    * an InfluxDB LineProtocol Perl [module](https://metacpan.org/pod/InfluxDB::LineProtocol)
   * [querying v 1.7](https://docs.influxdata.com/influxdb/v1.7/guides/querying_data/)
   * docker [formating arguments](https://docs.docker.com/config/formatting/) 
+  * [influx 2.x API via Postman](https://www.influxdata.com/blog/getting-started-influxdb-2-0-api-postman/) - not quite working in Postman (variables are not propagated into steps) but the details of the requests can be useful with curl Perl or Powershell client examples
 
 
 ### Youtube Links
@@ -782,7 +780,7 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
   * https://github.com/ypvillazon/spring-boot-metrics-to-influxdb
   * [intro](https://tproger.ru/translations/influxdb-guide/) to Time Series and InfluxDB (in Russian)
   * [migration from Influx v1 to v2](https://www.sqlpac.com/en/documents/influxdb-migration-procedure-v1-v2.html)
-  * [influx 2.x API via Postman](https://www.influxdata.com/blog/getting-started-influxdb-2-0-api-postman/) - not quite working in Postman (variables are not propagated into steps) but the details of the requests can be useful with curl Perl or Powershell client examples
+  * [influxdata channel](https://www.youtube.com/channel/UCnrgOD6G0y0_rcubQuICpTQ)
   
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
