@@ -8,13 +8,24 @@ If switched to InfluxDB __2.x__ the only difference for [data ingestion command]
 will be in the `org` and `bucket` in the url instead of the `database` query param and presence of the authoriaation token header
 
 ```sh
-curl --request POST \
-"http://localhost:8086/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" \
-  --header "Authorization: Token $TOKEN" \
-  --header "Content-Type: text/plain; charset=utf-8" \
-  --header "Accept: application/json" \
-  --data-binary '
-    measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
+curl -v --request POST "http://localhost:8086/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8"  --header "Accept: application/json"  --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
+```
+
+```text
+
+ Content-Type: text/plain; charset=utf-8
+> Accept: application/json
+> Content-Length: 67
+> 
+* upload completely sent off: 67 out of 67 bytes
+< HTTP/1.1 204 No Content
+< X-Influxdb-Build: OSS
+< X-Influxdb-Version: v2.2.0
+< Date: Fri, 24 Jun 2022 21:26:24 GMT
+< 
+* Connection #0 to host localhost left intact
+
+
 ```
 NOTE - above command is just [example from documentation](https://docs.influxdata.com/influxdb/v2.0/write-data/developer-tools/api/) - not tested in current project
 
@@ -278,7 +289,65 @@ With __2.x__ need to start in web interface `http://192.168.0.29:8086/`:
 
 ![setup Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-initial-setup.png)
 ```
-in the container use `influx` to create database:
+
+Continue with configuring the connection to "Getting Started", "Data", "API Tokens":
+![API Token Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-api-token.png)
+
+Save the token and use in curl command above
+```text
+IEcK-AQfzWBexzV2D6jIabZY9kj6cQHq5qaNd8MNCEuen8P17SLMUV08GVKeYq5hA0a1E0hTPkaL65W8qBTWUA==
+```
+it looks like base64 encoded text, but `base64` reports an error decoding it.
+```sh
+export TOKEN=$(cat token.txt)
+export ORG=testuser
+export BUCKET=testbucket
+curl -v --request POST "http://localhost:8086/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8"  --header "Accept: application/json"  --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
+```
+```sh
+export BASE_URL="http://192.168.0.92:8086"
+curl -v --request POST "$BASE_URL/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8"  --header "Accept: application/json"  --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
+```
+```
+export JQ=/c/tools/jq-win64.exe
+
+curl -v --request GET --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8" "$BASE_URL/api/v2/buckets" | $JQ '.buckets[].name'
+```
+
+will return user and system buckets:
+```text
+"_monitoring"
+"_tasks"
+"testbucket"
+
+```
+The query
+```sh
+curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Authorization: Token $TOKEN"  -d '{"query": "from(bucket: \"testbucket\")\n  |> range(start: 1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == measurment)\n  |> filter(fn: (r) => r[\"_field\"] == \"load\" )\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")"}'
+```
+is returning 
+```JSON
+{"code":"internal error","message":"An internal error has occurred - check server logs"}
+
+```
+with container logs showing Influx DB	 error:
+
+```text
+ts=2022-06-25T01:19:03.717302Z lvl=warn msg="internal error not returned to client" log_id=0bI56Su0000 handler=error_logger error="unknown query request type "
+```
+This is solved by examining the appplication source code [here](https://github.com/influxdata/influxdb/blob/master/http/query.go#L26) and [here](https://github.com/influxdata/influxdb/blob/master/http/query.go#L136) and adding the JSON parameter `"type":"flux"` in the body
+
+```sh
+curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Authorization: Token $TOKEN"  -d '{"type": "flux", "query": "from(bucket: \"testbucket\")\n  |> range(start: 1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == measurment)\n  |> filter(fn: (r) => r[\"_field\"] == \"load\" )\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")"}'
+```
+
+The response, though no longer an internal server error is still empty:
+```JSON
+{"errors":[]}
+
+```
+### Influx 1.x
+With Influx __1.x__ connect to the container and in  console run `influx` command to open shell to create database:
 
 ```sh
 / # influx
@@ -304,8 +373,10 @@ example
 disconnect from container, run Perl script from the host
 to post data
 ```sh
-perl -I . test.pl
+perl -I . ingest.pl
 ```
+
+With Influx __2.x__ one need to use FLUX to compose the query and pass the token in the `influx` query command in the container (unfinished)
 
 
 NOTE: the default vendor image is based
@@ -711,6 +782,8 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
   * https://github.com/ypvillazon/spring-boot-metrics-to-influxdb
   * [intro](https://tproger.ru/translations/influxdb-guide/) to Time Series and InfluxDB (in Russian)
   * [migration from Influx v1 to v2](https://www.sqlpac.com/en/documents/influxdb-migration-procedure-v1-v2.html)
+  * [influx 2.x API via Postman](https://www.influxdata.com/blog/getting-started-influxdb-2-0-api-postman/) - not quite working in Postman (variables are not propagated into steps) but the details of the requests can be useful with curl Perl or Powershell client examples
+  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 	
