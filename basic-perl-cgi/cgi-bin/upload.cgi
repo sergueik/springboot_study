@@ -31,14 +31,16 @@ use vars qw($query $filename $loadtype $method $new );
 cgi {
     $query = $_;
     $query->{multipart_form_options} = { parse_as_files => 0 };
-    $loadtype = $query->param('type');
-    $new      = $query->param('new');
-    $method   = $query->method;
+    $loadtype                        = $query->param('type');
+    $new                             = $query->param('new');
+    $method                          = $query->method;
+    print STDERR Dumper(
+        { new => $new, loadtype => $loadtype, filename => $filename } ), $/;
     if ( $method eq 'POST' ) {
 
         # $query->_body_multipart();
         if ( $loadtype =~ /send/ ) {
-            my $upload       = $query->upload('data');
+            my $upload = $query->upload('data');
             $filename = $upload->{filename} || 'unknown file';
             my $file_content = $upload->{content};
             print STDERR "upload content: ", $file_content, $/;

@@ -13,8 +13,12 @@ docker build -t $IMAGE -f Dockerfile .
 
 ```sh
 NAME=basic-perl-cgi
-docker run -d -p $(hostname -i):8080:80 -p $(hostname -i):9443:443 --name $NAME $IMAGE
+docker run -d -p 8080:80 -p 9443:443 --name $NAME $IMAGE
 docker logs $NAME
+```
+alternatively
+```
+docker run -d -p $(hostname -i):8080:80 -p $(hostname -i):9443:443 --name $NAME $IMAGE
 ```
 this will respond with
 ```sh
@@ -243,7 +247,28 @@ on a Linux machine
 it will look slightly less data but enough for debugging the visual part.
 
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture_file.png)
-### Upload 
+
+
+### Add CGI for Legacy Testing
+
+the container so far does have [FCGI](https://metacpan.org/pod/FCGI) version __0.78__ but no CGI.pm in the image.
+installed:
+```sh
+perl -MFCGI -e 'print $FCGI::VERSION'
+```
+```text
+0.78
+```
+Alternatively one can install [CGI-Tiny](https://metacpan.org/dist/CGI-Tiny/view/lib/CGI/Tiny.pod)  which has no unmet dependencies.
+```sh
+wget https://cpan.metacpan.org/authors/id/D/DB/DBOOK/CGI-Tiny-1.002.tar.gz
+wget https://cpan.metacpan.org/authors/id/D/DB/DBOOK/CGI-Tiny-1.002.tar.gz
+tar xzvf CGI-Tiny-1.002.tar.gz
+mkdir cgi-bin/CGI;
+cp -R -l CGI-Tiny-1.002/lib/CGI cgi-bin/.
+```
+
+### Upload via Curl
 
 ```sh
 curl -F "data=@$(pwd)/data.txt" -X POST "http://192.168.0.29:8080/cgi-bin/upload.cgi?type=send&new=1"
@@ -266,7 +291,6 @@ img {border: none;}
 </html>
 
 ```
-
 
 NOTE: need to work on passing  form arguments
 
@@ -325,5 +349,7 @@ only one of the polling controllers in the page `inventory.html` will be exercis
   * https://www.js-tutorials.com/angularjs-tutorial/simple-example-angularjs-interval-timeout/
   * https://stackoverflow.com/questions/42701048/how-to-pass-vm-to-a-settimeout-in-angularjs-changes-to-scope-dont-update-dom-v
   * [curl post file](https://reqbin.com/req/c-dot4w5a2/curl-post-file)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
