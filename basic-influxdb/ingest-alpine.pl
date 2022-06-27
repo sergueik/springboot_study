@@ -11,6 +11,7 @@ my $measurement = 'testing';
 my $value       = '42.0';
 my $database    = 'example';
 my $defer       = undef;
+my $now         = undef;
 my $debug       = undef;
 my $host        = '192.168.0.29';
 my $port        = '8086';
@@ -22,6 +23,7 @@ GetOptions(
     'database=s'    => \$database,
     'debug'         => \$debug,
     'defer'         => \$defer,
+    'now'           => \$now,
     'host=s'        => \$host,
     'measurement=s' => \$measurement,
     'port=s'        => \$port,
@@ -45,7 +47,7 @@ die 'No response' unless $result;
 
 # get the server version
 print "RESULT: " . $/;
-print Dumper( $result) ,$/;
+print Dumper($result), $/ if $debug;
 print $result->{version};
 
 our $reporting_host =
@@ -56,24 +58,31 @@ our $environment = 'UAT';
 my $timestamp;
 my $timestamp_seconds = time();
 my $periods = { 'm' => 60, 'h' => 3600 };
-if ( !($precision cmp 's') ) {
-    print 'using presision SECONDS' , $/;
+if ( !( $precision cmp 's' ) ) {
+    print 'using presision SECONDS', $/;
     $timestamp = $timestamp_seconds;
     print $timestamp , $/ if $debug;
 }
 elsif ( $precision =~ /\b(?:m|h)\b/ ) {
     my $period = $periods->{$precision};
     $timestamp = int( $timestamp_seconds / $period ) * $period;
-    print 'using presision MINUTES' , $/;
+    print 'using presision MINUTES', $/;
     print $timestamp , $/ if $debug;
 }
 else {
     my ( $seconds, $microseconds ) = gettimeofday();
-    my $timestamp_nanoseconds = $seconds . $microseconds;
-    print 'using presision NANOSECONDS' , $/;
-    $timestamp = $timestamp_nanoseconds;
+    my $timestamp_nanoseconds = $seconds . $microseconds . '000';
+
+    #  NOTE: still inaccurate: query later shows accidental leading digit loss
+    # 1656362391432086000 4     write
+    # 1656362386119790000 1     write
+    # 165636240215777000  16    write
+    print 'using presision NANOSECONDS', $/;
+    $timestamp_nanoseconds = $seconds . '000000000';
+    $timestamp             = $timestamp_nanoseconds;
     print $timestamp , $/ if $debug;
 }
+
 # exit 0;
 
 # https://docs.influxdata.com/influxdb/v1.8/write_protocols/line_protocol_tutorial/
@@ -95,8 +104,14 @@ my $measurements = [];
 foreach $appid_tag ( split( /,/, $appid ) ) {
     $tag_set =
 "host=${reporting_host},env=${environment},appid=${appid_tag},operation=write";
-    push( @$measurements,
-        "${measurement},${tag_set} ${field_set} ${timestamp}" );
+    push(
+        @$measurements,
+        (
+            $now
+            ? "${measurement},${tag_set} ${field_set}"
+            : "${measurement},${tag_set} ${field_set} ${timestamp}"
+        )
+    );
 }
 
 # Write
@@ -113,8 +128,8 @@ if ($do_write) {
 }
 
 # 'partial write: field type conflict: input field "value" on measurement "testing" is type float, already exists as type integer dropped=3',
-
-my $do_send = 1;
+# TODO: check if send_data allows null timestamp argument
+my $do_send = 0;
 if ($do_send) {
     $field_set = { value => $value };
     my %options = ( 'database' => $database, 'precision' => $precision );
@@ -147,7 +162,7 @@ print 'series:' . $/;
 
 print Dumper( $result->{data}->{results}->[0]->{series} );
 
-exit 0;
+# exit 0;
 print 'count' . $/;
 foreach my $operation (qw|write send|) {
     $result = $client->query(

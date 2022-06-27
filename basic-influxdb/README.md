@@ -8,7 +8,12 @@ If switched to InfluxDB __2.x__ the only difference for [data ingestion command]
 will be in the `org` and `bucket` in the url instead of the `database` query param and presence of the authoriaation token header
 
 ```sh
-curl -v --request POST "http://localhost:8086/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8"  --header "Accept: application/json"  --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
+export TOKEN=$(cat token.txt)
+export ORG=testorg
+export BUCKET=testbucket
+export BASE_URL="http://192.168.0.92:8086"
+export TIMESTAMP=$(perl -MTime::HiRes -e 'use Time::HiRes qw( gettimeofday); my ( $seconds, $microseconds ) = gettimeofday(); print $seconds . $microseconds ,"000", $/;')
+curl -v --request POST "$BASE_URL/api/v2/write?org=$ORG&bucket=$BUCKET&precision=ns" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8"  --header "Accept: application/json"  --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1656351627692598'
 ```
 
 ```text
@@ -25,9 +30,39 @@ curl -v --request POST "http://localhost:8086/api/v2/write?org=$ORG&bucket=$BUCK
 < 
 * Connection #0 to host localhost left intact
 
-
 ```
 NOTE - above command is just [example from documentation](https://docs.influxdata.com/influxdb/v2.0/write-data/developer-tools/api/) - not tested in current project
+
+for the nanosecond-precision timestamp use the Perl one-liner
+
+```sh
+perl -MTime::HiRes -e 'use Time::HiRes qw( gettimeofday); my ( $seconds, $microseconds ) = gettimeofday(); print $seconds . $microseconds , "000", $/;'
+```
+
+if the credentials are not accepted (e.g. after the loss of the container)
+[reset the password](https://docs.influxdata.com/influxdb/v2.3/reference/cli/influx/user/password/)
+```sh
+influx user password --name testuser --password password
+```
+or just recreate the container (the initial login will be redirected to `http://192.168.0.29:8086/onboarding/0`)
+
+
+* [InfluxDB](https://metacpan.org/pod/InfluxDB) CPAN module also implements the InfluxDB query and write, accesps `username ` and `password `
+* [AnyEvent::InfluxDB](https://metacpan.org/pod/AnyEvent::InfluxDB) module recognizes and supports JWT token
+
+
+From the client module all it takes is pass the 
+
+token in the `Authorization` header
+```perl
+if ($self->{token}) {
+        $args{headers}->{Authorization} = 'Authorization: Token '. $self->{token};
+    }
+```    
+    provide `org` and `bucket` instead of  `db`
+    and change the URL path from `/write` to
+        '/api/v2/write' 
+    
 
 
 Note, this build allows operating via REST (but not WEB) interface:
@@ -295,7 +330,9 @@ Continue with configuring the connection to "Getting Started", "Data", "API Toke
 
 Save the token and use in curl command above
 ```text
-IEcK-AQfzWBexzV2D6jIabZY9kj6cQHq5qaNd8MNCEuen8P17SLMUV08GVKeYq5hA0a1E0hTPkaL65W8qBTWUA==
+> token.txt  cat
+Bg8vhiRXDFDthyQpOKFvvfnZ8y2t07bTs9pSRjOwMOlJ0x8GURacteQaZ0h0eARTSL4bmaaFNdYNwNps2hTbWw==
+^D
 ```
 it looks like base64 encoded text, but `base64` reports an error decoding it.
 ```sh
@@ -305,9 +342,15 @@ export BUCKET=testbucket
 export BASE_URL="http://192.168.0.92:8086"
 curl -v --request POST "$BASE_URL/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8" --header "Accept: application/json" --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
 ```
-```
+```sh
 export JQ=/c/tools/jq-win64.exe
+```
+or
+```sh
+export JQ=jq
 
+```
+```sh
 curl -v --request GET --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8" "$BASE_URL/api/v2/buckets" | $JQ '.buckets[].name'
 ```
 
@@ -338,6 +381,9 @@ This is solved by examining the appplication source code [here](https://github.c
 curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Authorization: Token $TOKEN" -d '{"type": "flux", "query": "from(bucket: \"testbucket\")\n  |> range(start: 1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == measurment)\n  |> filter(fn: (r) => r[\"_field\"] == \"load\" )\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")"}'
 ```
 
+```
+curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Authorization: Token $TOKEN" -d '{"type": "flux", "query": "from(bucket: \"testbucket\")"}'
+```
 The response, though no longer an internal server error is still empty:
 ```JSON
 {"errors":[]}
@@ -483,6 +529,34 @@ time       appid env host       operation value
 1655256774 BAR   UAT sergueik71 send      42
 ...
 ```
+
+### Dummy Data Ingestion
+
+Lainch Grafana container linked to Influx DB one and inges some data with recognizable shape:
+
+```sh
+for cnt in $(seq 0 1 30 ); do export VALUE=$(expr $cnt \* $cnt ); echo $VALUE ; sleep 5 ; perl -I . ingest.pl -value $VALUE -now; done
+```
+and query it from Grafana via InfluxDB Data Source
+
+![setup Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-influxdb-datasource.png)
+using the query
+
+```SQL
+SELECT "value" FROM "measurement" WHERE ("appid" = 'FOO' AND "operation" = 'send') GROUP BY time(10m) ORDER BY time DESC
+```
+will see
+
+![Data In Grafana](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-data-grafana.png)
+NOTE: if the timestamp  were incorrectly formatted during data ingestion you may see Grafana complain `Data outside time rannge` and suggest `zoom to data`. After this done, see series and note the `1969-12-31` date in the range 
+
+To make script ingest the timestamps, modify the loop to be
+```sh
+for cnt in $(seq 0 1 30 ); do export VALUE=$(expr $cnt \* $cnt ); echo $VALUE ; sleep 5 ; perl -I . ingest.pl -precision ns -value $VALUE; done
+```
+NOTE: it still appears to not provide time in the right format, and the same quwry as earlier, shows no data. therefore modified it to  generate the nanosecond-precision timestamp by appending 9 zeros to unix epoch. No other precision apprar working atm.
+
+
 ### Spring Java Client
 ```cmd
 mvn spring-boot:run
@@ -572,10 +646,10 @@ measurement|,tag_set| |field_set| |timestamp
 
 ### Example Using Perl to Nanosecond Timestamp
 ```sh
-perl -MTime::HiRes -e 'use Time::HiRes qw( gettimeofday); my ($s, $n) = gettimeofday(); print $s.$n. $/;my $t = time(); print $t. $/'
+perl -MTime::HiRes -e 'use Time::HiRes qw( gettimeofday); my ($sec, $mil) = gettimeofday(); print $sec.$mil."000". $/;my $t = time(); print $t. $/'
 ```
 ```text
-1655244130852723
+1655244130852723000
 1655244130
 ```
 ### Observed Defects
@@ -638,7 +712,7 @@ V1655256772          BAR   UAT sergueik71      write                            
 
 To fix this itis sufficient to get to default precision when ingesting the data :
 ```sh
-perl -I . test.pl  -precision ns
+perl -I . ingest.pl  -precision ns
 ```
 and provising similar argument in the query (it is called `epoch` there):
 ```sh

@@ -1,0 +1,8 @@
+Mem:        1863756      665656      157580
+Swap:       2720764       24832     2695932
+load_average: 0.16 0.08 0.08 1/460 32100
+rpm: 104
+date: Sun Jun 26 18:54:31 EDT 2022
+computer: lenovo120S.private.org
+uptime: 18:56:03 up 1 day,  3:44,  3 users,  load average: 0.07, 0.10, 0.09
+disk: /dev/sda1 27G 22G 3.6G 86% /
