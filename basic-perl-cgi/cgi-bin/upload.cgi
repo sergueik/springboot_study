@@ -23,6 +23,10 @@ use CGI::Tiny;
 use Getopt::Long;
 use Data::Dumper;
 use Time::Local qw(timelocal);
+use InfluxDB::Client::SimpleAlpine;
+use JSON::PP;
+use Time::HiRes qw( gettimeofday);
+use Sys::Hostname;
 use strict;
 use warnings;
 use utf8;
@@ -75,7 +79,6 @@ cgi {
                         }
                         elsif ( $metric eq 'load_average' ) {
 
-                             # print STDERR "splitting '" . $data->{load_average} . "'" . $/;
                             ( undef, $value, undef, undef, undef ) =
                               split /\s+/,
                               $data->{load_average};
@@ -88,9 +91,6 @@ cgi {
                     # Sun Jun 26 18:54:31 EDT 2022
                     $data->{date} = 'Sun Jun 26 18:54:31 EDT 2022';
 
-                    # my @fields =
-                    #  split /(?:\s+|:)/, $data->{date};
-                    # print STDERR Dumper \@fields, $/;
                     (
                         undef, $month_alpha, $mday, $hour, $min, $sec, undef,
                         $year
@@ -122,6 +122,20 @@ cgi {
                     # get timestamp from payload data
                     $metrics->{computer} = $data->{computer};
                     print STDERR Dumper($metrics), $/;
+
+                    my $measurement = 'testing';
+                    my $value       = '42.0';
+                    my $database    = 'example';
+                    my $now         = undef;
+                    my $host        = 'boring_williams';
+                    my $port        = '8086';
+                    my $appid       = 'FOO,BAR,BAZ';
+                    my $precision   = 'ns';
+                    my $client      = InfluxDB::Client::SimpleAlpine->new(
+                        host     => $host,
+                        port     => $port,
+                        protocol => 'tcp'
+                    ) or die "Can't instantiate client";
 
                     # TODO: implement original processing:
                     # print to some local file handle

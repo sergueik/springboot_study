@@ -20,6 +20,13 @@ alternatively
 ```
 docker run -d -p $(hostname -i):8080:80 -p $(hostname -i):9443:443 --name $NAME $IMAGE
 ```
+ or if integrted with InfluxDB then
+```sh
+export INFLUXDB=boring_williams
+docker run -d -p 8080:80 -p 9443:443 --link $INFLUXDB --name $NAME $IMAGE
+
+```
+
 this will respond with
 ```sh
 wait for apache pid
@@ -341,7 +348,14 @@ if apache is started in debug mode
 ```
 only one of the polling controllers in the page `inventory.html` will be exercised:
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture_debug.png)
+### Notes
 
+
+```sh
+wget https://cpan.metacpan.org/authors/id/O/OA/OALDERS/URI-5.10.tar.gz
+tar zxvf URI-5.10.tar.gz
+cp -R URI-5.10/lib/* cgi-bin
+```
 ### See Also
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
   * https://stackoverflow.com/questions/13671031/server-polling-with-angularjs
