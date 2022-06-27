@@ -3,9 +3,12 @@ use Data::Dumper;
 use Getopt::Long;
 use JSON::PP;
 use Time::HiRes qw( gettimeofday);
+use Time::Local qw(timelocal);
 use Sys::Hostname;
 use warnings;
 use strict;
+
+use vars qw($month_alpha $months_alpha $mon $mday $hour $min $sec $year);
 
 my $measurement = 'testing';
 my $value       = '42.0';
@@ -14,9 +17,11 @@ my $defer       = undef;
 my $now         = undef;
 my $debug       = undef;
 my $host        = '192.168.0.29';
+my $timestamp   = undef;
 my $port        = '8086';
 my $appid       = 'FOO,BAR,BAZ';
 my $precision   = 's';
+my $environment = 'UAT';
 
 GetOptions(
     'appid=s'       => \$appid,
@@ -25,6 +30,7 @@ GetOptions(
     'defer'         => \$defer,
     'now'           => \$now,
     'host=s'        => \$host,
+    'timestamp=s'   => \$timestamp,
     'measurement=s' => \$measurement,
     'port=s'        => \$port,
     'precision=s'   => \$precision,
@@ -46,44 +52,75 @@ my $result = $client->ping();
 die 'No response' unless $result;
 
 # get the server version
-print "RESULT: " . $/;
-print Dumper($result), $/ if $debug;
-print $result->{version};
+print STDERR Dumper($result) if $debug;
+print STDERR "RESULT: " . $result->{version} . $/;
 
 our $reporting_host =
   exists $ENV{'COMPUTERNAME'} ? lc( $ENV{'COMPUTERNAME'} ) : hostname;
-print "Reporting host: " . $reporting_host . $/;
-our $environment = 'UAT';
+print STDERR "Reporting host: " . $reporting_host . $/;
+if ( !defined($timestamp) ) {
+    print STDERR 'generating timestamp' . $/;
 
-my $timestamp;
-my $timestamp_seconds = time();
-my $periods = { 'm' => 60, 'h' => 3600 };
-if ( !( $precision cmp 's' ) ) {
-    print 'using presision SECONDS', $/;
-    $timestamp = $timestamp_seconds;
-    print $timestamp , $/ if $debug;
-}
-elsif ( $precision =~ /\b(?:m|h)\b/ ) {
-    my $period = $periods->{$precision};
-    $timestamp = int( $timestamp_seconds / $period ) * $period;
-    print 'using presision MINUTES', $/;
-    print $timestamp , $/ if $debug;
+    my $timestamp_seconds = time();
+    my $periods = { 'm' => 60, 'h' => 3600 };
+    if ( !( $precision cmp 's' ) ) {
+        print STDERR 'using presision SECONDS' . $/;
+        $timestamp = $timestamp_seconds;
+        print STDERR $timestamp . $/ if $debug;
+    }
+    elsif ( $precision =~ /\b(?:m|h)\b/ ) {
+        my $period = $periods->{$precision};
+        $timestamp = int( $timestamp_seconds / $period ) * $period;
+        print STDERR 'using presision MINUTES' . $/;
+        print STDERR $timestamp . $/ if $debug;
+    }
+    else {
+        my ( $seconds, $microseconds ) = gettimeofday();
+
+        my $timestamp_nanoseconds = $seconds . $microseconds . '000';
+
+      #  NOTE: still inaccurate: query later shows accidental leading digit loss
+      # 1656362391432086000 4     write
+      # 1656362386119790000 1     write
+      # 165636240215777000  16    write
+        print STDERR 'using presision NANOSECONDS' . $/;
+        $timestamp_nanoseconds = $seconds . '000000000';
+        $timestamp             = $timestamp_nanoseconds;
+        print STDERR $timestamp . $/ if $debug;
+    }
+
 }
 else {
-    my ( $seconds, $microseconds ) = gettimeofday();
-    my $timestamp_nanoseconds = $seconds . $microseconds . '000';
+    print STDERR 'use caller provided timestamp ' . $timestamp . $/ if $debug;
 
-    #  NOTE: still inaccurate: query later shows accidental leading digit loss
-    # 1656362391432086000 4     write
-    # 1656362386119790000 1     write
-    # 165636240215777000  16    write
-    print 'using presision NANOSECONDS', $/;
-    $timestamp_nanoseconds = $seconds . '000000000';
-    $timestamp             = $timestamp_nanoseconds;
-    print $timestamp , $/ if $debug;
+    # get timestamp from payload data. For testing only
+
+    ( undef, $month_alpha, $mday, $hour, $min, $sec, undef, $year ) =
+      split /(?:\s+|:)/, $timestamp;
+    $months_alpha = {
+        'Jan' => 1,
+        'Feb' => 2,
+        'Mar' => 3,
+        'Apr' => 4,
+        'May' => 5,
+        'Jun' => 6,
+        'Jul' => 7,
+        'Aug' => 8,
+        'Sep' => 9,
+        'Oct' => 10,
+        'Nov' => 11,
+        'Dec' => 12
+
+    };
+
+    # print STDERR "month_alpha:" . $month_alpha, $/;
+    $mon = $months_alpha->{$month_alpha} - 1;
+
+    # Note the reverse order of the arguments and that January is month 0
+    # https://stackoverflow.com/questions/95492/how-do-i-convert-a-date-time-to-epoch-time-unix-time-seconds-since-1970-in-per
+    $timestamp =
+      ( timelocal( $sec, $min, $hour, $mday, $mon, $year ) ) . '000000000';
 }
-
-# exit 0;
 
 # https://docs.influxdata.com/influxdb/v1.8/write_protocols/line_protocol_tutorial/
 # https://perldoc.perl.org/Time::HiRes
@@ -115,7 +152,7 @@ foreach $appid_tag ( split( /,/, $appid ) ) {
 }
 
 # Write
-print 'Write' . $/;
+print STDERR 'Write' . $/;
 my $do_write = 1;
 if ($do_write) {
     $result = $client->write(
@@ -123,7 +160,7 @@ if ($do_write) {
         database  => $database,
         precision => $precision
     );
-    print Dumper($result) if $debug;
+    print STDERR Dumper($result) if $debug;
 
 }
 
@@ -136,7 +173,7 @@ if ($do_send) {
     foreach $appid_tag ( split( /,/, $appid ) ) {
 
         # Send Data
-        print 'Send Data' . $/;
+        print STDERR 'Send Data' . $/;
         $tag_set = {
             host      => $reporting_host,
             env       => $environment,
@@ -146,24 +183,23 @@ if ($do_send) {
         $result =
           $client->send_data( $measurement, $tag_set, $field_set, $timestamp,
             %options );
-        print Dumper($result) if $debug;
+        print STDERR Dumper($result) if $debug;
     }
 }
 
 # Query
-print 'Query' . $/;
+print STDERR 'Query' . $/;
 $result = $client->query(
     ["SELECT * FROM ${measurement}"],
     database  => $database,
     epoch     => $precision,
     chunksize => 0
 );
-print 'series:' . $/;
+print STDERR 'series:' . $/;
 
-print Dumper( $result->{data}->{results}->[0]->{series} );
+print STDERR Dumper( $result->{data}->{results}->[0]->{series} );
 
-# exit 0;
-print 'count' . $/;
+print STDERR 'count' . $/;
 foreach my $operation (qw|write send|) {
     $result = $client->query(
         [
@@ -173,10 +209,9 @@ foreach my $operation (qw|write send|) {
         epoch     => $precision,
         chunksize => 0
     );
-    print 'Result for ' . $operation . ':' . $/;
+    print STDERR 'Result for ' . $operation . ':' . $/;
 
-    # print Dumper($result);
-    print Dumper(
+    print STDERR Dumper(
         $result->{data}->{results}->[0]->{series}->[0]->{values}->[0]->[1] );
 }
 

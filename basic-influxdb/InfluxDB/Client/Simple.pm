@@ -7,10 +7,8 @@ use warnings;
 use Carp;
 use IO::Socket::INET;
 
-# in ActiveState Perl, the closest match is IO-Socket-SSL
 use JSON::PP;
 
-# use JSON;
 use LWP::UserAgent;
 use URI;
 use Data::Dumper;
@@ -24,6 +22,7 @@ sub new {
         host     => 'localhost',
         port     => 8086,
         protocol => 'tcp',
+        debug    => 0,
         timeout  => 180,
         @_,
     );
@@ -79,7 +78,7 @@ sub ping {
     # my $response = $self->{lwp_user_agent}->head( $uri->canonical() );
     my $response = $self->{lwp_user_agent}
       ->head( "http://" . $self->{host} . ":" . $self->{port} . "/ping" );
-    print Dumper( \$response ) if $self->{debug};
+    print STDERR Dumper( \$response ) if $self->{debug};
     if ( !$response->is_success() ) {
         my $error = $response->message();
         return {
@@ -114,7 +113,7 @@ sub query {
         $query = join( ';', @$query );
     }
 
-    print Dumper( \$query ) if $self->{debug};
+    print STDERR Dumper( \$query ) if $self->{debug};
 
     my $uri = $self->_get_influxdb_http_api_uri('query');
 
@@ -124,7 +123,7 @@ sub query {
         ( $chunk_size ? ( chunk_size => $chunk_size ) : () ),
         ( $epoch      ? ( epoch      => $epoch )      : () )
     );
-    print Dumper( $uri->canonical() ) if $self->{debug};
+    print STDERR Dumper( $uri->canonical() ) if $self->{debug};
 
 # "http://". $self->{host} . ":" . $self->{port} .  "/query?" +
 # 'q=SELECT+*+FROM+testing' + '&' + 'db=' + $args{'database'} + '&'+ 'epoch=' . $args{epoch}
@@ -137,11 +136,11 @@ sub query {
         our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
         local $@;
         my $data = eval {
-            print 'Raw content' . $/ if $self->{debug};
-            print Dumper($content)   if $self->{debug};
+            print STDERR 'Raw content' . $/ if $self->{debug};
+            print STDERR Dumper($content) if $self->{debug};
             my $result = $json_pp->decode($content);
-            print 'Decoded content' . $/ if $self->{debug};
-            print Dumper($result) if $self->{debug};
+            print STDERR 'Decoded content' . $/ if $self->{debug};
+            print STDERR Dumper($result) if $self->{debug};
             return $result;
         };
         $error = $@;
@@ -159,7 +158,7 @@ sub query {
         if ( !$error ) {
             $data->{request_id} = $response->header('Request-Id');
 
-            print Dumper($data) if $self->{debug};
+            print STDERR Dumper($data) if $self->{debug};
             return {
                 raw   => $response,
                 data  => $data,
@@ -203,9 +202,9 @@ sub write {
 #                  ( $retention_policy ? ( rp        => $retention_policy ) : () )
 # );
 
-        # print Dumper( $uri->canonical() );
+        # print STDERR Dumper( $uri->canonical() );
         # "http://${host}:${port}/write?db=${database}"
-        print Dumper( { Content => $measurement } ) if $self->{debug};
+        print STDERR Dumper( { Content => $measurement } ) if $self->{debug};
 
 # NOTE: $measurement is composed by the caller e.g.
 # "${metric},host=${reporting_host},env=${environment} value=${value}"
@@ -223,12 +222,12 @@ sub write {
 
         if ( $response->code() != 204 ) {
             local $@;
-            print 'Raw content:' . $/ if $self->{debug};
-            print Dumper($content) if $self->{debug};
+            print STDERR 'Raw content:' . $/ if $self->{debug};
+            print STDERR Dumper($content) if $self->{debug};
             our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
             my $data = eval { $json_pp->decode($content) };
-            print 'Decoded content:' . $/ if $self->{debug};
-            print Dumper($data) if $self->{debug};
+            print STDERR 'Decoded content:' . $/ if $self->{debug};
+            print STDERR Dumper($data) if $self->{debug};
             my $error = $@;
             $error = $data->{error} if ( !$error && $data );
 
@@ -267,8 +266,8 @@ sub send_data {
     my $timestamp   = shift;
     my %options     = @_;
 
-    print Dumper($fields) if $self->{debug};
-    print Dumper("_line_protocol: " . _line_protocol( $measurement, $tags, $fields, $timestamp )) if $self->{debug};  
+    print STDERR Dumper($fields) if $self->{debug};
+    print STDERR Dumper("_line_protocol: " . _line_protocol( $measurement, $tags, $fields, $timestamp )) if $self->{debug};  
 
     return $self->write(
         _line_protocol( $measurement, $tags, $fields, $timestamp ), %options );
@@ -287,7 +286,7 @@ sub _get_influxdb_http_api_uri {
         port   => $self->{port},
         path   => $endpoint
     };
-    print Dumper( \$uri ) if $self->{debug};
+    print STDERR Dumper( \$uri ) if $self->{debug};
 
     #    my
     $uri = URI->new();
@@ -296,7 +295,7 @@ sub _get_influxdb_http_api_uri {
     $uri->host( $self->{host} );
     $uri->port( $self->{port} );
     $uri->path($endpoint);
-    print Dumper( \$uri ) if $self->{debug};
+    print STDERR Dumper( \$uri ) if $self->{debug};
     return $uri;
 }
 
