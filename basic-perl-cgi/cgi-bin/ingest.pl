@@ -1,6 +1,6 @@
 use Data::Dumper;
 use Time::Local qw(timelocal);
-my $collect_metrics = [ 'mem', 'swap', 'load_average', 'disk' ];
+use vars qw($payload $data $metrics $value $collect_metrics $month_alpha $months_alpha $mon $mday $hour $min $sec $year);
 
 sub read_data {
 
@@ -30,12 +30,13 @@ disk: /dev/sda1 27G 22G 3.6G 86% /
 EOF
     return $payload;
 }
-my $payload = &get_payload;
-my $data    = read_data($payload);
+$payload = &get_payload;
+$data    = read_data($payload);
 # print STDERR Dumper($data);
 # print STDERR Dumper($collect_metrics);
-my $metrics = {};
-my $value   = undef;
+$metrics = {};
+$value   = undef;
+$collect_metrics = [ 'mem', 'swap', 'load_average', 'disk' ];
 foreach my $metric (@$collect_metrics) {
     # print STDERR "loading ${metric}", $/;
     if ( $metric eq 'cpu' ) {
@@ -63,13 +64,12 @@ foreach my $metric (@$collect_metrics) {
 # Sun Jun 26 18:54:31 EDT 2022
 $data->{date} = 'Sun Jun 26 18:54:31 EDT 2022';
 
-my $month_alpha, $mday, $hour, $min, $sec, $year;
-my @fields = 
-  split /(?:\s+|:)/, $data->{date};
+# my @fields = 
+#  split /(?:\s+|:)/, $data->{date};
 # print STDERR Dumper \@fields, $/;
 ( undef, $month_alpha, $mday, $hour, $min, $sec, undef, $year ) =
   split /(?:\s+|:)/, $data->{date};
-my $months_alpha = {
+$months_alpha = {
     'Jan' => 1,
     'Feb' => 2,
     'Mar' => 3,
@@ -85,7 +85,7 @@ my $months_alpha = {
 
 };
 # print STDERR "month_alpha:" . $month_alpha, $/;
-my $mon = $months_alpha->{$month_alpha};
+$mon = $months_alpha->{$month_alpha};
 # print STDERR "mon:" . $mon, $/;
 
 $metrics->{time} = timelocal( $sec, $min, $hour, $mday, $mon, $year );
