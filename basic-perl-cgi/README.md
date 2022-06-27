@@ -243,6 +243,72 @@ on a Linux machine
 it will look slightly less data but enough for debugging the visual part.
 
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture_file.png)
+### Upload 
+
+```sh
+curl -F "data=@$(pwd)/data.txt" -X POST "http://192.168.0.29:8080/cgi-bin/upload.cgi?type=send&new=1"
+```
+
+```text
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Thanks!</title>
+<style type="text/css">
+img {border: none;}
+</style>
+</head>
+<body>
+<p>Thanks for uploading data</p>
+<p><img src="/upload/data.txt" alt="data" /></p>
+</body>
+</html>
+
+```
+
+
+NOTE: need to work on passing  form arguments
+
+```sh
+curl -F "type=send&new=1&data=@$(pwd)/data.txt" -X POST http://192.168.0.29:8080/cgi-bin/upload.cgi
+```
+leads to
+```
+500 Internal Server Error
+```
+
+because form argument `new` is aparently lost and the `CGi::Lite` seeminly does not support reading from `File::Temp` file handle returned by
+
+```perl
+$query->upload('data');
+```
+altenatively open `http://localhost:8080/upload.html` in the browser and provide file to upload via File dialog
+
+![Example Upload](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-upload.png)
+The `data.txt` contains practically unformatted output from `free`, `uptime`
+```text
+Mem:        1863756      665656      157580
+Swap:       2720764       24832     2695932
+load_average: 0.16 0.08 0.08 1/460 32100
+rpm: 104
+date: Sun Jun 26 18:54:31 EDT 2022
+computer: lenovo120S.private.org
+uptime: 18:56:03 up 1 day,  3:44,  3 users,  load average: 0.07, 0.10, 0.09
+disk: /dev/sda1 27G 22G 3.6G 86% /
+
+```
+the `upload.cgi` successfully logs its contents to apache log `/var/www/logs/error.log`:
+```text
+[Sun Jun 26 23:53:17.609136 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: Mem:        1863756      665656      157580: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
+[Sun Jun 26 23:53:17.609220 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: Swap:       2720764       24832     2695932: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
+[Sun Jun 26 23:53:17.609297 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: load_average: 0.16 0.08 0.08 1/460 32100: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
+[Sun Jun 26 23:53:17.609322 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: rpm: 104: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
+[Sun Jun 26 23:53:17.609389 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: date: Sun Jun 26 18:54:31 EDT 2022: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
+[Sun Jun 26 23:53:17.609453 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: computer: lenovo120S.private.org: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
+[Sun Jun 26 23:53:17.609588 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: uptime: 18:56:03 up 1 day,  3:44,  3 users,  load average: 0.07, 0.10, 0.09: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
+[Sun Jun 26 23:53:17.609655 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: disk: /dev/sda1 27G 22G 3.6G 86% /: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
+```
 ### Note
 
 if apache is started in debug mode
@@ -258,5 +324,6 @@ only one of the polling controllers in the page `inventory.html` will be exercis
   * https://blog.guya.net/2016/08/08/simple-server-polling-in-angularjs-done-right/
   * https://www.js-tutorials.com/angularjs-tutorial/simple-example-angularjs-interval-timeout/
   * https://stackoverflow.com/questions/42701048/how-to-pass-vm-to-a-settimeout-in-angularjs-changes-to-scope-dont-update-dom-v
+  * [curl post file](https://reqbin.com/req/c-dot4w5a2/curl-post-file)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

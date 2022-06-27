@@ -31,7 +31,6 @@ use vars qw($query $filename $loadtype $method $new );
 cgi {
     $query = $_;
     $query->{multipart_form_options} = { parse_as_files => 0 };
-    $filename = $query->param('data') || "unknown file";
     $loadtype = $query->param('type');
     $new      = $query->param('new');
     $method   = $query->method;
@@ -40,6 +39,7 @@ cgi {
         # $query->_body_multipart();
         if ( $loadtype =~ /send/ ) {
             my $upload       = $query->upload('data');
+            $filename = $upload->{filename} || 'unknown file';
             my $file_content = $upload->{content};
             print STDERR "upload content: ", $file_content, $/;
 
@@ -58,6 +58,7 @@ cgi {
                 my $upload_filehandle = $upload;
 
                 # Not a GLOB reference ?
+                # https://metacpan.org/pod/File::Temp
                 # https://www.perlmonks.org/?node_id=708846
                 while (<$upload_filehandle>) {
 
