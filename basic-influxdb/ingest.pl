@@ -78,24 +78,19 @@ if ( !defined($timestamp) ) {
 
         my $timestamp_nanoseconds = $seconds . $microseconds . '000';
 
-      #  NOTE: still inaccurate: query later shows accidental leading digit loss
-      # 1656362391432086000 4     write
-      # 1656362386119790000 1     write
-      # 165636240215777000  16    write
+        #  NOTE: still inaccurate: query later shows accidental leading digit loss
+        # 1656362391432086000 4     write
+        # 1656362386119790000 1     write
+        # 165636240215777000  16    write
         print STDERR 'using presision NANOSECONDS' . $/;
         $timestamp_nanoseconds = $seconds . '000000000';
         $timestamp             = $timestamp_nanoseconds;
-        print STDERR $timestamp . $/ if $debug;
+        print STDERR 'timestamp: ',$/, $timestamp, $/;
     }
-
-    # exit 0;
-
 }
 else {
+    # get timestamp from caller provided argument
     print STDERR 'use caller provided timestamp ' . $timestamp . $/ if $debug;
-
-    # get timestamp from payload data. For testing only
-
     ( undef, $month_alpha, $mday, $hour, $min, $sec, undef, $year ) =
       split /(?:\s+|:)/, $timestamp;
     $months_alpha = {
@@ -113,14 +108,13 @@ else {
         'Dec' => 12
 
     };
-
-    # print STDERR "month_alpha:" . $month_alpha, $/;
     $mon = $months_alpha->{$month_alpha} - 1;
 
     # Note the reverse order of the arguments and that January is month 0
     # https://stackoverflow.com/questions/95492/how-do-i-convert-a-date-time-to-epoch-time-unix-time-seconds-since-1970-in-per
     $timestamp =
       ( timelocal( $sec, $min, $hour, $mday, $mon, $year ) ) . '000000000';
+    print STDERR 'timestamp: ',$/, $timestamp, $/;
 
 }
 

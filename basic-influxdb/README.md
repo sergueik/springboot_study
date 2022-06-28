@@ -817,6 +817,30 @@ you will need to paste the value of `$IMAGE` in the command run in the container
 perl -I . ingest-alpine.pl  -precision ns -host $IMAGE
 ```
 
+### Time Stamp Tool
+it is important to send Line Protocol data with nanosecond-precision time otherwise
+Grafana may auto zoom one to January 1970:
+
+![setup Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-bad-timestamp-indicator.png)
+
+```sh
+perl nanosecond_convertor.pl  -debug -precision s -timestamp "$(date)"
+```
+```text
+use caller provided timestamp Tue Jun 28 17:50:40 EDT 2022
+timestamp:
+1656453040000000000
+```
+```sh
+perl nanosecond_convertor.pl  -debug -precision ns
+```
+```text
+generating timestamp
+using presision NANOSECONDS
+1656453065000000000
+```
+
+
 ### See Also
 
    * introductory [documentation](https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/)

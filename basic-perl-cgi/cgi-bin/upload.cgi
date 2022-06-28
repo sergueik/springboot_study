@@ -88,7 +88,6 @@ cgi {
                     }
 
                     # get timestamp from payload data. For testing only
-                    # Sun Jun 26 18:54:31 EDT 2022
 
                     (
                         undef, $month_alpha, $mday, $hour, $min, $sec, undef,
@@ -111,10 +110,11 @@ cgi {
                     };
 
                     # print STDERR "month_alpha:" . $month_alpha, $/;
-                    $mon = $months_alpha->{$month_alpha};
+                    $mon = $months_alpha->{$month_alpha} - 1;
 
                     # print STDERR "mon:" . $mon, $/;
-
+                    # Note the reverse order of the arguments and that January is month 0
+                    # https://stackoverflow.com/questions/95492/how-do-i-convert-a-date-time-to-epoch-time-unix-time-seconds-since-1970-in-per  
                     $metrics->{time} =
                       timelocal( $sec, $min, $hour, $mday, $mon, $year );
 
