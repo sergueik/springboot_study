@@ -37,11 +37,10 @@ if ( !defined($timestamp) ) {
     }
     else {
         my ( $seconds, $microseconds ) = gettimeofday();
-	# NOTE: buggy in padding with zeros - currently not used
-        my $timestamp_nanoseconds = $seconds . $microseconds . '000';
+        my $timestamp_nanoseconds = $seconds . sprintf('%06d',$microseconds) . '000';
 
         print STDERR 'using presision NANOSECONDS' . $/;
-        $timestamp_nanoseconds = $seconds . '000000000';
+        # $timestamp_nanoseconds = $seconds . '000000000';
         $timestamp             = $timestamp_nanoseconds;
         print STDERR $timestamp . $/ if $debug;
     }

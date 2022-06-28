@@ -76,15 +76,8 @@ if ( !defined($timestamp) ) {
     }
     else {
         my ( $seconds, $microseconds ) = gettimeofday();
-
-        my $timestamp_nanoseconds = $seconds . $microseconds . '000';
-
-        #  NOTE: still inaccurate: query later shows accidental leading digit loss
-        # 1656362391432086000 4     write
-        # 1656362386119790000 1     write
-        # 165636240215777000  16    write
+        my $timestamp_nanoseconds = $seconds . sprintf('%06d',$microseconds) . '000';
         print STDERR 'using presision NANOSECONDS' . $/;
-        $timestamp_nanoseconds = $seconds . '000000000';
         $timestamp             = $timestamp_nanoseconds;
         print STDERR $timestamp . $/ if $debug;
     }
