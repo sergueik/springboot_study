@@ -356,6 +356,124 @@ wget https://cpan.metacpan.org/authors/id/O/OA/OALDERS/URI-5.10.tar.gz
 tar zxvf URI-5.10.tar.gz
 cp -R URI-5.10/lib/* cgi-bin
 ```
+### Posting to InfluxDB
+
+in developer machine:
+```sh
+curl -F "data=@$(pwd)/data.txt" -X POST "http://192.168.0.29:8080/cgi-bin/upload.cgi?type=send&new=1"
+```
+```text
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Thanks!</title>
+<style type="text/css">
+img {border: none;}
+</style>
+</head>
+<body>
+<p>Thanks for uploading data</p>
+<p><img src="/upload/data.txt" alt="data" /></p>
+</body>
+</html>
+```
+
+in `basic-perl-cgi` container apache log `error.log` (formatted for readability to free from `[Tue Jun 28 00:16:40.909223 2022] [cgi:error] [pid 12] [client 192.168.0.29:50706] fields` :
+```text
+
+     upload content:   
+     Mem:        1863756      665656      157580  
+     Swap:       2720764       24832     2695932  
+     load_average: 0.16 0.08 0.08 1/460 32100  
+     rpm: 104  
+     date: Sun Jun 26 18:54:31 EDT 2022  
+     computer: lenovo120S.private.org  
+     uptime: 18:56:03 up 1 day,  3:44,  3 users,  load average: 0.07, 0.10, 0.09  
+     disk: /dev/sda1 27G 22G 3.6G 86% /  
+       
+     do ingestion of Mem:        1863756      665656      157580  
+     Swap:       2720764       24832     2695932  
+     load_average: 0.16 0.08 0.08 1/460 32100  
+     rpm: 104  
+     date: Sun Jun 26 18:54:31 EDT 2022  
+     computer: lenovo120S.private.org  
+     uptime: 18:56:03 up 1 day,  3:44,  3 users,  load average: 0.07, 0.10, 0.09  
+     disk: /dev/sda1 27G 22G 3.6G 86% /  
+       
+     $VAR1 = {  
+               'disk' => '/dev/sda1 27G 22G 3.6G 86% /',  
+               'swap' => '2720764       24832     2695932',  
+               'load_average' => '0.16 0.08 0.08 1/460 32100',  
+               'date' => 'Sun Jun 26 18:54:31 EDT 2022',  
+               'mem' => '1863756      665656      157580',  
+               'rpm' => '104',  
+               'uptime' => '18:56:03 up 1 day,  3:44,  3 users,  load average: 0.07, 0.10, 0.09',  
+               'computer' => 'lenovo120S.private.org'  
+             };  
+       
+     $VAR1 = {  
+               'load_average' => '0.08',  
+               'computer' => 'lenovo120S.private.org',  
+               'time' => 1658861671,  
+               'swap' => '0.912684819411018'  
+             };  
+       
+
+     $VAR1 = [  
+               'testing,host=lenovo120S.private.org,appid=FOO,operation=write value=0.912684819411018 1658861671000000000',  
+               'testing,host=lenovo120S.private.org,appid=BAR,operation=write value=0.912684819411018 1658861671000000000',  
+               'testing,host=lenovo120S.private.org,appid=BAZ,operation=write value=0.912684819411018 1658861671000000000'  
+             ];  
+       
+     Use of uninitialized value $content in scalar chomp at /var/www/localhost/cgi-bin/InfluxDB/Client/SimpleAlpine.pm line 224.  
+     $VAR1 = {  
+               'raw' => {  
+                          'success' => 1,  
+                          'url' => 'http://boring_williams:8086/write?db=example',  
+                          'protocol' => 'HTTP/1.1',  
+                          'headers' => {  
+                                         'x-request-id' => '955e2e99-f677-11ec-800a-0242ac110002',  
+                                         'content-type' => 'application/json',  
+                                         'x-influxdb-version' => '1.7.11',  
+                                         'x-influxdb-build' => 'OSS',  
+                                         'date' => 'Tue, 28 Jun 2022 00:16:40 GMT',  
+                                         'request-id' => '955e2e99-f677-11ec-800a-0242ac110002'  
+                                       },  
+                          'status' => 204,  
+                          'reason' => 'No Content'  
+                        },  
+               'error' => undef  
+             };  
+       
+```
+in InfluxDB  container:
+
+```sh
+influx
+```
+```sh
+use example
+show series
+```
+```text
+key
+---
+testing,appid=BAR,host=lenovo120S.private.org,operation=write
+testing,appid=BAZ,host=lenovo120S.private.org,operation=write
+testing,appid=FOO,host=lenovo120S.private.org,operation=write
+```
+```sh
+> select * from testing
+```
+```text
+name: testing
+time                appid host                   operation value
+----                ----- ----                   --------- -----
+1658861671000000000 BAR   lenovo120S.private.org write     0.912684819411018
+1658861671000000000 BAZ   lenovo120S.private.org write     0.912684819411018
+1658861671000000000 FOO   lenovo120S.private.org write     0.912684819411018
+```
 ### See Also
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
   * https://stackoverflow.com/questions/13671031/server-polling-with-angularjs
@@ -366,4 +484,5 @@ cp -R URI-5.10/lib/* cgi-bin
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 

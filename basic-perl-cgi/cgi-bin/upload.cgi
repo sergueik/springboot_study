@@ -89,7 +89,6 @@ cgi {
 
                     # get timestamp from payload data. For testing only
                     # Sun Jun 26 18:54:31 EDT 2022
-                    $data->{date} = 'Sun Jun 26 18:54:31 EDT 2022';
 
                     (
                         undef, $month_alpha, $mday, $hour, $min, $sec, undef,
@@ -136,6 +135,39 @@ cgi {
                         port     => $port,
                         protocol => 'tcp'
                     ) or die "Can't instantiate client";
+
+                    my $time_seconds   = $metrics->{time};
+                    my $timestamp      = $time_seconds . '000000000';
+                    my $reporting_host = $metrics->{computer};
+                    my $field_set      = 'value='.$metrics->{swap};
+                    my $appid_tag;
+                    my $tag_set;
+                    my $measurements = [];
+                    foreach $appid_tag ( split( /,/, $appid ) ) {
+                        $tag_set =
+"host=${reporting_host},appid=${appid_tag},operation=write";
+                        push(
+                            @$measurements,
+                            (
+                                $now
+                                ? "${measurement},${tag_set} ${field_set}"
+                                : "${measurement},${tag_set} ${field_set} ${timestamp}"
+                            )
+                        );
+                    }
+
+                    # Write
+                    print STDERR Dumper($measurements), $/;
+                    my $do_write = 1;
+                    if ($do_write) {
+                        my $result = $client->write(
+                            $measurements,
+                            database  => $database,
+                            precision => $precision
+                        );
+                        print STDERR Dumper($result), $/;
+
+                    }
 
                     # TODO: implement original processing:
                     # print to some local file handle
