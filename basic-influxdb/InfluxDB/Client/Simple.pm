@@ -72,12 +72,11 @@ sub debug {
 sub ping {
     my ($self) = @_;
 
-    # my $uri      = $self->_get_influxdb_http_api_uri('ping');
+    my $uri = $self->_get_influxdb_http_api_uri('ping');
+
     # 'http://localhost:8086/ping'
 
-    # my $response = $self->{lwp_user_agent}->head( $uri->canonical() );
-    my $response = $self->{lwp_user_agent}
-      ->head( "http://" . $self->{host} . ":" . $self->{port} . "/ping" );
+    my $response = $self->{lwp_user_agent}->head( $uri->canonical() );
     print STDERR Dumper( \$response ) if $self->{debug};
     if ( !$response->is_success() ) {
         my $error = $response->message();
@@ -125,8 +124,7 @@ sub query {
     );
     print STDERR Dumper( $uri->canonical() ) if $self->{debug};
 
-# "http://". $self->{host} . ":" . $self->{port} .  "/query?" +
-# 'q=SELECT+*+FROM+testing' + '&' + 'db=' + $args{'database'} + '&'+ 'epoch=' . $args{epoch}
+# "http://". $self->{host} . ":" . $self->{port} .  "/query?" + 'q=SELECT+*+FROM+testing' + '&' + 'db=' + $args{'database'} + '&'+ 'epoch=' . $args{epoch}
     my $response = $self->{lwp_user_agent}->post( $uri->canonical() );
 
     chomp( my $content = $response->content() );
@@ -137,7 +135,7 @@ sub query {
         local $@;
         my $data = eval {
             print STDERR 'Raw content' . $/ if $self->{debug};
-            print STDERR Dumper($content) if $self->{debug};
+            print STDERR Dumper($content)   if $self->{debug};
             my $result = $json_pp->decode($content);
             print STDERR 'Decoded content' . $/ if $self->{debug};
             print STDERR Dumper($result) if $self->{debug};
@@ -145,12 +143,6 @@ sub query {
         };
         $error = $@;
 
-# NOTE: seen error when calling ->decode_json() instead of ->decode()
-# "malformed JSON string, neither array, object, number, string or atom, at character offset 0 (before "JSON::PP=HASH(0x1fb2...")
-
- # print $error;
- # arising from trouble with passing $self into the subroutine
- # It indicates that ->decode_json() is not, and ->decode () is the class method
         if ($data) {
             $error = $data->{error};
         }
@@ -195,28 +187,23 @@ sub write {
 
     if ( $self->{protocol} eq 'tcp' ) {
 
-        # my $uri = $self->_get_influxdb_http_api_uri('write');
+        my $uri = $self->_get_influxdb_http_api_uri('write');
 
-# $uri->query_form( db => $database,
-#                  ( $precision        ? ( precision => $precision )        : () ),
-#                  ( $retention_policy ? ( rp        => $retention_policy ) : () )
-# );
+        $uri->query_form(
+            db => $database,
+            ( $precision        ? ( precision => $precision )        : () ),
+            ( $retention_policy ? ( rp        => $retention_policy ) : () )
+        );
 
-        # print STDERR Dumper( $uri->canonical() );
+        print STDERR Dumper( $uri->canonical() ) if $self->{debug};
+
         # "http://${host}:${port}/write?db=${database}"
         print STDERR Dumper( { Content => $measurement } ) if $self->{debug};
 
-# NOTE: $measurement is composed by the caller e.g.
-# "${metric},host=${reporting_host},env=${environment} value=${value}"
-# my $response = $self->{lwp_user_agent}->post( $uri->canonical(), Content => $measurement );
-        my $response = $self->{lwp_user_agent}->post(
-            "http://"
-              . $self->{host} . ":"
-              . $self->{port}
-              . "/write?" . "db="
-              . $database,
-            Content => $measurement
-        );
+        # NOTE: $measurement is composed by the caller e.g.
+        # "${metric},host=${reporting_host},env=${environment} value=${value}"
+        my $response = $self->{lwp_user_agent}
+          ->post( $uri->canonical(), Content => $measurement );
 
         chomp( my $content = $response->content() );
 
@@ -267,7 +254,9 @@ sub send_data {
     my %options     = @_;
 
     print STDERR Dumper($fields) if $self->{debug};
-    print STDERR Dumper("_line_protocol: " . _line_protocol( $measurement, $tags, $fields, $timestamp )) if $self->{debug};  
+    print STDERR Dumper( "_line_protocol: "
+          . _line_protocol( $measurement, $tags, $fields, $timestamp ) )
+      if $self->{debug};
 
     return $self->write(
         _line_protocol( $measurement, $tags, $fields, $timestamp ), %options );
@@ -278,18 +267,9 @@ sub send_data {
 sub _get_influxdb_http_api_uri {
     my ( $self, $endpoint ) = @_;
 
-    die "Missing argument 'endpoint'" if !$endpoint;
+    die 'Missing argument "endpoint"' if !$endpoint;
 
-    my $uri = {
-        scheme => 'http',
-        host   => $self->{host},
-        port   => $self->{port},
-        path   => $endpoint
-    };
-    print STDERR Dumper( \$uri ) if $self->{debug};
-
-    #    my
-    $uri = URI->new();
+    my $uri = URI->new();
 
     $uri->scheme('http');
     $uri->host( $self->{host} );
@@ -322,6 +302,7 @@ sub _format_value {
         $v =~ s/(["\\])/\\$1/g;
         $v = '"' . $v . '"';
     }
+
     return $v;
 }
 
@@ -356,11 +337,11 @@ sub _line_protocol {
     my $field_string = join( ',', @fields );
 
     if ($timestamp) {
-        return sprintf( "%s,%s %s %s",
+        return sprintf( '%s,%s %s %s',
             $measurement, $tag_string, $field_string, $timestamp );
     }
     else {
-        return sprintf( "%s,%s %s", $measurement, $tag_string, $field_string );
+        return sprintf( '%s,%s %s', $measurement, $tag_string, $field_string );
     }
 }
 

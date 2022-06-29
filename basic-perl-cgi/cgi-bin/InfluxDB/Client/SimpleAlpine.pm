@@ -34,6 +34,7 @@ sub new {
         host     => $host,
         port     => $port,
         protocol => $protocol,
+        debug    => 0,
         options  => { database => $args{database} }
     };
 
@@ -71,16 +72,13 @@ sub debug {
 sub ping {
     my ($self) = @_;
 
-    # my $uri      = $self->_get_influxdb_http_api_uri('ping');
+    my $uri = $self->_get_influxdb_http_api_uri('ping');
+
     # 'http://localhost:8086/ping'
 
-    # my $response = $self->{lwp_user_agent}->head( $uri->canonical() );
     my $response =
-      $self->{agent}->request( 'HEAD',
-        'http://' . $self->{host} . ':' . $self->{port} . '/ping' );
+      $self->{agent}->request( 'HEAD', $uri->canonical() );
 
-    #    my $response = $self->{lwp_user_agent}
-    #      ->head( 'http://' . $self->{host} . ':' . $self->{port} . '/ping' );
     if ( !$response->{success} ) {
         my $error = $response->{reason};
         return {
@@ -89,9 +87,9 @@ sub ping {
             version => undef,
         };
     }
-    print Dumper $response->{headers} if $self->{debug};
+    print STDERR Dumper $response->{headers} if $self->{debug};
     my $version = $response->{headers}->{'x-influxdb-version'};
-    print "VERSION: ${version}", $/ if $self->{debug};
+    print STDERR "VERSION: ${version}" . $/ if $self->{debug};
     return {
         raw     => $response,
         error   => undef,
@@ -115,7 +113,8 @@ sub query {
     if ( ref($query) eq 'ARRAY' ) {
         $query = join( ';', @$query );
     }
-    print Dumper( \$query );
+
+    print STDERR Dumper( \$query ) if $self->{debug};
 
     my $uri = $self->_get_influxdb_http_api_uri('query');
 
@@ -125,10 +124,9 @@ sub query {
         ( $chunk_size ? ( chunk_size => $chunk_size ) : () ),
         ( $epoch      ? ( epoch      => $epoch )      : () )
     );
-    print Dumper( $uri->canonical() ) if $self->{debug};
+    print STDERR Dumper( $uri->canonical() ) if $self->{debug};
 
 # 'http://'. $self->{host} . ':' . $self->{port} .  '/query?' + 'q=SELECT+*+FROM+testing' + '&' + 'db=' + $args{'database'} + '&'+ 'epoch=' . $args{epoch}
-# my $response = $self->{lwp_user_agent}->post( $uri->canonical() );
 
     my $response = $self->{agent}->request( 'POST', $uri->canonical(), {} );
 
@@ -140,8 +138,8 @@ sub query {
         local $@;
         my $data = eval {
             if ( $self->{debug} ) {
-                print 'processing response content' . "\n";
-                print Dumper($content);
+                print STDERR 'processing response content' . $/;
+                print STDERR Dumper($content);
             }
             my $result = $json_pp->decode($content);
             return $result;
@@ -155,7 +153,7 @@ sub query {
         if ( !$error ) {
             $data->{request_id} = $response->{headers}->{'request-id'};
 
-            print Dumper($data) if $self->{debug};
+            print STDERR Dumper($data) if $self->{debug};
 
             return {
                 raw   => $response,
@@ -193,39 +191,27 @@ sub write {
 
     if ( $self->{protocol} eq 'tcp' ) {
 
-        # my $uri = $self->_get_influxdb_http_api_uri('write');
+        my $uri = $self->_get_influxdb_http_api_uri('write');
 
-        # TODO: use original code
-        #
-        # $uri->query_form(
-        #     db => $database,
-        #     ( $precision        ? ( precision => $precision )        : () ),
-        #     ( $retention_policy ? ( rp        => $retention_policy ) : () )
-        # );
-
-        # print Dumper( $uri->canonical() );
-        # "http://${host}:${port}/write?db=${database}"
-        print Dumper( { Content => $measurement } ) if $self->{debug};
-
-# NOTE: $measurement is composed by the caller e.g.
-# "${metric},host=${reporting_host},env=${environment} value=${value}"
-# my $response = $self->{lwp_user_agent}->post( $uri->canonical(), Content => $measurement );
-        my $response = $self->{agent}->request(
-            'POST',
-            'http://'
-              . $self->{host} . ':'
-              . $self->{port}
-              . '/write?' . 'db='
-              . $database,
-
-            , { 'content' => $measurement }
+        $uri->query_form(
+            db => $database,
+            ( $precision        ? ( precision => $precision )        : () ),
+            ( $retention_policy ? ( rp        => $retention_policy ) : () )
         );
+
+        # print STDERR Dumper( $uri->canonical() );
+        # "http://${host}:${port}/write?db=${database}"
+        print STDERR Dumper( { Content => $measurement } ) if $self->{debug};
+
+        # NOTE: $measurement is composed by the caller e.g.
+        # "${metric},host=${reporting_host},env=${environment} value=${value}"
+        my $response = $self->{agent}->post( $uri->canonical(), { 'content' => $measurement });
 
         chomp( my $content = $response->{content} );
 
         if ( $response->{status} != 204 ) {
             local $@;
-            print Dumper($content) if $self->{debug};
+            print STDERR Dumper($content) if $self->{debug};
             our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
             my $data = eval { $json_pp->decode($content) };
             my $error = $@;
@@ -266,6 +252,11 @@ sub send_data {
     my $timestamp   = shift;
     my %options     = @_;
 
+    print STDERR Dumper($fields) if $self->{debug};
+    print STDERR Dumper( "_line_protocol: "
+          . _line_protocol( $measurement, $tags, $fields, $timestamp ) )
+      if $self->{debug};
+
     return $self->write(
         _line_protocol( $measurement, $tags, $fields, $timestamp ), %options );
 
@@ -283,7 +274,7 @@ sub _get_influxdb_http_api_uri {
     $uri->host( $self->{host} );
     $uri->port( $self->{port} );
     $uri->path($endpoint);
-    print Dumper( \$uri ) if $self->{debug};
+    print STDERR Dumper( \$uri ) if $self->{debug};
     return $uri;
 }
 
