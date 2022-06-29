@@ -843,9 +843,12 @@ using presision NANOSECONDS
 
 ### See Also
 
-   * introductory [documentation](https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/)
-   * influxdb query language [documentation](https://docs.influxdata.com/influxdb/v1.7/query_language/)
-   * advanced  InfluxDB client [module](https://metacpan.org/pod/InfluxDB) on CPAN
+   * introductory [documentation](https://docs.influxdata.com/influxdb/v1.8/introduction/get-started)
+   * [Prometheus vs. InfluxDB: A Monitoring Comparison](https://logz.io/blog/prometheus-influxdb/). Note, while the difference in default data ingestion mode (push for InfluxDB, pull for Prometheus) and in query DSLs (PromQL  of Prometheus, FLUx and InfluxQL of InfluxDB) mentioned - no detailed analyzis in this article
+   * [Prometheus endpoints support in InfluxDB](https://www.influxdata.com/integration/prometheus-monitoring-tool/)
+   * [article](https://www.influxdata.com/blog/influxdb-now-supports-prometheus-remote-read-write-natively/) stating the key differences between the Prometheus and InfluxDB in a somewhat advanced language: *Prometheus server is focused squarely on metrics data and is meant to be an ephemeral pull-based store and monitoring system. Meanwhile, InfluxDB is focused on time series (metrics and events) and is meant to be used either as an ephemeral data store or as a store of record for data that lives forever* ...
+   * InfluxQL - the InfluxDB query language [documentation](https://docs.influxdata.com/influxdb/v1.7/query_language/)
+   * advanced InfluxDB client [module](https://metacpan.org/pod/InfluxDB) on CPAN
    * InfluxDB `LineProtocol` [tutorial](https://docs.influxdata.com/influxdb/v1.8/write_protocols/line_protocol_tutorial/)
    * Prometheus endpoint provided by influxdb [documentation](https://docs.influxdata.com/influxdb/v1.8/supported_protocols/prometheus/)
    * https://github.com/JonasProgrammer/docker-influxdb
@@ -861,6 +864,8 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
   * [querying v 1.7](https://docs.influxdata.com/influxdb/v1.7/guides/querying_data/)
   * docker [formating arguments](https://docs.docker.com/config/formatting/) 
   * [influx 2.x API via Postman](https://www.influxdata.com/blog/getting-started-influxdb-2-0-api-postman/) - not quite working in Postman (variables are not propagated into steps) but the details of the requests can be useful with curl Perl or Powershell client examples
+  * [prometheus/influxdb_exporter](https://github.com/prometheus/influxdb_exporter) - source tree of standalone app appearing to __Influx Telegraf__ [metric colector]() as a regular InfluxDB server server that accepts the InfluxDB time series metrics via the HTTP API and exports them via HTTP for Prometheus consumption, capable of preserving the original timestamps of the metric. The [images link](https://hub.docker.com/r/prom/influxdb-exporter). Apparently does not push data on its own. Most importantly does not allow pushing more than a single metric for every unique metric name and labels combination, thus making it impossible to bulk load histories
+  * [prometheus remote read and remote write](https://prometheus.io/docs/operating/integrations/) and example [project](https://github.com/prometheus/prometheus/tree/release-2.36/documentation/examples/remote_storage/example_write_adapter)  and [source](https://github.com/prometheus/prometheus/blob/release-2.36/documentation/examples/remote_storage/remote_storage_adapter/influxdb/client.go)
 
 
 ### Youtube Links
@@ -879,6 +884,7 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
   * [intro](https://tproger.ru/translations/influxdb-guide/) to Time Series and InfluxDB (in Russian)
   * [migration from Influx v1 to v2](https://www.sqlpac.com/en/documents/influxdb-migration-procedure-v1-v2.html)
   * [influxdata channel](https://www.youtube.com/channel/UCnrgOD6G0y0_rcubQuICpTQ)
+  * [Integrating Prometheus and InfluxDB - Paul Dix, InfluxData](https://www.youtube.com/watch?v=6UjVX-RTFmo) - mentions but not elaborates on remote Prometheus read/write API ?
   
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
