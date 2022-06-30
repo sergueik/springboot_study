@@ -1,0 +1,12 @@
+scrape_configs:
+  - job_name:       'influx_exporter'
+
+    scrape_interval: 1s
+    metrics_path: /metrics
+    honor_labels: true
+
+    static_configs:
+      - targets: ['influx_exporter:9122']
+        labels:
+          group: 'influx_exporter'
+
