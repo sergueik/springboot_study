@@ -11,18 +11,47 @@ import java.util.concurrent.TimeUnit;
 
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
-
+import org.influxdb.dto.BatchPoints;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Pong;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
 import org.influxdb.dto.QueryResult.Result;
 import org.influxdb.dto.QueryResult.Series;
-import org.influxdb.dto.BatchPoints;
 
 public class App {
 
+	public static void testTimestampEpoch() {
+		long timestamp;
+		String strDate;
+		String pattern;
+		strDate = "Jun 13 2003 23:11:52.454 UTC";
+		pattern = "MMM dd yyyy HH:mm:ss.SSS zzz";
+		timestamp = Utils.dateToEpoch(strDate, pattern);
+		System.err
+				.println(String.format("date: %s timestamp: %d", strDate, timestamp));
+		// 1055545912454
+		strDate = "Thu Jun 30 13:52:59 EDT 2022";
+		strDate = "Fri Jul 1 13:52:59 EDT 2022";
+		// d or dd?
+		// dd fails with single digit
+		// Exception in thread "main" java.time.format.DateTimeParseException:
+		// Text 'Fri Jul 21 13:52:59 EDT 2022' could not be parsed at index 8
+		// d does not fail with double
+		pattern = "EEE MMM d HH:mm:ss zzz yyyy";
+		timestamp = Utils.dateToEpoch(strDate, pattern);
+		System.err
+				.println(String.format("date: %s timestamp: %d", strDate, timestamp));
+		// Exception in thread "main" java.time.format.DateTimeParseException:
+		// Text 'Fri Jul 1 13:52:59 EDT 2022' could not be parsed at index 0
+
+		// return;
+
+	}
+
 	public static void main(String args[]) throws UnknownHostException {
+		testTimestampEpoch();
+
 		String host = "http://192.168.0.29:8086";
 		String user = "user";
 		String pw = "password";
@@ -42,13 +71,15 @@ public class App {
 		Point point = Point.measurement(seriesName).tag("atag", "test")
 				.field("idle", 90L).field("usertime", 9L).field("system", 1L).build();
 
-		// org.influxdb.dto.Point.Builder.time(Long timeToSet, TimeUnit precisionToSet)
+		// org.influxdb.dto.Point.Builder.time(Long timeToSet, TimeUnit
+		// precisionToSet)
 		point = Point.measurement(seriesName)
 				.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
 				.addField("idle", 90L).addField("usertime", 9L).addField("system", 1L)
 				.build();
-		// NO need to set precision during the write operation: already done in Point builder
-		
+		// NO need to set precision during the write operation: already done in
+		// Point builder
+
 		influxDB.write(point);
 		// NOTE: Enable Gzip compress for http request body
 		// is also possile, not tested
@@ -98,5 +129,6 @@ public class App {
 			}
 		}
 		influxDB.close();
+
 	}
 }

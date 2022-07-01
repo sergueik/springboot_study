@@ -8,7 +8,12 @@ If switched to InfluxDB __2.x__ the only difference for [data ingestion command]
 will be in the `org` and `bucket` in the url instead of the `database` query param and presence of the authoriaation token header
 
 ```sh
-curl -v --request POST "http://localhost:8086/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8"  --header "Accept: application/json"  --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
+export TOKEN=$(cat token.txt)
+export ORG=testorg
+export BUCKET=testbucket
+export BASE_URL="http://192.168.0.92:8086"
+export TIMESTAMP=$(perl -MTime::HiRes -e 'use Time::HiRes qw( gettimeofday); my ( $seconds, $microseconds ) = gettimeofday(); print $seconds . $microseconds ,"000", $/;')
+curl -v --request POST "$BASE_URL/api/v2/write?org=$ORG&bucket=$BUCKET&precision=ns" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8"  --header "Accept: application/json"  --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1656351627692598'
 ```
 
 ```text
@@ -28,6 +33,37 @@ curl -v --request POST "http://localhost:8086/api/v2/write?org=$ORG&bucket=$BUCK
 
 ```
 NOTE - above command is just [example from documentation](https://docs.influxdata.com/influxdb/v2.0/write-data/developer-tools/api/) - not tested in current project
+
+for the nanosecond-precision timestamp use the Perl one-liner
+
+```sh
+perl -MTime::HiRes -e 'use Time::HiRes qw( gettimeofday); my ( $seconds, $microseconds ) = gettimeofday(); print $seconds . $microseconds , "000", $/;'
+```
+
+if the credentials are not accepted (e.g. after the loss of the container)
+[reset the password](https://docs.influxdata.com/influxdb/v2.3/reference/cli/influx/user/password/)
+```sh
+influx user password --name testuser --password password
+```
+or just recreate the container (the initial login will be redirected to `http://192.168.0.29:8086/onboarding/0`)
+
+
+* [InfluxDB](https://metacpan.org/pod/InfluxDB) CPAN module also implements the InfluxDB query and write, accesps `username ` and `password `
+* [AnyEvent::InfluxDB](https://metacpan.org/pod/AnyEvent::InfluxDB) module recognizes and supports JWT token
+
+
+From the client module all it takes is pass the 
+
+token in the `Authorization` header
+```perl
+if ($self->{token}) {
+        $args{headers}->{Authorization} = 'Authorization: Token '. $self->{token};
+    }
+```    
+    provide `org` and `bucket` instead of  `db`
+    and change the URL path from `/write` to
+        '/api/v2/write' 
+    
 
 
 Note, this build allows operating via REST (but not WEB) interface:
@@ -288,29 +324,34 @@ docker run -d -p 8086:8086 influxdb:2.2.0-alpine
 With __2.x__ need to start in web interface `http://192.168.0.29:8086/`:
 
 ![setup Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-initial-setup.png)
-```
+
 
 Continue with configuring the connection to "Getting Started", "Data", "API Tokens":
 ![API Token Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-api-token.png)
 
 Save the token and use in curl command above
 ```text
-IEcK-AQfzWBexzV2D6jIabZY9kj6cQHq5qaNd8MNCEuen8P17SLMUV08GVKeYq5hA0a1E0hTPkaL65W8qBTWUA==
+> token.txt  cat
+Bg8vhiRXDFDthyQpOKFvvfnZ8y2t07bTs9pSRjOwMOlJ0x8GURacteQaZ0h0eARTSL4bmaaFNdYNwNps2hTbWw==
+^D
 ```
 it looks like base64 encoded text, but `base64` reports an error decoding it.
 ```sh
 export TOKEN=$(cat token.txt)
 export ORG=testuser
 export BUCKET=testbucket
-curl -v --request POST "http://localhost:8086/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8"  --header "Accept: application/json"  --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
+export BASE_URL="http://192.168.0.92:8086"
+curl -v --request POST "$BASE_URL/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8" --header "Accept: application/json" --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
 ```
 ```sh
-export BASE_URL="http://192.168.0.92:8086"
-curl -v --request POST "$BASE_URL/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8"  --header "Accept: application/json"  --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
-```
-```
 export JQ=/c/tools/jq-win64.exe
+```
+or
+```sh
+export JQ=jq
 
+```
+```sh
 curl -v --request GET --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8" "$BASE_URL/api/v2/buckets" | $JQ '.buckets[].name'
 ```
 
@@ -323,7 +364,7 @@ will return user and system buckets:
 ```
 The query
 ```sh
-curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Authorization: Token $TOKEN"  -d '{"query": "from(bucket: \"testbucket\")\n  |> range(start: 1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == measurment)\n  |> filter(fn: (r) => r[\"_field\"] == \"load\" )\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")"}'
+curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Authorization: Token $TOKEN" -d '{"query": "from(bucket: \"testbucket\")\n  |> range(start: 1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == measurment)\n  |> filter(fn: (r) => r[\"_field\"] == \"load\" )\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")"}'
 ```
 is returning 
 ```JSON
@@ -338,9 +379,12 @@ ts=2022-06-25T01:19:03.717302Z lvl=warn msg="internal error not returned to clie
 This is solved by examining the appplication source code [here](https://github.com/influxdata/influxdb/blob/master/http/query.go#L26) and [here](https://github.com/influxdata/influxdb/blob/master/http/query.go#L136) and adding the JSON parameter `"type":"flux"` in the body
 
 ```sh
-curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Authorization: Token $TOKEN"  -d '{"type": "flux", "query": "from(bucket: \"testbucket\")\n  |> range(start: 1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == measurment)\n  |> filter(fn: (r) => r[\"_field\"] == \"load\" )\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")"}'
+curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Authorization: Token $TOKEN" -d '{"type": "flux", "query": "from(bucket: \"testbucket\")\n  |> range(start: 1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == measurment)\n  |> filter(fn: (r) => r[\"_field\"] == \"load\" )\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")"}'
 ```
 
+```
+curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Authorization: Token $TOKEN" -d '{"type": "flux", "query": "from(bucket: \"testbucket\")"}'
+```
 The response, though no longer an internal server error is still empty:
 ```JSON
 {"errors":[]}
@@ -486,6 +530,34 @@ time       appid env host       operation value
 1655256774 BAR   UAT sergueik71 send      42
 ...
 ```
+
+### Dummy Data Ingestion
+
+Lainch Grafana container linked to Influx DB one and inges some data with recognizable shape:
+
+```sh
+for cnt in $(seq 0 1 30 ); do export VALUE=$(expr $cnt \* $cnt ); echo $VALUE ; sleep 5 ; perl -I . ingest.pl -value $VALUE -now; done
+```
+and query it from Grafana via InfluxDB Data Source
+
+![setup Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-influxdb-datasource.png)
+using the query
+
+```SQL
+SELECT "value" FROM "measurement" WHERE ("appid" = 'FOO' AND "operation" = 'send') GROUP BY time(10m) ORDER BY time DESC
+```
+will see
+
+![Data In Grafana](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-data-grafana.png)
+NOTE: if the timestamp  were incorrectly formatted during data ingestion you may see Grafana complain `Data outside time rannge` and suggest `zoom to data`. After this done, see series and note the `1969-12-31` date in the range 
+
+To make script ingest the timestamps, modify the loop to be
+```sh
+for cnt in $(seq 0 1 30 ); do export VALUE=$(expr $cnt \* $cnt ); echo $VALUE ; sleep 5 ; perl -I . ingest.pl -precision ns -value $VALUE; done
+```
+NOTE: it still appears to not provide time in the right format, and the same quwry as earlier, shows no data. therefore modified it to  generate the nanosecond-precision timestamp by appending 9 zeros to unix epoch. No other precision apprar working atm.
+
+
 ### Spring Java Client
 ```cmd
 mvn spring-boot:run
@@ -575,10 +647,10 @@ measurement|,tag_set| |field_set| |timestamp
 
 ### Example Using Perl to Nanosecond Timestamp
 ```sh
-perl -MTime::HiRes -e 'use Time::HiRes qw( gettimeofday); my ($s, $n) = gettimeofday(); print $s.$n. $/;my $t = time(); print $t. $/'
+perl -MTime::HiRes -e 'use Time::HiRes qw( gettimeofday); my ($sec, $mil) = gettimeofday(); print $sec.$mil."000". $/;my $t = time(); print $t. $/'
 ```
 ```text
-1655244130852723
+1655244130852723000
 1655244130
 ```
 ### Observed Defects
@@ -641,7 +713,7 @@ V1655256772          BAR   UAT sergueik71      write                            
 
 To fix this itis sufficient to get to default precision when ingesting the data :
 ```sh
-perl -I . test.pl  -precision ns
+perl -I . ingest.pl  -precision ns
 ```
 and provising similar argument in the query (it is called `epoch` there):
 ```sh
@@ -745,6 +817,28 @@ you will need to paste the value of `$IMAGE` in the command run in the container
 ```sh
 perl -I . ingest-alpine.pl  -precision ns -host $IMAGE
 ```
+### Time Stamp Tool
+it is important to send Line Protocol data with nanosecond-precision time otherwise
+Grafana may auto zoom one to January 1970:
+
+![setup Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-bad-timestamp-indicator.png)
+
+```sh
+perl nanosecond_convertor.pl  -debug -precision s -timestamp "$(date)"
+```
+```text
+use caller provided timestamp Tue Jun 28 17:50:40 EDT 2022
+timestamp:
+1656453040000000000
+```
+```sh
+perl nanosecond_convertor.pl  -debug -precision ns
+```
+```text
+generating timestamp
+using presision NANOSECONDS
+1656453065000000000
+```
 ### influxd.exe on Windows
 * server
 
@@ -758,6 +852,11 @@ perl -I . ingest-alpine.pl  -precision ns -host $IMAGE
    * introductory [documentation](https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/)
    * influxdb query language [documentation](https://docs.influxdata.com/influxdb/v1.7/query_language/)
    * advanced  InfluxDB client [module](https://metacpan.org/pod/InfluxDB) on CPAN
+   * [Prometheus vs. InfluxDB: A Monitoring Comparison](https://logz.io/blog/prometheus-influxdb/). Note, while the difference in default data ingestion mode (push for InfluxDB, pull for Prometheus) and in query DSLs (PromQL  of Prometheus, FLUx and InfluxQL of InfluxDB) mentioned - no detailed analyzis in this article
+   * [Prometheus endpoints support in InfluxDB](https://www.influxdata.com/integration/prometheus-monitoring-tool/)
+   * [article](https://www.influxdata.com/blog/influxdb-now-supports-prometheus-remote-read-write-natively/) stating the key differences between the Prometheus and InfluxDB in a somewhat advanced language: *Prometheus server is focused squarely on metrics data and is meant to be an ephemeral pull-based store and monitoring system. Meanwhile, InfluxDB is focused on time series (metrics and events) and is meant to be used either as an ephemeral data store or as a store of record for data that lives forever* ...
+   * InfluxQL - the InfluxDB query language [documentation](https://docs.influxdata.com/influxdb/v1.7/query_language/)
+   * advanced InfluxDB client [module](https://metacpan.org/pod/InfluxDB) on CPAN
    * InfluxDB `LineProtocol` [tutorial](https://docs.influxdata.com/influxdb/v1.8/write_protocols/line_protocol_tutorial/)
    * Prometheus endpoint provided by influxdb [documentation](https://docs.influxdata.com/influxdb/v1.8/supported_protocols/prometheus/)
    * https://github.com/JonasProgrammer/docker-influxdb
@@ -773,6 +872,10 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
   * [querying v 1.7](https://docs.influxdata.com/influxdb/v1.7/guides/querying_data/)
   * docker [formating arguments](https://docs.docker.com/config/formatting/) 
   * [nightly influxDB 1.7 build for windows 10 x64](https://dl.influxdata.com/influxdb/nightlies/influxdb-nightly_windows_amd64.zip) and how to install InfluxDB in Windows [stackoverflow discussion](https://stackoverflow.com/questions/26116711/how-to-install-influxdb-in-windows/30127377#30127377) - it runs in foreground on Windows and can be used for testing only
+  * [influx 2.x API via Postman](https://www.influxdata.com/blog/getting-started-influxdb-2-0-api-postman/) - not quite working in Postman (variables are not propagated into steps) but the details of the requests can be useful with curl Perl or Powershell client examples
+  * [prometheus/influxdb_exporter](https://github.com/prometheus/influxdb_exporter) - source tree of standalone app appearing to __Influx Telegraf__ [metric colector]() as a regular InfluxDB server server that accepts the InfluxDB time series metrics via the HTTP API and exports them via HTTP for Prometheus consumption, capable of preserving the original timestamps of the metric. The [images link](https://hub.docker.com/r/prom/influxdb-exporter). Apparently does not push data on its own. Most importantly does not allow pushing more than a single metric for every unique metric name and labels combination, thus making it impossible to bulk load histories
+  * [prometheus remote read and remote write](https://prometheus.io/docs/operating/integrations/) and example [project](https://github.com/prometheus/prometheus/tree/release-2.36/documentation/examples/remote_storage/example_write_adapter)  and [source](https://github.com/prometheus/prometheus/blob/release-2.36/documentation/examples/remote_storage/remote_storage_adapter/influxdb/client.go)
+  * [guide to DateTimeFormatter](https://www.baeldung.com/java-datetimeformatter) 
 
 
 ### Youtube Links
@@ -790,7 +893,8 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
   * https://github.com/ypvillazon/spring-boot-metrics-to-influxdb
   * [intro](https://tproger.ru/translations/influxdb-guide/) to Time Series and InfluxDB (in Russian)
   * [migration from Influx v1 to v2](https://www.sqlpac.com/en/documents/influxdb-migration-procedure-v1-v2.html)
-  * [influx 2.x API via Postman](https://www.influxdata.com/blog/getting-started-influxdb-2-0-api-postman/) - not quite working in Postman (variables are not propagated into steps) but the details of the requests can be useful with curl Perl or Powershell client examples
+  * [influxdata channel](https://www.youtube.com/channel/UCnrgOD6G0y0_rcubQuICpTQ)
+  * [Integrating Prometheus and InfluxDB - Paul Dix, InfluxData](https://www.youtube.com/watch?v=6UjVX-RTFmo) - mentions but not elaborates on remote Prometheus read/write API ?
   
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
