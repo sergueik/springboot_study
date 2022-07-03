@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?> <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>io.prometheus</groupId>
-  <artifactId>simpleclient</artifactId>
+  <groupId>example</groupId>
+  <artifactId>prometheus-simpleclient</artifactId>
   <packaging>jar</packaging>
-  <name>simpleclient</name>
-  <version>0.16.1-SNAPSHOT</version><!-- keep upstream version value -->
-  <description>Core instrumentation library for the simpleclient</description>
+  <name>prometheus-simpleclient</name>
+  <version>0.1.0-SNAPSHOT</version><!-- keep upstream version value -->
+  <description>replica of core instrumentation library for the simpleclient</description>
   <properties>
     <java.version>1.8</java.version>
 	    <!-- NOTE: has to specify to prevent ystem environment variable from being used ... : invalid target release: 1.8.0_101 -->
