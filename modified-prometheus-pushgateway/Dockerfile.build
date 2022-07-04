@@ -10,7 +10,6 @@ WORKDIR /build
 ADD api .
 ADD asset .
 ADD handler .
-ADD resources .
 ADD storage .
 ADD testutil .
 
