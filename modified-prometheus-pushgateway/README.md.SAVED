@@ -1,0 +1,10 @@
+### Info
+
+replica of [prometheus/pushgateway](https://github.com/prometheus/pushgateway) source to add the `timestamps` and expiration(to have a shorter name) option similar to existing in [prometheus/influxdb_exporter](https://github.com/prometheus/influxdb_exporter) to allog ephemeral jobs to enforce the timestamp of data points
+### Note
+
+* using commit hash `b7e0167e9574f4f88404dde9653ee1d3c940f2eb` to prevent upgrading to `golang` __17__.
+
+* the build process is extremely time consuming
+
+

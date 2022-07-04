@@ -1,0 +1,22 @@
+FROM basic-builder
+
+ENV GOOS=linux
+ENV GOARCH=amd64
+# ENV CGO_ENABLED=0
+ENV GO111MODULE=on
+
+WORKDIR /build
+# add directories recursively
+ADD api .
+ADD asset .
+ADD handler .
+ADD resources .
+ADD storage .
+ADD testutil .
+
+# copy the main.go last
+COPY . .
+# build unmodified prometheus pushgateway example
+RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example main.go
+
+

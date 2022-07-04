@@ -1,0 +1,10 @@
+FROM alpine:3.9.5
+RUN apk update 
+WORKDIR /
+ARG APP='example'
+COPY $APP /
+WORKDIR /
+RUN echo "#!/bin/sh" | tee /tmp/all_arguments.sh; \
+    echo "VAR=\"\$@\"; /$APP \$VAR" | tee -a /tmp/all_arguments.sh; \
+    chmod +x /tmp/all_arguments.sh
+ENTRYPOINT [ "/tmp/all_arguments.sh" ]
