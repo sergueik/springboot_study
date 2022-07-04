@@ -278,6 +278,21 @@ func (c *influxDBCollector) Collect(ch chan<- prometheus.Metric) {
 		)
 
 		if *exportTimestamp {
+      // relies on prometheus golang client in wrapping the already constructed metric instance with new timestamp
+      // which simply adds one time member variable to Metric derived type
+      // https://github.com/prometheus/client_golang/blob/main/prometheus/metric.go#L136
+      // type timestampedMetric struct {
+      //   Metric
+      //   t time.Time
+      // }
+      // then adds the result to the static page on metricsPath endpoint
+      // and defines an  Write  override with directly accessing protobuf'sample
+      // github.com/golang/protobuf/proto
+      // https://github.com/prometheus/client_golang/blob/main/prometheus/metric.go#L161
+      // TimestampMs = proto.Int64(m.t.Unix()*1000 + int64(m.t.Nanosecond()/1000000))
+      // https://github.com/prometheus/client_model/blob/master/go/metrics.pb.go#L519
+      // https://github.com/golang/protobuf/blob/master/proto/proto.go
+      // NewMetricWithTimestamp returns a new Metric wrapping the provided Metric in a
 			metric = prometheus.NewMetricWithTimestamp(sample.Timestamp, metric)
 		}
 		ch <- metric

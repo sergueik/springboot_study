@@ -196,7 +196,7 @@ in the opposite order, both work
   * [prometheus remote read and remote write](https://prometheus.io/docs/operating/integrations/)
   * [backfilling from OpenMetrics format](https://prometheus.io/docs/prometheus/latest/storage/#backfilling-from-openmetrics-format)
   * the `io.prometheus.client` Java adapter [source tree](https://github.com/prometheus/client_java#gauge)
-
+  * GoClipse an Eclipse [extension](https://marketplace.eclipse.org/content/goclipse)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
