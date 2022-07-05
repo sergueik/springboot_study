@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.lang.IllegalStateException;
 
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
@@ -21,12 +22,24 @@ import org.influxdb.dto.QueryResult.Series;
 
 public class App {
 
-	public static void testTimestampEpoch() {
+	private static String host = "http://192.168.0.29:8086";
+	private static String user = "user"; // not used in InfluxDB 1.x
+	private static String password = "password";// not used in InfluxDB 1.x
+	private static String databaseName = "example";
+	private static String seriesName = "testing";
+	private static InfluxDB influxDB;
+	private static Collection<Point> points = new HashSet<>();
+	private static Point point;
+	private static String metric_hostname;
+	private static Random rand = new Random();
+	private static String pattern = null;
+
+	private static void testTimestampEpoch() {
 		long timestamp;
 		String strDate;
-		String pattern;
+
 		strDate = "Jun 13 2003 23:11:52.454 UTC";
-		pattern = "MMM dd yyyy HH:mm:ss.SSS zzz";
+		pattern = "MMM d yyyy HH:mm:ss.SSS zzz";
 		timestamp = Utils.dateToEpoch(strDate, pattern);
 		System.err
 				.println(String.format("date: %s timestamp: %d", strDate, timestamp));
@@ -37,7 +50,7 @@ public class App {
 		// dd fails with single digit
 		// Exception in thread "main" java.time.format.DateTimeParseException:
 		// Text 'Fri Jul 21 13:52:59 EDT 2022' could not be parsed at index 8
-		// d does not fail with double
+		// d does not fail with two digit date
 		pattern = "EEE MMM d HH:mm:ss zzz yyyy";
 		timestamp = Utils.dateToEpoch(strDate, pattern);
 		System.err
@@ -49,30 +62,46 @@ public class App {
 
 	}
 
-	public static void main(String args[]) throws UnknownHostException {
-		testTimestampEpoch();
+	private static void importDeviceHistory(InfluxDB influxDB,
+			long[] timestamps) {
+		influxDB.setDatabase(databaseName);
+		if (!influxDB.isBatchEnabled()) {
+			try {
+				influxDB.enableBatch();
+			} catch (IllegalStateException e) {
+				System.err.println("Exception (ignored) " + e.toString());
+			}
+		}
+		System.err.println("Starting");
+		for (int i = 0; i < timestamps.length; i++) {
+			// https://www.tabnine.com/code/java/methods/org.influxdb.dto.Point$Builder/build
+			// optional tags
+			System.err.println("Adding metric point for " + timestamps[i]);
+			point = Point.measurement(seriesName)
+					.time(timestamps[i], TimeUnit.MILLISECONDS)
+					.tag("host", metric_hostname).tag("region", "region")
+					.addField("idle", 10L).addField("usertime", 10L)
+					.addField("system", 10L).build();
+			System.err.println(".");
+			points.add(point);
+		}
+		BatchPoints batchpoints = BatchPoints.builder().points(points).build();
+		influxDB.write(batchpoints);
+		System.err.println("Done");
+		influxDB.flush();
 
-		String host = "http://192.168.0.29:8086";
-		String user = "user";
-		String pw = "password";
-		String databaseName = "example";
-		String seriesName = "testing";
+	}
 
-		InfluxDB influxDB = InfluxDBFactory.connect(host, user, pw);
-		Pong pong = influxDB.ping();
-		System.err.println(pong.getVersion());
-		// clearAndCreateDatabase(influxDB, databaseName);
-		Random rand = new Random();
-		// NOTE: field method is deprecated in favor of addField
-		// https://javadoc.io/static/org.influxdb/influxdb-java/2.20/org/influxdb/InfluxDB.html
-		// https://www.tabnine.com/code/java/methods/org.influxdb.InfluxDB/write
-
+	private static void importPoint(InfluxDB influxDB) {
 		influxDB.setDatabase(databaseName);
 		Point point = Point.measurement(seriesName).tag("atag", "test")
 				.field("idle", 90L).field("usertime", 9L).field("system", 1L).build();
 
 		// org.influxdb.dto.Point.Builder.time(Long timeToSet, TimeUnit
 		// precisionToSet)
+		// NOTE: field method is deprecated in favor of addField
+		// https://javadoc.io/static/org.influxdb/influxdb-java/2.20/org/influxdb/InfluxDB.html
+		// https://www.tabnine.com/code/java/methods/org.influxdb.InfluxDB/write
 		point = Point.measurement(seriesName)
 				.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
 				.addField("idle", 90L).addField("usertime", 9L).addField("system", 1L)
@@ -80,21 +109,36 @@ public class App {
 		// NO need to set precision during the write operation: already done in
 		// Point builder
 
+		if (influxDB.isBatchEnabled()) {
+			try {
+				influxDB.disableBatch();
+			} catch (IllegalStateException e) {
+				System.err.println("Exception (ignored) " + e.toString());
+			}
+		}
 		influxDB.write(point);
-		// NOTE: Enable Gzip compress for http request body
-		// is also possile, not tested
-		influxDB.enableBatch();
-		System.err.println("Starting");
-		Collection<Point> points = new HashSet<>();
 
+	}
+
+	private static void importDeviceEphemeral(InfluxDB influxDB) {
+
+		influxDB.setDatabase(databaseName);
+		if (!influxDB.isBatchEnabled()) {
+			try {
+				influxDB.enableBatch();
+			} catch (IllegalStateException e) {
+
+			}
+		}
+		System.err.println("Starting");
 		for (int i = 0; i < 10; i++) {
 			// https://www.tabnine.com/code/java/methods/org.influxdb.dto.Point$Builder/build
 			// optional tags
 			point = Point.measurement(seriesName)
 					.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
-					.tag("host", InetAddress.getLocalHost().getHostName())
-					.tag("region", "region").addField("idle", 90L)
-					.addField("usertime", 9L).addField("system", 1L).build();
+					.tag("host", metric_hostname).tag("region", "region")
+					.addField("idle", 40L).addField("usertime", 19L)
+					.addField("system", 21L).build();
 			System.err.println(".");
 			points.add(point);
 		}
@@ -108,12 +152,35 @@ public class App {
 		// seeing in Perl Client too
 		System.err.println("Done");
 		influxDB.flush();
-		// https://javadoc.io/static/org.influxdb/influxdb-java/2.17/org/influxdb/InfluxDB.html
-		// NOTE: support of streaming queries against a database available,not
-		// tested
+
+	}
+
+	private static long[] pastTimestamps = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+			0L, 0L };
+
+	public static void generateHistory(long[] pastTimestamps) {
+		String strDate = "Fri Jul 1 13:52:59 EDT 2022";
+		// add data points in the past
+		// date -d "-1 day"
+		// NOTE: fragile - prome to
+		// Exception in thread "main" java.time.format.DateTimeParseException:
+		// Text 'Fri Jul 21 13:52:59 EDT 2022' could not be parsed at index 8
+		// d does not fail with two digit date
+		// d or dd?
+		// dd fails with single digit
+		pattern = "EEE MMM d HH:mm:ss zzz yyyy";
+		long pastTimestamp = Utils.dateToEpoch(strDate, pattern);
+		for (int i = 0; i < pastTimestamps.length; i++) {
+			pastTimestamps[i] = pastTimestamp + 100 * i;
+		}
+
+	}
+
+	private static void queryData(InfluxDB influxDB, String databaseName,
+			String queryString) {
 		influxDB.setLogLevel(InfluxDB.LogLevel.BASIC);
 
-		String queryString = "select * from testing";
+		// String queryString = "select * from testing";
 		Query query = new Query(queryString, databaseName);
 		QueryResult queryResult = influxDB.query(query);
 		List<Result> results = queryResult.getResults();
@@ -128,6 +195,30 @@ public class App {
 				System.err.println("values: " + series.getValues());
 			}
 		}
+
+	}
+
+	public static void main(String args[]) throws UnknownHostException {
+		testTimestampEpoch();
+		metric_hostname = InetAddress.getLocalHost().getHostName();
+		influxDB = InfluxDBFactory.connect(host, user, password);
+		Pong pong = influxDB.ping();
+		System.err.println(pong.getVersion());
+		// clearAndCreateDatabase(influxDB, databaseName);
+
+		importPoint(influxDB);
+		// NOTE: May Enable Gzip compress for http request body
+		// is also possile, not tested
+
+		importDeviceEphemeral(influxDB);
+		generateHistory(pastTimestamps);
+
+		importDeviceHistory(influxDB, pastTimestamps);
+		// https://javadoc.io/static/org.influxdb/influxdb-java/2.17/org/influxdb/InfluxDB.html
+		// NOTE: support of streaming queries against a database available,not
+		// tested
+
+		queryData(influxDB, databaseName, "select * from " + seriesName);
 		influxDB.close();
 
 	}
