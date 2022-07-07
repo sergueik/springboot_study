@@ -1,0 +1,7 @@
+# HELP memory Value of metric from instance
+# TYPE memory gauge
+memory{instance="hostname00",datacenter="dummy",application="application01",linborg_instance="instance01",} 100.0
+memory{instance="hostname01",datacenter="dummy",application="application01",linborg_instance="instance03",} 100.0
+memory{instance="hostname01",datacenter="dummy",application="application01",linborg_instance="instance04",} 100.0
+memory{instance="hostname01",datacenter="dummy",application="application02",linborg_instance="instance05",} 100.0
+memory{instance="hostname00",datacenter="dummy",application="application01",linborg_instance="instance02",} 100.0

@@ -251,7 +251,7 @@ docker build -t $IMAGE -f Dockerfile .
 
 ```sh
 NAME=application
-docker container rm $NAME
+docker container rm -f $NAME
 docker run --name $NAME -p 8080:8080 -d $IMAGE
 ```
 ```sh
@@ -282,6 +282,23 @@ docker exec $NAME find /demo/src/test/resources/data -type f
 /demo/src/test/resources/data/hostname07/data.txt
 /demo/src/test/resources/data/hostname06/data.txt
 ```
+
+The application will serve  endpoints: `/metrics`, `instantmetrics`  and `staticmetrics`
+
+The latter two write a static page with dummy `memory` values and a current time and a past time stamp (converted to milliseconds epoch)
+```sh
+curl -s http://192.168.0.29:8080/instantmetrics
+```
+```text
+# HELP memory Value of metric from instance
+# TYPE memory gauge
+memory{instance="hostname00",datacenter="dummy",application="application01",linborg_instance="instance01",} 100.0 1657227769814
+memory{instance="hostname01",datacenter="dummy",application="application01",linborg_instance="instance03",} 100.0 1657227769814
+memory{instance="hostname01",datacenter="dummy",application="application01",linborg_instance="instance04",} 100.0 1657227769814
+memory{instance="hostname01",datacenter="dummy",application="application02",linborg_instance="instance05",} 100.0 1657227769814
+memory{instance="hostname00",datacenter="dummy",application="application01",linborg_instance="instance02",} 100.0 1657227769814
+```
+
 
 * pull `prom2json` image. NOTE: pick a specific version to prevent polluting the images
 ```sh
@@ -352,8 +369,10 @@ docker run --link $NAME prom/prom2json:$VERSION http://$NAME:8080/metrics |jq
     ]
   }
 ]
-
 ```
+
+NOTE, the `prom2json` will fail to accept `instantmetrics` and `staticmetrics`.
+
 alternatiely build if for alpine as shown in [basic-prom2json](https://github.com/sergueik/springboot_study/tree/master/basic-prom2json)
 ### NOTE
 
@@ -395,6 +414,9 @@ scrape_configs:
 
 ```
 * run with the [option flag required](https://www.robustperception.io/reloading-prometheus-configuration) to enable the `http://localhost:9090/-/reload` endpoint
+```sh
+docker stop $(docker container ls | grep prom/prometheus | awk '{print $1}')
+```
 ```sh
 docker run --link application  -p 9090:9090  -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus:v2.27.0 --web.enable-lifecycle --config.file=/etc/prometheus/prometheus.yml
 ```
@@ -572,6 +594,23 @@ this will produce
 Wed Jul  6 21:22:16 EDT 2022
 ```
 providing the `time` and `range` argument to Prometheus query is a work in progress
+
+### Historic data
+
+Try to configure prometheus to ingest `http://application:8080/staticmetrics`
+which are hard coded to timestamp of `Fri Jul 1 13:52:59 EDT 2022` by making relevant edits in `prometheus.yml` and recycle and relaunch `prometheus`
+container linked to `application` one
+
+observe in the `prometheus` logs
+
+```text
+level=warn ts=2022-07-07T21:21:33.712Z caller=scrape.go:1473 component="scrape manager"
+scrape_pool=application 
+target=http://application:8080/staticmetrics msg="Error on ingesting samples that are too old or are too far into the future" num_dropped=5
+```
+repeat with `date -d "-1 hour"` - observe same error. Even 
+
+repeat with substracting 600 from current epoch (to avoid dealing with possible UTC / local time confusion)
 ### Cleanup
 
 ```sh
@@ -637,4 +676,5 @@ example.extractedMetricNames = { 'load_average': 'cpu_load'}
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 

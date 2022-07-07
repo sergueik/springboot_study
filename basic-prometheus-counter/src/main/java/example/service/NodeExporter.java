@@ -27,7 +27,6 @@ import io.prometheus.client.Gauge.Builder;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.exporter.common.TextFormat;
 
-
 import example.dao.JDBCDao;
 import example.entity.Host;
 import example.entity.Result;
@@ -148,7 +147,26 @@ public class NodeExporter {
 		if (metricNames instanceof ArrayList<?>)
 			((ArrayList<String>) metricNames).set(index, element);
 		*/
+
+		// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.Child.html
+		// see also:
+		// https://prometheus.github.io/client_java/io/prometheus/client/Info.Child.html
+		// sets or gets the info
+		// https://prometheus.io/docs/concepts/metric_types/
+		// NOTE: creates untyped metrics with caller-specified timestamp:
+		// example{appid="BAR",env="UAT",host="lenovo120S",operation="write"} 100
+		// 1656541996000
+		// unclear how to do it through prometheus.io classes
 		gauge.labels(labelArgs).set(value);
+		// NOTE: the method named "setToTime" name is misleading
+		// Executes runnable code and records its run duration
+
+		// NOTE: the "setToCurrentTime" method operates the gauge value,
+		// - not the timestamp of the gauge
+		// gauge.setToCurrentTime();
+		// https://github.com/prometheus/client_java/blob/master/simpleclient/src/main/java/io/prometheus/client/Gauge.java#L175
+		// Set to current unixtime
+		// througn "set" method
 
 		if (debug)
 			logger.info(String.format("Adding custom metrics %s %s %s %s %s: ",
@@ -195,6 +213,7 @@ public class NodeExporter {
 								String.format("no metrics found for %s, skipping", hostname));
 				}
 			}
+			// https://prometheus.github.io/client_java/io/prometheus/client/exporter/common/TextFormat.html
 			TextFormat.write004(writer, registry.metricFamilySamples());
 		} catch (
 
