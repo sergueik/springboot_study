@@ -225,6 +225,21 @@ curl -s http://localhost:8080/hostdata/$HOSTNAME | jq '.'
 
 ### Feed to Prometheus
 
+* adjust `src/main/resources/application.properties` to development host platform:
+uncomment
+for linux
+```java
+spring.datasource.url=jdbc:sqlite:${HOME}/Desktop/springboot.db
+```
+uncomment
+for windows
+```java
+spring.datasource.url=jdbc:sqlite:${USERPROFILE}\\Desktop\\data.db
+```
+for docker
+```java
+spring.datasource.url=jdbc:sqlite:/demo/src/test/resources/data.db
+```
 * place the app into Docker container
 ```sh
 mvn -Dmaven.test.skip=true clean package
@@ -242,10 +257,17 @@ docker run --name $NAME -p 8080:8080 -d $IMAGE
 ```sh
 docker logs $NAME
 ```
+confirm the successul launch
 ```text
 2022-04-29 23:58:56.422  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
 ```
 
+```text
+: Started Application in 23.396 seconds (JVM running for 25.76)
+```
+ it the exception is logged, most likely the `applocation.properies` were not updated a should
+
+* confirm the 'monitoring data' is present on application container'
 ```sh
 docker exec $NAME find /demo/src/test/resources/data -type f
 ```
@@ -444,6 +466,112 @@ docker run --network=$NETWORK --name $NAME  -p 8080:8080 -d $IMAGE
 PROMETHEUS_VERSION=v2.27.0
 docker run -d -p 9090:9090 --name=prometheus -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml --link application --network=$NETWORK prom/prometheus:$PROMETHEUS_VERSION
 ```
+
+* query data from Prometheus directly using documented [REST Query API](https://prometheus.io/docs/prometheus/latest/querying/api/)
+
+```sh
+ curl -s "http://localhost:9090/api/v1/query?query=disk" | jq '.'
+```
+
+NOTE : no time argument was added in the above request
+
+get response which will look like
+```JSON
+{
+  "status": "success",
+  "data": {
+    "resultType": "vector",
+    "result": [
+      {
+        "metric": {
+          "__name__": "disk",
+          "application": "application01",
+          "datacenter": "dummy",
+          "group": "application",
+          "instance": "hostname00",
+          "job": "application",
+          "linborg_instance": "instance01"
+        },
+        "value": [
+          1657156159.918,
+          "40.51499938964844"
+        ]
+      },
+      {
+        "metric": {
+          "__name__": "disk",
+          "application": "application01",
+          "datacenter": "dummy",
+          "group": "application",
+          "instance": "hostname00",
+          "job": "application",
+          "linborg_instance": "instance02"
+        },
+        "value": [
+          1657156159.918,
+          "40.59000015258789"
+        ]
+      },
+      {
+        "metric": {
+          "__name__": "disk",
+          "application": "application01",
+          "datacenter": "dummy",
+          "group": "application",
+          "instance": "hostname01",
+          "job": "application",
+          "linborg_instance": "instance03"
+        },
+        "value": [
+          1657156159.918,
+          "41.56999969482422"
+        ]
+      },
+      {
+        "metric": {
+          "__name__": "disk",
+          "application": "application01",
+          "datacenter": "dummy",
+          "group": "application",
+          "instance": "hostname01",
+          "job": "application",
+          "linborg_instance": "instance04"
+        },
+        "value": [
+          1657156159.918,
+          "41.518001556396484"
+        ]
+      },
+...
+// truncated the JSON
+```
+
+NOTE: the float data entry next to each value
+
+```sh
+curl -s "http://localhost:9090/api/v1/query?query=disk" | jq '.data.result[0].value[0]'
+```
+```text
+1657156681.826
+```
+
+is the timestamp in second with millisecond precisision.
+
+to prove, convert it  like one will do with epoch seconds to regular human calendar date format:
+
+```sh
+date --date="@1657156159"
+Wed Jul  6 21:09:19 EDT 2022
+```
+one line command is
+```sh
+curl -s "http://localhost:9090/api/v1/query?query=disk" | jq '.data.result[0].value[0]' |sed 's|\.[0-9][0-9]*$||' |xargs -IX  date --date=@X
+```
+this will produce
+```
+Wed Jul  6 21:22:16 EDT 2022
+```
+providing the `time` and `range` argument to Prometheus query is a work in progress
 ### Cleanup
 
 ```sh
@@ -505,6 +633,7 @@ example.extractedMetricNames = { 'load_average': 'cpu_load'}
   * [stackoverflow](https://stackoverflow.com/questions/26275736/how-to-pass-a-mapstring-string-with-application-properties) on defining `Map<String,String>` through `application.properties` and `@Value` annotation
   * [stackoverflow](https://stackoverflow.com/questions/6212898/spring-properties-file-get-element-as-an-array) on defining `Array<String>` through `application.properties` and `@Value` annotation
   * [tutorial](https://www.baeldung.com/spring-yaml-inject-map)	 on defining `Map<String,String>` through `application.yml` YAML and `@Value` annotation
+  * Prometheus data query [REST API](https://prometheus.io/docs/prometheus/latest/querying/api/)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
