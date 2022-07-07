@@ -6,7 +6,7 @@ prometheus metrics. Currently generates but does not export the appication speci
 
 ### Usage
 
-Create the sqlite database on Desktop `springboot.db` 
+Create the sqlite database on Desktop `springboot.db`
 
 ```sh
 pushd ~
@@ -34,9 +34,9 @@ and insert some data
 insert into hosts(hostname,app,environment,domain) values('hostname00','redis','qa','west');
 insert into hosts(hostname,app,environment,domain) values('hostname01','redis','prod','east');
 .quit
-``` 
+```
 alternatively use [SQLIteBrowser](https://sqlitebrowser.org)
-* verify 
+* verify
 ```powershell
 sqlite3.exe $env:userprofile\Desktop\springboot.db
 ```
@@ -384,7 +384,7 @@ and package skipping the tests - the database location is different between desk
 ```sh
 mvn -Dmaven.test.skip=true clean package
 ```
-occasionally observerd challenge with numbered version image container to hang. 
+occasionally observerd challenge with numbered version image container to hang.
 
 ```text
 Error response from daemon: Get https://registry-1.docker.io/v2/: dial tcp: lookup registry-1.docker.io on [::1]:53: read udp [::1]:55749->[::1]:53: read: connection refused
@@ -449,7 +449,7 @@ and click on __open the metrics explorer__ icon:
 ![Prometheus Page](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture-prometheus.png)
 
 one sees the metrics just added in the application code:
-`build_status_counter`,`requests_total`,`requests_latency_seconds` 
+`build_status_counter`,`requests_total`,`requests_latency_seconds`
 
 Select a specic one e.g. `requests_latency_seconds_count`, sees the result:
 
@@ -605,10 +605,35 @@ observe in the `prometheus` logs
 
 ```text
 level=warn ts=2022-07-07T21:21:33.712Z caller=scrape.go:1473 component="scrape manager"
-scrape_pool=application 
+scrape_pool=application
 target=http://application:8080/staticmetrics msg="Error on ingesting samples that are too old or are too far into the future" num_dropped=5
 ```
-repeat with `date -d "-1 hour"` - observe same error. Even 
+repeat with `date -d "-1 hour"` - observe same error. Finally made the offset in minutes a query parameter of the `/pastmetrics/60` endpoint in `prometheus.yml`:
+```YAML
+scrape_configs:
+  - job_name:       'application'
+
+    scrape_interval: 10s
+    metrics_path: /pastmetrics/60
+    honor_labels: true
+
+    static_configs:
+      - targets: ['application:8080']
+        labels:
+          group: 'application'
+
+```
+the oldest succesfully ingested data point is 60 minute ago (61 is "too old"):
+```text
+level=warn ts=2022-07-07T23:08:59.701Z caller=scrape.go:1473 component="scrape manager"
+scrape_pool=application target=http://application:8080/pastmetrics/61 msg="Error on ingesting samples that are too old or are too far into the future" num_dropped=5
+
+
+```
+
+
+
+![Sample Successfully Ingested Historic Datapoint](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture-historic-datapoint.png)
 
 repeat with substracting 600 from current epoch (to avoid dealing with possible UTC / local time confusion)
 ### Cleanup
@@ -668,7 +693,7 @@ example.extractedMetricNames = { 'load_average': 'cpu_load'}
   * https://www.tabnine.com/code/java/methods/io.prometheus.client.CollectorRegistry/register
   * https://prometheus.github.io/client_java/io/prometheus/client/Collector.MetricFamilySamples.Sample.html
   * https://prometheus.github.io/client_java/io/prometheus/client/Collector.MetricFamilySamples.html
-  * Prometheus [metric types](https://prometheus.io/docs/concepts/metric_types/)  
+  * Prometheus [metric types](https://prometheus.io/docs/concepts/metric_types/)
   * [stackoverflow](https://stackoverflow.com/questions/26275736/how-to-pass-a-mapstring-string-with-application-properties) on defining `Map<String,String>` through `application.properties` and `@Value` annotation
   * [stackoverflow](https://stackoverflow.com/questions/6212898/spring-properties-file-get-element-as-an-array) on defining `Array<String>` through `application.properties` and `@Value` annotation
   * [tutorial](https://www.baeldung.com/spring-yaml-inject-map)	 on defining `Map<String,String>` through `application.yml` YAML and `@Value` annotation

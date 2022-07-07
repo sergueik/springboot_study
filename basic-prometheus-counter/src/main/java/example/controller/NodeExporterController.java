@@ -9,6 +9,8 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+
 
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -22,6 +24,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -104,7 +108,7 @@ public class NodeExporterController {
 	// application hosted static file metrics - used for prometheus testing
 	@ResponseBody
 	@GetMapping(value = "instantmetrics", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> frozenMetrics() {
+	public ResponseEntity<String> instantMetrics() {
 
 		Instant timestamp = Instant.now();
 		Date date = new Date(timestamp.getEpochSecond());
@@ -141,31 +145,24 @@ public class NodeExporterController {
 
 	// application hosted static file metrics - used for prometheus testing
 	@ResponseBody
-	@GetMapping(value = "staticmetrics", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> staticMetrics() {
+	@GetMapping(value = "pastmetrics/{minute}", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> pastMetrics(@PathVariable String minute) {
 
-		logger.info("Sending static metrics");
+		logger.info("Sending past metrics");
 
 		String payload = getScriptContent("metrics.txt");
-		String strDate = "Thu Jul 7 16:30:21 EDT 2022";
-		                  
-		// add data points in the past
-		// date -d "-1 day"
-		// NOTE: fragile - prome to
-		// Exception in thread "main" java.time.format.DateTimeParseException:
-		// Text 'Fri Jul 21 13:52:59 EDT 2022' could not be parsed at index 8
-		// d does not fail with two digit date
-		// d or dd?
-		// dd fails with single digit
-		String pattern = "EEE MMM d HH:mm:ss zzz yyyy";
-		long pastTimestamp = dateToEpoch(strDate, pattern);
 		
-		Instant timestamp = Instant.now();
-		Date date = new Date(timestamp.getEpochSecond());
-		pastTimestamp = timestamp.toEpochMilli() - 60 * 10 * 1000;
-		// pastTimestamp = timestamp.toEpochMilli();
+		Instant timestamp = Instant.now().minus(Integer.parseInt(minute ) , ChronoUnit.MINUTES);
+		long pastTimestamp = timestamp.toEpochMilli() ; 
+		// long pastTimestamp = timestamp.toEpochMilli() - 60 * Integer.parseInt(minute ) * 1000;
 		// Instant.ofEpochSecond(0L).until(Instant.now(), ChronoUnit.MILLIS);
 		
+		String pattern = "EEE MMM d HH:mm:ss zzz yyyy";
+		final ZoneId UTC_ZONE = ZoneId.of("UTC");
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
+
+		logger.info("Sending historic metrics for the past timestamp: "
+				+ timestamp.atZone(UTC_ZONE).format(dateTimeFormatter));
 		String[] lines = payload.split("\r?\n");
 		for (int cnt = 0; cnt != lines.length; cnt++) {
 			if (!(lines[cnt].matches("^#.*"))) {

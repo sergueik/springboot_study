@@ -6,7 +6,12 @@ scrape_configs:
     # reload after change
     # metrics_path: /metrics
     # metrics_path: /instantmetrics
-    metrics_path: /staticmetrics
+    # 60 minutes ago is accepted
+    # 61 minutes ago is rejected
+    # target=http://application:8080/pastmetrics/61
+    # msg="Error on ingesting samples that are too old or are too far into the future" 
+    # num_dropped=5
+    metrics_path: /pastmetrics/60
     honor_labels: true
 
     static_configs:
