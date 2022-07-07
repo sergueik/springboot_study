@@ -62,7 +62,7 @@ public class App {
 
 	}
 
-	private static void importDeviceHistory(InfluxDB influxDB,
+	private static void importDeviceHistoryWithTimestamps(InfluxDB influxDB,
 			long[] timestamps) {
 		influxDB.setDatabase(databaseName);
 		if (!influxDB.isBatchEnabled()) {
@@ -92,36 +92,11 @@ public class App {
 
 	}
 
-	private static void importPoint(InfluxDB influxDB) {
-		influxDB.setDatabase(databaseName);
-		Point point = Point.measurement(seriesName).tag("atag", "test")
-				.field("idle", 90L).field("usertime", 9L).field("system", 1L).build();
+	private static void importDeviceHistory(InfluxDB influxDB) {
 
-		// org.influxdb.dto.Point.Builder.time(Long timeToSet, TimeUnit
-		// precisionToSet)
 		// NOTE: field method is deprecated in favor of addField
 		// https://javadoc.io/static/org.influxdb/influxdb-java/2.20/org/influxdb/InfluxDB.html
 		// https://www.tabnine.com/code/java/methods/org.influxdb.InfluxDB/write
-		point = Point.measurement(seriesName)
-				.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
-				.addField("idle", 90L).addField("usertime", 9L).addField("system", 1L)
-				.build();
-		// NO need to set precision during the write operation: already done in
-		// Point builder
-
-		if (influxDB.isBatchEnabled()) {
-			try {
-				influxDB.disableBatch();
-			} catch (IllegalStateException e) {
-				System.err.println("Exception (ignored) " + e.toString());
-			}
-		}
-		influxDB.write(point);
-
-	}
-
-	private static void importDeviceEphemeral(InfluxDB influxDB) {
-
 		influxDB.setDatabase(databaseName);
 		if (!influxDB.isBatchEnabled()) {
 			try {
@@ -155,32 +130,88 @@ public class App {
 
 	}
 
-	private static long[] pastTimestamps = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
-			0L, 0L };
+	public static void main(String args[]) throws UnknownHostException {
+		testTimestampEpoch();
+		metric_hostname = InetAddress.getLocalHost().getHostName();
+		influxDB = InfluxDBFactory.connect(host, user, password);
+		Pong pong = influxDB.ping();
+		System.err.println(pong.getVersion());
+		// clearAndCreateDatabase(influxDB, databaseName);
 
-	public static void generateHistory(long[] pastTimestamps) {
-		String strDate = "Fri Jul 1 13:52:59 EDT 2022";
-		// add data points in the past
+		// NOTE: field method is deprecated in favor of addField
+		// https://javadoc.io/static/org.influxdb/influxdb-java/2.20/org/influxdb/InfluxDB.html
+		// https://www.tabnine.com/code/java/methods/org.influxdb.InfluxDB/write
+
+		influxDB.setDatabase(databaseName);
+		Point point = Point.measurement(seriesName).tag("atag", "test")
+				.field("idle", 90L).field("usertime", 9L).field("system", 1L).build();
+
+		// org.influxdb.dto.Point.Builder.time(Long timeToSet, TimeUnit
+		// precisionToSet)
+		point = Point.measurement(seriesName)
+				.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+				.addField("idle", 90L).addField("usertime", 9L).addField("system", 1L)
+				.build();
+		// NO need to set precision during the write operation: already done in
+		// Point builder
+
+		influxDB.write(point);
+		// NOTE: Enable Gzip compress for http request body
+		// is also possile, not tested
+
+		if (!influxDB.isBatchEnabled()) {
+			try {
+				influxDB.enableBatch();
+			} catch (IllegalStateException e) {
+
+			}
+		}
+		System.err.println("Starting");
+		Collection<Point> points = new HashSet<>();
+
+		for (int i = 0; i < 10; i++) {
+			// https://www.tabnine.com/code/java/methods/org.influxdb.dto.Point$Builder/build
+			// optional tags
+			point = Point.measurement(seriesName)
+					.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
+					.tag("host", metric_hostname).tag("region", "region")
+					.addField("idle", 90L).addField("usertime", 9L).addField("system", 1L)
+					.build();
+			System.err.println(".");
+			points.add(point);
+		}
+		BatchPoints batchpoints = BatchPoints.builder().points(points).build();
+		influxDB.write(batchpoints);
+		// NOTE:
+		// Exception in thread "main"
+		// org.influxdb.InfluxDBException$FieldTypeConflictException: partial
+		// write: field type conflict: input field "idle" on measurement "testing"
+		// is type integer, already exists as type float dropped=1
+		// seeing in Perl Client too
+		System.err.println("Done");
+		influxDB.flush();
 		// date -d "-1 day"
-		// NOTE: fragile - prome to
+		String strDate = "Fri Jul 1 13:52:59 EDT 2022";
+		// d or dd?
+		// dd fails with single digit
 		// Exception in thread "main" java.time.format.DateTimeParseException:
 		// Text 'Fri Jul 21 13:52:59 EDT 2022' could not be parsed at index 8
 		// d does not fail with two digit date
-		// d or dd?
-		// dd fails with single digit
 		pattern = "EEE MMM d HH:mm:ss zzz yyyy";
 		long pastTimestamp = Utils.dateToEpoch(strDate, pattern);
+
+		long[] pastTimestamps = { 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L };
+
 		for (int i = 0; i < pastTimestamps.length; i++) {
 			pastTimestamps[i] = pastTimestamp + 100 * i;
 		}
-
-	}
-
-	private static void queryData(InfluxDB influxDB, String databaseName,
-			String queryString) {
+		importDeviceHistoryWithTimestamps(influxDB, pastTimestamps);
+		// https://javadoc.io/static/org.influxdb/influxdb-java/2.17/org/influxdb/InfluxDB.html
+		// NOTE: support of streaming queries against a database available,not
+		// tested
 		influxDB.setLogLevel(InfluxDB.LogLevel.BASIC);
 
-		// String queryString = "select * from testing";
+		String queryString = "select * from testing";
 		Query query = new Query(queryString, databaseName);
 		QueryResult queryResult = influxDB.query(query);
 		List<Result> results = queryResult.getResults();
@@ -195,30 +226,6 @@ public class App {
 				System.err.println("values: " + series.getValues());
 			}
 		}
-
-	}
-
-	public static void main(String args[]) throws UnknownHostException {
-		testTimestampEpoch();
-		metric_hostname = InetAddress.getLocalHost().getHostName();
-		influxDB = InfluxDBFactory.connect(host, user, password);
-		Pong pong = influxDB.ping();
-		System.err.println(pong.getVersion());
-		// clearAndCreateDatabase(influxDB, databaseName);
-
-		importPoint(influxDB);
-		// NOTE: May Enable Gzip compress for http request body
-		// is also possile, not tested
-
-		importDeviceEphemeral(influxDB);
-		generateHistory(pastTimestamps);
-
-		importDeviceHistory(influxDB, pastTimestamps);
-		// https://javadoc.io/static/org.influxdb/influxdb-java/2.17/org/influxdb/InfluxDB.html
-		// NOTE: support of streaming queries against a database available,not
-		// tested
-
-		queryData(influxDB, databaseName, "select * from " + seriesName);
 		influxDB.close();
 
 	}
