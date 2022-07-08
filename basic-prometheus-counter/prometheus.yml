@@ -19,3 +19,14 @@ scrape_configs:
         labels:
           group: 'application'
 
+  - job_name:       'application_instant'
+
+    scrape_interval: 10s
+    metrics_path: /instantmetrics
+    honor_labels: true
+
+    static_configs:
+      - targets: ['application:8080']
+        labels:
+          group: 'application'
+

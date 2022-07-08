@@ -119,15 +119,7 @@ public class NodeExporterController {
 		logger.info("Sending instant metrics for the current time: "
 				+ timestamp.atZone(UTC_ZONE).format(dateTimeFormatter));
 		// http://www.java2s.com/Tutorials/Java/Java_Format/0030__Java_Date_Format_Symbol.htm
-		String payload = getScriptContent("metrics.txt");
-		// date -d "-1 day"
-		// NOTE: fragile - prome to
-		// Exception in thread "main" java.time.format.DateTimeParseException:
-		// Text 'Fri Jul 21 13:52:59 EDT 2022' could not be parsed at index 8
-		// d does not fail with two digit date
-		// d or dd?
-		// dd fails with single digit
-
+		String payload = getScriptContent("instantmetrics.txt");
 		long pastTimestamp = timestamp.toEpochMilli();
 		// Instant.ofEpochSecond(0L).until(Instant.now(), ChronoUnit.MILLIS);
 

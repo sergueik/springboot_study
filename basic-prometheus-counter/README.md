@@ -630,12 +630,15 @@ scrape_pool=application target=http://application:8080/pastmetrics/61 msg="Error
 
 
 ```
-
-
-
 ![Sample Successfully Ingested Historic Datapoint](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture-historic-datapoint.png)
+one appears to be able to successfully combine the instant and past metrics from two separate jobs (*not certain if merging into same job would pass the test*):
+```yaml
+```
 
-repeat with substracting 600 from current epoch (to avoid dealing with possible UTC / local time confusion)
+![Sample with Two Targets](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture_instant_past.png)
+
+![Sample Successfully Ingested Historic and Current Datapoint](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-counter/screenshots/capture_data_feeds_combined.png)
+
 ### Cleanup
 
 ```sh
