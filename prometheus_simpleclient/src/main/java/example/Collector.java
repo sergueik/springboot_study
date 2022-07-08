@@ -146,10 +146,7 @@ public abstract class Collector {
 					+ help + " Samples: " + samples;
 		}
 
-		/**
-		 * A single Sample, with a unique name and set of labels.
-		 */
-		public static class Sample {
+			public static class Sample {
 			public final String name;
 			public final List<String> labelNames;
 			public final List<String> labelValues; // Must have same length as

@@ -69,29 +69,6 @@ public abstract class SimpleCollector<Child> extends Collector {
 		}
 	}
 
-	/**
-	 * Replace the Child with the given labels.
-	 * <p>
-	 * This is intended for advanced uses, in particular proxying metrics
-	 * from another monitoring system. This allows for callbacks for returning
-	 * values for {@link Counter} and {@link Gauge} without having to implement
-	 * a full {@link Collector}.
-	 * <p>
-	 * An example with {@link Gauge}:
-	 * <pre>
-	 * {@code
-	 *   Gauge.build().name("current_time").help("Current unixtime.").create()
-	 *       .setChild(new Gauge.Child() {
-	 *         public double get() {
-	 *           return System.currentTimeMillis() / MILLISECONDS_PER_SECOND;
-	 *         }
-	 *       }).register();
-	 * }
-	 * </pre>
-	 * <p>
-	 * Any references any previous Child with these labelValues are invalidated. 
-	 * A metric should be either all callbacks, or none.
-	 */
 	public <T extends Collector> T setChild(Child child, String... labelValues) {
 		if (labelValues.length != labelNames.size()) {
 			throw new IllegalArgumentException("Incorrect number of labels.");
@@ -159,66 +136,38 @@ public abstract class SimpleCollector<Child> extends Collector {
 		// done.
 		boolean dontInitializeNoLabelsChild;
 
-		/**
-		 * Set the name of the metric. Required.
-		 */
 		public B name(String name) {
 			this.name = name;
 			return (B) this;
 		}
 
-		/**
-		 * Set the subsystem of the metric. Optional.
-		 */
 		public B subsystem(String subsystem) {
 			this.subsystem = subsystem;
 			return (B) this;
 		}
 
-		/**
-		 * Set the namespace of the metric. Optional.
-		 */
 		public B namespace(String namespace) {
 			this.namespace = namespace;
 			return (B) this;
 		}
 
-		/**
-		 * Set the unit of the metric. Optional.
-		 *
-		 * @since 0.10.0
-		 */
 		public B unit(String unit) {
 			this.unit = unit;
 			return (B) this;
 		}
 
-		/**
-		 * Set the help string of the metric. Required.
-		 */
 		public B help(String help) {
 			this.help = help;
 			return (B) this;
 		}
 
-		/**
-		 * Set the labelNames of the metric. Optional, defaults to no labels.
-		 */
 		public B labelNames(String... labelNames) {
 			this.labelNames = labelNames;
 			return (B) this;
 		}
 
-		/**
-		 * Return the constructed collector.
-		 * <p>
-		 * Abstract due to generics limitations.
-		 */
 		public abstract C create();
 
-		/**
-		 * Create and register the Collector with the default registry.
-		 */
 		public C register() {
 			return register(CollectorRegistry.defaultRegistry);
 		}
