@@ -46,6 +46,14 @@ public class TextFormat {
 
 	public static void write004(Writer writer,
 			Enumeration<Collector.MetricFamilySamples> mfs) throws IOException {
+		// invoke original method
+		write004(writer, mfs, 0L);
+	}
+
+	public static void write004(Writer writer,
+			Enumeration<Collector.MetricFamilySamples> mfs, Long timestampMs)
+			throws IOException {
+
 		Map<String, Collector.MetricFamilySamples> omFamilies = new TreeMap<String, Collector.MetricFamilySamples>();
 		/* See http://prometheus.io/docs/instrumenting/exposition_formats/
 		 * for the output format specification. */
@@ -54,6 +62,7 @@ public class TextFormat {
 			String name = metricFamilySamples.name;
 			writer.write("# HELP ");
 			writer.write(name);
+
 			if (metricFamilySamples.type == Collector.Type.COUNTER) {
 				writer.write("_total");
 			}
@@ -106,9 +115,15 @@ public class TextFormat {
 				}
 				writer.write(' ');
 				writer.write(Collector.doubleToGoString(sample.value));
-				if (sample.timestampMs != null) {
+
+				if (timestampMs == 0) {
+					if (sample.timestampMs != null) {
+						writer.write(' ');
+						writer.write(sample.timestampMs.toString());
+					}
+				} else {
 					writer.write(' ');
-					writer.write(sample.timestampMs.toString());
+					writer.write(timestampMs.toString());
 				}
 				writer.write('\n');
 			}

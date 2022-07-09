@@ -5,10 +5,10 @@
   <artifactId>prometheus_simpleclient_common</artifactId>
   <packaging>jar</packaging>
   <name>prometheus-simpleclient-common</name>
-    <description>
+  <description>
         replica of Prometheus Java Simpleclient Common code used by various modules of the Simpleclient. 
     </description>
-  <version>0.1.0-SNAPSHOT</version><!-- keep upstream version value -->
+  <version>0.2.0-SNAPSHOT</version>
   <properties>
     <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,7 +18,6 @@
     <junit.version>4.13.1</junit.version>
     <log4j-core.version>2.17.1</log4j-core.version>
     <prometheus.version>0.15.0</prometheus.version>
-	    <!-- prior  to 0.16.0 spanContextSupplier  lacks method isSampled() -->
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
     <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
@@ -28,21 +27,18 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
-
-
-
-    <dependencies>
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>io.prometheus</groupId>
+      <artifactId>simpleclient</artifactId>
       <version>${prometheus.version}</version>
-        </dependency>
-        <!-- Test Dependencies Follow -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    </dependency>
+    <!-- Test Dependencies Follow -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

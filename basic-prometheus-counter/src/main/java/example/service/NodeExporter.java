@@ -3,8 +3,12 @@ package example.service;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +29,8 @@ import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.Gauge.Builder;
 import io.prometheus.client.Histogram;
-import io.prometheus.client.exporter.common.TextFormat;
+import example.TextFormat;
+// import io.prometheus.client.exporter.common.TextFormat;
 
 import example.dao.JDBCDao;
 import example.entity.Host;
@@ -214,7 +219,9 @@ public class NodeExporter {
 				}
 			}
 			// https://prometheus.github.io/client_java/io/prometheus/client/exporter/common/TextFormat.html
-			TextFormat.write004(writer, registry.metricFamilySamples());
+			// modified
+			TextFormat.write004(writer, registry.metricFamilySamples(),
+					Instant.now().toEpochMilli());
 		} catch (
 
 		IOException e) {
