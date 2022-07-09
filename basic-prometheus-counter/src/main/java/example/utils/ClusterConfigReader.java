@@ -56,7 +56,7 @@ public class ClusterConfigReader {
 			}
 			System.err.println(info.keySet());
 		} catch (IOException e) {
-			System.err.println("Excption (ignored) " + e.toString());
+			System.err.println("Exception (ignored) " + e.toString());
 		}
 	}
 }

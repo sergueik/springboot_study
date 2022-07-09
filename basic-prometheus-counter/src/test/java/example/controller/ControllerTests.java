@@ -113,12 +113,11 @@ public class ControllerTests {
 		ResponseEntity<String> entity = restTemplate.getForEntity(url,
 				String.class);
 
-		String entryPattern = String
-				.format(
-						"%s\\{" + "instance=\\\"hostname[0-9]+\\\"" + ","
-								+ "datacenter=\\\"\\w+\\\"" + "," + "application=\\\"\\w+\\\""
-								+ "," + "linborg_instance=\\\"\\w+\\\"," + "\\} [0-9.]+",
-						counterName);
+		String entryPattern = String.format(
+				"%s\\{" + "instance=\\\"hostname[0-9]+\\\"" + ","
+						+ "datacenter=\\\"\\w+\\\"" + "," + "application=\\\"\\w+\\\"" + ","
+						+ "linborg_instance=\\\"\\w+\\\"," + "\\} [0-9.]+ [0-9]+",
+				counterName);
 		List<String> entries = Arrays.asList(entity.getBody().split("\n")).stream()
 				.filter(o -> o.contains(counterName))
 				.filter(o -> o.contains("hostname")).collect(Collectors.toList());

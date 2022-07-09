@@ -56,7 +56,7 @@ public class NodeExporter {
 
 	// custom metric setting the instance
 	// https://prometheus.github.io/client_java/io/prometheus/client/Gauge.html
-	private static final boolean debug = false;
+	private static final boolean debug = true;
 
 	@Resource
 	private BaseService service;
@@ -173,9 +173,10 @@ public class NodeExporter {
 		// Set to current unixtime
 		// througn "set" method
 
-		if (debug)
-			logger.info(String.format("Adding custom metrics %s %s %s %s %s: ",
-					counterName, labelArgs) + gauge.labels(labelArgs).get());
+		// TODO: java.util.MissingFormatArgumentException: Format specifier '%s'
+		// if (debug)
+		// logger.info(String.format("Adding custom metrics %s %s %s %s %s: ",
+		// counterName, labelArgs) + gauge.labels(labelArgs).get());
 
 	}
 
@@ -185,12 +186,14 @@ public class NodeExporter {
 		Writer writer = new StringWriter();
 		try {
 			registry = CollectorRegistry.defaultRegistry;
-
 			clusterConfigReader.read(fileName);
 			hostInfo = clusterConfigReader.getInfo();
 
 			List<?> payload = dao.findAllServerInstanceApplication();
 			for (Object row : payload) {
+				// TODO: clear properly
+				registry.clear();
+				gauges.clear();
 				ServerInstanceApplication serverInstance = (ServerInstanceApplication) row;
 				String hostname = serverInstance.getServerName();
 				hostData = new HostData(hostname);
@@ -198,11 +201,15 @@ public class NodeExporter {
 				hostData.setExtractedMetricNames(extractedMetricNames);
 				hostData.setMetricExtractors(metricExtractors);
 				hostData.readData();
+				long timestamp = hostData.getTimestamp();
+				if (timestamp == 0)
+					timestamp = Instant.now().toEpochMilli();
 				data = hostData.getData();
 				if (data != null && !data.isEmpty()) {
 					if (debug)
-						logger.info(String.format("Loading %d metrics for host : %s",
-								data.keySet().size(), hostname));
+						logger.info(
+								String.format("Loading %d metrics for host: %s timestamp: %d",
+										data.keySet().size(), hostname, timestamp));
 
 					for (String metricName : data.keySet()) {
 						createGauge(metricName);
@@ -217,11 +224,10 @@ public class NodeExporter {
 						logger.info(
 								String.format("no metrics found for %s, skipping", hostname));
 				}
+				// https://prometheus.github.io/client_java/io/prometheus/client/exporter/common/TextFormat.html
+				// modified
+				TextFormat.write004(writer, registry.metricFamilySamples(), timestamp);
 			}
-			// https://prometheus.github.io/client_java/io/prometheus/client/exporter/common/TextFormat.html
-			// modified
-			TextFormat.write004(writer, registry.metricFamilySamples(),
-					Instant.now().toEpochMilli());
 		} catch (
 
 		IOException e) {

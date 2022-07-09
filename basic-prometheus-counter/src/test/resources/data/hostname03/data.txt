@@ -4,3 +4,4 @@ disk: 43.5
 load_average:  1 2 3 4 7
 rpm: 103
 uptime: 0
+timestamp: 1657332510213

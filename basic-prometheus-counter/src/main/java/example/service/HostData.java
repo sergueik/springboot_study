@@ -31,6 +31,7 @@ public class HostData {
 
 	private boolean debug = false;
 	private String hostname = null;
+	private long timestamp = 0;
 	private List<String> metrics = null;
 	private Map<String, String> metricExtractors = new HashMap<>();
 	private Map<String, String> extractedMetricNames = new HashMap<>();
@@ -42,6 +43,10 @@ public class HostData {
 	private Map<String, String> data = new HashMap<>();
 
 	private static final Logger logger = LogManager.getLogger(HostData.class);
+
+	public long getTimestamp() {
+		return timestamp;
+	}
 
 	public boolean isDebug() {
 		return debug;
@@ -142,6 +147,11 @@ public class HostData {
 				if (matcher.find()) {
 					key = matcher.group(1);
 					value = matcher.group(2);
+				}
+				pattern = Pattern.compile("timestamp: " + "([^ ]*)$");
+				matcher = pattern.matcher(line);
+				if (matcher.find()) {
+					this.timestamp = Long.parseLong(matcher.group(1));
 				}
 				// NOTE: "mKey" to prevent duplicate variable compiler error
 				for (String mKey : metricExtractors.keySet()) {
