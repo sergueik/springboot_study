@@ -50,6 +50,22 @@ public class TextFormat {
 		write004(writer, mfs, 0L);
 	}
 
+	public static void setTimestamp(
+			Enumeration<Collector.MetricFamilySamples> mfs, Long timestampMs) {
+		while (mfs.hasMoreElements()) {
+			Collector.MetricFamilySamples metricFamilySamples = mfs.nextElement();
+			for (Collector.MetricFamilySamples.Sample sample : metricFamilySamples.samples) {
+				if (sample.timestampMs != null) {
+					// the final field Collector.MetricFamilySamples.Sample.timestampMs
+					// cannot be assigned
+					// need to rebuild sample ?
+					// see the creation of OpenMetrics specific sample in write004
+					// sample.timestampMs = timestampMs;
+				}
+			}
+		}
+	}
+
 	public static void write004(Writer writer,
 			Enumeration<Collector.MetricFamilySamples> mfs, Long timestampMs)
 			throws IOException {
