@@ -6,6 +6,15 @@ prometheus metrics. Currently generates but does not export the appication speci
 
 ### Usage
 
+* rebuild and "install" the `springboot_study/prometheus_simpleclient_common`:
+
+```sh
+pushd ~/src/springboot_study/prometheus_simpleclient_common
+mvn install
+popd
+```
+this is a dependency of __0.26.0-SNAPSHOT__, __0.27.0-SNAPSHOT__ - may not be needed for later versions
+
 Create the sqlite database on Desktop `springboot.db`
 
 ```sh

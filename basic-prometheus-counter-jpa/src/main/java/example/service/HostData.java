@@ -26,6 +26,9 @@ import org.apache.logging.log4j.Logger;
 
 // Class to read host metrics written by legacy monitoring application
 // NOTE: Spring value-add features like @Value property annotations - do not work in this class
+/*
+ *  @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
+ */
 
 public class HostData {
 
@@ -155,16 +158,16 @@ public class HostData {
 							logger.info(
 									String.format("Found data for metric %s: %s", key, value));
 					}
-					// NOTE: hack
-					if (value != null) {
-						String realKey = extractedMetricNames != null
-								&& extractedMetricNames.containsKey(key)
-										? extractedMetricNames.get(key) : key;
-						if (debug)
-							logger.info(String.format("Adding data for metric %s(%s): %s",
-									key, realKey, value));
-						data.put(realKey, value);
-					}
+				}
+				// NOTE: hack
+				if (value != null) {
+					String realKey = extractedMetricNames != null
+							&& extractedMetricNames.containsKey(key)
+									? extractedMetricNames.get(key) : key;
+					if (debug)
+						logger.info(String.format("Adding data for metric %s(%s): %s", key,
+								realKey, value));
+					data.put(realKey, value);
 				}
 			}
 			bufferedReader.close();

@@ -138,20 +138,20 @@ public class HostData {
 
 			while ((line = bufferedReader.readLine()) != null) {
 
+				Pattern pattern = Pattern.compile("timestamp: " + "([^ ]*)$");
+				Matcher matcher = pattern.matcher(line);
+				if (matcher.find()) {
+					this.timestamp = Long.parseLong(matcher.group(1));
+				}
 				key = null;
 				value = null;
 				// collect metrics with non-blank values
-				Pattern pattern = Pattern.compile( /* "(?:" to suppress capturing */
+				pattern = Pattern.compile( /* "(?:" to suppress capturing */
 						"(" + StringUtils.join(metrics, "|") + ")" + ": " + "([^ ]*)$");
-				Matcher matcher = pattern.matcher(line);
+				matcher = pattern.matcher(line);
 				if (matcher.find()) {
 					key = matcher.group(1);
 					value = matcher.group(2);
-				}
-				pattern = Pattern.compile("timestamp: " + "([^ ]*)$");
-				matcher = pattern.matcher(line);
-				if (matcher.find()) {
-					this.timestamp = Long.parseLong(matcher.group(1));
 				}
 				// NOTE: "mKey" to prevent duplicate variable compiler error
 				for (String mKey : metricExtractors.keySet()) {
@@ -168,16 +168,16 @@ public class HostData {
 							logger.info(
 									String.format("Found data for metric %s: %s", key, value));
 					}
-					// NOTE: hack
-					if (value != null) {
-						String realKey = extractedMetricNames != null
-								&& extractedMetricNames.containsKey(key)
-										? extractedMetricNames.get(key) : key;
-						if (debug)
-							logger.info(String.format("Adding data for metric %s(%s): %s",
-									key, realKey, value));
-						data.put(realKey, value);
-					}
+				}
+				// NOTE: hack
+				if (value != null) {
+					String realKey = extractedMetricNames != null
+							&& extractedMetricNames.containsKey(key)
+									? extractedMetricNames.get(key) : key;
+					if (debug)
+						logger.info(String.format("Adding data for metric %s(%s): %s", key,
+								realKey, value));
+					data.put(realKey, value);
 				}
 			}
 			bufferedReader.close();
