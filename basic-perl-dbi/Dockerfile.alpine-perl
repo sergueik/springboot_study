@@ -1,0 +1,7 @@
+FROM alpine:3.9.5
+
+RUN apk update && apk upgrade && \
+    apk add perl && \
+    rm -rf /var/cache/apk/*
+WORKDIR /root
+
