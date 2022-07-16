@@ -51,6 +51,8 @@ public class LineProtocolParser {
 	}
 
 	public Point extractPointFromLineProtocolLine(String input, String grammar) {
+		if (input == null)
+			throw new IllegalArgumentException ("input cannot be empty");
 		Point result = new Point();
 		logger.info("input: " + input);
 		if (null != input) {
