@@ -25,10 +25,6 @@ import org.apache.logging.log4j.Level;
 @Repository("JdbcDao")
 public class JDBCDao implements Dao {
 
-	// http://www.baeldung.com/properties-with-spring
-	// Autowired annotation is not supported on static fields
-	@Value("${spring.datasource.url}")
-	private String datasourceUrl;
 	private static final Logger logger = LogManager
 			.getLogger(JDBCDao.class.getName());
 
@@ -53,7 +49,6 @@ public class JDBCDao implements Dao {
 
 	@Override
 	public List<?> findAllHost() {
-		logger.info("datasourceUrl = " + datasourceUrl);
 		List<?> results = null;
 		String sql = "SELECT * FROM hosts";
 		try {
@@ -68,7 +63,7 @@ public class JDBCDao implements Dao {
 
 	@Override
 	public List<?> findAllServerInstanceApplication() {
-		logger.info("datasourceUrl = " + datasourceUrl);
+
 		List<?> results = null;
 		String sql = "select server1_.sname as serverName, applicatio2_.aname as applicationName, instance3_.iname as instanceName"
 				+ " from axixs axixs0_ inner join server server1_ on (axixs0_.sid=server1_.sid) inner join application applicatio2_ on (axixs0_.aid=applicatio2_.aid) inner join instance instance3_ on (axixs0_.iid=instance3_.iid)";

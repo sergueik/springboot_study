@@ -42,4 +42,11 @@ public class ServerInstanceApplication {
 	public void setApplicationName(String value) {
 		applicationName = value;
 	}
+
+	@Override
+	public String toString() {
+		return "ServerInstanceApplication " + "[ " + "serverName = " + serverName
+				+ ", " + "instanceName = " + instanceName + ", " + "applicationName = "
+				+ applicationName + " ]";
+	}
 }

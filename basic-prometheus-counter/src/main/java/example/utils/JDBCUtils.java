@@ -26,6 +26,10 @@ public class JDBCUtils {
 	public static Connection connection = null;
 	public static PreparedStatement preparedStatement = null;
 	public static ResultSet resultSet = null;
+	
+	// http://www.baeldung.com/properties-with-spring
+	// NOTE: Autowired annotation is not supported on static fields
+	@Value("${spring.datasource.url}")
 	private static String datasourceUrl;
 
 	private JDBCUtils() {

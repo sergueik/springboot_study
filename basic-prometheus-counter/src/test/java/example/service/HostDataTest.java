@@ -12,11 +12,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import example.service.HostData;;
+import example.service.HostData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /*
  *  @author: Serguei Kouzmine (kouzmine_serguei@yahoo.com)
@@ -77,6 +77,7 @@ public class HostDataTest {
 		assertThat(data.get("disk"), is("40.5"));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void test3() throws Exception {
 
@@ -85,7 +86,17 @@ public class HostDataTest {
 
 		String metricName = "load_average";
 		assertThat(data, notNullValue());
-		assertThat(data.keySet().size(), is(6));
+		assertThat(data.keySet().size(), is(7));
+
+		// examine the keys of the data. NOTE: there are less laborous ways to do
+		// that in hamcrest
+		Set<String> keySet = data.keySet();
+		String[] keys = new String[keySet.size()];
+
+		keys = new ArrayList<String>(keySet).toArray(keys);
+		Arrays.sort(keys);
+		assertThat(String.join("|", keys),
+				is("cpu|disk|load_average|memory|rpm|timestamp|uptime"));
 		assertThat(data.containsKey(metricName), is(true));
 		assertThat(data.get(metricName), is("1 2 3 4 6"));
 	}
