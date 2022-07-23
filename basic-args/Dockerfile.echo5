@@ -1,0 +1,4 @@
+FROM alpine:3.9.5
+ADD echoargs.sh /tmp
+ENTRYPOINT /tmp/echoargs.sh
+# will lose arguments, alwyas echo hello world

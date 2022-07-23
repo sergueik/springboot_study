@@ -1,0 +1,3 @@
+FROM alpine:3.9.5
+ADD echoargs.sh /tmp
+ENTRYPOINT [ "sh" ,"-c", "/tmp/echoargs.sh $@"]
