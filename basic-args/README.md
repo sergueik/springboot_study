@@ -253,6 +253,49 @@ curl http://localhost:8080/basic
 This is my parameterized at run time and the result is: 17
 ```
 
+### Passing Arguments, Exercise Repeated
+
+`echoargs.sh`:
+```sh
+#!/bin/sh
+ARGS="$@";
+ARGS=${ARGS:-world};
+echo "hello ${ARGS}";
+```
+`Dockerfile`:
+```text
+FROM alpine:3.9.5
+ADD echoargs.sh /tmp
+CMD /tmp/echoargs.sh
+```
+```sh
+docker build -t echo4 -f Dockerfile.echo4 .
+```
+```sh
+docker run -it echo4 /tmp/echoargs.sh -cnt 10
+```
+```text
+hello -cnt 10
+```
+
+`Dockerfile.echo3`:
+
+
+```
+FROM alpine:3.9.5
+ADD echoargs.sh /tmp
+ENTRYPOINT /tmp/echoargs.sh $@
+```
+
+```sh
+docker build -t echo3 -f Dockerfile.echo3 .
+```
+```sh
+docker run -it echo3 "" -cnt 10
+```
+```text
+hello -cnt 10
+```
 
 ### See Also
    * [tutorial](https://howtodoinjava.com/spring-boot2/application-arguments/) for dealing with the application runtime arguments in a `@Component`
