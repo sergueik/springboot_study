@@ -1,15 +1,15 @@
 ### Info
 
-This72ef0f50d6 directory contains a [basic nginx configuration](https://hellokoding.com/spring-boot/docker/) proxying a 
+This directory contains a [basic nginx configuration](https://hellokoding.com/spring-boot/docker/) proxying a 
  copy of [basic static page springboot app](https://github.com/sergueik/springboot_study/tree/master/basic-static) in `app` with static content served from the nginx container as described in [configure serving static content with Nginx
 ](http://www.java2novice.com/nginx/configure-static-content/) document
 
 ### Usage
 
-* remove static image (missing image is easy to discover)
+* remove static image - missing image is easy to discover. The fact the style sheet is missing too, can be seen indirectly through font change but one has to be aware of the desired page looks
 
 ```sh
-IMAGEPATH=app/src/main/resources/static/images/icons8-upload-to-cloud-24.png
+IMAGEPATH=app/src/main/resources/static/images/cloud.png
 rm $IMAGEPATH
 ```
 
@@ -27,7 +27,7 @@ popd
   #    - ./app/src/main/resources/static:/var/www/
 
 ```
-* build cluser
+* build cluster
 
 ```sh
 
@@ -37,17 +37,17 @@ docker-compose up --build
 
 open page in the browser (may need to clear browsing history first):
 
-![page](https://github.com/sergueik/springboot_study/blob/master/basic-nginx-static/screenshots/capture-page.png)
+![page with image problem](https://github.com/sergueik/springboot_study/blob/master/basic-nginx-static/screenshots/capture_broken_image_page.png)
 
 confirm in the console logs the `No such file or directory` is logged by `nginx`:
 ```text
-nginx    | 2022/07/27 17:21:34 [error] 21#21: *16 open() "/var/www/images/icons8-upload-to-cloud-24.png" failed (2: No such file or directory), client: 192.168.0.25, server: , request: "GET /images/icons8-upload-to-cloud-24.png HTTP/1.1", host: "192.168.0.29", referrer: "http://192.168.0.29/application"
+nginx    | 2022/07/27 17:21:34 [error] 21#21: *16 open() "/var/www/images/cloud.png" failed (2: No such file or directory), client: 192.168.0.25, server: , request: "GET /images/cloud.png HTTP/1.1", host: "192.168.0.29", referrer: "http://192.168.0.29/application"
 
 ```
 
 * restore image
 ```sh
-IMAGEPATH=app/src/main/resources/static/images/icons8-upload-to-cloud-24.png
+IMAGEPATH=app/src/main/resources/static/images/cloud.png
 git checkout $IMAGEPATH
 ```
 
@@ -60,17 +60,15 @@ do not rebuild the java app
       - ./app/src/main/resources/static:/var/www/
 
 ```
-* recycle and rebuild cluser
+* recycle and rebuild cluster
 ```sh
 docker-compose stop
+docker-compose rm -f
 ```
 
 ```text
 Stopping nginx ... done
 Stopping app   ... done
-```
-```sh
-docker-compose rm -f
 ```
 ```text
 Removing nginx ... done
@@ -83,7 +81,7 @@ docker-compose up --build
 ```
 open page in the browser:
 
-![page](https://github.com/sergueik/springboot_study/blob/master/basic-nginx-static/screenshots/capture-page-static.png)
+![page with static image](https://github.com/sergueik/springboot_study/blob/master/basic-nginx-static/screenshots/capture_page_with_image.png)
 
 * test in console from host
 ```sh
@@ -119,25 +117,24 @@ docker exec -it $ID ps
 verify there is no image inside the jar (will have to do it locally):
  
 ```sh
-jar tvf app/target/example.static_page.jar  | grep 'BOOT-INF/classes/static/css'
+jar tvf app/target/example.static_page.jar  | grep 'BOOT-INF/classes/static'
 ```
 
-```text
-     0 Wed Jul 27 10:22:42 EDT 2022 BOOT-INF/classes/static/css/
-   163 Wed Jul 27 10:22:42 EDT 2022 BOOT-INF/classes/static/css/core.css
+````text
+  0 Wed Jul 27 10:22:42 EDT 2022 BOOT-INF/classes/static/
+  0 Wed Jul 27 10:22:42 EDT 2022 BOOT-INF/classes/static/css/
+163 Wed Jul 27 10:22:42 EDT 2022 BOOT-INF/classes/static/css/core.css
 ```
 
-- see no `icons8-upload-to-cloud-24.png`
- 
+- see no `cloud.png`
  
 verify the operation of `nginx` server reporting missing files
 ```
 curl http://localhost:80/css/missing.css
 ```
- through the docker compose logs tagged by `nginx`:
+through the docker compose logs tagged by `nginx`:
 ```  
 nginx    | 2022/07/27 15:51:45 [error] 22#22: *15 open() "/var/www/css/missing.css" failed (2: No such file or directory), client: 172.20.0.1, server: , request: "GET /css/missing.css HTTP/1.1", host: "localhost"
-
 ```
 and
 
@@ -157,7 +154,7 @@ curl http://localhost:80/css/core.css
 this will print the stylesheet
 
 ```sh
-curl http://localhost:80/images/icons8-upload-to-cloud-24.png -o /dev/null
+curl http://localhost:80/images/cloud.png -o /dev/null
 ```
 this will show the progress (one can also check the status) 
  
