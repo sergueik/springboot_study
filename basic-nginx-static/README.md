@@ -53,7 +53,14 @@ git checkout $IMAGEPATH
 
 do not rebuild the java app
 
-* rebuild cluser
+* uncomment the volumes instruction in `docker-compose.yml`:
+```YAML
+  nginx:
+    volumes:
+      - ./app/src/main/resources/static:/var/www/
+
+```
+* recycle and rebuild cluser
 ```sh
 docker-compose stop
 ```
@@ -65,11 +72,20 @@ Stopping app   ... done
 ```sh
 docker-compose rm -f
 ```
+```text
+Removing nginx ... done
+Removing app   ... done
+
+```
 ```sh
 export COMPOSE_HTTP_TIMEOUT=600
 docker-compose up --build
 ```
-* test from host
+open page in the browser:
+
+![page](https://github.com/sergueik/springboot_study/blob/master/basic-nginx-static/screenshots/capture-page-static.png)
+
+* test in console from host
 ```sh
 curl http://localhost:80/application/
 ```
@@ -85,7 +101,7 @@ this will show
 css     images
 ```
  
- ```sh
+```sh
 NAME='static_app'
 ID=$(docker container ls |  grep "$NAME" | awk '{print $1}' )
 docker exec -it $ID ps
@@ -93,7 +109,7 @@ docker exec -it $ID ps
  
  this will show
  
- ```text
+```text
  PID   USER     TIME  COMMAND
     1 root      0:42 java -jar app.jar
    47 root      0:00 ps
@@ -114,7 +130,7 @@ jar tvf app/target/example.static_page.jar  | grep 'BOOT-INF/classes/static/css'
 - see no `icons8-upload-to-cloud-24.png`
  
  
-verify the operation of nginx server reporting missing files
+verify the operation of `nginx` server reporting missing files
 ```
 curl http://localhost:80/css/missing.css
 ```
@@ -128,7 +144,7 @@ and
 ```sh
 curl http://localhost:80/images/missing.png
 ```
-logged in docker compose screen:
+logged in docker compose console log:
 ```
 nginx    | 2022/07/27 15:52:15 [error] 22#22: *16 open() "/var/www/images/missing.png" failed (2: No such file or directory), client: 172.20.0.1, server: , request: "GET /images/missing.css HTTP/1.1", host: "localhost" 
 ```
