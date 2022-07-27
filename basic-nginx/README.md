@@ -11,7 +11,7 @@ pushd app
 mvn clean package
 popd
 ```
-* build cluser
+* build cluster
 ```sh
 export COMPOSE_HTTP_TIMEOUT=600
 docker-compose up --build
