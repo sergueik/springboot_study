@@ -98,7 +98,7 @@ public class NodeExporterControllerTests {
 				.format(
 						"%s\\{" + "instance=\\\"hostname[0-9]+\\\"" + ","
 								+ "datacenter=\\\"\\w*\\\"" + "," + "application=\\\"\\w+\\\""
-								+ "," + "linborg_instance=\\\"\\w+\\\"," + "\\} [0-9.]+ [0-9]+",
+								+ "," + "linborg_instance=\\\"\\w+\\\"," + "\\} [0-9.]+",
 						counterName);
 		List<String> entries = Arrays.asList(entity.getBody().split("\n")).stream()
 				.filter(o -> o.contains(counterName))
