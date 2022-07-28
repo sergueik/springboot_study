@@ -120,7 +120,7 @@ verify there is no image inside the jar (will have to do it locally):
 jar tvf app/target/example.static_page.jar  | grep 'BOOT-INF/classes/static'
 ```
 
-````text
+```text
   0 Wed Jul 27 10:22:42 EDT 2022 BOOT-INF/classes/static/
   0 Wed Jul 27 10:22:42 EDT 2022 BOOT-INF/classes/static/css/
 163 Wed Jul 27 10:22:42 EDT 2022 BOOT-INF/classes/static/css/core.css
@@ -168,6 +168,7 @@ app      | 2021-12-13 22:18:14.627  INFO 1 --- [nio-8080-exec-5] example.control
 app      | 2021-12-13 22:18:14.627  INFO 1 --- [nio-8080-exec-5] example.controller.HomeController        : Setting text from environment hostname:Server:981fad0be0c8
 nginx    | 192.168.0.25 - - [13/Dec/2021:22:18:14 +0000] "GET /application HTTP/1.1" 200 876 "-" "curl/7.74.0" "-"
 ```
+
 or
 ```sh
 docket-compose exec -it nginx sh

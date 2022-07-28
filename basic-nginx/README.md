@@ -80,3 +80,4 @@ docker image prune -f
 ### See Also
   * example with [mysql, spring hibernate, nginx](https://github.com/opstree/spring3hibernate)
   * [note](https://nginx.org/ru/docs/http/ngx_http_proxy_module.html#proxy_pass)  about URI format
+  * nginx admin [documentation](https://docs.nginx.com/nginx/admin-guide/monitoring/logging/)
