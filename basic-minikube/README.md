@@ -32,7 +32,7 @@ minikube start --driver=docker
 NOTE: a lot quicker on Windows / SSD than on Linux/CF
 NOTE: to use `--driver=none` one appears to have to install minikube as root
 
-*  smoke test 
+*  smoke test
 ```sh
 kubectl create deployment nginx --image=nginx:alpine
 kubectl expose deployment nginx --type=NodePort --port=80
@@ -46,7 +46,7 @@ kubectl delete deployment nginx
 
 * test basic deployment
 ```
-kubectl apply -f deployment.nginx.yaml 
+kubectl apply -f deployment.nginx.yaml
 ```
 ```text
 deployment.apps/nginx-app created
@@ -84,7 +84,7 @@ docker build -t $NAME ../$NAME
 docker image ls | grep $NAME
 
 DEPLOYMENT_NAME=perl-app
-kubectl apply -f deployment.$DEPLOYMENT_NAME.yaml 
+kubectl apply -f deployment.$DEPLOYMENT_NAME.yaml
 kubectl get pod
 ```
 NOTE: do not provide `-f Dockerfile` argument - confuses Docker.
@@ -122,8 +122,8 @@ docker build -t %NAME% ..\%NAME%
 docker image ls | find %NAME%
 ```
 NOTE: do not provide `-f Dockerfile` argument - confuses Docker.
- 
-* configure deployment `imagePullPolicy` in `deployment.perl-app.yaml` to [uses a private image](https://kubernetes.io/docs/concepts/containers/images/) 
+
+* configure deployment `imagePullPolicy` in `deployment.perl-app.yaml` to [uses a private image](https://kubernetes.io/docs/concepts/containers/images/)
 
 ```yaml
   spec:
@@ -140,11 +140,11 @@ NOTE: do not provide `-f Dockerfile` argument - confuses Docker.
 ```sh
 DEPLOYMENT_NAME=perl-app
 
-kubectl apply -f deployment.$DEPLOYMENT_NAME.yaml 
+kubectl apply -f deployment.$DEPLOYMENT_NAME.yaml
 ```
 ```cmd
 set DEPLOYMENT_NAME=perl-app
-kubectl apply -f deployment.%DEPLOYMENT_NAME%.yaml 
+kubectl apply -f deployment.%DEPLOYMENT_NAME%.yaml
 ```
 
 * see
@@ -189,7 +189,7 @@ for /f "tokens=*" %. IN ('minikube.exe service %DEPLOYMENT_NAME% --url') do "c:\
    ]
 }
 ```
-alternatively  check `$DOCKER_HOST` and the port assiged 
+alternatively  check `$DOCKER_HOST` and the port assiged
 ```sh
 kubectl get service $DEPLOYMENT_NAME
 ```
@@ -198,10 +198,10 @@ NAME       TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
 perl-app   NodePort   10.100.74.243   <none>        8080:32497/TCP   9s
 
 ```
-if anything 
+if anything
 
 ```cmd
-for /f "tokens=*" %. IN ('kubectl.exe get pod -o name ^| findstr %DEPLOYMENT_NAME%') do @kubectl.exe exec -it %. -- sh  
+for /f "tokens=*" %. IN ('kubectl.exe get pod -o name ^| findstr %DEPLOYMENT_NAME%') do @kubectl.exe exec -it %. -- sh
 ```
 ```sh
 docker exec -it $(kubectl.exe get pod -o name | grep $DEPLOYMENT_NAME) -- sh
@@ -300,11 +300,11 @@ minikube addons enable ingress
 ```
 * create network
 ```sh
-docker network connect minikube nfs-server 
+docker network connect minikube nfs-server
 ```
 * create deployment
 ```sh
-kubectl apply -f deployment-alpine-volume.yaml 
+kubectl apply -f deployment-alpine-volume.yaml
 ```
 confirm the log is being appended:
 ```sh
@@ -324,13 +324,95 @@ docker container stop nfs-server
 docker container rm nfs-server
 minikube stop
 ```
+
+### NOTE
+
+if using Powershell to execute kubernetes commands reading input from the local files make sure not to omit the encoding override argument.
+Otherwise the __UTF16__ BOM (`<feff>`) will be stored
+
+* wrong way
+
+```powershell
+'admin'| out-file -nonewline -literalpath username.txt
+'1f2d1e2e67df' | out-file -nonewline -literalpath password.txt
+```
+```powershell
+C:\Minikube\kubectl.exe create secret generic db-user-pass  --from-file=./username.txt --from-file=./password.txt
+```
+
+```powershell
+$s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.password}"
+```
+
+```powershell
+$s
+```
+
+```text
+//4xAGYAMgBkADEAZQAyAGUANgA3AGQAZgA=
+```
+
+```powershell
+[System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($s))
+```
+this will print
+```text
+□﻿﻿﻿1f2d1e2e67df
+```
+* save to  another file, again without specifying the encoding
+```powershell
+[System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($s)) | out-file -nonewline -literalpath result.txt
+```
+
+open in the editor
+```text
+<feff>1f2d1e2e67df
+```
+ the BOM will nnot bi visible in the notepad
+
+* repeat with `encoding=ascii` option
+
+```powershell
+[System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($s)) | out-file -nonewline -literalpath result2.txt -encoding ascii
+```
+this time the BOM character will be converted to a question mark:
+
+```powershell
+get-content  -path .\result2.txt
+```
+```text
+?1f2d1e2e67df
+```
+* verify that passing encoding argument and updating the conversion call fixes it:
++ step 1
+```powershell
+'admin'| out-file -nonewline -literalpath username.txt -encoding ascii -force
+'1f2d1e2e67df' | out-file -nonewline -literalpath password.txt -encoding ascii -force
+```
+
++ step 2
+```powrshell
+$s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.password}"
+```
+
++ step 3
+```powershell
+[System.Text.Encoding]::Ascii.GetString([System.Convert]::FromBase64String($s))
+```
+
+```text
+1f2d1e2e67df
+```
 ### See Also
 
    * https://github.com/DanWahlin/DockerAndKubernetesCourseCode/tree/main/samples
    * https://v1-18.docs.kubernetes.io/docs/setup/learning-environment/minikube/
-   * https://kubernetes.io/docs/concepts/containers/images/
+   * [kubernetes dicumentation](https://kubernetes.io/docs/concepts/containers/images/)
    * https://www.tutorialworks.com/kubernetes-imagepullbackoff/
    * https://sysdig.com/blog/debug-kubernetes-crashloopbackoff/
+   * [Play with Kubernetes](https://labs.play-with-k8s.com)
+   * [Play with Kubernetes Classroom](https://training.play-with-kubernetes.com)
+
    * [Kubernetes Tutorials](https://github.com/mrbobbytables/k8s-intro-tutorials)
    * __Packaging Applitions with Helm for Kubernetes__ [example source](https://github.com/phcollignon/helm3)
    * __Deploying Statefull Application to Kubernetes__ [example source](https://github.com/phcollignon/kubernetes_storage)
