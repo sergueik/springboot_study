@@ -29,13 +29,108 @@ or (on Linux host)
 ```sh
 minikube start --driver=docker
 ```
-NOTE: a lot quicker on Windows / SSD than on Linux/CF
+NOTE: Vagrant driver is a lot quicker on Windows / SSD than on Linux/CF
 NOTE: to use `--driver=none` one appears to have to install minikube as root
 
 *  smoke test
 ```sh
 kubectl create deployment nginx --image=nginx:alpine
+```
+get ip address
+```sh
+kubectl get pods -o name
+```
+```text
+pod/nginx-565785f75c-9v9jm
+```
+```sh
+kubectl get pod/nginx-565785f75c-9v9jm -o jsonpath="{.status.podIP}"
+```
+```text
+172.17.0.4
+```
+NOTE: kubectl will not like the command 
+```sh
+kubectl get pod pod/nginx-565785f75c-9v9jm
+```
+```text
+error: there is no need to specify a resource type as a separate argument when passing arguments in resource/name form (e.g. 'kubectl get resource/<resource_name>' instead of 'kubectl get resource resource/<resource_name>'
+```
+NOTE:
+there will be timeout when accessing nginx direcrlty in the pod:
+```sh
+curl http://172.17.0.4:80/
+```
+```text
+curl: (28) Failed to connect to 172.17.0.4 port 80: Timed out
+```
+
+* add service
+```
 kubectl expose deployment nginx --type=NodePort --port=80
+```
+```sh
+kubectl get services
+```
+```text
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+kubernetes   ClusterIP   10.96.0.1      <none>        443/TCP        226d
+nginx        NodePort    10.102.35.42   <none>        80:30469/TCP   12s
+
+```sh
+kubectl get service/nginx -o json
+```
+```json
+{
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+        "creationTimestamp": "2022-08-09T21:22:51Z",
+        "labels": {
+            "app": "nginx"
+        },
+        "name": "nginx",
+        "namespace": "default",
+        "resourceVersion": "58861",
+        "uid": "69201b82-b89d-4dae-a8b7-8269019f5d76"
+    },
+    "spec": {
+        "clusterIP": "10.102.35.42",
+        "clusterIPs": [
+            "10.102.35.42"
+        ],
+        "externalTrafficPolicy": "Cluster",
+        "internalTrafficPolicy": "Cluster",
+        "ipFamilies": [
+            "IPv4"
+        ],
+        "ipFamilyPolicy": "SingleStack",
+        "ports": [
+            {
+                "nodePort": 30469,
+                "port": 80,
+                "protocol": "TCP",
+                "targetPort": 80
+            }
+        ],
+        "selector": {
+            "app": "nginx"
+        },
+        "sessionAffinity": "None",
+        "type": "NodePort"
+    },
+    "status": {
+        "loadBalancer": {}
+    }
+}
+```
+```sh
+kubectl get service/nginx -o jsonpath="{.spec.selector}"
+```
+```json
+{"app":"nginx"}
+```
+```sh
 curl $(minikube service nginx --url)
 kubectl delete service nginx
 kubectl delete deployment nginx
@@ -393,7 +488,7 @@ get-content  -path .\result2.txt
 + step 2
 ```powrshell
 $s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.password}"
-```
+  ```
 
 + step 3
 ```powershell
@@ -411,10 +506,11 @@ $s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.passwo
    * https://www.tutorialworks.com/kubernetes-imagepullbackoff/
    * https://sysdig.com/blog/debug-kubernetes-crashloopbackoff/
    * [Play with Kubernetes](https://labs.play-with-k8s.com)
-   * [Play with Kubernetes Classroom](https://training.play-with-kubernetes.com)
+   * [Play with Kubernetes workshop](https://training.play-with-kubernetes.com/kubernetes-workshop/)
+
 
    * [Kubernetes Tutorials](https://github.com/mrbobbytables/k8s-intro-tutorials)
-   * __Packaging Applitions with Helm for Kubernetes__ [example source](https://github.com/phcollignon/helm3)
+   * __Packaging Applications with Helm for Kubernetes__ [example source](https://github.com/phcollignon/helm3)
    * __Deploying Statefull Application to Kubernetes__ [example source](https://github.com/phcollignon/kubernetes_storage)
     * [NFS server conected to minukube cluster](https://github.com/phcollignon/nfs-server-minikube)
    * [kubernetes in docker](https://github.com/phcollignon/kind)
