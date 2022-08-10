@@ -18,6 +18,13 @@ $VERSION='1.1.5'
 
 invoke-webrequest -uri https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_windows_amd64.zip -OutFile terraform_${VERSION}_windows_amd64.zip
 ```
+if the error
+```text
+invoke-webrequest : The request was aborted: Could not create SSL/TLS securechannel.
+```
+
+still shows but the [registry fix](https://devblogs.microsoft.com/nuget/deprecating-tls-1-0-and-1-1-on-nuget-org/#ensuring-your-system-uses-tls-1-2) is not possible,
+download `https://releases.hashicorp.com/terraform/1.1.5/terraform_1.1.5_windows_amd64.zip` using the browser.
 unzip and copy to some directory (e.g. `c:\tools` ) the `terraform.exe` then add the directory to the `PATH`
 ```powershell
 $env:path="${env:path};C:\tools"
@@ -37,12 +44,8 @@ $env:PATH="${env:PATH};C:\Program Files\Git\usr\bin"
 ```
 but it is also failing, now from apparently constructing an invalid file path  expression to access the box that is downloaded in the local directory:
 ```text
-2022-02-11T18:39:04.252-0500 [WARN]  unexpected data: registry.terraform.io/terr
-a-farm/virtualbox:stderr=": C\:\\Users\\Serguei\\.terraform\virtualbox\\gold\vir
-tualbox: Cannot open: No such file or directory
-tar:"
-2022-02-11T18:39:04.257-0500 [WARN]  unexpected data: registry.terraform.io/terr
-a-farm/virtualbox:stderr="Error is not recoverable: exiting now
+2022-02-11T18:39:04.252-0500 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr=": C\:\\Users\\Serguei\\.terraform\virtualbox\\gold\virtualbox: Cannot open: No such file or directory tar:"
+2022-02-11T18:39:04.257-0500 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr="Error is not recoverable: exiting now
 
 ```
 
@@ -54,7 +57,12 @@ tar tvf virtualbox.box
 -rw-rw-r-- ladar/ladar 103506432 2022-02-01 06:13 generic-alpine39-virtualbox-disk001.vmdk
 -rw-rw-r-- ladar/ladar       301 2022-02-01 06:13 info.json
 -rw-rw-r-- ladar/ladar        26 2022-02-01 06:13 metadata.json
+```
 
+on Windows one can try to switch to CMD to finish initialization:
+```cmd
+PATH=%PATH%;c:\tools;"C:\Program Files\Git\usr\bin"
+terraform.exe init
 ```
 * verify version
 ```sh
@@ -91,7 +99,7 @@ terraform init
 ```
 * plan saving the state
 ```sh
-terraform plan -out a.out
+terraform plan -no-color -out a.out
 ```
 ```sh
 export TF_LOG=info
@@ -130,7 +138,44 @@ virtualbox_vm.node[0]: Still creating... [1m30s elapsed]
 virtualbox_vm.node[0]: Still creating... [1m40s elapsed]
 virtualbox_vm.node[0]: Creation complete after 1m46s [id=2465f3d7-08fa-4f05-9340-0b0a98d04b17]
 ```
+on Linux 
+and
 
+```text
+2022-08-09T21:10:25.947-0400 [INFO]  Starting apply for virtualbox_vm.node[0]
+virtualbox_vm.node[1]: Creating...
+2022-08-09T21:10:25.958-0400 [INFO]  Starting apply for virtualbox_vm.node[1]
+virtualbox_vm.node[0]: Still creating... [10s elapsed]
+virtualbox_vm.node[1]: Still creating... [10s elapsed]
+virtualbox_vm.node[0]: Still creating... [20s elapsed]
+virtualbox_vm.node[1]: Still creating... [20s elapsed]
+2022-08-09T21:10:49.148-0400 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr=tar
+2022-08-09T21:10:49.150-0400 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr=": C\:\\Users\\Serguei\\.terraform\virtualbox\\gold\virtualbox: Cannot open: No such file or directory"
+2022-08-09T21:10:49.157-0400 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr="tar: Error is not recoverable: exiting now"
+2022-08-09T21:10:49.193-0400 [ERROR] vertex "virtualbox_vm.node[1]" error: [ERROR] Unpacking image https://app.vagrantup.com/generic/boxes/alpine39/versions/3.6.8/providers/virtualbox.box: unpacking gold image virtualbox.box: exit status 2
+2022-08-09T21:10:54.677-0400 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr=tar
+2022-08-09T21:10:54.678-0400 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr=": C\:\\Users\\Serguei\\.terraform\virtualbox\\gold\virtualbox: Cannot open: No such file or directory
+tar: Error is not recoverable: exiting now"
+2022-08-09T21:10:54.706-0400 [ERROR] vertex "virtualbox_vm.node[0]" error: [ERROR] Unpacking image https://app.vagrantup.com/generic/boxes/alpine39/versions/3.6.8/providers/virtualbox.box: unpacking gold image virtualbox.box: exit status 2
+
+Error: [ERROR] Unpacking image https://app.vagrantup.com/generic/boxes/alpine39/versions/3.6.8/providers/virtualbox.box: unpacking gold image virtualbox.box: exit status 2
+
+  with virtualbox_vm.node[0],
+  on virtualbox.tf line 9, in resource "virtualbox_vm" "node":
+   9: resource "virtualbox_vm" "node" {
+
+
+Error: [ERROR] Unpacking image https://app.vagrantup.com/generic/boxes/alpine39/versions/3.6.8/providers/virtualbox.box: unpacking gold image virtualbox.box: exit status 2
+
+  with virtualbox_vm.node[1],
+  on virtualbox.tf line 9, in resource "virtualbox_vm" "node":
+   9: resource "virtualbox_vm" "node" {
+
+
+```
+
+on Windows.
+On Windows one can untar the box manually into 
 if a log was set fo info, there will be some more low level information:
 
 ```text
@@ -176,6 +221,9 @@ terraform plan -destroy -out a.out
 terraform apply a.out
 ```
 NOTE: all temporary resources will be found in the working directory and need to be added to the `.gitignore`.
+
+If the machine directory `c:\Users\Serguei\.terraform\virtualbox\machine\node-02` was not removed, remove it manually
+
 ### See Also
 
 * [install Terraform on Ubuntu Bionic 18.04 Server](https://www.decodingdevops.com/how-to-install-terraform-on-ubuntu-18-04-server/)
