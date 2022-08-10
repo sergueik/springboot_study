@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2022-08-10T02:11:03Z"
+  labels:
+    app: nginx
+  name: nginx
+  namespace: default
+  resourceVersion: "73011"
+  uid: b20365e0-7569-452f-a148-10faf314058d
+spec:
+  clusterIP: 10.96.139.193
+  clusterIPs:
+  - 10.96.139.193
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - nodePort: 30491
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx
+    selected_pod: X
+    # selecting specific pod to expose
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
