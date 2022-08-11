@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  app:
+    image: golang:alpine3.9
+    container_name: app
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile.one
+    ports:
+      - ${HTTP_PORT}:${HTTP_PORT}
+    env_file:
+      - .env

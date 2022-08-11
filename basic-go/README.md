@@ -134,7 +134,27 @@ docker run -v /etc:/tmp/etc -it $IMAGE /example3
 ```sh
 translated phrase: "AND OLD FALCON"
 ```
+###  All In One
 
+Alternatively run container from the same image that is used for compile:
+```sh
+NAME=xxx
+docker build -t $NAME -f Dockerfile.one .
+docker run --rm -it $NAME
+```
+```text
+{    "hi": [{        "hello": "Всем привет"    }]}
+Всем привет
+
+```
+```sh
+docker image rm $NAME
+```
+or
+```sh
+export COMPOSE_HTTP_TIMEOUT=600
+docker-compose up --build
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

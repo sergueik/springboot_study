@@ -1,0 +1,10 @@
+FROM golang:alpine3.9
+WORKDIR /app
+ENV GOOS=linux
+ENV GOARCH=amd64
+ENV CGO_ENABLED=0
+COPY example4.go test.json ./
+RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example4 example4.go
+CMD ["/app/example4"]
+
+
