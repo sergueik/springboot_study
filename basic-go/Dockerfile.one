@@ -6,6 +6,6 @@ ENV CGO_ENABLED=0
 COPY example4.go test.json ./
 RUN GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "-s -w" -o example4 example4.go
 CMD ["./example4"]
-# can use absolute paths or relative to WORKSPACE
+# can use absolute paths or relative to wORKSPACE
 
 

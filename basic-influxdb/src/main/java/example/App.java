@@ -23,8 +23,8 @@ import org.influxdb.dto.QueryResult.Series;
 public class App {
 
 	private static String host = "http://192.168.0.29:8086";
-	private static String user = "user"; // not used in InfluxDB 1.x
-	private static String password = "password";// not used in InfluxDB 1.x
+	private static String user = "user"; // not required with InfluxDB 1.x
+	private static String password = "password";// not required with InfluxDB 1.x
 	private static String databaseName = "example";
 	private static String seriesName = "testing";
 	private static InfluxDB influxDB;

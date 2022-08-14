@@ -848,7 +848,7 @@ using presision NANOSECONDS
 ![windows influx Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-windows-influx.png)
 
 ### See Also
-
+   * [intro](https://www.influxdata.com/time-series-database/) to time series databases (TSDB)
    * introductory [documentation](https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/https://docs.influxdata.com/influxdb/v1.8/introduction/get-started/)
    * influxdb query language [documentation](https://docs.influxdata.com/influxdb/v1.7/query_language/)
    * advanced  InfluxDB client [module](https://metacpan.org/pod/InfluxDB) on CPAN
