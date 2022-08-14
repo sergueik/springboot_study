@@ -1,0 +1,16 @@
+{
+  "name": "docker-web-gui",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:rakibtg/docker-web-gui.git",
+  "author": "rakibtg <rakibtg@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "file-exists": "^5.0.1",
+    "knex": "^0.19.4",
+    "sqlite3": "^4.1.0",
+    "write": "^2.0.0"
+  }
+}
