@@ -14,13 +14,16 @@ This directory contains a close replica of the
 * build the image:
 ```sh
 NAME=docker-web-gui
-docker build . -t $NAME
+docker build -t $NAME -f Dockerfile .
 ```
 * run the image:
 ```sh
-docker run -p 3230:3230 --name $IMAGE -v /var/run/docker.sock:/var/run/docker.sock $NAME
+docker container rm $NAME
+
+docker run -p 3230:3230 --name $NAME -v /var/run/docker.sock:/var/run/docker.sock $NAME
 ```
-NOTE: the original project was providing an invalid command which atempts to map both the socket and the binary. We install client locally in the contianer and only mount volume for socket
+NOTE: the original project was providing an invalid run command which attempts to map both the docker socket and the binary from the host into the container. The socker is the correct way to let docker process running in container access host inventory, but the binary is not compabile
+We install client locally in the contianer and only mount volume for socket
 
 ### Result
 
@@ -37,6 +40,58 @@ docker container stop $IMAGE
 docker container rm $IMAGE
 docker image rm $IMAGE
 ```
+### Notes
+
+switching to `node:16.12.0-alpine3.11` with intent to install just `docker-cli`, which is not possible in earlier releases of alpine than __3.11__ leads to error bulding node modules from source after finding no pre-built binaries for the platform:
+```text
+npm ERR! node-pre-gyp WARN Pre-built binaries not found for sqlite3@4.2.0 and node@16.12.0 (node-v93 ABI, musl) (falling back to source compile with node-gyp)
+npm ERR! node-pre-gyp http 403 status code downloading tarball https://mapbox-node-binary.s3.amazonaws.com/sqlite3/v4.2.0/node-v93-linux-x64.tar.gz
+npm ERR! gyp info it worked if it ends with ok
+npm ERR! gyp info using node-gyp@8.2.0
+npm ERR! gyp info using node@16.12.0 | linux | x64
+npm ERR! gyp info ok
+npm ERR! gyp info it worked if it ends with ok
+npm ERR! gyp info using node-gyp@8.2.0
+npm ERR! gyp info using node@16.12.0 | linux | x64
+npm ERR! gyp info find Python using Python version 3.8.10 found at "/usr/bin/python3"
+npm ERR! gyp info spawn /usr/bin/python3
+npm ERR! gyp info spawn args [
+npm ERR! gyp info spawn args   '/usr/local/lib/node_modules/npm/node_modules/node-gyp/gyp/gyp_main.py',
+npm ERR! gyp info spawn args   'binding.gyp',
+npm ERR! gyp info spawn args   '-f',
+npm ERR! gyp info spawn args   'make',
+npm ERR! gyp info spawn args   '-I',
+npm ERR! gyp info spawn args   '/src/backend/node_modules/sqlite3/build/config.gypi',
+npm ERR! gyp info spawn args   '-I',
+npm ERR! gyp info spawn args   '/usr/local/lib/node_modules/npm/node_modules/node-gyp/addon.gypi',
+npm ERR! gyp info spawn args   '-I',
+npm ERR! gyp info spawn args   '/root/.cache/node-gyp/16.12.0/include/node/common.gypi',
+npm ERR! gyp info spawn args   '-Dlibrary=shared_library',
+npm ERR! gyp info spawn args   '-Dvisibility=default',
+npm ERR! gyp info spawn args   '-Dnode_root_dir=/root/.cache/node-gyp/16.12.0',
+npm ERR! gyp info spawn args   '-Dnode_gyp_dir=/usr/local/lib/node_modules/npm/node_modules/node-gyp',
+npm ERR! gyp info spawn args   '-Dnode_lib_file=/root/.cache/node-gyp/16.12.0/<(target_arch)/node.lib',
+npm ERR! gyp info spawn args   '-Dmodule_root_dir=/src/backend/node_modules/sqlite3',
+npm ERR! gyp info spawn args   '-Dnode_engine=v8',
+npm ERR! gyp info spawn args   '--depth=.',
+npm ERR! gyp info spawn args   '--no-parallel',
+npm ERR! gyp info spawn args   '--generator-output',
+npm ERR! gyp info spawn args   'build',
+npm ERR! gyp info spawn args   '-Goutput_dir=.'
+npm ERR! gyp info spawn args ]
+npm ERR! gyp info ok
+npm ERR! gyp info it worked if it ends with ok
+npm ERR! gyp info using node-gyp@8.2.0
+npm ERR! gyp info using node@16.12.0 | linux | x64
+npm ERR! gyp info spawn make
+npm ERR! gyp info spawn args [ 'BUILDTYPE=Release', '-C', 'build' ]
+npm ERR! /bin/sh: python: not found
+npm ERR! make: *** [deps/action_before_build.target.mk:13: Release/obj/gen/sqlite-autoconf-3310100/sqlite3.c] Error 127
+npm ERR! gyp ERR! build error
+
+```
+a workaround for this is to install both `python` and `python3`. This can be improved further by splitting the build of the app into separate *build* container and only install `docker-cli` and `python3` in the application container
+
 ### Original Documentations
 
   * [Backend API](https://github.com/rakibtg/$IMAGE/tree/master/backend)
