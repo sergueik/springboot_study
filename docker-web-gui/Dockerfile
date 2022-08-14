@@ -1,7 +1,5 @@
-# FROM node:alpine
-FROM python:3.8.2-alpine
-# TODO: pin
-RUN apk add --update build-base nodejs npm docker
+FROM node:8.12-alpine
+RUN apk add --update build-base docker g++ make python
 WORKDIR /src
 ADD ./backend /src/backend
 ADD ./client /src/client
