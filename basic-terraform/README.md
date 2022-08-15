@@ -22,18 +22,29 @@ if the error
 ```text
 invoke-webrequest : The request was aborted: Could not create SSL/TLS securechannel.
 ```
-
-still shows but the [registry fix](https://devblogs.microsoft.com/nuget/deprecating-tls-1-0-and-1-1-on-nuget-org/#ensuring-your-system-uses-tls-1-2) is not possible,
+still shows and if the
+[registry fix](https://devblogs.microsoft.com/nuget/deprecating-tls-1-0-and-1-1-on-nuget-org/#ensuring-your-system-uses-tls-1-2)
+is not possible,
 download `https://releases.hashicorp.com/terraform/1.1.5/terraform_1.1.5_windows_amd64.zip` using the browser.
-unzip and copy to some directory (e.g. `c:\tools` ) the `terraform.exe` then add the directory to the `PATH`
+unzip and copy the `terraform.exe` 
+to some directory listed in the `PATH` (e.g. `c:\tools` ) or add the terraform application home directory to the `PATH`
+  + in cmd
+```cmd
+PATH=%PATH%;c:\tools;
+```
+  + in git bash
+```sh
+export PATH=$PATH:/c/tools
+```
+  + in powershell
 ```powershell
 $env:path="${env:path};C:\tools"
 ```
-to help it prepare `c:\Users\Serguei\.terraform\virtualbox\gold\virtualbox` need to install tar.exe. 
+to help it prepare `c:\Users\Serguei\.terraform\virtualbox\gold\virtualbox` need to install `tar.exe`
 https://docs.microsoft.com/en-us/virtualization/community/team-blog/2017/20171219-tar-and-curl-come-to-windows
 http://libarchive.org/downloads/libarchive-v3.5.2-win64.zip
-NOTE: the gnu [tar](https://sourceforge.net/projects/gnuwin32/files/tar/1.13-1/tar-1.13-1-bin.zip/download?use_mirror=iweb&download=) is failing in run time.
-NOTE: one cannot copy the tar.exe from  Windows 10 to Windows 8 -  the runtime error is:
+NOTE: the [gnu tar](https://sourceforge.net/projects/gnuwin32/files/tar/1.13-1/tar-1.13-1-bin.zip/download?use_mirror=iweb&download=) is failing at runtime.
+NOTE: one cannot copy the tar.exe from  Windows 10 to Windows 8 -  the runtime error would be:
 ```text
 Program 'tar.exe' failed to run: The specified executable is not a valid application for this OS platform.
 ```
@@ -46,10 +57,9 @@ but it is also failing, now from apparently constructing an invalid file path  e
 ```text
 2022-02-11T18:39:04.252-0500 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr=": C\:\\Users\\Serguei\\.terraform\virtualbox\\gold\virtualbox: Cannot open: No such file or directory tar:"
 2022-02-11T18:39:04.257-0500 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr="Error is not recoverable: exiting now
-
 ```
 
-The box itself is downloaded fine:
+The box itself is downloaded fine and will be found in the directory it was launched:
 ```sh
 tar tvf virtualbox.box
 -rw-rw-r-- ladar/ladar    2479 2022-02-01 06:13 Vagrantfile
@@ -58,17 +68,45 @@ tar tvf virtualbox.box
 -rw-rw-r-- ladar/ladar       301 2022-02-01 06:13 info.json
 -rw-rw-r-- ladar/ladar        26 2022-02-01 06:13 metadata.json
 ```
+this tar should be expanded into the `~/.terraform/virtualbox/gold/virtualbox/` which must be created first
+```cmd
+dir %userprofile%\.terraform\virtualbox\gold\virtualbox
 
-on Windows one can try to switch to CMD to finish initialization:
+08/09/2022  09:15 PM    <DIR>          .
+08/09/2022  09:15 PM    <DIR>          ..
+02/01/2022  07:13 AM             6,073 box.ovf
+08/09/2022  09:27 PM       103,506,432 generic-alpine39-virtualbox-disk001.vmdk
+02/01/2022  07:13 AM               301 info.json
+02/01/2022  07:13 AM                26 metadata.json
+02/01/2022  07:13 AM             2,479 Vagrantfile
+               5 File(s)    103,515,311 bytes
+               2 Dir(s)  107,445,460,992 bytes free
+```
+Also on Windows one can try to switch to CMD to finish initialization:
 ```cmd
 PATH=%PATH%;c:\tools;"C:\Program Files\Git\usr\bin"
 terraform.exe init
 ```
+* validate
+```sh
+terraform validate
+```
+
+```text
+Success! The configuration is valid.
+```
+by default it will use console ASI colors, so in CMD console one will have to append a `-no-color` option
+```
+terraform.exe validate -no-color
+```
+```text
+Success! The configuration is valid.
+```
+
 * verify version
 ```sh
 terraform -version
 ```
-
 ```text
 Terraform v1.1.5
 on linux_amd64
@@ -82,10 +120,22 @@ on linux_amd64
       version = "0.2.2-alpha.1"
     }
   }
-
 ```
+
 (no automated way learned yet)
 
+verify providers are found
+
+```cmd
+terraform.exe providers -no-color
+
+```
+```text
+Providers required by configuration:
+.
+|
++--- provider[registry.terraform.io/terra-farm/virtualbox] 0.2.2-alpha.1
+```
 ### Testing
 
 * comment the non-existent user_data reference
