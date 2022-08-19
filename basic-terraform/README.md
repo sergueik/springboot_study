@@ -274,6 +274,20 @@ NOTE: all temporary resources will be found in the working directory and need to
 
 If the machine directory `c:\Users\Serguei\.terraform\virtualbox\machine\node-02` was not removed, remove it manually
 
+### Plugins
+
+* terraform relies on [plugins]() called "providers" in order to manage various types of resources.
+* e.g. terraform plugin for creating random ids is a 13 MB executable
+
+```cmd
+Directory of .terraform\providers\registry.terraform.io\hashicorp\random\3.3.2\windows_amd64
+08/19/2022  02:07 PM    <DIR>          .
+08/19/2022  02:07 PM    <DIR>          ..
+08/19/2022  02:12 PM        14,023,168 terraform-provider-random_v3.3.2_x5.exe
+```
+Every resource type is implemented by a provider - a provider adds a set of resource types and/or data sources that Terraform will become capable of managing
+To find available providers, [browse](https://registry.terraform.io/browse/providers) the [registry](https://registry.terraform.io)
+
 ### See Also
 
 * [install Terraform on Ubuntu Bionic 18.04 Server](https://www.decodingdevops.com/how-to-install-terraform-on-ubuntu-18-04-server/)
