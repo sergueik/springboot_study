@@ -278,13 +278,30 @@ public class NodeExporter {
 
 	public String metricsFromDataNative() {
 		if (debug)
-			logger.info("Starting reporting metrics");
+			logger.info("Starting reporting metrics collected through native SQL");
 		Writer writer = new StringWriter();
 		try {
 			registry = CollectorRegistry.defaultRegistry;
+			List<Object[]> result = dao.customFind(
+					"select sname as hostname,'dummy' as dc, aname as application, iname as env from axixs x join server s on x.sid = s.sid left join application a on x.aid = a.aid join instance i on x.iid = i.iid");
+
+			for (Object[] row : result) {
+				logger.info(
+						String.format("Processing query result: %s", Arrays.asList(row)));
+				String hostname = row[0] != null ? row[0].toString() : "null";
+				String dc = row[1] != null ? row[1].toString() : "null";
+				String application = row[2] != null ? row[2].toString() : "null";
+				String env = row[3] != null ? row[3].toString() : "null";
+				logger
+						.info(String.format(
+								"Processing inventory for \"host\": " + "\"%s\"" + ", "
+										+ "\"dc\": " + "\"%s\"" + ", " + "\"application\": "
+										+ "\"%s\"" + ", " + "\"env\": " + "\"%s\"",
+								hostname, dc, application, env));
+
+			}
 			// illustration how to use composition to implement additional
 			// functionality
-			List<Object[]> result = dao.customFind("select sname as hostname,'dummy' as dc,aname as application, iname as env from axixs x join server s on x.sid = s.sid left join application a on x.aid = a.aid join instance i on x.iid = i.iid");
 			List<Object[]> payload = dao.findAllDataNative();
 
 			for (Object[] row : payload) {

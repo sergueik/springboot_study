@@ -13,7 +13,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 public class HibernateUtility {
 	private static SessionFactory factory;
 
-	private HibernateUtility() {
+	protected HibernateUtility() {
 	}
 
 	public synchronized static SessionFactory getSessionFactory() {
@@ -39,9 +39,8 @@ public class HibernateUtility {
 					System.getProperty("user.dir"), propertiesFileName);
 
 			// configuration.configure(resourcePath);
-			// org.hibernate.internal.util.config.ConfigurationException: Could not
-			// locate cfg.xml resource
-			// [C:\developer\sergueik\springboot_study\basic-hibernate-join-springboot/src/main/resources/hibernate.cfg.xml]
+			// org.hibernate.internal.util.config.ConfigurationException: 
+			// Could not locate cfg.xml resource .../src/main/resources/hibernate.cfg.xml
 			configuration.configure(propertiesFileName);
 
 			factory = configuration.buildSessionFactory();
