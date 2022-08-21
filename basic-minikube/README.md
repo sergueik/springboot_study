@@ -43,12 +43,46 @@ kubectl get pods -o name
 ```text
 pod/nginx-565785f75c-9v9jm
 ```
+to get bare name, use `jsonpath` argument
+```sh
+kubectl get pods -o jsonpath="{.items[*].metadata.name}"
+```
+```text
+nginx-565785f75c-9kp98
+```
+```sh
+kubectl get deployments -o name
+```
+```text
+deployment.apps/nginx
+```
+```sh
+kubectl get deployments -o jsonpath="{.items[*].metadata.name}"
+```
+```text
+nginx
+```
+```sh
+kubectl get pods -o jsonpath="{.items[*].spec.containers[*].image}"
+```
+```text
+nginx:alpine
+```
 ```sh
 kubectl get pod/nginx-565785f75c-9v9jm -o jsonpath="{.status.podIP}"
 ```
 ```text
 172.17.0.4
 ```
+alternatively
+```sh
+kubectl get pod nginx-565785f75c-9kp98 --template="{{.status.podIP}}"
+```
+```text
+172.17.0.2
+```
+- but `template` argument does not support array indexing.
+
 NOTE: kubectl will not like the command 
 ```sh
 kubectl get pod pod/nginx-565785f75c-9v9jm
@@ -56,8 +90,16 @@ kubectl get pod pod/nginx-565785f75c-9v9jm
 ```text
 error: there is no need to specify a resource type as a separate argument when passing arguments in resource/name form (e.g. 'kubectl get resource/<resource_name>' instead of 'kubectl get resource resource/<resource_name>'
 ```
+the bare name is OK:
+```sh
+kubectl get pod nginx-565785f75c-9kp98
+```
+```text
+NAME                     READY   STATUS    RESTARTS   AGE
+nginx-565785f75c-9kp98   1/1     Running   0          6h7m
+```
 NOTE:
-there will be timeout when accessing nginx direcrlty in the pod:
+there will be timeout when accessing nginx directly in the pod:
 ```sh
 curl http://172.17.0.4:80/
 ```
@@ -66,7 +108,7 @@ curl: (28) Failed to connect to 172.17.0.4 port 80: Timed out
 ```
 
 * add service
-```
+```sh
 kubectl expose deployment nginx --type=NodePort --port=80
 ```
 ```sh
@@ -76,7 +118,7 @@ kubectl get services
 NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
 kubernetes   ClusterIP   10.96.0.1      <none>        443/TCP        226d
 nginx        NodePort    10.102.35.42   <none>        80:30469/TCP   12s
-
+```
 ```sh
 kubectl get service/nginx -o json
 ```
@@ -515,11 +557,16 @@ $s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.passwo
    * [repository](https://github.com/scriptcamp/vagrant-kubeadm-kubernetes) `Vagrantfile` to Setup Kubernetes 3 node pod Cluster on Ubuntu 18.05 Vagrant VMs (a little resource requirement heavy)
    * [discussion](https://stackoverflow.com/questions/41166622/how-to-select-a-specific-pod-for-a-service-in-kubernetes/41171197#41171197) of statefulsets
    * [dicussion](https://stackoverflow.com/questions/53212748/kubernetes-route-incoming-traffic-to-specific-pod/63487152#63487152) on routing
+   * [kubernetes deployments versus statefulsets](https://www.baeldung.com/ops/kubernetes-deployment-vs-statefulsets)
+   * [RedHat StatefulSets Kubernetes Tutorial](https://redhat-scholars.github.io/kubernetes-tutorial/kubernetes-tutorial/statefulset.html)
+   * https://kubernetes.io/docs/tasks/access-application-cluster/list-all-running-container-images/
    * GKE documentation
+
        + [https://cloud.google.com/kubernetes-engine/docs/concepts#core-concepts](https://cloud.google.com/kubernetes-engine/docs/concepts#core-concepts)
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/pod](https://cloud.google.com/kubernetes-engine/docs/concepts/pod)  
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/deployment](https://cloud.google.com/kubernetes-engine/docs/concepts/deployment) 
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/service](https://cloud.google.com/kubernetes-engine/docs/concepts/service)
+       + [https://cloud.google.com/kubernetes-engine/docs/how-to/exposing-apps](https://cloud.google.com/kubernetes-engine/docs/how-to/exposing-apps)
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/volumes](https://cloud.google.com/kubernetes-engine/docs/concepts/volumes)
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/daemonset](https://cloud.google.com/kubernetes-engine/docs/concepts/daemonset) 
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/statefulset](https://cloud.google.com/kubernetes-engine/docs/concepts/statefulset) 
@@ -527,6 +574,7 @@ $s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.passwo
        + [https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/](https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/)   (older)
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/secret](https://cloud.google.com/kubernetes-engine/docs/concepts/secret)
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/configmap](https://cloud.google.com/kubernetes-engine/docs/concepts/configmap)
+       + [https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview)
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-autoscaler](https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-autoscaler)
        + [https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-autoscaler](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-autoscaler)
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/horizontalpodautoscaler](https://cloud.google.com/kubernetes-engine/docs/concepts/horizontalpodautoscaler)
@@ -536,5 +584,7 @@ $s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.passwo
        + [https://cloud.google.com/kubernetes-engine/docs/how-to/load-balance-ingress](https://cloud.google.com/kubernetes-engine/docs/how-to/load-balance-ingress)
        + [https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balance-ingress](https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balance-ingress)
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/service](https://cloud.google.com/kubernetes-engine/docs/concepts/service)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
