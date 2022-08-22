@@ -1,19 +1,22 @@
 package example.utils;
 
-// NOTE:  methods buildSessionFactory and ServiceRegistryBuilder in Hibernate 4.3.4 are deprecated
+import java.io.File;
+
+// NOTE:  
+// methods buildSessionFactory and ServiceRegistryBuilder in Hibernate 4.3.4 are deprecated
 // https://stackoverflow.com/questions/8640619/hibernate-serviceregistrybuilder
-// import org.hibernate.service.ServiceRegistryBuilder;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
+// import org.hibernate.service.ServiceRegistryBuilder;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 public class HibernateUtility {
 	private static SessionFactory factory;
 
-	private HibernateUtility() {
+	protected HibernateUtility() {
 	}
 
 	public synchronized static SessionFactory getSessionFactory() {
@@ -31,19 +34,23 @@ public class HibernateUtility {
 			// java.lang.UnsupportedOperationException: The application must supply
 			// JDBC connections
 			// https://www.programcreek.com/java-api-examples/org.hibernate.cfg.Configuration
-			// need full path ?
-			// org.hibernate.internal.util.config.ConfigurationException: Could not
-			// locate cfg.xml resource [hibernate.cfg.xml]
+
+			// configure via file
+			// see also:
+			// https://docs.jboss.org/hibernate/orm/3.5/api/org/hibernate/cfg/Configuration.html#configure(java.io.File)
 			String propertiesFileName = "hibernate.cfg.xml";
 			String resourcePath = String.format("%s/src/main/resources/%s",
 					System.getProperty("user.dir"), propertiesFileName);
 
-			// configuration.configure(resourcePath);
-			// org.hibernate.internal.util.config.ConfigurationException: Could not
-			// locate cfg.xml resource
-			// [C:\developer\sergueik\springboot_study\basic-hibernate-join-springboot/src/main/resources/hibernate.cfg.xml]
+			configuration.configure(new File(resourcePath));
+
+			// Alternatively call with application resource
+			// see also
+			// https://docs.jboss.org/hibernate/orm/3.5/api/org/hibernate/cfg/Configuration.html#configure(java.lang.String)
 			configuration.configure(propertiesFileName);
 
+			// see also: constructng configuration via the code
+			// https://www.baeldung.com/hibernate-5-spring
 			factory = configuration.buildSessionFactory();
 
 			// NOTE: the below initializaion will lead to error in runtime
