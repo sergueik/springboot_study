@@ -19,24 +19,52 @@ import example.model.Instance;
 import example.model.Application;
 import example.utils.HibernateUtility;
 
+// Duplicate annotation of non-repeatable type @SuppressWarnings
+// https://www.codejava.net/java-core/the-java-language/suppresswarnings-annotation-examples
+@SuppressWarnings({ "unchecked", "deprecation" })
+
 public class AdditionalQueriesImpl implements AdditionalQueries {
 	private static Logger logger = LoggerFactory
 			.getLogger(AdditionalQueries.class);
+	private List<Object[]> result = new ArrayList<>();
+	private Iterator<Object[]> nativeQueryObjectIterator;
+	
+	// NOTE: syntax 
+	private Object rows[] = {};
 
 	public List<Object[]> customFind(String query) {
-		List<Object[]> result = new ArrayList<>();
-		logger.info("customFind");
+		logger.info("customFind: {}", query);
 		SessionFactory factory = HibernateUtility.getSessionFactory();
 		Session session = factory.openSession();
 
-		@SuppressWarnings("unchecked")
 		Query<Object[]> nativeQuery = session.createNativeQuery(query);
 		// nativeQuery.setParameter("customerId", customerId);
+
 		List<Object[]> nativeQueryObjectList = nativeQuery.list();
-		Iterator<Object[]> nativeQueryObjectIterator = nativeQueryObjectList
-				.iterator();
+		result.clear();
+		nativeQueryObjectIterator = nativeQueryObjectList.iterator();
 		while (nativeQueryObjectIterator.hasNext()) {
-			Object rows[] = (Object[]) nativeQueryObjectIterator.next();
+			rows = (Object[]) nativeQueryObjectIterator.next();
+			result.add(rows);
+		}
+		session.clear();
+		session.close();
+		return result;
+	}
+
+	public List<Object[]> customFind(String query, long id) {
+		SessionFactory factory = HibernateUtility.getSessionFactory();
+		Session session = factory.openSession();
+
+		logger.info("customFind: {} {}", query, id);
+		Query<Object[]> nativeQuery = session.createNativeQuery(query);
+		nativeQuery.setParameter("customerId", id);
+
+		List<Object[]> nativeQueryObjectList = nativeQuery.list();
+		nativeQueryObjectIterator = nativeQueryObjectList.iterator();
+		result.clear();
+		while (nativeQueryObjectIterator.hasNext()) {
+			rows = (Object[]) nativeQueryObjectIterator.next();
 			result.add(rows);
 		}
 		session.clear();
