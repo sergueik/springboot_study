@@ -1,0 +1,47 @@
+---
+# based on: https://kubernetes.io/docs/tasks/inject-data-application/downward-api-volume-expose-pod-information/#capabilities-of-the-downward-api
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: downwardapi-example
+  labels:
+    cluster: info
+  annotations:
+    build: info
+spec:
+  containers:
+    - name: example
+      image: alpine:3.9
+      command: ["sh", "-c"]
+# NOTE: cannot use - > notation in this YAML processor
+# error: error parsing downwardapi-example.yaml: error converting YAML to JSON: yaml: line 27: did not find expected key
+#     args
+#      - >
+#      <shell script>
+# the command will be concatenated in the line, so steps have to be terminated with ";"
+      args:
+       - "while true; do
+          if [[ -e /etc/podinfo/labels ]]; then
+            echo -en '\nlabels:\n';
+            cat /etc/podinfo/labels;
+          fi;
+          if [[ -e /etc/podinfo/annotations ]]; then
+            echo -en '\nannotations:\n';
+            cat /etc/podinfo/annotations;
+          fi;
+          sleep 5;
+        done"
+      volumeMounts:
+        - name: podinfo
+          mountPath: /etc/podinfo
+  volumes:
+    - name: podinfo
+      downwardAPI:
+        items:
+          - path: labels
+            fieldRef:
+              fieldPath: metadata.labels
+          - path: annotations
+            fieldRef:
+              fieldPath: metadata.annotations

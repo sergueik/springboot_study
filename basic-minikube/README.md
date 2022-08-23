@@ -25,6 +25,15 @@ minikube start --driver=virtualbox
 ```cmd
 minikube.exe start --driver=virtualbox
 ```
+if seeing the communication timeout
+```cmd
+X minikube is unable to connect to the VM: dial tcp 192.168.59.100:22: i/o timeout
+```
+rerun the command one more time
+until the success comletion message
+```text
+* Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+```
 or (on Linux host)
 ```sh
 minikube start --driver=docker
@@ -210,6 +219,35 @@ curl $(minikube service nginx-app --url)
 kubectl delete service nginx-app
 kubectl delete deployment nginx-app
 ```
+
+### Downward API volume
+
+* deploy just a pod with a [downward API volume](https://kubernetes.io/docs/tasks/inject-data-application/downward-api-volume-expose-pod-information/#capabilities-of-the-downward-api)
+
+```sh
+kubectl create -f downwardapi-example.yaml
+```
+
+```sh
+kubectl get pod downwardapi-example
+```
+```
+NAME                  READY   STATUS    RESTARTS   AGE
+downwardapi-example   1/1     Running   0          37s
+```
+
+```sh
+kubectl logs downwardapi-example
+```
+```text
+labels:
+cluster="info"
+annotations:
+build="info"
+kubernetes.io/config.seen="2022-08-23T19:45:29.457804390Z"
+```
+
+these lines will continue be repeatedy logged
 
 ### Deploying Locally Built Images
 
@@ -560,6 +598,7 @@ $s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.passwo
    * [kubernetes deployments versus statefulsets](https://www.baeldung.com/ops/kubernetes-deployment-vs-statefulsets)
    * [RedHat StatefulSets Kubernetes Tutorial](https://redhat-scholars.github.io/kubernetes-tutorial/kubernetes-tutorial/statefulset.html)
    * https://kubernetes.io/docs/tasks/access-application-cluster/list-all-running-container-images/
+   * [minikube with knative](https://github.com/ivangfr/knative-minikube-environment) intended to host the deploy and run some Serverless applications
    * GKE documentation
 
        + [https://cloud.google.com/kubernetes-engine/docs/concepts#core-concepts](https://cloud.google.com/kubernetes-engine/docs/concepts#core-concepts)

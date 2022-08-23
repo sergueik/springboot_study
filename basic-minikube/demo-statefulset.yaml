@@ -1,0 +1,45 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: demo-service
+spec:
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 9376
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: demo-statefulset
+spec:
+  selector:
+    matchLabels:
+      app: MyApp
+  serviceName: demo-statefulset
+  replicas: 3
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: MyApp
+    spec:
+      containers:
+      - name: demo-container
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+          name: http
+        volumeMounts:
+        - name: demo-volume
+          mountPath: "/var/www/html"
+  volumeClaimTemplates:
+  - metadata:
+      name: demo-volume
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10M

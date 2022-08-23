@@ -1,0 +1,16 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: demo-pod-pvc
+spec:
+  containers:
+    - name: frontend
+      # TODO: pin the version
+      image: nginx:alpine
+      volumeMounts:
+      - mountPath: "/var/www/html"
+        name: demo-volume
+  volumes:
+    - name: demo-volume
+      persistentVolumeClaim:
+        claimName: demo-pvc
