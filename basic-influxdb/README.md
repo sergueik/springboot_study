@@ -5,13 +5,14 @@ this directory contains a minimally modified `InfluxDB::Client::Simple` Perl [mo
 tested interacting with an InfluxDB __1.8__ [hosted on alpine](https://hub.docker.com/r/woahbase/alpine-influxdb/). 
 
 If switched to InfluxDB __2.x__ the only difference for [data ingestion command](https://docs.influxdata.com/influxdb/v2.2/write-data/developer-tools/influx-cli/)
-will be in the `org` and `bucket` in the url instead of the `database` query param and presence of the authoriaation token header
+will be in the `org` and `bucket` in the upload url
+instead of the `database` query param and presence of the authoriaation token header. When two releases are run side-by-side make sure to adjust the port (e.g. in the below to `8096` for __2.2__)
 
 ```sh
 export TOKEN=$(cat token.txt)
 export ORG=testorg
 export BUCKET=testbucket
-export BASE_URL="http://192.168.0.92:8086"
+export BASE_URL="http://192.168.0.92:8096"
 export TIMESTAMP=$(perl -MTime::HiRes -e 'use Time::HiRes qw( gettimeofday); my ( $seconds, $microseconds ) = gettimeofday(); print $seconds . $microseconds ,"000", $/;')
 curl -v --request POST "$BASE_URL/api/v2/write?org=$ORG&bucket=$BUCKET&precision=ns" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8"  --header "Accept: application/json"  --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1656351627692598'
 ```
@@ -45,7 +46,7 @@ if the credentials are not accepted (e.g. after the loss of the container)
 ```sh
 influx user password --name testuser --password password
 ```
-or just recreate the container (the initial login will be redirected to `http://192.168.0.29:8086/onboarding/0`)
+or just recreate the container (the initial login will be redirected to `http://192.168.0.64:8086/onboarding/0`)
 
 
 * [InfluxDB](https://metacpan.org/pod/InfluxDB) CPAN module also implements the InfluxDB query and write, accesps `username ` and `password `
@@ -60,15 +61,10 @@ if ($self->{token}) {
         $args{headers}->{Authorization} = 'Authorization: Token '. $self->{token};
     }
 ```    
-    provide `org` and `bucket` instead of  `db`
-    and change the URL path from `/write` to
-        '/api/v2/write' 
-    
-
-
+provide `org` and `bucket` instead of  `db` and change the URL path from `/write` to `/api/v2/write`
 Note, this build allows operating via REST (but not WEB) interface:
 ```sh
-curl --silent -X POST http://192.168.0.29:8086/query?q=show%20databases | /c/tools/jq-win64.exe  '.' -
+curl --silent -X POST http://192.168.0.64:8086/query?q=show%20databases | /c/tools/jq-win64.exe  '.' -
 ```
 
 ```JSON
@@ -105,7 +101,7 @@ alternatively, query through Postman
 ![setup Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-postman.png)
 
 ```sh
-curl --silent -X POST "http://192.168.0.29:8086/query?q=select%20*%20from%20testing&db=example&pretty=true"
+curl --silent -X POST "http://192.168.0.64:8086/query?q=select%20*%20from%20testing&db=example&pretty=true"
 ```
 ```json
 {
@@ -150,14 +146,14 @@ curl --silent -X POST "http://192.168.0.29:8086/query?q=select%20*%20from%20test
 ```
 NOTE: encoding agruments in command line loses prettiness:
 ```sh
-curl --silent -X POST -v "http://192.168.0.29:8086/query" --data-urlencode "q=select * from testing" --data-urlencode "db=example" --data-urlencode "pretty=true"
+curl --silent -X POST -v "http://192.168.0.64:8086/query" --data-urlencode "q=select * from testing" --data-urlencode "db=example" --data-urlencode "pretty=true"
 ```
 ```text
 {"results":[{"statement_id":0,"series":[{"name":"testing","columns":["time","CPU","Memory","Server"],"values":[["2022-06-05T23:44:07.529619906Z",100,50,"SERGUEIK53"],["2022-06-05T23:44:12.551612791Z",100,50,"SERGUEIK53"],["2022-06-05T23:44:37.61060614Z",100,50,"SERGUEIK53"]]}]}]}
 ```
 but with `-G` flag it works as intended
 ```sh
-curl --silent -X POST -G "http://192.168.0.29:8086/query" --data-urlencode "q=select * from testing" --data-urlencode "db=example" --data-urlencode "pretty=true"
+curl --silent -X POST -G "http://192.168.0.64:8086/query" --data-urlencode "q=select * from testing" --data-urlencode "db=example" --data-urlencode "pretty=true"
 ```
 produces
 ```json
@@ -203,10 +199,10 @@ produces
 
 one can also create and use database via similar request:
 ```sh
-curl --silent -X POST "http://192.168.0.29:8086/query?q=CREATE%20database%20dummy"
+curl --silent -X POST "http://192.168.0.64:8086/query?q=CREATE%20database%20dummy"
 ```
 ```sh
-curl --silent -X POST "http://192.168.0.29:8086/query?q=SHOW%20databases"
+curl --silent -X POST "http://192.168.0.64:8086/query?q=SHOW%20databases"
 ```
 ### Testing
 #### Run InfluxDB Server
@@ -292,12 +288,15 @@ time                host        statement
 1654296416171853241 containment 42
 ```
 
+### Testing with stock InfluxDB 1.7
+
 alternatively pull vendor __1.x__ image
 ```sh
 docker pull influxdb:1.7-alpine
 ```
 ```sh
-docker run -d -p 8086:8086 influxdb:1.7-alpine
+NAME=influxdb_17
+docker run -d --name $NAME -p 8086:8086 influxdb:1.7-alpine
 ```
 update environment to connect to shell in the container
 ```sh
@@ -309,38 +308,55 @@ docker container stop $IMAGE
 docker container rm $IMAGE
 ```
 
-### Testing InfluxDB 2.x
+### Testing with stock InfluxDB 2.x
 
 pull a vendor image
 ```sh
 docker pull influxdb:2.2.0-alpine
 ```
-
+run it on non default TCP port side by side with __1.7__
 ```sh
-docker run -d -p 8086:8086 influxdb:2.2.0-alpine
+NAME=influxdb_22
+PORT=8096
+docker run -d --name $NAME -p $PORT:8086 influxdb:2.2.0-alpine
 ```
 
 
-With __2.x__ need to start in web interface `http://192.168.0.29:8086/`:
+With __2.x__ need to activate via web interface started on `http://192.168.0.64:8096/`:
 
 ![setup Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-initial-setup.png)
 
 
-Continue with configuring the connection to "Getting Started", "Data", "API Tokens":
+Fill username  and password inputs e.g. with
+
+* Username: `testuser`
+* Password: `password`
+
+
+and the multi-tenant inputs
+
+* Initial Organization Name `testuser`
+* Initial Bucket Name: `testbucket`
+
+Continue with configuring the connection through "Quick Start" button, "Data" menu item, "API Tokens" tab:
+
 ![API Token Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-api-token.png)
 
+Click on "testuser's Token" element to launch dialog from where the value of the token is available to clipboard copy.
 Save the token and use in curl command above
-```text
+```sh
 > token.txt  cat
-Bg8vhiRXDFDthyQpOKFvvfnZ8y2t07bTs9pSRjOwMOlJ0x8GURacteQaZ0h0eARTSL4bmaaFNdYNwNps2hTbWw==
+```
+```sh
+a6URUIqlST-RZGdCKrNOS2bkJDGXLuCnM4Y-8Fn3lPsYJR__SiZmm_p3opuWGP7Au84hFFpVFRJS-YBf3tRcTg==
 ^D
 ```
-it looks like base64 encoded text, but `base64` reports an error decoding it.
+NOTE: it appears like base64 encoded text, but `base64` reports an error decoding it.
 ```sh
 export TOKEN=$(cat token.txt)
 export ORG=testuser
 export BUCKET=testbucket
-export BASE_URL="http://192.168.0.92:8086"
+export BASE_URL="http://192.168.64:8096"
 curl -v --request POST "$BASE_URL/api/v2/write?org=$ORG&bucket=$BUCKET&precision=s" --header "Authorization: Token $TOKEN" --header "Content-Type: text/plain; charset=utf-8" --header "Accept: application/json" --data-binary 'measurement,server=host1,env=uat,dc=west load=1.4,mem=35 1630424257'
 ```
 ```sh
@@ -388,8 +404,38 @@ curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Auth
 The response, though no longer an internal server error is still empty:
 ```JSON
 {"errors":[]}
-
 ```
+if seeing
+```text
+>
+< HTTP/1.1 400 Bad Request: invalid header value
+< Content-Type: text/plain; charset=utf-8
+< Connection: close
+<
+* Closing connection 0
+400 Bad Request: invalid header value
+```
+
+remove the DOS line ending from the file `token.txt`:
+
+```sh
+sed -i 's|\r||g' token.txt
+```
+if seeing an authorizarion error
+```text
+HTTP/1.1 401 Unauthorized
+< Content-Type: application/json; charset=utf-8
+< X-Influxdb-Build: OSS
+< X-Influxdb-Version: v2.2.0
+< X-Platform-Error-Code: unauthorized
+< Date: Fri, 26 Aug 2022 18:09:06 GMT
+< Content-Length: 55
+<
+* Connection #0 to host 192.168.0.92 left intact
+{"code":"unauthorized","message":"unauthorized access"}
+```
+
+update the token.
 ### Influx 1.x
 With Influx __1.x__ connect to the container and in  console run `influx` command to open shell to create database:
 
@@ -563,7 +609,7 @@ NOTE: it still appears to not provide time in the right format, and the same quw
 mvn spring-boot:run
 ```
 ```sh
-curl -H "Content-Type: application/json" -X POST -d '{"current": 1,"power":2,"voltage":2, "time":"2022-06-04T20:23:28.295+00:00"}' http://localhost:8080/influxdb/insert/
+curl -H "Content-Type: application/json" -X POST -d '{"current": 1,"power":2,"voltage":2, "time":"2022-06-04T20:23:28.645+00:00"}' http://localhost:8080/influxdb/insert/
 ```
 the client receives a success response
 ```text
@@ -572,7 +618,7 @@ the client receives a success response
 
 however the operation is failing and the stack trace is indicating very generic misconfiguration:
 ```text
-2022-06-04 17:10:30.222 ERROR 728 --- [8.0.29:8086/...] c.i.client.write.events.
+2022-06-04 17:10:30.222 ERROR 728 --- [8.0.64:8086/...] c.i.client.write.events.
 WriteErrorEvent  : The error occurred during writing of data
 
 com.influxdb.exceptions.NotFoundException: null
@@ -656,7 +702,7 @@ perl -MTime::HiRes -e 'use Time::HiRes qw( gettimeofday); my ($sec, $mil) = gett
 ### Observed Defects
 when querying just inserted data via curl
 ```sh
-HOST=192.168.0.29
+HOST=192.168.0.64
 PORT=8086
 DATABASE=example
 QUERY="SELECT * FROM \"testing\""
