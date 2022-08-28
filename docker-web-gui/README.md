@@ -36,9 +36,9 @@ We install client locally in the contianer and only mount volume for socket
 ### Cleanup
 
 ```sh
-docker container stop $IMAGE
-docker container rm $IMAGE
-docker image rm $IMAGE
+docker container stop $NAME
+docker container rm $NAME
+docker image rm $NAME
 ```
 ### Notes
 
@@ -88,9 +88,113 @@ npm ERR! gyp info spawn args [ 'BUILDTYPE=Release', '-C', 'build' ]
 npm ERR! /bin/sh: python: not found
 npm ERR! make: *** [deps/action_before_build.target.mk:13: Release/obj/gen/sqlite-autoconf-3310100/sqlite3.c] Error 127
 npm ERR! gyp ERR! build error
-
 ```
 a workaround for this is to install both `python` and `python3`. This can be improved further by splitting the build of the app into separate *build* container and only install `docker-cli` and `python3` in the application container
+
+### Repro Details of the Upstream Project
+
+* this is copied from the PR [49](https://github.com/rakibtg/docker-web-gui/pull/49)
++ host os ubuntu 
+```sh
+lsb_release -a
+```
+```text
+No LSB modules are available.
+Distributor ID: Ubuntu
+Description:    Ubuntu 18.04.6 LTS
+Release:        18.04
+Codename:       bionic
+```
+
++ attempt to map host `docker` binary into container
+```sh
+which docker
+```
+```text
+/usr/bin/docker	
+```
++ run pinned version node alpine container
+```sh
+docker run -it -v /usr/bin/docker:/usr/bin/docker node:8.12-alpine sh
+```
+```text
+Unable to find image 'node:8.12-alpine' locally
+8.12-alpine: Pulling from library/node
+4fe2ade4980c: Already exists
+eeb7d76f44e7: Pull complete
+e35f88fcc259: Pull complete
+Digest: sha256:d75742c5fd41261113ed4706f961a21238db84648c825a5126ada373c361f46e
+Status: Downloaded newer image for node:8.12-alpine
+Digest: sha256:d75742c5fd41261113ed4706f961a21238db84648c825a5126ada373c361f46e
+Status: Downloaded newer image for node:8.12-alpine
+```
++ in the container see if `docker` is runnable
+```sh
+/ #
+/ # ldd /usr/bin/docker
+```
+```text
+ /lib64/ld-linux-x86-64.so.2 (0x7fd0646eb000)
+ libpthread.so.0 => /lib64/ld-linux-x86-64.so.2 (0x7fd0646eb000)
+ libdl.so.2 => /lib64/ld-linux-x86-64.so.2 (0x7fd0646eb000)
+ libc.so.6 => /lib64/ld-linux-x86-64.so.2 (0x7fd0646eb000)
+Error relocating /usr/bin/docker: __vfprintf_chk: symbol not found
+Error relocating /usr/bin/docker: __fprintf_chk: symbol not found
+```
++ try to run it anyway
+```sh
+/usr/bin/docker -v
+```
+```text
+sh: /usr/bin/docker: not found
+```
++ install `docker` via `apk`
+
+NOTE: one has to stop the the container which has the host's `docker` mapped
+
+```sh
+rm -f /usr/bin/docker
+```
+```text
+rm: can't remove '/usr/bin/docker': Resource busy
+``` 
+```sh
+exit
+```
++ run with mapped docker socket from host
+```sh
+docker run -it -v /var/run/docker.sock:/var/run/docker.sock node:8.12-alpine sh
+```
++ in the container install docker:
+```sh
+/ # apk add docker
+```
+
+```text
+fetch http://dl-cdn.alpinelinux.org/alpine/v3.8/main/x86_64/APKINDEX.tar.gz
+fetch http://dl-cdn.alpinelinux.org/alpine/v3.8/community/x86_64/APKINDEX.tar.gz
+(1/9) Installing ca-certificates (20191127-r2)
+(2/9) Installing libmnl (1.0.4-r0)
+(3/9) Installing jansson (2.11-r0)
+(4/9) Installing libnftnl-libs (1.1.1-r0)
+(5/9) Installing iptables (1.6.2-r0)
+(6/9) Installing device-mapper-libs (2.02.178-r0)
+(7/9) Installing libltdl (2.4.6-r5)
+(8/9) Installing libseccomp (2.4.2-r2)
+(9/9) Installing docker (18.06.1-r0)
+Executing docker-18.06.1-r0.pre-install
+Executing busybox-1.28.4-r1.trigger
+Executing ca-certificates-20191127-r2.trigger
+OK: 183 MiB in 24 packages
+```
++  and list hosts images
+```sh
+ docker container ls
+```
+```text
+CONTAINER ID        IMAGE               COMMAND             CREATED              STATUS              PORTS               NAMES
+78ac98862051        node:8.12-alpine    "sh"                About a minute ago   Up About a minute 
+```
 
 ### Original Documentations
 
