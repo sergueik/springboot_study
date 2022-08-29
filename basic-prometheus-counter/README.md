@@ -691,16 +691,19 @@ example.extractedMetricNames = { 'load_average': 'cpu_load'}
 ```
 ### See Also
 
-  * Prometheus [prom2json](https://hub.docker.com/r/prom/prom2json) Docker hub link
-  * Prometheus [prometheus](https://hub.docker.com/r/prom/prometheus) Docker ub lik
+  * Docker hub link for Prometheus [prometheus](https://hub.docker.com/r/prom/prometheus)
+  * Docker hub link for Prom2JSON [prom2json](https://hub.docker.com/r/prom/prom2json)
+  * [Java examples for Prometheus](https://github.com/RobustPerception/java_examples)
   * [minimal prometheus counter example](https://github.com/njanor/spring-boot-prometheus-demo) - uses older Springboot and currently does not compile, integrated the `build status` counter from the example
   * [step by step springboot monitoring dashboard example](https://github.com/rishant/springboot-monitoring-dashboard-example)
   * [example](https://github.com/ramesh-lingappan/prometheus-pushgateway-demo) - demonstrates `PushGatewayConfiguration`  and `PushGatewayCredentials` bolierplate code
   * old [MVC example](https://github.com/ConSol/springboot-monitoring-example) with static page links to generated metrics, the application handles the `/metrics` route on its own.
   * Spring Boot metrics monitoring using Prometheus & Grafana [blog](https://aboullaite.me/spring-boot-monitoring-prometheus-grafana/) - relies on `@EnablePrometheusEndpoint` and `@EnableSpringBootMetricsCollector` annotations which do not work yet in this project
-  * core [metrics Collection in Spring Boot With Micrometer and Prometheus](https://www.codeprimers.com/metrics-collection-in-spring-boot-with-micrometer-and-prometheus/) documentatiton
-  * [collection of alerting rules for Prometheus](https://awesome-prometheus-alerts.grep.to)
-  * plain Java (non-Spring) [prometheus pushgateway metric push demo application](https://github.com/binhhq/prometheus-pushgateway-demo)
+  * core *metrics Collection in Spring Boot With Micrometer and Prometheus* [documentation](https://www.codeprimers.com/metrics-collection-in-spring-boot-with-micrometer-and-prometheus/)
+  * [collection](https://awesome-prometheus-alerts.grep.to) of alerting rules for Prometheus
+  * plain Java (non-Spring) [metric push demo application](https://github.com/binhhq/prometheus-pushgateway-demo) pushing the data to prometheus [pushgateway](https://github.com/prometheus/pushgateway)
+    via `PushGateway` [adapter class](https://prometheus.github.io/client_java/io/prometheus/client/exporter/PushGateway.html)
+  * Prometheus for Java Developers Demo [project](https://github.com/fstab/prometheus-for-java-developers) - note there are severa subprojects there with an interesting per-project layout of git branches
   * https://www.tabnine.com/code/java/methods/io.prometheus.client.Collector$MetricFamilySamples$Sample/%3Cinit%3E
   * https://www.tabnine.com/code/java/methods/io.prometheus.client.CollectorRegistry/register
   * https://prometheus.github.io/client_java/io/prometheus/client/Collector.MetricFamilySamples.Sample.html
@@ -711,7 +714,13 @@ example.extractedMetricNames = { 'load_average': 'cpu_load'}
   * [tutorial](https://www.baeldung.com/spring-yaml-inject-map)	 on defining `Map<String,String>` through `application.yml` YAML and `@Value` annotation
   * Prometheus data query [REST API](https://prometheus.io/docs/prometheus/latest/querying/api/)
 
+### See Also
+
+  * Prometheus Java Graphite Bridge [example code](https://github.com/RobustPerception/java_examples/tree/master/java_graphite_bridge)
+  * [about](https://www.robustperception.io/exporting-to-graphite-with-the-prometheus-java-client/) exporting to Prometheus [Graphite](https://graphite.readthedocs.io/en/latest/overview.html) with the Java client - mentions Prometheusonly indirectly as provider of the GraphiteBridge Python [package](https://github.com/stuart-c/prometheus-graphite-bridge)
+  * Python GraphiteBridge [examples](https://python.hotexamples.com/examples/prometheus_client.bridge.graphite/GraphiteBridge/-/python-graphitebridge-class-examples.html)
+  * [comparison](https://logz.io/blog/prometheus-vs-graphite) of Prometheus vs. Graphite - it appears Graphite is like InfluxDB
+  * [comparison](https://www.loomsystems.com/blog/single-post/2017/06/07/prometheus-vs-grafana-vs-graphite-a-feature-comparison) of Prometheus vs. Grafana vs. Graphite
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
-
