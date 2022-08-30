@@ -782,6 +782,53 @@ HTTP/1.1 401 Unauthorized
 ```
 
 update the token.
+
+#### Ingesting using Java client
+* run
+```sh
+cd 2.x
+```
+```sh
+mvn package
+```
+```sh
+java -cp target\example.influxdb2.x-client.jar;target\lib\* example.App
+```
+(adjust the paths and array separators according to the host OS)
+
+it will both ingest and query the data back using Flex language. Note there will be more data returned than inseted in subsequent runs:
+```text
+Reading: 'password' = 'password'
+Reading: 'token' = 'a6URUIqlST-RZGdCKrNOS2bkJDGXLuCnM4Y-8Fn3lPsYJR__SiZmm_p3opuWGP7Au84hFFpVFRJS-YBf3tRcTg=='
+Reading: 'host' = 'http://192.168.0.64:8096'
+Reading: 'username' = 'testuser'
+Reading: 'org' = 'testuser'
+Reading: 'bucket' = 'testbucket'
+Writing Point instance
+Writing raw metric payload
+Writing custom pojo
+Querying the data via Flux: "from(bucket:"testbucket") |> range(start: 0)|> filter(fn: (r) => r["_measurement"] == "temperature")"
+Received 3 tables
+Processing table: FluxTable[columns=9, records=3]
+Received 3 records in table FluxTable[columns=9, records=3]
+time: 2022-08-30T17:56:55.719880208Z    value: 60.0     measurement: temperature        location: north
+time: 2022-08-30T18:03:54.887211309Z    value: 60.0     measurement: temperature        location: north
+time: 2022-08-30T18:17:30.681338404Z    value: 60.0     measurement: temperature        location: north
+Processing table: FluxTable[columns=9, records=3]
+Received 3 records in table FluxTable[columns=9, records=3]
+time: 2022-08-30T17:56:50.728Z  value: 62.0     measurement: temperature	location: south
+time: 2022-08-30T18:03:49.888Z  value: 62.0     measurement: temperature	location: south
+time: 2022-08-30T18:17:25.667Z  value: 62.0     measurement: temperature	location: south
+Processing table: FluxTable[columns=9, records=3]
+Received 3 records in table FluxTable[columns=9, records=3]
+time: 2022-08-30T17:56:50.221Z  value: 55.0     measurement: temperature	location: west
+time: 2022-08-30T18:03:49.412Z  value: 55.0     measurement: temperature	location: west
+time: 2022-08-30T18:17:25.203Z  value: 55.0     measurement: temperature	location: west
+```
+one can see the same data as table chart or histogam in UI:
+
+![Explore Page](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-influxdb2x-bucket-explore.png)
+
 ### Influx 1.x
 With Influx __1.x__ connect to the container and in  console run `influx` command to open shell to create database:
 
@@ -1255,19 +1302,21 @@ using presision NANOSECONDS
    * https://www.influxdata.com/the-best-way-to-store-collect-analyze-time-series-data/
    * https://github.com/ind9/influxdb-java - is using 1.x semantics
    * https://github.com/influxdata/influxdb-java - official, too big
+   * official InfluxDB 2 JVM Based Clients example [collection](https://github.com/influxdata/influxdb-client-java)
    * https://devconnected.com/how-to-create-a-database-on-influxdb-1-7-2-0/ - there apparently is a v2 / v1.x compatibility concern documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) and for [forward](https://docs.influxdata.com/influxdb/v2.0/reference/api/influxdb-1x/)
-  * [intro](https://habr.com/ru/company/selectel/blog/245515/) to TSDB, and InfluxDB (in Russian, with a number of valuable comments in discussion)
-  * InfluxDB Grafana data source [documentation](https://grafana.com/docs/grafana/latest/datasources/influxdb/) - note this covers InfluxQL (classic InfluxDB query) separately from [Flux](https://grafana.com/docs/grafana/latest/datasources/influxdb/influxdb-flux/) query language which apparently is supported but not required
+   * [intro](https://habr.com/ru/company/selectel/blog/245515/) to TSDB, and InfluxDB (in Russian, with a number of valuable comments in discussion)
+   * InfluxDB Grafana data source [documentation](https://grafana.com/docs/grafana/latest/datasources/influxdb/) - note this covers InfluxQL (classic InfluxDB query) separately from [Flux](https://grafana.com/docs/grafana/latest/datasources/influxdb/influxdb-flux/) query language which apparently is supported but not required
    * another InfluxDB Perl [module](https://metacpan.org/pod/InfluxDB) - JSON only (deprecated)
    * an InfluxDB LineProtocol Perl [module](https://metacpan.org/pod/InfluxDB::LineProtocol)
-  * [querying v 1.7](https://docs.influxdata.com/influxdb/v1.7/guides/querying_data/)
-  * docker [formating arguments](https://docs.docker.com/config/formatting/)
-  * [nightly influxDB 1.7 build for windows 10 x64](https://dl.influxdata.com/influxdb/nightlies/influxdb-nightly_windows_amd64.zip) and how to install InfluxDB in Windows [stackoverflow discussion](https://stackoverflow.com/questions/26116711/how-to-install-influxdb-in-windows/30127377#30127377) - it runs in foreground on Windows and can be used for testing only
-  * [influx 2.x API via Postman](https://www.influxdata.com/blog/getting-started-influxdb-2-0-api-postman/) - not quite working in Postman (variables are not propagated into steps) but the details of the requests can be useful with curl Perl or Powershell client examples
-  * [prometheus/influxdb_exporter](https://github.com/prometheus/influxdb_exporter) - source tree of standalone app appearing to __Influx Telegraf__ [metric colector]() as a regular InfluxDB server server that accepts the InfluxDB time series metrics via the HTTP API and exports them via HTTP for Prometheus consumption, capable of preserving the original timestamps of the metric. The [images link](https://hub.docker.com/r/prom/influxdb-exporter). Apparently does not push data on its own. Most importantly does not allow pushing more than a single metric for every unique metric name and labels combination, thus making it impossible to bulk load histories
-  * [prometheus remote read and remote write](https://prometheus.io/docs/operating/integrations/) and example [project](https://github.com/prometheus/prometheus/tree/release-2.36/documentation/examples/remote_storage/example_write_adapter)  and [source](https://github.com/prometheus/prometheus/blob/release-2.36/documentation/examples/remote_storage/remote_storage_adapter/influxdb/client.go)
-  * [guide to DateTimeFormatter](https://www.baeldung.com/java-datetimeformatter)
-  * InfluxData __InfluxDB Query Language__ Data Exploration [document](https://archive.docs.influxdata.com/influxdb/v1.2/query_language/data_exploration/) - note, only exists for old version, but is  equally relevant for recent __1.x__ InfluxDB.
+   * [querying v 1.7](https://docs.influxdata.com/influxdb/v1.7/guides/querying_data/)
+   * docker [formating arguments](https://docs.docker.com/config/formatting/)
+   * [nightly influxDB 1.7 build for windows 10 x64](https://dl.influxdata.com/influxdb/nightlies/influxdb-nightly_windows_amd64.zip) and how to install InfluxDB in Windows [stackoverflow discussion](https://stackoverflow.com/questions/26116711/how-to-install-influxdb-in-windows/30127377#30127377) - it runs in foreground on Windows and can be used for testing only
+   * [influx 2.x API via Postman](https://www.influxdata.com/blog/getting-started-influxdb-2-0-api-postman/) - not quite working in Postman (variables are not propagated into steps) but the details of the requests can be useful with curl Perl or Powershell client examples
+   * [prometheus/influxdb_exporter](https://github.com/prometheus/influxdb_exporter) - source tree of standalone app appearing to __Influx Telegraf__ [metric colector]() as a regular InfluxDB server server that accepts the InfluxDB time series metrics via the HTTP API and exports them via HTTP for Prometheus consumption, capable of preserving the original timestamps of the metric. The [images link](https://hub.docker.com/r/prom/influxdb-exporter). Apparently does not push data on its own. Most importantly does not allow pushing more than a single metric for every unique metric name and labels combination, thus making it impossible to bulk load histories
+   * [prometheus remote read and remote write](https://prometheus.io/docs/operating/integrations/) and example [project](https://github.com/prometheus/prometheus/tree/release-2.36/documentation/examples/remote_storage/example_write_adapter)  and [source](https://github.com/prometheus/prometheus/blob/release-2.36/documentation/examples/remote_storage/remote_storage_adapter/influxdb/client.go)
+   * [guide to DateTimeFormatter](https://www.baeldung.com/java-datetimeformatter)
+   * InfluxData __InfluxDB Query Language__ Data Exploration [document](https://archive.docs.influxdata.com/influxdb/v1.2/query_language/data_exploration/) - note, only exists for old version, but is  equally relevant for recent __1.x__ InfluxDB.
+
 
 ### Youtube Links
 
