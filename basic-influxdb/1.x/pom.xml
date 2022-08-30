@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
-  <artifactId>influxdb-client</artifactId>
-  <version>0.2.0-SNAPSHOT</version>
+  <artifactId>influxdb1.x-client</artifactId>
+  <version>0.3.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
-  <description>InfluxDB example</description>
+  <description>InfluxDB1.x Java Client Example</description>
   <properties>
     <mainClass>App</mainClass>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

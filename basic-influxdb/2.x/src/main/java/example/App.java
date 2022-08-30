@@ -1,5 +1,6 @@
 package example;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -8,13 +9,16 @@ import com.influxdb.annotations.Column;
 import com.influxdb.annotations.Measurement;
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
+import com.influxdb.client.InfluxQLQueryApi;
 import com.influxdb.client.QueryApi;
 import com.influxdb.client.WriteApiBlocking;
+import com.influxdb.client.domain.InfluxQLQuery;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
 import com.influxdb.query.FluxColumn;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
+import com.influxdb.query.InfluxQLQueryResult;
 
 import example.utils.PropertiesParser;
 
@@ -116,5 +120,45 @@ public class App {
 
 		@Column(timestamp = true)
 		Instant time;
+	}
+
+	// based on:
+	// https://github.com/influxdata/influxdb-client-java/blob/master/examples/src/main/java/example/InfluxQLExample.java
+	// not working
+	static void InfluxQLExampleQuery(/* InfluxDBClient influxDBClient */ ) {
+
+		String database = "testbucket";
+		try (InfluxDBClient influxDBClient = InfluxDBClientFactory.create(host,
+				token, org)) {
+
+			String influxQL = "SELECT FIRST(\"free\") FROM \"influxql\"";
+
+			InfluxQLQueryApi queryApi = influxDBClient.getInfluxQLQueryApi();
+
+			InfluxQLQueryResult result = queryApi.query(
+					new InfluxQLQuery(influxQL, database)
+							.setPrecision(InfluxQLQuery.InfluxQLPrecision.SECONDS),
+					(columnName, rawValue, resultIndex, seriesName) -> {
+						// convert columns
+						switch (columnName) {
+						case "time":
+							return Instant.ofEpochSecond(Long.parseLong(rawValue));
+						case "first":
+							return new BigDecimal(rawValue);
+						default:
+							throw new IllegalArgumentException(
+									"unexpected column " + columnName);
+						}
+					});
+
+			for (InfluxQLQueryResult.Result resultResult : result.getResults()) {
+				for (InfluxQLQueryResult.Series series : resultResult.getSeries()) {
+					for (InfluxQLQueryResult.Series.Record record : series.getValues()) {
+						System.out.println(record.getValueByKey("time") + ": "
+								+ record.getValueByKey("first"));
+					}
+				}
+			}
+		}
 	}
 }

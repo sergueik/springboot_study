@@ -530,14 +530,18 @@ update environment to connect to shell in the container
 ```sh
 IMAGE=$(docker ps | grep 'influxdb:1.7-alpine'| awk '{print $1}')
 ```
-#### Testingwith Java Client
+#### Testing with InfluxDB 1.x Java Client
+
+```sh
+cd 1.x
+```
 ```sh
 mvn package
 ```
 ```sh
-java -cp target\example.influxdb-client.jar;target\lib\* example.App
+java -cp target\example.influxdb1.x-client.jar;target\lib\* example.App
 ```
-(adjust the paths and array separators according to the host OS)
+(adjust the path and array separators according to the host OS)
 
 ```text
 Reading: 'password' = 'password'
@@ -794,7 +798,7 @@ mvn package
 ```sh
 java -cp target\example.influxdb2.x-client.jar;target\lib\* example.App
 ```
-(adjust the paths and array separators according to the host OS)
+(adjust the path and array separators according to the host OS)
 
 it will both ingest and query the data back using Flex language. Note there will be more data returned than inseted in subsequent runs:
 ```text
@@ -1243,8 +1247,6 @@ wget https://cpan.metacpan.org/authors/id/O/OA/OALDERS/URI-5.10.tar.gz
 tar zxvf URI-5.10.tar.gz
 cp -R URI-5.10/lib/* .
 ```
-
-
 ```sh
 IMAGE=$(docker container ls --format='{{.Names}}\t{{.Image}}'| grep 'influxdb:1.7-alpine'| awk '{print $1}')
 echo $IMAGE
@@ -1301,7 +1303,7 @@ using presision NANOSECONDS
    * https://github.com/JonasProgrammer/docker-influxdb
    * https://www.influxdata.com/the-best-way-to-store-collect-analyze-time-series-data/
    * https://github.com/ind9/influxdb-java - is using 1.x semantics
-   * https://github.com/influxdata/influxdb-java - official, too big
+   * official influx DB 1.x client Java [project](https://github.com/influxdata/influxdb-java) - too big
    * official InfluxDB 2 JVM Based Clients example [collection](https://github.com/influxdata/influxdb-client-java)
    * https://devconnected.com/how-to-create-a-database-on-influxdb-1-7-2-0/ - there apparently is a v2 / v1.x compatibility concern documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) and for [forward](https://docs.influxdata.com/influxdb/v2.0/reference/api/influxdb-1x/)
    * [intro](https://habr.com/ru/company/selectel/blog/245515/) to TSDB, and InfluxDB (in Russian, with a number of valuable comments in discussion)
@@ -1316,10 +1318,9 @@ using presision NANOSECONDS
    * [prometheus remote read and remote write](https://prometheus.io/docs/operating/integrations/) and example [project](https://github.com/prometheus/prometheus/tree/release-2.36/documentation/examples/remote_storage/example_write_adapter)  and [source](https://github.com/prometheus/prometheus/blob/release-2.36/documentation/examples/remote_storage/remote_storage_adapter/influxdb/client.go)
    * [guide to DateTimeFormatter](https://www.baeldung.com/java-datetimeformatter)
    * InfluxData __InfluxDB Query Language__ Data Exploration [document](https://archive.docs.influxdata.com/influxdb/v1.2/query_language/data_exploration/) - note, only exists for old version, but is  equally relevant for recent __1.x__ InfluxDB.
-
+   * query data in InfluxDB 2.x with InfluxQL [documentation](https://docs.influxdata.com/influxdb/v2.3/query-data/influxql) (untested)
 
 ### Youtube Links
-
 
   * [Nodered to InfluxDB to Grafana 2022](https://www.youtube.com/watch?v=HicgjmmL-T8)
   * [Influxdb Querying Data with Powershell](https://www.youtube.com/watch?v=z7Y20toBjJs)
