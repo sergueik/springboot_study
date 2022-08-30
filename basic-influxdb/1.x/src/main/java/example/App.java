@@ -104,7 +104,8 @@ public class App {
 	private static void importPoint(InfluxDB influxDB) {
 		influxDB.setDatabase(databaseName);
 		Point point = Point.measurement(seriesName).tag("atag", "test")
-				.field("idle", 90L).field("usertime", 9L).field("system", 1L).build();
+				.field("idle", 90.0).field("usertime", 9.0).field("system", 1.0)
+				.build();
 
 		// org.influxdb.dto.Point.Builder.time(Long timeToSet, TimeUnit
 		// precisionToSet)
@@ -113,8 +114,8 @@ public class App {
 		// https://www.tabnine.com/code/java/methods/org.influxdb.InfluxDB/write
 		point = Point.measurement(seriesName)
 				.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
-				.addField("idle", 90L).addField("usertime", 9L).addField("system", 1L)
-				.build();
+				.addField("idle", 90.0).addField("usertime", 9.0)
+				.addField("system", 1.0).build();
 		// NO need to set precision during the write operation: already done in
 		// Point builder
 
@@ -146,13 +147,16 @@ public class App {
 			point = Point.measurement(seriesName)
 					.time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
 					.tag("host", metric_hostname).tag("region", "region")
-					.addField("idle", 40L).addField("usertime", 19L)
-					.addField("system", 21L).build();
-			System.err.println(".");
+					.addField("idle", 40.0).addField("usertime", 19.0)
+					.addField("system", 21.0).build();
 			points.add(point);
 		}
 		BatchPoints batchpoints = BatchPoints.builder().points(points).build();
 		influxDB.write(batchpoints);
+		// write raw data
+		final String rawdata = "testing,host=sergueik10,region=region value=60.0,idle=40,usertime=20.0,system=22.0";
+		System.err.println("write raw data example: " + rawdata);
+		influxDB.write(rawdata);
 		// NOTE:
 		// Exception in thread "main"
 		// org.influxdb.InfluxDBException$FieldTypeConflictException: partial
@@ -189,7 +193,6 @@ public class App {
 			String queryString) {
 		influxDB.setLogLevel(InfluxDB.LogLevel.BASIC);
 
-		// String queryString = "select * from testing";
 		Query query = new Query(queryString, databaseName);
 		QueryResult queryResult = influxDB.query(query);
 		List<Result> results = queryResult.getResults();
@@ -197,11 +200,20 @@ public class App {
 		while (resultsIterator.hasNext()) {
 			Result result = resultsIterator.next();
 			List<Series> listSeries = result.getSeries();
-			Iterator<Series> listSeriesIterator = listSeries.iterator();
-			while (listSeriesIterator.hasNext()) {
-				Series series = listSeriesIterator.next();
-				System.err.println("columns: " + series.getColumns());
-				System.err.println("values: " + series.getValues());
+			if (listSeries != null) {
+				Iterator<Series> listSeriesIterator = listSeries.iterator();
+				if (listSeriesIterator != null) {
+
+					while (listSeriesIterator.hasNext()) {
+						Series series = listSeriesIterator.next();
+						System.err.println("columns: " + series.getColumns());
+						System.err.println("values: " + series.getValues());
+					}
+				} else {
+					System.err.println("No data returned by query: " + queryString);
+				}
+			} else {
+				System.err.println("No data returned by query: " + queryString);
 			}
 		}
 
@@ -231,7 +243,8 @@ public class App {
 		// NOTE: support of streaming queries against a database available,not
 		// tested
 
-		queryData(influxDB, databaseName, "select * from " + seriesName);
+		queryData(influxDB, databaseName,
+				"select * from " + seriesName + " where host = 'sergueik10'");
 		influxDB.close();
 
 	}

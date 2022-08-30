@@ -888,7 +888,7 @@ delete from testing
 ```
 ```cmd
 mvn package
-java -cp target\example.influxdb-client.jar;target\lib\* example.App
+java -cp target\example.influxdb1.x-client.jar;target\lib\* example.App
 ```
 ```text
 1.7.11
