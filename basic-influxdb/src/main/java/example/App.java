@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.lang.IllegalStateException;
@@ -20,11 +21,19 @@ import org.influxdb.dto.QueryResult;
 import org.influxdb.dto.QueryResult.Result;
 import org.influxdb.dto.QueryResult.Series;
 
+import example.utils.Utils;
+import example.utils.PropertiesParser;
+
 public class App {
 
-	private static String host = "http://192.168.0.29:8086";
-	private static String user = "user"; // not required with InfluxDB 1.x
-	private static String password = "password";// not required with InfluxDB 1.x
+	private static final String propertiesFileName = "application.properties";
+	private static final Map<String, String> propertiesMap = PropertiesParser
+			.getProperties(String.format("%s/src/main/resources/%s",
+					System.getProperty("user.dir"), propertiesFileName));
+	private static final String username = propertiesMap.get("username");
+	private static final String password = propertiesMap.get("password");
+	private static final String host = propertiesMap.get("host");
+
 	private static String databaseName = "example";
 	private static String seriesName = "testing";
 	private static InfluxDB influxDB;
@@ -199,9 +208,13 @@ public class App {
 	}
 
 	public static void main(String args[]) throws UnknownHostException {
+
 		testTimestampEpoch();
 		metric_hostname = InetAddress.getLocalHost().getHostName();
-		influxDB = InfluxDBFactory.connect(host, user, password);
+		System.err
+				.println(String.format("connecting host=%s, username=%s, password=%s",
+						host, username, password));
+		influxDB = InfluxDBFactory.connect(host, username, password);
 		Pong pong = influxDB.ping();
 		System.err.println(pong.getVersion());
 		// clearAndCreateDatabase(influxDB, databaseName);

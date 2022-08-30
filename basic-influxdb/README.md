@@ -2,7 +2,7 @@
 
 this directory contains a minimally modified `InfluxDB::Client::Simple` Perl [module](https://metacpan.org/dist/InfluxDB-Client-Simple/source/lib/InfluxDB/Client/Simple.pm)
 
-tested interacting with an InfluxDB __1.8__ [hosted on alpine](https://hub.docker.com/r/woahbase/alpine-influxdb/). 
+tested interacting with an InfluxDB __1.8__ [hosted on alpine](https://hub.docker.com/r/woahbase/alpine-influxdb/).
 
 If switched to InfluxDB __2.x__ the only difference for [data ingestion command](https://docs.influxdata.com/influxdb/v2.2/write-data/developer-tools/influx-cli/)
 will be in the `org` and `bucket` in the upload url
@@ -22,13 +22,13 @@ curl -v --request POST "$BASE_URL/api/v2/write?org=$ORG&bucket=$BUCKET&precision
  Content-Type: text/plain; charset=utf-8
 > Accept: application/json
 > Content-Length: 67
-> 
+>
 * upload completely sent off: 67 out of 67 bytes
 < HTTP/1.1 204 No Content
 < X-Influxdb-Build: OSS
 < X-Influxdb-Version: v2.2.0
 < Date: Fri, 24 Jun 2022 21:26:24 GMT
-< 
+<
 * Connection #0 to host localhost left intact
 
 
@@ -41,7 +41,7 @@ for the nanosecond-precision timestamp use the Perl one-liner
 perl -MTime::HiRes -e 'use Time::HiRes qw( gettimeofday); my ( $seconds, $microseconds ) = gettimeofday(); print $seconds . $microseconds , "000", $/;'
 ```
 
-if the credentials are not accepted (e.g. after the loss of the container)
+if the credentials are not accepted (e.g. if / after the container been recycled)
 [reset the password](https://docs.influxdata.com/influxdb/v2.3/reference/cli/influx/user/password/)
 ```sh
 influx user password --name testuser --password password
@@ -53,14 +53,14 @@ or just recreate the container (the initial login will be redirected to `http://
 * [AnyEvent::InfluxDB](https://metacpan.org/pod/AnyEvent::InfluxDB) module recognizes and supports JWT token
 
 
-From the client module all it takes is pass the 
+From the client module all it takes is pass the
 
 token in the `Authorization` header
 ```perl
 if ($self->{token}) {
         $args{headers}->{Authorization} = 'Authorization: Token '. $self->{token};
     }
-```    
+```
 provide `org` and `bucket` instead of  `db` and change the URL path from `/write` to `/api/v2/write`
 Note, this build allows operating via REST (but not WEB) interface:
 ```sh
@@ -113,28 +113,188 @@ curl --silent -X POST "http://192.168.0.64:8086/query?q=select%20*%20from%20test
                     "name": "testing",
                     "columns": [
                         "time",
-                        "CPU",
-                        "Memory",
-                        "Server"
+                        "host",
+                        "idle",
+                        "region",
+                        "system",
+                        "usertime"
                     ],
                     "values": [
                         [
-                            "2022-06-05T23:44:07.529619906Z",
-                            100,
-                            50,
-                            "SERGUEIK53"
+                            "2022-07-01T17:52:59Z",
+                            "sergueik53",
+                            10,
+                            "region",
+                            10,
+                            10
                         ],
                         [
-                            "2022-06-05T23:44:12.551612791Z",
-                            100,
-                            50,
-                            "SERGUEIK53"
+                            "2022-07-01T17:52:59.1Z",
+                            "sergueik53",
+                            10,
+                            "region",
+                            10,
+                            10
                         ],
                         [
-                            "2022-06-05T23:44:37.61060614Z",
-                            100,
-                            50,
-                            "SERGUEIK53"
+                            "2022-07-01T17:52:59.2Z",
+                            "sergueik53",
+                            10,
+                            "region",
+                            10,
+                            10
+                        ],
+                        [
+                            "2022-07-01T17:52:59.3Z",
+                            "sergueik53",
+                            10,
+                            "region",
+                            10,
+                            10
+                        ],
+                        [
+                            "2022-07-01T17:52:59.4Z",
+                            "sergueik53",
+                            10,
+                            "region",
+                            10,
+                            10
+                        ],
+                        [
+                            "2022-07-01T17:52:59.5Z",
+                            "sergueik53",
+                            10,
+                            "region",
+                            10,
+                            10
+                        ],
+                        [
+                            "2022-07-01T17:52:59.6Z",
+                            "sergueik53",
+                            10,
+                            "region",
+                            10,
+                            10
+                        ],
+                        [
+                            "2022-07-01T17:52:59.7Z",
+                            "sergueik53",
+                            10,
+                            "region",
+                            10,
+                            10
+                        ],
+                        [
+                            "2022-07-01T17:52:59.8Z",
+                            "sergueik53",
+                            10,
+                            "region",
+                            10,
+                            10
+                        ],
+                        [
+                            "2022-07-01T17:52:59.9Z",
+                            "sergueik53",
+                            10,
+                            "region",
+                            10,
+                            10
+                        ],
+                        [
+                            "2022-07-01T17:53:00Z",
+                            "sergueik53",
+                            10,
+                            "region",
+                            10,
+                            10
+                        ],
+                        [
+                            "2022-08-30T15:45:25.178Z",
+                            null,
+                            90,
+                            null,
+                            1,
+                            9
+                        ],
+                        [
+                            "2022-08-30T15:45:28.175Z",
+                            "sergueik53",
+                            40,
+                            "region",
+                            21,
+                            19
+                        ],
+                        [
+                            "2022-08-30T15:45:28.176Z",
+                            "sergueik53",
+                            40,
+                            "region",
+                            21,
+                            19
+                        ],
+                        [
+                            "2022-08-30T15:45:28.178Z",
+                            "sergueik53",
+                            40,
+                            "region",
+                            21,
+                            19
+                        ],
+                        [
+                            "2022-08-30T15:45:28.179Z",
+                            "sergueik53",
+                            40,
+                            "region",
+                            21,
+                            19
+                        ],
+                        [
+                            "2022-08-30T15:45:28.18Z",
+                            "sergueik53",
+                            40,
+                            "region",
+                            21,
+                            19
+                        ],
+                        [
+                            "2022-08-30T15:45:28.181Z",
+                            "sergueik53",
+                            40,
+                            "region",
+                            21,
+                            19
+                        ],
+                        [
+                            "2022-08-30T15:45:28.182Z",
+                            "sergueik53",
+                            40,
+                            "region",
+                            21,
+                            19
+                        ],
+                        [
+                            "2022-08-30T15:45:28.183Z",
+                            "sergueik53",
+                            40,
+                            "region",
+                            21,
+                            19
+                        ],
+                        [
+                            "2022-08-30T15:45:28.184Z",
+                            "sergueik53",
+                            40,
+                            "region",
+                            21,
+                            19
+                        ],
+                        [
+                            "2022-08-30T15:45:28.185Z",
+                            "sergueik53",
+                            40,
+                            "region",
+                            21,
+                            19
                         ]
                     ]
                 }
@@ -196,6 +356,61 @@ produces
     ]
 }
 ```
+The `max-row-limit` option appears to be backend only settable through [configuration](https://docs.influxdata.com/influxdb/v1.7/administration/config/#max-row-limit-0)
+
+One can rely on SQL `LIMIT` :
+```sh
+curl --silent -X POST -G "http://192.168.0.64:8086/query" --data-urlencode "q=select * from testing limit 3" --data-urlencode "db=example" --data-urlencode "pretty=true"
+```
+produces
+```json
+{
+    "results": [
+        {
+            "statement_id": 0,
+            "series": [
+                {
+                    "name": "testing",
+                    "columns": [
+                        "time",
+                        "host",
+                        "idle",
+                        "region",
+                        "system",
+                        "usertime"
+                    ],
+                    "values": [
+                        [
+                            "2022-07-01T17:52:59Z",
+                            "sergueik53",
+                            10,
+                            "region",
+                            10,
+                            10
+                        ],
+                        [
+                            "2022-07-01T17:52:59.1Z",
+                            "sergueik53",
+                            10,
+                            "region",
+                            10,
+                            10
+                        ],
+                        [
+                            "2022-07-01T17:52:59.2Z",
+                            "sergueik53",
+                            10,
+                            "region",
+                            10,
+                            10
+                        ]
+                    ]
+                }
+            ]
+        }
+    ]
+}
+```
 
 one can also create and use database via similar request:
 ```sh
@@ -221,6 +436,9 @@ IMAGE=$(docker ps | grep 'woahbase/alpine-influxdb'| awk '{print $1}')
 connect to shell in the container
 docker exec -it $IMAGE sh
 ```
+
+if the other base image used for the influx container, define the container name when creating and connect to the named one.
+
 in the container use `influx` to create database:
 
 ```sh
@@ -230,7 +448,7 @@ in the container use `influx` to create database:
 Connected to http://localhost:8086 version 1.8.3
 InfluxDB shell version: 1.8.3
 ```
-
+NOTE: one does not have to end every SQL statement with semicolon `;` when using InfluxQL
 ```SQL
 > CREATE DATABASE example
 >
@@ -278,6 +496,16 @@ example
 Using database example
 ```
 ```SQL
+show  series
+```
+```text
+key
+---
+testing
+testing,host=sergueik53,region=region
+```
+
+```SQL
 > SELECT host,statement from testing
 ```
 ```text
@@ -302,6 +530,124 @@ update environment to connect to shell in the container
 ```sh
 IMAGE=$(docker ps | grep 'influxdb:1.7-alpine'| awk '{print $1}')
 ```
+#### Testingwith Java Client
+```sh
+mvn package
+```
+```sh
+java -cp target\example.influxdb-client.jar;target\lib\* example.App
+```
+(adjust the paths and array separators according to the host OS)
+
+```text
+Reading: 'password' = 'password'
+Reading: 'host' = 'http://192.168.0.64:8086'
+Reading: 'username' = 'testuser'
+date: Jun 13 2003 23:11:52.454 UTC timestamp: 1055545912454
+date: Fri Jul 1 13:52:59 EDT 2022 timestamp: 1656697979000
+connecting host=http://192.168.0.64:8086, username=testuser, password=password
+1.7.11
+Starting
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+Done
+Starting
+Adding metric point for 1656697979000
+.
+Adding metric point for 1656697979100
+.
+Adding metric point for 1656697979200
+.
+Adding metric point for 1656697979300
+.
+Adding metric point for 1656697979400
+.
+Adding metric point for 1656697979500
+.
+Adding metric point for 1656697979600
+.
+Adding metric point for 1656697979700
+.
+Adding metric point for 1656697979800
+.
+Adding metric point for 1656697979900
+.
+Adding metric point for 1656697980000
+.
+Done
+Aug 30, 2022 11:45:31 AM okhttp3.internal.platform.Platform log
+INFO: --> GET http://192.168.0.64:8086/query?db=example&q=select+*+from+testing
+Aug 30, 2022 11:45:31 AM okhttp3.internal.platform.Platform log
+INFO: <-- 200 OK http://192.168.0.64:8086/query?db=example&q=select+*+from+testing (12ms, unknown-length body)
+columns: [time, host, idle, region, system, usertime]
+values: [
+[2022-07-01T17:52:59Z, sergueik53, 10.0, region, 10.0, 10.0],
+[2022-07-01T17:52:59.1Z, sergueik53, 10.0, region, 10.0, 10.0],
+[2022-07-01T17:52:59.2Z,sergueik53, 10.0, region, 10.0, 10.0],
+[2022-07-01T17:52:59.3Z, sergueik53, 10.0, region, 10.0, 10.0],
+[2022-07-01T17:52:59.4Z, sergueik53, 10.0, region, 10.0,10.0],
+[2022-07-01T17:52:59.5Z, sergueik53, 10.0, region, 10.0, 10.0],
+[2022-07-01T17:52:59.6Z, sergueik53, 10.0, region, 10.0, 10.0],
+[2022-07-01T17:52:59.7Z,sergueik53, 10.0, region, 10.0, 10.0],
+[2022-07-01T17:52:59.8Z, sergueik53, 10.0, region, 10.0, 10.0],
+[2022-07-01T17:52:59.9Z, sergueik53, 10.0, region, 10.0,10.0],
+[2022-07-01T17:53:00Z, sergueik53, 10.0, region, 10.0, 10.0],
+[2022-08-30T15:45:25.178Z, null, 90.0, null, 1.0, 9.0],
+[2022-08-30T15:45:28.175Z, sergueik53, 40.0, region, 21.0, 19.0],
+[2022-08-30T15:45:28.176Z, sergueik53, 40.0, region, 21.0, 19.0],
+[2022-08-30T15:45:28.178Z, sergueik53, 40.0, region, 21.0, 19.0],
+[2022-08-30T15:45:28.179Z, sergueik53, 40.0, region, 21.0, 19.0],
+[2022-08-30T15:45:28.18Z, sergueik53, 40.0, region, 21.0, 19.0],
+[2022-08-30T15:45:28.181Z, sergueik53, 40.0, region, 21.0, 19.0],
+[2022-08-30T15:45:28.182Z, sergueik53, 40.0, region, 21.0, 19.0],
+[2022-08-30T15:45:28.183Z, sergueik53, 40.0, region, 21.0, 19.0],
+[2022-08-30T15:45:28.184Z, sergueik53, 40.0, region, 21.0, 19.0],
+[2022-08-30T15:45:28.185Z, sergueik53, 40.0, region, 21.0, 19.0]
+]
+
+```
+the data can also be queried via `influx` directly on the container (note the schema difference compared to Perl example earlier):
+
+```SQL
+use example
+select host, idle, region, system, usertime from testing
+```
+```text
+name: testing
+time                host       idle region system usertime
+----                ----       ---- ------ ------ --------
+1656697979000000000 sergueik53 10   region 10     10
+1656697979100000000 sergueik53 10   region 10     10
+1656697979200000000 sergueik53 10   region 10     10
+1656697979300000000 sergueik53 10   region 10     10
+1656697979400000000 sergueik53 10   region 10     10
+1656697979500000000 sergueik53 10   region 10     10
+1656697979600000000 sergueik53 10   region 10     10
+1656697979700000000 sergueik53 10   region 10     10
+1656697979800000000 sergueik53 10   region 10     10
+1656697979900000000 sergueik53 10   region 10     10
+1656697980000000000 sergueik53 10   region 10     10
+1661874325178000000            90          1      9
+1661874328175000000 sergueik53 40   region 21     19
+1661874328176000000 sergueik53 40   region 21     19
+1661874328178000000 sergueik53 40   region 21     19
+1661874328179000000 sergueik53 40   region 21     19
+1661874328180000000 sergueik53 40   region 21     19
+1661874328181000000 sergueik53 40   region 21     19
+1661874328182000000 sergueik53 40   region 21     19
+1661874328183000000 sergueik53 40   region 21     19
+1661874328184000000 sergueik53 40   region 21     19
+1661874328185000000 sergueik53 40   region 21     19
+```
+
 ### Cleanup
 ```sh
 docker container stop $IMAGE
@@ -382,7 +728,7 @@ The query
 ```sh
 curl -v --request POST "$BASE_URL/api/v2/query/analyze?orgID$ORG" --header "Authorization: Token $TOKEN" -d '{"query": "from(bucket: \"testbucket\")\n  |> range(start: 1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == measurment)\n  |> filter(fn: (r) => r[\"_field\"] == \"load\" )\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")"}'
 ```
-is returning 
+is returning
 ```JSON
 {"code":"internal error","message":"An internal error has occurred - check server logs"}
 
@@ -595,7 +941,7 @@ SELECT "value" FROM "measurement" WHERE ("appid" = 'FOO' AND "operation" = 'send
 will see
 
 ![Data In Grafana](https://github.com/sergueik/springboot_study/blob/master/basic-influxdb/screenshots/capture-data-grafana.png)
-NOTE: if the timestamp  were incorrectly formatted during data ingestion you may see Grafana complain `Data outside time rannge` and suggest `zoom to data`. After this done, see series and note the `1969-12-31` date in the range 
+NOTE: if the timestamp  were incorrectly formatted during data ingestion you may see Grafana complain `Data outside time rannge` and suggest `zoom to data`. After this done, see series and note the `1969-12-31` date in the range
 
 To make script ingest the timestamps, modify the loop to be
 ```sh
@@ -689,7 +1035,7 @@ measurement|,tag_set| |field_set| |timestamp
 ```
 * the string field values are always expected to be double quoted
 * separate the field set and the optional timestamp with a whitespace (required by the protocol)
-* the timestamp for data point in nanosecond-precision Unix time unless a different `precision` is provided 
+* the timestamp for data point in nanosecond-precision Unix time unless a different `precision` is provided
 
 ### Example Using Perl to Nanosecond Timestamp
 ```sh
@@ -842,8 +1188,8 @@ it will return
 ```
 currently only default precision `ns` working acceptably.
 
-### Testing on Alpine 
-To 
+### Testing on Alpine
+To
 run on bare bones alpine perl container there is a `InfluxDB/Client/SimpleAlpine.pm` and `ingest-alpine.pl`. The `URI` module is a dependency of Influx::Client::Simple but is pure perl and can be downloaded from [CPAN](https://metacpan.org/pod/URI).
 ```sh
 wget https://cpan.metacpan.org/authors/id/O/OA/OALDERS/URI-5.10.tar.gz
@@ -907,22 +1253,21 @@ using presision NANOSECONDS
    * Prometheus endpoint provided by influxdb [documentation](https://docs.influxdata.com/influxdb/v1.8/supported_protocols/prometheus/)
    * https://github.com/JonasProgrammer/docker-influxdb
    * https://www.influxdata.com/the-best-way-to-store-collect-analyze-time-series-data/
-   * https://github.com/ind9/influxdb-java - probably 2.x
+   * https://github.com/ind9/influxdb-java - is using 1.x semantics
    * https://github.com/influxdata/influxdb-java - official, too big
-   * https://devconnected.com/how-to-create-a-database-on-influxdb-1-7-2-0/ - there apparently is a v2 / v1.x compatibility concern
-documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) and for [forward](https://docs.influxdata.com/influxdb/v2.0/reference/api/influxdb-1x/)
+   * https://devconnected.com/how-to-create-a-database-on-influxdb-1-7-2-0/ - there apparently is a v2 / v1.x compatibility concern documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) and for [forward](https://docs.influxdata.com/influxdb/v2.0/reference/api/influxdb-1x/)
   * [intro](https://habr.com/ru/company/selectel/blog/245515/) to TSDB, and InfluxDB (in Russian, with a number of valuable comments in discussion)
   * InfluxDB Grafana data source [documentation](https://grafana.com/docs/grafana/latest/datasources/influxdb/) - note this covers InfluxQL (classic InfluxDB query) separately from [Flux](https://grafana.com/docs/grafana/latest/datasources/influxdb/influxdb-flux/) query language which apparently is supported but not required
    * another InfluxDB Perl [module](https://metacpan.org/pod/InfluxDB) - JSON only (deprecated)
    * an InfluxDB LineProtocol Perl [module](https://metacpan.org/pod/InfluxDB::LineProtocol)
   * [querying v 1.7](https://docs.influxdata.com/influxdb/v1.7/guides/querying_data/)
-  * docker [formating arguments](https://docs.docker.com/config/formatting/) 
+  * docker [formating arguments](https://docs.docker.com/config/formatting/)
   * [nightly influxDB 1.7 build for windows 10 x64](https://dl.influxdata.com/influxdb/nightlies/influxdb-nightly_windows_amd64.zip) and how to install InfluxDB in Windows [stackoverflow discussion](https://stackoverflow.com/questions/26116711/how-to-install-influxdb-in-windows/30127377#30127377) - it runs in foreground on Windows and can be used for testing only
   * [influx 2.x API via Postman](https://www.influxdata.com/blog/getting-started-influxdb-2-0-api-postman/) - not quite working in Postman (variables are not propagated into steps) but the details of the requests can be useful with curl Perl or Powershell client examples
   * [prometheus/influxdb_exporter](https://github.com/prometheus/influxdb_exporter) - source tree of standalone app appearing to __Influx Telegraf__ [metric colector]() as a regular InfluxDB server server that accepts the InfluxDB time series metrics via the HTTP API and exports them via HTTP for Prometheus consumption, capable of preserving the original timestamps of the metric. The [images link](https://hub.docker.com/r/prom/influxdb-exporter). Apparently does not push data on its own. Most importantly does not allow pushing more than a single metric for every unique metric name and labels combination, thus making it impossible to bulk load histories
   * [prometheus remote read and remote write](https://prometheus.io/docs/operating/integrations/) and example [project](https://github.com/prometheus/prometheus/tree/release-2.36/documentation/examples/remote_storage/example_write_adapter)  and [source](https://github.com/prometheus/prometheus/blob/release-2.36/documentation/examples/remote_storage/remote_storage_adapter/influxdb/client.go)
-  * [guide to DateTimeFormatter](https://www.baeldung.com/java-datetimeformatter) 
-
+  * [guide to DateTimeFormatter](https://www.baeldung.com/java-datetimeformatter)
+  * InfluxData __InfluxDB Query Language__ Data Exploration [document](https://archive.docs.influxdata.com/influxdb/v1.2/query_language/data_exploration/) - note, only exists for old version, but is  equally relevant for recent __1.x__ InfluxDB.
 
 ### Youtube Links
 
@@ -941,7 +1286,7 @@ documented for [backward](https://docs.influxdata.com/influxdb/v1.8/tools/api/) 
   * [migration from Influx v1 to v2](https://www.sqlpac.com/en/documents/influxdb-migration-procedure-v1-v2.html)
   * [influxdata channel](https://www.youtube.com/channel/UCnrgOD6G0y0_rcubQuICpTQ)
   * [Integrating Prometheus and InfluxDB - Paul Dix, InfluxData](https://www.youtube.com/watch?v=6UjVX-RTFmo) - mentions but not elaborates on remote Prometheus read/write API ?
-  
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 	
