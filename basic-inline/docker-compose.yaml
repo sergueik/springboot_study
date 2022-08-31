@@ -1,0 +1,56 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: app
+    image: alpine:3.9.5
+    command: |
+      ash -c '
+      if [ -z "$${SERVICE_HOST}" ] ; then
+        echo "Using default service host";
+        SERVICE_HOST="slow-mysql-server";
+      fi;
+      echo "SERVICE_HOST=\"$${SERVICE_HOST}\"";
+      if [ -z "$${SERVICE_PORT}" ] ; then
+        echo "Using default service port";
+        SERVICE_PORT="3306";
+      fi;
+      echo "SERVICE_PORT=\"$${SERVICE_PORT}\"";
+      DELAY=10;
+      echo "DELAY=\"$${DELAY}\"";
+      if [ ! -z $$DEBUG_DELAYED_START ]; then
+        LOG="/tmp/debug.log";
+        echo "Debug logs in $${LOG}";
+      fi;
+      while true;
+      do
+        if [ ! -z "$$DEBUG_DELAYED_START" ]; then
+          echo "Waiting on the $${SERVICE_HOST} $${SERVICE_PORT}" | tee -a $$LOG;
+        else
+          echo "Waiting on the $${SERVICE_HOST} $${SERVICE_PORT}";
+        fi;
+        nc -z $$SERVICE_HOST $$SERVICE_PORT;
+        if [ $$? -eq 0 ]; then
+          if $$DEBUG_DELAYED_START; then
+            echo "Got Response" | tee -a $$LOG;
+          else
+            echo "Got Response";
+          fi;
+          break;
+        fi;
+        if [ ! -z "$$DEBUG_DELAYED_START" ]; then
+          echo "Waiting $${DELAY} sec" | tee -a $$LOG;
+        else
+          echo "Waiting $${DELAY} sec";
+        fi;
+        sleep $$DELAY;
+      done;
+      '
+
+    environment:
+      SERVICE_PORT: 3306
+      SERVICE_HOST: 'slow-mysql-server'
+      TIMEOUT: 600
+      DEBUG_DELAYED_START: 'true'
+      # DEBUG_DELAYED_START: true
+      # ERROR: The Compose file './docker-compose.yaml' is invalid because: services.app.environment.DEBUG_DELAYED_START contains true, which is an invalid type, it should be a string, number, or a null
