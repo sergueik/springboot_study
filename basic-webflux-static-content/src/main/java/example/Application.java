@@ -44,7 +44,27 @@ public class Application {
 				request -> ok().body(Flux.just("one", "two"), String.class))
 						.andOther(resources("/**", new ClassPathResource("/static")));
 	}
+// alternatively
+/*
+@Configuration
+public class WebConfig {
 
+  @Bean
+  public RouterFunction<?> router() {
+    Resource html = new ClassPathResource("static/index.html");
+
+    return route(
+      GET("/"), request ->
+        ok()
+          .contentType(MediaType.TEXT_HTML)
+          .bodyValue(html)
+    )
+      .andOther(resources("/**", new ClassPathResource("/static")))
+      ;
+  }
+
+}
+*/
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
