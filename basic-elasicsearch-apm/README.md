@@ -5,7 +5,7 @@ with a different app to get instrumented by [elasticsearch APM agent](https://ww
 
 ### Usage
 
-Note: elasticsearch stack standalone Vagrantbox is a good alternative. Try to fire several application docker process serially
+Note: [elasticsearch stack standalone Vagrantbox packaged by Bitnami](https://bitnami.com/stack/elk) is a good alternative. Try to fire several application docker process serially
 ```sh
 ELASTICSEARCH_BASE_IMAGE=blacktop/elasticsearch
 docker pull $ELASTICSEARCH_BASE_IMAGE
@@ -17,7 +17,6 @@ docker run --name $ELASTICSEARCH_SERVER -p 9200:9200 -p 9300:9300 -d $ELASTICSEA
 followed by
 ```sh
 docker logs $ELASTICSEARCH_SERVER
-
 ```
 ```sh
 APM_SERVER_BASE_IMAGE=docker.elastic.co/apm/apm-server:7.8.0
@@ -36,19 +35,19 @@ wget https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-
 
 docker build -f Dockerfile.app -t app_server .
 ```
-* Lanch the `mysql-example` backed Docker container, using [Environment variables configuration]() option supported by APM Agent.
+* Lanch the `mysql-example` backed Docker container, using [Environment variables configuration]() option supported by APM Agent
 ```sh
 docker run -d -p 8086:8085 -e ELASTIC_APM_SERVICE_NAME=app_server -e ELASTIC_APM_APPLICATION_PACKAGES=example.basic -e ELASTIC_APM_SERVER_URLS=http://$APM_SERVER:8200 --link $APM_SERVER app_server
 ```
 
-you may try to install the APM agent into the App container in which case thefollowing argument update will be needed:
+you may try to install the APM agent into the App container in which case the following argument update will be required:
 
 ```sh
 docker run -d -p 8086:8085 -e ELASTIC_APM_SERVICE_NAME=app_server -e ELASTIC_APM_APPLICATION_PACKAGES=example.basic -e ELASTIC_APM_SERVER_URLS=http://localhost:8200 --link $ELASTICSEARCH_SERVER app_server
 ```
  will also need link to the elasticsearch running: the app_server loops with
 ```sh
-	Failed to connect to backoff(elasticsearch(http://elasticsearch:9200)): Get http://elasticsearch:9200: lookup elasticsearch on 75.75.75.75:53: no such host
+Failed to connect to backoff(elasticsearch(http://elasticsearch:9200)): Get http://elasticsearch:9200: lookup elasticsearch on 75.75.75.75:53: no such host
 2021-03-03T22:38:04.850Z	INFO	pipeline/output.go:93	Attempting to reconnect to backoff(elasticsearch(http://elasticsearch:9200)) with 98 reconnect attempt(s)
 2021-03-03T22:38:04.879Z	WARN	transport/tcp.go:53	DNS lookup failure "elasticsearch": lookup elasticsearch on 75.75.75.75:53: no such host
 ```sh
@@ -72,6 +71,8 @@ APP_SERVER_ID=$(docker container ls -a | grep 'app-server' | awk '{print $1}' )
 ```
 ```sh
 docker logs $APP_SERVER_ID |  grep apm-server
+```
+```text
 2021-04-08 00:13:39.703 [apm-server-healthcheck] WARN co.elastic.apm.report.ApmServerHealthChecker - Elastic APM server is not available (404)
 2021-04-08 00:13:39.810 [main] INFO co.elastic.apm.configuration.StartupInfo - Starting Elastic APM 0.7.0 as app-server on Java 1.8.0_212 (IcedTea) Linux 5.4.0-42-generic
 2021-04-08 00:16:31.774 [OkHttp ConnectionPool] WARN co.elastic.apm.shaded.okhttp3.OkHttpClient - A connection to http://elastic-apm-server:8200/ was leaked. Did you forget to close a response body? To see where this was allocated, set the OkHttpClient logger level to FINE: Logger.getLogger(OkHttpClient.class.getName()).setLevel(Level.FINE);
@@ -93,7 +94,7 @@ K_URL="https://artifacts.elastic.co/downloads/kibana/kibana-${VERSION}-linux-x86
 ```sh
 wget -q $ES_URL -O elasticsearch.tar.gz 
 wget -q $LS_URL -O logstash.tar.gz 
-wget -q  $K_URL -O kibana.tar.gz
+wget -q $K_URL -O kibana.tar.gz
 ```
 and replace the RUN commands in `Dockerfile.elk` with the COPY commands 
 ### See Also
@@ -102,7 +103,6 @@ and replace the RUN commands in `Dockerfile.elk` with the COPY commands
  * docker.elastic.co/observability/apm-agent-java:1.12.
  * https://mvnrepository.com/artifact/co.elastic.apm/elastic-apm-agent
  * https://www.elastic.co/guide/en/apm/get-started/current/install-and-run.html
- * https://www.elastic.co/guide/en/apm/server/6.8/running-on-docker.html
  * https://www.docker.elastic.co/r/apm/apm-server
  * https://www.elastic.co/guide/en/apm/server/6.8/running-on-docker.html
  * https://www.elastic.co/guide/en/apm/server/current/running-on-docker.html
@@ -110,11 +110,17 @@ and replace the RUN commands in `Dockerfile.elk` with the COPY commands
   * https://stackoverflow.com/questions/51445846/elasticsearch-max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-inc
   * [blacktop/docker-elasticsearch-alpine](https://github.com/blacktop/docker-elasticsearch-alpine/blob/master/6.4/Dockerfile)
   * [blacktop/docker-elastic-stack](https://github.com/blacktop/docker-elastic-stack/blob/master/docker-compose.yml) based on Alpine
-  * [](https://github.com/cosminseceleanu/tutorials/blob/master/elastic-apm-java/docs/index.md) Docker hoster APM agent / server scenario 
+  * [Monitor Spring Boot Application Performance with Elastic APM, Elasticsearch and Kibana](https://github.com/cosminseceleanu/tutorials/blob/master/elastic-apm-java/docs/index.md) Docker-hosted APM agent / server scenario 
   * Elasticsearch, Logstash and Kibana 7.x single [image](https://github.com/githubcdr/docker-elk7)
   * https://slacker.ro/2020/09/02/monitoring-java-applications-with-elastic-getting-started-with-the-elastic-apm-java-agent/
   * interactively download apm jar [link](https://search.maven.org/artifact/co.elastic.apm/elastic-apm-agent/1.20.0/jar)
   * https://discuss.elastic.co/t/will-there-eventually-be-alpine-based-docker-images-for-logstash-6-x/163623/4
+  * [review of](https://www.elastic.co/blog/elasticsearch-as-a-time-series-data-store) __Elasticsearch as a Time Series Data Store__
+  * https://www.elastic.co/guide/en/elasticsearch/reference/current/use-elasticsearch-for-time-series-data.html
+  * [7 ways to ingest data into Elasticsearch](https://aravind.dev/elastic-data-ingest/)
+###  Youtube Links
+  * [Configuring Elasticsearch Index for Time Series Data](https://www.youtube.com/watch?v=2WJFMYAri_8)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
