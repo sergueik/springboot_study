@@ -1,4 +1,4 @@
-### Info
+﻿### Info
 
 Basic docker-compose tomcat8 with pre-built pure jsp tomcat application interacting with mysql data source project cloned from
 [springboot mySQL Docker container](https://github.com/dmulligan/docker-example-tomcat-mysql) converted to run on alpine openjdk jre base image.
@@ -147,6 +147,53 @@ for N in web db ; do docker stop $(docker ps  | grep _${N}_ |awk '{print $1}'); 
 docker-compose stop
 docker container prune -f
 ```
+### Auto Initialization
+
+the mysl docker hub [documentation](https://hub.docker.com/_/mysql)
+explains the auto initialization feature:
+ * When a container is started for the first time, a new database with
+ the specified
+ name will be created and
+ initialized with the provided configuration variables. Furthermore,
+ it will execute files with extensions `.sh`, `.sql` and `.sql.gz` that are
+ found in `/docker-entrypoint-initdb.d`.
+ Files will be executed in alphabetical order. You can
+ easily populate your mysql services by mounting a SQL dump into that directory
+ and provide custom images with contributed data. SQL files will
+be imported by default to the database specified by the `MYSQL_DATABASE` variable.
+
+
+mysql vendor supplies [no images](https://hub.docker.com/_/mysql/tags?page=1&name=alpine)
+with `alpine` in the tag
+
+therefore the `docker-compose.yaml`
+```yaml
+version: "3"
+services:
+    db:
+        image: "mysql:???"
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+          MYSQL_ROOT_PASSWORD: 1
+        volumes:
+          - ./DB:/docker-entrypoint-initdb.d
+```
+may not work with alpine builds (not tested)
+the
+`init.sql` in the example above is located under `DB`
+```SQL
+CREATE DATABASE IF NOT EXISTS appDB;
+
+CREATE USER IF NOT EXISTS 'user'@'%' IDENTIFIED BY 'password';
+GRANT SELECT,UPDATE,INSERT TO 'user'@'%';
+FLUSH PRIVILEGES;
+
+USE appDB;
+CREATE TABLE IF NOT EXISTS users (...
+```
+it may [require](https://github.com/docker-library/mysql/issues/654) `777` mode
+
 
 
 ### See Also
