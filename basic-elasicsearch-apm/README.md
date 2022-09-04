@@ -99,14 +99,14 @@ wget -q $K_URL -O kibana.tar.gz
 and replace the RUN commands in `Dockerfile.elk` with the COPY commands 
 ### See Also
 
- * https://github.com/elastic/apm-agent-java/blob/master/CONTRIBUTING.md
- * docker.elastic.co/observability/apm-agent-java:1.12.
- * https://mvnrepository.com/artifact/co.elastic.apm/elastic-apm-agent
- * https://www.elastic.co/guide/en/apm/get-started/current/install-and-run.html
- * https://www.docker.elastic.co/r/apm/apm-server
- * https://www.elastic.co/guide/en/apm/server/6.8/running-on-docker.html
- * https://www.elastic.co/guide/en/apm/server/current/running-on-docker.html
- * https://stackoverflow.com/questions/11570132/generator-functions-equivalent-in-java
+  * https://github.com/elastic/apm-agent-java/blob/master/CONTRIBUTING.md
+  * docker.elastic.co/observability/apm-agent-java:1.12.
+  * https://mvnrepository.com/artifact/co.elastic.apm/elastic-apm-agent
+  * https://www.elastic.co/guide/en/apm/get-started/current/install-and-run.html
+  * https://www.docker.elastic.co/r/apm/apm-server
+  * https://www.elastic.co/guide/en/apm/server/6.8/running-on-docker.html
+  * https://www.elastic.co/guide/en/apm/server/current/running-on-docker.html
+  * https://stackoverflow.com/questions/11570132/generator-functions-equivalent-in-java
   * https://stackoverflow.com/questions/51445846/elasticsearch-max-virtual-memory-areas-vm-max-map-count-65530-is-too-low-inc
   * [blacktop/docker-elasticsearch-alpine](https://github.com/blacktop/docker-elasticsearch-alpine/blob/master/6.4/Dockerfile)
   * [blacktop/docker-elastic-stack](https://github.com/blacktop/docker-elastic-stack/blob/master/docker-compose.yml) based on Alpine
@@ -118,8 +118,24 @@ and replace the RUN commands in `Dockerfile.elk` with the COPY commands
   * [review of](https://www.elastic.co/blog/elasticsearch-as-a-time-series-data-store) __Elasticsearch as a Time Series Data Store__
   * https://www.elastic.co/guide/en/elasticsearch/reference/current/use-elasticsearch-for-time-series-data.html
   * [7 ways to ingest data into Elasticsearch](https://aravind.dev/elastic-data-ingest/)
+  * C# elastic searh metric  gauge ingesting [client](https://github.com/Streets-Heaver/ElasticSeries) (needs VS 2015+, uses async/await)
+  * java [Elasticsearch Rest Client](https://github.com/searchbox-io/Jest) - NOTE, uses modules within the project. The tool documentation is in [jest](https://github.com/searchbox-io/Jest/tree/master/jest)
+  * [spring client](https://github.com/spring-projects/spring-data-elasticsearch) using `RestHighLevelCLient`
+  * https://github.com/dadoonet/fscrawler comlex media crawler for ELK - may have some useful common code, but not specifically for TDSB scenario
+  * sql4es [github repository](https://github.com/Anchormen/sql4es) and [release direcory](https://github.com/Anchormen/sql4es/tree/master/release) Elastic adapter JDBC.  Note - not published to Maven central. There s no newer version than for elastic search 6.3.2 4 year ago
+  * https://github.com/wilsonyy/spring-boot-elasticsearch-timeseries-demo - create and query time series, interesting
+  * https://github.com/ajaypp123/elasticsearch_timeseries/blob/master/timeseries_python.py
+ 
 ###  Youtube Links
   * [Configuring Elasticsearch Index for Time Series Data](https://www.youtube.com/watch?v=2WJFMYAri_8)
+  * [time series sata with Index Lifecycle Management (ILM) policies](https://www.youtube.com/watch?v=6oEtbyrByRk)
+  * [Using Elasticsearch as a Time-Series Database ](https://www.youtube.com/watch?v=hNzxm157gPg)
+  * [load data into ElasticSearch index using LogStash](https://www.youtube.com/watch?v=hIDIv4-CElc)
+  * [Benchmarking Elasticsearch vs InfluxDB for Time Series Data & Metrics](https://www.youtube.com/watch?v=qeg2jwpWhPU)
+  * [How to load data into ElasticSearch index using LogStash](https://www.youtube.com/watch?v=hIDIv4-CElc)
+  * [How to Use Logstash to import CSV Files Into ElasticSearch](https://www.youtube.com/watch?v=_kqunm8w7GI)
+  * [Configuring Elasticsearch Index for Time Series Data](https://www.youtube.com/watch?v=2WJFMYAri_8)
+  * [overview of TSDB incl. Elastic](https://youtu.be/HB9bG3Qcvq8?t=365)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
