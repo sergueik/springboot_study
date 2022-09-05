@@ -229,6 +229,43 @@ curl -H "Content-Type: application/json" -XPUT "http://192.168.0.138:9200/_templ
 ```
 
 ### Working with ElasticSearch from Java client
+*  run the app
+
+```sh
+mvn spring-boot:run
+```
+
+* in the browser, or console, perform requests
+NOTE: if the `query` is run before
+`http://localhost:8844/query`
+
+there have been any `insert`s, the index would not exist and application code does not currently catch it:
+
+```txt
+Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; nested exception is [my_index_test_alias]
+ElasticsearchStatusException[Elasticsearch exception [type=index_not_found_exception, reason=no such index [my_index_test_alias]]]] with root cause
+org.elasticsearch.ElasticsearchStatusException: Elasticsearch exception [type=index_not_found_exception, reason=no such index [my_index_test_alias]]
+```
+* in the browser or console, perform `insert`
+```sh
+http://localhost:8844/insert
+```
+will respond with
+`SUCCESS`
+
+repeating the `query` request now results in the collection JSON
+```json
+[{"createTime":1662352919707,"name":"Obj-13","id":"ac43c1bd-558d-4101-8793-3d0dca720c6b"}]
+```
+with the number of rows growing after more `insert` were performed
+
+ * Note that `createTime` is in milliseconds:
+```sh
+date +"%s"
+```
+```text
+1662353482
+```
 
 ### See Also
    * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html#network-interface-values
