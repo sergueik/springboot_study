@@ -1,0 +1,7 @@
+server:
+  port: 8844
+
+# using virtual box hoste integrated elastic search, logstash and kibana
+# no replicas
+elasticsearch:
+  cluster-nodes: 192.168.0.138:9200
