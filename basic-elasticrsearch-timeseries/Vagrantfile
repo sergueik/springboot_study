@@ -9,10 +9,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # set to false, if you do NOT want to check the correct VirtualBox Guest Additions version when booting this box
   if defined?(VagrantVbguest::Middleware)
-    config.vbguest.auto_update = true
+    config.vbguest.auto_update = false
   end
-  config.vm.box = 'elastic/debian-8-x86_64-test'
-  config_vm_box_name = 'debian-8-x86_64-test.box'
+  # https://app.vagrantup.com/stevesimpson/boxes/elasticsearch/versions/2.0.0
+  config.vm.box = 'stevesimpson/elasticsearch'
+  config_vm_box_name = 'elastic.box'
   config.vm.box_url = "file://#{basedir}/Downloads/#{config_vm_box_name}"
 
   config.vm.network :forwarded_port, guest: 5601, host: 5601
@@ -21,11 +22,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network 'public_network', ip: '192.168.0.138'
 
   config.vm.provider :virtualbox do |v|
-    v.name = 'Elasticsearch Debian Vagrant Box'
-  box_name  = v.name
+    v.name = 'Elasticsearch Vagrant Box'
+    box_name  = v.name
     v.customize ['modifyvm', :id, '--cpus', '2', '--memory', '2048']
- #  config.vm.define box_name do |guest|
- #     guest.vm.network 'private_network', ip: '172.17.8.128'
- #  end
   end
 end
