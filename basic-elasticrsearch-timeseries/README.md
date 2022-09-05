@@ -22,8 +22,28 @@ on the port 80, after authenticating with `user` user and password from `~bitnam
 
 
 may switch to use [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant/blob/master/elk/Vagrantfile) or [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant/blob/master/elk_box/Vagrantfile). This will take a little extra time to build custom ELK Virtualbox
+### Download Vargant Box
 
+```powershell
+$ProgressPreference = 'SilentlyContinue'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+invoke-webrequest -uri 'https://app.vagrantup.com/elastic/boxes/debian-8-x86_64-test/versions/20200209.0.0/providers/virtualbox.box' -outfile "${env:USERPROFILE}\Downloads\debian-8-x86_64-test.box"
+```
+or 
+```sh
+curl -o ~/Downloads/debian-8-x86_64-test.box -Lk https://app.vagrantup.com/elastic/boxes/debian-8-x86_64-test/versions/20200209.0.0/providers/virtualbox.box
+```
+```sh
+vagrant up
+```
+found that there is no elastic stact on this particulat box...
+
+```sh
+vagrant destroy -f
+vagrant box remove elastic/debian-8-x86_64-test
+```
 ### See Also
    * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html#network-interface-values
   * https://docs.bitnami.com/virtual-machine/apps/elk/administration/connect-remotely/
-  * https://docs.bitnami.com/virtual-machine/faq/administration/use-firewall/:
+  * https://docs.bitnami.com/virtual-machine/faq/administration/use-firewall/
+  * https://www.vagrantup.com/docs/networking/public_network
