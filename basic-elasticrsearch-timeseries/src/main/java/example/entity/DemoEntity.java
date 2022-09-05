@@ -11,23 +11,23 @@ public class DemoEntity {
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setId(String value) {
+		id = value;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String value) {
+		name = value;
 	}
 
 	public Date getCreateTime() {
 		return createTime;
 	}
 
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
+	public void setCreateTime(Date value) {
+		createTime = value;
 	}
 }

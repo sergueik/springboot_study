@@ -39,20 +39,16 @@ public class ESService {
 	@Autowired
 	private RestHighLevelClient client;
 
-	/**
-	 * 保存消息
-	 * @param entity 消息
-	 * @throws IOException
-	 */
 	public boolean save(DemoEntity entity, String index) throws IOException {
 		String newIndex = getIndexForSave(index);
 
-		IndexRequest request = new IndexRequest(newIndex);
+		IndexRequest indexRequest = new IndexRequest(newIndex);
 		Map<String, Object> map = JSONObject
 				.parseObject(JSONObject.toJSONString(entity)).getInnerMap();
-		request.source(map, XContentType.JSON);
-		IndexResponse iResponse = client.index(request, RequestOptions.DEFAULT);
-		return "created".equals(iResponse.getResult().getLowercase());
+		indexRequest.source(map, XContentType.JSON);
+		IndexResponse indexResponse = client.index(indexRequest,
+				RequestOptions.DEFAULT);
+		return "created".equals(indexResponse.getResult().getLowercase());
 	}
 
 	public List<Map<String, Object>> query(String index, int page, int limit,
@@ -60,38 +56,40 @@ public class ESService {
 		String newIndex = getIndexForSearch(index);
 		SearchRequest searchRequest = new SearchRequest(newIndex);
 
-		SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
 		if (!StringUtils.isEmpty(name)) {
-			sourceBuilder.query(
+			searchSourceBuilder.query(
 					QueryBuilders.matchQuery(name, "name").minimumShouldMatch("100%"));
 		}
-		sourceBuilder.timeout(new TimeValue(10, TimeUnit.SECONDS));
-		sourceBuilder.from((page - 1) * limit);
-		sourceBuilder.size(limit);
+		searchSourceBuilder.timeout(new TimeValue(10, TimeUnit.SECONDS));
+		searchSourceBuilder.from((page - 1) * limit);
+		searchSourceBuilder.size(limit);
 
-		// 排序
 		switch (order) {
 		case "desc":
-			sourceBuilder
+			searchSourceBuilder
 					.sort(new FieldSortBuilder("createTime").order(SortOrder.DESC));
 			break;
 		case "asc":
-			sourceBuilder
+			searchSourceBuilder
 					.sort(new FieldSortBuilder("createTime").order(SortOrder.ASC));
 			break;
 		}
 
-		searchRequest.source(sourceBuilder);
+		searchRequest.source(searchSourceBuilder);
 
-		SearchResponse sResponse = client.search(searchRequest,
+		SearchResponse searchResponse = client.search(searchRequest,
 				RequestOptions.DEFAULT);
 		List<Map<String, Object>> list = new ArrayList<>();
-		Arrays.stream(sResponse.getHits().getHits()).forEach(i -> {
-			Map<String, Object> map = i.getSourceAsMap();
-
-			list.add(map);
-		});
+		// https://www.javadoc.io/doc/org.elasticsearch/elasticsearch/7.6.2/org/elasticsearch/action/search/SearchResponse.html#getHits()
+		// https://www.javadoc.io/doc/org.elasticsearch/elasticsearch/7.6.2/org/elasticsearch/search/SearchHits.html
+		Arrays.stream(
+				searchResponse.getHits() /* SearchHits */.getHits() /* SearchHit[] */)
+				.forEach(i -> {
+					Map<String, Object> map = i.getSourceAsMap();
+					list.add(map);
+				});
 		return list;
 	}
 

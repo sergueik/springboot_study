@@ -1,7 +1,7 @@
-### Info
+﻿### Info
 
 replica of [Spring-boot-elasticsearch-timeseries-demo](https://github.com/wilsonyy/spring-boot-elasticsearch-timeseries-demo) with single instance ELK server
- the Elasticsearch is used to store time series database
+ the Elasticsearch is used to store time series database coupled with Grafana which is run on [Grafana packaged by Bitnami](https://bitnami.com/stack/grafana) VM (for sake of networking)
 The original project focus was with shard creation.
 
 Use [elasticsearch stack standalone Vagrantbox packaged by Bitnami](https://bitnami.com/stack/elk) as single ELK node (set number of replicas to zero)
@@ -9,20 +9,61 @@ This appliance is not configured to allow data posting to Elasticsearch from ext
 
 
 ### Usage
-
-You may need to re-import the image ova when migrating the project to different host
-
-If seeing 
-the
-```json
-{"statusCode":503,"error":"Service Unavailable","message":"License is not available."}
+* login to console and open port `3000`:
+```sh
+ufw allow 3000
 ```
+* login to `http://192.168.0.140:3000/login` and configure via web UI using credentials provided by bitmani
 
-on the port 80, after authenticating with `user` user and password from `~bitnami/bitnami_credentials`
+```text
+the default username and password is 'admin' and 'wNPHGcoP2RhS'
+```
+* import `bitnami-grafana-9.1.2-0-linux-vm-debian-11-x86_64-nami.ova`
+* configure grafana elasticsearch plugin
+Turns out the latest release Bitnami packaged Grafana __9.1.2__ refuses to work witn elasticsearch prior to __7.10__:
+web console says: *Support for Elasticsearch versions after their end-of-life (currently versions < 7.10) was removed*
+One can download rhe older release from `https://artifacthub.io/packages/helm/bitnami/grafana`
+
+Download grafana Vagrant box from `https://app.vagrantup.com/Siarhei/boxes/grafana/versions/1.0`
 
 
-may switch to use [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant/blob/master/elk/Vagrantfile) or [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant/blob/master/elk_box/Vagrantfile). This will take a little extra time to build custom ELK Virtualbox
-### Download Vargant Box
+```powershell
+$ProgressPreference = 'SilentlyContinue'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+invoke-webrequest -uri 'https://app.vagrantup.com/Siarhei/boxes/grafana/versions/1.0/providers/virtualbox.box' -outfile "${env:USERPROFILE}\Downloads\grafana.box"
+```
+```sh
+cd elasticsearch
+vagrant up
+```
+* ignore the error
+```text
+There was an error while executing `VBoxManage`, a CLI used by Vagrant
+for controlling VirtualBox. The command and stderr is shown below.
+
+Command: ["startvm", "85ac7834-8be6-44bb-a9cb-f2b67d87595a", "--type", "headless"]
+
+Stderr: VBoxManage.exe: error: RawFile#0 failed to create the raw output file C:/Users/Sergey_Bob/Documents/learn/prometeus+grafana/swarmprom/ubuntu-xenial-16.04-cloudimg-console.log (VERR_PATH_NOT_FOUND)
+VBoxManage.exe: error: Details: code E_FAIL (0x80004005), component ConsoleWrap, interface IConsole
+```
+remove the serial port cofiguration 
+
+and start the VM in Virtual Box manually
+
+Turns out it does not contain grafana locally,but has a docker images  which may lead to networking challenges - discard
+ 
+* try `https://app.vagrantup.com/novobi/boxes/labready-grafana/versions/1.0`
+
+```powershell
+$ProgressPreference = 'SilentlyContinue'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+invoke-webrequest -uri 'https://app.vagrantup.com/novobi/boxes/labready-grafana/versions/1.0/providers/virtualbox.box' -outfile "${env:USERPROFILE}\Downloads\grafana.box"
+```
+the VMappears to  have unreahcable bridge network card 2. Forward port 3000 on netrowk card 1 and connect to web ui as on `http://localhost:3000/login - it allows configuring the elasticsearch data source to `192.168.0.138` port `9200`. One ha to select the version `7.0+` of easticsearch backend in the configirtion screen, then it successfully tests the data source.
+
+
+* download elasticsearch __7.6.2__ Vargant Box
+
 
 ```powershell
 $ProgressPreference = 'SilentlyContinue'
@@ -35,6 +76,7 @@ or
 curl -o ~/Downloads/elastic.box -Lk https://app.vagrantup.com/stevesimpson/boxes/elasticsearch/versions/2.0.0/providers/virtualbox.box
 ```
 ```sh
+cd elasticsearch
 vagrant up
 ```
 NOTE: found that there is no elastic stact on [this](https://app.vagrantup.com/elastic/boxes/debian-8-x86_64-test/versions/20200209.0.0/providers/virtualbox.box) particular box despite the vendor.
@@ -266,6 +308,20 @@ date +"%s"
 ```text
 1662353482
 ```
+
+### Note Using Bitnami ElasticSearch VM 
+You may need to re-import the image ova when migrating the project to different host
+
+If seeing 
+the
+```json
+{"statusCode":503,"error":"Service Unavailable","message":"License is not available."}
+```
+
+on the port 80, after authenticating with `user` user and password from `~bitnami/bitnami_credentials`
+
+
+may switch to use [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant/blob/master/elk/Vagrantfile) or [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant/blob/master/elk_box/Vagrantfile). This will take a little extra time to build custom ELK Virtualbox
 
 ### See Also
    * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html#network-interface-values

@@ -1,0 +1,25 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = '2'
+basedir = ENV.fetch('USERPROFILE', '')
+basedir = ENV.fetch('HOME', '') if basedir == ''
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # set to false, if you do NOT want to check the correct VirtualBox Guest Additions version when booting this box
+  if defined?(VagrantVbguest::Middleware)
+    config.vbguest.auto_update = false
+  end
+  # https://app.vagrantup.com/Siarhei/boxes/grafana/versions/1.0
+  config.vm.box = "Siarhei/grafana"
+  config_vm_box_name = 'grafana.box'
+  config.vm.box_url = "file://#{basedir}/Downloads/#{config_vm_box_name}"
+  config.vm.network 'public_network', ip: '192.168.0.140'
+
+  config.vm.provider :virtualbox do |v|
+    v.name = 'Grafana Vagrant Box'
+    box_name  = v.name
+    v.customize ['modifyvm', :id, '--cpus', '1', '--memory', '512']
+  end
+end
