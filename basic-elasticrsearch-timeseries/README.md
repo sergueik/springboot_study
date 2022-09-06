@@ -367,8 +367,23 @@ leads to error
 ```
 acknowledge the index removal in Kibana `http://192.168.0.138:5601/app/kibana#/management/elasticsearch/index_management/indices?_g=()`
 
-### Working with ElasticSearch from Java client
 
+```json
+{"acknowledged":true}
+```
+
+* observe data in Grafana
+
+![Grafana Example](https://github.com/sergueik/springboot_study/blob/master/basic-elasticrsearch-timeseries/screenshots/capture-grafana-elasticsearch-panel.png)
+
+
+and Kibana
+
+![Kibana Example](https://github.com/sergueik/springboot_study/blob/master/basic-elasticrsearch-timeseries/screenshots/capture-kibana-visualization.png)
+
+
+
+### Working with ElasticSearch from Java client
 *  run the app
 
 ```sh
@@ -376,7 +391,6 @@ mvn spring-boot:run
 ```
 
 * in the browser, or console, perform requests
-
 NOTE: if the `query` is run before
 `http://localhost:8844/query`
 
@@ -409,9 +423,6 @@ date +"%s"
 ```
 The index will be available in Kibana Management panel `http://192.168.0.138:5601/app/kibana#/management/elasticsearch/index_management/indices?_g=()`.
 
-* observe data in Grafana
-
-![Grafana Example](https://github.com/sergueik/springboot_study/blob/master/basic-elasticrsearch-timeseries/screenshots/capture-grafana-elasticsearch-panel.png)
 
 ### Note Using Bitnami ElasticSearch VM 
 You may need to re-import the image ova when migrating the project to different host
