@@ -331,6 +331,17 @@ may switch to use [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant
   * https://www.tecmint.com/install-netstat-in-linux/
   * https://discuss.elastic.co/t/network-host-issue-elasticsearch-service-main-process-exited-code-exited-status-78/200193
 
+   * https://github.com/thoj/vagrant-influx-grafana oj/vagrant-influx-grafana - very old but may be easy to upgrade to latest grafana version.  effectively it is just
+```sh
+# install and start grafana
+  wget https://grafanarel.s3.amazonaws.com/builds/grafana_2.1.1_amd64.deb
+  sudo dpkg -i grafana_2.1.1_amd64.deb
+  sudo /etc/init.d/grafana-server start
+```  
+  
+  * https://github.com/djoven89/vagrant_monitoring_stack
+is another alternative  adding grafana `https://packagecloud.io/grafana/stable/debian` repo public key and installing it on vanilla `ubuntu/xenial64`. We need Grafana __6.6.1__ to work with ElasticSearch __7.6.2__
+  
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
