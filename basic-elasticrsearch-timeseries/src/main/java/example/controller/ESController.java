@@ -18,13 +18,21 @@ public class ESController {
 	private ESService esService;
 
 	private static final String MYINDEX = "my_index_test";
+	private Random generator = new Random(3);
 
 	@ResponseBody
 	@RequestMapping("/insert")
 	public String insert() {
 		DemoEntity entity = new DemoEntity();
-		entity.setId(UUID.randomUUID().toString());
-		entity.setName("Obj-" + new Random(10).nextInt(20));
+		final String dc = "west";
+		final String hostname = "hostname" + generator.nextInt(10);
+		final String appId = "app" + generator.nextInt(10);
+		entity.setDc(dc);
+		entity.setHostname(hostname);
+		entity.setAppId(appId);
+		// entity.setAppId(UUID.randomUUID().toString());
+		entity.setHostname(hostname);
+		entity.setCpu((float) (0.1 * (float) (generator.nextInt(50))));
 		entity.setCreateTime(new Date());
 		try {
 			return esService.save(entity, MYINDEX) ? "SUCCESS" : "FAIL";
@@ -38,8 +46,14 @@ public class ESController {
 	@RequestMapping("/query")
 	public Object query() {
 		try {
-			List<Map<String, Object>> list = esService.query(MYINDEX, 1, 3, null,
-					"desc");
+
+			final String index = MYINDEX;
+			final int page = 1;
+			final int limit = 100;
+			final String name = null;
+			final String order = "desc";
+			List<Map<String, Object>> list = esService.query(index, page, limit, name,
+					order);
 			return list;
 		} catch (IOException e) {
 			e.printStackTrace();

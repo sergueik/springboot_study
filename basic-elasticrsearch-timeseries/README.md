@@ -242,35 +242,133 @@ elasticsearch.yml                             100% 2853   392.3KB/s   00:00
 ```
 initialiazize the schema
 ```sh
+curl -H "Content-Type: application/json" -XDELETE 'http://192.168.0.138:9200/_template/my_index_test_template' 
+```
+NOTE: the URL appears to be different with later versions of ElasticSearch
+```sh
 curl -H "Content-Type: application/json" -XPUT "http://192.168.0.138:9200/_template/my_index_test_template" -d '{
   "template": "my_index_test*",
   "settings": {
+  "analysis": {
+      "analyzer": {
+        "default": {
+          "type": "keyword"
+        }
+      }
+    },
     "number_of_shards": 3,
     "number_of_replicas": 0
   },
   "mappings": {
-        "properties": {
-            "createTime": {
-                "type": "date",
-                "format": "yyyy-MM-dd HH:mm:ss || yyyy-MM-dd || yyyy/MM/dd HH:mm:ss|| yyyy/MM/dd ||epoch_millis"
-            },
-            "id": {
-                "type": "keyword"
-            },
-            "name": {
-                "type": "keyword"
-            }
-        }
-    },
-  "aliases": {"my_index_test_alias":{}}
-}'
+    "properties": {
+      "createTime": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss || yyyy-MM-dd || yyyy/MM/dd HH:mm:ss|| yyyy/MM/dd ||epoch_millis"
+      },
+      "cpu": {
+        "type": "float"
+      },
+      "memory": {
+        "type": "float"
+      },
+      "disk": {
+        "type": "float"
+      },
+      "load_average": {
+        "type": "float"
+      },
+      "rpm": {
+        "type": "integer"
+      },
+      "uptime": {
+        "type": "float"
+      },
+      "hostname": {
+        "type": "keyword"
+      },
+      "environment": {
+        "type": "keyword"
+      },
+      "dc": {
+        "type": "keyword"
+      },
+      "appid": {
+        "type": "keyword"
+      }
+    }
+  },
+  "aliases": {
+    "my_index_test_alias": {}
+  }
+}
+'
 ```
 
+will respond with
 ```json
 {"acknowledged":true}
 ```
 
+
+Note: error when specifying the analyzer incorrectly:
+```json
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "type": "keyword_analyzer"
+      }
+    },
+```
+getting error:
+```json
+{
+  "error": {
+    "root_cause": [
+      {
+        "type": "settings_exception",
+        "reason": "Failed to get setting group for [index.analysis.analyzer.] setting prefix and setting [index.analysis.analyzer.type] because of a missing '.'"
+      }
+    ],
+    "type": "settings_exception",
+    "reason": "Failed to get setting group for [index.analysis.analyzer.] setting prefix and setting [index.analysis.analyzer.type] because of a missing '.'"
+  },
+  "status": 500
+}
+
+```
+- see also [Default keyword analyzer](https://discuss.elastic.co/t/default-keyword-analyzer-not-work/293194)
+See [schema reference](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/number.html) for available metric types
+
+
+Note: "_all" is no longer needs to be disabled - specifying:
+```json
+  "_all": {
+    "enabled": false
+  },
+
+
+```
+leads to error
+```json
+{
+  "error": {
+    "root_cause": [
+      {
+        "type": "illegal_argument_exception",
+        "reason": "unknown setting [index._all.enabled] did you mean [index.warmer.enabled]?"
+      }
+    ],
+    "type": "illegal_argument_exception",
+    "reason": "unknown setting [index._all.enabled] did you mean [index.warmer.enabled]?"
+  },
+  "status": 400
+}
+
+```
+acknowledge the index removal in Kibana `http://192.168.0.138:5601/app/kibana#/management/elasticsearch/index_management/indices?_g=()`
+
 ### Working with ElasticSearch from Java client
+
 *  run the app
 
 ```sh
@@ -278,6 +376,7 @@ mvn spring-boot:run
 ```
 
 * in the browser, or console, perform requests
+
 NOTE: if the `query` is run before
 `http://localhost:8844/query`
 
@@ -308,6 +407,11 @@ date +"%s"
 ```text
 1662353482
 ```
+The index will be available in Kibana Management panel `http://192.168.0.138:5601/app/kibana#/management/elasticsearch/index_management/indices?_g=()`.
+
+* observe data in Grafana
+
+![Grafana Example](https://github.com/sergueik/springboot_study/blob/master/basic-elasticrsearch-timeseries/screenshots/capture-grafana-elasticsearch-panel.png)
 
 ### Note Using Bitnami ElasticSearch VM 
 You may need to re-import the image ova when migrating the project to different host
@@ -341,7 +445,8 @@ may switch to use [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant
   
   * https://github.com/djoven89/vagrant_monitoring_stack
 is another alternative  adding grafana `https://packagecloud.io/grafana/stable/debian` repo public key and installing it on vanilla `ubuntu/xenial64`. We need Grafana __6.6.1__ to work with ElasticSearch __7.6.2__
-  
+
+ * https://www.lucenetutorial.com/lucene-query-syntax.html  
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
