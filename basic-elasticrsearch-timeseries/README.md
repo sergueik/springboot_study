@@ -249,13 +249,6 @@ NOTE: the URL appears to be different with later versions of ElasticSearch
 curl -H "Content-Type: application/json" -XPUT "http://192.168.0.138:9200/_template/my_index_test_template" -d '{
   "template": "my_index_test*",
   "settings": {
-  "analysis": {
-      "analyzer": {
-        "default": {
-          "type": "keyword"
-        }
-      }
-    },
     "number_of_shards": 3,
     "number_of_replicas": 0
   },
@@ -293,7 +286,8 @@ curl -H "Content-Type: application/json" -XPUT "http://192.168.0.138:9200/_templ
         "type": "keyword"
       },
       "appid": {
-        "type": "keyword"
+        "type": "text",
+        "analyzer": "standard"
       }
     }
   },
@@ -372,6 +366,37 @@ acknowledge the index removal in Kibana `http://192.168.0.138:5601/app/kibana#/m
 {"acknowledged":true}
 ```
 
+
+The frequent practice is to consider pattern analyzer for appid:
+```json
+      "appid": {
+        "type": "text",
+	"analyzer": "appid_analyzer"
+      }
+
+```
+and
+```json
+  "analysis": {
+      "analyzer": {
+        "appid_analyzer": {
+          "type": "pattern",
+          "pattern": "\\||,"
+        }
+      }
+    },
+
+```
+instead of
+```JSON
+      "appid": {
+        "type": "keyword",
+	"analyzer": "keyword"
+      }
+
+```
+however a "stadard" analyzer works just fine. To be explored further...
+
 * observe data in Grafana
 
 ![Grafana Example](https://github.com/sergueik/springboot_study/blob/master/basic-elasticrsearch-timeseries/screenshots/capture-grafana-elasticsearch-panel.png)
@@ -390,6 +415,20 @@ and Kibana
 mvn spring-boot:run
 ```
 
+
+
+```json
+GET _analyze
+{   
+  
+"analyzer":  "standard",
+
+"text" : "app1,app2,app3",
+        
+"explain": true
+
+}
+```
 * in the browser, or console, perform requests
 NOTE: if the `query` is run before
 `http://localhost:8844/query`
@@ -458,6 +497,6 @@ may switch to use [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant
 is another alternative  adding grafana `https://packagecloud.io/grafana/stable/debian` repo public key and installing it on vanilla `ubuntu/xenial64`. We need Grafana __6.6.1__ to work with ElasticSearch __7.6.2__
 
  * https://www.lucenetutorial.com/lucene-query-syntax.html  
-
+ * https://community.grafana.com/t/why-is-my-graph-empty-when-i-zoom-in/24
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

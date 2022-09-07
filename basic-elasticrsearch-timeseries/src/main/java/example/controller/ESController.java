@@ -26,10 +26,11 @@ public class ESController {
 		DemoEntity entity = new DemoEntity();
 		final String dc = "west";
 		final String hostname = "hostname" + generator.nextInt(10);
-		final String appId = "app" + generator.nextInt(10);
+		final String appId1 = "app" + generator.nextInt(10);
+		final String appId2 = "app" + generator.nextInt(10);
 		entity.setDc(dc);
 		entity.setHostname(hostname);
-		entity.setAppId(appId);
+		entity.setAppId(String.format("%s,%s", appId1, appId2));
 		// entity.setAppId(UUID.randomUUID().toString());
 		entity.setHostname(hostname);
 		entity.setCpu((float) (0.1 * (float) (generator.nextInt(50))));

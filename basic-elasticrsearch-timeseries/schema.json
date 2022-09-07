@@ -1,0 +1,60 @@
+{
+  "template": "my_index_test*",
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "default": {
+          "type": "keyword"
+        },
+        "appid_analyzer": {
+          "type": "pattern",
+          "pattern": "\\||,"
+        }
+      }
+    },
+    "number_of_shards": 3,
+    "number_of_replicas": 0
+  },
+  "mappings": {
+    "properties": {
+      "createTime": {
+        "type": "date",
+        "format": "yyyy-MM-dd HH:mm:ss || yyyy-MM-dd || yyyy/MM/dd HH:mm:ss|| yyyy/MM/dd ||epoch_millis"
+      },
+      "cpu": {
+        "type": "float"
+      },
+      "memory": {
+        "type": "float"
+      },
+      "disk": {
+        "type": "float"
+      },
+      "load_average": {
+        "type": "float"
+      },
+      "rpm": {
+        "type": "integer"
+      },
+      "uptime": {
+        "type": "float"
+      },
+      "hostname": {
+        "type": "keyword"
+      },
+      "environment": {
+        "type": "keyword"
+      },
+      "dc": {
+        "type": "keyword"
+      },
+      "appid": {
+        "type": "text",
+        "analyzer": "appid_analyzer"
+      }
+    }
+  },
+  "aliases": {
+    "my_index_test_alias": {}
+  }
+}
