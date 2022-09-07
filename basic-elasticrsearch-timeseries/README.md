@@ -664,6 +664,7 @@ is another alternative  adding grafana `https://packagecloud.io/grafana/stable/d
  * https://www.lucenetutorial.com/lucene-query-syntax.html  
  * https://community.grafana.com/t/why-is-my-graph-empty-when-i-zoom-in/24
  * [how to](https://askubuntu.com/questions/1029531/how-to-setup-a-static-ip-on-ubuntu-server-18-04) setup a static IP on Ubuntu Server 18.04
+ * [how to](https://discuss.elastic.co/t/upgrade-elasticsearch-from-7-8-1-to-7-14-2/285217) solve the problem of broken import `org.elasticsearch.common.unit.TimeValue` becoming `org.elasticsearch.core.TimeValue`
  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
