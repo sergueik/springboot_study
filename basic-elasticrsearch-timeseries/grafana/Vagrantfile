@@ -15,11 +15,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "Siarhei/grafana"
   config_vm_box_name = 'grafana.box'
   config.vm.box_url = "file://#{basedir}/Downloads/#{config_vm_box_name}"
-  config.vm.network 'public_network', ip: '192.168.0.140'
+  config.vm.network 'public_network', ip: '192.168.0.248'
 
+  # NOTE:  the original box has "/etc/netplan/50-vagrant.yaml" with
+  # 192.168.58.104/24
+  # vagrant provision seems to create the "/etc/netplan/99-vagrant.yaml" which is naturally superceded by the 50
+  # ended up changing to 192.168.0.248/24 in place
   config.vm.provider :virtualbox do |v|
     v.name = 'Grafana Vagrant Box'
-    box_name  = v.name
+    box_name = v.name
     v.customize ['modifyvm', :id, '--cpus', '1', '--memory', '512']
   end
 end

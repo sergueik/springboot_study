@@ -9,15 +9,15 @@ This appliance is not configured to allow data posting to Elasticsearch from ext
 
 
 ### Usage
+
 * login to console and open port `3000`:
 ```sh
 ufw allow 3000
 ```
-* login to `http://192.168.0.140:3000/login` and configure via web UI using credentials provided by bitmani
+* login to `http://192.168.0.248:3000/login` and configure via web UI using default credentials:
 
-```text
-the default username and password is 'admin' and 'wNPHGcoP2RhS'
-```
+the default username and password is 'admin' and 'admin'
+
 * import `bitnami-grafana-9.1.2-0-linux-vm-debian-11-x86_64-nami.ova`
 * configure grafana elasticsearch plugin
 Turns out the latest release Bitnami packaged Grafana __9.1.2__ refuses to work witn elasticsearch prior to __7.10__:
@@ -61,6 +61,7 @@ invoke-webrequest -uri 'https://app.vagrantup.com/novobi/boxes/labready-grafana/
 ```
 the VMappears to  have unreahcable bridge network card 2. Forward port 3000 on netrowk card 1 and connect to web ui as on `http://localhost:3000/login - it allows configuring the elasticsearch data source to `192.168.0.138` port `9200`. One ha to select the version `7.0+` of easticsearch backend in the configirtion screen, then it successfully tests the data source.
 
+![Grafana Example](https://github.com/sergueik/springboot_study/blob/master/basic-elasticrsearch-timeseries/screenshots/capture-grafana-elasticsearch-datasource.png)
 
 * download elasticsearch __7.6.2__ Vargant Box
 
@@ -92,7 +93,6 @@ yum install net-tools
 
 
 ```
-
 reconfigure elasticsearch to listen fro outside
 ```sh
 curl 127.0.0.1:9200
@@ -240,7 +240,12 @@ Warning: Permanently added '[localhost]:2222' (ECDSA) to the list of known hosts
 vagrant@localhost's password:
 elasticsearch.yml                             100% 2853   392.3KB/s   00:00
 ```
-initialiazize the schema
+
+* delete the index
+```sh
+curl -H "Content-Type: application/json" -XDELETE 'http://192.168.0.138:9200/my_index_test_2022-9' 
+```
+* reinitialiazize the schema
 ```sh
 curl -H "Content-Type: application/json" -XDELETE 'http://192.168.0.138:9200/_template/my_index_test_template' 
 ```
@@ -398,6 +403,7 @@ instead of
 however a "stadard" analyzer works just fine. To be explored further...
 
 * observe data in Grafana
+`http://192.168.0.248:3000/login`
 
 ![Grafana Example](https://github.com/sergueik/springboot_study/blob/master/basic-elasticrsearch-timeseries/screenshots/capture-grafana-elasticsearch-panel.png)
 
@@ -440,6 +446,32 @@ Servlet.service() for servlet [dispatcherServlet] in context with path [] threw 
 ElasticsearchStatusException[Elasticsearch exception [type=index_not_found_exception, reason=no such index [my_index_test_alias]]]] with root cause
 org.elasticsearch.ElasticsearchStatusException: Elasticsearch exception [type=index_not_found_exception, reason=no such index [my_index_test_alias]]
 ```
+
+it the curl command was not run (initial sitution) you will see error to Java app console 
+after trying the query:
+```json
+{
+  "error": {
+    "root_cause": [
+      {
+        "type": "index_not_found_exception",
+        "reason": "no such index [my_index_test_alias]",
+        "resource.type": "index_or_alias",
+        "resource.id": "my_index_test_alias",
+        "index_uuid": "_na_",
+        "index": "my_index_test_alias"
+      }
+    ],
+    "type": "index_not_found_exception",
+    "reason": "no such index [my_index_test_alias]",
+    "resource.type": "index_or_alias",
+    "resource.id": "my_index_test_alias",
+    "index_uuid": "_na_",
+    "index": "my_index_test_alias"
+  },
+  "status": 404
+}
+```
 * in the browser or console, perform `insert`
 ```sh
 http://localhost:8844/insert
@@ -449,11 +481,140 @@ will respond with
 
 repeating the `query` request now results in the collection JSON
 ```json
-[{"createTime":1662352919707,"name":"Obj-13","id":"ac43c1bd-558d-4101-8793-3d0dca720c6b"}]
+[
+  {
+    "hostname": "hostname4",
+    "memory": 0,
+    "createTime": 1662572815307,
+    "appId": "app4,app9",
+    "cpu": 2.1,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname0",
+    "memory": 0,
+    "createTime": 1662572814887,
+    "appId": "app2,app8",
+    "cpu": 3.5,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname7",
+    "memory": 0,
+    "createTime": 1662572814687,
+    "appId": "app9,app2",
+    "cpu": 2.4,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname1",
+    "memory": 0,
+    "createTime": 1662572814504,
+    "appId": "app4,app3",
+    "cpu": 3.7,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname2",
+    "memory": 0,
+    "createTime": 1662572814323,
+    "appId": "app8,app2",
+    "cpu": 1.7,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname6",
+    "memory": 0,
+    "createTime": 1662572814153,
+    "appId": "app3,app8",
+    "cpu": 3.5,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname8",
+    "memory": 0,
+    "createTime": 1662572813843,
+    "appId": "app3,app7",
+    "cpu": 0.9,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname1",
+    "memory": 0,
+    "createTime": 1662572813644,
+    "appId": "app2,app5",
+    "cpu": 4.5,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname6",
+    "memory": 0,
+    "createTime": 1662572813466,
+    "appId": "app7,app6",
+    "cpu": 4.9,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname7",
+    "memory": 0,
+    "createTime": 1662572813276,
+    "appId": "app4,app1",
+    "cpu": 0.6,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname9",
+    "memory": 0,
+    "createTime": 1662572812903,
+    "appId": "app1,app5",
+    "cpu": 3.2,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname8",
+    "memory": 0,
+    "createTime": 1662568460152,
+    "appId": "app2,app9",
+    "cpu": 1.4,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname4",
+    "memory": 0,
+    "createTime": 1662568450891,
+    "appId": "app0,app0",
+    "cpu": 3.1,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname1",
+    "memory": 0,
+    "createTime": 1662568423642,
+    "appId": "app4,app3",
+    "cpu": 3.7,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname2",
+    "memory": 0,
+    "createTime": 1662568415820,
+    "appId": "app8,app2",
+    "cpu": 1.7,
+    "dc": "west"
+  },
+  {
+    "hostname": "hostname6",
+    "memory": 0,
+    "createTime": 1662568414008,
+    "appId": "app3,app8",
+    "cpu": 3.5,
+    "dc": "west"
+  }
+]
 ```
 with the number of rows growing after more `insert` were performed
 
- * Note that `createTime` is in milliseconds:
+* Note that `createTime` is in milliseconds:
 ```sh
 date +"%s"
 ```
@@ -469,7 +630,11 @@ You may need to re-import the image ova when migrating the project to different 
 If seeing 
 the
 ```json
-{"statusCode":503,"error":"Service Unavailable","message":"License is not available."}
+{
+  "statusCode": 503,
+  "error": "Service Unavailable",
+  "message": "License is not available."
+}
 ```
 
 on the port 80, after authenticating with `user` user and password from `~bitnami/bitnami_credentials`
@@ -478,7 +643,7 @@ on the port 80, after authenticating with `user` user and password from `~bitnam
 may switch to use [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant/blob/master/elk/Vagrantfile) or [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant/blob/master/elk_box/Vagrantfile). This will take a little extra time to build custom ELK Virtualbox
 
 ### See Also
-   * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html#network-interface-values
+  * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html#network-interface-values
   * https://docs.bitnami.com/virtual-machine/apps/elk/administration/connect-remotely/
   * https://docs.bitnami.com/virtual-machine/faq/administration/use-firewall/
   * https://www.vagrantup.com/docs/networking/public_network
@@ -498,5 +663,7 @@ is another alternative  adding grafana `https://packagecloud.io/grafana/stable/d
 
  * https://www.lucenetutorial.com/lucene-query-syntax.html  
  * https://community.grafana.com/t/why-is-my-graph-empty-when-i-zoom-in/24
+ * [how to](https://askubuntu.com/questions/1029531/how-to-setup-a-static-ip-on-ubuntu-server-18-04) setup a static IP on Ubuntu Server 18.04
+ 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
