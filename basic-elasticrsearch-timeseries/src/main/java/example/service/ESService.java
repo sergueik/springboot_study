@@ -1,6 +1,5 @@
 package example.service;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -33,14 +32,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
 import java.util.concurrent.TimeUnit;
+
 import example.entity.DemoEntity;
 import example.utils.DemoEntitySerializer;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Service
 public class ESService {
 
+	private final boolean debug = false;
 	private final static boolean directConvertrsion = false;
+
+	private static final Logger logger = LogManager.getLogger(ESService.class);
 
 	private static Gson gson = directConvertrsion ? new Gson()
 			: new GsonBuilder()
@@ -55,10 +62,10 @@ public class ESService {
 
 		IndexRequest indexRequest = new IndexRequest(newIndex);
 		String entityStr = gson.toJson(entity);
-		System.err.println("Serialized entity: " + entityStr);
+		if (debug)
+			logger.info("Serialized entity: " + entityStr);
+		@SuppressWarnings("unchecked")
 		Map<String, Object> entityMap = new Gson().fromJson(entityStr, Map.class);
-		// Map<String, Object> entityMap = JSONObject
-		// .parseObject(JSONObject.toJSONString(entity)).getInnerMap();
 		indexRequest.source(entityMap, XContentType.JSON);
 		IndexResponse indexResponse = client.index(indexRequest,
 				RequestOptions.DEFAULT);
