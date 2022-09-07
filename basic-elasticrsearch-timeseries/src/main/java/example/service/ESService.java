@@ -1,6 +1,9 @@
 package example.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -32,9 +35,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import example.entity.DemoEntity;
+import example.utils.DemoEntitySerializer;
 
 @Service
 public class ESService {
+
+	private final static boolean directConvertrsion = false;
+
+	private static Gson gson = directConvertrsion ? new Gson()
+			: new GsonBuilder()
+					.registerTypeAdapter(DemoEntity.class, new DemoEntitySerializer())
+					.create();
 
 	@Autowired
 	private RestHighLevelClient client;
@@ -43,9 +54,12 @@ public class ESService {
 		String newIndex = getIndexForSave(index);
 
 		IndexRequest indexRequest = new IndexRequest(newIndex);
-		Map<String, Object> map = JSONObject
-				.parseObject(JSONObject.toJSONString(entity)).getInnerMap();
-		indexRequest.source(map, XContentType.JSON);
+		String entityStr = gson.toJson(entity);
+		System.err.println("Serialized entity: " + entityStr);
+		Map<String, Object> entityMap = new Gson().fromJson(entityStr, Map.class);
+		// Map<String, Object> entityMap = JSONObject
+		// .parseObject(JSONObject.toJSONString(entity)).getInnerMap();
+		indexRequest.source(entityMap, XContentType.JSON);
 		IndexResponse indexResponse = client.index(indexRequest,
 				RequestOptions.DEFAULT);
 		return "created".equals(indexResponse.getResult().getLowercase());

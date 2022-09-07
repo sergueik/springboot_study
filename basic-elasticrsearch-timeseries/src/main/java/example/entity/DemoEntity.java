@@ -1,16 +1,37 @@
 package example.entity;
 
 import java.util.Date;
+import java.util.UUID;
 
 // import javax.persistence.Column;
 public class DemoEntity {
+
+	private static String staticInfo;
 	private String environment;
 	private String dc;
 	private Date createTime;
 	private String hostname;
 	private String appId;
 	private float cpu;
+	private int rpm;
 	private float memory;
+
+	// uncertain if one would ever need this
+	public static String getStaticInfo() {
+		return DemoEntity.staticInfo;
+	}
+
+	public DemoEntity() {
+		staticInfo = UUID.randomUUID().toString();
+	}
+
+	public int getRpm() {
+		return rpm;
+	}
+
+	public void setRpm(int value) {
+		rpm = value;
+	}
 
 	public float getCpu() {
 		return cpu;

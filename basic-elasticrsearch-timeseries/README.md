@@ -253,47 +253,23 @@ NOTE: the URL appears to be different with later versions of ElasticSearch
 ```sh
 curl -H "Content-Type: application/json" -XPUT "http://192.168.0.138:9200/_template/my_index_test_template" -d '{
   "template": "my_index_test*",
-  "settings": {
-    "number_of_shards": 3,
-    "number_of_replicas": 0
-  },
+  "settings": { "number_of_shards": 3, "number_of_replicas": 0 },
   "mappings": {
     "properties": {
       "createTime": {
         "type": "date",
         "format": "yyyy-MM-dd HH:mm:ss || yyyy-MM-dd || yyyy/MM/dd HH:mm:ss|| yyyy/MM/dd ||epoch_millis"
       },
-      "cpu": {
-        "type": "float"
-      },
-      "memory": {
-        "type": "float"
-      },
-      "disk": {
-        "type": "float"
-      },
-      "load_average": {
-        "type": "float"
-      },
-      "rpm": {
-        "type": "integer"
-      },
-      "uptime": {
-        "type": "float"
-      },
-      "hostname": {
-        "type": "keyword"
-      },
-      "environment": {
-        "type": "keyword"
-      },
-      "dc": {
-        "type": "keyword"
-      },
-      "appid": {
-        "type": "text",
-        "analyzer": "standard"
-      }
+      "cpu": { "type": "float" },
+      "memory": { "type": "float" },
+      "disk": { "type": "float" },
+      "load_average": { "type": "float" },
+      "rpm": { "type": "integer" },
+      "uptime": { "type": "float" },
+      "hostname": { "type": "keyword" },
+      "environment": { "type": "keyword" },
+      "dc": { "type": "keyword" },
+      "appid": { "type": "text", "analyzer": "standard" }
     }
   },
   "aliases": {

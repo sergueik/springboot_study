@@ -32,3 +32,6 @@ target/
 .project
 .settings/
 target/
+# Vagrant hidden folder
+**/.vagrant
+
