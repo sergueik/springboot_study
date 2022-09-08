@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<!-- CSS only -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+	<title>Create New Product</title>
+</head>
+<body>
+	<div align="center">
+		<h1>Создать новый продукт</h1>
+		<br/>
+		<form action="#" th:action="@{/save}" th:object="${product}" method="post">
+			<table border="0" cellpadding="10">
+				<tr>
+					<td>Наименования:</td>
+					<td><input required type="text" th:field="*{name}"  /></td>
+				</tr>
+				<tr>
+					<td>Описание:</td>
+					<td><input required type="text" th:field="*{description}"/></td>
+				</tr>
+				<tr>
+					<td>Категория:</td>
+					<td>
+						<!--<input  type="text" th:field="*{category}"/>-->
+
+						<!-- Проблема! значение из option не происвается в product-->
+						<select th:field="*{categoryList}" class="form-select form-select-sm" aria-label="form-select-sm example" required>
+							<option selected value="">Выберите категорию</option>
+							<option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}" value=""></option>
+						</select>
+
+					</td>
+				</tr>
+				<tr>
+					<td>Цена:</td>
+					<td><input required type="number" th:field="*{price}"  pattern='[0-9]+(\\.[0-9][0-9]?)?' /></td>
+				</tr>
+				<tr>
+					<td colspan="2"><button type="submit" class="btn btn-primary">Сохранить</button></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</body>
+</html>

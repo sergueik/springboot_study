@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+	<!-- CSS only -->
+<title>Product Manager</title>
+</head>
+<body>
+<div align="center">	
+		
+	<h1>Манеджер продуктов</h1>
+	
+	<br>
+	<br>
+
+	
+	<br/><br/>
+	<form th:action="@{/}">
+		Filter: <input type="text" name="keyword" id="keyword" size="50" th:value="${keyword}" placeholder="Поиск по категориям или по имени продукта" required />
+		&nbsp;
+		<input type="submit" value="Search" />
+		&nbsp;
+		<input type="button" value="Clear" id="btnClear" onclick="clearSearch()" />
+	</form>
+	<br/><br/>
+	<h2 align="center">Список продуктов</h2>
+	<a href="new_product">Создать новый продукт</a>
+	<br>
+	<br>
+	<table border="1" cellpadding="10">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Название</th>
+				<th>Описание</th>
+				<th>Категория</th>
+				<th>Цена</th>
+				
+				<th>Actions</th>				
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="product : ${listProducts}">
+				<td th:text="${product.id}">ID</td>
+				<td th:text="${product.name}">Наименование</td>
+				<td th:text="${product.description}">Описание</td>
+				<td>
+				<span th:each="cat : ${product.categoryList}">
+					<span th:text="${cat.name}">Категория</span>&nbsp;
+				</span>
+				</td>
+				<td th:text="${product.price}">Цена</td>
+				<td>
+					<a th:href="@{'/edit/' + ${product.id}}">Редактировать</a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<a th:href="@{'/delete/' + ${product.id}}">Удалить</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<!--Котегория-->
+<div align="center">
+
+	<br/><br/>
+
+	<br/><br/>
+	<h2 align="center">Список котегорий</h2>
+	<a href="new_category">Создать новую категорию</a>
+	<br>
+	<br>
+	<table border="1" cellpadding="10">
+		<thead>
+		<tr>
+			<th>ID</th>
+			<th>Название</th>
+			<th>Описание</th>
+			<th>Actions</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr th:each="category : ${categoryList}">
+			<td th:text="${category.id}">ID</td>
+			<td th:text="${category.name}">Наименование</td>
+			<td th:text="${category.description}">Описание</td>
+
+			<td>
+				<a th:href="@{'/editCategory/' + ${category.id}}">Редактировать</a>
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<a th:href="@{'/deleteCategory/' + ${category.id}}">Удалить</a>
+			</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+
+
+
+<script type="text/javascript">
+	function clearSearch() {
+		window.location = "[[@{/}]]";
+	}
+</script>
+</body>
+</html>

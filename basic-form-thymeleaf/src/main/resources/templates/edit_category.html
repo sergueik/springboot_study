@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit category</title>
+</head>
+<body>
+
+<div align="center">
+    <h1>Редактирование котегории</h1>
+    <br/>
+    <form action="#" th:action="@{/saveCategory}" th:object="${category}" method="post">
+        <table border="0" cellpadding="10">
+            <tr>
+                <td> ID:</td>
+                <td><input type="text" th:field="*{id}" readonly="readonly" /></td>
+            </tr>
+            <tr>
+                <td>Наименование:</td>
+                <td><input type="text" th:field="*{category.name}"/></td>
+            </tr>
+            <tr>
+                <td>Описание:</td>
+                <td><input type="text" th:field="*{category.description}"/></td>
+            </tr>
+<!--            <tr>-->
+<!--                <td>Категория:</td>-->
+<!--                <td><input type="text" th:field="*{category}"  /></td>-->
+<!--            </tr>-->
+            <tr>
+                <td colspan="2"><button type="submit" class="btn btn-primary">Сохранить</button></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+</body>
+</html>
