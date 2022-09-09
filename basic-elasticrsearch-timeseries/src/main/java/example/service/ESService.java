@@ -2,6 +2,7 @@ package example.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonPrimitive;
 
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.index.IndexRequest;
@@ -31,10 +32,12 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +65,12 @@ public class ESService {
 	private static Map<String, String> extractedMetricNames = new HashMap<>();
 	private static Map<String, String> metricExtractors = new HashMap<>();
 	private final static boolean directConvertrsion = false;
+	private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+			"yyyy-MM-dd HH:mm:ss");
+	private static String hostname = "host01";
+	private static String osName = utils.getOSName();
+	private static HostData hostData = null;
+	private static final String MYINDEX = "my_index_test";
 
 	private static final Logger logger = LogManager.getLogger(ESService.class);
 
@@ -172,31 +181,55 @@ public class ESService {
 					.filter(o -> o.getFileName().toString().matches(filemask))
 					.forEach(o -> {
 						if (debug)
-							System.err.println("found file: " + o.getFileName().toString());
+							logger.info("found file: " + o.getFileName().toString());
 						result.add(o);
 					});
 		}
+		String newIndex = getIndexForSave(MYINDEX);
+		IndexRequest indexRequest = new IndexRequest(newIndex);
+		// NOTE: Local variable indexResponse defined in an enclosing scope must be
+		// final or effectively final
+		// IndexResponse indexResponse;
+		List<Map<String, String>> results = readFiles(result);
 
-		return readFiles(result);
-		/*
-		 		indexRequest.source(entityMap, XContentType.JSON);
-		IndexResponse indexResponse = client.index(indexRequest,
-				RequestOptions.DEFAULT);
-		return "created".equals(indexResponse.getResult().getLowercase());
-		
-		 */
+		results.stream().forEach(o -> {
+			// NOTE: Adding dummy "hostname" and "appid"
+			o.put("hostame", hostname);
+			o.put("appid", "app0");
+			// NOTE: rename column and enforcing "yyyy-MM-dd HH:mm:ss"
+			// see also:
+			// https://stackoverflow.com/questions/535004/unix-epoch-time-to-java-date-object
+			// "@1662623820" appears to be a seconds-based epoch value therefore
+			// multiply the long from parseLong() with 1000
+			// to convert to milliseconds, that Date constructor expects:
+			// logger.info("converting " + o.get("timestamp"));
+			Date createTime = new Date(Long.parseLong(o.get("timestamp")) * 1000);
+			o.remove("timestamp");
+			if (createTime != null) {
+				o.put("createTime", simpleDateFormat.format(createTime));
+			}
+			if (debug)
+				logger.info("insert: " + " hostname: " + o.get("hostname") + " @"
+						+ o.get("createTime"));
+			indexRequest.source(o, XContentType.JSON);
+			try {
+				IndexResponse indexResponse = client.index(indexRequest,
+						RequestOptions.DEFAULT);
+				if (debug)
+					logger.info("response: " + indexResponse.getResult().getLowercase());
+			} catch (Exception e) {
+				// TODO: process
+				e.printStackTrace();
+			}
+		});
+		return results;
 	}
-
-	private static String osName = utils.getOSName();
 
 	private static String getDataFileUri(String dataFilePath) {
 		return osName.equals("windows")
 				? "file:///" + dataFilePath.replaceAll("\\\\", "/")
 				: "file://" + dataFilePath;
 	}
-
-	private static String hostname = "host01";
-	private static HostData hostData = null;
 
 	private List<Map<String, String>> readFiles(List<Path> result) {
 		List<Map<String, String>> results = new ArrayList<>();

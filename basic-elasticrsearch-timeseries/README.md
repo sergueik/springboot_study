@@ -599,6 +599,22 @@ date +"%s"
 ```
 The index will be available in Kibana Management panel `http://192.168.0.138:5601/app/kibana#/management/elasticsearch/index_management/indices?_g=()`.
 
+One caninsert a 4 hour mock up data (240 files in `data/host01/20220908`) e.g. `data.txt.202209080359`:
+```text
+cpu: 13702456
+timestamp: 1662623940
+```
+the CPU value was converted from `FreePhysicalMemory` metric to have a smooth line:
+```powershell
+0..120 | foreach-object {
+Get-CIMInstance Win32_OperatingSystem | Select FreePhysicalMemory, NumberOfProcesses | format-list | out-file c:\temp\data.txt -encoding ascii -append
+start-sleep -second 15
+}
+```
+The `/list` endpoint processing is in walking the directory and reading the metric and sending to elasticsearch which exploses it to Grafana:
+
+![Datatxt Example](https://github.com/sergueik/springboot_study/blob/master/basic-elasticrsearch-timeseries/screenshots/capture-grafana-elasticsearch-datatxt.png)
+
 
 ### Note Using Bitnami ElasticSearch VM 
 You may need to re-import the image ova when migrating the project to different host
