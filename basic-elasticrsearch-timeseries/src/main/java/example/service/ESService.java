@@ -115,11 +115,11 @@ public class ESService {
 		switch (order) {
 		case "desc":
 			searchSourceBuilder
-					.sort(new FieldSortBuilder("createTime").order(SortOrder.DESC));
+					.sort(new FieldSortBuilder("@timestamp").order(SortOrder.DESC));
 			break;
 		case "asc":
 			searchSourceBuilder
-					.sort(new FieldSortBuilder("createTime").order(SortOrder.ASC));
+					.sort(new FieldSortBuilder("@timestamp").order(SortOrder.ASC));
 			break;
 		}
 
@@ -206,11 +206,11 @@ public class ESService {
 			Date createTime = new Date(Long.parseLong(o.get("timestamp")) * 1000);
 			o.remove("timestamp");
 			if (createTime != null) {
-				o.put("createTime", simpleDateFormat.format(createTime));
+				o.put("@timestamp", simpleDateFormat.format(createTime));
 			}
 			if (debug)
 				logger.info("insert: " + " hostname: " + o.get("hostname") + " @"
-						+ o.get("createTime"));
+						+ o.get("@timestamp"));
 			indexRequest.source(o, XContentType.JSON);
 			try {
 				IndexResponse indexResponse = client.index(indexRequest,

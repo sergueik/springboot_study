@@ -256,7 +256,7 @@ curl -H "Content-Type: application/json" -XPUT "http://192.168.0.138:9200/_templ
   "settings": { "number_of_shards": 3, "number_of_replicas": 0 },
   "mappings": {
     "properties": {
-      "createTime": {
+      "@timestamp": {
         "type": "date",
         "format": "yyyy-MM-dd HH:mm:ss || yyyy-MM-dd || yyyy/MM/dd HH:mm:ss|| yyyy/MM/dd ||epoch_millis"
       },
@@ -461,7 +461,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname4",
     "memory": 0,
-    "createTime": 1662572815307,
+    "@timestamp": 1662572815307,
     "appId": "app4,app9",
     "cpu": 2.1,
     "dc": "west"
@@ -469,7 +469,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname0",
     "memory": 0,
-    "createTime": 1662572814887,
+    "@timestamp": 1662572814887,
     "appId": "app2,app8",
     "cpu": 3.5,
     "dc": "west"
@@ -477,7 +477,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname7",
     "memory": 0,
-    "createTime": 1662572814687,
+    "@timestamp": 1662572814687,
     "appId": "app9,app2",
     "cpu": 2.4,
     "dc": "west"
@@ -485,7 +485,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname1",
     "memory": 0,
-    "createTime": 1662572814504,
+    "@timestamp": 1662572814504,
     "appId": "app4,app3",
     "cpu": 3.7,
     "dc": "west"
@@ -493,7 +493,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname2",
     "memory": 0,
-    "createTime": 1662572814323,
+    "@timestamp": 1662572814323,
     "appId": "app8,app2",
     "cpu": 1.7,
     "dc": "west"
@@ -501,7 +501,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname6",
     "memory": 0,
-    "createTime": 1662572814153,
+    "@timestamp": 1662572814153,
     "appId": "app3,app8",
     "cpu": 3.5,
     "dc": "west"
@@ -509,7 +509,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname8",
     "memory": 0,
-    "createTime": 1662572813843,
+    "@timestamp": 1662572813843,
     "appId": "app3,app7",
     "cpu": 0.9,
     "dc": "west"
@@ -517,7 +517,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname1",
     "memory": 0,
-    "createTime": 1662572813644,
+    "@timestamp": 1662572813644,
     "appId": "app2,app5",
     "cpu": 4.5,
     "dc": "west"
@@ -525,7 +525,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname6",
     "memory": 0,
-    "createTime": 1662572813466,
+    "@timestamp": 1662572813466,
     "appId": "app7,app6",
     "cpu": 4.9,
     "dc": "west"
@@ -533,7 +533,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname7",
     "memory": 0,
-    "createTime": 1662572813276,
+    "@timestamp": 1662572813276,
     "appId": "app4,app1",
     "cpu": 0.6,
     "dc": "west"
@@ -541,7 +541,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname9",
     "memory": 0,
-    "createTime": 1662572812903,
+    "@timestamp": 1662572812903,
     "appId": "app1,app5",
     "cpu": 3.2,
     "dc": "west"
@@ -549,7 +549,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname8",
     "memory": 0,
-    "createTime": 1662568460152,
+    "@timestamp": 1662568460152,
     "appId": "app2,app9",
     "cpu": 1.4,
     "dc": "west"
@@ -557,7 +557,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname4",
     "memory": 0,
-    "createTime": 1662568450891,
+    "@timestamp": 1662568450891,
     "appId": "app0,app0",
     "cpu": 3.1,
     "dc": "west"
@@ -565,7 +565,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname1",
     "memory": 0,
-    "createTime": 1662568423642,
+    "@timestamp": 1662568423642,
     "appId": "app4,app3",
     "cpu": 3.7,
     "dc": "west"
@@ -573,7 +573,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname2",
     "memory": 0,
-    "createTime": 1662568415820,
+    "@timestamp": 1662568415820,
     "appId": "app8,app2",
     "cpu": 1.7,
     "dc": "west"
@@ -581,7 +581,7 @@ repeating the `query` request now results in the collection JSON
   {
     "hostname": "hostname6",
     "memory": 0,
-    "createTime": 1662568414008,
+    "@timestamp": 1662568414008,
     "appId": "app3,app8",
     "cpu": 3.5,
     "dc": "west"
@@ -590,7 +590,7 @@ repeating the `query` request now results in the collection JSON
 ```
 with the number of rows growing after more `insert` were performed
 
-* Note that `createTime` is in milliseconds:
+* Note that `@timestamp` is in milliseconds:
 ```sh
 date +"%s"
 ```
@@ -598,22 +598,6 @@ date +"%s"
 1662353482
 ```
 The index will be available in Kibana Management panel `http://192.168.0.138:5601/app/kibana#/management/elasticsearch/index_management/indices?_g=()`.
-
-One caninsert a 4 hour mock up data (240 files in `data/host01/20220908`) e.g. `data.txt.202209080359`:
-```text
-cpu: 13702456
-timestamp: 1662623940
-```
-the CPU value was converted from `FreePhysicalMemory` metric to have a smooth line:
-```powershell
-0..120 | foreach-object {
-Get-CIMInstance Win32_OperatingSystem | Select FreePhysicalMemory, NumberOfProcesses | format-list | out-file c:\temp\data.txt -encoding ascii -append
-start-sleep -second 15
-}
-```
-The `/list` endpoint processing is in walking the directory and reading the metric and sending to elasticsearch which exploses it to Grafana:
-
-![Datatxt Example](https://github.com/sergueik/springboot_study/blob/master/basic-elasticrsearch-timeseries/screenshots/capture-grafana-elasticsearch-datatxt.png)
 
 
 ### Note Using Bitnami ElasticSearch VM 

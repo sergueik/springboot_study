@@ -24,7 +24,7 @@ public class DemoEntitySerializer implements JsonSerializer<DemoEntity> {
 
 		final Date createTime = data.getCreateTime();
 		if (createTime != null) {
-			result.add("createTime",
+			result.add("@timestamp",
 					new JsonPrimitive(simpleDateFormat.format(createTime)));
 		}
 
