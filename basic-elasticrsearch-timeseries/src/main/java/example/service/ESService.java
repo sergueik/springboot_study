@@ -27,16 +27,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import example.HostData;
 import example.entity.DemoEntity;
 import example.utils.DemoEntitySerializer;
+import example.utils.Utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,7 +54,13 @@ import org.apache.logging.log4j.Logger;
 @Service
 public class ESService {
 
-	private final boolean debug = false;
+	private static Utils utils = Utils.getInstance();
+	private final boolean debug = true;
+	private static final String filemask = "data.txt.*$";
+	private static String[] metricNames = { "cpu" };
+	private static Map<String, String> data = new HashMap<>();
+	private static Map<String, String> extractedMetricNames = new HashMap<>();
+	private static Map<String, String> metricExtractors = new HashMap<>();
 	private final static boolean directConvertrsion = false;
 
 	private static final Logger logger = LogManager.getLogger(ESService.class);
@@ -122,4 +138,100 @@ public class ESService {
 	private String getIndexForSearch(String index) {
 		return String.format("%s_alias", index);
 	}
+
+	public List<Map<String, String>> listFilesDsNames(String path,
+			List<String> collectFolders, List<String> rejectFolders)
+			throws IOException {
+
+		final List<Path> result = new ArrayList<>();
+		Path basePath = Paths.get(path);
+		final String basePathUri = new URL(
+				getDataFileUri(basePath.toAbsolutePath().toString())).getFile() + "/";
+		System.err.println("Scanning path: " + basePathUri);
+		List<Path> folders = new ArrayList<>();
+		// Probably quite sub-optimal
+		try (Stream<Path> walk = Files.walk(basePath)) {
+			// collect folders
+			folders = walk.filter(Files::isDirectory).filter(o -> {
+				String key = o.getFileName().toString();
+				System.err.println("inspect: " + key);
+				boolean status = true;
+				// NOTE: exact match required
+				if ((collectFolders.size() > 0 && !collectFolders.contains(key))
+						|| rejectFolders.size() > 0 && rejectFolders.contains(key)) {
+					status = false;
+				}
+				System.err.println("status: " + status);
+				return status;
+			}).collect(Collectors.toList());
+		}
+		// collect files in folders
+		for (Path folder : folders) {
+			Stream<Path> walk = Files.walk(folder);
+			walk.filter(Files::isRegularFile)
+					.filter(o -> o.getFileName().toString().matches(filemask))
+					.forEach(o -> {
+						if (debug)
+							System.err.println("found file: " + o.getFileName().toString());
+						result.add(o);
+					});
+		}
+
+		return readFiles(result);
+		/*
+		 		indexRequest.source(entityMap, XContentType.JSON);
+		IndexResponse indexResponse = client.index(indexRequest,
+				RequestOptions.DEFAULT);
+		return "created".equals(indexResponse.getResult().getLowercase());
+		
+		 */
+	}
+
+	private static String osName = utils.getOSName();
+
+	private static String getDataFileUri(String dataFilePath) {
+		return osName.equals("windows")
+				? "file:///" + dataFilePath.replaceAll("\\\\", "/")
+				: "file://" + dataFilePath;
+	}
+
+	private static String hostname = "host01";
+	private static HostData hostData = null;
+
+	private List<Map<String, String>> readFiles(List<Path> result) {
+		List<Map<String, String>> results = new ArrayList<>();
+		System.err.println(String.format("Ingesting %d files: ", result.size()));
+		result.stream().forEach(o -> {
+			hostData = new HostData(hostname,
+					o.getParent().toAbsolutePath().toString(),
+					o.getFileName().toString());
+			// sync debug settings
+			hostData.setDebug(debug);
+			// NOTE: metricNames are used in SQL insert when processing metricsData
+			hostData.setMetrics(Arrays.asList(metricNames));
+			if (debug)
+				System.err.println("about to add data: " + Arrays.asList(metricNames));
+			hostData.setExtractedMetricNames(extractedMetricNames);
+			hostData.setMetricExtractors(metricExtractors);
+			hostData.readData();
+			long timestamp = hostData.getTimestamp();
+			if (timestamp == 0)
+				timestamp = Instant.now().toEpochMilli();
+			if (debug)
+				System.err.println("adding timestamp: " + timestamp);
+			data = hostData.getData();
+			if (data != null && !data.isEmpty()) {
+				if (debug)
+					System.err.println("added data: " + data.keySet());
+				data.put("timestamp", Long.toString(timestamp, 10));
+				data.put("hostname", hostname);
+				results.add(data);
+			} else {
+				if (debug)
+					System.err.println("data is empty: " + o.getFileName().toString());
+			}
+		});
+		return results;
+	}
+
 }

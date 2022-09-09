@@ -23,7 +23,7 @@ public class AppController {
 		String body = "<html>" + "<head>" + "demo app" + "</head>" + "<body>"
 				+ "<a href=\"./insert\"\"> Insert Dummy Metrics</a><br/>"
 				+ "<a href=\"./query\"\">Dump metrics</a><br/>"
-				+ "<a href=\"./metrics\"\">Server inventory (not available yet)</a><br/>"
+				+ "<a href=\"./list\"\">Server inventory</a><br/>"
 				+ "</body>" + "</html>";
 		return ResponseEntity.ok().body(body);
 	}

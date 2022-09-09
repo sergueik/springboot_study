@@ -20,6 +20,19 @@ public class ESController {
 	private Random generator = new Random(3);
 
 	@ResponseBody
+	@RequestMapping("/list")
+	public Object list() {
+		try {
+			List<Map<String, String>> data = esService.listFilesDsNames("data",
+					new ArrayList<String>(), new ArrayList<String>());
+			return data;
+		} catch (IOException e) {
+			// e.printStackTrace();
+			return "FAIL";
+		}
+	}
+
+	@ResponseBody
 	@RequestMapping("/insert")
 	public String insert() {
 		DemoEntity entity = new DemoEntity();
@@ -37,7 +50,7 @@ public class ESController {
 		try {
 			return esService.save(entity, MYINDEX) ? "SUCCESS" : "FAIL";
 		} catch (IOException e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 			return "FAIL";
 		}
 	}
@@ -56,7 +69,7 @@ public class ESController {
 					order);
 			return list;
 		} catch (IOException e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 			return "FAIL";
 		}
 	}

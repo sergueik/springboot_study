@@ -587,7 +587,6 @@ repeating the `query` request now results in the collection JSON
     "dc": "west"
   }
 ]
-
 ```
 with the number of rows growing after more `insert` were performed
 
@@ -600,15 +599,6 @@ date +"%s"
 ```
 The index will be available in Kibana Management panel `http://192.168.0.138:5601/app/kibana#/management/elasticsearch/index_management/indices?_g=()`.
 
-if the server is down check if it is recovering itself after shutdown:
-
-```sh
-cat /var/log/elasticsearch/elasticsearch.log
-```
-```text
-[2022-09-08T23:44:01,211][INFO ][o.e.g.GatewayService     ] [elasticsearch] recovered [3] indices into cluster_state
-[2022-09-08T23:44:18,237][INFO ][o.e.c.r.a.AllocationService] [elasticsearch] Cluster health status changed from [RED] to [GREEN] (reason: [shards started [[.kibana_task_manager][0]] ...]).
-```
 
 ### Note Using Bitnami ElasticSearch VM 
 You may need to re-import the image ova when migrating the project to different host
@@ -638,13 +628,14 @@ may switch to use [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant
 
    * https://github.com/thoj/vagrant-influx-grafana oj/vagrant-influx-grafana - very old but may be easy to upgrade to latest grafana version.  effectively it is just
 ```sh
-  # install and start grafana
+# install and start grafana
   wget https://grafanarel.s3.amazonaws.com/builds/grafana_2.1.1_amd64.deb
   sudo dpkg -i grafana_2.1.1_amd64.deb
   sudo /etc/init.d/grafana-server start
 ```  
   
-  * https://github.com/djoven89/vagrant_monitoring_stack is another alternative  adding grafana `https://packagecloud.io/grafana/stable/debian` repo public key and installing it on vanilla `ubuntu/xenial64`. We need Grafana __6.6.1__ to work with ElasticSearch __7.6.2__
+  * https://github.com/djoven89/vagrant_monitoring_stack
+is another alternative  adding grafana `https://packagecloud.io/grafana/stable/debian` repo public key and installing it on vanilla `ubuntu/xenial64`. We need Grafana __6.6.1__ to work with ElasticSearch __7.6.2__
 
  * https://www.lucenetutorial.com/lucene-query-syntax.html  
  * https://community.grafana.com/t/why-is-my-graph-empty-when-i-zoom-in/24
