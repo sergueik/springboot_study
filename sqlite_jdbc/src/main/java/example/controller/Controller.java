@@ -2,6 +2,7 @@ package example.controller;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,8 +45,10 @@ public class Controller {
 	}
 
 	@PostMapping("/findStudentById")
-	public Result findStudentById(@RequestParam("id") String id) {
-		return service.findStudentById(id);
+	public Result findStudentById(@RequestParam("id") String id,
+			@RequestParam("cte") Optional<Boolean> cte) {
+		return (cte.isPresent() && cte.get()) ? service.findStudentByIdWithCTE(id)
+				: service.findStudentById(id);
 	}
 
 	@PostMapping("/findStudentByName") // post name inside the body json

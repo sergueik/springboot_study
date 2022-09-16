@@ -16,7 +16,7 @@ public class ServiceImpl implements BaseService {
 
 	@Resource(name = "JdbcDao")
 	private Dao dao;
-	
+
 	private static final Logger logger = Logger
 			.getLogger(ServiceImpl.class.getName());
 
@@ -74,6 +74,17 @@ public class ServiceImpl implements BaseService {
 		Result result = new Result();
 		try {
 			Student res = dao.findStudentById(Long.parseLong(id));
+			result.setData(res);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, null, e);
+		}
+		return result;
+	}
+
+	public Result findStudentByIdWithCTE(String id) {
+		Result result = new Result();
+		try {
+			Student res = dao.findStudentByIdWithCTE(Long.parseLong(id));
 			result.setData(res);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, null, e);

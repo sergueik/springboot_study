@@ -13,5 +13,7 @@ public interface Dao {
 	public int delStudentById(long id);
 	// NOTE: strongly typed
 	public Student findStudentById(long id);
+	// NOTE: uses WITH...
+	public Student findStudentByIdWithCTE(long id);
 	public Student findStudentByName(String name);	
 }

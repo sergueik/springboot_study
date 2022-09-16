@@ -304,6 +304,30 @@ returns
     {
 ...
 ```
+### Testing Common Table Expression (CTE)
+the `` endpoint supports a boolean `cte` parameter to switch to JDBC query using `WITH` clause:
+
+```sh
+curl -X POST -H 'application/x-www-form-urlencoded' -d 'id=2&cte=true' http://127.0.0.1:8181/student/findStudentById
+```
+
+The JDBC will run CTE query:
+```SQL
+WITH s AS (
+SELECT *, 'dummy' as extracolumn FROM student
+)  SELECT * FROM s WHERE id = ?
+```
+and log the extra column 
+```java
+ResultSet resultSet = preparedStatement.executeQuery();
+logger.info("findStudentByIdWithCTE: extracolumn: "
+	+ resultSet.getString("extracolumn"));
+```
+to apppliction console:
+```text
+2022-09-16 12:17:21.771 logback [http-nio-8181-exec-1] INFO  example.dao.JDBCDao
+ - findStudentByIdWithCTE: extracolumn: dummy
+```
 * cleanup
 ```sh
 docker container ls -a | grep sqlite | cut -d ' ' -f 1 | xargs -IX docker container rm X
@@ -314,8 +338,12 @@ docker image ls |  grep '<none>' | awk '{print $3}' | xargs -IX  docker image rm
 ```
 ### See Also
 
-For SQLite Hibernate project example, see [restart1025/Spring-Boot-SQLite](https://github.com/restart1025/Spring-Boot-SQLite)
+  * for SQLite Hibernate project example, see [restart1025/Spring-Boot-SQLite](https://github.com/restart1025/Spring-Boot-SQLite)
 or [CherryYu/springboot-sqlite](https://github.com/CherryYu/springboot-sqlite)
+  * [documentation](https://dev.mysql.com/doc/refman/8.0/en/with.html) on MySQL CTE - amed temporary result set that exists within the scope of a single statement and that can be referred to later within that statement, possibly multiple times
+  * [documentation](https://www.sqlite.org/lang_with.html) on SQLite CTE - a little dry
+  * detailed [guide](https://www.baeldung.com/spring-request-param) to __Spring__ `@RequestParam` Annotation
+  * the simplest SQLite CTE [Tutorial](https://blog.expensify.com/2015/09/25/the-simplest-sqlite-common-table-expression-tutorial/)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

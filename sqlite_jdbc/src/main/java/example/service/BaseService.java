@@ -10,6 +10,7 @@ public interface BaseService {
 	public Result updateStudent(Student student);
 	public Result delStudentById(String id);
 	public Result findStudentById(String id);
+	public Result findStudentByIdWithCTE(String id);
 	public Result findStudentByName(String name);
 	
 	// new method for joins

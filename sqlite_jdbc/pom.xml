@@ -3,14 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>sqlite_jdbc</artifactId>
-  <version>0.7-SNAPSHOT</version>
+  <version>0.8-SNAPSHOT</version>
   <packaging>jar</packaging>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <!--
-    <version>2.1.2.RELEASE</version> 
--->
     <version>2.3.4.RELEASE</version>
     <relativePath/>
   </parent>

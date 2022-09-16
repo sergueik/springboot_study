@@ -110,6 +110,30 @@ public class JDBCDao implements Dao {
 	}
 
 	@Override
+	public Student findStudentByIdWithCTE(long id) {
+		List<?> results = null;
+		Student result = null;
+		String sql = "WITH s AS (SELECT *, 'dummy' as extracolumn FROM student) SELECT * FROM s WHERE id = ?";
+		try {
+			PreparedStatement preparedStatement = conn.prepareStatement(sql);
+			preparedStatement.setLong(1, id);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			logger.info("findStudentByIdWithCTE: extracolumn: "
+					+ resultSet.getString("extracolumn"));
+			results = JDBCUtils.TranverseToList(resultSet, Student.class);
+			// probably unnecesary, shown as example
+			// https://stackoverflow.com/questions/12320429/java-how-to-check-the-type-of-an-arraylist-as-a-whole
+			if (results != null && results instanceof List<?>
+					&& results.size() != 0) {
+				result = (Student) results.get(0);
+			}
+		} catch (SQLException | InstantiationException | IllegalAccessException e) {
+			logger.log(Level.SEVERE, null, e);
+		}
+		return result;
+	}
+
+	@Override
 	public Student findStudentByName(String name) {
 		List<?> results = null;
 		Student result = null;
