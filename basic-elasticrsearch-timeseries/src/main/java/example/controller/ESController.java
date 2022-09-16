@@ -1,8 +1,11 @@
 package example.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
@@ -15,16 +18,18 @@ public class ESController {
 
 	@Autowired
 	private ESService esService;
-
+	private static final Logger logger = LogManager.getLogger(ESController.class);
 	private static final String MYINDEX = "my_index_test";
 	private Random generator = new Random(3);
 
 	@ResponseBody
 	@RequestMapping("/list")
-	public Object list() {
+	public Object list(@RequestParam(defaultValue = "host01") String host) {
 		try {
-			List<Map<String, String>> data = esService.listFilesDsNames("data",
-					new ArrayList<String>(), new ArrayList<String>());
+			logger.info("Loading metrics for {}", host);
+			List<Map<String, String>> data = esService.listFilesDsNames(
+					String.format("data/%s", host), host, new ArrayList<String>(),
+					new ArrayList<String>());
 			return data;
 		} catch (IOException e) {
 			// e.printStackTrace();

@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 # #!/usr/bin/bash
 # NOTE: github bash is different location (/usr/bin/bash) than vanilla ubuntu (/bin/bash)
-HOSTNAME='host01'
-YEAR=${1:-2022}
-MONTH=${2:-09}
-DAY=${3:-08}
-DUMMYDATA=$(pwd)'/dummydata.txt'
+HOSTNAME=${1:-host01}
+DATAFILE=${2:-dummydata.txt}
+# fix the date range to avoid wondering where is the data
+YEAR=${3:-2022}
+MONTH=${4:-09}
+DAY=${5:-08}
+
+DUMMYDATA=$(pwd)'/'$DATAFILE
 MAXCNT=$(wc -l $DUMMYDATA|cut -f 1 -d ' ')
 echo "MAXCNT=${MAXCNT}"
 date="$YEAR$MONTH$DAY" # no separators

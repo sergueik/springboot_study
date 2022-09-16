@@ -148,7 +148,7 @@ public class ESService {
 		return String.format("%s_alias", index);
 	}
 
-	public List<Map<String, String>> listFilesDsNames(String path,
+	public List<Map<String, String>> listFilesDsNames(String path, String host,
 			List<String> collectFolders, List<String> rejectFolders)
 			throws IOException {
 
@@ -190,11 +190,11 @@ public class ESService {
 		// NOTE: Local variable indexResponse defined in an enclosing scope must be
 		// final or effectively final
 		// IndexResponse indexResponse;
-		List<Map<String, String>> results = readFiles(result);
+		List<Map<String, String>> results = readFiles(result, host);
 
 		results.stream().forEach(o -> {
-			// NOTE: Adding dummy "hostname" and "appid"
-			o.put("hostame", hostname);
+			// NOTE: Adding host and a dummy "appid"
+			o.put("hostame", host);
 			o.put("appid", "app0");
 			// NOTE: rename column and enforcing "yyyy-MM-dd HH:mm:ss"
 			// see also:
@@ -231,12 +231,11 @@ public class ESService {
 				: "file://" + dataFilePath;
 	}
 
-	private List<Map<String, String>> readFiles(List<Path> result) {
+	private List<Map<String, String>> readFiles(List<Path> result, String host) {
 		List<Map<String, String>> results = new ArrayList<>();
 		System.err.println(String.format("Ingesting %d files: ", result.size()));
 		result.stream().forEach(o -> {
-			hostData = new HostData(hostname,
-					o.getParent().toAbsolutePath().toString(),
+			hostData = new HostData(host, o.getParent().toAbsolutePath().toString(),
 					o.getFileName().toString());
 			// sync debug settings
 			hostData.setDebug(debug);
@@ -257,7 +256,7 @@ public class ESService {
 				if (debug)
 					System.err.println("added data: " + data.keySet());
 				data.put("timestamp", Long.toString(timestamp, 10));
-				data.put("hostname", hostname);
+				data.put("hostname", host);
 				results.add(data);
 			} else {
 				if (debug)

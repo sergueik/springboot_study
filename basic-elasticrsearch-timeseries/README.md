@@ -618,6 +618,14 @@ on the port 80, after authenticating with `user` user and password from `~bitnam
 
 may switch to use [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant/blob/master/elk/Vagrantfile) or [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant/blob/master/elk_box/Vagrantfile). This will take a little extra time to build custom ELK Virtualbox
 
+### Posting the Infastructure Metrics
+* execute metric collection for *individual hosts*:
+`http://localhost:8844/list?host=host02` and 
+`http://localhost:8844/list?host=host01`
+and observe the aggregated monitoring data in Grafana
+
+![Grafana Example](https://github.com/sergueik/springboot_study/blob/master/basic-elasticrsearch-timeseries/screenshots/capture-grafana-infrastructure.png)
+
 ### See Also
   * https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-network.html#network-interface-values
   * https://docs.bitnami.com/virtual-machine/apps/elk/administration/connect-remotely/
@@ -628,7 +636,6 @@ may switch to use [Vagrantfile](https://github.com/sergueik/puppetmaster_vagrant
 
    * https://github.com/thoj/vagrant-influx-grafana oj/vagrant-influx-grafana - very old but may be easy to upgrade to latest grafana version.  effectively it is just
 ```sh
-# install and start grafana
   wget https://grafanarel.s3.amazonaws.com/builds/grafana_2.1.1_amd64.deb
   sudo dpkg -i grafana_2.1.1_amd64.deb
   sudo /etc/init.d/grafana-server start
