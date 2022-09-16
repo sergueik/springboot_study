@@ -1337,6 +1337,41 @@ using presision NANOSECONDS
   * [influxdata channel](https://www.youtube.com/channel/UCnrgOD6G0y0_rcubQuICpTQ)
   * [Integrating Prometheus and InfluxDB - Paul Dix, InfluxData](https://www.youtube.com/watch?v=6UjVX-RTFmo) - mentions but not elaborates on remote Prometheus read/write API ?
 
+### See Also
+  * __InfluxdB__ 1.x__ *downsampling* and *data retension* [documentatiion](https://docs.influxdata.com/influxdb/v1.7/guides/downsampling_and_retention/)
+- evaluate mean values over longer span than originally collected
+(e.g. from per-minute to hourly),  write into new table to prevent storage concerns.
+Can be implemented via straight SQL
+```SQL
+CREATE CONTINUOUS QUERY "cq_30m" ON "food_data" BEGIN
+SELECT mean("website") AS "mean_website",mean("phone") AS "mean_phone"
+INTO "a_year"."downsampled_orders"
+FROM "orders"
+GROUP BY time(30m)
+```
+- in classic SQL may also require new timestamp column function
+
+* __InfluxdB__ 1.x__ *downsampling* and *data retension* [documentatiion](https://www.influxdata.com/blog/downsampling-influxdb-v2-0/)
+ via more esoteric __FLUX__ expression
+```js
+from(bucket: "my-bucket")
+|> range(start: v.timeRangeStart, stop: v.timeRangeStop)
+|> filter(fn: (r) =>
+(r["_measurement"] == "cpu"))
+|> filter(fn: (r) =>
+(r["_field"] == "usage_user"))
+|> aggregateWindow(every: 10s, fn: mean, createEmpty: false)
+// Use the to() function to validate that the results look correct. This is optional.
+|> to(bucket: "downsampled", org: "my-org")
+```
+
+  * __InfluxdB__ 1.x__  *continuous queries* (CQ) [documentation](https://docs.influxdata.com/influxdb/v1.8/query_language/continuous_queries/)
+  * __InfluxdB__ 2.x__  *InfluxDB Tasks* (CQ replacement) [documentation](https://docs.influxdata.com/influxdb/v2.4/upgrade/v1-to-v2/migrate-cqs/)
+  * __InfluxdB__ 2.x__  `aggregateWindow()` function [documentation](https://docs.influxdata.com/flux/v0.x/stdlib/universe/aggregatewindow/)
+  * __InfluxdB__ 2.x__  retention enforcement service [documentation](https://docs.influxdata.com/influxdb/v2.3/reference/internals/data-retention/) (probably is the same as *retention policies* (RP))
+
+  * downsampling [youtube videos](https://www.youtube.com/watch?v=j3x0TohyGJY)
+ 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 	
