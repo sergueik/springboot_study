@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>basic-static-rrd-js</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>basic-static-rrd-js</name>
-  <description>Springboot Template page Demo project With Flot</description>
+  <description>springboot thymeleaf page demo project with flot</description>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.5.4.RELEASE</version>
+    <version>2.3.4.RELEASE</version>
     <relativePath/>
   </parent>
   <properties>
@@ -18,14 +18,9 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
-    <jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
-    <java.version>1.8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <failOnMissingWebXml>false</failOnMissingWebXml>
-    <thymeleaf.version>3.0.8.RELEASE</thymeleaf.version>
-    <thymeleaf-extras-java8time.version>3.0.0.RELEASE</thymeleaf-extras-java8time.version>
-    <thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
     <assertj.version>3.8.0</assertj.version>
 
     <webjars-locator.version>0.30</webjars-locator.version>
@@ -44,12 +39,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-thymeleaf</artifactId>
-<!-- NOTE: after switchihg 1.5.4.RELEASE to 2.3.4.RELEASE 
-[ERROR] Failed to execute goal on project static_page: Could not resolve dependencies for project
-Could not find artifact org.thymeleaf:thymeleaf-spring5:jar:3.0.6.RELEASE
-in central (https://repo.maven.apache.org/maven2)
-https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf-spring5
--->
     </dependency>
     <dependency>
       <groupId>org.thymeleaf.extras</groupId>
@@ -73,13 +62,7 @@ https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf-spring5
       <groupId>org.webjars</groupId>
       <artifactId>webjars-locator</artifactId>
       <version>${webjars-locator.version}</version>
-<!-- NOTE: after switchihg 1.5.4.RELEASE to 2.3.4.RELEASE 
-[ERROR]     'dependencies.dependency.version' for org.webjars:webjars-locator:jar is missing. @ line 64, column 17
-[ERROR]
-
--->
     </dependency>
-    <!-- Test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
@@ -90,55 +73,10 @@ https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf-spring5
       <artifactId>antisamy</artifactId>
       <version>1.5.9</version>
     </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-java</artifactId>
-      <version>3.13.0</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
     <plugins>
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>${jacoco-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>report</id>
-            <phase>test</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>jacoco-check</id>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <rule>
-                  <element>PACKAGE</element>
-                  <limits>
-                    <limit>
-                      <counter>LINE</counter>
-                      <value>COVEREDRATIO</value>
-                      <minimum>${minimum.coverage}</minimum>
-                    </limit>
-                  </limits>
-                </rule>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
