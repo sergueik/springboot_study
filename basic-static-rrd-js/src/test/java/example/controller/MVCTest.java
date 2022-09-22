@@ -2,15 +2,21 @@ package example.controller;
 
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -25,10 +31,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static org.hamcrest.CoreMatchers.containsString;
 
-import example.controller.HomeController;
+import example.Launcher;
+import example.controller.ExampleController;
 
-@RunWith(SpringRunner.class)
-@WebMvcTest(controllers = HomeController.class)
+@ExtendWith(SpringExtension.class)
+@WebMvcTest(controllers = ExampleController.class)
 public class MVCTest {
 
 	@Autowired
@@ -36,18 +43,18 @@ public class MVCTest {
 
 	private ResultActions resultActions;
 	final static String charset = "UTF-8";
-	private final static String viewName = "index";
+	private final static String viewName = "home";
 
+	// NOTE: unused. Keep for future
 	// NOTE: "application" is a reserved variable name
 	@Value("${application}")
 	private String variable;
 
 	// System.getProperty("application");
 
-	@Before
-	public void beforeTest() throws Exception {
-		resultActions = mvc
-				.perform(get("/" + variable).accept(MediaType.TEXT_HTML));
+	@BeforeEach
+	public void beforeAll() throws Exception {
+		resultActions = mvc.perform(get("/").accept(MediaType.TEXT_HTML));
 	}
 
 	@Test
@@ -67,7 +74,7 @@ public class MVCTest {
 	public void bodyContainsTextTest() throws Exception {
 
 		resultActions.andExpect(
-				content().string(containsString("<title>Hello Spring Boot!</title>")));
+				content().string(containsString("using the Flot libraries")));
 	}
 
 	@Test
@@ -76,12 +83,12 @@ public class MVCTest {
 				content().contentType(String.format("text/html;charset=%s", charset)));
 	}
 
- 
 	@Test
 	public void veiewNameTest() throws Exception {
 		resultActions.andExpect(view().name(viewName));
 	}
 
+	@Disabled
 	@Test
 	public void verifiesHomePageLoads() throws Exception {
 
