@@ -1,6 +1,11 @@
 package example.controller;
 
 import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -45,12 +50,26 @@ public class Controller {
 		return data;
 	}
 
+	@GetMapping(value = "/params", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<String>> paramArrayEcho(
+			@RequestParam Optional<List<String>> values) {
+		return (values.isPresent() && values.get().size() > 0)
+				? ResponseEntity.status(HttpStatus.OK).body(values.get())
+				: ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+						.body(new ArrayList<String>());
+	}
+
 	private static final RestTemplate restTemplate = new RestTemplate();
 
-	@Value("${server.port:8085}")
-	private int port;
+	// @Value("${server.port:8085}")
+	// private int port;
 	// the @Value annotation is not working
-	// private int port = 8085;
+	private int port = 8085;
+	// when run test, seeing:
+	// org.springframework.web.client.ResourceAccessException: I/O error on POST
+	// request
+	// for "http://localhost:0/basic/post": connect:
+	// Address is invalid on local machine, or port is not valid on remote machine
 
 	@ResponseBody
 	// 406 Not Acceptable client error response

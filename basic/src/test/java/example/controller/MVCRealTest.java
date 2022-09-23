@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.Assume;
 
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,6 +23,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 import example.controller.Controller;
 import example.service.ExampleService;
@@ -104,12 +108,30 @@ public class MVCRealTest {
 						String.format("application/json;charset=%s", charset)));
 	}
 
-	@Ignore
 	@Test
 	public void postTest() throws Exception {
+		Assume.assumeTrue(listening("localhost", 8085));
 		mvc.perform(post(route + "/page").contentType(MediaType.TEXT_PLAIN)
 				.param("name", new String[] { "name" }))
 				.andExpect(content().string(containsString("name")));
 	}
 
+	// http://www.java2s.com/example/java-utility-method/http-port-find/isserverlistening-string-host-int-port-2d6d3.html
+	private static boolean listening(String host, int port) {
+		Socket socket = null;
+		try {
+			socket = new Socket(host, port);
+			return true;
+		} catch (Exception e) {
+			return false;
+		} finally {
+			if (socket != null) {
+				try {
+					socket.close();
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+		}
+	}
 }

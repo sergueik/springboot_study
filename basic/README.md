@@ -79,6 +79,7 @@ the launch configuration `.basic.launch` from `$HOME\workspace\.metadata\.plugin
 
 ```
 
+
 ### See Also
 
   * [step by step](https://github.com/in28minutes/SpringBootWebApplicationStepByStep) Web Application with Spring Boot
@@ -90,6 +91,10 @@ the launch configuration `.basic.launch` from `$HOME\workspace\.metadata\.plugin
   * [using Docker environment variables in build phase](https://vsupalov.com/docker-build-pass-environment-variables/)
   * [Docker commands](https://habr.com/ru/company/ruvds/blog/440660/) (in Russian)
   * official __Spring Boot Docker__ [documentation](https://spring.io/guides/topicals/spring-boot-docker/)
+  * `@RequestParam` [basics](https://medium.com/@AADota/spring-passing-list-and-array-of-values-as-url-parameters-1ed9bbdf0cb2) of passing array of values via one parameter
+  * [overiew](https://www.baeldung.com/spring-requestmapping) of __Spring RequestMapping__
+  * pure Java generic list partition [methods](https://stackoverflow.com/questions/12026885/is-there-a-common-java-utility-to-break-a-list-into-batches) - not applicable for infrastructure partition
+  * [introduction to JsonPath](https://www.baeldung.com/guide-to-jayway-jsonpath)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
