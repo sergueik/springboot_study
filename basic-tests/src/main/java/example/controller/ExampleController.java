@@ -3,8 +3,11 @@ package example.controller;
  * Copyright 2021 Serguei Kouzmine
  */
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -83,6 +86,15 @@ public class ExampleController {
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 
+	}
+
+	@GetMapping(value = "/params", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<String>> paramArrayEcho(
+			@RequestParam Optional<List<String>> values) {
+		return (values.isPresent() && values.get().size() > 0)
+				? ResponseEntity.status(HttpStatus.OK).body(values.get())
+				: ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+						.body(new ArrayList<String>());
 	}
 
 	// see also examples in
