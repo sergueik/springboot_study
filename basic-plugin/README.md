@@ -15,6 +15,12 @@ build application container image
 IMAGE=app
 mvn install
 ```
+this will eventuallty print completion status information:
+```text
+[INFO] DOCKER> [app:latest]: Created docker-build.tar in 514 milliseconds
+[INFO] DOCKER> [app:latest]: Built image sha256:c7d3a
+
+```
 * inspect the image
 ```sh
 docker image ispect $IMAGE
@@ -102,7 +108,9 @@ docker sysem prune -f
 ### Note
 
 [Docker Toolbox on legacy Windows](https://docs.docker.com/toolbox/) essentially relies on running a VirtualBox Linux VM
+### See Also
 
+  * Docker Maven Plugin [repo](https://github.com/fabric8io/docker-maven-plugin) 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
