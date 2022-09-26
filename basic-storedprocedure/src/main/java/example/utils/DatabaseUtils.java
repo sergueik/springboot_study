@@ -10,9 +10,6 @@ import javax.sql.DataSource;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 
-/**
- * Created by krisna putra on 10/28/2017.
- */
 @Component
 public class DatabaseUtils {
 	Logger log = LoggerFactory.getLogger(DatabaseUtils.class);

@@ -2,10 +2,7 @@ spring:
   dbhost: 192.168.0.64
   database: test
   datasource:
-    # Spring 2.x
-    # jdbc-url: jdbc:mysql://192.168.0.64/test
-    # Spring 1.5
-    url: jdbc:mysql://192.168.0.64/test
+    url: jdbc:mysql://${dbhost}/${database}
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver

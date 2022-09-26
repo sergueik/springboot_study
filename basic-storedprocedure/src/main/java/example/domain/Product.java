@@ -9,9 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 
-/**
- * Created by krisna putra on 10/30/2017.
- */
 @Entity
 @Data
 @Table

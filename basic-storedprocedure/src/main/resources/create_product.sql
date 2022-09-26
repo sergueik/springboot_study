@@ -1,6 +1,6 @@
 DELIMITER $$
 
-USE `training_sp`$$
+USE `test`$$
 
 DROP PROCEDURE IF EXISTS `create_product`$$
 
