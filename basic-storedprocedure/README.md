@@ -6,7 +6,7 @@ upgraded to Spring 2.x
 
 ### Usage
 * start mysql in Docker container 
-on host `192.168.0.64`:
+on host  `192.168.0.64`:
 ```sh
 IMAGE=$(docker container ls -a | grep mysql|head -1 |awk '{print $NF}')
 echo $IMAGE
@@ -130,7 +130,10 @@ BEGIN
     END$$
 
 DELIMITER ;
-
+```
+* create table manually and set `ddl`
+```sql
+create_product`(id VARCHAR(48), code VARCHAR(255), name VARCHAR(255),weight BIGINT);
 ```
 * run generic test
 ```sh
@@ -150,7 +153,36 @@ java.lang.IllegalArgumentException: jdbcUrl is required with driverClassName.
 ```
 replace `src/main/resources/application.yml` with `src/main/resources/application.FIXED.yml`
 
-- it appears also there is a YAML config parser issue to address
+- it appears there is a YAML config parser issue to address
+
+if seeing 
+```text
+java.net.ConnectException: Connection refused: connect
+```
+check if Dockerized mysql server ports are exposed and re-create containeer otherwise.
+```sh
+docker container stop $IMAGE
+docker container rm $IMAGE
+docker run --name mysql-server -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=java -e MYSQL_DATABASE=test -e MYSQL_PASSWORD=password -p 3306:3306 -d mysql:8.0.18
+```
+```sh
+docker logs -f $IMAGE
+```
+* test the invocation of the stored procedure
+```sh
+curl -s -XPOST http://localhost:8080/api/product-sp/sp-create-product-jdbc -d '{"name":"product", "code":"xyz","weight":10.0}' -H "Content-type: application/json"
+```
+```text
+success
+```
+
+and function
+```sh
+curl -s http://localhost:8080/api/product-sp/sp-count-product
+```
+```text
+2
+```
 ### See Also
 
   * https://github.com/seregamorph/morejdbc
@@ -163,4 +195,5 @@ replace `src/main/resources/application.yml` with `src/main/resources/applicatio
   * https://stackoverflow.com/questions/49088847/after-spring-boot-2-0-migration-jdbcurl-is-required-with-driverclassname
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 

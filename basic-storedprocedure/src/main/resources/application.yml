@@ -3,16 +3,17 @@ spring:
   database: test
   datasource:
     # Spring 2.x
-    # jdbc-url: jdbc:mysql://192.168.0.64/test
+    jdbc-url: jdbc:mysql://192.168.0.64:3306/test
     # Spring 1.5
-    url: jdbc:mysql://192.168.0.64/test
-    username: root
-    password: root
+    # url: jdbc:mysql://192.168.0.64:3306/test
+    username: java
+    password: password
     driver-class-name: com.mysql.jdbc.Driver
   jpa:
     database: mysql
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+      # update
     show-sql: true
   jackson:
     serialization:
