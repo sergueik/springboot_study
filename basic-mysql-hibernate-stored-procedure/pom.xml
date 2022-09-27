@@ -14,7 +14,7 @@
     <springframework.version>4.3.2.RELEASE</springframework.version>
     <hibernate.version>4.3.6.Final</hibernate.version>
     <hibernate-core.version>5.4.24.Final</hibernate-core.version>
-    <hibernate-validator.version>4.3.0.Final</hibernate-validator.version> 
+    <hibernate-validator.version>6.0.23.Final</hibernate-validator.version> 
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <!-- <mysql-connector-java.version>5.1.31</mysql-connector-java.version> -->
