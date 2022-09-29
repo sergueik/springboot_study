@@ -1,0 +1,16 @@
+spring:
+  dbhost: 192.168.0.64
+  database: test
+  datasource:
+    url: jdbc:mysql://${dbhost}/${database}
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  jackson:
+    serialization:
+      indent-output: true
