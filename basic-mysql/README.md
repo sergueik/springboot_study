@@ -303,8 +303,16 @@ docker build -f Dockerfile.alpine-mysql -t $SERVER_IMAGE .
 ```
 * run it with environments matching the `application.properties`:
 ```sh
-export SERVER_NAME=mysql-server
+export SERVER_NAME=alpine-mysql
 docker run --name $SERVER_NAME -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=java -e MYSQL_DATABASE=test -e MYSQL_PASSWORD=password -d $SERVER_IMAGE
+```
+to recall settings afterwards, use the command
+```sh
+docker container inspect $SERVER_NAME -f {{.Config.Env}}
+```
+the output will not be formatted
+```text
+[MYSQL_ROOT_PASSWORD=password MYSQL_USER=java MYSQL_DATABASE=test MYSQL_PASSWORD=password PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin]
 ```
 * observe the successful start log message in `mysql-server` container:
 ```sh

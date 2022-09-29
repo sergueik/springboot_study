@@ -49,7 +49,6 @@ public class MVCArrayValueTest {
 
 	static String route = "/basic/params";
 	final static String body = "Hello basic";
-	private static String charset = null;
 
 	@Autowired
 	private MockMvc mvc;
@@ -124,7 +123,6 @@ public class MVCArrayValueTest {
 		resultActions.andExpect(status().isOk());
 		resultActions
 				.andExpect(content().string(containsString("[\"a\",\"b\",\"c\"]")));
-
 	}
 
 	@Test
@@ -152,24 +150,25 @@ public class MVCArrayValueTest {
 	}
 
 	@Test
+	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/406
 	public void test10() throws Exception {
 		mvc.perform(get(route + "?" + args1).accept(MediaType.TEXT_PLAIN))
-				.andExpect(content().string(""));
+				.andExpect(content().string("")).andExpect(status().isNotAcceptable());
 	}
 
 	@Test
 	// NOTE: these expectations are Junit version sensitive
 	public void test8() throws Exception {
-		charset = "UTF-8";
 		mvc.perform(get(route + "?" + args1).accept(MediaType.APPLICATION_JSON))
 				.andExpect(content().contentType("application/json"));
 	}
 
 	// examine value
-	@Disabled("No value at JSON path \"$.length()\"")
+	// @Disabled("No value at JSON path \"$.length()\"")
 	@Test
 	public void test11() throws Exception {
-		mvc.perform(get(route + "/json")).andExpect(jsonPath("$.length()", is(4)));
+		mvc.perform(get(route + "?" + args1))
+				.andExpect(jsonPath("$.length()", is(values.size())));
 	}
 
 	// examine value
