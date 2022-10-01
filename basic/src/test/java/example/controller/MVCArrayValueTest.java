@@ -135,20 +135,20 @@ public class MVCArrayValueTest {
 		resultActions.andExpect(jsonPath("$.*", arrayWithSize(equalTo(4))));
 	}
 
-	@Ignore("Content type not set")
-	// examine response header
-	// TODO: Content type not set
 	@Test
-	// NOTE: these expectations are Junit version sensitive
 	public void test8() throws Exception {
 		charset = "UTF-8";
 		mvc.perform(get(route + "?" + args1).accept(MediaType.APPLICATION_JSON))
 				.andExpect(content().contentType(
 						String.format("application/json;charset=%s", charset)));
-		charset = "ISO-8859-1";
+	}
+
+	// @Ignore("Content type not set")
+	@Test
+	public void test9() throws Exception {
 		mvc.perform(get(route + "?" + args1).accept(MediaType.TEXT_PLAIN))
-				.andExpect(content()
-						.contentType(String.format("text/plain;charset=%s", charset)));
+				.andExpect(content().string("")).andExpect(status().isNotAcceptable())
+				.andExpect(status().reason((String) null));
 	}
 
 	// examine value
