@@ -82,7 +82,7 @@ npm ERR! gyp info spawn args ]
 npm ERR! gyp info ok
 npm ERR! gyp info it worked if it ends with ok
 npm ERR! gyp info using node-gyp@8.2.0
-npm ERR! gyp info using node@16.12.0 | linux | x64
+npm ERR! gyp info using node@16.12.0 | linux | x64 
 npm ERR! gyp info spawn make
 npm ERR! gyp info spawn args [ 'BUILDTYPE=Release', '-C', 'build' ]
 npm ERR! /bin/sh: python: not found
@@ -91,6 +91,18 @@ npm ERR! gyp ERR! build error
 ```
 a workaround for this is to install both `python` and `python3`. This can be improved further by splitting the build of the app into separate *build* container and only install `docker-cli` and `python3` in the application container
 
+### Update `package-lock.json`
+
+```sh
+docker exec -it $NAME sh
+```
+```sh
+cd /src/client/
+npm i --package-lock-only
+```	
+```sh
+docker cp $NAME:/src/client/package-lock.json ./client
+```
 ### Repro Details of the Upstream Project
 
 * this is copied from the PR [49](https://github.com/rakibtg/docker-web-gui/pull/49)
