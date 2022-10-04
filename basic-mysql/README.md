@@ -431,8 +431,8 @@ ENTRYPOINT ["sh", "/delayed_start.sh"]
   * recommended pure bash [script](https://github.com/vishnubob/wait-for-it) to poll and wait on the availability of a TCP host and port
   * [alternative script](https://github.com/eficode/wait-for/blob/master/wait-for) of the same script with support of TCP / HTTP "protocol" argument 
   * Docker Compose startup shutdown order [documentation](https://docs.docker.com/compose/startup-order/)
-  * [guide](https://www.baeldung.com/spring-boot-data-sql-and-schema-sql) about Springboot processing an script-based database schema and data initialization through `schema.sql` and `data.sql`
-
+  * [guide](https://www.baeldung.com/spring-boot-data-sql-and-schema-sql) about Springboot processing an script-based database schema and data initialization through `schema.sql` and `data.sql` and [repository](https://github.com/eugenp/tutorials/blob/master/persistence-modules/spring-boot-persistence/)
+  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

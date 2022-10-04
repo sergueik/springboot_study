@@ -587,6 +587,7 @@ $s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.passwo
    * https://sysdig.com/blog/debug-kubernetes-crashloopbackoff/
    * [Play with Kubernetes](https://labs.play-with-k8s.com)
    * [Play with Kubernetes workshop](https://training.play-with-kubernetes.com/kubernetes-workshop/)
+   * [Play with Kubernetes Classroom](https://training.play-with-kubernetes.com)
    * [Kubernetes Tutorials](https://github.com/mrbobbytables/k8s-intro-tutorials)
    * __Packaging Applications with Helm for Kubernetes__ [example source](https://github.com/phcollignon/helm3)
    * __Deploying Statefull Application to Kubernetes__ [example source](https://github.com/phcollignon/kubernetes_storage)
@@ -599,6 +600,11 @@ $s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.passwo
    * [RedHat StatefulSets Kubernetes Tutorial](https://redhat-scholars.github.io/kubernetes-tutorial/kubernetes-tutorial/statefulset.html)
    * https://kubernetes.io/docs/tasks/access-application-cluster/list-all-running-container-images/
    * [minikube with knative](https://github.com/ivangfr/knative-minikube-environment) intended to host the deploy and run some Serverless applications
+   * filtering `kubectl` outputs via `field selecors` [documentation](https://kubernetes.io/docs/concepts/overview/working-with-objects/field-selectors/)
+   * [multi-container pods in Kubernetes](https://linchpiner.github.io/k8s-multi-container-pods.html)
+   * [extending applications on Kubernetes with multi-container pods](https://learnk8s.io/sidecar-containers-patterns)
+   * [multi-container pods in Kubernetes](https://k21academy.com/docker-kubernetes/multi-container-pods/)
+   * [sidecar container best practices and examples](https://www.containiq.com/post/kubernetes-sidecar-container)	
    * GKE documentation
 
        + [https://cloud.google.com/kubernetes-engine/docs/concepts#core-concepts](https://cloud.google.com/kubernetes-engine/docs/concepts#core-concepts)
@@ -626,4 +632,3 @@ $s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.passwo
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
