@@ -37,12 +37,34 @@ Password:
 SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
 You are now connected to database "postgres" as user "postgres"
 ```
+close the connection
+
 * create database and table locally
 ```sh
 sudo -u postgres psql
 ```
-```sh
-postgres=# create database example;
+```text
+psql (10.22 (Ubuntu 10.22-0ubuntu0.18.04.1))
+Type "help" for help.
+
+postgres=#
+```
+```sql
+select datname from pg_database;
+```
+```text
+  datname
+-----------
+ postgres
+ template1
+ template0
+(3 rows)
+
+```
+if you do not see the `example` database in the output proceeed with (see [stackoverflow](https://stackoverflow.com/questions/18389124/simulate-create-database-if-not-exists-for-postgresql)):
+
+```sql
+create database example;
 ```
 ```sh
 CREATE DATABASE
@@ -75,15 +97,20 @@ will respond with
 }
 ```
 
-if there is an exception make sure to pass the `localhost` in properties:
+if there is an exception make sure that onnection is using the `localhost` in the `application.properties`:
 
 
 ```sh
 sed -i 's|//\(.*\):5432|//localhost:5432|' src/main/resources/application.properties
+```
+```sh
 cat src/main/resources/application.properties
+```
+and rebuild the app
+```sh
 mvn -Dmaven.test.skip=true clean spring-boot:run
 ```
-note: `-Dspring.datasource.url='jdbc:postgresql://localhost:5432/example'` will have no effect
+NOTE: the command line option `-Dspring.datasource.url='jdbc:postgresql://localhost:5432/example'` will have no effect
 
 and if the exception
 ```sh
@@ -117,7 +144,7 @@ shows
   }  
 ]
 ```
-and
+and in the postgres console,
 ```sh
 \c example
 Password for user postgres: 
@@ -152,7 +179,7 @@ can now uninstall postgresql
 mvn clean package
 ```
 
-* pull smallest possible postgresql container image 
+* pull the smallest possible postgresql container image 
 ```
 docker pull kiasaki/alpine-postgres
 ```
@@ -161,51 +188,73 @@ launch the database named container
 SERVER_NAME=postgres-database
 docker run --name $SERVER_NAME -e POSTGRES_PASSWORD=postgres -d kiasaki/alpine-postgres
 ```
-- will fail
+- this will fail
 
 change `SERVER_IMAGE` and rebuild the container from plain alpine:
 ```sh
 SERVER_IMAGE=alpine-postgres
 docker build -f Dockerfile.$SERVER_IMAGE -t $SERVER_IMAGE .
 ```
-run contained from the built image
+run container from the built image. NOTE: not exposing the port `5432`, will be connecting containrs over Docker network.
 ```sh
 SERVER_NAME=postgres-database
 docker run --name $SERVER_NAME -e POSTGRES_PASSWORD=postgres -d $SERVER_IMAGE
-
 ```
-run
+* run
 ```sh
-docker logs $SERVER_NAME
+docker logs -f $SERVER_NAME
 ```
-a few times before able to connect from PGAdmin (PGAdmin III on Xenial).
+wait for a few minutes until seeing the connect invite 
+NORE: the log entry from PGAdmin (PGAdmin III on Xenial) is unrelated
 
 ```text
 database system is ready to accept connections
 ```
-confirm the warming dialog
+confirm the warning dialog
 
 ![PG Admin III](https://github.com/sergueik/springboot_study/blob/master/basic-postgresql/screenshots/capture_pgadmin_iii.png)
 
-- turns out one cannot use PG Admin III wit Postresql 12.x, so for desktop testing one needs bionic or later
+- turns out one cannot use PG Admin III with Postresql __12.x__, so for desktop testing one needs __bionic__ __18.04__ or later release of Ubuntu
 
 * create database
 ```sh
 docker exec -it $SERVER_NAME psql -h localhost -p 5432 --username postgres -c "create database example"
 ```
+this will print 
+```text
+CREATE DATABASE
+```
 * drop table
 ```sh
 docker exec -it $SERVER_NAME psql -h localhost -p 5432 --username postgres --dbname example -c "drop table rest"
 ```
-* optionlly rebuild the java container
+NOTE: the table may not exist yet.
+* update the `application.properties` to use docker dns hostname:
+```java
+# for container deployed app
+# uncomment the following line
+spring.datasource.url=jdbc:postgresql://postgres-database:5432/example
+# for local run
+# uncomment the following line
+# spring.datasource.url=jdbc:postgresql://localhost:5432/example
 ```
+and repackage:
+```sh
+mvn clean package
+```
+* optionlly rebuild the java container
+```sh
 IMAGE=postgres-example
 docker build -f Dockerfile -t $IMAGE .
 ```
-* run application
+* run application in continer linked to the postgres container `$SERVER_NAME`:
 ```sh
 NAME=example-postgres
 docker run --name $NAME --link $SERVER_NAME -p 8080:8080 -d $IMAGE
+```
+NOTE: do not forget to stop the spring-boot run one earlier or get an error:
+```text
+Error response from daemon: driver failed programming external connectivity on endpoint example-postgres (4d734f6c5e503d0011591b22f027d77f537a3c97bd835bd0d339bc9c06e0054d): Error starting userland proxy: listen tcp 0.0.0.0:8080: bind: address already in use.
 ```
 * monitor logs:
 ```sh
@@ -214,9 +263,68 @@ docker logs $NAME
 * run aplication linked to postgres container
 * repeat the curl checks
 
-### TODO
+```
+curl -s -X PUT -H "Content-Type: application/json" -d '{"key":"example", "value":"new data"}' http://127.0.0.1:8080/rest/1 | jq '.'
+```
+```js
+{
+  "timestamp": 1665182943733,
+  "status": 500,
+  "error": "Internal Server Error",
+  "exception": "org.springframework.dao.EmptyResultDataAccessException",
+  "message": "Incorrect result size: expected 1, actual 0",
+  "path": "/rest/1"
+}
+```
+```sh
+curl -s http://127.0.0.1:8080/rest/ | jq '.'
+```
+```js
+[]
+```
 
-The current configuration  does now allow `application/x-www-form-urlencoded` form posts
+```sh
+curl -s -X POST -H "Content-Type: application/json" -d '{"key":"another example", "value":"some data"}' http://127.0.0.1:8080/rest | jq '.'
+```
+
+```js
+{
+  "id": 1,
+  "rand": 29,
+  "key": "another example",
+  "value": "some data"
+}
+
+```
+```sh
+curl -s http://127.0.0.1:8080/rest/ | jq '.'
+```
+```js
+[
+  {
+    "id": 1,
+    "rand": 29,
+    "key": "another example",
+    "value": "some data"
+  }
+]
+
+```
+```sh
+curl -s -X PUT -H "Content-Type: application/json" -d '{"key":"example", "value":"new data"}' http://127.0.0.1:8080/rest/1 | jq '.'
+```
+```js
+{
+  "id": 1,
+  "rand": 38,
+  "key": "example",
+  "value": "new data"
+}
+
+```
+### TODO:
+
+The current configuration of java app does now accept the `application/x-www-form-urlencoded` content-type POST requests:
 ```sh
 curl -X POST -H "application/x-www-form-urlencoded" -d "key=example&value=data&rand=123" 127.0.0.1:8080/rest/
 ```
@@ -265,6 +373,16 @@ docker image prune -f
 ```
 
 ### Install PG Admin
+* on Bionic can 
+```sh
+sudo apt-get install pgadmin4-desktop
+```
+this will install version __6.14__
+
+![PG Admin 4 Splash Screen](https://github.com/sergueik/springboot_study/blob/master/basic-postgresql/screenshots/capture-pg4_splash.png)
+
+if the application was installed, you may need to find out the last usedmaster password and unlock it:
+![PG Admin 4 Splash Screen](https://github.com/sergueik/springboot_study/blob/master/basic-postgresql/screenshots/capture-pg4_unlock_password.png)
 
 Follow the Debian system install [steps](https://www.pgadmin.org/download/pgadmin-4-apt/)
 ```sh
@@ -295,7 +413,8 @@ sudo apt-get install libpq5 pgadmin3-data postgresql-client postgresql-client-9.
 sudo dpkg -i pgadmin3*
 ```
 turns out one cannot connect to a newer PostgreSQL from older PG Admin
-TODO: One can install [docker container](https://hub.docker.com/r/dpage/pgadmin4/tags) with based web client pg admin 4 on xenial. Alternatiely pick a smalleralpine based [image](https://hub.docker.com/layers/huggla/sam-pgadmin/4.20/images/sha256-8867f605c49e9ccdbb52858decd15258c144c7b183dd2532964bed48bcb0dcc5?context=explore)	
+#### TODO 
+One can install [docker container](https://hub.docker.com/r/dpage/pgadmin4/tags) with based web client pg admin 4 on xenial. Alternatiely pick a smalleralpine based [image](https://hub.docker.com/layers/huggla/sam-pgadmin/4.20/images/sha256-8867f605c49e9ccdbb52858decd15258c144c7b183dd2532964bed48bcb0dcc5?context=explore)	
 
 ### See also
 
@@ -307,6 +426,8 @@ TODO: One can install [docker container](https://hub.docker.com/r/dpage/pgadmin4
   * [basics of installing postgresql in ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04)
   * [pgadmin](https://www.pgadmin.org/download/)
   * Cluster conriguration [instructions](https://linuxhint.com/postgresql_docker/)  for `dpage/pgadmin4` and `postgres`
+  * misc. PostgreSQL hint link [post](https://habr.com/ru/post/667428/) (in Russian)  
 
+  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
