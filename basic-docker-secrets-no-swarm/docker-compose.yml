@@ -1,0 +1,16 @@
+---
+version: "3.5"
+
+services:
+  demo_service:
+    image: alpine:3.9.5
+    entrypoint: "cat /run/secrets/secret_file"
+    secrets:
+      - secret_file
+    # can use with environment if hosted application recognizes one e.g.
+    # environment:
+    #  MYSQL_ROOT_PASSWORD_FILE: /run/secrets/secret_file
+secrets:
+  secret_file:
+    file: ./secret.txt
+
