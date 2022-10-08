@@ -30,7 +30,7 @@ downgraded to JDK 1.8. The  cleanup and replacement of undesired dependencies is
 mvn package
 ```
 ```sh
-java -cp target/pure-java-rest-api-1.0-SNAPSHOT.jar:target/lib/*  com.consulner.app.Application
+java -cp target/example.rest-api.jar:target/lib/* example.Application
 ```
 try to authentiate with the wrong password:
 ```
@@ -70,12 +70,11 @@ and return to the client
 ```
 try correct credentials:
 ```sh
-curl -v 192.168.0.64:8000/api/hello?name=Name -H 'Authorization: Basic YWRtaW46YWRtaW4='
+curl -s -v "192.168.0.64:8000/api/hello?group=Beatles&name=John&name=Paul&Nname=George&name=Ringo" -H 'Authorization: Basic YWRtaW46YWRtaW4='  
 ```
-get the parameter echo returned:
+get the first "name" parameter echoed:
 ```text
-curl -s -v 192.168.0.64:8000/api/hello?name=Name -H 'Authorization: Basic YWRtaW46YWRtaW4='
-Hello Name!* Uses proxy env variable no_proxy == '192.168.99.100'
+Hello John!* Uses proxy env variable no_proxy == '192.168.99.100'
 *   Trying 192.168.0.64:8000...
 * Connected to 192.168.0.64 (192.168.0.64) port 8000 (#0)
 > GET /api/hello?name=Name HTTP/1.1
@@ -92,6 +91,8 @@ Hello Name!* Uses proxy env variable no_proxy == '192.168.99.100'
 { [11 bytes data]
 * Connection #0 to host 192.168.0.64 left intact
 ```
+### Note:
+
 
 ### See Also
   * https://devops.stackexchange.com/questions/12101/secrets-in-docker-without-swarm
