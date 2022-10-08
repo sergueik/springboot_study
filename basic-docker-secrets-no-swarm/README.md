@@ -70,7 +70,7 @@ and return to the client
 ```
 try correct credentials:
 ```sh
-curl -s -v "192.168.0.64:8000/api/hello?group=Beatles&name=John&name=Paul&Nname=George&name=Ringo" -H 'Authorization: Basic YWRtaW46YWRtaW4='  
+curl -s -v "192.168.0.64:8000/api/hello?group=Beatles&name=John&name=Paul&Nname=George&name=Ringo" -H 'Authorization: Basic YWRtaW46YWRtaW4='
 ```
 get the first "name" parameter echoed:
 ```text
@@ -93,12 +93,32 @@ Hello John!* Uses proxy env variable no_proxy == '192.168.99.100'
 ```
 ### Note:
 
+current version hosts an in-memory write-only `User` repository:
+```java
+public class User {
+  String id;
+  String login;
+  String password;
+}
+```
+### TODO
+
+* get rid of __Vavr__ and __Lombok__  dependencies. Replace __jackson.databind.ObjectMapper__  with __Gson__
 
 ### See Also
+
   * https://devops.stackexchange.com/questions/12101/secrets-in-docker-without-swarm
   * [official  documentation](https://docs.docker.com/compose/compose-file/#secrets)
   * for a rocket science solution, see [hashicorp vault](https://www.vaultproject.io)
-
+  * another plain Java REST server [tutorial](https://dzone.com/articles/lightweight-embedded-java-rest-server-without-a-fr) and [demp project](https://github.com/StubbornJava/StubbornJava/tree/master/stubbornjava-examples/src/main/java/com/stubbornjava/examples/undertow/rest) - NOTE: non-maven source layout. Too much code
+  * https://www.debugbear.com/basic-auth-header-generator
+  * Lombok `@Value` annotation [examples](https://javabydeveloper.com/lombok-value-annotation-examples/)
+  * [documentation](https://www.baeldung.com/lombok-builder) on usage of Lombok `@Builder` annotation
+  * Lombok `@Builder` [examples](https://howtodoinjava.com/lombok/lombok-builder-annotation/)
+  * Lombok `@AllArgsConstructor` [examples](https://javabydeveloper.com/lombok-allargsconstructor-examples/)
+   * [introduction to Vavr](https://www.baeldung.com/vavr)
+   * [Vavr Tutorial](https://www.baeldung.com/vavr-tutorial)
 
 ### Author
+
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
