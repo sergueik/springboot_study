@@ -8,7 +8,6 @@ import com.sun.net.httpserver.HttpExchange;
 
 import example.errors.ApplicationExceptions;
 import example.errors.GlobalExceptionHandler;
-import io.vavr.control.Try;
 
 public abstract class Handler {
 
@@ -22,22 +21,36 @@ public abstract class Handler {
 	}
 
 	public void handle(HttpExchange exchange) {
-		Try.run(() -> execute(exchange))
-				.onFailure(thr -> exceptionHandler.handle(thr, exchange));
+		try {
+			execute(exchange);
+		} catch (Exception e) {
+			exceptionHandler.handle(e, exchange);
+		}
 	}
 
 	protected abstract void execute(HttpExchange exchange) throws Exception;
 
 	protected <T> T readRequest(InputStream is, Class<T> type) {
-		return Try.of(() -> objectMapper.readValue(is, type))
-				.getOrElseThrow(ApplicationExceptions.invalidRequest());
+		T result = null;
+		try {
+			result = objectMapper.readValue(is, type);
+		} catch (Exception e) {
+			throw ApplicationExceptions.invalidRequest().apply(e);
+		}
+		return result;
 	}
 
 	protected <T> byte[] writeResponse(T response) {
-		return Try.of(() -> objectMapper.writeValueAsBytes(response))
-				.getOrElseThrow(ApplicationExceptions.invalidRequest());
+		byte[] result = null;
+		try {
+			result = objectMapper.writeValueAsBytes(response);
+		} catch (Exception e) {
+			throw ApplicationExceptions.invalidRequest().apply(e);
+		}
+		return result;
 	}
 
+	@SuppressWarnings("restriction")
 	protected static Headers getHeaders(String key, String value) {
 		Headers headers = new Headers();
 		headers.set(key, value);

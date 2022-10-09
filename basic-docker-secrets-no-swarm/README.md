@@ -103,7 +103,7 @@ public class User {
 ```
 ### TODO
 
-* get rid of __Vavr__ and __Lombok__  dependencies. Replace __jackson.databind.ObjectMapper__  with __Gson__
+* get rid of __Lombok__  dependency. Replace __jackson.databind.ObjectMapper__  with __Gson__
 
 ### See Also
 
