@@ -25,6 +25,12 @@ docker container rm basic-docker-secrets-no-swarm_demo_service_1
 this example is a replica of the framework-less REST API in Java project covered in [tutorial](https://dev.to/piczmar_0/framework-less-rest-api-in-java-1jbl)
 and [repo](https://github.com/piczmar/pure-java-rest-api/tree/step-6)
 downgraded to JDK 1.8. The  cleanup and replacement of undesired dependencies is a work in progress
+
+The application jar is just 25K (not counting the jackson or gson dependencies jars):
+
+```sh
+-rw-rw-r-- 1 sergueik sergueik  25K Oct  9 20:05 example.rest-api.jar
+```
 ### Usage
 ```sh
 mvn package
@@ -119,6 +125,9 @@ public class User {
   * Lombok `@AllArgsConstructor` [examples](https://javabydeveloper.com/lombok-allargsconstructor-examples/)
   * [introduction to Vavr](https://www.baeldung.com/vavr)
   * [Vavr Tutorial](https://www.baeldung.com/vavr-tutorial)
+  * [guide](https://www.baeldung.com/a-guide-to-java-enums) to Java enums
+  * [guide](https://www.baeldung.com/java-enum-values) to manipilating values with Java enums
+  * [intro to Vault](https://www.baeldung.com/vault)
 
 ### Author
 
