@@ -115,9 +115,10 @@ public class User {
   * Lombok `@Value` annotation [examples](https://javabydeveloper.com/lombok-value-annotation-examples/)
   * [documentation](https://www.baeldung.com/lombok-builder) on usage of Lombok `@Builder` annotation
   * Lombok `@Builder` [examples](https://howtodoinjava.com/lombok/lombok-builder-annotation/)
+  * Builder Design Pattern in Java [tutorial](https://www.digitalocean.com/community/tutorials/builder-design-pattern-in-java)
   * Lombok `@AllArgsConstructor` [examples](https://javabydeveloper.com/lombok-allargsconstructor-examples/)
-   * [introduction to Vavr](https://www.baeldung.com/vavr)
-   * [Vavr Tutorial](https://www.baeldung.com/vavr-tutorial)
+  * [introduction to Vavr](https://www.baeldung.com/vavr)
+  * [Vavr Tutorial](https://www.baeldung.com/vavr-tutorial)
 
 ### Author
 

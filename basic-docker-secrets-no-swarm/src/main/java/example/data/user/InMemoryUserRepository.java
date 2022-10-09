@@ -12,6 +12,7 @@ public class InMemoryUserRepository implements UserRepository {
 
 	private static final Map USERS_STORE = new ConcurrentHashMap();
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public String create(NewUser newUser) {
 		String id = UUID.randomUUID().toString();

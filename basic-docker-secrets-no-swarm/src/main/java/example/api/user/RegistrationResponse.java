@@ -1,8 +1,14 @@
 package example.api.user;
 
-import lombok.Value;
-
-@Value
 class RegistrationResponse {
 	String id;
+
+	public String getId() {
+		return id;
+	}
+
+	public RegistrationResponse(String id) {
+		this.id = id;
+	}
+
 }
