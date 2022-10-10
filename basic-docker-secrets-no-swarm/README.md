@@ -32,14 +32,36 @@ mvn package
 ```sh
 java -cp target/example.rest-api.jar:target/lib/* example.Application
 ```
-try to authentiate with the wrong password:
+
+* do the health check
+```sh
+curl -s -v 192.168.0.64:8000/api/hello?name=Test 
 ```
+```text
+Hello Test!* Uses proxy env variable no_proxy == '192.168.99.100'
+*   Trying 127.0.0.1:8000...
+* Connected to localhost (127.0.0.1) port 8000 (#0)
+> GET /api/hello?name=Test HTTP/1.1
+> Host: localhost:8000
+> User-Agent: curl/7.74.0
+> Accept: */*
+>
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 200 OK
+< Date: Mon, 10 Oct 2022 03:00:38 GMT
+< Content-length: 11
+<
+{ [11 bytes data]
+* Connection #0 to host localhost left intact
+```
+* try to do registration but authentiate with the wrong password:
+```sh
 echo "admin:wrong password" | base64 -
 YWRtaW46d3JvbmcgcGFzc3dvcmQK
 ```
 then add header
-```
-curl -s -v 192.168.0.64:8000/api/hello?name=Test -H 'Authorization: Basic YWRtaW46d3JvbmcgcGFzc3dvcmQK'
+```sh
+curl -s -v -X POST localhost:8000/api/users/register -d '{"login": "test" , "password" : "test"}' -H 'Authorization: Basic YWRtaW46d3JvbmcgcGFzc3dvcmQK'
 ```
 the server will log
 ```text
@@ -50,46 +72,55 @@ and return to the client
 
 ```text
 * Uses proxy env variable no_proxy == '192.168.99.100'
-*   Trying 192.168.0.64:8000...
-* Connected to 192.168.0.64 (192.168.0.64) port 8000 (#0)
-> GET /api/hello?name=Test HTTP/1.1
-> Host: 192.168.0.64:8000
+*   Trying 127.0.0.1:8000...
+* Connected to localhost (127.0.0.1) port 8000 (#0)
+> POST /api/users/register HTTP/1.1
+> Host: localhost:8000
 > User-Agent: curl/7.74.0
 > Accept: */*
 > Authorization: Basic YWRtaW46d3JvbmcgcGFzc3dvcmQK
+> Content-Length: 39
+> Content-Type: application/x-www-form-urlencoded
 >
+} [39 bytes data]
+* upload completely sent off: 39 out of 39 bytes
 * Mark bundle as not supporting multiuse
 < HTTP/1.1 401 Unauthorized
 < Www-authenticate: Basic realm="myrealm"
-< Date: Sun, 09 Oct 2022 18:02:46 GMT
+< Date: Mon, 10 Oct 2022 03:01:45 GMT
 < Content-length: 0
 <
-* Connection #0 to host 192.168.0.64 left intact
+* Connection #0 to host localhost left intact
 ```
 retry with correct credentials:
 ```sh
-curl -s -v '192.168.0.64:8000/api/hello?group=Beatles&name=John&name=Paul&Nname=George&name=Ringo' -H 'Authorization: Basic YWRtaW46YWRtaW4='
+curl -s -v -X POST localhost:8000/api/users/register -d '{"login": "test" , "password" : "test"}' -H 'Authorization: Basic YWRtaW46YWRtaW4='
 ```
-get the first "name" parameter echoed:
+get the created `User` resource `id` echoed:
 ```text
-Hello John!* Uses proxy env variable no_proxy == '192.168.99.100'
-*   Trying 192.168.0.64:8000...
-* Connected to 192.168.0.64 (192.168.0.64) port 8000 (#0)
-> GET /api/hello?name=Name HTTP/1.1
-> Host: 192.168.0.64:8000
+{"id":"0d2b893b-d321-4985-abba-2d1b4b016c47"}* Uses proxy env variable no_proxy == '192.168.99.100'
+*   Trying 127.0.0.1:8000...
+* Connected to localhost (127.0.0.1) port 8000 (#0)
+> POST /api/users/register HTTP/1.1
+> Host: localhost:8000
 > User-Agent: curl/7.74.0
 > Accept: */*
 > Authorization: Basic YWRtaW46YWRtaW4=
+> Content-Length: 39
+> Content-Type: application/x-www-form-urlencoded
 >
+} [39 bytes data]
+* upload completely sent off: 39 out of 39 bytes
 * Mark bundle as not supporting multiuse
 < HTTP/1.1 200 OK
-< Date: Sat, 08 Oct 2022 21:37:12 GMT
-< Content-length: 11
+< Date: Mon, 10 Oct 2022 03:02:34 GMT
+< Transfer-encoding: chunked
+< Content-type: application/json
 <
-{ [11 bytes data]
-* Connection #0 to host 192.168.0.64 left intact
+{ [51 bytes data]
+* Connection #0 to host localhost left intact
 ```
-### Note:
+### Getting The User of Specific Login Data Back
 
 current version hosts an in-memory write-only `User` repository:
 ```java
@@ -99,10 +130,10 @@ public class User {
   String password;
 }
 ```
-### Getting Data Back
+
 * because the data is stored in memory need to post the user registration first
 ```sh
-curl -s -X POST localhost:8000/api/users/register -d '{"login": "test" , "password" : "test"}'
+curl -s -X POST localhost:8000/api/users/register -d '{"login": "test" , "password" : "test"}' -H 'Authorization: Basic YWRtaW46YWRtaW4='
 ```
 ```json
 {
@@ -110,7 +141,7 @@ curl -s -X POST localhost:8000/api/users/register -d '{"login": "test" , "passwo
 }
 ```
 ```sh
-curl -s -X GET localhost:8000/api/users/register?login=test
+curl -s -X GET localhost:8000/api/users/register?login=test -H 'Authorization: Basic YWRtaW46YWRtaW4='
 ```
 ```json
 {
@@ -119,7 +150,7 @@ curl -s -X GET localhost:8000/api/users/register?login=test
   "password": "test"
 }
 ```
-```
+
 ### TODO
 
 * Replace __jackson.databind.ObjectMapper__  with __Gson__

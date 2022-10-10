@@ -28,11 +28,9 @@ class Application {
 
 		RegistrationHandler registrationHandler = new RegistrationHandler(
 				getUserService(), getObjectMapper(), getErrorHandler());
-server.createContext("/api/users/register", registrationHandler::handle);
-		// server.createContext("/api/users/register", (exchange -> {
-		//	registrationHandler.handle(exchange);
-		//}));
-		HttpContext context = server.createContext("/api/hello", (exchange -> {
+		// NO AUTH
+		// can play role of health check
+		server.createContext("/api/hello", (exchange -> {
 
 			if ("GET".equals(exchange.getRequestMethod())) {
 				Map<String, List<String>> params = splitQuery(
@@ -52,6 +50,11 @@ server.createContext("/api/users/register", registrationHandler::handle);
 			}
 			exchange.close();
 		}));
+
+		HttpContext context = server.createContext("/api/users/register",
+				exchange -> {
+					registrationHandler.handle(exchange);
+				});
 		context.setAuthenticator(new BasicAuthenticator("myrealm") {
 			@Override
 			public boolean checkCredentials(String user, String pwd) {
@@ -62,7 +65,6 @@ server.createContext("/api/users/register", registrationHandler::handle);
 						&& pwd.replaceAll("\n", "").equals("admin");
 			}
 		});
-
 		server.setExecutor(null); // creates a default executor
 		server.start();
 	}
