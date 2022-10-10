@@ -10,16 +10,22 @@ import example.domain.user.UserRepository;
 
 public class InMemoryUserRepository implements UserRepository {
 
-	private static final Map USERS_STORE = new ConcurrentHashMap();
+	@SuppressWarnings("rawtypes")
+	private static final Map<String, User> USERS_STORE = new ConcurrentHashMap<String, User>();
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public String create(NewUser newUser) {
-		String id = UUID.randomUUID().toString();
-		User user = User.builder().id(id).login(newUser.getLogin())
-				.password(newUser.getPassword()).build();
-		USERS_STORE.put(newUser.getLogin(), user);
+	public String create(NewUser data) {
+		final String id = UUID.randomUUID().toString();
+		User user = User.builder().id(id).login(data.getLogin())
+				.password(data.getPassword()).build();
+		USERS_STORE.put(data.getLogin(), user);
 
 		return id;
+	}
+
+	@Override
+	public User get(String login) {
+		return USERS_STORE.get(login);
 	}
 }

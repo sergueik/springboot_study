@@ -1,6 +1,10 @@
 package example.api;
 
+// import lombok.AllArgsConstructor;
+// import lombok.Getter;
 
+// @AllArgsConstructor
+// @Getter
 public enum StatusCode {
 //@formatter:off
 	OK(200), 

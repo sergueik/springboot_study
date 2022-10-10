@@ -25,12 +25,6 @@ docker container rm basic-docker-secrets-no-swarm_demo_service_1
 this example is a replica of the framework-less REST API in Java project covered in [tutorial](https://dev.to/piczmar_0/framework-less-rest-api-in-java-1jbl)
 and [repo](https://github.com/piczmar/pure-java-rest-api/tree/step-6)
 downgraded to JDK 1.8. The  cleanup and replacement of undesired dependencies is a work in progress
-
-The application jar is just 25K (not counting the jackson or gson dependencies jars):
-
-```sh
--rw-rw-r-- 1 sergueik sergueik  25K Oct  9 20:05 example.rest-api.jar
-```
 ### Usage
 ```sh
 mvn package
@@ -45,7 +39,7 @@ YWRtaW46d3JvbmcgcGFzc3dvcmQK
 ```
 then add header
 ```
-curl -v 192.168.0.64:8000/api/hello?name=Marcin -H 'Authorization: Basic YWRtaW46d3JvbmcgcGFzc3dvcmQK'
+curl -s -v 192.168.0.64:8000/api/hello?name=Test -H 'Authorization: Basic YWRtaW46d3JvbmcgcGFzc3dvcmQK'
 ```
 the server will log
 ```text
@@ -53,13 +47,12 @@ checking authentication: user: "admin" password:"wrong password
 "
 ```
 and return to the client
+
 ```text
 * Uses proxy env variable no_proxy == '192.168.99.100'
 *   Trying 192.168.0.64:8000...
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Connected to 192.168.0.64 (192.168.0.64) port 8000 (#0)
-> GET /api/hello?name=Marcin HTTP/1.1
+* Connected to 192.168.0.64 (192.168.0.64) port 8000 (#0)
+> GET /api/hello?name=Test HTTP/1.1
 > Host: 192.168.0.64:8000
 > User-Agent: curl/7.74.0
 > Accept: */*
@@ -68,15 +61,14 @@ and return to the client
 * Mark bundle as not supporting multiuse
 < HTTP/1.1 401 Unauthorized
 < Www-authenticate: Basic realm="myrealm"
-< Date: Sat, 08 Oct 2022 21:23:43 GMT
+< Date: Sun, 09 Oct 2022 18:02:46 GMT
 < Content-length: 0
 <
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
 * Connection #0 to host 192.168.0.64 left intact
 ```
-try correct credentials:
+retry with correct credentials:
 ```sh
-curl -s -v "192.168.0.64:8000/api/hello?group=Beatles&name=John&name=Paul&Nname=George&name=Ringo" -H 'Authorization: Basic YWRtaW46YWRtaW4='
+curl -s -v '192.168.0.64:8000/api/hello?group=Beatles&name=John&name=Paul&Nname=George&name=Ringo' -H 'Authorization: Basic YWRtaW46YWRtaW4='
 ```
 get the first "name" parameter echoed:
 ```text
@@ -107,9 +99,30 @@ public class User {
   String password;
 }
 ```
+### Getting Data Back
+* because the data is stored in memory need to post the user registration first
+```sh
+curl -s -X POST localhost:8000/api/users/register -d '{"login": "test" , "password" : "test"}'
+```
+```json
+{
+  "id":"f78ae5e3-e8c2-4833-8da7-ed96d9ae022d"
+}
+```
+```sh
+curl -s -X GET localhost:8000/api/users/register?login=test
+```
+```json
+{
+  "id": "f78ae5e3-e8c2-4833-8da7-ed96d9ae022d",
+  "login": "test",
+  "password": "test"
+}
+```
+```
 ### TODO
 
-* get rid of __Lombok__  dependency. Replace __jackson.databind.ObjectMapper__  with __Gson__
+* Replace __jackson.databind.ObjectMapper__  with __Gson__
 
 ### See Also
 
@@ -127,7 +140,6 @@ public class User {
   * [Vavr Tutorial](https://www.baeldung.com/vavr-tutorial)
   * [guide](https://www.baeldung.com/a-guide-to-java-enums) to Java enums
   * [guide](https://www.baeldung.com/java-enum-values) to manipilating values with Java enums
-  * [intro to Vault](https://www.baeldung.com/vault)
 
 ### Author
 
