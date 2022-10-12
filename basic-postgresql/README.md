@@ -371,7 +371,14 @@ docker container prune -f
 docker image rm $IMAGE -f
 docker image prune -f
 ```
-
+### Testing Qeury
+* dummy run (echo)
+```sh
+curl "http://localhost:8080/rest/queryparam?ids=1,2,3,4,5&appids=foo,bar"
+```
+```text
+appids: foo,bar ids: 1,2,3,4,5
+```
 ### Install PG Admin
 * on Bionic can 
 ```sh

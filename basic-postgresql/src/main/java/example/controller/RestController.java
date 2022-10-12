@@ -5,11 +5,14 @@ import example.service.RestService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/rest")
@@ -17,6 +20,7 @@ public class RestController {
 	@Autowired
 	RestService restService;
 
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<BackendData> getById(@PathVariable("id") int id) {
 		BackendData data = restService.getBackendDataById(id);
@@ -49,4 +53,21 @@ public class RestController {
 		restService.deleteBackendDataById(id);
 		return new ResponseEntity<BackendData>(data, HttpStatus.OK);
 	}
+	
+	@GetMapping(value = "/queryparam", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> queryParam(
+			@RequestParam Optional<List<String>> appids,
+			@RequestParam Optional<List<Integer>> ids) {
+		String payload = null;
+		if ((appids.isPresent() && appids.get().size() > 0)
+				&& (ids.isPresent() && ids.get().size() > 0)) {
+			payload = String.format("appids: %s ids: %s",
+					String.join(",", appids.get()), String.join(",", ids.get().stream()
+							.map(o -> String.format("%d", o)).collect(Collectors.toList())));
+			return ResponseEntity.status(HttpStatus.OK).body(payload);
+		} else {
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("");
+		}
+	}
+
 }
