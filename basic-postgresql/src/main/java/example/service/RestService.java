@@ -11,4 +11,5 @@ public interface RestService {
 	void updateBackendData(BackendData rest, int id);
 	void deleteBackendDataById(int id);
 	int latestInput();
+	List<BackendData> queryByIds(List<Integer> ids);
 }

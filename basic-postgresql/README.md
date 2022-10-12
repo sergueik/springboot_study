@@ -379,6 +379,37 @@ curl "http://localhost:8080/rest/queryparam?ids=1,2,3,4,5&appids=foo,bar"
 ```text
 appids: foo,bar ids: 1,2,3,4,5
 ```
+in the application log will see the query result:
+```txt
+query returned: 5 rows
+```
+insert more data to query:
+```sh
+for CNT in $(seq 1 1 10); do
+curl -X POST -H "Content-Type: application/json" -d "{\"key\":\"some example $CNT\", \"value\":\"some data $CNT\"}" http://127.0.0.1:8080/rest | jq '.' ; done
+```
+this will print a series of entries inserted to the database
+```json
+{
+  "id": 14,
+  "rand": 13,
+  "key": "some example 9",
+  "value": "some data 9"
+}
+```
+```json
+{
+  "id": 15,
+  "rand": 7,
+  "key": "some example 10",
+  "value": "some data 10"
+}
+
+```
+by providing matching / out of range `ids` and observing the returned row counts one can be certain the condition is taken into account:
+```SQL
+"select * from rest  " + String.format("where id in (%s)", String.join(",", Arrays.asList(marks)));
+```
 ### Install PG Admin
 * on Bionic can 
 ```sh

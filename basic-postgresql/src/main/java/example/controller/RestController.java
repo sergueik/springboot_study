@@ -20,7 +20,6 @@ public class RestController {
 	@Autowired
 	RestService restService;
 
-	
 	@GetMapping("/{id}")
 	public ResponseEntity<BackendData> getById(@PathVariable("id") int id) {
 		BackendData data = restService.getBackendDataById(id);
@@ -36,12 +35,14 @@ public class RestController {
 	@PostMapping
 	public ResponseEntity<BackendData> addRest(@RequestBody BackendData data) {
 		restService.addBackendData(data);
-		BackendData data2 = restService.getBackendDataById(restService.latestInput());
+		BackendData data2 = restService
+				.getBackendDataById(restService.latestInput());
 		return new ResponseEntity<BackendData>(data2, HttpStatus.OK);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<BackendData> updateRest(@PathVariable("id") int id, @RequestBody BackendData data) {
+	public ResponseEntity<BackendData> updateRest(@PathVariable("id") int id,
+			@RequestBody BackendData data) {
 		restService.updateBackendData(data, id);
 		BackendData updatedData = restService.getBackendDataById(id);
 		return new ResponseEntity<BackendData>(updatedData, HttpStatus.OK);
@@ -53,7 +54,7 @@ public class RestController {
 		restService.deleteBackendDataById(id);
 		return new ResponseEntity<BackendData>(data, HttpStatus.OK);
 	}
-	
+
 	@GetMapping(value = "/queryparam", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> queryParam(
 			@RequestParam Optional<List<String>> appids,
@@ -64,6 +65,8 @@ public class RestController {
 			payload = String.format("appids: %s ids: %s",
 					String.join(",", appids.get()), String.join(",", ids.get().stream()
 							.map(o -> String.format("%d", o)).collect(Collectors.toList())));
+			List<BackendData> listData = restService.queryByIds(ids.get());
+			System.err.println("query returned: " + listData.size() + " rows");
 			return ResponseEntity.status(HttpStatus.OK).body(payload);
 		} else {
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("");

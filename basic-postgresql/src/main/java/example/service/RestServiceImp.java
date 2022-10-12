@@ -44,4 +44,7 @@ public class RestServiceImp implements RestService {
 		return backendDataDao.latestInput();
 	}
 
+	public List<BackendData> queryByIds(List<Integer> ids) {
+		return backendDataDao.queryByIds(ids);
+	}
 }
