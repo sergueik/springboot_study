@@ -40,5 +40,12 @@ indicating it is not packaged properly
 ```text
 The origin server did not find a current representation for the target resource or is not willing to disclose that one exists.
 ```
+### See Also
+
+  * https://github.com/Kroshkazavr/data_base_service
+  * java 7 (tomcat 8) spring mvc, jdbc, thymeleaf, postgresql [example project](https://github.com/whoscared/LibraryDemo)
+  * springboot thymeleaf postgresql [example project](https://github.com/arkenidar/spring-demo1)
+  * https://github.com/anicetkeric/Java-stored-procedures-postgresql
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

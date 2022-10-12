@@ -80,7 +80,7 @@ towork with tomcat 8.0 image use `java7` profile
 mvn -Pjava7 clean package
 ```
 and `Dockerfile.tomcat8.0`:
-```
+```sh
 export IMAGE='basic-servlet'
 export NAME='example-servlet'
 docker container rm -f $(docker container ls -a | grep $NAME | awk '{print $1}')
@@ -90,10 +90,48 @@ docker build -t $IMAGE -f Dockerfile.tomcat8.0 .
 docker run --name $NAME -p 8080:8080 -d $IMAGE
 ```
 
-can also use the `Dockerfile.tomcat8.5` instead of `Dockerfile` for java 1.8 / tomcat 8.5 test
+* repeat the tests:
 
+
+```sh
+curl -s http://$(hostname -i):8080/demo/hello
+```
+
+```text
+<!doctype html><html lang="en"><head><title>HTTP Status 500 – Internal Server Error</title>
+....
+<b>Root Cause</b></p><pre>java.lang.UnsupportedClassVersionError: example/HelloServlet : Unsupported major.minor version 52.0 (unable to load class example.HelloServlet)
+```
+To recover,
+also use the `Dockerfile.tomcat8.5` instead of `Dockerfile` for java 1.8 / tomcat 8.5 test
+
+
+```sh
+export IMAGE='basic-servlet'
+export NAME='example-servlet'
+docker container rm -f $(docker container ls -a | grep $NAME | awk '{print $1}')
+docker image prune -f
+docker image rm -f $IMAGE
+docker build -t $IMAGE -f Dockerfile.tomcat8.5 .
+docker run --name $NAME -p 8080:8080 -d $IMAGE
+```
+### NOTE
+
+Temporarily bundled with PostgreSQL JDBC with moderate exception handling. When testing make sure to pass an artgument:
+```sh
+curl -s http://$(hostname -i):8080/demo/hello?id=123
+
+```
+and check the container logs:
+```sh
+docker logs $NAME
+```
+```text
+HelloServlet with id = 123
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 
 
 
