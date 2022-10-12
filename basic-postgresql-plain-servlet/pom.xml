@@ -10,10 +10,10 @@
     <finalName>${project.groupId}.${project.artifactId}</finalName>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
     <junit.version>5.6.2</junit.version>
-    <postgresql.version>42.3.3</postgresql.version>
+    <postgresql.version>42.3.7</postgresql.version>
     <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
     <servlet-api.version>5.0.0</servlet-api.version>
     <!-- -->

@@ -136,3 +136,7 @@ mvn spring-boot:run
 
 ```
 
+### See Also
+
+  * https://github.com/egalli64/jd
+  * https://github.com/Kroshkazavr/data_base_service
