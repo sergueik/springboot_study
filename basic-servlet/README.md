@@ -113,24 +113,30 @@ docker container rm -f $(docker container ls -a | grep $NAME | awk '{print $1}')
 docker image prune -f
 docker image rm -f $IMAGE
 docker build -t $IMAGE -f Dockerfile.tomcat8.5 .
-docker run --name $NAME -p 8080:8080 -d $IMAGE
+DATABASE='postgres-database'
+docker start $DATABASE
+docker run --name $NAME --link $DATABASE -p 8080:8080 -d $IMAGE
 ```
 ### NOTE
 
 Temporarily bundled with PostgreSQL JDBC with moderate exception handling. When testing make sure to pass an artgument:
 ```sh
-curl -s http://$(hostname -i):8080/demo/hello?id=123
-
+curl -s http://$(hostname -i):8080/demo/hello?id=1
 ```
 and check the container logs:
 ```sh
 docker logs $NAME
 ```
 ```text
-HelloServlet with id = 123
+HelloServlet with id = 1
+```
+* verify
+```
+select id from "data" where id = ?
 ```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 
 
 
