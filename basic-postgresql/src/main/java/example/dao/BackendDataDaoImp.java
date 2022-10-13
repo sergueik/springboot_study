@@ -1,4 +1,7 @@
 package example.dao;
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,13 +11,22 @@ import org.springframework.transaction.annotation.Transactional;
 import example.model.BackendData;
 import example.model.BackendDataMapper;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @Transactional
 @Repository
 public class BackendDataDaoImp implements BackendDataDao {
+
+	private static final Logger logger = LogManager
+			.getLogger(BackendDataDaoImp.class);
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -58,10 +70,11 @@ public class BackendDataDaoImp implements BackendDataDao {
 				"SELECT currval(pg_get_serial_sequence('rest','id'))", Integer.class);
 	}
 
+	// NOTE:
+	// query(String sql, Object[] args, ResultSetExtractor<T> rse) - Deprecated.
+	// https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html
+
 	public List<BackendData> queryByIds(List<Integer> ids) {
-		// https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html
-		// query(String sql, Object[] args, ResultSetExtractor<T> rse)
-		// Deprecated.
 		int size = ids.size();
 		String marks[] = new String[size];
 		for (int cnt = 0; cnt != size; cnt++) {
@@ -75,60 +88,40 @@ public class BackendDataDaoImp implements BackendDataDao {
 		}
 		String SQL = "select * from rest where "
 				+ String.format("id in (%s)", String.join(",", Arrays.asList(marks)));
-
+		logger.info("sql: " + SQL);
 		return jdbcTemplate.query(SQL, args, new BackendDataMapper());
 	}
 
 	public List<BackendData> queryByIdsAndKeys(List<Integer> ids,
 			List<String> keys) {
-		// https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html
-		// query(String sql, Object[] args, ResultSetExtractor<T> rse)
-		// Deprecated.
 		int idSize = ids.size();
 		int keySize = keys.size();
-		Object[] args;
+		List<Object> args = new ArrayList<>();
 		String idMarks[] = new String[idSize];
-		int cnt;
-		for (cnt = 0; cnt != idSize; cnt++) {
-			idMarks[cnt] = "?";
-		}
-		args = new Object[idSize + keySize];
-		cnt = 0;
-		for (cnt = 0; cnt != idSize; cnt++) {
-			// for (int id : ids) {
-			args[cnt] = ids.get(cnt);
-			// cnt++;
-		}
+		Arrays.fill(idMarks, "?");
+		args.addAll(ids);
 
 		String keyMarks[] = new String[keySize];
-		for (cnt = 0; cnt != keySize; cnt++) {
-			keyMarks[cnt] = "?";
-		}
-
-		cnt = idSize;
-		for (cnt = 0; cnt != keySize; cnt++) {
-			// for (String key : keys) {
-			args[idSize + cnt] = keys.get(cnt);
-			// cnt++;
-		}
-
-		String SQL = "select id,key,value,rand from rest where "
+		Arrays.fill(keyMarks, "?");
+                // NOTE: decorating the mark with single quotes
+		// Arrays.fill(keyMarks, "'?'");
+		// leads to runtime error:
+		// org.postgresql.util.PSQLException: The column index is out of range: 7, number of columns: 6.
+		// NOTE: decorating the values in single quotes 
+		// args.addAll(idSize, keys.stream().map(o-> "'" + o + "'").collect(Collectors.toList()));
+		// leads to zero rows returned
+		args.addAll(idSize, keys);
+		String SQL = "select * from rest where "
 				+ String.format("id in (%s)", String.join(",", Arrays.asList(idMarks)))
 				+ " and " + String.format("key in (%s)",
 						String.join(",", Arrays.asList(keyMarks)));
 
-		System.err.println("args " + Arrays.asList(args));
-		return jdbcTemplate.query(SQL, args, new BackendDataMapper());
+		logger.info("sql: " + SQL);
+		logger.info("args: " + args);
+		// logged as:
+		// args [1, 2, 3, 5, 6, 7, example, example 1]
+		// NOTE: if an extra Arrays.asList applied the message format becomes
+		// args [[1, 2, 3, 5, 6, 7, example, example 1]]
+		return jdbcTemplate.query(SQL, args.toArray(), new BackendDataMapper());
 	}
-	/*
-	 org.springframework.jdbc.BadSqlGrammarException: 
-	 PreparedStatementCallback; 
-	 bad SQL grammar 
-	 [select id,key,value from rest where id in (?,?,?) and key in (?)]; 
-	 nested exception is org.postgresql.util.PSQLException: 
-	 ERROR: operator does not exist: integer = character varying
-	 Hint: No operator matches the given name and argument types. 
-	 You might need to add explicit type casts.
-	 Position: 40
-	 */
 }

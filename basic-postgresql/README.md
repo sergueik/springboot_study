@@ -426,6 +426,20 @@ args [1, 2, 3, 5, 6, 7, example, other]
 query by ids and keys returned: 6 rows
 ```
 
+### Troubleshooting
+
+```text
+	 org.springframework.jdbc.BadSqlGrammarException: 
+	 PreparedStatementCallback; 
+	 bad SQL grammar 
+	 [select id,key,value from rest where id in (?,?,?) and key in (?)]; 
+	 nested exception is org.postgresql.util.PSQLException: 
+	 ERROR: operator does not exist: integer = character varying
+	 Hint: No operator matches the given name and argument types. 
+	 You might need to add explicit type casts.
+	 Position: 40
+
+```
 ### Install PG Admin
 * on Bionic can 
 ```sh

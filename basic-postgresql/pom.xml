@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>postgresql</artifactId>
-  <version>0.8.0-SNAPSHOT</version>
+  <version>0.9.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>springboot-jdbc-postgres</name>
   <description>springboot postgresql jdbc</description>
@@ -41,6 +41,10 @@
       <artifactId>postgresql</artifactId>
       <version>${postgresql.version}</version>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-log4j2</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
