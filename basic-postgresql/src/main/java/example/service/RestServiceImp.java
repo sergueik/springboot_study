@@ -47,4 +47,9 @@ public class RestServiceImp implements RestService {
 	public List<BackendData> queryByIds(List<Integer> ids) {
 		return backendDataDao.queryByIds(ids);
 	}
+
+	public List<BackendData> queryByIdsAndKeys(List<Integer> ids,
+			List<String> keys) {
+		return backendDataDao.queryByIdsAndKeys(ids, keys);
+	}
 }

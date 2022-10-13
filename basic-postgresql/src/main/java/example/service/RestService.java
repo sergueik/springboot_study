@@ -12,4 +12,5 @@ public interface RestService {
 	void deleteBackendDataById(int id);
 	int latestInput();
 	List<BackendData> queryByIds(List<Integer> ids);
+	List<BackendData> queryByIdsAndKeys(List<Integer> ids, List<String> keys);
 }

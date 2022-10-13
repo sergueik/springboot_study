@@ -73,10 +73,62 @@ public class BackendDataDaoImp implements BackendDataDao {
 			args[cnt] = id;
 			cnt++;
 		}
-		String SQL = "select * from rest  " + String.format("where id in (%s)",
-				String.join(",", Arrays.asList(marks)));
+		String SQL = "select * from rest where "
+				+ String.format("id in (%s)", String.join(",", Arrays.asList(marks)));
 
 		return jdbcTemplate.query(SQL, args, new BackendDataMapper());
 	}
 
+	public List<BackendData> queryByIdsAndKeys(List<Integer> ids,
+			List<String> keys) {
+		// https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html
+		// query(String sql, Object[] args, ResultSetExtractor<T> rse)
+		// Deprecated.
+		int idSize = ids.size();
+		int keySize = keys.size();
+		Object[] args;
+		String idMarks[] = new String[idSize];
+		int cnt;
+		for (cnt = 0; cnt != idSize; cnt++) {
+			idMarks[cnt] = "?";
+		}
+		args = new Object[idSize + keySize];
+		cnt = 0;
+		for (cnt = 0; cnt != idSize; cnt++) {
+			// for (int id : ids) {
+			args[cnt] = ids.get(cnt);
+			// cnt++;
+		}
+
+		String keyMarks[] = new String[keySize];
+		for (cnt = 0; cnt != keySize; cnt++) {
+			keyMarks[cnt] = "?";
+		}
+
+		cnt = idSize;
+		for (cnt = 0; cnt != keySize; cnt++) {
+			// for (String key : keys) {
+			args[idSize + cnt] = keys.get(cnt);
+			// cnt++;
+		}
+
+		String SQL = "select id,key,value,rand from rest where "
+				+ String.format("id in (%s)", String.join(",", Arrays.asList(idMarks)))
+				+ " and " + String.format("key in (%s)",
+						String.join(",", Arrays.asList(keyMarks)));
+
+		System.err.println("args " + Arrays.asList(args));
+		return jdbcTemplate.query(SQL, args, new BackendDataMapper());
+	}
+	/*
+	 org.springframework.jdbc.BadSqlGrammarException: 
+	 PreparedStatementCallback; 
+	 bad SQL grammar 
+	 [select id,key,value from rest where id in (?,?,?) and key in (?)]; 
+	 nested exception is org.postgresql.util.PSQLException: 
+	 ERROR: operator does not exist: integer = character varying
+	 Hint: No operator matches the given name and argument types. 
+	 You might need to add explicit type casts.
+	 Position: 40
+	 */
 }

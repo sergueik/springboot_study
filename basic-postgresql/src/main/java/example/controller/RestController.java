@@ -57,16 +57,18 @@ public class RestController {
 
 	@GetMapping(value = "/queryparam", produces = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<String> queryParam(
-			@RequestParam Optional<List<String>> appids,
+			@RequestParam Optional<List<String>> keys,
 			@RequestParam Optional<List<Integer>> ids) {
 		String payload = null;
-		if ((appids.isPresent() && appids.get().size() > 0)
+		if ((keys.isPresent() && keys.get().size() > 0)
 				&& (ids.isPresent() && ids.get().size() > 0)) {
-			payload = String.format("appids: %s ids: %s",
-					String.join(",", appids.get()), String.join(",", ids.get().stream()
-							.map(o -> String.format("%d", o)).collect(Collectors.toList())));
+			payload = String.format("keys: %s ids: %s", String.join(",", keys.get()),
+					String.join(",", ids.get().stream().map(o -> String.format("%d", o))
+							.collect(Collectors.toList())));
 			List<BackendData> listData = restService.queryByIds(ids.get());
-			System.err.println("query returned: " + listData.size() + " rows");
+			System.err.println("query by ids returned: " + listData.size() + " rows");
+			listData = restService.queryByIdsAndKeys(ids.get(), keys.get());
+			System.err.println("query by ids and keys returned: " + listData.size() + " rows");
 			return ResponseEntity.status(HttpStatus.OK).body(payload);
 		} else {
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("");

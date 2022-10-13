@@ -374,7 +374,7 @@ docker image prune -f
 ### Testing Qeury
 * dummy run (echo)
 ```sh
-curl "http://localhost:8080/rest/queryparam?ids=1,2,3,4,5&appids=foo,bar"
+curl "http://localhost:8080/rest/queryparam?ids=1,2,3,4,5&keys=example"
 ```
 ```text
 appids: foo,bar ids: 1,2,3,4,5
@@ -385,8 +385,7 @@ query returned: 5 rows
 ```
 insert more data to query:
 ```sh
-for CNT in $(seq 1 1 10); do
-curl -X POST -H "Content-Type: application/json" -d "{\"key\":\"some example $CNT\", \"value\":\"some data $CNT\"}" http://127.0.0.1:8080/rest | jq '.' ; done
+for CNT in $(seq 1 1 10); do curl -X POST -H "Content-Type: application/json" -d "{\"key\":\"example $CNT\", \"value\":\"some data $CNT\"}" http://127.0.0.1:8080/rest | jq '.' ; done
 ```
 this will print a series of entries inserted to the database
 ```json
@@ -410,6 +409,23 @@ by providing matching / out of range `ids` and observing the returned row counts
 ```SQL
 "select * from rest  " + String.format("where id in (%s)", String.join(",", Arrays.asList(marks)));
 ```
+
+### Multiple Condition Query
+
+```sh
+curl "http://localhost:8080/rest/queryparam?ids=1,2,3,5,6,7&keys=example,example+1"
+```
+will echo to the curl console:
+```text
+keys: example,example 1 ids: 1,2,3,5,6,7
+```
+the springboot application server console log will show:
+```text
+query by ids returned: 6 rows
+args [1, 2, 3, 5, 6, 7, example, other]
+query by ids and keys returned: 6 rows
+```
+
 ### Install PG Admin
 * on Bionic can 
 ```sh
