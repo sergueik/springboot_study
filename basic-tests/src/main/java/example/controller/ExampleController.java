@@ -57,6 +57,34 @@ public class ExampleController {
 		return new Data(service.hello());
 	}
 
+	// NOTE:
+	// @RequestMapping( produces =
+	// MediaType.valueOf("application/pdf;charset=ASCII").toString())
+	// leads to compile time error:
+	// the value for annotation attribute RequestMapping.produces must be a
+	// constant expression
+	// see also: https://www.baeldung.com/spring-response-entity
+	@RequestMapping(method = RequestMethod.GET, value = "/charset", produces = {
+			MediaType.TEXT_PLAIN_VALUE })
+	public ResponseEntity<String> returnSpecificCharsetPayload() {
+		String data = "тест"; // TODO: localized string
+		HttpHeaders headers = new HttpHeaders();
+		// the default content-type is "text/plain; charset=us-ascii"
+		headers.add("Content-Type", "text/plain;charset=UTF-8");
+		// headers.add("Content-Type", "text/plain; charset=us-ascii");
+		return new ResponseEntity<String>(data, headers, HttpStatus.OK);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/charset2", produces = {
+			MediaType.TEXT_PLAIN_VALUE })
+	public ResponseEntity<String> returnGenericCharsetPayload() {
+		String data = "тест"; // TODO: localized string
+		HttpHeaders headers = new HttpHeaders();
+		// the content-type "text/plain; charset=us-ascii" is the default
+		headers.add("Content-Type", "text/plain;charset=us-ascii");
+		return new ResponseEntity<String>(data, headers, HttpStatus.OK);
+	}
+
 	@RequestMapping(method = RequestMethod.POST, value = "/post/json", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Data postJson(@RequestBody Data data) {
 		@SuppressWarnings("unused")
