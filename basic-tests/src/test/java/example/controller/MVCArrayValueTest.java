@@ -47,7 +47,7 @@ import example.Application;
 @WebMvcTest
 public class MVCArrayValueTest {
 
-	static String route = "/basic/params";
+	static String route = null;
 	final static String body = "Hello basic";
 
 	@Autowired
@@ -59,9 +59,10 @@ public class MVCArrayValueTest {
 
 	final static List<String> values = Arrays
 			.asList(new String[] { "a", "b", "c", "d" });
-	final static String args1 = String.join("&", values.stream()
-			.map(o -> String.format("values=%s", o)).collect(Collectors.toList()));
+	final static String args1 = "values=x";
 	final static String args2 = String.format("values=%s",
+			String.join(",", values));
+	final static String args3 = String.format("values=%s",
 			String.join(",", values));
 
 	@BeforeAll
@@ -70,13 +71,13 @@ public class MVCArrayValueTest {
 
 	@BeforeEach
 	public void beforeTest() throws Exception {
-		route = "/basic/params";
+		route = "/basic/array/params";
 		// TODO: find out what TCP port is listening during the test run
 		// Assumptions.assumeTrue(listening("localhost", 8085));
 
 	}
 
-	// examine HTTP status and body - missing request param
+	// examine HTTP status and body - missing request params
 	@Test
 	public void test1() throws Exception {
 
@@ -96,12 +97,18 @@ public class MVCArrayValueTest {
 				.andExpect(content().string(containsString("[\"a\",\"b\",\"c\"]")));
 	}
 
-	// examine HTTP status and body, value list argument
-	// NOTE: old Spring Framework - incorrectly parses and
-	// is losing some request params
+	// single value argument converted to a list
 	@Test
 	public void test3() throws Exception {
 		resultActions = mvc.perform(get(route + "?" + args1));
+		resultActions.andExpect(status().isOk());
+		resultActions.andExpect(content().string(containsString("[\"x\"]")));
+	}
+
+	// examine HTTP status and body, value list argument
+	@Test
+	public void test4() throws Exception {
+		resultActions = mvc.perform(get(route + "?" + args2));
 		resultActions.andExpect(status().isOk());
 
 		resultActions.andExpect(content()
@@ -109,16 +116,14 @@ public class MVCArrayValueTest {
 						values.get(0), values.get(1), values.get(2), values.get(3)))));
 	}
 
-	// NOTE: old Spring Framework - incorrectly parses and
-	// is losing some request params
 	@Test
-	public void test4() throws Exception {
-		resultActions = mvc.perform(get(route + "?" + args1));
+	public void test5() throws Exception {
+		resultActions = mvc.perform(get(route + "?" + args2));
 		resultActions.andExpect(jsonPath("$.*", hasSize(4)));
 	}
 
 	@Test
-	public void test5() throws Exception {
+	public void test6() throws Exception {
 		resultActions = mvc.perform(get(route + "?values=a,b,c"));
 		resultActions.andExpect(status().isOk());
 		resultActions
@@ -126,15 +131,15 @@ public class MVCArrayValueTest {
 	}
 
 	@Test
-	public void test6() throws Exception {
-		resultActions = mvc.perform(get(route + "?" + args2));
+	public void test7() throws Exception {
+		resultActions = mvc.perform(get(route + "?" + args3));
 		resultActions.andExpect(jsonPath("$.*", hasSize(4)));
 	}
 
 	@Disabled("wrong matcher ?")
 	@Test
-	public void test7() throws Exception {
-		resultActions = mvc.perform(get(route + "?" + args2));
+	public void test8() throws Exception {
+		resultActions = mvc.perform(get(route + "?" + args3));
 		resultActions.andExpect(jsonPath("$.*", arrayWithSize(equalTo(4))));
 	}
 
@@ -142,7 +147,7 @@ public class MVCArrayValueTest {
 	@Test
 	public void test9() throws Exception {
 		AssertionError thrown = assertThrows(AssertionError.class, () -> {
-			mvc.perform(get(route + "?" + args1).accept(MediaType.TEXT_PLAIN))
+			mvc.perform(get(route + "?" + args2).accept(MediaType.TEXT_PLAIN))
 					.andExpect(content().string(""));
 		});
 		assertThat("Expected Content type not set", thrown.getMessage(),
@@ -152,29 +157,29 @@ public class MVCArrayValueTest {
 	@Test
 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/406
 	public void test10() throws Exception {
-		mvc.perform(get(route + "?" + args1).accept(MediaType.TEXT_PLAIN))
+		mvc.perform(get(route + "?" + args2).accept(MediaType.TEXT_PLAIN))
 				.andExpect(content().string("")).andExpect(status().isNotAcceptable());
 	}
 
 	@Test
 	// NOTE: these expectations are Junit version sensitive
-	public void test8() throws Exception {
-		mvc.perform(get(route + "?" + args1).accept(MediaType.APPLICATION_JSON))
+	public void test11() throws Exception {
+		mvc.perform(get(route + "?" + args2).accept(MediaType.APPLICATION_JSON))
 				.andExpect(content().contentType("application/json"));
 	}
 
 	// examine value
 	// @Disabled("No value at JSON path \"$.length()\"")
 	@Test
-	public void test11() throws Exception {
-		mvc.perform(get(route + "?" + args1))
+	public void test12() throws Exception {
+		mvc.perform(get(route + "?" + args2))
 				.andExpect(jsonPath("$.length()", is(values.size())));
 	}
 
 	// examine value
 	@Test
-	public void test12() throws Exception {
-		mvc.perform(get(route + "?" + args2)).andExpect(jsonPath("@[1]", is("b")));
+	public void test13() throws Exception {
+		mvc.perform(get(route + "?" + args3)).andExpect(jsonPath("@[1]", is("b")));
 	}
 
 	// http://www.java2s.com/example/java-utility-method/http-port-find/isserverlistening-string-host-int-port-2d6d3.html

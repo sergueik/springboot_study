@@ -85,13 +85,16 @@ public class AcceptanceTest {
 
 	}
 
+	// @Disabled("Unexpected response for /basic Expected: is \"Hello test data\"
+	// but: was null")
 	@Test
 	public void test1() throws Exception {
 		Assumptions.assumeFalse(false);
 		url = "http://localhost:" + randomServerPort + route;
 		responseEntity = restTemplate.getForEntity(url, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getBody(), is(body));
+		assertThat("Unexpected response for " + route, responseEntity.getBody(),
+				is(body));
 	}
 
 	// https://www.baeldung.com/spring-resttemplate-post-json

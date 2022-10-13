@@ -1,6 +1,6 @@
 package example.controller;
 /**
- * Copyright 2021 Serguei Kouzmine
+ * Copyright 2021,2022 Serguei Kouzmine
  */
 
 import java.util.ArrayList;
@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -88,13 +89,31 @@ public class ExampleController {
 
 	}
 
-	@GetMapping(value = "/params", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/array/params", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<String>> paramArrayEcho(
 			@RequestParam Optional<List<String>> values) {
 		return (values.isPresent() && values.get().size() > 0)
 				? ResponseEntity.status(HttpStatus.OK).body(values.get())
 				: ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
 						.body(new ArrayList<String>());
+	}
+
+	@GetMapping(value = "/queryparam", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> queryParam(
+			@RequestParam Optional<List<String>> appids,
+			@RequestParam Optional<List<Integer>> ids) {
+		String payload = null;
+		if ((appids.isPresent() && appids.get().size() > 0)
+				&& (ids.isPresent() && ids.get().size() > 0)) {
+			payload = String.format("appids: %s ids: %s",
+					String.join(",", appids.get()), String.join(",", ids.get().stream()
+							.map(o -> String.format("%d", o)).collect(Collectors.toList())));
+			return ResponseEntity.status(HttpStatus.OK).body(payload);
+		} else {
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("");
+
+		}
+
 	}
 
 	// see also examples in
