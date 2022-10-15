@@ -33,6 +33,7 @@ public class QueryUtils {
 		} catch (ClassNotFoundException eConnection) {
 			eConnection.printStackTrace();
 		}
+		System.err.println("Connecting to " + URL);
 		return DriverManager.getConnection(URL, USER, PASSWORD);
 	}
 

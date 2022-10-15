@@ -1,44 +1,72 @@
 ### Info
 
-replica ot plain Servlet based REST service backed by PostgreSQL JDBC [project](https://github.com/markuszver/skytecapp)
+derivative ot plain Servlet based REST service backed by PostgreSQL JDBC [project](https://github.com/markuszver/skytecapp). Replaced `jakarta.servlet-api` (which was not working for me)  with `javax.servlet.javax.servlet-api`. Added multiparam JDBC method
+
 ### Usage
+* package application
 ```sh
 mvn package
 ```
+* stop the database server possibly running on host
 ```sh
-docker build -t test-p -f Dockerfile  .
+sudo /etc/init.d/postgresql stop
 ```
+```text
+[ ok ] Stopping postgresql (via systemctl): postgresql.service.
+```
+* start container with alpine postgres
 ```sh
-docker run -p 8080:8080 -d test-p
+DATABASE=postgres-database
+docker container start $DATABASE
+```
+* create database and table
+
+```sh
+psql -h localhost -p 5432 --username postgres --password example
+```
+```SQL
+CREATE TABLE IF NOT EXISTS data ( id serial PRIMARY KEY NOT NULL, key varchar(100) NOT NULL, value varchar(250) NOT NULL, rand smallint NOT NULL);
+```
+* insert some data
+
+```SQL
+INSERT INTO data (key,value,rand) VALUES ('foo 1', 'bar',42), ('foo 2', 'bat, 42), ('foo 3', 'baz',42) ;
+```
+```SQL
+SELECT * FROM data;
+```
+```text
+ id |  key  | value | rand
+----+-------+-------+------
+  1 | foo 1 | bar   |   42
+  2 | foo 2 | bat   |   42
+  3 | foo 3 | baz   |   42
+```
+* package the war into tomcat __8.5__
+```sh
+IMAGE=postgres-servlet
+docker build -t $IMAGE -f Dockerfile .
+```
+* run linked
+```sh
+NAME=postgres-servlet
+docker run --name $NAME --link $DATABASE -p 8080:8080 -d $IMAGE
 ```
 
-### Issues
-
-when trying to access servlet
+* test
 ```sh
-curl http://192.168.0.64:8080/demo/new-transaction
+curl http://192.168.0.64:8080/demo/hello-servlet
 ```
-get an exception occationally
-```text
-java.lang.ClassNotFoundException: jakarta.servlet.http.HttpServlet
-	org.apache.catalina.loader.WebappClassLoaderBase.loadClass(WebappClassLoaderBase.java:1364)
-	org.apache.catalina.loader.WebappClassLoaderBase.loadClass(WebappClassLoaderBase.java:1185)
-	java.lang.ClassLoader.defineClass1(Native Method)
-	java.lang.ClassLoader.defineClass(ClassLoader.java:763)
-	java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)
-	org.apache.catalina.loader.WebappClassLoaderBase.findClassInternal(WebappClassLoaderBase.java:2401)
-	org.apache.catalina.loader.WebappClassLoaderBase.findClass(WebappClassLoaderBase.java:859)
-	org.apache.catalina.loader.WebappClassLoaderBase.loadClass(WebappClassLoaderBase.java:1333)
-	org.apache.catalina.loader.WebappClassLoaderBase.loadClass(WebappClassLoaderBase.java:1185)
-	org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:493)
-	org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:81)
-	org.apache.catalina.valves.AbstractAccessLogValve.invoke(AbstractAccessLogValve.java:660)
-	org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+* monitor container logs
+
+```sh
+docker logs -f $NAME
 ```
-indicating it is not packaged properly
- and  most of the time 404 indicating the servlet is not mapped correctly
-```text
-The origin server did not find a current representation for the target resource or is not willing to disclose that one exists.
+### Cleanup
+```sh
+docker container rm -f $NAME
+docker image rm -f $IMAGE
+docker image prune -f
 ```
 ### See Also
 
