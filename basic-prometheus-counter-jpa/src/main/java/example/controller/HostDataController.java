@@ -30,13 +30,21 @@ public class HostDataController {
 	private static final Logger logger = LogManager
 			.getLogger(HostDataController.class);
 
+	@Value("#{'${example.booleans}'.split(',')}")
+	private boolean[] booleansFlagArray;
+
 	@Value("#{${example.metricExtractors}}")
 	private Map<String, String> metricExtractors;
 
 	@Value("#{'${example.metricNames}'.split(',')}")
 	private String[] metricNames;
 
-	private static final boolean debug = false;
+	// NOTE: no need to split: parses fine without it
+	// @Value("#{'${example.booleans}'.split(',')}")
+	@Value("#{'${example.booleans}'}")
+	private List<Boolean> booleansFlagsList;
+
+	private static final boolean debug = true;
 
 	@ResponseBody
 	@GetMapping(value = "hostdata/{hostname}", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -48,7 +56,12 @@ public class HostDataController {
 		hostData.setMetrics(Arrays.asList(metricNames));
 		hostData.setMetricExtractors(metricExtractors);
 		hostData.readData();
-
+		if (debug) {
+			logger.info("booleansFlagArray: {}", booleansFlagArray);
+			// booleansFlagArray: [true, true, true, false, true]
+			logger.info("booleansFlagsList: {}", booleansFlagsList);
+			// booleansFlagsList: [true, true, true, false, true]
+		}
 		Map<String, String> data = hostData.getData();
 		Map<String, Object> result = new HashMap<>();
 		result.put("hostname", hostname);

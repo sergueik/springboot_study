@@ -1,4 +1,10 @@
 package example.controller;
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
+
+import java.io.IOException;
+import java.io.InputStream;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -6,9 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-/**
- * Copyright 2022 Serguei Kouzmine
- */
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,13 +23,20 @@ public class AppController {
 	@GetMapping(produces = MediaType.TEXT_HTML_VALUE)
 	@ResponseBody
 	public ResponseEntity<String> index() {
-		String body = "<html>" + "<head>" + "</head>" + "<body>"
-				+ "<a href=\"./rawmetrics\"\">Application hosted metrics (untyped tag query)</a><br/>"
-				+ "<a href=\"./typedmetrics\"\">Application hosted metrics (strongly typed tag query)</a><br/>"
-				+ "<a href=\"./servers\"\">Server inventory DB query</a><br/>"
-				+ "<a href=\"./data\"\"> Untyped Server inventory DB query</a><br/>"
-				+ "</body>" + "</html>";
+		String body = getScriptContent("index.html");
 		return ResponseEntity.ok().body(body);
+	}
+
+	protected static String getScriptContent(String scriptName) {
+		try {
+			final InputStream stream = AppController.class.getClassLoader()
+					.getResourceAsStream(scriptName);
+			final byte[] bytes = new byte[stream.available()];
+			stream.read(bytes);
+			return new String(bytes, "UTF-8");
+		} catch (IOException e) {
+			throw new RuntimeException(scriptName);
+		}
 	}
 
 }

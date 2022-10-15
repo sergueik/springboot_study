@@ -1,7 +1,4 @@
 package example.dao;
-/**
- * Copyright 2022 Serguei Kouzmine
- */
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -103,14 +98,8 @@ public class BackendDataDaoImp implements BackendDataDao {
 
 		String keyMarks[] = new String[keySize];
 		Arrays.fill(keyMarks, "?");
-                // NOTE: decorating the mark with single quotes
-		// Arrays.fill(keyMarks, "'?'");
-		// leads to runtime error:
-		// org.postgresql.util.PSQLException: The column index is out of range: 7, number of columns: 6.
-		// NOTE: decorating the values in single quotes 
-		// args.addAll(idSize, keys.stream().map(o-> "'" + o + "'").collect(Collectors.toList()));
-		// leads to zero rows returned
 		args.addAll(idSize, keys);
+
 		String SQL = "select * from rest where "
 				+ String.format("id in (%s)", String.join(",", Arrays.asList(idMarks)))
 				+ " and " + String.format("key in (%s)",

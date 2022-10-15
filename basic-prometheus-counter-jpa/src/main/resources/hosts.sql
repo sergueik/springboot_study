@@ -2,7 +2,10 @@
 
 -- SQLite
 DROP TABLE IF EXISTS "hosts";
-CREATE TABLE "hosts" ( `id` INTEGER, `hostname` TEXT NOT NULL, `appid` TEXT, `environment` TEXT, `datacenter` TEX, `addtime` TEXT, PRIMARY KEY(`id`) )
+CREATE TABLE "hosts" ( `id` INTEGER, `hostname` TEXT NOT NULL, `appid` TEXT, `environment` TEXT, `datacenter` TEXT, `addtime` TEXT, PRIMARY KEY(`id`) )
+-- MYSQL (sans timestamp)
+CREATE TABLE `hosts` ( `id` INT AUTO_INCREMENT, `hostname`  VARCHAR(40) NOT NULL, `appid`  VARCHAR(40), `environment`  VARCHAR(40), `datacenter`  VARCHAR(40), PRIMARY KEY(`id`) );
+
 
 -- SQL
 exec sys.sp_readerrorlog 0, 1, 'listening';
@@ -22,6 +25,7 @@ addtime datetime not null default current_timestamp);
 -- Insert Sample data
 insert into hosts(hostname,appid,environment,datacenter) values('hostname10','redis','qa','west');
 insert into hosts(hostname,appid,environment,datacenter) values('hostname11','redis','prod','east');
+insert into hosts(hostname,appid,environment,datacenter) values('hostname12','mongo','qa','west');
 
 -- overlap with YAML cluster.yml
 insert into hosts(hostname,appid,environment,datacenter) values('hostname03','redis','prod','east');
