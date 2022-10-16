@@ -1,0 +1,10 @@
+GET http://localhost:8080/test?text=abc123
+Accept: application/json
+
+###
+GET http://localhost:8080/test?text=dfg123
+Accept: application/json
+
+###
+GET http://localhost:8080/test?text=klm123
+Accept: application/json
