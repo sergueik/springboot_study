@@ -1,0 +1,17 @@
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Phone</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="person in people">
+			<td>
+			<a href="/#/view/{{$index}}">{{person.fname}} {{person.lname}}</a>
+			
+			</td>
+			<td>{{person.tel}}</td>
+		</tr>
+	</tbody>
+</table>
