@@ -113,4 +113,33 @@ public class BackendDataDaoImp implements BackendDataDao {
 		// args [[1, 2, 3, 5, 6, 7, example, example 1]]
 		return jdbcTemplate.query(SQL, args.toArray(), new BackendDataMapper());
 	}
+	// the filter on the Java side is bandwidth wasteful
+	// see the discussion in
+	// https://qna.habr.com/q/1210502?e=13146198#clarification_1598732
+	// (in Russian)
+	/*
+	 public List<ContentDB> findAllByTag (final String tag){
+	      List<ContentDB>contentDBList = new ArrayList<>();
+
+	      Iterable<ContentDB> contentDBS = contentRepository.findAll();
+	      contentDBS.forEach(contentDB -> {
+	          Set<Tags> tagsSet = contentDB.getTagsSet();
+	          tagsSet.stream().forEach(tags -> {
+	              if(tags.getTag().equals(tag))
+	                  contentDBList.add(contentDB);
+	          });
+	      });
+	     return contentDBList;
+	  }
+	 */
+	// The other option is to use vendor specific features:
+	// MySQL: REGEXP LIKE
+	// SELECT * FROM rest WHERE key REGEXP '(example 1|example 2|example3)';
+	// SQLite - REGEXP, provided the extension is installed first
+	// https://stackoverflow.com/questions/5071601/how-do-i-use-regex-in-a-sqlite-query
+	// https://dev.mysql.com/doc/refman/8.0/en/regexp.html#operator_regexp
+	// PostgreSQL SIMILAR TO
+	// SELECT * FROM rest WHERE key SIMILAR TO '(example 1|example 2|example3)';
+	// https://www.postgresql.org/docs/current/functions-matching.html
 }
+
