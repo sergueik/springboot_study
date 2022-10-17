@@ -3,6 +3,11 @@ package example.controller;
  * Copyright 2021,2022 Serguei Kouzmine
  */
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -14,6 +19,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +39,7 @@ import example.service.ExampleService;
 @RequestMapping("/basic")
 public class ExampleController {
 
+	private boolean debug = false;
 	// see also about writing SpringBoot application tests without relying on
 	// SpringBoot field injection
 	// https://reflectoring.io/unit-testing-spring-boot/
@@ -64,27 +72,88 @@ public class ExampleController {
 	// the value for annotation attribute RequestMapping.produces must be a
 	// constant expression
 	// see also: https://www.baeldung.com/spring-response-entity
-	@RequestMapping(method = RequestMethod.GET, value = "/charset", produces = {
+	@RequestMapping(method = RequestMethod.GET, value = "/relevant_charset", produces = {
 			MediaType.TEXT_PLAIN_VALUE })
-	public ResponseEntity<String> returnSpecificCharsetPayload() {
+	public ResponseEntity<String> returnRelevantCharsetPayload() {
 		String data = "тест"; // TODO: localized string
 		HttpHeaders headers = new HttpHeaders();
-		// the default content-type is "text/plain; charset=us-ascii"
+		// NOTE: default Content-Type is "text/plain; charset=us-ascii"
 		headers.add("Content-Type", "text/plain;charset=UTF-8");
-		// headers.add("Content-Type", "text/plain; charset=us-ascii");
 		return new ResponseEntity<String>(data, headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/charset2", produces = {
+	@RequestMapping(method = RequestMethod.GET, value = "/wrong_charset", produces = {
 			MediaType.TEXT_PLAIN_VALUE })
 	public ResponseEntity<String> returnGenericCharsetPayload() {
 		String data = "тест"; // TODO: localized string
 		HttpHeaders headers = new HttpHeaders();
-		// the content-type "text/plain; charset=us-ascii" is the default
+		// NOTE: "Content-Type: text/plain; charset=us-ascii" is the default
 		headers.add("Content-Type", "text/plain;charset=us-ascii");
 		return new ResponseEntity<String>(data, headers, HttpStatus.OK);
 	}
 
+	// for downloading resources of the app
+	// see also:
+	// https://o7planning.org/11765/spring-boot-file-download
+	// http://localhost:8085/basic/download/resource?resourceFileName=test.txt
+	@RequestMapping(method = RequestMethod.GET, value = "/download/resource", produces = {
+			MediaType.APPLICATION_OCTET_STREAM_VALUE })
+	public ResponseEntity<?> downloadResource(
+			@RequestParam(defaultValue = "test.txt") String resourceFileName) {
+		// final String resourceFileName = "test.txt";
+		Resource resource = null;
+		try {
+			URI uri = this.getClass().getClassLoader().getResource(resourceFileName)
+					.toURI();
+			resource = new UrlResource(uri);
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.header(HttpHeaders.CONTENT_DISPOSITION, String
+							.format("attachment; filename=\"%s\"", resource.getFilename()))
+					.body(resource);
+
+		} catch (NullPointerException | IOException | URISyntaxException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	// for files hosted on the system
+	// alternative path value: "/download/file/{fileName:.+}"
+	// see also:
+	// https://www.javainuse.com/spring/boot-file-download
+	@RequestMapping(method = RequestMethod.GET, value = "/download/file", produces = {
+			MediaType.APPLICATION_OCTET_STREAM_VALUE })
+	public ResponseEntity<?> downloadFile() {
+		// NOTE: need an absolute path
+		Path filePath = Paths.get(String.join(System.getProperty("file.separator"),
+				System.getProperty("user.dir"), "src", "main", "resources",
+				"test.txt"));
+		// TODO:
+		// File file = new File(filePath)
+		// Contet-Length
+		// .contentLength(file.length())
+		//
+		Resource resource = null;
+		try {
+			resource = new UrlResource(filePath.toUri());
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.header(HttpHeaders.CONTENT_DISPOSITION, String
+							.format("attachment; filename=\"%s\"", resource.getFilename()))
+					.body(resource);
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("file not found: " + filePath);
+			// NOTE: code compiles but the body is ignored
+		}
+	}
+	// see also:
+	// testing upload
+	// https://medium.com/red6-es/uploading-a-file-with-a-filename-with-spring-resttemplate-8ec5e7dc52ca
+	// https://blogs.perficient.com/2022/07/12/api-testing-multipartfile-upload-using-java-spring-framework/
+
+	// see also:
+	// testing download (not ideal, checks body)
+	// https://dev.to/tolgee_i18n/testing-file-download-in-spring-boot-3afc
+	
 	@RequestMapping(method = RequestMethod.POST, value = "/post/json", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Data postJson(@RequestBody Data data) {
 		@SuppressWarnings("unused")
@@ -92,7 +161,6 @@ public class ExampleController {
 		// TODO: return result leads to postJSONTest failure
 		// return result;
 		return data;
-
 	}
 
 	// see also: https://qna.habr.com/q/1079162
@@ -163,6 +231,26 @@ public class ExampleController {
 		}
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(service.handleData(new Data(param.getFirst("name"))));
+	}
+
+	// NOTE: getResourceURI may not work with standalone or web hosted
+	// application
+	public String getResourceURI(String resourceFileName) {
+		//
+		try {
+			if (debug) {
+				System.err.println("Getting resource URI for: " + resourceFileName);
+			}
+
+			URI uri = this.getClass().getClassLoader().getResource(resourceFileName)
+					.toURI();
+			if (debug) {
+				System.err.println("Resource URI: " + uri.toString());
+			}
+			return uri.toString();
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static class Data {

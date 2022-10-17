@@ -73,7 +73,7 @@ public class PayloadCharsetTest {
 	// correct charset
 	@Test
 	public void test1() throws Exception {
-		route = "/basic/charset";
+		route = "/basic/relevant_charset";
 		url = "http://localhost:" + randomServerPort + route;
 		responseEntity = restTemplate.getForEntity(url, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
@@ -89,7 +89,7 @@ public class PayloadCharsetTest {
 	// incorrect charset encoding
 	@Test
 	public void test2() throws Exception {
-		route = "/basic/charset2";
+		route = "/basic/wrong_charset";
 		url = "http://localhost:" + randomServerPort + route;
 		responseEntity = restTemplate.getForEntity(url, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
