@@ -67,4 +67,7 @@ public class RestServiceImp implements RestService {
 		return backendDataDao.queryRegexpOfSetIds(ids);
 	}
 
+	public List<BackendData> queryRegexpOfSetKeys(List<String> keys) {
+		return backendDataDao.queryRegexpOfSetKeys(keys);
+	}
 }

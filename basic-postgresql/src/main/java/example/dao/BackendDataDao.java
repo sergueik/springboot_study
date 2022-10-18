@@ -17,7 +17,9 @@ public interface BackendDataDao {
 	// PostgreSQL only
 	List<BackendData> querySimilarToSetIds(List<Integer> ids);
 	List<BackendData> querySimilarToSetKeys(List<String> keys);
+	
 	// MySQL only
 	List<BackendData> queryRegexpOfSetIds(List<Integer> ids);
+	List<BackendData> queryRegexpOfSetKeys(List<String> keys);
 }
 

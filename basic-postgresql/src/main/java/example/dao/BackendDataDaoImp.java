@@ -149,6 +149,22 @@ public class BackendDataDaoImp implements BackendDataDao {
 				new BackendDataMapper());
 	}
 
+	public List<BackendData> queryRegexpOfSetKeys(List<String> keys) {
+		String args[] = new String[1];
+		args[0] = String.format("(%s)", String.join("|", keys));
+		// NOTE: have to use quotes ` with MySQL JDBC template string:
+		// cannot have bare column named "key" without quoting
+		// would get an exception in runtime :
+		// with root cause
+		// java.sql.SQLSyntaxErrorException:
+		// You have an error in your SQL syntax;
+		// check the manual that corresponds to your MySQL server version
+		// for the right syntax to use near
+		// 'key REGEXP '(example 1|example 2|example 3)''
+		return jdbcTemplate.query("select * from rest where `key` REGEXP ?", args,
+				new BackendDataMapper());
+	}
+
 	// PostgreSQL SIMILAR TO
 	// SELECT * FROM rest WHERE key SIMILAR TO '(example 1|example 2|example3)';
 	// https://www.postgresql.org/docs/current/functions-matching.html
@@ -164,7 +180,11 @@ public class BackendDataDaoImp implements BackendDataDao {
 	public List<BackendData> querySimilarToSetKeys(List<String> keys) {
 		String args[] = new String[1];
 		args[0] = String.format("(%s)", String.join("|", keys));
+		// NOTE: cannot use ` within PostgreSQL JDBC template string:
+		// org.postgresql.util.PSQLException: ERROR: operator does not exist: `
+		// character varying
 		return jdbcTemplate.query("select * from rest where key SIMILAR TO ?", args,
 				new BackendDataMapper());
 	}
 }
+

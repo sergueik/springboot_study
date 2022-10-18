@@ -515,10 +515,17 @@ sudo dpkg -i pgadmin3*
 ```
 turns out one cannot connect to a newer PostgreSQL from older PG Admin
 
-### Vendor-Specific queries
+### Vendor-Specific Query DSL
 
+#### Postgresql
 the request
 `http://localhost:8080/rest/similar/keys?keys=example+1,example+2,example+3`
+get queried as
+```java
+jdbcTemplate.query("select * from rest where id SIMILAR TO ?",
+                   new String[]{ String.format("(%s)", String.join("|", keys)) },
+                   new BackendDataMapper());
+```
 produces 
 ```text
 keys: example 1,example 2,example 3
@@ -528,18 +535,37 @@ id=22,key=example 2,value=some data 2,
 id=23,key=example 3,value=some data 3
 ]
 ```
+assuming that entries with the `key` `example 1`, `example 2`, `example 3` were added to the database
 
-NOTE: no similar query can be  constructed against ids:
+NOTE: no way to use similar query against numeric column:
 the attempt to
 `http://localhost:8080/rest/similar/ids?ids=1,2,3,4,5`
 leads to exception
 ```text
  org.springframework.jdbc.BadSqlGrammarException: 
  PreparedStatementCallback; 
- bad SQL grammar [select * from rest where id SIMILAR TO ?]; 
+ bad SQL grammar [select * from rest where key SIMILAR TO ?]; 
  nested exception is org.postgresql.util.PSQLException: 
  ERROR: operator does not exist: integer ~ text Hint: No operator matches the given name and argument types. You might need to add explicit type casts.
 
+```
+#### MySQL
+
+the request
+`http://localhost:8080/rest/similar/keys?keys=example+1,example+5,example+3`
+get fulfilled as
+```java
+jdbcTemplate.query("select * from rest where `key` REGEXP ?",
+                   new String[]{ String.format("(%s)", String.join("|", keys)) },
+                   new BackendDataMapper());
+```
+after traversing the usual call chain: `example.controller.RestController`, `example.service.RestService`, `example.service.RestServiceImp`,`example.dao.BackendDataDao`, `example.dao.BackendDataDaoImp`
+
+
+and produces the result:
+```text
+keys: example 1,example 5,example 3
+[id=5,key=example 1,value=product 1, id=7,key=example 3,value=product 3]
 ```
 #### TODO 
 One can install [docker container](https://hub.docker.com/r/dpage/pgadmin4/tags) with based web client pg admin 4 on xenial. Alternatiely pick a smalleralpine based [image](https://hub.docker.com/layers/huggla/sam-pgadmin/4.20/images/sha256-8867f605c49e9ccdbb52858decd15258c144c7b183dd2532964bed48bcb0dcc5?context=explore)	

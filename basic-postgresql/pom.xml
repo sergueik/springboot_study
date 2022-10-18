@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>postgresql</artifactId>
-  <version>0.10.0-SNAPSHOT</version>
+  <version>0.11.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>springboot-jdbc-postgres</name>
   <description>springboot postgresql jdbc</description>
@@ -19,6 +19,7 @@
     <java.version>1.8</java.version>
     <spring-jdbc.version>4.3.10.RELEASE</spring-jdbc.version>
     <postgresql.version>42.3.7</postgresql.version>
+    <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <dependencies>
@@ -35,6 +36,12 @@
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>${postgresql.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>${mysql-connector-java.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>

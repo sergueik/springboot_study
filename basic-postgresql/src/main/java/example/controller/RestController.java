@@ -108,8 +108,11 @@ public class RestController {
 		String payload = null;
 		if (keys.isPresent() && keys.get().size() > 0) {
 
-			List<BackendData> listData = restService
-					.querySimilarToSetKeys(keys.get());
+			// List<BackendData> listData =
+			// restService.querySimilarToSetKeys(keys.get());
+
+			List<BackendData> listData = restService.queryRegexpOfSetKeys(keys.get());
+
 			System.err
 					.println("query by keys returned: " + listData.size() + " rows");
 			payload = String.format("keys: %s\n%s", String.join(",", keys.get()),
