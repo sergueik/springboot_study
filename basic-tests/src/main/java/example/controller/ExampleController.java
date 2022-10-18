@@ -3,6 +3,7 @@ package example.controller;
  * Copyright 2021,2022 Serguei Kouzmine
  */
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -120,6 +121,9 @@ public class ExampleController {
 	// alternative path value: "/download/file/{fileName:.+}"
 	// see also:
 	// https://www.javainuse.com/spring/boot-file-download
+	// https://www.devglan.com/spring-boot/spring-boot-file-upload-download
+	// http://www.mastertheboss.com/jboss-frameworks/resteasy/using-rest-services-to-manage-download-and-upload-of-files/
+
 	@RequestMapping(method = RequestMethod.GET, value = "/download/file", produces = {
 			MediaType.APPLICATION_OCTET_STREAM_VALUE })
 	public ResponseEntity<?> downloadFile() {
@@ -127,15 +131,12 @@ public class ExampleController {
 		Path filePath = Paths.get(String.join(System.getProperty("file.separator"),
 				System.getProperty("user.dir"), "src", "main", "resources",
 				"test.txt"));
-		// TODO:
-		// File file = new File(filePath)
-		// Contet-Length
-		// .contentLength(file.length())
-		//
 		Resource resource = null;
 		try {
+			File file = new File(filePath.toString());
 			resource = new UrlResource(filePath.toUri());
 			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.header("Content-Length", Long.toString(file.length()))
 					.header(HttpHeaders.CONTENT_DISPOSITION, String
 							.format("attachment; filename=\"%s\"", resource.getFilename()))
 					.body(resource);
@@ -143,6 +144,12 @@ public class ExampleController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("file not found: " + filePath);
 			// NOTE: code compiles but the body is ignored
+			/*
+			var data = new FileInputStream(filePath.toString());    
+			IOUtils.copy(data, response.getOutputStream());
+			IOUtils.closeQuietly(data);
+			IOUtils.closeQuietly(response.getOutputStream());
+			*/
 		}
 	}
 	// see also:
@@ -153,7 +160,10 @@ public class ExampleController {
 	// see also:
 	// testing download (not ideal, checks body)
 	// https://dev.to/tolgee_i18n/testing-file-download-in-spring-boot-3afc
-	
+
+	// TODO:
+	// https://o7planning.org/11765/spring-boot-file-download getMediaTypeForFileName
+
 	@RequestMapping(method = RequestMethod.POST, value = "/post/json", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Data postJson(@RequestBody Data data) {
 		@SuppressWarnings("unused")
