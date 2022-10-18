@@ -68,7 +68,54 @@ public class RestController {
 			List<BackendData> listData = restService.queryByIds(ids.get());
 			System.err.println("query by ids returned: " + listData.size() + " rows");
 			listData = restService.queryByIdsAndKeys(ids.get(), keys.get());
-			System.err.println("query by ids and keys returned: " + listData.size() + " rows");
+			System.err.println(
+					"query by ids and keys returned: " + listData.size() + " rows");
+			return ResponseEntity.status(HttpStatus.OK).body(payload);
+		} else {
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("");
+		}
+	}
+
+	// NOTE: cannot use with id
+	/*
+	 org.springframework.jdbc.BadSqlGrammarException: 
+	 PreparedStatementCallback; 
+	 bad SQL grammar [select * from rest where id SIMILAR TO ?]; 
+	 nested exception is org.postgresql.util.PSQLException: 
+	 ERROR: operator does not exist: integer ~ text Hint: No operator matches the given name and argument types. You might need to add explicit type casts.
+	 */
+	// http://localhost:8080/rest/similar/ids?ids=1,2,3,4,5
+	@GetMapping(value = "/similar/ids", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> querySimilarToSetIds(
+			@RequestParam Optional<List<Integer>> ids) {
+		String payload = null;
+		if (ids.isPresent() && ids.get().size() > 0) {
+			payload = String.format("ids: %s", String.join(",", ids.get().stream()
+					.map(o -> String.format("%d", o)).collect(Collectors.toList())));
+			List<BackendData> listData = restService.querySimilarToSetIds(ids.get());
+			System.err.println("query by ids returned: " + listData.size() + " rows");
+			listData.stream().map(BackendData::toString);
+			return ResponseEntity.status(HttpStatus.OK).body(payload);
+		} else {
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("");
+		}
+	}
+
+	// http://localhost:8080/rest/similar/keys?keys=example+1,example+2,example+3
+	@GetMapping(value = "/similar/keys", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> querySimilarToSetKeys(
+			@RequestParam Optional<List<String>> keys) {
+		String payload = null;
+		if (keys.isPresent() && keys.get().size() > 0) {
+
+			List<BackendData> listData = restService
+					.querySimilarToSetKeys(keys.get());
+			System.err
+					.println("query by keys returned: " + listData.size() + " rows");
+			payload = String.format("keys: %s\n%s", String.join(",", keys.get()),
+					listData.stream().map(BackendData::toString)
+							.collect(Collectors.toList()));
+
 			return ResponseEntity.status(HttpStatus.OK).body(payload);
 		} else {
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("");

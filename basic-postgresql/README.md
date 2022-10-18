@@ -174,11 +174,44 @@ will update:
 can now uninstall postgresql
 
 ### Run in Docker
+
+stop postgresql running on host:
+```sh
+sudo  /etc/init.d/postgresql  stop
+```
+```text
+[ ok ] Stopping postgresql (via systemctl): postgresql.service.
+```
+alternaively
+```sh
+sudo systemctl stop postgresql
+sudo systemctl status postgresql
+```
+```text
+* postgresql.service - PostgreSQL RDBMS
+   Loaded: loaded (/lib/systemd/system/postgresql.service; enabled; vendor prese
+   Active: inactive (dead) since Tue 2022-10-18 22:21:07 CEST; 5s ago
+  Process: 1491 ExecStart=/bin/true (code=exited, status=0/SUCCESS)
+ Main PID: 1491 (code=exited, status=0/SUCCESS)
+
+Oct 17 14:59:06 sergueik71 systemd[1]: Starting PostgreSQL RDBMS...
+Oct 17 14:59:06 sergueik71 systemd[1]: Started PostgreSQL RDBMS.
+Oct 18 22:21:07 sergueik71 systemd[1]: Stopped PostgreSQL RDBMS.
+
+```
 * package the jar 
 ```sh
 mvn clean package
 ```
+if the container was saved from earlier, start
 
+```sh
+SERVER_NAME=postgres-database
+docker container start $SERVER_NAME
+```
+```text
+postgres-database
+```
 * pull the smallest possible postgresql container image 
 ```
 docker pull kiasaki/alpine-postgres
@@ -481,8 +514,36 @@ sudo apt-get install libpq5 pgadmin3-data postgresql-client postgresql-client-9.
 sudo dpkg -i pgadmin3*
 ```
 turns out one cannot connect to a newer PostgreSQL from older PG Admin
+
+### Vendor-Specific queries
+
+the request
+`http://localhost:8080/rest/similar/keys?keys=example+1,example+2,example+3`
+produces 
+```text
+keys: example 1,example 2,example 3
+[
+id=21,key=example 1,value=some data 1, 
+id=22,key=example 2,value=some data 2, 
+id=23,key=example 3,value=some data 3
+]
+```
+
+NOTE: no similar query can be  constructed against ids:
+the attempt to
+`http://localhost:8080/rest/similar/ids?ids=1,2,3,4,5`
+leads to exception
+```text
+ org.springframework.jdbc.BadSqlGrammarException: 
+ PreparedStatementCallback; 
+ bad SQL grammar [select * from rest where id SIMILAR TO ?]; 
+ nested exception is org.postgresql.util.PSQLException: 
+ ERROR: operator does not exist: integer ~ text Hint: No operator matches the given name and argument types. You might need to add explicit type casts.
+
+```
 #### TODO 
 One can install [docker container](https://hub.docker.com/r/dpage/pgadmin4/tags) with based web client pg admin 4 on xenial. Alternatiely pick a smalleralpine based [image](https://hub.docker.com/layers/huggla/sam-pgadmin/4.20/images/sha256-8867f605c49e9ccdbb52858decd15258c144c7b183dd2532964bed48bcb0dcc5?context=explore)	
+
 
 ### See also
 

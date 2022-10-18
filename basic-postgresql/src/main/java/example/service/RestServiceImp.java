@@ -52,4 +52,19 @@ public class RestServiceImp implements RestService {
 			List<String> keys) {
 		return backendDataDao.queryByIdsAndKeys(ids, keys);
 	}
+
+	// PostgreSQL only
+	public List<BackendData> querySimilarToSetIds(List<Integer> ids) {
+		return backendDataDao.querySimilarToSetIds(ids);
+	}
+
+	public List<BackendData> querySimilarToSetKeys(List<String> keys) {
+		return backendDataDao.querySimilarToSetKeys(keys);
+	}
+
+	// MySQL only
+	public List<BackendData> queryRegexpOfSetIds(List<Integer> ids) {
+		return backendDataDao.queryRegexpOfSetIds(ids);
+	}
+
 }

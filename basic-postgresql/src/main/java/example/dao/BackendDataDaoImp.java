@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -120,7 +121,7 @@ public class BackendDataDaoImp implements BackendDataDao {
 	/*
 	 public List<ContentDB> findAllByTag (final String tag){
 	      List<ContentDB>contentDBList = new ArrayList<>();
-
+	
 	      Iterable<ContentDB> contentDBS = contentRepository.findAll();
 	      contentDBS.forEach(contentDB -> {
 	          Set<Tags> tagsSet = contentDB.getTagsSet();
@@ -132,14 +133,38 @@ public class BackendDataDaoImp implements BackendDataDao {
 	     return contentDBList;
 	  }
 	 */
+
 	// The other option is to use vendor specific features:
 	// MySQL: REGEXP LIKE
 	// SELECT * FROM rest WHERE key REGEXP '(example 1|example 2|example3)';
 	// SQLite - REGEXP, provided the extension is installed first
 	// https://stackoverflow.com/questions/5071601/how-do-i-use-regex-in-a-sqlite-query
 	// https://dev.mysql.com/doc/refman/8.0/en/regexp.html#operator_regexp
+	// MySQL only
+	public List<BackendData> queryRegexpOfSetIds(List<Integer> ids) {
+		String args[] = new String[1];
+		args[0] = String.format("(%s)", String.join("|", ids.stream()
+				.map(o -> String.format("%d", o)).collect(Collectors.toList())));
+		return jdbcTemplate.query("select * from rest where id REGEXP ?", args,
+				new BackendDataMapper());
+	}
+
 	// PostgreSQL SIMILAR TO
 	// SELECT * FROM rest WHERE key SIMILAR TO '(example 1|example 2|example3)';
 	// https://www.postgresql.org/docs/current/functions-matching.html
-}
+	// PostgreSQL only
+	public List<BackendData> querySimilarToSetIds(List<Integer> ids) {
+		String args[] = new String[1];
+		args[0] = String.format("(%s)", String.join("|", ids.stream()
+				.map(o -> String.format("%d", o)).collect(Collectors.toList())));
+		return jdbcTemplate.query("select * from rest where id SIMILAR TO ?", args,
+				new BackendDataMapper());
+	}
 
+	public List<BackendData> querySimilarToSetKeys(List<String> keys) {
+		String args[] = new String[1];
+		args[0] = String.format("(%s)", String.join("|", keys));
+		return jdbcTemplate.query("select * from rest where key SIMILAR TO ?", args,
+				new BackendDataMapper());
+	}
+}

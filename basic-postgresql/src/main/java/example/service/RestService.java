@@ -13,4 +13,9 @@ public interface RestService {
 	int latestInput();
 	List<BackendData> queryByIds(List<Integer> ids);
 	List<BackendData> queryByIdsAndKeys(List<Integer> ids, List<String> keys);
+	// PostgreSQL only
+	List<BackendData> querySimilarToSetIds(List<Integer> ids);
+	List<BackendData> querySimilarToSetKeys(List<String> keys);
+	// MySQL only
+	List<BackendData> queryRegexpOfSetIds(List<Integer> ids);
 }
