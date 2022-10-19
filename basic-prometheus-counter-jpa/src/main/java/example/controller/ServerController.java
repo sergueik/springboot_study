@@ -1,6 +1,9 @@
 package example.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,6 +63,32 @@ public class ServerController {
 	}
 
 	@ResponseBody
+	@GetMapping(value = "serversregexp", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Server>> serversregexp(
+			@RequestParam Optional<List<String>> keys) {
+		if (keys.isPresent() && keys.get().size() > 0) {
+			String serverNamesRegexp = String.format("(%s)",
+					String.join("|", keys.get()));
+			logger.info("Starting reporting servers matching expression: "
+					+ serverNamesRegexp);
+			// build servers on the fly
+			List<Server> payload = dao.findServersNativeRegexp(serverNamesRegexp)
+					.stream()
+					.map(columns -> new Server((int) columns[0], (String) columns[1]))
+					.collect(Collectors.toList());
+
+			return (payload == null)
+					? ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
+					: ResponseEntity.status(HttpStatus.OK).body(payload);
+		} else {
+			// NOTE: typed response
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+					.body(new ArrayList<Server>());
+		}
+
+	}
+
+	@ResponseBody
 	@GetMapping(value = "data", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Object[]>> data() {
 
@@ -72,3 +101,4 @@ public class ServerController {
 	}
 
 }
+

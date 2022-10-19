@@ -36,6 +36,22 @@ public interface AxixsRepository
 	@Query("select new Server(s.serverId, s.serverName) from Server s where s.serverName LIKE ?1%")
 	public List<Server> findServer(String serverName);
 
+	// Caused by: java.lang.IllegalArgumentException:
+	// org.hibernate.hql.internal.ast.QuerySyntaxException:
+	// unexpected token: REGEXP near line 1, column 92
+	// [select new Server(s.serverId, s.serverName) from example.model.Server s
+	// where s.serverName REGEXP ?1]
+	// org.sqlite.SQLiteException:
+	// [SQLITE_ERROR] SQL error or missing database
+	// (no such function: REGEXP)
+	// see also:
+	// https://stackoverflow.com/questions/5071601/how-do-i-use-regex-in-a-sqlite-query
+	// https://stackoverflow.com/questions/5071601/how-do-i-use-regex-in-a-sqlite-query
+	// NOTE: Native SQL is case sensitive in table names, make sure tables are
+	// named correctly
+	@Query(nativeQuery = true, value = "select s.sid serverId, s.sname serverName from server s where s.sname REGEXP ?1")
+	public List<Object[]> findServersNativeRegexp(String serverNamesRegexp);
+
 	// NOTE: strongly typed - watch the columns to match the constructor arguments
 	// NOTE: rows from left join with with null values
 	// will be silently removed from the strongly typed result (?)
@@ -60,3 +76,4 @@ public interface AxixsRepository
 	@Query(value = "select sname as hostname,'dummy' as dc,aname as application, iname as env from axixs x join server s on x.sid = s.sid left join application a on x.aid = a.aid join instance i on x.iid = i.iid", nativeQuery = true)
 	public List<Object[]> findAllDataNative();
 }
+
