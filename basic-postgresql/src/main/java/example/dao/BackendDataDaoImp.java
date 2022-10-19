@@ -142,26 +142,27 @@ public class BackendDataDaoImp implements BackendDataDao {
 	// https://dev.mysql.com/doc/refman/8.0/en/regexp.html#operator_regexp
 	// MySQL only
 	public List<BackendData> queryRegexpOfSetIds(List<Integer> ids) {
-		String args[] = new String[1];
-		args[0] = String.format("(%s)", String.join("|", ids.stream()
-				.map(o -> String.format("%d", o)).collect(Collectors.toList())));
-		return jdbcTemplate.query("select * from rest where id REGEXP ?", args,
-				new BackendDataMapper());
+		return jdbcTemplate
+				.query("SELECT * FROM rest WHERE CONVERT(`id`, CHAR) REGEXP ?",
+						new String[] { String.format("(%s)",
+								String.join("|",
+										ids.stream().map(o -> String.format("%d", o))
+												.collect(Collectors.toList()))) },
+						new BackendDataMapper());
 	}
 
+	// NOTE: have to use quotes ` with MySQL JDBC template string:
+	// cannot have bare column named "key" without quoting
+	// would get an exception in runtime :
+	// with root cause
+	// java.sql.SQLSyntaxErrorException:
+	// You have an error in your SQL syntax;
+	// check the manual that corresponds to your MySQL server version
+	// for the right syntax to use near
+	// 'key REGEXP '(example 1|example 2|example 3)''
 	public List<BackendData> queryRegexpOfSetKeys(List<String> keys) {
-		String args[] = new String[1];
-		args[0] = String.format("(%s)", String.join("|", keys));
-		// NOTE: have to use quotes ` with MySQL JDBC template string:
-		// cannot have bare column named "key" without quoting
-		// would get an exception in runtime :
-		// with root cause
-		// java.sql.SQLSyntaxErrorException:
-		// You have an error in your SQL syntax;
-		// check the manual that corresponds to your MySQL server version
-		// for the right syntax to use near
-		// 'key REGEXP '(example 1|example 2|example 3)''
-		return jdbcTemplate.query("select * from rest where `key` REGEXP ?", args,
+		return jdbcTemplate.query("SELECT * FROM rest WHERE `key` REGEXP ?",
+				new String[] { String.format("(%s)", String.join("|", keys)) },
 				new BackendDataMapper());
 	}
 
@@ -170,21 +171,21 @@ public class BackendDataDaoImp implements BackendDataDao {
 	// https://www.postgresql.org/docs/current/functions-matching.html
 	// PostgreSQL only
 	public List<BackendData> querySimilarToSetIds(List<Integer> ids) {
-		String args[] = new String[1];
-		args[0] = String.format("(%s)", String.join("|", ids.stream()
-				.map(o -> String.format("%d", o)).collect(Collectors.toList())));
-		return jdbcTemplate.query("select * from rest where id SIMILAR TO ?", args,
-				new BackendDataMapper());
+		return jdbcTemplate
+				.query("SELECT * FROM rest WHERE id SIMILAR TO ?",
+						new String[] { String.format("(%s)",
+								String.join("|",
+										ids.stream().map(o -> String.format("%d", o))
+												.collect(Collectors.toList()))) },
+						new BackendDataMapper());
 	}
 
+	// NOTE: cannot use ` within PostgreSQL JDBC template string:
+	// org.postgresql.util.PSQLException: ERROR: operator does not exist: `
+	// character varying
 	public List<BackendData> querySimilarToSetKeys(List<String> keys) {
-		String args[] = new String[1];
-		args[0] = String.format("(%s)", String.join("|", keys));
-		// NOTE: cannot use ` within PostgreSQL JDBC template string:
-		// org.postgresql.util.PSQLException: ERROR: operator does not exist: `
-		// character varying
-		return jdbcTemplate.query("select * from rest where key SIMILAR TO ?", args,
+		return jdbcTemplate.query("SELECT * FROM rest WHERE key SIMILAR TO ?",
+				new String[] { String.format("(%s)", String.join("|", keys)) },
 				new BackendDataMapper());
 	}
 }
-
