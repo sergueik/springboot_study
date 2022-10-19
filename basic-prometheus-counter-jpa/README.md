@@ -10,7 +10,11 @@ rpm{instance="hostname05",dc="dummy",app="",env="instance01",} 100.0
 ```
 
 the code adding of Gauges with same name but varying number of labels array is not available yet.
+### REGEXT syntax extension
 
+```sh
+sudo apt-get install sqlite3-pcre
+```
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
