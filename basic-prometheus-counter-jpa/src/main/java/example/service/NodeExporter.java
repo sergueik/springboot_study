@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import example.repository.AxixsRepository;
+import example.model.Server;
 import example.projection.ServerInstanceApplication;
 import example.service.HostData;
 
@@ -228,6 +230,7 @@ public class NodeExporter {
 
 	// Native SQL, typed result
 	// failing - do not use
+	// Workaround - return raw and build object in the code
 	public String metricsFromServerInstanceListNative() {
 
 		if (debug)
@@ -236,8 +239,13 @@ public class NodeExporter {
 		try {
 			registry = CollectorRegistry.defaultRegistry;
 
+			// List<ServerInstanceApplication> payload =
+			// dao.findAllServerInstanceApplicationsNative();
 			List<ServerInstanceApplication> payload = dao
-					.findAllServerInstanceApplicationsNative();
+					.findAllServerInstanceApplicationsNativeRaw().stream()
+					.map(columns -> new ServerInstanceApplication((String) columns[0],
+							(String) columns[1], (String) columns[2]))
+					.collect(Collectors.toList());
 			for (Object row : payload) {
 				ServerInstanceApplication serverInstance = (ServerInstanceApplication) row;
 				String hostname = serverInstance.getServerName();

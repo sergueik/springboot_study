@@ -49,8 +49,19 @@ public interface AxixsRepository
 	// https://stackoverflow.com/questions/5071601/how-do-i-use-regex-in-a-sqlite-query
 	// NOTE: Native SQL is case sensitive in table names, make sure tables are
 	// named correctly
-	@Query(nativeQuery = true, value = "select s.sid serverId, s.sname serverName from server s where s.sname REGEXP ?1")
-	public List<Object[]> findServersNativeRegexp(String serverNamesRegexp);
+	@Query(nativeQuery = true, value = "SELECT s.sid serverId, s.sname serverName FROM server s WHERE s.sname REGEXP ?1")
+	public List<Object[]> findServersNativeRegexpRawData(
+			String serverNamesRegexp);
+
+	// Attempt to construct a nativeQuery creating array of strongly typed -
+	// failing
+	// NOTE: replacing the WHERE clause
+	// WHERE s.sname REGEXP ?1
+	// with
+	// WHERE s.sname = ?1
+	// does not help
+	@Query(nativeQuery = true, value = "SELECT new example.projection.Server(s.sid, s.sname) FROM server s WHERE s.sname REGEXP ?1")
+	public List<Server> findServersNativeRegexpTyped(String serverNamesRegexp);
 
 	// NOTE: strongly typed - watch the columns to match the constructor arguments
 	// NOTE: rows from left join with with null values
@@ -66,8 +77,11 @@ public interface AxixsRepository
 	// @Query(value = "select sname as hostname,aname as application, iname as env
 	// from axixs x join server s on x.sid = s.sid left join application a on
 	// x.aid = a.aid join instance i on x.iid = i.iid", nativeQuery = true)
-	@Query(value = "select new example.projection.ServerInstanceApplication(sname,aname,iname) from axixs x join server s on x.sid = s.sid join application a on x.aid = a.aid join instance i on x.iid = i.iid", nativeQuery = true)
+	@Query(nativeQuery = true, value = "select new example.projection.ServerInstanceApplication(sname,aname,iname) from axixs x join server s on x.sid = s.sid join application a on x.aid = a.aid join instance i on x.iid = i.iid")
 	public List<ServerInstanceApplication> findAllServerInstanceApplicationsNative();
+
+	@Query(nativeQuery = true, value = "select sname,aname,iname from axixs x join server s on x.sid = s.sid join application a on x.aid = a.aid join instance i on x.iid = i.iid")
+	public List<Object[]> findAllServerInstanceApplicationsNativeRaw();
 
 	// NOTE: losely typed
 	@Query("select s.serverName as hostname, 'dummy' as dc, a.applicationName as application, i.instanceName as env from Axixs x join Server s on x.serverId = s.serverId left join Application a on x.applicationId = a.applicationId join Instance i on x.instanceId = i.instanceId")
@@ -76,4 +90,3 @@ public interface AxixsRepository
 	@Query(value = "select sname as hostname,'dummy' as dc,aname as application, iname as env from axixs x join server s on x.sid = s.sid left join application a on x.aid = a.aid join instance i on x.iid = i.iid", nativeQuery = true)
 	public List<Object[]> findAllDataNative();
 }
-

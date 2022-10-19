@@ -65,18 +65,22 @@ public class ServerController {
 	@ResponseBody
 	@GetMapping(value = "serversregexp", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Server>> serversregexp(
-			@RequestParam Optional<List<String>> keys) {
+			@RequestParam Optional<List<String>> keys,
+			@RequestParam Optional<Boolean> strict) {
 		if (keys.isPresent() && keys.get().size() > 0) {
 			String serverNamesRegexp = String.format("(%s)",
 					String.join("|", keys.get()));
 			logger.info("Starting reporting servers matching expression: "
 					+ serverNamesRegexp);
 			// build servers on the fly
-			List<Server> payload = dao.findServersNativeRegexp(serverNamesRegexp)
-					.stream()
-					.map(columns -> new Server((int) columns[0], (String) columns[1]))
-					.collect(Collectors.toList());
-
+			List<Server> payload = new ArrayList<>();
+			if (strict.isPresent() && strict.get()) {
+				payload = dao.findServersNativeRegexpTyped(serverNamesRegexp);
+			} else {
+				payload = dao.findServersNativeRegexpRawData(serverNamesRegexp).stream()
+						.map(columns -> new Server((int) columns[0], (String) columns[1]))
+						.collect(Collectors.toList());
+			}
 			return (payload == null)
 					? ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)
 					: ResponseEntity.status(HttpStatus.OK).body(payload);
@@ -101,4 +105,3 @@ public class ServerController {
 	}
 
 }
-
