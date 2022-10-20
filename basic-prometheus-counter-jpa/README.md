@@ -119,6 +119,73 @@ List<Server> payload = dao.findServersNativeRegexp(serverNamesRegexp)
 			.map(columns -> new Server((int) columns[0], (String) columns[1]))
 			.collect(Collectors.toList());
 ```
+
+### Troubleshooting
+
+if seeing in application log
+```
+2022-10-20 11:17:43.132  WARN 2016 --- [         task-1] o.h.e.j.e.i.JdbcEnvironmentInitiator     : HHH000342: Could not obtain connection to query metadata
+Caused by: com.mysql.cj.exceptions.CJCommunicationsException: Communications link failure
+Caused by: java.net.ConnectException: Connection refused: connect
+```
+and unable to connect -  attempt
+```sh
+docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword
+```
+see
+```
+cannot exec in a stopped state: unknown
+```
+check
+
+```sh
+docker logs mysql-server
+```
+
+
+if seeing 
+```text
+2022-10-19T19:03:23.569123Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Socket: '/var/run/mysqld/mysqlx.sock' bind-address: '::' port: 33060
+mbind: Operation not permitted
+mbind: Operation not permitted
+mbind: Operation not permitted
+mbind: Operation not permitted
+mbind: Operation not permitted
+mbind: Operation not permitted
+mbind: Operation not permitted
+
+```
+and if unable to stop the container, need to recycle it and recreate database and table. Also may like to reboot the development host.
+
+### Strongly Typed
+
+Untyped query `http://localhost:8080/serversregexp?keys=hostname00,hostname01,hostname02&strict=false` works
+```text
+Hibernate: SELECT s.sid serverId, s.sname serverName FROM server s WHERE REGEXP_LIKE(sname, ? )
+```
+Typed query `http://localhost:8080/serversregexp?keys=hostname00,hostname01,hostname02&strict=true` throws exception:
+```text
+
+nested exception is org.hibernate.exception.SQLGrammarException: could not extract ResultSet] 
+with root cause
+java.sql.SQLSyntaxErrorException: 
+You have an error in your SQL syntax; check the manual that corresponds to your 
+MySQL server version for the right syntax to use near '.projection.Server(s.sid, s.sname) FROM server s WHERE s.sname REGEXP '(hostname' 
+at line 1
+```
+
+
+The query value is
+```SQL
+SELECT new example.projection.Server(s.sid, s.sname) FROM server s WHERE s.sname REGEXP ?1
+```
+
+The parameter is
+```java
+"(hostname00|hostname0|hostname02)"
+```
+- works just fine with untyped query.  There is no table or column with the  name `example` on database side. Apparently MySQL is trying to 
+resolve the `.projection` as some kind of schema which it cannot recognize.
 ### See Also
 
   * [BigQuery Regex and Pattern Matching: 6 Major Things](https://hevodata.com/learn/bigquery-regex)
@@ -127,4 +194,5 @@ List<Server> payload = dao.findServersNativeRegexp(serverNamesRegexp)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 
