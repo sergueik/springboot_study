@@ -6,13 +6,10 @@ CREATE TABLE "hosts" ( `id` INTEGER, `hostname` TEXT NOT NULL, `appid` TEXT, `en
 -- MYSQL (sans timestamp)
 CREATE TABLE `hosts` ( `id` INT AUTO_INCREMENT, `hostname`  VARCHAR(40) NOT NULL, `appid`  VARCHAR(40), `environment`  VARCHAR(40), `datacenter`  VARCHAR(40), PRIMARY KEY(`id`) );
 
-CREATE TABLE server(
-  sid int  AUTO_INCREMENT,
-  sname VARCHAR(40) NOT NULL not null,
-  primary key (sid)
-);
+-- REGEXP 
+select * from students where email REGEXP '(test4@gmail.com|test2@gmail.com)';
+insert into students (name, email, phone_no) values  ('peter','test2@gmail.com',12345),('john', 'test4@gmail.com',12345);
 
-insert into server (sname) values ('hostname00'),('hostname01'),('hostname02'),('hostname03'),('hostname04'),('hostname05');
 -- SQL
 exec sys.sp_readerrorlog 0, 1, 'listening';
 

@@ -49,7 +49,10 @@ public interface AxixsRepository
 	// https://stackoverflow.com/questions/5071601/how-do-i-use-regex-in-a-sqlite-query
 	// NOTE: Native SQL is case sensitive in table names, make sure tables are
 	// named correctly
-	@Query(nativeQuery = true, value = "SELECT s.sid serverId, s.sname serverName FROM server s WHERE s.sname REGEXP ?1")
+	// @Query(nativeQuery = true, value = "SELECT new
+	// example.projection.Server(s.sid, s.sname) FROM server s WHERE s.sname
+	// REGEXP ?1")
+	@Query(nativeQuery = true, value = "SELECT s.sid serverId, s.sname serverName FROM server s WHERE REGEXP_LIKE(sname, ?1 )")
 	public List<Object[]> findServersNativeRegexpRawData(
 			String serverNamesRegexp);
 
