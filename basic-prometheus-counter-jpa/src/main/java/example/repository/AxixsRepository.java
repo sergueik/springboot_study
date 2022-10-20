@@ -82,7 +82,7 @@ public interface AxixsRepository
 	// x.aid = a.aid join instance i on x.iid = i.iid", nativeQuery = true)
 	@Query(nativeQuery = true, value = "select new example.projection.ServerInstanceApplication(sname,aname,iname) from axixs x join server s on x.sid = s.sid join application a on x.aid = a.aid join instance i on x.iid = i.iid")
 	public List<ServerInstanceApplication> findAllServerInstanceApplicationsNative();
-
+	// NOTE: use SQL notation: consult the class field mapping in the model package
 	@Query(nativeQuery = true, value = "select sname,aname,iname from axixs x join server s on x.sid = s.sid join application a on x.aid = a.aid join instance i on x.iid = i.iid")
 	public List<Object[]> findAllServerInstanceApplicationsNativeRaw();
 
