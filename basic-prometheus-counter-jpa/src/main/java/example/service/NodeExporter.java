@@ -284,6 +284,85 @@ public class NodeExporter {
 		return writer.toString();
 	}
 
+	// NOTE: copy paste
+	public String metricsFromFilteredDataNative(String serverNamesRegexp) {
+		if (debug)
+			logger.info(
+					"Starting reporting metrics collected through native SQL with REGEXP ",
+					serverNamesRegexp);
+		Writer writer = new StringWriter();
+		try {
+			registry = CollectorRegistry.defaultRegistry;
+			List<Object[]> result = dao.customFind(String.format(
+					"select sname as hostname,'dummy' as dc, aname as application, iname as env from axixs x join server s on x.sid = s.sid left join application a on x.aid = a.aid join instance i on x.iid = i.iid WHERE REGEXP_LIKE(sname,'%s')",
+					serverNamesRegexp));
+
+			for (Object[] row : result) {
+				logger.info(
+						String.format("Processing query result: %s", Arrays.asList(row)));
+				String hostname = row[0] != null ? row[0].toString() : "null";
+				String dc = row[1] != null ? row[1].toString() : "null";
+				String application = row[2] != null ? row[2].toString() : "null";
+				String env = row[3] != null ? row[3].toString() : "null";
+				logger
+						.info(String.format(
+								"Processing inventory for \"host\": " + "\"%s\"" + ", "
+										+ "\"dc\": " + "\"%s\"" + ", " + "\"application\": "
+										+ "\"%s\"" + ", " + "\"env\": " + "\"%s\"",
+								hostname, dc, application, env));
+
+			}
+			// illustration how to use composition to implement additional
+			// functionality
+			List<Object[]> payload = dao.findFilteredDataNative(serverNamesRegexp);
+
+			for (Object[] row : payload) {
+
+				String hostname = row[0].toString();
+				hostData = new HostData(hostname);
+				hostData.setExtractedMetricNames(extractedMetricNames);
+				hostData.setMetrics(Arrays.asList(metricNames));
+				// NOTE: cannot dynamically update the value anotated via @Value
+				// it i java.util.Collections$UnmodifiableMap
+				hostData.setMetricExtractors(metricExtractors);
+				hostData.readData();
+				data = hostData.getData();
+
+				if (data != null && !data.isEmpty()) {
+					// copyOf
+					String[] labels = Arrays.copyOfRange(row, 0, row.length,
+							String[].class);
+					if (debug)
+						logger.info(String.format(
+								"Loading inventory %d metrics for host: %s labels %s",
+								data.keySet().size(), hostname, Arrays.asList(row)));
+
+					for (String metricName : data.keySet()) {
+						createGauge(metricName);
+						// create separate gauge for blank app label -
+						// currently it will cease to create new metric in the registry
+						// keep for the future use
+						// createGauge(metricName, new String[] { "instance", "dc", "env"
+						// });
+						exampleGauge(metricName, labels,
+								Float.parseFloat(data.get(metricName)));
+					}
+				} else {
+					if (debug)
+						logger.info(String.format("No metrics for host: %s", hostname));
+				}
+			}
+			TextFormat.write004(writer, registry.metricFamilySamples());
+		} catch (
+
+		IOException e) {
+			logger.error("Exception (caught):" + e.toString());
+			return null;
+		}
+		return writer.toString();
+
+	}
+
 	public String metricsFromDataNative() {
 		if (debug)
 			logger.info("Starting reporting metrics collected through native SQL");

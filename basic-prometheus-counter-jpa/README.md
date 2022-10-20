@@ -186,7 +186,30 @@ The parameter is
 ```
 - works just fine with untyped query.  There is no table or column with the  name `example` on database side. Apparently MySQL is trying to 
 resolve the `.projection` as some kind of schema which it cannot recognize.
-
+#### Metric query
+```SQL
+select sname as hostname,'dummy' as dc, aname as application, iname as env from axixs x join server s on x.sid = s.sid left join application a on x.aid = a.aid join instance i on x.iid = i.iid WHERE REGEXP_LIKE(sname,'(hostname00|hostname01)');
+```
+```SQL
+    select
+        sname as hostname,
+        'dummy' as dc,
+        aname as application,
+        iname as env
+    from
+        axixs x
+    join
+        server s
+            on x.sid = s.sid
+    left join
+        application a
+            on x.aid = a.aid
+    join
+        instance i
+            on x.iid = i.iid
+    WHERE
+        REGEXP_LIKE(sname,'(hostname00|hostname01)')
+```
 ### Dump the Data
 
 ```sh
