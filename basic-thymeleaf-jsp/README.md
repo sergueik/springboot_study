@@ -1,6 +1,25 @@
 ### Info 
 
-origin: https://github.com/algaworks/videoaula-spring-thymeleaf-jsp
- - switched to Spring Boot and added few dependencies that may be important for jsp
+origin: https://github.com/algaworks/videoaula-spring-thymeleaf-jsp with original page replaced with a [Hello World example](https://github.com/jmiguelsamper/thymeleaf3-spring-helloworld), and switched to Spring Boot and added few dependencies that may be important for jsp
 
+### Usage
+```sh
+mvn spring-boot:run
+```
+![JSP page example](https://github.com/sergueik/springboot_study/blob/master/basic-thymeleaf-jsp/screenshots/capture-jsp.png)
 
+![Thymeleaf page example](https://github.com/sergueik/springboot_study/blob/master/basic-thymeleaf-jsp/screenshots/capture-thymeleaf.png)
+
+### See Also
+
+  * https://stackoverflow.com/questions/28480223/using-both-thymeleaf-and-jsp (some of the links in the post are no longer available)
+  * [guide](https://www.baeldung.com/jsp) to JavaServer Pages (JSP) 
+  * [Springboot with javaServer Pages (JSP)](https://www.baeldung.com/spring-boot-jsp)
+  * [Introduction to Using Thymeleaf in Spring](https://www.baeldung.com/thymeleaf-in-spring-mvc)
+  * [Spring Boot - Thymeleaf](https://www.tutorialspoint.com/spring_boot/spring_boot_thymeleaf.htm)
+  * [Spring Boot CRUD Application with Thymeleaf](https://www.baeldung.com/spring-boot-crud-thymeleaf)
+  * [Utility for converting JSP files into Thymeleaf templates](https://github.com/wjase/jsp2thymeleaf)
+
+   
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
