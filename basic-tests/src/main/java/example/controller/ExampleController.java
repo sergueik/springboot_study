@@ -162,7 +162,8 @@ public class ExampleController {
 	// https://dev.to/tolgee_i18n/testing-file-download-in-spring-boot-3afc
 
 	// TODO:
-	// https://o7planning.org/11765/spring-boot-file-download getMediaTypeForFileName
+	// https://o7planning.org/11765/spring-boot-file-download
+	// getMediaTypeForFileName
 
 	@RequestMapping(method = RequestMethod.POST, value = "/post/json", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Data postJson(@RequestBody Data data) {
@@ -261,6 +262,11 @@ public class ExampleController {
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@GetMapping(value = "/servererror", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> serverError() {
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
 	}
 
 	public static class Data {

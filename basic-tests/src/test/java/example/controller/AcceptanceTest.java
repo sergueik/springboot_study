@@ -23,6 +23,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.web.client.HttpClientErrorException;
+
+import org.springframework.web.client.HttpClientErrorException.NotFound;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.hamcrest.Matchers.is;
@@ -30,6 +33,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +42,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.hamcrest.Matchers.greaterThan;
 
 // NOTE: property annotations have no effect
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
@@ -114,32 +117,13 @@ public class AcceptanceTest {
 		// assertThat(responseEntity.getBody(), containsString(body));
 	}
 
-	// NOTE: in Junit5 the @Test interface does not have expected attribute
-	// @Test(expected =
-	// org.springframework.web.client.HttpClientErrorException.class)
-	// see also: https://www.baeldung.com/junit-assert-exception
-	@Test
-	public void test3() throws Exception {
-		Assertions.assertThrows(HttpClientErrorException.class, () -> {
-			url = "http://localhost:" + randomServerPort + route + "/post/form";
-			headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-			HttpEntity<String> request = new HttpEntity<String>("", headers);
-			responseEntity = restTemplate.postForEntity(url, request, String.class,
-					headers);
-			assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-
-		});
-	}
-
 	@Disabled("Disabled until some reported problem is addressed")
 	@Test
-	public void test4() {
+	public void test3() {
 	}
 
 	@Test
-	public void test5() {
+	public void test4() {
 
 		final List<UUID> uuids = Arrays.asList(
 				UUID.fromString("3dd25fab-b689-4693-a589-625a637d10a7"),
@@ -158,4 +142,59 @@ public class AcceptanceTest {
 
 	}
 
+	// NOTE: in Junit5 the @Test interface no longe can be annotated with
+	// "expected" attribute
+	// @Test(expected =
+	// org.springframework.web.client.HttpClientErrorException.class)
+	// see also: https://www.baeldung.com/junit-assert-exception
+	@Test
+	public void test5() throws Exception {
+		Assertions.assertThrows(HttpClientErrorException.class, () -> {
+			url = "http://localhost:" + randomServerPort + route + "/post/form";
+			headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+			HttpEntity<String> request = new HttpEntity<String>("", headers);
+			responseEntity = restTemplate.postForEntity(url, request, String.class,
+					headers);
+			assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+
+		});
+	}
+
+	// NOTE: for 40x status codes use
+	// "org.springframework.web.client.HttpClientErrorException" package
+
+	@Test
+	public void test6() throws Exception {
+		Assertions.assertThrows(NotFound.class, () -> {
+			url = "http://localhost:" + randomServerPort + "/missing";
+			responseEntity = restTemplate.getForEntity(url, String.class);
+			assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+
+		});
+	}
+
+	@Test
+	public void test7() throws Exception {
+		Assertions.assertThrows(HttpClientErrorException.class, () -> {
+			url = "http://localhost:" + randomServerPort + "/missing";
+			responseEntity = restTemplate.getForEntity(url, String.class);
+			assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
+
+		});
+	}
+
+	// NOTE: for 50x status codes use
+	// "org.springframework.web.client.HttpServerErrorException" package
+	@Test
+	public void test8() throws Exception {
+		Assertions.assertThrows(HttpServerErrorException.class, () -> {
+			url = "http://localhost:" + randomServerPort + route + "/servererror";
+			responseEntity = restTemplate.getForEntity(url, String.class);
+			assertThat(responseEntity.getStatusCode(),
+					is(HttpStatus.INTERNAL_SERVER_ERROR));
+
+		});
+	}
 }
