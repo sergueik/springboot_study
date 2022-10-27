@@ -18,9 +18,6 @@ public class ThymeleafController {
 		return model;
 	}
 
-	// javax.servlet.ServletException: Could not resolve view with name '/hello'
-	// in servlet with name 'dispatcherServlet'
-	// would also be thrown when resolvers are not configured properly
 	@GetMapping("/misconfigured")
 	public ModelAndView misconfigured(
 			@RequestParam(value = "name", required = false, defaultValue = "World") String name) {

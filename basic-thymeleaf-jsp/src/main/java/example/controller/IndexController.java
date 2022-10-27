@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -29,7 +28,7 @@ public class IndexController {
 
 	protected static String getScriptContent(String scriptName) {
 		try {
-			final InputStream stream = JspController.class.getClassLoader()
+			final InputStream stream = IndexController.class.getClassLoader()
 					.getResourceAsStream(scriptName);
 			final byte[] bytes = new byte[stream.available()];
 			stream.read(bytes);

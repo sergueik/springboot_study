@@ -11,7 +11,7 @@ import org.springframework.web.servlet.view.JstlView;
 public class JspConfig {
 
 	@Bean
-	public ViewResolver jspViewResolver() {
+	public ViewResolver jspConfigViewResolver() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 
 		viewResolver.setOrder(2);

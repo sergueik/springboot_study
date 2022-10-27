@@ -18,8 +18,16 @@ public class ThymeleafConfig {
 	@Autowired
 	private ApplicationContext applicationContext;
 
+	// NOTE: can not have identically named @Bean annotated methods across
+	// classes:
+	// compile time error:
+	// The bean 'viewResolver', defined in class path resource
+	// [example/config/ThymeleafConfig.class], could not be registered. A bean
+	// with that name has already been defined in class path resource
+	// [example/config/JspConfig.class] and overriding is disabled.
 	@Bean
-	public ViewResolver thymeleafViewResolver(ITemplateEngine templateEngine) {
+	public ViewResolver thymeleafConfigViewResolver(
+			ITemplateEngine templateEngine) {
 		ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
 
 		viewResolver.setOrder(1);

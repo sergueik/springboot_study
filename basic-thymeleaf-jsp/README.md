@@ -1,4 +1,4 @@
-### Info 
+### Info
 
 origin: https://github.com/algaworks/videoaula-spring-thymeleaf-jsp with original page replaced with a [Hello World example](https://github.com/jmiguelsamper/thymeleaf3-spring-helloworld), and switched to Spring Boot and added few dependencies that may be important for jsp
 
@@ -10,16 +10,29 @@ mvn spring-boot:run
 
 ![Thymeleaf page example](https://github.com/sergueik/springboot_study/blob/master/basic-thymeleaf-jsp/screenshots/capture-thymeleaf.png)
 
+### Note
+
+When resolvers are not configured properly, an exception
+```text
+javax.servlet.ServletException: Could not resolve view with name '/hello'
+in servlet with name 'dispatcherServlet'
+```
+would be thrown in runtime - see the 
+```java
+@GetMapping("/misconfigured")
+	public ModelAndView misconfigured()...
+```
+in `ThymeleafController` class. Similar error will be thrown for misconfigured JSP.
 ### See Also
 
   * https://stackoverflow.com/questions/28480223/using-both-thymeleaf-and-jsp (some of the links in the post are no longer available)
-  * [guide](https://www.baeldung.com/jsp) to JavaServer Pages (JSP) 
+  * [guide](https://www.baeldung.com/jsp) to JavaServer Pages (JSP)
   * [Springboot with javaServer Pages (JSP)](https://www.baeldung.com/spring-boot-jsp)
   * [Introduction to Using Thymeleaf in Spring](https://www.baeldung.com/thymeleaf-in-spring-mvc)
   * [Spring Boot - Thymeleaf](https://www.tutorialspoint.com/spring_boot/spring_boot_thymeleaf.htm)
   * [Spring Boot CRUD Application with Thymeleaf](https://www.baeldung.com/spring-boot-crud-thymeleaf)
   * [Utility for converting JSP files into Thymeleaf templates](https://github.com/wjase/jsp2thymeleaf)
+  * __Spring Framework: Spring MVC 5 Fundamentals__ [Pluralsight Training](https://app.pluralsight.com/library/courses/spring-framework-spring-mvc-fundamentals/table-of-contents) covering obscure configuration code for Thymeleaf and JSP except for configuring the two alongside with one another
 
-   
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

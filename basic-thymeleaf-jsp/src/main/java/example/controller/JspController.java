@@ -14,7 +14,6 @@ public class JspController {
 		model.addAttribute("name", name);
 		model.addAttribute("id", "0");
 		return "/hello.jsp";
-		// the name of the JSP model
 	}
 
 }
