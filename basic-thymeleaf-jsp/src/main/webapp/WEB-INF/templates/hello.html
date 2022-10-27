@@ -1,16 +1,35 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <title>Thymeleaf example</title>
-    <meta charset="utf-8" />
-    	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>	
-	    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" rel="stylesheet"/>
-	    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet"/>
-	    <link href="/resources/css/style.css" rel="stylesheet"/>
-    
+<head>
+  <title>Thymeleaf example</title>
+  <meta charset="utf-8" />
+  	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>	
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" rel="stylesheet"/>
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet"/>
+	<link href="/resources/css/style.css" rel="stylesheet"/>
   </head>
   <body>
-    Hello <span th:text="${name}">World</span>!
-  </body>
+  Hello <span th:text="${name}">World</span>!
+  <table class="table table-bordered table-stripped">
+  <thead>
+  <tr>
+    <th:block th:each="elem : ${groupedByIdPersons}">
+      <th>ID</th>
+      <th>Letter</th>
+      <th>Name</th>
+    </th:block>
+  </tr>
+</thead>
+<tbody>
+  <tr th:each="elem : ${groupedByIdPersons}">
+    <th:block th:each="person: ${elem.value}">
+      <td><span th:text="${person.id}">person.id</span></td>
+      <td><span th:text="${person.letter}">person.letter</span></td>
+      <td><span th:text="${person.name}">person.name</span></td>
+    </th:block>
+  </tr>
+</tbody>
+</table>  
+</body>
 </html>
