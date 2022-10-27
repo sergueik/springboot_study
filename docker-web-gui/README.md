@@ -28,9 +28,11 @@ We install client locally in the contianer and only mount volume for socket
 ### Result
 
 * images
+
 ![images](https://github.com/sergueik/springboot_study/blob/master/docker-web-gui/screenshots/capture-images.png)
 
 * containers
+
 ![containers](https://github.com/sergueik/springboot_study/blob/master/docker-web-gui/screenshots/capture-containers.png)
 
 ### Cleanup
