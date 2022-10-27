@@ -45,6 +45,16 @@ public class ExampleController {
 		// http://www.java2s.com/Code/Java/Development-Class/RandomGUID.htm
 		Value value = data.getValue();
 		List<Node> nodes = value.getNodes();
+
+		// cannot use Stream with counter increment:
+		// int cnt = 0;
+		// nodes.stream()
+		// .forEach(o -> o.setUri(String.format("http://node%02d:5555", cnt++)));
+		// local variable cnt defined in an enclosing scope must be final or
+		// effectively final
+		for (int cnt = 0; cnt != nodes.size(); cnt++) {
+			nodes.get(cnt).setUri(String.format("http://node%02d:5555", cnt));
+		}
 		nodes.add(node1);
 		nodes.add(node2);
 		value.setNodes(nodes);

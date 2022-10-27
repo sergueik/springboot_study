@@ -104,6 +104,18 @@ data.setValue(value);
 return data;
 ```
 
+and use the DNS hostnames for nodes:
+```Java
+Value value = data.getValue();
+List<Node> nodes = value.getNodes();
+
+for (int cnt = 0; cnt != nodes.size(); cnt++) {
+  nodes.get(cnt).setUri(String.format("http://node%02d:5555", cnt));
+}
+```
+### See Also
+  * [example](https://stackoverflow.com/questions/70308152/how-do-i-display-data-into-two-column-with-thymeleaf-and-html) using thymeleaf template to group the and render in multi-column table
+
 ### Author
 
 
