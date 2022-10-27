@@ -1,0 +1,4 @@
+# Cron file
+# NOTE : removed  user field
+*/1 * * * * /bin/echo 'cron_works' >> /var/log/run_some_script.cron.log
+*/1 * * * * /usr/local/lib/pyenv/versions/3.8.2/bin/python -c 'print("python cron works")' >> /var/log/run_some_script.cron.log
