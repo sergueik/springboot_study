@@ -25,6 +25,7 @@
     <json.version>20170516</json.version>
     <junit.version>4.13.1</junit.version>
     <!-- https://maven.apache.org/guides/mini/guide-using-ant.html -->
+    <jsoup.version>1.15.3</jsoup.version>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
     <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
     <!-- runs ant build.xml scripts embedded in the POM -->
@@ -39,7 +40,7 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.14.2</version>
+      <version>${jsoup.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
