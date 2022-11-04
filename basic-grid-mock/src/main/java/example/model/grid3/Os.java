@@ -1,4 +1,4 @@
-package example.model.grid391;
+package example.model.grid3;
 
 /**
  * Copyright 2022 Serguei Kouzmine

@@ -1,6 +1,6 @@
 ### Info
 
-this directory contains a mock of Selenium 4 status page endpoint for testing the
+this directory contains a mock of Selenium 4, Selenium 3 (*late versions*) status page endpoint for testing the
 __REST client__
 [app](https://github.com/sergueik/powershell_ui_samples/tree/master/external/csharp/light-rest) and eventually
 __Sysem Tray Selenum Grid Status Checker__
@@ -83,14 +83,39 @@ will return static JSON with the following schema:
     ]
   }
 }
+```
 
+while 
+`http://localhost:4444/status?version=3`
+returns 
+```json
+{
+  "status": 0,
+  "value": {
+    "ready": true,
+    "message": "Hub has capacity",
+    "build": {
+      "revision": "63f7b50",
+      "time": "2018-02-07T22:42:28.403Z",
+      "version": "3.9.1"
+    },
+    "os": {
+      "arch": "x86",
+      "name": "Windows 7",
+      "version": "6.1"
+    },
+    "java": {
+      "version": "1.8.0_101"
+    }
+  }
+}
 ```
 To render it nicely in the Chrome browser will need to install the __JSON Formatter__ [chrome extension](https://chrome.google.com/webstore/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa/related) extension
 
 ![status-mock](https://github.com/sergueik/springboot_study/blob/master/basic-grid-mock/screenshots/capture-grid-status.png)
 
 The Java code has all backing `Data`, `Node`, `Slot` etc. classes in the `model`
-package so it can dynamically *add* "nodes" to "grid" like this:
+packages so it can dynamically *add* "nodes" to Selenium 4.x "grid" JSON like this:
 ```java
 Data data = gson.fromJson(jsonString, Data.class);
 Node node = new Node();
@@ -113,6 +138,9 @@ for (int cnt = 0; cnt != nodes.size(); cnt++) {
   nodes.get(cnt).setUri(String.format("http://node%02d:5555", cnt));
 }
 ```
+
+for Selenium 3.x grid status mocking, code simply deserializes a sample JSON and modifies `.value.build.version` string.
+
 ### See Also
   * [example](https://stackoverflow.com/questions/70308152/how-do-i-display-data-into-two-column-with-thymeleaf-and-html) using thymeleaf template to group the and render in multi-column table
 

@@ -1,4 +1,4 @@
-package example.controller;
+package example.service;
 /**
  * Copyright 2022 Serguei Kouzmine
  */
@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,17 +23,13 @@ import example.model.grid4.Node;
 import example.model.grid4.Value;
 import example.utils.Utils;
 
-@RestController
-@RequestMapping("/status")
-public class Grid4Controller {
-
-	private boolean debug = false;
+@Service
+public class Grid4Service {
 
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting()
 			.create();
 
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public Data json() {
+	public Data status() {
 		final String result = Utils.getScriptContent("grid4.json");
 		Data data = gson.fromJson(result, Data.class);
 		Node node1 = new Node();

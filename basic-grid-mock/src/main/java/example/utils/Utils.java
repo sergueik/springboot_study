@@ -3,8 +3,6 @@ package example.utils;
 import java.io.IOException;
 import java.io.InputStream;
 
-import example.controller.Grid391Controller;
-
 public class Utils {
 	public static String getScriptContent(String scriptName) {
 		try {

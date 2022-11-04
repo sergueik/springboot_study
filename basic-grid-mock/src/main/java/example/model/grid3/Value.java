@@ -1,11 +1,11 @@
-package example.model.grid391;
+package example.model.grid3;
 /**
  * Copyright 2022 Serguei Kouzmine
  */
 
-import example.model.grid391.Os;
-import example.model.grid391.Build;
-import example.model.grid391.Java;
+import example.model.grid3.Build;
+import example.model.grid3.Java;
+import example.model.grid3.Os;
 
 // generated with help of https://www.site24x7.com/tools/json-to-java.html
 // NOTE: poor code generation
