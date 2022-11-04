@@ -1,7 +1,10 @@
-package example.model;
+package example.model.grid4;
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
 
-//generated with help of https://www.site24x7.com/tools/json-to-java.html
-//NOTE: poor code generation
+// generated with help of https://www.site24x7.com/tools/json-to-java.html
+// NOTE: poor code generation
 
 public class Stereotype {
 	private String browserName;

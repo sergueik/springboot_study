@@ -17,13 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import example.model.Data;
-import example.model.Node;
-import example.model.Value;
+import example.model.grid4.Data;
+import example.model.grid4.Node;
+import example.model.grid4.Value;
+import example.utils.Utils;
 
 @RestController
 @RequestMapping("/status")
-public class ExampleController {
+public class Grid4Controller {
 
 	private boolean debug = false;
 
@@ -32,7 +33,7 @@ public class ExampleController {
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public Data json() {
-		final String result = getScriptContent("grid4.json");
+		final String result = Utils.getScriptContent("grid4.json");
 		Data data = gson.fromJson(result, Data.class);
 		Node node1 = new Node();
 		node1.setAvailability("UP");
@@ -61,17 +62,4 @@ public class ExampleController {
 		data.setValue(value);
 		return data;
 	}
-
-	protected static String getScriptContent(String scriptName) {
-		try {
-			final InputStream stream = ExampleController.class.getClassLoader()
-					.getResourceAsStream(scriptName);
-			final byte[] bytes = new byte[stream.available()];
-			stream.read(bytes);
-			return new String(bytes, "UTF-8");
-		} catch (IOException e) {
-			throw new RuntimeException(scriptName);
-		}
-	}
-
 }

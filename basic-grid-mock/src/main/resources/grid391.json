@@ -1,0 +1,20 @@
+{
+  "status": 0,
+  "value": {
+    "ready": true,
+    "message": "Hub has capacity",
+    "build": {
+      "revision": "63f7b50",
+      "time": "2018-02-07T22:42:28.403Z",
+      "version": "3.9.1"
+    },
+    "os": {
+      "arch": "x86",
+      "name": "Windows 7",
+      "version": "6.1"
+    },
+    "java": {
+      "version": "1.8.0_101"
+    }
+  }
+}

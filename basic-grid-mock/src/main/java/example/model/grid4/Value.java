@@ -1,9 +1,12 @@
-package example.model;
+package example.model.grid4;
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
 
 import java.util.ArrayList;
 import java.util.List;
 
-import example.model.Node;
+import example.model.grid4.Node;
 
 // generated with help of https://www.site24x7.com/tools/json-to-java.html
 // NOTE: poor code generation

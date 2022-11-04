@@ -1,10 +1,13 @@
-package example.model;
+package example.model.grid4;
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
 
-import example.model.Id;
-import example.model.Stereotype;
+import example.model.grid4.Id;
+import example.model.grid4.Stereotype;
 
-//generated with help of https://www.site24x7.com/tools/json-to-java.html
-//NOTE: poor code generation
+// generated with help of https://www.site24x7.com/tools/json-to-java.html
+// NOTE: poor code generation
 
 public class Slot {
 

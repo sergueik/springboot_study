@@ -1,9 +1,13 @@
-package example.model;
+package example.model.grid391;
 
-//generated with help of https://www.site24x7.com/tools/json-to-java.html
-//NOTE: poor code generation
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
 
-public class OsInfo {
+// generated with help of https://www.site24x7.com/tools/json-to-java.html
+// NOTE: poor code generation
+
+public class Os {
 	private String arch;
 	private String name;
 	private String version;
