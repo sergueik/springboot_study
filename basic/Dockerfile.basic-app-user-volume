@@ -1,0 +1,23 @@
+FROM openjdk:8-jre-alpine3.9
+ARG app_jar="example.basic.jar"
+EXPOSE 8085
+ARG UID=1000
+ARG GID=1000
+
+ENV UID=${UID}
+ENV GID=${GID}
+ARG USER_NAME=user
+ARG GROUP_NAME=users
+RUN getent group $GROUP_NAME >/dev/null || addgroup -S $GROUP_NAME
+
+RUN getent passwd $UID || adduser -h /home/$USER_NAME -u $UID -s /bin/sh -D -G $GROUP_NAME $USER_NAME
+# a simpler command is
+# RUN adduser -D -g $GROUP_NAME $USER_NAME
+USER root
+RUN echo -e "$PASSWORD\n$PASSWORD" | passwd $USER_NAME
+RUN mkdir /var/app && chown -R $USER_NAME:$GROUP_NAME /var/app
+WORKDIR /var/app
+ADD "target/${app_jar}" /var/app/app.jar
+USER $USER_NAME
+RUN mkdir /var/app/test
+ENTRYPOINT ["java", "-jar", "app.jar"]

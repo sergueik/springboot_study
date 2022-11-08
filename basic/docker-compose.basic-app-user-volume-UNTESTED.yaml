@@ -1,0 +1,21 @@
+---
+service:
+  image: java/service
+  build:
+      context: .
+      dockerfile: .docker/java.Dockerfile
+      args:
+        - UID
+        - GID
+    command: "java -jar file-service/file-service-rest/target/file-service.jar"
+    restart: always
+    user: "${UID}:${GID}"
+    ports:
+      - 4592:4592
+    volumes:
+      - ./:/usr/src/app
+      - ./file-service/file-service-rest/target/classes/image:/usr/src/app/image
+    environment:
+      JAVA_OPTS: -Dspring.config.location=file-service/settings.properties
+    healthcheck:
+      test: curl -f http://localhost:4592/check
