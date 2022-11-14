@@ -5,7 +5,12 @@ with a different app to get instrumented by [elasticsearch APM agent](https://ww
 
 ### Usage
 
-Note: [elasticsearch stack standalone Vagrantbox packaged by Bitnami](https://bitnami.com/stack/elk) is a good alternative. Try to fire several application docker process serially
+Note: [elasticsearch stack standalone Vagrantbox packaged by Bitnami](https://bitnami.com/stack/elk)
+is a good alternative.
+
+
+* try to fire several application docker process serially
+
 ```sh
 ELASTICSEARCH_BASE_IMAGE=blacktop/elasticsearch
 docker pull $ELASTICSEARCH_BASE_IMAGE
@@ -40,7 +45,8 @@ docker build -f Dockerfile.app -t app_server .
 docker run -d -p 8086:8085 -e ELASTIC_APM_SERVICE_NAME=app_server -e ELASTIC_APM_APPLICATION_PACKAGES=example.basic -e ELASTIC_APM_SERVER_URLS=http://$APM_SERVER:8200 --link $APM_SERVER app_server
 ```
 
-you may try to install the APM agent into the App container in which case the following argument update will be required:
+you may try to install the APM agent into the App container
+in which case the following argument update will be required:
 
 ```sh
 docker run -d -p 8086:8085 -e ELASTIC_APM_SERVICE_NAME=app_server -e ELASTIC_APM_APPLICATION_PACKAGES=example.basic -e ELASTIC_APM_SERVER_URLS=http://localhost:8200 --link $ELASTICSEARCH_SERVER app_server
@@ -52,7 +58,7 @@ Failed to connect to backoff(elasticsearch(http://elasticsearch:9200)): Get http
 2021-03-03T22:38:04.879Z	WARN	transport/tcp.go:53	DNS lookup failure "elasticsearch": lookup elasticsearch on 75.75.75.75:53: no such host
 ```sh
 
-and this is problematic on a low  resource laptop:
+and this is problematic on a insufficient resources on the developer laptop:
  the elasticsearch docker image fails with reporting insufficient resources:
 ```sh
 [2021-03-04T00:17:15,536][INFO ][o.e.t.TransportService   ] [N4XWO8j] publish_address {172.18.0.2:9300}, bound_addresses {0.0.0.0:9300}
@@ -139,4 +145,3 @@ and replace the RUN commands in `Dockerfile.elk` with the COPY commands
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
