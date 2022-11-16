@@ -143,7 +143,14 @@ mvn -Pgroup2 clean test
   * https://javabydeveloper.com/junit-5-tag-and-filtering-tags-with-examples/
   * https://stackoverflow.com/questions/64810671/spring-boot-random-sslexception-connection-reset-in-kubernetes-with-jdk11
   * [junit 5 and junit4 test tagging](https://www.baeldung.com/junit-filtering-tests)
-
+  * tutorial on [customizing](basic-perl-cgi-java/src/test/java/example/controller/MockServiceTest.java) the  Spring RestTemplate Configuration to manage ConnectionPooling and KeepAlive
+  * [document](https://www.baeldung.com/spring-security-session) on sesions
+  * [document](https://openclassrooms.com/en/courses/5683681-secure-your-web-application-with-spring-security/6695821-configure-role-based-access-control) on roles
+  * handling file uploads when using __Apache__ `HTTPClient` [document](https://www.baeldung.com/httpclient-multipart-upload)
+  * handling custom HTTP Headers when using __Apache__ `HTTPClient` [document](https://www.baeldung.com/httpclient-custom-http-header)
+  * handling basic auth when using __Apache__ `HTTPClient` [document](https://www.baeldung.com/httpclient-basic-authentication)
+  * handling redirects HTTP Headers after POST when using __Apache__ `HTTPClient` [document](https://www.baeldung.com/httpclient-redirect-on-http-post)
+  * handling HTTP Cookies when using __Apache__ `HTTPClient` [document](https://www.baeldung.com/httpclient-cookies)
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
