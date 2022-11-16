@@ -67,7 +67,7 @@ docker pull $APM_SERVER_BASE_IMAGE
 and run it with environments matching the `application.properties`:
 ```sh
 APM_SERVER=elastic-apm-server
-docker run --name $APM_SERVER --link $ELASTICSEARCH_SERVER -d $APM_SERVE  R_BASE_IMAGE
+docker run --name $APM_SERVER --link $ELASTICSEARCH_SERVER -d $APM_SERVER_BASE_IMAGE
 ```
 
 connect into `$APM_SERVER` to confirm connectivity
@@ -313,6 +313,9 @@ info - application_packages: 'example.basic' (source: Environment Variables)
   * [How to Use Logstash to import CSV Files Into ElasticSearch](https://www.youtube.com/watch?v=_kqunm8w7GI)
   * [Configuring Elasticsearch Index for Time Series Data](https://www.youtube.com/watch?v=2WJFMYAri_8)
   * [overview of TSDB incl. Elastic](https://youtu.be/HB9bG3Qcvq8?t=365)
+  * [using the Elastic APM Java Agent on Kubernetes](https://www.elastic.co/blog/using-elastic-apm-java-agent-on-kubernetes-k8s) and the referenced [project](eyalkoren/pet-clinic) illustrating alternative non-modifying variants of injecting the `javaagent` argument inluding the `JAVA_TOOL_OPTIONS` [advanced feature](https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html#tooloptions) environment variable usage by __JVMTM Tool Interface__.
+  * [tutorial](https://www.baeldung.com/ops/docker-share-volume-multiple-containers) on sharing a volume between multiple containers with `docker-compose`
+  * [documentation](https://docs.docker.com/compose/startup-order/) on controlling startup and shutdown order of services in Docker Compose - partial solution of fundamental dustributed system ordering challenge in need of [wait-for-it](https://github.com/vishnubob/wait-for-it), [docker-wait-for-dependencies](https://github.com/dadarek/docker-wait-for-dependencies) and similar additional containers
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
