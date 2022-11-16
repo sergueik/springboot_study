@@ -9,8 +9,10 @@ open `http://localhost:3000/grafana`
 
 ### See Also
 
-   * https://github.com/parinapatel/migrateGrafanaDashboards
+   * python script to generate jsonnet files from Grafana exported dashboard json https://github.com/parinapatel/migrateGrafanaDashboards
+   * https://www.baeldung.com/jackson-name-of-property
+   * https://howtodoinjava.com/gson/gson-serializedname/
 ### Author
-
+   
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

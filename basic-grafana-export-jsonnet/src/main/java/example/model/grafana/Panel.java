@@ -18,10 +18,28 @@ public class Panel {
 	public boolean reverseYBuckets;
 	public ArrayList<Target> targets;
 	public Object timeFrom;
+
+	public ArrayList<Target> getTargets() {
+		return targets;
+	}
+
+	public void setTargets(ArrayList<Target> data) {
+		targets = data;
+	}
+
 	public Object timeShift;
 	public String title;
 	public Tooltip tooltip;
 	public String type;
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String data) {
+		type = data;
+	}
+
 	public Xaxis xAxis;
 	public Object xBucketNumber;
 	public Object xBucketSize;

@@ -12,6 +12,15 @@ public class Root {
 	public Object id;
 	public ArrayList<Object> links;
 	public ArrayList<Panel> panels;
+
+	public ArrayList<Panel> getPanels() {
+		return panels;
+	}
+
+	public void setPanels(ArrayList<Panel> data) {
+		panels = data;
+	}
+
 	public int schemaVersion;
 	public String style;
 	public ArrayList<Object> tags;
