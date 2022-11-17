@@ -2,6 +2,8 @@ package example.model.grafana;
 
 import java.util.ArrayList;
 
+//generated via https://json2csharp.com/code-converters/json-to-pojo
+
 public class ReduceOptions {
 	public ArrayList<String> calcs;
 	public String fields;

@@ -7,18 +7,20 @@ package example.model.grafana;
 public class AnnotationEntry {
 
 	private float builtIn;
-	private String datasource;
+	private Datasource datasource;
 	private boolean enable;
 	private boolean hide;
 	private String iconColor;
 	private String name;
 	private String type;
+	private Target target;
+
 
 	public float getBuiltIn() {
 		return builtIn;
 	}
 
-	public String getDatasource() {
+	public Datasource getDatasource() {
 		return datasource;
 	}
 
@@ -46,7 +48,7 @@ public class AnnotationEntry {
 		builtIn = data;
 	}
 
-	public void setDatasource(String data) {
+	public void setDatasource(Datasource data) {
 		datasource = data;
 	}
 
@@ -68,5 +70,13 @@ public class AnnotationEntry {
 
 	public void setType(String data) {
 		type = data;
+	}
+
+	public Target getTarget() {
+		return target;
+	}
+
+	public void setTarget(Target data) {
+		target = data;
 	}
 }

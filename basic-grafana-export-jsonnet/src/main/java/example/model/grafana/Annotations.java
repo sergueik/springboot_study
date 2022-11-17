@@ -1,23 +1,24 @@
 package example.model.grafana;
 
+// generated via https://json2csharp.com/code-converters/json-to-pojo
+
 import java.util.ArrayList;
 import java.util.List;
 import example.model.grafana.AnnotationEntry;
 
 import com.google.gson.annotations.SerializedName;
-
-//generated via https://json2csharp.com/code-converters/json-to-pojo
-//modified to enclose List<AnnotationEntry> instead of List<List> 
+import example.model.grafana.AnnotationEntry
+;//generated via https://json2csharp.com/code-converters/json-to-pojo
 
 public class Annotations {
 	@SerializedName("list")
-	List<example.model.grafana.AnnotationEntry> list = new ArrayList<>();
+	List<AnnotationEntry> list = new ArrayList<>();
 
-	public List<example.model.grafana.AnnotationEntry> getList() {
+	public List<AnnotationEntry> getList() {
 		return list;
 	}
 
-	public void setList(List<example.model.grafana.AnnotationEntry> data) {
+	public void setList(List<AnnotationEntry> data) {
 		list = data;
 	}
 

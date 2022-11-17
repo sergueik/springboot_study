@@ -2,11 +2,13 @@ package example.model.grafana;
 
 import java.util.ArrayList;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Panel {
 	public Cards cards;
 	public Color color;
 	public String dataFormat;
-	public String datasource;
+	public Datasource datasource;
 	public FieldConfig fieldConfig;
 	public GridPos gridPos;
 	public Heatmap heatmap;
@@ -16,14 +18,16 @@ public class Panel {
 	public Legend legend;
 	public String pluginVersion;
 	public boolean reverseYBuckets;
-	public ArrayList<Target> targets;
+	
+	@SerializedName("targets")
+	public ArrayList<PanelTarget> targets;
 	public Object timeFrom;
 
-	public ArrayList<Target> getTargets() {
+	public ArrayList<PanelTarget> getTargets() {
 		return targets;
 	}
 
-	public void setTargets(ArrayList<Target> data) {
+	public void setTargets(ArrayList<PanelTarget> data) {
 		targets = data;
 	}
 
@@ -31,6 +35,7 @@ public class Panel {
 	public String title;
 	public Tooltip tooltip;
 	public String type;
+	public String description;
 
 	public String getType() {
 		return type;

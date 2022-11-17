@@ -1,5 +1,7 @@
 package example.model.grafana;
 
+//generated via https://json2csharp.com/code-converters/json-to-pojo
+
 // NOTE: "tooltip" is found in several areas of Grafana exported Dashboard JSON:
 // "tooltip": { "show": true, "showHistogram": false },
 // "tooltip": { "shared": true,"sort": 0, "value_type": "individual"  },
