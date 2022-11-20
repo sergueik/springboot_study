@@ -2,7 +2,7 @@
 
 This directory contains a skeleton spring/sqlite JDBC project based on
 [Spring Boot MVC Demo with JDBC and SqlServer](https://github.com/wuwei1024/SpringBoot-MVC-JDBC-SqlServer) but with SQLite
-instead  of MS SQL Server accessed through JDBC.
+instead of MS SQL Server still accessed through JDBC
 
 
 ### Prerequisites
@@ -336,6 +336,50 @@ docker container ls -a | grep sqlite | cut -d ' ' -f 1 | xargs -IX docker contai
 docker image rm -f sqlite-shell sqlite-jdbc
 docker image ls |  grep '<none>' | awk '{print $3}' | xargs -IX  docker image rm -f X
 ```
+### Index Creation
+
+based on the [recommedation](https://www.sqlite.org/optoverview.html) to enable the index when running the `LIKE` queries one need to specify the `NOCASE` in the `COLLATION` instruction:
+
+* when the following is set up:
+```SQL
+CREATE TABLE contacts (
+	first_name text NOT NULL,
+	last_name text NOT NULL,
+	email text NOT NULL
+);
+
+```
+```SQL
+CREATE UNIQUE INDEX idx_contacts_email ON contacts (email COLLATE NOCASE);
+```
+the index is being used:
+```SQL
+EXPLAIN QUERY PLAN
+SELECT
+	first_name,
+	last_name,
+	email
+FROM
+	contacts
+WHERE
+	email LIKE 'user@something.%';
+```
+shows
+```text
+SEARCH TABLE contacts USING INDEX idx_contacts (email>? AND email<?)
+```
+* while if the specification is not provided:
+```SQL
+CREATE UNIQUE INDEX idx_contacts_email ON contacts (email);
+```
+then the same `EXPLAIN QUERY PLAN` returns
+```text
+SCAN TABLE contacts
+```
+which should be leading to a poor performance full table scan problem
+
+This can also be tested in [SQLite indexes Tutorial Page](https://www.sqlitetutorial.net/sqlite-index/). NOTE the query TEXTAREA in [interactive SQL browser-based IDE](https://www.sqlitetutorial.net/tryit/query/sqlite-index) allows only one query statement at a time.
+
 ### See Also
 
   * for SQLite Hibernate project example, see [restart1025/Spring-Boot-SQLite](https://github.com/restart1025/Spring-Boot-SQLite)
