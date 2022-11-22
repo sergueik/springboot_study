@@ -2,9 +2,7 @@ version: "3.7"
 
 services:
   app:
-    image: sample-java-app
-    # NOTE: GID can be unset
-    # may use bash syntax to supply for defaut value
+    image: sample-java17-app
     user: "${UID:-1000}:${GID:-1000}"
     command: "java -jar /app/target/demo-2.7.5.jar"
     volumes:

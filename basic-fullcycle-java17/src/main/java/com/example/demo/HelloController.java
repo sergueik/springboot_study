@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloController {
 
-    @GetMapping("/")
-    public String index() {
-        CreateFile.append("controllerHello");
-        return "Greetings from Spring Boot!";
-    }
+	@GetMapping("/")
+	public String index() {
+		CreateFile.append("controllerHello");
+		return "Greetings from Spring Boot!";
+	}
 
 }
