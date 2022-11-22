@@ -2,13 +2,15 @@ version: "3.7"
 
 services:
   app:
-    image: docker-java/java
-    user: "${UID}:${GID}"
+    image: sample-java-app
+    # NOTE: GID can be unset
+    # may use bash syntax to supply for defaut value
+    user: "${UID:-1000}:${GID:-1000}"
     command: "java -jar /app/target/demo-2.7.5.jar"
     volumes:
       - .:/app
     ports:
       - "8585:8080"
     environment:
-      UID: ${UID}
-      0GID: ${GID}
+      UID: ${UID:-1000}
+      0GID: ${GID:-1000}

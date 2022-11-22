@@ -1,19 +1,19 @@
 #!/bin/sh
 # NOTE: ubuntu bionic - UID is set but GID is not
 if [ -z $GID ] ; then 
-  export GID=$(id -g $USER)
+  export GID=$(id -u )
 fi
-docker build -f maven.Dockerfile \
-             -t docker-java/maven .
-
+IMAGE=sample.app-app
+docker build -f Dockerfile.build \
+             -t $IMAGE .
+echo step 1 done
+NAME=sample.app-app
 docker run --rm \
-           --name docker-java_maven \
-           --user $(id -u ${USER}):$(id -g ${USER}) \
+           --name $NAME \
+           --user app \
            --volume $(pwd):/app \
-           docker-java/maven \
+           $IMAGE \
            mvn clean install
-
-docker rm docker-java_maven
-
-docker build -f java.Dockerfile \
-             -t docker-java/java .
+docker image rm $IMAGE
+docker build -f Dockerfile.app \
+             -t $IMAGE .
