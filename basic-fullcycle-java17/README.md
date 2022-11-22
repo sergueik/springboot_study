@@ -4,10 +4,32 @@ this is a replica of [example project](https://github.com/Diamis/docker-java)
 
 it builds and runs java app in container started by `docker-compose`. The goal is to run java app as nonroot user and do not have any root ownerartifacts in the workspace after the completion
 
-### Usage
-*  build
+### Prerequisites
+
+if the `docker-compose` installed  by `apt-get` it is too old. However it is OK to install `docker-compose` via apt-get first for dependency sake. NOTE: the download instruction from [digitalocean](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04) modified to put the script into `/usr/bin` instead of `/usr/local/bin`
+```sh
+sudo curl -L https://github.com/docker/compose/releases/download/1.25.0/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
 ```
-./build.sh
+
+### Usage
+
+* pull images
+
+```sh
+docker pull maven:3.8.3-openjdk-17
+docker pull openjdk:17
+docker pull openjdk:17-alpine3.14
+```
+it is over 1Gb worth of disk, counting build and run containers
+```text
+maven            3.8.3-openjdk-17        0b9ddcb8259e   12 months ago   785MB
+openjdk          17                      5e28ba2b4cdb   6 months ago    471MB
+openjdk          17-alpine               264c9bdce361   17 months ago   326MB
+```
+
+*  build
+```sh
+./build.sh | tee build.log
 ```
 this runs `Dockerfile.build` as non-root user to create the maven `target` directory  in the project directory (does not like it to owned by the root user), followed by constructing a skeleton Java 17 container with similar non-root user to feed to `docker-compose`
 
@@ -33,11 +55,23 @@ the docker is misconfigured
 ```text
 access: (0644/-rw-r--r--)  Uid: ( 1000/sergueik)   Gid: ( 1000/sergueik)
 ```
+* interact with app running in alpine container
+```sh
+curl http://localhost:8586
+```
+the log will be created
+
+
 ### Cleanup
 
 ```sh
 docker-compose stop
 docker-compose rm -f
+```
+the explicit image cleanup appears to be required:
+
+```sh
+ docker image ls | grep sample-java17| awk '{print $3}' | xargs -IX docker image rm X
 ```
 ### NOTE 
 

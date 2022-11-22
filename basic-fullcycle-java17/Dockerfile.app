@@ -1,5 +1,4 @@
 FROM openjdk:17
-
 ARG UID=1000
 ARG GID=1000
 

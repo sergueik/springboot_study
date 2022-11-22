@@ -11,4 +11,15 @@ services:
       - "8585:8080"
     environment:
       UID: ${UID:-1000}
-      0GID: ${GID:-1000}
+      GID: ${GID:-1000}
+  app-alpine:
+    image: sample-java17-app-alpine
+    user: "${UID:-1000}:${GID:-1000}"
+    command: "java -jar /app/target/demo-2.7.5.jar"
+    volumes:
+      - .:/app
+    ports:
+      - "8586:8080"
+    environment:
+      UID: ${UID:-1000}
+      GID: ${GID:-1000}

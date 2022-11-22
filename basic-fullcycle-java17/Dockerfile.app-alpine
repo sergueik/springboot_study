@@ -1,0 +1,26 @@
+FROM openjdk:17-alpine3.14
+ARG UID=1000
+ARG GID=1000
+ARG PASSWORD=TeStP_w0rD
+
+ENV UID=${UID}
+ENV GID=${GID}
+ENV PASSWORD=${PASSWORD}
+ENV EDITOR=nano
+
+ARG USER_NAME=docker_user
+ARG GROUP_NAME=docker_user
+
+# TODO: update the repo URL
+# ERROR: http://nl.alpinelinux.org/alpine/edge/main: UNTRUSTED signature
+# WARNING: Ignoring http://nl.alpinelinux.org/alpine/edge/main: No such file or directory
+# RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
+RUN apk update && apk add --no-cache $EDITOR
+RUN getent group $GROUP_NAME >/dev/null || addgroup -S $GROUP_NAME
+# solving
+RUN getent passwd $UID || adduser -h /home/$USER_NAME -u $UID -s /bin/sh -D -G $GROUP_NAME $USER_NAME 
+USER app
+
+WORKDIR /app
+
+CMD ["java"]
