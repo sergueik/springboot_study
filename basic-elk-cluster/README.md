@@ -29,6 +29,7 @@ curl http://192.168.0.92:5601/app/apm
 ```
 USER root
 RUN yum install -q -y python3 pip3
+RUN pip3 install flask elastic-apm[flask]
 USER apm-server
 ```
 and map port `6000` of `apm-server` to host `6000` (the port `5000` is already mapped to logstash container `5000`:
@@ -37,7 +38,7 @@ and map port `6000` of `apm-server` to host `6000` (the port `5000` is already m
 
 ```
 ```sh
-docker-compose exec apm_server sh
+docker-compose exec apm-server sh
 ```
 ```sh
 pip3 install --user flask elastic-apm[flask]
@@ -79,7 +80,19 @@ python3 /tmp/app.py
 ```sh
 curl -s http://192.168.0.92:6000
 ```
-currently it fails to submit index:
+it it fails with missing packages, repeat the exec step with root user:
+```sh
+docker-compose exec -u root apm-server  sh
+```
+then
+```sh
+yum install python3
+pip3 install flask
+pip3 install flask elastic-apm[flask]
+```
+![APM Example](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-apm-example.png)
+
+NOTE, one should use relatively new builds of ELK stack - when elasticsearch 6.6.x  the APM fails to submit index:
 ```text
 Failed to submit message: 'HTTP 404: 404 page not found\n'
 Traceback (most recent call last):
@@ -99,10 +112,11 @@ By default, the stack exposes the following ports:
 The images are relatively heavy
 
 ```text
-basic-elk-cluster_apm_server    latest                6fb06e8a9da3   4 years ago     319MB
-basic-elk-cluster_logstash      latest                5d448d68a8ee   4 years ago     669MB
-basic-elk-cluster_kibana        latest                23752503a930   4 years ago     547MB
-basic-elk-cluster_elasticsearch latest                458eedf9515f   4 years ago     451MB
+
+basic-elk-cluster_apm_server           latest                3abe88832b9e   18 hours ago    756MB
+basic-elk-cluster_logstash             latest                93ae8cd11560   3 years ago     847MB
+basic-elk-cluster_kibana               latest                714b175e84e8   3 years ago     745MB
+basic-elk-cluster_elasticsearch        latest                12ad640a1ec0   3 years ago     894MB
 
 ```
 ### TODO
@@ -120,3 +134,4 @@ remove `logstash` from the cluster (not needed for APM exercise)
 
 
 
+	

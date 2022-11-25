@@ -5,9 +5,9 @@ apm-server:
   kibana:
     enabled: true
     host: "kibana:5601"
-#    protocol: "http"
-    username: "elastic"
-    password: "elasticpassword"
+    protocol: "http"
+#    username: "elastic"
+#    password: "elasticpassword"
 
 #setup.template.enabled: true
 #setup.template.name: "apm-%{[observer.version]}"
@@ -17,8 +17,9 @@ apm-server:
 
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]
-  username: elastic
-  password: elasticpassword
+  protocol: "http"
+  #  username: elastic
+  #  password: elasticpassword
 #  index: "apm-%{[observer.version]}-%{+yyyy.MM.dd}"
 #  indices:
 #    - index: "apm-%{[observer.version]}-sourcemap"
@@ -42,8 +43,8 @@ output.elasticsearch:
 
 monitoring.enabled: true
 monitoring.elasticsearch:
-  username: "elastic"
-  password: "elasticpassword"
+  # username: "elastic"
+  #  password: "elasticpassword"
   hosts: ["elasticsearch:9200"]
 
 setup.kibana:

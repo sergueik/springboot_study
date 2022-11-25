@@ -1,9 +1,9 @@
-cluster.name: "docker-cluster"  ## 이 이름에 큰 의미 없음, 왜냐하면 싱글클러스터로 운영할 계획이기 때문에
-network.host: 0.0.0.0 ## 외부에서 접근가능
+cluster.name: "docker-cluster" 
+network.host: 0.0.0.0 
 
 xpack.license.self_generated.type: basic
 #xpack.security.authc.token.enable: true
 #xpack.security.authc.api_key.enabled: true
 
-xpack.security.enabled: true
+xpack.security.enabled: false
 xpack.monitoring.collection.enabled: true

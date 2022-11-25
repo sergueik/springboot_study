@@ -2,10 +2,8 @@
 http.host: "0.0.0.0"
 xpack.monitoring.elasticsearch.hosts: [ "http://elasticsearch:9200" ]
 
-## 엘라스틱 아이디와 비번을 로그스태시에게 알려주기
 xpack.monitoring.enabled: true
-xpack.monitoring.elasticsearch.username: elastic
-xpack.monitoring.elasticsearch.password: elasticpassword
+# xpack.monitoring.elasticsearch.username: elastic
+# xpack.monitoring.elasticsearch.password: elasticpassword
 
-## conf 변경시 재시작안해도 반영됨
 config.reload.automatic: true

@@ -5,5 +5,5 @@ elasticsearch.hosts: [ "http://elasticsearch:9200" ]
 #Error: \"monitoring.ui.container.elasticsearch.enabled\" setting was not applied. Check for spelling errors and ensure that expected plugins are installed.
 xpack.security.enabled: true
 
-elasticsearch.username: elastic
-elasticsearch.password: elasticpassword
+# elasticsearch.username: elastic
+# elasticsearch.password: elasticpassword
