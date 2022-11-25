@@ -1,61 +1,74 @@
-version: '2'
+version: '3'
 
 services:
-
   elasticsearch:
-    build:
-      context: elasticsearch/
+    restart: unless-stopped
+    build: ./elasticsearch
+    container_name: elasticsearch
     volumes:
-      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
+    #  - ./elasticsearch/data:/usr/share/elasticsearch/data
+    environment:
+      - TZ=Asia/Seoul
+      - ELASTIC_PASSWORD=elasticpassword
+      - node.name=elasticsearch 
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node 
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     ports:
       - "9200:9200"
-      - "9300:9300"
-    environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
-      - elk
-
-  logstash:
-    build:
-      context: logstash/
-    volumes:
-      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
-      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
-    ports:
-      - "5000:5000"
-    environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-    networks:
-      - elk
-    depends_on:
-      - elasticsearch
+      - elastic
 
   kibana:
-    build:
-      context: kibana/
+    restart: unless-stopped
+    build: ./kibana
+    container_name: kibana
     volumes:
-      - ./kibana/config/:/usr/share/kibana/config:ro
+      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,z
     ports:
-      - "5601:5601"
-    networks:
-      - elk
+      - "5601:5601" 
     depends_on:
       - elasticsearch
+    networks:
+      - elastic
 
-  apm_server:
-    build:
-      context: apm/
+  logstash:
+    restart: unless-stopped
+    build: ./logstash
+    container_name: logstash
     volumes:
-      - ./apm/config/:/usr/share/apm/config:ro
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,z
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro,z
+    environment:
+      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
+    ports:
+      - "5044:5044"
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+
+  apm-server:
+    restart: unless-stopped
+    image: docker.elastic.co/apm/apm-server:7.16.3
+    container_name: apm-server
+    cap_add: [ "CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID" ]
+    cap_drop: [ "ALL" ]
+    volumes:
+      - ./apm-server/config/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro,z
     ports:
       - "8200:8200"
-      - "6000:6000"
-    networks:
-      - elk
     depends_on:
-      - elasticsearch  
+      - elasticsearch
+      - kibana
+    networks:
+      - elastic
+
 
 networks:
-
-  elk:
-    driver: bridge
+  elastic:

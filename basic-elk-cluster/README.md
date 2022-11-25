@@ -1,6 +1,6 @@
 ### Info
 
-clone on [custom cluster](https://github.com/amalcp/Dockerized-ELK-APM-Server) with relatively old versions of ELK applications for APM learning  testing (aftera failed to vanilla install of `apm-server` on a a custom Vagrant box with other components installed)
+clone on [Elastic APM-Server Lab](https://github.com/SMin1620/Elastic_APM_Lab) ELK applications cluster for APM learning  testing (aftera failed to vanilla install of `apm-server` on a a custom Vagrant box with other components installed)
 
 
 ### Usage
@@ -107,7 +107,8 @@ basic-elk-cluster_elasticsearch latest                458eedf9515f   4 years ago
 ```
 ### TODO
 
-remove `logstash` from the cluster
+remove `logstash` from the cluster (not needed for APM exercise)
+
 ### See Also
 
   * [monitoring python flask application with elastic apm](https://medium.com/analytics-vidhya/monitoring-python-flask-application-with-elastic-apm-bb0853f056ff)

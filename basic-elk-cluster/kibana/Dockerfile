@@ -1,5 +1,2 @@
-# https://github.com/elastic/kibana-docker
-FROM docker.elastic.co/kibana/kibana-oss:6.2.3
-
-# Add your kibana plugins setup here
-# Example: RUN kibana-plugin install <name|url>
+FROM kibana:7.1.0
+# This version of Kibana (v7.16.3) is incompatible with the following Elasticsearch nodes in your cluster
