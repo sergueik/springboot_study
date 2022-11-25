@@ -18,21 +18,46 @@ curl -XGET 'localhost:9200/_cat/indices?v&pretty' | grep apm
 ```
 ```text
 yellow open   apm-6.2.4-2022.11.24 2xcjw25ZTJ-_iaj6vbAoAA   5   1          1            0      5.5kb          5.5kb
-
 ```
-The APM Server management via Kibana is not available in this old version of ELK
+Run explicitly "loud" the cluster member health checks docker-compose does when buildin the cluster:
+
 ```sh
-curl http://192.168.0.92:5601/app/apm
+curl -s --write-out 'HTTP %{http_code}' --fail  http://localhost:8200/
+curl -s http://localhost:9200 | jq '.tagline'
+curl -s http://localhost:5601/api/status | jq '.status.overall.state'
+```
+this will show:
+
+```json
+{
+  "build_date": "2019-05-15T23:36:10Z",
+  "build_sha": "75bf6e0a4a71e14c7c84cdfe7e4bce73e4afacc4",
+  "version": "7.1.0"
+}
+```
+```text
+"You Know, for Search"
+```
+```text
+
+"green"
 ```
 
-* add python3 on `apm-server` will be easy, it is an centos base image, but does not have sudo, therefore yum commands need to be added to `apm/Dockerfile`
+The APM Server management via Kibana is not fully functional in this old version of ELK: `http://$(hostname -i):5601/app/apm` clicking __Check APM Server Status__ button shows the message:
+```text
+No APM Server detected
+```
+![Kibana APM Example](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-kibana-apm-detection.png)
+
+One can proceed with a hello world application example on apm server
+* add python3 on `apm-server` will be easy, the container is based n centos image, the yum commands can to be added to `apm/Dockerfile`, switching to root user for a global module installation:
 ```
 USER root
 RUN yum install -q -y python3 pip3
 RUN pip3 install flask elastic-apm[flask]
 USER apm-server
 ```
-and map port `6000` of `apm-server` to host `6000` (the port `5000` is already mapped to logstash container `5000`:
+and map port `6000` of `apm-server` to host `6000` (the port `5000` is already mapped to logstash container `5000`):
 
 ```yaml
 
@@ -40,9 +65,44 @@ and map port `6000` of `apm-server` to host `6000` (the port `5000` is already m
 ```sh
 docker-compose exec apm-server sh
 ```
+if the error is shown:
+```text
+Error response from daemon: Container 8fb3761cee5c83adbf650fd371fe7ef6c7adafcf645a57cfd5b06e057d40c1bc is restarting, wait until the container is running
+```
+if the cotainer status is
+```
+docker container ls | grep apm-server
+```
+```text
+
+CONTAINER ID   IMAGE                             COMMAND                  CREATED          STATUS                          PORTS                                                 NAMES
+bd60a5144d04   basic-elk-cluster_apm-server      "/usr/local/bin/dock…"   33 minutes ago   Restarting (1) 19 seconds ago                                                         apm-server
+
+```
+inspect the logs:
+```sh
+docker logs apm-server
+```
+```text
+apm-server       | Exiting: error loading config file: config file ("apm-server.yml") can only be writable by the owner but the permissions are "-rw-rw-r--" (to fix the permissions use: 'chmod go-w /usr/share/apm-server/apm-server.yml')
+```
+
+and correct the permissions:
+```sh
+chmod 644 apm-server/config/apm-server.yml
+```
+
+![Kibana APM Example](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-kibana-apm-server-correctly-setup.png)
+then repeat the exec command and in the container, optionally install basic depenency modules:
+
 ```sh
 pip3 install --user flask elastic-apm[flask]
 ```
+if seeing
+```text
+Requirement already satisfied:
+```
+continue to next step
 ```
 hostname -i
 vi /tmp/app.py

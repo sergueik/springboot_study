@@ -80,6 +80,7 @@ services:
     cap_add: [ "CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID" ]
     cap_drop: [ "ALL" ]
     volumes:
+      # NOTE: the 'z' option tells Docker that two containers share the volume content. it is unclear why it is needed here
       - ./apm-server/config/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro,z
     ports:
       - "8200:8200"
