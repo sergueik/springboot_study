@@ -84,7 +84,6 @@ services:
       - ./apm-server/config/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro,z
     ports:
       - "8200:8200"
-      - "6000:6000"
     healthcheck:
       interval: 10s
       retries: 12
@@ -98,7 +97,20 @@ services:
         condition: service_healthy
     networks:
       - elastic
-
+  app:
+    restart: unless-stopped
+    build: ./app
+    container_name: app
+    ports:
+      - "6000:6000"
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:6000/
+    depends_on:
+      - apm-server
+    networks:
+      - elastic
 
 networks:
   elastic:

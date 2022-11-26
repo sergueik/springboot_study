@@ -1,19 +1,23 @@
 ## Info 
-* basic [python3 flask app](https://www.geeksforgeeks.org/flask-creating-first-simple-application/) in alpine Python container
 
+* basic [python3 flask app](https://www.geeksforgeeks.org/flask-creating-first-simple-application/) in alpine Python container
+showing the locale processing
+
+ 
 ### Usage
 
 * build
 ```sh
-export NAME=basic-python-flask
+export IMAGE=basic-python-flask
 ```
 ```sh
-docker build -t $NAME  -f Dockerfile .
+docker build -t $IMAGE  -f Dockerfile .
 ```
 * run in background
 
 ```sh
-docker run --name $NAME -p 5000:5000 -d $NAME
+export NAME=basic-python-flask
+docker run --name $NAME -p 5000:5000 -d $IMAGE
 ```
 * test localized static page
 ```sh
@@ -25,11 +29,12 @@ Hello йцукен
 ```
 test passing the URL - incorrectly
 ```sh
-curl host:5000/hello/абырвалг
+curl http://localhost:5000/hello/абырвалг
 ```
 will show misencoded UTF-8 to WIN CP1251 text
 ```text
 Hello DdegD+-NND2DdegD>>D
+Hello Ð°Ð±ÑÑÐ²Ð°Ð»Ð³ [208, 176, 208, 177, 209, 139, 209, 128, 208, 178, 208, 176, 208, 187, 208, 179] 
 ```
 using URL encoded argument localized string in the path
 ```sh
@@ -62,6 +67,9 @@ or windows
   * https://www.urlencoder.org
 
   * https://github.com/gliderlabs/docker-alpine/issues/144#issuecomment-436455850
+  * [encoding](https://stackoverflow.com/questions/24234987/urlencode-cyrillic-characters-in-python) the UTF-8 console cyrillic as urlencoded Windows `cp1251` locale
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 

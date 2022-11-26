@@ -49,27 +49,19 @@ No APM Server detected
 ```
 ![Kibana APM Example](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-kibana-apm-detection.png)
 
-One can proceed with a hello world application example on apm server
-* add python3 on `apm-server` will be easy, the container is based n centos image, the yum commands can to be added to `apm/Dockerfile`, switching to root user for a global module installation:
-```
-USER root
-RUN yum install -q -y python3 pip3
-RUN pip3 install flask elastic-apm[flask]
-USER apm-server
-```
-and map port `6000` of `apm-server` to host `6000` (the port `5000` is already mapped to logstash container `5000`):
+One can proceed with a hello world application example on `app` node
+NOTE:
 
-```yaml
-
-```
+if one can not connect to `apm-server`
 ```sh
 docker-compose exec apm-server sh
 ```
-if the error is shown:
+if the error is:
 ```text
 Error response from daemon: Container 8fb3761cee5c83adbf650fd371fe7ef6c7adafcf645a57cfd5b06e057d40c1bc is restarting, wait until the container is running
 ```
-if the cotainer status is
+
+check if the `apm-server` container status is unstable
 ```
 docker container ls | grep apm-server
 ```
@@ -93,102 +85,33 @@ chmod 644 apm-server/config/apm-server.yml
 ```
 
 ![Kibana APM Example](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-kibana-apm-server-correctly-setup.png)
-then repeat the exec command and in the container, optionally install basic depenency modules:
-
+* interact with `app` server
 ```sh
-pip3 install --user flask elastic-apm[flask]
-```
-if seeing
-```text
-Requirement already satisfied:
-```
-continue to next step
-```
-hostname -i
-vi /tmp/app.py
-```
-```python
-import socket
-from flask import Flask
-app = Flask(__name__)
-@app.route('/')
-def index():
-  return "Hello World!"
-if __name__ == '__main__':
-  s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-  s.connect(('8.8.8.8', 80))
-  ip = (s.getsockname()[0])
-  app.run(host = ip, port = 6000)
-```
-can add APM code right away
-```python
-import socket
-from flask import Flask
-from elasticapm.contrib.flask import ElasticAPM
-app = Flask(__name__)
-app.config['ELASTIC_APM'] = {
-          'SERVICE_NAME': 'FlaskApp',
-          'SECRET_TOKEN': '',
-          'SERVER_URL': 'http://localhost:8200'
-}
-apm = ElasticAPM(app)
-@app.route('/')
-def index():
-  return "Hello World!"
-if __name__ == '__main__':
-  s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-  s.connect(('8.8.8.8', 80))
-  ip = (s.getsockname()[0])
-  app.run(host = ip, port = 6000)
-```
-```sh
-python3 /tmp/app.py
-```
-```sh
-curl -s http://192.168.0.92:6000
-```
-it it fails with missing packages, repeat the exec step with root user:
-```sh
-docker-compose exec -u root apm-server  sh
-```
-then
-```sh
-yum install python3
-pip3 install flask
-pip3 install flask elastic-apm[flask]
+curl -s http://192.168.0.64:6000
 ```
 ![APM Example](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-apm-example.png)
 
-NOTE, one should use relatively new builds of ELK stack - when elasticsearch 6.6.x  the APM fails to submit index:
-```text
-Failed to submit message: 'HTTP 404: 404 page not found\n'
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.6/site-packages/elasticapm/transport/base.py", line 279, in _flush
-    self.send(data, forced_flush=forced_flush)
-  File "/usr/local/lib/python3.6/site-packages/elasticapm/transport/http.py", line 114, in send
-    raise TransportException(message, data, print_trace=print_trace)
-elasticapm.transport.exceptions.TransportException: HTTP 404: 404 page not found
-```
 ### Configuration
+
 By default, the stack exposes the following ports:
+
 * 5000: Logstash TCP input.
 * 9200: Elasticsearch HTTP
 * 9300: Elasticsearch TCP transport
 * 5601: Kibana
 * 8200: APM
-The images are relatively heavy
+
+NOTE: the images are relatively heavy
 
 ```text
-
 basic-elk-cluster_apm_server           latest                3abe88832b9e   18 hours ago    756MB
 basic-elk-cluster_logstash             latest                93ae8cd11560   3 years ago     847MB
 basic-elk-cluster_kibana               latest                714b175e84e8   3 years ago     745MB
 basic-elk-cluster_elasticsearch        latest                12ad640a1ec0   3 years ago     894MB
-
 ```
 ### TODO
 
-remove `logstash` from the cluster (not needed for APM exercise)
+* remove the `logstash` node from the cluster (not needed for APM exercise)
 
 ### See Also
 
@@ -199,7 +122,6 @@ remove `logstash` from the cluster (not needed for APM exercise)
   * [setup APM Server on Ubuntu for Your Elastic Stack to Get Insights in Your Application Performance Metrics]( https://blog.ruanbekker.com/blog/2018/11/11/setup-apm-server-on-ubuntu-for-your-elastic-stack-to-get-insights-in-your-application-performance-metrics)
 
   * [finding local IP addresses using Python's stdlib](https://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib)
-
 
 	
 ### Author
