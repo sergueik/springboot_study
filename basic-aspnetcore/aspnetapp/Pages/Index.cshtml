@@ -6,15 +6,13 @@
 @{
     ViewData["Title"] = "Home page";
     var process = Process.GetCurrentProcess();
-    var hostName = System.Net.Dns.GetHostName();
-    var ipList = await System.Net.Dns.GetHostAddressesAsync(hostName);
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome to .NET</h1>
+    <h1 class="display-4">Welcome to ASP.NET Core on DigitalOcean App Platform</h1>
 
     <h5>Environment</h5>
-    <p>@RuntimeInformation.FrameworkDescription (@RuntimeInformation.ProcessArchitecture)</p>
+    <p>@RuntimeInformation.FrameworkDescription</p>
     <p>@RuntimeInformation.OSDescription</p>
 </div>
 
@@ -25,42 +23,13 @@
             <td>Containerized</td>
             <td>@(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") is object ? "true" : "false")</td>
         </tr>
-        <tr>
-            <td>CPU cores</td>
-            <td>@Environment.ProcessorCount</td>
-        </tr>
-        @if (RuntimeInformation.OSDescription.StartsWith("Linux") && Directory.Exists("/sys/fs/cgroup/memory"))
-        {
-            <tr>
-                <td>cgroup memory usage</td>
-                <td>@System.IO.File.ReadAllLines("/sys/fs/cgroup/memory/memory.usage_in_bytes")[0]</td>
-            </tr>
-        }
-        <tr>
-            <td>Memory, current usage (bytes)</td>
-            <td>@process.WorkingSet64</td>
-        </tr>
-        <tr>
-            <td>Memory, max available (bytes)</td>
-            <td>@process.MaxWorkingSet</td>
-        </tr>
-
-        <tr>
-            <td>Host name</td>
-            <td>@hostName</td>
-        </tr>
-        <tr>
-            <td style="vertical-align: top">Server IP address</td>
-            <td>
-                @{
-                    foreach (var ip in ipList)
-                    {
-                        @ip
-                        <br />
-                    }
-                }
-
-            </td>
-        </tr>
+       
+    
     </table>
+</div>
+<div class="text-center">
+    <br />
+    <p>To deploy this app yourself, follow the instructions here: <a href="https://github.com/creativefisher/aspnetcoresample">https://github.com/creativefisher/aspnetcoresample</a></p>
+    <p>You can sign up for a DigitalOcean account using the link below and receive a $100, 60-day credit to get started:</p>
+    <a href="https://www.digitalocean.com/?refcode=928215b6ed22&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"><img src="https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg" alt="DigitalOcean Referral Badge" /></a>
 </div>

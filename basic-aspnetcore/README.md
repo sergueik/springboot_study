@@ -1,7 +1,7 @@
 ### Info
 this directory contains a replica of
-[ASP.NET Core Docker Sample](https://github.com/dotnet/dotnet-docker/tree/0fc0e2c6af6303cfd4676f1ac8c21090d82b0072) at commit  `0fc0e2c6af6303cfd4676f1ac8c21090d82b0072` *Update samples to .NET 6*
-
+[ASP.NET Core Docker Sample](https://github.com/dotnet/dotnet-docker/tree/0fc0e2c6af6303cfd4676f1ac8c21090d82b0072) at commit  `0fc0e2c6af6303cfd4676f1ac8c21090d82b0072` *Update samples to .NET 6*  with `aspnetapp` project from 
+[ASP.NET Core Docker Container Sample for DigitalOcean App Platform](https://github.com/creativefisher/aspnetcoresample) added `Elastic.Apm` to dependenies
 
 ### Usage
 
@@ -38,6 +38,8 @@ docker build -t $IMAGE -f Dockerfile .
 ```sh
 NAME=basic-aspnetapp
 docker run --name $NAME -it -p 8000:80 $IMAGE
+ELK_NETWORK=basic-elk-cluster_elastic 
+docker run --name $NAME --network $ELK_NETWORK -it -p 8000:80 $IMAGE
 ```
 or
 ```sh
@@ -47,7 +49,7 @@ docker start $NAME
 curl -s http://localhost:8000 | grep Welcome
 ```
 ```text
-<h1 class="display-4">Welcome to .NET</h1>
+<h1 class="display-4">Welcome to ASP.NET Core on DigitalOcean App Platform</h1>
 ```
 ### TODO
 

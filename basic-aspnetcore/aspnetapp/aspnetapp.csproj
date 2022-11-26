@@ -2,9 +2,28 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>57393389627611478466</UserSecretsId>
   </PropertyGroup>
 
+<!-- NOTE: The Microsoft.AspNetCore.All package is not supported when targeting .NET Core 3.0 or higher.  A FrameworkReference to Microsoft.AspNetCore.App should be used instead -->
+<!-- PackageReference to Microsoft.AspNetCore.App is not necessary when targeting .NET Core 3.0 or higher. If Microsoft.NET.Sdk.Web is used, the shared framework will be referenced automatically. Otherwise, the PackageReference should be replaced with a FrameworkReference.  -->
+<!--
+NOTE: warning NETSDK1086: A FrameworkReference for 'Microsoft.AspNetCore.App' was included in the project. This is implicitly referenced by the .NET SDK and you do not typically need to reference it from your project. For more information, see https://aka.ms/sdkimplicitrefs [/source/aspnetapp/aspnetapp.csproj]
+ 
+ -->
+<!-- 
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.1.6" />
+  </ItemGroup> -->
+
+  <ItemGroup>
+    <PackageReference Include="Elastic.Apm" Version="1.18.0" />
+  </ItemGroup>
+<!-- 
+  <ItemGroup>
+    <PackageReference Include="Elastic.Apm.NetCore" Version="1.18.0" />
+  </ItemGroup>-->
+  <ItemGroup>
+    <PackageReference Include="Elastic.Apm.NetCoreAll" Version="1.18.0" />
+  </ItemGroup> 
 </Project>
