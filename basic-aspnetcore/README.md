@@ -1,7 +1,14 @@
 ### Info
+
 this directory contains a replica of
 [ASP.NET Core Docker Sample](https://github.com/dotnet/dotnet-docker/tree/0fc0e2c6af6303cfd4676f1ac8c21090d82b0072) at commit  `0fc0e2c6af6303cfd4676f1ac8c21090d82b0072` *Update samples to .NET 6*  with `aspnetapp` project from 
-[ASP.NET Core Docker Container Sample for DigitalOcean App Platform](https://github.com/creativefisher/aspnetcoresample) added `Elastic.Apm` to dependenies
+[ASP.NET Core Docker Container Sample for DigitalOcean App Platform](https://github.com/creativefisher/aspnetcoresample) added `Elastic.Apm.NetCoreAll` to dependenies, and to `Startup.cs`
+
+  + [packaged](https://www.nuget.org/packages/Elastic.Apm.NetCoreAll/)
+
+  + [sources](https://github.com/elastic/apm-agent-dotnet) - many interdependent projects see e.g. `Elastic.Apm.NetCoreAll.csproj`
+
+  + [releases](https://github.com/elastic/apm-agent-dotnet/releases)
 
 ### Usage
 
@@ -45,20 +52,28 @@ or
 ```sh
 docker start $NAME
 ```
+
+![ASPNetCore Example](https://github.com/sergueik/springboot_study/blob/master/basic-aspnetcore/screenshots/capture-aspnetcore.png)
+
 ```sh
 curl -s http://localhost:8000 | grep Welcome
 ```
 ```text
 <h1 class="display-4">Welcome to ASP.NET Core on DigitalOcean App Platform</h1>
 ```
-### TODO
 
-* add __Elastic APM .NET agent__
-  + [packaged](https://www.nuget.org/packages/Elastic.Apm.NetCoreAll/_
 
-  + [sources](https://github.com/elastic/apm-agent-dotnet/blob/main/src/Elastic.Apm.NetCoreAll/Elastic.Apm.NetCoreAll.csproj) - not the best way to clone - too many interdependent projects
+![Kibana APM ASPNetCore Example](https://github.com/sergueik/springboot_study/blob/master/basic-aspnetcore/screenshots/capture-apm-aspnetcore.png)
 
-  + [releases](https://github.com/elastic/apm-agent-dotnet/releases)
+### Cleanup
+```sh
+NAME=basic-aspnetapp
+docker container stop $NAME
+docker container rm $NAME
+IMAGE=baic-aspnetapp
+docker image rm $IMAGE
+```
+
 
 
 ### See Also
