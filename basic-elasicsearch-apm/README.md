@@ -302,6 +302,8 @@ info - application_packages: 'example.basic' (source: Environment Variables)
   * sql4es [github repository](https://github.com/Anchormen/sql4es) and [release direcory](https://github.com/Anchormen/sql4es/tree/master/release) Elastic adapter JDBC.  Note - not published to Maven central. There s no newer version than for elastic search 6.3.2 4 year ago
   * https://github.com/wilsonyy/spring-boot-elasticsearch-timeseries-demo - create and query time series, interesting
   * https://github.com/ajaypp123/elasticsearch_timeseries/blob/master/timeseries_python.py
+   * [Tracing a Java Application with Elastic APM](https://medium.com/javarevisited/tracing-a-java-application-with-elastic-apm-62d4b90f031e)
+   * [Elastic APM on spring-boot apps](https://github.com/kamil-gawlik/elastic-apm-example)
  
 ###  Youtube Links
   * [Configuring Elasticsearch Index for Time Series Data](https://www.youtube.com/watch?v=2WJFMYAri_8)
@@ -316,6 +318,6 @@ info - application_packages: 'example.basic' (source: Environment Variables)
   * [using the Elastic APM Java Agent on Kubernetes](https://www.elastic.co/blog/using-elastic-apm-java-agent-on-kubernetes-k8s) and the referenced [project](eyalkoren/pet-clinic) illustrating alternative non-modifying variants of injecting the `javaagent` argument inluding the `JAVA_TOOL_OPTIONS` [advanced feature](https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html#tooloptions) environment variable usage by __JVMTM Tool Interface__.
   * [tutorial](https://www.baeldung.com/ops/docker-share-volume-multiple-containers) on sharing a volume between multiple containers with `docker-compose`
   * [documentation](https://docs.docker.com/compose/startup-order/) on controlling startup and shutdown order of services in Docker Compose - partial solution of fundamental dustributed system ordering challenge in need of [wait-for-it](https://github.com/vishnubob/wait-for-it), [docker-wait-for-dependencies](https://github.com/dadarek/docker-wait-for-dependencies) and similar additional containers
-
+ 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
