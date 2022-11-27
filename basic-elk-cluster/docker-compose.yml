@@ -5,8 +5,8 @@ services:
     restart: unless-stopped
     build: ./elasticsearch
     container_name: elasticsearch
-    volumes:
-      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
+    # volumes:
+    #  - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
     #  - ./elasticsearch/data:/usr/share/elasticsearch/data
     environment:
       - TZ=Asia/Seoul
@@ -38,8 +38,8 @@ services:
     restart: unless-stopped
     build: ./kibana
     container_name: kibana
-    volumes:
-      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,z
+    # volumes:
+    #  - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,z
     ports:
       - "5601:5601" 
     depends_on:
@@ -61,9 +61,9 @@ services:
     restart: unless-stopped
     build: ./logstash
     container_name: logstash
-    volumes:
-      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,z
-      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro,z
+    # volumes:
+    #  - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,z
+    #  - ./logstash/pipeline:/usr/share/logstash/pipeline:ro,z
     environment:
       - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
     ports:
@@ -79,9 +79,9 @@ services:
     container_name: apm-server
     cap_add: [ "CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID" ]
     cap_drop: [ "ALL" ]
-    volumes:
+    # volumes:
       # NOTE: the 'z' option tells Docker that two containers share the volume content. it is unclear why it is needed here
-      - ./apm-server/config/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro,z
+      # - ./apm-server/config/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro,z
     ports:
       - "8200:8200"
     healthcheck:
