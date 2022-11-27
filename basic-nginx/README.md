@@ -20,6 +20,19 @@ docker-compose up --build
 ```sh
 curl http://localhost:80/application/
 ```
+* NOTE: if run in [Docker Toolbox](https://github.com/docker-archive/toolbox) on Windows,
+use the ip adddress of the network card connected to Host-only adapter in the VM running Docker:
+
+```sh
+ifconfig eth1
+```
+```text
+eth1      link encap:Ethernet HWaddr 08:0027:B9:31:8B
+          inet addr:192.168.99.100 Bcast: 192.168.99.255 Mask:255.255.255.0
+```
+
+![APM Example](https://github.com/sergueik/springboot_study/blob/master/basic-nginx/screenshots/capture-application.png)
+
 * check nginx logs:
 ```sh
 docker-compose logs -f nginx
