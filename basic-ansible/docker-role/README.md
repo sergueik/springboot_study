@@ -1,1 +1,0 @@
-Sample Role for usage with docker as an example
