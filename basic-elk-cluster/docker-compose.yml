@@ -57,22 +57,6 @@ services:
       timeout: 10s
       retries: 120
 
-  logstash:
-    restart: unless-stopped
-    build: ./logstash
-    container_name: logstash
-    # volumes:
-    #  - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,z
-    #  - ./logstash/pipeline:/usr/share/logstash/pipeline:ro,z
-    environment:
-      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
-    ports:
-      - "5044:5044"
-    depends_on:
-      - elasticsearch
-    networks:
-      - elastic
-
   apm-server:
     restart: unless-stopped
     build: ./apm-server
