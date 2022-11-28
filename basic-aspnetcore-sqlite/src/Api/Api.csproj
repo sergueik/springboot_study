@@ -14,7 +14,7 @@
     <PackageReference Include="Elastic.Apm.NetCoreAll" Version="1.18.0" />
   </ItemGroup> 
   <ItemGroup>
-    <ProjectReference Include="..\EfcoreTest.Data\EfcoreTest.Data.csproj" />
+    <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 
 </Project>
