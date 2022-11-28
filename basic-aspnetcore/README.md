@@ -39,12 +39,17 @@ docker pull mcr.microsoft.com/dotnet/aspnet:6.0-alpine-amd64
 ```
 * build
 ```sh
-IMAGE=baic-aspnetapp
+IMAGE=basic-aspnetapp
 docker build -t $IMAGE -f Dockerfile .
 ```
+* test without APM
 ```sh
 NAME=basic-aspnetapp
 docker run --name $NAME -it -p 8000:80 $IMAGE
+```
+* test with APM
+```sh
+NAME=basic-aspnetapp
 ELK_NETWORK=basic-elk-cluster_elastic 
 docker run --name $NAME --network $ELK_NETWORK -it -p 8000:80 $IMAGE
 ```
@@ -54,6 +59,7 @@ docker start $NAME
 ```
 
 ![ASPNetCore Example](https://github.com/sergueik/springboot_study/blob/master/basic-aspnetcore/screenshots/capture-aspnetcore.png)
+
 
 ```sh
 curl -s http://localhost:8000 | grep Welcome
@@ -65,15 +71,71 @@ curl -s http://localhost:8000 | grep Welcome
 
 ![Kibana APM ASPNetCore Example](https://github.com/sergueik/springboot_study/blob/master/basic-aspnetcore/screenshots/capture-apm-aspnetcore.png)
 
+
+### C# Code Styles
+
+  * vanilla ASP .Net Core code aparently is a *regular* one - usage of statement Lambda operator indicates it's a __6.x__ C#  not a __5.x__ compatible C#
+    + `Program.cs`
+```C#
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+
+namespace aspnetapp {
+  public class Program {
+    public static void Main(string[] args) {
+      CreateHostBuilder(args).Build().Run(); }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+      Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(
+        webBuilder => { webBuilder.UseStartup<Startup>(); });
+   }	
+}
+```
+
+  * Some Microsoft [example C#]() looks a bit excesively modern and resembles a VB.Net:
+    + `Program.cs`
+```C#
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddRazorPages();
+
+var app = builder.Build();
+
+if (!app.Environment.IsDevelopment()) {
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.MapRazorPages();
+
+app.Run();
+```
+The latter syntax change appears unnnecessary for such a basic app.
+Besides the code snippets and documentation on [Elastic](https://github.com/elastic/apm-agent-dotnet/blob/main/docs/setup-asp-net-core.asciidoc) are written in __C# 6.0__
+
 ### Cleanup
 ```sh
 NAME=basic-aspnetapp
 docker container stop $NAME
 docker container rm $NAME
-IMAGE=baic-aspnetapp
+IMAGE=basic-aspnetapp
 docker image rm $IMAGE
 ```
 
+![ASPNetCore Docker Toolbox Example](https://github.com/sergueik/springboot_study/blob/master/basic-aspnetcore/screenshots/capture-aspnetcore-docker-toolbox.png)
 
 
 ### See Also

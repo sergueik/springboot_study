@@ -171,7 +171,33 @@ with the logs:
 "at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628) [?:?]",
 "at java.lang.Thread.run(Thread.java:835) [?:?]"] }
 ```
-  * remove the `logstash` node from the cluster (not needed for APM exercise)
+  * remove the `logstash` node from the cluster (not needed for APM exercise), also it makes the cluster unstable in long run:
+```sh
+docker container ls
+```
+```text
+CONTAINER ID   IMAGE                             COMMAND                  CREATED        STATUS                            PORTS                              NAMES
+7c151f60e5a3   baic-aspnetapp                    "./aspnetapp"            22 hours ago   Up 22 hours                       0.0.0.0:8000->80/tcp               basic-aspnetapp
+6f2396c64de1   basic-elk-cluster_app             "python /app/app.py"     28 hours ago   Up 23 hours (unhealthy)           0.0.0.0:6000->6000/tcp, 8080/tcp   app
+6ad327b93b37   basic-elk-cluster_apm-server      "/usr/local/bin/dock…"   28 hours ago   Up 23 hours (healthy)             0.0.0.0:8200->8200/tcp             apm-server
+88722a866d04   basic-elk-cluster_kibana          "/usr/local/bin/kiba…"   28 hours ago   Up 23 hours (healthy)             0.0.0.0:5601->5601/tcp             kibana
+eb7149f3e2e8   basic-elk-cluster_logstash        "/usr/local/bin/dock…"   28 hours ago   Up 23 hours                       0.0.0.0:5044->5044/tcp, 9600/tcp   logstash
+d23974a3444c   basic-elk-cluster_elasticsearch   "/usr/local/bin/dock…"   28 hours ago   Up 8 seconds (health: starting)   0.0.0.0:9200->9200/tcp, 9300/tcp   elasticsearch
+```
+one can not stop 
+```sh
+docker-compose stop
+```
+
+```text
+Stopping app           ... 
+Stopping apm-server    ... 
+Stopping apm-server    ... error
+Stopping kibana        ... error
+Stopping elasticsearch ... 
+Stopping elasticsearch ... error
+```
+- repeated attempts fix this
 
 ### See Also
 
