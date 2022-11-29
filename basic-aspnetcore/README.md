@@ -142,3 +142,7 @@ docker image rm $IMAGE
 
     * https://hub.docker.com/_/microsoft-dotnet-runtime/
     * https://hub.docker.com/_/microsoft-dotnet-sdk/
+    * [C# language versioning](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/configure-language-version)
+    * what's new in [C# 9](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-9)
+    * what's new in [C# 10](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-10)
+    * what's new in [C# 11](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-11)
