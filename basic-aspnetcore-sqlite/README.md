@@ -23,8 +23,8 @@ docker build -t $IMAGE -f Dockerfile .
 ```
 NAME=basic-aspnetcore-sqlite
 ELK_NETWORK=basic-elk-cluster_elastic
-docker run --name $NAME --network $ELK_NETWORK -it -p 5000:80 $IMAGE
-docker run -e ASPNETCORE_URLS="http://+" -e ASPNETCORE_HTTP_PORT=80 -p 5000:80 --network $ELK_NETWORK -it $IMAGE
+docker container rm $NAME
+docker run --name $NAME -e ASPNETCORE_URLS="http://+" -e ASPNETCORE_HTTP_PORT=80 -p 5000:80 --network $ELK_NETWORK -it $IMAGE
 ```
 
 ####  Verify
@@ -97,6 +97,11 @@ docker-compose up -d
     + [documentation](https://github.com/elastic/apm-agent-dotnet/blob/main/docs/index.asciidoc)
     + [releases](https://github.com/elastic/apm-agent-dotnet/releases)
     + [packaged](https://www.nuget.org/packages/Elastic.Apm.NetCoreAll/)
+
+  * [repository](https://github.com/elastic/elasticsearch-net) for `Elastic.Clients.Elasticsearch` the official .NET client, maintained and supported by Elastic with previous clients, `NEST` and `Elasticsearch.Net` in older branches 
+  * tutorial [repository](https://github.com/elastic/elasticsearch-net-example/tree/7.x-codecomplete) for Elasticsearch and NEST
 	
+
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -6,7 +6,14 @@ clone on [Elastic APM-Server Lab](https://github.com/SMin1620/Elastic_APM_Lab) E
 
 ### Usage
 
-* pull images
+* pull the latest __7.x__ images
+
+```sh
+ELK_VERSION=7.17.7
+docker pull kibana:$ELK_VERSION
+docker pull elasticsearch:$ELK_VERSION
+docker pull docker.elastic.co/apm/apm-server:$ELK_VERSION
+```
 * can run in foreground
 
 ```sh
@@ -19,7 +26,14 @@ the APM indes is auto created:
 curl -XGET 'localhost:9200/_cat/indices?v&pretty' | grep apm
 ```
 ```text
-yellow open   apm-6.2.4-2022.11.24 2xcjw25ZTJ-_iaj6vbAoAA   5   1          1            0      5.5kb          5.5kb
+green  open   .apm-agent-configuration         lTdECYbVQeWchgMt_EyOTw   1   0          0            0       226b           226b
+yellow open   apm-7.17.7-error-000001          T8LCy1CbSlur9BhzWosXYQ   1   1          0            0       226b           226b
+yellow open   apm-7.17.7-span-000001           yo4MxOkPTyysB3inaeK5sA   1   1          0            0       226b           226b
+green  open   .apm-custom-link                 BEiqFEjFSEuIvYYIxaGhyw   1   0          0            0       226b           226b
+yellow open   apm-7.17.7-onboarding-2022.11.30 Px1s3L3fSv64W_zIRAqgJw   1   1          1            0      7.9kb          7.9kb
+yellow open   apm-7.17.7-profile-000001        3v8VQPW-SXumL-fLxMlryw   1   1          0            0       226b           226b
+yellow open   apm-7.17.7-metric-000001         4NVXn4_sSGuR2AshSJqMtA   1   1          4            0     70.8kb         70.8kb
+yellow open   apm-7.17.7-transaction-000001    pTVGSy6GRPapi3OjIi_qvA   1   1          0            0       226b           226b
 ```
 Run explicitly "loud" the cluster member health checks docker-compose does when buildin the cluster:
 
@@ -32,9 +46,10 @@ this will show:
 
 ```json
 {
-  "build_date": "2019-05-15T23:36:10Z",
-  "build_sha": "75bf6e0a4a71e14c7c84cdfe7e4bce73e4afacc4",
-  "version": "7.1.0"
+  "build_date": "2022-10-13T16:18:51Z",
+  "build_sha": "441d2c2d115da97caaab8bbdd343d527da85fe47",
+  "publish_ready": true,
+  "version": "7.17.7"
 }
 ```
 ```text
@@ -45,16 +60,9 @@ this will show:
 "green"
 ```
 
-The APM Server management via Kibana is not fully functional in this old version of ELK: `http://$(hostname -i):5601/app/apm` clicking __Check APM Server Status__ button shows the message:
-```text
-No APM Server detected
-```
-![Kibana APM Example](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-kibana-apm-detection.png)
 
-One can proceed with a hello world application example on `app` node
-NOTE:
 
-if one can not connect to `apm-server`
+check if can not connect to `apm-server`
 ```sh
 docker-compose exec apm-server sh
 ```
@@ -86,10 +94,9 @@ and correct the permissions:
 chmod 644 apm-server/config/apm-server.yml
 ```
 
-![Kibana APM Example](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-kibana-apm-server-correctly-setup.png)
-* interact with `app` server
+* proceed with a hello world application example on `app` server
 ```sh
-curl -s http://192.168.0.64:6000
+curl -s http://localhost:6000
 ```
 ![APM Example](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-apm-example.png)
 
@@ -117,25 +124,16 @@ By default, the stack exposes the following ports:
 NOTE: the images are relatively heavy
 
 ```text
-basic-elk-cluster_apm_server           latest                3abe88832b9e   18 hours ago    756MB
-basic-elk-cluster_logstash             latest                93ae8cd11560   3 years ago     847MB
-basic-elk-cluster_kibana               latest                714b175e84e8   3 years ago     745MB
-basic-elk-cluster_elasticsearch        latest                12ad640a1ec0   3 years ago     894MB
+basic-elk-cluster_apm-server           latest                 c4ef445c0412   20 minutes ago   258MB
+basic-elk-cluster_kibana               latest                 3a414cdc79d3   20 minutes ago   799MB
+basic-elk-cluster_elasticsearch        latest                 a3f9ff0db620   23 minutes ago   619MB
+basic-elk-cluster_app                  latest                 2902ce4b8a5c   2 days ago       133MB
 ```
 ### TODO
 
   * the `docker-compose` container cluster build fails under [Docker Toolbox](https://github.com/docker-archive/toolbox) on Windows, with
 ```text
-ERROR: for elasticsearch  Cannot start service elasticsearch: OCI runtime create
- failed: container_linux.go:349: starting container process caused "process_linu
-x.go:449: container init caused \"rootfs_linux.go:58: mounting \\\"/c/developer/
-sergueik/springboot_study/basic-elk-cluster/elasticsearch/config/elasticsearch.y
-ml\\\" to rootfs \\\"/mnt/sda1/var/lib/docker/overlay2/39b30c8076f811570ce79d4f2
-9d44bd7398ead2b5bc85e5070a556952bd8fe92/merged\\\" at \\\"/mnt/sda1/var/lib/dock
-er/overlay2/39b30c8076f811570ce79d4f29d44bd7398ead2b5bc85e5070a556952bd8fe92/mer
-ged/usr/share/elasticsearch/config/elasticsearch.yml\\\" caused \\\"not a direct
-ory\\\"\"": unknown: Are you trying to mount a directory onto a file (or vice-ve
-rsa)? Check if the specified host path exists and is the expected type
+ERROR: for elasticsearch  Cannot start service elasticsearch: OCI runtime create failed: container_linux.go:349: starting container process caused "process_linux.go:449: container init caused \"rootfs_linux.go:58: mounting \\\"/c/developer/sergueik/springboot_study/basic-elk-cluster/elasticsearch/config/elasticsearch.yml\\\" to rootfs \\\"/mnt/sda1/var/lib/docker/overlay2/39b30c8076f811570ce79d4f29d44bd7398ead2b5bc85e5070a556952bd8fe92/merged\\\" at \\\"/mnt/sda1/var/lib/docker/overlay2/39b30c8076f811570ce79d4f29d44bd7398ead2b5bc85e5070a556952bd8fe92/merged/usr/share/elasticsearch/config/elasticsearch.yml\\\" caused \\\"not a directory\\\"\"": unknown: Are you trying to mount a directory onto a file (or vice-versa)? Check if the specified host path exists and is the expected type
 ERROR: Encountered errors while bringing up the project.
 ```
 
@@ -149,8 +147,6 @@ ERROR: for apm-server  Container "abed361f9948" is unhealthy.
 ERROR: Encountered errors while bringing up the project.
 ```
 the id of the unhealthy container is `elasticsearch`
-```text
-```
 ```text
 abed361f9948        basic-elk-cluster_elasticsearch   "/usr/local/bin/dock"   33
  minutes ago      Up 33 minutes (unhealthy)   0.0.0.0:9200->9200/tcp, 9300/tcp

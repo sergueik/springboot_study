@@ -1,2 +1,2 @@
-FROM elasticsearch:7.1.0
+FROM elasticsearch:7.17.7
 ADD config/elasticsearch.yml /usr/share/elasticsearch/config/elasticsearch.yml
