@@ -11,8 +11,9 @@ RUN dotnet restore --runtime linux-x64
 ADD ./src/ ./
 
 # make a release build
-RUN dotnet publish --runtime linux-x64 --configuration Release \
-                   --output /app/bin/ --no-restore
+RUN dotnet publish --no-self-contained --runtime linux-x64 \
+    --configuration Release \
+    --output /app/bin/ --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app/bin

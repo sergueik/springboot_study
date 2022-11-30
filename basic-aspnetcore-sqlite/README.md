@@ -4,7 +4,9 @@ replica of a boilerplate __ASP.NET Web API + Entity Framework__
 [test repository](https://github.com/Bonifatius94/AspnetEfcoreTest)
 but with SSL disabled, and added added `Elastic.Apm.NetCoreAll` to dependenies, and to `Startup.cs` for APM testing
 
-![ASP.Net Core Events](https://github.com/sergueik/springboot_study/blob/master/basic-aspnetcore-sqlite/screenshots/capture-apm-aspnetcore-events.png)
+![APM Services](https://github.com/sergueik/springboot_study/blob/master/basic-aspnetcore-sqlite/screenshots/capture-apm-services.png)
+
+![ASP.Net Core REST App Events](https://github.com/sergueik/springboot_study/blob/master/basic-aspnetcore-sqlite/screenshots/capture-apm-aspnetcore-events.png)
 
 ### Usage
 
@@ -83,11 +85,22 @@ curl -X GET $URL
 
 ### TODO
 
+* currently `src/Api/appsettings.json` is copied into the build and app container, and not mapped. The changes made to `appsettings.json` while the application is running, appear to be ignored
+
 * update the `docker-compose.yml` to connect to the network created earlier in `basic-elk-cluster`
 ```sh
 docker-compose up -d
 ```
 * generate and use certificates and enable HTTPS
+
+### TODO
+occasional error
+```text
+MSBuild version 17.3.2+561848881 for .NET
+MSBUILD : error MSB1011: Specify which project or solution file to use because this folder contains more than one project or solution file.
+The command '/bin/sh -c dotnet publish --runtime linux-x64 --configuration Release                    --output /app/bin/ --no-restore' returned a non-zero code: 1
+```
+this happen after the project directory was renamed but not pruned and it is difficult to debug due to [multi-stage](https://docs.docker.com/build/building/multi-stage/) nature of the `Dockerfile` commonly used for .Net Core apps
 
 ### See Also
 

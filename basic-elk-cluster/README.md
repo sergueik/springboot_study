@@ -167,7 +167,8 @@ with the logs:
 "at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628) [?:?]",
 "at java.lang.Thread.run(Thread.java:835) [?:?]"] }
 ```
-  * remove the `logstash` node from the cluster (not needed for APM exercise), also it makes the cluster unstable in long run:
+
+  * remove the `logstash` node from the cluster (not needed for APM exercise), also it makes the cluster unstable in long run possibly due to memory leak:
 ```sh
 docker container ls
 ```
@@ -194,6 +195,8 @@ Stopping elasticsearch ...
 Stopping elasticsearch ... error
 ```
 - repeated attempts fix this
+
+* add [elastic filebeat](https://hub.docker.com/layers/elastic/filebeat/7.17.7) node forpracticing Kibana/Lucene queries on the same cluster
 
 ### See Also
 
