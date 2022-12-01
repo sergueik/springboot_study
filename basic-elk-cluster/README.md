@@ -59,7 +59,15 @@ this will show:
 
 "green"
 ```
+ and for `app`:
 
+```sh
+curl -s  http://localhost:6000/
+```
+```text
+<h1>Distant Reading Archive</h1>
+    <p>A prototype API for distant reading of science fiction novels</p>
+```
 
 
 check if can not connect to `apm-server`
@@ -197,6 +205,84 @@ Stopping elasticsearch ... error
 - repeated attempts fix this
 
 * add [elastic filebeat](https://hub.docker.com/layers/elastic/filebeat/7.17.7) node forpracticing Kibana/Lucene queries on the same cluster
+
+### Testing Failure to Collect the Metrics
+
+Add another application, using [python flask api running in a docker container](https://github.com/deparkes/docker_flask_example)
+integrated with Elastic APM:
+
+
+```sh
+docker-compose ps
+```
+```text
+    Name               Command               State                Ports
+--------------------------------------------------------------------------------
+apm-server      /usr/bin/tini --         Up (healthy)     0.0.0.0:8200->8200/tcp
+                /usr/loca ...                             ,:::8200->8200/tcp
+app1            python /app/app.py       Up (unhealthy)   0.0.0.0:6000->6000/tcp
+                                                          ,:::6000->6000/tcp,
+                                                          8080/tcp
+app2            python app.py            Up               0.0.0.0:7000->7000/tcp
+                                                          ,:::7000->7000/tcp
+elasticsearch   /bin/tini --             Up (healthy)     0.0.0.0:9200->9200/tcp
+                /usr/local/bi ...                         ,:::9200->9200/tcp,
+                                                          9300/tcp
+kibana          /bin/tini --             Up (healthy)     0.0.0.0:5601->5601/tcp
+                /usr/local/bi ...                         ,:::5601->5601/tcp
+
+```
+* interact with the `app1`:
+
+```sh
+curl http://localhost:6000/hello/12345
+```
+
+it will instantly show in the Observability Servies summary page 
+
+![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-two-services.png)
+
+and details in "transactions":
+
+![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-app-transactions.png)
+
+* interact with the `app2`:
+
+```sh
+curl http://localhost:7000/
+```
+```text
+<h1>Distant Reading Archive</h1>
+    <p>A prototype API for distant reading of science fiction novels</p>
+
+```
+also test a failing call:
+```sh
+curl http://localhost:7000/api/v1/resources/books/json
+```
+```text
+<!doctype html>
+<html lang=en>
+<title>400 Bad Request</title>
+<h1>Bad Request</h1>
+<p>Failed to decode JSON object: None</p>
+```
+
+* check the  `apm-server` console log, notice the application name:
+```sh
+docker container logs -f apm-server
+```
+(will have to scan visually)
+```text
+{"log.level":"info","@timestamp":"2022-12-01T18:24:18.003Z","log.logger":"request","log.origin":{"file.name":"middleware/log_middleware.go","file.line":63},"message":"request accepted","service.name":"apm-server","url.original":"/intake/v2/events","http.request.method":"POST","user_agent.original":"apm-agent-python/6.13.2 (Flask SQLite REST App)","source.address":"172.18.0.6","http.request.body.bytes":478,"http.request.id":"f272c310-13e3-4ea8-8137-a0bd590279e4","event.duration":228619,"http.response.status_code":202,"ecs.version":"1.6.0"}
+
+{"log.level":"info","@timestamp":"2022-12-01T18:27:47.818Z","log.logger":"requt","log.origin":{"file.name":"middleware/log_middleware.go","file.line":63},"msage":"request accepted","service.name":"apm-server","url.original":"/intake/vevents","http.request.method":"POST","user_agent.original":"apm-agent-python/63.2 (Flask SQLite REST App)","source.address":"172.18.0.6","http.request.body.tes":472,"http.request.id":"a7581f77-9d31-4740-9cd7-65fa7c5614cd","event.duratn":354388,"http.response.status_code":202,"ecs.version":"1.6.0"}
+
+```
+
+however no monitoring data is observed
+
+![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-two-services2.png)
 
 ### See Also
 

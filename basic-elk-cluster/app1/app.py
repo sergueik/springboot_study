@@ -13,7 +13,7 @@ def show_character_ord(text):
 
 app = Flask(__name__)
 app.config['ELASTIC_APM'] = {
-          'SERVICE_NAME': 'FlaskApp',
+          'SERVICE_NAME': 'Basic Flask App',
           'SECRET_TOKEN': '',
           'SERVER_URL': 'http://apm-server:8200'
 }

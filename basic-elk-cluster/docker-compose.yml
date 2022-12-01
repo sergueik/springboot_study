@@ -81,10 +81,10 @@ services:
         condition: service_healthy
     networks:
       - elastic
-  app:
+  app1:
     restart: unless-stopped
-    build: ./app
-    container_name: app
+    build: ./app1
+    container_name: app1
     ports:
       - "6000:6000"
     healthcheck:
@@ -93,6 +93,25 @@ services:
       test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:6000/
     depends_on:
       - apm-server
+    networks:
+      - elastic
+
+  app2:
+    restart: unless-stopped
+    build: ./app2
+    container_name: app2
+    ports:
+      - "7000:7000"
+        # NOTE: reporting unhealthy, shows no data in 'Observability'  
+        # Commenting healthcheck
+        # healthcheck:
+        # interval: 10s
+        #retries: 12
+        #test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:7000/
+    depends_on:
+      - apm-server
+    volumes:
+      - ./app2:/web
     networks:
       - elastic
 
