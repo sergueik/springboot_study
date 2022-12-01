@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import socket
+import sys,os,socket
 from flask import Flask
 from urllib.parse import unquote
-import sys
 from elasticapm.contrib.flask import ElasticAPM
 	
 def show_character_ord(text):
@@ -13,7 +12,7 @@ def show_character_ord(text):
 
 app = Flask(__name__)
 app.config['ELASTIC_APM'] = {
-          'SERVICE_NAME': 'Basic Flask App',
+          'SERVICE_NAME': 'App 1',
           'SECRET_TOKEN': '',
           'SERVER_URL': 'http://apm-server:8200'
 }
@@ -30,6 +29,7 @@ if __name__ == '__main__':
   s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
   s.connect(('8.8.8.8', 80))
   ip = (s.getsockname()[0])
-  # print([l for l in ([ip for ip in socket.gethostbyname_ex(socket.gethostname())[2] if not ip.startswith("127.")][:1], [[(s.connect(('8.8.8.8', 53)), s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1]]) if l][0][0])
-  app.run(host = ip, port = 6000)
-
+  if os.environ.get('PORT') is not None:
+    app.run( host = ip, port = os.environ.get('PORT'))
+  else:
+    app.run( host = ip, port = 6000) 

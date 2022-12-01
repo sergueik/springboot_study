@@ -282,6 +282,52 @@ docker container logs -f apm-server
 
 however no monitoring data is observed
 
+* bad payload leading to 400 bad resest
+```sh
+curl -X GET -s -H "Content-Type: application/json" -d '{id:100}'  http://172.17.0.2:6000/books/json 
+```
+
+```text
+<!doctype html>
+<html lang=en>
+<title>400 Bad Request</title>
+<h1>Bad Request</h1>
+<p>The browser (or proxy) sent a request that this server could not understand.</p>
+
+```
+* wrong method
+```sh
+curl -X POST -s -H "Content-Type: application/json" -d '{"id":1}'  http://172.17.0.2:6000/books/json 
+```
+
+```text
+<!doctype html>
+<html lang=en>
+<title>405 Method Not Allowed</title>
+<h1>Method Not Allowed</h1>
+<p>The method is not allowed for the requested URL.</p>
+```
+* regular processing, should create `sqlite` transactions
+```sh
+curl -X GET -s -H "Content-Type: application/json" -d '{"id":100}'  http://172.17.0.2:6000/books/json
+```
+```text
+[]
+```
+
+* pass bad payload
+```sh
+curl -X GET -s -H "Content-Type: application/json" -d '{}'  http://172.17.0.2:6000/books/json
+```
+to trigger `KeyError: 'id'` Exception on /books/json and 500 Internal Server Error
+```text
+<!doctype html>
+<html lang=en>
+<title>500 Internal Server Error</title>
+<h1>Internal Server Error</h1>
+<p>The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.</p>
+```
+
 ![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-two-services2.png)
 
 ### See Also

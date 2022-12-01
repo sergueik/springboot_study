@@ -100,6 +100,9 @@ services:
     restart: unless-stopped
     build: ./app2
     container_name: app2
+    environment:
+      - MONITOR=true
+      - PORT=7000
     ports:
       - "7000:7000"
         # NOTE: reporting unhealthy, shows no data in 'Observability'  
@@ -110,8 +113,8 @@ services:
         #test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:7000/
     depends_on:
       - apm-server
-    volumes:
-      - ./app2:/web
+    # volumes:
+    #  - ./app2:/web
     networks:
       - elastic
 
