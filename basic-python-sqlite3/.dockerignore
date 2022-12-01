@@ -1,0 +1,12 @@
+__pycache__
+.Python
+env
+*.log
+.git
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+README.md
+LICENSE
