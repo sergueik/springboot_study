@@ -4,7 +4,13 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ page import="example.model.Dummy" %>
+<!-- NOTE: a typo in the package name leads to a vague runtime error: 
+  An error occurred at line: ... in the generated java file: [...\hello_jsp.java]
+  Only a type can be imported. example.mode.Dummy resolves to a package
+  An error occurred at line: [...] in the jsp file [/WEB-INF/templates/hello.jsp]
+  Dummy cannot be resolved
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -19,6 +25,14 @@
 <body>
   <div id="${id}">
     Hello ${name}
-  </div>  
+  </div>
+  <div>
+  <%
+    String firstName = Dummy.getFirstName();
+    String lastName = Dummy.getLastName();
+    out.print("Name: " + firstName + "</br>");
+    out.print("LastName: " + lastName);
+  %>
+  </div>
 </body>
 </html>
