@@ -3,18 +3,26 @@
 // NOTE: While you can still use full Program.cs and Startup.cs, `.UseSerilog()` is marked as obsolete for them. It's safer to move to minimal APIs.
 using Serilog;
 using System.Diagnostics;
-
+using Elastic.Apm.SerilogEnricher; 
 try
 {
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Host.UseSerilog((ctx, loggerConfiguration) =>
     {
+        // https://github.com/elastic/ecs-dotnet/blob/main/src/Elastic.Apm.SerilogEnricher/ElasticApmEnricherExtension.cs#L20
+	// https://github.com/elastic/ecs-dotnet/blob/main/src/Elastic.Apm.SerilogEnricher/ElasticApmEnricher.cs#L15
+	// https://github.com/elastic/ecs-dotnet/blob/main/src/Elastic.Apm.SerilogEnricher/ElasticApmEnricher.cs#L33 adds the properties:
+	// logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty( "ElasticApmTraceId", Agent.Tracer.CurrentTransaction.TraceId));
         loggerConfiguration
             .ReadFrom.Configuration(ctx.Configuration)
             .Enrich.FromLogContext()
             .Enrich.WithProperty("ApplicationName", typeof(Program).Assembly.GetName().Name)
-            .Enrich.WithProperty("Environment", ctx.HostingEnvironment);
+            .Enrich.WithProperty("Environment", ctx.HostingEnvironment)
+            .Enrich.WithElasticApmCorrelationInfo()
+	    .Enrich.WithProperty("CustomProperty", "My Custom Property")
+            .WriteTo.Console(outputTemplate: @"[ElasticApmTraceId:""{ElasticApmTraceId}"" ElasticApmTransactionId:""{ElasticApmTransactionId}"" ApplicatioName: ""{ApplicationName}"" CustomProperty: ""{CustomProperty}""] {Message:lj} {NewLine}{Exception}")
+            .MinimumLevel.Debug();
 
 #if DEBUG
         // Used to filter out potentially bad data due debugging.
@@ -64,11 +72,9 @@ catch (Exception ex)
         // 4. Set Retention Period (Days) to 10 or similar value
         // 5. Save settings
         // 6. Under Overview, restart web app
+	//
         // 7. Go to Log Stream and observe the logs
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .WriteTo.Console()
-            .CreateLogger();
+        Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Console().CreateLogger();
     }
 
     Log.Fatal(ex, "Host terminated unexpectedly");
