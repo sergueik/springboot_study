@@ -1,0 +1,61 @@
+version: '3.7'
+
+services:
+  mysql-server:
+    container_name: mysql-server
+    hostname: mysql-server
+    image: mysql:5.7
+    # the 8 jdbc implies java 8+
+    # image: mysql:8.0.18
+    restart: always
+    # NOTE: official MySQL container on first launch executes .sh, init.sql and init.sql.gz found in /docker-entrypoint-initdb.d
+    # command: --init-file /data/application/init.sql
+    # https://github.com/docker-library/mysql/blob/master/8.0/Dockerfile
+    environment:
+      # NOTE the credentials need to match setting in application.properties
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=java
+      - MYSQL_DATABASE=test
+      - MYSQL_PASSWORD=password
+    networks:
+      - example
+  wait_for:
+    container_name: wait_for
+    image: alpine:3.9
+    command: >
+      bash -c
+        "for i in `seq 1 30`; do
+          node main.js &&
+          s=$$? && break || s=$$?;
+          echo \"Tried $$i times. Waiting 5 secs...\";
+          sleep 5;
+        done; (exit $$s)"
+      
+    depends_on:
+      - mysql-server
+    environment:
+      SERVICE_PORT: 3306
+      SERVICE_HOST: 'mysql-server'
+      TIMEOUT: 600
+      # NOTE - Docker dns hostname: setting in the dependency container
+    networks:
+      - example
+  app:
+    depends_on:
+      # NOTE: db server name has to match application.properties
+      - wait_for
+    build: .
+    image: openjdk:8-jre-alpine3.9
+    ports:
+      # NOTE port has to match application.properties
+      - 8086:8086
+    environment:
+      SERVICE_PORT: 3306
+      SERVICE_HOST: 'mysql-server'
+      MYSQL_USER: java
+      MYSQL_DATABASE: test
+      MYSQL_PASSWORD: password
+    networks:
+      - example
+networks:
+  example:

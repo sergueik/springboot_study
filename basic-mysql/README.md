@@ -432,7 +432,8 @@ ENTRYPOINT ["sh", "/delayed_start.sh"]
   * [alternative script](https://github.com/eficode/wait-for/blob/master/wait-for) of the same script with support of TCP / HTTP "protocol" argument 
   * Docker Compose startup shutdown order [documentation](https://docs.docker.com/compose/startup-order/)
   * [guide](https://www.baeldung.com/spring-boot-data-sql-and-schema-sql) about Springboot processing an script-based database schema and data initialization through `schema.sql` and `data.sql` and [repository](https://github.com/eugenp/tutorials/blob/master/persistence-modules/spring-boot-persistence/)
-  
+  * extra node [example](https://github.com/billylaing/docker-wait-for-it-alpine) with a vanilla alpine image with bash added to execute the `wait-for-it.sh` [script](https://github.com/vishnubob/wait-for-it)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

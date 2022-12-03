@@ -83,6 +83,107 @@ curl -X GET $URL
 
 ![SQL Event Transaction](https://github.com/sergueik/springboot_study/blob/master/basic-aspnetcore-sqlite/screenshots/capture-apm-entityframework-sqlite.png)
 
+NOTE: the stack trace inclues agent implementation details of both APM and Microsoft:
+
+```text
+Database statement
+```
+```SQL
+INSERT INTO "Todos" ("Due", "Text") VALUES (@p0, @p1); SELECT "Id" FROM "Todos" WHERE changes() = 1 AND "rowid" = last_insert_rowid();  
+```
+
+
+```c#
+Elastic.Apm.Model.Span in .ctor in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Elastic.Apm.Model.Transaction in StartSpanInternal in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Elastic.Apm.Model.ExecutionSegmentCommon in StartSpanOnCurrentExecutionSegment in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Elastic.Apm.Model.DbSpanCommon in StartSpan in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Elastic.Apm.EntityFrameworkCore.EfCoreDiagnosticListener in HandleOnNext in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Elastic.Apm.DiagnosticListeners.DiagnosticListenerBase in OnNext in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+System.Diagnostics.DiagnosticListener in Write in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.Diagnostics.Internal.RelationalCommandDiagnosticsLogger in BroadcastCommandExecuting in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.Diagnostics.Internal.RelationalCommandDiagnosticsLogger in CommandReaderExecutingAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.Storage.RelationalCommand+<ExecuteReaderAsync>d__19 in ExecuteReaderAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+System.Runtime.CompilerServices.AsyncMethodBuilderCore in Start in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.Storage.RelationalCommand in ExecuteReaderAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch+<ExecuteAsync>d__29 in ExecuteAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+System.Runtime.CompilerServices.AsyncMethodBuilderCore in Start in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch in ExecuteAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor+<ExecuteAsync>d__9 in ExecuteAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+System.Runtime.CompilerServices.AsyncMethodBuilderCore in Start in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor in ExecuteAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.Storage.RelationalDatabase in SaveChangesAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager+<SaveChangesAsync>d__103 in SaveChangesAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+System.Runtime.CompilerServices.AsyncMethodBuilderCore in Start in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager in SaveChangesAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager+<SaveChangesAsync>d__107 in SaveChangesAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+System.Runtime.CompilerServices.AsyncMethodBuilderCore in Start in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager in SaveChangesAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager+<>c in <SaveChangesAsync>b__106_0 in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.Storage.NonRetryingExecutionStrategy in ExecuteAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager in SaveChangesAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.DbContext+<SaveChangesAsync>d__60 in SaveChangesAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+System.Runtime.CompilerServices.AsyncMethodBuilderCore in Start in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.EntityFrameworkCore.DbContext in SaveChangesAsync x 1 in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+EfcoreTest.Api.Controllers.TodoController+<CreateTodo>d__5 in CreateTodo in /app/src/Api/Controllers/TodoController.cs at line 55
+System.Runtime.CompilerServices.AsyncMethodBuilderCore in Start in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+EfcoreTest.Api.Controllers.TodoController in CreateTodo in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+N/A in lambda_method182 in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor+AwaitableObjectResultExecutor+<Execute>d__0 in Execute in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+System.Runtime.CompilerServices.AsyncMethodBuilderCore in Start in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor+AwaitableObjectResultExecutor in Execute in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker+<<InvokeActionMethodAsync>g__Logged|12_1>d in <InvokeActionMethodAsync>g__Logged|12_1 in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+System.Runtime.CompilerServices.AsyncMethodBuilderCore in Start in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker in <InvokeActionMethodAsync>g__Logged|12_1 in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker in InvokeActionMethodAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker in Next in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker in InvokeNextActionFilterAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker in Next in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker in InvokeNextActionFilterAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker in Next in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker in InvokeInnerFilterAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker in Next in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker in InvokeFilterPipelineAsync in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+```
+NOTE: the .Net build option
+```sh
+# make a release build
+RUN dotnet publish --no-self-contained --runtime linux-x64 \
+    --configuration Release \
+    --output /app/bin/ --no-restore
+```
+
+has no effect on stack trace, all numerous utility API call frames are shown
+
+to find the call details relevant to the *business* application, pay attention to the calling class package. The example app package was named `EfcoreTest.Api`
+
+Therefore the lines to inspect are the following two:
+
+```text
+EfcoreTest.Api.Controllers.TodoController+<CreateTodo>d__5 in CreateTodo in /app/src/Api/Controllers/TodoController.cs at line 55
+EfcoreTest.Api.Controllers.TodoController in CreateTodo in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+```
+The caller is a lambda in `CreateTodo`:
+```c#
+48        [HttpPost]
+49        public async Task<TodoItem> CreateTodo([FromBody] TodoItem item)
+50        {
+51
+52            // create the todo item
+53            var newItemRef = await _dbContext.Todos.AddAsync(item);
+53
+54            // apply the changes to database
+55            await _dbContext.SaveChangesAsync();
+```
+it is signaling APM to kick in via `System.Diagnostics.DiagnosticListener` producing an event the APM is subscribed to:
+```text
+Elastic.Apm.Model.Span in .ctor in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Elastic.Apm.Model.Transaction in StartSpanInternal in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Elastic.Apm.Model.ExecutionSegmentCommon in StartSpanOnCurrentExecutionSegment in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Elastic.Apm.Model.DbSpanCommon in StartSpan in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Elastic.Apm.EntityFrameworkCore.EfCoreDiagnosticListener in HandleOnNext in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+Elastic.Apm.DiagnosticListeners.DiagnosticListenerBase in OnNext in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
+```
 ### TODO
 
 * currently `src/Api/appsettings.json` is copied into the build and app container, and not mapped. The changes made to `appsettings.json` while the application is running, appear to be ignored

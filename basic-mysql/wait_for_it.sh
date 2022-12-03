@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
- 
-
-
 # origin: https://github.com/vishnubob/wait-for-it
-# NOTE: the original script uses bash
-# on alpine (ash)
-# shell throws error on line 15 unable to parse the function syntax
+# confirm if a specified TCP host/port are available or fail after timeout if one is specified
+# typical use with stateful containers in Dockerfle CMD argument before initializing the schema
 
-# this script will confirm if a specified TCP host/port are available or fail after timeout if one is specified
+# NOTE: this script relies on bash '[[' which is not compatible with ash
+# the default shell on alpine is ash
+# attemt to run throws error on line 15 unable to parse the function syntax
 
 cmdname=$(basename $0)
 

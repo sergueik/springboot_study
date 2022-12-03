@@ -206,6 +206,8 @@ Stopping elasticsearch ... error
 
 * add [elastic filebeat](https://hub.docker.com/layers/elastic/filebeat/7.17.7) node forpracticing Kibana/Lucene queries on the same cluster
 
+* exercise [log Correlation](https://www.elastic.co/guide/en/apm/agent/python/current/log-correlation.html)
+
 ### Testing Failure to Collect the Metrics
 
 Add another application, using [python flask api running in a docker container](https://github.com/deparkes/docker_flask_example)
@@ -241,10 +243,6 @@ curl http://localhost:6000/hello/12345
 it will instantly show in the Observability Servies summary page 
 
 ![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-two-services.png)
-
-and details in "transactions":
-
-![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-app-transactions.png)
 
 * interact with the `app2`:
 
@@ -315,6 +313,77 @@ curl -X GET -s -H "Content-Type: application/json" -d '{"id":100}'  http://172.1
 []
 ```
 
+
+![APM Transactions](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-apm-transactions.png)
+
+NOTE, the Python APM code is not shown in stack trace of the SQLite `connect` transaction:
+
+```python
+/app/app.py in api_filter_json at line 38
+```
+```python
+38 conn = sqlite.connect('books.db')
+```
+```text
++ 15 library frames
+```
+```python
+flask/app.py in dispatch_request at line 1502
+flask/app.py in full_dispatch_request at line 1516
+flask/app.py in wsgi_app at line 2073
+flask/app.py in __call__ at line 2091
+werkzeug/serving.py in execute at line 322
+werkzeug/serving.py in run_wsgi at line 335
+http/server.py in handle_one_request at line 415
+http/server.py in handle at line 427
+werkzeug/serving.py in handle at line 363
+python3.8/socketserver.py in __init__ at line 720
+python3.8/socketserver.py in finish_request at line 360
+python3.8/socketserver.py in process_request_thread at line 650
+python3.8/threading.py in run at line 870
+python3.8/threading.py in _bootstrap_inner at line 932
+python3.8/threading.py in _bootstrap at line 890
+```
+
+nor the `query` transaction
+```text
+database statement
+```
+```SQL
+SELECT * FROM books WHERE id=?;
+```
+```python
+flask/app.py in dispatch_request at line 1502
+```
+```python
+1408    def dispatch_request(self) -> ResponseReturnValue:                   
+...
+1502        return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_a
+```
+```python
+flask/app.py in full_dispatch_request at line 1516
+flask/app.py in wsgi_app at line 2073
+flask/app.py in __call__ at line 2091
+werkzeug/serving.py in execute at line 322
+werkzeug/serving.py in run_wsgi at line 335
+http/server.py in handle_one_request at line 415
+http/server.py in handle at line 427
+werkzeug/serving.py in handle at line 363
+python3.8/socketserver.py in __init__ at line 720
+python3.8/socketserver.py in finish_request at line 360
+python3.8/socketserver.py in process_request_thread at line 650
+python3.8/threading.py in run at line 870
+python3.8/threading.py in _bootstrap_inner at line 932
+python3.8/threading.py in _bootstrap at line 890
+```
+* to inspect the call stack, connect to the `app2` container:
+
+```sh
+docker exec -it app2 sh
+```
+```sh
+vi /usr/local/lib/python3.8/site-packages/flask/app.py 
+```
 * pass bad payload
 ```sh
 curl -X GET -s -H "Content-Type: application/json" -d '{}'  http://172.17.0.2:6000/books/json
@@ -329,6 +398,7 @@ to trigger `KeyError: 'id'` Exception on /books/json and 500 Internal Server Err
 ```
 
 ![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-two-services2.png)
+
 
 ### See Also
 
