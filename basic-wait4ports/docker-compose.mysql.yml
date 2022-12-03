@@ -1,0 +1,28 @@
+version: '3'
+services:
+  mysql-server:
+    container_name: mysql-server
+    hostname: mysql-server
+    image: mysql:8.0.18
+    restart: always
+    environment:
+      # NOTE the credentials need to match setting in application.properties
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=java
+      - MYSQL_DATABASE=test
+      - MYSQL_PASSWORD=password
+    networks:
+      - example
+  wait:
+    build: .
+    image: wait4ports
+    environment:
+      # can also use `WAIT4PORTS_SLEEP` and `WAIT4PORTS_TIMEOUT`  and `WAIT4PORTS_VERBOSE` environment vars
+      - "TIMEOUT=10"
+      - "NODE=mysql-server"
+      - "PORT=3306"
+    networks:
+      - example
+
+networks:
+  example:

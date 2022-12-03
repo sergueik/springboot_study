@@ -1,0 +1,13 @@
+version: '3'
+services:
+  wait:
+    build: .
+    image: wait4ports
+    environment:
+      - "TIMEOUT=60"
+      - "NODE=nginx"
+      - "PORT=80"
+  nginx:
+    image: nginx:latest
+    # no need to publish the port
+
