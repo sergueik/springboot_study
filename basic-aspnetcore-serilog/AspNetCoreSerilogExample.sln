@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.28922.388
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreSerilogExample.Web", "AspNetCoreSerilogExample.Web\AspNetCoreSerilogExample.Web.csproj", "{BE382D81-8A74-4167-A7AD-C7FE1DD89C72}"
 EndProject
+Project("{ca3e898b-6b22-4427-802d-1eecf5e901f3}") = "Elastic.Apm.SerilogEnricher", "AspNetCoreSerilogExample.Web\AspNetCoreSerilogExample.Web.csproj", "{3b030c32-be96-4397-b968-1b7334c4017e}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,5 +17,11 @@ Global
 		{BE382D81-8A74-4167-A7AD-C7FE1DD89C72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE382D81-8A74-4167-A7AD-C7FE1DD89C72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE382D81-8A74-4167-A7AD-C7FE1DD89C72}.Release|Any CPU.Build.0 = Release|Any CPU
+
+		{3b030c32-be96-4397-b968-1b7334c4017e}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3b030c32-be96-4397-b968-1b7334c4017e}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3b030c32-be96-4397-b968-1b7334c4017e}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3b030c32-be96-4397-b968-1b7334c4017e}.Release|Any CPU.Build.0 = Release|Any CPU
+
 	EndGlobalSection
 EndGlobal

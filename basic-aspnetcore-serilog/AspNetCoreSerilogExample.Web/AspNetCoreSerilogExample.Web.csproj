@@ -15,7 +15,9 @@
     <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0"/>
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0"/>
     <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.1"/>
+<!--
     <PackageReference Include="Elastic.Apm.SerilogEnricher" Version="1.5.3" />
+-->
   </ItemGroup>
   <ItemGroup>
     <!-- Make sure all of the necessary appsettings are included with the application. -->
@@ -27,5 +29,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+ <ItemGroup>
+    <ProjectReference Include="..\Elastic.Apm.SerilogEnricher\Elastic.Apm.SerilogEnricher.csproj" />
   </ItemGroup>
 </Project>

@@ -120,6 +120,62 @@ observe detailed logs in seq-server
 
 ![Seq Structured Log](https://github.com/sergueik/springboot_study/blob/master/basic-aspnetcore-serilog/screenshots/capture-seq-structured-log.png)
 
+
+### Building on Windows Host
+
+* use same commands as in `Dockerfile`, but omit the release platform option
+```cmd
+dotnet.exe restore
+```
+
+
+```cmd
+pushd AspNetCoreSerilogExample.Web
+dotnet.exe publish -c release -o /app  --self-contained false --no-restore
+popd
+```
+
+* Note: `run` only appears to work from project directory, not the 'c:\app':
+
+```
+pushd AspNetCoreSerilogExample.Web
+dotnet.exe run bin\release\net6.0\AspNetCoreSerilogExample.Web.dll
+popd
+````
+shows the logging 
+```text
+[ElasticApmTraceId:"" ElasticApmTransactionId:"" ApplicatioName: "AspNetCoreSerilogExample.Web" CustomProperty: "My Custom Property"] Content root path: C:\developer\sergueik\springboot_study\basic-aspnetcore-serilog\AspNetCoreSerilogExample.Web\
+[20:46:05 INF] HTTP/2 over TLS is not supported on Windows versions older than Windows 10 and Windows Server 2016 due to incompatible ciphers or missing ALPN support. Falling back to HTTP/1.1 instead.
+[20:46:05 INF] Now listening on: https://localhost:5001
+[20:46:05 INF] Now listening on: http://localhost:5000
+[20:46:05 INF] Application started. Press Ctrl+C to shut down.
+[20:46:05 INF] Hosting environment: Development
+[20:46:05 INF] Content root path: C:\developer\sergueik\springboot_study\basic-aspnetcore-serilog\AspNetCoreSerilogExample.Web\
+```
+and 
+
+```sh
+curl http://localhost:5000
+```
+works, however
+```cmd
+pushd c:\app
+dotnet run AspNetCoreSerilogExample.Web.dll
+popd
+```
+returns an error
+```
+is not found
+```
+
+to change `--self-contained` to `true`
+
+need to specify `RuntimeIdentifier` [](https://learn.microsoft.com/en-us/dotnet/core/rid-catalog)
+but using `win` leads to an errors in RID graph
+
+
+the dependency packages will be cached in `%USERPROfILE%\.nuget\packages`
+`
 ### Cleanup
 ```sh
 docker container stop $NAME
@@ -128,7 +184,7 @@ docker container stop $SEQ_SERVER_NAME
 docker container rm $SEQ_SERVER_NAME
 docker image prune -f
 ```
-* NOTE presumably the multi-stage Docker build would cache some of the intermeidate  images and not repeat the `restore` part
+* NOTE presumably the multi-stage Docker build would cache some of the intermediate  images and not repeat the `restore` part
 
 ### TODO
 

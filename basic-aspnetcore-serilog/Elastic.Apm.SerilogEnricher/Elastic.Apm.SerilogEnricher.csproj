@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Title>Elastic APM Serilog Enricher</Title>
+    <Description>Enrich Serilog log messages with APM TraceId and TransactionId.</Description>
+    <IsPackable>True</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="Elastic.Apm" Version="1.4.0" />
+  </ItemGroup>
+</Project>
