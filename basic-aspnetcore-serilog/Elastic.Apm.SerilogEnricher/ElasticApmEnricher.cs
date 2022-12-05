@@ -16,6 +16,7 @@ namespace Elastic.Apm.SerilogEnricher
 	{
 		public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
 		{
+			logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("ElasticApmCustomProperty", "Test"));
 			if (!Agent.IsConfigured) return;
 
 			logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("ElasticApmServiceName", Agent.Config.ServiceName));

@@ -21,7 +21,7 @@ try
             .Enrich.WithProperty("Environment", ctx.HostingEnvironment)
             .Enrich.WithElasticApmCorrelationInfo()
 	    .Enrich.WithProperty("CustomProperty", "My Custom Property")
-            .WriteTo.Console(outputTemplate: @"[ElasticApmTraceId:""{ElasticApmTraceId}"" ElasticApmTransactionId:""{ElasticApmTransactionId}"" ApplicatioName: ""{ApplicationName}"" CustomProperty: ""{CustomProperty}""] {Message:lj} {NewLine}{Exception}")
+            .WriteTo.Console(outputTemplate: @"[ElasticApmTraceId:""{ElasticApmTraceId}"" ElasticApmTransactionId:""{ElasticApmTransactionId}"" ElasticApmCustomProperty: ""{ElasticApmCustomProperty}"" ApplicatioName: ""{ApplicationName}"" CustomProperty: ""{CustomProperty}""] {Message:lj} {NewLine}{Exception}")
             .MinimumLevel.Debug();
 
 #if DEBUG
