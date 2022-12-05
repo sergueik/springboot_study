@@ -1,0 +1,19 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS build
+WORKDIR /source
+ARG RID=linux-musl-x64 
+# copy csproj and restore as distinct layers
+COPY *.sln .
+COPY AspNetCoreSerilogExample.Web/*.csproj ./AspNetCoreSerilogExample.Web/
+RUN dotnet restore -r $RID
+
+# copy everything else and build app
+ADD AspNetCoreSerilogExample.Web/. ./AspNetCoreSerilogExample.Web/
+WORKDIR /source/AspNetCoreSerilogExample.Web
+RUN dotnet publish -c release -o /app -r $RID --self-contained false --no-restore
+
+# final stage/image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine-amd64
+WORKDIR /app
+COPY --from=build /app ./
+
+ENTRYPOINT ["./AspNetCoreSerilogExample.Web"]
