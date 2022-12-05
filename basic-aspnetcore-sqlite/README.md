@@ -10,16 +10,33 @@ but with SSL disabled, and added added `Elastic.Apm.NetCoreAll` to dependenies, 
 
 ### Usage
 
-* pull the Docker images for runtime and SDK
+* pull the Docker linux debian base images for runtime and SDK
 ```sh
 docker pull mcr.microsoft.com/dotnet/sdk:6.0
 docker pull mcr.microsoft.com/dotnet/aspnet:6.0
 ```
 
+* pull the Docker linux alpine base images for runtime and SDK
+```sh
+docker pull mcr.microsoft.com/dotnet/runtime:6.0-alpine3.16-amd64
+docker pull mcr.microsoft.com/dotnet/sdk:6.0-alpine3.16-amd64
+```
 * build the application (NOTE: time comsuming)
 ```sh
 IMAGE=basic-aspnetcore-sqlite
 docker build -t $IMAGE -f Dockerfile .
+```
+```sh
+IMAGE=basic-aspnetcore-sqlite-alpine
+docker build -t $IMAGE -f Dockerfile.alpine .
+```
+the build will fail on alpine images:
+
+```text
+Step 8/12 : RUN dotnet publish --no-self-contained --runtime linux-musl-x64     --configuration Release     --output /app/bin/ --no-restore
+ ---> Running in 86cb524d3c1e
+MSBuild version 17.3.2+561848881 for .NET
+/usr/share/dotnet/sdk/6.0.403/Sdks/Microsoft.NET.Sdk/targets/Microsoft.PackageDependencyResolution.targets(267,5): error NETSDK1047: Assets file '/app/src/Api/obj/project.assets.json' doesn't have a target for 'net6.0/linux-musl-x64'. Ensure that restore has run and that you have included 'net6.0' in the TargetFrameworks for your project. You may also need to include 'linux-musl-x64' in your project's RuntimeIdentifiers. [/app/src/Api/Api.csproj]
 ```
 * run the app in foreground
 ```

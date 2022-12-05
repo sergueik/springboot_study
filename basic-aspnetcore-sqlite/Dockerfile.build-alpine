@@ -1,0 +1,13 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine
+ADD ./src/basic-aspnetcore-sqlite.sln ./
+ADD ./src/Api/Api.csproj ./Api/
+ADD ./src/Data/Data.csproj ./Data/
+
+RUN dotnet restore --runtime linux-musl-x64
+
+ADD ./src/ ./
+
+# make a release build
+RUN dotnet publish --no-self-contained --runtime linux-musl-x64 \
+    --configuration Release \
+    --output /app/bin/ --no-restore
