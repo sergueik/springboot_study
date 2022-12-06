@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys,os,socket
-from flask import Flask
+import requests
+from flask import Flask,jsonify
 from urllib.parse import unquote
 from elasticapm.contrib.flask import ElasticAPM
 	
@@ -20,6 +21,17 @@ apm = ElasticAPM(app)
 @app.route('/')
 def hello_world():
   return 'Hello йцукен'
+
+@app.route('/call')
+def call_request():
+  URL = 'http://app2:7000/books/all'
+  value = 'parameter value'
+  PARAMS = {'parameter':value}
+  response = requests.get(url = URL, params = PARAMS)
+  # https://www.geeksforgeeks.org/get-post-requests-using-python/
+  # response is already jsonified, but load it as JSON and jsonify again pretending there is some processing to happen
+  data = response.json()
+  return jsonify(data)
 
 @app.route('/hello/<name>', methods=['GET'])
 def hello_name(name):
