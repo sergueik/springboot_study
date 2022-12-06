@@ -25,7 +25,7 @@ only __Nlog__ and __Serilog__
 ```sh
 docker pull datalust/seq:2022.1.7378
 ```
-Note, __seq__ does not appear tobe availale for alpine or stretch, the image size is around 200Mb.
+Note, __seq__ does not appear tobe availale for alpine or stretch, the image size is around 535Mb.
 
 
 * run the `seq-server` configured just enough to prevent the aspnercore app from crashing - NOTE, probably will need a more elaborate configuration

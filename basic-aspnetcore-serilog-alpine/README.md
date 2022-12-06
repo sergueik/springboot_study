@@ -26,6 +26,15 @@ SEQ_SERVER_NAME=seq-server
 NAME=basic-aspnetapp-serilog-alpine
 docker run --name $NAME --link $SEQ_SERVER_NAME -it -p 8000:80 $IMAGE
 ```
+* or run both linked to `seq-server` host and connected to `basic-elk-cluster_elastic` network - this will make the API call from e.g. `app1` to `basic-elk-cluster_elastic` possible
+```
+SEQ_SERVER_NAME=seq-server
+NAME=basic-aspnetapp-serilog-alpine
+ELK_NETWORK=basic-elk-cluster_elastic
+docker run --name $NAME --link $SEQ_SERVER_NAME --network $ELK_NETWORK -it -p 8000:80 $IMAGE
+```
+
+
 
 * test
 
