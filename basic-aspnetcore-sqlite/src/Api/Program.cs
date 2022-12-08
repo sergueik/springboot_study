@@ -13,7 +13,7 @@ using Serilog;
 namespace EfcoreTest.Api {
     public class Program {
         public static void Main(string[] args) {
-            Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
+     //       Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
             
             Log.Information("Starting up!");
             
@@ -33,16 +33,25 @@ namespace EfcoreTest.Api {
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .UseSerilog((context, services, configuration) => configuration
-                    .ReadFrom.Configuration(context.Configuration)
-                    .ReadFrom.Services(services)
-                    .Enrich.FromLogContext()
-                    .Enrich.WithProperty("ApplicationName", typeof(Program).Assembly.GetName().Name)
-                    .Enrich.WithElasticApmCorrelationInfo()
-                    .WriteTo.Console()
-		    ).ConfigureWebHostDefaults(webBuilder => {
+                .UseSerilog((ctx, loggerConfiguration) =>
+    {
+        // https://github.com/elastic/ecs-dotnet/blob/main/src/Elastic.Apm.SerilogEnricher/ElasticApmEnricherExtension.cs#L20
+	// https://github.com/elastic/ecs-dotnet/blob/main/src/Elastic.Apm.SerilogEnricher/ElasticApmEnricher.cs#L15
+	// https://github.com/elastic/ecs-dotnet/blob/main/src/Elastic.Apm.SerilogEnricher/ElasticApmEnricher.cs#L33 adds the properties:
+	// logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty( "ElasticApmTraceId", Agent.Tracer.CurrentTransaction.TraceId));
+        loggerConfiguration
+            .ReadFrom.Configuration(ctx.Configuration)
+            .Enrich.FromLogContext()
+            .Enrich.WithProperty("ApplicationName", typeof(Program).Assembly.GetName().Name)
+            .Enrich.WithProperty("Environment", ctx.HostingEnvironment)
+            // .Enrich.WithElasticApmCorrelationInfo()
+	    .Enrich.WithProperty("CustomProperty", "My Custom Property")
+            .MinimumLevel.Warning();
+
+    }).ConfigureWebHostDefaults(webBuilder => {
                     webBuilder.UseStartup<Startup>();
                 });
+
         }
     }
 }

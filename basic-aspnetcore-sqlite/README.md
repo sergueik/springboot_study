@@ -14,6 +14,13 @@ Note: not using newer syntax
 
 ### Usage
 
+* run the `seq-server` configured just enough to prevent the aspnercore app from crashing - NOTE, probably will need a more elaborate configuration
+```sh
+SEQ_SERVER_NAME=seq-server
+VENDOR_IMAGE=datalust/seq:2022.1.7378
+docker run -p 80:80 -e ACCEPT_EULA=Y --name $SEQ_SERVER_NAME -d $VENDOR_IMAGE
+```
+
 * pull the Docker linux debian base images for runtime and SDK
 ```sh
 docker pull mcr.microsoft.com/dotnet/sdk:6.0
@@ -49,6 +56,12 @@ NAME=basic-aspnetcore-sqlite
 ELK_NETWORK=basic-elk-cluster_elastic
 docker container rm $NAME
 docker run --name $NAME -e ASPNETCORE_URLS="http://+" -e ASPNETCORE_HTTP_PORT=80 -p 5000:80 --network $ELK_NETWORK -it $IMAGE
+```
+
+```sh
+SEQ_SERVER_NAME=seq-server
+NAME=basic-aspnetcore-sqlite
+docker run --name $NAME --link $SEQ_SERVER_NAME -e ASPNETCORE_URLS="http://+" -e ASPNETCORE_HTTP_PORT=80 -p 5000:80 -it $IMAGE
 ```
 ```sh
 SEQ_SERVER_NAME=seq-server
