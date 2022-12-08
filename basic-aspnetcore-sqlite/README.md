@@ -29,6 +29,7 @@ docker build -t $IMAGE -f Dockerfile .
 ```sh
 IMAGE=basic-aspnetcore-sqlite-alpine
 docker build -t $IMAGE -f Dockerfile.alpine .
+  # TypeError: The view function did not return a valid response. The return type must be a string, dict, tuple, Response instance, or WSGI callable, but it was a Response.
 ```
 the build will fail on alpine images:
 
@@ -201,6 +202,14 @@ Elastic.Apm.Model.DbSpanCommon in StartSpan in /usr/share/dotnet/shared/Microsof
 Elastic.Apm.EntityFrameworkCore.EfCoreDiagnosticListener in HandleOnNext in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
 Elastic.Apm.DiagnosticListeners.DiagnosticListenerBase in OnNext in /usr/share/dotnet/shared/Microsoft.NETCore.App/6.0.11/System.Private.CoreLib.dll
 ```
+
+### Cleanup
+
+forcibly remove all running conatiners
+```sh
+docker container rm -f $(docker container ps -qa)
+```
+
 ### TODO
 
 * currently `src/Api/appsettings.json` is copied into the build and app container, and not mapped. The changes made to `appsettings.json` while the application is running, appear to be ignored

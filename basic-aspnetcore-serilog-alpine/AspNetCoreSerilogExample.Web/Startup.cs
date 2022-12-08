@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Elastic.Apm.NetCoreAll;
 
 namespace AspNetCoreSerilogExample.Web
 {
@@ -28,6 +29,7 @@ namespace AspNetCoreSerilogExample.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseAllElasticApm(Configuration);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

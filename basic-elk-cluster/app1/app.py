@@ -22,16 +22,21 @@ apm = ElasticAPM(app)
 def hello_world():
   return 'Hello йцукен'
 
-@app.route('/call2')
+@app.route('/call_serilog')
 def call_request2():
-  URL = 'http://basic-aspnetapp-serilog-alpine:80/'
+  URL = 'http://basic-aspnetcore-serilog-alpine:80/'
   value = 'parameter value'
   PARAMS = {'parameter':value}
   response = requests.get(url = URL, params = PARAMS)
   return response.text
-  # https://requests.readthedocs.io/en/latest/user/quickstart/#response-content
-  # NOTE: strongly typed:
-  # TypeError: The view function did not return a valid response. The return type must be a string, dict, tuple, Response instance, or WSGI callable, but it was a Response.
+
+@app.route('/call_sqlite')
+def call_request3():
+  URL = 'http://basic-aspnetcore-sqlite:80/todo'
+  value = 'parameter value'
+  PARAMS = {'parameter':value}
+  response = requests.get(url = URL, params = PARAMS)
+  return response.text
 
 @app.route('/call')
 def call_request():
