@@ -11,8 +11,26 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Elastic.Apm dependencies -->
     <PackageReference Include="Elastic.Apm.NetCoreAll" Version="1.18.0" />
   </ItemGroup> 
+  <ItemGroup>
+    <!-- Serilog dependencies -->
+    <PackageReference Include="Serilog" Version="2.12.0"/>
+    <PackageReference Include="Serilog.AspNetCore" Version="6.1.0"/>
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0"/>
+    <PackageReference Include="Serilog.Exceptions" Version="8.3.0"/>
+    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0"/>
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0"/>
+    <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0"/>
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0"/>
+    <PackageReference Include="Serilog.Sinks.Seq" Version="5.2.1"/>
+
+  </ItemGroup> 
+  <ItemGroup>
+    <!-- Serilog APM Enricher dependencies -->
+    <PackageReference Include="Elastic.Apm.SerilogEnricher" Version="1.5.3" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>

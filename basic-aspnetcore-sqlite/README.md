@@ -2,7 +2,11 @@
 
 replica of a boilerplate __ASP.NET Web API + Entity Framework__
 [test repository](https://github.com/Bonifatius94/AspnetEfcoreTest)
-but with SSL disabled, and added added `Elastic.Apm.NetCoreAll` to dependenies, and to `Startup.cs` for APM testing
+but with SSL disabled, and added added `Elastic.Apm.NetCoreAll` to dependenies, and to `Startup.cs` for APM testing and added certain `Serilog` packages as done in example [project](https://github.com/serilog/serilog-aspnetcore)
+ using Serilog + Seq for storing and viewing logs
+
+Note: not using newer syntax
+[project](https://github.com/rdos85/PocDatalustSeq)
 
 ![APM Services](https://github.com/sergueik/springboot_study/blob/master/basic-aspnetcore-sqlite/screenshots/capture-apm-services.png)
 
@@ -46,7 +50,12 @@ ELK_NETWORK=basic-elk-cluster_elastic
 docker container rm $NAME
 docker run --name $NAME -e ASPNETCORE_URLS="http://+" -e ASPNETCORE_HTTP_PORT=80 -p 5000:80 --network $ELK_NETWORK -it $IMAGE
 ```
-
+```sh
+SEQ_SERVER_NAME=seq-server
+ELK_NETWORK=basic-elk-cluster_elastic
+NAME=basic-aspnetcore-sqlite
+docker run --name $NAME --link $SEQ_SERVER_NAME -e ASPNETCORE_URLS="http://+" -e ASPNETCORE_HTTP_PORT=80 -p 5000:80 --network $ELK_NETWORK -it $IMAGE
+```
 ####  Verify
 
 NOTE: operate through HTTP -  currently docker-compose fails with loading certificate

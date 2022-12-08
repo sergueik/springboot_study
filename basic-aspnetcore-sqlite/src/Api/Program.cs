@@ -7,24 +7,40 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace EfcoreTest.Api
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
+using Elastic.Apm.SerilogEnricher; 
+using Serilog;
+
+namespace EfcoreTest.Api {
+    public class Program {
+        public static void Main(string[] args) {
+            Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
+            
+            Log.Information("Starting up!");
+            
+            try {
+              CreateHostBuilder(args).Build().Run();
+            
+              Log.Information("Stopped cleanly");
+              return ;
+            } catch (Exception ex) {
+              Log.Fatal(ex, "An unhandled exception occured during bootstrapping");
+              return ;
+            } finally {
+              Log.CloseAndFlush();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.AddConsole();
-                })
-                .ConfigureWebHostDefaults(webBuilder => {
+                .UseSerilog((context, services, configuration) => configuration
+                    .ReadFrom.Configuration(context.Configuration)
+                    .ReadFrom.Services(services)
+                    .Enrich.FromLogContext()
+                    .Enrich.WithProperty("ApplicationName", typeof(Program).Assembly.GetName().Name)
+                    .Enrich.WithElasticApmCorrelationInfo()
+                    .WriteTo.Console()
+		    ).ConfigureWebHostDefaults(webBuilder => {
                     webBuilder.UseStartup<Startup>();
                 });
         }
