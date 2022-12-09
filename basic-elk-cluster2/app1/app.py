@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys,os,socket
 import requests
-from flask import Flask,jsonify
+from flask import Flask,jsonify, request
 from urllib.parse import unquote
 from elasticapm.contrib.flask import ElasticAPM
 	
@@ -32,12 +32,18 @@ def call_request2():
 
 @app.route('/call_sqlite')
 def call_request3():
-    
+
   URL = 'http://aspnetcore-app:80/todo'
   value = 'parameter value'
   PARAMS = {'parameter':value}
   response = requests.get(url = URL, params = PARAMS)
   return response.text
+
+
+@app.route('/call2', methods = ['POST'])
+def update_text():
+  data = request.form
+  return ''
 
 @app.route('/call')
 def call_request():
@@ -61,4 +67,4 @@ if __name__ == '__main__':
   if os.environ.get('PORT') is not None:
     app.run( host = ip, port = os.environ.get('PORT'))
   else:
-    app.run( host = ip, port = 6000) 
+    app.run( host = ip, port = 6000)

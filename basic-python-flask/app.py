@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask
+from flask import Flask,jsonify, request
 from urllib.parse import unquote
 import sys
 	
@@ -18,6 +18,12 @@ def hello_world():
 def hello_name(name):
    name_check = 'абв'
    return 'Hello {} {} {} {}!'.format(name, show_character_ord(name), name_check, show_character_ord(name_check))
+
+@app.route('/call', methods = ['POST'])
+def update_text():
+  data = request.form 
+  return ''
+
 if __name__ == '__main__':
   app.run(host= '0.0.0.0')
 

@@ -240,6 +240,11 @@ forcibly remove all running conatiners
 ```sh
 docker container rm -f $(docker container ps -qa)
 ```
+##  APM Agent Configuratiion 
+The easiest way to navigate to the APM Agent Configuration Kibana screen is via direct url typing:
+
+`http://192.168.0.92:5601/app/apm/settings/agent-configuration`
+This will prompt for creating a configuration when none existed and selecting the agent.
 
 ### TODO
 
@@ -251,8 +256,7 @@ docker-compose up -d
 ```
 * generate and use certificates and enable HTTPS
 
-### TODO
-occasional error
+* debug occasional error
 ```text
 MSBuild version 17.3.2+561848881 for .NET
 MSBUILD : error MSB1011: Specify which project or solution file to use because this folder contains more than one project or solution file.
@@ -271,7 +275,7 @@ this happen after the project directory was renamed but not pruned and it is dif
 
   * [repository](https://github.com/elastic/elasticsearch-net) for `Elastic.Clients.Elasticsearch` the official .NET client, maintained and supported by Elastic with previous clients, `NEST` and `Elasticsearch.Net` in older branches 
   * tutorial [repository](https://github.com/elastic/elasticsearch-net-example/tree/7.x-codecomplete) for Elasticsearch and NEST
-	
+  * ELK Agent configuration [documentation](https://www.elastic.co/guide/en/kibana/7.17/agent-configuration.html)
 
 
 ### Author
