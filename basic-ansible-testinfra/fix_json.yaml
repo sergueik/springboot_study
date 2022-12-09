@@ -1,0 +1,37 @@
+---
+# see also: https://www.cyberforum.ru/shell/thread3056378.html
+# see also: https://stackoverflow.com/questions/53542389/modify-json-in-ansible for jq command approach
+- hosts: localhost
+  vars:
+    filename: 'test.json'
+  tasks:
+  - name: back up json
+    copy:
+      content: |
+        {
+        "one": 1,
+             "two": "two",
+        "three": 1000,
+           "four": 3
+               }
+      backup: no
+      dest: 'test.json'
+  - name: update data in json
+    lineinfile:
+      regexp: '"({{item.key}})": *([^,]*)(,?)'
+      backrefs: yes
+      state: present
+      line: '"\1": {{item.value}}\3'
+      dest: 'test.json'
+    loop: "{{data | dict2items }}"
+    vars:
+      data:
+        one: 10
+        two: 100
+        three: 1000
+        four: '"xxx"'
+        five: 5
+  - name: show updated json
+    debug:
+      msg: "{{lookup('pipe','cat {{filename}}')}}"
+
