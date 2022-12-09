@@ -1,21 +1,52 @@
-version: "2"
+version: '2.2'
 
 services:
-  basic-aspnetcore-sqlite:
-    image: basic-aspnetcore-sqlite
+  seq-server:
+    restart: unless-stopped
+    image: datalust/seq:2022.1.7378
+    container_name: seq-server
     environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "8080:80"
+    networks:
+      - aspnetcore-app-seq
+
+  aspnetcore-app:
+    restart: unless-stopped
+    build: .
+    container_name: aspnetcore-app
+    ports:
+      - "5000:80"
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:80/
+    environment:
+      - ASPNETCORE_URLS=http://+
+      - ASPNETCORE_HTTP_PORT=80
+    # alternatively
+
+    # environment:
       # ASPNETCORE_URLS: "https://+;http://+"
-      ASPNETCORE_URLS: "http://+"
-      ASPNETCORE_HTTP_PORT: 80
+      # ASPNETCORE_URLS: "http://+"
+      # ASPNETCORE_HTTP_PORT: 80
       # ASPNETCORE_HTTPS_PORT: 443
       # ASPNETCORE_Kestrel__Certificates__Default__Password: ${HTTPS_SSL_PW}
       # ASPNETCORE_Kestrel__Certificates__Default__Path: /app/certs/localhost.pfx
-    volumes:
-      - './certs/localhost.pfx:/app/certs/localhost.pfx'
-    ports:
-      - 5000:80
-      - 5001:443
+      # volumes:
+      #  - './certs/localhost.pfx:/app/certs/localhost.pfx'
+      # NOTE:
+      # bad syntax with double quotes in list style
+      # environment entry would lead to perpetual resart of the container
+    healthcheck:
+      interval: 10s
+      retries: 100
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:80/
+    depends_on:
+       - seq-server
     networks:
-      - elastic
+      - aspnetcore-app-seq
+
 networks:
-  elastic:
+  aspnetcore-app-seq:
