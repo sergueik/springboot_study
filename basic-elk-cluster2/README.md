@@ -240,11 +240,60 @@ forcibly remove all running conatiners
 ```sh
 docker container rm -f $(docker container ps -qa)
 ```
-##  APM Agent Configuratiion 
+
+###  APM Agent Configuration 
+
 The easiest way to navigate to the APM Agent Configuration Kibana screen is via direct url typing:
 
 `http://192.168.0.92:5601/app/apm/settings/agent-configuration`
 This will prompt for creating a configuration when none existed and selecting the agent.
+
+
+### APM Transaction Fields
+
+The most recent version of ELK 
+__APM Transaction fields__ (Transaction-specific data for __APM__) [documentation](https://www.elastic.co/guide/en/apm/guide/master/exported-fields-apm-transaction.html)
+says about `http.request.headers` and `http.response.headers` that <font color="red">Object is not enabled</font>. 
+In fact these are the only propertes with this status.
+
+a similar [request from customer](https://discuss.elastic.co/t/searching-for-a-custom-made-header/200403) concerning availability of some headers was advices i DIY fashion through
+programmatically  adding the value of interest 
+using APM agent public APIs []() and set the values of these headers as labels in the transaction that corresponds the request handling
+
+* APM Java Agent Public API [reference](https://www.elastic.co/guide/en/apm/agent/java/current/public-api.html)
+* APM .Net Agent Public API [reference](https://www.elastic.co/guide/en/apm/agent/dotnet/current/public-api.html)
+
+say
+
+`Transaction` `setLabel(String key, value)` (Added in 1.5.0 as addLabel) in Java and
+`void SetLabel(string key, T value)` [1.7.0] in .Net
+
+Labels are used to add *indexed information* (searchable and aggregatable) to __transactions__, __spans__, and __errors__. 
+
+The __APM Transaction Field__ [documentation](https://www.elastic.co/guide/en/apm/guide/master/exported-fields-apm-transaction.html) defines
+
+ --- | --- 
+`labels` | A flat mapping of user-defined labels with string, boolean or number values
+type |object
+Yes  | ECS field
+
+for Python there  is no such document as "public-api.html" and the full [method reference](https://www.elastic.co/guide/en/apm/agent/python/current/index.html)
+
+I added the label call to Python flask example application according to the instruction and called the REST API the correspondent label information  appears in that transaction metadata screen:
+
+![APM Transaction Labels](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster2/screenshots/capture-transaction-labels.png)
+Since label is ECS, it is probably also can be used in regular search, i have not yet figured out, how. The earlier name `labels` in ElasticSearch was `context.tags`
+
+Currently unclear if the label can be made part of the name of the transaction
+For Java, one option (clearly this is what the document advised to take) is add `apm-agent-api` jar to the business application dependencies and the developer of the business application to add the code there. In Java it is also possible to add custom code to the Agent that is instrumenting the business applications. It will require moderate modification of APM Java Agent
+
+For .Net one will need to ask the developer of the business application to add the code there.
+
+The original __custom made header__ [document](https://discuss.elastic.co/t/searching-for-a-custom-made-header/200403/2) also includes customization at APM Server enabling specific header in the headers group in `apm-server.yml` (have not tried yet) 
+
+The Java Agent `Labels` interface source is [here](https://github.com/elastic/apm-agent-java/blob/main/apm-agent-core/src/main/java/co/elastic/apm/agent/metrics/Labels.java#L4) and [here](https://github.com/elastic/apm-agent-java/blob/master/apm-agent-api/src/main/java/co/elastic/apm/api/Transaction.java#L141) and [here](https://github.com/elastic/apm-agent-java/blob/master/apm-agent-api/src/main/java/co/elastic/apm/api/TransactionImpl.java#L107) and `setLabel` test is [here](https://github.com/elastic/apm-agent-java/blob/main/apm-agent-plugins/apm-api-plugin/src/test/java/co/elastic/apm/agent/pluginapi/TransactionInstrumentationTest.java#L111)
+
+
 
 ### TODO
 

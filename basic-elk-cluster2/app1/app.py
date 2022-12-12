@@ -4,7 +4,8 @@ import requests
 from flask import Flask,jsonify, request
 from urllib.parse import unquote
 from elasticapm.contrib.flask import ElasticAPM
-	
+import elasticapm
+
 def show_character_ord(text):
   result = []
   for character in range(0, len(text)):
@@ -50,6 +51,7 @@ def call_request():
   URL = 'http://app2:7000/books/all'
   value = 'parameter value'
   PARAMS = {'parameter':value}
+  elasticapm.label(ecommerce=True, dollar_value=47.12)
   response = requests.get(url = URL, params = PARAMS)
   # https://www.geeksforgeeks.org/get-post-requests-using-python/
   # response is already jsonified, but load it as JSON and jsonify again pretending there is some processing to happen
