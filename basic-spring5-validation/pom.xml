@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>validation</artifactId>
-  <version>0.1.1-SNAPSHOT</version>
+  <version>0.2.1-SNAPSHOT</version>
   <name>validation</name>
   <description>Spring Web App Input Vaidation Exception Handler annotation</description>
   <parent>
@@ -37,6 +37,11 @@ Flyway failed to initialize: none of the following migration scripts locations c
 
         - classpath:db/migration
  -->
+	<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
     <dependency>
       <groupId>commons-validator</groupId>
       <artifactId>commons-validator</artifactId>

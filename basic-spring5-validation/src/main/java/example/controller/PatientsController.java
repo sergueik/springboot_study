@@ -9,6 +9,8 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.validation.annotation.Validated;
+// import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/patients")
@@ -32,11 +34,17 @@ public class PatientsController {
 
 	@PostMapping
 	public PatientResponse createPatient(
-			@RequestBody PatientRequest patientRequest) {
+			@Validated @RequestBody PatientRequest patientRequest) {
 		validatePatient(patientRequest);
 		return patientsService.createPatient(patientRequest);
 	}
 
+  @PutMapping("/{id}")
+  public PatientResponse updateResponse(@PathVariable Long id, @Validated @RequestBody PatientRequest patientRequest) {
+      return patientsService.updatePatient(id, patientRequest);
+  }
+
+  
 	private void validatePatient(PatientRequest patientRequest) {
 
 		// NOTE: isBlank requires Java 11

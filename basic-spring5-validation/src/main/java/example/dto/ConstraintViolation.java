@@ -1,4 +1,4 @@
-package com.pluralsight.data.input.validation.medicalfacility.dto;
+package example.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ErrorResponse {
-
+public class ConstraintViolation {
+    
+    private String fieldName;
     private String message;
+    private String rejectedValue;
 }
