@@ -348,10 +348,33 @@ Unfortunately with added the configuration `fiels.yml`:
                overwrite: true
 
 ```
-the imdex does not show the change in mappings:
+the index does not show the change in mappings:
 
 ![APM Transaction Labels](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster2/screenshots/capture-transaction-index.png)
+
 Testig was done on Elastic Stack `7.17.7`
+
+Adding the `append_fields` section to `apm-server.yaml`: 
+```YAML
+setup.template.enabled: true
+#setup.template.name: "apm-%{[observer.version]}"
+#setup.template.pattern: "apm-%{[observer.version]}-*"
+setup.template.fields: "${path.config}/fields.yml"
+setup.template.overwrite: true
+
+setup.template.append_fields:
+  - name: http.response.headers
+    type: object
+  - name: http.response.headers.Custom-Header
+    type: keyword
+```
+and executing series of REST calls with the specific header:
+```sh
+curl -H "Custom-Header: value2" http://localhost:6000/call
+```
+shows the field being added to the transaction:
+
+![APM Transaction Labels](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster2/screenshots/capture-transaction-append-fields.png)
 
 ### TODO
 
