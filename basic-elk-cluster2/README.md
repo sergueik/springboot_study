@@ -293,7 +293,65 @@ The original __custom made header__ [document](https://discuss.elastic.co/t/sear
 
 The Java Agent `Labels` interface source is [here](https://github.com/elastic/apm-agent-java/blob/main/apm-agent-core/src/main/java/co/elastic/apm/agent/metrics/Labels.java#L4) and [here](https://github.com/elastic/apm-agent-java/blob/master/apm-agent-api/src/main/java/co/elastic/apm/api/Transaction.java#L141) and [here](https://github.com/elastic/apm-agent-java/blob/master/apm-agent-api/src/main/java/co/elastic/apm/api/TransactionImpl.java#L107) and `setLabel` test is [here](https://github.com/elastic/apm-agent-java/blob/main/apm-agent-plugins/apm-api-plugin/src/test/java/co/elastic/apm/agent/pluginapi/TransactionInstrumentationTest.java#L111)
 
+### Configuring APM Server Fields
 
+* add `fiels.yml` to configs and update Dockerfile to plant it to the container
+
+* verify with the REST call with the header
+```sh
+curl -H "Custom_header: value3" http://localhost:6000/call
+```
+
+* inspect the indexes by browsing the URL `http://192.168.0.92:5601/app/management/data/index_management/indices`
+
+to confirm the `fields.yml` is updated connect to the container
+```sh
+docker exec  -it apm-server sh
+```
+
+indpect the filr
+```sh
+vi /usr/share/apm-server/fields.yml
+```
+
+if something is wrong may need to recycle the cluster
+```sh
+docker-compose stop
+docker-compose rm -f
+```
+```sh
+docker image rm basicelkcluster_elasticsearch basicelkcluster_apm-server
+```
+
+Unfortunately with added the configuration `fiels.yml`:
+
+```YAML
+     - name: request
+         type: group
+         fields:
+
+          - name: method
+            type: keyword
+            description: >
+              The http method of the request leading to this event.
+            overwrite: true
+          - name: headers
+            type: group
+            enabled: false
+            description: >
+              The canonical headers of the monitored HTTP request.
+            fields:
+             - name: Custom_header
+               type: keyword
+               description: >
+                 My custom header
+               overwrite: true
+
+```
+the imdex does not show the change in mappings:
+
+![APM Transaction Labels](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster2/screenshots/capture-transaction-index.png)
+Testig was done on Elastic Stack `7.17.7`
 
 ### TODO
 

@@ -1,7 +1,7 @@
 apm-server:
   host: "0.0.0.0:8200"
   rum:
-    enabled: true
+    enabled: false
   kibana:
     enabled: true
     host: "kibana:5601"
@@ -13,7 +13,7 @@ apm-server:
 #setup.template.name: "apm-%{[observer.version]}"
 #setup.template.pattern: "apm-%{[observer.version]}-*"
 #setup.template.fields: "${path.config}/fields.yml"
-#setup.template.overwrite: false
+setup.template.overwrite: true
 
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]
