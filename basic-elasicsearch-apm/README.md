@@ -116,7 +116,7 @@ mvn package
 ```
 ```sh
 ELASTIC_APM_AGENT_VERSION=1.30.0
-wget https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/${ELASTIC_APM_AGENT_VERSION}/elastic-apm-agent-${ELASTIC_APM_AGENT_VERSION}.jar \-O elastic-apm-agent.jar
+wget https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/${ELASTIC_APM_AGENT_VERSION}/elastic-apm-agent-${ELASTIC_APM_AGENT_VERSION}.jar -O elastic-apm-agent.jar
 APP_SERVER=app_server
 
 docker build -f Dockerfile.app -t $APP_SERVER .
@@ -252,7 +252,7 @@ curl http://192.168.0.138:9200
 * download relatively recent version of the APM Agent jar
 ```sh
 ELASTIC_APM_AGENT_VERSION=1.30.0
-wget https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/${ELASTIC_APM_AGENT_VERSION}/elastic-apm-agent-${ELASTIC_APM_AGENT_VERSION}.jar \-O elastic-apm-agent.jar
+wget https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/${ELASTIC_APM_AGENT_VERSION}/elastic-apm-agent-${ELASTIC_APM_AGENT_VERSION}.jar -O elastic-apm-agent.jar
 ```
 * build image using a specific Dockerfile:
 
@@ -273,6 +273,62 @@ info - application_packages: 'example.basic' (source: Environment Variables)
 2022-11-14 21:15:25,003 [elastic-apm-server-healthcheck] WARN  co.elastic.apm.agent.report.ApmServerHealthChecker - Failed to parse version of APM server http://192.168.0.138:9200/: null
 ```
 - need to reconfigure to use Elastic Search directly
+
+### Updates
+
+Download Elastic Agent version __1.30.0__ 
+
+ELASTIC_APM_AGENT_VERSION=1.30.0
+wget https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/${ELASTIC_APM_AGENT_VERSION}/elastic-apm-agent-${ELASTIC_APM_AGENT_VERSION}.jar \-O elastic-apm-agent.jar
+
+NOTE: the [releases](https://github.com/elastic/apm-agent-java/releases) directory appears to only have source packages
+The below is another valid link one can also download from maven repository
+
+```sh
+ELASTIC_APM_AGENT_VERSION=1.30.0
+wget -O elastic-apm-agent.jar  https://repo1.maven.org/maven2/co/elastic/apm/elastic-apm-agent/${ELASTIC_APM_AGENT_VERSION}/elastic-apm-agent-${ELASTIC_APM_AGENT_VERSION}.jar
+```
+* Link to SOAP Server
+```
+ln -fs  -T ../basic-soap-server-client/server/src src
+ln -fs  ../basic-soap-server-client/server/pom.xml  pom.xml
+
+```
+
+Run connected to alreadt launched ELK cluster APM Server
+```sh
+APM_SERVER=apm-server
+APP_SERVER=app_server
+
+docker run --name $APP_SERVER -d -p 9000:9000 -p 9999:9999 -e ELASTIC_APM_SERVICE_NAME=$APP_SERVER -e ELASTIC_APM_APPLICATION_PACKAGES=example.static_page. -e ELASTIC_APM_SERVER_URLS=http://$APM_SERVER:8200 --link $APM_SERVER $APP_SERVER
+```
+
+this will complain:
+```text
+docker: Error response from daemon: Cannot link to /apm-server, as it does not belong to the default network.
+```
+
+and while Docker container shows running, the call to SOAP client fails:
+
+```text
+java.lang.IllegalStateException: Failed to execute CommandLineRunner
+        at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:798) [spring-boot-2.3.4.RELEASE.jar:2.3.4.RELEASE]
+        at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:779) [spring-boot-2.3.4.RELEASE.jar:2.3.4.RELEASE]
+        at org.springframework.boot.SpringApplication.run(SpringApplication.java:322) [spring-boot-2.3.4.RELEASE.jar:2.3.4.RELEASE]
+        at org.springframework.boot.SpringApplication.run(SpringApplication.java:1237) [spring-boot-2.3.4.RELEASE.jar:2.3.4.RELEASE]
+        at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226) [spring-boot-2.3.4.RELEASE.jar:2.3.4.RELEASE]
+        at com.arpit.soap.client.main.SoapClientApplication.main(SoapClientApplication.java:49) [classes/:na]
+Caused by: org.springframework.ws.client.WebServiceIOException: I/O error: Connection refused (Connection refused); nested exception is java.net.ConnectException: Connection refused (Connection refused)
+
+```
+* connect to network instead of container host:
+```sh
+APM_SERVER=apm-server
+APP_SERVER=app_server
+
+docker run --name $APP_SERVER -d -p 9000:9000 -p 9999:9999 -e ELASTIC_APM_SERVICE_NAME=$APP_SERVER -e ELASTIC_APM_APPLICATION_PACKAGES=example.static_page -e ELASTIC_APM_SERVER_URLS=http://$APM_SERVER:8200 --network basicelkcluster_elastic $APP_SERVER
+
+```
 
 ### See Also
 
