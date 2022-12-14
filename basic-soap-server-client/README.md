@@ -1,6 +1,6 @@
 ### Info
 
-this directory contains a replica of [masic soap project](https://github.com/arpitaggarwal/soap) with minimal upgrades to later spring-boot version
+this directory contains a replica of [basic soap project](https://github.com/arpitaggarwal/soap) with minimal upgrades to later spring-boot version, added logging and added code to create or log the HTTP Headers (possibly incorrecly called)
 
 ### Usage
 
@@ -98,3 +98,154 @@ mvn spring-boot:run
 * the code references `https://aggarwalarpit.wordpress.com/hello-world/helloWorld` but works on the machine without the internet connection
 * modifying package names may lead to runtime errors
 
+* SOAPAction header example from [msdn](https://learn.microsoft.com/en-us/openspecs/sql_server_protocols/ms-ssnws/bb3d9ea3-6f43-4c72-afc2-c873b304dcde).
+```text
+ POST /SqlBatch HTTP/1.1
+ Host: testServer
+ Content-Type:application/xml
+ SOAPAction: 
+ "http://schemas.microsoft.com/sqlserver/2004/SOAPsqlbatch"
+ <SOAP-ENV:Envelope
+ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+ xmlns:sql="http://schemas.microsoft.com/sqlserver/2004/SOAP">
+   <SOAP-ENV:Body>
+     <sql:sqlbatch>
+       <sql:BatchCommands>
+         SELECT @@version
+       </sql:BatchCommands>
+     </sql:sqlbatch>
+   </SOAP-ENV:Body>
+ </SOAP-ENV:Envelope>
+```
+
+
+
+### Extracting Action from SoapAction Header
+
+* execute in Kibana Dev Tools Console `http://192.168.0.92:5601/app/dev_tools#/console`
+
+```sh
+DELETE /my-index
+```
+
+```sh
+PUT my-index
+{
+  "mappings": {
+    "properties": {
+            
+      "@timestamp": {
+        "format": "strict_date_optional_time||epoch_second",
+        "type": "date"
+      },
+      "soapaction": {
+        "type": "keyword"
+      }
+    }
+  }
+}
+```
+
+```sh
+PUT my-index/_mappings
+{
+  "runtime": {
+    "action": {
+      "type": "keyword",
+      "script": """
+        String data=grok('%{GREEDYDATA}/%{GREEDYDATA:filename}').extract(doc["soapaction"].value)?.filename;
+        if (data != null) emit(data); else  emit("unknown"); 
+      """
+    }
+  }
+}
+
+```
+
+
+```sh
+POST /my-index/_doc/1
+{
+"timestamp": "2022-12-14",
+"soapaction": "http://schemas.microsoft.com/sqlserver/2004/SOAPsqlbatch"
+}
+````
+```sh
+POST /my-index/_doc/2
+{
+"timestamp": "2022-12-14",
+"soapaction": ""
+}
+```
+
+
+```sh
+GET my-index/_search
+{
+  
+  "fields" : ["soapaction", "action"]
+}
+```
+```json
+{
+  "took" : 1,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 2,
+      "relation" : "eq"
+    },
+    "max_score" : 1.0,
+    "hits" : [
+      {
+        "_index" : "my-index",
+        "_type" : "_doc",
+        "_id" : "1",
+        "_score" : 1.0,
+        "_source" : {
+          "timestamp" : "2022-12-14",
+          "soapaction" : "http://schemas.microsoft.com/sqlserver/2004/SOAPsqlbatch"
+        },
+        "fields" : {
+          "soapaction" : [
+            "http://schemas.microsoft.com/sqlserver/2004/SOAPsqlbatch"
+          ],
+          "action" : [
+            "SOAPsqlbatch"
+          ]
+        }
+      },
+      {
+        "_index" : "my-index",
+        "_type" : "_doc",
+        "_id" : "2",
+        "_score" : 1.0,
+        "_source" : {
+          "timestamp" : "2022-12-14",
+          "soapaction" : ""
+        },
+        "fields" : {
+          "soapaction" : [
+            ""
+          ],
+          "action" : [
+            "unknown"
+          ]
+        }
+      }
+    ]
+  }
+}
+```
+
+### See Also
+
+  * https://www.elastic.co/guide/en/elasticsearch/reference/current/grok.html
+  * https://www.elastic.co/blog/structuring-elasticsearch-data-with-grok-on-ingest-for-faster-analytics 
+  * https://stackoverflow.com/questions/3169237/setting-a-custom-http-header-dynamically-with-spring-ws-client
