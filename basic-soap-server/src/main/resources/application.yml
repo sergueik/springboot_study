@@ -1,0 +1,33 @@
+app:
+    service:
+        name: hellow
+  
+server:
+    port: 8080
+    servlet:
+        context-path: /${app.service.name}
+  
+management:
+    endpoint:
+            # health:
+            # enabled: true
+            #info:
+         #   enabled: false # Activated by default
+        # metrics:
+        #  enabled: false
+        # Expose endpoint for prometheus scraping
+        # prometheus:
+        #    enabled: false
+        # java.lang.ClassNotFoundException: io.micrometer.prometheus.HistogramFlavor
+    
+    endpoints:
+        web:
+            base-path: /admin
+            exposure:
+               include: health
+            #  include: health, metrics, prometheus
+   # metrics.tags.application: ${app.service.name}
+    health.mail.enabled: false
+
+logging.level.org.springframework.boot.autoconfigure.logging: INFO
+logging.pattern.console: "%clr(%d{yy-MM-dd E HH:mm:ss.SSS}) %clr(%-5p) %clr(${HOSTNAME}){faint} %clr(---){faint} %clr([%8.15t]) %clr(%-40.40logger{0}) %clr(:) %clr(%m){faint}%n"
