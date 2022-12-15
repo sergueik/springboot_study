@@ -19,7 +19,9 @@
     <java.version>1.8</java.version>
     <slf4j.version>1.7.30</slf4j.version>
     <log4j-core.version>2.17.1</log4j-core.version>
-    <finalName>${project.groupId}.${project.artifactId}</finalName>
+    <alt.groupId>example</alt.groupId>
+    <alt.artifactId>static_page</alt.artifactId>
+    <finalName>${alt.groupId}.${alt.artifactId}</finalName>
   </properties>
   <dependencies>
     <dependency>

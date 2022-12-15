@@ -10,7 +10,7 @@
 	xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://impl.service.server.soap.arpit.com/"
 	name="HelloWorldServiceImplService">
 	<import namespace="http://service.server.soap.arpit.com/"
-		location="http://localhost:9999/service/hello-world?wsdl=1" />
+		location="http://soap-server:9999/service/hello-world?wsdl=1" />
 	<binding xmlns:ns1="http://service.server.soap.arpit.com/"
 		name="HelloWorldServiceImplPortBinding" type="ns1:HelloWorldService">
 		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"
@@ -29,7 +29,7 @@
 	</binding>
 	<service name="HelloWorldServiceImplService">
 		<port name="HelloWorldServiceImplPort" binding="tns:HelloWorldServiceImplPortBinding">
-			<soap:address location="http://localhost:9999/service/hello-world" />
+			<soap:address location="http://soap-server:9999/service/hello-world" />
 		</port>
 	</service>
 </definitions>

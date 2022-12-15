@@ -17,7 +17,7 @@ public class SoapServerApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		Endpoint.publish("http://localhost:" + servicePort
+		Endpoint.publish("http://soap-server:" + servicePort
 				+ "/service/hello-world", new HelloWorldServiceImpl());
 	}
 
