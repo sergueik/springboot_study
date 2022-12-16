@@ -136,6 +136,35 @@ src
 
 is checked in
 
+### TODO
+The application dependency error in runtime:
+```text
+2022-12-15 19:35:00.608  WARN 12003 --- [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'application': Unsatisfied dependency expressed through field 'webServiceTemplate'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.springframework.ws.client.core.WebServiceTemplate' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2022-12-15 19:35:00.612  INFO 12003 --- [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2022-12-15 19:35:00.627  INFO 12003 --- [           main] ConditionEvaluationReportLoggingListener :
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2022-12-15 19:35:00.912 ERROR 12003 --- [           main] o.s.b.d.LoggingFailureAnalysisReporter   :
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field webServiceTemplate in example.Application required a bean of type 'org.springframework.ws.client.core.WebServiceTemplate' that could not be found.
+
+The injection point has the following annotations:
+        - @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'org.springframework.ws.client.core.WebServiceTemplate' in your configuration.
+
+
+```
+
 ### See Also
 
   * [invoking a SOAP Web Service in Java](https://www.baeldung.com/java-soap-web-service)

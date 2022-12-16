@@ -1,4 +1,3 @@
-
 package example.client.generated;
 
 import javax.xml.bind.JAXBElement;
