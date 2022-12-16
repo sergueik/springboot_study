@@ -1,7 +1,7 @@
 apm-server:
   host: "0.0.0.0:8200"
   rum:
-    enabled: false
+    enabled: true
   kibana:
     enabled: true
     host: "kibana:5601"
@@ -9,17 +9,11 @@ apm-server:
 #    username: "elastic"
 #    password: "elasticpassword"
 
-setup.template.enabled: true
+#setup.template.enabled: true
 #setup.template.name: "apm-%{[observer.version]}"
 #setup.template.pattern: "apm-%{[observer.version]}-*"
-setup.template.fields: "${path.config}/fields.yml"
-setup.template.overwrite: true
-
-setup.template.append_fields:
-  - name: http.response.headers
-    type: object
-  - name: http.response.headers.Custom-Header
-    type: keyword
+#setup.template.fields: "${path.config}/fields.yml"
+#setup.template.overwrite: false
 
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]

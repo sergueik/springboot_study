@@ -10326,7 +10326,7 @@
             description: >
               The canonical headers of the monitored HTTP request.
             fields: 
-             - name: Custom_header
+             - name: Custom_Request_Header
                type: keyword
                description: >
                  My custom header
@@ -10360,7 +10360,7 @@
             description: >
               The canonical headers of the monitored HTTP request.
             fields: 
-             - name: Custom_header
+             - name: Custom_Response_Header
                type: keyword
                description: >
                  My custom header
