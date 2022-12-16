@@ -8,7 +8,7 @@
   <name>spring-security-http-basic-authentication</name>
   <url>http://maven.apache.org</url>
   <properties>
-    <org.springframework.version>4.2.2.RELEASE</org.springframework.version>
+    <org.springframework.version>5.2.20.RELEASE</org.springframework.version>
     <spring-security.version>4.2.2.RELEASE</spring-security.version>
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>    
     <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
