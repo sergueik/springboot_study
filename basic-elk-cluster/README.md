@@ -1140,6 +1140,190 @@ POST /apm-7.17.7-transaction-000001/_update_by_query
   }
 }
 ```
+
+this can be saved as a pipeline
+
+```sh
+
+  
+  {    "script": {
+      "source": "String data1 = ctx._source.transaction.name;String data2 = ctx._source.http.request.headers['Appendedfield'][0]; if (data1.indexOf(data2) == -1) ctx._source.transaction.name = data1 + '/' + data2; else ctx.op = 'noop'"
+    }
+  }
+
+
+
+
+```
+
+NOTE:  currently struggling with:
+```
+Invalid pipeline
+Please ensure the JSON is a valid pipeline object.
+```
+when  editing the Pipeline
+
+
+### Adding Pipeline in console call
+
+* add the pipeline via a curl call:
+```sh
+curl -XPUT -H 'Content-Type: application/json' "http://192.168.0.64:9200/_ingest/pipeline/apm_renametransaction_pipeline" -d "
+{
+  \"description\": \"appends the header to transaction name\",
+\"processors\": [
+    {
+    \"script\": {
+      \"source\": \"String data = ctx._source.http.request.headers['Appendedfield'][0]; if (ctx._source.transaction.name.indexOf(data ) == -1 ) ctx._source.transaction.name += '/' + data;\"
+    }
+  }
+  ]
+}"
+```
+this responds with
+```json
+{"acknowledged":true}
+```
+* list all processors
+```sh
+curl -s "http://192.168.0.64:9200/_nodes/ingest?filter_path=nodes.*.ingest.processors" | /c/tools/jq-win64.exe "."
+```
+this will return vendor default list:
+```JSON
+{
+  "nodes": {
+    "BnUzjm1-TOWBIuzb38WNXQ": {
+      "ingest": {
+        "processors": [
+          {
+            "type": "append"
+          },
+          {
+            "type": "bytes"
+          },
+          {
+            "type": "circle"
+          },
+          {
+            "type": "community_id"
+          },
+          {
+            "type": "convert"
+          },
+          {
+            "type": "csv"
+          },
+          {
+            "type": "date"
+          },
+          {
+            "type": "date_index_name"
+          },
+          {
+            "type": "dissect"
+          },
+          {
+            "type": "dot_expander"
+          },
+          {
+            "type": "drop"
+          },
+          {
+            "type": "enrich"
+          },
+          {
+            "type": "fail"
+          },
+          {
+            "type": "fingerprint"
+          },
+          {
+            "type": "foreach"
+          },
+          {
+            "type": "geoip"
+          },
+          {
+            "type": "grok"
+          },
+          {
+            "type": "gsub"
+          },
+          {
+            "type": "html_strip"
+          },
+          {
+            "type": "inference"
+          },
+          {
+            "type": "join"
+          },
+          {
+            "type": "json"
+          },
+          {
+            "type": "kv"
+          },
+          {
+            "type": "lowercase"
+          },
+          {
+            "type": "network_direction"
+          },
+          {
+            "type": "pipeline"
+          },
+          {
+            "type": "registered_domain"
+          },
+          {
+            "type": "remove"
+          },
+          {
+            "type": "rename"
+          },
+          {
+            "type": "script"
+          },
+          {
+            "type": "set"
+          },
+          {
+            "type": "set_security_user"
+          },
+          {
+            "type": "sort"
+          },
+          {
+            "type": "split"
+          },
+          {
+            "type": "trim"
+          },
+          {
+            "type": "uppercase"
+          },
+          {
+            "type": "uri_parts"
+          },
+          {
+            "type": "urldecode"
+          },
+          {
+            "type": "user_agent"
+          }
+        ]
+      }
+    }
+  }
+}
+
+```
+
+inspect via Kibana GUI
+
+![Custom Ingestion Pipeline](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-apm-custom-ingestion-pieline.png)
+
 ### See Also
 
   * [monitoring python flask application with elastic apm](https://medium.com/analytics-vidhya/monitoring-python-flask-application-with-elastic-apm-bb0853f056ff)
