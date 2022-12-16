@@ -36,7 +36,7 @@ import example.client.generated.EmployeeResponse;
 import example.LogHelper;
 
 @SpringBootApplication
-@ComponentScan({ "example", "example.client.generated" })
+@ComponentScan({ "example", "example.config", "example.client.generated" })
 public class Application implements CommandLineRunner {
 
 	@Autowired
@@ -108,9 +108,8 @@ public class Application implements CommandLineRunner {
 								"HTTP Headers: " + Arrays.asList(httpPost.getAllHeaders()));
 
 						final StringWriter out = new StringWriter();
-						webServiceTemplate.getMarshaller().marshal(
-								getHeader(serviceUserId, serviceUserPassword),
-								new StreamResult(out));
+						webServiceTemplate.getMarshaller().marshal( 
+								getHeader(new Object()),							new StreamResult(out));
 						Transformer transformer = TransformerFactory.newInstance()
 								.newTransformer();
 						transformer.transform(new StringSource(out.toString()),
@@ -127,8 +126,14 @@ public class Application implements CommandLineRunner {
 		return obj;
 	}
 
-	private Object getHeader(final String userId, final String password) {
-		return new Object();
+	
+
+	private Object getHeader(final Object value) {
+
+		final ObjectFactory objectFactory = new ObjectFactory();
+				final JAXBElement<Object> header = objectFactory.createEmployee(new EmployeeResponse());
+		return header;
+
 	}
 
 	public void setWebServiceTemplate(final WebServiceTemplate template) {
