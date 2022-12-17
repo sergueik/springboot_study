@@ -18,6 +18,9 @@ apm-server:
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]
   protocol: "http"
+  pipeline: apm
+  # NOTE: pipeline with id [apm_renametransaction_pipeline] does not exist, dropping event!" error after referencing new pipeline from apm-server.yml
+  # pipeline: apm_renametransaction_pipeline
   #  username: elastic
   #  password: elasticpassword
 #  index: "apm-%{[observer.version]}-%{+yyyy.MM.dd}"

@@ -1140,11 +1140,187 @@ POST /apm-7.17.7-transaction-000001/_update_by_query
   }
 }
 ```
+NOTE: can query by presence of the SOAP API  which would be the only one in need of amening with `SOAPAction` header:
 
-this can be saved as a pipeline
+```sh 
+GET /apm-7.17.7-transaction-000001/_search?_source=_id,transaction.name,http.request.headers.Appendedfield
+
+{
+    "query": {
+        "terms": {
+            "transaction.name": [
+                "GET /call"
+            ]
+        }
+    }
+}
+```
+or
+```sh 
+GET /apm-7.17.7-transaction-000001/_search?_source=_id,transaction.name,http.request.headers.Appendedfield
+
+{
+    "query": {
+        "match": {
+            "transaction.name": [
+                "GET /call"
+            ]
+        }
+    }
+}
+```
+
+
+these work:
+
+```JSON
+
+{
+    "took": 1,
+    "timed_out": false,
+    "_shards": {
+        "total": 1,
+        "successful": 1,
+        "skipped": 0,
+        "failed": 0
+    },
+    "hits": {
+        "total": {
+            "value": 1,
+            "relation": "eq"
+        },
+        "max_score": 1.0,
+        "hits": [{
+            "_index": "apm-7.17.7-transaction-000001",
+            "_type": "_doc",
+            "_id": "6drBHIUBtUxcsrGvtZBL",
+            "_score": 1.0,
+            "_source": {
+                "http": {
+                    "request": {
+                        "headers": {
+                            "Appendedfield": [
+                                "value456"
+                            ]
+                        }
+                    }
+                },
+                "transaction": {
+                    "name": "GET /call"
+                }
+            }
+        }]
+    }
+}
+```
+
+
+this: 
+
 
 ```sh
+GET /apm-7.17.7-transaction-000001/_search?_source=_id,transaction.name
 
+{
+    "query": {
+        "terms": {
+            "http.request.headers.Appendedfield": [
+                "value456"
+            ]
+        }
+    }
+}
+```
+does not work:
+```JSON
+{
+    "took": 0,
+    "timed_out": false,
+    "_shards": {
+        "total": 1,
+        "successful": 1,
+        "skipped": 0,
+        "failed": 0
+    },
+    "hits": {
+        "total": {
+            "value": 0,
+            "relation": "eq"
+        },
+        "max_score": null,
+        "hits": []
+    }
+}
+```
+
+the variant
+```
+GET /apm-7.17.7-transaction-000001/_search?_source=_id,transaction.name
+{
+    "query": {
+        "bool": {
+            "must": [{
+                "match": {
+                    "http.request.headers.Appendedfield": "value456"
+                }
+            }]
+        }
+
+    }
+}
+```
+does not find any documents 
+
+
+the variant:
+```sh
+GET /apm-7.17.7-transaction-000001/_search?_source=_id,http.request.headers
+
+{
+    "query": {
+        "wildcard": {
+            "http.request.headers": {
+                "value": "*"
+            }
+        }
+
+    }
+}
+```
+does not find any documents 
+
+neither does
+```sh
+GET /apm-7.17.7-transaction-000001/_search?_source=_id,http.request.headers
+{
+    "query": {
+        "exists": {
+            "field": "http.request.headers"
+        }
+
+    }
+}
+```
+NOTE:  is there a document field chain depth limit? the following does work:
+
+```sh
+GET /apm-7.17.7-transaction-000001/_search?_source=_id,http.request.headers
+
+{
+    "query": {
+
+        "exists": {
+            "field": "http.request"
+        }
+
+    }
+}
+```
+### Adding Pipeline in console call
+
+This update script can be also saved as a ingestion pipeline
+
+```sh
   
   {    "script": {
       "source": "String data1 = ctx._source.transaction.name;String data2 = ctx._source.http.request.headers['Appendedfield'][0]; if (data1.indexOf(data2) == -1) ctx._source.transaction.name = data1 + '/' + data2; else ctx.op = 'noop'"
@@ -1164,7 +1340,6 @@ Please ensure the JSON is a valid pipeline object.
 when  editing the Pipeline
 
 
-### Adding Pipeline in console call
 
 * add the pipeline via a curl call:
 ```sh
@@ -1184,145 +1359,31 @@ this responds with
 ```json
 {"acknowledged":true}
 ```
-* list all processors
-```sh
-curl -s "http://192.168.0.64:9200/_nodes/ingest?filter_path=nodes.*.ingest.processors" | /c/tools/jq-win64.exe "."
-```
-this will return vendor default list:
-```JSON
-{
-  "nodes": {
-    "BnUzjm1-TOWBIuzb38WNXQ": {
-      "ingest": {
-        "processors": [
-          {
-            "type": "append"
-          },
-          {
-            "type": "bytes"
-          },
-          {
-            "type": "circle"
-          },
-          {
-            "type": "community_id"
-          },
-          {
-            "type": "convert"
-          },
-          {
-            "type": "csv"
-          },
-          {
-            "type": "date"
-          },
-          {
-            "type": "date_index_name"
-          },
-          {
-            "type": "dissect"
-          },
-          {
-            "type": "dot_expander"
-          },
-          {
-            "type": "drop"
-          },
-          {
-            "type": "enrich"
-          },
-          {
-            "type": "fail"
-          },
-          {
-            "type": "fingerprint"
-          },
-          {
-            "type": "foreach"
-          },
-          {
-            "type": "geoip"
-          },
-          {
-            "type": "grok"
-          },
-          {
-            "type": "gsub"
-          },
-          {
-            "type": "html_strip"
-          },
-          {
-            "type": "inference"
-          },
-          {
-            "type": "join"
-          },
-          {
-            "type": "json"
-          },
-          {
-            "type": "kv"
-          },
-          {
-            "type": "lowercase"
-          },
-          {
-            "type": "network_direction"
-          },
-          {
-            "type": "pipeline"
-          },
-          {
-            "type": "registered_domain"
-          },
-          {
-            "type": "remove"
-          },
-          {
-            "type": "rename"
-          },
-          {
-            "type": "script"
-          },
-          {
-            "type": "set"
-          },
-          {
-            "type": "set_security_user"
-          },
-          {
-            "type": "sort"
-          },
-          {
-            "type": "split"
-          },
-          {
-            "type": "trim"
-          },
-          {
-            "type": "uppercase"
-          },
-          {
-            "type": "uri_parts"
-          },
-          {
-            "type": "urldecode"
-          },
-          {
-            "type": "user_agent"
-          }
-        ]
-      }
-    }
-  }
-}
 
-```
-
-inspect via Kibana GUI
+* inspect via Kibana GUI
 
 ![Custom Ingestion Pipeline](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-apm-custom-ingestion-pieline.png)
+
+
+* Added a `Set` filter:
+```json
+ {
+    "set": {
+      "field": "transaction.name",
+      "value": "{{transaction.name}} / {{ http.request.headers.Appendedfield.0 }}"
+    }
+  }
+```
+![Custom Ingestion Pipeline](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-ingest-filter.png)
+
+* Observed the SOAP-action-amended transaction names after doing a prepated REST calls:
+```sh
+curl -H "AppendedField: value25" http://192.168.0.64:6000/call
+```
+
+
+ ![Custom Ingestion Pipeline](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-transactions-with-names.png)
+
 
 ### See Also
 
@@ -1344,7 +1405,7 @@ inspect via Kibana GUI
 
   * Elastic APM Server [Ingest node pipeline](https://www.elastic.co/guide/en/apm/server/7.15/elasticsearch-output.html#pipeline-option-es) to write events to  
    
-  * Elastic APM Server [Custom Pipelines](https://www.elastic.co/guide/en/apm/server/7.15/configuring-ingest-node.html#custom-pipelines)
+  * Elastic APM Server [Custom Pipelines](https://www.elastic.co/guide/en/apm/server/7.15/configuring-ingest-node.html#custom-pipelines
 
   * [Using Ingest Pipelines to Enhance Elastic Observability Data](https://dzone.com/articles/using-ingest-pipelines-to-improve-elastic-observab)
 
