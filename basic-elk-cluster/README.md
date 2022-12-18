@@ -677,6 +677,16 @@ curl -H 'Content-Type: application/json' -X POST "192.168.0.64:9200/$INDEX/$TYPE
     }
 }'
 ```
+```sh
+
+INDEX=apm-7.17.7-transaction-000001
+TYPE=_doc
+ID=ZgddHoUBLFUYqZyXJEff
+curl -H 'Content-Type: application/json' -X POST "192.168.0.64:9200/$INDEX/$TYPE/$ID/_update" -d '{
+    "doc" : {
+        "http": {"request": {"headers": {"Appendedfield": [ "http://xmlme.com/WebServices/GetSpeech"] }}}
+    }
+}'
 
 NOTE: this will be incorrect syntax
 ```sh
@@ -1116,21 +1126,6 @@ POST /apm-7.17.7-transaction-000001/_doc/s9rBHIUBtUxcsrGvZpAB/_update
 alternatively
 
 ```sh
-POST /apm-7.17.7-transaction-000001/_doc/s9rBHIUBtUxcsrGvZpAB/_update 
-
-{
-    "script": {
-        "source": """
-           String data1 = ctx._source.transaction.name; 
-           String data2 = ctx._source.http.request.headers['Appendedfield'][0]; 
-           if (data1.indexOf(data2 ) == -1 ) 
-             ctx._source.transaction.name = data1 + '/' + data2;
-        """,
-        "lang": "painless"
-    }
-}
-```
-```sh
 POST /apm-7.17.7-transaction-000001/_update_by_query
 
 {
@@ -1155,11 +1150,187 @@ POST /apm-7.17.7-transaction-000001/_update_by_query
   }
 }
 ```
+NOTE: can query by presence of the SOAP API  which would be the only one in need of amening with `SOAPAction` header:
 
-this can be saved as a pipeline
+```sh 
+GET /apm-7.17.7-transaction-000001/_search?_source=_id,transaction.name,http.request.headers.Appendedfield
+
+{
+    "query": {
+        "terms": {
+            "transaction.name": [
+                "GET /call"
+            ]
+        }
+    }
+}
+```
+or
+```sh 
+GET /apm-7.17.7-transaction-000001/_search?_source=_id,transaction.name,http.request.headers.Appendedfield
+
+{
+    "query": {
+        "match": {
+            "transaction.name": [
+                "GET /call"
+            ]
+        }
+    }
+}
+```
+
+
+these work:
+
+```JSON
+
+{
+    "took": 1,
+    "timed_out": false,
+    "_shards": {
+        "total": 1,
+        "successful": 1,
+        "skipped": 0,
+        "failed": 0
+    },
+    "hits": {
+        "total": {
+            "value": 1,
+            "relation": "eq"
+        },
+        "max_score": 1.0,
+        "hits": [{
+            "_index": "apm-7.17.7-transaction-000001",
+            "_type": "_doc",
+            "_id": "6drBHIUBtUxcsrGvtZBL",
+            "_score": 1.0,
+            "_source": {
+                "http": {
+                    "request": {
+                        "headers": {
+                            "Appendedfield": [
+                                "value456"
+                            ]
+                        }
+                    }
+                },
+                "transaction": {
+                    "name": "GET /call"
+                }
+            }
+        }]
+    }
+}
+```
+
+
+this: 
+
 
 ```sh
+GET /apm-7.17.7-transaction-000001/_search?_source=_id,transaction.name
 
+{
+    "query": {
+        "terms": {
+            "http.request.headers.Appendedfield": [
+                "value456"
+            ]
+        }
+    }
+}
+```
+does not work:
+```JSON
+{
+    "took": 0,
+    "timed_out": false,
+    "_shards": {
+        "total": 1,
+        "successful": 1,
+        "skipped": 0,
+        "failed": 0
+    },
+    "hits": {
+        "total": {
+            "value": 0,
+            "relation": "eq"
+        },
+        "max_score": null,
+        "hits": []
+    }
+}
+```
+
+the variant
+```
+GET /apm-7.17.7-transaction-000001/_search?_source=_id,transaction.name
+{
+    "query": {
+        "bool": {
+            "must": [{
+                "match": {
+                    "http.request.headers.Appendedfield": "value456"
+                }
+            }]
+        }
+
+    }
+}
+```
+does not find any documents 
+
+
+the variant:
+```sh
+GET /apm-7.17.7-transaction-000001/_search?_source=_id,http.request.headers
+
+{
+    "query": {
+        "wildcard": {
+            "http.request.headers": {
+                "value": "*"
+            }
+        }
+
+    }
+}
+```
+does not find any documents 
+
+neither does
+```sh
+GET /apm-7.17.7-transaction-000001/_search?_source=_id,http.request.headers
+{
+    "query": {
+        "exists": {
+            "field": "http.request.headers"
+        }
+
+    }
+}
+```
+NOTE:  is there a document field chain depth limit? the following does work:
+
+```sh
+GET /apm-7.17.7-transaction-000001/_search?_source=_id,http.request.headers
+
+{
+    "query": {
+
+        "exists": {
+            "field": "http.request"
+        }
+
+    }
+}
+```
+### Adding Pipeline in console call
+
+This update script can be also saved as a ingestion pipeline
+
+```sh
   
   {    "script": {
       "source": "String data1 = ctx._source.transaction.name;String data2 = ctx._source.http.request.headers['Appendedfield'][0]; if (data1.indexOf(data2) == -1) ctx._source.transaction.name = data1 + '/' + data2; else ctx.op = 'noop'"
@@ -1177,6 +1348,132 @@ Invalid pipeline
 Please ensure the JSON is a valid pipeline object.
 ```
 when  editing the Pipeline
+
+
+
+* add the pipeline via a curl call:
+```sh
+curl -XPUT -H 'Content-Type: application/json' "http://192.168.0.64:9200/_ingest/pipeline/apm_renametransaction_pipeline" -d "
+{
+  \"description\": \"appends the header to transaction name\",
+\"processors\": [
+    {
+    \"script\": {
+      \"source\": \"String data = ctx._source.http.request.headers['Appendedfield'][0]; if (ctx._source.transaction.name.indexOf(data ) == -1 ) ctx._source.transaction.name += '/' + data;\"
+    }
+  }
+  ]
+}"
+```
+this responds with
+```json
+{"acknowledged":true}
+```
+
+* inspect via Kibana GUI
+
+![Custom Ingestion Pipeline](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-apm-custom-ingestion-pieline.png)
+
+
+* Added a `Set` filter:
+```json
+ {
+    "set": {
+      "field": "transaction.name",
+      "value": "{{transaction.name}} / {{ http.request.headers.Appendedfield.0 }}"
+    }
+  }
+```
+![Custom Ingestion Pipeline](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-ingest-filter.png)
+
+* Observed the SOAP-action-amended transaction names after doing a prepated REST calls:
+```sh
+curl -H "AppendedField: value25" http://192.168.0.64:6000/call
+```
+
+
+ ![Custom Ingestion Pipeline](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-transactions-with-names.png)
+
+
+
+#### Processing the SOAPACtion Header before appending
+
+the working update payload code example
+
+```sh
+
+POST /apm-7.17.7-transaction-000001/_doc/ZgddHoUBLFUYqZyXJEff/_update 
+{
+    "script": {
+          "lang": "painless",
+          "source": """
+            // String data2 = 'http://xmlme.com/WebServices/GetSpeech';
+            String data1 = ctx._source.transaction.name;
+            String data2 = ctx._source.http.request.headers.Appendedfield[0];
+            String[] data = data2.splitOnToken(params['delimiter']);
+            String data3 = data[params['position']];
+            if (data1.indexOf(data3) == -1)
+              ctx._source.transaction.name = data1 + '/' + data3;
+            else
+              ctx.op = 'noop'
+          """,
+          "params": {
+            "delimiter": "/",
+            "position": -1
+          }
+    }
+}
+
+```
+
+this leads to ingestion step attempt that does not work:
+```javascript
+  {
+    "set": {
+      "field": "transaction.name",
+      "value": "{{transaction.name}} / {{ (http.request.headers.Appendedfield.0).splitOnToken('/')[-1] }}"
+    }
+  }
+```
+
+- nothing gets appended
+
+the solution is to combine
+
+GSUB 
+```javascript
+{
+      "gsub": {
+        "field": "http.request.headers.Appendedfield.0",
+        "pattern": "^.*/",
+        "replacement": "",
+        "target_field": "http.request.headers.Appendedfield.0"
+      }
+    }
+```
+and 
+
+SET 
+
+```
+{
+      "gsub": {
+        "field": "http.request.headers.Appendedfield.0",
+        "pattern": "^.*/",
+        "replacement": "",
+        "target_field": "http.request.headers.Appendedfield.0"
+      }
+    }
+```
+pipelines. This way the request with a legitimate SOAPAction-like header:
+
+```sh
+for I in $(seq 1 1 10 );do J=$(expr $I % 2); curl -H "AppendedField: http://xmlme.com/WebServices/API${J}" http://localhost:6000/call ; sleep 30 ; done
+```
+produces the mix '/call/API1' and '/call/API2' "SOAP Call" transactions 
+
+![Custom Ingestion Pipeline](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-apm-transaction-renamed2.png)
+
 
 ### See Also
 
@@ -1198,12 +1495,25 @@ when  editing the Pipeline
 
   * Elastic APM Server [Ingest node pipeline](https://www.elastic.co/guide/en/apm/server/7.15/elasticsearch-output.html#pipeline-option-es) to write events to  
    
-  * Elastic APM Server [Custom Pipelines](https://www.elastic.co/guide/en/apm/server/7.15/configuring-ingest-node.html#custom-pipelines)
+  * Elastic APM Server [Custom Pipelines](https://www.elastic.co/guide/en/apm/server/7.15/configuring-ingest-node.html#custom-pipelines
 
   * [Using Ingest Pipelines to Enhance Elastic Observability Data](https://dzone.com/articles/using-ingest-pipelines-to-improve-elastic-observab)
 
   * ElasticSearch [Enrich Processor](https://www.elastic.co/guide/en/elasticsearch/reference/current/enrich-processor.html#enrich-processor)
-   
+  
+  * [call SOAP Server from the command line](https://www.baeldung.com/call-soap-command-line)
+
+  * [call SOAP Server from Postman] (https://www.baeldung.com/postman-soap-request)
+
+  * building `SOAPAction` header [SOAP client app documentation](http://www.herongyang.com/Web-Services/SAAJ-addHeader-Set-SOAPAction-Header-Line.html) for java - uses `headers.addHeader("SOAPAction", uri+"/GetSpeech");` which leads to the header `SOAPAction: http://xmlme.com/WebServices/GetSpeech`
+
+  * [how java code to set an attribute like SOAPAction in the Header?](https://coderanch.com/t/220498/java/set-attribute-SOAPAction-Header) shows example `https://coderanch.com/t/220498/java/set-attribute-SOAPAction-Header`
+
+  * [predefined grok patterns](https://github.com/hpcugent/logstash-patterns/blob/master/files/grok-patterns)
+
+  * `_Update` [examples](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html#docs-update
+
+  * [Script processor](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/script-processor.html)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
