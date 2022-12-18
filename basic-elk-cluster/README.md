@@ -738,6 +738,97 @@ produces the mix '/call/API1' and '/call/API2' "SOAP Call" transactions
 
 ![Custom Ingestion Pipeline](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-apm-transaction-renamed2.png)
 
+### History
+
+The [Wikipedia page](https://en.wikipedia.org/wiki/SOAP) mentions
+the original SOAP with its intentions to become the fundament of complex higher level services like 
+[UDDI](https://en.wikipedia.org/wiki/Web_Services_Discovery#Universal_Description_Discovery_and_Integration)
+(which was never widely accepted and support of which was eventually fully removed by major vendors by 2007) 
+has failed to foresee the actual direction of evolution of Web Services.
+
+
+The __SOAP 1.1__ specification was not approved by W3C to even 'W3C Recommendation' level, and it technically can not be considered a "web standard", defines `SOAPAction` HTTP header.
+
+```text
+SOAPAction: "http://electrocommerce.org/abc#MyMessage"
+```
+The stable release __SOAP 1.2__ [spec](https://www.w3.org/TR/2001/WD-soap12-20010709/#_Toc478383528) (which did became a W3C recommendation) also contains a section describing `SOAPAction` Header and the definition looks similar to that of __SOAP 1.1__ [spec](https://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383528)
+but from training on the subject is known that __SOAP 1.2__ no longer enforces the `SOAPAction` Header to be present (there are far deeper differences between 1.2 and 1.1 than just that)
+
+In fact the example SOAP message shown in Wikipedia page
+```text
+POST /InStock HTTP/1.1
+Host: www.example.org
+Content-Type: application/soap+xml; charset=utf-8
+Content-Length: 299
+SOAPAction: "http://www.w3.org/2003/05/soap-envelope"
+
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:m="http://www.example.org">
+  <soap:Header>
+  </soap:Header>
+  <soap:Body>
+    <m:GetStockPrice>
+      <m:StockName>T</m:StockName>
+    </m:GetStockPrice>
+  </soap:Body>
+</soap:Envelope>
+```
+apparently does contain a `SOAHeader` but in the exampleshown that header value which is of little use, since it is identically matches to the namespace of the undelying SOAP envelope, and not of the message element and
+one would not be able to get any information concerning the actual API method call being serialized in the SOAP message from such header
+
+The [SOAP 1.1 example payload](https://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383490)
+
+```text
+
+POST /StockQuote HTTP/1.1
+Host: www.stockquoteserver.com
+Content-Type: text/xml; charset="utf-8"
+Content-Length: nnnn
+SOAPAction: "Some-URI"
+
+<SOAP-ENV:Envelope
+  xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+  SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+   <SOAP-ENV:Body>
+       <m:GetLastTradePrice xmlns:m="Some-URI">
+           <symbol>DIS</symbol>
+       </m:GetLastTradePrice>
+   </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+```
+better illustrates the intent how the `SOAPAction` header must be constructed (it matches the XML namespace of the action element and presumably would also contain the name of the element after the hash symbol: `#GetLastTradePrice`).
+
+Also, the [SOAP 1.2 example document](https://www.w3.org/TR/soap12-part1/#firstexample)
+appears to be placethe namespace right in that element but there is no full  message example
+
+```xml
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+ <env:Header>
+  <n:alertcontrol xmlns:n="http://example.org/alertcontrol">
+   <n:priority>1</n:priority>
+   <n:expires>2001-06-22T14:00:00-05:00</n:expires>
+  </n:alertcontrol>
+ </env:Header>
+ <env:Body>
+  <m:alert xmlns:m="http://example.org/alert">
+   <m:msg>Pick up Mary at school at 2pm</m:msg>
+  </m:alert>
+ </env:Body>
+</env:Envelope>
+```
+
+Why __SOAP 1.2__ the `SOAPAction` header no longer being required.
+
+This is because the `SOAP-Envelope` includes its own specific `SOAP-Header` which makes the "Header" technically a part of the HTTP message body
+and as such is not easily accessible to Elastic APM at the transaction level. 
+
+Also due to several reasons SOAP document is very complex to parse. __SOAP 1.2__ does no longer expect the HTTP Header to be present precisely because with SOA protocol evolution it puts more and more wight in the Envelope parts to be self-describing
+
+
+The SOAP protocol tendency to reimplement several existing features of HTTP is quoted among its disadvantages
+
+
 
 
 ### TODO
