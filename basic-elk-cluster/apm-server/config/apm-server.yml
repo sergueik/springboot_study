@@ -18,6 +18,7 @@ apm-server:
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]
   protocol: "http"
+  pipeline: apm
   #  username: elastic
   #  password: elasticpassword
 #  index: "apm-%{[observer.version]}-%{+yyyy.MM.dd}"
