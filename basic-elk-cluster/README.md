@@ -703,31 +703,55 @@ but ingestion step attempt that does not work:
 
 - nothing gets appended
 
-the solution is to combine two pipelines:
+the solution is to combine three pipelines (__SET__, __GSUB__, __SET__):
+
+
+__SET__:
+
+![Processor 1](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-processor1.png)
+
+```JSON
+{
+  "set": {
+    "field": "transaction.soapaction",
+    "copy_from": "http.request.headers.Appendedfield.0"
+  }
+}
+```
 
 __GSUB__:
-```javascript
-{
-      "gsub": {
-        "field": "http.request.headers.Appendedfield.0",
-        "pattern": "^.*/",
-        "replacement": "",
-        "target_field": "http.request.headers.Appendedfield.0"
-      }
-    }
-```
-and  __SET__ 
 
-```
+
+![Processor 2](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-processor2.png)
+
+```JSON
 {
-      "gsub": {
-        "field": "http.request.headers.Appendedfield.0",
-        "pattern": "^.*/",
-        "replacement": "",
-        "target_field": "http.request.headers.Appendedfield.0"
-      }
-    }
+  "gsub": {
+    "field": "http.request.headers.Appendedfield.0",
+    "pattern": "^.*/",
+    "replacement": "",
+    "target_field": "transaction.soapaction"
+  }
+}
 ```
+(note the deep nested schema of the http request headers appended field)
+
+and  __SET__ :
+
+
+
+![Processor 3](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-processor3.png)
+
+```JSON
+{
+  "set": {
+    "field": "transaction.name",
+    "value": "{{ transaction.name }}/{{ transaction.soapaction }}"
+  }
+}
+```
+This copies the extracted Action token into the new field `transaction.soapaction` at the `transaction` level (one can do the same and keep the original `transaction.name` as an alias. For illustration simplicity instead of sending / extracting the [fragment identifier of the URI](https://www.w3.org/2002/11/dbooth-names/rfc2396-numbered_clean.htm) - the part after the `#` hash symbol the example just grabs the last path element in the URI.
+
 
 This way the request with a legitimate SOAPAction-like header:
 
@@ -777,23 +801,22 @@ SOAPAction: "http://www.w3.org/2003/05/soap-envelope"
 apparently does contain a `SOAHeader` but in the exampleshown that header value which is of little use, since it is identically matches to the namespace of the undelying SOAP envelope, and not of the message element and
 one would not be able to get any information concerning the actual API method call being serialized in the SOAP message from such header
 
-The [SOAP 1.1 example payload](https://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383490)
-
+The [SOAP 1.1 example payload](https://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383490) using the `SOAPAction` header example above would be
 ```text
 
 POST /StockQuote HTTP/1.1
 Host: www.stockquoteserver.com
 Content-Type: text/xml; charset="utf-8"
 Content-Length: nnnn
-SOAPAction: "Some-URI"
+SOAPAction: "http://electrocommerce.org/abc#MyMessage"
 
 <SOAP-ENV:Envelope
   xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
   SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
    <SOAP-ENV:Body>
-       <m:GetLastTradePrice xmlns:m="Some-URI">
-           <symbol>DIS</symbol>
-       </m:GetLastTradePrice>
+       <m:MyMessage xmlns:m="http://electrocommerce.org/abc">
+           <m:MyArgument>Hello</m:MyArgument>
+       </m:MyMessagee>
    </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 ```
@@ -915,6 +938,7 @@ with the logs:
 
   * [log Correlation](https://www.elastic.co/guide/en/apm/agent/python/current/log-correlation.html)
 
+  * Java __Spring-WS__-based  library [repository](https://github.com/reficio/soap-ws),  that enables handling SOAP on a purely XML level and with SOAP standards supports version 1.1 and 1.2 - the `SOAPAction` attribute is automatically [properly placed](https://github.com/reficio/soap-ws/search?p=2&q=soapaction)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
