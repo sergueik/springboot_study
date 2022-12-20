@@ -1,0 +1,8 @@
+<payment>
+    <amount>
+      <currency>MXN</currency>
+      <quantity>10</quantity>
+    </amount>
+    <from>Evan</from>
+    <to>PayStand</to>
+</payment>
