@@ -1,8 +1,7 @@
-<payment>
-    <amount>
-      <currency>MXN</currency>
-      <quantity>10</quantity>
-    </amount>
-    <from>Evan</from>
-    <to>PayStand</to>
-</payment>
+<SOAP-ENV:Envelope  xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <SOAP-ENV:Body>
+    <m:MyMessage xmlns:m="http://electrocommerce.org/abc">
+      <m:MyArgument>Hello</m:MyArgument>
+    </m:MyMessage>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

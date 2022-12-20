@@ -39,7 +39,7 @@ Technically one can possibly tweak the `Parser.js` to strip attributes of elemen
 
 ```
 
-* temporatily remove every attribute
+* temporatily remove every attribute manually
 ```XML
 
 <SOAP-ENV:Envelope>
@@ -57,7 +57,7 @@ tag = openTag.match(/[^<][:-\w+$]*/)[0];
 ```
 * run in vanilla node container
 ```sh 
-IMGE=node:16.12.0-alpine3.11 sh
+IMAGE=node:16.12.0-alpine3.11
 docker pull $IMAGE
 ```
 
@@ -66,7 +66,7 @@ NAME=test
 docker run --name $NAME -it $IMAGE sh
 ```
 ```sh
-docker cp test.xml app.js Parser.js $NAME:/
+for FILE in test.xml app.js Parser.js;do docker cp $FILE $NAME:/ ; done
 ```
 * parse into JSON (in the container)
 
