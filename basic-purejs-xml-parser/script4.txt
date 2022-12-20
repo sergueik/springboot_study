@@ -1,0 +1,29 @@
+POST /apm-7.17.7-transaction-000001/_doc/t9WKMYUB7ikC1HY84JYH/_update
+{
+    "script": {
+          "lang": "painless",
+          "source": """
+            String unescapeString(def data){
+
+            Pattern p1 = /\n|\t|\r/;
+            def result1 =  p1.matcher(data).replaceAll(' ');
+            def result2 = clearAttributes(result1);
+            Pattern p2 = / /;
+            def result3 =  p2.matcher(result2).replaceAll('');
+            return result3;
+            }
+          String clearAttributes(def data){
+
+            Pattern p = /[\w:-]+ *= *"[^"]+"/;
+            def result =  p.matcher(data).replaceAll('');
+            return result;
+            }
+          String data  = 'data base values attribute1="aaaaa" attribute2="12345" attrib:ute3 = "123" attribute4="foo bar"';
+          ctx._source.transaction.name = unescapeString(data);
+       """
+    }
+}
+
+
+
+

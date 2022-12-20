@@ -18,7 +18,7 @@ class  Parser{
       // closeTagPosition will contain the index of the closing tag
       closeTagPositon = xmlSource.indexOf(openTag.replace('<', '</'));
       if (closeTagPositon == -1){
-        tag = openTag.match(/[^<][:-\w+$]*/)[0];
+        tag = openTag.match(/[^<][:-\w$]*/)[0];
         //  console.error('tag: ' + tag );
 
          closeTagPositon = xmlSource.indexOf('</' + tag);
@@ -50,21 +50,20 @@ class  Parser{
     return jsonRes;
   }
 
-  unescapeString = function(string){
-    var aux = string.replace(/\n|\t|\r/g,' ');
-    aux = this.clearAttributes(aux);
-    var chars = aux.split('');
-    aux = '';
-    chars.forEach((v,i) => {
-      if(!(v == ' ')){
-        aux +=v;
-      }
-    });
-    return aux
+  unescapeString = function(data){
+    // convert all whitespace to space
+    var result = data.replace(/\n|\t|\r/g,' ');
+    // remove element attributes
+    result = this.clearAttributes(result);
+    //remove whitespace
+    result = result.replace(/ /g,'');
+    return result;
   }
-  clearAttributes = function(string){
-    var aux = string.replace(/(?:[:-\w+]+) *= *"(?:[^"]+)"/, '');
-    return aux
+
+  clearAttributes = function(data){
+    // remove name="value" pairs
+    var result = data.replace(/(?:[:-\w]+) *= *"(?:[^"]+)"/g, '');
+    return result;
   }
 
 }

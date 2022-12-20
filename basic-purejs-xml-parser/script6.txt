@@ -1,0 +1,26 @@
+POST /apm-7.17.7-transaction-000001/_doc/t9WKMYUB7ikC1HY84JYH/_update
+{
+    "script": {
+          "lang": "painless",
+          "source": """
+          // getting the value between tags
+           String getElementContent(def data, def openTag){
+             def closeTag = /</.matcher(openTag).replaceFirst('</');
+             // dynamic getter [java.lang.String, length] not found
+             // def startPos = openTag.length - 1;
+             def startPos = openTag.indexOf('>') + 1;
+             def endPos = data.indexOf(closeTag);
+             def elementContent = data.substring(startPos, endPos);
+             return elementContent;
+             // return data.substring(openTag.length,data.indexOf(closeTag));
+           }
+            int getIndexOf(def data, def tag){
+              return data.indexOf(tag);
+            }
+            String data  = '<SOAP-ENV:Envelope  xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"  SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">data </SOAP-ENV:Envelope>';
+            ctx._source.transaction.name = getElementContent(data, '<SOAP-ENV:Envelope>');
+       """
+    }
+
+}
+

@@ -12,7 +12,7 @@ fs.readFile('test.xml', 'utf-8', (err, data) => {
     console.log(result);
     // Demo
     console.log(result['SOAP-ENV:Envelope']['SOAP-ENV:Body']);
-    } catch(exception) { 
+    } catch(exception) {
       console.error('Error "' + exception + '": Failed to parse the XML.');
     }
 });
