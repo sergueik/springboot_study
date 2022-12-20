@@ -12,3 +12,6 @@ xpack.license.self_generated.type: basic
 #xpack.security.authc.token.enable: true
 #xpack.security.authc.api_key.enabled: true
 
+
+script.painless.regex.enabled: true
+# NOTE: the script.painless.regex.limit-factor setting yet to be explored
