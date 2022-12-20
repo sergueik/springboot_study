@@ -1,9 +1,8 @@
 class  Parser{
   constructor(){
-
+  this.jsonRes = {};// JSON object
   }
   parseXML(xmlSource){
-    var jsonRes = {};// JSON object
     var tag,tmp,closeTagPositon,openTag, value;// helper variables
     // cleaning the XML
     xmlSource = this.unescapeString(xmlSource);
@@ -12,22 +11,15 @@ class  Parser{
       // getting the current open Tag
       openTag = this.clearAttributes(xmlSource.match(/<[^\/][^>]*>/)[0]);
       // getting the tag name
-      tag = openTag.substring(1, openTag.length - 1);
+      // the "substring" and "length" appear lacking in painless
+      tag = openTag.replace('<', '').replace('>','');
       console.error('tag: "' + tag + '"');
       // looking for the </element> tag
       // closeTagPosition will contain the index of the closing tag
       closeTagPositon = xmlSource.indexOf(openTag.replace('<', '</'));
-      if (closeTagPositon == -1){
-        tag = openTag.match(/[^<][:-\w$]*/)[0];
-        //  console.error('tag: ' + tag );
-
-         closeTagPositon = xmlSource.indexOf('</' + tag);
-         if (closeTagPositon == -1) {
-             closeTagPositon = xmlSource.indexOf('<\\/' + tag);
-         }
-      }
       // getting the value between tags
-      value = xmlSource.substring(openTag.length, closeTagPositon);
+      // the "length" appears lacking in painless
+      value = xmlSource.substring(openTag.indexOf('>') + 1, closeTagPositon);
       // if the inner value is a tag
        if (value.match(/<[^\/][^>]*>/)) {
          // call to the function with the childrens nodes
@@ -37,17 +29,17 @@ class  Parser{
            tmp = value; // if is a simple value
        }
        // if the object doesn't have the tag already
-       if (jsonRes[tag] === undefined) {
-           jsonRes[tag] = tmp; // creating the tag
+       if (this.jsonRes[tag] === undefined) {
+           this.jsonRes[tag] = tmp; // creating the tag
        }
-       else if (Array.isArray(jsonRes[tag])) {
+       else if (Array.isArray(this.jsonRes[tag])) {
            // is there is a value with the same tag is an array
-           jsonRes[tag].push(tmp);
+           this.jsonRes[tag].push(tmp);
        }
 
        xmlSource = xmlSource.substring(openTag.length * 2 + 1 + value.length);
     }
-    return jsonRes;
+    return this.jsonRes;
   }
 
   unescapeString = function(data){

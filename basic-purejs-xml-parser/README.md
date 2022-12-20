@@ -545,7 +545,29 @@ POST /apm-7.17.7-transaction-000001/_doc/t9WKMYUB7ikC1HY84JYH/_update
 
   * add exception handler - streamed XML parsing is using recursion and is prone to stack overflows
   * add globbing the contents of the `result['SOAP-ENV:Envelope']['SOAP-ENV:Body']` which is entirely context agnostic, to get some heuristic to get SOAPAction  of a real heavy SOAP XML payloads. Alternatively one can stop right at this level and let ElasticSearch explore the resulting JSON
+  * it appears that moving the instantiation of the result `var jsonRes = {}` into the constructor leads to the following damage to the resulting object:
+```sh
+node ./app.js
+```
+```text
+tag: "SOAP-ENV:Envelope"
+tag: "SOAP-ENV:Body"
+tag: "m:MyMessage"
+tag: "m:MyArgument"
+<ref *1> {
+  'm:MyArgument': 'Hello',
+  'm:MyMessage': [Circular *1],
+  'SOAP-ENV:Body': [Circular *1],
+  'SOAP-ENV:Envelope': [Circular *1]
+}
+<ref *1> {
+  'm:MyArgument': 'Hello',
+  'm:MyMessage': [Circular *1],
+  'SOAP-ENV:Body': [Circular *1],
+  'SOAP-ENV:Envelope': [Circular *1]
+}
 
+```
 ### See Also
    * another pure js XML DOM parser [repository](https://github.com/iazrael/xmlparser)
    * another fast and simple streaming XML Parser for parsing xml to json objects [repository](https://github.com/Ahmadreza-s/xmlparser)
@@ -556,7 +578,7 @@ POST /apm-7.17.7-transaction-000001/_doc/t9WKMYUB7ikC1HY84JYH/_update
    * [how to Script Painless-ly in Elasticsearch](https://www.compose.com/articles/how-to-script-painless-ly-in-elasticsearch/) - does not cover functions
    * [Painless](https://github.com/rmuir/Painless) - New Scripting Language for ElasticSearch -  repository from 2015
    * [painless circuit breaker settings](https://www.elastic.co/guide/en/elasticsearch/reference/current/circuit-breaker.html)
-
+   * [painless script examples](https://www.elastic.co/guide/en/elasticsearch/painless/7.0/painless-examples.html)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
