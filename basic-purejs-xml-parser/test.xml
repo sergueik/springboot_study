@@ -1,7 +1,69 @@
-<SOAP-ENV:Envelope  xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-  <SOAP-ENV:Body>
-    <m:MyMessage xmlns:m="http://electrocommerce.org/abc">
-      <m:MyArgument>Hello</m:MyArgument>
-    </m:MyMessage>
-  </SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+				  xmlns:tns="http://www.jpworks.com/employee"
+				  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+				  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+				  name="EmployeeService" targetNamespace="http://www.jpworks.com/employee">
+	<wsdl:documentation>SOAP Definition for ws-employee</wsdl:documentation>
+	<wsdl:types>
+		<xsd:schema>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="EmployeeByIdRequest">
+		<wsdl:part name="parameters" element="tns:EmployeeByIdRequest"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="EmployeeByNameRequest">
+		<wsdl:part name="parameters" element="tns:EmployeeByNameRequest"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="EmployeeResponse">
+		<wsdl:part name="parameters" element="tns:EmployeeResponse"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="EmployeesResponse">
+		<wsdl:part name="parameters" element="tns:EmployeesResponse"></wsdl:part>
+	</wsdl:message>
+
+	<wsdl:portType name="EmployeeServicePortType">
+		<wsdl:operation name="GetEmployeeById">
+			<wsdl:input message="tns:EmployeeByIdRequest"></wsdl:input>
+			<wsdl:output message="tns:EmployeeResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetEmployeesByName">
+			<wsdl:input message="tns:EmployeeByNameRequest"></wsdl:input>
+			<wsdl:output message="tns:EmployeesResponse"></wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:binding name="EmployeeServiceSOAP" type="tns:EmployeeServicePortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http">
+		</soap:binding>
+		<wsdl:operation name="GetEmployeeById">
+			<soap:operation soapAction="http://www.jpworks.com/employee/GetEmployeeById">
+		</soap:operation>
+			<wsdl:input>
+				<soap:body use="literal">
+				</soap:body>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal">
+				</soap:body>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetEmployeesByName">
+			<soap:operation soapAction="http://www.jpworks.com/employee/GetEmployeesByName">
+		</soap:operation>
+			<wsdl:input>
+				<soap:body use="literal">
+				</soap:body>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal">
+				</soap:body>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+
+	<wsdl:service name="EmployeeService">
+		<wsdl:port name="EmployeeServiceSOAP" binding="tns:EmployeeServiceSOAP">
+			<soap:address location="the-url-service-goes-here"></soap:address>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

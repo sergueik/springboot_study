@@ -11,7 +11,9 @@ fs.readFile('test.xml', 'utf-8', (err, data) => {
     // Dump
     console.log(result);
     // Demo
-    console.log(result['SOAP-ENV:Envelope']['SOAP-ENV:Body']);
+    console.log(result['wsdl:definitions']['wsdl:service']);
+    console.log(result['wsdl:definitions']['wsdl:binding']['soap:binding']);
+    
     } catch(exception) {
       console.error('Error "' + exception + '": Failed to parse the XML.');
     }

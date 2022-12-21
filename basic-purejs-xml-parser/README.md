@@ -568,6 +568,15 @@ tag: "m:MyArgument"
 }
 
 ```
+ * need to get rid of XML declaration 
+```XML
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+```
+which currrently is leading to the execption
+```text
+tag: "?xml?"
+Error "RangeError: Maximum call stack size exceeded": Failed to parse the XML.
+```
 ### See Also
    * another pure js XML DOM parser [repository](https://github.com/iazrael/xmlparser)
    * another fast and simple streaming XML Parser for parsing xml to json objects [repository](https://github.com/Ahmadreza-s/xmlparser)
@@ -579,6 +588,6 @@ tag: "m:MyArgument"
    * [Painless](https://github.com/rmuir/Painless) - New Scripting Language for ElasticSearch -  repository from 2015
    * [painless circuit breaker settings](https://www.elastic.co/guide/en/elasticsearch/reference/current/circuit-breaker.html)
    * [painless script examples](https://www.elastic.co/guide/en/elasticsearch/painless/7.0/painless-examples.html)
-
+   * `substring` [discussion](https://discuss.elastic.co/t/substring-and-contains-in-painless/176294)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
