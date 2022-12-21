@@ -1,0 +1,13 @@
+POST /apm-7.17.7-transaction-000001/_doc/t9WKMYUB7ikC1HY84JYH/_update
+{
+    "script": {
+          "lang": "painless",
+          "source": """
+             String data  = '<SOAP-ENV:Envelope> element data </SOAP-ENV:Envelope>';
+             def x  =  new StringBuffer(data);
+                
+             ctx._source.transaction.name = x.substring(data.indexOf('ENV'),data.indexOf('>')) + ' ' + x.length();
+       """
+    }
+
+}

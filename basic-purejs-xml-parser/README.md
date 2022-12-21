@@ -580,14 +580,17 @@ Error "RangeError: Maximum call stack size exceeded": Failed to parse the XML.
 ### See Also
    * another pure js XML DOM parser [repository](https://github.com/iazrael/xmlparser)
    * another fast and simple streaming XML Parser for parsing xml to json objects [repository](https://github.com/Ahmadreza-s/xmlparser)
-   * [painless functions](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-functions.html)
-  * [painless alkthrough](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-walkthrough.html) - shows example using regex to replace the matches in a string
-  * [advanced scripting engine](https://www.elastic.co/guide/en/elasticsearch/reference/master/modules-scripting-engine.html#modules-scripting-engine) example of a custom ScriptEngine
-   * [painless lanuage specification](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-lang-spec.html) - painless scripting language is rather simple but obscure
-   * [how to Script Painless-ly in Elasticsearch](https://www.compose.com/articles/how-to-script-painless-ly-in-elasticsearch/) - does not cover functions
-   * [Painless](https://github.com/rmuir/Painless) - New Scripting Language for ElasticSearch -  repository from 2015
-   * [painless circuit breaker settings](https://www.elastic.co/guide/en/elasticsearch/reference/current/circuit-breaker.html)
-   * [painless script examples](https://www.elastic.co/guide/en/elasticsearch/painless/7.0/painless-examples.html)
-   * `substring` [discussion](https://discuss.elastic.co/t/substring-and-contains-in-painless/176294)
+   * Painless ElasticSearch Scripting Language
+     + [Script Examples](https://www.elastic.co/guide/en/elasticsearch/painless/7.0/painless-examples.html)
+     + [Language Specification](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-lang-spec.html) - painless scripting language is rather simple but obscure
+     + [Painless API Reference](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-api-reference.html)
+     + [Java Classes exposed to Painless](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-api-reference-shared.html) a.k.a. Shared API
+     + [Functions](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-functions.html)
+     + [Walkthrough](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-walkthrough.html) - shows example using regex to replace the matches in a string
+     + [Custom ScriptEngine](https://www.elastic.co/guide/en/elasticsearch/reference/master/modules-scripting-engine.html#modules-scripting-engine)
+     + [How To Script Painless-ly in Elasticsearch](https://www.compose.com/articles/how-to-script-painless-ly-in-elasticsearch/)
+     + [old repository](https://github.com/rmuir/Painless) from 2015
+     + [Circuit Breaker Settings](https://www.elastic.co/guide/en/elasticsearch/reference/current/circuit-breaker.html)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
