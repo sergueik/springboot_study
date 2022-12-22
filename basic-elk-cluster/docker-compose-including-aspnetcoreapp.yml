@@ -10,7 +10,7 @@ services:
     ports:
       - "8080:80"
     networks:
-      - aspnetcore-app-seq-elastic
+      - elastic
 
   aspnetcore-app:
     restart: unless-stopped
@@ -47,7 +47,7 @@ services:
       - apm-server
       - seq-server
     networks:
-      - aspnetcore-app-seq-elastic
+      - elastic
 
   elasticsearch:
     restart: unless-stopped
@@ -80,7 +80,7 @@ services:
     ports:
       - "9200:9200"
     networks:
-      - aspnetcore-app-seq-elastic
+      - elastic
 
   kibana:
     restart: unless-stopped
@@ -94,7 +94,7 @@ services:
       elasticsearch:
         condition: service_healthy
     networks:
-      - aspnetcore-app-seq-elastic
+      - elastic
     healthcheck:
       test:
         [
@@ -128,7 +128,7 @@ services:
       kibana:
         condition: service_healthy
     networks:
-      - aspnetcore-app-seq-elastic
+      - elastic
   app1:
     restart: unless-stopped
     build: ./app1
@@ -142,7 +142,7 @@ services:
     depends_on:
       - apm-server
     networks:
-      - aspnetcore-app-seq-elastic
+      - elastic
 
   app2:
     restart: unless-stopped
@@ -164,7 +164,7 @@ services:
     # volumes:
     #  - ./app2:/web
     networks:
-      - aspnetcore-app-seq-elastic
+      - elastic
 
 networks:
-  aspnetcore-app-seq-elastic:
+  elastic:

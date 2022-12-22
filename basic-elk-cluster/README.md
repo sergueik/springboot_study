@@ -898,47 +898,35 @@ with the logs:
 
 ### See Also
 
-  * [monitoring python flask application with elastic apm](https://medium.com/analytics-vidhya/monitoring-python-flask-application-with-elastic-apm-bb0853f056ff)
 
-  * [get application performance metrics on python flask witheElastic APM on kibana and elasticsearch](https://ruanbekker.medium.com/get-application-performance-metrics-on-python-flask-with-elastic-apm-on-kibana-and-elasticsearch-2859ea02ae30)
+  * ElasticSearch
+    + [Enrich APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/enrich-apis.html)
+    + [Ingest pipelines](https://www.elastic.co/guide/en/elasticsearch/reference/current/ingest.html)
+    + [Partial Update](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html)
+    + [Tune Data Ingestion on APM Server and ElasticSearch server](https://www.elastic.co/guide/en/apm/guide/master/tune-data-ingestion.html) 
+    + [Ingest node pipeline](https://www.elastic.co/guide/en/apm/server/7.15/elasticsearch-output.html#pipeline-option-es)
+    + [Custom Pipelines](https://www.elastic.co/guide/en/apm/server/7.15/configuring-ingest-node.html#custom-pipelines)
+    + [Using Ingest Pipelines to Enhance Elastic Observability Data](https://dzone.com/articles/using-ingest-pipelines-to-improve-elastic-observab)
+    + [Enrich Processor](https://www.elastic.co/guide/en/elasticsearch/reference/current/enrich-processor.html#enrich-processor)
+    + [Predefined grok patterns](https://github.com/hpcugent/logstash-patterns/blob/master/files/grok-patterns)
+    + [Update Examples](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html#docs-update)
+    + [Script processor](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/script-processor.html)
+    + [log Correlation](https://www.elastic.co/guide/en/apm/agent/python/current/log-correlation.html)
 
-  * [setup APM Server on Ubuntu for Your Elastic Stack to Get Insights in Your Application Performance Metrics]( https://blog.ruanbekker.com/blog/2018/11/11/setup-apm-server-on-ubuntu-for-your-elastic-stack-to-get-insights-in-your-application-performance-metrics)
+  * SOAP
 
-  * [finding local IP addresses using Python's stdlib](https://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib)
+     + building `SOAPAction` header [SOAP client app documentation](http://www.herongyang.com/Web-Services/SAAJ-addHeader-Set-SOAPAction-Header-Line.html) for java - uses `headers.addHeader("SOAPAction", uri+"/GetSpeech");` which leads to the header `SOAPAction: http://xmlme.com/WebServices/GetSpeech`
+     + [how java code to set an attribute like SOAPAction in the Header?](https://coderanch.com/t/220498/java/set-attribute-SOAPAction-Header) shows example `https://coderanch.com/t/220498/java/set-attribute-SOAPAction-Header`
+     + Java __Spring-WS__-based  library [repository](https://github.com/reficio/soap-ws),  that enables handling SOAP on a purely XML level and with SOAP standards supports version 1.1 and 1.2 - the `SOAPAction` attribute is automatically [properly placed](https://github.com/reficio/soap-ws/search?p=2&q=soapaction)
+     + [call SOAP Server from Postman] (https://www.baeldung.com/postman-soap-request)
+     + [call SOAP Server from the command line](https://www.baeldung.com/call-soap-command-line)
 
-  * ElasticSearch [Enrich APIs](https://www.elastic.co/guide/en/elasticsearch/reference/current/enrich-apis.html)
+  * Misc.
+    + [monitoring python flask application with elastic apm](https://medium.com/analytics-vidhya/monitoring-python-flask-application-with-elastic-apm-bb0853f056ff)
+    + [get application performance metrics on python flask witheElastic APM on kibana and elasticsearch](https://ruanbekker.medium.com/get-application-performance-metrics-on-python-flask-with-elastic-apm-on-kibana-and-elasticsearch-2859ea02ae30)
+    + [setup APM Server on Ubuntu](https://blog.ruanbekker.com/blog/2018/11/11/setup-apm-server-on-ubuntu-for-your-elastic-stack-to-get-insights-in-your-application-performance-metrics)
+    + [finding local IP addresses using Python's stdlib](https://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib)
 
-  * ElasticSearch [Ingest pipelines](https://www.elastic.co/guide/en/elasticsearch/reference/current/ingest.html)
-
-  * ElasticSearch document Partial Update [documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html)
-
-  * ElasticSearch [Tune Data Ingestion](https://www.elastic.co/guide/en/apm/guide/master/tune-data-ingestion.html) on APM Server and ElasticSearch server
-
-  * Elastic APM Server [Ingest node pipeline](https://www.elastic.co/guide/en/apm/server/7.15/elasticsearch-output.html#pipeline-option-es) to write events to  
-   
-  * Elastic APM Server [Custom Pipelines](https://www.elastic.co/guide/en/apm/server/7.15/configuring-ingest-node.html#custom-pipelines
-
-  * [Using Ingest Pipelines to Enhance Elastic Observability Data](https://dzone.com/articles/using-ingest-pipelines-to-improve-elastic-observab)
-
-  * ElasticSearch [Enrich Processor](https://www.elastic.co/guide/en/elasticsearch/reference/current/enrich-processor.html#enrich-processor)
-  
-  * [call SOAP Server from the command line](https://www.baeldung.com/call-soap-command-line)
-
-  * [call SOAP Server from Postman] (https://www.baeldung.com/postman-soap-request)
-
-  * building `SOAPAction` header [SOAP client app documentation](http://www.herongyang.com/Web-Services/SAAJ-addHeader-Set-SOAPAction-Header-Line.html) for java - uses `headers.addHeader("SOAPAction", uri+"/GetSpeech");` which leads to the header `SOAPAction: http://xmlme.com/WebServices/GetSpeech`
-
-  * [how java code to set an attribute like SOAPAction in the Header?](https://coderanch.com/t/220498/java/set-attribute-SOAPAction-Header) shows example `https://coderanch.com/t/220498/java/set-attribute-SOAPAction-Header`
-
-  * [predefined grok patterns](https://github.com/hpcugent/logstash-patterns/blob/master/files/grok-patterns)
-
-  * `_Update` [examples](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html#docs-update
-
-  * [Script processor](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/script-processor.html)
-
-  * [log Correlation](https://www.elastic.co/guide/en/apm/agent/python/current/log-correlation.html)
-
-  * Java __Spring-WS__-based  library [repository](https://github.com/reficio/soap-ws),  that enables handling SOAP on a purely XML level and with SOAP standards supports version 1.1 and 1.2 - the `SOAPAction` attribute is automatically [properly placed](https://github.com/reficio/soap-ws/search?p=2&q=soapaction)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
