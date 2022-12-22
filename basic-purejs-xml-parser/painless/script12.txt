@@ -1,0 +1,34 @@
+POST /apm-7.17.7-transaction-000001/_doc/jDtAO4UBcZAN60pWuqjG/_update
+{
+    "script": {
+        "lang": "painless",
+        "source": """
+        HashMap parseXML(def source) {
+            def result = new HashMap();
+            
+            def value  = new StringBuffer(source);
+            result.put(value, 1);
+            // recursive call 
+            if (source.length() > 1) {
+              value  = value.substring(0, source.length()- 1);
+             
+              result = parseXML(value );                
+                // do something else
+            } else {
+                return result;
+            }
+  
+        }
+
+
+        String data = 'abcdefgh';
+        def result = parseXML(data);
+        def result2= result.get(data);
+        ctx._source.transaction.name = result2; 
+        """,
+        "params": {
+            "delimiter": "/",
+            "position": -1
+        }
+    }
+}

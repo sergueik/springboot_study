@@ -1,0 +1,8 @@
+#  get the id value to use in the update scripts
+GET /apm-7.17.7-transaction-000001/_search?_source=_id
+
+
+# get result
+GET /apm-7.17.7-transaction-000001/_doc/jDtAO4UBcZAN60pWuqjG?_source=transaction
+
+

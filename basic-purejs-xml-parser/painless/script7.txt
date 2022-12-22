@@ -1,0 +1,32 @@
+POST /apm-7.17.7-transaction-000001/_doc/jDtAO4UBcZAN60pWuqjG/_update
+{
+    "script": {
+          "lang": "painless",
+          "source": """
+            String unescapeString(def data){
+              return / /.matcher(clearAttributes(/\n|\t|\r/.matcher(data).replaceAll(' '))).replaceAll('');
+            }
+            String clearAttributes(def data){
+              return /[\w:-]+ *= *"[^"]+"/.matcher(data).replaceAll('');
+
+            }
+            String getElementContent(def data, def openTag){
+              String closeTag = /</.matcher(openTag).replaceFirst('</');
+              int startPos = openTag.length();
+              // NOTE: dynamic getter [java.lang.String, length] not found
+              // when property confused with method
+              // def startPos = openTag.length - 1;
+              // int startPos = openTag.indexOf('>') + 1;
+              int endPos = data.indexOf(closeTag);
+              return data.substring(startPos, endPos);
+            }
+            String data  = '<SOAP-ENV:Envelope  xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"> <SOAP-ENV:Body> <m:MyMessage xmlns:m="http://electrocommerce.org/abc"> <m:MyArgument>Hello</m:MyArgument> </m:MyMessage> </SOAP-ENV:Body> </SOAP-ENV:Envelope>';
+            String openTag = '<SOAP-ENV:Envelope>';
+            String result = getElementContent(unescapeString(data), openTag);
+            String expected = '<SOAP-ENV:Body><m:MyMessage><m:MyArgument>Hello</m:MyArgument></m:MyMessage></SOAP-ENV:Body>';
+            ctx._source.transaction.name = result;
+       """
+    }
+
+}
+

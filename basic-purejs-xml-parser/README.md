@@ -32,7 +32,8 @@ Technically one can possibly tweak the `Parser.js` to strip attributes of elemen
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
   <SOAP-ENV:Body>
     <m:MyMessage xmlns:m="http://electrocommerce.org/abc">
-      <m:MyArgument>Hello</m:MyArgument>
+      <m:MyArguments>Hello</m:MyArguments>
+      <m:MyArguments>World</m:MyArguments>
     </m:MyMessage>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
@@ -41,11 +42,11 @@ Technically one can possibly tweak the `Parser.js` to strip attributes of elemen
 
 * temporatily remove every attribute manually
 ```XML
-
-<SOAP-ENV:Envelope>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
   <SOAP-ENV:Body>
-    <m:MyMessage>
-      <m:MyArgument>Hello</m:MyArgument>
+    <m:MyMessage xmlns:m="http://electrocommerce.org/abc">
+      <m:MyArguments>Hello</m:MyArguments>
+      <m:MyArguments>World</m:MyArguments>
     </m:MyMessage>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
@@ -93,7 +94,8 @@ copy modified script into container and rerun. This time it shows the contents o
 }
 ```
 ```json
-{ "m:MyMessage": { "m:MyArgument": "Hello" } }
+{ 'm:MyMessage': { 'm:MyArguments': [ 'Hello', 'World' ] } }
+
 ```
 #### Cleanup
 ```sh

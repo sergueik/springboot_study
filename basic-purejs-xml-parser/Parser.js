@@ -32,9 +32,13 @@ class  Parser{
        if (jsonRes[tag] === undefined) {
            jsonRes[tag] = tmp; // creating the tag
        }
-       else if (Array.isArray(jsonRes[tag])) {
-           // is there is a value with the same tag is an array
-           jsonRes[tag].push(tmp);
+       else { 
+           // is there is a value with the same tag make it an array
+           console.error('converting value to array: "' + tag + '"');
+           var tmpValue = [];
+           tmpValue.push( jsonRes[tag]);
+           tmpValue.push(tmp);
+           jsonRes[tag] = tmpValue;
        }
 
        xmlSource = xmlSource.substring(openTag.length * 2 + 1 + value.length);
