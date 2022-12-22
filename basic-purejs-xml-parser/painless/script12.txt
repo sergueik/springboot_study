@@ -3,31 +3,36 @@ POST /apm-7.17.7-transaction-000001/_doc/jDtAO4UBcZAN60pWuqjG/_update
     "script": {
         "lang": "painless",
         "source": """
-        HashMap parseXML(def source) {
-            def result = new HashMap();
-            
-            def value  = new StringBuffer(source);
-            result.put(value, 1);
-            // recursive call 
-            if (source.length() > 1) {
-              value  = value.substring(0, source.length()- 1);
-             
-              result = parseXML(value );                
-                // do something else
-            } else {
-                return result;
+            String findTag(def source) {
+              String openTag = '';
+              def m = /(<[^\/][^>]*>)/.matcher(source);
+              if ( m.find() ) {
+                openTag = m.group(1);
+              }
+              return openTag;
             }
-  
-        }
+            String unescapeString(def data){
+              return / /.matcher(clearAttributes(/\n|\t|\r/.matcher(data).replaceAll(' '))).replaceAll('');
+            }
+            String clearAttributes(def data){
+              return /[\w:-]+ *= *"[^"]+"/.matcher(data).replaceAll('');
 
-
-        String data = 'abcdefgh';
-        def result = parseXML(data);
-        def result2= result.get(data);
-        ctx._source.transaction.name = result2; 
+            }
+           String data = params['data'];
+           def result  = findTag(data);
+           ctx._source.transaction.name = result;
         """,
         "params": {
-            "delimiter": "/",
+            "data": """
+              <payment>
+                <amount>
+                  <currency>MXN</currency>
+                  <quantity>10</quantity>
+                </amount>
+                <from>Evan</from>
+                <to>PayStand</to>
+            </payment>
+            """,
             "position": -1
         }
     }

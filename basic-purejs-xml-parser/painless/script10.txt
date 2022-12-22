@@ -3,17 +3,17 @@ POST /apm-7.17.7-transaction-000001/_doc/jDtAO4UBcZAN60pWuqjG/_update
     "script": {
         "lang": "painless",
         "source": """
-        HashMap parseXML(def source) {
+        HashMap recursiveCall(def source) {
             def result = new HashMap();
-            
+            result.put(source, 1);
             def value  = new StringBuffer(source);
-            result.put(value, 1);
-            // recursive call 
+            // recursive call
             if (source.length() > 1) {
               value  = value.substring(0, source.length()- 1);
-             
-              result = parseXML(value );                
-                // do something else
+              result = recursiveCall(value );
+              // NOTE: result.put(source, 1);              
+              // leading to 
+              // cannot access method/field [put] from a null def reference
             } else {
                 return result;
             }
@@ -22,46 +22,12 @@ POST /apm-7.17.7-transaction-000001/_doc/jDtAO4UBcZAN60pWuqjG/_update
 
 
         String data = 'abcdefgh';
-        def result = parseXML(data);
-        def result2= result.get(data);
+        def result = recursiveCall(data);
+        def result2 = result.keySet().asList().toString();
+	def expected = '[a]';
+        // NOTE:
+        // cannot write xcontent for unknown value of type class java.lang.StringBuffer
         ctx._source.transaction.name = result2; 
-        """,
-        "params": {
-            "delimiter": "/",
-            "position": -1
-        }
-    }
-}POST /apm-7.17.7-transaction-000001/_doc/jDtAO4UBcZAN60pWuqjG/_update
-{
-    "script": {
-        "lang": "painless",
-        "source": """
-        HashMap parseXML(def source) {
-            def result = new HashMap();
-            
-            def value  = new StringBuffer(source);
-            result.put(value, 1);
-            // recursive call 
-            if (source.length() > 1) {
-              value  = value.substring(0, source.length()- 1);
-             
-              result = parseXML(value );                
-                // do something else
-            } else {
-                return result;
-            }
-  
-        }
-
-
-        String data = 'abcdefgh';
-        def result = parseXML(data);
-        def result2= result.get(data);
-        ctx._source.transaction.name = result2; 
-        """,
-        "params": {
-            "delimiter": "/",
-            "position": -1
-        }
+        """
     }
 }

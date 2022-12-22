@@ -75,10 +75,9 @@ for FILE in test.xml app.js Parser.js;do docker cp $FILE $NAME:/ ; done
 node ./app.js
 ```
 ```javascript
-{
-  'SOAP-ENV:Envelope': { 'SOAP-ENV:Body': { 'm:MyMessage': [Object] } }
+Map(1) {
+  'SOAP-ENV:Envelope' => Map(1) { 'SOAP-ENV:Body' => Map(1) { 'm:MyMessage' => [Map] } }
 }
-
 ```
 
 * add the line to the demo app `app.js` to illustrate the `Parser.js` loaded a fully defined object:
@@ -89,12 +88,14 @@ console.log(result['SOAP-ENV:Envelope']['SOAP-ENV:Body']);
 copy modified script into container and rerun. This time it shows the contents of the `m:MyMessage` element:
 
 ```javascript
-{
-  "SOAP-ENV:Envelope": { "SOAP-ENV:Body": { "m:MyMessage": [Object] } }
+Map(1) {
+  'SOAP-ENV:Envelope' => Map(1) { 'SOAP-ENV:Body' => Map(1) { 'm:MyMessage' => [Map] } }
 }
 ```
 ```json
-{ 'm:MyMessage': { 'm:MyArguments': [ 'Hello', 'World' ] } }
+Map(1) {
+  'm:MyMessage' => Map(1) { 'm:MyArguments' => [ 'Hello', 'World' ] }
+}
 
 ```
 #### Cleanup

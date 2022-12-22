@@ -3,7 +3,7 @@ class  Parser{
 
   }
   parseXML(xmlSource){
-    var jsonRes = {};// JSON object
+    var jsonRes = new Map();
     var tag,tmp,closeTagPositon,openTag, value;// helper variables
     // cleaning the XML
     xmlSource = this.unescapeString(xmlSource);
@@ -28,17 +28,17 @@ class  Parser{
        else {
            tmp = value; // if is a simple value
        }
-       // if the object doesn't have the tag already
-       if (jsonRes[tag] === undefined) {
-           jsonRes[tag] = tmp; // creating the tag
+       // if the map doesn't have the tag already
+           if (!jsonRes.has(tag)) {
+           jsonRes.set(tag, tmp); // creating the tag
        }
        else { 
-           // is there is a value with the same tag make it an array
+           // is there is a value with the same tag is an array
            console.error('converting value to array: "' + tag + '"');
            var tmpValue = [];
-           tmpValue.push( jsonRes[tag]);
+           tmpValue.push( jsonRes.get(tag));
            tmpValue.push(tmp);
-           jsonRes[tag] = tmpValue;
+           jsonRes.set(tag,  tmpValue);
        }
 
        xmlSource = xmlSource.substring(openTag.length * 2 + 1 + value.length);

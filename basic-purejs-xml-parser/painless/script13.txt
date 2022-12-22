@@ -1,0 +1,66 @@
+POST /apm-7.17.7-transaction-000001/_doc/jDtAO4UBcZAN60pWuqjG/_update
+{
+    "script": {
+        "lang": "painless",
+        "source": """
+          HashMap parseXML(def source) {
+            def result = new HashMap();
+             def data = unescapeString(source);
+              while (data =~/<[^\/][^>]*>/){
+                String openTag = findTag(data);
+                result[openTag] = 1;
+                data = getElementContent(data, openTag);
+            }  
+            return result;
+          }
+
+            String findTag(def source) {
+              String openTag = '';               
+              def m = /(<[^\/][^>]*>)/.matcher(source);
+              if ( m.find() ) {
+                openTag = m.group(1);
+              }
+              return openTag;
+            }
+            String unescapeString(def data){
+              return / /.matcher(clearAttributes(/\n|\t|\r/.matcher(data).replaceAll(' '))).replaceAll('');
+            }
+            String clearAttributes(def data){
+              return /[\w:-]+ *= *"[^"]+"/.matcher(data).replaceAll('');
+
+            }
+            String getElementContent(def data, def openTag){
+              String closeTag = /</.matcher(openTag).replaceFirst('</');
+              int startPos = openTag.length();
+              // NOTE: dynamic getter [java.lang.String, length] not found
+              // when property confused with method
+              // def startPos = openTag.length - 1;
+              // int startPos = openTag.indexOf('>') + 1;
+              int endPos = data.indexOf(closeTag);
+              if (endPos == -1 ) {
+                endPos = data.length() - 1;
+              }
+              return data.substring(startPos, endPos);
+            }
+
+        String data = params['data'];
+        def result  = parseXML(data);
+        def result2 = result.keySet().asList().toString();
+        // [<payment>, <currency>, <amount>]
+        ctx._source.transaction.name = result2; 
+        """,
+        "params": {
+            "data": """
+              <payment>
+                <amount>
+                  <currency>MXN</currency>
+                  <quantity>10</quantity>
+                </amount>
+                <from>Evan</from>
+                <to>PayStand</to>
+            </payment>
+            """,
+            "position": -1
+        }
+    }
+}

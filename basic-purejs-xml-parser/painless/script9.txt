@@ -1,28 +1,22 @@
 POST /apm-7.17.7-transaction-000001/_doc/jDtAO4UBcZAN60pWuqjG/_update
 {
     "script": {
-          "lang": "painless",
-          "source": """
-          HashMap parseXML(def source){
-            def result =  new HashMap();
+        "lang": "painless",
+        "source": """
+        HashMap returnMap(def source) {
+            def result = new HashMap();
             result.put('x', 'y');
-            // NOTE: result['x'] = 'y'; 
+            // NOTE: result['x'] = 'y';
             // does not work
             return result;
 
-          }
+        }
 
-            	
-          String data  = 'data';
-          def result = parseXML(data);
-          ctx._source.transaction.name = result.get('x');
-          // NOTE :result.keys  does not wotk
-       """,
-          "params": {
-            "delimiter": "/",
-            "position": -1
-          }
+
+        String data = 'data';
+        def result = returnMap(data);
+        ctx._source.transaction.name = result.get('x');
+        // NOTE: result.keys  does not work
+        """
     }
 }
-
-
