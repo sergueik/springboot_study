@@ -544,6 +544,123 @@ POST /apm-7.17.7-transaction-000001/_doc/t9WKMYUB7ikC1HY84JYH/_update
 }
 ```
 
+### Painless Script
+* after 99% conversion of the `Parser.js` to Painless: 
+```Java
+{
+    "script": {
+        "lang": "painless",
+        "source": """
+          HashMap parseXML(def source) {
+            def result = new HashMap();
+             def data = unescapeString(source);
+              while (data =~/<[^\/][^>]*>/){
+                String openTag = findTag(data);
+                String tag = openTag.substring(1, openTag.length() - 1);
+                def value = getElementContent(data, openTag);
+                def tmp = '';
+                if (value =~/ <[^\/][^>]*>/) {
+                  // found XML inside the element
+                  tmp = parseXML(value);
+                } else {
+                  // found plain text inside the element
+                  tmp = value;
+                }
+                // TODO: handle arrays
+                result[tag] = tmp;
+            }  
+            return result;
+          }
+
+            String findTag(def source) {
+              String openTag = '';               
+              def m = /(<[^\/][^>]*>)/.matcher(source);
+              if ( m.find() ) {
+                openTag = m.group(1);
+              }
+              return openTag;
+            }
+            String unescapeString(def data){
+              return / /.matcher(clearAttributes(/\n|\t|\r/.matcher(data).replaceAll(' '))).replaceAll('');
+            }
+            String clearAttributes(def data){
+              return /[\w:-]+ *= *"[^"]+"/.matcher(data).replaceAll('');
+
+            }
+            String getElementContent(def data, def openTag){
+              String closeTag = /</.matcher(openTag).replaceFirst('</');
+              int startPos = openTag.length();
+              // NOTE: dynamic getter [java.lang.String, length] not found
+              // when property confused with method
+              // def startPos = openTag.length - 1;
+              // int startPos = openTag.indexOf('>') + 1;
+              int endPos = data.indexOf(closeTag);
+              if (endPos == -1 ) {
+                endPos = data.length() - 1;
+              }
+              return data.substring(startPos, endPos);
+            }
+
+        String data = params['data'];
+        def result  = parseXML(data);
+        def result2 = result.keySet().asList().toString();
+        // [<payment>, <currency>, <amount>]
+        ctx._source.transaction.name = result2; 
+        """,
+        "params": {
+            "data": """
+              <payment>
+                <amount>
+                  <currency>MXN</currency>
+                  <quantity>10</quantity>
+                </amount>
+                <from>Evan</from>
+                <to>PayStand</to>
+            </payment>
+            """,
+            "position": -1
+        }
+    }
+}
+```
+the recursion call in processing the element contents 
+
+```java
+
+  HashMap parseXML(def source) {
+    def result = new HashMap();
+     def data = unescapeString(source);
+      while (data =~/<[^\/][^>]*>/){
+        String openTag = findTag(data);
+        String tag = openTag.substring(1, openTag.length() - 1);
+        def value = getElementContent(data, openTag);
+        def tmp = '';
+        if (value =~/ <[^\/][^>]*>/) {
+          // found XML inside the element
+          tmp = parseXML(value);
+        } else {
+          // found plain text inside the element
+          tmp = value;
+        }
+        // TODO: handle arrays
+        result[tag] = tmp;
+    }  
+    return result;
+  }
+
+```
+which is the key for loading the XML into the tree structure was observed to lead to a runtime error clearly related to the [circuit breaker setting](https://www.elastic.co/guide/en/elasticsearch/reference/current/circuit-breaker.html) enforced (quite reasonably) in the Elastic:
+
+fails to compile:
+```json
+{
+        "type" : "painless_error",
+        "reason" : "The maximum number of statements that can be executed in a loop has been reached."
+      }
+```
+this indicates the need to consider writing a plugin script in pure Java to cope with extraction of `SoapAction` from the SOAP XMP payload.
+
+
 ### TODO
 
   * add exception handler - streamed XML parsing is using recursion and is prone to stack overflows
@@ -569,13 +686,16 @@ tag: "m:MyArgument"
   'SOAP-ENV:Body': [Circular *1],
   'SOAP-ENV:Envelope': [Circular *1]
 }
-
 ```
- * need to get rid of XML declaration 
+ * support closed tags
+```XML
+<element/>
+```
+ * Support Comments and XML declaration 
 ```XML
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 ```
-which currrently is leading to the execption
+easiest appears to to get rid of  both early during the parse which currrently is leading to the exception (in Javascript version)
 ```text
 tag: "?xml?"
 Error "RangeError: Maximum call stack size exceeded": Failed to parse the XML.
@@ -590,10 +710,11 @@ Error "RangeError: Maximum call stack size exceeded": Failed to parse the XML.
      + [Java Classes exposed to Painless](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-api-reference-shared.html) a.k.a. Shared API
      + [Functions](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-functions.html)
      + [Walkthrough](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-walkthrough.html) - shows example using regex to replace the matches in a string
-     + [Custom ScriptEngine](https://www.elastic.co/guide/en/elasticsearch/reference/master/modules-scripting-engine.html#modules-scripting-engine)
+     + [Custom ScriptEngine](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-engine.html#modules-scripting-engine)
      + [How To Script Painless-ly in Elasticsearch](https://www.compose.com/articles/how-to-script-painless-ly-in-elasticsearch/)
      + [old repository](https://github.com/rmuir/Painless) from 2015
      + [Circuit Breaker Settings](https://www.elastic.co/guide/en/elasticsearch/reference/current/circuit-breaker.html)
+     + [repository](https://github.com/elastic/elasticsearch/tree/main/plugins/examples/script-expert-scoring) with example plugin implementing the interface `ScriptPlugin` and include a [test suite](https://github.com/elastic/elasticsearch/blob/main/plugins/examples/script-expert-scoring/src/yamlRestTest/java/org/elasticsearch/example/expertscript/ExpertScriptClientYamlTestSuiteIT.java) that is required for including in ElasticSearch
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

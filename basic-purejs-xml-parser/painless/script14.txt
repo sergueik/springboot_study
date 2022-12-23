@@ -3,20 +3,31 @@ POST /apm-7.17.7-transaction-000001/_doc/jDtAO4UBcZAN60pWuqjG/_update
     "script": {
         "lang": "painless",
         "source": """
-            String findTag(def source) {
-              String openTag = '';
-              def data = unescapeString(source);
-               
-              if (data =~ /<[^\/][^>]*>/){
-                def m = /(<[^\/][^>]*>)/.matcher(data);
-                if ( m.find() ) {
-                  openTag = m.group(1);
-                } else { 
-                  openTag = 'no match: ' + data;
+          HashMap parseXML(def source) {
+            def result = new HashMap();
+             def data = unescapeString(source);
+              while (data =~/<[^\/][^>]*>/){
+                String openTag = findTag(data);
+                String tag = openTag.substring(1, openTag.length() - 1);
+                def value = getElementContent(data, openTag);
+                def tmp  = '';
+                if (value =~/ <[^\/][^>]*>/) {
+                   tmp = parseXML(value);
+                } else {
+                   tmp = value;
                 }
+                // TODO: handle arrays
+                result[tag] = tmp;
+            }  
+            return result;
+          }
+
+            String findTag(def source) {
+              String openTag = '';               
+              def m = /(<[^\/][^>]*>)/.matcher(source);
+              if ( m.find() ) {
+                openTag = m.group(1);
               }
-              // the following does not work
-              // openTag = /(<[^\/][^>]*>)/.matcher(data).replaceAll('$1');
               return openTag;
             }
             String unescapeString(def data){
@@ -40,23 +51,24 @@ POST /apm-7.17.7-transaction-000001/_doc/jDtAO4UBcZAN60pWuqjG/_update
               return data.substring(startPos, endPos);
             }
 
-          String data = params['data'];
-          def result  = findTag(data);
-          
-          ctx._source.transaction.name = result; 
+        String data = params['data'];
+        def result  = parseXML(data);
+        def result2 = result.keySet().asList().toString();
+        // [<payment>, <currency>, <amount>]
+        ctx._source.transaction.name = result2; 
         """,
         "params": {
-          "data": """
-            <payment>
-              <amount>
-                <currency>MXN</currency>
-                <quantity>10</quantity>
-              </amount>
-              <from>Evan</from>
-              <to>PayStand</to>
-          </payment>
-          """,
-          "position": -1
+            "data": """
+              <payment>
+                <amount>
+                  <currency>MXN</currency>
+                  <quantity>10</quantity>
+                </amount>
+                <from>Evan</from>
+                <to>PayStand</to>
+            </payment>
+            """,
+            "position": -1
         }
     }
 }
