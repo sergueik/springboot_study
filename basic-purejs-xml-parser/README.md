@@ -687,7 +687,7 @@ tag: "m:MyArgument"
   'SOAP-ENV:Envelope': [Circular *1]
 }
 ```
- * support closed tags
+ * support empty XML elements
 ```XML
 <element/>
 ```
@@ -695,11 +695,12 @@ tag: "m:MyArgument"
 ```XML
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 ```
-easiest appears to to get rid of  both early during the parse which currrently is leading to the exception (in Javascript version)
+which currrently is leading to the exception (in Javascript version)
 ```text
 tag: "?xml?"
 Error "RangeError: Maximum call stack size exceeded": Failed to parse the XML.
 ```
+easiest appears to to get rid early during the parse 
 ### See Also
    * another pure js XML DOM parser [repository](https://github.com/iazrael/xmlparser)
    * another fast and simple streaming XML Parser for parsing xml to json objects [repository](https://github.com/Ahmadreza-s/xmlparser)
