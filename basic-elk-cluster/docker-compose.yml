@@ -3,7 +3,7 @@ version: '2.2'
 services:
   elasticsearch:
     restart: unless-stopped
-    build: ./elasticsearch
+    build: elasticsearch
     container_name: elasticsearch
     # volumes:
     #  - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
@@ -36,7 +36,7 @@ services:
 
   kibana:
     restart: unless-stopped
-    build: ./kibana
+    build: kibana
     container_name: kibana
     # volumes:
     #  - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,z
@@ -59,7 +59,7 @@ services:
 
   apm-server:
     restart: unless-stopped
-    build: ./apm-server
+    build: apm-server
     container_name: apm-server
     cap_add: [ "CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID" ]
     cap_drop: [ "ALL" ]
@@ -83,7 +83,7 @@ services:
       - elastic
   app1:
     restart: unless-stopped
-    build: ./app1
+    build: app1
     container_name: app1
     ports:
       - "6000:6000"
@@ -98,7 +98,7 @@ services:
 
   app2:
     restart: unless-stopped
-    build: ./app2
+    build: app2
     container_name: app2
     environment:
       - MONITOR=true

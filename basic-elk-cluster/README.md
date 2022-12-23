@@ -853,6 +853,131 @@ The SOAP protocol tendency to reimplement several existing features of HTTP is q
 
 
 
+### Processing Custom Header
+
+* observe APM indices:
+
+```sh
+curl -s 'http://localhost:9200/_cat/indices?v&pretty'|grep 'apm'
+```
+```text
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1920  100  1920    0     0   144k      0 --:--:-- --:--:-- --:--:--  144k
+green  open   .apm-agent-configuration         bsEi1dBORbC1oZ8BXMwQxg   1   0          0            0       226b           226b
+yellow open   apm-7.17.7-error-000001          WeUug1n-R1CBfI3Qzph5Qg   1   1          0            0       226b           226b
+yellow open   apm-7.17.7-span-000001           1JtE97CPRwK3k7uU9JfidA   1   1          0            0       226b           226b
+yellow open   apm-7.17.7-onboarding-2022.12.16 zfcQtDRbSoKIYMXuui13AQ   1   1          1            0      7.9kb          7.9kb
+green  open   .apm-custom-link                 P6LEn3TqTmqyyOo5zuXHWA   1   0          0            0       226b           226b
+yellow open   apm-7.17.7-profile-000001        KZYMLpLjQIO0zpIVwXs14w   1   1          0            0       226b           226b
+yellow open   apm-7.17.7-metric-000001         weyOmQ_GT4CRz8i1LoJPng   1   1          2            0       19kb           19kb
+yellow open   apm-7.17.7-transaction-000001    dVuxfasZQ-i8vvGYm16dSA   1   1          0            0       226b           226b
+```
+
+
+inspect the index
+```
+curl -s -X GET http://localhost:9200/apm-7.17.7-transaction-000001/_mappings
+```
+```JSON
+{
+  "apm-7.17.7-transaction-000001" : {
+    "mappings" : {
+      "_meta" : {
+        "beat" : "apm",
+        "version" : "7.17.7"
+      },
+      "dynamic_templates" : [
+        {
+          "labels" : {
+            "path_match" : "labels.*",
+... truncated ~ 7K lines of JSON
+```
+
+Repeat with search
+
+```
+curl -s -X GET http://localhost:9200/apm-7.17.7-transaction-000001/_mappings | jq '."apm-7.17.7-transaction-000001".mappings.properties.http.properties.request.properties.headers' | less
+```
+this will show
+
+```JSON
+{
+  "properties": {
+    "Custom_header": {
+      "type": "keyword",
+      "ignore_above": 1024
+    }
+  }
+}
+```
+
+perform a few API calls with  header
+
+Search
+```
+curl -s -X GET http://localhost:9200/apm-7.17.7-transaction-000001/_search
+```
+
+```sh
+curl -H 'Content-Type: application/json' -s -d '{ "fields": ["http.request.headers"] }' -X GET http://localhost:9200/apm-7.17.7-transaction-000001/_search 
+```
+
+
+with filtering
+
+```sh
+curl -H 'Content-Type: application/json' -s -d '{ "fields": ["http.request.headers"] }' -X GET http://localhost:9200/apm-7.17.7-transaction-000001/_search  | jq '.hits.hits[]._source.http.request.headers."Custom-Header"'
+```
+```text
+null
+null
+["value 3"]
+["value 2"]
+null
+["value"]
+```
+alternatively do in Dev Tools console:
+```
+GET /apm-7.17.7-transaction-000001/_search { "fields": ["http.request.headers"] }
+```
+
+
+NOTE: actually both `fields.yml` and `apm-server.yml` work:
+
+```sh
+curl -s -X GET http://localhost:9200/apm-7.17.7-transaction-000001/_mappings | jq '."apm-7.17.7-transaction-000001".mappings'| grep -i custom
+```
+```text
+                "Custom_header": {
+                "Custom-Header": {
+```
+but it appears only `Custom-Header` has data
+
+```
+PUT /apm-7.17.7-transaction-000001/_mappings
+{
+  "runtime": {
+    "action": {
+      "type": "keyword",
+      "script": """
+        String data=grok('%{GREEDYDATA:filename}').extract(doc["http.request.headers.Custom-Header"].value)?.filename;
+        if (data != null) emit(data); else  emit("unknown"); 
+      """
+    }
+  }
+}
+
+```
+```
+GET /apm-7.17.7-transaction-000001/_search { "fields": ["http.request.headers.Custom-Header", "action"] }
+
+```
+
+```sh
+GET /apm-7.17.7-transaction-000001/_doc/glAgGYUBS-3qJRiahbvM?_source=http.request.headers.Custom-Header
+
+```
 
 ### TODO
 
