@@ -1,62 +1,62 @@
-class  Parser{
-  constructor(){
+class Parser {
+  constructor() {
 
   }
-  parseXML(xmlSource){
-    var jsonRes = new Map();
-    var tag,tmp,closeTagPositon,openTag, value;// helper variables
-    // cleaning the XML
+  parseXML(xmlSource) {
+    var result = new Map();
     xmlSource = this.unescapeString(xmlSource);
-    // While XML string has <elemts>
-    while (xmlSource.match(/<[^\/][^>]*>/)){
+
+    while (xmlSource.match(/<[^\/][^>]*>/)) {
       // getting the current open Tag
-      openTag = this.clearAttributes(xmlSource.match(/<[^\/][^>]*>/)[0]);
+      var openTag = this.clearAttributes(xmlSource.match(/<[^\/][^>]*>/)[0]);
       // getting the tag name
-      // the "substring" and "length" appeared to be lacking in painless (actually present)
-      tag = openTag.replace('<', '').replace('>','');
+      var tag = openTag.replace('<', '').replace('>', '');
       console.error('tag: "' + tag + '"');
-      // looking for the </element> tag
-      // closeTagPosition will contain the index of the closing tag
-      closeTagPositon = xmlSource.indexOf(openTag.replace('<', '</'));
-      // getting the value between tags
-      value = xmlSource.substring(openTag.indexOf('>') + 1, closeTagPositon);
-      // if the inner value is a tag
-       if (value.match(/<[^\/][^>]*>/)) {
-         // call to the function with the childrens nodes
-           tmp = this.parseXML(value);
-       }
-       else {
-           tmp = value; // if is a simple value
-       }
-       // if the map doesn't have the tag already
-           if (!jsonRes.has(tag)) {
-           jsonRes.set(tag, tmp); // creating the tag
-       }
-       else { 
-           // is there is a value with the same tag is an array
-           console.error('converting value to array: "' + tag + '"');
-           var tmpValue = [];
-           tmpValue.push( jsonRes.get(tag));
-           tmpValue.push(tmp);
-           jsonRes.set(tag,  tmpValue);
-       }
+      // looking for the closing tag tag
+      var closeTag = openTag.replace('<', '</');
+      var closeTagPositon = xmlSource.indexOf(closeTag);
+      // getting the element value
 
-       xmlSource = xmlSource.substring(openTag.length * 2 + 1 + value.length);
+      var value = xmlSource.substring(openTag.length, closeTagPositon);
+      var tmp = '';
+
+      if (value.match(/<[^\/][^>]*>/)) {
+        // if the inner value is an Element
+        // do recursive call
+        tmp = this.parseXML(value);
+      } else {
+        tmp = value; // store a text value
+      }
+      // if the map doesn't have the tag already
+      if (!result.has(tag)) {
+        result.set(tag, tmp); // creating the tag
+      } else {
+        // replace the string value with array value
+        console.error('converting value to array: "' + tag + '"');
+        var tmpValue = [];
+        tmpValue.push(result.get(tag));
+        tmpValue.push(tmp);
+
+        result.delete(tag);
+        result.set(tag, tmpValue);
+      }
+
+      xmlSource = xmlSource.substring(openTag.length * 2 + 1 + value.length);
     }
-    return jsonRes;
-  }
-
-  unescapeString = function(data){
-    // convert all whitespace to space
-    var result = data.replace(/\n|\t|\r/g,' ');
-    // remove element attributes
-    result = this.clearAttributes(result);
-    //remove whitespace
-    result = result.replace(/ /g,'');
     return result;
   }
 
-  clearAttributes = function(data){
+  unescapeString = function(data) {
+    // convert all whitespace to space
+    var result = data.replace(/\n|\t|\r/g, ' ');
+    // remove element attributes
+    result = this.clearAttributes(result);
+    //remove whitespace
+    result = result.replace(/ /g, '');
+    return result;
+  }
+
+  clearAttributes = function(data) {
     // remove name="value" pairs
     var result = data.replace(/(?:[:-\w]+) *= *"(?:[^"]+)"/g, '');
     return result;

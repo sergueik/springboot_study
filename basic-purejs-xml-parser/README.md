@@ -1,10 +1,11 @@
 
 ### Info
 
- replica of an oversimplified  streaming XML to JSON translator [repository](https://github.com/AnatoliyDemiurge/XMLparser) in 50 lines of code
+ replica of an oversimplified streaming XML to JSON parser [repository](https://github.com/ErickWeeds/XMLParser) 
+ capable of converting attribute-less DOM to JSON in 50 lines of code
 
 ### Note
- unfortunatey the original project fails to parse SOAP payloads because complertely unprepared of handling XML attributes
+ the original project fails with SOAP payloads because completely unprepared of handling XML attributes
 
 The `test.xml` of the original project
 
@@ -702,8 +703,12 @@ Error "RangeError: Maximum call stack size exceeded": Failed to parse the XML.
 ```
 easiest appears to to get rid early during the parse 
 ### See Also
-   * another pure js XML DOM parser [repository](https://github.com/iazrael/xmlparser)
-   * another fast and simple streaming XML Parser for parsing xml to json objects [repository](https://github.com/Ahmadreza-s/xmlparser)
+
+   * another pure JS XML parser [repo](https://github.com/SummersRemote/xmlToJSON) (failing test)
+   * another pure js XML DOM parser [repository](https://github.com/iazrael/xmlparser) - untested
+   * another fast and simple streaming XML Parser for parsing xml to json objects [repository](https://github.com/Ahmadreza-s/xmlparser) - heavily Regex based, has useful functions to borrow
+   * [discussion](https://codereview.stackexchange.com/questions/28307/implementing-an-algorithm-that-walks-the-dom-without-recursion) and [another](https://stackoverflow.com/questions/6969604/recursion-down-dom-tree) of non-recursive DOM tree traversal in Javascript
+   
    * Painless ElasticSearch Scripting Language
      + [Script Examples](https://www.elastic.co/guide/en/elasticsearch/painless/7.0/painless-examples.html)
      + [Language Specification](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-lang-spec.html) - painless scripting language is rather simple but obscure
