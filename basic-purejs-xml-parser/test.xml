@@ -1,8 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
   <SOAP-ENV:Body>
     <m:MyMessage xmlns:m="http://electrocommerce.org/abc">
       <m:MyArguments>Hello</m:MyArguments>
       <m:MyArguments>World</m:MyArguments>
+      <!--
+          comment should be ignored
+      -->
     </m:MyMessage>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>

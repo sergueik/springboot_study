@@ -692,16 +692,14 @@ tag: "m:MyArgument"
 ```XML
 <element/>
 ```
- * Support Comments and XML declaration 
-```XML
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-```
 which currrently is leading to the exception (in Javascript version)
 ```text
-tag: "?xml?"
+tag: "m:MyEmptyElement/"
 Error "RangeError: Maximum call stack size exceeded": Failed to parse the XML.
 ```
-easiest appears to to get rid early during the parse 
+easiest appears to to create and insert closing tags early during the `sanitize`
+
+
 ### See Also
 
    * another pure JS XML parser [repo](https://github.com/SummersRemote/xmlToJSON) (failing test)

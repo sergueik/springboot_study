@@ -2,22 +2,22 @@ class Parser {
   constructor() {
 
   }
-  parseXML(xmlSource) {
+  parseXML(data) {
     var result = new Map();
-    xmlSource = this.unescapeString(xmlSource);
+    data = this.unescapeString(this.sanitize(data));
 
-    while (xmlSource.match(/<[^\/][^>]*>/)) {
+    while (data.match(/<[^\/][^>]*>/)) {
       // getting the current open Tag
-      var openTag = this.clearAttributes(xmlSource.match(/<[^\/][^>]*>/)[0]);
+      var openTag = this.clearAttributes(data.match(/<[^\/][^>]*>/)[0]);
       // getting the tag name
       var tag = openTag.replace('<', '').replace('>', '');
       console.error('tag: "' + tag + '"');
       // looking for the closing tag tag
       var closeTag = openTag.replace('<', '</');
-      var closeTagPositon = xmlSource.indexOf(closeTag);
+      var closeTagPositon = data.indexOf(closeTag);
       // getting the element value
 
-      var value = xmlSource.substring(openTag.length, closeTagPositon);
+      var value = data.substring(openTag.length, closeTagPositon);
       var tmp = '';
 
       if (value.match(/<[^\/][^>]*>/)) {
@@ -41,11 +41,16 @@ class Parser {
         result.set(tag, tmpValue);
       }
 
-      xmlSource = xmlSource.substring(openTag.length * 2 + 1 + value.length);
+      data = data.substring(openTag.length * 2 + 1 + value.length);
     }
     return result;
   }
 
+  // remove comments and xml declaration
+  sanitize = function (data) {
+    var result = data.replace(/<\?.*\?>/g, '').replace(/<!--.[^(><.)]*-->/g, '');
+    return result;
+  }
   unescapeString = function(data) {
     // convert all whitespace to space
     var result = data.replace(/\n|\t|\r/g, ' ');
