@@ -1,0 +1,13 @@
+
+<bix>
+
+    <package  sex="male">
+        <id>222</id>
+        <name hasEntityReference="false">weager</name>
+    </package>
+    <package>
+        <id>333</id>
+        <name />
+    </package>
+
+</bix><!-- this is comment2 -->
