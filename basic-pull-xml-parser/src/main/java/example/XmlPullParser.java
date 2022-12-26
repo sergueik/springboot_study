@@ -4,7 +4,16 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Hashtable;
 
-public class XmlPullParser implements SimplePullParser {
+public class XmlPullParser {
+
+	public static final int START_DOCUMENT = 0;
+	public static final int END_DOCUMENT = 1;
+	public static final int START_TAG = 2;
+	public static final int END_TAG = 3;
+	public static final int TEXT = 4;
+	public static final int CDSECT = 5;
+	public static final int ENTITY_REF = 6;
+	public static final int LEGACY = 999;
 
 	static final private String UNEXPECTED_EOF = "Unexpected EOF";
 
@@ -156,7 +165,7 @@ public class XmlPullParser implements SimplePullParser {
 				// TODO hack for <![CDATA[]]
 				req = "[CDATA[";
 				term = ']';
-				this.type = SimplePullParser.TEXT;
+				this.type = TEXT;
 				push = true;
 			} else {
 				req = "DOCTYPE";
@@ -242,23 +251,23 @@ public class XmlPullParser implements SimplePullParser {
 	private final int peekType() {
 		switch (this.peek0) {
 		case -1:
-			return SimplePullParser.END_DOCUMENT;
+			return END_DOCUMENT;
 		case '&':
-			return SimplePullParser.ENTITY_REF;
+			return ENTITY_REF;
 		case '<':
 			switch (this.peek1) {
 			case '/':
-				return SimplePullParser.END_TAG;
+				return END_TAG;
 			case '[':
-				return SimplePullParser.CDSECT;
+				return CDSECT;
 			case '?':
 			case '!':
-				return SimplePullParser.LEGACY;
+				return LEGACY;
 			default:
-				return SimplePullParser.START_TAG;
+				return START_TAG;
 			}
 		default:
-			return SimplePullParser.TEXT;
+			return TEXT;
 		}
 	}
 
@@ -269,8 +278,6 @@ public class XmlPullParser implements SimplePullParser {
 		System.arraycopy(arr, 0, bigger, 0, arr.length);
 		return bigger;
 	}
-
-	/** Sets name and attributes */
 
 	private final void parseStartTag() throws IOException {
 
@@ -340,11 +347,6 @@ public class XmlPullParser implements SimplePullParser {
 		}
 	}
 
-	/**
-	 * result: isWhitespace; if the setName parameter is set, the name of the
-	 * entity is stored in "name"
-	 */
-
 	public final boolean pushEntity() throws IOException {
 
 		read(); // &
@@ -383,11 +385,6 @@ public class XmlPullParser implements SimplePullParser {
 
 		return whitespace;
 	}
-
-	/**
-	 * types: '<': parse to any token (for nextToken ()) '"': parse to quote ' ':
-	 * parse to whitespace or '>'
-	 */
 
 	private final boolean pushText(int delimiter) throws IOException {
 
@@ -437,8 +434,6 @@ public class XmlPullParser implements SimplePullParser {
 		return whitespace;
 	}
 
-	// --------------- public part starts here... ---------------
-
 	public XmlPullParser(Reader reader) throws IOException {
 		this(reader, true);
 	}
@@ -479,10 +474,9 @@ public class XmlPullParser implements SimplePullParser {
 
 		buf.append(" @" + this.line + ":" + this.column + ": ");
 
-		if (this.type == SimplePullParser.START_TAG
-				|| this.type == SimplePullParser.END_TAG) {
+		if (this.type == START_TAG || this.type == END_TAG) {
 			buf.append('<');
-			if (this.type == SimplePullParser.END_TAG)
+			if (this.type == END_TAG)
 				buf.append('/');
 
 			buf.append(this.name);
@@ -507,11 +501,6 @@ public class XmlPullParser implements SimplePullParser {
 		return this.isWhitespace;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.enough.polish.xml.SimplePullParser#getText()
-	 */
 	public String getText() {
 
 		if (this.text == null)
@@ -565,7 +554,7 @@ public class XmlPullParser implements SimplePullParser {
 		try {
 
 			if (this.degenerated) {
-				this.type = SimplePullParser.END_TAG;
+				this.type = END_TAG;
 				this.degenerated = false;
 				this.depth--;
 				return this.type;
@@ -583,43 +572,41 @@ public class XmlPullParser implements SimplePullParser {
 
 				switch (this.type) {
 
-				case SimplePullParser.ENTITY_REF:
+				case ENTITY_REF:
 					this.isWhitespace &= pushEntity();
-					this.type = SimplePullParser.TEXT;
+					this.type = TEXT;
 					break;
 
-				case SimplePullParser.START_TAG:
+				case START_TAG:
 					parseStartTag();
 					break;
 
-				case SimplePullParser.END_TAG:
+				case END_TAG:
 					parseEndTag();
 					break;
 
-				case SimplePullParser.END_DOCUMENT:
+				case END_DOCUMENT:
 					break;
 
-				case SimplePullParser.TEXT:
+				case TEXT:
 					this.isWhitespace &= pushText('<');
 					break;
 
-				case SimplePullParser.CDSECT:
+				case CDSECT:
 					parseLegacy(true);
 					this.isWhitespace = false;
-					this.type = SimplePullParser.TEXT;
+					this.type = TEXT;
 					break;
 
 				default:
 					parseLegacy(false);
 				}
-			} while (this.type > SimplePullParser.TEXT
-					|| this.type == SimplePullParser.TEXT
-							&& peekType() >= SimplePullParser.TEXT);
+			} while (this.type > TEXT || this.type == TEXT && peekType() >= TEXT);
 
-			this.isWhitespace &= this.type == SimplePullParser.TEXT;
+			this.isWhitespace &= this.type == TEXT;
 
 		} catch (IOException e) {
-			this.type = SimplePullParser.END_DOCUMENT;
+			this.type = END_DOCUMENT;
 		}
 
 		return this.type;
@@ -627,8 +614,7 @@ public class XmlPullParser implements SimplePullParser {
 
 	public void require(int eventType, String eventName) throws IOException {
 
-		if (this.type == SimplePullParser.TEXT && eventType != SimplePullParser.TEXT
-				&& isWhitespace()) {
+		if (this.type == TEXT && eventType != TEXT && isWhitespace()) {
 			next();
 		}
 
@@ -640,7 +626,7 @@ public class XmlPullParser implements SimplePullParser {
 
 	public String readText() throws IOException {
 
-		if (this.type != SimplePullParser.TEXT)
+		if (this.type != TEXT)
 			return "";
 
 		String result = getText();
