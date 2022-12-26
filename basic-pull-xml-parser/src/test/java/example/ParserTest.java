@@ -120,7 +120,7 @@ public class ParserTest {
 	@Test(enabled = true, dataProvider = "soap-file-argument-provider", threadPoolSize = 2)
 	public void test2(String fileName) throws IOException {
 		String data = getScriptContent(fileName).replaceAll("(?:\\n|\\r|\\t)", " ");
-		String element = "<([\\w]+):([\\w]+)\\s*(?:xmlns:)([\\w]+)\\s*=\\s*\"([^\"]+)\">";
+		String element = "<([\\w]+):([\\w]+)\\s*(?:xmlns:)([\\w]+)\\s*=\\s*\"([^\"]+)\"\\s*(?:.*)>";
 		Pattern p = Pattern.compile(element);
 		String namespacePrefix = null;
 		String tagName = null;
@@ -136,6 +136,10 @@ public class ParserTest {
 				tagName = m.group(2);
 				namespaceName = m.group(3);
 				namespaceUri = m.group(4);
+				if (namespacePrefix.matches("soap")) {
+					System.err.println("ignoring soap namepace");
+					continue;
+				}
 				System.err.println("namespacePrefix: " + "\"" + namespacePrefix + "\""
 						+ "\t" + "tagName: " + "\"" + tagName + "\"" + "\t"
 						+ "namespaceName: " + "\"" + namespaceName + "\"" + "\t"
@@ -190,3 +194,4 @@ public class ParserTest {
 	}
 
 }
+

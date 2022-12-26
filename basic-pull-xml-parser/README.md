@@ -94,12 +94,10 @@ Appplying this filter will reveal:
 
 | element              |  match            |
 |----------------------|--------------|
-| ``<?xml version="1.0"?>     | no match.        |
-| `<soap:Envelope  xmlns:soap="http://www.w3.org/2003/05/soap-envelope/"  so
-ap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">`     | no matchi (need to rectified).        |
+| `<?xml version="1.0"?>`     | no match.        |
+| `<soap:Envelope  xmlns:soap="http://www.w3.org/2003/05/soap-envelope/"  soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">`     | ignoring soap namepace - no match (needs to rectified by checking namepace prefix)        |
 | `<soap:Body>`     | no match.        |
-| `<m:GetPrice xmlns:m="https://www.w3schools.com/prices">`     | match: <br/>
-namespacePrefix: "m" <br/>   tagName: "GetPrice" <br/>    namespaceName: "m"<br/>      namespaceUri: "https://www.w3schools.com/prices" |
+| `<m:GetPrice xmlns:m="https://www.w3schools.com/prices">`     | match: <br/> `namespacePrefix`: `"m"` <br/>   `tagName`: `"GetPrice"` <br/>    `namespaceName`: `"m"`<br/>      `namespaceUri`: `"https://www.w3schools.com/prices"` |
 | `<m:Item>Apples`     | no match.        |
 | `</m:Item>`     | no match.        |
 | `</m:GetPrice>`     | no match.        |
@@ -113,7 +111,7 @@ input: <?xml version="1.0"?>
 no match.
 input: <soap:Envelope  xmlns:soap="http://www.w3.org/2003/05/soap-envelope/"  so
 ap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">
-no match.
+ignoring soap namepace.
 input: <soap:Body>
 no match.
 input: <m:GetPrice xmlns:m="https://www.w3schools.com/prices">
