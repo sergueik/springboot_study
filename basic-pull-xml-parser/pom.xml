@@ -6,27 +6,32 @@
 
     <groupId>example</groupId>
     <artifactId>xml-pull</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>xml-pull</name>
     <description>A pull based XML parser lacking namespaces comment and entity declaration support</description>
     <url></url>
   <properties>
     <java.version>1.8</java.version>
-    <junit.version>4.13.1</junit.version>
     <hamcrest-all.version>1.3</hamcrest-all.version>
+    <testng.version>6.14.3</testng.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
   </properties>
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>${testng.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>

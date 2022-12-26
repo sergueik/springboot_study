@@ -1,8 +1,5 @@
 package example;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,20 +14,33 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
 
-import static org.junit.Assert.assertTrue;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 public class ParserTest {
 
 	private List<String> attributes = new ArrayList<>();
 
-	@Before
+	@DataProvider(name = "wsdl-file-argument-provider", parallel = false)
+	public Object[][] wsdl_files() throws Exception {
+		return new Object[][] { { "test1.xml" }, { "test2.xml" } };
+	}
+
+	@DataProvider(name = "soap-file-argument-provider", parallel = false)
+	public Object[][] soap_files() throws Exception {
+		return new Object[][] { { "test3.xml" }, { "test4.xml" } };
+	}
+
+	@BeforeMethod
 	public void beforeTest() throws IOException {
 		attributes.clear();
 	}
 
-	@Test
-	public void test1() throws IOException {
-		String fileName = "test1.xml";
+	@Test(enabled = true, dataProvider = "wsdl-file-argument-provider", threadPoolSize = 2)
+	public void test1(String fileName) throws IOException {
 		String data = getScriptContent(fileName);
 		XmlPullParser parser = new XmlPullParser(new StringReader(data));
 		do {
@@ -61,9 +71,9 @@ public class ParserTest {
 		assertThat(attributes.size(), greaterThan(0));
 	}
 
-	@Test
-	public void test2() throws IOException {
-		String fileName = "test2.xml";
+	@Test(enabled = true, dataProvider = "soap-file-argument-provider", threadPoolSize = 2)
+	public void test3(String fileName) throws IOException {
+
 		String data = getScriptContent(fileName);
 		XmlPullParser parser = new XmlPullParser(new StringReader(data));
 		do {
@@ -74,41 +84,7 @@ public class ParserTest {
 					|| parser.getType() == XmlPullParser.END_DOCUMENT)
 				continue;
 			String name = parser.getName();
-			if (parser.getType() == XmlPullParser.START_TAG
-					&& (name.contains("definitions") || name.contains("operation")
-							|| name.contains("service"))) {
-				int attributeCount = parser.getAttributeCount();
-				assertThat(attributeCount, greaterThan(0));
-				System.err
-						.println(String.format("Attributes: (%d total)", attributeCount));
-				for (int index = 0; index != attributeCount; index++) {
-					String attributeName = parser.getAttributeName(index);
-					String attributeValue = parser.getAttributeValue(index);
-					System.err.println(attributeName + ": " + attributeValue);
-					if (attributeName.matches("soapAction")) {
-						attributes.add(attributeValue);
-					}
-				}
-			}
-		} while (parser.getType() != XmlPullParser.END_DOCUMENT);
 
-		assertThat(attributes.size(), greaterThan(0));
-	}
-
-	@Test
-	public void test3() throws IOException {
-		String fileName = "test3.xml";
-		String data = getScriptContent(fileName);
-		XmlPullParser parser = new XmlPullParser(new StringReader(data));
-		do {
-			parser.next();
-			String description = parser.getPositionDescription();
-			System.err.println(description);
-			if (parser.getType() == XmlPullParser.TEXT
-					|| parser.getType() == XmlPullParser.END_DOCUMENT)
-				continue;
-			String name = parser.getName();
-			System.err.println("name: " + name);
 			if (parser.getType() == XmlPullParser.START_TAG
 					&& name.matches("^[\\w]+:.*") && !name.matches("^soap:")) {
 				// TODO: capture the tag name prefix, locate the "xmlns:prefix"
