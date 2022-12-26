@@ -1,5 +1,9 @@
 package example;
 
+/**
+ * Copyright 2022 Serguei Kouzmine
+ */
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +24,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class ParserTest {
 
 	private List<String> attributes = new ArrayList<>();
@@ -39,7 +46,7 @@ public class ParserTest {
 		attributes.clear();
 	}
 
-	@Test(enabled = true, dataProvider = "wsdl-file-argument-provider", threadPoolSize = 2)
+	@Test(enabled = false, dataProvider = "wsdl-file-argument-provider", threadPoolSize = 2)
 	public void test1(String fileName) throws IOException {
 		String data = getScriptContent(fileName);
 		XmlPullParser parser = new XmlPullParser(new StringReader(data));
@@ -84,9 +91,12 @@ public class ParserTest {
 					|| parser.getType() == XmlPullParser.END_DOCUMENT)
 				continue;
 			String name = parser.getName();
-
+			System.err.println("name: " + name);
+			// igore soap namespace
 			if (parser.getType() == XmlPullParser.START_TAG
-					&& name.matches("^[\\w]+:.*") && !name.matches("^soap:")) {
+					&& name.matches("^[\\w]+:.*") && !(name.matches("^soap:.*"))) {
+				String namespacePrefix = getNamespacePrefix(name);
+				System.err.println("namespacePrefix: " + namespacePrefix);
 				// TODO: capture the tag name prefix, locate the "xmlns:prefix"
 				// attribute
 				int attributeCount = parser.getAttributeCount();
@@ -95,12 +105,48 @@ public class ParserTest {
 							.println(String.format("Attributes: (%d total)", attributeCount));
 					for (int index = 0; index != attributeCount; index++) {
 						String attributeName = parser.getAttributeName(index);
+						String namespaceName = getNamespaceName(attributeName);
+						System.err.println("namespaceName: " + namespaceName);
+						// assume for simplicity just one attribute
+						assertThat(namespaceName, is(namespacePrefix));
 						String attributeValue = parser.getAttributeValue(index);
 						System.err.println(attributeName + ": " + attributeValue);
 					}
 				}
 			}
 		} while (parser.getType() != XmlPullParser.END_DOCUMENT);
+	}
+
+	@Test(enabled = true, dataProvider = "soap-file-argument-provider", threadPoolSize = 2)
+	public void test2(String fileName) throws IOException {
+		String data = getScriptContent(fileName).replaceAll("(?:\\n|\\r|\\t)", " ");
+		String element = "<([\\w]+):([\\w]+)\\s*(?:xmlns:)([\\w]+)\\s*=\\s*\"([^\"]+)\">";
+		Pattern p = Pattern.compile(element);
+		String namespacePrefix = null;
+		String tagName = null;
+		String namespaceName = null;
+		String namespaceUri = null;
+		for (String fragment : data.split("<")) {
+			String input = "<" + fragment;
+			System.err.println("input: " + input);
+			Matcher m = p.matcher(input);
+
+			if (m.find()) {
+				namespacePrefix = m.group(1);
+				tagName = m.group(2);
+				namespaceName = m.group(3);
+				namespaceUri = m.group(4);
+				System.err.println("namespacePrefix: " + "\"" + namespacePrefix + "\""
+						+ "\t" + "tagName: " + "\"" + tagName + "\"" + "\t"
+						+ "namespaceName: " + "\"" + namespaceName + "\"" + "\t"
+						+ "namespaceUri: " + "\"" + namespaceUri + "\"");
+				assertThat(namespaceName, is(namespacePrefix));
+			} else {
+
+				System.err.println("no match.");
+
+			}
+		}
 	}
 
 	protected static String getScriptContent(String filename) {
@@ -113,6 +159,34 @@ public class ParserTest {
 		} catch (IOException e) {
 			throw new RuntimeException(filename);
 		}
+	}
+
+	public static String getNamespaceName(String input) {
+		if (null == input) {
+			return null;
+		}
+		String value = null;
+		Pattern p = Pattern.compile(String.format("^xmlns:(\\w+)$"));
+		Matcher m = p.matcher(input);
+
+		if (m.find()) {
+			value = m.group(1);
+		}
+		return value;
+	}
+
+	public static String getNamespacePrefix(String input) {
+		if (null == input) {
+			return null;
+		}
+		String value = null;
+		Pattern p = Pattern.compile("^(\\w+):");
+		Matcher m = p.matcher(input);
+
+		if (m.find()) {
+			value = m.group(1);
+		}
+		return value;
 	}
 
 }

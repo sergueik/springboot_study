@@ -69,6 +69,67 @@ soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">
 
 to be able to process that XML a lean version of the parser can be designed since there ill be no comments, DTD, or processing instructions (it is uncertain if the `CDATA` is allowed in the __SOAP__ envelope.
 
+### Grok-Style Element Discovery
+
+To extract the element which has namespace attribute of its own namespace that is different from `soap` namespace, one can utilize regular expression matching each elements in the envelope in turn
+
+```java
+
+String elementMatcher = "<([\\w]+):([\\w]+)\\s*(?:xmlns:)([\\w]+)\\s*=\\s*\"([^\"]+)\">";
+Pattern p = Pattern.compile(elementMatcher);
+String namespacePrefix = null;
+String tagName = null;
+String namespaceName = null;
+String namespaceUri = null;
+Matcher m = p.matcher(element);
+
+if (m.find()) {
+	namespacePrefix = m.group(1);
+	tagName = m.group(2);
+	namespaceName = m.group(3);
+	namespaceUri = m.group(4);
+```
+Appplying this filter will reveal:
+
+
+| element              |  match            |
+|----------------------|--------------|
+| ``<?xml version="1.0"?>     | no match.        |
+| `<soap:Envelope  xmlns:soap="http://www.w3.org/2003/05/soap-envelope/"  so
+ap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">`     | no matchi (need to rectified).        |
+| `<soap:Body>`     | no match.        |
+| `<m:GetPrice xmlns:m="https://www.w3schools.com/prices">`     | match: <br/>
+namespacePrefix: "m" <br/>   tagName: "GetPrice" <br/>    namespaceName: "m"<br/>      namespaceUri: "https://www.w3schools.com/prices" |
+| `<m:Item>Apples`     | no match.        |
+| `</m:Item>`     | no match.        |
+| `</m:GetPrice>`     | no match.        |
+| `</soap:Body>`     | no match.        |
+| `</soap:Envelope>`     | no match.        |
+
+the test run log:
+
+```text
+input: <?xml version="1.0"?>
+no match.
+input: <soap:Envelope  xmlns:soap="http://www.w3.org/2003/05/soap-envelope/"  so
+ap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">
+no match.
+input: <soap:Body>
+no match.
+input: <m:GetPrice xmlns:m="https://www.w3schools.com/prices">
+namespacePrefix: "m"    tagName: "GetPrice"     namespaceName: "m"      namespac
+eUri: "https://www.w3schools.com/prices"
+input: <m:Item>Apples
+no match.
+input: </m:Item>
+no match.
+input: </m:GetPrice>
+no match.
+input: </soap:Body>
+no match.
+input: </soap:Envelope>
+no match.
+```
 ### See Also
 
   * [simple guide to WSDL](https://www.tutorialworks.com/wsdl/)
