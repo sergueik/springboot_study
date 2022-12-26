@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>example</groupId>
+    <artifactId>xml-pull</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>xml-pull</name>
+    <description>A pull based XML parser lacking namespaces comment and entity declaration support</description>
+    <url></url>
+  <properties>
+    <java.version>1.8</java.version>
+    <junit.version>4.13.1</junit.version>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+    <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
+  </properties>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <goals>
+          <goal>compile</goal>
+        </goals>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <encoding>utf-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+      <plugin>
+        <!-- Separates the unit tests from the integration tests. -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
+        <configuration>
+          <!-- Skip the default running of this plug-in (or everything is run twice...see below) -->
+          <skip>true</skip>
+          <!-- Show 100% of the lines from the stack trace (doesn't work) -->
+          <trimStackTrace>false</trimStackTrace>
+        </configuration>
+        <executions>
+          <execution>
+            <id>unit-tests</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <!-- Never skip running the tests when the test phase is invoked -->
+              <skip>false</skip>
+              <includes>
+                <!-- Include unit tests within integration-test phase. -->
+                <include>**/*Test.java</include>
+              </includes>
+              <excludes>
+                <!-- Exclude integration tests within (unit) test phase. -->
+                <exclude>**/*IntegrationTest.java</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>integration-tests</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <!-- Never skip running the tests when the integration-test phase is invoked -->
+              <skip>false</skip>
+              <includes>
+                <!-- Include integration tests within integration-test phase. -->
+                <include>**/*IntegrationTest.java</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+        </plugins>
+    </build>
+
+</project>

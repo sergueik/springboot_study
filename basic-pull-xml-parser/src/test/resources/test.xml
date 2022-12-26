@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.jpworks.com/employee" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="EmployeeService" targetNamespace="http://www.jpworks.com/employee">
+  <wsdl:portType name="EmployeeServicePortType">
+    <wsdl:operation name="GetEmployeeById">
+      <wsdl:input message="tns:EmployeeByIdRequest">
+      </wsdl:input>
+      <wsdl:output message="tns:EmployeeResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="EmployeeServiceSOAP" type="tns:EmployeeServicePortType">
+    <wsdl:operation name="GetEmployeeById">
+      <soap:operation soapAction="http://www.jpworks.com/employee/GetEmployeeById"/>
+      <soap:body use="literal"/>
+    </wsdl:operation>
+  </wsdl:binding>
+  <!-- comment  -->
+  <wsdl:service name="EmployeeService">
+    <wsdl:port name="EmployeeServiceSOAP" binding="tns:EmployeeServiceSOAP"/>
+  </wsdl:service>
+</wsdl:definitions>
