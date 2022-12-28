@@ -383,7 +383,7 @@ curl -H 'Content-Type: application/json' -X POST "192.168.0.64:9200/$INDEX/$TYPE
     }
 }'
 ```
-and in __Dev Tools__
+
 ```sh
 INDEX=apm-7.17.7-transaction-000001
 TYPE=_doc
@@ -400,7 +400,7 @@ curl -H 'Content-Type: application/json' -X POST "192.168.0.64:9200/$INDEX/$TYPE
     }
 }
 '
-
+```
 this will increment the document version
 ```json
 {
@@ -981,9 +981,9 @@ GET /apm-7.17.7-transaction-000001/_doc/glAgGYUBS-3qJRiahbvM?_source=http.reques
 
 #### Extracting the SOAPAction
 
-perform the valid XML element processing, keep the applicatio-specific tag name
+perform the valid XML element processing, keep the application-specific tag name
 ```sh
-PPOST /apm-7.17.7-transaction-000001/_doc/PisIUYUBfKtxXCdrzw64/_update
+POST /apm-7.17.7-transaction-000001/_doc/PisIUYUBfKtxXCdrzw64/_update
 {
   "script": {
     "lang": "painless",
@@ -992,6 +992,7 @@ PPOST /apm-7.17.7-transaction-000001/_doc/PisIUYUBfKtxXCdrzw64/_update
         def result = "";
          def elementMatcher = /<([\w]+):([\w]+)\s*(xmlns:)([\w]+)\s*=\s*"([^"]+)"\s*(.*)>/;
           if (data =~ elementMatcher){
+            // NOTE: also need to inspect the namespace
             result = elementMatcher.matcher(data).replaceAll('$2');
         }  
         return trim(result);
@@ -1046,7 +1047,7 @@ see
   }
 }
 ```
-* process the full SOAP XMLpayload
+* process the full SOAP XML payload
 
 ```sh
 POST /apm-7.17.7-transaction-000001/_doc/PisIUYUBfKtxXCdrzw64/_update
@@ -1074,11 +1075,9 @@ POST /apm-7.17.7-transaction-000001/_doc/PisIUYUBfKtxXCdrzw64/_update
           if (data =~ elementMatcher){
             def namespace = elementMatcher.matcher(data).replaceAll('$1');
             def tmp = elementMatcher.matcher(data).replaceAll('$2');
-            // NOTE: cannot use !~ expression
+            // NOTE: there is no !~ expression
             if (!(namespace =~ /soap/)){
-              // cannot have empty if ... else block:
-              // "illegal_argument_exception"
-              // "extraneous if block"
+              // NOTE: one cannot have an empty if ... else block: "illegal_argument_exception", "extraneous if block"
               result = tmp;
             }
         }
@@ -1097,6 +1096,7 @@ POST /apm-7.17.7-transaction-000001/_doc/PisIUYUBfKtxXCdrzw64/_update
     "data": """
       <?xml version="1.0"?>
 
+
       <soap:Envelope
       xmlns:soap="http://www.w3.org/2003/05/soap-envelope/"
       soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">
@@ -1105,12 +1105,10 @@ POST /apm-7.17.7-transaction-000001/_doc/PisIUYUBfKtxXCdrzw64/_update
         <m:UpdatePrice
         xmlns:m="https://www.w3schools.com/prices"
         soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding"
-        >
-          <m:Item>Apples</m:Item>
+        ><m:Item>
+          Apples</m:Item>
         </m:UpdatePrice>
       </soap:Body>
-
-      </soap:Envelope>
     """
     }
   }
@@ -1160,7 +1158,7 @@ see
       "duration" : {
         "us" : 58503
       },
-      "name" : "SetPrice",
+      "name" : "UpdatePrice",
       "span_count" : {
         "dropped" : 0,
         "started" : 1
