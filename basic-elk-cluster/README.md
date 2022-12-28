@@ -979,6 +979,200 @@ GET /apm-7.17.7-transaction-000001/_doc/glAgGYUBS-3qJRiahbvM?_source=http.reques
 
 ```
 
+#### Extracting the SOAPAction
+
+perform the valid XML element processing, keep the applicatio-specific tag name
+```sh
+PPOST /apm-7.17.7-transaction-000001/_doc/PisIUYUBfKtxXCdrzw64/_update
+{
+  "script": {
+    "lang": "painless",
+    "source": """
+      String parseSOAPXMLElement(def data) {
+        def result = "";
+         def elementMatcher = /<([\w]+):([\w]+)\s*(xmlns:)([\w]+)\s*=\s*"([^"]+)"\s*(.*)>/;
+          if (data =~ elementMatcher){
+            result = elementMatcher.matcher(data).replaceAll('$2');
+        }  
+        return trim(result);
+      }
+      String trim(def data){
+        return / /.matcher(/\n|\t|\r/.matcher(data).replaceAll(' ')).replaceAll('');
+      }
+
+      String data = params['data'];
+      def result  = parseSOAPXMLElement(data);
+
+      ctx._source.transaction.name = result;
+    """,
+    "params": {
+      "data": """
+        <m:GetPrice xmlns:m="https://www.w3schools.com/prices">
+      """,
+      "position": -1
+    }
+  }
+}
+```
+review the result
+```sh
+GET /apm-7.17.7-transaction-000001/_doc/PisIUYUBfKtxXCdrzw64?_source=transaction
+```
+see
+```json
+{
+  "_index" : "apm-7.17.7-transaction-000001",
+  "_type" : "_doc",
+  "_id" : "PisIUYUBfKtxXCdrzw64",
+  "_version" : 5,
+  "_seq_no" : 5,
+  "_primary_term" : 2,
+  "found" : true,
+  "_source" : {
+    "transaction" : {
+      "result" : "HTTP 2xx",
+      "duration" : {
+        "us" : 58503
+      },
+      "name" : "GetPrice",
+      "span_count" : {
+        "dropped" : 0,
+        "started" : 1
+      },
+      "id" : "003933126330c6d3",
+      "type" : "request",
+      "sampled" : true
+    }
+  }
+}
+```
+* process the full SOAP XMLpayload
+
+```sh
+POST /apm-7.17.7-transaction-000001/_doc/PisIUYUBfKtxXCdrzw64/_update
+{
+  "script": {
+    "lang": "painless",
+    "source": """
+      String parseSOAPXMLDocument(def data) {
+        def result = "";
+        // handle whitespace
+        String[] elelentList = (/\n|\t|\r/.matcher(data).replaceAll(' ')).splitOnToken('<');
+        // paginate to have one XML element per page
+        for (def element : elelentList) {
+          // extract tag name from relevant elements
+          def tmp = parseSOAPXMLElement('<' + element);
+           if (tmp != "") {
+            result = tmp;
+          }
+        }
+        return result;
+      }
+      String parseSOAPXMLElement(def data) {
+        def result = "";
+         def elementMatcher = /<([\w]+):([\w]+)\s*(xmlns:)([\w]+)\s*=\s*"([^"]+)"\s*(.*)>/;
+          if (data =~ elementMatcher){
+            def namespace = elementMatcher.matcher(data).replaceAll('$1');
+            def tmp = elementMatcher.matcher(data).replaceAll('$2');
+            // NOTE: cannot use !~ expression
+            if (!(namespace =~ /soap/)){
+              // cannot have empty if ... else block:
+              // "illegal_argument_exception"
+              // "extraneous if block"
+              result = tmp;
+            }
+        }
+        return trim(result);
+      }
+      String trim(def data){
+        return / /.matcher(/\n|\t|\r/.matcher(data).replaceAll(' ')).replaceAll('');
+      }
+      String data = params['data'];
+      def result = parseSOAPXMLDocument(data);
+
+      ctx._source.transaction.name = result;
+  """,
+  "params": {
+    "delimiter": "<",
+    "data": """
+      <?xml version="1.0"?>
+
+      <soap:Envelope
+      xmlns:soap="http://www.w3.org/2003/05/soap-envelope/"
+      soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">
+
+      <soap:Body>
+        <m:UpdatePrice
+        xmlns:m="https://www.w3schools.com/prices"
+        soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding"
+        >
+          <m:Item>Apples</m:Item>
+        </m:UpdatePrice>
+      </soap:Body>
+
+      </soap:Envelope>
+    """
+    }
+  }
+}
+
+```
+the status is success:
+```text
+#! [types removal] Specifying types in document update requests is deprecated, use the endpoint /{index}/_update/{id} instead.
+```
+```json
+{
+  "_index" : "apm-7.17.7-transaction-000001",
+  "_type" : "_doc",
+  "_id" : "PisIUYUBfKtxXCdrzw64",
+  "_version" : 10,
+  "result" : "updated",
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 10,
+  "_primary_term" : 2
+}
+```
+review the document:
+```sh
+GET /apm-7.17.7-transaction-000001/_doc/PisIUYUBfKtxXCdrzw64?_source=transaction
+
+```
+
+see
+
+```json
+{
+  "_index" : "apm-7.17.7-transaction-000001",
+  "_type" : "_doc",
+  "_id" : "PisIUYUBfKtxXCdrzw64",
+  "_version" : 9,
+  "_seq_no" : 9,
+  "_primary_term" : 2,
+  "found" : true,
+  "_source" : {
+    "transaction" : {
+      "result" : "HTTP 2xx",
+      "duration" : {
+        "us" : 58503
+      },
+      "name" : "SetPrice",
+      "span_count" : {
+        "dropped" : 0,
+        "started" : 1
+      },
+      "id" : "003933126330c6d3",
+      "type" : "request",
+      "sampled" : true
+    }
+  }
+}
+
+```
 ### TODO
 
 
@@ -1037,6 +1231,20 @@ with the logs:
     + [Update Examples](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html#docs-update)
     + [Script processor](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/script-processor.html)
     + [log Correlation](https://www.elastic.co/guide/en/apm/agent/python/current/log-correlation.html)
+
+   * Painless ElasticSearch Scripting Language
+     + [Script Examples](https://www.elastic.co/guide/en/elasticsearch/painless/7.0/painless-examples.html)
+     + [Language Specification](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-lang-spec.html) - painless scripting language is rather simple but obscure
+     + [Painless API Reference](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-api-reference.html)
+     + [Java Classes exposed to Painless](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-api-reference-shared.html) a.k.a. Shared API
+     + [Functions](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-functions.html)
+     + [Walkthrough](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-walkthrough.html) - shows example using regex to replace the matches in a string
+     + [Custom ScriptEngine](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-scripting-engine.html#modules-scripting-engine)
+     + [How To Script Painless-ly in Elasticsearch](https://www.compose.com/articles/how-to-script-painless-ly-in-elasticsearch/)
+     + [old repository](https://github.com/rmuir/Painless) from 2015
+     + [Circuit Breaker Settings](https://www.elastic.co/guide/en/elasticsearch/reference/current/circuit-breaker.html)
+     + [repository](https://github.com/elastic/elasticsearch/tree/main/plugins/examples/script-expert-scoring) with example plugin implementing the interface `ScriptPlugin` and include a [test suite](https://github.com/elastic/elasticsearch/blob/main/plugins/examples/script-expert-scoring/src/yamlRestTest/java/org/elasticsearch/example/expertscript/ExpertScriptClientYamlTestSuiteIT.java) that is required for including in ElasticSearch
+
 
   * SOAP
 
