@@ -9,12 +9,18 @@ apm-server:
 #    username: "elastic"
 #    password: "elasticpassword"
 
-#setup.template.enabled: true
+setup.template.enabled: true
 #setup.template.name: "apm-%{[observer.version]}"
 #setup.template.pattern: "apm-%{[observer.version]}-*"
-#setup.template.fields: "${path.config}/fields.yml"
-#setup.template.overwrite: false
+setup.template.fields: "${path.config}/fields.yml"
+setup.template.overwrite: true
 
+setup.template.append_fields:
+  - name: http.response.headers
+    type: object
+  - name: http.response.headers.Custom-Header
+    type: keyword
+ 
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]
   protocol: "http"
