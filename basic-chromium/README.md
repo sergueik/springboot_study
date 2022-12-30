@@ -24,21 +24,33 @@ mvn test
 cd ..
 ```
 - the test runs the chmromium headless and saves a pdf file into current directory
-* build the `chromium` and `chromium-driver` into the image
+* build the image with the `chromium` and `chromium-driver` installed by `apk`
 ```sh
 IMAGE='basic-maven-chromium'
 docker build -t $IMAGE -f Dockerfile .
 ```
 * run some ultra basic regular Selenium test 
 ```sh
-docker run -it -v "$PWD/demo.selenium":/demo -w /demo $IMAGE mvn clean test
+docker run -it -v "$PWD/demo.project":/demo -w /demo $IMAGE mvn clean test
 ```
 which returns
 ```sh
 Results :
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 ```
+* NOTE: the same test will fail with Selenium __4.7.2__:
+```text
+[INFO]
+[INFO] Results:
+[INFO]
+[ERROR] Failures:
+[ERROR]   ChromiumBrowserTest.downloadPDF:116
+Expected: is <true>
+     but: was <false>
+[INFO]
+[ERROR] Tests run: 2, Failures: 1, Errors: 0, Skipped: 0
 
+```
 that is confirmed through
 ```sh
 ID=$(docker container ls -a |grep $IMAGE| head -1 | awk '{print $1}')
@@ -118,7 +130,7 @@ chromeOptions.setExperimentalOption("prefs", new HashMap<String, Object>() {
 
 * the issue observed occasionally
 ```sh
-etch http://dl-cdn.alpinelinux.org/alpine/v3.11/main/x86_64/APKINDEX.tar.gz
+fetch http://dl-cdn.alpinelinux.org/alpine/v3.11/main/x86_64/APKINDEX.tar.gz
 ERROR: unable to select packages:
   /bin/sh (virtual):D	
     provided by: busybox-1.33.0-r6
@@ -130,6 +142,7 @@ ID=$(docker image ls  |grep 'zenika/alpine-maven' | head -1| awk '{print $1}')
 docker inspect --format='{{.Id}} {{.Parent}}'     $(docker images --filter since=$ID --quiet)
 ```
 and remove all and start over
-
+### See Also
+  * https://alpinelinux.org/releases/
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

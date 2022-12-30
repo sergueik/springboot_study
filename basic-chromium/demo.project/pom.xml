@@ -12,6 +12,7 @@
     <junit.version>4.13.1</junit.version>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
+    <selenium.version>4.7.2</selenium.version>
     <selenium.version>3.141.59</selenium.version>
   </properties>
   <build>
