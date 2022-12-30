@@ -1171,6 +1171,97 @@ see
 }
 
 ```
+
+
+### APM Transaction Fields
+* this section is restored from commit `23f4d0969cd05e38ca62dc26b1e3f4c76ff2e632`*
+The most recent version of ELK 
+__APM Transaction fields__ (Transaction-specific data for __APM__) [documentation](https://www.elastic.co/guide/en/apm/guide/master/exported-fields-apm-transaction.html)
+says about `http.request.headers` and `http.response.headers` that <font color="red">Object is not enabled</font>. 
+In fact these are the only propertes with this status.
+
+a similar [request from customer](https://discuss.elastic.co/t/searching-for-a-custom-made-header/200403) concerning availability of some headers was advices i DIY fashion through
+programmatically  adding the value of interest 
+using APM agent public APIs []() and set the values of these headers as labels in the transaction that corresponds the request handling
+
+* APM Java Agent Public API [reference](https://www.elastic.co/guide/en/apm/agent/java/current/public-api.html)
+* APM .Net Agent Public API [reference](https://www.elastic.co/guide/en/apm/agent/dotnet/current/public-api.html)
+
+say
+
+`Transaction` `setLabel(String key, value)` (Added in 1.5.0 as addLabel) in Java and
+`void SetLabel(string key, T value)` [1.7.0] in .Net
+
+Labels are used to add *indexed information* (searchable and aggregatable) to __transactions__, __spans__, and __errors__. 
+
+The __APM Transaction Field__ [documentation](https://www.elastic.co/guide/en/apm/guide/master/exported-fields-apm-transaction.html) defines
+
+--- | --- 
+`labels` | A flat mapping of user-defined labels with string, boolean or number values
+type |object
+Yes  | ECS field
+
+for Python there  is no such document as "public-api.html" and the full [method reference](https://www.elastic.co/guide/en/apm/agent/python/current/index.html)
+
+
+
+### Changes in Elastic Search Release 8.x
+
+* Looking for the references to the default configuration
+```YAML
+setup.template.enabled: true
+#setup.template.name: "apm-%{[observer.version]}"
+#setup.template.pattern: "apm-%{[observer.version]}-*"
+setup.template.fields: "${path.config}/fields.yml"
+setup.template.overwrite: true
+```
+
+those can be found in Elastic Search release __7.x__ in [https://github.com/elastic/apm-server/blob/v7.17.7/apm-server.yml#L557](https://github.com/elastic/apm-server/blob/v7.17.7/apm-server.yml#L557)
+
+however *the experimental config option* suggested in __Searching for a custom made heade__
+[customer discussion resolution by Elastic](https://discuss.elastic.co/t/searching-for-a-custom-made-header/200403/2)
+```YAML
+setup.template.append_fields:
+  - name: http.response.headers
+    type: object
+  - name: http.response.headers.Custom-Header
+    type: keyword
+
+```
+
+was nowhere found in scanning various revisions of https://github.com/elastic/apm-server/ repository
+
+Also the 8.x no longer has `setup.template.fields` not any other configurations in `setup.template`
+
+
+and removed in the release __v8.1.1__ in the commit
+[01d75ec0e231832487e739f2d4c174c9534208d3](https://github.com/elastic/apm-server/commit/01d75ec0e231832487e739f2d4c174c9534208d3)
+
+```text
+Remove index management, always use data streams (#6606)
+* Remove index management, always use data streams
+
+- Remove `apm-server.ilm.*` config
+- Remove `apm-server.data_streams.enabled` config
+- Remove `setup.*` config
+- Remove `output.elasticsearch.{index,indices}` config
+- Stop building, including, and using libbeat fields
+
+* Update notice
+
+A bunch of transitive dependencies are removed, because we're
+no longer including the x-pack/libbeat processors.
+
+* Update README
+
+* Fix merge
+```
+
+
+it was not tested thoroughfully if the feature was restored in later 8.x releases - most likely it is compeltely gone.
+in the [main branch](https://github.com/elastic/apm-server/blob/main/apm-server.yml) 
+the `setup.template.*` configuration no longer exist in `apm-server.yml`
+
 ### TODO
 
 
