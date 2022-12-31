@@ -3,6 +3,7 @@ package example;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -100,12 +101,14 @@ public class ChromiumBrowserTest {
 		driver.close();
 	}
 
+	@Ignore // unstable
 	@Test
+
 	public void downloadPDF() {
-		url = "http://www.africau.edu/images/default/sample.pdf";
+		url = "https://www.africau.edu/images/default/sample.pdf";
 		driver.get(url);
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 		}
 		File file = new File(

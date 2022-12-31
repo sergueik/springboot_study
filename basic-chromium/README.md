@@ -29,9 +29,41 @@ cd ..
 IMAGE='basic-maven-chromium'
 docker build -t $IMAGE -f Dockerfile .
 ```
+* run chromium directly:
+```sh
+docker run -it $IMAGE /usr/bin/chromium-browser --headless --disable-gpu  --no-sandbox --dump-dom https://www.wikipedia.org
+```
+this will print HTML in console
+* NOTE: the version of chromium-browser in the container will be rather old, but common options (`dump-dom`, `print-to-pdf`,`screenshot`) are supported
+```sh
+docker run -it $IMAGE sh
+```
+```sh
+/usr/bin/chromium-browser --headless --disable-gpu  --no-sandbox --screenshot https://www.wikipedia.org
+```
+```text
+Written to file screenshot.png.
+```
+```sh
+/usr/bin/chromium-browser --headless --disable-gpu  --no-sandbox --print-pdf https://www.wikipedia.org
+```
+
+```text
+Written to file output.pdf.
+```
+
+
+
 * run some ultra basic regular Selenium test 
 ```sh
 docker run -it -v "$PWD/demo.project":/demo -w /demo $IMAGE mvn clean test
+```
+for repeated runs use the commands:
+
+```sh
+ID=$(docker container ls -a |grep $IMAGE| head -1 | awk '{print $1}')
+docker start $ID 
+docker exec -it -w /demo $ID mvn clean test
 ```
 which returns
 ```sh
@@ -71,8 +103,16 @@ from mounted host directory
 ```sh
 docker run -v demo -it $IMAGE sh
 ```
+### Cleanup
+
+if there is no other stopped containers 
 ```sh
 docker container prune -f
+```
+
+selectively
+```sh
+docker container ls -a | grep $IMAGE | awk '{print $1}' | xargs -IX docker container rm X
 ```
 ### Note
 
@@ -143,6 +183,9 @@ docker inspect --format='{{.Id}} {{.Parent}}'     $(docker images --filter since
 ```
 and remove all and start over
 ### See Also
+
   * https://alpinelinux.org/releases/
+  * https://developer.chrome.com/blog/headless-chrome/
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
