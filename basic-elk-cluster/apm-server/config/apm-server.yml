@@ -16,9 +16,9 @@ setup.template.fields: "${path.config}/fields.yml"
 setup.template.overwrite: true
 
 setup.template.append_fields:
-  - name: http.response.headers
+  - name: http.request.headers
     type: object
-  - name: http.response.headers.Custom-Header
+  - name: http.request.headers.Appendedfield
     type: keyword
  
 output.elasticsearch:
