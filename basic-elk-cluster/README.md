@@ -35,6 +35,35 @@ yellow open   apm-7.17.7-profile-000001        3v8VQPW-SXumL-fLxMlryw   1   1   
 yellow open   apm-7.17.7-metric-000001         4NVXn4_sSGuR2AshSJqMtA   1   1          4            0     70.8kb         70.8kb
 yellow open   apm-7.17.7-transaction-000001    pTVGSy6GRPapi3OjIi_qvA   1   1          0            0       226b           226b
 ```
+if only the indices 
+
+```text
+green  open   .apm-agent-configuration         fFmjfMpPRWSnO9_dOR8zUQ   1   0          0            0       226b           226b
+green  open   .apm-custom-link                 FjALsnNuRwujJMKq0lVB7g   1   0          0            0       226b           226b
+
+```
+are displayed the `apm-server` is likely misconfigured, check the container log ```sh
+docker logs apm-server
+```
+for error messages that look like:
+```text
+{
+  "log.level": "error",
+  "@timestamp": "2022-12-31T18:29:23.907Z",
+  "log.logger": "publisher_pipeline_output",
+  "log.origin": {
+    "file.name": "pipeline/output.go",
+    "file.line": 154
+  },
+  "message": "Failed to connect to backoff(elasticsearch(http://elasticsearch:9200)): Connection marked as failed because the onConnect callback failed: error loading Elasticsearch template: error creating template from file /usr/share/apm-server/fields.yml: yaml: line 10356: did not find expected key",
+  "service.name": "apm-server",
+  "ecs.version": "1.6.0"
+}
+
+```
+and similar kind of log messages
+
+
 Run explicitly "loud" the cluster member health checks docker-compose does when buildin the cluster:
 
 ```sh
@@ -1320,6 +1349,7 @@ with the logs:
     + [Update Examples](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html#docs-update)
     + [Script processor](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/script-processor.html)
     + [log Correlation](https://www.elastic.co/guide/en/apm/agent/python/current/log-correlation.html)
+    + [cluster state](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/cluster-state.html) - to save and load the custom Ingest Pipeline steps
 
    * Painless ElasticSearch Scripting Language
      + [Script Examples](https://www.elastic.co/guide/en/elasticsearch/painless/7.0/painless-examples.html)

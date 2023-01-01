@@ -10353,9 +10353,7 @@
            description: >
              Used by the Node agent to indicate when in the response life cycle an error has occurred.
            overwrite: true
-           # NOTE: YAML indent sensitive:
-           # error after incorrectly indented block:
-           # {"log.level":"error","@timestamp":"2022-12-31T18:29:23.907Z","log.logger":"publisher_pipeline_output","log.origin":{"file.name":"pipeline/output.go","file.line":154},"message":"Failed to connect to backoff(elasticsearch(http://elasticsearch:9200)): Connection marked as failed because the onConnect callback failed: error loading Elasticsearch template: error creating template from file /usr/share/apm-server/fields.yml: yaml: line 10356: did not find expected key","service.name":"apm-server","ecs.version":"1.6.0"}
+
          - name: headers
            type: group
            enabled: true
