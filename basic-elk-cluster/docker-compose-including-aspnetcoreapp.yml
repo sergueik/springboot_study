@@ -99,7 +99,8 @@ services:
       test:
         [
             "CMD-SHELL",
-            "curl http://localhost:5601/api/status | grep -q '401'",
+            "curl http://localhost:5601/api/status | jq -r '.status.overall.state' | grep -q 'green'",
+            # "curl http://localhost:5601/api/status | grep -q '401'",
         ]
       interval: 10s
       timeout: 10s
@@ -158,10 +159,10 @@ services:
       - "7000:7000"
         # NOTE: reporting unhealthy, shows no data in 'Observability'  
         # Commenting healthcheck
-        # healthcheck:
-        # interval: 10s
-        #retries: 12
-        #test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:7000/
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:7000/books/all
     depends_on:
       - apm-server
     # volumes:
