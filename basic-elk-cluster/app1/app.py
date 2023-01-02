@@ -66,7 +66,10 @@ if __name__ == '__main__':
   s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
   s.connect(('8.8.8.8', 80))
   ip = (s.getsockname()[0])
+  # NOTE: connecting specifically to the ip address of the container hurts the docker-compose healthcheck
   if os.environ.get('PORT') is not None:
-    app.run( host = ip, port = os.environ.get('PORT'))
+    # app.run( host = ip, port = os.environ.get('PORT'))
+    app.run( host = '0.0.0.0', port = os.environ.get('PORT'))
   else:
-    app.run( host = ip, port = 6000)
+    # app.run( host = ip, port = 6000) 
+    app.run( host = '0.0.0.0', port = 6000)
