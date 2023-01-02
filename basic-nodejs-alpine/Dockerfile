@@ -79,6 +79,15 @@ RUN addgroup -g 1000 node \
   && node --version \
   && npm --version
 
+
+# Set the variable for the container working directory
+ARG WORK_DIRECTORY=/program
+# Create app directory
+RUN mkdir -p $WORK_DIRECTORY
+WORKDIR $WORK_DIRECTORY
+# Install npm packages (do this AFTER setting the working directory)
+RUN  npm i selenium
+
 ENV YARN_VERSION 1.22.19
 
 RUN apk add --no-cache --virtual .build-deps-yarn curl gnupg tar \
