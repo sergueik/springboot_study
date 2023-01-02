@@ -42,11 +42,13 @@ green  open   .apm-agent-configuration         fFmjfMpPRWSnO9_dOR8zUQ   1   0   
 green  open   .apm-custom-link                 FjALsnNuRwujJMKq0lVB7g   1   0          0            0       226b           226b
 
 ```
-are displayed the `apm-server` is likely misconfigured, check the container log ```sh
+are displayed the `apm-server` is likely misconfigured, check the container log
+
+```sh
 docker logs apm-server
 ```
 for error messages that look like:
-```text
+```JSON
 {
   "log.level": "error",
   "@timestamp": "2022-12-31T18:29:23.907Z",
