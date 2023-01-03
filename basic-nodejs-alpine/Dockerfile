@@ -86,7 +86,7 @@ ARG WORK_DIRECTORY=/program
 RUN mkdir -p $WORK_DIRECTORY
 WORKDIR $WORK_DIRECTORY
 # Install npm packages (do this AFTER setting the working directory)
-RUN  npm i selenium
+RUN npm install selenium selenium-webdriver
 
 ENV YARN_VERSION 1.22.19
 
