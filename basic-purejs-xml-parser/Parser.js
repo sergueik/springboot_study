@@ -4,7 +4,7 @@ class Parser {
   }
   parseXML(data) {
     var result = new Map();
-    data = this.unescapeString(this.sanitize(data));
+    data = this.replaceEmptyElements(this.sanitize(this.unescapeString(data)));
 
     while (data.match(/<[^\/][^>]*>/)) {
       // getting the current open Tag
@@ -48,9 +48,16 @@ class Parser {
 
   // remove comments and xml declaration
   sanitize = function (data) {
-    var result = data.replace(/<\?.*\?>/g, '').replace(/<!--.[^(><.)]*-->/g, '');
+    // TODO: string indexOf to deal with comments
+    var result = data.replace(/<\?.*\?>/g, '').replace(/<!--[^(><.)]*-->/g, '');
     return result;
   }
+  // replace empty elements with  a normal element with a blank content
+  replaceEmptyElements = function (data) {
+    var result = data.replace(/<([^>\/]+)\/>/g, '<$1></$1>');
+    return result;
+  }
+  // prepare the body for DOM parsing
   unescapeString = function(data) {
     // convert all whitespace to space
     var result = data.replace(/\n|\t|\r/g, ' ');
@@ -69,3 +76,4 @@ class Parser {
 
 }
 module.exports = Parser;
+

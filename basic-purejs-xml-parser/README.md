@@ -21,8 +21,101 @@ The `test.xml` of the original project
 </payment>
 ```
 is too simple compared to SOAP payload - which is attribute and namespace - heavy
+for a faily large XML file without attributes usage consider ageneric Java project `pom.xml`. 
+A sample file is checked in  locally. 
+The only modification needed to make it parseable was replace empty   element
+```XML
+<relativePath/>
+```
+with an explicit pair of open/ close tags:
+```XML
+<relativePath></relativePath>
+```
+ and remove the XML comments with XML elements commented:
+```XML
+<!--
+<element> ... 
+-->
+```
 
-Technically one can possibly tweak the `Parser.js` to strip attributes of elements automatically, the attribute-less DOM would still be valid and SOAPAction is the namespace amended tag name. This is a work in progress, the below steps describe the expected value
+Parsing such file will prove the tool is capable of real work:
+```sh
+node app.js
+```
+```text
+tag: "project"
+tag: "modelVersion"
+tag: "groupId"
+tag: "artifactId"
+tag: "version"
+tag: "packaging"
+tag: "name"
+tag: "description"
+tag: "parent"
+tag: "groupId"
+tag: "artifactId"
+tag: "version"
+tag: "relativePath"
+tag: "properties"
+tag: "project.build.sourceEncoding"
+tag: "project.reporting.outputEncoding"
+tag: "java.version"
+tag: "finalName"
+tag: "gson.version"
+tag: "dependencies"
+tag: "dependency"
+tag: "groupId"
+tag: "artifactId"
+tag: "version"
+tag: "exclusions"
+tag: "exclusion"
+tag: "groupId"
+tag: "artifactId"
+tag: "dependency"
+tag: "groupId"
+tag: "artifactId"
+converting value to array: "dependency"
+tag: "dependency"
+tag: "groupId"
+tag: "artifactId"
+converting value to array: "dependency"
+tag: "build"
+tag: "plugins"
+tag: "plugin"
+tag: "groupId"
+tag: "artifactId"
+tag: "configuration"
+tag: "finalName"
+```
+```Javascript
+Map(1) {
+  'project' => Map(11) {
+    'modelVersion' => '4.0.0',
+    'groupId' => 'example',
+    'artifactId' => 'basic',
+    'version' => '0.5.0-SNAPSHOT',
+    'packaging' => 'jar',
+    'name' => 'basic',
+    'description' => 'DemoSpringbootDocker-hostedapp',
+    'parent' => Map(4) {
+      'groupId' => 'org.springframework.boot',
+      'artifactId' => 'spring-boot-starter-parent',
+      'version' => '1.5.4.RELEASE',
+      'relativePath' => ''
+    },
+    'properties' => Map(5) {
+      'project.build.sourceEncoding' => 'UTF-8',
+      'project.reporting.outputEncoding' => 'UTF-8',
+      'java.version' => '1.8',
+      'finalName' => '${project.groupId}.${project.artifactId}',
+      'gson.version' => '2.8.9'
+    },
+    'dependencies' => Map(1) { 'dependency' => [Array] },
+    'build' => Map(1) { 'plugins' => [Map] }
+  }
+}
+
+Technically one can possibly tweak the `Parser.js` to strip attributes of elements automatically, the attribute-less DOM would still be valid and SOAPAction is the namespace amended tag name.
 
 
 ### Usage
