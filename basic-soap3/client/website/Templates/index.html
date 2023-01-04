@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Currency Converter</title>
+</head>
+
+<body>
+    <div style="max-width: 500px; margin: auto; text-align: center;">
+        <h1>Currency Converter</h1>
+        <h3>CCS310 - Software Architecture</h3>
+        <h4>AA1922</h4>
+    </div>
+    <div style="max-width: 500px; margin: auto">
+        <form method="post" action="/" style="text-align: center;">
+            <table>
+                <tr>
+                    <td colspan="3"> <input style="width: 500px;" type="number" name="value1" required
+                            placeholder="Enter amount"> </td>
+                </tr>
+                <tr>
+                    <td>
+                        <select style="width: 200px; text-align: center;" name="currencyName1" id="currencyName1">
+                            {%for i in range(0, len)%}
+                            <option value="{{currencyList[i]}}">{{currencyList[i]}}</option>
+                            {%endfor%}
+                        </select>
+                    </td>
+                    <td>
+                        <h1 style="width: 100px; text-align: center;">=></h1>
+                    </td>
+                    <td>
+                        <select style="width: 200px; text-align: center;" name="currencyName2" id="currencyName2">
+                            {%for i in range(0, len)%}
+                            <option value="{{currencyList[i]}}">{{currencyList[i]}}</option>
+                            {%endfor%}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3"><input style="width: 500px;" type="submit" value="Convert"></td>
+                </tr>
+            </table>
+        </form>
+        <h3 style="text-align: center; width: 500px;">{{ answer }}</h3>
+    </div>
+</body>
+
+</html>
