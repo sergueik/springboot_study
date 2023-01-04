@@ -783,7 +783,32 @@ and  __SET__ :
 ```
 This copies the extracted Action token into the new field `transaction.soapaction` at the `transaction` level (one can do the same and keep the original `transaction.name` as an alias. For illustration simplicity instead of sending / extracting the [fragment identifier of the URI](https://www.w3.org/2002/11/dbooth-names/rfc2396-numbered_clean.htm) - the part after the `#` hash symbol the example just grabs the last path element in the URI.
 
+alternatively one can perform __GROK__, to create an `tansaction.soapaction` field in one step:
+```JSON
+ {
+    "grok": {
+      "field": "http.request.headers.Appendedfield.0",
+      "patterns": [
+        "%{GREEDYDATA}/%{GREEDYDATA:transaction.soapaction}"
+      ],
+      "ignore_missing": true
+    }
+  }
+```
+![Grok Debugger](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-grok-debugger.png)
 
+
+and __SET__:
+
+```JSON
+{
+  "set": {
+    "field": "transaction.name",
+    "value": "{{ transaction.name }}/{{ transaction.soapaction }}"
+  }
+}
+```
+The Grok filters are somehat easier to test via __Grok Debuger__ in  __Dev Tools__
 This way the request with a legitimate SOAPAction-like header:
 
 ```sh
