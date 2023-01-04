@@ -1,5 +1,4 @@
-//AA1922
-package com.sltc.aa1922;
+package example;
 
 import org.json.simple.parser.ParseException;
 
@@ -13,33 +12,32 @@ import java.util.Collections;
 
 @WebService
 @SOAPBinding(style = SOAPBinding.Style.DOCUMENT)
-public class CurrencyWS {
+public class Application {
+	private Utils utils;
+
 	@WebMethod
 	public double convert(double amountInSourceCurrency, String sourceCurrency,
 			String targetCurrency) throws IOException, ParseException {
-
-		ReadJson readJson = new ReadJson();
-
-		Double sourceCurrencyRate = Double
-				.valueOf(readJson.conversionRates.get(sourceCurrency).toString());
-		Double targetCurrencyRate = Double
-				.valueOf(readJson.conversionRates.get(targetCurrency).toString());
+		utils = new Utils();
+		Double sourceCurrencyRate = utils.conversionRates.get(sourceCurrency);
+		Double targetCurrencyRate = utils.conversionRates.get(targetCurrency);
 
 		return (amountInSourceCurrency / sourceCurrencyRate) * targetCurrencyRate;
 	}
 
 	@WebMethod
-	public ArrayList getCurrencyList() throws IOException, ParseException {
+	public ArrayList<String> getCurrencyList()
+			throws IOException, ParseException {
+		utils = new Utils();
 
-		ReadJson readJson = new ReadJson();
-		ArrayList currencyList = readJson.currencyList;
+		ArrayList<String> currencyList = utils.currencyList;
 		Collections.sort(currencyList);
 		return currencyList;
 	}
 
 	public static void main(String[] args) {
 
-		Endpoint.publish("http://0.0.0.0:8888/CurrencyConversionWebServiceAA1922",
-				new CurrencyWS());
+		Endpoint.publish("http://0.0.0.0:8888/CurrencyConversionWebService",
+				new Application());
 	}
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>SoftwareArchitecture_AA1922</groupId>
-  <artifactId>CurrencyConverter</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <groupId>example</groupId>
+  <artifactId>soap-service</artifactId>
+  <version>0.2.0-SNAPSHOT</version>
   <properties>
     <java.version>1.8</java.version>
     <maven.compiler.source>8</maven.compiler.source>
@@ -18,6 +18,7 @@
     <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
     <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
     <maven.compiler.source>1.8</maven.compiler.source>
+    <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <dependencies>
     <dependency>
@@ -52,7 +53,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>${maven-assembly-plugin.version}</version>
         <configuration>
-          <finalName>SWTsample</finalName>
+          <finalName>${finalName}</finalName>
           <appendAssemblyId>false</appendAssemblyId>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>

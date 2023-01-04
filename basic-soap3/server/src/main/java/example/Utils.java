@@ -1,4 +1,4 @@
-package com.sltc.aa1922;
+package example;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -9,21 +9,20 @@ import java.util.Set;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
 
-public class ReadJson {
+public class Utils {
 	public String base;
-	public HashMap conversionRates;
+	public HashMap<String, Double> conversionRates;
 	public ArrayList<String> currencyList;
 
-	public ReadJson() throws IOException, ParseException {
+	@SuppressWarnings("unchecked")
+	public Utils() throws IOException, ParseException {
 		Object obj = new JSONParser()
 				.parse(new FileReader("src/main/resources/conversionRates.json"));
 
-		JSONObject jo = (JSONObject) obj;
+		JSONObject data = (JSONObject) obj;
 
-		base = (String) jo.get("base");
-		conversionRates = ((HashMap) jo.get("rates"));
-
-		Set<String> keySet = conversionRates.keySet();
-		currencyList = new ArrayList<>(keySet);
+		base = (String) data.get("base");
+		conversionRates = ((HashMap<String, Double>) data.get("rates"));
+		currencyList = new ArrayList<>(conversionRates.keySet());
 	}
 }
