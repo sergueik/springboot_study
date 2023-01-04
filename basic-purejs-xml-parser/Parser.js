@@ -5,7 +5,7 @@ class Parser {
   parseXML(data) {
     var result = new Map();
     data = this.replaceEmptyElements(this.sanitize(this.unescapeString(data)));
-
+    // Error "RangeError: Maximum call stack size exceeded": Failed to parse the XML.
     while (data.match(/<[^\/][^>]*>/)) {
       // getting the current open Tag
       var openTag = this.clearAttributes(data.match(/<[^\/][^>]*>/)[0]);
@@ -46,14 +46,29 @@ class Parser {
     return result;
   }
 
+  // remove comments
+  removeComments = function(data) {
+    while (data.match(/<!--/) && data.match(/-->/)) {
+      var l1 = data.indexOf('<!--');
+      var l2 = data.indexOf('-->');
+      var dataBefore = data.substring(0, l1 );
+      var dataAfter = data.substring(l2 + '-->'.length);
+      data = dataBefore + dataAfter;
+
+    }
+    return data
+  }
+  // remove xml declaration
+  removeXMLDeclaration = function(data) {
+    return data.replace(/<\?.*\?>/g, '')
+  }
+
   // remove comments and xml declaration
-  sanitize = function (data) {
-    // TODO: string indexOf to deal with comments
-    var result = data.replace(/<\?.*\?>/g, '').replace(/<!--[^(><.)]*-->/g, '');
-    return result;
+  sanitize = function(data) {
+    return this.removeComments(this.removeXMLDeclaration(data))
   }
   // replace empty elements with  a normal element with a blank content
-  replaceEmptyElements = function (data) {
+  replaceEmptyElements = function(data) {
     var result = data.replace(/<([^>\/]+)\/>/g, '<$1></$1>');
     return result;
   }
@@ -76,4 +91,3 @@ class Parser {
 
 }
 module.exports = Parser;
-
