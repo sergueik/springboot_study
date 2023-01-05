@@ -16,8 +16,7 @@ public class Utils {
 
 	@SuppressWarnings("unchecked")
 	public Utils() throws IOException, ParseException {
-		Object obj = new JSONParser()
-				.parse(new FileReader("src/main/resources/conversionRates.json"));
+		Object obj = new JSONParser().parse(new FileReader("src/main/resources/conversionRates.json"));
 
 		JSONObject data = (JSONObject) obj;
 

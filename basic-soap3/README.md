@@ -11,17 +11,20 @@ modified to print the raw SOAP payload when invoked
 
 * build server
 ```sh
+cd server
 mvn clean package
 ```
 * run server locally
 ```sh
-java -cp target\example.soap-service.jar example.Application
+cd server
+
+java -cp target/example.soap-service.jar example.Application
 ```
 * check server operational
 ```sh
 curl -s http://localhost:8888/CurrencyConversionWebServiceAA1922/?wsdl
 ```
-this will print service definitions
+this will print service definitions WSDL
 ```XML
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Published by JAX-WS RI (http://jax-ws.java.net). RI's version is JAX-WS RI 2.2.9-b130926.1035 svn-revision#5f6196f2b90e9460065a4c2f4e30e065b245e51e. -->
@@ -104,7 +107,7 @@ this will print service definitions
   </service>
 </definitions>
 ```
-* run client
+* run client locally (if there is a Python environmnent on the developent machine)
 ```sh
 cd client
 python main.py
@@ -143,7 +146,78 @@ console shows
   </soap-env:Body>
 </soap-env:Envelope>
 ```
-if run in Docker Toolbox, use the ip address on network adapter which is connected to __Host-only__ network `192.168.99.0`. 
+*  run in Docker
+```sh
+docker-compose up --build
+```
+* test in the console
+```sh
+curl -X POST -d "currencyName1=AFN&currencyName2=AED&value1=10.0" http://localhost:5000/
+```
+this will print the page to the console:
+```HTML
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Currency Converter</title>
+  </head>
+  <body>
+    <div style="max-width: 500px; margin: auto; text-align: center;">
+      <h1>Currency Converter</h1>
+    </div>
+    <div style="max-width: 500px; margin: auto">
+      <form method="post" action="/" style="text-align: center;">
+        <table>
+          <tr>
+            <td colspan="3">
+              <input style="width: 500px;" type="number" name="value1" required="required" placeholder="Enter amount"/>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select style="width: 200px; text-align: center;" name="currencyName1" id="currencyName1">
+                            <option value="AED">AED</option>
+                            <option value="AFN">AFN</option>
+                            <option value="ALL">ALL</option>
+                            <option value="AMD">AMD</option>
+                            <option value="ANG">ANG</option>
+                            <option value="AOA">AOA</option>
+                            <option value="ARS">ARS</option>
+                            <option value="AUD">AUD</option>
+                            ...
+                        </select>
+            </td>
+            <td>
+              <h1 style="width: 100px; text-align: center;">=&gt;</h1>
+            </td>
+            <td>
+              <select style="width: 200px; text-align: center;" name="currencyName2" id="currencyName2">
+                            <option value="AED">AED</option>
+                            <option value="AFN">AFN</option>
+                            <option value="ALL">ALL</option>
+                            <option value="AMD">AMD</option>
+                            <option value="ANG">ANG</option>
+                            <option value="AOA">AOA</option>
+                            <option value="ARS">ARS</option>
+                            <option value="AUD">AUD</option>
+                            ...
+                        </select>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <input style="width: 500px;" type="submit" value="Convert"/>
+            </td>
+          </tr>
+        </table>
+      </form>
+      <h3 style="text-align: center; width: 500px;">10.0 AFN =&gt; 0.48 AED</h3>
+    </div>
+  </body>
+</html>
+```
+NOTE: if run in [Docker Toolbox](https://github.com/docker/toolbox), use the ip address on network adapter which is connected to __Host-only__ network `192.168.99.0`.
 
 ```
 curl -s http://192.168.99.100:500/
@@ -278,11 +352,11 @@ zeep.exceptions.ValidationError: Missing element arg0 (convert.arg0)
 
    * [lxml - XML and HTML with Python](https://lxml.de)
    * [zeep - Python SOAP client](https://docs.python-zeep.org/en/master/)
-   * [plain Java Web Service](https://docs.oracle.com/javase/7/docs/api/javax/jws/package-summary.html) 
+   * [plain Java Web Service](https://docs.oracle.com/javase/7/docs/api/javax/jws/package-summary.html)
    * [Introduction to JAX-WS](https://www.baeldung.com/jax-ws)
    * [java-ws and .net interop example](https://gridwizard.wordpress.com/2014/12/26/java-ws-and-dotnet-interop-example/)
 
-  
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

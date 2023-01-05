@@ -3,36 +3,36 @@ import zeep
 from lxml import etree
 import os
 
-templatesLocation = 'Templates'
-app = Flask('CurrencyConverter', template_folder= templatesLocation)
+app = Flask('CurrencyConverter', template_folder = 'Templates')
+
 
 if os.getenv('SERVER') != None :
   server = os.getenv('SERVER')
 else:
   server = 'localhost'
-  # server = '192.168.0.25'
 
-client = zeep.Client(wsdl =  'http://{}:8888/CurrencyConversionWebService?wsdl'.format(server))
+client = zeep.Client(wsdl = 'http://{}:8888/CurrencyConversionWebService?wsdl'.format(server))
 currencyList = client.service.getCurrencyList()
 
 answer = ''
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods = ['GET'])
 def home():
   return render_template('index.html', currencyList = currencyList, len = len(currencyList))
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods = ['POST'])
 def currencyConvert():
   currency1 = request.form['currencyName1']
   currency2 = request.form['currencyName2']
-  value1 = request.form['value1']
-
+  value1 = float(request.form['value1'])
+  print('currencyName1={} currencyName2={} value1={}'.format(currency1,currency2,str(value1)))
   node = client.create_message(client.service, 'convert', value1, currency1, currency2)
   print(etree.tostring(node, pretty_print = True))
-  answer = value1 + ' ' + currency1 + ' => ' + str(round(client.service.convert(value1, currency1, currency2),2)) + ' ' + currency2
+  # update the page
+  answer = str(value1) + ' ' + currency1 + ' => ' + str(round(float(client.service.convert(value1, currency1, currency2)),2)) + ' ' + currency2
   
   return render_template('index.html', currencyList = currencyList, len = len(currencyList), answer = answer)
 
 
 if __name__ == '__main__':
-  app.run(debug=True)
+  app.run( host = '0.0.0.0', port = 5000, debug = True)
