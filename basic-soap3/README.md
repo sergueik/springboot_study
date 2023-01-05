@@ -152,7 +152,7 @@ docker-compose up --build
 ```
 * test in the console
 ```sh
-curl -X POST -d "currencyName1=AFN&currencyName2=AED&value1=10.0" http://localhost:5000/
+curl -X POST -d "currencyName1=AFN&currencyName2=AED&value1=10.0" http://localhost:5000/ 
 ```
 this will print the page to the console:
 ```HTML
@@ -183,7 +183,7 @@ this will print the page to the console:
                             <option value="AMD">AMD</option>
                             <option value="ANG">ANG</option>
                             <option value="AOA">AOA</option>
-                            <option value="ARS">ARS</option>
+                            <option value="ARS">ARS</option>                            
                             <option value="AUD">AUD</option>
                             ...
                         </select>
@@ -199,7 +199,7 @@ this will print the page to the console:
                             <option value="AMD">AMD</option>
                             <option value="ANG">ANG</option>
                             <option value="AOA">AOA</option>
-                            <option value="ARS">ARS</option>
+                            <option value="ARS">ARS</option>                            
                             <option value="AUD">AUD</option>
                             ...
                         </select>
@@ -217,7 +217,7 @@ this will print the page to the console:
   </body>
 </html>
 ```
-NOTE: if run in [Docker Toolbox](https://github.com/docker/toolbox), use the ip address on network adapter which is connected to __Host-only__ network `192.168.99.0`.
+NOTE: if run in [Docker Toolbox](https://github.com/docker/toolbox), use the ip address on network adapter which is connected to __Host-only__ network `192.168.99.0`. 
 
 ```
 curl -s http://192.168.99.100:500/
@@ -297,6 +297,58 @@ e/">\n      <arg0>10</arg0>\n      <arg1>AED</arg1>\n      <arg2>ANG</arg2>\n
  client         | 127.0.0.1 - - [05/Jan/2023 00:46:47] "POST / HTTP/1.0" 200 -
  client         | 127.0.0.1 - - [05/Jan/2023 00:46:56] "GET / HTTP/1.1" 200 -
 ```
+
+### Adding APM Agent
+
+* download to development server. The version is checked from Kibana link of the ELK server running in Docker container: `http://192.168.0.92:5601/app/home#/tutorial/apm`
+
+```sh
+ELASTIC_APM_AGENT_VERSION=1.35.0
+wget https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/${ELASTIC_APM_AGENT_VERSION}/elastic-apm-agent-${ELASTIC_APM_AGENT_VERSION}.jar -O elastic-apm-agent.jar
+```
+* inspect running APM server to configure the commandline:
+```sh
+APM_SERVER='apm-server'
+docker inspect $APM_SERVER | jq  ".[0].NetworkSettings.Networks"
+```
+this will show
+
+```JSON
+{
+  "basicelkcluster_elastic": {
+    "IPAMConfig": null,
+    "Links": null,
+    "Aliases": [
+      "apm-server",
+      "07cde5067c18"
+    ],
+    "NetworkID": "ba20d8e8ee9eee4bdda54ef6728f276a42583b520de1cbbb9b57a5bf2a35c1e6",
+    "EndpointID": "5c56e24228c10a7349a855e50551d420f5f710570c6e6dd785c5d4b213688414",
+    "Gateway": "172.20.0.1",
+    "IPAddress": "172.20.0.4",
+    "IPPrefixLen": 16,
+    "IPv6Gateway": "",
+    "GlobalIPv6Address": "",
+    "GlobalIPv6PrefixLen": 0,
+    "MacAddress": "02:42:ac:14:00:04",
+    "DriverOpts": null
+  }
+}
+```
+start the SOAP server with APM agent
+
+```sh
+APM_SERVER_IP=172.20.0.4
+```
+```sh
+cd server
+java -javaagent:../elastic-apm-agent.jar -Delastic.apm.service_name=my-cool-service -Delastic.apm.application_packages=example -Delastic.apm.server_url=http://${APM_SERVER_IP}:8200 -cp target/example.soap-service.jar example.Application
+```
+* build a docker image with both apps and add to new ELK `docker-compose.yaml`
+(work in progress)
+```
+docker build -f Dockerfile.app -t $APP_SERVER .
+```
 ###  TODO
 
 currently if no arguments in the SOAP call are provided:
@@ -352,9 +404,12 @@ zeep.exceptions.ValidationError: Missing element arg0 (convert.arg0)
 
    * [lxml - XML and HTML with Python](https://lxml.de)
    * [zeep - Python SOAP client](https://docs.python-zeep.org/en/master/)
-   * [plain Java Web Service](https://docs.oracle.com/javase/7/docs/api/javax/jws/package-summary.html)
+   * [plain Java Web Service](https://docs.oracle.com/javase/7/docs/api/javax/jws/package-summary.html) 
    * [Introduction to JAX-WS](https://www.baeldung.com/jax-ws)
    * [java-ws and .net interop example](https://gridwizard.wordpress.com/2014/12/26/java-ws-and-dotnet-interop-example/)
+
+  * [run APM agent from the subject application](https://www.elastic.co/guide/en/apm/agent/java/current/setup-attach-api.html)
+  * [running APM agent via Java javaagentflag](https://www.elastic.co/guide/en/apm/agent/java/current/setup-attach-api.html)
 
 
 
