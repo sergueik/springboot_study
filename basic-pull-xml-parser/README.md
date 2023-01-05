@@ -109,14 +109,12 @@ the test run log:
 ```text
 input: <?xml version="1.0"?>
 no match.
-input: <soap:Envelope  xmlns:soap="http://www.w3.org/2003/05/soap-envelope/"  so
-ap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">
+input: <soap:Envelope  xmlns:soap="http://www.w3.org/2003/05/soap-envelope/"  soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">
 ignoring soap namepace.
 input: <soap:Body>
 no match.
 input: <m:GetPrice xmlns:m="https://www.w3schools.com/prices">
-namespacePrefix: "m"    tagName: "GetPrice"     namespaceName: "m"      namespac
-eUri: "https://www.w3schools.com/prices"
+namespacePrefix: "m"    tagName: "GetPrice"     namespaceName: "m"      namespaceUri: "https://www.w3schools.com/prices"
 input: <m:Item>Apples
 no match.
 input: </m:Item>
@@ -134,3 +132,11 @@ no match.
   * __XML WSDL__ [documentation] (https://www.w3schools.com/xml/xml_wsdl.asp) illustrating the __WSDL__ Binding to __SOAP__
   * another [WSDL - Example](https://www.tutorialspoint.com/wsdl/wsdl_example.htm)
   * __SOAP__ request and response message [specification with examples](https://www.w3schools.com/xml/xml_soap.asp)
+  * [DOM interface for XML processing](https://en.wikipedia.org/wiki/Java_API_for_XML_Processing#DOM_interface)
+  * [SAX and PULL interfaces for XML processing](https://en.wikipedia.org/wiki/Simple_API_for_XML) - both operate events like  `Start Document`, `End Document`, `Start Tag`, `End Tag`, `Text`
+  * [python Simple SOAP Library](https://github.com/pysimplesoap/pysimplesoap)
+  * [Simple to use SOAP library for Python](https://github.com/jeffkit/SOAPpy) - NOTE, may be too old and only support SOAP 1.0
+  * [Docker cluster implementing SOAP Web Service demonstraring basic bank transactions](https://github.com/theoterz/Spyne-web-services)
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
