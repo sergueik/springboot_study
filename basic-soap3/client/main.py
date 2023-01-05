@@ -1,12 +1,16 @@
 from flask import Flask, render_template, request
 import zeep
 from lxml import etree
+import os
 
 templatesLocation = 'Templates'
 app = Flask('CurrencyConverter', template_folder= templatesLocation)
 
-server = 'localhost'
-server = '192.168.0.25'
+if os.getenv('SERVER') != None :
+  server = os.getenv('SERVER')
+else:
+  server = 'localhost'
+  # server = '192.168.0.25'
 
 client = zeep.Client(wsdl =  'http://{}:8888/CurrencyConversionWebService?wsdl'.format(server))
 currencyList = client.service.getCurrencyList()

@@ -143,6 +143,86 @@ console shows
   </soap-env:Body>
 </soap-env:Envelope>
 ```
+if run in Docker Toolbox, use the ip address on network adapter which is connected to __Host-only__ network `192.168.99.0`. 
+
+```
+curl -s http://192.168.99.100:500/
+```
+if seeing the error
+```sh
+curl -s http://192.168.99.100:5000/
+$ echo $?
+```
+```text
+7
+```
+```text
+curl: (7) Failed to connect to 192.168.99.100 port 5000: Connection refused
+
+```
+then connect directly to the container ip.
+Find it via
+
+```sh
+docker inspect  client | /c/tools/jq-win64.exe  ".[0].NetworkSettings.Networks"
+```
+```
+{
+  "basic-soap3_example": {
+    "IPAMConfig": null,
+    "Links": null,
+    "Aliases": [
+      "client",
+      "eeac066a4a19"
+    ],
+    "NetworkID": "2626833edfbc2433545fa284b296582651e8adca709335baceac0bacfe67d591",
+    "EndpointID": "7a8d59c6c3f42beec59d80af380ff774065011d88d9d3ec2373f5e709b72a36c",
+    "Gateway": "172.22.0.1",
+    "IPAddress": "172.22.0.3",
+    "IPPrefixLen": 16,
+    "IPv6Gateway": "",
+    "GlobalIPv6Address": "",
+    "GlobalIPv6PrefixLen": 0,
+    "MacAddress": "02:42:ac:16:00:03",
+    "DriverOpts": null
+  }
+}
+```
+then
+
+```sh
+curl http://172.22.0.3:5000/
+```
+
+if seeing the same error
+
+then connect to the client via docker exec:
+```sh
+docker exec -it client sh
+```
+
+```sh
+lynx http://localhost:5000/
+```
+
+![Lynx](https://github.com/sergueik/springboot_study/blob/master/basic-soap3/screenshots/capture-lynx.png)
+the soap will be logged to the console log
+```sh
+docker logs client
+```
+```text
+client         | 127.0.0.1 - - [05/Jan/2023 00:46:46] "GET / HTTP/1.1" 200 -
+client         | b'<soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org
+/soap/envelope/">\n  <soap-env:Header xmlns:wsa="http://www.w3.org/2005/08/addre
+ssing">\n    <wsa:Action>http://example/Application/convertRequest</wsa:Action>\
+n    <wsa:MessageID>urn:uuid:78728a50-95b6-4778-a06b-bfadffdde75c</wsa:MessageID
+>\n    <wsa:To>http://soap-server:8888/CurrencyConversionWebService</wsa:To>\n
+</soap-env:Header>\n  <soap-env:Body>\n    <ns0:convert xmlns:ns0="http://exampl
+e/">\n      <arg0>10</arg0>\n      <arg1>AED</arg1>\n      <arg2>ANG</arg2>\n
+ </ns0:convert>\n  </soap-env:Body>\n</soap-env:Envelope>\n'
+ client         | 127.0.0.1 - - [05/Jan/2023 00:46:47] "POST / HTTP/1.0" 200 -
+ client         | 127.0.0.1 - - [05/Jan/2023 00:46:56] "GET / HTTP/1.1" 200 -
+```
 ###  TODO
 
 currently if no arguments in the SOAP call are provided:

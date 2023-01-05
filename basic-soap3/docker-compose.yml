@@ -1,0 +1,51 @@
+version: '2.2'
+
+services:
+  soap-server:
+    restart: unless-stopped
+    build: server
+    container_name: soap-server
+    healthcheck:
+      test:
+        [
+            "CMD-SHELL",
+            "curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8888/CurrencyConversionWebService/?wsdl | grep -q 200",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 60
+        
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "8888:8888"
+    networks:
+      - example
+
+  client:
+    restart: unless-stopped
+    build: client
+    container_name: client
+    ports:
+      - "5000:5000" 
+    depends_on:
+      soap-server:
+        condition: service_healthy
+    environment:
+      - SERVER=soap-server
+    networks:
+      - example
+    healthcheck:
+      test:
+        [
+            "CMD-SHELL",
+            "curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://127.0.0.1:5000/ | grep -q 200",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+networks:
+  example:
