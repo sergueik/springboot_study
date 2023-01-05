@@ -1318,6 +1318,37 @@ it was not tested thoroughfully if the feature was restored in later 8.x release
 in the [main branch](https://github.com/elastic/apm-server/blob/main/apm-server.yml) 
 the `setup.template.*` configuration no longer exist in `apm-server.yml`
 
+### APM Server 8.x Differences
+
+* To inspect differences
+
+* pull image
+```sh
+APM_SERVER_VERSION=8.5.2
+docker pull elastic/apm-server:$APM_SERVER_VERSION
+```
+* run the shell in the container
+```sh
+docker run -it elastic/apm-server:$APM_SERVER_VERSION sh
+```
+* in the container inspect the `apm-server.yml`
+```sh
+ls /usr/share/apm-server
+cd /usr/share/apm-server
+more apm-server.yml
+```
+
+* note that in the `Elasticsearch output` section there is nothing related to templates
+
+*  cleanup
+```sh
+docker image ls |grep apm-server | grep $APM_SERVER_VERSION | awk '{print $3}'| xargs -IX docker image rm -f X
+```
+NOTE: the following will not do it
+```sh
+docker image rm apm-server:$APM_SERVER_VERSION
+```
+
 ### TODO
 
 
