@@ -14,5 +14,3 @@ COPY app.py .
 ARG SERVICE_PORT=8080
 EXPOSE $SERVICE_PORT
 ENTRYPOINT ["python", "/app/app.py"]
-# NOTE: "-m", "flask" leads to a prompt
-

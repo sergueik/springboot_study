@@ -1,0 +1,4 @@
+Flask==2.0.3
+elastic-apm==6.13.2
+elastic-apm[flask]==6.13.2
+zeep==4.2.1 
