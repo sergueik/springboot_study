@@ -1349,6 +1349,59 @@ NOTE: the following will not do it
 docker image rm apm-server:$APM_SERVER_VERSION
 ```
 
+### APM Agent SOAP Call processing
+
+* add two more nodes:
+    + `soap-server` SOAP Server (Java) with APM agent
+    + `app4` Python Flask app with [zeep - Python SOAP client](https://docs.python-zeep.org/en/master/) with APM agent
+
+
+![Cluster With SOAP Agent](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/captrue-cluster-with-soapserver.png)
+
+![SOAP Agent](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-cluster-with-soap.png)
+
+* configure the APM agents to collect header and body
+
+![Agent Settings 1](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-agent-settings-1.png)
+
+![Agent Settings 2](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-agent-settings-2.png)
+
+* invoke the `Currency Converter` by `app4` 
+
+![Currency Converter](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-currency-converter.png)
+
+* observe the distributed transaction timeline and metadata collected:
+
+![SOAP Call](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-soap-call.png)
+
+
+* ispect details of HTTP, see body in one call
+
+![SOAP HTTP Call Transaction 1](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-transaction-details-1.png)
+
+* ispect details of HTTP, see no body and empty `SOAPAction` header in chained call
+
+![SOAP HTTP Call Transaction 2](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-transaction-details-2.png)
+
+
+### Switch to APM 8.5
+
+* pull images
+```sh
+VERSION=8.5.2
+```
+```sh
+docker pull elasticsearch:$VERSION
+docker pull kibana:$VERSION
+docker pull elastic/apm-server:$VERSION
+```
+* inspact configurations
+```sh
+NAME=apm-server.$VERSION
+docker run --name $NAME --rm -it elastic/apm-server:$VERSION sh
+docker cp $NAME:/usr/share/apm-server/apm-server.yml .
+```
+
 ### TODO
 
 
@@ -1430,6 +1483,21 @@ with the logs:
      + Java __Spring-WS__-based  library [repository](https://github.com/reficio/soap-ws),  that enables handling SOAP on a purely XML level and with SOAP standards supports version 1.1 and 1.2 - the `SOAPAction` attribute is automatically [properly placed](https://github.com/reficio/soap-ws/search?p=2&q=soapaction)
      + [call SOAP Server from Postman] (https://www.baeldung.com/postman-soap-request)
      + [call SOAP Server from the command line](https://www.baeldung.com/call-soap-command-line)
+     + [lxml - XML and HTML with Python](https://lxml.de)
+     + [zeep - Python SOAP client](https://docs.python-zeep.org/en/master/)
+     + [plain Java Web Service](https://docs.oracle.com/javase/7/docs/api/javax/jws/package-summary.html) 
+     + [Introduction to JAX-WS](https://www.baeldung.com/jax-ws)
+     + [java-ws and .net interop example](https://gridwizard.wordpress.com/2014/12/26/java-ws-and-dotnet-interop-example/)
+
+     + [run APM agent from the subject application](https://www.elastic.co/guide/en/apm/agent/java/current/setup-attach-api.html)
+     + [running APM agent via Java javaagentflag](https://www.elastic.co/guide/en/apm/agent/java/current/setup-attach-api.html)
+
+    + [Passing SOAPHeader with zeep](https://docs.python-zeep.org/en/master/headers.html)
+    + [SOAP 1.2 vs. SOAP 1.1 HTTP Headers](https://github.com/mvantellingen/python-zeep/issues/211) -   
+also, seems that SOAP 1.2 requires the action to be set via the Content-Type header instead of the separate SOAPAction header as in 1.1
+
+    + Zeep has low level `post_xml(address, envelope, headers)` [transport method](https://docs.python-zeep.org/en/master/api.html?highlight=post_xml#zeep.Transport.post_xml) to allow Post the envelope xml element to the given address with the headers (e.g. `{"SOAPAction": '"convert"',"Content-Type": "text/xml; charset=utf-8"}`)
+
 
   * Misc.
     + [monitoring python flask application with elastic apm](https://medium.com/analytics-vidhya/monitoring-python-flask-application-with-elastic-apm-bb0853f056ff)
