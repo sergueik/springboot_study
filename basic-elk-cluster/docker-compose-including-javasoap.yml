@@ -147,6 +147,9 @@ services:
     restart: unless-stopped
     build: app5
     container_name: soap-server
+    # NOTE: currently unused, trouble with seeing it from Dockerfile
+    environment:
+      - APM_SERVER=apm-server
     healthcheck:
       test:
         [
