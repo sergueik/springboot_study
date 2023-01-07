@@ -1,19 +1,10 @@
 from flask import Flask, render_template, request
 import zeep
+import requests
 from lxml import etree
 import os
 
-from elasticapm.contrib.flask import ElasticAPM
-import elasticapm
-
 app = Flask('CurrencyConverter', template_folder = 'Templates')
-apm_server_url = 'http://{}:8200'.format(os.getenv('APM_SERVER_IP'))
-app.config['ELASTIC_APM'] = {
-          'SERVICE_NAME': 'App 5',
-          'SECRET_TOKEN': '',
-          'SERVER_URL': apm_server_url
-}
-apm = ElasticAPM(app)
 # NOTE: in runtime, complains:
 # No handlers could be found for logger "elasticapm.transport"
 # probably will need containerization to function
@@ -40,8 +31,16 @@ def currencyConvert():
   node = client.create_message(client.service, 'convert', value1, currency1, currency2)
   print(etree.tostring(node, pretty_print = True))
   # update the page
-  answer = str(value1) + ' ' + currency1 + ' => ' + str(round(float(client.service.convert(value1, currency1, currency2)),2)) + ' ' + currency2
-  
+  transport = zeep.Transport()
+  response = transport.post_xml('http://{}:8888/CurrencyConversionWebService'.format(server), node, {"SOAPAction": '"convert"',"Content-Type": "text/xml; charset=utf-8"})
+  print(response.content)
+  # this will be raw SOAP server response XML document, which one has to parse to get the result
+  # NOTE: can 
+  # set_default_soapheaders({"SOAPAction": '"convert"',"Content-Type": "text/xml; charset=utf-8"})
+  # perform the high level call
+  result =   client.service.convert(value1, currency1, currency2)
+  answer = str(value1) + ' ' + currency1 + ' => ' + str(round(float(result),2)) + ' ' + currency2
+ 
   return render_template('index.html', currencyList = currencyList, len = len(currencyList), answer = answer)
 
 

@@ -127,7 +127,7 @@ console shows
 
 ![Client](https://github.com/sergueik/springboot_study/blob/master/basic-soap3/screenshots/capture-client.png)
 
-* check client console logs once submitted:
+* check client console logs once submitted. both raw request XML and response XML will be logged there:
 
 ```XML
 <?xml version="1.0"?>
@@ -145,6 +145,30 @@ console shows
     </ns0:convert>
   </soap-env:Body>
 </soap-env:Envelope>
+```
+```xml
+<?xml version="1.0" ?>
+  <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap-env:Body>
+    <ns2:convertResponse xmlns:ns2="http://example/">
+      <return>576.1683054372187
+      </return>
+    </ns2:convertResponse>
+  </soap-env:Body>
+</soap-env:Envelope>
+```
+this is achieved with following debug code:
+```python
+request = client.create_message(client.service, 'convert', value1, currency1, currency2)
+print(etree.tostring(request, pretty_print = True))
+transport = zeep.Transport()
+response = transport.post_xml('http://{}:8888/CurrencyConversionWebService'.format(server), request, {"SOAPAction": '"convert"',"Content-Type": "text/xml; charset=utf-8"})
+print(response.content)
+```
+normally the application does just 
+
+```python
+result = client.service.convert(value1, currency1, currency2)
 ```
 *  run in Docker
 ```sh
@@ -219,9 +243,6 @@ this will print the page to the console:
 ```
 NOTE: if run in [Docker Toolbox](https://github.com/docker/toolbox), use the ip address on network adapter which is connected to __Host-only__ network `192.168.99.0`. 
 
-```
-curl -s http://192.168.99.100:500/
-```
 if seeing the error
 ```sh
 curl -s http://192.168.99.100:5000/
@@ -240,7 +261,7 @@ Find it via
 ```sh
 docker inspect  client | /c/tools/jq-win64.exe  ".[0].NetworkSettings.Networks"
 ```
-```
+```JSON
 {
   "basic-soap3_example": {
     "IPAMConfig": null,
@@ -297,58 +318,7 @@ e/">\n      <arg0>10</arg0>\n      <arg1>AED</arg1>\n      <arg2>ANG</arg2>\n
  client         | 127.0.0.1 - - [05/Jan/2023 00:46:47] "POST / HTTP/1.0" 200 -
  client         | 127.0.0.1 - - [05/Jan/2023 00:46:56] "GET / HTTP/1.1" 200 -
 ```
-
-### Adding APM Agent
-
-* download to development server. The version is checked from Kibana link of the ELK server running in Docker container: `http://192.168.0.92:5601/app/home#/tutorial/apm`
-
-```sh
-ELASTIC_APM_AGENT_VERSION=1.35.0
-wget https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/${ELASTIC_APM_AGENT_VERSION}/elastic-apm-agent-${ELASTIC_APM_AGENT_VERSION}.jar -O elastic-apm-agent.jar
-```
-* inspect running APM server to configure the commandline:
-```sh
-APM_SERVER='apm-server'
-docker inspect $APM_SERVER | jq  ".[0].NetworkSettings.Networks"
-```
-this will show
-
-```JSON
-{
-  "basicelkcluster_elastic": {
-    "IPAMConfig": null,
-    "Links": null,
-    "Aliases": [
-      "apm-server",
-      "07cde5067c18"
-    ],
-    "NetworkID": "ba20d8e8ee9eee4bdda54ef6728f276a42583b520de1cbbb9b57a5bf2a35c1e6",
-    "EndpointID": "5c56e24228c10a7349a855e50551d420f5f710570c6e6dd785c5d4b213688414",
-    "Gateway": "172.20.0.1",
-    "IPAddress": "172.20.0.4",
-    "IPPrefixLen": 16,
-    "IPv6Gateway": "",
-    "GlobalIPv6Address": "",
-    "GlobalIPv6PrefixLen": 0,
-    "MacAddress": "02:42:ac:14:00:04",
-    "DriverOpts": null
-  }
-}
-```
-start the SOAP server with APM agent
-
-```sh
-APM_SERVER_IP=172.20.0.4
-```
-```sh
-cd server
-java -javaagent:../elastic-apm-agent.jar -Delastic.apm.service_name=my-cool-service -Delastic.apm.application_packages=example -Delastic.apm.server_url=http://${APM_SERVER_IP}:8200 -cp target/example.soap-service.jar example.Application
-```
-* build a docker image with both apps and add to new ELK `docker-compose.yaml`
-(work in progress)
-```
-docker build -f Dockerfile.app -t $APP_SERVER .
-```
+### Posting Raw XML Envelope and Headers
 ###  TODO
 
 currently if no arguments in the SOAP call are provided:
@@ -411,7 +381,8 @@ zeep.exceptions.ValidationError: Missing element arg0 (convert.arg0)
   * [run APM agent from the subject application](https://www.elastic.co/guide/en/apm/agent/java/current/setup-attach-api.html)
   * [running APM agent via Java javaagentflag](https://www.elastic.co/guide/en/apm/agent/java/current/setup-attach-api.html)
 
-
+  * [requests](https://www.w3schools.com/python/module_requests.asp)
+  * [response](https://www.w3schools.com/python/ref_requests_response.asp)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
