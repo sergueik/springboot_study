@@ -1462,6 +1462,16 @@ with the logs:
     + [log Correlation](https://www.elastic.co/guide/en/apm/agent/python/current/log-correlation.html)
     + [cluster state](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/cluster-state.html) - to save and load the custom Ingest Pipeline steps
 
+  * ELastic __8.5__ changes
+  
+   + [Standalone (legacy) APM Server binary with Elastic 8.x](https://www.elastic.co/guide/en/apm/guide/current/overview.html#overview)
+   + [Legacy APM Overview](https://www.elastic.co/guide/en/apm/guide/current/legacy-apm-overview.html) how to get custom metric atm https://discuss.elastic.co/t/how-to-get-custom-metrics-in-apm/321116/3
+   + [Elastic Data Streams](https://www.elastic.co/guide/en/elasticsearch/reference/8.5/data-streams.html) -  no information how to append column in this document
+   + [Elastic Fleet](https://www.elastic.co/guide/en/fleet/8.5/fleet-overview.html)
+   + [Beats and Elastic Agent capabilities](https://www.elastic.co/guide/en/fleet/8.5/beats-agent-comparison.html)
+   + [Elasticsearch Index Template](https://www.elastic.co/guide/en/beats/filebeat/8.5/configuration-template.html) mentions `setup.template.append_fields` and `setup.template.fields` (path to YAML file describing the fields) indicating it is available in __8.5__
+
+
    * Painless ElasticSearch Scripting Language
      + [Script Examples](https://www.elastic.co/guide/en/elasticsearch/painless/7.0/painless-examples.html)
      + [Language Specification](https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-lang-spec.html) - painless scripting language is rather simple but obscure

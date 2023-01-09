@@ -8,7 +8,8 @@ apm-server:
     protocol: "http"
 #    username: "elastic"
 #    password: "elasticpassword"
-
+# NOTE: 'setup.template' was removed from `apm-server.yml` in 8.0: index templates are managed by Fleet
+# NOTE: in 7.x but not in 8.x also one can configure 'output.elasticsearch.index'
 setup.template.enabled: true
 #setup.template.name: "apm-%{[observer.version]}"
 #setup.template.pattern: "apm-%{[observer.version]}-*"
