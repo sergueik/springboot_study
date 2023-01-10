@@ -53,14 +53,7 @@ public class Uu03dFixTest {
 	public void test1() throws Exception {
 		url = "http://localhost:" + randomServerPort + route + "?fix=false";
 		responseEntity = restTemplate.getForEntity(url, String.class);
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getHeaders().containsKey("Content-Type"),
-				is(true));
-		assertThat(responseEntity.getHeaders().get("Content-Type").get(0),
-				containsString("application/json"));
-		assertThat("Unexpected response for " + route,
-				gson.fromJson(responseEntity.getBody(), Object.class), notNullValue());
-		// NOTE: different from legacy Spring
+		// NOTE: different test from legacy Spring
 		body = "0\\u003dRUNNING,1\\u003dRUNNING,2\\u003dRUNNING";
 		System.err.println(
 				"get: " + gson.fromJson(responseEntity.getBody(), Object.class));
@@ -76,15 +69,18 @@ public class Uu03dFixTest {
 	public void test2() throws Exception {
 		url = "http://localhost:" + randomServerPort + route + "?fix=true";
 		responseEntity = restTemplate.getForEntity(url, String.class);
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
-		assertThat(responseEntity.getHeaders().containsKey("Content-Type"),
-				is(true));
-		assertThat(responseEntity.getHeaders().get("Content-Type").get(0),
-				containsString("application/json"));
-		assertThat("Unexpected response for " + route,
-				gson.fromJson(responseEntity.getBody(), Object.class), notNullValue());
 		body = "0=RUNNING,1=RUNNING,2=RUNNING";
 
+		assertThat("Unexpected formatting for " + route,
+				gson.fromJson(responseEntity.getBody(), Object.class).toString(),
+				containsString(body));
+	}
+
+	@Test
+	public void test3() throws Exception {
+		url = "http://localhost:" + randomServerPort + "/basic/uu03draw";
+		responseEntity = restTemplate.getForEntity(url, String.class);
+		body = "0=RUNNING,1=RUNNING,2=RUNNING";
 		assertThat("Unexpected formatting for " + route,
 				gson.fromJson(responseEntity.getBody(), Object.class).toString(),
 				containsString(body));

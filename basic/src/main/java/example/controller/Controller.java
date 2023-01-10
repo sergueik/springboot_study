@@ -62,6 +62,16 @@ public class Controller {
 		return json;
 	}
 
+	@ResponseBody
+	@GetMapping(value = "/uu03draw", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Map<String, String>> uu03draw(
+			@RequestParam Optional<Boolean> fix) {
+
+		Map<String, String> dataMap = new HashMap<>();
+		dataMap.put("data", "0=RUNNING,1=RUNNING,2=RUNNING");
+		return ResponseEntity.status(HttpStatus.OK).body(dataMap);
+	}
+
 	@PostMapping(value = "/post", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Data post(@RequestBody Data data) {
 		return data;
