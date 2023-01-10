@@ -381,7 +381,7 @@ curl -H "AppendedField: value2" http://localhost:6000/call
 * check if the APM documents get indexed
 
 ```sh
-curl -XGET 'localhost:9200/apm-7.17.7-transaction-000001/_search?_source=false'
+curl -XGET 'localhost:9200/apm-7.17.7-transaction-000001/_search?_source=false' | jq '.'
 ```
 
 see both 
@@ -1402,6 +1402,250 @@ docker run --name $NAME --rm -it elastic/apm-server:$VERSION sh
 docker cp $NAME:/usr/share/apm-server/apm-server.yml .
 ```
 
+### Script Pipeline Step
+
+Posted the sample XML using shell script `event2.sh`:
+```sh
+#!/bin/sh
+DATA=$(cat <<EOF)
+<?xml version="1.0"?>
+<soap:Envelope
+xmlns:soap="http://www.w3.org/2003/05/soap-envelope/"
+soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">
+
+<soap:Body>
+  <m:UpdatePrice
+  xmlns:m="https://www.w3schools.com/prices"
+  soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding"
+  ><m:Item>
+    Apples</m:Item>
+  </m:UpdatePrice>
+</soap:Body>
+EOF
+curl -X POST -d "$DATA" http://localhost:6000/call2
+
+```
+the format of the data (note the quotes etc.):
+
+```text
+{'<?xml version': '"1.0"?>\n<soap:Envelope\nxmlns:soap="http://www.w3.org/2003/05/soap-envelope/"\nsoap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">\n\n<soap:Body>\n <m:UpdatePrice\n xmlns:m="https://www.w3schools.com/prices"\n soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding"\n ><m:Item>\n Apples</m:Item>\n </m:UpdatePrice>\n</soap:Body>'}
+```
+
+
+Found the document which was added (visual scan, need a better way):
+
+```sh
+GET /apm-7.17.7-transaction-000001/_doc/FlzJmIUBVsWXF39TlJmq?_source=http,transaction
+```
+
+Added pipelines
+
+__SET__ (copying from one field `http.request.body.original` to the other `transaction.body`):
+```JSON
+{
+    "set": {
+      "field": "transaction.body",
+      "copy_from": "http.request.body.original"
+}
+```    
+result of pipeline test with specific document with `index`:`apm-7.17.7-transaction-000001` `id`:`FlzJmIUBVsWXF39TlJmq`
+
+```JSON 
+{
+   "_id": "FlzJmIUBVsWXF39TlJmq",
+    "_index": "apm-7.17.7-transaction-000001"
+}
+```
+```JSON
+{
+  "docs": [
+    {
+      "doc": {
+        "_index": "apm-7.17.7-transaction-000001",
+        "_type": "_doc",
+        "_id": "FlzJmIUBVsWXF39TlJmq",
+        "_source": {
+          "container": {
+            "id": "017c4a89f4db685c1310325dca8141b39c95bffb1c8dba1b560e81a74e680c47"
+          },
+          "process": {
+            "args": [
+              "/app/app.py"
+            ],
+            "pid": 1,
+            "ppid": 0
+          },
+          "agent": {
+            "name": "python",
+            "version": "6.13.2"
+          },
+          "source": {
+            "ip": "172.20.0.1"
+          },
+          "processor": {
+            "name": "transaction",
+            "event": "transaction"
+          },
+          "url": {
+            "path": "/call2",
+            "scheme": "http",
+            "port": 6000,
+            "domain": "localhost",
+            "full": "http://localhost:6000/call2"
+          },
+          "observer": {
+            "hostname": "5b8943718007",
+            "id": "b6b46367-453c-4504-8dd7-3724181b8f77",
+            "ephemeral_id": "af20d66f-dac5-4277-97cf-7511d8cea79c",
+            "type": "apm-server",
+            "version": "7.17.7",
+            "version_major": 7
+          },
+          "trace": {
+            "id": "02dc95aa29c5f3311f2a233a0044eb76"
+          },
+          "@timestamp": "2023-01-09T23:06:57.534Z",
+          "ecs": {
+            "version": "1.12.0"
+          },
+          "service": {
+            "name": "App 1",
+            "node": {
+              "name": "017c4a89f4db685c1310325dca8141b39c95bffb1c8dba1b560e81a74e680c47"
+            },
+            "runtime": {
+              "name": "CPython",
+              "version": "3.8.2"
+            },
+            "language": {
+              "name": "python",
+              "version": "3.8.2"
+            },
+            "framework": {
+              "name": "flask",
+              "version": "2.0.3"
+            }
+          },
+          "host": {
+            "name": "017c4a89f4db",
+            "hostname": "017c4a89f4db",
+            "os": {
+              "platform": "linux"
+            },
+            "ip": "172.20.0.6",
+            "architecture": "x86_64"
+          },
+          "client": {
+            "ip": "172.20.0.1"
+          },
+          "http": {
+            "request": {
+              "headers": {
+                "User-Agent": [
+                  "curl/7.58.0"
+                ],
+                "Host": [
+                  "localhost:6000"
+                ],
+                "Accept": [
+                  "*/*"
+                ],
+                "Content-Length": [
+                  "354"
+                ],
+                "Content-Type": [
+                  "application/x-www-form-urlencoded"
+                ]
+              },
+              "method": "POST",
+              "env": {
+                "SERVER_PORT": "6000",
+                "REMOTE_ADDR": "172.20.0.1",
+                "SERVER_NAME": "0.0.0.0"
+              },
+              "body": {
+                "original": "{'<?xml version': '\"1.0\"?>\\n<soap:Envelope\\nxmlns:soap=\"http://www.w3.org/2003/05/soap-envelope/\"\\nsoap:encodingStyle=\"http://www.w3.org/2003/05/soap-encoding\">\\n\\n<soap:Body>\\n  <m:UpdatePrice\\n  xmlns:m=\"https://www.w3schools.com/prices\"\\n  soap:encodingStyle=\"http://www.w3.org/2003/05/soap-encoding\"\\n  ><m:Item>\\n    Apples</m:Item>\\n  </m:UpdatePrice>\\n</soap:Body>'}"
+              }
+            },
+            "response": {
+              "headers": {
+                "Content-Length": [
+                  "0"
+                ],
+                "Content-Type": [
+                  "text/html; charset=utf-8"
+                ]
+              },
+              "status_code": 200
+            }
+          },
+          "event": {
+            "ingested": "2023-01-09T23:11:13.196783895Z",
+            "outcome": "success"
+          },
+          "transaction": {
+            "result": "HTTP 2xx",
+            "duration": {
+              "us": 1092
+            },
+            "name": "POST /call2",
+            "span_count": {
+              "dropped": 0,
+              "started": 0
+            },
+            "id": "cf8a4c1a183bfa14",
+            "type": "request",
+            "body": "{'<?xml version': '\"1.0\"?>\\n<soap:Envelope\\nxmlns:soap=\"http://www.w3.org/2003/05/soap-envelope/\"\\nsoap:encodingStyle=\"http://www.w3.org/2003/05/soap-encoding\">\\n\\n<soap:Body>\\n  <m:UpdatePrice\\n  xmlns:m=\"https://www.w3schools.com/prices\"\\n  soap:encodingStyle=\"http://www.w3.org/2003/05/soap-encoding\"\\n  ><m:Item>\\n    Apples</m:Item>\\n  </m:UpdatePrice>\\n</soap:Body>'}",
+            "sampled": true
+          },
+          "user_agent": {
+            "name": "curl",
+            "original": "curl/7.58.0",
+            "device": {
+              "name": "Other"
+            },
+            "version": "7.58.0"
+          },
+          "timestamp": {
+            "us": 1673305617534056
+          }
+        },
+        "_ingest": {
+          "timestamp": "2023-01-09T23:11:13.196783895Z"
+        }
+      }
+    }
+  ]
+}
+```
+
+while not yet figured how to read and write the index being ingested, use `params`: for input and TBD how access `docs` for output.
+```JSON
+
+  {
+    "script": {
+      "lang": "painless",
+      "source": "\r\nString data = \"x\"+ ctx['transaction.body'] + \"x\"; \r\n\r\nctx['transaction.body'] = data;",
+      "params": {
+        "data": "\r\n      <?xml version=\"1.0\"?>\r\n\r\n\r\n      <soap:Envelope\r\n      xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope/\"\r\n      soap:encodingStyle=\"http://www.w3.org/2003/05/soap-encoding\">\r\n\r\n      <soap:Body>\r\n        <m:UpdatePrice\r\n        xmlns:m=\"https://www.w3schools.com/prices\"\r\n        soap:encodingStyle=\"http://www.w3.org/2003/05/soap-encoding\"\r\n        ><m:Item>\r\n          Apples</m:Item>\r\n        </m:UpdatePrice>\r\n      </soap:Body>\r\n    "
+      }
+    }
+```
+### Capture Body Quirks
+
+
+![Capture Body 1](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-body-fields.png)
+
+
+![Capture Body 3](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-body-raw-misplaced.png)
+
+![Capture Body 2](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-body-workaround.png)
+
+![Capture Body 4](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-body-workaround-unneeded.png)
+
+![Capture Body 5](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-body-final-example.png)
+
+
 ### TODO
 
 
@@ -1458,19 +1702,10 @@ with the logs:
     + [Enrich Processor](https://www.elastic.co/guide/en/elasticsearch/reference/current/enrich-processor.html#enrich-processor)
     + [Predefined grok patterns](https://github.com/hpcugent/logstash-patterns/blob/master/files/grok-patterns)
     + [Update Examples](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update.html#docs-update)
-    + [Script processor](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/script-processor.html)
+    + [Script processor](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/script-processor.html) - unclear how to make modifications to the metadata document from `SCRIPT` step
+    + [blog about Ingest Pipeline](https://hevodata.com/learn/elasticsearch-ingest-pipeline/) - shows the `_ingest/pipeline/_simulate` and `_ingest/pipeline/sample-pipeline-id` REST API for automating simulation of the ingestion etc.
     + [log Correlation](https://www.elastic.co/guide/en/apm/agent/python/current/log-correlation.html)
     + [cluster state](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/cluster-state.html) - to save and load the custom Ingest Pipeline steps
-
-  * ELastic __8.5__ changes
-  
-   + [Standalone (legacy) APM Server binary with Elastic 8.x](https://www.elastic.co/guide/en/apm/guide/current/overview.html#overview)
-   + [Legacy APM Overview](https://www.elastic.co/guide/en/apm/guide/current/legacy-apm-overview.html) how to get custom metric atm https://discuss.elastic.co/t/how-to-get-custom-metrics-in-apm/321116/3
-   + [Elastic Data Streams](https://www.elastic.co/guide/en/elasticsearch/reference/8.5/data-streams.html) -  no information how to append column in this document
-   + [Elastic Fleet](https://www.elastic.co/guide/en/fleet/8.5/fleet-overview.html)
-   + [Beats and Elastic Agent capabilities](https://www.elastic.co/guide/en/fleet/8.5/beats-agent-comparison.html)
-   + [Elasticsearch Index Template](https://www.elastic.co/guide/en/beats/filebeat/8.5/configuration-template.html) mentions `setup.template.append_fields` and `setup.template.fields` (path to YAML file describing the fields) indicating it is available in __8.5__
-
 
    * Painless ElasticSearch Scripting Language
      + [Script Examples](https://www.elastic.co/guide/en/elasticsearch/painless/7.0/painless-examples.html)
