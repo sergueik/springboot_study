@@ -1620,17 +1620,60 @@ result of pipeline test with specific document with `index`:`apm-7.17.7-transact
 ```
 
 while not yet figured how to read and write the index being ingested, use `params`: for input and TBD how access `docs` for output.
+ + elementary
 ```JSON
 
   {
     "script": {
       "lang": "painless",
-      "source": "\r\nString data = \"x\"+ ctx['transaction.body'] + \"x\"; \r\n\r\nctx['transaction.body'] = data;",
+      "\r\nString data = \"x\"+ ctx['transaction']['body'] + \"x\"; \r\n\r\nctx['transaction']['body'] = data;"
       "params": {
         "data": "\r\n      <?xml version=\"1.0\"?>\r\n\r\n\r\n      <soap:Envelope\r\n      xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope/\"\r\n      soap:encodingStyle=\"http://www.w3.org/2003/05/soap-encoding\">\r\n\r\n      <soap:Body>\r\n        <m:UpdatePrice\r\n        xmlns:m=\"https://www.w3schools.com/prices\"\r\n        soap:encodingStyle=\"http://www.w3.org/2003/05/soap-encoding\"\r\n        ><m:Item>\r\n          Apples</m:Item>\r\n        </m:UpdatePrice>\r\n      </soap:Body>\r\n    "
       }
     }
 ```
++ basic
+
+```JSON
+
+  {
+    "script": {
+      "lang": "painless",
+      "source": "      String parseSOAPXMLDocument(def data) {\r\n        def result = \"\";\r\n        String[] elelentList = (/\\n|\\t|\\r/.matcher(data).replaceAll(' ')).splitOnToken('<');\r\n        for (def element : elelentList) {\r\n          def tmp = parseSOAPXMLElement('<' + element);\r\n           if (tmp != \"\") {\r\n            result = tmp;\r\n          }\r\n        }\r\n        return result;\r\n      }\r\n      String parseSOAPXMLElement(def data) {\r\n        def result = \"\";\r\n         def elementMatcher = /<([\\w]+):([\\w]+)\\s*(xmlns:)([\\w]+)\\s*=\\s*\"([^\"]+)\"\\s*(.*)>/;\r\n          if (data =~ elementMatcher){\r\n            def namespace = elementMatcher.matcher(data).replaceAll('$1');\r\n            def tmp = elementMatcher.matcher(data).replaceAll('$2');\r\n            if (!(namespace =~ /soap/)){\r\n              result = tmp;\r\n            }\r\n        }\r\n        return trim(result);\r\n      }\r\n      String trim(def data){\r\n        return / /.matcher(/\\n|\\t|\\r/.matcher(data).replaceAll(' ')).replaceAll('');\r\n      }\r\n\r\n\r\nString data = ctx['transaction']['body'];\r\nString  result = parseSOAPXMLElement(params['data']);\r\nctx['transaction']['body2'] = result;",
+      "params": {
+        "data": "\r\n      <m:GetPrice xmlns:m=\"https://www.w3schools.com/prices\">\r\n    "
+```
+ + semi-final
+```JSON
+  {
+    "script": {
+      "lang": "painless",
+      "source": "      String parseSOAPXMLDocument(def data) {\r\n        def result = \"\";\r\n        String[] elelentList = (/\\n|\\t|\\r/.matcher(data).replaceAll(' ')).splitOnToken('<');\r\n        for (def element : elelentList) {\r\n          def tmp = parseSOAPXMLElement('<' + element);\r\n           if (tmp != \"\") {\r\n            result = tmp;\r\n          }\r\n        }\r\n        return result;\r\n      }\r\n      String parseSOAPXMLElement(def data) {\r\n        def result = \"\";\r\n         def elementMatcher = /<([\\w]+):([\\w]+)\\s*(xmlns:)([\\w]+)\\s*=\\s*\"([^\"]+)\"\\s*(.*)>/;\r\n          if (data =~ elementMatcher){\r\n            def namespace = elementMatcher.matcher(data).replaceAll('$1');\r\n            def tmp = elementMatcher.matcher(data).replaceAll('$2');\r\n            if (!(namespace =~ /soap/)){\r\n              result = tmp;\r\n            }\r\n        }\r\n        return trim(result);\r\n      }\r\n      String trim(def data){\r\n        return / /.matcher(/\\n|\\t|\\r/.matcher(data).replaceAll(' ')).replaceAll('');\r\n      }\r\n\r\n\r\nString data = ctx['transaction']['body'];\r\nString  result = parseSOAPXMLElement(params['data']);\r\nresult = parseSOAPXMLDocument(data);\r\nctx['transaction']['body2'] = result;",
+      "params": {
+        "data": "\r\n      <m:GetPrice xmlns:m=\"https://www.w3schools.com/prices\">\r\n    "
+      }
+    }
+```
+
+ + fixed
+
+```JSON
+
+  {
+    "script": {
+      "lang": "painless",
+      "source": "      String parseSOAPXMLDocument(def data) {\r\n        def result = \"\";\r\n        String[] elelentList = (/\\n|\\t|\\r|\\\\r/.matcher(data).replaceAll(' ')).splitOnToken('<');\r\n        for (def element : elelentList) {\r\n          def tmp = parseSOAPXMLElement('<' + element);\r\n           if (tmp != \"\") {\r\n            result = tmp;\r\n          }\r\n        }\r\n        return result;\r\n      }\r\n      String parseSOAPXMLElement(def data) {\r\n        def result = \"\";\r\n         def elementMatcher = /<([\\w]+):([\\w]+)\\s*(xmlns:)([\\w]+)\\s*=\\s*\"([^\"]+)\"\\s*(.*)>/;\r\n          if (data =~ elementMatcher){\r\n            def namespace = elementMatcher.matcher(data).replaceAll('$1');\r\n            def tmp = elementMatcher.matcher(data).replaceAll('$2');\r\n            if (!(namespace =~ /soap/)){\r\n              result = tmp;\r\n            }\r\n        }\r\n        return trim(result);\r\n      }\r\n      String trim(def data){\r\n        return / /.matcher(/\\n|\\t|\\\\r/.matcher(data).replaceAll(' ')).replaceAll('');\r\n      }\r\n\r\n\r\nString data = ctx['transaction']['body'];\r\nString  result = parseSOAPXMLElement(params['data']);\r\nctx['transaction']['body2'] = result;",
+      "params": {
+        "data": "\r\n      <m:GetPrice xmlns:m=\"https://www.w3schools.com/prices\">\r\n    "
+      }
+    }
+  }
+```
+
+![Capture Pipeline Script Design](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-pipeline-script-design.png)
+
+![Capture Pipeline Test](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-pipeline-script-testing.png)
+
 ### Capture Body Quirks
 
 
