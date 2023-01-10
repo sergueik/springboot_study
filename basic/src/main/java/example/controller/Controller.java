@@ -1,9 +1,12 @@
 package example.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +48,30 @@ public class Controller {
 		return new Data(service.hello());
 	}
 
+	// see also: https://jkoder.com/gson-encoding-the-string-like-u003d/
+	// TODO: change signature to ResponseEntity<String>
+	@ResponseBody
+	@GetMapping(value = "/uu03d", produces = MediaType.APPLICATION_JSON_VALUE)
+	public String uu03d(@RequestParam Optional<Boolean> fix) {
+
+		Map<String, String> dataMap = new HashMap<>();
+		dataMap.put("data", "0=RUNNING,1=RUNNING,2=RUNNING");
+		Gson gson = (fix.isPresent() && fix.get())
+				? new GsonBuilder().disableHtmlEscaping().create() : new Gson();
+		String json = gson.toJson(dataMap);
+		return json;
+	}
+
 	@PostMapping(value = "/post", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Data post(@RequestBody Data data) {
 		return data;
 	}
 
+	// example execution:
+	// GET http://192.168.0.64:8085/basic/params?values=a&values=b&values=c
+	// 200 [ "a" ]
+	// http://192.168.0.64:8085/basic
+	// 405 []
 	@GetMapping(value = "/params", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<String>> paramArrayEcho(
 			@RequestParam Optional<List<String>> values) {
