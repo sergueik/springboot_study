@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -15,6 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -43,6 +45,23 @@ public class Uu03dFixTest {
 
 	@Before
 	public void before() throws Exception {
+
+	}
+
+	private String charset;
+
+	@Test
+	public void test0() throws Exception {
+		resultActions = mvc.perform(get(route));
+		resultActions.andExpect(status().isOk());
+	}
+
+	@Test
+	
+	public void test5() throws Exception {
+		charset = "UTF-8";
+		resultActions = mvc.perform(get(route));
+		resultActions.andExpect(content().contentType(String.format("application/json;charset=%s", charset)));
 
 	}
 
