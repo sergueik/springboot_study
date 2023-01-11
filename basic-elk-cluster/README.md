@@ -1792,6 +1792,59 @@ with
 ```
 thus dropping or adding the key `_source` which is only needed for ad-hoc.
 
+*  validating more complex SOAP document
+
+the elementary parser successfully handles the data extraction from significantly more complex payload because it so happens that the tag of interest was the last encountered and waa carried. A number of optimizations is certainly possible:
+
+* result:
+
+```JSON
+{
+  "_index" : "apm-7.17.7-transaction-000001",
+  "_type" : "_doc",
+  "_id" : "FlzJmIUBVsWXF39TlJmq",
+  "_version" : 32,
+  "_seq_no" : 6372,
+  "_primary_term" : 3,
+  "found" : true,
+  "_source" : {
+    "transaction" : {
+      "result" : "HTTP 2xx",
+      "duration" : {
+        "us" : 1092
+      },
+      "name" : "POST /call2",
+      "span_count" : {
+        "dropped" : 0,
+        "started" : 0
+      },
+      "id" : "cf8a4c1a183bfa14",
+      "type" : "request",
+      "body" : """ 
+      {'
+       <?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope/" soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">
+  <soap:Header>
+    <appId>12345</appId>
+    <n1:context xmlns:n1="http://www.w3.org/soap-envelope/n1"/>
+  </soap:Header>
+  <soap:Body>
+    <m3:UpdatePriceComplex xmlns:m1="https://www.w3schools.com/m1" xmlns:m2="https://www.w3schools.com/m2" xmlns:m3="https://www.w3schools.com/m3" xmlns:m4="https://www.w3schools.com/m4" xmlns:m5="https://www.w3schools.com/m5" soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">
+      <m1:Item>
+    Banana</m1:Item>
+    </m3:UpdatePriceComplex>
+  </soap:Body>
+</soap:Envelope>
+    '}
+
+      """,
+      "sampled" : true,
+      "action" : "UpdatePriceComplex"
+    }
+  }
+}
+
+```
 ### TODO
 
 

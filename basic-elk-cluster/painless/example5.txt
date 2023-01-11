@@ -1,0 +1,31 @@
+POST /apm-7.17.7-transaction-000001/_doc/FlzJmIUBVsWXF39TlJmq/_update 
+{
+// initialize the document
+  "script": {
+    "lang": "painless",
+    "source": """
+    ctx['_source']['transaction']['body'] = params['data'];
+    """,
+    "params": {
+      "data": """ 
+      {'
+       <?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope/" soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">
+  <soap:Header>
+    <appId>12345</appId>
+    <n1:context xmlns:n1="http://www.w3.org/soap-envelope/n1"/>
+  </soap:Header>
+  <soap:Body>
+    <m3:UpdatePriceComplex xmlns:m1="https://www.w3schools.com/m1" xmlns:m2="https://www.w3schools.com/m2" xmlns:m3="https://www.w3schools.com/m3" xmlns:m4="https://www.w3schools.com/m4" xmlns:m5="https://www.w3schools.com/m5" soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">
+      <m1:Item>
+    Banana</m1:Item>
+    </m3:UpdatePriceComplex>
+  </soap:Body>
+</soap:Envelope>
+    '}
+
+      """,
+      "position": -1
+    }
+  }
+}
