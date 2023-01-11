@@ -1,0 +1,49 @@
+POST /apm-7.17.7-transaction-000001/_doc/FlzJmIUBVsWXF39TlJmq/_update 
+{
+  "script": {
+    "lang": "painless",
+    "source": """
+    String parseSOAPXMLDocument(def data) {
+      def result = "";
+      String[] elelentList = (/\n|\t|\r|\\r|\\n/.matcher(data).replaceAll(' ')).splitOnToken('<');
+
+      for (def item: elelentList) {
+        String element = '<' + trim(item);
+        def tmp = parseSOAPXMLElement(element);
+        if (tmp != "") {
+          result = tmp;
+        }
+      }
+      return result;
+    }
+    String parseSOAPXMLElement(def data) {
+      def result = "";
+      def elementMatcher = /<([\w]+):([\w]+)\s*(xmlns:)([\w]+)\s*=\s*"([^"]+)"\s*(.*)>/;
+      // beautify JS  breaks the =~ into =<space>~ which leads to compile error
+      if (data =~ elementMatcher) {
+        def namespace = elementMatcher.matcher(data).replaceAll('$1');
+        def tmp = elementMatcher.matcher(data).replaceAll('$2');
+        if (!(namespace =~/soap/)) {
+          result = tmp;
+        }
+      }
+      return trim(result);
+    }
+    String trim(def data) {
+      return / /.matcher(/\n|\t|\\r/.matcher(data).replaceAll(' ')).replaceAll('');
+    }
+
+
+
+    // String data = ctx['transaction']['body'];
+    String data = ctx['_source']['transaction']['body'];
+
+    if (data != null) {
+      String result = parseSOAPXMLDocument(data);
+      ctx._source.transaction.action = result;
+    } else { 
+      ctx._source.transaction.action = 'undefined';
+    }
+    """
+  }
+}

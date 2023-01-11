@@ -1688,6 +1688,109 @@ while not yet figured how to read and write the index being ingested, use `param
 
 ![Capture Body 5](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-body-final-example.png)
 
+### Testing Script Processor Step in Dev Tools
+
+* it is quicker to run the `POST` `_update` followed by `GET` in Dev Tools than to repeatedly enter the document id and index in Ingestion Pipeline menu
+```text
+POST /apm-7.17.7-transaction-000001/_doc/FlzJmIUBVsWXF39TlJmq/_update 
+{
+  "script": {
+    "lang": "painless",
+    "source": """
+    String parseSOAPXMLDocument(def data) {
+      def result = "";
+      String[] elelentList = (/\n|\t|\r|\\r|\\n/.matcher(data).replaceAll(' ')).splitOnToken('<');
+
+      for (def item: elelentList) {
+        String element = '<' + trim(item);
+        def tmp = parseSOAPXMLElement(element);
+        if (tmp != "") {
+          result = tmp;
+        }
+      }
+      return result;
+    }
+    String parseSOAPXMLElement(def data) {
+      def result = "";
+      def elementMatcher = /<([\w]+):([\w]+)\s*(xmlns:)([\w]+)\s*=\s*"([^"]+)"\s*(.*)>/;
+      // beautify JS  breaks the =~ into =<space>~ which leads to compile error
+      if (data =~ elementMatcher) {
+        def namespace = elementMatcher.matcher(data).replaceAll('$1');
+        def tmp = elementMatcher.matcher(data).replaceAll('$2');
+        if (!(namespace =~/soap/)) {
+          result = tmp;
+        }
+      }
+      return trim(result);
+    }
+    String trim(def data) {
+      return / /.matcher(/\n|\t|\\r/.matcher(data).replaceAll(' ')).replaceAll('');
+    }
+
+
+
+    // String data = ctx['transaction']['body'];
+    String data = ctx['_source']['transaction']['body'];
+
+    if (data != null) {
+      String result = parseSOAPXMLDocument(data);
+      ctx._source.transaction.action = result;
+    } else { 
+      ctx._source.transaction.action = 'undefined';
+    }
+    """
+  }
+}
+```
+
+* for simplicity put the `body` into `transaction.body` and only query the transaction`:
+
+```text
+GET /apm-7.17.7-transaction-000001/_doc/FlzJmIUBVsWXF39TlJmq?_source=transaction
+```
+* result:
+```JSON
+{
+  "_index" : "apm-7.17.7-transaction-000001",
+  "_type" : "_doc",
+  "_id" : "FlzJmIUBVsWXF39TlJmq",
+  "_version" : 24,
+  "_seq_no" : 5746,
+  "_primary_term" : 3,
+  "found" : true,
+  "_source" : {
+    "transaction" : {
+      "result" : "HTTP 2xx",
+      "duration" : {
+        "us" : 1092
+      },
+      "name" : "POST /call2",
+      "span_count" : {
+        "dropped" : 0,
+        "started" : 0
+      },
+      "id" : "cf8a4c1a183bfa14",
+      "type" : "request",
+      "body" : """{'<?xml version': '"1.0"?>\n<soap:Envelope\nxmlns:soap="http://www.w3.org/2003/05/soap-envelope/"\nsoap:encodingStyle="http://www.w3.org/2003/05/soap-encoding">\n\n<soap:Body>\n  <m:UpdatePrice\n  xmlns:m="https://www.w3schools.com/prices"\n  soap:encodingStyle="http://www.w3.org/2003/05/soap-encoding"\n  ><m:Item>\n    Apples</m:Item>\n  </m:UpdatePrice>\n</soap:Body>'}""",
+      "sampled" : true,
+      "body2" : "UpdatePrice",
+      "action" : "UpdatePrice"
+    }
+  }
+}
+
+```
+* when  finished convert ad-hoc script to Ingeston Pipeline. The only needed change is to replace
+
+```javascript
+    String data = ctx['_source']['transaction']['body'];
+```
+
+with
+```javascript
+    String data = ctx['transaction']['body'];
+```
+thus dropping or adding the key `_source` which is only needed for ad-hoc.
 
 ### TODO
 
