@@ -70,8 +70,13 @@ public class IntegrationTest {
 		resultActions = mvc.perform(get(route));
 	}
 
+	// TODO: check the quotes issue
+	// it is related to "spring.http.converters.preferred-json-mapper=gson" and
+	// "spring.gson.disable-html-escaping=true" in "application.properties"
 	@Test
 	void alltTest() throws Exception {
+		//resultActions.andDo(print()).andExpect(status().isOk())
+		//		.andExpect(content().string(equalTo(String.format("\"%s\"", body))));
 		resultActions.andDo(print()).andExpect(status().isOk())
 				.andExpect(content().string(equalTo(body)));
 		verify(mockService).hello();

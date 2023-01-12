@@ -1,6 +1,6 @@
 package example.controller;
 /**
- * Copyright 2021,2022 Serguei Kouzmine
+ * Copyright 2021,2022,2023 Serguei Kouzmine
  */
 
 import java.io.File;
@@ -11,15 +11,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -34,11 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import example.service.ExampleService;
 
@@ -275,47 +268,6 @@ public class ExampleController {
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	// see also: https://jkoder.com/gson-encoding-the-string-like-u003d/
-	// TODO: change signature to ResponseEntity<String>
-	@ResponseBody
-	@GetMapping(value = "/uu03d", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public String uu03d(@RequestParam Optional<Boolean> fix) {
-
-		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("data", "0=RUNNING,1=RUNNING,2=RUNNING");
-		Gson gson = (fix.isPresent() && fix.get())
-				? new GsonBuilder().disableHtmlEscaping().create() : new Gson();
-		String json = gson.toJson(dataMap);
-		return json;
-	}
-
-	@RequestMapping(method = RequestMethod.GET, value = "/uu03dcharset", produces = {
-			MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<String> uu03dcharset(
-			@RequestParam Optional<Boolean> fix) {
-		HttpHeaders headers = new HttpHeaders();
-		// NOTE: default Content-Type is "text/plain; charset=us-ascii"
-		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("data", "0=RUNNING,1=RUNNING,2=RUNNING");
-		Gson gson = (fix.isPresent() && fix.get())
-				? new GsonBuilder().disableHtmlEscaping().create() : new Gson();
-		String json = gson.toJson(dataMap);
-
-		headers.add("Content-Type", "application/json;charset=UTF-8");
-		return new ResponseEntity<String>(json, headers, HttpStatus.OK);
-
-	}
-
-	@ResponseBody
-	@GetMapping(value = "/uu03draw", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Map<String, String>> uu03draw(
-			@RequestParam Optional<Boolean> fix) {
-
-		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("data", "0=RUNNING,1=RUNNING,2=RUNNING");
-		return ResponseEntity.status(HttpStatus.OK).body(dataMap);
 	}
 
 	@GetMapping(value = "/servererror", produces = MediaType.APPLICATION_JSON_VALUE)
