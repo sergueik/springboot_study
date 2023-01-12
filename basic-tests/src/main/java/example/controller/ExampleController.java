@@ -67,14 +67,14 @@ public class ExampleController {
 		return service.hello();
 	}
 
-	@GetMapping(value = "/json", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/json", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public Data json() {
 		return new Data(service.hello());
 	}
 
 	// NOTE:
 	// @RequestMapping( produces =
-	// MediaType.valueOf("application/pdf;charset=ASCII").toString())
+	// { MediaType.valueOf("application/pdf;charset=ASCII").toString() })
 	// leads to compile time error:
 	// the value for annotation attribute RequestMapping.produces must be a
 	// constant expression
@@ -171,7 +171,9 @@ public class ExampleController {
 	// https://o7planning.org/11765/spring-boot-file-download
 	// getMediaTypeForFileName
 
-	@RequestMapping(method = RequestMethod.POST, value = "/post/json", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, value = "/post/json", consumes = {
+			MediaType.APPLICATION_JSON_VALUE }, produces = {
+					MediaType.APPLICATION_JSON_VALUE })
 	public Data postJson(@RequestBody Data data) {
 		@SuppressWarnings("unused")
 		Data result = service.handleData(data);
@@ -189,7 +191,9 @@ public class ExampleController {
 		return ResponseEntity.status(HttpStatus.OK).body(data);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "/post/set", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, value = "/post/set", consumes = {
+			MediaType.APPLICATION_JSON_VALUE }, produces = {
+					MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<Set<Data>> postSet(@RequestBody Set<String> inputs) {
 
 		Set<Data> result = new HashSet<>();
@@ -202,7 +206,8 @@ public class ExampleController {
 
 	}
 
-	@GetMapping(value = "/array/params", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/array/params", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<List<String>> paramArrayEcho(
 			@RequestParam Optional<List<String>> values) {
 		return (values.isPresent() && values.get().size() > 0)
@@ -211,7 +216,7 @@ public class ExampleController {
 						.body(new ArrayList<String>());
 	}
 
-	@GetMapping(value = "/queryparam", produces = MediaType.TEXT_PLAIN_VALUE)
+	@GetMapping(value = "/queryparam", produces = { MediaType.TEXT_PLAIN_VALUE })
 	public ResponseEntity<String> queryParam(
 			@RequestParam Optional<List<String>> appids,
 			@RequestParam Optional<List<Integer>> ids) {
@@ -234,7 +239,9 @@ public class ExampleController {
 	// https://www.baeldung.com/spring-request-method-not-supported-405
 	// returns HTTP 405 error code for GET
 	@RequestMapping(method = { RequestMethod.PUT,
-			RequestMethod.POST }, value = "/post/form", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+			RequestMethod.POST }, value = "/post/form", consumes = {
+					MediaType.APPLICATION_FORM_URLENCODED_VALUE }, produces = {
+							MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<Data> postForm(
 			@RequestBody final MultiValueMap<String, String> param /* , HttpServletResponse response */) {
 		if (param.isEmpty()) {
@@ -273,7 +280,7 @@ public class ExampleController {
 	// see also: https://jkoder.com/gson-encoding-the-string-like-u003d/
 	// TODO: change signature to ResponseEntity<String>
 	@ResponseBody
-	@GetMapping(value = "/uu03d", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/uu03d", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public String uu03d(@RequestParam Optional<Boolean> fix) {
 
 		Map<String, String> dataMap = new HashMap<>();
@@ -282,6 +289,23 @@ public class ExampleController {
 				? new GsonBuilder().disableHtmlEscaping().create() : new Gson();
 		String json = gson.toJson(dataMap);
 		return json;
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/uu03dcharset", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<String> uu03dcharset(
+			@RequestParam Optional<Boolean> fix) {
+		HttpHeaders headers = new HttpHeaders();
+		// NOTE: default Content-Type is "text/plain; charset=us-ascii"
+		Map<String, String> dataMap = new HashMap<>();
+		dataMap.put("data", "0=RUNNING,1=RUNNING,2=RUNNING");
+		Gson gson = (fix.isPresent() && fix.get())
+				? new GsonBuilder().disableHtmlEscaping().create() : new Gson();
+		String json = gson.toJson(dataMap);
+
+		headers.add("Content-Type", "application/json;charset=UTF-8");
+		return new ResponseEntity<String>(json, headers, HttpStatus.OK);
+
 	}
 
 	@ResponseBody
