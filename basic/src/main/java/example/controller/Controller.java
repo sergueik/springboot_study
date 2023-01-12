@@ -1,21 +1,15 @@
 package example.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
+import com.google.gson.Gson;
 
 import example.service.ExampleService;
 
@@ -48,31 +44,9 @@ public class Controller {
 		return new Data(service.hello());
 	}
 
-	// see also: https://jkoder.com/gson-encoding-the-string-like-u003d/
-	// TODO: change signature to ResponseEntity<String>
-	@ResponseBody
-	@GetMapping(value = "/uu03d", produces = { MediaType.APPLICATION_JSON_VALUE })
-
-	public String uu03d(@RequestParam Optional<Boolean> fix) {
-
-		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("data", "0=RUNNING,1=RUNNING,2=RUNNING");
-		Gson gson = (fix.isPresent() && fix.get()) ? new GsonBuilder().disableHtmlEscaping().create() : new Gson();
-		String json = gson.toJson(dataMap);
-		return json;
-	}
-
-	@ResponseBody
-	@GetMapping(value = "/uu03draw", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<Map<String, String>> uu03draw(@RequestParam Optional<Boolean> fix) {
-
-		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("data", "0=RUNNING,1=RUNNING,2=RUNNING");
-		return ResponseEntity.status(HttpStatus.OK).body(dataMap);
-	}
-
-	@PostMapping(value = "/post", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
-			MediaType.APPLICATION_JSON_VALUE })
+	@PostMapping(value = "/post", consumes = {
+			MediaType.APPLICATION_JSON_VALUE }, produces = {
+					MediaType.APPLICATION_JSON_VALUE })
 	public Data post(@RequestBody Data data) {
 		return data;
 	}
@@ -82,10 +56,14 @@ public class Controller {
 	// 200 [ "a" ]
 	// http://192.168.0.64:8085/basic
 	// 405 []
-	@GetMapping(value = "/params", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<List<String>> paramArrayEcho(@RequestParam Optional<List<String>> values) {
-		return (values.isPresent() && values.get().size() > 0) ? ResponseEntity.status(HttpStatus.OK).body(values.get())
-				: ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new ArrayList<String>());
+	@GetMapping(value = "/params", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<List<String>> paramArrayEcho(
+			@RequestParam Optional<List<String>> values) {
+		return (values.isPresent() && values.get().size() > 0)
+				? ResponseEntity.status(HttpStatus.OK).body(values.get())
+				: ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+						.body(new ArrayList<String>());
 	}
 
 	private static final RestTemplate restTemplate = new RestTemplate();
@@ -105,8 +83,8 @@ public class Controller {
 	// 406 Not Acceptable client error response
 	// 415 Unsupported Media Type
 	@PostMapping(value = "/page" /*
-									 * , consumes = { MediaType.TEXT_PLAIN_VALUE }
-									 */, produces = { MediaType.TEXT_PLAIN_VALUE })
+																* , consumes = { MediaType.TEXT_PLAIN_VALUE }
+																*/, produces = { MediaType.TEXT_PLAIN_VALUE })
 	public ResponseEntity<String> page(@RequestParam String name) {
 		final String url = String.format("http://localhost:%d/basic/post", port);
 		// perform API call to localhost
@@ -118,9 +96,11 @@ public class Controller {
 		final Gson gson = new Gson();
 
 		final String payload = gson.toJson(input);
-		System.err.println(String.format("POSTING %s to %s", payload.toString(), url));
+		System.err
+				.println(String.format("POSTING %s to %s", payload.toString(), url));
 		final HttpEntity<String> request = new HttpEntity<String>(payload, headers);
-		final ResponseEntity<Data> responseEntity = restTemplate.postForEntity(url, request, Data.class, headers);
+		final ResponseEntity<Data> responseEntity = restTemplate.postForEntity(url,
+				request, Data.class, headers);
 		final String result = responseEntity.getBody().getName();
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
