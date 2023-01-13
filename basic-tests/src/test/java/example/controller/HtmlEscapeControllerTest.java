@@ -42,7 +42,7 @@ public class HtmlEscapeControllerTest {
 	private static final RestTemplate restTemplate = new RestTemplate();
 	private ResponseEntity<String> responseEntity = null;
 	private final String body = "0=RUNNING,1=RUNNING,2=RUNNING";
-	private final String body_escaped = "0\\u003dRUNNING,1\\u003dRUNNING,2\\u003dRUNNING";
+	private final String body_escaped = body.replaceAll("=", "\\\\u003d");
 
 	@BeforeEach
 	public void setUp() {

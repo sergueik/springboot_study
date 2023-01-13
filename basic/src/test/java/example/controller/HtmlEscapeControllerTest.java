@@ -33,7 +33,7 @@ public class HtmlEscapeControllerTest {
 	// private static final Gson gson = new Gson();
 	private static String route;
 	private final String body = "0=RUNNING,1=RUNNING,2=RUNNING";
-	private final String body_escaped = "0\\u003dRUNNING,1\\u003dRUNNING,2\\u003dRUNNING";
+	private final String body_escaped = body.replaceAll("=", "\\\\u003d");
 	private ResultActions resultActions;
 	private static MockMvc mvc;
 	private String charset;
