@@ -3,7 +3,7 @@ version: '2.2'
 services:
   soap-server:
     restart: unless-stopped
-    build: server
+    build: soap-server
     container_name: soap-server
     healthcheck:
       test:

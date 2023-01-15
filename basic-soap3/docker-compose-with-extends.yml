@@ -1,0 +1,14 @@
+---
+version: '3'
+
+services:
+  soap-server:
+    extends:
+      file: docker-compose-soap-server.yml
+      service: soap-server
+  client:
+    extends:
+      file: docker-compose-client.yml
+      service: client
+networks:
+  example:

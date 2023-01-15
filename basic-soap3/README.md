@@ -1,4 +1,5 @@
-###  Info
+
+##  Info
 
 
 dockerized replica of a simple
@@ -9,14 +10,14 @@ modified to print the raw SOAP payload when invoked
 ### Usage
 
 
-* build server
+* build soap-server
 ```sh
-cd server
+cd soap-server
 mvn clean package
 ```
 * run server locally
 ```sh
-cd server
+cd soap-server
 
 java -cp target/example.soap-service.jar example.Application
 ```
@@ -162,7 +163,7 @@ this is achieved with following debug code:
 request = client.create_message(client.service, 'convert', value1, currency1, currency2)
 print(etree.tostring(request, pretty_print = True))
 transport = zeep.Transport()
-response = transport.post_xml('http://{}:8888/CurrencyConversionWebService'.format(server), request, {"SOAPAction": '"convert"',"Content-Type": "text/xml; charset=utf-8"})
+response = transport.post_xml('http://{}:8888/CurrencyConversionWebService'.format(soap-server), request, {"SOAPAction": '"convert"',"Content-Type": "text/xml; charset=utf-8"})
 print(response.content)
 ```
 normally the application does just 
@@ -370,6 +371,21 @@ Traceback (most recent call last):
     "Missing element %s" % (self.name), path=render_path
 zeep.exceptions.ValidationError: Missing element arg0 (convert.arg0)
 ```
+### Install 1.29
+
+```sh
+VERSION=v2.14.1
+sudo curl -L https://github.com/docker/compose/releases/download/$VERSION/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+
+sudo chmod +x /usr/local/bin/docker-compose
+```
+Note the `docker-compose` verison __2.14.1__ is being installed to `/usr/local/bin` while the one installed by apt remains in `/usr/bin`.
+
+run 
+```sh
+/usr/local/bin/docker-compose -f docker-compose-with-extends.yml up --build
+```
+this will exercise the syntax that older `docker-compose` does not understand
 ### See Also
 
    * [lxml - XML and HTML with Python](https://lxml.de)
@@ -383,6 +399,8 @@ zeep.exceptions.ValidationError: Missing element arg0 (convert.arg0)
 
   * [requests](https://www.w3schools.com/python/module_requests.asp)
   * [response](https://www.w3schools.com/python/ref_requests_response.asp)
+  * install Docker Compose on Ubuntu __18.04__ [steps](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04)
+  * [sharing Compose configurations between files and projects](https://docs.docker.com/compose/extends/)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -1,0 +1,28 @@
+version: '3.6'
+
+networks:
+  example:
+services:
+  soap-server:
+    restart: unless-stopped
+    build: soap-server
+    container_name: soap-server
+    healthcheck:
+      test:
+        [
+            "CMD-SHELL",
+            "curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8888/CurrencyConversionWebService/?wsdl | grep -q 200",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 60
+        
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "8888:8888"
+    networks:
+      - example
+

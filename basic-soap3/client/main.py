@@ -9,11 +9,13 @@ app = Flask('CurrencyConverter', template_folder = 'Templates')
 # No handlers could be found for logger "elasticapm.transport"
 # probably will need containerization to function
 if os.getenv('SERVER') != None :
-  server = os.getenv('SERVER')
+  # NOTE: when acidently using dash in variable name :
+  # SyntaxError: cannot assign to operator
+  soap_server = os.getenv('SERVER')
 else:
-  server = 'localhost'
+  soap_server = 'localhost'
 
-client = zeep.Client(wsdl = 'http://{}:8888/CurrencyConversionWebService?wsdl'.format(server))
+client = zeep.Client(wsdl = 'http://{}:8888/CurrencyConversionWebService?wsdl'.format(soap_server))
 currencyList = client.service.getCurrencyList()
 
 answer = ''
@@ -32,7 +34,7 @@ def currencyConvert():
   print(etree.tostring(node, pretty_print = True))
   # update the page
   transport = zeep.Transport()
-  response = transport.post_xml('http://{}:8888/CurrencyConversionWebService'.format(server), node, {"SOAPAction": '"convert"',"Content-Type": "text/xml; charset=utf-8"})
+  response = transport.post_xml('http://{}:8888/CurrencyConversionWebService'.format(soap_server), node, {"SOAPAction": '"convert"',"Content-Type": "text/xml; charset=utf-8"})
   print(response.content)
   # this will be raw SOAP server response XML document, which one has to parse to get the result
   # NOTE: can 
