@@ -35,14 +35,13 @@ yellow open   apm-7.17.7-profile-000001        3v8VQPW-SXumL-fLxMlryw   1   1   
 yellow open   apm-7.17.7-metric-000001         4NVXn4_sSGuR2AshSJqMtA   1   1          4            0     70.8kb         70.8kb
 yellow open   apm-7.17.7-transaction-000001    pTVGSy6GRPapi3OjIi_qvA   1   1          0            0       226b           226b
 ```
-if only the indices 
+if only fe indices are dislayed:
 
 ```text
 green  open   .apm-agent-configuration         fFmjfMpPRWSnO9_dOR8zUQ   1   0          0            0       226b           226b
 green  open   .apm-custom-link                 FjALsnNuRwujJMKq0lVB7g   1   0          0            0       226b           226b
-
 ```
-are displayed the `apm-server` is likely misconfigured, check the container log
+this indicates the `apm-server` is misconfigured, check the container log of `apm-server`, and check its status in Kibana
 
 ```sh
 docker logs apm-server
@@ -148,6 +147,23 @@ ifconfig eth1
 ```text
 eth1      link encap:Ethernet HWaddr 08:0027:B9:31:8B
           inet addr:192.168.99.100 Bcast: 192.168.99.255 Mask:255.255.255.0
+```
+
+#### Add ASP.Net Core node
+
+run the command:
+```sh
+docker-compose -f docker-compose.yml -f docker-compose-including-aspnetcoreapp.yml up --build
+```
+#### Add Java SOAP node
+build jar
+```sh
+cd app5;  mvn clean package
+```
+run the command:
+```sh
+
+docker-compose -f docker-compose.yml -f docker-compose-including-javasoap.yml  up --build
 ```
 
 ### Configuration
@@ -1949,6 +1965,7 @@ also, seems that SOAP 1.2 requires the action to be set via the Content-Type hea
     + [setup APM Server on Ubuntu](https://blog.ruanbekker.com/blog/2018/11/11/setup-apm-server-on-ubuntu-for-your-elastic-stack-to-get-insights-in-your-application-performance-metrics)
     + [finding local IP addresses using Python's stdlib](https://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib)
 
+    + docker-compose `extends` syntax [documetation](https://docs.docker.com/compose/extends/) - share Compose configurations between files and projects
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
