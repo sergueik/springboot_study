@@ -14,7 +14,7 @@
   <properties>
     <java.version>1.8</java.version>
     <hamcrest-all.version>1.3</hamcrest-all.version>
-    <testng.version>6.14.3</testng.version>
+    <testng.version>7.7.0</testng.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
