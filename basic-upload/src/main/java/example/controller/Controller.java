@@ -21,7 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.codec.binary.Base64;
+// import org.apache.commons.codec.binary.Base64;
+import java.util.Base64;
 
 @RestController
 @RequestMapping("/basic")
@@ -92,11 +93,16 @@ public class Controller {
 				f.flush();
 				f.close();
 
+				// origin:
+				// http://www.java2s.com/example/java-utility-method/base64-encode/base64encode-byte-data-281b5.html
+				// NOTE: still incorrect
 				if (encode.isPresent() && encode.get()) {
-					byte[] rawdata = data.toString().getBytes();
+					byte[] binaryData = data.toString().getBytes();
+					Base64.Encoder encoder = Base64.getEncoder();
+					String base64EncodedData = encoder.encodeToString(binaryData);
 					System.err.println(String.format(
-							"size:%d/%d" + "\n" + "raw data(base64 encoded):" + "\n" + "%s",
-							data.length(), rawdata.length, Base64.encodeBase64(rawdata)));
+							"size: %d/%d" + "\n" + "raw data(base64 encoded):" + "\n" + "%s",
+							data.length(), binaryData.length, base64EncodedData));
 				} else
 					System.err.print(data.toString());
 
@@ -108,3 +114,4 @@ public class Controller {
 		}
 	}
 }
+
