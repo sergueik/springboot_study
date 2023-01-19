@@ -1,12 +1,13 @@
 package example.controller;
 /**
- * Copyright 2021 Serguei Kouzmine
+ * Copyright 2021,2023 Serguei Kouzmine
  */
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.apache.commons.codec.binary.Base64;
 
 @RestController
 @RequestMapping("/basic")
@@ -63,6 +65,7 @@ public class Controller {
 			@CookieValue(name = default_name, defaultValue = default_value) String cookie,
 			@RequestParam("operation") String operation,
 			@RequestParam("param") String param,
+			@RequestParam("encode") Optional<Boolean> encode,
 			@RequestParam("file") MultipartFile file) {
 		if (param.isEmpty())
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -88,7 +91,15 @@ public class Controller {
 				}
 				f.flush();
 				f.close();
-				System.err.print(data.toString());
+
+				if (encode.isPresent() && encode.get()) {
+					byte[] rawdata = data.toString().getBytes();
+					System.err.println(String.format(
+							"size:%d/%d" + "\n" + "raw data(base64 encoded):" + "\n" + "%s",
+							data.length(), rawdata.length, Base64.encodeBase64(rawdata)));
+				} else
+					System.err.print(data.toString());
+
 			} catch (IOException e) {
 				System.err.print("Exception (caught):" + e.toString());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);

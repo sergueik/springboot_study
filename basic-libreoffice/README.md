@@ -113,6 +113,62 @@ the `http://localhost:3000/` will show the desktop
 
 ![Libreoffice Web UI](https://github.com/sergueik/springboot_study/blob/master/basic-libreoffice/screenshots/capture-libreoffice-webui.png)
 
+### Posting Upload via curl
+
+* the correct way
+```sh
+curl -s -XPOST -F 'operation=send' -F 'param=data' -F "file=@$(pwd)/data.txt" http://localhost:8085/basic/upload
+```
+* NOTE: cannot combine request parameters in `-F`:
+```sh
+curl -s -XPOST -F "operation=send&param=data&file=@$(pwd)/data.txt" http://localhost:8085/basic/upload
+```
+```JSON
+{
+  "timestamp": "2023-01-19T00:36:10.177+00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "",
+  "path": "/basic/upload"
+}
+```
+with application console log:
+```text
+ParameterException: Required String parameter 'param' is not present]
+```
+* NOTE: cannot issue both `-d` and  `-F`:
+
+
+```sh
+curl -s -X POST -F "file=$(pwd)/data.txt" http://localhost:8085/basic/upload -d "operation=send"
+```
+```text
+Warning: You can only select one HTTP request method! You asked for both POST
+Warning: (-d, --data) and multipart formpost (-F, --form).
+```
+with request not being sent
+
+* download binary file, instruct the server to encode it when logging
+```sh
+base64 1x1.png
+```
+```text
+iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMA
+QObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=
+```
+invoke as
+```sh
+ curl -XPOST -F "operation=send" -F "param=data" -F "encode=true" -F "file=@$(pwd)/1x1.png" http://localhost:8085/basic/upload
+```
+on the server end see
+```text
+herServlet        : Complet
+Processing 1x1.png
+size:95/95
+raw data(base64 encoded):
+[B@45e171a6
+```
+ - not quite right, but close enough
 ### See Also
 
   * https://stackoverflow.com/questions/50982064/converting-docx-to-pdf-with-pure-python-on-linux-without-libreoffice
@@ -120,6 +176,9 @@ the `http://localhost:3000/` will show the desktop
   * https://docs.linuxserver.io/images/docker-libreoffice
   * https://medium.com/codex/libreoffice-on-docker-1a64245468c
   * [known bug](https://bugs.documentfoundation.org/show_bug.cgi?id=37531&redirected_from=fdo) of Libreoffice will not run in "batch mode" when there is another instance open
-
+  * [document](https://www.baeldung.com/spring-file-upload) and [source](https://github.com/eugenp/tutorials/tree/master/spring-web-modules/spring-mvc-java) on Spring App file Upoad - too many projects in the same umbrella
+  * [upload files through curl](https://medium.com/@petehouston/upload-files-with-curl-93064dcccc76)
+  * [spring uloading gettin files started](https://spring.io/guides/gs/uploading-files/)
+  * [1 pixel png used as spacer](https://commons.wikimedia.org/wiki/File:1x1.png)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
