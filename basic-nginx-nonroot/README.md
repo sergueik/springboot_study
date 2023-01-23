@@ -2,7 +2,12 @@
 
 * launch basic-example Spring app to proxy
 ```sh
-docker build -f ../basic/Dockerfile -t basic-example  ../basic/
+pushd ../basic
+mvn package
+popd
+```
+```sh
+docker build -f ../basic/Dockerfile -t basic-example ../basic/
 docker run --name basic-example -d basic-example
 ```
 * compile configure build and burn into image the nginx/alpine
@@ -19,7 +24,7 @@ ignoring the
 ```sh
 10-listen-on-ipv6-by-default.sh: error: /etc/nginx/conf.d/default.conf differs from the packages version
 ```
-* probe
+* probe the application. NOTE: use default TCP port 80
 ```sh
 wget -qO- http://localhost/basic
 ```
@@ -137,6 +142,8 @@ nginx-nonroot  | 10-listen-on-ipv6-by-default.sh: error: can not modify /etc/ngi
   * https://stackoverflow.com/questions/42329261/running-nginx-as-non-root-user
   * [nginx in Docker without Root](http://pjdietz.com/2016/08/28/nginx-in-docker-without-root.html) - does not appear to cover the log file ownership that is somewhat critical for developers using Docker
   *  Как настроить права в Docker? [forum](https://qna.habr.com/q/872915) novice discussion of setting alternative user, ostly around doing it the `docker-compose.yaml` way (in Russian, with links)
+ * [nginx variables](http://nginx.org/en/docs/http/ngx_http_core_module.html#variables)
+  * [](https://mm-notes.com/devops/webserver/2021/10/09/how-to-print-http-headers.html)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
