@@ -274,7 +274,7 @@ confirm the successul launch
 ```text
 : Started Application in 23.396 seconds (JVM running for 25.76)
 ```
- it the exception is logged, most likely the `applocation.properies` were not updated a should
+ it the exception is logged, most likely the `application.properies` were not updated a should
 
 * confirm the 'monitoring data' is present on application container'
 ```sh
@@ -713,6 +713,23 @@ example.extractedMetricNames = { 'load_average': 'cpu_load'}
   * [stackoverflow](https://stackoverflow.com/questions/6212898/spring-properties-file-get-element-as-an-array) on defining `Array<String>` through `application.properties` and `@Value` annotation
   * [tutorial](https://www.baeldung.com/spring-yaml-inject-map)	 on defining `Map<String,String>` through `application.yml` YAML and `@Value` annotation
   * Prometheus data query [REST API](https://prometheus.io/docs/prometheus/latest/querying/api/)
+
+### Bulk Import Promethus Metric to Elsewhere (in Particular, to Elastic Search)
+
+   * Prometheus doesn't have a specific bulk data export feature yet, your best bet is using the [HTTP querying API and PromQL](http://prometheus.io/docs/querying/api/) -  from [prometheus-developers google group discussion](https://groups.google.com/g/prometheus-developers/c/vAiOnEmbTlg)
+   * [catalog of Prometheus exporters](https://prometheus.io/docs/instrumenting/exporters/) (the opposite direction - libraries and servers which help in exporting existing metrics from third-party systems **as Prometheus metrics** )
+
+  * https://levelup.gitconnected.com/building-a-prometheus-exporter-8a4bbc3825f5 - the opposite direction
+  *  shipping Prometheus metrics to Elasticsearch with [prometheus module](https://www.elastic.co/guide/en/beats/metricbeat/current/metricbeat-module-prometheus.html) - redundant does scrape metrics from Prometheus exporters or push gateways, not a bulk load
+
+  * [Elasticsearch stats exporter for Prometheus](https://github.com/prometheus-community/elasticsearch_exporter) - the opposite direction
+
+  * [bulk import querying for metric names then pulling metrics one at a time](https://medium.com/@aneeshputtur/export-data-from-prometheus-to-csv-b19689d780aa)
+discussing example based on the query processing script from [blog](https://www.robustperception.io/prometheus-query-results-as-csv/):
+
+  * [Prometheus HTTP Querying API docuentation](https://prometheus.io/docs/prometheus/latest/querying/api/)
+   * [backfill data into Prometheus](https://prometheus.io/docs/prometheus/latest/querying/api/) - note the direction is opposite
+  * [stackoverflow](https://stackoverflow.com/questions/73099856/exporting-metrics-from-prometheus-to-elastics-search-for-better-monitoring-capab) post concerning porting metrics from Prometheus to Elastics Search with links to elastic blogs and documents
 
 ### See Also
 
