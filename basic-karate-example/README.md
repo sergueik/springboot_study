@@ -66,6 +66,7 @@ fails with attempting to launch 32 bit Chrome browser
 indicating that Karate is expecting a 32 bit Chrome application on Windows
 for testing, one can download a 32 bit version of Chrome from __ Google Chrome Older Versions Download (Windows, Linux & Mac)__ [page](https://www.slimjet.com/chrome/google-chrome-old-version.php)
 
+This adds a bit of extra lag possibly due to challenge of 64 bit apps when communicating with 32 bit apps on Windows
 Note: immediately after a fresh install, one has to manually get past the __Make Chrome your own__ pages in the session run by Karate,  the test itself is unable to operate
 
 
@@ -103,6 +104,10 @@ WARN com.intuit.karate.shell.Command - exitcode was non-zero: 1 - [C:\Program Fi
 ### See Also
 
    * [Karate-UI Test Automation framework](https://www.youtube.com/watch?v=NwWIbNG6oXs&list=PLhNpGuN8mVmGBwsRliG2teFEfQLmCKN5Q) youtube videos - may be not in the correct order
+   * [documentation](https://www.manual2automation.com/Karate/karateConfig.html) of `Karate-Config.Js`
+   * [discussion](https://stackoverflow.com/questions/66828388/get-frequent-chrome-driver-error-driver-config-start-failed-chrome-server-re) about `karate-config.js`
+   * [blog](https://dev.to/promode/how-to-work-with-karate-config-js-to-switch-env-in-karate-api-testing-automation-19dn) about `karate-config.js`
+   * [donfiguring browser exetable path](https://stackoverflow.com/questions/60580582/how-to-launch-all-karate-features-setting-up-which-browser-to-use-as-an-external)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
