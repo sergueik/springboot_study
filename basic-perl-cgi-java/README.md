@@ -2,13 +2,13 @@
 
 Plain [OpenJDK alpine 3.9](https://hub.docker.com/layers/openjdk/library/openjdk/8-jre-alpine3.9/images/sha256-ea81da311d33e052eeea34336018434bdc50596100f9c623193867faa291b284) container with installed Perl 
 with few pure Perl modules (YAML, XML and JSON)  
-and  of a legacy CGI-BIN binary mockup 
-and  a Springboot application calling the legacy Perl in the background
+and a legacy CGI-BIN binary set 
+and a Springboot application calling the legacy Perl in the background
 for serving CGI-BIN pages
 
 ### Testing
 
-* build the appp
+* build the app
 ```sh
 mvn package
 ```
@@ -21,7 +21,7 @@ docker build -t $NAME -f Dockerfile .
 
 ```sh
 docker run -d -p 8085:8085 --name $NAME $NAME
-docker logs $NAME
+docker logs -f $NAME
 ```
 this will respond with regular Springboot logo and eventually
 ```text
@@ -104,6 +104,7 @@ will be translated to running cgi-bin script: `legacy-script` with `args[]` stri
 ```sh
 -a,b,-c,d
 ```
+
 ### Cleanup
 ```sh
 docker container rm -f $NAME

@@ -7,12 +7,9 @@ RUN apk update && apk upgrade && \
     rm -rf /var/cache/apk/* && \
     mkdir -p /var/www/localhost/cgi-bin
 
-COPY cgi-bin /var/www/localhost/cgi-bin
-COPY JSON /var/www/localhost/cgi-bin/JSON
-COPY YAML /var/www/localhost/cgi-bin/YAML
-COPY XML /var/www/localhost/cgi-bin/XML
+ADD cgi-bin /var/www/localhost/cgi-bin
 
-RUN chmod 775 /var/www/localhost/cgi-bin/*
+RUN chmod 775 /var/www/localhost/cgi-bin/*.cgi
 ARG app_jar="example.basic-perl-cgi-java.jar"
 ADD "target/${app_jar}" app.jar
 EXPOSE 8085

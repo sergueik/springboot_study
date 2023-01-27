@@ -14,7 +14,7 @@ docker build -t $IMAGE -f Dockerfile .
 ```sh
 NAME=basic-perl-cgi
 docker run -d -p 8080:80 -p 9443:443 --name $NAME $IMAGE
-docker logs $NAME
+docker logs -f $NAME
 ```
 alternatively
 ```
