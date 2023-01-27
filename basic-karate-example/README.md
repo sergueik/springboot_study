@@ -102,6 +102,17 @@ WARN com.intuit.karate.shell.Command - exitcode was non-zero: 1 - [C:\Program Fi
 
 
 ### See Also
+   *  youtube course
+      + [01 - Introduction](https://www.youtube.com/watch?v=_mDU946eQDQ&list=PLMd2VtYMV0OSv62KjzJ4TFGLDTVtTtQVr&index=1)
+      + [02 - Wildcards & Friendly Locators](https://www.youtube.com/watch?v=sgXpDLWN1x0&list=PLMd2VtYMV0OSv62KjzJ4TFGLDTVtTtQVr&index=2)
+      + [03 - Browser and Driver Commands](https://www.youtube.com/watch?v=dQGDi6QhpPI&list=PLMd2VtYMV0OSv62KjzJ4TFGLDTVtTtQVr&index=3)
+      + [04 - Howto Run in Multiple Browsers](https://www.youtube.com/watch?v=IMdwDKaV8xI&list=PLMd2VtYMV0OSv62KjzJ4TFGLDTVtTtQVr&index=4)
+      + [How to Rerun Failed Tests](https://www.youtube.com/watch?v=__9gWDmYMzs&list=PLMd2VtYMV0OSv62KjzJ4TFGLDTVtTtQVr&index=6)
+      + [05 - How to take Screenshots](https://www.youtube.com/watch?v=cKV-IsJFE9w&list=PLMd2VtYMV0OSv62KjzJ4TFGLDTVtTtQVr&index=5)
+      + [06 - File Upload](https://www.youtube.com/watch?v=bGRcWN3zcOY&list=PLMd2VtYMV0OSv62KjzJ4TFGLDTVtTtQVr&index=7)
+      + [07 - Dynamic Web Elements](https://www.youtube.com/watch?v=AE_4xxNTQk0&list=PLMd2VtYMV0OSv62KjzJ4TFGLDTVtTtQVr&index=8)
+      + [08 - script method, Javascript only Shadow Root DOM](https://www.youtube.com/watch?v=O76h9Hf9-Os&list=PLMd2VtYMV0OSv62KjzJ4TFGLDTVtTtQVr&index=9)
+      + [09 - Send Keybaord keys and Getting Attribues](https://www.youtube.com/watch?v=pV-DL4Mqgxg&list=PLMd2VtYMV0OSv62KjzJ4TFGLDTVtTtQVr&index=10)
 
    * [Karate-UI Test Automation framework](https://www.youtube.com/watch?v=NwWIbNG6oXs&list=PLhNpGuN8mVmGBwsRliG2teFEfQLmCKN5Q) youtube videos - may be not in the correct order
    * [documentation](https://www.manual2automation.com/Karate/karateConfig.html) of `Karate-Config.Js`
