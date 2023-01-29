@@ -1,4 +1,4 @@
-package nl.nlighten.prometheus.tomcat;
+package example;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.annotation.WebServlet;
@@ -7,6 +7,10 @@ import io.prometheus.client.Collector;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.MetricsServlet;
 import io.prometheus.client.hotspot.DefaultExports;
+import nl.nlighten.prometheus.tomcat.TomcatDbcp2PoolExports;
+import nl.nlighten.prometheus.tomcat.TomcatGenericExports;
+import nl.nlighten.prometheus.tomcat.TomcatJdbcPoolExports;
+
 import java.lang.IllegalArgumentException;
 import java.util.Arrays;
 import java.util.Enumeration;

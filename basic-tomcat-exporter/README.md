@@ -41,7 +41,7 @@ Date: Sun, 29 Jan 2023 21:24:59 GMT
 ```
 * ispect the metrics
 ```sh
-curl -s http://192.168.0.92:8080/metrics/
+curl -s http://localhost:8080/metrics/
 ```
 will print
 ```text
