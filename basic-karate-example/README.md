@@ -119,6 +119,11 @@ WARN com.intuit.karate.shell.Command - exitcode was non-zero: 1 - [C:\Program Fi
    * [discussion](https://stackoverflow.com/questions/66828388/get-frequent-chrome-driver-error-driver-config-start-failed-chrome-server-re) about `karate-config.js`
    * [blog](https://dev.to/promode/how-to-work-with-karate-config-js-to-switch-env-in-karate-api-testing-automation-19dn) about `karate-config.js`
    * [donfiguring browser exetable path](https://stackoverflow.com/questions/60580582/how-to-launch-all-karate-features-setting-up-which-browser-to-use-as-an-external)
-
+  * https://github.com/shahnawazm786/KarateUIAutomation
+  * https://github.com/prabhureuben/Karate-UI-Automation
+  * https://github.com/firozautomation/Karate_UI_Automation
+  * https://github.com/skulkarni48/karate-demo-final
+  * https://github.com/lppb/karateStoreUI
+  * https://github.com/moinuddin14/karate-ui-demo-1 (junit5)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
