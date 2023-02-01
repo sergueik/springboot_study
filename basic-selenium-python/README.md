@@ -293,7 +293,7 @@ libgomp.so.1 => /usr/lib/libgomp.so.1 (0x7fcf162c8000)
 Error relocating /usr/lib/libpango-1.0.so.0: g_memdup2: symbol not found
 ```
 
-* repeat with -based `Dockerfile`:
+* repeat with `joyzoursky/python-chromedriver` -based `Dockerfile`:
 ```
 IMAGE=python-selenium
 docker build -f Dockerfile.$IMAGE -t $IMAGE .
@@ -335,7 +335,7 @@ sudo rm -fr '"'
 ```
 it was created by incorrectly provided chrome options
 ### See Also
-
+  * [github repository of the image used in this project](https://github.com/joyzoursky/docker-python-chromedriver)
   * https://github.com/joyzoursky/docker-python-chromedriver/blob/master/deprecated/py3.6-xvfb-selenium/Dockerfile
   * https://github.com/joyzoursky/docker-python-chromedriver/blob/master/py-alpine/3.8-alpine-selenium/Dockerfile
   * https://github.com/cypress-io/cypress/issues/419

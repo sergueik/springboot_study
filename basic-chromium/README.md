@@ -24,28 +24,40 @@ mvn test
 cd ..
 ```
 - the test runs the chmromium headless and saves a pdf file into current directory
-* build the image with the `chromium` and `chromium-driver` installed by `apk`
+* build the image with the `chromium` and `chromium-driver` installed via `apk` installer accepting that both will be relatively old versions
+
 ```sh
 IMAGE='basic-maven-chromium'
 docker build -t $IMAGE -f Dockerfile .
 ```
-* run chromium directly:
+* run chromium directly in the container:
+
 ```sh
-docker run -it $IMAGE /usr/bin/chromium-browser --headless --disable-gpu  --no-sandbox --dump-dom https://www.wikipedia.org
+export NAME=$IMAGE
+
+docker run --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --disable-gpu  --no-sandbox --dump-dom https://www.wikipedia.org
+
 ```
 this will print HTML in console
 * NOTE: the version of chromium-browser in the container will be rather old, but common options (`dump-dom`, `print-to-pdf`,`screenshot`) are supported
 ```sh
 docker run -it $IMAGE sh
 ```
+or 
 ```sh
-/usr/bin/chromium-browser --headless --disable-gpu  --no-sandbox --screenshot https://www.wikipedia.org
+ID=$(docker container ls -a |grep $IMAGE| head -1 | awk '{print $1}')
+docker start $ID
+docker exec -it $ID sh
+```
+- unfortunately this container instance may quit too quickly
+```sh
+/usr/bin/chromium-browser --headless --disable-gpu --no-sandbox --screenshot https://www.wikipedia.org
 ```
 ```text
 Written to file screenshot.png.
 ```
 ```sh
-/usr/bin/chromium-browser --headless --disable-gpu  --no-sandbox --print-pdf https://www.wikipedia.org
+/usr/bin/chromium-browser --headless --disable-gpu --no-sandbox --print-pdf https://www.wikipedia.org
 ```
 
 ```text
@@ -87,7 +99,7 @@ that is confirmed through
 ```sh
 ID=$(docker container ls -a |grep $IMAGE| head -1 | awk '{print $1}')
 docker start $ID
-docker exec -it $ID sh -c 'test -f  /demo/sample.pdf && echo OK'
+docker exec -it $ID sh -c 'test -f /demo/sample.pdf && echo OK'
 ```
 will print
 ```sh
@@ -186,6 +198,9 @@ and remove all and start over
 
   * https://alpinelinux.org/releases/
   * https://developer.chrome.com/blog/headless-chrome/
+  * [python - Running Selenium with Headless Chrome Webdriver - Stack Overflow](https://stackoverflow.com/questions/53657215/running-selenium-with-headless-chrome-webdriver)
+  * [python - Selenium: WebDriverException:Chrome failed to start: crashed as google-chrome is no longer running so ChromeDriver is assuming that Chrome has crashed](https://stackoverflow.com/questions/53073411/selenium-webdriverexceptionchrome-failed-to-start-crashed-as-google-chrome-is)
+  * [how To Run Selenium With Chrome In Docker](https://stackoverflow.com/questions/45323271/how-to-run-selenium-with-chrome-in-docker)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
