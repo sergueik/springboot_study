@@ -664,7 +664,9 @@ Status: true
   * https://freddysf.wordpress.com/2013/12/05/urbancode-deploy-agent-based-source-config-types/
   * https://db.apache.org/derby/
   * https://stedolan.github.io/jq/manual/#ConditionalsandComparisons
-
+  * [public documentaion of various UCD topics](http://bertucci.org/stop-start-and-restart-a-windows-service-with-urbancode-deploy/) 
+  
+  
 ### NOTE
 
 As of April 2021, the [UCD Server](https://hub.docker.com/r/ibmcom/ucds/) 
