@@ -91,7 +91,7 @@ Topic: test-topic, Partition: 0, Offset: 108, Key: null, Value: Message # 8
 Topic: test-topic, Partition: 0, Offset: 109, Key: null, Value: Message # 9
 Topic: test-topic, Partition: 0, Offset: 110, Key: null, Value: Message # 10
 ```
-and 
+and
 ```text
 subscribed to the following topics:
 test-topic
@@ -214,7 +214,8 @@ topic: test-topic
 offset: 62
 partition: 0
 value size: 10
-2021-10-21 01:37:19.876  INFO 6649 --- [ntainer#0-0-C-1] example.engine.Producer                  : #### -> Consumed message -> TIMESTAMP: 1634773039862
+2021-10-21 01:37:19.876  INFO 6649 --- [ntainer#0-0-C-1] example.engine.Producer                  :
+#### -> Consumed message -> TIMESTAMP: 1634773039862
 2021-10-21
 offset: 62
 key: subject
@@ -225,7 +226,8 @@ topic: test-topic
 offset: 63
 partition: 0
 value size: 10
-2021-10-21 01:37:22.888  INFO 6649 --- [ntainer#0-0-C-1] example.engine.Producer                  : #### -> Consumed message -> TIMESTAMP: 1634773042861
+2021-10-21 01:37:22.888  INFO 6649 --- [ntainer#0-0-C-1] example.engine.Producer                  :
+#### -> Consumed message -> TIMESTAMP: 1634773042861
 2021-10-21
 offset: 63
 key: subject
@@ -236,18 +238,12 @@ topic: test-topic
 
 the Springboot Kafka configuration is incompete: cannot direct it to use remote hosted Kafka:
 ```text
-2021-10-20 19:32:50.818  WARN 4360 --- [ead | example-1] org.apache.kafka.client
-s.NetworkClient   : [Producer clientId=example-1] Connection to node 1001 (local
-host/127.0.0.1:9092) could not be established. Broker may not be available.
-2021-10-20 19:32:50.821  WARN 4360 --- [ntainer#0-0-C-1] org.apache.kafka.client
-s.NetworkClient   : [Consumer clientId=example-0, groupId=example] Connection to
- node 1001 (localhost/127.0.0.1:9092) could not be established. Broker may not b
-e available.
-
+2021-10-20 19:32:50.818  WARN 4360 --- [ead | example-1] org.apache.kafka.clients.NetworkClient   : [Producer clientId=example-1] Connection to node 1001 (localhost/127.0.0.1:9092) could not be established. Broker may not be available.
+2021-10-20 19:32:50.821  WARN 4360 --- [ntainer#0-0-C-1] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=example-0, groupId=example] Connection to node 1001 (localhost/127.0.0.1:9092) could not be established. Broker may not be available.
 ```
 ### See Also
 
-  * Kafka quickstart [documentation](https://kafka.apache.org/quickstart) 
+  * Kafka quickstart [documentation](https://kafka.apache.org/quickstart)
   * basic Golang client [example](https://github.com/blacktop/docker-kafka-alpine/tree/master/test/src)
   * long [post](https://rmoff.net/2018/08/02/kafka-listeners-explained/) of challenges in Kafka network configuration, in particular explaining that Docker hosted instance will not be available to clients external to Docker host machine wants to connect
   * [stackoverflow thread](https://stackoverflow.com/questions/28146409/kafka-unable-to-send-a-message-to-a-remote-server-using-java) about the same problem
@@ -262,17 +258,29 @@ e available.
 
 ### See Also
 
-  Misc Bitnami configuration documents:
+  * Misc Bitnami configuration documents:
 
-  *  https://docs.bitnami.com/virtual-machine/faq/get-started/find-credentials/
-  *  https://docs.bitnami.com/virtual-machine/faq/get-started/connect-ssh/
-  *  https://docs.bitnami.com/virtual-machine/faq/get-started/enable-ssh/
-  *  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/
-  *  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/administration/control-services/
-  *  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/administration/connect-remotely/
-  *  https://docs.bitnami.com/virtual-machine/faq/administration/use-firewall/
-  *  2181
-  *  9092
-  *  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/administration/run-producer-consumer/
-  *  https://docs.bitnami.com/virtual-machine/faq/get-started/enable-ssh-password/
-  *  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/administration/run-producer-consumer/
+     +  https://docs.bitnami.com/virtual-machine/faq/get-started/find-credentials/
+     +  https://docs.bitnami.com/virtual-machine/faq/get-started/connect-ssh/
+     +  https://docs.bitnami.com/virtual-machine/faq/get-started/enable-ssh/
+     +  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/
+     +  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/administration/control-services/
+     +  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/administration/connect-remotely/
+     +  https://docs.bitnami.com/virtual-machine/faq/administration/use-firewall/
+     +  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/administration/run-producer-consumer/
+     +  https://docs.bitnami.com/virtual-machine/faq/get-started/enable-ssh-password/
+     +  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/administration/run-producer-consumer/
+
+  * Distributed Tracing applications that subscribe to and publish data to Apache Kafka distributed event source and message queue
+
+    + [documentation](https://newrelic.com/blog/how-to-relic/distributed-tracing-with-kafka) on how to achieve Tracing Kafka workflow with OpenTelemetry and newrelic
+    + [discussion](https://community.dynatrace.com/t5/Alerting/Dynatrace-distributed-tracing-with-Kafka/td-p/126406)  of avalable options of handling Kafka workflows in Dynatrace and [some related Dynatrace documentation](https://www.dynatrace.com/support/help/how-to-use-dynatrace/services/service-detection-and-naming/service-types/define-messaging-services) - suport seems to be barely avialbale
+    + [discussion](https://www.confluent.io/blog/importance-of-distributed-tracing-for-apache-kafka-based-applications/) on Importance of Distributed Tracing for Apache-Kafka-Based Applications and conflit with Kafka's primary ability to decouple producers and consumers using an event log as an intermediate layer
+    + [overview of apm monitoring of kafka itself](https://dattell.com/data-architecture-blog/kafka-monitoring-with-elasticsearch-and-kibana/), not distributed tracing
+    + [how to monitor a standalone Kafka cluster with Metricbeat and Filebeat or with Elastic Agent](https://www.elastic.co/blog/how-to-monitor-containerized-kafka-with-elastic-observability)
+    + [discussion](https://discuss.elastic.co/t/apm-distributed-tracing-with-kafka/268759) of can one do distributed tracing with kafka in the middle, solving challenge of discovering the consumer (no affirmative conclusion)
+    + [part1](https://www.elastic.co/blog/just-enough-kafka-for-the-elastic-stack-part1) and [part2](https://www.elastic.co/blog/just-enough-kafka-for-the-elastic-stack-part2) on using Kafka with Elastic Search, but as utility, not as a monitored target
+    
+    
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
