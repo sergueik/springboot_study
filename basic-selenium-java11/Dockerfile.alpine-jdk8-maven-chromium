@@ -1,11 +1,7 @@
 FROM openjdk:8-jre-alpine3.9
 ARG app_jar="example.java_selenium.jar"
 ADD "target/${app_jar}" app.jar
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories \
-    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
-    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-    && echo "http://dl-cdn.alpinelinux.org/alpine/v3.11/main" >> /etc/apk/repositories \
-    && apk upgrade -U -a \
+RUN apk upgrade -U -a \
     && apk add --no-cache \
     libstdc++ \
     chromium \
@@ -14,10 +10,26 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositorie
     nss \
     freetype \
     ttf-freefont \
-    wqy-zenhei \
     maven \
     && rm -rf /var/cache/* \
-    && mkdir /var/cache/apk
+     && mkdir /var/cache/apk
+
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories \
+    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
+    && echo "http://dl-cdn.alpinelinux.org/alpine/v3.11/main" >> /etc/apk/repositories \
+   && apk add --no-cache \
+    wqy-zenhei \
+    && rm -rf /var/cache/* \
+     && mkdir /var/cache/apk
+
+# NOTE: WARNING: Ignoring http://dl-cdn.alpinelinux.org/alpine/edge/main: UNTRUSTED signature
+# WARNING: Ignoring http://dl-cdn.alpinelinux.org/alpine/edge/community: UNTRUSTED signature
+# WARNING: Ignoring http://dl-cdn.alpinelinux.org/alpine/edge/testing: UNTRUSTED signature
+# ERROR: unable to select packages:
+#  wqy-zenhei (no such package):
+#  required by: world[wqy-zenhei]
+
 
 # build project on Docker container
 COPY src /src
