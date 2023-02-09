@@ -1,0 +1,6 @@
+FROM gradle:5.4.1-jdk8-alpine
+WORKDIR /work
+# NOTE: will share build project src and target with Docker container
+COPY build.gradle /work
+# TODO:  
+CMD ["gradle", "test"]

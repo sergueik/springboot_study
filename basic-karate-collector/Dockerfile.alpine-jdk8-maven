@@ -1,0 +1,12 @@
+# FROM gradle:5.4.1-jdk8-alpine
+# NOTE: gradle image has no root user
+FROM openjdk:8-jdk-alpine3.9
+RUN apk upgrade -U -a \
+    && apk add --no-cache \
+    maven \
+    && rm -rf /var/cache/* \
+    && mkdir /var/cache/apk
+WORKDIR /work
+# NOTE: will share build project src and target with Docker container
+COPY pom.xml /work
+CMD ["mvn", "test"]
