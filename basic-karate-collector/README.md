@@ -308,7 +308,7 @@ mkdir target
 
 (docker container run --rm -v $(pwd)/src:/work/src/ -v $(pwd)/target:/work/target:rw $IMAGE ); ls -l target
 ```
-NOTE: Docker run is time consuming due to massive amount of dependncy jars. user just as starting point to gradle test:
+NOTE: Docker run is time consuming due to massive amount of dependency jars. user just as starting point to gradle test:
 
 ```text
 [INFO] Scanning for projects...
@@ -832,6 +832,49 @@ file:///work/target/karate-reports/karate-summary.html
 [INFO] Finished at: 2023-02-09T23:44:33Z
 [INFO] ------------------------------------------------------------------------
 ```
+#### Gradle
+```sh
+IMAGE=basic-karate-gradle
+docker build -t $IMAGE -f Dockerfile.alpine-jdk8-gradle .
+```
+* NOTE: run as root to prevent dealing with
+
+```text
+Could not create service of type ScriptPluginFactory using BuildScopeServices.createScriptPluginFactory().
+```
+error 
+
+```sh
+docker container run  -u root -v $(pwd)/src:/work/src/ -v $(pwd)/target:/work/target:rw -it $IMAGE sh
+```
+```sh
+gradle test
+```
+```
+Welcome to Gradle 5.4.1!
+
+Here are the highlights of this release:
+ - Run builds with JDK12
+ - New API for Incremental Tasks
+ - Updates to native projects, including Swift 5 support
+
+For more details see https://docs.gradle.org/5.4.1/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+> Task :compileJava NO-SOURCE
+> Task :processResources NO-SOURCE
+> Task :classes UP-TO-DATE
+> Task :compileTestJava
+> Task :processTestResources
+> Task :testClasses
+> Task :test
+BUILD SUCCESSFUL in 3m 2s
+3 actionable tasks: 3 executed
+
+```
+NOTE: gradle run is quite a bit slower than maven
+
+At the end of gradle test run, only see the `karate.log`, no JSON reports nor `karate-report` directory
 TODO: change user - need to make owner or `work` dir
 ```
 (docker container run --rm -v $(pwd)/src:/work/src/ -v $(pwd)/target:/work/target:rw -u $(id -u ${USER}):$(id -g ${USER}) $IMAGE ); ls -l target 
@@ -844,6 +887,8 @@ sudo rm --fr target
 ### See Also
 
   * https://github.com/fertekton/karate-api/blob/main/src/test/java/Yevo/BackEndTests.java
-
+  * https://stackoverflow.com/questions/53272230/could-not-create-service-of-type-scriptpluginfactory-using-buildscopeservices-cr
+  * https://github.com/gradle/gradle/issues/8436
+  * https://github.com/figroc/tensorflow-serving-client/issues/11
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
