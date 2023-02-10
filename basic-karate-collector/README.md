@@ -286,6 +286,36 @@ and HTML page
 }
 
 ```
+
+The processing of the `karate-summary-json.txt` is simple with [jq](https://stedolan.github.io/jq/manual):
+
+```sh
+jq '.featureSummary[0].failedCount' karate-summary-json.txt
+```
+```text
+0
+```
+The Perl version is also possible:
+```sh
+perl karate-ummary-processor.pl  -input karate-summary.json
+```
+```text
+0
+```
+the code is:
+```Perl
+
+our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
+local $@;
+my $data = eval { return $json_pp->decode($content); };
+$error = $@;
+
+if ( !$error ) {
+    print $data->{'featureSummary'}->[0]->{'failedCount'};
+}
+```
+
+
 the `"stepLog"` contains actual exhange payload, and the log file can grow quite big
 
 
@@ -299,7 +329,7 @@ docker pull gradle:5.4.1-jdk8-alpine
 ```
 
 ```sh
-IMAGE=basic-karate
+IMAGE=basic-karate-maven
 docker build -t $IMAGE -f Dockerfile.alpine-jdk8-maven .
 ```
 basic test
