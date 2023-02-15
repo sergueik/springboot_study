@@ -332,13 +332,15 @@ docker pull gradle:5.4.1-jdk8-alpine
 IMAGE=basic-karate-maven
 docker build -t $IMAGE -f Dockerfile.alpine-jdk8-maven .
 ```
-basic test
+bas ic test
 ```sh
 mkdir target
 
 (docker container run --rm -v $(pwd)/src:/work/src/ -v $(pwd)/target:/work/target:rw $IMAGE ); ls -l target
 ```
-NOTE: Docker run is time consuming due to massive amount of dependency jars. user just as starting point to gradle test:
+the `karate-summary-json.txt` will  be in `target/karate-reports`
+
+NOTE: Docker run is time consuming due to the massive amount of dependency jars.
 
 ```text
 [INFO] Scanning for projects...
@@ -867,18 +869,15 @@ file:///work/target/karate-reports/karate-summary.html
 IMAGE=basic-karate-gradle
 docker build -t $IMAGE -f Dockerfile.alpine-jdk8-gradle .
 ```
-* NOTE: run as root to prevent dealing with
+* NOTE: run as root to prevent dealing with error:
 
 ```text
 Could not create service of type ScriptPluginFactory using BuildScopeServices.createScriptPluginFactory().
 ```
-error 
+
 
 ```sh
-docker container run  -u root -v $(pwd)/src:/work/src/ -v $(pwd)/target:/work/target:rw -it $IMAGE sh
-```
-```sh
-gradle test
+docker container run --rm -u root -v $(pwd)/src:/work/src/ -v $(pwd)/build:/work/build:rw -it $IMAGE
 ```
 ```
 Welcome to Gradle 5.4.1!
@@ -900,19 +899,16 @@ Starting a Gradle Daemon (subsequent builds will be faster)
 > Task :test
 BUILD SUCCESSFUL in 3m 2s
 3 actionable tasks: 3 executed
-
 ```
+
+the `karate-summary-json.txt` will  be in `build/karate-reports`
+
 NOTE: gradle run is quite a bit slower than maven
 
-At the end of gradle test run, only see the `karate.log`, no JSON reports nor `karate-report` directory
-TODO: change user - need to make owner or `work` dir
-```
-(docker container run --rm -v $(pwd)/src:/work/src/ -v $(pwd)/target:/work/target:rw -u $(id -u ${USER}):$(id -g ${USER}) $IMAGE ); ls -l target 
-```
 ### Cleanup
 
 ```sh
-sudo rm --fr target
+sudo rm -fr target
 ```
 ### See Also
 
@@ -920,5 +916,6 @@ sudo rm --fr target
   * https://stackoverflow.com/questions/53272230/could-not-create-service-of-type-scriptpluginfactory-using-buildscopeservices-cr
   * https://github.com/gradle/gradle/issues/8436
   * https://github.com/figroc/tensorflow-serving-client/issues/11
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
