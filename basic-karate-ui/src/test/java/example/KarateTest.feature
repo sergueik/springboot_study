@@ -9,7 +9,6 @@ Feature: Karate browser automation
     # NOTE: vulnerable to presence of other browsers on visible desktop:
     # failed to get reply for: [id: 6, method: Page.navigate, params: {url=https://google.com}]
     And driver.maximize ()
-    Then waitForUrl('https://www.youtube.com/')
     # NOTE: not the: 'input[name="btnK"]'
     # javascript evaluation failed twice:
     # var e = document.querySelector("input[name="q"]")

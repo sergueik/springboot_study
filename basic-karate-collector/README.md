@@ -2,7 +2,6 @@
 
 replica of [basic Karate tesst](https://github.com/KaterinaUK/automated_API_with_Karate) modified with simpler bootstrap Java code and `build.gradle` from [Karate Gradle Test](https://github.com/mbzebra/karategradletest)
 with `https://jsonplaceholder.typicode.com/` used as system under test.
-
 ### Usage
 
 * run with maven (standalone run and run with gradle are alternatives)
@@ -22,8 +21,8 @@ mvn clean test
   "featureSummary": [
     {
       "failedCount": 0,
-      "packageQualifiedName": "example.feature.jsonplaceholder"
-      "relativePath": "example/feature/jsonplaceholder.feature"
+      "packageQualifiedName": "example.feature.Test"
+      "relativePath": "example/feature/Test.feature"
       "scenarioCount": 2,
       "name": "Tests for the json placeholder page",
       "description": "",
@@ -55,8 +54,8 @@ and HTML page
   "featureSummary": [
     {
       "failedCount": 1,
-      "packageQualifiedName": "example.feature.jsonplaceholder",
-      "relativePath": "example/feature/jsonplaceholder.feature",
+      "packageQualifiedName": "example.feature.Test",
+      "relativePath": "example/feature/Test.feature",
       "scenarioCount": 2,
       "name": "Tests for the json placeholder page",
       "description": "",
@@ -74,14 +73,14 @@ and HTML page
 ```
 ![failed run](https://github.com/sergueik/springboot_study/blob/master/basic-karate-collector/screenshots/capture-failure.png)
 
-* the details are in  `target\karate-reports\example.feature.jsonplaceholder.karate-json.txt`:
+* the details are in per-feature reports found in `target\karate-reports` e.g. for `Test.feature` it will be `example.feature.Test.karate-json.txt`:
 ```JSON
 {
   "failedCount": 1,
-  "prefixedPath": "classpath:example/feature/jsonplaceholder.feature",
-  "packageQualifiedName": "example.feature.jsonplaceholder",
+  "prefixedPath": "classpath:example/feature/Test.feature",
+  "packageQualifiedName": "example.feature.Test",
   "loopIndex": -1,
-  "relativePath": "example/feature/jsonplaceholder.feature",
+  "relativePath": "example/feature/Test.feature",
   "scenarioResults": [
     {
       "sectionIndex": 0,
@@ -97,7 +96,7 @@ and HTML page
             "line": 4,
             "prefix": "Given",
             "index": 0,
-            "text": "url 'https://jsonplaceholder.typicode.com/'"
+            "text": "url 'https://Test.typicode.com/'"
           },
           "stepLog": "22:25:40.858 karate.env system property was: null \n"
         },
@@ -192,7 +191,7 @@ and HTML page
             "line": 4,
             "prefix": "Given",
             "index": 0,
-            "text": "url 'https://jsonplaceholder.typicode.com/'"
+            "text": "url 'https://Test.typicode.com/'"
           },
           "stepLog": "22:25:43.899 karate.env system property was: null \n"
         },
@@ -251,7 +250,7 @@ and HTML page
         {
           "result": {
             "nanos": 6051304,
-            "errorMessage": "match failed: EQUALS\n  $ | not equal (NUMBER:NUMBER)\n  1\n  0\n\nclasspath:example/feature/jsonplaceholder.feature:19",
+            "errorMessage": "match failed: EQUALS\n  $ | not equal (NUMBER:NUMBER)\n  1\n  0\n\nclasspath:example/feature/Test.feature:19",
             "millis": 6.051304,
             "status": "failed"
           },
@@ -261,14 +260,14 @@ and HTML page
             "index": 4,
             "text": "match response[0].userId == 0"
           },
-          "stepLog": "22:25:44.121 classpath:example/feature/jsonplaceholder.feature:19\nAnd match response[0].userId == 0\nmatch failed: EQUALS\n  $ | not equal (NUMBER:NUMBER)\n  1\n  0\n\nclasspath:example/feature/jsonplaceholder.feature:19\n"
+          "stepLog": "22:25:44.121 classpath:example/feature/Test.feature:19\nAnd match response[0].userId == 0\nmatch failed: EQUALS\n  $ | not equal (NUMBER:NUMBER)\n  1\n  0\n\nclasspath:example/feature/Test.feature:19\n"
         }
       ],
       "line": 14,
       "description": "",
       "durationMillis": 227.954545,
       "failed": true,
-      "error": "match failed: EQUALS\n  $ | not equal (NUMBER:NUMBER)\n  1\n  0\n\nclasspath:example/feature/jsonplaceholder.feature:19",
+      "error": "match failed: EQUALS\n  $ | not equal (NUMBER:NUMBER)\n  1\n  0\n\nclasspath:example/feature/Test.feature:19",
       "executorName": "main",
       "name": "List todos",
       "startTime": 1675913143888,
@@ -831,11 +830,11 @@ Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/s
 the test concludes with
 ```text
 ---------------------------------------------------------
-feature: classpath:example/feature/jsonplaceholder.feature
+feature: classpath:example/feature/Test.feature
 scenarios:  2 | passed:  2 | failed:  0 | time: 2.0639
 ---------------------------------------------------------
 
-23:44:30.710 [main] INFO  com.intuit.karate.Suite - <<pass>> feature 1 of 1 (0 remaining) classpath:example/feature/jsonplaceholder.feature
+23:44:30.710 [main] INFO  com.intuit.karate.Suite - <<pass>> feature 1 of 1 (0 remaining) classpath:example/feature/Test.feature
 Karate version: 1.3.1
 ======================================================
 elapsed:   7.61 | threads:    1 | thread time: 2.06 
@@ -921,3 +920,4 @@ sudo rm -fr target build
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
