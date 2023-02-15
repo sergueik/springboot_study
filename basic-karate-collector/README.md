@@ -1,6 +1,6 @@
 ### Info
 
-replica of [basic Karate tesst](https://github.com/KaterinaUK/automated_API_with_Karate)
+replica of [basic Karate tesst](https://github.com/KaterinaUK/automated_API_with_Karate) modified with simpler bootstrap Java code and `build.gradle` from [Karate Gradle Test](https://github.com/mbzebra/karategradletest)
 with `https://jsonplaceholder.typicode.com/` used as system under test.
 
 ### Usage
@@ -320,13 +320,9 @@ the `"stepLog"` contains actual exhange payload, and the log file can grow quite
 
 
 ### Testing in Docker Container
-#### Basic permission check
+#### Maven
 
-will add maven to alpine JDK8 gradle image
-
-```sh
-docker pull gradle:5.4.1-jdk8-alpine
-```
+will add maven to alpine JDK8 image
 
 ```sh
 IMAGE=basic-karate-maven
@@ -865,6 +861,12 @@ file:///work/target/karate-reports/karate-summary.html
 [INFO] ------------------------------------------------------------------------
 ```
 #### Gradle
+
+* pull
+```sh
+docker pull gradle:5.4.1-jdk8-alpine
+```
+* build
 ```sh
 IMAGE=basic-karate-gradle
 docker build -t $IMAGE -f Dockerfile.alpine-jdk8-gradle .
@@ -901,14 +903,14 @@ BUILD SUCCESSFUL in 3m 2s
 3 actionable tasks: 3 executed
 ```
 
-the `karate-summary-json.txt` will  be in `build/karate-reports`
+the `karate-summary-json.txt` will be in `build/karate-reports`
 
 NOTE: gradle run is quite a bit slower than maven
 
 ### Cleanup
 
 ```sh
-sudo rm -fr target
+sudo rm -fr target build
 ```
 ### See Also
 
