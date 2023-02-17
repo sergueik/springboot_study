@@ -72,8 +72,10 @@ cgi {
                             my ( $m1, $m2, undef ) = split /\s+/, $data->{swap};
 
                           # print STDERR Dumper( { m1 => $m1, m2 => $m2 } ), $/;
-                            $value = $m2 * 100.0 / $m1;
-                            $metrics->{$metric} = $value;
+                            if ( $m2 != 0 ) {
+                                $value = $m2 * 100.0 / $m1;
+                                $metrics->{$metric} = $value;
+                            }
                         }
                         elsif ( $metric eq 'disk' ) {
                         }
@@ -88,35 +90,37 @@ cgi {
                     }
 
                     # get timestamp from payload data. For testing only
+                    if ( $data->{date} != '' ) {
 
-                    (
-                        undef, $month_alpha, $mday, $hour, $min, $sec, undef,
-                        $year
-                    ) = split /(?:\s+|:)/, $data->{date};
-                    $months_alpha = {
-                        'Jan' => 1,
-                        'Feb' => 2,
-                        'Mar' => 3,
-                        'Apr' => 4,
-                        'May' => 5,
-                        'Jun' => 6,
-                        'Jul' => 7,
-                        'Aug' => 8,
-                        'Sep' => 9,
-                        'Oct' => 10,
-                        'Nov' => 11,
-                        'Dec' => 12
+                        (
+                            undef, $month_alpha, $mday, $hour, $min, $sec,
+                            undef, $year
+                        ) = split /(?:\s+|:)/, $data->{date};
+                        $months_alpha = {
+                            'Jan' => 1,
+                            'Feb' => 2,
+                            'Mar' => 3,
+                            'Apr' => 4,
+                            'May' => 5,
+                            'Jun' => 6,
+                            'Jul' => 7,
+                            'Aug' => 8,
+                            'Sep' => 9,
+                            'Oct' => 10,
+                            'Nov' => 11,
+                            'Dec' => 12
 
-                    };
+                        };
 
-                    # print STDERR "month_alpha:" . $month_alpha, $/;
-                    $mon = $months_alpha->{$month_alpha} - 1;
+                        # print STDERR "month_alpha:" . $month_alpha, $/;
+                        $mon = $months_alpha->{$month_alpha} - 1;
 
-                    # print STDERR "mon:" . $mon, $/;
-                    # Note the reverse order of the arguments and that January is month 0
-                    # https://stackoverflow.com/questions/95492/how-do-i-convert-a-date-time-to-epoch-time-unix-time-seconds-since-1970-in-per  
-                    $metrics->{time} =
-                      timelocal( $sec, $min, $hour, $mday, $mon, $year );
+                        # print STDERR "mon:" . $mon, $/;
+                        # Note the reverse order of the arguments and that January is month 0
+                        # https://stackoverflow.com/questions/95492/how-do-i-convert-a-date-time-to-epoch-time-unix-time-seconds-since-1970-in-per
+                        $metrics->{time} =
+                          timelocal( $sec, $min, $hour, $mday, $mon, $year );
+                    }
 
                     # get timestamp from payload data
                     $metrics->{computer} = $data->{computer};
@@ -139,7 +143,7 @@ cgi {
                     my $time_seconds   = $metrics->{time};
                     my $timestamp      = $time_seconds . '000000000';
                     my $reporting_host = $metrics->{computer};
-                    my $field_set      = 'value='.$metrics->{swap};
+                    my $field_set      = 'value=' . $metrics->{swap};
                     my $appid_tag;
                     my $tag_set;
                     my $measurements = [];

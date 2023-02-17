@@ -13,17 +13,17 @@ docker build -t $IMAGE -f Dockerfile .
 
 ```sh
 NAME=basic-perl-cgi
-docker run -d -p 8080:80 -p 9443:443 --name $NAME $IMAGE
+docker run -d -p 9090:80 -p 9443:443 --name $NAME $IMAGE
 docker logs -f $NAME
 ```
 alternatively
 ```
-docker run -d -p $(hostname -i):8080:80 -p $(hostname -i):9443:443 --name $NAME $IMAGE
+docker run -d -p $(hostname -i):9090:80 -p $(hostname -i):9443:443 --name $NAME $IMAGE
 ```
  or if integrted with InfluxDB then
 ```sh
 export INFLUXDB=boring_williams
-docker run -d -p 8080:80 -p 9443:443 --link $INFLUXDB --name $NAME $IMAGE
+docker run -d -p 9090:80 -p 9443:443 --link $INFLUXDB --name $NAME $IMAGE
 
 ```
 
@@ -51,7 +51,7 @@ This is perl 5, version 26, subversion 3 (v5.26.3) built for x86_64-linux-thread
 exit the container
 * verify the vanilla httpd to run inside Docker
 ```sh
-curl http://$(hostname -i):8080/
+curl http://$(hostname -i):9090/
 ```
 it will print the default apache welcome page
 ```html
@@ -137,7 +137,7 @@ Content-Type: application/json
 verify web server to run cgi inside container. Basically will observe same output 
 results (sans the header) as cgi-bin :
 ```sh
-curl -s http://$(hostname -i):8080/cgi-bin/list.cgi
+curl -s http://$(hostname -i):9090/cgi-bin/list.cgi
 ```
 ```json
 {
@@ -159,7 +159,7 @@ curl -s http://$(hostname -i):8080/cgi-bin/list.cgi
 ```
 post the data to `form.cgi`:
 ```sh
-curl -X POST -d 'a=b&c=d' http://$(hostname -i):8080/cgi-bin/form.cgi
+curl -X POST -d 'a=b&c=d' http://$(hostname -i):9090/cgi-bin/form.cgi
 ```
 this will echo data back as a JSON
 ```sh
@@ -172,7 +172,7 @@ Content-Type: application/json
 ```
 testing the AJAX page in console:
 ```sh
-curl http://$(hostname -i):8080/inventory.html
+curl http://$(hostname -i):9090/inventory.html
 ```
 
 * this will show the plain page:
@@ -215,20 +215,19 @@ Server Data: <br />
 </body>
 </html>
 ```
-one needs to open page in the browser to see the dynamic data being pulled. To verify, stop and rerun the container with default pors pusblsued as `8080` and `9443` on all network interfaces:
+one needs to open page in the browser to see the dynamic data being pulled. To verify, stop and rerun the container with default pors pusblsued as `9090` and `9443` on all network interfaces:
 ```sh
 docker stop $NAME
 docker container rm $NAME
-docker run -d -p 8080:80 -p 9443:443 --name $NAME $IMAGE
+docker run -d -p 9090:80 -p 9443:443 --name $NAME $IMAGE
 ```
 and navigate to the url in the browser with ip address of the hosting node:
 ```sh
-chromium-browser http://$(hostname -i):8080/inventory.html &
+chromium-browser http://$(hostname -i):9090/inventory.html &
 ```
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture.png)
 
  - open developer tools tab eeto that the Angular does poll the server
-![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture.png)
 
 ### Cleanup
 
@@ -275,10 +274,10 @@ mkdir cgi-bin/CGI;
 cp -R -l CGI-Tiny-1.002/lib/CGI cgi-bin/.
 ```
 
-### Upload via Curl
+### Upload Datafile by Curl
 
 ```sh
-curl -F "data=@$(pwd)/data.txt" -X POST "http://192.168.0.29:8080/cgi-bin/upload.cgi?type=send&new=1"
+curl -F "data=@$(pwd)/data.txt" -X POST "http://localhost:9090/cgi-bin/upload.cgi?type=send&new=1"
 ```
 
 ```text
@@ -296,27 +295,62 @@ img {border: none;}
 <p><img src="/upload/data.txt" alt="data" /></p>
 </body>
 </html>
+```
+alternatively a simpler `curl` command (does not work entirely perfectly):
+```sh
+curl -T data.txt -X POST "http://192.168.0.92:9090/cgi-bin/upload.cgi?type=send&new=1"
+```
+will lead to happy message (except for the filename of the uploaded file)
+```text
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Thanks!</title>
+<style type="text/css">
+img {border: none;}
+</style>
+</head>
+<body>
+<p>Thanks for uploading data</p>
+<p><img src="/upload/unknown file" alt="data" /></p>
+</body>
+</html>
 
 ```
-
-NOTE: need to work on passing  form arguments
+NOTE: passing the form arguments together with `data` does not work
 
 ```sh
-curl -F "type=send&new=1&data=@$(pwd)/data.txt" -X POST http://192.168.0.29:8080/cgi-bin/upload.cgi
+curl -F "type=send&new=1&data=@$(pwd)/data.txt" -X POST http://192.168.0.92:9090/cgi-bin/upload.cgi
 ```
 leads to
 ```
 500 Internal Server Error
 ```
-
+and the following in `/var/log/apache2/error.log`: 
+```text
+$VAR1 = {: /var/www/localhost/cgi-bin/upload.cgi
+ 'filename' => undef,: /var/www/localhost/cgi-bin/upload.cgi
+ 'new' => undef,: /var/www/localhost/cgi-bin/upload.cgi
+ 'loadtype' => 'send&new=1&data=@/home/sergueik/src/springbo
+ };: /var/www/localhost/cgi-bin/upload.cgi
+upload content: Use of uninitialized value $file_content in print at /var/www/localhost/cgi-bin/upload.cgi line 53.
+ Not a GLOB reference at /var/www/localhost/cgi-bin/upload.cgi line 188.
+```
 because form argument `new` is aparently lost and the `CGi::Lite` seeminly does not support reading from `File::Temp` file handle returned by
 
 ```perl
 $query->upload('data');
 ```
-altenatively open `http://localhost:8080/upload.html` in the browser and provide file to upload via File dialog
+altenatively open `http://localhost:9090/upload.html` in the browser and provide file to upload via File dialog
 
-![Example Upload](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-upload.png)
+![Upload](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-upload.png)
+
+
+it will respond with confirmation message
+
+![Confirmed Upload](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-confirmed-upload.png)
+
 The `data.txt` contains practically unformatted output from `free`, `uptime`
 ```text
 Mem:        1863756      665656      157580
@@ -331,14 +365,14 @@ disk: /dev/sda1 27G 22G 3.6G 86% /
 ```
 the `upload.cgi` successfully logs its contents to apache log `/var/www/logs/error.log`:
 ```text
-[Sun Jun 26 23:53:17.609136 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: Mem:        1863756      665656      157580: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
-[Sun Jun 26 23:53:17.609220 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: Swap:       2720764       24832     2695932: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
-[Sun Jun 26 23:53:17.609297 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: load_average: 0.16 0.08 0.08 1/460 32100: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
-[Sun Jun 26 23:53:17.609322 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: rpm: 104: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
-[Sun Jun 26 23:53:17.609389 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: date: Sun Jun 26 18:54:31 EDT 2022: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
-[Sun Jun 26 23:53:17.609453 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: computer: lenovo120S.private.org: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
-[Sun Jun 26 23:53:17.609588 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: uptime: 18:56:03 up 1 day,  3:44,  3 users,  load average: 0.07, 0.10, 0.09: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
-[Sun Jun 26 23:53:17.609655 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: disk: /dev/sda1 27G 22G 3.6G 86% /: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.29:8080/upload.html
+[Sun Jun 26 23:53:17.609136 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: Mem:        1863756      665656      157580: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.92:9090/upload.html
+[Sun Jun 26 23:53:17.609220 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: Swap:       2720764       24832     2695932: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.92:9090/upload.html
+[Sun Jun 26 23:53:17.609297 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: load_average: 0.16 0.08 0.08 1/460 32100: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.92:9090/upload.html
+[Sun Jun 26 23:53:17.609322 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: rpm: 104: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.92:9090/upload.html
+[Sun Jun 26 23:53:17.609389 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: date: Sun Jun 26 18:54:31 EDT 2022: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.92:9090/upload.html
+[Sun Jun 26 23:53:17.609453 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: computer: lenovo120S.private.org: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.92:9090/upload.html
+[Sun Jun 26 23:53:17.609588 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: uptime: 18:56:03 up 1 day,  3:44,  3 users,  load average: 0.07, 0.10, 0.09: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.92:9090/upload.html
+[Sun Jun 26 23:53:17.609655 2022] [cgi:error] [pid 4966] [client 192.168.0.25:51639] AH01215: disk: /dev/sda1 27G 22G 3.6G 86% /: /var/www/localhost/cgi-bin/upload.cgi, referer: http://192.168.0.92:9090/upload.html
 ```
 ### Note
 
@@ -360,7 +394,7 @@ cp -R URI-5.10/lib/* cgi-bin
 
 in developer machine:
 ```sh
-curl -F "data=@$(pwd)/data.txt" -X POST "http://192.168.0.29:8080/cgi-bin/upload.cgi?type=send&new=1"
+curl -F "data=@$(pwd)/data.txt" -X POST "http://192.168.0.92:9090/cgi-bin/upload.cgi?type=send&new=1"
 ```
 ```text
 <!DOCTYPE html>
@@ -379,7 +413,7 @@ img {border: none;}
 </html>
 ```
 
-in `basic-perl-cgi` container apache log `error.log` (formatted for readability to free from `[Tue Jun 28 00:16:40.909223 2022] [cgi:error] [pid 12] [client 192.168.0.29:50706] fields` :
+in `basic-perl-cgi` container apache log `error.log` (formatted for readability to free from `[Tue Jun 28 00:16:40.909223 2022] [cgi:error] [pid 12] [client 192.168.0.92:50706] fields` :
 ```text
 
      upload content:   
@@ -475,13 +509,14 @@ time                appid host                   operation value
 1658861671000000000 FOO   lenovo120S.private.org write     0.912684819411018
 ```
 ### See Also
+
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
   * https://stackoverflow.com/questions/13671031/server-polling-with-angularjs
   * https://blog.guya.net/2016/08/08/simple-server-polling-in-angularjs-done-right/
   * https://www.js-tutorials.com/angularjs-tutorial/simple-example-angularjs-interval-timeout/
   * https://stackoverflow.com/questions/42701048/how-to-pass-vm-to-a-settimeout-in-angularjs-changes-to-scope-dont-update-dom-v
   * [curl post file](https://reqbin.com/req/c-dot4w5a2/curl-post-file)
-
+  * [CPAN](https://metacpan.org/pod/HTTP::Request::Common) `HTTP::Request::Common`
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
