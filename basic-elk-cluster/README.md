@@ -162,9 +162,43 @@ cd app5;  mvn clean package
 ```
 run the command:
 ```sh
-
-docker-compose -f docker-compose.yml -f docker-compose-including-javasoap.yml  up --build
+docker-compose -f docker-compose.yml -f docker-compose-including-javasoap.yml up --build
 ```
+#### Add NPM Express Blog page node
+
+```sh
+docker-compose -f docker-compose.yml -f docker-compose-including-express.yml up --build
+```
+```sh
+docker container ls
+```
+will show
+```text
+CONTAINER ID   IMAGE                             COMMAND                  CREATED              STATUS                        PORTS                                                 NAMES
+5d19262080d0   basic-elk-cluster-app6            "docker-entrypoint.s…"   About a minute ago   Up About a minute (healthy)   0.0.0.0:3000->3000/tcp, :::3000->3000/tcp             app6
+4b4ac2988007   basic-elk-cluster-app1            "python /app/app.py"     19 minutes ago       Up 16 minutes (healthy)       0.0.0.0:6000->6000/tcp, :::6000->6000/tcp, 8080/tcp   app1
+58c59e8c2b8a   basic-elk-cluster-app2            "python /app/app.py"     19 minutes ago       Up 16 minutes (healthy)       0.0.0.0:7000->7000/tcp, :::7000->7000/tcp, 8080/tcp   app2
+35a04836e9d3   basic-elk-cluster-apm-server      "/usr/bin/tini -- /u…"   19 minutes ago       Up 16 minutes (healthy)       0.0.0.0:8200->8200/tcp, :::8200->8200/tcp             apm-server
+eb571689c9d8   basic-elk-cluster-kibana          "/bin/tini -- /usr/l…"   19 minutes ago       Up 18 minutes (healthy)       0.0.0.0:5601->5601/tcp, :::5601->5601/tcp             kibana
+e72ba232c224   basic-elk-cluster-elasticsearch   "/bin/tini -- /usr/l…"   19 minutes ago       Up 19 minutes (healthy)       0.0.0.0:9200->9200/tcp, :::9200->9200/tcp, 9300/tcp   elasticsearch
+
+```
+
+```sh
+docker-compose -f docker-compose.yml -f docker-compose-including-express.yml ps
+```
+ will show
+```text	
+NAME                IMAGE                             COMMAND                  SERVICE             CREATED             STATUS                    PORTS
+apm-server          basic-elk-cluster-apm-server      "/usr/bin/tini -- /u…"   apm-server          20 minutes ago      Up 17 minutes (healthy)   0.0.0.0:8200->8200/tcp, :::8200->8200/tcp
+app1                basic-elk-cluster-app1            "python /app/app.py"     app1                20 minutes ago      Up 17 minutes (healthy)   0.0.0.0:6000->6000/tcp, :::6000->6000/tcp, 8080/tcp
+app2                basic-elk-cluster-app2            "python /app/app.py"     app2                20 minutes ago      Up 17 minutes (healthy)   0.0.0.0:7000->7000/tcp, :::7000->7000/tcp, 8080/tcp
+app6                basic-elk-cluster-app6            "docker-entrypoint.s…"   app6                3 minutes ago       Up 3 minutes (healthy)    0.0.0.0:3000->3000/tcp, :::3000->3000/tcp
+elasticsearch       basic-elk-cluster-elasticsearch   "/bin/tini -- /usr/l…"   elasticsearch       20 minutes ago      Up 20 minutes (healthy)   0.0.0.0:9200->9200/tcp, :::9200->9200/tcp, 9300/tcp
+kibana              basic-elk-cluster-kibana          "/bin/tini -- /usr/l…"   kibana              20 minutes ago      Up 19 minutes (healthy)   0.0.0.0:5601->5601/tcp, :::5601->5601/tcp
+
+```
+![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/captrue-cluster-with-node-express.png)
 
 ### Configuration
 
@@ -1958,6 +1992,9 @@ also, seems that SOAP 1.2 requires the action to be set via the Content-Type hea
 
     + Zeep has low level `post_xml(address, envelope, headers)` [transport method](https://docs.python-zeep.org/en/master/api.html?highlight=post_xml#zeep.Transport.post_xml) to allow Post the envelope xml element to the given address with the headers (e.g. `{"SOAPAction": '"convert"',"Content-Type": "text/xml; charset=utf-8"}`)
 
+  * Node.js APM agent
+    - [releases](https://www.elastic.co/guide/en/apm/agent/nodejs/index.html)
+    - [documentation](https://www.elastic.co/guide/en/apm/agent/nodejs/current/intro.html)
 
   * Misc.
     + [monitoring python flask application with elastic apm](https://medium.com/analytics-vidhya/monitoring-python-flask-application-with-elastic-apm-bb0853f056ff)
