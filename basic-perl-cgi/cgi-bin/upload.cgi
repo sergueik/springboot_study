@@ -216,18 +216,19 @@ img {border: none;}
 </html>
 
 EOF
-
     sub read_data {
 
         my $payload = shift;
-        my %data    = ();
+        my $data    = {};
 
         foreach my $line ( split /\r?\n/, $payload ) {
-            my ( $keyx, $value ) = split( ' ', $line, 2 );
-            my ( $key, ) = split '[:=]', $keyx;
+            my ( $first, $rest ) = split( ' ', $line, 2 );
+            my ( $key, ) = split '[:=]', $first;
+            my $value = $rest;
             $key = lc $key;
-            $data{$key} = $value;
+            $data->{$key} = $value;
         }
-        return \%data;
+       return $data;
     }
+
 }

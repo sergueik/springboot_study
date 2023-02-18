@@ -223,7 +223,70 @@ img {border: none;}
 </html>
 
 ```
-Update the build job, using same code in shell script
+Update the build job, using same code in shell script..
+create data.txt in `karate-collector` in `jenkins` user home directory  in the container: 
+there is some challenge with using output shell redirection in the shell step in Jenkins.
+
+```sh
+docker exec -it jenkins sh
+```
+
+save sample data:
+```text
+Mem: 1863756 665300 157580
+Swap: 2720764 24832 2695932
+load_average: 0.16 0.08 0.08 1/460 32100
+rpm: 104
+date: Sun Jun 26 22:08:31 EDT 2022
+computer: lenovo120S.private.org
+uptime: 18:56:03 up 1 day, 3:44, 3 users, load average: 0.07, 0.10, 0.09
+disk: /dev/sda1 27G 22G 3.6G 86% /
+foo: 0
+
+```
+NOTE: shell command sensitive to space  in front of `>`: 
+```sh
+cd ~/karate-collector
+echo Mem:        1863756      665300      157580 > data.txt
+echo Swap:       2720764       24832     2695932 >> data.txt
+echo load_average: 0.16 0.08 0.08 1/460 32100 >> data.txt
+echo rpm: 104 >> data.txt
+echo date: Sun Jun 26 22:08:31 EDT 2022 >> data.txt
+echo computer: lenovo120S.private.org >> data.txt
+echo uptime: 18:56:03 up 1 day,  3:44,  3 users,  load average: 0.07, 0.10, 0.09 >> data.txt
+echo disk: /dev/sda1 27G 22G 3.6G 86% />> data.txt
+echo foo: 0 >> data.txt
+```
+
+
+in Jenkins shell step, replace `foo: 0` with `foo: 42` and send file:
+```sh
+ls data.txt
+sed -i 's|foo: .*|foo: 42|' data.txt
+curl -F "data=@./data.txt" -X POST "http://172.17.0.2:80/cgi-bin/upload.cgi?type=send&new=1"
+```
+after the job completes find the expected value in the STDERR output of the Perl script 
+
+```Perl
+print STDERR Dumper(read_data($query->upload('data')->{content}), $/;
+```			
+
+in `/var/log/apache2/error.log`:
+```text
+$VAR1 = {
+ 'rpm' => '104',
+ 'swap' => '2720764 24832 2695932',
+ 'uptime' => '18:56:03 up 1 day, 3:44, 3 users, load a'
+ 'foo' => '42',
+ 'load_average' => '0.16 0.08 0.08 1/460 32100',
+ 'computer' => 'lenovo120S.private.org',
+ 'date' => 'Sun Jun 26 22:08:31 EDT 2022',
+ 'mem' => '1863756 665300 157580',
+ 'disk' => '/dev/sda1 27G 22G 3.6G 86% /'
+};
+```
+
+
 ### See Also
    * [configure the remote Maven repository in Jenkins project jobs](https://docs.cloudbees.com/docs/cloudbees-ci-kb/latest/client-and-managed-masters/configure-the-remote-maven-repository-in-jenkins-project-jobs)
 
