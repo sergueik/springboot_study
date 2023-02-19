@@ -2,9 +2,8 @@ FROM node:16.12.0-alpine3.11
 
 RUN apk update && apk add --update --no-cache docker-cli python3 python g++ make
 WORKDIR /src
-ADD ./views ./views
-ADD ./public ./public
-ADD ./app.js /src/app.js
+ADD ./API_helper.js .
+ADD ./app.js .
 ADD ./package.json .
 ADD ./package-lock.json .
 RUN npm install --silent

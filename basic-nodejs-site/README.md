@@ -1,7 +1,7 @@
 ### Info
 
-replica of [blog website](https://github.com/HauwaAguillard/BlogWebsite)
-using HTML, CSS, Boostrap, JavaScript, Nodejs, NPM, Express, EJS in Alpine Docker container with node js with Elastic Node.js APM agent installed separately
+replica of __how To Make external REST API Calls In Express Web App__ [repository](https://github.com/codehandbook/make-api-call-express)
+using Express, and Request modules in Alpine Docker container with node js with Elastic Node.js APM agent installed separately
 
 ### Usage
 
@@ -11,18 +11,15 @@ docker build -t $IMAGE -f Dockerfile .
 NAME=basic-express-site
 docker run --name $NAME -d -p 3000:3000 $IMAGE
 ```
-you will be able to compose blogs on `http://localhost:3000/compose` and see on `http://localhost:3000/`
+you will be able to perform REST calls to `https://jsonplaceholder.typicode.com/todos/1` by visiting the `http://localhost:3000/getAPIResponse`. One can direct the REST call to another APM monitored app to see __Distributed Transaction Tracing__ in action.
 
-* NOTE: there will be connection error logged periodically to console:
+* NOTE: when application run standalone there will be APM server connection error logged periodically to console:
 ```text
 {"log.level":"error","@timestamp":"2023-02-18T22:09:22.759Z","log":{"logger":"elastic-apm-node"},"ecs":{"version":"1.6.0"},"message":"APM Server transport error (ECONNREFUSED): connect ECONNREFUSED 127.0.0.1:8200"}
 ```
-```text
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-```
 ### See Also
-    * [elastic nodejs apm agent releases](https://www.elastic.co/guide/en/apm/agent/nodejs/index.html)
-    * [elastic nodejs apm agent documentation](https://www.elastic.co/guide/en/apm/agent/nodejs/current/intro.html)
+    * __building a REST API from client to backend with Node and Express__ [tutorial](https://stackabuse.com/building-a-rest-api-with-node-and-express/)
+    * __how To Make external REST API Calls In Express Web App__ [tutorial](https://codehandbook.org/how-to-make-rest-api-calls-in-express-web-app/) and [repository](https://github.com/codehandbook/make-api-call-express)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
