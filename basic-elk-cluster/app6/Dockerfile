@@ -7,6 +7,5 @@ ADD ./app.js .
 ADD ./package.json .
 ADD ./package-lock.json .
 RUN npm install --silent
-RUN npm install elastic-apm-node --save
 EXPOSE 3000
 CMD ["node", "/app/app.js"]
