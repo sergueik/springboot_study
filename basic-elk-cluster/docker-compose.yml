@@ -85,6 +85,8 @@ services:
     restart: unless-stopped
     build: app1
     container_name: app1
+    environment:
+      - MONITOR=true
     ports:
       - "6000:6000"
     healthcheck:

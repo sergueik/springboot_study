@@ -200,16 +200,30 @@ kibana              basic-elk-cluster-kibana          "/bin/tini -- /usr/l…"  
 ```
 ![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/captrue-cluster-with-node-express.png)
 
+Calling `http://localhost:3000/getAPIResponse` will trigger an `express` to `flask` to `sqlite3` call which will be recored in distributed tracing:
+
+![Distributed Tracing Call Example](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-fulltrace-express-python.png)
+
 ### Configuration
 
 By default, the stack exposes the following ports:
 
-* 5000: Logstash TCP input.
-* 9200: Elasticsearch HTTP
-* 9300: Elasticsearch TCP transport
-* 5601: Kibana
-* 8200: APM
+  * 5000: Logstash TCP input.
+  * 9200: Elasticsearch HTTP
+  * 9300: Elasticsearch TCP transport
+  * 5601: Kibana
+  * 8200: APM
 
+The monitored Apps run on the following ports:
+
+  * 3000: Node.js Express
+  * 6000: Flask #1
+  * 7000: Flask #2 
+  * 8000: Flask #3 
+  * 5000: ASP.Net Core REST
+  * 8888: Java SOAP
+
+ 
 NOTE: the images are relatively heavy
 
 ```text

@@ -18,7 +18,8 @@ app.config['ELASTIC_APM'] = {
           'SECRET_TOKEN': '',
           'SERVER_URL': 'http://apm-server:8200'
 }
-apm = ElasticAPM(app)
+if os.environ.get('MONITOR') is not None:
+  apm = ElasticAPM(app)
 @app.route('/')
 def hello_world():
   return 'Hello йцукен'
