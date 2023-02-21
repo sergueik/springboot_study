@@ -204,6 +204,58 @@ Calling `http://localhost:3000/getAPIResponse` will trigger an `express` to `fla
 
 ![Distributed Tracing Call Example](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-fulltrace-express-python.png)
 
+### Adding Desktop Browser to Test Distributed Tracing Invoked from Client-side Javascript
+
+```sh
+docker-compose -f docker-compose.yml -f docker-compose-including-express.yml -f docker-compose-client.yml up --build app7
+```
+```sh
+ID=$(docker container ls |grep app7 |awk '{print $1}')
+docker inspect $ID | jq '.[]|.NetworkSettings.Networks'
+```
+```JSON
+{
+  "basic-elk-cluster_elastic": {
+    "IPAMConfig": null,
+    "Links": null,
+    "Aliases": [
+      "app7",
+      "app7",
+      "8213fbed68aa"
+    ],
+    "NetworkID": "698818da7c2371668e5bfe3d164c350e01e9d5e65155a5227f5e89b2a7096fd8",
+    "EndpointID": "601e25f4042022ed928d24891e2b2e6bec6515cfa6cde50799a2d9a3adfec3bd",
+    "Gateway": "172.20.0.1",
+    "IPAddress": "172.20.0.2",
+    "IPPrefixLen": 16,
+    "IPv6Gateway": "",
+    "GlobalIPv6Address": "",
+    "GlobalIPv6PrefixLen": 0,
+    "MacAddress": "02:42:ac:14:00:08",
+    "DriverOpts": null
+  }
+}
+```
+NOTE: for jq query to traverse node names with dash, [use double quotes](https://stackoverflow.com/questions/37344329/jq-not-working-on-tag-name-with-dashes-and-numbers):
+```sh
+IPADDRESS=$(docker inspect $ID | jq -cr '.[]|.NetworkSettings.Networks."basic-elk-cluster_elastic".IPAddress')
+echo "IPADDRESS=$IPADDRESS"
+```
+```text
+IPADDRESS=172.20.0.2
+```
+update remmina configuration
+```sh
+sed -i "s|^server=.*|server=${IPADDRESS}:0|g" app7/connection.remmina 
+```
+Connect to XVGFB server like to VNC server 
+```sh
+remmina -c app7/connection.remmina
+```
+you will be running as root, but can launch firefox browser from `st` shell:
+
+![Xvfb Fluxbox Firefox](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-xvfb-firefox-remmina.png)
+
 ### Configuration
 
 By default, the stack exposes the following ports:

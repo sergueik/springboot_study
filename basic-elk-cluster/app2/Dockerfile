@@ -1,6 +1,7 @@
 FROM python:3.8.2-alpine
 WORKDIR /app
-RUN apk add curl 
+RUN apk add curl \
+  && rm -vrf /var/cache/apk/*
 ENV PYTHONIOENCODING=utf-8
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1

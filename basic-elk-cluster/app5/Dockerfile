@@ -1,6 +1,7 @@
 FROM openjdk:8-jre-alpine3.9
 ARG HOME='/home'
-RUN apk add curl 
+RUN apk add curl \
+  && rm -vrf /var/cache/apk/*
 WORKDIR /home
 ARG ELASTIC_APM_AGENT_VERSION="1.35.0" 
 ARG APM_SERVER="apm_server"
