@@ -4,9 +4,10 @@ RUN apk update && apk add --update --no-cache docker-cli python3 python g++ make
 WORKDIR /src
 ADD ./API_helper.js .
 ADD ./app.js .
+ADD public public
 ADD ./package.json .
 ADD ./package-lock.json .
 RUN npm install --silent
-RUN npm install elastic-apm-node --save
+RUN npm install cors --save
 EXPOSE 3000
 CMD ["node", "/src/app.js"]
