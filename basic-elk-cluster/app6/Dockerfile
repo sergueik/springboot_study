@@ -5,6 +5,7 @@ RUN apk update && apk add --update --no-cache curl lynx docker-cli python3 pytho
 WORKDIR /app
 ADD ./API_helper.js .
 ADD ./app.js .
+ADD public public
 ADD ./package.json .
 ADD ./package-lock.json .
 RUN npm install --silent

@@ -250,7 +250,7 @@ sed -i "s|^server=.*|server=${IPADDRESS}:0|g" app7/connection.remmina
 ```
 Connect to XVGFB server like to VNC server 
 ```sh
-remmina -c app7/connection.remmina
+remmina -c $(pwd)/app7/connection.remmina
 ```
 you will be running as root, but can launch firefox browser from `st` shell:
 
@@ -2061,7 +2061,15 @@ also, seems that SOAP 1.2 requires the action to be set via the Content-Type hea
   * Node.js APM agent
     - [releases](https://www.elastic.co/guide/en/apm/agent/nodejs/index.html)
     - [documentation](https://www.elastic.co/guide/en/apm/agent/nodejs/current/intro.html)
+  * Elastic RUM
 
+    - [documenttion](https://www.elastic.co/guide/en/apm/agent/rum-js/current/distributed-tracing-guide.html)
+
+  * Distributed Tracing
+   - [Trace Context W3C Recommendation](https://www.w3.org/TR/trace-context/)
+   - [Elastoc Seatch Common Schema Tracing Fields](https://www.elastic.co/guide/en/ecs/current/ecs-tracing.html#ecs-tracing)
+   - [blog](https://hackernoon.com/custom-traceid-in-elastic-apm-82q3uox) on Elastic APM supported OpenTracing compliant distributed tracing
+ 
   * Misc.
     + [monitoring python flask application with elastic apm](https://medium.com/analytics-vidhya/monitoring-python-flask-application-with-elastic-apm-bb0853f056ff)
     + [get application performance metrics on python flask witheElastic APM on kibana and elasticsearch](https://ruanbekker.medium.com/get-application-performance-metrics-on-python-flask-with-elastic-apm-on-kibana-and-elasticsearch-2859ea02ae30)

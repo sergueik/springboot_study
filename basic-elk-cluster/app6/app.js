@@ -1,4 +1,3 @@
-const env = require('node:process')
 const apm = require('elastic-apm-node')
 if (process.env.MONITOR) {
   var apm_server_url = 'http://apm-server:8200'
@@ -11,22 +10,33 @@ if (process.env.MONITOR) {
   console.log(`Apm server on ${apm_server_url}!`)
 }
 const express = require('express')
+const bodyParser = require('body-parser');
 const api_helper = require('./API_helper')
+const cors = require('cors')
 const app = express()
-const port = 3000
+const path = require('path')
 
-app.get('/', (req, res) => res.send('Welcome!'))
+// NOTE: does not work this way
+// const env = require('process')
+// const port = env.PORT
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname,'public')))
 
-app.get('/getAPIResponse', (req, res) => {
+const port = process.env.PORT
+app.get('/', (req, res) => res.send('Welcome to Express!'))
+app.post('/api', (req, res) => {
   api_helper.make_API_call('http://app2:7000/books/all')
-    .then(response => {
-      res.json(response)
-    })
-    .catch(error => {
-      res.send(error)
-    })
+	.then(response => {
+		res.json(response)
+	})
+	.catch(error => {
+		res.send(error)
+	})
 })
 
 app.listen(port, () => console.log(`App listening on port ${port}!`))
 
 module.exports = app
+
