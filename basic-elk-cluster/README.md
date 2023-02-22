@@ -153,7 +153,7 @@ eth1      link encap:Ethernet HWaddr 08:0027:B9:31:8B
 
 run the command:
 ```sh
-docker-compose -f docker-compose.yml -f docker-compose-including-aspnetcoreapp.yml up --build
+docker-compose -f docker-compose.yml -f docker-compose-aspnetcoreapp.yml up --build
 ```
 #### Add Java SOAP node
 build jar
@@ -162,12 +162,12 @@ cd app5;  mvn clean package
 ```
 run the command:
 ```sh
-docker-compose -f docker-compose.yml -f docker-compose-including-javasoap.yml up --build
+docker-compose -f docker-compose.yml -f docker-compose-javasoap.yml up --build
 ```
 #### Add NPM Express Blog page node
 
 ```sh
-docker-compose -f docker-compose.yml -f docker-compose-including-express.yml up --build
+docker-compose -f docker-compose.yml -f docker-compose-express.yml up --build
 ```
 ```sh
 docker container ls
@@ -185,7 +185,7 @@ e72ba232c224   basic-elk-cluster-elasticsearch   "/bin/tini -- /usr/l…"   19 m
 ```
 
 ```sh
-docker-compose -f docker-compose.yml -f docker-compose-including-express.yml ps
+docker-compose -f docker-compose.yml -f docker-compose-express.yml ps
 ```
  will show
 ```text	
@@ -207,7 +207,7 @@ Calling `http://localhost:3000/getAPIResponse` will trigger an `express` to `fla
 ### Adding Desktop Browser to Test Distributed Tracing Invoked from Client-side Javascript
 
 ```sh
-docker-compose -f docker-compose.yml -f docker-compose-including-express.yml -f docker-compose-client.yml up --build app7
+docker-compose -f docker-compose.yml -f docker-compose-express.yml -f docker-compose-client.yml up --build app7
 ```
 ```sh
 ID=$(docker container ls |grep app7 |awk '{print $1}')
@@ -244,6 +244,8 @@ echo "IPADDRESS=$IPADDRESS"
 ```text
 IPADDRESS=172.20.0.2
 ```
+NOTE: with older versions of `docker-compose` the network name may be `basicelkcluster_elastic`.
+
 update remmina configuration
 ```sh
 sed -i "s|^server=.*|server=${IPADDRESS}:0|g" app7/connection.remmina 
