@@ -10,9 +10,14 @@ docker pull jenkins/jenkins:$VERSION-alpine-jdk8
 ```sh
 docker run --name jenkins -d -p 8080:8080 jenkins/jenkins:$VERSION-alpine-jdk8
 ```
+while it is installing, connect to the container as root to install `jq` and set up some files in `jenkins` home directory
+```sh
+docker exec -u root -it jenkins sh
+```
 ```sh
 docker logs jenkins
 ```
+
 this will show
 ```text
 2023-02-17 14:46:02.126+0000 [id=27]    INFO    jenkins.install.SetupWizard#init:
@@ -50,19 +55,17 @@ To add software and configurations connect to container as root user
 docker exec -u root -it jenkins sh
  ```
 ```sh
-apk add maven gradle git
+apk add maven gradle git jq
 ```
-
 * add mvn and gradle configuration and tool locations to Jenkins Tool through `http://192.168.0.92:8080/manage`
 
 configuration details:
 
-  * `JDK_HOME`: `opt/java/openjdk``
+  * `JDK_HOME`: `opt/java/openjdk`
   * `GRADLE_HOME`: `/usr/share/java/gradle`
   * `MAVEN_HOME`: `/usr/share/java/maven-3`
   * Clear "install automatically" check boxes 
-and set Default settings provider  to `/usr/share/jenkins/settings.xml`
-
+and optionally set Default settings provider to `/usr/share/jenkins/settings.xml`
 
 ![configuration](https://github.com/sergueik/springboot_study/blob/master/basic-jenkins/screenshots/capture-tool-configuration.png)
 
@@ -75,7 +78,7 @@ chown -R jenkins:jenkins  ~jenkins/karate-collector
 exit
 ```
   
-#### Copy Project
+#### Copy Project from Development Machine
 
 ```sh
 docker cp ../basic-karate-collector/build.gradle jenkins:/var/jenkins_home/karate-collector
@@ -84,6 +87,8 @@ docker cp ../basic-karate-collector/src/test/java/example/ jenkins:/var/jenkins_
 ```
 #### Create and Run a Basic Project
 
+* create a freestyle project e.g. `test`
+* add gradle or maven invoking __Execute Shell__ build step
 ```sh
 mvn -verison
 gradle -version
@@ -91,6 +96,23 @@ cp -R ~/karate-collector/* .
 mvn clean test
 gradle clean test
 ```
+
+* log processing __Execute Shell__ build step
+```sh
+SUMMARY_LOG='target/karate-reports/karate-summary-json.txt'
+ls $SUMMARY_LOG
+cat $SUMMARY_LOG
+jq '.' $SUMMARY_LOG
+jq -cr '.featureSummary[].failedCount' $SUMMARY_LOG
+FAILED_COUNT=$(jq -cr '.featureSummary[].failedCount' $SUMMARY_LOG)
+echo "FAILED_COUNT=${FAILED_COUNT}"
+```
+
+and __Post-Build Actions__:
+  *  __Archive the artifacts__ 
+  * __Delete Workpace__
+
+
 after the build measure repository cache directories
 ```sh
 find ~/.m2 -type f |wc
@@ -286,9 +308,10 @@ $VAR1 = {
 };
 ```
 
-
 ### See Also
    * [configure the remote Maven repository in Jenkins project jobs](https://docs.cloudbees.com/docs/cloudbees-ci-kb/latest/client-and-managed-masters/configure-the-remote-maven-repository-in-jenkins-project-jobs)
+   * Jenkins Stable (LTS) [release change logs](https://www.jenkins.io/changelog-stable/)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
