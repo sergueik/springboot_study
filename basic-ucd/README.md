@@ -665,7 +665,9 @@ Status: true
   * https://db.apache.org/derby/
   * https://stedolan.github.io/jq/manual/#ConditionalsandComparisons
   * [public documentaion of various UCD topics](http://bertucci.org/stop-start-and-restart-a-windows-service-with-urbancode-deploy/) 
-  
+  * Selenium Udeploy Windows automation
+    + [powershell/C# client(https://github.com/sergueik/powershell_selenium/blob/master/powershell/ucd_client.ps1)
+    + [java client](https://github.com/sergueik/selenium_tests/blob/master/src/test/java/com/github/sergueik/selenium/UcdTest.java)
   
 ### NOTE
 
