@@ -30,9 +30,9 @@ func main() {
   if err != nil {
     log.Fatal("failed to Start: " + err.Error())
   } else {
-    fmt.Printf("Started pid=%d\n" , cmd.Process.Pid)
+    fmt.Printf("Started pid=%d\n", cmd.Process.Pid)
     fmt.Printf(string(stdout))
-    time.Sleep(1000 *  time.Millisecond)
+    time.Sleep(1000 * time.Millisecond)
   }
 }
 ```
@@ -155,6 +155,11 @@ or
 export COMPOSE_HTTP_TIMEOUT=600
 docker-compose up --build
 ```
+
+### See Also:
+
+   * online [go playground](https://go.dev/play/p/VCwlmEjAT0_a)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
