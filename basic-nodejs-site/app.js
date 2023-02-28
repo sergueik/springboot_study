@@ -1,6 +1,7 @@
 const express = require('express')
-const api = require('./API_helper')
+// const api = require('./API_helper')
 const cors = require('cors')
+const request = require('request')
 const app = express()
 const path = require('path')
 
@@ -29,7 +30,7 @@ make_API_call = function(url) {
 const port = process.env.PORT
 app.get('/', (req, res) => res.send('Welcome to Express!'))
 app.post('/api', (req, res) => {
-  api.make_API_call('https://jsonplaceholder.typicode.com/todos/1')
+  make_API_call('https://jsonplaceholder.typicode.com/todos/1')
     .then(response => {
       res.json(response)
     })

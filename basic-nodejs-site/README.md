@@ -15,6 +15,18 @@ docker run --name $NAME -d -e PORT=3000 -p 3000:3000 $IMAGE
 ```
 you will be able to perform REST calls to `https://jsonplaceholder.typicode.com/todos/1` by visiting the `http://192.168.0.64:3000/api.html` and pressing the `Submit` button. The page will `POST` to the server from where the backend does the REST call to another APM monitored app to see __Distributed Transaction Tracing__ in action.
 
+
+if seeing the error
+
+```text
+
+docker: Error response from daemon: endpoint with name basic-express-site already exists in network bridge.
+```
+
+will need to 
+```sh
+sudo systemctl  restart docker
+```
 ### See Also
 
   * __REST API Client to Backend__ [tutorial](https://stackabuse.com/building-a-rest-api-with-node-and-express/)
