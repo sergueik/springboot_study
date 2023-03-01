@@ -1,6 +1,30 @@
 ### Info
 
-This directory containes basic JSP Tomcat application packaged into war file.
+This directory containes basic static page JSP Tomcat application packaged into war file.
+The page compiles and executes basic Java code which prints system environment:
+```java
+key =  "CATALINA_HOME";
+out.println(key + " = " + System.getenv(key));
+```
+and properties parameters:
+
+```java
+String propertiesFile = "application.properties";
+String propertyName = "application.setting";
+InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream(propertiesFile);
+Properties properties = new Properties();
+properties.load(input);
+out.println(propertyName + " = " + properties.getProperty(propertyName));
+```
+and reads the contents of the local file:
+```java
+String propertiesPath = getServletContext().getRealPath(propertiesFile);
+InputStream input = new FileInputStream(propertiesPath);
+Properties properties = new Properties();
+properties.load(input);
+out.println("Property file \"" + propertiesPath  + "\" " + propertyName + " = " + properties.getProperty(propertyName));
+```
+
 ### Usage
 * test locally
 ```sh
@@ -8,7 +32,7 @@ mvn tomcat:run-war
 ```
 NOTE: currently the JSP page request is leading to Internal Server Error:
 ```sh
- curl -I http://localhost:8080/demo/
+curl -I http://localhost:8080/demo/
 ```
 ```sh
 HTTP/1.1 500 Internal Server Error
@@ -18,7 +42,7 @@ Content-Length: 2200
 Date: Fri, 30 Jul 2021 00:37:14 GMT
 Connection: close
 ``` 
-but the  static web works fine:
+but the explicitly provided static page url works fine:
 ```sh
 curl -I http://localhost:8080/demo/top_example.html
 ```
@@ -45,7 +69,7 @@ docker logs $NAME
 ```sh
 curl http://127.0.0.1:8080/demo/
 ```
-will reply with
+will print
 
 ```html
 html><body><pre>Server:f774929da86b
