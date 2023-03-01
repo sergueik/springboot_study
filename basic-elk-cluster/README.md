@@ -200,7 +200,11 @@ kibana              basic-elk-cluster-kibana          "/bin/tini -- /usr/l…"  
 ```
 ![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/captrue-cluster-with-node-express.png)
 
-Calling `http://localhost:3000/getAPIResponse` will trigger an `express` to `flask` to `sqlite3` call which will be recored in distributed tracing:
+Clcking the `Submit` button on `http://localhost:3000/api.html` will trigger an `express` to `flask` to `sqlite3` call:
+
+![Express Transactions](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-express-transactions.png)
+
+which will be recorded in distributed tracing:
 
 ![Distributed Tracing Call Example](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-fulltrace-express-python.png)
 
@@ -258,6 +262,21 @@ you will be running as root, but can launch firefox browser from `st` shell:
 
 ![Xvfb Fluxbox Firefox](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-xvfb-firefox-remmina.png)
 
+### Stopping the Cluster
+
+```sh
+docker-compose -f docker-compose.yml -f docker-compose-express.yml -f docker-compose-client.yml stop
+```
+* NOTE: cannot run
+```sh
+for F in *.yml ; do docker-compose -f $F stop; done
+```
+the error is:
+```text
+service "aspnetcore-app" depends on undefined service apm-server: invalid compose project
+service "app7" depends on undefined service app6: invalid compose project
+...
+```
 ### Configuration
 
 By default, the stack exposes the following ports:
