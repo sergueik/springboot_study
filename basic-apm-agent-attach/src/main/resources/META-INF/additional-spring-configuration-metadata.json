@@ -1,0 +1,39 @@
+{
+  "properties": [
+    {
+      "name": "elastic.apm.enabled",
+      "type": "java.lang.Boolean",
+      "description": "A boolean to enable attaching the Elastic APM Agent."
+    },
+    {
+      "name": "elastic.apm.server-url",
+      "type": "java.lang.String",
+      "description": "Elastic APM Server URL."
+    },
+    {
+      "name": "elastic.apm.service-name",
+      "type": "java.lang.String",
+      "description": "The service name to register with the Elastic APM Server."
+    },
+    {
+      "name": "elastic.apm.secret-token",
+      "type": "java.lang.String",
+      "description": "The token to register with the Elastic APM Server."
+    },
+    {
+      "name": "elastic.apm.environment",
+      "type": "java.lang.String",
+      "description": "The environment tag to add to the service on the Elastic APM Server."
+    },
+    {
+      "name": "elastic.apm.application-packages",
+      "type": "java.lang.String",
+      "description": "Packages the Elastic APM Agent should scan and report on."
+    },
+    {
+      "name": "elastic.apm.log-level",
+      "type": "java.lang.String",
+      "description": "The log level the Elastic APM Agent should use. Possible values are: DEBUG, INFO, WARNING, or ERROR."
+    }
+  ]
+}
