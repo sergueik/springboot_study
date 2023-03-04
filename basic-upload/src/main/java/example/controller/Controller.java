@@ -136,11 +136,11 @@ public class Controller {
 
 	// origin: https://qna.habr.com/q/1258736
 	// see also:
-	@RequestMapping(value = "/partialupload", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE, method = RequestMethod.GET)
+	@RequestMapping(value = "/partialupload", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE, method = RequestMethod.POST)
 	public ResponseEntity<byte[]> partialUpload(
-			@RequestHeader(value = "Range", required = false) String range)
+			@RequestHeader(value = "Range", required = false, defaultValue = "") String range)
 			throws IOException {
-		// https://stackoverflow.com/questions/36588915/how-to-use-spring-classpathresource-with-classpath-or-classpath-and-leading
+		// System.err.println("Range is: " + range);
 		ClassPathResource file = new ClassPathResource("test.txt");
 		InputStream is = file.getInputStream();
 		HttpHeaders headers = new HttpHeaders();
@@ -164,7 +164,7 @@ public class Controller {
 		is.read(data, 0, contentLength);
 		is.close();
 
-		headers.add("Content-Type", "video/mp4");
+		headers.add("Content-Type", "text/plain");
 		headers.add("Content-Length", String.valueOf(contentLength));
 		headers.add("Accept-Ranges", "bytes");
 		headers.add("Content-Range",
