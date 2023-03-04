@@ -84,5 +84,7 @@ with only difference is how Powershell client scripts transmit the file.
   * [testing a Spring Multipart POST Request](https://www.baeldung.com/spring-multipart-post-request-test)
   * [MockMvcRequestBuilders class methods](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/test/web/servlet/request/MockMvcRequestBuilders.html)
 
+  * REST pagination [article](https://www.baeldung.com/rest-api-pagination-in-spring) 
+  * handling partial content [forum question](https://qna.habr.com/q/1258736)(in Russian), with code example
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

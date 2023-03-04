@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -113,5 +115,62 @@ public class Controller {
 			return ResponseEntity.status(HttpStatus.OK).body(data.toString());
 		}
 	}
-}
 
+	//
+	@RequestMapping(value = "/classpath", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE, method = RequestMethod.GET)
+	public ResponseEntity<String> getClassPathResourcePath(
+			@RequestParam(value = "file", required = false) String file) {
+		String result = null;
+
+		try {
+			ClassPathResource resource = new ClassPathResource(
+					(file == null) ? "" : file);
+			result = resource.getFile().getAbsolutePath();
+			return ResponseEntity.status(HttpStatus.OK).body(result);
+		} catch (IOException e) {
+			System.err.print("Exception (caught):" + e.toString());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+
+	}
+
+	// origin: https://qna.habr.com/q/1258736
+	// see also:
+	@RequestMapping(value = "/partialupload", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE, method = RequestMethod.GET)
+	public ResponseEntity<byte[]> partialUpload(
+			@RequestHeader(value = "Range", required = false) String range)
+			throws IOException {
+		// https://stackoverflow.com/questions/36588915/how-to-use-spring-classpathresource-with-classpath-or-classpath-and-leading
+		ClassPathResource file = new ClassPathResource("test.txt");
+		InputStream is = file.getInputStream();
+		HttpHeaders headers = new HttpHeaders();
+		int fileSize = is.available();
+		byte[] data;
+		String[] rangeArray = range.split("=");
+		int byteStart = 0;
+		int byteEnd = fileSize - 1;
+
+		if (rangeArray.length > 1) {
+			String[] byteRange = rangeArray[1].split("-");
+			byteStart = Integer.parseInt(byteRange[0]);
+			if (byteRange.length > 1) {
+				byteEnd = Integer.parseInt(byteRange[1]);
+			}
+		}
+
+		int contentLength = byteEnd - byteStart + 1;
+		data = new byte[contentLength];
+		is.skip(byteStart);
+		is.read(data, 0, contentLength);
+		is.close();
+
+		headers.add("Content-Type", "video/mp4");
+		headers.add("Content-Length", String.valueOf(contentLength));
+		headers.add("Accept-Ranges", "bytes");
+		headers.add("Content-Range",
+				"bytes " + byteStart + "-" + byteEnd + "/" + fileSize);
+
+		return new ResponseEntity(data, headers, HttpStatus.PARTIAL_CONTENT);
+	}
+
+}
