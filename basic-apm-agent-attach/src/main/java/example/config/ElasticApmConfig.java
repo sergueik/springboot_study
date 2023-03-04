@@ -1,4 +1,4 @@
-package io.sayadi.elasticapmspringbootintegration;
+package example.config;
 
 import co.elastic.apm.attach.ElasticApmAttacher;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package io.sayadi.elasticapmspringbootintegration;
+package example.controller;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
