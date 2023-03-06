@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>startup</artifactId>
-  <version>0.3.0-SNAPSHOT</version>
+  <version>0.4.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>basic</name>
   <description>Demo Springboot Docker-hosted app with custom code in PostConstruct</description>
@@ -11,11 +11,7 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <!-- <version>1.5.4.RELEASE</version> -->
-    <!-- this requires 2.x 2.0.5.RELEASE does not work -->
-<!--
     <version>2.3.4.RELEASE</version>
--->
-    <version>1.5.4.RELEASE</version>
     <relativePath/>
   </parent>
   <properties>
