@@ -1,4 +1,4 @@
-###  Info
+﻿###  Info
 This directory contains a replica of [example code](https://github.com/sayadi/elastic-apm-spring-boot-integration) from [article](https://levelup.gitconnected.com/how-to-integrate-elastic-apm-java-agent-with-spring-boot-7ce8388a206e) on adding the
 [self-attached APM agent](https://www.elastic.co/guide/en/apm/agent/java/master/setup-attach-api.html)
 to a java Spring application via dependency injection and conditional method run.
@@ -127,7 +127,7 @@ curl http://192.168.0.92:$PREDEV_PORT/fast
 ```
 There should be no new APM information collected from `predev` environment
 
-* test `dev` environment again with a different API
+* test `dev` environment again with several API
 
 ```sh
 DEV_PORT=8082
@@ -136,25 +136,17 @@ curl http://192.168.0.92:$DEV_PORT/fast
 ```sh
 DEV_PORT=8082
 curl http://192.168.0.92:$DEV_PORT/slow
-
-you will see the second REST API as a new transaction
+```
+you will see the additional REST API(s) discovered as a new transaction(s)
 
 ![Transactions](https://github.com/sergueik/springboot_study/blob/master/basic-apm-agent-attach/screenshots/capture-two-transactions.png)
 
-
-
 ### See Also
-
 
    * general Spring `@Conditional` Annotation [documentation](https://www.baeldung.com/spring-conditionalonproperty)
    * Spring `@ConditionalOnProperty` Annotation [documentation](https://www.baeldung.com/spring-conditional-annotations)
-
-
-
-
-  
-
-
+   * Spring properties [basics](https://www.baeldung.com/properties-with-spring)
+   * Spring profiles [basics](https://www.baeldung.com/spring-profiles)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
