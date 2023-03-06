@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>signal-handler</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
   <developers>
@@ -36,7 +36,7 @@
     <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <snakeyaml.version>1.32</snakeyaml.version>
+    <snakeyaml.version>2.0</snakeyaml.version>
   </properties>
   <dependencies>
     <dependency>
