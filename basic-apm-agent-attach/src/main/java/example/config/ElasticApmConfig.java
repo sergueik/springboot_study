@@ -1,7 +1,8 @@
 package example.config;
 
 import co.elastic.apm.attach.ElasticApmAttacher;
-import lombok.Setter;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -10,40 +11,41 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
-@Setter
 @Configuration
 @ConfigurationProperties(prefix = "elastic.apm")
 @ConditionalOnProperty(value = "elastic.apm.enabled", havingValue = "true")
 public class ElasticApmConfig {
 
-	private static final String SERVER_URL_KEY = "server_url";
+	@Value("${elastic.apm.server-url:http://apm-server:8200}")
 	private String serverUrl;
 
-	private static final String SERVICE_NAME_KEY = "service_name";
+	@Value("${elastic.apm.service-name:elastic-apm-spring-boot-integration}")
 	private String serviceName;
 
-	private static final String SECRET_TOKEN_KEY = "secret_token";
+	@Value("${elastic.apm.secret-token}")
 	private String secretToken;
 
-	private static final String ENVIRONMENT_KEY = "environment";
+	@Value("${elastic.apm.environment}")
 	private String environment;
 
-	private static final String APPLICATION_PACKAGES_KEY = "application_packages";
+	@Value("${elastic.apm.log-level}")
 	private String applicationPackages;
 
-	private static final String LOG_LEVEL_KEY = "log_level";
+	@Value("${elastic.apm.log-level:INFO}")
 	private String logLevel;
 
 	@PostConstruct
 	public void init() {
 
 		Map<String, String> apmProps = new HashMap<>();
-		apmProps.put(SERVER_URL_KEY, serverUrl);
-		apmProps.put(SERVICE_NAME_KEY, serviceName);
-		apmProps.put(SECRET_TOKEN_KEY, secretToken);
-		apmProps.put(ENVIRONMENT_KEY, environment);
-		apmProps.put(APPLICATION_PACKAGES_KEY, applicationPackages);
-		apmProps.put(LOG_LEVEL_KEY, logLevel);
+		apmProps.put("server_url", serverUrl);
+		apmProps.put("service_name", serviceName);
+		if (secretToken != null && !secretToken.trim().equals("")) {
+			apmProps.put("secret_token", secretToken);
+		}
+		apmProps.put("environment", environment);
+		apmProps.put("application_packages", applicationPackages);
+		apmProps.put("log_level", logLevel);
 
 		ElasticApmAttacher.attach(apmProps);
 	}
