@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>prometheus-counter-jpa</artifactId>
-  <version>0.11.0-SNAPSHOT</version>
+  <version>0.12.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -20,7 +20,7 @@
     <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
     <postgresql.version>42.3.7</postgresql.version>
     <prometheus.version>0.12.0</prometheus.version>
-    <snakeyaml.version>1.32</snakeyaml.version>
+    <snakeyaml.version>2.0</snakeyaml.version>
     <spring-jdbc.version>5.2.0.RELEASE</spring-jdbc.version>
     <sqlite-jdbc.version>3.28.0</sqlite-jdbc.version>
     <json-path.version>2.6.0</json-path.version>
