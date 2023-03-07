@@ -1,0 +1,17 @@
+cluster.name: "docker-cluster" 
+network.host: 0.0.0.0 
+# NOTE: starting with ElasticSearch 8 
+# # SSL/TLS is ON by default for HTTP clients
+# disable SSL in your elasticsearch.yml configuration 
+# also REST requests need credentials
+
+xpack.security.http.ssl.enabled: false
+xpack.security.enabled: false
+xpack.monitoring.collection.enabled: true
+xpack.license.self_generated.type: basic
+#xpack.security.authc.token.enable: true
+#xpack.security.authc.api_key.enabled: true
+
+
+script.painless.regex.enabled: true
+# NOTE: the script.painless.regex.limit-factor setting yet to be explored

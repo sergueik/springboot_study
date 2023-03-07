@@ -54,7 +54,6 @@ basic-apm-agent-attach-apm-server-1      docker.elastic.co/apm/apm-server:7.17.7
 basic-apm-agent-attach-elasticsearch-1   docker.elastic.co/elasticsearch/elasticsearch:7.17.7   "/bin/tini -- /usr/l…"   elasticsearch       3 minutes ago       Up 3 minutes (healthy)   0.0.0.0:9200->9200/tcp, :::9200->9200/tcp, 9300/tcp
 basic-apm-agent-attach-kibana-1          docker.elastic.co/kibana/kibana:7.17.7                 "/bin/tini -- /usr/l…"   kibana              3 minutes ago       Up 3 minutes (healthy)   0.0.0.0:5601->5601/tcp, :::5601->5601/tcp
 
-
 ```
 the repetition of the command (after a small delay)
 
@@ -71,20 +70,35 @@ No more information is available about this error
 
 * run app "in dev environment"
 ```sh
- mvn spring-boot:run -Dspring-boot.run.profiles=dev
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 * test the `dev` environment
 
 ```sh
 DEV_PORT=8082
-curl http://192.168.0.92:$DEV_PORT/slow
+curl http://localhost:$DEV_PORT/slow
 ```
+* verify the ELK cluster is exposed to the host:
 
+```sh
+netstat -ant|grep LISTEN
+```
+will return among other ports, the `5601`,`9200`,  and `8200`
+```text
+tcp        0      0 0.0.0.0:8200            0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:5601            0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:9200            0.0.0.0:*               LISTEN     
+tcp6       0      0 :::5601                 :::*                    LISTEN     
+tcp6       0      0 :::8200                 :::*                    LISTEN
+tcp6       0      0 :::9200                 :::*                    LISTEN    
+```
+(the connectone between the APM Server, Kibana and ElasticSearch Server go along the 
+`elastic` network defined in the `docker-compose.yml`
 #### Inspect APM
-
-* After the ELK cluster is operational you still need to visit the 'Add APM' page `http://localhost:5601/app/kibana#/home/tutorial/apm` and 
-click the `Check APM Server Status` button
-![Check APM Server](https://github.com/serghttp://192.168.0.92:5601/app/observability/landingueik/springboot_study/blob/master/basic-apm-agent-attach/screenshots/capture-apm-server-status.png)
+ 
+* After the ELK cluster is operational one still needs to visit the 'Add APM' page `http://localhost:5601/app/kibana#/home/tutorial/apm` and 
+click the `Checck APM Server Status` button on `http://192.168.0.92:5601/app/observability`
+![Check APM Server](https://github.com/sergueik/springboot_study/blob/master/basic-apm-agent-attach/screenshots/capture-apm-server-status.png)
 
 `Check APM Agent Status` button
 ![Check APM Agent](https://github.com/sergueik/springboot_study/blob/master/basic-apm-agent-attach/screenshots/capture-apm-agent-status.png)
