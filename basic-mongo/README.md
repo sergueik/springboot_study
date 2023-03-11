@@ -434,5 +434,15 @@ docker image ls | grep  mongo | awk '{print $3}' |xargs -IX docker image rm X -f
   * https://www.baeldung.com/java-mongodb-aggregations
   * https://www.baeldung.com/queries-in-spring-data-mongodb
   * https://mongodb.github.io/mongo-java-driver/3.9/driver/getting-started/quick-start/  
+  * Elastic PaccketBeat monitoring MongoDB
+
+
+    + [etting started with Packetbeat for MongoDB](https://www.elastic.co/blog/mongodb-monitoring-with-packetbeat-and-elasticsearch)
+    + [packetbeat installation and configuration](https://www.elastic.co/guide/en/beats/packetbeat/current/packetbeat-installation-configuration.html)
+    + [checkojng status of libpcap apk](https://stackoverflow.com/questions/56623439/how-to-check-if-libpcap-installed-in-alphine-docker-container)
+    + [configuting mongodb in alpine](https://www.how2shout.com/linux/how-to-install-mongodb-server-on-alpine-linux/)
+    + [mongodb ElasticSearch integrations](https://docs.elastic.co/en/integrations/mongodb#compatibility) (possibly unrelated)
+    + [alternative Dockefile for Alpine](https://github.com/docker-flow/docker-flow-proxy/blob/main/Dockerfile.packetbeat)
+
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
