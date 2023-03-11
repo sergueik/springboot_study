@@ -25,7 +25,10 @@ docker container prune -f
 docker run -d --name $CONTAINER -p 27717:27017 -i $IMAGE
 docker logs $CONTAINER
 ```
-in the normal course of events the container log will be empty
+in the normal course of events the container log will be clean from errors and contain the status message
+```text
+2023-03-11T18:24:42.329+0000 I INDEX    [LogicalSessionCacheRefresh] build index done.  scanned 0 total records. 0 secs
+```
 * verify ports
 ```sh
 netstat -ant | grep LISTEN | grep 27717
@@ -45,7 +48,7 @@ if the error is observed
 ```text
 ``` 
 
-simply connect to plain shell and start mongod in a conteiner:
+simply connect to plain shell and start mongod in a container:
 ```sh
 docker exec -it $CONTAINER sh
 ```
@@ -56,7 +59,15 @@ docker exec -it $CONTAINER sh
 mongod
 ```
 - more profound troubleshooting is a work in progress
+### Start Packetbeat
+the container does not launch packetbeat automatically yet.
+Connect and perform
+```sh
+docker exec -it $CONTAINER sh
+```
+```sh
 
+```
 ### Testing Plain Java Application in a Developer host
 
 * run test
@@ -443,6 +454,6 @@ docker image ls | grep  mongo | awk '{print $3}' |xargs -IX docker image rm X -f
     + [configuting mongodb in alpine](https://www.how2shout.com/linux/how-to-install-mongodb-server-on-alpine-linux/)
     + [mongodb ElasticSearch integrations](https://docs.elastic.co/en/integrations/mongodb#compatibility) (possibly unrelated)
     + [alternative Dockefile for Alpine](https://github.com/docker-flow/docker-flow-proxy/blob/main/Dockerfile.packetbeat)
-
+    + [packetbeat configuration to capture mongodb traffic](https://www.elastic.co/guide/en/beats/packetbeat/master/configuration-mongodb.html)
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

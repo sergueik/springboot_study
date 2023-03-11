@@ -1,7 +1,7 @@
 FROM frolvlad/alpine-glibc:alpine-3.9_glibc-2.29
 
-ENV VERSION=8.6.2 PLATFORM=x86_64
-ENV FILENAME=packetbeat-${VERSION}-${PLATFORM}.tar.gz 
+ENV VERSION=8.6.2 PLATFORM=x86_64 OS=linux
+ENV FILENAME=packetbeat-${VERSION}-${OS}-${PLATFORM}.tar.gz 
 
 # Environment variables
 ENV PACKETBEAT_HOME /opt/packetbeat-${VERSION}-${PLATFORM}
@@ -16,15 +16,15 @@ RUN echo 'http://dl-cdn.alpinelinux.org/alpine/v3.6/main' >> /etc/apk/repositori
     && apk update \
     && apk add --no-cache \
        libpcap mongodb mongodb-tools curl
-RUN curl -L -O https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-8.6.2-linux-x86_64.tar.gz \\
-  && tar xzvf packetbeat-8.6.2-linux-x86_64.tar.gz
+RUN curl -L -O https://artifacts.elastic.co/downloads/beats/packetbeat/packetbeat-8.6.2-linux-x86_64.tar.gz \
+  && tar xzvf /packetbeat-8.6.2-linux-x86_64.tar.gz -C /opt
 # TODO: configure the packetbeat.yml and start packatbeat via entrypoint (?)
 # see also: https://github.com/JonnyBGod/docker-packetbeat/blob/master/Dockerfile
 VOLUME /data/db
 EXPOSE 27017 28017
 ADD packetbeat.yml ${PACKETBEAT_HOME}/
 ADD packetbeat-entrypoint.sh /root
-RUN chmod +x /root/packebeat-entrypoint.sh
+RUN chmod +x /root/packetbeat-entrypoint.sh
 
 # NOTE: Windows Line endings sensitive
 COPY run.sh /root
