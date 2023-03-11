@@ -1,0 +1,19 @@
+version: '2.2'
+
+services:
+  app8:
+    restart: unless-stopped
+    build: app8
+    container_name: app8
+    environment:
+      - MONITOR=true
+      - APM_SERVER=apm-server
+    ports:
+      - "27717:27017"
+    depends_on:
+      apm-server:
+        condition: service_healthy
+    networks:
+      - elastic
+networks:
+  elastic:

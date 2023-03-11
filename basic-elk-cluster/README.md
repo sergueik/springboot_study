@@ -2023,7 +2023,349 @@ with the logs:
 "at java.lang.Thread.run(Thread.java:835) [?:?]"] }
 ```
 
+### Installing Packetbeat
 
+* NOTE: when enabling both 
+
+```text
+output.onsole:
+  pretty: true
+```
+and
+```text
+output.elasticsearch:
+  # Array of hosts to connect to.
+  hosts: ["elasticsearch:9200"]
+```
+in `packbeat.yaml` the application fails wih error 
+```text
+Exiting: error unpacking config data: more than one namespace configured accessing 'output' (source:'packetbeat.yml')
+```
+currently commented the `output.elasticsearch`
+
+leave only mongodb protocol configured in `packetbeat.yml`:
+```text
+packetbeat.protocols:
+- type: icmp
+  # Enable ICMPv4 and ICMPv6 monitoring. The default is true.
+  enabled: true
+
+- type: mongodb
+  # Configure the ports where to listen for MongoDB traffic. You can disable
+  # the MongoDB protocol by commenting out the list of ports.
+  ports: [27017]
+  send_request: true
+  send_response: true
+  max_docs: 0
+  max_doc_length: 0
+```
+
+perform the test nteracting via bridge gateway.
+
+the test will log:
+ 
+```text
+ -------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running example.BasicTest
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+2023-03-11 15:04:50  [main] - INFO  - Database: admin
+ trace.id=2023-03-11 15:04:50  [main] - INFO  - Database: config
+ trace.id=2023-03-11 15:04:50  [main] - INFO  - Database: local
+ trace.id=2023-03-11 15:04:50  [main] - INFO  - Database: myUserDb
+ trace.id=2023-03-11 15:04:50  [main] - INFO  { "name" : { "first" : "James", "last" : "Bond" } }
+ trace.id=2023-03-11 15:04:50  [main] - INFO  { "name" : "name 0" }
+ trace.id=2023-03-11 15:04:50  [main] - INFO  { "name" : "name 1" }
+ trace.id=2023-03-11 15:04:50  [main] - INFO  { "name" : "name 2" }
+ trace.id=2023-03-11 15:04:50  [main] - INFO  { "name" : "name 3" }
+ trace.id=2023-03-11 15:04:50  [main] - INFO  { "name" : "name 4" }
+...
+```
+ 
+the packetbeat will log to console enties of the following kind:
+```json
+
+{
+  "@timestamp": "2023-03-11T20:05:20.002Z",
+  "@metadata": {
+    "beat": "packetbeat",
+    "type": "_doc",
+    "version": "7.17.7"
+  },
+  "flow": {
+    "id": "EAz/////AP//////CAwAAAGsFAABrBQAB2KQiWkRAAAAAAAAAA",
+    "final": false
+  },
+  "type": "flow",
+  "source": {
+    "ip": "172.20.0.1",
+    "port": 36962,
+    "packets": 12,
+    "bytes": 2086
+  },
+  "host": {
+    "containerized": true,
+    "ip": [
+      "172.20.0.7"
+    ],
+    "mac": [
+      "02:42:ac:14:00:07"
+    ],
+    "hostname": "9e3f4718f471",
+    "name": "9e3f4718f471",
+    "architecture": "x86_64",
+    "os": {
+      "version": "",
+      "family": "",
+      "name": "Alpine Linux",
+      "kernel": "4.15.0-206-generic",
+      "type": "linux",
+      "platform": "alpine"
+    }
+  },
+  "agent": {
+    "version": "7.17.7",
+    "hostname": "9e3f4718f471",
+    "ephemeral_id": "07422a26-4b7b-4539-b198-91ba9318614f",
+    "id": "85c8ff02-f838-4543-bd2e-9ec76ce16b78",
+    "name": "9e3f4718f471",
+    "type": "packetbeat"
+  },
+  "event": {
+    "kind": "event",
+    "category": [
+      "network_traffic",
+      "network"
+    ],
+    "action": "network_flow",
+    "type": [
+      "connection"
+    ],
+    "start": "2023-03-11T20:04:50.945Z",
+    "end": "2023-03-11T20:04:50.948Z",
+    "duration": 2803594,
+    "dataset": "flow"
+  },
+  "network": {
+    "type": "ipv4",
+    "transport": "tcp",
+    "community_id": "1:CLjeFrxe9q+Q3dyYJ4FdCHcRwDo=",
+    "bytes": 4831,
+    "packets": 22
+  },
+  "ecs": {
+    "version": "1.12.0"
+  },
+  "destination": {
+    "port": 27017,
+    "packets": 10,
+    "bytes": 2745,
+    "ip": "172.20.0.7"
+  }
+}
+```
+and entries like:
+```json
+{
+  "@timestamp": "2023-03-11T20:04:50.207Z",
+  "@metadata": {
+    "beat": "packetbeat",
+    "type": "_doc",
+    "version": "7.17.7"
+  },
+  "query": "admin.$cmd.otherCommand()",
+  "network": {
+    "type": "ipv4",
+    "transport": "tcp",
+    "protocol": "mongodb",
+    "direction": "ingress",
+    "community_id": "1:gGhuZCtThD4I1jJl/zHJtCnXxFE=",
+    "bytes": 519
+  },
+  "method": "otherCommand",
+  "source": {
+    "bytes": 280,
+    "ip": "172.20.0.1",
+    "port": 36818
+  },
+  "host": {
+    "ip": [
+      "172.20.0.7"
+    ],
+    "mac": [
+      "02:42:ac:14:00:07"
+    ],
+    "hostname": "9e3f4718f471",
+    "name": "9e3f4718f471",
+    "architecture": "x86_64",
+    "os": {
+      "kernel": "4.15.0-206-generic",
+      "type": "linux",
+      "platform": "alpine",
+      "version": "",
+      "family": "",
+      "name": "Alpine Linux"
+    },
+    "containerized": true
+  },
+  "server": {
+    "port": 27017,
+    "bytes": 239,
+    "ip": "172.20.0.7"
+  },
+  "destination": {
+    "bytes": 239,
+    "ip": "172.20.0.7",
+    "port": 27017
+  },
+  "client": {
+    "bytes": 280,
+    "ip": "172.20.0.1",
+    "port": 36818
+  },
+  "event": {
+    "kind": "event",
+    "dataset": "mongodb",
+    "duration": 243000,
+    "start": "2023-03-11T20:04:50.207Z",
+    "end": "2023-03-11T20:04:50.207Z",
+    "category": [
+      "network_traffic",
+      "network"
+    ],
+    "type": [
+      "connection",
+      "protocol"
+    ]
+  },
+  "type": "mongodb",
+  "ecs": {
+    "version": "1.12.0"
+  },
+  "resource": "admin.$cmd",
+  "mongodb": {
+    "numberToSkip": 0,
+    "numberToReturn": 4294967295,
+    "numberReturned": 1,
+    "cursorId": 0,
+    "startingFrom": 0,
+    "fullCollectionName": "admin.$cmd"
+  },
+  "agent": {
+    "type": "packetbeat",
+    "version": "7.17.7",
+    "hostname": "9e3f4718f471",
+    "ephemeral_id": "07422a26-4b7b-4539-b198-91ba9318614f",
+    "id": "85c8ff02-f838-4543-bd2e-9ec76ce16b78",
+    "name": "9e3f4718f471"
+  },
+  "related": {
+    "ip": [
+      "172.20.0.1",
+      "172.20.0.7"
+    ]
+  },
+  "status": "OK"
+}
+```
+also the queries are logged in the following way:
+```json
+{
+  "@timestamp": "2023-03-11T20:53:07.238Z",
+  "@metadata": {
+    "beat": "packetbeat",
+    "type": "_doc",
+    "version": "7.17.7"
+  },
+  "server": {
+    "ip": "172.20.0.7",
+    "port": 27017
+  },
+  "event": {
+    "kind": "event",
+    "dataset": "mongodb",
+    "start": "2023-03-11T20:53:07.238Z",
+    "category": [
+      "network_traffic",
+      "network"
+    ],
+    "type": [
+      "connection",
+      "protocol"
+    ]
+  },
+  "ecs": {
+    "version": "1.12.0"
+  },
+  "source": {
+    "ip": "172.20.0.1",
+    "port": 33388,
+    "bytes": 225
+  },
+  "status": "OK",
+  "request": ".msg()",
+  "destination": {
+    "ip": "172.20.0.7",
+    "port": 27017
+  },
+  "client": {
+    "port": 33388,
+    "bytes": 225,
+    "ip": "172.20.0.1"
+  },
+  "type": "mongodb",
+  "agent": {
+    "version": "7.17.7",
+    "hostname": "0b8d1ddcf0b0",
+    "ephemeral_id": "3f27df30-8fa2-4ae1-9585-4a77e5fc47e4",
+    "id": "329dda73-f488-4b2c-a58b-2f2e6cef6a09",
+    "name": "0b8d1ddcf0b0",
+    "type": "packetbeat"
+  },
+  "response": "{\"$db\":\"myUserDb\",\"$readPreference\":{\"mode\":\"primaryPreferred\"},\"filter\":{\"$or\":[{\"name\":{\"$eq\":\"James\"}},{\"name\":{\"$eq\":\"Fred\"}}]},\"find\":\"agents\",\"limit\":1,\"singleBatch\":true}",
+  "resource": "",
+  "method": "msg",
+  "host": {
+    "name": "0b8d1ddcf0b0",
+    "os": {
+      "type": "linux",
+      "platform": "alpine",
+      "version": "",
+      "family": "",
+      "name": "Alpine Linux",
+      "kernel": "4.15.0-206-generic"
+    },
+    "containerized": true,
+    "ip": [
+      "172.20.0.7"
+    ],
+    "mac": [
+      "02:42:ac:14:00:07"
+    ],
+    "hostname": "0b8d1ddcf0b0",
+    "architecture": "x86_64"
+  },
+  "query": ".msg()",
+  "network": {
+    "community_id": "1:9kPxxPD2PHA54ooH7L9JTWwVO64=",
+    "bytes": 225,
+    "type": "ipv4",
+    "transport": "tcp",
+    "protocol": "mongodb",
+    "direction": "ingress"
+  },
+  "mongodb": {},
+  "related": {
+    "ip": [
+      "172.20.0.1",
+      "172.20.0.7"
+    ]
+  }
+}
+```
 ### See Also
 
 
