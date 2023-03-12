@@ -1,18 +1,21 @@
 package example.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import example.dto.MessageDto;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-@Slf4j
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class DemoMessageListener implements MessageListener {
+
+	private static final Logger log = LoggerFactory
+			.getLogger(DemoMessageListener.class);
 
 	private final ObjectMapper objectMapper;
 
