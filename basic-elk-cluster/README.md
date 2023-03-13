@@ -2060,7 +2060,16 @@ packetbeat.protocols:
   max_doc_length: 0
 ```
 
-perform the test nteracting via bridge gateway.
+*  start the packetbeat manually:
+```sh
+docker exec -it app8 sh
+```
+in the container,
+```sh
+cd /opt/packetbeat-7.17.7-linux-x86_64/
+./packetbeat --strict.perms=false -e -c packetbeat.yml
+```
+perform the test interacting via bridge gateway.
 
 the test will log:
  
@@ -2366,6 +2375,19 @@ also the queries are logged in the following way:
   }
 }
 ```
+after connecting to the elasticsearch and performing  basic mongodb test by running a java app, observe in docker-compose console:
+```text
+app8           | 2023-03-13T23:23:31.599+0000 I NETWORK  [conn75] received client metadata from 172.20.0.1:48476 conn75: { driver: { name: "mongo-java-driver", version: "3.9.1" }, os: { type: "Linux", name: "Linux", architecture: "amd64", version: "4.15.0-206-generic" }, platform: "Java/Oracle Corporation/1.8.0_161-b12" }
+
+```
+in index pattern there is a number of `mongodb.` fields
+
+![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-packetbeat-mongo.png)
+
+NOTE: not seeing the query defails yet.
+
+
+
 ### See Also
 
 
@@ -2440,6 +2462,12 @@ also, seems that SOAP 1.2 requires the action to be set via the Content-Type hea
     + [finding local IP addresses using Python's stdlib](https://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib)
 
     + docker-compose `extends` syntax [documetation](https://docs.docker.com/compose/extends/) - share Compose configurations between files and projects
+
+
+  * Elastic Clusters on docker-compose
+
+   + https://github.com/deviantony/docker-elk/commit/1a30af6e11f65323b0f3a75a4e4ab54861adc240 (NOTE: too many nodes)
+   + https://github.com/maxyermayank/docker-compose-elasticsearch-kibana
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

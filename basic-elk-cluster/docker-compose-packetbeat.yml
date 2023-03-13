@@ -1,0 +1,23 @@
+version: '2.2'
+# origin: https://github.com/maxyermayank/docker-compose-elasticsearch-kibana/blob/master/docker-compose.yml#L232
+# NOTE: adding vanilla packetbeat image
+services:
+  packetbeat:
+    restart: unless-stopped
+    image: docker.elastic.co/beats/packetbeat:7.17.7
+    container_name: packetbeat
+    environment:
+      - setup.kibana.host=kibana:5601
+      - output.elasticsearch.hosts=["elasticsearch:9200"]
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    depends_on:
+      apm-server:
+        condition: service_healthy
+    networks:
+      - elastic
+    # no api  key     
+    command: --strict.perms=false
+networks:
+  elastic:
