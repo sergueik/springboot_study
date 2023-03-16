@@ -164,6 +164,10 @@ run the command:
 ```sh
 docker-compose -f docker-compose.yml -f docker-compose-javasoap.yml up --build
 ```
+
+To invoke the SOAP call from Python applicstion, interact with the latter through the browser "Currency Convertor" web page `http://192.168.0.92:8000/`
+On Kibana side you will be able to inspect the transaction from either step (the "View full tarce" button will indicate)
+
 #### Add NPM Express Blog page node
 
 ```sh
@@ -200,7 +204,7 @@ kibana              basic-elk-cluster-kibana          "/bin/tini -- /usr/l…"  
 ```
 ![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/captrue-cluster-with-node-express.png)
 
-Clcking the `Submit` button on `http://localhost:3000/api.html` will trigger an `express` to `flask` to `sqlite3` call:
+Clicking the `Submit` button on `http://localhost:3000/api.html` will trigger an `express` to `flask` to `sqlite3` call:
 
 ![Express Transactions](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-express-transactions.png)
 
