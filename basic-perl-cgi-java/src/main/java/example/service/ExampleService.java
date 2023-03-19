@@ -1,9 +1,12 @@
 package example.service;
 /**
- * Copyright 2021 Serguei Kouzmine
+ * Copyright 2021-2023 Serguei Kouzmine
  */
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
+import java.util.Arrays;
 import java.io.InputStreamReader;
 
 import org.apache.commons.logging.Log;
@@ -28,8 +31,17 @@ public class ExampleService {
 		return runProcess(String.format("%s/%s %s", scriptDir, script, options));
 	}
 
-	// https://www.javaworld.com/article/2071275/core-java/when-runtime-exec---won-t.html?page=2
+	public String runScript(final String script, String payload) {
+		return runProcess(String.format("%s/%s %s", scriptDir, script, options),
+				payload);
+	}
+
 	public String runProcess(String processName) {
+		return runProcess(processName, null);
+	}
+
+	// https://www.javaworld.com/article/2071275/core-java/when-runtime-exec---won-t.html?page=2
+	public String runProcess(String processName, String payload) {
 		BufferedReader stderrBufferedReader;
 		BufferedReader stdoutBufferedReader;
 		StringBuffer processOutput = new StringBuffer();
@@ -44,7 +56,29 @@ public class ExampleService {
 				processName.trim());
 		try {
 			Runtime runtime = Runtime.getRuntime();
-			Process process = runtime.exec(command);
+
+			Process process = null;
+
+			if (payload != null) {
+				// see also:
+				// execute the specified string command in a separate process
+				// with the specified environment
+				// http://docs.oracle.com/javase/6/docs/api/java/lang/Runtime.html#exec%28java.lang.String,%20java.lang.String%5B%5D%29
+				String[] envp = { String.format("CONTENT_LENGTH=%d", payload.length()),
+						"REQUEST_METHOD=POST" };
+				log.info("Running with environment: " + Arrays.asList(envp));
+				process = runtime.exec(command, envp);
+				BufferedWriter bufferedWriter = new BufferedWriter(
+						new OutputStreamWriter(process.getOutputStream()));
+				log.info("Passing the payload: " + payload);
+				// Passing the payload: %7B%22foo%22%3A+%22bar%22%7D=
+				bufferedWriter.write(payload);
+				bufferedWriter.newLine();
+				bufferedWriter.flush();
+				bufferedWriter.close();
+			} else {
+				process = runtime.exec(command);
+			}
 			// process.redirectErrorStream( true);
 
 			stdoutBufferedReader = new BufferedReader(

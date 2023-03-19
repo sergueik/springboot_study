@@ -9,6 +9,7 @@ RUN apk update && apk upgrade && \
 
 ADD cgi-bin /var/www/localhost/cgi-bin
 
+RUN sed -i 's|\r||g' /var/www/localhost/cgi-bin/*cgi
 RUN chmod 775 /var/www/localhost/cgi-bin/*.cgi
 ARG app_jar="example.basic-perl-cgi-java.jar"
 ADD "target/${app_jar}" app.jar

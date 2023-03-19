@@ -104,6 +104,32 @@ will be translated to running cgi-bin script: `legacy-script` with `args[]` stri
 ```sh
 -a,b,-c,d
 ```
+### Post Requests
+
+```sh 
+curl -H "Content-Type: application/json" -X POST -d '{"foo": 10, "bar": 30}' http://192.168.99.100:8085/cgi-bin/status2.cgi
+```
+this will print to the console
+```text
+Date: Sun, 19 Mar 2023 21:34:29 GMT
+Content-Type: application/json
+Content-Length: 56
+ {   "foo" : 10,   "remote_addr" : "",   "bar" : 30}
+```
+```sh 
+curl -H "Content-Type: application/json" -X POST -d '{"foo": "bar"}' http://localhost:8085/cgi-bin/status.cgi
+```
+this will print to the console
+```text
+Content-Type: application/json{   "remote_addr" : null,   "foo" : "bar"}
+```
+### Work in Docker ToolBox
+if [Docker Toolbox](https://github.com/docker-archive/toolbox) is used from Windows host, find the ip address of the irtual Box container via the [command](https://devilbox.readthedocs.io/en/latest/howto/docker-toolbox/find-docker-toolbox-ip-address.html):
+```sh
+DOCKER_IP=$(docker-machine ip)
+echo $DOCKER_IP
+```
+use `$DOCKER_IP` whenever accessing the container, instead of `localhost`.
 
 ### Cleanup
 ```sh
