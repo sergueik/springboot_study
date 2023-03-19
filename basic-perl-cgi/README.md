@@ -53,6 +53,14 @@ exit the container
 ```sh
 curl http://$(hostname -i):9090/
 ```
+if [Docker Toolbox](https://github.com/docker-archive/toolbox) is used from Windows host, find the ip address of the irtual Box container via the command:
+```sh
+DOCKER_IP=$(docker-machine ip)
+echo $DOCKER_IP
+```
+```sh
+curl http://$DOCKER_IP:9090/
+```
 it will print the default apache welcome page
 ```html
 <html><body><h1>It works!</h1></body></html>
@@ -65,7 +73,24 @@ socket: address family not supported by protocol
 ```
 observed in Docker version __20.10.6__ on a host where ipv6 was [turned off](https://linuxconfig.org/how-to-disable-ipv6-address-on-ubuntu-18-04-bionic-beaver-linux)
 
+if an error is reported
 
+```HTML
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>500 Internal Server Error</title>
+</head><body>
+<h1>Internal Server Error</h1>
+<p>The server encountered an internal error or
+misconfiguration and was unable to complete
+your request.</p>
+<address>Apache/2.4.46 (Unix) Server at 192.168.99.100 Port 9090</address>
+</body></html>
+```
+see the apache error log:
+```sh
+docker exec -it $NAME tail /var/log/apache2/error.log
+```
 * run smoke test
 call cgi inside container directly:
 ```sh
@@ -517,6 +542,7 @@ time                appid host                   operation value
   * https://stackoverflow.com/questions/42701048/how-to-pass-vm-to-a-settimeout-in-angularjs-changes-to-scope-dont-update-dom-v
   * [curl post file](https://reqbin.com/req/c-dot4w5a2/curl-post-file)
   * [CPAN](https://metacpan.org/pod/HTTP::Request::Common) `HTTP::Request::Common`
+  * [how to find Docker Toolbox IP address](https://devilbox.readthedocs.io/en/latest/howto/docker-toolbox/find-docker-toolbox-ip-address.html)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
