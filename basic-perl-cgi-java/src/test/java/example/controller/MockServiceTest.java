@@ -38,7 +38,7 @@ public class MockServiceTest {
 
 	@Test
 	public void test1() throws URISyntaxException {
-		when(mockService.runScript(any(String.class), any(String[].class)))
+		when(mockService.runCGiBINScript(any(String.class), any(String[].class)))
 				.thenReturn("called");
 		controller = new Controller(mockService);
 		assertThat(controller.legacyParam("example.cgi", request), is("called"));
@@ -48,7 +48,7 @@ public class MockServiceTest {
 	public void test2() throws URISyntaxException {
 		// Invalid use of argument matchers
 		// When using matchers, all arguments have to be provided by matchers
-		when(mockService.runScript(any(String.class),
+		when(mockService.runCGiBINScript(any(String.class),
 				eq(new String[] { "a", "b", "c" }))).thenReturn("got args");
 		controller = new Controller(mockService);
 		assertThat(controller.legacyParam("example.cgi", request), is("got args"));

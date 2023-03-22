@@ -52,7 +52,7 @@ public class Controller {
 			// "bar": 30}' http://192.168.99.100:8085/cgi-bin/status.cgi
 			// "Content-Type: appliction/json=&{"foo": "bar"}="
 			body = URLDecoder.decode(request.getBody(), "utf8");
-			return service.runScript(script, body);
+			return service.runCGiBINScript(script, body);
 		} catch (UnsupportedEncodingException e) {
 			return "";
 		}
@@ -62,7 +62,7 @@ public class Controller {
 	// try to have more specific annotation
 	@PostMapping(value = "/cgi-bin/{script:status[0-9].cgi}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String status(@PathVariable String script, @RequestBody String body) {
-		return service.runScript(script, body);
+		return service.runCGiBINScript(script, body);
 	}
 
 	//
@@ -76,16 +76,17 @@ public class Controller {
 
 		String[] commandlineArgs = (query == null) ? new String[] {}
 				: query.split("\\s+");
-
+		final String separator = ",";
+		// NOTE: comma-joined commandline arguments formatting is non-standard
 		log.info(String.format("Running cgi-bin script: %s with args: %s", script,
-				String.join(",", commandlineArgs)));
-		return service.runScript(script, commandlineArgs);
+				String.join(separator, commandlineArgs)));
+		return service.runCGiBINScript(script, commandlineArgs);
 	}
 
 	@GetMapping(value = "/bad/cgi-bin/{script}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String badRun(@PathVariable String script) {
 		log.info(String.format("Running cgi-bin script: %s", script));
-		return service.runScript(script);
+		return service.runCGiBINScript(script);
 	}
 
 }

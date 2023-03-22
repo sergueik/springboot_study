@@ -17,43 +17,53 @@ import org.springframework.stereotype.Service;
 public class ExampleService {
 
 	private Log log = LogFactory.getLog(this.getClass());
-
+	private final String separator = " ";
 	private final static String scriptDir = "/var/www/localhost/cgi-bin";
 	private final String options = "-no-headers";
 	protected static String osName = getOSName();
 
-	public String runScript(final String script) {
-		return runProcess(String.format("%s/%s %s", scriptDir, script, options));
+	public String runCGiBINScript(final String script) {
+		return runPerlScript(String.format("%s/%s %s", scriptDir, script, options));
 	}
 
-	public String runScript(final String script, String[] commandlineArgs) {
+	public String runCGiBINScript(final String script, String[] commandlineArgs) {
 		// ignore command line args for now
-		return runProcess(String.format("%s/%s %s", scriptDir, script, options));
+		return runPerlScript(String.format("%s/%s %s %s", scriptDir, script,
+				options, String.join(" ", Arrays.asList(commandlineArgs))));
 	}
 
-	public String runScript(final String script, String payload) {
-		return runProcess(String.format("%s/%s %s", scriptDir, script, options),
+	public String runCGiBINScript(final String script, String payload) {
+		return runPerlScript(String.format("%s/%s %s", scriptDir, script, options),
 				payload);
 	}
 
-	public String runProcess(String processName) {
-		return runProcess(processName, null);
+	public String runPerlScript(String processName) {
+		return runPerlScript(processName, null);
 	}
 
-	// https://www.javaworld.com/article/2071275/core-java/when-runtime-exec---won-t.html?page=2
-	public String runProcess(String processName, String payload) {
-		BufferedReader stderrBufferedReader;
-		BufferedReader stdoutBufferedReader;
-		StringBuffer processOutput = new StringBuffer();
-		StringBuffer processError = new StringBuffer();
-		log.info("Running the process: " + processName);
+	public String runPerlScript(String perlScriptWithArgs, String payload) {
+		log.info("Running the perl script with arguments: " + perlScriptWithArgs);
 
-		if (processName.isEmpty()) {
+		if (perlScriptWithArgs.isEmpty()) {
 			return null;
 		}
 		String command = String.format(
 				(osName.equals("windows")) ? "perl.exe %s" : "/usr/bin/perl %s",
-				processName.trim());
+				perlScriptWithArgs.trim());
+		return runProcess(command, payload);
+
+	}
+
+	public String runProcess(String command) {
+		return runProcess(command, null);
+	}
+
+	// https://www.javaworld.com/article/2071275/core-java/when-runtime-exec---won-t.html?page=2
+	public String runProcess(String command, String payload) {
+		BufferedReader stderrBufferedReader;
+		BufferedReader stdoutBufferedReader;
+		StringBuffer processOutput = new StringBuffer();
+		StringBuffer processError = new StringBuffer();
 		try {
 			Runtime runtime = Runtime.getRuntime();
 
