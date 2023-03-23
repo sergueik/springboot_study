@@ -40,33 +40,20 @@ public class Controller {
 		service = data;
 	}
 
-	@PostMapping(value = "/cgi-bin/{script:status.cgi}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public String statusBroken(@PathVariable String script,
+	@PostMapping(value = "/cgi-bin/{script:[a-z.0-9]+.sh}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public String shell(@PathVariable String script,
 			RequestEntity<String> request) {
-
-		String body;
-		try {
-			// body = new String(Base64.decodeBase64(request.getBody()));
-			// NOTE:
-			// getBody() returns everything in one string:
-			// call curl -H "Content-Type: appliction/json" -X POST -d '{"foo": 10,
-			// "bar": 30}' http://192.168.99.100:8085/cgi-bin/status.cgi
-			// "Content-Type: appliction/json=&{"foo": "bar"}="
-			body = URLDecoder.decode(request.getBody(), "utf8");
-			return service.runCGiBINScript(script, body);
-		} catch (UnsupportedEncodingException e) {
-			return "";
-		}
-
+		String body = request.getBody();
+		log.info("pricessing shell script: " + script);
+		final String scriptDir = "/var/www/localhost/cgi-bin";
+		return service.runProcess(String.format("%s/%s", scriptDir, script), body);
 	}
 
-	// try to have more specific annotation
-	@PostMapping(value = "/cgi-bin/{script:status[0-9].cgi}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/cgi-bin/{script:status.cgi}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String status(@PathVariable String script, @RequestBody String body) {
 		return service.runCGiBINScript(script, body);
 	}
 
-	// try to have more specific annotation
 	@PostMapping(value = "/cgi-bin/{script:status[0-9].cgi}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String status(@PathVariable String script, @RequestBody byte[] bytes) {
 		return service.runCGiBINScript(script,
@@ -77,7 +64,7 @@ public class Controller {
 	// Free-hand argument will be possible to read through RequestEntity
 	// https://stackoverflow.com/questions/52842979/how-to-get-request-url-in-spring-boot
 	// The question mark does not have REGEX meaning in the mask
-	@GetMapping(value = "/cgi-bin/{script:[a-z.0-9]+}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/cgi-bin/{script:[a-z.0-9]+cgi}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String legacyParam(@PathVariable String script,
 			RequestEntity<String> request) {
 		String query = request.getUrl().getQuery();

@@ -20,6 +20,7 @@ docker build -t $NAME -f Dockerfile .
 * start run default command
 
 ```sh
+docker container rm $NAME
 docker run -d -p 8085:8085 --name $NAME $NAME
 docker logs -f $NAME
 ```
@@ -144,6 +145,59 @@ DOCKER_MACHINE_IP=$(docker-machine ip)
 echo $DOCKER_MACHINE_IP
 ```
 use `$DOCKER_MACHINE_IP` whenever accessing the container, instead of `localhost`.
+
+### Shell Scripts
+
+```sh
+curl -s -X  GET -d '' -H 'Content-Type: application/json' http://$DOCKER_MACHINE_IP:8085/cgi-bin/static.sh | $JQ  '.' 
+```
+```JSON
+{
+  "data": {
+    "rows": [
+      {
+        "name": "Ray",
+        "message": "Hello",
+        "imageUri": null,
+        "_links": {
+          "self": {
+            "href": "http://localhost:8081/rows/1"
+          },
+          "link": {
+            "href": "http://localhost:8081/rows/1"
+          }
+        }
+      },
+      {
+        "name": "Charles",
+        "message": "Hello",
+        "imageUri": null,
+        "_links": {
+          "self": {
+            "href": "http://localhost:8081/rows/1"
+          },
+          "link": {
+            "href": "http://localhost:8081/rows/1"
+          }
+        }
+      }
+    ]
+  }
+}
+
+```
+```sh
+curl -s -X  GET -d '{"data":[1, 2, 3]}' -H 'Content-Type: application/json' http://$DOCKER_MACHINE_IP:8085/cgi-bin/echo.sh | $JQ  '.'
+```
+```JSON
+{
+  "data": [
+    1,
+    2,
+    3
+  ]
+  
+```
 
 ### Cleanup
 ```sh
