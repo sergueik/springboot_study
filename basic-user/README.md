@@ -3,23 +3,34 @@
 This directory contains standard Docker example of creating the container with
 specific non-root user `docker_user`, cloning the invoking user UID, mount that container user home directory as writable volume mapped to project directory and launch the editor in docker
 
-#### Note
+#### Usage
 
-Use the (readonly) environment `UID` from the host user login session to update the `Dockerfile` - modifying the `UID` though run argument way will not have intended effect
+* Write some text into `test.txt` on the host, e.g.
+
+```text
+this file was copied from the host
+```
+
+the file will be copied into container during docker build
+
+* Use the (readonly) environment `UID` from the host user login session to update the `Dockerfile` - modifying the `UID` though run argument way will not have intended effect
 ```sh
 DOCKER_USER=docker_user
 TAG=basic_user
 sed -i "s|UID=[0-9][0-9]*|UID=$UID|g" Dockerfile
 docker build -t $TAG -f Dockerfile .
+```
+
+```sh
 docker run -u $DOCKER_USER -it -v $(pwd):/home/$DOCKER_USER:rw $TAG
 ```
 alternatively provide arguments
 ```sh
 docker run -it -e UID -e GID=$(id -G| cut -f 1 -d ' ')  -u $DOCKER_USER -v $(pwd):/home/$DOCKER_USER:rw $TAG
 ```
+open `test.txt` in the editor (it is currently configured to use `nano` as entrypoint)
 
-
-save the file in the editor e.g. as `test.txt`
+* add some text and save the file in the editor e.g. under same name, as `test.txt`
 find the local file with the expected contents in the project directory:
 ```sh
 cat test.txt
@@ -93,5 +104,6 @@ docker image rm alpine:3.9.5
   * https://unix.stackexchange.com/questions/397232/adduser-addgroup-group-in-use
   * https://arkit.co.in/four-ways-non-interactively-set-passwords-linux/
  
+  * handle `http://nl.alpinelinux.org/alpine/edge/main: UNTRUSTED signature` error - https://stackoverflow.com/questions/70445952/how-to-disable-ssl-verification-in-alpines-apk
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
