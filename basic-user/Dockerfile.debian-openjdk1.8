@@ -1,0 +1,17 @@
+FROM qaware/debian8-jdk8:8u77
+# Debian 8 docker container with JDK8 installed.
+
+ARG UID=1000
+ARG GID=1000
+
+ENV UID=${UID}
+ENV GID=${GID}
+
+RUN groupadd --gid $GID node \
+  && useradd --uid $UID --gid node --shell /bin/bash --create-home node
+
+USER node
+
+WORKDIR /usr/src/app
+  
+ENTRYPOINT ["java"]

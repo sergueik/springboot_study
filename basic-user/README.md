@@ -30,6 +30,7 @@ docker run -it -e UID -e GID=$(id -G| cut -f 1 -d ' ')  -u $DOCKER_USER -v $(pwd
 ```
 open `test.txt` in the editor (it is currently configured to use `nano` as entrypoint)
 
+![Docker Nano](https://github.com/sergueik/springboot_study/blob/master/basic-user/screenshots/capture-nano.png)
 * add some text and save the file in the editor e.g. under same name, as `test.txt`
 find the local file with the expected contents in the project directory:
 ```sh

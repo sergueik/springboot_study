@@ -8,7 +8,7 @@ services:
       args:
       - UID=${UID:-1000}
       - GID=${GROUPS:-1000}
-      # NOTE: only good for personal host, where GROUPS is just one element. Enterprise envieonment will likely break since the GROUPS is an array of GID
+      # NOTE: only good for personal host, where GROUPS is just one element. Enterprise environment will likely break since the GROUPS is an array of GID
       # TODO: how to invoke ? $(id -G |cut -d ' ' -f 1)
     volumes:
      - .:/home/${DOCKER_USER:-docker_user}
