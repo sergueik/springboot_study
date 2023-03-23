@@ -13,6 +13,7 @@ import static org.mockito.Mockito.eq;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -20,37 +21,47 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 
-public class MockServiceTest {
+public class MockPostServiceTest {
 
 	Controller controller;
 	ExampleService mockService;
 	// Default constructor cannot handle exception type URISyntaxException thrown
 	// by implicit super constructor. Must define an explicit constructor
-	RequestEntity request;
+
 	private final String url = "https://localhost:80/cgi-bin/example.cgi?a%20b%20c";
+	// see also:
+	// https://www.tabnine.com/code/java/methods/org.springframework.http.RequestEntity/post
+	private final String body = "{ \"foo\":  \"bar\" }";
 
 	@Before
 	public void setup() throws URISyntaxException {
-		request = new RequestEntity<String>(HttpMethod.GET, new URI(url));
 		mockService = Mockito.mock(ExampleService.class);
-
 	}
 
 	@Test
 	public void test1() throws URISyntaxException {
-		when(mockService.runCGiBINScript(any(String.class), any(String[].class)))
-				.thenReturn("called");
+		RequestEntity<byte[]> request;
+		// Invalid use of argument matchers
+		// When using matchers, all arguments have to be provided by matchers
+		request = RequestEntity.post(new URI(url))
+				.body(body.getBytes(StandardCharsets.UTF_8));
+		when(mockService.runCGiBINScript(any(String.class), eq(body)))
+				.thenReturn("got json");
 		controller = new Controller(mockService);
-		assertThat(controller.legacyParam("example.cgi", request), is("called"));
+		assertThat(controller.status("status1.cgi", (byte[]) request.getBody()),
+				is("got json"));
 	}
 
 	@Test
 	public void test2() throws URISyntaxException {
+		RequestEntity<String> request;
 		// Invalid use of argument matchers
 		// When using matchers, all arguments have to be provided by matchers
-		when(mockService.runCGiBINScript(any(String.class),
-				eq(new String[] { "a", "b", "c" }))).thenReturn("got args");
+		request = RequestEntity.post(new URI(url)).body(body);
+		when(mockService.runCGiBINScript(any(String.class), eq(body)))
+				.thenReturn("got json");
 		controller = new Controller(mockService);
-		assertThat(controller.legacyParam("example.cgi", request), is("got args"));
+		assertThat(controller.status("status.cgi", request.getBody()),
+				is("got json"));
 	}
 }

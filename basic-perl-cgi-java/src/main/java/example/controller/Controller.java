@@ -20,6 +20,7 @@ import org.apache.commons.codec.binary.Base64;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/")
@@ -63,6 +64,13 @@ public class Controller {
 	@PostMapping(value = "/cgi-bin/{script:status[0-9].cgi}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String status(@PathVariable String script, @RequestBody String body) {
 		return service.runCGiBINScript(script, body);
+	}
+
+	// try to have more specific annotation
+	@PostMapping(value = "/cgi-bin/{script:status[0-9].cgi}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public String status(@PathVariable String script, @RequestBody byte[] bytes) {
+		return service.runCGiBINScript(script,
+				new String(bytes, StandardCharsets.UTF_8));
 	}
 
 	//

@@ -46,6 +46,20 @@ this will print JSON:
   ]
 }
 ```
+on Windows Docker Toolbox, replace `localhost` with $DOCKER_MACHINE_IP
+
+```sh
+```
+
+and `jq` with
+```sh
+export JQ='/c/tools/jq-win64.exe'
+```
+```sh
+DOCKER_MACHINE_IP=$(docker-machine ip)
+curl http://$DOCKER_MACHINE_IP:8085/cgi-bin/example.cgi | $JQ '.'
+```
+
 the log will show:
 ```txt
 INFO 1 --- [io-8085-exec-10] example.service.ExampleService: Running the process: /var/www/localhost/cgi-bin//example.cgi -no-headers
@@ -126,10 +140,10 @@ Content-Type: application/json{   "remote_addr" : null,   "foo" : "bar"}
 ### Work in Docker ToolBox
 if [Docker Toolbox](https://github.com/docker-archive/toolbox) is used from Windows host, find the ip address of the irtual Box container via the [command](https://devilbox.readthedocs.io/en/latest/howto/docker-toolbox/find-docker-toolbox-ip-address.html):
 ```sh
-DOCKER_IP=$(docker-machine ip)
-echo $DOCKER_IP
+DOCKER_MACHINE_IP=$(docker-machine ip)
+echo $DOCKER_MACHINE_IP
 ```
-use `$DOCKER_IP` whenever accessing the container, instead of `localhost`.
+use `$DOCKER_MACHINE_IP` whenever accessing the container, instead of `localhost`.
 
 ### Cleanup
 ```sh
