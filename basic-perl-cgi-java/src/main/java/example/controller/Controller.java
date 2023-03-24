@@ -15,12 +15,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
+
 import example.service.ExampleService;
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/")
@@ -40,24 +44,39 @@ public class Controller {
 		service = data;
 	}
 
+	private static Gson gson = new Gson();
+
 	@PostMapping(value = "/cgi-bin/{script:[a-z.0-9]+.sh}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String shell(@PathVariable String script,
 			RequestEntity<String> request) {
 		String body = request.getBody();
-		log.info("pricessing shell script: " + script);
+		log.info("processing shell script: " + script);
 		final String scriptDir = "/var/www/localhost/cgi-bin";
-		return service.runProcess(String.format("%s/%s", scriptDir, script), body);
+		service.runProcess(String.format("%s/%s", scriptDir, script), body);
+		if (service.isStatus()) {
+			return service.getProcessOut();
+		} else {
+			Map<String, Object> failureResult = new HashMap<>();
+			failureResult.put("status", service.isStatus());
+			failureResult.put("stdout", service.getProcessOut().replaceAll("\"", "'"));
+			failureResult.put("stderr",
+					service.getProcessErr().replaceAll("\"", "'"));
+			failureResult.put("exitcode", service.getExitCode());
+			log.info("returning error from shell script: " + script);
+			return gson.toJson(failureResult);
+		}
 	}
 
 	@PostMapping(value = "/cgi-bin/{script:status.cgi}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String status(@PathVariable String script, @RequestBody String body) {
-		return service.runCGiBINScript(script, body);
+		service.runCGiBINScript(script, body);
+		return service.getProcessOut();
 	}
 
 	@PostMapping(value = "/cgi-bin/{script:status[0-9].cgi}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String status(@PathVariable String script, @RequestBody byte[] bytes) {
-		return service.runCGiBINScript(script,
-				new String(bytes, StandardCharsets.UTF_8));
+		service.runCGiBINScript(script, new String(bytes, StandardCharsets.UTF_8));
+		return service.getProcessOut();
 	}
 
 	//
@@ -75,13 +94,15 @@ public class Controller {
 		// NOTE: comma-joined commandline arguments formatting is non-standard
 		log.info(String.format("Running cgi-bin script: %s with args: %s", script,
 				String.join(separator, commandlineArgs)));
-		return service.runCGiBINScript(script, commandlineArgs);
+		service.runCGiBINScript(script, commandlineArgs);
+		return service.getProcessOut();
 	}
 
 	@GetMapping(value = "/bad/cgi-bin/{script}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String badRun(@PathVariable String script) {
 		log.info(String.format("Running cgi-bin script: %s", script));
-		return service.runCGiBINScript(script);
+		service.runCGiBINScript(script);
+		return service.getProcessOut();
 	}
 
 }

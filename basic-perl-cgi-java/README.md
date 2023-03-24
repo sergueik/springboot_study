@@ -20,11 +20,11 @@ docker build -t $NAME -f Dockerfile .
 * start run default command
 
 ```sh
-docker container rm $NAME
+docker container rm -f $NAME
 docker run -d -p 8085:8085 --name $NAME $NAME
 docker logs -f $NAME
 ```
-this will respond with regular Springboot logo and eventually
+this will respond with regular Springboot logo and aplication initialization messages and eventually
 ```text
  INFO [main] example.ExampleApplication               : Started ExampleApplication in 9.437 seconds (JVM running for 10.855)
 ```
@@ -32,6 +32,21 @@ this will respond with regular Springboot logo and eventually
 ```sh
 curl http://localhost:8085/cgi-bin/example.cgi | jq '.'
 ```
+on Windows Docker Toolbox, replace `localhost` with $DOCKER_MACHINE_IP
+
+```sh
+```
+
+and `jq` with
+```sh
+export JQ='/c/tools/jq-win64.exe'
+```
+```sh
+DOCKER_MACHINE_IP=$(docker-machine ip)
+curl http://$DOCKER_MACHINE_IP:8085/cgi-bin/example.cgi | $JQ '.'
+```
+
+
 or (illustrating the parameter validation issue)
 ```sh
 curl http://localhost:8085/bad/cgi-bin/example.cgi.dummy | jq '.'
@@ -46,19 +61,6 @@ this will print JSON:
     "plum"
   ]
 }
-```
-on Windows Docker Toolbox, replace `localhost` with $DOCKER_MACHINE_IP
-
-```sh
-```
-
-and `jq` with
-```sh
-export JQ='/c/tools/jq-win64.exe'
-```
-```sh
-DOCKER_MACHINE_IP=$(docker-machine ip)
-curl http://$DOCKER_MACHINE_IP:8085/cgi-bin/example.cgi | $JQ '.'
 ```
 
 the log will show:
@@ -197,6 +199,20 @@ curl -s -X  GET -d '{"data":[1, 2, 3]}' -H 'Content-Type: application/json' http
     3
   ]
   
+```
+### Handling  Failures
+* invoke non existing scirpt
+```sh
+curl -H "Content-Type: application/json" -X POST -d '{"foo": 10, "bar": 30}' http://$DOCKER_MACHIME_IP:8085/cgi-bin/status3.sh
+```
+it will print custom JSON message:
+```JSON
+{
+  "stdout": "",
+  "exitcode": 2,
+  "stderr": "Can't open perl script '/var/www/localhost/cgi-bin/status3.cgi': No such file or directory",
+  "status": false
+}
 ```
 
 ### Cleanup

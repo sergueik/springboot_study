@@ -19,8 +19,30 @@ public class ExampleService {
 	private Log log = LogFactory.getLog(this.getClass());
 	private final String separator = " ";
 	private final static String scriptDir = "/var/www/localhost/cgi-bin";
+
+	public boolean isStatus() {
+		return status;
+	}
+
+	public int getExitCode() {
+		return exitCode;
+	}
+
+	public String getProcessOut() {
+		return processOut;
+	}
+
+	public String getProcessErr() {
+		return processErr;
+	}
+
 	private final String options = "-no-headers";
 	protected static String osName = getOSName();
+	private boolean status = false;
+	private int exitCode;
+	// TODO: make regular class with properties
+	private String processOut;
+	private String processErr;
 
 	public String runCGiBINScript(final String script) {
 		return runPerlScript(String.format("%s/%s %s", scriptDir, script, options));
@@ -106,19 +128,25 @@ public class ExampleService {
 				processError.append(line);
 			}
 			int exitCode = process.waitFor();
+			this.exitCode = exitCode;
+			this.status = true;
 			// ignore exit code 128
 			if (exitCode != 0 && (exitCode ^ 128) != 0) {
+				this.status = false;
 				log.info("Process exit code: " + exitCode);
 				if (processOutput.length() > 0) {
 					log.info("<OUTPUT>" + processOutput + "</OUTPUT>");
 				}
 				if (processError.length() > 0) {
 					log.info("<ERROR>" + processError + "</ERROR>");
+					this.processErr = processError.toString();
 				}
 			}
 		} catch (Exception e) {
 			log.info("Exception (ignored): " + e.getMessage());
 		}
+
+		this.processOut = processOutput.toString();
 		return processOutput.toString();
 	}
 
