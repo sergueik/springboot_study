@@ -39,7 +39,7 @@ public class MockPostServiceTest {
 		mockService = Mockito.mock(ExampleService.class);
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test1() throws URISyntaxException {
 		RequestEntity<byte[]> request;
@@ -54,7 +54,7 @@ public class MockPostServiceTest {
 				is("got json"));
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test2() throws URISyntaxException {
 		RequestEntity<String> request;

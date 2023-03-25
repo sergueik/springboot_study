@@ -37,7 +37,7 @@ public class MockGetServiceTest {
 
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test1() throws URISyntaxException {
 		when(mockService.runCGiBINScript(any(String.class), any(String[].class)))
@@ -46,7 +46,7 @@ public class MockGetServiceTest {
 		assertThat(controller.legacyParam("example.cgi", request), is("called"));
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test2() throws URISyntaxException {
 		// Invalid use of argument matchers

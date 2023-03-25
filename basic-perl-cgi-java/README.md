@@ -253,11 +253,11 @@ curl -H "Content-Type: application/json" -X POST -d '{"foo": "bar"}' http://$DOC
 ```
 the console log shows
 ```text
-2023-03-25 00:34:45.610  INFO 1 --- [nio-8085-exec-1] example.controller.Controller            : processing shell script: failing.sh
-2023-03-25 00:34:45.616  INFO 1 --- [nio-8085-exec-1] example.service.ExampleService           : Running with environment: [CONTENT_LENGTH=14, REQUEST_METHOD=POST]
-2023-03-25 00:34:45.646  INFO 1 --- [nio-8085-exec-1] example.service.ExampleService           : Passing the payload: {"foo": "bar"}
-2023-03-25 00:34:45.649  INFO 1 --- [nio-8085-exec-1] example.service.ExampleService           : Exception (ignored): Broken pipe
-2023-03-25 00:34:45.654  INFO 1 --- [nio-8085-exec-1] example.controller.Controller            : returning error from shell script: failing.sh
+2023-03-25 20:46:42.816  INFO 1 --- [nio-8085-exec-9] example.controller.Controller            : processing shell script: failing.sh
+2023-03-25 20:46:42.826  INFO 1 --- [nio-8085-exec-9] example.utils.ProcessRunner              : Process exit code: 42
+2023-03-25 20:46:42.828  INFO 1 --- [nio-8085-exec-9] example.utils.ProcessRunner              : <OUTPUT>console message</OUTPUT>
+2023-03-25 20:46:42.833  INFO 1 --- [nio-8085-exec-9] example.utils.ProcessRunner              : <ERROR>error message</ERROR>
+2023-03-25 20:46:42.836  INFO 1 --- [nio-8085-exec-9] example.service.ExampleService           : returning error from command: /var/www/localhost/cgi-bin/failing.sh
 ```
 ### Cleanup
 ```sh
