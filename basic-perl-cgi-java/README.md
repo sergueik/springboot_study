@@ -214,7 +214,51 @@ it will print custom JSON message:
   "status": false
 }
 ```
+* test confirming collecting console and error messages
 
+```sh
+/var/www/localhost/cgi-bin/failing.sh 1>/dev/null
+```
+```text
+error message
+```
+```sh
+/var/www/localhost/cgi-bin/failing.sh 2>/dev/null
+```
+```text
+console message
+```
+```sh
+/var/www/localhost/cgi-bin/failing.sh  >& /dev/null
+echo $?
+```
+```text
+42
+```
+
+```sh
+curl -H "Content-Type: application/json" -X POST -d '' http://$DOCKER_MACHINE_IP:8085/cgi-bin/failing.sh | $JQ
+```
+```JSON
+{
+  "stdout": "console message",
+  "exitcode": 42,
+  "stderr": "error message",
+  "status": false
+}
+```
+* NOTE: the code occasionally does not work when input is provided:
+```sh
+curl -H "Content-Type: application/json" -X POST -d '{"foo": "bar"}' http://$DOCKER_MACHINE_IP:8085/cgi-bin/failing.sh | $JQ
+```
+the console log shows
+```text
+2023-03-25 00:34:45.610  INFO 1 --- [nio-8085-exec-1] example.controller.Controller            : processing shell script: failing.sh
+2023-03-25 00:34:45.616  INFO 1 --- [nio-8085-exec-1] example.service.ExampleService           : Running with environment: [CONTENT_LENGTH=14, REQUEST_METHOD=POST]
+2023-03-25 00:34:45.646  INFO 1 --- [nio-8085-exec-1] example.service.ExampleService           : Passing the payload: {"foo": "bar"}
+2023-03-25 00:34:45.649  INFO 1 --- [nio-8085-exec-1] example.service.ExampleService           : Exception (ignored): Broken pipe
+2023-03-25 00:34:45.654  INFO 1 --- [nio-8085-exec-1] example.controller.Controller            : returning error from shell script: failing.sh
+```
 ### Cleanup
 ```sh
 docker container rm -f $NAME
