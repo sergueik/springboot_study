@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
@@ -25,12 +26,16 @@ public class ExampleService {
 	private static Gson gson = new Gson();
 	private final String options = "-no-headers";
 	protected static String osName = getOSName();
-	ProcessRunner processRunner = new ProcessRunner();
+	@Autowired
+	ProcessRunner processRunner;
+
+	public ExampleService(ProcessRunner processRunner) {
+		this.processRunner = processRunner;
+	}
 
 	public void setDebug(boolean data) {
 		debug = data;
 	}
-
 
 	public String runCGiBINScript(final String script) {
 		return runPerlScript(String.format("%s/%s %s", scriptDir, script, options));
@@ -69,6 +74,7 @@ public class ExampleService {
 	}
 
 	public String runProcess(String command, String payload) {
+
 		processRunner.runProcess(command, payload);
 
 		if (processRunner.isStatus()) {

@@ -5,6 +5,7 @@ package example.controller;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public class Controller {
 
 	private Log log = LogFactory.getLog(this.getClass());
 
-	// @Autowired
+	@Autowired
 	private ExampleService service;
 
 	public Controller(ExampleService data) {
