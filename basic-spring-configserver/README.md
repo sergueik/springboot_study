@@ -1,4 +1,4 @@
-### See Also
+### Info
 
 this directory contains examples from [section 3](https://app.pluralsight.com/course-player?clipId=caf88459-8a71-4181-aaae-72dd78243410) __Simplifying Environment Management with Centralized Configuration__ of the training [Java Microservices with Spring Cloud: Developing Services](https://app.pluralsight.com/courses/36c015db-2983-4f97-8973-098b6a5d1fcc/table-of-contents), downgraded to much older release of Spring Boot/ Spring Cloud to avoid massive dependency pull
 
@@ -10,7 +10,7 @@ mvn test
 ```
 * run
 ```sh
-mvn -Dmaven.test.skip=true clean spring=boot:run
+mvn -Dmaven.test.skip=true clean spring-boot:run
 ```
 * test
 ```sh
@@ -51,6 +51,19 @@ the result will be specific to the resource path e.g.:
   ]
 }
 ```
+
+### Client Test
+
+* start `configserver`
+* start config-client
+```sh
+cd config-client
+mvn spring-boot:run
+```
+* browse the page
+
+![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-spring-configserver/screenshots/capture-greeting.png)
+
 ### Note
 
 
@@ -70,6 +83,6 @@ so switched to `Hoxton.SR8` - released on Aug 29, 2020 - confirmed that to work 
 
 ### See Also
   * [quick Intro to Spring Cloud Configuration](https://www.baeldung.com/spring-cloud-configuration)
-
+  * https://stackoverflow.com/questions/74658355/how-to-fix-java-lang-noclassdeffounderror-org-springframework-boot-bootstrapper
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
