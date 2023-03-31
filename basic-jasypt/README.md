@@ -79,6 +79,91 @@ this will print
 Username is -------->user
 Endpoint is -------->https://user:password@localhost:30000
 ```
+### Profiling the Run
+
+* timing 100 encryption runs
+
+```sh
+time ./m1.sh
+```
+```text
+real    0m44.187s
+user    1m35.484s
+sys     0m4.074s
+```
+```sh
+time ./m2.sh
+```
+```text
+real    0m3.457s
+user    0m3.045s
+sys     0m0.372s
+```
+* timing 100 decryption runs
+```sh
+time ./m3.sh
+```
+```text
+real    0m44.502s
+user    1m35.537s
+sys     0m4.251s
+
+```
+```sh
+time ./m4.sh
+```
+```text
+real    0m3.738s
+user    0m3.360s
+sys     0m0.382s
+```
+
+* Note: `cpan` fails to install `Devel::DProf`:
+```text
+in file included from DProf.xs:4:0:
+DProf.c:854:10: error: static declaration of ‘XS_Devel__DProf_END’ follows non-static declaration
+ XS_EUPXS(XS_Devel__DProf_END); /* prototype to pass -Wmissing-prototypes */
+          ^
+  FLORA/Devel-DProf-20110802.00.tar.gz
+  /usr/bin/make -- NOT OK
+
+```
+the
+```sh
+cpan install Devel::SmallProf
+```
+also fails
+```text
+
+Running make test
+PERL_DL_NONLAZY=1 "/usr/bin/perl" "-MExtUtils::Command::MM" "-MTest::Harness" "-e" "undef *Test::Harness::Switches; test_harness(0, 'blib/lib', 'blib/arch')" t/*.t
+t/part1.t .. Can't use 'defined(@array)' (Maybe you should just omit the defined()?) at /home/sergueik/.cpan/build/Devel-SmallProf-2.02-1/blib/lib/Devel/SmallProf.pm line 35.
+Compilation failed in require at t/part1.t line 1.
+BEGIN failed--compilation aborted at t/part1.t line 2.
+
+Test Summary Report
+-------------------
+t/part1.t (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t/part2.t (Wstat: 0 Tests: 10 Failed: 10)
+  Failed tests:  1-10
+t/part3.t (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+t/part4.t (Wstat: 0 Tests: 2 Failed: 1)
+  Failed test:  1
+Files=5, Tests=12,  0 wallclock secs ( 0.02 usr  0.00 sys +  0.04 cusr  0.00 csys =  0.06 CPU)
+Result: FAIL
+Failed 4/5 test programs. 11/12 subtests failed.
+Makefile:842: recipe for target 'test_dynamic' failed
+make: *** [test_dynamic] Error 255
+  SALVA/Devel-SmallProf-2.02.tar.gz
+  /usr/bin/make test -- NOT OK
+//hint// to see the cpan-testers results for installing this module, try:
+  reports SALVA/Devel-SmallProf-2.02.tar.gz
+
+```
 
 ### Cleanup
 
@@ -95,6 +180,8 @@ rm jasypt-1.9.3-dist.zip
   * [python library](https://github.com/Telmediq/jasypt-2-python) (not tested)
   * [another python library](https://github.com/lemonprogis/python-jasypt)
   * [another python library](https://github.com/fareliner/jasypt4py)
+  * [stackoverflow](https://stackoverflow.com/questions/4371714/how-do-i-profile-my-perl-programs)
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
