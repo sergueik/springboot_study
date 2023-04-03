@@ -7,7 +7,9 @@ replica of
 VERSION=1.9.3
 curl -LOsk https://github.com/jasypt/jasypt/releases/download/jasypt-$VERSION/jasypt-$VERSION-dist.zip
 unzip jasypt-$VERSION-dist.zip
+chmod +x  ./jasypt-$VERSION/bin/encrypt.sh ./jasypt-$VERSION/bin/encrypt.sh
 chmod +x  ./jasypt-$VERSION/bin/encrypt.sh ./jasypt-$VERSION/bin/decrypt.sh
+chmod +x  ./jasypt-$VERSION/bin/encrypt.sh ./jasypt-$VERSION/bin/listAlgorithms.sh
 
 ```
 * encrypt the default password
@@ -165,6 +167,425 @@ make: *** [test_dynamic] Error 255
 
 ```
 
+### Alternative Algorithms
+
+```sh
+./jasypt-1.9.3/bin/listAlgorithms.sh |sed 's|\s|\n|g '
+
+```
+```text
+PBEWITHHMACSHA1ANDAES_128
+PBEWITHHMACSHA1ANDAES_256
+PBEWITHHMACSHA224ANDAES_128
+PBEWITHHMACSHA224ANDAES_256
+PBEWITHHMACSHA256ANDAES_128
+PBEWITHHMACSHA256ANDAES_256
+PBEWITHHMACSHA384ANDAES_128
+PBEWITHHMACSHA384ANDAES_256
+PBEWITHHMACSHA512ANDAES_128
+PBEWITHHMACSHA512ANDAES_256
+PBEWITHMD5ANDDES
+PBEWITHMD5ANDTRIPLEDES
+PBEWITHSHA1ANDDESEDE
+PBEWITHSHA1ANDRC2_128
+PBEWITHSHA1ANDRC2_40
+PBEWITHSHA1ANDRC4_128
+PBEWITHSHA1ANDRC4_40
+```
+
+it does not appear all algorithms are workimg:
+
+```sh
+ALGORITHMS="PBEWITHHMACSHA1ANDAES_128 PBEWITHHMACSHA1ANDAES_256 PBEWITHHMACSHA224ANDAES_128 PBEWITHHMACSHA224ANDAES_256 PBEWITHHMACSHA256ANDAES_128 PBEWITHHMACSHA256ANDAES_256 PBEWITHHMACSHA384ANDAES_128 PBEWITHHMACSHA384ANDAES_256 PBEWITHHMACSHA512ANDAES_128 PBEWITHHMACSHA512ANDAES_256 PBEWITHMD5ANDDES PBEWITHMD5ANDTRIPLEDES PBEWITHSHA1ANDDESEDE PBEWITHSHA1ANDRC2_128 PBEWITHSHA1ANDRC2_40 PBEWITHSHA1ANDRC4_128 PBEWITHSHA1ANDRC4_40"
+
+
+(for A in $ALGORITHMS ; do echo $A; echo ./jasypt-1.9.3/bin/encrypt.sh algorithm=$A input=test password=secret; ./jasypt-1.9.3/bin/encrypt.sh algorithm=$A input=test password=secret ;done ) 2>&1 | tee a.log
+
+```
+in the log:
+```text
+PBEWITHHMACSHA1ANDAES_128
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA1ANDAES_128 input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHHMACSHA1ANDAES_128
+password: secret
+
+
+
+----ERROR-----------------------
+
+Operation not possible (Bad input or parameters)
+
+
+PBEWITHHMACSHA1ANDAES_256
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA1ANDAES_256 input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHHMACSHA1ANDAES_256
+password: secret
+
+
+
+----ERROR-----------------------
+
+Operation not possible (Bad input or parameters)
+
+
+PBEWITHHMACSHA224ANDAES_128
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA224ANDAES_128 input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHHMACSHA224ANDAES_128
+password: secret
+
+
+
+----ERROR-----------------------
+
+Operation not possible (Bad input or parameters)
+
+
+PBEWITHHMACSHA224ANDAES_256
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA224ANDAES_256 input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHHMACSHA224ANDAES_256
+password: secret
+
+
+
+----ERROR-----------------------
+
+Operation not possible (Bad input or parameters)
+
+
+PBEWITHHMACSHA256ANDAES_128
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA256ANDAES_128 input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHHMACSHA256ANDAES_128
+password: secret
+
+
+
+----ERROR-----------------------
+
+Operation not possible (Bad input or parameters)
+
+
+PBEWITHHMACSHA256ANDAES_256
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA256ANDAES_256 input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHHMACSHA256ANDAES_256
+password: secret
+
+
+
+----ERROR-----------------------
+
+Operation not possible (Bad input or parameters)
+
+
+PBEWITHHMACSHA384ANDAES_128
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA384ANDAES_128 input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHHMACSHA384ANDAES_128
+password: secret
+
+
+
+----ERROR-----------------------
+
+Operation not possible (Bad input or parameters)
+
+
+PBEWITHHMACSHA384ANDAES_256
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA384ANDAES_256 input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHHMACSHA384ANDAES_256
+password: secret
+
+
+
+----ERROR-----------------------
+
+Operation not possible (Bad input or parameters)
+
+
+PBEWITHHMACSHA512ANDAES_128
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA512ANDAES_128 input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHHMACSHA512ANDAES_128
+password: secret
+
+
+
+----ERROR-----------------------
+
+Operation not possible (Bad input or parameters)
+
+
+PBEWITHHMACSHA512ANDAES_256
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA512ANDAES_256 input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHHMACSHA512ANDAES_256
+password: secret
+
+
+
+----ERROR-----------------------
+
+Operation not possible (Bad input or parameters)
+
+
+PBEWITHMD5ANDDES
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHMD5ANDDES input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHMD5ANDDES
+password: secret
+
+
+
+----OUTPUT----------------------
+
+dXzqjV8RIAKXZJY9YTGixQ==
+
+
+PBEWITHMD5ANDTRIPLEDES
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHMD5ANDTRIPLEDES input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHMD5ANDTRIPLEDES
+password: secret
+
+
+
+----OUTPUT----------------------
+
+0NEOANIDacCLxSm6insuig==
+
+
+PBEWITHSHA1ANDDESEDE
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDDESEDE input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHSHA1ANDDESEDE
+password: secret
+
+
+
+----OUTPUT----------------------
+
+cXX80fyZD+mIbsUIQnLpLA==
+
+
+PBEWITHSHA1ANDRC2_128
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDRC2_128 input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHSHA1ANDRC2_128
+password: secret
+
+
+
+----OUTPUT----------------------
+
+Q0+bNtDD6wwveV2VX9hFGQ==
+
+
+PBEWITHSHA1ANDRC2_40
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDRC2_40 input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHSHA1ANDRC2_40
+password: secret
+
+
+
+----OUTPUT----------------------
+
+rR4F7KuJ+mQIIejpJZacDg==
+
+
+PBEWITHSHA1ANDRC4_128
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDRC4_128 input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHSHA1ANDRC4_128
+password: secret
+
+
+
+----OUTPUT----------------------
+
+gBfP4Z7pbWnga0IJ
+
+
+PBEWITHSHA1ANDRC4_40
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDRC4_40 input=test password=secret
+
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+input: test
+algorithm: PBEWITHSHA1ANDRC4_40
+password: secret
+
+
+
+----OUTPUT----------------------
+
+9vaGV86+5EfZkJSm
+
+
+
+```
+* Note, all `AES` algorythms are returning the error:
+```
+----ERROR-----------------------
+
+Operation not possible (Bad input or parameters)
+```
 ### Cleanup
 
 ```sh
