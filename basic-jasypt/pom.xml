@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.techjava</groupId>
   <artifactId>springboot-jasypt-encrypt-demo</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>springboot-jasypt-encrypt-demo</name>
   <description>Demo project for Spring Boot</description>
@@ -17,7 +17,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
-    <jasypt-version>1.16</jasypt-version>
+    <jasypt-version>3.0.3</jasypt-version>
+    <jasypt-maven-plugin-version>3.0.3</jasypt-maven-plugin-version>
   </properties>
   <dependencies>
     <dependency>
@@ -40,6 +41,11 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+	      <groupId>com.github.ulisesbocchio</groupId>
+    <artifactId>jasypt-maven-plugin</artifactId>
+	<version>${jasypt-maven-plugin-version}</version>
       </plugin>
     </plugins>
   </build>
