@@ -86,6 +86,7 @@ Property file "/usr/local/tomcat/webapps/demo/application.properties" applicatio
 - no token expansion observed
 
  * demo [app](https://github.com/vborrego/jsp-example) with bean / handler integration
+
 ### Work in Progress
 
 Attempt to use native Tomcat [Property replacements](https://tomcat.apache.org/tomcat-8.5-doc/config/systemprops.html#Property_replacements) in custom application propetis file does not work.
@@ -148,6 +149,11 @@ The desperate option is to explicitly include the call from into the application
 *  https://github.com/apache/tomcat/blob/8.5.x/java/org/apache/tomcat/util/digester/EnvironmentPropertySource.java
 #
 
+![screenshot 1](https://github.com/sergueik/springboot_study/blob/master/basic-jsp/screenshots/top_parent_message.png)
+
+![screenshot 2](https://github.com/sergueik/springboot_study/blob/master/basic-jsp/screenshots/page_layout.png)
+
+![screenshot 3](https://github.com/sergueik/springboot_study/blob/master/basic-jsp/screenshots/nested_frame_message.png)
 ### See Also
 
   * demo [app](https://github.com/vborrego/jsp-example) with bean / handler integration

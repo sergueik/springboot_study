@@ -1,4 +1,6 @@
 <html>
+<!-- NOTE: this is not a plain backup
+TODO: branch or create a separate project -->
 <!-- https://stackoverflow.com/questions/935127/how-to-access-parent-iframe-from-javascript -->
   <head>
     <title>iframe child example</title>
