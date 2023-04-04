@@ -635,9 +635,57 @@ endpoint = https://${username}:${password}@localhost:30000
 ```
 #### Note 
 
+
+```sh
+mvn jasypt:encrypt-value -Djasypt.encryptor.password=secret -Djasypt.plugin.value="password" -Djasypt.encryptor.algorithm=PBEWithMD5AndDES
+```
+```
+```text
+z0AjXEOUv2BvWSLGFIuSJOp2WmChCwj0pc8HiG+PjDN+x0K0yyPToddcpgfrv0M2
+```
+the reverse
+```sh
+ mvn jasypt:decrypt-value -Djasypt.encryptor.password=secret -Djasypt.plugin.value="z0AjXEOUv2BvWSLGFIuSJOp2WmChCwj0pc8HiG+PjDN+x0K0yyPToddcpgfrv0M2"
+```
+succeeds and prints a lot of information about the configuration used:
+  
+```text
+ [INFO] Started MavenCli in 1.192 seconds (JVM running for 3.549)
+[INFO] Active Profiles: Default
+[INFO] Decrypting value z0AjXEOUv2BvWSLGFIuSJOp2WmChCwj0pc8HiG+PjDN+x0K0yyPToddcpgfrv0M2
+[INFO] String Encryptor custom Bean not found with name 'jasyptStringEncryptor'. Initializing Default String Encryptor
+[INFO] Encryptor config not found for property jasypt.encryptor.algorithm, using default value: PBEWITHHMACSHA512ANDAES_256
+[INFO] Encryptor config not found for property jasypt.encryptor.key-obtention-iterations, using default value: 1000
+[INFO] Encryptor config not found for property jasypt.encryptor.pool-size, using default value: 1
+[INFO] Encryptor config not found for property jasypt.encryptor.provider-name, using default value: null
+[INFO] Encryptor config not found for property jasypt.encryptor.provider-class-name, using default value: null
+[INFO] Encryptor config not found for property jasypt.encryptor.salt-generator-classname, using default value: org.jasypt.salt.RandomSaltGenerator
+[INFO] Encryptor config not found for property jasypt.encryptor.iv-generator-classname, using default value: org.jasypt.iv.RandomIvGenerator
+[INFO] Encryptor config not found for property jasypt.encryptor.string-output-type, using default value: base64
+[INFO]
+```
+```text
+password
+```
+the `PBEWITHHMACSHA512ANDAES_256` corresponds to `PBEWithHmacSHA512AndAES_256` in Perl JCE notation:
+
+
+```sh
+perl jasypt.pl -operation encrypt -secret secret -value  "password"
+```
+```text
+edC1/D1GWuRBxk1QLdgUQxzBagg8ER/tZ4N1WEt82+ebTjfpTzGj3Tbk19HhnL8Z
+```
+```sh
+perl jasypt.pl -operation decrypt -secret secret -value  "z0AjXEOUv2BvWSLGFIuSJOp2WmChCwj0pc8HiG+PjDN+x0K0yyPToddcpgfrv0M2"
+```
+```text
+password
+```
+
 the arguments of the new release of jasypt are not compatible or tricky to set rght:
 ```sh
-mvn jasypt:decrypt-value -Djasypt.encryptor.password=secret -Djasypt.plugin.value="5MiW4WoXPfaKnm4ufkRAev7T7wP2j/ZnnImEkWYUE3U=" -Djasypt.encryptor.algorithm=PBEWithMD5AndDES
+mvn jasypt:encrypt-value -Djasypt.encryptor.password=secret -Djasypt.plugin.value="password" -Djasypt.encryptor.algorithm=PBEWithMD5AndDES 
 ```
 
 gives
