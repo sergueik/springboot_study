@@ -1,4 +1,4 @@
-### Info
+﻿### Info
 replica of
 [Springboot Jasypt Encrypt Demo](https://github.com/techragesh/springboot-jasypt-encrypt-demo) combined with __jasypt-spring-boot-demo-simple__ [example](https://github.com/ulisesbocchio/jasypt-spring-boot-samples)
 ### Usage
@@ -167,430 +167,11 @@ make: *** [test_dynamic] Error 255
 
 ```
 
-### Alternative Algorithms
-
-```sh
-./jasypt-1.9.3/bin/listAlgorithms.sh |sed 's|\s|\n|g '
-
-```
-```text
-PBEWITHHMACSHA1ANDAES_128
-PBEWITHHMACSHA1ANDAES_256
-PBEWITHHMACSHA224ANDAES_128
-PBEWITHHMACSHA224ANDAES_256
-PBEWITHHMACSHA256ANDAES_128
-PBEWITHHMACSHA256ANDAES_256
-PBEWITHHMACSHA384ANDAES_128
-PBEWITHHMACSHA384ANDAES_256
-PBEWITHHMACSHA512ANDAES_128
-PBEWITHHMACSHA512ANDAES_256
-PBEWITHMD5ANDDES
-PBEWITHMD5ANDTRIPLEDES
-PBEWITHSHA1ANDDESEDE
-PBEWITHSHA1ANDRC2_128
-PBEWITHSHA1ANDRC2_40
-PBEWITHSHA1ANDRC4_128
-PBEWITHSHA1ANDRC4_40
-```
-
-it does not appear all algorithms are workimg:
-
-```sh
-ALGORITHMS="PBEWITHHMACSHA1ANDAES_128 PBEWITHHMACSHA1ANDAES_256 PBEWITHHMACSHA224ANDAES_128 PBEWITHHMACSHA224ANDAES_256 PBEWITHHMACSHA256ANDAES_128 PBEWITHHMACSHA256ANDAES_256 PBEWITHHMACSHA384ANDAES_128 PBEWITHHMACSHA384ANDAES_256 PBEWITHHMACSHA512ANDAES_128 PBEWITHHMACSHA512ANDAES_256 PBEWITHMD5ANDDES PBEWITHMD5ANDTRIPLEDES PBEWITHSHA1ANDDESEDE PBEWITHSHA1ANDRC2_128 PBEWITHSHA1ANDRC2_40 PBEWITHSHA1ANDRC4_128 PBEWITHSHA1ANDRC4_40"
-
-
-(for A in $ALGORITHMS ; do echo $A; echo ./jasypt-1.9.3/bin/encrypt.sh algorithm=$A input=test password=secret; ./jasypt-1.9.3/bin/encrypt.sh algorithm=$A input=test password=secret ;done ) 2>&1 | tee a.log
-
-```
-in the log:
-```text
-PBEWITHHMACSHA1ANDAES_128
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA1ANDAES_128 input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHHMACSHA1ANDAES_128
-password: secret
-
-
-
-----ERROR-----------------------
-
-Operation not possible (Bad input or parameters)
-
-
-PBEWITHHMACSHA1ANDAES_256
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA1ANDAES_256 input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHHMACSHA1ANDAES_256
-password: secret
-
-
-
-----ERROR-----------------------
-
-Operation not possible (Bad input or parameters)
-
-
-PBEWITHHMACSHA224ANDAES_128
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA224ANDAES_128 input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHHMACSHA224ANDAES_128
-password: secret
-
-
-
-----ERROR-----------------------
-
-Operation not possible (Bad input or parameters)
-
-
-PBEWITHHMACSHA224ANDAES_256
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA224ANDAES_256 input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHHMACSHA224ANDAES_256
-password: secret
-
-
-
-----ERROR-----------------------
-
-Operation not possible (Bad input or parameters)
-
-
-PBEWITHHMACSHA256ANDAES_128
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA256ANDAES_128 input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHHMACSHA256ANDAES_128
-password: secret
-
-
-
-----ERROR-----------------------
-
-Operation not possible (Bad input or parameters)
-
-
-PBEWITHHMACSHA256ANDAES_256
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA256ANDAES_256 input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHHMACSHA256ANDAES_256
-password: secret
-
-
-
-----ERROR-----------------------
-
-Operation not possible (Bad input or parameters)
-
-
-PBEWITHHMACSHA384ANDAES_128
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA384ANDAES_128 input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHHMACSHA384ANDAES_128
-password: secret
-
-
-
-----ERROR-----------------------
-
-Operation not possible (Bad input or parameters)
-
-
-PBEWITHHMACSHA384ANDAES_256
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA384ANDAES_256 input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHHMACSHA384ANDAES_256
-password: secret
-
-
-
-----ERROR-----------------------
-
-Operation not possible (Bad input or parameters)
-
-
-PBEWITHHMACSHA512ANDAES_128
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA512ANDAES_128 input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHHMACSHA512ANDAES_128
-password: secret
-
-
-
-----ERROR-----------------------
-
-Operation not possible (Bad input or parameters)
-
-
-PBEWITHHMACSHA512ANDAES_256
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA512ANDAES_256 input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHHMACSHA512ANDAES_256
-password: secret
-
-
-
-----ERROR-----------------------
-
-Operation not possible (Bad input or parameters)
-
-
-PBEWITHMD5ANDDES
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHMD5ANDDES input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHMD5ANDDES
-password: secret
-
-
-
-----OUTPUT----------------------
-
-dXzqjV8RIAKXZJY9YTGixQ==
-
-
-PBEWITHMD5ANDTRIPLEDES
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHMD5ANDTRIPLEDES input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHMD5ANDTRIPLEDES
-password: secret
-
-
-
-----OUTPUT----------------------
-
-0NEOANIDacCLxSm6insuig==
-
-
-PBEWITHSHA1ANDDESEDE
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDDESEDE input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHSHA1ANDDESEDE
-password: secret
-
-
-
-----OUTPUT----------------------
-
-cXX80fyZD+mIbsUIQnLpLA==
-
-
-PBEWITHSHA1ANDRC2_128
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDRC2_128 input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHSHA1ANDRC2_128
-password: secret
-
-
-
-----OUTPUT----------------------
-
-Q0+bNtDD6wwveV2VX9hFGQ==
-
-
-PBEWITHSHA1ANDRC2_40
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDRC2_40 input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHSHA1ANDRC2_40
-password: secret
-
-
-
-----OUTPUT----------------------
-
-rR4F7KuJ+mQIIejpJZacDg==
-
-
-PBEWITHSHA1ANDRC4_128
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDRC4_128 input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHSHA1ANDRC4_128
-password: secret
-
-
-
-----OUTPUT----------------------
-
-gBfP4Z7pbWnga0IJ
-
-
-PBEWITHSHA1ANDRC4_40
-./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDRC4_40 input=test password=secret
-
-----ENVIRONMENT-----------------
-
-Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
-
-
-
-----ARGUMENTS-------------------
-
-input: test
-algorithm: PBEWITHSHA1ANDRC4_40
-password: secret
-
-
-
-----OUTPUT----------------------
-
-9vaGV86+5EfZkJSm
-
-
-
-```
 * Note, all `AES` algorythms are returning the error:
 ```
 ----ERROR-----------------------
 
 Operation not possible (Bad input or parameters)
-```
-### Cleanup
-
-```sh
-rm -rf jasypt-1.9.3
-rm jasypt-1.9.3-dist.zip
 ```
 
 ### Encrypting at Build Time
@@ -633,26 +214,72 @@ username = user
 endpoint = https://${username}:${password}@localhost:30000
 
 ```
-#### Note 
+#### Perl Java Interability
 
 
 ```sh
-mvn jasypt:encrypt-value -Djasypt.encryptor.password=secret -Djasypt.plugin.value="password" -Djasypt.encryptor.algorithm=PBEWithMD5AndDES
-```
+mvn jasypt:encrypt-value -Djasypt.encryptor.password=secret -Djasypt.plugin.value="password"
 ```
 ```text
-z0AjXEOUv2BvWSLGFIuSJOp2WmChCwj0pc8HiG+PjDN+x0K0yyPToddcpgfrv0M2
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building springboot-jasypt-encrypt-demo 0.2.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO]
+[INFO] --- jasypt-maven-plugin:3.0.3:encrypt-value (default-cli) @ springboot-jasypt-encrypt-demo ---
+[INFO] Starting MavenCli v3.3.9 on lenovoy40-1 with PID 4391 (/opt/apache-maven-3.3.9/lib/maven-embedder-3.3.9.jar started by sergueik in /home/sergueik/src/springboot_study/basic-jasypt)
+[INFO] No active profile set, falling back to default profiles: default
+[INFO] Post-processing PropertySource instances
+[INFO] Converting PropertySource configurationProperties [org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertySource] to AOP Proxy
+[INFO] Converting PropertySource systemProperties [org.springframework.core.env.PropertiesPropertySource] to EncryptableMapPropertySourceWrapper
+[INFO] Converting PropertySource systemEnvironment [org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor$OriginAwareSystemEnvironmentPropertySource] to EncryptableSystemEnvironmentPropertySourceWrapper
+[INFO] Converting PropertySource random [org.springframework.boot.env.RandomValuePropertySource] to EncryptablePropertySourceWrapper
+[INFO] Property Filter custom Bean not found with name 'encryptablePropertyFilter'. Initializing Default Property Filter
+[INFO] Started MavenCli in 1.306 seconds (JVM running for 4.07)
+[INFO] Active Profiles: Default
+[INFO] Encrypting value password
+[INFO] String Encryptor custom Bean not found with name 'jasyptStringEncryptor'. Initializing Default String Encryptor
+[INFO] Encryptor config not found for property jasypt.encryptor.algorithm, using default value: PBEWITHHMACSHA512ANDAES_256
+[INFO] Encryptor config not found for property jasypt.encryptor.key-obtention-iterations, using default value: 1000
+[INFO] Encryptor config not found for property jasypt.encryptor.pool-size, using default value: 1
+[INFO] Encryptor config not found for property jasypt.encryptor.provider-name, using default value: null
+[INFO] Encryptor config not found for property jasypt.encryptor.provider-class-name, using default value: null
+[INFO] Encryptor config not found for property jasypt.encryptor.salt-generator-classname, using default value: org.jasypt.salt.RandomSaltGenerator
+[INFO] Encryptor config not found for property jasypt.encryptor.iv-generator-classname, using default value: org.jasypt.iv.RandomIvGenerator
+[INFO] Encryptor config not found for property jasypt.encryptor.string-output-type, using default value: base64
+[INFO]
+```
+
+```text
+ENC(eVNwzOOiu7Vtt32+S2aJm61Bm71KIxXjrZdyAgaSetZ41CsTYmNMvSBlbRTkgw4N)
+
 ```
 the reverse
 ```sh
- mvn jasypt:decrypt-value -Djasypt.encryptor.password=secret -Djasypt.plugin.value="z0AjXEOUv2BvWSLGFIuSJOp2WmChCwj0pc8HiG+PjDN+x0K0yyPToddcpgfrv0M2"
+mvn jasypt:decrypt-value -Djasypt.encryptor.password=secret -Djasypt.plugin.value="eVNwzOOiu7Vtt32+S2aJm61Bm71KIxXjrZdyAgaSetZ41CsTYmNMvSBlbRTkgw4N"
 ```
 succeeds and prints a lot of information about the configuration used:
   
 ```text
- [INFO] Started MavenCli in 1.192 seconds (JVM running for 3.549)
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building springboot-jasypt-encrypt-demo 0.2.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO]
+[INFO] --- jasypt-maven-plugin:3.0.3:decrypt-value (default-cli) @ springboot-jasypt-encrypt-demo ---
+[INFO] Starting MavenCli v3.3.9 on lenovoy40-1 with PID 4431 (/opt/apache-maven-3.3.9/lib/maven-embedder-3.3.9.jar started by sergueik in /home/sergueik/src/springboot_study/basic-jasypt)
+[INFO] No active profile set, falling back to default profiles: default
+[INFO] Post-processing PropertySource instances
+[INFO] Converting PropertySource configurationProperties [org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertySource] to AOP Proxy
+[INFO] Converting PropertySource systemProperties [org.springframework.core.env.PropertiesPropertySource] to EncryptableMapPropertySourceWrapper
+[INFO] Converting PropertySource systemEnvironment [org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor$OriginAwareSystemEnvironmentPropertySource] to EncryptableSystemEnvironmentPropertySourceWrapper
+[INFO] Converting PropertySource random [org.springframework.boot.env.RandomValuePropertySource] to EncryptablePropertySourceWrapper
+[INFO] Property Filter custom Bean not found with name 'encryptablePropertyFilter'. Initializing Default Property Filter
+[INFO] Started MavenCli in 1.18 seconds (JVM running for 3.512)
 [INFO] Active Profiles: Default
-[INFO] Decrypting value z0AjXEOUv2BvWSLGFIuSJOp2WmChCwj0pc8HiG+PjDN+x0K0yyPToddcpgfrv0M2
+[INFO] Decrypting value eVNwzOOiu7Vtt32+S2aJm61Bm71KIxXjrZdyAgaSetZ41CsTYmNMvSBlbRTkgw4N
 [INFO] String Encryptor custom Bean not found with name 'jasyptStringEncryptor'. Initializing Default String Encryptor
 [INFO] Encryptor config not found for property jasypt.encryptor.algorithm, using default value: PBEWITHHMACSHA512ANDAES_256
 [INFO] Encryptor config not found for property jasypt.encryptor.key-obtention-iterations, using default value: 1000
@@ -670,84 +297,257 @@ password
 the `PBEWITHHMACSHA512ANDAES_256` corresponds to `PBEWithHmacSHA512AndAES_256` in Perl JCE notation:
 
 
-```sh
-perl jasypt.pl -operation encrypt -secret secret -value  "password"
+
+- updated `jasypt.pl` to use the `PBEWithHmacSHA512AndAES_256` algorithm
+```Perl
+my $password = $secret;
+my $pbe      = PBEWithHmacSHA512AndAES_256($password);
+my $encrypted = decode_base64($value);
+print $pbe->decrypt($encrypted), $/;
 ```
-```text
-edC1/D1GWuRBxk1QLdgUQxzBagg8ER/tZ4N1WEt82+ebTjfpTzGj3Tbk19HhnL8Z
-```
 ```sh
-perl jasypt.pl -operation decrypt -secret secret -value  "z0AjXEOUv2BvWSLGFIuSJOp2WmChCwj0pc8HiG+PjDN+x0K0yyPToddcpgfrv0M2"
+perl jasypt.pl -operation decrypt -secret secret -value "eVNwzOOiu7Vtt32+S2aJm61Bm71KIxXjrZdyAgaSetZ41CsTYmNMvSBlbRTkgw4N"
 ```
 ```text
 password
 ```
 
-the arguments of the new release of jasypt are not compatible or tricky to set rght:
+### NOTE
+the arguments of the older release of jasypt are not compatible or tricky to set rght:
 ```sh
-mvn jasypt:encrypt-value -Djasypt.encryptor.password=secret -Djasypt.plugin.value="password" -Djasypt.encryptor.algorithm=PBEWithMD5AndDES 
+./jasypt-1.9.3/bin/decrypt.sh input="eVNwzOOiu7Vtt32+S2aJm61Bm71KIxXjrZdyAgaSetZ41CsTYmNMvSBlbRTkgw4N" password=secret algorithm=PBEWITHHMACSHA512ANDAES_256
 ```
-
-gives
-
 ```text
-[INFO] Converting PropertySource systemProperties [org.springframework.core.env.PropertiesPropertySource] to EncryptableMapPropertySourceWrapper
-[INFO] Converting PropertySource systemEnvironment [org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor$OriginAwareSystemEnvironmentPropertySource] to EncryptableSystemEnvironmentPropertySourceWrapper
-[INFO] Converting PropertySource random [org.springframework.boot.env.RandomValuePropertySource] to EncryptablePropertySourceWrapper
-[INFO] Property Filter custom Bean not found with name 'encryptablePropertyFilter'. Initializing Default Property Filter
-[INFO] Started MavenCli in 1.177 seconds (JVM running for 3.605)
-[INFO] Active Profiles: Default
-[INFO] Decrypting value 5MiW4WoXPfaKnm4ufkRAev7T7wP2j/ZnnImEkWYUE3U=
-[INFO] String Encryptor custom Bean not found with name 'jasyptStringEncryptor'. Initializing Default String Encryptor
-[INFO] Encryptor config not found for property jasypt.encryptor.key-obtention-iterations, using default value: 1000
-[INFO] Encryptor config not found for property jasypt.encryptor.pool-size, using default value: 1
-[INFO] Encryptor config not found for property jasypt.encryptor.provider-name, using default value: null
-[INFO] Encryptor config not found for property jasypt.encryptor.provider-class-name, using default value: null
-[INFO] Encryptor config not found for property jasypt.encryptor.salt-generator-classname, using default value: org.jasypt.salt.RandomSaltGenerator
-[INFO] Encryptor config not found for property jasypt.encryptor.iv-generator-classname, using default value: org.jasypt.iv.RandomIvGenerator
-[INFO] Encryptor config not found for property jasypt.encryptor.string-output-type, using default value: base64
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD FAILURE
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time: 2.800 s
-[INFO] Finished at: 2023-04-04T18:49:08-04:00
-[INFO] Final Memory: 26M/248M
-[INFO] ------------------------------------------------------------------------
-[ERROR] Failed to execute goal com.github.ulisesbocchio:jasypt-maven-plugin:3.0.3:decrypt-value (default-cli) on project springboot-jasypt-encrypt-demo: Error Decrypting: null: EncryptionOperationNotPossibleException -> [Help 1]
-[ERROR]
+----ENVIRONMENT-----------------
+
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+
+
+
+----ARGUMENTS-------------------
+
+algorithm: PBEWITHHMACSHA512ANDAES_256
+input: eVNwzOOiu7Vtt32+S2aJm61Bm71KIxXjrZdyAgaSetZ41CsTYmNMvSBlbRTkgw4N
+password: secret
+
+
+
+----ERROR-----------------------
+
+Operation not possible (Bad input or parameters)
 
 ```
+### Alternative Algorithms
 
-### Python Modules
+```sh
+./jasypt-1.9.3/bin/listAlgorithms.sh |sed 's|\s|\n|g '
 
-https://github.com/fareliner/jasypt4py/blob/master/jasypt4py/encryptor.py
-
-
- 
- NOTE:
- 
-the code is not compatible with Python past 3.8 
- 
+```
 ```text
-module 'time' has no attribute 'clock'
+PBEWITHHMACSHA1ANDAES_128
+PBEWITHHMACSHA1ANDAES_256
+PBEWITHHMACSHA224ANDAES_128
+PBEWITHHMACSHA224ANDAES_256
+PBEWITHHMACSHA256ANDAES_128
+PBEWITHHMACSHA256ANDAES_256
+PBEWITHHMACSHA384ANDAES_128
+PBEWITHHMACSHA384ANDAES_256
+PBEWITHHMACSHA512ANDAES_128
+PBEWITHHMACSHA512ANDAES_256
+PBEWITHMD5ANDDES
+PBEWITHMD5ANDTRIPLEDES
+PBEWITHSHA1ANDDESEDE
+PBEWITHSHA1ANDRC2_128
+PBEWITHSHA1ANDRC2_40
+PBEWITHSHA1ANDRC4_128
+PBEWITHSHA1ANDRC4_40
+```
+it does not appear all algorithms are workimg:
+
+```sh
+ALGORITHMS="PBEWITHHMACSHA1ANDAES_128 PBEWITHHMACSHA1ANDAES_256 PBEWITHHMACSHA224ANDAES_128 PBEWITHHMACSHA224ANDAES_256 PBEWITHHMACSHA256ANDAES_128 PBEWITHHMACSHA256ANDAES_256 PBEWITHHMACSHA384ANDAES_128 PBEWITHHMACSHA384ANDAES_256 PBEWITHHMACSHA512ANDAES_128 PBEWITHHMACSHA512ANDAES_256 PBEWITHMD5ANDDES PBEWITHMD5ANDTRIPLEDES PBEWITHSHA1ANDDESEDE PBEWITHSHA1ANDRC2_128 PBEWITHSHA1ANDRC2_40 PBEWITHSHA1ANDRC4_128 PBEWITHSHA1ANDRC4_40"
+
+(for A in $ALGORITHMS ; do echo $A; echo ./jasypt-1.9.3/bin/encrypt.sh algorithm=$A input=test password=secret; ./jasypt-1.9.3/bin/encrypt.sh algorithm=$A input=test password=secret ;done ) 2>&1 | tee a.log
+```
+in the log:
+```text
+PBEWITHHMACSHA1ANDAES_128
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA1ANDAES_128 input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHHMACSHA1ANDAES_128
+password: secret
+----ERROR-----------------------
+Operation not possible (Bad input or parameters)
+PBEWITHHMACSHA1ANDAES_256
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA1ANDAES_256 input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHHMACSHA1ANDAES_256
+password: secret
+----ERROR-----------------------
+Operation not possible (Bad input or parameters)
+PBEWITHHMACSHA224ANDAES_128
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA224ANDAES_128 input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHHMACSHA224ANDAES_128
+password: secret
+----ERROR-----------------------
+Operation not possible (Bad input or parameters)
+PBEWITHHMACSHA224ANDAES_256
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA224ANDAES_256 input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHHMACSHA224ANDAES_256
+password: secret
+----ERROR-----------------------
+Operation not possible (Bad input or parameters)
+PBEWITHHMACSHA256ANDAES_128
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA256ANDAES_128 input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHHMACSHA256ANDAES_128
+password: secret
+----ERROR-----------------------
+Operation not possible (Bad input or parameters)
+PBEWITHHMACSHA256ANDAES_256
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA256ANDAES_256 input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHHMACSHA256ANDAES_256
+password: secret
+----ERROR-----------------------
+Operation not possible (Bad input or parameters)
+PBEWITHHMACSHA384ANDAES_128
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA384ANDAES_128 input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHHMACSHA384ANDAES_128
+password: secret
+----ERROR-----------------------
+Operation not possible (Bad input or parameters)
+PBEWITHHMACSHA384ANDAES_256
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA384ANDAES_256 input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHHMACSHA384ANDAES_256
+password: secret
+----ERROR-----------------------
+Operation not possible (Bad input or parameters)
+PBEWITHHMACSHA512ANDAES_128
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA512ANDAES_128 input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHHMACSHA512ANDAES_128
+password: secret
+----ERROR-----------------------
+Operation not possible (Bad input or parameters)
+PBEWITHHMACSHA512ANDAES_256
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHHMACSHA512ANDAES_256 input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHHMACSHA512ANDAES_256
+password: secret
+----ERROR-----------------------
+Operation not possible (Bad input or parameters)
+PBEWITHMD5ANDDES
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHMD5ANDDES input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHMD5ANDDES
+password: secret
+----OUTPUT----------------------
+dXzqjV8RIAKXZJY9YTGixQ==
+PBEWITHMD5ANDTRIPLEDES
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHMD5ANDTRIPLEDES input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHMD5ANDTRIPLEDES
+password: secret
+----OUTPUT----------------------
+0NEOANIDacCLxSm6insuig==
+PBEWITHSHA1ANDDESEDE
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDDESEDE input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHSHA1ANDDESEDE
+password: secret
+----OUTPUT----------------------
+cXX80fyZD+mIbsUIQnLpLA==
+PBEWITHSHA1ANDRC2_128
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDRC2_128 input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHSHA1ANDRC2_128
+password: secret
+----OUTPUT----------------------
+Q0+bNtDD6wwveV2VX9hFGQ==
+PBEWITHSHA1ANDRC2_40
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDRC2_40 input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHSHA1ANDRC2_40
+password: secret
+----OUTPUT----------------------
+rR4F7KuJ+mQIIejpJZacDg==
+PBEWITHSHA1ANDRC4_128
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDRC4_128 input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHSHA1ANDRC4_128
+password: secret
+----OUTPUT----------------------
+gBfP4Z7pbWnga0IJ
+PBEWITHSHA1ANDRC4_40
+./jasypt-1.9.3/bin/encrypt.sh algorithm=PBEWITHSHA1ANDRC4_40 input=test password=secret
+----ENVIRONMENT-----------------
+Runtime: Oracle Corporation Java HotSpot(TM) 64-Bit Server VM 25.161-b12
+----ARGUMENTS-------------------
+input: test
+algorithm: PBEWITHSHA1ANDRC4_40
+password: secret
+----OUTPUT----------------------
+9vaGV86+5EfZkJSm
 ```
 
-Using the suggeed in  https://stackoverflow.com/questions/58569361/attributeerror-module-time-has-no-attribute-clock-in-python-3-8
+### Cleanup
 
-leads to a new error:
-
-```text
-Traceback (most recent call last):
-  File "app.py", line 5, in <module>
-    cryptor.encrypt('secret', 'test', 1000)
-  File "/app/encryptor.py", line 95, in encrypt
-    encrypted_message = cipher.encrypt(self.pad(AES.block_size, text))
-  File "/usr/local/lib/python3.8/site-packages/Crypto/Cipher/_mode_cbc.py", line 178, in encrypt
-    c_uint8_ptr(plaintext),
-
-  File "/usr/local/lib/python3.8/site-packages/Crypto/Util/_raw_api.py", line 242, in c_uint8_ptr
-  raise TypeError("Object type %s cannot be passed to C code" % type(data))
-TypeError: Object type <class 'str'> cannot be passed to C code
+```sh
+rm -rf jasypt-1.9.3
+rm jasypt-1.9.3-dist.zip
 ```
 
 ### See Also
@@ -760,6 +560,18 @@ TypeError: Object type <class 'str'> cannot be passed to C code
   * [another python library](https://github.com/fareliner/jasypt4py)
   * [stackoverflow](https://stackoverflow.com/questions/4371714/how-do-i-profile-my-perl-programs)
   * [spring Boot Password Encryption Using Jasypt](https://www.appsdeveloperblog.com/spring-boot-password-encryption-using-jasypt/)
+
+  * .Net
+
+  + [translate PBE Codes from Java to C#](https://cuteprogramming.wordpress.com/2015/02/20/translate-pbe-codes-from-java-to-c/) - article covers `PBEWithMD5AndDES` algorythm
+  + [Emulating PBEWithMD5AndDES Encryption under .NET](https://www.codeproject.com/Articles/16450/Emulating-PBEWithMD5AndDES-Encryption-under-NET)
+  + https://www.cryptosys.net/pki/dotnetpki/html/AllMembers_T_CryptoSysPKI_Pbe.htm
+  + https://www.example-code.com/csharp/crypt2_pbes2.asp - requires Chilkat .NET Assemblies - commercial - 30 day evaluation available on [nuget](https://www.nuget.org/packages/chilkat-x64#supportedframeworks-body-tab) -  works with .NET Framework net481, net451 and earlier - separate dlls for net 451 through 472 in the archive: ChilkatDotNet45.dll and the like
+  + `PbeParameters` Class - not available for .NET Framework 4.8.1, only .Net 7 [link](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.pbeparameters?view=net-7.0&viewFallbackFrom=netframework-4.8.1)
+
+* Python Modules
+  + [python2.7 example](https://github.com/lemonprogis/python-jasypt) - need conversion of string / byte / unicode variables
+  + [python3.x example](https://github.com/fareliner/jasypt4py/blob/master/jasypt4py/encryptor.py) - the code is not compatible with Python __3.8__ and later, error is: `module 'time' has no attribute 'clock'`. Attempt to Use the alternative module suggeested in [stackoverflow](https://stackoverflow.com/questions/58569361/attributeerror-module-time-has-no-attribute-clock-in-python-3-8) leads to a new error: `TypeError: Object type <class 'str'> cannot be passed to C code`
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
