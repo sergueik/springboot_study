@@ -11,9 +11,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 
+import example.dto.StringResponse;
 import example.service.ExampleService;
 
 @RestController
@@ -78,6 +81,40 @@ public class Controller {
 	// for "http://localhost:0/basic/post": connect:
 	// Address is invalid on local machine, or port is not valid on remote
 	// machine
+
+	@PostMapping(value = "/customHello", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+
+	public ResponseEntity<StringResponse> stringResponsePage(
+			@RequestParam Optional<String> message) {
+		if (message.isPresent()) {
+			StringResponse respose = new StringResponse(
+					(message.get().length() == 0 ? "Custom " : message.get()));
+			return ResponseEntity.status(HttpStatus.OK).body(respose);
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+	}
+
+	@GetMapping(value = "/defaultHello", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<StringResponse> objectResponse(
+			@RequestParam Optional<String> message) {
+		String finalMessage = String.format("Hello %s",
+				(message.isPresent() ? message.get() : "World!"));
+		StringResponse respose = new StringResponse(finalMessage);
+		return ResponseEntity.status(HttpStatus.OK).body(respose);
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/pathHello/{message}", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<StringResponse> objectResponse(
+			@PathVariable String message) {
+		String finalMessage = String.format("Hello %s",
+				(message == null ? "world" : message));
+		StringResponse respose = new StringResponse(finalMessage);
+		return ResponseEntity.status(HttpStatus.OK).body(respose);
+	}
 
 	@ResponseBody
 	// 406 Not Acceptable client error response

@@ -34,6 +34,7 @@ public class HtmlEscapeController {
 		Gson gson = (fix.isPresent() && fix.get())
 				? new GsonBuilder().disableHtmlEscaping().create() : new Gson();
 		String json = gson.toJson(data);
+
 		return json;
 	}
 
