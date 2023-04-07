@@ -20,4 +20,5 @@ public interface CustomerRepository extends JpaRepository<Customers, Long> {
 	@Query(nativeQuery = true, value = "SELECT a.id, a.first_name, a.last_name, a.balance FROM customers a WHERE REGEXP_LIKE(a.first_name, ?1 ) order by a.first_name")
 	public List<Object[]> queryCustomers(String firstName);
 
+	public List<Customers> findAllByOrderByIdDesc();
 }

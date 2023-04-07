@@ -37,10 +37,14 @@ public class CustomerController {
 	}
 
 	@GetMapping("/sorted")
-	public ResponseEntity<List<Customers>> findAllSorted() {
+	public ResponseEntity<List<Customers>> findAllSorted(
+			@RequestParam(name = "auto") Optional<Boolean> auto) {
 		logger.info(
-				"Request received to get all available customers sorted in descending order");
-		return ResponseEntity.ok(customerService.findAllSorted());
+				"Request received to get all available customers sorted in descending order"
+						+ ((auto.isPresent() && auto.get()) ? " by JPA" : ""));
+		return ResponseEntity.ok(
+				(auto.isPresent() && auto.get()) ? customerService.findAllAutoSorted()
+						: customerService.findAllCustomSorted());
 	}
 
 	@GetMapping("/firstname")

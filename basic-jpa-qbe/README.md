@@ -145,7 +145,121 @@ curl  -s "http://localhost:8080/customer/query?firstName=S.*" | /c/tools/jq-win6
   ]
 ]
 ```
+* sorting via custom code
+```sh
+curl  -s "http://localhost:8080/customer" | /c/tools/jq-win64.exe  "."
+```
+```JSON
+[
+  {
+    "id": 15,
+    "firstName": "Narendra",
+    "lastName": "Jindal",
+    "walletBalance": 2000
+  },
+  {
+    "id": 14,
+    "firstName": "Mahendra",
+    "lastName": "Khillar",
+    "walletBalance": 5000
+  },
+  {
+    "id": 13,
+    "firstName": "Rosalin",
+    "lastName": "Khillar",
+    "walletBalance": 2000
+  },
+  {
+    "id": 12,
+    "firstName": "Soumya",
+    "lastName": "Shankar",
+    "walletBalance": 1000
+  },
+  {
+    "id": 11,
+    "firstName": "Ankit",
+    "lastName": "Jindal",
+    "walletBalance": 2000
+  },
+  {
+    "id": 10,
+    "firstName": "Jitendra",
+    "lastName": "Bhandari",
+    "walletBalance": 2000
+  },
+  {
+    "id": 9,
+    "firstName": "Harikant",
+    "lastName": "Ojha",
+    "walletBalance": 5000
+  },
+  {
+    "id": 8,
+    "firstName": "Shyambrij",
+    "lastName": "Mourya",
+    "walletBalance": 1000
+  },
+  {
+    "id": 7,
+    "firstName": "Kuber",
+    "lastName": "Goel",
+    "walletBalance": 5000
+  },
+  {
+    "id": 6,
+    "firstName": "Vidushi",
+    "lastName": "Diwedy",
+    "walletBalance": 3000
+  },
+  {
+    "id": 5,
+    "firstName": "Promod",
+    "lastName": "Barik",
+    "walletBalance": 2000
+  },
+  {
+    "id": 4,
+    "firstName": "Anita",
+    "lastName": "Das",
+    "walletBalance": 3000
+  },
+  {
+    "id": 3,
+    "firstName": "Anita",
+    "lastName": "Samal",
+    "walletBalance": 5000
+  },
+  {
+    "id": 2,
+    "firstName": "Satvik",
+    "lastName": "Dhinda",
+    "walletBalance": 2000
+  },
+  {
+    "id": 1,
+    "firstName": "Debendra",
+    "lastName": "Dhinda",
+    "walletBalance": 5000
+  }
+]
 
+
+```
+* sorting without adding code (only the interface):
+```java
+@Repository
+public interface CustomerRepository extends JpaRepository<Customers, Long> {
+	public List<Customers> findAllByOrderByIdDesc();
+
+```
+```sh
+curl  -s "http://localhost:8080/customer/sorted?auto=true" | /c/tools/jq-win64.exe  "."
+```
+the log will show
+
+```text
+2023-04-07 18:41:34.844  INFO 7392 --- [nio-8080-exec-5] example.controller.CustomerController    : Request received to get all available customers sorted in descending order by JPA
+```
 
 ### Comparison
 

@@ -13,5 +13,6 @@ public interface CustomerService {
 	List<Customers> findByWalletBalanceEquals(Long balance);
 	List<Customers> findByFirstNameStarting(String nameStarting);
 	List<Object[]> queryCustomers(String firstName);
-	List<Customers> findAllSorted();
+	List<Customers> findAllCustomSorted();
+	List<Customers> findAllAutoSorted();
 }

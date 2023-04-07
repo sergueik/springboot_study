@@ -28,7 +28,13 @@ public class CustomerServiceImpl implements CustomerService {
 	private CustomerRepository customerRepository;
 
 	@Override
-	public List<Customers> findAllSorted() {
+	public List<Customers> findAllAutoSorted() {
+		// use method names to let JPA do the work
+		return customerRepository.findAllByOrderByIdDesc();
+	}
+
+	@Override
+	public List<Customers> findAllCustomSorted() {
 		return customerRepository.findAll(sortByIdDesc());
 	}
 
