@@ -75,11 +75,43 @@ curl -s http://localhost:8080/customer/firstname?endsWith=dra | /c/tools/jq-win6
   }
 ]
 ```
+```sh
+curl -s http://localhost:8080/customer/firstname?startsWith=An | /c/tools/jq-win64.exe '.'
+```
+```json
+[
+  {
+    "id": 3,
+    "firstName": "Anita",
+    "lastName": "Samal",
+    "walletBalance": 5000
+  },
+  {
+    "id": 4,
+    "firstName": "Anita",
+    "lastName": "Das",
+    "walletBalance": 3000
+  },
+  {
+    "id": 11,
+    "firstName": "Ankit",
+    "lastName": "Jindal",
+    "walletBalance": 2000
+  }
+]
+```
+NOTE: empty argument is  supported by `@Query` version (testing thr QBE code is a work in progress):
+```sh
+curl -s http://localhost:8080/customer/firstname?startsWith=""|/c/tools/jq-win64.exe  '.|length'
+```
+```text
+15
+```
 ### Comparison
-Altenatively may 
-use classic `@Query` annotationa (unfinished)
-```java
 
+Alternatively may use classic `@Query` annotations and projection classes (unfinished, using th original model class )
+
+```java
 // NOTE: strongly typed
 @Query("SELECT new example.model.Customers(a.id, a.firstName,a.lastName,a.walletBalance)"
 		+ " from Customers a where a.firstName LIKE ?1%")
