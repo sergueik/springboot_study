@@ -174,6 +174,9 @@ Caused by: java.lang.IllegalArgumentException: Not a managed type: class example
   * [delombok](https://projectlombok.org/features/delombok)
   * [lombok](https://www.baeldung.com/lombok-builder) `@Builder` annotation
   * [Spring Data JPA Query by Example](https://www.baeldung.com/spring-data-query-by-example)
+  * [explicit sorting with code](https://stackoverflow.com/questions/25486583/how-to-use-orderby-with-findall-in-spring-data)
+  * [Springboot h2 database](https://www.baeldung.com/spring-boot-h2-database)
+  * [sorting with JPA](https://www.baeldung.com/jpa-sort)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -16,6 +16,7 @@ import example.service.CustomerService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -25,6 +26,15 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Autowired
 	private CustomerRepository customerRepository;
+
+	@Override
+	public List<Customers> findAllSorted() {
+		return customerRepository.findAll(sortByIdDesc());
+	}
+
+	private Sort sortByIdDesc() {
+		return Sort.by(Sort.Direction.DESC, "id");
+	}
 
 	@Override
 	public List<Customers> findByFirstNameStarting(String nameStarting) {

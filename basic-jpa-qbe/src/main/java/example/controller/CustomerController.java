@@ -32,8 +32,15 @@ public class CustomerController {
 
 	@GetMapping("/list")
 	public ResponseEntity<List<Customers>> getAllStates() {
-		logger.info("Request received to get all availavble customers");
+		logger.info("Request received to get all available customers");
 		return ResponseEntity.ok(customerService.getAll());
+	}
+
+	@GetMapping("/sorted")
+	public ResponseEntity<List<Customers>> findAllSorted() {
+		logger.info(
+				"Request received to get all available customers sorted in descending order");
+		return ResponseEntity.ok(customerService.findAllSorted());
 	}
 
 	@GetMapping("/firstname")
