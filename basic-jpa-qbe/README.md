@@ -1,6 +1,7 @@
 ### Info
 
-simplified replica of [repository](https://github.com/talk2debendra/spring-boot) illustrating the [article](https://talk2debendra90.medium.com/spring-data-jpa-query-by-example-qbe-a9c817248c0d)
+simplified replica of [repository](https://github.com/talk2debendra/spring-boot)
+illustrating the [article](https://talk2debendra90.medium.com/spring-data-jpa-query-by-example-qbe-a9c817248c0d)
 
 
 
@@ -15,7 +16,7 @@ then perform queries
 ```sh
 curl -s http://localhost:8080/customer/firstname?endsWith=dra | /c/tools/jq-win64.exe '.'
 ```
-```json
+```JSON
 [
   {
     "id": 1,
@@ -47,7 +48,7 @@ curl -s http://localhost:8080/customer/firstname?endsWith=dra | /c/tools/jq-win6
 ```sh
 curl -s http://localhost:8080/customer/firstname?endsWith=dra | /c/tools/jq-win64.exe '.' | /c/tools/jq-win64.exe '.'
 ```
-```json
+```JSON
 [
   {
     "id": 1,
@@ -78,7 +79,7 @@ curl -s http://localhost:8080/customer/firstname?endsWith=dra | /c/tools/jq-win6
 ```sh
 curl -s http://localhost:8080/customer/firstname?startsWith=An | /c/tools/jq-win64.exe '.'
 ```
-```json
+```JSON
 [
   {
     "id": 3,
@@ -107,6 +108,19 @@ curl -s http://localhost:8080/customer/firstname?startsWith=""|/c/tools/jq-win64
 ```text
 15
 ```
+
+
+* exact name
+
+```sh
+curl http://localhost:8080/customer/rosalin
+```
+
+```JSON
+[{"id":13,"firstName":"Rosalin","lastName":"Khillar","walletBalance":2000}]
+```
+
+```
 ### Comparison
 
 Alternatively may use classic `@Query` annotations and projection classes (unfinished, using th original model class )
@@ -117,6 +131,18 @@ Alternatively may use classic `@Query` annotations and projection classes (unfin
 		+ " from Customers a where a.firstName LIKE ?1%")
 public List<Customers> findCustomers(String firstNameFragment);
 
+```
+### TODO
+
+Problem adding unit tests in the project
+
+```text
+Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'entityManagerFactory' available
+```
+the attempt to apply fix by [stackoverflow hint](https://stackoverflow.com/questions/24520602/spring-data-jpa-no-bean-named-entitymanagerfactory-is-defined-injection-of-a)
+leads to 
+```text
+Caused by: java.lang.IllegalArgumentException: Not a managed type: class example.model.Customers
 ```
 ### See Also
   * [delombok](https://projectlombok.org/features/delombok)
