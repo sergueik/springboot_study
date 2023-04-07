@@ -119,8 +119,34 @@ curl http://localhost:8080/customer/rosalin
 ```JSON
 [{"id":13,"firstName":"Rosalin","lastName":"Khillar","walletBalance":2000}]
 ```
-
+* regexp
+```sh
+curl  -s "http://localhost:8080/customer/query?firstName=S.*" | /c/tools/jq-win64.exe  '.'
 ```
+```JSON
+[
+  [
+    2,
+    "Satvik",
+    "Dhinda",
+    2000
+  ],
+  [
+    8,
+    "Shyambrij",
+    "Mourya",
+    1000
+  ],
+  [
+    12,
+    "Soumya",
+    "Shankar",
+    1000
+  ]
+]
+```
+
+
 ### Comparison
 
 Alternatively may use classic `@Query` annotations and projection classes (unfinished, using th original model class )

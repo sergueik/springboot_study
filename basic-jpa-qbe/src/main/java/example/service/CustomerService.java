@@ -12,4 +12,5 @@ public interface CustomerService {
 	List<Customers> getAll();
 	List<Customers> findByWalletBalanceEquals(Long balance);
 	List<Customers> findByFirstNameStarting(String nameStarting);
+	List<Object[]> queryCustomers(String firstName);
 }

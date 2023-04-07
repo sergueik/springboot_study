@@ -78,4 +78,8 @@ public class CustomerServiceImpl implements CustomerService {
 
 	}
 
+	@Override
+	public List<Object[]> queryCustomers(String firstName) {
+		return customerRepository.queryCustomers(firstName);
+	}
 }
