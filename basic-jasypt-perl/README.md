@@ -10,24 +10,38 @@ Pure Perl module with dependencies installed on top of Alpine image
 IMAGE=basic-perl-crypt-jasypt
 docker build -t $IMAGE -f Dockerfile .
 ```
+if the build ends with error
+
+```text
+Step 5/5 : COPY test.pl /root/
+COPY failed: file not found in build context or excluded by .dockerignore: stat test.pl: file does not exist
+```
+
+copy the `jasypt.pl` locally with the name `test.pl`
+if seeing the error with `Crypt::PBE`, comment the line, where the cpan commandis invoked, rebuild the image and install interatively as explained below in the __TODO__ section
+
 * NOTE: build will be time comsuming
 
 #### Verify Application
 
 ```sh
 NAME=example-perl-jasypt
+docker container rm $NAME
 docker run --name $NAME -it $IMAGE sh
 ```
 * run test in the container
 ```sh
-perl test.pl -value message -secret apple -operation encrypt
+VALUE=$(perl test.pl -value message -secret apple -operation encrypt)
+echo $VALUE
 ```
+this will print some base64 encoded binary string, different each time
 ```text
 x5p9WNNzxLAqGwt7zDkx1A==
 ```
 ```sh
-perl test.pl -value 'x5p9WNNzxLAqGwt7zDkx1A==' -secret apple
+perl test.pl -value "$VALUE" -secret apple
 ```
+this will successfully decrypt it
 ```text
 message
 ```
@@ -68,7 +82,7 @@ ww0nfj0f7a94s7osdsz7sz022
 Total reclaimed space: 258.6MB
 
 ```
-* comment the 
+* comment the
 ```sh
 RUN cpan -i 'Crypt::PBE'
 ```
@@ -88,16 +102,16 @@ apparently this succeeds:
 Running make test
 PERL_DL_NONLAZY=1 "/usr/bin/perl" "-MExtUtils::Command::MM" "-MTest::Harness" "-e" "undef *Test::Harness::Switches; test_harness(0, 'blib/lib', 'blib/arch')" t/*.t
 t/00-load.t ............ 1/? # Crypt::PBE 0.102, Perl 5.026003, /usr/bin/perl
-t/00-load.t ............ ok   
-t/10-PBKDF1.t .......... ok   
-t/11-PBKDF1-alias.t .... ok   
-t/20-PBKDF2.t .......... ok    
-t/21-PBKDF2-RFC6070.t .. ok   
-t/22-PBKDF2-alias.t .... ok    
-t/30-PBES1.t ........... ok   
-t/40-PBES2.t ........... ok   
-t/50-PBE.t ............. ok    
-t/60-CLI.t ............. ok    
+t/00-load.t ............ ok
+t/10-PBKDF1.t .......... ok
+t/11-PBKDF1-alias.t .... ok
+t/20-PBKDF2.t .......... ok
+t/21-PBKDF2-RFC6070.t .. ok
+t/22-PBKDF2-alias.t .... ok
+t/30-PBES1.t ........... ok
+t/40-PBES2.t ........... ok
+t/50-PBE.t ............. ok
+t/60-CLI.t ............. ok
 All tests successful.
 Files=10, Tests=98,  2 wallclock secs ( 0.10 usr  0.02 sys +  1.86 cusr  0.15 csys =  2.13 CPU)
 Result: PASS
