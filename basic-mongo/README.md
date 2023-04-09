@@ -13,7 +13,6 @@ docker pull mvertes/alpine-mongo
 IMAGE='mvertes/alpine-mongo'
 CONTAINER=mongo-serviceo:14
 docker container prune -f
-# docker run -d --name $CONTAINER -i $IMAGE
 docker run -d --name $CONTAINER -p 27717:27017 -i $IMAGE
 ```
 * alternatively, build from scratch
@@ -48,7 +47,7 @@ if the error is observed
 ```text
 ``` 
 
-simply connect to plain shell and start mongod in a container:
+simply connect to plain shell and start `mongod` in a container:
 ```sh
 docker exec -it $CONTAINER sh
 ```
@@ -241,9 +240,22 @@ docker-compose -f docker-compose.yaml up
 curl http://localhost:8085/mongo/all
 ```
 this will respond with an empty collection.
-```
+```text
 []
 ```
+
+alternatively, check just the status:
+```sh
+curl -sI http://192.168.0.92:8085/mongo/all
+```
+
+```text
+HTTP/1.1 200
+Content-Type: application/json
+Content-Length: 2
+Date: Sun, 09 Apr 2023 20:13:26 GMT
+```
+
 the error
 ```sh
 curl: (56) Recv failurng 127.0.0.1...
@@ -332,17 +344,23 @@ for VALUE in test4 test5 test6 ; do curl -s http://localhost:8085/mongo/insert2/
 Note:
 there may be replicas if the insert was run multiple times -  the application assigns a unique `id` in every insert.
 More realistic support of CRUD is a WIP.
-
+__
 Note:
 
 the REST call to get value back
 ```sh
 ID=$(curl -s  http://localhost:8085/mongo/all| jq -r  '.[0]|.id')
 echo "ID=${ID}"
-curl  -s http://localhost:8085/mongo/get/$ID
 ```
-is currently prnting nothing (an empty page is returned
-and the server response status is 404 NOT FOUND:
+will print generated id:
+```text
+1681071350708
+```
+then
+```sh
+curl -s http://localhost:8085/mongo/get/$ID
+```
+with Springboot __1.5.4__ was printing nothing (an empty page is returned and the server response status is 404 NOT FOUND:
 ```sh
 curl  -v -s http://localhost:8085/mongo/get/$ID
 ```
@@ -361,10 +379,10 @@ curl  -v -s http://localhost:8085/mongo/get/$ID
 * Connection #0 to host localhost left intact
 
 ```
-it is WIP to debug what is causing empry response body
+it is WIP to debug what is causing empty response body
 after fix is  made,
 
-container log will showi slighhtly different implementation details . For __2.3.4.RELEASE__ it will be
+container log will show slightly different implementation details. For release __2.3.4__ it will be working correctly too
 ```text
 Searching: "1642535883087"
 Result: "Optional[example.Model@2d5eb373]"
@@ -375,9 +393,13 @@ Searching: "1642535883087"
 Result: "example.Model@304f9b26"
 ```
 curl command response will show:
-```text
-{"id":1642535883087,"value":"test1"}
+```JSON
+{
+  "id": 1642535883087,
+  "value": "test1"
+}
 ```
+
 naturally the `ID` will be different. One can confirm in console:
 ```sh
 docker exec -it 'mongo-service' mongo
@@ -411,6 +433,17 @@ uncomment the lines in `src/main/resources/application.properties` of the spring
 ```java
 spring.data.mongodb.username=${MONGODB_USERNAME:test}
 spring.data.mongodb.password=${MONGODB_PASSWORD:test}
+```
+
+### Note
+refactoring packages in eclipse is prone to lead to weird looking copilation errors:
+```
+[ERROR] ../basic-mongo/spring/src/main/java/example/repository/ModelMongoRepository.java:[6,8] duplicate class: example.ModelMongoRepository
+[ERROR] ../basic-mongo/spring/src/main/java/example/controller/Worker.java:[22,26] cannot access example.repository.ModelMo
+ngoRepository
+[ERROR]   bad source file: ..\basic-mongo\spring\src\main\java\example\repository\ModelMongoRepository.java
+[ERROR]     file does not contain class example.repository.ModelMongoRepository
+[ERROR]     Please remove or make sure it appears in the correct subdirectory of the sourcepath.
 ```
 ### Cleanup
 

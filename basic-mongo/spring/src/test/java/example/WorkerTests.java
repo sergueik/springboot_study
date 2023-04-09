@@ -36,9 +36,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import example.Worker;
-import example.Model;
-import example.ModelMongoRepository;
+import example.controller.Worker;
+import example.model.Model;
+import example.repository.ModelMongoRepository;
 
 import java.io.IOException;
 import java.util.List;

@@ -1,4 +1,4 @@
-package example;
+package example.controller;
 
 /**	
  * Copyright 2021, 2022 Serguei Kouzmine
@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import example.repository.ModelMongoRepository;
+import example.model.Model;
 
 @Component
 @RestController
@@ -51,7 +54,7 @@ public class Worker {
 			System.err.println(String.format("Searching: \"%d\"", id));
 
 			// https://stackoverflow.com/questions/44101061/missing-crudrepositoryfindone-method
-			Model result = mongoRepository.findOne(id);
+			Model result = mongoRepository.findById(id).orElse(null);
 			if (result != null) {
 				System.err.println(String.format("Result: \"%s\"", result));
 				return ResponseEntity.status(HttpStatus.OK).body(result);

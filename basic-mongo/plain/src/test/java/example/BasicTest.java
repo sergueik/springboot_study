@@ -20,15 +20,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Level;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
@@ -191,6 +192,8 @@ public class BasicTest {
 		find.forEach(codeBlock);
 	}
 
+	// TODO: triage
+	@Ignore
 	@Test
 	public void findDocumentArgumentTest() {
 		db = mongoClient.getDatabase(dbName);

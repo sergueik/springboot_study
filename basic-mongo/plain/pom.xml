@@ -60,12 +60,6 @@
       <version>${hamcrest-all.version}</version>
       <scope>test</scope>
     </dependency>
-<!--
-    <dependency>
-      <groupId>hamcrest</groupId>
-      <artifactId>hamcrest</artifactId>
-      <version>${hamcrest.version}</version>
-    </dependency> -->
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongo-java-driver</artifactId>
