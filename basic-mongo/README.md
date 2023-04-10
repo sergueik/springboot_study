@@ -314,7 +314,7 @@ Got Response
 
 * add few values
 ```sh
-for VALUE in test1 test2 test3 ; do curl -s http://localhost:8085/mongo/insert1/$VALUE; done
+for VALUE in test1 test2 test3 ; do curl -X POST -s http://localhost:8085/mongo/insert1/$VALUE; done
 ```
 get it back
 ```sh
@@ -338,7 +338,7 @@ this will respond with
 ]
 ```
 ```sh
-for VALUE in test4 test5 test6 ; do curl -s http://localhost:8085/mongo/insert2/$VALUE; done
+for VALUE in test4 test5 test6 ; do curl -X POST -s http://localhost:8085/mongo/insert2/$VALUE; done
 ```
 
 Note:
@@ -419,6 +419,55 @@ returns
 	"value" : "test5"
 }
 ```
+### More Querying
+
+```sh
+curl -s http://192.168.0.92:8085/mongo/get/1681166194356
+```
+or
+```sh
+
+http://192.168.0.92:8085/mongo/get/template/1681166194356
+```
+will return one entry
+```json
+{"id":1681166194356,"value":"test1"}
+```
+
+
+#### Query
+
+```sh
+curl http://localhost:8085/mongo/find/test3 | jq '.'
+```
+it will print array of one 
+```JSON
+[
+  {
+    "id": 1681166194868,
+    "value": "test3"
+  }
+]
+
+```
+
+
+
+or many elements
+
+```json
+[
+  {
+    "id": 1681166194868,
+    "value": "test3"
+  },
+  {
+    "id": 1681167505846,
+    "value": "test3"
+  }
+]
+```
+ depends on what was inserted earlier
 
 ### Testing SpringBoot Application with credentials
 ```sh
@@ -478,10 +527,12 @@ docker image ls | grep  mongo | awk '{print $3}' |xargs -IX docker image rm X -f
   * https://www.baeldung.com/java-mongodb-aggregations
   * https://www.baeldung.com/queries-in-spring-data-mongodb
   * https://mongodb.github.io/mongo-java-driver/3.9/driver/getting-started/quick-start/  
+  * pluralsight Training
+    + https://app.pluralsight.com/library/courses/spring-data-mongo-getting-started/table-of-contents
   * Elastic PaccketBeat monitoring MongoDB
 
 
-    + [etting started with Packetbeat for MongoDB](https://www.elastic.co/blog/mongodb-monitoring-with-packetbeat-and-elasticsearch)
+    + [getting started with Packetbeat for MongoDB](https://www.elastic.co/blog/mongodb-monitoring-with-packetbeat-and-elasticsearch)
     + [packetbeat installation and configuration](https://www.elastic.co/guide/en/beats/packetbeat/current/packetbeat-installation-configuration.html)
     + [checkojng status of libpcap apk](https://stackoverflow.com/questions/56623439/how-to-check-if-libpcap-installed-in-alphine-docker-container)
     + [configuting mongodb in alpine](https://www.how2shout.com/linux/how-to-install-mongodb-server-on-alpine-linux/)
