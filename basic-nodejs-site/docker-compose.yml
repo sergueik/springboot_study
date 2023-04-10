@@ -1,0 +1,15 @@
+version: '3.5'
+
+services:
+  nodejs-site:
+    restart: unless-stopped
+    build: .
+    container_name: nodejs-site
+    ports:
+      - "3000:3001"
+    environment:
+      - PORT
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:3001/
