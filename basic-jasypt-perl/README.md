@@ -47,11 +47,37 @@ this will successfully decrypt it
 message
 ```
 ### Debugging
+
+
 ```sh
 perl test.pl -password secret -value test
 ```
+```text
+Salt (random): 347a420dfdfa3606
+$VAR1 = [
+          253,
+          43,
+          18,
+          116,
+          47,
+          117,
+          29,
+          11
+        ];
+Salt (fixed): fd2b12742f751d0b
+DK:
+29395b04f92c9d2a57e85c0eb06566bb
+Encrypted: 80d0d46697c243d6
+Salt: fd2b12742f751d0b
+/SsSdC91HQuA0NRml8JD1g==
+```
 ```sh
-perl test.pl -password secret -value "vbmwnI3ttptjEsCtxFAqiQ"  -operation decrypt
+perl test.pl -password secret -value "/SsSdC91HQuA0NRml8JD1g==" -operation decrypt
+```
+```text
+Salt: fd2b12742f751d0b
+Encrypted: 80d0d46697c243d6
+test
 ```
 
 ### TODO
@@ -152,5 +178,8 @@ Appending installation info to /usr/lib/perl5/core_perl/perllocal.pod
 
   * `Crypt::PBE` [module](https://metacpan.org/pod/Crypt::PBE)
   * [discussion](https://www.perlmonks.org/?dislaytype=print;node_id=845861;replies=1) about implementing Jasypt in Perl
+  * [packing](https://perldoc.perl.org/perlpacktut) - ranked overly complicated
+  * [stackoverflow packing example](https://stackoverflow.com/questions/2427527/how-can-i-convert-a-48-hex-string-to-bytes-using-perl)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

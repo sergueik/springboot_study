@@ -12,17 +12,17 @@ use Data::Dumper;
 our $VERSION = '0.102';
 
 our @EXPORT = qw(
-    pbkdf1
-    pbkdf1_base64
-    pbkdf1_hex
-    byte_hex
+  pbkdf1
+  pbkdf1_base64
+  pbkdf1_hex
+  byte_hex
 );
 
 our @EXPORT_OK = qw(
 
-    pbkdf1_md5
-    pbkdf1_md5_base64
-    pbkdf1_md5_hex
+  pbkdf1_md5
+  pbkdf1_md5_base64
+  pbkdf1_md5_hex
 
 );
 
@@ -35,7 +35,7 @@ sub new {
     my $count    = delete $params{count}    || 1_000;
     my $hash     = delete $params{hash}     || 'md5';
     my $dk_len   = 16;
-    my $self = {
+    my $self     = {
         password => $password,
         salt     => $salt,
         count    => $count,
@@ -116,8 +116,7 @@ sub pbkdf1 {
         $dkLen = 16;
     }
 
-    if ( $hash eq 'md5' && $dkLen > 16)
-    {
+    if ( $hash eq 'md5' && $dkLen > 16 ) {
         croak 'derived key too long';
     }
 
@@ -130,27 +129,24 @@ sub pbkdf1 {
     }
 
     my $DK = substr( $T, 0, $dkLen );
-    print Dumper($DK);
-    print "pbkdf1: ", byte_hex( $DK) ,$/;
+
+    # print Dumper($DK);
+    # print "pbkdf1: ", byte_hex( $DK) ,$/;
     return $DK;
 
 }
 
 sub pbkdf1_hex {
-    # return byte_hex( pbkdf1(@_));
-    my  $x  = pbkdf1(@_);
-    print Dumper($x);
-    return join '', unpack '(H2)*', pbkdf1(@_);
+    return byte_hex( pbkdf1(@_) );
 }
 
 sub pbkdf1_base64 {
     return encode_base64 pbkdf1(@_), '';
 }
+
 sub byte_hex {
-my $arg = shift;
-print Dumper(\$arg);
-   print "byte_hex: $arg", $/;
-  return join '', unpack( '(H2)*', "$arg");
+    my $arg = shift;
+    return join '', unpack( '(H2)*', $arg );
 }
 
 for my $digest (qw/ md5/) {
