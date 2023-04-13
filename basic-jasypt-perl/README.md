@@ -1,6 +1,7 @@
 ### Info
 
 Pure Perl module with dependencies installed on top of Alpine image
+and with modified and trimmed Crypt::PBE installed into workdir for debugging
 
 ### Usage
 
@@ -39,12 +40,20 @@ this will print some base64 encoded binary string, different each time
 x5p9WNNzxLAqGwt7zDkx1A==
 ```
 ```sh
-perl test.pl -value "$VALUE" -secret apple
+perl test.pl -value "$VALUE" -password apple
 ```
 this will successfully decrypt it
 ```text
 message
 ```
+### Debugging
+```sh
+perl test.pl -password secret -value test
+```
+```sh
+perl test.pl -password secret -value "vbmwnI3ttptjEsCtxFAqiQ"  -operation decrypt
+```
+
 ### TODO
 
 the same build fails on a clean machine with:
