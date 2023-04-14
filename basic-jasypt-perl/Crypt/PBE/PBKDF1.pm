@@ -130,8 +130,6 @@ sub pbkdf1 {
 
     my $DK = substr( $T, 0, $dkLen );
 
-    # print Dumper($DK);
-    # print "pbkdf1: ", byte_hex( $DK) ,$/;
     return $DK;
 
 }

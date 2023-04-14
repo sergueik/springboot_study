@@ -48,12 +48,22 @@ message
 ```
 ### Debugging
 
-
 ```sh
 perl test.pl -password secret -value test
 ```
 ```text
-Salt (random): 347a420dfdfa3606
+/SsSdC91HQuA0NRml8JD1g==
+```
+
+```sh
+perl test.pl -password secret -value test -debug
+```
+```text
+
+password: secret
+value: test
+Encrypting
+Salt (random): fcf78385db4f64b3
 $VAR1 = [
           253,
           43,
@@ -65,21 +75,29 @@ $VAR1 = [
           11
         ];
 Salt (fixed): fd2b12742f751d0b
-DK:
-29395b04f92c9d2a57e85c0eb06566bb
-Encrypted: 80d0d46697c243d6
+DK: 29395b04f92c9d2a57e85c0eb06566bb
 Salt: fd2b12742f751d0b
+Encrypted: 80d0d46697c24
 /SsSdC91HQuA0NRml8JD1g==
+Decrypting
+Decrypting
+Salt: fd2b12742f751d0b
+Encrypted: 80d0d46697c243d6
+test
+
 ```
 ```sh
-perl test.pl -password secret -value "/SsSdC91HQuA0NRml8JD1g==" -operation decrypt
+perl test.pl -password secret -value '/SsSdC91HQuA0NRml8JD1g==' -debug -operation decrypt
 ```
 ```text
+password: secret
+value: /SsSdC91HQuA0NRml8JD1g==
+Decrypting
+/SsSdC91HQuA0NRml8JD1g==
 Salt: fd2b12742f751d0b
 Encrypted: 80d0d46697c243d6
 test
 ```
-
 ### TODO
 
 the same build fails on a clean machine with:

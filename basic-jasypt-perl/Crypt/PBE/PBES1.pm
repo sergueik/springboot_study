@@ -23,6 +23,7 @@ sub new {
         count    => $params{count}    || 1_000,
         hash     => $params{hash}     || croak('Specify hash digest algorithm'),
         encryption => $params{encryption} || 'des',   # TODO add support for RC2
+        debug  => undef,
         dk_len => 0,
     };
 
@@ -34,22 +35,28 @@ sub new {
 
 }
 
+sub debug {
+    my ( $self, $value ) = @_;
+    $self->{debug} = $value;
+}
+
 sub encrypt {
 
     my ( $self, $data ) = @_;
 
     my $salt = Crypt::CBC->random_bytes(8);
-    print STDERR 'Salt (random): ', byte_hex($salt), $/;
-    my $salt_string = 'fd2b12742f751d0b';
 
+    print STDERR 'Salt (random): ', byte_hex($salt), $/ if ( $self->{debug} );
+
+    my $salt_string = 'fd2b12742f751d0b';
 
     my @hex = ( $salt_string =~ /(..)/g );
     my @dec = map { hex($_) } @hex;
-    print Dumper( \@dec );
+    print Dumper( \@dec ) if ( $self->{debug} );
     my @bytes = map { pack( 'C', $_ ) } @dec;
 
     $salt = join '', @bytes;
-    print STDERR 'Salt (fixed): ', byte_hex($salt), $/;
+    print STDERR 'Salt (fixed): ', byte_hex($salt), $/ if ( $self->{debug} );
 
     # print Dumper($salt);
     # origin: https://www.perlmonks.org/?node_id=1054876
@@ -63,7 +70,7 @@ sub encrypt {
     );
 
     # TODO: add debug property
-    print STDERR 'DK: ', byte_hex($DK), $/;
+    print STDERR 'DK: ', byte_hex($DK), $/ if ( $self->{debug} );
     my $key = substr( $DK, 0, 8 );
     my $iv  = substr( $DK, 8, 8 );
 
@@ -77,8 +84,10 @@ sub encrypt {
 
     my $encrypted = $crypt->encrypt($data);
     my @result = ( $salt, $encrypted );
-    print STDERR 'Salt: ', byte_hex($salt), $/;
-    print STDERR 'Encrypted: ', byte_hex($encrypted), $/;
+    if ( $self->{debug} ) {
+        print STDERR 'Salt: ',      byte_hex($salt),      $/;
+        print STDERR 'Encrypted: ', byte_hex($encrypted), $/;
+    }
 
     return wantarray ? @result : join( '', @result );
 
@@ -94,8 +103,10 @@ sub decrypt {
         $encrypted = substr( $data, 8 );
     }
 
-    print STDERR 'Salt: ', byte_hex($salt), $/;
-    print STDERR 'Encrypted: ', byte_hex($encrypted), $/;
+    if ( $self->{debug} ) {
+        print STDERR 'Salt: ',      byte_hex($salt),      $/;
+        print STDERR 'Encrypted: ', byte_hex($encrypted), $/;
+    }
     my $DK = pbkdf1(
         hash     => $self->{hash},
         password => $self->{password},
