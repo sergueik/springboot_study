@@ -1,0 +1,14 @@
+version: '3.2'
+
+services:
+  mongo:
+    hostname: mongo-service
+    container_name: mongo-service
+    image: mvertes/alpine-mongo
+    networks:
+      - myapp
+    ports:
+    - 27017:27017
+networks:
+  myapp:
+    driver: bridge

@@ -1,0 +1,49 @@
+package example.service;
+
+import org.springframework.stereotype.Service;
+
+import example.dao.PersonDao;
+import example.model.Person;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class PersonService {
+
+	private final PersonDao personDao;
+
+	public PersonService(PersonDao personDao) {
+		this.personDao = personDao;
+	}
+
+	public Person insertPersonData(Person person) {
+		return personDao.insertPersonData(person);
+	}
+
+	public List<Person> findByNameLike(String nameRegex) {
+		return personDao.findByNameLike(nameRegex);
+	}
+
+	public List<Person> findByNumberGreaterOrEqualCustomQuery(int number) {
+		return personDao.findByNumberGreaterOrEqualCustomQuery(number);
+	}
+
+	public Collection<Person> getAllPersonInformation() {
+		return personDao.getAllPersonInformation();
+	}
+
+	public Optional<Person> getPersonInformationUsingId(String id) {
+		return personDao.getPersonInformationById(id);
+	}
+
+	public void updatePersonUsingId(String id, Person person) {
+		personDao.updatePersonUsingId(id, person);
+	}
+
+	public void deletePersonUsingId(String id) {
+		personDao.deletePersonUsingId(id);
+	}
+
+}
