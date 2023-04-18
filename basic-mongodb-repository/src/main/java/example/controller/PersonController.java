@@ -36,22 +36,22 @@ public class PersonController {
 	}
 
 	@GetMapping(path = "greater/{id}")
-	public List<Person> findByNumberGreaterOrEqualCustomQuery(@PathVariable("id") int id) {
+	public List<Person> findByNumberGreaterOrEqualCustomQuery(@PathVariable("id") Integer id) {
 		return personService.findByNumberGreaterOrEqualCustomQuery(id);
 	}
 
 	@GetMapping(path = "{id}")
-	public Optional<Person> readQueryUsingId(@PathVariable("id") String id) {
+	public Optional<Person> readQueryUsingId(@PathVariable("id") Integer id) {
 		return personService.getPersonInformationUsingId(id);
 	}
 
 	@PutMapping(path = "/update/{id}")
-	public void update(@PathVariable String id, @RequestBody Person person) {
+	public void update(@PathVariable Integer id, @RequestBody Person person) {
 		personService.updatePersonUsingId(id, person);
 	}
 
 	@DeleteMapping(path = "/delete/{id}")
-	public void delete(@PathVariable("id") String id) {
+	public void delete(@PathVariable("id") Integer id) {
 		personService.deletePersonUsingId(id);
 	}
 }

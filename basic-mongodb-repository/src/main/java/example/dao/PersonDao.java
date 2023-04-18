@@ -10,7 +10,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
 @Component
 public class PersonDao {
 
@@ -28,32 +29,38 @@ public class PersonDao {
 		return personRepository.findAll();
 	}
 
-	public Optional<Person> getPersonInformationById(String id) {
-		return personRepository.findById(id);
+	public Optional<Person> getPersonInformationById(Integer id) {
+		return personRepository.findById(convertInt(id));
 	}
 
 	public List<Person> findByNameLike(String nameRegex) {
 		return personRepository.findByNameLike(nameRegex);
 	}
 
-	public List<Person> findByNumberGreaterOrEqualCustomQuery(int number) {
-		return personRepository.findByNumberGreaterOrEqualCustomQuery(number);
+	public List<Person> findByNumberGreaterOrEqualCustomQuery(Integer number) {
+		return personRepository.findByNumberGreaterOrEqualCustomQuery(convertInt(number));
 	}
 
-	public Person updatePersonUsingId(String id, Person person) {
-		Optional<Person> findPersonQuery = personRepository.findById(id);
+	public Person updatePersonUsingId(Integer id, Person person) {
+		Optional<Person> findPersonQuery = personRepository.findById(convertInt(id));
 		Person personValues = findPersonQuery.get();
 		personValues.setId(person.getId());
 		personValues.setName(person.getName());
 		return personRepository.save(personValues);
 	}
 
-	public void deletePersonUsingId(String id) {
+	public void deletePersonUsingId(Integer id) {
 		try {
-			personRepository.deleteById(id);
+			personRepository.deleteById(convertInt( id));
 		} catch (NoSuchElementException e) {
 			e.printStackTrace();
 		}
 	}
+	// http://www.java2s.com/example/java/java.math/convert-int-to-biginteger.html
+  public static int NUMBER_OF_BYTES_INT = Integer.SIZE / Byte.SIZE;
 
+  public static BigInteger convertInt(int value) {
+      return new BigInteger(ByteBuffer.allocate(NUMBER_OF_BYTES_INT)
+              .putInt(value).array());
+  }
 }

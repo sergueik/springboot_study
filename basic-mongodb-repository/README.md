@@ -33,21 +33,27 @@ mvn spring-boot:run
 ```
 then in separate console:
 ```sh
-curl -s -X POST -H "Content-Type: application/json" -d '{"id":"1", "name": "Adam" }' http://localhost:8080/
-curl -s -X POST -H "Content-Type: application/json" -d '{"id":"2", "name": "Eve" }' http://localhost:8080/
+curl -s -X POST -H "Content-Type: application/json" -d '{"id":1, "name": "Adam" }' http://localhost:8080/
+curl -s -X POST -H "Content-Type: application/json" -d '{"id":2, "name": "Eve" }' http://localhost:8080/
 ```
 ```sh
 curl -s http://localhost:8080/person
 ```
 ```JSON
-[{"id":"1","name":"Adam"},{"id":"2","name":"Eva"},{"id":"643dc2714d093de9589b0553","name":"Paul"}]
+[{"id":1,"name":"Adam"},{"id":2,"name":"Eva"}]
 
 ```
 ```sh
 curl -s http://localhost:8080/person/name/A
 ```
 ```JSON
-[{"id":"1","name":"Adam"}]
+[{"id":1,"name":"Adam"}]
+```
+```sh
+ curl -s http://localhost:8080/person/greater/2
+```
+```JSON
+[{"id":2,"name":"Eva"}]
 ```
 * if need to run the query directly then
 ```sh

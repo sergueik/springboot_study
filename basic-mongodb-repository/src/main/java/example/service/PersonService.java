@@ -26,7 +26,7 @@ public class PersonService {
 		return personDao.findByNameLike(nameRegex);
 	}
 
-	public List<Person> findByNumberGreaterOrEqualCustomQuery(int number) {
+	public List<Person> findByNumberGreaterOrEqualCustomQuery(Integer number) {
 		return personDao.findByNumberGreaterOrEqualCustomQuery(number);
 	}
 
@@ -34,15 +34,15 @@ public class PersonService {
 		return personDao.getAllPersonInformation();
 	}
 
-	public Optional<Person> getPersonInformationUsingId(String id) {
+	public Optional<Person> getPersonInformationUsingId(Integer id) {
 		return personDao.getPersonInformationById(id);
 	}
 
-	public void updatePersonUsingId(String id, Person person) {
+	public void updatePersonUsingId(Integer id, Person person) {
 		personDao.updatePersonUsingId(id, person);
 	}
 
-	public void deletePersonUsingId(String id) {
+	public void deletePersonUsingId(Integer id) {
 		personDao.deletePersonUsingId(id);
 	}
 
