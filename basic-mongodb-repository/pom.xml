@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>springdata-mongodb</artifactId>
-  <version>0.3.1-SNAPSHOT</version>
+  <version>0.3.2-SNAPSHOT</version>
   <name>springdata-mongodb</name>
   <description>Springdata CRUD MongoDB repository example</description>
   <parent>

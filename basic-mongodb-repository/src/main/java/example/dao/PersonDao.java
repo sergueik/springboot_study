@@ -56,12 +56,11 @@ public class PersonDao {
 		return personRepository.save(personValues);
 	}
 
-	public Person addTicketsPersonUsingId(Integer id, List<Ticket> ticket) {
+	public Person addTicketsPersonUsingId(Integer id, List<Ticket> tickets) {
 		Optional<Person> findPersonQuery = personRepository
 				.findById(convertInt(id));
 		Person personValues = findPersonQuery.get();
-		List<Ticket> personTickets = personValues.getTickets().get();
-		personValues.setTickets(personTickets);
+		personValues.setTickets(tickets);
 		return personRepository.save(personValues);
 	}
 

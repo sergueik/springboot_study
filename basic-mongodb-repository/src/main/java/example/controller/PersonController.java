@@ -59,9 +59,9 @@ public class PersonController {
 	}
 
 	@PutMapping(path = "/addticket/{id}")
-	public void addTicket(@PathVariable Integer id,
+	public void addTickets(@PathVariable Integer id,
 			@RequestBody List<Ticket> tickets) {
-		personService.addTicket(id, tickets);
+		personService.addTickets(id, tickets);
 	}
 
 	@DeleteMapping(path = "/delete/{id}")

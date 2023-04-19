@@ -13,26 +13,19 @@ public class Person {
 	@Id
 	private BigInteger id;
 	private String name;
-	private Optional<List<Ticket>> tickets;
-	private List<Ticket> t = new ArrayList<>();
+	private ArrayList<Ticket> tickets = new ArrayList<>();
 
-	public Optional<List<Ticket>> getTickets() {
-		return (tickets == null || !tickets.isPresent())
-				? Optional.of(new ArrayList<>()) : tickets;
+	public List<Ticket> getTickets() {
+		return tickets;
 	}
 
 	public void setTickets(List<Ticket> data) {
-		if (tickets == null || !tickets.isPresent()) {
-			tickets = Optional.of(new ArrayList<>());
-		}
-		t = tickets.get();
-		t.addAll(data);
-		this.tickets = Optional.of(t);
-
+		this.tickets.addAll(data);
 	}
 
 	public Person(@JsonProperty("id") BigInteger id,
 			@JsonProperty("name") String name) {
+		this.tickets = new ArrayList<>();
 		this.id = id;
 		this.name = name;
 	}

@@ -14,6 +14,8 @@ public class Ticket {
 	public Ticket() {
 	}
 
+	// TODO: constructor with id
+	
 	public Ticket(String appId, String status) {
 		this.appId = appId;
 		this.status = status;
