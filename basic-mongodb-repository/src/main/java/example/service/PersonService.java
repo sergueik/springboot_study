@@ -1,9 +1,12 @@
 package example.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import example.dao.PersonDao;
 import example.model.Person;
+import example.model.Ticket;
 
 import java.util.Collection;
 import java.util.List;
@@ -42,6 +45,9 @@ public class PersonService {
 		personDao.updatePersonUsingId(id, person);
 	}
 
+	public void addTicket(Integer id,  List<Ticket> tickets) {
+		personDao.addTicketsPersonUsingId(id, tickets);
+	}
 	public void deletePersonUsingId(Integer id) {
 		personDao.deletePersonUsingId(id);
 	}

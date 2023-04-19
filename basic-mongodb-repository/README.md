@@ -33,19 +33,35 @@ mvn spring-boot:run
 ```
 then in separate console:
 ```sh
-curl -s -X POST -H "Content-Type: application/json" -d '{"id":1, "name": "Adam" }' http://localhost:8080/
-curl -s -X POST -H "Content-Type: application/json" -d '{"id":2, "name": "Eve" }' http://localhost:8080/
+curl -s -X POST -H "Content-Type: application/json" -d '{"id":1, "name": "Adam" }' http://localhost:8080/person
+curl -s -X POST -H "Content-Type: application/json" -d '{"id":2, "name": "Eve" }' http://localhost:8080/person
 ```
 ```sh
 curl -s http://localhost:8080/person
 ```
 ```JSON
-[{"id":1,"name":"Adam"},{"id":2,"name":"Eva"}]
+[{"id":1,"name":"Adam","tickets":[]},{"id":2,"name":"Eva","tickets":[]}]
+```
 
+```sh
+curl -s -X PUT -H "Content-Type: application/json" -d '[{"appId":1, "status": "new" }]' http://localhost:8080/person/addticket/1
 ```
 ```sh
-curl -s http://localhost:8080/person/name/A
+curl -s http://localhost:8080/person/1
 ```
+
+When the `Person` class has `Optional<List<Ticket>>` `tickets` property this will raise the exception:
+```text
+java.lang.UnsupportedOperationException: Cannot set immutable property java.util.O
+ptional.value!] with root cause
+
+java.lang.UnsupportedOperationException: Cannot set immutable property java.util.Optional.value!
+        at org.springframework.data.mapping.model.BeanWrapper.setProperty(BeanWrapper.java:87) ~[spring-data-commons-2.3.4.RELEASE.jar:2.3.4.RELEASE]
+...
+...
+at com.sun.proxy.$Proxy63.findById(Unknown Source) ~[na:na]
+```
+
 ```JSON
 [{"id":1,"name":"Adam"}]
 ```
