@@ -3,7 +3,7 @@ ENV TIMEZONE US/New York
 
 ENV GRAFANA_VERSION 7.3.4
 
-# NOTE: use "," as separator when installing mutple plugins
+# NOTE: use "," as separator when installing mutiple plugins
 ENV GF_INSTALL_PLUGINS="grafana-simple-json-datasource"
 
 RUN apk add --no-cache su-exec ca-certificates openssl curl
@@ -16,7 +16,7 @@ RUN addgroup grafana && \
     adduser -s /bin/false -G grafana -S -D grafana
 
 COPY ./scripts/start.sh start.sh
-RUN sed -i 's|\r||g' start.sh
+RUN [ -z "$COMPOSE_CONVERT_WINDOWS_PATHS" ] || sed -i 's|\r||g' start.sh
 RUN tar -C . -xzf grafana-$GRAFANA_VERSION.linux-amd64.tar.gz && \
         mv grafana-${GRAFANA_VERSION} /grafana && \
         for D in dashboards data logs plugins datasources; do mkdir -p /grafana/$D; done && \
@@ -29,7 +29,7 @@ RUN     grafana-cli plugins update-all && \
         rm -f /grafana/conf/*.ini
 
 COPY ./files/defaults.ini /grafana/conf/
-
+ADD mongodb-grafana /var/lib/grafana/plugins/grafana-mongodb-datasource
 VOLUME  [ "/grafana" ]
 
 EXPOSE 3000

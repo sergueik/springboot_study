@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+	<context:component-scan base-package="net.arunoday" />
+	<task:annotation-driven/>
+
+	<!-- =============================================== -->
+	<!-- MONGODB SETUP -->
+	<!-- =============================================== -->
+
+	<!-- MongoDB configuration -->
+	<context:property-placeholder location="classpath:mongo.properties" />
+	
+	<mongo:mongo host="${mongo.event.host}" port="${mongo.event.port}">
+		<mongo:options connections-per-host="${mongo.event.connectionsPerHost}"
+					threads-allowed-to-block-for-connection-multiplier="${mongo.event.threadsAllowedToBlockForConnectionMultiplier}"
+					connect-timeout="${mongo.event.connectTimeout}" max-wait-time="${mongo.event.maxWaitTime}"
+					auto-connect-retry="${mongo.event.autoConnectRetry}" socket-keep-alive="${mongo.event.socketKeepAlive}"
+					socket-timeout="${mongo.event.socketTimeout}" write-number="1"
+					write-timeout="0" write-fsync="false"/>
+	</mongo:mongo> 
+
+	<bean id="eventMongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
+	</bean>
+
+	<mongo:db-factory dbname="${mongo.event.database}" />
+
+
+	<mongo:mongo id="metricMongo" host="${mongo.metric.host}" port="${mongo.metric.port}">
+		<mongo:options connections-per-host="${mongo.metric.connectionsPerHost}"
+					threads-allowed-to-block-for-connection-multiplier="${mongo.metric.threadsAllowedToBlockForConnectionMultiplier}"
+					connect-timeout="${mongo.metric.connectTimeout}" max-wait-time="${mongo.metric.maxWaitTime}"
+					auto-connect-retry="${mongo.metric.autoConnectRetry}" socket-keep-alive="${mongo.metric.socketKeepAlive}"
+					socket-timeout="${mongo.metric.socketTimeout}" write-number="1"
+					write-timeout="0" write-fsync="false"/>
+	</mongo:mongo> 
+
+	<bean id="metricMongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongoDbFactory" ref="metricMongoFactory" />
+	</bean>
+
+	<mongo:db-factory id="metricMongoFactory" dbname="${mongo.metric.database}" mongo-ref="metricMongo"/>
+
+	<mongo:repositories base-package="net.arunoday.metric.store.repository" />
+
+</beans>
