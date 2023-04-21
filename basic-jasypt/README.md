@@ -7,14 +7,20 @@ replica of
 VERSION=1.9.3
 curl -LOsk https://github.com/jasypt/jasypt/releases/download/jasypt-$VERSION/jasypt-$VERSION-dist.zip
 unzip jasypt-$VERSION-dist.zip
-chmod +x  ./jasypt-$VERSION/bin/encrypt.sh ./jasypt-$VERSION/bin/encrypt.sh
-chmod +x  ./jasypt-$VERSION/bin/encrypt.sh ./jasypt-$VERSION/bin/decrypt.sh
-chmod +x  ./jasypt-$VERSION/bin/encrypt.sh ./jasypt-$VERSION/bin/listAlgorithms.sh
+chmod +x  ./jasypt-$VERSION/bin/encrypt.sh ./jasypt-$VERSION/bin/decrypt.sh ./jasypt-$VERSION/bin/listAlgorithms.sh
 
 ```
 * encrypt the default password
 ```sh
 ./jasypt-1.9.3/bin/encrypt.sh input=password password=secret
+```
+
+Alternatively build it in docker
+```sh
+docker build -t jasypt -f Dockerfile .
+```
+```sh
+docker run -it jasypt input=password password=secret
 ```
 this will print to console somewhat verbosely
 ```text
