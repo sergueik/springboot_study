@@ -8,5 +8,5 @@ RUN curl -LOsk https://github.com/jasypt/jasypt/releases/download/jasypt-$VERSIO
   && sed -i 's|\r||g' ./jasypt-$VERSION/bin/encrypt.sh ./jasypt-$VERSION/bin/decrypt.sh ./jasypt-$VERSION/bin/listAlgorithms.sh \
   && chmod +x ./jasypt-$VERSION/bin/encrypt.sh ./jasypt-$VERSION/bin/decrypt.sh ./jasypt-$VERSION/bin/listAlgorithms.sh \
   && rm jasypt-$VERSION-dist.zip 
-ENTRYPOINT ["/bin/sh", "-c", "/tmp/jasypt-$VERSION/bin/encrypt.sh $0 $@"]
+ENTRYPOINT [ "/bin/sh", "-c", "if [ \"$0\" = 'encrypt' ] ; then TOOL=encrypt.sh ; else  TOOL=decrypt.sh; fi ; /tmp/jasypt-$VERSION/bin/$TOOL $@"]
 

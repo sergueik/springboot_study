@@ -20,7 +20,7 @@ Alternatively build it in docker
 docker build -t jasypt -f Dockerfile .
 ```
 ```sh
-docker run -it jasypt input=password password=secret
+docker run -it jasypt encrypt input=password password=secret
 ```
 this will print to console somewhat verbosely
 ```text
@@ -38,8 +38,30 @@ password: secret
 
 
 ----OUTPUT----------------------
+I4TFuoFbppF19ccd9yIVOXVdIFYW1Asd
 
-b6pYDEOHlJ0BzvZ4uqm3i0Guh1lYxxFx
+```
+* check to decrypt by Java
+```sh
+docker run -it jasypt decrypt password=secret input=I4TFuoFbppF19ccd9yIVOXVdIFYW1Asd
+```
+```text
+----ENVIRONMENT-----------------
+
+Runtime: IcedTea OpenJDK 64-Bit Server VM 25.212-b04
+
+
+
+----ARGUMENTS-------------------
+
+input: I4TFuoFbppF19ccd9yIVOXVdIFYW1Asd
+password: secret
+
+
+
+----OUTPUT----------------------
+
+password
 ```
 
 ```sh
