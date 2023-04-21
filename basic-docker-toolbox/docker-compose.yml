@@ -1,0 +1,14 @@
+version: '3.5'
+
+services:
+  app:
+    restart: unless-stopped
+    build: .
+    container_name: app
+    ports:
+      - "5000:5000"
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:5000/
+
