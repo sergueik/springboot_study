@@ -1,18 +1,19 @@
 ### Info
 
 ### Notes
-if seeing
+if seeing the communication error
 ```text
+//./pipe/docker_engine: The system cannot find the file specified
 ```
 
+apply the [resolution from forums.docker.com](https://forums.docker.com/t/docker-on-windows-fails-with-pipe-docker-engine-the-system-cannot-find-the-file-specified/28479/4)
 
-try the [resolution from forums.docker.com](https://forums.docker.com/t/docker-on-windows-fails-with-pipe-docker-engine-the-system-cannot-find-the-file-specified/28479/4)
-
-* run
+* query environment
 
 ```sh
 docker-machine env default
 ```
+
 ```sh
 export DOCKER_TLS_VERIFY="1"
 export DOCKER_HOST="tcp://192.168.99.101:2376"
@@ -25,24 +26,24 @@ export COMPOSE_CONVERT_WINDOWS_PATHS="true"
 ```cmd
 set DOCKER_TLS_VERIFY=1
 set DOCKER_HOST=tcp://192.168.99.100:2376
-set DOCKER_CERT_PATH=C:\Users\Serguei\.docker\machine\machines\default
+set DOCKER_CERT_PATH=%USERPROFILE%\.docker\machine\machines\default
 set DOCKER_MACHINE_NAME=default
 set COMPOSE_CONVERT_WINDOWS_PATHS=true
 ```
 run in the clean command shell
 ```cmd
-@FOR /f “tokens=*” %i IN (‘echo commands.txt’) DO @%i
+@FOR /f "tokens=*" %i IN ('echo commands.txt') DO @%i
 ```
 
 
-followed by the command from the real `Docker Quickstart Terminal` desktop shortcut
+followed by the command from the original `Docker Quickstart Terminal` desktop shortcut
 
 ```cmd
 "C:\Program Files\Git\bin\bash.exe" --login -i "C:\Program Files\Docker Toolbox\start.sh"
 ```
-Alternatively make these settings permanent via __Control Panel__. The __Docker Toolbox__ installer apparently does not do that.
+Alternatively make these settings permanently via __Control Panel__. The __Docker Toolbox__ installer apparently does not manage to do that on some machines.
 
-#### Upgrade Docker compose
+### Challenge with Upgrade Docker compose
 
 Note: From the end of June 2023 Compose V1, is about to not be supported, and the last archive build of Docker ToolBox comes with Docker-compose version `1.24.1`
 
@@ -102,7 +103,7 @@ github.com/docker/compose/v2/pkg/progress.NewWriter({0x22f8180, 0xc0002b40a0}, {
 one will have to restore the original version of `docker-compose.exe`
 
 
-*verify
+* verify
 ```sh
 
 curl $(docker-machine ip):5000/hello/docker-toolbox
@@ -110,13 +111,13 @@ curl $(docker-machine ip):5000/hello/docker-toolbox
 ```text
 Hello docker-toolbox!
 ```
-and the docker console will show
+and the docker console will show flask log
 
 ```text
-app    | 192.168.99.1 - - [20/Apr/2023 22:34:02] "GET /hello/docker-toolbox HTTP
-/1.1" 200 -
+app    | 192.168.99.1 - - [20/Apr/2023 22:34:02] "GET /hello/docker-toolbox HTTP/1.1" 200 -
 ```
 
-the connection to docker machine will take place over __Virtual Box__ __Host-Only Ethernet Adapter__ with IP Address `192.168.99.1` and net mask `255.255.255.0`
+the connection to docker machine will takes place over __Virtual Box__ __Host-Only Ethernet Adapter__ with IP Address `192.168.99.1` and net mask `255.255.255.0`
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
