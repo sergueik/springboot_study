@@ -4,13 +4,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 @Document(collection = "Person")
 public class Person {
 	@Id
 	private BigInteger id;
 	private String name;
+	private ArrayList<Ticket> tickets = new ArrayList<>();
 
-	public Person(@JsonProperty("id") BigInteger id, @JsonProperty("name") String name) {
+	public List<Ticket> getTickets() {
+		return tickets;
+	}
+
+	public void setTickets(List<Ticket> data) {
+		this.tickets.addAll(data);
+	}
+
+	public Person(@JsonProperty("id") BigInteger id,
+			@JsonProperty("name") String name) {
+		this.tickets = new ArrayList<>();
 		this.id = id;
 		this.name = name;
 	}

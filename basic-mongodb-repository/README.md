@@ -33,27 +33,54 @@ mvn spring-boot:run
 ```
 then in separate console:
 ```sh
-curl -s -X POST -H "Content-Type: application/json" -d '{"id":1, "name": "Adam" }' http://localhost:8080/
-curl -s -X POST -H "Content-Type: application/json" -d '{"id":2, "name": "Eve" }' http://localhost:8080/
+curl -s -X POST -H "Content-Type: application/json" -d '{"id":1, "name": "Adam" }' http://localhost:8080/person
+curl -s -X POST -H "Content-Type: application/json" -d '{"id":2, "name": "Eve" }' http://localhost:8080/person
 ```
 ```sh
 curl -s http://localhost:8080/person
 ```
 ```JSON
-[{"id":1,"name":"Adam"},{"id":2,"name":"Eva"}]
+[{"id":1,"name":"Adam","tickets":[]},{"id":2,"name":"Eva","tickets":[]}]
+```
 
+```sh
+curl -s -X PUT -H "Content-Type: application/json" -d '[{"appId":1, "status": "new" }]' http://localhost:8080/person/addticket/1
 ```
 ```sh
-curl -s http://localhost:8080/person/name/A
+curl -s http://localhost:8080/person/1
 ```
 ```JSON
-[{"id":1,"name":"Adam"}]
+{"id":1,"name":"Adam","tickets":[{"id":null,"appId":"1","status":"new"}]}
+```
+NOTE: only when added explicitly, `Ticket` has id:
+```sh
+curl -s -X POST -H "Content-Type: application/json" -d '{"appId":10, "status": "unsure" }' http://localhost:8080/person/ticket
+```
+```JSON
+{"id":"64405f40426a552864e3c56c","appId":"10","status":"unsure"}
+```
+NOTE: When the `Person` class has `Optional<List<Ticket>>` `tickets` property, query will raise the exception:
+```text
+java.lang.UnsupportedOperationException: Cannot set immutable property java.util.Optional.value!] with root cause
+
+java.lang.UnsupportedOperationException: Cannot set immutable property java.util.Optional.value!
+        at org.springframework.data.mapping.model.BeanWrapper.setProperty(BeanWrapper.java:87) ~[spring-data-commons-2.3.4.RELEASE.jar:2.3.4.RELEASE]
+...
+...
+at com.sun.proxy.$Proxy63.findById(Unknown Source) ~[na:na]
+```
+and when it is declared to be List<Ticket> the query will raise the exception:
+```text
+org.springframework.data.mapping.model.MappingInstantiationException:
+Failed to instantiate java.util.List using constructor NO_CONSTRUCTOR with arguments ] with root cause
+org.springframework.beans.BeanInstantiationException:
+Failed to instantiate[java.util.List]:Specified class is an interface
 ```
 ```sh
- curl -s http://localhost:8080/person/greater/2
+curl -s http://localhost:8080/person/greater/2
 ```
 ```JSON
-[{"id":2,"name":"Eva"}]
+[{"id":2,"name":"Eve","tickets":[]}]
 ```
 * if need to run the query directly then
 ```sh
