@@ -43,18 +43,18 @@ followed by the command from the original `Docker Quickstart Terminal` desktop s
 ```
 Alternatively make these settings permanently via __Control Panel__. The __Docker Toolbox__ installer apparently does not manage to do that on some machines.
 
-### Challenge with Upgrade Docker compose
+### Challenge with Upgrade Docker compose to Certain 2.x Versions
 
 Note: From the end of June 2023 Compose V1, is about to not be supported, and the last archive build of Docker ToolBox comes with Docker-compose version `1.24.1`
 
-To upgrade via curl, need to use Windows account with write permission to `Program Files` directories.
+To upgrade via curl, need to use Windows account with write permission for `Program Files` directories.
 
 First in git bash that is launched by __Docker Toolbox__
 
 ```sh
 cd /c/Program Files/Docker Toolbox
 cd $TEMP
-VERSION=2.17.3
+VERSION=2.14.0
 curl -sL https://github.com/docker/compose/releases/download/v$VERSION/docker-compose-windows-x86_64.exe -o docker-compose.exe
 ```
 verify
@@ -62,7 +62,7 @@ verify
 ./docker-compose.exe  --version
 ```
 ```text
-Docker Compose version v2.17.3
+Docker Compose version v2.14.0
 ```
 second, in elevated prompt
 ```cmd
@@ -70,15 +70,92 @@ copy /y %TEMP%\docker-compose.exe "c:\Program Files\Docker Toolbox"
 ```
 NOTE the directory path
 
-unfortunately it will lead to a problem in runtime:
+finally run a basic `docker-compose.yml`:
+```sh
+docker-compose up --build
+```
+it will show th normal console output
+```txt
+[+] Building 0.5s (12/12) FINISHED
+ => [internal] load build definition from Dockerfile                       0.0s
+ => => transferring dockerfile: 32B                                        0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/python:3.8.2-alpine     0.5s
+ => [1/7] FROM docker.io/library/python:3.8.2-alpine@sha256:745fac134e7ea  0.0s
+ => [internal] load build context                                          0.0s
+ => => transferring context: 63B                                           0.0s
+ => CACHED [2/7] WORKDIR /app                                              0.0s
+ => CACHED [3/7] RUN apk add curl                                          0.0s
+ => CACHED [4/7] RUN pip install --upgrade pip                             0.0s
+ => CACHED [5/7] COPY ./requirements.txt ./                                0.0s
+ => CACHED [6/7] RUN pip install -r requirements.txt                       0.0s
+ => CACHED [7/7] COPY app.py ./                                            0.0s
+ => exporting to image                                                     0.0s
+ => => exporting layers                                                    0.0s
+ => => writing image sha256:50c117d81a2cc68b121ec050edb7081533ed10a49f7b2  0.0s
+ => => naming to docker.io/library/basic-docker-toolbox-app                0.0s
+[+] Running 1/1
+ - Container app  Created                                                  0.0s
+Attaching to app
+app  |  * Serving Flask app 'app' (lazy loading)
+app  |  * Environment: production
+app  |    WARNING: This is a development server. Do not use it in a production deployment.
+app  |    Use a production WSGI server instead.
+app  |  * Debug mode: off
+app  | WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+app  |  * Running on all addresses (0.0.0.0)
+app  |  * Running on http://127.0.0.1:5000
+app  |  * Running on http://172.18.0.2:5000
+app  | Press CTRL+C to quit
+app  | 127.0.0.1 - - [23/Apr/2023 22:02:51] "GET / HTTP/1.1" 200 -
+app  | 127.0.0.1 - - [23/Apr/2023 22:03:01] "GET / HTTP/1.1" 200 -
+app  | 127.0.0.1 - - [23/Apr/2023 22:03:11] "GET / HTTP/1.1" 200 -
+```
+in seperate console, run
+```sh
+docker-compose ps
+```
+
+it will show sucess
+```text
+NAME                COMMAND                SERVICE             STATUS              PORTS
+app                 "python /app/app.py"   app                 running (healthy)   0.0.0.0:5000->5000/tcp
+```
+
+* verify
+```sh
+
+curl -s $(docker-machine ip):5000/hello/docker-toolbox
+```
+```text
+Hello docker-toolbox!
+```
+and the docker console will show flask log
+```sh
+docker-compose logs app
+```
+```text
+app  | 127.0.0.1 - - [23/Apr/2023 22:04:42] "GET / HTTP/1.1" 200 -
+app    | 192.168.99.1 - - [20/Apr/2023 22:34:02] "GET /hello/docker-toolbox HTTP/1.1" 200 -
+```
+
+the connection to docker machine will takes place over __Virtual Box__ __Host-Only Ethernet Adapter__ with IP Address `192.168.99.1` and net mask `255.255.255.0`
+
+
+
+NOTE: certain versions of Docker-Compose, e.g.  
+```
+Docker Compose version v2.17.3
+```
+will throw exception in runtime:
 
 ```sh
 docker-compose up --build
 ```
 
 ```text
-panic: interface conversion: *windowsconsole.ansiWriter is not console.File: mis
-sing method Close
+panic: interface conversion: *windowsconsole.ansiWriter is not console.File: missing method Close
 
 goroutine 1 [running]:
 github.com/docker/compose/v2/pkg/progress.NewWriter({0x22f8180, 0xc0002b40a0}, {
@@ -102,22 +179,6 @@ github.com/docker/compose/v2/pkg/progress.NewWriter({0x22f8180, 0xc0002b40a0}, {
 
 one will have to restore the original version of `docker-compose.exe`
 
-
-* verify
-```sh
-
-curl $(docker-machine ip):5000/hello/docker-toolbox
-```
-```text
-Hello docker-toolbox!
-```
-and the docker console will show flask log
-
-```text
-app    | 192.168.99.1 - - [20/Apr/2023 22:34:02] "GET /hello/docker-toolbox HTTP/1.1" 200 -
-```
-
-the connection to docker machine will takes place over __Virtual Box__ __Host-Only Ethernet Adapter__ with IP Address `192.168.99.1` and net mask `255.255.255.0`
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
