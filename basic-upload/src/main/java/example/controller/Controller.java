@@ -63,7 +63,7 @@ public class Controller {
 				.header(HttpHeaders.SET_COOKIE, resCookie.toString()).build();
 	}
 
-	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+	@RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> upload(
 			@CookieValue(name = default_name, defaultValue = default_value) String cookie,
 			@RequestParam("operation") String operation,

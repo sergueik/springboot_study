@@ -81,6 +81,9 @@ public class MultipartFormDataTest {
 		// "http://localhost:" + randomServerPort
 		// is not optional
 		url = "http://localhost:" + randomServerPort + route;
+		// NOTE: FRAGILE! Removing empty elements leads to Response Status 400
+		// org.springframework.web.bind.MissingServletRequestParameterException:
+		// Required String parameter 'operation' is not present
 		//@formatter:off
 		body = String.join("\r\n",
 				Arrays.asList("--boundary",
