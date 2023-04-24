@@ -861,6 +861,8 @@ file:///work/target/karate-reports/karate-summary.html
 ```
 #### Gradle
 
+* NOTE: Gradle is very old on Alpine
+
 * pull
 ```sh
 docker pull gradle:5.4.1-jdk8-alpine
@@ -870,10 +872,13 @@ docker pull gradle:5.4.1-jdk8-alpine
 IMAGE=basic-karate-gradle
 docker build -t $IMAGE -f Dockerfile.alpine-jdk8-gradle .
 ```
-* NOTE: run as root to prevent dealing with error:
+Mount the source  tree and empty `build` directory into the container
+
+* NOTE:run as regular user will fail. run as root to prevent dealing with errors:
 
 ```text
 Could not create service of type ScriptPluginFactory using BuildScopeServices.createScriptPluginFactory().
+Could not create service of type CrossBuildFileHashCache using BuildSessionScopeServices.createCrossBuildFileHashCache()
 ```
 
 
@@ -902,11 +907,185 @@ BUILD SUCCESSFUL in 3m 2s
 3 actionable tasks: 3 executed
 ```
 
-the `karate-summary-json.txt` will be in `build/karate-reports`
+the `karate-summary-json.txt` will be in `build/karate-reports`:
+```text
+build/karate-reports/
+├── example.feature.Test.html
+├── example.feature.Test.karate-json.txt
+├── favicon.ico
+├── karate-labs-logo-ring.svg
+├── karate-logo.png
+├── karate-logo.svg
+├── karate-summary.html
+├── karate-summary-json.txt
+├── karate-tags.html
+├── karate-timeline.html
+└── res
+    ├── bootstrap.min.css
+    ├── bootstrap.min.js
+    ├── jquery.min.js
+    ├── jquery.tablesorter.min.js
+    ├── karate-report.css
+    ├── karate-report.js
+    ├── vis.min.css
+    └── vis.min.js
+
+```
 
 NOTE: gradle run is quite a bit slower than maven
 
 
+* Alternatively use the newer gradle and JDK 11
+
+```sh
+IMAGE=basic-karate-gradle
+docker build -t $IMAGE -f Dockerfile.alpine-jdk11-gradle .
+```
+NOTE: the gradle __8.x__ image is significantly bigger:
+```sh
+docker images gradle:8.1-jdk11-alpine
+```
+```text
+REPOSITORY   TAG                IMAGE ID       CREATED      SIZE
+gradle       8.1-jdk11-alpine   8c3240bdc5c8   2 days ago   580MB
+```
+
+than the __5.x__
+```sh
+docker images gradle:5.4.1-jdk8-alpine
+```
+```text
+REPOSITORY   TAG                 IMAGE ID       CREATED       SIZE
+gradle       5.4.1-jdk8-alpine   8017d8c2ba74   3 years ago   204MB
+```
+
+Mount the source  tree and empty `build` directory into the container.
+NOTE: it may be already present and owned by `root`:
+```sh
+sudo rm -fr ./build && mkdir ./build
+```
+run the test in gradle (no root account needed):
+```sh
+docker container run --rm -v $(pwd)/src:/work/src/ -v $(pwd)/build:/work/build:rw -it $IMAGE
+```
+
+this will print (after a while):
+```text
+
+Welcome to Gradle 8.1.1!
+
+Here are the highlights of this release:
+ - Stable configuration cache
+ - Experimental Kotlin DSL assignment syntax
+ - Building with Java 20
+	
+For more details see https://docs.gradle.org/8.1.1/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+
+
+
+> Task :compileJava NO-SOURCE
+> Task :processResources NO-SOURCE
+> Task :classes UP-TO-DATE
+> Task :compileTestJava
+> Task :processTestResources
+> Task :testClasses
+> Task :test
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+See https://docs.gradle.org/8.1.1/userguide/command_line_interface.html#sec:command_line_warnings
+
+BUILD SUCCESSFUL in 3m 30s
+3 actionable tasks: 3 executed
+```
+NOTE: the `build` directory willstill be owned by `root` user after gradle run
+
+#### Timings
+
+The user time to run in this version of Gradle is 3 minute or worse:
+* first build
+```text
+BUILD SUCCESSFUL in 3m 35s
+3 actionable tasks: 3 executed
+real    3m39.341s
+user    0m0.047s
+sys     0m0.016s
+```
+* subsequent buils
+```text
+BUILD SUCCESSFUL in 1m 12s
+3 actionable tasks: 3 executed
+
+real    1m23.212s
+user    0m0.024s
+sys     0m0.027s
+
+```
+the execution time with Gradle __5.x__ is under 1:30 minutest
+
+#### Results
+the `build/karate-reports` directory will contain karate reports, same as with Gradle __5.x__:
+```text
+build/karate-reports/
+├── example.feature.Test.html
+├── example.feature.Test.karate-json.txt
+├── favicon.ico
+├── karate-labs-logo-ring.svg
+├── karate-logo.png
+├── karate-logo.svg
+├── karate-summary.html
+├── karate-summary-json.txt
+├── karate-tags.html
+├── karate-timeline.html
+└── res
+    ├── bootstrap.min.css
+    ├── bootstrap.min.js
+    ├── jquery.min.js
+    ├── jquery.tablesorter.min.js
+    ├── karate-report.css
+    ├── karate-report.js
+    ├── vis.min.css
+    └── vis.min.js
+```
+the `karate-summary.json.txt` is 
+
+```sh
+jq '.' build/karate-reports/karate-summary-json.txt
+```
+```JSON
+{
+  "featureSummary": [
+    {
+      "failedCount": 0,
+      "packageQualifiedName": "example.feature.Test",
+      "relativePath": "example/feature/Test.feature",
+      "scenarioCount": 2,
+      "name": "Tests for the json placeholder page",
+      "description": "",
+      "durationMillis": 1002.085666,
+      "passedCount": 2,
+      "failed": false
+    }
+  ],
+  "efficiency": 0.25379939209726443,
+  "featuresPassed": 1,
+  "featuresFailed": 0,
+  "totalTime": 1002,
+  "threads": 1,
+  "featuresSkipped": 0,
+  "resultDate": "2023-04-24 11:02:17 PM",
+  "scenariosPassed": 2,
+  "version": "1.2.0",
+  "scenariosfailed": 0,
+  "elapsedTime": 3948
+}
+
+```
 ### Standalone
 one can run karate tests directly without gradle or maven:
 * download specific release jar
@@ -2247,4 +2426,5 @@ sudo rm -fr target build
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 

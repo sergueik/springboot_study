@@ -1,4 +1,4 @@
-FROM gradle:5.4.1-jdk8-alpine
+FROM gradle:8.1-jdk11-alpine
 WORKDIR /work
 # NOTE: will share build project src and build with Docker container
 COPY build.gradle /work
