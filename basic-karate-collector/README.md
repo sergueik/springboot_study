@@ -294,9 +294,10 @@ jq '.featureSummary[0].failedCount' karate-summary-json.txt
 ```text
 0
 ```
-The Perl version is also possible:
+The Perl version processing also possible with help of `JSON:PP` or `JSON::Tiny`CPAN module:
+
 ```sh
-perl karate-ummary-processor.pl  -input karate-summary.json
+perl karate-summary-processor.pl -input build/karate-reports/karate-summary-json.txt
 ```
 ```text
 0
@@ -310,11 +311,44 @@ my $data = eval { return $json_pp->decode($content); };
 $error = $@;
 
 if ( !$error ) {
-    print $data->{'featureSummary'}->[0]->{'failedCount'};
+  print $data->{'featureSummary'}->[0]->{'failedCount'};
 }
 ```
 
-
+in the debug run
+```sh
+perl karate-summary-processor.pl -input build/karate-reports/karate-sum
+mary-json.txt -debug
+```
+Perl `Data::Dumper` module is used to print the loaded object:
+```sh
+$VAR1 = {
+  'resultDate' => '2023-04-25 12:58:31 AM',
+  'featuresFailed' => 0,
+  'scenariosfailed' => 0,
+  'version' => '1.2.0',
+  'featureSummary' => [
+    {
+      'passedCount' => 2,
+      'packageQualifiedName' => 'example.feature.Test',
+      'name' => 'Tests for the json placeholder page',
+      'failedCount' => 0,
+      'failed' => bless( do{\(my $o = 0)}, 'JSON::PP::Boolean' ),
+      'relativePath' => 'example/feature/Test.feature',
+      'durationMillis' => '8306.099281',
+      'scenarioCount' => 2,
+      'description' => ''
+    }
+  ],
+  'totalTime' => '8306',
+  'threads' => 1,
+  'efficiency' => '0.249969904899482',
+  'scenariosPassed' => 2,
+  'elapsedTime' => '33228',
+  'featuresPassed' => 1,
+  'featuresSkipped' => 0
+};
+```
 the `"stepLog"` contains actual exhange payload, and the log file can grow quite big
 
 
@@ -1086,7 +1120,37 @@ jq '.' build/karate-reports/karate-summary-json.txt
 }
 
 ```
+### Docker Toolbox
+
+* on Windows __8.x__ hosted Docker Toolbox source and build directory binding appears to not work
+
+* workaround is to  copy files into container and run there:
+```sh
+docker container run --name $IMAGE -it -u root $IMAGE sh
+```
+in separate __Docker QuickStart Terminal__(referenced  as second terminal in below)
+```sh
+docker cp src $IMAGE:/work/src
+```
+in first __Docker QuickStart Terminal__:
+```
+gradle build test
+```
+it will create the `build` directory in the container. It can be explicitly copied into the host rom second __Docker QuickSart Terminal__:
+```sh
+docker cp $IMAGE:/work/build .
+```
+ pretty-print `karate-summary-json.txt`, assuming that `jq-win64.exe` is in `c:\tools` directory
+
+```powershell
+/c/tools/jq-win64.exe "." < build/karate-reports/karate-summary-json.txt
+```
+and
+```powershell
+/c/tools/jq-win64.exe ".featureSummary[0].failedCount" < build/karate-reports/karate-summary-json.txt
+```
 ### Standalone
+
 one can run karate tests directly without gradle or maven:
 * download specific release jar
 ```sh
@@ -2409,6 +2473,9 @@ file:///C:/developer/sergueik/springboot_study/basic-karate-collector/target/kar
 ### Cleanup
 
 ```sh
+docker container prune -f
+docker image prune -f
+docker image rm $IMAGE
 sudo rm -fr target build
 ```
 ### See Also
