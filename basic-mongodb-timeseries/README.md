@@ -36,10 +36,15 @@ docker container run --name $NAME --link $SERVER -d -p 3000:3000 $IMAGE
 * run the application
 ```sh
 mvn -Dmaven.test.skip=true clean install -pl core jetty:run
-mvn clean install -pl core jetty:run
 ```
-if observe application
- failing at runtime with
+if see build error with message
+```text
+ERROR] Could not create local repository at ~/.m2/repository
+```
+
+maks sure file system mounted on `/home` is writable
+
+if observe the application failing early at runtime with
 ```text
 Apr 21, 2023 3:46:00 PM com.mongodb.DBTCPConnector initDirectConnection
 WARNING: Exception executing isMaster command on /127.0.0.1:27017
@@ -102,8 +107,8 @@ and exception in jetty logs:
  at [Source: HttpInputOverHTTP@2ef48e97; line: 1, column: 2] (through reference chain: net.arunoday.metric.store.model.GaugeEvent["occuredOn"]); nested exception is com.fasterxml.jackson.databind.exc.InvalidFormatException: Can not construct instance of java.util.Date from String value '04/23/23T14:19:28EDT': not a valid representation (error: Failed to parse Date value '04/23/23T14:19:28EDT': Can not parse date "04/23/23T14:19:28EDT": not compatible with any of standard forms ("yyyy-MM-dd'T'HH:mm:ss.SSSZ", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "EEE, dd MMM yyyy HH:mm:ss zzz", "yyyy-MM-dd"))
  at [Source: HttpInputOverHTTP@2ef48e97; line: 1, column: 2] (through reference chain: net.arunoday.metric.store.model.GaugeEvent["occuredOn"])
 ```
-to format event date like `2013-12-28T14:19:56Z`
-use the argument
+change the event date format. 
+The mask like `2013-12-28T14:19:56Z` will be produced after using the argument
 ```sh
 D=$(date +%Y-%m-%dT%H:%M:%SZ)
 ```
@@ -151,7 +156,10 @@ switched to db eventstore
 to visualize data from MongoDB in Grafana , will need to install [MongoDB Data Surce Grafana plugin](https://grafana.com/grafana/plugins/grafana-mongodb-datasource/) which is not free
 The [old build of the plugin](https://github.com/JamesOsgood/mongodb-grafana)
 is avaialable on github.
-it can be installed into a working `grafana` container and built there after the start:
+
+The build and usage instructions will also be available on `http://localhost:3000/plugins/grafana-mongodb-datasource/`.
+Mongo DB Data Source Plugin it can be installed into a working `grafana` container and built there after the start:
+
 ```sh
 docker exec -it grafana sh
 ```
@@ -161,8 +169,37 @@ apk add npm
 npm install
 npm run server
 ```
-then using the unsigned data source in Grafana
+then using the unsigned data source in Grafana. Without this step the `Save And Test` button will show an error:
 
+```text
+HTTP Error Bad Gateway
+```
+
+To debug the MongoDB Datasource Grafana Plugin, stop it and modify the
+`/var/lib/grafana/plugins/grafana-mongodb-datasource/dist/server/config/default.json` to enable logging:
+```json
+{
+    "server":
+    {
+      "port": 3333,
+      "logRequests": true, 
+      "logQueries": true, 
+      "logTimings": false
+    }
+}
+
+```
+When `Save & Test` is clicked, the grafana console where plugin is executed will show
+```text
+Server is listening on port 3333
+REQUEST: /:
+{
+  "db": {
+    "url": "mongodb://mongo:27017",
+    "db": "eventstore"
+  }
+}
+```
 ![Mongo DB Data Source](https://github.com/sergueik/springboot_study/blob/master/basic-mongodb-timeseries/screenshots/capture-mongodb-datasource-unsigned.png)
 
 it can be successfully configured
@@ -173,6 +210,58 @@ with
   * MongoDB Database `eventstore`
 
 ![Mongo DB Data Source Configured and Verifed](https://github.com/sergueik/springboot_study/blob/master/basic-mongodb-timeseries/screenshots/capture-mongodb-datasource-enabled.png)
+
+when the query is entered and `Apply` is clicked the npm in grafana console will show:
+```text
+REQUEST: /query:
+{
+  "app": "dashboard",
+  "requestId": "Q102",
+  "timezone": "browser",
+  "panelId": 23763571993,
+  "dashboardId": null,
+  "range": {
+    "from": "2023-04-25T14:18:27.653Z",
+    "to": "2023-04-25T20:18:27.653Z",
+    "raw": {
+      "from": "now-6h",
+      "to": "now"
+    }
+  },
+  "timeInfo": "",
+  "interval": "20s",
+  "intervalMs": 20000,
+  "targets": [
+    {
+      "target": "db.request.event.aggregate()",
+      "refId": "A",
+      "type": "timeserie"
+    }
+  ],
+  "maxDataPoints": 998,
+  "scopedVars": {
+    "__interval": {
+      "text": "20s",
+      "value": "20s"
+    },
+    "__interval_ms": {
+      "text": "20000",
+      "value": 20000
+    }
+  },
+  "startTime": 1682453907653,
+  "rangeRaw": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "db": {
+    "url": "mongodb://mongo:27017",
+    "db": "eventstore"
+  }
+}
+
+```
+it is unclear why no result is returned
 
 ### TODO
 
