@@ -1,9 +1,14 @@
 package example.controller;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,14 +29,20 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.Gson;
 
 import example.dto.StringResponse;
+import example.model.HostData;
 import example.service.ExampleService;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/basic")
 public class Controller {
 
-	// @Autowired
+	@Autowired
 	private ExampleService service;
+	private static Map<String, HostData> inventory = new HashMap<>();
 
 	public Controller(ExampleService data) {
 		service = data;
@@ -46,6 +57,41 @@ public class Controller {
 	public Data json() {
 		return new Data(service.hello());
 	}
+
+	// not needed
+	@GetMapping(value = "/array_json", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public List<Data> arrayJson() {
+		Data[] datas = { new Data(service.hello()) };
+		return Arrays.asList(datas);
+	}
+
+	@GetMapping(value = "/hostdata", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public HostData hostdata() {
+
+		String hostname = "localhost";
+		HostData hostdata = new HostData(hostname, System.getProperty("user.dir"),
+				"dummy1.txt");
+		hostdata.addFilePath(System.getProperty("user.dir"), "dummy2.txt");
+		return hostdata;
+	}
+
+	@GetMapping(value = "/listdata/{hostname}", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public List<String> arrayFile(@PathVariable String hostname) {
+
+		HostData hostdata = new HostData(hostname, System.getProperty("user.dir"),
+				"dummy1.txt");
+		hostdata.addFilePath(System.getProperty("user.dir"), "dummy2.txt");
+
+		inventory.put(hostname, hostdata);
+		final List<String> results = (inventory.containsKey(hostname))
+				? inventory.get(hostname).getFilePaths() : new ArrayList<>();
+
+		return results;
+	}
+
 
 	@PostMapping(value = "/post", consumes = {
 			MediaType.APPLICATION_JSON_VALUE }, produces = {
