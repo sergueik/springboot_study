@@ -161,7 +161,8 @@ The build and usage instructions will also be available on `http://localhost:300
 Mongo DB Data Source Plugin it can be installed into a working `grafana` container and built there after the start:
 
 ```sh
-docker exec -it grafana sh
+NAME=grafana
+docker exec -u root -it $NAME sh
 ```
 ```sh
 cd /var/lib/grafana/plugins/grafana-mongodb-datasource/
@@ -277,5 +278,9 @@ it is unclear why no result is returned
   * [MongoDB plugin for Grafana](https://github.com/JamesOsgood/mongodb-grafana) - early version, available on github
   * latest [MongoDB Data Source Grafana Plugin](https://github.com/JamesOsgood/mongodb-grafana) documentation
   * [setting Up Grafana MongoDB Integration](https://hevodata.com/learn/grafana-mongodb/) 
+  * [video](https://grafana.com/blog/2022/08/09/video-how-to-get-started-with-mongodb-and-grafana/) of get started with MongoDB and Grafana
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
+

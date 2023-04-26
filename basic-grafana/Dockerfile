@@ -16,7 +16,7 @@ RUN addgroup grafana && \
     adduser -s /bin/false -G grafana -S -D grafana
 
 COPY ./scripts/start.sh start.sh
-RUN [ -z "$COMPOSE_CONVERT_WINDOWS_PATHS" ] || sed -i 's|\r||g' start.sh
+RUN [ -z "$COMPOSE_CONVERT_WINDOWS_PATHS" ] && sed -i 's|\r||g' start.sh
 RUN tar -C . -xzf grafana-$GRAFANA_VERSION.linux-amd64.tar.gz && \
         mv grafana-${GRAFANA_VERSION} /grafana && \
         for D in dashboards data logs plugins datasources; do mkdir -p /grafana/$D; done && \
