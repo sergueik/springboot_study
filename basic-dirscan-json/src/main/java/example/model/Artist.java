@@ -5,6 +5,7 @@ import java.util.UUID;
 public class Artist {
 	private String name;
 	private String plays;
+	private Float price;
 	private static String staticInfo;
 	private int id;
 
@@ -13,7 +14,15 @@ public class Artist {
 	}
 
 	public void setName(String data) {
-		this.name = data;
+		name = data;
+	}
+
+	public Float getPrice() {
+		return price;
+	}
+
+	public void setPrice(Float data) {
+		price = data;
 	}
 
 	public String getPlays() {
@@ -21,7 +30,7 @@ public class Artist {
 	}
 
 	public void setPlays(String data) {
-		this.plays = data;
+		plays = data;
 	}
 
 	public int getId() {
@@ -29,7 +38,7 @@ public class Artist {
 	}
 
 	public void setId(int data) {
-		this.id = data;
+		id = data;
 	}
 
 	public Artist() {

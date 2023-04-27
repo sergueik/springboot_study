@@ -1,4 +1,7 @@
 package example.model;
+/**
+ * Copyright 2023 Serguei Kouzmine
+ */
 
 import java.lang.reflect.Type;
 import com.google.gson.FieldNamingStrategy;
@@ -22,35 +25,23 @@ public class ArtistSerializer implements JsonSerializer<Artist> {
 	public JsonElement serialize(final Artist data, final Type type,
 			final JsonSerializationContext context) {
 		JsonObject result = new JsonObject();
-		int id = data.getId();
-		if (id != 0) {
-			result.add("id", new JsonPrimitive(id));
-		}
-		// added static info from the serialized class
-		// NPE
-		if (type != null) {
-			result.add("staticInfo",
-					new JsonPrimitive(((Artist) type).getStaticInfo()));
-		} else {
-			String staticInfo = data.getStaticInfo();
-			System.err.println("Static info: " + staticInfo);
-			if (staticInfo != null) {
-				result.add("staticInfo", new JsonPrimitive(staticInfo));
-			}
-		}
-
-		@SuppressWarnings("unused")
 		String name = data.getName();
-		// filter what to (not) serialize
+		result.add("name", new JsonPrimitive(name));
 
 		String plays = data.getPlays();
 		if (plays != null && !plays.isEmpty()) {
 			result.add("plays", new JsonPrimitive(plays));
 		}
-		/*
-		 * Float price = data.getPrice(); result.add("price", new
-		 * JsonPrimitive(price));
-		 */
+
+		@SuppressWarnings("unused")
+		// filter what to (not) serialize
+		Float price = data.getPrice();
+		// result.add("price", new JsonPrimitive(price));
+
+		int id = data.getId();
+		if (id != 0) {
+			result.add("id", new JsonPrimitive(id));
+		}
 		return result;
 	}
 

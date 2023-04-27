@@ -1,4 +1,7 @@
 package example.controller;
+/**
+ * Copyright 2023 Serguei Kouzmine
+ */
 
 import java.io.BufferedReader;
 
@@ -11,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,9 +37,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+
 import example.model.Artist;
-import example.model.DataRow;
-import example.model.HostDataRow;
 import example.model.HostData;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -59,10 +65,15 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import example.model.ArtistSerializer;
 
 @RestController
 @RequestMapping("/")
 public class DataController {
+
+	private static Gson gson = new GsonBuilder()
+			.registerTypeAdapter(Artist.class, new ArtistSerializer()).create();
+
 	private static Map<String, String> data = new HashMap<>();
 	private static List<Map<String, String>> metricsData = new ArrayList<>();
 	private static Log log = LogFactory.getLog(DataController.class);
@@ -77,8 +88,8 @@ public class DataController {
 	private static Map<String, HostData> inventory = new HashMap<>();
 
 	@ResponseBody
-	@GetMapping("/data/{name}")
-	public ResponseEntity<List<Map<String, String>>> showData(
+	@GetMapping("/file/{name}")
+	public ResponseEntity<List<Map<String, String>>> showFile(
 			@PathVariable("name") String name) throws IOException {
 
 		List<String> hostDirs = new ArrayList<>();
@@ -92,6 +103,43 @@ public class DataController {
 		} catch (RuntimeException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
+	}
+
+	@ResponseBody
+	@GetMapping("/data/{name}")
+	public ResponseEntity<String> showData(@PathVariable("name") String name)
+			throws IOException {
+
+		ArtistSerializer serializer = new ArtistSerializer();
+
+		Artist artist = new Artist(1, name, "instrument");
+
+		JsonElement rowJson = serializer.serialize(artist, null, null);
+		return ResponseEntity.status(HttpStatus.OK)
+				.contentType(MediaType.APPLICATION_JSON_UTF8).body(rowJson.toString());
+
+	}
+
+	@ResponseBody
+	@GetMapping("/databroken/{name}")
+	public ResponseEntity<JsonElement> showDataBroken(
+			@PathVariable("name") String name) throws IOException {
+
+		ArtistSerializer serializer = new ArtistSerializer();
+
+		Artist artist = new Artist(1, name, "instrument");
+		artist.setPrice((float) 2.5); // will not be printed
+
+		JsonElement rowJson = serializer.serialize(artist, null, null);
+		// ExceptionResolver : Failed to write HTTP message:
+		// org.springframework.http.converter.HttpMessageNotWritableException: Could
+		// not write JSON: Not a JSON Primitive: {"id":1,"plays":"instrument"};
+		// nested exception is com.fasterxml.jackson.databind.JsonMappingException:
+		// Not a JSON Primitive: {"id":1,"plays":"instrument"} (through reference
+		// chain: com.google.gson.JsonObject["asJsonPrimitive"])
+		return ResponseEntity.status(HttpStatus.OK)
+				.contentType(MediaType.APPLICATION_JSON_UTF8).body(rowJson);
+
 	}
 
 	private final static String defaulthost = "localhost";
