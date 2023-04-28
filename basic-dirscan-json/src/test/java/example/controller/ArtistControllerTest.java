@@ -47,11 +47,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import example.controller.DataController;
 import example.Launcher;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.XML;
 
 @PropertySource("classpath:application.properties")
 @WebMvcTest
@@ -96,7 +102,7 @@ public class ArtistControllerTest {
 				.andExpect(jsonPath("$.length()", is(numkeys)));
 	}
 
-	// TODO: finish key extraction e.g. to expect id to be the last key 
+	// TODO: finish key extraction e.g. to expect id to be the last key
 	@Test
 	public void test5() throws Exception {
 		String content = resultActions.andReturn().getResponse()
@@ -105,8 +111,27 @@ public class ArtistControllerTest {
 				is("{\"name\":\"john\",\"plays\":\"instrument\",\"id\":1}"));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void test6() throws Exception {
+		String content = resultActions.andReturn().getResponse()
+				.getContentAsString();
+		System.err.println("Content: " + content);
+		final JSONObject result = new JSONObject(content);
+		String key = null;
+		Iterator<String> keys = result.keys();
+		// NOTE: can get *first* key. Can get the *last* key
+		// unfortunately the key come in random order - unreliable
+		while (keys.hasNext()) {
+			key = keys.next();
+			System.err.println("Artist key: " + key);
+		}
+		assertThat(key, is("id"));
+		assertThat(result.has("id"), is(true));
+	}
+
+	@Test
+	public void test7() throws Exception {
 
 		resultActions.andExpect(content().string(containsString("name")))
 				.andExpect(jsonPath("$.name", is(name)));
@@ -117,7 +142,7 @@ public class ArtistControllerTest {
 	// No results for path: $['price']
 	@Ignore
 	@Test(expected = AssertionError.class)
-	public void test7() throws Exception {
+	public void test8() throws Exception {
 		resultActions.andExpect(jsonPath("$.price", nullValue()));
 	}
 
