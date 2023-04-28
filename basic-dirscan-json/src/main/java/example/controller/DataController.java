@@ -4,68 +4,44 @@ package example.controller;
  */
 
 import java.io.BufferedReader;
-
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.IllegalArgumentException;
-
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
+
 import com.google.gson.JsonElement;
 
 import example.model.Artist;
-import example.model.HostData;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import example.model.ArtistSerializer;
+import example.model.HostData;
 
 @RestController
 @RequestMapping("/")
@@ -157,6 +133,30 @@ public class DataController {
 				? inventory.get(hostname).getFileNames() : new ArrayList<>();
 
 		return results;
+	}
+
+	// NOTE: without content-type header will receive:
+	// curl -d '{"name": "x", "plays": "drums", "id":1}' -XPOST
+	// http://localhost:8080/updatedata/xxx
+	// Controller : payload:
+	// %7B%22name%22%3A+%22x%22%2C+%22plays%22%3A+%22drums%22%2C+%22id%22%3A1%7D=
+	@PostMapping(value = "/updatedata/{name}", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<String> updateData(@PathVariable String name,
+			@RequestBody String payload) {
+		log.info("RequestBody(raw): " + payload);
+		Artist artist = gson.fromJson(payload, Artist.class);
+		log.info("RequestBody(parsed): " + gson.toJson(artist));
+		JsonReader reader = new JsonReader(
+				new InputStreamReader(new ByteArrayInputStream(payload.getBytes())));
+		artist = gson.fromJson(reader, Artist.class);
+		log.info("RequestBody(parsed, 2 nd attempt): " + gson.toJson(artist));
+		return (artist.getName() == null || name == null
+				|| !name.equals(artist.getName()))
+						? ResponseEntity.status(HttpStatus.BAD_REQUEST).body("bad name")
+						: ResponseEntity.status(HttpStatus.OK)
+								.contentType(MediaType.APPLICATION_JSON_UTF8)
+								.body("{\"status\":\"OK\"}");
 	}
 
 	@GetMapping(value = "/listdata/{hostname}", produces = {

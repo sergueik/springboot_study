@@ -9,7 +9,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
-import static org.junit.Assert.assertTrue;
+// import static org.junit.Assert.assertTrue;
 
 import static org.hamcrest.Matchers.containsString;
 
@@ -20,11 +20,12 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.equalTo;
 // import org.hamcrest.collection.*;
 import static org.hamcrest.collection.IsArrayWithSize.*;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.Assume;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -80,12 +81,12 @@ public class ArtistControllerTest {
 			"dummy2.txt");
 	private static List<String> entries = new ArrayList<>();
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp() {
 		mvc = MockMvcBuilders.standaloneSetup(controller).build();
 	}
 
-	@Before
+	@BeforeEach
 	public void beforeTest() throws Exception {
 		// TODO: find out what TCP port is listening during the test run
 		// Assume.assumeTrue(listening("localhost", 8085));
@@ -120,8 +121,7 @@ public class ArtistControllerTest {
 		final JSONObject result = new JSONObject(content);
 		String key = null;
 		Iterator<String> keys = result.keys();
-		// NOTE: can get *first* key. Can get the *last* key
-		// unfortunately the key come in random order - unreliable
+		// NOTE: cannot get *first* key. Can get the *last*
 		while (keys.hasNext()) {
 			key = keys.next();
 			System.err.println("Artist key: " + key);
@@ -132,7 +132,6 @@ public class ArtistControllerTest {
 
 	@Test
 	public void test7() throws Exception {
-
 		resultActions.andExpect(content().string(containsString("name")))
 				.andExpect(jsonPath("$.name", is(name)));
 	}
@@ -140,8 +139,9 @@ public class ArtistControllerTest {
 	// TODO: a better test
 	// No value at JSON path "$.price", exception:
 	// No results for path: $['price']
-	@Ignore
-	@Test(expected = AssertionError.class)
+	@Disabled
+	@Test
+	//@Test(expected = AssertionError.class)
 	public void test8() throws Exception {
 		resultActions.andExpect(jsonPath("$.price", nullValue()));
 	}

@@ -1,4 +1,7 @@
 package example.controller;
+/**
+ * Copyright 2023 Serguei Kouzmine
+ */
 
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.PropertySource;
@@ -10,11 +13,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.equalTo;
 // import org.hamcrest.collection.*;
 import static org.hamcrest.collection.IsArrayWithSize.*;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.Assume;
 
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -42,6 +40,12 @@ import java.util.stream.Collectors;
 
 import example.controller.DataController;
 import example.Launcher;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 @PropertySource("classpath:application.properties")
 @WebMvcTest
@@ -64,12 +68,12 @@ public class DataControllerTest {
 			"dummy2.txt");
 	private static List<String> entries = new ArrayList<>();
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp() {
 		mvc = MockMvcBuilders.standaloneSetup(controller).build();
 	}
 
-	@Before
+	@BeforeEach
 	public void beforeTest() throws Exception {
 
 		// TODO: find out what TCP port is listening during the test run
