@@ -83,7 +83,7 @@ public class AcceptanceTest {
 		request = new HttpEntity<Artist>(artist, headers);
 		responseEntity = restTemplate.postForEntity(url, request, String.class,
 				headers);
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.METHOD_NOT_ALLOWED));
 	}
 
 	// TODO: trace the

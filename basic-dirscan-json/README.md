@@ -15,7 +15,13 @@ curl -s -d '{"name": "john", "plays": "drums", "id":1}' -H "Content-type:applica
 ```JSON
 {"status":"OK"}
 ```
+### Todo 
 
+Acceptance Test list HttpResponse processing
+### See Also
+  * https://www.baeldung.com/spring-rest-template-list
+  * https://www.baeldung.com/spring-bean
+ 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

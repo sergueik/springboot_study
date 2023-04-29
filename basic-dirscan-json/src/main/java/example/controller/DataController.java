@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -76,6 +77,8 @@ public class DataController {
 	static int cnt = 100;
 	private static boolean debug = false;
 	private static Map<String, HostData> inventory = new HashMap<>();
+	@Value("${file.path:C:\\temp}")
+	public String file_path;
 
 	@ResponseBody
 	@GetMapping("/file/{name}")
@@ -165,23 +168,25 @@ public class DataController {
 				new InputStreamReader(new ByteArrayInputStream(payload.getBytes())));
 		artist = gson.fromJson(reader, Artist.class);
 		log.info("RequestBody(parsed, 2 nd attempt): " + gson.toJson(artist));
-
-		// origin:
-		// http://www.java2s.com/Tutorials/Java/java.nio.file/Files/Java_Files_createFile_Path_path_FileAttribute_lt_gt_attrs_.htm
-		// https://www.javatpoint.com/how-to-create-a-file-in-java
-		// see also:
-		// https://stackoverflow.com/questions/74608272/java-files-existspath-fails-on-linux-but-passes-on-windows
-		createFile(name);
+		final String filePath = file_path + "\\" + name;
+		createFile(filePath);
 		try {
-			Files.write(Paths.get("C:\\temp\\" + name), payload.getBytes(),
+			Files.write(Paths.get(file_path + "\\" + name), payload.getBytes(),
 					StandardOpenOption.WRITE);
 		} catch (IOException e) {
-			log.info("Exception wrigint file:" + e.toString());
-
+			// e.g.
+			// org.springframework.web.client.HttpServerErrorException$InternalServerError:
+			// 500: [Exception writing file: java.nio.file.NoSuchFileException:
+			// C:\temp\data\notdir\john]
+			final String message = "Exception writing file: " + e.toString();
+			log.info(message);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(message);
 		}
 		return (artist.getName() == null || name == null
 				|| !name.equals(artist.getName()))
-						? ResponseEntity.status(HttpStatus.BAD_REQUEST).body("bad name")
+						? ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+								.body("bad name")
 						: ResponseEntity.status(HttpStatus.OK)
 								.contentType(MediaType.APPLICATION_JSON_UTF8)
 								.body("{\"status\":\"OK\"}");
@@ -319,24 +324,29 @@ public class DataController {
 		return osName;
 	}
 
-	public static void createFile(String name) {
-		File file = new File("C:\\temp\\" + name); // initialize File object and
-																								// passing path as argument
+	// origin:
+	// http://www.java2s.com/Tutorials/Java/java.nio.file/Files/Java_Files_createFile_Path_path_FileAttribute_lt_gt_attrs_.htm
+	// https://www.javatpoint.com/how-to-create-a-file-in-java
+	// see also:
+	// https://stackoverflow.com/questions/74608272/java-files-existspath-fails-on-linux-but-passes-on-windows
+	public void createFile(String filePath) {
+
 		boolean result;
-		try {
-			result = file.createNewFile(); // creates a new file
-			if (result) // test if successfully created a new file
-			{
-				log.info("file created " + file.getCanonicalPath()); // returns
-																															// the
-																															// path
-																															// string
-			} else {
-				log.info("File already exist at location: " + file.getCanonicalPath());
+		File file = new File(filePath);
+
+		if (!file.exists()) {
+			try {
+				result = file.createNewFile();
+				final String fileCanonicalPath = file.getCanonicalPath();
+				// check if successfully created a new file
+				if (result) {
+					log.info("file created " + fileCanonicalPath);
+				} else {
+					log.info("File already exist at location: " + fileCanonicalPath);
+				}
+			} catch (IOException e) {
+				log.info("Excption creating file: " + filePath + " " + e.toString());
 			}
-		} catch (IOException e) {
-			log.info(e.toString());
-			// prints exception if any
 		}
 	}
 }
