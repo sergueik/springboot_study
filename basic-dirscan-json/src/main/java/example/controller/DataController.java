@@ -11,8 +11,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +44,18 @@ import com.google.gson.JsonElement;
 import example.model.Artist;
 import example.model.ArtistSerializer;
 import example.model.HostData;
+
+import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Set;
+import java.io.File;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/")
@@ -151,6 +165,20 @@ public class DataController {
 				new InputStreamReader(new ByteArrayInputStream(payload.getBytes())));
 		artist = gson.fromJson(reader, Artist.class);
 		log.info("RequestBody(parsed, 2 nd attempt): " + gson.toJson(artist));
+
+		// origin:
+		// http://www.java2s.com/Tutorials/Java/java.nio.file/Files/Java_Files_createFile_Path_path_FileAttribute_lt_gt_attrs_.htm
+		// https://www.javatpoint.com/how-to-create-a-file-in-java
+		// see also:
+		// https://stackoverflow.com/questions/74608272/java-files-existspath-fails-on-linux-but-passes-on-windows
+		createFile(name);
+		try {
+			Files.write(Paths.get("C:\\temp\\" + name), payload.getBytes(),
+					StandardOpenOption.WRITE);
+		} catch (IOException e) {
+			log.info("Exception wrigint file:" + e.toString());
+
+		}
 		return (artist.getName() == null || name == null
 				|| !name.equals(artist.getName()))
 						? ResponseEntity.status(HttpStatus.BAD_REQUEST).body("bad name")
@@ -291,4 +319,24 @@ public class DataController {
 		return osName;
 	}
 
+	public static void createFile(String name) {
+		File file = new File("C:\\temp\\" + name); // initialize File object and
+																								// passing path as argument
+		boolean result;
+		try {
+			result = file.createNewFile(); // creates a new file
+			if (result) // test if successfully created a new file
+			{
+				log.info("file created " + file.getCanonicalPath()); // returns
+																															// the
+																															// path
+																															// string
+			} else {
+				log.info("File already exist at location: " + file.getCanonicalPath());
+			}
+		} catch (IOException e) {
+			log.info(e.toString());
+			// prints exception if any
+		}
+	}
 }
