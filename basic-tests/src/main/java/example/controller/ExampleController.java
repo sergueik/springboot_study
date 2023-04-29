@@ -33,12 +33,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
+
 import example.service.ExampleService;
 
 @RestController
 @RequestMapping("/basic")
 public class ExampleController {
 
+	private static Gson gson = new GsonBuilder().create();
 	private boolean debug = false;
 	// see also about writing SpringBoot application tests without relying on
 	// SpringBoot field injection
@@ -167,12 +172,21 @@ public class ExampleController {
 	@RequestMapping(method = RequestMethod.POST, value = "/post/json", consumes = {
 			MediaType.APPLICATION_JSON_VALUE }, produces = {
 					MediaType.APPLICATION_JSON_VALUE })
-	public Data postJson(@RequestBody Data data) {
-		@SuppressWarnings("unused")
-		Data result = service.handleData(data);
-		// TODO: return result leads to postJSONTest failure
-		// return result;
-		return data;
+	public Data postJson(@RequestBody ExampleController.Data payload) {
+
+		// payload.setName("Mr. " + payload.getName());
+		ExampleController.Data result = service.handleData(payload);
+		// result.setName("white");
+		return result;
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value = "/post/plain", consumes = {
+			MediaType.APPLICATION_JSON_VALUE }, produces = {
+					MediaType.APPLICATION_JSON_VALUE })
+	public Data postPlain(@RequestBody String payload) {
+		Data result = gson.fromJson(payload, Data.class);
+		// result.setName("white");
+		return result;
 	}
 
 	// see also: https://qna.habr.com/q/1079162
