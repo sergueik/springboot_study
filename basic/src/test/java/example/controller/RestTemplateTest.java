@@ -34,9 +34,13 @@ public class RestTemplateTest {
 	private HttpHeaders headers = new HttpHeaders();
 	private Data response = null;
 	private ResponseEntity<Data> responseEntity = null;
+	private ResponseEntity<String> responseEntityString = null;
 	private HttpEntity<Data> requestEntity = null;
+	private HttpEntity<String> requestEntityString = null;
+
 	private String url = null;
 	private static Gson gson = new GsonBuilder().create();
+	private static final String defaultName = "Hello basic";
 	private final String name = "elton";
 	private Data data = null;
 
@@ -108,6 +112,9 @@ public class RestTemplateTest {
 		assertThat(responseEntity, notNullValue());
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody(), notNullValue());
+		response = responseEntity.getBody();
+		assertThat(response, notNullValue());
+		assertThat(response.getName(), is(defaultName));
 
 	}
 
@@ -123,6 +130,39 @@ public class RestTemplateTest {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody(), notNullValue());
 		response = responseEntity.getBody();
+		assertThat(response, notNullValue());
+		assertThat(response.getName(), is(name));
+
+	}
+
+	@Test
+	public void test7() {
+		url = baseUrl + "/json";
+		responseEntityString = restTemplate.getForEntity(url, String.class,
+				headers);
+
+		assertThat(responseEntityString, notNullValue());
+		assertThat(responseEntityString.getStatusCode(), is(HttpStatus.OK));
+		assertThat(gson.fromJson(responseEntityString.getBody(), Data.class),
+				notNullValue());
+		response = gson.fromJson(responseEntityString.getBody(), Data.class);
+		assertThat(response, notNullValue());
+		assertThat(response.getName(), is(defaultName));
+	}
+
+	@Test
+	public void test8() {
+		url = baseUrl + "/post";
+		data.setName(name);
+		requestEntityString = new HttpEntity<String>(gson.toJson(data), headers);
+		responseEntityString = restTemplate.postForEntity(url, requestEntityString,
+				String.class, headers);
+
+		assertThat(responseEntityString, notNullValue());
+		assertThat(responseEntityString.getStatusCode(), is(HttpStatus.OK));
+		assertThat(gson.fromJson(responseEntityString.getBody(), Data.class),
+				notNullValue());
+		response = gson.fromJson(responseEntityString.getBody(), Data.class);
 		assertThat(response, notNullValue());
 		assertThat(response.getName(), is(name));
 
