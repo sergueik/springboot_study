@@ -86,12 +86,6 @@ public class AcceptanceTest {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.METHOD_NOT_ALLOWED));
 	}
 
-	// TODO: trace the
-	// org.springframework.http.converter.HttpMessageNotReadableException:
-	// Required request body is missing: public
-	// org.springframework.http.ResponseEntity<java.lang.String>
-	// example.controller.DataController.updateData(java.lang.String,java.lang.String)]
-	@Disabled
 	@Test
 	public void test3() throws Exception {
 		String name = "john";
@@ -99,7 +93,7 @@ public class AcceptanceTest {
 		artist = new Artist(1, name, "guitar");
 		HttpEntity<String> request2 = new HttpEntity<String>(gson.toJson(artist),
 				headers);
-		responseEntity = restTemplate.postForEntity(url, request, String.class,
+		responseEntity = restTemplate.postForEntity(url, request2, String.class,
 				headers);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 	}
