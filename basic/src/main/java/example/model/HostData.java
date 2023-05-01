@@ -52,7 +52,7 @@ public class HostData {
 		this.filePaths.add(filePath);
 		// NOTE: without configuration nothing is logged to console
 		// System.err.println("HostData intialized with file path: " + filePath);
-		// logger.info("HostData intialized with file path: " + filePath);
+		logger.info("HostData intialized with file path: " + filePath);
 		// TODO : examine and bail if not a soft link
 	}
 
