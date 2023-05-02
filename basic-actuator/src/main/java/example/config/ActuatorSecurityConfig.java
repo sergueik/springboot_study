@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+// NOTE: commenting enables everything
+
 @Configuration
 public class ActuatorSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -43,11 +45,15 @@ public class ActuatorSecurityConfig extends WebSecurityConfigurerAdapter {
 		// .httpBasic();
 
 		// Actuator 2.x
+
+		//		http.authorizeRequests()
+		//		.requestMatchers(EndpointRequest.toAnyEndpoint())
+		//		.hasRole("ACTUATOR_ADMIN")
+		//		.requestMatchers(PathRequest.toStaticResources().atCommonLocations())
+		//		.permitAll().antMatchers("/").permitAll().antMatchers("/**")
+		//		.authenticated().and().httpBasic();
+
 		http.authorizeRequests().requestMatchers(EndpointRequest.toAnyEndpoint())
-				.hasRole("ACTUATOR_ADMIN")
-				.requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-				.permitAll().antMatchers("/").permitAll().antMatchers("/**")
-				.authenticated().and().httpBasic();
-		// NOTE: commenting enables everything
+				.permitAll();
 	}
 }
