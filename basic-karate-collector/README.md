@@ -2478,6 +2478,32 @@ docker image prune -f
 docker image rm $IMAGE
 sudo rm -fr target build
 ```
+### Karate-Reports Directory
+*  the contents of the `karate-reports` directory, required to render the results
+
+```text
+build/karate-reports/example.feature.Test.html
+build/karate-reports/example.feature.Test.karate-json.txt
+build/karate-reports/favicon.ico
+build/karate-reports/karate-labs-logo-ring.svg
+build/karate-reports/karate-logo.png
+build/karate-reports/karate-logo.svg
+build/karate-reports/karate-summary-json.txt
+build/karate-reports/karate-summary.html
+build/karate-reports/karate-tags.html
+build/karate-reports/karate-timeline.html
+build/karate-reports/res/bootstrap.min.css
+build/karate-reports/res/bootstrap.min.js
+build/karate-reports/res/jquery.min.js
+build/karate-reports/res/jquery.tablesorter.min.js
+build/karate-reports/res/karate-report.css
+build/karate-reports/res/karate-report.js
+build/karate-reports/res/vis.min.css
+build/karate-reports/res/vis.min.js
+```
+
+![directory](https://github.com/sergueik/springboot_study/blob/master/basic-karate-collector/screenshots/capture-karate-reports-directory.png)
+
 ### See Also
   * [REST API Testing with Karate](https://www.baeldung.com/karate-rest-api-testing)
   * standalne karate.jar [download](https://github.com/karatelabs/karate/tree/master/karate-netty#standalone-jar)
@@ -2490,6 +2516,8 @@ sudo rm -fr target build
   * https://github.com/gradle/gradle/issues/8436
   * https://github.com/figroc/tensorflow-serving-client/issues/11
   * [docker image](https://hub.docker.com/r/ptrthomas/karate-chrome) with X server (XVFB), VNC, Google Chrome
+
+  * [jenkins cucumber reports plugin](https://plugins.jenkins.io/cucumber-reports/)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
