@@ -1,0 +1,32 @@
+version: '3.1'
+
+services:
+  fastapi:
+    build: .
+    container_name: fastapi
+    restart: always
+    command: uvicorn main:app --host 0.0.0.0 --reload
+    ports:
+      - 8000:8000
+    depends_on:
+      - mongodb
+    env_file:
+      - .env
+    volumes:
+      - ./:/project/
+
+  mongodb:
+    #NOTE: `mvertes/alpine-mongo` is not configured to provide Access control is not enabled for the database  
+    #
+    # image: mvertes/alpine-mongo
+    image:mongo:4.4.6-bionic mongo:4.4.6-bionic
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    restart: always
+    env_file:
+      - .env
+
+#  redis:
+#    image: redis:alpine
+#    container_name: redis
