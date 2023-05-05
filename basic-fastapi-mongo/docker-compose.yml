@@ -1,0 +1,42 @@
+version: '3.1'
+
+services:
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
+    container_name: fastapi
+    restart: always
+    # NOTE: dublicating the CMD in Dockerfile.fastapi
+    command: uvicorn website:app --host 0.0.0.0 --reload
+    # TODO:
+    # healthcheck:
+    #   test:
+    #     [
+    #       "CMD-SHELL",
+    #       "python app.py",
+    #     ]
+    #  interval: 10s
+    #  timeout: 10s
+    #  retries: 60
+    ports:
+      - 8000:8000
+    depends_on:
+      - mongodb
+    env_file:
+      - .env
+    volumes:
+      - ./:/project/
+
+  mongodb:
+    #NOTE: `mvertes/alpine-mongo` is not configured to provide Access control is not enabled for the database
+    #
+    # image: mvertes/alpine-mongo
+    image: mongo:4.4.6-bionic
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    restart: always
+    env_file:
+      - .env
+

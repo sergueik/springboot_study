@@ -1,0 +1,16 @@
+FROM python:3.8.2-alpine
+WORKDIR /app
+RUN apk add --no-cache -t .build-deps curl ca-certificates jq gcc cmake pkgconfig make libc-dev linux-headers && \
+    rm -rf /var/cache/apk/*
+ENV PYTHONIOENCODING=utf-8
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8 
+ENV LC_LANG=C.UTF-8
+RUN pip install --upgrade pip
+RUN pip install python-dotenv==1.0.0 fastapi pymongo uvicorn
+COPY .env app.py website.py ./
+ARG SERVICE_PORT=8080
+EXPOSE $SERVICE_PORT
+CMD ["uvicorn", "website:app", "--host", "0.0.0.0", "--reload"]
