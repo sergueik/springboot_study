@@ -1,0 +1,53 @@
+version: '3.2'
+services:
+  mysql-alpine:
+    image: alpine:3.9.5
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql-alpine
+    stdin_open: true
+    tty: true
+    ports:
+      - 3306
+    env_file:
+      - .env
+  app:
+    image: probe 
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    stdin_open: true
+    tty: true
+    entrypoint: >
+      /bin/sh -c "
+        DELAY='${INTERVAL}'
+        TOTAL=${RETRIES}
+        CNT=1
+
+        echo \"Start checking whether MySQL is up & running\" 
+        echo \"(able to process incoming connections) each $$DELAY for a total amount of $$TOTAL times\"
+
+        while [ $$CNT -le $$TOTAL ]; do
+          sleep $$DELAY
+
+          curl --silent --unix-socket /var/run/docker.sock http://v$${docker_api_version}/containers/json |jq '.[] | select(.Names[] | contains(\"-mysql-alpine-\")) | select(.State == \"running\") | .Status'
+          OUTPUT=$$(curl --silent --unix-socket /var/run/docker.sock http://v$${docker_api_version}/containers/json | \
+            jq '.[] | select(.Names[] | contains(\"-mysql-alpine-\")) | select(.State == \"running\") | .Status | contains(\"(healthy)\")')
+
+          if [ \"$$OUTPUT\" = \"true\" ]; then
+            echo \"OK: [$$CNT/$$TOTAL] MySQL is up & running.\"
+            return 0
+          else
+            echo \"WARN: [$$CNT/$$TOTAL] MySQL database still NOT up & running ...\"
+            CNT=`expr $$CNT + 1`
+          fi
+        done;
+
+        echo 'ERROR: Could not connect to MySQL in due time.'
+        return 1"
+    depends_on:
+      - mysql-alpine
+    volumes:    
+      - /var/run/docker.sock:/var/run/docker.sock 

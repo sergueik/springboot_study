@@ -1,0 +1,14 @@
+FROM alpine:3.9.5
+# based on: https://github.com/wangxian/alpine-mysql/blob/master/Dockerfile
+
+WORKDIR /app
+VOLUME /app
+
+ENV MYSQL_USER MYSQL_PASSWORD MYSQL_DATABASE 
+RUN apk add --update mysql mysql-client && rm -f /var/cache/apk/*
+COPY startup.sh /startup.sh
+COPY my.cnf /etc/mysql/my.cnf
+RUN chmod +x /startup.sh
+EXPOSE 3306
+HEALTHCHECK --interval=10s --timeout=30s --retries=10 CMD  mysql --protocol=socket --socket=/tmp/mysqld.sock  --host='localhost' --user="${MYSQL_USER}" --execute="USE ${MYSQL_DATABASE};show databases" 
+CMD ["/startup.sh"]
