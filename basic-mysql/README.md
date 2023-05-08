@@ -320,7 +320,42 @@ docker logs $SERVER_NAME
 ```
 * verify the console connection:
 ```sh
-docker exec -it $SERVER_NAME mysql -P 3306 -h localhost -u java -ppassword -e "set @var = '1'; select @var ;"
+docker exec -it $SERVER_NAME mysql -P 3306 --protocol=socket --socket=/tmp/mysqld.sock -h localhost -u java -ppassword -e "set @var = '1'; select @var ;"
+```
+NOTE: some issues observed with authentication, if seeing error:
+```text
+ERROR 1045 (28000): Access denied for user 'java'@'localhost' (using password: YES)
+
+```
+
+repeat the command without `-ppassword argument`:
+
+```sh
+docker exec -it $SERVER_NAME mysql -P 3306 --protocol=socket --socket=/tmp/mysqld.sock -h localhost -u root -e "set @var = '1'; select @var ;"
+```
+```text
++------+
+| @var |
++------+
+| 1    |
++------+
+```
+both `root` and `java` users will be allowed to connect without the password
+
+```sh
+
+ docker exec -it $SERVER_NAME mysql -P 3306 --protocol=socket --socket=/tmp/mysqld.sock -h localhost -u root -e "use test;show databases;"
+
+```
+```text
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| test               |
++--------------------+
 ```
 ### Plain docker-compose test
 

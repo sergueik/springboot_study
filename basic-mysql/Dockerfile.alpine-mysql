@@ -9,5 +9,6 @@ COPY startup.sh /startup.sh
 COPY my.cnf /etc/mysql/my.cnf
 RUN chmod +x /startup.sh
 EXPOSE 3306
-HEALTHCHECK --interval=10s --timeout=30s --retries=10 CMD nc -z 127.0.0.1 3306 || exit 1
+# HEALTHCHECK --interval=10s --timeout=30s --retries=10 CMD nc -z 127.0.0.1 3306 || exit 1
+
 CMD ["/startup.sh"]
