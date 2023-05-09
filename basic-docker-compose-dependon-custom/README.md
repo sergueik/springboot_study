@@ -104,6 +104,7 @@ does not have health check passed presumably to some missing configuration
 ### See Also
   * https://github.com/satrapu/jdbc-with-docker/blob/master/docker-compose-using-api.yml
   * https://github.com/byrnedo/docker-alpine-curl
+  * https://superuser.com/questions/834307/can-curl-send-requests-to-sockets
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

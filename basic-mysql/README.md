@@ -314,6 +314,19 @@ the output will not be formatted
 ```text
 [MYSQL_ROOT_PASSWORD=password MYSQL_USER=java MYSQL_DATABASE=test MYSQL_PASSWORD=password PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin]
 ```
+in about two minutes, observe
+
+```sh
+docker container ls | grep $SERVER_NAME
+
+```
+```text
+3245fc8ec400   alpine-mysql   "/startup.sh"   About a minute ago   Up About a minute (unhealthy)   3306/tcp   alpine-mysql
+```
+the container will be failing `HEALTHCHECK`:
+```sh
+HEALTHCHECK --interval=10s --timeout=30s --retries=10 CMD nc -z 127.0.0.1 3306 || exit 1
+```
 * observe the successful start log message in `mysql-server` container:
 ```sh
 docker logs $SERVER_NAME
