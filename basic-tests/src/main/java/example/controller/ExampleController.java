@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -282,6 +284,14 @@ public class ExampleController {
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@RequestMapping(method = RequestMethod.GET, value = "/sanitize/{file}", produces = {
+			MediaType.APPLICATION_OCTET_STREAM_VALUE })
+	public ResponseEntity<?> sanitizeFileName(@PathVariable("file") String file) {
+		final String special = "^[[\\|$<>&!,`]]";
+		final Pattern regex = Pattern.compile(special);
+		return ResponseEntity.status(HttpStatus.OK).body(service.handleData(file));
 	}
 
 	@GetMapping(value = "/servererror", produces = MediaType.APPLICATION_JSON_VALUE)
