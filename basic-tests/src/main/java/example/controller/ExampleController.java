@@ -286,12 +286,19 @@ public class ExampleController {
 		}
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/sanitize/{file}", produces = {
+	@RequestMapping(method = RequestMethod.GET, value = "/sanitize/{filename}/data", produces = {
 			MediaType.APPLICATION_OCTET_STREAM_VALUE })
-	public ResponseEntity<?> sanitizeFileName(@PathVariable("file") String file) {
-		final String special = "^[[\\|$<>&!,`]]";
+	public ResponseEntity<?> sanitizeFileName(
+			@PathVariable("filename") String fileName) {
+		final String special = "^[[\\|$<>&!,{}`]]";
 		final Pattern regex = Pattern.compile(special);
-		return ResponseEntity.status(HttpStatus.OK).body(service.handleData(file));
+
+		return regex.matcher(fileName).find()
+				? ResponseEntity.status(HttpStatus.OK)
+						.body(service.handleData("valid filename: " + fileName))
+				: ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+						.body("invalid filename");
+
 	}
 
 	@GetMapping(value = "/servererror", produces = MediaType.APPLICATION_JSON_VALUE)
