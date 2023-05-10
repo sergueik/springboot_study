@@ -1,0 +1,61 @@
+package example;
+/**
+ * Copyright 2021 Serguei Kouzmine
+ */
+
+import static io.gatling.javaapi.core.CoreDsl.*;
+import static io.gatling.javaapi.http.HttpDsl.*;
+
+import io.gatling.javaapi.core.*;
+import io.gatling.javaapi.http.*;
+
+import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
+
+import java.util.Map;
+import java.util.HashMap;
+
+// based on: https://github.com/gatling/gatling-maven-plugin-demo-java/blob/main/src/test/java/computerdatabase/ComputerDatabaseSimulation.java#L5
+public class LoadSimulation extends Simulation {
+
+	private final static Map<String, String> sentHeaders = new HashMap<>();
+	static {
+		sentHeaders.put("content-type",
+				"multipart/form-data;boundary=\"boundary\"");
+		sentHeaders.put("accept", "text/html");
+	}
+	private final static String data = "test data";
+	private final static String baseUrl = "http://localhost:8085";
+	//@formatter:off
+	private static String body = String.join("\r\n",
+			Arrays.asList(
+					"--boundary",
+					"Content-Disposition: form-data; name=\"file\"; filename=\"temp.txt\"",
+					"Content-Type: application/octet-stream", 
+					"", 
+					data, 
+					"",
+					"--boundary--", 
+					""));
+	//@formatter:on
+
+	ChainBuilder upload =
+			// retry 2 times
+			tryMax(2).on(exec(http("Post")
+					// NOTE: passing arguments in an unusual way for POST
+					.post("/basic/upload"
+							+ "?operation=send&param=something&servername=server")
+					.headers(sentHeaders).body(StringBody(body))
+					.check(status().is(session -> 200)))).exitHereIfFailed();
+
+	HttpProtocolBuilder httpProtocol = http.baseUrl(baseUrl)
+			.acceptHeader("text/html,application/xhtml+xml,application/xml")
+			.acceptLanguageHeader("en-US,en;q=0.5")
+			.acceptEncodingHeader("gzip, deflate");
+
+	ScenarioBuilder agents = scenario("Agents").exec(upload);
+
+	{
+		setUp(agents.injectOpen(rampUsers(100).during(10))).protocols(httpProtocol);
+	}
+}

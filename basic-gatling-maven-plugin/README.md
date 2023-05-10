@@ -32,9 +32,9 @@ test data
 ...
 ```
 
-* observe very detailed test run stats on gatling end
+* observe very detailed test run statistics on gatling end
 ```text
-Simulation computerdatabase.ComputerDatabaseSimulation started...
+Simulation example.LoadSimulation started...
 
 ================================================================================
 
@@ -57,7 +57,7 @@ Simulation computerdatabase.ComputerDatabaseSimulation started...
           waiting: 0      / active: 0      / done: 100
 ================================================================================
 
-Simulation computerdatabase.ComputerDatabaseSimulation completed in 10 seconds
+Simulation example.LoadSimulation completed in 10 seconds
 Parsing log file(s)...
 Parsing log file(s) done
 Generating reports...
@@ -87,14 +87,13 @@ Generating reports...
 
 
 Reports generated in 0s.
-Please open the following file: file:////computerdatabasesimulation-20230509235003798/index.html
+Please open the following file: file:///...target/gatling/loadsimulation-20230509235003798/index.html
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
 [INFO] Total time:  31.566 s
 [INFO] Finished at: 2023-05-09T19:50:18-04:00
 [INFO] ------------------------------------------------------------------------
-
 ```
 
 ### See Also
