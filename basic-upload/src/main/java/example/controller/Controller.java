@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import org.springframework.core.io.ClassPathResource;
@@ -23,8 +25,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
 // import org.apache.commons.codec.binary.Base64;
 import java.util.Base64;
+import java.util.List;
 
 @RestController
 @RequestMapping("/basic")
@@ -63,15 +68,29 @@ public class Controller {
 				.header(HttpHeaders.SET_COOKIE, resCookie.toString()).build();
 	}
 
+	private static String osName = getOSName();
+
 	@RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> upload(
 			@CookieValue(name = default_name, defaultValue = default_value) String cookie,
 			@RequestParam("operation") String operation,
 			@RequestParam("param") String param,
+			@RequestParam("servername") String servername,
 			@RequestParam("encode") Optional<Boolean> encode,
 			@RequestParam("file") MultipartFile file) {
 		if (param.isEmpty())
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		if (servername.isEmpty())
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		Path basePath = Paths.get(String.format(
+				"%s%ssrc%smain%sresources%sdata%s%s",
+				(osName.equals("windows")
+						? System.getProperty("user.dir").replaceAll("/", "\\")
+						: System.getProperty("user.dir")),
+				File.separator, File.separator, File.separator, File.separator,
+				File.separator, servername));
+
+		mkdirs(basePath.toFile());
 		if (!operation.equals("send")) {
 			System.err.println("invalid operation: " + operation);
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(null);
@@ -171,6 +190,31 @@ public class Controller {
 				"bytes " + byteStart + "-" + byteEnd + "/" + fileSize);
 
 		return new ResponseEntity(data, headers, HttpStatus.PARTIAL_CONTENT);
+	}
+
+	public static void mkdirs(File dir) {
+		File parent = dir.getAbsoluteFile();
+		List<File> mkdir = new ArrayList<File>();
+		for (; !parent.exists()
+				|| !parent.isDirectory(); parent = parent.getParentFile()) {
+			mkdir.add(parent);
+		}
+		for (int i = mkdir.size(); --i >= 0;) {
+			File d = mkdir.get(i);
+			d.mkdir();
+			d.setReadable(true, false);
+			d.setWritable(true, false);
+		}
+	}
+
+	public static String getOSName() {
+		if (osName == null) {
+			osName = System.getProperty("os.name").toLowerCase();
+			if (osName.startsWith("windows")) {
+				osName = "windows";
+			}
+		}
+		return osName;
 	}
 
 }
