@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+
+<!-- 
+http://jsfiddle.net/vishalvasani/4hqvu/
+
+
+based on: http://www.matlus.com/html5-file-upload-with-progress/
+see also
+-->
+
+<head>
+<meta charset="utf-8" />
+<title>Upload file</title>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.js">
+</script>
+<script src="/js/script.js"></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+<link rel="stylesheet" href="/css/main.css"/>
+</head>
+
+<body ng-controller="FileUploadCtrl">
+  <div class="row">
+    <label for="fileToUpload">Select a File to Upload</label><br />
+    <input type="file" ng-model-instant id="fileToUpload" multiple onchange="angular.element(this).scope().setFiles(this)" />
+  </div>
+  <div id="dropbox" class="dropbox" ng-class="dropClass"><span>{{dropText}}</span></div>
+  <div ng-show="files.length">
+    <div ng-repeat="file in files.slice(0)">
+      <span>{{file.webkitRelativePath || file.name}}</span>
+      (<span ng-switch="file.size > 1024*1024">
+        <span ng-switch-when="true">{{file.size / 1024 / 1024 | number:2}} MB</span>
+        <span ng-switch-default>{{file.size / 1024 | number:2}} kB</span>
+      </span>)
+    </div>
+    <input type="button" ng-click="uploadFile()" value="Upload" />
+    <div ng-show="progressVisible">
+      <div class="percent">{{progress}}%</div>
+      <div class="progress-bar">
+        <div class="uploaded" ng-style="{'width': progress+'%'}"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

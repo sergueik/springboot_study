@@ -155,6 +155,8 @@ docker container rm $NAME
   * pure Java generic list partition [methods](https://stackoverflow.com/questions/12026885/is-there-a-common-java-utility-to-break-a-list-into-batches) - not applicable for infrastructure partition
   * [introduction to JsonPath](https://www.baeldung.com/guide-to-jayway-jsonpath)
   * [how to](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04) install Docker Compose from the Docker’s GitHub repository  
+  * [docker routing](https://codepoetry.ru/post/docker-user-iptables/)(in Russian)
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

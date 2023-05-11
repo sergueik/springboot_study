@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AngularJS Custom Function Form Validation</title>
+<script src= "https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js">
+</script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+</head>
+
+<body ng-app="developapp">
+
+
+<form name="myForm">
+<input name="myInput" ng-model="myInput" required>
+</form>
+<div>
+<span ng-show="myForm.myInput.$touched && myForm.myInput.$invalid">The value is required.</span>
+</div>
+<div>
+<span >The input's valid state is:{{myForm.myInput.$valid}}</span>
+
+
+<form name="form1">
+Username:
+<input name="username" required>
+<div>valid: {{form1.username.$valid}}</div>
+<div><b>Note:</b> The "username" value must must be non-blank to be valid</div>
+<br/>
+Age:
+<input name="age" ng-model="age" required app-directive>
+<div>valid: {{form1.age.$valid}}</div>
+<div><b>Note:</b> The "age" value must must be greater than 18 to be valid </div>
+<button data-ng-click="update()" data-ng-disabled="form1.$invalid" class="btn btn-primary">SUBMIT</button>
+</form>
+<script>
+	var app = angular.module('developapp', []);
+	app.directive('appDirective', function () {
+			return {
+				require: 'ngModel',
+				link: function (scope, element, attr, mCtrl) {
+					function myValidation(value) {
+						if (value >= 18) {
+							mCtrl.$setValidity('charE', true);
+						} else {
+							mCtrl.$setValidity('charE', false);
+						}
+						return value;
+					}
+					mCtrl.$parsers.push(myValidation);
+				}
+			};
+		});
+	</script>
+</body>
+</html>
+
