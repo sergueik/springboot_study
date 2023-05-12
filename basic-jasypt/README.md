@@ -109,6 +109,63 @@ this will print
 Username is -------->user
 Endpoint is -------->https://user:password@localhost:30000
 ```
+
+* NOTE:
+setting enviroment variable works. 
+
+```sh
+export JASYPT_ENCRYPTOR_PASSWORD=secret
+mvn spring-boot:run
+```
+leads to
+```text
+##############################
+Username is -------->user
+Endpoint is -------->https://user:password@localhost:30000
+##############################
+```
+forgetting to export the env 
+
+```sh
+JASYPT_ENCRYPTOR_PASSWORD=secret
+mvn spring-boot:run
+```
+leads to
+```text
+Error creating bean with name 'myTest': Injection of autowired dependencies failed; nested exception is java.lang.IllegalStateException: either 'jasypt.encryptor.password' or one of ['jasypt.encryptor.private-key-string', 'jasypt.encryptor.private-key-location'] must be provided for Password-based or Asymmetric encryption
+
+```
+
+setting secret password through `key.txt` placed in fixed location or as resource into the package requires custom bean
+```sh
+mvn spring-boot:run
+```
+```text
+   main] c.u.j.encryptor.DefaultLazyEncryptor     : Found Custom Encryptor Bean org.jasypt.encryption.pbe.PooledPBEStringEncryptor@1051817b with name: jasyptStringEncryptor
+2023-05-12 23:51:27.217  INFO 9819 --- [           main] tConfig$$EnhancerBySpringCGLIB$$d74e9abb : loading src/main/resources/key.txt
+2023-05-12 23:51:27.218  INFO 9819 --- [           main] tConfig$$EnhancerBySpringCGLIB$$d74e9abb : Read: "secret"
+
+2023-05-12 23:30:34.515  INFO 7726 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2023-05-12 23:30:35.478  INFO 7726 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2023-05-12 23:30:35.507  INFO 7726 --- [           main] s.SpringbootJasyptEncryptDemoApplication : Started SpringbootJasyptEncryptDemoApplication in 4.952 seconds (JVM running for 5.724)
+##############################
+Username is -------->user
+Endpoint is -------->https://user:password@localhost:30000
+##############################
+
+```
+NOTE: need to read and remove newlines, not doing so leads to:
+```text
+2023-05-12 23:30:33.793  INFO 7726 --- [           main] tConfig$$EnhancerBySpringCGLIB$$d74e9abb : Read: "secret
+"
+Exception encountered during context initialization - 
+ cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: 
+ Error creating bean with name 'myTest': Injection of autowired dependencies failed; 
+ nested exception is org.jasypt.exceptions.EncryptionInitializationException: 
+ java.security.spec.InvalidKeySpecException: Password is not ASCII
+ 
+
+```
 ### Profiling the Run
 
 * timing 100 encryption runs
@@ -205,6 +262,7 @@ Operation not possible (Bad input or parameters)
 ### Encrypting at Build Time
 
 #### Check Operation
+
 ```sh
 mvn jasypt:encrypt-value -Djasypt.encryptor.password=secret -Djasypt.plugin.value="password"
 ```
@@ -228,8 +286,16 @@ defaultPassword = DEC(password)
 ```
 * run
 ```sh
-mvn jasypt:encrypt -Djasypt.encryptor.password=secret-Djasypt.plugin.path="file:src/main/resources/application.properties" -Djasypt.encryptor.algorithm=PBEWithMD5AndDES
+mvn jasypt:encrypt -Djasypt.encryptor.password=secret -Djasypt.plugin.path="file:src/main/resources/application.properties" -Djasypt.encryptor.algorithm=PBEWithMD5AndDES
 ```
+alternatively, write the password into file `src/main/resources/key.txt` and repeat the previous command sans the `-Djasypt.encryptor.password` argument:
+
+```sh
+mvn jasypt:encrypt -Djasypt.encryptor.private-key-location="file:src/main/resources/key.txt" -Djasypt.plugin.path="file:src/main/resources/application.properties" -Djasypt.encryptor.algorithm=PBEWithMD5AndDES
+```
+* NOTE: the command needs more arguments
+
+
 * verify `aplication.properties`
 ```text
 jasypt.encryptor.algorithm=PBEWithMD5AndDES
@@ -240,6 +306,21 @@ defaultPassword = ENC(/QXDB/JASqv5tHKcbdL3x+4yMgdNnp621FfBLP268Yk=)
 password = ${PASSWORD:${defaultPassword}}
 username = user
 endpoint = https://${username}:${password}@localhost:30000
+
+```
+the `src/main/resorces/application.properties` will be modified from:
+```text
+defaultPassword = DEC(password)
+```
+to
+```text
+defaultPassword = ENC(07yqh79SUIS5aptXZ7RgDI4zxmcqbNTDSYc/B8a7932ZwW2exVi4cdeA4gA78Fv5)
+```
+* NOTE: error in runtime
+
+```text
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'myTest': Injection of autowired dependencies failed; nested exception is com.ulisesbocchio.jasyptspringboot.exception.DecryptionException: Unable to decrypt: ENC(07yqh79SUIS5aptXZ7RgDI4zxmcqbNTDSYc/B8a7932ZwW2exVi4cdeA4gA78Fv5). Decryption of Properties failed,  make sure encryption/decryption passwords match
+        at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:405) ~[spring-beans-5.2.9.RELEASE.jar:5.2.9.RELEASE]
 
 ```
 #### Perl Java Interability
@@ -581,13 +662,13 @@ rm jasypt-1.9.3-dist.zip
 ### See Also
 
   * [Spring Boot Configuration with Jasypt](https://www.baeldung.com/spring-boot-jasypt)
-  * `Crypt::PBE` [module](https://metacpan.org/pod/Crypt::PBE)
-  * [discussion](https://www.perlmonks.org/?dislaytype=print;node_id=845861;replies=1) about implementing Jasypt in Perl
-  * [python library](https://github.com/Telmediq/jasypt-2-python) (not tested)
-  * [another python library](https://github.com/lemonprogis/python-jasypt) - Python 2.7
-  * [another python library](https://github.com/fareliner/jasypt4py)
-  * [stackoverflow](https://stackoverflow.com/questions/4371714/how-do-i-profile-my-perl-programs)
   * [spring Boot Password Encryption Using Jasypt](https://www.appsdeveloperblog.com/spring-boot-password-encryption-using-jasypt/)
+  * https://www.geeksforgeeks.org/how-to-encrypt-passwords-in-a-spring-boot-project-using-jasypt/
+
+  * Perl 
+    + `Crypt::PBE` [module](https://metacpan.org/pod/Crypt::PBE)
+    + [discussion](https://www.perlmonks.org/?dislaytype=print;node_id=845861;replies=1) about implementing Jasypt in Perl
+    + [stackoverflow](https://stackoverflow.com/questions/4371714/how-do-i-profile-my-perl-programs)
 
   * .Net
 
@@ -600,6 +681,9 @@ rm jasypt-1.9.3-dist.zip
 * Python Modules
   + [python2.7 example](https://github.com/lemonprogis/python-jasypt) - need conversion of string / byte / unicode variables
   + [python3.x example](https://github.com/fareliner/jasypt4py/blob/master/jasypt4py/encryptor.py) - the code is not compatible with Python __3.8__ and later, error is: `module 'time' has no attribute 'clock'`. Attempt to Use the alternative module suggeested in [stackoverflow](https://stackoverflow.com/questions/58569361/attributeerror-module-time-has-no-attribute-clock-in-python-3-8) leads to a new error: `TypeError: Object type <class 'str'> cannot be passed to C code`
+  * [python library](https://github.com/Telmediq/jasypt-2-python) (not tested)
+  * [another python library](https://github.com/lemonprogis/python-jasypt) - Python 2.7
+  * [another python library](https://github.com/fareliner/jasypt4py)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
