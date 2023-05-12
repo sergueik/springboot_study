@@ -1,28 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+
 <title>AngularJS Custom Function Form Validation</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js">
+</script>
 <script src= "https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js">
 </script>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 </head>
 
-<body ng-app="developapp">
-<!-- origin:https://www.w3schools.com/angular/tryit.asp?filename=try_ng_validate_required
-no code -->
-<!--
-<div data-title="form1">
-<form name="form1">
-<input name="myInput" ng-model="myInput" required>
-</form>
-<div>
-<span ng-show="form1.myInput.$touched && form1.myInput.$invalid">The value is required.</span>
-</div>
-<div>
-<span >The input's valid state is:{{form1.myInput.$valid}}</span>
-</div>
--->
+<body ng-app="developapp" data-ng-controller="formcontroller">
 <div data-title="form2">
 <form name="form2">
 Username:
@@ -36,9 +26,13 @@ Age:
 <div><b>Note:</b> The "age" value must be greater than 18 to be valid </div>
 Backend Call:
 <!-- NOTE: do not use "param" for name attribute -->
-<input name="xxx" ng-model="xxx" required xxx-validation-directive>
-<div>valid: {{form2.xxx.$valid}}</div>
-<div><b>Note:</b> The "xxx" value {{form2.xxx}} must be greater than 18 to be valid </div>
+<!--
+<input name="probe" ng-model="probe" required probe-validation-directive ng-blur="sendRequest(123);">
+-->
+
+<input name="probe" ng-model="probe" data-ng-blur="sendRequest($event);">
+<div>valid: {{form2.probe.$valid}}</div>
+<div><b>Note:</b> The "probe" value {{form2.probe}} must be greater than 18 to be valid </div>
 <button data-ng-click="update()" data-ng-disabled="form2.$invalid" class="btn btn-primary">SUBMIT</button>
 </form>
 </div>

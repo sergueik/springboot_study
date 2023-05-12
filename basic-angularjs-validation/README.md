@@ -41,16 +41,49 @@ The `debug` flag will trigger printing additional debugging information
 ```sh
 mvn clean -Dmaven.test.skip=true spring-boot:run
 ```
-followed by opening in the browser
-
-`curl http://localhost:8080/input-validation.html`
+followed by opening in the browser `http://localhost:8080/input-validation.html`
 this will show form with two inputs, validated. Only the second validation tiggels the button
+
+### Note
+
+```javascript
+console.log('response: '+ JSON.stringify(mCtrl));
+```
+leads to
+```text
+TypeError: Converting circular structure to JSON
+property '$$controls' -> object with constructor 'Array'
+   |     index 0 -> object with constructor 'Object'
+   --- property '$$parentForm' closes the circle
+```
+```javascript
+console.log('response: '+ JSON.stringify(scope.form2.username));
+```
+leads to
+```text
+TypeError: Converting circular structure to JSON
+    --> starting at object with constructor 'Object'
+    |     property '$$parentForm' -> object with constructor 'Object'
+    |     property '$$controls' -> object with constructor 'Array'
+    --- index 0 closes the circle
+```
+
+
 ### See Also
+
+
   * AngularJS Form $setValidity [post](https://medium.com/@lily.lsps/angularjs-form-setvalidity-1f2485ad9b22)
   * `form.FormController` [documentation](https://docs.angularjs.org/api/ng/type/form.FormController)
   * https://stackoverflow.com/questions/14363656/using-setvalidity-inside-a-controller
   * [validating User Input on a Form in Angular JS](https://www.infragistics.com/community/blogs/b/dhananjay_kumar/posts/validating-user-input-on-a-form-in-angular-js)
   * https://stackoverflow.com/questions/42624184/how-to-call-any-function-in-input-type-text-in-angularjs
+
+  * https://stackoverflow.com/questions/31875248/how-to-pass-the-input-element-as-a-parameter-in-ng-blur
+  * https://www.itsolutionstuff.com/post/angular-input-blur-event-exampleexample.html
+  * https://stackoverflow.com/questions/24336858/pass-http-from-controller-to-directive
+  * https://docs.angularjs.org/api/ng/service/$compile#-scope-
+  * https://stackoverflow.com/questions/22142017/angular-directive-handles-http-request
+  * https://stackoverflow.com/questions/14363656/using-setvalidity-inside-a-controller
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
