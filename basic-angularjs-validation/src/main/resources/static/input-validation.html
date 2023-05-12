@@ -26,13 +26,10 @@ Age:
 <div><b>Note:</b> The "age" value must be greater than 18 to be valid </div>
 Backend Call:
 <!-- NOTE: do not use "param" for name attribute -->
-<!--
-<input name="probe" ng-model="probe" required probe-validation-directive ng-blur="sendRequest(123);">
--->
+<input name="probe" ng-model="probe" required probe-validation-directive ng-change="sendRequest();">
 
-<input name="probe" ng-model="probe" data-ng-blur="sendRequest($event);">
 <div>valid: {{form2.probe.$valid}}</div>
-<div><b>Note:</b> The "probe" value {{form2.probe}} must be greater than 18 to be valid </div>
+<div><b>Note:</b> The "probe" value must be greater than 18 to be valid </div>
 <button data-ng-click="update()" data-ng-disabled="form2.$invalid" class="btn btn-primary">SUBMIT</button>
 </form>
 </div>

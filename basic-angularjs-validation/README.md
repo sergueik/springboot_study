@@ -84,6 +84,9 @@ TypeError: Converting circular structure to JSON
   * https://docs.angularjs.org/api/ng/service/$compile#-scope-
   * https://stackoverflow.com/questions/22142017/angular-directive-handles-http-request
   * https://stackoverflow.com/questions/14363656/using-setvalidity-inside-a-controller
+  * https://stackoverflow.com/questions/42964908/accessing-scope-from-a-directive-in-angularjs 
+  * https://www.w3schools.com/angular/ng_ng-change.asp
+  * https://stackoverflow.com/questions/30947808/how-to-get-the-value-of-a-field-with-ng-change
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

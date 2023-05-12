@@ -7,9 +7,8 @@ app.controller('formcontroller', function($scope, $http) {
         console.log($scope.validationStatus);
     }
 
-    $scope.sendRequest = function(event) {
-        var value = event.target.value;
-        console.log('event target value: ' + value);
+    $scope.sendRequest = function() {
+        var value = $scope.probe;
         console.log('sendRequest: ' + value);
         $http.get($scope.url + '/' + value).then(function(response) {
             // console.log('sendRequest response: '+ JSON.stringify(response));
@@ -56,7 +55,7 @@ app.directive('probeValidationDirective', function() {
         require: 'ngModel',
         link: function(scope, element, attr, mCtrl) {
             function ageValidation(value) {
-                if ($scope.validationStatus) {
+                if (scope.validationStatus) {
                     console.log('valid: ' + value);
                     mCtrl.$setValidity('charE', true);
                 } else {
@@ -69,28 +68,3 @@ app.directive('probeValidationDirective', function() {
         }
     };
 });
-
-app.directive('probeValidationDirective_NONWORKING', ['$http', function($http) {
-    return {
-        require: 'ngModel',
-        link: function(scope, element, attr, mCtrl) {
-            function probeValidation(value) {
-                $http.get($scope.url + '/' + value).then(function(response) {
-                    // console.log('response: '+ JSON.stringify(response));
-                    var result = parseInt(response.data.name, 10);
-                    console.log('result: ' + result);
-                    if (result >= 18) {
-                        console.log('valid: ' + result);
-                        mCtrl.$setValidity('charE', true);
-                    } else {
-                        console.log('invalid: ' + result);
-                        mCtrl.$setValidity('charE', false);
-                    }
-                }, function(reason) {
-                    console.log(reason);
-                });
-            }
-            mCtrl.$parsers.push(probeValidation);
-        }
-    };
-}]);
