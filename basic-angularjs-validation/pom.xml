@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>angular-validator</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>basic-angular-validator</name>
   <description>Springboot Template page Demo project</description>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.5.4.RELEASE</version>
+    <version>2.3.4.RELEASE</version>
     <relativePath/>
   </parent>
   <properties>
@@ -23,9 +23,6 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <failOnMissingWebXml>false</failOnMissingWebXml>
-    <thymeleaf.version>3.0.8.RELEASE</thymeleaf.version>
-    <thymeleaf-extras-java8time.version>3.0.0.RELEASE</thymeleaf-extras-java8time.version>
-    <thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
     <assertj.version>3.8.0</assertj.version>
 
     <webjars-locator.version>0.30</webjars-locator.version>

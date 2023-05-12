@@ -9,49 +9,36 @@
 </head>
 
 <body ng-app="developapp">
-
-
-<form name="myForm">
+<!-- origin:https://www.w3schools.com/angular/tryit.asp?filename=try_ng_validate_required
+no code -->
+<!--
+<div data-title="form1">
+<form name="form1">
 <input name="myInput" ng-model="myInput" required>
 </form>
 <div>
-<span ng-show="myForm.myInput.$touched && myForm.myInput.$invalid">The value is required.</span>
+<span ng-show="form1.myInput.$touched && form1.myInput.$invalid">The value is required.</span>
 </div>
 <div>
-<span >The input's valid state is:{{myForm.myInput.$valid}}</span>
-
-
-<form name="form1">
+<span >The input's valid state is:{{form1.myInput.$valid}}</span>
+</div>
+-->
+<div data-title="form2">
+<form name="form2">
 Username:
-<input name="username" required>
-<div>valid: {{form1.username.$valid}}</div>
+<input name="username" ng-model="username" required>
+<div>valid: {{form2.username.$valid}}</div>
 <div><b>Note:</b> The "username" value must must be non-blank to be valid</div>
 <br/>
 Age:
-<input name="age" ng-model="age" required app-directive>
-<div>valid: {{form1.age.$valid}}</div>
+<input name="age" ng-model="age" required age-validation-directive>
+<div>valid: {{form2.age.$valid}}</div>
 <div><b>Note:</b> The "age" value must must be greater than 18 to be valid </div>
-<button data-ng-click="update()" data-ng-disabled="form1.$invalid" class="btn btn-primary">SUBMIT</button>
+<button data-ng-click="update()" data-ng-disabled="form2.$invalid" class="btn btn-primary">SUBMIT</button>
 </form>
-<script>
-	var app = angular.module('developapp', []);
-	app.directive('appDirective', function () {
-			return {
-				require: 'ngModel',
-				link: function (scope, element, attr, mCtrl) {
-					function myValidation(value) {
-						if (value >= 18) {
-							mCtrl.$setValidity('charE', true);
-						} else {
-							mCtrl.$setValidity('charE', false);
-						}
-						return value;
-					}
-					mCtrl.$parsers.push(myValidation);
-				}
-			};
-		});
-	</script>
+</div>
+<script src="js/script.js">
+</script>
 </body>
 </html>
 
