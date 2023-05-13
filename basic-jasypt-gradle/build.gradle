@@ -1,0 +1,17 @@
+buildscript {
+    dependencies {
+        classpath files('jasypt-encrypt-plugin-1.0.0.jar')
+        classpath files('org-jasypt-plugin-1.9.3.jar')
+    }
+}
+plugins {
+    id 'io.github.ximtech.jasypt-encrypt-plugin' version '1.0.1'
+    id 'java'
+}
+apply plugin: com.github.jasypt.encrypt.JasyptPlugin
+
+
+dependencies {
+implementation group: 'org.jasypt', name: 'jasypt', version: '1.9.3'
+
+}
