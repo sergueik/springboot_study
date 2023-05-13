@@ -1,5 +1,5 @@
 ### Info
-Docker Alpine [container](https://hub.docker.com/layers/library/gradle/7.3.1-jdk17-alpine) with JDK 17.x and Gradle 7.x  for [](https://github.com/ximtech/jasypt-encrypt-plugin)
+Docker Alpine [container](https://hub.docker.com/layers/library/gradle/7.3.1-jdk17-alpine) with JDK 17.x and Gradle 7.x  for [jasyt gradle plugin](https://github.com/ximtech/jasypt-encrypt-plugin) testing
 
 ### Usage
 ```sh
@@ -61,7 +61,7 @@ docker image rm $IMAGE
 
 ### See Also
 
-  * https://github.com/moberwasserlechner/jasypt-gradle-plugin/blob/master/build.gradle
+  * https://github.com/moberwasserlechner/jasypt-gradle-plugin/blob/master/build.gradle - compatible with JDK 1.8
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
