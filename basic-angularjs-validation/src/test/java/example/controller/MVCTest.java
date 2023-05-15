@@ -25,10 +25,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static org.hamcrest.CoreMatchers.containsString;
 
-import example.controller.HomeController;
+import example.controller.ExampleController;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = HomeController.class)
+@WebMvcTest(controllers = ExampleController.class)
 public class MVCTest {
 
 	@Autowired
@@ -47,7 +47,7 @@ public class MVCTest {
 	@Before
 	public void beforeTest() throws Exception {
 		resultActions = mvc
-				.perform(get("/" + variable).accept(MediaType.TEXT_HTML));
+				.perform(get("/json/" + variable).accept(MediaType.APPLICATION_JSON));
 	}
 
 	@Test
@@ -58,43 +58,6 @@ public class MVCTest {
 	@Test
 	public void statusTest() throws Exception {
 		resultActions.andExpect(status().isOk());
-	}
-
-	final static String body = "<html/>";
-
-	// assert the response body content with a Hamcrest Matcher
-	@Test
-	public void bodyContainsTextTest() throws Exception {
-
-		resultActions.andExpect(
-				content().string(containsString("<title>Hello Spring Boot!</title>")));
-	}
-
-	@Test
-	public void contentTypeTest() throws Exception {
-		resultActions.andExpect(
-				content().contentType(String.format("text/html;charset=%s", charset)));
-	}
-
- 
-	@Test
-	public void veiewNameTest() throws Exception {
-		resultActions.andExpect(view().name(viewName));
-	}
-
-	@Test
-	public void verifiesHomePageLoads() throws Exception {
-
-		Arrays.asList("variable", "hostname", "now").forEach(a -> {
-			try {
-				resultActions.andExpect(model().attributeExists(a));
-			} catch (Exception e) {
-				// for missing attributes, the
-				// java.lang.AssertionError will be thrown:
-				// Model attribute 'then' does not exist
-				return;
-			}
-		});
 	}
 
 }
