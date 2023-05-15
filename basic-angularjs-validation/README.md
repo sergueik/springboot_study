@@ -2,7 +2,7 @@
 
 Static Spring boot Application hosting a basic AngularJS
 
-custom form input validation example taken from __AngularJS Form Validation__ [article](https://www.geeksforgeeks.org/angularjs-form-validation/)
+custom form input validation example taken from __AngularJS Form Validation__ [article](https://www.geeksforgeeks.org/angularjs-form-validation/). It does default `required` atteribute validation on first input, the local Javascript function validation on the second input, toggling the `$valid` property of the input and of the form through `$parsers`, and does a remote rest call to validate the third input, also togling the similar propery but through updating the `$asyncValidators` depednency injected propery.
 
 ![Page](https://github.com/sergueik/springboot_study/blob/master/basic-angularjs-validation/screenshots/capture-page.png)
 
@@ -88,7 +88,8 @@ TypeError: Converting circular structure to JSON
   * https://www.w3schools.com/angular/ng_ng-change.asp
   * https://stackoverflow.com/questions/30947808/how-to-get-the-value-of-a-field-with-ng-change
   * https://stackoverflow.com/questions/27923529/asyncvalidators-angular
-  * https://docs.angularjs.org/api/ng/type/ngModel.NgModelController#$asyncValidators (a full readingis required)
+  * `$asyncValidators` [angularjs documentation](https://docs.angularjs.org/api/ng/type/ngModel.NgModelController#$asyncValidators) (a full reading is required)
+  * `$parsers` [angularjs documentation](https://docs.angularjs.org/api/ng/type/ngModel.NgModelController#$parsers) (a full reading is required)
 
 ### Author
 
