@@ -7,7 +7,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -55,7 +60,8 @@ public class MultipartFormDataTest {
 		// NOTE:
 		// "http://localhost:" + randomServerPort
 		// is not optional
-		url = "http://localhost:" + randomServerPort + route + "?operation=send&param=something";
+		url = "http://localhost:" + randomServerPort + route
+				+ "?operation=send&param=something&servername=localhost";
 		//@formatter:off
 		body = String.join("\r\n",
 				Arrays.asList(
@@ -94,6 +100,10 @@ public class MultipartFormDataTest {
 						"Content-Disposition: form-data; name=\"operation\"",
 						"", 
 						"send", 
+						"--boundary", 
+						"Content-Disposition: form-data; name=\"servername\"",
+						"", 
+						"localhost", 
 						"--boundary",
 						"Content-Disposition: form-data; name=\"file\"; filename=\"data.txt\"",
 						"Content-Type: application/octet-stream", 
@@ -113,4 +123,5 @@ public class MultipartFormDataTest {
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody(), containsString("one"));
 	}
+
 }

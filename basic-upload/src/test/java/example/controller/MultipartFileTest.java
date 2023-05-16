@@ -61,9 +61,9 @@ public class MultipartFileTest {
 	// examine response status and body
 	@Test
 	public void test1() throws Exception {
-		resultActions = mvc
-				.perform(multipart(route + "?operation=send&param=something").file(file)
-						.characterEncoding("utf-8"));
+		resultActions = mvc.perform(multipart(
+				route + "?operation=send&param=something&servername=localhost")
+						.file(file).characterEncoding("utf-8"));
 		resultActions.andExpect(status().isOk()).andExpect(content().string(data));
 	}
 
@@ -72,7 +72,8 @@ public class MultipartFileTest {
 	public void test2() throws Exception {
 		resultActions = mvc.perform(multipart(route).file(file)
 				.characterEncoding("utf-8").param("operation", new String[] { "send" })
-				.param("param", new String[] { "non empty" }));
+				.param("param", new String[] { "non empty" })
+				.param("servername", new String[] { "localhost" }));
 		resultActions.andExpect(status().isOk()).andExpect(content().string(data));
 	}
 
@@ -85,7 +86,8 @@ public class MultipartFileTest {
 	public void test3() throws Exception {
 		resultActions = mvc.perform(multipart(route).file(file)
 				.characterEncoding("utf-8").param("operation", new String[] { "send" })
-				.param("param", new String[] { "non empty" }));
+				.param("param", new String[] { "non empty" })
+				.param("servername", new String[] { "localhost" }));
 		result = resultActions.andReturn();
 		request = result.getRequest();
 		assertThat(request.getContentAsString(), nullValue());
@@ -105,10 +107,11 @@ public class MultipartFileTest {
 	// examine response status
 	@Test
 	public void test4() throws Exception {
-		resultActions = mvc.perform(
-				multipart(route).file(file).characterEncoding("utf-8")
-						.param("operation", new String[] { "unknown" }).param("param",
-								new String[] { "non empty" }));
+		resultActions = mvc
+				.perform(multipart(route).file(file).characterEncoding("utf-8")
+						.param("operation", new String[] { "unknown" })
+						.param("param", new String[] { "non empty" })
+						.param("servername", new String[] { "localhost" }));
 		resultActions.andExpect(status().isMethodNotAllowed());
 	}
 
@@ -130,6 +133,15 @@ public class MultipartFileTest {
 		resultActions.andExpect(status().isBadRequest());
 	}
 
+	@Test
+	public void test7() throws Exception {
+		resultActions = mvc.perform(
+				multipart(route).file(file).characterEncoding("utf-8")
+						.param("operation", new String[] { "unknown" }).param("param",
+								new String[] { "non empty" }));
+		// missing "servername" param
+		resultActions.andExpect(status().isBadRequest());
+	}
 	// NOTE: version conflicts:
 	// in older spring boot there is no multipart method,
 	// in newer spring boot there is no console capture
