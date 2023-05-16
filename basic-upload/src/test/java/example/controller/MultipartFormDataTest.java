@@ -1,6 +1,6 @@
 package example.controller;
 /**
- * Copyright 2021 Serguei Kouzmine
+ * Copyright 2021,2023 Serguei Kouzmine
  */
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -122,6 +122,51 @@ public class MultipartFormDataTest {
 				headers);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		assertThat(responseEntity.getBody(), containsString("one"));
+	}
+
+	private List<String> buildPayload(Map<String, String> params) {
+
+		List<String> payload = new ArrayList<>();
+		for (Entry<String, String> e : params.entrySet()) {
+			payload
+					.addAll(
+							Arrays
+									.asList(new String[] { "--boundary",
+											String.format(
+													"Content-Disposition: form-data; name=\"%s\"",
+													e.getKey()),
+											"", e.getValue() }));
+		}
+		return payload;
+	}
+
+	@Test
+	public void test3() throws Exception {
+		Map<String, String> params = new HashMap<>();
+		params.put("operation", "send");
+		params.put("param", "something");
+		params.put("servername", "localhost");
+
+		// NOTE:
+		url = "http://localhost:" + randomServerPort + route;
+		List<String> payload = buildPayload(params);
+		//@formatter:off
+		payload.addAll(Arrays.asList(
+				"--boundary",
+				"Content-Disposition: form-data; name=\"file\"; filename=\"temp.txt\"",
+				"Content-Type: application/octet-stream", 
+				"", 
+				data, 
+				"",
+				"--boundary--", 
+				""));
+  	//@formatter:on
+		body = String.join("\r\n", payload);
+		request = new HttpEntity<String>(body, headers);
+		responseEntity = restTemplate.postForEntity(url, request, String.class,
+				headers);
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
+		assertThat(responseEntity.getBody(), containsString(data));
 	}
 
 }
