@@ -192,6 +192,69 @@ Appending installation info to /usr/lib/perl5/core_perl/perllocal.pod
   /usr/bin/make install  -- OK
 
 ```
+### Debugging the `PBEWithHmacSHA512AndAES_256`
+
+* modify with debug messages and include `Crypt/PBE/PBES2.pm`, `Crypt/PBE/PBKDF2.pm`
+and modify the `Crypt/PBE.pm` to recognize `PBEWithHmacSHA512AndAES_256`
+
+* run
+```sh
+perl test.pl  -operation encrypt -password secret -value data -debug 2>&1 |t
+ee a.log
+
+```
+```text
+PBEWithMD5AndDES
+PBEWithHmacSHA512AndAES_256
+Salt (random): e7a0f23ff31287202a24e4714109bd75
+$VAR1 = [
+          4,
+          50,
+          207,
+          58,
+          65,
+          5,
+          42,
+          101,
+          146,
+          144,
+          12,
+          46,
+          108,
+          11,
+          92,
+          121
+        ];
+Salt (fixed): 0432cf3a41052a6592900c2e6c0b5c79
+key: fedbb6eb4b3128bef07fc97215342452e1327b24e7b1fa4288506544f4d1f4bd
+Salt: 0432cf3a41052a6592900c2e6c0b5c79
+Iv: 646ebc65e7176836b07bac13f4192b41
+Encrypted: c93fc19c6f235990d9503cee5a96a58a
+Salt: 0432cf3a41052a6592900c2e6c0b5c79
+Iv: 646ebc65e7176836b07bac13f4192b41
+Encrypted: c93fc19c6f235990d9503cee5a96a58a
+key: fedbb6eb4b3128bef07fc97215342452e1327b24e7b1fa4288506544f4d1f4bd
+$VAR1 = \{
+            'PBEWithMD5AndDES' => {
+                                    'encryption' => 'des',
+                                    'hash' => 'md5'
+                                  }
+          };
+$VAR1 = \{
+            'PBEWithHmacSHA512AndAES_256' => {
+                                               'hmac' => 'hmac-sha512',
+                                               'encryption' => 'aes-256'
+                                             }
+          };
+password: secret
+value: data
+Encrypting
+BDLPOkEFKmWSkAwubAtceWRuvGXnF2g2sHusE/QZK0HJP8GcbyNZkNlQPO5alqWK
+
+Decrypting
+data
+
+```
 ### See Also
 
   * `Crypt::PBE` [module](https://metacpan.org/pod/Crypt::PBE)
