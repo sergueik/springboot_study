@@ -1,12 +1,12 @@
 ### Info
 
-this directory contains exercse from __How to Inject a Property Value Into a Class Not Managed by Spring?__ [article](https://www.baeldung.com/inject-properties-value-non-spring-class)
+this directory contains exercise from __How to Inject a Property Value Into a Class Not Managed by Spring?__ [article](https://www.baeldung.com/inject-properties-value-non-spring-class)
 
 ### Usage
 
-* loading Springboot injected classed into plain does not trigger property  autowiring.
+* loading Springboot injected classed into plain does not trigger property autowiring.
 
-* one can directly load properties from the jar.
+* one can directly load properties from the jar via `class.getClassLoader().getResourceAsStream()` method.
 ```sh
 mvn spring-boot:run
 ```
@@ -17,7 +17,7 @@ curl  http://localhost:8085/basic/value
 Value got from the file
 ```
 
-during the test an entirely test specific `application.properties` will be used:
+during the test an alternate test-specific `application.properties` will be used by the application:
 
 ```java
 @Test
