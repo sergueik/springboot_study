@@ -1,0 +1,8 @@
+FROM python:3.9-alpine
+WORKDIR /app
+ARG VERSION=7.1
+ADD pureyaml-develop/pureyaml ./pureyaml
+RUN pip install future ply
+
+COPY pureyaml_test.py ./
+ENTRYPOINT ["python", "/app/pureyaml_test.py"]
