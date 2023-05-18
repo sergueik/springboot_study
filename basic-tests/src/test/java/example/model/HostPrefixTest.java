@@ -21,15 +21,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class HostNameTest {
+public class HostPrefixTest {
 
 	private static Set<String> result;
 	private static final String suffix = "ys4jaw6dniqc1bmq";
 	private static String prefix;
-
+	private final static Pattern pattern = Pattern.compile("^([^-.]+)[-.]?.*$");
 	private static final List<String> inputs = Arrays.asList(new String[] {
 			"aa-1ibqg2e7aeiqnbcck", "aa-2fg1yh4maaprikjuo", "aaa3wtw4zrn8v2dbtl6s",
 			"aaa4df0iva3sebbkcnn5", "ccc5cwje3bcgz0qy1if9", "ccc6nhau7oktm2qjgmtb",
@@ -38,18 +39,22 @@ public class HostNameTest {
 	private static String[] checkResults = new String[] { "aaa", "ccc", "aa" };
 
 	private Set<String> getPrefixes(List<String> inputs) {
-		return inputs.stream().map((String o) -> {
-			return new HostName(o);
-		}).map((HostName o) -> o.getHostPrefix()).collect(Collectors.toSet());
+
+		return inputs.stream().map((String value) -> {
+			value = pattern.matcher(value).replaceAll("$1");
+			return (value.length() < 3) ? value : value.substring(0, 3);
+		}).collect(Collectors.toSet());
+
 	}
 
 	// https://www.baeldung.com/junit-assert-exception
 	// https://howtodoinjava.com/junit5/expected-exception-example/
-	// this is Junit 5
 	@Test
-	public void test2() {
-		prefix = "zzz";
+	public void test6() {
 		List<String> inputs2 = new ArrayList<>();
+		inputs2.addAll(inputs);
+		prefix = "zzz";
+
 		for (String exrahost : Arrays
 				.asList(new String[] { String.format("%s%s", prefix, suffix),
 						String.format("%s-%s", prefix, suffix),
@@ -57,27 +62,24 @@ public class HostNameTest {
 			inputs2.clear();
 			inputs2.addAll(inputs);
 			inputs2.add(exrahost);
-
 			result = getPrefixes(inputs2);
-
 			Exception exception = assertThrows(Exception.class, () -> {
 				try {
-					System.err.println("test2 returned: " + result);
-					System.err.println("test2 expected: " + Arrays.asList(checkResults));
+					System.err.println("test6 returned: " + result);
+					System.err.println("test6 expected: " + Arrays.asList(checkResults));
 					assertThat(result, containsInAnyOrder(checkResults));
 				} catch (AssertionError e) {
 					throw new Exception(e.getMessage());
 				}
-
 			});
+
 			assertThat(exception.getMessage(),
 					containsString(String.format("no match for: \"%s\"", prefix)));
 		}
-
 	}
 
 	@Test
-	public void test3() {
+	public void test5() {
 
 		List<String> inputs2 = new ArrayList<>();
 		inputs2.addAll(inputs);
@@ -86,11 +88,12 @@ public class HostNameTest {
 				.filter((String o) -> o.startsWith(prefix))
 				.collect(Collectors.toList());
 		inputs2.removeAll(inputs3);
+
 		result = getPrefixes(inputs2);
 		Exception exception = assertThrows(Exception.class, () -> {
 			try {
-				System.err.println("test3 returned: " + result);
-				System.err.println("test3 expected: " + Arrays.asList(checkResults));
+				System.err.println("test5 returned: " + result);
+				System.err.println("test5 expected: " + Arrays.asList(checkResults));
 				assertThat(result, containsInAnyOrder(checkResults));
 			} catch (AssertionError e) {
 				throw new Exception(e.getMessage());
@@ -102,16 +105,4 @@ public class HostNameTest {
 				containsString(String.format("no item matches: \"%s\"", prefix)));
 	}
 
-	@Disabled("with Junit 5 / Java 11 the message will be \"remove\", but here we get nothing")
-	@Test
-	public void test4() {
-		// inputs.remove("aaa-bbbbb");
-		// java.lang.UnsupportedOperationException
-		Exception exception = assertThrows(UnsupportedOperationException.class,
-				() -> {
-					// but not here
-					inputs.remove("aaa-bbbbb");
-				});
-		assertThat(exception.getMessage(), nullValue());
-	}
 }
