@@ -1,0 +1,17 @@
+<html>
+<body>
+	
+<form action="/uploadFile"  method = "POST" enctype="multipart/form-data">
+File: <input type="file" name="file">
+<input type="submit" value="Upload File"/>
+<input type="hidden" name="caller" value="legacy"/>
+</form>
+<br/>
+<form action="/uploadMultipleFiles"  method = "POST" enctype="multipart/form-data">
+Files: <input type="file" name="files" multiple>
+<!-- NOTE: not showing all inputs, only the latest -->
+<input type="submit" value="Upload Files"/>
+<input type="hidden" name="caller" value="legacy"/>
+</form>
+</body>
+</html>
