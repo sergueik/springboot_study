@@ -37,6 +37,7 @@ public class FileUploadController {
 	@PostMapping("/uploadFile")
 	public UploadFileResponse uploadFile(
 			@RequestParam("file") MultipartFile file) {
+		logger.info("upload file: " + file.getOriginalFilename());
 		String fileName = fileStorageService.storeFile(file);
 
 		String fileDownloadUri = ServletUriComponentsBuilder
@@ -50,6 +51,11 @@ public class FileUploadController {
 	@PostMapping("/uploadMultipleFiles")
 	public List<UploadFileResponse> uploadMultipleFiles(
 			@RequestParam("files") MultipartFile[] files) {
+		logger
+				.info("upload " + files.length + " files: "
+						+ Arrays.asList(files).stream()
+								.map(file -> file.getOriginalFilename())
+								.collect(Collectors.toList()));
 		return Arrays.asList(files).stream().map(file -> uploadFile(file))
 				.collect(Collectors.toList());
 	}
@@ -66,7 +72,7 @@ public class FileUploadController {
 			contentType = request.getServletContext()
 					.getMimeType(resource.getFile().getAbsolutePath());
 		} catch (IOException ex) {
-			logger.info("Could not determine file type.");
+			logger.info("Could not determine file type of " + fileName);
 		}
 
 		// Fallback to the default content type if type could not be determined

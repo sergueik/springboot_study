@@ -46,6 +46,44 @@ this is a test
 
 NOTE: the `downloadFile` method is still using `javax.servlet.http.HttpServletRequest`
 
+### Upload Multiple Files
+* use Angular page to pass multiple file arguments (still work in progress):
+
+![Mutlple Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload-files.png)
+the page will show the backend response
+
+![Mutlple Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-drag-and-drop-upload-files.png)
+the console log will show
+```text
+2023-05-19 20:01:28.789  INFO 9908 --- [nio-8080-exec-2] example.controller.File
+UploadController  : upload 3 files: [a.txt, b.txt, c.txt]
+2023-05-19 20:01:28.789  INFO 9908 --- [nio-8080-exec-2] example.controller.File
+UploadController  : upload file: a.txt
+2023-05-19 20:01:28.851  INFO 9908 --- [nio-8080-exec-2] example.controller.File
+UploadController  : upload file: b.txt
+2023-05-19 20:01:28.851  INFO 9908 --- [nio-8080-exec-2] example.controller.File
+UploadController  : upload file: c.txt
+
+```
+
+the files appear in the download directory:
+```powershell
+dir C:\temp\a.txt,C:\temp\b.txt,C:\temp\c.txt
+
+```
+```text
+
+    Directory: C:\temp
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----        5/19/2023   7:56 PM              4 a.txt
+-a----        5/19/2023   7:56 PM              4 b.txt
+-a----        5/19/2023   7:56 PM              6 c.txt
+
+```
+
 ### Usage (Untested)
 * optionally test through Powershell / powershell console:
 ```powershell
