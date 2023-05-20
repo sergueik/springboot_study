@@ -37,13 +37,20 @@ public class FileUploadController {
 	@PostMapping("/uploadFile")
 	public UploadFileResponse uploadFile(
 			@RequestParam("file") MultipartFile file) {
+		if (file.getOriginalFilename().isEmpty())
+			return new UploadFileResponse(null, null, null, 0);
 		logger.info("upload file: " + file.getOriginalFilename());
 		String fileName = fileStorageService.storeFile(file);
 
 		String fileDownloadUri = ServletUriComponentsBuilder
 				.fromCurrentContextPath().path("/downloadFile/").path(fileName)
 				.toUriString();
-
+		// NOTE: if the file parameter is empty the custom exception
+		// example.exception.FileStorageException:
+		// Could not store file . Please try again!
+		// with root cause
+		// java.nio.file.DirectoryNotEmptyException: "<the download directory>"
+		// is raised
 		return new UploadFileResponse(fileName, fileDownloadUri,
 				file.getContentType(), file.getSize());
 	}
@@ -71,7 +78,7 @@ public class FileUploadController {
 		try {
 			contentType = request.getServletContext()
 					.getMimeType(resource.getFile().getAbsolutePath());
-		} catch (IOException ex) {
+		} catch (IOException e) {
 			logger.info("Could not determine file type of " + fileName);
 		}
 

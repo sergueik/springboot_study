@@ -6,9 +6,9 @@ public class UploadFileResponse {
 	private String fileType;
 	private long size;
 
-	// TODO: ad md5
-	// based on:
-	// https://github.com/wemakebug/FileUpload.Java/tree/master/src/main/java/com/zhangzhihao/FileUpload/Java/Utils
+	// TODO: add md5
+	// see also:
+	// https://github.com/wemakebug/FileUpload.Java/blob/master/src/main/java/com/zhangzhihao/FileUpload/Java/Utils/CreateMd5.java
 	public UploadFileResponse(String fileName, String fileDownloadUri,
 			String fileType, long size) {
 		this.fileName = fileName;
@@ -21,31 +21,31 @@ public class UploadFileResponse {
 		return fileName;
 	}
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
+	public void setFileName(String value) {
+		fileName = value;
 	}
 
 	public String getFileDownloadUri() {
 		return fileDownloadUri;
 	}
 
-	public void setFileDownloadUri(String fileDownloadUri) {
-		this.fileDownloadUri = fileDownloadUri;
+	public void setFileDownloadUri(String value) {
+		fileDownloadUri = value;
 	}
 
 	public String getFileType() {
 		return fileType;
 	}
 
-	public void setFileType(String fileType) {
-		this.fileType = fileType;
+	public void setFileType(String value) {
+		fileType = value;
 	}
 
 	public long getSize() {
 		return size;
 	}
 
-	public void setSize(long size) {
-		this.size = size;
+	public void setSize(long value) {
+		size = value;
 	}
 }

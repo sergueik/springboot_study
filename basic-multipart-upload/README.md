@@ -47,13 +47,53 @@ this is a test
 NOTE: the `downloadFile` method is still using `javax.servlet.http.HttpServletRequest`
 
 ### Upload Multiple Files
+* create few dummy files
+```sh
+for i in $(seq 1 1 4) ; do echo "data $i" >  $i.txt; done
+```
+* use legacy page with repeated "files" input for multple files
+![Mutlple Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-legacy-upload-files.png)
+
+After page is  submitted the result is displayed:
+```json
+[
+  {
+    "fileName": "1.txt",
+    "fileDownloadUri": "http://localhost:8080/downloadFile/1.txt",
+    "fileType": "text/plain",
+    "size": 7
+  },
+  {
+    "fileName": "2.txt",
+    "fileDownloadUri": "http://localhost:8080/downloadFile/2.txt",
+    "fileType": "text/plain",
+    "size": 7
+  },
+  {
+    "fileName": "3.txt",
+    "fileDownloadUri": "http://localhost:8080/downloadFile/3.txt",
+    "fileType": "text/plain",
+    "size": 7
+  },
+  {
+    "fileName": null,
+    "fileDownloadUri": null,
+    "fileType": null,
+    "size": 0
+  }
+]
+```
+ 
 * use Angular page to pass multiple file arguments (still work in progress):
 
 ![Mutlple Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload-files.png)
+
 the page will show the backend response
 
 ![Mutlple Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-drag-and-drop-upload-files.png)
+
 the console log will show
+
 ```text
 2023-05-19 20:01:28.789  INFO 9908 --- [nio-8080-exec-2] example.controller.File
 UploadController  : upload 3 files: [a.txt, b.txt, c.txt]
@@ -63,10 +103,9 @@ UploadController  : upload file: a.txt
 UploadController  : upload file: b.txt
 2023-05-19 20:01:28.851  INFO 9908 --- [nio-8080-exec-2] example.controller.File
 UploadController  : upload file: c.txt
-
 ```
 
-the files appear in the download directory:
+all files appear in the download directory:
 ```powershell
 dir C:\temp\a.txt,C:\temp\b.txt,C:\temp\c.txt
 
@@ -142,7 +181,7 @@ test data
 with only difference is how Powershell client scripts transmit the file.
 
 ### See Also
-
+  * [file Upload with Spring MVC](https://www.baeldung.com/spring-file-upload)
   * [Multipart Request Handling in Spring](https://www.baeldung.com/sprint-boot-multipart-requests)
   * [Spring Boot File upload example with Multipart File](https://www.bezkoder.com/spring-boot-file-upload/)
   * [testing a Spring Multipart POST Request](https://www.baeldung.com/spring-multipart-post-request-test)
