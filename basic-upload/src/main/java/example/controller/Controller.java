@@ -7,8 +7,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import java.util.Optional;
 
 import org.springframework.core.io.ClassPathResource;
@@ -31,9 +33,15 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/basic")
 public class Controller {
+
+	private static final Logger logger = LoggerFactory
+			.getLogger(Controller.class);
 
 	private static final StringBuilder data = new StringBuilder();
 	private final static String default_value = "default_value";
@@ -78,10 +86,14 @@ public class Controller {
 			@RequestParam("servername") String servername,
 			@RequestParam("encode") Optional<Boolean> encode,
 			@RequestParam("file") MultipartFile file) {
-		if (param.isEmpty())
+		if (param.isEmpty()) {
+			logger.info("param can not be empty");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		if (servername.isEmpty())
+		}
+		if (servername.isEmpty()) {
+			logger.info("servername can not be empty");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
 		Path basePath = Paths.get(String.format(
 				"%s%ssrc%smain%sresources%sdata%s%s",
 				(osName.equals("windows")
@@ -92,14 +104,14 @@ public class Controller {
 
 		mkdirs(basePath.toFile());
 		if (!operation.equals("send")) {
-			System.err.println("invalid operation: " + operation);
+			logger.info("unsupported operation: " + operation);
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(null);
 		} else {
 			if (file.isEmpty()) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 			}
 			try {
-				System.err.println("Processing " + file.getOriginalFilename());
+				logger.info("Processing " + file.getOriginalFilename());
 				data.setLength(0);
 				InputStream in = file.getInputStream();
 				String currDirPath = new File(".").getAbsolutePath();
@@ -121,14 +133,16 @@ public class Controller {
 					byte[] binaryData = data.toString().getBytes();
 					Base64.Encoder encoder = Base64.getEncoder();
 					String base64EncodedData = encoder.encodeToString(binaryData);
-					System.err.println(String.format(
-							"size: %d/%d" + "\n" + "raw data(base64 encoded):" + "\n" + "%s",
-							data.length(), binaryData.length, base64EncodedData));
+					logger
+							.info(String.format(
+									"data size: %d/%d" + "\n" + "raw data(base64 encoded):" + "\n"
+											+ "%s",
+									data.length(), binaryData.length, base64EncodedData));
 				} else
-					System.err.print(data.toString());
+					logger.info("data : " + data.toString());
 
 			} catch (IOException e) {
-				System.err.print("Exception (caught):" + e.toString());
+				logger.info("Exception (caught):" + e.toString());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 			return ResponseEntity.status(HttpStatus.OK).body(data.toString());
@@ -145,9 +159,10 @@ public class Controller {
 			ClassPathResource resource = new ClassPathResource(
 					(file == null) ? "" : file);
 			result = resource.getFile().getAbsolutePath();
+			logger.info("classpath: " + result);
 			return ResponseEntity.status(HttpStatus.OK).body(result);
 		} catch (IOException e) {
-			System.err.print("Exception (caught):" + e.toString());
+			logger.info("Exception (caught):" + e.toString());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 

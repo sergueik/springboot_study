@@ -62,7 +62,7 @@ public class MultipartFileTest {
 	@Test
 	public void test1() throws Exception {
 		resultActions = mvc.perform(multipart(
-				route + "?operation=send&param=something&servername=localhost")
+				route + "?operation=send&param=some+non+empty+value&servername=host")
 						.file(file).characterEncoding("utf-8"));
 		resultActions.andExpect(status().isOk()).andExpect(content().string(data));
 	}
@@ -72,8 +72,8 @@ public class MultipartFileTest {
 	public void test2() throws Exception {
 		resultActions = mvc.perform(multipart(route).file(file)
 				.characterEncoding("utf-8").param("operation", new String[] { "send" })
-				.param("param", new String[] { "non empty" })
-				.param("servername", new String[] { "localhost" }));
+				.param("param", new String[] { "some non empty value" })
+				.param("servername", new String[] { "host" }));
 		resultActions.andExpect(status().isOk()).andExpect(content().string(data));
 	}
 
@@ -86,8 +86,8 @@ public class MultipartFileTest {
 	public void test3() throws Exception {
 		resultActions = mvc.perform(multipart(route).file(file)
 				.characterEncoding("utf-8").param("operation", new String[] { "send" })
-				.param("param", new String[] { "non empty" })
-				.param("servername", new String[] { "localhost" }));
+				.param("param", new String[] { "some non empty value" })
+				.param("servername", new String[] { "host" }));
 		result = resultActions.andReturn();
 		request = result.getRequest();
 		assertThat(request.getContentAsString(), nullValue());
