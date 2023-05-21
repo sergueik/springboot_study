@@ -55,6 +55,11 @@ public class MultipartFormDataTest {
 	private HttpHeaders headers = new HttpHeaders();
 	private HttpEntity<String> request = null;
 	private ResponseEntity<String> responseEntity = null;
+	private static Map<String, Object> value = new HashMap<>();
+	private static String valueCheck = null;
+	private static String[] checkResults = new String[] { "fileName",
+			"fileDownloadUri", "fileType", "size" };
+
 
 	@BeforeEach
 	public void setUp() {
@@ -77,11 +82,6 @@ public class MultipartFormDataTest {
 		}
 		return payload;
 	}
-
-	private static Map<String, Object> value = new HashMap<>();
-	private static String valueCheck = null;
-	private static String[] checkResults = new String[] { "fileName",
-			"fileDownloadUri", "fileType", "size" };
 
 	@Test
 	public void test3() throws Exception {
