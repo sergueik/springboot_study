@@ -7,7 +7,7 @@
 
       <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js">
       </script>
-      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/angular-resource.min.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-resource/1.7.5/angular-resource.min.js"></script>
 
       <title>AngularJS File Upload Form Data</title>
 <style>
@@ -20,10 +20,7 @@
 }
 </style>
 <script type="text/javascript">
-(function () {
-   "use strict";
-   var mod = angular.module("testSampleApp", [ "testSampleUploadModule" ]);
-   mod.controller("testSampleController", [ "$scope", "testSampleUploadService",
+angular.module("testSampleApp", [ "testSampleUploadModule" ]).controller("testSampleController", [ "$scope", "testSampleUploadService",
       function ($scope, testSampleUploadService) {
          var vm = this;
          vm.fileName = null;
@@ -81,13 +78,9 @@
          });
       }
    ]);
-})();
 </script>
 <script type="text/javascript">
-(function () {
-   "use strict";
-   var mod = angular.module("testSampleUploadModule", [ ]);
-   mod.factory("testSampleUploadService", [ "$http",
+angular.module("testSampleUploadModule", [ ]).factory("testSampleUploadService", [ "$http",
       function ($http) {
          var svc = {
             uploadFile: uploadFile
@@ -116,8 +109,6 @@
          return svc;
       }
    ]);
-})();
-
       </script>
    </head>
    <body>
