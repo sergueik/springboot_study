@@ -1,0 +1,4 @@
+---
+application:
+  property1: {{*name1||default1*}}
+  property2: value2
