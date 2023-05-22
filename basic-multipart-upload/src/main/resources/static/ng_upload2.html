@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+   <head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.5/angular.min.js">
+      </script>
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/angular-resource.min.js"></script>
+
+      <title>AngularJS File Upload Form Data</title>
+<style>
+.top-margin {
+   margin-top: 30px;
+}
+
+.space::after {
+   content: " ";
+}
+</style>
+<script type="text/javascript">
+(function () {
+   "use strict";
+   var mod = angular.module("testSampleApp", [ "testSampleUploadModule" ]);
+   mod.controller("testSampleController", [ "$scope", "testSampleUploadService",
+      function ($scope, testSampleUploadService) {
+         var vm = this;
+         vm.fileName = null;
+         vm.uploadingFile = false;
+         vm.uploadSuccess = false;
+         vm.uploadFailed = false;
+         
+         vm.clickBrowseFile = function () {
+            angular.element("#fileUploadForm #chosenFile").click();
+         };
+         
+         vm.clickUpload = function () {
+            vm.uploadingFile = true;
+            vm.uploadSuccess = false;
+            vm.uploadFailed = false;
+            var upoadFileField = angular.element("#fileUploadForm #chosenFile");
+            if (upoadFileField != null && upoadFileField.length > 0) {
+               if (upoadFileField[0].files && upoadFileField[0].files.length > 0) {
+                  testSampleUploadService.uploadFile("./uploadFile", upoadFileField[0].files[0])
+                     .then(function (result) {
+                        if (result && result.status === 200) {
+                           console.log(result.data);
+/*
+                           if (result.data && result.data.opSuccess === true) {
+                              vm.uploadSuccess = true;
+                           } else {
+                              vm.uploadFailed = true;
+                           }
+*/
+                            vm.uploadSuccess = true;
+                        } else {
+                           vm.uploadFailed = true;
+                        }
+                     }, function (error) {
+                        if (error) {
+                           console.log(error);
+                        }
+                        vm.uploadFailed = true;
+                     }).finally(function () {
+                        upoadFileField[0].files = null;
+                        vm.fileName = null;
+                        vm.uploadingFile = false;
+                     });
+               }
+            }
+         };
+         
+         angular.element("#fileUploadForm #chosenFile").bind("change", function(evt) {
+            if (evt) {
+               if (evt.target.files && evt.target.files.length > 0) {
+                  vm.fileName =  evt.target.files[0].name;
+               }
+               $scope.$apply();
+            }
+         });
+      }
+   ]);
+})();
+</script>
+<script type="text/javascript">
+(function () {
+   "use strict";
+   var mod = angular.module("testSampleUploadModule", [ ]);
+   mod.factory("testSampleUploadService", [ "$http",
+      function ($http) {
+         var svc = {
+            uploadFile: uploadFile
+         };
+         
+         function uploadFile(uploadUrl, fileToUpload) {
+            var imgMetadata = {
+               author: "Han Solo",
+               title: "Sample Upload Image",
+               description: "This is a simple upload with additional metadata attached.",
+               keywords: "keyword1,keyword2,keyword3,keyword4"
+            };
+            
+            var fd = new FormData();
+            fd.append('fileMetadata', JSON.stringify(imgMetadata));
+            fd.append('file', fileToUpload);
+            
+            return $http.post(uploadUrl, fd, {
+               transformRequest: angular.identity,
+               headers: {
+                  "Content-Type": undefined
+               }
+            });
+         }
+         
+         return svc;
+      }
+   ]);
+})();
+
+      </script>
+   </head>
+   <body>
+      <div class="container top-margin" ng-app="testSampleApp" ng-controller="testSampleController as vm">
+         <div class="row">
+            <div class="col-xs-12" ng-if="vm.uploadSuccess">
+               <div class="alert alert-success">Upload successful.</div>
+            </div>
+            <div class="col-xs-12" ng-if="vm.uploadFailed">
+               <div class="alert alert-danger">Upload failed.</div>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-xs-12 col-sm-offset-2 col-sm-8 col-md-offset-3 col-md-6">
+               <form id="fileUploadForm" class="form-horizontal">
+                  <div class="form-group">
+                     <div class="col-sm-10">
+                        <div class="input-group">
+                           <input type=file id="chosenFile" style="display: none;">
+                           <input type="text" class="form-control" ng-model="vm.fileName" ng-disabled="vm.uploadingFile">
+                           <span class="input-group-btn">
+                              <button class="btn btn-default" type="button" ng-click="vm.clickBrowseFile()">Browse</button>
+                           </span>
+                        </div>
+                     </div>
+                     <div class="col-sm-2">
+                        <button class="btn btn-default form-control" ng-click="vm.clickUpload()">Upload</button>
+                     </div>
+                  </div>
+               </form>
+            </div>   
+         </div>
+
+         <hr>
+         
+         <footer class="footer">
+            <p>&copy; 2019, Han Bo Sun.</p>
+         </footer>
+
+      </div>
+    
+    </body>  
+</html>

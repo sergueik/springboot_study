@@ -4,6 +4,7 @@ Basic POST `multipart-`handler REST server from __Spring Boot File Upload / Down
 
 with a static, thymeleaf and JSP landing pages
 supporting `/uploadFile` and `/uploadMultipleFiles` end points and also the `/downloadFile/{fileName}`
+combined with __Multi-part File Upload via AngularJS__ through `$http.post` and `FormData` object [codeproject artile](https://www.codeproject.com/Articles/5292552/AngularJS-FormData-Multi-part-File-Upload) examle code (uploading single file) and the AngularJS [AngularJS Drag-and-Drop File Input Collector Example](https://www.webappers.com/2011/09/28/drag-drop-file-upload-with-html5-javascript/) and __AngularJS File Upload with Progress Bar__ [article](http://www.matlus.com/html5-file-upload-with-progress)
 
 ### Usage
 
@@ -190,6 +191,9 @@ with only difference is how Powershell client scripts transmit the file.
   * REST pagination [article](https://www.baeldung.com/rest-api-pagination-in-spring) 
   * handling partial content [forum question](https://qna.habr.com/q/1258736)(in Russian), with code example
   * [guide](https://www.baeldung.com/spring-enable-config-properties) to `@EnableConfigurationProperties`
-   
+  * [Angular 4 / Springboot Multipart Upload](https://medium.com/linkit-intecs/file-upload-download-as-multipart-file-using-angular-6-spring-boot-7ad06d841c21) - need an AngularJS verion
+  * another [File Upload Using AngularJS and Spring](https://dzone.com/articles/file-upload-using-angularjs-and-spring) article
+  * [upload data and multiple files with angularjs and Spring mvc](https://stackoverflow.com/questions/47536401/upload-data-and-multiple-files-with-angularjs-and-spring-mvc)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
