@@ -656,8 +656,13 @@ Status: true
 ### See Also
 
   * UCD [Docker images](https://github.com/UrbanCode/UCD-Docker-Images)
+  * NOTE: As of April 2021, the Docker images referenced by this project appper to no longer be available (status __404__)
+    + [UCD Server](https://hub.docker.com/r/ibmcom/ucds/)
+    + [UCD Agent](https://hub.docker.com/r/ibmcom/ucda/)
+
   * [REST commands for the IBM UrbanCode Deploy server](https://www.ibm.com/support/knowledgecenter/en/SS4GSP_6.2.0/com.ibm.udeploy.reference.doc/topics/rest_api_ref_commands.html)
-  * uDeployRestClient [github repository](https://github.com/UrbanCode/uDeployRestClient)
+  * __uDeployRestClient__ [github repository](https://github.com/UrbanCode/uDeployRestClient)
+  * __Property-Utils-UCD__ plugin that provides steps for collecting IBM UrbanCode properties  [github reposiory](https://github.com/UrbanCode/Property-Utils-UCD). NOTE: practically lacking the plain text documentation, one will have to figure the plugin usage from [groovy source](https://github.com/UrbanCode/Property-Utils-UCD/blob/master/src/main/scripts/export_properties_from_ucd.groovy) or install in Jenkins and explore.
   * Jenkins pipeline [ucd plugin](https://github.com/UrbanCode/jenkins-pipeline-ucd-plugin) source code
   * Usage of __component\_deployment__ and __version\_import__ into [ucd](https://www.urbancode.com/plugindoc/jenkins-pipeline#tab-usage) from Jenkins, Pipeline syntax
   * https://github.com/UrbanCode/Jenkins-Job-Manager-UCD
@@ -669,9 +674,5 @@ Status: true
     + [powershell/C# client(https://github.com/sergueik/powershell_selenium/blob/master/powershell/ucd_client.ps1)
     + [java client](https://github.com/sergueik/selenium_tests/blob/master/src/test/java/com/github/sergueik/selenium/UcdTest.java)
   
-### NOTE
-
-As of April 2021, the [UCD Server](https://hub.docker.com/r/ibmcom/ucds/) 
-[UCD Agent](https://hub.docker.com/r/ibmcom/ucda/) docker images appper to be removed (404)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
