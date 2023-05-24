@@ -1,6 +1,6 @@
 ### Info
 
-This dir contains examples from [Python click tutorial](https://zetcode.com/python/click/)
+This dir contains examples from [Python click tutorial](https://zetcode.com/python/click/) and regular example from [Python getopts library](https://docs.python.org/3/library/getopt.html)
 
 ### Usage
 
@@ -43,7 +43,43 @@ unzip -x click-$VERSION.zip
 * build container with `click` installed through file copy
 ```sh
 docker build -t $IMAGE -f Dockerfile.file .
+
 ```
+*  run default entrypoint (all options are provided)
+```sh
+docker run -it $IMAGE
+```
+```text
+Method 1 is called
+search = "something"
+filename = "outname"
+debug = True
+```
+* run with some arguments omitted
+```
+docker run --entrypoint '' -it $IMAGE python click_groups.py method2 -s foo
+
+```
+it will stop with prompt
+```text
+Your file argument:
+```
+
+* enter filename[dummy.txt]:
+
+```sh
+Your file argument[dummy.txt]: filename
+```
+the script will print ant return
+```text
+Method 2 is called
+search = "foo"
+filename = "filename"
+debug = False
+```
+
+Note: providing `default` for a non-flag option does not suppress the prompt for that option
+
 * run the plain shell in the container
 
 ```sh
@@ -104,6 +140,18 @@ Method 2 is called
 ```sh
 docker container prune -f
 docker image rm $IMAGE
+```
+
+### TODO
+
+* figure out if the freehand arguments can be used with `click`. Currently unable to do so:
+
+```sh
+python3 click_groups.py  method1 --search text  --filename file --debug  x,y,z
+```
+```text
+Usage: click_groups.py method1 [OPTIONS]
+Error: Got unexpected extra argument (x,y,z)
 ```
 
 ### See Also

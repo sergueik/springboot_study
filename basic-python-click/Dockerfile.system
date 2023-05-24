@@ -1,5 +1,5 @@
 FROM python:3.9-alpine
 WORKDIR /app
 RUN pip install click==7.0
-COPY groups.py ./
-ENTRYPOINT ["python", "/app/groups.py"]
+COPY opts.py click_options.py click_groups.py ./
+ENTRYPOINT ["python", "click_groups.py", "method1", "--debug", "-s", "something", "--filename", "outname"]

@@ -2,5 +2,5 @@ FROM python:3.9-alpine
 WORKDIR /app
 ARG VERSION=7.1
 ADD click-$VERSION/src/click ./click
-COPY groups.py ./
-ENTRYPOINT ["python", "/app/groups.py"]
+COPY opts.py click_options.py click_groups.py ./
+ENTRYPOINT ["python", "/app/click_groups.py"]

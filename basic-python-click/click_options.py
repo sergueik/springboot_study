@@ -35,12 +35,24 @@ def named_ars(name):
 
 @click.command()
 @click.option('--words', '-ww', multiple = True)
-def multiple_args(words):
-    click.echo('words: {}'.format(','.join(words)))
+def repeated_args(words):
+  click.echo('words: {}'.format(','.join(words)))
+
+@click.command()
+@click.option('--blue', is_flag=True, help='message in blue color')
+@click.option('--red', is_flag=True, help='message in red color', default=None)
+def flag_args(blue: bool, red: bool):
+  if blue:
+    click.secho('Hello there', fg='blue')
+  else:
+    click.secho('Hello there')
+
+
 # NOTE: example1.py does not exercise group
 if __name__ == '__main__':
   # NOTE: not passing arguments
   #  func()
   # varargs()
   # named_args()
-  multiple_args()
+  # repeated_args()
+  flag_args()
