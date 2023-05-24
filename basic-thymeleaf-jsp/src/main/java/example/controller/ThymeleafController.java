@@ -1,5 +1,9 @@
 package example.controller;
 
+/**
+ * Copyright 2022-2023 Serguei Kouzmine
+ */
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import example.model.Person;
+
+import example.utils.Utils;
 
 @Controller
 @RequestMapping("/thymeleaf")
@@ -29,6 +35,8 @@ public class ThymeleafController {
 		model.addObject("groupedByIdPersons", groupedByIdPersons);
 		model.addObject("name", name);
 		model.addObject("persons", persons);
+		model.addObject("console", Utils.getFileContent("dummy.txt"));
+		
 		return model;
 	}
 

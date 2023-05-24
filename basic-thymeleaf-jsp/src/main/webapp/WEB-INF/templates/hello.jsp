@@ -34,5 +34,10 @@
     out.print("LastName: " + lastName);
   %>
   </div>
+  <!-- NOTE: avoid leading space-->
+  <pre>
+  ${console	}
+  </pre>
+  
 </body>
 </html>

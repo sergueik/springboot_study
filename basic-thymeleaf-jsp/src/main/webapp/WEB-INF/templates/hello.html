@@ -11,7 +11,8 @@
   </head>
   <body>
   Hello <span th:text="${name}">World</span>!
-  <table class="table table-bordered table-stripped">
+<pre th:text="${console}">
+<table class="table table-bordered table-stripped">
   <thead>
   <tr>
     <th:block th:each="elem : ${groupedByIdPersons}">
@@ -30,6 +31,6 @@
     </th:block>
   </tr>
 </tbody>
-</table>  
+</table>
 </body>
 </html>

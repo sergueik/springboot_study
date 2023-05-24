@@ -1,12 +1,44 @@
 ### Info
 
-origin: https://github.com/algaworks/videoaula-spring-thymeleaf-jsp with original page replaced with a [Hello World example](https://github.com/jmiguelsamper/thymeleaf3-spring-helloworld), and switched to Spring Boot and added few dependencies that may be important for jsp
+This directory contains a replica of Spring appliction rendering JSP and Thymeleaf simultaneously
+
+[repository](https://github.com/algaworks/videoaula-spring-thymeleaf-jsp)
+with original page replaced with a simpler [Hello World example](https://github.com/jmiguelsamper/thymeleaf3-spring-helloworld), 
+and switched to Spring Boot and added few dependencies that may be important for jsp
 
 ### Usage
+* test
 ```sh
-mvn spring-boot:run
+mvn test
 ```
+ignore the error messages 
+```text
+2023-05-24 12:19:38.859 ERROR 6360 --- [nio-8080-exec-4] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context
+ with path [] threw exception [Could not resolve view with name '/hello' in servlet with name 'dispatcherServlet'] with root cause
+
+javax.servlet.ServletException: Could not resolve view with name '/hello' in servlet with name 'dispatcherServlet'
+        at org.springframework.web.servlet.DispatcherServlet.render(DispatcherServlet.java:1353) ~[spring-webmvc-5.2.9.RELEASE.jar:5.2.9.RELEASE]
+```
+
+
+from the passing test
+
+```text
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+
+---------------------------------------------------
+BUILD SUCCESS
+```
+
+* run
+```sh
+mvn -Dmaven.test.skip=true spring-boot:run
+```
+JSP page example on `http://localhost:8080/jsp?name=world` is rendered by `example.JspController`:
+
 ![JSP page example](https://github.com/sergueik/springboot_study/blob/master/basic-thymeleaf-jsp/screenshots/capture-jsp.png)
+
+Thymeleaf page example on `http://localhost:8080/thymeleaf?name=world` rendered by `example.ThymeleafController`:
 
 ![Thymeleaf page example](https://github.com/sergueik/springboot_study/blob/master/basic-thymeleaf-jsp/screenshots/capture-thymeleaf.png)
 
