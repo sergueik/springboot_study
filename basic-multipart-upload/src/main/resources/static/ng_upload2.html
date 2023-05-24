@@ -24,6 +24,7 @@ angular.module("testSampleApp", [ "testSampleUploadModule" ]).controller("testSa
       function ($scope, testSampleUploadService) {
          var vm = this;
          vm.fileName = null;
+         vm.fileNames = [];
          vm.uploadingFile = false;
          vm.uploadSuccess = false;
          vm.uploadFailed = false;
@@ -38,6 +39,7 @@ angular.module("testSampleApp", [ "testSampleUploadModule" ]).controller("testSa
             vm.uploadFailed = false;
             var upoadFileField = angular.element("#fileUploadForm #chosenFile");
             if (upoadFileField != null && upoadFileField.length > 0) {
+               console.log("continue to download: " + upoadFileField[0].files.length + " files");
                if (upoadFileField[0].files && upoadFileField[0].files.length > 0) {
                   testSampleUploadService.uploadFile("./uploadFile", upoadFileField[0].files[0])
                      .then(function (result) {
@@ -71,7 +73,11 @@ angular.module("testSampleApp", [ "testSampleUploadModule" ]).controller("testSa
          angular.element("#fileUploadForm #chosenFile").bind("change", function(evt) {
             if (evt) {
                if (evt.target.files && evt.target.files.length > 0) {
-                  vm.fileName =  evt.target.files[0].name;
+			       console.log("attempt to upload " + evt.target.files.length + " files");
+		       vm.fileNames.push(evt.target.files[0].name);
+			vm.fileName  = vm.fileNames.join(',');
+                  // vm.fileName =  evt.target.files[0].name;
+
                }
                $scope.$apply();
             }
@@ -88,9 +94,8 @@ angular.module("testSampleUploadModule", [ ]).factory("testSampleUploadService",
          
          function uploadFile(uploadUrl, fileToUpload) {
             var imgMetadata = {
-               author: "Han Solo",
-               title: "Sample Upload Image",
-               description: "This is a simple upload with additional metadata attached.",
+               title: "title",
+               description: "upload with metadata attached",
                keywords: "keyword1,keyword2,keyword3,keyword4"
             };
             
@@ -105,7 +110,7 @@ angular.module("testSampleUploadModule", [ ]).factory("testSampleUploadService",
                }
             });
          }
-         
+ 
          return svc;
       }
    ]);
@@ -127,7 +132,7 @@ angular.module("testSampleUploadModule", [ ]).factory("testSampleUploadService",
                   <div class="form-group">
                      <div class="col-sm-10">
                         <div class="input-group">
-                           <input type=file id="chosenFile" style="display: none;">
+                           <input type=file id="chosenFile" style="display: none;" multiple>
                            <input type="text" class="form-control" ng-model="vm.fileName" ng-disabled="vm.uploadingFile">
                            <span class="input-group-btn">
                               <button class="btn btn-default" type="button" ng-click="vm.clickBrowseFile()">Browse</button>
