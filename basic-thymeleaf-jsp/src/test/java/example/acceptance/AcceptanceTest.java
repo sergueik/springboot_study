@@ -1,6 +1,6 @@
 package example.acceptance;
 /**
- * Copyright 2022 Serguei Kouzmine
+ * Copyright 2022,2023 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.PropertySource;
@@ -44,10 +45,10 @@ public class AcceptanceTest {
 
 	}
 
-	// @Disabled
 	@Test
 	public void test1() throws Exception {
-		Assumptions.assumeFalse(false);
+		// to skip dynamically use Junit 5 Assumptions
+		// Assumptions.assumeFalse(false);
 		route = "/jsp" + "?name=test1";
 		url = "http://localhost:" + randomServerPort + route;
 		responseEntity = restTemplate.getForEntity(url, String.class);
@@ -57,10 +58,10 @@ public class AcceptanceTest {
 				containsString(body));
 	}
 
-	// @Disabled
 	@Test
 	public void test2() throws Exception {
-		Assumptions.assumeFalse(false);
+		// to skip dynamically use Junit 5 Assumptions
+		// Assumptions.assumeFalse(false);
 		route = "/thymeleaf" + "?name=test2";
 		url = "http://localhost:" + randomServerPort + route;
 		responseEntity = restTemplate.getForEntity(url, String.class);
@@ -69,7 +70,7 @@ public class AcceptanceTest {
 		assertThat("Unexpected response for " + route, responseEntity.getBody(),
 				containsString(body));
 	}
-	// @Disabled
+
 	@Test
 	public void test3() throws Exception {
 		Assertions.assertThrows(InternalServerError.class, () -> {

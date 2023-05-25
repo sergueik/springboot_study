@@ -5,6 +5,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="example.model.Dummy" %>
+<%@ page import="example.utils.Utils" %>
 <!-- NOTE: a typo in the package name leads to a vague runtime error: 
   An error occurred at line: ... in the generated java file: [...\hello_jsp.java]
   Only a type can be imported. example.mode.Dummy resolves to a package
@@ -37,6 +38,10 @@
   <!-- NOTE: avoid leading space-->
   <pre>
   ${console	}
+  </pre>
+  <hr/>
+  <pre>
+  <% out.print(Utils.getFileContent("dummy.txt")); %>
   </pre>
   
 </body>
