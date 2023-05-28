@@ -2,8 +2,9 @@
 FROM alpine:3.9
 # see also https://github.com/Docker-Hub-frolvlad/docker-alpine-bash
 RUN apk add --no-cache bash gawk sed grep bc coreutils
-# while the script is not stable, run it through volume^M
-# ADD wait_for_it.sh wait_for_it.s
+# while the script is not stable, run it through volume
+# ADD wait_for_it.sh wait_for_it.sh
+# RUN sed -i 's|\r||g' /wait_for_it.sh
 
 
 # ENTRYPOINT ["sh", "/wait_for_it.sh", "--host=${SERVICE_HOST}" , "--port=${SERVICE_PORT}", "--timeout=${TIMEOUT}"]
