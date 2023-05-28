@@ -1,7 +1,7 @@
 ### Info
 
 
-This directory contains code of __pure Java Scheduler__
+This directory contains code of __pure Java Scheduler__ by Scott Oaks and Henry Wong
 and its dependency classes
 
   * `JobScheduler` [java2s](http://www.java2s.com/Code/Java/Threads/JobScheduler.htm)
@@ -9,14 +9,18 @@ and its dependency classes
   * `ThreadPool` : [java2s](http://www.java2s.com/Code/Java/Threads/ThreadPool2.htm)
   * `BusyFlag`, `CondVar`: [java2s](http://www.java2s.com/Code/Java/Threads/BusyFlag.htm)
 
-Runs the custom PDH class [](https://github.com/sergueik/selenium_java/tree/master/jna_pdh) collecting `System\Processor Queue Length` Windows performance metric 
+The Scheduer runs the custom [windows Performance Counter](https://github.com/sergueik/selenium_java/tree/master/jna_pdh) 
+`PDHTest` class 
+which is collecting `System\Processor Queue Length` Windows performance counter values evey scheduled interval
 
 ### Usage
+* package
 ```sh
 mvn test
 mvn clean -Dmaven.test.skip=true package
 ```
-add confg file (currently only the `collect` section is being processed):
+
+* create a confg file (NOTE: currently only the `collect` section is about to be processed):
 ```YAML
 collect:
  interval: 1000
@@ -27,10 +31,11 @@ compute:
    debug: false
    verbose: false
 ```
+* launch scheduler
 ```sh
 java -jar target/scheduler.jar -config config.yaml
 ```
-* set the size of `CircularList` to 10 to see the index rollover quickly:
+* set the size of `CircularList` to 10 to see the index rollover quickly in the console log:
 ```text
 
  # 1\System\Processor Queue Length \System\Processor Queue Length 1st=3 2nd=0 multi=1
@@ -194,7 +199,9 @@ method of `Collections` class to make thread safe apppends. Note, the `size` met
 return the index the next element will be written to (only used for logging).
 
 ### Note:
-occassionally see failing test:
+
+occassionally see the following failing test:
+
 ```cmd
 mvn test
 ```
@@ -221,7 +228,9 @@ usually error disappears in a rerun
    * https://www.codejava.net/java-core/collections/java-stream-aggregate-functions-examples-intermediate-operations
    * https://docs.oracle.com/javase/tutorial/collections/streams/index.html
    * [quartz](http://www.quartz-scheduler.org) Java Spring Scheduler documentation page
-    .NET [port](https://github.com/quartznet/quartznet) of Java Quartz and [related projects](https://github.com/search?q=Quartz.NET)
+   * [cron4](https://github.com/Takuto88/cron4j) pure java cron-like scheduled
+   * [jobrunr](https://github.com/jobrunr/jobrunr) - library to perform background processing on the JVM
+   * [quartznet](https://github.com/quartznet/quartznet) - a .NET port of Java Quartz and [related projects](https://github.com/search?q=Quartz.NET)
 
 
 ### Author
