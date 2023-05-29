@@ -29,7 +29,7 @@ application:
   servers:
     - ip: 127.0.0.1
       path: /dev1
-    - ip: 127.0.0.2
-      path: /dev2
-    - ip: 127.0.0.3
-      path: /dev3
+#    - ip: 127.0.0.2
+#      path: /dev2
+#    - ip: 127.0.0.3
+#      path: /dev3

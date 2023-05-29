@@ -20,7 +20,7 @@ public class Application implements CommandLineRunner {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
-
+	// required to implement CommandLineRunner
 	@Override
 	public void run(String... args) {
 		System.out.println(globalProperties);
