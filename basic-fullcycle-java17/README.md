@@ -8,7 +8,10 @@ it builds and runs java app in container started by `docker-compose`. The goal i
 
 if the `docker-compose` installed  by `apt-get` it is too old. However it is OK to install `docker-compose` via apt-get first for dependency sake. NOTE: the download instruction from [digitalocean](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04) modified to put the script into `/usr/bin` instead of `/usr/local/bin`
 ```sh
-sudo curl -L https://github.com/docker/compose/releases/download/1.25.0/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
+VERSION=2.14.0
+sudo curl -sL https://github.com/docker/compose/releases/download/v$VERSION/docker-compose-`uname -s`-`uname -m` -o docker-compose
+sudo chmod 775 docker-compose
+sudo cp docker-compose /usr/bin/docker-compose
 ```
 
 ### Usage

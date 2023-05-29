@@ -1,0 +1,39 @@
+FROM openjdk:17-alpine3.14
+ARG UID=1000
+ARG GID=1000
+ARG PASSWORD=TeStP_w0rD
+
+ENV UID=${UID}
+ENV GID=${GID}
+ENV PASSWORD=${PASSWORD}
+ENV EDITOR=nano
+
+ARG USER_NAME=app
+ARG GROUP_NAME=app
+
+# TODO: update the repo URL
+# ERROR: http://nl.alpinelinux.org/alpine/edge/main: UNTRUSTED signature
+# WARNING: Ignoring http://nl.alpinelinux.org/alpine/edge/main: No such file or directory
+# RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
+RUN apk update && apk add --no-cache $EDITOR
+RUN getent group $GROUP_NAME >/dev/null || addgroup -S $GROUP_NAME
+# solving
+RUN getent passwd $UID || adduser -h /home/$USER_NAME -u $UID -s /bin/sh -D -G $GROUP_NAME $USER_NAME 
+
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en'
+
+
+# We make four distinct layers so if there are application changes the library layers can be re-used
+COPY --chown=${UID} target/quarkus-app/lib/ ./deployments/lib/
+COPY --chown=${UID} target/quarkus-app/*.jar ./deployments/
+COPY --chown=${UID} target/quarkus-app/app/ ./deployments/app/
+COPY --chown=${UID} target/quarkus-app/quarkus/ ./deployments/quarkus/
+
+EXPOSE 8080
+USER ${UID}
+ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+ENV JAVA_APP_JAR="/app/deployments/quarkus-run.jar"
+USER app
+
+WORKDIR /app
+
