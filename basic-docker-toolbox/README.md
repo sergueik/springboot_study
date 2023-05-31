@@ -59,7 +59,7 @@ curl -sL https://github.com/docker/compose/releases/download/v$VERSION/docker-co
 ```
 verify
 ```sh
-./docker-compose.exe  --version
+./docker-compose.exe --version
 ```
 ```text
 Docker Compose version v2.14.0
@@ -165,11 +165,11 @@ docker-compose up --build
 ...
 ```
 
-the solution is to start __Docker Toolbox__ from the __Git Bash__:
+the workaround is to start __Docker Toolbox__ from the __Git Bash__:
 ```sh
 /c/Program\ Files/Docker\ Toolbox/start.sh
 ```
-
+this will fix the termcap
 ```sh
 docker-compose up --build
 ```

@@ -1,0 +1,23 @@
+version: '3.5'
+
+services:
+  counter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: python:3.8.2-alpine
+    volumes:
+      - ./app:/app
+    working_dir: /tmp
+    command: python script.py
+    # command: python /tmp/script.py
+    # NOTE: can use path relative to workdir or absolute path here
+    restart: on-failure:3
+      # https://docs.docker.com/compose/compose-file/compose-file-v3/#restart_policy
+     # NOTE:  do not set docker-compose restart policy to 'always' the container
+     # NOTE: even with version: '3.9' get an error
+     # Additional property restart_policy is not allowed
+  #  restart_policy:
+  #    condition: on-failure
+  #    max_attempts: 3
+

@@ -12,8 +12,9 @@ This directory contains a replica of the basic persistence Docker volume [exampl
 IMAGE_NAME='basic-counter-image'
 CONTAINER_NAME='basic-counter'
 docker build -t $IMAGE_NAME -f Dockerfile . 
-docker volume create --name startup-counter-vol
-docker run --name $CONTAINER_NAME -v startup-counter-vol:/app -t $IMAGE_NAME 
+VOLUME_NAME=counter-vol
+docker volume create --name $VOLUME_NAME
+docker run --name $CONTAINER_NAME -v $VOLUME_NAME:/app -t $IMAGE_NAME 
 docker logs $CONTAINER_NAME
 ```
 it will print:
@@ -33,7 +34,7 @@ it will print
 * remove container and run again
 ```sh
 docker rm $CONTAINER_NAME
-docker run --name $CONTAINER_NAME -v startup-counter-vol:/app -t $IMAGE_NAME 
+docker run --name $CONTAINER_NAME -v $VOLUME_NAME:/app -t $IMAGE_NAME 
 docker logs $CONTAINER_NAME
 ```
 it will print:
@@ -44,11 +45,34 @@ it will print:
 ```sh
 docker inspect $CONTAINER_NAME| jq '.' | tee /tmp/a.json
 VOLUME_PATH=$(jq -cr '.[]|.Mounts|.[]|.Source' /tmp/a.json)
-sudo cat $VOLUME_PATH/numberdocker container rm $IMAGE_NAME
+sudo cat $VOLUME_PATH/number
+docker rm $CONTAINER_NAME
 ```
 it will print:
 ```text
 2
+```
+* list the volume contents
+
+```sh
+VOLUME_PATH=$(docker volume inspect $VOLUME_NAME| jq -cr '.[].Mountpoint')
+echo $VOLUME_PATH
+```
+```text
+/var/lib/docker/volumes/startup-counter-vol/_data
+```
+```sh
+sudo ls /var/lib/docker/volumes/startup-counter-vol/_data
+```
+```text
+number
+```
+```sh
+sudo cat /var/lib/docker/volumes/startup-counter-vol/_data/number
+```
+
+```text
+1
 ```
 ### Repeat with mounted local directory
 
@@ -110,12 +134,62 @@ DRIVER    VOLUME NAME
 local     app
 
 ```
+### NOTE
+
+* Directory mapping does not work right in __Docker Toolbox__ with Windows directories:
+```cmd
+docker run --name $CONTAINER_NAME --rm -v ./app:/app:rw -t $IMAGE_NAME
+```
+```text
+C:\Program Files\Docker Toolbox\docker.exe: 
+Error response from daemon: create ./app: "./app" includes invalid characters for a local volume name, 
+only "[a-zA-Z0-9][a-zA-Z0-9_.-]" are allowed. 
+If you intended to pass a host directory, use absolute path.
+```
+the only way to pass a directory argument is to have it on __Docker Toolbox__ machine - no workaround atm.
+
+* to inspect the volume will need to also ssh to __Docker Toolbox__ machine:
+```sh
+docker-machine ssh
+```
+```text
+   ( '>')
+  /) TC (\   Core is distributed with ABSOLUTELY NO WARRANTY.
+ (/-_--_-\)           www.tinycorelinux.net
+```
+inspect the volumes either from Windows or from Debian side (NOTE, `jq` is likely to not be available on either):
+```sh
+VOLUME_NAME=startup-counter-vol
+docker volume inspect $VOLUME_NAME
+```
+```json
+[
+    {
+        "CreatedAt": "2023-05-31T13:05:48Z",
+        "Driver": "local",
+        "Labels": {},
+        "Mountpoint": "/mnt/sda1/var/lib/docker/volumes/startup-counter-vol/_data",
+        "Name": "startup-counter-vol",
+        "Options": {},
+        "Scope": "local"
+    }
+]
+```
+
+```sh
+sudo ls /mnt/sda1/var/lib/docker/volumes/startup-counter-vol/_data
+```
+
+```text
+number
+```
 ### Cleanup
 
 ```sh
 docker container prune -f
-docker volume rm startup-counter-vol
+docker volume rm $VOLUME_NAME
 docker image prune -f
+sudo  rm -fr app/
 ```
 
 ### Author

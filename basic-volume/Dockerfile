@@ -1,3 +1,7 @@
 FROM python:3.8.2-alpine
-COPY script.py /usr/local/
-CMD python /usr/local/script.py
+WORKDIR /tmp
+
+COPY script.py ./
+
+CMD python ./script.py
+
