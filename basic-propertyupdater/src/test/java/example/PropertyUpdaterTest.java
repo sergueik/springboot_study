@@ -10,8 +10,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
@@ -24,16 +25,18 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
+import java.util.Set;
 import java.io.IOException;
 import java.io.InputStream;
 
 public class PropertyUpdaterTest {
 
 	private static final String fileName = "application.yaml";
+	private static final String expectedFileName = "configured_application.yaml";
 
 	@Test
 	public void test1() throws Exception {
@@ -51,6 +54,18 @@ public class PropertyUpdaterTest {
 		propertyUpdater.updateConfiguration();
 		configuration = propertyUpdater.getConfiguration();
 		System.err.println("new configuration: " + configuration);
+
+		String expectedConfiguration = getFileContent(expectedFileName);
+		String[] checkResults = expectedConfiguration.split("\r?\n");
+		Set<String> result = new HashSet<String>();
+		String[] lines = configuration.split("\r?\n");
+		for (int cnt = 0; cnt != lines.length; cnt++) {
+			result.add(lines[cnt]);
+		}
+
+		System.err.println("test returned: " + result);
+		System.err.println("test expected: " + Arrays.asList(checkResults));
+		assertThat(result, containsInAnyOrder(checkResults));
 	}
 
 	public String getFileContent(String fileName) {
