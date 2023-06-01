@@ -135,7 +135,22 @@ docker run -it $IMAGE method2
 ```text
 Method 2 is called
 ```
+### Multiple alighed Argument pairs
+* construct long command line:
+```sh
+echo -n 'python3 click_option_pairs.py '
+ for i in  {a..z} ; do echo  -n " --keys ${i}1  --vals ${i}1" ; done
+for i in  {a..z} ; do echo  -n " --keys ${i}1 " ; echo -n  '--vals ' ;echo -n "${i}1" |tr '[a-z]' '[A-Z]' ; done
+```
+* run the command line
+```sh
+python3 click_option_pairs.py  --keys a1 --vals A1 --keys b1 --vals B1 --keys c1 --vals C1 --keys d1 --vals D1 --keys e1 --vals E1 --keys f1 --vals F1 --keys g1 --vals G1 --keys h1 --vals H1 --keys i1 --vals I1 --keys j1 --vals J1 --keys k1 --vals K1 --keys l1 --vals L1 --keys m1 --vals M1 --keys n1 --vals N1 --keys o1 --vals O1 --keys p1 --vals P1 --keys q1 --vals Q1 --keys r1 --vals R1 --keys s1 --vals S1 --keys t1 --vals T1 --keys u1 --vals U1 --keys v1 --vals V1 --keys w1 --vals W1 --keys x1 --vals X1 --keys y1 --vals Y1 --keys z1 --vals Z1
+```
+```text
+keys: a1, b1, c1, d1, e1, f1, g1, h1, i1, j1, k1, l1, m1, n1, o1, p1, q1, r1, s1, t1, u1, v1, w1, x1, y1, z1
+vals: A1, B1, C1, D1, E1, F1, G1, H1, I1, J1, K1, L1, M1, N1, O1, P1, Q1, R1, S1, T1, U1, V1, W1, X1, Y1, Z1
 
+```
 #### Cleanup
 ```sh
 docker container prune -f

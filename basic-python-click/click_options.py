@@ -39,20 +39,25 @@ def repeated_args(words):
   click.echo('words: {}'.format(','.join(words)))
 
 @click.command()
-@click.option('--blue', is_flag=True, help='message in blue color')
-@click.option('--red', is_flag=True, help='message in red color', default=None)
+@click.option('--blue', is_flag=True, help='message in blue foreground color')
+@click.option('--red', is_flag=True, help='message in red foreground color', default=None)
 def flag_args(blue: bool, red: bool):
   if blue:
     click.secho('Hello there', fg='blue')
   else:
     click.secho('Hello there')
 
+@click.command()
+@click.option('--keys', '-k', multiple = True)
+@click.option('--vals', '-v', multiple = True)
+def repeated_arg_pairs(keys: list, vals: list):
+  click.echo('keys: {}'.format(', '.join(keys)) + '\n' +  'vals: {}'.format(', '.join(vals)))
 
-# NOTE: example1.py does not exercise group
 if __name__ == '__main__':
-  # NOTE: not passing arguments
+  # NOTE: not providing arguments per signature
   #  func()
   # varargs()
   # named_args()
   # repeated_args()
   flag_args()
+  # repeated_arg_pairs()
