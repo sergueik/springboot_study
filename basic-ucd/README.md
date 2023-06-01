@@ -653,6 +653,15 @@ this will print
 Snapshot "Snapshot 3" confirmed to be valid
 Status: true
 ```
+
+### Updating UCD Build Property Files from Outside UCD
+
+* NOTE: the syntax of UCD [propery placeholders](https://www.ibm.com/docs/en/urbancode-deploy/7.0.4?topic=properties-referring) is complex:
+  * `${p:scope/propertyName}`, e.g. * `${p:environment/db.hostname}`
+  * `${p:propertyName}`
+  * `${p?:propertyName}`
+
+
 ### See Also
 
   * UCD [Docker images](https://github.com/UrbanCode/UCD-Docker-Images)
