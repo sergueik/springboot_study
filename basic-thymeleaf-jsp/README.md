@@ -72,6 +72,6 @@ on the static `http://localhost:8080//resources/static/page.html` the app is dis
   * [Spring Boot CRUD Application with Thymeleaf](https://www.baeldung.com/spring-boot-crud-thymeleaf)
   * [Utility for converting JSP files into Thymeleaf templates](https://github.com/wjase/jsp2thymeleaf)
   * __Spring Framework: Spring MVC 5 Fundamentals__ [Pluralsight Training](https://app.pluralsight.com/library/courses/spring-framework-spring-mvc-fundamentals/table-of-contents) covering obscure configuration code for Thymeleaf and JSP except for configuring the two alongside with one another
-  * [java Servlet Filter Example Tutorial](https://www.digitalocean.com/community/tutorials/java-servlet-filter-example-tutorial)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

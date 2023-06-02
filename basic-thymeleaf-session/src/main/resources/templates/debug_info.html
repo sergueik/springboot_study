@@ -1,0 +1,42 @@
+<html>
+<head></head>
+<body>
+<a href="./jsp?name=JSP+Page">JSP page</a><br/>
+<a href="./thymeleaf?name=Thymeleaf+page">Thymeleaf page</a><br/>
+<div>all of spring beans available (some empty)</div>
+<table>
+  <tr th:each="var : ${param.keySet()}">
+    <td th:text="${var}"></td>
+    <td th:text="${param.get(var)}"></td>
+  </tr>
+</table>
+<table>
+    <tr th:each="var : ${#vars.getVariableNames()}">
+        <td th:text="${var}"></td>
+        <td th:text="${#vars.getVariable(var)}"></td>
+    </tr>
+    <!-- 
+        Adding these manually because they are considered special.
+        see https://github.com/thymeleaf/thymeleaf/blob/thymeleaf-3.0.3.RELEASE/src/main/java/org/thymeleaf/context/WebEngineContext.java#L199
+    -->
+    <tr>
+        <td>param</td>
+        <td th:text="${#vars.getVariable('param')}"></td>
+    </tr>
+    <tr>
+        <td>session</td>
+        <td th:text="${#vars.getVariable('session')}"></td>
+    </tr>
+    <tr>
+        <td>application</td>
+        <td th:text="${#vars.getVariable('application')}"></td>
+    </tr>
+</table>
+<div>session data: </div>
+<table>
+    <tr th:each="var : ${#vars.getVariable('session')}">
+        <td th:text="${var.key}"></td>
+        <td th:text="${var.value}"></td>
+    </tr>
+</table>
+</body></html>
