@@ -151,6 +151,33 @@ keys: a1, b1, c1, d1, e1, f1, g1, h1, i1, j1, k1, l1, m1, n1, o1, p1, q1, r1, s1
 vals: A1, B1, C1, D1, E1, F1, G1, H1, I1, J1, K1, L1, M1, N1, O1, P1, Q1, R1, S1, T1, U1, V1, W1, X1, Y1, Z1
 
 ```
+### Dispatch Methods with Different Arguments
+
+  * the `apple`method expects `apple` argument
+  * the `banana` method expects `banana` and `filename` but not `apple`
+
+both expect `debug` argument
+
+* test `apple`:
+```sh
+python3 click_groups2.py banana --banana yellow -d --filename dummy.txt
+```
+```text
+Method 2 is called
+apple = "None"
+banana = "yellow"
+debug = True
+```
+```sh
+python3 click_groups2.py apple --apple red -d
+```
+```text
+Method 1 is called
+apple = "red"
+banana = "None"
+debug = True
+```
+ 
 #### Cleanup
 ```sh
 docker container prune -f
