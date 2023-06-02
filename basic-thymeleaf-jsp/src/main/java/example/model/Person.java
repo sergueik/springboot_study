@@ -5,7 +5,7 @@ package example.model;
 // import org.springframework.boot.context.properties.EnableConfigurationProperties;
 // import org.springframework.context.annotation.Configuration;
 
-public class Person {
+public class Person implements LoggedOnUser {
 
 	private String letter = null;
 	private String name = null;
@@ -42,6 +42,16 @@ public class Person {
 
 	public void setId(Integer data) {
 		id = data;
+	}
+
+	private String loggedOnUserName;
+
+	public String getLoggedOnUserName() {
+		return loggedOnUserName;
+	}
+
+	public void setLoggedOnUserName(String value) {
+		loggedOnUserName = value;
 	}
 
 }
