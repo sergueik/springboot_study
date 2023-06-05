@@ -32,17 +32,19 @@ docker run --name $NAME -it $IMAGE sh
 ```
 * run test in the container
 ```sh
-VALUE=$(perl test.pl -value message -secret apple -operation encrypt)
+VALUE=$(perl test.pl -value message -password apple -operation encrypt) 2>/dev/null
 echo $VALUE
 ```
-this will print some base64 encoded binary string, different each time
+NOTE: without the `2>/dev/null` redirect there may be some extra debugging output in console
+this will print some base64 encoded binary string, different each time because of the salt prefix
 ```text
 x5p9WNNzxLAqGwt7zDkx1A==
 ```
 ```sh
-perl test.pl -value "$VALUE" -password apple
+perl test.pl -value "$VALUE" -password apple -operation decrypt
 ```
-this will successfully decrypt it
+this will successfully decrypt it, printing:
+
 ```text
 message
 ```

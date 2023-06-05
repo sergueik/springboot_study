@@ -36,8 +36,9 @@ my $pbes2_map =
   { 'PBEWithHmacSHA512AndAES_256' =>
       { hmac => 'hmac-sha512', encryption => 'aes-256' }, };
 
-    print Dumper( \$pbes1_map ) ;
-    print Dumper( \$pbes2_map ) ;
+print STDERR Dumper( \$pbes1_map );
+print STDERR Dumper( \$pbes2_map );
+
 # PBES1 + PBDKF1
 
 foreach ( keys %{$pbes1_map} ) {
