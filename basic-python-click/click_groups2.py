@@ -1,5 +1,4 @@
 import click
-import getopt
 import sys
 
 @click.group()
