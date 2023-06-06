@@ -1,6 +1,7 @@
 import getopt
 import sys
 import os
+import re
 from pprint import pprint
 
 class ServiceConfig(object):
@@ -45,14 +46,28 @@ class ServiceConfig(object):
       if line.find(' ') == -1:
         continue
         # alternatively, handle ValueError: not enough values to unpack
- 
+
       # TODO: rename to arguments
       command, filename, *variables = line.split(' ')
       variables = variables + ( [''] * 2 )
-      # NOTE: cannot do in place
-      fields = [ command, filename ]
-      fields.extend(variables[:2])
-      self._config.append(fields)
+      self._config.append([ command, filename ] + variables[:2] )
+
+    patt= re.compile('^#include')
+    # insert
+    for cnt in range(len(self._config)):
+
+      command, filename, arg1, arg2 = self._config[cnt]
+      if patt.match(command) != None:
+        print('include detected in line {} "{}"'.format(cnt, self._lines[cnt]))
+        if os.path.isfile(self.path + '/' + filename ):
+          print('valid include')
+          s_c = ServiceConfig()
+          s_c.path = self.path
+          s_c.filename = filename
+          s_c.process()
+          insert_lines = s_c.lines
+          print('including lines: {}'.format('\n'.join(insert_lines)))
+          self._lines = self._lines[0:cnt] + insert_lines + self._lines[cnt:]
 
 help_message = 'usage: service_config.py --path <text> -file <text> [--debug]'
 
@@ -106,4 +121,5 @@ if __name__ == '__main__':
   pprint(s_c.lines)
 
   s_c.examine()
+  pprint(s_c.lines)
   pprint(s_c.config)

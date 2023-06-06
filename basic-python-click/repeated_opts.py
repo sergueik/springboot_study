@@ -28,9 +28,9 @@ if __name__ == '__main__':
   # https://stackoverflow.com/questions/1592565/determine-if-variable-is-defined-in-python 
   try: 
     opts
-  except NDameError: 
+  except NameError: 
     print(help_message)
-    x = None
+    opts = None
     exit()
   
   text = None
