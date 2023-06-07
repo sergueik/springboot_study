@@ -2,6 +2,7 @@ import getopt
 import sys
 import os
 import re
+import subprocess
 from pprint import pprint
 
 class ServiceConfig(object):
@@ -58,9 +59,9 @@ class ServiceConfig(object):
     patt= re.compile('^#include ')
     # insert
     scanned = False
+    recursion_control_cnt = 0
     while not scanned:
       scanned = True
-      recursion_control_cnt = 0
       for cnt in range(len(self._lines)):
 
         line = self._lines[cnt]
@@ -92,6 +93,37 @@ class ServiceConfig(object):
             if self._debug:
               pprint(self._lines)
 
+  def process_execs(self):
+    patt= re.compile('^#exec ')
+    # insert
+    for cnt in range(len(self._lines)):
+
+      line = self._lines[cnt]
+      # NOTE: TypeError: a bytes-like object is required, not 'str'
+      #
+      if self._debug:
+        print(type(line))
+      if line.find(' ') == -1:
+        continue
+
+      if patt.match(line) != None:
+        if self._debug:
+          print('include detected in line {} "{}"'.format(cnt, line))
+        _, filename, *_ = line.split(' ')
+        if os.path.isfile(self.path + '/' + filename ):
+          if self._debug:
+            print('valid include filename: "{}"'.format(filename))
+          # NOTE: not sure when to remove the "#exec " prefix
+          insert_lines = self.process_exec(line.replace('#exec ', ''))
+          if self._debug:
+            print('including lines: {}'.format('\n'.join(insert_lines)))
+
+          # NOTE: insert lines is tricky inside the range loop
+          self._lines = self._lines[0:cnt] + insert_lines + self._lines[cnt + 1:]
+          if self._debug:
+            pprint(self._lines)
+
+
   def tokenize_lines(self):
     for line in self._lines:
       if line.find(' ') == -1:
@@ -102,6 +134,17 @@ class ServiceConfig(object):
       arguments = arguments + ( [''] * 2 )
       self._config.append([ command, filename ] + arguments[:2] )
 
+  def process_exec(self, commandline: str):
+    command, *arguments = commandline.split(' ')
+    arguments = arguments + ( [''] * 2 )
+    command = self._path + '/' + command
+    if self._debug:
+      print('running command: "{}"'.format(command))
+    result = subprocess.run([ command ] + arguments[:2] , stdout = subprocess.PIPE)
+    lines = result.stdout.decode('utf-8').splitlines() if result.returncode == 0 else []
+    return lines
+
+# command line entrance code
 help_message = 'usage: service_config.py --path <text> -file <text> [--debug]'
 
 def show_options():
@@ -156,6 +199,7 @@ if __name__ == '__main__':
   # pprint(s_c.lines)
 
   # TODO: move method invocation into the relevant getters
+  s_c.process_execs()
   s_c.process_includes()
   s_c.tokenize_lines()
 
