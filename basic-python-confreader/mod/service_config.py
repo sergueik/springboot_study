@@ -31,15 +31,15 @@ class ServiceConfig(object):
     @property
     def lines(self):
         self._lines = []
-        self.read_file()
-        self.process_execs()
-        self.process_includes()
+        self.__read_file__()
+        self.__process_execs__()
+        self.__process_includes__()
         return self._lines
 
     @property
     def config(self):
         self._config = []
-        self.read_config()
+        self.__read_config__()
         return self._config
 
     @filename.setter
@@ -56,12 +56,12 @@ class ServiceConfig(object):
 
     # methods
 
-    def read_file(self):
-        with open(self.path + '/' + self.filename, mode='r') as file:
+    def __read_file__(self):
+        with open(os.path.join(self.path, self.filename), mode='r') as file:
             for line in file:
                 self._lines.append(line.strip())
 
-    def process_includes(self):
+    def __process_includes__(self):
         patt = re.compile('^#include ')
         scanned = False
         recursion_control_cnt = 0
@@ -75,7 +75,7 @@ class ServiceConfig(object):
 
                 if not patt.match(line) is None:
                     _, filename, *_ = line.split(' ')
-                    if os.path.isfile(self.path + '/' + filename):
+                    if os.path.isfile(os.path.join(self.path, filename)):
                         service_config = ServiceConfig()
                         service_config.path = self.path
                         service_config.filename = filename
@@ -87,7 +87,7 @@ class ServiceConfig(object):
                             scanned = True
                         self._lines = self._lines[0:cnt] + insert_lines + self._lines[cnt + 1:]
 
-    def process_execs(self):
+    def __process_execs__(self):
         patt = re.compile('^#exec ')
         for cnt in range(len(self._lines)):
             line = self._lines[cnt]
@@ -98,10 +98,10 @@ class ServiceConfig(object):
                 script_path = os.path.join(self.path, script)
                 if os.path.isfile( script_path ) and os.access(script_path, os.X_OK) :
                     # NOTE: not sure in which scope is best to remove the "#exec " prefix
-                    insert_lines = self.process_command(line.replace('#exec ', ''))
+                    insert_lines = self.__process_command__(line.replace('#exec ', ''))
                     self._lines = self._lines[0:cnt] + insert_lines + self._lines[cnt + 1:]
 
-    def read_config(self):
+    def __read_config__(self):
         for line in self._lines:
             if line.find(' ') == -1:
                 continue
@@ -109,7 +109,7 @@ class ServiceConfig(object):
             arguments = arguments + ([''] * 2)
             self._config.append([command, filename] + arguments[:2])
 
-    def process_command(self, commandline: str):
+    def __process_command__(self, commandline: str):
         script, *arguments = commandline.split(' ')
         arguments = arguments + ([''] * 2)
         script_path = os.path.join(self.path, script)
@@ -118,58 +118,3 @@ class ServiceConfig(object):
         return lines
 
 
-# command line entrance code
-help_message = 'usage: service_config.py --path <text> -file <text> [--debug]'
-
-
-def show_options():
-    print(f'debug: {debug}\nconfig_filename: "{config_filename}"\nconfig_path: "{config_path}"')
-
-
-if __name__ == '__main__':
-
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hdp:f:', ['help', 'debug', 'path=', 'file='])
-    except getopt.GetoptError as err:
-        print(help_message)
-
-    # https://stackoverflow.com/questions/1592565/determine-if-variable-is-defined-in-python
-    try:
-        opts
-    except NameError:
-        print(help_message)
-        opts = None
-        exit()
-
-    global debug
-    # TODO:read through environment
-    debug = False
-    config_path = os.path.curdir
-    config_filename = 'data.conf'
-
-    for option, argument in opts:
-        if option in ('-d', '--debug'):
-            debug = True
-        elif option in ('-h', '--help'):
-            print(help_message)
-            exit()
-        elif option in ('-p', '--path'):
-            config_path = argument
-        elif option in ('-f', '--file'):
-            config_filename = argument
-        else:
-            assert False, 'unhandled option: {}'.format(option)
-    if config_path is None or config_filename is None:
-        print(help_message)
-        exit()
-    if debug:
-        show_options()
-
-    service_config = ServiceConfig()
-    service_config.path = config_path
-    service_config.debug = debug
-    service_config.filename = config_filename
-    # repeat to examine idempotency
-    # for cnt in range(3):
-    pprint(service_config.lines)
-    pprint(service_config.config)

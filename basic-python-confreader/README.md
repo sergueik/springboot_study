@@ -1,4 +1,26 @@
 ### Usage
+
+
+```sh
+python3
+```
+```python
+>>> 
+
+>>> import sys
+>>> sys.path.insert(0,os.path.join(os.path.curdir,'mod'))
+>>> import service_config
+>>> dir(service_config)
+['ServiceConfig', '__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__', 'getopt', 'os', 'pprint', 're', 'subprocess', 'sys']
+>>> dir(service_config.ServiceConfig)
+['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__process_command__', '__process_execs__', '__process_includes__', '__read_config__', '__read_file__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'config', 'debug', 'filename', 'lines', 'path']
+
+>>> exit()
+```
+
+
+
+
 ```sh
 python3 read_exec.py  --command "./command.pl data2.conf" -d
 ```
@@ -35,7 +57,7 @@ provide dummy config files `data.conf`:
 
 
 ```sh
-python3 service_config.py -p '.' -c 'data.conf'
+python3 service_config_tool.py -p '.' -c 'data.conf'
 ```
 this will print `lines`
 ```text
@@ -65,4 +87,8 @@ and `config`
   * [python method mangling](https://www.geeksforgeeks.org/name-mangling-in-python/)
 
   * https://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
+  * https://stackoverflow.com/questions/16114391/adding-directory-to-sys-path-pythonpath
 
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
