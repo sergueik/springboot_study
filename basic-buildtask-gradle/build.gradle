@@ -26,7 +26,9 @@ task printJavaVersionBuildSrc(type : PrintToolVersionBuildSrcTask) {
     printJavaVersionBuildSrc.fileName = 'application.yaml'
 }
 task printGroovyVersionBuildSrc(type : PrintToolVersionBuildSrcTask) {
-    printJavaVersionBuildSrc.tool = 'groovy'
+    // NOTE: one may accidentally affect the other task properties 
+    // by referring those in result of an copy-paste development
+    // printJavaVersionBuildSrc.tool = 'groovy'
     tool 'groovy'
     fileName  'application.yaml'
     commandline 'name1=https://www.yahoo.com name2=user name3=17 name4=""'
