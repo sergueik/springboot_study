@@ -1,0 +1,8 @@
+---
+property1: {{* name1||default1 *}}
+property2: {{* name2||default2 *}}
+property3: {{* name3||default3 *}}
+property4: {{* name4||default4 *}}
+# comment
+property5: value5
+

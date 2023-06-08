@@ -19,12 +19,13 @@ allprojects {
 subprojects {
     version = '1.0'
 }
-import com.baeldung.PrintToolVersionBuildSrcTask
+import example.PrintToolVersionBuildSrcTask
 
 task printJavaVersionBuildSrc(type : PrintToolVersionBuildSrcTask) {
     // NOTE: both will work
     printJavaVersionBuildSrc.tool = 'java'
     tool 'java'
+    printJavaVersionBuildSrc.fileName = "application.yaml"
 }
 // NOTE: defining new tasks will call the constructor again with the different injected arguments
 /*
