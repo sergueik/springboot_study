@@ -22,15 +22,13 @@ subprojects {
 import example.PrintToolVersionBuildSrcTask
 
 task printJavaVersionBuildSrc(type : PrintToolVersionBuildSrcTask) {
-    // NOTE: both will work
-    printJavaVersionBuildSrc.tool = 'java'
     tool 'java'
-    printJavaVersionBuildSrc.fileName = "application.yaml"
+    printJavaVersionBuildSrc.fileName = 'application.yaml'
 }
-// NOTE: defining new tasks will call the constructor again with the different injected arguments
-/*
 task printGroovyVersionBuildSrc(type : PrintToolVersionBuildSrcTask) {
     printJavaVersionBuildSrc.tool = 'groovy'
     tool 'groovy'
+    fileName  'application.yaml'
+    commandline 'name1=https://www.yahoo.com name2=user name3=17 name4=""'
 }
-*/
+

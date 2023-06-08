@@ -27,6 +27,11 @@ class PropertyUpdaterBootstrap {
 		fileName = value;
 	}
 
+	private String commandline = null;
+
+	public void setCommandline(String value) {
+		commandline = value;
+	}
 	public PropertyUpdaterBootstrap(String tool, String fileName) {
 
 		super();
@@ -34,12 +39,20 @@ class PropertyUpdaterBootstrap {
 		this.fileName = fileName;
 	}
 
+	public PropertyUpdaterBootstrap(String tool, String fileName, String commandline) {
+
+		super();
+		this.tool = tool;
+		this.commandline = commandline;
+		this.fileName = fileName;
+	}
 	public void process() throws IOException {
+	if (commandline == null)	
+		commandline = getApplicationProperties().getProperty("commandline");
 		System.out.println("Processing tool: " + tool);
 		String configuration = getFileContent(fileName);
 		System.out.println("new configuration: " + configuration);
-		List<String> tokens = Arrays.asList(
-				getApplicationProperties().getProperty("commandline").split(" +"));
+		List<String> tokens = Arrays.asList( commandline.split(" +"));
 		Map<String, Object> properties = new HashMap<>();
 		tokens.stream().forEach((String t) -> {
 			String[] data = t.split("=");
