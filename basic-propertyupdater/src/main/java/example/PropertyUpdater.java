@@ -1,5 +1,8 @@
 package example;
 
+/**
+ * Copyright 2023 Serguei Kouzmine
+ */
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 

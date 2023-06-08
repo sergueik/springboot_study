@@ -1,5 +1,8 @@
 package example;
 
+/**
+ * Copyright 2023 Serguei Kouzmine
+ */
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
