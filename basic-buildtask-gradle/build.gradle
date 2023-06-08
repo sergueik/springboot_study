@@ -22,9 +22,14 @@ subprojects {
 import com.baeldung.PrintToolVersionBuildSrcTask
 
 task printJavaVersionBuildSrc(type : PrintToolVersionBuildSrcTask) {
+    // NOTE: both will work
+    printJavaVersionBuildSrc.tool = 'java'
     tool 'java'
 }
-
+// NOTE: defining new tasks will call the constructor again with the different injected arguments
+/*
 task printGroovyVersionBuildSrc(type : PrintToolVersionBuildSrcTask) {
+    printJavaVersionBuildSrc.tool = 'groovy'
     tool 'groovy'
 }
+*/

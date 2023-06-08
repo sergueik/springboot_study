@@ -23,6 +23,7 @@ docker run -u root --rm -it gradle:5.4.1-jdk8-alpine sh
 ```
 
 ### See Also
+  * https://www.linkedin.com/pulse/writing-custom-gradle-plugin-using-java-mahendra-tonape/
   * [gretl plugin](https://github.com/sogis/gretl)
   * https://github.com/gpetuhov/SampleGradle
-  * example [Multi Module Gradle project with Custom Gradle Plugin and Custom task](https://github.com/TechPrimers/gradle-custom-plugin-example-2)
+DefaultTask  * example [Multi Module Gradle project with Custom Gradle Plugin and Custom task](https://github.com/TechPrimers/gradle-custom-plugin-example-2)
