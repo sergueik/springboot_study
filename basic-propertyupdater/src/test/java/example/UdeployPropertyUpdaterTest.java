@@ -26,9 +26,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
 
-import example.PropertyUpdater;
+import example.UdeployPropertyUpdater;
 
-public class PropertyUpdaterTest {
+public class UdeployPropertyUpdaterTest {
 
 	private static final String fileName = "application.yaml";
 	private static final String expectedFileName = "configured_application.yaml";
@@ -44,7 +44,7 @@ public class PropertyUpdaterTest {
 			String[] data = t.split("=");
 			properties.put(data[0], data[1]);
 		});
-		PropertyUpdater propertyUpdater = new PropertyUpdater(configuration,
+		UdeployPropertyUpdater propertyUpdater = new UdeployPropertyUpdater(configuration,
 				properties);
 		propertyUpdater.updateConfiguration();
 		configuration = propertyUpdater.getConfiguration();

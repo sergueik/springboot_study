@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class PropertyUpdater {
+public class UdeployPropertyUpdater {
 	private String configuration = null;
 	private Map<String, Object> properties;
 
@@ -30,7 +30,7 @@ public class PropertyUpdater {
 		properties = value;
 	}
 
-	public PropertyUpdater(String configuration, Map<String, Object> properties) {
+	public UdeployPropertyUpdater(String configuration, Map<String, Object> properties) {
 		this.configuration = configuration;
 		this.properties = properties;
 	}
