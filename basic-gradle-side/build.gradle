@@ -1,0 +1,14 @@
+task definePath { 
+  def var = '../karate/build.gradle'
+  doLast {
+    definePath.ext.variable = var
+  }
+}
+task testbuild(type: GradleBuild) {
+  dependsOn 'definePath'
+  doFirst { 
+    buildFile = definePath.variable
+  }
+  startParameter.taskNames = ['clean', 'test']
+  startParameter.systemPropertiesArgs = ['param': 'value']
+}
