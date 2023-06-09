@@ -34,9 +34,14 @@ Starting a Gradle Daemon (subsequent builds will be faster)
 > Task :basic-karate-collector:testClasses
 > Task :basic-karate-collector:test
 
-BUILD SUCCESSFUL in 3m 29s
-2 actionable tasks: 2 executed
+> Task :testclean
+deleting: [/work/karate/build/classes, /work/karate/build/karate-reports, /work/
+karate/build/test-results, /work/karate/build/resources, /work/karate/build/repo
+rts, /work/karate/build/tmp, /work/karate/build/generated]
+done.
 
+BUILD SUCCESSFUL in 4m 9s
+3 actionable tasks: 3 executed
 ```
 * debug
 
