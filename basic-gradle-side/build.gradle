@@ -1,29 +1,63 @@
-task definePath { 
+task getBuildFile {
   def var = '../karate/build.gradle'
   doLast {
-    definePath.ext.variable = var
+    getBuildFile.ext.variable = var
   }
 }
 task testbuild(type: GradleBuild) {
-  dependsOn 'definePath'
-  doFirst { 
-    buildFile = definePath.variable
+  dependsOn 'getBuildFile'
+  doFirst {
+    buildFile = getBuildFile.variable
   }
   startParameter.taskNames = ['clean', 'test']
   startParameter.systemPropertiesArgs = ['param': 'value']
 }
 
+
 task testclean(type: Delete) {
 
-  dependsOn 'definePath'
+  dependsOn 'getBuildFile'
   def buildFile = ''
-  doLast { 
-    buildFile = definePath.variable
-    def buildDir = file(file(buildFile).getParent() + '/build')
+  doLast {
+    def buildDir = file(file(getBuildFile.variable).getParent() + '/build')
     println('deleting: ' +  buildDir.listFiles())
     buildDir.deleteDir()
-    // delete buildDir.listFiles()
-    // delete fileTree(buildDir).include('**/*')
-    println('done.' )
+  }
+}
+
+// NOTE: not actually deleting files for some reason
+task testclean3(type: Delete) {
+
+  dependsOn 'getBuildFile'
+  def buildFile = ''
+  doLast {
+    def buildDir = file(file(getBuildFile.variable).getParent() + '/build')
+    println('deleting: ' +  buildDir.listFiles())
+    delete = buildDir.listFiles()
+  }
+}
+
+
+// NOTE: not actually deleting files for some reason
+task testclean2(type: Delete) {
+
+  dependsOn 'getBuildFile'
+  def buildFile = ''
+  doLast {
+    def buildDir = file(file(getBuildFile.variable).getParent() + '/build')
+    println('deleting: ' +  buildDir.listFiles())
+    delete buildDir.listFiles()
+  }
+}
+
+// NOTE: not actually deleting files for some reason
+task testclean4(type: Delete) {
+
+  dependsOn 'getBuildFile'
+  def buildFile = ''
+  doLast {
+    def buildDir = file(file(getBuildFile.variable).getParent() + '/build')
+    println('deleting: ' +  buildDir.listFiles())
+    delete fileTree(buildDir).include('**/*')
   }
 }
