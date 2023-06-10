@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: app
+    image: alpine:3.9.5
+    command: |
+      ash -c '
+      while true;
+      do
+        nc -z $$SERVICE_HOST $$SERVICE_PORT;
+        if [ $$? -eq 0 ]; then
+          echo 'Done';
+          break;
+        fi;
+        echo "Waiting $${DELAY} sec";
+        sleep $$DELAY;
+      done;
+      '
+
+    environment:
+      SERVICE_PORT: 3306
+      SERVICE_HOST: 'slow-mysql-server'
+      DELAY: 10

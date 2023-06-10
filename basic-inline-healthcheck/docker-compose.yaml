@@ -1,0 +1,58 @@
+version: '3.7'
+
+services:
+  mysql-server:
+    container_name: mysql-server
+    hostname: mysql-server
+    image: mysql:5.7-debian
+    build:
+      context: .
+      dockerfile: Dockerfile.db
+    environment:
+      # NOTE the credentials need to match setting in application.properties
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=java
+      - MYSQL_DATABASE=test
+      - MYSQL_PASSWORD=password
+      - SERVICE_PORT=3306
+    healthcheck:
+      test:
+        [
+            "CMD-SHELL",
+            "nc -z 127.0.0.1 $$SERVICE_PORT",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 60
+    networks:
+      - example
+  app:
+    container_name: app
+    networks:
+      - example
+    depends_on:
+      mysql-server:
+        condition: service_healthy
+
+    image: alpine:3.9.5
+    command: |
+      ash -c '
+      while true;
+      do
+        nc -z $$SERVICE_HOST $$SERVICE_PORT;
+        if [ $$? -eq 0 ]; then
+          echo 'Done';
+          break;
+        fi;
+        echo "Waiting $${DELAY} sec";
+        sleep $$DELAY;
+      done;
+      '
+
+    environment:
+      SERVICE_PORT: 3306
+      SERVICE_HOST: 'mysql-server'
+      DELAY: 10
+
+networks:
+  example:

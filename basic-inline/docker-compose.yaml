@@ -16,7 +16,6 @@ services:
         SERVICE_PORT="3306";
       fi;
       echo "SERVICE_PORT=\"$${SERVICE_PORT}\"";
-      DELAY=10;
       echo "DELAY=\"$${DELAY}\"";
       if [ ! -z $$DEBUG_DELAYED_START ]; then
         LOG="/tmp/debug.log";
@@ -50,7 +49,4 @@ services:
     environment:
       SERVICE_PORT: 3306
       SERVICE_HOST: 'slow-mysql-server'
-      TIMEOUT: 600
-      DEBUG_DELAYED_START: 'true'
-      # DEBUG_DELAYED_START: true
-      # ERROR: The Compose file './docker-compose.yaml' is invalid because: services.app.environment.DEBUG_DELAYED_START contains true, which is an invalid type, it should be a string, number, or a null
+      DELAY: 15
