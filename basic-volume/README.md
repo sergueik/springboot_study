@@ -183,14 +183,73 @@ sudo ls /mnt/sda1/var/lib/docker/volumes/startup-counter-vol/_data
 ```text
 number
 ```
+### Scanning the Files in Volume
+
+
+`reader.py` in Docker container scans the volume and prints files to standard output
+
+* build 
+```
+IMAGE_NAME='basic-reader-image'
+CONTAINER_NAME='basic-reader'
+docker build -t $IMAGE_NAME -f Dockerfile.reader . 
+```
+*  run
+```sh
+docker run --name $CONTAINER_NAME -v $(pwd)/app:/app -t $IMAGE_NAME 
+```
+create a few files
+```
+sudo touch ./app/file1.txt ./app/file2.txt ./app/file3.txt
+```
+observe in docker console the files shown:
+```text
+[]
+['file2.txt', 'file1.txt', 'file3.txt']
+```
+
+similarly  through `docker-compose`:
+```sh
+docker-compose -f docker-compose-reader.yml up --build
+```
+```sh
+[+] Building 2.4s (8/8) FINISHED                                                
+ => [internal] load build definition from Dockerfile.reader                0.1s
+ => => transferring dockerfile: 38B                                        0.0s
+ => [internal] load .dockerignore                                          0.1s
+ => => transferring context: 2B                                            0.0s
+ => [internal] load metadata for docker.io/library/python:3.8.2-alpine     0.0s
+ => [1/3] FROM docker.io/library/python:3.8.2-alpine                       0.2s
+ => [internal] load build context                                          0.0s
+ => => transferring context: 31B                                           0.0s
+ => [2/3] WORKDIR /tmp                                                     0.2s
+ => [3/3] COPY reader.py ./                                                1.5s
+ => exporting to image                                                     0.3s
+ => => exporting layers                                                    0.2s
+ => => writing image sha256:48da6582d7fc93b2190b7cbc7e53201509c9972217ab7  0.0s
+ => => naming to docker.io/library/python:3.8.2-alpine                     0.0s
+[+] Running 1/1
+ ⠿ Container basic-volume-reader-1  R...                                  11.4s
+Attaching to basic-volume-reader-1
+basic-volume-reader-1  | ['file11.txt', 'file13.txt', 'file12.txt']
+basic-volume-reader-1  | ['file23.txt', 'file11.txt', 'file13.txt', 'file22.txt', 'file12.txt', 'file21.txt']
+basic-volume-reader-1  | ['file23.txt', 'file11.txt', 'file13.txt', 'file22.txt', 'file12.txt', 'file21.txt']
+```
 ### Cleanup
 
 ```sh
+docker-compose -f docker-compose-reader.yml  stop
+docker-compose -f docker-compose-reader.yml  rm -f
+
+docker stop $CONTAINER_NAME
+docker container rm $CONTAINER_NAME
 docker container prune -f
 docker volume rm $VOLUME_NAME
 docker image prune -f
 sudo  rm -fr app/
 ```
 
+### See Also
+  * https://stackoverflow.com/questions/3207219/how-do-i-list-all-files-of-a-directory
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -1,0 +1,11 @@
+version: '3.5'
+
+services:
+  reader:
+    build:
+      context: .
+      dockerfile: Dockerfile.reader
+    image: python:3.8.2-alpine
+    volumes:
+      - ./app:/app
+    
