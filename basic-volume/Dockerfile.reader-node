@@ -1,11 +1,9 @@
 FROM node:16.12.0-alpine3.11
 
-RUN apk update && apk add --update --no-cache curl lynx g++ make \
+RUN apk update && apk add --update --no-cache curl \
   && rm -vrf /var/cache/apk/*
-WORKDIR /application
-# NOTE: not '/app'. the /app directory is used for files
+WORKDIR /app
 ADD app.js package.json ./
-ADD public ./public/
 RUN npm install --silent
 EXPOSE 3000
-CMD ["node", "/application/app.js"]
+CMD ["node", "/app/app.js"]

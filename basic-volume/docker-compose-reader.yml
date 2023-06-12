@@ -4,8 +4,8 @@ services:
   reader:
     build:
       context: .
-      dockerfile: Dockerfile.reader
+      dockerfile: Dockerfile.reader-python
     image: python:3.8.2-alpine
     volumes:
-      - ./app:/app
+      - ./files:/files
     

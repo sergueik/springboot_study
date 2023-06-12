@@ -1,6 +1,6 @@
 import os
 
-path = '/app/number'
+path = '/files/number'
 
 if not os.path.isdir(os.path.dirname(path)):
   os.makedirs(os.path.dirname(path))

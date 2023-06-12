@@ -2,7 +2,7 @@ from os import listdir
 from os.path import isfile, join
 import time
 import sys
-volume = '/app'
+volume = '/files'
 delay = 10
 while True:
   files = []

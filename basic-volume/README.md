@@ -14,9 +14,10 @@ CONTAINER_NAME='basic-counter'
 docker build -t $IMAGE_NAME -f Dockerfile . 
 VOLUME_NAME=counter-vol
 docker volume create --name $VOLUME_NAME
-docker run --name $CONTAINER_NAME -v $VOLUME_NAME:/app -t $IMAGE_NAME 
+docker run --name $CONTAINER_NAME -v $VOLUME_NAME:/files -t $IMAGE_NAME 
 docker logs $CONTAINER_NAME
 ```
+NOTE: run without removing at the end
 it will print:
 ```text
 0
@@ -34,7 +35,7 @@ it will print
 * remove container and run again
 ```sh
 docker rm $CONTAINER_NAME
-docker run --name $CONTAINER_NAME -v $VOLUME_NAME:/app -t $IMAGE_NAME 
+docker run --name $CONTAINER_NAME -v $VOLUME_NAME:/files -t $IMAGE_NAME 
 docker logs $CONTAINER_NAME
 ```
 it will print:
@@ -78,7 +79,7 @@ sudo cat /var/lib/docker/volumes/startup-counter-vol/_data/number
 
 * 
 ```sh
-docker run --name $CONTAINER_NAME --rm -v $(pwd)/app:/app -t $IMAGE_NAME 
+docker run --name $CONTAINER_NAME --rm -v $(pwd)/files:/files -t $IMAGE_NAME 
 docker logs $CONTAINER_NAME
 ```
 it will print:
@@ -88,23 +89,23 @@ it will print:
 
 the counter will be in the file owned by root user:
 ```sh
-ls -l app/
+ls -l files/
 total 12
 -rw-r--r-- 1 root     root        1 May 30 22:43 number
 ```
 ```sh
-cat app/number
+cat files/number
 ```
 ```text
 1
 ```
 update the counter and rerun
 ```sh
-echo 42 | sudo tee app/number
+echo 42 | sudo tee files/number
 ```
 
 ```sh
-docker run --name $CONTAINER_NAME --rm -v $(pwd)/app:/app -t $IMAGE_NAME 
+docker run --name $CONTAINER_NAME --rm -v $(pwd)/files:/files -t $IMAGE_NAME 
 ```
 it will print
 ```text
@@ -114,16 +115,15 @@ it will print
 
 if not provided full path to local dir 
 ```sh
-docker run --name $CONTAINER_NAME --rm -v app:/app -t $IMAGE_NAME
-
+docker run --name $CONTAINER_NAME --rm -v files:/files -t $IMAGE_NAME
 ```
 it will not be created in the current dir:
 ```sh
-ls -l app/  
+ls -l files/  
 ```
 
 ```text
-ls: cannot access 'app/': No such file or directory
+ls: cannot access 'files/': No such file or directory
 ```
 but will be interpreted as a name of the volume
 ```sh
@@ -131,18 +131,18 @@ docker volume ls
 ```
 ```text
 DRIVER    VOLUME NAME
-local     app
+local     files
 
 ```
 ### NOTE
 
 * Directory mapping does not work right in __Docker Toolbox__ with Windows directories:
 ```cmd
-docker run --name $CONTAINER_NAME --rm -v ./app:/app:rw -t $IMAGE_NAME
+docker run --name $CONTAINER_NAME --rm -v ./files:/files:rw -t $IMAGE_NAME
 ```
 ```text
 C:\Program Files\Docker Toolbox\docker.exe: 
-Error response from daemon: create ./app: "./app" includes invalid characters for a local volume name, 
+Error response from daemon: create ./files: "./files" includes invalid characters for a local volume name, 
 only "[a-zA-Z0-9][a-zA-Z0-9_.-]" are allowed. 
 If you intended to pass a host directory, use absolute path.
 ```
@@ -192,15 +192,15 @@ number
 ```
 IMAGE_NAME='basic-reader-image'
 CONTAINER_NAME='basic-reader'
-docker build -t $IMAGE_NAME -f Dockerfile.reader . 
+docker build -t $IMAGE_NAME -f Dockerfile.reader-python . 
 ```
 *  run
 ```sh
-docker run --name $CONTAINER_NAME -v $(pwd)/app:/app -t $IMAGE_NAME 
+docker run --name $CONTAINER_NAME -v $(pwd)/files:/files -t $IMAGE_NAME 
 ```
 create a few files
 ```
-sudo touch ./app/file1.txt ./app/file2.txt ./app/file3.txt
+sudo touch ./files/file1.txt ./files/file2.txt ./files/file3.txt
 ```
 observe in docker console the files shown:
 ```text
@@ -214,7 +214,7 @@ docker-compose -f docker-compose-reader.yml up --build
 ```
 ```sh
 [+] Building 2.4s (8/8) FINISHED                                                
- => [internal] load build definition from Dockerfile.reader                0.1s
+ => [internal] load build definition from Dockerfile.reader-python         0.1s
  => => transferring dockerfile: 38B                                        0.0s
  => [internal] load .dockerignore                                          0.1s
  => => transferring context: 2B                                            0.0s
@@ -244,34 +244,38 @@ docker build -t $IMAGE_NAME -f Dockerfile.reader-node .
 ```
 
 ```sh
-docker run --name $CONTAINER_NAME -v $(pwd)/app:/app -p 3000:3000 -e PORT=3000 -t $IMAGE_NAME
+docker run --name $CONTAINER_NAME -v $(pwd)/files:/files -p 3000:3000 -e PORT=3000 -t $IMAGE_NAME
 ```
 ```sh
-sudo touch ./app/file1.txt ./app/file2.txt ./app/file3.txt
+sudo touch ./files/file1.txt ./files/file2.txt ./files/file3.txt
 ```
 
 ```sh
-curl -X POST  http://localhost:3000/app
+curl -X POST  http://localhost:3000/files
 ```
 
 ```JSON
 ["file21.txt","file22.txt","file23.txt","file31.txt","file32.txt","file33.txt"]
 ```
+
+
 ```sh
- curl -X POST  http://localhost:3000/app
+sudo touch ./files/file11.txt ./files/file12.txt ./files/file13.txt
+sudo rm ./files/file2*.txt
+```
+
+
+```sh
+curl -X POST  http://localhost:3000/files
 ```
 
 ```JSON
 ["file11.txt","file12.txt","file13.txt","file31.txt","file32.txt","file33.txt"]
 ```
 
-```sh
-sudo touch ./app/file11.txt ./app/file12.txt ./app/file13.txt
-sudo rm ./app/file21.txt ./app/file22.txt ./app/file23.txt
-```
 
 ```sh
-docker container stop  $CONTAINER_NAME
+docker container stop $CONTAINER_NAME
 docker container rm $CONTAINER_NAME
 ```
 
@@ -286,10 +290,11 @@ docker container rm $CONTAINER_NAME
 docker container prune -f
 docker volume rm $VOLUME_NAME
 docker image prune -f
-sudo  rm -fr app/
+sudo  rm -fr files/
 ```
 
 ### See Also
   * https://stackoverflow.com/questions/3207219/how-do-i-list-all-files-of-a-directory
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
