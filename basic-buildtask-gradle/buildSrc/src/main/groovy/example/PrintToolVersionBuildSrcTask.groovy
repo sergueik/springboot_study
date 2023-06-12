@@ -7,7 +7,7 @@ import org.gradle.api.tasks.Optional
 
 class PrintToolVersionBuildSrcTask extends DefaultTask {
     @Input
-    String tool = null;
+    String syntax = null;
     @Input
     String fileName = null;
     @Input
@@ -16,9 +16,22 @@ class PrintToolVersionBuildSrcTask extends DefaultTask {
     
     @TaskAction
     void printToolVersion() {
-     def propertyUpdaterBootstrap = new PropertyUpdaterBootstrap( tool, fileName, commandline)
-		propertyUpdaterBootstrap.process()
-		println "Done."
+    
+      switch (syntax) {
+            case 'java':
+			    def propertyUpdaterBootstrap = new ApplicationPropertyUpdaterBootstrap( fileName, commandline)
+					propertyUpdaterBootstrap.process()
+					println "Done."
+                break
+                break
+            case 'udeploy':
+			    def propertyUpdaterBootstrap = new UdeployPropertyUpdaterBootstrap( fileName, commandline)
+					propertyUpdaterBootstrap.process()
+					println "Done."
+                break
+            default:
+                throw new IllegalArgumentException("Unknown syntax")
+        }
 
 	}
 }

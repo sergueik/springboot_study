@@ -119,13 +119,13 @@ docker pull gradle:8.1-jdk11-alpine
 * build
 ```sh
 IMAGE=basictask-gradle
-docker build -t $IMAGE -f Dockerfile.alpine-jdk17-gradle .
+docker build -t $IMAGE -f Dockerfile.alpine-jdk8-gradle .
 ```
 * run (omit the `--rm` flag and optionally add the `--name` flag with argument to keep the container)
 ```sh
 docker container run -u root --rm -it $IMAGE
 ```
-
+repeat with each `Dockerfile.alpine-jdk11-gradle`,`Dockerfile.alpine-jdk11-gradle`,`Dockerfile.alpine-jdk11-gradle`
 
 You will get on Gradle 5.x:
 ```text

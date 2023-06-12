@@ -22,14 +22,14 @@ subprojects {
 import example.PrintToolVersionBuildSrcTask
 
 task printJavaVersionBuildSrc(type : PrintToolVersionBuildSrcTask) {
-    tool 'java'
-    printJavaVersionBuildSrc.fileName = 'application.yaml'
+    syntax 'java'
+    fileName = 'application.properties'
 }
 task printGroovyVersionBuildSrc(type : PrintToolVersionBuildSrcTask) {
     // NOTE: one may accidentally affect the other task properties 
     // by referring those in result of an copy-paste development
-    // printJavaVersionBuildSrc.tool = 'groovy'
-    tool 'groovy'
+    // printJavaVersionBuildSrc.syntax = 'udeploy'
+    syntax 'udeploy'
     fileName  'application.yaml'
     commandline 'name1=https://www.yahoo.com name2=user name3=17 name4=""'
 }
