@@ -235,6 +235,46 @@ basic-volume-reader-1  | ['file11.txt', 'file13.txt', 'file12.txt']
 basic-volume-reader-1  | ['file23.txt', 'file11.txt', 'file13.txt', 'file22.txt', 'file12.txt', 'file21.txt']
 basic-volume-reader-1  | ['file23.txt', 'file11.txt', 'file13.txt', 'file22.txt', 'file12.txt', 'file21.txt']
 ```
+
+### Node.js Exercise
+```sh
+IMAGE_NAME='basic-reader-image-node'
+CONTAINER_NAME='basic-reader-node'
+docker build -t $IMAGE_NAME -f Dockerfile.reader-node .
+```
+
+```sh
+docker run --name $CONTAINER_NAME -v $(pwd)/app:/app -p 3000:3000 -e PORT=3000 -t $IMAGE_NAME
+```
+```sh
+sudo touch ./app/file1.txt ./app/file2.txt ./app/file3.txt
+```
+
+```sh
+curl -X POST  http://localhost:3000/app
+```
+
+```JSON
+["file21.txt","file22.txt","file23.txt","file31.txt","file32.txt","file33.txt"]
+```
+```sh
+ curl -X POST  http://localhost:3000/app
+```
+
+```JSON
+["file11.txt","file12.txt","file13.txt","file31.txt","file32.txt","file33.txt"]
+```
+
+```sh
+sudo touch ./app/file11.txt ./app/file12.txt ./app/file13.txt
+sudo rm ./app/file21.txt ./app/file22.txt ./app/file23.txt
+```
+
+```sh
+docker container stop  $CONTAINER_NAME
+docker container rm $CONTAINER_NAME
+```
+
 ### Cleanup
 
 ```sh
