@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,11 +23,15 @@ import java.util.Properties;
 import javax.inject.Inject;
 
 import example.UdeployPropertyUpdater;
+import example.Utils;
 
 class UdeployPropertyUpdaterBootstrap {
 
 	private String fileName = "application.yaml";
+	private String filepath = "buildSrc/src/main/resources";
 	private String commandline = null;
+	private boolean save = true;
+	private static Utils utils = Utils.getInstance();
 
 	public void setFileName(String value) {
 		fileName = value;
@@ -51,100 +56,29 @@ class UdeployPropertyUpdaterBootstrap {
 
 	public void process() throws IOException {
 		if (commandline == null)
-			commandline = getApplicationProperties().getProperty("commandline");
-		
-		String configuration = getResourceContent(fileName);
-		System.out.println("new configuration: " + configuration);
+			commandline = utils.getApplicationProperties().getProperty("commandline");
+
+		String configuration = utils.getResourceContent(fileName);
+
+		String configurationFilePath = Paths
+				.get(String.format("%s/%s/%s", System.getProperty("user.dir"), filepath, fileName)).normalize()
+				.toAbsolutePath().toString();
+		configuration = utils.getFileContent(configurationFilePath);
+
+		System.out.println("template configuration: " + configuration);
 		List<String> tokens = Arrays.asList(commandline.split(" +"));
 		Map<String, Object> properties = new HashMap<>();
 		tokens.stream().forEach((String t) -> {
 			String[] data = t.split("=");
 			properties.put(data[0], data[1]);
 		});
-		UdeployPropertyUpdater propertyUpdater = new UdeployPropertyUpdater(
-				configuration, properties);
+		UdeployPropertyUpdater propertyUpdater = new UdeployPropertyUpdater(configuration, properties);
 		propertyUpdater.updateConfiguration();
 		configuration = propertyUpdater.getConfiguration();
 		System.err.println("new configuration: " + configuration);
+		if (save)
+			utils.writeToFile(Arrays.asList(configuration.split("\n")), configurationFilePath, true);
 
 	}
 
-	public String getResourceContent(String fileName) {
-		try {
-			final InputStream stream = this.getClass().getClassLoader()
-					.getResourceAsStream(fileName);
-			final byte[] bytes = new byte[stream.available()];
-			stream.read(bytes);
-			return new String(bytes, "UTF-8");
-		} catch (IOException e) {
-			throw new RuntimeException("No resource found: " + fileName);
-		}
-	}
-
-	public String getFileContent(String filePath) {
-		try {
-			List<String> lines = readFileLineByLine(filePath);
-			return String.join("\n", lines);
-		} catch (IOException e) {
-			throw new RuntimeException("file not found: " + filePath);
-		}
-	}
-
-	public static List<String> readFileLineByLine(String filePath)
-			throws IOException {
-		FileInputStream fis = new FileInputStream(filePath);
-		BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-		List<String> res = new ArrayList<>();
-
-		String line = null;
-		while ((line = br.readLine()) != null) {
-			res.add(line);
-		}
-		br.close();
-
-		return res;
-	}
-
-	// based on:
-	// http://www.java2s.com/example/java/java.util/get-application-properties.html
-	public Properties getApplicationProperties() throws IOException {
-		Properties appProperties = new Properties();
-		InputStream in = null;
-		try {
-			in = this.getClass().getClassLoader()
-					.getResourceAsStream("application.properties");
-			appProperties.load(in);
-			return appProperties;
-		} finally {
-			if (in != null) {
-				in.close();
-			}
-		}
-	}
-
-	public static void writeToFile(List<String> content, String filePath,
-			Boolean overwriteFlag) {
-		File file = new File(filePath);
-		if (overwriteFlag) {
-
-			try {
-				file.createNewFile();
-				FileWriter fw = null;
-				try {
-					fw = new FileWriter(file.getAbsoluteFile());
-					BufferedWriter bw = new BufferedWriter(fw);
-					for (String line : content) {
-						bw.write(line);
-						bw.newLine();
-					}
-					bw.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				System.out.println("Written content to " + filePath + " succesfully!");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 }

@@ -348,8 +348,38 @@ Done.
 
 BUILD SUCCESSFUL in 15m 5s
 7 actionable tasks: 6 executed, 1 up-to-date
-
 ```
+
+To review the updated files
+
+```sh
+NAME=basictask-gradle
+docker container run --name $NAME -u root -it $IMAGE sh
+```
+```sh
+gradle clean build printGroovyVersionBuildSrc printJavaVersionBuildSrc
+```
+```sh
+cat buildSrc/src/main/resources/application.yaml
+```
+```text
+---
+property1: https://www.yahoo.com
+property2: user
+property3: 17
+property4: default4
+# comment
+property5: value5
+```
+
+```sh
+exit
+```
+```sh
+docker stop $NAME 
+docker container rm $NAME
+```
+
 * NOTE: one may like to change the Docker machine to have two CPU when testing the gradle tasks
 
 ![Docker Machine](https://github.com/sergueik/springboot_study/blob/master/basic-buildtask-gradle/screenshots/capture-docker-machine.png)
