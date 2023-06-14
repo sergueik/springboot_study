@@ -59,7 +59,7 @@ sub encrypt {
 
     print STDERR 'Salt (random): ', byte_hex($salt), $/ if ( $self->{debug} );
 
-    my $salt_string = '0432cf3a41052a6592900c2e6c0b5c79';
+    my $salt_string = 'fec4c9acd8c72cd9790ccfb953ba48f7';
 
     my @hex = ( $salt_string =~ /(..)/g );
     my @dec = map { hex($_) } @hex;

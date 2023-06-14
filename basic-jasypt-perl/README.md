@@ -11,6 +11,15 @@ and with modified and trimmed Crypt::PBE installed into workdir for debugging
 IMAGE=basic-perl-crypt-jasypt
 docker build -t $IMAGE -f Dockerfile .
 ```
+__HINT__: do not build if the image already exists and changes are not critical: `CPAN` appears to not be always able to discover if rebuild is needed and is quite time consuming
+
+```sh
+docker images $IMAGE
+REPOSITORY                TAG       IMAGE ID       CREATED       SIZE
+basic-perl-crypt-jasypt   latest    a07da5352c7e   4 weeks ago   446MB
+```
+
+
 if the build ends with error
 
 ```text
@@ -257,6 +266,75 @@ Decrypting
 data
 
 ```
+
+### Testing the `PBEWithHmacSHA512AndAES_256`
+
+* update the `test.pl`, `Crypt/PBE.pm` and add `AES` specific modules
+* run the test once to see the random salt value and update `Crypt/PBE/PBES2.pm` *fixed* `$salt_string` accordingly
+
+* rebuild image
+
+```sh
+docker run --name $NAME -it $IMAGE sh
+```
+* run test, with `debug` flag
+```sh
+perl test.pl -debug
+```
+```text
+
+$VAR1 = \{
+            'PBEWithMD5AndDES' => {
+                                    'hash' => 'md5',
+                                    'encryption' => 'des'
+                                  }
+          };
+$VAR1 = \{
+            'PBEWithHmacSHA512AndAES_256' => {
+                                               'encryption' => 'aes-256',
+                                               'hmac' => 'hmac-sha512'
+                                             }
+          };
+PBEWithMD5AndDES
+PBEWithHmacSHA512AndAES_256
+password: password
+value: test
+Encrypting
+Salt (random): c6a7c6e135c5174b920e9c668555b0e2
+$VAR1 = [
+          254,
+          196,
+          201,
+          172,
+          216,
+          199,
+          44,
+          217,
+          121,
+          12,
+          207,
+          185,
+          83,
+          186,
+          72,
+          247
+        ];
+Salt (fixed): fec4c9acd8c72cd9790ccfb953ba48f7
+key: 728fd1e13922c02eb7ce70e5e71a03ef72385d9c46ef08e0a14c2a3776361374
+Salt: fec4c9acd8c72cd9790ccfb953ba48f7
+Iv: 65b19c50b76ceaf5e151901975e9aa09
+Encrypted: 1932b6e933f30ed285699cb92695f52c
+/sTJrNjHLNl5DM+5U7pI92WxnFC3bOr14VGQGXXpqgkZMrbpM/MO0oVpnLkmlfUs
+
+Decrypting
+Salt: fec4c9acd8c72cd9790ccfb953ba48f7
+Iv: 65b19c50b76ceaf5e151901975e9aa09
+Encrypted: 1932b6e933f30ed285699cb92695f52c
+key: 728fd1e13922c02eb7ce70e5e71a03ef72385d9c46ef08e0a14c2a3776361374
+test
+
+```
+
 ### See Also
 
   * `Crypt::PBE` [module](https://metacpan.org/pod/Crypt::PBE)
