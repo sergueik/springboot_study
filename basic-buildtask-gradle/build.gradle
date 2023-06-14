@@ -24,13 +24,16 @@ import example.PrintToolVersionBuildSrcTask
 task printJavaVersionBuildSrc(type : PrintToolVersionBuildSrcTask) {
     syntax 'java'
     fileName = 'application.properties'
+    // NOTE: missing /empty filePath currently is not handled well
+    filePath 'buildSrc/src/main/resources'
 }
 task printGroovyVersionBuildSrc(type : PrintToolVersionBuildSrcTask) {
     // NOTE: one may accidentally affect the other task properties 
     // by referring those in result of an copy-paste development
     // printJavaVersionBuildSrc.syntax = 'udeploy'
     syntax 'udeploy'
-    fileName  'application.yaml'
+    fileName 'application.yaml'
+    filePath 'buildSrc/src/main/resources'
     commandline 'name1=https://www.yahoo.com name2=user name3=17 name4=""'
 }
 

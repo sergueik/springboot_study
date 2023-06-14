@@ -24,6 +24,7 @@ import javax.inject.Inject;
 class Utils {
 	private static Utils instance = new Utils();
 	private boolean debug = false;
+
 	public void setDebug(boolean value) {
 		debug = value;
 	}
@@ -34,7 +35,6 @@ class Utils {
 	public static Utils getInstance() {
 		return instance;
 	}
-
 
 	public String getResourceContent(String fileName) {
 		try {
@@ -87,6 +87,12 @@ class Utils {
 				in.close();
 			}
 		}
+	}
+
+	public static void writeToFile(String content, String filePath,
+			Boolean overwriteFlag) {
+		writeToFile(Arrays.asList(content.split("\n")), filePath,
+				overwriteFlag);
 	}
 
 	public static void writeToFile(List<String> content, String filePath,

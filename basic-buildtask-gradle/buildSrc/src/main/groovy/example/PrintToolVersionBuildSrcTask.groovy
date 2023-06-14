@@ -12,6 +12,9 @@ class PrintToolVersionBuildSrcTask extends DefaultTask {
     String fileName = null;
     @Input
     @Optional
+    String filePath = null;
+    @Input
+    @Optional
     String commandline = null;
     
     @TaskAction
@@ -19,15 +22,19 @@ class PrintToolVersionBuildSrcTask extends DefaultTask {
     
       switch (syntax) {
             case 'java':
-			    def propertyUpdaterBootstrap = new ApplicationPropertyUpdaterBootstrap( fileName, commandline)
-					propertyUpdaterBootstrap.process()
-					println "Done."
+			    def propertyUpdaterBootstrap = new ApplicationPropertyUpdaterBootstrap( fileName, '',  commandline)
+			    if (filePath) 
+			    	propertyUpdaterBootstrap.setFilePath(filePath)
+				propertyUpdaterBootstrap.process()
+				println "Done."
                 break
                 break
             case 'udeploy':
 			    def propertyUpdaterBootstrap = new UdeployPropertyUpdaterBootstrap( fileName, commandline)
-					propertyUpdaterBootstrap.process()
-					println "Done."
+			    if (filePath != null) 
+			    	propertyUpdaterBootstrap.setFilePath(filePath)
+				propertyUpdaterBootstrap.process()
+				println "Done."
                 break
             default:
                 throw new IllegalArgumentException("Unknown syntax")
