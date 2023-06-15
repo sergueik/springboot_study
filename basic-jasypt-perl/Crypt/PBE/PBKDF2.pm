@@ -7,7 +7,8 @@ use utf8;
 use Carp;
 use POSIX;
 use MIME::Base64;
-use Digest::SHA qw(hmac_sha1 hmac_sha224 hmac_sha256 hmac_sha384 hmac_sha512);
+# removed code except one encoding/ one hash for readability
+use Digest::SHA qw( hmac_sha512);
 use Data::Dumper;
 use Exporter qw(import);
 
@@ -121,11 +122,16 @@ sub pbkdf2 {
     my $c     = delete( $params{count} )    || 1_000;
     my $dkLen = delete( $params{dk_len} )   || 0;
     my $PRF   = delete( $params{prf} )      || 'hmac-sha1';
+    print "\$P = $P\n";
+    print "\$S =  ", byte_hex($S), "\n";
 
     $PRF =~ s/-/_/;
-
+    # print "\$PRF = $PRF\n";
+    # $PRF = hmac_sha512
     my $hLen = 20;
     $dkLen ||= 0;
+    # print "\$dkLen = $dkLen\n";
+    # $dkLen = 32
     $c     ||= 1_000;
 
     my %hmac_length = ( 'hmac_sha512' => ( 512 / 8 ), );
@@ -135,19 +141,25 @@ sub pbkdf2 {
     }
 
     $hLen = $hmac_length{$PRF};
-
+    # print "\$hLen = $hLen\n";
+    # $hLen = 64
     if ( $dkLen > ( 2**32 - 1 ) * $hLen ) {
         croak 'derived key too long';
     }
 
     my $l = ( $dkLen > 0 ) ? POSIX::ceil( $dkLen / $hLen ) : 1;
+    # print "\$l = $l\n";
+    # $l = 1
 
     my $r = $dkLen - ( $l - 1 ) * $hLen;
+    # print "\$r = $r\n";
+    # $r = 32
     my $T = undef;
 
     for ( my $i = 1 ; $i <= $l ; $i++ ) {
         $T .= _pbkdf2_F( $PRF, $P, $S, $c, $i );
     }
+    print "\$T = ", byte_hex($T),"\n";
 
     my $DK = $T;
 
@@ -166,10 +178,16 @@ sub _pbkdf2_F {
     no strict 'refs';    ## no critic
 
     my $U = &{$PRF}( $S . pack( 'N', $i ), $P );
+    # print "\$U = $U\n";
+    # $S.pack('N',1) is simply $S
 
     my $U_x = $U;
 
     for ( my $x = 1 ; $x < $c ; $x++ ) {
+        # concat and digest ?
+        # see https://perldoc.perl.org/Digest::SHA
+        # sha512($data, ..., $key)
+        # Logically joins the arguments into a single string, and returns its SHA-1/224/256/384/512 digest encoded as a binary string.
         $U_x = &{$PRF}( $U_x, $P );
         $U ^= $U_x;
     }
