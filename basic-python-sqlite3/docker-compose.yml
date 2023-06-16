@@ -1,8 +1,7 @@
-version: '2.2'
+version: '3.2'
 services:
-    web:
-        build: .
-        ports:
-            - "5000:5000"
-        volumes:
-            - .:/web
+  python-sqlite3:
+    container_name: python-sqlite3
+    build: .
+    ports:
+      - "5000:5000"

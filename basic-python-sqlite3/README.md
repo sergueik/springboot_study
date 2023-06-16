@@ -11,12 +11,24 @@ docker-compose up --build
 URL=http://localhost:5000/api/v1/resources/books
 curl -s "$URL/all"
 ```
+
+To debug:
+```sh
+docker build -t test -f Dockerfile .
+docker run  -it test sh
+```
+
+then
+```sh
+python app.py
+```
 ### See Also 
 
   * the original [blog](https://deparkes.co.uk/2018/03/02/simple-docker-flask-sqlite-api/)
   * __uwsgi-nginx-flask-python-sqlite-docker-example__ [example](https://github.com/maltesander/uwsgi-nginx-flask-python-sqlite-docker-example) of a dockerized Flask webserver with uWSGI and Nginx with a simple REST API to access a Sqlite database intended to simplify it to a barebones REST server backed by SQLIte3
 
     * [tutorial-academy.com](http://tutorial-academy.com/uwsgi-nginx-flask-python-sqlite-docker-example)
+    * [explanaion](https://www.geeksforgeeks.org/with-statement-in-python/) of `with` statement in Python
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
