@@ -1,5 +1,0 @@
-FROM gradle:7.3.1-jdk17-alpine
-WORKDIR /work
-ADD buildSrc ./buildSrc/
-COPY build.gradle dependencies.gradle versioning.gradle settings.gradle ./
-CMD ["gradle", "clean", "build", "printGroovyVersionBuildSrc"]

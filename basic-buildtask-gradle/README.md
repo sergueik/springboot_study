@@ -109,35 +109,22 @@ BUILD SUCCESSFUL in 1s
 4 actionable tasks: 4 executed
 ```
 ### Docker Alpine Test
-* pull
-```sh
-docker pull gradle:5.4.1-jdk8-alpine
-docker pull gradle:7.3.1-jdk17-alpine
-docker pull gradle:8.1-jdk11-alpine
-```
-* repeat the following steps for all gradle releases
-* build
+
+* build, specifying the base image via `build-arg`, note the syntax)
 ```sh
 IMAGE=basictask-gradle
-docker build -t $IMAGE -f Dockerfile.alpine-jdk8-gradle .
+BASE=gradle:5.4.1-jdk8-alpine
+docker pull $BASE
+docker build --build-arg "BASE=$BASE" -t $IMAGE -f Dockerfile .
 ```
-* run (omit the `--rm` flag and optionally add the `--name` flag with argument to keep the container)
+* run (omit the `--rm` flag and optionally add provide the `--name` flag with argument if intended to keep the container)
 ```sh
 docker container run -u root --rm -it $IMAGE
 ```
-repeat with each `Dockerfile.alpine-jdk11-gradle`,`Dockerfile.alpine-jdk11-gradle`,`Dockerfile.alpine-jdk11-gradle`
+repeat with seting `BASE` to `gradle:8.1-jdk11-alpine`,`gradle:7.3.1-jdk17-alpine`
 
-You will get on Gradle 5.x:
+You will get similar output (sans the banner) on Gradle 5.x, Gradle 7.x and Gradle 8.x:
 ```text
-Welcome to Gradle 5.4.1!
-
-Here are the highlights of this release:
- - Run builds with JDK12
- - New API for Incremental Tasks
- - Updates to native projects, including Swift 5 support
-
-For more details see https://docs.gradle.org/5.4.1/release-notes.html
-
 Starting a Gradle Daemon (subsequent builds will be faster)
 > Task :buildSrc:compileJava
 > Task :buildSrc:compileGroovy
@@ -168,8 +155,8 @@ Starting a Gradle Daemon (subsequent builds will be faster)
 > Task :build
 
 > Task :printGroovyVersionBuildSrc
-Processing tool: groovy
-new configuration: ---
+reading template configuration from file: /work/buildSrc/src/main/resources/application.yaml
+template configuration: ---
 property1: {{* name1||default1 *}}
 property2: {{* name2||default2 *}}
 property3: {{* name3||default3 *}}
@@ -177,7 +164,6 @@ property4: {{* name4||default4 *}}
 # comment
 property5: value5
 
-
 new configuration: ---
 property1: https://www.yahoo.com
 property2: user
@@ -192,165 +178,24 @@ property3: 17
 property4: default4
 # comment
 property5: value5
-TODO: GroovySystem.getVersion()
+Written content to /work/buildSrc/src/main/resources/application.yaml succesfully!
 Done.
 
-> Task :printJavaVersionBuildSrc FAILED
+> Task :printJavaVersionBuildSrc
+filePath: buildSrc/src/main/resources
+reading template configuration from file: /work/buildSrc/src/main/resources/application.properties
+template configuration: commandline: name1=https://www.google.com name2=admin name3=42 name4=""
+example: "${name1} ${name2} ${name3} ${name4}"
+new configuration: commandline: name1=https://www.google.com name2=admin name3=42 name4=""
+example: "https://www.google.com admin 42 """
+Written content to /work/buildSrc/src/main/resources/application.properties succesfully!
+Done.
 
-FAILURE: Build failed with an exception.
-
-* What went wrong: A problem was found with the configuration of task ':printJavaVersionBuildSrc'.
-> No value has been specified for property 'commandline'.
-
-* Try:
-Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
-
-* Get more help at https://help.gradle.org
-
-BUILD FAILED in 12m 46s
+BUILD SUCCESSFUL in 6m 29s
 4 actionable tasks: 3 executed, 1 up-to-date
-
 ```
 
-
-You will get on Gradle 7.x:
-```text
-Welcome to Gradle 7.3.1!
-
-Here are the highlights of this release:
- - Easily declare new test suites in Java projects
- - Support for Java 17
- - Support for Scala 3
-
-For more details see https://docs.gradle.org/7.3.1/release-notes.html
-
-Starting a Gradle Daemon (subsequent builds will be faster)
-> Task :buildSrc:compileJava
-d^H^H> Task :buildSrc:compileGroovy
-> Task :buildSrc:processResources
-> Task :buildSrc:classes
-> Task :buildSrc:jar
-> Task :buildSrc:assemble
-> Task :buildSrc:compileTestJava NO-SOURCE
-> Task :buildSrc:compileTestGroovy NO-SOURCE
-> Task :buildSrc:processTestResources NO-SOURCE
-> Task :buildSrc:testClasses UP-TO-DATE
-> Task :buildSrc:test NO-SOURCE
-> Task :buildSrc:check UP-TO-DATE
-> Task :buildSrc:build
-> Task :clean UP-TO-DATE
-> Task :compileJava NO-SOURCE
-> Task :compileGroovy NO-SOURCE
-> Task :processResources NO-SOURCE
-> Task :classes UP-TO-DATE
-> Task :jar
-> Task :assemble
-> Task :compileTestJava NO-SOURCE
-> Task :compileTestGroovy NO-SOURCE
-> Task :processTestResources NO-SOURCE
-> Task :testClasses UP-TO-DATE
-> Task :test NO-SOURCE
-> Task :check UP-TO-DATE
-> Task :build
-
-> Task :printGroovyVersionBuildSrc
-Processing tool: groovy
-new configuration: ---
-property1: {{* name1||default1 *}}
-property2: {{* name2||default2 *}}
-property3: {{* name3||default3 *}}
-property4: {{* name4||default4 *}}
-# comment
-property5: value5
-new configuration: ---
-property1: https://www.yahoo.com
-property2: user
-property3: 17
-property4: default4
-# comment
-property5: value5
-new configuration: ---
-property1: https://www.yahoo.com
-property2: user
-property3: 17
-property4: default4
-# comment
-property5: value5
-TODO: GroovySystem.getVersion()
-Done.
-
-BUILD SUCCESSFUL in 8m
-7 actionable tasks: 6 executed, 1 up-to-date
-
-```
-
-
-You will get on Gradle 8.x:
-```text
-
-Welcome to Gradle 8.1.1!
-
-Here are the highlights of this release:
- - Stable configuration cache
- - Experimental Kotlin DSL assignment syntax
- - Building with Java 20
-
-For more details see https://docs.gradle.org/8.1.1/release-notes.html
-
-Starting a Gradle Daemon (subsequent builds will be faster)
-> Task :buildSrc:compileJava
-> Task :buildSrc:compileGroovy
-> Task :buildSrc:processResources
-> Task :buildSrc:classes
-> Task :buildSrc:jar
-> Task :clean UP-TO-DATE
-> Task :compileJava NO-SOURCE
-> Task :compileGroovy NO-SOURCE
-> Task :processResources NO-SOURCE
-> Task :classes UP-TO-DATE
-> Task :jar
-> Task :assemble
-> Task :compileTestJava NO-SOURCE
-> Task :compileTestGroovy NO-SOURCE
-> Task :processTestResources NO-SOURCE
-> Task :testClasses UP-TO-DATE
-> Task :test NO-SOURCE
-> Task :check UP-TO-DATE
-> Task :build
-
-> Task :printGroovyVersionBuildSrc
-Processing tool: groovy
-new configuration: ---
-property1: {{* name1||default1 *}}
-property2: {{* name2||default2 *}}
-property3: {{* name3||default3 *}}
-property4: {{* name4||default4 *}}
-# comment
-property5: value5
-
-
-new configuration: ---
-property1: https://www.yahoo.com
-property2: user
-property3: 17
-property4: default4
-# comment
-property5: value5
-new configuration: ---
-property1: https://www.yahoo.com
-property2: user
-property3: 17
-property4: default4
-# comment
-property5: value5
-TODO: GroovySystem.getVersion()
-Done.
-
-BUILD SUCCESSFUL in 15m 5s
-7 actionable tasks: 6 executed, 1 up-to-date
-```
-
-To review the updated files
+To review the updated files, keep the container and print the file after. To troubleshoot, run shell in the container
 
 ```sh
 NAME=basictask-gradle
@@ -380,7 +225,7 @@ docker stop $NAME
 docker container rm $NAME
 ```
 
-* NOTE: one may like to change the Docker machine to have two CPU when testing the gradle tasks
+* NOTE: one may find it useful to increase the Docker machine system to two CPU when testing the gradle tasks
 
 ![Docker Machine](https://github.com/sergueik/springboot_study/blob/master/basic-buildtask-gradle/screenshots/capture-docker-machine.png)
 
