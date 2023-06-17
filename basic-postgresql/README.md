@@ -177,7 +177,7 @@ can now uninstall postgresql
 
 stop postgresql running on host:
 ```sh
-sudo  /etc/init.d/postgresql  stop
+sudo /etc/init.d/postgresql  stop
 ```
 ```text
 [ ok ] Stopping postgresql (via systemctl): postgresql.service.
@@ -212,7 +212,7 @@ docker container start $SERVER_NAME
 ```text
 postgres-database
 ```
-* pull the smallest possible postgresql container image 
+* pull the [smallest possible postgresql container image](https://hub.docker.com/r/kiasaki/alpine-postgres/)
 ```
 docker pull kiasaki/alpine-postgres
 ```
@@ -221,14 +221,50 @@ launch the database named container
 SERVER_NAME=postgres-database
 docker run --name $SERVER_NAME -e POSTGRES_PASSWORD=postgres -d kiasaki/alpine-postgres
 ```
-- this will fail
+- this will fail on __Docker Toolbox__ with
+```text
+PostgreSQL stand-alone backend 9.6.5
+backend> statement: ALTER USER postgres WITH SUPERUSER PASSWORD 'postgres';
 
+backend>
+waiting for server to start....FATAL:  could not create lock file "/run/postgres
+ql/.s.PGSQL.5432.lock": No such file or directory
+LOG:  database system is shut down
+ stopped waiting
+pg_ctl: could not start server
+Examine the log output.
+
+/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+
+pg_ctl: PID file "/var/lib/postgresql/data/postmaster.pid" does not exist Is server running?
+FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory
+LOG:  database system is shut down
+```
+
+on a Linux host it will succeed with:
+```text
+2023-06-17 14:48:41.201 UTC [31] LOG:  shutting down
+2023-06-17 14:48:41.674 UTC [29] LOG:  database system is shut down
+ done
+server stopped
+2023-06-17 14:48:41.712 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2023-06-17 14:48:41.712 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2023-06-17 14:48:41.752 UTC [1] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-06-17 14:48:41.795 UTC [1] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-06-17 14:48:41.864 UTC [40] LOG:  database system was shut down at 2023-06-17 14:48:41 UTC
+2023-06-17 14:48:41.884 UTC [1] LOG:  database system is ready to accept connections
+```
+stop the container and focus on client code in selected language
+```sh
+
+```
+Alternatively
 change `SERVER_IMAGE` and rebuild the container from plain alpine:
 ```sh
 SERVER_IMAGE=alpine-postgres
 docker build -f Dockerfile.$SERVER_IMAGE -t $SERVER_IMAGE .
 ```
-run container from the built image. NOTE: not exposing the port `5432`, will be connecting containrs over Docker network.
+run container from the built image. NOTE: not exposing the port `5432`, will be connecting containres over Docker network.
 ```sh
 SERVER_NAME=postgres-database
 docker run --name $SERVER_NAME -e POSTGRES_PASSWORD=postgres -d $SERVER_IMAGE
@@ -570,19 +606,205 @@ keys: example 1,example 5,example 3
 #### TODO 
 One can install [docker container](https://hub.docker.com/r/dpage/pgadmin4/tags) with based web client pg admin 4 on xenial. Alternatiely pick a smalleralpine based [image](https://hub.docker.com/layers/huggla/sam-pgadmin/4.20/images/sha256-8867f605c49e9ccdbb52858decd15258c144c7b183dd2532964bed48bcb0dcc5?context=explore)	
 
+### Notes
+```sh
+psql -h 172.17.0.2 -p 5432 --username postgres --password
+Password:
+psql: FATAL:  password authentication failed for user "postgres"
+``` 
+```sh
+ psql -h 127.0.0.1 -p 5432 --username postgres --password
+Password:
+psql (11.11)
+Type "help" for help.
 
+postgres=# \l
+                                 List of databases
+   Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges
+-----------+----------+----------+------------+------------+-----------------------
+ example   | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
+
+...
+```
+
+
+```sh
+psql -h postgres-database -p 5432 --username postgres --password
+```
+https://www.bigbinary.com/blog/configure-postgresql-to-allow-remote-connection
+```sh
+
+ nc -z postgres-database 5432
+/tmp # echo $?
+0
+
+pip install py-postgresql
+python
+```
+```
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/usr/local/lib/python3.8/site-packages/postgresql/__init__.py", line 92, in open
+    c.connect()
+  File "/usr/local/lib/python3.8/site-packages/postgresql/driver/pq3.py", line 2441, in connect
+    self._establish()
+  File "/usr/local/lib/python3.8/site-packages/postgresql/driver/pq3.py", line 2567, in _establish
+    self.typio.raise_client_error(could_not_connect, creator = self, cause = exc)
+  File "/usr/local/lib/python3.8/site-packages/postgresql/driver/pq3.py", line 517, in raise_client_error
+    raise client_error
+postgresql.exceptions.ClientCannotConnectError: could not establish connection to server
+  CODE: 08001
+  LOCATION: CLIENT
+CONNECTION: [failed]
+  failures[0]:
+    NOSSL socket('172.17.0.2', 5432)
+    postgresql.exceptions.AuthenticationSpecificationError: password authentication failed for user "postgres"
+      CODE: 28P01
+      LOCATION: File 'auth.c', line 337, in auth_failed from SERVER
+CONNECTOR: [Host] pq://postgres:***@postgres-database:5432/example
+  category: None
+DRIVER: postgresql.driver.pq3.Driver
+```
+```sh
+apk add postgresql
+```
+```sh
+psql -h postgres-database -p 5432 --username postgres --password
+Password:
+psql: error: FATAL:  password authentication failed for user "postgres"
+
+```
+
+```sh
+docker pull postgres:9.6-alpine3.13
+
+docker run -d --name postgres-database -e POSTGRES_PASSWORD=password postgres:9.6-alpine3.13
+docker run --link postgres-database -it python:3.8.2-alpine sh
+
+```
+
+
+```sh
+ psql -h $(hostname -i) -p 5432 --username postgres --password
+Password for user postgres:
+psql (9.6.22)
+Type "help" for help.
+
+postgres=# \l
+                                 List of databases
+   Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges
+-----------+----------+----------+------------+------------+-----------------------
+ postgres  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
+ template0 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+           |          |          |            |            | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+           |          |          |            |            | postgres=CTc/postgres
+
+CREATE DATABASE
+postgres=#
+postgres=# \c example
+Password:
+You are now connected to database "example" as user "postgres".
+CREATE TABLE rest ( id serial PRIMARY KEY NOT NULL, key varchar(100) NOT NULL, value varchar(250) NOT NULL, rand smallint NOT NULL);
+
+
+example=# \d
+             List of relations
+ Schema |    Name     |   Type   |  Owner
+--------+-------------+----------+----------
+ public | rest        | table    | postgres
+ public | rest_id_seq | sequence | postgres
+(2 rows)
+
+```
+```
+pip install
+python
+import postgresql
+db = postgresql.open('pq://postgres:password@postgres-database:5432/example')
+>>> db
+<postgresql.driver.pq3.Connection[pq://postgres:***@postgres-database:5432/example] b'I'>
+
+make_emp = db.prepare("INSERT INTO rest (key,value,rand) VALUES ($1, $2, $3)")
+make_emp("key1", "value1", 32)
+
+```
+
+on database side
+
+```
+ \d rest
+                                 Table "public.rest"
+ Column |          Type          |                     Modifiers                
+--------+------------------------+---------------------------------------------------
+ id     | integer                | not null default nextval('rest_id_seq'::regclass)
+ key    | character varying(100) | not null
+ value  | character varying(250) | not null
+ rand   | smallint               | not null
+Indexes:
+    "rest_pkey" PRIMARY KEY, btree (id)
+
+example=# select * from rest;
+ id | key  | value  | rand
+----+------+--------+------
+  1 | key1 | value1 |   32
+
+```
+
+```sql
+CREATE TABLE cache ( id serial PRIMARY KEY NOT NULL, hostname varchar(100) NOT NULL, value varchar(250) NOT NULL, timestamp bigint NOT NULL);
+
+
+```
+```text
+CREATE TABLE
+```
+```
+CREATE INDEX cache_hostname ON cache ( hostname);
+```
+* the [multi column index](https://www.tutlane.com/tutorial/sqlite/sqlite-indexes) is relevant for SQLite cache, not needed for PostgreSQL one
+```sql
+CREATE INDEX cache_hostname_timestamp ON cache ( hostname,timestamp);
+```
+
+```
+db.close()
+from datetime import datetime,timedelta
+
+db = postgresql.open('pq://postgres:password@postgres-database:5432/example')
+make_emp = db.prepare('INSERT INTO cache (hostname,value,timestamp) VALUES ($1, $2, $3)')
+timestamp = int(datetime.now().strftime('%s'))
+make_emp("host1", "value1", timestamp)
+
+query_timestamp = int((datetime.now() - timedelta(seconds=60)).strftime('%s'))
+res = db.query('select * from cache where timestamp > $1' , query_timestamp)
+res
+[]
+make_emp = db.query('DELETE FROM cache where timestamp < $1', query_timestamp)
+db.close()
+```
+
+```sh
+docker container stop postgres-database
+```
+```sh
+docker container ls -a | grep -v postgres-database | awk '{print $1}'| xargs -IX docker container rm X
+```
 ### See also
 
- * another basic [jdbc postgress example](https://github.com/christosperis/spring-jdbctemplate-postgresql-example)
- * [initialize default user and password in postgresql](https://chartio.com/resources/tutorials/how-to-set-the-default-user-password-in-postgresql/)
- * postgresql [command rederence](https://www.tutorialspoint.com/postgresql/postgresql_select_database.htm)
- * Docker [image](https://hub.docker.com/r/kiasaki/alpine-postgres/) and [github repository](https://hub.docker.com/r/kiasaki/alpine-postgres/dockerfile)
- * configuring "sticky" versions with [apk](https://superuser.com/questions/1055060/how-to-install-a-specific-package-version-in-alpine)
+  * another basic [jdbc postgress example](https://github.com/christosperis/spring-jdbctemplate-postgresql-example)
+  * [initialize default user and password in postgresql](https://chartio.com/resources/tutorials/how-to-set-the-default-user-password-in-postgresql/)
+  * postgresql [command rederence](https://www.tutorialspoint.com/postgresql/postgresql_select_database.htm)
+  * Docker [image](https://hub.docker.com/r/kiasaki/alpine-postgres/) and [github repository](https://hub.docker.com/r/kiasaki/alpine-postgres/dockerfile)
+  * configuring "sticky" versions with [apk](https://superuser.com/questions/1055060/how-to-install-a-specific-package-version-in-alpine)
   * [basics of installing postgresql in ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04)
   * [pgadmin](https://www.pgadmin.org/download/)
   * Cluster conriguration [instructions](https://linuxhint.com/postgresql_docker/)  for `dpage/pgadmin4` and `postgres`
   * misc. PostgreSQL hint link [post](https://habr.com/ru/post/667428/) (in Russian)  
+  * [Docker inventory inspection for Dockerizer Postgres](https://habr.com/ru/companies/piter/articles/736332/) (in Russian)
+  * [py-postgresql](https://pypi.org/project/py-postgresql/)  
 
-  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
+

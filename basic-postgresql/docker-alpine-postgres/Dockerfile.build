@@ -1,29 +1,21 @@
-# origin: https://github.com/onjin/docker-alpine-postgres/blob/master/DockerfileARG ALPINE_VERSION="3.9"
+# origin: https://github.com/onjin/docker-alpine-postgres/blob/master/Dockerfile
+
+ARG ALPINE_VERSION="3.9.5"
 
 FROM alpine:${ALPINE_VERSION}
 
-ARG PG_MAJOR="13.0"
-ARG PG_VERSION="13.0"
+ARG PG_MAJOR="9.6"
+ARG PG_VERSION="9.6.5"
 ARG GOSU_VERSION="1.12"
 ARG BUILD_DATE
 ARG VCS_REF
 ARG VERSION
-LABEL org.label-schema.build-date=$BUILD_DATE \
-		org.label-schema.name="Minimal PostgreSQL image based on Alpine Linux" \
-		org.label-schema.description="Minimal PostgreSQL image based on Alpine Linux" \
-		org.label-schema.url="https://github.com/onjin/docker-alpine-postgres" \
-		org.label-schema.vcs-ref=$VCS_REF \
-		org.label-schema.vcs-url="https://github.com/onjin/docker-alpine-postgres" \
-		org.label-schema.vendor="Marek Wywiał" \
-		org.label-schema.version=$PG_VERSION \
-		org.label-schema.schema-version="1.0"
-
 
 ENV PATH /usr/lib/postgresql/${PG_MAJOR}/bin:$PATH
 ENV PGDATA /var/lib/postgresql/data
 
 ENV LANG en_US.utf8
-RUN set -eux; \
+RUN set -ux; \
 	addgroup -g 70 -S postgres; \
 	adduser -u 70 -S -D -G postgres -H -h /var/lib/postgresql -s /bin/sh postgres; \
 	mkdir -p /var/lib/postgresql; \
@@ -32,7 +24,7 @@ RUN set -eux; \
 # echo "$PG_SHA256 *postgresql.tar.bz2" | sha256sum -c -; \
 RUN set -eux; \
     \
-    wget -O postgresql.tar.bz2 https://ftp.postgresql.org/pub/source/v${PG_VERSION}/postgresql-${PG_VERSION}.tar.bz2 ; \
+    wget --timeout=600 -O postgresql.tar.bz2 https://ftp.postgresql.org/pub/source/v${PG_VERSION}/postgresql-${PG_VERSION}.tar.bz2 ; \
 	mkdir -p /usr/src/postgresql; \
 	tar \
 		--extract \
@@ -53,6 +45,7 @@ RUN set -eux; \
 		libedit-dev \
 		libxml2-dev \
 		libxslt-dev \
+		llvm-dev  \
 		linux-headers \
 		llvm10-dev clang g++ \
 		make \
