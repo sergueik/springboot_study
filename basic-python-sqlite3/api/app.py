@@ -1,9 +1,12 @@
 from flask import Flask, request, jsonify, render_template
 import sqlite3 as sqlite
 import sys
+import datetime
 import os
-app = Flask(__name__)
 
+app = Flask(__name__)
+global databasefile
+databasefile = '../data/books.db'
 # with statement in Python
 class DbWrapper(object):
   def __init__(self, db):
@@ -33,16 +36,16 @@ def page_not_found(e):
   return render_template('404.html'), 404
 
 # A route to return all of the available entries in our catalog.
-@app.route('/api/v1/resources/books/all', methods=['GET'])
+@app.route('/books', methods=['GET'])
 def api_all():
   results = []  
-  with DbWrapper('../data/books.db') as conn:
+  with DbWrapper(databasefile ) as conn:
     conn.row_factory = dict_factory
     cur = conn.cursor()
-    results = cur.execute("SELECT * FROM books;").fetchall()
+    results = cur.execute('SELECT * FROM books;').fetchall()
   return jsonify(results)
 
-@app.route("/api/v1/resources/books", methods=['GET'])
+@app.route('/book', methods=['GET'])
 def api_filter():
   query_parameters = request.args
   
@@ -54,13 +57,13 @@ def api_filter():
   query = build_select_books_query(author, id, published, to_filter)
   results = []
   
-  with DbWrapper('../data/books.db') as conn:
+  with DbWrapper(databasefile ) as conn:
     cur = conn.cursor()
     results = cur.execute(query, to_filter).fetchall()
   
   return jsonify(results)
 
-@app.route("/api/v1/resources/books/json", methods=['GET'])
+@app.route('/book/json', methods=['GET'])
 def api_filter_json():
   books = request.get_json()
   results = []
@@ -73,7 +76,7 @@ def api_filter_json():
     query = build_select_books_query(author, id, published, to_filter)
 
     resuts = []
-    with DbWrapper('../data/books.db') as conn:
+    with DbWrapper(databasefile ) as conn:
       conn.row_factory = dict_factory
       cur = conn.cursor()
       results.append(cur.execute(query, to_filter).fetchall()[0])
@@ -82,7 +85,7 @@ def api_filter_json():
 
 
 def build_select_books_query(author, id, published, to_filter):
-  query = "SELECT * FROM books WHERE"
+  query = 'SELECT * FROM books WHERE'
   if id:
     query += ' id=? AND'
     to_filter.append(id)
@@ -96,6 +99,19 @@ def build_select_books_query(author, id, published, to_filter):
     return page_not_found(404)
   query = query[:-4] + ';'
   return query
+
+@app.route('/books', methods = ['POST'])
+def currencyConvert():
+  hostname = request.form['hostname']
+  info = request.form['info']
+  value = float(request.form['value'])
+  timestamp = datetime.datetime.now().strftime('%s')
+  # datetime.datetime.now() - datetime.timedelta(seconds=60)
+  response = 'hostname={} info={} value={} timestamp={}'.format(hostname,info,str(value),timestamp)
+  print(response, file=sys.stderr)
+  sys.stderr.flush()
+  # update the page: not returning anything will raise TypeError
+  return render_template('index.html', hostname = hostname, value = str(value), timestamp = timestamp )
 
 
 if __name__ == '__main__':

@@ -22,6 +22,50 @@ then
 ```sh
 python app.py
 ```
+
+```sh
+curl -X GET http://192.168.99.100:5000/book?author=David+Brin
+```
+
+```JSON
+[
+  [
+    null,
+    1988,
+    "David Brin",
+    "The Uplift War",
+    "There had never been such traffic at Port Helenia\u2019s sleepy landing field\u2014not in all the years Fiben Bolger had lived here."
+  ],
+  [
+    null,
+    1984,
+    "David Brin",
+    "Startide Rising",
+    "Fins had been making wisecracks about human beings for thousands of years."
+  ]
+]
+```
+
+```sh
+URL=http://$(docker-machine ip):5000/books
+curl -sX POST -d 'hostname=localhost&info=something&value=10' "$URL"
+```
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Page</title>
+  </head>
+  <body>
+          <div>hostname=localhost</div>
+          <div>info=</div>
+          <div>value=10.0</div>
+          <div>timestamp=1686960404</div>
+  </body>
+</html>
+
+```
 ### See Also 
 
   * the original [blog](https://deparkes.co.uk/2018/03/02/simple-docker-flask-sqlite-api/)
