@@ -66,13 +66,50 @@ curl -sX POST -d 'hostname=localhost&info=something&value=10' "$URL"
 </html>
 
 ```
+### SQLite Cache Use Scenario
+
+With help of [code2flow](https://app.code2flow.com) - online [graphviz](https://graphviz.org/download/)-like flowchart creator by Code Charm, Inc - one can construct the flowchart of the program in the browser
+
+![Flow](https://github.com/sergueik/springboot_study/blob/master/basic-python-sqlite3/screenshots/capture-flow.png)
+
+in annotated pseudocode
+```code
+find host info;
+// datetime.now() - timedelta(seconds=60)
+{compute confidence age}
+// SELECT * FROM CACHE WHERE hostname = $1 AND timestamp > $2
+{query cache
+hostname + timestamp}
+if(found?) {
+    {get data from cache}
+    return host info;
+} else
+{ 
+  // SELECT * FROM DATABASE WHERE hostname = $1
+  {query data from database;} 
+// INSERT INTO cache (hostname,info,
+// datetime.now().strftime('%s'))
+{insert data + timestampt to cache }
+// DELETE FROM cache WHERE timestamp < $1
+  {
+    delete old cache data
+    
+  } 
+  return host info
+};
+
+```
+![Anotated Flow](https://github.com/sergueik/springboot_study/blob/master/basic-python-sqlite3/screenshots/capture-flow-detailed.png)
+
 ### See Also 
 
-  * the original [blog](https://deparkes.co.uk/2018/03/02/simple-docker-flask-sqlite-api/)
-  * __uwsgi-nginx-flask-python-sqlite-docker-example__ [example](https://github.com/maltesander/uwsgi-nginx-flask-python-sqlite-docker-example) of a dockerized Flask webserver with uWSGI and Nginx with a simple REST API to access a Sqlite database intended to simplify it to a barebones REST server backed by SQLIte3
+    * the original [blog](https://deparkes.co.uk/2018/03/02/simple-docker-flask-sqlite-api/)
+    * __uwsgi-nginx-flask-python-sqlite-docker-example__ [example](https://github.com/maltesander/uwsgi-nginx-flask-python-sqlite-docker-example) of a dockerized Flask webserver with uWSGI and Nginx with a simple REST API to access a Sqlite database intended to simplify it to a barebones REST server backed by SQLIte3
 
     * [tutorial-academy.com](http://tutorial-academy.com/uwsgi-nginx-flask-python-sqlite-docker-example)
     * [explanaion](https://www.geeksforgeeks.org/with-statement-in-python/) of `with` statement in Python
+    * [code2flow](https://app.code2flow.com)
+    * [graphviz](https://graphviz.org/download/)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
