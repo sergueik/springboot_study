@@ -58,10 +58,10 @@ curl -sX POST -d 'hostname=localhost&info=something&value=10' "$URL"
     <title>Page</title>
   </head>
   <body>
-          <div>hostname=localhost</div>
-          <div>info=</div>
-          <div>value=10.0</div>
-          <div>timestamp=1686960404</div>
+    <div>hostname=localhost</div>
+    <div>info=</div>
+    <div>value=10.0</div>
+    <div>timestamp=1686960404</div>
   </body>
 </html>
 
@@ -84,32 +84,32 @@ if(found?) {
     {get data from cache}
     return host info;
 } else
-{ 
+{
   // SELECT * FROM DATABASE WHERE hostname = $1
-  {query data from database;} 
+  {query data from database;}
 // INSERT INTO cache (hostname,info,
 // datetime.now().strftime('%s'))
 {insert data + timestampt to cache }
 // DELETE FROM cache WHERE timestamp < $1
   {
     delete old cache data
-    
-  } 
+  }
   return host info
 };
 
 ```
 ![Anotated Flow](https://github.com/sergueik/springboot_study/blob/master/basic-python-sqlite3/screenshots/capture-flow-detailed.png)
 
-### See Also 
+### See Also
 
-    * the original [blog](https://deparkes.co.uk/2018/03/02/simple-docker-flask-sqlite-api/)
-    * __uwsgi-nginx-flask-python-sqlite-docker-example__ [example](https://github.com/maltesander/uwsgi-nginx-flask-python-sqlite-docker-example) of a dockerized Flask webserver with uWSGI and Nginx with a simple REST API to access a Sqlite database intended to simplify it to a barebones REST server backed by SQLIte3
-
-    * [tutorial-academy.com](http://tutorial-academy.com/uwsgi-nginx-flask-python-sqlite-docker-example)
-    * [explanaion](https://www.geeksforgeeks.org/with-statement-in-python/) of `with` statement in Python
-    * [code2flow](https://app.code2flow.com)
-    * [graphviz](https://graphviz.org/download/)
+ * the original [blog](https://deparkes.co.uk/2018/03/02/simple-docker-flask-sqlite-api/)
+ * [example](https://github.com/maltesander/uwsgi-nginx-flask-python-sqlite-docker-example) of a dockerized Flask webserver with uWSGI,Nginx, REST and SQLIte3
+ * [tutorial-academy.com](http://tutorial-academy.com/uwsgi-nginx-flask-python-sqlite-docker-example)
+ * [explanaion](https://www.geeksforgeeks.org/with-statement-in-python/) of `with` statement in Python
+ * [code2flow](https://app.code2flow.com)
+ * [graphviz](https://graphviz.org/download/)
+ * [SQLite Autoincrement specifics](https://www.sqlite.org/autoinc.html) - note, the `SERIAL` language keyword [does not exist](https://stackoverflow.com/questions/19726028/sqlite3-serial-type-wasnt-incremented), do use `AUTOINCREMENT` instead
+ * [SQLite Indexes](https://www.tutlane.com/tutorial/sqlite/sqlite-indexes)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
