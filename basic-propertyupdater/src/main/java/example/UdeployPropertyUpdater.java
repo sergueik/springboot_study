@@ -10,9 +10,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class UdeployPropertyUpdater {
+public class UdeployPropertyUpdater  implements PropertyUpdater {
 	private String configuration = null;
 	private Map<String, Object> properties;
+	private boolean trim = false;
 
 	public String getConfiguration() {
 		return configuration;
@@ -24,6 +25,10 @@ public class UdeployPropertyUpdater {
 
 	public void setProperties(Map<String, Object> value) {
 		properties = value;
+	}
+
+	public void setTrim(boolean value) {
+		trim = value;
 	}
 
 	public UdeployPropertyUpdater(String configuration,

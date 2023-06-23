@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ApplicationPropertyUpdater {
+public class ApplicationPropertyUpdater implements PropertyUpdater{
 	private String configuration = null;
 	private Map<String, Object> properties;
 	// private static String osName = OSUtils.getOsName();

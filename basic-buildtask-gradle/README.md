@@ -97,7 +97,7 @@ NAME=basictask-gradle
 docker container run --name $NAME -u root -it $IMAGE sh
 ```
 ```sh
-gradle clean build updateUdeployProperties updateApplicationProperties
+gradle --stacktrace updateUdeployProperties updateApplicationProperties
 ```
 ```sh
 cat buildSrc/src/main/resources/application.yaml

@@ -19,7 +19,7 @@ public class ApplicationPropertyUpdaterTest {
 		String configuration = utils.getResourceContent(fileName);
 		Map<String, Object> properties = utils.getPropertiesFromCommandline(
 				utils.getApplicationProperties().getProperty("commandline"));
-		ApplicationPropertyUpdater propertyUpdater = new ApplicationPropertyUpdater(
+		PropertyUpdater propertyUpdater = new ApplicationPropertyUpdater(
 				configuration, properties);
 		propertyUpdater.setTrim(false);
 		System.err.println("orig configuration: " + configuration);

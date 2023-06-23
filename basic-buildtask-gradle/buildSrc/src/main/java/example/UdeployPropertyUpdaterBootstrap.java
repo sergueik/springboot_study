@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import example.PropertyUpdater;
 import example.UdeployPropertyUpdater;
 import example.Utils;
 
@@ -68,13 +69,15 @@ class UdeployPropertyUpdaterBootstrap {
 			configurationFilePath = Paths.get(String.format("%s/%s/%s",
 					System.getProperty("user.dir"), filePath, fileName)).normalize()
 					.toAbsolutePath().toString();
-			System.out.println("reading template configuration from file: " + configurationFilePath) ;
+			System.out.println(
+					"reading template configuration from file: " + configurationFilePath);
 			configuration = utils.getFileContent(configurationFilePath);
 		}
 		System.out.println("template configuration: " + configuration);
-		Map<String, Object> properties = utils.getPropertiesFromCommandline(commandline);
-		UdeployPropertyUpdater propertyUpdater = new UdeployPropertyUpdater(
-				configuration, properties);
+		Map<String, Object> properties = utils
+				.getPropertiesFromCommandline(commandline);
+		PropertyUpdater propertyUpdater = new UdeployPropertyUpdater(configuration,
+				properties);
 		propertyUpdater.updateConfiguration();
 		configuration = propertyUpdater.getConfiguration();
 		System.err.println("new configuration: " + configuration);

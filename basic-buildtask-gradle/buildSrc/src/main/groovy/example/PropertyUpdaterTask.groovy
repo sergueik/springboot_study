@@ -8,10 +8,17 @@ import org.gradle.api.tasks.Optional
 import java.nio.file.Paths
 import example.ApplicationPropertyUpdater
 import example.UdeployPropertyUpdater
+import example.PropertyUpdater
 import example.Utils
 import java.util.Properties
-
-class PropertyUpdater extends DefaultTask {
+// NOTE: if the groovy and java class with same name preseent
+// the error will be observed in runtime
+// as
+// java.lang.IncompatibleClassChangeError: Implementing class
+// at example.PropertyUpdater.class$(PropertyUpdater.groovy)
+// at example.PropertyUpdater.$get$$class$example$UdeployPropertyUpdaterBootstrap(PropertyUpdater.groovy)
+// with variations
+class PropertyUpdaterTask extends DefaultTask {
     @Input
     String syntax = null;
     @Input
@@ -26,6 +33,8 @@ class PropertyUpdater extends DefaultTask {
     @TaskAction
     void updateProperties() {
       def utils = Utils.getInstance()
+      PropertyUpdater propertyUpdater = null
+      // def propertyUpdater = null 
       switch (syntax) {
             case 'java':
 			    if (!fileName) 			    
@@ -49,7 +58,8 @@ class PropertyUpdater extends DefaultTask {
 				
 				// NOTE: observed some challenge with lambda inline in groovy code, give up temporarily
 				def properties = utils.getPropertiesFromCommandline(commandline)
-				def propertyUpdater = new ApplicationPropertyUpdater(configuration, properties)
+				// NOTE: java.lang.IncompatibleClassChangeError: Implementing class
+				propertyUpdater = new ApplicationPropertyUpdater(configuration, properties)
 				propertyUpdater.setTrim(false)
 				propertyUpdater.updateConfiguration()
 				configuration = propertyUpdater.getConfiguration()
@@ -59,15 +69,7 @@ class PropertyUpdater extends DefaultTask {
 			    
 				println 'Done.'
                 break
-            case 'udeploy':
-            /*
-			    def propertyUpdaterBootstrap = new UdeployPropertyUpdaterBootstrap( fileName, commandline)
-			    if (filePath != null) 
-			    	propertyUpdaterBootstrap.setFilePath(filePath)
-				propertyUpdaterBootstrap.process()
-				println 'Done.'
-                break
-                */
+            case 'udeploy':                
 			    if (!fileName) 			    
 			    	fileName = "application.yaml"
 			    if (!filePath) 			    
@@ -89,7 +91,9 @@ class PropertyUpdater extends DefaultTask {
 				
 				// NOTE: observed some challenge with lambda inline in groovy code, give up temporarily
 				def properties = utils.getPropertiesFromCommandline(commandline)
-				def propertyUpdater = new UdeployPropertyUpdater(configuration, properties)
+				// NOTE: java.lang.IncompatibleClassChangeError: Implementing class
+
+				propertyUpdater = new UdeployPropertyUpdater(configuration, properties)
 				
 				propertyUpdater.updateConfiguration()
 				configuration = propertyUpdater.getConfiguration()
@@ -99,6 +103,17 @@ class PropertyUpdater extends DefaultTask {
 			    
 				println 'Done.'
                 break
+            case 'udeploy2':
+            // NOTE:  java.lang.IncompatibleClassChangeError: Implementing class
+        	// at example.PropertyUpdater.class$(PropertyUpdater.groovy)
+        	// at example.PropertyUpdater.$get$$class$example$UdeployPropertyUpdaterBootstrap(PropertyUpdater.groovy)            
+			    def propertyUpdaterBootstrap = new UdeployPropertyUpdaterBootstrap( fileName, commandline)
+			    if (filePath != null) 
+			    	propertyUpdaterBootstrap.setFilePath(filePath)
+				propertyUpdaterBootstrap.process()
+				println 'Done.'
+                break
+                
             default:
                 throw new IllegalArgumentException("Unknown syntax")
         }
