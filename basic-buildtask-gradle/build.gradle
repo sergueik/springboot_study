@@ -19,15 +19,15 @@ allprojects {
 subprojects {
     version = '1.0'
 }
-import example.PrintToolVersionBuildSrcTask
-
-task printJavaVersionBuildSrc(type : PrintToolVersionBuildSrcTask) {
+import example.PropertyUpdater
+// NOTE: the task name does not matter, there must be one method annotated with @TaskAction in the task definition class
+task updateApplicationProperties(type : PropertyUpdater) {
     syntax 'java'
     fileName = 'application.properties'
     // NOTE: missing /empty filePath currently is not handled well
     filePath 'buildSrc/src/main/resources'
 }
-task printGroovyVersionBuildSrc(type : PrintToolVersionBuildSrcTask) {
+task updateUdeployProperties(type : PropertyUpdater) {
     // NOTE: one may accidentally affect the other task properties 
     // by referring those in result of an copy-paste development
     // printJavaVersionBuildSrc.syntax = 'udeploy'

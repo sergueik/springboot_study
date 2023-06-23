@@ -3,111 +3,6 @@
 trimmed replica of
 [https://www.baeldung.com/gradle-custom-task](https://www.baeldung.com/gradle-custom-task) example
 
-### Usage
-
-```sh
-gradle clean build printJavaVersionBuildSrc
-```
-it will update configuration and log the old and new contents to console
-
-```text
-> Task :printJavaVersionBuildSrc
-> Task :printJavaVersionBuildSrc
-Processing tool: java
-new configuration: ---
-property1: {{* name1||default1 *}}
-property2: {{* name2||default2 *}}
-property3: {{* name3||default3 *}}
-property4: {{* name4||default4 *}}
-# comment
-property5: value5
-new configuration: ---
-property1: https://www.google.com
-property2: admin
-property3: 42
-property4: default4
-# comment
-property5: value5
-new configuration: ---
-property1: https://www.google.com
-property2: admin
-property3: 42
-property4: default4
-# comment
-property5: value5
-```
-then print an environment variable:
-```text
-1.8.0_161
-```
-* repeat building two tasks with different parameters
-```sh
-gradle clean build printJavaVersionBuildSrc printGroovyVersionBuildSrc
-```
-```
-> Task :printJavaVersionBuildSrc
-Processing tool: groovy
-new configuration: ---
-property1: {{* name1||default1 *}}
-property2: {{* name2||default2 *}}
-property3: {{* name3||default3 *}}
-property4: {{* name4||default4 *}}
-# comment
-property5: value5
-new configuration: ---
-property1: https://www.google.com
-property2: admin
-property3: 42
-property4: default4
-# comment
-property5: value5
-new configuration: ---
-property1: https://www.google.com
-property2: admin
-property3: 42
-property4: default4
-# comment
-property5: value5
-TODO: GroovySystem.getVersion()
-Done.
-```
-```
-> Task :printGroovyVersionBuildSrc
-Processing tool: groovy
-new configuration: ---
-property1: {{* name1||default1 *}}
-property2: {{* name2||default2 *}}
-property3: {{* name3||default3 *}}
-property4: {{* name4||default4 *}}
-# comment
-property5: value5
-new configuration: ---
-property1: https://www.yahoo.com
-property2: user
-property3: 17
-property4: default4
-# comment
-property5: value5
-new configuration: ---
-property1: https://www.yahoo.com
-property2: user
-property3: 17
-property4: default4
-# comment
-property5: value5
-TODO: GroovySystem.getVersion()
-Done.
-```
-ignore the warnings:
-``` 
-Deprecated Gradle features were used in this build, making it incompatible with Gradle 7.0.
-Use '--warning-mode all' to show the individual deprecation warnings.
-See https://docs.gradle.org/6.6.1/userguide/command_line_interface.html#sec:command_line_warnings
-```
-```
-BUILD SUCCESSFUL in 1s
-4 actionable tasks: 4 executed
-```
 ### Docker Alpine Test
 
 * build, specifying the base image via `build-arg`, note the syntax)
@@ -154,7 +49,7 @@ Starting a Gradle Daemon (subsequent builds will be faster)
 > Task :check UP-TO-DATE
 > Task :build
 
-> Task :printGroovyVersionBuildSrc
+> Task :updateUdeployProperties
 reading template configuration from file: /work/buildSrc/src/main/resources/application.yaml
 template configuration: ---
 property1: {{* name1||default1 *}}
@@ -181,7 +76,7 @@ property5: value5
 Written content to /work/buildSrc/src/main/resources/application.yaml succesfully!
 Done.
 
-> Task :printJavaVersionBuildSrc
+> Task :updateApplicationProperties
 filePath: buildSrc/src/main/resources
 reading template configuration from file: /work/buildSrc/src/main/resources/application.properties
 template configuration: commandline: name1=https://www.google.com name2=admin name3=42 name4=""
@@ -202,7 +97,7 @@ NAME=basictask-gradle
 docker container run --name $NAME -u root -it $IMAGE sh
 ```
 ```sh
-gradle clean build printGroovyVersionBuildSrc printJavaVersionBuildSrc
+gradle clean build updateUdeployProperties updateApplicationProperties
 ```
 ```sh
 cat buildSrc/src/main/resources/application.yaml
@@ -237,16 +132,121 @@ docker container run -u root -it $IMAGE sh
 in the container
 
 ```sh
-gradle clean build printJavaVersionBuildSrc
+gradle clean build updateApplicationProperties
 ```
 or 
 ```sh
-gradle clean build printGroovyVersionBuildSrc
+gradle clean build updateUdeployProperties
 ```
 ### Cleanup
 ```sh
 docker image prune -f 
 docker volume prune -f
+```
+### Test Standalone
+
+```sh
+gradle clean build updateApplicationProperties
+```
+it will update configuration and log the old and new contents to console
+
+```text
+> Task :updateApplicationProperties
+> Task :updateApplicationProperties
+Processing tool: java
+new configuration: ---
+property1: {{* name1||default1 *}}
+property2: {{* name2||default2 *}}
+property3: {{* name3||default3 *}}
+property4: {{* name4||default4 *}}
+# comment
+property5: value5
+new configuration: ---
+property1: https://www.google.com
+property2: admin
+property3: 42
+property4: default4
+# comment
+property5: value5
+new configuration: ---
+property1: https://www.google.com
+property2: admin
+property3: 42
+property4: default4
+# comment
+property5: value5
+```
+then print an environment variable:
+```text
+1.8.0_161
+```
+* repeat building two tasks with different parameters
+```sh
+gradle clean build updateApplicationProperties updateUdeployProperties
+```
+```
+> Task :updateApplicationProperties
+Processing tool: groovy
+new configuration: ---
+property1: {{* name1||default1 *}}
+property2: {{* name2||default2 *}}
+property3: {{* name3||default3 *}}
+property4: {{* name4||default4 *}}
+# comment
+property5: value5
+new configuration: ---
+property1: https://www.google.com
+property2: admin
+property3: 42
+property4: default4
+# comment
+property5: value5
+new configuration: ---
+property1: https://www.google.com
+property2: admin
+property3: 42
+property4: default4
+# comment
+property5: value5
+TODO: GroovySystem.getVersion()
+Done.
+```
+```
+> Task :updateUdeployProperties
+Processing tool: groovy
+new configuration: ---
+property1: {{* name1||default1 *}}
+property2: {{* name2||default2 *}}
+property3: {{* name3||default3 *}}
+property4: {{* name4||default4 *}}
+# comment
+property5: value5
+new configuration: ---
+property1: https://www.yahoo.com
+property2: user
+property3: 17
+property4: default4
+# comment
+property5: value5
+new configuration: ---
+property1: https://www.yahoo.com
+property2: user
+property3: 17
+property4: default4
+# comment
+property5: value5
+TODO: GroovySystem.getVersion()
+Done.
+```
+ignore the warnings:
+``` 
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 7.0.
+Use '--warning-mode all' to show the individual deprecation warnings.
+See https://docs.gradle.org/6.6.1/userguide/command_line_interface.html#sec:command_line_warnings
+```
+```
+BUILD SUCCESSFUL in 1s
+4 actionable tasks: 4 executed
 ```
 ### See Also
   * https://www.linkedin.com/pulse/writing-custom-gradle-plugin-using-java-mahendra-tonape/

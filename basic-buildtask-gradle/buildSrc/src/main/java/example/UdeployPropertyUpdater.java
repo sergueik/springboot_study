@@ -3,7 +3,7 @@ package example;
 /**
  * Copyright 2023 Serguei Kouzmine
  */
-import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +34,6 @@ public class UdeployPropertyUpdater {
 	}
 
 	public void updateConfiguration() {
-		List<String> newConfigurationLines = new ArrayList<>();
 		properties.keySet().stream().forEach((String name) -> {
 			Object value = properties.get(name);
 			List<String> results = Arrays.asList(configuration.split("\r?\n"))
@@ -55,6 +54,7 @@ public class UdeployPropertyUpdater {
 		Matcher m = p.matcher(input);
 
 		if (m.find()) {
+
 			// System.err.println("group count: " + m.groupCount());
 			// java.lang.IllegalArgumentException: No group with name <value>
 			String captured1 = m.group(1).toString().trim();

@@ -91,8 +91,17 @@ class Utils {
 
 	public static void writeToFile(String content, String filePath,
 			Boolean overwriteFlag) {
-		writeToFile(Arrays.asList(content.split("\n")), filePath,
-				overwriteFlag);
+		writeToFile(Arrays.asList(content.split("\n")), filePath, overwriteFlag);
+	}
+
+	public static Map<String, Object> getPropertiesFromCommandline(String commandline) {
+		final List<String> tokens = Arrays.asList(commandline.split(" +"));
+		final Map<String, Object> properties = new HashMap<>();
+		tokens.stream().forEach((String t) -> {
+			String[] data = t.split("=");
+			properties.put(data[0], data[1]);
+		});
+		return properties;
 	}
 
 	public static void writeToFile(List<String> content, String filePath,
