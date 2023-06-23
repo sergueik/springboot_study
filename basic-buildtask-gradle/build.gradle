@@ -32,9 +32,31 @@ task updateUdeployProperties(type : PropertyUpdaterTask) {
     // NOTE: one may accidentally affect the other task properties 
     // by referring those in result of an copy-paste development
     // printJavaVersionBuildSrc.syntax = 'udeploy'
-    syntax 'udeploy'
-    fileName 'application.yaml'
-    filePath 'buildSrc/src/main/resources'
-    commandline 'name1=https://www.yahoo.com name2=user name3=17 name4=""'
+    // NOTE:
+    // enclosing the property setting in the doLast closure leads to
+
+    // TODO: build error
+    // > No value has been specified for property 'fileName'.
+    // > No value has been specified for property 'syntax'.
+    // regardles of the assignent syntax. 
+	/*
+    doLast {
+	    syntax = 'udeploy'
+	    fileName = 'application.yaml'
+	    filePath = 'buildSrc/src/main/resources'
+	    commandline = 'name1=https://www.yahoo.com name2=user name3=17 name4=""'
+    }
+    */
+    syntax = 'udeploy'
+    fileName = 'application.yaml'
+    filePath = 'buildSrc/src/main/resources'
+    commandline = 'name1=https://www.yahoo.com name2=user name3=17 name4=""'
+}
+
+task updateCustomProperties(type : PropertyUpdaterTask) {
+    syntax = 'custom'
+    fileName = 'application.properties.custom'
+    filePath = 'buildSrc/src/main/resources'
+    commandline = 'name1=https://www.yahoo.com name2=user name3=17 name4=""'
 }
 

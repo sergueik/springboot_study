@@ -1,0 +1,9 @@
+---
+# Custom UCD style property template
+property1: :[ name1 ]
+property2: :[ name2 ]
+property3: :[ name3 ]
+property4: :[ name4 ]
+# comment
+property5: value5
+

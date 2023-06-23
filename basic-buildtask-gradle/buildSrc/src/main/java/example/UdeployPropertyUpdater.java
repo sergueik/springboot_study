@@ -65,6 +65,8 @@ public class UdeployPropertyUpdater implements PropertyUpdater {
 			input = captured1;
 			m = p.matcher(input);
 			if (m.find()) {
+				// NOTE: fragile regarding whitespace: 
+				// property: {{* name||default *}}
 				final String expression3 = String
 						.format("\\{\\{\\* " + "%s\\|\\|(\\w+)" + " \\*\\}\\}.*$", name);
 				if (value != null

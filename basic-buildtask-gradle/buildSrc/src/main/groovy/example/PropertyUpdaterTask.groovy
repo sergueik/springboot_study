@@ -7,6 +7,7 @@ import org.gradle.api.tasks.Optional
 
 import java.nio.file.Paths
 import example.ApplicationPropertyUpdater
+import example.CustomPropertyUpdater
 import example.UdeployPropertyUpdater
 import example.PropertyUpdater
 import example.Utils
@@ -35,6 +36,9 @@ class PropertyUpdaterTask extends DefaultTask {
             case 'udeploy':                
 				propertyUpdater = new UdeployPropertyUpdater()								
                 break
+            case 'custom': 
+				propertyUpdater = new CustomPropertyUpdater()								
+                break
             default:
                 throw new IllegalArgumentException("Unknown syntax")
         }
@@ -52,6 +56,7 @@ class PropertyUpdaterTask extends DefaultTask {
 			println "reading template configuration from resources."
 			configuration = utils.getResourceContent(fileName)
 		} else {
+		    // TODO: detect absolute path and prepend with ${user.dir} otherwise
 			configurationFilePath = Paths.get(String.format("%s/%s/%s", System.getProperty("user.dir"), filePath, fileName)).normalize() .toAbsolutePath().toString()
 			println "reading template configuration from file: " + configurationFilePath
 			configuration = utils.getFileContent(configurationFilePath)
@@ -60,7 +65,7 @@ class PropertyUpdaterTask extends DefaultTask {
 		
 		// NOTE: observed some challenge with lambda inline in groovy code, give up temporarily
 		def properties = utils.getPropertiesFromCommandline(commandline)
-		propertyUpdater.setTrim(false)
+		propertyUpdater.setTrim(true)
 		propertyUpdater.setProperties(properties)
 			propertyUpdater.setConfiguration(configuration)
 		propertyUpdater.updateConfiguration()
