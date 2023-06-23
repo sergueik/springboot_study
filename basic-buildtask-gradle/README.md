@@ -143,6 +143,22 @@ gradle clean build updateUdeployProperties
 docker image prune -f 
 docker volume prune -f
 ```
+### NOTE:
+cannot add
+```sh
+RUN  gradle build
+```
+instruction to the `Dockerfile`: getting the fake build error and image is marked as not created:
+```text
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Could not create service of type ScriptPluginFactory using BuildScopeServices.cr
+eateScriptPluginFactory().
+> Could not create service of type CrossBuildFileHashCache using BuildSessionSco
+peServices.createCrossBuildFileHashCache().
+
+```
 ### Test Standalone
 
 ```sh

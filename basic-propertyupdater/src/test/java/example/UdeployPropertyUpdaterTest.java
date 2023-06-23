@@ -6,26 +6,14 @@ package example;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
-import example.Utils;
 
 public class UdeployPropertyUpdaterTest {
 	private static Utils utils = Utils.getInstance();
@@ -36,13 +24,9 @@ public class UdeployPropertyUpdaterTest {
 	@Test
 	public void test1() throws Exception {
 		String configuration = utils.getResourceContent(fileName);
-		List<String> tokens = Arrays.asList(utils.getApplicationProperties()
-				.getProperty("commandline").split(" +"));
-		Map<String, Object> properties = new HashMap<>();
-		tokens.stream().forEach((String t) -> {
-			String[] data = t.split("=");
-			properties.put(data[0], data[1]);
-		});
+		Map<String, Object> properties = utils.getPropertiesFromCommandline(
+				utils.getApplicationProperties().getProperty("commandline"));
+
 		UdeployPropertyUpdater propertyUpdater = new UdeployPropertyUpdater(
 				configuration, properties);
 		propertyUpdater.updateConfiguration();

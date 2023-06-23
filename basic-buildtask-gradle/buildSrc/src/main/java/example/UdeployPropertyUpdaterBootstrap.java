@@ -72,12 +72,7 @@ class UdeployPropertyUpdaterBootstrap {
 			configuration = utils.getFileContent(configurationFilePath);
 		}
 		System.out.println("template configuration: " + configuration);
-		List<String> tokens = Arrays.asList(commandline.split(" +"));
-		Map<String, Object> properties = new HashMap<>();
-		tokens.stream().forEach((String t) -> {
-			String[] data = t.split("=");
-			properties.put(data[0], data[1]);
-		});
+		Map<String, Object> properties = utils.getPropertiesFromCommandline(commandline);
 		UdeployPropertyUpdater propertyUpdater = new UdeployPropertyUpdater(
 				configuration, properties);
 		propertyUpdater.updateConfiguration();

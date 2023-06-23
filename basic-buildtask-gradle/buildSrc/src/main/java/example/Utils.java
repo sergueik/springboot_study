@@ -57,7 +57,7 @@ class Utils {
 		}
 	}
 
-	public static List<String> readFileLineByLine(String filePath)
+	public List<String> readFileLineByLine(String filePath)
 			throws IOException {
 		FileInputStream fis = new FileInputStream(filePath);
 		BufferedReader br = new BufferedReader(new InputStreamReader(fis));
@@ -89,12 +89,12 @@ class Utils {
 		}
 	}
 
-	public static void writeToFile(String content, String filePath,
+	public void writeToFile(String content, String filePath,
 			Boolean overwriteFlag) {
 		writeToFile(Arrays.asList(content.split("\n")), filePath, overwriteFlag);
 	}
 
-	public static Map<String, Object> getPropertiesFromCommandline(String commandline) {
+	public Map<String, Object> getPropertiesFromCommandline(String commandline) {
 		final List<String> tokens = Arrays.asList(commandline.split(" +"));
 		final Map<String, Object> properties = new HashMap<>();
 		tokens.stream().forEach((String t) -> {
@@ -104,7 +104,7 @@ class Utils {
 		return properties;
 	}
 
-	public static void writeToFile(List<String> content, String filePath,
+	public void writeToFile(List<String> content, String filePath,
 			Boolean overwriteFlag) {
 		File file = new File(filePath);
 		if (overwriteFlag) {

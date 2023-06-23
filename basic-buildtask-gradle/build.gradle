@@ -26,6 +26,7 @@ task updateApplicationProperties(type : PropertyUpdater) {
     fileName = 'application.properties'
     // NOTE: missing /empty filePath currently is not handled well
     filePath 'buildSrc/src/main/resources'
+    commandline 'name1=https://www.google.com name2=admin name3=42 name4=""'
 }
 task updateUdeployProperties(type : PropertyUpdater) {
     // NOTE: one may accidentally affect the other task properties 
