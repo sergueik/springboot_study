@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ApplicationPropertyUpdater  implements PropertyUpdater  {
+public class ApplicationPropertyUpdater implements PropertyUpdater {
 	private String configuration = null;
 	private Map<String, Object> properties;
 	// private static String osName = OSUtils.getOsName();
@@ -53,11 +53,11 @@ public class ApplicationPropertyUpdater  implements PropertyUpdater  {
 			Pattern p = Pattern.compile("^(\\w+:)(\\w+)$");
 			Matcher m = p.matcher(name);
 			if (m.find()) {
-				String propertyName = m.replaceFirst("$2");
+				String n = m.replaceFirst("$2");
 				if (debug) {
-					System.err.println("Interpolating " + propertyName);
+					System.err.println("Interpolating " + n);
 				}
-				value = System.getProperty(propertyName);
+				value = System.getProperty(n);
 			}
 			if (value == null) {
 				if (debug) {
@@ -83,18 +83,16 @@ public class ApplicationPropertyUpdater  implements PropertyUpdater  {
 		Matcher m = p.matcher(input);
 		StringBuffer sb = new StringBuffer();
 		while (m.find()) {
-			String envVarName = null == m.group(1) ? m.group(2) : m.group(1);
-			String envVarValue = properties.containsKey(envVarName)
-					? properties.get(envVarName).toString() : System.getenv(envVarName);
+			String n = null == m.group(1) ? m.group(2) : m.group(1);
+			String v = properties.containsKey(n) ? properties.get(n).toString()
+					: System.getenv(n);
 			if (trim) {
 				m.appendReplacement(sb,
-						null == envVarValue
-								|| envVarValue.replaceAll("\"", "").trim().length() == 0 ? ""
-										: envVarValue.replace("\\", "\\\\"));
+						null == v || v.replaceAll("\"", "").trim().length() == 0 ? ""
+								: v.replace("\\", "\\\\"));
 			} else {
 				m.appendReplacement(sb,
-						null == envVarValue || envVarValue.trim().length() == 0 ? ""
-								: envVarValue.replace("\\", "\\\\"));
+						null == v || v.trim().length() == 0 ? "" : v.replace("\\", "\\\\"));
 
 			}
 		}

@@ -1,0 +1,9 @@
+---
+# Custom UCD style property template
+property1: https://www.google.com
+property2: admin
+property3: 42
+property4: 
+# comment
+property5: value5
+
