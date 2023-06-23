@@ -1,4 +1,7 @@
 package example;
+/**
+ * Copyright 2023 Serguei Kouzmine
+ */
 
 import java.util.Map;
 import java.util.regex.Matcher;
