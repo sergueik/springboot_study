@@ -32,12 +32,6 @@ public class UdeployPropertyUpdater implements PropertyUpdater {
 		trim = value;
 	}
 
-	public UdeployPropertyUpdater(String configuration,
-			Map<String, Object> properties) {
-		this.configuration = configuration;
-		this.properties = properties;
-	}
-
 	public void updateConfiguration() {
 		properties.keySet().stream().forEach((String name) -> {
 			Object value = properties.get(name);

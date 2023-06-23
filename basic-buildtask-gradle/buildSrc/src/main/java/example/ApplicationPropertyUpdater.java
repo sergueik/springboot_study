@@ -30,12 +30,6 @@ public class ApplicationPropertyUpdater implements PropertyUpdater{
 		properties = value;
 	}
 
-	public ApplicationPropertyUpdater(String configuration,
-			Map<String, Object> properties) {
-		this.configuration = configuration;
-		this.properties = properties;
-	}
-
 	public void updateConfiguration() {
 		configuration = resolveEnvVars(configuration);
 	}
