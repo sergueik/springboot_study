@@ -5,6 +5,7 @@ package example;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -69,5 +70,20 @@ public class UdeployPropertyUpdaterTest {
 		String configuration = utils.getFileContent(filepath);
 		System.err.println("New configuration: " + configuration);
 	}
+
+	@Test
+	public void test4() throws Exception {
+		ArrayIndexOutOfBoundsException exception = assertThrows(
+			ArrayIndexOutOfBoundsException.class, () -> {
+				final String commandline = "name1=https://www.google.com badproperty name2=admin name3=42 name4=\"\"";
+				try {
+					utils.getPropertiesFromCommandline(commandline);
+				} catch (ArrayIndexOutOfBoundsException e) {
+					System.err.println(String.format( "Unparseable arguments - check the commandline: %s", commandline));
+					throw e;
+				}
+			});
+	}
+
 
 }
