@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class UdeployPropertyUpdater  implements PropertyUpdater {
+public class UdeployPropertyUpdater implements PropertyUpdater {
 	private String configuration = null;
 	private Map<String, Object> properties;
 	private boolean trim = false;
@@ -31,11 +31,15 @@ public class UdeployPropertyUpdater  implements PropertyUpdater {
 		trim = value;
 	}
 
-	public UdeployPropertyUpdater(String configuration,
-			Map<String, Object> properties) {
-		this.configuration = configuration;
-		this.properties = properties;
-	}
+	// NOTE: presence of constructor with arguments leads to fail to 
+	// find the constructor without the same
+	/*
+		public UdeployPropertyUpdater(String configuration,
+				Map<String, Object> properties) {
+			this.configuration = configuration;
+			this.properties = properties;
+		}
+	*/
 
 	public void updateConfiguration() {
 		properties.keySet().stream().forEach((String name) -> {
@@ -63,7 +67,7 @@ public class UdeployPropertyUpdater  implements PropertyUpdater {
 			// java.lang.IllegalArgumentException: No group with name <value>
 			String captured1 = m.group(1).toString().trim();
 			// System.err.println(String.format("group (1): \"%s\"", captured1));
-			final String expression2 = String.format("^%s\\|\\|(\\w+)$", name);
+			final String expression2 = String.format("^%s\\|\\|\\|([a-zA-Z0-9.:/\\_-]+)$", name);
 			p = Pattern.compile(expression2);
 			// System.err
 			// .println(String.format("Pattern exression %s:\n", p.toString()));
@@ -71,7 +75,7 @@ public class UdeployPropertyUpdater  implements PropertyUpdater {
 			m = p.matcher(input);
 			if (m.find()) {
 				final String expression3 = String
-						.format("\\{\\{\\* " + "%s\\|\\|(\\w+)" + " \\*\\}\\}.*$", name);
+						.format("\\{\\{\\*(?: )*" + "%s\\|\\|\\|([a-zA-Z0-9.:/\\_-]+)" + "(?: )*\\*\\}\\}.*$", name);
 				if (value != null
 						&& !value.toString().replaceAll("[\"']", "").isEmpty()) {
 					// System.err.println(String.format("Replacement \"%s\"",

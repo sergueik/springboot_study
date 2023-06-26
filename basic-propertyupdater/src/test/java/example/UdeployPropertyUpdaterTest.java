@@ -27,8 +27,9 @@ public class UdeployPropertyUpdaterTest {
 		Map<String, Object> properties = utils.getPropertiesFromCommandline(
 				utils.getApplicationProperties().getProperty("commandline"));
 
-		PropertyUpdater propertyUpdater = new UdeployPropertyUpdater(configuration,
-				properties);
+		PropertyUpdater propertyUpdater = new UdeployPropertyUpdater();
+		propertyUpdater.setConfiguration(configuration);
+		propertyUpdater.setProperties(properties);
 		propertyUpdater.updateConfiguration();
 		configuration = propertyUpdater.getConfiguration();
 		System.err.println("new configuration: " + configuration);

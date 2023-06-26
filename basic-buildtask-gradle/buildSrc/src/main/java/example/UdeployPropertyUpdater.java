@@ -58,7 +58,7 @@ public class UdeployPropertyUpdater implements PropertyUpdater {
 			// java.lang.IllegalArgumentException: No group with name <value>
 			String captured1 = m.group(1).toString().trim();
 			// System.err.println(String.format("group (1): \"%s\"", captured1));
-			final String expression2 = String.format("^%s\\|\\|\\|([a-zA-Z0-9.:/\\_]+)$", name);
+			final String expression2 = String.format("^%s\\|\\|\\|([a-zA-Z0-9.:/\\_-]+)$", name);
 			p = Pattern.compile(expression2);
 			// System.err
 			// .println(String.format("Pattern exression %s:\n", p.toString()));
@@ -66,7 +66,7 @@ public class UdeployPropertyUpdater implements PropertyUpdater {
 			m = p.matcher(input);
 			if (m.find()) {
 				final String expression3 = String
-						.format("\\{\\{\\*(?: )*" + "%s\\|\\|\\|([a-zA-Z0-9.:/\\_]+)" + "(?: )*\\*\\}\\}.*$", name);
+						.format("\\{\\{\\*(?: )*" + "%s\\|\\|\\|([a-zA-Z0-9.:/\\_-]+)" + "(?: )*\\*\\}\\}.*$", name);
 				if (value != null
 						&& !value.toString().replaceAll("[\"']", "").isEmpty()) {
 					// System.err.println(String.format("Replacement \"%s\"",

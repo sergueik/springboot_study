@@ -1,6 +1,6 @@
 ---
 # Custom UCD style property template
-property1: https://www.google.com
+property1: https://www.application-prod.com:8081/some_url
 property2: admin
 property3: 42
 property4: 
