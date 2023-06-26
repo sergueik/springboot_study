@@ -1,8 +1,8 @@
 ---
-property1: {{* name1||default1 *}}
-property2: {{* name2||default2 *}}
-property3: {{* name3||default3 *}}
-property4: {{* name4||default4 *}}
+property1: {{* name1|||https://www.amazon.com:8080/ *}} # comment
+property2: {{*name2|||default2*}}
+property3: {{*  name3|||default3   *}}
+property4: {{*name4|||default4*}}    # comment
 # comment
 property5: value5
 
