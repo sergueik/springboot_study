@@ -5,3 +5,6 @@ property3: 42
 property4: default4
 # comment
 property5: value5
+# missing from properties - will be replaced with default
+property6: default6 # comment
+property7: default7

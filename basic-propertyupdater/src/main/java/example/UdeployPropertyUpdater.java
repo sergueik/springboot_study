@@ -31,7 +31,7 @@ public class UdeployPropertyUpdater implements PropertyUpdater {
 		trim = value;
 	}
 
-	// NOTE: presence of constructor with arguments leads to fail to 
+	// NOTE: presence of constructor with arguments leads to fail to
 	// find the constructor without the same
 	/*
 		public UdeployPropertyUpdater(String configuration,
@@ -50,8 +50,16 @@ public class UdeployPropertyUpdater implements PropertyUpdater {
 			configuration = String.join("\n", results);
 		});
 
-		configuration = replaceRemaining(configuration);
+		// do asecond pass for the remaining placeholders.
+		// NOTE: can not currently do replace of the multiline configuration
+		List<String> results = Arrays.asList(configuration.split("\r?\n")).stream()
+				.map((String line) -> replaceRemaining(line))
+				.collect(Collectors.toList());
+		configuration = String.join("\n", results);
+
+		// configuration = replaceRemaining(configuration);
 		System.err.println("new configuration: " + configuration);
+
 	}
 
 	private String replaceRemaining(String payload) {
@@ -75,7 +83,6 @@ public class UdeployPropertyUpdater implements PropertyUpdater {
 
 	}
 
-
 	private String replaceEntry(String payload, String name, Object value) {
 		final String expression1 = "^.*\\{\\{\\*" + "(.+)" + "\\*\\}\\}.*$";
 		Pattern p = Pattern.compile(expression1);
@@ -90,15 +97,16 @@ public class UdeployPropertyUpdater implements PropertyUpdater {
 			// java.lang.IllegalArgumentException: No group with name <value>
 			String captured1 = m.group(1).toString().trim();
 			// System.err.println(String.format("group (1): \"%s\"", captured1));
-			final String expression2 = String.format("^%s\\|\\|\\|([a-zA-Z0-9.:/\\_-]+)$", name);
+			final String expression2 = String
+					.format("^%s\\|\\|\\|([a-zA-Z0-9.:/\\_-]+)$", name);
 			p = Pattern.compile(expression2);
 			// System.err
 			// .println(String.format("Pattern exression %s:\n", p.toString()));
 			input = captured1;
 			m = p.matcher(input);
 			if (m.find()) {
-				final String expression3 = String
-						.format("\\{\\{\\*(?: )*" + "%s\\|\\|\\|([a-zA-Z0-9.:/\\_-]+)" + "(?: )*\\*\\}\\}.*$", name);
+				final String expression3 = String.format("\\{\\{\\*(?: )*"
+						+ "%s\\|\\|\\|([a-zA-Z0-9.:/\\_-]+)" + "(?: )*\\*\\}\\}.*$", name);
 				if (value != null
 						&& !value.toString().replaceAll("[\"']", "").isEmpty()) {
 					// System.err.println(String.format("Replacement \"%s\"",
@@ -121,3 +129,4 @@ public class UdeployPropertyUpdater implements PropertyUpdater {
 	}
 
 }
+

@@ -3,10 +3,10 @@ package example;
  * Copyright 2023 Serguei Kouzmine
  */
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.CoreMatchers.containsString;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.file.Paths;
@@ -87,9 +87,10 @@ public class UdeployPropertyUpdaterTest {
 			});
 	}
 
+
 	@Test
 	public void test5() throws Exception {
-		String configuration = "property: {{*  name|||default*}} # comment";
+		String configuration = "property: {{*  missing|||default*}} # comment";
 		Map<String, Object> properties = utils.getPropertiesFromCommandline(
 				utils.getApplicationProperties().getProperty("commandline"));
 
@@ -106,6 +107,34 @@ public class UdeployPropertyUpdaterTest {
 		assertThat(configuration, containsString(expectedConfiguration));
 	}
 
+	@Test
+	public void test6() throws Exception {
+		String configuration = "property1: {{*missing1|||default1  *}} # comment1"
+				+ "\n" + "property2: {{*missing2|||default2*}} # comment2";
+		Map<String, Object> properties = utils.getPropertiesFromCommandline(
+				utils.getApplicationProperties().getProperty("commandline"));
 
+		PropertyUpdater propertyUpdater = new UdeployPropertyUpdater();
+		propertyUpdater.setConfiguration(configuration);
+		propertyUpdater.setProperties(properties);
+		propertyUpdater.updateConfiguration();
+		configuration = propertyUpdater.getConfiguration();
+		System.err.println("new configuration: " + configuration);
+
+		String expectedConfiguration = "property1: default1 # comment1" + "\n"
+				+ "property2: default2 # comment2";
+		;
+		String[] checkResults = expectedConfiguration.split("\r?\n");
+		Set<String> result = new HashSet<String>();
+		String[] lines = configuration.split("\r?\n");
+		for (int cnt = 0; cnt != lines.length; cnt++) {
+			result.add(lines[cnt]);
+		}
+
+		System.err.println("test returned: " + result);
+		System.err.println("test expected: " + Arrays.asList(checkResults));
+		assertThat(result, containsInAnyOrder(checkResults));
+	}
 
 }
+
