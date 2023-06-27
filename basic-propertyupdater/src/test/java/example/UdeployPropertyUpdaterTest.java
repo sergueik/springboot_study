@@ -5,6 +5,8 @@ package example;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.CoreMatchers.containsString;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.file.Paths;
@@ -84,6 +86,26 @@ public class UdeployPropertyUpdaterTest {
 				}
 			});
 	}
+
+	@Test
+	public void test5() throws Exception {
+		String configuration = "property: {{*  name|||default*}} # comment";
+		Map<String, Object> properties = utils.getPropertiesFromCommandline(
+				utils.getApplicationProperties().getProperty("commandline"));
+
+		PropertyUpdater propertyUpdater = new UdeployPropertyUpdater();
+		propertyUpdater.setConfiguration(configuration);
+		propertyUpdater.setProperties(properties);
+		propertyUpdater.updateConfiguration();
+		configuration = propertyUpdater.getConfiguration();
+		System.err.println("new configuration: " + configuration);
+
+		String expectedConfiguration = "property: default # comment";
+		System.err.println("test returned: " + configuration);
+		System.err.println("test expected: " + expectedConfiguration);
+		assertThat(configuration, containsString(expectedConfiguration));
+	}
+
 
 
 }

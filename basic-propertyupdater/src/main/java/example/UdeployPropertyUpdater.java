@@ -50,8 +50,31 @@ public class UdeployPropertyUpdater implements PropertyUpdater {
 			configuration = String.join("\n", results);
 		});
 
+		configuration = replaceRemaining(configuration);
 		System.err.println("new configuration: " + configuration);
 	}
+
+	private String replaceRemaining(String payload) {
+		String result = payload;
+		final String expression1 = "^.*\\{\\{\\*" + "(?: *)" + "(?:\\w+)"
+				+ "(?:\\|\\|\\|)" + "([a-zA-Z0-9.:/\\_-]+)" + "(?: *)" + "\\*\\}\\}.*$";
+		final String expression2 = "\\{\\{\\*" + "(?: *)" + "(?:\\w+)"
+				+ "(?:\\|\\|\\|)" + "([a-zA-Z0-9.:/\\_-]+)" + "(?: *)" + "\\*\\}\\}";
+		Pattern p1 = Pattern.compile(expression1);
+		System.err.println(String.format("Payload:\n%s\n", payload));
+		System.err.println(String.format("Pattern exression:%s\n", p1.toString()));
+		String input = payload;
+		Matcher m1 = p1.matcher(payload);
+		Pattern p2 = Pattern.compile(expression2);
+		if (m1.find()) {
+			System.err.println("Match observed. Replacing...");
+			Matcher m2 = p2.matcher(payload);
+			result = m2.replaceAll("$1");
+		}
+		return result;
+
+	}
+
 
 	private String replaceEntry(String payload, String name, Object value) {
 		final String expression1 = "^.*\\{\\{\\*" + "(.+)" + "\\*\\}\\}.*$";
