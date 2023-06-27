@@ -21,6 +21,25 @@ subprojects {
 }
 import example.PropertyUpdaterTask
 // NOTE: the task name does not matter, there must be one method annotated with @TaskAction in the task definition class
+
+ext { 
+  buildFile = null
+  filePath = null
+}
+task getBuildFile {
+  def variable = (project.hasProperty('special')) ? true: false
+  if (variable) {
+    rootProject.ext.buildFile = 'special.properties'
+    rootProject.ext.filePath = 'buildSrc/src/main/resources'
+    println 'getBuildFile variable = ' + variable
+  } else {
+    rootProject.ext.buildFile = 'application.properties.custom'
+    rootProject.ext.filePath = 'buildSrc/src/main/resources'
+    println 'getBuildFile variable = ' +variable
+  }
+}
+
+
 task updateApplicationProperties(type : PropertyUpdaterTask) {
     syntax 'java'
     fileName = 'application.properties'
@@ -52,11 +71,23 @@ task updateUdeployProperties(type : PropertyUpdaterTask) {
     filePath = 'buildSrc/src/main/resources'
     commandline = 'name1=https://www.yahoo.com name2=user name3=17 name4=""'
 }
-
-task updateCustomProperties(type : PropertyUpdaterTask) {
+// The following does not work
+task updateCustomProperties(type : PropertyUpdaterTask,  dependsOn: 'getBuildFile') {
+ 
+    def variable = rootProject.ext.buildFile 
+    println 'updateCustomProperties variable = ' + variable
+    if (variable != null) {
+        fileName = variable
+        println 'used variable'
+    } else {
+      println 'variable is empty'
+      fileName = 'application.properties.custom'
+    }
     syntax = 'custom'
-    fileName = 'application.properties.custom'
     filePath = 'buildSrc/src/main/resources'
     commandline = 'name1=https://www.yahoo.com name2=user name3=17 name4=""'
+    doLast {
+     updateProperties()
+    }
 }
 

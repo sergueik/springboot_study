@@ -272,5 +272,9 @@ DefaultTask  * example [Multi Module Gradle project with Custom Gradle Plugin an
   * https://docs.gradle.org/current/userguide/more_about_tasks.html
   * https://docs.gradle.org/current/userguide/custom_tasks.html#sec:writing_a_simple_task_class
   * https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/Optional.html
+  * [passing parameters to gradle tasks](https://stackoverflow.com/questions/20410854/how-to-pass-parameters-or-arguments-into-a-gradle-task)
+  * [invoke gradle task from another gradle task with parameter discussion](https://discuss.gradle.org/t/invoke-task-from-other-task-and-passing-some-arguments/11908/2) (no direct way)
+
+  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
