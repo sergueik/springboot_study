@@ -41,10 +41,39 @@ public class UdeployPropertyUpdater implements PropertyUpdater {
 			configuration = String.join("\n", results);
 		});
 
+		// run a second pass for the remaining placeholders.
+		// NOTE: cannot currently do replace in the whole multiline configuration
+		// payload
+		List<String> results = Arrays.asList(configuration.split("\r?\n")).stream()
+				.map((String line) -> replaceRemaining(line))
+				.collect(Collectors.toList());
+		configuration = String.join("\n", results);
+
 		System.err.println("new configuration: " + configuration);
 	}
 
-	private String replaceEntry(String payload, String name, Object value) {
+	private String replaceEntry(String payload, S		String result = payload;
+	final String expression1 = "^.*\\{\\{\\*" + "(?: *)" + "(?:\\w+)"
+			+ "(?:\\|\\|\\|)" + "([a-zA-Z0-9.:/\\_-]+)" + "(?: *)" + "\\*\\}\\}.*$";
+	final String expression2 = "\\{\\{\\*" + "(?: *)" + "(?:\\w+)"
+			+ "(?:\\|\\|\\|)" + "([a-zA-Z0-9.:/\\_-]+)" + "(?: *)" + "\\*\\}\\}";
+	Pattern p1 = Pattern.compile(expression1);
+	System.err.println(String.format("Payload:\n%s\n", payload));
+	System.err.println(String.format("Pattern exression:%s\n", p1.toString()));
+	String input = payload;
+	Matcher m1 = p1.matcher(payload);
+	Pattern p2 = Pattern.compile(expression2);
+	if (m1.find()) {
+		System.err.println("Match observed. Replacing...");
+		Matcher m2 = p2.matcher(payload);
+		result = m2.replaceAll("$1");
+	}
+	return result;
+
+}
+
+tring name, Object value)
+	{
 		final String expression1 = "^.*\\{\\{\\*" + "(.+)" + "\\*\\}\\}.*$";
 		Pattern p = Pattern.compile(expression1);
 		// System.err.println(String.format("Pattern exression %s:\n",
@@ -58,15 +87,16 @@ public class UdeployPropertyUpdater implements PropertyUpdater {
 			// java.lang.IllegalArgumentException: No group with name <value>
 			String captured1 = m.group(1).toString().trim();
 			// System.err.println(String.format("group (1): \"%s\"", captured1));
-			final String expression2 = String.format("^%s\\|\\|\\|([a-zA-Z0-9.:/\\_-]+)$", name);
+			final String expression2 = String
+					.format("^%s\\|\\|\\|([a-zA-Z0-9.:/\\_-]+)$", name);
 			p = Pattern.compile(expression2);
 			// System.err
 			// .println(String.format("Pattern exression %s:\n", p.toString()));
 			input = captured1;
 			m = p.matcher(input);
 			if (m.find()) {
-				final String expression3 = String
-						.format("\\{\\{\\*(?: )*" + "%s\\|\\|\\|([a-zA-Z0-9.:/\\_-]+)" + "(?: )*\\*\\}\\}.*$", name);
+				final String expression3 = String.format("\\{\\{\\*(?: )*"
+						+ "%s\\|\\|\\|([a-zA-Z0-9.:/\\_-]+)" + "(?: )*\\*\\}\\}.*$", name);
 				if (value != null
 						&& !value.toString().replaceAll("[\"']", "").isEmpty()) {
 					// System.err.println(String.format("Replacement \"%s\"",

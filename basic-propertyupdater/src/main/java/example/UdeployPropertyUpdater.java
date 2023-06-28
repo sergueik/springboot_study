@@ -50,14 +50,14 @@ public class UdeployPropertyUpdater implements PropertyUpdater {
 			configuration = String.join("\n", results);
 		});
 
-		// do asecond pass for the remaining placeholders.
-		// NOTE: can not currently do replace of the multiline configuration
+		// run a second pass for the remaining placeholders.
+		// NOTE: cannot currently do replace in the whole multiline configuration
+		// payload
 		List<String> results = Arrays.asList(configuration.split("\r?\n")).stream()
 				.map((String line) -> replaceRemaining(line))
 				.collect(Collectors.toList());
 		configuration = String.join("\n", results);
 
-		// configuration = replaceRemaining(configuration);
 		System.err.println("new configuration: " + configuration);
 
 	}

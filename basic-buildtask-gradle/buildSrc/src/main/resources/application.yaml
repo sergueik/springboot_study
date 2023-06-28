@@ -5,4 +5,6 @@ property3: {{*  name3|||default3   *}}
 property4: {{*name4|||default4*}}    # comment
 # comment
 property5: value5
-
+# missing from properties - will be replaced with default
+property6: {{*  name6|||default6*}} # comment
+property7: {{*name7|||default7 *}}
