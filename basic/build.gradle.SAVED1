@@ -1,0 +1,32 @@
+// origin: https://github.com/cloudtechmasters/springboot-tomcat-gradle-war/blob/main/build.gradle
+
+plugins {
+    id 'org.springframework.boot' version '1.5.4.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'  
+   // id 'spring-boot'
+  // id 'jar'
+}
+
+group = 'example.basic'
+version = '0.1.0-SNAPSHOT'
+sourceCompatibility = '1.8'
+// apply plugin: 'java'
+// apply plugin: 'spring-boot' 
+// apply plugin: 'io.spring.dependency-management' 
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation 'com.google.code.gson:gson'
+ }
+
+// task wrapper(type: Wrapper) {
+ //   gradleVersion = '5.4'
+//}
