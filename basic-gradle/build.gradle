@@ -1,0 +1,26 @@
+// origin: https://github.com/cloudtechmasters/springboot-tomcat-gradle-war/blob/main/build.gradle
+
+plugins {
+  id 'org.springframework.boot' version '2.3.4.RELEASE'
+  id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+  id 'java'  
+}
+
+group = 'example.basic'
+version = '0.1.0-SNAPSHOT'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+}
+dependencies {
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation 'com.google.code.gson:gson'
+ }
+
+// Cannot add task 'wrapper' as a task with that name already exists.
+// task wrapper(type: Wrapper) {
+//   gradleVersion = '7.3'
+// }

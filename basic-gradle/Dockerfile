@@ -1,6 +1,4 @@
-# ARG BASE=gradle:8.1-jdk11-alpine
 ARG BASE=gradle:7.3.1-jdk11-alpine
-# ARG BASE=gradle:5.4.1-jdk8-alpine
 FROM $BASE 
 WORKDIR /work
 ADD src ./src/
