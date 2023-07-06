@@ -1,0 +1,22 @@
+version: '3.5'
+
+services:
+  mysql-server:
+    container_name: mysql-server
+    hostname: mysql-server
+    image: mysql:5.7
+    # NOTE: myslq:8 jdbc requires java 8+ thus conflicts with tomcat:8.0-alpine
+    # that has java 7
+    environment:
+      - 'MYSQL_ROOT_PASSWORD=nimda'
+      - 'MYSQL_USER=example_db_user'
+      - 'MYSQL_DATABASE=example_db'
+      - 'MYSQL_PASSWORD=example_db_pass'
+    ports:
+      - "3306:3306"
+    volumes:
+     - ./db:/docker-entrypoint-initdb.d
+    networks:
+      - example
+networks:
+  example:
