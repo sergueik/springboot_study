@@ -18,17 +18,16 @@
     <java.version>1.8</java.version>
     <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
     <!-- NOTE the version naming https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
-<vault.version>3.0.2</vault.version>
+    <!-- NOTE: later releases e.g. 3.0.2 compiled to newer JDK than the main Springboot part will fail the build -->
+    <vault.version>2.2.2.RELEASE</vault.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <dependencies>
-<!--
-  <dependency>
+    <dependency>
       <groupId>org.springframework.vault</groupId>
       <artifactId>spring-vault-core</artifactId>
-     <version>${vault.version}</version>
-     </dependency>
--->
+      <version>${vault.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
@@ -45,8 +44,7 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
-  <!-- comment the exclusions if want project to use junit 4  -->
-
+      <!-- comment the exclusions if want project to use junit 4 -->
       <exclusions>
         <exclusion>
           <groupId>org.junit.vintage</groupId>
@@ -67,12 +65,12 @@
     </dependencies>
   </dependencyManagement>
   <build>
-   <sourceDirectory>src/main/java</sourceDirectory>
-   <testSourceDirectory>src/test/java</testSourceDirectory>
-     <plugins>
-       <plugin>
-         <groupId>org.springframework.boot</groupId>
-         <artifactId>spring-boot-maven-plugin</artifactId>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <finalName>${finalName}</finalName>
         </configuration>

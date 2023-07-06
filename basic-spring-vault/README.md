@@ -1,8 +1,10 @@
 #### Info
 
-code at `bb926d3bdeefc8de38987e8ac97ceefbaf23d6ac` from
-[Spring Vault](https://www.baeldung.com/spring-vault) and a basic __HashiCorp Vault on Alpine__ `Dockerfile` based on [project](https://github.com/dweomer/dockerfiles-vault). Alternatively one may try the vendor build vault image from [hashicorp vault docker container](https://hub.docker.com/_/vault/tags?page=1)
- the steps covered in [youtube video](https://youtu.be/MaTDiKp_IrA)
+this directory contains replica of the skeleton
+springboot vault-backed spring cloud configuration [example repository](https://github.com/codeforgeyt/vault-demo-mvn)
+connected to Vault [running in Docker container](https://github.com/dweomer/dockerfiles-vault/blob/master/Dockerfile).
+
+the steps to configure the Vault and `bootstrap.properties` are covered in [youtube video](https://youtu.be/MaTDiKp_IrA)
 
 ### Usage
 * build package on host (NOTE: skip the tests)
@@ -11,8 +13,8 @@ mvn -Dmaven.test.skip=true package
 ```
 * build image
 ```sh
-IMAGE=basic-vault
-docker build -t $IMAGE -f Dockerfile .
+export IMAGE=basic-vault
+docker build --build-arg "GID=$(id -g)" --build-arg "UID=$(id -u)" -t $IMAGE -f Dockerfile .
 ```
 * run, override the entry point, and exposing the default port
 ```sh
@@ -20,19 +22,21 @@ docker run --rm --entrypoint "" -p 8200:8200 -it $IMAGE sh
 ```
 ```sh
 vault -version
-``
+```
 ```text
-Vault v1.12.2 (415e1fe3118eebd5df6cb60d13defdc01aa17b03), built 2022-11-23T12:53
-:46Z
+Vault v1.12.2 (415e1fe3118eebd5df6cb60d13defdc01aa17b03), built 2022-11-23T12:53:46Z
 ```
-* start dev server 
+* start dev server with options
 ```sh
-vault server -dev -dev-listen-address=0.0.0.0:8200
+vault server -dev -dev-listen-address=0.0.0.0:8200 -dev-root-token-id='example'
 ```
+ - use the `spring.cloud.vault.token` value from `src/main/resources/bootstrap.properties`
 this will allow connecting to the container through the ip address of the dev host:
 
 ![Vault UI](https://github.com/sergueik/springboot_study/blob/master/basic-spring-vault/screenshots/capture-login.png)
 
+
+alternatively can drop the `dev-root-token-id` option and
 
 collect the token information to continue
 ```text
@@ -47,8 +51,8 @@ docker cp target/example.basic-vault.jar $ID:/work/app.jar
 * do exercises from a second console
 ```sh
 IMAGE=basic-vault
-CONTAINER_ID=$(docker container ls | grep $IMAGE |awk '{print $1}')
-docker exec -it $CONTAINER_ID sh
+ID=$(docker container ls | grep $IMAGE |awk '{print $1}')
+docker exec -it $ID sh
 ```
 ```sh
 export VAULT_ADDR=http://127.0.0.1:8200/
@@ -113,7 +117,7 @@ this will print
   "warnings": null
 }
 ```
-![Secret](https://github.com/sergueik/springboot_study/blob/master/basic-spring-vault   basic-elk-cluster/screenshots/capture-secret.png)
+![Secret](https://github.com/sergueik/springboot_study/blob/master/basic-spring-vault/screenshots/capture-secret.png)
 
 * run the Java app
 
@@ -152,6 +156,7 @@ Step 5/13 : RUN unzip vault_${VAULT_VERSION}_linux_amd64.zip -d /usr/local/bin &
 
 - it does appear to be using cache but after the download
 ### See Also
+
   * __Hashicorp Vault__
      + [Getting Started with Vault](https://app.pluralsight.com/lti-integration/redirect/3134d6b5-8d8f-48fe-9251-b3ec443fa9f5)(qwicklab)
 
@@ -179,5 +184,7 @@ Step 5/13 : RUN unzip vault_${VAULT_VERSION}_linux_amd64.zip -d /usr/local/bin &
   * [vendor example](https://github.com/hashicorp/hello-vault-spring/blob/main/sample-app/pom.xml) also uses the same parent pom
   * [skeleton springboot project with vault](https://github.com/codeforgeyt/vault-demo-mvn) - minimal configuration 
   * https://developer.hashicorp.com/vault/docs/commands
+  * https://developer.hashicorp.com/vault/tutorials/tokens/tokens
+  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
