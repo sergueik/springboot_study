@@ -2,6 +2,7 @@
 
 code at `bb926d3bdeefc8de38987e8ac97ceefbaf23d6ac` from
 [Spring Vault](https://www.baeldung.com/spring-vault) and a basic __HashiCorp Vault on Alpine__ `Dockerfile` based on [project](https://github.com/dweomer/dockerfiles-vault). Alternatively one may try the vendor build vault image from [hashicorp vault docker container](https://hub.docker.com/_/vault/tags?page=1)
+ the steps covered in [youtube video](https://youtu.be/MaTDiKp_IrA)
 
 ### Usage
 * build package on host (NOTE: skip the tests)
@@ -13,9 +14,9 @@ mvn -Dmaven.test.skip=true package
 IMAGE=basic-vault
 docker build -t $IMAGE -f Dockerfile .
 ```
-* run, override entry point
+* run, override the entry point, and exposing the default port
 ```sh
-docker run --entrypoint "" -it $IMAGE sh
+docker run --rm --entrypoint "" -p 8200:8200 -it $IMAGE sh
 ```
 ```sh
 vault -version
@@ -26,117 +27,130 @@ Vault v1.12.2 (415e1fe3118eebd5df6cb60d13defdc01aa17b03), built 2022-11-23T12:53
 ```
 * start dev server 
 ```sh
-vault server -dev
+vault server -dev -dev-listen-address=0.0.0.0:8200
 ```
+this will allow connecting to the container through the ip address of the dev host:
+
+![Vault UI](https://github.com/sergueik/springboot_study/blob/master/basic-spring-vault/screenshots/capture-login.png)
+
+
 collect the token information to continue
 ```text
 Root Token: hvs.LhxlbD0lD1QWV33DFfsSlauA
 ```
+update `src/main/resources/bootstrap.properties`, repackage, copy
+```sh
+export ID=$(docker container ls -a| grep $IMAGE| awk '{print $1}')
 
-* do exercises from a separate console
+docker cp target/example.basic-vault.jar $ID:/work/app.jar
+```
+* do exercises from a second console
 ```sh
 IMAGE=basic-vault
 CONTAINER_ID=$(docker container ls | grep $IMAGE |awk '{print $1}')
 docker exec -it $CONTAINER_ID sh
 ```
 ```sh
-vault kv put secret/hello foo=world
+export VAULT_ADDR=http://127.0.0.1:8200/
+export VAULT_TOKEN='hvs.gRGsjUZRa8LqhlszT2VF9Yct'
 ```
+NOTE:  combine both inputs in single command (may not be necessary)
+```sh
+vault kv put secret/application login=testuser password=test123
+```
+(the `secret` secret engine and the `application` path are the default ones Java uses)
+
+* verify the secret
+```sh
+vault kv get secret/application
+```
+this will print 
+
 ```text
-== Secret Path ==
-secret/data/hello
+===== Secret Path =====
+secret/data/application
 
 ======= Metadata =======
 Key                Value
 ---                -----
-created_time       2023-07-03T21:03:15.379884493Z
+created_time       2023-07-06T01:38:37.055689815Z
 custom_metadata    <nil>
 deletion_time      n/a
 destroyed          false
-version            1
-```
+version            5
 
+====== Data ======
+Key         Value
+---         -----
+login       testuser
+password    test123
+```
+* print the full JSON
 ```sh
-vault kv get -format=json secret/hello |  jq -r '.'
+vault kv get -format=json secret/application| jq -r '.'
 ```
-
+this will print
 ```json
+
 {
-  "request_id": "1ea52b23-98f0-4815-ac55-82e6a6111458",
+  "request_id": "1082b408-df32-2079-93b9-9e5691ac3769",
   "lease_id": "",
   "lease_duration": 0,
   "renewable": false,
   "data": {
     "data": {
-      "foo": "world"
+      "login": "testuser",
+      "password": "test123"
     },
     "metadata": {
-      "created_time": "2023-07-03T21:03:15.379884493Z",
+      "created_time": "2023-07-06T01:38:37.055689815Z",
       "custom_metadata": null,
       "deletion_time": "",
       "destroyed": false,
-      "version": 1
+      "version": 5
     }
   },
   "warnings": null
 }
 ```
-TODO: add debugging logs to application 
+![Secret](https://github.com/sergueik/springboot_study/blob/master/basic-spring-vault   basic-elk-cluster/screenshots/capture-secret.png)
 
-### Usage
-* pull vault image
-```sh
-docker pull vault:1.12.0
-```
-* run vault in foreground
-```sh
-docker run -it -p 8200:8200 vault:1.12.0
-```
- * uppdate the code and properies with hostname where vault it run,
-```sh
-docker-mahine ip
-```
-or `localhst` if run on Linux host
+* run the Java app
 
- * attept to run tests
 ```sh
-mvn test
+java -jar app.jar
 ```
-this fails, apparently Spring is attempting to run `vault` command locally:
+this will log Spring logo and possibly few ignorable warnings, then
 ```text
-starting vault
-unable to start vault in new processjava.io.IOException: Cannot run program "vau
-lt":
-CreateProcess error=2, 
-The system cannot find the file specified
+2023-07-06 01:45:32.679  INFO 260 --- [           main] c.c.v.VaultDemoMvnApplication            : Started VaultDemoMvnApplication in 9.565 seconds (JVM running for 10.926)
+Login: testuser
+Password: test123
+
 ```
+if it logs an error:
+
 ```text
-19:30:49.334 [main] WARN org.springframework.context.support.GenericApplicationContext - 
-Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: 
-Error creating bean with name 'credentialsService': Unsatisfied dependency expressed through constructor parameter 0; 
-nested exception is org.springframework.beans.factory.BeanCreationException: 
-Error creating bean with name 'vaultTemplate' defined in example.VaultTestConfiguration: 
-Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.vault.core.VaultTemplate]: 
-Factory method 'vaultTemplate' threw exception; nested exception is org.springframework.beans.factory.BeanCreationException: 
-Error creating bean with name 'vaultInitializer' defined in example.VaultTestConfiguration: 
-Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: 
-Failed to instantiate [example.VaultInitializer]: Factory method 'vaultInitializer' threw exception; 
-nested exception is java.lang.NullPointerException
-19:30:49.339 [main] DEBUG org.springframework.test.context.support.AbstractGenericContextLoader - Loading ApplicationContext for merged context configuration [[WebMergedContextConfiguration@15888343 testClass = VaultIntegrationManualTest, locations = '{}', classes = '{class example.CredentialsService, class example.VaultTestConfiguration}', contextInitializerClasses = '[]', activeProfiles = '{}',
-propertySourceLocations = '{}', propertySourceProperties = '{org.springframework.boot.test.context.SpringBootTestContextBootstrapper=true, server.port=0}', contextCustomizers = set[[ImportsContextCustomizer@33ecda92 key = [@org.springframework.test.context.ContextConfiguration(inheritInitializers=true, loader=class org.springframework.test.context.support.AnnotationConfigContextLoader, initializers=[], classes=[class example.VaultTestConfiguration], name=, locations=[], value=[], inheritLocations=true), @org.springframework.vault.repository.configuration.EnableVaultRepositories(vaultTemplateRef=vaultTemplate, repositoryBaseClass=class org.springramework.data.repository.config.DefaultRepositoryBaseClass, excludeFilters=[], keyValueTemplateRef=vaultKeyValueTemplate, basePackageClasses=[], includeFilters=[], repositoryFactoryBeanClass=class org.springframework.vault.repository.support.VaultRepositoryFactoryBean, queryLookupStrategy=CREATE_IF_NOT_FOUND, namedQueriesLocation=, repositoryImplementationPostfix=Impl, considerNestedRepositories=false, basePackages=[], value=[]), @org.springframework.test.context.BootstrapWith(value=class org.springframework.boot.test.context.SpringBootTestContextBootstrapper), @org.apiguardian.api.API(consumers=[*], since=5.0, status=STABLE), @org.junit.runner.RunWith(value=class org.springframework.test.context.junit4.SpringJUnit4ClassRunner),
-@org.springframework.test.annotation.DirtiesContext(hierarchyMode=EXHAUSTIVE, methodMode=AFTER_METHOD, classMode=AFTER_CLASS),
-@org.springframework.boot.test.context.SpringBootTest(args=[], webEnvironment=RANDOM_PORT, value=[], properties=[], classes=[class example.CredentialsService]),
- @org.junit.jupiter.api.extension.ExtendWith(value=[class org.springframework.test.context.junit.jupiter.SpringExtension]), @org.springframework.data.keyvalue.repository.config.QueryCreatorType(repositoryQueryType=class org.springframework.vault.repository.query.VaultPartTreeQuery, value=class org.springframework.vault.repository.query.VaultQueryCreator), @org.springframework.context.annotation.Import(value=[class org.springframework.vault.repository.configuration.VaultRepositoriesRegistrar])]], org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@4df50bcc, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@54c562f7, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer@2b6faea6, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@0,org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory$Customizer@79b06cab, org.springframework.boot.test.context.SpringBootTestArgs@1], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.support.AnnotationConfigContextLoader', parent = [null]]].
-Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.vault.core.VaultTemplate]: 
-Factory method 'vaultTemplate' threw exception; nested exception is org.springframework.beans.factory.BeanCreationException: 
-Error creating bean with name 'vaultInitializer' defined inexample.VaultTestConfiguration: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [example.VaultInitializer]: Factory method 'vaultInitializer' threw exception; nested exception is java.lang.NullPointerException
-        at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:185)
-        at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:650)
-        ... 77 common frames omitted
+2023-07-06 01:42:24.987 ERROR 240 --- [           main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'vaultConfiguration': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'login' in value "${login}"
+
 ```
-NOTE: the `starting vault` is logged regardless the Docker container is running or not
+it means it was misconfigured
 
+### TODO 
 
+* Refactor `Dockerfile` to prevent repeating the
+```text
+Step 4/13 : ADD https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip .
+Downloading  81.38MB/81.38MB
+
+ ---> Using cache
+ ---> 5dbbac5d6289
+Step 5/13 : RUN unzip vault_${VAULT_VERSION}_linux_amd64.zip -d /usr/local/bin && rm vault_${VAULT_VERSION}_linux_amd64.zip
+ ---> Using cache
+```
+
+- it does appear to be using cache but after the download
 ### See Also
   * __Hashicorp Vault__
      + [Getting Started with Vault](https://app.pluralsight.com/lti-integration/redirect/3134d6b5-8d8f-48fe-9251-b3ec443fa9f5)(qwicklab)
@@ -161,6 +175,9 @@ NOTE: the `starting vault` is logged regardless the Docker container is running 
   * [An Intro to Vault](https://www.baeldung.com/vault)
   * [HashiCorp Spring Vault](https://www.baeldung.com/spring-vault)
   * [Load a secret from Azure Key Vault in a Spring Boot application](https://learn.microsoft.com/en-us/azure/developer/java/spring-framework/configure-spring-boot-starter-java-app-with-azure-key-vault)
-
+  * likely an useful [project](https://github.com/markramach/vault-spring-boot-starter). NOTE, its parent class is the `org.springframework.cloud.spring-cloud-config`, not a usual `org.springframework.spring-boot-starter-parent`
+  * [vendor example](https://github.com/hashicorp/hello-vault-spring/blob/main/sample-app/pom.xml) also uses the same parent pom
+  * [skeleton springboot project with vault](https://github.com/codeforgeyt/vault-demo-mvn) - minimal configuration 
+  * https://developer.hashicorp.com/vault/docs/commands
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

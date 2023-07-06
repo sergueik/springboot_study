@@ -20,5 +20,5 @@ RUN set -x \
 
 ARG app_jar="example.basic-vault.jar"
 ADD "target/${app_jar}" app.jar
-EXPOSE 8085
+EXPOSE 8085,8200,8201
 ENTRYPOINT ["java", "-jar", "app.jar"]
