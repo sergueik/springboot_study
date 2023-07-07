@@ -91,6 +91,19 @@ select count(1) from example_table;
 docker-compose stop
 docker-compose rm -f
 ```
+
+### Note
+
+on Windows __Docker Toolbox__ hosted environment one can find the database not completely initialize
+```sql
+use example_db;
+show tables;
+```
+return
+```text
+Empty set (0.00 sec)
+```
+To fix is avoid using `volumes` in `docker-compose.yml`, but copy the directory via `Dockerfle` instead
 #### TODO
 
 the auto-initialization scenario may not work with alpine builds (not tested)

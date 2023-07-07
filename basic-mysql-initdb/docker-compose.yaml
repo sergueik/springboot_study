@@ -5,8 +5,6 @@ services:
     container_name: mysql-server
     hostname: mysql-server
     image: mysql:5.7
-    # NOTE: myslq:8 jdbc requires java 8+ thus conflicts with tomcat:8.0-alpine
-    # that has java 7
     environment:
       - 'MYSQL_ROOT_PASSWORD=nimda'
       - 'MYSQL_USER=example_db_user'

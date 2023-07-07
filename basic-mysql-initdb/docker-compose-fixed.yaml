@@ -1,0 +1,23 @@
+
+version: '3.5'
+
+services:
+  mysql-server:
+    container_name: mysql-server
+    hostname: mysql-server
+    image: mysql:5.7
+    build: .
+    environment:
+      - 'MYSQL_ROOT_PASSWORD=nimda'
+      - 'MYSQL_USER=example_db_user'
+      - 'MYSQL_DATABASE=example_db'
+      - 'MYSQL_PASSWORD=example_db_pass'
+    ports:
+      - "3306:3306"
+    # does not work with Docker Toolbox
+    # volumes:
+    # - ./db:/docker-entrypoint-initdb.d
+    networks:
+      - example
+networks:
+  example:
