@@ -16,9 +16,11 @@ mvn -Dmaven.test.skip=true package
 export IMAGE=basic-vault
 docker build --build-arg "GID=$(id -g)" --build-arg "UID=$(id -u)" -t $IMAGE -f Dockerfile .
 ```
+* NOTE: on Windows the values returned by `id` will be big numbers like `197609`
 * run, override the entry point, and exposing the default port
 ```sh
-docker run --rm --entrypoint "" -p 8200:8200 -it $IMAGE sh
+NAME=vault-container
+docker run --rm --name $NAME --entrypoint "" -p 8200:8200 -it $IMAGE sh
 ```
 ```sh
 vault -version
@@ -28,9 +30,25 @@ Vault v1.12.2 (415e1fe3118eebd5df6cb60d13defdc01aa17b03), built 2022-11-23T12:53
 ```
 * start dev server with options
 ```sh
-vault server -dev -dev-listen-address=0.0.0.0:8200 -dev-root-token-id='example'
+TOKEN=$(echo 'vault token' | base64 -)
+echo $TOKEN
+vault server -dev -dev-listen-address=0.0.0.0:8200 -dev-root-token-id=$TOKEN
 ```
- - use the `spring.cloud.vault.token` value from `src/main/resources/bootstrap.properties`
+this will print to console
+```text
+The unseal key and root token are displayed below in case you want to
+seal/unseal the Vault or re-authenticate.
+
+Unseal Key: t1Pz89JEGcc4p/tYrJYlKEFFVLbHQ4kD+diNMQ6f2LE=
+Root Token: dmF1bHQgdG9rZW4K
+
+Development mode should NOT be used in production installations!
+```
+and remain running
+
+* NOTE: simple PLAIN strings like 'example' appear to not always work - only observer through Java aplication failure
+
+* nake sure use the `spring.cloud.vault.token` value from `src/main/resources/bootstrap.properties`
 this will allow connecting to the container through the ip address of the dev host:
 
 ![Vault UI](https://github.com/sergueik/springboot_study/blob/master/basic-spring-vault/screenshots/capture-login.png)
@@ -38,7 +56,7 @@ this will allow connecting to the container through the ip address of the dev ho
 
 alternatively can drop the `dev-root-token-id` option and
 
-collect the token information to continue
+collect the randomly generated token information to continue
 ```text
 Root Token: hvs.LhxlbD0lD1QWV33DFfsSlauA
 ```
@@ -49,6 +67,7 @@ export ID=$(docker container ls -a| grep $IMAGE| awk '{print $1}')
 docker cp target/example.basic-vault.jar $ID:/work/app.jar
 ```
 * do exercises from a second console
+
 ```sh
 IMAGE=basic-vault
 ID=$(docker container ls | grep $IMAGE |awk '{print $1}')
@@ -56,7 +75,9 @@ docker exec -it $ID sh
 ```
 ```sh
 export VAULT_ADDR=http://127.0.0.1:8200/
-export VAULT_TOKEN='hvs.gRGsjUZRa8LqhlszT2VF9Yct'
+TOKEN=$(echo 'vault token' | base64 -)
+echo $TOKEN
+export VAULT_TOKEN=$TOKEN
 ```
 NOTE:  combine both inputs in single command (may not be necessary)
 ```sh
