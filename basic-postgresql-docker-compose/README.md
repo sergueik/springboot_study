@@ -7,6 +7,18 @@ __PostgreSQL on Docker: Basic to Advanced__ [tutorial post](https://habr.com/ru/
 ```sh
 mkdir data
 ```
+may have to stop postgresql if running localy
+```sh
+sudo netstat -antp | grep 5432
+```
+```text
+tcp        0      0 0.0.0.0:5432            0.0.0.0:*               LISTEN      1152/postgres 
+```
+
+
+```sh
+sudo /etc/init.d/postgresql  stop
+```
 * see the failure when file is used in command line in volume argument:
 ```sh
 IMAGE=postgres:9.6-alpine3.13
@@ -34,16 +46,18 @@ this will log the warning
 ```text
 PostgreSQL Database directory appears to contain a database; Skipping initialization
 ```
+
+![Skipping Initialization](https://github.com/sergueik/springboot_study/blob/master/basic-postgresql-docker-compose/screenshots/capture-skipping.png)
+
 and ignore the initialization
 
-Connect to conrainer interatively
+Connect to container interactively
 ```sh
 docker exec -it $NAME sh
 ```
 and try to run init sql script by hand:
 ```sh
-/ # psql -h localhost -p 5432 --username habrpguser --password -d habrdb </docke
-r-entrypoint-initdb.d/1.sql
+/ # psql -h localhost -p 5432 --username habrpguser --password -d habrdb </docker-entrypoint-initdb.d/1.sql
 ```
 ```sh
 Password for user habrpguser:
@@ -55,8 +69,7 @@ could not read from input file: Is a directory
 ls -ld /docker-entrypoint-initdb.d/1.sql
 ```
 ```txt
-drwxr-xr-x    2 root     root            40 Jul  8 14:38 /docker-entrypoint-init
-db.d/1.sql
+drwxr-xr-x    2 root     root            40 Jul  8 14:38 /docker-entrypoint-initdb.d/1.sql
 ```
 This is apparently a limitation of __Docker ToolBox__ __Windows 8.1__
 
@@ -119,10 +132,16 @@ docker-compose exec -it postgres sh
 ```sh
 docker-compose stop 
 docker-compose rm -f
+sudo rm -fr data
 ```
 ### See Also
 
     * long [discussion](https://gist.github.com/onjin/2dd3cc52ef79069de1faa2dfd456c945) of volume mounting and initdb /PGDATA  interplay on Docker Toolbox on Windows 8.1
     * [original post](https://qna.habr.com/q/1292232)(in Russian)
+    * discussion on [stackoverflow](https://stackoverflow.com/questions/59715622/docker-compose-and-create-db-in-postgres-on-init) of `docker-compose` and `create db` in Postgres on init
+
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
 
