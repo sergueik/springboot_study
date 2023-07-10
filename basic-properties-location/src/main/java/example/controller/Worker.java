@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,10 @@ public class Worker {
 
 	@Autowired
 	Properties properties;
+	
+	public Worker(Properties data) {
+		properties = data;
+	}
 
 	private final String fileName = "key.txt";
 
@@ -32,13 +37,14 @@ public class Worker {
 		StringBuilder response = new StringBuilder();
 
 		try {
+			String pathCandidate = String.join(System.getProperty("file.separator"),
+					Arrays.asList(properties.getProperty("location", "."), fileName));
 			String filePath = new File(
-					Paths.get(System.getProperty("user.dir"))
-							.resolve(String.join(System.getProperty("file.separator"),
-									Arrays.asList(properties.getProperty("location", "."),
-											fileName)))
-							.toAbsolutePath().toString()).getCanonicalPath();
-			logger.info("Read file from: " + filePath);
+					(Paths.get((pathCandidate.startsWith("/")) ? pathCandidate
+							: System.getProperty("user.dir")).resolve(pathCandidate))
+									.toAbsolutePath().toString()).getCanonicalPath();
+			logger.info("Read file from: " + filePath
+					);
 			Path path = Paths.get(filePath);
 			if (Files.isReadable(path)) {
 				String data = new String(Files.readAllBytes(Paths.get(filePath)),
@@ -50,7 +56,7 @@ public class Worker {
 				response.append("Data: read error");
 			}
 		} catch (IOException e) {
-			logger.error("Key file path error" + e.getMessage()	);
+			logger.error("Key file path error" + e.getMessage());
 			response.append("Key file path error" + e.getMessage());
 		}
 
@@ -58,4 +64,3 @@ public class Worker {
 	}
 
 }
-	
