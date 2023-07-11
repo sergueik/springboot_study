@@ -59,9 +59,11 @@ public class Worker {
 			}
 		} catch (IOException e) {
 			logger.error("Key file path error: "
-					+ (filePath == null ? pathCandidate : filePath) + e.getMessage());
-			response.append("Data: Key file path error:"
-					+ (filePath == null ? pathCandidate : filePath) + e.getMessage());
+					+ (filePath == null ? pathCandidate : filePath) + " "
+					+ e.getMessage());
+			response.append("Data: Key file path error: "
+					+ (filePath == null ? pathCandidate : filePath) + " "
+					+ e.getMessage());
 		}
 
 		return response.toString();

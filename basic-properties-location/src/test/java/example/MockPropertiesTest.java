@@ -36,9 +36,18 @@ public class MockPropertiesTest {
 				is("Data: read error: C:\\tmp\\key.txt"));
 	}
 
-	// @Ignore
 	@Test
+	// created the directory named"src/test/resources/key.txt"
 	public void test2() {
+		when(properties.getProperty(anyString(), anyString()))
+				.thenReturn("src/test/resources");
+		worker = new Worker(properties);
+		assertThat(worker.propertyCheck(),
+				containsString("Data: Key file path error"));
+	}
+
+	@Test
+	public void test3() {
 		when(properties.getProperty(anyString(), anyString())).thenReturn(".");
 		worker = new Worker(properties);
 		assertThat(worker.propertyCheck(), containsString("Data: 123"));
