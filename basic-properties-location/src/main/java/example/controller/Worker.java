@@ -23,6 +23,7 @@ public class Worker {
 
 	private static final Logger logger = LoggerFactory.getLogger(Worker.class);
 
+	private static String message = null;
 	@Autowired
 	Properties properties;
 
@@ -52,18 +53,17 @@ public class Worker {
 				logger.info(String.format("Read  %d bytes", data.length()));
 				response.append("Data: " + data);
 			} else {
-				logger.error("Invalid path to the file: "
-						+ (filePath == null ? pathCandidate : filePath));
-				response.append("Data: read error: "
-						+ (filePath == null ? pathCandidate : filePath));
+				message = "Invalid path to the file: "
+						+ (filePath == null ? pathCandidate : filePath);
+				logger.error(message);
+				response.append("Data: read error: " + message);
 			}
 		} catch (IOException e) {
-			logger.error("Key file path error: "
+			message = "Key file path error: "
 					+ (filePath == null ? pathCandidate : filePath) + " "
-					+ e.getMessage());
-			response.append("Data: Key file path error: "
-					+ (filePath == null ? pathCandidate : filePath) + " "
-					+ e.getMessage());
+					+ e.getMessage();
+			logger.error(message);
+			response.append("Data: " + message);
 		}
 
 		return response.toString();
