@@ -25,7 +25,7 @@ public class Worker {
 
 	@Autowired
 	Properties properties;
-	
+
 	public Worker(Properties data) {
 		properties = data;
 	}
@@ -35,16 +35,16 @@ public class Worker {
 	@GetMapping("/check")
 	public String propertyCheck() {
 		StringBuilder response = new StringBuilder();
-
+		String filePath = null;
+		String pathCandidate = null;
 		try {
-			String pathCandidate = String.join(System.getProperty("file.separator"),
+			pathCandidate = String.join(System.getProperty("file.separator"),
 					Arrays.asList(properties.getProperty("location", "."), fileName));
-			String filePath = new File(
+			filePath = new File(
 					(Paths.get((pathCandidate.startsWith("/")) ? pathCandidate
 							: System.getProperty("user.dir")).resolve(pathCandidate))
 									.toAbsolutePath().toString()).getCanonicalPath();
-			logger.info("Read file from: " + filePath
-					);
+			logger.info("Read file from: " + filePath);
 			Path path = Paths.get(filePath);
 			if (Files.isReadable(path)) {
 				String data = new String(Files.readAllBytes(Paths.get(filePath)),
@@ -52,12 +52,16 @@ public class Worker {
 				logger.info(String.format("Read  %d bytes", data.length()));
 				response.append("Data: " + data);
 			} else {
-				logger.error("Invalid path to the file: " + filePath);
-				response.append("Data: read error");
+				logger.error("Invalid path to the file: "
+						+ (filePath == null ? pathCandidate : filePath));
+				response.append("Data: read error: "
+						+ (filePath == null ? pathCandidate : filePath));
 			}
 		} catch (IOException e) {
-			logger.error("Key file path error" + e.getMessage());
-			response.append("Key file path error" + e.getMessage());
+			logger.error("Key file path error: "
+					+ (filePath == null ? pathCandidate : filePath) + e.getMessage());
+			response.append("Data: Key file path error:"
+					+ (filePath == null ? pathCandidate : filePath) + e.getMessage());
 		}
 
 		return response.toString();
