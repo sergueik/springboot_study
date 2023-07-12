@@ -1,0 +1,22 @@
+# origin: https://automated-testing.info/t/log4j2-logs-ne-poluchaetsya-vyvesti-v-konsol/29039
+
+# configuration syntax
+status=error
+dest=err
+name=PropertiesConfig
+
+# publish console logs
+appender.console.type=Console
+appender.console.name=STDOUT
+appender.console.layout.type=PatternLayout
+appender.console.layout.pattern=[%-5level] %d{DEFAULT} %c:%L - %m%n
+
+# capture logs
+logger.app.name=base
+logger.app.level=debug
+logger.app.additivity=false
+logger.app.appenderRef.console.ref=STDOUT
+
+# root logger
+rootLogger.level=info
+rootLogger.appenderRef.stdout.ref=STDOUT
