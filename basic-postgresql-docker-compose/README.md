@@ -1,4 +1,4 @@
-### Info
+﻿### Info
 
 __PostgreSQL on Docker: Basic to Advanced__ [tutorial post](https://habr.com/ru/articles/578744/)(in Russian, possibly translated)
 
@@ -109,13 +109,15 @@ docker stop $NAME
 docker container rm $NAME
 ```
 ```sh
+export COMPOSE_HTTP_TIMEOUT=600
 docker-compose up --build
 ```
 ```sh
 docker-compose ps
 ```
 ```text
-basic-postgresql-docker-compose-postgres-1   "docker-entrypoint.s…"   postgres running             0.0.0.0:5432->5432/tcp
+basic-postgresql-docker-compose-postgres-1   "docker-entrypoint.s…"   postgres    running             0.0.0.0:5432->5432/tcp
+client                                       "sleep 5000"             psql-client running (healthy)
 ```
 ```sh
 docker-compose logs postgres
@@ -123,12 +125,16 @@ docker-compose logs postgres
 ```text
 basic-postgresql-docker-compose-postgres-1  | PostgreSQL Database directory appears to contain a database; Skipping initialization
 ```
+```text
+basic-postgresql-docker-compose-postgres-1  | LOG:  database system is ready to accept connection
+```
 ```sh
 docker-compose exec -it postgres sh
 ```
 * repeat verification steps
 
 ### Cleanup
+
 ```sh
 docker-compose stop 
 docker-compose rm -f

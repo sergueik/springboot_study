@@ -3,14 +3,30 @@ version: "3.7"
 services:
   postgres:
     image: postgres:9.6-alpine3.13
+    hostname: postgres  
     environment:
       POSTGRES_DB: "habrdb"
       POSTGRES_USER: "habrpguser"
       POSTGRES_PASSWORD: "pgpwd4habr"
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
-    # NOTE: bad indentation leads to error "volumes must be a mapping"
       - ./initdb:/docker-entrypoint-initdb.d
       - ./data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - example
+  psql-client:
+    restart: on-failure:3
+    build: client
+    container_name: client
+    depends_on:
+      - postgres
+    environment:
+      POSTGRES_DB: "habrdb"
+      POSTGRES_USER: "habrpguser"
+      POSTGRES_PASSWORD: "pgpwd4habr"
+    networks:
+      - example
+networks:
+  example:
