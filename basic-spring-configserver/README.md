@@ -60,7 +60,7 @@ the result will be specific to the resource path e.g.:
 cd config-client
 mvn spring-boot:run
 ```
-* browse the page
+* browse the page `http://192.168.0.25:8080/greeting`
 
 ![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-spring-configserver/screenshots/capture-greeting.png)
 
@@ -83,6 +83,7 @@ so switched to `Hoxton.SR8` - released on Aug 29, 2020 - confirmed that to work 
 
 ### See Also
   * [quick Intro to Spring Cloud Configuration](https://www.baeldung.com/spring-cloud-configuration)
+  * `@EnableConfigServer` annotation [documentation](https://cloud.spring.io/spring-cloud-config/multi/multi__spring_cloud_config_server.html) 
   * https://stackoverflow.com/questions/74658355/how-to-fix-java-lang-noclassdeffounderror-org-springframework-boot-bootstrapper
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
