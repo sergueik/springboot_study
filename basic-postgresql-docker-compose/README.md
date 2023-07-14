@@ -115,16 +115,25 @@ docker-compose up --build
 ```sh
 docker-compose ps
 ```
+will first show
 ```text
-basic-postgresql-docker-compose-postgres-1   "docker-entrypoint.s…"   postgres    running             0.0.0.0:5432->5432/tcp
-client                                       "sleep 5000"             psql-client running (healthy)
+NAME                                         COMMAND                  SERVICE       STATUS              PORTS
+basic-postgresql-docker-compose-postgres-1   "docker-entrypoint.s…"   postgres      running             0.0.0.0:5432->5432/tcp 
+client                                       "tail -f /dev/null"      psql-client   running (starting)
+```
+and later
+```text
+basic-postgresql-docker-compose-postgres-1   "docker-entrypoint.s…"   postgres      running             0.0.0.0:5432->5432/tcp
+client                                       "tail -f /dev/null"      psql-client   running (healthy)
 ```
 ```sh
 docker-compose logs postgres
 ```
+NOTE, the warning
 ```text
 basic-postgresql-docker-compose-postgres-1  | PostgreSQL Database directory appears to contain a database; Skipping initialization
 ```
+and near the end of the console log
 ```text
 basic-postgresql-docker-compose-postgres-1  | LOG:  database system is ready to accept connection
 ```
@@ -138,7 +147,7 @@ docker-compose exec -it postgres sh
 CONTAINER_ID=$(docker container ls -a | grep client | awk '{print $1}')
 docker exec -it $CONTAINER_ID sh
 ```
-*in the container run
+* in the `client` container run
 ```sh
 cat /tmp/a.*.txt
 ```
