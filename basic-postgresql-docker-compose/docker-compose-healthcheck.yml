@@ -27,14 +27,14 @@ services:
       POSTGRES_USER: "habrpguser"
       POSTGRES_PASSWORD: "pgpwd4habr"
       
-    #healthcheck:
-      #test:
-        #[
-            #"CMD-SHELL","PGPASSWORD=$$POSTGRES_PASSWORD psql --host=postgres --port=5432 --username=$$POSTGRES_USER --no-password --dbname=$$POSTGRES_DB --quiet --command='SELECT 1' --output=/tmp/a.$$$$.txt"
-        #]
-      #interval: 10s
-      #timeout: 10s
-      #retries: 10
+    healthcheck:
+      test:
+        [
+            "CMD-SHELL","PGPASSWORD=$$POSTGRES_PASSWORD psql --host=postgres --port=5432 --username=$$POSTGRES_USER --no-password --dbname=$$POSTGRES_DB --quiet --command='SELECT 1' --output=/tmp/a.$$$$.txt"
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
 
 
     networks:

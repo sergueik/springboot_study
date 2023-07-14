@@ -132,7 +132,26 @@ basic-postgresql-docker-compose-postgres-1  | LOG:  database system is ready to 
 docker-compose exec -it postgres sh
 ```
 * repeat verification steps
+### Verify HealthCheck
+* verify
+```sh
+CONTAINER_ID=$(docker container ls -a | grep client | awk '{print $1}')
+docker exec -it $CONTAINER_ID sh
+```
+*in the container run
+```sh
+cat /tmp/a.*.txt
+```
 
+* will see a number of
+```text
+ ?column?
+----------
+        1
+(1 row)
+```
+
+messages in console
 ### Cleanup
 
 ```sh
@@ -145,7 +164,8 @@ sudo rm -fr data
     * long [discussion](https://gist.github.com/onjin/2dd3cc52ef79069de1faa2dfd456c945) of volume mounting and initdb /PGDATA  interplay on Docker Toolbox on Windows 8.1
     * [original post](https://qna.habr.com/q/1292232)(in Russian)
     * discussion on [stackoverflow](https://stackoverflow.com/questions/59715622/docker-compose-and-create-db-in-postgres-on-init) of `docker-compose` and `create db` in Postgres on init
-
+    * [how to keep Docker container running indefinitely](https://devopscube.com/keep-docker-container-running/)
+   * [how do I specify a password to psql non-interactively?](https://stackoverflow.com/questions/6405127/how-do-i-specify-a-password-to-psql-non-interactively)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
