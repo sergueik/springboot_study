@@ -4,9 +4,11 @@ example MongoDB / Python container cluster with / without authentication
 ### Usage
 
 #### No Authentication
+
+* use Ubuntu Mongo image (alternatively use)
 ```sh
 IMAGE=mongo:4.4.6-bionic
-CONTAINER=mongodb
+CONTAINER=mongo_server
 docker pull $IMAGE
 docker container rm $CONTAINER
 docker run -d -e MONGO_INITDB_DATABASE=db --name $CONTAINER $IMAGE
@@ -20,11 +22,11 @@ docker exec -it $CONTAINER sh
 mongo
 ```
 ```sh
-> use db;
-> db.db.insert({name:"john", age: 100 })
+use db;
+db.db.insert({name:"john", age: 100 })
 ```
 ```sh
-> show databases
+show databases
 ```
 ```text
 admin   0.000GB
@@ -34,41 +36,64 @@ local   0.000GB
 test    0.000GB
 ```
 ```sh
-> quit()
+quit()
 ```
 ```sh
 exit
 ```
-* connect the Python client
+* create the Python client container
 ```sh
-CONTAINER_IMAGE=test
-cp env.WITH-CREDENTIALS .env
+CONTAINER_IMAGE=mongo_client_python
+cp env.NO-AUTH .env
 docker build -f Dockerfile -t $CONTAINER_IMAGE .
 ```
+update the `.env` to have the name of MONGO_SERVER container apepar in the `DATABASE_URL` (`.env` appears to have precedence over arguments):
+```text
+```
 ```sh
-CONTAINER=test
+CONTAINER=mongo_client_python
 docker container rm $CONTAINER
+MONGO_SERVER=mongo_server
 
-docker run --link mongodb -it -e DATABASE_URL=mongodb://mongodb:27017/db --name $CONTAINER $CONTAINER_IMAGE
+docker run --link $MONGO_SERVER -it -e DATABASE_URL=mongodb://$MONGO_SERVER:27017/db --name $CONTAINER $CONTAINER_IMAGE
 ```
 
 this wll show  no collections but at least not fail:
 ```text
-Connected to the MongoDB database via connection string mongodb://mongodb:27017/db 
-MongoClient(host=['mongodb:27017'], document_class=dict, tz_aware=False, connect=True) Database(MongoClient(host=['mongodb:27017'], document_class=dict, tz_aware=False, connect=True), 'db'
-Test:<pymongo.command_cursor.CommandCursor object at 0x7f8328e473d0>
+
+Connected to the MongoDB database via connection string mongodb://mongo_server:27017/db MongoClient(host=['mongo_server:27017'], document_class=dict, tz_aware=False, connect=True) 
+Database(MongoClient(host=['mongo_server:27017'], document_class=dict, tz_aware=False, connect=True), 'db')
+Test: {
+  "name": "db",
+  "type": "collection",
+  "options": {},
+  "info": {
+    "readOnly": false,
+    "uuid": "<binary data>"
+  },
+  "idIndex": {
+    "v": 2,
+    "key": {
+      "_id": 1
+    },
+    "name": "_id_"
+  }
+}
+
 MongoDB database connection were closed.
 ```
+(pretty-printed)
+
 #### With Authentication
 
 * recycle container and start with auth options passed in
 ```sh
 IMAGE=mongo:4.4.6-bionic
 docker pull $IMAGE
-CONTAINER=mongodb
+MONGO_SERVER=mongo_server
 docker stop $CONTAINER
 docker container rm $CONTAINER
-docker run -d -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=db --name $CONTAINER $IMAGE
+docker run -d -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=db --name $MONGO_SERVER $IMAGE
 ```
 * connect to  mongodb container and run mongo in console with authentication:
 
@@ -115,12 +140,13 @@ docker build -f Dockerfile -t $CONTAINER_IMAGE .
 ```sh
 CONTAINER=test
 docker container rm $CONTAINER
-docker run -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=db -e DATABASE_URL=mongodb://admin:admin@mongodb:27017/db --name $CONTAINER -it $CONTAINER $CONTAINER_IMAGE
+MONGO_SERVER=mongo_server
+docker run -e MONGO_INITDB_ROOT_USERNAME=admin --link $MONGO_SERVER -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=db -e DATABASE_URL=mongodb://admin:admin@$MONGO_SERVER:27017/db --name $CONTAINER -it $CONTAINER $CONTAINER_IMAGE
 ```
 no output
 
 ```sh
-docker run --link mongodb -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=db -e DATABASE_URL=mongodb://admin:admin@mongodb:27017/db --name $CONTAINER -it $CONTAINER sh
+docker run --link mongodb -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin --link $MONGO_SERVER -e MONGO_INITDB_DATABASE=db -e DATABASE_URL=mongodb://admin:admin@$MONGO_SERVER:27017/db --name $CONTAINER -it $CONTAINER sh
 ```
 
 ```sh
@@ -224,6 +250,9 @@ Error response from daemon: Container 90c06e816bf7dd432208f766b252e01b9db2d59087
 ```text
 mongodb    | 2023-05-04T13:08:07.989+0000 I CONTROL  [initandlisten] ** WARNING: Access control is not enabled for the database.
 ```
+### TODO
+
+   https://www.geeksforgeeks.org/python-mongodb-insert_one-query/
 
 ### See Also
 https://www.mongodb.com/basics/create-database
