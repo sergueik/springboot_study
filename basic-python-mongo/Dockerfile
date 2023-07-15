@@ -10,10 +10,7 @@ ENV LC_ALL=C.UTF-8
 ENV LC_LANG=C.UTF-8
 RUN pip install --upgrade pip
 # https://pypi.org/project/python-dotenv/
-RUN pip install python-dotenv==1.0.0 fastapi pymongo
-# NOTE: to install unicorn, need to add compilers
-# COPY ./requirements.txt .
-# RUN pip install -r requirements.txt
+RUN pip install python-dotenv==1.0.0 pymongo
 COPY .env app.py ./
 ARG SERVICE_PORT=8080
 EXPOSE $SERVICE_PORT

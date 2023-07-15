@@ -1,4 +1,4 @@
-### Usage
+﻿### Usage
 this directory contains a Perl [Mango](https://metacpan.org/pod/Mango) test.
 NOTE: the "Pure Perl" `Mango` module states to be is not correct strictly speaking - has a dependency on compiled module `Mojolicious`
 
@@ -33,7 +33,7 @@ and 5 min for `Mango` on a fast machine
 IMAGE=mongo:4.4.6-bionic
 MONGO_SERVER=mongo_server
 docker pull $IMAGE
-docker container rm $CONTAINER
+docker container rm $MONGO_SERVER
 docker run -d -e MONGO_INITDB_DATABASE=db --name $MONGO_SERVER $IMAGE
 ```
 * create the Perl client container
@@ -41,6 +41,8 @@ docker run -d -e MONGO_INITDB_DATABASE=db --name $MONGO_SERVER $IMAGE
 CONTAINER_IMAGE=mongo_client_perl
 docker build -f Dockerfile -t $CONTAINER_IMAGE .
 ```
+* NOTE: time-consuming! 
+
 run it in background
 ```sh
 CONTAINER_NAME=mongo_client_perl
@@ -54,30 +56,43 @@ docker run --link $MONGO_SERVER -d -e DATABASE_URL=mongodb://$MONGO_SERVER:27017
 
 
 ```sh
-docker exec -it $CONTAINER_NAME sh
-```
-```sh
-perl -I . test.pl
+docker exec -it $CONTAINER_NAME perl test.pl
 ```
 will print
 ```text
 Connect
 Insert document
+Object Id: 64b21209de3f7b00149a287c
+Object Id: 64b21209de3f7b00149b287c
+Object Id: 64b21209de3f7b00149c287c
+Object Id: 64b21209de3f7b00149d287c
+Object Id: 64b21209de3f7b00149e287c
+...
 Object Id: 64b1c58054f5860048211b7d
 Update document
 Find document
-JSON:PP
-{
-   "_id" : null,
-   "bar" : "yada"
-}
-Data::Dumper
 $VAR1 = {
           '_id' => bless( {
-                            'oid' => 'd��+T��̚�'
+                            'oid' => 'd��?{T��'
                           }, 'Mango::BSON::ObjectID' ),
-          'bar' => 'yada'
+          'size' => {
+                      'h' => 28,
+                      'uom' => 'cm',
+                      'w' => '35.5'
+                    },
+          'tags' => [
+                      'cotton'
+                    ],
+          'item' => 'bar0',
+          'qty' => 100
         };
+```
+timing shows
+
+```text
+real	0m1.043s
+user	0m0.041s
+sys	0m0.036s
 
 ```
 connect to mongodb container to verify the data was inserted:
