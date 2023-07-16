@@ -98,6 +98,14 @@ docker container ls -a | grep "${IMAGE}" | awk '{print $1}' | xargs -IX docker c
 
 docker image prune -f
 ```
+### TODO
+
+The JSON logger does not work in the current configuration. The error is
+```text
+ERROR StatusLogger Unable to invoke factory method in class org.apache.logging.log4j.core.layout.JsonLayout for element JsonLayout: java.lang.IllegalStateException: No factory method found for class org.apache.logging.log4j.core.layout.JsonLayout
+ java.lang.IllegalStateException: No factory method found for class org.apache.logging.log4j.core.layout.JsonLayout
+```
+commented the logger in `log4.xml.FILE-AND-CONSOLE`
 ### See Also
     * [log4j2 – Logging to Both File and Console](https://www.baeldung.com/java-log4j2-file-and-console) and [example repository](https://github.com/eugenp/tutorials/tree/master/logging-modules/log4j2)
  
