@@ -47,8 +47,6 @@ CONTAINER_IMAGE=mongo_client_python
 cp env.NO-AUTH .env
 docker build -f Dockerfile -t $CONTAINER_IMAGE .
 ```
-* NOTE: time-consuming! 
-
 update the `.env` to have the name of MONGO_SERVER container apepar in the `DATABASE_URL` (`.env` appears to have precedence over arguments):
 ```text
 ```
@@ -57,28 +55,39 @@ CONTAINER_NAME=mongo_client_python
 docker container rm $CONTAINER_NAME
 MONGO_SERVER=mongo_server
 
-docker run --link $MONGO_SERVER -e DATABASE_URL=mongodb://$MONGO_SERVER:27017/db --name $CONTAINER_NAME -it $CONTAINER_IMAGE 
+docker run --link $MONGO_SERVER -e DATABASE_URL=mongodb://$MONGO_SERVER:27017/db --name $CONTAINER_NAME -d $CONTAINER_IMAGE tail -f /dev/null
+```
+```sh
+time  docker exec -it $CONTAINER_NAME python app.py
 ```
 
 this will print:
 ```text
 Connected to the MongoDB database via connection string mongodb://mongo_server:27017/test MongoClient(host=['mongo_server:27017'], document_class=dict, tz_aware=False, connect=True) Database(MongoClient(host=['mongo_server:27017'], document_class=dict, tz_aware=False, connect=True), 'test')
-oid:<pymongo.results.InsertOneResult object at 0x7efc9a223c70>
-oid:<pymongo.results.InsertOneResult object at 0x7efc9a223dc0>
-oid:<pymongo.results.InsertOneResult object at 0x7efc9a223d30>
-oid:<pymongo.results.InsertOneResult object at 0x7efc9a223ca0>
-oid:<pymongo.results.InsertOneResult object at 0x7efc9a2237c0>
+Inserving 10000 documents
+
+oid:<pymongo.results.InsertOneResult object at 0x7fadacce0a30>
+oid:<pymongo.results.InsertOneResult object at 0x7fadacce08b0>
+oid:<pymongo.results.InsertOneResult object at 0x7fadacce0040>
 ...
 MongoDB database connection were closed.
+
+real    0m45.436s
+user    0m0.000s
+sys     0m0.031s
+
 ```
-timing shows:
+
+and in silent run the benchmark is
 ```text
-real	0m2.728s
-user	0m0.053s
-sys	0m0.037s
+Connected to the MongoDB database via connection string mongodb://mongo_server:27017/test MongoClient(host=['mongo_server:27017'], document_class=dict, tz_aware=False, connect=True) Database(MongoClient(host=['mongo_server:27017'], document_class=dict, tz_aware=False, connect=True), 'test')
+Inserving 10000 documents
+MongoDB database connection were closed.
 
+real    0m22.660s
+user    0m0.000s
+sys     0m0.031s
 ```
-
 #### With Authentication
 
 * recycle container and start with auth options passed in

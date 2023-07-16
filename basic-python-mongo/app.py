@@ -9,7 +9,9 @@ if __name__ == '__main__':
   database = mongo_client[config['MONGO_INITDB_DATABASE']]
   print('Connected to the MongoDB database via connection string {} {} {}'.format(config['DATABASE_URL'],mongo_client, database))
   collection = database['bar']
-  for cnt in range(0,1000):
+  total_cnt = 10000
+  print ('Inserving {} documents'.format(total_cnt))
+  for cnt in range(0,total_cnt):
     item = 'bar{0}'.format(cnt)
     data = { 'item': item, 'qty': 100, 'tags': ['cotton'], 'size': {'h': 28,'w': 35.5,'uom':'cm' } }
     oid = collection.insert_one(data)
