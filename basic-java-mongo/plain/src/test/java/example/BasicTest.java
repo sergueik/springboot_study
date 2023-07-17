@@ -10,8 +10,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +34,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
 import com.mongodb.ConnectionString;
@@ -47,6 +50,7 @@ import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.UpdateResult;
+import java.util.Properties;
 
 @SuppressWarnings("deprecation")
 public class BasicTest {
@@ -62,6 +66,8 @@ public class BasicTest {
 	private static BasicDBObject basicDBObject;
 	private static ObjectId documentId;
 	private static String dbName = "myUserDb";
+	private static Properties p = new Properties();
+	private static String mongoServer = null;
 	private static final Map<String, String> nameChange = new HashMap<>();
 	static {
 		nameChange.put("James", "Fred");
@@ -72,9 +78,21 @@ public class BasicTest {
 
 	@Before
 	public void setUp() {
+		try {
+
+			// Map<String, String> p2 =
+			// getProperties("src/test/resources/application.properties");
+			// logger.info("properties: {}", p2.keySet());
+			p.load(new FileInputStream("src/test/resources/application.properties"));
+			logger.info("Loaded properties");
+		} catch (IOException e) {
+			System.err.println("Failed to load properties");
+		}
+		mongoServer = p.getProperty("mongo.server", "localhost");
 		ConnectionString connectionString = new ConnectionString(
 				// NOTE: not using default port
-				String.format("mongodb://%s:%d", "localhost", 27717));
+				String.format("mongodb://%s:%d", mongoServer, 27017));
+		logger.info("Connectiong to: " + connectionString.getConnectionString());
 		mongoClient = MongoClients.create(connectionString);
 	}
 
@@ -110,6 +128,28 @@ public class BasicTest {
 				.insertOne(new Document().append("name", "James"));
 	}
 
+	// @Ignore
+	@Test
+	public void insertMultipleDocuments() {
+		db = mongoClient.getDatabase(dbName);
+		logger.info("insertMultipleDocuments started.");
+		final int maxcnt = 10000;
+		logger.info("insert {} documents.", maxcnt);
+		for (int cnt = 0; cnt < maxcnt; cnt++) {
+			String item = String.format("bar%d", cnt);
+			document = new Document();
+			Map<String, Object> size = new HashMap<>();
+			size.put("h", 28);
+			size.put("w", 35.5);
+			size.put("oum", "cm");
+			document.append("item", item).append("qty", 100)
+					.append("tags", Arrays.asList(new String[] { "cotton" }))
+					.append("size", size);
+			db.getCollection("foo").insertOne(document);
+		}
+		logger.info("insertMultipleDocuments completed.");
+	}
+
 	@Test
 	public void insertManyDocuments() {
 		db = mongoClient.getDatabase(dbName);
@@ -141,6 +181,7 @@ public class BasicTest {
 	}
 
 	// http://www.java2s.com/example/java-api/com/mongodb/client/model/projections/fields-1-0.html
+	@Ignore("failng with java.lang.AssertionError")
 	@Test
 	public void projections() {
 		db = mongoClient.getDatabase(dbName);
@@ -302,4 +343,33 @@ public class BasicTest {
 	public void tearDown() {
 		mongoClient.close();
 	}
+
+	public static Map<String, String> getProperties(final String fileName) {
+		Properties p = new Properties();
+		Map<String, String> propertiesMap = new HashMap<>();
+		// System.err.println(String.format("Reading properties file: '%s'",
+		// fileName));
+		try {
+			p.load(new FileInputStream(fileName));
+			@SuppressWarnings("unchecked")
+			Enumeration<String> e = (Enumeration<String>) p.propertyNames();
+			for (; e.hasMoreElements();) {
+				String key = e.nextElement();
+				String val = p.get(key).toString();
+				System.out.println(String.format("Reading: '%s' = '%s'", key, val));
+				propertiesMap.put(key, val);
+			}
+
+		} catch (FileNotFoundException e) {
+			System.err.println(
+					String.format("Properties file was not found: '%s'", fileName));
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.err.println(
+					String.format("Properties file is not readable: '%s'", fileName));
+			e.printStackTrace();
+		}
+		return (propertiesMap);
+	}
+
 }

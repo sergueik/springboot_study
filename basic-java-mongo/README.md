@@ -507,7 +507,23 @@ when rebuilding the application, force the application image recycle (name is as
 ```sh
 docker image rm 'basic-mongo_app'
 ```
+### Document Insert Benchmark
 
+```cmd
+mvn -Dmongo.server:192.168.99.100 test
+```
+```text
+Running example.BasicTest
+2023-07-17 15:26:23  [main] - INFO  Loaded properties
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+ trace.id=2023-07-17 15:26:23  [main] - INFO  Connectiong to: mongodb://192.168.99.100:27017
+ trace.id=2023-07-17 15:26:23  [main] - INFO  insertMultipleDocuments started.
+ trace.id=2023-07-17 15:26:23  [main] - INFO  insert 10000 documents.
+ trace.id=2023-07-17 15:26:37  [main] - INFO  insertMultipleDocuments completed.
+... other tests
+```
 ### Full Cleanup
 
 ```sh
