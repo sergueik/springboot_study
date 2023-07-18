@@ -524,6 +524,24 @@ SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further detail
  trace.id=2023-07-17 15:26:37  [main] - INFO  insertMultipleDocuments completed.
 ... other tests
 ```
+### Overriding Test Application Properties
+* note neither of the following work
+```cmd
+mvn test -Drun.arguments="--mongo.server=127.0.0.1"
+```
+```cmd
+mvn test -Dmongo.server=127.0.0.1
+```
+```cmd
+mvn -Dmongo.server=127.0.0.1 test
+```
+the only working sample with plain Java is 
+
+```cmd
+echo mongo.server=127.0.0.1>applicaion.properties
+set PROP_FILE=%CD%\applicaion.properties
+mvn clean test
+```
 ### Full Cleanup
 
 ```sh
@@ -555,5 +573,9 @@ docker image ls | grep  mongo | awk '{print $3}' |xargs -IX docker image rm X -f
     + [mongodb ElasticSearch integrations](https://docs.elastic.co/en/integrations/mongodb#compatibility) (possibly unrelated)
     + [alternative Dockefile for Alpine](https://github.com/docker-flow/docker-flow-proxy/blob/main/Dockerfile.packetbeat)
     + [packetbeat configuration to capture mongodb traffic](https://www.elastic.co/guide/en/beats/packetbeat/master/configuration-mongodb.html)
+
+   * overriding one `application.property` from command line [stackoverflow discusion](https://stackoverflow.com/questions/37052857/spring-overriding-one-application-property-from-command-line) - only appears to work right with `spring-boot:run`
+   * override values in `application.properties` in mvn test from command line [stackoverflow discusion](https://stackoverflow.com/questions/49688106/mvn-test-override-values-in-application-properties)
+   * specify `application.properties` on command line [stackoverflow discusion](https://stackoverflow.com/questions/22835800/load-config-file-project-properties-at-runtime-via-command-prompt-in-java) - no other option available for plain Java apps test
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

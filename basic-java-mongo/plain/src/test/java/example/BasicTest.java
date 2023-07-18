@@ -66,7 +66,7 @@ public class BasicTest {
 	private static BasicDBObject basicDBObject;
 	private static ObjectId documentId;
 	private static String dbName = "myUserDb";
-	private static Properties p = new Properties();
+
 	private static String mongoServer = null;
 	private static final Map<String, String> nameChange = new HashMap<>();
 	static {
@@ -78,22 +78,25 @@ public class BasicTest {
 
 	@Before
 	public void setUp() {
-		try {
+		final Properties p = new Properties();
+		String propfile = System.getenv().containsKey("PROP_FILE")
+				? System.getenv("PROP_FILE")
+				: "src/test/resources/application.properties";
 
-			// Map<String, String> p2 =
-			// getProperties("src/test/resources/application.properties");
-			// logger.info("properties: {}", p2.keySet());
-			p.load(new FileInputStream("src/test/resources/application.properties"));
-			logger.info("Loaded properties");
+		try {
+			p.load(new FileInputStream(propfile));
+			logger.info("Loaded properties from {}", propfile);
 		} catch (IOException e) {
-			System.err.println("Failed to load properties");
+			logger.error("Failed to load properties from {}", propfile);
 		}
+
 		mongoServer = p.getProperty("mongo.server", "localhost");
 		ConnectionString connectionString = new ConnectionString(
 				// NOTE: not using default port
 				String.format("mongodb://%s:%d", mongoServer, 27017));
 		logger.info("Connectiong to: " + connectionString.getConnectionString());
 		mongoClient = MongoClients.create(connectionString);
+		logger.info("database: " + mongoClient.getDatabase(dbName));
 	}
 
 	@Test
@@ -343,33 +346,4 @@ public class BasicTest {
 	public void tearDown() {
 		mongoClient.close();
 	}
-
-	public static Map<String, String> getProperties(final String fileName) {
-		Properties p = new Properties();
-		Map<String, String> propertiesMap = new HashMap<>();
-		// System.err.println(String.format("Reading properties file: '%s'",
-		// fileName));
-		try {
-			p.load(new FileInputStream(fileName));
-			@SuppressWarnings("unchecked")
-			Enumeration<String> e = (Enumeration<String>) p.propertyNames();
-			for (; e.hasMoreElements();) {
-				String key = e.nextElement();
-				String val = p.get(key).toString();
-				System.out.println(String.format("Reading: '%s' = '%s'", key, val));
-				propertiesMap.put(key, val);
-			}
-
-		} catch (FileNotFoundException e) {
-			System.err.println(
-					String.format("Properties file was not found: '%s'", fileName));
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.err.println(
-					String.format("Properties file is not readable: '%s'", fileName));
-			e.printStackTrace();
-		}
-		return (propertiesMap);
-	}
-
 }
