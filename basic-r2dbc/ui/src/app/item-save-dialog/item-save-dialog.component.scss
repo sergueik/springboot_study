@@ -1,0 +1,18 @@
+.mat-dialog-actions {
+  justify-content: flex-end;
+}
+
+textarea {
+  resize: none;
+}
+
+.tags {
+  padding-top: 10px;
+  padding-bottom: 10px;
+
+  .selected {
+    background-color: green;
+    color: white;
+  }
+}
+

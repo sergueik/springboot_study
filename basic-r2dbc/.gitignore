@@ -1,0 +1,44 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+/todo-list-application/src/main/webapp/dist/3rdpartylicenses.txt
+/todo-list-application/src/main/webapp/dist/favicon.ico
+/todo-list-application/src/main/webapp/dist/index.html
+/todo-list-application/src/main/webapp/dist/main-es5.f7476559dd44034653ca.js
+/todo-list-application/src/main/webapp/dist/main-es2015.f7476559dd44034653ca.js
+/todo-list-application/src/main/webapp/dist/polyfills-es5.177e85a9724683782539.js
+/todo-list-application/src/main/webapp/dist/polyfills-es2015.f332a089ad1600448873.js
+/todo-list-application/src/main/webapp/dist/runtime-es5.0dae8cbc97194c7caed4.js
+/todo-list-application/src/main/webapp/dist/runtime-es2015.0dae8cbc97194c7caed4.js
+/todo-list-application/src/main/webapp/dist/styles.8039fd8c3c8d4eb5af23.css
+/todo-list-application/src/main/webapp/dist/

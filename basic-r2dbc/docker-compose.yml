@@ -1,0 +1,38 @@
+version: "3.1"
+
+services:
+
+  postgres:
+    container_name: postgresdb
+    image: postgres:13.2
+    restart: always
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=todolist
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/data/db
+    networks:
+      - r2dbc
+     
+  app:
+    build:
+      context: app
+    depends_on:
+      - postgres
+    image: app
+    ports:
+      - "8080:8080"
+    networks:
+      - r2dbc
+    environment:
+      - spring.r2dbc.url=r2dbc:postgresql://postgres:5432/todolist
+      - spring.liquibase.url=jdbc:postgresql://postgres:5432/todolist
+
+volumes:
+  postgres_data:
+networks:
+  r2dbc:
+
