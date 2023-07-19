@@ -8,9 +8,12 @@ __Reactive Spring Boot, Spring Webflux, Spring Data R2DBC application with Postg
 
 * build the backend `app` (currently skipping the frontend `ui`)
 ```sh
-mvn clean package
+mvn -Dmaven.test.skip=true clean package
 ```
-
+* pull the reasonably sized postgress __13.2__  base image
+```sh
+docker pull postgres:13.2-alpine
+```
 *  package and run in the container
 ```sh
 export COMPOSE_HTTP_TIMEOUT=600
@@ -102,20 +105,39 @@ alternatively perform the operations through Swagger UI page `http://localhost:8
 
 * bring pgadmin up (optional)
 
+* pull light `pgadmin4` image
 ```sh
-export COMPOSE_HTTP_TIMEOUT=600
-docker-compose -f docker-compose-postgres.yml up --build
+```
+* determine the network name created by `docker-compose`:
+```sh
+docker network ls | grep r2dbc |awk '{print $2}'
+```
+```text
+basic-r2dbc_r2dbc
+```
+* run standalone recycled container with pgadmin
+```sh
+docker run --rm --network basic-r2dbc_r2dbc -d --name pgadmin4 -p 5050:5050 huggla/pgadmin-alpine:py3-20190220
 ```
 
-* connect through web interface `http://localhost:5050/login?next=%2F with `admin@admin.com`/`password` credentials
+* connect through web interface `http://localhost:5050/login?next=%2F - no credentials will be needed
+
 ![Login](https://github.com/sergueik/springboot_study/blob/master/basic-r2dbc/screenshsots/capture-pgadmin4.png)
 
+* register connection to `postgresdb` with admin account from `docker-compose.yml`:
 
-* register connection to `postgresdb`
 ![Register Connection](https://github.com/sergueik/springboot_study/blob/master/basic-r2dbc/screenshots/capture-register.png)
 
 * browse to the schema and table in question
 ![Browse Schema](https://github.com/sergueik/springboot_study/blob/master/basic-r2dbc/screenshots/capture-table.png)
+### Cleanup
+```sh
+docker-compose stopdocker-compose stop
+docker stop pgadmin4
+docker system prune -f
+```
+### TODO
+   * switch to  `../basic-postgresql/docker-alpine-postgres/Dockerfile.build`
 
 ###  See Also:
   * [Reactive Programming and Relational Databases](https://spring.io/blog/2018/12/07/reactive-programming-and-relational-databases/)

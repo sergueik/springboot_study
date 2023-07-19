@@ -4,7 +4,7 @@ services:
 
   postgres:
     container_name: postgresdb
-    image: postgres:13.2
+    image: postgres:13.2-alpine
     restart: always
     environment:
       - POSTGRES_USER=admin
@@ -19,7 +19,7 @@ services:
      
   app:
     build:
-      context: app
+      context: .
     depends_on:
       - postgres
     image: app
@@ -28,6 +28,7 @@ services:
     networks:
       - r2dbc
     environment:
+    # NOTE: does not appear to be used
       - spring.r2dbc.url=r2dbc:postgresql://postgres:5432/todolist
       - spring.liquibase.url=jdbc:postgresql://postgres:5432/todolist
 
