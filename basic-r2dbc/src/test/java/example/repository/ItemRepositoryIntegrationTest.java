@@ -21,35 +21,38 @@ import static org.junit.jupiter.api.Assertions.*;
 @DirtiesContext
 public class ItemRepositoryIntegrationTest {
 
-    @Autowired
-    private ItemRepository itemRepository;
+	@Autowired
+	private ItemRepository itemRepository;
 
-    @BeforeEach
-    @AfterEach
-    public void cleanup() {
-        itemRepository.deleteAll();
-    }
-    @Test
-    public void testOptimisticLockingWithPostgres() {
+	@BeforeEach
+	@AfterEach
+	public void cleanup() {
+		itemRepository.deleteAll();
+	}
 
-        // Given
-        Item existingItem = itemRepository.save(new Item().setDescription("Walk the dog").setStatus(ItemStatus.TODO)).block();
-        assertNotNull(existingItem);
+	@Test
+	public void testOptimisticLockingWithPostgres() {
 
-        assertEquals(0, existingItem.getVersion());
+		// Given
+		Item existingItem = itemRepository.save(
+				new Item().setDescription("Walk the dog").setStatus(ItemStatus.TODO))
+				.block();
+		assertNotNull(existingItem);
 
-        existingItem.setDescription("Walk the dog in the park");
-        existingItem = itemRepository.save(existingItem).block();
-        assertNotNull(existingItem);
+		assertEquals(0, existingItem.getVersion());
 
-        assertEquals(1, existingItem.getVersion());
+		existingItem.setDescription("Walk the dog in the park");
+		existingItem = itemRepository.save(existingItem).block();
+		assertNotNull(existingItem);
 
-        // When / Then
-        final Item itemToUpdate = new Item().setId(existingItem.getId())
-                .setVersion(0L)
-                .setDescription("Walk the dog by the river");
+		assertEquals(1, existingItem.getVersion());
 
-            assertThrows(OptimisticLockingFailureException.class, () -> itemRepository.save(itemToUpdate).block());
-    }
+		// When / Then
+		final Item itemToUpdate = new Item().setId(existingItem.getId())
+				.setVersion(0L).setDescription("Walk the dog by the river");
+
+		assertThrows(OptimisticLockingFailureException.class,
+				() -> itemRepository.save(itemToUpdate).block());
+	}
 
 }

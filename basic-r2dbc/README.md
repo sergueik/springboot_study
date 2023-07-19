@@ -8,8 +8,14 @@ __Reactive Spring Boot, Spring Webflux, Spring Data R2DBC application with Postg
 
 * build the backend `app` (currently skipping the frontend `ui`)
 ```sh
-mvn -Dmaven.test.skip=true clean package
+mvn -f pom-plain.xml -Dmaven.test.skip=true clean package
 ```
+* NOTE: to use the revision relying on [Lombok](https://projectlombok.org/),  check out and branch the commit `6a21f84da3a95b29286cb270b8faacc2176631ac` and use the command
+```
+mvn -f pom-lombok.xml -Dmaven.test.skip=true clean package
+```
+
+
 * pull the reasonably sized postgress __13.2__  base image
 ```sh
 docker pull postgres:13.2-alpine
@@ -138,10 +144,16 @@ docker system prune -f
 ```
 ### TODO
    * switch to  `../basic-postgresql/docker-alpine-postgres/Dockerfile.build`
+### DeLombok
 
+```cmd
+copy pom.xml pom-lombok.xml
+mvn -f pom-lombok.xml -Dmaven.test.skip=true clean package
+```
 ###  See Also:
   * [Reactive Programming and Relational Databases](https://spring.io/blog/2018/12/07/reactive-programming-and-relational-databases/)
   * [R2DBC](https://r2dbc.io)
+  * https://stackoverflow.com/questions/13479099/how-can-i-get-maven-to-compile-from-code-modified-delombokd-instead-of-from-s
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

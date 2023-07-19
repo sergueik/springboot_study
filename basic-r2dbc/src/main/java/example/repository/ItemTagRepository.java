@@ -8,10 +8,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface ItemTagRepository extends ReactiveSortingRepository<ItemTag, Long> {
+public interface ItemTagRepository
+		extends ReactiveSortingRepository<ItemTag, Long> {
 
-    Flux<ItemTag> findAllByItemId(Long itemId);
+	Flux<ItemTag> findAllByItemId(Long itemId);
 
-    Mono<Integer> deleteAllByItemId(Long itemId);
+	Mono<Integer> deleteAllByItemId(Long itemId);
 
 }

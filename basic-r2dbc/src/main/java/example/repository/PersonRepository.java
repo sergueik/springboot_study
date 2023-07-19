@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import example.model.Person;
 
 @Repository
-public interface PersonRepository extends ReactiveSortingRepository<Person, Long> {
-
+public interface PersonRepository
+		extends ReactiveSortingRepository<Person, Long> {
 
 }

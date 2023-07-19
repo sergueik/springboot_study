@@ -10,7 +10,7 @@ import reactor.core.publisher.Flux;
 @Repository
 public interface TagRepository extends ReactiveSortingRepository<Tag, Long> {
 
-    @Query("select t.* from tag t join item_tag it on t.id = it.tag_id where it.item_id = :item_id order by t.name")
-    Flux<Tag> findTagsByItemId(Long itemId);
+	@Query("select t.* from tag t join item_tag it on t.id = it.tag_id where it.item_id = :item_id order by t.name")
+	Flux<Tag> findTagsByItemId(Long itemId);
 
 }
