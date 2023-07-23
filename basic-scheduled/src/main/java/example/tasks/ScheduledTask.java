@@ -1,4 +1,7 @@
 package example.tasks;
+/**
+ * Copyright 2021,2023 Serguei Kouzmine
+ */
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +18,13 @@ public class ScheduledTask {
 
 	private AtomicInteger count = new AtomicInteger(0);
 
-	// run every 3 sec
-	@Scheduled(fixedRateString = "3000")
+	// run every "example.rate" sec
+	// NOTE: set default to every 60 sec, and a mish shorter through properties
+	// for a clear visually different rate
+	@Scheduled(fixedRateString = "${example.rate:60000}")
 	public void send() throws ExecutionException, InterruptedException {
-		logger.info(String.format("executed %d times", count.incrementAndGet()));
+		logger.info(String.format("executing %d time%s", count.get(),
+				((count.incrementAndGet() == 2) ? "" : "s")));
 	}
 
 	public int getCount() {
