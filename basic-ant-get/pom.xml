@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>example</groupId>
+  <artifactId>antrun-dependency-download</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>SWET is a standalone Java application hosting a browser-based Page Element locator recorder</description>
+  <developers>
+    <developer>
+      <name>Serguei Kouzmine</name>
+      <email>kouzmine_serguei@yahoo.com</email>
+      <organization/>
+      <organizationUrl>https://github.com/sergueik</organizationUrl>
+    </developer>
+  </developers>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>1.8</java.version>
+    <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+    <!-- https://maven.apache.org/guides/mini/guide-using-ant.html -->
+   <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
+    <!-- runs ant build.xml scripts embedded in the POM -->
+    <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <hamcrest-all.version>1.3</hamcrest-all.version>
+    <junit.version>4.13.1</junit.version>
+    <jOpenDocument.version>1.5</jOpenDocument.version>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.jopendocument</groupId>
+      <artifactId>jOpenDocument</artifactId>
+      <version>${jOpenDocument.version}</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/src/main/resources/downloads/jOpenDocument-${jOpenDocument.version}.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-antrun-plugin</artifactId>
+      <version>${maven-antrun-plugin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <version>${hamcrest-all.version}</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>${maven-antrun-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <goals>
+          <goal>compile</goal>
+        </goals>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <encoding>utf-8</encoding>
+          <compilerArgument>-Xlint:all</compilerArgument>
+          <showWarnings>true</showWarnings>
+          <showDeprecation>true</showDeprecation>
+          <!--
+          <compilerArgument>-verbose</compilerArgument>
+          -->
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
+        <configuration>
+          <trimStackTrace>false</trimStackTrace>
+          <encoding>${project.build.sourceEncoding}</encoding>
+          <argLine>-Dfile.encoding=${project.build.sourceEncoding} -DAPP_LOG_ROOT=c:/temp</argLine>
+        </configuration>
+      </plugin>
+      <!-- https://cduu.wordpress.com/2012/10/17/echo-the-value-of-a-maven-property/ -->
+      <!-- inclusion of the following block leads to error when importing the pom.xml in eclipse:
+No marketplace entries found to handle maven-antrun-plugin:1.8:run in Eclipse. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>${maven-antrun-plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <property name="downloads.dir" location="src/main/resources/downloads"/>
+                <echo message="downloads.dir = ${downloads.dir}"/>
+                <mkdir dir="${downloads.dir}"/>
+                <get dest="${downloads.dir}">
+                  <url url="https://www.jopendocument.org/download/jOpenDocument-1.5.jar"/>
+                </get>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <repositories>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </repository>
+    <repository>
+      <id>maven-central</id>
+      <name>maven central repo</name>
+      <url>https://mvnrepository.com/repos/central</url>
+    </repository>
+    <repository>
+      <id>central</id>
+      <url>https://repo1.maven.org/maven2/</url>
+    </repository>
+    <repository>
+      <id>project.local</id>
+      <name>project</name>
+      <url>file:${project.basedir}/downloads</url>
+    </repository>
+  </repositories>
+</project>
