@@ -18,6 +18,10 @@ public class ScheduledTask {
 
 	private AtomicInteger count = new AtomicInteger(0);
 
+	// NOTE: Exactly one of the cron(), fixedDelay(), or fixedRate() attributes
+	// must be specified.
+	// see also:
+	// https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Scheduled.html
 	// run every "example.rate" sec
 	// NOTE: set default to every 60 sec, and a mish shorter through properties
 	// for a clear visually different rate

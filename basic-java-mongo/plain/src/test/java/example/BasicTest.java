@@ -57,6 +57,7 @@ public class BasicTest {
 
 	private static MongoClient mongoClient;
 	private static MongoDatabase db;
+	private static int count;
 	private static MongoCollection<Document> collection;
 	private static FindIterable<Document> find;
 	private static MongoCursor<Document> cursor;
@@ -68,6 +69,7 @@ public class BasicTest {
 	private static String dbName = "myUserDb";
 
 	private static String mongoServer = null;
+	private static String mongoPort = null;
 	private static final Map<String, String> nameChange = new HashMap<>();
 	static {
 		nameChange.put("James", "Fred");
@@ -91,9 +93,12 @@ public class BasicTest {
 		}
 
 		mongoServer = p.getProperty("mongo.server", "localhost");
+		mongoPort = p.getProperty("mongo.port", "27017");
+		count = Integer.parseInt(p.getProperty("count", "100000"))	;
 		ConnectionString connectionString = new ConnectionString(
-				// NOTE: not using default port
-				String.format("mongodb://%s:%d", mongoServer, 27017));
+		// NOTE: not using default port
+		// NOTE: mongoPort is String
+		String.format("mongodb://%s:%s", mongoServer, mongoPort));
 		logger.info("Connectiong to: " + connectionString.getConnectionString());
 		mongoClient = MongoClients.create(connectionString);
 		logger.info("database: " + mongoClient.getDatabase(dbName));
@@ -136,7 +141,7 @@ public class BasicTest {
 	public void insertMultipleDocuments() {
 		db = mongoClient.getDatabase(dbName);
 		logger.info("insertMultipleDocuments started.");
-		final int maxcnt = 10000;
+		final int maxcnt = count;
 		logger.info("insert {} documents.", maxcnt);
 		for (int cnt = 0; cnt < maxcnt; cnt++) {
 			String item = String.format("bar%d", cnt);
