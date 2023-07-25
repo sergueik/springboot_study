@@ -46,7 +46,7 @@ Hello some value
 ```
 
 
-and updates instantly when `application.properties` is changed.
+and updates instantly when the file  `application.properties` is changed.
 It is also possible to pass the absolute path outside the project dir:
 ```sh
 mvn -Dspring.config.location=$(pwd)/src/main/resources/application.properties spring-boot:run
@@ -68,6 +68,10 @@ followed by validation
 ```sh
 curl -vk 192.168.0.64:8085/worker
 ```
+or in the browser
+
+![Various Propeties](https://github.com/sergueik/springboot_study/blob/master/basic-properties/screenshots/capture-properties.png)
+
 on Windows, make sure to set the file encoding to `ascii` or  `utf8`:
 ```powershell
 out-File -literalpath C:\temp\application.properties -encoding utf8 -nonewline -inputobject ([System.String]::Join("`r`n", (get-content -path .\src\main\resources\application.properties)).replace('some value','different value'))
@@ -92,7 +96,11 @@ returning
 ```sh
 Hello unknown
 ```
-indicating that property file was not read.
+indicating that Spring runtime was unable to read the property file:
+```java
+final String value = properties.getProperty("value.property");
+return value == null ? "unknown" : value;
+```
 
 note that one can remove the drive letter from the path assuming the configuration properfies file is on the same drive
 ```sh

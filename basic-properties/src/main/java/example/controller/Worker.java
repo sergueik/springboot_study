@@ -67,13 +67,14 @@ public class Worker {
 	@GetMapping("/worker")
 	public String Hello() {
 		StringBuilder response = new StringBuilder();
-		response.append("Hello: \n");
+		response.append("<pre>\nHello: \n");
 		if (!test)
 			response.append("instance: " + getExample1PropertyValue() + "\n");
 		response.append("static: " + getStaticValue() + "\n");
 		response.append("static (2): " + getPropertiesParserStaticValue() + "\n");
 		response.append("injected: " + getExample2PropertyValue() + "\n");
 		response.append("own: " + getValue() + "\n");
+		response.append("</pre>\n");
 		return response.toString();
 	}
 
