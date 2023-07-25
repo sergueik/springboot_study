@@ -70,7 +70,7 @@ curl -vk 192.168.0.64:8085/worker
 ```
 or in the browser
 
-![Various Propeties](https://github.com/sergueik/springboot_study/blob/master/basic-properties/screenshots/capture-properties.png)
+![Various Properties](https://github.com/sergueik/springboot_study/blob/master/basic-properties/screenhsots/capture-properties.png)
 
 on Windows, make sure to set the file encoding to `ascii` or  `utf8`:
 ```powershell
