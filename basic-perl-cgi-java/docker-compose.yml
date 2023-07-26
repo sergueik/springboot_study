@@ -1,0 +1,18 @@
+version: '2.2'
+
+services:
+  example:
+    restart: unless-stopped
+    build: .
+    container_name: example
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "8085:8085"
+    networks:
+      - default
