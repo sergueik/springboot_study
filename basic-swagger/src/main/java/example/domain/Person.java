@@ -1,12 +1,33 @@
 package example.domain;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-
-@Data
 public class Person {
 	@ApiModelProperty(notes = "name")
 	private String name;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String value) {
+		name = value;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String value) {
+		title = value;
+	}
+
+	public Long getSalary() {
+		return salary;
+	}
+
+	public void setSalary(Long value) {
+		salary = value;
+	}
 
 	@ApiModelProperty(notes = "title")
 	private String title;

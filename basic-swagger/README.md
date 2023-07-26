@@ -1,6 +1,18 @@
 
 ### Info
-https://github.com/bennzhang/spring-boot-swagger2-demo
+
+this directory contains trimmed code from the example [project](https://github.com/bennzhang/spring-boot-swagger2-demo)
+
+### Usage
+* run the app
+
+```sh
+mvn spring-boot:run
+```
+See the data and service defintion in REST call
+```sh
+curl -s http://localhost:8080/v2/api-docs |jq '.'
+```
 
 ```json
 {
@@ -95,14 +107,24 @@ https://github.com/bennzhang/spring-boot-swagger2-demo
 
 ```
 
+ * alternatively explore the defined operations through Swagger UI. The default URL for the swagger-ui will be `http://localhost:8080/swagger-ui.html`
+
+![Swagger ui](https://github.com/sergueik/springboot_study/blob/master/basic-swagger/screenshots/capture-swagger.png)
 
 ### See Also
-
-  * [Generate Spring Boot REST Client project with Swagger](https://www.baeldung.com/spring-boot-rest-client-swagger-codegen)
-  o [Generate Spring Boot Project with Swagger]()
-  * [Setting Up Swagger 2 with a Spring REST API](https://www.baeldung.com/swagger-2-documentation-for-spring-rest-api)
-  * [reading Swagger spec from YAML file](https://qna.habr.com/q/1080992)(in Russian)
- * https://swagger.io/docs/swagger-inspector/how-to-create-an-openapi-definition-using-swagger/
- * https://www.baeldung.com/swagger-2-documentation-for-spring-rest-api
- * https://stackoverflow.com/questions/36745620/swagger-2-spring-boot-generate-yml-file
- * https://howtodoinjava.com/swagger2/swagger-spring-mvc-rest-example/
+  
+    * [Generate Spring Boot REST Client project with Swagger](https://www.baeldung.com/spring-boot-rest-client-swagger-codegen)
+    * [Spring Boot + Swagger 2](https://www.javainuse.com/spring/boot_swagger)
+    * [Setting Up Swagger 2 with a Spring REST API](https://www.baeldung.com/swagger-2-documentation-for-spring-rest-api)
+    * [reading Swagger spec from YAML file](https://qna.habr.com/q/1080992)(in Russian)
+    * [change default Sagger UI url prefix](https://www.baeldung.com/spring-boot-custom-swagger-url)
+    * https://swagger.io/docs/swagger-inspector/how-to-create-an-openapi-definition-using-swagger/
+    * https://www.baeldung.com/swagger-2-documentation-for-spring-rest-api
+    * https://stackoverflow.com/questions/36745620/swagger-2-spring-boot-generate-yml-file
+    * https://howtodoinjava.com/swagger2/swagger-spring-mvc-rest-example/
+    * Swagger Pluralsight Training
+      + [Getting Started with Swagger 2 Tools](https://app.pluralsight.com/library/courses/getting-started-swagger-tools)
+      + [Spring Framework: Documenting Spring Data Rest APIs with Swagger and Springfox](https://app.pluralsight.com/library/courses/spring-framework-documenting-spring-data-rest-apis-swagger-springfox)
+ 
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
