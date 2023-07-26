@@ -159,8 +159,11 @@ Content-Type: application/json
    "plum"
 ]
 ```
-verify web server to run cgi inside container. Basically will observe same output 
-results (sans the header) as cgi-bin :
+#### REST Call Tests
+
+* by calling the web server inside container by invoking requests through exorted port, confirm the cgi-bin run successtully by Apache in the contaiter.
+Basically will observe same outputs (sans the header) as cgi-bin call via Docker exec:
+
 ```sh
 curl -s http://$(hostname -i):9090/cgi-bin/list.cgi
 ```
@@ -186,8 +189,8 @@ post the data to `form.cgi`:
 ```sh
 curl -X POST -d 'a=b&c=d' http://$(hostname -i):9090/cgi-bin/form.cgi
 ```
-this will echo data back as a JSON
-```sh
+this will echo data back as a JSON object with keys and values constructed from FORM elements:
+```text
 Content-Type: application/json
 
 {
@@ -195,7 +198,7 @@ Content-Type: application/json
    "a" : "b"
 }
 ```
-testing the AJAX page in console:
+testing the AJAX page in console will display static content:
 ```sh
 curl http://$(hostname -i):9090/inventory.html
 ```
@@ -240,7 +243,7 @@ Server Data: <br />
 </body>
 </html>
 ```
-one needs to open page in the browser to see the dynamic data being pulled. To verify, stop and rerun the container with default pors pusblsued as `9090` and `9443` on all network interfaces:
+one needs to open page in the browser to see the data being pulled from the backend by Angular dynamically. To verify, stop and rerun the container with default ports `80` and `443` published as `9090` and `9443` on all network interfaces:
 ```sh
 docker stop $NAME
 docker container rm $NAME
@@ -252,7 +255,7 @@ chromium-browser http://$(hostname -i):9090/inventory.html &
 ```
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture.png)
 
- - open developer tools tab eeto that the Angular does poll the server
+ - inspect the developer tools tab to observe that the Angular indeed polls the server
 
 ### Cleanup
 
@@ -264,7 +267,7 @@ docker image rm $IMAGE
 ```
 ### Running Angular part from filesystem
 
-one can start the page in th browser from file explorer via:
+one can start the page in th browser from file explorer via URI:
 
 ```cmd
 file:///C:/developer/sergueik/springboot_study/basic-perl-cgi/html/inventory.html
@@ -275,7 +278,7 @@ google-chrome file://$(pwd)/html/inventory.html &
 ```
 on a Linux machine
 
-it will look slightly less data but enough for debugging the visual part.
+it will have slightly smaller amount of data but enough for debugging the visual part.
 
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture_file.png)
 
@@ -352,7 +355,7 @@ leads to
 ```
 500 Internal Server Error
 ```
-and the following in `/var/log/apache2/error.log`: 
+and the following message is logged in apache `/var/log/apache2/error.log`: 
 ```text
 $VAR1 = {: /var/www/localhost/cgi-bin/upload.cgi
  'filename' => undef,: /var/www/localhost/cgi-bin/upload.cgi
@@ -438,7 +441,8 @@ img {border: none;}
 </html>
 ```
 
-in `basic-perl-cgi` container apache log `error.log` (formatted for readability to free from `[Tue Jun 28 00:16:40.909223 2022] [cgi:error] [pid 12] [client 192.168.0.92:50706] fields` :
+in `basic-perl-cgi` container apache log `error.log` 
+For better readability the timestamp portion was removed from the logfragmen below `[Tue Jun 28 00:16:40.909223 2022] [cgi:error] [pid 12] [client 192.168.0.92:50706] fields` :
 ```text
 
      upload content:   
