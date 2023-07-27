@@ -410,6 +410,14 @@ if apache is started in debug mode
 ```
 only one of the polling controllers in the page `inventory.html` will be exercised:
 ![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture_debug.png)
+
+### Standalone Example
+
+* one can work on rendering the page with Angular JS with no need of the backend, e.g. providing data directly into the page and updating it dynamically
+
+![Examplei Single Page](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-singlepage.png)
+
+
 ### Notes
 
 
@@ -548,6 +556,10 @@ time                appid host                   operation value
   * [CPAN](https://metacpan.org/pod/HTTP::Request::Common) `HTTP::Request::Common`
   * [how to find Docker Toolbox IP address](https://devilbox.readthedocs.io/en/latest/howto/docker-toolbox/find-docker-toolbox-ip-address.html)
 ### Author
+  * https://stackoverflow.com/questions/32121479/get-json-code-from-textarea-and-parse-it
+  * http://www.java2s.com/Tutorials/Javascript/AngularJS_Example/Controller/Call_function_in_controller_with_onchange_event.htm
+  * https://www.w3schools.com/angular/tryit.asp?filename=try_ng_ng-change
+
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
 

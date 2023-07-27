@@ -1,0 +1,24 @@
+{
+  "results": [
+    {
+      "column1": "server1 column 1",
+      "column2": "server1 column 2",
+      "column3": "server1 column 3"
+    },
+    {
+      "column1": "server2 column 1",
+      "column2": "server2 column 2",
+      "column3": "server2 column 3"
+    },
+    {
+      "column1": "server3 column 1",
+      "column2": "server3 column 2",
+      "column3": "server3 column 3"
+    },
+    {
+      "column1": "server4 column 1",
+      "column2": "server4 column 2",
+      "column3": "server4 column 3"
+    }
+  ]
+}
