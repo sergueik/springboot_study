@@ -31,7 +31,9 @@ import com.google.gson.Gson;
 import example.dto.StringResponse;
 import example.model.HostData;
 import example.service.ExampleService;
+import example.utils.Utils;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -56,6 +58,25 @@ public class Controller {
 	@GetMapping(value = "/json", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public Data json() {
 		return new Data(service.hello());
+	}
+
+	@GetMapping(value = "/file", produces = { MediaType.APPLICATION_JSON_VALUE })
+	// copy NUL c:\temp\a.conf
+	// copy NUL c:\temp\b.conf
+	// copy NUL c:\temp\base\c.conf
+	// GET http://localhost:8085/basic/file
+	// {"a":1690604332,"b":1690604335,"base:c":1690604632}
+	// GET http://localhost:8085/basic/file?newer=1690604333
+	// {"b":1690604335,"base:c":1690604632}
+	public Map<String, Long> file(@RequestParam Optional<Long> newer) {
+		try {
+			Utils.getOSName();
+
+			return (newer.isPresent()) ? Utils.listFileData("c:\\temp", newer.get())
+					: Utils.listFileData("c:\\temp");
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	// not needed
@@ -91,7 +112,6 @@ public class Controller {
 
 		return results;
 	}
-
 
 	@PostMapping(value = "/post", consumes = {
 			MediaType.APPLICATION_JSON_VALUE }, produces = {
