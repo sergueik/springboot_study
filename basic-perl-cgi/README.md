@@ -24,7 +24,6 @@ docker run -d -p $(hostname -i):9090:80 -p $(hostname -i):9443:443 --name $NAME 
 ```sh
 export INFLUXDB=boring_williams
 docker run -d -p 9090:80 -p 9443:443 --link $INFLUXDB --name $NAME $IMAGE
-
 ```
 
 this will respond with
@@ -93,6 +92,13 @@ docker exec -it $NAME tail /var/log/apache2/error.log
 ```
 * run smoke test
 call cgi inside container directly:
+```sh
+docker exec $NAME perl -d /var/www/localhost/cgi-bin/list.cgi
+```
+this will print
+```text
+/var/www/localhost/cgi-bin/list.cgi syntax OK
+```
 ```sh
 docker exec $NAME /var/www/localhost/cgi-bin/list.cgi
 ```
@@ -545,6 +551,216 @@ time                appid host                   operation value
 1658861671000000000 BAZ   lenovo120S.private.org write     0.912684819411018
 1658861671000000000 FOO   lenovo120S.private.org write     0.912684819411018
 ```
+### Config
+* in the Docker container create `config.cgi`
+* start with JSON file `config.json`:
+```JSON
+{
+  "sergueik53": {
+    "PORTS": [
+      22,
+      443,
+      3306
+    ]
+  },
+  "sergueik71": {
+    "PORTS": [
+      5432
+    ]
+  },
+  "sergueik119": {}
+}
+
+
+```
+
+convert it to Perl object:
+```sh
+perl json_pp_example.pl  -input config.json -dump -debug
+```
+this will print sample data
+```Perl
+$VAR1 = {
+          'sergueik53' => {
+                            'PORTS' => [
+                                         22,
+                                         443,
+                                         3306
+                                       ]
+                          },
+          'sergueik71' => {
+                            'PORTS' => [
+                                         5432
+                                       ]
+                          },
+          'sergueik119' => {}
+        };
+```
+
+to be include into `config.cgi`:
+```Perl
+#!/usr/bin/perl
+
+use strict;
+
+use Getopt::Long;
+
+
+use YAML::Tiny;
+use JSON::PP;
+my $data = {
+          'sergueik53' => {
+                            'PORTS' => [
+                                         22,
+                                         443,
+                                         3306
+                                       ]
+                          },
+          'sergueik71' => {
+                            'PORTS' => [
+                                         5432
+                                       ]
+                          },
+          'sergueik119' => {}
+        };
+
+our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
+print "Content-Type: application/json\n\n", $json_pp->encode($data);
+```
+
+this will print it back:
+![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-config.png)
+
+The Java app can produce a very similar JSON result when uses `Maps` and `Arrays` internally:
+```Java
+	@ResponseBody
+	@GetMapping(value = "/config", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public List<Map<String, Object>> arrayConfig() {
+		List<Map<String, Object>> results = new ArrayList<>();
+		Map<String, Object> row = new HashMap<>();
+		Map<String, Object> data = new HashMap<>();
+		row.put("sergueik119", data);
+		results.add(row);
+		row = new HashMap<>();
+		data = new HashMap<>();
+		List<Integer> ports = Arrays.asList(new Integer[] { 5432 });
+		data.put("PORTS", ports);
+		row.put("sergueik71", data);
+		results.add(row);
+		row = new HashMap<>();
+		data = new HashMap<>();
+		ports = Arrays.asList(new Integer[] { 22, 443, 3306 });
+		data.put("PORTS", ports);
+		row.put("sergueik53", data);
+		results.add(row);
+		return results;
+	}
+
+```
+```JSON
+[
+  {
+    "sergueik119": {}
+  },
+  {
+    "sergueik71": {
+      "PORTS": [
+        5432
+      ]
+    }
+  },
+  {
+    "sergueik53": {
+      "PORTS": [
+        22,
+        443,
+        3306
+      ]
+    }
+  }
+]
+```
+
+while when using a POJO
+```java
+public static class ServerConfig {
+
+  private String name;
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String data) {
+    name = data;
+  }
+
+  public ServerConfig(String name) {
+    this.name = name;
+  }
+
+  public ServerConfig() {
+  }
+
+  List<Integer> ports = new ArrayList<>();
+
+  public List<Integer> getPorts() {
+    return ports;
+  }
+
+  public void setPorts(List<Integer> data) {
+    ports = data;
+  }
+
+}
+
+@ResponseBody
+@GetMapping(value = "/config/strong", produces = {
+    MediaType.APPLICATION_JSON_VALUE })
+public List<ServerConfig> arrayStrongConfig() {
+
+  listServerConfig = new ArrayList<>();
+  serverConfig = new ServerConfig("sergueik119");
+  listServerConfig.add(serverConfig);
+  serverConfig = new ServerConfig("sergueik71");
+  ports = Arrays.asList(new Integer[] { 5432 });
+  serverConfig.setPorts(ports);
+  listServerConfig.add(serverConfig);
+
+  ports = Arrays.asList(new Integer[] { 22, 443, 3306 });
+  serverConfig = new ServerConfig("sergueik53");
+  serverConfig.setPorts(ports);
+  listServerConfig.add(serverConfig);
+  data.put("PORTS", ports);
+  row.put("sergueik53", data);
+  return listServerConfig;
+}
+
+```
+the resulting JSON would look like:
+```JSON
+[
+  {
+    "name": "sergueik119",
+    "ports": []
+  },
+  {
+    "name": "sergueik71",
+    "ports": [
+      5432
+    ]
+  },
+  {
+    "name": "sergueik53",
+    "ports": [
+      22,
+      443,
+      3306
+    ]
+  }
+]
+```
 ### See Also
 
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
@@ -559,6 +775,8 @@ time                appid host                   operation value
   * https://stackoverflow.com/questions/32121479/get-json-code-from-textarea-and-parse-it
   * http://www.java2s.com/Tutorials/Javascript/AngularJS_Example/Controller/Call_function_in_controller_with_onchange_event.htm
   * https://www.w3schools.com/angular/tryit.asp?filename=try_ng_ng-change
+  * [AngularJS Developer Guide](https://docs.angularjs.org/guide)
+  * [AngularJS API](https://docs.angularjs.org/api) 
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

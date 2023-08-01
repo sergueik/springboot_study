@@ -31,7 +31,9 @@ import com.google.gson.Gson;
 import example.dto.StringResponse;
 import example.model.HostData;
 import example.service.ExampleService;
+import example.utils.Utils;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -56,6 +58,25 @@ public class Controller {
 	@GetMapping(value = "/json", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public Data json() {
 		return new Data(service.hello());
+	}
+
+	@GetMapping(value = "/file", produces = { MediaType.APPLICATION_JSON_VALUE })
+	// copy NUL c:\temp\a.conf
+	// copy NUL c:\temp\b.conf
+	// copy NUL c:\temp\base\c.conf
+	// GET http://localhost:8085/basic/file
+	// {"a":1690604332,"b":1690604335,"base:c":1690604632}
+	// GET http://localhost:8085/basic/file?newer=1690604333
+	// {"b":1690604335,"base:c":1690604632}
+	public Map<String, Long> file(@RequestParam Optional<Long> newer) {
+		try {
+			Utils.getOSName();
+
+			return (newer.isPresent()) ? Utils.listFileData("c:\\temp", newer.get())
+					: Utils.listFileData("c:\\temp");
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	// not needed
@@ -92,6 +113,61 @@ public class Controller {
 		return results;
 	}
 
+	private static List<Map<String, Object>> results;
+	private static Map<String, Object> row;
+	private static Map<String, Object> data;
+	private static List<Integer> ports;
+	private ServerConfig serverConfig = null;
+	List<ServerConfig> listServerConfig;
+
+	@ResponseBody
+	@GetMapping(value = "/config", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public List<Map<String, Object>> arrayConfig(
+			/* @PathVariable String hostname */ @RequestParam Optional<String> hostname) {
+		results = new ArrayList<>();
+		row = new HashMap<>();
+		data = new HashMap<>();
+		row.put("sergueik119", data);
+		results.add(row);
+		row = new HashMap<>();
+		data = new HashMap<>();
+		ports = Arrays.asList(new Integer[] { 5432 });
+		data.put("PORTS", ports);
+		row.put("sergueik71", data);
+		results.add(row);
+		row = new HashMap<>();
+		data = new HashMap<>();
+		ports = Arrays.asList(new Integer[] { 22, 443, 3306 });
+		data.put("PORTS", ports);
+		row.put("sergueik53", data);
+		results.add(row);
+		return results;
+	}
+
+	@ResponseBody
+	@GetMapping(value = "/config/strong", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public List<ServerConfig> arrayStrongConfig(
+
+			/* @PathVariable String hostname */ @RequestParam Optional<String> hostname) {
+
+		listServerConfig = new ArrayList<>();
+		serverConfig = new ServerConfig("sergueik119");
+		listServerConfig.add(serverConfig);
+		serverConfig = new ServerConfig("sergueik71");
+		ports = Arrays.asList(new Integer[] { 5432 });
+		serverConfig.setPorts(ports);
+		listServerConfig.add(serverConfig);
+
+		ports = Arrays.asList(new Integer[] { 22, 443, 3306 });
+		serverConfig = new ServerConfig("sergueik53");
+		serverConfig.setPorts(ports);
+		listServerConfig.add(serverConfig);
+		data.put("PORTS", ports);
+		row.put("sergueik53", data);
+		return listServerConfig;
+	}
 
 	@PostMapping(value = "/post", consumes = {
 			MediaType.APPLICATION_JSON_VALUE }, produces = {
@@ -186,6 +262,37 @@ public class Controller {
 				request, Data.class, headers);
 		final String result = responseEntity.getBody().getName();
 		return ResponseEntity.status(HttpStatus.OK).body(result);
+	}
+
+	public static class ServerConfig {
+
+		private String name;
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String data) {
+			name = data;
+		}
+
+		public ServerConfig(String name) {
+			this.name = name;
+		}
+
+		public ServerConfig() {
+		}
+
+		List<Integer> ports = new ArrayList<>();
+
+		public List<Integer> getPorts() {
+			return ports;
+		}
+
+		public void setPorts(List<Integer> data) {
+			ports = data;
+		}
+
 	}
 
 	public static class Data {

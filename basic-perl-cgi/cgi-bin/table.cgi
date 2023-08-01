@@ -50,6 +50,7 @@ sub result {
     }
     join '', @indexes;
 }
+# randomize data
 my $results = $data->{results};
 foreach ( 0 .. $#$results ) {
     my $data   = $results->[$_];
