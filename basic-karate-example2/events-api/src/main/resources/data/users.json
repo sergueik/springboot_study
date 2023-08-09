@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "firstName": "John",
+    "lastName": "Smith",
+    "email": "johns@pocisoft.com",
+    "roles": "",
+    "password": "$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6"
+  },
+  {
+    "id": 2,
+    "firstName": "Alice",
+    "lastName": "Johnson",
+    "email": "alicej@pocisoft.com",
+    "roles": "",
+    "password": "$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6"
+  },
+  {
+    "id": 3,
+    "firstName": "Michael",
+    "lastName": "Williams",
+    "email": "michaelw@pocisoft.com",
+    "roles": "",
+    "password": "$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6"
+  },
+  {
+    "id": 4,
+    "firstName": "Emily",
+    "lastName": "Brown",
+    "email": "emilyb@pocisoft.com",
+    "roles": "",
+    "password": "$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6"
+  },
+  {
+    "id": 5,
+    "firstName": "Daniel",
+    "lastName": "Taylor",
+    "email": "danielt@pocisoft.com",
+    "roles": "",
+    "password": "$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6"
+  }
+]
