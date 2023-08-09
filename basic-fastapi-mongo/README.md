@@ -39,18 +39,24 @@ test    0.000GB
 ```sh
 exit
 ```
-* connect the Python client
+exit container
+```sh
+exit
+```
+
+* connect the Python client running FastAPI
 ```sh
 CONTAINER_IMAGE=test
 cp env.NO-AUTH .env
-docker build -f Dockerfile -t $CONTAINER_IMAGE .
+docker build -f Dockerfile.fastapi -t $CONTAINER_IMAGE .
 ```
+after a sligtly long build it is ready
 ```sh
 CONTAINER=test
 docker container rm $CONTAINER
 
 docker run --link mongodb -it -e DATABASE_URL=mongodb://mongodb:27017/db --name $CONTAINER $CONTAINER_IMAGE
-```
+	```
 
 this wll show  no collections but at least not fail:
 ```text
@@ -205,13 +211,19 @@ docker stop $CONTAINER
 docker container rm $CONTAINER
 docker run --link mongodb -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=db -e DATABASE_URL=mongodb://admin:admin@mongodb:27017/db --name $CONTAINER -p 8000:8000 -it $CONTAINER
 ```
+
+open the swagger ui link `http://192.168.99.100:8000/docs`
+
+![Swagger Docs](https://github.com/sergueik/springboot_study/blob/master/basic-fastapi-mongo/screenshots/capture-docs.jpg)
 ```sh
 $ curl http://192.168.0.92:8000/ping
 ```
 ```text
 {"Test":["db"]}
 ```
+alternartively open the SWAGGER UI url `http://192.168.99.100:8000/docs#/default/ping_ping_get` in the browser
 
+![Call API](https://github.com/sergueik/springboot_study/blob/master/basic-fastapi-mongo/screenshots/capture-call.jpg)
 ```sh
 docker exec -it fastapi sh
 ```
@@ -313,3 +325,7 @@ Successfully installed unicorn-2.0.1.post1
    *  https://www.mongodb.com/basics/create-database
    *  https://pypi.org/project/pymongo/
    *  https://pypi.org/project/fastapi/
+   *  https://fastapi.tiangolo.com/tutorial/metadata/
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
