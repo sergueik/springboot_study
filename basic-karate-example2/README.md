@@ -40,13 +40,19 @@ if see errorabout constraints
 ```
 repeat the drop run until all clear
 
-Alternatiely delete files
+Alternatiely delete the database files
 ```cmd
-%userprofile%\test.trace.db
-%userprofile%\test.mv.db
+del /q %userprofile%\test.trace.db
+del /q %userprofile%\test.mv.db
 ```
 
-restart to observe
+restart 
+
+```cmd
+mvn spring-boot:run
+```
+to observe
+
 
 ```text
 H2 web server started: http://192.168.99.1:8082
@@ -107,8 +113,46 @@ should return
 ```
 alternatively, navigate and execute `GET` `/api/publicevents/{id}` `getEvent` through Swagger UI.
 
-### See Also
+```cmd
+mvn clean test
+```
+```text
+---------------------------------------------------------
+feature: classpath:example/token/token.feature
+scenarios:  1 | passed:  1 | failed:  0 | time: 21.9594
+---------------------------------------------------------
+```
+the token will be in the logs:
+```text
+target\karate-reports\example.token.token.html
+target\karate-reports\example.token.token.karate-json.txt
+target\karate-reports\karate-summary-json.txt
+```
 
+it can be found through
+```cmd
+type target\karate-reports\example.token.token.karate-json.txt | c:\tools\jq-win64.exe ".scenarioResults[0].stepResults[6]"
+```
+```JSON
+{
+  "result": {
+    "nanos": 60556763,
+    "millis": 60.556763,
+    "status": "passed"
+  },
+  "step": {
+    "line": 12,
+    "prefix": "*",
+    "index": 5,
+    "text": "print \"Access Token: \" + access_token"
+  },
+  "stepLog": "09:31:07.587 [print] Access Token: eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOjEsInN1YiI6ImpvaG5zQHBvY2lzb2Z0LmNvbSIsImV4cCI6MTY5MTY5MjI2NywiaWF0IjoxNjkxNjc0MjY3fQ.3fewnoYwpBqFODAkQ97hbrsihXjDdNPMLAtzfNj3LZ68re2_QCV-NvZ6NeqxK21d2Hv9ekPaONsZQW5TTq6w6g \n"
+}
+```
+* TODO imprvove the query
+
+### See Also
+ * [free fake API for testing and prototyping](https://jsonplaceholder.typicode.com)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
