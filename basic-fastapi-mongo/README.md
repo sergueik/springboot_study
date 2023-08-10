@@ -5,15 +5,15 @@ example MongoDB / Python container cluster with / without authentication
 
 #### No Authentication
 ```sh
-IMAGE=mongo:4.4.6-bionic
-CONTAINER=mongodb
-docker pull $IMAGE
-docker container rm $CONTAINER
-docker run -d -e MONGO_INITDB_DATABASE=db --name $CONTAINER $IMAGE
+MONGODB_IMAGE=mongo:4.4.6-bionic
+MONGODB_CONTAINER=mongodb
+docker pull $MONGODB_IMAGE
+docker container rm $MONGODB_CONTAINER
+docker run -d -e MONGO_INITDB_DATABASE=db --name $MONGODB_CONTAINER $MONGODB_IMAGE
 ```
-* connect to container and create database
+* connect to container `$MONGODB_CONTAINER` and create database
 ```sh
-docker exec -it $CONTAINER sh
+docker exec -it $MONGODB_CONTAINER sh
 ```
 
 ```sh
@@ -46,17 +46,19 @@ exit
 
 * connect the Python client running FastAPI
 ```sh
-CONTAINER_IMAGE=test
+PYTHON_CLIENT_IMAGE=test
+PYTHON_CLIENT_CONTAINER=test
+
 cp env.NO-AUTH .env
-docker build -f Dockerfile.fastapi -t $CONTAINER_IMAGE .
+docker build -f Dockerfile.fastapi -t $PYTHON_CLIENT_IMAGE .
 ```
 after a sligtly long build it is ready
 ```sh
-CONTAINER=test
-docker container rm $CONTAINER
+PYTHON_CLIENT_CONTAINER=test
+docker container rm $PYTHON_CLIENT_CONTAINER
 
-docker run --link mongodb -it -e DATABASE_URL=mongodb://mongodb:27017/db --name $CONTAINER $CONTAINER_IMAGE
-	```
+docker run --link $MONGODB_CONTAINER -it -e DATABASE_URL=mongodb://$MONGODB_CONTAINER:27017/db --name $PYTHON_CLIENT_CONTAINER $PYTHON_CLIENT_IMAGE
+```
 
 this wll show  no collections but at least not fail:
 ```text
@@ -69,17 +71,17 @@ MongoDB database connection were closed.
 
 * recycle container and start with auth options passed in
 ```sh
-IMAGE=mongo:4.4.6-bionic
-docker pull $IMAGE
-CONTAINER=mongodb
-docker stop $CONTAINER
-docker container rm $CONTAINER
-docker run -d -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=db --name $CONTAINER $IMAGE
+MONGODB_IMAGE=mongo:4.4.6-bionic
+MONGODB_CONTAINER=mongodb
+docker pull $MONGODB_IMAGE
+docker stop $MONGODB_CONTAINER
+docker container rm $MONGODB_CONTAINER
+docker run -d -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=db --name $MONGODB_CONTAINER $MONGODB_IMAGE
 ```
-* connect to  mongodb container and run mongo in console with authentication:
+* connect to `$MONGODB_CONTAINER` container and run mongo in console with authentication:
 
 ```sh
-docker exec -it mongodb sh
+docker exec -it $MONGODB_CONTAINER sh
 ```
 ```sh
 > show databases
@@ -113,20 +115,20 @@ exit
 * connect python client with authentication
 ```sh
 cp env.WITH-CREDENTIALS .env
-CONTAINER_IMAGE=test
-docker build -f Dockerfile -t $CONTAINER_IMAGE .
+PYTHON_CLIENT_IMAGE=test
+PYTHON_CLIENT_CONTAINER=test
+docker build -f Dockerfile -t $PYTHON_CLIENT_IMAGE .
 
 ```
 
 ```sh
-CONTAINER=test
-docker container rm $CONTAINER
-docker run -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=db -e DATABASE_URL=mongodb://admin:admin@mongodb:27017/db --name $CONTAINER -it $CONTAINER $CONTAINER_IMAGE
+docker container rm $PYTHON_CLIENT_CONTAINER
+docker run --link $MONGODB_CONTAINER -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=db -e DATABASE_URL=mongodb://admin:admin@$MONGODB_CONTAINER:27017/db --name $PYTHON_CLIENT_CONTAINER -it $PYTHON_CLIENT_IMAGE
 ```
 no output
 
 ```sh
-docker run --link mongodb -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=db -e DATABASE_URL=mongodb://admin:admin@mongodb:27017/db --name $CONTAINER -it $CONTAINER sh
+docker run --link $MONGODB_CONTAINER -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=db -e DATABASE_URL=mongodb://admin:admin@$MONGODB_CONTAINER:27017/db --name $PYTHON_CLIENT_CONTAINER -it $PYTHON_CLIENT_IMAGE sh
 ```
 
 ```sh
@@ -179,37 +181,34 @@ pymongo.errors.OperationFailure: Authentication failed., full error: {'ok': 0.0,
 ####  Fix Authentication Error
 ```sh
 cp env.FIXED .env
-CONTAINER_IMAGE=test
-docker build -f Dockerfile -t $CONTAINER_IMAGE .
+PYTHON_CLIENT_IMAGE=test
+docker build -f Dockerfile -t $PYTHON_CLIENT_IMAGE .
 ```
 ```sh
-CONTAINER=test
-docker stop $CONTAINER
-docker container rm $CONTAINER
-docker run --link mongodb -it -e DATABASE_URL=mongodb://mongodb:27017/db --name $CONTAINER $CONTAINER_IMAGE
+PYTHON_CLIENT_CONTAINER=test
+docker stop $PYTHON_CLIENT_CONTAINER
+docker container rm $PYTHON_CLIENT_CONTAINER
+docker run --link $MONGODB_CONTAINER -it -e DATABASE_URL=mongodb://$MONGODB_CONTAINER:27017/db --name $PYTHON_CLIENT_CONTAINER $PYTHON_CLIENT_IMAGE
 ```
 
 ```text
-Connected to the MongoDB database via connection string mongodb://admin:admin@mo
-ngodb:27017 MongoClient(host=['mongodb:27017'], document_class=dict, tz_aware=Fa
-lse, connect=True) Database(MongoClient(host=['mongodb:27017'], document_class=d
-ict, tz_aware=False, connect=True), 'db')
-Test:{'name': 'db', 'type': 'collection', 'options': {}, 'info': {'readOnly': Fa
-lse, 'uuid': Binary(b'R\xe6\xc9\nk\x17C\x1a\xa5\xa17\xde\x04\xde\xd8\x7f', 4)},
-'idIndex': {'v': 2, 'key': {'_id': 1}, 'name': '_id_'}}
+Connected to the MongoDB database via connection string mongodb://admin:admin@mongodb:27017 
+MongoClient(host=['mongodb:27017'], document_class=dict, tz_aware=False, connect=True) Database(MongoClient(host=['mongodb:27017'], document_class=dict, tz_aware=False, connect=True), 'db')
+Test:{'name': 'db', 'type': 'collection', 'options': {}, 'info': {'readOnly': False, 'uuid': Binary(b'R\xe6\xc9\nk\x17C\x1a\xa5\xa17\xde\x04\xde\xd8\x7f', 4)},'idIndex': {'v': 2, 'key': {'_id': 1}, 'name': '_id_'}}
 MongoDB database connection were closed.
 
 ```
 ```sh
 cp env.FIXED .env
-CONTAINER_IMAGE=fastapi
-docker build -f Dockerfile.fastapi -t $CONTAINER_IMAGE .
+FASTAPI_IMAGE=fastapi-test
+FASTAPI_CONTAINER=fastapi-test
+docker build -f Dockerfile.fastapi -t $FASTAPI_IMAGE .
 ```
 ```sh
-CONTAINER=fastapi
-docker stop $CONTAINER
-docker container rm $CONTAINER
-docker run --link mongodb -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=db -e DATABASE_URL=mongodb://admin:admin@mongodb:27017/db --name $CONTAINER -p 8000:8000 -it $CONTAINER
+FASTAPI_CONTAINER=fastapi-test
+docker stop $FASTAPI_CONTAINER
+docker container rm $FASTAPI_CONTAINER
+docker run --link $MONGODB_CONTAINER -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin -e MONGO_INITDB_DATABASE=db -e DATABASE_URL=mongodb://admin:admin@mongodb:27017/db --name $FASTAPI_CONTAINER -p 8000:8000 -it $FASTAPI_IMAGE
 ```
 
 open the swagger ui link `http://192.168.99.100:8000/docs`
@@ -225,7 +224,7 @@ alternartively open the SWAGGER UI url `http://192.168.99.100:8000/docs#/default
 
 ![Call API](https://github.com/sergueik/springboot_study/blob/master/basic-fastapi-mongo/screenshots/capture-call.jpg)
 ```sh
-docker exec -it fastapi sh
+docker exec -it $FASTAPI_CONTAINER sh
 ```
 
 ```sh
@@ -235,7 +234,6 @@ python app.py
  python app.py
 Connected to the MongoDB database via connection string mongodb://admin:admin@mongodb:27017 MongoClient(host=['mongodb:27017'], document_class=dict, tz_aware=False, connect=True) Database(MongoClient(host=['mongodb:27017'], document_class=dict, tz_aware=False, connect=True), 'db')
 Test:{'name': 'db', 'type': 'collection', 'options': {}, 'info': {'readOnly': False, 'uuid': Binary(b'Z\x98Y2A\x1fKs\xb0\x0c\xab\xab\x83BP\xb8', 4)}, 'idIndex': {'v': 2, 'key': {'_id': 1}, 'name': '_id_'}}
-
 ```
 ### Cleanup
 
@@ -284,13 +282,12 @@ d8d27351687b        basic-fastapi-mongo_fastapi   "python /app/app.py "   2 minu
 
 ```
 ```text
-CONTAINER ID        IMAGE                         COMMAND                  CREAT
-ED             STATUS                         PORTS               NAMES
+CONTAINER ID        IMAGE                         COMMAND                  CREATED             STATUS                         PORTS               NAMES
 d8d27351687b        basic-fastapi-mongo_fastapi   "python /app/app.py "   2 minutes ago       Restarting (0) 1 second ago                        fastapi
 43ce944caad6        mongo:4.4.6-bionic            "docker-entrypoint.s"   2 minutes ago       Restarting (14) 1 second ago                       mongodb
 ```
 ```sh
-docker-compose exec fastapi sh
+docker-compose exec $FASTAPI_CONTAINER sh
 ```
 ```text
 Error response from daemon: Container 90c06e816bf7dd432208f766b252e01b9db2d59087a84491c08c468f3dc27e9f is restarting, wait until the container is running
