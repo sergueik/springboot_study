@@ -8,10 +8,12 @@ ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8 
 ENV LC_LANG=C.UTF-8
 RUN pip install --upgrade pip
-RUN pip install Flask unidecode urllib3
+# NOTE Flask-RESTPlus cannot install
+RUN pip install Flask flask_restful flask_cors flask_swagger_ui unidecode urllib3
+
 # COPY ./requirements.txt .
 # RUN pip install -r requirements.txt
-COPY app.py .
+COPY swagger.json app.py ./
 ARG SERVICE_PORT=8080
 EXPOSE $SERVICE_PORT
 ENTRYPOINT ["python", "/app/app.py"]

@@ -1,9 +1,8 @@
 ## Info 
 
 * basic [python3 flask app](https://www.geeksforgeeks.org/flask-creating-first-simple-application/) in alpine Python container
-showing the locale processing
+showing the locale processing and an example from __Build a Swagger UI for your Python Flask Application__ [post](https://code.likeagirl.io/swagger-and-postman-build-a-swagger-ui-for-your-python-flask-application-141bb4d0c203) but with non-working __CORS__ part.
 
- 
 ### Usage
 
 * build
@@ -53,6 +52,21 @@ or windows
 
 ![windows](https://github.com/sergueik/springboot_study/blob/master/basic-python-flask/screenshots/capture_url_chrome.png)
 
+### Swagger UI
+
+![Landing](https://github.com/sergueik/springboot_study/blob/master/basic-python-flask/screenshots/capture-swaggerui1.png)
+
+![Call](https://github.com/sergueik/springboot_study/blob/master/basic-python-flask/screenshots/capture-swaggerui2.png)
+
+![Fail](https://github.com/sergueik/springboot_study/blob/master/basic-python-flask/screenshots/capture-swaggerui3.png)
+
+### Cleanup
+
+```sh
+docker stop $NAME
+docker rm $NAME
+```
+
 ### Note
 
 `curl` allows URL-encoding POSTDATA body but not the URL by specifying `--data-urlencode` flag.
@@ -68,6 +82,12 @@ or windows
 
   * https://github.com/gliderlabs/docker-alpine/issues/144#issuecomment-436455850
   * [encoding](https://stackoverflow.com/questions/24234987/urlencode-cyrillic-characters-in-python) the UTF-8 console cyrillic as urlencoded Windows `cp1251` locale
+
+  * https://flask-restplus.readthedocs.io/en/stable/
+   * https://code.likeagirl.io/swagger-and-postman-build-a-swagger-ui-for-your-python-flask-application-141bb4d0c203
+   * https://stackoverflow.com/questions/25594893/how-to-enable-cors-in-flask
+   * https://swagger.io/docs/open-source-tools/swagger-ui/usage/cors/ 
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

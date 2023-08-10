@@ -19,8 +19,8 @@ ENV LANG=ru_RU.UTF-8
 ENV LC_ALL=ru_RU.UTF-8 
 ENV LC_LANG=ru_RU.UTF-8
 RUN pip install --upgrade pip
-RUN pip install Flask
-COPY app.py .
+RUN pip install Flask flask_restful flask_cors flask_swagger_ui unidecode urllib3
+COPY swagger.json app.py ./
 ARG SERVICE_PORT=8080
 EXPOSE $SERVICE_PORT
 ENTRYPOINT ["python", "/app/app.py"]
