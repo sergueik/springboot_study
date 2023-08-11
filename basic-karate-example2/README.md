@@ -150,9 +150,27 @@ type target\karate-reports\example.token.token.karate-json.txt | c:\tools\jq-win
 }
 ```
 * TODO imprvove the query
+### Threads
 
+at the end of Karate run through maven test it reports utilizing the threads:
+
+```text
+classpath:example/token/token.feature
+Karate version: 1.3.1
+======================================================
+elapsed:   7.23 | threads:    5 | thread time: 14.94
+features:     5 | skipped:    0 | efficiency: 0.41
+scenarios:    8 | passed:     8 | failed: 0
+======================================================
+
+```
 ### See Also
- * [free fake API for testing and prototyping](https://jsonplaceholder.typicode.com)
- * [Karate Assertions and matching cheat sheet](https://priyankab85.medium.com/cheat-sheet-for-karate-assertions-and-matching-d248383546e0)
+
+   * [REST API Testing with Karate](https://www.baeldung.com/karate-rest-api-testing)
+   * [API Testing with Karate](https://www.rajith.me/2020/04/api-testing-with-karate.html)
+   * [free fake API for testing and prototyping](https://jsonplaceholder.typicode.com)
+   * [Karate Assertions and matching cheat sheet](https://priyankab85.medium.com/cheat-sheet-for-karate-assertions-and-matching-d248383546e0)
+
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

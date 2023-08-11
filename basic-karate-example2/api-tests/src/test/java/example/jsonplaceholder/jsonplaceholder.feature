@@ -1,10 +1,9 @@
-Feature: sample karate test script
+Feature: free fake REST API for testing and prototyping 
   for help, see: https://github.com/karatelabs/karate/wiki/IDE-Support
 
   Background:
     * url 'https://jsonplaceholder.typicode.com'
-  # uses free fake REST API for testing and prototyping
-  # does not need events-api to run
+
   Scenario: get all users and then get the first user by id
     Given path 'users'
     When method get

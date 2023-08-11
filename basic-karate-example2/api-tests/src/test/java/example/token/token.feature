@@ -1,5 +1,5 @@
 Feature: Obtain and keep authentication token
-
+# the called feature will be displayed in "karate-summary.html"
  Background:
   * url 'http://localhost:8080/api'
   
