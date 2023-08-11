@@ -153,6 +153,6 @@ type target\karate-reports\example.token.token.karate-json.txt | c:\tools\jq-win
 
 ### See Also
  * [free fake API for testing and prototyping](https://jsonplaceholder.typicode.com)
-
+ * [Karate Assertions and matching cheat sheet](https://priyankab85.medium.com/cheat-sheet-for-karate-assertions-and-matching-d248383546e0)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
