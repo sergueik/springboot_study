@@ -1,0 +1,5 @@
+FROM alpine:3.9.5
+WORKDIR /app
+ADD a.txt ./
+ONBUILD RUN echo 'test' >&2
+

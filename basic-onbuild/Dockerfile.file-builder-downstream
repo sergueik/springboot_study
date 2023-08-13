@@ -1,0 +1,4 @@
+FROM alpine:3.9.5
+WORKDIR /app
+COPY --from=basic-file-builder /app/a.txt ./
+
