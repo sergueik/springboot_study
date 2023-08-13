@@ -1,0 +1,202 @@
+[
+  {
+    "date": "2023-07-25",
+    "description": "Yoga Retreat",
+    "location": "Serenity Spa Resort",
+    "maxCapacity": 50,
+    "name": "Zen and Wellness Retreat",
+    "numberOfHours": 3,
+    "organizer": "Yoga Bliss Studios",
+    "startTime": "09:00"
+  },
+  {
+    "date": "2023-08-02",
+    "description": "Tech Conference",
+    "location": "TechHub Convention Center",
+    "maxCapacity": 500,
+    "name": "TechCon 2023",
+    "numberOfHours": 8,
+    "organizer": "TechPros Inc.",
+    "startTime": "09:30"
+  },
+  {
+    "date": "2023-09-15",
+    "description": "Art Workshop",
+    "location": "Artistic Lounge",
+    "maxCapacity": 30,
+    "name": "Brush & Palette Workshop",
+    "numberOfHours": 2,
+    "organizer": "ArtConnect",
+    "startTime": "14:00"
+  },
+  {
+    "date": "2023-09-22",
+    "description": "Food Truck Fiesta",
+    "location": "Street Food Park",
+    "maxCapacity": 300,
+    "name": "Flavor Fest",
+    "numberOfHours": 6,
+    "organizer": "Foodies Unite",
+    "startTime": "12:00"
+  },
+  {
+    "date": "2023-10-05",
+    "description": "Fitness Bootcamp",
+    "location": "Park Fitness Zone",
+    "maxCapacity": 80,
+    "name": "FitFest",
+    "numberOfHours": 4,
+    "organizer": "FitLife Studios",
+    "startTime": "07:00"
+  },
+  {
+    "date": "2023-11-12",
+    "description": "Music Festival",
+    "location": "Central Park",
+    "maxCapacity": 1000,
+    "name": "MusicFest 2023",
+    "numberOfHours": 12,
+    "organizer": "Soundwave Entertainment",
+    "startTime": "16:00"
+  },
+  {
+    "date": "2023-11-20",
+    "description": "Book Fair",
+    "location": "City Library",
+    "maxCapacity": 200,
+    "name": "LitFest",
+    "numberOfHours": 5,
+    "organizer": "Bookworms Society",
+    "startTime": "10:00"
+  },
+  {
+    "date": "2023-12-03",
+    "description": "Fashion Show",
+    "location": "Fashion Arena",
+    "maxCapacity": 500,
+    "name": "StyleX",
+    "numberOfHours": 6,
+    "organizer": "Glamour Events",
+    "startTime": "18:00"
+  },
+  {
+    "date": "2023-12-10",
+    "description": "Charity Gala",
+    "location": "Grand Ballroom",
+    "maxCapacity": 300,
+    "name": "Hope for All",
+    "numberOfHours": 4,
+    "organizer": "Charity Foundation",
+    "startTime": "19:00"
+  },
+  {
+    "date": "2023-12-22",
+    "description": "Tech Workshop",
+    "location": "TechHub Workshop",
+    "maxCapacity": 50,
+    "name": "Tech Skills Bootcamp",
+    "numberOfHours": 2,
+    "organizer": "Tech Pros",
+    "startTime": "10:00"
+  },
+  {
+    "date": "2024-01-10",
+    "description": "Cooking Class",
+    "location": "Culinary Institute",
+    "maxCapacity": 40,
+    "name": "Taste & Learn",
+    "numberOfHours": 2,
+    "organizer": "Foodie Delights",
+    "startTime": "15:00"
+  },
+  {
+    "date": "2024-01-18",
+    "description": "Comedy Show",
+    "location": "Laughter Lounge",
+    "maxCapacity": 150,
+    "name": "Laugh Riot",
+    "numberOfHours": 3,
+    "organizer": "Jokers Club",
+    "startTime": "20:00"
+  },
+  {
+    "date": "2024-02-05",
+    "description": "Art Exhibition",
+    "location": "Gallery Space",
+    "maxCapacity": 100,
+    "name": "ArtExpo",
+    "numberOfHours": 5,
+    "organizer": "Artistic Creations",
+    "startTime": "11:00"
+  },
+  {
+    "date": "2024-02-18",
+    "description": "Science Fair",
+    "location": "Tech Museum",
+    "maxCapacity": 200,
+    "name": "TechWonders",
+    "numberOfHours": 6,
+    "organizer": "ScienceGeeks",
+    "startTime": "13:00"
+  },
+  {
+    "date": "2024-03-02",
+    "description": "Dance Workshop",
+    "location": "Dance Studio",
+    "maxCapacity": 60,
+    "name": "GrooveX",
+    "numberOfHours": 2,
+    "organizer": "DanceLife",
+    "startTime": "17:30"
+  },
+  {
+    "date": "2024-03-15",
+    "description": "Wine Tasting",
+    "location": "Vineyard Estate",
+    "maxCapacity": 80,
+    "name": "WineFest",
+    "numberOfHours": 4,
+    "organizer": "Vino Lovers",
+    "startTime": "19:30"
+  },
+  {
+    "date": "2024-04-01",
+    "description": "Tech Hackathon",
+    "location": "Innovation Hub",
+    "maxCapacity": 150,
+    "name": "CodeXtreme",
+    "numberOfHours": 24,
+    "organizer": "TechGenius",
+    "startTime": "10:00"
+  },
+  {
+    "date": "2024-04-12",
+    "description": "Theater Play",
+    "location": "City Theater",
+    "maxCapacity": 200,
+    "name": "DramaFest",
+    "numberOfHours": 2,
+    "organizer": "StageMasters",
+    "startTime": "19:00"
+  },
+  {
+    "date": "2024-05-10",
+    "description": "Health Expo",
+    "location": "Wellness Center",
+    "maxCapacity": 300,
+    "name": "Wellness Expo 2024",
+    "numberOfHours": 8,
+    "organizer": "HealthFirst",
+    "startTime": "09:00"
+  },
+  {
+    "date": "2024-05-20",
+    "description": "Fitness Challenge",
+    "location": "Sports Arena",
+    "maxCapacity": 500,
+    "name": "FitChallenge 2024",
+    "numberOfHours": 6,
+    "organizer": "FitNation",
+    "startTime": "08:00"
+  }
+]

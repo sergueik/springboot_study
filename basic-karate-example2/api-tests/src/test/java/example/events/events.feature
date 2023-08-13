@@ -4,6 +4,7 @@ Feature: Test Event
   * url 'http://localhost:8080/api'
   * def tokenFeature = callonce read('../token/token.feature')
   * def access_token = tokenFeature.access_token
+   * def tokenDetails = tokenFeature.tokenDetails
 
   Scenario: Get list of events for current user
 
@@ -48,3 +49,41 @@ Feature: Test Event
   When method delete
   Then status 403
   * assert response.errorMessage == 'User not allowed to delete this event'
+
+  
+  Scenario Outline: Create Event  - <name>
+  Given path 'events' 
+  And header Authorization = 'Bearer ' + access_token
+  And request 
+      """
+      {
+      "date":<date>,
+       "description":<description>,
+      "location":<location>,
+      "maxCapacity":<maxCapacity>,
+      "name":<name>,
+      "numberOfHours":<numberOfHours>,
+      "organizer":<organizer>,
+      "startTime":<startTime>
+      }
+      """
+  When method post
+  Then status 201
+  Then match response.data == 
+    """
+      {
+    'userId': '#(tokenDetails.uid)',
+    'date': '#ignore',
+    'description': <description>,
+    'location': <location>,
+    'maxCapacity': <maxCapacity>,
+    'name': <name>,
+    'numberOfHours': <numberOfHours>,
+    'organizer': <organizer>,
+    'startTime': <startTime>,
+    'id': '#present',
+    'currentCapacity':0
+      }
+     """
+    Examples:
+     | read('newevents.json') |  

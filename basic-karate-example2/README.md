@@ -164,13 +164,54 @@ scenarios:    8 | passed:     8 | failed: 0
 ======================================================
 
 ```
+
+### NOTE
+on Windows / Java 1.8 the Karate runs successfully 26 tests 
+```text
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+```
+but then throws the error:
+```text
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:15 min
+[INFO] Finished at: 2023-08-12T22:18:04-04:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.2:test (default-test) on project api-tests: There are test failures.
+[ERROR]
+[ERROR] Please refer to C:\developer\sergueik\springboot_study\basic-karate-example2\api-tests\target\surefire-reports for the individual test results.
+[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] The forked VM terminated without properly saying goodbye. VM crash or System.exit called?
+[ERROR] Command was cmd.exe /X /C "c:\java\jdk1.8.0_101\jre\bin\java -Dfile.encoding=UTF-8 -jar C:\Users\Serguei\AppData\Local\Temp\surefire5193139620443941896\surefirebooter2463886534091575716.jar C:\Users\Serguei\AppData\Local\Temp\surefire5193139620443941896 2023-08-12T22-16-55_345-jvmRun1 surefire1552301505766016797tmp surefire_05973237234382054702tmp"
+```
+
+on Linux host the Karate successully executes 27 tests:
+
+```text
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.923 s - in example.ExamplesTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:07 min
+[INFO] Finished at: 2023-08-13T04:24:18+02
+```
 ### See Also
 
    * [REST API Testing with Karate](https://www.baeldung.com/karate-rest-api-testing)
    * [API Testing with Karate](https://www.rajith.me/2020/04/api-testing-with-karate.html)
    * [free fake API for testing and prototyping](https://jsonplaceholder.typicode.com)
    * [Karate Assertions and matching cheat sheet](https://priyankab85.medium.com/cheat-sheet-for-karate-assertions-and-matching-d248383546e0)
-
+   * [Introduction to JSON Web Tokens](https://jwt.io/introduction)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
