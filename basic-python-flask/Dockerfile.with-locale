@@ -1,5 +1,7 @@
 FROM python:3.8.2-alpine
-RUN apk --no-cache add ca-certificates wget && \
+ARG SERVICE_PORT=5000
+WORKDIR /app
+RUN apk --no-cache add ca-certificates curl wget && \
     wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
     wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-2.25-r0.apk && \
     wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-bin-2.25-r0.apk && \
@@ -7,22 +9,18 @@ RUN apk --no-cache add ca-certificates wget && \
     apk add glibc-bin-2.25-r0.apk glibc-i18n-2.25-r0.apk glibc-2.25-r0.apk
 
 
-COPY ./locale.md /locale.md
+COPY ./locale.md ./
 RUN cat locale.md | xargs -i /usr/glibc-compat/bin/localedef -i {} -f UTF-8 {}.UTF-8
 
-WORKDIR /app
-RUN apk add curl 
 ENV PYTHONIOENCODING=utf-8
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV LANG=ru_RU.UTF-8
 ENV LC_ALL=ru_RU.UTF-8 
 ENV LC_LANG=ru_RU.UTF-8
-RUN pip install --upgrade pip
-RUN pip install Flask flask_restful flask_cors flask_swagger_ui unidecode urllib3
-COPY swagger.json app.py ./
-ARG SERVICE_PORT=8080
+COPY ./requirements.txt swagger.json app.py ./
+RUN pip install -r requirements.txt
 EXPOSE $SERVICE_PORT
 ENTRYPOINT ["python", "/app/app.py"]
-# NOTE: "-m", "flask" leads to a prompt
+# NOTE: adding the "-m", "flask" arguments leads to a prompt
 

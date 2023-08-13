@@ -1,7 +1,8 @@
-## Info 
+﻿## Info 
 
 * basic [python3 flask app](https://www.geeksforgeeks.org/flask-creating-first-simple-application/) in alpine Python container
-showing the locale processing and an example from __Build a Swagger UI for your Python Flask Application__ [post](https://code.likeagirl.io/swagger-and-postman-build-a-swagger-ui-for-your-python-flask-application-141bb4d0c203) but with non-working __CORS__ part.
+showing the locale processing and an example from 
+__Build a Swagger UI for your Python Flask Application__ [post](https://code.likeagirl.io/swagger-and-postman-build-a-swagger-ui-for-your-python-flask-application-141bb4d0c203)
 
 ### Usage
 
@@ -58,7 +59,8 @@ or windows
 
 ![Call](https://github.com/sergueik/springboot_study/blob/master/basic-python-flask/screenshots/capture-swaggerui2.png)
 
-![Fail](https://github.com/sergueik/springboot_study/blob/master/basic-python-flask/screenshots/capture-swaggerui3.png)
+
+NOTE: to prevent CORS error do not specify hostname in the `api_url` parameter of the `get_swaggerui_blueprint` method
 
 ### Cleanup
 

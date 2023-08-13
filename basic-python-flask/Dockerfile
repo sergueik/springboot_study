@@ -1,4 +1,5 @@
 FROM python:3.8.2-alpine
+ARG SERVICE_PORT=5000
 WORKDIR /app
 RUN apk add curl 
 ENV PYTHONIOENCODING=utf-8
@@ -7,15 +8,10 @@ ENV PYTHONUNBUFFERED 1
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8 
 ENV LC_LANG=C.UTF-8
-RUN pip install --upgrade pip
-# NOTE Flask-RESTPlus cannot install
-RUN pip install Flask flask_restful flask_cors flask_swagger_ui unidecode urllib3
 
-# COPY ./requirements.txt .
-# RUN pip install -r requirements.txt
-COPY swagger.json app.py ./
-ARG SERVICE_PORT=8080
+COPY ./requirements.txt swagger.json app.py ./
+RUN pip install -r requirements.txt
 EXPOSE $SERVICE_PORT
 ENTRYPOINT ["python", "/app/app.py"]
-# NOTE: "-m", "flask" leads to a prompt
+# NOTE: adding the "-m", "flask" arguments leads to a prompt
 
