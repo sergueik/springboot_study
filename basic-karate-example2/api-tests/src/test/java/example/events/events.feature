@@ -25,6 +25,16 @@ Feature: Test Event
   When method get
   Then status 200
 
+  * def config = { username: 'sa', password: '', url: 'jdbc:h2:tcp://localhost/~/test ', driverClassName: 'org.h2.Driver' }
+  * def Utils = Java.type('example.utils.Utils')
+  * def db = new Utils(config)
+  * def eventsFromDB = db.readRows('select * from events where UserId = ' + tokenDetails.uid)
+  * def idsFromDB = karate.map(eventsFromDB,function(x) {return x.ID})
+  # * print idsFromDB
+  * def idsFromResponse = karate.map(response.data,function(x) {return x.id})
+  # * print idsFromResponse
+  # * match idsFromDB contains only idsFromResponse 
+  # NOTE: the lists of ids are is not identical
   Scenario Outline: Filter Events
   * def str = <str>
   * def id = <id>
