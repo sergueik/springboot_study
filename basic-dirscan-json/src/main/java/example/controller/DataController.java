@@ -14,11 +14,15 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.LinkOption;
+
 import java.nio.file.StandardOpenOption;
+import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,6 +37,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -71,7 +76,8 @@ public class DataController {
 	private static boolean verifylinks = false;
 	private static String linkedDataDir = null;
 	private static HostData hostData = null;
-	private static final String filemask = "*.json$";
+	// NOTE: fixed shell filemask
+	private static final String filemask = ".*\\.json$";
 	private String baseDirectory = System.getProperty("os.name").toLowerCase()
 			.contains("windows") ? System.getenv("TEMP") : "/tmp";
 	static int cnt = 100;
@@ -79,6 +85,7 @@ public class DataController {
 	private static Map<String, HostData> inventory = new HashMap<>();
 	@Value("${file.path:C:\\temp}")
 	public String file_path;
+	private final static String defaulthost = "localhost";
 
 	@ResponseBody
 	@GetMapping("/file/{name}")
@@ -135,11 +142,10 @@ public class DataController {
 
 	}
 
-	private final static String defaulthost = "localhost";
-
 	@GetMapping(value = "/listfilenames/{hostname}", produces = {
 			MediaType.APPLICATION_JSON_VALUE })
-	public List<String> arrayFileNames(@PathVariable String hostname) {
+	public List<String> arrayFileNames(@PathVariable String hostname,
+			@RequestParam Optional<Long> newer) {
 
 		HostData hostdata = new HostData(hostname, System.getProperty("user.dir"),
 				"dummy1.txt");
@@ -167,11 +173,11 @@ public class DataController {
 		JsonReader reader = new JsonReader(
 				new InputStreamReader(new ByteArrayInputStream(payload.getBytes())));
 		artist = gson.fromJson(reader, Artist.class);
-		log.info("RequestBody(parsed, 2 nd attempt): " + gson.toJson(artist));
+		log.info("RequestBody(parsed, 2nd attempt): " + gson.toJson(artist));
 		final String filePath = file_path + "\\" + name;
 		createFile(filePath);
 		try {
-			Files.write(Paths.get(file_path + "\\" + name), payload.getBytes(),
+			Files.write(Paths.get(filePath), payload.getBytes(),
 					StandardOpenOption.WRITE);
 		} catch (IOException e) {
 			// e.g.
@@ -211,6 +217,7 @@ public class DataController {
 		List<Map<String, String>> results = new ArrayList<>();
 		System.err.println(String.format("Ingesting %d files: ", result.size()));
 		result.stream().forEach(o -> {
+
 			hostData = new HostData("dummy",
 					o.getParent().toAbsolutePath().toString(),
 					o.getFileName().toString());
@@ -219,8 +226,12 @@ public class DataController {
 			BufferedReader reader = null;
 			StringBuffer contents = new StringBuffer();
 			String text = null;
+			log.info("adding hostdata");
 			try {
-				file = new File(o.getFileName().toString());
+				log.info(String.format("About to read %s (%s)",
+						o.getFileName().toString(), o.toAbsolutePath()));
+				log.info("adding hostdata ... ");
+				file = new File(o.toAbsolutePath().toString());
 				reader = new BufferedReader(new FileReader(file));
 				while ((text = reader.readLine()) != null) {
 					contents.append(text).append(System.getProperty("line.separator"));
@@ -240,7 +251,6 @@ public class DataController {
 			data.put(o.getFileName().toString(), contents.toString());
 			results.add(data);
 			// sync debug settings
-
 		});
 		return results;
 
@@ -251,10 +261,11 @@ public class DataController {
 	// path,
 	// new ArrayList<String>(),
 	// new ArrayList<String>());
-	private static List<Map<String, String>> listFilesDsNames(String path)
+	private List<Map<String, String>> listFilesDsNames(String path)
 			throws IOException {
+		Path basePath = Paths
+				.get(file_path + System.getProperty("file.separator") + path);
 
-		Path basePath = Paths.get(path);
 		// NOTE: do not use File.separator
 		final String basePathUri = new URL(
 				getDataFileUri(basePath.toAbsolutePath().toString())).getFile() + "/";
@@ -265,43 +276,80 @@ public class DataController {
 		List<Path> result;
 		List<Path> result2;
 		//
+		/*
+ 		try {
+
+		} catch (NoSuchFileException e) {
+
+		}
+
+		 */
 		if (verifylinks) {
-			try (Stream<Path> walk = Files.walk(basePath)) {
-				result2 = walk.filter(Files::isSymbolicLink).filter(o -> {
-					try {
-						Path targetPath = Files.readSymbolicLink(o.toAbsolutePath());
-						if (debug)
-							System.err.println("Testing link " + o.getFileName().toString()
-									+ " target path " + targetPath.toString());
-
-						File target = new File(
-								String.format(
-										"%s/%s", (linkedDataDir == null
-												? o.getParent().toAbsolutePath() : linkedDataDir),
-										targetPath.toString()));
-						if (target.exists() && target.isFile())
+			if (Files.isDirectory(basePath, LinkOption.NOFOLLOW_LINKS)) {
+				System.err
+						.println("Walking basepath (allow symbolic links): " + basePath);
+				try (Stream<Path> walk = Files.walk(basePath)) {
+					System.err.println("Walking basepath: " + basePath);
+					result2 = walk.filter(Files::isSymbolicLink).filter(o -> {
+						try {
+							Path targetPath = Files.readSymbolicLink(o.toAbsolutePath());
 							if (debug)
-								System.err.println("Valid link " + o.getFileName().toString()
-										+ " target path " + target.getCanonicalPath());
-						return true;
+								System.err.println("Testing link " + o.getFileName().toString()
+										+ " target path " + targetPath.toString());
 
-					} catch (IOException e) {
-						// fall through
-					}
+							File target = new File(String.format(
+									"%s/%s", (linkedDataDir == null
+											? o.getParent().toAbsolutePath() : linkedDataDir),
+									targetPath.toString()));
+							if (target.exists() && target.isFile())
+								if (debug)
+									System.err.println("Valid link " + o.getFileName().toString()
+											+ " target path " + target.getCanonicalPath());
+							return true;
 
-					return false;
-				}).filter(o -> o.getFileName().toString().matches(filemask))
-						.collect(Collectors.toList());
+						} catch (IOException e) {
+							// fall through
+						}
+
+						return false;
+					}).filter(o -> o.getFileName().toString().matches(filemask))
+							.collect(Collectors.toList());
+				}
+				return readFiles(result2);
+			} else {
+				return new ArrayList<Map<String, String>>();
 			}
-			return readFiles(result2);
 		} else {
-			try (Stream<Path> walk = Files.walk(basePath)) {
-				result = walk.filter(Files::isRegularFile)
-						.filter(o -> o.getFileName().toString().matches(filemask))
-						.collect(Collectors.toList());
+			if (Files.isDirectory(basePath, LinkOption.NOFOLLOW_LINKS)) {
+				System.err.println("Walking basepath: " + basePath);
+
+				try (Stream<Path> walk = Files.walk(basePath)) {
+					System.err.println("Walking basepath ...");
+					result = walk.filter(Files::isRegularFile).filter(o -> {
+						String name = o.getFileName().toString();
+						System.err.println(
+								"Examine filename : " + name + " versu mask " + filemask);
+						if (name.matches(filemask)) {
+							System.err.println("the file is valid " + name);
+							return true;
+						} else {
+							System.err.println(String
+									.format("file iss not matching filemask \"%s\"", filemask));
+							return false;
+						}
+
+					}).collect(Collectors.toList());
+					System.err.println("Reading files: " + result);
+					// NOTE: streams are not designed to be rescanned
+					System.err.println("Reading files: " + result);
+					return readFiles(result);
+				} catch (Exception e) {
+					System.err.println("Exception (ignored): " + e.toString());
+					return new ArrayList<Map<String, String>>();
+				}
+			} else {
+				return new ArrayList<Map<String, String>>();
 			}
-			// NOTE: streams are not designed to be rescanned
-			return readFiles(result);
 		}
 
 	}
