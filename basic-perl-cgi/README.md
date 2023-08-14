@@ -165,7 +165,70 @@ Content-Type: application/json
    "plum"
 ]
 ```
+### Config CGI Test
+```sh
+curl http://$(hostname -i):9090/cgi-bin/config.cgi
+```
+```JSON
+{
+   "result" : {
+      "red" : "green"
+   },
+   "status" : "OK"
+}
+
+```
+
+NOTE that currently the query params are not yet implemented. The `config.cgi` compares the file modification time of `example_config.cgi` to
+`Mon Aug 14 23:42:23 CEST 2023`: 
+```Perl
+my $check_epoch     = 1692049343;
+```
+
+change it to `1692089343` to trigger the other branch of he logic:
+```Perl
+date --date='@1692089343'
+```
+```text
+Tue Aug 15 10:49:03 CEST 2023
+```
+and rebuild:
+```sh
+docker stop $NAME
+docker rm $NAME
+docker build -t $IMAGE -f Dockerfile .
+docker run -d -p 9090:80 -p 9443:443 --name $NAME $IMAGE
+
+```
+
+observe this time the `config.cgi` to return an "error":
+```sh
+curl http://$(hostname -i):9090/cgi-bin/config.cgi
+```
+```JSON
+{
+   "status" : "error",
+   "result" : "Config /var/www/localhost/cgi-bin/example_config.json is older than Tue Aug 15 08:49:03 2023"
+}
+```
+finally, restoring the `$check_epoch` but breaking the JSON example config
+```JSON
+{"red": "green",}
+```
+the same call will return the exception info:
+
+```sh
+curl http://$(hostname -i):9090/cgi-bin/config.cgi
+```
+```JSON
+{
+   "status" : "error",
+   "result" : "Error reading Config /var/www/localhost/cgi-bin/example_config.json: unexpected end of string while parsing JSON string, at character offset 17 (before \"\\n\") at /var/www/localhost/cgi-bin/config.cgi line 82.\n"
+}
+
+```
 #### REST Call Tests
+
 
 * by calling the web server inside container by invoking requests through exorted port, confirm the cgi-bin run successtully by Apache in the contaiter.
 Basically will observe same outputs (sans the header) as cgi-bin call via Docker exec:
