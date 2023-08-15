@@ -166,6 +166,7 @@ Content-Type: application/json
 ]
 ```
 ### Config CGI Test
+
 ```sh
 curl http://$(hostname -i):9090/cgi-bin/config.cgi
 ```
@@ -227,6 +228,59 @@ curl http://$(hostname -i):9090/cgi-bin/config.cgi
 }
 
 ```
+
+Alternatively pass query parameters normally:
+```sh
+export QUERY_STRING='newer=1692049343&inputfile=example_config.json'
+perl config.cgi
+```
+```JSON
+{
+   "result" : {
+      "red" : "green"
+   },
+   "status" : "OK"
+}
+
+```
+```
+export QUERY_STRING='newer=1692089343&inputfile=example_config.json'
+perl config.cgi
+
+```
+```JSON
+{
+   "status" : "error",
+   "result" : "Config /home/sergueik/src/springboot_study/basic-perl-cgi/cgi-bin/example_config.json is older than Tue Aug 15 10:49:03 2023"
+}
+
+```
+or through REST call:
+```sh
+curl 'http://$(hostname -i):9090/cgi-bin/config.cgi?newer=1692089343&inputfile=example_config.json'
+```
+```JSON
+{
+   "status" : "error",
+   "result" : "Config /var/www/localhost/cgi-bin/example_config.json is older than Tue Aug 15 08:49:03 2023"
+}
+
+```
+and
+
+```sh
+curl 'http://$(hostname -i):9090/cgi-bin/config.cgi?newer=1692049343&inputfile=example_config.json'
+```
+```JSON
+{
+   "result" : {
+      "red" : "green"
+   },
+   "status" : "OK"
+}
+
+```
+
 #### REST Call Tests
 
 

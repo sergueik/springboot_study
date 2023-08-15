@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-
+use warnings;
 use strict;
 
 use Getopt::Long;
@@ -24,8 +24,9 @@ BEGIN {
 
 use YAML::Tiny;
 use JSON::PP;
+
 # use CGI::Tiny;
-# TODO: 
+# TODO:
 # cgi exited without rendering a response
 # Status: 500 Internal Server Error
 use Data::Dumper;
@@ -46,19 +47,37 @@ sub check_newer {
 }
 our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
 
-
-my $status  = undef;
+my $status   = undef;
 my $response = '{}';
-my $content = undef;
-my $debug   = 0;
-my $error = undef;
-# hard code the query parameters: $inputfile $check_epoch
-my $dir             = getcwd;
-my $inputfile       = $dir . '/' . 'example_config.json';
-my $check_epoch     = 1692049343;
-#   $check_epoch     = 1692089343;
-my $check_timestamp = localtime($check_epoch);
-$status = &check_newer( $inputfile, $check_epoch );
+my $content  = undef;
+my $debug    = 0;
+my $error    = undef;
+
+# hardcode the query parameter defauts: $inputfile $newer
+my $dir       = getcwd;
+my $inputfile = 'example_config.json';
+my $newer     = 1692049343;
+
+#   $newer     = 1692089343;
+
+# process QUERY_STRING directly without relying on CGI::Tiny
+my $query        = {};
+my $query_string = $ENV{'QUERY_STRING'};
+my @pairs        = split( '&', $query_string );
+foreach my $pair (@pairs) {
+    my ( $name, $value ) = split( '=', $pair );
+    $query->{$name} = $value;
+}
+if ( exists $query->{newer} ) {
+    $newer = $query->{newer};
+}
+if ( exists $query->{inputfile} ) {
+    $inputfile = $query->{inputfile};
+}
+
+$inputfile = $dir . '/' . $inputfile;
+my $check_timestamp = localtime($newer);
+$status = &check_newer( $inputfile, $newer );
 if ($status) {
     if ($inputfile) {
         $content = '';
@@ -73,7 +92,6 @@ if ($status) {
         print STDERR Dumper($content);
     }
 
-    our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
     local $@;
     my $data = eval {
         if ($debug) {
