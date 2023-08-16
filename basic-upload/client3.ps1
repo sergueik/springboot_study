@@ -1,4 +1,4 @@
-#Copyright (c) 2021,2022 Serguei Kouzmine
+#Copyright (c) 2021-2023 Serguei Kouzmine
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -91,6 +91,16 @@ function sendfile {
   try {
     [System.Net.WebResponse] $response =  $webRequest.GetResponse()
     [System.Net.HttpStatusCode]$statuscode = $response.StatusCode
+    # see also  discussion:
+    # https://stackoverflow.com/questions/38622526/invoke-restmethod-how-do-i-get-the-return-code
+
+    # question: how can one access the HTTP status of a successful REST call done via Invoke-RestMethod cmdlet
+    # the short answer is: one can't. it returns String
+    # workarounds exist when an exception occurs, then access the $_.Exception.Response.StatusCode.value__
+    # https://stackoverflow.com/questions/29613572/error-handling-for-invoke-restmethod-powershell
+    # one should use Invoke-WebRequest instead. it returns Microsoft.PowerShell.Commands.HtmlWebResponseObject
+    # or use one of the direct C# classes in this directory
+    #
     if ($debug)  {
       write-host ('Response status code: {0}' -f $statuscode.value__)
     }
