@@ -57,6 +57,15 @@ this will show something like
     inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
        valid_lft forever preferred_lft forever
 ```
+* alternatively list routes:
+```sh
+ip route list
+```
+this will show something like
+```text
+default via 172.17.0.1 dev eth0
+172.17.0.0/16 dev eth0 scope link  src 172.17.0.2
+```
 * alternatively list the networks:
 ```sh
 docker network list
@@ -66,10 +75,46 @@ docker network list
 38e910f2eda5   host                                      host      local
 90b8867ef029   none                                      null      local
 ```
-unless specified otherwise the container will be on `bridge` network. Inspect that network gateway:
+unless specified otherwise the container will be on `bridge` network.  if not certain , inspect:
+```sh
+docker inspect $CONTAINER_ID | jq '.[0].HostConfig.NetworkMode'
+```
+this will print network mode:
+```text
+"default"
+```
+continue to explore the container configuraion
+```sh
+docker inspect $CONTAINER_ID | jq '.[0].NetworkSettings.Networks'
+```
+
+this will show
+```JSON
+{
+  "bridge": {
+    "IPAMConfig": null,
+    "Links": null,
+    "Aliases": null,
+    "NetworkID": "e1f4d0d3d2270bb31fa6a90828c0ddef440d44641fda333bde6d5cd2680829d7",
+    "EndpointID": "4bc49bce0177bc20f675dfbc2b9ad60299b3b75b56d7b6cc25f67abbf2733e7e",
+    "Gateway": "172.17.0.1",
+    "IPAddress": "172.17.0.2",
+    "IPPrefixLen": 16,
+    "IPv6Gateway": "",
+    "GlobalIPv6Address": "",
+    "GlobalIPv6PrefixLen": 0,
+    "MacAddress": "02:42:ac:11:00:02",
+    "DriverOpts": null
+  }
+}
+```
+the gateway ip address to use will be displayed
+
+alternatively inspect that network:
 ```sh
 docker inspect bridge
 ```
+to see full JSON 
 and browse the output or provide a `format` argument:
 ```sh
 docker inspect bridge --format '{{ json .IPAM.Config }}'
@@ -86,7 +131,15 @@ alternatively can filter the output with `jq`:
 ```sh
 docker inspect bridge | jq '.[].IPAM.Config'
 ```
-then connect to the container and ping the `bridge` network gateway:
+or select just the address with `jq`:
+```sh
+docker inspect bridge  | jq -cr '.[0].IPAM.Config[0].Gateway'
+```
+this will likely show the ip adress
+```text
+172.17.0.1
+```
+then execute in the container the ping command providing the `bridge` network gateway ip address from earlier:
 ```sh
 ping -c 1 172.17.0.1
 ```
