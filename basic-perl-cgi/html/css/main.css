@@ -11,3 +11,8 @@ body {
     background-color: #f4f4f4;
     height: 100%;
 }
+.error {
+  background-color: red;
+  color: white;
+  font-weight: 600
+}
