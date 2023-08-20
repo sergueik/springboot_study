@@ -126,6 +126,53 @@ ls -l test
 ```
 one can also try it through `docker-compose` using `docker-compose.basic-app-user-volume-UNTESTED.yaml` - not verified
 
+### Validating Rexexp Patterns
+
+```sh
+curl -s -X POST --data-urlencode 'expression=Lorem ipsum** dolor sit amet' http://192.168.0.25:8085/validate | jq
+```
+
+```JSON
+{
+  "result": {
+    "expression": "Lorem ipsum** dolor sit amet",
+    "character": "*",
+    "message": "java.util.regex.PatternSyntaxException: Dangling meta character '*' near index 12\r\nLorem ipsum** dolor sit amet\r\n            ^",
+    "index": 12
+  },
+  "status": "error"
+}
+
+```
+
+```sh
+curl -s -X POST --data-urlencode 'expression=Lorem \Ipsum dolor sit amet' http://192.168.0.25:8085/validate | jq
+```
+```JSON
+{
+  "result": {
+    "expression": "Lorem \\Ipsum dolor sit amet",
+    "character": "\\",
+    "message": "java.util.regex.PatternSyntaxException: Illegal/unsupported escape sequence near index 7\r\nLorem \\Ipsum dolor sit amet\r\n       ^",
+    "index": 7
+  },
+  "status": "error"
+}
+```
+```sh
+curl -sX POST --data-urlencode 'expression=Lorem ipsum do[lor sit amet' http://192.168.0.25:8085/validate | jq
+```
+```JSON
+{
+  "result": {
+    "expression": "Lorem ipsum do[lor sit amet",
+    "character": "e",
+    "message": "java.util.regex.PatternSyntaxException: Unclosed character class near index 26\r\nLorem ipsum do[lor sit amet\r\n                          ^",
+    "index": 26
+  },
+  "status": "error"
+}
+```
 #### See Also
 
   * [basic-user](https://github.com/sergueik/springboot_study/tree/master/basic-user) example
