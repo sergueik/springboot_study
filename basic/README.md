@@ -1,4 +1,4 @@
-### Info
+﻿### Info
 
 Springboot Docker basic project extracted from [springboot mySQL Docker container](https://github.com/TechPrimers/docker-mysql-spring-boot-example) converted to run on alpine openjdk jre base image.
 ### Test
@@ -173,6 +173,33 @@ curl -sX POST --data-urlencode 'expression=Lorem ipsum do[lor sit amet' http://1
   "status": "error"
 }
 ```
+* NOTE:
+```sh
+curl -s  -H "Content-Type: text/plain" -X POST http://localhost:8085/validate -d "expression=abc"
+```
+may lead to
+```JSON
+{
+  "timestamp": "Aug 20, 2023 11:38:31 AM",
+  "status": 400,
+  "error": "Bad Request",
+  "exception": "org.springframework.web.bind.MissingServletRequestParameterException",
+  "message": "Required String parameter 'expression' is not present",
+  "path": "/validate"
+}
+```
+or
+```JSON
+{
+  "timestamp": "Aug 20, 2023 11:51:00 AM",
+  "status": 415,
+  "error": "Unsupported Media Type",
+  "exception": "org.springframework.web.HttpMediaTypeNotSupportedException",
+  "message": "Content type 'text/plain' not supported",
+  "path": "/validate"
+}
+```
+
 #### See Also
 
   * [basic-user](https://github.com/sergueik/springboot_study/tree/master/basic-user) example

@@ -36,8 +36,9 @@ public class RegexpValidationController {
 	private Log log = LogFactory.getLog(this.getClass());
 
 	@ResponseBody
-	@PostMapping(value = "/validate", produces = {
-			MediaType.APPLICATION_JSON_VALUE })
+	@PostMapping(value = "/validate", consumes = {
+			MediaType.APPLICATION_FORM_URLENCODED_VALUE }, produces = {
+					MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<Map<String, Object>> validate(
 			@RequestParam String expression, @RequestParam Optional<Boolean> fix) {
 		return ResponseEntity.status(HttpStatus.OK)
