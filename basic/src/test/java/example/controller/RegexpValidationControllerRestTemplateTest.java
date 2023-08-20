@@ -30,6 +30,7 @@ import example.controller.RegexpValidationController.Result;
 // org.springframework.web.client.ResourceAccessException: I/O error on POST request for
 // http://localhost:8085/basic/post/
 // Connection refused: connect; nested exception is java.net.ConnectException: Connection refused: connect
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class RegexpValidationControllerRestTemplateTest {
 
 	public static final String url = "http://localhost:8085/validate";
@@ -38,13 +39,14 @@ public class RegexpValidationControllerRestTemplateTest {
 	private HttpHeaders headers = new HttpHeaders();
 	private ResponseEntity<Map> responseEntity = null;
 	private ResponseEntity<String> responseEntityString = null;
+	// Type mismatch: cannot convert from ResponseEntity<Map> to
+	// ResponseEntity<Map<String,String>>
+	private ResponseEntity<Map> responseEntityMap = null;
 	private HttpEntity<Map<String, String>> requestEntity = null;
 	private HttpEntity<String> requestEntityString = null;
 	private Map<String, String> data = new HashMap<>();
 
 	private static Gson gson = new GsonBuilder().create();
-	private static final String defaultName = "Hello basic";
-	private final String name = "elton";
 	private Map<String, Object> response = new HashMap<>();
 	private Map<String, Object> resultMap = new HashMap<>();
 	private Result result;
@@ -59,7 +61,6 @@ public class RegexpValidationControllerRestTemplateTest {
 		data = new HashMap<>();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void test1() {
 
@@ -102,6 +103,7 @@ public class RegexpValidationControllerRestTemplateTest {
 		result = new Result(resultMap.get("expression").toString(),
 				resultMap.get("character").toString(),
 				resultMap.get("message").toString(),
+				resultMap.get("exception").toString(),
 				((Double) resultMap.get("index")).intValue());
 		assertThat(result.getIndex(), is(7));
 		try {
@@ -122,9 +124,24 @@ public class RegexpValidationControllerRestTemplateTest {
 		}
 	}
 
-	// NOTE: redundant
 	@Test
 	public void test3() {
+
+		requestEntityString = new HttpEntity<String>(
+				"expression=Lorem ipsum dolor sit amet", headers);
+		responseEntityMap = restTemplate.postForEntity(url, requestEntityString,
+				Map.class, headers);
+		assertThat(responseEntityMap, notNullValue());
+		assertThat(responseEntityMap.getStatusCode(), is(HttpStatus.OK));
+		data = responseEntityMap.getBody();
+		System.err.println("Response (map): " + data);
+		assertThat(data.get("status"), is("OK"));
+		assertThat(data.get("result"), is(""));
+	}
+
+	// NOTE: redundant
+	@Test
+	public void test4() {
 
 		requestEntityString = new HttpEntity<String>(
 				"expression=Lorem **ipsum dolor sit amet", headers);
@@ -146,17 +163,53 @@ public class RegexpValidationControllerRestTemplateTest {
 		result = new Result(resultMap.get("expression").toString(),
 				resultMap.get("character").toString(),
 				resultMap.get("message").toString(),
+				resultMap.get("exception").toString(),
 				((Double) resultMap.get("index")).intValue());
 		assertThat(result.getIndex(), is(7));
 	}
 
-	@Ignore
+	@Test
+	public void test5() {
+
+		requestEntityString = new HttpEntity<String>(
+				"expression=Lorem [ipsum dolor sit amet", headers);
+		responseEntityMap = restTemplate.postForEntity(url, requestEntityString,
+				Map.class, headers);
+		assertThat(responseEntityMap, notNullValue());
+		assertThat(responseEntityMap.getStatusCode(), is(HttpStatus.OK));
+		resultMap = responseEntityMap.getBody();
+		System.err.println("Response (map): " + resultMap);
+		assertThat(resultMap.get("status"), is("error"));
+		System.err.println("Result (map): " + resultMap.get("result"));
+		data = (Map) resultMap.get("result");
+		assertThat(data.get("index"), is(26));
+		System.err.println(String.format("index: %d", data.get("index")));
+		// int index = Integer.parseInt(data.get("index"));
+		// java.lang.ClassCastException: java.lang.Integer cannot be cast to
+		// java.lang.String
+		int index = Integer.parseInt(String.format("%d", data.get("index")));
+		result = new Result(data.get("expression"), data.get("character"),
+				data.get("message"), data.get("exception"), index);
+		assertThat(result, notNullValue());
+		assertThat(result.getIndex(), is(26));
+		try {
+			result = (Result) resultMap.get("result");
+			assertThat(result, notNullValue());
+			assertThat(result.getIndex(), is(26));
+		} catch (Exception e) {
+			// java.lang.ClassCastException: java.util.LinkedHashMap cannot be cast to
+			// example.controller.RegexpValidationController$Result
+			System.err.println("Excepion: " + e.toString());
+		}
+
+	}
+
 	// Writing [{expression=Lorem ipsum dolor sit amet}] using
 	// [org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 	// leads to org.springframework.web.client.HttpClientErrorException: 415 null
-	@SuppressWarnings("unchecked")
+	@Ignore
 	@Test
-	public void test4() {
+	public void test8() {
 		// same error also with
 		// headers.setContentType(MediaType.TEXT_PLAIN);
 
@@ -168,26 +221,18 @@ public class RegexpValidationControllerRestTemplateTest {
 
 	}
 
-	@Ignore
 	// Writing [{expression=Lorem ipsum dolor sit amet}] using
 	// [org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 	// leads to org.springframework.web.client.HttpClientErrorException: 415 null
+	@Ignore
 	@Test
-	public void test5() {
+	public void test9() {
 
 		data.put("expression", "Lorem ipsum dolor sit amet");
 		responseEntityString = restTemplate.postForEntity(url, data, String.class,
 				headers);
-
 		assertThat(responseEntityString, notNullValue());
 		assertThat(responseEntityString.getStatusCode(), is(HttpStatus.OK));
-		assertThat(gson.fromJson(responseEntityString.getBody(), Map.class),
-				notNullValue());
-		System.err.println("Response: " + responseEntityString.getBody());
-		response = gson.fromJson(responseEntityString.getBody(), Map.class);
-		assertThat(response, notNullValue());
-		assertThat(response.get("status"), is("OK"));
-		assertThat(response.get("result"), is(""));
 	}
 
 }

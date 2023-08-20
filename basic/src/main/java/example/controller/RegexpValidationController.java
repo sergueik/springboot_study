@@ -7,8 +7,9 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public class RegexpValidationController {
 		debug = data;
 	}
 
-	private Log log = LogFactory.getLog(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@ResponseBody
 	@PostMapping(value = "/validate", consumes = {
@@ -47,14 +48,14 @@ public class RegexpValidationController {
 
 	private Map<String, Object> processExpression(String expression) {
 		Map<String, Object> response = new HashMap<>();
-		log.info(String.format("Pattern expression %s:\n", expression));
+		log.info("Pattern expression {}", expression);
 		try {
 			Pattern p = Pattern.compile(expression, Pattern.MULTILINE);
 
 			response.put("status", "OK");
 			response.put("result", "");
 			payload = gson.toJson(response);
-			log.info("payload: " + payload);
+			log.info("payload: {0}", payload);
 
 		} catch (PatternSyntaxException e) {
 			int index = e.getIndex();
@@ -66,18 +67,18 @@ public class RegexpValidationController {
 
 			String formattedExpression3 = expression.substring(index);
 
-			log.info("Exception: " + e.toString() + " " + formattedExpression1 + " "
-					+ formattedExpression2 + " " + formattedExpression3);
+			log.info("Exception: {} {} {} {}", e.toString(), formattedExpression1,
+					formattedExpression2, formattedExpression3);
 
-			result = new Result(expression, formattedExpression2, e.toString(),
-					index);
+			result = new Result(expression, formattedExpression2, e.getMessage(),
+					e.getClass().getName(), index);
 			response.put("status", "error");
 			response.put("result", result);
 			payload = gson.toJson(response);
-			log.info("payload: " + payload);
+			log.info("payload: {0}", payload);
 
 		} catch (Exception e) {
-			log.info("Exception: " + e.toString());
+			log.info("Exception: {} ", e.toString());
 			response.put("status", "error");
 			response.put("result", e.toString());
 		}
@@ -87,6 +88,7 @@ public class RegexpValidationController {
 	public static class Result {
 
 		private String expression;
+		private String exception;
 		private String character;
 		private String message;
 		private int index = -1;
@@ -97,6 +99,14 @@ public class RegexpValidationController {
 
 		public void setExpression(String value) {
 			expression = value;
+		}
+
+		public String getException() {
+			return exception;
+		}
+
+		public void setException(String value) {
+			exception = value;
 		}
 
 		public String getCharacter() {
@@ -139,10 +149,19 @@ public class RegexpValidationController {
 		}
 
 		public Result(String expression, String character, String message,
-				int index) {
+				String exception) {
 			this.expression = expression;
 			this.character = character;
 			this.message = message;
+			this.exception = exception;
+		}
+
+		public Result(String expression, String character, String message,
+				String exception, int index) {
+			this.expression = expression;
+			this.character = character;
+			this.message = message;
+			this.exception = exception;
 			this.index = index;
 		}
 
