@@ -1,4 +1,7 @@
 package example.controller;
+/**
+ * Copyright 2022-2023 Serguei Kouzmine
+ */
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
