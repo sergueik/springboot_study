@@ -1,0 +1,26 @@
+FROM alpine:3.9.5
+# based on: https://github.com/wangxian/alpine-mysql/blob/master/Dockerfile
+
+WORKDIR /app
+VOLUME /app
+RUN apk update && apk add cmake make musl-dev gcc gettext-dev libintl
+RUN wget https://gitlab.com/rilian-la-te/musl-locales/-/archive/master/musl-locales-master.zip \
+    && unzip musl-locales-master.zip \
+    && cd musl-locales-master \
+   && cmake -DLOCALE_PROFILE=OFF -D CMAKE_INSTALL_PREFIX:PATH=/usr . && make && make install \
+    && cd .. && rm -r musl-locales-master
+ENV MUSL_LOCPATH /usr/share/i18n/locales/musl      
+RUN  echo "export LANG=ru_RU.UTF-8\nexport LANGUAGE=ru_RU.UTF-8\nexport LC_ALL=ru_RU.UTF-8\n">> /root/.ashrc
+ENV LANG=ru_RU.UTF-8
+ENV LANGUAGE=ru_RU.UTF-8
+ENV LC_ALL=ru_RU.UTF-8
+
+RUN apk add --update mysql mysql-client && rm -f /var/cache/apk/*
+COPY startup.sh /startup.sh
+RUN sed -i 's|\r||g' /startup.sh
+COPY my.cnf /etc/mysql/my.cnf
+RUN chmod +x /startup.sh
+EXPOSE 3306
+# HEALTHCHECK --interval=10s --timeout=30s --retries=10 CMD nc -z 127.0.0.1 3306 || exit 1
+
+CMD ["/startup.sh"]
