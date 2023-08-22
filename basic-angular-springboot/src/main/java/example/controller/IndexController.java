@@ -18,15 +18,22 @@ public class IndexController {
 		request.setAttribute("id", "generated id");
 		request.setAttribute("app_css_src", "/css/app.css");
 		request.setAttribute("app_src", "/js/app.js");
-		request.setAttribute("customer_service_src", "/js/service/customer_service.js");
-		request.setAttribute("customer_controller_src", "/js/controller/customer_controller.js");
+		request.setAttribute("customer_service_src",
+				"/js/service/customer_service.js");
+		request.setAttribute("customer_controller_src",
+				"/js/controller/customer_controller.js");
 
 		return "thymeleaf";
 	}
 
 	@GetMapping("polling")
-	public String getPollingPage(){
+	public String getPollingPage() {
 		return "polling";
+	}
+
+	@GetMapping("ng_validators")
+	public String getValidatorsPage() {
+		return "ng_validators";
 	}
 
 }

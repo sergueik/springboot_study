@@ -1,6 +1,6 @@
 ### Info 
 
-This directory contains eplica of
+This directory contains replica of
    [sample app AngularJS and Spring Boot service](https://github.com/nagypeter/angularjs-springboot-CreditScoreApp) to convert into poller skeleton
 with minimal fix added to make runnable and not fail with `net::ERR_NAME_NOT_RESOLVED`)
 combined with code from [sample server polling in angularJS done right](https://blog.guya.net/2016/08/08/simple-server-polling-in-angularjs-done-right/)

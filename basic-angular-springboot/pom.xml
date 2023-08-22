@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>basic-angular-springboot</artifactId>
-  <version>0.2.0-SNAPSHOT</version>
-  <name>basic-thymeleaf</name>
-  <description>angular-springboot</description>
+  <version>0.3.0-SNAPSHOT</version>
+  <name>angular-springboot</name>
+  <description>angular springboot example</description>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>

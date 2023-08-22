@@ -1,0 +1,185 @@
+<!doctype html>
+<!-- origin: http://www.java2s.com/Tutorials/AngularJS/AngularJS_Tutorial/Introduction/Form_Validation.htm 
+see also: https://www.tutlane.com/tutorial/angularjs/angularjs-form-validations-with-examples 
+https://www.tutlane.com/tutorial/angularjs/angularjs-ng-pattern-validation-email-with-regular-expressions
+https://stackoverflow.com/questions/35200508/regex-validation-angularjs
+-->
+<html ng-app="myApp">
+<head>
+<script data-require="angulra.js@1.5.x" src="https://code.angularjs.org/1.5.8/angular.min.js" data-semver="1.5.8"></script>
+
+<style id="jsbin-css">
+small { position: relative; top:14px;}
+input.ng-invalid {
+  border: 1px solid red;
+}
+
+input.ng-valid {
+  border: 1px solid green;
+}
+table { border-collapse: collapse; }
+
+body {
+  margin: 0;
+  padding: 0;
+  font-weight: 400;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 1.2rem;
+  line-height: 2.58;
+  color: #333;
+  background-color: #f4f4f4;
+  height: 100%;
+}
+</style>
+</head>
+<body>
+  
+<form name="signup_form" novalidate ng-submit="signupForm()">
+    <div class="row">
+      <div class="large-12 columns">
+        <label>Your name</label>
+        <input type="text" placeholder="Name" name="name" ng-model="signup.name" ng-minlength=3 ng-maxlength=20 required />
+        <div class="error" ng-show="signup_form.name.$dirty && signup_form.name.$invalid">
+      <small class="error" ng-show="signup_form.name.$error.required"> Your name is required.  </small>
+      <small class="error" ng-show="signup_form.name.$error.minlength"> Your name is required to be at least 3 characters </small>
+      <small class="error" ng-show="signup_form.name.$error.maxlength"> Your name cannot be longer than 20 characters </small>
+      </div>
+      </div>
+    </div>
+      
+    <div class="row">          
+      <div class="large-12 columns">
+        <label>Your email</label>
+        <input type="email" placeholder="Email" name="email" ng-model="signup.email" ng-minlength=3 ng-maxlength=20 required />
+        <div class="error" ng-show="signup_form.email.$dirty && signup_form.email.$invalid">
+      <small class="error" ng-show="signup_form.email.$error.required"> Your email is required.  </small>
+      <small class="error" ng-show="signup_form.email.$error.minlength"> Your email is required to be at least 3 characters </small>
+      <small class="error" ng-show="signup_form.email.$error.email"> That is not a valid email. Please input a valid email.  </small>
+      <small class="error" ng-show="signup_form.email.$error.maxlength"> Your email cannot be longer than 20 characters </small>
+      </div>
+      </div>
+    </div>
+
+    <div class="large-12 columns">
+      <label>Pin Code</label>
+        <!-- can same directive be called from multiple inputs e.g. by adding the ensure-unique="pin" attribute ? -->
+        <input  type="text" placeholder="pin" name="pin" ng-model="signup.pin" ng-minlength=3 ng-maxlength=20 ng-pattern="/^[0-9]{1,5}$/" required />
+        <!-- for negative match use e.g. /(?!\*\*)/ -->
+        <div class="error" ng-show="signup_form.pin.$dirty && signup_form.pin.$invalid">
+        <small class="error" ng-show="signup_form.pin.$error.required">Please input a pin</small>
+        <small class="error" ng-show="signup_form.pin.$error.minlength">Your pin is required to be at least 3 characters</small>
+        <small class="error" ng-show="signup_form.pin.$error.pattern">Your pin does not match the pattern: only Numbers Allowed, max 5 chars</small>
+        <small class="error" ng-show="signup_form.pin.$error.maxlength">Your pin cannot be longer than 20 characters</small>
+      </div>
+    </div>  
+    <div class="large-12 columns">
+      <label for="pattern1">Pattern</label><span><small>built-in Angular validator</small></span>
+        <input  type="text" placeholder="pattern1" name="pattern1" ng-model="pattern1" ng-minlength=3 ng-maxlength=20 ng-pattern="/.*(?!(?:\*\*|\\\\)).*/"required />
+        <!-- for negative match use e.g. /(?!\*\*)/ -->
+      <div class="error" ng-show="signup_form.pattern1.$dirty && signup_form.pattern.$invalid">
+        <small class="error" ng-show="signup_form.pattern1.$error.required">Please correct input</small>
+        <small class="error" ng-show="signup_form.pattern1.$error.minlength">Your pattern is required to be at least 3 characters</small>
+        <small class="error" ng-show="signup_form.pattern1.$error.pattern">Your pattern does not match the pattern: no double **</small>
+        <small class="error" ng-show="signup_form.pattern1.$error.maxlength">Your pattern cannot be longer than 20 characters</small>
+      </div>
+    </div>  
+    <div class="large-12 columns">
+      <label for="pattern2">Pattern</label><span><small>local function to validate</small></span>
+        <input  type="text" placeholder="pattern2" name="pattern2" ng-model="pattern2" ng-minlength=3 ng-maxlength=20 ensure-validpattern="pattern2" required />
+      <div class="error" ng-show="signup_form.pattern2.$dirty && signup_form.pattern2.$invalid">
+        <small class="error" ng-show="signup_form.pattern2.$error.required">Please input a pattern</small>
+        <small class="error" ng-show="signup_form.pattern2.$error.minlength">Your pattern is required to be at least 3 characters</small>
+        <small class="error" ng-show="signup_form.pattern2.$error.maxlength">Your pattern cannot be longer than 20 characters</small>
+        <small class="error" ng-show="signup_form.pattern2.$error.validpattern">That pattern is invalid</small>
+      </div>
+    </div>  
+    <div class="large-12 columns">
+      <label for="username">Username</label><span><small>(backend call validation)</small></span>
+        <input  type="text" placeholder="Desired username" name="username" ng-model="username" ng-minlength=3 ng-maxlength=20 ensure-unique="username" required />
+        <div class="error" ng-show="signup_form.username.$dirty && signup_form.username.$invalid">
+      <small class="error" ng-show="signup_form.username.$error.required">Please input a username</small>
+      <small class="error" ng-show="signup_form.username.$error.minlength">Your username is required to be at least 3 characters</small>
+      <small class="error" ng-show="signup_form.username.$error.maxlength">Your username cannot be longer than 20 characters</small>
+      <small class="error" ng-show="signup_form.username.$error.unique">That username is taken, please try another</small>
+      </div>
+    </div>  
+
+    <button type="submit" ng-disabled="signup_form.$invalid" class="button radius">Submit</button>
+</form>
+<script id="jsbin-javascript">
+//  ensure-unique => ensureUnique
+//  ensure-pattern => ensurePattern
+angular.module('myApp', [])
+   //  .directive('ensureUnique', ['$scope', '$http', function($scope, $http) {
+// TODO: why can not pas $scope ?
+ .directive('ensureUnique', ['$http', function( $http) {
+        return {
+            require: 'ngModel',
+            link: function(scope, ele, attrs, c) {
+                scope.$watch(attrs.ngModel, function() {
+                    console.log('HTTP call to validate ' + scope.username + ' ' +attrs.ensureUnique);
+                    $http({
+                        method: 'POST',
+                        url: 	window.location.protocol + '//' + window.location.hostname + ':' + 8085 + '/validate_cors/',
+                        data: {
+                            'expression': scope.username
+                        }
+                    }).success(function(data, status, headers, cfg) {
+                        c.$setValidity('unique', data.isUnique);
+                    }).error(function(data, status, headers, cfg) {
+                        c.$setValidity('unique', false);
+                    });
+                });
+            }
+        };
+    }])
+    .directive('ensureValidpattern', ['$http', function($scope, $http) {
+        return {
+            require: 'ngModel',
+            link: function(scope, ele, attrs, c) {
+                console.log('local api call to validate ' + attrs.ensureValidpattern);
+                scope.$watch(attrs.ngModel, function() {
+                    var value = scope.pattern2;
+                    console.log('local watch validate ' + value);
+                    var goodRegex = /^[789]\d{3}$/;
+                    // for negative match use e.g. /(?!\*\*)/
+                    if (goodRegex.test(value) && value.length === 4) {
+                        c.$setValidity('validpattern', true);
+                        console.log('pass validation:' + value);
+                    } else {
+                        console.log('fail validation:' + value);
+                        c.$setValidity('validpattern', false);
+                    }
+                    var badRegex  = /.*(?:\*\*|\\\\).*/;
+                    if (badRegex.test(value)) {
+                        c.$setValidity('validpattern', false);
+                        console.log('detected bad pattern in:' + value);
+                    } else {
+                        console.log('no bad patterns:' + value);
+                        c.$setValidity('validpattern', true);
+                    }
+                });
+            }
+        };
+    }]);
+</script>
+<!--	
+var x = /.*(?:\*\*|\\\\).*/;
+var v = null;
+try {
+ 
+v = 'ab***y';
+
+s = x.test(v);
+  console.log('status: ' +s )
+} catch(e) {
+  // NOTE: does not catch 
+  // v = 'ab\x';
+  // malformed hexadecimal character escape sequence
+  console.log(e)
+}
+       -->
+</body>
+</html>
+
+

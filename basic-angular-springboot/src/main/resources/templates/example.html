@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  </head>
+  <body>
+  First Name: <span th:text="${customer.getFirstName()}"/>
+  Some score<span th:text="${customer.getScore()}"></span>
+<!-- bad nesting example: the context of the th inside the body of the annotated span will be lost -->
+<span th:text="${customer.getFirstName()}">Score: <span th:text="${product.getPrice()}"/></span>
+</body>
+</html>
+	

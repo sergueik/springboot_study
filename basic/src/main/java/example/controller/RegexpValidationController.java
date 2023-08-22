@@ -16,6 +16,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,6 +58,7 @@ public class RegexpValidationController {
 	}
 
 	@ResponseBody
+	@CrossOrigin
 	@RequestMapping(method = RequestMethod.OPTIONS, value = "/validate_cors")
 	public ResponseEntity<String> validateCorsOptions() {
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -73,6 +75,7 @@ public class RegexpValidationController {
 	}
 
 	@ResponseBody
+	@CrossOrigin
 	@PostMapping(value = "/validate_cors", consumes = {
 			MediaType.APPLICATION_JSON_VALUE }, produces = {
 					MediaType.APPLICATION_JSON_VALUE })
@@ -82,7 +85,6 @@ public class RegexpValidationController {
 		// https://www.baeldung.com/spring-response-header
 		// https://stackoverflow.com/questions/31612931/cors-issue-on-localhost-while-calling-rest-service-from-angularjs
 		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set("Access-Control-Allow-Origin", "*");
 		responseHeaders.set("Access-Control-Allow-Origin", "*");
 		responseHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
 		responseHeaders.set("Access-Control-Allow-Headers", "Content-Type");
