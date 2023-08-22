@@ -3,8 +3,8 @@ package example.service;
 import org.springframework.stereotype.Service;
 
 @Service
-// NOTE: should not use reserved name "Service" when naming the class :
-// collision with stereotype:
+// NOTE: should avoid naming the class with reserved name "Service"
+// due to collision with stereotype:
 // incompatible types: example.Service cannot be converted to
 // java.lang.annotation.Annotation
 

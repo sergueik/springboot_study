@@ -12,13 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 
 import example.model.Result;
 
-@Component
-public class ProcessExpressionService {
+@Service
+public class RegexpValidationService {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	private Result result;
@@ -37,18 +38,17 @@ public class ProcessExpressionService {
 			response.put("result", "");
 			payload = gson.toJson(response);
 			log.info("payload: {}", payload);
-
 		} catch (PatternSyntaxException e) {
 			int index = e.getIndex();
-
-			String formattedExpression1 = (index == 0 ? ""
-					: expression.substring(0, index));
-
-			String formattedExpression2 = expression.substring(index - 1, index);
-
-			String formattedExpression3 = expression.substring(index);
-
-			log.info("Exception: {} {} {} {}", e.toString(), formattedExpression1,
+			int highlight_index = (index >= 1) ? index - 1 : 0;
+			log.info("Pattern index {} highlight_index {}", index, highlight_index);
+			String formattedExpression1 = highlight_index > 0
+					? expression.substring(0, highlight_index) : "";
+			String formattedExpression2 = expression.substring(highlight_index,
+					highlight_index + 1);
+			String formattedExpression3 = expression.substring(highlight_index + 1);
+			log.info("Exception: {}", e.toString());
+			log.info("Formatted: {}|{}|{}", formattedExpression1,
 					formattedExpression2, formattedExpression3);
 
 			result.setExpression(expression);

@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import example.service.ProcessExpressionService;
+import example.service.RegexpValidationService;
 
 @RestController
 @RequestMapping("/")
@@ -33,7 +33,7 @@ public class RegexpValidationController {
 
 	private boolean debug = false;
 	@Autowired
-	private ProcessExpressionService service;
+	private RegexpValidationService service;
 
 	public void setDebug(boolean data) {
 		debug = data;

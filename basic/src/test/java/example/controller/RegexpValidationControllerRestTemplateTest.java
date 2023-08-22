@@ -17,15 +17,14 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.is;
 
-// import example.controller.Controller.Data;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-// import example.controller.RegexpValidationController.Result;
 import example.model.Result;
+
 // NOTE: incomplete: requires explicit start of the app in the sibling console otherwise having
 // org.springframework.web.client.ResourceAccessException: I/O error on POST request for
 // http://localhost:8085/basic/post/
