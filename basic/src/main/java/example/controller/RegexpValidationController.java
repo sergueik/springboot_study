@@ -42,14 +42,12 @@ public class RegexpValidationController {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@ResponseBody
-	@PostMapping(value = "/validate", consumes = {
+	@PostMapping(value = "/validate_form", consumes = {
 			MediaType.APPLICATION_FORM_URLENCODED_VALUE }, produces = {
 					MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<Map<String, Object>> validate(
+	public ResponseEntity<Map<String, Object>> validateForm(
 			@RequestParam String expression, @RequestParam Optional<Boolean> debug) {
 
-		// https://www.baeldung.com/spring-response-header
-		// https://stackoverflow.com/questions/31612931/cors-issue-on-localhost-while-calling-rest-service-from-angularjs
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("Access-Control-Allow-Origin", "*");
 
@@ -59,44 +57,19 @@ public class RegexpValidationController {
 
 	@ResponseBody
 	@CrossOrigin
-	@RequestMapping(method = RequestMethod.OPTIONS, value = "/validate_cors")
-	public ResponseEntity<String> validateCorsOptions() {
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set("Access-Control-Allow-Origin", "*");
-		responseHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-		responseHeaders.set("Access-Control-Allow-Headers", "Content-Type");
-		responseHeaders.setAccessControlAllowOrigin("*");
-		responseHeaders.setAccessControlAllowHeaders(Arrays.asList("Content-Type"));
-		responseHeaders.setAccessControlAllowMethods(
-				Arrays.asList(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS));
-		log.info("Returning headers: " + responseHeaders);
-		return ResponseEntity.status(HttpStatus.OK).headers(responseHeaders)
-				.body("");
-	}
-
-	@ResponseBody
-	@CrossOrigin
-	@PostMapping(value = "/validate_cors", consumes = {
+	@PostMapping(value = "/validate_json", consumes = {
 			MediaType.APPLICATION_JSON_VALUE }, produces = {
 					MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<Map<String, Object>> validateCors(
+	public ResponseEntity<Map<String, Object>> validateAJAX(
 			@RequestBody Map<String, Object> data) {
 
-		// https://www.baeldung.com/spring-response-header
-		// https://stackoverflow.com/questions/31612931/cors-issue-on-localhost-while-calling-rest-service-from-angularjs
 		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set("Access-Control-Allow-Origin", "*");
-		responseHeaders.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-		responseHeaders.set("Access-Control-Allow-Headers", "Content-Type");
 		responseHeaders.setAccessControlAllowOrigin("*");
-		responseHeaders.setAccessControlAllowHeaders(Arrays.asList("Content-Type"));
-		responseHeaders.setAccessControlAllowMethods(
-				Arrays.asList(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS));
-		log.info("Returning headers: " + responseHeaders);
-		// Map<String, Object> data = new HashMap<>();
-		data.put("status", "OK");
+		// responseHeaders.set("Access-Control-Allow-Origin", "*");
+		String expression = data.get("expression").toString();
 		return ResponseEntity.status(HttpStatus.OK).headers(responseHeaders)
-				.body(data);
+				.body(service.processExpression(expression));
 	}
 
 }
+

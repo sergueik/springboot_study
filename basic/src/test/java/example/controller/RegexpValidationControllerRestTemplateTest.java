@@ -33,7 +33,7 @@ import example.model.Result;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class RegexpValidationControllerRestTemplateTest {
 
-	public static final String url = "http://localhost:8085/validate";
+	public static final String url = "http://localhost:8085/validate_form";
 
 	private RestTemplate restTemplate = new RestTemplate();
 	private HttpHeaders headers = new HttpHeaders();
@@ -236,3 +236,4 @@ public class RegexpValidationControllerRestTemplateTest {
 	}
 
 }
+
