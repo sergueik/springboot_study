@@ -64,7 +64,20 @@ public class RegexpValidationController {
 			@RequestBody Map<String, Object> data) {
 
 		HttpHeaders responseHeaders = new HttpHeaders();
+		// NOTE: observed Chrome complain that the "*" is added twice but should not
+		// - not reproduced in curl check
 		responseHeaders.setAccessControlAllowOrigin("*");
+		// NOTE: no "set" API - probably will never work when patched this way
+		// NOTE: this is warning by Chrome
+		// logged after the connection is actually made:
+		// Refused to connect to '....' because
+		// it violates the following Content Security Policy directive:
+		// "default-src 'self' 'unsafe-inline' data:".
+		// Note that 'connect-src' was not explicitly set,
+		// so 'default-src' is used as a fallback.
+		responseHeaders.add("Content-Security-Policy",
+				"default-src ‘self’;*.mydomain.org");
+		// see also: https://www.baeldung.com/spring-security-csp
 		// responseHeaders.set("Access-Control-Allow-Origin", "*");
 		String expression = data.get("expression").toString();
 		return ResponseEntity.status(HttpStatus.OK).headers(responseHeaders)
