@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.techjava</groupId>
-  <artifactId>springboot-jasypt-encrypt-demo</artifactId>
-  <version>0.3.0-SNAPSHOT</version>
+  <groupId>example</groupId>
+  <artifactId>jasypt-demo</artifactId>
+  <version>0.4.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>springboot-jasypt-encrypt-demo</name>
+  <name>jasypt-demo</name>
   <description>Demo project for Spring Boot</description>
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -17,7 +17,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
-    <jasypt-version>1.16</jasypt-version>
     <jasypt-version>3.0.3</jasypt-version>
     <jasypt-maven-plugin-version>3.0.3</jasypt-maven-plugin-version>
   </properties>
