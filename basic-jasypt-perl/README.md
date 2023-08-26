@@ -335,6 +335,36 @@ test
 
 ```
 
+### Udpate the Perl module
+
+Building new version of Docker images is *very* time consuming. So it makes sense to udate pure Perl `Crypt::PBE` module in the running container.
+
+
+NOTE, with Windows __Docker Toolbox__ one cannot easily copy into container files from user home directory directly, so copy in the current directory first:
+```sh
+cp ~/Downloads/Crypt-PBE-0.103.tar.gz .
+```
+```sh
+VERSION=0.103
+docker cp ./Crypt-PBE-$VERSION.tar.gz  example-perl-jasypt:/root
+```
+then expand it in the container
+```sh
+tar xzvf Crypt-PBE-0.103.tar.gz
+```
+
+and copy lib recursively into current directory
+```sh
+cp -R cp -R Crypt-PBE-0.103/lib/Crypt/ .
+```
+
+this will fix the error from the truncated version used in the project temporarily:
+```sh
+perl  test.pl  -value 'hello,world' -password secret  -operation encrypt
+```
+```text
+bWyoue2Pgo9VkZfbG0C08j2TvgvDksCNsY5byYh6L60KEZRn/J/q+xxewkn9XTJH
+```
 ### See Also
 
   * `Crypt::PBE` [module](https://metacpan.org/pod/Crypt::PBE)
