@@ -20,35 +20,48 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		/*
 		System.out.println("***** SNAKE-YAML *****\n");
 		System.out.println("**** CONFIGURATION READER ****\n");
 		readYamlAsBeanWithNestedClass2();
-		return;
-		*/
+		// return;
+
+		/*
 		System.out.println("***** SNAKE-YAML *****\n");
 		System.out.println("**** READER ****\n");
 		System.out.println("*** Read YAML ***");
 		readYaml();
-
+		
 		System.out.println("\n*** Read YAML containing Collection ***");
 		readYamlWithCollection();
-
+		
 		System.out.println("\n*** Read YAML as Bean ***");
 		readYamlAsBean();
-
+		*/
+		/*
 		System.out.println("\n*** Read YAML as Bean with Nested Class ***");
 		readYamlAsBeanWithNestedClass();
+		*/
+		System.out
+				.println("\n*** Read YAML as Bean with Deeply Nested Classes ***");
 
-		System.out.println("\n**** WRITER ****\n");
-		System.out.println("*** Write YAML ***");
-		writeYaml();
+		readYamlAsBeanWithDeeplyNestedClasses();
 
-		System.out.println("*** Write YAML Basic ***");
-		writeYamlBasic();
+		System.out
+				.println("\n*** FAILED Read YAML as Bean with Deeply Nested Classes ***");
 
-		System.out.println("*** Write YAML with Collection ***");
-		writeYamlCollection();
+		failedReadYamlAsBeanWithDeeplyNestedClasses();
+
+		/*
+				System.out.println("\n**** WRITER ****\n");
+				System.out.println("*** Write YAML ***");
+				writeYaml();
+		
+				System.out.println("*** Write YAML Basic ***");
+				writeYamlBasic();
+		
+				System.out.println("*** Write YAML with Collection ***");
+				writeYamlCollection();
+				*/
 	}
 
 	/**
@@ -68,6 +81,14 @@ public class Main {
 
 	private static void readYamlAsBeanWithNestedClass() {
 		reader.ReadYamlAsBeanWithNestedClass();
+	}
+
+	private static void readYamlAsBeanWithDeeplyNestedClasses() {
+		reader.ReadYamlAsBeanWithDeeplyNestedClasses();
+	}
+
+	private static void failedReadYamlAsBeanWithDeeplyNestedClasses() {
+		reader.FailedReadYamlAsBeanWithDeeplyNestedClasses();
 	}
 
 	private static void readYamlAsBeanWithNestedClass2() {

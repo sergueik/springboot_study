@@ -1,11 +1,11 @@
 package example.model.configuration;
 
+import example.model.configuration.Services;
 import java.util.List;
 
 public class Configuration {
 	private String version;
 	// NOTE: has to be named "Services" , not "Service"
-	private Services services;
 	private Settings settings;
 
 	public Settings getSettings() {
@@ -16,15 +16,6 @@ public class Configuration {
 		this.settings = settings;
 	}
 
-	public Configuration(String version, Services services, Settings settings) {
-		this.version = version;
-		this.services = services;
-		this.settings = settings;
-	}
-
-	public Configuration() {
-	}
-
 	public String getVersion() {
 		return version;
 	}
@@ -33,11 +24,13 @@ public class Configuration {
 		this.version = version;
 	}
 
-	public Services getServices() {
+	private List<Services> services;
+
+	public List<Services> getServices() {
 		return services;
 	}
 
-	public void setServices(Services services) {
+	public void setServices(List<Services> services) {
 		this.services = services;
 	}
 }

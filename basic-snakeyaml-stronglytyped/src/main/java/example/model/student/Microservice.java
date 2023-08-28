@@ -1,6 +1,7 @@
-package example.model.configuration;
+package example.model.student;
 
 public class Microservice {
+
 	private String name;
 	private String image;
 

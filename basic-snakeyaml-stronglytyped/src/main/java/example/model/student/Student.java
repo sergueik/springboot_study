@@ -3,6 +3,8 @@ package example.model.student;
 import java.util.List;
 import java.util.StringJoiner;
 
+import example.model.student.Services;
+
 public class Student extends Person {
 
 	private int year;
@@ -31,6 +33,15 @@ public class Student extends Person {
 
 	public void setCourses(List<Course> courses) {
 		this.courses = courses;
+	}
+	private List<Services> services;
+
+	public List<Services> getServices() {
+		return services;
+	}
+
+	public void setServices(List<Services> services) {
+		this.services = services;
 	}
 
 	@Override

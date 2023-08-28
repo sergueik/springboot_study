@@ -14,10 +14,12 @@ public class ConfigurationReader {
 		InputStream inputStream = this.getClass().getClassLoader()
 				.getResourceAsStream("task_config.yml");
 		try {
-			System.out.println("reading YAML:" + readAll(inputStream));
+			System.out.println("reading YAML:\n" + readAll(inputStream));
 		} catch (IOException e) {
 			System.err.println("Exception:" + e.toString());
 		}
+		inputStream = this.getClass().getClassLoader()
+				.getResourceAsStream("task_config.yml");
 		Yaml yaml = new Yaml(new Constructor(Configuration.class));
 		Configuration data = yaml.load(inputStream);
 

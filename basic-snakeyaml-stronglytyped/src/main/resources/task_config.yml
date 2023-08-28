@@ -1,11 +1,6 @@
 services: 
-  - microservice:
-      name: db
-      image: mysql
-  - microservice:      
-      name: web
-      image: apache
-
+  - microservice: { name: db, image: mysql }
+  - microservice: { name: web, image: apache }
 settings:
   boolean_setting: true
   integer_setting: 42

@@ -81,9 +81,32 @@ Yaml yaml = new Yaml(new Constructor(Configuration.class));
 Configuration data = yaml.load(inputStream);
 
 ```
+
+
+the flat YAML
+```YAML
+id: 20
+name: Bruce
+year: 2020
+address: Gotham City
+department: Computer Science
+courses:
+  - name: Algorithms
+    credits: 6
+  - name: Data Structure
+    credits: 5
+  - name: Design patters
+    credits: 3
+services:
+  - microservice: { name: db, image: mysql }
+  - microservice: { name: web, image: apache }
+
+```
 ### See Also
 
+  * [Parsing YAML with SnakeYAML](https://www.baeldung.com/java-snake-yaml)
   * https://stackabuse.com/reading-and-writing-yaml-files-in-java-with-snakeyaml/
+  * https://bitbucket.org/snakeyaml/snakeyaml/wiki/Documentation
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

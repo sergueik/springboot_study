@@ -1,8 +1,7 @@
-package example.model.configuration;
+package example.model.student;
 
 import java.util.List;
-
-import example.model.configuration.Microservice;
+import example.model.student.Microservice;
 
 public class Services {
 	private Microservice microservice;

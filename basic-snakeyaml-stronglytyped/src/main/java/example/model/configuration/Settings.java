@@ -4,7 +4,7 @@ public class Settings {
 	private boolean boolean_setting;
 	private Integer integer_setting;
 	private String string_setting;
-
+/*
 	public Settings(boolean boolean_setting, Integer integer_setting,
 			String string_setting) {
 		super();
@@ -15,7 +15,7 @@ public class Settings {
 
 	public Settings() {
 	}
-
+*/
 	public boolean isBoolean_setting() {
 		return boolean_setting;
 	}
