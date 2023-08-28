@@ -1,0 +1,11 @@
+!!example.model.Student
+address: Night City
+courses:
+- credits: 5.0
+  name: Intelligence
+- credits: 2.0
+  name: Crafting
+department: Cyberware
+id: 21
+name: Tim
+year: 2077
