@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.taimoor</groupId>
   <artifactId>snake-yaml</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <description>Demo project for Snake YAML</description>
   <properties>
     <java.version>1.8</java.version>

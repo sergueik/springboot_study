@@ -12,7 +12,7 @@ mvn package
 ```
 
 ```sh
-java -cp target\snake-yaml-0.1.0-SNAPSHOT.jar;target\lib\*  example.Student
+java -cp target\snake-yaml-0.2.0-SNAPSHOT.jar;target\lib\*  example.StudentReader
 ```
 this will print all read/write YAML examples executed:
 
@@ -55,7 +55,35 @@ year: 2077
 java.io.PrintWriter@490d6c15
 ```
 
+### TODO
 
+support the YAML:
+```YAML
+services:
+  - microservice:
+      name: db
+      image: mysql
+  - microservice:
+      name: web
+      image: apache
+
+settings:
+  boolean_setting: true
+  integer_setting: 42
+  string_setting: somethings
+
+version: 1.0
+
+```
+currently failed to load it, get a null after:
+```java
+Yaml yaml = new Yaml(new Constructor(Configuration.class));
+Configuration data = yaml.load(inputStream);
+
+```
 ### See Also
 
-###
+  * https://stackabuse.com/reading-and-writing-yaml-files-in-java-with-snakeyaml/
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

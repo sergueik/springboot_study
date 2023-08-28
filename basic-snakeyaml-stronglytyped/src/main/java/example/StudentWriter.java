@@ -1,7 +1,10 @@
-package example.model;
+package example;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+
+import example.model.student.Course;
+import example.model.student.Student;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class Writer {
+public class StudentWriter {
 
 	public void WriteYaml() throws IOException {
 		Map<String, Object> dataMap = new HashMap<>();

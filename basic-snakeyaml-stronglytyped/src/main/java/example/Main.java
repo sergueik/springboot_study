@@ -6,17 +6,26 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import example.model.Writer;
+
+import example.StudentWriter;
 
 /**
  * based on: https://github.com/TaimoorChoudhary/snake-yaml
  */
-public class Student {
+public class Main {
 
-	static Reader reader = new Reader();
-	static Writer writer = new Writer();
+	static ConfigurationReader reader2 = new ConfigurationReader();
+	static StudentReader reader = new StudentReader();
+	static StudentWriter writer = new StudentWriter();
 
 	public static void main(String[] args) {
+
+		/*
+		System.out.println("***** SNAKE-YAML *****\n");
+		System.out.println("**** CONFIGURATION READER ****\n");
+		readYamlAsBeanWithNestedClass2();
+		return;
+		*/
 		System.out.println("***** SNAKE-YAML *****\n");
 		System.out.println("**** READER ****\n");
 		System.out.println("*** Read YAML ***");
@@ -59,6 +68,10 @@ public class Student {
 
 	private static void readYamlAsBeanWithNestedClass() {
 		reader.ReadYamlAsBeanWithNestedClass();
+	}
+
+	private static void readYamlAsBeanWithNestedClass2() {
+		reader2.ReadYamlAsBeanWithNestedClass();
 	}
 
 	private static void writeYaml() {

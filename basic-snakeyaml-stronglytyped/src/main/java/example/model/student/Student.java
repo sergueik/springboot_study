@@ -1,4 +1,4 @@
-package example.model;
+package example.model.student;
 
 import java.util.List;
 import java.util.StringJoiner;

@@ -10,12 +10,9 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Map;
 
-import example.model.Student;
+import example.model.student.Student;
 
-/**
- * @author Taimoor Choudhary
- */
-public class Reader {
+public class StudentReader {
 
 	public void ReadYaml() {
 

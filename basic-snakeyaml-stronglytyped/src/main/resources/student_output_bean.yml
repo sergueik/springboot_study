@@ -1,4 +1,4 @@
-!!example.model.Student
+!!example.model.student.Student
 address: Night City
 courses:
 - credits: 5.0
