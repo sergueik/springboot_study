@@ -48,38 +48,6 @@ public class StudentReader {
 		System.out.println(data);
 	}
 
-	public void FailedReadYamlAsBeanWithDeeplyNestedClasses() {
-		InputStream inputStream = this.getClass().getClassLoader()
-				.getResourceAsStream("student_with_courses_and_services.yml");
-		
-		try {
-			System.out.println("reading YAML:\n" + readAll(inputStream));
-		} catch (IOException e) {
-			System.err.println("Exception:" + e.toString());
-		}
-		inputStream = this.getClass().getClassLoader()
-				.getResourceAsStream("student_with_courses_and_services.yml");
-		Yaml yaml = new Yaml(new Constructor(Student.class));
-		Student data = yaml.load(inputStream);
-		System.out.println(data);
-	}
-
-	public void ReadYamlAsBeanWithDeeplyNestedClasses() {
-		InputStream inputStream = this.getClass().getClassLoader()
-				.getResourceAsStream("student_with_courses_and_services_flattened.yml");
-		try {
-			System.out.println("reading YAML:\n" + readAll(inputStream));
-		} catch (IOException e) {
-			System.err.println("Exception:" + e.toString());
-		}
-		inputStream = this.getClass().getClassLoader()
-				.getResourceAsStream("student_with_courses_and_services.yml");
-		
-		Yaml yaml = new Yaml(new Constructor(Student.class));
-		Student data = yaml.load(inputStream);
-		System.out.println(data);
-	}
-
 	// http://www.java2s.com/example/java-utility-method/inputstream-read-all/readall-inputstream-in-c5be9.html
 	public static final String readAll(InputStream in) throws IOException {
 		StringBuilder bob = new StringBuilder();

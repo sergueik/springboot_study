@@ -14,15 +14,20 @@ import example.StudentWriter;
  */
 public class Main {
 
-	static ConfigurationReader reader2 = new ConfigurationReader();
-	static StudentReader reader = new StudentReader();
+	static ConfigurationReader configurationReader = new ConfigurationReader();
+	static ComplexConfigurationReader complexConfigurationReader = new ComplexConfigurationReader();
+	static StudentReader studentReader = new StudentReader();
 	static StudentWriter writer = new StudentWriter();
 
 	public static void main(String[] args) {
 
 		System.out.println("***** SNAKE-YAML *****\n");
 		System.out.println("**** CONFIGURATION READER ****\n");
-		readYamlAsBeanWithNestedClass2();
+		readConfigurationYamlAsBeanWithNestedClass();
+
+		System.out.println("***** SNAKE-YAML *****\n");
+		System.out.println("**** COMPLEX CONFIGURATION READER ****\n");
+		readComplexConfigurationYamlAsBeanWithNestedClass();
 		// return;
 
 		/*
@@ -37,19 +42,8 @@ public class Main {
 		System.out.println("\n*** Read YAML as Bean ***");
 		readYamlAsBean();
 		*/
-		/*
 		System.out.println("\n*** Read YAML as Bean with Nested Class ***");
-		readYamlAsBeanWithNestedClass();
-		*/
-		System.out
-				.println("\n*** Read YAML as Bean with Deeply Nested Classes ***");
-
-		readYamlAsBeanWithDeeplyNestedClasses();
-
-		System.out
-				.println("\n*** FAILED Read YAML as Bean with Deeply Nested Classes ***");
-
-		failedReadYamlAsBeanWithDeeplyNestedClasses();
+		readStudentYamlAsBeanWithNestedClass();
 
 		/*
 				System.out.println("\n**** WRITER ****\n");
@@ -68,31 +62,27 @@ public class Main {
 	 * Read Basic YAML File
 	 */
 	private static void readYaml() {
-		reader.ReadYaml();
+		studentReader.ReadYaml();
 	}
 
 	private static void readYamlWithCollection() {
-		reader.readYamlWithCollection();
+		studentReader.readYamlWithCollection();
 	}
 
 	private static void readYamlAsBean() {
-		reader.ReadYamlAsBean();
+		studentReader.ReadYamlAsBean();
 	}
 
-	private static void readYamlAsBeanWithNestedClass() {
-		reader.ReadYamlAsBeanWithNestedClass();
+	private static void readStudentYamlAsBeanWithNestedClass() {
+		studentReader.ReadYamlAsBeanWithNestedClass();
 	}
 
-	private static void readYamlAsBeanWithDeeplyNestedClasses() {
-		reader.ReadYamlAsBeanWithDeeplyNestedClasses();
+	private static void readConfigurationYamlAsBeanWithNestedClass() {
+		configurationReader.ReadYamlAsBeanWithNestedClass();
 	}
 
-	private static void failedReadYamlAsBeanWithDeeplyNestedClasses() {
-		reader.FailedReadYamlAsBeanWithDeeplyNestedClasses();
-	}
-
-	private static void readYamlAsBeanWithNestedClass2() {
-		reader2.ReadYamlAsBeanWithNestedClass();
+	private static void readComplexConfigurationYamlAsBeanWithNestedClass() {
+		complexConfigurationReader.ReadYamlAsBeanWithNestedClass();
 	}
 
 	private static void writeYaml() {

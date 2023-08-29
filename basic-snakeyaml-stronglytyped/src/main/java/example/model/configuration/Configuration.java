@@ -5,7 +5,6 @@ import java.util.List;
 
 public class Configuration {
 	private String version;
-	// NOTE: has to be named "Services" , not "Service"
 	private Settings settings;
 
 	public Settings getSettings() {
@@ -24,6 +23,7 @@ public class Configuration {
 		this.version = version;
 	}
 
+	// NOTE: has to be match the YAML and be named "Services" , not "Service"
 	private List<Services> services;
 
 	public List<Services> getServices() {

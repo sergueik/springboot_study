@@ -1,0 +1,20 @@
+services: 
+  - microservice:
+      name: db
+      image: mysql
+  - microservice: { name: web, image: apache }
+  - microservice:
+      name: lb
+      image: nginx
+# see complex_config.yml      
+#      depends_on:
+#        - web
+#        - db 
+        
+
+settings:
+  boolean_setting: true
+  integer_setting: 42
+  string_setting: somethings
+
+version: 1.0	
