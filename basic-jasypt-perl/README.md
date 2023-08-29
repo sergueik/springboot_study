@@ -335,9 +335,9 @@ test
 
 ```
 
-### Udpate the Perl module
+### Update the Perl module
 
-Building new version of Docker images is *very* time consuming. So it makes sense to udate pure Perl `Crypt::PBE` module in the running container.
+Building new version of Perl Docker image is *very* time consuming. So it makes sense to udate pure Perl `Crypt::PBE` module in the running container.
 
 
 NOTE, with Windows __Docker Toolbox__ one cannot easily copy into container files from user home directory directly, so copy in the current directory first:
