@@ -42,8 +42,7 @@ shows properteis value to not  be initialized:
 
 ```text	
 16:44:24.130 [pool-1-thread-1] INFO example.task.EventLoggingTask - Value #1 is 0
-16:44:24.134 [pool-1-thread-1] INFO example.task.EventLoggingTask - Exception ja
-va.lang.NullPointerException
+16:44:24.134 [pool-1-thread-1] INFO example.task.EventLoggingTask - Exception java.lang.NullPointerException
 ```
 
 ### See Also:

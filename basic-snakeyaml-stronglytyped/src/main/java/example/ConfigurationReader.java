@@ -14,9 +14,10 @@ public class ConfigurationReader {
 		InputStream inputStream = this.getClass().getClassLoader()
 				.getResourceAsStream("config.yml");
 		try {
-			System.out.println("reading YAML:\n" + readAll(inputStream));
+			System.out.println("raw YAML:\n" + readAll(inputStream));
 		} catch (IOException e) {
 			System.err.println("Exception:" + e.toString());
+			return;
 		}
 		inputStream = this.getClass().getClassLoader()
 				.getResourceAsStream("config.yml");

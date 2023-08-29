@@ -20,15 +20,16 @@ public class EventLoggingTask implements Runnable {
 	@Override
 	public void run() {
 
-		logger.info("Value #1 is {}", value1);
+		logger.info("Value #1 is loaded through annotation: {}", value1);
 		try {
 			properties = new Properties();
 			properties
 					.load(this.getClass().getResourceAsStream("/application.properties"));
 			final String value2 = properties.getProperty("setting.value", "123");
-			logger.info("Value #2 are {} {}", value2);
+			logger.info("Value #2 is read from \"{}\": {}", "/application.properties",
+					value2);
 		} catch (Exception e) {
-			logger.info("Exception " + e.toString());
+			logger.info("Exception (ignored): " + e.toString());
 		}
 
 	}

@@ -10,10 +10,30 @@ services:
       depends_on:
         - web
         - db 
-        
+# NOTE: no SPL expressions
 extradata:
   windows: c:\windows\system32
   linux: /home
+
+# NOTE: this is not correct schema, easy to confuse - the YAML fails to deserizlize this part
+#configpaths:
+#  windows: 
+#    extraconfig:
+#      sysdir: c:\windows\system32
+#      homedir: c:\ProgramData
+#  linux:
+#    extraconfig:
+#      sysdir: /bin
+#      homedir: /home
+
+configpaths:
+  linux:
+    homedir: linux home dir
+    sysdir: linux sys dir
+  windows:
+    homedir: windows home dir
+    sysdir: windows sys dir
+
 settings:
   boolean_setting: true
   integer_setting: 42

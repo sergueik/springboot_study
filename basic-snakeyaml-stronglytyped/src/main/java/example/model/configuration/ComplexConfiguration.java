@@ -8,6 +8,16 @@ public class ComplexConfiguration {
 	private String version;
 	private Settings settings;
 	private Map<String, String> extradata = new HashMap<String, String>();
+	// TODO : generate the YAML from new ComplexConfiguration
+	private Map<String, ComplexConfiguration.Extraconfig> configpaths = new HashMap<String, Extraconfig>();
+
+	public Map<String, ComplexConfiguration.Extraconfig> getConfigpaths() {
+		return configpaths;
+	}
+
+	public void setConfigpaths(Map<String, Extraconfig> configpaths) {
+		this.configpaths = configpaths;
+	}
 
 	public Map<String, String> getExtradata() {
 		return extradata;
@@ -16,6 +26,7 @@ public class ComplexConfiguration {
 	public void setExtradata(Map<String, String> extradata) {
 		this.extradata = extradata;
 	}
+
 	public Settings getSettings() {
 		return settings;
 	}
@@ -135,6 +146,27 @@ public class ComplexConfiguration {
 			public void setProperty(String property) {
 				this.property = property;
 			}
+		}
+	}
+
+	public static class Extraconfig {
+		private String sysdir;
+		private String homedir;
+
+		public String getSysdir() {
+			return sysdir;
+		}
+
+		public void setSysdir(String sysdir) {
+			this.sysdir = sysdir;
+		}
+
+		public String getHomedir() {
+			return homedir;
+		}
+
+		public void setHomedir(String homedir) {
+			this.homedir = homedir;
 		}
 	}
 

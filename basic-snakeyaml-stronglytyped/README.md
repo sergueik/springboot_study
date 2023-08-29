@@ -12,7 +12,7 @@ mvn package
 ```
 
 ```sh
-java -cp target\snake-yaml-0.5.0-SNAPSHOT.jar;target\lib\*  example.StudentReader
+java -cp target\snake-yaml-0.6.0-SNAPSHOT.jar;target\lib\*  example.StudentReader
 ```
 this will print all read/write YAML examples executed:
 
