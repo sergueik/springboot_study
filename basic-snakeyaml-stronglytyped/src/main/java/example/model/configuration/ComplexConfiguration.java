@@ -1,11 +1,21 @@
 package example.model.configuration;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ComplexConfiguration {
 	private String version;
 	private Settings settings;
+	private Map<String, String> extradata = new HashMap<String, String>();
 
+	public Map<String, String> getExtradata() {
+		return extradata;
+	}
+
+	public void setExtradata(Map<String, String> extradata) {
+		this.extradata = extradata;
+	}
 	public Settings getSettings() {
 		return settings;
 	}

@@ -102,6 +102,49 @@ services:
   - microservice: { name: web, image: apache }
 
 ```
+
+### OS-Specific Configuration
+
+it seems easiest to support Map in the pojo:
+```java
+public class ComplexConfiguration {
+	private String version;
+	private Settings settings;
+	private Map<String, String> extradata = new HashMap<String, String>();
+
+	public Map<String, String> getExtradata() {
+		return extradata;
+	}
+
+	public void setExtradata(Map<String, String> extradata) {
+		this.extradata = extradata;
+	}
+
+```
+and YAML
+```YAML
+extradata:
+  windows: c:\windows\system32
+  linux: /home
+```
+then print debugging info:
+```java
+Yaml yaml = new Yaml(new Constructor(ComplexConfiguration.class));
+ComplexConfiguration data = yaml.load(inputStream);
+
+System.out.println("Read data: " + data);
+System.out.println("Read data version: " + data.getVersion());
+System.out.println("Read data extradata for Windows: "
+	+ data.getExtradata().get("windows"));
+
+```
+this will print
+
+```text
+Read data: example.model.configuration.ComplexConfiguration@12bb4df8
+Read data version: 1.0
+Read data extradata for Windows: c:\windows\system32
+```
 ### See Also
 
   * [Parsing YAML with SnakeYAML](https://www.baeldung.com/java-snake-yaml)

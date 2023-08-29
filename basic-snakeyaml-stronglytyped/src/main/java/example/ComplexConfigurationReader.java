@@ -32,6 +32,8 @@ public class ComplexConfigurationReader {
 		System.out.println("Read data: " + data);
 		try {
 			System.out.println("Read data version: " + data.getVersion());
+			System.out.println("Read data extradata for Windows: "
+					+ data.getExtradata().get("windows"));
 		} catch (NullPointerException e) {
 			System.err.println("Exception:" + e.toString());
 		}

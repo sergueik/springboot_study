@@ -1,3 +1,4 @@
+---
 services: 
   - microservice:
       name: db
@@ -10,7 +11,9 @@ services:
         - web
         - db 
         
-
+extradata:
+  windows: c:\windows\system32
+  linux: /home
 settings:
   boolean_setting: true
   integer_setting: 42
