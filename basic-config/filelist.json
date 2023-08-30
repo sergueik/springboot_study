@@ -1,9 +1,9 @@
 {
   "status": "OK",
   "result": [
-    "configuration_file1",
-    "configuration_file2",
-    "configuration_file4"
+    "file1",
+    "file2",
+    "file4"
   ]
 }
 
