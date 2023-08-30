@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use utf8;
 
-# https://www.softwaretestinghelp.com/rest-api-response-codes/:
 
 BEGIN {
     use constant RELEASE => 0;
@@ -33,8 +32,9 @@ use Time::HiRes qw( gettimeofday);
 use Sys::Hostname;
 use utf8;
 
-use vars qw($cgi $method $remote_addr $body $data $code );
+use vars qw($cgi $method $remote_addr $body $data $code %nodata);
 our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
+%nodata = ( 'status', 'error' );
 cgi {
     $cgi    = $_;
     $method = $cgi->method;
@@ -42,12 +42,14 @@ cgi {
     $cgi->set_error_handler(
         sub {
             my ( $cgi, $error, $rendered ) = @_;
-            print STDERR "in error handler", $/;
-            $cgi->render( json => { error => 'Bad request' } );
+            print STDERR "in error handler: $error", $/;
+            $nodata{'result'} = $error;
+            $cgi->set_response_status(406)
+              ->render( html => $json_pp->encode( \%nodata ) );
         }
     );
 
-    # NOTE: curl -I  is sending HEAD and -X GET does not override that
+    # NOTE: curl -I is sending HEAD and -X GET does not override that
     if ( $method eq 'GET' || $method eq 'HEAD' ) {
         $code = $cgi->query_param('code');
         print STDERR "code=$code", $/;
@@ -63,22 +65,25 @@ cgi {
         }
         else {
             print STDERR "returning HTTP Status $code", $/;
+            print STDERR Dumper( \%nodata ), $/;
 
             $cgi->set_response_status($code)
-              ->render( html->$json_pp->encode( {} ) );
+              ->render( html => $json_pp->encode( \%nodata ) );
 
+            # https://www.softwaretestinghelp.com/rest-api-response-codes/:
             # 304  Not Modified
             # 200  OK
             # 208  Already Reported
             # 404  Not Found
             # 208  Already Reported
+            # 406 - Not Acceptable
         }
 
     }
     else {
-        print STDERR "Unsupported method", $/;
-            $cgi->set_response_status(405)
-              ->render( html->$json_pp->encode( {} ) );
+        print STDERR 'Unsupported method', $/;
+        $cgi->set_response_status(405)
+          ->render( html => $json_pp->encode( \%nodata ) );
     }
 }
 

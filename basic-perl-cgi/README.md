@@ -878,6 +878,93 @@ the resulting JSON would look like:
   }
 ]
 ```
+### REST Status Codes
+to return one of the known [REST status Codes](https://www.softwaretestinghelp.com/rest-api-response-codes/) use
+```sh
+
+curl -sIX GET http://192.168.99.101:9090/cgi-bin/statuscode.cgi
+```
+```text
+HTTP/1.1 200 OK
+Date: Wed, 30 Aug 2023 22:50:17 GMT
+Server: Apache/2.4.46 (Unix)
+Content-Length: 78
+Content-Type: application/json
+```
+```
+curl -sI http://192.168.99.101:9090/cgi-bin/statuscode.cgi
+```
+```text
+HTTP/1.1 200 OK
+Date: Wed, 30 Aug 2023 22:50:57 GMT
+Server: Apache/2.4.46 (Unix)
+Content-Type: application/json
+```
+```sh
+curl -s http://192.168.99.101:9090/cgi-bin/statuscode.cgi
+```
+```JSON
+{
+   "result" : null,
+   "status" : "OK",
+   "remote_addr" : "192.168.99.1"
+	}
+```
+```sh
+curl -sI http://192.168.99.101:9090/cgi-bin/statuscode.cgi?code=304
+```
+```text
+HTTP/1.1 304 Not Modified
+Date: Wed, 30 Aug 2023 22:52:23 GMT
+Server: Apache/2.4.46 (Unix)
+```
+```sh
+curl -Is http://192.168.99.101:9090/cgi-bin/statuscode.cgi?code=208
+```
+```text
+HTTP/1.1 208 Already Reported
+Date: Wed, 30 Aug 2023 22:52:53 GMT
+Server: Apache/2.4.46 (Unix)
+```
+
+NOTE: no `"result"` is returned when a error code is requested, ony the `"status"`:
+```JSON
+{
+   "status" : "error"
+}
+
+```
+
+NOTE: currently non standard `code` arguments is returned as `406` through `$cgi->error_handler` that is defined to return the error and status:
+```sh
+curl -sIX GET http://192.168.99.101:9090/cgi-bin/statuscode.cgi?code=999
+```
+```text
+HTTP/1.1 406 Not Acceptable
+Date: Wed, 30 Aug 2023 22:46:00 GMT
+Server: Apache/2.4.46 (Unix)
+Content-Length: 149
+Content-Type: text/html;charset=UTF-8
+```
+```sh
+curl -sX GET http://192.168.99.101:9090/cgi-bin/statuscode.cgi?code=999
+```
+
+```JSON
+{
+   "status" : "error",
+   "result" : "Attempted to set unknown HTTP response status 999 at /var/www/localhost/cgi-bin/statuscode.cgi line 69.\n"
+}
+
+```
+
+the apache log has this:
+```text
+code=999: /var/www/localhost/cgi-bin/statuscode.cgi
+returning HTTP Status 999: /var/www/localhost/cgi-bin/statuscode.cgi
+in error handler: Attempted to set unknown HTTP response status 999 at
+```
+
 ### See Also
 
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
