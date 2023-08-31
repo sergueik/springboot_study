@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use utf8;
 
-
 BEGIN {
     use constant RELEASE => 0;
     use constant HOME    => (
@@ -32,9 +31,9 @@ use Time::HiRes qw( gettimeofday);
 use Sys::Hostname;
 use utf8;
 
-use vars qw($cgi $method $remote_addr $body $data $code %nodata);
+use vars qw($cgi $method $remote_addr $body $data $code);
 our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
-%nodata = ( 'status', 'error' );
+$data = {};
 cgi {
     $cgi    = $_;
     $method = $cgi->method;
@@ -43,9 +42,13 @@ cgi {
         sub {
             my ( $cgi, $error, $rendered ) = @_;
             print STDERR "in error handler: $error", $/;
-            $nodata{'result'} = $error;
+            $data->{'status'} = 'error';
+            $data->{'code'}   = 500;
+            $data->{'result'} = $error;
+
+            # NOTE: CGI:Lite uses JSON::PP internally
             $cgi->set_response_status(406)
-              ->render( html => $json_pp->encode( \%nodata ) );
+              ->render( html => $json_pp->encode($data) );
         }
     );
 
@@ -54,9 +57,9 @@ cgi {
         $code = $cgi->query_param('code');
         print STDERR "code=$code", $/;
         $remote_addr = $cgi->remote_addr;
-        $data        = {};
         if ( $code eq '200' || !$code ) {
             $data->{'status'}      = 'OK';
+            $data->{'code'}        = 200;
             $data->{'remote_addr'} = $remote_addr;
             $data->{'result'}      = ();
             $cgi->set_response_type('application/json');
@@ -65,25 +68,30 @@ cgi {
         }
         else {
             print STDERR "returning HTTP Status $code", $/;
-            print STDERR Dumper( \%nodata ), $/;
-
-            $cgi->set_response_status($code)
-              ->render( html => $json_pp->encode( \%nodata ) );
-
             # https://www.softwaretestinghelp.com/rest-api-response-codes/:
             # 304  Not Modified
             # 200  OK
+	    # 204  No Content
             # 208  Already Reported
             # 404  Not Found
-            # 208  Already Reported
-            # 406 - Not Acceptable
+            # 406  Not Acceptable
+
+            $data->{'status'} = 'error';
+            $data->{'code'}   = $code;
+	    print STDERR 'Returning payload:' . $/ . Dumper($data);
+	    print STDERR 'Returning payload: '. $json_pp->encode($data) ;
+            $cgi->set_response_status($code)
+              ->render( html => $json_pp->encode($data) );
+
         }
 
     }
     else {
         print STDERR 'Unsupported method', $/;
+        $data->{'status'} = 'error';
+        $data->{'code'}   = $code;
         $cgi->set_response_status(405)
-          ->render( html => $json_pp->encode( \%nodata ) );
+          ->render( html => $json_pp->encode($data) );
     }
 }
 

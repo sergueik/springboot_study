@@ -932,7 +932,6 @@ NOTE: no `"result"` is returned when a error code is requested, ony the `"status
 {
    "status" : "error"
 }
-
 ```
 
 NOTE: currently non standard `code` arguments is returned as `406` through `$cgi->error_handler` that is defined to return the error and status:
@@ -965,6 +964,63 @@ returning HTTP Status 999: /var/www/localhost/cgi-bin/statuscode.cgi
 in error handler: Attempted to set unknown HTTP response status 999 at
 ```
 
+### Updating Scripts
+```sh
+docker cp cgi-bin/statuscode.cgi $NAME:/var/www/localhost/cgi-bin
+```
+
+NOTE: it may not always work in __Docker Toolbox__ - use vi and clipboard in this case
+
+### Troubleshooting 
+
+The Server 500 error
+```powershell
+. .\getstatuscode.ps1
+```
+```text
+Exception (intercepted): The remote server returned an error: (500) Internal Server Error.
+Page: ""
+Exception (intercepted): The remote server returned an error: (500) Internal Server Error.
+HTTP Stasus: -1
+```
+and the apache `/var/www/logs/error.log` message
+```text
+[Thu Aug 31 16:50:50.487137 2023] [cgi:error] [pid 13] [client 192.168.99.1:50902] AH01215: (2)No such file or directory: exec of '/var/www/localhost/cgi-bin/statuscode.cgi' failed: /var/www/localhost/cgi-bin/statuscode.cgi
+```
+confirmed by shell error
+```sh
+sh: /var/www/localhost/cgi-bin/statuscode.cgi: not found
+```
+
+indicates line endings issue, fixed via
+```sh
+sed -i 's|\r||g' /var/www/localhost/cgi-bin/statuscode.cgi
+```
+
+The success case should look like
+
+```text
+Page: {
+    "status":  "error",
+    "code":  "208"
+}
+HTTP Stasus: 208
+```
+and
+
+```powershell
+. .\getstatuscode.ps1 -url http://192.168.99.100:9090/cgi-bin/statuscode.cgi
+```
+```text
+
+Page: {
+    "result":  null,
+    "status":  "OK",
+    "code":  200,
+    "remote_addr":  "192.168.99.1"
+}
+HTTP Stasus: 200
+```
 ### See Also
 
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
@@ -975,6 +1031,7 @@ in error handler: Attempted to set unknown HTTP response status 999 at
   * [curl post file](https://reqbin.com/req/c-dot4w5a2/curl-post-file)
   * [CPAN](https://metacpan.org/pod/HTTP::Request::Common) `HTTP::Request::Common`
   * [how to find Docker Toolbox IP address](https://devilbox.readthedocs.io/en/latest/howto/docker-toolbox/find-docker-toolbox-ip-address.html)
+
 ### Author
   * https://stackoverflow.com/questions/32121479/get-json-code-from-textarea-and-parse-it
   * http://www.java2s.com/Tutorials/Javascript/AngularJS_Example/Controller/Call_function_in_controller_with_onchange_event.htm
