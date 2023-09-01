@@ -1,0 +1,32 @@
+<!doctype html>
+<html ng-app='Application'>
+<head>
+<meta charset="UTF-8">
+<title>Title</title>
+<script type="text/javascript" src="js/angular.js">
+<!-- AngularJS module for sanitizing HTML -->
+</script>
+<!-- NOTE: cannot use latest version 1.8.3: with 1.6.x and later 
+observe 
+Uncaught TypeError: angular.module(...).provider(...).info is not a function
+-->
+<script type="text/javascript" src="js/angular-sanitize.js"></script> 
+<!--
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-sanitize.js"></script>
+-->
+<link rel="stylesheet" href="css/bootstrap.min.css"/>
+<link rel="stylesheet" href="css/main.css"/>
+<!-- NOTE: angular-sanitizer.js is deprecate, not storing along with other scripts -->
+<script type="text/javascript" src="js/formatter.js">
+</script>
+</head>
+<body>
+<!-- origin: https://docs.angularjs.org/guide/directive -->
+
+<div ng-controller="FormatController">
+<span>{{message}}</span><br/>
+<span ng-bind="message"></span> <br/>
+<span ng-bind-html="message"></span>
+</div>
+</body>
+</html>

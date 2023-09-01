@@ -45,9 +45,28 @@ Content-Type: text/html
  * back out apache configurations
 
 ```sh
-
+docker cp $NAME:/web/config/conf.d/httpd.conf .
+docker cp $NAME:/web/config/httpd.conf .
 ```
 
+### Testing CGI
+
+```sh
+curl -ksI  https://localhost:443/cgi-bin/statuscode.cgi?code=204
+```
+```text
+HTTP/1.1 204 No Content
+Date: Fri, 01 Sep 2023 20:54:08 GMT
+Server: Apache/2.4.56 (Unix)
+```
+```sh
+curl -ksI  https://localhost:443/cgi-bin/statuscode.cgi?code=999
+```
+```text
+HTTP/1.1 406 Not Acceptable
+Date: Fri, 01 Sep 2023 20:56:16 GMT
+Server: Apache/2.4.56 (Unix)
+```
 ### Cleanup
 ```sh
 docker stop $NAME
