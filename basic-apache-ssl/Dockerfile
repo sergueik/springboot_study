@@ -6,6 +6,10 @@ RUN apk --allow-untrusted update && apk upgrade && \
     rm -rf /var/cache/apk/*
 
 COPY root/. /
+RUN cd /etc/service && rm apache2 && ln -fs ../sv/apache2 apache2 && \
+    sed -i 's|\r||g' /etc/sv/apache2/run /etc/run_always/50-config-webdir /etc/run_always/55-fix-html-dir
+
+
 RUN  mkdir /web/ && chown -R apache.www-data /web && \
     sed -i 's|^DocumentRoot ".*|DocumentRoot "/web/html"|g' /etc/apache2/httpd.conf && \
     sed -i 's|AllowOverride [Nn]one|AllowOverride All|' /etc/apache2/httpd.conf && \
@@ -13,14 +17,13 @@ RUN  mkdir /web/ && chown -R apache.www-data /web && \
     sed -i 's/^|ServerName.*/ServerName webproxy/' /etc/apache2/httpd.conf && \
     sed -i 's|^IncludeOptional /etc/apache2/conf|IncludeOptional /web/config/conf|g' /etc/apache2/httpd.conf && \
     sed -i 's|PidFile "/run/.*|Pidfile "/web/run/httpd.pid"|g'  /etc/apache2/conf.d/mpm.conf && \
-    sed -i 's#Directory "/var/www/localhost/htdocs.*#Directory "/web/html" >#g' /etc/apache2/httpd.conf && \
-    sed -i 's#Directory "/var/www/localhost/cgi-bin.*#Directory "/web/cgi-bin" >#g' /etc/apache2/httpd.conf && \
-    sed -i 's#/var/www/localhost/htdocs#/web/html#g' /etc/apache2/conf.d/ssl.conf && \
-    sed -i 's#/var/www/localhost/cgi-bin#/web/cgi-bin#g' /etc/apache2/conf.d/ssl.conf && \
-    sed -i 's#/var/www/localhost/cgi-bin#/web/cgi-bin#g' /etc/apache2/httpd.conf && \
-
-    sed -i 's#/var/log/apache2/#/web/logs/#g' /etc/logrotate.d/apache2 && \
-    sed -i 's/Options Indexes/Options /g' /etc/apache2/httpd.conf && \
+    sed -i 's|Directory "/var/www/localhost/htdocs.*|Directory "/web/html" >|g' /etc/apache2/httpd.conf && \
+    sed -i 's|Directory "/var/www/localhost/cgi-bin.*|Directory "/web/cgi-bin" >|g' /etc/apache2/httpd.conf && \
+    sed -i 's|/var/www/localhost/htdocs|/web/html|g' /etc/apache2/conf.d/ssl.conf && \
+    sed -i 's|/var/www/localhost/cgi-bin|/web/cgi-bin|g' /etc/apache2/conf.d/ssl.conf && \
+    sed -i 's|/var/www/localhost/cgi-bin|/web/cgi-bin|g' /etc/apache2/httpd.conf && \
+    sed -i 's|/var/log/apache2/|/web/logs/|g' /etc/logrotate.d/apache2 && \
+    sed -i 's|Options Indexes|Options |g' /etc/apache2/httpd.conf && \
     mkdir /web/cgi-bin && \
     cp /var/www/localhost/cgi-bin/test-cgi /web/cgi-bin/test-cgi && \
     chmod +x /web/cgi-bin/test-cgi && \
