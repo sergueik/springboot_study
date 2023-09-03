@@ -143,11 +143,14 @@ docker volume prune -f
 
 ### See Also
 
-  * https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authentication-with-apache-on-ubuntu-20-04
+   * https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authentication-with-apache-on-ubuntu-20-04
 
-  *  https://medium.com/@nh3500/how-to-create-self-assigned-ssl-for-local-docker-based-lamp-dev-environment-on-macos-sierra-ab606a27ba8a
+   *  https://medium.com/@nh3500/how-to-create-self-assigned-ssl-for-local-docker-based-lamp-dev-environment-on-macos-sierra-ab606a27ba8a
 
-  * https://codeburst.io/http-server-on-docker-with-https-7b5468f72874
+   * https://codeburst.io/http-server-on-docker-with-https-7b5468f72874
+   * https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-apache-in-ubuntu-16-04
+   * [how to create and use self-signed SSL certificate in Apache](https://www.howtogeek.com/devops/how-to-create-and-use-self-signed-ssl-on-apache/)
+   * https://github.com/g0t4/course-implementing-self-hosted-docker-registry
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

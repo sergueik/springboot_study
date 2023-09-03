@@ -1,3 +1,15 @@
+FROM alpine:3.9.5 AS generate-certs 
+RUN apk add --no-cache openssl
+WORKDIR /certs
+RUN openssl req -x509 \
+    -subj "/CN=example.com" \
+    -nodes \
+    -days 365 \
+    -newkey rsa:4096 \
+    -keyout /certs/server.key \
+    -out /certs/server.crt
+
+
 FROM nimmis/alpine-micro
 
 
@@ -6,6 +18,7 @@ RUN apk --allow-untrusted update && apk upgrade && \
     rm -rf /var/cache/apk/*
 
 COPY root/. /
+COPY --from=generate-certs /certs /etc/ssl/apache2/
 RUN cd /etc/service && rm apache2 && ln -fs ../sv/apache2 apache2 && \
     sed -i 's|\r||g' /etc/sv/apache2/run /etc/run_always/50-config-webdir /etc/run_always/55-fix-html-dir
 
@@ -20,6 +33,7 @@ RUN  mkdir /web/ && chown -R apache.www-data /web && \
     sed -i 's|Directory "/var/www/localhost/htdocs.*|Directory "/web/html" >|g' /etc/apache2/httpd.conf && \
     sed -i 's|Directory "/var/www/localhost/cgi-bin.*|Directory "/web/cgi-bin" >|g' /etc/apache2/httpd.conf && \
     sed -i 's|/var/www/localhost/htdocs|/web/html|g' /etc/apache2/conf.d/ssl.conf && \
+    sed -i 's|^SSLCertificateFile.*|SSLCertificateFile /etc/ssl/apache2/server.crt|g' /etc/apache2/conf.d/ssl.conf && \
     sed -i 's|/var/www/localhost/cgi-bin|/web/cgi-bin|g' /etc/apache2/conf.d/ssl.conf && \
     sed -i 's|/var/www/localhost/cgi-bin|/web/cgi-bin|g' /etc/apache2/httpd.conf && \
     sed -i 's|/var/log/apache2/|/web/logs/|g' /etc/logrotate.d/apache2 && \
