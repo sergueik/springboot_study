@@ -1021,6 +1021,43 @@ Page: {
 }
 HTTP Stasus: 200
 ```
+
+### Download Update Config
+```sh
+curl -so example_config.json  "http://192.168.99.101:9090/cgi-bin/file_hash.cgi?inputfile=example_config.json&hash=xxxxx"
+```
+
+```sh
+ls -l example_config.json
+```
+```text
+-rw-r--r-- 1 Serguei 197609 18 Sep  5 19:05 example_config.json
+```
+on the client
+```sh
+md5sum.exe  exmple_config.json
+```
+```text
+9f8377db38593544a5e994006fe4e9e4 *example_config.json
+```
+on the server
+```sh
+md5sum  /var/www/localhost/cgi-bin/example_config.json
+```
+```text
+9f8377db38593544a5e994006fe4e9e4  example_config.json
+```
+```sh
+curl -s "http://192.168.99.101:9090/cgi-bin/file_hash.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4"
+```
+```JSON	
+
+{
+   "status" : "error",
+   "result" : "Config /var/www/localhost/cgi-bin/example_config.json is unchanged"
+}
+
+```
 ### See Also
 
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
