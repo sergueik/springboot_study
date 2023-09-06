@@ -2,8 +2,6 @@
 
 use strict;
 
-use Getopt::Long;
-
 BEGIN {
     use constant RELEASE => 0;
     use constant HOME    => (
@@ -22,11 +20,6 @@ BEGIN {
     }
 }
 use JSON::PP;
-
-# NOTE: the encoding pragma is no longer supported
-# use encoding 'utf8';
-use POSIX qw (locale_h);
-use locale;
 
 our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
 my $buffer;
