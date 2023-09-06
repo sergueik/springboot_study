@@ -51,11 +51,11 @@ sub check_newer {
 our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
 
 use vars
-  qw($cgi $method $data $status $content $debug $dir $inputfile $newer $hash $file_hash );
+  qw($cgi $method $data $status $content $DEBUG $dir $inputfile $newer $hash $file_hash );
 $data    = {};
 $status  = undef;
 $content = undef;
-$debug   = 1;
+$DEBUG   = 1;
 
 $dir       = getcwd;
 $inputfile = 'example_config.json';
@@ -66,7 +66,7 @@ $file_hash = undef;
 cgi {
     $cgi    = $_;
     $method = $cgi->method;
-    print STDERR "method=$method", $/;
+    print STDERR "method=$method", $/ if $DEBUG;
     $cgi->set_error_handler(
         sub {
             my ( $cgi, $error, $rendered ) = @_;
@@ -86,21 +86,32 @@ cgi {
         $newer     = $cgi->query_param('newer');
         $hash      = $cgi->query_param('hash');
         $inputfile = $dir . '/' . $inputfile;
-        my $check_timestamp = localtime($newer);
+        print STDERR "\$inputfile=${inputfile}\n" if $DEBUG;
+        $status = 1;
 
         # evaluate: status based on file age
-        $status = &check_newer( $inputfile, $newer );
+        if ($newer) {
+            my $check_timestamp = localtime($newer);
+            $status = &check_newer( $inputfile, $newer );
+        }
 
         # override the status with file content md5 hash check
-        $file_hash = &checksum_file($inputfile);
-        print STDERR
-          "\$hash = ${hash} \$file_hash = ${file_hash} \$status = ${status}\n";
-        if ( $file_hash cmp $hash ) {
-            $status = 1;
+        if ($hash) {
+            $file_hash = &checksum_file($inputfile);
+            if ( $file_hash cmp $hash ) {
+                $status = 1;
+            }
+            else {
+
+                $status = 0;
+            }
         }
-        else {
-            $status = 0;
-        }
+        print STDERR (
+            "\$newer = ${newer}",
+            "\$hash = ${hash}",
+            "\$file_hash = ${file_hash}",
+            "\$status = ${status}\n"
+        ) if $DEBUG;
         #
         if ($status) {
             if ($inputfile) {
@@ -112,20 +123,30 @@ cgi {
                 close(FH);
             }
 
-            if ($debug) {
+            if ($DEBUG) {
                 print STDERR Dumper($content);
             }
             $cgi->render( html => $content );
         }
         else {
-
-            # print "Content-Type: application/json\n\n", $content;
+      # return failure through HTTP status code
+      # 304  Not Modified
+      # 204  No Content
+      # 208  Already Reported
+      #
+      # NOTE: the payload will be ignored for 304, 204, will be received for 208
+      # print "Content-Type: application/json\n\n", $content;
             $data->{'status'} = 'error';
             $data->{'info'}   = "Config ${inputfile} is unchanged";
-            print STDERR 'Returning payload: ' . $json_pp->encode($data);
+            print STDERR 'Returning payload: ' . $json_pp->encode($data)
+              if $DEBUG;
             $cgi->set_response_status(304)
               ->render( html => $json_pp->encode($data) );
 
+# alternative scenario is with server always returning a 200 + JSON             # but
+# when there is no change in the requested resource
+# the returned JSON to contain a different schema,
+# e.g. { "status" : "failure", "info": "unchanged" }
         }
 
     }

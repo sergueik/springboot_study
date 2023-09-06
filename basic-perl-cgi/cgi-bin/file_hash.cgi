@@ -52,16 +52,18 @@ our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
 my $status   = undef;
 my $response = '{}';
 my $content  = undef;
-my $debug    = 1;
+my $DEBUG    = 1;
 my $error    = undef;
 
 # hardcode the query parameter defauts: $inputfile $newer
 my $dir       = getcwd;
 my $inputfile = 'example_config.json';
-my $newer     = 1692049343;
+my $newer     = undef;
 
 #  $newer     = 1692089343;
-my $hash      = undef;
+my $hash = undef;
+
+#  $hash      = '9f8377db38593544a5e994006fe4e9e4';
 my $file_hash = undef;
 
 # process QUERY_STRING directly without relying on CGI::Tiny
@@ -84,24 +86,33 @@ if ( exists $query->{hash} ) {
 }
 
 $inputfile = $dir . '/' . $inputfile;
+print STDERR "\$inputfile=${inputfile}\n" if $DEBUG;
 
-my $check_timestamp = localtime($newer);
+$status = 1;
+
 # evaluate: status based on file mtime
-$status = &check_newer( $inputfile, $newer );
-# override the status with hash check
-$file_hash = &checksum_file($inputfile);
-if ( $file_hash cmp $hash ) {
-    $status = 1;
+if ($newer) {
+    my $check_timestamp = localtime($newer);
+    $status = &check_newer( $inputfile, $newer );
 }
-else {
-    $status = 0;
-}
-#
-if ($debug) {
 
-    print STDERR
-      "\$hash = ${hash} \$file_hash = ${file_hash} \$status = ${status}\n";
+# override the status with file content md5 hash check
+if ($hash) {
+    $file_hash = &checksum_file($inputfile);
+    if ( $file_hash cmp $hash ) {
+        $status = 1;
+    }
+    else {
+
+        $status = 0;
+    }
 }
+print STDERR (
+    "\$newer = ${newer}",
+    "\$hash = ${hash}",
+    "\$file_hash = ${file_hash}",
+    "\$status = ${status}\n"
+) if $DEBUG;
 if ($status) {
     if ($inputfile) {
         $content = '';
@@ -112,12 +123,18 @@ if ($status) {
         close(FH);
     }
 
-    if ($debug) {
+    if ($DEBUG) {
         print STDERR Dumper($content);
     }
 
 }
 else {
+    # return the failure
+    # alternative scenario is return failure through HTTP status code
+    # 304  Not Modified
+    # 204  No Content
+    # 208  Already Reported
+    #
     $response = {
         status => 'error',
         result => "Config ${inputfile} is unchanged"
