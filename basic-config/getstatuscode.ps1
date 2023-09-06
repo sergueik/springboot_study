@@ -134,16 +134,87 @@ try {
 
   $page = ''
 }
+
 # undo the conversion to PSObjects done by invoke-restmethod by default
 $page = $page | convertto-json
   return $page
-} 
+}
+
+# origin: https://4sysops.com/archives/convert-json-to-a-powershell-hash-table/
+# see also: https://github.com/sergueik/powershell_ui_samples/blob/master/external/parse_json_hash.ps1
+
+function ConvertTo-Hashtable {
+    [CmdletBinding()]
+    [OutputType('hashtable')]
+    param (
+        [Parameter(ValueFromPipeline)]
+        $InputObject
+    )
+
+    process {
+        if ($null -eq $InputObject) {
+            return $null
+        }
+
+        if ($InputObject -is [System.Collections.IEnumerable] -and $InputObject -isnot [string]) {
+            $collection = @(
+                # NOTE: this is a breaking change
+                # $InputObject | foreach-object { 
+                #     $object = $_ 
+                foreach ($object in $InputObject) {
+		    write-host ('object  is {0}' -f $object.gettype().Name)
+                    # ConvertTo-Hashtable -InputObject $object
+                    write-host ('ConvertTo-Hashtable -InputObject "{0}"' -f  $object)
+                    $result = ConvertTo-Hashtable -InputObject $object
+		    write-host ('result type is {0}' -f $result.gettype().Name)
+                    write-output $result
+                }
+            )
+            Write-Output -NoEnumerate $collection
+        } elseif ($InputObject -is [psobject]) { 
+            # If the object has properties that need enumeration
+            # Convert it to its own dictionary table and return it
+            # convertFrom-Json produces System.Management.Automation.PSCustomObject 
+            # https://stackoverflow.com/questions/14012773/difference-between-psobject-hashtable-and-pscustomobject
+            # which properties enumeration is fastest through its PSObject
+            $dictionary = @{}
+            foreach ($property in $InputObject.PSObject.Properties) {
+                write-host ('processing {0}' -f $property.Name)
+                $dictionary[$property.Name] = ConvertTo-Hashtable -InputObject $property.Value
+            }
+            $dictionary
+        } else {
+            # the object isn't an array, collection, or other object, it's already a dictionary table
+            # so just return it.
+            $InputObject
+        }
+    }
+}
+ 
 $page = getPage -url $url
 write-output ('Body: {0}' -f $page)
 # main
 $statuscode = getHttpStatusCode -url $url
 write-output ('HTTP Stasus: {0}' -f $statuscode)
-# 208
+
+
+if ($statuscode -ne 304) {
+# using ConvertTo-HashTable
+
+$json_obj = $page | convertfrom-json
+$response = $json_obj | ConvertTo-HashTable
+if ($response.ContainsKey('status') -and ( -not ($response['status'] -eq 'OK' ) )) {
+   $result = $response['result']
+   write-host ('ERROR: {0} '-f $result)
+   exit
+} else {
+  write-host 'Response:'
+  write-host $page
+}
+
+
+
+}
 <#
 NOTE: the Powershell treats some(?) 30x status codes as exceptions:
    . .\getstatuscode.ps1 -url http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=304
@@ -170,8 +241,6 @@ curl -sI -X GET http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=304
 HTTP/1.1 304 Not Modified
 Date: Wed, 06 Sep 2023 15:47:11 GMT
 Server: Apache/2.4.46 (Unix)
-
-
 No payload is received by the client when the HTTP Status Codes
 
 304 - Not Modified
@@ -179,3 +248,16 @@ No payload is received by the client when the HTTP Status Codes
 
 #> 
 
+
+<#
+. .\getstatuscode.ps1 -url 'http://192.168.99.100:9090/cgi-bin/file_hash.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4'
+
+Body: {
+    "result":  "Config /var/www/localhost/cgi-bin/example_config.json is unchanged",
+    "status":  "error"
+}
+HTTP Stasus: 200
+processing result
+processing status
+ERROR: Config /var/www/localhost/cgi-bin/example_config.json is unchanged
+#>
