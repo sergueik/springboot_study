@@ -18,6 +18,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #THE SOFTWARE.
 
+
 param (
   [string]$url = 'http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=208'
 )
@@ -63,7 +64,18 @@ function getHttpStatusCode {
     $ProgressPreference = 'Continue'
   } catch [Exception]{
     write-host ('Exception (intercepted): {0}' -f $_.Exception.Message)
-    $statuscode = -1
+    # uncomment the code below when debugging
+    $exception = $_.Exception
+    # $exception | select-object -property *
+    $exception_response = $exception.Response
+    # $exception_response | select-object -property *
+    write-host ('Status Description: {0}' -f $exception_response.StatusDescription)
+    $exception_statuscode = $exception_response.StatusCode
+    write-host ('Status code: {0}' -f [int] $exception_statuscode)
+    write-host ('Status code: {0}' -f $exception_statuscode.value__)
+    # write-output $statuscode | select-object -property *
+
+    $statuscode = $exception_statuscode.value__
   }
   return  $statuscode
 }
@@ -112,45 +124,58 @@ try {
   $page = invoke-restmethod -uri $url -method Get -contenttype "$content_type"
   $ProgressPreference = 'Continue'
 } catch [Exception]{
+  # write-host ('Exception (intercepted): {0}' -f $_.Exception.getType().FullName)
   write-host ('Exception (intercepted): {0}' -f $_.Exception.Message)
+  # handle the exception, get the HTTP Status code
+  $exception_statuscode = $_.Exception.Response.StatusCode
+  # write-host ('Response: {0}' -f $_.Exception.Response.getType().FullName)
+  write-host ('Status code: {0}' -f [int] $exception_statuscode)
+  write-host ('Status code: {0}' -f $exception_statuscode.value__)
+
   $page = ''
 }
 # undo the conversion to PSObjects done by invoke-restmethod by default
 $page = $page | convertto-json
-return $page
+  return $page
 } 
 $page = getPage -url $url
 write-output ('Body: {0}' -f $page)
 # main
-$statuscode = getHttpStatusCode -url  $url
+$statuscode = getHttpStatusCode -url $url
 write-output ('HTTP Stasus: {0}' -f $statuscode)
 # 208
 <#
 NOTE: the Powershell treats some(?) 30x status codes as exceptions:
-  . .\getHttpStatusCode.ps1 -url http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=304
-Exception (intercepted): The remote server returned an error: (304) Not Modified.
-Page: ""
+   . .\getstatuscode.ps1 -url http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=304
+   . .\getstatuscode.ps1 -url 'http://192.168.99.100:9090/cgi-bin/file_hash_status.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4'
 
-Most of the 30x codes are for URL Redirection.
-https://www.softwaretestinghelp.com/rest-api-response-codes/
+Exception (intercepted): The remote server returned an error: (304) Not Modified
+.
+Body: ""
+Exception (intercepted): The remote server returned an error: (304) Not Modified
+.
+Status Description: Not Modified
+Status code: 304
+Status code: 304
+HTTP Stasus: 304
+#>
+# Most of the 30x codes are for URL Redirection.
+#
+# see also https://www.softwaretestinghelp.com/rest-api-response-codes/
+
+<#
 similar with curl:
 
- curl -sv http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=304
-* Uses proxy env variable no_proxy == '192.168.99.100,192.168.99.101'
-*   Trying 192.168.99.100:9090...
-* Connected to 192.168.99.100 (192.168.99.100) port 9090 (#0)
-> GET /cgi-bin/statuscode.cgi?code=304 HTTP/1.1
-> Host: 192.168.99.100:9090
-> User-Agent: curl/7.74.0
-> Accept: */*
->
-* Mark bundle as not supporting multiuse
-< HTTP/1.1 304 Not Modified
-< Date: Thu, 31 Aug 2023 17:52:26 GMT
-< Server: Apache/2.4.46 (Unix)
+curl -sI -X GET http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=304
+HTTP/1.1 304 Not Modified
+Date: Wed, 06 Sep 2023 15:47:11 GMT
+Server: Apache/2.4.46 (Unix)
 
 
+No payload is received by the client when the HTTP Status Codes
 
-the payload is not delivered to the client when the HTTP Status Code 304 – Not Modified
-similarly with HTTP Status Code 204 – No Content
-#>
+304 - Not Modified
+204 - No Content
+
+#> 
+
