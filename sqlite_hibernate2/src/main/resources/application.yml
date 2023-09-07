@@ -1,0 +1,25 @@
+﻿server:
+  port: 8080
+  context-path: /springboot
+# SQLite connection active
+# MySQL connection details commented
+spring:
+  session:
+     store-type: none
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    # driver-class-name: com.mysql.jdbc.Driver
+    # driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:sqlite:${USERPROFILE}\\sqlite\\springboot.db
+    # url: 'jdbc:sqlite::memory:'
+    # url: 'jdbc:mysql://localhost:3306/test'
+    username:
+    # username: java
+    password:
+    # password: password
+  jpa:
+    database-platform: example.sqlite.SQLiteDialect
+    # org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
