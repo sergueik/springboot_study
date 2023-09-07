@@ -42,7 +42,7 @@ GetOptions(
 $DEBUG    = 0;
 $response = HTTP::Tiny->new->get($url);
 
-if ( !$response->{'success'} ) {
+if ( !$response->{success} ) {
     print STDERR Dumper($response), $/ if $DEBUG;
     print 'ERROR: ', $response->{reason}, $/;
 }

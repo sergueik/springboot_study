@@ -68,7 +68,7 @@ my $file_hash = undef;
 
 # process QUERY_STRING directly without relying on CGI::Tiny
 my $query        = {};
-my $query_string = $ENV{'QUERY_STRING'};
+my $query_string = $ENV{QUERY_STRING};
 my @pairs        = split( '&', $query_string );
 foreach my $pair (@pairs) {
     my ( $name, $value ) = split( '=', $pair );

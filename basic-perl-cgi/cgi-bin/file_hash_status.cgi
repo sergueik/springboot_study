@@ -71,9 +71,9 @@ cgi {
         sub {
             my ( $cgi, $error, $rendered ) = @_;
             print STDERR "in error handler: $error", $/;
-            $data->{'status'} = 'error';
-            $data->{'code'}   = 500;
-            $data->{'result'} = $error;
+            $data->{status} = 'error';
+            $data->{code}   = 500;
+            $data->{result} = $error;
 
             # NOTE: CGI:Lite uses JSON::PP internally
             $cgi->set_response_status(406)
@@ -137,8 +137,8 @@ cgi {
               #
               # NOTE: the payload will be ignored for 304, 204, will be received for 208
               # print "Content-Type: application/json\n\n", $content;
-                $data->{'status'} = 'error';
-                $data->{'info'}   = "Config ${inputfile} is unchanged";
+                $data->{status} = 'error';
+                $data->{result}   = "Config ${inputfile} is unchanged";
                 print STDERR 'Returning payload: ' . $json_pp->encode($data)
                   if $DEBUG;
                 $cgi->set_response_status(304)
@@ -147,14 +147,14 @@ cgi {
               # alternative scenario is with server always returning a 200 + JSON             # but
               # when there is no change in the requested resource
               # the returned JSON to contain a different schema,
-              # e.g. { "status" : "failure", "info": "unchanged" }
+              # e.g. { "status" : "failure", "result": "unchanged" }
             }
         }
         else {
             # return the failure
             # alternative scenario is return failure in the response JSON
-            $data->{'status'} = 'error';
-            $data->{'info'}   = "Config ${inputfile} not found";
+            $data->{status} = 'error';
+            $data->{result}   = "Config ${inputfile} not found";
             $cgi->set_response_status(404)
               ->render( html => $json_pp->encode($data) );
         }
@@ -162,8 +162,8 @@ cgi {
     }
     else {
         print STDERR 'Unsupported method', $/ if $DEBUG;
-        $data->{'status'} = 'error';
-        $data->{'info'}   = 'unsupported method';
+        $data->{status} = 'error';
+        $data->{result}   = 'unsupported method';
         $cgi->set_response_status(405)
           ->render( html => $json_pp->encode($data) );
     }

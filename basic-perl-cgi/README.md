@@ -1068,14 +1068,14 @@ curl -s "http://192.168.99.101:9090/cgi-bin/file_hash.cgi?inputfile=example_conf
   * [curl post file](https://reqbin.com/req/c-dot4w5a2/curl-post-file)
   * [CPAN](https://metacpan.org/pod/HTTP::Request::Common) `HTTP::Request::Common`
   * [how to find Docker Toolbox IP address](https://devilbox.readthedocs.io/en/latest/howto/docker-toolbox/find-docker-toolbox-ip-address.html)
-
-### Author
+  * `HTTP::Tiny` [Pure Perl HTTP Client](https://metacpan.org/pod/HTTP::Tiny)
   * https://stackoverflow.com/questions/32121479/get-json-code-from-textarea-and-parse-it
   * http://www.java2s.com/Tutorials/Javascript/AngularJS_Example/Controller/Call_function_in_controller_with_onchange_event.htm
   * https://www.w3schools.com/angular/tryit.asp?filename=try_ng_ng-change
   * [AngularJS Developer Guide](https://docs.angularjs.org/guide)
   * [AngularJS API](https://docs.angularjs.org/api) 
 
+### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
 
