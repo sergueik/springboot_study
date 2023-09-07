@@ -87,58 +87,71 @@ if ( exists $query->{hash} ) {
 
 $inputfile = $dir . '/' . $inputfile;
 print STDERR "\$inputfile=${inputfile}\n" if $DEBUG;
+if ( -e $inputfile ) {
 
-$status = 1;
+    $status = 1;
 
-# evaluate: status based on file mtime
-if ($newer) {
-    my $check_timestamp = localtime($newer);
-    $status = &check_newer( $inputfile, $newer );
-}
+    # evaluate: status based on file mtime
+    if ($newer) {
+        my $check_timestamp = localtime($newer);
+        $status = &check_newer( $inputfile, $newer );
+    }
 
-# override the status with file content md5 hash check
-if ($hash) {
-    $file_hash = &checksum_file($inputfile);
-    if ( $file_hash cmp $hash ) {
-        $status = 1;
+    # override the status with file content md5 hash check
+    if ($hash) {
+        $file_hash = &checksum_file($inputfile);
+        if ( $file_hash cmp $hash ) {
+            $status = 1;
+        }
+        else {
+
+            $status = 0;
+        }
+    }
+    print STDERR (
+        "\$newer = ${newer}",
+        "\$hash = ${hash}",
+        "\$file_hash = ${file_hash}",
+        "\$status = ${status}\n"
+    ) if $DEBUG;
+    if ($status) {
+        if ($inputfile) {
+            $content = '';
+            open( FH, '<', $inputfile ) or die $!;
+            while (<FH>) {
+                $content .= $_;
+            }
+            close(FH);
+        }
+
+        if ($DEBUG) {
+            print STDERR Dumper($content);
+        }
+
     }
     else {
-
-        $status = 0;
+        # return the failure
+        # alternative scenario is return failure through HTTP status code
+        # 304  Not Modified
+        # 204  No Content
+        # 208  Already Reported
+        #
+        $response = {
+            status => 'error',
+            result => "Config ${inputfile} is unchanged"
+        };
+        $content = $json_pp->encode($response);
     }
-}
-print STDERR (
-    "\$newer = ${newer}",
-    "\$hash = ${hash}",
-    "\$file_hash = ${file_hash}",
-    "\$status = ${status}\n"
-) if $DEBUG;
-if ($status) {
-    if ($inputfile) {
-        $content = '';
-        open( FH, '<', $inputfile ) or die $!;
-        while (<FH>) {
-            $content .= $_;
-        }
-        close(FH);
-    }
-
-    if ($DEBUG) {
-        print STDERR Dumper($content);
-    }
-
 }
 else {
     # return the failure
     # alternative scenario is return failure through HTTP status code
-    # 304  Not Modified
-    # 204  No Content
-    # 208  Already Reported
-    #
+    # 404 Not Found
     $response = {
         status => 'error',
-        result => "Config ${inputfile} is unchanged"
+        result => "Config ${inputfile} not found"
     };
     $content = $json_pp->encode($response);
 }
+
 print "Content-Type: application/json\n\n", $content;
