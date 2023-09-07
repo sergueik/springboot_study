@@ -42,7 +42,11 @@ public class Launcher {
 	public static void main(String[] args) throws Exception {
 
 		// configuring the app through the application.yaml does not work
-    // docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e 'use test ; drop table if exists `user`; CREATE TABLE `user` (  `id` int PRIMARY KEY, `nick_name` varchar(255), `gender` int, `password` varchar(255), `name` varchar(255));' 
+
+		// docker container rm mysql-server
+		// docker run --name mysql-server -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=java -e MYSQL_DATABASE=test -e MYSQL_PASSWORD=password -d mysql:8.0.18
+
+    // docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e 'use test ; drop table if exists `user`; CREATE TABLE `user` (  `id` int AUTO_INCREMENT  PRIMARY KEY, `nick_name` varchar(255), `gender` int, `password` varchar(255), `name` varchar(255));' 
 		/*
 				InputStream input = null;
 				try {

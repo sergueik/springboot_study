@@ -59,10 +59,13 @@ would response with
 
 ```
 ```sh
-for CNT in (seq 1 1 1000); do curl -sX POST -H "application/x-www-form-urlencoded" -d "userName=Michael&nickName=michaeljackson&gender=MAN&password=thriller&confirmPassword=thriller" http://localhost:8080/springboot/addUser ; done
+for CNT in $(seq 1 1 1000); do curl -sX POST -H "application/x-www-form-urlencoded" -d "userName=Michael&nickName=michaeljackson&gender=MAN&password=thriller&confirmPassword=thriller" http://localhost:8080/springboot/addUser ; done
 ```
 
 * add shell scripts to evaluate timing of the run (serially)
+
+`test1.sh`:
+
 ```sh
 HOST=192.168.0.25
 MAX_COUNT=1000
@@ -77,6 +80,13 @@ real    0m32.533s
 user    0m11.619s
 sys     0m7.024s
 ```
+`test2.sh`:
+
+```sh
+HOST=192.168.0.25
+MAX_COUNT=1000
+for cnt in $(seq 1 1 $MAX_COUNT); do curl -s http://$HOST:8080/springboot/getUser?id=10 > /dev/null; done
+```
 ```sh
 time ./test2.sh
 ```
@@ -85,6 +95,102 @@ without caching
 real    1m11.333s
 user    0m11.010s
 sys     0m7.357s
+
+```
+
+With MySQL connection instead of SQLite the timings:
+```
+
+```sh
+time ./test1.sh
+```
+with caching
+```text
+real    1m49.866s
+user    0m10.927s
+sys     0m27.960s
+```
+
+
+```sh
+time ./test2.sh
+```
+without caching
+```text
+real    3m7.313s
+user    0m10.693s
+sys     0m28.451s
+```
+
+#### Gatling Results
+
+* with caching
+
+```text
+---- Global Information --------------------------------------------------------
+
+> request count                                       1000 (OK=1000   KO=0     )
+
+> min response time                                      2 (OK=2      KO=-     )
+
+> max response time                                   3372 (OK=3372   KO=-     )
+
+> mean response time                                   407 (OK=407    KO=-     )
+
+> std deviation                                        605 (OK=605    KO=-     )
+
+> response time 50th percentile                         59 (OK=59     KO=-     )
+
+> response time 75th percentile                        737 (OK=737    KO=-     )
+
+> response time 95th percentile                       1618 (OK=1618   KO=-     )
+
+> response time 99th percentile                       2722 (OK=2722   KO=-     )
+
+> mean requests/sec                                    100 (OK=100    KO=-     )
+
+---- Response Time Distribution ------------------------------------------------
+
+> t < 800 ms                                           767 ( 77%)
+> 800 ms <= t < 1200 ms                                103 ( 10%)
+> t >= 1200 ms                                         130 ( 13%)
+> failed                                                 0 (  0%)
+================================================================================
+
+```
+* without caching
+
+```text
+---- Global Information --------------------------------------------------------
+
+> request count                                       1000 (OK=1000   KO=0     )
+
+> min response time                                   2842 (OK=2842   KO=-     )
+
+> max response time                                  57917 (OK=57917  KO=-     )
+
+> mean response time                                 30909 (OK=30909  KO=-     )
+
+> std deviation                                      15149 (OK=15149  KO=-     )
+
+> response time 50th percentile                      31062 (OK=31062  KO=-     )
+
+> response time 75th percentile                      43782 (OK=43782  KO=-     )
+
+> response time 95th percentile                      54385 (OK=54385  KO=-     )
+
+> response time 99th percentile                      57208 (OK=57208  KO=-     )
+
+> mean requests/sec                                 14.925 (OK=14.925 KO=-     )
+
+---- Response Time Distribution ------------------------------------------------
+
+> t < 800 ms                                             0 (  0%)
+> 800 ms <= t < 1200 ms                                  0 (  0%)
+> t >= 1200 ms                                        1000 (100%)
+> failed                                                 0 (  0%)
+================================================================================
+
 
 ```
 #### Database Settings

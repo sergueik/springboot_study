@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <hibernate-configuration>
   <session-factory>
-    <property name="hibernate.dialect">example.sqlite.SQLiteDialect</property>
-    <property name="hibernate.connection.driver_class">org.sqlite.JDBC</property>
-    <property name="hibernate.connection.url">jdbc:sqlite::memory:</property>
-    <property name="hibernate.connection.username"/>
-    <property name="hibernate.connection.password"/>
+    <property name="hibernate.dialect">com.mysql.jdbc.Driver</property>
+    <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+    <property name="hibernate.connection.url">jdbc:mysql://127.0.0.1:3306/test</property>
+    <property name="hibernate.connection.username">java</property>
+    <property name="hibernate.connection.password">password</property>
     <property name="hibernate.hbm2ddl.auto">create</property>
     <property name="hibernate.show_sql">true</property>
     <mapping class="example.User"/>
