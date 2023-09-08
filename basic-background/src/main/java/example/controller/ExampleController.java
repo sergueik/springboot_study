@@ -16,7 +16,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import example.component.DataComponent;
-import example.model.Data;
+import example.domain.Gender;
+import example.domain.User;
 
 @RestController
 @RequestMapping("/basic")
@@ -37,26 +38,26 @@ public class ExampleController {
 
 	@GetMapping
 	public String hello() {
-		ConcurrentHashMap.KeySetView<Integer, String> keySetView = data.keySet();
-		Iterator<Integer> iterator = keySetView.iterator();
+		ConcurrentHashMap.KeySetView<Long, User> keySetView = data.keySet();
+		Iterator<Long> iterator = keySetView.iterator();
 
 		long time = System.currentTimeMillis();
 		String output = time + ": ";
 
 		while (iterator.hasNext()) {
-			Integer key = iterator.next();
-			String value = data.getOrDefault(key, "");
+			Long key = iterator.next();
+			User value = data.getOrDefault(key,
+					new User("username", "password", Gender.MAN));
 			output += key + "=>" + value + "; ";
 		}
 
 		return output;
 
-		// return service.hello();
 	}
 
 	@GetMapping(value = "/json", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public Data json() {
-		return new Data("dummy");
+	public User json() {
+		return new User("username", "password", Gender.MAN);
 	}
 
 }
