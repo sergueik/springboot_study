@@ -10,6 +10,7 @@
 
     <property name="hibernate.connection.driver_class">org.sqlite.JDBC</property>
 
+    <!-- <property name="hibernate.connection.url">jdbc:sqlite:${HOME}/Desktop/springboot.db</property>-->
     <property name="hibernate.connection.url">jdbc:sqlite::memory:</property>
 
     <property name="hibernate.connection.username"/>

@@ -9,8 +9,8 @@ spring:
   datasource:
     driver-class-name: org.sqlite.JDBC
     # driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:sqlite:${USERPROFILE}\\sqlite\\springboot.db
-    # url: 'jdbc:sqlite::memory:'
+    # url: jdbc:sqlite:${HOME}/Desktop/springboot.db
+    url: 'jdbc:sqlite::memory:'
     # url: 'jdbc:mysql://127.0.0.1:3306/test'
     username:
     # username: java

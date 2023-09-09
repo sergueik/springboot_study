@@ -56,5 +56,13 @@ mvn spring-boot:run
 org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'jpaVendorAdapter' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.orm.jpa.JpaVendorAdapter]: Factory method 'jpaVendorAdapter' threw exception; nested exception is java.lang.NoClassDefFoundError: org/hibernate/jpa/HibernatePersistenceProvider
 
 ```
+
+With matching legacy versions __2.3.4.RELEASE__ and __5.3.20.Final__ the exception becomes:
+```text
+ Started Application in 8.543 seconds (JVM running for 9.259)
+Exception in thread "Thread-3" org.springframework.transaction.CannotCreateTransactionException: Could not open JPA EntityManager for transaction; nested exception is java.lang.NoSuchMethodError: org.springframework.orm.jpa.JpaTransactionManager$JpaTransactionObject.setReadOnly(Z)V
+
+```
+the same error whether the database is in memory `jdbc:sqlite::memory:` or on disk `jdbc:sqlite:${HOME}/Desktop/springboot.db`
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
