@@ -63,6 +63,17 @@ With matching legacy versions __2.3.4.RELEASE__ and __5.3.20.Final__ the excepti
 Exception in thread "Thread-3" org.springframework.transaction.CannotCreateTransactionException: Could not open JPA EntityManager for transaction; nested exception is java.lang.NoSuchMethodError: org.springframework.orm.jpa.JpaTransactionManager$JpaTransactionObject.setReadOnly(Z)V
 
 ```
+ moving aroung versions does not resolve this -  see `pom.xml.BROKEN-IN-JPA`
 the same error whether the database is in memory `jdbc:sqlite::memory:` or on disk `jdbc:sqlite:${HOME}/Desktop/springboot.db`
+
+
+```sh
+docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e 'use test ; drop table if exists `user`; CREATE TABLE `user` (  `id` int AUTO_INCREMENT  PRIMARY KEY, `nick_name` varchar(255), `gender` int, `password` varchar(255), `name` varchar(255));'
+```
+
+```sh
+docker exec -it mysql-server mysql -P 3306 -h localhost -u java -ppassword -e 'use test; insert into user ( nick_name, gender, password, name) values ("ringo", 0, "starr","richard");'
+
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
