@@ -9,23 +9,14 @@ mvn spring-boot:run
 this will start backgrond worker thread updating a memory hash with thread-specific values from the SQLite database:
 ```text
 Hibernate: select user0_.id as id1_0_, user0_.gender as gender2_0_, user0_.nick_name as nick_nam3_0_, user0_.password as password4_0_, user0_.name as name5_0_ from user user0_
-1694215757069: Writer-1 has put [1 => userName: John, pasword: beatles, gender:MAN]
-1694215757153: Writer-1 has put [2 => userName: Michael, pasword: thriller, gender: MAN]
-1694215757185: Writer-1 has put [3 => userName: Michael, pasword: thriller, gender: MAN]
-1694215757212: Writer-1 has put [4 => userName: Michael, pasword: thriller, gender: MAN]
-1694215757239: Writer-1 has put [5 => userName: Michael, pasword: thriller, gender: MAN]
-1694215757268: Writer-1 has put [6 => userName: Michael, pasword: thriller, gender: MAN]
-1694215757292: Writer-1 has put [7 => userName: Michael, pasword: thriller, gender: MAN]
-1694215757311: Writer-1 has put [8 => userName: Michael, pasword: thriller, gender: MAN]
-1694215757333: Writer-1 has put [9 => userName: Michael, pasword: thriller, gender: MAN]
-1694215757355: Writer-1 has put [10 => userName: Michael, pasword: thriller, gender: MAN]
+1694455352011: Writer-1 has updated users
 ...
 ```
 
 the state of the can in-memory inventory be queried via
 ```sh
 
-curl -s http://localhost:8085/basic/
+curl -s http://localhost:8085/all/
 ```
 
 This will print the hash:
@@ -33,7 +24,39 @@ This will print the hash:
 1694217055820: 1=>userName: John, pasword: beatles, gender: MAN; 2=>userName: Michael, pasword: thriller, gender: MAN; 
 ...
 ```
+indvidual row:
+```sh
+ID=10
+curl -s -X GET http://localhost:8085/json/$ID
+```
+```JSON
+{
+  "id": 10,
+  "userName": "Michael",
+  "password": "thriller",
+  "gender": "MAN"
+}
 
+```
+```sh
+curl -s http://localhost:8085/data/10?prop=gender
+```
+
+```text
+MAN
+```
+```
+curl -s http://localhost:8085/data/10?prop=id
+```
+```text
+10
+```
+```sh
+curl -s http://localhost:8085/data/10?prop=substr
+```
+```text
+unknown
+```
 ### TODO
 
 The project only works with very old SpringBoot parent

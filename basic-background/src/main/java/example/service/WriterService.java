@@ -17,6 +17,7 @@ public class WriterService extends Thread {
 	private DataComponent data;
 	private Random random;
 	private String name;
+	private Long index = 1L;
 
 	UserRepository userRepository;
 
@@ -33,23 +34,19 @@ public class WriterService extends Thread {
 
 			Map<Long, User> cachedUsers = new HashMap<>();
 			List<User> users = userRepository.findAll();
-			for (User user : users) {
-				cachedUsers.put(user.getId(), user);
-			}
+			// only update 10 users
 			int maxcnt = 100;
 			int cnt = 0;
-			// only update 10 users
-			for (User value : users) {
+			for (User user : users) {
 				if (cnt++ > maxcnt) {
 					break;
 				}
-				Long key = value.getId();
-				data.put(key, value);
-
-				System.out.println(String.format("%d: %s has put [%d => %s]",
-						System.currentTimeMillis(), name, key, value));
-
+				cachedUsers.put(user.getId(), user);
 			}
+			data.put(index, cachedUsers);
+
+			System.out.println(String.format("%d: %s has updated users",
+					System.currentTimeMillis(), name));
 
 			try {
 				Thread.sleep(5000);
