@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  <variable name="BASEDIR" value="${BASEDIR:-.}"/>
+  <!-- https://www.cloudesire.com/configure-logback-log-level-via-environment-variables/ -->
+  <property name="FILENAME" value="App"/>
+  <property name="DIR" value="${BASEDIR}/logs"/>
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- can use ${APP_HOME} -->
+    <file>${DIR}/${FILENAME}.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${DIR}/${FILENAME}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <maxFileSize>1KB</maxFileSize>
+      <totalSizeCap>10KB</totalSizeCap>
+      <maxHistory>1</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  <root level="WARN">
+    <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="FILE"/>
+  </root>
+  <logger name="example" level="DEBUG" additivity="false">
+    <appender-ref ref="FILE"/>
+  </logger>
+  <logger name="org.springframework" level="INFO"/>
+  <logger name="org.springframework.jdbc.core" level="DEBUG"/>
+</configuration>

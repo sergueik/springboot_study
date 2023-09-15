@@ -1,11 +1,63 @@
 ### Info
 
-This project contains [minimal demo code of logback example](http://logback.qos.ch/manual/appenders.html) converted to a regular springboot application logging initialization and operation
+This project contains demo code of [minimal logback example](http://logback.qos.ch/manual/appenders.html)
+converted to a regular springboot application logging initialization and operation
 
 ### Usage
 
 * test application locally
+
+#### Console-only Logging
+
 ```sh
+cd src/main/resources
+rm logback.xml
+cp logback.xml.CONSOLE-ONLY logback.xml
+cd ../../..
+mvn clean package
+```
+will see console logs:
+```text
+2498 [main] INFO  example.ExampleTest - Starting ExampleTest on sergueik71 with PID 17467
+2499 [main] DEBUG example.ExampleTest - Running with Spring Boot v2.3.4.RELEASE, Spring v5.2.9.RELEASE
+2500 [main] INFO  example.ExampleTest - The following profiles are active: development
+4737 [main] INFO  example.LogHelper - logger constructor message
+4737 [main] WARN  example.LogHelper - logger constructor message
+4737 [main] DEBUG example.LogHelper - logger constructor message
+6764 [main] INFO  example.ExampleTest - Started ExampleTest in 5.126 seconds (JVM running for 7.819)
+```
+```sh
+java -jar target/example.logback.jar
+```
+
+and in separate shell
+```sh
+for CNT in $(seq 1 1 10) ; do wget --quiet -O /dev/null 127.0.0.1:8080/example ; done
+```
+will see the log messages in the application console
+```text
+5732 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+5733 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+5734 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/9.0.38]
+5906 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+6077 [main] INFO  example.LogHelper - logger constructor message
+6079 [main] WARN  example.LogHelper - logger constructor message
+6079 [main] DEBUG example.LogHelper - logger constructor message
+7131 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+7217 [main] INFO  example.Example - Started Example in 6.316 seconds (JVM running for 8.891)
+53038 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+53136 [http-nio-8080-exec-1] INFO  example.LogHelper - request processed: null
+53139 [http-nio-8080-exec-1] WARN  example.LogHelper - request processed: null
+53139 [http-nio-8080-exec-1] DEBUG example.LogHelper - request processed: null
+```
+#### Console and File Logging
+
+* (assuming Linux host)
+```sh
+cd src/main/resources
+rm logback.xml
+cp logback.xml.CONSOLE-AND-FILE logback.xml
+cd ../../..
 mvn clean package
 mkdir dummy
 BASEDIR=$(pwd)/dummy
@@ -23,7 +75,31 @@ java -Dspring.profiles.active=development -Dlogback.debug=true -jar target/examp
 and in separate console
 ```sh
 for CNT in $(seq 1 1 10) ; do wget --quiet -O /dev/null 127.0.0.1:8080/example ; done
-tail logs/dummy/App.log
+```
+```sh
+ls -1 logs/
+```
+```text
+App.2023-09-15.0.log.gz
+App.2023-09-15.1.log.gz
+App.2023-09-15.2.log.gz
+App.2023-09-15.3.log.gz
+App.2023-09-15.4.log.gz
+App.2023-09-15.5.log.gz
+App.2023-09-15.6.log.gz
+App.2023-09-15.7.log.gz
+App.2023-09-15.8.log.gz
+App.log
+```
+```sh
+tail logs/App.log
+```
+will see `WARN`, `INFO` and `DEBUG` messages:
+```text
+4689 [main] INFO  example.LogHelper - logger constructor message
+4700 [main] WARN  example.LogHelper - logger constructor message
+4700 [main] DEBUG example.LogHelper - logger constructor message
+6707 [main] INFO  example.ExampleTest - Started ExampleTest in 4.948 seconds (JVM running for 7.739)
 ```
 use `$(hostname -i)` instead of `localhost` when neededed
 or (windows)
@@ -309,6 +385,15 @@ in `logback.xml` may cause __logback__ to instantiate an additional `FILE` logge
 22:53:18,295 |-INFO in ch.qos.logback.core.joran.action.NestedComplexPropertyIA - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
 22:53:18,298 |-INFO in ch.qos.logback.core.rolling.FixedWindowRollingPolicy@16b3fc9e - No compression will be used
 22:53:18,300 |-INFO in ch.qos.logback.core.rolling.RollingFileAppender[FILE] - Active log file name: LOG_FILE_IS_UNDEFINED
+```
+### TODO
+
+* the json logger `logback.xml.CONSOLE-AND-FILE-AND-JSON` is currently broken:
+```sh
+mvn test
+```
+```text
+ERROR in ch.qos.logback.core.joran.action.NestedComplexPropertyIA - Could not create component [jsonFormatter] of type [ch.qos.logback.contrib.jackson.JacksonJsonFormatter] java.lang.ClassNotFoundException: ch.qos.logback.contrib.jackson.JacksonJsonFormatter
 ```
 ### See Also
 
