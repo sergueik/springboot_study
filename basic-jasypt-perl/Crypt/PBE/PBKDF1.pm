@@ -10,8 +10,9 @@ use Digest::MD2 qw(md2);
 use Digest::MD5 qw(md5);
 use Digest::SHA qw(sha1);
 use Exporter qw(import);
+use Data::Dumper;
 
-our $VERSION = '0.103';
+our $VERSION = '0.104';
 
 our @EXPORT = qw(
     pbkdf1
@@ -147,11 +148,16 @@ sub pbkdf1 {
 }
 
 sub pbkdf1_hex {
-    return join '', unpack '(H2)*', pbkdf1(@_);
+    return byte_hex( pbkdf1(@_) );
 }
 
 sub pbkdf1_base64 {
     return encode_base64 pbkdf1(@_), '';
+}
+
+sub byte_hex {
+    my $arg = shift;
+    return join '', unpack( '(H2)*', $arg );
 }
 
 for my $digest (qw/md2 md5 sha1/) {
@@ -181,6 +187,7 @@ for my $digest (qw/md2 md5 sha1/) {
         my (%params) = @_;
         $params{hash}   = $digest;
         $params{dk_len} = $dk_len;
+	#  return join '', unpack '(H2)*', pbkdf1(%params);
         return join '', unpack 'H*', pbkdf1(%params);
     };
 

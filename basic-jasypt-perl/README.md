@@ -365,6 +365,33 @@ perl  test.pl  -value 'hello,world' -password secret  -operation encrypt
 ```text
 bWyoue2Pgo9VkZfbG0C08j2TvgvDksCNsY5byYh6L60KEZRn/J/q+xxewkn9XTJH
 ```
+
+### Copying the Perl Modules into Container
+
+```sh
+export NAME=d159a0bcc6d7 ; 
+
+docker cp Crypt/PBE.pm $NAME:/root/Crypt
+docker cp Crypt/PBE/CLI.pm $NAME:/root/Crypt/PBE
+docker cp Crypt/PBE/PBES1.pm $NAME:/root/Crypt/PBE  
+docker cp Crypt/PBE/PBES2.pm $NAME:/root/Crypt/PBE
+docker cp Crypt/PBE/PBKDF1.pm $NAME:/root/Crypt/PBE
+docker cp Crypt/PBE/PBKDF2.pm $NAME:/root/Crypt/PBE
+```
+
+* NOTE: when destination path is wrong, error is:
+```text
+Error response from daemon: extraction point is not a directory
+```
+and
+```text
+Error response from daemon: lstat /mnt/sda1/var/lib/docker/overlay2/d007ea1822bbabd4ad7107b8e4bd5f7140f612381da6638a7b8cb350d216a986/merged/Crypt/PBE: not a directory
+```
+
+a faster way is
+```sh
+find Crypt -type f |xargs -IX docker cp X $NAME:/root/X 
+```
 ### See Also
 
   * `Crypt::PBE` [module](https://metacpan.org/pod/Crypt::PBE)

@@ -10,7 +10,8 @@ use Exporter qw(import);
 
 use Crypt::PBE::PBKDF2;
 
-our $VERSION = '0.103';
+use Data::Dumper;
+our $VERSION = '0.104';
 
 use constant KEY_SIZE => {
     'aes-128' => 16,
@@ -36,6 +37,7 @@ sub new {
         encryption => $params{encryption} || croak('Specify encryption method'),
         count      => $params{count}      || 1_000,
         dk_len     => 0,
+        debug      => undef,
     };
 
     my $dk_len = KEY_SIZE->{ $params{encryption} };
@@ -50,6 +52,11 @@ sub new {
 
 }
 
+sub debug {
+    my ( $self, $value ) = @_;
+    $self->{debug} = $value;
+}
+
 sub encrypt {
 
     my ( $self, $data ) = @_;
@@ -57,6 +64,20 @@ sub encrypt {
     my $salt = Crypt::CBC->random_bytes(16);
     my $iv   = Crypt::CBC->random_bytes(16);
 
+    print STDERR 'Salt (random): ', byte_hex($salt), $/ if ( $self->{debug} );
+
+    my $salt_string = 'fec4c9acd8c72cd9790ccfb953ba48f7';
+
+    my @hex = ( $salt_string =~ /(..)/g );
+    my @dec = map { hex($_) } @hex;
+    print STDERR Dumper( \@dec ) if ( $self->{debug} );
+    my @bytes = map { pack( 'C', $_ ) } @dec;
+
+    $salt = join '', @bytes;
+    print STDERR 'Salt (fixed): ', byte_hex($salt), $/ if ( $self->{debug} );
+
+    # print Dumper($salt);
+    # origin: https://www.perlmonks.org/?node_id=1054876
     my $key = pbkdf2(
         prf      => $self->{hmac},
         password => $self->{password},
@@ -65,6 +86,8 @@ sub encrypt {
         count    => $self->{count}
     );
 
+    # TODO: add debug property
+    print STDERR 'key: ', byte_hex($key), $/ if ( $self->{debug} );
     my $cipher = Crypt::CBC->new(
         -key         => $key,
         -keysize     => length($key),
@@ -77,6 +100,11 @@ sub encrypt {
     my $encrypted = $cipher->encrypt($data);
 
     my @result = ( $salt, $iv, $encrypted );
+    if ( $self->{debug} ) {
+        print STDERR 'Salt: ',      byte_hex($salt),      $/;
+        print STDERR 'Iv: ',        byte_hex($iv),        $/;
+        print STDERR 'Encrypted: ', byte_hex($encrypted), $/;
+    }
 
     return wantarray ? @result : join( '', @result );
 
@@ -96,6 +124,11 @@ sub decrypt {
 
     }
 
+    if ( $self->{debug} ) {
+        print STDERR 'Salt: ',      byte_hex($salt),      $/;
+        print STDERR 'Iv: ',        byte_hex($iv),        $/;
+        print STDERR 'Encrypted: ', byte_hex($encrypted), $/;
+    }
     my $key = pbkdf2(
         prf      => $self->{hmac},
         password => $self->{password},
@@ -103,6 +136,7 @@ sub decrypt {
         dk_len   => $self->{dk_len},
         count    => $self->{count}
     );
+    print STDERR 'key: ', byte_hex($key), $/ if ( $self->{debug} );
 
     my $cipher = Crypt::CBC->new(
         -key         => $key,
@@ -116,6 +150,14 @@ sub decrypt {
     return $cipher->decrypt($encrypted);
 
 }
+# NOTE: when defined in PBKDF2.pm, not imported:
+# Undefined subroutine &Crypt::PBE::PBES2::byte_hex called at Crypt/PBE/PBES2.pm
+sub byte_hex {
+    my $arg = shift;
+    return join '', unpack( '(H2)*', $arg );
+}
+
+
 
 1;
 

@@ -1,6 +1,7 @@
 package Crypt::PBE;
 
 use strict;
+no strict 'refs';
 use warnings;
 use utf8;
 
@@ -8,8 +9,9 @@ use Carp;
 
 use Crypt::PBE::PBES1;
 use Crypt::PBE::PBES2;
+use Data::Dumper;
 
-our $VERSION = '0.103';
+our $VERSION = '0.104';
 
 use Exporter qw(import);
 
@@ -68,22 +70,24 @@ my $pbes2_map = {
     'PBEWithHmacSHA512AndAES_256' => { hmac => 'hmac-sha512', encryption => 'aes-256' },
 };
 
-# PBES1 + PBDKF1
+# print STDERR Dumper( \$pbes1_map );
+# print STDERR Dumper( \$pbes2_map );
 
+# PBES1 + PBDKF1
 foreach my $sub_name ( keys %{$pbes1_map} ) {
 
     my $params = $pbes1_map->{$sub_name};
 
-    no strict 'refs';    ## no critic
 
     *{$sub_name} = sub {
-        my ( $password, $count ) = @_;
+        my ( $password, $count, $debug ) = @_;
         my $pbes1 = Crypt::PBE::PBES1->new(
             password   => $password,
             count      => ( $count || 1_000 ),
             hash       => $params->{hash},
             encryption => $params->{encryption},
         );
+        $pbes1->debug($debug);
         return $pbes1;
     };
 
@@ -95,16 +99,16 @@ foreach my $sub_name ( keys %{$pbes2_map} ) {
 
     my $params = $pbes2_map->{$sub_name};
 
-    no strict 'refs';    ## no critic
 
     *{$sub_name} = sub {
-        my ( $password, $count ) = @_;
+        my ( $password, $count, $debug ) = @_;
         my $pbes2 = Crypt::PBE::PBES2->new(
             password   => $password,
             count      => ( $count || 1_000 ),
             hmac       => $params->{hmac},
             encryption => $params->{encryption},
         );
+        $pbes2->debug($debug);
         return $pbes2;
     };
 
