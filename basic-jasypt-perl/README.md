@@ -23,11 +23,11 @@ basic-perl-crypt-jasypt   latest    a07da5352c7e   4 weeks ago   446MB
 if the build ends with error
 
 ```text
-Step 5/5 : COPY test.pl /root/
-COPY failed: file not found in build context or excluded by .dockerignore: stat test.pl: file does not exist
+Step 5/5 : COPY jasypt.pl /root/
+COPY failed: file not found in build context or excluded by .dockerignore: stat jasypt.pl: file does not exist
 ```
 
-copy the `jasypt.pl` locally with the name `test.pl`
+copy the `jasypt.pl` locally with the name `jasypt.pl`
 if seeing the error with `Crypt::PBE`, comment the line, where the cpan commandis invoked, rebuild the image and install interatively as explained below in the __TODO__ section
 
 * NOTE: build will be time comsuming
@@ -41,8 +41,8 @@ docker run --name $NAME -it $IMAGE sh
 ```
 * run test in the container
 ```sh
-VALUE=$(perl test.pl -value message -password apple -operation encrypt) 2>/dev/null
-echo $VALUE
+VALUE=$(perl jasypt.pl -value message -password apple -operation encrypt) 2>/dev/null
+docker run --name $NAME -it $IMAGE shecho $VALUE
 ```
 NOTE: without the `2>/dev/null` redirect there may be some extra debugging output in console
 this will print some base64 encoded binary string, different each time because of the salt prefix
@@ -50,7 +50,7 @@ this will print some base64 encoded binary string, different each time because o
 x5p9WNNzxLAqGwt7zDkx1A==
 ```
 ```sh
-perl test.pl -value "$VALUE" -password apple -operation decrypt
+perl jasypt.pl -value "$VALUE" -password apple -operation decrypt
 ```
 this will successfully decrypt it, printing:
 
@@ -60,14 +60,14 @@ message
 ### Debugging
 
 ```sh
-perl test.pl -password secret -value test
+perl jasypt.pl -password secret -value test
 ```
 ```text
 /SsSdC91HQuA0NRml8JD1g==
 ```
 
 ```sh
-perl test.pl -password secret -value test -debug
+perl jasypt.pl -password secret -value test -debug
 ```
 ```text
 
@@ -98,7 +98,7 @@ test
 
 ```
 ```sh
-perl test.pl -password secret -value '/SsSdC91HQuA0NRml8JD1g==' -debug -operation decrypt
+perl jasypt.pl -password secret -value '/SsSdC91HQuA0NRml8JD1g==' -debug -operation decrypt
 ```
 ```text
 password: secret
@@ -210,7 +210,7 @@ and modify the `Crypt/PBE.pm` to recognize `PBEWithHmacSHA512AndAES_256`
 
 * run
 ```sh
-perl test.pl  -operation encrypt -password secret -value data -debug 2>&1 |t
+perl jasypt.pl -operation encrypt -password secret -value data -debug 2>&1 |t
 ee a.log
 
 ```
@@ -269,7 +269,7 @@ data
 
 ### Testing the `PBEWithHmacSHA512AndAES_256`
 
-* update the `test.pl`, `Crypt/PBE.pm` and add `AES` specific modules
+* update the `jasypt.pl`, `Crypt/PBE.pm` and add `AES` specific modules
 * run the test once to see the random salt value and update `Crypt/PBE/PBES2.pm` *fixed* `$salt_string` accordingly
 
 * rebuild image
@@ -279,7 +279,7 @@ docker run --name $NAME -it $IMAGE sh
 ```
 * run test, with `debug` flag
 ```sh
-perl test.pl -debug
+perl jasypt.pl -debug
 ```
 ```text
 
@@ -360,7 +360,7 @@ cp -R cp -R Crypt-PBE-0.103/lib/Crypt/ .
 
 this will fix the error from the truncated version used in the project temporarily:
 ```sh
-perl  test.pl  -value 'hello,world' -password secret  -operation encrypt
+perl jasypt.pl -value 'hello,world' -password secret -operation encrypt
 ```
 ```text
 bWyoue2Pgo9VkZfbG0C08j2TvgvDksCNsY5byYh6L60KEZRn/J/q+xxewkn9XTJH
