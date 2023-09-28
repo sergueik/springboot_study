@@ -8,6 +8,7 @@ from abc import ABCMeta
 from base64 import b64encode, b64decode
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
+from Crypto.Hash import SHA512
 
 from generator import PKCS12ParameterGenerator, RandomSaltGenerator, FixedSaltGenerator
 
@@ -34,10 +35,20 @@ class StandardPBEStringEncryptor(object):
             raise NotImplementedError('Salt generator %s is not implemented' % salt_generator)
 
         # setup the generators and cipher
+        print('algorithm: {}'.format(algorithm))
+
         if algorithm == 'PBEWITHSHA256AND256BITAES-CBC':
 
             # create sha256 PKCS12 secret generator
             self.key_generator = PKCS12ParameterGenerator(SHA256)
+
+            # setup the AES cipher
+            self._cipher_factory = AES.new
+            self._cipher_mode = AES.MODE_CBC
+        elif algorithm == 'PBEWITHSHA512AND256BITAES-CBC':
+
+            # create sha256 PKCS12 secret generator
+            self.key_generator = PKCS12ParameterGenerator(SHA512)
 
             # setup the AES cipher
             self._cipher_factory = AES.new
@@ -92,6 +103,7 @@ class StandardPBEStringEncryptor(object):
         cipher = self._cipher_factory(key, self._cipher_mode, iv)
 
         # pad the plain text secret to AES block size
+        # NOTE: TypeError: Object type <class 'str'> cannot be passed to C code 
         encrypted_message = cipher.encrypt(self.pad(AES.block_size, text))
 
         # concatenate salt + encrypted message

@@ -55,6 +55,7 @@ class PKCS12ParameterGenerator(PBEParameterGenerator):
     """
     __metaclass__ = ABCMeta
 
+    KEY_SIZE_512 = 512
     KEY_SIZE_256 = 256
     KEY_SIZE_128 = 128
     DEFAULT_IV_SIZE = 128
@@ -238,3 +239,8 @@ class FixedSaltGenerator(SaltGenerator):
 
     def generate_salt(self):
         return self.salt
+
+class ArgumentError(Exception):
+    """A problem with the supplied arguments to a class or function
+    """
+    pass
