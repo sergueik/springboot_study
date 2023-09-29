@@ -60,5 +60,7 @@ docker container rm $NAME
   * https://cryptobook.nakov.com/symmetric-key-ciphers/aes-encrypt-decrypt-examples
   * https://www.quickprogrammingtips.com/python/aes-256-encryption-and-decryption-in-python.html
   * https://stackoverflow.com/questions/14179784/python-encrypting-with-pycrypto-aes
+  * https://cryptobook.nakov.com/mac-and-key-derivation/pbkdf2
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

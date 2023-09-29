@@ -13,6 +13,7 @@ import base64
 import hashlib
 from Crypto import Random
 from Crypto.Cipher import AES
+from Crypto.Hash import SHA512
 import pbkdf2
 import os
 
@@ -21,23 +22,33 @@ BS = 16
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS).encode()
 unpad = lambda s: s[:-ord(s[len(s)-1:])]
 
-def iv():
-    """
-    The initialization vector to use for encryption or decryption.
-    It is ignored for MODE_ECB and MODE_CTR.
-    """
-    return chr(0) * 16
-
 class AESCipher(object):
     """
     https://github.com/dlitz/pycrypto
     """
 
+    @staticmethod
+    def pkcs12_password_to_bytes(password):
+        """
+        Converts a password string to a PKCS12 v1.0 compliant byte array.
+
+        :param password: byte[] - the password as simple string
+        :return: The unsigned byte array holding the password
+        """
+        pkcs12_pwd = [0x00] * (len(password) + 1) * 2
+
+        for i in range(0, len(password)):
+            digit = ord(password[i])
+            pkcs12_pwd[i * 2] = digit >> 8
+            pkcs12_pwd[i * 2 + 1] = digit
+
+        return bytearray(pkcs12_pwd)
+
     def __init__(self, password ):
-      self.salt = os.urandom(16)
-      key = pbkdf2.PBKDF2(password, self.salt).read(32)
-      self.key = key
-      print('salt (1): {}'.format(base64.b64encode(self.salt ).decode('utf-8')))
+      self.salt = os.urandom(16) 
+      # TypeError: passphrase must be str or unicode
+      # self.password = AESCipher.pkcs12_password_to_bytes(password)
+      self.password = password
 
     def encrypt(self, value):
         """
@@ -46,18 +57,28 @@ class AESCipher(object):
         """
         message = value.encode()
         raw = pad(message)
-        cipher = AES.new(self.key, AES.MODE_CBC, iv())
+        print('salt (encrypt): {}'.format(self.salt.hex()))        
+        # https://cryptobook.nakov.com/mac-and-key-derivation/pbkdf2
+        derivedbytes = pbkdf2.PBKDF2(self.password, self.salt,1000,SHA512)
+        self.key = derivedbytes.read(32)
+        self.iv = derivedbytes.read(16)
+        print('iv (encrypt): {}'.format(self.iv.hex()))        
+        # print('salt (1): {}'.format(base64.b64encode(self.salt ).decode('utf-8')))
+        cipher = AES.new(self.key, AES.MODE_CBC, self.iv)
         enc = cipher.encrypt(raw)
         return base64.b64encode(self.salt + enc).decode('utf-8')
 
     def decrypt(self, value):
         data = base64.b64decode(value)
         self.salt = data[:16]
-        print('salt (2): {}'.format(base64.b64encode(self.salt ).decode('utf-8')))        
+        print('salt (decrypt): {}'.format(self.salt.hex()))        
         enc = data[16:]
-        self.key = pbkdf2.PBKDF2(password, self.salt).read(32)
+        derivedbytes = pbkdf2.PBKDF2(self.password, self.salt,1000,SHA512)
+        self.key = derivedbytes.read(32)
+        self.iv = derivedbytes.read(16)
+        print('iv (decrypt): {}'.format(self.iv.hex()))        
 
-        cipher = AES.new(self.key, AES.MODE_CBC, iv())
+        cipher = AES.new(self.key, AES.MODE_CBC, self.iv)
         dec = cipher.decrypt(enc)
         # print('salt: {}'.format(base64.b64encode(self.salt ).decode('utf-8')))        
         return unpad(dec).decode('utf-8')
