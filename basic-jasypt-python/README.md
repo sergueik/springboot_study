@@ -2,7 +2,7 @@
 
 This repository contaians a modified `PBEWithMD5AndDES` in Python [example](https://github.com/lemonprogis/python-jasypt)
 
-This can only run on Python __2.7__ . 
+NOTE: The `MD5`/`DES` example can only run on Python __2.7__ . 
 On  Python __3.8.2__ fails with
 
 ```text
@@ -35,7 +35,7 @@ docker run --name $NAME -it $IMAGE sh
 
 in the container
 ```sh
-python jasypt_md5_des_ex.py --value test --password password
+python app3.py --value test --password password
 ```
 ```text
 6QavZfkiUlAqQNmFiP0E0g==
@@ -54,8 +54,11 @@ docker container stop $NAME
 docker container rm $NAME
 ```
 ### See Also 
-  * `PBEWithMD5AndDES` in Python [example](https://github.com/lemonprogis/python-jasypt)
-  * https://github.com/hei1233212000/python-jasypt-pbewithmd5anddes-poc
 
+  * https://github.com/hei1233212000/python-jasypt-pbewithmd5anddes-poc
+  * https://onboardbase.com/blog/aes-encryption-decryption/ 
+  * https://cryptobook.nakov.com/symmetric-key-ciphers/aes-encrypt-decrypt-examples
+  * https://www.quickprogrammingtips.com/python/aes-256-encryption-and-decryption-in-python.html
+  * https://stackoverflow.com/questions/14179784/python-encrypting-with-pycrypto-aes
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

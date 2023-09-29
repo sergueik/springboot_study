@@ -4,3 +4,5 @@ strict-functions
 future
 encryptor
 generators
+pbkdf2
+Crypto
