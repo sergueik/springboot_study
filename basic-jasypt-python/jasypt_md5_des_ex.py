@@ -1,9 +1,12 @@
 # origin: https://github.com/lemonprogis/python-jasypt/blob/master/PBEWithMD5AndDES.py
+from __future__ import print_function
 
 import base64
 import hashlib
 import re
 import os
+import argparse
+
 from Crypto.Cipher import DES
 
 """
@@ -65,13 +68,31 @@ def encrypt(msg, password):
     return base64.b64encode(salt + enc_text)
 
 def main():
-    msg = "hey"
-    passwd = "mypassword"
-    s = encrypt(msg, passwd)
-    print s
-    print decrypt(s, passwd)
+  parser = argparse.ArgumentParser(prog = 'modify_web_xml')
+  parser.add_argument('--operation', '-o', help = 'operation', type = str, action = 'store')
+  parser.add_argument('--password', '-p', help = 'password', type = str, action = 'store')
+  parser.add_argument('--value', '-v', help = 'test value', type = str, action = 'store')
+  parser.add_argument('--debug', '-d', help = 'debug', action = 'store_const', const = True)
+  args = parser.parse_args()
+  if args.debug:
+    print('running debug mode')
 
-if __name__ == "__main__":
+  if args.operation == None :
+    args.operation = 'encrypt'
+  if args.password == None :
+    args.password = 'password'
+  if args.value == None:
+    args.value = 'test'
+
+  if args.operation == 'decrypt' :
+    s = decrypt(args.value, args.password)
+    print(s) 
+  else:
+    s = encrypt(args.value, args.password)
+    print(s) 
+
+
+if __name__ == '__main__':
     main()
 
 

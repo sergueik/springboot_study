@@ -33,8 +33,27 @@ kuyvA9EAYwwussMaD4Lvwan4s4dq5jRGkMO4NP4kqhc=
 test
 ```
 
-NOTE: the `SHA512` example is not valid. the `SHA256` example was not verified yet
+NOTE: the `SHA512` example is not valid. the `SHA256` example was not verified yet - turns out to not be valid either
 
+```sh
+python jasypt_md5_des_ex.py --value test --password password
+```
+```text
+6QavZfkiUlAqQNmFiP0E0g==
+```
+```sh
+python jasypt_md5_des_ex.py --operation decrypt --value 6QavZfkiUlAqQNmFiP0E0g== --password password
+```
+```text
+test
+```
+the `MD5` `DES` encryption appears to be compatible with Perl, C#, Java
+
+### Cleanup
+```sh
+docker container stop $NAME
+docker container rm $NAME
+```
 ### See Also 
   * `PBEWithMD5AndDES` in Python [example](https://github.com/lemonprogis/python-jasypt)
   * https://github.com/hei1233212000/python-jasypt-pbewithmd5anddes-poc
