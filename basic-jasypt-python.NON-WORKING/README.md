@@ -1,26 +1,11 @@
 ### Info
 
-This repository contaians a modified `PBEWithMD5AndDES` in Python [example](https://github.com/lemonprogis/python-jasypt)
-
-This can only run on Python __2.7__ . 
-On  Python __3.8.2__ fails with
+This repository contaians a modified of [jasypt4py](https://github.com/fareliner/jasypt4py/tree/master/jasypt4py) repo. This runs on Python __2.7__ (on  Python __3.8.2__ fails with
 
 ```text
 TypeError: Object type <class 'str'> cannot be passed to C code
 ```
-and 
-```text
-key = password + salt
-TypeError: can only concatenate str (not "bytes") to str
-```
-during `encrypt`
-and 
-
-```text
- TypeError: can only concatenate str (not "bytes") to str
-```
-
-during `decrypt`.
+in `encryptor.py`
 
 ### Usage
 
@@ -34,6 +19,22 @@ docker run --name $NAME -it $IMAGE sh
 ```
 
 in the container
+```sh
+python app.py
+```
+```text
+algorithm: PBEWITHSHA256AND256BITAES-CBC
+N417ozOd+LpLotOsxLoirOgBzrfLbVu3dV9obc0Vsck=
+test
+```
+```text
+algorithm: PBEWITHSHA512AND256BITAES-CBC
+kuyvA9EAYwwussMaD4Lvwan4s4dq5jRGkMO4NP4kqhc=
+test
+```
+
+NOTE: the `SHA512` example is not valid. the `SHA256` example was not verified yet - turns out to not be valid either
+
 ```sh
 python jasypt_md5_des_ex.py --value test --password password
 ```

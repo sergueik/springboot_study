@@ -1,6 +1,5 @@
 # FROM python:3.8.2-alpine
 FROM python:2.7.17-alpine
-
 WORKDIR /app
 RUN apk --allow-untrusted update && apk upgrade && \
     apk add curl make gcc musl-dev perl-dev openssl-dev && \
@@ -14,7 +13,7 @@ ENV LC_LANG=C.UTF-8
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
-COPY jasypt_md5_des_ex.py ./
+COPY app.py  encryptor.py  exceptions.py  generator.py jasypt_md5_des_ex.py ./
 
 ARG SERVICE_PORT=8080
 EXPOSE $SERVICE_PORT
