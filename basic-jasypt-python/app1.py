@@ -68,7 +68,7 @@ def encrypt(msg, password):
     return base64.b64encode(salt + enc_text)
 
 def main():
-  parser = argparse.ArgumentParser(prog = 'modify_web_xml')
+  parser = argparse.ArgumentParser(prog = 'app1.py')
   parser.add_argument('--operation', '-o', help = 'operation', type = str, action = 'store')
   parser.add_argument('--password', '-p', help = 'password', type = str, action = 'store')
   parser.add_argument('--value', '-v', help = 'test value', type = str, action = 'store')
