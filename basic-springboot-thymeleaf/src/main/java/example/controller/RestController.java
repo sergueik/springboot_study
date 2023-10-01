@@ -24,7 +24,7 @@ public class RestController {
 	@RequestMapping(value = "/creditscore", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Customer> creditScore(@RequestBody Customer customer) {
-		int score = utils.setScore(customer);
+		int score = utils.	setScore(customer);
 		logger.info("Processing {}", customer);
 		customer.setScore(score);
 		ResponseEntity<Customer> response = new ResponseEntity<Customer>(customer,

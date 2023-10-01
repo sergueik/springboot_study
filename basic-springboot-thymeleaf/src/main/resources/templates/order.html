@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+ xmlns:th="http://www.thymeleaf.org">
+ <head>
+ <title>Order</title> 
+ </head>
+ <body>
+ <h1>Сделайте Ваш заказ:</h1>
+ <!--
+ <form method="post">
+ -->
+ 
+ <form method="post" th:object="${order}">
+ <p>
+ <input type="text" th:field="*{name}"/>
+ </p>
+ 
+ <p>
+ <input type="checkbox" th:value="${burger.getName()}" th:field="*{dishes}"/>
+ <span th:text="${burger.getName()}">DISHES</span>
+ </p>
+ 
+ <p>
+ <input type="checkbox" th:value="${cola.getName()}" th:field="*{dishes}"/>
+ <span th:text="${cola.getName()}">DISHES</span>
+ </p>
+ 
+ <p>
+ <input type="checkbox" th:value="${chicken.getName()}" th:field="*{dishes}"/>
+ <span th:text="${chicken.getName()}">DISHES</span>
+ </p>
+ 
+ <p>
+ <input type="checkbox" th:value="${tea.getName()}" th:field="*{dishes}"/>
+ <span th:text="${tea.getName()}">DISHES</span>
+ </p>
+ 
+ <input type="submit" value="ok"/>
+ 
+ </form>
+ </body>
+ </html>
