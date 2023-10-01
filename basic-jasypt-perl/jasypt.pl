@@ -42,13 +42,12 @@ GetOptions(
 # NOTE: jasypt_csharp used MD5 and DES
 # my $pbe = PBEWithMD5AndDES($password, undef, $debug);
 
-# NOTE: pbkdf2-csharp uses Rfc2898DeriveBytes which by default
-# uses HMACSHA1 and AES256
+# NOTE: pbkdf2-csharp uses System.Security.Cryptography.Rfc2898DeriveBytes.Rfc2898DeriveBytes for PBKDF which under .Net Framework 4.6 or earlir by default uses HMACSHA1
 # https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.rfc2898derivebytes?view=netframework-4.5
 # my $pbe =  PBEWithHmacSHA1AndAES_256($password, undef, $debug);
 
-# NOTE: under .Net 4.8 one canconfigure the Rfc2898DeriveBytes to use SHA512
-# HMACSHA512AES256 is Jasypt default
+# NOTE: under .Net Framework 4.8 one can configure the System.Security.Cryptography.Rfc2898DeriveBytes.Rfc2898DeriveBytes constructor to use SHA512
+# NOTE: HMACSHA512AES256 is also Jasypt default
 my $pbe = PBEWithHmacSHA512AndAES_256( $password, undef, $debug );
 
 if ($debug) {

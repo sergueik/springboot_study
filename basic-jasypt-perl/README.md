@@ -8,6 +8,8 @@ and with modified and trimmed Crypt::PBE installed into workdir for debugging
 #### Build
 
 ```sh
+IMAGE1=basic-perl-crypt
+docker build -t $IMAGE1 -f Dockerfile.build .
 IMAGE=basic-perl-crypt-jasypt
 docker build -t $IMAGE -f Dockerfile .
 ```
@@ -36,13 +38,15 @@ if seeing the error with `Crypt::PBE`, comment the line, where the cpan commandi
 
 ```sh
 NAME=example-perl-jasypt
+docker stop $NAME
 docker container rm $NAME
 docker run --name $NAME -it $IMAGE sh
 ```
 * run test in the container
 ```sh
 VALUE=$(perl jasypt.pl -value message -password apple -operation encrypt) 2>/dev/null
-docker run --name $NAME -it $IMAGE shecho $VALUE
+docker run --name $NAME -it $IMAGE sh 
+echo $VALUE
 ```
 NOTE: without the `2>/dev/null` redirect there may be some extra debugging output in console
 this will print some base64 encoded binary string, different each time because of the salt prefix

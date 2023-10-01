@@ -138,6 +138,8 @@ sub decrypt {
     );
     print STDERR 'key: ', byte_hex($key), $/ if ( $self->{debug} );
 
+    # TODO: If a key derivation function (-pbkdf) of 'none' is provided, a literal key and iv must be provided at Crypt/PBE/PBES2.pm line 148.
+    # the code is executed when a typo in operation option e.g. "enrypt"
     my $cipher = Crypt::CBC->new(
         -key         => $key,
         -keysize     => length($key),
