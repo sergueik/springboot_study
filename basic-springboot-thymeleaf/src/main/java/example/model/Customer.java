@@ -21,7 +21,8 @@ public class Customer {
 	public Customer() {
 	}
 
-	public Customer(String firstName, String lastName, String birthDate, String ssn) {
+	public Customer(String firstName, String lastName, String birthDate,
+			String ssn) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.birthDate = birthDate;
@@ -70,8 +71,10 @@ public class Customer {
 
 	@Override
 	public String toString() {
-		return "Customer {" + "First name='" + this.firstName + '\'' + ", Last name=" + this.lastName
-				+ ", Date of birth=" + this.birthDate + ", SSN=" + this.ssn + '}';
+		return "Customer {" + "First name='" + this.firstName + '\''
+				+ ", Last name=" + this.lastName + ", Date of birth=" + this.birthDate
+				+ ", SSN=" + this.ssn + '}';
 	}
 
 }
+	

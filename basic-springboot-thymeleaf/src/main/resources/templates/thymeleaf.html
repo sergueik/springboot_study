@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>AngularJS + Spring Boot</title>  
+    <title>AngularJS + Spring Boot</title>
      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
      <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
      <link th:attr="href=${app_css_src}" rel="stylesheet"></link>
@@ -27,8 +27,8 @@
                 </div>
               </div>
             </div>
-            
-            
+
+
             <div class="row">
               <div class="form-group col-md-12">
                 <label class="col-md-2 control-lable" for="file">Last Name</label>
@@ -55,7 +55,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="row">
               <div class="form-group col-md-12">
                 <label class="col-md-2 control-lable" for="file">SSN</label>
@@ -67,8 +67,8 @@
                   </div>
                 </div>
               </div>
-            </div>            
- 
+            </div>
+
             <div class="row">
               <div class="form-actions floatRight">
                 <input type="submit"  value="Score" class="btn btn-primary btn-sm" ng-disabled="myForm.$invalid">
@@ -82,7 +82,7 @@
         <div class="panel-heading"><span class="lead">Credit Score: <span id="score_result" style="color:red">{{ctrl.user.score}}</span></span></div>
       </div>
     </div>
-    
+
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   	  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.js"></script>
