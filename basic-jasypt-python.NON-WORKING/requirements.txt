@@ -1,6 +1,0 @@
-# PyCryptodome
-pycrypto
-strict-functions
-future
-encryptor
-generators
