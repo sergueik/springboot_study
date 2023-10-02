@@ -74,14 +74,15 @@ class AESCipher(object):
     cipher = AES.new(self.key, AES.MODE_CBC, self.iv)
     cipher.block_size = 32
     enc = cipher.encrypt(raw)
-    return base64.b64encode(self.salt + enc).decode('utf-8')
+    return base64.b64encode(self.salt + self.iv + enc).decode('utf-8')
 
   def decrypt(self, value):
     data = base64.b64decode(value)
     self.salt = data[:16]
     print('salt (decrypt): {}'.format(self.salt.hex()))        
-    enc = data[16:]
-    derivedbytes = pbkdf2.PBKDF2(self.password, self.salt,1000,SHA512)
+    iv = data[16:32]
+    enc = data[32:]
+    derivedbytes = pbkdf2.PBKDF2(self.password, self.salt, 1000, SHA512)
     self.key = derivedbytes.read(32)
     print('key (decrypt): {}'.format(self.key.hex()))        
     self.iv = derivedbytes.read(16)

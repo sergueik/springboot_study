@@ -25,43 +25,57 @@ during `decrypt`.
 ### Usage
 
 ```sh
+export IMAGE1=basic-python-crypto
+docker image build -t $IMAGE1 -f Dockerfile.build .
 export IMAGE=basic-jasypt-python
-docker image build -t $IMAGE -f Dockerfile  .
+docker image build -t $IMAGE -f Dockerfile .
 ```
 ```sh
 export NAME=basic-jasypt-python
 docker run --name $NAME -it $IMAGE sh
 ```
-
+#### AES Encryption
 in the container
 ```sh
-python app3.py --value test --password password --salt 781549FD8B328283F0
-DD61937BF4F27F --debug
+python app3.py --value test --password password
 ```
 ```text
-running debug mode
-salt (encrypt): 781549fd8b328283f0dd61937bf4f27f
-32
-key (encrypt): 165e6f969d8dc72a3f5e1739c49fd6bf1fa9c47d9ccfcd2201f81f41b18b99cb
-iv (encrypt): 980f2342e2ce49f07fe57307e8f069bc
-encrypted: eBVJ/YsygoPw3WGTe/Tyf/ahtOzRz9CfJ4nQFutw7pw=
+salt (encrypt): f55cae7681a9081369c877b7bc7fb077
+key (encrypt): e59f5596fbf97f06ff335bc42d106f2c6f1c2c8f032aaeadb3b5fd3bf7277a3a
+iv (encrypt): ce8fee6a30164659f4e23f8917ed572b
+encrypted: 9VyudoGpCBNpyHe3vH+wd86P7mowFkZZ9OI/iRftVyuwCbMe+3K6kjZuCCNLNJkl
+
+```
+* NOTE: one can provide `salt` argument too:
+```sh
+python app3.py --value test --password password --salt f55cae7681a9081369c877b7bc7fb077
+```
+
+```text
+salt (encrypt): f55cae7681a9081369c877b7bc7fb077
+key (encrypt): e59f5596fbf97f06ff335bc42d106f2c6f1c2c8f032aaeadb3b5fd3bf7277a3a
+iv (encrypt): ce8fee6a30164659f4e23f8917ed572b
+encrypted: 9VyudoGpCBNpyHe3vH+wd86P7mowFkZZ9OI/iRftVyuwCbMe+3K6kjZuCCNLNJkl
 ```
 
 ```sh
-python app3.py --value 'eBVJ/YsygoPw3WGTe/Tyf/ahtOzRz9CfJ4nQFutw7pw=' --p
-assword password --salt 781549FD8B328283F0DD61937BF4F27F --debug --operation dec
-rypt
+python app3.py --value '9VyudoGpCBNpyHe3vH+wd86P7mowFkZZ9OI/iRftVyuwCbMe+3K6kjZuCCNLNJkl' --password password --debug --operation decrypt
 ```
 
 ```text
 running debug mode
-salt (decrypt): 781549fd8b328283f0dd61937bf4f27f
-key (decrypt): 165e6f969d8dc72a3f5e1739c49fd6bf1fa9c47d9ccfcd2201f81f41b18b99cb
-iv (decrypt): 980f2342e2ce49f07fe57307e8f069bc
+salt (decrypt): f55cae7681a9081369c877b7bc7fb077
+key (decrypt): e59f5596fbf97f06ff335bc42d106f2c6f1c2c8f032aaeadb3b5fd3bf7277a3a
+iv (decrypt): ce8fee6a30164659f4e23f8917ed572b
 decrypted: test
 ```
+The `SHA512` `AES256` encryption appears to be compatible with Perl, C#, Java
+
+#### DES Encryption
+
+* NOTE: will need to use `python:2.7.17`-based images.
 ```sh
-python jasypt_md5_des_ex.py --operation decrypt --value 6QavZfkiUlAqQNmFiP0E0g== --password password
+python app1.py --operation decrypt --value 6QavZfkiUlAqQNmFiP0E0g== --password password
 ```
 ```text
 test
@@ -82,5 +96,7 @@ docker container rm $NAME
   * https://stackoverflow.com/questions/14179784/python-encrypting-with-pycrypto-aes
   * https://cryptobook.nakov.com/mac-and-key-derivation/pbkdf2
   * https://stackoverflow.com/questions/12524994/encrypt-and-decrypt-using-pycrypto-aes-256
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
