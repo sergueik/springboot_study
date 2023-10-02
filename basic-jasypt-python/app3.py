@@ -14,10 +14,6 @@ import hashlib
 from Crypto import Random
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA512
-import sys
-sys.path.insert(0,'.')
-# NOTE: no quotes
-# SyntaxError: invalid syntax
 import pbkdf2
 import os
 import argparse

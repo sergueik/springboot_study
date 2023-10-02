@@ -2,31 +2,13 @@
 
 This repository contaians a modified `PBEWithMD5AndDES` in Python [example](https://github.com/lemonprogis/python-jasypt)
 
-NOTE: The `MD5`/`DES` example can only run on Python __2.7__ . 
-On  Python __3.8.2__ fails with
-
-```text
-TypeError: Object type <class 'str'> cannot be passed to C code
-```
-and 
-```text
-key = password + salt
-TypeError: can only concatenate str (not "bytes") to str
-```
-during `encrypt`
-and 
-
-```text
- TypeError: can only concatenate str (not "bytes") to str
-```
-
-during `decrypt`.
-
 ### Usage
-
+* build image in stages
 ```sh
 export IMAGE1=basic-python-crypto
 docker image build -t $IMAGE1 -f Dockerfile.build .
+```
+```sh
 export IMAGE=basic-jasypt-python
 docker image build -t $IMAGE -f Dockerfile .
 ```
@@ -84,16 +66,26 @@ test
 ```
 the `MD5` `DES` encryption appears to be compatible with Perl, C#, Java
 
-### Missing Module
-```sh
-curl -O https://files.pythonhosted.org/packages/02/c0/6a2376ae81beb82eda645a091684c0b0becb86b972def7849ea9066e3d5e/pbkdf2-1.3.tar.gz
-tar xzvf pbkdf2-1.3.tar.gz
+NOTE: The `MD5`/`DES` example can only run on Python __2.7__ . 
+On  Python __3.8.2__ fails with
+
+```text
+TypeError: Object type <class 'str'> cannot be passed to C code
 ```
+during `encrypt`
+
+and 
+```text
+key = password + salt
+TypeError: can only concatenate str (not "bytes") to str
+```
+during `decrypt`.
 
 ### Cleanup
 ```sh
 docker container stop $NAME
 docker container rm $NAME
+docker image prune -f
 ```
 ### See Also 
 
@@ -108,4 +100,5 @@ docker container rm $NAME
   * https://stackoverflow.com/questions/1112618/import-python-package-from-local-directory-into-interpreter
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 

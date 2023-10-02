@@ -1,7 +1,2 @@
-# PyCryptodome
-pycrypto
-strict-functions
-future
-encryptor
-generators
-Crypto
+pbkdf2==1.3
+pycrypto==2.6.1
