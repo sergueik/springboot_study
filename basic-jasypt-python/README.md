@@ -32,6 +32,8 @@ docker image build -t $IMAGE -f Dockerfile .
 ```
 ```sh
 export NAME=basic-jasypt-python
+docker container stop $NAME
+docker container rm $NAME
 docker run --name $NAME -it $IMAGE sh
 ```
 #### AES Encryption
@@ -82,6 +84,12 @@ test
 ```
 the `MD5` `DES` encryption appears to be compatible with Perl, C#, Java
 
+### Missing Module
+```sh
+curl -O https://files.pythonhosted.org/packages/02/c0/6a2376ae81beb82eda645a091684c0b0becb86b972def7849ea9066e3d5e/pbkdf2-1.3.tar.gz
+tar xzvf pbkdf2-1.3.tar.gz
+```
+
 ### Cleanup
 ```sh
 docker container stop $NAME
@@ -96,7 +104,8 @@ docker container rm $NAME
   * https://stackoverflow.com/questions/14179784/python-encrypting-with-pycrypto-aes
   * https://cryptobook.nakov.com/mac-and-key-derivation/pbkdf2
   * https://stackoverflow.com/questions/12524994/encrypt-and-decrypt-using-pycrypto-aes-256
-
+  * https://pypi.org/project/pbkdf2/#files
+  * https://stackoverflow.com/questions/1112618/import-python-package-from-local-directory-into-interpreter
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
