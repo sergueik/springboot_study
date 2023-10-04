@@ -2,22 +2,24 @@
 
 this directory contains replica of the skeleton
 springboot vault-backed spring cloud configuration [example repository](https://github.com/codeforgeyt/vault-demo-mvn)
-connected to Vault [running in Docker container](https://github.com/dweomer/dockerfiles-vault/blob/master/Dockerfile).
+connected to the Alpine hosted HashiCorp Vault [running in Docker container](https://github.com/dweomer/dockerfiles-vault/blob/master/Dockerfile).
 
 the steps to configure the Vault and `bootstrap.properties` are covered in [youtube video](https://youtu.be/MaTDiKp_IrA)
 
 ### Usage
+
 * build package on host (NOTE: skip the tests)
 ```sh
 mvn -Dmaven.test.skip=true package
 ```
-* build image
+* build the image with Java and Vault applications
 ```sh
 export IMAGE=basic-vault
 docker build --build-arg "GID=$(id -g)" --build-arg "UID=$(id -u)" -t $IMAGE -f Dockerfile .
 ```
-* NOTE: on Windows the values returned by `id` will be big numbers like `197609`
-* run, override the entry point, and exposing the default port
+* NOTE: on a Windows host the values returned by `id` will be big integer numbers like `197609`. On a Linux host you will posibly see numbers like `1000`
+
+* run the container interactively, override the entry point, and exposing the default port, to execute vault commands in the foreground
 ```sh
 NAME=vault-container
 docker run --rm --name $NAME --entrypoint "" -p 8200:8200 -it $IMAGE sh
@@ -44,28 +46,99 @@ Root Token: dmF1bHQgdG9rZW4K
 
 Development mode should NOT be used in production installations!
 ```
-and remain running
+and vault will remain running
 
-* NOTE: simple PLAIN strings like 'example' appear to not always work - only observer through Java aplication failure
+If the key was changed extract it while running shell on the host:
+```sh
+sed -n 's/spring.cloud.vault.token=//p'  src/main/resources/bootstrap.properties
+```
+```text
+dmF1bHQgdG9rZW4K
+```
+then in the container use the value
+```sh
+TOKEN=dmF1bHQgdG9rZW4K
+echo $TOKEN
+vault server -dev -dev-listen-address=0.0.0.0:8200 -dev-root-token-id=$TOKEN
+```
+* NOTE: a simple PLAIN strings like 'example' do not always work - but the problem will only be discovered in runtime through observed Java aplication failure
 
-* nake sure use the `spring.cloud.vault.token` value from `src/main/resources/bootstrap.properties`
-this will allow connecting to the container through the ip address of the dev host:
+* make sure use the `spring.cloud.vault.token` value from `src/main/resources/bootstrap.properties`
+this will allow connecting to the container through the ip address of the dev host (`http://localhost:8200/ui/` for Linux host, the address will be shown by `docker-machine ip` for Windows host, e.g. `http://192.168.99.100:8200/ui/`):
 
 ![Vault UI](https://github.com/sergueik/springboot_study/blob/master/basic-spring-vault/screenshots/capture-login.png)
 
-
-alternatively can drop the `dev-root-token-id` option and
+alternatively can skip the `dev-root-token-id` option and
 
 collect the randomly generated token information to continue
 ```text
 Root Token: hvs.LhxlbD0lD1QWV33DFfsSlauA
 ```
-update `src/main/resources/bootstrap.properties`, repackage, copy
+update `src/main/resources/bootstrap.properties`, repackage, copy image into the running container
 ```sh
 export ID=$(docker container ls -a| grep $IMAGE| awk '{print $1}')
 
 docker cp target/example.basic-vault.jar $ID:/work/app.jar
 ```
+
+
+
+
+to do this, run on development host
+
+```sh
+export VAULT_ADDR=http://127.0.0.1:8200/
+sed -n 's/spring.cloud.vault.token=//p'  src/main/resources/bootstrap.properties
+echo $TOKEN
+export VAULT_TOKEN=$TOKEN
+NAME=vault-container
+docker exec -e VAULT_TOKEN=$TOKEN -e VAULT_ADDR=http://127.0.0.1:8200/ $NAME vault kv get secret/application
+```
+this wll print
+```text
+No value found at secret/data/application
+```
+
+NOTE:  without the settings, command will fail with complain
+```text
+Get "https://127.0.0.1:8200/v1/sys/internal/ui/mounts/secret/application": http: server gave HTTP response to HTTPS client
+```
+
+alternarively open the second interactive shell to the same container and execute commands there:
+```sh
+docker exec -it $NAME  sh
+```
+
+then in the second shell on the conainer:
+```sh
+export VAULT_ADDR=http://127.0.0.1:8200/
+TOKEN=$(echo 'vault token' | base64 -)
+echo $TOKEN
+export VAULT_TOKEN=$TOKEN
+vault kv get secret/application
+```
+
+
+* initilize the sensitive variables:
+```sh
+docker exec -e VAULT_TOKEN=$TOKEN -e VAULT_ADDR=http://127.0.0.1:8200/ $NAME vault kv put secret/application login=testuser password=test123
+```
+
+this will print
+```text
+===== Secret Path =====
+secret/data/application
+
+======= Metadata =======
+Key                Value
+---                -----
+created_time       2023-10-04T15:54:45.289732869Z
+custom_metadata    <nil>
+deletion_time      n/a
+destroyed          false
+version            1
+```
+
 * do exercises from a second console
 
 ```sh
@@ -79,11 +152,19 @@ TOKEN=$(echo 'vault token' | base64 -)
 echo $TOKEN
 export VAULT_TOKEN=$TOKEN
 ```
-NOTE:  combine both inputs in single command (may not be necessary)
+* put secret data into Vault
+NOTE: combine both inputs in single command (may not be necessary)
 ```sh
 vault kv put secret/application login=testuser password=test123
 ```
-(the `secret` secret engine and the `application` path are the default ones Java uses)
+NOTE: the `secret` secret engine and the `application` path are the default ones Java application is configured to use through `bootstrap.properties`:
+
+```java
+spring.application.name=basic-vault
+spring.cloud.vault.uri=http://localhost:8200
+spring.cloud.vault.generic.backend=secret
+spring.cloud.vault.generic.default-context=application
+```
 
 * verify the secret
 ```sh
@@ -138,30 +219,71 @@ this will print
   "warnings": null
 }
 ```
-![Secret](https://github.com/sergueik/springboot_study/blob/master/basic-spring-vault/screenshots/capture-secret.png)
+alternatively create and observe via UI:
 
-* run the Java app
+![Configured Application Secrets](https://github.com/sergueik/springboot_study/blob/master/basic-spring-vault/screenshots/capture-secret.png)
+
+![Secret Value Displayed](https://github.com/sergueik/springboot_study/blob/master/basic-spring-vault/screenshots/capture-secret2.png)
+
+* run the Java app in Docker container console
 
 ```sh
 java -jar app.jar
 ```
-this will log Spring logo and possibly few ignorable warnings, then
+
+or from the development host
+```sh
+docker exec $NAME java -jar app.jar
+```
+this will print to console the starnard Spring banned and possibly few ignorable warnings, then print the sensitive data received from Vault:
 ```text
-2023-07-06 01:45:32.679  INFO 260 --- [           main] c.c.v.VaultDemoMvnApplication            : Started VaultDemoMvnApplication in 9.565 seconds (JVM running for 10.926)
+2023-10-04 16:04:19.334  INFO 64 --- [           main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.3.4.RELEASE)
+
+2023-10-04 16:04:22.909  INFO 64 --- [           main] o.s.v.c.e.LeaseAwareVaultPropertySource  : Vault location [secret/basic-vault] not resolvable: Not found
+2023-10-04 16:04:22.998  INFO 64 --- [           main] b.c.PropertySourceBootstrapConfiguration : Located property source: [BootstrapPropertySource {name='bootstrapProperties-secret/basic-vault'}, BootstrapPropertySource {name='bootstrapProperties-secret/application'}]
+2023-10-04 16:04:23.086  INFO 64 --- [           main] c.c.c.ConfigServicePropertySourceLocator : Fetching config from server at : http://localhost:8888
+2023-10-04 16:04:23.297  INFO 64 --- [           main] c.c.c.ConfigServicePropertySourceLocator : Connect Timeout Exception on Url - http://localhost:8888. Will be trying the next url if available
+2023-10-04 16:04:23.306  WARN 64 --- [           main] c.c.c.ConfigServicePropertySourceLocator : Could not locate PropertySource: I/O error on GET request for"http://localhost:8888/basic-vault/default": Connection refused (Connection refused); nested exception is java.net.ConnectException: Connection refused (Connection refused)
+2023-10-04 16:04:23.369  INFO 64 --- [           main] example.Application                      : No active profile set, falling back to default profiles: default
+2023-10-04 16:04:29.348  INFO 64 --- [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=02bc8d54-4cb5-3c3d-a568-d793f6fe7cfe
+2023-10-04 16:04:32.044  INFO 64 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8085 (http)
+2023-10-04 16:04:32.159  INFO 64 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-10-04 16:04:32.162  INFO 64 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.38]
+2023-10-04 16:04:32.793  INFO 64 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-10-04 16:04:32.800  INFO 64 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 9192 ms
+2023-10-04 16:04:34.767  INFO 64 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2023-10-04 16:04:36.954  INFO 64 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8085 (http) with context path ''
+2023-10-04 16:04:37.063  INFO 64 --- [           main] example.Application                      : Started Application in 32.279 seconds (JVM running for 36.651)
 Login: testuser
 Password: test123
 
 ```
+The warning messages in the log indicate some kind of race condition between defining and accssing the Vault `uri` by Spring, but the eventually logged sensitive data proves the success
+
 if it logs an error:
 
 ```text
 2023-07-06 01:42:24.987 ERROR 240 --- [           main] o.s.boot.SpringApplication               : Application run failed
 
 org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'vaultConfiguration': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'login' in value "${login}"
-
 ```
 it means it was misconfigured
 
+if you see the error
+```text
+Web server failed to start. Port 8085 was already in use.
+```
+connect to the container interactively and terminate the already running Java process
+
+* you can update the sensitive informaion in the vault and see it being picked by the new instance of the Java app
 ### TODO 
 
 * Refactor `Dockerfile` to prevent repeating the
