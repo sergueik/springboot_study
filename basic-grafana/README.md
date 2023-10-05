@@ -357,9 +357,9 @@ curl -s -X POST  -H "Content-Type: application/json" http://localhost:5000/searc
   * https://oznetnerd.com/2018/04/17/writing-a-grafana-backend-using-the-simple-json-datasource-flask/
   * basic implementation of [SimpleJSON REST server](https://github.com/IsmetKh/grafana-simplejson-datasource) - has ASP.Net dependencies , can be used to prototype `/query`, `/search`,`/annotations`, `/tag-keys`, `tag-alues` payloads then using some prototype ASP.Net clean [REST famework](https://github.com/sachabarber/REST/tree/master/RESTServer/RESTServer) also discussed in [codeproject article](https://www.codeproject.com/Articles/826383/REST-A-Simple-REST-framework)
   * [populating Spring @Value during Unit Test](https://newbedev.com/populating-spring-value-during-unit-test)
-  * another [snippet](https://gist.github.com/danlangford/3418696) od dealing with @Value annotations in test runner
-
-   * [discussion](https://stackoverflow.com/questions/48546124/what-is-linux-equivalent-of-host-docker-internal/61001152) about the linux equivalent of "host.docker.internal"
+  * another [snippet](https://gist.github.com/danlangford/3418696) on dealing with @Value annotations in test runner
+   * [connect from a container to the host](https://docs.docker.com/desktop/networking/#i-want-to-connect-from-a-container-to-a-service-on-the-host) via `host.docker.internal` DNS name - does not work on Linux host nor on Windows with Docker Toolbox
+   * [discussion](https://stackoverflow.com/questions/48546124/what-is-linux-equivalent-of-host-docker-internal/61001152) about the linux equivalent of `host.docker.internal`
 
 ### Author
 
