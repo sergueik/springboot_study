@@ -1,7 +1,7 @@
 FROM openjdk:8-jre-alpine3.9
 
 ARG app_jar="example.basic-perl-cgi-java.jar"
-# No real httpd server
+# No real httpd server will run on this host
 
 RUN apk update && apk upgrade && \
     apk add jq && \

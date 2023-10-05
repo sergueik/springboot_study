@@ -41,22 +41,33 @@ public class ExampleService {
 		return runPerlScript(String.format("%s/%s %s", scriptDir, script, options));
 	}
 
+	public String runCGiBINScript(final String script, final String queryString) {
+		return runPerlScript(String.format("%s/%s %s", scriptDir, script, options),
+				queryString);
+	}
+
 	public String runCGiBINScript(final String script, String[] commandlineArgs) {
 		// ignore command line args for now
 		return runPerlScript(String.format("%s/%s %s %s", scriptDir, script,
 				options, String.join(separator, Arrays.asList(commandlineArgs))));
 	}
 
-	public String runCGiBINScript(final String script, String payload) {
+	public String runCGiBINScript(final String script, final String queryString,
+			final String payload) {
 		return runPerlScript(String.format("%s/%s %s", scriptDir, script, options),
-				payload);
+				queryString, payload);
 	}
 
 	public String runPerlScript(String processName) {
-		return runPerlScript(processName, null);
+		return runPerlScript(processName, null, null);
 	}
 
-	public String runPerlScript(String perlScriptWithArgs, String payload) {
+	public String runPerlScript(String processName, String queryString) {
+		return runPerlScript(processName, queryString, null);
+	}
+
+	public String runPerlScript(String perlScriptWithArgs, String queryString,
+			String payload) {
 		log.info("Running the perl script with arguments: " + perlScriptWithArgs);
 
 		if (perlScriptWithArgs.isEmpty()) {
@@ -65,17 +76,21 @@ public class ExampleService {
 		String command = String.format(
 				(osName.equals("windows")) ? "perl.exe %s" : "/usr/bin/perl %s",
 				perlScriptWithArgs.trim());
-		return runProcess(command, payload);
+		return runProcess(command, queryString, payload);
 
 	}
 
 	public String runProcess(String command) {
-		return runProcess(command, null);
+		return runProcess(command, null, null);
 	}
 
-	public String runProcess(String command, String payload) {
+	public String runProcess(String command, String queryString) {
+		return runProcess(command, queryString, null);
+	}
 
-		processRunner.runProcess(command, payload);
+	public String runProcess(String command, String queryString, String payload) {
+
+		processRunner.runProcess(command, queryString, payload);
 
 		if (processRunner.isStatus()) {
 			return processRunner.getProcessOutput();

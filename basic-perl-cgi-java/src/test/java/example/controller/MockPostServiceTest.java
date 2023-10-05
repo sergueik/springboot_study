@@ -8,6 +8,7 @@ import example.controller.Controller;
 import example.service.ExampleService;
 
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.isNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 
@@ -39,7 +40,7 @@ public class MockPostServiceTest {
 		mockService = Mockito.mock(ExampleService.class);
 	}
 
-	// @Ignore
+	@Ignore
 	@Test
 	public void test1() throws URISyntaxException {
 		RequestEntity<byte[]> request;
@@ -47,11 +48,17 @@ public class MockPostServiceTest {
 		// When using matchers, all arguments have to be provided by matchers
 		request = RequestEntity.post(new URI(url))
 				.body(body.getBytes(StandardCharsets.UTF_8));
-		when(mockService.runCGiBINScript(any(String.class), eq(body)))
-				.thenReturn("got json");
+		// query string passed
+		when(mockService.runCGiBINScript(any(String.class), any(String.class),
+				eq(body))).thenReturn("got test1 json");
+
+		// NO query string passed
+		when(mockService.runCGiBINScript(any(String.class), isNull(), eq(body)))
+				.thenReturn("got test1 json");
+
 		controller = new Controller(mockService);
 		assertThat(controller.status("status1.cgi", (byte[]) request.getBody()),
-				is("got json"));
+				is("got test1 json"));
 	}
 
 	// @Ignore
@@ -61,10 +68,12 @@ public class MockPostServiceTest {
 		// Invalid use of argument matchers
 		// When using matchers, all arguments have to be provided by matchers
 		request = RequestEntity.post(new URI(url)).body(body);
-		when(mockService.runCGiBINScript(any(String.class), eq(body)))
-				.thenReturn("got json");
+		when(mockService.runCGiBINScript(any(String.class), any(String.class),
+				eq(body))).thenReturn("got test2 json");
+		when(mockService.runCGiBINScript(any(String.class), isNull(), eq(body)))
+				.thenReturn("got test2 json");
 		controller = new Controller(mockService);
 		assertThat(controller.status("status.cgi", request.getBody()),
-				is("got json"));
+				is("got test2 json"));
 	}
 }

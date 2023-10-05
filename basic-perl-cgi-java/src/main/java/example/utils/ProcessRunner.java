@@ -7,12 +7,16 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+@Component
 public class ProcessRunner {
 
 	private Log log = LogFactory.getLog(this.getClass());
@@ -53,7 +57,11 @@ public class ProcessRunner {
 	}
 
 	public void runProcess(String command) {
-		runProcess(command, null);
+		runProcess(command, null, null);
+	}
+
+	public void runProcess(String command, String queryString) {
+		runProcess(command, queryString, null);
 	}
 
 	// https://www.javaworld.com/article/2071275/core-java/when-runtime-exec---won-t.html?page=2
@@ -61,16 +69,28 @@ public class ProcessRunner {
 	// execute the specified string command in a separate process
 	// with the specified environment
 	// http://docs.oracle.com/javase/6/docs/api/java/lang/Runtime.html#exec%28java.lang.String,%20java.lang.String%5B%5D%29
-	public void runProcess(String command, String payload) {
+	public void runProcess(String command, String queryString, String payload) {
 		processOutputBuffer.setLength(0);
 		processErrorBuffer.setLength(0);
 		try {
 			runtime = Runtime.getRuntime();
+			List<String> env = new ArrayList<>();
 
+			if (queryString != null) {
+				// http://www.java2s.com/Code/Perl/CGI/AnexampleofusingQUERYSTRING.htm
+				// my @pairs = split(/&/,$ENV{QUERY_STRING});
+				// foreach my $pair ( @pairs ) {
+				// my ( $name, $value ) = split ( "=", $pair );
+				env.add(String.format("QUERY_STRING=%s", queryString));
+			}
 			if (payload != null) {
-				String[] envp = { String.format("CONTENT_LENGTH=%d", payload.length()),
-						"REQUEST_METHOD=POST" };
-				log.info("Running with environment: " + Arrays.asList(envp));
+				env.add(String.format("CONTENT_LENGTH=%d", payload.length()));
+				env.add("REQUEST_METHOD=POST");
+			}
+			String[] envp = new String[env.size()];
+			env.toArray(envp);
+			log.info("Running with environment: " + Arrays.asList(envp));
+			if (payload != null) {
 				process = runtime.exec(command, envp);
 				bufferedWriter = new BufferedWriter(
 						new OutputStreamWriter(process.getOutputStream()));
@@ -79,6 +99,8 @@ public class ProcessRunner {
 				bufferedWriter.newLine();
 				bufferedWriter.flush();
 				bufferedWriter.close();
+			} else if (queryString != null) {
+				process = runtime.exec(command, envp);
 			} else {
 				process = runtime.exec(command);
 			}

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import example.service.ExampleService;
 import java.nio.charset.StandardCharsets;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 @RestController
 @RequestMapping("/")
@@ -37,23 +39,31 @@ public class Controller {
 		service = data;
 	}
 
-	@PostMapping(value = "/cgi-bin/{script:[a-z.0-9]+.sh}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/cgi-bin/{script:[a-z.0-9_]+.sh}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String shell(@PathVariable String script,
 			RequestEntity<String> request) {
 		String body = request.getBody();
 		log.info("processing shell script: " + script);
 		final String scriptDir = "/var/www/localhost/cgi-bin";
-		return service.runProcess(String.format("%s/%s", scriptDir, script), body);
+		return service.runProcess(String.format("%s/%s", scriptDir, script), null,
+				body);
 	}
 
 	@PostMapping(value = "/cgi-bin/{script:status.cgi}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String status(@PathVariable String script, @RequestBody String body) {
-		return service.runCGiBINScript(script, body);
+		log.info("processing CGIBIN script(1): " + script);
+		// TODO: change logging to slf4j
+		// log.info("invoking CGIBIN {}(\"{}\",\"{}\",\"{}\"): ", script, null,
+		// body);
+		log.info(String.format("invoking CGIBIN %s(\"%s\",\"%s\",\"%s\"): ",
+				"runCGiBINScript", script, null, body));
+		return service.runCGiBINScript(script, null, body);
 	}
 
 	@PostMapping(value = "/cgi-bin/{script:status[0-9].cgi}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String status(@PathVariable String script, @RequestBody byte[] bytes) {
-		return service.runCGiBINScript(script,
+		log.info("processing CGIBIN script(2): " + script);
+		return service.runCGiBINScript(script, null,
 				new String(bytes, StandardCharsets.UTF_8));
 	}
 
@@ -61,7 +71,7 @@ public class Controller {
 	// Free-hand argument will be possible to read through RequestEntity
 	// https://stackoverflow.com/questions/52842979/how-to-get-request-url-in-spring-boot
 	// The question mark does not have REGEX meaning in the mask
-	@GetMapping(value = "/cgi-bin/{script:[a-z.0-9]+cgi}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/cgi-bin/{script:[a-z.0-9_]+cgi}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String legacyParam(@PathVariable String script,
 			RequestEntity<String> request) {
 		String query = request.getUrl().getQuery();

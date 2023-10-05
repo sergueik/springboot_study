@@ -28,14 +28,16 @@ this will respond with regular Springboot logo and aplication initialization mes
 ```text
  INFO [main] example.ExampleApplication               : Started ExampleApplication in 9.437 seconds (JVM running for 10.855)
 ```
-* verify the vanilla httpd to run in Docker
+* ver	ify the vanilla httpd to run in Docker
 ```sh
 curl http://localhost:8085/cgi-bin/example.cgi | jq '.'
 ```
-on Windows Docker Toolbox, replace `localhost` with $DOCKER_MACHINE_IP
-
-```sh
+on Windows __Docker Toolbox__, replace `localhost` with `$DOCKER_MACHINE_IP`. NOTE: this environment variable may not be set even in __Docker Toolbox__ shell
+and will definitely not be set outside. To evauate run
 ```
+export DOCKER_MACHINE_IP=$(docker-machine ip)
+```
+The `docker-machine` will be in the `$PATH` in __Docker Toolbox__ shell
 
 and `jq` with
 ```sh
@@ -258,6 +260,46 @@ the console log shows
 2023-03-25 20:46:42.828  INFO 1 --- [nio-8085-exec-9] example.utils.ProcessRunner              : <OUTPUT>console message</OUTPUT>
 2023-03-25 20:46:42.833  INFO 1 --- [nio-8085-exec-9] example.utils.ProcessRunner              : <ERROR>error message</ERROR>
 2023-03-25 20:46:42.836  INFO 1 --- [nio-8085-exec-9] example.service.ExampleService           : returning error from command: /var/www/localhost/cgi-bin/failing.sh
+```
+
+### Config
+
+* NOTE: the Java app is not currently creating `$QUERY_STRING`.
+
+```sh
+curl http://$DOCKER_MACHINE_IP:8085/cgi-bin/config.cgi
+```
+```JSON
+{
+  "stdout": "",
+  "exitcode": 2,
+  "stderr": "Use of uninitialized value $query_string in split at /var/www/localhost/cgi-bin/config.cgi line 66.Can't call method 'mtime' on an undefined value at /var/www/localhost/cgi-bin/config.cgi line 46.",
+  "status": false
+}
+	
+```
+```sh
+curl http://$DOCKER_MACHINE_IP:8085/cgi-bin/file_hash.cgi
+```
+```text
+Content-Type: application/json
+```
+```JSON
+{  
+  "result" : "Config //example_config.json not found",  
+  "status" : "error"
+}
+```
+```
+curl http://$DOCKER_MACHINE_IP:8085/cgi-bin/file_hash_status.cgi
+```
+```text
+{
+  "stdout": "Status: 500 Internal Server Error Date: Thu, 05 Oct 2023 22:19:53 GMT Content-Type: text/plain Content-Length: 25 500 Internal Server Error",
+  "exitcode": 255,
+  "stderr": "Unknown debug command -no-headers cgi exited without rendering a response",
+  "status": false
+}
 ```
 ### Cleanup
 ```sh
