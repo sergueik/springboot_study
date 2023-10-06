@@ -3,44 +3,38 @@ package example.controller;
  * Copyright 2023 Serguei Kouzmine
  */
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import example.utils.Utils;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/configs")
 public class Controller {
+
+	private static Gson gson = new GsonBuilder().create();
+	private static String body = null;
 
 	@ResponseBody
 	@GetMapping(value = "/{filename}/load", produces = {
@@ -57,24 +51,67 @@ public class Controller {
 
 	}
 
+	// convert String to InputStream
+	// http://www.java2s.com/example/java/java.io/convert-string-to-inputstream.html
+	public static InputStream getInputStream(final String in) {
+		return new ByteArrayInputStream(in.getBytes());
+	}
+
+	// NOTE: when MediaType is APPLICATION_JSON_VALUE
+	// the client test receives:
+	// {"inputStream":{"buf":[123,34,114,101,115,117,108,116,34,58,34,101,114,114,111,114,32,109,101,115,115,97,103,101,34,44,34,115,116,97,116,117,115,34,58,34,101,114,114,111,114,34,125],"pos":0,"mark":0,"count":43},
+	// "description":"resource loaded through InputStream","read":false }
+
 	@ResponseBody
-	@GetMapping(value = "/file_hash", produces = {
-			MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<Map<String, Object>> fileHash(
+	@GetMapping(value = "/file_hash_error_only", produces = {
+			MediaType.APPLICATION_OCTET_STREAM_VALUE })
+
+	public ResponseEntity<InputStreamResource> fileHash(
 			@RequestParam String filename, @RequestParam Optional<Long> newer,
 			@RequestParam Optional<String> hash) {
+		Map<String, Object> response = Utils.getErrorResponse("newer: 12345");
+		body = gson.toJson(response, Map.class);
 		Utils.getOSName();
 		// not doing real hash comparison
 		final String filePath = "c:\\temp" + "\\" + filename;
-		return (hash.isPresent())
-				? ResponseEntity.status(HttpStatus.OK)
-						.body(Utils.getErrorResponse("hash"))
-				: (newer.isPresent())
-						? ResponseEntity.status(HttpStatus.OK)
-								.body(Utils.getFileData(filePath, newer.get()))
-						: ResponseEntity.status(HttpStatus.OK)
-								.body(Utils.getFileData(filePath));
+		response = (hash.isPresent()) ? Utils.getErrorResponse("hash")
+				: (newer.isPresent()) ? Utils.getFileData(filePath, newer.get())
+						: Utils.getFileData(filePath);
 
+		return ResponseEntity.status(HttpStatus.OK).body(new InputStreamResource(
+				getInputStream(gson.toJson(response, Map.class))));
+	}
+
+	@ResponseBody
+	@GetMapping(value = "/file_hash", produces = {
+			MediaType.APPLICATION_OCTET_STREAM_VALUE })
+
+	public ResponseEntity<InputStreamResource> fileHashx(
+			@RequestParam String filename, @RequestParam Optional<Long> newer,
+			@RequestParam Optional<String> hash) {
+		Map<String, Object> response = Utils.getErrorResponse("newer: 12345");
+		body = gson.toJson(response, Map.class);
+		Utils.getOSName();
+		// not doing real hash comparison
+		final String filePath = "c:\\temp" + "\\" + filename;
+		if (hash.isPresent()) {
+			response = Utils.getErrorResponse("hash");
+			body = gson.toJson(response, Map.class);
+		} else if (newer.isPresent()) {
+			// not doing real time stamp comparison
+			response = Utils.getFileData(filePath, newer.get());
+			body = gson.toJson(response, Map.class);
+		} else {
+			try {
+				body = new String(Files.readAllBytes(Paths.get(filePath)),
+						StandardCharsets.UTF_8);
+			} catch (IOException e) {
+				// e.printStackTrace();
+			}
+			// response = Utils.getFileData(filePath);
+		}
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(new InputStreamResource(getInputStream(body)));
 	}
 
 	@ResponseBody

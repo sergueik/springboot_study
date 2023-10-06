@@ -85,6 +85,25 @@ curl -s "http://localhost:8085/configs/file_hash_status?filename=a.txt&newer=123
 }
 ```
 
+* successful case:
+* create a JSON file in a app resource directory (`C:\TEMP`  for simplicity) and download it 
+
+```sh
+curl -o data.json -s "http://localhost:8085/configs/file_hash?filename=data.json"
+```
+verify hashes to match
+```sh
+md5sum.exe ./data.json  /c/temp/data.json
+```
+```text
+571076c15c60e93c3b4484f10e45499b *./data.json
+571076c15c60e93c3b4484f10e45499b */c/temp/data.json
+```
+
+### See Also
+
+   * [Spring Controller download an Image or a File](https://www.baeldung.com/spring-controller-return-image-file)
+   * [ways to read a file into String](https://stackoverflow.com/questions/3402735/what-is-simplest-way-to-read-a-file-into-string)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
