@@ -18,7 +18,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #THE SOFTWARE.
 
-
+# this version uses Invoke-WebRequest
 param (
   [string]$url = 'http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=208'
 )
@@ -130,81 +130,6 @@ function getHttpStatusCode {
   return  $statuscode
 }
 
-# use invoke-restmethod cmdlet to read page, but 
-# NOTE: there is no way to get HTTP status with invoke-restmethod
-function getPage{
-
-  param(
-    [string]$url,
-    [boolean]$debug
-  )
-  # workaround for the error invoke-restmethod cmdlet:
-  # the underlying connection was closed: could not establish trust relationship for the SSL/TLSsecure channel
-  # see also: https://stackoverflow.com/questions/11696944/powershell-v3-invoke-webrequest-https-error
-  # https://learn.microsoft.com/en-us/dotnet/api/system.net.icertificatepolicy?view=netframework-4.0
-  $helper_class = 'TrustAllCertsPolicy'
-  if ( -not ( $helper_class -as [type])) {
-    # ICertificatePolicy Interface validates a server certificate
-    # ignore self-signed certificates
-    add-type @"
-    using System.Net;
-    using System.Security.Cryptography.X509Certificates;
-    public class ${helper_class} : ICertificatePolicy {
-      public bool CheckValidationResult( ServicePoint srvPoint, X509Certificate certificate, WebRequest request, int certificateProblem) {
-        return true;
-      }
-    }
-"@
-# NOTE: the line above should not be indented
-  }
-  $collected_output = $false 
-  # https://www.cyberforum.ru/powershell/thread2589305.html
-  [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
-  [System.Net.ServicePointManager]::CertificatePolicy = new-object -typename $helper_class
-  # alternatively define as a lambda
-  # [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
-  $content_type = 'application/json'
-  if ($debug)  {
-    write-host ('invoke-restmethod -uri {0} -method GET -contenttype "{1}"' -f $uri, $content_type)
-  }
-  # quotes around "content_type" argument are optional
-  
-try {
-  $ProgressPreference = 'SilentlyContinue'
-  # let the invoke-restmethod write the server response to the file, read it afterwards
-  $outfile = (Get-ScriptDirectory) + '\' + 'data.json'
-  if ($debug)  {
-    write-host ('invoke-restmethod -uri {0} -method GET -contenttype "{1}" -OutFile {2}' -f $uri, $content_type, $outfile)
-  }
-
-  invoke-restmethod -uri $url -method Get -contenttype "$content_type" -OutFile $outfile
-  if ($debug)  {
-    write-host ('saved the server response into {0}' -f $outfile )
-  }
-  $page = ( Get-Content -literalpath $outfile ) -join ''
-  if ($debug)  {
-    write-host ($page)
-  }
-  # $page = invoke-restmethod -uri $url -method Get -contenttype "$content_type"
-  $ProgressPreference = 'Continue'
-} catch [Exception]{
-  # write-host ('Exception (intercepted): {0}' -f $_.Exception.getType().FullName)
-  write-host ('Exception (intercepted): {0}' -f $_.Exception.Message)
-  # handle the exception, get the HTTP Status code
-  $exception_statuscode = $_.Exception.Response.StatusCode
-  # write-host ('Response: {0}' -f $_.Exception.Response.getType().FullName)
-  write-host ('Status code: {0}' -f [int] $exception_statuscode)
-  write-host ('Status code: {0}' -f $exception_statuscode.value__)
-
-  $page = ''
-}
-# NOTE: this is only relevant when collecting the invoke-restmethod output directly
-# undo the conversion to PSObjects done by invoke-restmethod by default
-  if ($collected_output -eq $true) { 
-     $page = $page | convertto-json
-  }
-  return $page
-}
 
 # origin: https://4sysops.com/archives/convert-json-to-a-powershell-hash-table/
 # see also: https://github.com/sergueik/powershell_ui_samples/blob/master/external/parse_json_hash.ps1
@@ -257,73 +182,7 @@ function ConvertTo-Hashtable {
 }
 
 
-$page = getPage -url $url -debug $true
-write-output ('Body: {0}' -f $page)
 # main
 $statuscode = getHttpStatusCode -url $url
 write-output ('HTTP Stasus: {0}' -f $statuscode)
-
-
-if ($statuscode -ne 304) {
-# using ConvertTo-HashTable
-
-$json_obj = $page | convertfrom-json
-$response = $json_obj | ConvertTo-HashTable
-if ($response.ContainsKey('status') -and ( -not ($response['status'] -eq 'OK' ) )) {
-   $result = $response['result']
-   write-host ('ERROR: {0} '-f $result)
-   exit
-} else {
-  write-host 'Response:'
-  write-host $page
-}
-
-
-
-}
-<#
-NOTE: the Powershell treats some(?) 30x status codes as exceptions:
-   . .\getstatuscode.ps1 -url http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=304
-   . .\getstatuscode.ps1 -url 'http://192.168.99.100:9090/cgi-bin/file_hash_status.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4'
-
-Exception (intercepted): The remote server returned an error: (304) Not Modified
-.
-Body: ""
-Exception (intercepted): The remote server returned an error: (304) Not Modified
-.
-Status Description: Not Modified
-Status code: 304
-Status code: 304
-HTTP Stasus: 304
-#>
-# Most of the 30x codes are for URL Redirection.
-#
-# see also https://www.softwaretestinghelp.com/rest-api-response-codes/
-
-<#
-similar with curl:
-
-curl -sI -X GET http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=304
-HTTP/1.1 304 Not Modified
-Date: Wed, 06 Sep 2023 15:47:11 GMT
-Server: Apache/2.4.46 (Unix)
-No payload is received by the client when the HTTP Status Codes
-
-304 - Not Modified
-204 - No Content
-
-#> 
-
-
-<#
-. .\getstatuscode.ps1 -url 'http://192.168.99.100:9090/cgi-bin/file_hash.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4'
-
-Body: {
-    "result":  "Config /var/www/localhost/cgi-bin/example_config.json is unchanged",
-    "status":  "error"
-}
-HTTP Stasus: 200
-processing result
-processing status
-ERROR: Config /var/www/localhost/cgi-bin/example_config.json is unchanged
-#>
+# TODO: get payload

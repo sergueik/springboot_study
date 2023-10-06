@@ -1,0 +1,269 @@
+#Copyright (c) 2023 Serguei Kouzmine
+#
+#Permission is hereby granted, free of charge, to any person obtaining a copy
+#of this software and associated documentation files (the "Software"), to deal
+#in the Software without restriction, including without limitation the rights
+#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#copies of the Software, and to permit persons to whom the Software is
+#furnished to do so, subject to the following conditions:
+#
+#The above copyright notice and this permission notice shall be included in
+#all copies or substantial portions of the Software.
+#
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+#THE SOFTWARE.
+
+# this version uses invoke-restmethod cmdlet to download the config, and is able to detect errors in HTTP status or inside the payload
+
+param (
+  [string]$url = 'http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=208'
+)
+
+# http://poshcode.org/2887
+# http://stackoverflow.com/questions/8343767/how-to-get-the-current-directory-of-the-cmdlet-being-executed
+# https://msdn.microsoft.com/en-us/library/system.management.automation.invocationinfo.pscommandpath%28v=vs.85%29.aspx
+# https://gist.github.com/glombard/1ae65c7c6dfd0a19848c
+
+function Get-ScriptDirectory {
+
+  if ($global:scriptDirectory -eq $null) {
+    [string]$global:scriptDirectory = $null
+
+    if ($host.Version.Major -gt 2) {
+      $global:scriptDirectory = (Get-Variable PSScriptRoot).Value
+      write-debug ('$PSScriptRoot: {0}' -f $global:scriptDirectory)
+      if ($global:scriptDirectory -ne $null) {
+        return $global:scriptDirectory;
+      }
+      $global:scriptDirectory = [System.IO.Path]::GetDirectoryName($MyInvocation.PSCommandPath)
+      write-debug ('$MyInvocation.PSCommandPath: {0}' -f $global:scriptDirectory)
+      if ($global:scriptDirectory -ne $null) {
+        return $global:scriptDirectory;
+      }
+
+      $global:scriptDirectory = Split-Path -Parent $PSCommandPath
+      write-debug ('$PSCommandPath: {0}' -f $global:scriptDirectory)
+      if ($global:scriptDirectory -ne $null) {
+        return $global:scriptDirectory;
+      }
+    } else {
+      $global:scriptDirectory = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Definition)
+      if ($global:scriptDirectory -ne $null) {
+        return $global:scriptDirectory;
+      }
+      $Invocation = (Get-Variable MyInvocation -Scope 1).Value
+      if ($Invocation.PSScriptRoot) {
+        $global:scriptDirectory = $Invocation.PSScriptRoot
+      } elseif ($Invocation.MyCommand.Path) {
+        $global:scriptDirectory = Split-Path $Invocation.MyCommand.Path
+      } else {
+        $global:scriptDirectory = $Invocation.InvocationName.Substring(0,$Invocation.InvocationName.LastIndexOf('\'))
+      }
+      return $global:scriptDirectory
+    }
+  } else {
+      write-debug ('Returned cached value: {0}' -f $global:scriptDirectory)
+      return $global:scriptDirectory
+  }
+}
+
+# origin: https://4sysops.com/archives/convert-json-to-a-powershell-hash-table/
+# see also: https://github.com/sergueik/powershell_ui_samples/blob/master/external/parse_json_hash.ps1
+
+function ConvertTo-Hashtable {
+    [CmdletBinding()]
+    [OutputType('hashtable')]
+    param (
+        [Parameter(ValueFromPipeline)]
+        $InputObject
+    )
+    process {
+        if ($null -eq $InputObject) {
+            return $null
+        }
+
+        if ($InputObject -is [System.Collections.IEnumerable] -and $InputObject -isnot [string]) {
+            $collection = @(
+                # NOTE: this is a breaking change
+                # $InputObject | foreach-object { 
+                #     $object = $_ 
+                foreach ($object in $InputObject) {
+                  # write-host ('object  is {0}' -f $object.gettype().Name)
+                  # ConvertTo-Hashtable -InputObject $object
+                  # write-host ('ConvertTo-Hashtable -InputObject "{0}"' -f  $object)
+                  $result = ConvertTo-Hashtable -InputObject $object
+                  # write-host ('result type is {0}' -f $result.gettype().Name)
+                  write-output $result
+                }
+            )
+            Write-Output -NoEnumerate $collection
+        } elseif ($InputObject -is [psobject]) { 
+            # If the object has properties that need enumeration
+            # Convert it to its own dictionary table and return it
+            # convertFrom-Json produces System.Management.Automation.PSCustomObject 
+            # https://stackoverflow.com/questions/14012773/difference-between-psobject-hashtable-and-pscustomobject
+            # which properties enumeration is fastest through its PSObject
+            $dictionary = @{}
+            foreach ($property in $InputObject.PSObject.Properties) {
+                # write-host ('processing {0}' -f $property.Name)
+                $dictionary[$property.Name] = ConvertTo-Hashtable -InputObject $property.Value
+            }
+            $dictionary
+        } else {
+            # the object isn't an array, collection, or other object, it's already a dictionary table
+            # so just return it.
+            $InputObject
+        }
+    }
+}
+
+# use invoke-restmethod cmdlet to read page, but 
+# NOTE: there is no way to get HTTP status with invoke-restmethod
+function getPage{
+
+  param(
+    [string]$url,
+    [boolean]$debug
+  )
+  # workaround for the error invoke-restmethod cmdlet:
+  # the underlying connection was closed: could not establish trust relationship for the SSL/TLSsecure channel
+  # see also: https://stackoverflow.com/questions/11696944/powershell-v3-invoke-webrequest-https-error
+  # https://learn.microsoft.com/en-us/dotnet/api/system.net.icertificatepolicy?view=netframework-4.0
+  $helper_class = 'TrustAllCertsPolicy'
+  if ( -not ( $helper_class -as [type])) {
+    # ICertificatePolicy Interface validates a server certificate
+    # ignore self-signed certificates
+    add-type @"
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
+    public class ${helper_class} : ICertificatePolicy {
+      public bool CheckValidationResult( ServicePoint srvPoint, X509Certificate certificate, WebRequest request, int certificateProblem) {
+        return true;
+      }
+    }
+"@
+# NOTE: the line above should not be indented
+  }
+  $collected_output = $false 
+  # https://www.cyberforum.ru/powershell/thread2589305.html
+  [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
+  [System.Net.ServicePointManager]::CertificatePolicy = new-object -typename $helper_class
+  # alternatively define as a lambda
+  # [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+  $content_type = 'application/json'
+  if ($debug)  {
+    write-host ('invoke-restmethod -uri {0} -method GET -contenttype "{1}"' -f $uri, $content_type)
+  }
+  # quotes around "content_type" argument are optional
+  
+  try {
+    $ProgressPreference = 'SilentlyContinue'
+    # let the invoke-restmethod write the server response to the file, read it afterwards
+    $outfile = (Get-ScriptDirectory) + '\' + 'data.json'
+    if ($debug)  {
+      write-host ('invoke-restmethod -uri {0} -method GET -contenttype "{1}" -OutFile {2}' -f $uri, $content_type, $outfile)
+    }
+
+    invoke-restmethod -uri $url -method Get -contenttype "$content_type" -OutFile $outfile
+    if ($debug)  {
+      write-host ('saved the server response into {0}' -f $outfile )
+    }
+    $page = ( Get-Content -literalpath $outfile ) -join ''
+    if ($debug)  {
+      write-host ($page)
+    }
+    # TODO: avoid hardcoding the status code, this is temporary
+    $global:statuscode = 200 
+    $ProgressPreference = 'Continue'
+  } catch [Exception]{
+    # write-host ('Exception (intercepted): {0}' -f $_.Exception.getType().FullName)
+    write-host ('Exception (intercepted): {0}' -f $_.Exception.Message)
+    # handle the exception, get the HTTP Status code
+    $exception_statuscode = $_.Exception.Response.StatusCode
+    # write-host ('Response: {0}' -f $_.Exception.Response.getType().FullName)
+    write-host ('Status code: {0}' -f [int] $exception_statuscode)
+    write-host ('Status code: {0}' -f $exception_statuscode.value__)
+    $global:statuscode = $exception_statuscode.value__
+    $page = ''
+  }
+  # NOTE: this is only relevant when collecting the invoke-restmethod output directly
+  # undo the conversion to PSObjects done by invoke-restmethod by default
+  if ($collected_output -eq $true) { 
+     $page = $page | convertto-json
+  }
+  return $page
+}
+
+ 
+$page = getPage -url $url -debug $true
+write-output ('Body: {0}' -f $page)
+# TODO: use the global var for the status code that will be evaluated by getPage
+
+write-output ('HTTP Stasus: {0}' -f $global:statuscode)
+
+
+if ($global:statuscode -ne 304) {
+  # using ConvertTo-HashTable
+  write-host ('converting the page to JSON')
+  $json_obj = $page | convertfrom-json
+  $response = $json_obj | ConvertTo-HashTable
+  if ($response.ContainsKey('status') -and ( -not ($response['status'] -eq 'OK' ) )) {
+     $result = $response['result']
+     write-host ('ERROR: {0} '-f $result)
+     exit
+  } else {
+    write-host 'Response: '
+    write-host $page
+  }
+}
+<#
+NOTE: the Powershell treats some(?) 30x status codes as exceptions:
+   . .\getstatuscode.ps1 -url http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=304
+   . .\getstatuscode.ps1 -url 'http://192.168.99.100:9090/cgi-bin/file_hash_status.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4'
+
+Exception (intercepted): The remote server returned an error: (304) Not Modified
+.
+Body: ""
+Exception (intercepted): The remote server returned an error: (304) Not Modified
+.
+Status Description: Not Modified
+Status code: 304
+Status code: 304
+HTTP Stasus: 304
+#>
+# Most of the 30x codes are for URL Redirection.
+#
+# see also https://www.softwaretestinghelp.com/rest-api-response-codes/
+
+<#
+  similar with curl:
+
+  curl -sI -X GET http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=304
+  HTTP/1.1 304 Not Modified
+  Date: Wed, 06 Sep 2023 15:47:11 GMT
+  Server: Apache/2.4.46 (Unix)
+  No payload is received by the client when the HTTP Status Codes
+
+  304 - Not Modified
+  204 - No Content
+
+#> 
+
+
+<#
+  . .\getstatuscode.ps1 -url 'http://192.168.99.100:9090/cgi-bin/file_hash.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4'
+
+  Body: {
+      "result":  "Config /var/www/localhost/cgi-bin/example_config.json is unchanged",
+      "status":  "error"
+  }
+  HTTP Stasus: 200
+  processing result
+  processing status
+  ERROR: Config /var/www/localhost/cgi-bin/example_config.json is unchanged
+#>
