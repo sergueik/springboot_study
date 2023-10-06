@@ -100,6 +100,17 @@ md5sum.exe ./data.json  /c/temp/data.json
 571076c15c60e93c3b4484f10e45499b */c/temp/data.json
 ```
 
+```sh
+curl -o data.json -s "http://localhost:8085/configs/file_hash_status?filename=data.json"
+```
+
+```sh
+md5sum.exe ./data.json  /c/temp/data.json
+```
+```text
+571076c15c60e93c3b4484f10e45499b *./data.json
+571076c15c60e93c3b4484f10e45499b */c/temp/data.json
+```
 ### See Also
 
    * [Spring Controller download an Image or a File](https://www.baeldung.com/spring-controller-return-image-file)

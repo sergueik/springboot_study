@@ -35,6 +35,9 @@ public class Controller {
 
 	private static Gson gson = new GsonBuilder().create();
 	private static String body = null;
+	private Map<String, Object> response;
+	private String filePath;
+	private HttpStatus status;
 
 	@ResponseBody
 	@GetMapping(value = "/{filename}/load", produces = {
@@ -53,8 +56,8 @@ public class Controller {
 
 	// convert String to InputStream
 	// http://www.java2s.com/example/java/java.io/convert-string-to-inputstream.html
-	public static InputStream getInputStream(final String in) {
-		return new ByteArrayInputStream(in.getBytes());
+	public static InputStream getInputStream(final String data) {
+		return new ByteArrayInputStream(data.getBytes());
 	}
 
 	// NOTE: when MediaType is APPLICATION_JSON_VALUE
@@ -69,11 +72,11 @@ public class Controller {
 	public ResponseEntity<InputStreamResource> fileHash(
 			@RequestParam String filename, @RequestParam Optional<Long> newer,
 			@RequestParam Optional<String> hash) {
-		Map<String, Object> response = Utils.getErrorResponse("newer: 12345");
+		response = Utils.getErrorResponse("newer: 12345");
 		body = gson.toJson(response, Map.class);
 		Utils.getOSName();
-		// not doing real hash comparison
-		final String filePath = "c:\\temp" + "\\" + filename;
+		// NOTE: not doing file hash or mod time evaluation
+		filePath = "c:\\temp" + "\\" + filename;
 		response = (hash.isPresent()) ? Utils.getErrorResponse("hash")
 				: (newer.isPresent()) ? Utils.getFileData(filePath, newer.get())
 						: Utils.getFileData(filePath);
@@ -85,20 +88,19 @@ public class Controller {
 	@ResponseBody
 	@GetMapping(value = "/file_hash", produces = {
 			MediaType.APPLICATION_OCTET_STREAM_VALUE })
-
 	public ResponseEntity<InputStreamResource> fileHashx(
 			@RequestParam String filename, @RequestParam Optional<Long> newer,
 			@RequestParam Optional<String> hash) {
-		Map<String, Object> response = Utils.getErrorResponse("newer: 12345");
+		response = Utils.getErrorResponse("newer: 12345");
 		body = gson.toJson(response, Map.class);
 		Utils.getOSName();
-		// not doing real hash comparison
 		final String filePath = "c:\\temp" + "\\" + filename;
 		if (hash.isPresent()) {
+			// not doing any file hash comparison
 			response = Utils.getErrorResponse("hash");
 			body = gson.toJson(response, Map.class);
 		} else if (newer.isPresent()) {
-			// not doing real time stamp comparison
+			// not doing modification time stamp comparison
 			response = Utils.getFileData(filePath, newer.get());
 			body = gson.toJson(response, Map.class);
 		} else {
@@ -106,7 +108,7 @@ public class Controller {
 				body = new String(Files.readAllBytes(Paths.get(filePath)),
 						StandardCharsets.UTF_8);
 			} catch (IOException e) {
-				// e.printStackTrace();
+				body = "";
 			}
 			// response = Utils.getFileData(filePath);
 		}
@@ -116,22 +118,31 @@ public class Controller {
 
 	@ResponseBody
 	@GetMapping(value = "/file_hash_status", produces = {
-			MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<Map<String, Object>> fileHashStatus(
+			MediaType.APPLICATION_OCTET_STREAM_VALUE })
+	public ResponseEntity<InputStreamResource> fileHashStatus(
 			@RequestParam String filename, @RequestParam Optional<Long> newer,
 			@RequestParam Optional<String> hash) {
 		Utils.getOSName();
-		final String filePath = "c:\\temp" + "\\" + filename;
+		status = HttpStatus.OK;
+		filePath = "c:\\temp" + "\\" + filename;
 		if (hash.isPresent()) {
-			return ResponseEntity.status(HttpStatus.NOT_MODIFIED)
-					.body(new HashMap<String, Object>());
+			status = HttpStatus.NOT_MODIFIED;
+			body = "";
 		} else if (newer.isPresent()) {
-			return ResponseEntity.status(HttpStatus.ALREADY_REPORTED)
-					.body(Utils.getErrorResponse("newer: " + newer.get()));
-		} else
-			return ResponseEntity.status(HttpStatus.OK)
-					.body(Utils.getFileData("c:\\temp" + "\\" + filename));
-
+			status = HttpStatus.ALREADY_REPORTED;
+			Map<String, Object> response = Utils
+					.getErrorResponse("newer: " + newer.get());
+			body = gson.toJson(response, Map.class);
+		} else {
+			try {
+				body = new String(Files.readAllBytes(Paths.get(filePath)),
+						StandardCharsets.UTF_8);
+			} catch (IOException e) {
+				body = null;
+			}
+		}
+		return ResponseEntity.status(status)
+				.body(new InputStreamResource(getInputStream(body)));
 	}
 
 	@ResponseBody
