@@ -48,11 +48,52 @@ public class Controller {
 	public ResponseEntity<Map<String, Object>> file(@PathVariable String filename,
 			@RequestParam Optional<Long> newer) {
 		Utils.getOSName();
+		final String filePath = "c:\\temp" + "\\" + filename;
 		return (newer.isPresent())
 				? ResponseEntity.status(HttpStatus.OK)
-						.body(Utils.getFileData("c:\\temp\\" + filename, newer.get()))
+						.body(Utils.getFileData(filePath, newer.get()))
 				: ResponseEntity.status(HttpStatus.OK)
-						.body(Utils.getFileData("c:\\temp\\" + filename));
+						.body(Utils.getFileData(filePath));
+
+	}
+
+	@ResponseBody
+	@GetMapping(value = "/file_hash", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Map<String, Object>> fileHash(
+			@RequestParam String filename, @RequestParam Optional<Long> newer,
+			@RequestParam Optional<String> hash) {
+		Utils.getOSName();
+		// not doing real hash comparison
+		final String filePath = "c:\\temp" + "\\" + filename;
+		return (hash.isPresent())
+				? ResponseEntity.status(HttpStatus.OK)
+						.body(Utils.getErrorResponse("hash"))
+				: (newer.isPresent())
+						? ResponseEntity.status(HttpStatus.OK)
+								.body(Utils.getFileData(filePath, newer.get()))
+						: ResponseEntity.status(HttpStatus.OK)
+								.body(Utils.getFileData(filePath));
+
+	}
+
+	@ResponseBody
+	@GetMapping(value = "/file_hash_status", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Map<String, Object>> fileHashStatus(
+			@RequestParam String filename, @RequestParam Optional<Long> newer,
+			@RequestParam Optional<String> hash) {
+		Utils.getOSName();
+		final String filePath = "c:\\temp" + "\\" + filename;
+		if (hash.isPresent()) {
+			return ResponseEntity.status(HttpStatus.NOT_MODIFIED)
+					.body(new HashMap<String, Object>());
+		} else if (newer.isPresent()) {
+			return ResponseEntity.status(HttpStatus.ALREADY_REPORTED)
+					.body(Utils.getErrorResponse("newer: " + newer.get()));
+		} else
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(Utils.getFileData("c:\\temp" + "\\" + filename));
 
 	}
 

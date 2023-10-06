@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Utils {
+
+	
 	protected static String osName;
 	private static BasicFileAttributes basicFileAttributes;
 	private static final Logger logger = LoggerFactory.getLogger(Utils.class);
@@ -40,6 +42,19 @@ public class Utils {
 			}
 		}
 		return osName;
+	}
+
+	public static Map<String, Object> getErrorResponse() {
+		return getErrorResponse("error message");
+	}
+
+	public static Map<String, Object> getErrorResponse(String message) {
+		// return getFileData(path);
+		Map<String, Object> data = new HashMap<>();
+		data.put("status", "error");
+		data.put("result", message);
+		return data;
+
 	}
 
 	public static Map<String, Object> getFileData(String dataFilePath) {
@@ -128,4 +143,5 @@ public class Utils {
 		return fileData;
 
 	}
+
 }

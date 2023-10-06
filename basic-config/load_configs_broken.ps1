@@ -47,7 +47,7 @@ function Broken-ConvertTo-Hashtable {
         }
 
         if ($InputObject -is [System.Collections.IEnumerable] -and $InputObject -isnot [string]) {
-            $collection = @(
+            $collection = @( )
 	    # https://learn.microsoft.com/en-us/dotnet/api/system.collections.ienumerable?view=netframework-4.5
 	    # NOTE: cannot use 
 	    # $InputObject | foreach-object... 
@@ -57,9 +57,11 @@ function Broken-ConvertTo-Hashtable {
                $InputObject | foreach-object { 
                     $object = $_ 
 		    write-host ('object  is {0}' -f $object.gettype().Name)
-                    Broken-ConvertTo-Hashtable -InputObject $object
+                    write-host ('Broken-ConvertTo-Hashtable -InputObject "{0}"' -f  $object)
+                    $result = Broken-ConvertTo-Hashtable -InputObject $object
+		    write-host ('result  is {0}' -f $result.gettype().Name)
+                    $collection += $result
                 }
-            )
             Write-Output -NoEnumerate $collection
         } elseif ($InputObject -is [psobject]) { 
             # convertFrom-Json produces System.Management.Automation.PSCustomObject 
@@ -67,7 +69,8 @@ function Broken-ConvertTo-Hashtable {
             # which properties enumeration is fastest through its PSObject
             $dictionary = @{}
             foreach ($property in $InputObject.PSObject.Properties) {
-                $dictionary[$property.Name] = Broken-ConvertTo-Hashtable -InputObject $property.Value
+              write-host ('processing {0}' -f $property.Name)
+              $dictionary[$property.Name] = Broken-ConvertTo-Hashtable -InputObject $property.Value
             }
             $dictionary
         } else {
@@ -99,7 +102,11 @@ function ConvertTo-Hashtable {
                 #     $object = $_ 
                 foreach ($object in $InputObject) {
 		    write-host ('object  is {0}' -f $object.gettype().Name)
-                    ConvertTo-Hashtable -InputObject $object
+                    # ConvertTo-Hashtable -InputObject $object
+                    write-host ('ConvertTo-Hashtable -InputObject "{0}"' -f  $object)
+                    $result = ConvertTo-Hashtable -InputObject $object
+		    write-host ('result type is {0}' -f $result.gettype().Name)
+                    write-output $result
                 }
             )
             Write-Output -NoEnumerate $collection
@@ -111,6 +118,7 @@ function ConvertTo-Hashtable {
             # which properties enumeration is fastest through its PSObject
             $dictionary = @{}
             foreach ($property in $InputObject.PSObject.Properties) {
+                write-host ('processing {0}' -f $property.Name)
                 $dictionary[$property.Name] = ConvertTo-Hashtable -InputObject $property.Value
             }
             $dictionary
