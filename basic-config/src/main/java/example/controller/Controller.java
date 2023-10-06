@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -39,13 +40,16 @@ public class Controller {
 	private String filePath;
 	private HttpStatus status;
 
+	@Value("${config.dir:c:\\TEMP}")
+	private String configDir;
+
 	@ResponseBody
 	@GetMapping(value = "/{filename}/load", produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<Map<String, Object>> file(@PathVariable String filename,
 			@RequestParam Optional<Long> newer) {
 		Utils.getOSName();
-		final String filePath = "c:\\temp" + "\\" + filename;
+		final String filePath = configDir + "\\" + filename;
 		return (newer.isPresent())
 				? ResponseEntity.status(HttpStatus.OK)
 						.body(Utils.getFileData(filePath, newer.get()))
@@ -130,8 +134,7 @@ public class Controller {
 			body = "";
 		} else if (newer.isPresent()) {
 			status = HttpStatus.ALREADY_REPORTED;
-			Map<String, Object> response = Utils
-					.getErrorResponse("newer: " + newer.get());
+			response = Utils.getErrorResponse("newer: " + newer.get());
 			body = gson.toJson(response, Map.class);
 		} else {
 			try {

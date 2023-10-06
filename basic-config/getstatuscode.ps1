@@ -23,10 +23,60 @@ param (
   [string]$url = 'http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=208'
 )
 
+# http://poshcode.org/2887
+# http://stackoverflow.com/questions/8343767/how-to-get-the-current-directory-of-the-cmdlet-being-executed
+# https://msdn.microsoft.com/en-us/library/system.management.automation.invocationinfo.pscommandpath%28v=vs.85%29.aspx
+# https://gist.github.com/glombard/1ae65c7c6dfd0a19848c
+
+function Get-ScriptDirectory {
+
+  if ($global:scriptDirectory -eq $null) {
+    [string]$global:scriptDirectory = $null
+
+    if ($host.Version.Major -gt 2) {
+      $global:scriptDirectory = (Get-Variable PSScriptRoot).Value
+      write-debug ('$PSScriptRoot: {0}' -f $global:scriptDirectory)
+      if ($global:scriptDirectory -ne $null) {
+        return $global:scriptDirectory;
+      }
+      $global:scriptDirectory = [System.IO.Path]::GetDirectoryName($MyInvocation.PSCommandPath)
+      write-debug ('$MyInvocation.PSCommandPath: {0}' -f $global:scriptDirectory)
+      if ($global:scriptDirectory -ne $null) {
+        return $global:scriptDirectory;
+      }
+
+      $global:scriptDirectory = Split-Path -Parent $PSCommandPath
+      write-debug ('$PSCommandPath: {0}' -f $global:scriptDirectory)
+      if ($global:scriptDirectory -ne $null) {
+        return $global:scriptDirectory;
+      }
+    } else {
+      $global:scriptDirectory = [System.IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Definition)
+      if ($global:scriptDirectory -ne $null) {
+        return $global:scriptDirectory;
+      }
+      $Invocation = (Get-Variable MyInvocation -Scope 1).Value
+      if ($Invocation.PSScriptRoot) {
+        $global:scriptDirectory = $Invocation.PSScriptRoot
+      } elseif ($Invocation.MyCommand.Path) {
+        $global:scriptDirectory = Split-Path $Invocation.MyCommand.Path
+      } else {
+        $global:scriptDirectory = $Invocation.InvocationName.Substring(0,$Invocation.InvocationName.LastIndexOf('\'))
+      }
+      return $global:scriptDirectory
+    }
+  } else {
+      write-debug ('Returned cached value: {0}' -f $global:scriptDirectory)
+      return $global:scriptDirectory
+  }
+}
+
+
 # use Invoke-WebRequest cmdlet to read HTTP Status
 function getHttpStatusCode {
   param(
-    [string]$url
+    [string]$url,
+    [boolean]$debug
   
   )
   # workaround for the error ininvoke-webrequest cmdlet:
@@ -85,8 +135,8 @@ function getHttpStatusCode {
 function getPage{
 
   param(
-    [string]$url
-  
+    [string]$url,
+    [boolean]$debug
   )
   # workaround for the error invoke-restmethod cmdlet:
   # the underlying connection was closed: could not establish trust relationship for the SSL/TLSsecure channel
@@ -107,7 +157,7 @@ function getPage{
 "@
 # NOTE: the line above should not be indented
   }
-  
+  $collected_output = $false 
   # https://www.cyberforum.ru/powershell/thread2589305.html
   [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
   [System.Net.ServicePointManager]::CertificatePolicy = new-object -typename $helper_class
@@ -117,11 +167,25 @@ function getPage{
   if ($debug)  {
     write-host ('invoke-restmethod -uri {0} -method GET -contenttype "{1}"' -f $uri, $content_type)
   }
-  # quotes around "content_type" argumen are optional
+  # quotes around "content_type" argument are optional
   
 try {
   $ProgressPreference = 'SilentlyContinue'
-  $page = invoke-restmethod -uri $url -method Get -contenttype "$content_type"
+  # let the invoke-restmethod write the server response to the file, read it afterwards
+  $outfile = (Get-ScriptDirectory) + '\' + 'data.json'
+  if ($debug)  {
+    write-host ('invoke-restmethod -uri {0} -method GET -contenttype "{1}" -OutFile {2}' -f $uri, $content_type, $outfile)
+  }
+
+  invoke-restmethod -uri $url -method Get -contenttype "$content_type" -OutFile $outfile
+  if ($debug)  {
+    write-host ('saved the server response into {0}' -f $outfile )
+  }
+  $page = Get-Content -literalpath $outfile
+  if ($debug)  {
+    write-host ($page)
+  }
+  # $page = invoke-restmethod -uri $url -method Get -contenttype "$content_type"
   $ProgressPreference = 'Continue'
 } catch [Exception]{
   # write-host ('Exception (intercepted): {0}' -f $_.Exception.getType().FullName)
@@ -134,9 +198,11 @@ try {
 
   $page = ''
 }
-
+# NOTE: this is only relevant when collecting the invoke-restmethod output directly
 # undo the conversion to PSObjects done by invoke-restmethod by default
-$page = $page | convertto-json
+  if ($collected_output -eq $true) { 
+     $page = $page | convertto-json
+  }
   return $page
 }
 
@@ -191,7 +257,7 @@ function ConvertTo-Hashtable {
     }
 }
  
-$page = getPage -url $url
+$page = getPage -url $url -debug $true
 write-output ('Body: {0}' -f $page)
 # main
 $statuscode = getHttpStatusCode -url $url

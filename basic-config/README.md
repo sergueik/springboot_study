@@ -62,6 +62,24 @@ Host: localhost:8085
 <
 * Connection #0 to host localhost left intact
 ```
+
+```powershell
+```
+will print
+
+```text
+Status code: 304
+Status code: 304
+Body: ""
+Exception (intercepted): The remote server returned an error: (304) Not Modified
+.
+Status Description:
+Status code: 304
+Status code: 304
+HTTP Stasus: 304
+```
+several alternative ways of collecting the status are exercized in the Powershell script hence multiple redundant messages about the status
+
 ```sh
 curl -sv "http://localhost:8085/configs/file_hash_status?filename=a.txt&newer=12345"
 ```
@@ -85,8 +103,27 @@ curl -s "http://localhost:8085/configs/file_hash_status?filename=a.txt&newer=123
 }
 ```
 
+```powershell
+
+.\getstatuscode.ps1 -url  "http://localhost:8085/configs/file_hash_status?filename=a.txt&newer=12345"
+```
+will print
+```text
+
+Body: {
+    "result":  "newer: 12345",
+    "status":  "error"
+}
+HTTP Stasus: 208
+processing result
+processing status
+ERROR: newer: 12345
+```
+several alternative ways of collecting the status are exercized in the Powershell script hence multiple redundant messages about the status and result
+
+
 * successful case:
-* create a JSON file in a app resource directory (`C:\TEMP`  for simplicity) and download it 
+* create a JSON file in a app resource directory (the directory is defined in `config.dir` in `application.properties`, fallback to `C:\TEMP` for simplicity) and download it
 
 ```sh
 curl -o data.json -s "http://localhost:8085/configs/file_hash?filename=data.json"
@@ -110,6 +147,58 @@ md5sum.exe ./data.json  /c/temp/data.json
 ```text
 571076c15c60e93c3b4484f10e45499b *./data.json
 571076c15c60e93c3b4484f10e45499b */c/temp/data.json
+```
+
+```powershell
+dir .\data.json,C:\temp\data.json
+```
+```text
+`
+
+    Directory: C:\developer\sergueik\springboot_study\basic-config
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----        10/6/2023   9:20 AM            148 data.json
+
+
+    Directory: C:\temp
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----        10/6/2023   8:00 AM            148 data.json
+
+```
+```cmd
+md5sum.exe ./data.json  /c/temp/data.json
+```
+0dfa1329f15fefa8648856794eb33244 *./data.json
+0dfa1329f15fefa8648856794eb33244 */c/temp/data.json
+```
+alternatively
+```cmd
+c:\cygwin\bin\md5sum.exe c:\temp\data.json data.json
+```
+this will complain about the command line but confirm the hashes are identical:
+```text
+cygwin warning:
+  MS-DOS style path detected: c:\temp\data.json
+  Preferred POSIX equivalent is: /cygdrive/c/temp/data.json
+  CYGWIN environment variable option "nodosfilewarning" turns off this warning.
+  Consult the user's guide for more details about POSIX paths:
+    http://cygwin.com/cygwin-ug-net/using.html#using-pathnames
+\0dfa1329f15fefa8648856794eb33244 *c:\\temp\\data.json
+0dfa1329f15fefa8648856794eb33244 *data.json
+```
+
+```cmd
+c:\cygwin\bin\md5sum.exe /cygdrive/c/temp/data.json data.json
+```
+```text
+0dfa1329f15fefa8648856794eb33244 */cygdrive/c/temp/data.json
+0dfa1329f15fefa8648856794eb33244 *data.json
 ```
 ### See Also
 
