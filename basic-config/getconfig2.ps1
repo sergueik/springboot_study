@@ -20,7 +20,10 @@
 
 # this version uses Invoke-WebRequest
 param (
-  [string]$url = 'http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=208'
+  [String]$config_dir = '',
+  [String]$config_filename = 'data.json',
+  [string]$base_url = 'http://localhost:8085/configs/file_hash_status'
+  # [string]$base_url =  'http://localhost:8085/configs/file_hash'
 )
 
 # http://poshcode.org/2887
@@ -72,10 +75,22 @@ function Get-ScriptDirectory {
 }
 
 
+# see also: https://github.com/sergueik/powershell_ui_samples/blob/master/utils/hash_files.ps1
+function checksum_file {
+  param(
+    [string]$unc_path)
+  # TODO: refactor 
+  return [System.BitConverter]::ToString((New-Object -TypeName 'System.Security.Cryptography.MD5CryptoServiceProvider').ComputeHash([System.IO.File]::ReadAllBytes((Get-Item -Path $unc_path).FullName)))
+  # alternatively , just 
+  # return (get-filehash -algorithm MD5 -literalpath $unc_path ).Hash
+}
+
+
 # use Invoke-WebRequest cmdlet to read HTTP Status
 function getHttpStatusCode {
   param(
     [string]$url,
+    [string]$outfile,
     [boolean]$debug
   
   )
@@ -110,12 +125,36 @@ function getHttpStatusCode {
     # NOTE : do not set to "Stop" or the status code error will abort 
     # The running command stopped because the preference variable "ProgressPreference" or common parameter is set to Stop: Reading web response
     $ProgressPreference = 'SilentlyContinue'
-    $statuscode = (Invoke-WebRequest -uri $url).StatusCode
+    # let the invoke-restmethod write the server response to the file, read it afterwards
+    if ($debug)  {
+      write-host ('Invoke-WebRequest -uri {0} -OutFile {1} -passthru' -f $url, $outfile)
+    }
+    $statuscode = (Invoke-WebRequest -uri $url -OutFile $outfile -passthru).StatusCode
+    if ($debug)  {
+      write-host ('status code: {0}' -f $statuscode)
+    }
+    if ($debug)  {
+      write-host ('saved the server response into {0}' -f $outfile )
+    }
+    $page = ( Get-Content -literalpath $outfile ) -join ''
+    if ($debug)  {
+      write-host ($page)
+    }
+
     $ProgressPreference = 'Continue'
   } catch [Exception]{
     write-host ('Exception (intercepted): {0}' -f $_.Exception.Message)
     # uncomment the code below when debugging
     $exception = $_.Exception
+# TODO:
+# https://learn.microsoft.com/en-us/dotnet/api/system.net.webexceptionstatus?view=netframework-4.8
+# 1 NameResolutionFailure  
+# 15 ProxyNameResolutionFailure	
+# 2 ConnectFailure
+# 3 ReceiveFailure
+# 7 ProtocolError
+# 9 TrustFailure
+
     # $exception | select-object -property *
     $exception_response = $exception.Response
     # $exception_response | select-object -property *
@@ -181,8 +220,48 @@ function ConvertTo-Hashtable {
     }
 }
 
+# Main
+if ($config_dir -eq '' ) {
+   $config_dir = Get-ScriptDirectory 
+}
 
-# main
-$statuscode = getHttpStatusCode -url $url
+$config_file_path = $config_dir + '\' + $config_filename 
+if (test-path -path $config_file_path -pathtype Leaf) {
+  $md5sum = checksum_file -unc_path $config_file_path
+  $md5sum =  (get-filehash -algorithm MD5 -literalpath $config_file_path ).Hash
+  [string]$url = ('{0}?filename={1}&hash={2}' -f $base_url, $config_filename, $md5sum)
+} else {
+  [string]$url = ('{0}?filename={1}' -f $base_url, $config_filename)
+}
+write-host ('GET {0}' -f $url )
+$temp_file = $env:TEMP + '\' + $config_filename
+$statuscode = getHttpStatusCode -url $url -outfile $temp_file -debug $true
+
 write-output ('HTTP Stasus: {0}' -f $statuscode)
-# TODO: get payload
+
+# get payload
+
+if ($statuscode -eq 200) {
+  # using ConvertTo-HashTable
+  if (test-path -path $temp_file -pathtype leaf) {
+    $page = ( Get-Content -literalpath $temp_file ) -join ''
+  }
+  if ($page -ne '') {
+    write-output ('Body: {0}' -f $page)
+    write-host ('converting the page to JSON')
+    $json_obj = $page | convertfrom-json
+    $response = $json_obj | ConvertTo-HashTable
+    if ($response.ContainsKey('status') -and ( -not ($response['status'] -eq 'OK' ) )) {
+      $result = $response['result']
+      write-host ('ERROR: {0} '-f $result)
+      write-host ('not updating {0}' -f $config_filename )
+      exit
+    } else {
+      write-host ('Updating: {0}' -f $config_file_path)
+      write-host $page
+      copy-item -destination $config_file_path -path $temp_file -force
+    }
+  }
+} else {
+  write-host ('not updating {0}' -f $config_filename )
+}

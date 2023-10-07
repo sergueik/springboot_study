@@ -26,17 +26,6 @@ param (
   [string]$base_url = 'http://localhost:8085/configs/file_hash_status'
   # [string]$base_url =  'http://localhost:8085/configs/file_hash'
 )
-# see also: https://github.com/sergueik/powershell_ui_samples/blob/master/utils/hash_files.ps1
-function checksum_file {
-  param(
-    [string]$unc_path)
-  # TODO: refactor 
-  return [System.BitConverter]::ToString((New-Object -TypeName 'System.Security.Cryptography.MD5CryptoServiceProvider').ComputeHash([System.IO.File]::ReadAllBytes((Get-Item -Path $unc_path).FullName)))
-  # alternatively , just 
-  # return (get-filehash -algorithm MD5 -literalpath $unc_path ).Hash
-}
-
-
 # http://poshcode.org/2887
 # http://stackoverflow.com/questions/8343767/how-to-get-the-current-directory-of-the-cmdlet-being-executed
 # https://msdn.microsoft.com/en-us/library/system.management.automation.invocationinfo.pscommandpath%28v=vs.85%29.aspx
@@ -135,6 +124,18 @@ function ConvertTo-Hashtable {
     }
 }
 
+# see also: https://github.com/sergueik/powershell_ui_samples/blob/master/utils/hash_files.ps1
+function checksum_file {
+  param(
+    [string]$unc_path)
+  # TODO: refactor 
+  return [System.BitConverter]::ToString((New-Object -TypeName 'System.Security.Cryptography.MD5CryptoServiceProvider').ComputeHash([System.IO.File]::ReadAllBytes((Get-Item -Path $unc_path).FullName)))
+  # alternatively , just 
+  # return (get-filehash -algorithm MD5 -literalpath $unc_path ).Hash
+}
+
+
+
 # use invoke-restmethod cmdlet to read page, but 
 # NOTE: there is no way to get HTTP status with invoke-restmethod
 function getPage{
@@ -170,17 +171,13 @@ function getPage{
   # alternatively define as a lambda
   # [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
   $content_type = 'application/json'
-  if ($debug)  {
-    write-host ('invoke-restmethod -uri {0} -method GET -contenttype "{1}"' -f $uri, $content_type)
-  }
-  # quotes around "content_type" argument are optional
   
   try {
     $ProgressPreference = 'SilentlyContinue'
+    # NOTE: quotes around "content_type" argument are optional
     # let the invoke-restmethod write the server response to the file, read it afterwards
-    # $outfile = $env:TEMP + '\' + 'data.json'
     if ($debug)  {
-      write-host ('invoke-restmethod -uri {0} -method GET -contenttype "{1}" -OutFile {2}' -f $uri, $content_type, $outfile)
+      write-host ('invoke-restmethod -url {0} -method GET -contenttype "{1}" -OutFile {2}' -f $url, $content_type, $outfile)
     }
 
     invoke-restmethod -uri $url -method Get -contenttype "$content_type" -OutFile $outfile
@@ -259,6 +256,7 @@ if (($global:statuscode -ne 304) -and ($global:statuscode -ne 208)) {
     if ($response.ContainsKey('status') -and ( -not ($response['status'] -eq 'OK' ) )) {
       $result = $response['result']
       write-host ('ERROR: {0} '-f $result)
+      write-host ('not updating {0}' -f $config_filename )
       exit
     } else {
       write-host ('Updating: {0}' -f $config_file_path)
@@ -266,4 +264,6 @@ if (($global:statuscode -ne 304) -and ($global:statuscode -ne 208)) {
       copy-item -destination $config_file_path -path $temp_file -force
     }
   }
+} else {
+  write-host ('not updating {0}' -f $config_filename )
 }

@@ -299,8 +299,7 @@ Updating: C:\developer\sergueik\springboot_study\basic-config\data.json
 ```
 ```text
 
-GET http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1
-329F15FEFA8648856794EB33244
+GET http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244
 
 invoke-restmethod -uri  -method GET -contenttype "application/json"
 invoke-restmethod -uri  -method GET -contenttype "application/json" -OutFile C:\
@@ -329,6 +328,101 @@ converting the page to JSON
 ERROR: hash
 
 ```
+
+* alternative version
+
+```powershell
+rm .\data.json
+```
+
+```powershell
+.\getconfig2.ps1 -base_url http://localhost:8085/configs/file_hash_status
+```
+```text
+GET http://localhost:8085/configs/file_hash_status?filename=data.json
+Invoke-WebRequest -uri http://localhost:8085/configs/file_hash_status?filename=data.json -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json -passthru
+status code: 200
+```
+```text
+saved the server response into C:\Users\Serguei\AppData\Local\Temp\data.json
+{  "host1": {    "netstat": [      22,      443,      3306    ]  },  "host2": { "netstat": [    ]  },  "host3": {}}
+```
+```text
+converting the page to JSON
+Updating: C:\developer\sergueik\springboot_study\basic-config\data.json
+```
+
+```powershell
+.\getconfig2.ps1 -base_url http://localhost:8085/configs/file_hash_status
+GET http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244
+Invoke-WebRequest -uri http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244 -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json -passthru
+Exception (intercepted): The remote server returned an error: (304) Not Modified.
+```
+```text
+Status Description:
+Status code: 304
+Status code: 304
+HTTP Stasus: 304
+```
+
+
+```powershell
+rm .\data.json
+```
+```powershell
+
+.\getconfig2.ps1 -base_url http://localhost:8085/configs/file_hash
+```
+```text
+
+GET http://localhost:8085/configs/file_hash?filename=data.json
+Invoke-WebRequest -uri http://localhost:8085/configs/file_hash?filename=data.json -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json -passthru
+status code: 200
+saved the server response into C:\Users\Serguei\AppData\Local\Temp\data.json
+{  "host1": {    "netstat": [      22,      443,      3306    ]  },  "host2": {   "netstat": [    ]  },  "host3": {}}
+
+HTTP Stasus: 200
+Body: {  "host1": {    "netstat": [      22,      443,      3306    ]  },  "host2": {    "netstat": [    ]  },  "host3": {}}
+converting the page to JSON
+Updating: C:\developer\sergueik\springboot_study\basic-config\data.json
+```
+```text
+
+{  "host1": {    "netstat": [      22,      443,      3306    ]  },  "host2": {   "netstat": [    ]  },  "host3": {}}
+```
+```powershell
+.\getconfig2.ps1 -base_url http://localhost:8085/configs/file_hash
+```
+```text
+GET http://localhost:8085/configs/file_hash?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244
+Invoke-WebRequest -uri http://localhost:8085/configs/file_hash?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244 -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json -passthru
+status code: 200
+```
+```text
+
+saved the server response into C:\Users\Serguei\AppData\Local\Temp\data.json
+{"result":"hash","status":"error"}
+HTTP Stasus: 200
+Body: {"result":"hash","status":"error"}
+converting the page to JSON
+```
+```text
+ERROR: hash
+```
+file is unchanged:
+```powershell
+dir .\data.json
+
+```
+```text
+    Directory: C:\developer\sergueik\springboot_study\basic-config
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----        10/7/2023   7:32 PM            148 data.json
+```
+
 ### See Also
 
    * [Spring Controller download an Image or a File](https://www.baeldung.com/spring-controller-return-image-file)
