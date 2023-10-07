@@ -205,6 +205,65 @@ c:\cygwin\bin\md5sum.exe /cygdrive/c/temp/data.json data.json
 0dfa1329f15fefa8648856794eb33244 */cygdrive/c/temp/data.json
 0dfa1329f15fefa8648856794eb33244 *data.json
 ```
+### Loading Config Providing Md5 Hash
+
+```sh
+curl -s "http://localhost:8085/configs/file_hash_status?filename=data.json"
+```
+```JSON
+  {
+  "host1": {
+    "netstat": [
+      22,
+      443,
+      3306
+    ]
+  },
+  "host2": {
+    "netstat": [
+    ]
+  },
+  "host3": {}
+}
+
+```
+
+```sh
+curl -s "http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0dfa1329f15fefa8648856794eb33241"
+```
+```JSON
+  {
+  "host1": {
+    "netstat": [
+      22,
+      443,
+      3306
+    ]
+  },
+  "host2": {
+    "netstat": [
+    ]
+  },
+  "host3": {}
+}
+
+```
+
+
+```sh
+curl -vs "http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0dfa1329f15fefa8648856794eb33244"
+```
+```text
+HTTP/1.1 304
+```
+
+```sh
+curl -s "http://localhost:8085/configs/file_hash?filename=data.json&hash=0dfa1329f15fefa8648856794eb33244"
+```
+```JSON
+{"result":"hash","status":"error"}
+```
+
 ### See Also
 
    * [Spring Controller download an Image or a File](https://www.baeldung.com/spring-controller-return-image-file)

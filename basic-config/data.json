@@ -1,1 +1,15 @@
-{"result":"hash","status":"error"}
+{
+  "host1": {
+    "netstat": [
+      22,
+      443,
+      3306
+    ]
+  },
+  "host2": {
+    "netstat": [
+    ]
+  },
+  "host3": {}
+}
+

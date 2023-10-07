@@ -45,6 +45,7 @@ public class Controller {
 	private HttpStatus status;
 	private static final Logger logger = LoggerFactory
 			.getLogger(Controller.class);
+
 	@Value("${config.dir:c:\\TEMP}")
 	private String configDir;
 
@@ -73,7 +74,6 @@ public class Controller {
 	// the client test receives:
 	// {"inputStream":{"buf":[123,34,114,101,115,117,108,116,34,58,34,101,114,114,111,114,32,109,101,115,115,97,103,101,34,44,34,115,116,97,116,117,115,34,58,34,101,114,114,111,114,34,125],"pos":0,"mark":0,"count":43},
 	// "description":"resource loaded through InputStream","read":false }
-
 	@ResponseBody
 	@GetMapping(value = "/file_hash", produces = {
 			MediaType.APPLICATION_OCTET_STREAM_VALUE })
@@ -84,26 +84,33 @@ public class Controller {
 		body = gson.toJson(response, Map.class);
 		Utils.getOSName();
 		filePath = configDir + "\\" + filename;
+		boolean resourceStatus = false;
+
 		if (hash.isPresent()) {
 			// not doing any file hash comparison
 			response = Utils.getErrorResponse("hash");
 			body = gson.toJson(response, Map.class);
 			md5sum = Utils.md5Sum(filePath);
 			logger.info("md5Sum of {}: {}", filePath, md5sum);
-
+			if (!md5sum.equalsIgnoreCase(hash.get()))
+				resourceStatus = true;
 		} else if (newer.isPresent()) {
 			// not doing modification time stamp comparison
 			response = Utils.getFileData(filePath, newer.get());
 			body = gson.toJson(response, Map.class);
+			resourceStatus = false;
 		} else {
+			resourceStatus = true;
+		}
+		if (resourceStatus) {
 			try {
 				body = new String(Files.readAllBytes(Paths.get(filePath)),
 						StandardCharsets.UTF_8);
 			} catch (IOException e) {
 				body = "";
 			}
-			// response = Utils.getFileData(filePath);
 		}
+
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(new InputStreamResource(getInputStream(body)));
 	}
@@ -115,6 +122,7 @@ public class Controller {
 			@RequestParam String filename, @RequestParam Optional<Long> newer,
 			@RequestParam Optional<String> hash) {
 		Utils.getOSName();
+		boolean resourceStatus = false;
 		status = HttpStatus.OK;
 		filePath = configDir + "\\" + filename;
 		if (hash.isPresent()) {
@@ -122,11 +130,20 @@ public class Controller {
 			md5sum = Utils.md5Sum(filePath);
 			logger.info("md5Sum of {}: {}", filePath, md5sum);
 			body = "";
+			if (!md5sum.equalsIgnoreCase(hash.get())) {
+				status = HttpStatus.OK;
+				resourceStatus = true;
+			}
 		} else if (newer.isPresent()) {
 			status = HttpStatus.ALREADY_REPORTED;
 			response = Utils.getErrorResponse("newer: " + newer.get());
 			body = gson.toJson(response, Map.class);
+			resourceStatus = false;
 		} else {
+			status = HttpStatus.OK;
+			resourceStatus = true;
+		}
+		if (resourceStatus) {
 			try {
 				body = new String(Files.readAllBytes(Paths.get(filePath)),
 						StandardCharsets.UTF_8);
