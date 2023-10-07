@@ -21,8 +21,21 @@
 # this version uses invoke-restmethod cmdlet to download the config, and is able to detect errors in HTTP status or inside the payload
 
 param (
-  [string]$url = 'http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=208'
+  [String]$config_dir = '',
+  [String]$config_filename = 'data.json',
+  [string]$base_url = 'http://localhost:8085/configs/file_hash_status'
+  # [string]$base_url =  'http://localhost:8085/configs/file_hash'
 )
+# see also: https://github.com/sergueik/powershell_ui_samples/blob/master/utils/hash_files.ps1
+function checksum_file {
+  param(
+    [string]$unc_path)
+  # TODO: refactor 
+  return [System.BitConverter]::ToString((New-Object -TypeName 'System.Security.Cryptography.MD5CryptoServiceProvider').ComputeHash([System.IO.File]::ReadAllBytes((Get-Item -Path $unc_path).FullName)))
+  # alternatively , just 
+  # return (get-filehash -algorithm MD5 -literalpath $unc_path ).Hash
+}
+
 
 # http://poshcode.org/2887
 # http://stackoverflow.com/questions/8343767/how-to-get-the-current-directory-of-the-cmdlet-being-executed
@@ -128,6 +141,7 @@ function getPage{
 
   param(
     [string]$url,
+    [string]$outfile,
     [boolean]$debug
   )
   # workaround for the error invoke-restmethod cmdlet:
@@ -164,7 +178,7 @@ function getPage{
   try {
     $ProgressPreference = 'SilentlyContinue'
     # let the invoke-restmethod write the server response to the file, read it afterwards
-    $outfile = (Get-ScriptDirectory) + '\' + 'data.json'
+    # $outfile = $env:TEMP + '\' + 'data.json'
     if ($debug)  {
       write-host ('invoke-restmethod -uri {0} -method GET -contenttype "{1}" -OutFile {2}' -f $uri, $content_type, $outfile)
     }
@@ -181,14 +195,32 @@ function getPage{
     $global:statuscode = 200 
     $ProgressPreference = 'Continue'
   } catch [Exception]{
-    # write-host ('Exception (intercepted): {0}' -f $_.Exception.getType().FullName)
-    write-host ('Exception (intercepted): {0}' -f $_.Exception.Message)
-    # handle the exception, get the HTTP Status code
-    $exception_statuscode = $_.Exception.Response.StatusCode
-    # write-host ('Response: {0}' -f $_.Exception.Response.getType().FullName)
-    write-host ('Status code: {0}' -f [int] $exception_statuscode)
-    write-host ('Status code: {0}' -f $exception_statuscode.value__)
-    $global:statuscode = $exception_statuscode.value__
+    # handle the exception
+    $global:statuscode = 0
+    write-host ('Exception (intercepted): {0} {1}' -f $_.Exception.getType().FullName, $_.Exception.Message)
+    $exception = $_.Exception
+    # https://learn.microsoft.com/en-us/dotnet/api/system.net.webexception?view=netframework-4.8
+    if ($exception.getType().FullName -eq 'System.Net.WebException') {
+
+  
+      # https://learn.microsoft.com/en-us/dotnet/api/system.net.webexceptionstatus?view=netframework-4.8
+      # 1 NameResolutionFailure  
+      # 15 ProxyNameResolutionFailure	
+      # 2 ConnectFailure
+      # 3 ReceiveFailure
+      # 7 ProtocolError
+      # 9 TrustFailure
+      $global:statuscode = [int] $exception.Status
+      write-host ('{0} {1}' -f $global:statuscode, $exception.Status)
+    } 
+    if ($global:statuscode -eq 7 ) {
+      # get the HTTP Status code
+      $exception_statuscode = $_.Exception.Response.StatusCode
+      # write-host ('Response: {0}' -f $_.Exception.Response.getType().FullName)
+      write-host ('Status code: {0}' -f [int] $exception_statuscode)
+      write-host ('Status code: {0}' -f $exception_statuscode.value__)
+      $global:statuscode = $exception_statuscode.value__
+    }
     $page = ''
   }
   # NOTE: this is only relevant when collecting the invoke-restmethod output directly
@@ -199,71 +231,39 @@ function getPage{
   return $page
 }
 
- 
-$page = getPage -url $url -debug $true
-write-output ('Body: {0}' -f $page)
-# TODO: use the global var for the status code that will be evaluated by getPage
+# Main
+if ($config_dir -eq '' ) {
+   $config_dir = Get-ScriptDirectory 
+}
 
+$config_file_path = $config_dir + '\' + $config_filename 
+if (test-path -path $config_file_path -pathtype Leaf) {
+  $md5sum = checksum_file -unc_path $config_file_path
+  $md5sum =  (get-filehash -algorithm MD5 -literalpath $config_file_path ).Hash
+  [string]$url = ('{0}?filename={1}&hash={2}' -f $base_url, $config_filename, $md5sum)
+} else {
+  [string]$url = ('{0}?filename={1}' -f $base_url, $config_filename)
+}
+write-host ('GET {0}' -f $url )
+$temp_file = $env:TEMP + '\' + $config_filename
+$page = getPage -url $url -outfile $temp_file -debug $true
 write-output ('HTTP Stasus: {0}' -f $global:statuscode)
-
-
-if ($global:statuscode -ne 304) {
+# NOTE: copy : The given path's format is not supported.
+if (($global:statuscode -ne 304) -and ($global:statuscode -ne 208)) {
   # using ConvertTo-HashTable
-  write-host ('converting the page to JSON')
-  $json_obj = $page | convertfrom-json
-  $response = $json_obj | ConvertTo-HashTable
-  if ($response.ContainsKey('status') -and ( -not ($response['status'] -eq 'OK' ) )) {
-     $result = $response['result']
-     write-host ('ERROR: {0} '-f $result)
-     exit
-  } else {
-    write-host 'Response: '
-    write-host $page
+  if ($page -ne '') {
+    write-output ('Body: {0}' -f $page)
+    write-host ('converting the page to JSON')
+    $json_obj = $page | convertfrom-json
+    $response = $json_obj | ConvertTo-HashTable
+    if ($response.ContainsKey('status') -and ( -not ($response['status'] -eq 'OK' ) )) {
+      $result = $response['result']
+      write-host ('ERROR: {0} '-f $result)
+      exit
+    } else {
+      write-host ('Updating: {0}' -f $config_file_path)
+      write-host $page
+      copy-item -destination $config_file_path -path $temp_file -force
+    }
   }
 }
-<#
-NOTE: the Powershell treats some(?) 30x status codes as exceptions:
-   . .\getstatuscode.ps1 -url http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=304
-   . .\getstatuscode.ps1 -url 'http://192.168.99.100:9090/cgi-bin/file_hash_status.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4'
-
-Exception (intercepted): The remote server returned an error: (304) Not Modified
-.
-Body: ""
-Exception (intercepted): The remote server returned an error: (304) Not Modified
-.
-Status Description: Not Modified
-Status code: 304
-Status code: 304
-HTTP Stasus: 304
-#>
-# Most of the 30x codes are for URL Redirection.
-#
-# see also https://www.softwaretestinghelp.com/rest-api-response-codes/
-
-<#
-  similar with curl:
-
-  curl -sI -X GET http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=304
-  HTTP/1.1 304 Not Modified
-  Date: Wed, 06 Sep 2023 15:47:11 GMT
-  Server: Apache/2.4.46 (Unix)
-  No payload is received by the client when the HTTP Status Codes
-
-  304 - Not Modified
-  204 - No Content
-
-#> 
-
-
-<#
-  . .\getstatuscode.ps1 -url 'http://192.168.99.100:9090/cgi-bin/file_hash.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4'
-
-  Body: {
-      "result":  "Config /var/www/localhost/cgi-bin/example_config.json is unchanged",
-      "status":  "error"
-  }
-  HTTP Stasus: 200
-  processing result
-  processing status
-  ERROR: Config /var/www/localhost/cgi-bin/example_config.json is unchanged
-#>

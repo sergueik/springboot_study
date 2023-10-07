@@ -264,6 +264,71 @@ curl -s "http://localhost:8085/configs/file_hash?filename=data.json&hash=0dfa132
 {"result":"hash","status":"error"}
 ```
 
+### Updating Config File
+
+```powershell
+rm .\data.json
+
+```
+```powershell
+.\getconfig.ps1 -base_url http://localhost:8085/configs/file_hash_status
+
+```
+```text
+GET http://localhost:8085/configs/file_hash_status?filename=data.json
+invoke-restmethod -uri  -method GET -contenttype "application/json"
+invoke-restmethod -uri  -method GET -contenttype "application/json" -OutFile C:\
+Users\Serguei\AppData\Local\Temp\data.json
+saved the server response into C:\Users\Serguei\AppData\Local\Temp\data.json
+{ "host1": { "netstat": [  22,  443,  3306 ] }, "host2": { "netstat": [ ] }, "host3": {}}
+
+```
+```text
+HTTP Stasus: 200
+Body: { "host1": { "netstat": [ 22, 443, 3306 ] }, "host 2": { "netstat": [ ] }, "host3": {}}
+```
+```text
+converting the page to JSON
+Updating: C:\developer\sergueik\springboot_study\basic-config\data.json
+{ "host1": { "netstat": [ 22, 443, 3306 ] }, "host2": { "netstat": [ ] }, "host3": {}}
+
+```
+```powershell
+.\getconfig.ps1 -base_url http://localhost:8085/configs/file_hash_status
+
+```
+```text
+
+GET http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1
+329F15FEFA8648856794EB33244
+
+invoke-restmethod -uri  -method GET -contenttype "application/json"
+invoke-restmethod -uri  -method GET -contenttype "application/json" -OutFile C:\
+Users\Serguei\AppData\Local\Temp\data.json
+Exception (intercepted): System.Net.WebException The remote server returned an e
+rror: (304) Not Modified.
+7 ProtocolError
+Status code: 304
+Status code: 304
+HTTP Stasus: 304
+```
+```powershell
+.\getconfig.ps1 -base_url http://localhost:8085/configs/file_hash
+```
+```text
+GET http://localhost:8085/configs/file_hash?filename=data.json&hash=0DFA1329F15F
+EFA8648856794EB33244
+invoke-restmethod -uri  -method GET -contenttype "application/json"
+invoke-restmethod -uri  -method GET -contenttype "application/json" -OutFile C:\
+Users\Serguei\AppData\Local\Temp\data.json
+saved the server response into C:\Users\Serguei\AppData\Local\Temp\data.json
+{"result":"hash","status":"error"}
+HTTP Stasus: 200
+Body: {"result":"hash","status":"error"}
+converting the page to JSON
+ERROR: hash
+
+```
 ### See Also
 
    * [Spring Controller download an Image or a File](https://www.baeldung.com/spring-controller-return-image-file)
