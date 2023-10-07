@@ -140,6 +140,11 @@ md5sum.exe ./data.json  /c/temp/data.json
 ```sh
 curl -o data.json -s "http://localhost:8085/configs/file_hash_status?filename=data.json"
 ```
+in the java console will see the md5sum of the requested file logged (the actal logic of processing the hash is still WIP, the controller returns the error whenever the `hash` parameter is provided, ignoring the value of the query parameter):
+```text
+2023-10-06 22:10:09.645  INFO 4884 --- [nio-8085-exec-1] example.controller.Controller            : md5Sum of c:\temp\data.json: 571076c15c60e93c3b4484f10e45499b
+4
+```
 
 ```sh
 md5sum.exe ./data.json  /c/temp/data.json
@@ -204,6 +209,6 @@ c:\cygwin\bin\md5sum.exe /cygdrive/c/temp/data.json data.json
 
    * [Spring Controller download an Image or a File](https://www.baeldung.com/spring-controller-return-image-file)
    * [ways to read a file into String](https://stackoverflow.com/questions/3402735/what-is-simplest-way-to-read-a-file-into-string)
-
+   * [generate file MD5 checksum in Java](https://www.baeldung.com/java-md5-checksum-file)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -3,36 +3,52 @@ package example.utils;
  * Copyright 2023 Serguei Kouzmine
  */
 
-import java.net.URL;
-
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import java.nio.file.attribute.BasicFileAttributes;
-
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Utils {
 
-	
 	protected static String osName;
+	public static StringBuffer result;
 	private static BasicFileAttributes basicFileAttributes;
 	private static final Logger logger = LoggerFactory.getLogger(Utils.class);
 	private static final String extensionMask = "\\.conf$";
 	private static final String fileMask = ".*" + extensionMask;
+
+	// https://www.baeldung.com/java-md5-checksum-file
+	// NOTE: BigInteger approach from the above does not format it quite right:
+	// returns dfa1329f15fefa8648856794eb33244
+	// while md5sum returns 0dfa1329f15fefa8648856794eb33244
+	// NOTE:
+	// http://www.java2s.com/example/android/file-input-output/calculate-md5-hash-for-a-file.html
+	// is producing invalid hash
+	public static String md5Sum(String dataFilePath) {
+		String checksum = "";
+		try (InputStream inputStream = Files
+				.newInputStream(Paths.get(dataFilePath))) {
+			checksum = DigestUtils.md5Hex(inputStream);
+		} catch (IOException e) {
+			logger.error("exeception computing checksum of {} : {} ", dataFilePath,
+					e.toString());
+		}
+
+		return checksum;
+	}
 
 	public static String getOSName() {
 		if (osName == null) {

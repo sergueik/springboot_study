@@ -28,6 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import example.utils.Utils;
 
 @RestController
@@ -36,10 +39,12 @@ public class Controller {
 
 	private static Gson gson = new GsonBuilder().create();
 	private static String body = null;
+	private String md5sum = null;
 	private Map<String, Object> response;
 	private String filePath;
 	private HttpStatus status;
-
+	private static final Logger logger = LoggerFactory
+			.getLogger(Controller.class);
 	@Value("${config.dir:c:\\TEMP}")
 	private String configDir;
 
@@ -70,26 +75,6 @@ public class Controller {
 	// "description":"resource loaded through InputStream","read":false }
 
 	@ResponseBody
-	@GetMapping(value = "/file_hash_error_only", produces = {
-			MediaType.APPLICATION_OCTET_STREAM_VALUE })
-
-	public ResponseEntity<InputStreamResource> fileHash(
-			@RequestParam String filename, @RequestParam Optional<Long> newer,
-			@RequestParam Optional<String> hash) {
-		response = Utils.getErrorResponse("newer: 12345");
-		body = gson.toJson(response, Map.class);
-		Utils.getOSName();
-		// NOTE: not doing file hash or mod time evaluation
-		filePath = "c:\\temp" + "\\" + filename;
-		response = (hash.isPresent()) ? Utils.getErrorResponse("hash")
-				: (newer.isPresent()) ? Utils.getFileData(filePath, newer.get())
-						: Utils.getFileData(filePath);
-
-		return ResponseEntity.status(HttpStatus.OK).body(new InputStreamResource(
-				getInputStream(gson.toJson(response, Map.class))));
-	}
-
-	@ResponseBody
 	@GetMapping(value = "/file_hash", produces = {
 			MediaType.APPLICATION_OCTET_STREAM_VALUE })
 	public ResponseEntity<InputStreamResource> fileHashx(
@@ -98,11 +83,14 @@ public class Controller {
 		response = Utils.getErrorResponse("newer: 12345");
 		body = gson.toJson(response, Map.class);
 		Utils.getOSName();
-		final String filePath = "c:\\temp" + "\\" + filename;
+		filePath = configDir + "\\" + filename;
 		if (hash.isPresent()) {
 			// not doing any file hash comparison
 			response = Utils.getErrorResponse("hash");
 			body = gson.toJson(response, Map.class);
+			md5sum = Utils.md5Sum(filePath);
+			logger.info("md5Sum of {}: {}", filePath, md5sum);
+
 		} else if (newer.isPresent()) {
 			// not doing modification time stamp comparison
 			response = Utils.getFileData(filePath, newer.get());
@@ -128,9 +116,11 @@ public class Controller {
 			@RequestParam Optional<String> hash) {
 		Utils.getOSName();
 		status = HttpStatus.OK;
-		filePath = "c:\\temp" + "\\" + filename;
+		filePath = configDir + "\\" + filename;
 		if (hash.isPresent()) {
 			status = HttpStatus.NOT_MODIFIED;
+			md5sum = Utils.md5Sum(filePath);
+			logger.info("md5Sum of {}: {}", filePath, md5sum);
 			body = "";
 		} else if (newer.isPresent()) {
 			status = HttpStatus.ALREADY_REPORTED;
