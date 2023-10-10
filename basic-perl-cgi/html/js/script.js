@@ -24,7 +24,8 @@ var listController = function ($scope, $http, $timeout) {
             }).success(function (data) {
                 console.log('getting list data');
                 try {
-                    console.log('got raw data: ' + data);
+                    console.log('getListData raw data:'); 
+                    console.log(data);
                     $scope.list_rows = data.results;
                 } catch (e) {
                     data = {
@@ -75,7 +76,8 @@ var tableController = function ($scope, $http, $timeout) {
             }).success(function (data) {
                 console.log('getting table data');
                 try {
-                    console.log('got raw data: ' + data);
+                    console.log('getTableData raw data:'); 
+                    console.log(data);
                     $scope.table_rows = data.results;
                 } catch (e) {
                     data = {
@@ -105,8 +107,22 @@ app.controller('SelectController', function ($scope, $http) {
             try {
                 $scope.names = data;
             } catch (e) {
-                $scope.names = ["mockup"];
+                $scope.names = ['mockup'];
             }
         });
     }
 });
+
+
+// slightly different syntax 
+// https://qna.habr.com/q/1306110?e=14002190#clarification_1790048
+app.controller('TableController', function ($scope, $http) {
+    $http.get('cgi-bin/table.cgi')
+    .then(function success(response){
+      console.log('anonymous raw data: '); 
+      console.log( response.data);
+      $scope.table_rows = response.data.results;
+    }, function error(response){
+      console.log('error(2): ' + response)
+    });
+  });

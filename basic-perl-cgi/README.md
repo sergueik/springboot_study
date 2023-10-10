@@ -1074,7 +1074,9 @@ curl -s "http://192.168.99.101:9090/cgi-bin/file_hash.cgi?inputfile=example_conf
   * https://www.w3schools.com/angular/tryit.asp?filename=try_ng_ng-change
   * [AngularJS Developer Guide](https://docs.angularjs.org/guide)
   * [AngularJS API](https://docs.angularjs.org/api) 
-
+  * [Angular - HTTP GET Request Examples](https://jasonwatmore.com/post/2019/09/06/angular-http-get-request-examples)
+  * the full `HttpResponse` [class documentation](https://angular.io/api/common/http/HttpResponse#properties)
+  * AngularJS $http [reference](https://docs.angularjs.org/api/ng/service/$http)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
