@@ -1,4 +1,9 @@
 ### Usage
+
+* compile and launch config server stub skipping unit tests
+```cmd
+mvn -Dmaven.test.skip=true spring-boot:run
+```
 ```sh
 curl -s http://localhost:8085/configs/xxx/list?newer=1690604340
 ```

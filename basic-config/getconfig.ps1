@@ -184,7 +184,11 @@ function getPage{
     if ($debug)  {
       write-host ('saved the server response into {0}' -f $outfile )
     }
-    $page = ( Get-Content -literalpath $outfile ) -join ''
+    # $page = ( Get-Content -literalpath $outfile ) -join ''
+    # https://powershellmagazine.com/2012/11/13/pstip-get-the-contents-of-a-file-in-one-string/
+    # alternatively 
+    # $page = [System.IO.File]::ReadAllText($outfile)
+    $page = Get-Content -literalpath $outfile -raw
     if ($debug)  {
       write-host ($page)
     }
@@ -228,6 +232,149 @@ function getPage{
   return $page
 }
 
+# wrapper around FileHelper class to write the config file
+function updateConfig {
+  param(
+    [String]$filepath,
+    [String]$text,
+    [int]$retries = 3,
+    [int]$interval = 250,
+    [bool]$debug
+  )
+# safe read and write with retry for the "File in use by another process"
+# based on: https://stackoverflow.com/questions/876473/is-there-a-way-to-check-if-a-file-is-in-use
+$data_class = 'FileHelper'
+
+if (-not ($data_class -as [type])) {
+  # interpolate class name
+  add-type -TypeDefinition @"
+  using System;
+  using System.IO;
+  using System.Text;
+  using System.Threading;
+
+  public class $data_class {
+    private int interval = 500;
+    private string filePath = null;
+    public int Retries { get; set; }
+    public int Interval { set { interval = value; } get {return interval;}}
+    public string FilePath { set { filePath = value; }  get {return filePath;}}
+    public bool Debug { get; set; }
+    public string Text { get; set; }
+    private byte[] bytes;
+    public byte[] Bytes { get { return bytes; } }
+
+    private FileStream stream = null;
+
+    public void WriteContents() {
+      Boolean done = false;
+      if (!string.IsNullOrEmpty(filePath)) {
+        // Console.Error.WriteLine(String.Format("Writing data to {0}.", filePath));
+        for (int cnt = 0; cnt != Retries; cnt++) {
+          if (done)
+            break;
+          try {
+            stream = new FileInfo(filePath).Open(FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            bytes = Encoding.ASCII.GetBytes(Text);
+            // stream.Lock(0, bytes.Length);
+            // have to truncate
+            stream.SetLength(0);
+            if (Debug)
+              Console.Error.WriteLine(String.Format("Writing text {0}.", Text));
+            stream.Write(bytes, 0, bytes.Length);
+            stream.Flush();
+            if (Debug)
+              Console.Error.WriteLine(String.Format("Written text {0}.", Text));
+            // stream.Unlock(0, bytes.Length);
+            done = true;
+
+          } catch (IOException e) {
+            Console.Error.WriteLine(String.Format("Got Exception during Write: {0}. " + "Wait {1, 4:f2} sec and retry", e.Message, (interval / 1000F)));
+          } finally {
+            if (stream != null)
+              stream.Close();
+          }
+          // wait and retry
+          if (!done)
+            Thread.Sleep(interval);
+        }
+      }
+      return;
+    }
+
+    // retries if "File in use by another process"
+    // because file is being processed by another thread
+    public void ReadContents() {
+      if (Debug)
+        Console.Error.WriteLine(String.Format("Reading the file {0}", filePath));
+      Text = null;
+      Boolean done = false;
+      if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath)) {
+        for (int cnt = 0; cnt != Retries && Text == null; cnt++) {
+
+          if (done)
+            break;
+          try {
+            stream = new FileInfo(filePath).Open(FileMode.Open, FileAccess.Read, FileShare.None);
+
+            int numBytesToRead = (int)stream.Length;
+            if (numBytesToRead > 0) {
+              bytes = new byte[numBytesToRead];
+              int numBytesRead = 0;
+              while (numBytesToRead > 0) {
+                if (Debug)
+                  Console.Error.WriteLine(String.Format("{0} bytes to read", numBytesToRead));
+                int n = stream.Read(bytes, numBytesRead, numBytesToRead);
+                if (n == 0)
+                  break;
+
+                numBytesRead += n;
+                numBytesToRead -= n;
+              }
+              numBytesToRead = bytes.Length;
+              if (bytes.Length > 0)
+                Text = Encoding.ASCII.GetString(bytes);
+              // the below call is race condition prone
+              // text =  System.IO.File.ReadAllText(filePath);
+              done = true;
+            }
+          } catch (IOException e) {
+            if (Debug)
+              Console.Error.WriteLine(String.Format("Got Exception during Read: {0}. " + "Wait {1, 4:f2} sec and retry", e.Message, (interval / 1000F)));
+          } finally {
+            if (Debug)
+              Console.Error.WriteLine(String.Format("Read text \"{0}\". Retry: {1}", Text, cnt));
+            if (stream != null)
+              stream.Close();
+          }
+          // wait and retry
+          if (Text == null) {
+            if (Debug)
+              Console.Error.WriteLine(String.Format("Wait {0, 4:f2} sec and retry: {1}", (interval / 1000F), cnt));
+            Thread.Sleep(interval);
+          }
+        }
+      }
+      return;
+    }
+  }
+"@
+  # NOTE: the previous line with "@" marker should not be indented
+}
+  $o = new-object -typeName $data_class
+  $o.Debug = $debug
+  $o.Retries = $retries
+  $o.Interval = $interval
+  $o.FilePath = $filepath
+  if ($debug) {
+    write-host ('Read {0} safely' -f $o.FilePath )
+  }
+  $o.Text = $text
+  $o.WriteContents()
+  return
+}
+
+
 # Main
 if ($config_dir -eq '' ) {
    $config_dir = Get-ScriptDirectory 
@@ -261,7 +408,13 @@ if (($global:statuscode -ne 304) -and ($global:statuscode -ne 208)) {
     } else {
       write-host ('Updating: {0}' -f $config_file_path)
       write-host $page
-      copy-item -destination $config_file_path -path $temp_file -force
+      # "copy-item "may not be entirely race condition safe
+      # copy-item -destination $config_file_path -path $temp_file -force
+      updateConfig -filepath $config_file_path -text $page
+      # If found that updateConfig is corrupting the file, use the following to debug
+      #
+      # $tool_test_path = ('{0}.1' -f $config_file_path )
+      # updateConfig -filepath $tool_test_path -text $page
     }
   }
 } else {
