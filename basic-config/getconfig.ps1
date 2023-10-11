@@ -18,6 +18,10 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #THE SOFTWARE.
 
+# Usage:
+# .\getconfig.ps1 -base_url 'http://localhost:8085/configs/file_hash_status'
+# .\getconfig.ps1 -base_url 'http://localhost:8085/configs/file_hash'
+
 # this version uses invoke-restmethod cmdlet to download the config, and is able to detect errors in HTTP status or inside the payload
 
 param (
@@ -135,6 +139,44 @@ function checksum_file {
 }
 
 
+# NOTE: current mixing logic of reading the status from JSON and HTTP code 
+# "/file_hash" route "/file_hash_status" route
+# makes code convoluted
+
+function download_status {
+  param(
+    $statuscode,
+    [String]$page
+  )
+  [int] $status = 0
+  if ($statuscode -eq 200) {
+    # read page
+    if ($page -ne '') {
+      write-host ('Body: {0}' -f $page)
+      $json_obj = $page | convertfrom-json
+      $response = $json_obj | ConvertTo-HashTable
+      if ($response.ContainsKey('status') -and ( -not ($response['status'] -eq 'OK' ) )) {
+        $result = $response['result']
+        write-host ('ERROR: {0} '-f $result)
+        write-host ('unmodified')
+        $status = 2
+      } else {
+        write-host ('success')
+        $status = 1
+      }
+    } else {
+      write-host ('server error or misconfiguration')
+      $status = 3
+    } 
+  } elseif (($statuscode -eq 304) -or ($statuscode -eq 208)) {
+    write-host ('unmodified')
+    $status = 2
+  } else {
+    write-host ('server error or misconfiguration')
+    $status = 3
+  }
+  return $status
+}
 
 # use invoke-restmethod cmdlet to read page, but 
 # NOTE: there is no way to get HTTP status with invoke-restmethod
@@ -391,7 +433,12 @@ if (test-path -path $config_file_path -pathtype Leaf) {
 write-host ('GET {0}' -f $url )
 $temp_file = $env:TEMP + '\' + $config_filename
 $page = getPage -url $url -outfile $temp_file -debug $true
+
 write-output ('HTTP Stasus: {0}' -f $global:statuscode)
+# NOTE: unfinished
+# download_status -statuscode $global:statuscode -outfile $temp_file
+download_status -statuscode $global:statuscode -page $page
+
 # NOTE: copy : The given path's format is not supported.
 if (($global:statuscode -ne 304) -and ($global:statuscode -ne 208)) {
   # using ConvertTo-HashTable

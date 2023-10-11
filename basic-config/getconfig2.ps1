@@ -19,6 +19,8 @@
 #THE SOFTWARE.
 
 # this version uses Invoke-WebRequest
+# .\getconfig2.ps1 -base_url = 'http://localhost:8085/configs/file_hash_status'
+# .\getconfig2.ps1 -base_url = 'http://localhost:8085/configs/file_hash'
 param (
   [String]$config_dir = '',
   [String]$config_filename = 'data.json',
@@ -227,6 +229,45 @@ if (-not ($data_class -as [type])) {
   return
 }
 
+# NOTE: current mixing logic of reading the status from JSON and HTTP code 
+# "/file_hash" route "/file_hash_status" route
+# makes code convoluted
+
+function download_status2 {
+  param(
+    $statuscode,
+    [String]$outfile
+  )
+  [int] $status = 0
+  if ($statuscode -eq 200) {
+    # read page details using ConvertTo-HashTable. It may not be the config
+    if (test-path -path $outfile -pathtype leaf) {
+      $page = Get-Content -literalpath $outfile -raw 
+      if ($page -ne '') {
+        write-host ('Body: {0}' -f $page)
+        $json_obj = $page | convertfrom-json
+        $response = $json_obj | ConvertTo-HashTable
+        if ($response.ContainsKey('status') -and ($response['status'] -ne 'OK' )) {
+          write-host ('unmodified')
+          $status = 2 
+        } else {
+          write-host ('success')
+          $status = 1
+        }
+      } 
+    } else {
+      write-host ('server error or misconfiguration')
+      $status = 3
+    }
+  } elseif (($statuscode -eq 304) -or ($statuscode -eq 208)) {
+    write-host ('unmodified')
+    $status = 2
+  } else {
+    write-host ('server error or misconfiguration')
+    $status = 3
+  }
+  return $status
+}
 
 # use Invoke-WebRequest cmdlet to read HTTP Status
 function getHttpStatusCode {
@@ -292,14 +333,14 @@ function getHttpStatusCode {
     write-host ('Exception (intercepted): {0}' -f $_.Exception.Message)
     # uncomment the code below when debugging
     $exception = $_.Exception
-# TODO:
-# https://learn.microsoft.com/en-us/dotnet/api/system.net.webexceptionstatus?view=netframework-4.8
-# 1 NameResolutionFailure  
-# 15 ProxyNameResolutionFailure	
-# 2 ConnectFailure
-# 3 ReceiveFailure
-# 7 ProtocolError
-# 9 TrustFailure
+    # TODO:
+    # https://learn.microsoft.com/en-us/dotnet/api/system.net.webexceptionstatus?view=netframework-4.8
+    # 1 NameResolutionFailure  
+    # 15 ProxyNameResolutionFailure	
+    # 2 ConnectFailure
+    # 3 ReceiveFailure
+    # 7 ProtocolError
+    # 9 TrustFailure
 
     # $exception | select-object -property *
     $exception_response = $exception.Response
@@ -387,8 +428,13 @@ write-output ('HTTP Stasus: {0}' -f $statuscode)
 
 # get payload
 
-if ($statuscode -eq 200) {
+# NOTE: unfinished
+download_status2 -statuscode $statuscode -outfile $temp_file
+
+if ($statuscode -eq 200) { 
+  # success 
   # using ConvertTo-HashTable
+  $page = ''
   if (test-path -path $temp_file -pathtype leaf) {
     $page = Get-Content -literalpath $temp_file -raw 
   }
@@ -397,7 +443,7 @@ if ($statuscode -eq 200) {
     write-host ('converting the page to JSON')
     $json_obj = $page | convertfrom-json
     $response = $json_obj | ConvertTo-HashTable
-    if ($response.ContainsKey('status') -and ( -not ($response['status'] -eq 'OK' ) )) {
+    if ($response.ContainsKey('status') -and ( $response['status'] -ne 'OK' ) ) {
       $result = $response['result']
       write-host ('ERROR: {0} '-f $result)
       write-host ('not updating {0}' -f $config_filename )
@@ -414,6 +460,7 @@ if ($statuscode -eq 200) {
       # updateConfig -filepath $tool_test_path -text $page
     }
   }
+# TODO: handle server error statuses
 } else {
   write-host ('not updating {0}' -f $config_filename )
 }
