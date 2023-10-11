@@ -1,0 +1,22 @@
+// flow for https://app.code2flow.com/ diagram
+start;
+// https://server/config?querystring
+if (config exists) {
+     querystring=N=config&H=ec3005...d6b
+    } else {
+    querystring=N=config
+  }
+
+examine server response
+
+  if (success) {
+    save config locally;
+  } else if (unmodified) {
+     nothing to do
+    } else
+    {
+      
+    server error or misconfiguration;
+  }
+done;
+
