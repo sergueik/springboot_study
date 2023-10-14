@@ -84,7 +84,7 @@ function checksum_file {
   # return (get-filehash -algorithm MD5 -literalpath $unc_path ).Hash
 }
 
-# wrapper around FileHelper class to write the config file
+# wrapper around FileHelper class o write the config file
 function updateConfig {
   param(
     [String]$filepath,
@@ -292,7 +292,17 @@ function getHttpStatusCode {
     if ($debug)  {
       write-host ('Invoke-WebRequest -uri {0} -OutFile {1} -passthru' -f $url, $outfile)
     }
-    $statuscode = (Invoke-WebRequest -uri $url -OutFile $outfile -passthru).StatusCode
+    $response  = Invoke-WebRequest -uri $url -OutFile $outfile -passthru
+
+    if ($debug)  {
+      write-host ('Response Headers' -f $response.Headers )
+      $headers = $response.Headers
+      $headers.Keys | foreach-object { write-host ( '{0} = {1}' -f $_ ,$headers[$_] ) }
+
+    }
+
+    # alternative is to work with [System.Net.HttpWebRequest] or [System.Net.WebRequest]
+    $statuscode =  $response.StatusCode
     if ($debug)  {
       write-host ('status code: {0}' -f $statuscode)
     }

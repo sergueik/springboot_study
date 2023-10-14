@@ -18,12 +18,7 @@
 #OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #THE SOFTWARE.
 
-# Usage:
-# .\getconfig.ps1 -base_url 'http://localhost:8085/configs/file_hash_status'
-# .\getconfig.ps1 -base_url 'http://localhost:8085/configs/file_hash'
-
 # this version uses invoke-restmethod cmdlet to download the config, and is able to detect errors in HTTP status or inside the payload
-
 param (
   [String]$config_dir = '',
   [String]$config_filename = 'data.json',
@@ -226,7 +221,9 @@ function getPage{
     if ($debug)  {
       write-host ('saved the server response into {0}' -f $outfile )
     }
-    # $page = ( Get-Content -literalpath $outfile ) -join ''
+    # NOTE: apparently cannot get the Response Headers with invoke-restmethod 
+    # alternative is to work with [System.Net.HttpWebRequest] or [System.Net.WebRequest]
+
     # https://powershellmagazine.com/2012/11/13/pstip-get-the-contents-of-a-file-in-one-string/
     # alternatively 
     # $page = [System.IO.File]::ReadAllText($outfile)

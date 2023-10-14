@@ -276,7 +276,7 @@ rm .\data.json
 
 ```
 ```powershell
-.\getconfig.ps1 -base_url http://localhost:8085/configs/file_hash_status
+.\getconfig3.ps1 -base_url http://localhost:8085/configs/file_hash_status
 
 ```
 ```text
@@ -299,7 +299,7 @@ Updating: C:\developer\sergueik\springboot_study\basic-config\data.json
 
 ```
 ```powershell
-.\getconfig.ps1 -base_url http://localhost:8085/configs/file_hash_status
+.\getconfig3.ps1 -base_url http://localhost:8085/configs/file_hash_status
 
 ```
 ```text
@@ -316,14 +316,15 @@ Status code: 304
 Status code: 304
 HTTP Stasus: 304
 ```
+(no longer supported)
 ```powershell
 .\getconfig.ps1 -base_url http://localhost:8085/configs/file_hash
 ```
 ```text
 GET http://localhost:8085/configs/file_hash?filename=data.json&hash=0DFA1329F15F
 EFA8648856794EB33244
-invoke-restmethod -uri  -method GET -contenttype "application/json"
-invoke-restmethod -uri  -method GET -contenttype "application/json" -OutFile C:\
+invoke-restmethod -uri -method GET -contenttype "application/json"
+invoke-restmethod -uri -method GET -contenttype "application/json" -OutFile C:\
 Users\Serguei\AppData\Local\Temp\data.json
 saved the server response into C:\Users\Serguei\AppData\Local\Temp\data.json
 {"result":"hash","status":"error"}
@@ -341,7 +342,7 @@ rm .\data.json
 ```
 
 ```powershell
-.\getconfig2.ps1 -base_url http://localhost:8085/configs/file_hash_status
+.\getconfig4.ps1 -base_url http://localhost:8085/configs/file_hash_status
 ```
 ```text
 GET http://localhost:8085/configs/file_hash_status?filename=data.json
@@ -358,7 +359,7 @@ Updating: C:\developer\sergueik\springboot_study\basic-config\data.json
 ```
 
 ```powershell
-.\getconfig2.ps1 -base_url http://localhost:8085/configs/file_hash_status
+.\getconfig4.ps1 -base_url http://localhost:8085/configs/file_hash_status
 GET http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244
 Invoke-WebRequest -uri http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244 -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json -passthru
 Exception (intercepted): The remote server returned an error: (304) Not Modified.
@@ -374,8 +375,8 @@ HTTP Stasus: 304
 ```powershell
 rm .\data.json
 ```
+(no longer supported)
 ```powershell
-
 .\getconfig2.ps1 -base_url http://localhost:8085/configs/file_hash
 ```
 ```text
@@ -395,6 +396,7 @@ Updating: C:\developer\sergueik\springboot_study\basic-config\data.json
 
 {  "host1": {    "netstat": [      22,      443,      3306    ]  },  "host2": {   "netstat": [    ]  },  "host3": {}}
 ```
+(no longer supported)
 ```powershell
 .\getconfig2.ps1 -base_url http://localhost:8085/configs/file_hash
 ```
