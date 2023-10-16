@@ -1110,12 +1110,12 @@ perl client.pl  -url 'http://192.168.99.100:9090/cgi-bin/file_hash_status.cgi?in
 ```JSON
 {"red": "green"}
 ```
-* NOTE: currenlty the file check sum is not preserved:
+* the file check sum is preserved:
 ```sh
 $ md5sum.exe a.json
 ```
 ```text
-0ad60a692e34c072126a40f50f301972 *a.json
+9f8377db38593544a5e994006fe4e9e4 *a.json
 ```
 while on the container:
 ```sh
