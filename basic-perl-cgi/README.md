@@ -1023,6 +1023,7 @@ HTTP Stasus: 200
 ```
 
 ### Download Update Config
+
 ```sh
 curl -so example_config.json  "http://192.168.99.101:9090/cgi-bin/file_hash.cgi?inputfile=example_config.json&hash=xxxxx"
 ```
@@ -1048,7 +1049,8 @@ md5sum  /var/www/localhost/cgi-bin/example_config.json
 9f8377db38593544a5e994006fe4e9e4  example_config.json
 ```
 ```sh
-curl -s "http://192.168.99.101:9090/cgi-bin/file_hash.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4"
+DOCKER_MACHINE_HOST=$(docker-machine ip)
+curl -s "http://$DOCKER_MACHINE_HOST:9090/cgi-bin/file_hash.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4"
 ```
 ```JSON	
 
@@ -1057,6 +1059,103 @@ curl -s "http://192.168.99.101:9090/cgi-bin/file_hash.cgi?inputfile=example_conf
    "result" : "Config /var/www/localhost/cgi-bin/example_config.json is unchanged"
 }
 
+```
+
+### Process Config File HTTP status
+
+```sh
+IMAGE=basic-perl-apache
+NAME=basic-perl-cgi
+docker run -d -p 9090:80 -p 9443:443 --name $NAME $IMAGE
+```
+or
+
+```sh
+docker start $NAME
+```
+
+```
+DOCKER_MACHINE_HOST=$(docker-machine ip)
+curl -so example_config.json  "http://192.168.99.101:9090/cgi-bin/file_hash_status.cgi?inputfile=example_config.json&hash=xxxxx"
+```
+```sh
+curl -vs "http://$DOCKER_MACHINE_HOST:9090/cgi-bin/file_hash_status.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4"
+```
+```text
+* Uses proxy env variable no_proxy == '192.168.99.103,192.168.99.100'
+*   Trying 192.168.99.100:9090...
+* Connected to 192.168.99.100 (192.168.99.100) port 9090 (#0)
+> GET /cgi-bin/file_hash_status.cgi?inputfile=example_config.json&hash=9f8377db3
+8593544a5e994006fe4e9e4 HTTP/1.1
+> Host: 192.168.99.100:9090
+> User-Agent: curl/7.75.0
+> Accept: */*
+>
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 304 Not Modified
+< Date: Mon, 16 Oct 2023 20:17:33 GMT
+< Server: Apache/2.4.46 (Unix)
+<
+* Connection #0 to host 192.168.99.100 left intact
+```
+```sh
+perl client.pl  -url 'http://192.168.99.100:9090/cgi-bin/file_hash_status.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4'
+```
+```text
+ERROR: Not Modified
+```
+```sh
+perl client.pl  -url 'http://192.168.99.100:9090/cgi-bin/file_hash_status.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e3'
+```
+```JSON
+{"red": "green"}
+```
+* NOTE: currenlty the file check sum is not preserved:
+```sh
+$ md5sum.exe a.json
+```
+```text
+0ad60a692e34c072126a40f50f301972 *a.json
+```
+while on the container:
+```sh
+docker exec $NAME md5sum /var/www/localhost/cgi-bin/example_config.json
+```
+```text
+9f8377db38593544a5e994006fe4e9e4  /var/www/localhost/cgi-bin/example_config.json
+```
+### Troubleshooting
+
+if see curl error:
+```text
+connect to 192.168.99.100 port 9090 failed: Connection refused
+Failed to connect to 192.168.99.100 port 9090: Connection refused
+Closing connection 0
+```
+check
+```sh
+$ docker container ls -a
+CONTAINER ID        IMAGE                      COMMAND                  CREATED
+            STATUS                      PORTS               NAMES
+611834b2c3af        basic-perl-apache          "sh -c 'PIDFILE='/ru"   6 weeks ago         Exited (0) 1 second ago                         basic-perl-cgi
+```
+
+then
+```sh
+$ docker logs $NAME
+```
+```text
+[Thu Aug 31 13:50:20.835067 2023] [alias:warn] [pid 6] AH00671: The Alias directive in /etc/apache2/conf.d/mod_fcgid.conf at line 4 will probably never match be
+cause it overlaps an earlier ScriptAlias.
+AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.2. Set the 'ServerName' directive globally to suppress this message
+0
+wait for apache pid
+apache is running with ID 7
+[Mon Oct 16 20:07:01.923646 2023] [alias:warn] [pid 6] AH00671: The Alias directive in /etc/apache2/conf.d/mod_fcgid.conf at line 4 will probably never match because it overlaps an earlier ScriptAlias.
+AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.2. Set the 'ServerName' directive globally to suppress this message
+0
+apache is running with ID 7
+apache is gone
 ```
 ### See Also
 

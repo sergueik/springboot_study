@@ -27,6 +27,7 @@ use Getopt::Long;
 
 use vars qw($url $response $page $data $DEBUG);
 our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
+my $outputfile = undef;
 
 $url = 'http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=304';
 $url =
@@ -34,9 +35,9 @@ $url =
 
 # $url = 'http://192.168.99.100:9090/cgi-bin/file_hash_status.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4';
 GetOptions(
-    'debug' => \$DEBUG,
-    'url=s' => \$url,
-
+    'debug'    => \$DEBUG,
+    'url=s'    => \$url,
+    'output=s' => \$outputfile,
 );
 
 $DEBUG    = 0;
@@ -58,6 +59,14 @@ else {
         $data = $json_pp->decode($page);
         if ($DEBUG) {
             print STDERR Dumper($data);
+        }
+        if ($outputfile) {
+
+            # Initialize the configuration into the file
+            open( DATA, '>', $outputfile ) or die $!;
+            print DATA $data;
+            flush DATA;
+            close(DATA);
         }
         if ( exists $data->{status} ) {
             if ( $data->{status} =~ /error/ ) {
