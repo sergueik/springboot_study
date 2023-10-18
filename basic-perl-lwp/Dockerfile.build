@@ -1,0 +1,7 @@
+FROM alpine:3.9.5
+USER root
+RUN apk --allow-untrusted update && apk upgrade && \
+    apk add perl perl-utils make gcc musl-dev perl-dev openssl-dev && \
+    rm -rf /var/cache/apk/* 
+RUN cpan -i 'LWP'
+
