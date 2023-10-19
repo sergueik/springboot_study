@@ -1,4 +1,4 @@
 FROM basic-perl-lwp
 WORKDIR /root
-COPY test.pl ./
+COPY client1.pl client2.pl ./
 

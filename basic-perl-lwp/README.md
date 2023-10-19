@@ -23,10 +23,11 @@ docker run --name $NAME --link basic-perl-cgi -it $IMAGE sh
 ```
 * run test in the container
 ```sh
-~ # perl test.pl  -url "http://$HOST:80/cgi-bin/file_hash_status.cgi?inputfile=example_config.json" -output a.json
+HOST=basic-perl-cgi
+perl client1.pl  -url "http://$HOST:80/cgi-bin/file_hash_status.cgi?inputfile=example_config.json" -output a.json
 ```
 ```text
-$VAR1 = 200;
+Status: 200
 ```
 ```sh
 ~ # ls -l
@@ -45,10 +46,10 @@ md5sum a.json
 * repeat with the hash. Remove the file 
 ```sh
 HOST=basic-perl-cgi
-perl test.pl  -url "http://$HOST:80/cgi-bin/file_hash_status.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4" -output b.json
+perl client1.pl  -url "http://$HOST:80/cgi-bin/file_hash_status.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4" -output b.json
 ```
 ```text
-$VAR1 = 304;
+Status: 304
 ```
 Confirm the file was not be downoaded:
 
@@ -59,6 +60,29 @@ echo $?
 ```text
 1
 ```
+```sh
+
+HOST=basic-perl-cgi
+perl client2.pl  -url "http://$HOST:80/cgi-bin/file_hash_status.cgi?inputfile=example_config.json" -output a.json
+
+```
+```text
+Status: 200
+```
+
+```sh
+HOST=basic-perl-cgi
+perl client2.pl  -url "http://$HOST:80/cgi-bin/file_hash_status.cgi?inputfile=example_config.json&hash=9f8377db38593544a5e994006fe4e9e4" -output b.json
+```
+```text
+Status: 304
+```
+### See Also
+
+  * CGI file upload [document](https://www.sitepoint.com/uploading-files-cgi-perl/)
+  * `mirror` [method](https://metacpan.org/pod/HTTP::Tiny#mirror) in `HTTP::Tiny`
+  * `mirror` [method](https://metacpan.org/pod/LWP::Simple#mirror) in `LWP::Simple`
+  * `getstore` [method](https://metacpan.org/pod/LWP::Simple#getstore) in `LWP::Simple`
 
 
 ### Author
