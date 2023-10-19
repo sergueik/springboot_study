@@ -91,8 +91,8 @@ function ConvertTo-Hashtable {
         if ($InputObject -is [System.Collections.IEnumerable] -and $InputObject -isnot [string]) {
             $collection = @(
                 # NOTE: this is a breaking change
-                # $InputObject | foreach-object { 
-                #     $object = $_ 
+                # $InputObject | foreach-object {
+                #     $object = $_
                 foreach ($object in $InputObject) {
                   # write-host ('object  is {0}' -f $object.gettype().Name)
                   # ConvertTo-Hashtable -InputObject $object
@@ -103,10 +103,10 @@ function ConvertTo-Hashtable {
                 }
             )
             Write-Output -NoEnumerate $collection
-        } elseif ($InputObject -is [psobject]) { 
+        } elseif ($InputObject -is [psobject]) {
             # If the object has properties that need enumeration
             # Convert it to its own dictionary table and return it
-            # convertFrom-Json produces System.Management.Automation.PSCustomObject 
+            # convertFrom-Json produces System.Management.Automation.PSCustomObject
             # https://stackoverflow.com/questions/14012773/difference-between-psobject-hashtable-and-pscustomobject
             # which properties enumeration is fastest through its PSObject
             $dictionary = @{}
@@ -127,14 +127,14 @@ function ConvertTo-Hashtable {
 function checksum_file {
   param(
     [string]$unc_path)
-  # TODO: refactor 
+  # TODO: refactor
   return [System.BitConverter]::ToString((New-Object -TypeName 'System.Security.Cryptography.MD5CryptoServiceProvider').ComputeHash([System.IO.File]::ReadAllBytes((Get-Item -Path $unc_path).FullName)))
-  # alternatively , just 
+  # alternatively , just
   # return (get-filehash -algorithm MD5 -literalpath $unc_path ).Hash
 }
 
 
-# NOTE: current mixing logic of reading the status from JSON and HTTP code 
+# NOTE: current mixing logic of reading the status from JSON and HTTP code
 # "/file_hash" route "/file_hash_status" route
 # makes code convoluted
 
@@ -162,7 +162,7 @@ function download_status {
     } else {
       write-host ('server error or misconfiguration')
       $status = 3
-    } 
+    }
   } elseif (($statuscode -eq 304) -or ($statuscode -eq 208)) {
     write-host ('unmodified')
     $status = 2
@@ -173,7 +173,7 @@ function download_status {
   return $status
 }
 
-# use invoke-restmethod cmdlet to read page, but 
+# use invoke-restmethod cmdlet to read page, but
 # NOTE: there is no way to get HTTP status with invoke-restmethod
 function getPage{
 
@@ -201,14 +201,14 @@ function getPage{
 "@
 # NOTE: the line above should not be indented
   }
-  $collected_output = $false 
+  $collected_output = $false
   # https://www.cyberforum.ru/powershell/thread2589305.html
   [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
   [System.Net.ServicePointManager]::CertificatePolicy = new-object -typename $helper_class
   # alternatively define as a lambda
   # [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
   $content_type = 'application/json'
-  
+
   try {
     $ProgressPreference = 'SilentlyContinue'
     # NOTE: quotes around "content_type" argument are optional
@@ -221,30 +221,30 @@ function getPage{
     if ($debug)  {
       write-host ('saved the server response into {0}' -f $outfile )
     }
-    # NOTE: apparently cannot get the Response Headers with invoke-restmethod 
+    # NOTE: apparently cannot get the Response Headers with invoke-restmethod
     # alternative is to work with [System.Net.HttpWebRequest] or [System.Net.WebRequest]
 
     # https://powershellmagazine.com/2012/11/13/pstip-get-the-contents-of-a-file-in-one-string/
-    # alternatively 
+    # alternatively
     # $page = [System.IO.File]::ReadAllText($outfile)
     $page = Get-Content -literalpath $outfile -raw
     if ($debug)  {
       write-host ($page)
     }
     # TODO: avoid hardcoding the status code, this is temporary
-    $global:statuscode = 200 
+    $global:statuscode = 200
     $ProgressPreference = 'Continue'
   } catch [Exception]{
     # handle the exception
     $global:statuscode = 0
     write-host ('Exception (intercepted): {0} {1}' -f $_.Exception.getType().FullName, $_.Exception.Message)
+    # https://learn.microsoft.com/en-us/dotnet/api/system.management.automation.errorrecord?view=powershellsdk-1.1.0
+    # write-host ('Exception (intercepted): ' + $_.getType().FullName)
     $exception = $_.Exception
     # https://learn.microsoft.com/en-us/dotnet/api/system.net.webexception?view=netframework-4.8
     if ($exception.getType().FullName -eq 'System.Net.WebException') {
-
-  
       # https://learn.microsoft.com/en-us/dotnet/api/system.net.webexceptionstatus?view=netframework-4.8
-      # 1 NameResolutionFailure  
+      # 1 NameResolutionFailure
       # 15 ProxyNameResolutionFailure	
       # 2 ConnectFailure
       # 3 ReceiveFailure
@@ -252,12 +252,18 @@ function getPage{
       # 9 TrustFailure
       $global:statuscode = [int] $exception.Status
       write-host ('{0} {1}' -f $global:statuscode, $exception.Status)
-    } 
+    }	
     if ($global:statuscode -eq 7 ) {
+      # https://learn.microsoft.com/en-us/dotnet/api/system.net.webexception.response?view=netframework-4.8
+      # https://learn.microsoft.com/en-us/dotnet/api/System.Net.WebResponse?view=netframework-4.8
+      # https://learn.microsoft.com/en-us/dotnet/api/system.net.webresponse.headers?view=netframework-4.8
+      # https://learn.microsoft.com/en-us/dotnet/api/system.net.webheadercollection?view=netframework-4.8
       # get the HTTP Status code
       $exception_statuscode = $_.Exception.Response.StatusCode
       # write-host ('Response: {0}' -f $_.Exception.Response.getType().FullName)
+      # https://learn.microsoft.com/en-us/dotnet/api/System.Net.HttpStatusCode?view=netframework-4.8
       write-host ('Status code: {0}' -f [int] $exception_statuscode)
+      # write-host ('Response Status Code: {0}' -f $_.Exception.Response.StatusCode.getType().FullName)
       write-host ('Status code: {0}' -f $exception_statuscode.value__)
       $global:statuscode = $exception_statuscode.value__
     }
@@ -265,7 +271,7 @@ function getPage{
   }
   # NOTE: this is only relevant when collecting the invoke-restmethod output directly
   # undo the conversion to PSObjects done by invoke-restmethod by default
-  if ($collected_output -eq $true) { 
+  if ($collected_output -eq $true) {
      $page = $page | convertto-json
   }
   return $page
@@ -416,10 +422,10 @@ if (-not ($data_class -as [type])) {
 
 # Main
 if ($config_dir -eq '' ) {
-   $config_dir = Get-ScriptDirectory 
+   $config_dir = Get-ScriptDirectory
 }
 
-$config_file_path = $config_dir + '\' + $config_filename 
+$config_file_path = $config_dir + '\' + $config_filename
 if (test-path -path $config_file_path -pathtype Leaf) {
   $md5sum = checksum_file -unc_path $config_file_path
   $md5sum =  (get-filehash -algorithm MD5 -literalpath $config_file_path ).Hash
