@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import example.task.EventLoggingTask;
 
+@SuppressWarnings({ "unused", "rawtypes" })
 public class Application {
 
 	private static ExecutorService executorService;

@@ -15,8 +15,6 @@ public class EventLoggingTask implements Runnable {
 	@Value("${setting.value:123}")
 	private long value1;
 
-	// NOTE: uncommenting the following code leads to task never run
-
 	// TODO: public EventLoggingTask(@Autowired ReloadableProperties properties)
 	public Properties properties;
 

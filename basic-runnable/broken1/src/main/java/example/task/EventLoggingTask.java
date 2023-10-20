@@ -29,10 +29,10 @@ public class EventLoggingTask implements Runnable {
 	@Override
 	public void run() {
 
-		logger.info("Value #1 is {}", value1);
 		try {
 			final String value2 = properties.getProperty("setting.value");
-			logger.info("Value #2 are {} {}", value2);
+			logger.info("Attempt to load Value from autowired properties object: {}",
+					value2);
 		} catch (Exception e) {
 			logger.info("Exception " + e.toString());
 		}
