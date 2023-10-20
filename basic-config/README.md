@@ -68,22 +68,100 @@ Host: localhost:8085
 * Connection #0 to host localhost left intact
 ```
 
+#### Powershell
+
+* vanilla try of the stock `Invoke-WebRequest` cmdlet with intent to get the status like
+
 ```powershell
+$WebObjVariable = Invoke-WebRequest -Uri <URL>
+$WebObjVariable.StatusCode
+$WebObjVariable.StatusDescription
+```
+will report a script runtime error for Status Codes `304`, `40x` and `50x` by the backend:
+
+```powershell
+Invoke-WebRequest -Uri 'http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244' -erroraction silentlycontinue
+```
+```text
+Invoke-WebRequest : The remote server returned an error: (304) Not Modified.
+At line:1 char:19
++ $WebObjVariable = Invoke-WebRequest -Uri 'http://localhost:8085/configs/file_has ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebException
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+```
+
+```powershell
+Invoke-WebRequest -Uri 'http://localhost:8085/configs/file_hash_status?filename=?data.son&hash=0DFA1329F15FEFA8648856794EB33244' -erroraction silentlycontinue
+```
+```text
+Invoke-WebRequest : The remote server returned an error: (500) Internal Server Error.
+At line:1 char:19
++ $WebObjVariable = Invoke-WebRequest -Uri 'http://localhost:8085/configs/file_has ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:Htt
+   pWebRequest) [Invoke-WebRequest], WebException
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShe
+   ll.Commands.InvokeWebRequestCommand
+```
+```powershell
+Invoke -WebRequest -Uri 'http://localhost:8085/configs/file_hash_status2?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244' -erroraction silentlycontinue
+```
+```text
+Invoke-WebRequest : The remote server returned an error: (404) Not Found.
+At line:1 char:19
++ $WebObjVariable = Invoke-WebRequest -Uri 'http://localhost:8085/configs/file_has ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebException
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+```
+
+providing the 
+```powershell
+-passthru -outfile a.json
+```
+arguments does not change this behavior 
+
+#### Calling Custom Script
+
+
+```powershell
+.\getconfig4.ps1
 ```
 will print
 
 ```text
-Status code: 304
-Status code: 304
-Body: ""
-Exception (intercepted): The remote server returned an error: (304) Not Modified
-.
+Invoke-WebRequest -uri http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244 -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json -passthru
+Exception (intercepted): The remote server returned an error: (304) Not Modified.
 Status Description:
 Status code: 304
 Status code: 304
 HTTP Stasus: 304
+unmodified
+not updating data.json
 ```
-several alternative ways of collecting the status are exercized in the Powershell script hence multiple redundant messages about the status
+
+```powershell
+.\getconfig3.ps1
+```
+will print
+
+```text
+
+GET http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244
+invoke-restmethod -url http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244 -method GET -contenttype "application/json" -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json
+Exception (intercepted): System.Net.WebException The remote server returned an error: (304) Not Modified.
+7 ProtocolError
+Status code: 304
+Status code: 304
+HTTP Stasus: 304
+unmodified
+2
+not updating data.json
+```
+
+#### Misc.
+Several alternative ways of collecting the status are exercized in the Powershell script hence multiple redundant messages about the status
 
 ```sh
 curl -sv "http://localhost:8085/configs/file_hash_status?filename=a.txt&newer=12345"
@@ -112,9 +190,8 @@ curl -s "http://localhost:8085/configs/file_hash_status?filename=a.txt&newer=123
 
 .\getstatuscode.ps1 -url  "http://localhost:8085/configs/file_hash_status?filename=a.txt&newer=12345"
 ```
-will print
+this will print
 ```text
-
 Body: {
     "result":  "newer: 12345",
     "status":  "error"
@@ -147,8 +224,7 @@ curl -o data.json -s "http://localhost:8085/configs/file_hash_status?filename=da
 ```
 in the java console will see the md5sum of the requested file logged (the actal logic of processing the hash is still WIP, the controller returns the error whenever the `hash` parameter is provided, ignoring the value of the query parameter):
 ```text
-2023-10-06 22:10:09.645  INFO 4884 --- [nio-8085-exec-1] example.controller.Controller            : md5Sum of c:\temp\data.json: 571076c15c60e93c3b4484f10e45499b
-4
+2023-10-06 22:10:09.645  INFO 4884 --- [nio-8085-exec-1] example.controller.Controller            : md5Sum of c:\temp\data.json: 571076c15c60e93c3b4484f10e45499b4
 ```
 
 ```sh
@@ -184,6 +260,7 @@ Mode                LastWriteTime         Length Name
 ```cmd
 md5sum.exe ./data.json  /c/temp/data.json
 ```
+```text
 0dfa1329f15fefa8648856794eb33244 *./data.json
 0dfa1329f15fefa8648856794eb33244 */c/temp/data.json
 ```
@@ -282,8 +359,7 @@ rm .\data.json
 ```text
 GET http://localhost:8085/configs/file_hash_status?filename=data.json
 invoke-restmethod -uri  -method GET -contenttype "application/json"
-invoke-restmethod -uri  -method GET -contenttype "application/json" -OutFile C:\
-Users\Serguei\AppData\Local\Temp\data.json
+invoke-restmethod -uri  -method GET -contenttype "application/json" -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json
 saved the server response into C:\Users\Serguei\AppData\Local\Temp\data.json
 { "host1": { "netstat": [  22,  443,  3306 ] }, "host2": { "netstat": [ ] }, "host3": {}}
 
@@ -307,10 +383,8 @@ Updating: C:\developer\sergueik\springboot_study\basic-config\data.json
 GET http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244
 
 invoke-restmethod -uri  -method GET -contenttype "application/json"
-invoke-restmethod -uri  -method GET -contenttype "application/json" -OutFile C:\
-Users\Serguei\AppData\Local\Temp\data.json
-Exception (intercepted): System.Net.WebException The remote server returned an e
-rror: (304) Not Modified.
+invoke-restmethod -uri  -method GET -contenttype "application/json" -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json
+Exception (intercepted): System.Net.WebException The remote server returned an error: (304) Not Modified.
 7 ProtocolError
 Status code: 304
 Status code: 304
@@ -321,15 +395,15 @@ HTTP Stasus: 304
 .\getconfig.ps1 -base_url http://localhost:8085/configs/file_hash
 ```
 ```text
-GET http://localhost:8085/configs/file_hash?filename=data.json&hash=0DFA1329F15F
-EFA8648856794EB33244
+GET http://localhost:8085/configs/file_hash?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244
 invoke-restmethod -uri -method GET -contenttype "application/json"
-invoke-restmethod -uri -method GET -contenttype "application/json" -OutFile C:\
-Users\Serguei\AppData\Local\Temp\data.json
+invoke-restmethod -uri -method GET -contenttype "application/json" -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json
 saved the server response into C:\Users\Serguei\AppData\Local\Temp\data.json
 {"result":"hash","status":"error"}
+
 HTTP Stasus: 200
 Body: {"result":"hash","status":"error"}
+
 converting the page to JSON
 ERROR: hash
 
@@ -436,6 +510,7 @@ Mode                LastWriteTime         Length Name
    * [ways to read a file into String](https://stackoverflow.com/questions/3402735/what-is-simplest-way-to-read-a-file-into-string)
    * [generate file MD5 checksum in Java](https://www.baeldung.com/java-md5-checksum-file)
    * [code2flow](https://app.code2flow.com) - online graphviz-like flowchart creator Copyright © 2013-2022, Code Charm, Inc.
+   * [similar discussion](https://qna.habr.com/q/1313744?e=14071418#comment_3349388) (in Russian)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
