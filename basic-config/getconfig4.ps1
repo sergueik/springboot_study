@@ -330,17 +330,20 @@ function getHttpStatusCode {
     # 3 ReceiveFailure
     # 7 ProtocolError
     # 9 TrustFailure
+    if ( $exception.Status -eq 7 ) {
+      # $exception | select-object -property *
+      $exception_response = $exception.Response
+      # $exception_response | select-object -property *
+      write-host ('Status Description: {0}' -f $exception_response.StatusDescription)
+      $exception_statuscode = $exception_response.StatusCode
+      write-host ('Status code: {0}' -f [int] $exception_statuscode)
+      write-host ('Status code: {0}' -f $exception_statuscode.value__)
+      # write-output $statuscode | select-object -property *
 
-    # $exception | select-object -property *
-    $exception_response = $exception.Response
-    # $exception_response | select-object -property *
-    write-host ('Status Description: {0}' -f $exception_response.StatusDescription)
-    $exception_statuscode = $exception_response.StatusCode
-    write-host ('Status code: {0}' -f [int] $exception_statuscode)
-    write-host ('Status code: {0}' -f $exception_statuscode.value__)
-    # write-output $statuscode | select-object -property *
-
-    $statuscode = $exception_statuscode.value__
+      $statuscode = $exception_statuscode.value__
+    } else { 
+      $statuscode = [int] $exception.Status
+    }
   }
   return  $statuscode
 }
