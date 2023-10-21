@@ -30,6 +30,7 @@ RUN     grafana-cli plugins update-all && \
 
 COPY ./files/defaults.ini /grafana/conf/
 ADD mongodb-grafana /var/lib/grafana/plugins/grafana-mongodb-datasource
+RUN test -f /var/lib/grafana/plugins/grafana-mongodb-datasource/package-lock.json && rm /var/lib/grafana/plugins/grafana-mongodb-datasource/package-lock.json
 VOLUME  [ "/grafana" ]
 
 EXPOSE 3000
