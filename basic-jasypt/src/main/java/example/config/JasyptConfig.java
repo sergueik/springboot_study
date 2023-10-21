@@ -37,12 +37,18 @@ public class JasyptConfig {
 	private final static Pattern pattern = Pattern.compile("\\s+",
 			Pattern.MULTILINE);
 
+	@Value("${jasypt.encryptor.algorithm:PBEWITHHMACSHA512ANDAES_256}")
+	private String algorithm;
+
+	@Value("${jasypt.encryptor.iterations:1000}")
+	private String iterations;
+
 	@Bean(name = "jasyptStringEncryptor")
-	// @Bean("jasyptStringEncryptor")
 	public StringEncryptor stringEncryptor() {
 		PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
 		SimpleStringPBEConfig config = new SimpleStringPBEConfig();
-		// TODO: read resource instead
+		// NOTE: can read password from resource embedded in the application jar
+		// instead
 		String password = readString(String.format("%s/src/main/resources/%s",
 				System.getProperty("user.dir"), "key.txt"));
 		// trimming it here too.
@@ -50,8 +56,8 @@ public class JasyptConfig {
 			password = pattern.matcher(password).replaceAll("");
 		logger.info("Read: \"" + password + "\"");
 		config.setPassword(password);
-		config.setAlgorithm("PBEWITHHMACSHA512ANDAES_256");
-		config.setKeyObtentionIterations("1000");
+		config.setAlgorithm(algorithm);
+		config.setKeyObtentionIterations(iterations);
 		config.setPoolSize("1");
 		config.setProviderName("SunJCE");
 		config.setSaltGeneratorClassName("org.jasypt.salt.RandomSaltGenerator");
@@ -102,4 +108,3 @@ public class JasyptConfig {
 	}
 
 }
-
