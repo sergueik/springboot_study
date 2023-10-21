@@ -1,6 +1,6 @@
 ### Info
 
-An __7.5.0__ container based on [container-examples](https://github.com/container-examples/alpine-grafana) repository,
+An __Grafana 7.x__ container based on [container-examples](https://github.com/container-examples/alpine-grafana) repository,
 switched to available [alpine 3.9 Docker image with glibc](https://hub.docker.com/r/frolvlad/alpine-glibc/)
 base image with only JSON Datasource plugins 
 
@@ -11,10 +11,11 @@ installed and a fake datasource with a trivial timeseries from [Jonnymcc/grafana
 and the springboot application with similar functionality
 
 ### Testing
-* optionally pre-download grafana package (it seems to be ignored by Docker `ADD` instruction)
+
+* optionally pre-download grafana package (it however appears to be ignored by Docker `ADD` instruction, and is replaced with direct download URL in the `Dockerfile`)
 ```sh
 GRAFANA_VERSION=7.3.4
-wget https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz .
+wget -q https://dl.grafana.com/oss/release/grafana-${GRAFANA_VERSION}.linux-amd64.tar.gz .
 ```
 NOTE, the download link can be pasted into browser address. To find the link, first browse the download page, e.g. for version __7.3.4__ it is [https://grafana.com/grafana/download/7.3.4?edition=oss](https://grafana.com/grafana/download/7.3.4?edition=oss). For change logs see [https://github.com/grafana/grafana/releases?after=v7.3.7](https://github.com/grafana/grafana/releases?after=v7.3.7)
 
@@ -28,16 +29,20 @@ followed by
 docker container run --name $IMAGE -d -p 3000:3000 $IMAGE
 docker logs $IMAGE
 ```
-* or when there is a server to link
+* or when there is a server to link (e.g. in the `../basic-go`)
 ```sh
 SERVER=basic-go-run
 docker container run --name $IMAGE --link $SERVER -d -p 3000:3000 $IMAGE
 ```
 eventually it will show
 ```text
+t=2023-10-21T18:21:18+0000 lvl=info msg="Registering plugin" logger=plugins id=grafana-mongodb-datasource
+t=2023-10-21T18:21:18+0000 lvl=info msg="Registering plugin" logger=plugins id=grafana-simple-json-datasource
+```
+```text
 lvl=info msg="HTTP Server Listen" logger=http.server address=[::]:3000 protocol=http subUrl= socket=
 ```
-* run the `index.py` as flask application in tbe foreground on a separate terminal
+* run the `index.py` as Flask application in tbe foreground in a separate terminal
 ```sh
 python index.py
 ```
@@ -185,8 +190,14 @@ alternatively one can extract the external ip address of the host
 ```sh
 IP=$(ip -4 route list match 0/0 | awk '{print $3}')
 ```
+* verify __MongoDB__ and __SimpleJSON__ data source types can be addded:
 
-* add datasource in the browser and configure __Simple JSON__ datasource to use that url `http://172.17.0.1:5000`
+![mongodb datasource](https://github.com/sergueik/springboot_study/blob/master/basic-grafana/screenshots/capture_mongodb_datasource.png)
+
+
+![simplejson datasource](https://github.com/sergueik/springboot_study/blob/master/basic-grafana/screenshots/capture_simplejson_datasource.png)
+
+* add a __SimpleJSON__ datasource using the browser and configure  datasource to use that url `http://172.17.0.1:5000`
 * alternatively if `docker-compose.yaml` is used add the setting:
 ```yaml
 extra_hosts:
@@ -204,7 +215,7 @@ After clicking __Save & Test__ it will respond with __Data source is working__
 ![dashboard](https://github.com/sergueik/springboot_study/blob/master/basic-grafana/screenshots/capture_dashbpoard.png)
 
 Of course it will be fake: no matter the time interval it will alwats diplay a straight line
-the query details will be logged in the flask application console (pretty-printed):
+the query details will be logged in the Flask application console (below is a pretty-printed log):
 ```sh
 172.17.0.2 - - [22/Jun/2021 02:45:25] "POST /query HTTP/1.1" 200 -
 /query:
