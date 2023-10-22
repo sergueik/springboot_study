@@ -1,5 +1,4 @@
 FROM python:3.8.2-alpine
-# FROM python:2.7.17-alpine
 
 WORKDIR /app
 RUN apk --allow-untrusted update && apk upgrade && \

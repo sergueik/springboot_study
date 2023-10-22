@@ -1,6 +1,6 @@
 FROM basic-python-crypto
 WORKDIR /app
-COPY app1.py app3.py ./
+COPY app.py ./
 
 ARG SERVICE_PORT=8080
 EXPOSE $SERVICE_PORT

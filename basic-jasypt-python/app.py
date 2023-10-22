@@ -2,12 +2,6 @@
 
 # origin: https://gist.github.com/wowkin2/a2b234c87290f6959c815d3c21336278
 # origin: https://cryptobook.nakov.com/symmetric-key-ciphers/aes-encrypt-decrypt-examples
-# References
-# http://www.imcore.net/encrypt-decrypt-AES-c-objective-ios-iphone-ipad-php-java-android-perl-javascript/
-# http://stackoverflow.com/questions/12562021/aes-decryption-padding-with-pkcs5-python
-# http://stackoverflow.com/questions/12524994/encrypt-decrypt-using-pycrypto-AES
-# http://www.di-mgt.com.au/cryptopad.html
-# https://github.com/dlitz/pycrypto
 
 import base64
 import hashlib
