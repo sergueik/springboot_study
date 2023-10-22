@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>dirscan-json</artifactId>
-  <version>0.6.0-SNAPSHOT</version>
+  <version>0.7.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>basic-dirscan-json</name>
   <description>JSON file configuration directory scan</description>
@@ -20,7 +20,7 @@
     <java.version>1.8</java.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
     <java.version>1.8</java.version>
-    <json.version>20080701</json.version>
+    <json.version>20231013</json.version>
     <json-path.version>2.5.0</json-path.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
