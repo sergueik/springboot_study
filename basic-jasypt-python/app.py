@@ -76,6 +76,7 @@ class AESCipher(object):
     print('salt (decrypt): {}'.format(self.salt.hex()))        
     iv = data[16:32]
     enc = data[32:]
+    print('enc: {}'.format(str(enc.hex())))
     derivedbytes = pbkdf2.PBKDF2(self.password, self.salt, 1000, SHA512)
     self.key = derivedbytes.read(32)
     print('key (decrypt): {}'.format(self.key.hex()))        

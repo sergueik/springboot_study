@@ -1,0 +1,2 @@
+cryptography
+pycrypto==2.6.1
