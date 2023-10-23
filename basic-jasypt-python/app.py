@@ -86,6 +86,8 @@ class AESCipher(object):
     cipher = AES.new(self.key, AES.MODE_CBC, self.iv)
     cipher.block_size = 32
     dec = cipher.decrypt(enc)
+    print('dec: {}'.format(str(dec.hex())))
+    print('dec(2): "{}"'.format(dec.decode('utf-8')))
     # print('salt: {}'.format(base64.b64encode(self.salt ).decode('utf-8')))        
     return unpad(dec).decode('utf-8')
 
@@ -124,9 +126,3 @@ def main():
   
 if __name__ == '__main__':
   main()
-
-# password = 'password'
-# message = 'test'
-# salt = '781549FD8B328283F0DD61937BF4F27F'
-
-

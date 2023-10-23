@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 # origin:
 from __future__ import print_function
 
@@ -18,6 +19,8 @@ from cryptography.hazmat.backends import default_backend
 # https://stackoverflow.com/questions/31569339/importerror-no-module-named-cryptography-hazmat-backends-boxsdk-on-mac
 
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+BS = 16
+pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS).encode()
 salt = os.urandom(16)
 print('salt: {}'.format(str(salt.hex())))
 kdf = PBKDF2HMAC(
@@ -45,11 +48,13 @@ key = derivedbytes[:32]
 iv = derivedbytes[32:48]
 print('key: {}'.format(str(key.hex())))
 print('iv: {}'.format(str(iv.hex())))
-message = 'testtesttesttest'
+message = 'test'
+message = pad(str(message))
+raw = bytearray()
+raw.extend(map(ord, message))
+print('len(raw): {}'.format(len(raw)))
 cipher = AES.new(key, AES.MODE_CBC, iv)
 cipher.block_size = 32
-BS = 16
-pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS).encode()
 # TODO: TypeError: can only concatenate str (not "bytes") to str
 # raw = pad(message)
 raw = message
