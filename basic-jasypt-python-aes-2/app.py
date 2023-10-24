@@ -15,52 +15,43 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 BS = 16
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS).encode()
-salt = os.urandom(16)
-print('salt: {}'.format(str(salt.hex())))
-kdf = PBKDF2HMAC(
-  algorithm = hashes.SHA512(),
-  length = 48, 
-  salt = salt,
-  iterations = 1000,
-   backend = default_backend
-)
-password = 'password'
-password_bytes = bytearray()
-password_bytes.extend(map(ord, password))
 
-# password_bytes = bytes(bytearray.fromhex(password))
-derivedbytes = kdf.derive(password_bytes)
-# NOTE: 
-# cryptography.exceptions.AlreadyFinalized: PBKDF2 instances can only be used once
-kdf = PBKDF2HMAC(
-  algorithm = hashes.SHA512(),
-  length = 48, 
-  salt = salt,
-  iterations = 1000,
-   backend = default_backend
-)
+def encrypt(value, password, salt = None) :
+  if salt == None:
+    salt_bytes = os.urandom(16)
+  else:
+    salt_bytes = bytes(bytearray.fromhex(salt))
 
-kdf.verify(password_bytes,derivedbytes)
-key = derivedbytes[:32]
-iv = derivedbytes[32:48]
-print('key: {}'.format(str(key.hex())))
-print('iv: {}'.format(str(iv.hex())))
-message = 'test'
-message_bytes = message.encode()
-# message_bytes = bytearray()
-# message_bytes .extend(map(ord, message))
+  print('salt: {}'.format(str(salt_bytes.hex())))
+  kdf = PBKDF2HMAC(
+    algorithm = hashes.SHA512(),
+    length = 48,
+    salt = salt_bytes,
+    iterations = 1000,
+     backend = default_backend
+  )
+  password = 'password'
+  password_bytes = bytearray()
+  password_bytes.extend(map(ord, password))
 
-raw = pad(message_bytes)
+  derivedbytes = kdf.derive(password_bytes)
+  key = derivedbytes[:32]
+  iv = derivedbytes[32:48]
+  print('key: {}'.format(str(key.hex())))
+  print('iv: {}'.format(str(iv.hex())))
+  value_bytes = value.encode()
 
-print('len(raw): {}'.format(len(raw)))
-cipher = AES.new(key, AES.MODE_CBC, iv)
-cipher.block_size = 32
-enc = cipher.encrypt(raw)
-print('enc: {}'.format(str(enc.hex())))
-print ('encrypted: ' + base64.b64encode(salt + iv + enc).decode('utf-8'))
+  padded_value_bytes = pad(value_bytes)
+
+  print('len(raw): {}'.format(len(padded_value_bytes)))
+  cipher = AES.new(key, AES.MODE_CBC, iv)
+  cipher.block_size = 32
+  encrypted_bytes = cipher.encrypt(padded_value_bytes)
+  print('enc: {}'.format(str(encrypted_bytes.hex())))
+  return base64.b64encode(salt_bytes + iv + encrypted_bytes).decode('utf-8')
 
 def main():
-  
+
   parser = argparse.ArgumentParser(prog = 'app.py')
   parser.add_argument('--operation', '-o', help = 'operation', type = str, action = 'store')
   parser.add_argument('--password', '-p', help = 'password', type = str, action = 'store')
@@ -70,14 +61,14 @@ def main():
   args = parser.parse_args()
   if args.debug:
     print('running debug mode')
-  
+
   if args.operation == None :
     args.operation = 'encrypt'
   if args.password == None :
     args.password = 'password'
   if args.value == None:
     args.value = 'test'
-  
+
   if args.operation == 'decrypt':
     if args.salt == None:
       result = AESCipher(args.password).decrypt(args.value)
@@ -86,11 +77,10 @@ def main():
     print('decrypted: {}'.format(result))
   else:
     if args.salt == None :
-      result = AESCipher(args.password).encrypt(args.value)
+      result = encrypt(args.value,args.password)
     else:
-      result = AESCipher(args.password,args.salt).encrypt(args.value)
+      result = encrypt(args.value,args.password,args.salt)
     print('encrypted: {}'.format(result))
-  
-  
-# if __name__ == '__main__':
-#  main()
+
+if __name__ == '__main__':
+  main()
