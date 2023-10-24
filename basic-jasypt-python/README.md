@@ -62,7 +62,22 @@ decrypted: test
 ```
 The `SHA512` `AES256` encryption appears to be compatible with Perl, C#, Java
 
+### Testing Pad
 
+```sh
+python pad.py --value test
+```
+```text
+pad: 746573740c0c0c0c0c0c0c0c0c0c0c0c
+```
+```sh
+python pad.py --value '746573740c0c0c0c0c0c0c0c0c0c0c0c' --operation unpad
+```
+```text
+raw: 746573740c0c0c0c0c0c0c0c0c0c0c0c
+raw result: 74657374
+result: "test"
+```
 ### Cleanup
 ```sh
 docker container stop $NAME

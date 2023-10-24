@@ -93,7 +93,7 @@ class AESCipher(object):
 
 def main():
   
-  parser = argparse.ArgumentParser(prog = 'app1.py')
+  parser = argparse.ArgumentParser(prog = 'app.py')
   parser.add_argument('--operation', '-o', help = 'operation', type = str, action = 'store')
   parser.add_argument('--password', '-p', help = 'password', type = str, action = 'store')
   parser.add_argument('--value', '-v', help = 'value', type = str, action = 'store')
