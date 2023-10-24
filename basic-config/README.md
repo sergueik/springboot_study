@@ -511,6 +511,9 @@ Mode                LastWriteTime         Length Name
    * [generate file MD5 checksum in Java](https://www.baeldung.com/java-md5-checksum-file)
    * [code2flow](https://app.code2flow.com) - online graphviz-like flowchart creator Copyright © 2013-2022, Code Charm, Inc.
    * [similar discussion](https://qna.habr.com/q/1313744?e=14071418#comment_3349388) (in Russian)
+   * [basic file upload](https://www.javainuse.com/spring/boot-file-download) with `Content-Disposition`
+   * [documentation on various options](https://betacode.net/11765/spring-boot-file-download)(in Russian)
+   * [stackoverflow](https://stackoverflow.com/questions/29816121/creating-a-file-download-link-using-spring-boot-and-thymeleaf) discussion of yet more alternative ways to download the resource
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
