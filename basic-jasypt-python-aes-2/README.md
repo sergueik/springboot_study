@@ -27,45 +27,57 @@ docker exec -it $NAME sh
 in the container
 
 ```sh
-python app.py
+python app.py --operation encrypt --salt ce0636d05a87d2e1130ca19af99023c1 --password secret --value 'test message'
 ```
 ```text
-salt: cb4743d5d7b83b21f38fa10c7b689c83
-key: 7de7f736fb44a3650f3361ad019d5cb6b1a2dd5fdac2b1ab7adb7f75772dea20
-iv: 593643e1ae1d2b25489ec2d6df95c147
-enc: 26a56f13dbf83a75e0b019528c99007b
-encrypted: y0dD1de4OyHzj6EMe2icg1k2Q+GuHSslSJ7C1t+VwUcmpW8T2/g6deCwGVKMmQB7
+salt: ce0636d05a87d2e1130ca19af99023c1
+key: 88c876fafce6b54d4708bc32cb37cd7f23797cdad63401079a4504e3248e4121
+iv: a468c35cba0fff8a7ff5acf39a81185f
+len(raw): 16
+enc: c22b088988c6bdeee2a5b7ec2e673668
+encrypted: zgY20FqH0uETDKGa+ZAjwaRow1y6D/+Kf/Ws85qBGF/CKwiJiMa97uKlt+wuZzZo
 ```
+```sh
+python app.py --operation decrypt --salt ce0636d05a87d2e1130ca19af99023c1 --password secret --value 'zgY20FqH0uETDKGa+ZAjwaRow1y6D/+Kf/Ws85qBGF/CKwiJiMa97uKlt+wuZzZo'
+```
+```text
+salt: ce0636d05a87d2e1130ca19af99023c1
+key: 88c876fafce6b54d4708bc32cb37cd7f23797cdad63401079a4504e3248e4121
+iv: a468c35cba0fff8a7ff5acf39a81185f
+enc: c22b088988c6bdeee2a5b7ec2e673668
+dec: 74657374206d65737361676504040404
+dec(2): "test message"
+decrypted: test message
+```
+the `salt` argument is not required (can be used for debugging)
+```sh
+python app.py --operation decrypt --password secret --value 'zgY20FqH0uETDKGa+ZAjwaRow1y6D/+Kf/Ws85qBGF/CKwiJiMa97uKlt+wuZzZo'
+```
+```text
+salt: ce0636d05a87d2e1130ca19af99023c1
+key: 88c876fafce6b54d4708bc32cb37cd7f23797cdad63401079a4504e3248e4121
+iv: a468c35cba0fff8a7ff5acf39a81185f
+enc: c22b088988c6bdeee2a5b7ec2e673668
+dec: 74657374206d65737361676504040404
+dec(2): "test message"
+decrypted: test message
 
+```
 then in the `basic-jasypt-python` container
 
 ```sh
-python app.py --value '1Rk/oslwF0uRGekY9QWPM2L5T9RiyWozrMw/dk4AdcyApF/KoezPo73Lkzo621oO' --password password --operation decrypt --salt cb4743d5d7b83b21f38fa10c7b689c83
-salt (decrypt): d5193fa2c970174b9119e918f5058f33
-enc: 80a45fcaa1eccfa3bdcb933a3adb5a0e
-key (decrypt): 98b7066808116f3c1d2fa0419dbb1debe7e78d61397fff04512271a198349500
-iv (decrypt): 62f94fd462c96a33accc3f764e0075cc
-dec: 74657374746573747465737474657374
-dec(2): testtesttesttest
-dec(3): b'testtesttesttest'
-decrypted:
-```
-
-
-```sh
-python app.py --value testtesttesttest --password password
+python app.py --password secret --value 'zgY20FqH0uETDKGa+ZAjwaRow1y6D/+Kf/Ws85qBGF/CKwiJiMa97uKlt+wuZzZo' --operation decrypt
 ```
 ```text
-salt (encrypt): 9633e155827c2b4a35c78fc8a2481348
-key (encrypt): d7f128b66c80a3af9b9aea4c8448364922e405e27eae093012f5cea5f3454268
-iv (encrypt): 75867233419ac3a2fe110c558f776a11
-encrypted: ljPhVYJ8K0o1x4/IokgTSHWGcjNBmsOi/hEMVY93ahEWsdwh0BWQBunQ39wiWmDf0hS/azeZyw9YvRaGAflkFg==
+salt (decrypt): ce0636d05a87d2e1130ca19af99023c1
+enc: c22b088988c6bdeee2a5b7ec2e673668
+key (decrypt): 88c876fafce6b54d4708bc32cb37cd7f23797cdad63401079a4504e3248e4121
+iv (decrypt): a468c35cba0fff8a7ff5acf39a81185f
+dec: 74657374206d65737361676504040404
+dec(2): "test message"
+decrypted: test message
 ```
-```sh
-python app.py --value 'ljPhVYJ8K0o1x4/IokgTSHWGcjNBmsOi/hEMVY93ahEWsdwh0BWQBunQ39wiWmDf0hS/azeZyw9YvRaGAflkFg==' --password password --operation decrypt
-```
-```text
-```
+
 ### Cleanup
 ```sh
 docker container stop $NAME
@@ -75,5 +87,8 @@ docker image prune -f
 ### See Also 
   * https://cryptography.io/en/latest/hazmat/primitives/key-derivation-functions/
   * https://github.com/pyca/cryptography/issues/1958
+  * https://stackoverflow.com/questions/31569339/importerror-no-module-named-cryptography-hazmat-backends-boxsdk-on-mac
+
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

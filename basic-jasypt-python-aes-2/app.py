@@ -13,8 +13,12 @@ from Crypto.Cipher import AES
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
+# origin: https://gist.github.com/wowkin2/a2b234c87290f6959c815d3c21336278
 BS = 16
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS).encode()
+unpad = lambda s: s[:-ord(s[len(s)-1:])]
+
 
 def encrypt(value, password, salt = None) :
   if salt == None:
@@ -28,9 +32,8 @@ def encrypt(value, password, salt = None) :
     length = 48,
     salt = salt_bytes,
     iterations = 1000,
-     backend = default_backend
+    backend = default_backend
   )
-  password = 'password'
   password_bytes = bytearray()
   password_bytes.extend(map(ord, password))
 
@@ -49,6 +52,42 @@ def encrypt(value, password, salt = None) :
   encrypted_bytes = cipher.encrypt(padded_value_bytes)
   print('enc: {}'.format(str(encrypted_bytes.hex())))
   return base64.b64encode(salt_bytes + iv + encrypted_bytes).decode('utf-8')
+
+def decrypt(value, password, salt = None):
+  data = base64.b64decode(value)
+  if salt == None:
+    salt_bytes = data[:16]
+  else:
+    salt_bytes = bytes(bytearray.fromhex(salt))
+
+  print('salt: {}'.format(salt_bytes.hex()))
+  iv = data[16:32]
+  kdf = PBKDF2HMAC(
+    algorithm = hashes.SHA512(),
+    length = 48,
+    salt = salt_bytes,
+    iterations = 1000,
+    backend = default_backend
+  )
+  password_bytes = bytearray()
+  password_bytes.extend(map(ord, password))
+
+  derivedbytes = kdf.derive(password_bytes)
+  key = derivedbytes[:32]
+  iv = derivedbytes[32:48]
+
+  print('key: {}'.format(key.hex()))
+  print('iv: {}'.format(iv.hex()))
+  encrypted_bytes = data[32:]
+  print('enc: {}'.format(str(encrypted_bytes.hex())))
+
+  cipher = AES.new(key, AES.MODE_CBC, iv)
+  cipher.block_size = 32
+  decrypted_bytes = cipher.decrypt(encrypted_bytes)
+  print('dec: {}'.format(str(decrypted_bytes.hex())))
+  print('dec(2): "{}"'.format(decrypted_bytes.decode('utf-8')))
+  return unpad(decrypted_bytes).decode('utf-8')
+
 
 def main():
 
@@ -71,9 +110,9 @@ def main():
 
   if args.operation == 'decrypt':
     if args.salt == None:
-      result = AESCipher(args.password).decrypt(args.value)
+      result = decrypt(args.value,args.password)
     else:
-      result = AESCipher(args.password,args.salt).decrypt(args.value)
+      result = decrypt(args.value,args.password,args.salt)
     print('decrypted: {}'.format(result))
   else:
     if args.salt == None :
@@ -84,3 +123,4 @@ def main():
 
 if __name__ == '__main__':
   main()
+
