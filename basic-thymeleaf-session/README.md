@@ -42,6 +42,13 @@ the same is shown in the browser or curl or postman
 see test
  https://github.com/spring-projects/spring-framework/blob/main/spring-test/src/test/java/org/springframework/test/web/servlet/samples/standalone/resultmatchers/SessionAttributeAssertionTests.java
 
+### See Also:
 
+  * [forum question](https://qna.habr.com/q/1314758) (in Russian) on adding `SpringSecurityDialect` to let Thymeleaf comprehend the `sec` namespace template declared via url `xmlns:sec="http://www.thymeleaf.org/extras/spring-security"` attribute
+  * [Spring Security with Thymeleaf](https://www.baeldung.com/spring-security-thymeleaf)
+  * [Tutorial: Thymeleaf + Spring](https://www.thymeleaf.org/doc/tutorials/3.0/thymeleafspring.html)
+  * [thymeleaf + Spring Security integration basics](https://www.thymeleaf.org/doc/articles/springsecurity.html)
+  * [introduction to Using Thymeleaf in Spring](https://www.baeldung.com/thymeleaf-in-spring-mvc)
+  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
