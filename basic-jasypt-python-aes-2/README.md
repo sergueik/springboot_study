@@ -27,6 +27,19 @@ docker exec -it $NAME sh
 in the container
 
 ```sh
+python app.py --operation encrypt --password secret --value 'test message'
+```
+```text
+salt: abd0086b798ec085d229beb3520b08e0
+key: 98fd29a6e5957ad9590cd678773afcec0f60c492401970ee7bd06f949f329883
+iv: c2de92211004ec5f8d7bdf4a86a2136d
+len(raw): 16
+enc: 983da31b00784e9935ea5613a086cd73
+encrypted: q9AIa3mOwIXSKb6zUgsI4MLekiEQBOxfjXvfSoaiE22YPaMbAHhOmTXqVhOghs1z
+```
+
+
+```sh
 python app.py --operation encrypt --salt ce0636d05a87d2e1130ca19af99023c1 --password secret --value 'test message'
 ```
 ```text
