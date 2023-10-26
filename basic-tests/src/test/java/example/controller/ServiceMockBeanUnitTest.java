@@ -18,6 +18,13 @@ import example.service.ExampleService;
 
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,6 +55,8 @@ public class ServiceMockBeanUnitTest {
 	final static String body = "Hello mock";
 	private final Data data = new Data("data");
 	private Data response;
+	private Set<String> inputs = new HashSet<>();
+	private ResponseEntity<Set<Data>> responseEntity = null;
 	private static final Gson gson = new Gson();
 
 	@BeforeEach
@@ -89,10 +98,6 @@ public class ServiceMockBeanUnitTest {
 		assertThat(controller.postJson(null), nullValue());
 	}
 
-	Set<String> inputs = new HashSet<>();
-
-	ResponseEntity<Set<Data>> responseEntity = null;
-
 	@Test
 	public void test5() {
 		inputs.add("foo");
@@ -109,6 +114,9 @@ public class ServiceMockBeanUnitTest {
 		// need a better test
 		assertThat(responseEntity.getBody().toString().contains(data.toString()),
 				is(true));
+		List<String> names = responseEntity.getBody().stream()
+				.map(ExampleController.Data::getName).collect(Collectors.toList());
+		assertThat(names.contains("data"), is(true));
 
 	}
 
