@@ -1,7 +1,7 @@
 package example.service;
 
 /**
- * Copyright 2021 Serguei Kouzmine
+ * Copyright 2021,2023 Serguei Kouzmine
  */
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +22,21 @@ public class ExampleService {
 	@Autowired
 	private ExampleComponent propertyComponent;
 
+	@Autowired
+	public ExampleService(ExampleComponent data) {
+		propertyComponent = data;
+	}
+
+	public ExampleService() {
+
+	}
+
 	public String hello() {
 		return "Hello " + propertyComponent.getProperty1();
+	}
+
+	public String hello(final String name) {
+		return "Hello " + name;
 	}
 
 	public ExampleController.Data handleData(ExampleController.Data data) {
