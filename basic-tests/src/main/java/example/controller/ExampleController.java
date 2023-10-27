@@ -11,8 +11,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -33,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
@@ -65,6 +68,16 @@ public class ExampleController {
 	@GetMapping
 	public String hello() {
 		return service.hello();
+	}
+
+	@GetMapping(value = "/quoteinjson", produces = {
+			MediaType.APPLICATION_JSON_VALUE })
+	@ResponseBody
+	public Map<String, String> quoteinjson() {
+		Map<String, String> config = new HashMap<>();
+		String name = "\"quoted\"";
+		config.put("name", name);
+		return config;
 	}
 
 	@GetMapping(value = "/json", produces = { MediaType.APPLICATION_JSON_VALUE })
@@ -174,7 +187,7 @@ public class ExampleController {
 	@RequestMapping(method = RequestMethod.POST, value = "/post/json", consumes = {
 			MediaType.APPLICATION_JSON_VALUE }, produces = {
 					MediaType.APPLICATION_JSON_VALUE })
-	public Data postJson(@RequestBody ExampleController.Data payload) {
+	public Data postJson(ExampleController.Data payload) {
 
 		// payload.setName("Mr. " + payload.getName());
 		ExampleController.Data result = service.handleData(payload);
@@ -323,6 +336,12 @@ public class ExampleController {
 		}
 
 		public Data() {
+		}
+
+		@Override
+		public String toString() {
+
+			return "Data {" + "name=" + this.name + '}';
 		}
 	}
 }

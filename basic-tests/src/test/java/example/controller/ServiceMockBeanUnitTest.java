@@ -1,43 +1,31 @@
 package example.controller;
 
-/**
- *	 Copyright 2021 Serguei Kouzmine
- */
-import org.mockito.Mockito;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import example.controller.ExampleController;
-import example.controller.ExampleController.Data;
-import example.service.ExampleService;
-
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.mockito.Mockito.any;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
+
+import example.controller.ExampleController.Data;
+import example.service.ExampleService;
 
 // https://stackoverflow.com/questions/61088682/is-there-any-special-configuration-to-use-springrunner-with-junit5
 // https://www.baeldung.com/java-spring-mockito-mock-mockbean
@@ -89,7 +77,8 @@ public class ServiceMockBeanUnitTest {
 
 	@Test
 	public void test3() {
-		assertThat(controller.postJson(data), is(data));
+		response = controller.postJson(data);
+		assertThat(response, is(data));
 	}
 
 	@Test
