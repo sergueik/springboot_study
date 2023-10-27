@@ -17,18 +17,7 @@ import example.service.SimpleService;
 @RestController
 @RequestMapping("/dispatch")
 public class DispatchController {
-	// NOTE: somewhat annoying, not reproduced in a clone project with no other
-	// components but DispatchController SimpleService DispatchControllerTest
-	// Exception encountered during context initialization - 
-	// cancelling refresh attempt: 
-	// org.springframework.beans.factory.UnsatisfiedDependencyException:
-	// Error creating bean with name 'dispatchController' defined in file ...
-	// Unsatisfied dependency expressed through constructor parameter 0;
-	// nested exception is
-	// org.springframework.beans.factory.NoSuchBeanDefinitionException:
-	// No qualifying bean of type 'example.service.SimpleService' available:
-	// expected at least 1 bean which qualifies as autowire candidate.
-	// Dependency annotations: {}
+
 	@Autowired
 	private SimpleService simpleService;
 
