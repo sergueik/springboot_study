@@ -18,7 +18,6 @@ import example.service.SimpleService;
 @RequestMapping("/dispatch")
 public class DispatchController {
 
-	@Autowired
 	private SimpleService simpleService;
 
 	@Autowired
