@@ -53,6 +53,8 @@ public class ExampleController {
 	// see also about writing SpringBoot application tests without relying on
 	// SpringBoot field injection
 	// https://reflectoring.io/unit-testing-spring-boot/
+
+	@Autowired
 	private ExampleService service;
 
 	@Autowired
