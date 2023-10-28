@@ -53,6 +53,7 @@ public class ExampleController {
 	// see also about writing SpringBoot application tests without relying on
 	// SpringBoot field injection
 	// https://reflectoring.io/unit-testing-spring-boot/
+
 	@Autowired
 	private ExampleService service;
 
@@ -70,8 +71,7 @@ public class ExampleController {
 		return service.hello();
 	}
 
-	@GetMapping(value = "/quoteinjson", produces = {
-			MediaType.APPLICATION_JSON_VALUE })
+	@GetMapping(value = "/quoteinjson", produces = { MediaType.APPLICATION_JSON_VALUE })
 	@ResponseBody
 	public Map<String, String> quoteinjson() {
 		Map<String, String> config = new HashMap<>();
@@ -92,8 +92,7 @@ public class ExampleController {
 	// the value for annotation attribute RequestMapping.produces must be a
 	// constant expression
 	// see also: https://www.baeldung.com/spring-response-entity
-	@RequestMapping(method = RequestMethod.GET, value = "/relevant_charset", produces = {
-			MediaType.TEXT_PLAIN_VALUE })
+	@RequestMapping(method = RequestMethod.GET, value = "/relevant_charset", produces = { MediaType.TEXT_PLAIN_VALUE })
 	public ResponseEntity<String> returnRelevantCharsetPayload() {
 		String data = "тест"; // TODO: localized string
 		HttpHeaders headers = new HttpHeaders();
@@ -102,8 +101,7 @@ public class ExampleController {
 		return new ResponseEntity<String>(data, headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/wrong_charset", produces = {
-			MediaType.TEXT_PLAIN_VALUE })
+	@RequestMapping(method = RequestMethod.GET, value = "/wrong_charset", produces = { MediaType.TEXT_PLAIN_VALUE })
 	public ResponseEntity<String> returnGenericCharsetPayload() {
 		String data = "тест"; // TODO: localized string
 		HttpHeaders headers = new HttpHeaders();
@@ -118,17 +116,15 @@ public class ExampleController {
 	// http://localhost:8085/basic/download/resource?resourceFileName=test.txt
 	@RequestMapping(method = RequestMethod.GET, value = "/download/resource", produces = {
 			MediaType.APPLICATION_OCTET_STREAM_VALUE })
-	public ResponseEntity<?> downloadResource(
-			@RequestParam(defaultValue = "test.txt") String resourceFileName) {
+	public ResponseEntity<?> downloadResource(@RequestParam(defaultValue = "test.txt") String resourceFileName) {
 		// final String resourceFileName = "test.txt";
 		Resource resource = null;
 		try {
-			URI uri = this.getClass().getClassLoader().getResource(resourceFileName)
-					.toURI();
+			URI uri = this.getClass().getClassLoader().getResource(resourceFileName).toURI();
 			resource = new UrlResource(uri);
 			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
-					.header(HttpHeaders.CONTENT_DISPOSITION, String
-							.format("attachment; filename=\"%s\"", resource.getFilename()))
+					.header(HttpHeaders.CONTENT_DISPOSITION,
+							String.format("attachment; filename=\"%s\"", resource.getFilename()))
 					.body(resource);
 
 		} catch (NullPointerException | IOException | URISyntaxException e) {
@@ -147,28 +143,25 @@ public class ExampleController {
 			MediaType.APPLICATION_OCTET_STREAM_VALUE })
 	public ResponseEntity<?> downloadFile() {
 		// NOTE: need an absolute path
-		Path filePath = Paths.get(String.join(System.getProperty("file.separator"),
-				System.getProperty("user.dir"), "src", "main", "resources",
-				"test.txt"));
+		Path filePath = Paths.get(String.join(System.getProperty("file.separator"), System.getProperty("user.dir"),
+				"src", "main", "resources", "test.txt"));
 		Resource resource = null;
 		try {
 			File file = new File(filePath.toString());
 			resource = new UrlResource(filePath.toUri());
 			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
-					.header("Content-Length", Long.toString(file.length()))
-					.header(HttpHeaders.CONTENT_DISPOSITION, String
-							.format("attachment; filename=\"%s\"", resource.getFilename()))
+					.header("Content-Length", Long.toString(file.length())).header(HttpHeaders.CONTENT_DISPOSITION,
+							String.format("attachment; filename=\"%s\"", resource.getFilename()))
 					.body(resource);
 		} catch (IOException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("file not found: " + filePath);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("file not found: " + filePath);
 			// NOTE: code compiles but the body is ignored
 			/*
-			var data = new FileInputStream(filePath.toString());    
-			IOUtils.copy(data, response.getOutputStream());
-			IOUtils.closeQuietly(data);
-			IOUtils.closeQuietly(response.getOutputStream());
-			*/
+			 * var data = new FileInputStream(filePath.toString());
+			 * IOUtils.copy(data, response.getOutputStream());
+			 * IOUtils.closeQuietly(data);
+			 * IOUtils.closeQuietly(response.getOutputStream());
+			 */
 		}
 	}
 	// see also:
@@ -185,8 +178,7 @@ public class ExampleController {
 	// getMediaTypeForFileName
 
 	@RequestMapping(method = RequestMethod.POST, value = "/post/json", consumes = {
-			MediaType.APPLICATION_JSON_VALUE }, produces = {
-					MediaType.APPLICATION_JSON_VALUE })
+			MediaType.APPLICATION_JSON_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public Data postJson(ExampleController.Data payload) {
 
 		// payload.setName("Mr. " + payload.getName());
@@ -196,8 +188,7 @@ public class ExampleController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/post/plain", consumes = {
-			MediaType.APPLICATION_JSON_VALUE }, produces = {
-					MediaType.APPLICATION_JSON_VALUE })
+			MediaType.APPLICATION_JSON_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public Data postPlain(@RequestBody String payload) {
 		Data result = gson.fromJson(payload, Data.class);
 		// result.setName("white");
@@ -206,16 +197,13 @@ public class ExampleController {
 
 	// see also: https://qna.habr.com/q/1079162
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public ResponseEntity<String> list(
-			@RequestParam final Collection<UUID> uuids) {
-		String data = String.join(" ",
-				uuids.stream().map(o -> o.toString()).collect(Collectors.toList()));
+	public ResponseEntity<String> list(@RequestParam final Collection<UUID> uuids) {
+		String data = String.join(" ", uuids.stream().map(o -> o.toString()).collect(Collectors.toList()));
 		return ResponseEntity.status(HttpStatus.OK).body(data);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/post/set", consumes = {
-			MediaType.APPLICATION_JSON_VALUE }, produces = {
-					MediaType.APPLICATION_JSON_VALUE })
+			MediaType.APPLICATION_JSON_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<Set<Data>> postSet(@RequestBody Set<String> inputs) {
 
 		Set<Data> result = new HashSet<>();
@@ -228,26 +216,19 @@ public class ExampleController {
 
 	}
 
-	@GetMapping(value = "/array/params", produces = {
-			MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<List<String>> paramArrayEcho(
-			@RequestParam Optional<List<String>> values) {
-		return (values.isPresent() && values.get().size() > 0)
-				? ResponseEntity.status(HttpStatus.OK).body(values.get())
-				: ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-						.body(new ArrayList<String>());
+	@GetMapping(value = "/array/params", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<List<String>> paramArrayEcho(@RequestParam Optional<List<String>> values) {
+		return (values.isPresent() && values.get().size() > 0) ? ResponseEntity.status(HttpStatus.OK).body(values.get())
+				: ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new ArrayList<String>());
 	}
 
 	@GetMapping(value = "/queryparam", produces = { MediaType.TEXT_PLAIN_VALUE })
-	public ResponseEntity<String> queryParam(
-			@RequestParam Optional<List<String>> appids,
+	public ResponseEntity<String> queryParam(@RequestParam Optional<List<String>> appids,
 			@RequestParam Optional<List<Integer>> ids) {
 		String payload = null;
-		if ((appids.isPresent() && appids.get().size() > 0)
-				&& (ids.isPresent() && ids.get().size() > 0)) {
-			payload = String.format("appids: %s ids: %s",
-					String.join(",", appids.get()), String.join(",", ids.get().stream()
-							.map(o -> String.format("%d", o)).collect(Collectors.toList())));
+		if ((appids.isPresent() && appids.get().size() > 0) && (ids.isPresent() && ids.get().size() > 0)) {
+			payload = String.format("appids: %s ids: %s", String.join(",", appids.get()),
+					String.join(",", ids.get().stream().map(o -> String.format("%d", o)).collect(Collectors.toList())));
 			return ResponseEntity.status(HttpStatus.OK).body(payload);
 		} else {
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("");
@@ -260,12 +241,13 @@ public class ExampleController {
 	// https://www.programcreek.com/java-api-examples/?class=org.springframework.http.MediaType&method=APPLICATION_FORM_URLENCODED_VALUE
 	// https://www.baeldung.com/spring-request-method-not-supported-405
 	// returns HTTP 405 error code for GET
-	@RequestMapping(method = { RequestMethod.PUT,
-			RequestMethod.POST }, value = "/post/form", consumes = {
-					MediaType.APPLICATION_FORM_URLENCODED_VALUE }, produces = {
-							MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<Data> postForm(
-			@RequestBody final MultiValueMap<String, String> param /* , HttpServletResponse response */) {
+	@RequestMapping(method = { RequestMethod.PUT, RequestMethod.POST }, value = "/post/form", consumes = {
+			MediaType.APPLICATION_FORM_URLENCODED_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<Data> postForm(@RequestBody final MultiValueMap<String, String> param /*
+																								 * ,
+																								 * HttpServletResponse
+																								 * response
+																								 */) {
 		if (param.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Data());
 			// Alternatively change the method signature to include
@@ -275,8 +257,7 @@ public class ExampleController {
 			// see also:
 			// https://stackoverflow.com/questions/16232833/how-to-respond-with-http-400-error-in-a-spring-mvc-responsebody-method-returnin
 		}
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(service.handleData(new Data(param.getFirst("name"))));
+		return ResponseEntity.status(HttpStatus.OK).body(service.handleData(new Data(param.getFirst("name"))));
 	}
 
 	// NOTE: getResourceURI may not work with standalone or web hosted
@@ -288,8 +269,7 @@ public class ExampleController {
 				System.err.println("Getting resource URI for: " + resourceFileName);
 			}
 
-			URI uri = this.getClass().getClassLoader().getResource(resourceFileName)
-					.toURI();
+			URI uri = this.getClass().getClassLoader().getResource(resourceFileName).toURI();
 			if (debug) {
 				System.err.println("Resource URI: " + uri.toString());
 			}
@@ -301,16 +281,13 @@ public class ExampleController {
 
 	@RequestMapping(method = RequestMethod.GET, value = "/sanitize/{filename}/data", produces = {
 			MediaType.APPLICATION_OCTET_STREAM_VALUE })
-	public ResponseEntity<?> sanitizeFileName(
-			@PathVariable("filename") String fileName) {
+	public ResponseEntity<?> sanitizeFileName(@PathVariable("filename") String fileName) {
 		final String special = "^[[\\|$<>&!,{}`]]";
 		final Pattern regex = Pattern.compile(special);
 
 		return regex.matcher(fileName).find()
-				? ResponseEntity.status(HttpStatus.OK)
-						.body(service.handleData("valid filename: " + fileName))
-				: ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-						.body("invalid filename");
+				? ResponseEntity.status(HttpStatus.OK).body(service.handleData("valid filename: " + fileName))
+				: ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("invalid filename");
 
 	}
 
