@@ -1,0 +1,4 @@
+FROM alpine:3.9.5
+# first argument
+RUN echo "#!/bin/sh" > /tmp/first_argument.sh; echo "VAR=\${1:-world}; echo \"hello \${VAR}!\";" >> /tmp/first_argument.sh; chmod +x /tmp/first_argument.sh
+ENTRYPOINT [ "/tmp/first_argument.sh" ]
