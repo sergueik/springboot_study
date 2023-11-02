@@ -1,4 +1,5 @@
 package jasypt
+// origin: https://github.com/Mystery00/go-jasypt/blob/master/encryption/pbe_hmacsha512_aes256.go
 
 import (
 	"bytes"

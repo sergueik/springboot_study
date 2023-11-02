@@ -7,7 +7,20 @@ docker image rm -f $IMAGE
 docker build -t $IMAGE -f Dockerfile .
 export NAME=jasypt-go
 docker container rm $NAME
-docker run --name=$NAME -it $IMAGE go run jasypt.go password test
+docker run --rm -it $NAME password test
+```
+```text
+Result: 9MQ0EeNEz4Qkq7Ke1gcpRw==
+Result: test
+
+```
+if for some reason the compilation does not work can interpret the source in the container:
+```sh
+docker run --name=$NAME --entrypoint '' -it $IMAGE go run jasypt.go password test
+```
+```text
+Result: Z2MBMrbRJDFw5bJDrnZeOQ==
+Result: test
 ```
 
 ### Verify
