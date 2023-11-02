@@ -1176,6 +1176,11 @@ apache is gone
   * [Angular - HTTP GET Request Examples](https://jasonwatmore.com/post/2019/09/06/angular-http-get-request-examples)
   * the full `HttpResponse` [class documentation](https://angular.io/api/common/http/HttpResponse#properties)
   * AngularJS $http [reference](https://docs.angularjs.org/api/ng/service/$http)
+  * CGI file upload [document](https://www.sitepoint.com/uploading-files-cgi-perl/)
+  * `mirror` [method](https://metacpan.org/pod/HTTP::Tiny#mirror) in `HTTP::Tiny`
+  * `mirror` [method](https://metacpan.org/pod/LWP::Simple#mirror) in `LWP::Simple`
+  * `getstore` [method](https://metacpan.org/pod/LWP::Simple#getstore) in `LWP::Simple`
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

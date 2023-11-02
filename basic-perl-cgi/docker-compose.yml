@@ -1,0 +1,40 @@
+version: '2.2'
+
+services:
+  app1:
+    restart: unless-stopped
+    build: .
+    container_name: app1
+    environment:
+      - MONITOR=true
+    ports:
+      - "9090:80"
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:80/
+    networks:
+      - app
+
+  app2:
+    restart: unless-stopped
+    build: .
+    container_name: app2
+    environment:
+      - MONITOR=true
+      - PORT=7000
+    ports:
+      - "8080:80"
+        # NOTE: reporting unhealthy, shows no data in 'Observability'  
+        # Commenting healthcheck
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:80/
+    depends_on:
+      - app1
+    networks:
+      - app
+
+networks:
+  app:
