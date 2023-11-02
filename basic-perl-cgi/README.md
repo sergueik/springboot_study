@@ -13,6 +13,7 @@ docker build -t $IMAGE -f Dockerfile .
 
 ```sh
 NAME=basic-perl-cgi
+docker container rm $NAME
 docker run -d -p 9090:80 -p 9443:443 --name $NAME $IMAGE
 docker logs -f $NAME
 ```
@@ -1157,6 +1158,16 @@ AH00558: httpd: Could not reliably determine the server's fully qualified domain
 apache is running with ID 7
 apache is gone
 ```
+### Note
+
+```sh
+perl -pi -e '$_ =~ s|(<Directory "/var/www/localhost/htdocs">)|$1\nHeader set Access-Control-Allow-Origin "*"|og unless /^\s*Header set Access-Control-Allow-Origin/' /etc/apache2/httpd.conf
+```
+is not idempotent, updates the file in every run, because emulates sed line-oriented operation
+
+####
+`http://192.168.99.100:8080/form_post.html`
+
 ### See Also
 
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
@@ -1180,6 +1191,9 @@ apache is gone
   * `mirror` [method](https://metacpan.org/pod/HTTP::Tiny#mirror) in `HTTP::Tiny`
   * `mirror` [method](https://metacpan.org/pod/LWP::Simple#mirror) in `LWP::Simple`
   * `getstore` [method](https://metacpan.org/pod/LWP::Simple#getstore) in `LWP::Simple`
+  * [enable CORS in Apache Web Server](https://ubiq.co/tech-blog/enable-cors-apache-web-server/)
+  * [insert line after match using sed or perl](https://stackoverflow.com/questions/15559359/insert-line-after-match-using-sed)
+  * https://stackoverflow.com/questions/39069206/how-to-set-custom-headers-for-httptiny-in-perl
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

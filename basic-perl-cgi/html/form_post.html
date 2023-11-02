@@ -22,16 +22,19 @@ app.controller('postserviceCtrl', function($scope, $http) {
       adress: adress
     };
     // https://docs.angularjs.org/api/ng/service/$http#$http-arguments
-    // try some CORS?
     // NOTE: cannot use host names, need to run X Desktop in th cluster, later
     // use a different port
-    // note: not location.host
-console.log('http://' + location.hostname + ':9090/cgi-bin/echo_json.cgi') ;
-    $http.post('http://' + location.hostname + ':9090/cgi-bin/echo_json.cgi', JSON.stringify(data), {
+    // note: use location.hostname not location.host
+    const port = 9090;
+    // console.log('http://' + location.hostname + ':9090/cgi-bin/echo_json.cgi') ;
+    data['custom_referrer'] = document.URL;
+    $http.post('http://' + location.hostname + ':' + port + '/cgi-bin/echo_json.cgi', JSON.stringify(data), {
       headers: {
-        /*  Referer: document.URL, */
-        'Referrer-Policy': 'origin'
+         //  Referer: document.URL,
+         // angular.js:11945 Refused to set unsafe header "Referer"
+        'Referrer-Policy': 'origin' 
       }
+
     }).then(function(response /* data, status, headers, config */
       // NOTE: Angular refused to set unsafe header "Referer"
       // https://stackoverflow.com/questions/33143776/ajax-request-refused-to-set-unsafe-header

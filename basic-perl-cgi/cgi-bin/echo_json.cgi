@@ -32,6 +32,12 @@ use vars qw($query $method $remote_addr $body $data $headers);
 our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
 cgi {
     $query  = $_;
+    # Override API being blocked by CORS policy:  
+    # Request header field referrer-policy, content-type is not allowed by Access-Control-Allow-Headers in preflight response
+    # NOTE: can not add multiple headers in one call 
+    $query = $query->add_response_header('Access-Control-Allow-Origin' => '*');
+    $query = $query->add_response_header('Access-Control-Allow-Headers' => '*');
+
     $headers = $query->headers;
     $method = $query->method;
     if ( $method eq 'POST' ) {
