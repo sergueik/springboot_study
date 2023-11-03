@@ -3,6 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.baeldung.multipledb</groupId>
   <artifactId>multidatabase-jpa-h2</artifactId>
+  <version>0.2.0-SNAPSHOT</version>
   <name>multidatabase-jpa-h2</name>
   <packaging>jar</packaging>
   <description>Demo Spring Boot applications that starts multi database H2 in memory database</description>
@@ -12,6 +13,12 @@
     <version>2.3.4.RELEASE</version>
     <relativePath/>
   </parent>
+  <properties>
+    <!-- The main class to start by executing java -jar -->
+    <start-class>com.baeldung.multipledb.Application</start-class>
+    <guava.version>23.0</guava.version>
+    <java.version>1.8</java.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -36,11 +43,32 @@
       <version>${lombok.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${gson.version}</version>
+      <exclusions>
+        <exclusion>
+          <!-- exclude side by side versions of guava jar from gson -->
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.junit.vintage</groupId>
+          <artifactId>junit-vintage-engine</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
-  <properties>
-    <!-- The main class to start by executing java -jar -->
-    <start-class>com.baeldung.multipledb.Application</start-class>
-    <guava.version>23.0</guava.version>
-    <java.version>1.8</java.version>
-  </properties>
 </project>
