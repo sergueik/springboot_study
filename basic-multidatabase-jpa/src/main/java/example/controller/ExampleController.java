@@ -1,4 +1,4 @@
-package com.baeldung.multipledb.controller;
+package example.controller;
 /**
  * Copyright 2023 Serguei Kouzmine
  */
