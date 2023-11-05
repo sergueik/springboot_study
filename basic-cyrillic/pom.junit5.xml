@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>cyrillic</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>cyrillic</name>
   <description>Demo message exaple</description>
@@ -12,20 +12,21 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
     <junit-jupiter.version>5.6.3</junit-jupiter.version>
-
+    <consoleEncoding>utf-8</consoleEncoding>
+    <!-- NOTE:  without consoleEncoding, works too -->
     <finalName>${project.groupId}.${project.artifactId}</finalName>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
     <maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
     <mainClass>ConsoleApp</mainClass>
-    <maven-surefire-plugin.version>2.20.0</maven-surefire-plugin.version>
+    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
   </properties>
   <dependencies>
-<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter</artifactId>
-<version>${junit-jupiter.version}</version>
-		</dependency>  
-</dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit-jupiter.version}</version>
+    </dependency>
+  </dependencies>
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
     <testSourceDirectory>src/test/java</testSourceDirectory>
@@ -70,10 +71,9 @@
           <compilerArgument>-Xlint:all</compilerArgument>
           <showWarnings>true</showWarnings>
           <showDeprecation>true</showDeprecation>
-	  <!--
+          <!--
 	  <compilerArgument>-verbose</compilerArgument> -->
         </configuration>
-
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -82,9 +82,9 @@
         <configuration>
           <trimStackTrace>false</trimStackTrace>
           <encoding>${project.build.sourceEncoding}</encoding>
-	  <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
-        <outputEncoding>${project.build.sourceEncoding}</outputEncoding>
-          <argLine>-Dfile.encoding=${project.build.sourceEncoding} -DconsoleEncoding=866</argLine>
+          <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
+          <outputEncoding>${project.build.sourceEncoding}</outputEncoding>
+          <argLine>-Dfile.encoding=${project.build.sourceEncoding} -DconsoleEncoding=${consoleEncoding}</argLine>
         </configuration>
       </plugin>
     </plugins>
