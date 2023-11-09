@@ -2,7 +2,7 @@
 
 This directory contains a basic springboot jdbc on postgresql project based on
 [KominfoPemudaPersis/springboot-jdbc-postgres](https://github.com/KominfoPemudaPersis/springboot-jdbc-postgres)
-and alpine postgres basic Dockerfile from [github repository](https://hub.docker.com/r/kiasaki/alpine-postgres/dockerfile)
+and alpine postgres basic Dockerfile from [kiasaki/alpine-postgres](https://hub.docker.com/r/kiasaki/alpine-postgres/dockerfile) github repository
 
 ### Run application
 * install postgres locally 
@@ -182,7 +182,7 @@ sudo /etc/init.d/postgresql  stop
 ```text
 [ ok ] Stopping postgresql (via systemctl): postgresql.service.
 ```
-alternaively
+alternat	ively
 ```sh
 sudo systemctl stop postgresql
 sudo systemctl status postgresql
@@ -216,9 +216,11 @@ postgres-database
 ```
 docker pull kiasaki/alpine-postgres
 ```
-launch the database named container
+launch the database in container named $SERVER_NAME
 ```sh
 SERVER_NAME=postgres-database
+docker stop $SERVER_NAME
+docker container rm $SERVER_NAME
 docker run --name $SERVER_NAME -e POSTGRES_PASSWORD=postgres -d kiasaki/alpine-postgres
 ```
 - this will fail on __Docker Toolbox__ with
@@ -227,8 +229,8 @@ PostgreSQL stand-alone backend 9.6.5
 backend> statement: ALTER USER postgres WITH SUPERUSER PASSWORD 'postgres';
 
 backend>
-waiting for server to start....FATAL:  could not create lock file "/run/postgres
-ql/.s.PGSQL.5432.lock": No such file or directory
+waiting for server to start....
+FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory
 LOG:  database system is shut down
  stopped waiting
 pg_ctl: could not start server
@@ -256,18 +258,19 @@ server stopped
 ```
 stop the container and focus on client code in selected language
 ```sh
-
+docker stop $SERVER_NAME
+docker container rm $SERVER_NAME
 ```
 Alternatively
-change `SERVER_IMAGE` and rebuild the container from plain alpine:
+change `SERVER_IMAGE` and rebuild the container from plain alpine using `Dockerfile.alpine-postgres`:
 ```sh
 SERVER_IMAGE=alpine-postgres
 docker build -f Dockerfile.$SERVER_IMAGE -t $SERVER_IMAGE .
 ```
-run container from the built image. NOTE: not exposing the port `5432`, will be connecting containres over Docker network.
+run container from the built image. NOTE: one is not required to expose the port `5432`, application will be connecting containers over Docker network.
 ```sh
 SERVER_NAME=postgres-database
-docker run --name $SERVER_NAME -e POSTGRES_PASSWORD=postgres -d $SERVER_IMAGE
+docker run --name $SERVER_NAME -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d $SERVER_IMAGE
 ```
 * run
 ```sh
@@ -316,7 +319,7 @@ mvn clean package
 IMAGE=postgres-example
 docker build -f Dockerfile -t $IMAGE .
 ```
-* run application in continer linked to the postgres container `$SERVER_NAME`:
+* run application in container linked to the postgres container `$SERVER_NAME`:
 ```sh
 NAME=example-postgres
 docker run --name $NAME --link $SERVER_NAME -p 8080:8080 -d $IMAGE
@@ -393,7 +396,7 @@ curl -s -X PUT -H "Content-Type: application/json" -d '{"key":"example", "value"
 ```
 ### TODO:
 
-The current configuration of java app does now accept the `application/x-www-form-urlencoded` content-type POST requests:
+The current configuration of java app does not accept the `application/x-www-form-urlencoded` content-type POST requests:
 ```sh
 curl -X POST -H "application/x-www-form-urlencoded" -d "key=example&value=data&rand=123" 127.0.0.1:8080/rest/
 ```
@@ -510,7 +513,7 @@ query by ids and keys returned: 6 rows
 
 ```
 ### Install PG Admin
-* on Bionic can 
+* on Ubuntu Bionic one can 
 ```sh
 sudo apt-get install pgadmin4-desktop
 ```
@@ -518,7 +521,7 @@ this will install version __6.14__
 
 ![PG Admin 4 Splash Screen](https://github.com/sergueik/springboot_study/blob/master/basic-postgresql/screenshots/capture-pg4_splash.png)
 
-if the application was installed, you may need to find out the last usedmaster password and unlock it:
+if the application was installed, you may need to find out the last used master password and unlock it:
 ![PG Admin 4 Splash Screen](https://github.com/sergueik/springboot_study/blob/master/basic-postgresql/screenshots/capture-pg4_unlock_password.png)
 
 Follow the Debian system install [steps](https://www.pgadmin.org/download/pgadmin-4-apt/)
@@ -689,7 +692,8 @@ docker run --link postgres-database -it python:3.8.2-alpine sh
 Password for user postgres:
 psql (9.6.22)
 Type "help" for help.
-
+```
+```SQL
 postgres=# \l
                                  List of databases
    Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges
@@ -717,7 +721,7 @@ example=# \d
 (2 rows)
 
 ```
-```
+```python
 pip install
 python
 import postgresql
@@ -753,8 +757,6 @@ example=# select * from rest;
 
 ```sql
 CREATE TABLE cache ( id serial PRIMARY KEY NOT NULL, hostname varchar(100) NOT NULL, value varchar(250) NOT NULL, timestamp bigint NOT NULL);
-
-
 ```
 ```text
 CREATE TABLE
@@ -788,7 +790,7 @@ db.close()
 docker container stop postgres-database
 ```
 ```sh
-docker container ls -a | grep -v postgres-database | awk '{print $1}'| xargs -IX docker container rm X
+docker container ls -a | grep -i postgres-database | awk '{print $1}'| xargs -IX docker container rm X
 ```
 ### See also
 
