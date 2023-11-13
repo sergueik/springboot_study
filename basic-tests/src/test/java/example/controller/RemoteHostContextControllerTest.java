@@ -24,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
 @PropertySource("classpath:application.properties")
 
 @SuppressWarnings("unchecked")
-public class RemoteHosTest {
+public class RemoteHostContextControllerTest {
 
 	@LocalServerPort
 	// NOTE: property annotations seem to have no effect here
@@ -47,7 +47,6 @@ public class RemoteHosTest {
 
 	}
 
-	// correct charset
 	@Test
 	public void test1() throws Exception {
 		route = "/basic/request";
