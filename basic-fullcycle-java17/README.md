@@ -123,19 +123,7 @@ update `pom.xml` and container configurations to have pinned jar name
   <finalName>${finalName}</finalName>
 </configuration>
 ```
-
-### Spring Boot 3.x Changes
-
-```text
-[ERROR] /app/src/main/java/com/example/demo/RemoteHostContextController.java:[11,26] package javax.servlet.http does not exist
-[ERROR] /app/src/main/java/com/example/demo/RemoteHostContextController.java:[37,51] cannot find symbol
-[ERROR]   symbol:   class HttpServletRequest
-[ERROR]   location: class com.example.demo.RemoteHostContextController
-
-```
-
 ### See Also
-
 
    * https://blog.giovannidemizio.eu/2021/05/24/how-to-set-user-and-group-in-docker-compose/
    * https://nickjanetakis.com/blog/running-docker-containers-as-a-non-root-user-with-a-custom-uid-and-gid
