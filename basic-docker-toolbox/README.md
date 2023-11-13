@@ -57,6 +57,7 @@ cd $TEMP
 VERSION=2.14.0
 curl -sL https://github.com/docker/compose/releases/download/v$VERSION/docker-compose-windows-x86_64.exe -o docker-compose.exe
 ```
+one can try later releases e.g. `VERSION=2.21.0`
 verify
 ```sh
 ./docker-compose.exe --version
@@ -74,7 +75,10 @@ finally start a new __Docker Toolbox__ bash shell. Verify version of the `docker
 ```sh
 docker-compose --version
 ```
-
+or 
+```sh
+docker-compose.exe version
+```
 ```text
 Docker Compose version v2.14.0
 ```
@@ -121,7 +125,7 @@ app  | 127.0.0.1 - - [23/Apr/2023 22:03:01] "GET / HTTP/1.1" 200 -
 app  | 127.0.0.1 - - [23/Apr/2023 22:03:11] "GET / HTTP/1.1" 200 -
 ```
 
-NOTE: on some mashines `TERM=cygwin` nor `TERM=xtexm` nor `TERM=xterm-256color` does not fix the colors (console ASCII escape sequence doesn't clear window content and [is "displaying strange characters" instead](https://stackoverflow.com/questions/35387667/git-bash-is-displaying-strange-characters-on-windows-7)):
+NOTE: on some mashines setting the envionment `TERM=cygwin` nor `TERM=xterm` nor `TERM=xterm-256color` does not fix the colors (console ASCII escape sequence doesn't clear window content and [is "displaying strange characters" instead](https://stackoverflow.com/questions/35387667/git-bash-is-displaying-strange-characters-on-windows-7)):
 
 ```sh
 docker-compose up --build
