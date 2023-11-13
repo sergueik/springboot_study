@@ -1,0 +1,5 @@
+FROM alpine:3.9.5
+# first argument workaround
+RUN echo "#!/bin/sh" > /tmp/check_argument.sh; \
+    echo 'if [ "$1" == "sh" ] ; then VAR=world; else VAR="$@"; VAR=${VAR:-world}; fi;  echo "hello $VAR"' >> /tmp/check_argument.sh; chmod +x /tmp/check_argument.sh
+ENTRYPOINT [ "/tmp/check_argument.sh" ]

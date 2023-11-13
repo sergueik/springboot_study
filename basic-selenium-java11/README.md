@@ -113,13 +113,18 @@ java.io.FileReader.<init>(Ljava/io/File;Ljava/nio/charset/Charset;)V
 DOCKER_IMAGE=alpine-jdk11-maven
 docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
 ```
-followed by
+
+
+followed by container run
+* NOTE: maping host repository volume into container will have no effect, since source code is about to be compiled during *build* phase:
 ```sh
 DOCKER_IMAGE=alpine-jdk11-chromium
 docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
-docker run -it $DOCKER_IMAGE
+docker run -v $(pwd)/maven/.m2:/tmp/maven/.m2 -it $DOCKER_IMAGE
 ```
-which logs
+the correct way is to either use the [cache mount](https://docs.docker.com/build/guide/mounts/) or have an explicit run step building java app
+
+the process above will log
 ```sh
 WARNING: Unable to find an exact match for CDP version 86, so returning the closest version found: 84
 Nov 20, 2020 2:57:34 AM org.openqa.selenium.devtools.CdpVersionFinder findNearestMatch
@@ -130,6 +135,9 @@ Hi, Julio
 ### See Also
 
   * https://www.cyberciti.biz/faq/10-alpine-linux-apk-command-examples/
-
+  * [Caching Maven Dependencies with Docker](https://www.baeldung.com/ops/docker-cache-maven-dependencies) - NOTE: requires `buildkit` feature to be enabled
+ * [optimizing builds with cache management](https://docs.docker.com/build/cache/)
+  * [long stackoverflow discussion of cons and pros of caching](https://stackoverflow.com/questions/42208442/maven-docker-cache-dependencies)
+  * [speed up Maven Docker builds with Cache and buildkit](https://containers.fan/posts/speed-up-maven-docker-builds-with-cache/)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -1,3 +1,4 @@
 FROM alpine:3.9.5
 ADD echoargs.sh /tmp
+RUN sed -i 's|\r||g' /tmp/echoargs.sh
 CMD /tmp/echoargs.sh $@

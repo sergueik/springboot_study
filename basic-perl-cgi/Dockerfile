@@ -8,7 +8,12 @@ RUN apk --allow-untrusted update && apk upgrade && \
     mkdir /var/run/mod_fcgid/ && chown -R apache.www-data /var/run/mod_fcgid  && \
     sed -i 's|AllowOverride [Nn]one|AllowOverride All|' /etc/apache2/httpd.conf && \
     sed -i 's|#LoadModule cgi|LoadModule cgi|g' /etc/apache2/httpd.conf && \
-    sed -i 's|Options Indexes|Options |g' /etc/apache2/httpd.conf
+    sed -i 's|#LoadModule headers_module|LoadModule headers_module|g' /etc/apache2/httpd.conf && \
+    sed -i 's|Options Indexes|Options |g' /etc/apache2/httpd.conf && \
+    grep -q 'Header set Access-Control-Allow-Origin' /etc/apache2/httpd.conf || sed -i 's|\(<Directory "/var/www/localhost/htdocs">\)|\1\nHeader set Access-Control-Allow-Origin "*"|' /etc/apache2/httpd.conf
+
+    # NOTE: thw Perl command will update configuration in every run, since Perl run in sed mode. Can just use sed
+    # perl -pi -e '$_ =~ s|(<Directory "/var/www/localhost/htdocs">)|$1\nHeader set Access-Control-Allow-Origin "*"|og unless /^\s*Header set Access-Control-Allow-Origin/' /etc/apache2/httpd.conf
 
 COPY html /var/www/localhost/htdocs
 COPY cgi-bin /var/www/localhost/cgi-bin

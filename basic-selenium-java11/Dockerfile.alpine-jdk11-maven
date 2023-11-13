@@ -4,7 +4,7 @@ FROM azul/zulu-openjdk-alpine:11
 ARG REFRESHED_AT
 ENV REFRESHED_AT $REFRESHED_AT
 
-ARG MAVEN_VERSION=3.6.3
+ARG MAVEN_VERSION=3.8.8
 
 RUN apk add --no-cache \
   curl
@@ -15,5 +15,7 @@ RUN mkdir -p /usr/share/maven /usr/share/maven/ref \
   && rm -f /tmp/apache-maven.tar.gz \
   && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 # see also: https://medium.com/@migueldoctor/how-to-create-a-custom-docker-image-with-jdk8-maven-and-gradle-ddc90f41cee4
+
 ENV MAVEN_HOME /usr/share/maven
-ENV MAVEN_CONFIG "/root/.m2"
+RUN mkdir -p  "/tmp/maven/.m2"
+ENV MAVEN_CONFIG "/tmp/maven/.m2"

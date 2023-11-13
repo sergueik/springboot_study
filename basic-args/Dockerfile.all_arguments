@@ -1,0 +1,4 @@
+FROM alpine:3.9.5
+# echo all argumens
+RUN echo "#!/bin/sh" > /tmp/all_arguments.sh; echo "VAR=\"\$@\"; VAR=\${VAR:-world}; echo \"hello \${VAR}\";" >> /tmp/all_arguments.sh; chmod +x /tmp/all_arguments.sh
+ENTRYPOINT [ "/tmp/all_arguments.sh" ]

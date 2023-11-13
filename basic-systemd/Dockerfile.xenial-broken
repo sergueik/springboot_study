@@ -1,0 +1,18 @@
+FROM ubuntu:xenial
+# NOTE: moving target. Better to use  image names with timestamp in the tag e.g. xenial-20210804
+RUN apt-get update && apt-get install -y systemd openssh-server python3 sudo && apt-get clean
+RUN systemctl enable ssh
+RUN useradd app -m -G sudo -s /bin/bash && echo 'app:password123' | chpasswd
+COPY sudoers.txt /etc/sudoers.d/
+COPY id_rsa.pub /home/app/.ssh/authorized_keys
+# NOTE: old docker version 19.03.12 does not recognize the chmod option
+# docker version 20.10.21 also refuses to recognize the chmod option:
+# the --chmod option requires BuildKit. Refer to https://docs.docker.com/go/buildkit/ to learn how to build images with BuildKit enabled
+
+RUN chmod 600 /etc/sudoers.d/sudoers.txt 
+RUN chown app:app /home/app/.ssh/authorized_keys && chmod 700 /home/app/.ssh/authorized_keys
+EXPOSE 22
+CMD ["/usr/sbin/init"]
+# The link does not exist on Xenial
+# starting systectl is challenging
+# Failed to connect to bus: No such file or directory

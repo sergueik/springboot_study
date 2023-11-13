@@ -5,9 +5,70 @@ Springboot Docker basic argument exercise project based on
 Modified to pass an arbirtary data structure wrapped in json and subsequntly base 64 encoded, through  SpringBoot - hopefully
 eliminating modifying low level details of the stack delivery engine when there is a business application signature change
 
-### Basic
+### Vanilla Usage
+
 ```sh
-TAG=echo
+export IMAGE=vanilla-example
+docker build --build-arg PARAMS=value -t $IMAGE -f Dockerfile.vanilla .
+```
+```sh
+docker run -it $IMAGE sh
+```
+```sh
+env
+```
+```text
+HOSTNAME=55b77a913f48
+SHLVL=1
+HOME=/root
+PARAMS_ENV=value
+TERM=xterm
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PWD=/
+```
+```sh
+docker container prune -f
+docker image rm -f $IMAGE
+```
+### Basic Scripts
+
+```sh
+TAG=one_argument
+docker build -t $TAG -f Dockerfile.$TAG .
+```
+then
+```sh
+docker run -it $TAG
+```
+will respond with
+```sh
+hello world
+```
+and
+```sh
+docker run -it $TAG john
+```
+will respond with
+```sh
+hello john
+```
+and
+```sh
+docker run -it $TAG john paul ringo george
+```
+will respond with
+```sh
+hello john
+```
+```sh
+docker container prune -f
+docker image rm -f $TAG
+```
+
+
+
+```sh
+TAG=all_arguments
 docker build -t $TAG -f Dockerfile.$TAG .
 ```
 then
@@ -34,6 +95,12 @@ will respond with
 ```sh
 hello john paul ringo george
 ```
+```sh
+docker container prune -f
+docker image rm -f $TAG
+```
+
+
 alternatively use Docker `CMD` / `ENTRYPOINT` interplay:
 ```sh
 TAG=default_arg
@@ -54,7 +121,7 @@ hello world
 ```
 hoewever, this does not work right with multiple arguments:
 ```sh
-docker run -it $TAG  message1 message2
+docker run -it $TAG message1 message2
 ```
 will respond with
 ```sh
@@ -73,13 +140,19 @@ else
 fi
 echo "hello $VAR"
 ```
+```sh
+TAG=check_arg
+docker build -t $TAG -f Dockerfile.$TAG .
+docker run -it $TAG message1 message2 message3
+```
+
 One then can call it in one of the following ways:
 ```sh
-ENTRYPOINT [ "/tmp/a.sh" ]
+ENTRYPOINT [ "/tmp/check_argument.sh" ]
 ```
 or
 ```sh
-ENTRYPOINT ["sh", "-c", "/tmp/a.sh \"$0\" \"$@\"" ]
+ENTRYPOINT ["sh", "-c", "/tmp/check_argument.sh \"$0\" \"$@\"" ]
 ```
 A simplified  version 
 ```
