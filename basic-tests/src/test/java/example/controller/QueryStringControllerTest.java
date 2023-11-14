@@ -5,10 +5,13 @@ package example.controller;
  */
 import com.google.gson.Gson;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +26,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URLEncoder;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
 		"serverPort=8085" })
@@ -31,7 +33,8 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 
 // based on:
 // https://stackoverflow.com/questions/8297215/spring-resttemplate-get-with-parameters
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes", "deprecation" })
+
 public class QueryStringControllerTest {
 
 	@LocalServerPort
@@ -55,7 +58,9 @@ public class QueryStringControllerTest {
 	private HttpEntity entity;
 	private String urlTemplate;
 
-	@SuppressWarnings("rawtypes")
+	private Set<String> fullKeySet = new HashSet<>();
+	private String[] fullKeyArray = {};
+
 	@BeforeEach
 	public void setUp() {
 		headers = new HttpHeaders();
@@ -89,6 +94,11 @@ public class QueryStringControllerTest {
 		for (String key : params.keySet()) {
 			url = url.replace("{" + key + "}", URLEncoder.encode(params.get(key)));
 		}
+		fullKeySet.addAll(params.keySet());
+		fullKeySet.add("id");
+		fullKeyArray = new String[fullKeySet.size()];
+		fullKeySet.toArray(fullKeyArray);
+
 	}
 
 	@Test
@@ -106,21 +116,16 @@ public class QueryStringControllerTest {
 		assertThat("Unexpected id", Integer.parseInt(data.get("id")), is(id));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void test2() throws Exception {
 		responseEntity = restTemplate.getForEntity(url, String.class);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		body = responseEntity.getBody();
 		data = gson.fromJson(body, Map.class);
-		assertThat("Unexpected response for " + url, data.containsKey("id"),
-				is(true));
 
-		params.keySet().stream()
-				.forEach(o -> assertThat("Unexpected response for " + url,
-						data.containsKey(o), is(true)));
+		assertThat(new HashSet<String>(data.keySet()),
+				containsInAnyOrder(fullKeyArray));
+
 		assertThat("Unexpected id", Integer.parseInt(data.get("id")), is(id));
 	}
-
-	// responseEntity = restTemplate.getForEntity(url, String.class);
 }
