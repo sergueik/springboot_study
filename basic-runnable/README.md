@@ -38,7 +38,7 @@ and running the app
 mvn spring-boot:run
 ```
 
-shows neither the value deifned in `application.properties` 
+shows neither the value defined in `application.properties` 
 ```java
 setting.value = 42
 ```
@@ -75,6 +75,17 @@ is logged as NPE:
 
 ```text
 0:11:05.836 [pool-1-thread-1] INFO example.task.EventLoggingTask - Exception jaa.lang.NullPointerException
+```
+
+### Fixed version
+
+```sh
+mvn spring-boot:run
+```
+```text
+2023-11-15 22:00:09.984  INFO 7512 --- [           main] example.Application                      : Started Application in 1.51 seconds (JVM running for 1.853)
+2023-11-15 22:00:09.990  INFO 7512 --- [cTaskExecutor-1] example.task.EventLoggingTask            : Run with value1=42,profile=development through annotation
+2023-11-15 22:00:09.992  INFO 7512 --- [cTaskExecutor-1] example.task.EventLoggingTask            : Read  value2 is from resource "/application.properties" within application: 42
 ```
 ### See Also:
 
