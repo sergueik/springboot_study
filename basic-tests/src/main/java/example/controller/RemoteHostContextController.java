@@ -38,7 +38,7 @@ public class RemoteHostContextController {
 		remoteHost = request.getRemoteHost();
 		data.put("remotehost", remoteHost);
 		payload = gson.toJson(data);
-		
+
 		return ResponseEntity.status(HttpStatus.OK).body(payload);
 	}
 
