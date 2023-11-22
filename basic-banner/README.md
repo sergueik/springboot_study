@@ -26,12 +26,14 @@ mvn package
 java -jar target\example.banner.jar
 ```
 ```text
-Version: 0.3.0-SNAPSHOT
-reading the resource
-read the resource
-read the version: 0.3.0-SNAPSHOT
-Version: 0.3.0-SNAPSHOT
-
+Version: 0.4.0-SNAPSHOT
+reading the resource: maven/example/banner/pom.properties
+read the resource: maven/example/banner/pom.properties
+read the version: 0.4.0-SNAPSHOT
+reading the resource: MANIFEST.MF
+read the resource: MANIFEST.MF
+read the version: 0.4.0-SNAPSHOT
+Version: 0.4.0-SNAPSHOT
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
 ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \

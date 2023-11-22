@@ -12,6 +12,10 @@ public class Utils {
 		debug = value;
 	}
 
+	private Properties properties = new Properties();
+	private InputStream inputStream = null;
+	private String resourcePath;
+
 	private Utils() {
 	}
 
@@ -19,36 +23,61 @@ public class Utils {
 		return instance;
 	}
 
-	public synchronized String getVersion(boolean usepom) {
+	public synchronized String getVersion(boolean usepom, boolean usemanifest) {
 		String version = null;
 
 		if (usepom) {
 			// try to load from maven properties straight
 			try {
-				Properties p = new Properties();
-				InputStream is = getClass().getResourceAsStream(
-						"/META-INF/maven/example/banner/pom.properties");
+				resourcePath = "maven/example/banner/pom.properties";
+				inputStream = getClass()
+						.getResourceAsStream("/META-INF/" + resourcePath);
 				if (debug)
-					System.err.println("reading the resource");
-				if (is != null) {
+					System.err.println("reading the resource: " + resourcePath);
+				if (inputStream != null) {
 					if (debug)
-						System.err.println("read the resource");
-					p.load(is);
-					version = p.getProperty("version", "");
+						System.err.println("read the resource: " + resourcePath);
+					properties.load(inputStream);
+					version = properties.getProperty("version", "");
 					if (debug)
 						System.err.println("read the version: " + version);
 				} else {
 					if (debug)
 						System.err.println("failed to find the version");
-
 				}
 			} catch (Exception e) {
 				// ignore
-				System.err.println("Exception (ignord):" + e.toString()	);
+				System.err.println("Exception (ignord):" + e.toString());
+			}
+		}
+		if (usemanifest) {
+
+			try {
+				resourcePath = "MANIFEST.MF";
+				inputStream = getClass()
+						.getResourceAsStream("/META-INF/" + resourcePath);
+				if (debug)
+					System.err.println("reading the resource: " + resourcePath);
+				if (inputStream != null) {
+					if (debug)
+						System.err.println("read the resource: " + resourcePath);
+					properties.load(inputStream);
+					version = properties.getProperty("version", "");
+					if (debug)
+						System.err.println("read the version: " + version);
+				} else {
+					if (debug)
+						System.err.println("failed to find the version");
+				}
+			} catch (Exception e) {
+				// ignore
+				System.err.println("Exception (ignord):" + e.toString());
 			}
 		}
 		// fallback to using Java API
-		if (version == null) {
+		if (version == null)
+
+		{
 			Package aPackage = getClass().getPackage();
 			if (aPackage != null) {
 				version = aPackage.getImplementationVersion();
