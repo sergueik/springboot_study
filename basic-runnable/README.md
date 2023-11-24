@@ -3,89 +3,30 @@
 This directory contains basic example from
 [repo](https://github.com/eugenp/tutorials/blob/master/core-java-modules/core-java-concurrency-basic/src/main/java/com/baeldung/concurrent) of the
 __Implementing a Runnable vs Extending a Thread__ [article](https://www.baeldung.com/java-runnable-vs-extending-thread)
+
 ### Usage
 
-```sh
-mvn spring-boot:run
-```
-this logs
 
-```text
-16:40:59.707 [pool-1-thread-1] INFO example.task.EventLoggingTask - Value #1 is 0
-```
-
-NOTE, the property value was not read through annotation:
-```java
-@Value("${setting.value:123}")
-private long value1;
-String message1 = String.format("Value: %d", value1);
-	logger.info("Message #1 is {}", message1);
-```
-
-### Note:
-
-Uncommenting the value
-```java
-@Autowired
-private Properties properties;
-```
-
-in the class 
-
-and running the app
-
-```sh
-mvn spring-boot:run
-```
-
-shows neither the value defined in `application.properties` 
-```java
-setting.value = 42
-```
-nor the default value is being assigned to the property
-```java
-@Value("${setting.value:101}")
-	private long value1;
-```
- in the `EventLoggingTask` class implementing `Runnable`:
-
-```text
-[INFO] Attaching agents: []
-10:03:41.780 [pool-1-thread-1] INFO example.task.EventLoggingTask - Attempt to load value1 through annotation: 0
-10:03:41.788 [pool-1-thread-1] INFO example.task.EventLoggingTask - Read  value2 is from resource "/application.properties" within application: 42
-```
-
-Attempt to autowire the properties object:
-```java
-@Autowired
-private Properties properties;
-```
-
-```java
-try {
-	final String value2 = properties.getProperty("setting.value");
-	logger.info("Attempt to load Value from autowired properties object: {}",
-	value2);
-	} catch (Exception e) {
-	logger.info("Exception " + e.toString());
-}
-```
-
-is logged as NPE:
-
-```text
-0:11:05.836 [pool-1-thread-1] INFO example.task.EventLoggingTask - Exception jaa.lang.NullPointerException
-```
-
-### Fixed version
+below , describes the fixed version. For early failed attempts, see commit history
 
 ```sh
 mvn spring-boot:run
 ```
 ```text
-2023-11-15 22:00:09.984  INFO 7512 --- [           main] example.Application                      : Started Application in 1.51 seconds (JVM running for 1.853)
-2023-11-15 22:00:09.990  INFO 7512 --- [cTaskExecutor-1] example.task.EventLoggingTask            : Run with value1=42,profile=development through annotation
-2023-11-15 22:00:09.992  INFO 7512 --- [cTaskExecutor-1] example.task.EventLoggingTask            : Read  value2 is from resource "/application.properties" within application: 42
+2023-11-24 14:32:18.841  INFO 11432 --- [           main] example.Application                   : No active profile set, falling back to default profiles: default
+2023-11-24 14:32:19.717  INFO 11432 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2023-11-24 14:32:19.726  INFO 11432 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-11-24 14:32:19.727  INFO 11432 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.38]
+2023-11-24 14:32:19.782  INFO 11432 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-11-24 14:32:19.783  INFO 11432 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 889 ms
+2023-11-24 14:32:19.931  INFO 11432 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2023-11-24 14:32:20.060  INFO 11432 --- [           main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2023-11-24 14:32:20.093  INFO 11432 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+
+2023-11-24 14:32:20.104  INFO 11432 --- [           main] example.Application                      : Started Application in 1.564 seconds (JVM running for 1.876)
+2023-11-24 14:32:20.120  INFO 11432 --- [cTaskExecutor-1] example.task.EventLoggingTask            : os.arch = amd64
+2023-11-24 14:32:20.121  INFO 11432 --- [cTaskExecutor-1] example.task.EventLoggingTask            : Run with value1 = 42, profile = development, applicationPath = c:\program files (x86), expandEnvVar = C:\Users\Serguei through annotation
+2023-11-24 14:32:20.122  INFO 11432 --- [cTaskExecutor-1] example.task.EventLoggingTask            : Read confguration from resource "/application.properties" within application: value1 = 42
 ```
 ### See Also:
 
