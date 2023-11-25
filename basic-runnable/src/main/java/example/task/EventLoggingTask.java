@@ -1,38 +1,42 @@
 package example.task;
 
-import java.util.Map;
-import java.util.Properties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import example.config.Config;
-import example.utils.Utils;
 
 @Component
-// @Scope("prototype")
+// NOTE: "scope" annotation is optional here
+@Scope("prototype")
 public class EventLoggingTask implements Runnable {
 	private Logger logger = LoggerFactory.getLogger(EventLoggingTask.class);
 
 	@Autowired
 	private Config config;
 
-	// private Config config = new Config(); // Config.getInstance();
-	private String applicationPath = config.getApplicationPath();
-	private String expandEnvVar = config.getExpandEnvVar();
+	// NOTE: constructing the Config instance directly leads to
+	// NPE in the Config class loading its properties
+	// private Config config = new Config();
 
-	private long value1 = config.getValue1();
-	private String profile = config.getProfile();
+	// NOTE: early initialization leads to NPE
+	// private String applicationPath = config.getApplicationPath();
+	private String applicationPath = null;
+	private String expandEnvVar = null;
+	private long value = 0L;
+	private String profile = null;
 
 	@Override
 	public void run() {
+		applicationPath = config.getApplicationPath();
+		expandEnvVar = config.getExpandEnvVar();
 
+		value = config.getValue();
+		profile = config.getProfile();
 		logger.info(
-				"Run with value1 = {}, profile = {}, applicationPath = {}, expandEnvVar = {} through annotation",
-				value1, profile, applicationPath, expandEnvVar);
+				"Run with value = {}, profile = {}, applicationPath = {}, expandEnvVar = {} through annotation",
+				value, profile, applicationPath, expandEnvVar);
 	}
 }
