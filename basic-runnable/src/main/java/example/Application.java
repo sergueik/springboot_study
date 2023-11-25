@@ -24,10 +24,6 @@ import org.springframework.stereotype.Component;
 @SuppressWarnings({ "unused", "rawtypes" })
 public class Application {
 
-	// does not work
-	private static ExecutorService executorService;
-	private SimpleAsyncTaskExecutor executor;
-
 	@Autowired
 	private ApplicationContext applicationContext;
 
@@ -37,20 +33,26 @@ public class Application {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void ready() {
-		EventLoggingTask eventLoggingTask = applicationContext
-				.getBean(EventLoggingTask.class);
-		executor = new SimpleAsyncTaskExecutor();
-		executor.execute(eventLoggingTask);
-		// executeTask();
+		// both work
+		executeAsyncTask();
+		executeTask();
 	}
 
-	private static void executeTask() {
-		executorService = Executors.newSingleThreadExecutor();
+	private void executeAsyncTask() {
+		EventLoggingTask eventLoggingTask = applicationContext
+				.getBean(EventLoggingTask.class);
+		// NOTE: constructing Task directly leads to NPE in accessing the Config
+		// EventLoggingTask eventLoggingTask = new EventLoggingTask();
+		SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
+		executor.execute(eventLoggingTask);
+	}
 
-		EventLoggingTask task = new EventLoggingTask();
-
-		Future future = executorService.submit(task);
-
+	private void executeTask() {
+		ExecutorService executorService = Executors.newSingleThreadExecutor();
+		// NOTE: constructing Task directly leads to NPE in accessing the Config
+		EventLoggingTask eventLoggingTask = applicationContext
+				.getBean(EventLoggingTask.class);
+		Future future = executorService.submit(eventLoggingTask);
 		executorService.shutdown();
 	}
 }
