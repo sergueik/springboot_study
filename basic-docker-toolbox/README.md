@@ -1,6 +1,9 @@
 ### Info
 
+this directory contains example for [latest available(https://github.com/boot2docker/boot2docker/releases) __Docker Toolbox__
+
 ### Notes
+
 if seeing the communication error
 ```text
 //./pipe/docker_engine: The system cannot find the file specified
@@ -8,7 +11,7 @@ if seeing the communication error
 
 apply the [resolution from forums.docker.com](https://forums.docker.com/t/docker-on-windows-fails-with-pipe-docker-engine-the-system-cannot-find-the-file-specified/28479/4)
 
-* query environment
+* query the environment
 
 ```sh
 docker-machine env default
@@ -16,11 +19,12 @@ docker-machine env default
 
 ```sh
 export DOCKER_TLS_VERIFY="1"
-export DOCKER_HOST="tcp://192.168.99.101:2376"
+export DOCKER_HOST="tcp://192.168.99.100:2376"
 export DOCKER_CERT_PATH="C:\Users\Serguei\.docker\machine\machines\default"
 export DOCKER_MACHINE_NAME="default"
 export COMPOSE_CONVERT_WINDOWS_PATHS="true"
 ```
+(the ip address of docker machine will vary
  * convert to equivalent Windows environment setting commands:
 
 ```cmd
@@ -41,7 +45,7 @@ followed by the command from the original `Docker Quickstart Terminal` desktop s
 ```cmd
 "C:\Program Files\Git\bin\bash.exe" --login -i "C:\Program Files\Docker Toolbox\start.sh"
 ```
-Alternatively make these settings permanently via __Control Panel__. The __Docker Toolbox__ installer apparently does not manage to do that on some machines.
+Alternatively make these system environment settings permanently via __Control Panel__. The __Docker Toolbox__ installer apparently does not manage to do that on some machines.
 
 ### Challenge with Upgrade Docker compose to Certain 2.x Versions
 
@@ -348,6 +352,108 @@ github.com/docker/compose/v2/pkg/progress.NewWriter({0x22f8180, 0xc0002b40a0}, {
 
 one will have to restore the original version of `docker-compose.exe`
 
+### Copying the Docker Machine VM across development hosts
 
+* to prevent error
+```text
+VBoxManage.exe: error: UUID {96bd555c-9e20-4708-90ea-b74423272f1e} of the medium
+ 'C:\Users\Serguei\.docker\machine\machines\default\disk.vmdk' does not match the value {a3f97130-676f-4ecd-834d-6e5e50144432} stored in the media registry (
+'C:\Users\Serguei\.VirtualBox\VirtualBox.xml')
+VBoxManage.exe: error: Details: code E_FAIL (0x80004005), component MediumWrap,interface IMedium
+```
+and similar errors
+update the `default` machine through VirtualBox UI and
+update user home directory path in 
+`CertDir` , `CaCertPath`, `CaPrivateKeyPath`, `SSHKeyPath`, `StorePath`, `ServerKeyPath`, and other setings in 
+`%USERPROFILE%\.docker\machine\machines\default\config.json`:
+
+```JSON
+{
+  "ConfigVersion": 3,	
+  "Driver": {
+    "IPAddress": "192.168.99.100",
+    "MachineName": "default",
+    "SSHUser": "docker",
+    "SSHPort": 50868,
+    "SSHKeyPath": "C:\\Users\\Serguei\\.docker\\machine\\machines\\default\\id_rsa",
+    "StorePath": "C:\\Users\\Serguei\\.docker\\machine",
+    "SwarmMaster": false,
+    "SwarmHost": "tcp://0.0.0.0:3376",
+    "SwarmDiscovery": "",
+    "VBoxManager": {},
+    "HostInterfaces": {},
+    "CPU": 1,
+    "Memory": 1024,
+    "DiskSize": 20000,
+    "NatNicType": "82540EM",
+    "Boot2DockerURL": "",
+    "Boot2DockerImportVM": "",
+    "HostDNSResolver": false,
+    "HostOnlyCIDR": "192.168.99.1/24",
+    "HostOnlyNicType": "82540EM",
+    "HostOnlyPromiscMode": "deny",
+    "UIType": "headless",
+    "HostOnlyNoDHCP": false,
+    "NoShare": false,
+    "DNSProxy": true,
+    "NoVTXCheck": false,
+    "ShareFolder": ""
+  },
+  "DriverName": "virtualbox",
+  "HostOptions": {
+    "Driver": "",
+    "Memory": 0,
+    "Disk": 0,
+    "EngineOptions": {
+      "ArbitraryFlags": [],
+      "Dns": null,
+      "GraphDir": "",
+      "Env": [],
+      "Ipv6": false,
+      "InsecureRegistry": [],
+      "Labels": [],
+      "LogLevel": "",
+      "StorageDriver": "",
+      "SelinuxEnabled": false,
+      "TlsVerify": true,
+      "RegistryMirror": [],
+      "InstallURL": "https://get.docker.com"
+    },
+    "SwarmOptions": {
+      "IsSwarm": false,
+      "Address": "",
+      "Discovery": "",
+      "Agent": false,
+      "Master": false,
+      "Host": "tcp://0.0.0.0:3376",
+      "Image": "swarm:latest",
+      "Strategy": "spread",
+      "Heartbeat": 0,
+      "Overcommit": 0,
+      "ArbitraryFlags": [],
+      "ArbitraryJoinFlags": [],
+      "Env": null,
+      "IsExperimental": false
+    },
+    "AuthOptions": {
+      "CertDir": "C:\\Users\\Serguei\\.docker\\machine\\certs",
+      "CaCertPath": "C:\\Users\\Serguei\\.docker\\machine\\certs\\ca.pem",
+      "CaPrivateKeyPath": "C:\\Users\\Serguei\\.docker\\machine\\certs\\ca-key.pem",
+      "CaCertRemotePath": "",
+      "ServerCertPath": "C:\\Users\\Serguei\\.docker\\machine\\machines\\default\\server.pem",
+      "ServerKeyPath": "C:\\Users\\Serguei\\.docker\\machine\\machines\\default\\server-key.pem",
+      "ClientKeyPath": "C:\\Users\\Serguei\\.docker\\machine\\certs\\key.pem",
+      "ServerCertRemotePath": "",
+      "ServerKeyRemotePath": "",
+      "ClientCertPath": "C:\\Users\\Serguei\\.docker\\machine\\certs\\cert.pem",
+
+      "ServerCertSANs": [],
+      "StorePath": "C:\\Users\\Serguei\\.docker\\machine\\machines\\default"
+    }
+  },
+  "Name": "default"
+}
+
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
