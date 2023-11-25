@@ -25,7 +25,8 @@ import org.springframework.stereotype.Component;
 public class Application {
 
 	@Autowired
-	private ApplicationContext applicationContext;
+	EventLoggingTask eventLoggingTask;
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -39,19 +40,12 @@ public class Application {
 	}
 
 	private void executeAsyncTask() {
-		EventLoggingTask eventLoggingTask = applicationContext
-				.getBean(EventLoggingTask.class);
-		// NOTE: constructing Task directly leads to NPE in accessing the Config
-		// EventLoggingTask eventLoggingTask = new EventLoggingTask();
 		SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
 		executor.execute(eventLoggingTask);
 	}
 
 	private void executeTask() {
 		ExecutorService executorService = Executors.newSingleThreadExecutor();
-		// NOTE: constructing Task directly leads to NPE in accessing the Config
-		EventLoggingTask eventLoggingTask = applicationContext
-				.getBean(EventLoggingTask.class);
 		Future future = executorService.submit(eventLoggingTask);
 		executorService.shutdown();
 	}

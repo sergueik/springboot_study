@@ -44,6 +44,12 @@ public class Config {
 	// "${spring.profile.active}"
 	private String profile;
 
+	@Value("${example.windows.application.path}")
+	private String applicationWindowsPath;
+
+	@Value("${example.unix.application.path}")
+	private String applicationUnixPath;
+
 	public long getValue() {
 		return value;
 	}
@@ -58,6 +64,11 @@ public class Config {
 					Arrays.asList(applicationPaths.keySet()));
 		applicationPath = applicationPaths.get(osName);
 		return applicationPath;
+	}
+
+	public String getApplicationOsSpecificPath() {
+		return (osName.contains("windows")) ? applicationWindowsPath
+				: applicationUnixPath;
 	}
 
 	public String getExpandEnvVar() {

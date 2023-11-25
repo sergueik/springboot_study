@@ -24,6 +24,7 @@ public class EventLoggingTask implements Runnable {
 	// NOTE: early initialization leads to NPE
 	// private String applicationPath = config.getApplicationPath();
 	private String applicationPath = null;
+	private String applicationOsSpecificPath = null;
 	private String expandEnvVar = null;
 	private long value = 0L;
 	private String profile = null;
@@ -35,8 +36,11 @@ public class EventLoggingTask implements Runnable {
 
 		value = config.getValue();
 		profile = config.getProfile();
+		applicationOsSpecificPath = config.getApplicationOsSpecificPath();
 		logger.info(
-				"Run with value = {}, profile = {}, applicationPath = {}, expandEnvVar = {} through annotation",
-				value, profile, applicationPath, expandEnvVar);
+				"Run with value = {}, profile = {}, applicationPath = {}, expandEnvVar = {}, applicationOsSpecificPath = {} through annotation",
+				value, profile, applicationPath, expandEnvVar,
+				applicationOsSpecificPath);
+
 	}
 }
