@@ -2,12 +2,13 @@
 
 This directory contains basic example from
 [repo](https://github.com/eugenp/tutorials/blob/master/core-java-modules/core-java-concurrency-basic/src/main/java/com/baeldung/concurrent) of the
-__Implementing a Runnable vs Extending a Thread__ [article](https://www.baeldung.com/java-runnable-vs-extending-thread)
+__Implementing a Runnable vs Extending a Thread__ [article](https://www.baeldung.com/java-runnable-vs-extending-thread) and demonstrating
+defining the Runnable class properties from `application.properties` configuration for Task running on `org.springframework.core.task.SimpleAsyncTaskExecutor.SimpleAsyncTaskExecutor()` and `java.util.concurrent.Executors.newSingleThreadExecutor()`. In the properties file, defining os-specific values is shown
 
 ### Usage
 
 
-below , describes the fixed version. For early failed attempts, see commit history
+* below, describes the fixed version. For early failed attempts, see commit historiaes
 
 ```sh
 mvn spring-boot:run
@@ -24,6 +25,7 @@ mvn spring-boot:run
    * https://stackoverflow.com/questions/15818839/value-annotation-doesnt-return-a-value
    * https://stackoverflow.com/questions/5853167/runnable-with-a-parameter
    * https://www.baeldung.com/java-thread-parameters
-
+   * [Quick Guide to Spring Bean Scopes](https://www.baeldung.com/spring-bean-scopes)
+   * [Custom Scope in Spring](https://www.baeldung.com/spring-custom-scope)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

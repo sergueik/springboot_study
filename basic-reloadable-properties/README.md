@@ -1,4 +1,4 @@
-### Info
+﻿### Info
 
 Springboot Docker basic project based on [springboot mySQL Docker container](https://github.com/TechPrimers/docker-mysql-spring-boot-example)
 converted to pass Spring `application.properties` file configuration separately into the container
@@ -181,6 +181,52 @@ o.a.c.c.PropertiesConfiguration:
 Reloading configuration. URL is file:/var/properties/application.properties
 ```
 
+### Testing if Alternative Location Properties is Merged or Replaced
+
+```sh
+mvn sping-boot:run
+```
+```
+curl -s http://localhost:8085/worker
+```
+```text
+Hello unknown. The red property is: red The blue property is: purple
+```
+```sh
+mvn sping-boot:run
+```
+```
+curl -s http://localhost:8085/worker
+```
+```text
+Hello unknown. The red property is: red The blue property is: purple
+```
+if the `alternative` directory does not exist, create one and put a different properties file there:
+```sh
+mkdir alternative
+copy src\main\resources\application.properties alternative
+```
+edit the `alternative\application.properties` removing an existing `red.property` and adding new `blue.property`
+```sh
+mvn -Dspring.config.location=alternative/application.properties spring-boot:run
+```
+
+it will log to console during startup:
+```text
+registrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+application properties file path: alternative/application.properties
+```
+
+repeat the curl command:
+```sh
+curl -s http://localhost:8085/worker
+```
+```text
+Hello some value.
+The red property is: red
+The blue property is: blue
+```
+this cwdemonstrates that two side by side properties resources are *merged*
 #### Cleanup
 * may need to manually destroy all started containers and images
 ```sh
@@ -188,6 +234,8 @@ docker container prune -f
 docker image rm basic-example
 docker image prune -f
 ```
+
+
 
 ### See Also
   * package Springboot as [standalone jar](https://www.baeldung.com/spring-boot-run-maven-vs-executable-jar)
