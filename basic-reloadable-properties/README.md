@@ -226,7 +226,7 @@ Hello some value.
 The red property is: red
 The blue property is: blue
 ```
-this cwdemonstrates that two side by side properties resources are *merged*
+this demonstrates that two side by side properties resources are *merged*
 #### Cleanup
 * may need to manually destroy all started containers and images
 ```sh

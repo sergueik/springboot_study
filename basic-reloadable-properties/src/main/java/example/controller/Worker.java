@@ -1,6 +1,7 @@
 package example.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +28,14 @@ public class Worker {
 		return value == null ? "unknown" : value;
 	}
 
+	@Value("${red.property:orange}")
+	String red;
+	@Value("${blue.property:purple}")
+	String blue;
+
 	@GetMapping
 	public String Hello() {
-		return "Hello " + getValue();
+		return "Hello " + getValue() + "." + "\n" + "The red property is: " + red
+				+ "\n" + "The blue property is: " + blue;
 	}
 }
