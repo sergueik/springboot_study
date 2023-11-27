@@ -1191,6 +1191,12 @@ Access-Control-Allow-Origin: *
 
 The page `http://192.168.0.92:9090/form_post.html` will call service on same host and port, and will not be blocked by CORS even without the headers.
 
+Without the call in `echo-json.cgi`
+```perl
+$query = $query->add_response_header('Access-Control-Allow-Origin' => '*');
+```
+
+![Example CORS Error](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/cature-preflightmissingalloworiginheader.png)
 
 ### See Also
 
@@ -1218,6 +1224,7 @@ The page `http://192.168.0.92:9090/form_post.html` will call service on same hos
   * [enable CORS in Apache Web Server](https://ubiq.co/tech-blog/enable-cors-apache-web-server/)
   * [insert line after match using sed or perl](https://stackoverflow.com/questions/15559359/insert-line-after-match-using-sed)
   * https://stackoverflow.com/questions/39069206/how-to-set-custom-headers-for-httptiny-in-perl
+  * [mozilla documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin) on `cross-origin resource sharing error preflightmissingalloworiginheader` error 
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

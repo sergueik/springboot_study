@@ -24,13 +24,14 @@ app.controller('postserviceCtrl', function($scope, $location, $http) {
     };
     // https://docs.angularjs.org/api/ng/service/$http#$http-arguments
     // NOTE: cannot exercise CORS with host names in minimal cluster connected to development host via port mapping, would need to add a container to have the X Desktop and GUI to run the client browser
-  // alternatively one can use vanilla javascriot window.location.hostname or simply location.hostname
+  // alternatively one can use vanilla javascript window.location.hostname or simply location.hostname
     // - not the window.location.host which includes the port
     // https://docs.angularjs.org/api/ng/service/$location#host
     // use a different port to trigger the CORS checks
     const port = 9090;
     // console.log('http://' + $location.host() + ':9090/cgi-bin/echo_json.cgi') ;
-    // NOTE: the AngularJS $location.url() is getter / setter method, but it appear to return empty string
+    // NOTE: the AngularJS $location.url() is getter / setter method, but it appear to return empty string - its main purpose apperently is different: for building the browser location 
+    // https://stackoverflow.com/questions/34017904/window-location-href-not-working-in-angularjs
     // https://docs.angularjs.org/api/ng/service/$location#url
     var url = $location.url();
     // console.log('location.url: ' + url);
