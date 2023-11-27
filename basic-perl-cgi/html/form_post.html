@@ -16,7 +16,6 @@ app.controller('postserviceCtrl', function($scope, $location, $http) {
   $scope.age = null;
   $scope.adress = null;
   $scope.lblMsg = null;
-  console.log ('angular location host: ' + $location.host());
   $scope.postdata = function(name, age, adress) {
     var data = {
       name: name,
@@ -24,19 +23,25 @@ app.controller('postserviceCtrl', function($scope, $location, $http) {
       adress: adress
     };
     // https://docs.angularjs.org/api/ng/service/$http#$http-arguments
-    // NOTE: cannot use host names in minimal cluster connected to development host via port mapping, 
-    // would need to create an extra container to have the X Desktop and GUI to run the browser, later
-    // NOTE: use window.location.hostname not window.location.host in vanilla Javascript - the latter includes the port
-    // NOTE: one can omit window.location.hostname and use just location.hostname
-    // NOTE: with AngularJS use $location.host()
-    // see also: https://docs.angularjs.org/api/ng/service/$location#host
+    // NOTE: cannot exercise CORS with host names in minimal cluster connected to development host via port mapping, would need to add a container to have the X Desktop and GUI to run the client browser
+  // alternatively one can use vanilla javascriot window.location.hostname or simply location.hostname
+    // - not the window.location.host which includes the port
+    // https://docs.angularjs.org/api/ng/service/$location#host
     // use a different port to trigger the CORS checks
     const port = 9090;
-    // console.log('http://' + window.location.hostname + ':9090/cgi-bin/echo_json.cgi') ;
-    data['custom_referrer'] = document.URL;
-    $http.post('http://' + window.location.hostname + ':' + port + '/cgi-bin/echo_json.cgi', JSON.stringify(data), {
+    // console.log('http://' + $location.host() + ':9090/cgi-bin/echo_json.cgi') ;
+    // NOTE: the AngularJS $location.url() is getter / setter method, but it appear to return empty string
+    // https://docs.angularjs.org/api/ng/service/$location#url
+    var url = $location.url();
+    // console.log('location.url: ' + url);
+
+    if (url === null || url == '') {
+      url = document.URL;
+    }
+    data['custom_referrer'] = url;
+    $http.post('http://' + $location.host() + ':' + port + '/cgi-bin/echo_json.cgi', JSON.stringify(data), {
       headers: {
-         //  Referer: document.URL,
+         // Referer: $location.url()
          // angular.js:11945 Refused to set unsafe header "Referer"
         'Referrer-Policy': 'origin' 
       }
