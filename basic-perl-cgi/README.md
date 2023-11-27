@@ -21,7 +21,7 @@ alternatively
 ```
 docker run -d -p $(hostname -i):9090:80 -p $(hostname -i):9443:443 --name $NAME $IMAGE
 ```
- or if integrted with InfluxDB then
+or if integrated with InfluxDB then
 ```sh
 export INFLUXDB=boring_williams
 docker run -d -p 9090:80 -p 9443:443 --link $INFLUXDB --name $NAME $IMAGE
@@ -181,7 +181,7 @@ curl http://$(hostname -i):9090/cgi-bin/config.cgi
 
 ```
 
-NOTE that currently the query params are not yet implemented. The `config.cgi` compares the file modification time of `example_config.cgi` to
+NOTE that currently the query params are not fullly implemented. The `config.cgi` compares the file modification time of `example_config.cgi` to
 `Mon Aug 14 23:42:23 CEST 2023`: 
 ```Perl
 my $check_epoch     = 1692049343;
@@ -1165,8 +1165,32 @@ perl -pi -e '$_ =~ s|(<Directory "/var/www/localhost/htdocs">)|$1\nHeader set Ac
 ```
 is not idempotent, updates the file in every run, because emulates sed line-oriented operation
 
-####
-`http://192.168.99.100:8080/form_post.html`
+#### Testing the CORS
+
+```sh
+docker container stop basic-perl-cgi
+
+docker-compose up --build
+```
+
+the latter command will start two identicalcontainers listening to two TCP ports mapped on host: `8080` and `9090`. The page running on former `http://192.168.99.100:8080/form_post.html` will call the service run in the latter:
+
+![Example CORS](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-cors.png)
+
+
+and does require CORS support by `echo_json.cgi` to work, which is accomplished by returning response headers
+```text
+Access-Control-Allow-Headers: *
+```
+and
+```text
+Access-Control-Allow-Origin: *
+```
+
+![Example CORS Headers](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-needed-headers.png)
+
+The page `http://192.168.0.92:9090/form_post.html` will call service on same host and port, and will not be blocked by CORS even without the headers.
+
 
 ### See Also
 
