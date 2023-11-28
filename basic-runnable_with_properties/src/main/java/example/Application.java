@@ -44,7 +44,7 @@ public class Application {
 		executor.execute(eventLoggingTask);
 	}
 
-	private void executeTask() {
+	private void executeTask() {	
 		ExecutorService executorService = Executors.newSingleThreadExecutor();
 		Future future = executorService.submit(eventLoggingTask);
 		executorService.shutdown();

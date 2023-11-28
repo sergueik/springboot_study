@@ -206,15 +206,17 @@ if the `alternative` directory does not exist, create one and put a different pr
 mkdir alternative
 copy src\main\resources\application.properties alternative
 ```
-edit the `alternative\application.properties` removing an existing `red.property` and adding new `blue.property`
+in the `alternative\application.properties` remove one existing `red.property`, add a new `blue.property`, and modify the value of some property
+```java
+value.property=alternative value
+```
 ```sh
 mvn -Dspring.config.location=alternative/application.properties spring-boot:run
 ```
 
 it will log to console during startup:
 ```text
-registrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
-application properties file path: alternative/application.properties
+registrationBean   : Mapping filter: 'requestContextFilter' to: [/*] application properties file path: alternative/application.properties
 ```
 
 repeat the curl command:
@@ -222,11 +224,12 @@ repeat the curl command:
 curl -s http://localhost:8085/worker
 ```
 ```text
-Hello some value.
+Hello alternative value.
 The red property is: red
 The blue property is: blue
 ```
-this demonstrates that two side by side properties resources are *merged*
+this demonstrates that two side by side properties resources are *merged* and the value from the property file specificed through command line option, win
+
 #### Cleanup
 * may need to manually destroy all started containers and images
 ```sh
