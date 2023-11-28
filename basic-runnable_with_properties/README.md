@@ -41,6 +41,7 @@ comment the value in the `src\main\resources\application.properties`, then obser
 ```text
 2023-11-28 08:37:27.354  INFO 9888 --- [pool-2-thread-1] example.task.EventLoggingTask            : Run with value = 101, profile = development, applicationPath = c:\program files (x86), expandEnvVar = C:\Users\Serguei, applicationOsSpecificPath = c:\program files (x86) through annotation
 ```
+NOTE: merging the reloadaable properties code from [basic-reloadable_properties](https://github.com/sergueik/springboot_study/tree/master/basic-reloadable-properties) does not fix this behavior.
 ### See Also:
 
    * https://stackoverflow.com/questions/15818839/value-annotation-doesnt-return-a-value
