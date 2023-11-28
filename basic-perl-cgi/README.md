@@ -1196,6 +1196,18 @@ Without the call in `echo-json.cgi`
 $query = $query->add_response_header('Access-Control-Allow-Origin' => '*');
 ```
 
+NOTE, alternatively, one may provide the header in the apache configuration `/etc/apache2/httpd.conf`
+```text
+<Directory "/var/www/localhost/cgi-bin">
+Header set Access-Control-Allow-Origin "*"
+    AllowOverride All
+    Options None
+    Require all granted
+</Directory>
+```
+
+it appears to be harmless to have duplication in `Access-Control-Allow-Origin` headers
+
 ![Example CORS Error](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/cature-preflightmissingalloworiginheader.png)
 
 ### See Also

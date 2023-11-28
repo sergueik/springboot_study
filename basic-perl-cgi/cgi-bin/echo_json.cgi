@@ -35,8 +35,8 @@ cgi {
     # Override API being blocked by CORS policy:  
     # Request header field referrer-policy, content-type is not allowed by Access-Control-Allow-Headers in preflight response
     # NOTE: can not add multiple headers in one call 
-    $query = $query->add_response_header('Access-Control-Allow-Origin' => '*');
-    $query = $query->add_response_header('Access-Control-Allow-Headers' => '*');
+    # $query = $query->add_response_header('Access-Control-Allow-Origin' => '*');
+    # $query = $query->add_response_header('Access-Control-Allow-Headers' => '*');
 
     $headers = $query->headers;
     $method = $query->method;
