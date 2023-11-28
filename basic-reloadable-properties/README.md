@@ -229,6 +229,21 @@ The red property is: red
 The blue property is: blue
 ```
 this demonstrates that two side by side properties resources are *merged* and the value from the property file specificed through command line option, win
+### Spring  Boot Version Dependency
+
+* replacing Spring Boot version `1.5.4` with version `2.3.4` leads to loss of the reladable property functionality:
+
+```sh
+mvn -Dspring.config.location=alternative\application.properties clean spring-boot:run
+```
+```sh
+curl -s http://localhost:8085/worker
+```
+```text
+Hello unknown.
+The red property is: red
+The blue property is: purple
+```
 
 #### Cleanup
 * may need to manually destroy all started containers and images
