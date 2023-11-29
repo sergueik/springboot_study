@@ -1209,6 +1209,33 @@ Header set Access-Control-Allow-Origin "*"
 it appears to be harmless to have duplication in `Access-Control-Allow-Origin` headers
 
 ![Example CORS Error](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/cature-preflightmissingalloworiginheader.png)
+### Custom Headers with Legacy `CGI.pm`
+  
+The legacy `CGI.pm` does not have method to print custom headers. The header method misundertands the arguments:
+```sh
+perl -MCGI -e 'my $o = new CGI;print $o->header("X-Server" => "Apache Next Generation 10.0"  )'
+```
+will produce 
+```text
+Status: Apache Next Generation 10.0
+Content-Type: X-Server; charset=ISO-8859-1
+```
+One will need to install the `mod_perl` (but this will not be possible without the apache source)
+to use the [method](https://perl.apache.org/docs/1.0/api/Apache.html)
+```Perl
+$r->header_out( $header, $value );
+```
+Alternatively one may simply [print header fully, directly](https://docstore.mik.ua/orelly/weblinux2/modperl/ch06_11.htm)
+```Perl
+print qq|
+HTTP/1.1 200 OK 
+Date: Tue, 10 Apr 2001 03:01:36 GMT Server: Apache/1.3.19 (Unix) mod_perl/1.25 
+Connection: close
+Access-Control-Allow-Origin: * 
+Access-Control-Allow-Headers: *
+Content-Type: text/plain |;
+
+```
 
 ### See Also
 
