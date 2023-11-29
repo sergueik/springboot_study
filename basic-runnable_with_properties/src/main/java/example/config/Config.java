@@ -18,9 +18,6 @@ public class Config {
 
 	private Logger logger = LoggerFactory.getLogger(Config.class);
 
-	// using singleton for config leads to NPE
-	// private static Config instance = new Config();
-
 	private static String osName = null;
 	private boolean debug = true;
 
