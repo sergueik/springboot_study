@@ -9,7 +9,7 @@
 
 <body>
     <div>Apache FileUpload</div>
-    <form method="post" action="second" enctype="multipart/form-data">
+    <form method="post" action="/uploadFile" enctype="multipart/form-data">
         Choose a file: <input type="file" name="uploadFile"/><input type="submit" value="Upload"/>
     </form>
 
