@@ -23,7 +23,6 @@ NAME=sample-java17-app
 docker run --rm --name $NAME --user app --volume $(pwd):/app $IMAGE mvn clean -Dslash=true test
 ```
 ```text
-
 INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.063 s - in com.example.demo.ApplicationTests
 [INFO] 
 [INFO] Results:
@@ -31,6 +30,10 @@ INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.063 s - 
 [ERROR] Failures: 
 [ERROR]   AcceptanceTest.test2:55 Unexpected exception type thrown, expected: <org.springframework.web.client.HttpClientErrorException> but was: <java.lang.AssertionError>
 [INFO] 
+Caused by: java.lang.AssertionError: 
+Expected: is <404 NOT_FOUND>
+     but: was <200 OK>
+
 [ERROR] Tests run: 4, Failures: 1, Errors: 0, Skipped: 1
 [INFO] 
 
