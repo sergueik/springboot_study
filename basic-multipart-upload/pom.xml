@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>multipart-upload</artifactId>
-  <version>0.8.0-SNAPSHOT</version>
+  <version>0.9.0-SNAPSHOT</version>
   <name>basic-multipart-upload</name>
   <packaging>jar</packaging>
   <parent>
@@ -17,12 +17,10 @@
     <!-- https://htmlunit.sourceforge.io -->
     <htmlunit.version>2.62.0</htmlunit.version>
     <json-path.version>2.4.0</json-path.version>
-    <commons-lang.version>2.6</commons-lang.version>
     <commons-lang3.version>3.11</commons-lang3.version>
     <commons-cli.version>1.4</commons-cli.version>
     <maven-war-plugin.version>3.0.0</maven-war-plugin.version>
     <jackson.version>2.11.1</jackson.version>
-    <commons-fileupload.version>1.4</commons-fileupload.version>
     <junit-platform.version>1.2.0</junit-platform.version>
     <junit-jupiter.version>5.2.0</junit-jupiter.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -103,17 +101,6 @@
 			<version>4.3.4.RELEASE</version>
 		</dependency>
 		-->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.1.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-      <version>1.2</version>
-    </dependency>
 <dependency>
     <groupId>org.springframework.session</groupId>
     <artifactId>spring-session</artifactId>

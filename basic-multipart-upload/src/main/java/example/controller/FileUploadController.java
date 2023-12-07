@@ -48,12 +48,11 @@ public class FileUploadController {
 		String fileDownloadUri = ServletUriComponentsBuilder
 				.fromCurrentContextPath().path("/downloadFile/").path(fileName)
 				.toUriString();
-		// NOTE: if the file parameter is empty the custom exception
+		// NOTE: when the file parameter is empty the custom exception is raised
 		// example.exception.FileStorageException:
 		// Could not store file . Please try again!
 		// with root cause
 		// java.nio.file.DirectoryNotEmptyException: "<the download directory>"
-		// is raised
 		return new UploadFileResponse(fileName, fileDownloadUri,
 				file.getContentType(), file.getSize());
 	}
@@ -69,33 +68,4 @@ public class FileUploadController {
 		return Arrays.asList(files).stream().map(file -> uploadFile(file))
 				.collect(Collectors.toList());
 	}
-
-	/*
-	@GetMapping("/downloadFile/{fileName:.+}")
-	public ResponseEntity<Resource> downloadFile(@PathVariable String fileName,
-			HttpServletRequest request) {
-		// Load file as Resource
-		Resource resource = fileStorageService.loadFileAsResource(fileName);
-	
-		// Try to determine file's content type
-		String contentType = null;
-		try {
-			contentType = request.getServletContext()
-					.getMimeType(resource.getFile().getAbsolutePath());
-		} catch (IOException e) {
-			logger.info("Could not determine file type of " + fileName);
-		}
-	
-		// Fallback to the default content type if type could not be determined
-		if (contentType == null) {
-			contentType = "application/octet-stream";
-		}
-	
-		return ResponseEntity.ok()
-				.contentType(MediaType.parseMediaType(contentType))
-				.header(HttpHeaders.CONTENT_DISPOSITION,
-						"attachment; filename=\"" + resource.getFilename() + "\"")
-				.body(resource);
-	}
-	*/
 }
