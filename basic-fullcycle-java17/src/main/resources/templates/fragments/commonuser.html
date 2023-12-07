@@ -1,0 +1,33 @@
+<html 
+  xmlns:th="https://www.thymeleaf.org/"
+  xmlns:sec="https://www.thymeleaf.org/extras/spring-security5"
+  >
+
+
+<nav th:fragment="menu" class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">HealthCare</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      
+      <!--Patient START-->
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          OPTIONS
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" th:href="@{/patient/register}" sec:authorize="isAnonymous()">REGISTER</a>
+          <a class="dropdown-item" th:href="@{/user/login}" sec:authorize="isAnonymous()">LOGIN</a>
+        </div>
+      </li>
+      <!--Patient END-->
+    </ul>
+    
+  </div>
+</nav>
+
+
+</html>
