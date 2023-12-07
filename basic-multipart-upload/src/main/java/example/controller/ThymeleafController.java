@@ -20,7 +20,7 @@ import example.model.Person;
 import example.utils.Utils;
 
 @Controller
-@RequestMapping("/thymeleaf")
+@RequestMapping("/u)
 public class ThymeleafController {
 
 	@GetMapping
@@ -40,12 +40,4 @@ public class ThymeleafController {
 		return model;
 	}
 
-	@GetMapping("/misconfigured")
-	public ModelAndView misconfigured(
-			@RequestParam(value = "name", required = false, defaultValue = "World") String name) {
-		ModelAndView model = new ModelAndView("/hello");
-		model.addObject("name", name);
-
-		return model;
-	}
 }
