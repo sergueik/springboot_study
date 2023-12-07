@@ -18,8 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import javax.servlet.http.HttpServletRequest;
+// NOTE: temporarily removed the javax.servlet dependency due to 
+// difficult to debug Java 17 runtime conflict
+// import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -69,12 +70,13 @@ public class FileUploadController {
 				.collect(Collectors.toList());
 	}
 
+	/*
 	@GetMapping("/downloadFile/{fileName:.+}")
 	public ResponseEntity<Resource> downloadFile(@PathVariable String fileName,
 			HttpServletRequest request) {
 		// Load file as Resource
 		Resource resource = fileStorageService.loadFileAsResource(fileName);
-
+	
 		// Try to determine file's content type
 		String contentType = null;
 		try {
@@ -83,17 +85,17 @@ public class FileUploadController {
 		} catch (IOException e) {
 			logger.info("Could not determine file type of " + fileName);
 		}
-
+	
 		// Fallback to the default content type if type could not be determined
 		if (contentType == null) {
 			contentType = "application/octet-stream";
 		}
-
+	
 		return ResponseEntity.ok()
 				.contentType(MediaType.parseMediaType(contentType))
 				.header(HttpHeaders.CONTENT_DISPOSITION,
 						"attachment; filename=\"" + resource.getFilename() + "\"")
 				.body(resource);
 	}
-
+	*/
 }

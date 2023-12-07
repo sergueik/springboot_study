@@ -8,6 +8,12 @@ combined with __Multi-part File Upload via AngularJS__ through `$http.post` and 
 
 ### Usage
 
+![Selecting Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload.png)
+<br/>
+![Summary Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload2.png)
+
+### More Usage
+
 * launch the server
 ```sh
 mvn spring-boot:test
