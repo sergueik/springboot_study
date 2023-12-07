@@ -13,18 +13,19 @@ function uploadMultipleFiles(files) {
     }
 
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "/uploadMultipleFiles");
+    xhr.open('POST', '/uploadMultipleFiles');
 
     xhr.onload = function() {
-        console.log(xhr.responseText);
+        console.log('response: ' + xhr.responseText);
         var response = JSON.parse(xhr.responseText);
         if(xhr.status == 200) {
-            multipleFileUploadError.style.display = "none";
-            var content = "<p>All Files Uploaded Successfully</p>";
+            multipleFileUploadError.style.display = 'none';
+            var content = '<p>All Files Uploaded Successfully</p>';
             for(var i = 0; i < response.length; i++) {
-                content += "<div>" + response[i].fileName + "</div>";
+                console.log('<pre>' +response[i].fileName + '</pre>');
+                content += '<div>' + '<pre>' +response[i].fileName + '</pre>'+ '</div>';
             }
-            multipleFileUploadSuccess.innerHTML = content;
+            multipleFileUploadSuccess.innerHTML =  content ;
             multipleFileUploadSuccess.style.display = "block";
         } else {
             multipleFileUploadSuccess.style.display = "none";

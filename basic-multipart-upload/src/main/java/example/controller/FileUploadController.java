@@ -5,7 +5,7 @@ package example.controller;
  */
 import example.payload.UploadFileResponse;
 import example.service.FileStorageService;
-import example.property.FileStorageProperties;
+import example.utils.Utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 // difficult to debug Java 17 runtime conflict
 // import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,7 +66,13 @@ public class FileUploadController {
 						+ Arrays.asList(files).stream()
 								.map(file -> file.getOriginalFilename())
 								.collect(Collectors.toList()));
-		return Arrays.asList(files).stream().map(file -> uploadFile(file))
-				.collect(Collectors.toList());
+		@SuppressWarnings("unused")
+		String listing = Utils.listDirecroryFiles();
+		List<UploadFileResponse> result = new ArrayList<>();
+		result.addAll(Arrays.asList(files).stream().map(file -> uploadFile(file))
+				.collect(Collectors.toList()));
+		UploadFileResponse last = new UploadFileResponse(listing, null, null, 0);
+		result.add(last);
+		return result;
 	}
 }
