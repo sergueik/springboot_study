@@ -18,9 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-// NOTE: temporarily removed the javax.servlet dependency due to 
-// difficult to debug Java 17 runtime conflict
-// import javax.servlet.http.HttpServletRequest;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,12 +65,12 @@ public class FileUploadController {
 								.map(file -> file.getOriginalFilename())
 								.collect(Collectors.toList()));
 		@SuppressWarnings("unused")
-		String listing = Utils.listDirecroryFiles();
+		String listing = Utils.listDirecroryFiles(fileStorageService.getUploadDir());
 		List<UploadFileResponse> result = new ArrayList<>();
 		result.addAll(Arrays.asList(files).stream().map(file -> uploadFile(file))
 				.collect(Collectors.toList()));
 		UploadFileResponse last = new UploadFileResponse(listing, null, null, 0);
 		result.add(last);
 		return result;
-	}
+}
 }

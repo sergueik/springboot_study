@@ -1,3 +1,5 @@
+	<html xmlns:th="https://www.thymeleaf.org/">
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
@@ -5,6 +7,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
         <title>Spring Boot File Upload / Download Rest API Example</title>
         <meta charset="utf-8" />
+	<style type="text/css">
+	table tr th, td {
+		text-transform: capitalize;
+		text-align: center;
+	}
+	</style>
   </head>
   <body>
 	  <div>
@@ -19,6 +27,7 @@
                         <div id="multipleFileUploadSuccess"></div>
                     </div>
                     </div>
-        <script src="/resources/js/main.js" ></script>
+		<script th:src="@{/js/main.js}"></script>
 </body>
 </html>
+	

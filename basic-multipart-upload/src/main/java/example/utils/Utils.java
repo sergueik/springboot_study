@@ -18,14 +18,18 @@ public class Utils {
 		}
 	}
 
+	public static String listDirecroryFiles() {
+		return listDirecroryFiles("c:/temp/upload");
+	}
 	// orign:
 	// http://www.java2s.com/ref/java/java-file-list-all-files-and-directories-under-a-folder.html
-	public static String listDirecroryFiles() {
+	public static String listDirecroryFiles(String uploadDir) {
 		StringBuffer processOutput = new StringBuffer();
 		processOutput.append("");
 		String line = null;
 		// NOTE: no checking that directory exists. This is just minimal demo exampe
-		File dir = new File("c:/temp/upload");
+		// TODO: use the FileStorageService getUploadDir
+		File dir = new File(uploadDir);
 		File[] list = dir.listFiles();
 		if (list.length > 0) {
 			for (File f : list) {

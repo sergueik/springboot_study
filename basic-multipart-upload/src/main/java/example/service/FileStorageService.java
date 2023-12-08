@@ -26,8 +26,7 @@ import java.nio.file.StandardCopyOption;
 @Service
 public class FileStorageService {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(FileStorageService.class);
+	private static final Logger logger = LoggerFactory.getLogger(FileStorageService.class);
 
 	private final Path fileStorageLocation;
 
@@ -40,6 +39,14 @@ public class FileStorageService {
 	private String uploadDirLinux = "/tmp/upload";
 
 	private String uploadDir = null;
+	public String getUploadDir() {
+		return uploadDir;
+	}
+
+	public void setUploadDir(String value) {
+		uploadDir = value;
+	}
+
 
 	@Autowired
 	public FileStorageService() {
