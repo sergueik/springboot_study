@@ -36,6 +36,13 @@ public class FileUploadController {
 	@Autowired
 	private FileStorageService fileStorageService;
 
+	@GetMapping("/listFiles")
+	public String listFiles() {
+		String listing = Utils
+				.listDirecroryFiles(fileStorageService.getUploadDir());
+		return listing;
+	}
+
 	@PostMapping("/uploadFile")
 	public UploadFileResponse uploadFile(
 			@RequestParam("file") MultipartFile file) {
@@ -65,12 +72,17 @@ public class FileUploadController {
 								.map(file -> file.getOriginalFilename())
 								.collect(Collectors.toList()));
 		@SuppressWarnings("unused")
-		String listing = Utils.listDirecroryFiles(fileStorageService.getUploadDir());
 		List<UploadFileResponse> result = new ArrayList<>();
+		// no longer showing upoaded files
+
 		result.addAll(Arrays.asList(files).stream().map(file -> uploadFile(file))
 				.collect(Collectors.toList()));
+
+		String listing = Utils
+				.listDirecroryFiles(fileStorageService.getUploadDir());
 		UploadFileResponse last = new UploadFileResponse(listing, null, null, 0);
+		result.clear();
 		result.add(last);
 		return result;
-}
+	}
 }

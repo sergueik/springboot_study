@@ -21,29 +21,66 @@ public class Utils {
 	public static String listDirecroryFiles() {
 		return listDirecroryFiles("c:/temp/upload");
 	}
-	// orign:
+
+	// origin:
 	// http://www.java2s.com/ref/java/java-file-list-all-files-and-directories-under-a-folder.html
 	public static String listDirecroryFiles(String uploadDir) {
-		StringBuffer processOutput = new StringBuffer();
-		processOutput.append("");
 		String line = null;
-		// NOTE: no checking that directory exists. This is just minimal demo exampe
-		// TODO: use the FileStorageService getUploadDir
+		// NOTE: not checking that directory exists. This is just minimal demo
+		// exampe
 		File dir = new File(uploadDir);
-		File[] list = dir.listFiles();
-		if (list.length > 0) {
-			for (File f : list) {
-				if (f.isFile()) {
-					line = f.getPath() + " (File)";
-					processOutput.append(line);
-					processOutput.append("\n");
-				} else if (f.isDirectory()) {
-					line = f.getPath() + " (Directory)";
-					processOutput.append(line);
-					processOutput.append("\n");
-				}
+		File[] listFiles = dir.listFiles();
+		if (listFiles.length > 0) {
+			return formattedList(listFiles);
+
+		} else
+			return "";
+
+	}
+
+	// based on:
+	// https://stackoverflow.com/questions/13669430/formated-output-in-java-like-ls
+	private static String formattedList(File[] files) {
+		final int NUM_COLUMNS = 3;
+		final int SEPARATING_SPACE_LENGTH = 2;
+		StringBuffer processOutput = new StringBuffer();
+		String line = null;
+		int[] maxLength = new int[NUM_COLUMNS];
+
+		for (int i = 0; i < files.length; i++) {
+			File f = files[i];
+			if (f.isFile()) {
+				line = f.getName();
+			} else if (f.isDirectory()) {
+				line = f.getName() + "/";
+			}
+			int fileLength = line.length();
+			int columnIndex = i % NUM_COLUMNS;
+
+			if (maxLength[columnIndex] < fileLength) {
+				maxLength[columnIndex] = fileLength;
+			}
+		}
+
+		for (int i = 0; i < files.length; i++) {
+			File f = files[i];
+			if (f.isFile()) {
+				line = f.getName();
+			} else if (f.isDirectory()) {
+				line = f.getName() + "/";
+			}
+			processOutput.append(line);
+
+			for (int j = 0; j < maxLength[i % NUM_COLUMNS] - line.length()
+					+ SEPARATING_SPACE_LENGTH; j++) {
+				processOutput.append(" ");
+			}
+
+			if ((i + 1) % NUM_COLUMNS == 0) {
+				processOutput.append("\n");
 			}
 		}
 		return processOutput.toString();
 	}
+
 }
