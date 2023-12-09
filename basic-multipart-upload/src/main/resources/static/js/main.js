@@ -22,6 +22,7 @@ function uploadMultipleFiles(files) {
       multipleFileUploadSuccess.style.display = 'none';
       multipleFileUploadError.innerHTML = (response && response.message) || 'Some Error Occurred';
     }
+    document.getElementById('multipleUploadForm').reset();
   }
   xhr.send(formData);
 }
