@@ -51,7 +51,7 @@ cgi {
         # $data = $query->body_json;
         $data = $json_pp->decode($body);
         $data->{'status'} = 'OK';
-        $data->{'environent'} = 'PRODUCTION';
+        $data->{'environment'} = 'PRODUCTION';
         print STDERR Dumper($data), $/;
         $query->set_response_type('application/json');
 

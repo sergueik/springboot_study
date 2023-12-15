@@ -1278,6 +1278,46 @@ as
 
 ![Example Host Status](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-host-status.png)
 
+### Styling Rows 
+```sh
+docker cp html/styled_row.html $NAME:/var/www/localhost/htdocs
+```
+start `styled_row.html` from file or host:
+paste sample monitoring data
+```json
+[
+{
+  "host": "host1",
+  "columns": [
+    {
+      "column": "hostname",
+      "value": "host1",
+      "class": "hostclass"
+    },
+    {
+      "column": "UPTIME",
+      "value": 123.45,
+      "class": "uptime"
+    },
+    {
+      "column": "MEMORY",
+      "value": 16,
+      "class": "memoryclass"
+    },
+    {
+      "column": "TIME",
+      "value": "11:58:28",
+      "class": "time"
+    }
+  ]
+}
+]
+```
+into textarea
+![Example Host Status](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-styled-rows.png)
+
+![Example Host Status](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-styled-rows-2.png)
+
 ### See Also
 
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
