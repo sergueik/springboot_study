@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.5/angular.min.js"></script>
+<script src="js/angular.js"></script>
 <style>
 table { border-collapse: collapse; }
 
@@ -19,7 +19,7 @@ body {
 <body ng-app='Aplication'>
 <div ng-controller='TableController'>
 <div>Paste JSON in textarea</div>
-<textarea id='data' ng-change = 'tableController();' ng-model='myValue' />
+<textarea id='data' ng-change = 'tableController();' ng-model='myValue'>
 {
   "results": [
     {

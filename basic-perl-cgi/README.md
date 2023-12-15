@@ -1236,6 +1236,47 @@ Access-Control-Allow-Headers: *
 Content-Type: text/plain |;
 
 ```
+### Text Area
+```sh
+docker cp html/process_textarea.html $NAME:/var/www/localhost/htdocs
+```
+```sh
+docker cp html/js/csv.js $NAME:/var/www/localhost/htdocs/js
+```
+
+```sh
+docker cp cgi-bin/host_status.cgi $NAME:/var/www/localhost/cgi-bin/
+```
+
+proceed with `http://192.168.99.100:9090/process_textarea.html`
+paste 
+```text
+column1,column2,column3
+host1,true,PROD
+host2,true,PROD
+host3,false,STAGING
+
+```
+into textarea
+NOTE: the minimal information to paste is single column with header (additional columns reserved for later use):
+```text
+column1
+host1
+host2
+host3
+host4
+host5
+```
+will see the host statuses evaluated via REST calls
+```javascript
+$http.get('http://' + url + ':' + port + '/cgi-bin/host_status.cgi' + '?hostname=' + hostname, '', { headers: { 'Referrer-Policy': 'origin' } }).then(
+  function(response) { $scope.msg = 'success'; $scope.results.push( response.data )}, 
+  function(response) { $scope.msg = 'error'}
+);
+```
+as
+
+![Example Host Status](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-host-status.png)
 
 ### See Also
 
@@ -1264,6 +1305,7 @@ Content-Type: text/plain |;
   * [insert line after match using sed or perl](https://stackoverflow.com/questions/15559359/insert-line-after-match-using-sed)
   * https://stackoverflow.com/questions/39069206/how-to-set-custom-headers-for-httptiny-in-perl
   * [mozilla documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin) on `cross-origin resource sharing error preflightmissingalloworiginheader` error 
+  * [vanilla JavaScript CSV (comma-separated values) parser](https://github.com/cparker15/CSV-js/blob/master/src/csv.js)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
