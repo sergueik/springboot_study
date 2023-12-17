@@ -15,9 +15,9 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <slf4j.version>1.6.6</slf4j.version>
-    <log4back.version>1.0.6</log4back.version>
-    <spring.version>4.0.0.RELEASE</spring.version>
-    <spring.data.mongo.version>1.4.0.RC1</spring.data.mongo.version>
+    <logback-classic.version>1.2.13</logback-classic.version>
+    <spring.version>5.2.7.RELEASE</spring.version>
+    <spring.data.mongo.version>1.10.23.RELEASE</spring.data.mongo.version>
     <spring.data.commons.version>1.7.0.RC1</spring.data.commons.version>
     <jetty.version>9.1.0.v20131115</jetty.version>
     <jackson.version>2.2.2</jackson.version>
@@ -25,9 +25,6 @@
   </properties>
   <dependencyManagement>
     <dependencies>
-      <!-- ==================== -->
-      <!-- SPRING DEPENDENCIES -->
-      <!-- ==================== -->
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
@@ -58,9 +55,6 @@
         <artifactId>javax.servlet-api</artifactId>
         <version>3.0.1</version>
       </dependency>
-      <!-- ==================== -->
-      <!-- SPRING DATA -->
-      <!-- ==================== -->
       <dependency>
         <groupId>org.springframework.data</groupId>
         <artifactId>spring-data-commons</artifactId>
@@ -86,7 +80,6 @@
         <artifactId>joda-time</artifactId>
         <version>${joda.version}</version>
       </dependency>
-      <!-- Jackson JSON Mapper -->
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
@@ -97,9 +90,6 @@
         <artifactId>jackson-databind</artifactId>
         <version>${jackson.version}</version>
       </dependency>
-      <!-- ==================== -->
-      <!-- LOGGING DEPENDENCIES -->
-      <!-- ==================== -->
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
@@ -108,12 +98,9 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>${log4back.version}</version>
+        <version>${logback-classic.version}</version>
         <scope>runtime</scope>
       </dependency>
-      <!-- ==================== -->
-      <!-- UNIT TEST DEPENDENCIES -->
-      <!-- ==================== -->
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-test</artifactId>
@@ -123,7 +110,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.11</version>
+	<version>4.11</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -283,9 +270,6 @@
     </repository>
     <repository>
       <id>central</id>
-      <!--
-      https://central.maven.org/maven2/ Error 403 Use https://repo1.maven.org
-      -->
       <url>https://repo1.maven.org/maven2/</url>
     </repository>
     <repository>
