@@ -16,7 +16,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <slf4j.version>1.6.6</slf4j.version>
     <logback-classic.version>1.2.13</logback-classic.version>
-    <spring.version>5.2.7.RELEASE</spring.version>
+    <spring.version>5.2.24.RELEASE</spring.version>
     <spring.data.mongo.version>1.10.23.RELEASE</spring.data.mongo.version>
     <spring.data.commons.version>1.7.0.RC1</spring.data.commons.version>
     <jetty.version>9.1.0.v20131115</jetty.version>
