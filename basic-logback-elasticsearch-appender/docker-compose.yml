@@ -1,0 +1,78 @@
+version: '2.2'
+
+services:
+  elasticsearch:
+    restart: unless-stopped
+    build: elasticsearch
+    container_name: elasticsearch
+    # volumes:
+    #  - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
+    #  - ./elasticsearch/data:/usr/share/elasticsearch/data
+    environment:
+      - TZ=Asia/Seoul
+      # - ELASTIC_PASSWORD=elasticpassword
+      - node.name=elasticsearch 
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node 
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    healthcheck:
+      test:
+        [
+            "CMD-SHELL",
+            "curl http://localhost:9200 | grep -q 'You Know, for Search'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 60
+        
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+    networks:
+      - elastic
+
+  kibana:
+    restart: unless-stopped
+    build: kibana
+    container_name: kibana
+    # volumes:
+    #  - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,z
+    ports:
+      - "5601:5601" 
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - elastic
+    healthcheck:
+      test:
+        [
+            "CMD-SHELL",
+            "curl http://localhost:5601/api/status | jq -r '.status.overall.state' | grep -q 'green'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+  app:
+    restart: unless-stopped
+    build: app
+    container_name: app1
+    environment:
+      - MONITOR=true
+    ports:
+      - "8080:8080"
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8080/
+    depends_on:
+      - apm-server
+    networks:
+      - elastic
+
+networks:
+  elastic:

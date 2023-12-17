@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
+        <timestampFormat>yyyy-MM-dd'T'HH:mm:ss.SSSX</timestampFormat>
+        <timestampFormatTimezoneId>Etc/UTC</timestampFormatTimezoneId>
+        <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+          <prettyPrint>false</prettyPrint>
+        </jsonFormatter>
+        <appendLineSeparator>true</appendLineSeparator>
+      </layout>
+    </encoder>
+  </appender>
+  <variable name="BASEDIR" value="${BASEDIR:-.}"/>
+  <!-- https://www.cloudesire.com/configure-logback-log-level-via-environment-variables/ -->
+  <property name="FILENAME" value="App"/>
+  <property name="DIR" value="${BASEDIR}/logs"/>
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- can use ${APP_HOME} -->
+    <file>${DIR}/${FILENAME}.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${DIR}/${FILENAME}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <maxFileSize>1KB</maxFileSize>
+      <totalSizeCap>10KB</totalSizeCap>
+      <maxHistory>1</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="ELASTIC" class="com.internetitem.logback.elasticsearch.ElasticsearchAppender">
+    <url>http://yourserver/_bulk</url>
+    <index>logs-%date{yyyy-MM-dd}</index>
+    <type>tester</type>
+    <loggerName>es-logger</loggerName>
+    <!-- optional -->
+    <errorLoggerName>es-error-logger</errorLoggerName>
+    <!-- optional -->
+    <connectTimeout>30000</connectTimeout>
+    <!-- optional (in ms, default 30000) -->
+    <errorsToStderr>false</errorsToStderr>
+    <!-- optional (default false) -->
+    <includeCallerData>false</includeCallerData>
+    <!-- optional (default false) -->
+    <logsToStderr>false</logsToStderr>
+    <!-- optional (default false) -->
+    <maxQueueSize>104857600</maxQueueSize>
+    <!-- optional (default 104857600) -->
+    <maxRetries>3</maxRetries>
+    <!-- optional (default 3) -->
+    <readTimeout>30000</readTimeout>
+    <!-- optional (in ms, default 30000) -->
+    <sleepTime>250</sleepTime>
+    <!-- optional (in ms, default 250) -->
+    <rawJsonMessage>false</rawJsonMessage>
+    <!-- optional (default false) -->
+    <includeMdc>false</includeMdc>
+    <!-- optional (default false) -->
+    <maxMessageSize>100</maxMessageSize>
+    <!-- optional (default -1 -->
+    <authentication class="com.internetitem.logback.elasticsearch.config.BasicAuthentication"/>
+    <!-- optional -->
+    <properties>
+      <property>
+        <name>host</name>
+        <value>${HOSTNAME}</value>
+        <allowEmpty>false</allowEmpty>
+      </property>
+      <property>
+        <name>severity</name>
+        <value>%level</value>
+      </property>
+      <property>
+        <name>thread</name>
+        <value>%thread</value>
+      </property>
+      <property>
+        <name>stacktrace</name>
+        <value>%ex</value>
+      </property>
+      <property>
+        <name>logger</name>
+        <value>%logger</value>
+      </property>
+    </properties>
+    <headers>
+      <header>
+        <name>Content-Type</name>
+        <value>application/json</value>
+      </header>
+    </headers>
+  </appender>
+  <root level="WARN">
+    <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="FILE"/>
+    <appender-ref ref="JSON"/>
+  </root>
+  <logger name="example" level="DEBUG" additivity="false">
+    <appender-ref ref="FILE"/>
+  </logger>
+  <logger name="org.springframework" level="INFO"/>
+  <logger name="org.springframework.jdbc.core" level="DEBUG"/>
+</configuration>
