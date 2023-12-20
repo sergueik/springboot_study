@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?define Description="Description" ?>
+<?define Name="Text File Installer" ?>
+<?define ApplicationVersion="1.0.0" ?>
+<?define Manufacturer="Manufacturer" ?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Name="$(var.Name)" Language="1033" Version="$(var.ApplicationVersion)" Manufacturer="$(var.Manufacturer)" Id="EA524AD9-6920-4D46-B03E-7DA72F46F89B" UpgradeCode="8AB05FAB-726C-4AA1-BB09-CC8C2534683C">
+    <Package Id="*" InstallerVersion="200" Compressed="yes"/>
+    <UIRef Id="WixUI_Minimal"/>
+    <MediaTemplate EmbedCab="yes"/>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLDIR" Name="$(var.Name)">
+          <Component Id="Application" Guid="181410DA-06A6-413A-A1C7-261B894D4EF9">
+        <File Id="SampleFile" Name="Sample.txt" DiskId="1" Source="..\Program\sample.txt" Vital="yes"/>
+          </Component>
+        </Directory>
+      </Directory>
+    </Directory>
+    <Feature Id="Complete" Level="1">
+      <ComponentRef Id="Application"/>
+    </Feature>
+    <UI>
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+    </UI>
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Open Text File"/>
+    <Property Id="WixShellExecTarget" Value="[#SampleFile]"/>
+    <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes"/>
+  </Product>
+</Wix>
