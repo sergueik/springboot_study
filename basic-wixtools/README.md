@@ -7,40 +7,26 @@ this directory contains a Docker project based on alpine
 
 ```sh
 sed -i "s|UID=[0-9][0-9]*|UID=$UID|g" Dockerfile
+wget https://dl.winehq.org/wine/wine-mono/6.0.0/wine-mono-6.0.0-x86.msi -nv -O mono.msi
+wget -nv -O wix.zip https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311-binaries.zip
+mkdir wix
+unzip wix.zip -d wix
+```
+```sh
 IMAGE=basic-wix
-docker build -f Dockerfile -t $IMAGE .
+docker build -f Dockerfile --platform linux/386 -t $IMAGE .
+rm -fr wix
 ```
 followed by
-```sh
-docker run -v $(pwd):/wix $IMAGE candle Setup/Product.wxs
-```
-this will create `Product.wixobj` in the project directory
-
-```sh
-docker run -v $(pwd):/wix $IMAGE light Product.wixobj -ext WixUIExtension -ext WixUtilExtension -sval
-```
-this will fail with
-```text
-Z:\wix\Setup\Product.wxs(16) : error LGHT0103 : The system cannot find the file '..\Program\sample.txt'.
-```
-
-the path issue can be remediated by running docker from `Setup` directory:
 
 ```sh
 docker run -w /wix/Setup -v $(pwd):/wix $IMAGE candle Product.wxs
 docker run -w /wix/Setup -v $(pwd):/wix $IMAGE light Product.wixobj -ext WixUIExtension -ext WixUtilExtension -ext WixNetFxExtension -sval
 ```
 
-NOTE: without the this `-ext` flags the command will fail with
-```text
-Z:\wix\Setup\Product.wxs(10) : error LGHT0094 : Unresolved reference to symbol 'WixUI:WixUI_Minimal' in section 'Product:{EA524AD9-6920-4D46-B03E-7DA72F46F89B}'.
-Z:\wix\Setup\Product.wxs(25) : error LGHT0094 : Unresolved reference to symbol 'Dialog:ExitDialog' in section 'Product:{EA524AD9-6920-4D46-B03E-7DA72F46F89B}'.
-Z:\wix\Setup\Product.wxs(29) : error LGHT0094 : Unresolved reference to symbol 'Binary:WixCA' in section 'Product:{EA524AD9-6920-4D46-B03E-7DA72F46F89B}'.
-```
-
 Alternatively, open an interactive shell in the container to run WixTools commands:
 ```sh
-docker run -v $(pwd):/wix -it $IMAGE sh
+docker run -v $(pwd):/wix --platform linux/386 -it $IMAGE sh
 ```
 in the shell, change the directory and build MSI package from `Setup`:
 
@@ -50,7 +36,6 @@ candle Product.wxs
 light -ext WixUIExtension -ext WixUtilExtension Product.wixobj -sval
 ```
 this wll create `Product.msi` in the `Setup` directory
-
 
 NOTE: not providing the full path to `WixNetFxExtension.dll`, `WixUIExtension.dll` etc. to the linker
 
@@ -70,7 +55,14 @@ docker image prune -f
 suppress Docker warning
 ```text
 [Warning] The requested image's platform (linux/386) does not match the detected host platform (linux/amd64) and no specific platform was requested
+```
 
+### Note
+
+the image size is big compared to released:
+```text
+basic-wix                                       latest                  5977c2a0581a   4 minutes ago    971MB
+dactiv/wix                                      latest                  0081f46494b8   2 years ago      691MB
 ```
 ### See Also
 
