@@ -1,0 +1,12 @@
+FROM i386/alpine:3.13.2
+
+USER root
+ARG WINE_VERSION=4.0.3-r0
+ARG FREETYPE_VERSION=2.10.4-r3
+ARG MONO_VERSION=6.0.0
+
+RUN apk add --no-cache wine=$WINE_VERSION freetype=$FREETYPE_VERSION curl ncurses-libs
+
+RUN curl -sLko mono.msi https://dl.winehq.org/wine/wine-mono/$MONO_VERSION/wine-mono-$MONO_VERSION-x86.msi 
+RUN wine msiexec.exe /i mono.msi && rm -fr mono.msi /tmp/*
+ 

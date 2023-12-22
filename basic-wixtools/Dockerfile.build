@@ -1,0 +1,37 @@
+FROM alpine-wine-mono
+
+USER root
+ARG UID=1000
+ARG GID=1000
+
+ENV UID=${UID}
+ENV GID=${GID}
+ARG USER_NAME=wine
+ARG GROUP_NAME=wine
+# Create a separate user for Wine
+RUN getent group $GROUP_NAME >/dev/null || addgroup -S $GROUP_NAME -g $GID
+RUN getent passwd $UID || adduser -h /home/wine -u $UID -s /bin/sh -D -G $GROUP_NAME $USER_NAME --disabled-password --shell /bin/bash
+ENV HOME=/home/wine WINEPREFIX=/home/wine/.wine WINEARCH=win32 PATH="/home/wine/bin:$PATH" WINEDEBUG=-all
+
+
+COPY make-aliases.sh /home/wine/make-aliases.sh
+RUN mkdir /wix \
+  && mv /root/.wine /home/wine \
+  && chown -R $USER_NAME:$GROUP_NAME /home/wine /wix
+
+# Use the separate Wine user
+USER wine
+WORKDIR /home/wine
+
+RUN curl -sLko wix.zip https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311-binaries.zip \
+  && mkdir wix \
+  && unzip -qq -d wix wix.zip \
+  && rm -f wix.zip
+RUN wineboot \
+  && mkdir -p $WINEPREFIX/drive_c/temp \
+  && chmod +x /home/wine/make-aliases.sh \
+  && sed -i 's|\r||g' /home/wine/make-aliases.sh \
+  && /home/wine/make-aliases.sh \
+  && rm -f /home/wine/make-aliases.sh 
+
+WORKDIR /wix

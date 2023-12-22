@@ -7,8 +7,8 @@ this directory contains a Docker project based on alpine
 
 ```sh
 sed -i "s|UID=[0-9][0-9]*|UID=$UID|g" Dockerfile
-wget https://dl.winehq.org/wine/wine-mono/6.0.0/wine-mono-6.0.0-x86.msi -nv -O mono.msi
-wget -nv -O wix.zip https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311-binaries.zip
+curl -sLko mono.msi https://dl.winehq.org/wine/wine-mono/6.0.0/wine-mono-6.0.0-x86.msi
+curl -sLko wix.zip https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311-binaries.zip
 mkdir wix
 unzip wix.zip -d wix
 ```
@@ -39,6 +39,35 @@ this wll create `Product.msi` in the `Setup` directory
 
 NOTE: not providing the full path to `WixNetFxExtension.dll`, `WixUIExtension.dll` etc. to the linker
 
+### Multi Step
+
+```sh
+IMAGE=alpine-wine-mono
+docker build -f Dockerfile.$IMAGE -t $IMAGE .
+IMAGE=basic-wix
+docker build -f Dockerfile.build -t $IMAGE .
+```
+NOTE: `--platform` is only supported on a Docker daemon with experimental features enabled in `docker.json` (e.g. Docker Toolbox is not)
+NOTE: not working:
+
+```sh
+docker run -v $(pwd):/wix -it basic-wix sh
+```
+```sh
+wine /home/wine/wix/candle.exe
+```
+returns without printing anything to console  with exit status `255`:
+```sh
+echo $?
+```
+```text
+255
+```
+```sh
+docker run -v $(pwd):/wix -it alpine-wine-mono sh
+```
+Mono is installed into `root` user directory `/root/.wine/drive_c/windows/mono/mono-2.0`:
+
 ### Cleanup
 
 ```sh
@@ -56,7 +85,10 @@ suppress Docker warning
 ```text
 [Warning] The requested image's platform (linux/386) does not match the detected host platform (linux/amd64) and no specific platform was requested
 ```
-
+find out more about
+```text
+Wine cannot find the ncurses library (libncursesw.so.6).
+```
 ### Note
 
 the image size is big compared to released:
