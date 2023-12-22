@@ -29,7 +29,7 @@ public class Consumer {
 		final String queueName = argv[0];
 		channel.queueDeclare(queueName, true, false, false, null);
 		System.err.println(
-				"Waiting for messages in: " + queueName + "n" + "To exit press CTRL+C");
+				"Waiting for messages in: " + queueName + "\n" + "To exit press CTRL+C");
 
 		channel.basicQos(1);
 		DeliverCallback deliverCallback = (consumerTag, delivery) -> {
