@@ -11,7 +11,7 @@ __Build a Swagger UI for your Python Flask Application__ [post](https://code.lik
 export IMAGE=basic-python-flask
 ```
 ```sh
-docker build -t $IMAGE  -f Dockerfile .
+docker build -t $IMAGE -f Dockerfile .
 ```
 * run in background
 
@@ -19,6 +19,67 @@ docker build -t $IMAGE  -f Dockerfile .
 export NAME=basic-python-flask
 docker run --name $NAME -p 5000:5000 -d $IMAGE
 ```
+
+* test connection
+on Linux
+```sh
+sudo netstat -antp | grep 5000
+```
+```text
+tcp        0      0 0.0.0.0:5000            0.0.0.0:*               LISTEN      3957/docker-proxy
+tcp6       0      0 :::5000                 :::*                    LISTEN      3964/docker-proxy
+```
+
+```sh
+nc -v 127.0.0.1 5000
+```
+```text
+Connection to 127.0.0.1 5000 port [tcp/*] succeeded!
+```
+
+```sh
+GET / HTTP/1.1
+
+```
+
+```text
+HTTP/1.1 302 FOUND
+Server: Werkzeug/3.0.1 Python/3.8.2
+Date: Tue, 02 Jan 2024 15:55:56 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 199
+Location: /hello
+Access-Control-Allow-Origin: *
+Connection: close
+
+<!doctype html>
+<html lang=en>
+<title>Redirecting...</title>
+<h1>Redirecting...</h1>
+<p>You should be redirected automatically to the target URL: <a href="/hello">/hello</a>. If not, click the link.
+```
+
+on Windows 8.x when using Docker Toolbox
+```sh
+docker-machine ip
+```
+```text
+192.168.99.100
+```
+```powershelll
+test-netconnection -computername 192.168.99.100 -port 5000
+```
+```text
+ComputerName           : 192.168.99.100
+RemoteAddress          : 192.168.99.100
+RemotePort             : 5000
+InterfaceAlias         : VirtualBox Host-Only Network #2
+SourceAddress          : 192.168.99.1
+PingSucceeded          : True
+PingReplyDetails (RTT) : 0 ms
+TcpTestSucceeded       : True
+```
+
 * test localized static page
 ```sh
 curl http://localhost:5000/
