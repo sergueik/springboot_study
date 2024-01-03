@@ -1,4 +1,4 @@
-#Copyright (c) 2023 Serguei Kouzmine
+#Copyright (c) 2023,2024 Serguei Kouzmine
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -19,6 +19,9 @@
 #THE SOFTWARE.
 
 # this version uses invoke-restmethod cmdlet to download the config, and is able to detect errors in HTTP status or inside the payload
+# NOTE: to test processing of various HTTP Status code by invoke-restmethod, 
+# run the basic-perl-cgi container and
+# use base_url http://localhost:8085/cgi-bin/statuscode.cgi?code=$code
 param (
   [String]$config_dir = '',
   [String]$config_filename = 'data.json',

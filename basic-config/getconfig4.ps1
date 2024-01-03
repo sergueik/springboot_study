@@ -19,6 +19,9 @@
 #THE SOFTWARE.
 
 # this version uses Invoke-WebRequest
+# NOTE: to test processing of various HTTP Status code by invoke-webrequest, 
+# run the basic-perl-cgi container and
+# use base_url http://localhost:8085/cgi-bin/statuscode.cgi?code=$code
 param (
   [String]$config_dir = '',
   [String]$config_filename = 'data.json',

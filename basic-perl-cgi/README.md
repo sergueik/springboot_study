@@ -10,6 +10,22 @@ IMAGE=basic-perl-apache
 docker build -t $IMAGE -f Dockerfile .
 ```
 * start run default command
+```sh
+NAME=basic-perl-cgi
+ID=$(docker container ls -a | grep $NAME|cut -f 1 -d ' ')
+docker start $ID
+```
+```sh
+docker ps
+
+```
+```text
+CONTAINER ID        IMAGE               COMMAND                  CREATED     STATUS              PORTS                                         NAMES
+c2312b18f192        basic-perl-apache   "sh -c 'PIDFILE='/ru"   2 weeks ago    Up 2 minutes        0.0.0.0:9090->80/tcp, 0.0.0.0:9443->443/tcp   basic-perl-cgi
+```
+
+```
+* run new instance of default command
 
 ```sh
 NAME=basic-perl-cgi
@@ -1317,6 +1333,74 @@ into textarea
 ![Example Host Status](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-styled-rows.png)
 
 ![Example Host Status](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-styled-rows-2.png)
+
+
+### Testing Just HTTP Status code
+
+* Powershell appears to introduce a custom excwption class for HTTP Status codes `40x` `50x`
+
+```sh
+curl -sv http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=408
+```
+```text
+{
+   "status" : "error",
+   "code" : "408"
+}
+* processing: http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=408
+* Uses proxy env variable no_proxy == '192.168.99.100'
+*   Trying 192.168.99.100:9090...
+* Connected to 192.168.99.100 (192.168.99.100) port 9090
+> GET /cgi-bin/statuscode.cgi?code=408 HTTP/1.1
+> Host: 192.168.99.100:9090
+> User-Agent: curl/8.2.1
+> Accept: */*
+>
+< HTTP/1.1 408 Request Timeout
+< Date: Wed, 03 Jan 2024 02:24:36 GMT
+< Server: Apache/2.4.46 (Unix)
+< Content-Length: 45
+< Access-Control-Allow-Origin: *
+< Connection: close
+< Content-Type: text/html;charset=UTF-8
+<
+{ [45 bytes data]
+* Closing connection
+
+
+```
+
+```powershell
+. .\getconfig3.ps1 -base_url http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=408 -debug
+```
+try vanilla Powershell cmdlets:
+```powershell
+invoke-restmethod -method Get -uri http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=408
+```
+get exception
+```text
+invoke-restmethod : { "code" : "408", "status" : "error" }
+At line:1 char:1
++ invoke-restmethod -method Get -uri http://192.168.99.100:9090/cgi-bin/statuscode ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-RestMethod], WebException
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeRestMethodCommand
+```
+```powershell
+Invoke-WebRequest -method Get -uri http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=408
+```
+```text
+Invoke-WebRequest : { "status" : "error", "code" : "408" }
+At line:1 char:1
++ Invoke-WebRequest -method Get -uri http://192.168.99.100:9090/cgi-bin/statuscode ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebException
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+```
+
+there are two different classes `Microsoft.PowerShell.Commands.InvokeRestMethodCommand` and `Microsoft.PowerShell.Commands.InvokeWebRequestCommand` involved and neither
+returns simply the HTTP status for non-`20x` cases
 
 ### See Also
 
