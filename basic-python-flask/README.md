@@ -11,7 +11,7 @@ __Build a Swagger UI for your Python Flask Application__ [post](https://code.lik
 export IMAGE=basic-python-flask
 ```
 ```sh
-docker build -t $IMAGE -f Dockerfile .
+docker build -t $IMAGE -f Dockerfile . --progress=plain
 ```
 * run in background
 

@@ -7,7 +7,7 @@ Plain Alpine 3.9 container installing the apache and Perl using some code from [
 * build the image
 ```sh
 IMAGE=basic-perl-apache
-docker build -t $IMAGE -f Dockerfile .
+docker build -t $IMAGE -f Dockerfile . --progress=plain
 ```
 * start run default command
 ```sh
@@ -1186,7 +1186,7 @@ is not idempotent, updates the file in every run, because emulates sed line-orie
 ```sh
 docker container stop basic-perl-cgi
 
-docker-compose up --build
+docker-compose up --build --no-color
 ```
 
 the latter command will start two identicalcontainers listening to two TCP ports mapped on host: `8080` and `9090`. The page running on former `http://192.168.99.100:8080/form_post.html` will call the service run in the latter:
