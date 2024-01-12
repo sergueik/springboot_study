@@ -78,17 +78,36 @@ will log
 Dan Simmons,Hyperion,,978-8576576013
 Douglas Adams,"The Hitchhiker's Guide to the Galaxy",1979,978-0345391803
 Lynne Truss,"Eats, Shoots and Leaves",2003,978-1861976123"
-2024-01-11 20:34:16.585  INFO 13980 --- [nio-8085-exec-1] example.controller.TypedController       : Before Reading:
-2024-01-11 20:34:16.585  INFO 13980 --- [nio-8085-exec-1] example.controller.TypedController       : Reading:
-2024-01-11 20:34:16.586  INFO 13980 --- [nio-8085-exec-1] example.controller.TypedController       : Read: Data {title=Hyperion author=Dan Simmons}
-2024-01-11 20:34:16.586  INFO 13980 --- [nio-8085-exec-1] example.controller.TypedController       : Reading:
-2024-01-11 20:34:16.587  INFO 13980 --- [nio-8085-exec-1] example.controller.TypedController       : Read: Data {title=The Hitchhiker's Guide to the Galaxy author=Douglas Adams}
-2024-01-11 20:37:26.166  INFO 13980 --- [nio-8085-exec-2] example.controller.TypedController       : Reading:
-2024-01-11 20:37:26.166  INFO 13980 --- [nio-8085-exec-2] example.controller.TypedController       : Read: Data {title=Eats, Shoots and Leaves author=Lynne Truss}
+2024-01-12 14:44:58.283  INFO 2816 --- [nio-8085-exec-1] example.controller.TypedController       : Before Reading:
+2024-01-12 14:44:58.284  INFO 2816 --- [nio-8085-exec-1] example.controller.TypedController       : Reading:
+2024-01-12 14:44:58.285  INFO 2816 --- [nio-8085-exec-1] example.controller.TypedController       : Read: Data {title=Hyperion author=Dan Simmons}
+2024-01-12 14:44:58.285  INFO 2816 --- [nio-8085-exec-1] example.controller.TypedController       : Reading:
+2024-01-12 14:44:58.286  INFO 2816 --- [nio-8085-exec-1] example.controller.TypedController       : Data year: "1979"
+2024-01-12 14:44:58.288  INFO 2816 --- [nio-8085-exec-1] example.controller.TypedController       : Read: Data {title=The Hitchhiker's Guide to the Galaxy author=Douglas Adams year=1979}
+2024-01-12 14:44:58.288  INFO 2816 --- [nio-8085-exec-1] example.controller.TypedController       : Reading:
+2024-01-12 14:44:58.289  INFO 2816 --- [nio-8085-exec-1] example.controller.TypedController       : Data year: "2003"
+2024-01-12 14:44:58.289  INFO 2816 --- [nio-8085-exec-1] example.controller.TypedController       : Read: Data {title=Eats, Shoots and Leaves author=Lynne Truss year=2003}
 ```
 and return
 ```json
-"[{\"status\":false,\"author\":\"Dan Simmons\",\"title\":\"Hyperion\"},{\"status\":false,\"author\":\"Douglas Adams\",\"title\":\"The Hitchhiker\\u0027s Guide to the Galaxy\"}]"
+[
+  {
+    "status": false,
+    "author": "Dan Simmons",
+    "title": "Hyperion"
+  },
+  {
+    "status": false,
+    "author": "Douglas Adams",
+    "title": "The Hitchhiker's Guide to the Galaxy"
+  },
+  {
+    "status": false,
+    "author": "Lynne Truss",
+    "title": "Eats, Shoots and Leaves"
+  }
+]
+
 ```
 
 ```sh
@@ -98,8 +117,25 @@ Douglas Adams,\"The Hitchhiker's Guide to the Galaxy\",1979,978-0345391803
 Lynne Truss,\"Eats, Shoots and Leaves\",2003,978-1861976123" -H 'Content-type: application/octet-stream'
 ```
 will also succeed:
-```text
-"[{\"status\":false,\"author\":\"Dan Simmons\",\"title\":\"Hyperion\"},{\"status\":false,\"author\":\"Douglas Adams\",\"title\":\"The Hitchhiker\\u0027s Guide to the Galaxy\"},{\"status\":false,\"author\":\"Lynne Truss\",\"title\":\"Eats, Shoots and Leaves\"}]"
+```json
+[
+  {
+    "status": false,
+    "author": "Dan Simmons",
+    "title": "Hyperion"
+  },
+  {
+    "status": false,
+    "author": "Douglas Adams",
+    "title": "The Hitchhiker's Guide to the Galaxy"
+  },
+  {
+    "status": false,
+    "author": "Lynne Truss",
+    "title": "Eats, Shoots and Leaves"
+  }
+]
+
 ```
 ```sh
 curl -sX POST http://localhost:8085/data -d "author,title
@@ -107,9 +143,29 @@ Dan Simmons,Hyperion
 Douglas Adams,The Hitchhiker's Guide to the Galaxy
 " -H 'Content-type: application/octet-stream'
 ```
-will also succeed, though not all columns have been present in the payload:
-```text
-"[{\"status\":false,\"author\":\"Dan Simmons\",\"title\":\"Hyperion\"},{\"status\":false,\"author\":\"Douglas Adams\",\"title\":\"The Hitchhiker\\u0027s Guide to the Galaxy\"}]"
+will also succeed, though not every columns defined in theconsumer
+
+
+```java
+public static final String[] HEADERS = { "author", "title", "year", "isbn" };
+CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader(HEADERS).setSkipHeaderRecord(true).build();
+```
+have been present in the payload:
+```json
+[
+  {
+    "status": false,
+    "author": "Dan Simmons",
+    "title": "Hyperion"
+  },
+  {
+    "status": false,
+    "author": "Douglas Adams",
+    "title": "The Hitchhiker's Guide to the Galaxy"
+  }
+]
+```
+
 
 ### See Also
    * https://www.baeldung.com/spring-url-encoded-form-data

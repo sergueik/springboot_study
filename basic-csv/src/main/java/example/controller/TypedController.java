@@ -68,12 +68,12 @@ public class TypedController {
 	private final Logger logger = LoggerFactory.getLogger(TypedController.class);
 	private static final StringBuilder data = new StringBuilder();
 
-
 	public static class Data {
 
 		private boolean status;
 		private String author;
 		private String title;
+		private int year;
 
 		public boolean isStatus() {
 			return status;
@@ -85,6 +85,14 @@ public class TypedController {
 
 		public String getAuthor() {
 			return author;
+		}
+
+		public void setYear(int value) {
+			this.year = value;
+		}
+
+		public int getYear() {
+			return year;
 		}
 
 		public void setAuthor(String data) {
@@ -111,7 +119,7 @@ public class TypedController {
 		public String toString() {
 
 			return "Data {" + "title=" + this.title + " " + "author=" + this.author
-					+ '}';
+					+ ((year != 0) ? " year=" + year : "") + '}';
 		}
 	}
 
@@ -130,10 +138,15 @@ public class TypedController {
 				String author = record.get("author");
 				String title = record.get("title");
 				Data data = new Data(author, title);
+				String year = record.get("year");
+				if (year != null && year.length() != 0) {
+					logger.info("Data year: \"{}\"", year);
+					data.setYear(Integer.parseInt(year));
+				}
 				logger.info("Read: " + data.toString());
 				result.add(data);
 			}
-		} catch (IOException e) {
+		} catch (IOException | NumberFormatException e) {
 			logger.info("Exception: " + e.toString());
 			throw (e);
 		}
@@ -141,10 +154,11 @@ public class TypedController {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@PostMapping(value = "/encodeddata", produces = {
 			MediaType.APPLICATION_JSON_VALUE }, consumes = {
 					MediaType.APPLICATION_FORM_URLENCODED_VALUE })
-	public ResponseEntity<String> encodeddata(@RequestBody String body) {
+	public ResponseEntity<List<Data>> encodeddata(@RequestBody String body) {
 
 		List<Data> result = new ArrayList<>();
 		try {
@@ -154,33 +168,29 @@ public class TypedController {
 			result = processData(in);
 		} catch (UnsupportedEncodingException e) {
 			logger.info("Exception: " + e.toString());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
 
 		} catch (IOException e) {
 			logger.info("Exception: " + e.toString());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(gson.toJson(result));
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
 	@PostMapping(value = "/data", produces = {
 			MediaType.APPLICATION_JSON_VALUE }, consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public ResponseEntity<String> data(@RequestBody String body) {
+	public ResponseEntity<List<Data>> data(@RequestBody String body) {
 
 		List<Data> result;
 		StringReader in = new StringReader(body);
 		logger.info(String.format("Body: \"%s\"", body));
 		try {
 			result = processData(in);
-		} catch (UnsupportedEncodingException e) {
-			logger.info("Exception: " + e.toString());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-
 		} catch (IOException e) {
 			logger.info("Exception: " + e.toString());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(gson.toJson(result));
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
 	// origin:
