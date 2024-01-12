@@ -1430,6 +1430,7 @@ returns simply the HTTP status for non-`20x` cases
   * https://stackoverflow.com/questions/39069206/how-to-set-custom-headers-for-httptiny-in-perl
   * [mozilla documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin) on `cross-origin resource sharing error preflightmissingalloworiginheader` error 
   * [vanilla JavaScript CSV (comma-separated values) parser](https://github.com/cparker15/CSV-js/blob/master/src/csv.js)
+   * [Pure-perl CVS module](https://metacpan.org/pod/Text::CSV_PP) (NOTE: without installing `https://fastapi.metacpan.org/source/ISHIGAKI/Text-CSV-2.04/lib/Text/CSV.pm`)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

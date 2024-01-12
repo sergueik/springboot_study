@@ -41,8 +41,10 @@ cgi {
     $loadtype                        = $query->param('type');
     $new                             = $query->param('new');
     $method                          = $query->method;
+#    print STDERR Dumper(
+#        { new => $new, loadtype => $loadtype, filename => $filename } ), $/;
     print STDERR Dumper(
-        { new => $new, loadtype => $loadtype, filename => $filename } ), $/;
+        { new => $new, loadtype => $loadtype } ), $/;
     if ( $method eq 'POST' ) {
 
         # $query->_body_multipart();
@@ -199,6 +201,7 @@ cgi {
     }
     $query->set_response_type('text/html');
 
+    $filename = 'unknown file' unless $filename;
     $query->render( html => <<EOF);
 <!DOCTYPE html>
 <html>
