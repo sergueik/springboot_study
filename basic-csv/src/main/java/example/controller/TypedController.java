@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +37,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -103,28 +106,50 @@ public class TypedController {
 		}
 	}
 
+	@PostMapping(value = "/encodeddata", produces = {
+			MediaType.APPLICATION_JSON_VALUE }, consumes = {
+					MediaType.APPLICATION_FORM_URLENCODED_VALUE })
+	public ResponseEntity<String> encodeddata(@RequestBody String body) {
+
+		List<Data> result = new ArrayList<>();
+		try {
+			String decodedBody = URLDecoder.decode(body, "UTF-8");
+
+			logger.info(String.format("Decoded Body: \"%s\"", decodedBody));
+
+			StringReader in = new StringReader(body);
+			CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader(HEADERS)
+					.setSkipHeaderRecord(true).build();
+
+			Iterable<CSVRecord> records;
+			records = csvFormat.parse(in);
+			logger.info("Before Reading: ");
+			for (CSVRecord record : records) {
+				logger.info("Reading: ");
+				String author = record.get("author");
+				String title = record.get("title");
+				Data data = new Data(author, title);
+				logger.info("Read: " + data.toString());
+				result.add(data);
+			}
+		} catch (UnsupportedEncodingException e) {
+			logger.info("Exception: " + e.toString());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+
+		} catch (IOException e) {
+			logger.info("Exception: " + e.toString());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(gson.toJson(result));
+	}
+
 	@PostMapping(value = "/data", produces = {
-			MediaType.APPLICATION_JSON_VALUE }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+			MediaType.APPLICATION_JSON_VALUE }, consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public ResponseEntity<String> data(@RequestBody String body) {
 
 		logger.info(String.format("Body: \"%s\"", body));
 
 		StringReader in = new StringReader(body);
-		/*
-		int ch = 0;
-		try {
-			while ((ch = in.read()) != -1) {
-				logger.info("read: " + ch);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			// e.printStackTrace();
-			logger.info("Exception: " + e.toString());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		}
-		in.close();
-		 in = new StringReader(body);
-		 */
 		CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader(HEADERS)
 				.setSkipHeaderRecord(true).build();
 		List<Data> result = new ArrayList<>();

@@ -3,9 +3,15 @@
 example based on [introduction to Apache Commons CSV](https://www.baeldung.com/apache-commons-csv)
 
 ### Usage
+```sh
+mvn test
+```
+```sh
+mvn spring-boot:run
+```
 
 ```sh
-curl -sX POST http://localhost:8085/data -d "author,title
+curl -sX POST http://localhost:8085/encodeddata -d "author,title
 Dan Simmons,Hyperion
 Douglas Adams,The Hitchhiker's Guide to the Galaxy
 " -H 'Content-type: application/x-www-form-urlencoded'
@@ -14,9 +20,24 @@ Douglas Adams,The Hitchhiker's Guide to the Galaxy
 "[]"
 
 ```
-```sh
-curl -sX POST -T src/test/resources/book.csv  http://localhost:8085/data -H 'Content-type: application/x-www-form-urlencoded'
+```text
+ curl -sX POST -T src/test/resources/book.csv  http://localhost:8085/encodeddata -H 'Content-type: application/x-www-form-urlencoded'
 ```
+```text
+"[]"
+```
+will log (NOTE the trailing `=` in the "decoded body"):
+```text
+2024-01-11 20:46:10.243  INFO 13116 --- [nio-8085-exec-4] example.controller.Typ
+edController       : Decoded Body: "author,title
+Dan Simmons,Hyperion
+Douglas Adams,The Hitchhiker's Guide to the Galaxy
+="
+2024-01-11 20:46:10.243  INFO 13116 --- [nio-8085-exec-4] example.controller.Typ
+edController       : Before Reading:
+
+```
+
 ```sh
 curl -sX POST -T src/test/resources/book.csv  http://localhost:8085/data -H 'Content-type: multipart/form-data'
 ```
@@ -49,6 +70,48 @@ edController       : Before Reading:
 
 ```
 
-### See Also
+```sh
+curl -sX POST -T src/test/resources/book.csv http://localhost:8085/data
+```
+or 
+```sh
+curl -sX POST -T src/test/resources/book.csv  http://localhost:8085/data  -H 'Content-type: application/octet-stream'
+```
+will log
+```text
+2024-01-11 20:34:16.584  INFO 13980 --- [nio-8085-exec-1] example.controller.Typ
+edController       : Body: "author,title
+Dan Simmons,Hyperion
+Douglas Adams,The Hitchhiker's Guide to the Galaxy
+"
+2024-01-11 20:34:16.585  INFO 13980 --- [nio-8085-exec-1] example.controller.Typ
+edController       : Before Reading:
+2024-01-11 20:34:16.585  INFO 13980 --- [nio-8085-exec-1] example.controller.Typ
+edController       : Reading:
+2024-01-11 20:34:16.586  INFO 13980 --- [nio-8085-exec-1] example.controller.Typ
+edController       : Read: Data {title=Hyperion author=Dan Simmons}
+2024-01-11 20:34:16.586  INFO 13980 --- [nio-8085-exec-1] example.controller.Typ
+edController       : Reading:
+2024-01-11 20:34:16.587  INFO 13980 --- [nio-8085-exec-1] example.controller.Typ
+edController       : Read: Data {title=The Hitchhiker's Guide to the Galaxy auth
+or=Douglas Adams}
+```
+and return
+```json
+"[{\"status\":false,\"author\":\"Dan Simmons\",\"title\":\"Hyperion\"},{\"status\":false,\"author\":\"Douglas Adams\",\"title\":\"The Hitchhiker\\u0027s Guide to the Galaxy\"}]"
+```
+```sh
+curl -sX POST http://localhost:8085/data -d "author,title
+Dan Simmons,Hyperion
+Douglas Adams,The Hitchhiker's Guide to the Galaxy
+" -H 'Content-type: application/octet-stream'
+```
+will also succeed:
+```text
+"[{\"status\":false,\"author\":\"Dan Simmons\",\"title\":\"Hyperion\"},{\"status\":false,\"author\":\"Douglas Adams\",\"title\":\"The Hitchhiker\\u0027s Guide to the Galaxy\"}]"
 
-https://github.com/apache/commons-csv
+### See Also
+   * https://www.baeldung.com/spring-url-encoded-form-data
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
