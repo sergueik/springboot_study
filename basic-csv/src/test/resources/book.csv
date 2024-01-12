@@ -1,3 +1,4 @@
-author,title
-Dan Simmons,Hyperion
-Douglas Adams,The Hitchhiker's Guide to the Galaxy
+author,title,year,isbn
+Dan Simmons,Hyperion,,978-8576576013
+Douglas Adams,"The Hitchhiker's Guide to the Galaxy",1979,978-0345391803
+Lynne Truss,"Eats, Shoots and Leaves",2003,978-1861976123

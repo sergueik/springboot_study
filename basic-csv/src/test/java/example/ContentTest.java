@@ -25,12 +25,13 @@ public class ContentTest {
 				{
 					put("Dan Simmons", "Hyperion");
 					put("Douglas Adams", "The Hitchhiker's Guide to the Galaxy");
+					put("Lynne Truss","Eats, Shoots and Leaves");
 				}
 			});
-	public static final String[] HEADERS = { "author", "title" };
+	public static final String[] HEADERS = { "author", "title", "year", "isbn" };
 
 	enum BookHeaders {
-		author, title
+		author, title,year,isbn
 	}
 
 	@Test

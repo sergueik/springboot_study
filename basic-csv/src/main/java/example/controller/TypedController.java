@@ -59,6 +59,15 @@ public class TypedController {
 
 	private static Gson gson = new GsonBuilder().create();
 	private boolean debug = false;
+	public static final String[] HEADERS = { "author", "title", "year", "isbn" };
+
+	enum BookHeaders {
+		author, title, year, isbn
+	}
+
+	private final Logger logger = LoggerFactory.getLogger(TypedController.class);
+	private static final StringBuilder data = new StringBuilder();
+
 
 	public static class Data {
 
@@ -106,18 +115,10 @@ public class TypedController {
 		}
 	}
 
-	@PostMapping(value = "/encodeddata", produces = {
-			MediaType.APPLICATION_JSON_VALUE }, consumes = {
-					MediaType.APPLICATION_FORM_URLENCODED_VALUE })
-	public ResponseEntity<String> encodeddata(@RequestBody String body) {
+	private List<Data> processData(StringReader in) throws IOException {
 
 		List<Data> result = new ArrayList<>();
 		try {
-			String decodedBody = URLDecoder.decode(body, "UTF-8");
-
-			logger.info(String.format("Decoded Body: \"%s\"", decodedBody));
-
-			StringReader in = new StringReader(body);
 			CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader(HEADERS)
 					.setSkipHeaderRecord(true).build();
 
@@ -132,6 +133,25 @@ public class TypedController {
 				logger.info("Read: " + data.toString());
 				result.add(data);
 			}
+		} catch (IOException e) {
+			logger.info("Exception: " + e.toString());
+			throw (e);
+		}
+		return result;
+
+	}
+
+	@PostMapping(value = "/encodeddata", produces = {
+			MediaType.APPLICATION_JSON_VALUE }, consumes = {
+					MediaType.APPLICATION_FORM_URLENCODED_VALUE })
+	public ResponseEntity<String> encodeddata(@RequestBody String body) {
+
+		List<Data> result = new ArrayList<>();
+		try {
+			String decodedBody = URLDecoder.decode(body, "UTF-8");
+			logger.info(String.format("Decoded Body: \"%s\"", decodedBody));
+			StringReader in = new StringReader(body);
+			result = processData(in);
 		} catch (UnsupportedEncodingException e) {
 			logger.info("Exception: " + e.toString());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -147,49 +167,21 @@ public class TypedController {
 			MediaType.APPLICATION_JSON_VALUE }, consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public ResponseEntity<String> data(@RequestBody String body) {
 
-		logger.info(String.format("Body: \"%s\"", body));
-
+		List<Data> result;
 		StringReader in = new StringReader(body);
-		CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader(HEADERS)
-				.setSkipHeaderRecord(true).build();
-		List<Data> result = new ArrayList<>();
-
-		Iterable<CSVRecord> records;
+		logger.info(String.format("Body: \"%s\"", body));
 		try {
-			records = csvFormat.parse(in);
-			logger.info("Before Reading: ");
-			for (CSVRecord record : records) {
-				logger.info("Reading: ");
-				String author = record.get("author");
-				String title = record.get("title");
-				Data data = new Data(author, title);
-				logger.info("Read: " + data.toString());
-				result.add(data);
-			}
+			result = processData(in);
+		} catch (UnsupportedEncodingException e) {
+			logger.info("Exception: " + e.toString());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			// e.printStackTrace();
 			logger.info("Exception: " + e.toString());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(gson.toJson(result));
 	}
-
-	public static final Map<String, String> AUTHOR_BOOK_MAP = Collections
-			.unmodifiableMap(new LinkedHashMap<String, String>() {
-				{
-					put("Dan Simmons", "Hyperion");
-					put("Douglas Adams", "The Hitchhiker's Guide to the Galaxy");
-				}
-			});
-	public static final String[] HEADERS = { "author", "title" };
-
-	enum BookHeaders {
-		author, title
-	}
-
-	private final Logger logger = LoggerFactory.getLogger(TypedController.class);
-	private static final StringBuilder data = new StringBuilder();
 
 	// origin:
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
