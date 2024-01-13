@@ -166,7 +166,33 @@ have been present in the payload:
 ]
 ```
 
+```sh
+curl -s -X POST "http://localhost:8085/upload?operation=send&param=something&servername=localhost" -F file=@/c/temp/book.csv
+```
 
+```json
+[
+  {
+    "status": false,
+    "author": "Dan Simmons",
+    "title": "Hyperion",
+    "year": 0
+  },
+  {
+    "status": false,
+    "author": "Douglas Adams",
+    "title": "The Hitchhiker's Guide to the Galaxy",
+    "year": 1979
+  },
+  {
+    "status": false,
+    "author": "Lynne Truss",
+    "title": "Eats, Shoots and Leaves",
+    "year": 2003
+  }
+]
+
+```
 ### See Also
    * https://www.baeldung.com/spring-url-encoded-form-data
    * [Pure-perl CVS module](https://metacpan.org/pod/Text::CSV_PP)

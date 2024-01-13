@@ -52,6 +52,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 
 @RestController
@@ -195,7 +196,7 @@ public class TypedController {
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<String> upload(
+	public ResponseEntity<List<Data>> upload(
 			@RequestParam("operation") String operation,
 			@RequestParam("param") String param,
 			@RequestParam("file") MultipartFile file) {
@@ -212,30 +213,15 @@ public class TypedController {
 			try {
 				logger.info("Processing " + file.getOriginalFilename());
 				data.setLength(0);
-				InputStream in = file.getInputStream();
-				String currDirPath = new File(".").getAbsolutePath();
-				String outputFileName = currDirPath.substring(0,
-						currDirPath.length() - 1) + file.getOriginalFilename();
-				FileOutputStream f = new FileOutputStream(outputFileName);
-				int ch = 0;
-				while ((ch = in.read()) != -1) {
-					f.write(ch);
-					data.append(new Character((char) ch).toString());
-				}
-				f.flush();
-				f.close();
-				System.err.print(data.toString());
-				in.close();
-				in = file.getInputStream();
-				result = new ArrayList<>();
-				Reader in2 = new FileReader(outputFileName);
-				result = processData(in2);
-				
+
+				Reader in = new InputStreamReader(file.getInputStream());
+				result = processData(in);
+
 			} catch (IOException e) {
 				logger.error("Exception (caught):" + e.toString());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
-			return ResponseEntity.status(HttpStatus.OK).body(gson.toJson(result));
+			return ResponseEntity.status(HttpStatus.OK).body(result);
 		}
 	}
 }
