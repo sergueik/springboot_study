@@ -10,7 +10,7 @@ Basic POST `multipart-`handler REST server from __File Upload with Spring MVC__ 
 mvn spring-boot:test
 ```
 
-create a *small*  text file:
+create a *small*  text file `c:\temp\pstest.log`:
 ```text
 test data
 ```
@@ -18,9 +18,43 @@ test data
 * test through curl / git bash:
 
 ```sh
-curl -X POST  http://localhost:8085/basic/upload -F file=@/c/temp/pstest.log
+curl -s -X POST http://localhost:8085/basic/upload -F file=@/c/temp/pstest.log
 ```
 
+this will respond with
+```JSON
+{
+  "timestamp": "2024-01-12T23:30:55.983+00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "",
+  "path": "/basic/upload"
+}
+```
+
+and log the error in applicaton console:
+```text
+2024-01-12 18:28:19.796  WARN 8948 --- [nio-8085-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MissingServletRequestParameterException: Required String parameter 'operation' is not present]
+2024-01-12 18:28:19.796  WARN 8948 --- [nio-8085-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MissingServletRequestParameterException: Required String parameter 'param' is not present]
+2024-01-12 18:28:38.099  WARN 8948 --- [nio-8085-exec-3] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpMediaTypeNotSupportedException: Content type '' not supported]
+2024-01-12 18:29:02.344  WARN 8948 --- [nio-8085-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MissingServletRequestParameterException: Required String parameter 'servername' is not present]
+```
+after adding the required parameters to query string (`operation` needs to be `send`, other parameters can have arbitrary values)
+```sh
+curl -s -X POST "http://localhost:8085/basic/upload?operation=send&param=something&servername=localhost" -F file=@/c/temp/pstest.log
+```
+
+curl will successfully print back the file contents:
+
+```text
+test data
+```
+and log
+```text
+2024-01-12 18:29:26.619  INFO 8948 --- [nio-8085-exec-5] example.controller.Controller            : Processing pstest.log
+2024-01-12 18:29:26.628  INFO 8948 --- [nio-8085-exec-5] example.controller.Controller            : data : test data
+
+```
 * test through Powershell / powershell console:
 ```powershell
 . .\client1.ps1 -filepath C:\temp\pstest.txt -url 'http://localhost:8085/basic/upload'

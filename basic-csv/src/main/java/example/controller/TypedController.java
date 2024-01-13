@@ -49,6 +49,7 @@ import org.apache.commons.csv.CSVRecord;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -123,7 +124,7 @@ public class TypedController {
 		}
 	}
 
-	private List<Data> processData(StringReader in) throws IOException {
+	private List<Data> processData(Reader in) throws IOException {
 
 		List<Data> result = new ArrayList<>();
 		try {
@@ -193,12 +194,12 @@ public class TypedController {
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 
-	// origin:
-	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+	@RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> upload(
 			@RequestParam("operation") String operation,
 			@RequestParam("param") String param,
 			@RequestParam("file") MultipartFile file) {
+		List<Data> result;
 		if (param.isEmpty())
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		if (!operation.equals("send")) {
@@ -213,9 +214,9 @@ public class TypedController {
 				data.setLength(0);
 				InputStream in = file.getInputStream();
 				String currDirPath = new File(".").getAbsolutePath();
-				FileOutputStream f = new FileOutputStream(
-						currDirPath.substring(0, currDirPath.length() - 1)
-								+ file.getOriginalFilename());
+				String outputFileName = currDirPath.substring(0,
+						currDirPath.length() - 1) + file.getOriginalFilename();
+				FileOutputStream f = new FileOutputStream(outputFileName);
 				int ch = 0;
 				while ((ch = in.read()) != -1) {
 					f.write(ch);
@@ -224,12 +225,17 @@ public class TypedController {
 				f.flush();
 				f.close();
 				System.err.print(data.toString());
+				in.close();
+				in = file.getInputStream();
+				result = new ArrayList<>();
+				Reader in2 = new FileReader(outputFileName);
+				result = processData(in2);
+				
 			} catch (IOException e) {
 				logger.error("Exception (caught):" + e.toString());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
-			return ResponseEntity.status(HttpStatus.OK).body(data.toString());
+			return ResponseEntity.status(HttpStatus.OK).body(gson.toJson(result));
 		}
-
 	}
 }
