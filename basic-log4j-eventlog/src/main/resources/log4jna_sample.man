@@ -1,0 +1,27 @@
+<instrumentationManifest
+    xmlns="http://schemas.microsoft.com/win/2004/08/events" 
+    xmlns:win="http://manifests.microsoft.com/win/2004/08/windows/events"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    >
+
+    <instrumentation>
+        <events>
+            <provider name="log4jna_sample" 
+                guid="{55748f35-b4f6-4544-8143-6b51970de865}" 
+                symbol="{1e1583f4-839b-482a-acfd-7d4f8783674b}" 
+                resourceFileName="Win32EventLogAppender.dll" 
+                messageFileName="Win32EventLogAppender.dll"
+                message="log4jna_sample">
+            </provider>
+        </events>
+    </instrumentation>
+
+    <localization>
+        <resources culture="en-US">
+            <stringTable>
+                <string id="Provider.Name" value="log4jna_sample.Logging"/>
+            </stringTable>
+        </resources>
+    </localization>
+
+</instrumentationManifest>

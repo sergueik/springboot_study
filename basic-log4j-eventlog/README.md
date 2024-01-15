@@ -1,4 +1,4 @@
-### Info
+﻿### Info
 
 replica of [yokra9/log4jna_samle](https://github.com/yokra9/log4jna_samle) with added missing jna dependency and other minor fixes
 
@@ -45,13 +45,35 @@ java  -cp target\SWTsample.jar com.github.yokra9.log4jna_sample.App
 [DEBUG] 2024-01-14 04:24:24.914 [main] log4jna_sample.Logging -
 [TRACE] 2024-01-14 04:24:24.914 [main] log4jna_sample.Logging -
 ```
+```cmd
+cd src\main\resources
+wevtutil.exe im sample_log.man
+```
+(does not create event log)
+run the following from project root in elevated powershell prompt.
+Use the full package name of the logger
+```powershell
+remove-eventlog -logname log4jna_sample
+new-eventLog -logName log4jna_sample -Source 'com.github.yokra9.log4jna_sample' -CategoryResourceFile ((resolve-path 'src\main\resources\Win32EventLogAppender.dll').Path) -MessageResourceFile ((resolve-path 'src\main\resources\Win32EventLogAppender.dll').Path)
+```
+alternatively run the jar once in elevated prompt
+```
+java -cp target\log4jna_sample-1.0-SNAPSHOT.jar;target\lib\* com.github.yokra9.log4jna_sample.App
+```
+### NOTE
+
+added replica of [dblock/log4jna](https://github.com/dblock/log4jna) at commit `032ee6f` (2.0 release)
 ### See Also
+
 
  
   * [blog covering eventlog logback](http://ykchee.blogspot.com/2012/09/logback-nt-event-log-appender.html) - code unavailable
   * [guide to Java Logging with Logback](https://betterstack.com/community/guides/logging/java/logback/)
   * https://logback.qos.ch/manual/appenders.html
   * [guide To Logback](https://www.baeldung.com/logback)
+  * https://learn.microsoft.com/en-us/windows/win32/wes/identifying-the-provider?redirectedfrom=MSDN
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
+
