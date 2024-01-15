@@ -66,12 +66,25 @@ NOTE: since cgi-bin prints debugging information to STDERR, it will be found in 
 
 
 ### See Also
-   * https://github.com/maricn/logback-slack-appender
-   * https://github.com/cyfrania/logback-slack-appender
-   * https://github.com/ArpNetworking/logback-steno
-   * [Simple CLI tool to test logback on command line](https://github.com/wlanboy/logbacktest)
-   * https://github.com/jukka/logback-tray (AWT)
-   * https://github.com/ofer-velich/logback-http-appender
+    * https://github.com/maricn/logback-slack-appender
+    * https://github.com/cyfrania/logback-slack-appender
+    * https://github.com/ArpNetworking/logback-steno
+    * [Simple CLI tool to test logback on command line](https://github.com/wlanboy/logbacktest)
+    * https://github.com/jukka/logback-tray (AWT)
+    * https://github.com/ofer-velich/logback-http-appender
+    * https://github.com/bckfnn/influxdb-logback-appender
+    * https://github.com/omnecon/loganalytics-logback-appender
+    * https://github.com/opensourceteams/n_01001_maven_logback_httpclient
+    * https://github.com/themodernway/logback-json-gson
+    * https://github.com/Bali8/Google-PubSub-Logback-Appender
+    * https://github.com/DTForce/logback-google-cloud (stackdriver)
+    * https://github.com/godbles4me/logbackx
+    * https://github.com/bcoste/sample-filebeat-docker-logging
+    * https://github.com/codewinkel/logback-extensions httpappendr config
+    * https://github.com/michl-b/logback-msteams-appender
+    * https://github.com/carlspring/logback-configuration
+    * https://logback.qos.ch/manual/index.html
+    * https://github.com/sswayney/seq-logback-appender
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
