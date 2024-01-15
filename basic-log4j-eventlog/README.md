@@ -174,7 +174,7 @@ so presumably one can run the above command with a dummy value `%SystemRoot%\Mic
 
 ```powershell
 remove-eventlog -logname log4jna_sample
-$resource_dll_path = '%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
+$resource_dll_path = 'C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
 new-eventLog -logName log4jna_sample -Source 'example.log4jna_sample' -CategoryResourceFile $resource_dll_path -MessageResourceFile $resource_dll_path
 ```
 but after this is done, the java code shows the same`java.lang.RuntimeException` exception attempting to register event source in runtime
@@ -228,7 +228,13 @@ messageFileName: Win32EventLogAppender.dll
 ```
 The test will pass in non-elevated prompt
 ```cmd
+wevtutil.exe qe log4jna_sample /c:1
 
+
+```
+```XML
+<Event xmlns='http://schemas.microsoft.com/win/2004/08/events/event'><System><Provider Name='example.log4jna_sample'/><EventID Qualifiers='0'>4096</EventID><Level>4</Level><Task>1</Task><Keywords>0x80000000000000</Keywords><TimeCreated SystemTime='2024-01-15T22:58:19.000000000Z'/><EventRecordID>157</EventRecordID><Channel>log4jna_sample</Channel><Computer>sergueik42</Computer><Security/></System><EventData><Data>Thread: main Logger: log4jna_sample.LoggingTest Message: info</Data>
+</EventData></Event>
 ```
 
 alternatively run the jar once in elevated prompt
@@ -278,6 +284,17 @@ Message            : The description for Event ID '4096' in Source
                      Message: test message
                      '
 ```
+NOTE: the  Message id 4096 is hard coded in `Win32EventLogAppender.java`:
+```java
+final int messageID = 0x1000;
+```
+therefore using `C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll` which does not have it in its message table is not helpful though providing the absolute path in
+```XML
+ <Property name="dllfile">src\main\resources\Win32EventLogAppender.dll</Property>
+```
+
+appeaars to unblock event log messaging by non elevated user.
+
 ### NOTE
 
 added replica of [dblock/log4jna](https://github.com/dblock/log4jna) at commit `032ee6f` (2.0 release)
@@ -290,6 +307,7 @@ added replica of [dblock/log4jna](https://github.com/dblock/log4jna) at commit `
   * https://logback.qos.ch/manual/appenders.html
   * [guide To Logback](https://www.baeldung.com/logback)
   * https://learn.microsoft.com/en-us/windows/win32/wes/identifying-the-provider?redirectedfrom=MSDN
+  * https://stackoverflow.com/questions/12862697/difference-between-different-eventlogmessages-dll-in-net-framework-folders
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
