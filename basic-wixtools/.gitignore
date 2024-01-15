@@ -1,0 +1,7 @@
+wix/
+wix.zip
+mono.msi
+*.wixobj
+*.wixpdb
+*.msi
+

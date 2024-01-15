@@ -1,0 +1,27 @@
+---
+# predefined    
+logging:
+  level:
+    org.springframework: ERROR
+    example: DEBUG
+spring:
+  profiles: 
+    active: development
+# access log:
+tomcat:
+  accesslog:
+    directory: ${BASEDIR}/logs
+    enabled: true
+    pattern: common
+---
+spring:
+  profiles: development
+suffix: dev
+logging:
+  suffix: dev
+---
+spring:
+  profiles: test
+suffix: test
+logging:
+  suffix: dummy

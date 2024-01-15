@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Properties>
+        <Property name="dllfile">src\main\resources\Win32EventLogAppender.dll</Property>
+    </Properties>
+    <Appenders>
+
+        <Console name="Console-Appender" target="SYSTEM_OUT">
+            <PatternLayout>
+                <pattern>
+                    [%level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{2} - %message%n
+                </pattern>
+            </PatternLayout>
+        </Console>
+
+        <Win32EventLog name="EventViewer-Appender" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="com.github.yokra9.log4jna_sample" application="log4jna_sample">
+            <PatternLayout>
+                <pattern>
+                    Thread: %thread%nLogger: %logger{2}%nMessage: %message%n
+                </pattern>
+            </PatternLayout>
+        </Win32EventLog>
+
+    </Appenders>
+    <Loggers>
+        <Root level="trace">
+            <AppenderRef ref="Console-Appender" />
+            <AppenderRef ref="EventViewer-Appender" />
+        </Root>
+    </Loggers>
+</Configuration>

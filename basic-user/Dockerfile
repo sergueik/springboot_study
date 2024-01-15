@@ -21,8 +21,11 @@ RUN mkdir -p /home/$USER_NAME && chown -R $USER_NAME:$GROUP_NAME /home/$USER_NAM
 USER root
 RUN echo -e "$PASSWORD\n$PASSWORD" | passwd $USER_NAME
 USER $USER_NAME
-# NOTE: There is no need to specify VOLUME through Dockerfile, except for documenting the project
-VOLUME /home/$USER_NAME
+RUN echo "Run following commands as $(whoami)"
+# NOTE: There is no real need to specify VOLUME through Dockerfile, except for documenting the project
 WORKDIR /home/$USER_NAME
-ADD test.txt /
+
+ADD test.txt ./
+RUN touch /home/$USER_NAME/test2.txt
+VOLUME /home/$USER_NAME
 ENTRYPOINT [ "sh","-c","$EDITOR" ]

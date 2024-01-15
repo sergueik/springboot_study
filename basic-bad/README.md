@@ -6,7 +6,7 @@ docker-compose up --build
 ```
 works
 
-however under Docker Toolbox, the `docker-compose` is failing with:
+however under __Docker Toolbox__, the `docker-compose` (both versions __1.2.x__ and __2.20.x__) is failing with:
 ```text
 Creating network "basic-bad_test" with driver "bridge"
 Building test

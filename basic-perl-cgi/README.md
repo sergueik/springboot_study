@@ -7,9 +7,25 @@ Plain Alpine 3.9 container installing the apache and Perl using some code from [
 * build the image
 ```sh
 IMAGE=basic-perl-apache
-docker build -t $IMAGE -f Dockerfile .
+docker build -t $IMAGE -f Dockerfile . --progress=plain
 ```
 * start run default command
+```sh
+NAME=basic-perl-cgi
+ID=$(docker container ls -a | grep $NAME|cut -f 1 -d ' ')
+docker start $ID
+```
+```sh
+docker ps
+
+```
+```text
+CONTAINER ID        IMAGE               COMMAND                  CREATED     STATUS              PORTS                                         NAMES
+c2312b18f192        basic-perl-apache   "sh -c 'PIDFILE='/ru"   2 weeks ago    Up 2 minutes        0.0.0.0:9090->80/tcp, 0.0.0.0:9443->443/tcp   basic-perl-cgi
+```
+
+```
+* run new instance of default command
 
 ```sh
 NAME=basic-perl-cgi
@@ -21,7 +37,7 @@ alternatively
 ```
 docker run -d -p $(hostname -i):9090:80 -p $(hostname -i):9443:443 --name $NAME $IMAGE
 ```
- or if integrted with InfluxDB then
+or if integrated with InfluxDB then
 ```sh
 export INFLUXDB=boring_williams
 docker run -d -p 9090:80 -p 9443:443 --link $INFLUXDB --name $NAME $IMAGE
@@ -181,7 +197,7 @@ curl http://$(hostname -i):9090/cgi-bin/config.cgi
 
 ```
 
-NOTE that currently the query params are not yet implemented. The `config.cgi` compares the file modification time of `example_config.cgi` to
+NOTE that currently the query params are not fullly implemented. The `config.cgi` compares the file modification time of `example_config.cgi` to
 `Mon Aug 14 23:42:23 CEST 2023`: 
 ```Perl
 my $check_epoch     = 1692049343;
@@ -1165,8 +1181,226 @@ perl -pi -e '$_ =~ s|(<Directory "/var/www/localhost/htdocs">)|$1\nHeader set Ac
 ```
 is not idempotent, updates the file in every run, because emulates sed line-oriented operation
 
-####
-`http://192.168.99.100:8080/form_post.html`
+#### Testing the CORS
+
+```sh
+docker container stop basic-perl-cgi
+
+docker-compose up --build --no-color
+```
+
+the latter command will start two identicalcontainers listening to two TCP ports mapped on host: `8080` and `9090`. The page running on former `http://192.168.99.100:8080/form_post.html` will call the service run in the latter:
+
+![Example CORS](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-cors.png)
+
+
+and does require CORS support by `echo_json.cgi` to work, which is accomplished by returning response headers
+```text
+Access-Control-Allow-Headers: *
+```
+and
+```text
+Access-Control-Allow-Origin: *
+```
+
+![Example CORS Headers](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-needed-headers.png)
+
+The page `http://192.168.0.92:9090/form_post.html` will call service on same host and port, and will not be blocked by CORS even without the headers.
+
+Without the call in `echo-json.cgi`
+```perl
+$query = $query->add_response_header('Access-Control-Allow-Origin' => '*');
+```
+
+NOTE, alternatively, one may provide the header in the apache configuration `/etc/apache2/httpd.conf`
+```text
+<Directory "/var/www/localhost/cgi-bin">
+Header set Access-Control-Allow-Origin "*"
+    AllowOverride All
+    Options None
+    Require all granted
+</Directory>
+```
+
+it appears to be harmless to have duplication in `Access-Control-Allow-Origin` headers
+
+![Example CORS Error](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/cature-preflightmissingalloworiginheader.png)
+### Custom Headers with Legacy `CGI.pm`
+  
+The legacy `CGI.pm` does not have method to print custom headers. The header method misundertands the arguments:
+```sh
+perl -MCGI -e 'my $o = new CGI;print $o->header("X-Server" => "Apache Next Generation 10.0"  )'
+```
+will produce 
+```text
+Status: Apache Next Generation 10.0
+Content-Type: X-Server; charset=ISO-8859-1
+```
+One will need to install the `mod_perl` (but this will not be possible without the apache source)
+to use the [method](https://perl.apache.org/docs/1.0/api/Apache.html)
+```Perl
+$r->header_out( $header, $value );
+```
+Alternatively one may simply [print header fully, directly](https://docstore.mik.ua/orelly/weblinux2/modperl/ch06_11.htm)
+```Perl
+print qq|
+HTTP/1.1 200 OK 
+Date: Tue, 10 Apr 2001 03:01:36 GMT Server: Apache/1.3.19 (Unix) mod_perl/1.25 
+Connection: close
+Access-Control-Allow-Origin: * 
+Access-Control-Allow-Headers: *
+Content-Type: text/plain |;
+
+```
+### Text Area
+```sh
+docker cp html/process_textarea.html $NAME:/var/www/localhost/htdocs
+```
+```sh
+docker cp html/js/csv.js $NAME:/var/www/localhost/htdocs/js
+```
+
+```sh
+docker cp cgi-bin/host_status.cgi $NAME:/var/www/localhost/cgi-bin/
+```
+
+proceed with `http://192.168.99.100:9090/process_textarea.html`
+paste 
+```text
+column1,column2,column3
+host1,true,PROD
+host2,true,PROD
+host3,false,STAGING
+
+```
+into textarea
+NOTE: the minimal information to paste is single column with header (additional columns reserved for later use):
+```text
+column1
+host1
+host2
+host3
+host4
+host5
+```
+will see the host statuses evaluated via REST calls
+```javascript
+$http.get('http://' + url + ':' + port + '/cgi-bin/host_status.cgi' + '?hostname=' + hostname, '', { headers: { 'Referrer-Policy': 'origin' } }).then(
+  function(response) { $scope.msg = 'success'; $scope.results.push( response.data )}, 
+  function(response) { $scope.msg = 'error'}
+);
+```
+as
+
+![Example Host Status](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-host-status.png)
+
+### Styling Rows 
+```sh
+docker cp html/styled_row.html $NAME:/var/www/localhost/htdocs
+```
+start `styled_row.html` from file or host:
+paste sample monitoring data
+```json
+[
+{
+  "host": "host1",
+  "columns": [
+    {
+      "column": "hostname",
+      "value": "host1",
+      "class": "hostclass"
+    },
+    {
+      "column": "UPTIME",
+      "value": 123.45,
+      "class": "uptime"
+    },
+    {
+      "column": "MEMORY",
+      "value": 16,
+      "class": "memoryclass"
+    },
+    {
+      "column": "TIME",
+      "value": "11:58:28",
+      "class": "time"
+    }
+  ]
+}
+]
+```
+into textarea
+![Example Host Status](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-styled-rows.png)
+
+![Example Host Status](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-styled-rows-2.png)
+
+
+### Testing Just HTTP Status code
+
+* Powershell appears to introduce a custom excwption class for HTTP Status codes `40x` `50x`
+
+```sh
+curl -sv http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=408
+```
+```text
+{
+   "status" : "error",
+   "code" : "408"
+}
+* processing: http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=408
+* Uses proxy env variable no_proxy == '192.168.99.100'
+*   Trying 192.168.99.100:9090...
+* Connected to 192.168.99.100 (192.168.99.100) port 9090
+> GET /cgi-bin/statuscode.cgi?code=408 HTTP/1.1
+> Host: 192.168.99.100:9090
+> User-Agent: curl/8.2.1
+> Accept: */*
+>
+< HTTP/1.1 408 Request Timeout
+< Date: Wed, 03 Jan 2024 02:24:36 GMT
+< Server: Apache/2.4.46 (Unix)
+< Content-Length: 45
+< Access-Control-Allow-Origin: *
+< Connection: close
+< Content-Type: text/html;charset=UTF-8
+<
+{ [45 bytes data]
+* Closing connection
+
+
+```
+
+```powershell
+. .\getconfig3.ps1 -base_url http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=408 -debug
+```
+try vanilla Powershell cmdlets:
+```powershell
+invoke-restmethod -method Get -uri http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=408
+```
+get exception
+```text
+invoke-restmethod : { "code" : "408", "status" : "error" }
+At line:1 char:1
++ invoke-restmethod -method Get -uri http://192.168.99.100:9090/cgi-bin/statuscode ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-RestMethod], WebException
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeRestMethodCommand
+```
+```powershell
+Invoke-WebRequest -method Get -uri http://192.168.99.100:9090/cgi-bin/statuscode.cgi?code=408
+```
+```text
+Invoke-WebRequest : { "status" : "error", "code" : "408" }
+At line:1 char:1
++ Invoke-WebRequest -method Get -uri http://192.168.99.100:9090/cgi-bin/statuscode ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebException
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+
+```
+
+there are two different classes `Microsoft.PowerShell.Commands.InvokeRestMethodCommand` and `Microsoft.PowerShell.Commands.InvokeWebRequestCommand` involved and neither
+returns simply the HTTP status for non-`20x` cases
 
 ### See Also
 
@@ -1194,6 +1428,9 @@ is not idempotent, updates the file in every run, because emulates sed line-orie
   * [enable CORS in Apache Web Server](https://ubiq.co/tech-blog/enable-cors-apache-web-server/)
   * [insert line after match using sed or perl](https://stackoverflow.com/questions/15559359/insert-line-after-match-using-sed)
   * https://stackoverflow.com/questions/39069206/how-to-set-custom-headers-for-httptiny-in-perl
+  * [mozilla documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin) on `cross-origin resource sharing error preflightmissingalloworiginheader` error 
+  * [vanilla JavaScript CSV (comma-separated values) parser](https://github.com/cparker15/CSV-js/blob/master/src/csv.js)
+   * [Pure-perl CVS module](https://metacpan.org/pod/Text::CSV_PP) (NOTE: without installing `https://fastapi.metacpan.org/source/ISHIGAKI/Text-CSV-2.04/lib/Text/CSV.pm`)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

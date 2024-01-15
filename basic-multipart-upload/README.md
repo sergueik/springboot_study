@@ -8,6 +8,15 @@ combined with __Multi-part File Upload via AngularJS__ through `$http.post` and 
 
 ### Usage
 
+![Initial](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload.png)
+<br/>
+![Selecting Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload2.png)
+
+<br/>
+![After Upload](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload3.png)
+
+### More Usage
+
 * launch the server
 ```sh
 mvn spring-boot:test
@@ -180,7 +189,31 @@ test data
 ```
 
 with only difference is how Powershell client scripts transmit the file.
+### Angular JS Version
 
+use (origin detail TBD)
+```sh
+git checkout 57fb4733594635919d4ac2f115d745ee1d6c3a0e
+```
+### Optional Dependencies to Pin
+```xML
+<dependency>
+  <groupId>org.thymeleaf</groupId>
+  <artifactId>thymeleaf-spring4</artifactId>
+  <version>3.0.2.RELEASE</version>
+</dependency>
+```
+for SpringBoot `2.3.4`
+
+and 
+```XML
+<dependency>
+  <groupId>org.thymeleaf</groupId>
+  <artifactId>thymeleaf-spring5</artifactId>
+  <version>3.1.0.RELEASE</version>
+</dependency>
+```
+for SpringBoot `3.1.5`
 ### See Also
 
 
@@ -200,5 +233,7 @@ with only difference is how Powershell client scripts transmit the file.
   * [upload data and multiple files with angularjs and Spring mvc](https://stackoverflow.com/questions/47536401/upload-data-and-multiple-files-with-angularjs-and-spring-mvc)
   * [how to upload single or multiple files the easy way with FormData](https://www.freecodecamp.org/news/formdata-explained/)
   * [Angular file upload: complete guide](https://blog.angular-university.io/angular-file-upload/)
+  * https://ryfarlane.com/article/on-load-vanilla-javascript
+  * https://stackoverflow.com/questions/13669430/formated-output-in-java-like-ls
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

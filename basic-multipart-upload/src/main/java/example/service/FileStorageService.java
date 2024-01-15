@@ -5,8 +5,11 @@ package example.service;
  */
 import example.exception.FileStorageException;
 import example.exception.FileNotFoundException;
-import example.property.FileStorageProperties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -23,13 +26,39 @@ import java.nio.file.StandardCopyOption;
 @Service
 public class FileStorageService {
 
+	private static final Logger logger = LoggerFactory.getLogger(FileStorageService.class);
+
 	private final Path fileStorageLocation;
 
+	protected String osName = null;
+
+	// NOTE: NPE reading the value
+	// @Value("${file.upload-dir-windows}")
+	private String uploadDirWindows = "c:/temp/upload";
+	// @Value("${file.upload-dir-linux}")
+	private String uploadDirLinux = "/tmp/upload";
+
+	private String uploadDir = null;
+	public String getUploadDir() {
+		return uploadDir;
+	}
+
+	public void setUploadDir(String value) {
+		uploadDir = value;
+	}
+
+
 	@Autowired
-	public FileStorageService(
-			example.property.FileStorageProperties fileStorageProperties) {
-		this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
-				.toAbsolutePath().normalize();
+	public FileStorageService() {
+		// 	uploadDir = uploadDirWindows;
+		if (uploadDir == null) {
+			osName = getOSName();
+			uploadDir = osName.equals("windows") ? uploadDirWindows : uploadDirLinux;
+		}
+		logger.info("UploadDir: " + uploadDir);
+
+		this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath()
+				.normalize();
 
 		try {
 			Files.createDirectories(this.fileStorageLocation);
@@ -79,4 +108,16 @@ public class FileStorageService {
 					"File not found " + fileName, ex);
 		}
 	}
+
+	// Utilities
+	public String getOSName() {
+		if (osName == null) {
+			osName = System.getProperty("os.name").toLowerCase();
+			if (osName.startsWith("windows")) {
+				osName = "windows";
+			}
+		}
+		return osName;
+	}
+
 }

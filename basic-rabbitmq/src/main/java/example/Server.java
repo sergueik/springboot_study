@@ -68,8 +68,12 @@ public class Server {
 		factory.setPassword(getPassword());
 		factory.setUsername(getUser());
 		factory.setHost(getIp());
+		factory.setPort(getPort());
 		factory.setVirtualHost(getVirtual_host());
 		try {
+			System.out.println(String.format(
+					"Trying new connection with host: %s port: %d virtual host: %s",
+					getIp(), getPort(), getVirtual_host()));
 			this.connection = factory.newConnection();
 			System.out.println("Connection done: " + getIp());
 
@@ -139,7 +143,7 @@ public class Server {
 		System.out.println("Starting server..");
 		server.init_connection();
 		server.start_server();
-		System.out.println("Server started yea!");
+		System.out.println("Server started");
 	}
 
 }
