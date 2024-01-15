@@ -1,0 +1,14 @@
+<configuration debug="true">
+    <appender name="logzio" class="ch.qos.logback.ext.logzio.LogzioAppnder">
+        <token>NlwmHZamKoxOydJaPdoOxZOQqFHIpOaA</token>
+        <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
+            <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+                <!-- prettyPrint is probably ok in dev, but usually not ideal in production: -->
+                <prettyPrint>false</prettyPrint>
+            </jsonFormatter>
+        </layout>
+    </appender>
+    <root level="info">
+        <appender-ref ref="logzio" />
+    </root>
+</configuration>
