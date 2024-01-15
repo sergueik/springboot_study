@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
   <Properties>
-    <Property name="dllfile">src\main\resources\Win32EventLogAppender.dll</Property>
+    <Property name="dllfile">&#37;SystemRoot&#37;\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</Property>
   </Properties>
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">

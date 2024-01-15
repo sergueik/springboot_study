@@ -19,7 +19,7 @@ C:\Windows\System32\Winevt\Logs\log4jna_sample.evtx NT SERVICE\EventLog:(ID)F
 mvn -Dmaven.test.skip=true package
 ```
 ```sh
-java  -cp target\log4jna_sample-1.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App "test message"
+java  -cp target\log4jna_sample-3.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App "test message"
 ```
 ```text
 [FATAL] 2024-01-14 04:28:36.133 [main] log4jna_sample.Logging - test message
@@ -178,6 +178,54 @@ $resource_dll_path = '%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMe
 new-eventLog -logName log4jna_sample -Source 'example.log4jna_sample' -CategoryResourceFile $resource_dll_path -MessageResourceFile $resource_dll_path
 ```
 but after this is done, the java code shows the same`java.lang.RuntimeException` exception attempting to register event source in runtime
+
+the fix to make the `log4j2.xml` `dllfile` property look the same does not work:
+
+```XML
+<Property name="dllfile">%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</Property>
+```
+
+After adding a dummy event to the `log4jna_sample` log and 
+```cmd
+wevtutil.exe  gl log4jna_sample
+```
+```text
+name: 	
+enabled: true
+type: Admin
+owningPublisher:
+isolation: Application
+channelAccess: O:BAG:SYD:(A;;0xf0007;;;SY)(A;;0x7;;;BA)(A;;0x7;;;SO)(A;;0x3;;;IU)(A;;0x3;;;SU)(A;;0x3;;;S-1-5-3)(A;;0x3;;;S-1-5-33)(A;;0x1;;;S-1-5-32-573)
+logging:
+  logFileName: %SystemRoot%\System32\Winevt\Logs\log4jna_sample.evtx
+  retention: false
+  autoBackup: false
+  maxSize: 1052672
+publishing:
+  fileMax: 1
+```
+
+```cmd
+wevtutil.exe ep | where-object { $_ -match '.*log4jna_sample'
+```
+```text
+example.log4jna_sample
+log4jna_sample
+log4jna_sample
+
+```
+
+```cmd
+wevtutil.exe gp log4jna_sample
+```
+```text
+
+name: log4jna_sample
+guid: 55748f35-b4f6-4544-8143-6b51970de865
+helpLink:
+resourceFileName: Win32EventLogAppender.dll
+messageFileName: Win32EventLogAppender.dll
+```
 The test will pass in non-elevated prompt
 ```cmd
 
@@ -186,6 +234,49 @@ The test will pass in non-elevated prompt
 alternatively run the jar once in elevated prompt
 ```
 java -cp target\log4jna_sample-1.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App
+```
+the test works but the event log messages become far less useful:
+
+```text
+The description for Event ID 4096 from source example.log4jna_sample cannot be found. Either the component that raises this event is not installed on your local computer or the installation is corrupted. You can install or repair the component on the local computer.
+
+If the event originated on another computer, the display information had to be saved with the event.
+
+The following information was included with the event: 
+
+Thread: main
+Logger: log4jna_sample.App
+Message: test message 
+
+
+the message resource is present but the message is not found in the string/message table
+
+```
+
+```text
+Category           : (1)
+CategoryNumber     : 1
+ReplacementStrings : {Thread: main
+                     Logger: log4jna_sample.App
+                     Message: test message
+                     }
+Source             : example.log4jna_sample
+TimeGenerated      : 1/15/2024 2:25:21 PM
+TimeWritten        : 1/15/2024 2:25:21 PM
+UserName           :
+
+Index              : 140
+EntryType          : Error
+InstanceId         : 4096
+Message            : The description for Event ID '4096' in Source
+                     'example.log4jna_sample' cannot be found.  The local
+                     computer may not have the necessary registry information
+                     or message DLL files to display the message, or you may
+                     not have permission to access them.  The following
+                     information is part of the event:'Thread: main
+                     Logger: log4jna_sample.App
+                     Message: test message
+                     '
 ```
 ### NOTE
 
