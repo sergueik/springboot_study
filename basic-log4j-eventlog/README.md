@@ -19,7 +19,7 @@ C:\Windows\System32\Winevt\Logs\log4jna_sample.evtx NT SERVICE\EventLog:(ID)F
 mvn -Dmaven.test.skip=true package
 ```
 ```sh
-java  -cp target\log4jna_sample-3.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App "test message"
+java  -cp target\log4jna_sample-4.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App "test message"
 ```
 ```text
 [FATAL] 2024-01-14 04:28:36.133 [main] log4jna_sample.Logging - test message
@@ -238,7 +238,7 @@ wevtutil.exe qe log4jna_sample /c:1
 ```
 
 alternatively run the jar once in elevated prompt
-```
+```cmd
 java -cp target\log4jna_sample-1.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App
 ```
 the test works but the event log messages become far less useful:
@@ -298,7 +298,119 @@ appeaars to unblock event log messaging by non elevated user.
 ### NOTE
 
 added replica of [dblock/log4jna](https://github.com/dblock/log4jna) at commit `032ee6f` (2.0 release)
+that is calling `ReportEvent` [method](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-reporteventw) from `advapi32.dll`
+
+[passing](https://github.com/dblock/log4jna/blob/master/log4jna-api/src/main/java/org/dblock/log4jna/nt/Win32EventLogAppender.java#L252) 
+the `org.apache.logging.log4j.core.LogEvent` [interface](https://logging.apache.org/log4j/2.x/javadoc/log4j-core/org/apache/logging/log4j/core/LogEvent.html)
+
+
+### Building Custom Log4JNA
+
+when building the [dblock/log4jna](https://github.com/dblock/log4jna) on a vanilla Windows machine will likely get the error
+
+```text
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-antrun-plugin:1.8:run (add-dll) on project log4jna-win32dll: An Ant BuildException has occured: The following error occurred while executing this line:
+[ERROR] ...log4jna-win32dll\src\build.xml:132: Execute failed: java.io.IOException: Cannot run program "mc" (in directory "...log4jna-win32dll"): CreateProcess error=2, The system cannot find the file specified
+
+```
+
+workaround is by commenting the module reference (the resource dll is only needed at run time):
+```xml
+  <modules>
+<!--
+    <module>log4jna-win32dll</module> -->
+    <module>log4jna-api</module>
+    <module>log4jna-demo</module>
+    <module>log4jna-assembly</module>
+  </modules>
+
+```
+
+```cmd
+cd log4jna
+mvn -Dmaven.test.skip=true clean package install
+cd ..
+```
+```cmd
+java -cp target\log4jna_sample-4.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App "test message to be appended with some other text"
+```
+
+will log to console:
+
+```text
+[FATAL] 2024-01-16 12:40:48.951 [main] log4jna_sample.App - test message to be appended with some other text
+[ERROR] 2024-01-16 12:40:49.389 [main] log4jna_sample.App - test message to be appended with some other text
+[WARN] 2024-01-16 12:40:49.389 [main] log4jna_sample.App - test message to be appended with some other text
+[INFO] 2024-01-16 12:40:49.389 [main] log4jna_sample.App - test message to be appended with some other text
+[DEBUG] 2024-01-16 12:40:49.389 [main] log4jna_sample.App - test message to be appended with some other text
+[TRACE] 2024-01-16 12:40:49.389 [main] log4jna_sample.App - test message to be appended with some other text
+```
+
+
+but event log logs will show a different message:
+
+```powershell
+get-eventlog -logname log4jna_sample -newest 5 |format-list
+```
+```text
+Index              : 244
+EntryType          : Information
+InstanceId         : 4096
+Message            : Thread: main
+                     Logger: log4jna_sample.App
+                     Message: test message to be appended with some other text
+                      - this is a test
+Category           : Trace
+CategoryNumber     : 1
+ReplacementStrings : {Thread: main
+                     Logger: log4jna_sample.App
+                     Message: test message to be appended with some other text
+                      - this is a test}
+Source             : example.log4jna_sample
+TimeGenerated      : 1/16/2024 12:40:49 PM
+TimeWritten        : 1/16/2024 12:40:49 PM
+UserName           :
+
+Index              : 243
+EntryType          : Warning
+InstanceId         : 4096
+Message            : Thread: main
+                     Logger: log4jna_sample.App
+                     Message: test message to be appended with some other text
+                      - this is a test
+Category           : Trace
+CategoryNumber     : 1
+ReplacementStrings : {Thread: main
+                     Logger: log4jna_sample.App
+                     Message: test message to be appended with some other text
+                      - this is a test}
+Source             : example.log4jna_sample
+TimeGenerated      : 1/16/2024 12:40:49 PM
+TimeWritten        : 1/16/2024 12:40:49 PM
+UserName           :
+
+Index              : 242
+EntryType          : Error
+InstanceId         : 4096
+Message            : Thread: main
+                     Logger: log4jna_sample.App
+                     Message: test message to be appended with some other text
+                      - this is a test
+Category           : Trace
+CategoryNumber     : 1
+ReplacementStrings : {Thread: main
+                     Logger: log4jna_sample.App
+                     Message: test message to be appended with some other text - this is a test}
+Source             : example.log4jna_sample
+TimeGenerated      : 1/16/2024 12:40:49 PM
+TimeWritten        : 1/16/2024 12:40:49 PM
+UserName           :
+
+```
+the message is modified by `Win32EventLogAppender.java`
+
 ### See Also
+
 
 
  
