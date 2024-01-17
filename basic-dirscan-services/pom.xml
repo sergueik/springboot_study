@@ -19,7 +19,9 @@
     <java.version>1.8</java.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
     <java.version>1.8</java.version>
-    <json.version>20080701</json.version>
+    <!-- NOTE:  bumping json version whilel the tests are broken -->
+    <!-- <json.version>20080701</json.version> -->
+    <json.version>20231013</json.version>
     <json-path.version>2.5.0</json-path.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
