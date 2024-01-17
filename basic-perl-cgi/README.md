@@ -1401,7 +1401,77 @@ At line:1 char:1
 
 there are two different classes `Microsoft.PowerShell.Commands.InvokeRestMethodCommand` and `Microsoft.PowerShell.Commands.InvokeWebRequestCommand` involved and neither
 returns simply the HTTP status for non-`20x` cases
+### Upload CSV Data
 
+* the simplest is to create a text file `a.csv` with contents:
+```text
+foo,bar,baz
+10,20,30
+100,200,300
+```
+
+and upload it via `curl` in the body of the message. With curl one does not have to specify the `POST` method but need to be aware of the required `--data-binary` option:
+```sh
+ curl -sX POST -H 'Content-type: application/octet-stream' --data-binary @a.csv http://192.168.99.100:9090/cgi-bin/csv.cgi
+```
+prints back the page with payload embedded
+```HTML
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Thanks!</title>
+<style type="text/css">
+img {border: none;}
+</style>
+</head>
+<body>
+<p>Thanks for uploading data:</p>
+foo,bar,baz
+10,20,30
+100,200,300
+
+</body>
+</html>
+
+```
+
+and logs it normally
+```text
+[Wed Jan 17 23:46:47.309873 2024] [cgi:error] [pid 11] [client 192.168.99.1:5852 8] AH01215: $VAR1 = 'foo,bar,baz: 
+[Wed Jan 17 23:46:47.309928 2024] [cgi:error] [pid 11] [client 192.168.99.1:5852 8] AH01215: 10,20,30 
+[Wed Jan 17 23:46:47.309980 2024] [cgi:error] [pid 11] [client 192.168.99.1:5852 8] AH01215: 100,200,300 
+[Wed Jan 17 23:46:47.310007 2024] [cgi:error] [pid 11] [client 192.168.99.1:5852 8] AH01215: '; 
+```
+while omitting the flag
+
+
+```sh
+curl -X POST -H 'Content-type: application/octet-stream' -d@a.csv http://192.168.99.100:9090/cgi-bin/csv.cgi
+
+```
+illustrates how `curl` clobbers line endings:
+```HTML
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Thanks!</title>
+<style type="text/css">
+img {border: none;}
+</style>
+</head>
+<body>
+<p>Thanks for uploading data:</p>
+foo,bar,baz10,20,30100,200,300
+</body>
+</html>
+```
+in the `error.log`
+```text
+[Wed Jan 17 23:02:20.993501 2024] [cgi:error] [pid 15] [client 192.168.99.1:5844 6] AH01215: $VAR1 = 'foo,bar,baz10,20,30100,200,300';
+n/csv.cgi
+```
 ### See Also
 
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
@@ -1431,6 +1501,7 @@ returns simply the HTTP status for non-`20x` cases
   * [mozilla documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin) on `cross-origin resource sharing error preflightmissingalloworiginheader` error 
   * [vanilla JavaScript CSV (comma-separated values) parser](https://github.com/cparker15/CSV-js/blob/master/src/csv.js)
    * [Pure-perl CVS module](https://metacpan.org/pod/Text::CSV_PP) (NOTE: without installing `https://fastapi.metacpan.org/source/ISHIGAKI/Text-CSV-2.04/lib/Text/CSV.pm`)
+   * https://stackoverflow.com/questions/3872427/how-to-send-line-break-with-curl
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
