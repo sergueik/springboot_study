@@ -1472,6 +1472,25 @@ in the `error.log`
 [Wed Jan 17 23:02:20.993501 2024] [cgi:error] [pid 15] [client 192.168.99.1:5844 6] AH01215: $VAR1 = 'foo,bar,baz10,20,30100,200,300';
 n/csv.cgi
 ```
+```sh
+curl -s http://192.168.99.100:9090/cgi-bin/csv.cgi -X POST --data-binary @a.csv -H 'Content-type: application/octet-stream'
+```
+produces the JSON  serialized  object:
+```JSON
+[
+   {
+      "foo" : "10",
+      "bar" : "20",
+      "baz" : "30"
+   },
+   {
+      "baz" : "300",
+      "foo" : "100",
+      "bar" : "200"
+   }
+]
+
+```
 ### See Also
 
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
@@ -1502,6 +1521,7 @@ n/csv.cgi
   * [vanilla JavaScript CSV (comma-separated values) parser](https://github.com/cparker15/CSV-js/blob/master/src/csv.js)
    * [Pure-perl CVS module](https://metacpan.org/pod/Text::CSV_PP) (NOTE: without installing `https://fastapi.metacpan.org/source/ISHIGAKI/Text-CSV-2.04/lib/Text/CSV.pm`)
    * https://stackoverflow.com/questions/3872427/how-to-send-line-break-with-curl
+   * https://stackoverflow.com/questions/46233809/how-to-upload-a-file-from-post-request-content-type-application-octet-stream
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
