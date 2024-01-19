@@ -8,7 +8,7 @@ BEGIN {
         do { $_ = $ENV{HOME}; /\/([^\/]+)$/ }
     );
     use constant SCRIPT_DIR => (
-        do { my $s = `dirname $0`; chomp $s; $s }
+        do { my $s = qx|dirname $0|; chomp $s; $s }
     );
     if (RELEASE) {
 
@@ -16,46 +16,46 @@ BEGIN {
     }
     else {
         unshift( @INC, SCRIPT_DIR );
-        unshift( @INC, `pwd` );
+        unshift( @INC, qx|pwd| );
     }
 }
+
 use utf8;
 use CGI::Tiny;
-use Getopt::Long;
 use Text::CSV_PP;
 use JSON::PP;
 use Data::Dumper;
 use File::Temp qw/ tempdir tempfile /;
 
-use vars qw($query $body );
+use vars qw|$cgi $csv|;
 
 cgi {
 
-    $query = $_;
-    $query->set_response_type('application/json');
-    $body = $query->body();
-
-    my $dir = tempdir( CLEANUP => 0 );
-    my ( $fh, $filename ) = tempfile( DIR => $dir );
-
-    # print STDERR "filename: ${filename}\n";
-    my $csv = Text::CSV_PP->new( { binary => 1 } );
-    print $fh $body;
-
-    # print STDERR Dumper(  $body ), $/;
-    $| = 1;
-
-    # flush($fh);
-    close($fh);
-    my $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
-    my $data    = [];
-    open $fh, '<', $filename or die "filename: ${filename} error: $!";
-    my @cols = @{ $csv->getline($fh) };
-
-    # print STDERR Dumper(\@cols);
-    $csv->column_names(@cols);
-    while ( my $row = $csv->getline_hr($fh) ) {
-        push @$data, $row;
+    $cgi = $_;
+    if ( $cgi->method ne 'POST' ) {
+        $cgi->set_response_status(405);    # METHOD_NOT_ALLOWED
+        exit;
     }
-    $query->render( html => $json_pp->encode($data) );
+
+    my $tmpdir = tempdir( CLEANUP => 1 );
+    $| = 1;
+    my ( $fh, $tmpfile ) = tempfile( DIR => $tmpdir );
+
+    # print STDERR "tmpfile: ${tmpfile}\n";
+    # print STDERR Dumper(  $body ), $/;
+    print $fh $cgi->body();
+
+    close($fh);
+    $csv = Text::CSV_PP->new( { binary => 1 } );
+    my $csv_data = [];
+    open $fh, '<', $tmpfile or die "tmpfile: ${tmpfile} error: $!";
+    my @column_names = @{ $csv->getline($fh) };
+
+    $csv->column_names(@column_names);
+    while ( my $row = $csv->getline_hr($fh) ) {
+        push @$csv_data, $row;
+    }
+    my $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
+    $cgi->set_response_type('application/json');
+    $cgi->render( html => $json_pp->encode($csv_data) );
 }

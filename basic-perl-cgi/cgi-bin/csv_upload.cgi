@@ -20,55 +20,56 @@ BEGIN {
     }
 }
 use CGI::Tiny;
-use Getopt::Long;
 use Data::Dumper;
+use Text::CSV_PP;
 use JSON::PP;
+use File::Temp qw/ tempdir tempfile /;
 use strict;
 use warnings;
 use utf8;
 
-use vars qw($cgi $filename $loadtype );
-use vars qw($content $data $line $value );
+use vars qw|$cgi $filename $fh $csv|;
 
 cgi {
     $cgi = $_;
     $cgi->{multipart_form_options} = { parse_as_files => 0 };
     if ( $cgi->method ne 'POST' ) {
-        $cgi->set_response_status(405); # METHOD_NOT_ALLOWED
+        $cgi->set_response_status(405);    # METHOD_NOT_ALLOWED
         exit;
     }
 
     # $cgi->_body_multipart();
     if ( $cgi->param('type') !~ /send/ ) {
-        $cgi->set_response_status(400); # BAD_REQUEST
+        $cgi->set_response_status(400);    # BAD_REQUEST
         exit;
     }
-    $data = $cgi->upload('data');
-    $filename = $data->{filename} || 'unknown file';
+    my $data = $cgi->upload('data');
+    $filename = $data->{filename} || 'unknown';
     print STDERR 'filename: ', $filename, $/;
     my $content = $data->{content};
-    print STDERR 'payload: ', $/;
-    foreach $line ( split /\r?\n/, $content ) {
+    $| = 1;
+    my $tmpfile = '/tmp/' . $filename;
+    open $fh, '<', $tmpfile or die "${filename} error: $!";
+    print $fh 'content ', $content;
+
+    print STDERR 'content: ', $/;
+    foreach my $line ( split /\r?\n/, $content ) {
         print STDERR $line, $/;
     }
 
-    $cgi->set_response_type('text/html');
+    close($fh);
+    my $csv = Text::CSV_PP->new( { binary => 1 } );
+    my $csv_data = [];
+    open $fh, '<', $tmpfile or die "tmpfile: ${tmpfile} error: $!";
+    my @column_names = @{ $csv->getline($fh) };
 
-    $cgi->render( html => <<EOF);
-<!DOCTYPE html>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Thanks!</title>
-<style type="text/css">
-img {border: none;}
-</style>
-</head>
-<body>
-<p>Thanks for uploading data</p>
-<p><img src="/upload/$filename" alt="data" /></p>
-</body>
-</html>
+    # print STDERR Dumper(\@column_names);
+    $csv->column_names(@column_names);
+    while ( my $row = $csv->getline_hr($fh) ) {
+        push @$csv_data, $row;
+    }
+    my $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
+    $cgi->set_response_type('application/json');
+    $cgi->render( html => $json_pp->encode($csv_data) );
 
-EOF
 }
