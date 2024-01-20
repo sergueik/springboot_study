@@ -41,10 +41,12 @@ cgi {
     $| = 1;
     my ( $fh, $tmpfile ) = tempfile( DIR => $tmpdir );
 
-    print STDERR "tmpfile: ${tmpfile}\n";
-    # NOTE: should not print $fh $cgi->body(); 
+    print STDERR 'tmpfile: ' . $tmpfile. $/;
+    # NOTE: should not do in one operation: print $fh $cgi->body(); 
     my $body = $cgi->body();
-    # print STDERR Dumper(  $body ), $/;
+    # TODO: process _body_multipart file object contents
+    # my $body = $cgi->_body_multipart();
+    print STDERR 'body: ' . Dumper( $body ) . $/;
     print $fh $body; 
 
     close($fh);

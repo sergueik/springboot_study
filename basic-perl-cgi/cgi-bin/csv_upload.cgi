@@ -45,7 +45,7 @@ cgi {
     }
     my $data = $cgi->upload('data');
     $filename = $data->{filename} || 'unknown';
-    print STDERR 'filename: ', $filename, $/;
+    print STDERR 'filename: '. $filename. $/;
     my $content = $data->{content};
     $| = 1;
     my $tmpfile = '/tmp/' . $filename;
@@ -54,7 +54,7 @@ cgi {
 
     print STDERR 'content: ', $/;
     foreach my $line ( split /\r?\n/, $content ) {
-        print STDERR $line, $/;
+        print STDERR $line. $/;
     }
 
     close($fh);
