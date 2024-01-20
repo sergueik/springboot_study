@@ -300,6 +300,12 @@ for SpringBoot `3.1.5`
   * [Angular file upload: complete guide](https://blog.angular-university.io/angular-file-upload/)
   * https://ryfarlane.com/article/on-load-vanilla-javascript
   * https://stackoverflow.com/questions/13669430/formated-output-in-java-like-ls
+  * [Angular File Upload](https://blog.angular-university.io/angular-file-upload/) (TypeScript - not Angular JS)
+  * https://uploadcare.com/blog/how-to-upload-files-in-angular/ (TypeScript - not Angular JS)
+  * https://www.filestack.com/fileschool/angular/angular-file-upload-tutorial/ (TypeScript - not Angular JS)
+  * https://stackoverflow.com/questions/18571001/file-upload-using-angularjs
+  * [upload File with AngularJS using ngResource](https://www.codeproject.com/Articles/5163873/Upload-File-with-AngularJS-using-ngResource) via loading the selected file as BASE64 encoded string
+  * __Angular JS file upload__ [tutorial](https://folio3.com/angularjs-file-upload-example-tutorial/) via custom directive attribute amending the classic browser file element to make the value accesible and [source](https://github.com/folio3/AngularJS-Tutorial-Example-Code/tree/master/Angular_File_Upload_Demo)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
