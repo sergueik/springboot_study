@@ -13,12 +13,12 @@
     <relativePath/>
   </parent>
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <gson.version>2.8.9</gson.version>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.8</java.version>
-    <commons-codec.version>1.13</commons-codec.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <commons-codec.version>1.13</commons-codec.version>
+    <gson.version>2.8.9</gson.version>
+    <java.version>1.8</java.version>
   </properties>
   <dependencies>
     <dependency>

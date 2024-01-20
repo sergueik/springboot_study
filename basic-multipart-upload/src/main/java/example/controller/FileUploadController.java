@@ -61,7 +61,7 @@ public class FileUploadController {
 						+ Arrays.asList(files).stream()
 								.map(file -> file.getOriginalFilename())
 								.collect(Collectors.toList()));
-		// no longer showing upoaded files
+		// no longer showing upoaded files urls
 
 		List<String> results = Arrays.asList(files).stream()
 				.map(file -> uploadFile(file)).collect(Collectors.toList());

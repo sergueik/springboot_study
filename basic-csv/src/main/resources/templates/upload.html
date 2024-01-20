@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<!-- origin: https://github.com/callicoder/spring-boot-file-upload-download-rest-api-example/blob/master/src/main/resources/static/index.html -->
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>Spring Boot File Upload / Download Rest API Example</title>
+  <meta charset="utf-8" />
+  <style type="text/css">
+  table tr th, td {
+    text-transform: capitalize;
+    text-align: center;
+  }
+  </style>
+  </head>
+  <body>
+    <div>
+      <h3>Spring Boot File Upload Single File</h3>
+      <form id="singleUploadForm" name="singleUploadForm">
+        <input id="singleFileUploadInput" type="file" name="file" class="file-input" required />
+        <button type="submit" class="primary submit-btn">Submit</button>
+      </form>
+      <div class="upload-response">
+        <div id="singleFileUploadError"></div>
+        <div id="singleFileUploadSuccess"></div>
+      </div>
+    </div>
+    <script th:src="@{/js/main.js}"></script>
+  </body>
+</html>
+

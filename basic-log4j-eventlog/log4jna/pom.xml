@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.dblock.log4jna</groupId>
   <artifactId>log4jna</artifactId>
-  <version>2.0</version>
+  <version>2.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Log4JNA Parent</name>
   <url>https://github.com/dblock/log4jna</url>
@@ -400,7 +400,8 @@
     </site>
   </distributionManagement>
   <modules>
-    <module>log4jna-win32dll</module>
+<!--
+    <module>log4jna-win32dll</module> -->
     <module>log4jna-api</module>
     <module>log4jna-demo</module>
     <module>log4jna-assembly</module>

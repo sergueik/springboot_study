@@ -2,14 +2,23 @@
 
 Basic POST `multipart-`handler REST server from __Spring Boot File Upload / Download Rest API Example__  [repository](https://github.com/callicoder/spring-boot-file-upload-download-rest-api-example)
 which does not use `org.apache.commons.fileuload.servlet.ServletFileUpload`
-with a static, thymeleaf and JSP landing pages
+converted to thymeleaf page
 supporting `/uploadFile` and `/uploadMultipleFiles` end points and also the `/downloadFile/{fileName}`
-combined with __Multi-part File Upload via AngularJS__ through `$http.post` and `FormData` object [codeproject artile](https://www.codeproject.com/Articles/5292552/AngularJS-FormData-Multi-part-File-Upload) examle code (uploading single file) and the AngularJS [AngularJS Drag-and-Drop File Input Collector Example](https://www.webappers.com/2011/09/28/drag-drop-file-upload-with-html5-javascript/) and __AngularJS File Upload with Progress Bar__ [article](http://www.matlus.com/html5-file-upload-with-progress)
+and using a derivattive of __Java File list all files and directories under a folder__ [example](http://www.java2s.com/ref/java/java-file-list-all-files-and-directories-under-a-folder.html)
+to mimic the [Java Servlet](https://en.wikipedia.org/wiki/Jakarta_Servlet) to build a dynamic web page server-side.
+
+#### NOTE
+
+Early history in this project was including
+static, and JSP landing pages
+combined with __Multi-part File Upload via AngularJS__ through `$http.post` and `FormData` object [codeproject article](https://www.codeproject.com/Articles/5292552/AngularJS-FormData-Multi-part-File-Upload) examle code (uploading single file) and the AngularJS [AngularJS Drag-and-Drop File Input Collector Example](https://www.webappers.com/2011/09/28/drag-drop-file-upload-with-html5-javascript/) and __AngularJS File Upload with Progress Bar__ [article](http://www.matlus.com/html5-file-upload-with-progress)
 
 ### Usage
 
 ![Initial](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload.png)
-<br/>
+
+<br/>	
+
 ![Selecting Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload2.png)
 
 <br/>
@@ -19,20 +28,51 @@ combined with __Multi-part File Upload via AngularJS__ through `$http.post` and 
 
 * launch the server
 ```sh
-mvn spring-boot:test
+mvn spring-boot:run
 ```
 
+```text
+--- spring-boot-maven-plugin:3.1.5:run (default-cli) @ multipart-upload ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.1.5)
+
+2024-01-18T11:15:45.266-05:00  INFO 2648 --- [           main] example.Application                      : Starting Application using Java 17.0.9 with PID 2648 (/home/sergueik/src/springboot_study/basic-multipart-upload/target/classes started by sergueik in /home/sergueik/src/springboot_study/basic-multipart-upload)
+2024-01-18T11:15:45.271-05:00  INFO 2648 --- [           main] example.Application                      : No active profile set, falling back to 1 default profile: "default"
+2024-01-18T11:15:46.601-05:00  INFO 2648 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2024-01-18T11:15:46.611-05:00  INFO 2648 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-01-18T11:15:46.612-05:00  INFO 2648 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.15]
+2024-01-18T11:15:46.771-05:00  INFO 2648 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-01-18T11:15:46.773-05:00  INFO 2648 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1416 ms
+2024-01-18T11:15:47.073-05:00  INFO 2648 --- [           main] example.service.FileStorageService       : UploadDir: /tmp/upload
+2024-01-18T11:15:47.493-05:00  INFO 2648 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2024-01-18T11:15:47.507-05:00  INFO 2648 --- [           main] example.Application                      : Started Application in 2.869 seconds (process running for 3.371)
+```
+
+
+
+testing can be done from Widows or Linux machine
 create a *small*  text file `test.txt`:
 ```sh
 echo 'this is a test' > test.txt
 ```
 
-* test through curl in bash or git bash:
+* test through curl in bash or git bash, in separate console
 
 ```sh
 curl -X POST http://localhost:8080/uploadFile -F file=@$(pwd)/test.txt
 ```
-it will print to console
+it will print to console log
+
+```text
+upload file: test.txt
+```
 
 ```text
 {
@@ -56,10 +96,35 @@ this is a test
 
 NOTE: the `downloadFile` method is still using `javax.servlet.http.HttpServletRequest`
 
+* About to Upload Additional Files Linux
+![Uploading Additional Files Linux](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload4.png)
+
+* Selecting Files Linux
+![Selecting Files Linux](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload5.png)
+
+* Starting Upload Files
+![Starting Upload Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload6.png)
+
+the appliction console log will show
+
+```text
+2024-01-18T11:21:22.489-05:00  INFO 2648 --- [nio-8080-exec-8] e.controller.FileUploadController        : upload 4 files: [test1.txt, test2.txt, test3.txt, test4.txt]
+2024-01-18T11:21:22.490-05:00  INFO 2648 --- [nio-8080-exec-8] e.controller.FileUploadController        : upload file: test1.txt
+2024-01-18T11:21:22.490-05:00  INFO 2648 --- [nio-8080-exec-8] e.controller.FileUploadController        : upload file: test2.txt
+2024-01-18T11:21:22.491-05:00  INFO 2648 --- [nio-8080-exec-8] e.controller.FileUploadController        : upload file: test3.txt
+2024-01-18T11:21:22.492-05:00  INFO 2648 --- [nio-8080-exec-8] e.controller.FileUploadController        : upload file: test4.txt
+```
+
+* Showing Newly Uploaded Files
+
+![Showing Newly Uploaded Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload7.png)
+
+
+
 ### Upload Multiple Files
 * create few dummy files
 ```sh
-for i in $(seq 1 1 4) ; do echo "data $i" >  $i.txt; done
+for i in $(seq 1 1 10) ; do echo "data $i" >  "test${i}.txt"; done
 ```
 * use legacy page with repeated "files" input for multple files
 ![Mutlple Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-legacy-upload-files.png)
@@ -235,5 +300,6 @@ for SpringBoot `3.1.5`
   * [Angular file upload: complete guide](https://blog.angular-university.io/angular-file-upload/)
   * https://ryfarlane.com/article/on-load-vanilla-javascript
   * https://stackoverflow.com/questions/13669430/formated-output-in-java-like-ls
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

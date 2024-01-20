@@ -193,6 +193,41 @@ curl -s -X POST "http://localhost:8085/upload?operation=send&param=something&ser
 ]
 
 ```
+### Uploading Through the Browser
+alternatively upload the `book.csv` throughthe browser (the upload endpoint  accepts any CSV data but internally tries to construct a `Book` object from it, so some specic fields presence in the CSV is required (`author`, `title`,`year`)
+
+the csv contents are returnd by the end point  for debugging, as JSON payload, but currentlty only visible through Developer Tools:
+```JSON
+[
+  {
+    "status": false,
+    "author": "Dan Simmons",
+    "title": "Hyperion",
+    "year": 0
+  },
+  {
+    "status": false,
+    "author": "Douglas Adams",
+    "title": "The Hitchhiker's Guide to the Galaxy",
+    "year": 1979
+  },
+  {
+    "status": false,
+    "author": "Lynne Truss",
+    "title": "Eats, Shoots and Leaves",
+    "year": 2003
+  }
+]
+
+```
+
+![Broswer](https://github.com/sergueik/springboot_study/blob/master/basic-csv/screenshots/capture-uploadpage.png)
+
+#### NOTE
+Without the thymeleaf dependency attempt to add the `/upload` endpoint rendering `upload.html` will fail with
+```text
+javax.servlet.ServletException: Circular view path [upload]: would dispatch back to the current handler URL [/upload] again. Check your ViewResolver setup! (Hint: This may be the result of an unspecified view, due to default view name generation.)
+```
 ### See Also
    * https://www.baeldung.com/spring-url-encoded-form-data
    * [Pure-perl CVS module](https://metacpan.org/pod/Text::CSV_PP)

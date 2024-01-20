@@ -1,4 +1,4 @@
-### Info
+f### Info
 
 Plain Alpine 3.9 container installing the apache and Perl using some code from [Alpine microcontainer with Apache2, perl5 and FCGI.pm](https://github.com/kjetillll/docker-alpine-apache-perl-fcgi) - and launching httpd without using init.d of [nimmis/docker-alpine-micro](https://github.com/nimmis/docker-alpine-micro) and installing few pure Perl modules (YAML, XML and JSON) and Angular and Bootstrap to explore Angular CGI-BIN pages
 
@@ -433,7 +433,7 @@ perl -MFCGI -e 'print $FCGI::VERSION'
 ```text
 0.78
 ```
-Alternatively one can install [CGI-Tiny](https://metacpan.org/dist/CGI-Tiny/view/lib/CGI/Tiny.pod)  which has no unmet dependencies.
+Alternatively one can install [CGI-Tiny](https://metacpan.org/dist/CGI-Tiny/view/lib/CGI/Tiny.pod) which has no unmet dependencies.
 ```sh
 wget https://cpan.metacpan.org/authors/id/D/DB/DBOOK/CGI-Tiny-1.002.tar.gz
 wget https://cpan.metacpan.org/authors/id/D/DB/DBOOK/CGI-Tiny-1.002.tar.gz
@@ -1401,7 +1401,184 @@ At line:1 char:1
 
 there are two different classes `Microsoft.PowerShell.Commands.InvokeRestMethodCommand` and `Microsoft.PowerShell.Commands.InvokeWebRequestCommand` involved and neither
 returns simply the HTTP status for non-`20x` cases
+### Upload CSV Data
 
+* the simplest is to create a text file `a.csv` with contents:
+```text
+foo,bar,baz
+10,20,30
+100,200,300
+```
+
+and upload it via `curl` in the body of the message. With curl one does not have to specify the `POST` method but need to be aware of the required `--data-binary` option:
+```sh
+ curl -sX POST -H 'Content-type: application/octet-stream' --data-binary @a.csv http://192.168.99.100:9090/cgi-bin/csv.cgi
+```
+prints back the page with payload embedded
+```HTML
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Thanks!</title>
+<style type="text/css">
+img {border: none;}
+</style>
+</head>
+<body>
+<p>Thanks for uploading data:</p>
+foo,bar,baz
+10,20,30
+100,200,300
+
+</body>
+</html>
+
+```
+
+and logs it normally
+```text
+[Wed Jan 17 23:46:47.309873 2024] [cgi:error] [pid 11] [client 192.168.99.1:5852 8] AH01215: $VAR1 = 'foo,bar,baz: 
+[Wed Jan 17 23:46:47.309928 2024] [cgi:error] [pid 11] [client 192.168.99.1:5852 8] AH01215: 10,20,30 
+[Wed Jan 17 23:46:47.309980 2024] [cgi:error] [pid 11] [client 192.168.99.1:5852 8] AH01215: 100,200,300 
+[Wed Jan 17 23:46:47.310007 2024] [cgi:error] [pid 11] [client 192.168.99.1:5852 8] AH01215: '; 
+```
+while omitting the flag
+
+
+```sh
+curl -X POST -H 'Content-type: application/octet-stream' -d@a.csv http://192.168.99.100:9090/cgi-bin/csv.cgi
+
+```
+illustrates how `curl` clobbers line endings:
+```HTML
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Thanks!</title>
+<style type="text/css">
+img {border: none;}
+</style>
+</head>
+<body>
+<p>Thanks for uploading data:</p>
+foo,bar,baz10,20,30100,200,300
+</body>
+</html>
+```
+in the `error.log`
+```text
+[Wed Jan 17 23:02:20.993501 2024] [cgi:error] [pid 15] [client 192.168.99.1:5844 6] AH01215: $VAR1 = 'foo,bar,baz10,20,30100,200,300';
+n/csv.cgi
+```
+```sh
+curl -s http://192.168.99.100:9090/cgi-bin/csv.cgi -X POST --data-binary @a.csv -H 'Content-type: application/octet-stream'
+```
+produces the JSON  serialized  object:
+```JSON
+[
+   {
+      "foo" : "10",
+      "bar" : "20",
+      "baz" : "30"
+   },
+   {
+      "baz" : "300",
+      "foo" : "100",
+      "bar" : "200"
+   }
+]
+
+```
+### More Upload
+```sh
+curl -F "data=@$(pwd)/data.txt" -X POST "http://192.168.99.100:9090/cgi-bin/upload.cgi?type=send&new=0"
+```
+```
+curl -F "data=@$(pwd)/data.txt" -X POST "http://192.168.99.100:9090/cgi-bin/csv_upload.cgi?type=send"
+```
+### Troubleshooting
+```sh
+docker container start $NAME
+```
+```sh
+docker container ls  -a
+```
+```text
+CONTAINER ID        IMAGE               COMMAND                  CREATED     STATUS                      PORTS               NAMES
+948fd2134e76        basic-perl-apache   "sh -c 'PIDFILE='/ru"   5 days ago    Exited (0) 12 seconds ago                       basic-perl-cgi
+```
+```sh
+docker container logs $NAME
+```
+```text
+[Fri Jan 19 23:01:53.207868 2024] [alias:warn] [pid 6] AH00671: The Alias directive in /etc/apache2/conf.d/mod_fcgid.conf at line 4 will probably never match because it overlaps an earlier ScriptAlias.AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.2. Set the 'ServerName' directive globally to suppress this message
+0
+apache is running with ID 7
+apache is gone
+
+```
+restart of `docker-machine` does not help. giving up
+```sh
+mkdir /var/www/localhost/cgi-bin/Text
+```
+```sh
+curl -F "data=@$(pwd)/a.csv" -sX POST "http://192.168.99.100:9090/cgi-bin/csv_upload.cgi?type=send"
+```
+```JSON
+[
+   {
+      "bar" : "20",
+      "foo" : "10",
+      "baz" : "30"
+   },
+   {
+      "baz" : "300",
+      "foo" : "100",
+      "bar" : "200"
+   }
+]
+
+```sh
+curl -sX POST -H 'Content-type: application/octet-stream' --data-binary @a.csv http://192.168.99.100:9090/cgi-bin/csv.cgi
+```
+```JSON
+
+[
+   {
+      "baz" : "30",
+      "foo" : "10",
+      "bar" : "20"
+   },
+   {
+      "baz" : "300",
+      "bar" : "200",
+      "foo" : "100"
+   }
+]
+
+
+```
+```sh
+curl -sX POST -H 'Content-type: application/octet-stream' --data-binary $'foo,bar,baz\n10,20,30\n100,200,300' http://192.168.99.100:9090/cgi-bin/csv.cgi
+```
+```JSON
+[
+   {
+      "foo" : "10",
+      "bar" : "20",
+      "baz" : "30"
+   },
+   {
+      "foo" : "100",
+      "bar" : "200",
+      "baz" : "300"
+   }
+]
+
+
+```
 ### See Also
 
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
@@ -1431,6 +1608,8 @@ returns simply the HTTP status for non-`20x` cases
   * [mozilla documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin) on `cross-origin resource sharing error preflightmissingalloworiginheader` error 
   * [vanilla JavaScript CSV (comma-separated values) parser](https://github.com/cparker15/CSV-js/blob/master/src/csv.js)
    * [Pure-perl CVS module](https://metacpan.org/pod/Text::CSV_PP) (NOTE: without installing `https://fastapi.metacpan.org/source/ISHIGAKI/Text-CSV-2.04/lib/Text/CSV.pm`)
+   * https://stackoverflow.com/questions/3872427/how-to-send-line-break-with-curl
+   * https://stackoverflow.com/questions/46233809/how-to-upload-a-file-from-post-request-content-type-application-octet-stream
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
