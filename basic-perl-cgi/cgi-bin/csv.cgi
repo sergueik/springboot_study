@@ -41,9 +41,11 @@ cgi {
     $| = 1;
     my ( $fh, $tmpfile ) = tempfile( DIR => $tmpdir );
 
-    # print STDERR "tmpfile: ${tmpfile}\n";
+    print STDERR "tmpfile: ${tmpfile}\n";
+    # NOTE: should not print $fh $cgi->body(); 
+    my $body = $cgi->body();
     # print STDERR Dumper(  $body ), $/;
-    print $fh $cgi->body();
+    print $fh $body; 
 
     close($fh);
     $csv = Text::CSV_PP->new( { binary => 1 } );

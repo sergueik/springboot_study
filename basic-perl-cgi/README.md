@@ -1,4 +1,4 @@
-### Info
+f### Info
 
 Plain Alpine 3.9 container installing the apache and Perl using some code from [Alpine microcontainer with Apache2, perl5 and FCGI.pm](https://github.com/kjetillll/docker-alpine-apache-perl-fcgi) - and launching httpd without using init.d of [nimmis/docker-alpine-micro](https://github.com/nimmis/docker-alpine-micro) and installing few pure Perl modules (YAML, XML and JSON) and Angular and Bootstrap to explore Angular CGI-BIN pages
 
@@ -433,7 +433,7 @@ perl -MFCGI -e 'print $FCGI::VERSION'
 ```text
 0.78
 ```
-Alternatively one can install [CGI-Tiny](https://metacpan.org/dist/CGI-Tiny/view/lib/CGI/Tiny.pod)  which has no unmet dependencies.
+Alternatively one can install [CGI-Tiny](https://metacpan.org/dist/CGI-Tiny/view/lib/CGI/Tiny.pod) which has no unmet dependencies.
 ```sh
 wget https://cpan.metacpan.org/authors/id/D/DB/DBOOK/CGI-Tiny-1.002.tar.gz
 wget https://cpan.metacpan.org/authors/id/D/DB/DBOOK/CGI-Tiny-1.002.tar.gz
@@ -1489,6 +1489,94 @@ produces the JSON  serialized  object:
       "bar" : "200"
    }
 ]
+
+```
+### More Upload
+```sh
+curl -F "data=@$(pwd)/data.txt" -X POST "http://192.168.99.100:9090/cgi-bin/upload.cgi?type=send&new=0"
+```
+```
+curl -F "data=@$(pwd)/data.txt" -X POST "http://192.168.99.100:9090/cgi-bin/csv_upload.cgi?type=send"
+```
+### Troubleshooting
+```sh
+docker container start $NAME
+```
+```sh
+docker container ls  -a
+```
+```text
+CONTAINER ID        IMAGE               COMMAND                  CREATED     STATUS                      PORTS               NAMES
+948fd2134e76        basic-perl-apache   "sh -c 'PIDFILE='/ru"   5 days ago    Exited (0) 12 seconds ago                       basic-perl-cgi
+```
+```sh
+docker container logs $NAME
+```
+```text
+[Fri Jan 19 23:01:53.207868 2024] [alias:warn] [pid 6] AH00671: The Alias directive in /etc/apache2/conf.d/mod_fcgid.conf at line 4 will probably never match because it overlaps an earlier ScriptAlias.AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 172.17.0.2. Set the 'ServerName' directive globally to suppress this message
+0
+apache is running with ID 7
+apache is gone
+
+```
+restart of `docker-machine` does not help. giving up
+```sh
+mkdir /var/www/localhost/cgi-bin/Text
+```
+```sh
+curl -F "data=@$(pwd)/a.csv" -sX POST "http://192.168.99.100:9090/cgi-bin/csv_upload.cgi?type=send"
+```
+```JSON
+[
+   {
+      "bar" : "20",
+      "foo" : "10",
+      "baz" : "30"
+   },
+   {
+      "baz" : "300",
+      "foo" : "100",
+      "bar" : "200"
+   }
+]
+
+```sh
+curl -sX POST -H 'Content-type: application/octet-stream' --data-binary @a.csv http://192.168.99.100:9090/cgi-bin/csv.cgi
+```
+```JSON
+
+[
+   {
+      "baz" : "30",
+      "foo" : "10",
+      "bar" : "20"
+   },
+   {
+      "baz" : "300",
+      "bar" : "200",
+      "foo" : "100"
+   }
+]
+
+
+```
+```sh
+curl -sX POST -H 'Content-type: application/octet-stream' --data-binary $'foo,bar,baz\n10,20,30\n100,200,300' http://192.168.99.100:9090/cgi-bin/csv.cgi
+```
+```JSON
+[
+   {
+      "foo" : "10",
+      "bar" : "20",
+      "baz" : "30"
+   },
+   {
+      "foo" : "100",
+      "bar" : "200",
+      "baz" : "300"
+   }
+]
+
 
 ```
 ### See Also

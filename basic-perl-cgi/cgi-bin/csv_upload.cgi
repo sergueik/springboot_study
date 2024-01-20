@@ -49,8 +49,8 @@ cgi {
     my $content = $data->{content};
     $| = 1;
     my $tmpfile = '/tmp/' . $filename;
-    open $fh, '<', $tmpfile or die "${filename} error: $!";
-    print $fh 'content ', $content;
+    open $fh, '>' , $tmpfile or die "tmpfile ${tmpfile} for writing error: $!";
+    print $fh $content;
 
     print STDERR 'content: ', $/;
     foreach my $line ( split /\r?\n/, $content ) {
@@ -60,7 +60,7 @@ cgi {
     close($fh);
     my $csv = Text::CSV_PP->new( { binary => 1 } );
     my $csv_data = [];
-    open $fh, '<', $tmpfile or die "tmpfile: ${tmpfile} error: $!";
+    open $fh, '<', $tmpfile or die "tmpfile ${tmpfile} for reading error: $!";
     my @column_names = @{ $csv->getline($fh) };
 
     # print STDERR Dumper(\@column_names);
