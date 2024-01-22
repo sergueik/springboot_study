@@ -34,6 +34,12 @@ use vars qw|$cgi $payload $csv_data|;
 cgi {
 
     $cgi = $_;
+    # NOTE: Apache may be already sending the header
+    # Access-Control-Allow-Origin: * 
+    # uncommenting the below leads to browser error
+    # The 'Access-Control-Allow-Origin' header contains multiple values '*, *', but only one is allowed.
+    # $cgi->add_response_header('Access-Control-Allow-Origin' => '*');
+    # $cgi->add_response_header('Access-Control-Allow-Headers' => '*');
     if ( $cgi->method ne 'POST' ) {
         $cgi->set_response_status(405);    # METHOD_NOT_ALLOWED
         exit;
@@ -44,24 +50,21 @@ cgi {
     my $content_type = $cgi->content_type;
     # print STDERR 'Content-Type: ' . $content_type . $/;
     if (extract_multipart_boundary($content_type)) {
-        my $pairs = $cgi->uploads;
-        # print STDERR 'uploads ' . Dumper($pairs) . $/;
+        my $uploads = $cgi->uploads;
+        # print STDERR 'uploads ' . Dumper($uploads) . $/;
         # NOTE: limit to processing only one uploaded file
-        my $name = $pairs->[0]->[0];
-        my $data = $cgi->upload($name);
+        my $upload = $uploads->[0]->[0];
+        my $data = $cgi->upload($upload);
         my $filename = $data->{filename} || 'unknown';
         # print STDERR 'filename: ' . $filename . $/;
         my $fh = $data->{file};
-
-        while (<$fh>) {
-            $payload .= $_;
-            # my $line = $_;
-            # chomp $line;
-            # print STDERR $line . $/;
+        {
+        local $/ = undef;
+        $payload = <$fh>;
         }
     }
     else {
-        # NOTE: should not attmept do in single operation: print $fh $cgi->body();
+        # NOTE: should not attempt do in single operation: print $fh $cgi->body();
         $payload = $cgi->body();
     }
     # print STDERR 'payload: ' . $payload . $/;
