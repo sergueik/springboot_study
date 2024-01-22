@@ -1579,6 +1579,15 @@ curl -sX POST -H 'Content-type: application/octet-stream' --data-binary $'foo,ba
 
 
 ```
+
+### Upload With AntularJS
+
+* Using [example](https://www.tutorialspoint.com/angularjs/angularjs_upload_file.htm) - uses [custom directive](https://docs.angularjs.org/guide/directive) to enable Angular access plain file input form element and [service](https://docs.angularjs.org/guide/services) and [formdata](https://docs.angularjs.org/guide/forms) - handy for debugging and rendering the csv
+
+![Example](https://github.com/sergueik/springboot_study/blob/master/basic-perl-cgi/screenshots/capture-angularjs-upload.png)
+
+NOTE, AngularJS uploads files via `multipart/form-data` - modifications were required to cgi-bin `csv.cgi` to accept both
+
 ### See Also
 
   * https://stackoverflow.com/questions/19408011/angularjs-error-argument-firstctrl-is-not-a-function-got-undefined/19408070
@@ -1607,9 +1616,12 @@ curl -sX POST -H 'Content-type: application/octet-stream' --data-binary $'foo,ba
   * https://stackoverflow.com/questions/39069206/how-to-set-custom-headers-for-httptiny-in-perl
   * [mozilla documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSMissingAllowOrigin) on `cross-origin resource sharing error preflightmissingalloworiginheader` error 
   * [vanilla JavaScript CSV (comma-separated values) parser](https://github.com/cparker15/CSV-js/blob/master/src/csv.js)
-   * [Pure-perl CVS module](https://metacpan.org/pod/Text::CSV_PP) (NOTE: without installing `https://fastapi.metacpan.org/source/ISHIGAKI/Text-CSV-2.04/lib/Text/CSV.pm`)
-   * https://stackoverflow.com/questions/3872427/how-to-send-line-break-with-curl
-   * https://stackoverflow.com/questions/46233809/how-to-upload-a-file-from-post-request-content-type-application-octet-stream
+  * [Pure-perl CVS module](https://metacpan.org/pod/Text::CSV_PP) (NOTE: without installing `https://fastapi.metacpan.org/source/ISHIGAKI/Text-CSV-2.04/lib/Text/CSV.pm`)
+  * https://stackoverflow.com/questions/3872427/how-to-send-line-break-with-curl
+  * https://stackoverflow.com/questions/46233809/how-to-upload-a-file-from-post-request-content-type-application-octet-stream
+  * Angular JS file upload [tutorial](https://github.com/folio3/AngularJS-Tutorial-Example-Code)
+  * [AngularJS FormData Multi-part File Upload](https://www.codeproject.com/Articles/5292552/AngularJS-FormData-Multi-part-File-Upload)
+  * [send FormData with other field in AngularJS](https://stackoverflow.com/questions/37039852/send-formdata-with-other-field-in-angularjs)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
