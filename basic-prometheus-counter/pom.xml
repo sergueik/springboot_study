@@ -21,7 +21,7 @@
     <spring-jdbc.version>5.2.0.RELEASE</spring-jdbc.version>
     <sqlite-jdbc.version>3.28.0</sqlite-jdbc.version>
     <ini4j.version>0.5.4</ini4j.version>
-    <json-path.version>2.6.0</json-path.version>
+    <json-path.version>2.9.0</json-path.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <dependencies>

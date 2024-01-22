@@ -18,7 +18,7 @@
     <javax-servlet-api.version>2.3.3</javax-servlet-api.version>
     <!-- https://htmlunit.sourceforge.io -->
     <htmlunit.version>2.62.0</htmlunit.version>
-    <json-path.version>2.4.0</json-path.version>
+    <json-path.version>2.9.0</json-path.version>
     <commons-lang.version>2.6</commons-lang.version>
     <commons-lang3.version>3.11</commons-lang3.version>
     <commons-cli.version>1.4</commons-cli.version>
