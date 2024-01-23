@@ -324,6 +324,12 @@ for SpringBoot `3.1.5`
   * https://stackoverflow.com/questions/18571001/file-upload-using-angularjs
   * [upload File with AngularJS using ngResource](https://www.codeproject.com/Articles/5163873/Upload-File-with-AngularJS-using-ngResource) via loading the selected file as BASE64 encoded string
   * __Angular JS file upload__ [tutorial](https://folio3.com/angularjs-file-upload-example-tutorial/) via custom directive attribute amending the classic browser file element to make the value accesible and [source](https://github.com/folio3/AngularJS-Tutorial-Example-Code/tree/master/Angular_File_Upload_Demo)
+  * [how to create array of files to FormData from FileList](https://stackoverflow.com/questions/73237026/how-to-create-array-of-files-to-formdata-from-filelist)
+  * [creating a FormData object from scratch](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects)
+  * [how to Append JavaScript Data to FormData](https://plainenglish.io/blog/how-to-append-javascript-data-to-formdata)
+  * [how to use JavaScript’s FormData Object to Send Complex Data](https://dpericich.medium.com/how-to-use-javascripts-formdata-object-to-send-complex-data-c07c31c95f6c)
+  * [uploading files using fetch and FormData](https://muffinman.io/blog/uploading-files-using-fetch-multipart-form-data/)  
+  * http://www.java2s.com/example/javascript-book/for-of.html
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -4,17 +4,31 @@ var multipleFileUploadInput = document.querySelector('#multipleFileUploadInput')
 var multipleFileUploadError = document.querySelector('#multipleFileUploadError');
 var multipleFileUploadSuccess = document.querySelector('#multipleFileUploadSuccess');
 
-// the <input type="file" miltiple> created a FileList
-// https://developer.mozilla.org/en-US/docs/Web/API/FileList
-// https://developer.mozilla.org/en-US/docs/Web/API/FormData
+// the <input type="file" miltiple> creates a FileList
+// the file upload back end typically expects a FormData
 function uploadMultipleFiles(files) {
   var formData = new FormData();
   console.log('files: ' + files);
   for (var index = 0; index < files.length; index++) {
     formData.append('files', files[index]);
   }
-  console.dir('formData files: ' + formData.getAll('files'));
-
+  console.log('formData files: ');
+  console.dir(formData.getAll('files'));
+  // NOTE: syntax error would lead to console output being lost
+  console.log('formData entries: ');
+  console.dir(formData.entries());
+  try {
+    var entries = formData.entries();
+    for (let entry of entries) {
+      console.log('formData entry: ');
+      console.dir(entry);
+      // Array(2)
+      // "files"
+      // File { "name": "...", "lastModified":  1705973287311, "lastModifiedDate": "Mon ...", "size": 7, "type": "text/plain", "webkitRelativePath": 2 }
+    }
+  } catch (exception) {
+    console.log('exception :' + exception);
+  }
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/uploadMultipleFiles');
   xhr.onload = function() {
@@ -22,7 +36,7 @@ function uploadMultipleFiles(files) {
     if (xhr.status == 200) {
       multipleFileUploadError.style.display = 'none';
       var content = xhr.responseText;
-      multipleFileUploadSuccess.innerHTML = '<pre>' +  content + '</pre>';
+      multipleFileUploadSuccess.innerHTML = '<pre>' + content + '</pre>';
       multipleFileUploadSuccess.style.display = 'block';
     } else {
       multipleFileUploadSuccess.style.display = 'none';
@@ -51,7 +65,7 @@ window.addEventListener('load', function(event) {
     if (xhr.status == 200) {
       multipleFileUploadError.style.display = 'none';
       var content = xhr.responseText;
-      multipleFileUploadSuccess.innerHTML = '<pre>' +  content + '</pre>';
+      multipleFileUploadSuccess.innerHTML = '<pre>' + content + '</pre>';
       multipleFileUploadSuccess.style.display = 'block';
     } else {
       multipleFileUploadSuccess.style.display = 'none';
