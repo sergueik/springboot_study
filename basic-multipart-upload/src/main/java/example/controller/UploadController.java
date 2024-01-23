@@ -11,12 +11,10 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/")
-public class  UploadController {
+public class UploadController {
 
 	@GetMapping("/upload")
-	public String display(
-			@RequestParam(value = "message", required = false) String message,
-			Model model) {
+	public String display(@RequestParam(value = "message", required = false) String message, Model model) {
 		return "upload";
 	}
 

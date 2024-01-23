@@ -56,7 +56,6 @@ mvn spring-boot:run
 ```
 
 
-
 testing can be done from Widows or Linux machine
 create a *small*  text file `test.txt`:
 ```sh
@@ -94,18 +93,23 @@ this will print to console
 this is a test
 ```
 
-NOTE: the `downloadFile` method is still using `javax.servlet.http.HttpServletRequest`
+NOTE: the `downloadFile` method is still using `javax.servlet.http.HttpServletRequest` - removed
+
+
 
 * About to Upload Additional Files Linux
+
 ![Uploading Additional Files Linux](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload4.png)
 
 * Selecting Files Linux
+
 ![Selecting Files Linux](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload5.png)
 
 * Starting Upload Files
+
 ![Starting Upload Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload6.png)
 
-the appliction console log will show
+The application will log details to console:
 
 ```text
 2024-01-18T11:21:22.489-05:00  INFO 2648 --- [nio-8080-exec-8] e.controller.FileUploadController        : upload 4 files: [test1.txt, test2.txt, test3.txt, test4.txt]
@@ -113,6 +117,9 @@ the appliction console log will show
 2024-01-18T11:21:22.490-05:00  INFO 2648 --- [nio-8080-exec-8] e.controller.FileUploadController        : upload file: test2.txt
 2024-01-18T11:21:22.491-05:00  INFO 2648 --- [nio-8080-exec-8] e.controller.FileUploadController        : upload file: test3.txt
 2024-01-18T11:21:22.492-05:00  INFO 2648 --- [nio-8080-exec-8] e.controller.FileUploadController        : upload file: test4.txt
+2024-01-18T11:21:22.493-05:00  INFO 2648 --- [nio-8080-exec-4] example.controller.FileUploadController  : Listing: test1.txt test2.txt test3.txt test4.txt
+
+
 ```
 
 * Showing Newly Uploaded Files
@@ -120,13 +127,24 @@ the appliction console log will show
 ![Showing Newly Uploaded Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload7.png)
 
 
+* Developer Console
+
+![Debug Information During Files Upload](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload-developer-console.png)
 
 ### Upload Multiple Files
+
+*  clear upload directory
+
+```sh
+rm /tmp/upload/*
+```
 * create few dummy files
 ```sh
+
 for i in $(seq 1 1 10) ; do echo "data $i" >  "test${i}.txt"; done
 ```
 * use legacy page with repeated "files" input for multple files
+
 ![Mutlple Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-legacy-upload-files.png)
 
 After page is  submitted the result is displayed:

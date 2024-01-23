@@ -4,11 +4,17 @@ var multipleFileUploadInput = document.querySelector('#multipleFileUploadInput')
 var multipleFileUploadError = document.querySelector('#multipleFileUploadError');
 var multipleFileUploadSuccess = document.querySelector('#multipleFileUploadSuccess');
 
+// the <input type="file" miltiple> created a FileList
+// https://developer.mozilla.org/en-US/docs/Web/API/FileList
+// https://developer.mozilla.org/en-US/docs/Web/API/FormData
 function uploadMultipleFiles(files) {
   var formData = new FormData();
+  console.log('files: ' + files);
   for (var index = 0; index < files.length; index++) {
     formData.append('files', files[index]);
   }
+  console.dir('formData files: ' + formData.getAll('files'));
+
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/uploadMultipleFiles');
   xhr.onload = function() {

@@ -1,10 +1,8 @@
 package example.service;
 
 /**
- * Copyright 2023 Serguei Kouzmine
+ * Copyright 2023,2024 Serguei Kouzmine
  */
-import example.exception.FileStorageException;
-import example.exception.FileNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +37,7 @@ public class FileStorageService {
 	private String uploadDirLinux = "/tmp/upload";
 
 	private String uploadDir = null;
+
 	public String getUploadDir() {
 		return uploadDir;
 	}
@@ -47,25 +46,21 @@ public class FileStorageService {
 		uploadDir = value;
 	}
 
-
 	@Autowired
 	public FileStorageService() {
-		// 	uploadDir = uploadDirWindows;
+		// uploadDir = uploadDirWindows;
 		if (uploadDir == null) {
 			osName = getOSName();
 			uploadDir = osName.equals("windows") ? uploadDirWindows : uploadDirLinux;
 		}
 		logger.info("UploadDir: " + uploadDir);
 
-		this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath()
-				.normalize();
+		this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
 
 		try {
 			Files.createDirectories(this.fileStorageLocation);
 		} catch (Exception ex) {
-			throw new FileStorageException(
-					"Could not create the directory where the uploaded files will be stored.",
-					ex);
+			throw new RuntimeException("Could not create the upload directory.", ex);
 		}
 	}
 
@@ -76,20 +71,18 @@ public class FileStorageService {
 		try {
 			// Check if the file's name contains invalid characters
 			if (fileName.contains("..")) {
-				throw new FileStorageException(
-						"Sorry! Filename contains invalid path sequence " + fileName);
+				throw new RuntimeException("Invalud Filename: " + fileName);
 			}
 
-			// Copy file to the target location (Replacing existing file with the same
+			// Copy file to the target location (Replacing existing file with
+			// the same
 			// name)
 			Path targetLocation = this.fileStorageLocation.resolve(fileName);
-			Files.copy(file.getInputStream(), targetLocation,
-					StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
 			return fileName;
 		} catch (IOException ex) {
-			throw new FileStorageException(
-					"Could not store file " + fileName + ". Please try again!", ex);
+			throw new RuntimeException("Could not store file " + fileName + ". Please try again!", ex);
 		}
 	}
 
@@ -100,12 +93,10 @@ public class FileStorageService {
 			if (resource.exists()) {
 				return resource;
 			} else {
-				throw new example.exception.FileNotFoundException(
-						"File not found " + fileName);
+				throw new RuntimeException("File not found " + fileName);
 			}
 		} catch (MalformedURLException ex) {
-			throw new example.exception.FileNotFoundException(
-					"File not found " + fileName, ex);
+			throw new RuntimeException("File not found: malformed url " + fileName, ex);
 		}
 	}
 
