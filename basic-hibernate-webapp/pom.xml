@@ -9,7 +9,7 @@
   <properties>
     <!--    <finalName>${FINAL_NAME}</finalName> -->
     <finalName>demo</finalName>
-    <spring-core.version>4.3.20.RELEASE</spring-core.version>
+    <spring-core.version>6.0.15</spring-core.version>
     <springframework.version>4.0.6.RELEASE</springframework.version>
     <hibernate.version>4.3.6.Final</hibernate.version>
     <hibernate-core.version>5.4.24.Final</hibernate-core.version>
