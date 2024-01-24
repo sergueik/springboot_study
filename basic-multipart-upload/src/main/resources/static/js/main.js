@@ -8,29 +8,15 @@ var multipleFileUploadSuccess = document.querySelector('#multipleFileUploadSucce
 // the file upload back end typically expects a FormData
 function uploadMultipleFiles(files) {
   var formData = new FormData();
-  console.log('files: ' + files);
-  for (var index = 0; index < files.length; index++) {
-    formData.append('files', files[index]);
-  }
-  console.log('formData files: ');
-  console.dir(formData.getAll('files'));
   // NOTE: syntax error would lead to console output being lost
-  console.log('formData entries: ');
-  console.dir(formData.entries());
-  try {
-    var entries = formData.entries();
-    for (let entry of entries) {
-      console.log('formData entry: ');
-      console.dir(entry);
-      // Array(2)
-      // "files"
-      // File { "name": "...", "lastModified":  1705973287311, "lastModifiedDate": "Mon ...", "size": 7, "type": "text/plain", "webkitRelativePath": 2 }
-    }
-  } catch (exception) {
-    console.log('exception :' + exception);
+  for (let file of files) {
+    formData.append('files', file);
   }
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', '/uploadMultipleFiles');
+  // uncomment for cgi testing
+  // var uploadUrl = 'http://192.168.99.100:9090/cgi-bin/upload_multiple_files.cgi';
+  var uploadUrl = '/uploadMultipleFiles';
+  xhr.open('POST', uploadUrl);
   xhr.onload = function() {
     // console.log(xhr.responseText);
     if (xhr.status == 200) {
