@@ -34,12 +34,13 @@ use vars qw|$cgi $payload $csv_data|;
 cgi {
 
     $cgi = $_;
-    # NOTE: Apache may be already sending the header
-    # Access-Control-Allow-Origin: * 
-    # uncommenting the below leads to browser error
-    # The 'Access-Control-Allow-Origin' header contains multiple values '*, *', but only one is allowed.
-    # $cgi->add_response_header('Access-Control-Allow-Origin' => '*');
-    # $cgi->add_response_header('Access-Control-Allow-Headers' => '*');
+
+# NOTE: Apache may be already sending the header
+# Access-Control-Allow-Origin: *
+# uncommenting the below leads to browser error
+# The 'Access-Control-Allow-Origin' header contains multiple values '*, *', but only one is allowed.
+# $cgi->add_response_header('Access-Control-Allow-Origin' => '*');
+# $cgi->add_response_header('Access-Control-Allow-Headers' => '*');
     if ( $cgi->method ne 'POST' ) {
         $cgi->set_response_status(405);    # METHOD_NOT_ALLOWED
         exit;
@@ -48,29 +49,35 @@ cgi {
 
     # detect multipart header
     my $content_type = $cgi->content_type;
-    # print STDERR 'Content-Type: ' . $content_type . $/;
-    if (extract_multipart_boundary($content_type)) {
-        my $uploads = $cgi->uploads;
-        # print STDERR 'uploads ' . Dumper($uploads) . $/;
-        # NOTE: limit to processing only one uploaded file
-        my $upload = $uploads->[0]->[0];
-        my $data = $cgi->upload($upload);
-        my $filename = $data->{filename} || 'unknown';
-        # print STDERR 'filename: ' . $filename . $/;
-        my $fh = $data->{file};
-        {
-        local $/ = undef;
-        $payload = <$fh>;
+
+    if ( extract_multipart_boundary($content_type) ) {
+        my $uploads      = $cgi->uploads;
+        my $upload_array = $cgi->upload_array('files');
+        print STDERR 'Debug: ' . Dumper($upload_array) . $/;
+
+        # TODO: Keep payload from Processing every uploaded files (currently overwriting )
+        #
+        for my $upload (@$upload_array) {
+
+            my $filename = $upload->{filename} || 'unknown';
+            print STDERR 'Uploading filename: ' . $filename . $/;
+            my $fh = $upload->{file};
+            {
+                local $/ = undef;
+                $payload = <$fh>;
+            }
         }
     }
     else {
-        # NOTE: should not attempt do in single operation: print $fh $cgi->body();
+      # NOTE: should not attempt do in single operation: print $fh $cgi->body();
         $payload = $cgi->body();
     }
+
     # print STDERR 'payload: ' . $payload . $/;
     my $tmpdir = tempdir( CLEANUP => 1 );
     $| = 1;
     my ( $fh, $tmpfile ) = tempfile( DIR => $tmpdir );
+
     # print STDERR 'tmpfile: ' . $tmpfile . $/;
     print $fh $payload;
     close($fh);
@@ -83,9 +90,11 @@ cgi {
     while ( my $row = $csv->getline_hr($fh) ) {
         push @$csv_data, $row;
     }
+
     # print STDERR 'csv data: ' . Dumper($csv_data) . $/;
-    my $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
+    my $json_pp   = JSON::PP->new->ascii->pretty->allow_nonref;
     my $json_data = $json_pp->encode($csv_data);
+
     # print STDERR 'json data: ' . Dumper($json_data) . $/;
     $cgi->set_response_type('application/json');
     $cgi->render( html => $json_data );

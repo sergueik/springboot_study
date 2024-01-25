@@ -1,15 +1,14 @@
 package example.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.File;
 
 public class Utils {
 
 	public static String getFileContent(String fileName) {
 		try {
-			final InputStream stream = Utils.class.getClassLoader()
-					.getResourceAsStream(fileName);
+			final InputStream stream = Utils.class.getClassLoader().getResourceAsStream(fileName);
 			final byte[] bytes = new byte[stream.available()];
 			stream.read(bytes);
 			return new String(bytes, "UTF-8");
@@ -71,8 +70,7 @@ public class Utils {
 			}
 			processOutput.append(line);
 
-			for (int j = 0; j < maxLength[i % NUM_COLUMNS] - line.length()
-					+ SEPARATING_SPACE_LENGTH; j++) {
+			for (int j = 0; j < maxLength[i % NUM_COLUMNS] - line.length() + SEPARATING_SPACE_LENGTH; j++) {
 				processOutput.append(" ");
 			}
 

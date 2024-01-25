@@ -56,7 +56,6 @@ mvn spring-boot:run
 ```
 
 
-
 testing can be done from Widows or Linux machine
 create a *small*  text file `test.txt`:
 ```sh
@@ -94,18 +93,23 @@ this will print to console
 this is a test
 ```
 
-NOTE: the `downloadFile` method is still using `javax.servlet.http.HttpServletRequest`
+NOTE: the `downloadFile` method is still using `javax.servlet.http.HttpServletRequest` - removed
+
+
 
 * About to Upload Additional Files Linux
+
 ![Uploading Additional Files Linux](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload4.png)
 
 * Selecting Files Linux
+
 ![Selecting Files Linux](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload5.png)
 
 * Starting Upload Files
+
 ![Starting Upload Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload6.png)
 
-the appliction console log will show
+The application will log details to console:
 
 ```text
 2024-01-18T11:21:22.489-05:00  INFO 2648 --- [nio-8080-exec-8] e.controller.FileUploadController        : upload 4 files: [test1.txt, test2.txt, test3.txt, test4.txt]
@@ -113,6 +117,9 @@ the appliction console log will show
 2024-01-18T11:21:22.490-05:00  INFO 2648 --- [nio-8080-exec-8] e.controller.FileUploadController        : upload file: test2.txt
 2024-01-18T11:21:22.491-05:00  INFO 2648 --- [nio-8080-exec-8] e.controller.FileUploadController        : upload file: test3.txt
 2024-01-18T11:21:22.492-05:00  INFO 2648 --- [nio-8080-exec-8] e.controller.FileUploadController        : upload file: test4.txt
+2024-01-18T11:21:22.493-05:00  INFO 2648 --- [nio-8080-exec-4] example.controller.FileUploadController  : Listing: test1.txt test2.txt test3.txt test4.txt
+
+
 ```
 
 * Showing Newly Uploaded Files
@@ -120,13 +127,24 @@ the appliction console log will show
 ![Showing Newly Uploaded Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload7.png)
 
 
+* Developer Console
+
+![Debug Information During Files Upload](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload-developer-console.png)
 
 ### Upload Multiple Files
+
+*  clear upload directory
+
+```sh
+rm /tmp/upload/*
+```
 * create few dummy files
 ```sh
+
 for i in $(seq 1 1 10) ; do echo "data $i" >  "test${i}.txt"; done
 ```
 * use legacy page with repeated "files" input for multple files
+
 ![Mutlple Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-legacy-upload-files.png)
 
 After page is  submitted the result is displayed:
@@ -300,6 +318,18 @@ for SpringBoot `3.1.5`
   * [Angular file upload: complete guide](https://blog.angular-university.io/angular-file-upload/)
   * https://ryfarlane.com/article/on-load-vanilla-javascript
   * https://stackoverflow.com/questions/13669430/formated-output-in-java-like-ls
+  * [Angular File Upload](https://blog.angular-university.io/angular-file-upload/) (TypeScript - not Angular JS)
+  * https://uploadcare.com/blog/how-to-upload-files-in-angular/ (TypeScript - not Angular JS)
+  * https://www.filestack.com/fileschool/angular/angular-file-upload-tutorial/ (TypeScript - not Angular JS)
+  * https://stackoverflow.com/questions/18571001/file-upload-using-angularjs
+  * [upload File with AngularJS using ngResource](https://www.codeproject.com/Articles/5163873/Upload-File-with-AngularJS-using-ngResource) via loading the selected file as BASE64 encoded string
+  * __Angular JS file upload__ [tutorial](https://folio3.com/angularjs-file-upload-example-tutorial/) via custom directive attribute amending the classic browser file element to make the value accesible and [source](https://github.com/folio3/AngularJS-Tutorial-Example-Code/tree/master/Angular_File_Upload_Demo)
+  * [how to create array of files to FormData from FileList](https://stackoverflow.com/questions/73237026/how-to-create-array-of-files-to-formdata-from-filelist)
+  * [creating a FormData object from scratch](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects)
+  * [how to Append JavaScript Data to FormData](https://plainenglish.io/blog/how-to-append-javascript-data-to-formdata)
+  * [how to use JavaScript’s FormData Object to Send Complex Data](https://dpericich.medium.com/how-to-use-javascripts-formdata-object-to-send-complex-data-c07c31c95f6c)
+  * [uploading files using fetch and FormData](https://muffinman.io/blog/uploading-files-using-fetch-multipart-form-data/)  
+  * http://www.java2s.com/example/javascript-book/for-of.html
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

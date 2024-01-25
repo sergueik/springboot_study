@@ -1,7 +1,9 @@
 package example.controller;
+/**
+ * Copyright 2023-2024 Serguei Kouzmine
+ */
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -13,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- * Copyright 2023 Serguei Kouzmine
- */
 import example.service.FileStorageService;
 import example.utils.Utils;
 
@@ -24,16 +23,15 @@ import example.utils.Utils;
 @RestController
 public class FileUploadController {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(FileUploadController.class);
+	private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
 
 	@Autowired
 	private FileStorageService fileStorageService;
 
 	@GetMapping("/listFiles")
 	public String listFiles() {
-		String listing = Utils
-				.listDirecroryFiles(fileStorageService.getUploadDir());
+		String listing = Utils.listDirecroryFiles(fileStorageService.getUploadDir());
+		logger.info("Listing: {}", listing);
 		return listing;
 	}
 
@@ -54,19 +52,13 @@ public class FileUploadController {
 	}
 
 	@PostMapping("/uploadMultipleFiles")
-	public String uploadMultipleFiles(
-			@RequestParam("files") MultipartFile[] files) {
-		logger
-				.info("upload " + files.length + " files: "
-						+ Arrays.asList(files).stream()
-								.map(file -> file.getOriginalFilename())
-								.collect(Collectors.toList()));
-		// no longer showing upoaded files urls
-
-		List<String> results = Arrays.asList(files).stream()
-				.map(file -> uploadFile(file)).collect(Collectors.toList());
-
-		String result = Utils.listDirecroryFiles(fileStorageService.getUploadDir());
-		return result;
+	public String uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
+		logger.info("upload " + files.length + " files: "
+				+ Arrays.asList(files).stream().map(file -> file.getOriginalFilename()).collect(Collectors.toList()));
+		// no longer showing the uploaded files urls
+		Arrays.asList(files).stream().forEach(file -> uploadFile(file));
+		String listing = Utils.listDirecroryFiles(fileStorageService.getUploadDir());
+		logger.info("Listing: {}", listing);
+		return listing;
 	}
 }

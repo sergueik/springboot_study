@@ -4,19 +4,25 @@ var multipleFileUploadInput = document.querySelector('#multipleFileUploadInput')
 var multipleFileUploadError = document.querySelector('#multipleFileUploadError');
 var multipleFileUploadSuccess = document.querySelector('#multipleFileUploadSuccess');
 
+// the <input type="file" miltiple> creates a FileList
+// the file upload back end typically expects a FormData
 function uploadMultipleFiles(files) {
   var formData = new FormData();
-  for (var index = 0; index < files.length; index++) {
-    formData.append('files', files[index]);
+  // NOTE: syntax error would lead to console output being lost
+  for (let file of files) {
+    formData.append('files', file);
   }
   var xhr = new XMLHttpRequest();
-  xhr.open('POST', '/uploadMultipleFiles');
+  // uncomment for cgi testing
+  // var uploadUrl = 'http://192.168.99.100:9090/cgi-bin/upload_multiple_files.cgi';
+  var uploadUrl = '/uploadMultipleFiles';
+  xhr.open('POST', uploadUrl);
   xhr.onload = function() {
     // console.log(xhr.responseText);
     if (xhr.status == 200) {
       multipleFileUploadError.style.display = 'none';
       var content = xhr.responseText;
-      multipleFileUploadSuccess.innerHTML = '<pre>' +  content + '</pre>';
+      multipleFileUploadSuccess.innerHTML = '<pre>' + content + '</pre>';
       multipleFileUploadSuccess.style.display = 'block';
     } else {
       multipleFileUploadSuccess.style.display = 'none';
@@ -45,7 +51,7 @@ window.addEventListener('load', function(event) {
     if (xhr.status == 200) {
       multipleFileUploadError.style.display = 'none';
       var content = xhr.responseText;
-      multipleFileUploadSuccess.innerHTML = '<pre>' +  content + '</pre>';
+      multipleFileUploadSuccess.innerHTML = '<pre>' + content + '</pre>';
       multipleFileUploadSuccess.style.display = 'block';
     } else {
       multipleFileUploadSuccess.style.display = 'none';
