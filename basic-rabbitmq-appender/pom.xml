@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>rabbitmq-appender</artifactId>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>rabbitmq-appender</name>
   <url>http://maven.apache.org</url>
@@ -17,7 +17,7 @@
     <guava.version>23.0</guava.version>
     <hamcrest-all.version>1.3</hamcrest-all.version>
     <java.version>1.8</java.version>
-    <json.version>20170516</json.version>
+    <json.version>20231013</json.version>
     <junit.version>4.13.1</junit.version>
     <log4j-core.version>2.17.1</log4j-core.version>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>

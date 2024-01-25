@@ -36,11 +36,13 @@ this will be logged:
 ```sh
 ```
 ### Adding Rabbitmq
+
+* copy `example.rabbitmq-appender-0.3.0-SNAPSHOT.jar` from `../basic-rabbitmq-appender/target' to `src/main/resources`
 * run standalone basic example
 ```sh
 mvn compile
 
-java -Dlog4j.configuration=log4j.xml -cp $HOME/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar:src/main/resources/example.rabbitmq-appender-0.1.0-SNAPSHOT.jar:$HOME/.m2/repository/com/rabbitmq/amqp-client/5.8.0/amqp-client-5.8.0.jar:$HOME/.m2/repository/org/slf4j/slf4j-log4j12/1.7.5/slf4j-log4j12-1.7.5.jar:$HOME/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar:$HOME/.m2/repository/org/json/json/20160810/json-20160810.jar:target/classes example.Basic
+java -Dlog4j.configuration=log4j.xml -cp $HOME/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar:src/main/resources/example.rabbitmq-appender-0.3.0-SNAPSHOT.jar:$HOME/.m2/repository/com/rabbitmq/amqp-client/5.8.0/amqp-client-5.8.0.jar:$HOME/.m2/repository/org/slf4j/slf4j-log4j12/1.7.5/slf4j-log4j12-1.7.5.jar:$HOME/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar:$HOME/.m2/repository/org/json/json/20160810/json-20160810.jar:target/classes example.Basic
 ```
 ### See Also
  * [Logging in Spring Boot](https://www.baeldung.com/spring-boot-logging)
