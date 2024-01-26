@@ -7,7 +7,7 @@
   <properties>
     <mainClass>App</mainClass>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <guava.version>30.0-jre</guava.version>
+    <guava.version>32.0.0-jre</guava.version>
     <java.version>11</java.version>
     <junit.version>4.13.1</junit.version>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
