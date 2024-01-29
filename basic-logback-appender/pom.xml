@@ -10,7 +10,7 @@
     <encoding>UTF-8</encoding>
     <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
     <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
-    <json.version>20180130</json.version>
+    <json.version>20231013</json.version>
     <logback.contrib.version>0.1.5</logback.contrib.version>
     <logback-classic.version>1.4.8</logback-classic.version>
     <!-- NOTE: not compatible with Java 1.8: class file has wrong version 55.0, should be 52.0 -->
