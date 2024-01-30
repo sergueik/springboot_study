@@ -23,15 +23,15 @@ public class MapAppender extends AppenderBase<ILoggingEvent> {
 			addError("Prefix is not set for MapAppender.");
 			return;
 		}
-		
+
 		byte[] byteArrary = encoder.encode(event);
 		String message = "";
 		try {
 			message = new String(byteArrary, "utf-8");
-			System.err.println(message);
 		} catch (UnsupportedEncodingException e) {
 			addError(e.toString());
 		}
+		System.err.println("DEBUG: appending event message: " + message);
 
 		eventMap.put(prefix + System.currentTimeMillis(), event);
 	}

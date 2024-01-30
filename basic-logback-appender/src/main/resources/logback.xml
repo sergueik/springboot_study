@@ -8,11 +8,17 @@
   </appender>
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
     </encoder>
   </appender>
   <root level="info">
     <appender-ref ref="map"/>
     <appender-ref ref="CONSOLE"/>
   </root>
+  <logger name="mapAppender" level="debug">
+  <!-- suppress console logging for illustration --> 
+    <!--  <appender-ref ref="CONSOLE"/>  -->
+    <appender-ref ref="map"/>
+  </logger>
 </configuration>
