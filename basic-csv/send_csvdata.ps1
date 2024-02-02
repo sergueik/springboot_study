@@ -19,16 +19,64 @@
 #THE SOFTWARE.
 # [CmdletBinding()]
 param(
-  [parameter(Mandatory=$true,Position=2)] [System.URI] $url,
-  $timeout = 10
-  # ,
+  # NOTE: adding Powershell parameter annotation leads to runtime exception:
   # A parameter with the name 'Debug' was defined multiple times for the command
-  #[switch]$debug
+  # [parameter(Mandatory=$true,Position=1)] [System.URI] $url,
+  [System.URI] $url,
+  $timeout = 10,
+  [switch]$debug
 )
+# NOTE: can not use in the middle
+# Unexpected attribute 'CmdLetbinding'.
+# [CmdLetbinding(DefaultParameterSetName='file')]
+function getPayload{
+  param (
+    # NOTE: adding Powershell parameter annotation leads to runtime exception:
+    # A parameter with the name 'Debug' was defined multiple times for the command
+    # [Parameter(Mandatory=$true,ParameterSetName='file')] [string]$filePath = (resolve-path 'data.txt'),
+    [string]$filePath = $null,
+    # [Parameter(Mandatory=$true,ParameterSetName='map')][Object[]] $dataRows,
+    [Object[]] $dataRows = @(),
+    # [Parameter(Mandatory=$true,ParameterSetName='list')][String[]] $dataLines,
+    [String[]] $dataLines = @(),
+    [String[]] $dataColumns = @(),
+    [bool]$debug = $false
+  )
+  [String]$payload = ''
+  # based on https://stackoverflow.com/questions/60985012/powershell-one-of-two-parameters-are-mandatory
+  if(($filePath -ne $null ) -and ($filePath -ne '')){
+    $payload = [System.Text.Encoding]::GetEncoding('UTF-8').GetString([System.IO.File]::ReadAllBytes($filePath))
+  }
+  if(($dataRows -ne $null) -and ($dataRows.Count -ne 0)){
+    $dataLines = @()
+    $dataRows | foreach-object {
+      $row = @()
+      $dataRow = $_
+      $columns | foreach-object {
+        $column = $_
+        if ($dataRow.ContainsKey($column)){
+          $row += $dataRow[$column]
+        } else {
+          $row += ''
+        }
+      }
+
+      $dataLines += ($row -join ',')
+    }
+    $payload = $dataLines -join ([char]10);
+  }
+  if(($dataLines -ne $null) -and ($dataLines.Count -ne 0)){
+    $payload = $dataLines -join ([char]10);
+  }
+  if ($debug){
+    write-host ('payload:' + [char]10 + $payload)
+  }
+  return $payload
+}
 function sendData {
   param (
-    [string]$filePath = (resolve-path 'data.txt'),
-    [Object[]] $dataRows,
+    [string]$filePath = ((resolve-path '.').path + '\' + 'data.txt'),
+    [String]$payload = '',
     [string]$boundary = [System.Guid]::NewGuid().ToString(),
     [string]$url = 'http://localhost:8085/basic/upload',
     [System.Collections.Hashtable]$params = @{
@@ -40,30 +88,6 @@ function sendData {
   )
   $date = get-date -format 'yyyy-MM-dd HH:mm'
   $filename = ($filePath -replace '^.*\\', '') + '_' + ($date -replace '[\-: ]', '_')
-  $columns = @(
-    'author',
-    'title',
-    'year',
-    'isbn'
-  )
-  $rows = @()
-  $dataRows | foreach-object { 
-    $row = @()
-    $dataRow = $_
-    $columns | foreach-object {
-      $column = $_
-      if ($dataRow.ContainsKey($column)){
-        $row += $dataRow[$column]
-      } else {
-        $row += ''    
-      }
-    }
-  
-    $rows += ($row -join ',')
-  }
-  $payload = $rows -join ([char]10);
-  write-host $payload
-
   $LF = "`r`n";
   $B = '--' + $boundary
   $body_lines = @()
@@ -83,7 +107,9 @@ function sendData {
   $body_lines += $B + '--'
   $body_lines += ''
   $body = $body_lines -join $LF
-  write-host ('body:' + [char]10 + $body)
+  if ($debug){
+    write-host ('body:' + [char]10 + $body)
+  }
   # NOTE: Powershell does not allow dash in variables names
   $content_type = ('multipart/form-data; boundary="{0}"' -f $boundary)
   if ($debug)  {
@@ -94,7 +120,10 @@ function sendData {
   try {
     # Returns the response gotten from the server (we pass it on).
     #
-    $result = invoke-restmethod -uri $URL -method Post -contenttype "$content_type"  -timeoutSec $timeout -body $body
+    if ($debug) {
+	    write-host ( 'invoke-restmethod -uri {0} -method Post -contenttype "{1}"  -timeoutSec {2} -body {3}' -f $url,$content_type,$timeout,$body  )
+    }
+    $result = invoke-restmethod -uri $url -method Post -contenttype "$content_type"  -timeoutSec $timeout -body $body
     return $result
   }
   catch [System.Net.WebException] {
@@ -103,7 +132,7 @@ function sendData {
   }
 }
 # TODO: org.apache.commons.csv.CSVRecord losing one row considering it header
-$dataRows = @( 
+$dataRows = @(
   @{
     author = 'author';
     title = 'title';
@@ -129,6 +158,33 @@ $dataRows = @(
   }
 )
 
+$columns = @(
+  'author',
+  'title',
+  'year',
+  'isbn'
+)
 [bool]$debug_flag = [bool]$psboundparameters['debug'].ispresent
-$result = sendData -url $url -dataRows $dataRows -debug $debug_flag
+$payload  = getPayload -dataRows $dataRows -dataColumns $columns -debug $debug_flag
+write-output 'Sending data row set'
+$result = sendData -url $url -payload "${payload}" -debug $debug_flag
+write-output $result
+write-output 'Sending data lines'
+$dataLines = @()
+$dataRows | foreach-object {
+  $row = @()
+  $dataRow = $_
+  $columns | foreach-object {
+    $column = $_
+    if ($dataRow.ContainsKey($column)){
+      $row += $dataRow[$column]
+    } else {
+      $row += ''
+    }
+  }
+
+  $dataLines += ($row -join ',')
+}
+$payload  = getPayload -dataLines $dataLines -debug $debug_flag
+$result = sendData -url $url -payload "${payload}" -debug $debug_flag
 write-output $result
