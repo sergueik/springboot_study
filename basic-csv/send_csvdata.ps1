@@ -27,11 +27,19 @@ param(
 )
 function sendData {
   param (
+    [string]$filePath = (resolve-path 'data.txt'),
     [Object[]] $dataRows,
-    [String] $url,
+    [string]$boundary = [System.Guid]::NewGuid().ToString(),
+    [string]$url = 'http://localhost:8085/basic/upload',
+    [System.Collections.Hashtable]$params = @{
+      'operation' = 'send';
+      'param'   = 'data';
+    },
     $timeout = 10,
-    [bool]$debug
+    [bool]$debug = $false
   )
+  $date = get-date -format 'yyyy-MM-dd HH:mm'
+  $filename = ($filePath -replace '^.*\\', '') + '_' + ($date -replace '[\-: ]', '_')
   $columns = @(
     'author',
     'title',
@@ -55,49 +63,38 @@ function sendData {
   }
   $payload = $rows -join ([char]10);
   write-host $payload
-  $computer = $env:COMPUTERNAME
-  $boundary = [System.Guid]::NewGuid().ToString()
 
-  $LF = "`n"
   $LF = "`r`n";
-  # Note: The Multipart Content-Type protocol https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html is very precise about getting the number of line feeds correct (both CRLF or LF work).
-  # pass an extra form argument to have an example
-    [System.Collections.Hashtable]$params = @{
-      'operation' = 'send';
-      'param'   = 'data';
-   }
-    $params.keys | foreach-object {
-      $key = $_
-      $val = $params.Item($key)
-      # $content.Add((new-object System.Net.Http.StringContent($val)), $key)
-    }
-  $param_lines = @()
   $B = '--' + $boundary
-  $param_lines += $B
+  $body_lines = @()
+  $body_lines += $B
   $params.keys | foreach-object {
     $key = $_
     $val = $params.Item($key)
-    $param_lines += ('Content-Disposition: form-data; name="{0}"' -f $key)
-    $param_lines += ''
-    $param_lines += $val
-    $param_lines += $B
+    $body_lines += ('Content-Disposition: form-data; name="{0}"' -f $key)
+    $body_lines += ''
+    $body_lines += $val
+    $body_lines += $B
   }
-  $param_part = $param_lines -join $LF
-  $body = @(
-    "--$boundary",
-    "Content-Disposition: form-data; name=`"file`"$LF",   # filename= is optional
-    $payload,
-    $param_part,
-#    "--$boundary",
-    "Content-Disposition: form-data; name=`"computer`"$LF",
-    $computer,
-    "--$boundary--$LF"
-    ) -join $LF
-   write-host $body
+  $body_lines += ('Content-Disposition: form-data; name="file"; filename="{0}"' -f $filename)
+  $body_lines += 'Content-Type: application/octet-stream'
+  $body_lines += ''
+  $body_lines += $payload
+  $body_lines += $B + '--'
+  $body_lines += ''
+  $body = $body_lines -join $LF
+  write-host ('body:' + [char]10 + $body)
+  # NOTE: Powershell does not allow dash in variables names
+  $content_type = ('multipart/form-data; boundary="{0}"' -f $boundary)
+  if ($debug)  {
+    write-host ('invoke-restmethod -uri {0} -method Post -contenttype "{1}" -body {2}' -f $uri, $content_type, [char]10 + $body)
+  }
+  # quotes aroung content_type arguments are optional
+
   try {
     # Returns the response gotten from the server (we pass it on).
     #
-    $result = invoke-RestMethod -uri $url -method POST -contentType ( 'multipart/form-data; boundary="{0}"' -f $boundary) -timeoutSec $timeout -body $body
+    $result = invoke-restmethod -uri $URL -method Post -contenttype "$content_type"  -timeoutSec $timeout -body $body
     return $result
   }
   catch [System.Net.WebException] {
@@ -105,8 +102,14 @@ function sendData {
     throw $_
   }
 }
-
+# TODO: org.apache.commons.csv.CSVRecord losing one row considering it header
 $dataRows = @( 
+  @{
+    author = 'author';
+    title = 'title';
+    isbn = 'isbn';
+    year = 'year';
+  },
   @{
     author = 'Dan Simmons';
     title = 'Hyperion';
@@ -114,13 +117,13 @@ $dataRows = @(
   },
   @{
     author = 'Douglas Adams'
-    title = "The Hitchhiker's Guide to the Galaxy";
+    title = "`"The Hitchhiker's Guide to the Galaxy`"";
     year =  1979;
     isbn = '978-0345391803';
   },
   @{
     author = 'Lynne Truss';
-    title = "Eats, Shoots and Leaves";
+    title = "`"Eats, Shoots and Leaves`"";
     year =  2003;
     isbn = '978-1861976123';
   }
@@ -128,3 +131,4 @@ $dataRows = @(
 
 [bool]$debug_flag = [bool]$psboundparameters['debug'].ispresent
 $result = sendData -url $url -dataRows $dataRows -debug $debug_flag
+write-output $result

@@ -193,8 +193,21 @@ curl -s -X POST "http://localhost:8085/upload?operation=send&param=something&ser
 ]
 
 ```
+### Powershell
+```powershell
+. .\send_csvdata.ps1 -url 'http://localhost:8085/upload'
+```
+```text
+
+             status author              title                              year
+             ------ ------              -----                              ----
+              False Dan Simmons         Hyperion                              0
+              False Douglas Adams       The Hitchhiker's...                1979
+              False Lynne Truss         Eats, Shoots and...                2003
+
+```
 ### Uploading Through the Browser
-alternatively upload the `book.csv` throughthe browser (the upload endpoint  accepts any CSV data but internally tries to construct a `Book` object from it, so some specic fields presence in the CSV is required (`author`, `title`,`year`)
+alternatively upload the `book.csv` through the browser (the upload endpoint  accepts any CSV data but internally tries to construct a `Book` object from it, so some specic fields presence in the CSV is required (the `author`, the `title`, and the `year`)
 
 the csv contents are returnd by the end point  for debugging, as JSON payload, but currentlty only visible through Developer Tools:
 ```JSON

@@ -5,11 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <title>Spring Boot File Upload / Download Rest API Example</title>
   <meta charset="utf-8" />
-  <style type="text/css">
-  table tr th, td {
+<style>
+table { border-collapse: collapse; }
+  tr th, td {
     text-transform: capitalize;
     text-align: center;
   }
+
+body {
+  margin: 0;
+  padding: 0;
+  font-weight: 400;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: .7rem;
+  line-height: 1.5;
+  color: #03030A;
+  background-color: #f4f4f4;
+  height: 100%;
+}
   </style>
   </head>
   <body>
@@ -25,6 +38,22 @@
       </div>
     </div>
     <script th:src="@{/js/main.js}"></script>
+<!-- 
+<body ng-app='Aplication'>
+<div ng-controller='TableController'>
+<div>Paste CSV into textarea</div>
+<textarea id='data' ng-change = 'tableController();' ng-model='myValue' >
+</textarea>
+<table class='table-bordered' style='width: 800px;'>
+  <tr data-ng-repeat='row in table_rows'>
+    <td style='width: 25%'>{{ row.column1 }}</td>
+    <td style='width: 25%'>{{ row.column2 }}</td>
+    <td style='width: 50%'>{{ row.column3 }}</td>
+  </tr>
+</table>
+</div>
+
+-->
   </body>
 </html>
 
