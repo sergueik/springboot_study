@@ -68,7 +68,7 @@ function sendfile {
 
   $webRequest = [System.Net.WebRequest]::Create($url)
   $webRequest.Method = 'POST'
-  $content_type = ('multipart/form-payload; boundary="{0}"' -f $boundary)
+  $content_type = ('multipart/form-data; boundary="{0}"' -f $boundary)
 
   $webRequest.ContentType = $content_type
 
