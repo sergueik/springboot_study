@@ -52,7 +52,7 @@ function getPayload{
     $dataRows | foreach-object {
       $row = @()
       $dataRow = $_
-      $columns | foreach-object {
+      $dataColumns | foreach-object {
         $column = $_
         if ($dataRow.ContainsKey($column)){
           $row += $dataRow[$column]
@@ -80,8 +80,8 @@ function sendData {
     [string]$boundary = [System.Guid]::NewGuid().ToString(),
     [string]$url = 'http://localhost:8085/basic/upload',
     [System.Collections.Hashtable]$params = @{
-      'operation' = 'send';
-      'param'   = 'data';
+      operation = 'send';
+      param = 'data';
     },
     $timeout = 10,
     [bool]$debug = $false
@@ -158,26 +158,30 @@ $dataRows = @(
   }
 )
 
-$columns = @(
+$dataColumns = @(
   'author',
   'title',
   'year',
   'isbn'
 )
 [bool]$debug_flag = [bool]$psboundparameters['debug'].ispresent
-$payload  = getPayload -dataRows $dataRows -dataColumns $columns -debug $debug_flag
+
 write-output 'Sending data row set'
+$payload = getPayload -dataRows $dataRows -dataColumns $dataColumns -debug $debug_flag
 $result = sendData -url $url -payload "${payload}" -debug $debug_flag
 write-output $result
+
 write-output 'Sending data lines'
 $dataLines = @()
 $dataRows | foreach-object {
   $row = @()
   $dataRow = $_
-  $columns | foreach-object {
+  $dataColumns | foreach-object {
     $column = $_
     if ($dataRow.ContainsKey($column)){
-      $row += $dataRow[$column]
+      # NOTE: not escaping quotation inside the column
+      $value = ( $dataRow[$column] -replace '^"', '' ) -replace '"$', ''
+      $row += ('"{0}"' -f $value)
     } else {
       $row += ''
     }
@@ -185,6 +189,6 @@ $dataRows | foreach-object {
 
   $dataLines += ($row -join ',')
 }
-$payload  = getPayload -dataLines $dataLines -debug $debug_flag
+$payload = getPayload -dataLines $dataLines -debug $debug_flag
 $result = sendData -url $url -payload "${payload}" -debug $debug_flag
 write-output $result
