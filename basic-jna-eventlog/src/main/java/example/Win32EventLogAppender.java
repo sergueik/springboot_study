@@ -5,16 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.Layout;
-import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.appender.AbstractAppender;
-import org.apache.logging.log4j.core.config.plugins.Plugin;
-import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
-import org.apache.logging.log4j.core.config.plugins.PluginElement;
-import org.apache.logging.log4j.core.config.plugins.PluginFactory;
-
 import com.sun.jna.platform.win32.Advapi32;
 import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.Kernel32;
@@ -144,7 +134,7 @@ public class Win32EventLogAppender {
 
 		final int messageID = 0x1000;
 
-		String[] buffer = { message + " - this is a test" };
+		String[] buffer = { message };
 		if (Advapi32.INSTANCE.ReportEvent(_handle, eventLogType, category,
 				messageID, null, buffer.length, 0, buffer, null) == false) {
 			Exception e = new Win32Exception(Kernel32.INSTANCE.GetLastError());
