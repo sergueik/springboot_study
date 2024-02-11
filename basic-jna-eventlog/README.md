@@ -17,6 +17,13 @@ mvn clean package
 java -jar target\example.jna_eventlog.jar the quick brown fox jumps over the lazy dog
 ```
 
+this will print to console:
+```text
+
+04:26:37.314 [main] WARN  mapAppender - Event log from App message the quick brown fox jumps over the lazy dog
+DEBUG: appending event message: 04:26:37.314 [main] WARN  mapAppender - Event log from App message the quick brown fox jumps over the lazy dog
+```
+and add Windows Event Log:
 ![Event log Message](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-message.png)
 
 * verify
@@ -24,15 +31,35 @@ java -jar target\example.jna_eventlog.jar the quick brown fox jumps over the laz
 ```powershell
 get-eventlog -logname log4jna_sample -newest 1 |format-list
 ```
+reveals
+```text
+Index              : 32
+EntryType          : Information
+InstanceId         : 4096
+Message            : 04:26:37.314 [main] WARN  mapAppender - Event log from App
+                      message the quick brown fox jumps over the lazy dog
+
+Category           : Info
+CategoryNumber     : 3
+ReplacementStrings : {04:26:37.314 [main] WARN  mapAppender - Event log from Ap
+                     p message the quick brown fox jumps over the lazy dog
+                     }
+Source             : example.log4jna_sample
+TimeGenerated      : 31.01.2024 4:26:39
+TimeWritten        : 31.01.2024 4:26:39
+UserName           :
+```
+
 or  
 ```cmd
-wevtutil.exe qe   log4jna_sample /rd:true /f:text /c:1
+wevtutil.exe query-events log4jna_sample /rd:true /f:text /c:1
 ```
+reveals
 ```text
 Event[0]:
   Log Name: log4jna_sample
   Source: example.log4jna_sample
-  Date: 2024-01-25T18:02:54.0220000Z
+  Date: 2024-01-31T04:26:39.0170000Z
   Event ID: 4096
   Task: Info
   Level: Сведения
@@ -42,25 +69,12 @@ Event[0]:
   User Name: N/A
   Computer: DESKTOP-82V9KDO
   Description:
-the quick brown fox jumps over the lazy dog  - this is a test
-
+04:26:37.314 [main] WARN  mapAppender - Event log from App message the quick brown fox jumps over the lazy dog
 ```
-reveals
-```text
-Index              : 26
-EntryType          : Information
-InstanceId         : 4096
-Message            : the quick brown fox jumps over the lazy dog  - this is a test
-Category           : Info
-CategoryNumber     : 3
-ReplacementStrings : {the quick brown fox jumps over the lazy dog  - this is a  test}
-Source             : example.log4jna_sample
-TimeGenerated      : 25.01.2024 8:07:00
-TimeWritten        : 25.01.2024 8:07:00
-UserName           :
-
+### Cleanup
+```cmd
+wevtutil.exe clear-log log4jna_sample
 ```
-
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<configuration>
+  <appender name="map" class="example.MapAppender">
+    <prefix>test</prefix>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+    </encoder>
+  </appender>
+  <root level="info"/>
+  <logger name="mapAppender" level="debug">
+    <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="map"/>
+  </logger>
+</configuration>
