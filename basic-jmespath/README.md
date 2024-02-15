@@ -1,14 +1,9 @@
 ### Info
-this directory contains basic skeleton project to exercise testing the [jmespath-java](https://github.com/burtcorp/jmespath-java)( the
-implementation of the JMES Path JSON Query langauge foir Java)
-
+implementation of the JMES Path JSON Query langauge for Java
 ### Usage
 
 ```sh
 mvn dependency:copy-dependencies
-```
-```sh
-mvn test
 ```
 ### NOTE
 
@@ -38,6 +33,3 @@ the "main* maven dependency `jmespath` dependency on [maven central](https://mvn
    * https://github.com/NikiforovAll/jmespath-demo
    * https://github.com/jdevillard/JmesPath.Net/commits/master/?after=e59be9c0c0dfeea84f1bb65ddc1f776f063056c5+69
  -  there is alternatibe vendor, with very frequent [releases that are all published to maven cenral](https://mvnrepository.com/artifact/com.amazonaws/jmespath-java)
-
-### Author
-[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

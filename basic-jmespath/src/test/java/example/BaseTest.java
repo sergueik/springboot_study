@@ -9,10 +9,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.io.IOException;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -22,6 +20,7 @@ import io.burt.jmespath.Expression;
 import io.burt.jmespath.JmesPath;
 import io.burt.jmespath.jackson.JacksonRuntime;
 
+@SuppressWarnings("deprecation")
 public class BaseTest {
 
 	private boolean debug = false;
@@ -44,13 +43,13 @@ public class BaseTest {
 	JsonNode result = null;
 	JsonNode input = null;
 
-	@Before
-	public void beforeClass() throws IOException {
+	@BeforeClass
+	public void beforeClass() {
 		jmespath = new JacksonRuntime();
 
 	}
 
-	@Test
+	@Test(enabled = true)
 	public void test1() throws JsonProcessingException {
 		input = mapper.readTree(jsonString);
 		expression = jmespath.compile("k1");
