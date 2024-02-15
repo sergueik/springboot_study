@@ -1,0 +1,9 @@
+{
+    "message": "The given data was invalid.",
+    "errors": {
+        "email": [
+            "invalid email",
+            "another row of data"
+        ]
+    }
+}
