@@ -69,7 +69,189 @@ harness-proxy-1              harness/nginx:1.21.4                        "/docke
 harness-redis-1              harness/redis:6.2.7-alpine                  "docker-entrypoint.s…"   redis               47 minutes ago      Up 39 minutes (healthy)     6379/tcp
 ```
 
+```sh
+docker-compose logs platform-service
+```
+shows
+```text
+basic-harness-platform-service-1  | + [[ -v {hostname} ]]
+basic-harness-platform-service-1  | + [[ -z 60m ]]
+basic-harness-platform-service-1  | Using memory  60m
+basic-harness-platform-service-1  | + [[ -z '' ]]
+basic-harness-platform-service-1  | + export COMMAND=server
+basic-harness-platform-service-1  | + COMMAND=server
+basic-harness-platform-service-1  | + echo 'Using memory ' 60m
+basic-harness-platform-service-1  | + [[ -z '' ]]
+basic-harness-platform-service-1  | + export CAPSULE_JAR=/opt/harness/platform-service-capsule.jar
+basic-harness-platform-service-1  | + CAPSULE_JAR=/opt/harness/platform-service-capsule.jar
+basic-harness-platform-service-1  | + [[ true == \t\r\u\e ]]
+basic-harness-platform-service-1  | + export 'GC_PARAMS= -XX:+UseSerialGC -Dfile.encoding=UTF-8'
+basic-harness-platform-service-1  | + GC_PARAMS=' -XX:+UseSerialGC -Dfile.encoding=UTF-8'
+basic-harness-platform-service-1  | + export 'JAVA_OPTS=-Xmx60m -XX:+HeapDumpOnOutOfMemoryError -Xloggc:mygclogfilename.gc  -XX:+UseSerialGC -Dfile.encoding=UTF-8 -XX:-TieredCompilation'
+basic-harness-platform-service-1  | + JAVA_OPTS='-Xmx60m -XX:+HeapDumpOnOutOfMemoryError -Xloggc:mygclogfilename.gc  -XX:+UseSerialGC -Dfile.encoding=UTF-8 -XX:-TieredCompilation'
+basic-harness-platform-service-1  | + [[ '' == \t\r\u\e ]]
+basic-harness-platform-service-1  | + [[ '' == \t\r\u\e ]]
+basic-harness-platform-service-1  | + [[ KUBERNETES_ONPREM == \K\U\B\E\R\N\E\T\E\S ]]
+basic-harness-platform-service-1  | + [[ KUBERNETES_ONPREM == \K\U\B\E\R\N\E\T\E\S\_\O\N\P\R\E\M ]]
+basic-harness-platform-service-1  | + java -Xmx60m -XX:+HeapDumpOnOutOfMemoryError -Xloggc:mygclogfilename.gc -XX:+UseSerialGC -Dfile.encoding=UTF-8 -XX:-TieredCompilation -jar /opt/harness/platform-service-capsule.jar server /opt/harness/config.yml
+basic-harness-platform-service-1  | [0.002s][warning][gc] -Xloggc is deprecated. Will use -Xlog:gc:mygclogfilename.gc instead.
+basic-harness-platform-service-1  | ERROR StatusLogger Log4j2 could not find a logging implementation. Please add log4j-core to the classpath. Using SimpleLogger to log to the console...
+basic-harness-platform-service-1  | WARN  [2024-02-21 23:06:11,131] org.reflections.Reflections: given scan urls are empty. set urls in the configuration
+basic-harness-platform-service-1  | WARN  [2024-02-21 23:06:14,149] javax.persistence.spi: javax.persistence.spi::No valid providers found.
+basic-harness-platform-service-1  | WARNING: An illegal reflective access operation has occurred
+basic-harness-platform-service-1  | WARNING: Illegal reflective access by org.springframework.util.ReflectionUtils (file:/opt/harness/platform-service-capsule.jar) to field java.lang.Enum.name
+basic-harness-platform-service-1  | WARNING: Please consider reporting this to the maintainers of org.springframework.util.ReflectionUtils
+basic-harness-platform-service-1  | WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+basic-harness-platform-service-1  | WARNING: All illegal access operations will be denied in a future release
+basic-harness-platform-service-1  | 2024-02-21 23:06:52,987 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - No class store collection filters with not final class io.harness.filter.entity.Filter [33m[collectionName=filters][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:53,512 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "unique_accountId_organizationId_projectId_type", "unique": true} {"fullyQualifiedIdentifier": 1, "filterType": 1} [33m[indexName=unique_accountId_organizationId_projectId_type, collectionName=filters][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:54,349 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "unique_accountId_orgId_projectId_name_type_Index", "unique": true} {"accountIdentifier": 1, "orgIdentifier": 1, "projectIdentifier": 1, "name": 1, "filterType": 1} [33m[indexName=unique_accountId_orgId_projectId_name_type_Index, collectionName=filters][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:54,534 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - No class store collection notifyQueue with not final class io.harness.waiter.NotifyEvent [33m[collectionName=notifyQueue][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:54,539 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "waitInstanceId_1", "unique": true} {"waitInstanceId": 1} [33m[indexName=waitInstanceId_1, collectionName=notifyQueue][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:54,972 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "earliestGet_1", "background": true, "expireAfterSeconds": 86400} {"earliestGet": 1} [33m[indexName=earliestGet_1, collectionName=notifyQueue][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:55,018 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "next4", "background": true} {"topic": 1, "earliestGet": 1} [33m[indexName=next4, collectionName=notifyQueue][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:55,332 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "processAfter_1", "background": true} {"processAfter": 1} [33m[indexName=processAfter_1, collectionName=ns_delegateAsyncTaskResponses][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:55,434 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "validUntil_1", "background": true, "expireAfterSeconds": 0} {"validUntil": 1} [33m[indexName=validUntil_1, collectionName=ns_delegateAsyncTaskResponses][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:55,496 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Class store collection cache with final class io.harness.cache.CacheEntity [33m[collectionName=cache][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:55,510 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "accountId_1", "background": true} {"accountId": 1} [33m[indexName=accountId_1, collectionName=cache][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:55,621 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "validUntil_1", "background": true, "expireAfterSeconds": 0} {"validUntil": 1} [33m[indexName=validUntil_1, collectionName=cache][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:55,663 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "unique_commutative", "unique": true} {"_id": 1, "contextValue": 1} [33m[indexName=unique_commutative, collectionName=cache][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:55,803 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "unique_notificationsetting_idx", "unique": true} {"accountId": 1} [33m[indexName=unique_notificationsetting_idx, collectionName=notificationSettings][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:56,069 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "team_idx", "background": true} {"team": 1} [33m[indexName=team_idx, collectionName=notificationTemplates][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:56,466 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "unique_identifier_team_idx", "unique": true} {"identifier": 1, "team": 1} [33m[indexName=unique_identifier_team_idx, collectionName=notificationTemplates][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:56,611 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - No class store collection notificationsNg with not final class io.harness.notification.entities.Notification [33m[collectionName=notificationsNg][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:56,621 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "unique_notification_idx", "unique": true} {"id": 1} [33m[indexName=unique_notification_idx, collectionName=notificationsNg][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:56,809 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "notification_retries_sent", "background": true} {"shouldRetry": 1, "retries": 1} [33m[indexName=notification_retries_sent, collectionName=notificationsNg][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:56,986 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "nextIteration_1", "background": true} {"nextIteration": 1} [33m[indexName=nextIteration_1, collectionName=notificationsNg][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:57,142 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - No class store collection migrationJobInstances with not final class io.harness.migration.MigrationJobInstance [33m[collectionName=migrationJobInstances][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:57,167 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "validUntil_1", "background": true, "expireAfterSeconds": 0} {"validUntil": 1} [33m[indexName=validUntil_1, collectionName=progressUpdate][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:57,433 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "correlation", "background": true} {"correlationId": 1, "createdAt": -1} [33m[indexName=correlation, collectionName=progressUpdate][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:57,507 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "createdAt_1", "background": true} {"createdAt": 1} [33m[indexName=createdAt_1, collectionName=progressUpdate][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:57,585 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "validUntil_1", "background": true, "expireAfterSeconds": 0} {"validUntil": 1} [33m[indexName=validUntil_1, collectionName=ns_delegateSyncTaskResponses][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:57,776 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "validUntil_1", "background": true, "expireAfterSeconds": 0} {"validUntil": 1} [33m[indexName=validUntil_1, collectionName=notifyResponses][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:57,867 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "createdAt_1", "background": true} {"createdAt": 1} [33m[indexName=createdAt_1, collectionName=notifyResponses][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:57,933 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "correlationIds_1", "background": true} {"correlationIds": 1} [33m[indexName=correlationIds_1, collectionName=waitInstances][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:58,043 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "validUntil_1", "background": true, "expireAfterSeconds": 0} {"validUntil": 1} [33m[indexName=validUntil_1, collectionName=waitInstances][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:58,191 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "waitingOnCorrelationIds_1", "background": true} {"waitingOnCorrelationIds": 1} [33m[indexName=waitingOnCorrelationIds_1, collectionName=waitInstances][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:58,287 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "processAfter_1", "background": true} {"processAfter": 1} [33m[indexName=processAfter_1, collectionName=ns_delegateTaskProgressResponses][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:06:58,391 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.mongo.IndexManagerSession[0;39m - Creating index {"name": "validUntil_1", "background": true, "expireAfterSeconds": 0} {"validUntil": 1} [33m[indexName=validUntil_1, collectionName=ns_delegateTaskProgressResponses][0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,440 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/pipeline/slack/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,444 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/pipeline/email/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,450 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/pipeline/pagerduty/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,453 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/pipeline/msteams/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,459 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/stage/slack/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,464 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/stage/email/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,469 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/stage/pagerduty/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,478 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/stage/msteams/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,485 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/step/slack/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,491 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/step/email/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,495 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/step/pagerduty/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,499 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/step/msteams/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,503 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/approval/slack/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,505 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/approval/email/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,508 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/approval/slack/plain_text_execution.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,512 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/approval/email/plain_text_execution.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,517 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_slo_simple_project_slack.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,520 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_slo_simple_project_email.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,523 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_slo_simple_project_pagerduty.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,526 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_slo_simple_project_msteams.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,528 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_slo_composite_project_slack.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,531 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_slo_composite_project_email.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,533 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_slo_composite_project_pagerduty.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,542 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_slo_composite_project_msteams.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,547 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_slo_composite_account_slack.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,551 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_slo_composite_account_email.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,554 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_slo_composite_account_pagerduty.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,558 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_slo_composite_account_msteams.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,561 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_monitoredservice_slack.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,564 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_monitoredservice_et_slack.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,567 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_monitoredservice_email.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,572 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_monitoredservice_et_email.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,574 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_monitoredservice_pagerduty.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,578 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource cvng_notification_templates/cvng_monitoredservice_msteams.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,632 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/email_test.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,633 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/slack_test.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,636 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/pd_test.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,639 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/msteams_test.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,652 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/pipeline_rejected_email_test.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,654 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/pipeline_rejected_slack_test.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,656 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/pipeline_rejected_pd_test.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,659 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/pipeline_rejected_msteams_test.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,661 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/approval/msteams/plain_text.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | 2024-02-21 23:07:03,670 [32m[main][0;39m [31mWARN [0;39m [36mio.harness.notification.service.SeedDataPopulaterServiceImpl[0;39m - Resource not found, skipping to seed the template - java.lang.IllegalArgumentException: resource notification_templates/approval/msteams/plain_text_execution.txt not found. [33m[0;39m 
+basic-harness-platform-service-1  | java.lang.OutOfMemoryError: Java heap space
+basic-harness-platform-service-1  | Dumping heap to java_pid149.hprof ...
+basic-harness-platform-service-1  | Heap dump file created [93389809 bytes in 9.588 secs]
+basic-harness-platform-service-1  | java.lang.OutOfMemoryError: Java heap space
+basic-harness-platform-service-1  | 	at java.base/java.util.Arrays.copyOf(Arrays.java:3745)
+basic-harness-platform-service-1  | 	at java.base/jdk.internal.loader.Resource.getBytes(Resource.java:117)
+basic-harness-platform-service-1  | 	at java.base/jdk.internal.loader.URLClassPath$JarLoader$2.getBytes(URLClassPath.java:882)
+basic-harness-platform-service-1  | 	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:797)
+basic-harness-platform-service-1  | 	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassOnClassPathOrNull(BuiltinClassLoader.java:698)
+basic-harness-platform-service-1  | 	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:621)
+basic-harness-platform-service-1  | 	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:579)
+basic-harness-platform-service-1  | 	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+basic-harness-platform-service-1  | 	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+basic-harness-platform-service-1  | 	at java.base/java.lang.Class.getDeclaredMethods0(Native Method)
+basic-harness-platform-service-1  | 	at java.base/java.lang.Class.privateGetDeclaredMethods(Class.java:3166)
+basic-harness-platform-service-1  | 	at java.base/java.lang.Class.getDeclaredMethods(Class.java:2309)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.server.model.IntrospectionModeller$2.run(IntrospectionModeller.java:236)
+basic-harness-platform-service-1  | 	at java.base/java.security.AccessController.doPrivileged(Native Method)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.server.model.IntrospectionModeller.getAllDeclaredMethods(IntrospectionModeller.java:230)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.server.model.IntrospectionModeller.checkForNonPublicMethodIssues(IntrospectionModeller.java:150)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.server.model.IntrospectionModeller.doCreateResourceBuilder(IntrospectionModeller.java:97)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.server.model.IntrospectionModeller.access$000(IntrospectionModeller.java:58)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.server.model.IntrospectionModeller$1.call(IntrospectionModeller.java:90)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.server.model.IntrospectionModeller$1.call(IntrospectionModeller.java:87)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.internal.Errors.process(Errors.java:292)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.internal.Errors.process(Errors.java:274)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.internal.Errors.processWithException(Errors.java:232)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.server.model.IntrospectionModeller.createResourceBuilder(IntrospectionModeller.java:87)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.server.model.Resource.from(Resource.java:781)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.server.ResourceBagConfigurator.init(ResourceBagConfigurator.java:66)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.server.ApplicationHandler.initialize(ApplicationHandler.java:331)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.server.ApplicationHandler.lambda$initialize$1(ApplicationHandler.java:293)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.server.ApplicationHandler$$Lambda$1044/0x0000000100a89840.call(Unknown Source)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.internal.Errors.process(Errors.java:292)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.internal.Errors.process(Errors.java:274)
+basic-harness-platform-service-1  | 	at org.glassfish.jersey.internal.Errors.processWithException(Errors.java:232)
+
+```
+is fixe through updating the onfiguration
+```yaml
+ platform-service:
+    image: harness/platform-service-signed:79202
+    deploy:
+      resources:
+        limits:
+          memory: 244m
+``` 
+to 
+```yaml
+ platform-service:
+    image: harness/platform-service-signed:79202
+    deploy:
+      resources:
+        limits:
+          memory: 1024m
+
+```
+and in `environment/platform-service.env`:
+```text
+MEMORY=60m
+```
+to
+```text
+MEMORY=1024m
+
+```
+and rerunning
+```sh
+docker-compose up --build platform-service
+```
 ![Harness Signup](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-harness-signup.png)
+
+NOTE: the password will not authenticate you anywhere but this cluster
 
 ![Harness Login](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-harness-login.png)
 
@@ -77,6 +259,11 @@ harness-redis-1              harness/redis:6.2.7-alpine                  "docker
 ```sh
 docker-compose stop
 docker network prune -f
+```
+      
+```text
+Deleted Networks:
+basic-harness_harness-network
 ```
 ### See Also
 
