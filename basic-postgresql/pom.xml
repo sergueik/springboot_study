@@ -18,7 +18,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
     <spring-jdbc.version>4.3.10.RELEASE</spring-jdbc.version>
-    <postgresql.version>42.3.8</postgresql.version>
+    <postgresql.version>42.3.9</postgresql.version>
     <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
