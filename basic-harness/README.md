@@ -249,7 +249,7 @@ and rerunning
 ```sh
 docker-compose up --build platform-service
 ```
-![Harness Signup](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-harness-signup.png)
+![Harness Signup](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-harness-signup.png)
 
 NOTE: the password will not authenticate you anywhere but this cluster
 
@@ -265,6 +265,80 @@ docker network prune -f
 Deleted Networks:
 basic-harness_harness-network
 ```
+### WinRM
+
+on Windows host:
+
+
+```powershell
+enable-psremoting -force
+winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+winrm set  winrm/config/service/auth '@{Basic="true"}
+```
+this establishes the channel without encryption and with basic authentication
+
+execute some Powershell to have identifyable result
+```powershell
+get-wmiobject "win32_computersystem"
+```
+
+```text
+Domain              : WORKGROUP
+Manufacturer        : innotek GmbH
+Model               : VirtualBox
+Name                : WIN-NCC616RSI3V
+PrimaryOwnerName    : 
+TotalPhysicalMemory : 2147012608
+```
+
+![Windows Target](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-windows-server.png)
+
+On Linux host
+
+
+
+
+```sh
+sudo pip3 install pywinrm
+sudo pip3 install winrmcp
+```
+```sh
+python
+```
+
+in Python shell
+
+```
+>>> import winrm
+>>> session = winrm.Session('192.168.0.185', auth = ('administrator', 'NP730qfg'))
+>>> result = session.run_ps('get-wmiobject "win32_computersystem"')
+>>> print(result.std_out.decode('utf8'))
+```
+
+```text
+Domain              : WORKGROUP
+Manufacturer        : innotek GmbH
+Model               : VirtualBox
+Name                : WIN-NCC616RSI3V
+PrimaryOwnerName    : 
+TotalPhysicalMemory : 2147012608
+
+```
+
+
+
+
+```python
+>>>result = session.run_ps('get-content "c:\\users\\administrator\\Desktop\\a.txt"')
+>>> print(result.std_out.decode('utf8'))
+```
+
+
+```text
+hello World
+```
+![Windows Target](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-winrm-client.png)
+
 ### See Also
 
   * [deploy to physical data center](https://developer.harness.io/docs/continuous-delivery/get-started/cd-tutorials/pdc) using a `harness/delegate` Docker instance
