@@ -350,5 +350,16 @@ hello World
   * [Harness Shell Script step example](https://developer.harness.io/docs/continuous-delivery/x-platform-cd-features/cd-steps/utilities/shell-script-step)
   * https://hostadvice.com/how-to/web-hosting/ubuntu/how-to-configure-firewall-with-ufw-on-ubuntu-18/
 
+
+  * https://medium.com/@raghavmnnit/setting-up-winrm-communication-between-linux-and-windows-using-python-and-pywinrm-88f47a68bf7d (requires creation of account to access the material)
+  * https://adamtheautomator.com/python-winrm/
+  * https://www.google.com/search?q=python%20pywinrm%20tutorial
+  * https://adamtheautomator.com/python-winrm/
+  * https://pypi.org/project/pywinrm
+  * https://pypi.org/project/winrmcp/
+  * https://github.com/packer-community/winrmcp/tree/master/winrmcp Golang?
+  * https://github.com/diyan/pywinrm/blob/f796b5aa15f0ce6c3e16aa3fd33a13efedff4937/winrm/__init__.py#L30
+
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
