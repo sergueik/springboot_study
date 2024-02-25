@@ -371,6 +371,17 @@ curl -s -X POST  -H "Content-Type: application/json" http://localhost:5000/searc
   * another [snippet](https://gist.github.com/danlangford/3418696) on dealing with @Value annotations in test runner
    * [connect from a container to the host](https://docs.docker.com/desktop/networking/#i-want-to-connect-from-a-container-to-a-service-on-the-host) via `host.docker.internal` DNS name - does not work on Linux host nor on Windows with Docker Toolbox
    * [discussion](https://stackoverflow.com/questions/48546124/what-is-linux-equivalent-of-host-docker-internal/61001152) about the linux equivalent of `host.docker.internal`
+  * VictoriaMetrics 
+  + [repository](https://github.com/VictoriaMetrics/VictoriaMetrics)
+  + https://docs.victoriametrics.com/victorialogs/data-ingestion/
+  + [youtube](https://www.youtube.com/@victoriametrics)
+  + [Imports data to VictoriaMetrics](https://docs.victoriametrics.com/url-examples/?highlight=how&highlight=to&highlight=import&highlight=data&highlight=in&highlight=prometheus&highlight=exposition&highlight=format#apiv1import)
+  + [VictoriaMetrics remote write protocol](https://docs.victoriametrics.com/vmagent/?highlight=remote_write&highlight=protocol#victoriametrics-remote-write-protocol) 
+  + [difference between VicroriaMetrics vmagent and Prometheus](https://docs.victoriametrics.com/faq/?highlight=remote_write&highlight=protocol#what-is-the-difference-between-vmagent-and-prometheus)
+  + [pushing test metrics to victoria metrics with Retrofit JUnit and VictoriaMetricsService](https://automated-testing.info/t/java-retrofit-junit-kak-otkidyvat-metriki-v-prometheus/29636/3) (in Russian)
+  + https://github.com/VictoriaMetrics/metrics-java
+  + [Introduction to Retrofit](https://www.baeldung.com/retrofit)
+
 
 ### Author
 

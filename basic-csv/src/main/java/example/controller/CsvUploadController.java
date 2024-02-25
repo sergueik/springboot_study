@@ -67,10 +67,11 @@ public class CsvUploadController {
 		author, title, year, isbn
 	}
 
-	private final Logger logger = LoggerFactory.getLogger(CsvUploadController.class);
+	private final Logger logger = LoggerFactory
+			.getLogger(CsvUploadController.class);
 	private static final StringBuilder data = new StringBuilder();
 
-	public static class Data {
+	public static class Book {
 
 		private boolean status;
 		private String author;
@@ -109,25 +110,25 @@ public class CsvUploadController {
 			title = data;
 		}
 
-		public Data(String author, String title) {
+		public Book(String author, String title) {
 			this.title = title;
 			this.author = author;
 		}
 
-		public Data() {
+		public Book() {
 		}
 
 		@Override
 		public String toString() {
 
-			return "Data {" + "title=" + this.title + " " + "author=" + this.author
+			return "Book {" + "title=" + this.title + " " + "author=" + this.author
 					+ ((year != 0) ? " year=" + year : "") + '}';
 		}
 	}
 
-	private List<Data> processData(Reader in) throws IOException {
+	private List<Book> processBook(Reader in) throws IOException {
 
-		List<Data> result = new ArrayList<>();
+		List<Book> result = new ArrayList<>();
 		try {
 			CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader(HEADERS)
 					.setSkipHeaderRecord(true).build();
@@ -136,16 +137,16 @@ public class CsvUploadController {
 			records = csvFormat.parse(in);
 			logger.info("Before Reading: ");
 			for (CSVRecord record : records) {
-				logger.info("Reading: ");
+				logger.info("Reading record number: " + record.getRecordNumber());
 				String author = record.get("author");
 				String title = record.get("title");
-				Data data = new Data(author, title);
+				Book data = new Book(author, title);
 				String year = record.get("year");
 				if (year != null && year.length() != 0) {
-					logger.info("Data year: \"{}\"", year);
+					logger.info("Book year: \"{}\"", year);
 					data.setYear(Integer.parseInt(year));
 				}
-				logger.info("Read: " + data.toString());
+				logger.info("Read data instance: " + data.toString());
 				result.add(data);
 			}
 		} catch (IOException | NumberFormatException e) {
@@ -160,14 +161,14 @@ public class CsvUploadController {
 	@PostMapping(value = "/encodeddata", produces = {
 			MediaType.APPLICATION_JSON_VALUE }, consumes = {
 					MediaType.APPLICATION_FORM_URLENCODED_VALUE })
-	public ResponseEntity<List<Data>> encodeddata(@RequestBody String body) {
+	public ResponseEntity<List<Book>> encodeddata(@RequestBody String body) {
 
-		List<Data> result = new ArrayList<>();
+		List<Book> result = new ArrayList<>();
 		try {
 			String decodedBody = URLDecoder.decode(body, "UTF-8");
 			logger.info(String.format("Decoded Body: \"%s\"", decodedBody));
 			StringReader in = new StringReader(body);
-			result = processData(in);
+			result = processBook(in);
 		} catch (UnsupportedEncodingException e) {
 			logger.info("Exception: " + e.toString());
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(null);
@@ -181,13 +182,13 @@ public class CsvUploadController {
 
 	@PostMapping(value = "/data", produces = {
 			MediaType.APPLICATION_JSON_VALUE }, consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-	public ResponseEntity<List<Data>> data(@RequestBody String body) {
+	public ResponseEntity<List<Book>> data(@RequestBody String body) {
 
-		List<Data> result;
+		List<Book> result;
 		StringReader in = new StringReader(body);
 		logger.info(String.format("Body: \"%s\"", body));
 		try {
-			result = processData(in);
+			result = processBook(in);
 		} catch (IOException e) {
 			logger.info("Exception: " + e.toString());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -196,11 +197,11 @@ public class CsvUploadController {
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<List<Data>> upload(
+	public ResponseEntity<List<Book>> upload(
 			@RequestParam("operation") String operation,
 			@RequestParam("param") String param,
 			@RequestParam("file") MultipartFile file) {
-		List<Data> result;
+		List<Book> result;
 		if (param.isEmpty())
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		if (!operation.equals("send")) {
@@ -215,7 +216,7 @@ public class CsvUploadController {
 				data.setLength(0);
 
 				Reader in = new InputStreamReader(file.getInputStream());
-				result = processData(in);
+				result = processBook(in);
 
 			} catch (IOException e) {
 				logger.error("Exception (caught):" + e.toString());

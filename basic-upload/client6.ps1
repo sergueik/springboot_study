@@ -46,7 +46,7 @@ function sendfile {
     return $result
   }
   catch [System.Net.WebException] {
-    Write-Error( 'Exception: ' $_ )
+    Write-Error(( 'Exception: ' + $_ ))
     throw $_
   }
 }

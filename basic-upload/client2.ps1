@@ -66,7 +66,7 @@ function sendfile {
   $body = $body_lines -join $LF
 
   # NOTE: Powershell does not allow dash in variables names
-  $content_type = ('multipart/form-payload; boundary="{0}"' -f $boundary)
+  $content_type = ('multipart/form-data; boundary="{0}"' -f $boundary)
   if ($debug)  {
     write-host ('invoke-restmethod -uri {0} -method Post -contenttype "{1}" -body {2}' -f $uri, $content_type, [char]10 + $body)
   }

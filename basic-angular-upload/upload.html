@@ -1,34 +1,60 @@
-<!DOCTYPE html>
-<html lang="en" ng-app="app">
-<head>
-    <meta charset="UTF-8">
-    <title>File Upload Demo</title>
-    <script src="js/angular.min.js"></script>
-
-    <script type="text/javascript" src="js/app.module.js"></script>
-    <script type="text/javascript" src="js/controllers.js"></script>
-    <script type="text/javascript" src="js/directives.js"></script>
-    <script type="text/javascript" src="js/services.js"></script>
-
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-
-</head>
-<body ng-controller="FileUploadController">
-    <h2>File Upload Demo</h2>
-
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <form>
-                <div class="form-group">
-                    <label for="myFileField">Select a file: </label>
-                    <input type="file" demo-file-model="myFile"  class="form-control" id ="myFileField"/>
-                </div>
-                <button ng-click="uploadFile()" class = "btn btn-primary">Upload File</button>
-            </form>
-        </div>
+<html>
+  <head>
+    <script src = "js/angular.js">
+    </script>
+  </head>  
+  <body ng-app = "myApp">
+    <div ng-controller = "myCtrl">
+      <input type = "file" file-model = "myFile"/>
+      <button ng-click = "uploadFile()">upload me</button>
     </div>
-    <div>{{serverResponse}}</div>
-</body>
+    <script>
+      var myApp = angular.module('myApp', []);
+      myApp.directive('fileModel', ['$parse', function ($parse) {
+        return {
+          restrict: 'A',
+          link: function(scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            var modelSetter = model.assign;
+            
+            element.bind('change', function() {
+              scope.$apply(function() {
+                modelSetter(scope, element[0].files[0]);
+              });
+            });
+          }
+        };
+      }]);
+      myApp.service('fileUpload', ['$http', function ($http) {
+        this.uploadFileToUrl = function(file, uploadUrl) {
+          var fd = new FormData();
+          fd.append('file', file);
+        
+          $http.post(uploadUrl, fd, {
+            transformRequest: angular.identity,
+            headers: {'Content-Type': undefined}
+          })
+          .success(function(response) {
+            console.log('upload success');
+            if (response){
+              console.log(response);
+            }
+          })
+          .error(function() {
+            console.log('upload error');
+          });
+        }
+      }]);
+      myApp.controller('myCtrl', ['$scope', 'fileUpload', function($scope, fileUpload) {
+        $scope.uploadFile = function() {
+          
+          var file = $scope.myFile;
+          console.log('file is ' + file);
+          console.dir(file);
+          var uploadUrl = 'http://192.168.99.100:9090/cgi-bin/csv.cgi';
+          fileUpload.uploadFileToUrl(file, uploadUrl);
+        };
+      }]);
+    </script>
+  </body>
 </html>
