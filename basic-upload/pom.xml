@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>upload</artifactId>
-  <version>0.10.0-SNAPSHOT</version>
+  <version>0.11.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>basic-upload</name>
   <description>Demo Springboot multipart-form-data upload app</description>
@@ -18,7 +18,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
     <commons-codec.version>1.13</commons-codec.version>
-  <httpclient.version>5.0</httpclient.version>
+    <httpclient.version>5.0</httpclient.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <dependencies>
@@ -34,27 +34,35 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+      <!-- the tests in this projects use junit 4.x -->
+      <!--
+      <exclusions>
+        <exclusion>
+          <groupId>org.junit.vintage</groupId>
+          <artifactId>junit-vintage-engine</artifactId>
+        </exclusion>
+	      </exclusions>
+      -->
     </dependency>
-<dependency>
-    <groupId>org.apache.httpcomponents.client5</groupId>
-    <artifactId>httpclient5</artifactId>
-            <version>${httpclient.version}</version>
-</dependency>
-
-<!--
-<dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>fluent-hc</artifactId>
-            <version>${httpclient.version}</version>
+    <dependency>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+      <version>${httpclient.version}</version>
     </dependency>
-<dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>${httpclient.version}</version>
-    </dependency>
+    <!-- NOTE:  optional and appearss to just slow down test execution	-->
+    <!--
+	<dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
 -->
   </dependencies>
   <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>

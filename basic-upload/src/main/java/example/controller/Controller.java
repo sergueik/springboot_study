@@ -1,6 +1,6 @@
 package example.controller;
 /**
- * Copyright 2021,2023 Serguei Kouzmine
+ * Copyright 2021,2023,2024 Serguei Kouzmine
  */
 
 import java.io.File;
@@ -21,6 +21,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,6 +40,8 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/basic")
 public class Controller {
+
+	private static String osName = getOSName();
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(Controller.class);
@@ -76,7 +79,29 @@ public class Controller {
 				.header(HttpHeaders.SET_COOKIE, resCookie.toString()).build();
 	}
 
-	private static String osName = getOSName();
+	@RequestMapping(value = "/simpleupload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<String> uploadFile(
+			@RequestParam("file") MultipartFile file) {
+
+		if (file.isEmpty()) {
+			logger.info("file argument cannot be empty");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+		try {
+			InputStream in = file.getInputStream();
+			data.setLength(0);
+			int ch = 0;
+			while ((ch = in.read()) != -1) {
+				data.append(new Character((char) ch).toString());
+			}
+			logger.info("data size: " + data.length()  /* + "\n"
+					+ "raw data(base64 encoded):" + "\n" + data.toString() */);
+		} catch (IOException e) {
+			logger.info("Exception (caught):" + e.toString());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+		return new ResponseEntity<String>(HttpStatus.OK);
+	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<String> upload(
@@ -111,13 +136,15 @@ public class Controller {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 			}
 			try {
-				logger.info("Processing " + file.getOriginalFilename());
+
+				String currDirPath = new File(".").getAbsolutePath();
+				String uploadFilePath = currDirPath.substring(0,
+						currDirPath.length() - 1) + file.getOriginalFilename();
+				logger.info(
+						"Processing " + file.getOriginalFilename() + " " + uploadFilePath);
 				data.setLength(0);
 				InputStream in = file.getInputStream();
-				String currDirPath = new File(".").getAbsolutePath();
-				FileOutputStream f = new FileOutputStream(
-						currDirPath.substring(0, currDirPath.length() - 1)
-								+ file.getOriginalFilename());
+				FileOutputStream f = new FileOutputStream(uploadFilePath);
 				int ch = 0;
 				while ((ch = in.read()) != -1) {
 					f.write(ch);
@@ -139,7 +166,8 @@ public class Controller {
 											+ "%s",
 									data.length(), binaryData.length, base64EncodedData));
 				} else
-					logger.info("data : " + data.toString());
+					logger.info("data size: " + data.length() + "\n"
+							+ "raw data(base64 encoded):" + "\n" + data.toString());
 
 			} catch (IOException e) {
 				logger.info("Exception (caught):" + e.toString());
@@ -231,5 +259,4 @@ public class Controller {
 		}
 		return osName;
 	}
-
 }

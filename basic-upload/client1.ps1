@@ -33,8 +33,9 @@ function sendfile {
     [string]$url = 'http://localhost:8085/basic/upload',
     [bool]$debug = $false,
     [System.Collections.Hashtable]$params = @{
-      'operation' = 'send';
-      'param'   = 'data';
+      operation = 'send';
+      param  = 'data';
+      servername = $env:COMPUTERNAME
    }
   )
   $result = $null
