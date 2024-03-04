@@ -1,6 +1,6 @@
 ### Info
 
-This directory contains a tweaked replica of [](https://www.petrikainulainen.net/programming/tips-and-tricks/creating-profile-specific-configuration-files-with-maven/)
+This directory contains a tweaked replica of __creating profile-specific configuration files with maven__ [article exaple code](https://www.petrikainulainen.net/programming/tips-and-tricks/creating-profile-specific-configuration-files-with-maven/)
 [project] (https://github.com/pkainulainen/maven-examples/tree/master/properties-filtering) to enable profile based property filtering in test.
 
 By default the [maven Resources Plugin Filtering](https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html) is only visible in 

@@ -2,6 +2,17 @@
 
 Beam server
 
+### Usage
+```sh
+IMAGE=basic-cron
+docker build -t $IMAGE -f Dockerfile .
+```
+
+```sh
+NAME=basic-cron
+docker run --name $NAME -it $IMAGE
+```
+
 Small addition to basic `Dockerfile` 
 ```sh
 python3 server.py 
