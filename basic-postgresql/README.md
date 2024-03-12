@@ -322,11 +322,16 @@ docker build -f Dockerfile -t $IMAGE .
 * run application in container linked to the postgres container `$SERVER_NAME`:
 ```sh
 NAME=example-postgres
+docker container stop $NAME
+docker container rm $NAME
 docker run --name $NAME --link $SERVER_NAME -p 8080:8080 -d $IMAGE
 ```
 NOTE: do not forget to stop the spring-boot run one earlier or get an error:
 ```text
-Error response from daemon: driver failed programming external connectivity on endpoint example-postgres (4d734f6c5e503d0011591b22f027d77f537a3c97bd835bd0d339bc9c06e0054d): Error starting userland proxy: listen tcp 0.0.0.0:8080: bind: address already in use.
+Error response from daemon: 
+driver failed programming external connectivity on endpoint example-postgres (4d734f6c5e503d0011591b22f027d77f537a3c97bd835bd0d339bc9c06e0054d): 
+Error starting userland proxy: listen tcp 0.0.0.0:8080: 
+bind: address already in use.
 ```
 * monitor logs:
 ```sh
@@ -805,7 +810,15 @@ docker container ls -a | grep -i postgres-database | awk '{print $1}'| xargs -IX
   * misc. PostgreSQL hint link [post](https://habr.com/ru/post/667428/) (in Russian)  
   * [Docker inventory inspection for Dockerizer Postgres](https://habr.com/ru/companies/piter/articles/736332/) (in Russian)
   * [py-postgresql](https://pypi.org/project/py-postgresql/)  
-
+  * https://stackoverflow.com/questions/769683/how-to-show-tables-in-postgresql
+  * https://stackoverflow.com/questions/9556474/automatically-populate-a-timestamp-field-in-postgresql-when-a-new-row-is-inserte
+  * https://www.reddit.com/r/PostgreSQL/comments/10shxej/how_to_update_a_timestamp_automatically/
+  * https://x-team.com/blog/automatic-timestamps-with-postgresql/  
+  * https://www.postgresql.org/message-id/6150FC42.5070207@anastigmatix.net mentions `track_commit_timestamp`
+  * https://stackoverflow.com/questions/9488640/how-to-find-out-when-data-was-inserted-to-postgres/61788447#61788447
+  * https://gist.github.com/brianmed/0e73292da11940a95b98
+  * https://aviyadav231.medium.com/automatically-updating-a-timestamp-column-in-postgresql-using-triggers-98766e3b47a0
+ 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
