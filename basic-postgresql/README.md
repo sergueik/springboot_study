@@ -300,6 +300,121 @@ CREATE DATABASE
 ```sh
 docker exec -it $SERVER_NAME psql -h localhost -p 5432 --username postgres --dbname example -c "drop table rest"
 ```
+* create table `rest` by running the script noninteractively:
+```sh
+docker exec -it $SERVER_NAME psql -h localhost -p 5432 --username postgres --dbname example -c "CREATE TABLE IF NOT EXISTS rest ( id serial PRIMARY KEY NOT NULL, key varchar(100) NOT NULL, value varchar(250) NOT NULL, timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT clock_timestamp(), rand smallint NOT NULL );"
+```
+
+* create function in database `example` by running interactively:
+```sh
+docker exec -it $SERVER_NAME psql -h localhost -p 5432 --username postgres --dbname example
+```
+paste
+```SQL
+CREATE OR REPLACE FUNCTION update_row_modified_function_()
+RETURNS TRIGGER 
+AS 
+$$
+BEGIN
+    -- ASSUMES the table has a column named exactly "row_modified_".
+    -- Fetch date-time of actual current moment from clock, rather than start of statement or start of transaction.
+    NEW.row_modified_ = clock_timestamp(); 
+    RETURN NEW;
+END;
+$$ 
+language 'plpgsql';
+```
+this will respond with 
+```text
+CREATE FUNCTION
+```
+paste
+```SQL
+drop function update_row_modified_function_;
+```
+this will respond with 
+```text
+DROP FUNCTION
+```
+paste
+```SQL
+CREATE OR REPLACE FUNCTION update_row_modified_function_()
+RETURNS TRIGGER 
+AS 
+$$
+BEGIN
+    NEW.timestamp = clock_timestamp(); 
+    RETURN NEW;
+END;
+$$ 
+language 'plpgsql';
+
+```
+this will respond with 
+```text
+CREATE FUNCTION
+```
+paste 
+```SQL
+CREATE TRIGGER row_mod_on_customer_trigger_
+BEFORE UPDATE
+ON rest
+FOR EACH ROW 
+EXECUTE PROCEDURE update_row_modified_function_();
+```
+this will respond with
+```text
+CREATE TRIGGER
+
+```
+run check
+```SQL
+\d rest
+```
+```text
+                                      Table "public.rest"
+  Column   |           Type           | Collation | Nullable |             Default              
+-----------+--------------------------+-----------+----------+----------------------------------
+ id        | integer                  |           | not null | nextval('rest_id_seq'::regclass)
+ key       | character varying(100)   |           | not null | 
+ value     | character varying(250)   |           | not null | 
+ timestamp | timestamp with time zone |           | not null | clock_timestamp()
+ rand      | smallint                 |           | not null | 
+Indexes:
+    "rest_pkey" PRIMARY KEY, btree (id)
+Triggers:
+    row_mod_on_customer_trigger_ BEFORE UPDATE ON rest FOR EACH ROW EXECUTE PROCEDURE update_row_modified_function_()
+```
+
+* check with direct inserts and updates
+
+```SQL
+insert into rest (key,value,rand) values ('a','A',12345);
+```
+```SQL
+select * from rest;
+```
+```text
+ id | key | value |           timestamp           | rand  
+----+-----+-------+-------------------------------+-------
+  2 | a   | A     | 2024-03-13 17:31:52.916959+00 | 12345
+
+```
+
+```SQL
+update rest set rand = 23456 where key = 'a';
+
+```
+```SQL
+select * from rest;
+```
+```text
+id | key | value |           timestamp           | rand  
+----+-----+-------+-------------------------------+-------
+  2 | a   | A     | 2024-03-13 17:32:14.014161+00 | 23456
+
+```
+
 NOTE: the table may not exist yet.
 * update the `application.properties` to use docker dns hostname:
 ```java
@@ -337,12 +452,20 @@ bind: address already in use.
 ```sh
 docker logs $NAME
 ```
+observe the success message
+```text
+ns for JMX exposure on startup
+2024-03-13 17:23:19.386  INFO 1 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080 (http)
+2024-03-13 17:23:19.393  INFO 1 --- [           main] example.Launcher                         : Started Launcher in 9.426 seconds (JVM running for 11.163)
+
+```
 * run aplication linked to postgres container
 * repeat the curl checks
 
 ```
 curl -s -X PUT -H "Content-Type: application/json" -d '{"key":"example", "value":"new data"}' http://127.0.0.1:8080/rest/1 | jq '.'
 ```
+NOTE: will see the error, and code does not does process the exceptions
 ```js
 {
   "timestamp": 1665182943733,
@@ -353,13 +476,35 @@ curl -s -X PUT -H "Content-Type: application/json" -d '{"key":"example", "value"
   "path": "/rest/1"
 }
 ```
+- probably need a `POST`
 ```sh
 curl -s http://127.0.0.1:8080/rest/ | jq '.'
 ```
 ```js
-[]
-```
+[
+  {
+    "id": 2,
+    "rand": 41,
+    "key": "a",
+    "value": "new data",
+    "timestamp": 1710351617167
+  }
+]
 
+```
+```sh
+curl -s -X PUT -H "Content-Type: application/json" -d '{"key":"a", "value":"new data"}' http://127.0.0.1:8080/rest/2 
+```
+```
+{
+  "id": 2,
+  "rand": 48,
+  "key": "a",
+  "value": "new data",
+  "timestamp": 1710351746834
+}
+
+```
 ```sh
 curl -s -X POST -H "Content-Type: application/json" -d '{"key":"another example", "value":"some data"}' http://127.0.0.1:8080/rest | jq '.'
 ```
@@ -818,7 +963,7 @@ docker container ls -a | grep -i postgres-database | awk '{print $1}'| xargs -IX
   * https://stackoverflow.com/questions/9488640/how-to-find-out-when-data-was-inserted-to-postgres/61788447#61788447
   * https://gist.github.com/brianmed/0e73292da11940a95b98
   * https://aviyadav231.medium.com/automatically-updating-a-timestamp-column-in-postgresql-using-triggers-98766e3b47a0
- 
+  * http://crafted-software.blogspot.com/2014/10/track-date-time-of-row-creation.html 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
