@@ -35,15 +35,17 @@ public class RestController {
 	@PostMapping
 	public ResponseEntity<BackendData> addRest(@RequestBody BackendData data) {
 		restService.addBackendData(data);
-		BackendData data2 = restService
-				.getBackendDataById(restService.latestInput());
+		BackendData data2 = restService.getBackendDataById(restService.latestInput());
 		return new ResponseEntity<BackendData>(data2, HttpStatus.OK);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<BackendData> updateRest(@PathVariable("id") int id,
-			@RequestBody BackendData data) {
-		restService.updateBackendData(data, id);
+	public ResponseEntity<BackendData> updateRest(@PathVariable("id") int id, @RequestBody BackendData data) {
+		try {
+			restService.updateBackendData(data, id);
+		} catch (Exception e) {
+			// TODO: logger
+		}
 		BackendData updatedData = restService.getBackendDataById(id);
 		return new ResponseEntity<BackendData>(updatedData, HttpStatus.OK);
 	}
@@ -56,20 +58,16 @@ public class RestController {
 	}
 
 	@GetMapping(value = "/queryparam", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> queryParam(
-			@RequestParam Optional<List<String>> keys,
+	public ResponseEntity<String> queryParam(@RequestParam Optional<List<String>> keys,
 			@RequestParam Optional<List<Integer>> ids) {
 		String payload = null;
-		if ((keys.isPresent() && keys.get().size() > 0)
-				&& (ids.isPresent() && ids.get().size() > 0)) {
+		if ((keys.isPresent() && keys.get().size() > 0) && (ids.isPresent() && ids.get().size() > 0)) {
 			payload = String.format("keys: %s ids: %s", String.join(",", keys.get()),
-					String.join(",", ids.get().stream().map(o -> String.format("%d", o))
-							.collect(Collectors.toList())));
+					String.join(",", ids.get().stream().map(o -> String.format("%d", o)).collect(Collectors.toList())));
 			List<BackendData> listData = restService.queryByIds(ids.get());
 			System.err.println("query by ids returned: " + listData.size() + " rows");
 			listData = restService.queryByIdsAndKeys(ids.get(), keys.get());
-			System.err.println(
-					"query by ids and keys returned: " + listData.size() + " rows");
+			System.err.println("query by ids and keys returned: " + listData.size() + " rows");
 			return ResponseEntity.status(HttpStatus.OK).body(payload);
 		} else {
 			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("");
@@ -78,20 +76,20 @@ public class RestController {
 
 	// NOTE: cannot use with id
 	/*
-	 org.springframework.jdbc.BadSqlGrammarException: 
-	 PreparedStatementCallback; 
-	 bad SQL grammar [select * from rest where id SIMILAR TO ?]; 
-	 nested exception is org.postgresql.util.PSQLException: 
-	 ERROR: operator does not exist: integer ~ text Hint: No operator matches the given name and argument types. You might need to add explicit type casts.
+	 * org.springframework.jdbc.BadSqlGrammarException:
+	 * PreparedStatementCallback; bad SQL grammar [select * from rest where id
+	 * SIMILAR TO ?]; nested exception is org.postgresql.util.PSQLException:
+	 * ERROR: operator does not exist: integer ~ text Hint: No operator matches
+	 * the given name and argument types. You might need to add explicit type
+	 * casts.
 	 */
 	// http://localhost:8080/rest/similar/ids?ids=1,2,3,4,5
 	@GetMapping(value = "/similar/ids", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> querySimilarToSetIds(
-			@RequestParam Optional<List<Integer>> ids) {
+	public ResponseEntity<String> querySimilarToSetIds(@RequestParam Optional<List<Integer>> ids) {
 		String payload = null;
 		if (ids.isPresent() && ids.get().size() > 0) {
-			payload = String.format("ids: %s", String.join(",", ids.get().stream()
-					.map(o -> String.format("%d", o)).collect(Collectors.toList())));
+			payload = String.format("ids: %s",
+					String.join(",", ids.get().stream().map(o -> String.format("%d", o)).collect(Collectors.toList())));
 			List<BackendData> listData = restService.querySimilarToSetIds(ids.get());
 			System.err.println("query by ids returned: " + listData.size() + " rows");
 			listData.stream().map(BackendData::toString);
@@ -103,8 +101,7 @@ public class RestController {
 
 	// http://localhost:8080/rest/similar/keys?keys=example+1,example+2,example+3
 	@GetMapping(value = "/similar/keys", produces = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<String> querySimilarToSetKeys(
-			@RequestParam Optional<List<String>> keys) {
+	public ResponseEntity<String> querySimilarToSetKeys(@RequestParam Optional<List<String>> keys) {
 		String payload = null;
 		if (keys.isPresent() && keys.get().size() > 0) {
 
@@ -113,11 +110,9 @@ public class RestController {
 
 			List<BackendData> listData = restService.queryRegexpOfSetKeys(keys.get());
 
-			System.err
-					.println("query by keys returned: " + listData.size() + " rows");
+			System.err.println("query by keys returned: " + listData.size() + " rows");
 			payload = String.format("keys: %s\n%s", String.join(",", keys.get()),
-					listData.stream().map(BackendData::toString)
-							.collect(Collectors.toList()));
+					listData.stream().map(BackendData::toString).collect(Collectors.toList()));
 
 			return ResponseEntity.status(HttpStatus.OK).body(payload);
 		} else {

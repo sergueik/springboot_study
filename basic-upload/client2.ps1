@@ -30,20 +30,36 @@ param(
   [string]$url = 'http://localhost:8085/basic/upload'
 )
 
+function getPayload{
+  param (
+    [string]$filePath = $null,
+    [bool]$debug = $false
+  )
+  [String]$payload = ''
+  if(($filePath -ne $null ) -and ($filePath -ne '')){
+    $payload = [System.Text.Encoding]::GetEncoding('UTF-8').GetString([System.IO.File]::ReadAllBytes($filePath))
+  }
+  if ($debug){
+    write-host ('payload:' + [char]10 + $payload)
+  }
+  return $payload
+}
+
 function sendfile {
   param(
     [string]$filePath = (resolve-path 'data.txt'),
     [string]$boundary = [System.Guid]::NewGuid().ToString(),
     [string]$url = 'http://localhost:8085/basic/upload',
-    [bool]$debug = $false,
     [System.Collections.Hashtable]$params = @{
-      'operation' = 'send';
-      'param'   = 'data';
-    }
+      operation = 'send';
+      param   = 'data';
+    },
+    [bool]$debug = $false
   )
+  $params['servername'] = $env:COMPUTERNAME
   $date = get-date -format 'yyyy-MM-dd HH:mm'
   $filename = ($filePath -replace '^.*\\', '') + '_' + ($date -replace '[\-: ]', '_')
-  $payload = [System.Text.Encoding]::GetEncoding('UTF-8').GetString([System.IO.File]::ReadAllBytes($filePath))
+  [String]$payload = getPayload -filePath $filePath -debug $debug
 
   $LF = "`r`n";
   $B = '--' + $boundary
@@ -67,7 +83,7 @@ function sendfile {
 
   # NOTE: Powershell does not allow dash in variables names
   $content_type = ('multipart/form-data; boundary="{0}"' -f $boundary)
-  if ($debug)  {
+  if ($debug) {
     write-host ('invoke-restmethod -uri {0} -method Post -contenttype "{1}" -body {2}' -f $uri, $content_type, [char]10 + $body)
   }
   # quotes aroung content_type arguments are optional

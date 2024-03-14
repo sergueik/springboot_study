@@ -10,15 +10,72 @@ Basic POST `multipart-`handler REST server from __File Upload with Spring MVC__ 
 mvn spring-boot:test
 ```
 
-create a *small*  text file `c:\temp\pstest.log`:
+create a *small*  text file `c:\temp\pstest.log` (not in current directory):
 ```text
 test data
 ```
 
-* test through curl / git bash:
+* test single file upload through curl / git bash:
 
 ```sh
-curl -s -X POST http://localhost:8085/basic/upload -F file=@/c/temp/pstest.log
+ curl  -v -s -X POST http://localhost:8085/basic/simpleupload -F "file=@/c/temp/pstest.log"
+
+```
+```text
+* processing: http://localhost:8085/basic/simpleupload
+* Uses proxy env variable no_proxy == '192.168.99.100,192.168.99.101'
+*   Trying [::1]:8085...
+* Connected to localhost (::1) port 8085
+> POST /basic/simpleupload HTTP/1.1
+> Host: localhost:8085
+> User-Agent: curl/8.2.1
+> Accept: */*
+> Content-Length: 213
+> Content-Type: multipart/form-data; boundary=------------------------2c8f3f65e97e6e05
+>
+} [213 bytes data]
+* We are completely uploaded and fine
+< HTTP/1.1 200
+< Content-Length: 0
+< Date: Fri, 01 Mar 2024 16:56:31 GMT
+<
+* Connection #0 to host localhost left intact
+```
+the `simpleuload` endpoint does not perform any argument validation
+
+* atempt to upload a big file. Make `/c/temp/pstest.log` bigger (over 10K will be enough):
+```sh
+ls -lh /c/temp/pstest.log
+```
+```text
+-rw-r--r-- 1 Serguei 197609 18K Mar  1 12:44 /c/temp/pstest.log
+```
+```sh
+curl -s -X POST "http://localhost:8085/basic/simpleupload" -F file=@/c/temp/pstest.log
+```
+```json
+{
+  "timestamp": "2024-03-01T17:19:13.866+00:00",
+  "status": 500,
+  "error": "Internal Server Error",
+  "message": "",
+  "path": "/basic/simpleupload"
+}
+
+```
+the application console log will show:
+```text	
+2024-03-01 12:46:39.752 ERROR 5392 --- [nio-8085-exec-6] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; 
+
+nested exception is org.springframework.web.multipart.MaxUploadSizeExceededException: Maximum upload size exceeded; 
+
+nested exception is java.lang.IllegalStateException: org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException: the request was rejected because its size (18232) exceeds the configured maximum (10240)] with root cause
+
+org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException: the request was rejected because its size (18232) exceeds the configured maximum (10240)
+```
+* re-create a small file to proceed
+```sh
+curl -s -X POST http://localhost:8085/basic/upload -F "file=@/c/temp/pstest.log"
 ```
 
 this will respond with
@@ -32,28 +89,45 @@ this will respond with
 }
 ```
 
-and log the error in applicaton console:
+application logs the following error in applicaton console:
 ```text
 2024-01-12 18:28:19.796  WARN 8948 --- [nio-8085-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MissingServletRequestParameterException: Required String parameter 'operation' is not present]
 2024-01-12 18:28:19.796  WARN 8948 --- [nio-8085-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MissingServletRequestParameterException: Required String parameter 'param' is not present]
 2024-01-12 18:28:38.099  WARN 8948 --- [nio-8085-exec-3] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpMediaTypeNotSupportedException: Content type '' not supported]
 2024-01-12 18:29:02.344  WARN 8948 --- [nio-8085-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MissingServletRequestParameterException: Required String parameter 'servername' is not present]
 ```
-after adding the required parameters to query string (`operation` needs to be `send`, other parameters can have arbitrary values)
+after adding the required parameters to query string (`operation` parameter value needs to be `send`, other parameters can have arbitrary values)
 ```sh
-curl -s -X POST "http://localhost:8085/basic/upload?operation=send&param=something&servername=localhost" -F file=@/c/temp/pstest.log
+curl -s -X POST "http://localhost:8085/basic/upload?operation=send&param=something&servername=localhost" -F "file=@/c/temp/pstest.log"
 ```
 
-curl will successfully print back the file contents:
+`curl` will successfully print back the file contents:
 
 ```text
 test data
 ```
-and log
+and the console log will show
 ```text
 2024-01-12 18:29:26.619  INFO 8948 --- [nio-8085-exec-5] example.controller.Controller            : Processing pstest.log
 2024-01-12 18:29:26.628  INFO 8948 --- [nio-8085-exec-5] example.controller.Controller            : data : test data
+```
 
+NOTE: the `-F` parameter is for multipart MIME data. To see list of supported options for curl in git bash enter
+```sh
+curl --help all
+```
+
+```sh
+curl -s -X POST "http://localhost:8085/basic/upload?operation=send&param=something&servername=localhost" -F file=@/c/temp/pstest.log
+```
+```json
+{
+  "timestamp": "2024-03-01T17:11:37.729+00:00",
+  "status": 500,
+  "error": "Internal Server Error",
+  "message": "",
+  "path": "/basic/upload"
+}
 ```
 * test through Powershell / powershell console:
 ```powershell
@@ -111,6 +185,15 @@ test data
 
 with only difference is how Powershell client scripts transmit the file.
 
+### NOTE
+
+the `org.springframework.mock.web.MockMultipartFile` class does not read `applicatio.properties` for 
+```java
+spring.servlet.multipart.max-request-size = 10KB
+```
+therefore to test the `org.springframework.web.multipart.MaxUploadSizeExceededException` exception one needs to upload a real file
+
+
 ### See Also
 
   * [Multipart Request Handling in Spring](https://www.baeldung.com/sprint-boot-multipart-requests)
@@ -118,7 +201,10 @@ with only difference is how Powershell client scripts transmit the file.
   * [testing a Spring Multipart POST Request](https://www.baeldung.com/spring-multipart-post-request-test)
   * [MockMvcRequestBuilders class methods](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/test/web/servlet/request/MockMvcRequestBuilders.html)
 
-  * REST pagination [article](https://www.baeldung.com/rest-api-pagination-in-spring) 
+  * REST pagination [article](https://www.baeldung.com/rest-api-pagination-in-spring)
   * handling partial content [forum question](https://qna.habr.com/q/1258736)(in Russian), with code example
+  * [testing a Spring Multipart POST Request](https://www.baeldung.com/spring-multipart-post-request-test)
+  * https://stackoverflow.com/questions/21800726/using-spring-mvc-test-to-unit-test-multipart-post-request
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

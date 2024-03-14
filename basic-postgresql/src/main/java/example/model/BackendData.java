@@ -1,9 +1,20 @@
 package example.model;
 
+import java.sql.Timestamp;
+
 public class BackendData {
 	private int id;
 	private int rand;
 	private String key, value;
+	private Timestamp timestamp;
+
+	public Timestamp getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Timestamp timestamp) {
+		this.timestamp = timestamp;
+	}
 
 	public int getId() {
 		return id;

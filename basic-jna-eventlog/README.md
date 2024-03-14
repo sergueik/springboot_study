@@ -8,6 +8,12 @@ Standalone Event log logger based on [dblock/log4jna](https://github.com/dblock/
 ```cmd
 wevtutil.exe clear-log log4jna_sample
 ```
+ignore the warning which will be printed if the log is already deleted / not yet created
+
+```text
+Failed to clear log log4jna_sample. The specified channel could not be found. Check channel configuration.
+```
+
 * run from elevated console. ([WIP] subsequent runs will work for any user)
 to create the event source `log4jna_sample` in  `%SystemRoot%\System32\Winevt\Logs\log4jna_sample.evtx`
 ```sh
@@ -23,6 +29,13 @@ this will print to console:
 04:26:37.314 [main] WARN  mapAppender - Event log from App message the quick brown fox jumps over the lazy dog
 DEBUG: appending event message: 04:26:37.314 [main] WARN  mapAppender - Event log from App message the quick brown fox jumps over the lazy dog
 ```
+create the entry in the Windows Registry for eventlog service:
+
+![Event log Config Before](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-eventlog-config-before.png)
+
+![Event log Config After](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-eventlog-config-after.png)
+
+
 and add Windows Event Log:
 ![Event log Message](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-message.png)
 

@@ -1,4 +1,4 @@
-<?xml version=f"1.0"?>
+<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
@@ -6,7 +6,7 @@
   <version>0.3.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
-  <description></description>
+  <description/>
   <properties>
     <browser.name>firefox</browser.name>
     <java.version>1.8</java.version>
@@ -22,7 +22,7 @@
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-exec.version>1.3.2</commons-exec.version>
     <commons-io.version>2.7</commons-io.version>
-    <commons-compress.version>1.19</commons-compress.version>
+    <commons-compress.version>1.26.0</commons-compress.version>
     <gson.version>2.8.9</gson.version>
     <hamcrest-all.version>1.3</hamcrest-all.version>
     <httpclient.version>4.5.13</httpclient.version>
@@ -31,9 +31,13 @@
   </properties>
   <dependencies>
     <dependency>
-  <groupId>example</groupId>
-  <artifactId>yaml_config_extend</artifactId>
-  <version>0.1.0-SNASHOT</version>
+      <groupId>example</groupId>
+      <artifactId>yaml_config_extend</artifactId>
+      <version>0.10.0-SNAPSHOT</version>
+     <!-- NOTE: misconfigured project: after mvn install of yaml_config_extend, this project is failing with 
+ Could not resolve dependencies for project example:basic-profiles:jar:0.3.0-SNAPSHOT: Could not find artifact example:yaml_config_extend:jar:0.10.0-SNAPSHOT
+despite presence of ~/.m2/repository/example/yamlconfig_extend/0.10.0-SNAPSHOT/yamlconfig_extend-0.10.0-SNAPSHOT.jar
+ -->
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -84,15 +88,15 @@
     </dependency>
   </dependencies>
   <build>
-<resources>
-    <resource>
+    <resources>
+      <resource>
         <filtering>true</filtering>
         <directory>src/main/resources</directory>
-    </resource>
-</resources>
-<filters>
-    <filter>profiles/${browser.name}/config.properties</filter>
-</filters>
+      </resource>
+    </resources>
+    <filters>
+      <filter>profiles/${browser.name}/config.properties</filter>
+    </filters>
     <sourceDirectory>src/main/java</sourceDirectory>
     <testSourceDirectory>src/test/java</testSourceDirectory>
     <plugins>
@@ -134,9 +138,9 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
         <configuration>
-              <systemPropertyVariables>
-                <webdriver.driver>${browser.name}</webdriver.driver>
-              </systemPropertyVariables>
+          <systemPropertyVariables>
+            <webdriver.driver>${browser.name}</webdriver.driver>
+          </systemPropertyVariables>
           <trimStackTrace>false</trimStackTrace>
           <encoding>${project.build.sourceEncoding}</encoding>
           <argLine>-Dfile.encoding=${project.build.sourceEncoding}</argLine>

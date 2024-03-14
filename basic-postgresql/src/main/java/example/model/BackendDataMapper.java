@@ -13,6 +13,7 @@ public class BackendDataMapper implements RowMapper<BackendData> {
 		rest.setKey(rs.getString("key"));
 		rest.setValue(rs.getString("value"));
 		rest.setRand(rs.getInt("rand"));
+		rest.setTimestamp(rs.getTimestamp("timestamp"));
 		return rest;
 	}
 }

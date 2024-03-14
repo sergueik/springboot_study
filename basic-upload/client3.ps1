@@ -24,22 +24,38 @@ param(
   [string]$url = 'http://localhost:8085/basic/upload'
 )
 
+function getPayload{
+  param (
+    [string]$filePath = $null,
+    [bool]$debug = $false
+  )
+  [String]$payload = ''
+  if(($filePath -ne $null ) -and ($filePath -ne '')){
+    $payload = [System.Text.Encoding]::GetEncoding('UTF-8').GetString([System.IO.File]::ReadAllBytes($filePath))
+  }
+  if ($debug){
+    write-host ('payload:' + [char]10 + $payload)
+  }
+  return $payload
+}
+
 function sendfile {
   param(
     [string]$filePath = (resolve-path 'data.txt'),
     [string]$boundary = [System.Guid]::NewGuid().ToString(),
     [string]$url = 'http://localhost:8085/basic/upload',
-    [bool]$debug = $false,
     [System.Collections.Hashtable]$params = @{
-      'operation' = 'send';
-      'param'   = 'data';
+      operation = 'send';
+      param = 'data';
+      servername = $env:COMPUTERNAME;
     },
-    [System.Collections.Hashtable]$headers = @{ }
+    [System.Collections.Hashtable]$headers = @{ },
+    [bool]$debug = $false
   )
   [string]$result = $null
   $date = get-date -format 'yyyy-MM-dd HH:mm'
   $filename = ($filePath -replace '^.*\\', '') + '_' + ($date -replace '[\-: ]', '_')
-  $payload = [System.Text.Encoding]::GetEncoding('UTF-8').GetString([System.IO.File]::ReadAllBytes($filePath))
+  [String]$payload = getPayload -filePath $filePath -debug $debug
 
   $LF = "`r`n";
   $B = '--' + $boundary
@@ -115,8 +131,7 @@ function sendfile {
         write-host ('Response:{1}{0}' -f $result, [char]10 )
       }
     }
-
-   } catch [Exception] {
+  } catch [Exception] {
      # System.Management.Automation.ErrorRecord -> System.Net.WebException
      $e = $_[0].Exception
      write-host ('Exception:{3}Status: {0}{3}StatusCode: {1}{3}Message: {2}' -f  $e.Status, $e.Response.StatusCode, $e.Message,[char]10 )
