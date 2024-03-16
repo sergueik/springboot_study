@@ -17,7 +17,7 @@ mvn clean -Dmaven.test.skip=true spring-boot:run
 followed by
 
 ```sh
-curl http://localhost:8080/application
+curl -s http://localhost:8080/application
 ```
 this will print
 ```html
@@ -93,7 +93,7 @@ NOTE: the attempt to directly set the propery on the command line without defaul
 ```sh
 mvn -Dapplication=test clean spring-boot:run
 ```
-occasioally does not work:
+occasionally does not work:
 ```sh
 Invocation of init method failed; 
 nested exception is java.lang.IllegalStateException: 

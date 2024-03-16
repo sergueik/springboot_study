@@ -33,6 +33,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(Launcher.class)
+@SuppressWarnings("deprecation")
 public class LauncherTest {
 
 	private MvcResult result = null;
@@ -108,11 +109,12 @@ public class LauncherTest {
 		if (debug) {
 			System.err.println("Validating: " + input);
 		}
-		// BOOT-INF\lib\antisamy-1.5.9.jar ??
+		// https://www.baeldung.com/java-resourcebundle
 		ResourceBundle messages = ResourceBundle.getBundle("AntiSamy", Locale.US,
 				this.getClass().getClassLoader());
 		CssScanner cssScanner = null;
 		try {
+			// https://javadoc.io/static/org.owasp.antisamy/antisamy/1.7.5/org/owasp/validator/css/CssScanner.html
 			cssScanner = new CssScanner((InternalPolicy) InternalPolicy
 					.getInstance(getPageContent("/index.html")), messages);
 		} catch (PolicyException e) {
