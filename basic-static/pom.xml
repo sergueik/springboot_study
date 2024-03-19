@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>static_page</artifactId>
-  <version>0.8.0-SNAPSHOT</version>
+  <version>0.9.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>basic-static-page</name>
   <description>Springboot Template page Demo project</description>
@@ -17,6 +17,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
+      <antisamy.version>1.7.5</antisamy.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
     <jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
     <java.version>1.8</java.version>
@@ -33,6 +34,11 @@
     <webjars.jquery.version>3.2.1</webjars.jquery.version>
   </properties>
   <dependencies>
+	    <dependency>
+      <groupId>org.owasp.antisamy</groupId>
+      <artifactId>antisamy</artifactId>
+      <version>${antisamy.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
@@ -84,11 +90,6 @@ https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf-spring5
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.owasp.antisamy</groupId>
-      <artifactId>antisamy</artifactId>
-      <version>1.5.9</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
