@@ -41,12 +41,16 @@ public class RegexpValidationController {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+	// NOTE: adding a @RequestParam without providing one from RestTemplate end
+	// leads to all tests failing with a
+	// org.springframework.web.client.HttpClientErrorException: 400 null
 	@ResponseBody
 	@PostMapping(value = "/validate_form", consumes = {
 			MediaType.APPLICATION_FORM_URLENCODED_VALUE }, produces = {
 					MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<Map<String, Object>> validateForm(
-			@RequestParam String expression, @RequestParam Optional<Boolean> debug) {
+			@RequestParam String expression, @RequestParam String pattern,
+			@RequestParam Optional<Boolean> debug) {
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("Access-Control-Allow-Origin", "*");
@@ -85,4 +89,3 @@ public class RegexpValidationController {
 	}
 
 }
-

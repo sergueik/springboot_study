@@ -1,6 +1,6 @@
 package example.controller;
 /**
- * Copyright 2023 Serguei Kouzmine
+ * Copyright 2023,2024 Serguei Kouzmine
  */
 
 import org.junit.Before;
@@ -36,6 +36,7 @@ public class RegexpValidationControllerRestTemplateTest {
 
 	private RestTemplate restTemplate = new RestTemplate();
 	private HttpHeaders headers = new HttpHeaders();
+	private String responseBody = null;
 	private ResponseEntity<Map> responseEntity = null;
 	private ResponseEntity<String> responseEntityString = null;
 	// Type mismatch: cannot convert from ResponseEntity<Map> to
@@ -49,6 +50,7 @@ public class RegexpValidationControllerRestTemplateTest {
 	private Map<String, Object> response = new HashMap<>();
 	private Map<String, Object> resultMap = new HashMap<>();
 	private Result result;
+	private String body = "expression=Lorem ipsum dolor sit amet&pattern=abc";
 
 	@Before
 	public void setUp() {
@@ -63,17 +65,16 @@ public class RegexpValidationControllerRestTemplateTest {
 	@Test
 	public void test1() {
 
-		requestEntityString = new HttpEntity<String>(
-				"expression=Lorem ipsum dolor sit amet", headers);
+		requestEntityString = new HttpEntity<String>(body, headers);
 		responseEntityString = restTemplate.postForEntity(url, requestEntityString,
 				String.class, headers);
 
 		assertThat(responseEntityString, notNullValue());
 		assertThat(responseEntityString.getStatusCode(), is(HttpStatus.OK));
-		assertThat(gson.fromJson(responseEntityString.getBody(), Map.class),
-				notNullValue());
-		System.err.println("Response: " + responseEntityString.getBody());
-		response = gson.fromJson(responseEntityString.getBody(), Map.class);
+		responseBody = responseEntityString.getBody();
+		assertThat(responseBody, notNullValue());
+		System.err.println("Response: " + responseBody);
+		response = gson.fromJson(responseBody, Map.class);
 		assertThat(response, notNullValue());
 		assertThat(response.get("status"), is("OK"));
 		assertThat(response.get("result"), is(""));
@@ -81,19 +82,19 @@ public class RegexpValidationControllerRestTemplateTest {
 
 	@Test
 	public void test2() {
-
-		requestEntityString = new HttpEntity<String>(
-				"expression=Lorem \\ipsum dolor sit amet", headers);
+		body = "expression=Lorem \\ipsum dolor sit amet&pattern=abc";
+		requestEntityString = new HttpEntity<String>(body, headers);
 		responseEntityString = restTemplate.postForEntity(url, requestEntityString,
 				String.class, headers);
 
 		assertThat(responseEntityString, notNullValue());
 		assertThat(responseEntityString.getStatusCode(), is(HttpStatus.OK));
-		assertThat(gson.fromJson(responseEntityString.getBody(), Map.class),
-				notNullValue());
-		System.err.println("Response: " + responseEntityString.getBody());
+		responseBody = responseEntityString.getBody();
+		assertThat(responseBody, notNullValue());
+		System.err.println("Response: " + responseBody);
 
-		response = gson.fromJson(responseEntityString.getBody(), Map.class);
+		response = gson.fromJson(responseBody, Map.class);
+		assertThat(response, notNullValue());
 		assertThat(response.get("status"), is("error"));
 		resultMap = (Map) response.get("result");
 		System.err.println("Result keys: " + resultMap.keySet());
@@ -126,8 +127,7 @@ public class RegexpValidationControllerRestTemplateTest {
 	@Test
 	public void test3() {
 
-		requestEntityString = new HttpEntity<String>(
-				"expression=Lorem ipsum dolor sit amet", headers);
+		requestEntityString = new HttpEntity<String>(body, headers);
 		responseEntityMap = restTemplate.postForEntity(url, requestEntityString,
 				Map.class, headers);
 		assertThat(responseEntityMap, notNullValue());
@@ -141,19 +141,20 @@ public class RegexpValidationControllerRestTemplateTest {
 	// NOTE: redundant
 	@Test
 	public void test4() {
-
-		requestEntityString = new HttpEntity<String>(
-				"expression=Lorem **ipsum dolor sit amet", headers);
+		body = "expression=Lorem **ipsum dolor sit amet&pattern=abc";
+		requestEntityString = new HttpEntity<String>(body, headers);
 		responseEntityString = restTemplate.postForEntity(url, requestEntityString,
 				String.class, headers);
 
 		assertThat(responseEntityString, notNullValue());
 		assertThat(responseEntityString.getStatusCode(), is(HttpStatus.OK));
-		assertThat(gson.fromJson(responseEntityString.getBody(), Map.class),
-				notNullValue());
-		System.err.println("Response: " + responseEntityString.getBody());
 
-		response = gson.fromJson(responseEntityString.getBody(), Map.class);
+		responseBody = responseEntityString.getBody();
+		assertThat(responseBody, notNullValue());
+		System.err.println("Response: " + responseBody);
+
+		response = gson.fromJson(responseBody, Map.class);
+		assertThat(response, notNullValue());
 		assertThat(response.get("status"), is("error"));
 		resultMap = (Map) response.get("result");
 		System.err.println("Result keys: " + resultMap.keySet());
@@ -169,9 +170,9 @@ public class RegexpValidationControllerRestTemplateTest {
 
 	@Test
 	public void test5() {
+		body = "expression=Lorem [ipsum dolor sit amet&pattern=abc";
+		requestEntityString = new HttpEntity<String>(body, headers);
 
-		requestEntityString = new HttpEntity<String>(
-				"expression=Lorem [ipsum dolor sit amet", headers);
 		responseEntityMap = restTemplate.postForEntity(url, requestEntityString,
 				Map.class, headers);
 		assertThat(responseEntityMap, notNullValue());
@@ -213,6 +214,8 @@ public class RegexpValidationControllerRestTemplateTest {
 		// headers.setContentType(MediaType.TEXT_PLAIN);
 
 		data.put("expression", "Lorem ipsum dolor sit amet");
+		// NOTE: test does not fail without the "pattern" key
+		data.put("pattern", "abc");
 		response = restTemplate.postForObject(url, data, Map.class);
 		assertThat(response, notNullValue());
 		assertThat(responseEntity.getStatusCode(),
@@ -228,6 +231,8 @@ public class RegexpValidationControllerRestTemplateTest {
 	public void test9() {
 
 		data.put("expression", "Lorem ipsum dolor sit amet");
+		// NOTE: test does not fail without the "pattern" key
+		data.put("pattern", "abc");
 		responseEntityString = restTemplate.postForEntity(url, data, String.class,
 				headers);
 		assertThat(responseEntityString, notNullValue());
@@ -235,4 +240,3 @@ public class RegexpValidationControllerRestTemplateTest {
 	}
 
 }
-
