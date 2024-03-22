@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<configuration>
+  <appender name="map" class="example.MapAppender">
+    <prefix>test</prefix>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+    </encoder>
+  </appender>
+  <root level="debug">
+    <appender-ref ref="CONSOLE"/>
+    <!-- NOTE: Failed to parse condition [property("USERPROFILE").empty()] org.codehaus.commons.compiler.CompileException: Line 1, Column 65: A method named "empty" is not declared in any enclosing class nor any supertype, nor through a static import
+	at org.codehaus.commons.compiler.CompileException: 
+  
+  Line 1, Column 65: A method named "empty" is not declared in any enclosing class nor any supertype, nor through a static import
+
+ -->
+<!--
+   <if condition='property("windir").equalsIgnoreCase("C:\Windows")'>
+    -->
+    
+<!--
+        <if condition="property(&quot;WINDIR&quot;).equalsIgnoreCase(&quot;C:\Windows&quot;)">
+    -->
+  
+   <if condition='isDefined("windir")'>
+<!-- Works but is Case sensitive -->
+<!--
+    <if condition='property("os.name").contains("Win")'>
+-->
+      <then>
+        <appender-ref ref="map"/>
+    </then>
+      <else>
+      </else>
+    </if>
+  </root>
+  
+  <logger name="mapAppender" level="debug">
+  </logger>
+</configuration>
