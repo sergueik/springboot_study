@@ -31,15 +31,11 @@ public class Win32EventLogAppender {
 
 	private HANDLE _handle = null;
 
-	public static Win32EventLogAppender createAppender(String name, String server,
-			String source, String application, String eventMessageFile,
-			String categoryMessageFile) {
-		return new Win32EventLogAppender(name, server, source, application,
-				eventMessageFile, categoryMessageFile);
+	public static Win32EventLogAppender createAppender(String name, String server, String source, String application, String eventMessageFile, String categoryMessageFile) {
+		return new Win32EventLogAppender(name, server, source, application, eventMessageFile, categoryMessageFile);
 	}
 
-	public Win32EventLogAppender(String name, String server, String source,
-			String application, String eventMessageFile, String categoryMessageFile) {
+	public Win32EventLogAppender(String name, String server, String source, String application, String eventMessageFile, String categoryMessageFile) {
 
 		if (eventMessageFile != null) {
 			Path p = Paths.get(eventMessageFile);
@@ -115,8 +111,7 @@ public class Win32EventLogAppender {
 		close();
 
 		try {
-			_handle = registerEventSource(_server, _source, _application,
-					_eventMessageFile, _categoryMessageFile);
+			_handle = registerEventSource(_server, _source, _application, _eventMessageFile, _categoryMessageFile);
 		} catch (Exception e) {
 			close();
 			throw new RuntimeException("Could not register event source.", e);
@@ -135,8 +130,7 @@ public class Win32EventLogAppender {
 		final int messageID = 0x1000;
 
 		String[] buffer = { message };
-		if (Advapi32.INSTANCE.ReportEvent(_handle, eventLogType, category,
-				messageID, null, buffer.length, 0, buffer, null) == false) {
+		if (Advapi32.INSTANCE.ReportEvent(_handle, eventLogType, category, messageID, null, buffer.length, 0, buffer, null) == false) {
 			Exception e = new Win32Exception(Kernel32.INSTANCE.GetLastError());
 			System.err
 					.println("Failed to report event [" + message + "]." + e.toString());
@@ -152,23 +146,17 @@ public class Win32EventLogAppender {
 		close();
 	}
 
-	private HANDLE registerEventSource(String server, String source,
-			String application, String eventMessageFile, String categoryMessageFile) {
+	private HANDLE registerEventSource(String server, String source, String application, String eventMessageFile, String categoryMessageFile) {
 		String applicationKeyPath = EVENT_LOG_PATH + application;
 		String eventSourceKeyPath = applicationKeyPath + "\\" + source;
-		if (Advapi32Util.registryKeyExists(WinReg.HKEY_LOCAL_MACHINE,
-				applicationKeyPath)) {
-			if (Advapi32Util.registryKeyExists(WinReg.HKEY_LOCAL_MACHINE,
-					eventSourceKeyPath)) {
-				setVariableKeys(eventMessageFile, categoryMessageFile,
-						eventSourceKeyPath);
+		if (Advapi32Util.registryKeyExists(WinReg.HKEY_LOCAL_MACHINE, applicationKeyPath)) {
+			if (Advapi32Util.registryKeyExists(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath)) {
+				setVariableKeys(eventMessageFile, categoryMessageFile, eventSourceKeyPath);
 			} else {
-				createAndSetAllKeys(eventMessageFile, categoryMessageFile,
-						eventSourceKeyPath);
+				createAndSetAllKeys(eventMessageFile, categoryMessageFile, eventSourceKeyPath);
 			}
 		} else {
-			createAndSetAllKeys(eventMessageFile, categoryMessageFile,
-					eventSourceKeyPath);
+			createAndSetAllKeys(eventMessageFile, categoryMessageFile, eventSourceKeyPath);
 		}
 
 		HANDLE h = Advapi32.INSTANCE.RegisterEventSource(server, source);
@@ -179,38 +167,26 @@ public class Win32EventLogAppender {
 		return h;
 	}
 
-	private void createAndSetAllKeys(String eventMessageFile,
-			String categoryMessageFile, String eventSourceKeyPath) {
-		if (Advapi32Util.registryCreateKey(WinReg.HKEY_LOCAL_MACHINE,
-				eventSourceKeyPath)) {
-			Advapi32Util.registrySetIntValue(WinReg.HKEY_LOCAL_MACHINE,
-					eventSourceKeyPath, "TypesSupported", TYPES_SUPPORTED);
-			Advapi32Util.registrySetIntValue(WinReg.HKEY_LOCAL_MACHINE,
-					eventSourceKeyPath, "CategoryCount", CATEGORY_COUNT);
-			setVariableKeys(eventMessageFile, categoryMessageFile,
-					eventSourceKeyPath);
+	private void createAndSetAllKeys(String eventMessageFile, String categoryMessageFile, String eventSourceKeyPath) {
+		if (Advapi32Util.registryCreateKey(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath)) {
+			Advapi32Util.registrySetIntValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, "TypesSupported", TYPES_SUPPORTED);
+			Advapi32Util.registrySetIntValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, "CategoryCount", CATEGORY_COUNT);
+			setVariableKeys(eventMessageFile, categoryMessageFile, eventSourceKeyPath);
 		}
 	}
 
-	private void setVariableKeys(String eventMessageFile,
-			String categoryMessageFile, String eventSourceKeyPath) {
-		if (!Advapi32Util.registryValueExists(WinReg.HKEY_LOCAL_MACHINE,
-				eventSourceKeyPath, EVENT_MESSAGE_FILE)
+	private void setVariableKeys(String eventMessageFile, String categoryMessageFile, String eventSourceKeyPath) {
+		if (!Advapi32Util.registryValueExists(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, EVENT_MESSAGE_FILE)
 				|| !Advapi32Util
-						.registryGetStringValue(WinReg.HKEY_LOCAL_MACHINE,
-								eventSourceKeyPath, EVENT_MESSAGE_FILE)
+						.registryGetStringValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, EVENT_MESSAGE_FILE)
 						.equalsIgnoreCase(eventMessageFile)) {
-			Advapi32Util.registrySetStringValue(WinReg.HKEY_LOCAL_MACHINE,
-					eventSourceKeyPath, EVENT_MESSAGE_FILE, eventMessageFile);
+			Advapi32Util.registrySetStringValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, EVENT_MESSAGE_FILE, eventMessageFile);
 		}
-		if (!Advapi32Util.registryValueExists(WinReg.HKEY_LOCAL_MACHINE,
-				eventSourceKeyPath, CATEGORY_MESSAGE_FILE)
+		if (!Advapi32Util.registryValueExists(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, CATEGORY_MESSAGE_FILE)
 				|| !Advapi32Util
-						.registryGetStringValue(WinReg.HKEY_LOCAL_MACHINE,
-								eventSourceKeyPath, CATEGORY_MESSAGE_FILE)
+						.registryGetStringValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, CATEGORY_MESSAGE_FILE)
 						.equalsIgnoreCase(categoryMessageFile)) {
-			Advapi32Util.registrySetStringValue(WinReg.HKEY_LOCAL_MACHINE,
-					eventSourceKeyPath, CATEGORY_MESSAGE_FILE, categoryMessageFile);
+			Advapi32Util.registrySetStringValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, CATEGORY_MESSAGE_FILE, categoryMessageFile);
 		}
 	}
 

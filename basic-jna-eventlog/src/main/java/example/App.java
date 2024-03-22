@@ -2,13 +2,7 @@ package example;
 
 import java.io.Serializable;
 
-import org.slf4j.LoggerFactory;
-
-import ch.qos.logback.classic.Logger;
-
 public class App {
-
-	static Logger logger = (Logger) LoggerFactory.getLogger("mapAppender");
 
 	public static void main(String[] args) {
 
@@ -18,7 +12,16 @@ public class App {
 			b.append(' ');
 		}
 		String message = b.toString();
-		logger.warn("Event log from {} message {}", App.class.getSimpleName(),
-				message);
+
+		String name = "EventLog";
+
+		final String server = "."; // guess
+		final String source = "example.log4jna_sample";
+		final String application = "log4jna_sample";
+		final String eventMessageFile = "src\\main\\resources\\Win32EventLogAppender.dll";
+		final String categoryMessageFile = "src\\main\\resources\\Win32EventLogAppender.dll";
+		Win32EventLogAppender appender = Win32EventLogAppender.createAppender(name,
+				server, source, application, eventMessageFile, categoryMessageFile);
+		appender.append(message);
 	}
 }
