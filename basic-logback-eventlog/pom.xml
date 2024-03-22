@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>example</groupId>
   <artifactId>jna_eventlog</artifactId>
-  <version>0.5.0-SNAPSHOT</version>
-
-  <name>log4jna_sample</name>
+  <version>0.6.0-SNAPSHOT</version>
+  <name>log4jna_eventlog</name>
   <properties>
     <encoding>UTF-8</encoding>
+    <janino.version>2.6.1</janino.version>
     <java.version>1.8</java.version>
     <jna-platform.version>5.4.0</jna-platform.version>
     <json.version>20231013</json.version>
@@ -18,17 +16,16 @@
     <mainClass>App</mainClass>
     <maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
     <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
     <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
     <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
-    <maven.compiler.source>${java.version}</maven.compiler.source>
-    <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
     <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
     <slf4j.version>1.7.30</slf4j.version>
   </properties>
-
   <dependencies>
     <dependency>
       <groupId>net.java.dev.jna</groupId>
@@ -46,14 +43,12 @@
       <version>${slf4j.version}</version>
     </dependency>
     <dependency>
-        <groupId>org.codehaus.janino</groupId>
-        <artifactId>janino</artifactId>
-        <version>2.6.1</version>
+      <groupId>org.codehaus.janino</groupId>
+      <artifactId>janino</artifactId>
+      <version>${janino.version}</version>
     </dependency>
   </dependencies>
-
   <build>
-
     <sourceDirectory>src/main/java</sourceDirectory>
     <testSourceDirectory>src/test/java</testSourceDirectory>
     <plugins>
@@ -139,7 +134,6 @@
         </configuration>
       </plugin>
     </plugins>
-
     <pluginManagement>
       <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
@@ -153,15 +147,14 @@
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-        <version>${maven-jar-plugin.version}</version>
+          <version>${maven-jar-plugin.version}</version>
         </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>${maven-assembly-plugin.version}</version>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>${maven-assembly-plugin.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
   </build>
 </project>
-

@@ -12,35 +12,17 @@
 			</pattern>
     </encoder>
   </appender>
-  <root level="debug">
+  <root level="DEBUG">
     <appender-ref ref="CONSOLE"/>
-    <!-- NOTE: Failed to parse condition [property("USERPROFILE").empty()] org.codehaus.commons.compiler.CompileException: Line 1, Column 65: A method named "empty" is not declared in any enclosing class nor any supertype, nor through a static import
-	at org.codehaus.commons.compiler.CompileException: 
-  
-  Line 1, Column 65: A method named "empty" is not declared in any enclosing class nor any supertype, nor through a static import
-
- -->
-<!--
-   <if condition='property("windir").equalsIgnoreCase("C:\Windows")'>
-    -->
-    
-<!--
-        <if condition="property(&quot;WINDIR&quot;).equalsIgnoreCase(&quot;C:\Windows&quot;)">
-    -->
-  
-   <if condition='isDefined("windir")'>
-<!-- Works but is Case sensitive -->
-<!--
-    <if condition='property("os.name").contains("Win")'>
--->
+  </root>
+  <root level="WARN">
+    <appender-ref ref="CONSOLE"/>
+    <if condition="isDefined(&quot;windir&quot;)">
       <then>
         <appender-ref ref="map"/>
-    </then>
-      <else>
-      </else>
+      </then>
     </if>
   </root>
-  
-  <logger name="mapAppender" level="debug">
+  <logger name="mapAppender" level="DEBUG">
   </logger>
 </configuration>

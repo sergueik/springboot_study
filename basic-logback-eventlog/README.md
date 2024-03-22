@@ -1,6 +1,6 @@
 ﻿### Info
 
-Standalone Event log logger based on [dblock/log4jna](https://github.com/dblock/log4jna)
+Logback Appender performing Event log logging converted from [dblock/log4jna](https://github.com/dblock/log4jna)
 
 ### Usage
 
@@ -12,7 +12,8 @@ mvn package
 java -cp target/example.jna_eventlog.jar:target/lib/* example.App the quick brown fox jumps over the lazy dog
 ```
 ```text
-20:28:54.575 [main] WARN  example.App - Event log from App message the quick brown fox jumps over the lazy dog 
+00:24:59.001 [main] ERROR example.App - message: the quick brown fox jumps over the lazy dog
+00:24:59.007 [main] WARN  example.App - message: the quick brown fox jumps over the lazy dog
 ```
 #### Windows
 
@@ -38,10 +39,18 @@ java -cp target\example.jna_eventlog.jar;target\lib\* example.App the quick brow
 this will print to console:
 
 ```text
-17:59:26.848 [main] WARN  example.App - Event log from App message the quick brown fox jumps over the lazy dog
-DEBUG: appending event message: 17:59:26.848 [main] WARN  example.App - Event log from App message the quick brown fox jumps over the lazy dog
+16:26:57.277 [main] ERROR example.App - message: the quick brown fox jumps over
+the lazy dog
+DEBUG: appending event message: 16:26:57.277 [main] ERROR example.App - message:
+ the quick brown fox jumps over the lazy dog
+
+16:26:58.105 [main] WARN  example.App - message: the quick brown fox jumps over
+the lazy dog
+DEBUG: appending event message: 16:26:58.105 [main] WARN  example.App - message:
+ the quick brown fox jumps over the lazy dog
+
 ```
-create the entry in the Windows Registry for eventlog service:
+create two entries in the Windows Registry for eventlog service:
 
 ![Event log Config Before](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-eventlog-config-before.png)
 
@@ -128,13 +137,57 @@ Event[0]:
 ```cmd
 wevtutil.exe clear-log log4jna_sample
 ```
-### See Also
-http://janino-compiler.github.io/janino/
 
-https://stackoverflow.com/questions/1975939/read-environment-variables-from-logback-configuration-file
-https://stackoverflow.com/questions/42370870/else-if-in-janino-logback-configuration
-https://stackoverflow.com/questions/27814140/conditions-in-logback-configuration
-https://www.wlangiewicz.com/2019/03/28/effective-way-of-using-conditional-expressions-in-logback/
+#### Flexible Logging
+
+in `logback.xml` we allow all message be logged through appended when specific custom  logger `mapAppender` is called explicitly:
+
+```XML
+ <logger name="mapAppender" level="DEBUG">
+  </logger>
+```
+
+and for a default log 
+
+```java
+
+```
+`WARN` logs on Windows be logged to __System Event Log__:
+```xml
+ <root level="WARN">
+    <appender-ref ref="CONSOLE"/>
+    <if condition="isDefined(&quot;windir&quot;)">
+      <then>
+        <appender-ref ref="map"/>
+      </then>
+    </if>
+  </root>
+
+```
+
+on Unix the `WARN` level will be printed to console.
+
+### NOTE
+
+The logback levels are, in order of precedence: 
+
+  * `TRACE`
+  * `DEBUG`
+  * `INFO`
+  * `WARN`
+  * `ERROR`
+
+### See Also
+
+  * https://www.baeldung.com/logback
+  * http://janino-compiler.github.io/janino/
+  * https://stackoverflow.com/questions/1975939/read-environment-variables-from-logback-configuration-file
+  * https://stackoverflow.com/questions/42370870/else-if-in-janino-logback-configuration
+  * https://stackoverflow.com/questions/27814140/conditions-in-logback-configuration
+  * https://www.wlangiewicz.com/2019/03/28/effective-way-of-using-conditional-expressions-in-logback/
+  * https://stackoverflow.com/questions/15911303/how-can-i-configure-logback-conditionally-based-on-context-name
+  * https://dennis-xlc.gitbooks.io/the-logback-manual/content/en/chapter-3-configuration/configuration-file-syntax/variable-substitution.html
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

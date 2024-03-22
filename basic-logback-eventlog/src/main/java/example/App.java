@@ -19,6 +19,10 @@ public class App {
 			b.append(' ');
 		}
 		String message = b.toString();
-		logger.warn("Event log from {} message {}", App.class.getSimpleName(), message);
+		logger.error("message: {}",  message);
+		logger.warn("message: {}", message);
+		logger.info("message: {}", message);
+		logger.debug("message: {}",  message);
+		// logger.warn("Event log from {} message {}", App.class.getSimpleName(), message);
 	}
 }
