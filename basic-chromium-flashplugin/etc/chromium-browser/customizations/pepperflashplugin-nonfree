@@ -1,0 +1,3 @@
+flashso="/usr/lib/pepperflashplugin-nonfree/libpepflashplayer.so"
+flashversion=`strings $flashso 2> /dev/null | grep LNX | cut -d ' ' -f 2 | sed -e "s/,/./g"`
+CHROMIUM_FLAGS="$CHROMIUM_FLAGS --ppapi-flash-path=$flashso --ppapi-flash-version=$flashversion"
