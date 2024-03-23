@@ -29,9 +29,16 @@ which will be printed if the log is already deleted / not yet created
 
 * run from elevated console. ([WIP] subsequent runs will work for any user)
 to create the event source `log4jna_sample` in  `%SystemRoot%\System32\Winevt\Logs\log4jna_sample.evtx`
+
+copy Microsoft provided dummy event log provider category resource dll into project resource directory if not building from the source:
+```cmd
+copy /y %windir%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll src\main\resources\Win32EventLogAppender.dll
+```
+build application jar
 ```cmd
 mvn clean package
 ```
+run application
 ```cmd
 java -cp target\example.jna_eventlog.jar;target\lib\* example.App the quick brown fox jumps over the lazy dog
 ```
@@ -50,7 +57,9 @@ DEBUG: appending event message: 16:26:58.105 [main] WARN  example.App - message:
  the quick brown fox jumps over the lazy dog
 
 ```
-create two entries in the Windows Registry for eventlog service:
+NOTE: in `logback.xml` by redefining the `root` logger to `WARN` one loses earlier definition on `INFO` - a more granular configuration is possible
+
+and creates two entries in the Windows Registry for eventlog service:
 
 ![Event log Config Before](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-eventlog-config-before.png)
 
@@ -91,25 +100,40 @@ java -cp target/example.jna_eventlog.jar:target/lib/* example.App the quick brow
 * Windows
 
 ```powershell
-get-eventlog -logname log4jna_sample -newest 1 |format-list
+get-eventlog -logname log4jna_sample -newest 2 |format-list
 ```
 reveals
 ```text
-Index              : 32
+
+Index              : 255
 EntryType          : Information
 InstanceId         : 4096
-Message            : 04:26:37.314 [main] WARN  mapAppender - Event log from App
-                      message the quick brown fox jumps over the lazy dog
+Message            : 14:58:52.493 [main] WARN  example.App - message: the quick brown fox jumps over the lazy dog
 
-Category           : Info
+Category           : %1
 CategoryNumber     : 3
-ReplacementStrings : {04:26:37.314 [main] WARN  mapAppender - Event log from Ap
-                     p message the quick brown fox jumps over the lazy dog
+ReplacementStrings : {14:58:52.493 [main] WARN  example.App - message: the quick brown fox jumps over the lazy dog
                      }
 Source             : example.log4jna_sample
-TimeGenerated      : 31.01.2024 4:26:39
-TimeWritten        : 31.01.2024 4:26:39
+TimeGenerated      : 3/23/2024 2:58:52 PM
+TimeWritten        : 3/23/2024 2:58:52 PM
 UserName           :
+
+Index              : 254
+EntryType          : Information
+InstanceId         : 4096
+Message            : 14:58:52.165 [main] ERROR example.App - message: the quick brown fox jumps over the lazy dog
+
+Category           : %1
+CategoryNumber     : 3
+ReplacementStrings : {14:58:52.165 [main] ERROR example.App - message: the quick brown fox jumps over the lazy dog
+                     }
+Source             : example.log4jna_sample
+TimeGenerated      : 3/23/2024 2:58:52 PM
+TimeWritten        : 3/23/2024 2:58:52 PM
+UserName           :
+
+
 ```
 
 or  
