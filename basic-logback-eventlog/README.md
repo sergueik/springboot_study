@@ -85,6 +85,69 @@ and creates two entries in the Windows Registry for eventlog service:
 and add Windows Event Log:
 ![Event log Message](https://github.com/sergueik/springboot_study/blob/master/basic-logback-eventlog/screenshots/capture-message.png)
 
+Alternatively remove the event log and create using Microsofr Powershell cmdlets:
+```powershell
+
+$logname = 'log4jna_sample'
+remove-eventlog -logname $logname
+
+$app = 'log4jna_sample'
+$resource_dll = 'C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
+new-EventLog -LogName $logname -source $app -CategoryResourceFile $resource_dll -MessageResourceFile $resource_dll -ParameterResourceFile $resource_dll
+
+```
+then run the app in non-elevated prompt:
+```cmd
+java -cp target\example.logback-eventlog.jar;target\lib\* example.App the quick brown fox jumps over the lazy cat
+```
+this will log
+```
+12:07:14.857 [main] ERROR example.App - message: the quick brown fox jumps over the lazy cat
+DEBUG: appending event message: 12:07:14.857 [main] ERROR example.App - message: the quick brown fox jumps over the lazy cat
+
+12:07:14.998 [main] WARN  example.App - message: the quick brown fox jumps over the lazy cat
+DEBUG: appending event message: 12:07:14.998 [main] WARN  example.App - message: the quick brown fox jumps over the lazy cat
+```
+```powershell
+get-eventlog -logname log4jna_sample -newest 2 |format-list
+
+```
+```text
+Index              : 36
+EntryType          : Information
+InstanceId         : 4096
+Message            : 12:09:03.299 [main] WARN  example.App - message: the
+                     quick brown fox jumps over the lazy cat
+
+Category           : Info
+CategoryNumber     : 3
+ReplacementStrings : {12:09:03.299 [main] WARN  example.App - message: the
+                     quick brown fox jumps over the lazy cat
+                     }
+Source             : example.log4jna_sample
+TimeGenerated      : 3/25/2024 12:09:03 PM
+TimeWritten        : 3/25/2024 12:09:03 PM
+UserName           :
+
+Index              : 35
+EntryType          : Information
+InstanceId         : 4096
+Message            : 12:09:03.159 [main] ERROR example.App - message: the
+                     quick brown fox jumps over the lazy cat
+
+Category           : Info
+CategoryNumber     : 3
+ReplacementStrings : {12:09:03.159 [main] ERROR example.App - message: the
+                     quick brown fox jumps over the lazy cat
+                     }
+Source             : example.log4jna_sample
+TimeGenerated      : 3/25/2024 12:09:03 PM
+TimeWritten        : 3/25/2024 12:09:03 PM
+UserName           :
+
+
+
+```
 #### Verify
 
 * Linux
@@ -216,6 +279,48 @@ The logback levels are, in order of precedence:
   * `INFO`
   * `WARN`
   * `ERROR`
+### Custom Event Log Templates
+have few disadvantages:
+
+ * complex to author (see snapshot [example](https://github.com/sergueik/powershell_samples/tree/bcbeceaf05bb37927bb8f432d0ce08f73514c751/external/wix/basic-eventlog-source-installer/Resource):
+```cpp
+;// HEADER SECTION
+MessageIdTypedef=DWORD
+
+;// CATEGORY DEFINITIONS
+MessageId=1
+Language=English
+Web service
+.
+
+;// MESSAGE DEFINITIONS
+MessageId=100
+Language=English
+Max connections was exceeded.
+.
+MessageId=101
+Language=English
+Service utilization: %1
+.
+```
+ * require CPP generation tooling
+
+```cmd
+@echo OFF
+set TARGET=messages
+del %TARGET%.dll %TARGET%.rc %TARGET%.res
+REM call "c:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\vcvars32.bat"
+call "c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\vcvars32.bat"
+REM ignore the ERROR: Cannot determine the location of the VS Common Tools folder. 
+set PATH=c:\Program Files\Microsoft Visual Studio 10.0\VC\bin;c:\Program Files\Microsoft SDKs\Windows\v7.1\Bin;%PATH%
+mc.exe -u %TARGET%.mc
+rc.exe -r -fo %TARGET%.res %TARGET%.rc
+link.exe -dll -noentry -out:%TARGET%.dll %TARGET%.res /MACHINE:X86
+REM Alternatively
+c:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe /win32res:%TARGET%.res /unsafe /target:library /out:.\%TARGET%_csc.dll
+xcopy.exe /Y %TARGET%.dll ..\Setup
+```
+ * are barely used if at all to style the messages
 
 ### See Also
 
