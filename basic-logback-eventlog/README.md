@@ -1,6 +1,10 @@
 ﻿### Info
 
-Logback Appender performing Event log logging converted from [dblock/log4jna](https://github.com/dblock/log4jna)
+Logback Appender performing Event log logging converted from one of [java native access](https://github.com/java-native-access/jna) project contributions - the JNA wrapper around the native Windows Event Log `ReportEvent` [function](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-reporteventa) that resides 
+in `advapi32.dll` [dll](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files) hosting provides misc. security calls and functions for manipulating the Windows Registry.
+[dblock/log4jna](https://github.com/dblock/log4jna) 
+by replacing the original project depednency on [log4j]()(discouraged because of [log4jshell]()) and introducing the dependency on logback enabling one to
+configue the logged in calling class / message severity / executing host operating system fashion.
 
 ### Usage
 
@@ -9,7 +13,7 @@ Logback Appender performing Event log logging converted from [dblock/log4jna](ht
 * console only
 ```sh
 mvn package
-java -cp target/example.jna_eventlog.jar:target/lib/* example.App the quick brown fox jumps over the lazy dog
+java -cp target/example.logback-eventlog.jar:target/lib/* example.App the quick brown fox jumps over the lazy dog
 ```
 ```text
 00:24:59.001 [main] ERROR example.App - message: the quick brown fox jumps over the lazy dog
@@ -27,20 +31,32 @@ Failed to clear log log4jna_sample. The specified channel could not be found. Ch
 ```
 which will be printed if the log is already deleted / not yet created
 
+* remove the custom event log completely
+
+```poweshell
+remove-eventlog -logname log4jna_sample
+```
 * run from elevated console. ([WIP] subsequent runs will work for any user)
 to create the event source `log4jna_sample` in  `%SystemRoot%\System32\Winevt\Logs\log4jna_sample.evtx`
 
 copy Microsoft provided dummy event log provider category resource dll into project resource directory if not building from the source:
 ```cmd
 copy /y %windir%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll src\main\resources\Win32EventLogAppender.dll
-```
+``` 
 build application jar
+```cmd
+mvn clean package
+```
+
+* run from elevated console. ([WIP] subsequent runs will work for any user)
+
+in the first run Java application will observe non existing and create the event source `log4jna_sample` in  `%SystemRoot%\System32\Winevt\Logs\log4jna_sample.evtx`
 ```cmd
 mvn clean package
 ```
 run application
 ```cmd
-java -cp target\example.jna_eventlog.jar;target\lib\* example.App the quick brown fox jumps over the lazy dog
+java -cp target\example.logback-eventlog.jar;target\lib\* example.App the quick brown fox jumps over the lazy dog
 ```
 
 this will print to console:
@@ -61,25 +77,25 @@ NOTE: in `logback.xml` by redefining the `root` logger to `WARN` one loses earli
 
 and creates two entries in the Windows Registry for eventlog service:
 
-![Event log Config Before](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-eventlog-config-before.png)
+![Event log Config Before](https://github.com/sergueik/springboot_study/blob/master/basic-logback-eventlog/screenshots/capture-eventlog-config-before.png)
 
-![Event log Config After](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-eventlog-config-after.png)
+![Event log Config After](https://github.com/sergueik/springboot_study/blob/master/basic-logback-eventlog/screenshots/capture-eventlog-config-after.png)
 
 
 and add Windows Event Log:
-![Event log Message](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-message.png)
+![Event log Message](https://github.com/sergueik/springboot_study/blob/master/basic-logback-eventlog/screenshots/capture-message.png)
 
 #### Verify
 
 * Linux
 ```sh
 mvn package
-java -cp target/example.jna_eventlog.jar:target/lib/* example.App the quick brown fox jumps over the lazy dog
+java -cp target/example.logback-eventlog.jar:target/lib/* example.App the quick brown fox jumps over the lazy dog
 ```
 ```text
 20:02:26,956 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.xml]
 20:02:26,957 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found resource [logback.xml] at [jar:file:/home/sergueik/src/springboot_study/basic-logback-eventlog/target/example.jna_eventlog.jar!/logback.xml]
-20:02:26,971 |-INFO in ch.qos.logback.core.joran.spi.ConfigurationWatchList@4e9ba398 - URL [jar:file:/home/sergueik/src/springboot_study/basic-logback-eventlog/target/example.jna_eventlog.jar!/logback.xml] is not of type file
+20:02:26,971 |-INFO in ch.qos.logback.core.joran.spi.ConfigurationWatchList@4e9ba398 - URL [jar:file:/home/sergueik/src/springboot_study/basic-logback-eventlog/target/example.logback-eventlog.jar!/logback.xml] is not of type file
 20:02:27,063 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - debug attribute not set
 20:02:27,063 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [example.MapAppender]
 20:02:27,067 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [map]
