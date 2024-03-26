@@ -1,10 +1,19 @@
 ﻿### Info
 
-Logback Appender performing Event log logging converted from one of [java native access](https://github.com/java-native-access/jna) project contributions - the JNA wrapper around the native Windows Event Log `ReportEvent` [function](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-reporteventa) that resides 
-in `advapi32.dll` [dll](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files) hosting provides misc. security calls and functions for manipulating the Windows Registry.
-[dblock/log4jna](https://github.com/dblock/log4jna) 
-by replacing the original project depednency on [log4j]()(discouraged because of [log4jshell]()) and introducing the dependency on logback enabling one to
-configue the logged in calling class / message severity / executing host operating system fashion.
+[Logback](https://www.baeldung.com/logback)
+[Appender](https://logback.qos.ch/manual/appenders.html)
+performing logging messaged into [Event log](https://en.wikipedia.org/wiki/Event_Viewer)
+The project uses code
+converted from one of
+[java native access](https://github.com/java-native-access/jna)
+project contributions - [dblock/log4jna](https://github.com/dblock/log4jna) - the JNA wrapper around the native
+Windows Event Log `ReportEvent` [function](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-reporteventa)
+that resides  in `advapi32.dll` [dll](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files)
+which is system dll hosting misc. security calls and functions for manipulating the Windows Registry
+ by replacing the original project depednency on [log4j](https://en.wikipedia.org/wiki/Log4j) - discouraged because of [log4jshell](https://en.wikipedia.org/wiki/Log4Shell)
+ and bundling the logger with logback enabling one to configure the logger
+ through invoker class / message severity / executing host operating system fashion. The environment test logic relies on 
+ embedded [Janino compiler](https://www.janino.net) dependency
 
 ### Usage
 
@@ -160,17 +169,17 @@ java -cp target/example.logback-eventlog.jar:target/lib/* example.App the quick 
 20:02:26,957 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found resource [logback.xml] at [jar:file:/home/sergueik/src/springboot_study/basic-logback-eventlog/target/example.jna_eventlog.jar!/logback.xml]
 20:02:26,971 |-INFO in ch.qos.logback.core.joran.spi.ConfigurationWatchList@4e9ba398 - URL [jar:file:/home/sergueik/src/springboot_study/basic-logback-eventlog/target/example.logback-eventlog.jar!/logback.xml] is not of type file
 20:02:27,063 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - debug attribute not set
-20:02:27,063 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [example.MapAppender]
+20:02:27,063 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [example.eventlogAppender]
 20:02:27,067 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [map]
 20:02:27,075 |-INFO in ch.qos.logback.core.joran.action.NestedComplexPropertyIA - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
 20:02:27,128 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
 20:02:27,129 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [CONSOLE]
 20:02:27,132 |-INFO in ch.qos.logback.classic.joran.action.RootLoggerAction - Setting level of ROOT logger to INFO
-20:02:27,133 |-INFO in ch.qos.logback.classic.joran.action.LoggerAction - Setting level of logger [mapAppender] to DEBUG
-20:02:27,133 |-INFO in ch.qos.logback.core.joran.action.AppenderRefAction - Attaching appender named [CONSOLE] to Logger[mapAppender]
+20:02:27,133 |-INFO in ch.qos.logback.classic.joran.action.LoggerAction - Setting level of logger [eventlogAppender] to DEBUG
+20:02:27,133 |-INFO in ch.qos.logback.core.joran.action.AppenderRefAction - Attaching appender named [CONSOLE] to Logger[eventlogAppender]
 20:02:27,134 |-ERROR in ch.qos.logback.core.joran.conditional.IfAction - Could not find Janino library on the class path. Skipping conditional processing.
 20:02:27,134 |-ERROR in ch.qos.logback.core.joran.conditional.IfAction - See also http://logback.qos.ch/codes.html#ifJanino
-20:02:27,135 |-WARN in ch.qos.logback.classic.joran.action.LoggerAction - The object on the top the of the stack is not Logger[mapAppender] pushed earlier
+20:02:27,135 |-WARN in ch.qos.logback.classic.joran.action.LoggerAction - The object on the top the of the stack is not Logger[eventlogAppender] pushed earlier
 20:02:27,135 |-WARN in ch.qos.logback.classic.joran.action.LoggerAction - It is: ch.qos.logback.core.joran.conditional.IfAction
 20:02:27,135 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - End of configuration.
 20:02:27,136 |-INFO in ch.qos.logback.classic.joran.JoranConfigurator@6d7b4f4c - Registering current configuration as safe fallback point
@@ -234,7 +243,7 @@ Event[0]:
   User Name: N/A
   Computer: DESKTOP-82V9KDO
   Description:
-04:26:37.314 [main] WARN  mapAppender - Event log from App message the quick brown fox jumps over the lazy dog
+04:26:37.314 [main] WARN  eventlogAppender - Event log from App message the quick brown fox jumps over the lazy dog
 ```
 ### Cleanup
 ```cmd
@@ -243,10 +252,10 @@ wevtutil.exe clear-log log4jna_sample
 
 #### Flexible Logging
 
-in `logback.xml` we allow all message be logged through appended when specific custom  logger `mapAppender` is called explicitly:
+in `logback.xml` we allow all message be logged through appended when specific custom  logger `eventlogAppender` is called explicitly:
 
 ```XML
- <logger name="mapAppender" level="DEBUG">
+ <logger name="eventlogAppender" level="DEBUG">
   </logger>
 ```
 

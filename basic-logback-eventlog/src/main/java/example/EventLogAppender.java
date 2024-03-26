@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import ch.qos.logback.core.encoder.Encoder;
 
-public class MapAppender extends AppenderBase<ILoggingEvent> {
+public class EventLogAppender extends AppenderBase<ILoggingEvent> {
 
 	private String prefix;
 	private Encoder encoder;
@@ -38,8 +38,8 @@ public class MapAppender extends AppenderBase<ILoggingEvent> {
 		final String application = "log4jna_sample";
 		final String eventMessageFile = "src\\main\\resources\\Win32EventLogAppender.dll";
 		final String categoryMessageFile = "src\\main\\resources\\Win32EventLogAppender.dll";
-		Win32EventLogAppender appender = Win32EventLogAppender.createAppender(name,
-				server, source, application, eventMessageFile, categoryMessageFile);
+		Win32EventLogAppender appender = Win32EventLogAppender.createAppender(name, server, source, application,
+				eventMessageFile, categoryMessageFile);
 		appender.append(message);
 
 	}
