@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>app.log </file>
+    <file>app.log</file>
     <append>true</append>
     <encoder>
       <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
@@ -19,7 +19,12 @@
     </encoder>
   </appender>
   <root level="DEBUG">
+
     <appender-ref ref="CONSOLE"/>
-    <appender-ref ref="FILE"/>
+    <if condition="isDefined(&quot;windir&quot;)">
+      <then>
+        <appender-ref ref="FILE"/>
+      </then>
+    </if>
   </root>
 </configuration>

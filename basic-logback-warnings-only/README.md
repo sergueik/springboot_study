@@ -1,19 +1,38 @@
 ### Info
 
-Logging of WARN only to filebased appender while everything to CONSOLE
+Logging of `WARN` only to `FILE`-based appender while `INFO` and everything more severe to `CONSOLE`
 
 based on [stackoverflow discussion example](https://stackoverflow.com/questions/25339540/logback-configuration-file-write-all-except-debug-to-file-as-logging-to-cons) 
+
+### NOTE
+
+the level threshold is set to very lowest level at the global scope:
+```XML
+<root level="DEBUG">
+</root>
+```
+but is reset to `INFO` and `WARN` levels in `CONSOLE` and `FILE` Appenders through direct usage of `Filter`:
+```XML
+<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>WARN</level>
+    </filter>
+```
+this is to illystrate suppression of `DEBUG` messages in console and `DEBUG` and `INFO` in the log file `app.log`
 
 ### Usage
 
 * test application locally
 
 #### Console-only Logging And WARNING to File
-
+* Windows
+```cmd
+copy NUL app.log
+```
 ```sh
+
 mvn clean spring-boot:run
 ```
-this will call loggers in the servler contstructor:
+this will call loggers in the servlet logger helper class contstructor:
 ```java
 logger = LoggerFactory.getLogger(LogHelper.class);
 logger.info("logger constructor INFO message");
@@ -62,53 +81,41 @@ java -jar target/example.logback-warnings-only.jar
 
 and interact with app through separate shell
 ```sh
-for CNT in $(seq 1 1 10) ; do wget --quiet -O /dev/null 127.0.0.1:8080/example ; done
+for CNT in $(seq 1 1 3) ; do wget --quiet -O /dev/null 127.0.0.1:8080/example ; done
 ```
-will see the log messages in the application console
-```text
-50609 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-50609 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-50613 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 4 ms
-50633 [http-nio-8080-exec-1] INFO  example.LogHelper - INFO: request processed: null
-50634 [http-nio-8080-exec-1] WARN  example.LogHelper - WARN: request processed: null
-50661 [http-nio-8080-exec-2] INFO  example.LogHelper - INFO: request processed: null
-50661 [http-nio-8080-exec-2] WARN  example.LogHelper - WARN: request processed: null
-50667 [http-nio-8080-exec-3] INFO  example.LogHelper - INFO: request processed: null
-50667 [http-nio-8080-exec-3] WARN  example.LogHelper - WARN: request processed: null
-50674 [http-nio-8080-exec-5] INFO  example.LogHelper - INFO: request processed: null
-50674 [http-nio-8080-exec-5] WARN  example.LogHelper - WARN: request processed: null
-50680 [http-nio-8080-exec-6] INFO  example.LogHelper - INFO: request processed: null
-50680 [http-nio-8080-exec-6] WARN  example.LogHelper - WARN: request processed: null
-50687 [http-nio-8080-exec-7] INFO  example.LogHelper - INFO: request processed: null
-50687 [http-nio-8080-exec-7] WARN  example.LogHelper - WARN: request processed: null
-50692 [http-nio-8080-exec-8] INFO  example.LogHelper - INFO: request processed: null
-50692 [http-nio-8080-exec-8] WARN  example.LogHelper - WARN: request processed: null
-50697 [http-nio-8080-exec-9] INFO  example.LogHelper - INFO: request processed: null
-50698 [http-nio-8080-exec-9] WARN  example.LogHelper - WARN: request processed: null
-50703 [http-nio-8080-exec-10] INFO  example.LogHelper - INFO: request processed: null
-50703 [http-nio-8080-exec-10] WARN  example.LogHelper - WARN: request processed: null
-50707 [http-nio-8080-exec-1] INFO  example.LogHelper - INFO: request processed: null
+NOTE: on Windows / Git bash there will be no `wget` and run the following command instead:
+```sh
+ for CNT in $(seq 1 1 3) ; do curl -s 127.0.0.1:8080/example ; done
 ```
-and in file `a.log`:
+this will print in the client console
 ```text
-16:40:30.267 [http-nio-8080-exec-1] WARN  example.LogHelper - WARN: request processed: null
-16:40:30.294 [http-nio-8080-exec-2] WARN  example.LogHelper - WARN: request processed: null
-16:40:30.300 [http-nio-8080-exec-3] WARN  example.LogHelper - WARN: request processed: null
-16:40:30.307 [http-nio-8080-exec-5] WARN  example.LogHelper - WARN: request processed: null
-16:40:30.313 [http-nio-8080-exec-6] WARN  example.LogHelper - WARN: request processed: null
-16:40:30.320 [http-nio-8080-exec-7] WARN  example.LogHelper - WARN: request processed: null
-16:40:30.325 [http-nio-8080-exec-8] WARN  example.LogHelper - WARN: request processed: null
-16:40:30.331 [http-nio-8080-exec-9] WARN  example.LogHelper - WARN: request processed: null
-16:40:30.336 [http-nio-8080-exec-10] WARN  example.LogHelper - WARN: request processed: null
-16:40:30.340 [http-nio-8080-exec-1] WARN  example.LogHelper - WARN: request processed: null
+request processed: null
+request processed: null
+request processed: null
+```
+and one will observe the new log messages in the application console
+```text
+96518 [http-nio-8080-exec-1] INFO  example.LogHelper - INFO: request processed:null
+96526 [http-nio-8080-exec-1] WARN  example.LogHelper - WARN: request processed:null
+96694 [http-nio-8080-exec-3] INFO  example.LogHelper - INFO: request processed:null
+96694 [http-nio-8080-exec-3] WARN  example.LogHelper - WARN: request processed:null
+96814 [http-nio-8080-exec-5] INFO  example.LogHelper - INFO: request processed:null
+96814 [http-nio-8080-exec-5] WARN  example.LogHelper - WARN: request processed:null
+```
+and in the file `app.log`:
+```text
+18:43:32.223 [http-nio-8080-exec-1] WARN  example.LogHelper - WARN: request processed: null
+18:43:32.391 [http-nio-8080-exec-3] WARN  example.LogHelper - WARN: request processed: null
+18:43:32.511 [http-nio-8080-exec-5] WARN  example.LogHelper - WARN: request processed: null
 ```
 
+### Note 
+if the `janino` dependency is not added to project `pom.xml` the following exception will be observed in runtime:
+```text
+Exception in thread "main" java.lang.NoSuchMethodError: ch.qos.logback.core.util.OptionHelper.isNotEmtpy([Ljava/lang/Object;)Z
+```
 ### See Also:
    * https://logback.qos.ch/manual/filters.html
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
-
-
-
