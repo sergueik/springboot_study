@@ -1,78 +1,55 @@
 ﻿### Info
 
-Standalone Event log logger based on [dblock/log4jna](https://github.com/dblock/log4jna)
+Standalone Event log logger derived from [dblock/log4jna](https://github.com/dblock/log4jna) - removed the dependency on Log4j with the plan to use with Logback
+
 
 ### Usage
 
-* clear the log
+* clear the custom Event Log `log4jna_sample`
 ```cmd
 wevtutil.exe clear-log log4jna_sample
 ```
-ignore the warning which will be printed if the log is already deleted / not yet created
-
-```text
-Failed to clear log log4jna_sample. The specified channel could not be found. Check channel configuration.
-```
-
 * run from elevated console. ([WIP] subsequent runs will work for any user)
-to create the event source `log4jna_sample` in  `%SystemRoot%\System32\Winevt\Logs\log4jna_sample.evtx`
+to create the event source `log4jna_sample` in `%SystemRoot%\System32\Winevt\Logs\log4jna_sample.evtx`
 ```sh
 mvn clean package
 ```
 ```sh
 java -jar target\example.jna_eventlog.jar the quick brown fox jumps over the lazy dog
 ```
+* review Event Log entries
 
-this will print to console:
-```text
-
-04:26:37.314 [main] WARN  mapAppender - Event log from App message the quick brown fox jumps over the lazy dog
-DEBUG: appending event message: 04:26:37.314 [main] WARN  mapAppender - Event log from App message the quick brown fox jumps over the lazy dog
-```
-create the entry in the Windows Registry for eventlog service:
-
-![Event log Config Before](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-eventlog-config-before.png)
-
-![Event log Config After](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-eventlog-config-after.png)
-
-
-and add Windows Event Log:
 ![Event log Message](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-message.png)
 
-* verify
+* query in console
 
 ```powershell
 get-eventlog -logname log4jna_sample -newest 1 |format-list
 ```
 reveals
 ```text
-Index              : 32
+Index              : 26
 EntryType          : Information
 InstanceId         : 4096
-Message            : 04:26:37.314 [main] WARN  mapAppender - Event log from App
-                      message the quick brown fox jumps over the lazy dog
-
+Message            : the quick brown fox jumps over the lazy dog  - this is a test
 Category           : Info
 CategoryNumber     : 3
-ReplacementStrings : {04:26:37.314 [main] WARN  mapAppender - Event log from Ap
-                     p message the quick brown fox jumps over the lazy dog
-                     }
+ReplacementStrings : {the quick brown fox jumps over the lazy dog  - this is a  test}
 Source             : example.log4jna_sample
-TimeGenerated      : 31.01.2024 4:26:39
-TimeWritten        : 31.01.2024 4:26:39
+TimeGenerated      : 25.01.2024 8:07:00
+TimeWritten        : 25.01.2024 8:07:00
 UserName           :
 ```
 
-or  
+alternatively
 ```cmd
-wevtutil.exe query-events log4jna_sample /rd:true /f:text /c:1
+wevtutil.exe qe log4jna_sample /rd:true /f:text /c:1
 ```
-reveals
 ```text
 Event[0]:
   Log Name: log4jna_sample
   Source: example.log4jna_sample
-  Date: 2024-01-31T04:26:39.0170000Z
+  Date: 2024-01-25T18:02:54.0220000Z
   Event ID: 4096
   Task: Info
   Level: Сведения
@@ -82,15 +59,8 @@ Event[0]:
   User Name: N/A
   Computer: DESKTOP-82V9KDO
   Description:
-04:26:37.314 [main] WARN  mapAppender - Event log from App message the quick brown fox jumps over the lazy dog
-```
-### Cleanup
-```cmd
-wevtutil.exe clear-log log4jna_sample
+the quick brown fox jumps over the lazy dog  - this is a test
+
 ```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
-
-
-\

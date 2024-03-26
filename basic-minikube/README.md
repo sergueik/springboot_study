@@ -630,5 +630,15 @@ $s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.passwo
        + [https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balance-ingress](https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balance-ingress)
        + [https://cloud.google.com/kubernetes-engine/docs/concepts/service](https://cloud.google.com/kubernetes-engine/docs/concepts/service)
 
+
+   * Misc.
+     + Jenkins / K8 (mostly in Russian, possibly translations):
+        - [part 1](https://habr.com/ru/post/487922)
+        - [part 2](https://habr.com/ru/articles/488796)
+        - [part 3](https://habr.com/ru/articles/490302)
+        - [part 4](https://habr.com/ru/articles/493580)
+
+
+     + [k8 minikube docs](https://minikube.sigs.k8s.io/docs/start/)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

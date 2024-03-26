@@ -288,7 +288,7 @@ confirm the warning dialog
 
 - turns out one cannot use PG Admin III with Postresql __12.x__, so for desktop testing one needs __bionic__ __18.04__ or later release of Ubuntu
 
-* create database
+* create the database
 ```sh
 docker exec -it $SERVER_NAME psql -h localhost -p 5432 --username postgres -c "create database example"
 ```
@@ -386,6 +386,42 @@ Triggers:
     row_mod_on_customer_trigger_ BEFORE UPDATE ON rest FOR EACH ROW EXECUTE PROCEDURE update_row_modified_function_()
 ```
 
+inspect the table columns by querying the `information_schema`:
+```SQL
+select * from information_schema.columns where table_name = 'rest';
+```
+```text
+ table_catalog | table_schema | table_name | column_name | ordinal_position |          column_default          | is_nullable |        data_type         | character_maximum_length | character_octet_length | numeric_precision | numeric_precision_radix | numeric_scale | datetime_precision | interval_type | interval_precision | character_set_catalog | character_set_schema | character_set_name | collation_catalog | collation_schema | collation_name | domain_catalog | domain_schema | domain_name | udt_catalog | udt_schema |  udt_name   | scope_catalog | scope_schema | scope_name | maximum_cardinality | dtd_identifier | is_self_referencing | is_identity | identity_generation | identity_start | identity_increment | identity_maximum | identity_minimum | identity_cycle | is_generated | generation_expression | is_updatable 
+---------------+--------------+------------+-------------+------------------+----------------------------------+-------------+--------------------------+--------------------------+------------------------+-------------------+-------------------------+---------------+--------------------+---------------+--------------------+-----------------------+----------------------+--------------------+-------------------+------------------+----------------+----------------+---------------+-------------+-------------+------------+-------------+---------------+--------------+------------+---------------------+----------------+---------------------+-------------+---------------------+----------------+--------------------+------------------+------------------+----------------+--------------+-----------------------+--------------
+ example       | public       | rest       | id          |                1 | nextval('rest_id_seq'::regclass) | NO          | integer                  |                          |                        |                32 |                       2 |             0 |                    |               |                    |                       |                      |                    |                   |                  |                |                |               |             | example     | pg_catalog | int4        |               |              |            |                     | 1              | NO                  | NO          |                     |                |                    |                  |                  | NO             | NEVER        |                       | YES
+ example       | public       | rest       | key         |                2 |                                  | NO          | character varying        |                      100 |                    400 |                   |                         |               |                    |               |                    |                       |                      |                    |                   |                  |                |                |               |             | example     | pg_catalog | varchar     |               |              |            |                     | 2              | NO                  | NO          |                     |                |                    |                  |                  | NO             | NEVER        |                       | YES
+ example       | public       | rest       | value       |                3 |                                  | NO          | character varying        |                      250 |                   1000 |                   |                         |               |                    |               |                    |                       |                      |                    |                   |                  |                |                |               |             | example     | pg_catalog | varchar     |               |              |            |                     | 3              | NO                  | NO          |                     |                |                    |                  |                  | NO             | NEVER        |                       | YES
+ example       | public       | rest       | timestamp   |                4 | clock_timestamp()                | NO          | timestamp with time zone |                          |                        |                   |                         |               |                  6 |               |                    |                       |                      |                    |                   |                  |                |                |               |             | example     | pg_catalog | timestamptz |               |              |            |                     | 4              | NO                  | NO          |                     |                |                    |                  |                  | NO             | NEVER        |                       | YES
+ example       | public       | rest       | rand        |                5 |                                  | NO          | smallint                 |                          |                        |                16 |                       2 |             0 |                    |               |                    |                       |                      |                    |                   |                  |                |                |               |             | example     | pg_catalog | int2        |               |              |            |                     | 5              | NO                  | NO          |                     |                |                    |                  |                  | NO             | NEVER        |                       | YES
+```
+
+inspect the triggers by querying the `information_schema`:
+
+
+```SQL
+SELECT trigger_catalog, trigger_name, action_timing,  event_manipulation, event_object_catalog, event_object_table, action_statement FROM information_schema.triggers where event_object_table = 'rest';
+```
+
+```text
+ trigger_catalog |         trigger_name         | action_timing | event_manipulation | event_object_catalog | event_object_table |                 action_statement
+-----------------+------------------------------+---------------+--------------------+----------------------+--------------------+---------------------------------------------------
+ example         | row_mod_on_customer_trigger_ | BEFORE        | UPDATE             | example              | rest               | EXECUTE PROCEDURE update_row_modified_function_()
+```
+
+```SQL
+SELECT event_object_table, trigger_name FROM information_schema.triggers   GROUP BY event_object_table,trigger_name ORDER BY event_object_table,trigger_name;
+```
+```text
+ event_object_table |         trigger_name
+--------------------+------------------------------
+ rest               | row_mod_on_customer_trigger_
+
+```
 * check with direct inserts and updates
 
 ```SQL
@@ -964,7 +1000,12 @@ docker container ls -a | grep -i postgres-database | awk '{print $1}'| xargs -IX
   * https://gist.github.com/brianmed/0e73292da11940a95b98
   * https://aviyadav231.medium.com/automatically-updating-a-timestamp-column-in-postgresql-using-triggers-98766e3b47a0
   * http://crafted-software.blogspot.com/2014/10/track-date-time-of-row-creation.html 
+  * https://tembo.io/docs/postgres_guides/how-to-describe-tables-in-postgres
+  * https://soft-builder.com/how-to-list-triggers-in-postgresql-database/
+
+
 ### Author
+
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
 

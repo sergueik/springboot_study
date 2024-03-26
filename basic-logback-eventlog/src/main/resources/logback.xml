@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<configuration>
+	<appender name="eventlog" class="example.EventLogAppender">
+		<prefix>test</prefix>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	<root level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+	</root>
+	<root level="WARN">
+		<appender-ref ref="CONSOLE" />
+		<if condition="isDefined(&quot;windir&quot;)">
+			<then>
+				<appender-ref ref="eventlog" />
+			</then>
+		</if>
+	</root>
+	<logger name="eventlogAppender" level="DEBUG">
+	</logger>
+</configuration>

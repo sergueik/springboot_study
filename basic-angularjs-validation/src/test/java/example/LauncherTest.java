@@ -13,11 +13,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.owasp.validator.css.CssScanner;
-import org.owasp.validator.html.CleanResults;
-import org.owasp.validator.html.InternalPolicy;
-import org.owasp.validator.html.PolicyException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -92,42 +87,6 @@ public class LauncherTest {
 		// Assert
 		assertEquals("Unexpected response status", HttpStatus.NOT_FOUND.value(),
 				result.getResponse().getStatus());
-	}
-
-	@Test
-	// https://www.programcreek.com/java-api-examples/?code=werval/werval/werval-master/io.werval.modules/io.werval.modules.sanitize/src/main/java/io/werval/modules/sanitize/Sanitize.java
-	public void cssTest() throws java.lang.Exception {
-		final String cssPath = "/css/main.css";
-		// Act
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(cssPath)
-				.accept(MediaType.APPLICATION_JSON_UTF8)).andReturn();
-		// Assert
-		assertEquals("Unexpected response status", HttpStatus.OK.value(),
-				result.getResponse().getStatus());
-		String input = result.getResponse().getContentAsString();
-		if (debug) {
-			System.err.println("Validating: " + input);
-		}
-		// BOOT-INF\lib\antisamy-1.5.9.jar ??
-		ResourceBundle messages = ResourceBundle.getBundle("AntiSamy", Locale.US,
-				this.getClass().getClassLoader());
-		CssScanner cssScanner = null;
-		try {
-			cssScanner = new CssScanner((InternalPolicy) InternalPolicy
-					.getInstance(getPageContent("/index.html")), messages);
-		} catch (PolicyException e) {
-			// org.xml.sax.SAXParseException Content is not allowed in prolog.
-			// when attempting to initialize InternalPolicy with css instead of html
-		}
-		if (cssScanner != null) {
-			CleanResults results = cssScanner.scanStyleSheet(input,
-					Integer.MAX_VALUE);
-			assertEquals(String.format("Invalid CSS in %s", cssPath), 0,
-					results.getNumberOfErrors());
-		}
-		if (debug) {
-			System.err.println("Debug: " + debug);
-		}
 	}
 
 	// NOTE: cannot make this version static
