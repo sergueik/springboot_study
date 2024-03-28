@@ -62,5 +62,9 @@ Event[0]:
 the quick brown fox jumps over the lazy dog  - this is a test
 
 ```
+### See Also
+
+   * [evaluate if the current user is a member the "well-known" sid Administator group](https://www.rgagnon.com/javadetails/java-detect-if-current-user-is-admin-using-jna.html)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
