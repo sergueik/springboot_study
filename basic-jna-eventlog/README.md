@@ -62,5 +62,43 @@ Event[0]:
 the quick brown fox jumps over the lazy dog  - this is a test
 
 ```
+### TODO
+
+the Windows Event Log messages can be addded by a regular user. However the creation of the application-specicic Windows Event Log with all its categories an resources requires elevation. There is currently no working Java code capable of perfoeming the UAC check - the method `checkCurrentUserIsAdmin`
+relies on checking th membership of the opetating user in the `BUILTIN\Administrators` group and reports false positive.
+#### Demo
+
+* try to do logging as a regular user when no event log exists
+```cmd	
+mvn clean package
+java -jar target\example.jna_eventlog.jar message
+```
+see the technical info
+```text
+registerEventSource
+Check if CurrentUser is Admin
+group: None
+group: Everyone
+group: Local account and member of Administrators group
+group: HelpLibraryUpdaters
+group: HomeUsers
+group: Administrators
+Current User Is Admin
+```
+
+and the exception
+```text
+Exception in thread "main" java.lang.RuntimeException: Could not register event source: Access is denied.
+        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:126)
+        at example.Win32EventLogAppender.append(Win32EventLogAppender.java:136)
+```
+### See Also
+
+   * [evaluate if the current user is a member the "well-known" sid Administator group](https://www.rgagnon.com/javadetails/java-detect-if-current-user-is-admin-using-jna.html) - not a UAC replacement
+   * https://superuser.com/questions/809901/check-for-elevation-at-command-prompt
+   * http://blogs.msdn.com/b/virtual_pc_guy/archive/2010/09/23/a-self-elevating-powershell-script.aspx
+   * https://stackoverflow.com/questions/7985755/how-to-detect-if-cmd-is-running-as-administrator-has-elevated-privileges
+   * https://stackoverflow.com/questions/1894967/how-to-request-administrator-access-inside-a-batch-file
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
