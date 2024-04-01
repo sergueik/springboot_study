@@ -1,0 +1,72 @@
+/* Main Styles for Email Signature Generator */
+html, body {
+	height: 100%;
+	width: 100%;
+	min-height: 100%;
+}
+
+/* Hide the Signature results initially */
+.hidden {
+	opacity: 0;
+	visibility: hidden;
+}
+
+.visible {
+	opacity: 1;
+	visibility: visible;
+}
+
+.main-ui {
+	background: #fefefe;
+	height: 100vh;
+	width: 100vw;
+}
+
+.container {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.text-input {
+	-webkit-appearance: none;
+	backface-visibility: hidden;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-shadow: none;
+	clear: both;
+	float: left;
+	margin-bottom: 40px;
+	padding: 10px;
+	transition: border 0.3s, transform 0.3s;
+	height: 30px;
+	width: 400px;
+}
+
+.text-input:focus,
+.text-input:hover {
+	border: 1px solid purple;
+	outline: none;
+	transform: scale(1.1);
+}
+
+.show-signature {
+	background: purple;
+	border: none;
+	border-radius: 50px;
+	box-shadow: none;
+	color: #fff;
+	clear: both;
+	float: left;
+	padding: 20px;
+	transition: background 0.3s, transform 0.3s;
+	-webkit-appearance: none;
+}
+
+.show-signature:hover,
+.show-signature:focus {
+	background: #222;
+	transform: scale(1.1);
+}
+

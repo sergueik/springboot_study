@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>WebDevStudios Email Signature Generator</title>
+    <link rel='stylesheet' href='pagestyle.css'>
+
+</head>
+<body id="signature-generator">
+
+<main class="main-ui container">
+
+	<section class="input-container">
+		<input type="text" placeholder="What's your name?" value="" id="name" class="text-input input-name">
+		<input type="text" placeholder="What's your job title?" value="" id="job" class="text-input input-job">
+		<button class="show-signature">Gimme My Signature</button>
+	</section>
+
+	<section class="results hidden">
+		<!-- TABLE RESULTS BASED ON INPUTS -->
+
+		<p class="name-result">Your name is </p>
+		<p class="job-result">Your job is </p>
+
+	</section>
+
+</main>
+
+<script>
+
+// NOTE: 'name' is reserved do not name variable
+var xname = document.querySelector('.input-name');
+var job = document.querySelector('.input-job');
+var resultsBlock = document.querySelector('.results');
+var resultName = document.querySelector('.name-result');
+var resultJob = document.querySelector('.job-result');
+
+
+function showSignature() {
+    console.log('xname: ' + xname.value);
+    resultName.innerHTML = 'name: ' + xname.value;
+    console.log('job: ' + job.value);
+    resultJob.innerHTML = 'job: ' + job.value;
+    resultsBlock.classList.remove('hidden');
+}
+document.querySelector( '.show-signature' ).addEventListener( 'click', function(){
+    showSignature();
+});
+</script>
+</body>
+</html>
