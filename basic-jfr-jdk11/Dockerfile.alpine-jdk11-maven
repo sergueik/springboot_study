@@ -4,7 +4,7 @@ FROM azul/zulu-openjdk-alpine:11
 ARG REFRESHED_AT
 ENV REFRESHED_AT $REFRESHED_AT
 
-ARG MAVEN_VERSION=3.6.3
+ARG MAVEN_VERSION=3.9.6
 
 RUN apk add --no-cache curl 
 
