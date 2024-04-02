@@ -2,8 +2,8 @@
 
 This directory contains 
 https://mkyong.com/java/java-11-java-flight-recorder/
-a basi Selenium compiled as standalone app to practice running Selenium tests on Java 11 runtime -
-* compile and package jar on JDK11/Maven "builder" container and copy the jar into a searate Docker image with JDK 11 and jfr:
+a basic Selenium compiled as standalone app to practice running Selenium tests on Java 11 runtime -
+* compile and package jar using the JDK11/Maven "builder" container and copy the jar into a separate Docker image with JRE 11 and jfr:
 
 
 ```sh
@@ -16,22 +16,37 @@ DOCKER_IMAGE=alpine-jdk11-jfr
 docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
 docker run -it $DOCKER_IMAGE
 ```
-which will log
+which will log the following
 ```sh
 Started recording 1. The result will be written to:
 
 /application/leak.jfr
 Exception in thread "Producer Thread" java.lang.OutOfMemoryError: Java heap space
   at example.App.lambda$main$0(App.java:23)
-  at example.App$$Lambda$70/0x00000001000e8440.run(Unknown Source)
+  at example.App$$Lambda$70/0x00000001000ne8440.run(Unknown Source)
   at java.base/java.lang.Thread.run(Thread.java:829)
+```
+
+in a sibling console window, connevt to the container
+```sh
+DOCKER_IMAGE=alpine-jdk11-jfr
+
+CONTAINER_ID=$(docker container ls| grep $DOCKER_IMAGE | awk '{print $1}')
+docker exec -it $CONTAINER_ID sh
+```
+```sh
+ls -l /application/leak.jfr
+```
+```text
+
+rw-r--r--    1 root     root       5776521 Apr  1 15:28 /application/leak.jfr
 ```
 * copy recorder artifact to the host
 ```sh
 docker cp $(docker container ls | grep $DOCKER_IMAGE | head -1 | awk '{print #1}'):/application/leak.jfr .
 ```
 Note:
-The JMC 8 runs fine on Windows or Bionic and later releases. 
+The JMC 8 runs fine on Windows or Ubutu Bionic and later releases. 
 
 On Xenial Ubuntu Linux __16.04__/ JDK 8 the jmc (which is just an eclipse) 
 ```sh
@@ -62,14 +77,16 @@ find  /opt/jdk1.8.0_161 -iname 'org.eclipse.swt.gtk.linux.x86_64_*'
 find  /opt/eclipse/ -iname 'org.eclipse.swt.gtk.linux.x86_64_*'
 ```
 
-this is failing because some classes were not provided in that jar:
+this is failing because some classes were not provided in that jar version:
 ```sh
 java.lang.NoClassDefFoundError: org/eclipse/swt/SWTError
 1628277319957.log:Caused by: java.lang.ClassNotFoundException: org.eclipse.swt.SWTError cannot be found by org.eclipse.ui.workbench_3.119.0.v20200521-1247
 ```
 
 ### See Also
- * https://groups.google.com/g/smartsvn/c/Z4lJ6sGdo7Q?pli=1
- 
+
+  * https://groups.google.com/g/smartsvn/c/Z4lJ6sGdo7Q?pli=1
+  * https://www.baeldung.com/java-flight-recorder-monitoring
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

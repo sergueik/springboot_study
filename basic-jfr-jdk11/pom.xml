@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>memoryleak</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <properties>
     <mainClass>App</mainClass>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -94,8 +94,7 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <selenium.version>3.13.0</selenium.version>
-        <selenium.version>4.0.0-alpha-7</selenium.version>
+        <selenium.version>4.10.0</selenium.version>
       </properties>
     </profile>
     <profile>
@@ -110,8 +109,7 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <selenium.version>3.13.0</selenium.version>
-        <selenium.version>4.0.0-alpha-7</selenium.version>
+        <selenium.version>4.10.0</selenium.version>
       </properties>
     </profile>
     <profile>
@@ -123,7 +121,7 @@
         <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <selenium.version>4.0.0-alpha-7</selenium.version>
+        <selenium.version>4.19.1</selenium.version>
       </properties>
     </profile>
   </profiles>
