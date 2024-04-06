@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>exmpla</groupId>
+  <groupId>example</groupId>
   <artifactId>poi</artifactId>
   <version>${revision}</version>
-  <name>Java POI</name>
-  <description>Java POI</description>
+  <name>poi</name>
+  <description>Java POI export / import application</description>
   <packaging>jar</packaging>
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -15,13 +15,11 @@
   </parent>
   <properties>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
-    <revision>0.2.0-SNAPSHOT</revision>
-    <!-- NOTE: Project build error: Non-resolvable parent POM for exmpla:poi:${revision}
- -->
+    <revision>0.3.0-SNAPSHOT</revision>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
-    <poi.version>3.17</poi.version>
-    <poiooxml.version>3.17</poiooxml.version>
+    <poi.version>4.1.1</poi.version>
+    <poiooxml.version>4.11</poiooxml.version>
     <version>2.3.4.RELEASE</version>
     <relativePath/>
   </properties>

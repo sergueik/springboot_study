@@ -43,9 +43,6 @@ public class ExcelTemplateUtil {
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("template file does not exist");
-		} catch (InvalidFormatException e) {
-			e.printStackTrace();
-			throw new RuntimeException("template file format not supported");
 		}
 		return this;
 	}
@@ -57,9 +54,6 @@ public class ExcelTemplateUtil {
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("template file does not exist");
-		} catch (InvalidFormatException e) {
-			e.printStackTrace();
-			throw new RuntimeException("template file format not supported");
 		}
 		return this;
 	}
@@ -71,9 +65,6 @@ public class ExcelTemplateUtil {
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("template file does not exist");
-		} catch (InvalidFormatException e) {
-			e.printStackTrace();
-			throw new RuntimeException("template file format not supported");
 		}
 		return this;
 	}
