@@ -1,10 +1,10 @@
 ### info
 
-![Operation Dashboard](https://github.com/sergueik/springboot_study/blob/master/basic-cabie/screenshots/32730.png)
+![Operation Dashboard](https://github.com/sergueik/springboot_study/blob/master/basic-cabie/screenshots/32730.jpg)
 
-![Job Detail](https://github.com/sergueik/springboot_study/blob/master/basic-cabie/screenshots/32728.png)
+![Job Detail](https://github.com/sergueik/springboot_study/blob/master/basic-cabie/screenshots/32728.jpg)
 
-![Environment Detail](https://github.com/sergueik/springboot_study/blob/master/basic-cabie/screenshots/32724.png)
+![Environment Detail](https://github.com/sergueik/springboot_study/blob/master/basic-cabie/screenshots/32724.jpg)
 
 
 
