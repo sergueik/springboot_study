@@ -1,5 +1,9 @@
 package example;
 
+/**
+ * Copyright 2023,2024 Serguei Kouzmine
+ */
+
 import java.io.Serializable;
 
 public class App {
@@ -18,8 +22,8 @@ public class App {
 		final String server = "."; // guess
 		final String source = "example.log4jna_sample";
 		final String application = "log4jna_sample";
-		final String eventMessageFile = "src\\main\\resources\\Win32EventLogAppender.dll";
-		final String categoryMessageFile = "src\\main\\resources\\Win32EventLogAppender.dll";
+		final String eventMessageFile = "%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll";
+		final String categoryMessageFile = "%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll";
 		Win32EventLogAppender appender = Win32EventLogAppender.createAppender(name,
 				server, source, application, eventMessageFile, categoryMessageFile);
 		appender.append(message);

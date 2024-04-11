@@ -1,9 +1,15 @@
 package example;
 
+/**
+ * Copyright 2023,2024 Serguei Kouzmine
+ */
+
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.sun.jna.platform.win32.Advapi32;
 import com.sun.jna.platform.win32.Advapi32Util;
@@ -43,17 +49,27 @@ public class Win32EventLogAppender {
 			String application, String eventMessageFile, String categoryMessageFile) {
 
 		if (eventMessageFile != null) {
+			setEventMessageFile(eventMessageFile);
+/*
 			Path p = Paths.get(eventMessageFile);
 			if (Files.exists(p)) {
+				System.err.println(
+						"Setting EventMessageFie to " + p.toAbsolutePath().toString());
 				setEventMessageFile(p.toAbsolutePath().toString());
 			}
+			*/
 		}
 
 		if (categoryMessageFile != null) {
+			setCategoryMessageFile(categoryMessageFile);
+			/*
 			Path p = Paths.get(categoryMessageFile);
 			if (Files.exists(p)) {
+				System.err.println(
+						"Setting CategoryMessageFie to " + p.toAbsolutePath().toString());
 				setCategoryMessageFile(p.toAbsolutePath().toString());
 			}
+			*/
 		}
 
 		this._server = server;
@@ -117,7 +133,9 @@ public class Win32EventLogAppender {
 		close();
 
 		try {
-			System.err.println("registerEventSource");
+			System.err.println(String.format(
+					"RegisterEventSource: EventMessageFile: \"%s\", CategoryMessageFile: \"%s\"",
+					_eventMessageFile, _categoryMessageFile));
 			_handle = registerEventSource(_server, _source, _application,
 					_eventMessageFile, _categoryMessageFile);
 		} catch (Exception e) {
@@ -139,6 +157,11 @@ public class Win32EventLogAppender {
 		final int messageID = 0x1000;
 
 		String[] buffer = { message };
+
+		// https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-reporteventa
+		// https://www.pinvoke.net/search.aspx?search=ReportEvent
+		// https://github.com/java-native-access/jna/blob/master/contrib/platform/src/com/sun/jna/platform/win32/Advapi32.java#L1650
+
 		if (Advapi32.INSTANCE.ReportEvent(_handle, eventLogType, category,
 				messageID, null, buffer.length, 0, buffer, null) == false) {
 			Exception e = new Win32Exception(Kernel32.INSTANCE.GetLastError());
@@ -244,4 +267,23 @@ public class Win32EventLogAppender {
 		}
 		return isAdmin;
 	}
+	// TODO:  convert
+	public static String resolveEnvVars(String input) {
+		if (null == input) {
+			return null;
+		}
+		Pattern p = Pattern.compile("\\$(?:\\{(?:env:)?(\\w+)\\}|(\\w+))");
+		Matcher m = p.matcher(input);
+		StringBuffer sb = new StringBuffer();
+		while (m.find()) {
+			String envVarName = null == m.group(1) ? m.group(2) : m.group(1);
+			String envVarValue = System.getenv(envVarName);
+			m.appendReplacement(sb,
+					null == envVarValue ? "" : envVarValue.replace("\\", "\\\\"));
+		}
+		m.appendTail(sb);
+		return sb.toString();
+	}
+
+
 }
