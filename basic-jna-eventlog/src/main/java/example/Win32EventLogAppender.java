@@ -49,27 +49,33 @@ public class Win32EventLogAppender {
 			String application, String eventMessageFile, String categoryMessageFile) {
 
 		if (eventMessageFile != null) {
-			setEventMessageFile(eventMessageFile);
-/*
-			Path p = Paths.get(eventMessageFile);
+			String pathExpanded = resolveEnvVars(eventMessageFile);
+
+			Path p = Paths.get(pathExpanded);
+
 			if (Files.exists(p)) {
 				System.err.println(
-						"Setting EventMessageFie to " + p.toAbsolutePath().toString());
-				setEventMessageFile(p.toAbsolutePath().toString());
+						"Verified EventMessageFile path " + p.toAbsolutePath().toString());
+				if (p.isAbsolute())
+					setEventMessageFile(eventMessageFile);
+				else
+					setEventMessageFile(p.toAbsolutePath().toString());
 			}
-			*/
+
 		}
 
 		if (categoryMessageFile != null) {
-			setCategoryMessageFile(categoryMessageFile);
-			/*
-			Path p = Paths.get(categoryMessageFile);
+			String pathExpanded = resolveEnvVars(categoryMessageFile);
+			Path p = Paths.get(pathExpanded);
 			if (Files.exists(p)) {
 				System.err.println(
-						"Setting CategoryMessageFie to " + p.toAbsolutePath().toString());
-				setCategoryMessageFile(p.toAbsolutePath().toString());
+						"Verified CategoryMessageFile path " + p.toAbsolutePath().toString());
+				if (p.isAbsolute())
+					setCategoryMessageFile(categoryMessageFile);
+				else
+					setCategoryMessageFile(p.toAbsolutePath().toString());
+
 			}
-			*/
 		}
 
 		this._server = server;
@@ -267,16 +273,16 @@ public class Win32EventLogAppender {
 		}
 		return isAdmin;
 	}
-	// TODO:  convert
+
 	public static String resolveEnvVars(String input) {
 		if (null == input) {
 			return null;
 		}
-		Pattern p = Pattern.compile("\\$(?:\\{(?:env:)?(\\w+)\\}|(\\w+))");
+		Pattern p = Pattern.compile("%(\\w+)%");
 		Matcher m = p.matcher(input);
 		StringBuffer sb = new StringBuffer();
 		while (m.find()) {
-			String envVarName = null == m.group(1) ? m.group(2) : m.group(1);
+			String envVarName = m.group(1);
 			String envVarValue = System.getenv(envVarName);
 			m.appendReplacement(sb,
 					null == envVarValue ? "" : envVarValue.replace("\\", "\\\\"));

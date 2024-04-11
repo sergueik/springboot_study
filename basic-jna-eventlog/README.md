@@ -153,10 +153,18 @@ TimeGenerated      : 4/11/2024 12:55:10 PM
 TimeWritten        : 4/11/2024 12:55:10 PM
 UserName           :
 ```
-NOTE: the older version will throw excdption:
-```text
-RegisterEventSource: EventMessageFile: "", CategoryMessageFile: ""
 
+NOTE: when the relative paths used for `CategoryMessageFile` and `EventMessageFile` and the program is not run in elevated way
+java  will throw runtime exception:
+```text
+
+Verified EventMessageFile path C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll
+Verified CategoryMessageFile path C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll
+RegisterEventSource: EventMessageFile: "C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll", 
+CategoryMessageFile: "C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll"
+```
+
+```text
 Check if CurrentUser is Admin
 group: None 
 group: Everyone
@@ -181,6 +189,7 @@ Caused by: com.sun.jna.platform.win32.Win32Exception: Access is denied.
 
 ```
 
+because the logger will attempt to install the event source, which is privileged operation on Windows
 
 ### See Also
 
@@ -192,3 +201,4 @@ Caused by: com.sun.jna.platform.win32.Win32Exception: Access is denied.
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
