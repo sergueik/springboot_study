@@ -2,10 +2,8 @@
 
 [Logback](https://www.baeldung.com/logback)
 [Appender](https://logback.qos.ch/manual/appenders.html)
-performing logging messaged into [Event log](https://en.wikipedia.org/wiki/Event_Viewer)
-The project uses code
-converted from one of
-[java native access](https://github.com/java-native-access/jna)
+writing logging messaged into [Windows Event log](https://en.wikipedia.org/wiki/Event_Viewer)
+The project uses code converted from one of [java native access](https://github.com/java-native-access/jna)
 project contributions - [dblock/log4jna](https://github.com/dblock/log4jna) - the JNA wrapper around the native
 Windows Event Log `ReportEvent` [function](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-reporteventa)
 that resides  in `advapi32.dll` [dll](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files)
@@ -17,6 +15,7 @@ which is system dll hosting misc. security calls and functions for manipulating 
 
 ### Usage
 
+### Conditional Loging
 #### Linux
 
 * console only
@@ -29,11 +28,12 @@ java -cp target/example.logback-eventlog.jar:target/lib/* example.App the quick 
 00:24:59.007 [main] WARN  example.App - message: the quick brown fox jumps over the lazy dog
 ```
 #### Windows
-
+* NOTE: use Java 11, otherwise conditional logging won't work
 * clear the log
 ```cmd
 wevtutil.exe clear-log log4jna_sample
 ```
+
 ignore the warning
 ```text
 Failed to clear log log4jna_sample. The specified channel could not be found. Check channel configuration.
@@ -42,208 +42,202 @@ which will be printed if the log is already deleted / not yet created
 
 * remove the custom event log completely
 
-```poweshell
-remove-eventlog -logname log4jna_sample
+```powershell
+remove-eventlog -LogName 'log4jna_sample'
 ```
-* run from elevated console. ([WIP] subsequent runs will work for any user)
-to create the event source `log4jna_sample` in  `%SystemRoot%\System32\Winevt\Logs\log4jna_sample.evtx`
-
-copy Microsoft provided dummy event log provider category resource dll into project resource directory if not building from the source:
-```cmd
-copy /y %windir%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll src\main\resources\Win32EventLogAppender.dll
-``` 
-build application jar
-```cmd
-mvn clean package
+* create the log in elevated console. You can specify DOS-style envronment expression in the arguments:
+```powershell
+$resource_dll_path = '%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
+new-eventLog -logName log4jna_sample -Source 'example.log4jna_sample' -CategoryResourceFile $resource_dll_path -MessageResourceFile $resource_dll_path
 ```
-
-* run from elevated console. ([WIP] subsequent runs will work for any user)
-
-in the first run Java application will observe non existing and create the event source `log4jna_sample` in  `%SystemRoot%\System32\Winevt\Logs\log4jna_sample.evtx`
-```cmd
-mvn clean package
+alternatiely can use full path:
+```powershell
+$resource_dll_path = 'C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
 ```
-run application
-```cmd
-java -cp target\example.logback-eventlog.jar;target\lib\* example.App the quick brown fox jumps over the lazy dog
+or absolute path to local file:
+```powershell
+$resource_dll_path = (resolve-path 'src\main\resources\Win32EventLogAppender.dll').Path
 ```
-
-this will print to console:
-
+(this variant is only needed for legacy support)
+this willcreate an empty event log named `log4jna_sample`
+```cmd
+wevtutil.exe enum-logs | findstr log4jna_sample
+```
 ```text
-16:26:57.277 [main] ERROR example.App - message: the quick brown fox jumps over
-the lazy dog
-DEBUG: appending event message: 16:26:57.277 [main] ERROR example.App - message:
- the quick brown fox jumps over the lazy dog
-
-16:26:58.105 [main] WARN  example.App - message: the quick brown fox jumps over
-the lazy dog
-DEBUG: appending event message: 16:26:58.105 [main] WARN  example.App - message:
- the quick brown fox jumps over the lazy dog
-
+log4jna_sample
 ```
-NOTE: in `logback.xml` by redefining the `root` logger to `WARN` one loses earlier definition on `INFO` - a more granular configuration is possible
-
-and creates two entries in the Windows Registry for eventlog service:
+under the hood this install command produces two entries in the Windows Registry for eventlog service:
 
 ![Event log Config Before](https://github.com/sergueik/springboot_study/blob/master/basic-logback-eventlog/screenshots/capture-eventlog-config-before.png)
 
 ![Event log Config After](https://github.com/sergueik/springboot_study/blob/master/basic-logback-eventlog/screenshots/capture-eventlog-config-after.png)
 
+```powershell
+get-item HKLM:\SYSTEM\CurrentControlSet\services\eventlog\log4jna_sample
+```
+```text
 
-and add Windows Event Log:
+    Hive: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\eventlog
+
+Name                           Property
+----                           --------
+log4jna_sample                 MaxSize            : 524288
+                               AutoBackupLogFiles : 0
+```
+
+```
+get-childitem HKLM:\SYSTEM\CurrentControlSet\services\eventlog\log4jna_sample
+
+```
+```text
+    Hive: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\eventlog\log4jna_sample
+
+
+Name                           Property
+----                           --------
+example.log4jna_sample         EventMessageFile    : C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
+                               CategoryMessageFile : C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
+                               CategoryCount       : 0
+log4jna_sample                 EventMessageFile    : C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
+                               CategoryMessageFile : C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
+                               CategoryCount       : 0
+
+
+```
+* run subsequent steps from non-elevated console, as a regular user
+* review and update the `src/main/resources/logback.xml` with the  path to CategoryResourceFile if changing using the same value as earlier:
+```XML
+<configuration>
+	<appender name="eventlog" class="example.EventLogAppender">
+		<resource>%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</resource>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	<root level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+	</root>
+	<root level="WARN">
+		<appender-ref ref="eventlog" />
+	</root>
+</configuration>
+
+```
+the conditional logic part is optional
+```XML
+	<root level="WARN">
+		<appender-ref ref="CONSOLE" />
+		<if condition="isDefined(&quot;windir&quot;)">
+			<then>
+				<appender-ref ref="eventlog" />
+			</then>
+		</if>
+	</root>
+
+```
+* build the application jar
+```cmd
+mvn clean package
+```
+
+* run the application
+```cmd
+java -cp target\example.logback-eventlog.jar;target\lib\* example.App the quick brown fox jumps over the dazy log
+```
+
+this will print to console:
+
+```text
+08:31:26.748 [main] ERROR example.App - message: the quick brown fox jumps over the dazy log
+DEBUG: appending event message: 08:31:26.748 [main] ERROR example.App - message: the quick brown fox jumps over the dazy log
+
+Verified EventMessageFile path C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
+Verified CategoryMessageFile path C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
+08:31:27.013 [main] WARN  example.App - message: the quick brown fox jumps over
+the dazy log
+DEBUG: appending event message: 08:31:27.013 [main] WARN  example.App - message: the quick brown fox jumps over the dazy log
+
+Verified EventMessageFile path C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dllVerified CategoryMessageFile path C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
+
+```
+
+and add Windows Event Logs:
 ![Event log Message](https://github.com/sergueik/springboot_study/blob/master/basic-logback-eventlog/screenshots/capture-message.png)
 
-Alternatively remove the event log and create using Microsofr Powershell cmdlets:
-```powershell
-
-$logname = 'log4jna_sample'
-remove-eventlog -logname $logname
-
-$app = 'log4jna_sample'
-$resource_dll = 'C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
-new-EventLog -LogName $logname -source $app -CategoryResourceFile $resource_dll -MessageResourceFile $resource_dll -ParameterResourceFile $resource_dll
-
-```
-then run the app in non-elevated prompt:
-```cmd
-java -cp target\example.logback-eventlog.jar;target\lib\* example.App the quick brown fox jumps over the lazy cat
-```
-this will log
-```
-12:07:14.857 [main] ERROR example.App - message: the quick brown fox jumps over the lazy cat
-DEBUG: appending event message: 12:07:14.857 [main] ERROR example.App - message: the quick brown fox jumps over the lazy cat
-
-12:07:14.998 [main] WARN  example.App - message: the quick brown fox jumps over the lazy cat
-DEBUG: appending event message: 12:07:14.998 [main] WARN  example.App - message: the quick brown fox jumps over the lazy cat
-```
-```powershell
-get-eventlog -logname log4jna_sample -newest 2 |format-list
-
-```
-```text
-Index              : 36
-EntryType          : Information
-InstanceId         : 4096
-Message            : 12:09:03.299 [main] WARN  example.App - message: the
-                     quick brown fox jumps over the lazy cat
-
-Category           : Info
-CategoryNumber     : 3
-ReplacementStrings : {12:09:03.299 [main] WARN  example.App - message: the
-                     quick brown fox jumps over the lazy cat
-                     }
-Source             : example.log4jna_sample
-TimeGenerated      : 3/25/2024 12:09:03 PM
-TimeWritten        : 3/25/2024 12:09:03 PM
-UserName           :
-
-Index              : 35
-EntryType          : Information
-InstanceId         : 4096
-Message            : 12:09:03.159 [main] ERROR example.App - message: the
-                     quick brown fox jumps over the lazy cat
-
-Category           : Info
-CategoryNumber     : 3
-ReplacementStrings : {12:09:03.159 [main] ERROR example.App - message: the
-                     quick brown fox jumps over the lazy cat
-                     }
-Source             : example.log4jna_sample
-TimeGenerated      : 3/25/2024 12:09:03 PM
-TimeWritten        : 3/25/2024 12:09:03 PM
-UserName           :
-
-
-
-```
-#### Verify
-
-* Linux
-```sh
-mvn package
-java -cp target/example.logback-eventlog.jar:target/lib/* example.App the quick brown fox jumps over the lazy dog
-```
-```text
-20:02:26,956 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.xml]
-20:02:26,957 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found resource [logback.xml] at [jar:file:/home/sergueik/src/springboot_study/basic-logback-eventlog/target/example.jna_eventlog.jar!/logback.xml]
-20:02:26,971 |-INFO in ch.qos.logback.core.joran.spi.ConfigurationWatchList@4e9ba398 - URL [jar:file:/home/sergueik/src/springboot_study/basic-logback-eventlog/target/example.logback-eventlog.jar!/logback.xml] is not of type file
-20:02:27,063 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - debug attribute not set
-20:02:27,063 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [example.eventlogAppender]
-20:02:27,067 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [map]
-20:02:27,075 |-INFO in ch.qos.logback.core.joran.action.NestedComplexPropertyIA - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
-20:02:27,128 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
-20:02:27,129 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [CONSOLE]
-20:02:27,132 |-INFO in ch.qos.logback.classic.joran.action.RootLoggerAction - Setting level of ROOT logger to INFO
-20:02:27,133 |-INFO in ch.qos.logback.classic.joran.action.LoggerAction - Setting level of logger [eventlogAppender] to DEBUG
-20:02:27,133 |-INFO in ch.qos.logback.core.joran.action.AppenderRefAction - Attaching appender named [CONSOLE] to Logger[eventlogAppender]
-20:02:27,134 |-ERROR in ch.qos.logback.core.joran.conditional.IfAction - Could not find Janino library on the class path. Skipping conditional processing.
-20:02:27,134 |-ERROR in ch.qos.logback.core.joran.conditional.IfAction - See also http://logback.qos.ch/codes.html#ifJanino
-20:02:27,135 |-WARN in ch.qos.logback.classic.joran.action.LoggerAction - The object on the top the of the stack is not Logger[eventlogAppender] pushed earlier
-20:02:27,135 |-WARN in ch.qos.logback.classic.joran.action.LoggerAction - It is: ch.qos.logback.core.joran.conditional.IfAction
-20:02:27,135 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - End of configuration.
-20:02:27,136 |-INFO in ch.qos.logback.classic.joran.JoranConfigurator@6d7b4f4c - Registering current configuration as safe fallback point
-
-```
-* Windows
-
 ```powershell
 get-eventlog -logname log4jna_sample -newest 2 |format-list
 ```
-reveals
 ```text
-
-Index              : 255
+Index              : 257
 EntryType          : Information
 InstanceId         : 4096
-Message            : 14:58:52.493 [main] WARN  example.App - message: the quick brown fox jumps over the lazy dog
+Message            : 08:31:27.013 [main] WARN  example.App - message: the quick brown fox jumps over the dazy log
 
 Category           : %1
 CategoryNumber     : 3
-ReplacementStrings : {14:58:52.493 [main] WARN  example.App - message: the quick brown fox jumps over the lazy dog
+ReplacementStrings : {08:31:27.013 [main] WARN  example.App - message: the quick brown fox jumps over the dazy log
                      }
 Source             : example.log4jna_sample
-TimeGenerated      : 3/23/2024 2:58:52 PM
-TimeWritten        : 3/23/2024 2:58:52 PM
+TimeGenerated      : 4/12/2024 8:31:27 AM
+TimeWritten        : 4/12/2024 8:31:27 AM
 UserName           :
 
-Index              : 254
+Index              : 256
 EntryType          : Information
 InstanceId         : 4096
-Message            : 14:58:52.165 [main] ERROR example.App - message: the quick brown fox jumps over the lazy dog
+Message            : 08:31:26.748 [main] ERROR example.App - message: the quick brown fox jumps over the dazy log
 
 Category           : %1
 CategoryNumber     : 3
-ReplacementStrings : {14:58:52.165 [main] ERROR example.App - message: the quick brown fox jumps over the lazy dog
+ReplacementStrings : {08:31:26.748 [main] ERROR example.App - message: the quick brown fox jumps over the dazy log
                      }
 Source             : example.log4jna_sample
-TimeGenerated      : 3/23/2024 2:58:52 PM
-TimeWritten        : 3/23/2024 2:58:52 PM
+TimeGenerated      : 4/12/2024 8:31:27 AM
+TimeWritten        : 4/12/2024 8:31:27 AM
 UserName           :
-
 
 ```
-
 or  
 ```cmd
-wevtutil.exe query-events log4jna_sample /rd:true /f:text /c:1
+wevtutil.exe query-events log4jna_sample /rd:true /f:text /c:2
 ```
 reveals
 ```text
 Event[0]:
   Log Name: log4jna_sample
   Source: example.log4jna_sample
-  Date: 2024-01-31T04:26:39.0170000Z
+  Date: 2024-04-12T08:31:27.000
   Event ID: 4096
-  Task: Info
-  Level: Сведения
-  Opcode: Сведения
-  Keyword: Классический
+  Task: %1
+  Level: Information
+  Opcode: Info
+  Keyword: Classic
   User: N/A
   User Name: N/A
-  Computer: DESKTOP-82V9KDO
-  Description:
-04:26:37.314 [main] WARN  eventlogAppender - Event log from App message the quick brown fox jumps over the lazy dog
+  Computer: sergueik42
+  Description: 08:31:27.013 [main] WARN  example.App - message: the quick brown fox jumps over the dazy log
+
+
+Event[1]:
+  Log Name: log4jna_sample
+  Source: example.log4jna_sample
+  Date: 2024-04-12T08:31:27.000
+  Event ID: 4096
+  Task: %1
+  Level: Information
+  Opcode: Info
+  Keyword: Classic
+  User: N/A
+  User Name: N/A
+  Computer: sergueik42
+  Description: 08:31:26.748 [main] ERROR example.App - message: the quick brown fox jumps over the dazy log
+
 ```
 ### Cleanup
 ```cmd
@@ -330,6 +324,42 @@ c:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe /win32res:%TARGET%.res /un
 xcopy.exe /Y %TARGET%.dll ..\Setup
 ```
  * are barely used if at all to style the messages
+
+### Avoiding Installing the Event Log
+To use the `Application` event log which is installed on every system by default
+make the following settings:
+
+```powershell
+get-childitem HKLM:\SYSTEM\CurrentControlSet\services\eventlog\Application 
+
+
+```
+this will reveal a lot of loggers. narrow it down
+```powershell
+get-item HKLM:\SYSTEM\CurrentControlSet\services\eventlog\Application\Application
+
+```
+```text
+
+    Hive:
+    HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\eventlog\Application
+
+
+Name                           Property
+----                           --------
+Application                    CategoryCount       : 7
+                               CategoryMessageFile :
+                               C:\Windows\system32\wevtapi.dll
+
+```
+
+update the `logback.xml` with
+```xml
+		<resource>%SystemRoot%\system32\wevtapi.dll</resource>
+
+```
+observe the log will silently not be written. Similar attempt through `jna-eventlog` leads to exception
+Fixing this is a work in progress
 
 ### See Also
 

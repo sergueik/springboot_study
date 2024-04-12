@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <configuration>
 	<appender name="eventlog" class="example.EventLogAppender">
-		<prefix>test</prefix>
+		<resource>%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</resource>
 		<encoder>
 			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
 			</pattern>

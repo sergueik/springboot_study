@@ -96,7 +96,9 @@ Exception in thread "main" java.lang.RuntimeException: Could not register event 
 ### Using System Event Log Resources
 
   *  remove  the custom event log created by Java by running system cmdlets
-  * remove-eventlog -LogName 'log4jna_sample' 
+```powershell
+remove-eventlog -LogName 'log4jna_sample' 
+```
     -inspect through Registry but not modify directly
   *  create the same custom event log  specifying the categorymessagefile and eventmessagefile to be
 ```powershell
