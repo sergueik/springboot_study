@@ -92,6 +92,105 @@ Exception in thread "main" java.lang.RuntimeException: Could not register event 
         at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:126)
         at example.Win32EventLogAppender.append(Win32EventLogAppender.java:136)
 ```
+
+### Using System Event Log Resources
+
+  *  remove  the custom event log created by Java by running system cmdlets
+  * remove-eventlog -LogName 'log4jna_sample' 
+    -inspect through Registry but not modify directly
+  *  create the same custom event log  specifying the categorymessagefile and eventmessagefile to be
+```powershell
+$resource_dll_path = (resolve-path 'src\main\resources\Win32EventLogAppender.dll').Path
+$resource_dll_path =  'C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
+$resource_dll_path = '%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
+new-eventLog -logName log4jna_sample -Source 'example.log4jna_sample' -CategoryResourceFile $resource_dll_path -MessageResourceFile $resource_dll_path
+```
+
+  * try both literal path and expand expression
+
+  * update the `jna_eventlog` Java source arguments to make it confirm it has the log available
+
+
+run as regular user:
+```cmd
+mvn clean package
+```
+```cmd
+java -jar target\example.jna_eventlog.jar the quick brown fox jumps over the lazy dome
+```
+this will successfully log the message:
+```text
+RegisterEventSource: EventMessageFile: "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll", CategoryMessageFile: "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll"
+```
+it will be found
+
+```powershell
+get-eventlog -logname 'log4jna_sample'
+```
+```text
+   Index Time          EntryType   Source                 InstanceID Message
+   ----- ----          ---------   ------                 ---------- -------
+      39 Apr 11 12:55  Information example.log4jna_s...         4096 the qui...
+```
+
+
+```powershell
+ get-eventlog -logname log4jna_sample -newest 1 |format-list
+```
+
+
+```text
+
+Index              : 39
+EntryType          : Information
+InstanceId         : 4096
+Message            : the quick brown fox jumps over the lazy dome
+Category           : %1
+CategoryNumber     : 3
+ReplacementStrings : {the quick brown fox jumps over the lazy dome }
+Source             : example.log4jna_sample
+TimeGenerated      : 4/11/2024 12:55:10 PM
+TimeWritten        : 4/11/2024 12:55:10 PM
+UserName           :
+```
+
+NOTE: when the relative paths used for `CategoryMessageFile` and `EventMessageFile` and the program is not run in elevated way
+java  will throw runtime exception:
+```text
+
+Verified EventMessageFile path C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll
+Verified CategoryMessageFile path C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll
+RegisterEventSource: EventMessageFile: "C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll", 
+CategoryMessageFile: "C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll"
+```
+
+```text
+Check if CurrentUser is Admin
+group: None 
+group: Everyone
+group: Local account and member of Administrators group
+group: HelpLibraryUpdaters
+group: HomeUsers
+group: Administrators
+Current User Is Admin
+Exception in thread "main" java.lang.RuntimeException: Could not register event
+source: Access is denied.
+        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:136)
+        at example.Win32EventLogAppender.append(Win32EventLogAppender.java:146)
+        at example.Win32EventLogAppender.append(Win32EventLogAppender.java:167)
+        at example.App.main(App.java:29)
+Caused by: com.sun.jna.platform.win32.Win32Exception: Access is denied.
+        at com.sun.jna.platform.win32.Advapi32Util.registrySetStringValue(Advapi32Util.java:1557)
+        at com.sun.jna.platform.win32.Advapi32Util.registrySetStringValue(Advapi32Util.java:1533)
+        at example.Win32EventLogAppender.setVariableKeys(Win32EventLogAppender.java:230)
+        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:182)
+        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:131)
+        ... 3 more
+
+```
+
+because the logger will attempt to install the event source, which is privileged operation on Windows
+
 ### See Also
 
    * [evaluate if the current user is a member the "well-known" sid Administator group](https://www.rgagnon.com/javadetails/java-detect-if-current-user-is-admin-using-jna.html) - not a UAC replacement
@@ -102,3 +201,4 @@ Exception in thread "main" java.lang.RuntimeException: Could not register event 
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
