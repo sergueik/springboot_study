@@ -11,14 +11,14 @@ import ch.qos.logback.core.encoder.Encoder;
 
 public class EventLogAppender extends AppenderBase<ILoggingEvent> {
 
-	private String prefix;
+	private String resource;
 	private Encoder encoder;
 
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void append(final ILoggingEvent event) {
-		if (prefix == null || "".equals(prefix)) {
-			addError("Prefix is not set for MapAppender.");
+		if (resource == null || "".equals(resource)) {
+			addError("Resource is not set for EventLogAppender.");
 			return;
 		}
 
@@ -36,20 +36,20 @@ public class EventLogAppender extends AppenderBase<ILoggingEvent> {
 		final String server = "."; // guess
 		final String source = "example.log4jna_sample";
 		final String application = "log4jna_sample";
-		final String eventMessageFile = "src\\main\\resources\\Win32EventLogAppender.dll";
-		final String categoryMessageFile = "src\\main\\resources\\Win32EventLogAppender.dll";
+		final String eventMessageFile = resource ; // "%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll";
+		final String categoryMessageFile = resource; // "%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll";
 		Win32EventLogAppender appender = Win32EventLogAppender.createAppender(name, server, source, application,
 				eventMessageFile, categoryMessageFile);
 		appender.append(message);
 
 	}
 
-	public String getPrefix() {
-		return prefix;
+	public String getResource() {
+		return resource;
 	}
 
-	public void setPrefix(String value) {
-		prefix = value;
+	public void setResource(String value) {
+		resource = value;
 	}
 
 	public void setEncoder(Encoder encoder) {
