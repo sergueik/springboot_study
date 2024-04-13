@@ -160,11 +160,14 @@ public class Win32EventLogAppender {
 			registerEventSource();
 		}
 
-		final int messageID = 0x1000;
+		final int messageID = 1000 ; 
+		// final int messageID = 0x1000; // 4096
 
 		String[] buffer = { message };
 
 		// https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-reporteventa
+		// NOTE the age: Minimum supported client	Windows 2000 Professional
+		// Minimum supported server	Windows 2000 Server
 		// https://www.pinvoke.net/search.aspx?search=ReportEvent
 		// https://github.com/java-native-access/jna/blob/master/contrib/platform/src/com/sun/jna/platform/win32/Advapi32.java#L1650
 
@@ -189,6 +192,7 @@ public class Win32EventLogAppender {
 			String application, String eventMessageFile, String categoryMessageFile) {
 		String applicationKeyPath = EVENT_LOG_PATH + application;
 		String eventSourceKeyPath = applicationKeyPath + "\\" + source;
+		// https://github.com/java-native-access/jna/blob/master/contrib/platform/src/com/sun/jna/platform/win32/Advapi32Util.java#L623
 		if (Advapi32Util.registryKeyExists(WinReg.HKEY_LOCAL_MACHINE,
 				applicationKeyPath)) {
 			if (Advapi32Util.registryKeyExists(WinReg.HKEY_LOCAL_MACHINE,
@@ -231,6 +235,8 @@ public class Win32EventLogAppender {
 
 	private void setVariableKeys(String eventMessageFile,
 			String categoryMessageFile, String eventSourceKeyPath) {
+		// https://github.com/java-native-access/jna/blob/master/contrib/platform/src/com/sun/jna/platform/win32/Advapi32Util.java#L667
+		// NOTE: "Application" has CATEGORY_MESSAGE_FILE  but no EVENT_MESSAGE_FILE
 		if (!Advapi32Util.registryValueExists(WinReg.HKEY_LOCAL_MACHINE,
 				eventSourceKeyPath, EVENT_MESSAGE_FILE)
 				|| !Advapi32Util
@@ -240,9 +246,9 @@ public class Win32EventLogAppender {
 			if (!checkCurrentUserIsAdmin()) {
 				throw new RuntimeException("need elevation");
 			}
-
-			Advapi32Util.registrySetStringValue(WinReg.HKEY_LOCAL_MACHINE,
-					eventSourceKeyPath, EVENT_MESSAGE_FILE, eventMessageFile);
+			// skip creating one
+			// Advapi32Util.registrySetStringValue(WinReg.HKEY_LOCAL_MACHINE,
+			//		eventSourceKeyPath, EVENT_MESSAGE_FILE, eventMessageFile);
 		}
 		if (!Advapi32Util.registryValueExists(WinReg.HKEY_LOCAL_MACHINE,
 				eventSourceKeyPath, CATEGORY_MESSAGE_FILE)

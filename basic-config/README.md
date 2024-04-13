@@ -56,6 +56,9 @@ curl -s "http://localhost:8085/configs/file_hash?filename=a.txt&newer=12345"
 ```sh
 curl -sv "http://localhost:8085/configs/file_hash_status?filename=a.txt&hash=x"
 ```
+responded by server with `208 Already Reported` or `304 Not Modified`:
+
+
 ```text
 Host: localhost:8085
 > User-Agent: curl/7.74.0
@@ -77,7 +80,7 @@ $WebObjVariable = Invoke-WebRequest -Uri <URL>
 $WebObjVariable.StatusCode
 $WebObjVariable.StatusDescription
 ```
-will report a script runtime error for Status Codes `304`, `40x` and `50x` by the backend:
+will throw a runtime error from the script to convey the received HTTP Status Codes `304` (`208`?), similarly how it handles real `40x` and `50x` errors reported by the backend:
 
 ```powershell
 Invoke-WebRequest -Uri 'http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244' -erroraction silentlycontinue
@@ -99,10 +102,8 @@ Invoke-WebRequest : The remote server returned an error: (500) Internal Server E
 At line:1 char:19
 + $WebObjVariable = Invoke-WebRequest -Uri 'http://localhost:8085/configs/file_has ...
 + ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:Htt
-   pWebRequest) [Invoke-WebRequest], WebException
-    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShe
-   ll.Commands.InvokeWebRequestCommand
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebException
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
 ```
 ```powershell
 Invoke -WebRequest -Uri 'http://localhost:8085/configs/file_hash_status2?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244' -erroraction silentlycontinue
@@ -120,7 +121,7 @@ providing the
 ```powershell
 -passthru -outfile a.json
 ```
-arguments does not change this behavior 
+arguments does not change this exception throwing behavior
 
 #### Calling Custom Script
 
@@ -187,7 +188,6 @@ curl -s "http://localhost:8085/configs/file_hash_status?filename=a.txt&newer=123
 ```
 
 ```powershell
-
 .\getstatuscode.ps1 -url  "http://localhost:8085/configs/file_hash_status?filename=a.txt&newer=12345"
 ```
 this will print
@@ -239,7 +239,6 @@ md5sum.exe ./data.json  /c/temp/data.json
 dir .\data.json,C:\temp\data.json
 ```
 ```text
-`
 
     Directory: C:\developer\sergueik\springboot_study\basic-config
 
@@ -275,8 +274,7 @@ cygwin warning:
   Preferred POSIX equivalent is: /cygdrive/c/temp/data.json
   CYGWIN environment variable option "nodosfilewarning" turns off this warning.
   Consult the user's guide for more details about POSIX paths:
-    http://cygwin.com/cygwin-ug-net/using.html#using-pathnames
-\0dfa1329f15fefa8648856794eb33244 *c:\\temp\\data.json
+    http://cygwin.com/cygwin-ug-net/using.html#using-pathnames\0dfa1329f15fefa8648856794eb33244 *c:\\temp\\data.json
 0dfa1329f15fefa8648856794eb33244 *data.json
 ```
 
@@ -511,6 +509,9 @@ Mode                LastWriteTime         Length Name
    * [generate file MD5 checksum in Java](https://www.baeldung.com/java-md5-checksum-file)
    * [code2flow](https://app.code2flow.com) - online graphviz-like flowchart creator Copyright © 2013-2022, Code Charm, Inc.
    * [similar discussion](https://qna.habr.com/q/1313744?e=14071418#comment_3349388) (in Russian)
+   * https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/208
+   * https://http.dev/208
+   * https://http.dev/304	
    * [basic file upload](https://www.javainuse.com/spring/boot-file-download) with `Content-Disposition`
    * [documentation on various options](https://betacode.net/11765/spring-boot-file-download)(in Russian)
    * [stackoverflow](https://stackoverflow.com/questions/29816121/creating-a-file-download-link-using-spring-boot-and-thymeleaf) discussion of yet more alternative ways to download the resource
