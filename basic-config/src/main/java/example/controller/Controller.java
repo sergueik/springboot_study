@@ -1,6 +1,6 @@
 package example.controller;
 /**
- * Copyright 2023 Serguei Kouzmine
+ * Copyright 2023,2024 Serguei Kouzmine
  */
 
 import java.io.ByteArrayInputStream;
@@ -127,6 +127,13 @@ public class Controller {
 		filePath = configDir + "\\" + filename;
 		if (hash.isPresent()) {
 			status = HttpStatus.NOT_MODIFIED;
+			// HTTP 304 not modified status code
+			// means that the resource being requested
+			// hasn't been updated since the last time client accessed it
+			// HTTP 304 not modified status code
+			// is returned by the server to indicate a successful HTTP request
+			// yet there is no need to send the payload for the requsted resource
+			// and there is no message body for this response code
 			md5sum = Utils.md5Sum(filePath);
 			logger.info("md5Sum of {}: {}", filePath, md5sum);
 			body = "";
@@ -136,6 +143,13 @@ public class Controller {
 			}
 		} else if (newer.isPresent()) {
 			status = HttpStatus.ALREADY_REPORTED;
+			// HTTP 208 Already Reported response code
+			// means the HTTP response (typically the 200 OK)
+			// has already been returned earlier with regard to a specified resource
+			// used e.g. when the same resource being requested repeatedly
+			// (for example as part of a collection), or with different equivalent
+			// paths
+			// only the first time resource is reported with 200 OK
 			response = Utils.getErrorResponse("newer: " + newer.get());
 			body = gson.toJson(response, Map.class);
 			resourceStatus = false;
