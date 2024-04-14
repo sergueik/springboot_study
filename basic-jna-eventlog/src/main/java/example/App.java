@@ -1,20 +1,12 @@
 package example;
 
-/**
- * Copyright 2023,2024 Serguei Kouzmine
- */
-
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -22,28 +14,22 @@ import org.apache.commons.cli.ParseException;
 public class App {
 
 	private final static Options options = new Options();
-	public static final int INVALID_OPTION = 42;
 	private final static CommandLineParser commandLineparser = new DefaultParser();
 	private static CommandLine commandLine = null;
-	private Map<String, String> flags = new HashMap<>();
+	public static final int INVALID_OPTION = 42;
+
 	static String name = "EventLog";
-	static String server = "."; // guess
-	static String source = "Application Error";
-	static String application = "Application";
-	static String eventMessageFile = "%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll";
-	static String categoryMessageFile = "%SystemRoot%\\System32\\wer.dll"; // "%SystemRoot%\\system32\\wevtapi.dll";
-	static String resource = "%SystemRoot%\\System32\\wer.dll";
+	static String server = ".";
+	static String source = "example.log4jna_sample";
+	// "Application Error";
+	static String application = "log4jna_sample";
+	// "Application";
+	static String resource = "%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll";
+	// "%SystemRoot%\\System32\\wer.dll";
+	// "%SystemRoot%\\system32\\wevtapi.dll";
 	static String message = "the quick brown fox jumps over the lazy dog";
 	static int id = 1000;
-	// //
-
-	private static HelpFormatter helpFormatter = new HelpFormatter();
 	private static boolean debug = false;
-
-	public void saveFlagValue(String flagName, String longFlagNAme) {
-		options.addRequiredOption(flagName, "action", true,
-				String.format("%s option", longFlagNAme));
-	}
 
 	public static void main(String[] args) {
 
@@ -88,36 +74,36 @@ public class App {
 			if (debug) {
 				System.err.println("Command line options: ");
 				Map<String, String> flags = new HashMap<>();
-				Arrays.asList(commandLine.getOptions()).stream().forEach(
-						(Option o) -> System.err.println(String.format("%s (%s): %s",
-								o.getOpt(), o.getLongOpt(), o.getValue())));
-				Arrays.asList(commandLine.getOptions()).stream()
-						.forEach(o -> flags.put(o.getArgName(), o.getValue()));
-				flags.keySet().stream().forEach(
-						o -> System.err.println(String.format("%s", o, flags.get(o))));
+				Arrays.asList(commandLine.getOptions()).stream().forEach((Option o) -> System.err
+						.println(String.format("%s (%s): %s", o.getOpt(), o.getLongOpt(), o.getValue())));
 				return;
 			}
 		} catch (ParseException e) {
 			System.err.println("Exception parsing command line: " + e.toString());
 			System.exit(INVALID_OPTION);
 		}
-		/*
-				StringBuilder b = new StringBuilder();
-				for (String str : args) {
-					b.append(str);
-					b.append(' ');
-				}
-				String message = b.toString();
-		*/
-
-		// "%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll";
-		Win32EventLogAppender appender = Win32EventLogAppender.createAppender(id,
-				name, server, source, application, resource, resource);
+		Win32EventLogAppender appender = Win32EventLogAppender.createAppender(id, name, server, source, application,
+				resource, resource);
 		appender.append(message);
 	}
 
 	public static void help() {
+		// @formatter:off
+		System.err.println( "Usage:" + "\n"
+				+ "java -jar jna_eventlog.jar " 
+				+ "-message \"MESSAGE\" " 
+				+ "-id EVENTID " 
+				+ "-resource \"RESOURCE\" " 
+				+ "-application \"APPLICATION\" " 
+				+ "-source \"EVENT SOURCE\" " 
+				+ "-name \"EVENT LOG NAME\"");
+		System.err.println("To write to custom Event Source, use the following argument verbatim:\n" 
+				+ "RESOURCE: \"%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll\"\n"
+				+ "and create the custom event log using the above as the CategoryMessageFile and EventMessageFile.");
+		System.err.println("Example Usage:\n" +
+				"java -jar example.jna_eventlog.jar -message \"the quick brown fox jumps over the lazy dog\" -id 12345  -r \"%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll\" -application \"log4jna_sample\" -source \"example.log4jna_sample\"  -name \"log4jna_sample\"");
+		// @formatter:on
 		System.exit(1);
+		
 	}
-
 }
