@@ -28,9 +28,13 @@ public class Win32EventLogAppender {
 	private static final int TYPES_SUPPORTED = 7;
 	private static final String DEFAULT_SOURCE = "Log4jna";
 	private static final String DEFAULT_APPLICATION = "Application";
+	private static final int MESSAGE_ID = 1000 ;  
+	// final int messageID = 1000 ; 
+	// final int messageID = 0x1000; // 4096
 
 	private boolean isAdmin = false;
 	private String _source = null;
+	private int messageID = MESSAGE_ID;
 	private String _server = null;
 	private String _application = DEFAULT_APPLICATION;
 	private String _eventMessageFile = "";
@@ -38,16 +42,17 @@ public class Win32EventLogAppender {
 
 	private HANDLE _handle = null;
 
-	public static Win32EventLogAppender createAppender(String name, String server,
+	public static Win32EventLogAppender createAppender(int messageID, String name, String server,
 			String source, String application, String eventMessageFile,
 			String categoryMessageFile) {
-		return new Win32EventLogAppender(name, server, source, application,
+		return new Win32EventLogAppender(messageID, name, server, source, application,
 				eventMessageFile, categoryMessageFile);
 	}
 
-	public Win32EventLogAppender(String name, String server, String source,
+	public Win32EventLogAppender(int messageID, String name, String server, String source,
 			String application, String eventMessageFile, String categoryMessageFile) {
 
+		this.messageID = messageID; 
 		if (eventMessageFile != null) {
 			String pathExpanded = resolveEnvVars(eventMessageFile);
 
@@ -160,8 +165,6 @@ public class Win32EventLogAppender {
 			registerEventSource();
 		}
 
-		final int messageID = 1000 ; 
-		// final int messageID = 0x1000; // 4096
 
 		String[] buffer = { message };
 
