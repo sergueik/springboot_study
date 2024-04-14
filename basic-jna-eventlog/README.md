@@ -5,18 +5,18 @@ Standalone Event log logger derived from [dblock/log4jna](https://github.com/dbl
 
 ### Usage
 
-* clear the custom Event Log `log4jna_sample`
-```cmd
-wevtutil.exe clear-log log4jna_sample
-```
-* run from elevated console. ([WIP] subsequent runs will work for any user)
-to create the event source `log4jna_sample` in `%SystemRoot%\System32\Winevt\Logs\log4jna_sample.evtx`
+build
 ```sh
 mvn clean package
 ```
+
+#### Log to Application Event Log:
+
 ```sh
-java -jar target\example.jna_eventlog.jar the quick brown fox jumps over the lazy dog
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug"
 ```
+
+
 * review Event Log entries
 
 ![Event log Message](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-message.png)
@@ -24,140 +24,146 @@ java -jar target\example.jna_eventlog.jar the quick brown fox jumps over the laz
 * query in console
 
 ```powershell
-get-eventlog -logname log4jna_sample -newest 1 |format-list
+get-eventlog -logname Application -source 'Application Error' -newest 1 |format-list
 ```
 reveals
 ```text
-Index              : 26
+Index              : 100331
 EntryType          : Information
-InstanceId         : 4096
-Message            : the quick brown fox jumps over the lazy dog  - this is a test
-Category           : Info
+InstanceId         : 1000
+Message            : Faulting application name: the quick brown fox lamps over the dozy jug, version: %2, time stamp: 0x%3
+                     Faulting module name: %4, version: %5, time stamp: 0x%6
+                     Exception code: 0x%7
+                     Fault offset: 0x%8
+                     Faulting process id: 0x%9
+                     Faulting application start time: 0x%10
+                     Faulting application path: %11
+                     Faulting module path: %12
+                     Report Id: %13
+Category           : (3)
 CategoryNumber     : 3
-ReplacementStrings : {the quick brown fox jumps over the lazy dog  - this is a  test}
-Source             : example.log4jna_sample
-TimeGenerated      : 25.01.2024 8:07:00
-TimeWritten        : 25.01.2024 8:07:00
+ReplacementStrings : {the quick brown fox lamps over the dozy jug}
+Source             : Application Error
+TimeGenerated      : 4/14/2024 10:41:43 AM
+TimeWritten        : 4/14/2024 10:41:43 AM
 UserName           :
+
+
+
+
 ```
 
-alternatively
+alternatively (NOTE, due to lack of query conditon need to run the following very soon after the java test has run
 ```cmd
-wevtutil.exe qe log4jna_sample /rd:true /f:text /c:1
+wevtutil.exe query-events Application /rd:true /f:text /c:10
 ```
 ```text
-Event[0]:
-  Log Name: log4jna_sample
-  Source: example.log4jna_sample
-  Date: 2024-01-25T18:02:54.0220000Z
-  Event ID: 4096
-  Task: Info
-  Level: Сведения
-  Opcode: Сведения
-  Keyword: Классический
+Event[2]:
+  Log Name: Application
+  Source: Application Error
+  Date: 2024-04-14T10:40:31.000
+  Event ID: 1000
+  Task: N/A
+  Level: Information
+  Opcode: Info
+  Keyword: Classic
   User: N/A
   User Name: N/A
-  Computer: DESKTOP-82V9KDO
+  Computer: sergueik42
   Description:
-the quick brown fox jumps over the lazy dog  - this is a test
+Faulting application name: the quick brown fox lamps over the dozy jug, version:
+ %2, time stamp: 0x%3
+Faulting module name: %4, version: %5, time stamp: 0x%6
+Exception code: 0x%7
+Fault offset: 0x%8
+Faulting process id: 0x%9
+Faulting application start time: 0x%10
+Faulting application path: %11
+Faulting module path: %12
+Report Id: %13
 
 ```
-### TODO
 
-the Windows Event Log messages can be addded by a regular user. However the creation of the application-specicic Windows Event Log with all its categories an resources requires elevation. There is currently no working Java code capable of perfoeming the UAC check - the method `checkCurrentUserIsAdmin`
-relies on checking th membership of the opetating user in the `BUILTIN\Administrators` group and reports false positive.
-#### Demo
+#### Using Custom Event Log with Arbitrary id
 
-* try to do logging as a regular user when no event log exists
-```cmd	
-mvn clean package
-java -jar target\example.jna_eventlog.jar message
-```
-see the technical info
-```text
-registerEventSource
-Check if CurrentUser is Admin
-group: None
-group: Everyone
-group: Local account and member of Administrators group
-group: HelpLibraryUpdaters
-group: HomeUsers
-group: Administrators
-Current User Is Admin
-```
+  *  remove  the custom event log created earlier and create it. These steps need to be performed in elevated prompt:
 
-and the exception
-```text
-Exception in thread "main" java.lang.RuntimeException: Could not register event source: Access is denied.
-        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:126)
-        at example.Win32EventLogAppender.append(Win32EventLogAppender.java:136)
-```
-
-### Using System Event Log Resources
-
-  *  remove  the custom event log created by Java by running system cmdlets
 ```powershell
 remove-eventlog -LogName 'log4jna_sample' 
 ```
-    -inspect through Registry but not modify directly
   *  create the same custom event log  specifying the categorymessagefile and eventmessagefile to be
 ```powershell
-$resource_dll_path = (resolve-path 'src\main\resources\Win32EventLogAppender.dll').Path
-$resource_dll_path =  'C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
 $resource_dll_path = '%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
-new-eventLog -logName log4jna_sample -Source 'example.log4jna_sample' -CategoryResourceFile $resource_dll_path -MessageResourceFile $resource_dll_path
+new-eventLog -logName 'log4jna_sample' -Source 'example.log4jna_sample' -CategoryResourceFile $resource_dll_path -MessageResourceFile $resource_dll_path
 ```
-
-  * try both literal path and expand expression
-
-  * update the `jna_eventlog` Java source arguments to make it confirm it has the log available
-
-
-run as regular user:
+* append to the same custom event log  specifying the categorymessagefile and eventmessagefile, source, application, name, id and message
+NOTE: When  run in `cmd` console
 ```cmd
-mvn clean package
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample"  -name "log4jna_sample" -debug
 ```
-```cmd
-java -jar target\example.jna_eventlog.jar the quick brown fox jumps over the lazy dome
-```
-this will successfully log the message:
+this will echo the options:
 ```text
-RegisterEventSource: EventMessageFile: "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll", CategoryMessageFile: "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll"
+Command line options:
+m (message): the quick brown fox lamps over the dozy jug
+i (id): 123
+r (resource): C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
+a (application): log4jna_sample
+s (source): example.log4jna_sample
+n (name): log4jna_sample
+d (debug): null
+null
 ```
-it will be found
+NOTE: the "environment" expansion has taken place
 
+* run the same from powershell console
 ```powershell
-get-eventlog -logname 'log4jna_sample'
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample"  -name "log4jna_sample" -debug
 ```
+this will print
 ```text
-   Index Time          EntryType   Source                 InstanceID Message
-   ----- ----          ---------   ------                 ---------- -------
-      39 Apr 11 12:55  Information example.log4jna_s...         4096 the qui...
+Command line options:
+m (message): the quick brown fox lamps over the dozy jug
+i (id): 123
+r (resource): %SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
+a (application): log4jna_sample
+s (source): example.log4jna_sample
+n (name): log4jna_sample
+d (debug): null
 ```
 
-
+repeat without debug flag
 ```powershell
- get-eventlog -logname log4jna_sample -newest 1 |format-list
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample"  -name "log4jna_sample"
+```
+this will print
+```text
+Verified EventMessageFile path C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
+Verified CategoryMessageFile path C:\Windows\Microsoft.NET\Framework\v4.0.30319\
+EventLogMessages.dllRegisterEventSource: EventMessageFile: "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll", CategoryMessageFile: "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll"
 ```
 
-
+Confirm the message
+```powershell
+get-eventlog -logname log4jna_sample -newest 1 |format-list
+```
 ```text
-
-Index              : 39
+Index              : 258
 EntryType          : Information
-InstanceId         : 4096
-Message            : the quick brown fox jumps over the lazy dome
+InstanceId         : 123
+Message            : the quick brown fox lamps over the dozy jug
 Category           : %1
 CategoryNumber     : 3
-ReplacementStrings : {the quick brown fox jumps over the lazy dome }
+ReplacementStrings : {the quick brown fox lamps over the dozy jug}
 Source             : example.log4jna_sample
-TimeGenerated      : 4/11/2024 12:55:10 PM
-TimeWritten        : 4/11/2024 12:55:10 PM
+TimeGenerated      : 4/14/2024 12:19:24 PM
+TimeWritten        : 4/14/2024 12:19:24 PM
 UserName           :
+
 ```
 
-NOTE: when the relative paths used for `CategoryMessageFile` and `EventMessageFile` and the program is not run in elevated way
-java  will throw runtime exception:
+![Custom Event Log Message](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-message-custom.png)
+
+NOTE: when the arguments are invalid and the program is not run in elevated way -  java  will throw runtime exception:
 ```text
 
 Verified EventMessageFile path C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll
@@ -192,6 +198,7 @@ Caused by: com.sun.jna.platform.win32.Win32Exception: Access is denied.
 ```
 
 because the logger will attempt to install the event source, which is privileged operation on Windows
+
 ### Note
 
 ```cmd
