@@ -204,9 +204,6 @@ public class Win32EventLogAppender {
 	}
 
 	private void createAndSetAllKeys(String eventMessageFile, String categoryMessageFile, String eventSourceKeyPath) {
-		if (!checkCurrentUserIsAdmin()) {
-			throw new RuntimeException("need elevation");
-		}
 		if (Advapi32Util.registryCreateKey(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath)) {
 			Advapi32Util.registrySetIntValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, "TypesSupported",
 					TYPES_SUPPORTED);
@@ -224,9 +221,6 @@ public class Win32EventLogAppender {
 				|| !Advapi32Util
 						.registryGetStringValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, EVENT_MESSAGE_FILE)
 						.equalsIgnoreCase(eventMessageFile)) {
-			if (!checkCurrentUserIsAdmin()) {
-				throw new RuntimeException("need elevation");
-			}
 			// skip creating one
 			// Advapi32Util.registrySetStringValue(WinReg.HKEY_LOCAL_MACHINE,
 			// eventSourceKeyPath, EVENT_MESSAGE_FILE, eventMessageFile);
@@ -235,28 +229,10 @@ public class Win32EventLogAppender {
 				|| !Advapi32Util
 						.registryGetStringValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, CATEGORY_MESSAGE_FILE)
 						.equalsIgnoreCase(categoryMessageFile)) {
-			if (!checkCurrentUserIsAdmin()) {
-				throw new RuntimeException("need elevation");
-			}
 
 			Advapi32Util.registrySetStringValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, CATEGORY_MESSAGE_FILE,
 					categoryMessageFile);
 		}
-	}
-
-	private boolean checkCurrentUserIsAdmin() {
-		// System.err.println("Check if CurrentUser is Admin");
-		Advapi32Util.Account[] groups = Advapi32Util.getCurrentUserGroups();
-		isAdmin = false;
-		for (Advapi32Util.Account group : groups) {
-			// System.err.println("group: " + group.name);
-			if ("S-1-5-32-544".equals(group.sidString)) {
-				isAdmin = true;
-				// System.err.println("Current User Is Admin");
-				break;
-			}
-		}
-		return isAdmin;
 	}
 
 	public static String resolveEnvVars(String input) {

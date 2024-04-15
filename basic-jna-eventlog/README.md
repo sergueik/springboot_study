@@ -89,8 +89,14 @@ Report Id: %13
   *  remove  the custom event log created earlier and create it. These steps need to be performed in elevated prompt:
 
 ```powershell
-remove-eventlog -LogName 'log4jna_sample' 
+remove-eventlog -LogName 'log4jna_sample'
 ```
+if  you see the error
+```text
+remove-eventlog : Requested registry access is not allowed.
+```
+switch to elevated Powershell console (a.k.a "Run As Administrator"
+
   *  create the same custom event log  specifying the categorymessagefile and eventmessagefile to be
 ```powershell
 $resource_dll_path = '%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
@@ -131,18 +137,11 @@ n (name): log4jna_sample
 d (debug): null
 ```
 
-repeat without debug flag
+repeat without the `debug` flag
 ```powershell
 java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample"  -name "log4jna_sample"
 ```
-this will print
-```text
-Verified EventMessageFile path C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
-Verified CategoryMessageFile path C:\Windows\Microsoft.NET\Framework\v4.0.30319\
-EventLogMessages.dllRegisterEventSource: EventMessageFile: "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll", CategoryMessageFile: "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll"
-```
-
-Confirm the message
+this will log the message. Confirm the message
 ```powershell
 get-eventlog -logname log4jna_sample -newest 1 |format-list
 ```
@@ -158,9 +157,34 @@ Source             : example.log4jna_sample
 TimeGenerated      : 4/14/2024 12:19:24 PM
 TimeWritten        : 4/14/2024 12:19:24 PM
 UserName           :
+```
+Alternatively can use full path to resource when creating the event log:
+```powershell
+$resource_dll_path = "C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll"
+new-eventLog -logName log4jna_sample -Source 'example.log4jna_sample' -CategoryResourceFile $resource_dll_path -MessageResourceFile $resource_dll_path
+```
+and use the same in `resource` argument:
+
+```cmd
+java -jar target\example.jna_eventlog.jar -message "the quick lawn box lamps over the dazy jug" -id 123  -r "C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample"
+```
+```powershell
+get-eventlog -logname log4jna_sample -newest 1 |format-list
+```
+```text
+Index              : 46
+EntryType          : Information
+InstanceId         : 123
+Message            : the quick lawn box lamps over the dazy jug
+Category           : %1
+CategoryNumber     : 3
+ReplacementStrings : {the quick lawn box lamps over the dazy jug}
+Source             : example.log4jna_sample
+TimeGenerated      : 4/14/2024 5:24:21 PM
+TimeWritten        : 4/14/2024 5:24:21 PM
+UserName           :
 
 ```
-
 ![Custom Event Log Message](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-message-custom.png)
 
 NOTE: when the arguments are invalid and the program is not run in elevated way -  java  will throw runtime exception:
