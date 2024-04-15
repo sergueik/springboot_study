@@ -89,8 +89,14 @@ Report Id: %13
   *  remove  the custom event log created earlier and create it. These steps need to be performed in elevated prompt:
 
 ```powershell
-remove-eventlog -LogName 'log4jna_sample' 
+remove-eventlog -LogName 'log4jna_sample'
 ```
+if  you see the error
+```text
+remove-eventlog : Requested registry access is not allowed.
+```
+switch to elevated Powershell console (a.k.a "Run As Administrator"
+
   *  create the same custom event log  specifying the categorymessagefile and eventmessagefile to be
 ```powershell
 $resource_dll_path = '%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
@@ -99,7 +105,7 @@ new-eventLog -logName 'log4jna_sample' -Source 'example.log4jna_sample' -Categor
 * append to the same custom event log  specifying the categorymessagefile and eventmessagefile, source, application, name, id and message
 NOTE: When  run in `cmd` console
 ```cmd
-java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample"  -name "log4jna_sample" -debug
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample" -debug
 ```
 this will echo the options:
 ```text
@@ -113,11 +119,16 @@ n (name): log4jna_sample
 d (debug): null
 null
 ```
-NOTE: the "environment" expansion has taken place
+NOTE: the "environment" expansion has taken place.
+There appears to be no better way to address this underised environment while passing command line options than follows
+```cmd
+set FOO=SYSTEMROOT
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%%FOO%%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample" -debug
+```
 
-* run the same from powershell console
+* alternatively run the same from powershell console
 ```powershell
-java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample"  -name "log4jna_sample" -debug
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123 -resource "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample" -debug
 ```
 this will print
 ```text
@@ -131,18 +142,11 @@ n (name): log4jna_sample
 d (debug): null
 ```
 
-repeat without debug flag
+repeat without the `debug` flag
 ```powershell
-java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample"  -name "log4jna_sample"
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123 -resource "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample"
 ```
-this will print
-```text
-Verified EventMessageFile path C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
-Verified CategoryMessageFile path C:\Windows\Microsoft.NET\Framework\v4.0.30319\
-EventLogMessages.dllRegisterEventSource: EventMessageFile: "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll", CategoryMessageFile: "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll"
-```
-
-Confirm the message
+this will log the message. Confirm the message
 ```powershell
 get-eventlog -logname log4jna_sample -newest 1 |format-list
 ```
@@ -158,46 +162,54 @@ Source             : example.log4jna_sample
 TimeGenerated      : 4/14/2024 12:19:24 PM
 TimeWritten        : 4/14/2024 12:19:24 PM
 UserName           :
+```
+Alternatively can use full path to resource when creating the event log:
+```powershell
+$resource_dll_path = "C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll"
+new-eventLog -logName log4jna_sample -Source 'example.log4jna_sample' -CategoryResourceFile $resource_dll_path -MessageResourceFile $resource_dll_path
+```
+and use the same in `resource` argument:
+
+```cmd
+java -jar target\example.jna_eventlog.jar -message "the quick lawn box lamps over the dazy jug" -id 123  -r "C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample"
+```
+```powershell
+get-eventlog -logname log4jna_sample -newest 1 |format-list
+```
+```text
+Index              : 46
+EntryType          : Information
+InstanceId         : 123
+Message            : the quick lawn box lamps over the dazy jug
+Category           : %1
+CategoryNumber     : 3
+ReplacementStrings : {the quick lawn box lamps over the dazy jug}
+Source             : example.log4jna_sample
+TimeGenerated      : 4/14/2024 5:24:21 PM
+TimeWritten        : 4/14/2024 5:24:21 PM
+UserName           :
 
 ```
-
 ![Custom Event Log Message](https://github.com/sergueik/springboot_study/blob/master/basic-jna-eventlog/screenshots/capture-message-custom.png)
 
 NOTE: when the arguments are invalid and the program is not run in elevated way -  java  will throw runtime exception:
 ```text
 
-Verified EventMessageFile path C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll
-Verified CategoryMessageFile path C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll
-RegisterEventSource: EventMessageFile: "C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll", 
-CategoryMessageFile: "C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll"
-```
-
-```text
-Check if CurrentUser is Admin
-group: None 
-group: Everyone
-group: Local account and member of Administrators group
-group: HelpLibraryUpdaters
-group: HomeUsers
-group: Administrators
-Current User Is Admin
-Exception in thread "main" java.lang.RuntimeException: Could not register event
-source: Access is denied.
-        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:136)
-        at example.Win32EventLogAppender.append(Win32EventLogAppender.java:146)
-        at example.Win32EventLogAppender.append(Win32EventLogAppender.java:167)
-        at example.App.main(App.java:29)
+Exception in thread "main" java.lang.RuntimeException: Could not register event source: Access is denied.
+        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:145)
+        at example.Win32EventLogAppender.append(Win32EventLogAppender.java:155)
+        at example.Win32EventLogAppender.append(Win32EventLogAppender.java:175)
+        at example.App.main(App.java:87)
 Caused by: com.sun.jna.platform.win32.Win32Exception: Access is denied.
-        at com.sun.jna.platform.win32.Advapi32Util.registrySetStringValue(Advapi32Util.java:1557)
-        at com.sun.jna.platform.win32.Advapi32Util.registrySetStringValue(Advapi32Util.java:1533)
-        at example.Win32EventLogAppender.setVariableKeys(Win32EventLogAppender.java:230)
-        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:182)
-        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:131)
+        at com.sun.jna.platform.win32.Advapi32Util.registryCreateKey(Advapi32Util.java:1282)
+        at com.sun.jna.platform.win32.Advapi32Util.registryCreateKey(Advapi32Util.java:1260)
+        at example.Win32EventLogAppender.createAndSetAllKeys(Win32EventLogAppender.java:207)
+        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:191)
+        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:142)
         ... 3 more
-
 ```
 
-because the logger will attempt to install the event source, which is privileged operation on Windows
+because the logger will attempt to install the event source, which is a privileged operation on Windows
 
 ### Note
 
@@ -1078,6 +1090,9 @@ keywords:
    * http://blogs.msdn.com/b/virtual_pc_guy/archive/2010/09/23/a-self-elevating-powershell-script.aspx
    * https://stackoverflow.com/questions/7985755/how-to-detect-if-cmd-is-running-as-administrator-has-elevated-privileges
    * https://stackoverflow.com/questions/1894967/how-to-request-administrator-access-inside-a-batch-file
+   * [Apache Commons CLI](https://commons.apache.org/proper/commons-cli/)
+   * https://stackoverflow.com/questions/30970729/batch-output-file-without-expanding-variables
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
