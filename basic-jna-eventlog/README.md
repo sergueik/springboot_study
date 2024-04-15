@@ -105,7 +105,7 @@ new-eventLog -logName 'log4jna_sample' -Source 'example.log4jna_sample' -Categor
 * append to the same custom event log  specifying the categorymessagefile and eventmessagefile, source, application, name, id and message
 NOTE: When  run in `cmd` console
 ```cmd
-java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample"  -name "log4jna_sample" -debug
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample" -debug
 ```
 this will echo the options:
 ```text
@@ -119,11 +119,16 @@ n (name): log4jna_sample
 d (debug): null
 null
 ```
-NOTE: the "environment" expansion has taken place
+NOTE: the "environment" expansion has taken place.
+There appears to be no better way to address this underised environment while passing command line options than follows
+```cmd
+set FOO=SYSTEMROOT
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%%FOO%%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample" -debug
+```
 
-* run the same from powershell console
+* alternatively run the same from powershell console
 ```powershell
-java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample"  -name "log4jna_sample" -debug
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123 -resource "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample" -debug
 ```
 this will print
 ```text
@@ -139,7 +144,7 @@ d (debug): null
 
 repeat without the `debug` flag
 ```powershell
-java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample"  -name "log4jna_sample"
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123 -resource "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample"
 ```
 this will log the message. Confirm the message
 ```powershell
@@ -190,38 +195,21 @@ UserName           :
 NOTE: when the arguments are invalid and the program is not run in elevated way -  java  will throw runtime exception:
 ```text
 
-Verified EventMessageFile path C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll
-Verified CategoryMessageFile path C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll
-RegisterEventSource: EventMessageFile: "C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll", 
-CategoryMessageFile: "C:\developer\sergueik\springboot_study\basic-jna-eventlog\src\main\resources\Win32EventLogAppender.dll"
-```
-
-```text
-Check if CurrentUser is Admin
-group: None 
-group: Everyone
-group: Local account and member of Administrators group
-group: HelpLibraryUpdaters
-group: HomeUsers
-group: Administrators
-Current User Is Admin
-Exception in thread "main" java.lang.RuntimeException: Could not register event
-source: Access is denied.
-        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:136)
-        at example.Win32EventLogAppender.append(Win32EventLogAppender.java:146)
-        at example.Win32EventLogAppender.append(Win32EventLogAppender.java:167)
-        at example.App.main(App.java:29)
+Exception in thread "main" java.lang.RuntimeException: Could not register event source: Access is denied.
+        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:145)
+        at example.Win32EventLogAppender.append(Win32EventLogAppender.java:155)
+        at example.Win32EventLogAppender.append(Win32EventLogAppender.java:175)
+        at example.App.main(App.java:87)
 Caused by: com.sun.jna.platform.win32.Win32Exception: Access is denied.
-        at com.sun.jna.platform.win32.Advapi32Util.registrySetStringValue(Advapi32Util.java:1557)
-        at com.sun.jna.platform.win32.Advapi32Util.registrySetStringValue(Advapi32Util.java:1533)
-        at example.Win32EventLogAppender.setVariableKeys(Win32EventLogAppender.java:230)
-        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:182)
-        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:131)
+        at com.sun.jna.platform.win32.Advapi32Util.registryCreateKey(Advapi32Util.java:1282)
+        at com.sun.jna.platform.win32.Advapi32Util.registryCreateKey(Advapi32Util.java:1260)
+        at example.Win32EventLogAppender.createAndSetAllKeys(Win32EventLogAppender.java:207)
+        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:191)
+        at example.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:142)
         ... 3 more
-
 ```
 
-because the logger will attempt to install the event source, which is privileged operation on Windows
+because the logger will attempt to install the event source, which is a privileged operation on Windows
 
 ### Note
 
@@ -1102,6 +1090,9 @@ keywords:
    * http://blogs.msdn.com/b/virtual_pc_guy/archive/2010/09/23/a-self-elevating-powershell-script.aspx
    * https://stackoverflow.com/questions/7985755/how-to-detect-if-cmd-is-running-as-administrator-has-elevated-privileges
    * https://stackoverflow.com/questions/1894967/how-to-request-administrator-access-inside-a-batch-file
+   * [Apache Commons CLI](https://commons.apache.org/proper/commons-cli/)
+   * https://stackoverflow.com/questions/30970729/batch-output-file-without-expanding-variables
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
