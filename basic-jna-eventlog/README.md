@@ -12,10 +12,10 @@ mvn clean package
 
 #### Log to Application Event Log:
 
-```sh
-java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug"
+enter the command in non-elevated powershell console
+```powershell
+java -jar target\example.jna_eventlog.jar -message "the quick brown box jumps over the lazy fog" -id 1000 -resource "%SystemRoot%\System32\wer.dll" -application "Application" -source "Application Error" -name "EventLog"
 ```
-
 
 * review Event Log entries
 
@@ -28,10 +28,11 @@ get-eventlog -logname Application -source 'Application Error' -newest 1 |format-
 ```
 reveals
 ```text
-Index              : 100331
+Index              : 93993
 EntryType          : Information
 InstanceId         : 1000
-Message            : Faulting application name: the quick brown fox lamps over the dozy jug, version: %2, time stamp: 0x%3
+Message            : Faulting application name: the quick brown box jumps over
+                     the lazy fog, version: %2, time stamp: 0x%3
                      Faulting module name: %4, version: %5, time stamp: 0x%6
                      Exception code: 0x%7
                      Fault offset: 0x%8
@@ -42,14 +43,11 @@ Message            : Faulting application name: the quick brown fox lamps over t
                      Report Id: %13
 Category           : (3)
 CategoryNumber     : 3
-ReplacementStrings : {the quick brown fox lamps over the dozy jug}
+ReplacementStrings : {the quick brown box jumps over the lazy fog}
 Source             : Application Error
-TimeGenerated      : 4/14/2024 10:41:43 AM
-TimeWritten        : 4/14/2024 10:41:43 AM
+TimeGenerated      : 4/15/2024 12:11:00 PM
+TimeWritten        : 4/15/2024 12:11:00 PM
 UserName           :
-
-
-
 
 ```
 
@@ -58,10 +56,10 @@ alternatively (NOTE, due to lack of query conditon need to run the following ver
 wevtutil.exe query-events Application /rd:true /f:text /c:10
 ```
 ```text
-Event[2]:
+Event[0]:
   Log Name: Application
   Source: Application Error
-  Date: 2024-04-14T10:40:31.000
+  Date: 2024-04-15T12:11:00.000
   Event ID: 1000
   Task: N/A
   Level: Information
@@ -71,8 +69,7 @@ Event[2]:
   User Name: N/A
   Computer: sergueik42
   Description:
-Faulting application name: the quick brown fox lamps over the dozy jug, version:
- %2, time stamp: 0x%3
+Faulting application name: the quick brown box jumps over the lazy fog, version: %2, time stamp: 0x%3
 Faulting module name: %4, version: %5, time stamp: 0x%6
 Exception code: 0x%7
 Fault offset: 0x%8
@@ -81,7 +78,6 @@ Faulting application start time: 0x%10
 Faulting application path: %11
 Faulting module path: %12
 Report Id: %13
-
 ```
 
 #### Using Custom Event Log with Arbitrary id
