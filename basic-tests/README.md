@@ -51,6 +51,73 @@ $ curl -s -X POST http://localhost:8085/typed/map -d '{"name": "name", "status":
 "{\"name\":\"name\",\"status\":\"false\"}"
 
 
+### Status Code Tests
+
+* the `/basic/statuscode` endpoint can be used to stub legacy application failing with specific HTTP statuses:
+
+```sh
+curl -Is http://localhost:8085/basic/statuscode?code=404
+```
+```text
+HTTP/1.1 404 
+Content-Length: 0
+Date: Wed, 17 Apr 2024 17:54:15 GMT
+```
+```sh
+curl -Is http://localhost:8085/basic/statuscode?code=403
+```
+```text
+HTTP/1.1 403 
+Content-Length: 0
+Date: Wed, 17 Apr 2024 17:54:17 GMT
+```
+```sh
+curl -Is http://localhost:8085/basic/statuscode?code=503
+```
+```text
+HTTP/1.1 503 
+Content-Length: 0
+Date: Wed, 17 Apr 2024 18:54:22 GMT
+Connection: close
+```
+NOTE: for non-standard values of `code` it will produce a status `500`
+```sh
+curl -Is http://localhost:8085/basic/statuscode?code=999
+```
+
+```text
+HTTP/1.1 500 
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 17 Apr 2024 17:54:21 GMT
+Connection: close
+```
+with server logs containing the exception:
+```text
+java.lang.IllegalArgumentException: No matching constant for [999]
+	at org.springframework.http.HttpStatus.valueOf(HttpStatus.java:538)
+```
+```
+NOTE: omitting the `code` query parameter argument
+
+```sh
+curl -Is http://localhost:8085/basic/statuscode
+```
+is leading to status `400` (Bad Request)
+```text
+HTTP/1.1 400 
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Wed, 17 Apr 2024 18:08:31 GMT
+Connection: close
+
+```
+with server side log:
+```text
+org.springframework.web.bind.MissingServletRequestParameterException: 
+Required int parameter 'code' is not present
+```
+
 ### See Also
 
   * https://reflectoring.io/unit-testing-spring-boot/
