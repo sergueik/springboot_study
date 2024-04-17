@@ -917,6 +917,7 @@ Date: Wed, 30 Aug 2023 22:50:57 GMT
 Server: Apache/2.4.46 (Unix)
 Content-Type: application/json
 ```
+to see the returned page, remove `I` option
 ```sh
 curl -s http://192.168.99.101:9090/cgi-bin/statuscode.cgi
 ```
@@ -927,6 +928,7 @@ curl -s http://192.168.99.101:9090/cgi-bin/statuscode.cgi
    "remote_addr" : "192.168.99.1"
 	}
 ```
+to make the back end return specific status code, pass the needed statuc code value via `code` request argument 
 ```sh
 curl -sI http://192.168.99.101:9090/cgi-bin/statuscode.cgi?code=304
 ```
@@ -944,12 +946,38 @@ Date: Wed, 30 Aug 2023 22:52:53 GMT
 Server: Apache/2.4.46 (Unix)
 ```
 
-NOTE: no `"result"` is returned when a error code is requested, ony the `"status"`:
+NOTE: no `"result"` is returned when a error code is requested in the payload, ony the `"status"`:
 ```JSON
 {
    "status" : "error"
 }
 ```
+NOTE: in the standard protocol, no response body is required with status code `208` and `304`.
+
+* all regular status code are returned as requested:
+```sh
+curl -sIX GET http://localhost:9090/cgi-bin/statuscode.cgi?code=404
+```
+```text
+HTTP/1.1 404 Not Found
+Date: Wed, 17 Apr 2024 16:50:31 GMT
+Server: Apache/2.4.46 (Unix)
+Content-Length: 45
+Access-Control-Allow-Origin: *
+Content-Type: text/html;charset=UTF-8
+```
+```sh
+curl -sIX GET http://localhost:9090/cgi-bin/statuscode.cgi?code=401
+```
+```text
+HTTP/1.1 401 Unauthorized
+Date: Wed, 17 Apr 2024 16:51:04 GMT
+Server: Apache/2.4.46 (Unix)
+Content-Length: 45
+Access-Control-Allow-Origin: *
+Content-Type: text/html;charset=UTF-8
+```
+
 
 NOTE: currently non standard `code` arguments is returned as `406` through `$cgi->error_handler` that is defined to return the error and status:
 ```sh
