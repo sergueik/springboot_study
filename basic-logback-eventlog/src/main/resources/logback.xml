@@ -2,6 +2,9 @@
 <configuration>
 	<appender name="eventlog" class="example.EventLogAppender">
 		<resource>%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</resource>
+		<id>42</id>
+		<source>example.log4jna_sample</source>
+		<application>log4jna_sample</application>
 		<encoder>
 			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
 			</pattern>

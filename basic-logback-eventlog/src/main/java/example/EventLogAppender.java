@@ -12,11 +12,18 @@ import ch.qos.logback.core.encoder.Encoder;
 public class EventLogAppender extends AppenderBase<ILoggingEvent> {
 
 	private String resource;
+	private int id;
+	private String application;
+	private String source = "example.log4jna_sample";
 	private Encoder encoder;
 
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void append(final ILoggingEvent event) {
+		if (resource == null || "".equals(resource)) {
+			addError("Resource is not set for EventLogAppender.");
+			return;
+		}
 		if (resource == null || "".equals(resource)) {
 			addError("Resource is not set for EventLogAppender.");
 			return;
@@ -31,14 +38,10 @@ public class EventLogAppender extends AppenderBase<ILoggingEvent> {
 		}
 		System.err.println("DEBUG: appending event message: " + message);
 
-		String name = "EventLog";
-
 		final String server = "."; // guess
-		final String source = "example.log4jna_sample";
-		final String application = "log4jna_sample";
-		final String eventMessageFile = resource ; // "%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll";
+		final String eventMessageFile = resource; // "%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll";
 		final String categoryMessageFile = resource; // "%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll";
-		Win32EventLogAppender appender = Win32EventLogAppender.createAppender(name, server, source, application,
+		Win32EventLogAppender appender = Win32EventLogAppender.createAppender(id, server, source, application,
 				eventMessageFile, categoryMessageFile);
 		appender.append(message);
 
@@ -50,6 +53,30 @@ public class EventLogAppender extends AppenderBase<ILoggingEvent> {
 
 	public void setResource(String value) {
 		resource = value;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String value) {
+		source = value;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int value) {
+		id = value;
+	}
+
+	public String getApplication() {
+		return application;
+	}
+
+	public void setApplication(String value) {
+		application = value;
 	}
 
 	public void setEncoder(Encoder encoder) {

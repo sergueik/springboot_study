@@ -109,6 +109,10 @@ log4jna_sample                 EventMessageFile    : C:\Windows\Microsoft.NET\Fr
 ```XML
 <configuration>
 	<appender name="eventlog" class="example.EventLogAppender">
+		<id>42</id>
+		<source>example.log4jna_sample</source>
+		<application>log4jna_sample</application>
+
 		<resource>%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</resource>
 		<encoder>
 			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>

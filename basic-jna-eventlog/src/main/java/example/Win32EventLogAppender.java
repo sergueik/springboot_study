@@ -32,7 +32,6 @@ public class Win32EventLogAppender {
 	// final int messageID = 1000 ;
 	// final int messageID = 0x1000; // 4096
 
-	private boolean isAdmin = false;
 	private String _source = null;
 	private int messageID = MESSAGE_ID;
 	private String _server = null;
@@ -235,7 +234,7 @@ public class Win32EventLogAppender {
 		}
 	}
 
-	public static String resolveEnvVars(String input) {
+	private static String resolveEnvVars(String input) {
 		if (null == input) {
 			return null;
 		}
