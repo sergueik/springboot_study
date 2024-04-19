@@ -11,9 +11,9 @@ import ch.qos.logback.core.encoder.Encoder;
 
 public class EventLogAppender extends AppenderBase<ILoggingEvent> {
 
-	private String resource;
-	private int id;
-	private String application;
+	private String resource = "%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll";
+	private int id = 42;
+	private String application = "log4jna_sample";
 	private String source = "example.log4jna_sample";
 	private Encoder encoder;
 
@@ -36,11 +36,16 @@ public class EventLogAppender extends AppenderBase<ILoggingEvent> {
 		} catch (UnsupportedEncodingException e) {
 			addError(e.toString());
 		}
-		System.err.println("DEBUG: appending event message: " + message);
 
-		final String server = "."; // guess
-		final String eventMessageFile = resource; // "%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll";
-		final String categoryMessageFile = resource; // "%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll";
+		final String server = ".";
+		final String eventMessageFile = resource;
+		final String categoryMessageFile = resource;
+		System.err.println(String.format(
+				"DEBUG: appending event:\n" + "\n" + "message: \"%s\"" + "\n" + "id: %d" + "\n" + "server: \"%s\""
+						+ "\n" + "application: \"%s\"" + "\n" + "source: \"%s\"" + "\n" + "eventMessageFile: \"%s\""
+						+ "\n" + "categoryMessageFile: \"%s\"",
+				message, id, server, source, application, eventMessageFile, categoryMessageFile));
+
 		Win32EventLogAppender appender = Win32EventLogAppender.createAppender(id, server, source, application,
 				eventMessageFile, categoryMessageFile);
 		appender.append(message);

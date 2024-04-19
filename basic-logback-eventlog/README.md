@@ -365,6 +365,75 @@ update the `logback.xml` with
 observe the log will silently not be written. Similar attempt through `jna-eventlog` leads to exception
 Fixing this is a work in progress
 
+### Logging to Application Event Log
+
+```XML
+	<appender name="eventlog" class="example.EventLogAppender">
+		<resource>%SystemRoot%\System32\wer.dll</resource>
+		<id>1000</id>
+		<source>Application Error</source>
+		<application>Application</application>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+```
+```cmd
+java -cp target\example.logback-eventlog.jar;target\lib\* example.App the quick brown fox jumps over the lazy frog
+```
+```text
+08:25:05.045 [main] ERROR example.App - message: the quick brown fox jumps over the lazy frog
+DEBUG: appending event:
+
+message: "08:25:05.045 [main] ERROR example.App - message: the quick brown fox jumps over the lazy frog"
+id: 1000
+server: "."
+application: "Application Error"
+source: "Application"
+eventMessageFile: "%SystemRoot%\System32\wer.dll"
+categoryMessageFile: "%SystemRoot%\System32\wer.dll"
+
+Apppending message(1): 08:25:05.045 [main] ERROR example.App - message: the quick brown fox jumps over the lazy frog eventLogType: 4 category:3
+registerEventSource(1) applicationKeyPath: SYSTEM\CurrentControlSet\Services\EventLog\Application eventSourceKeyPath: SYSTEM\CurrentControlSet\Services\EventLog\Application\Application Error
+registerEventSource(2)
+registerEventSource(3)
+registerEventSource(4)
+registerEventSource(5)
+Reported Event: 08:25:05.733 [main] ERROR example.App - message: the quick brown fox jumps over the lazy frog
+
+```
+```powershell
+get-eventlog -source "application error" -logname application -newest 1 |format-list
+```
+```text
+Index              : 94060
+EntryType          : Information
+InstanceId         : 1000
+Message            : Faulting application name: 08:25:05.733 [main] WARN
+                     example.App - message: the quick brown fox jumps over the
+                     lazy frog
+                     , version: %2, time stamp: 0x%3
+                     Faulting module name: %4, version: %5, time stamp: 0x%6
+                     Exception code: 0x%7
+                     Fault offset: 0x%8
+                     Faulting process id: 0x%9
+                     Faulting application start time: 0x%10
+                     Faulting application path: %11
+                     Faulting module path: %12
+                     Report Id: %13
+Category           : (3)
+CategoryNumber     : 3
+ReplacementStrings : {08:25:05.733 [main] WARN  example.App - message: the
+                     quick brown fox jumps over the lazy frog
+                     }
+Source             : Application Error
+TimeGenerated      : 4/19/2024 8:25:05 AM
+TimeWritten        : 4/19/2024 8:25:05 AM
+UserName           :
+
+```
 ### See Also
 
   * https://www.baeldung.com/logback
@@ -377,8 +446,5 @@ Fixing this is a work in progress
   * https://dennis-xlc.gitbooks.io/the-logback-manual/content/en/chapter-3-configuration/configuration-file-syntax/variable-substitution.html
 
 ### Author
+
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
-
-
-
