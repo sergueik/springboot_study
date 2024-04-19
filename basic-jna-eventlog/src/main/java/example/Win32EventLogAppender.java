@@ -41,13 +41,13 @@ public class Win32EventLogAppender {
 
 	private HANDLE _handle = null;
 
-	public static Win32EventLogAppender createAppender(int messageID, String name, String server, String source,
+	public static Win32EventLogAppender createAppender(int messageID, String server, String source,
 			String application, String eventMessageFile, String categoryMessageFile) {
-		return new Win32EventLogAppender(messageID, name, server, source, application, eventMessageFile,
+		return new Win32EventLogAppender(messageID, server, source, application, eventMessageFile,
 				categoryMessageFile);
 	}
 
-	public Win32EventLogAppender(int messageID, String name, String server, String source, String application,
+	public Win32EventLogAppender(int messageID, String server, String source, String application,
 			String eventMessageFile, String categoryMessageFile) {
 
 		this.messageID = messageID;
