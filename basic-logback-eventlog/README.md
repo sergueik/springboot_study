@@ -147,6 +147,7 @@ the conditional logic part is optional
 ```
 * build the application jar
 ```cmd
+cd plain
 mvn clean package
 ```
 
@@ -243,6 +244,52 @@ Event[1]:
   Description: 08:31:26.748 [main] ERROR example.App - message: the quick brown fox jumps over the dazy log
 
 ```
+
+for Spring, can do
+```cmd
+cd  spring
+mvn spring-boot:run
+```
+
+
+and interact with app:
+```cmd
+curl -s  127.0.0.1:8080/example?data=123
+```
+this will log to curl console
+```text
+request processed: 123
+```
+to spring console
+```text
+
+Apppending message(3) (success): 15:54:08.482 [http-nio-8080-exec-4] WARN  example.LogHelper - request processed: 123 eventLogType: 4 category:3
+Reported Event: 15:54:08.482 [http-nio-8080-exec-4] WARN  example.LogHelper - request processed: 123
+
+
+```
+
+to event log:
+```
+Index              : 116
+EntryType          : Information
+InstanceId         : 42
+Message            : 15:54:08.466 [http-nio-8080-exec-4] INFO
+                     example.LogHelper - request processed: 123
+
+Category           : %1
+CategoryNumber     : 3
+ReplacementStrings : {15:54:08.466 [http-nio-8080-exec-4] INFO
+                     example.LogHelper - request processed: 123
+                     }
+Source             : example.log4jna_sample
+TimeGenerated      : 4/19/2024 3:54:08 PM
+TimeWritten        : 4/19/2024 3:54:08 PM
+UserName           :
+
+```
+![Event log Config Before](https://github.com/sergueik/springboot_study/blob/master/basic-logback-eventlog/screenshots/capture-spring-eventlog.png)
+
 ### Cleanup
 ```cmd
 wevtutil.exe clear-log log4jna_sample
