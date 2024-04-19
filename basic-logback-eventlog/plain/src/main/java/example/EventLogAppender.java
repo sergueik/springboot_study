@@ -1,5 +1,7 @@
 package example;
-
+/**
+ * Copyright 2024 Serguei Kouzmine
+ */
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 
@@ -40,12 +42,13 @@ public class EventLogAppender extends AppenderBase<ILoggingEvent> {
 		final String server = ".";
 		final String eventMessageFile = resource;
 		final String categoryMessageFile = resource;
+		/*
 		System.err.println(String.format(
 				"DEBUG: appending event:\n" + "\n" + "message: \"%s\"" + "\n" + "id: %d" + "\n" + "server: \"%s\""
 						+ "\n" + "application: \"%s\"" + "\n" + "source: \"%s\"" + "\n" + "eventMessageFile: \"%s\""
 						+ "\n" + "categoryMessageFile: \"%s\"",
 				message, id, server, source, application, eventMessageFile, categoryMessageFile));
-
+        */
 		Win32EventLogAppender appender = Win32EventLogAppender.createAppender(id, server, source, application,
 				eventMessageFile, categoryMessageFile);
 		appender.append(message);
