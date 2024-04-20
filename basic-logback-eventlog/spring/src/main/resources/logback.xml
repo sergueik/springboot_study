@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+  <include resource="/org/springframework/boot/logging/logback/defaults.xml"/>
+  <property name="SUFFIX" value="default"/>
+  <springProfile name="development">
+    <property name="SUFFIX" value="dev"/>
+  </springProfile>
+  <springProfile name="test">
+    <property name="SUFFIX" value="test"/>
+  </springProfile>
+  <!--  TODO: explore NTEventLogAppender -->
+  <!-- NOTE: cannot redefine property -->
+  <springProperty name="LOGGING_SUFFIX" source="logging.suffix"/>
+  <!--  ERROR in org.springframework.boot.logging.logback.SpringPropertyAction -
+  The "name" and "source" attributes of <springProperty> must be set  -->
+  <!-- follow the propery file naming nconvention -->
+  <variable name="BASEDIR" value="${BASEDIR:-.}"/>
+  <!-- https://www.cloudesire.com/configure-logback-log-level-via-environment-variables/ -->
+  <property name="FILENAME" value="App-SUFFIX-${SUFFIX}"/>
+  <property name="DIR" value="${BASEDIR}/logs"/>
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- can use ${APP_HOME} -->
+    <file>${DIR}/${FILENAME}.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${DIR}/${FILENAME}-LOGGING_SUFFIX-${LOGGING_SUFFIX}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <maxFileSize>3KB</maxFileSize>
+      <totalSizeCap>10KB</totalSizeCap>
+      <maxHistory>1</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+    </encoder>
+  </appender>
+  <appender name="EVENTLOG" class="example.EventLogAppender">
+    <resource>%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</resource>
+    <id>42</id>
+    <source>example.log4jna_sample</source>
+    <application>log4jna_sample</application>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+    </encoder>
+  </appender>
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+    </encoder>
+  </appender>
+  <root level="INFO">
+    <appender-ref ref="FILE"/>
+    <appender-ref ref="CONSOLE"/>
+    <appender-ref ref="EVENTLOG"/>
+  </root>
+</configuration>

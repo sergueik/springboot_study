@@ -1,5 +1,9 @@
 package example;
 
+/**
+ * Copyright 2023,2024 Serguei Kouzmine
+ */
+
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,8 +28,10 @@ public class Win32EventLogAppender {
 	private static final int TYPES_SUPPORTED = 7;
 	private static final String DEFAULT_SOURCE = "Log4jna";
 	private static final String DEFAULT_APPLICATION = "Application";
+	private static final int MESSAGE_ID = 1000;
 
 	private String _source = null;
+	private int messageID = MESSAGE_ID;
 	private String _server = null;
 	private String _application = DEFAULT_APPLICATION;
 	private String _eventMessageFile = "";
@@ -33,22 +39,20 @@ public class Win32EventLogAppender {
 
 	private HANDLE _handle = null;
 
-	public static Win32EventLogAppender createAppender(String name, String server, String source, String application,
+	public static Win32EventLogAppender createAppender(int messageID, String server, String source, String application,
 			String eventMessageFile, String categoryMessageFile) {
-		return new Win32EventLogAppender(name, server, source, application, eventMessageFile, categoryMessageFile);
+		return new Win32EventLogAppender(messageID, server, source, application, eventMessageFile, categoryMessageFile);
 	}
 
-	public Win32EventLogAppender(String name, String server, String source, String application, String eventMessageFile,
-			String categoryMessageFile) {
-
+	public Win32EventLogAppender(int messageID, String server, String source, String application,
+			String eventMessageFile, String categoryMessageFile) {
+		this.messageID = messageID;
 		if (eventMessageFile != null) {
 			String pathExpanded = resolveEnvVars(eventMessageFile);
 
 			Path p = Paths.get(pathExpanded);
 
 			if (Files.exists(p)) {
-				System.err.println(
-						"Verified EventMessageFile path " + p.toAbsolutePath().toString());
 				if (p.isAbsolute())
 					setEventMessageFile(eventMessageFile);
 				else
@@ -60,8 +64,6 @@ public class Win32EventLogAppender {
 			String pathExpanded = resolveEnvVars(categoryMessageFile);
 			Path p = Paths.get(pathExpanded);
 			if (Files.exists(p)) {
-				System.err.println(
-						"Verified CategoryMessageFile path " + p.toAbsolutePath().toString());
 				if (p.isAbsolute())
 					setCategoryMessageFile(categoryMessageFile);
 				else
@@ -134,7 +136,7 @@ public class Win32EventLogAppender {
 			_handle = registerEventSource(_server, _source, _application, _eventMessageFile, _categoryMessageFile);
 		} catch (Exception e) {
 			close();
-			throw new RuntimeException("Could not register event source.", e);
+			throw new RuntimeException("Could not register event source: " + e.getMessage(), e);
 		}
 	}
 
@@ -143,18 +145,39 @@ public class Win32EventLogAppender {
 	}
 
 	public void append(String message, int eventLogType, int category) {
+		/*
+		  System.err.println(
+				"Apppending message(1): " + message + " eventLogType: " + eventLogType + " category:" + category);
+		*/
 		if (_handle == null) {
 			registerEventSource();
 		}
-
-		final int messageID = 0x1000;
-
+		/*
+		System.err.println(
+				"Apppending message(2): " + message + " eventLogType: " + eventLogType + " category:" + category);
+		*/
 		String[] buffer = { message };
 		// https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-reporteventa
+		// NOTE the age: Minimum supported client Windows 2000 Professional
+		// Minimum supported server Windows 2000 Server
+		// https://www.pinvoke.net/search.aspx?search=ReportEvent
+		// https://github.com/java-native-access/jna/blob/master/contrib/platform/src/com/sun/jna/platform/win32/Advapi32.java#L1650
 		if (Advapi32.INSTANCE.ReportEvent(_handle, eventLogType, category, messageID, null, buffer.length, 0, buffer,
 				null) == false) {
+			/*
+				System.err.println("Apppending message(3) (error): " + message + " eventLogType: " + eventLogType
+					+ " category:" + category);
+			*/
 			Exception e = new Win32Exception(Kernel32.INSTANCE.GetLastError());
-			System.err.println("Failed to report event [" + message + "]." + e.toString());
+			/*
+				System.err.println("Failed to report event [" + message + "]." + e.toString());
+			*/
+		} else {
+			/*
+				System.err.println("Apppending message(3) (success): " + message + " eventLogType: " + eventLogType
+						+ " category:" + category);
+				System.err.println("Reported Event: " + message);
+			*/
 		}
 
 	}
@@ -171,8 +194,24 @@ public class Win32EventLogAppender {
 			String categoryMessageFile) {
 		String applicationKeyPath = EVENT_LOG_PATH + application;
 		String eventSourceKeyPath = applicationKeyPath + "\\" + source;
+		/*
+
+			System.err.println(String.format("registerEventSource(1) applicationKeyPath: %s eventSourceKeyPath: %s",
+					applicationKeyPath, eventSourceKeyPath));
+		*/
+
+		// https://github.com/java-native-access/jna/blob/master/contrib/platform/src/com/sun/jna/platform/win32/Advapi32Util.java#L623
 		if (Advapi32Util.registryKeyExists(WinReg.HKEY_LOCAL_MACHINE, applicationKeyPath)) {
+			/*
+				System.err.println("registerEventSource(2)");
+			*/
+
+
 			if (Advapi32Util.registryKeyExists(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath)) {
+				/*
+					System.err.println("registerEventSource(3)");
+				*/
+
 				setVariableKeys(eventMessageFile, categoryMessageFile, eventSourceKeyPath);
 			} else {
 				createAndSetAllKeys(eventMessageFile, categoryMessageFile, eventSourceKeyPath);
@@ -180,13 +219,17 @@ public class Win32EventLogAppender {
 		} else {
 			createAndSetAllKeys(eventMessageFile, categoryMessageFile, eventSourceKeyPath);
 		}
-
+		/*
+			System.err.println("registerEventSource(4)");
+		*/
 		// https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-deregistereventsource
 		HANDLE h = Advapi32.INSTANCE.RegisterEventSource(server, source);
 		if (h == null) {
 			throw new Win32Exception(Kernel32.INSTANCE.GetLastError());
 		}
-
+		/* 
+			System.err.println("registerEventSource(5)");
+		*/
 		return h;
 	}
 
@@ -201,19 +244,37 @@ public class Win32EventLogAppender {
 	}
 
 	private void setVariableKeys(String eventMessageFile, String categoryMessageFile, String eventSourceKeyPath) {
+		// https://github.com/java-native-access/jna/blob/master/contrib/platform/src/com/sun/jna/platform/win32/Advapi32Util.java#L667
+		// NOTE: "Application" has CATEGORY_MESSAGE_FILE but no
+		// EVENT_MESSAGE_FILE
 		if (!Advapi32Util.registryValueExists(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, EVENT_MESSAGE_FILE)
 				|| !Advapi32Util
 						.registryGetStringValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, EVENT_MESSAGE_FILE)
 						.equalsIgnoreCase(eventMessageFile)) {
-			Advapi32Util.registrySetStringValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, EVENT_MESSAGE_FILE,
-					eventMessageFile);
+			/*
+				System.err.println("setVariableKeys - optionally skip creating eventMessageFile");
+			*/
+			// optionally skip creating one eventMessageFile
+			// Advapi32Util.registrySetStringValue(WinReg.HKEY_LOCAL_MACHINE,
+			// eventSourceKeyPath, EVENT_MESSAGE_FILE, eventMessageFile);
 		}
 		if (!Advapi32Util.registryValueExists(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, CATEGORY_MESSAGE_FILE)
 				|| !Advapi32Util
 						.registryGetStringValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, CATEGORY_MESSAGE_FILE)
 						.equalsIgnoreCase(categoryMessageFile)) {
+			boolean t = Advapi32Util.registryValueExists(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath,
+					CATEGORY_MESSAGE_FILE);
+			String s = Advapi32Util.registryGetStringValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath,
+					CATEGORY_MESSAGE_FILE);
+			/*
+				System.err.println(String.format("setVariableKeys - create categoryMessageFile %s t %s s %s",
+					categoryMessageFile, t, s));
+			*/
 			Advapi32Util.registrySetStringValue(WinReg.HKEY_LOCAL_MACHINE, eventSourceKeyPath, CATEGORY_MESSAGE_FILE,
 					categoryMessageFile);
+			/*
+				System.err.println("setVariableKeys(2)");
+			*/
 		}
 	}
 
@@ -227,12 +288,10 @@ public class Win32EventLogAppender {
 		while (m.find()) {
 			String envVarName = m.group(1);
 			String envVarValue = System.getenv(envVarName);
-			m.appendReplacement(sb,
-					null == envVarValue ? "" : envVarValue.replace("\\", "\\\\"));
+			m.appendReplacement(sb, null == envVarValue ? "" : envVarValue.replace("\\", "\\\\"));
 		}
 		m.appendTail(sb);
 		return sb.toString();
 	}
-
 
 }

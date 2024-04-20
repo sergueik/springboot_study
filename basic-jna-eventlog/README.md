@@ -14,7 +14,7 @@ mvn clean package
 
 enter the command in non-elevated powershell console
 ```powershell
-java -jar target\example.jna_eventlog.jar -message "the quick brown box jumps over the lazy fog" -id 1000 -resource "%SystemRoot%\System32\wer.dll" -application "Application" -source "Application Error" -name "EventLog"
+java -jar target\example.jna_eventlog.jar -message "the quick brown box jumps over the lazy fog" -id 1000 -resource "%SystemRoot%\System32\wer.dll" -application "Application" -source "Application Error"
 ```
 
 * review Event Log entries
@@ -101,7 +101,7 @@ new-eventLog -logName 'log4jna_sample' -Source 'example.log4jna_sample' -Categor
 * append to the same custom event log  specifying the categorymessagefile and eventmessagefile, source, application, name, id and message
 NOTE: When  run in `cmd` console
 ```cmd
-java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample" -debug
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -debug
 ```
 this will echo the options:
 ```text
@@ -119,12 +119,12 @@ NOTE: the "environment" expansion has taken place.
 There appears to be no better way to address this underised environment while passing command line options than follows
 ```cmd
 set FOO=SYSTEMROOT
-java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%%FOO%%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample" -debug
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123  -r "%%FOO%%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -debug
 ```
 
 * alternatively run the same from powershell console
 ```powershell
-java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123 -resource "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample" -debug
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123 -resource "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -debug
 ```
 this will print
 ```text
@@ -140,7 +140,7 @@ d (debug): null
 
 repeat without the `debug` flag
 ```powershell
-java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123 -resource "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample"
+java -jar target\example.jna_eventlog.jar -message "the quick brown fox lamps over the dozy jug" -id 123 -resource "%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample"
 ```
 this will log the message. Confirm the message
 ```powershell
@@ -167,7 +167,7 @@ new-eventLog -logName log4jna_sample -Source 'example.log4jna_sample' -CategoryR
 and use the same in `resource` argument:
 
 ```cmd
-java -jar target\example.jna_eventlog.jar -message "the quick lawn box lamps over the dazy jug" -id 123  -r "C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample" -name "log4jna_sample"
+java -jar target\example.jna_eventlog.jar -message "the quick lawn box lamps over the dazy jug" -id 123  -r "C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll" -application "log4jna_sample" -source "example.log4jna_sample"
 ```
 ```powershell
 get-eventlog -logname log4jna_sample -newest 1 |format-list
@@ -231,7 +231,6 @@ Microsoft-Windows-Application-Experience/Program-Telemetry
 wevtutil.exe get-log Application
 ```
 ```text
-name: Application
 enabled: true
 type: Admin
 owningPublisher:
@@ -981,6 +980,8 @@ SomeApplication
 ```
 ```cmd
 wevtutil.exe get-publisher Application
+```
+```text
 name: Application
 guid: 00000000-0000-0000-0000-000000000000
 helpLink:
@@ -1040,6 +1041,8 @@ keywords:
 ```
 ```cmd
 wevtutil.exe get-publisher "Application Error"
+```
+```text
 name: Application Error
 guid: 00000000-0000-0000-0000-000000000000
 helpLink: http://go.microsoft.com/fwlink/events.asp?CoName=Microsoft%20Corporation&ProdName=Microsoft%c2%ae%20Windows%c2%ae%20Operating%20System&ProdVer=6.1.7600.16385&FileName=wer.dll&FileVer=6.1.7600.16385

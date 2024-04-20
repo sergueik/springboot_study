@@ -18,7 +18,6 @@ public class App {
 	private static CommandLine commandLine = null;
 	public static final int INVALID_OPTION = 42;
 
-	static String name = "EventLog";
 	static String server = ".";
 	static String source = "example.log4jna_sample";
 	// "Application Error";
@@ -35,7 +34,6 @@ public class App {
 
 		options.addOption("h", "help", false, "Help");
 		options.addOption("d", "debug", false, "Debug");
-		options.addOption("n", "name", true, "Name");
 		options.addOption("a", "application", true, "Event Log Application");
 		options.addOption("s", "source", true, "Event Log Source");
 		options.addOption("i", "id", true, "Event Log Id");
@@ -59,10 +57,6 @@ public class App {
 				source = commandLine.getOptionValue("source");
 			}
 
-			if (commandLine.hasOption("name")) {
-				name = commandLine.getOptionValue("name");
-			}
-
 			if (commandLine.hasOption("message")) {
 				message = commandLine.getOptionValue("message");
 			}
@@ -82,7 +76,7 @@ public class App {
 			System.err.println("Exception parsing command line: " + e.toString());
 			System.exit(INVALID_OPTION);
 		}
-		Win32EventLogAppender appender = Win32EventLogAppender.createAppender(id, name, server, source, application,
+		Win32EventLogAppender appender = Win32EventLogAppender.createAppender(id, server, source, application,
 				resource, resource);
 		appender.append(message);
 	}
@@ -95,13 +89,12 @@ public class App {
 				+ "-id EVENTID " 
 				+ "-resource \"RESOURCE\" " 
 				+ "-application \"APPLICATION\" " 
-				+ "-source \"EVENT SOURCE\" " 
-				+ "-name \"EVENT LOG NAME\"");
+				+ "-source \"EVENT SOURCE\"");
 		System.err.println("To write to custom Event Source, use the following argument verbatim:\n" 
 				+ "RESOURCE: \"%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll\"\n"
 				+ "and create the custom event log using the above as the CategoryMessageFile and EventMessageFile.");
 		System.err.println("Example Usage:\n" +
-				"java -jar example.jna_eventlog.jar -message \"the quick brown fox jumps over the lazy dog\" -id 12345  -r \"%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll\" -application \"log4jna_sample\" -source \"example.log4jna_sample\"  -name \"log4jna_sample\"");
+				"java -jar example.jna_eventlog.jar -message \"the quick brown fox jumps over the lazy dog\" -id 12345  -r \"%SystemRoot%\\Microsoft.NET\\Framework\\v4.0.30319\\EventLogMessages.dll\" -application \"log4jna_sample\" -source \"example.log4jna_sample\"");
 		// @formatter:on
 		System.exit(1);
 		
