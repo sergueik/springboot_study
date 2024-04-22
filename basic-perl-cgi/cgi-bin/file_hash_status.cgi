@@ -30,24 +30,35 @@ use Digest::MD5 qw(md5_hex);
 use Data::Dumper;
 
 sub checksum_file {
-    my $filename = shift;
+    my $filepath = shift;
     my $hash;
-    {
-        local $/ = undef;
-        open FILE, "$filename";
-        binmode FILE;
-        my $data = <FILE>;
-        close FILE;
-        $hash = md5_hex($data);
+    if ( ! -f $filepath ) {
+        return 0;
     }
-    $hash;
+    else {
+        {
+            local $/ = undef;
+            open FILE, "$filepath";
+            binmode FILE;
+            my $data = <FILE>;
+            close FILE;
+            $hash = md5_hex($data);
+        }
+        return $hash;
+    }
 }
 
 sub check_newer {
     my ( $filepath, $check_epoch ) = @_;
-    my $stat = stat($filepath);
-    return ( $stat->mtime > $check_epoch ) ? 1 : 0;
+    if ( ! -f $filepath ) {
+        return 0;
+    }
+    else {
+        my $stat = stat($filepath);
+        return ( $stat->mtime > $check_epoch ) ? 1 : 0;
+    }
 }
+
 our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
 
 use vars
@@ -155,7 +166,7 @@ cgi {
             # alternative scenario is return failure in the response JSON
             $data->{status} = 'error';
             $data->{result}   = "Config ${inputfile} not found";
-            $cgi->set_response_status(404)
+            $cgi->set_response_status(410)
               ->render( html => $json_pp->encode($data) );
         }
 
