@@ -40,6 +40,23 @@ curl http://localhost:8080/home.html
 ```text
 {"timestamp":1713910195959,"status":404,"error":"Not Found","path":"/home.html"}
 ```
+* NOTE: the broken version is still useful with older releases of Java.
 
+* fixed version
+```sh
+curl http://localhost:8080/home.html
+```
+gives
+```HTML
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        It is home page
+    </body>
+</html>
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
