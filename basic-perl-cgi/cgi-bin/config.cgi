@@ -42,8 +42,13 @@ my $data = {
 
 sub check_newer {
     my ( $filepath, $check_epoch ) = @_;
-    my $stat = stat($filepath);
-    return ( $stat->mtime > $check_epoch ) ? 1 : 0;
+    if ( ! -f $filepath ) {
+        return 0;
+    }
+    else {
+        my $stat = stat($filepath);
+        return ( $stat->mtime > $check_epoch ) ? 1 : 0;
+    }
 }
 our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
 
@@ -79,7 +84,7 @@ $inputfile = $dir . '/' . $inputfile;
 my $check_timestamp = localtime($newer);
 $status = &check_newer( $inputfile, $newer );
 if ($status) {
-    if ($inputfile) {
+    if (-f $inputfile) {
         $content = '';
         open( FH, '<', $inputfile ) or die $!;
         while (<FH>) {
