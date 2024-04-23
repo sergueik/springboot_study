@@ -1,13 +1,14 @@
 ### Info
 
 this directory contains basic __ASP.NET Core 6.0 Serilog__ [project](https://github.com/jernejk/AspNetCoreSerilogExample/) with APM Serilog Enricher [nuget package](https://www.nuget.org/packages/Elastic.Apm.SerilogEnricher) dependency hosted on Docker container based on __ASP.NET Core Runtime__ on __Alpine__ [image](https://hub.docker.com/_/microsoft-dotnet-aspnet) by Microsoft linked with [seq](https://hub.docker.com/r/datalust/seq) container to dump the messages pulled at revision __datalust/seq:2022.1.7378__. 
-Note, __seq__ does not appear tobe available for alpine or stretch, the image size is around 200Mb.
+Note, __seq__ does not appear to be available for alpine or stretch container, the image size is around 200Mb.
 
 ### Usage
 
 * pull the image for `seq-server`
 ```sh
-docker pull datalust/seq:2022.1.7378
+VERSION=2022.1.7378
+docker pull datalust/seq:$VERSION
 ```
 run the `seq-server`
 ```sh
@@ -26,7 +27,7 @@ SEQ_SERVER_NAME=seq-server
 NAME=basic-aspnetcore-serilog-alpine
 docker run --name $NAME --link $SEQ_SERVER_NAME -it -p 8000:80 $IMAGE
 ```
-* or run both linked to `seq-server` host and connected to `basic-elk-cluster_elastic` network - this will make the API call from e.g. `app1` to `basic-elk-cluster_elastic` possible
+* or run both linked to `seq-server` host and connected to `basic-elk-cluster_elastic` network when the latter is present - this will make the API call from e.g. `app1` to `basic-elk-cluster_elastic` possible
 ```
 SEQ_SERVER_NAME=seq-server
 NAME=basic-aspnetcore-serilog-alpine
@@ -41,11 +42,16 @@ docker run --name $NAME --link $SEQ_SERVER_NAME --network $ELK_NETWORK -it -p 80
 ```sh
 curl -s http://localhost:8000/
 ```
+this will log
 ```text
 Hello World!
 Use /api/test/flatlog?input=Test, /api/test/StructuredLog?input=Test, etc. and observe console/Seq for logs.
 ```
-see the logged message in console
+examine seq logs on localhost:
+
+![Seq Events](https://github.com/sergueik/springboot_study/blob/master/basic-aspnetcore-serilog-alpine/screenshots/capture-seq.png)
+
+see the logged message in the console
 
 ```text
 [16:56:02 INF] Now listening on: http://[::]:80
@@ -79,7 +85,7 @@ docker image prune -f
 ```
 ### TODO
 
-  * send aspnetcore app logs directly to Elasticsearch by usiSng the `Serilog.Sinks.ElasticSearch` package and format the message according to __Elastic.CommonSchema__ via `Elastic.CommonSchema.Serilog.EcsTextFormatter` package 
+  * send aspnetcore app logs directly to Elastic Search by using the `Serilog.Sinks.ElasticSearch` package and format the message according to __Elastic.CommonSchema__ via `Elastic.CommonSchema.Serilog.EcsTextFormatter` package 
 
 ### See Also
 

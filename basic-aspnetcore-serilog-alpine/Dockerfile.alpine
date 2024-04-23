@@ -3,12 +3,12 @@ WORKDIR /source
 ARG RID=linux-musl-x64 
 # copy csproj and restore as distinct layers
 COPY *.sln .
-COPY AspNetCoreSerilogExample.Web/*.csproj ./AspNetCoreSerilogExample.Web/
+COPY app/*.csproj ./app/
 RUN dotnet restore -r $RID
 
 # copy everything else and build app
-ADD AspNetCoreSerilogExample.Web/. ./AspNetCoreSerilogExample.Web/
-WORKDIR /source/AspNetCoreSerilogExample.Web
+ADD app/. ./app/
+WORKDIR /source/app
 RUN dotnet publish -c release -o /app -r $RID --self-contained false --no-restore
 
 # final stage/image
@@ -16,4 +16,4 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine-amd64
 WORKDIR /app
 COPY --from=build /app ./
 
-ENTRYPOINT ["./AspNetCoreSerilogExample.Web"]
+ENTRYPOINT ["./app"]

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28922.388
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreSerilogExample.Web", "AspNetCoreSerilogExample.Web\AspNetCoreSerilogExample.Web.csproj", "{BE382D81-8A74-4167-A7AD-C7FE1DD89C72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "app", "app\app.csproj", "{BE382D81-8A74-4167-A7AD-C7FE1DD89C72}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
