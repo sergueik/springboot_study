@@ -4,6 +4,7 @@ Basic Springboot application hosting static page rendered by thymeleaf spring fr
 with unit tests on HTTP status and page content validations (partially working) added
 
 ### Testing
+
 ```sh
 docker pull openjdk:17-alpine
 ```
@@ -12,7 +13,7 @@ docker pull openjdk:17-alpine
 
 ```sh
 DOCKER_IMAGE=alpine-jdk17-maven
-docker build -t $DOCKER_IMAGE -f Dockerfile .
+docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
 docker run --rm -v $(echo $HOME)/maven/.m2:/tmp/maven/.m2 -v .:/app --entrypoint sh -p 8080:8080 -it $DOCKER_IMAGE
 ```
 
@@ -46,7 +47,7 @@ curl http://localhost:8080/home.html
 ```sh
 curl http://localhost:8080/home.html
 ```
-gives
+gives 
 ```HTML
 <!DOCTYPE html>
 <html>
@@ -57,6 +58,16 @@ gives
         It is home page
     </body>
 </html>
+```
+* test locally (checkout the hash `a5c326c9db97d6852b7d61798afdfceae1269b02` to restore the older version)
+```sh
+git checkout a5c326c9db97d6852b7d61798afdfceae1269b02
+```
+```sh
+mvn -f pom.JAVA11.xml spring-boot:run
+```
+```sh
+curl http://localhost:8080/home.html
 ```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
