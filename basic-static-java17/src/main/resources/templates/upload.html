@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>Spring Boot File Upload / Download Rest API Example</title>
+  <meta charset="utf-8" />
+  <style type="text/css">
+  table tr th, td {
+    text-transform: capitalize;
+    text-align: center;
+  }
+  .hidden {
+    visibility: hidden;
+    opacity: 0;
+  }
+  </style>
+  </head>
+  <body>
+    <div>
+      <h3>Spring Boot File Upload Multiple Files</h3>
+      <form id="multipleUploadForm" name="multipleUploadForm">
+        <input id="multipleFileUploadInput" type="file" name="files" class="file-input" multiple required />
+        <button type="submit" class="primary submit-btn">Submit</button>
+        <div id ="input" class="hidden">test input: <input id="special" type="text"></div>
+      </form>
+      <div class="upload-response">
+        <div id="multipleFileUploadError"></div>
+        <div id="multipleFileUploadSuccess"></div>
+      </div>
+    </div>
+    <script th:src="@{/js/main.js}"></script>
+    <div class="hidden">debug: <span id="debug" th:text="${debug}"></span></div>
+  </body>
+</html>
+

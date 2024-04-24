@@ -14,7 +14,7 @@ docker pull openjdk:17-alpine
 ```sh
 DOCKER_IMAGE=alpine-jdk17-maven
 docker build -t $DOCKER_IMAGE -f Dockerfile.$DOCKER_IMAGE .
-docker run --rm -v $(echo $HOME)/maven/.m2:/tmp/maven/.m2 -v .:/app --entrypoint sh -p 8080:8080 -it $DOCKER_IMAGE
+docker run --rm -v $(echo $HOME)/maven/.m2:/tmp/maven/.m2 -v $(pwd):/app --entrypoint sh -p 8080:8080 -it $DOCKER_IMAGE
 ```
 
 in the container run
@@ -59,7 +59,12 @@ gives
     </body>
 </html>
 ```
+
+also supported the templates `http://localhost:8080/upload`
+
+* NOTE:the config class may need to be reviewed in Java 11 case)
 * test locally (checkout the hash `a5c326c9db97d6852b7d61798afdfceae1269b02` to restore the older version)
+
 ```sh
 git checkout a5c326c9db97d6852b7d61798afdfceae1269b02
 ```
