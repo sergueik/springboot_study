@@ -9,5 +9,15 @@
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
+  <ItemGroup>
+  <Reference Include="shared">
+    <HintPath>..\shared\shared.dll</HintPath>
+  </Reference>
+</ItemGroup>
+<!--
+ <ItemGroup>
+    <ProjectReference Include="..\shared\shared.csproj" />
+	</ItemGroup>
+-->
 
 </Project>

@@ -45,6 +45,8 @@ app.pdb
 app.runtimeconfig.json
 appsettings.Development.json
 appsettings.json
+shared.dll
+shared.pdb
 ```
 * run the application without leaving the container
 
@@ -81,13 +83,18 @@ curl -H 'Content-type: application/json' -XPOST http://localhost:8000/api/user -
 
 ```
 indicating the service code is operating
+
 alternatiely
 ```sh
 NAME=basic-aspnetcore-shared
 docker run --name $NAME -it -p 8000:80 $IMAGE
 ```
+
 ### See Also
- * https://stackoverflow.com/questions/40108106/reference-external-dll-in-net-core-project
+
+  * https://stackoverflow.com/questions/40108106/reference-external-dll-in-net-core-project
+  * https://docs.docker.com/build/building/multi-stage/
+  * https://github.com/lazarofl/docker-multistage-aspnetcore (multi stage with test included)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
