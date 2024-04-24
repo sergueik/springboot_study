@@ -43,6 +43,20 @@ multipleUploadForm.addEventListener('submit', function(event) {
 }, true);
 window.addEventListener('load', function(event) {
   var xhr = new XMLHttpRequest();
+  
+  // console.dir(document.querySelector('#debug'));
+  // var debug = (/true/).test(document.querySelector('#debug').textContent);
+  var debug = new RegExp('true', 'i').test(document.querySelector('#debug').textContent);
+  
+  console.log('debug: '+ debug);
+  var inputElement = document.querySelector('#input');
+  if (debug) { 
+    inputElement.classList.remove('hidden');
+  } else {
+    inputElement.classList.remove('hidden');
+    inputElement.classList.add('hidden');
+  }  
+
   var multipleFileUploadSuccess = document.querySelector('#multipleFileUploadSuccess');
   xhr.open('GET', '/listFiles');
   var content = '<p>Reading Files</p>';

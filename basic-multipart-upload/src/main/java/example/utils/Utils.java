@@ -26,14 +26,18 @@ public class Utils {
 	public static String listDirecroryFiles(String uploadDir) {
 		String line = null;
 		// NOTE: not checking that directory exists. This is just minimal demo
-		// exampe
+		// example
 		File dir = new File(uploadDir);
-		File[] listFiles = dir.listFiles();
-		if (listFiles.length > 0) {
-			return formattedList(listFiles);
-
-		} else
+		if (dir.exists()) {
+			File[] listFiles = dir.listFiles();
+			if (listFiles.length > 0) {
+				return formattedList(listFiles);
+			} else {
+				return "";
+			}
+		} else {
 			return "";
+		}
 
 	}
 

@@ -297,6 +297,81 @@ and
 </dependency>
 ```
 for SpringBoot `3.1.5`
+
+### Test-Specific Inputs
+
+* with template based upload page (instead of a static one) one can inject inputs that can be set by the backend and provide addirional "test inputs" enabled by page when run in test:
+
+![Initial](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/apture-debug-true.png)
+
+vs.
+
+![Initial](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/apture-debug-false.png)
+
+
+### NOTE
+
+* massive warnings in the spring boot log:
+```text
+============================
+CONDITIONS EVALUATION REPORT
+============================
+
+
+Positive matches:
+-----------------
+
+   AopAutoConfiguration matched:
+      - @ConditionalOnProperty (spring.aop.auto=true) matched (OnPropertyCondition)
+
+...
+
+```
+*trimmed hundreds of lines*
+ 
+```text
+   WebSocketServletAutoConfiguration.TomcatWebSocketConfiguration#websocketServletWebServerCustomizer matched:
+      - @ConditionalOnMissingBean (names: websocketServletWebServerCustomizer; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+   ActiveMQAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'javax.jms.ConnectionFactory' (OnClassCondition)
+
+   AopAutoConfiguration.AspectJAutoProxyingConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.aspectj.weaver.Advice' (OnClassCondition)
+
+   ArtemisAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'javax.jms.ConnectionFactory' (OnClassCondition)
+
+   BatchAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.batch.core.launch.JobLauncher' (OnClassCondition)
+
+```
+*trimmed hundreds of lines*
+
+```
+Exclusions:
+-----------
+
+    None
+
+
+Unconditional classes:
+----------------------
+
+    org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration
+    org.springframework.boot.autoconfigure.context.LifecycleAutoConfiguration
+    org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration
+    org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration
+    org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration
+```
 ### See Also
 
 

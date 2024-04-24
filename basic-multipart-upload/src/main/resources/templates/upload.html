@@ -10,6 +10,10 @@
     text-transform: capitalize;
     text-align: center;
   }
+  .hidden {
+    visibility: hidden;
+    opacity: 0;
+  }
   </style>
   </head>
   <body>
@@ -18,6 +22,7 @@
       <form id="multipleUploadForm" name="multipleUploadForm">
         <input id="multipleFileUploadInput" type="file" name="files" class="file-input" multiple required />
         <button type="submit" class="primary submit-btn">Submit</button>
+        <div id ="input" class="hidden">test input: <input id="special" type="text"></div>
       </form>
       <div class="upload-response">
         <div id="multipleFileUploadError"></div>
@@ -25,6 +30,7 @@
       </div>
     </div>
     <script th:src="@{/js/main.js}"></script>
+    <div class="hidden">debug: <span id="debug" th:text="${debug}"></span></div>
   </body>
 </html>
 
