@@ -1,4 +1,4 @@
-package ch.qos.logback.ext.logzio;
+package example.logback;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -9,7 +9,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 
-public class LogzioAppnder<E> extends AbstractLogzioAppnder<E> {
+public class CustomAppender<E> extends AbstractCustomAppender<E> {
 
 	private static final String USER_AGENT = "Mozilla/5.0";
 
@@ -28,8 +28,7 @@ public class LogzioAppnder<E> extends AbstractLogzioAppnder<E> {
 
 			// add header
 			post.setHeader("User-Agent", USER_AGENT);
-			post.setEntity(
-					new StringEntity(event, ContentType.create(layout.getContentType())));
+			post.setEntity(new StringEntity(event, ContentType.create(layout.getContentType())));
 
 			HttpResponse response = null;
 
@@ -38,15 +37,12 @@ public class LogzioAppnder<E> extends AbstractLogzioAppnder<E> {
 
 			if (response.getStatusLine().getStatusCode() != 200) {
 				String message = readResponseBody(response);
-				addError(
-						"Post to Logz.io failed. (HTTP " + responseCode + ").\n Endpoint:\n"
-								+ getEndpoint() + "\nResponse body:\n" + message);
+				addError("Post to Log rest server failed. (HTTP " + responseCode + ").\n Endpoint:\n" + getEndpoint()
+						+ "\nResponse body:\n" + message);
 			}
 
 		} catch (IOException e) {
-			addError(
-					"IOException occurred while attempting to communicate with Logz.io",
-					e);
+			addError("IOException occurred while attempting to communicate with Log rest server: ", e);
 		}
 	}
 

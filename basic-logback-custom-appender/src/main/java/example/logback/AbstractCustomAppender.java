@@ -1,4 +1,4 @@
-package ch.qos.logback.ext.logzio;
+package example.logback;
 
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.core.Context;
@@ -11,8 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
-public abstract class AbstractLogzioAppnder<E>
-		extends UnsynchronizedAppenderBase<E> {
+public abstract class AbstractCustomAppender<E> extends UnsynchronizedAppenderBase<E> {
 
 	public static final String DEFAULT_LISTENER_HOSTNAME = "192.168.99.100";
 	public static final String DEFAULT_LISTENER_URI = "/cgi-bin/echo_json.cgi";
@@ -58,8 +57,7 @@ public abstract class AbstractLogzioAppnder<E>
 		}
 
 		if (this.token == null) {
-			addError(
-					"Token must be configured. Please verify that you pass a logz.io user access token");
+			addError("Token must be configured");
 		}
 
 		buildEndpoint();
@@ -81,15 +79,13 @@ public abstract class AbstractLogzioAppnder<E>
 	}
 
 	protected void ensureProtocol() {
-		if (this.protocol == null) {
-			this.protocol = HTTP_LISTENER_PROTOCOL;
+		if (protocol == null) {
+			protocol = HTTP_LISTENER_PROTOCOL;
 			return;
 		}
 
-		if (this.protocol != HTTP_LISTENER_PROTOCOL
-				|| this.protocol != HTTPS_LISTENER_PROTOCOL) {
-			addError(
-					"Invalid protocol given. Must be set to 'http' or 'https', default to 'http'");
+		if (protocol != HTTP_LISTENER_PROTOCOL || protocol != HTTPS_LISTENER_PROTOCOL) {
+			addError("Invalid protocol: " + protocol);
 		}
 	}
 
@@ -142,9 +138,8 @@ public abstract class AbstractLogzioAppnder<E>
 		// uri = uri + '/';
 		// }
 
-		endpoint = result.append(protocol).append("://").append(hostname)
-				.append(":").append(port).append(uri).append('?').append("token")
-				.append("=").append(token).toString();
+		endpoint = result.append(protocol).append("://").append(hostname).append(":").append(port).append(uri)
+				.append('?').append("token").append("=").append(token).toString();
 
 		return endpoint;
 	}
@@ -153,8 +148,7 @@ public abstract class AbstractLogzioAppnder<E>
 		if (s == null)
 			return s;
 
-		return s.substring(0,
-				s.length() - (s.endsWith(postfix) ? postfix.length() : 0));
+		return s.substring(0, s.length() - (s.endsWith(postfix) ? postfix.length() : 0));
 	}
 
 	protected String cleanString(String cleaned) {
@@ -169,8 +163,7 @@ public abstract class AbstractLogzioAppnder<E>
 	}
 
 	protected String readResponseBody(HttpResponse response) throws IOException {
-		BufferedReader rd = new BufferedReader(
-				new InputStreamReader(response.getEntity().getContent()));
+		BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
 		StringBuffer result = new StringBuffer();
 		String line = "";
@@ -186,40 +179,40 @@ public abstract class AbstractLogzioAppnder<E>
 		return protocol;
 	}
 
-	public void setProtocol(String protocol) {
-		this.protocol = cleanString(protocol);
+	public void setProtocol(String value) {
+		protocol = cleanString(value);
 	}
 
 	public String getHostname() {
 		return hostname;
 	}
 
-	public void setHostname(String hostname) {
-		this.hostname = cleanString(hostname);
+	public void setHostname(String value) {
+		hostname = cleanString(value);
 	}
 
 	public String getUri() {
 		return uri;
 	}
 
-	public void setUri(String uri) {
-		this.uri = cleanString(uri);
+	public void setUri(String value) {
+		uri = cleanString(value);
 	}
 
 	public String getPort() {
 		return port;
 	}
 
-	public void setPort(String port) {
-		this.port = cleanString(port);
+	public void setPort(String value) {
+		port = cleanString(value);
 	}
 
 	public String getToken() {
 		return token;
 	}
 
-	public void setToken(String token) {
-		this.token = cleanString(token);
+	public void setToken(String value) {
+		token = cleanString(value);
 	}
 
 	public String getEndpoint() {
@@ -230,16 +223,16 @@ public abstract class AbstractLogzioAppnder<E>
 		return pattern;
 	}
 
-	public void setPattern(String pattern) {
-		this.pattern = pattern;
+	public void setPattern(String value) {
+		pattern = value;
 	}
 
 	public Layout<E> getLayout() {
 		return layout;
 	}
 
-	public void setLayout(Layout<E> layout) {
-		this.layout = layout;
+	public void setLayout(Layout<E> value) {
+		layout = value;
 	}
 
 }

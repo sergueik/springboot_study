@@ -1,6 +1,10 @@
 <configuration debug="true">
-    <appender name="logzio" class="ch.qos.logback.ext.logzio.LogzioAppnder">
+    <appender name="rest" class="example.logback.CustomAppender">
         <token>NlwmHZamKoxOydJaPdoOxZOQqFHIpOaA</token>
+        <hostname>192.168.99.100</hostname>
+        <port>9090</port>
+        <protocol>http</protocol>
+        <uri>/cgi-bin/echo_json.cgi</uri>
         <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
             <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
                 <!-- prettyPrint is probably ok in dev, but usually not ideal in production: -->
@@ -9,6 +13,6 @@
         </layout>
     </appender>
     <root level="info">
-        <appender-ref ref="logzio" />
+        <appender-ref ref="rest" />
     </root>
 </configuration>

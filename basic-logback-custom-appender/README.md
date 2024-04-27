@@ -7,10 +7,14 @@ replica of [logback-http-appender](https://github.com/ofer-velich/logback-http-a
 start http server to send logs to
 
 ```sh
+pushd basic-perl-cgi
+```
+```sh
 IMAGE=basic-perl-apache
 ```
 build image if necessary
 ```sh
+NAME=basic-perl-cgi
 docker build -t $IMAGE -f Dockerfile . --progress=plain
 docker run -d -p 9090:80 -p 9443:443 --name $NAME $IMAGE
 ```
@@ -19,6 +23,41 @@ docker run -d -p 9090:80 -p 9443:443 --name $NAME $IMAGE
 NAME=basic-perl-cgi
 ID=$(docker container ls -a | grep $NAME|cut -f 1 -d ' ')
 docker start $ID
+```
+* check the Log rest endpoint is functional
+
+```sh
+ curl -sX POST -d '{"foo": "bar"}' http://192.168.99.100:9090/cgi-bin/echo_json.cgi
+```
+this will echo JSON back:
+```JSON
+{
+   "foo" : "bar",
+   "remote_addr" : "192.168.99.101",
+   "referer" : null
+}
+```
+* update `logback.xml` with the hostname of the log rest server. Currrently it only operates over http.
+```XML
+<configuration debug="true">
+    <appender name="rest" class="example.logback.CustomAppender">
+        <token></token>
+        <hostname>192.168.99.100</hostname>
+        <port>9090</port>
+        <protocol>http</protocol>
+        <uri>/cgi-bin/echo_json.cgi</uri>
+        <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
+            <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+                <!-- prettyPrint is probably ok in dev, but usually not ideal in production: -->
+                <prettyPrint>false</prettyPrint>
+            </jsonFormatter>
+        </layout>
+    </appender>
+    <root level="info">
+        <appender-ref ref="rest" />
+    </root>
+</configuration>
+
 ```
 * run the application
 ```cmd
@@ -64,27 +103,36 @@ NOTE: since cgi-bin prints debugging information to STDERR, it will be found in 
 
 ```
 
+### Cleanup
+```sh
+docker container stop $NAME
+docker container rm $NAME
+docker image prune -f 
+docker volume prune -f  
+```
 
 ### See Also
-    * https://github.com/maricn/logback-slack-appender
-    * https://github.com/cyfrania/logback-slack-appender
-    * https://github.com/ArpNetworking/logback-steno
-    * [Simple CLI tool to test logback on command line](https://github.com/wlanboy/logbacktest)
-    * https://github.com/jukka/logback-tray (AWT)
-    * https://github.com/ofer-velich/logback-http-appender
-    * https://github.com/bckfnn/influxdb-logback-appender
-    * https://github.com/omnecon/loganalytics-logback-appender
-    * https://github.com/opensourceteams/n_01001_maven_logback_httpclient
-    * https://github.com/themodernway/logback-json-gson
-    * https://github.com/Bali8/Google-PubSub-Logback-Appender
-    * https://github.com/DTForce/logback-google-cloud (stackdriver)
-    * https://github.com/godbles4me/logbackx
-    * https://github.com/bcoste/sample-filebeat-docker-logging
-    * https://github.com/codewinkel/logback-extensions httpappendr config
-    * https://github.com/michl-b/logback-msteams-appender
-    * https://github.com/carlspring/logback-configuration
-    * https://logback.qos.ch/manual/index.html
-    * https://github.com/sswayney/seq-logback-appender
+
+  * [Simple CLI tool to test logback on command line](https://github.com/wlanboy/logbacktest)
+  * misc. custom logback appenders
+    + https://github.com/maricn/logback-slack-appender
+    + https://github.com/cyfrania/logback-slack-appender
+    + https://github.com/ArpNetworking/logback-steno
+    + https://github.com/jukka/logback-tray (AWT)
+    + https://github.com/ofer-velich/logback-http-appender
+    + https://github.com/bckfnn/influxdb-logback-appender
+    + https://github.com/omnecon/loganalytics-logback-appender
+    + https://github.com/opensourceteams/n_01001_maven_logback_httpclient
+    + https://github.com/themodernway/logback-json-gson
+    + https://github.com/Bali8/Google-PubSub-Logback-Appender
+    + https://github.com/DTForce/logback-google-cloud (stackdriver)
+    + https://github.com/godbles4me/logbackx
+    + https://github.com/bcoste/sample-filebeat-docker-logging
+    + https://github.com/codewinkel/logback-extensions httpappendr config
+    + https://github.com/michl-b/logback-msteams-appender
+    + https://github.com/carlspring/logback-configuration
+    + https://logback.qos.ch/manual/index.html
+    + https://github.com/sswayney/seq-logback-appender
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
