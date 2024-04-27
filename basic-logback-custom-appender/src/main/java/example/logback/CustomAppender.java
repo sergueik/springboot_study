@@ -15,34 +15,32 @@ public class CustomAppender<E> extends AbstractCustomAppender<E> {
 
 	@Override
 	protected void append(E eventObject) {
-		String msg = this.layout.doLayout(eventObject);
-		System.err.println(String.format("Sending: %s", msg));
-		doPost(msg);
+		final String message = this.layout.doLayout(eventObject);
+		System.err.println(String.format("Sending: %s", message));
+		doPost(message);
 	}
 
 	private void doPost(final String event) {
 		try {
 
-			HttpClient client = HttpClientBuilder.create().build();
-			HttpPost post = new HttpPost(getEndpoint());
+			HttpClient httpClient = HttpClientBuilder.create().build();
+			HttpPost httpPost = new HttpPost(getEndpoint());
 
 			// add header
-			post.setHeader("User-Agent", USER_AGENT);
-			post.setEntity(new StringEntity(event, ContentType.create(layout.getContentType())));
+			httpPost.setHeader("User-Agent", USER_AGENT);
+			httpPost.setEntity(new StringEntity(event, ContentType.create(layout.getContentType())));
 
-			HttpResponse response = null;
-
-			response = client.execute(post);
-			int responseCode = response.getStatusLine().getStatusCode();
-
-			if (response.getStatusLine().getStatusCode() != 200) {
-				String message = readResponseBody(response);
-				addError("Post to Log rest server failed. (HTTP " + responseCode + ").\n Endpoint:\n" + getEndpoint()
-						+ "\nResponse body:\n" + message);
+			// https://hc.apache.org/httpcomponents-client-4.5.x/current/httpclient/apidocs/org/apache/http/client/HttpClient.html
+			HttpResponse httpResponse =  httpClient.execute(httpPost);
+			int statusCode = httpResponse.getStatusLine().getStatusCode();
+			if (statusCode != 200) {
+				String message = readResponseBody(httpResponse);
+				addError("Post to Log rest server failed. (HTTP STATUS: " + statusCode + ").\n Endpoint:\n"
+						+ getEndpoint() + "\nResponse body:\n" + message);
 			}
 
 		} catch (IOException e) {
-			addError("IOException occurred while attempting to communicate with Log rest server: ", e);
+			addError("IOException occurred communicating Log rest server: ", e);
 		}
 	}
 

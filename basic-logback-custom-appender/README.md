@@ -1,10 +1,12 @@
 ### info
 
-replica of [logback-http-appender](https://github.com/ofer-velich/logback-http-appender) used to test the [log4jna](https://github.com/dblock/log4jna) log appender
+replica of [logback-http-appender](https://github.com/ofer-velich/logback-http-appender) that demonstrates performing REST server 
+logging through `org.apache.http.client.HttpClient` [package](https://hc.apache.org/httpcomponents-client-4.5.x/)
+used to port the [log4jna](https://github.com/dblock/log4jna) log appender from [log4j](https://logging.apache.org/log4j/) to [logback](https://logback.qos.ch/).
 
 ### Usage
 
-start http server to send logs to
+* start http server to send logs to
 
 ```sh
 pushd basic-perl-cgi
@@ -12,7 +14,7 @@ pushd basic-perl-cgi
 ```sh
 IMAGE=basic-perl-apache
 ```
-build image if necessary
+* build image if necessary
 ```sh
 NAME=basic-perl-cgi
 docker build -t $IMAGE -f Dockerfile . --progress=plain
@@ -37,7 +39,7 @@ this will echo JSON back:
    "referer" : null
 }
 ```
-* update `logback.xml` with the hostname of the log rest server. Currrently it only operates over http.
+* update `logback.xml` with the hostname of the log rest server. Currrently it only tested operating over http.
 ```XML
 <configuration debug="true">
     <appender name="rest" class="example.logback.CustomAppender">
@@ -57,11 +59,12 @@ this will echo JSON back:
         <appender-ref ref="rest" />
     </root>
 </configuration>
-
 ```
 * run the application
 ```cmd
 mvn package
+```
+```cmd
 java -cp target/basic-logback-custom-appender.jar;target/lib/* example.Main
 ```
 or
@@ -76,11 +79,9 @@ this will log to console
 18:45:02,548 |-INFO in ch.qos.logback.core.model.processor.AppenderRefModelHandler - Attaching appender named [logzio] to Logger[ROOT]
 18:45:02,549 |-INFO in ch.qos.logback.core.model.processor.DefaultProcessor@2bbaf4f0 - End of configuration.
 18:45:02,550 |-INFO in ch.qos.logback.classic.joran.JoranConfigurator@4e41089d - Registering current configuration as safe fallback point
-18:45:02,551 |-INFO in ch.qos.logback.classic.util.ContextInitializer@52af6cff - ch.qos.logback.classic.util.DefaultJoranConfigurator.configure() call lasted 486 milliseconds. ExecutionStatus=DO_NOT_INVOKE_NEXT_IF_ANY
-Sending: {"timestamp":"1705275902554","level":"INFO","thread":"main","logger":"example.Main","message":"Hello World from Logback!","context":"default"}
-
+18:45:02,551 |-INFO in ch.qos.logback.classic.util.ContextInitializer@52af6cff - ch.qos.logback.classic.util.DefaultJoranConfigurator.configure() call lasted 486 milliseconds. ExecutionStatus=DO_NOT_INVOKE_NEXT_IF_ANY Sending: {"timestamp":"1705275902554","level":"INFO","thread":"main","logger":"example.Main","message":"Hello World from Logback!","context":"default"}
 ```
-* connect to container interactively
+* connect to log server container interactively
 ```sh
 docker exec -it $NAME sh
 ```
@@ -113,6 +114,7 @@ docker volume prune -f
 
 ### See Also
 
+  * [apache HttpClient Tutorial](https://www.baeldung.com/httpclient-guide)
   * [Simple CLI tool to test logback on command line](https://github.com/wlanboy/logbacktest)
   * misc. custom logback appenders
     + https://github.com/maricn/logback-slack-appender

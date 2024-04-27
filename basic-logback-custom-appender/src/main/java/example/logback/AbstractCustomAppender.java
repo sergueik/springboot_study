@@ -113,6 +113,7 @@ public abstract class AbstractCustomAppender<E> extends UnsynchronizedAppenderBa
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Layout<E> createLayout() {
 		PatternLayout layout = new PatternLayout();
 		String pattern = getPattern();
@@ -151,15 +152,15 @@ public abstract class AbstractCustomAppender<E> extends UnsynchronizedAppenderBa
 		return s.substring(0, s.length() - (s.endsWith(postfix) ? postfix.length() : 0));
 	}
 
-	protected String cleanString(String cleaned) {
-		if (cleaned != null) {
-			cleaned = cleaned.trim();
+	protected String cleanString(String data) {
+		if (data != null) {
+			data = data.trim();
 		}
-		if ("".equals(cleaned)) {
-			cleaned = null;
+		if ("".equals(data)) {
+			data = null;
 		}
 
-		return cleaned;
+		return data;
 	}
 
 	protected String readResponseBody(HttpResponse response) throws IOException {
