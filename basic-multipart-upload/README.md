@@ -176,7 +176,7 @@ After page is  submitted the result is displayed:
   }
 ]
 ```
- 
+
 * use Angular page to pass multiple file arguments (still work in progress):
 
 ![Mutlple Files](https://github.com/sergueik/springboot_study/blob/master/basic-multipart-upload/screenshots/capture-upload-files.png)
@@ -288,7 +288,7 @@ git checkout 57fb4733594635919d4ac2f115d745ee1d6c3a0e
 ```
 for SpringBoot `2.3.4`
 
-and 
+and
 ```XML
 <dependency>
   <groupId>org.thymeleaf</groupId>
@@ -328,7 +328,7 @@ Positive matches:
 
 ```
 *trimmed hundreds of lines*
- 
+
 ```text
    WebSocketServletAutoConfiguration.TomcatWebSocketConfiguration#websocketServletWebServerCustomizer matched:
       - @ConditionalOnMissingBean (names: websocketServletWebServerCustomizer; SearchStrategy: all) did not find any beans (OnBeanCondition)
@@ -383,7 +383,7 @@ Unconditional classes:
   * [testing a Spring Multipart POST Request](https://www.baeldung.com/spring-multipart-post-request-test)
   * [MockMvcRequestBuilders class methods](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/test/web/servlet/request/MockMvcRequestBuilders.html)
 
-  * REST pagination [article](https://www.baeldung.com/rest-api-pagination-in-spring) 
+  * REST pagination [article](https://www.baeldung.com/rest-api-pagination-in-spring)
   * handling partial content [forum question](https://qna.habr.com/q/1258736)(in Russian), with code example
   * [guide](https://www.baeldung.com/spring-enable-config-properties) to `@EnableConfigurationProperties`
   * [Angular 4 / Springboot Multipart Upload](https://medium.com/linkit-intecs/file-upload-download-as-multipart-file-using-angular-6-spring-boot-7ad06d841c21) - need an AngularJS verion
@@ -403,8 +403,31 @@ Unconditional classes:
   * [creating a FormData object from scratch](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Using_FormData_Objects)
   * [how to Append JavaScript Data to FormData](https://plainenglish.io/blog/how-to-append-javascript-data-to-formdata)
   * [how to use JavaScript’s FormData Object to Send Complex Data](https://dpericich.medium.com/how-to-use-javascripts-formdata-object-to-send-complex-data-c07c31c95f6c)
-  * [uploading files using fetch and FormData](https://muffinman.io/blog/uploading-files-using-fetch-multipart-form-data/)  
+  * [uploading files using fetch and FormData](https://muffinman.io/blog/uploading-files-using-fetch-multipart-form-data/)
   * http://www.java2s.com/example/javascript-book/for-of.html
+  * [sample File Upload Form](https://cgi-lib.berkeley.edu/ex/fup.html) - describing basic requirements for browser backed file upload HTML page:
+      + the form tag must specify the POST method
+      + the form tag must specify an enctype of multipart/form-data
+      + the form must contain an `<input type=file>` element:
+  * [example](https://ps.uci.edu/~franklin/doc/file_upload.html)
 
+```HTML
+<HTML>
+<HEAD>
+<TITLE>File Upload Test</TITLE>
+</HEAD>
+
+<BODY>
+<H1>File Upload Test</H1>
+<FORM ENCTYPE = "multipart/form-data"
+  ACTION="http://www.oac.uci.edu/indiv/franklin/cgi-bin/values"
+  METHOD="POST">
+Send this file: <INPUT NAME="userfile" TYPE="file">
+<INPUT TYPE="submit" VALUE="Send File">
+</FORM>
+</BODY>
+
+```
+   * https://www.browserstack.com/docs/automate/selenium/test-file-upload
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
