@@ -1,30 +1,29 @@
 package example;
 
-// NOTE: do not initialize specific logger
+// NOTE: do not import "logback.classic" to initialize specific logger
 // import ch.qos.logback.classic.Logger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class App {
-	// NOTE: do not initialize specific logger
-	// static Logger logger = (Logger)
-	// LoggerFactory.getLogger("eventlogAppender");
+	// NOTE: for demonstration initialize custom logger
+	static Logger eventlogAppenderlogger = (Logger) LoggerFactory.getLogger("eventlogAppender");
 	static final Logger logger = LoggerFactory.getLogger(App.class);
 
 	public static void main(String[] args) {
 
-		StringBuilder b = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder();
 		for (String str : args) {
-			b.append(str);
-			b.append(' ');
+			stringBuilder.append(str);
+			stringBuilder.append(' ');
 		}
-		String message = b.toString();
+		final String message = stringBuilder.toString();
 		logger.error("message: {}", message);
 		logger.warn("message: {}", message);
 		logger.info("message: {}", message);
 		logger.debug("message: {}", message);
-		// logger.warn("Event log from {} message {}",
-		// App.class.getSimpleName(), message);
+		eventlogAppenderlogger.warn("Event log from {} {} message {}",
+				eventlogAppenderlogger.getClass().getName(), App.class.getName(), message);
 	}
 }
