@@ -4,7 +4,211 @@ replica of [yokra9/log4jna_samle](https://github.com/yokra9/log4jna_samle) with 
 
 ### Usage
 
-the first run of the test will pass only when run from elevated console. subsequent runs will work for any user
+* test must be run in elevated console
+```cmd
+remove-eventlog -logname log4jna_sample
+```
+
+```cmd
+mvn clean test
+```
+if this is not followed observe the errors
+```text
+2024-05-01 19:14:02,603 main ERROR An exception occurred processing Appender EventLog java.lang.RuntimeException: Could not register event source.
+	at example.log4j.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:253)
+	at example.log4j.Win32EventLogAppender.append(Win32EventLogAppender.java:292)
+	at example.log4j.Win32EventLogAppender.append(Win32EventLogAppender.java:286)
+	at org.apache.logging.log4j.core.config.AppenderControl.tryCallAppender(AppenderControl.java:161)
+	at org.apache.logging.log4j.core.config.AppenderControl.callAppender0(AppenderControl.java:134)
+	at org.apache.logging.log4j.core.config.AppenderControl.callAppenderPreventRecursion(AppenderControl.java:125)
+	at org.apache.logging.log4j.core.config.AppenderControl.callAppender(AppenderControl.java:89)
+	at org.apache.logging.log4j.core.config.LoggerConfig.callAppenders(LoggerConfig.java:542)
+	at org.apache.logging.log4j.core.config.LoggerConfig.processLogEvent(LoggerConfig.java:500)
+	at org.apache.logging.log4j.core.config.LoggerConfig.log(LoggerConfig.java:483)
+	at org.apache.logging.log4j.core.config.LoggerConfig.log(LoggerConfig.java:417)
+	at org.apache.logging.log4j.core.config.AwaitCompletionReliabilityStrategy.log(AwaitCompletionReliabilityStrategy.java:82)
+	at org.apache.logging.log4j.core.Logger.log(Logger.java:161)
+	at org.apache.logging.log4j.spi.AbstractLogger.tryLogMessage(AbstractLogger.java:2205)
+	at org.apache.logging.log4j.spi.AbstractLogger.logMessageTrackRecursion(AbstractLogger.java:2159)
+	at org.apache.logging.log4j.spi.AbstractLogger.logMessageSafely(AbstractLogger.java:2142)
+	at org.apache.logging.log4j.spi.AbstractLogger.logMessage(AbstractLogger.java:2017)
+	at org.apache.logging.log4j.spi.AbstractLogger.logIfEnabled(AbstractLogger.java:1983)
+	at org.apache.logging.log4j.spi.AbstractLogger.info(AbstractLogger.java:1320)
+	at example.LoggingTest.info(LoggingTest.java:95)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:140)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:84)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:214)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:210)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:135)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:66)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.util.ArrayList.forEach(ArrayList.java:1255)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.util.ArrayList.forEach(ArrayList.java:1255)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:107)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:86)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:86)
+	at org.junit.platform.launcher.core.SessionPerRequestLauncher.execute(SessionPerRequestLauncher.java:53)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:142)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:117)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:383)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:344)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:125)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:417)
+Caused by: com.sun.jna.platform.win32.Win32Exception: Access is denied.
+	at com.sun.jna.platform.win32.Advapi32Util.registryCreateKey(Advapi32Util.java:1282)
+	at com.sun.jna.platform.win32.Advapi32Util.registryCreateKey(Advapi32Util.java:1260)
+	at example.log4j.Win32EventLogAppender.createAndSetAllKeys(Win32EventLogAppender.java:372)
+	at example.log4j.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:351)
+	at example.log4j.Win32EventLogAppender.registerEventSource(Win32EventLogAppender.java:250)
+	... 88 more
+```
+after the test will observe the following event log messages:
+```powershell
+get-eventlog -logname log4jna_sample -newest 5 |format-list
+```
+```text
+Index              : 30
+EntryType          : 0
+InstanceId         : 4096
+Message            : Thread: main
+                     Logger: example.LoggingTest
+                     Message: trace
+
+Category           : Fatal
+CategoryNumber     : 6
+ReplacementStrings : {Thread: main
+                     Logger: example.LoggingTest
+                     Message: trace
+                     }
+Source             : example.log4jna_sample
+TimeGenerated      : 5/1/2024 3:03:32 PM
+TimeWritten        : 5/1/2024 3:03:32 PM
+UserName           :
+
+Index              : 29
+EntryType          : Error
+InstanceId         : 4096
+Message            : Thread: main
+                     Logger: example.LoggingTest
+                     Message: fatal
+
+Category           : Trace
+CategoryNumber     : 1
+ReplacementStrings : {Thread: main
+                     Logger: example.LoggingTest
+                     Message: fatal
+                     }
+Source             : example.log4jna_sample
+TimeGenerated      : 5/1/2024 3:03:32 PM
+TimeWritten        : 5/1/2024 3:03:32 PM
+UserName           :
+
+Index              : 28
+EntryType          : Error
+InstanceId         : 4096
+Message            : Thread: main
+                     Logger: example.LoggingTest
+                     Message: error
+
+Category           : Trace
+CategoryNumber     : 1
+ReplacementStrings : {Thread: main
+                     Logger: example.LoggingTest
+                     Message: error
+                     }
+Source             : example.log4jna_sample
+TimeGenerated      : 5/1/2024 3:03:32 PM
+TimeWritten        : 5/1/2024 3:03:32 PM
+UserName           :
+
+Index              : 27
+EntryType          : 0
+InstanceId         : 4096
+Message            : Thread: main
+                     Logger: example.LoggingTest
+                     Message: debug
+
+Category           : Fatal
+CategoryNumber     : 6
+ReplacementStrings : {Thread: main
+                     Logger: example.LoggingTest
+                     Message: debug
+                     }
+Source             : example.log4jna_sample
+TimeGenerated      : 5/1/2024 3:03:32 PM
+TimeWritten        : 5/1/2024 3:03:32 PM
+UserName           :
+
+Index              : 26
+EntryType          : Warning
+InstanceId         : 4096
+Message            : Thread: main
+                     Logger: example.LoggingTest
+                     Message: warn
+
+Category           : Trace
+CategoryNumber     : 1
+ReplacementStrings : {Thread: main
+                     Logger: example.LoggingTest
+                     Message: warn
+                     }
+Source             : example.log4jna_sample
+TimeGenerated      : 5/1/2024 3:03:32 PM
+TimeWritten        : 5/1/2024 3:03:32 PM
+UserName           :
+
+```
+* the first run of the test will pass only when run from elevated console. subsequent runs will work for any user
 It will create the event source `log4jna_sample` which is mapped to `%SystemRoot%\System32\Winevt\Logs\log4jna_sample.evtx` owned by `LOCAL SERVICE` built-in account
 which ACL is inherired from the directory and limited to `System` and `Administrators`:
 
@@ -423,5 +627,6 @@ the message is modified by `Win32EventLogAppender.java`
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 
 

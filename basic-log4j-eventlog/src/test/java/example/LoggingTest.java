@@ -1,4 +1,4 @@
-package example.log4jna_sample;
+package example;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +18,7 @@ public class LoggingTest {
 
 	private static final String EVENT_SOURCE = "example.log4jna_sample";
 	private static final String THREAD = "main";
-	private static final String LOGGER = "log4jna_sample.LoggingTest";
+	private static final String LOGGER = "example.LoggingTest";
 
 	/**
 	 * Check whether EventViewer has the expected record for a specific period of

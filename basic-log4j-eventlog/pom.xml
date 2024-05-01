@@ -16,10 +16,12 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
-    <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
     <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
     <maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
     <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
+    <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
+    <!-- overriding temporarily unable to get file when no network access. 2.20 is too old -->
+    <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
     <jna-platform.version>5.4.0</jna-platform.version>
   </properties>
 
@@ -40,11 +42,13 @@
       <artifactId>jna-platform</artifactId>
       <version>${jna-platform.version}</version>
     </dependency>
+<!-- 
     <dependency>
       <groupId>org.dblock.log4jna</groupId>
       <artifactId>log4jna-api</artifactId>
       <version>2.0.1-SNAPSHOT</version>
     </dependency>
+-->
 
     <!-- test -->
     <dependency>
