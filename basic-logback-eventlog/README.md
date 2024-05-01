@@ -245,6 +245,8 @@ Event[1]:
 
 ```
 
+#### Spring Web
+
 for Spring, can do
 ```cmd
 cd  spring
@@ -290,6 +292,55 @@ UserName           :
 ```
 ![Event log Config Before](https://github.com/sergueik/springboot_study/blob/master/basic-logback-eventlog/screenshots/capture-spring-eventlog.png)
 
+#### Spring Server Batch
+
+for Server Side Spring app, can do
+```cmd
+wevtutil.exe clear-log log4jna_sample
+```
+```cmd
+cd ..
+```
+```cmd
+cd  spring-batch
+mvn clean spring-boot:run
+```
+this will report event logging done through the operational console log
+
+```text
+22:46:36.527 [pool-3-thread-1] INFO  eventlogAppender - Logger ch.qos.logback.classic.Logger Run with value = 42, profile = development, applicationPath = c:\program files (x86), expandEnvVar = C:\Users\sergueik, applicationOsSpecificPath = c:\program files (x86) through annotation
+22:46:36.527 [SimpleAsyncTaskExecutor-1] INFO  eventlogAppender - Logger ch.qos.logback.classic.Logger Run with value = 42, profile = development, applicationPath = c:\program files (x86), expandEnvVar = C:\Users\sergueik, applicationOsSpecificPath = c:\program files (x86) through annotation
+```
+and produce those entries
+```powershell
+get-eventlog -logname log4jna_sample -newest 2 |format-list
+```
+```text
+Index              : 119
+EntryType          : Information
+InstanceId         : 42
+Message            : 22:56:28.652 [SimpleAsyncTaskExecutor-1] INFO  eventlogAppender - Logger ch.qos.logback.classic.Logger Run with value = 42, profile = development, applicationPath = c:\program files (x86), expandEnvVar = C:\Users\sergueik, applicationOsSpecificPath = c:\program files (x86) through annotation 
+Category           : %1
+CategoryNumber     : 3
+ReplacementStrings : {22:56:28.652 [SimpleAsyncTaskExecutor-1] INFO  eventlogAppender - Logger ch.qos.logback.classic.Logger Run with value = 42, profile = development, applicationPath = c:\program files (x86), expandEnvVar = C:\Users\sergueik, applicationOsSpecificPath = c:\program files (x86) through annotation}
+Source             : example.log4jna_sample
+TimeGenerated      : 30.04.2024 22:56:28
+TimeWritten        : 30.04.2024 22:56:28
+UserName           :
+
+Index              : 118
+EntryType          : Information
+InstanceId         : 42
+Message            : 22:56:28.652 [pool-3-thread-1] INFO  eventlogAppender - Logger ch.qos.logback.classic.Logger Run with value = 42, profile = development, applicationPath = c:\program files (x86), expandEnvVar = C:\Users\sergueik, applicationOsSpecificPath = c:\program files (x86) through annotation
+
+Category           : %1
+CategoryNumber     : 3
+ReplacementStrings : {22:56:28.652 [pool-3-thread-1] INFO  eventlogAppender - Logger ch.qos.logback.classic.Logger Run with value = 42, profile = development, applicationPath = c:\program files (x86), expandEnvVar = C:\Users\sergueik, applicationOsSpecificPath = c:\program files (x86) through annotation}
+Source             : example.log4jna_sample
+TimeGenerated      : 30.04.2024 22:56:28
+TimeWritten        : 30.04.2024 22:56:28
+UserName           :
+```
 ### Cleanup
 ```cmd
 wevtutil.exe clear-log log4jna_sample
@@ -406,8 +457,7 @@ Application                    CategoryCount       : 7
 
 update the `logback.xml` with
 ```xml
-		<resource>%SystemRoot%\system32\wevtapi.dll</resource>
-
+<resource>%SystemRoot%\system32\wevtapi.dll</resource>
 ```
 observe the log will silently not be written. Similar attempt through `jna-eventlog` leads to exception
 Fixing this is a work in progress

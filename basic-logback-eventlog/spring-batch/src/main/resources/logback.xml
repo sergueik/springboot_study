@@ -31,7 +31,7 @@
       <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
     </encoder>
   </appender>
-  <appender name="EVENTLOG" class="example.EventLogAppender">
+  <appender name="EVENTLOG" class="example.logback.EventLogAppender">
     <resource>%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</resource>
     <id>42</id>
     <source>example.log4jna_sample</source>

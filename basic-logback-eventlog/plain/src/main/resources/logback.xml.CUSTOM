@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <configuration>
-	<appender name="eventlog" class="example.EventLogAppender">
+	<appender name="eventlog" class="example.logback.EventLogAppender">
 		<resource>%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</resource>
 		<id>42</id>
 		<source>example.log4jna_sample</source>

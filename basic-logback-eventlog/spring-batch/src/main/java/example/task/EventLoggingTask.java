@@ -1,10 +1,17 @@
 package example.task;
+/**
+ * Copyright 2024 Serguei Kouzmine
+ */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+// NOTE: do not import "logback.classic" to initialize specific logger
+// import ch.qos.logback.classic.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import example.config.Config;
 
@@ -12,6 +19,8 @@ import example.config.Config;
 // NOTE: "scope" annotation is optional here
 @Scope("prototype")
 public class EventLoggingTask implements Runnable {
+	// NOTE: for demonstration initialize custom logger
+	static Logger eventlogAppenderlogger = (Logger) LoggerFactory.getLogger("eventlogAppender");
 	private Logger logger = LoggerFactory.getLogger(EventLoggingTask.class);
 
 	@Autowired
@@ -39,8 +48,10 @@ public class EventLoggingTask implements Runnable {
 		applicationOsSpecificPath = config.getApplicationOsSpecificPath();
 		logger.info(
 				"Run with value = {}, profile = {}, applicationPath = {}, expandEnvVar = {}, applicationOsSpecificPath = {} through annotation",
-				value, profile, applicationPath, expandEnvVar,
-				applicationOsSpecificPath);
+				value, profile, applicationPath, expandEnvVar, applicationOsSpecificPath);
+		eventlogAppenderlogger.info(
+				"Logger {} Run with value = {}, profile = {}, applicationPath = {}, expandEnvVar = {}, applicationOsSpecificPath = {} through annotation",
+				eventlogAppenderlogger.getClass().getName(),  value, profile, applicationPath, expandEnvVar, applicationOsSpecificPath);
 
 	}
 }
