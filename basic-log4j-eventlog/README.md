@@ -8,7 +8,10 @@ replica of [yokra9/log4jna_samle](https://github.com/yokra9/log4jna_samle) with 
 ```cmd
 remove-eventlog -logname log4jna_sample
 ```
-
+* NOTE: for test compiling on Linux, will need to skip tests explicitly as in:
+```sh
+mvn -Dmaven.test.skip=true package
+```
 ```cmd
 mvn clean test
 ```

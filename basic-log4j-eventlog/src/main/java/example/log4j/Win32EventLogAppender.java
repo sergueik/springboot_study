@@ -17,6 +17,8 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Filter;
@@ -130,16 +132,27 @@ public class Win32EventLogAppender extends AbstractAppender {
 		}
 
 		if (eventMessageFile != null) {
-			Path p = Paths.get(eventMessageFile);
+			String pathExpanded = resolveEnvVars(eventMessageFile);
+
+			Path p = Paths.get(pathExpanded);
+
 			if (Files.exists(p)) {
-				setEventMessageFile(p.toAbsolutePath().toString());
+				if (p.isAbsolute())
+					setEventMessageFile(eventMessageFile);
+				else
+					setEventMessageFile(p.toAbsolutePath().toString());
 			}
 		}
 
 		if (categoryMessageFile != null) {
-			Path p = Paths.get(categoryMessageFile);
+			String pathExpanded = resolveEnvVars(categoryMessageFile);
+			Path p = Paths.get(pathExpanded);
 			if (Files.exists(p)) {
-				setCategoryMessageFile(p.toAbsolutePath().toString());
+				if (p.isAbsolute())
+					setCategoryMessageFile(categoryMessageFile);
+				else
+					setCategoryMessageFile(p.toAbsolutePath().toString());
+
 			}
 		}
 
@@ -458,5 +471,22 @@ public class Win32EventLogAppender extends AbstractAppender {
 		}
 		return category;
 	}
+
+	private static String resolveEnvVars(String input) {
+		if (null == input) {
+			return null;
+		}
+		Pattern p = Pattern.compile("%(\\w+)%");
+		Matcher m = p.matcher(input);
+		StringBuffer sb = new StringBuffer();
+		while (m.find()) {
+			String envVarName = m.group(1);
+			String envVarValue = System.getenv(envVarName);
+			m.appendReplacement(sb, null == envVarValue ? "" : envVarValue.replace("\\", "\\\\"));
+		}
+		m.appendTail(sb);
+		return sb.toString();
+	}
+
 
 }

@@ -5,7 +5,7 @@
 
   <groupId>example.log4jna_sample</groupId>
   <artifactId>log4jna_sample</artifactId>
-  <version>4.0-SNAPSHOT</version>
+  <version>0.5.0-SNAPSHOT</version>
 
   <name>log4jna_sample</name>
   <url>https://github.com/yokra9/log4jna_sample</url>
@@ -13,14 +13,15 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>1.8</java.version>
+    <junit.version>5.8.1</junit.version>
+    <junit-platform.version>1.8.1</junit-platform.version>
+    <log4j-core.version>2.17.1</log4j-core.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
     <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
     <maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
     <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
-    <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
-    <!-- overriding temporarily unable to get file when no network access. 2.20 is too old -->
     <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
     <jna-platform.version>5.4.0</jna-platform.version>
   </properties>
@@ -29,12 +30,12 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
-      <version>2.17.1</version>
+      <version>${log4j-core.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>2.17.1</version>
+      <version>${log4j-core.version}</version>
     </dependency>
 
     <dependency>
@@ -42,34 +43,19 @@
       <artifactId>jna-platform</artifactId>
       <version>${jna-platform.version}</version>
     </dependency>
-<!-- 
-    <dependency>
-      <groupId>org.dblock.log4jna</groupId>
-      <artifactId>log4jna-api</artifactId>
-      <version>2.0.1-SNAPSHOT</version>
-    </dependency>
--->
-
-    <!-- test -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.8.1</version>
-<!--
-      <scope>test</scope>
--->
+      <version>${junit.version}</version>
     </dependency>
     <dependency>
       <groupId>org.junit.platform</groupId>
       <artifactId>junit-platform-launcher</artifactId>
-      <version>1.8.1</version>
+      <version>${junit-platform.version}</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
-
   <build>
-
     <sourceDirectory>src/main/java</sourceDirectory>
     <testSourceDirectory>src/test/java</testSourceDirectory>
     <plugins>
@@ -97,7 +83,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>${maven-assembly-plugin.version}</version>
         <configuration>
-          <finalName>SWTsample</finalName>
+	<finalName>${project.name}</finalName>
           <appendAssemblyId>false</appendAssemblyId>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
