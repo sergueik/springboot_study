@@ -65,6 +65,8 @@ public class Win32EventLogAppender extends AbstractAppender {
 	private static final int TYPES_SUPPORTED = 7;
 	private static final String DEFAULT_SOURCE = "Log4jna";
 	private static final String DEFAULT_APPLICATION = "Application";
+	private static final int DEFAULT_MESSAGE_ID = 1;
+	private int messageID = DEFAULT_MESSAGE_ID;
 	/**
 	 * 
 	 */
@@ -101,12 +103,13 @@ public class Win32EventLogAppender extends AbstractAppender {
 			@PluginAttribute("server") String server,
 			@PluginAttribute("source") String source,
 			@PluginAttribute("application") String application,
+			@PluginAttribute("messageId") String messageIdString,
 			@PluginAttribute("eventMessageFile") String eventMessageFile,
 			@PluginAttribute("categoryMessageFile") String categoryMessageFile,
 			@PluginElement("Layout") Layout<? extends Serializable> layout,
 			@PluginElement("Filters") Filter filter) {
 		return new Win32EventLogAppender(name, server, source, application,
-				eventMessageFile, categoryMessageFile, layout, filter);
+				messageIdString, eventMessageFile, categoryMessageFile, layout, filter);
 	}
 
 	/**
@@ -128,9 +131,11 @@ public class Win32EventLogAppender extends AbstractAppender {
 	 *            A Log4j Filter
 	 */
 	public Win32EventLogAppender(String name, String server, String source,
-			String application, String eventMessageFile, String categoryMessageFile,
-			Layout<? extends Serializable> layout, Filter filter) {
+			String application, String messageIdString, String eventMessageFile,
+			String categoryMessageFile, Layout<? extends Serializable> layout,
+			Filter filter) {
 		super(name, filter, layout);
+		setMessageID(messageIdString);
 		if (source == null || source.length() == 0) {
 			source = DEFAULT_SOURCE;
 		}
@@ -177,6 +182,14 @@ public class Win32EventLogAppender extends AbstractAppender {
 		this._server = server;
 		setSource(source);
 		setApplication(application);
+	}
+
+	public void setMessageID(String source) {
+		try {
+			this.messageID = Integer.parseInt(source);
+		} catch (NumberFormatException e) {
+			this.messageID = DEFAULT_MESSAGE_ID;
+		}
 	}
 
 	/**
@@ -303,7 +316,6 @@ public class Win32EventLogAppender extends AbstractAppender {
 		}
 
 		String s = new String(getLayout().toByteArray(event));
-		final int messageID = 0x1000;
 
 		String[] buffer = { s };
 
@@ -327,11 +339,12 @@ public class Win32EventLogAppender extends AbstractAppender {
 			registerEventSource();
 		}
 
-		final int messageID = 0x1000;
+		// final int messageID = 0x1000;
 
 		String[] buffer = { message /* + " - this is a test" */ };
+		System.err.println("Reporting event messageID: " + this.messageID);
 		if (Advapi32.INSTANCE.ReportEvent(_handle, eventLogType, category,
-				messageID, null, buffer.length, 0, buffer, null) == false) {
+				this.messageID, null, buffer.length, 0, buffer, null) == false) {
 			Exception e = new Win32Exception(Kernel32.INSTANCE.GetLastError());
 			// TODO: find a better method for handling an error reporting with a
 			// message, and exception but without a logging event

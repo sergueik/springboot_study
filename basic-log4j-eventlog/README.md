@@ -394,7 +394,7 @@ the fix to make the `log4j2.xml` `dllfile` property look the same does not work:
 
 After adding a dummy event to the `log4jna_sample` log and 
 ```cmd
-wevtutil.exe  gl log4jna_sample
+wevtutil.exe gl log4jna_sample
 ```
 ```text
 name: 	
@@ -446,7 +446,7 @@ wevtutil.exe qe log4jna_sample /c:1
 
 alternatively run the jar once in elevated prompt
 ```cmd
-java -cp target\log4jna_sample-1.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App
+java -cp target\log4jna_sample-0.5.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App
 ```
 the test works but the event log messages become far less useful:
 
@@ -502,6 +502,18 @@ therefore using `C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.
 
 appeaars to unblock event log messaging by non elevated user.
 
+### Using Syste EventLogMessages.dll
+
+update `log4j.xml` with
+```xml
+<Property name="dllfile">%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</Property>
+```
+ecreate the custom log event file:
+```powershell
+remove-eventlog -logname log4jna_sample
+$resource_dll_path = '%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
+new-eventLog -logName log4jna_sample -Source 'example.log4jna_sample' -CategoryResourceFile $resource_dll_path -MessageResourceFile $resource_dll_path
+```
 ### NOTE
 
 added replica of [dblock/log4jna](https://github.com/dblock/log4jna) at commit `032ee6f` (2.0 release)
@@ -539,7 +551,7 @@ mvn -Dmaven.test.skip=true clean package install
 cd ..
 ```
 ```cmd
-java -cp target\log4jna_sample-4.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App "test message to be appended with some other text"
+java -cp target\log4jna_sample-0.5.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App "test message to be appended with some other text"
 ```
 
 will log to console:
@@ -616,6 +628,63 @@ UserName           :
 ```
 the message is modified by `Win32EventLogAppender.java`
 
+
+### Specifying Message Id
+
+
+configure `log4j.xml`:
+```XML
+<Win32EventLog name="EventLog" messageId="3" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="example.log4jna_sample" application="log4jna_sample">
+```
+run
+```
+java -cp target\log4jna_sample-0.5.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App "test message to be appended with some other text"
+```
+will see log
+
+```text
+
+[FATAL] 2024-05-02 14:54:45.246 [main] log4jna_sample.App - test message to be appended with some other text
+Registry Key exists
+Reporting event messageID: 3
+[ERROR] 2024-05-02 14:54:46.339 [main] log4jna_sample.App - test message to be appended with some other text
+Reporting event messageID: 3
+[WARN] 2024-05-02 14:54:46.339 [main] log4jna_sample.App - test message to be appended with some other text
+Reporting event messageID: 3
+[INFO] 2024-05-02 14:54:46.355 [main] log4jna_sample.App - test message to be appended with some other text
+Reporting event messageID: 3
+[DEBUG] 2024-05-02 14:54:46.355 [main] log4jna_sample.App - test message to be appended with some other text
+Reporting event messageID: 3
+[TRACE] 2024-05-02 14:54:46.371 [main] log4jna_sample.App - test message to be appended with some other text
+Reporting event messageID: 3
+
+```
+
+```powershell
+get-eventlog -logname log4jna_sample -newest 1| format-list
+```
+
+```text
+Index              : 348
+EntryType          : 0
+InstanceId         : 3
+Message            : Thread: main
+                     Logger: log4jna_sample.App
+                     Message: test message to be appended with some other text
+
+Category           : %1
+CategoryNumber     : 6
+ReplacementStrings : {Thread: main
+                     Logger: log4jna_sample.App
+                     Message: test message to be appended with some other text
+                     }
+Source             : example.log4jna_sample
+TimeGenerated      : 5/2/2024 2:59:46 PM
+TimeWritten        : 5/2/2024 2:59:46 PM
+UserName           :
+
+
+```
 ### See Also
 
 
