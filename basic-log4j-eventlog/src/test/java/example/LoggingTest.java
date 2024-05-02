@@ -29,8 +29,8 @@ public class LoggingTest {
 	 * @param startedAt
 	 * @param endedAt
 	 */
-	private void shouldBe(Level level, EventLogType eventLogType, long startedAt,
-			long endedAt) {
+	private void shouldBe(String logMessage, Level level,
+			EventLogType eventLogType, long startedAt, long endedAt) {
 		EventLogIterator iter = new EventLogIterator(null, EVENT_SOURCE,
 				WinNT.EVENTLOG_BACKWARDS_READ);
 		try {
@@ -49,7 +49,7 @@ public class LoggingTest {
 
 					String message = String.format(
 							"Thread: %s\r\nLogger: %s\r\nMessage: %s\r\n", THREAD, LOGGER,
-							level.name().toLowerCase());
+							logMessage + " " + level.name().toLowerCase());
 
 					StringBuilder eventMessage = new StringBuilder();
 					for (String str : record.getStrings()) {
@@ -68,48 +68,51 @@ public class LoggingTest {
 	@Test
 	public void fatal() {
 		long startedAt = System.currentTimeMillis() / 1000;
-		log.fatal("fatal");
+		log.fatal("test fatal");
 		long endedAt = System.currentTimeMillis() / 1000;
-		shouldBe(Level.FATAL, EventLogType.Error, startedAt, endedAt);
+		shouldBe("test", Level.FATAL, EventLogType.Error, startedAt, endedAt);
 	}
 
 	@Test
 	public void error() {
 		long startedAt = System.currentTimeMillis() / 1000;
-		log.error("error");
+		log.error("test error");
 		long endedAt = System.currentTimeMillis() / 1000;
-		shouldBe(Level.ERROR, EventLogType.Error, startedAt, endedAt);
+		shouldBe("test", Level.ERROR, EventLogType.Error, startedAt, endedAt);
 	}
 
 	@Test
 	public void warn() {
 		long startedAt = System.currentTimeMillis() / 1000;
-		log.warn("warn");
+		log.warn("test warn");
 		long endedAt = System.currentTimeMillis() / 1000;
-		shouldBe(Level.WARN, EventLogType.Warning, startedAt, endedAt);
+		shouldBe("test", Level.WARN, EventLogType.Warning, startedAt, endedAt);
 	}
 
 	@Test
 	public void info() {
 		long startedAt = System.currentTimeMillis() / 1000;
-		log.info("info");
+		log.info("test info");
 		long endedAt = System.currentTimeMillis() / 1000;
-		shouldBe(Level.INFO, EventLogType.Informational, startedAt, endedAt);
+		shouldBe("test", Level.INFO, EventLogType.Informational, startedAt,
+				endedAt);
 	}
 
 	@Test
 	public void debug() {
 		long startedAt = System.currentTimeMillis() / 1000;
-		log.debug("debug");
+		log.debug("test debug");
 		long endedAt = System.currentTimeMillis() / 1000;
-		shouldBe(Level.DEBUG, EventLogType.Informational, startedAt, endedAt);
+		shouldBe("test", Level.DEBUG, EventLogType.Informational, startedAt,
+				endedAt);
 	}
 
 	@Test
 	public void trace() {
 		long startedAt = System.currentTimeMillis() / 1000;
-		log.trace("trace");
+		log.trace("test trace");
 		long endedAt = System.currentTimeMillis() / 1000;
-		shouldBe(Level.TRACE, EventLogType.Informational, startedAt, endedAt);
+		shouldBe("test", Level.TRACE, EventLogType.Informational, startedAt,
+				endedAt);
 	}
 }
