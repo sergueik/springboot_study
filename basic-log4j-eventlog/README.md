@@ -13,7 +13,7 @@ The creation of the custom event log can be done outside of the application, and
 ```powershell
 get-eventlog log4jna_sample
 remove-eventlog -logname log4jna_sample
-$resource_dll_path = '%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
+$resource_dll_path = 'C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
 new-eventLog -logName log4jna_sample -Source 'example.log4jna_sample' -CategoryResourceFile $resource_dll_path -MessageResourceFile $resource_dll_path
 ```
 
@@ -100,6 +100,64 @@ Reporting event messageID: 3
 ![Event log Entry](https://github.com/sergueik/springboot_study/blob/master/basic-log4j-eventlog/screenshots/capture-eventlog-entry.png)
 
 
+* examine the custom log:
+```powershell
+get-eventlog -logname log4jna_sample -newest 1| format-list
+```
+
+this will show
+```text
+Index              : 348
+EntryType          : 0
+InstanceId         : 3
+Message            : Thread: main
+                     Logger: log4jna_sample.App
+                     Message: test message to be appended with some other text
+
+Category           : %1
+CategoryNumber     : 6
+ReplacementStrings : {Thread: main
+                     Logger: log4jna_sample.App
+                     Message: test message to be appended with some other text
+                     }
+Source             : example.log4jna_sample
+TimeGenerated      : 5/2/2024 2:59:46 PM
+TimeWritten        : 5/2/2024 2:59:46 PM
+UserName           :
+
+
+```
+
+
+### NOTE
+
+* test must be run in elevated console. if this is not followed observe the following errors
+```cmd
+remove-eventlog -logname log4jna_sample
+```
+* run the app
+```
+java -cp target\log4jna_sample-0.5.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App "test message to be appended with some other text"
+```
+* will see operation logged to console
+
+```text
+
+[FATAL] 2024-05-02 14:54:45.246 [main] log4jna_sample.App - test message to be appended with some other text
+Registry Key exists
+Reporting event messageID: 3
+[ERROR] 2024-05-02 14:54:46.339 [main] log4jna_sample.App - test message to be appended with some other text
+Reporting event messageID: 3
+[WARN] 2024-05-02 14:54:46.339 [main] log4jna_sample.App - test message to be appended with some other text
+Reporting event messageID: 3
+[INFO] 2024-05-02 14:54:46.355 [main] log4jna_sample.App - test message to be appended with some other text
+Reporting event messageID: 3
+[DEBUG] 2024-05-02 14:54:46.355 [main] log4jna_sample.App - test message to be appended with some other text
+Reporting event messageID: 3
+[TRACE] 2024-05-02 14:54:46.371 [main] log4jna_sample.App - test message to be appended with some other text
+Reporting event messageID: 3
+
+```
 * examine the custom log:
 ```powershell
 get-eventlog -logname log4jna_sample -newest 1| format-list
