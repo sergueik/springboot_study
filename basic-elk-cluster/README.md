@@ -1,12 +1,14 @@
 ﻿### Info
 
-clone on [Elastic APM-Server Lab](https://github.com/SMin1620/Elastic_APM_Lab) ELK applications cluster for APM learning  testing (aftera failed to vanilla install of `apm-server` on a a custom Vagrant box with other components installed)
+This dieectory contains a project that started from the clone of
+[Elastic APM-Server Lab](https://github.com/SMin1620/Elastic_APM_Lab) ELK applications cluster for APM learning.
+A vanilla Vagrant box  install of `apm-server` combined with other components turns out to be complex to maintain.
 
 ![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-cluster.png)
 
 ### Usage
 
-* pull the latest __7.x__ images
+* pull the latest __7.x__ ELK images
 
 ```sh
 ELK_VERSION=7.17.7
@@ -20,8 +22,8 @@ docker pull docker.elastic.co/apm/apm-server:$ELK_VERSION
 export COMPOSE_HTTP_TIMEOUT=600
 docker-compose up --build
 ```
-the Kibana web UI is on [http://localhost:5601](http://localhost:5601) 
-the APM indes is auto created:
+the Kibana web UI will be on [http://localhost:5601](http://localhost:5601) 
+the APM index is auto created:
 ```sh
 curl -XGET 'localhost:9200/_cat/indices?v&pretty' | grep apm
 ```
@@ -35,13 +37,14 @@ yellow open   apm-7.17.7-profile-000001        3v8VQPW-SXumL-fLxMlryw   1   1   
 yellow open   apm-7.17.7-metric-000001         4NVXn4_sSGuR2AshSJqMtA   1   1          4            0     70.8kb         70.8kb
 yellow open   apm-7.17.7-transaction-000001    pTVGSy6GRPapi3OjIi_qvA   1   1          0            0       226b           226b
 ```
-if only fe indices are dislayed:
+if only the indices are displayed:
 
 ```text
 green  open   .apm-agent-configuration         fFmjfMpPRWSnO9_dOR8zUQ   1   0          0            0       226b           226b
 green  open   .apm-custom-link                 FjALsnNuRwujJMKq0lVB7g   1   0          0            0       226b           226b
 ```
-this indicates the `apm-server` is misconfigured, check the container log of `apm-server`, and check its status in Kibana
+This indicates the `apm-server` is misconfigured. 
+To find out what went wrong check the container log of `apm-server`, and check ELK status through Kibana
 
 ```sh
 docker logs apm-server
@@ -62,10 +65,10 @@ for error messages that look like:
 }
 
 ```
-and similar kind of log messages
+and similar
 
 
-Run explicitly "loud" the cluster member health checks docker-compose does when buildin the cluster:
+Run in foreground explicitly the cluster member health checks configured in `docker-compose` when building the cluster:
 
 ```sh
 curl -s --write-out 'HTTP %{http_code}' --fail  http://localhost:8200/
@@ -86,21 +89,21 @@ this will show:
 "You Know, for Search"
 ```
 ```text
-
 "green"
 ```
- and for `app`:
+ and same for the `app` service:
 
 ```sh
 curl -s  http://localhost:6000/
 ```
+it will return
 ```text
 <h1>Distant Reading Archive</h1>
     <p>A prototype API for distant reading of science fiction novels</p>
 ```
 
 
-check if can not connect to `apm-server`
+check if it can connect to `apm-server`
 ```sh
 docker-compose exec apm-server sh
 ```
@@ -117,7 +120,6 @@ docker container ls | grep apm-server
 
 CONTAINER ID   IMAGE                             COMMAND                  CREATED          STATUS                          PORTS                                                 NAMES
 bd60a5144d04   basic-elk-cluster_apm-server      "/usr/local/bin/dock…"   33 minutes ago   Restarting (1) 19 seconds ago                                                         apm-server
-
 ```
 inspect the logs:
 ```sh
@@ -132,14 +134,14 @@ and correct the permissions:
 chmod 644 apm-server/config/apm-server.yml
 ```
 
-* proceed with a hello world application example on `app` server
+* proceed with a __hello world__ application example on `app` server
 ```sh
 curl -s http://localhost:6000
 ```
 ![APM Example](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-apm-example.png)
 
-* NOTE: if run in [Docker Toolbox](https://github.com/docker-archive/toolbox) on Windows,
-use the ip adddress of the network card connected to Host-only adapter in the VM running Docker:
+* NOTE: if run in the [Docker Toolbox](https://github.com/docker-archive/toolbox) on Windows,
+use the ip adddress of the network card ised in  Host-only adapter network in the VM running Docker:
 
 ```sh
 ifconfig eth1
@@ -151,22 +153,23 @@ eth1      link encap:Ethernet HWaddr 08:0027:B9:31:8B
 
 #### Add ASP.Net Core node
 
-run the command:
+* run the command:
 ```sh
 docker-compose -f docker-compose.yml -f docker-compose-aspnetcoreapp.yml up --build
 ```
 #### Add Java SOAP node
-build jar
+
+* build the jar
 ```sh
 cd app5;  mvn clean package
 ```
-run the command:
+* run the command:
 ```sh
 docker-compose -f docker-compose.yml -f docker-compose-javasoap.yml up --build
 ```
 
-To invoke the SOAP call from Python applicstion, interact with the latter through the browser "Currency Convertor" web page `http://192.168.0.92:8000/`
-On Kibana side you will be able to inspect the transaction from either step (the "View full tarce" button will indicate)
+To exercise the SOAP call from the Python applicstion, interact with the latter through the browser "Currency Convertor" web page `http://192.168.0.92:8000/`
+On Kibana side you will be able to inspect the transaction from either step (the "View Full Trace" button will indicate)
 
 #### Add NPM Express Blog page node
 
@@ -208,7 +211,7 @@ Clicking the `Submit` button on `http://localhost:3000/api.html` will trigger an
 
 ![Express Transactions](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-express-transactions.png)
 
-which will be recorded in distributed tracing:
+which will be recorded in distributed tracing transaction:
 
 ![Distributed Tracing Call Example](https://github.com/sergueik/springboot_study/blob/master/basic-elk-cluster/screenshots/capture-fulltrace-express-python.png)
 
@@ -331,7 +334,7 @@ curl http://localhost:7000/
     <p>A prototype API for distant reading of science fiction novels</p>
 
 ```
-also test a failing call:
+also test a failing request:
 ```sh
 curl http://localhost:7000/api/v1/resources/books/json
 ```
@@ -347,7 +350,7 @@ curl http://localhost:7000/api/v1/resources/books/json
 ```sh
 docker container logs -f apm-server
 ```
-(will have to scan visually)
+(will have to examine logs visually)
 ```text
 {"log.level":"info","@timestamp":"2022-12-01T18:24:18.003Z","log.logger":"request","log.origin":{"file.name":"middleware/log_middleware.go","file.line":63},"message":"request accepted","service.name":"apm-server","url.original":"/intake/v2/events","http.request.method":"POST","user_agent.original":"apm-agent-python/6.13.2 (Flask SQLite REST App)","source.address":"172.18.0.6","http.request.body.bytes":478,"http.request.id":"f272c310-13e3-4ea8-8137-a0bd590279e4","event.duration":228619,"http.response.status_code":202,"ecs.version":"1.6.0"}
 
