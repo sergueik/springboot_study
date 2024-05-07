@@ -135,6 +135,11 @@ Caused by: java.lang.ClassNotFoundException: org.apache.log4j.Logger
         at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
         ... 1 more
 ```
+
+replacing the dependencies reveals the new error:
+```text
+ERROR StatusLogger Reconfiguration failed: No configuration found for '6d06d69c' at 'null' in 'null'
+```
 or package
 ```
 mvn package

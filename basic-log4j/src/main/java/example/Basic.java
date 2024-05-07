@@ -1,10 +1,12 @@
 package example;
 
 // NOTE: switched to log4j2
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Basic {
-	private static final Logger LOGGER = Logger.getLogger(Basic.class);
+	private static final Logger LOGGER = LogManager.getLogger(Basic.class);
 
 	public static void main(String a[]) {
 		LOGGER.debug("Debug message");
