@@ -15,7 +15,7 @@ import com.sun.jna.platform.win32.WinNT;
 public class LoggingTest {
 
 	private static final Logger log = LogManager.getLogger(LoggingTest.class);
-
+	private static int messageId = 3;
 	private static final String EVENT_SOURCE = "example.log4jna_sample";
 	private static final String LOGGER = "example.LoggingTest";
 
@@ -40,7 +40,10 @@ public class LoggingTest {
 				if (record.getRecord().TimeWritten.longValue() >= startedAt
 						&& record.getRecord().TimeWritten.longValue() <= endedAt) {
 					isfound = true;
-
+					if (record.getEventId() != messageId) {
+						System.err.println("not the expected messageId: " + record.getEventId());
+						continue;
+					}
 					assertEquals(EVENT_SOURCE, record.getSource());
 					assertEquals(eventLogType, record.getType());
 

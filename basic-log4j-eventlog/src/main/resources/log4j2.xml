@@ -9,16 +9,21 @@
         <pattern>[%level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{2} - %message%n</pattern>
       </PatternLayout>
     </Console>
-    <Win32EventLog name="EventLog" messageId="3" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="example.log4jna_sample" application="log4jna_sample">
+    <Win32EventLog name="EventLog3" messageId="3" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="example.log4jna_sample" application="log4jna_sample">
       <PatternLayout>
         <pattern>[%level]%nLogger: %logger{2}%nMessage: %message</pattern>
       </PatternLayout>
     </Win32EventLog>
-  </Appenders>
+     <Win32EventLog name="EventLog2" messageId="2" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="example.log4jna_sample" application="log4jna_sample">
+      <PatternLayout>
+        <pattern>[%level]%nLogger: %logger{2}%nMessage: %message</pattern>
+      </PatternLayout>
+    </Win32EventLog></Appenders>
   <Loggers>
     <Root level="trace">
       <AppenderRef ref="Console"/>
-      <AppenderRef ref="EventLog"/>
+      <AppenderRef ref="EventLog2"/>
+      <AppenderRef ref="EventLog3"/>
     </Root>
   </Loggers>
 </Configuration>

@@ -69,11 +69,19 @@ log4jna_sample
 <Property name="dllfile">%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</Property>
 <Win32EventLog name="EventLog" messageId="3" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="example.log4jna_sample" application="log4jna_sample">
 ```
+temporarily add several EventLog appenders with distinct MessageId:
+```
+```
+
 * run the tests
 
 ```cmd
 mvn test
 ```
+observe presence of specific ids in Evenet Log:
+
+![Event log Config Before](https://github.com/sergueik/springboot_study/blob/master/basic-log4j-eventlog/screenshots/capture-different-ids.png)
+
 * build app. If the custom event log was not created, you will need to be skipping tests in non-elevated command prompt:
 ```sh
 mvn -Dmaven.test.skip=true clean package

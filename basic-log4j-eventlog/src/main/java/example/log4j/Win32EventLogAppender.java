@@ -141,38 +141,38 @@ public class Win32EventLogAppender extends AbstractAppender {
 		}
 
 		if (eventMessageFile != null) {
-			System.err.println("Examine eventMessageFile: " + eventMessageFile);
+			// System.err.println("Examine eventMessageFile: " + eventMessageFile);
 			String pathExpanded = resolveEnvVars(eventMessageFile);
-			System.err.println(
-					"Examine expanded path for eventMessageFile: " + pathExpanded);
+			//System.err.println(
+			//		"Examine expanded path for eventMessageFile: " + pathExpanded);
 			Path p = Paths.get(pathExpanded);
 
 			if (Files.exists(p)) {
 				if (p.isAbsolute()) {
 					setEventMessageFile(eventMessageFile);
-					System.err.println("set eventMessageFile = " + eventMessageFile);
+					// System.err.println("set eventMessageFile = " + eventMessageFile);
 				} else {
-					System.err.println(
-							"set eventMessageFile = " + p.toAbsolutePath().toString());
+					// System.err.println(
+					//		"set eventMessageFile = " + p.toAbsolutePath().toString());
 					setEventMessageFile(p.toAbsolutePath().toString());
 				}
 			}
 		}
 
 		if (categoryMessageFile != null) {
-			System.err.println("Examine categoryMessageFile: " + categoryMessageFile);
+			// System.err.println("Examine categoryMessageFile: " + categoryMessageFile);
 			String pathExpanded = resolveEnvVars(categoryMessageFile);
 			Path p = Paths.get(pathExpanded);
-			System.err.println(
-					"Examine expanded path for categoryMessageFile: " + pathExpanded);
+			// System.err.println(
+			//		"Examine expanded path for categoryMessageFile: " + pathExpanded);
 			if (Files.exists(p)) {
 				if (p.isAbsolute()) {
-					System.err
-							.println("set categoryMessageFile = " + categoryMessageFile);
+					// System.err
+					//		.println("set categoryMessageFile = " + categoryMessageFile);
 					setCategoryMessageFile(categoryMessageFile);
 				} else {
-					System.err.println(
-							"set categoryMessageFile = " + p.toAbsolutePath().toString());
+					// System.err.println(
+					//		"set categoryMessageFile = " + p.toAbsolutePath().toString());
 					setCategoryMessageFile(p.toAbsolutePath().toString());
 				}
 
@@ -342,7 +342,7 @@ public class Win32EventLogAppender extends AbstractAppender {
 		// final int messageID = 0x1000;
 
 		String[] buffer = { message /* + " - this is a test" */ };
-		System.err.println("Reporting event messageID: " + this.messageID);
+		// System.err.println("Reporting event messageID: " + this.messageID);
 		if (Advapi32.INSTANCE.ReportEvent(_handle, eventLogType, category,
 				this.messageID, null, buffer.length, 0, buffer, null) == false) {
 			Exception e = new Win32Exception(Kernel32.INSTANCE.GetLastError());
@@ -393,16 +393,16 @@ public class Win32EventLogAppender extends AbstractAppender {
 				applicationKeyPath)) {
 			if (Advapi32Util.registryKeyExists(WinReg.HKEY_LOCAL_MACHINE,
 					eventSourceKeyPath)) {
-				System.err.println("Registry Key exists");
+				// System.err.println("Registry Key exists");
 				setVariableKeys(eventMessageFile, categoryMessageFile,
 						eventSourceKeyPath);
 			} else {
-				System.err.println("Registry Key does not exist - creating one");
+				// System.err.println("Registry Key does not exist - creating one");
 				createAndSetAllKeys(eventMessageFile, categoryMessageFile,
 						eventSourceKeyPath);
 			}
 		} else {
-			System.err.println("Registry Key does not exist - creating one");
+			// System.err.println("Registry Key does not exist - creating one");
 			createAndSetAllKeys(eventMessageFile, categoryMessageFile,
 					eventSourceKeyPath);
 		}
