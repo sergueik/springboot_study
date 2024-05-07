@@ -17,22 +17,19 @@ public class LoggingTest {
 	private static final Logger log = LogManager.getLogger(LoggingTest.class);
 
 	private static final String EVENT_SOURCE = "example.log4jna_sample";
-	private static final String THREAD = "main";
 	private static final String LOGGER = "example.LoggingTest";
 
 	/**
-	 * Check whether EventViewer has the expected record for a specific period of
-	 * time.
+	 * Check whether EventViewer has the expected record for a specific period
+	 * of time.
 	 * 
 	 * @param level
 	 * @param eventLogType
 	 * @param startedAt
 	 * @param endedAt
 	 */
-	private void shouldBe(String logMessage, Level level,
-			EventLogType eventLogType, long startedAt, long endedAt) {
-		EventLogIterator iter = new EventLogIterator(null, EVENT_SOURCE,
-				WinNT.EVENTLOG_BACKWARDS_READ);
+	private void shouldBe(String logMessage, Level level, EventLogType eventLogType, long startedAt, long endedAt) {
+		EventLogIterator iter = new EventLogIterator(null, EVENT_SOURCE, WinNT.EVENTLOG_BACKWARDS_READ);
 		try {
 			assertTrue(iter.hasNext(), "There was no EventLog");
 
@@ -47,9 +44,8 @@ public class LoggingTest {
 					assertEquals(EVENT_SOURCE, record.getSource());
 					assertEquals(eventLogType, record.getType());
 
-					String message = String.format(
-							"Thread: %s\r\nLogger: %s\r\nMessage: %s\r\n", THREAD, LOGGER,
-							logMessage + " " + level.name().toLowerCase());
+					String message = String.format("[%s]" + "\r\n" + "Logger: %s" + "\r\n" + "Message: %s",
+							level.name(), LOGGER, logMessage);
 
 					StringBuilder eventMessage = new StringBuilder();
 					for (String str : record.getStrings()) {
@@ -68,7 +64,7 @@ public class LoggingTest {
 	@Test
 	public void fatal() {
 		long startedAt = System.currentTimeMillis() / 1000;
-		log.fatal("test fatal");
+		log.fatal("test");
 		long endedAt = System.currentTimeMillis() / 1000;
 		shouldBe("test", Level.FATAL, EventLogType.Error, startedAt, endedAt);
 	}
@@ -76,7 +72,7 @@ public class LoggingTest {
 	@Test
 	public void error() {
 		long startedAt = System.currentTimeMillis() / 1000;
-		log.error("test error");
+		log.error("test");
 		long endedAt = System.currentTimeMillis() / 1000;
 		shouldBe("test", Level.ERROR, EventLogType.Error, startedAt, endedAt);
 	}
@@ -84,7 +80,7 @@ public class LoggingTest {
 	@Test
 	public void warn() {
 		long startedAt = System.currentTimeMillis() / 1000;
-		log.warn("test warn");
+		log.warn("test");
 		long endedAt = System.currentTimeMillis() / 1000;
 		shouldBe("test", Level.WARN, EventLogType.Warning, startedAt, endedAt);
 	}
@@ -92,27 +88,24 @@ public class LoggingTest {
 	@Test
 	public void info() {
 		long startedAt = System.currentTimeMillis() / 1000;
-		log.info("test info");
+		log.info("test");
 		long endedAt = System.currentTimeMillis() / 1000;
-		shouldBe("test", Level.INFO, EventLogType.Informational, startedAt,
-				endedAt);
+		shouldBe("test", Level.INFO, EventLogType.Informational, startedAt, endedAt);
 	}
 
 	@Test
 	public void debug() {
 		long startedAt = System.currentTimeMillis() / 1000;
-		log.debug("test debug");
+		log.debug("test");
 		long endedAt = System.currentTimeMillis() / 1000;
-		shouldBe("test", Level.DEBUG, EventLogType.Informational, startedAt,
-				endedAt);
+		shouldBe("test", Level.DEBUG, EventLogType.Informational, startedAt, endedAt);
 	}
 
 	@Test
 	public void trace() {
 		long startedAt = System.currentTimeMillis() / 1000;
-		log.trace("test trace");
+		log.trace("test");
 		long endedAt = System.currentTimeMillis() / 1000;
-		shouldBe("test", Level.TRACE, EventLogType.Informational, startedAt,
-				endedAt);
+		shouldBe("test", Level.TRACE, EventLogType.Informational, startedAt, endedAt);
 	}
 }

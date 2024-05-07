@@ -13,7 +13,7 @@ The creation of the custom event log can be done outside of the application, and
 ```powershell
 get-eventlog log4jna_sample
 remove-eventlog -logname log4jna_sample
-$resource_dll_path = 'C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
+$resource_dll_path = '%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
 new-eventLog -logName log4jna_sample -Source 'example.log4jna_sample' -CategoryResourceFile $resource_dll_path -MessageResourceFile $resource_dll_path
 ```
 
@@ -69,7 +69,12 @@ log4jna_sample
 <Property name="dllfile">%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</Property>
 <Win32EventLog name="EventLog" messageId="3" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="example.log4jna_sample" application="log4jna_sample">
 ```
-* build app skipping tests in non-elevated command prompt:
+* run the tests
+
+```cmd
+mvn test
+```
+* build app. If the custom event log was not created, you will need to be skipping tests in non-elevated command prompt:
 ```sh
 mvn -Dmaven.test.skip=true clean package
 ```

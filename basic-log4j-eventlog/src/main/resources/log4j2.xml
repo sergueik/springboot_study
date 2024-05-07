@@ -11,7 +11,7 @@
     </Console>
     <Win32EventLog name="EventLog" messageId="3" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="example.log4jna_sample" application="log4jna_sample">
       <PatternLayout>
-        <pattern>Thread: %thread%nLogger: %logger{2}%nMessage: %message%n</pattern>
+        <pattern>[%level]%nLogger: %logger{2}%nMessage: %message</pattern>
       </PatternLayout>
     </Win32EventLog>
   </Appenders>
