@@ -18,16 +18,6 @@
     <appender-ref ref="CONSOLE"/>
   </root>
   <root level="WARN">
-    <appender-ref ref="CONSOLE"/>
-    <if condition="isDefined(&quot;windir&quot;)">
-      <then>
         <appender-ref ref="eventlog"/>
-      </then>
-    </if>
   </root>
-  <if condition="isDefined(&quot;windir&quot;)">
-    <then>
-      <logger name="eventlogAppender" level="DEBUG"/>
-    </then>
-  </if>
 </configuration>

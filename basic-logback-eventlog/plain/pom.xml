@@ -9,6 +9,8 @@
     <encoding>UTF-8</encoding>
     <janino.version>2.6.1</janino.version>
     <java.version>1.8</java.version>
+    <junit.version>5.8.1</junit.version>
+    <junit-platform.version>1.8.1</junit-platform.version>
     <jna-platform.version>5.4.0</jna-platform.version>
     <json.version>20231013</json.version>
     <logback-classic.version>1.2.13</logback-classic.version>
@@ -21,7 +23,7 @@
     <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
     <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
     <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-    <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
+    <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
     <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
     <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
     <slf4j.version>1.7.30</slf4j.version>
@@ -47,6 +49,17 @@
       <artifactId>janino</artifactId>
       <version>${janino.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>${junit.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <version>${junit-platform.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
@@ -71,52 +84,17 @@
           -->
         </configuration>
       </plugin>
-      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>${maven-assembly-plugin.version}</version>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
         <configuration>
-          <finalName>${project.groupId}.${project.artifactId}</finalName>
-          <appendAssemblyId>false</appendAssemblyId>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <archive>
-            <manifest>
-              <mainClass>${project.groupId}.${mainClass}</mainClass>
-            </manifest>
-          </archive>
+          <trimStackTrace>false</trimStackTrace>
+          <encoding>${project.build.sourceEncoding}</encoding>
+          <argLine>-Dfile.encoding=${project.build.sourceEncoding} -DAPP_LOG_ROOT=c:/temp</argLine>
         </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
-      -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>${maven-dependency-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/lib</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
+<plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>${maven-jar-plugin.version}</version>
@@ -132,8 +110,26 @@
             </manifest>
           </archive>
         </configuration>
-      </plugin>
+      </plugin>	      
+  <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>${maven-dependency-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>	      
     </plugins>
+
     <pluginManagement>
       <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>

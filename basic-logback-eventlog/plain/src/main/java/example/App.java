@@ -19,11 +19,11 @@ public class App {
 			stringBuilder.append(' ');
 		}
 		final String message = stringBuilder.toString();
-		logger.error("message: {}", message);
-		logger.warn("message: {}", message);
-		logger.info("message: {}", message);
-		logger.debug("message: {}", message);
-		eventlogAppenderlogger.warn("Event log from {} {} message {}",
-				eventlogAppenderlogger.getClass().getName(), App.class.getName(), message);
+		logger.error(message);
+		logger.warn(message);
+		logger.info(message);
+		logger.debug(message);
+		eventlogAppenderlogger.warn("Event log directly through {} {} message {}", eventlogAppenderlogger.getClass().getName(),
+				App.class.getName(), message);
 	}
 }

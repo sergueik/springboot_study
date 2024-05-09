@@ -153,23 +153,16 @@ mvn clean package
 
 * run the application
 ```cmd
-java -cp target\example.logback-eventlog.jar;target\lib\* example.App the quick brown fox jumps over the dazy log
+
+java -cp target\example.logback-eventlog.jar;target\lib\* example.App  the quick brown fox jumps over the lazy dog
 ```
 
 this will print to console:
 
 ```text
-08:31:26.748 [main] ERROR example.App - message: the quick brown fox jumps over the dazy log
-DEBUG: appending event message: 08:31:26.748 [main] ERROR example.App - message: the quick brown fox jumps over the dazy log
-
-Verified EventMessageFile path C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
-Verified CategoryMessageFile path C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
-08:31:27.013 [main] WARN  example.App - message: the quick brown fox jumps over
-the dazy log
-DEBUG: appending event message: 08:31:27.013 [main] WARN  example.App - message: the quick brown fox jumps over the dazy log
-
-Verified EventMessageFile path C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dllVerified CategoryMessageFile path C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
-
+[ERROR] 19:34:28.733 [main] example.App - the quick brown fox jumps over the lazy dog
+[WARN ] 19:34:29.474 [main] example.App - the quick brown fox jumps over the lazy dog
+[WARN ] 19:34:29.483 [main] eventlogAppender - Event log directly through ch.qos.logback.classic.Logger example.App message the quick brown fox jumps over the lazy dog
 ```
 
 and add Windows Event Logs:
@@ -179,70 +172,78 @@ and add Windows Event Logs:
 get-eventlog -logname log4jna_sample -newest 2 |format-list
 ```
 ```text
-Index              : 257
-EntryType          : Information
-InstanceId         : 4096
-Message            : 08:31:27.013 [main] WARN  example.App - message: the quick brown fox jumps over the dazy log
-
+Message            : [WARN ]
+                      Logger: eventlogAppender
+                      Message: Event log directly through
+                     ch.qos.logback.classic.Logger example.App message the
+                     quick brown fox jumps over the lazy dog
 Category           : %1
 CategoryNumber     : 3
-ReplacementStrings : {08:31:27.013 [main] WARN  example.App - message: the quick brown fox jumps over the dazy log
-                     }
+ReplacementStrings : {[WARN ]
+                      Logger: eventlogAppender
+                      Message: Event log directly through
+                     ch.qos.logback.classic.Logger example.App message the
+                     quick brown fox jumps over the lazy dog }
 Source             : example.log4jna_sample
-TimeGenerated      : 4/12/2024 8:31:27 AM
-TimeWritten        : 4/12/2024 8:31:27 AM
+TimeGenerated      : 5/8/2024 7:34:29 PM
+TimeWritten        : 5/8/2024 7:34:29 PM
 UserName           :
 
-Index              : 256
+Index              : 80
 EntryType          : Information
-InstanceId         : 4096
-Message            : 08:31:26.748 [main] ERROR example.App - message: the quick brown fox jumps over the dazy log
-
+InstanceId         : 42
+Message            : [WARN ]
+                      Logger: example.App
+                      Message: the quick brown fox jumps over the lazy dog
 Category           : %1
 CategoryNumber     : 3
-ReplacementStrings : {08:31:26.748 [main] ERROR example.App - message: the quick brown fox jumps over the dazy log
-                     }
+ReplacementStrings : {[WARN ]
+                      Logger: example.App
+                      Message: the quick brown fox jumps over the lazy dog }
 Source             : example.log4jna_sample
-TimeGenerated      : 4/12/2024 8:31:27 AM
-TimeWritten        : 4/12/2024 8:31:27 AM
+TimeGenerated      : 5/8/2024 7:34:29 PM
+TimeWritten        : 5/8/2024 7:34:29 PM
 UserName           :
-
 ```
-or  
+or console command 
 ```cmd
 wevtutil.exe query-events log4jna_sample /rd:true /f:text /c:2
 ```
-reveals
+which reveals
 ```text
 Event[0]:
   Log Name: log4jna_sample
   Source: example.log4jna_sample
-  Date: 2024-04-12T08:31:27.000
-  Event ID: 4096
+  Date: 2024-05-08T19:34:29.000
+  Event ID: 42
   Task: %1
   Level: Information
   Opcode: Info
   Keyword: Classic
   User: N/A
   User Name: N/A
-  Computer: sergueik42
-  Description: 08:31:27.013 [main] WARN  example.App - message: the quick brown fox jumps over the dazy log
-
+  Computer: Lenovo-PC
+  Description:
+[WARN ]
+ Logger: eventlogAppender
+ Message: Event log directly through ch.qos.logback.classic.Logger example.App message the quick brown fox jumps over the lazy dog
 
 Event[1]:
   Log Name: log4jna_sample
   Source: example.log4jna_sample
-  Date: 2024-04-12T08:31:27.000
-  Event ID: 4096
+  Date: 2024-05-08T19:34:29.000
+  Event ID: 42
   Task: %1
   Level: Information
   Opcode: Info
   Keyword: Classic
   User: N/A
   User Name: N/A
-  Computer: sergueik42
-  Description: 08:31:26.748 [main] ERROR example.App - message: the quick brown fox jumps over the dazy log
-
+  Computer: Lenovo-PC
+  Description:
+[WARN ]
+ Logger: example.App
+ Message: the quick brown fox jumps over the lazy dog
 ```
 
 #### Spring Web
