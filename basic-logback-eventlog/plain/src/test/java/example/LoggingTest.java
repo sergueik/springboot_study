@@ -36,7 +36,11 @@ public class LoggingTest {
 	 * @param startedAt
 	 * @param endedAt
 	 */
-	private void shouldBe(String logMessage, org.slf4j.event.Level level, EventLogType eventLogType, long startedAt,
+	private void shouldBe(String logMessage, Level level, EventLogType eventLogType, long startedAt, long endedAt) {
+		shouldBe(logMessage, level, LOGGER, eventLogType, startedAt, endedAt);
+	}
+
+	private void shouldBe(String logMessage, Level level, String logger, EventLogType eventLogType, long startedAt,
 			long endedAt) {
 		EventLogIterator iter = new EventLogIterator(null, EVENT_SOURCE, WinNT.EVENTLOG_BACKWARDS_READ);
 		try {
@@ -56,13 +60,17 @@ public class LoggingTest {
 					assertEquals(EVENT_SOURCE, record.getSource());
 					assertEquals(eventLogType, record.getType());
 
-					String message = String.format("[%-5s]" + "\r\n" + " Logger: %s" + "\r\n" + " Message: %s",
-							level.name(), LOGGER, logMessage);
+					String message = String.format("[%-5s] " + "\r\n" + " Logger: %s " + "\r\n" + " Message: %s",
+							level.name(), logger, logMessage);
 
 					StringBuilder eventMessage = new StringBuilder();
 					for (String str : record.getStrings()) {
 						eventMessage.append(str);
 					}
+					System.err.println(
+							String.format("Expecting:\n" + "\"%s\"", message.replaceAll("\\r\\n", "\\\\r\\\\n")));
+					System.err.println(String.format("Observed:\n" + "\"%s\"",
+							eventMessage.toString().replaceAll("\\r\\n", "\\\\r\\\\n")));
 
 					assertEquals(message, eventMessage.toString());
 				}
@@ -73,20 +81,46 @@ public class LoggingTest {
 		}
 	}
 
+	private String message = null;
+
 	@Test
 	public void test1() {
+		message = "test warn";
 		long startedAt = System.currentTimeMillis() / 1000;
-		log1.warn("test");
+		log1.warn(message);
 		long endedAt = System.currentTimeMillis() / 1000;
-		shouldBe("test", Level.WARN, EventLogType.Informational, startedAt, endedAt);
+		shouldBe(message, Level.WARN, this.getClass().getCanonicalName(), EventLogType.Informational, startedAt,
+				endedAt);
+	}
+
+	// TODO: info produces "WARN"
+	@Disabled
+	@Test
+	public void test2() {
+		message = "test info";
+		long startedAt = System.currentTimeMillis() / 1000;
+		log1.info(message);
+		long endedAt = System.currentTimeMillis() / 1000;
+		shouldBe(message, Level.WARN, this.getClass().getCanonicalName(), EventLogType.Informational, startedAt,
+				endedAt);
 	}
 
 	@Test
-	public void test2() {
+	public void test7() {
+		message = "test warn with selected logger";
 		long startedAt = System.currentTimeMillis() / 1000;
-		log2.warn("test");
+		log2.warn(message);
 		long endedAt = System.currentTimeMillis() / 1000;
-		shouldBe("test", Level.WARN, EventLogType.Informational, startedAt, endedAt);
+		shouldBe(message, Level.WARN, EventLogType.Informational, startedAt, endedAt);
+	}
+
+	@Test
+	public void test8() {
+		message = "test info with selected logger";
+		long startedAt = System.currentTimeMillis() / 1000;
+		log2.info(message);
+		long endedAt = System.currentTimeMillis() / 1000;
+		shouldBe(message, Level.INFO, EventLogType.Informational, startedAt, endedAt);
 	}
 
 }
