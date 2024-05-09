@@ -315,10 +315,46 @@ raw data(base64 encoded):
 [B@45e171a6
 ```
  - not quite right, but close enough
+
+### Windows Automation
+
+* using Libreoffics in headless mode is popular on Windows for PDF conversion is practically the same:
+
+```cmd
+"c:\Program Files\LibreOffice\program\soffice.exe" --headless --convert-to pdf --outdir "%USERPROFILE%\Downloads"  "%USERPROFILE%\downloads\a.docx"
+```
+* the background run and / user ACL is a bit of a challenge
+
+* interop is a [popular](https://www.cyberforum.ru/powershell/thread3166872.html#post17301582) alternative
+
+```powershell
+  pushd $shared_assemblies_path
+
+  @(
+'Spire.Doc.dll',
+'Spire.Pdf.dll'
+
+) | foreach-object {
+    if ($host.Version.Major -gt 2) {
+      unblock-file -Path $_
+    }
+    write-debug $_
+    add-type -Path $_
+  }
+
+popd
+$doc = new-object Spire.Doc.Document
+$doc.LoadFromFile("${env:USERPROFILE}\a.doc")
+$doc.SaveToFile("a.pdf",[Spire.Doc.FileFormat]::PDF )
+
+```
 ### See Also
+
+
 
   * https://stackoverflow.com/questions/50982064/converting-docx-to-pdf-with-pure-python-on-linux-without-libreoffice
   * https://stackoverflow.com/questions/72434000/running-libreoffice-converter-on-docker  
+
   * https://docs.linuxserver.io/images/docker-libreoffice
   * https://medium.com/codex/libreoffice-on-docker-1a64245468c
   * [known bug](https://bugs.documentfoundation.org/show_bug.cgi?id=37531&redirected_from=fdo) of Libreoffice will not run in "batch mode" when there is another instance open
@@ -327,6 +363,7 @@ raw data(base64 encoded):
   * [spring uloading gettin files started](https://spring.io/guides/gs/uploading-files/)
   * [1 pixel png used as spacer](https://commons.wikimedia.org/wiki/File:1x1.png)
   * https://stackoverflow.com/questions/35406213/how-to-copy-data-from-docker-volume-to-host
+  * [standalone Office Development Suites for .Net](https://www.e-iceblue.com/Introduce/spire-office-for-net-free.html)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
