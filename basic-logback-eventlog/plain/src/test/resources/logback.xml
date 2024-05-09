@@ -6,12 +6,12 @@
     <source>example.log4jna_sample</source>
     <application>log4jna_sample</application>
     <encoder>
-      <pattern>[%-5level] %n Logger: %logger{36} %n Message: %msg</pattern>
+      <pattern>[%-5level] %n Logger: %logger{2} %n Message: %msg</pattern>
     </encoder>
   </appender>
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-      <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+      <pattern>[%-5level] %d{HH:mm:ss.SSS} [%thread] %logger{2} - %msg%n</pattern>
     </encoder>
   </appender>
   <root level="DEBUG">
@@ -20,4 +20,5 @@
   <root level="WARN">
         <appender-ref ref="eventlog"/>
   </root>
+      <logger name="eventlogAppender" level="DEBUG"/>
 </configuration>

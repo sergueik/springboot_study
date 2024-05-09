@@ -1,4 +1,5 @@
 package example;
+
 /**
  * Copyright 2024 Serguei Kouzmine
  */
@@ -18,11 +19,13 @@ import org.slf4j.event.Level;
 
 public class LoggingTest {
 
-	
-	private static final Logger log = LoggerFactory.getLogger(LoggingTest.class);
+	private static final Logger log1 = LoggerFactory.getLogger(LoggingTest.class);
+	// NOTE: for demonstration initialize custom logger
+	static Logger log2 = (Logger) LoggerFactory.getLogger("eventlogAppender");
+
 	private static int messageId = 42;
 	private static final String EVENT_SOURCE = "example.log4jna_sample";
-	private static final String LOGGER = "example.LoggingTest";
+	private static final String LOGGER = "eventlogAppender";
 
 	/**
 	 * Check whether EventViewer has the expected record for a specific period
@@ -33,7 +36,8 @@ public class LoggingTest {
 	 * @param startedAt
 	 * @param endedAt
 	 */
-	private void shouldBe(String logMessage, org.slf4j.event.Level level, EventLogType eventLogType, long startedAt, long endedAt) {
+	private void shouldBe(String logMessage, org.slf4j.event.Level level, EventLogType eventLogType, long startedAt,
+			long endedAt) {
 		EventLogIterator iter = new EventLogIterator(null, EVENT_SOURCE, WinNT.EVENTLOG_BACKWARDS_READ);
 		try {
 			assertTrue(iter.hasNext(), "There was no EventLog");
@@ -52,7 +56,7 @@ public class LoggingTest {
 					assertEquals(EVENT_SOURCE, record.getSource());
 					assertEquals(eventLogType, record.getType());
 
-					String message = String.format("[%s]" + "\r\n" + "Logger: %s" + "\r\n" + "Message: %s",
+					String message = String.format("[%-5s]" + "\r\n" + " Logger: %s" + "\r\n" + " Message: %s",
 							level.name(), LOGGER, logMessage);
 
 					StringBuilder eventMessage = new StringBuilder();
@@ -69,46 +73,20 @@ public class LoggingTest {
 		}
 	}
 
-	@Disabled
 	@Test
-	public void error() {
+	public void test1() {
 		long startedAt = System.currentTimeMillis() / 1000;
-		log.error("test");
+		log1.warn("test");
 		long endedAt = System.currentTimeMillis() / 1000;
-		shouldBe("test", Level.ERROR, EventLogType.Error, startedAt, endedAt);
-	}
-	@Disabled
-	@Test
-	public void warn() {
-		long startedAt = System.currentTimeMillis() / 1000;
-		log.warn("test");
-		long endedAt = System.currentTimeMillis() / 1000;
-		shouldBe("test", Level.WARN, EventLogType.Warning, startedAt, endedAt);
+		shouldBe("test", Level.WARN, EventLogType.Informational, startedAt, endedAt);
 	}
 
 	@Test
-	public void info() {
+	public void test2() {
 		long startedAt = System.currentTimeMillis() / 1000;
-		log.info("test");
+		log2.warn("test");
 		long endedAt = System.currentTimeMillis() / 1000;
-		// 		shouldBe("test", Level.INFO, EventLogType.Informational, startedAt, endedAt);
+		shouldBe("test", Level.WARN, EventLogType.Informational, startedAt, endedAt);
 	}
 
-	@Disabled
-	@Test
-	public void debug() {
-		long startedAt = System.currentTimeMillis() / 1000;
-		log.debug("test");
-		long endedAt = System.currentTimeMillis() / 1000;
-		shouldBe("test", Level.DEBUG, EventLogType.Informational, startedAt, endedAt);
-	}
-
-	@Disabled
-	@Test
-	public void trace() {
-		long startedAt = System.currentTimeMillis() / 1000;
-		log.trace("test");
-		long endedAt = System.currentTimeMillis() / 1000;
-shouldBe("test", Level.TRACE, EventLogType.Informational, startedAt, endedAt);
-	}
 }
