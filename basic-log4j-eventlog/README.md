@@ -1,9 +1,77 @@
 ﻿### Info
 
-replica of [yokra9/log4jna_samle](https://github.com/yokra9/log4jna_samle) with added missing jna dependency and other minor fixes.
-The underlying [Log4jna] library of Java Native Windows Event Log appenders for [log4j]() is modified in particular to
-enable configuring different event IDs for logged messages via `log4j.xml`
-and to use the system-provided message dll `C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll` instead of the embedded `src\main\resources\Win32EventLogAppender.dll`
+replica of [yokra9/log4jna_sample](https://github.com/yokra9/log4jna_sample) with added missing jna dependency and other minor fixes.
+The underlying [dblock/log4jna](https://github.com/dblock/log4jna) library of Java Native Windows Event Log appenders for [apache log4j2](https://logging.apache.org/log4j/2.x/index.html)
+is modified in particular to allow distinct event IDs for different appenders configured via `log4j.xml`:
+```XML
+<Configuration>
+  <Properties>
+    <Property name="dllfile">%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</Property>
+  </Properties>
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout>
+        <pattern>[%level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{2} - %message%n</pattern>
+      </PatternLayout>
+    </Console>
+    <Win32EventLog name="EventLog3" messageId="3" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="example.log4jna_sample" application="log4jna_sample">
+      <PatternLayout>
+        <pattern>[%level]%nLogger: %logger{2}%nMessage: %message</pattern>
+      </PatternLayout>
+    </Win32EventLog>
+     <Win32EventLog name="EventLog2" messageId="2" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="example.log4jna_sample" application="log4jna_sample">
+      <PatternLayout>
+        <pattern>[%level]%nLogger: %logger{2}%nMessage: %message</pattern>
+      </PatternLayout>
+    </Win32EventLog></Appenders>
+  <Loggers>
+    <Root level="trace">
+      <AppenderRef ref="Console"/>
+      <AppenderRef ref="EventLog2"/>
+      <AppenderRef ref="EventLog3"/>
+    </Root>
+  </Loggers>
+</Configuration>
+```
+
+and to use the system-provided message dll `C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll` instead of the embedded message dll resource `src\main\resources\Win32EventLogAppender.dll`
+The modified `log4jna-api` is placed under `new` directory, deployed to local `.m2` cache:
+```cmd
+mvn -Dmaven.test.skip=true install
+```
+
+```text
+ Directory of C:\Users\Serguei\.m2\repository\org\dblock\log4jna\log4jna-api\2.2.0-SNAPSHOT
+
+05/10/2024  07:24 PM    <DIR>          .
+05/10/2024  07:24 PM    <DIR>          ..
+05/10/2024  07:24 PM             7,881 log4jna-api-2.2.0-SNAPSHOT.jar
+05/10/2024  07:23 PM             1,686 log4jna-api-2.2.0-SNAPSHOT.pom
+05/10/2024  07:24 PM               715 maven-metadata-local.xml
+05/10/2024  07:24 PM               210 _remote.repositories
+``` and picked from there by the `log4jna_sample`:
+```XML
+<properties>
+properties>
+    <log4jna-api.version>2.2.0-SNAPSHOT</log4jna-api.version>
+</properties>
+ <dependency>
+      <groupId>org.dblock.log4jna</groupId>
+      <artifactId>log4jna-api</artifactId>
+      <version>${log4jna-api.version}</version>
+    </dependency>	
+```
+one can also enforce via
+
+```XML
+  <repositories>
+    <repository>
+      <id>project.local</id>
+      <name>project</name>
+      <url>file:${project.basedir}/repo</url>
+    </repository>
+  </repositories>
+```
 The creation of the custom event log can be done outside of the application, and logging does not require elevated (a.k.a admin) privileges
 
 ### Usage
@@ -63,7 +131,9 @@ log4jna_sample
 log4jna_sample
 
 ```
-
+```powerhsell
+mvn -Dmaven.test.skip=true package
+```
 * configure `log4j.xml`:
 ```XML
 <Property name="dllfile">%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</Property>
