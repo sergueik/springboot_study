@@ -14,12 +14,12 @@ is modified in particular to allow distinct event IDs for different appenders co
         <pattern>[%level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{2} - %message%n</pattern>
       </PatternLayout>
     </Console>
-    <Win32EventLog name="EventLog3" messageId="3" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="example.log4jna_sample" application="log4jna_sample">
+    <Win32EventLog name="EventLog43" messageId="43" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="example.log4jna_sample" application="log4jna_sample">
       <PatternLayout>
         <pattern>[%level]%nLogger: %logger{2}%nMessage: %message</pattern>
       </PatternLayout>
     </Win32EventLog>
-     <Win32EventLog name="EventLog2" messageId="2" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="example.log4jna_sample" application="log4jna_sample">
+     <Win32EventLog name="EventLog42" messageId="42" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="example.log4jna_sample" application="log4jna_sample">
       <PatternLayout>
         <pattern>[%level]%nLogger: %logger{2}%nMessage: %message</pattern>
       </PatternLayout>
@@ -27,8 +27,8 @@ is modified in particular to allow distinct event IDs for different appenders co
   <Loggers>
     <Root level="trace">
       <AppenderRef ref="Console"/>
-      <AppenderRef ref="EventLog2"/>
-      <AppenderRef ref="EventLog3"/>
+      <AppenderRef ref="EventLog42"/>
+      <AppenderRef ref="EventLog43"/>
     </Root>
   </Loggers>
 </Configuration>
@@ -52,7 +52,7 @@ mvn -Dmaven.test.skip=true install
 ``` and picked from there by the `log4jna_sample`:
 ```XML
 <properties>
-properties>
+<properties>
     <log4jna-api.version>2.2.0-SNAPSHOT</log4jna-api.version>
 </properties>
  <dependency>
@@ -156,28 +156,40 @@ observe presence of specific ids in Evenet Log:
 ```sh
 mvn -Dmaven.test.skip=true clean package
 ```
+this will also store all dependencies into `target\lib`:
+```cmd
+ Directory of C:\developer\sergueik\springboot_study\basic-log4j-eventlog\target\lib
+
+05/10/2024  07:50 PM    <DIR>          .
+05/10/2024  07:50 PM    <DIR>          ..
+05/01/2024  06:21 PM             6,806 apiguardian-api-1.1.2.jar
+08/02/2019  10:13 AM         1,506,245 jna-5.4.0.jar
+08/02/2019  10:13 AM         2,624,748 jna-platform-5.4.0.jar
+05/01/2024  06:21 PM           193,501 junit-jupiter-api-5.8.1.jar
+05/01/2024  06:21 PM           229,680 junit-jupiter-engine-5.8.1.jar
+05/01/2024  06:21 PM           100,451 junit-platform-commons-1.8.1.jar
+05/01/2024  06:21 PM           185,778 junit-platform-engine-1.8.1.jar
+05/01/2024  06:21 PM           159,560 junit-platform-launcher-1.8.1.jar
+03/23/2022  01:43 PM           301,872 log4j-api-2.17.1.jar
+03/23/2022  01:43 PM         1,790,452 log4j-core-2.17.1.jar
+05/10/2024  07:42 PM             8,670 log4jna-api-2.2.0-SNAPSHOT.jar
+10/23/2019  06:14 PM             7,653 opentest4j-1.2.0.jar
+              12 File(s)      7,115,416 bytes
+```
 * run the app
 ```
-java -cp target\log4jna_sample-0.5.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App "test message from Java app"
+java -cp target\log4jna_sample-0.7.0-SNAPSHOT.jar;target\lib\* example.log4jna_sample.App "test message from Java app"
 ```
 * will see operation logged to console
 
 ```text
 
-[FATAL] 2024-05-02 14:54:45.246 [main] log4jna_sample.App - test message to be appended with some other text
-Registry Key exists
-Reporting event messageID: 3
-[ERROR] 2024-05-02 14:54:46.339 [main] log4jna_sample.App - test message to be appended with some other text
-Reporting event messageID: 3
-[WARN] 2024-05-02 14:54:46.339 [main] log4jna_sample.App - test message to be appended with some other text
-Reporting event messageID: 3
-[INFO] 2024-05-02 14:54:46.355 [main] log4jna_sample.App - test message to be appended with some other text
-Reporting event messageID: 3
-[DEBUG] 2024-05-02 14:54:46.355 [main] log4jna_sample.App - test message to be appended with some other text
-Reporting event messageID: 3
-[TRACE] 2024-05-02 14:54:46.371 [main] log4jna_sample.App - test message to be appended with some other text
-Reporting event messageID: 3
-
+[FATAL] 2024-05-10 19:51:43.214 [main] log4jna_sample.App - test message from Java app
+[ERROR] 2024-05-10 19:51:44.022 [main] log4jna_sample.App - test message from Java app
+[WARN] 2024-05-10 19:51:44.025 [main] log4jna_sample.App - test message from Java app
+[INFO] 2024-05-10 19:51:44.029 [main] log4jna_sample.App - test message from Java app
+[DEBUG] 2024-05-10 19:51:44.033 [main] log4jna_sample.App - test message from Java app
+[TRACE] 2024-05-10 19:51:44.035 [main] log4jna_sample.App - test message from Java app
 ```
 
 ![Event log Entry](https://github.com/sergueik/springboot_study/blob/master/basic-log4j-eventlog/screenshots/capture-eventlog-entry.png)
@@ -185,27 +197,43 @@ Reporting event messageID: 3
 
 * examine the custom log:
 ```powershell
-get-eventlog -logname log4jna_sample -newest 1| format-list
+get-eventlog -logname log4jna_sample -newest 2| format-list
 ```
 
 this will show
 ```text
-Index              : 348
-EntryType          : 0
-InstanceId         : 3
-Message            : Thread: main
-                     Logger: log4jna_sample.App
-                     Message: test message to be appended with some other text
 
+
+Index              : 175
+EntryType          : 0
+InstanceId         : 43
+Message            : [TRACE]
+                     Logger: example.LoggingTest
+                     Message: test
 Category           : %1
 CategoryNumber     : 6
-ReplacementStrings : {Thread: main
-                     Logger: log4jna_sample.App
-                     Message: test message to be appended with some other text
-                     }
+ReplacementStrings : {[TRACE]
+                     Logger: example.LoggingTest
+                     Message: test}
 Source             : example.log4jna_sample
-TimeGenerated      : 5/2/2024 2:59:46 PM
-TimeWritten        : 5/2/2024 2:59:46 PM
+TimeGenerated      : 5/10/2024 7:46:37 PM
+TimeWritten        : 5/10/2024 7:46:37 PM
+UserName           :
+
+Index              : 174
+EntryType          : 0
+InstanceId         : 42
+Message            : [TRACE]
+                     Logger: example.LoggingTest
+                     Message: test
+Category           : %1
+CategoryNumber     : 6
+ReplacementStrings : {[TRACE]
+                     Logger: example.LoggingTest
+                     Message: test}
+Source             : example.log4jna_sample
+TimeGenerated      : 5/10/2024 7:46:37 PM
+TimeWritten        : 5/10/2024 7:46:37 PM
 UserName           :
 
 
