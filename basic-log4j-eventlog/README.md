@@ -3,6 +3,7 @@
 replica of [yokra9/log4jna_sample](https://github.com/yokra9/log4jna_sample) with added missing jna dependency and other minor fixes.
 The underlying [dblock/log4jna](https://github.com/dblock/log4jna) library of Java Native Windows Event Log appenders for [apache log4j2](https://logging.apache.org/log4j/2.x/index.html)
 is modified in particular to allow distinct event IDs for different appenders configured via `log4j.xml`:
+
 ```XML
 <Configuration>
   <Properties>
@@ -39,6 +40,7 @@ The modified `log4jna-api` is placed under `new` directory, deployed to local `.
 ```cmd
 mvn -Dmaven.test.skip=true install
 ```
+this will place it into local cache:
 
 ```text
  Directory of C:\Users\Serguei\.m2\repository\org\dblock\log4jna\log4jna-api\2.2.0-SNAPSHOT
@@ -49,9 +51,10 @@ mvn -Dmaven.test.skip=true install
 05/10/2024  07:23 PM             1,686 log4jna-api-2.2.0-SNAPSHOT.pom
 05/10/2024  07:24 PM               715 maven-metadata-local.xml
 05/10/2024  07:24 PM               210 _remote.repositories
-``` and picked from there by the `log4jna_sample`:
+```
+from where it will be picked by the `log4jna_sample`:
+
 ```XML
-<properties>
 <properties>
     <log4jna-api.version>2.2.0-SNAPSHOT</log4jna-api.version>
 </properties>
@@ -59,9 +62,9 @@ mvn -Dmaven.test.skip=true install
       <groupId>org.dblock.log4jna</groupId>
       <artifactId>log4jna-api</artifactId>
       <version>${log4jna-api.version}</version>
-    </dependency>	
+ </dependency>	
 ```
-one can also enforce via
+* NOTE: one can also enforce via
 
 ```XML
   <repositories>
@@ -84,7 +87,14 @@ remove-eventlog -logname log4jna_sample
 $resource_dll_path = '%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
 new-eventLog -logName log4jna_sample -Source 'example.log4jna_sample' -CategoryResourceFile $resource_dll_path -MessageResourceFile $resource_dll_path
 ```
+* NOTE: one can use absolute paths instead of `REG_EXPAND_SZ` expressions, just necessary to be consistent between the command creating the log and `log4j.xml` configuration:
 
+```powershell
+get-eventlog log4jna_sample
+remove-eventlog -logname log4jna_sample
+$resource_dll_path = 'C:\windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll'
+new-eventLog -logName log4jna_sample -Source 'example.log4jna_sample' -CategoryResourceFile $resource_dll_path -MessageResourceFile $resource_dll_path
+```
 this will create 
 ```txt
 c:\Windows\System32\winevt\Logs\log4jna_sample.evtx

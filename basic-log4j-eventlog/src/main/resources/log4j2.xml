@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
   <Properties>
+<!--
     <Property name="dllfile">%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</Property>
+-->
+    <Property name="dllfile">C:\windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</Property>
   </Properties>
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
