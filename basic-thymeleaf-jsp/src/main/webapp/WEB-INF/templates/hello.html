@@ -10,9 +10,9 @@
 	<link href="/resources/css/style.css" rel="stylesheet"/>
   </head>
   <body>
+  
   Hello <span th:text="${name}">World</span>!
-<pre th:text="${console}">
-<table class="table table-bordered table-stripped">
+  <table class="table table-bordered table-stripped">
   <thead>
   <tr>
     <th:block th:each="elem : ${groupedByIdPersons}">
@@ -32,5 +32,41 @@
   </tr>
 </tbody>
 </table>
+
+
+  <table class="table table-bordered table-stripped">
+  <thead>
+  <tr>
+      <th>ID</th>
+      <th>Letter</th>
+      <th>Name</th>
+  </tr>
+</thead>
+<tbody>
+<tr>
+    <th:block th:each="person: ${persons}">
+      <td><span th:text="${person.id}">person.id</span></td>
+      <td><span th:text="${person.letter}">person.letter</span></td>
+      <td><span th:text="${person.name}">person.name</span></td>
+    </th:block>
+  </tr>
+</tbody>
+</table>
+<!-- https://www.baeldung.com/spring-thymeleaf-css-js -->
+<script>
+// https://qna.habr.com/q/1351278
+var a = ();
+var b = ();
+var с = ();
+<th:block th:each="row: ${persons}">
+  a.add( [[${row.id}]] );
+  b.add( [[${row.letter}]]);
+  c.add( [[ ${row.name}]] );
+</th:block>
+</script>
+
+<pre th:text="${console}">
+</pre>
 </body>
+
 </html>

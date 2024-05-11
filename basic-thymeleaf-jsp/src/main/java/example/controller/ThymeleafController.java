@@ -1,7 +1,7 @@
 package example.controller;
 
 /**
- * Copyright 2022-2023 Serguei Kouzmine
+ * Copyright 2022-2024 Serguei Kouzmine
  */
 
 import java.util.Arrays;
@@ -24,19 +24,16 @@ import example.utils.Utils;
 public class ThymeleafController {
 
 	@GetMapping
-	public ModelAndView hello(
-			@RequestParam(value = "name", required = false, defaultValue = "World") String name) {
+	public ModelAndView hello(@RequestParam(value = "name", required = false, defaultValue = "World") String name) {
 		ModelAndView model = new ModelAndView("/hello.html");
-		List<Person> persons = Arrays.asList(new Person(1, "A", "ford1"),
-				new Person(2, "A", "ford2"), new Person(1, "B", "toyota1"),
-				new Person(2, "B", "toyota2"));
-		Map<Integer, List<Person>> groupedByIdPersons = persons.stream()
-				.collect(Collectors.groupingBy(Person::getId));
+		List<Person> persons = Arrays.asList(new Person(1, "A", "ford1"), new Person(2, "A", "ford2"),
+				new Person(1, "B", "toyota1"), new Person(2, "B", "toyota2"));
+		Map<Integer, List<Person>> groupedByIdPersons = persons.stream().collect(Collectors.groupingBy(Person::getId));
 		model.addObject("groupedByIdPersons", groupedByIdPersons);
 		model.addObject("name", name);
 		model.addObject("persons", persons);
 		model.addObject("console", Utils.getFileContent("dummy.txt"));
-		
+
 		return model;
 	}
 
@@ -45,7 +42,6 @@ public class ThymeleafController {
 			@RequestParam(value = "name", required = false, defaultValue = "World") String name) {
 		ModelAndView model = new ModelAndView("/hello");
 		model.addObject("name", name);
-
 		return model;
 	}
 }
