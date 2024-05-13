@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    poll_interval: '5'
+    command_time: '15'
+    async_wait_time: '45'
+  tasks:
+    - name: Long running task
+      command: '/bin/sleep {{ command_time }}'
+      async: '{{ async_wait_time|int }}'
+      poll: '{{ poll_interval|int }}'
+      register: job_result
+    - name: Cleanup async job cache
+      async_status:
+        mode: cleanup
+        jid: "{{ job_result.ansible_job_id }}"

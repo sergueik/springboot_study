@@ -1,0 +1,77 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    filename: test.json
+    result_array: []
+    result_dict: {}
+  tasks:
+  - name: create mockup application properties file
+    copy:
+      content: |
+        server.jdbc.user.name=user
+        server.jdbc.user.passwd=password
+      # backup: no
+      dest: '{{ filename }}'
+  - name: shell script
+    shell: cat {{ filename }}
+    register: shell_command
+
+  - name: lookup data in application properties file
+    debug: 
+     msg: |
+      {% set data = lookup('file' , '{{ filename }}') %}
+      {% for line in data.split('\n') %}
+        {% set entry = line | trim %}"
+        {% set entry_key = entry.split('=')[0].replace('.','_') %}
+        {% set entry_value = entry.split('=')[1] %}
+       {# {% result_array.append(entry_key ) %}
+        {% result_dict.update(entry_key, entry_value ) %} #}
+        key: {{  entry_key }}
+        value: {{ entry_value }}
+        {% if not loop.last %}
+        {% endif %}
+      {% endfor%}
+  - name: 'show result #1'
+    # https://www.middlewareinventory.com/blog/ansible-split-examples/
+    debug:
+      msg: "{{ item.split('=')[0].replace('.','_') }}: {{item.split('=')[1] }}"
+    loop: "{{ shell_command.stdout_lines }}"
+
+  - name: 'show result #2'
+    debug:
+      msg: "{{ item.split('=')[0].replace('.','_') }}: {{item.split('=')[1] }}"
+    loop: "{{ lookup('file', '{{filename}}').split('\n') }}"
+
+  - name: 'show result #3'
+    debug:
+      var: 
+        "{{ item.split('=')[0].replace('.','_') }}": "{{item.split('=')[1] }}"
+    loop: "{{ lookup('file', '{{filename}}').split('\n') }}"
+
+     # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/set_fact_module.html
+  - name: 'set fact #1'
+    set_fact:
+      "{{ item.split('=')[0].replace('.','_') | trim}}": "{{item.split('=')[1]}}"
+    loop: "{{ shell_command.stdout_lines }}"
+
+  - name: 'set fact #2'
+    set_fact:
+      "{{ item.split('=')[0].replace(' ','').replace('.','_')}}": "{{item.split('=')[1]}}"
+    loop: '{{ shell_command.stdout_lines }}'
+
+  - name: 'set fact #3'
+    set_fact:
+      "{{ item.split('=')[0].replace(' ','').replace('.','_')}}": "{{item.split('=')[1]}}"
+    loop: "{{ lookup('file', '{{filename}}').split('\n') }}"
+
+  - name: 'set fact #4'
+    # template error while templating string: unexpected char u'\"'
+    # similar error when swapped single and double quotes 
+    # set_fact: '{{ item.split("=")[0].replace(".","_")}}={{item.split("=")[1]}}}}'
+    set_fact:
+      var: >
+       {%- set entry = item.split('=') -%} 
+       {{ entry[0].replace('.','_')}}={{entry[1] }}
+
+    loop: "{{ lookup('file', '{{filename}}').split('\n') }}"

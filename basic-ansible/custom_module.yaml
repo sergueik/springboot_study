@@ -1,0 +1,18 @@
+--- 
+# based on: https://jruels.github.io/adv-ansible/labs/gh_module/
+- hosts: localhost
+  become: false
+  tasks:
+    - name: Test script
+      register: result
+      github_repo:
+        github_auth_key: "..."
+        username: "Hello-World"
+        name: "Hello-World"
+        description: "This is your first repository"
+        private: yes
+        has_issues: no
+        has_wiki: no
+        has_downloads: no
+        state: present
+    - debug: var=result  

@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    url: https://bit.ly/3dtJtR7
+  tasks:
+    - name: Download file
+      block:
+        - name: Download file
+          get_url:
+            url: "{{url}}"
+            dest: /tmp/a.txt
+        - name: completion
+          debug: 'msg="downloaded"'
+      rescue:
+      - debug: 'msg="site appears"'
+

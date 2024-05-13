@@ -1,0 +1,15 @@
+---
+   # https://www.middlewareinventory.com/blog/ansible-changed_when-and-failed_when-examples/
+- hosts: localhost
+  gather_facts: no
+  become: no
+  vars:
+    username: puppet
+  tasks:
+    - name: read user home directory
+      shell: 'getent passwd {{ username }} | cut -d: -f6'
+      register: shell_command
+      changed_when: false
+    - name: print user home directory
+      debug:
+        msg: 'user: {{ username }} {{ shell_command.stdout }}'

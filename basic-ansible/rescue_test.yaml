@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  tasks:
+    - name: basic
+      debug: 'msg="basic task"'
+    - name: safety check block #1
+      block:
+        - name: some operation
+          debug:
+            msg: 'test'
+        - name: some failing operation
+          command: '/bin/false'
+      rescue:
+      - debug: 'msg="processing the exception #1"'
+    - name: safety check block #2
+      block:
+        # can have no - name: line
+        - debug: { msg: 'another test' }
+        - name: some passing operation
+          command: '/bin/true'
+      rescue:
+      - debug: 'msg="processing the exception #2"'

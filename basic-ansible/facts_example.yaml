@@ -1,0 +1,85 @@
+--- 
+
+- name: show facts
+  hosts: localhost
+
+  tasks:
+    - name: display all facts
+      debug:
+        var: ansible_facts
+        # var: ansible_facts | community.general.json_query('python')     
+        # see also: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_filters.html#selecting-json-data-json-queries
+        # no filter named 'community.general.json_query'
+    - name: display subset of facts about python
+      debug:
+        var: ansible_facts['python']
+ 
+    - name: display subset of facts about python through hostvars
+      debug:
+        # NOTE: output appears poorly readable but 
+        # could not filter with to_nice_yaml:
+        # "found character that cannot start any token" error
+        msg: |
+          {%  for  host  in groups['all']  %}
+            {# this will be empty object #}
+            {{ hostvars[host]['ansible_facts'] |to_yaml }} on {{ hostvars[host]['inventory_hostname'] }}
+            {# this will be empty array #}
+            {{ hostvars[host]['ansible_facts'].keys() }} on {{ hostvars[host]['inventory_hostname'] }}
+            {# this will be throw an error:
+                     'dict object' has no attribute 'default_ipv4'  #}
+            {#
+            {{ hostvars[host]['ansible_facts']['default_ipv4'] }} on {{ hostvars[host]['inventory_hostname'] }}
+            #}
+            {# will show:
+            [
+             'ansible_check_mode',
+             'ansible_diff_mode',
+             'ansible_facts',
+             'ansible_forks',
+             'ansible_inventory_sources',
+             'ansible_playbook_python',
+             'ansible_run_tags',
+             'ansible_skip_tags',
+             'ansible_ssh_host',
+             'ansible_ssh_port',
+             'ansible_verbosity',
+             'ansible_version',
+             'docker_apparmorprofile',
+             'docker_args',
+             'docker_config',
+             'docker_created',
+             'docker_driver',
+             'docker_execids',
+             'docker_graphdriver',
+             'docker_hostconfig',
+             'docker_hostnamepath',
+             'docker_hostspath',
+             'docker_id',
+             'docker_image',
+             'docker_logpath',
+             'docker_mountlabel',
+             'docker_mounts',
+             'docker_name',
+             'docker_networksettings',
+             'docker_path',
+             'docker_platform',
+             'docker_processlabel',
+             'docker_resolvconfpath',
+             'docker_restartcount',
+             'docker_short_id',
+             'gdocker_state',
+             'group_names',
+             'groups',
+             'inventory_dir',
+             'inventory_file',
+             'inventory_hostname',
+             'inventory_hostname_short',
+             'omit',
+             'playbook_dir'
+            ]
+            #}
+            {{ hostvars[host].keys() }} on {{ hostvars[host]['inventory_hostname'] }}
+          {% endfor %}
+ 
+
+

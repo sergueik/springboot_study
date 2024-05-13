@@ -1,0 +1,3 @@
+---
+# this cannot be overridden
+# expected_mem_gb: 4

@@ -1,0 +1,29 @@
+---
+- hosts: localhost
+  become: no
+  gather_facts: no
+  vars:
+    data: ['a','b','c']
+  tasks:
+    - name: basic
+      debug: 'msg="test"'
+    - name: safety check block
+      block:
+        - name: some operation
+          debug:
+            msg: 'test'
+        - name: nested loop example with error
+          # the item[index] tokens need to be in individual handlebars
+          # template error while templating string:
+          # expected token 'end of print statement', got 'item'
+          debug:
+            msg: 'item: {{ item[0] item[1] }}'
+          with_nested:
+            - '{{ data }}'
+            - [ '1','2' ]
+        - name: some failing operation
+          command: '/bin/false'
+      rescue:
+      - debug: 'msg="processing the exception"'
+    - name: next task
+      debug: { msg: 'another task' }

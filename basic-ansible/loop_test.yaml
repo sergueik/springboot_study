@@ -1,0 +1,19 @@
+---
+  # https://docs.ansible.com/ansible/2.9/modules/modules_by_category.html
+- hosts: localhost
+  gather_facts: no
+  become: no
+  vars:
+    data: ['a','b','c']
+  tasks:
+    - name: print message in loop
+      debug:
+        msg: 'item: {{ item }}'
+      with_items:
+        - '{{ data }}'
+    - name: nested loop example
+      debug:
+        msg: 'item: {{ item[0] }} {{ item[1] }}'
+      with_nested:
+        - '{{ data }}'
+        - [ '1','2' ]

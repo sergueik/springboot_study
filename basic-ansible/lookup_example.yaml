@@ -1,0 +1,48 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    filename: test.json
+    result_array: []
+    result_dict: {}
+  tasks:
+  - name: create mockup application properties file
+    copy:
+      content: |
+        server.jdbc.user.name=user
+        server.jdbc.user.passwd=password
+      # backup: no
+      dest: '{{ filename }}'
+  - name: lookup data in application properties file
+    notify: 'show updated array'
+    debug: 
+      msg: |
+        {% set data = lookup('file' , '{{ filename }}') %}
+        {% for line in data.split('\n') %}
+          {% set entry = line | trim %}"
+          {% set entry_key = entry.split('=')[0].replace('.','_') %}
+          {% set entry_value = entry.split('=')[1] %}
+          {# 
+            {% set tmp = result_array.append(entry_key ) %}
+            {% set tmp = result_dict.update({ entry_key, entry_value } ) %} 
+            {% result_dict['{{entry_key}}'] = '{{entry_value}}' %} 
+          #}
+          {% set tmp = result_array.append(entry_key ) %}
+          {# log the keys and values read from the file #}
+          key: {{  entry_key }}
+          value: {{ entry_value }}
+          {% if loop.last %}
+          Result:
+          {{ result_array | to_nice_yaml }}
+          {% endif %}
+        {% endfor%}
+  - name: print updated array
+    debug:
+      var: '{{ result_array }}'
+  - name: flush handlers
+    meta: flush_handlers
+
+  handlers:
+  - name: show updated array
+    debug:
+      var: '{{ result_array }}'

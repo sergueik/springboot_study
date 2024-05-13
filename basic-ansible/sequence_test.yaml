@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  become: no
+  vars:
+  - name:  name
+  - count: 3
+  tasks:
+    - name: xx
+      debug: 
+        msg: 'item: {{ name }} {{ item }}'
+      with_sequence: 'count={{ count }}'

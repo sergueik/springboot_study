@@ -1,0 +1,28 @@
+---
+- name: creare and delete temp file
+  # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_handlers.html#handlers
+  hosts: localhost
+  vars:
+    filename: test.txt
+  gather_facts: no
+  tasks:
+    - name: create mockup json
+      copy:
+        content: |
+          {
+          "one": 1,
+               "two": "two",
+          "three": 1000,
+             "four": 3
+                 }
+        backup: no
+        dest: filename
+      notify: handler notification
+  
+  handlers:
+    - name: delete temp file
+      file:
+        name: filename
+        state: absent
+      listen: handler notification
+

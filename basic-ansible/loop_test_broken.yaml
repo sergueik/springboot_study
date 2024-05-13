@@ -1,0 +1,19 @@
+---
+  # https://docs.ansible.com/ansible/2.9/modules/modules_by_category.html
+- hosts: localhost
+  gather_facts: no
+  become: no
+  vars:
+    data: ['a','b','c']
+  tasks:
+    - name: nested loop example with error
+      # the item[index] tokens need to be in individual handlebars
+      # template error while templating string:
+      # expected token 'end of print statement', got 'item'
+      debug:
+        msg: 'item: {{ item[0] item[1] }}'
+      with_nested:
+        - '{{ data }}'
+        - [ '1','2' ]
+    - name: basic
+      debug: 'msg="will not be printed"'

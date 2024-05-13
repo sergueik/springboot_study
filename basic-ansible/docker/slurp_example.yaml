@@ -1,0 +1,20 @@
+---
+- hosts: dummy
+  gather_facts: no
+  vars:
+    filename: '/tmp/application.properties'
+  tasks:
+  - name: create mockup application properties file on remote machine
+    copy:
+      content: |
+        server.jdbc.user.name=user
+        server.jdbc.user.passwd=password
+      dest: '{{ filename }}'
+  - name: read application properties from remote machine
+    slurp:
+      src: '{{ filename }}'
+    register: slurp_task
+
+  - debug:
+      msg: '{{ slurp_task["content"] | b64decode }}'
+

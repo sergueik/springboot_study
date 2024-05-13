@@ -1,0 +1,7 @@
+---
+# ansible-playbook -e "expected_mem_gb=1" test.yaml
+- hosts: localhost
+  gather_facts: no
+  become: no
+  roles:
+    - spec

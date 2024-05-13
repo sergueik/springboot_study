@@ -1,0 +1,48 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    filename: test.json
+  tasks:
+  - name: create mockup json
+    copy:
+      content: |
+        {
+        "one": 1,
+             "two": "two",
+        "three": 1000,
+           "four": 3
+               }
+      # backup: no
+      dest: '{{ filename }}'
+  - name: update data in json
+    lineinfile:
+      regexp: '"({{ item.key }})": *([^,]*)(,?)'
+      backrefs: yes
+      state: present
+      line: '"\1": {{ item.value }}\3'
+      dest: '{{ filename }}'
+    notify: 'show updated json'
+    # set to false to skip
+    when: true
+    loop: "{{ data | dict2items }}"
+    vars:
+      data:
+        one: 10
+        two: 100
+        three: 1000
+        four: '"xxx"'
+        five: 5
+    
+  - name: flush handlers
+    meta: flush_handlers
+
+  handlers:
+  - name: show updated json
+    debug:
+      msg: "{{ lookup('pipe','cat {{filename}}') }}"
+
+# https://www.mydailytutorials.com/ansible-lineinfile-module-examples/
+# see also: https://www.cyberforum.ru/shell/thread3056378.html
+# see also: https://stackoverflow.com/questions/53542389/modify-json-in-ansible for jq command approach
+# https://github.com/geerlingguy/ansible-for-devops

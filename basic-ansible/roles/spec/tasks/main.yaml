@@ -1,0 +1,3 @@
+---
+# tasks for spec role
+- include: memtest.yaml

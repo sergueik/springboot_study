@@ -1,0 +1,28 @@
+---
+# see: https://www.middlewareinventory.com/blog/ansible-changed_when-and-failed_when-examples#How_to_use_ansible_changed_when_Statement
+
+# NOTE: in order to test this playbook example, build and start basic-perl-apache container
+# https://github.com/sergueik/springboot_study/tree/master/basic-perl-cgi
+# and update ansible docker inventory to use it
+# ../generate_docker_inventory.sh  $NAME
+# 172.17.0.3 ansible_host=basic-perl-cgi connection=docker| tee docker-inventory
+# and install sudo in the `basic-perl-cgi` container 
+# docker exec -it $NAME apk add sudo
+
+- hosts: 172.17.0.3
+  gather_facts: no
+  become: no
+  vars:
+  tasks:
+  - name: "Start the Apache HTTPD Server"
+    become: true
+    become_user: root
+    register: raw_command
+    raw: "httpd -k start"
+    # NOTE: has not used 'shell'
+    # shell: "httpd -k start"
+    changed_when: "raw_command.has_key('stdout') and 'already running' not in raw_command.stdout"
+    # NOTE: when task failed, e.g.there is no `sudo` the playbook will fail with    # 'dict object' has no attribute 'stdout' 
+    # changed_when: "'already running' not in raw_command.stdout"
+  - debug:
+      msg: "{{ raw_command.stdout }}"

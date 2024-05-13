@@ -1,0 +1,27 @@
+---
+- name: exercise handlers
+  # https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_handlers.html#handlers
+  # ansible-playbook handlers_example.yaml  -v
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    # if the value contains # needs to be in quotes
+    - name: 'task #1'
+      command: 'echo "task #1"'
+      notify:
+      - 'handler #1'
+      - 'handler #2'
+    # it appears that debug task does not trigger notification, probably because nothing is updated
+    - name: 'task #2'
+      debug:
+        msg: 'task #2'
+      notify: 'handler #2'
+    - name: flush handlers
+      meta: flush_handlers
+  handlers:
+    - name: 'handler #1'
+      debug:
+        msg: 'handler #1'
+    - name: 'handler #2'
+      command: 'echo "handler #2"'
+      listen: 'handler #2'
