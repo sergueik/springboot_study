@@ -5,27 +5,35 @@ https://registry.terraform.io/providers/terra-farm/virtualbox/latest/docs/resour
 
 ### Install
 
+on Linux
 ```sh
-export VERSION=1.1.2
+export VERSION=1.7.5
 wget -q https://releases.hashicorp.com/terraform/$VERSION/terraform_${VERSION}_linux_amd64.zip
 unzip terraform_${VERSION}_linux_amd64.zip
 sudo mv terraform /usr/local/bin/
+rm -f terraform*.zip
+which terraform
 ```
-for Windows
+```text
+/usr/local/bin/terraform
+```
+on Windows
+
 ```powershell
 [Net.ServicePointManager]::SecurityProtocol = 'Tls12, Tls11, Tls, Ssl3'
-$VERSION='1.1.5'
-
+$VERSION='1.7.5'
 invoke-webrequest -uri https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_windows_amd64.zip -OutFile terraform_${VERSION}_windows_amd64.zip
 ```
-if the error
+* NOTE: the 32-bit version `terraform_${VERSION}_windows_386.zip` often exists.
+
+if the error still shows 
 ```text
 invoke-webrequest : The request was aborted: Could not create SSL/TLS securechannel.
 ```
-still shows and if the
-[registry fix](https://devblogs.microsoft.com/nuget/deprecating-tls-1-0-and-1-1-on-nuget-org/#ensuring-your-system-uses-tls-1-2)
-is not possible,
-download `https://releases.hashicorp.com/terraform/1.1.5/terraform_1.1.5_windows_amd64.zip` using the browser.
+and the [registry fix](https://devblogs.microsoft.com/nuget/deprecating-tls-1-0-and-1-1-on-nuget-org/#ensuring-your-system-uses-tls-1-2)
+is not possible (no admin rights), download the package 
+`https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_windows_amd64.zip` using the browser
+
 unzip and copy the `terraform.exe` 
 to some directory listed in the `PATH` (e.g. `c:\tools` ) or add the terraform application home directory to the `PATH`
   + in cmd
@@ -40,6 +48,179 @@ export PATH=$PATH:/c/tools
 ```powershell
 $env:path="${env:path};C:\tools"
 ```
+
+### Local File Tests
+
+```sh
+cd localfile
+terraform init
+terraform plan -out plan.zip
+```
+```sh
+unzip -tv plan.zip
+```
+```text
+Archive:  plan.zip
+    testing: tfplan                   OK
+    testing: tfstate                  OK
+    testing: tfstate-prev             OK
+    testing: tfconfig/m-/main.tf      OK
+    testing: tfconfig/modules.json    OK
+    testing: .terraform.lock.hcl      OK
+```
+```sh
+terraform  show -json |jq '.'
+```
+```json
+{
+  "format_version": "1.0",
+  "terraform_version": "1.1.2",
+  "values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "local_file.literature",
+          "mode": "managed",
+          "type": "local_file",
+          "name": "literature",
+          "provider_name": "registry.terraform.io/hashicorp/local",
+          "schema_version": 0,
+          "values": {
+            "content": "Sun Tzu said: The art of war is of vital importance to the State.\nIt is a matter of life and death, a road either to safety or to\nruin. Hence it is a subject of inquiry which can on no account be\nneglected.\n",
+            "content_base64": null,
+            "content_base64sha256": "n949xQ36N8DlPVC28AnuochfHeWOknOj5paFrFCY9QU=",
+            "content_base64sha512": "8l4lpKUzSYm7O/0k3IxNuo9LczjmRtcpisB6qSJvy85acKW5edL3KcFh6R6bffXpBNdL99lPDCkCGXpqwZwlWw==",
+            "content_md5": "ab949ed0eb41876dd7816dc270c87ca0",
+            "content_sha1": "262612c6b5e2169d098751e409cfbd26d6715ba2",
+            "content_sha256": "9fde3dc50dfa37c0e53d50b6f009eea1c85f1de58e9273a3e69685ac5098f505",
+            "content_sha512": "f25e25a4a5334989bb3bfd24dc8c4dba8f4b7338e646d7298ac07aa9226fcbce5a70a5b979d2f729c161e91e9b7df5e904d74bf7d94f0c2902197a6ac19c255b",
+            "directory_permission": "0777",
+            "file_permission": "0777",
+            "filename": "art_of_war.txt",
+            "id": "262612c6b5e2169d098751e409cfbd26d6715ba2",
+            "sensitive_content": null,
+            "source": null
+          },
+          "sensitive_values": {}
+        }
+      ]
+    }
+  }
+}
+```
+NOTE: no longer can display the contents of the applies plan:
+```sh
+terraform show -json plan.zip |jq '.'
+```
+```text
+╷
+│ Error: Saved plan is stale
+```
+will need rerun `apply`.
+```json
+{
+  "format_version": "1.2",
+  "terraform_version": "1.7.5",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "local_file.lorem",
+          "mode": "managed",
+          "type": "local_file",
+          "name": "lorem",
+          "provider_name": "registry.terraform.io/hashicorp/local",
+          "schema_version": 0,
+          "values": {
+            "content": "Lorem ipsum dolor sit amet\nconsectetur adipiscing elit\nsed do eiusmod tempor incididunt\nut labore et dolore magna aliqua\n",
+            "content_base64": null,
+            "directory_permission": "0777",
+            "file_permission": "0777",
+            "filename": "a.txt",
+            "sensitive_content": null,
+            "source": null
+          },
+          "sensitive_values": {}
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "local_file.lorem",
+      "mode": "managed",
+      "type": "local_file",
+      "name": "lorem",
+      "provider_name": "registry.terraform.io/hashicorp/local",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "content": "Lorem ipsum dolor sit amet\nconsectetur adipiscing elit\nsed do eiusmod tempor incididunt\nut labore et dolore magna aliqua\n",
+          "content_base64": null,
+          "directory_permission": "0777",
+          "file_permission": "0777",
+          "filename": "a.txt",
+          "sensitive_content": null,
+          "source": null
+        },
+        "after_unknown": {
+          "content_base64sha256": true,
+          "content_base64sha512": true,
+          "content_md5": true,
+          "content_sha1": true,
+          "content_sha256": true,
+          "content_sha512": true,
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "sensitive_content": true
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "local": {
+        "name": "local",
+        "full_name": "registry.terraform.io/hashicorp/local",
+        "version_constraint": "~> 2.5"
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "local_file.lorem",
+          "mode": "managed",
+          "type": "local_file",
+          "name": "lorem",
+          "provider_config_key": "local",
+          "expressions": {
+            "content": {
+              "constant_value": "Lorem ipsum dolor sit amet\nconsectetur adipiscing elit\nsed do eiusmod tempor incididunt\nut labore et dolore magna aliqua\n"
+            },
+            "filename": {
+              "constant_value": "a.txt"
+            }
+          },
+          "schema_version": 0
+        }
+      ]
+    }
+  },
+  "timestamp": "2024-05-14T12:25:02Z",
+    "errored": false
+}
+
+```
+```sh
+terraform apply plan.zip
+```
+### VirtualBox Tests
+
 to help it prepare `c:\Users\Serguei\.terraform\virtualbox\gold\virtualbox` need to install `tar.exe`
 https://docs.microsoft.com/en-us/virtualization/community/team-blog/2017/20171219-tar-and-curl-come-to-windows
 http://libarchive.org/downloads/libarchive-v3.5.2-win64.zip
@@ -143,7 +324,7 @@ Providers required by configuration:
 ```text
 user_data = file("${path.module}/user_data")
 ```
-* rerun init
+* re-initialize
 ```sh
 terraform init
 ```
@@ -217,7 +398,7 @@ Error: [ERROR] Unpacking image https://app.vagrantup.com/generic/boxes/alpine39/
 
 Error: [ERROR] Unpacking image https://app.vagrantup.com/generic/boxes/alpine39/versions/3.6.8/providers/virtualbox.box: unpacking gold image virtualbox.box: exit status 2
 
-  with virtualbox_vm.node[1],
+    le plwith virtualbox_vm.node[1],
   on virtualbox.tf line 9, in resource "virtualbox_vm" "node":
    9: resource "virtualbox_vm" "node" {
 
@@ -276,8 +457,7 @@ If the machine directory `c:\Users\Serguei\.terraform\virtualbox\machine\node-02
 
 ### Plugins
 
-* terraform relies on [plugins]() called "providers" in order to manage various types of resources.
-* e.g. terraform plugin for creating random ids is a 13 MB executable
+* e.g. terraform plugin for creating random ids is a 13 MB executable on Windows or Linux
 
 ```cmd
 Directory of .terraform\providers\registry.terraform.io\hashicorp\random\3.3.2\windows_amd64
@@ -285,10 +465,30 @@ Directory of .terraform\providers\registry.terraform.io\hashicorp\random\3.3.2\w
 08/19/2022  02:07 PM    <DIR>          ..
 08/19/2022  02:12 PM        14,023,168 terraform-provider-random_v3.3.2_x5.exe
 ```
-Every resource type is implemented by a provider - a provider adds a set of resource types and/or data sources that Terraform will become capable of managing
-To find available providers, [browse](https://registry.terraform.io/browse/providers) the [registry](https://registry.terraform.io)
+
+```sh
+ls -lha .terraform/providers/registry.terraform.io/hashicorp/local/2.5.1/linux_amd64/
+```
+```text
+total 14M
+drwxr-xr-x 2 sergueik sergueik 4.0K May 14 08:55 .
+drwxr-xr-x 3 sergueik sergueik 4.0K May 14 08:55 ..
+-rwxr-xr-x 1 sergueik sergueik  14M May 14 08:55 terraform-provider-local_v2.5.1_x5
+```
+### Cleanup
+
+```sh
+rm -fr .terraform
+rm -f  plan.zip
+```
 
 ### See Also
 
-* [install Terraform on Ubuntu Bionic 18.04 Server](https://www.decodingdevops.com/how-to-install-terraform-on-ubuntu-18-04-server/)
-* https://turbot.com/v5/docs/7-minute-labs/terraform
+  * [install Terraform on Ubuntu Bionic 18.04 Server](https://www.decodingdevops.com/how-to-install-terraform-on-ubuntu-18-04-server/)
+  * https://turbot.com/v5/docs/7-minute-labs/terraform
+  * https://developer.hashicorp.com/terraform/language/functions
+  * https://registry.terraform.io/browse/providers
+  * https://registry.terraform.io
+  
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
