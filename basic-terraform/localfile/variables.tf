@@ -14,8 +14,8 @@ variable "apps" {
   }
 }
 
-variable "tags" {
-  description = ""
+variable "simple_map" {
+  description = "simple map exercise"
   type        = map(any)
   default = {
     "1" = "foo",
@@ -23,7 +23,18 @@ variable "tags" {
   }
 }
 
-
+variable "complex_map" {
+  description = "complex map exercise"
+  type        = map(any)
+  default = {
+    "foo" = {
+      inner = ["foo1", "foo2", "foo3"]
+    }
+    "bar" = {
+      inner = ["bar2", "bar3", "bar4"]
+    }
+  }
+}
 variable "lines" {
   description = "text lines"
   default = [

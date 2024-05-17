@@ -13,16 +13,17 @@ terraform {
     }
   }
 }
-module "example" {
+module "basic" {
 
   source = "./modules/example"
   lines  = var.lines
   apps   = var.apps
 
 }
-module "d" {
+module "loops" {
 
-  source = "./modules/dynamic"
-  tags   = var.tags
+  source      = "./modules/dynamic"
+  simple_map  = var.simple_map
+  complex_map = var.complex_map
 
 }
