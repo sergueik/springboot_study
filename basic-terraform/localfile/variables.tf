@@ -18,8 +18,8 @@ variable "tags" {
   description = ""
   type        = map(any)
   default = {
-    "foo" = "1",
-    "bar" = "2"
+    "1" = "foo",
+    "2" = "bar"
   }
 }
 

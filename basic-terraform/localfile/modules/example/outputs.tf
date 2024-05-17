@@ -8,5 +8,5 @@ output "line2" {
 }
 
 output "line3" {
- value = var.apps["foo"]
+  value = var.apps["foo"]
 }
