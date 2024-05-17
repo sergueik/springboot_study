@@ -1,4 +1,4 @@
-### Info
+﻿### Info
 
 https://registry.terraform.io/providers/terra-farm/virtualbox/latest/docs/resources/vm
 
@@ -38,7 +38,7 @@ unzip and copy the `terraform.exe`
 to some directory listed in the `PATH` (e.g. `c:\tools` ) or add the terraform application home directory to the `PATH`
   + in cmd
 ```cmd
-PATH=%PATH%;c:\tools;
+PATH=%PATH%;c:\tools
 ```
   + in git bash
 ```sh
