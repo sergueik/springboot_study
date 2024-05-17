@@ -20,3 +20,9 @@ module "example" {
   apps   = var.apps
 
 }
+module "d" {
+
+  source = "./modules/dynamic"
+  tags   = var.tags
+
+}

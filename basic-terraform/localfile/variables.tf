@@ -14,6 +14,16 @@ variable "apps" {
   }
 }
 
+variable "tags" {
+  description = ""
+  type        = map(any)
+  default = {
+    "foo" = "1",
+    "bar" = "2"
+  }
+}
+
+
 variable "lines" {
   description = "text lines"
   default = [
