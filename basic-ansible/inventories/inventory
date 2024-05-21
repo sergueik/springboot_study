@@ -1,2 +1,4 @@
 [dummy]
-localhost
+localhost # color=lightgray
+[dummy:vars]
+color=violet
