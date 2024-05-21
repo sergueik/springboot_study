@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: yes
+  become: no
+  vars:
+    color: white
+  tasks:
+  - name: load more_vars.yaml
+    ansible.builtin.include_vars:
+      file: more_vars.yaml
+  - name: set facts
+    ansible.builtin.set_fact:
+      color: navy
+  - name: display color
+    vars:
+      color: brown
+    ansible.builtin.debug:
+      msg: color is {{ color }}
