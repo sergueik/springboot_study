@@ -1,0 +1,16 @@
+---
+- hosts: all
+  connection: local
+  gather_facts: yes
+  become: yes
+  vars:
+    filename: test.json
+  tasks:
+  - name: install jq
+    apt:
+      state: present
+      name: jq
+    tags: jq
+    when: ansible_facts['distribution'] == 'Debian' or ansible_facts['distribution'] == 'Ubuntu'
+
+
