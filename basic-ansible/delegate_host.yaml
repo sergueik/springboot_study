@@ -1,0 +1,41 @@
+---
+- hosts: all
+  connection: local
+  gather_facts: yes
+  become: yes
+  vars:
+    filename: test.json
+  tasks:
+ # - name: install micro-httpd server
+ #   apt:
+ #     state: present
+ #     name: micro-httpd
+ #   tags: micro-httpd
+  - name: install httpd server
+    apt:
+      state: present
+      name: apache2
+    tags: apache
+  - name: update home page
+    copy:
+      dest: '/var/www/html/index.html'
+      content: this is homepage
+  - name: start server
+    service:
+      enabled: true
+      state: started
+      name: apache2
+
+  - name: verify installation
+    uri:
+      url: "http://{{ inventory_hostname }}"
+      method: GET
+      timeout: 10
+      status_code: 200
+      return_content: yes
+    delegate_to: localhost
+    register: result
+  - name: print result
+    debug:
+      var: result.content
+

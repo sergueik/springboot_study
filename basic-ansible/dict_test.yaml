@@ -1,0 +1,32 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    data:
+      one: 10
+      two: '"xxx"'
+      three:
+         - one
+         - two
+         - three  
+    filename: test.txt
+  tasks:
+  - name: create file
+    copy:
+      content: |
+          {{ data['three'][2] }}
+      # backup: no
+      dest: '{{ filename }}'
+    notify: 'show file'
+
+  - name: flush handlers
+    meta: flush_handlers
+
+  handlers:
+  - name: show file
+    debug:
+      msg: "{{ filename }}"
+    # NOTE: found a duplicate dict key (debug). Using last defined value only
+    debug:
+      msg: "{{ lookup('pipe','cat {{filename}}') }}"
+

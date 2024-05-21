@@ -3,27 +3,27 @@
 terraform {
   required_providers {
     local = {
-      source = "hashicorp/local"
+      source  = "hashicorp/local"
       version = "~> 2.5"
 
-     }
+    }
     random = {
-      source = "hashicorp/random"
+      source  = "hashicorp/random"
       version = "~> 3.6"
     }
   }
 }
-resource "random_shuffle" "random_lines" {
-   input = var.lines
-}
+module "basic" {
 
-locals {
-  uppercase_lines = {for s in var.lines : s => upper(s)}
+  source = "./modules/example"
+  lines  = var.lines
+  apps   = var.apps
+
 }
-resource "local_file" "lorem" {
-  filename = "a.txt"
-  content = <<-EOF
-    ${join("\n",  var.lines)}
-  EOF
-  
+module "loops" {
+
+  source      = "./modules/dynamic"
+  simple_map  = var.simple_map
+  complex_map = var.complex_map
+
 }
