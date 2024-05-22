@@ -17,25 +17,25 @@ which terraform
 ```text
 /usr/local/bin/terraform
 ```
-on Windows
+on Windows (64-bit)
 
 ```powershell
 [Net.ServicePointManager]::SecurityProtocol = 'Tls12, Tls11, Tls, Ssl3'
 $VERSION='1.7.5'
 invoke-webrequest -uri https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_windows_amd64.zip -OutFile terraform_${VERSION}_windows_amd64.zip
 ```
-* NOTE: the 32-bit version `terraform_${VERSION}_windows_386.zip` often exists.
+* NOTE: the 32-bit version `terraform_${VERSION}_windows_386.zip` also exists
 
 if the error still shows 
 ```text
 invoke-webrequest : The request was aborted: Could not create SSL/TLS securechannel.
 ```
 and the [registry fix](https://devblogs.microsoft.com/nuget/deprecating-tls-1-0-and-1-1-on-nuget-org/#ensuring-your-system-uses-tls-1-2)
-is not possible (no admin rights), download the package 
-`https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_windows_amd64.zip` using the browser
+is not possible (no admin rights), download the package using the browser using the exact download url 
+`https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_windows_amd64.zip` or download page `https://developer.hashicorp.com/terraform/install`
 
 unzip and copy the `terraform.exe` 
-to some directory listed in the `PATH` (e.g. `c:\tools` ) or add the terraform application home directory to the `PATH`
+to some directory listed in the `PATH` (e.g. `c:\tools` ) or add the terraform application home directory to the `PATH`, the exact syntax varies with the shell
   + in cmd
 ```cmd
 PATH=%PATH%;c:\tools
