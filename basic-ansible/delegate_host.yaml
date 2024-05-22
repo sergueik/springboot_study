@@ -6,25 +6,31 @@
   vars:
     filename: test.json
   tasks:
- # - name: install micro-httpd server
- #   apt:
- #     state: present
- #     name: micro-httpd
- #   tags: micro-httpd
-  - name: install httpd server
-    apt:
-      state: present
-      name: apache2
-    tags: apache
-  - name: update home page
-    copy:
-      dest: '/var/www/html/index.html'
-      content: this is homepage
-  - name: start server
-    service:
-      enabled: true
-      state: started
-      name: apache2
+  - name: install web server on centos
+    tags: server
+    when: "'centos' in ansible_facts['distribution']"
+    block:
+      - name: debug
+        debug:
+          msg: pass
+  - name: install web server on ubuntu
+    tags: server
+    when: ansible_facts['distribution'] == 'Debian' or ansible_facts['distribution'] == 'Ubuntu'
+    block:
+      - name: install package
+        apt:
+          state: present
+          name: apache2
+        tags: apache
+      - name: update home page
+        copy:
+          dest: '/var/www/html/index.html'
+          content: this is homepage
+      - name: start server
+        service:
+          enabled: true
+          state: started
+          name: apache2
 
   - name: verify installation
     uri:
