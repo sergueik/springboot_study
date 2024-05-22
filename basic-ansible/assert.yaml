@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  become: no
+  vars:
+    filename: test.json
+  tasks:
+  - name: ensure variable is defined
+    tags:
+      - always
+    assert:
+      that:
+        - filename is defined
+        - (filename  == 'test.txt') or (filename == 'test.json' ) 
+      success_msg: >
+        assertion passed
+      fail_msg: |
+        assertion failed
+
+
