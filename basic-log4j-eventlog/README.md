@@ -427,7 +427,8 @@ Caused by: com.sun.jna.platform.win32.Win32Exception: Access is denied.
   * [guide To Logback](https://www.baeldung.com/logback)
   * https://learn.microsoft.com/en-us/windows/win32/wes/identifying-the-provider?redirectedfrom=MSDN
   * https://stackoverflow.com/questions/12862697/difference-between-different-eventlogmessages-dll-in-net-framework-folders
-
+  * https://howtodoinjava.com/log4j2/levelrangefilter-example/
+  * https://stackoverflow.com/questions/24932539/migrating-from-log4j-1-2-to-log4j-2-levelrangefilter
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
