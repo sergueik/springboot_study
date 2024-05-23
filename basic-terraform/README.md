@@ -482,6 +482,38 @@ rm -fr .terraform
 rm -f  plan.zip
 ```
 
+### NOTE
+On Windows Powershell or CMD console, need to provide the `-no-color` option to suppress ANSI color escape code sequences from being printed to console verbabtim:
+
+```powershell
+terraform plan
+```
+```text
+	 [0m [1maws_instance.ec2: Refreshing state... [id=i-0631110fe9edee7ac] [0m
+Terraform will perform the following actions:
+
+ [1m  # aws_instance.ec2 [0m will be updated in-place [0m [0m
+ [0m   [33m~ [0m [0m resource "aws_instance" "ec2" {
+         [1m [0mid [0m [0m                                   = "i-0631110fe9edee
+7ac"
+       [33m~ [0m  [0m [1m [0minstance_type [0m [0m                        = "t2.
+nano"  [33m-> [0m  [0m"t2.micro"
+         [1m [0mtags [0m [0m                                 = {}
+         [90m# (28 unchanged attributes hidden) [0m [0m
+
+
+
+
+
+
+
+
+         [90m# (8 unchanged blocks hidden) [0m [0m
+    }
+
+ [0m [1mPlan: [0m 0 to add, 1 to change, 0 to destroy.
+ [0m [90m
+```
 ### See Also
 
   * [install Terraform on Ubuntu Bionic 18.04 Server](https://www.decodingdevops.com/how-to-install-terraform-on-ubuntu-18-04-server/)
@@ -489,6 +521,7 @@ rm -f  plan.zip
   * https://developer.hashicorp.com/terraform/language/functions
   * https://registry.terraform.io/browse/providers
   * https://registry.terraform.io
-  
+  * [terraform CLI Configuration File](https://developer.hashicorp.com/terraform/cli/config/config-file) - `.terraformrc` or `terraform.rc`
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
