@@ -16,6 +16,8 @@
       <PatternLayout>
         <pattern>[%level]%nLogger: %logger{2}%nMessage: %message</pattern>
       </PatternLayout>
+      <!-- https://logging.apache.org/log4j/2.x/javadoc/log4j-core/org/apache/logginvg/log4j/core/filter/LevelRangeFilter.html -->
+      <LevelRangeFilter minLevel="WARN" maxLevel="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
     </Win32EventLog>
      <Win32EventLog name="EventLog42" messageId="42" eventMessageFile="${dllfile}" categoryMessageFile="${dllfile}" source="example.log4jna_sample" application="log4jna_sample">
       <PatternLayout>
@@ -23,7 +25,7 @@
       </PatternLayout>
     </Win32EventLog></Appenders>
   <Loggers>
-    <Root level="trace">
+    <Root level="TRACE">
       <AppenderRef ref="Console"/>
       <AppenderRef ref="EventLog42"/>
       <AppenderRef ref="EventLog43"/>
