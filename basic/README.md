@@ -231,7 +231,7 @@ docker container rm $NAME
   * [introduction to JsonPath](https://www.baeldung.com/guide-to-jayway-jsonpath)
   * [how to](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-18-04) install Docker Compose from the Docker’s GitHub repository  
   * [docker routing](https://codepoetry.ru/post/docker-user-iptables/)(in Russian)
-
+  * `@Autowired` and `@InjectMocks` in [Spring Boot testing](https://www.baeldung.com/spring-test-autowired-injectmocks)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
