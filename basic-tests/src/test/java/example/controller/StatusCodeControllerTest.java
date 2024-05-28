@@ -113,6 +113,7 @@ public class StatusCodeControllerTest {
 
 	@Test
 	public void test7() {
+		int timeout = 5000;
 		Exception exception = assertThrows(Exception.class, () -> {
 			int retry = 5;
 			int statusValue = HttpStatus.SERVICE_UNAVAILABLE.value();
@@ -121,11 +122,11 @@ public class StatusCodeControllerTest {
 				try {
 					responseEntity = restTemplate.getForEntity(url, String.class);
 				} catch (RestClientException e1) {
+
 					System.err.println("Processing exception: " + e1.getMessage());
-					if (e1.getMessage().matches(String.format(".*\\b503\\b.*", statusValue))) {
-						// wait 5 second
+					if (e1.getMessage().indexOf("" + statusValue) != -1) {
 						try {
-							Thread.sleep(5000);
+							Thread.sleep(timeout);
 						} catch (InterruptedException e2) {
 							e2.printStackTrace();
 						}
