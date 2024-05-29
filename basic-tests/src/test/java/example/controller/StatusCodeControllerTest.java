@@ -28,6 +28,10 @@ import org.springframework.web.client.RestClientException;
 @PropertySource("classpath:application.properties")
 
 // https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/HttpStatus.html
+// see also: https://www.baeldung.com/spring-retry
+// https://www.baeldung.com/spring-async-retry
+// https://www.baeldung.com/spring-boot-resilience4j
+// https://www.baeldung.com/resilience4j
 public class StatusCodeControllerTest {
 	@LocalServerPort
 	private int randomServerPort = 8085;
@@ -43,25 +47,8 @@ public class StatusCodeControllerTest {
 	public void setUp() {
 
 	}
-
-	@Disabled("need to find a different way to confirm HTTP Status 400 Bad Request")
 	@Test
 	public void test1() throws Exception {
-		url = "http://localhost:" + randomServerPort + route;
-		responseEntity = restTemplate.getForEntity(url, String.class);
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
-	}
-
-	@Disabled("need to find a different way to confirm HTTP Status 404 Not Found")
-	@Test
-	public void test2() throws Exception {
-		url = "http://localhost:" + randomServerPort + route + "?code=404";
-		responseEntity = restTemplate.getForEntity(url, String.class);
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.NOT_FOUND));
-	}
-
-	@Test
-	public void test3() throws Exception {
 		for (HttpStatus status : Arrays.asList(HttpStatus.NOT_MODIFIED, HttpStatus.ALREADY_REPORTED)) {
 			int statusValue = status.value();
 			url = "http://localhost:" + randomServerPort + route + "?code=" + statusValue;
@@ -71,10 +58,11 @@ public class StatusCodeControllerTest {
 	}
 
 	@Test
-	public void test4() {
+	public void test2() {
 
 		for (HttpStatus status : Arrays.asList(HttpStatus.NOT_IMPLEMENTED, HttpStatus.SERVICE_UNAVAILABLE,
-				HttpStatus.UNAUTHORIZED, HttpStatus.TOO_MANY_REQUESTS, HttpStatus.NOT_FOUND, HttpStatus.GONE)) {
+				HttpStatus.FORBIDDEN, HttpStatus.UNAUTHORIZED, HttpStatus.TOO_MANY_REQUESTS, HttpStatus.BAD_REQUEST,
+				HttpStatus.NOT_FOUND, HttpStatus.GONE)) {
 
 			int statusValue = status.value();
 			url = "http://localhost:" + randomServerPort + route + "?code=" + statusValue;
@@ -92,8 +80,8 @@ public class StatusCodeControllerTest {
 	}
 
 	@Test
-	public void test5() {
-		for (int status : Arrays.asList(501, 503, 403, 429, 404, 410)) {
+	public void test3() {
+		for (int status : Arrays.asList(501, 503, 401, 403, 429, 400, 404, 410)) {
 			url = "http://localhost:" + randomServerPort + route + "?code=" + status;
 			Exception exception = assertThrows(Exception.class, () -> {
 				responseEntity = restTemplate.getForEntity(url, String.class);
@@ -103,7 +91,7 @@ public class StatusCodeControllerTest {
 	}
 
 	@Test
-	public void test6() {
+	public void test4() {
 		url = "http://localhost:" + randomServerPort + route;
 		Exception exception = assertThrows(Exception.class, () -> {
 			responseEntity = restTemplate.getForEntity(url, String.class);
@@ -112,7 +100,7 @@ public class StatusCodeControllerTest {
 	}
 
 	@Test
-	public void test7() {
+	public void test5() {
 		int timeout = 5000;
 		Exception exception = assertThrows(Exception.class, () -> {
 			int retry = 5;
