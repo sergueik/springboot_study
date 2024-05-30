@@ -1,3 +1,7 @@
+### Info
+
+DES/SHA256 symmetric encryption example
+
 ### Usage
  * build applications:
 
@@ -38,3 +42,8 @@ test
   * [example](https://github.com/Mystery00/go-jasypt) of `PBEWithHMACSHA512AndAES_256` - somewhat excessive breakdown into chained classes (~ 13 source files) with only two needed `pbe_hmacsha512_aes256.go` and `pbe_md5_des.go`, rest are iterfaces and proxy classes - need flatten  before being useful
   * [command line client for the same](https://github.com/brunofjesus/jasypt-cli)
   * [example](https://github.com/wispeeer/jasypt-go) of an Jasypt non compatible project
+  * [PBKDF2 in c#](https://github.com/sergueik/powershell_samples/tree/master/csharp/pbkdf2-csharp) AES 256 bits Encryption Library with Salt which is not compatible with this project
+
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
