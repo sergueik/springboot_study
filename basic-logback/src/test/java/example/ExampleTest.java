@@ -2,6 +2,7 @@ package example;
 
 import org.junit.Test;
 import org.apache.commons.lang3.StringUtils;
+import org.assertj.core.util.Arrays;
 
 import static org.junit.Assert.assertTrue;
 
@@ -23,18 +24,27 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class ExampleTest {
+	//
 	@Test
 	public void contextLoads() {
-		int value = 1145;
+		int value = Integer.parseInt("10001111001", 2);
+		// value = 139;
+		System.err.println("Value: " + value);
 		String result = Integer.toString(value, 2);
-		System.err.println("Result: " + result);
-		// value = value >> 1;
-		// result = Integer.toBinaryString(value);
-		// System.err.println("Result: " + result);
-		int length = measureGap(value);
-		assertTrue(result.contains(StringUtils.repeat("0", length)));
+		System.err.println("Value (binary): " + result);
+		result = Integer.toBinaryString(value);
+		System.err.println("Value (binary): " + result);
+		result = intToBinaryString(value);
+		System.err.println("Value (binary): " + result);
 
-		Stream.generate(() -> "0").limit(length).collect(Collectors.joining());
+		System.err.println("Value (check): " + binaryToInteger(result));
+		int length = measureGap(value);
+		System.err.println("Longest gap: " + length);
+		assertTrue(result.contains(StringUtils.repeat("0", length)));
+		String mask = Stream.generate(() -> "0").limit(length).collect(Collectors.joining());
+		assertTrue(result.contains(mask));
+		mask = StringUtils.repeat("0", length);
+		assertTrue(result.contains(mask));
 		// assertTrue(result.contains("0".repeat(length)));
 	}
 
@@ -63,6 +73,23 @@ public class ExampleTest {
 		return best;
 	}
 
+	// based on:
+	// https://stackoverflow.com/questions/10178980/how-to-convert-a-binary-string-to-a-base-10-integer-in-java
+	public int binaryToInteger(String binString) {
+		String[] digits = binString.split("");
+		// System.err.println("digits: " + Arrays.asList(digits));
+		int value = 0;
+		int pow = 1;
+		int count = 0;
+		for (int i = digits.length - 1; i >= 0; i--) {
+			// System.err.println("Digit: " + digits[i]);
+			value += (digits[i].compareTo("1") == 0) ? pow : 0;
+			pow = pow << 1;
+		}
+		return value;
+
+	}
+
 	public int measureGap(int value) {
 		int best = 0;
 		int gap = 0;
@@ -88,24 +115,27 @@ public class ExampleTest {
 				return best;
 			}
 		}
-		// return 0;
 	}
 
 	// see also
 	// https://stackoverflow.com/questions/5263187/print-an-integer-in-binary-format-in-java
-	public static String intToString(int number, int groupSize) {
+	// https://www.baeldung.com/java-print-integer-binary
+
+	public static String intToBinaryString(int value) {
 		StringBuilder result = new StringBuilder();
-
-		for (int i = 31; i >= 0; i--) {
-			int mask = 1 << i;
-			result.append((number & mask) != 0 ? "1" : "0");
-
-			if (i % groupSize == 0)
-				result.append(" ");
+		if (value == 0) {
+			return "0";
 		}
-		result.replace(result.length() - 1, result.length(), "");
-
-		return result.toString();
+		while (true) {
+			if (value == 0) {
+				result = result.reverse();
+				return result.toString();
+			}
+			int remainder = value % 2;
+			// appending
+			result.append(remainder);
+			value /= 2;
+		}
 	}
 
 }
