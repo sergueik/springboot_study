@@ -21,6 +21,13 @@ docker build -t $NAME -f Dockerfile .
 docker container rm $NAME
 
 docker run -p 3230:3230 --name $NAME -v /var/run/docker.sock:/var/run/docker.sock $NAME
+
+```
+
+optionally run using host `docker`:
+```sh
+docker run -p 3230:3230 --name $NAME -v /usr/local/bin/docker:/usr/local/bin/docker -v /var/run/docker.sock:/var/run/docker.sock $NAME
+
 ```
 NOTE: the original project was providing an invalid run command which attempts to map both the docker socket and the binary from the host into the container. The socker is the correct way to let docker process running in container access host inventory, but the binary is not compabile
 We install client locally in the contianer and only mount volume for socket
