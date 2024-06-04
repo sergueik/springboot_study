@@ -1,7 +1,29 @@
-# terraform cache
+# terraform
 
-**/terraform.tfstate*
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
 *box
 *out
+
+# provider hashes state lock and downloaded cache
 **/.terraform.lock.*
-**/.terraform/**
+**/.terraform/providers/**
+
+# local .terraform directories
+**/.terraform/*
+
+
+# crash log files
+crash.log
+
+# .tfvars files, not limited to "secret.tfvars" commonly used contain sentitive data
+*.tfvars
+
+# override files comonly used to override resources locally
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+

@@ -24,6 +24,11 @@ on Windows (64-bit)
 $VERSION='1.7.5'
 invoke-webrequest -uri https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_windows_amd64.zip -OutFile terraform_${VERSION}_windows_amd64.zip
 ```
+if you see the [error](https://stackoverflow.com/questions/2859790/the-request-was-aborted-could-not-create-ssl-tls-secure-channel)
+```text
+invoke-webrequest : The request was aborted: Could not create SSL/TLS secure channel.
+```
+the quickest is to use the browser to download.
 * NOTE: the 32-bit version `terraform_${VERSION}_windows_386.zip` also exists
 
 if the error still shows 
@@ -513,6 +518,16 @@ nano"  [33m-> [0m  [0m"t2.micro"
 
  [0m [1mPlan: [0m 0 to add, 1 to change, 0 to destroy.
  [0m [90m
+```
+
+to avoid re-running `init`, can copy the hidden directory and file with provider info:
+```cmd
+robocopy.exe /s ..\ec2\.terraform .\.terraform
+copy ..\ec2\.terraform.lock.hcl .
+```
+```sh
+cp -R ../ec2/.terraform .
+cp ../ec2/.terraform.lock.hcl .
 ```
 ### See Also
 
