@@ -480,6 +480,17 @@ drwxr-xr-x 2 sergueik sergueik 4.0K May 14 08:55 .
 drwxr-xr-x 3 sergueik sergueik 4.0K May 14 08:55 ..
 -rwxr-xr-x 1 sergueik sergueik  14M May 14 08:55 terraform-provider-local_v2.5.1_x5
 ```
+```text
+ls -hal .terraform/providers/registry.terraform.io/kreuzwerker/docker/3.0.2/linux_amd64/
+total 18M
+drwxr-xr-x 2 sergueik sergueik 4.0K Jun  9 02:37 .
+drwxr-xr-x 3 sergueik sergueik 4.0K Jun  9 02:37 ..
+-rw-r--r-- 1 sergueik sergueik  26K Jun  9 02:37 CHANGELOG.md
+-rw-r--r-- 1 sergueik sergueik  17K Jun  9 02:37 LICENSE
+-rw-r--r-- 1 sergueik sergueik 4.3K Jun  9 02:37 README.md
+-rwxr-xr-x 1 sergueik sergueik  18M Jun  9 02:37 terraform-provider-docker_v3.0.2
+
+```
 ### Cleanup
 
 ```sh

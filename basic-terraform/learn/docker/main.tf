@@ -8,26 +8,31 @@ terraform {
   }
 }
 locals {
-  version = "3.9.5"
+  version = "latest"
 }
 provider "docker" {
   // for ubuntu: 
-  host = "unix:///var/run/docker.sock"
-  // for Windows 8.x Docker ToolBox ??
-  //   host = "tcp://192.168.99.100:2376"
-  // NOTE: does not work:
-  // # 2024-06-08T20:31:51.061-0400 [DEBUG] provider.stdio: received EOF, stopping recv loop: err="rpc error: code = Unavailable desc = error reading from server: EOF"
+  // host = "unix:///var/run/docker.sock"
+  // Windows 8.x Docker ToolBox running in Virtual Box
+  // use docker-toolbox ip 
+  host = "tcp://192.168.99.100:2376"
   // Windows 10 Docker
   // see also: (get-childitem \\.\pipe\).FullName
-  // host = "npipe:////.//pipe//docker_engine"
+  // host = "pipe:////.//pipe/"
 }
-
-resource "docker_image" "alpine" {
-  name = "alpine:${local.version}"
+// https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs/resources/image
+resource "docker_image" "nginx" {
+  name         = "nginx:${local.version}"
+  keep_locally = true
 }
+// https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs/resources/container
+resource "docker_container" "nginx_test" {
+  image = docker_image.nginx.image_id
+  name  = "nginx_test"
+  ports {
+    internal = 80
+    external = 8000
+  }
 
-resource "docker_container" "alpine_test" {
-  image = docker_image.alpine.image_id
-  name  = "alpine_test"
 }
 
