@@ -527,9 +527,60 @@ copy ..\ec2\.terraform.lock.hcl .
 ```
 ```sh
 cp -R ../ec2/.terraform .
+
 cp ../ec2/.terraform.lock.hcl .
 ```
+
+### Docker Provider
+fails with warning on Linux:
+```text
+2024-06-09T02:41:15.253+0200 [WARN]  Provider "provider[\"registry.terraform.io/kreuzwerker/docker\"]" produced an unexpected new value for docker_container.alpine_test, but we are tolerating it because it is using the legacy plugin SDK.
+    The following problems may be the cause of any confusing errors from downstream operations:
+      - .privileged: was null, but now cty.False
+      - .network_mode: was null, but now cty.StringVal("default")
+      - .memory: was null, but now cty.NumberIntVal(0)
+      - .memory_swap: was null, but now cty.NumberIntVal(0)
+      - .user: was null, but now cty.StringVal("")
+      - .max_retry_count: was null, but now cty.NumberIntVal(0)
+      - .userns_mode: was null, but now cty.StringVal("")
+      - .cpu_set: was null, but now cty.StringVal("")
+      - .working_dir: was null, but now cty.StringVal("")
+      - .cpu_shares: was null, but now cty.NumberIntVal(0)
+      - .domainname: was null, but now cty.StringVal("")
+      - .publish_all_ports: was null, but now cty.False
+      - .pid_mode: was null, but now cty.StringVal("")
+
+
+
+
+```
+
+the conatiner is created but there is no service causing it to exit:
+```sh
+docker container ls
+```
+```text
+CONTAINER ID   IMAGE          COMMAND     CREATED         STATUS                     PORTS     NAMES
+3ac610b99dc7   82f67be598eb   "/bin/sh"   2 minutes ago   Exited (0) 2 minutes ago             alpine_test
+
+
+```
+uncommenting the `host` argument,
+```hcl
+provider "docker" {
+  host = "unix:///var/run/docker.sock"
+}
+```
+leads to better interplay between Docker and Terraform but the container exit still not processed properly:
+```text
+2024-06-09T02:47:15.693+0200 [ERROR] vertex "docker_container.alpine_test" error: timeout while waiting for state to become 'running' (last state: 'pending', timeout: 15s): container exited immediately
+╷
+│ Error: timeout while waiting for state to become 'running' (last state: 'pending', timeout: 15s): container exited immediately
+│
+
+```
 ### See Also
+
 
   * [install Terraform on Ubuntu Bionic 18.04 Server](https://www.decodingdevops.com/how-to-install-terraform-on-ubuntu-18-04-server/)
   * https://turbot.com/v5/docs/7-minute-labs/terraform
