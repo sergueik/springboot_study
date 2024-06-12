@@ -104,7 +104,8 @@ public class StatusCodeControllerTest {
 	@Test
 	public void test5() {
 		int timeout = 5000;
-		Exception exception = assertThrows(RestClientException.class, () -> {
+		// NOTE: throwing an unchecked exception
+		Exception exception = assertThrows(RuntimeException.class, () -> {
 			int retry = 5;
 			int statusValue = HttpStatus.SERVICE_UNAVAILABLE.value();
 			url = "http://localhost:" + randomServerPort + route + "?code=" + statusValue;
