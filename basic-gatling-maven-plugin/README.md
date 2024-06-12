@@ -1,11 +1,15 @@
 ### Info
-fork of [gatling Maven plugin](https://github.com/gatling/gatling-maven-plugin-demo-java) Java demo project trimmed to perform parallel data upkoads for performance analysis
+this directory contains 
+fork of [gatling Maven plugin](https://github.com/gatling/gatling-maven-plugin-demo-java) Java demo project trimmed to perform parallel data uploads for performance analysis
 
 ### Usage
 
-* start double server
+* start caching server in `sqlite_hibernate2`
 
 ```sh
+cd ..\sqlite_hibernate2
+mkdir %USERPROFILE%\sqlite
+copy src\main\resources\springboot.db %userprofile%\sqlite
 mvn spring-boot:run
 ```
 
@@ -18,10 +22,9 @@ mvn gatling:test
 
 ```text
 ...
+2024-06-11 19:45:54.391  INFO 4556 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8085 (http)
 .TomcatWebServer  : Tomcat started on port(s): 8085 (http) with context path ''
-2023-05-09 19:41:42.368  INFO 1804 --- [           main] example.Application
-                  : Started Application in 5.204 seconds (JVM running for 6.062)
-
+2023-05-09 19:41:42.368  INFO 1804 --- [           main] example.Application                      : Started Application in 5.204 seconds (JVM running for 6.062)
 2023-05-09 19:48:56.691  INFO 1804 --- [nio-8085-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
 2023-05-09 19:48:56.697  INFO 1804 --- [nio-8085-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
 2023-05-09 19:48:56.720  INFO 1804 --- [nio-8085-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 20 ms

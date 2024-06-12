@@ -1,6 +1,6 @@
 package example;
 /**
- * Copyright 2021 Serguei Kouzmine
+ * Copyright 2021,2023 Serguei Kouzmine
  */
 
 import static io.gatling.javaapi.core.CoreDsl.*;
@@ -15,7 +15,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.Map;
 import java.util.HashMap;
 
-// based on: https://github.com/gatling/gatling-maven-plugin-demo-java/blob/main/src/test/java/computerdatabase/ComputerDatabaseSimulation.java#L5
+// NOTE: to prevent gatling-maven-plugin "More than 1 simulation to run" error 
+// need to rename to class  
+
 public class LoadSimulation extends Simulation {
 
 	private final static Map<String, String> sentHeaders = new HashMap<>();

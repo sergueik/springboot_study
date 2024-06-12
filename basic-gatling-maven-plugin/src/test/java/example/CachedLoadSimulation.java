@@ -1,6 +1,6 @@
 package example;
 /**
- * Copyright 2023 Serguei Kouzmine
+ * Copyright 2023,2024 Serguei Kouzmine
  */
 
 import static io.gatling.javaapi.core.CoreDsl.*;
@@ -14,7 +14,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import java.util.Map;
 import java.util.HashMap;
-
 // based on: https://github.com/gatling/gatling-maven-plugin-demo-java/blob/main/src/test/java/computerdatabase/ComputerDatabaseSimulation.java#L5
 public class CachedLoadSimulation extends Simulation {
 
