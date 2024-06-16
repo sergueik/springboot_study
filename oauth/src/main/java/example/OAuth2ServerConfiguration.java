@@ -25,8 +25,7 @@ public class OAuth2ServerConfiguration {
 
 	@Configuration
 	@EnableResourceServer
-	protected static class ResourceServerConfiguration
-			extends ResourceServerConfigurerAdapter {
+	protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
 		@Override
 		public void configure(ResourceServerSecurityConfigurer resources) {
@@ -35,15 +34,13 @@ public class OAuth2ServerConfiguration {
 
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().antMatchers("/users").hasRole("ADMIN")
-					.antMatchers("/greeting").authenticated();
+			http.authorizeRequests().antMatchers("/users").hasRole("ADMIN").antMatchers("/greeting").authenticated();
 		}
 	}
 
 	@Configuration
 	@EnableAuthorizationServer
-	protected static class AuthorizationServerConfiguration
-			extends AuthorizationServerConfigurerAdapter {
+	protected static class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
 		private TokenStore tokenStore = new InMemoryTokenStore();
 
@@ -55,19 +52,15 @@ public class OAuth2ServerConfiguration {
 		private CustomUserDetailsService userDetailsService;
 
 		@Override
-		public void configure(AuthorizationServerEndpointsConfigurer endpoints)
-				throws Exception {
-			endpoints.tokenStore(this.tokenStore)
-					.authenticationManager(this.authenticationManager)
+		public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+			endpoints.tokenStore(this.tokenStore).authenticationManager(this.authenticationManager)
 					.userDetailsService(userDetailsService);
 		}
 
 		@Override
-		public void configure(ClientDetailsServiceConfigurer clients)
-				throws Exception {
-			clients.inMemory().withClient("clientapp")
-					.authorizedGrantTypes("password", "refresh_token").authorities("USER")
-					.scopes("read", "write").resourceIds(RESOURCE_ID).secret("123456");
+		public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+			clients.inMemory().withClient("clientapp").authorizedGrantTypes("password", "refresh_token")
+					.authorities("USER").scopes("read", "write").resourceIds(RESOURCE_ID).secret("123456");
 		}
 
 		@Bean

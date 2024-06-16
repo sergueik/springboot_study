@@ -83,6 +83,20 @@ curl -X POST -vsu clientapp:123456 http://127.0.0.1:8080/oauth/token -H "Accept:
 { [178 bytes data]
 * Connection #0 to host 127.0.0.1 left intact
 ```
+
+```sh
+curl -s -H '{"access_token":"815d7333-85ec-42d8-976c-d2408df8aa68","token_type":"bearer","refresh_token":"9fff459f-feb9-4440-aee8-967a54135570","expires_in":42711,"scope":"read write"}' -XPOST -s http://127.0.0.1:8080/login
+```
+```json
+{
+  "timestamp": 1718552007993,
+  "status": 403,
+  "error": "Forbidden",
+  "message": "Could not verify the provided CSRF token because your session was not found.",
+  "path": "/login"
+}
+
+```
 ### See also
 
   * Example [wingyplus/robotframework-serverspeclibrary](https://github.com/wingyplus/robotframework-serverspeclibrary)
