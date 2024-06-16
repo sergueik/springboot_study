@@ -5,6 +5,8 @@ package example;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -16,15 +18,12 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.apache.commons.lang3.StringUtils;
-// import org.assertj.core.util.Arrays;
 
-import static org.junit.Assert.assertTrue;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -83,6 +82,7 @@ public class GapTest {
 	// based on:
 	// https://stackoverflow.com/questions/10178980/how-to-convert-a-binary-string-to-a-base-10-integer-in-java
 	public int binaryToInteger(String binString) {
+		
 		String[] digits = binString.split("");
 		// System.err.println("digits: " + Arrays.asList(digits));
 		int value = 0;
