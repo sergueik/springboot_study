@@ -3,12 +3,16 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.springframework</groupId>
   <artifactId>spring-rest-service-oauth</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.3.0.RC1</version>
+   <!-- <version>1.3.0.RC1</version>-->
+<!-- NOTE: package org.springframework.boot.context.web does not exist in springboot 1.5.4.RELEASE
+https://stackoverflow.com/questions/38413594/org-springframework-boot-web-support-does-not-exist
+ -->
+  <version>1.5.4.RELEASE</version> 
   </parent>
   <properties>
     <java.version>1.8</java.version>
