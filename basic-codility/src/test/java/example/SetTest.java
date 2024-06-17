@@ -26,6 +26,13 @@ public class SetTest {
 		assertEquals('8', res);
 	}
 
+	static String data1 = "12356722240";
+	@Test
+	public void test5() {
+		String data2 = String.valueOf("12356722240");
+		assertTrue(data1 == data2);
+	}
+
 	public char isAbsent(String data) {
 		Set<Integer> present = new HashSet<>();
 		char[] letters = data.toCharArray();

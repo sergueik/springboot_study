@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
 
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -23,7 +22,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.apache.commons.lang3.StringUtils;
-
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,6 +46,14 @@ public class GapTest {
 		System.err.println("Longest gap: " + length);
 		assertTrue(result.contains(StringUtils.repeat("0", length)));
 		String mask = Stream.generate(() -> "0").limit(length).collect(Collectors.joining());
+
+		/*
+		 * List<String> sortedList = list.stream()
+		 * .sorted(Comparator.naturalOrder()) .collect(Collectors.toList());
+		 * 
+		 * List<String> sortedList = list.stream() .sorted((o1,o2)->
+		 * o1.compareTo(o2)) .collect(Collectors.toList());
+		 */
 		assertTrue(result.contains(mask));
 		mask = StringUtils.repeat("0", length);
 		assertTrue(result.contains(mask));
@@ -82,7 +88,7 @@ public class GapTest {
 	// based on:
 	// https://stackoverflow.com/questions/10178980/how-to-convert-a-binary-string-to-a-base-10-integer-in-java
 	public int binaryToInteger(String binString) {
-		
+
 		String[] digits = binString.split("");
 		// System.err.println("digits: " + Arrays.asList(digits));
 		int value = 0;

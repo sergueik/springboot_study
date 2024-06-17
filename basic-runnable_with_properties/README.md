@@ -46,6 +46,7 @@ comment the value in the `src\main\resources\application.properties`, then obser
    * https://stackoverflow.com/questions/15818839/value-annotation-doesnt-return-a-value
    * https://stackoverflow.com/questions/5853167/runnable-with-a-parameter
    * https://www.baeldung.com/java-thread-parameters
+   * [Runnable vs. Callable in Java](https://www.baeldung.com/java-runnable-callable)
    * [Quick Guide to Spring Bean Scopes](https://www.baeldung.com/spring-bean-scopes)
    * [Custom Scope in Spring](https://www.baeldung.com/spring-custom-scope)
 ### Author

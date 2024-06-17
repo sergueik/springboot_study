@@ -47,6 +47,8 @@ public class Application {
 	private void executeTask() {	
 		ExecutorService executorService = Executors.newSingleThreadExecutor();
 		Future future = executorService.submit(eventLoggingTask);
+		// to return result, switch to Callable
+		// future.get();
 		executorService.shutdown();
 	}
 }

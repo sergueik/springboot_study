@@ -10,6 +10,7 @@ import example.config.Config;
 
 @Component
 // NOTE: "scope" annotation is optional here
+// https://www.baeldung.com/java-pattern-prototype
 @Scope("prototype")
 public class EventLoggingTask implements Runnable {
 	private Logger logger = LoggerFactory.getLogger(EventLoggingTask.class);
