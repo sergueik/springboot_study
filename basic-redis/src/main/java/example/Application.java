@@ -4,13 +4,16 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.params.SetParams;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
@@ -26,25 +29,30 @@ public class Application {
 		SpringApplication.run(Application.class, args);
 	}
 
-	private int secondsExpire = 10;
-
 	@GetMapping
-	public String hello() throws InterruptedException {
+	public String hello(@RequestParam(name = "ex") Optional<Integer> secondsExpire) throws InterruptedException {
 		StringBuffer data = new StringBuffer();
 
-		SetParams setParams = new SetParams();
-		setParams.ex(secondsExpire);
 		jedis = new Jedis(host, Integer.parseInt(port), 10000);
 		data.append(String.format("Connection to Redis server %s %s sucessful\n", host, port));
 		data.append("Server is running: " + jedis.ping() + "\n");
 
-		jedis.set("title", "Redis tutorial", setParams);
+		if (secondsExpire.isPresent()) {
+			System.err.println(String.format("Expire in %d second", secondsExpire.get()));
+			SetParams setParams = new SetParams();
+			setParams.ex(secondsExpire.get());
+			jedis.set("title", "Redis tutorial", setParams);
+		} else {
+			jedis.set("title", "Redis tutorial");
+		}
 		data.append("Stored string: " + jedis.get("title") + "\n");
 
 		jedis.lpush("numbers", Double.valueOf(1).toString());
 		jedis.lpush("numbers", Double.valueOf(2).toString());
 		jedis.lpush("numbers", Double.valueOf(3).toString());
-		Thread.sleep(10000);
+		if (secondsExpire.isPresent()) {
+			Thread.sleep((secondsExpire.get() + 1) * 1000);
+		}
 		List<Double> numbers = jedis.lrange("numbers", 0, 10).stream().map(o -> Double.valueOf(o))
 				.collect(Collectors.toList());
 		data.append("Stored range of numbers: "
@@ -60,3 +68,4 @@ public class Application {
 
 	}
 }
+
