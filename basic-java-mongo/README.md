@@ -11,7 +11,7 @@ docker pull mvertes/alpine-mongo
 * run mongo standalone
 ```sh
 IMAGE='mvertes/alpine-mongo'
-CONTAINER=mongo-serviceo:14
+CONTAINER=mongo-service
 docker container prune -f
 docker run -d --name $CONTAINER -p 27717:27017 -i $IMAGE
 ```
