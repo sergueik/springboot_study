@@ -27,6 +27,8 @@ docker container prune -f
   * https://github.com/itxwnet/redis-springboot (uses `spring-boot-starter-data-redis` dependency, has a featured `RedisUtils` class implementing all basic Redis operations.
   * https://www.tutorialspoint.com/redis/redis_java.htm
   * https://github.com/abhirockzz/fn-redis-example
-
+  * https://stackoverflow.com/questions/49376096/how-to-set-a-key-with-value-along-with-expiry-using-java-jediscluster
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
+
