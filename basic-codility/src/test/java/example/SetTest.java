@@ -5,6 +5,7 @@ package example;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -27,10 +28,19 @@ public class SetTest {
 	}
 
 	static String data1 = "12356722240";
+
+	// https://www.shiksha.com/online-courses/articles/difference-between-equals-function-and-equal-operator-in-java-blogId-156757#:~:text=equals()%20and%20==%20in%20Java?,customized%20in%20user-defined%20classes.
 	@Test
 	public void test5() {
 		String data2 = String.valueOf("12356722240");
 		assertTrue(data1 == data2);
+		String data3 = "1235672224";
+		data3 = data3 + "0";
+		assertFalse(data1 == data3);
+		assertTrue(data1 == data2);
+		String data4 = new String("12356722240");
+		assertFalse(data1 == data4);
+
 	}
 
 	public char isAbsent(String data) {
