@@ -14,17 +14,23 @@ import java.util.HashMap;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class LongestUniqueSubstringTest {
 
-	private boolean debug = false;
+	private boolean debug = true;
+	static String data = null;
+
+	@Before
+	public void before() {
+		data = "ritmma12345alphabet";
+	}
 
 	@Test
 	public void test1() {
-		String data = "alphabetritmma123456789zyxwa";
 
 		int result = lengthOfLongestContiguous(data);
 		System.err.println("result: " + result);
@@ -35,8 +41,6 @@ public class LongestUniqueSubstringTest {
 	// @Ignore
 	@Test
 	public void test3() {
-		String data = "alphabetritmma123456789zyxwa";
-
 		int result = lengthOfLongestContiguous2(data);
 		System.err.println("result: " + result);
 		// assertTrue(data .indexOf(result) != -1);
@@ -50,7 +54,6 @@ public class LongestUniqueSubstringTest {
 
 		Set<Character> present = new HashSet<>();
 		char[] letters = data.toCharArray();
-		StringBuffer stringBuffer = new StringBuffer();
 		int cnt = 0;
 		int max = 0;
 		for (int s = 0; s < letters.length - 1; s++) {
@@ -58,21 +61,18 @@ public class LongestUniqueSubstringTest {
 			present = new HashSet<>();
 			for (int i = 0; i < letters.length - s; i++) {
 				char ch = letters[i + s];
-				stringBuffer.append(ch);
 
 				if (!present.add(ch)) {
-					String result = stringBuffer.toString();
-					result = result.substring(0, result.length() - 1);
-					System.err.println(String.format("candidate: %s", result));
 					max = (max > cnt) ? max : cnt;
-					stringBuffer = new StringBuffer();
 					// https://stackoverflow.com/questions/16850937/converting-a-part-of-a-char-array-to-string-in-java
-					// if (debug)
-					System.err.println(new String(letters, s, i ));
+					if (debug) {
+						System.err.println("char:  " + ch);
+						System.err.println("candidate (2): " + new String(letters, i - cnt, cnt));
+					}
 					cnt = 1;
 					present = new HashSet<>();
 					present.add(ch);
-					stringBuffer.append(ch);
+					// break;
 				} else {
 					cnt++;
 				}
@@ -81,24 +81,29 @@ public class LongestUniqueSubstringTest {
 		return max;
 	}
 
-	public static int lengthOfLongestContiguous(String data) {
+	public int lengthOfLongestContiguous(String data) {
 		if (data == null || data.length() == 0)
 			return 0;
 		char[] letters = data.toCharArray();
 		Map<Character, Integer> positions = new HashMap<>();
-		int start = 0;
+		int previous = 0;
 		int max = 0;
 
-		for (int i = 0; i < data.length(); i++) {
-			char c = data.charAt(i);
+		for (int pos = 0; pos < data.length(); pos++) {
+			char ch = letters[pos];
 
-			start = Math.max(start, (positions.containsKey(c)) ? positions.get(c) + 1 : 0);
+			previous = Math.max(previous, (positions.containsKey(ch)) ? positions.get(ch) + 1 : 0);
 
-			max = Math.max(max, i - start + 1);
-			System.err.println(String.format("%d %d %d", start, i, letters.length));
-			System.err.println(new String(letters, start, i - start));
-			positions.put(c, i);
+			max = Math.max(max, pos - previous + 1);
+			if (positions.containsKey(ch))
+				if (debug)
+					System.err.println("candidate: " + new String(letters, previous, pos - previous + 1) + ", length: "
+							+ (pos - previous + 1));
+			positions.put(ch, pos);
 		}
+		if (debug)
+			System.err.println("candidate: " + new String(letters, letters.length - max, max) + ", length: " + max);
+
 		return max;
 	}
 
@@ -138,3 +143,4 @@ public class LongestUniqueSubstringTest {
 	}
 
 }
+
