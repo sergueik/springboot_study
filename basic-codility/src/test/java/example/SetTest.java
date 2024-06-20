@@ -27,6 +27,21 @@ public class SetTest {
 		assertEquals('8', res);
 	}
 
+	static String data2 = String.valueOf("3142354231");
+
+	@Test
+	public void test6() {
+		String data = data2;
+		int result = isFull(6, data);
+		assertTrue(result == 6);
+		data = data2.substring(0, 3) + "11111" + "222" + data2.substring(3);
+		result = isFull(6, data);
+		assertTrue(result == 14);
+		data = data2 + "11111";
+		result = isFull(6, data);
+		assertTrue(result == 6);
+	}
+
 	static String data1 = "12356722240";
 
 	// https://www.shiksha.com/online-courses/articles/difference-between-equals-function-and-equal-operator-in-java-blogId-156757#:~:text=equals()%20and%20==%20in%20Java?,customized%20in%20user-defined%20classes.
@@ -43,8 +58,26 @@ public class SetTest {
 
 	}
 
+	public int isFull(int X, String data) {
+		Set<Integer> present = new HashSet<>();
+		char[] letters = data.toCharArray();
+		// Leaves fall from a tree onto the surface of the river.
+		for (int i = 0; i < data.length(); i++) {
+			char ch = letters[i];
+			present.add(ch - '0');
+
+			if (present.size() == X - 1) {
+				// when all the positions from 1 to X are covered by leaves
+				System.err.println("Done on: " + i);
+				return i + 1;
+			}
+		}
+		return -1;
+	}
+
 	public char isAbsent(String data) {
 		Set<Integer> present = new HashSet<>();
+
 		char[] letters = data.toCharArray();
 		for (int i = 0; i < data.length(); i++) {
 			char ch = data.charAt(i);
