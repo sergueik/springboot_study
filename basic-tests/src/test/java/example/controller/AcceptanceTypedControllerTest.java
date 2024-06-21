@@ -25,11 +25,13 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import org.springframework.web.client.HttpClientErrorException.NotFound;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import example.controller.ExampleController.Data;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 // import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -48,8 +50,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
 // NOTE: property annotations have no effect
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
-		"serverPort=8085" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = { "serverPort=8085" })
 @PropertySource("classpath:application.properties")
 
 public class AcceptanceTypedControllerTest {
@@ -80,11 +81,9 @@ public class AcceptanceTypedControllerTest {
 		url = "http://localhost:" + randomServerPort + route + "/data";
 
 		data.setName(name);
-		request2 = new HttpEntity<String>(
-				gson.toJson(data, Data.class).toString() + "bad text", headers);
+		request2 = new HttpEntity<String>(gson.toJson(data, Data.class).toString() + "bad text", headers);
 		System.err.println("request body: " + request2.getBody());
-		responseEntity = restTemplate.postForEntity(url, request2, String.class,
-				headers);
+		responseEntity = restTemplate.postForEntity(url, request2, String.class, headers);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		String responseBody = responseEntity.getBody();
 		System.err.println("responseBody: " + responseBody);
@@ -100,8 +99,7 @@ public class AcceptanceTypedControllerTest {
 		data.setName(name);
 		request2 = new HttpEntity<String>("bad text", headers);
 		System.err.println("request body: " + request2.getBody());
-		responseEntity = restTemplate.postForEntity(url, request2, String.class,
-				headers);
+		responseEntity = restTemplate.postForEntity(url, request2, String.class, headers);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.BAD_REQUEST));
 		String responseBody = responseEntity.getBody();
 		System.err.println("responseBody: " + responseBody);
@@ -118,11 +116,65 @@ public class AcceptanceTypedControllerTest {
 		data.setName(name);
 
 		request1 = new HttpEntity<Data>(data, headers);
-		responseEntity = restTemplate.postForEntity(url, request1, String.class,
-				headers);
+		responseEntity = restTemplate.postForEntity(url, request1, String.class, headers);
 		assertThat(responseEntity.getStatusCode(), is(HttpStatus.OK));
 		String responseBody = responseEntity.getBody();
 		assertThat(responseBody, containsString(name));
+
+	}
+
+	@Test
+	public void test5() throws Exception {
+		url = "http://localhost:" + randomServerPort + route + "/data";
+
+		Exception exception = assertThrows(RestClientException.class, () -> {
+			responseEntity = restTemplate.getForEntity(url, String.class);
+		});
+
+		assertThat(exception.getMessage(),
+				containsString(HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase() /* "Method Not Allowed" */ ));
+		assertThat(exception.getMessage(), containsString("" + HttpStatus.METHOD_NOT_ALLOWED.value() /* 405 */ ));
+		// String responseBody = responseEntity.getBody();
+		// System.err.println("responseBody: " + responseBody);
+		// assertThat(responseBody, containsString(name));
+
+	}
+
+	@Disabled
+	@Test
+	public void test6() throws Exception {
+		url = "http://localhost:" + randomServerPort + route + "/data";
+		headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
+		Exception exception = assertThrows(RestClientException.class, () -> {
+			data.setName(name);
+			request1 = new HttpEntity<Data>(data, headers);
+			responseEntity = restTemplate.postForEntity(url, request1, String.class, headers);
+		});
+		assertThat(exception.getMessage(), containsString("No HttpMessageConverter"));
+		// No HttpMessageConverter for example.controller.ExampleController$Data
+		// and content type "text/plain"
+
+	}
+
+	// NOTE: unstable
+	@Test
+	public void test7() throws Exception {
+		url = "http://localhost:" + randomServerPort + route + "/data";
+		headers = new HttpHeaders();
+		// headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		headers.setContentType(MediaType.TEXT_PLAIN);
+		request2 = new HttpEntity<String>("bad text", headers);
+		// System.err.println("request body: " + request2.getBody());
+		try {
+			responseEntity = restTemplate.postForEntity(url, request2, String.class, headers);
+		} catch (Exception e) {
+			System.err.println("test7: " + e.getMessage());
+			// throw e;
+		}
+		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
+		// No HttpMessageConverter for example.controller.ExampleController$Data
+		// and content type "text/plain"
 
 	}
 }
