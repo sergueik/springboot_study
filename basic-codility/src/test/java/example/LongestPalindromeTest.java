@@ -23,7 +23,9 @@ import org.junit.Test;
 
 public class LongestPalindromeTest {
 
-	@Ignore
+	private final boolean debug = false;
+
+	// @Ignore
 	@Test
 	public void test1() {
 		String data = "abcba";
@@ -31,7 +33,7 @@ public class LongestPalindromeTest {
 		assertTrue(res);
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test2() {
 		String data = "abccba";
@@ -39,7 +41,7 @@ public class LongestPalindromeTest {
 		assertTrue(res);
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test3() {
 		String data = "abcda";
@@ -48,7 +50,7 @@ public class LongestPalindromeTest {
 
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test4() {
 		String data = "abda";
@@ -57,7 +59,7 @@ public class LongestPalindromeTest {
 
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test5() {
 		String data = "abcba";
@@ -65,7 +67,7 @@ public class LongestPalindromeTest {
 		assertTrue(res);
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test6() {
 		String data = "abccba";
@@ -73,7 +75,7 @@ public class LongestPalindromeTest {
 		assertTrue(res);
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test7() {
 		String data = "abcda";
@@ -82,7 +84,7 @@ public class LongestPalindromeTest {
 
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test8() {
 		String data = "abda";
@@ -91,7 +93,7 @@ public class LongestPalindromeTest {
 
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test10() {
 		String data = "I was driving a racecar with my mom at noon and saw the speed radar at level 0 of civic lane.";
@@ -106,7 +108,7 @@ public class LongestPalindromeTest {
 	public void test12() {
 		String data = "A man, a plan, a canal: Panama";
 		boolean res = isPalindrome3(data);
-		assertFalse(res);
+		assertTrue(res);
 	}
 
 	@Test
@@ -150,9 +152,11 @@ public class LongestPalindromeTest {
 			int j = letters.length - 1 - i;
 			char ch1 = letters[i];
 			char ch2 = letters[j];
-			System.err.println(String.format("Scanning %c %c", ch1, ch2));
+			if (debug)
+				System.err.println(String.format("Scanning %c %c", ch1, ch2));
 			if (ch1 != ch2) {
-				System.err.println("false");
+				if (debug)
+					System.err.println("false");
 				return false;
 			}
 		}
@@ -165,13 +169,10 @@ public class LongestPalindromeTest {
 		char[] letters = data.toCharArray();
 		// NOTE: moving pointers together
 		for (int i = 0, j = letters.length - 1; i <= j; i++, j--) {
-			// NOTE: will fail on punctuation:
-			// ':' > '9'
-			// ':' < 'A'
 			// TODO: switch to Character.isLetterOrDigit
-			while (i <= j && (letters[i] < '0' || letters[i] > 'z'))
+			while (i <= j && !isLetterOrDigit(letters[i]))
 				i++;
-			while (i <= j && (letters[j] < '0' || letters[j] > 'z'))
+			while (i <= j && !isLetterOrDigit(letters[j]))
 				j--;
 			if (i > j)
 				return true;
@@ -182,6 +183,13 @@ public class LongestPalindromeTest {
 			}
 		}
 		return true;
+	}
+
+	private boolean isLetterOrDigit(Character ch) {
+		boolean status = (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'z');
+		if (debug)
+			System.err.println(String.format("%c %b", ch, status));
+		return status;
 	}
 
 	private String badLongestPalindrome(String data) {
