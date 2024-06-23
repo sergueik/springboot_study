@@ -1,4 +1,4 @@
-package example;
+	package example;
 /**
  * Copyright 2024 Serguei Kouzmine
  */

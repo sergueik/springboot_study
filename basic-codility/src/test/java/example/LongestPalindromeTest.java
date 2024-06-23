@@ -93,6 +93,13 @@ public class LongestPalindromeTest {
 
 	}
 
+	@Test
+	public void test9() {
+		String data = "abda";
+		boolean res = isPalindrome4(data);
+		assertFalse(res);
+	}
+
 	// @Ignore
 	@Test
 	public void test10() {
@@ -185,6 +192,25 @@ public class LongestPalindromeTest {
 		return true;
 	}
 
+	private boolean isPalindrome4(String data) {
+		String reverse = "";
+		for (int i = 0; i < data.length(); i++) {
+			reverse = reverse + data.charAt(i);
+		}
+		return (data.equals(reverse));
+	}
+
+	public static boolean isPalindromeNumber(int data) {
+		int temp = data;
+		int reverse = 0;
+		while (temp > 0) {
+			int reminder = temp % 10;
+			reverse = reverse * 10 + reminder;
+			temp = temp / 10;
+		}
+		return (data == reverse);
+	}
+
 	private boolean isLetterOrDigit(Character ch) {
 		boolean status = (ch >= '0' && ch <= '9') || (ch >= 'A' && ch <= 'z');
 		if (debug)
@@ -192,39 +218,4 @@ public class LongestPalindromeTest {
 		return status;
 	}
 
-	private String badLongestPalindrome(String data) {
-
-		String[] words = data.split(" ");
-		char[] letters = data.toCharArray();
-		Map<Character, Integer> positions = new HashMap<>();
-		int i = 0;
-		String s1 = "";
-		String s2 = "";
-		String result = "";
-		// List<Character> result = new ArrayList<>();
-		int j = letters.length - 1;
-		while (i != letters.length) {
-			while (j != 0 && j > i) {
-				char ch1 = letters[i];
-				char ch2 = letters[j];
-				// if (ch1 == ch1) {
-				if (ch1 == ch1) {
-					s1 = String.format("%s%c", s1, ch1);
-					s2 = String.format("%c%s", ch2, s2);
-					// result = ch1 + s1 + s2 + ch2;
-					//
-				} else {
-					s1 = "";
-					s2 = "";
-				}
-				if (i == j) {
-					result = String.format("%s%s", s1, s2);
-					break;
-				}
-				j--;
-			}
-			i++;
-		}
-		return "";
-	}
 }
