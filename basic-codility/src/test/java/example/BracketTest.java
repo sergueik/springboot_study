@@ -3,8 +3,7 @@ package example;
  * Copyright 2024 Serguei Kouzmine
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Stack;
 
@@ -14,49 +13,71 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class BracketTest {
+	String data = null;
+	boolean res = false;
 
 	@Test
 	public void test1() {
-		String data = "{[(a)(fd)]}";
-		int res = isBalanced(data);
-		assertTrue(res == 0);
+		data = "{[(a)(fd)]}";
+		res = isBalanced(data);
+		assertTrue(res);
 	}
 
 	@Test
 	public void test2() {
-		String data = "";
-
-		int res = isBalanced(data);
-		assertTrue(res == 0);
+		data = "";
+		res = isBalanced(data);
+		assertTrue(res);
 	}
 
 	@Test
 	public void test3() {
-		String data = "({[)]}";
-
-		int res = isBalanced(data);
-		assertEquals(1, res );
+		data = "{";
+		res = isBalanced(data);
+		assertFalse(res);
 	}
 
-	public int isBalanced(String data) {
+	@Test
+	public void test4() {
+		data = "{([])";
+		res = isBalanced(data);
+		assertFalse(res);
+	}
+
+	@Test
+	public void test5() {
+		data = "({[)]}";
+		res = isBalanced(data);
+		assertEquals(false, res);
+	}
+
+	@Test
+	public void test6() {
+		data = "(a[b]c{d}e)f";
+		res = isBalanced(data);
+		assertEquals(true, res);
+	}
+
+	public boolean isBalanced(String data) {
 		Stack<Character> scanned = new Stack<>();
 		for (int i = 0; i < data.length(); i++) {
 			char ch = data.charAt(i);
 			if (ch != '(' && ch != ')' && ch != '[' && ch != ']' && ch != '{' && ch != '}')
+				// ignore other characters
 				continue;
 			if (ch == ')' || ch == ']' || ch == '}') {
 				if (scanned.empty()) {
-					return 1;
+					return false;
 				}
 				char top = scanned.pop();
 				if ((ch == ')' && top != '(') || (ch == ']' && top != '[') || (ch == '}' && top != '{')) {
-					return 1;
+					return false;
 				}
 			} else {
 				scanned.push(ch);
 			}
 		}
-		return scanned.empty() ? 0 : 1;
+		return scanned.empty();
 	}
 
 }
