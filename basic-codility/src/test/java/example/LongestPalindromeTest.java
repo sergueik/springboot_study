@@ -23,7 +23,7 @@ import org.junit.Test;
 
 public class LongestPalindromeTest {
 
-	private final boolean debug = false;
+	private boolean debug = false;
 
 	// @Ignore
 	@Test
@@ -90,11 +90,11 @@ public class LongestPalindromeTest {
 		String data = "abda";
 		boolean res = isPalindrome2(data);
 		assertFalse(res);
-
 	}
 
 	@Test
 	public void test9() {
+		debug = true;
 		String data = "abda";
 		boolean res = isPalindrome4(data);
 		assertFalse(res);
@@ -194,9 +194,11 @@ public class LongestPalindromeTest {
 
 	private boolean isPalindrome4(String data) {
 		String reverse = "";
-		for (int i = 0; i < data.length(); i++) {
+		for (int i = data.length() - 1; i != 0; i--) {
 			reverse = reverse + data.charAt(i);
 		}
+		if (debug)
+			System.err.println(String.format("Data: %s Reverse: %s", data, reverse));
 		return (data.equals(reverse));
 	}
 
