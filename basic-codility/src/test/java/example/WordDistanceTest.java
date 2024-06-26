@@ -23,8 +23,8 @@ public class WordDistanceTest {
 
 	private boolean debug = true;
 	// NOTE: Array constants can only be used in initializers
-	static String[] data = { "practice", "makes", "A", "coding", "perfect", "coding", "coding", "perfect", "coding",
-			"it", "definitely", "makes" };
+	static String[] data = { "practice", "makes", "A", "coding", "very", "perfect", "coding", "coding", "perfect",
+			"coding", "it", "definitely", "makes" };
 	static String word1;
 	static String word2;
 
@@ -32,71 +32,57 @@ public class WordDistanceTest {
 	public void before() {
 	}
 
-	@Ignore
+	// @Ignore
 	@Test
 	public void test1() {
-		word1 = "makes";
-		word2 = "coding";
+		word1 = "coding";
+		word2 = "makes";
 		int result = shortestWordDistance(data, word1, word2);
 		System.err.println("result: " + result);
 		// assertTrue(data .indexOf(result) != -1);
-		assertEquals(1, result);
+		assertEquals(2, result);
 	}
 
 	@Test
 	public void test2() {
 		word1 = "makes";
 		word2 = "coding";
-		int result = shortestWordDistanceModified(data, word1, word2);
+		int result = shortestWordDistance(data, word1, word2);
 		System.err.println("result: " + result);
 		assertEquals(2, result);
 	}
 
-	public int shortestWordDistanceModified(String[] words, String word1, String word2) {
+	public int shortestWordDistance(String[] words, String word1, String word2) {
 		if (word1.isEmpty() || word2.isEmpty()) {
 			return -1;
 		}
 		String word;
-		int previous = -1;
+		int position1 = -1;
+		int position2 = -1;
 		int shortest = words.length;
 		for (int position = 0; position < words.length; position++) {
 			word = words[position];
-			if (word.equals(word1) || word.equals(word2)) {
-				if (previous != -1) {
-					if (words[previous].equals(word)) {
-						if (debug)
-							System.err.println("reset position to " + position);
-						previous = position;
-					} else {
-						shortest = Math.min(position - previous, shortest);
-						if (debug) {
-							System.err.println(String.format("Consider %s %s", words[previous], word));
-							System.err.println("compute distance to " + shortest);
-						}
-						// TODO
-					}
-				} else {
-					previous = position;
+			if (word.equals(word1)) {
+				position1 = position;
+				if (debug)
+					System.err.println("reset word1 position to " + position1);
+			}
+			if (word.equals(word2)) {
+				position2 = position;
+				if (debug)
+					System.err.println("reset word2 position to " + position2);
+			}
+			if (position1 != -1 && position2 != -1) {
+				shortest = Math.min(Math.abs(position1 - position2), shortest);
+				if (debug) {
+					System.err.println("compute distance to " + shortest);
 				}
 
 			}
 
 		}
 		return shortest;
-	}
 
-	public int shortestWordDistance(String[] words, String word1, String word2) {
-		int prevIndex = -1;
-		int min = words.length;
-		for (int i = 0; i < words.length; i++) {
-			if (words[i].equals(word1) || words[i].equals(word2)) {
-				if (prevIndex != -1 && !words[prevIndex].equals(words[i])) {
-					min = Math.min(i - prevIndex, min);
-				}
-				prevIndex = i;
-			}
-		}
-		return min;
 	}
 
 }
