@@ -28,18 +28,18 @@ if you see the [error](https://stackoverflow.com/questions/2859790/the-request-w
 ```text
 invoke-webrequest : The request was aborted: Could not create SSL/TLS secure channel.
 ```
-the quickest is to use the browser to download.
+the quickest is to use the browser to download - registry tweak [registry fix](https://devblogs.microsoft.com/nuget/deprecating-tls-1-0-and-1-1-on-nuget-org/#ensuring-your-system-uses-tls-1-2) exist.
 * NOTE: the 32-bit version `terraform_${VERSION}_windows_386.zip` also exists
 
 if the error still shows 
 ```text
-invoke-webrequest : The request was aborted: Could not create SSL/TLS securechannel.
+invoke-webrequest : The request was aborted: Could not create SSL/TLS secure channel.
 ```
-and the [registry fix](https://devblogs.microsoft.com/nuget/deprecating-tls-1-0-and-1-1-on-nuget-org/#ensuring-your-system-uses-tls-1-2)
-is not possible (no admin rights), download the package using the browser using the exact download url 
-`https://releases.hashicorp.com/terraform/${VERSION}/terraform_${VERSION}_windows_amd64.zip` or download page `https://developer.hashicorp.com/terraform/install`
+and the fix is not possible to apply (no admin rights) or does not work , download the package using the browser using the exact download url `https://releases.hashicorp.com/terraform/1.7.5/terraform_1.7.5_windows_amd64.zip` (update if desired a later version) or download page `https://developer.hashicorp.com/terraform/install`
 
-unzip and copy the `terraform.exe` 
+unzip and copy the `terraform.exe`.
+
+
 to some directory listed in the `PATH` (e.g. `c:\tools` ) or add the terraform application home directory to the `PATH`, the exact syntax varies with the shell
   + in cmd
 ```cmd
@@ -54,6 +54,17 @@ export PATH=$PATH:/c/tools
 $env:path="${env:path};C:\tools"
 ```
 
+The warning about the version is OK:
+```cmd
+terraform.exe -version
+```
+```text
+Terraform v1.7.5
+on windows_amd64
+
+Your version of Terraform is out of date! The latest version
+is 1.9.0. You can update by downloading from https://www.terraform.io/downloads.html
+```
 ### Local File Tests
 
 ```sh
@@ -541,7 +552,11 @@ cp -R ../ec2/.terraform .
 
 cp ../ec2/.terraform.lock.hcl .
 ```
+### CMD Runs
 
+```cmd
+set TF_CLI_ARGS=-no-color
+```
 ### Docker Provider
 fails with warning on Linux:
 ```text
@@ -602,3 +617,4 @@ leads to better interplay between Docker and Terraform but the container exit st
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
