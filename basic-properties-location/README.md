@@ -74,7 +74,17 @@ Data: read error
 ```
 ### NOTE:
 
-* special property `spring.config.location` may allow redefining `application.properties` - not used in this example
+* special property `spring.config.location` may allow redefining `application.properties` - not used in this example. Also with `spring.config.name` can specify alternative name of the application property file scanned in the following paths:
+  
+  + config subdirectory of the current directory
+  + current directory
+  + config package in the `CLASSPATH`
+  + on the `CLASSPATH` root
+
+ * special property `spring.config.additional-location` is to additional locations
+### See Also:
+
+  * [External Configuration Data in Spring](https://springframework.guru/spring-external-configuration-data/)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
