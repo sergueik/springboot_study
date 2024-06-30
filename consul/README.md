@@ -1,4 +1,4 @@
-### Info
+﻿### Info
 
 This directory contains a replica of [consul springboot microservices project](https://github.com/guedim/spring-projects/tree/master/consul-microservice-discovery-sample) used to dissect how exactly `org.springframework.cloud.cient.discovery.DiscoveryClient` does consul service definition and booostrap.
 
@@ -183,6 +183,7 @@ echo Y |docker image prune
 
   * original [Getting Started with Microservices in SpringBoot](https://www.infoq.com/articles/Microservices-SpringBoot) article.
   * [transtation](https://habr.com/company/otus/blog/413567/) (in russian)
+  * [Service Discovery in Microservices](https://www.baeldung.com/cs/service-discovery-microservices)
   * HashiCorp Consul [alternatives/competitors](https://www.g2.com/products/hashicorp-consul/competitors/alternatives)
   * consul [overview](https://xakep.ru/2016/04/18/consul/)(in Russian)
   * consul [intro](https://habr.com/ru/post/266139/)(in Russian)
