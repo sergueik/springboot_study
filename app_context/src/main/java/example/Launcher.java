@@ -11,12 +11,19 @@ import org.springframework.core.io.ClassPathResource;
 import example.application.Movie;
 
 @SpringBootApplication
+
+// @SpringBootConfiguration
+// @EnableAutoConfiguration
+// @ComponentScan
+
 public class Launcher {
 
 	public static void main(String[] args) {
 		ApplicationContext applicationContext = SpringApplication
 				.run(Launcher.class, args);
 
+		for (String name: applicationContext.getBeanDefinitionNames()) 
+		System.err.println(name);
 		// does not work
 		Movie x = new Movie();
 

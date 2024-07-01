@@ -24,5 +24,10 @@ warning: Clone succeeded, but checkout failed.
 ```
 
 ### See Also
- [another example project](https://github.com/gopal10/spring-xml-demo)
- [generic tutorial](https://www.baeldung.com/spring-dependency-injection)
+
+  * [another example project](https://github.com/gopal10/spring-xml-demo)
+  * [generic tutorial](https://www.baeldung.com/spring-dependency-injection) 
+  * [Microservices using Spring Boot, Spring Cloud, Docker and Kubernetes](https://github.com/in28minutes/spring-microservices)
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
