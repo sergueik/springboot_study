@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Service
 public class GithubLookupService {
 
-	private static final Logger logger = LoggerFactory
-			.getLogger(GithubLookupService.class);
+	private static final Logger logger = LoggerFactory.getLogger(GithubLookupService.class);
 
 	private final RestTemplate restTemplate;
 
@@ -28,8 +28,7 @@ public class GithubLookupService {
 	public User doUser(User user) {
 		User result = null;
 		logger.info("Looking up " + user.getLogin());
-		String url = String.format("https://api.github.com/users/%s",
-				user.getLogin());
+		String url = String.format("https://api.github.com/users/%s", user.getLogin());
 		try {
 			// de-serialize User object from JSON response
 			result = restTemplate.getForObject(url, User.class);
@@ -43,12 +42,10 @@ public class GithubLookupService {
 	public Follower doFollowers(User user) {
 		List<Follower> result = new ArrayList<>();
 		logger.info("Looking up followers of " + user.getLogin());
-		String url = String.format("https://api.github.com/users/%s/followers",
-				user.getLogin());
+		String url = String.format("https://api.github.com/users/%s/followers", user.getLogin());
 		try {
 			// de-serialize User object from JSON response
-			result = (List<Follower>) Arrays
-					.asList(restTemplate.getForObject(url, Follower[].class));
+			result = (List<Follower>) Arrays.asList(restTemplate.getForObject(url, Follower[].class));
 			Thread.sleep(1000L);
 		} catch (InterruptedException e) {
 			//
@@ -61,15 +58,19 @@ public class GithubLookupService {
 	}
 
 	@Async
-	public CompletableFuture<Follower> findUser(User user)
-			throws InterruptedException {
-		return CompletableFuture.supplyAsync(() -> doUser(user))
-				.thenApplyAsync(o -> doFollowers(o));
+	public CompletableFuture<Follower> findUser(User user) throws InterruptedException {
+		Supplier<User> supplier = () -> doUser(user);
+		Function<User, Follower> function = (User o) -> {
+			return doFollowers(o);
+		};
+		// NOTE: thenRun,thenAccept,thenApply,thenCompose,thenCombine,thenCombine  
+		return CompletableFuture.supplyAsync(supplier).thenApplyAsync(function);
+		// return CompletableFuture.supplyAsync(() ->
+		// doUser(user)).thenApplyAsync((User o) -> doFollowers(o));
 	}
 
 	@Async
-	public CompletableFuture<User> findUser(String user)
-			throws InterruptedException {
+	public CompletableFuture<User> findUser(String user) throws InterruptedException {
 		logger.info("Looking up " + user);
 		String url = String.format("https://api.github.com/users/%s", user);
 		// de-serialize User object from JSON response

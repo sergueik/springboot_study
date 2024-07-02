@@ -13,8 +13,8 @@ import java.util.concurrent.Executor;
 public class Application {
 
 	public static void main(String[] args) {
-		// close the application context to shut down the custom ExecutorService
-		// after the result is returned
+		// NOTE: closing the application context to shut down the custom ExecutorService
+		// once the result is returned
 		SpringApplication.run(Application.class, args).close();
 	}
 
