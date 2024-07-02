@@ -1,17 +1,47 @@
 ﻿### Info
 
-[Logback](https://www.baeldung.com/logback)
+This directory contains implementagion of [Logback](https://www.baeldung.com/logback)
 [Appender](https://logback.qos.ch/manual/appenders.html)
 writing logging messaged into [Windows Event log](https://en.wikipedia.org/wiki/Event_Viewer)
 The project uses code converted from one of [java native access](https://github.com/java-native-access/jna)
 project contributions - [dblock/log4jna](https://github.com/dblock/log4jna) - the JNA wrapper around the native
 Windows Event Log `ReportEvent` [function](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-reporteventa)
-that resides  in `advapi32.dll` [dll](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files)
+that resides in `advapi32.dll` [dll](https://en.wikipedia.org/wiki/Microsoft_Windows_library_files)
 which is system dll hosting misc. security calls and functions for manipulating the Windows Registry
- by replacing the original project depednency on [log4j](https://en.wikipedia.org/wiki/Log4j) - discouraged because of [log4jshell](https://en.wikipedia.org/wiki/Log4Shell)
- and bundling the logger with logback enabling one to configure the logger
- through invoker class / message severity / executing host operating system fashion. The environment test logic relies on 
- embedded [Janino compiler](https://www.janino.net) dependency
+ by replacing the original project dependency on [log4j framework](https://en.wikipedia.org/wiki/Log4j) that is discouraged because of [log4jshell](https://en.wikipedia.org/wiki/Log4Shell)
+ and bundling the logger with [logback framework](https://logback.qos.ch). 
+
+The environment discovery XML logic relies on the embedded [Janino compiler](https://www.janino.net) dependency is enabling one to configure the logger through invoker class / message severity / executing host operating system fashion.
+
+Futhermore this project replaces natively build custom message dll with just one Message ID with the system one provided by Microsoft therefore enabling customization of message IDs:
+```xml
+  <appender name="eventlog42" class="example.logback.EventLogAppender">
+    <resource>%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</resource>
+    <id>42</id>
+    <source>example.log4jna_sample</source>
+    <application>log4jna_sample</application>
+    <encoder>
+      <pattern>[%-5level] %n Logger: %logger{36} %n Message: %msg</pattern>
+    </encoder>
+  </appender>
+  <appender name="eventlog101" class="example.logback.EventLogAppender">
+    <resource>%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</resource>
+    <id>101</id>
+    <source>example.log4jna_sample</source>
+    <application>log4jna_sample</application>
+    <encoder>
+      <pattern>[%-5level] %n Logger: %logger{36} %n Message: %msg</pattern>
+    </encoder>
+  </appender>
+<root level="WARN">
+<appender-ref ref="eventlog42"/>
+<appender-ref ref="eventlog101"/>
+</root>
+```
+
+leads to logging with two different IDs:
+
+![Event log Id](https://github.com/sergueik/springboot_study/blob/master/basic-logback-eventlog/screenshots/capture_multi_id.png)
 
 ### Usage
 
@@ -85,13 +115,12 @@ log4jna_sample                 MaxSize            : 524288
                                AutoBackupLogFiles : 0
 ```
 
-```
+```powershell
 get-childitem HKLM:\SYSTEM\CurrentControlSet\services\eventlog\log4jna_sample
 
 ```
 ```text
     Hive: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\eventlog\log4jna_sample
-
 
 Name                           Property
 ----                           --------
@@ -101,8 +130,6 @@ example.log4jna_sample         EventMessageFile    : C:\Windows\Microsoft.NET\Fr
 log4jna_sample                 EventMessageFile    : C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
                                CategoryMessageFile : C:\Windows\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll
                                CategoryCount       : 0
-
-
 ```
 * run subsequent steps from non-elevated console, as a regular user
 * review and update the `src/main/resources/logback.xml` with the  path to CategoryResourceFile if changing using the same value as earlier:

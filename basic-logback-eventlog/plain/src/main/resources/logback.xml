@@ -1,8 +1,17 @@
 <?xml version="1.0"?>
 <configuration>
-  <appender name="eventlog" class="example.logback.EventLogAppender">
+  <appender name="eventlog42" class="example.logback.EventLogAppender">
     <resource>%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</resource>
     <id>42</id>
+    <source>example.log4jna_sample</source>
+    <application>log4jna_sample</application>
+    <encoder>
+      <pattern>[%-5level] %n Logger: %logger{36} %n Message: %msg</pattern>
+    </encoder>
+  </appender>
+  <appender name="eventlog101" class="example.logback.EventLogAppender">
+    <resource>%SystemRoot%\Microsoft.NET\Framework\v4.0.30319\EventLogMessages.dll</resource>
+    <id>101</id>
     <source>example.log4jna_sample</source>
     <application>log4jna_sample</application>
     <encoder>
@@ -21,7 +30,8 @@
     <appender-ref ref="CONSOLE"/>
     <if condition="isDefined(&quot;windir&quot;)">
       <then>
-        <appender-ref ref="eventlog"/>
+        <appender-ref ref="eventlog42"/>
+        <appender-ref ref="eventlog101"/>
       </then>
     </if>
   </root>
