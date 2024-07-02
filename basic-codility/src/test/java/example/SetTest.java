@@ -16,6 +16,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+// a.k.a. Frog River
+// https://app.codility.com/programmers/lessons/4-counting_elements/frog_river_one/
 public class SetTest {
 	private boolean debug = true;
 
@@ -60,6 +62,23 @@ public class SetTest {
 
 	}
 
+	@Test
+	public void test9() {
+		String data = data2;
+		int result = isFullAlt(5, data);
+		// System.err.println("test9 result: " + result);
+		assertTrue(result == 6);
+		data = data2.substring(0, 3) + "11111" + "222" + data2.substring(3);
+		result = isFullAlt(5, data);
+		// System.err.println("test9 result: " + result);
+		assertTrue(result == 14);
+		data = data2 + "11111";
+		result = isFullAlt(5, data);
+		// System.err.println("test9 result: " + result);
+		assertTrue(result == 6);
+
+	}
+
 	public int isFull(int X, String data) {
 		Set<Integer> present = new HashSet<>();
 		char[] letters = data.toCharArray();
@@ -71,6 +90,34 @@ public class SetTest {
 			if (present.size() == X - 1) {
 				// when all the positions from 1 to X are covered by leaves
 				System.err.println("Done on: " + i);
+				return i + 1;
+			}
+		}
+		return -1;
+	}
+
+	public int isFullAlt(int X, String data) {
+		Set<Integer> needed = new HashSet<>();
+
+		// put needed positions into the set
+		for (int i = 1; i <= X; i++) {
+			needed.add(i);
+		}
+		if (debug)
+			System.err.println("Needed: " + Arrays.asList(needed));
+		char[] letters = data.toCharArray();
+		// Leaves fall at random from a tree onto the surface of the river.
+		for (int i = 0; i < data.length(); i++) {
+			int code = letters[i] - '0';
+			if (debug)
+				System.err.println("Examine: " + code);
+			if (needed.contains(code)) {
+
+				needed.remove(code);
+				if (debug)
+					System.err.println("Updated Needed: " + Arrays.asList(needed));
+			}
+			if (needed.isEmpty()) {
 				return i + 1;
 			}
 		}
@@ -125,7 +172,9 @@ public class SetTest {
 		int res = isPerm2(data);
 		assertTrue(res == 0);
 	}
-	// when the string contains numbers, letters etc. conse:cutive - this is  not always the case
+
+	// when the string contains numbers, letters etc. conse:cutive - this is not
+	// always the case
 	public int isPerm2(String data) {
 		Set<Integer> present = new HashSet<>();
 		char[] letters = data.toCharArray();
@@ -163,5 +212,5 @@ public class SetTest {
 		return 1;
 	}
 
-
 }
+

@@ -28,16 +28,21 @@ import java.util.stream.Stream;
 import org.junit.Ignore;
 
 public class GapTest {
+	private final static int radix = 2;
+
 	//
 	@Test
-	public void contextLoads() {
-		int value = Integer.parseInt("10001111001", 2);
+	public void test1() {
+		int value = Integer.parseInt("10001111001", radix);
 		// value = 139;
 		System.err.println("Value: " + value);
-		String result = Integer.toString(value, 2);
+		String result = Integer.toString(value, radix);
 		System.err.println("Value (binary): " + result);
 		result = Integer.toBinaryString(value);
 		System.err.println("Value (binary): " + result);
+		result = intToBinaryStringBinaryOperation(value);
+		System.err.println("Value (binary): " + result);
+
 		result = intToBinaryString(value);
 		System.err.println("Value (binary): " + result);
 
@@ -64,7 +69,7 @@ public class GapTest {
 
 		int best = 0;
 		int gap = 0;
-		System.err.println("input: " + Integer.toString(value, 2));
+		System.err.println("input: " + Integer.toString(value, radix));
 		// shift left as long as minor digit is zero
 		while (value != 0 && (value & 1) == 0) {
 			value = value >> 1;
@@ -107,7 +112,7 @@ public class GapTest {
 		int best = 0;
 		int gap = 0;
 
-		System.err.println("input: " + Integer.toString(value, 2));
+		System.err.println("input: " + Integer.toString(value, radix));
 		// shift left as long as minor digit is zero
 		while (value != 0 && (value & 1) == 0) {
 			value = value >> 1;
@@ -145,9 +150,26 @@ public class GapTest {
 				return result.toString();
 			}
 			int remainder = value % 2;
-			// appending
+			// appending, will reverse at the end
 			result.append(remainder);
 			value /= 2;
+		}
+	}
+
+	public static String intToBinaryStringBinaryOperation(int value) {
+		StringBuilder result = new StringBuilder();
+		if (value == 0) {
+			return "0";
+		}
+		while (true) {
+			if (value == 0) {
+				result = result.reverse();
+				return result.toString();
+			}
+			int remainder = value & 01;
+			// appending, will reverse at the end
+			result.append(remainder);
+			value = value >> 1;
 		}
 	}
 
