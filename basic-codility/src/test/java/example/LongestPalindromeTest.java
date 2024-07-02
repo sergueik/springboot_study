@@ -95,9 +95,9 @@ public class LongestPalindromeTest {
 	@Test
 	public void test9() {
 		debug = true;
-		String data = "abda";
+		String data = "adbda";
 		boolean res = isPalindrome4(data);
-		assertFalse(res);
+		assertTrue(res);
 	}
 
 	// @Ignore
@@ -125,6 +125,15 @@ public class LongestPalindromeTest {
 		assertTrue(res);
 	}
 
+	@Test
+	public void test14() {
+		debug = true;
+		String data = "adzbzda";
+		boolean res = isPalindrome5(data, 0, data.length() - 1);
+		assertTrue(res);
+	}
+
+	// @Ignore
 	private boolean isPalindrome(String data) {
 		String reverse = new StringBuilder(data).reverse().toString();
 		for (int i = 0; i != data.length() / 2; i++) {
@@ -194,12 +203,23 @@ public class LongestPalindromeTest {
 
 	private boolean isPalindrome4(String data) {
 		String reverse = "";
-		for (int i = data.length() - 1; i != 0; i--) {
+		for (int i = data.length() - 1; i >= 0; i--) {
 			reverse = reverse + data.charAt(i);
 		}
 		if (debug)
 			System.err.println(String.format("Data: %s Reverse: %s", data, reverse));
 		return (data.equals(reverse));
+	}
+
+	private boolean isPalindrome5(String data, int start_pos, int end_pos) {
+		while (start_pos < end_pos) {
+			if (data.charAt(start_pos) != data.charAt(end_pos)) {
+				return false;
+			}
+			start_pos++;
+			end_pos--;
+		}
+		return true;
 	}
 
 	public static boolean isPalindromeNumber(int data) {
