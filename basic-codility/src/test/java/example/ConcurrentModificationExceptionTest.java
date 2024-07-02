@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
@@ -36,7 +37,6 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
 
 // see also: https://www.baeldung.com/java-concurrentmodificationexception
-// 
 public class ConcurrentModificationExceptionTest {
 
 	private boolean debug = true;
@@ -113,4 +113,26 @@ public class ConcurrentModificationExceptionTest {
 		map.put(null, 1);
 		assertTrue(map.get(null).equals(1));
 	}
+
+	@Test
+	// origin: https://www.baeldung.com/java-synchronized-collections
+	// see also:
+	// https://docs.oracle.com/javase/tutorial/essential/concurrency/collections.html
+	public void test6() throws InterruptedException {
+		List<Integer> list = Collections.synchronizedList(new ArrayList<>());
+		Runnable operation = () -> {
+			list.addAll(Arrays.asList(1, 2, 3, 4, 5, 6));
+		};
+
+		Thread thread1 = new Thread(operation);
+		Thread thread2 = new Thread(operation);
+		thread1.start();
+		thread2.start();
+		thread1.join();
+		thread2.join();
+
+		assertTrue(list.size() == 12);
+	}
+
 }
+
