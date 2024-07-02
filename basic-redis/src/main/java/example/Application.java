@@ -24,6 +24,7 @@ public class Application {
 	public static final String port = System.getenv().getOrDefault("REDIS_PORT", "6379");
 
 	public static Jedis jedis = null;
+	private final int timeout = 10000;
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -31,32 +32,37 @@ public class Application {
 
 	@GetMapping
 	public String hello(@RequestParam(name = "ex") Optional<Integer> secondsExpire) throws InterruptedException {
-		StringBuffer data = new StringBuffer();
 
-		jedis = new Jedis(host, Integer.parseInt(port), 10000);
+		StringBuffer data = new StringBuffer();
+		int ex = 0;
+		// https://javadoc.io/doc/redis.clients/jedis/3.2.0/index.html
+		jedis = new Jedis(host, Integer.parseInt(port), timeout);
+
 		data.append(String.format("Connection to Redis server %s %s sucessful\n", host, port));
 		data.append("Server is running: " + jedis.ping() + "\n");
 
 		if (secondsExpire.isPresent()) {
-			System.err.println(String.format("Expire in %d second", secondsExpire.get()));
+			ex = secondsExpire.get();
+			System.err.println(String.format("Expire in %d second", ex));
 			SetParams setParams = new SetParams();
-			setParams.ex(secondsExpire.get());
+			setParams.ex(ex);
 			jedis.set("title", "Redis tutorial", setParams);
+			data.append(String.format("Stored string: %s\nExpire in %d second\n", jedis.get("title"), ex));
 		} else {
 			jedis.set("title", "Redis tutorial");
+			data.append("Stored string: " + jedis.get("title") + "\n");
 		}
-		data.append("Stored string: " + jedis.get("title") + "\n");
 
 		jedis.lpush("numbers", Double.valueOf(1).toString());
 		jedis.lpush("numbers", Double.valueOf(2).toString());
 		jedis.lpush("numbers", Double.valueOf(3).toString());
 		if (secondsExpire.isPresent()) {
-			Thread.sleep((secondsExpire.get() + 1) * 1000);
+			Thread.sleep((ex + 1) * 1000);
 		}
 		List<Double> numbers = jedis.lrange("numbers", 0, 10).stream().map(o -> Double.valueOf(o))
 				.collect(Collectors.toList());
 		data.append("Stored range of numbers: "
-				+ String.join(",", numbers.stream().map(Object::toString).collect(Collectors.toList())) + "\n");
+				+ numbers.stream().map(Object::toString).collect(Collectors.joining(", ", "[", "]")) + "\n");
 
 		Object[] keys = jedis.keys("*").toArray();
 		data.append("List of stored keys: ");
@@ -68,4 +74,3 @@ public class Application {
 
 	}
 }
-

@@ -45,6 +45,7 @@ docker container prune -f
   * https://www.tutorialspoint.com/redis/redis_java.htm
   * https://github.com/abhirockzz/fn-redis-example
   * https://stackoverflow.com/questions/49376096/how-to-set-a-key-with-value-along-with-expiry-using-java-jediscluster
+  * https://www.geeksforgeeks.org/redis-cache-in-java-using-jedis/
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
