@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -59,7 +60,8 @@ public class AsyncChainingTest {
 	}
 
 	@Test
-	public void test3() throws ExecutionException, InterruptedException {
+	// TODO: java.util.concurrent.RejectedExecutionException
+	public void test3() throws ExecutionException, InterruptedException, RejectedExecutionException {
 		ExecutorService executorService = Executors.newFixedThreadPool(2);
 
 		completableFuture = CompletableFuture.supplyAsync(() -> "message1", executorService)
@@ -133,6 +135,45 @@ public class AsyncChainingTest {
 		assertThat(procedureFuture.get(), nullValue());
 	}
 
+	@Test
+	@SuppressWarnings("unused")
+	// https://www.baeldung.com/java-exceptions-completablefuture
+	// https://www.baeldung.com/java-completablefuture-collect-results-handle-exceptions
+	// NOTE: Method test11() should be public
+	// org.junit.runners.model.InvalidTestClassError
+	public void test11() throws ExecutionException, InterruptedException {
+		String input = null;
+		String result = null;
+		try {
+			result = CompletableFuture.supplyAsync(() -> {
+				// NOTE: Null pointer access: The variable input can only be
+				// null at
+				// this location
+				if (input == null || input.isEmpty()) {
+					throw new IllegalArgumentException("Supplied empty input");
+				}
+				// NOTE: the "return" code in supplier is dead
+				return input;
+			}).handle((data, e) -> {
+				// https://www.baeldung.com/java-bifunction-interface
+				if (e == null) {
+					return data;
+				} else {
+					System.err.println("Processing exception: " + e.toString());
+					// Processing exception:
+					// java.util.concurrent.CompletionException:
+					// java.lang.IllegalArgumentException:
+					// Supplied empty input
+					return "default";
+				}
+			}).get();
+		} catch (Exception e) {
+			// should never reach this code
+			System.err.println("Exception: " + e.toString());
+		}
+		assertThat(result, is("default"));
+	}
+
 	// origin: shutdownAndAwaitTermination example in
 	// https://docs.oracle.com/javase%2F8%2Fdocs%2Fapi%2F%2F/java/util/concurrent/ExecutorService.html
 	// see also:
@@ -140,24 +181,24 @@ public class AsyncChainingTest {
 	// com.hellokoding.java.concurrent.ConcurrentUtils.stop;
 	public static void shutdownAndAwaitTermination(ExecutorService pool) {
 
+		final int timeout = 2;
 		pool.shutdown(); // Disable new tasks from being submitted
 
 		try {
 			// Wait a while for existing tasks to terminate
-			if (!pool.awaitTermination(2, TimeUnit.SECONDS)) {
+			if (!pool.awaitTermination(timeout, TimeUnit.SECONDS)) {
 				pool.shutdownNow(); // Cancel currently executing tasks
 
 				// Wait a while for tasks to respond to being cancelled
-				if (!pool.awaitTermination(2, TimeUnit.SECONDS))
+				if (!pool.awaitTermination(timeout, TimeUnit.SECONDS))
 					System.err.println("Pool did not terminate");
 			}
 		} catch (InterruptedException ie) {
 			// (Re-)Cancel if current thread also interrupted
-			pool.shutdownNow(); 
+			pool.shutdownNow();
 
 			// Preserve interrupt status
 			Thread.currentThread().interrupt();
 		}
 	}
-
 }

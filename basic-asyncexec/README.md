@@ -23,8 +23,10 @@ This directory contains a close replica of [async execition queries](https://git
   * https://www.callicoder.com/java-8-completablefuture-tutorial/
   * https://www.logicbig.com/tutorials/core-java-tutorial/java-multi-threading/completion-stage-and-completable-future.html
   * https://www.baeldung.com/spring-bean
-  * https://www.baeldung.com/spring-bean-annotations
-
+  * https://www.baeldung.com/spring-bean-annotations 
+  * [exceptions in Java CompletableFuture](https://www.baeldung.com/java-exceptions-completablefuture)
+  * [how to Collect All Results and Handle Exceptions With CompletableFuture in a Loop](https://www.baeldung.com/java-completablefuture-collect-results-handle-exceptions)
+  * [guide to Java BiFunction Interface](https://www.baeldung.com/java-bifunction-interface)
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
