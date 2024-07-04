@@ -138,7 +138,6 @@ public class AsyncChainingTest {
 	@Test
 	@SuppressWarnings("unused")
 	// https://www.baeldung.com/java-exceptions-completablefuture
-	// https://www.baeldung.com/java-completablefuture-collect-results-handle-exceptions
 	// NOTE: Method test11() should be public
 	// org.junit.runners.model.InvalidTestClassError
 	public void test11() throws ExecutionException, InterruptedException {
@@ -155,7 +154,6 @@ public class AsyncChainingTest {
 				// NOTE: the "return" code in supplier is dead
 				return input;
 			}).handle((data, e) -> {
-				// https://www.baeldung.com/java-bifunction-interface
 				if (e == null) {
 					return data;
 				} else {
@@ -170,6 +168,28 @@ public class AsyncChainingTest {
 		} catch (Exception e) {
 			// should never reach this code
 			System.err.println("Exception: " + e.toString());
+			result = null;
+		}
+		assertThat(result, is("default"));
+	}
+
+	@Test
+	@SuppressWarnings("unused")
+	public void test12() throws ExecutionException, InterruptedException {
+		String input = null;
+		String result = null;
+		try {
+			result = CompletableFuture.supplyAsync(() -> {
+				if (input == null || input.isEmpty()) {
+					throw new IllegalArgumentException("Supplied empty input");
+				}
+				// NOTE: the "return" code in supplier is dead
+				return input;
+			}).exceptionally((Throwable e) -> "default").get();
+		} catch (Exception e) {
+			// should never reach this code
+			System.err.println("Exception: " + e.toString());
+			result = null;
 		}
 		assertThat(result, is("default"));
 	}
@@ -202,3 +222,4 @@ public class AsyncChainingTest {
 		}
 	}
 }
+
