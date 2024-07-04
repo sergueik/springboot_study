@@ -11,10 +11,14 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.PropertySource;
@@ -137,6 +141,26 @@ public class StatusCodeControllerTest {
 			}
 		});
 		assertThat(exception.getMessage(), containsString("run out of retries"));
+	}
+
+	// see also: https://www.baeldung.com/parameterized-tests-junit-5
+	// https://www.baeldung.com/springjunit4classrunner-parameterized
+	@ParameterizedTest
+	@MethodSource("parameters")
+	public void test4(int statusCode) {
+
+		url = "http://localhost:" + randomServerPort + route + "?code=" + statusCode;
+		Exception exception = assertThrows(RestClientException.class, () -> {
+			responseEntity = restTemplate.getForEntity(url, String.class);
+		});
+		assertThat(exception.getMessage(), containsString("zzz  " + statusCode));
+
+	}
+
+	static Stream<Arguments> parameters() {
+		return Stream.of(Arguments.of(500), Arguments.of(501), Arguments.of(503), Arguments.of(504), Arguments.of(401),
+				Arguments.of(403), Arguments.of(429), Arguments.of(400), Arguments.of(404), Arguments.of(410),
+				Arguments.of(415));
 	}
 
 }
