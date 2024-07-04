@@ -143,24 +143,29 @@ public class StatusCodeControllerTest {
 		assertThat(exception.getMessage(), containsString("run out of retries"));
 	}
 
+	// based on:
 	// see also: https://www.baeldung.com/parameterized-tests-junit-5
 	// https://www.baeldung.com/springjunit4classrunner-parameterized
 	@ParameterizedTest
 	@MethodSource("parameters")
-	public void test4(int statusCode) {
+	public void test4(int statusCode, String result) {
 
 		url = "http://localhost:" + randomServerPort + route + "?code=" + statusCode;
 		Exception exception = assertThrows(RestClientException.class, () -> {
 			responseEntity = restTemplate.getForEntity(url, String.class);
 		});
-		assertThat(exception.getMessage(), containsString("zzz  " + statusCode));
+		assertThat(exception.getMessage(), containsString(result));
 
 	}
 
 	static Stream<Arguments> parameters() {
-		return Stream.of(Arguments.of(500), Arguments.of(501), Arguments.of(503), Arguments.of(504), Arguments.of(401),
-				Arguments.of(403), Arguments.of(429), Arguments.of(400), Arguments.of(404), Arguments.of(410),
-				Arguments.of(415));
+		return Stream.of(Arguments.of(500, "500 : [no body]"), Arguments.of(501, "501 : [no body]"),
+				Arguments.of(503, "503 : [no body]"), Arguments.of(504, "504 : [no body]"),
+				Arguments.of(401, "401 : [no body]"), Arguments.of(403, "403 : [no body]"),
+				Arguments.of(429, "429 : [no body]"), Arguments.of(400, "400 : [no body]"),
+				Arguments.of(404, "404 : [no body]"), Arguments.of(410, "410 : [no body]"),
+				Arguments.of(415, "415 : [no body]"));
 	}
 
 }
+
