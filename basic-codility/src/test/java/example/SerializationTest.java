@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.Arrays;
 
 import org.junit.After;
@@ -30,6 +31,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 //origin: https://www.baeldung.com/java-serialization
 
@@ -106,7 +108,7 @@ public class SerializationTest {
 		objectOutputStream.flush();
 		objectOutputStream.close();
 		byte[] data = byteArrayOutputStream.toByteArray();
-		// System.err.println(new String(data));
+		// System.err.println("test1: " + new String(data));
 		// will be a binary
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
 
@@ -121,11 +123,11 @@ public class SerializationTest {
 	}
 
 	@Test
+	// https://www.baeldung.com/java-serialization-approaches
 	public void test2() throws IOException, ClassNotFoundException {
 
 		String json = gson.toJson(person);
-		System.err.println(json);
-
+		System.err.println("test2: " + json);
 		Person p2 = gson.fromJson(json, Person.class);
 		assertThat(p2.getAge(), is(0));
 		assertThat(p2.getName(), is(person.getName()));
@@ -133,4 +135,20 @@ public class SerializationTest {
 
 	}
 
+	@Test
+	// http://www.java2s.com/example/java-api/java/io/stringwriter/stringwriter-0-17.html
+	public void test3() {
+
+		StringWriter stringWriter = new StringWriter();
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		gson.toJson(person, stringWriter);
+		StringBuffer stringBuffer = stringWriter.getBuffer();
+		String json = stringBuffer.toString();
+		System.err.println("test3: " + json);
+		Person p2 = gson.fromJson(json, Person.class);
+		assertThat(p2.getAge(), is(0));
+		assertThat(p2.getName(), is(person.getName()));
+		assertThat(p2.getAddress().getHouseNumber(), is(person.getAddress().getHouseNumber()));
+
+	}
 }
