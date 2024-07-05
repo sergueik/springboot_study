@@ -27,6 +27,9 @@ This directory contains a close replica of [async execition queries](https://git
   * [exceptions in Java CompletableFuture](https://www.baeldung.com/java-exceptions-completablefuture)
   * [how to Collect All Results and Handle Exceptions With CompletableFuture in a Loop](https://www.baeldung.com/java-completablefuture-collect-results-handle-exceptions)
   * [guide to Java BiFunction Interface](https://www.baeldung.com/java-bifunction-interface)
+  * https://www.baeldung.com/java-exceptions-completablefuture
+  * https://www.baeldung.com/java-completablefuture-collect-results-handle-exceptions
+
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

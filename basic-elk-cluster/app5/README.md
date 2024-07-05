@@ -1,5 +1,6 @@
 ### Info
-this  directory contains a dummy plain Java SOAP server applicstion for APM evaluation.
+
+this directory contains a dummy plain Java SOAP server application for APM evaluation.
 
 ### Note
 
@@ -31,4 +32,9 @@ ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.6
 
 ### See Also
 
-   *  https://stackoverflow.com/questions/51892528/migration-jaxws-application-from-java-8-to-java-11
+   * https://stackoverflow.com/questions/51892528/migration-jaxws-application-from-java-8-to-java-11
+   * [steps to generate code to invoke a SOAP Web Service in Java](https://www.baeldung.com/java-soap-web-service)
+   * [creating a SOAP Web Service with Spring](https://www.baeldung.com/spring-boot-soap-web-service)
+  
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
