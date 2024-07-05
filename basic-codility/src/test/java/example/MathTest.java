@@ -20,68 +20,118 @@ import java.util.HashSet;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class MathTest {
 
-	@Test
-	public void test1() {
-		String a = "10";
-		String b = "10";
-
-		String res = addBinary(a, b);
-
-		assertThat(res, is("100"));
-		// assertTrue(data.indexOf(String.valueOf(res)) == -1);
-		// assertEquals('8', res);
-	}
+	private final static int radix = 2;
+	private String a = null;
+	private String b = null;
+	private String res = null;
 
 	@Test
 	public void test2() {
-		String a = "11";
-		String b = "11";
+		a = Integer.toString(2, radix);
+		b = Integer.toString(2, radix);
 
-		String res = addBinary(a, b);
+		res = addBinary(a, b);
 
-		assertThat(res, is("110"));
-		// assertTrue(data.indexOf(String.valueOf(res)) == -1);
-		// assertEquals('8', res);
+		assertThat(Integer.parseInt(res, radix), is(4));
 	}
 
 	@Test
 	public void test3() {
-		String a = "111111";
-		String b = "000001";
+		String a = "11";
+		String b = "11";
+		res = addBinary(a, b);
+		assertThat(res, is("110"));
+	}
 
-		String res = addBinary(a, b);
+	@Test
+	public void test4() {
+		a = Integer.toString(3, radix);
+		b = Integer.toString(3, radix);
+
+		res = addBinary(a, b);
+		assertThat(Integer.parseInt(res, radix), is(6));
+	}
+
+	@Test
+	public void test5() {
+		a = "111111";
+		b = "000001";
+		System.err.println("test5 a: " + a);
+		System.err.println("test5 b: " + b);
+
+		res = addBinary(a, b);
+		System.err.println("test5 res: " + res);
 
 		assertThat(res, is("1000000"));
-		// assertTrue(data.indexOf(String.valueOf(res)) == -1);
-		// assertEquals('8', res);
+	}
+
+	@Test
+	public void test6() {
+		a = Integer.toString(63, radix);
+		b = Integer.toString(1, radix);
+		System.err.println("test6 a: " + a);
+		System.err.println("test6 b: " + b);
+		String res = addBinary(a, b);
+		System.err.println("test6 res: " + res);
+
+		assertThat(Integer.parseInt(res, radix), is(64));
+	}
+
+	// @Ignore
+	// overflow ?
+	@Test
+	public void test7() {
+		a = Integer.toString(127, radix);
+		b = Integer.toString(1, radix);
+		System.err.println("test7 a: " + a);
+		System.err.println("test7 b: " + b);
+		String res = addBinary(a, b);
+		System.err.println("test7 res: " + res);
+		assertThat(Integer.parseInt(res, radix), is(128));
 	}
 
 	public String addBinary(String a, String b) {
 		char[] a1 = a.toCharArray();
 		char[] b1 = b.toCharArray();
 		StringBuilder result = new StringBuilder();
-		char[] a2 = new char[a1.length];
-		char[] b2 = new char[b1.length];
-		int r1 = a1.length - 1;
+		// pad
+		int size = Math.max(a1.length, b1.length);
+
+		char[] a2 = new char[size];
+		char[] b2 = new char[size];
 		System.err.println("a: " + String.valueOf(a1));
+
+		for (int i = 0; i != size; i++) {
+			a2[i] = '0';
+		}
+		System.err.println("a2: " + String.valueOf(a2));
+		for (int i = 0; i != size; i++) {
+			b2[i] = '0';
+		}
+		System.err.println("b2: " + String.valueOf(b2));
+		// reverse
+		int r1 = a1.length - 1;
 		for (int i = 0; i != a1.length; i++) {
 			a2[i] = a1[r1 - i];
 		}
 		System.err.println("a(*):" + String.valueOf(a2));
 		r1 = b1.length - 1;
-		System.err.println("b" + String.valueOf(b1));
+
+		System.err.println("b: " + String.valueOf(b1));
 
 		for (int i = 0; i != b1.length; i++) {
 			b2[i] = b1[r1 - i];
 		}
-		System.err.println("b(*):" + String.valueOf(b2));
+		System.err.println("b(*): " + String.valueOf(b2));
+
 		int d = 0;
 		// TODO: wrong loop = need to pad
-		for (int i = 0, j = 0; i != a1.length && j != b1.length; i++, j++) {
+		for (int i = 0, j = 0; i != size && j != size; i++, j++) {
 
 			char c = '0';
 			int a3 = a2[i] - '0';
