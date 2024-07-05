@@ -194,6 +194,48 @@ public class AsyncChainingTest {
 		assertThat(result, is("default"));
 	}
 
+	@Test
+	public void test13() throws ExecutionException, InterruptedException {
+		final String input = "";
+		String result = null;
+		final String exceptionType = "java.util.concurrent.ExecutionException";
+		final String causeExceptionType = "java.lang.IllegalArgumentException.IllegalArgumentException";
+		try {
+			CompletableFuture.supplyAsync(() -> {
+				if (input.isEmpty())
+					throw new IllegalArgumentException("Supplied empty input");
+				return "";
+			}).whenComplete((String data, Throwable exception) -> {
+				return;
+			});
+		} catch (Exception e) {
+
+			System.err.println("Exception: " + e.toString());
+			// NOTE:
+			// assertThat(e.getClass(), is(ExecutionException.class));
+			// fail to compile:
+			// The method assertThat(T, Matcher<? super T>)
+			// in the type MatcherAssert
+			// is not applicable for the arguments
+			// (Class<capture#1-of ? extends ExecutionException>,
+			// Matcher<ExecutionException>)
+
+			assertThat(e.getClass().getCanonicalName(), is(exceptionType));
+			assertThat(e.getCause().getClass().getCanonicalName(), is(causeExceptionType));
+
+		}
+
+		final Stack<String> data = new Stack<>();
+		try {
+			result = data.peek();
+			data.pop();
+		} catch (Exception e) {
+			System.err.println("Exception: " + e.toString());
+			// java.util.EmptyStackException
+		}
+		assertThat(result, nullValue());
+	}
+
 	// origin: shutdownAndAwaitTermination example in
 	// https://docs.oracle.com/javase%2F8%2Fdocs%2Fapi%2F%2F/java/util/concurrent/ExecutorService.html
 	// see also:
@@ -222,4 +264,3 @@ public class AsyncChainingTest {
 		}
 	}
 }
-
