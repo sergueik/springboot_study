@@ -3,29 +3,13 @@ package example;
  * Copyright 2024 Serguei Kouzmine
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-
-import java.nio.file.Paths;
-import java.time.Duration;
-import java.util.Stack;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import org.junit.Ignore;
+import org.junit.Test;
 
 public class GapTest {
 	private final static int radix = 2;

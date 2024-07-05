@@ -1,0 +1,44 @@
+package example;
+/**
+ * Copyright 2024 Serguei Kouzmine
+ */
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.lang.reflect.Field;
+
+import org.junit.Test;
+
+// https://stackoverflow.com/questions/20945049/is-a-java-string-really-immutable
+public class ReflectionTest {
+
+	private boolean debug = false;
+
+	private String data = "Hello World";
+
+	// https://www.baeldung.com/java-immutable-object
+	@Test
+	public void test1() {
+		String newData = data.replace("World", "Java!");
+
+		assertThat(data, is("Hello World"));
+		assertThat(newData, is("Hello Java!"));
+	}
+
+	@Test
+	public void test2()
+			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		Field field = String.class.getDeclaredField("value");
+		field.setAccessible(true);
+		char[] value = (char[]) field.get(data);
+		value[6] = 'J';
+		value[7] = 'a';
+		value[8] = 'v';
+		value[9] = 'a';
+		value[10] = '!';
+		System.err.println("test2: " + data);
+		assertThat(data, is("Hello Java!"));
+	}
+
+}

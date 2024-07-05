@@ -72,6 +72,7 @@ public class SerializationTest {
 
 	}
 
+	@SuppressWarnings("serial")
 	public static class Address implements Serializable {
 		private int houseNumber;
 
