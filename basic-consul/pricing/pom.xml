@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>example</groupId>
-    <artifactId>consul-microservice-discovery-sample</artifactId>
-    <version>0.0.2</version>
+    <artifactId>discovery</artifactId>
+    <version>0.3.0-SNAPSHOT</version>
   </parent>
   <groupId>example</groupId>
   <artifactId>pricing</artifactId>
   <name>pricing</name>
-  <description>Pricing Microservice discovery service using Spring Boot and consul</description>
+  <description>Pricing Microservice</description>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -17,13 +17,6 @@
     <finalName>${project.groupId}.${project.artifactId}</finalName>
     <java.version>1.8</java.version>
   </properties>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
   <build>
     <plugins>
       <plugin>

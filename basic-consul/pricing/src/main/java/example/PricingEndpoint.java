@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 public class PricingEndpoint implements InitializingBean {
 	@Autowired
 	DiscoveryClient client;
+
 	Map<String, Double> pricingMap = new HashMap<>();
 
 	RestTemplate restTemplate = new RestTemplate();

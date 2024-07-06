@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>example</groupId>
+    <artifactId>discovery</artifactId>
+    <version>0.3.0-SNAPSHOT</version>
+  </parent>
+  <groupId>example</groupId>
+  <artifactId>portfolio</artifactId>
+  <name>portfolio</name>
+  <description>Portfolio Microservice</description>
+  <url>http://maven.apache.org</url>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <finalName>${project.groupId}.${project.artifactId}</finalName>
+    <java.version>1.8</java.version>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <!-- https://github.com/spotify/docker-maven-plugin 
+       NOTE: currently inactive
+        -->
+        <artifactId>dockerfile-maven-plugin</artifactId>
+        <version>${version.dockerfile-maven}</version>
+        <executions>
+          <execution>
+            <id>default</id>
+            <goals>
+              <goal>build</goal>
+              <goal>push</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <dockerHost>tcp://192.168.99.100:2376</dockerHost>
+          <repository>${docker.image.prefix}/${project.artifactId}</repository>
+          <tag>${project.version}</tag>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
