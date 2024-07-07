@@ -26,6 +26,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import org.springframework.web.client.HttpClientErrorException.NotFound;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.hamcrest.Matchers.is;
@@ -107,7 +108,7 @@ public class AcceptanceTest {
 	// https://www.baeldung.com/spring-resttemplate-post-json
 
 	@Test
-	public void test2() throws Exception {
+	public void test2() throws RestClientException {
 		url = "http://localhost:" + randomServerPort + route + "/post/form";
 		headers = new HttpHeaders();
 		data.setName(body);
@@ -141,7 +142,7 @@ public class AcceptanceTest {
 
 	}
 
-	// NOTE: in Junit5 the @Test interface no longe can be annotated with
+	// NOTE: in Junit5 the @Test interface cannot anylonger be annotated with
 	// "expected" attribute
 	// @Test(expected =
 	// org.springframework.web.client.HttpClientErrorException.class)

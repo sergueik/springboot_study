@@ -168,13 +168,14 @@ public class AcceptanceTypedControllerTest {
 		// System.err.println("request body: " + request2.getBody());
 		try {
 			responseEntity = restTemplate.postForEntity(url, request2, String.class, headers);
+			assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
+			// No HttpMessageConverter for example.controller.ExampleController$Data
+			// and content type "text/plain"
 		} catch (Exception e) {
 			System.err.println("test7: " + e.getMessage());
 			// throw e;
 		}
-		assertThat(responseEntity.getStatusCode(), is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
-		// No HttpMessageConverter for example.controller.ExampleController$Data
-		// and content type "text/plain"
 
 	}
 }
+

@@ -57,7 +57,7 @@ public class AcceptanceTypedTest {
 	@LocalServerPort
 	private int randomServerPort = 8085;
 	private final String route = "/basic";
-	// NOTE: execrising property file override
+	// NOTE: exercising property file override
 	private static final RestTemplate restTemplate = new RestTemplate();
 	private static ExampleController.Data data = new ExampleController.Data();
 	private String url = null;

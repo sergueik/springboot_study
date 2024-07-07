@@ -21,6 +21,8 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -31,6 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -237,17 +240,26 @@ public class ExampleController {
 
 	}
 
+	@PutMapping("/put/form/{name}")
+	public ResponseEntity<Data> updateData(@RequestBody Data data, @PathVariable String name) {
+		if (data.getName() != name) {
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(data);
+	}
+
+	/*
+	 * public ResponseEntity<Data> postForm(@RequestBody final
+	 * MultiValueMap<String, String> param, HttpServletResponse response) {
+	 * return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(null); }
+	 */
 	// see also examples in
 	// https://www.programcreek.com/java-api-examples/?class=org.springframework.http.MediaType&method=APPLICATION_FORM_URLENCODED_VALUE
 	// https://www.baeldung.com/spring-request-method-not-supported-405
 	// returns HTTP 405 error code for GET
 	@RequestMapping(method = { RequestMethod.PUT, RequestMethod.POST }, value = "/post/form", consumes = {
 			MediaType.APPLICATION_FORM_URLENCODED_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<Data> postForm(@RequestBody final MultiValueMap<String, String> param /*
-																								 * ,
-																								 * HttpServletResponse
-																								 * response
-																								 */) {
+	public ResponseEntity<Data> postForm(@RequestBody final MultiValueMap<String, String> param) {
 		if (param.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Data());
 			// Alternatively change the method signature to include

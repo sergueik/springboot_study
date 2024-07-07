@@ -29,6 +29,8 @@ This directory contains a close replica of [async execition queries](https://git
   * [guide to Java BiFunction Interface](https://www.baeldung.com/java-bifunction-interface)
   * https://www.baeldung.com/java-exceptions-completablefuture
   * https://www.baeldung.com/java-completablefuture-collect-results-handle-exceptions
+  * [console Application in Spring Boot](https://www.baeldung.com/spring-boot-console-app)
+  * [running Logic on Startup in Spring Boot](https://www.baeldung.com/running-setup-logic-on-startup-in-spring)
 
 ### Author
 

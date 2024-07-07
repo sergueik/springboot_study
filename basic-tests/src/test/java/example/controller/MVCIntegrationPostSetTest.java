@@ -39,17 +39,22 @@ public class MVCIntegrationPostSetTest {
 	@MockBean
 	// needed to prevent the following exception:
 	// java.lang.IllegalStateException: Failed to load ApplicationContext
-	// Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException:
+	// Caused by:
+	// org.springframework.beans.factory.UnsatisfiedDependencyException:
 	// Error creating bean with name 'exampleController' defined in file
 	// [../ExampleController.class]:
 	// Unsatisfied dependency expressed through constructor parameter 0; nested
-	// exception is org.springframework.beans.factory.NoSuchBeanDefinitionException:
+	// exception is
+	// org.springframework.beans.factory.NoSuchBeanDefinitionException:
 	// No qualifying bean of type 'example.service.ExampleService' available:
-	// expected at least 1 bean which qualifies as autowire candidate. Dependency
+	// expected at least 1 bean which qualifies as autowire candidate.
+	// Dependency
 	// annotations: {}
-	// Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException:
+	// Caused by:
+	// org.springframework.beans.factory.NoSuchBeanDefinitionException:
 	// No qualifying bean of type 'example.service.ExampleService' available:
-	// expected at least 1 bean which qualifies as autowire candidate. Dependency
+	// expected at least 1 bean which qualifies as autowire candidate.
+	// Dependency
 	// annotations: {}
 	private ExampleService mockService;
 
@@ -83,7 +88,7 @@ public class MVCIntegrationPostSetTest {
 	}
 
 	// examine HTTP status
-	// 400 Bad Request when backend expects json array while caller
+	// 400 Bad Request when backend expects JSON array while caller
 	// provides plain text
 	@Test
 	public void test3() throws Exception {
@@ -93,8 +98,8 @@ public class MVCIntegrationPostSetTest {
 	}
 
 	// examine HTTP status
-	// 400 Bad Request when backend expects json array while caller
-	// provides plain text
+	// 400 Bad Request when backend expects JSON array while caller
+	// provides JSON object
 	@Test
 	public void test4() throws Exception {
 		resultActions = mvc.perform(post(route).contentType(MediaType.APPLICATION_JSON)
