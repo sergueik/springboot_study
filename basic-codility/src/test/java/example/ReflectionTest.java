@@ -5,9 +5,10 @@ package example;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.startsWith;
 
 import java.lang.reflect.Field;
-
+import org.junit.Assume;
 import org.junit.Test;
 
 // https://stackoverflow.com/questions/20945049/is-a-java-string-really-immutable
@@ -26,9 +27,15 @@ public class ReflectionTest {
 		assertThat(newData, is("Hello Java!"));
 	}
 
+	// NOTE: works on Java 8, but fails on Java 11:
+	// Tests in error:
+	//  test2(example.ReflectionTest): class [B cannot be cast to class [C ([B and [C are in module java.base of loader 'bootstrap')
+
 	@Test
 	public void test2()
 			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	        String javaVersion = System.getProperty("java.version");
+	        Assume.assumeThat(javaVersion, startsWith("1.8"));
 		Field field = String.class.getDeclaredField("value");
 		field.setAccessible(true);
 		char[] value = (char[]) field.get(data);
