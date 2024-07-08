@@ -50,13 +50,12 @@ public class LadderFibonacciTest {
 	//
 	private boolean debug = true;
 
-	//
-
 	@Test
 	public void test1() {
 		int size = 3;
 		int result = fibonacciNR(size);
-		System.err.println("Result: " + result);
+		if (debug)
+			System.err.println("Result: " + result);
 		assertThat(result, is(3));
 
 	}
@@ -65,7 +64,8 @@ public class LadderFibonacciTest {
 	public void test2() {
 		int size = 4;
 		int result = fibonacciNR(size);
-		System.err.println("Result: " + result);
+		if (debug)
+			System.err.println("Result: " + result);
 		assertThat(result, is(5));
 
 	}
@@ -74,7 +74,8 @@ public class LadderFibonacciTest {
 	public void test3() {
 		int size = 5;
 		int result = fibonacciNR(size);
-		System.err.println("Result: " + result);
+		if (debug)
+			System.err.println("Result: " + result);
 		assertThat(result, is(8));
 
 	}
@@ -83,7 +84,8 @@ public class LadderFibonacciTest {
 	public void test4() {
 		int size = 6;
 		int result = fibonacciNR(size);
-		System.err.println("Result: " + result);
+		if (debug)
+			System.err.println("Result: " + result);
 		assertThat(result, is(13));
 
 	}
@@ -92,7 +94,8 @@ public class LadderFibonacciTest {
 	public void test5() {
 		int size = 7;
 		int result = fibonacciNR(size);
-		System.err.println("Result: " + result);
+		if (debug)
+			System.err.println("Result: " + result);
 		assertThat(result, is(21));
 
 	}
@@ -111,8 +114,9 @@ public class LadderFibonacciTest {
 		B[3] = 3;
 		A[4] = 1;
 		B[4] = 1;
-		Integer[] results = fibonacciMultiNR(A, B);
-		System.err.println("Result: " + Arrays.asList(results));
+		int[] results = fibonacciMultiNR(A, B);
+		if (debug)
+			System.err.println("Result: " + Arrays.asList(results));
 		// https://stackoverflow.com/questions/54439629/hamcrest-matcher-to-compare-two-arrays
 		assertThat(results, is(new Integer[] { 5, 1, 8, 0, 1 }));
 
@@ -145,16 +149,16 @@ public class LadderFibonacciTest {
 		A[10] = 4;
 		B[10] = 3;
 
-		Integer[] results = fibonacciMultiNR(A, B);
-		System.err.println("Result: " + Arrays.asList(results));
+		int[] results = fibonacciMultiNR(A, B);
+		if (debug)
+			System.err.println("Result: " + Arrays.asList(results));
 		// https://stackoverflow.com/questions/54439629/hamcrest-matcher-to-compare-two-arrays
-		assertThat(results, is(new Integer[] { 5, 1, 8, 0, 1, 144, 5, 5, 5, 5, 5 }));
+		assertThat(results, is(new int[] { 5, 1, 8, 0, 1, 144, 5, 5, 5, 5, 5 }));
 
 	}
 
 	private int fibonacciNR(int size) {
 		int[] fib = new int[size + 1];
-		// The space used here is O(N)
 		// https://en.wikipedia.org/wiki/Fibonacci_sequence
 		fib[0] = 1;
 		fib[1] = 1;
@@ -166,21 +170,15 @@ public class LadderFibonacciTest {
 		// The array is traversed only once so time complexity is O(N)\
 		return fib[size];
 	}
-	/*
-	 * L is an integer within the range [1..50,000]; each element of array A is
-	 * an integer within the range [1..L]; each element of array B is an integer
-	 * within the range [1..30].
-	 */
 
-	private Integer[] fibonacciMultiNR(int[] rungs, int[] scales) {
+	private int[] fibonacciMultiNR(int[] rungs, int[] scales) {
 		int size = rungs.length;
 
 		int max = 0;
 		for (int i = 0; i < size; i++) {
 			max = Math.max(rungs[i], max);
 		}
-		// each element of rungs array is an integer within the range [1..size]
-		Long[] fib = new Long[size + 1];
+		long[] fib = new long[size + 1];
 		fib[0] = 1L;
 		fib[1] = 1L;
 		fib[2] = 2L;
@@ -188,13 +186,12 @@ public class LadderFibonacciTest {
 			for (int k = 3; k <= size; k++)
 				fib[k] = fib[k - 1] + fib[k - 2];
 		}
-		Integer[] results = new Integer[size];
+		int[] results = new int[size];
 		for (int i = 0; i < size; i++) {
-			results[i] = (Integer) ((int) (fib[rungs[i]] % (1 << scales[i])));
+			results[i] = (int) (fib[rungs[i]] % (01 << scales[i]));
 		}
 		return results;
 
 	}
 
 }
-
