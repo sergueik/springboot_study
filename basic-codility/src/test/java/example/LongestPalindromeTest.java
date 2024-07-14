@@ -7,10 +7,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
+//better matchers
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasKey;
 
 import java.util.Stack;
 import java.util.*;
@@ -112,6 +118,19 @@ public class LongestPalindromeTest {
 	}
 
 	@Test
+	public void test11() {
+		String data = "I was driving a racecar with my mom at noon and saw the speed radar at level 0 of civic lane.";
+		Set<String>results = new HashSet<>();
+		String result = longestPalindromeWord(data, results);
+		System.err.println("Result: " + result);
+		assertThat(result, is("racecar"));
+		assertTrue(result.equals("racecar"));
+		
+		System.err.println("Results: " + Arrays.asList(results));
+		assertThat(results.size(), is(4));
+	}
+
+	@Test
 	public void test12() {
 		String data = "A man, a plan, a canal: Panama";
 		boolean res = isPalindrome3(data);
@@ -142,6 +161,24 @@ public class LongestPalindromeTest {
 			}
 		}
 		return true;
+	}
+
+	private String longestPalindromeWord(String data, Set<String> resultSet) {
+		String[] words = data.split(" ");
+		Map<String, Integer> results = new HashMap<>();
+		String result = null;
+		int maxlength = 0;
+		for (int i = 0; i != words.length - 1; i++) {
+			if (isPalindrome(words[i])) {
+				results.put(words[i], words[i].length());
+				if (words[i].length() > maxlength) {
+					maxlength = words[i].length();
+					result = words[i];
+				}
+			}
+		}
+		resultSet.addAll(results.keySet());
+		return result;
 	}
 
 	private String longestPalindromeWord(String data) {
