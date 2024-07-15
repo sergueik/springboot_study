@@ -19,144 +19,36 @@ popd
 ```sh
 mvn -Dlog4j.debug spring-boot:run
 ```
-this will print  various verbose log4j iscovery messages in startup log:
+this will print  various verbose log4j discovery messages in startup log:
 
 
 ```text
-DEBUG StatusLogger PluginManager 'Converter' found 48 plugins
-DEBUG StatusLogger Starting OutputStreamManager SYSTEM_OUT.false.false-1
-DEBUG StatusLogger Initializing Thread Context Data Service Providers
-DEBUG StatusLogger Starting LoggerContext[name=7ebc9f63, org.apache.logging.log4j.core.LoggerContext@39ec99c]...
-DEBUG StatusLogger Reconfiguration started for context[name=7ebc9f63] at URI null (org.apache.logging.log4j.core.LoggerContext@39ec99c) with optional ClassLoader: null
-DEBUG StatusLogger Thread Context Data Service Provider initialization complete
-DEBUG StatusLogger PluginManager 'ConfigurationFactory' found 5 plugins
-DEBUG StatusLogger Missing dependencies for Yaml support, ConfigurationFactory rg.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory is inactive
-DEBUG StatusLogger Using configurationFactory org.apache.logging.log4j.core.config.ConfigurationFactory$Factory@1fc8308e
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.properties] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.properties] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.properties] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.properties] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.yml] using context classloader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.yml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.yml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.yml] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.yaml] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.yaml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.yaml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.yaml] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.json] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.json] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.json] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.json] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.jsn] using context classloader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.jsn] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.jsn] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.jsn] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.xml] using context classloader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.xml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.xml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.xml] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.springboot] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.springboot] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.springboot] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test7ebc9f63.springboot] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j2-test.properties] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j2-test.properties] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test.properties] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test.properties] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j2-test.yml] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j2-test.yml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test.yml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test.yml] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j2-test.yaml] using context class loaderjava.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j2-test.yaml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test.yaml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test.yaml] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j2-test.json] using context class loaderjava.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j2-test.json] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test.json] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test.json] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j2-test.jsn] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j2-test.jsn] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test.jsn] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test.jsn] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j2-test.xml] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j2-test.xml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test.xml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test.xml] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j2-test.springboot] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j2-test.springboot] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test.springboot] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j2-test.springboot] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j27ebc9f63.properties] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.properties] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.properties] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.properties] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j27ebc9f63.yml] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.yml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.yml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.yml] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j27ebc9f63.yaml] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.yaml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.yaml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.yaml] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j27ebc9f63.json] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.json] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.json] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.json] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j27ebc9f63.jsn] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.jsn] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.jsn] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.jsn] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j27ebc9f63.xml] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.xml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.xml] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.xml] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j27ebc9f63.springboot] using context class loader java.net.URLClassLoader@7ebc9f63.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.springboot] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.springboot] using java.net.URLClassLoader@7ebc9f63 class loader.
-TRACE StatusLogger Trying to find [log4j27ebc9f63.springboot] using ClassLoader.getSystemResource().
-TRACE StatusLogger Trying to find [log4j2.properties] using context class loader java.net.URLClassLoader@7ebc9f63.
-DEBUG StatusLogger Apache Log4j Core 2.17.1 initializing configuration org.apache.logging.log4j.core.config.properties.PropertiesConfiguration@6115793
-DEBUG StatusLogger Installed 1 script engine
-DEBUG StatusLogger Oracle Nashorn version: 1.8.0_151, language: ECMAScript, threading: Not Thread Safe, compile: true, names: [nashorn, Nashorn, js, JS, JavaScript, javascript, ECMAScript, ecmascript], factory class: jdk.nashorn.api.scripting.NashornScriptEngineFactory
-DEBUG StatusLogger PluginManager 'Core' found 128 plugins
-DEBUG StatusLogger PluginManager 'Level' found 0 plugins
-DEBUG StatusLogger PluginManager 'Lookup' found 17 plugins
-DEBUG StatusLogger Building Plugin[name=loggers, class=org.apache.logging.log4j.core.config.LoggersPlugin].
-DEBUG StatusLogger createLoggers(={})
-DEBUG StatusLogger Building Plugin[name=appenders, class=org.apache.logging.log4j.core.config.AppendersPlugin].
-DEBUG StatusLogger createAppenders(={})
-WARN StatusLogger No Root logger was configured, creating default ERROR-level Root logger with Console appender
-DEBUG StatusLogger PluginManager 'Converter' found 48 plugins
-DEBUG StatusLogger Starting OutputStreamManager SYSTEM_OUT.false.false-2
-DEBUG StatusLogger Configuration org.apache.logging.log4j.core.config.properties.PropertiesConfiguration@6115793 initialized
-DEBUG StatusLogger Starting configuration org.apache.logging.log4j.core.config.properties.PropertiesConfiguration@6115793
-DEBUG StatusLogger Started configuration org.apache.logging.log4j.core.config.properties.PropertiesConfiguration@6115793 OK.
-TRACE StatusLogger Stopping org.apache.logging.log4j.core.config.DefaultConfiguration@6ad4eda0...
-TRACE StatusLogger DefaultConfiguration notified 1 ReliabilityStrategies that config will be stopped.
-TRACE StatusLogger DefaultConfiguration stopping root LoggerConfig.
-TRACE StatusLogger DefaultConfiguration notifying ReliabilityStrategies that appenders will be stopped.
-TRACE StatusLogger DefaultConfiguration stopping remaining Appenders.
-DEBUG StatusLogger Shutting down OutputStreamManager SYSTEM_OUT.false.false-1DEBUG StatusLogger OutputStream closed
-DEBUG StatusLogger Shut down OutputStreamManager SYSTEM_OUT.false.false-1, all resources released: true
-DEBUG StatusLogger Appender DefaultConsole-1 stopped with status true
-TRACE StatusLogger DefaultConfiguration stopped 1 remaining Appenders.
-TRACE StatusLogger DefaultConfiguration cleaning Appenders from 1 LoggerConfigs.
+[INFO] Attaching agents: []
 
-DEBUG StatusLogger Stopped org.apache.logging.log4j.core.config.DefaultConfiguration@6ad4eda0 OK
-TRACE StatusLogger Reregistering MBeans after reconfigure. Selector=org.apache.logging.log4j.core.selector.ClassLoaderContextSelector@4fbd8127
-TRACE StatusLogger Reregistering context (1/1): '7ebc9f63' org.apache.logging.log4j.core.LoggerContext@39ec99c
-TRACE StatusLogger Unregistering but no MBeans found matching 'org.apache.logging.log4j2:type=7ebc9f63'
-TRACE StatusLogger Unregistering but no MBeans found matching 'org.apache.logging.log4j2:type=7ebc9f63,component=StatusLogger'
-TRACE StatusLogger Unregistering but no MBeans found matching 'org.apache.logging.log4j2:type=7ebc9f63,component=ContextSelector'
-TRACE StatusLogger Unregistering but no MBeans found matching 'org.apache.logging.log4j2:type=7ebc9f63,component=Loggers,name=*'TRACE StatusLogger Unregistering but no MBeans found matching 'org.apache.logging.log4j2:type=7ebc9f63,component=Appenders,name=*'
-TRACE StatusLogger Unregistering but no MBeans found matching 'org.apache.logging.log4j2:type=7ebc9f63,component=AsyncAppenders,name=*'
-TRACE StatusLogger Unregistering but no MBeans found matching 'org.apache.logging.log4j2:type=7ebc9f63,component=AsyncLoggerRingBuffer'
-TRACE StatusLogger Unregistering but no MBeans found matching 'org.apache.logging.log4j2:type=7ebc9f63,component=Loggers,name=*,subtype=RingBuffer'
-DEBUG StatusLogger Registering MBean org.apache.logging.log4j2:type=7ebc9f63
-DEBUG StatusLogger Registering MBean org.apache.logging.log4j2:type=7ebc9f63,component=StatusLogger
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.3.4.RELEASE)
 
+2024-07-15 13:02:33.846  INFO 14156 --- [           main] example.Example
+                   : Starting Example on Lenovo-PC with PID 14156 (C:\developer\sergueik\springboot_study\basic-log4j2\target\classes started by Serguei in C:\developer\sergueik\springboot_study\basic-log4j2)
+2024-07-15 13:02:33.849 DEBUG 14156 --- [           main] example.Example
+                   : Running with Spring Boot v2.3.4.RELEASE, Spring v5.2.9.RELEASE
+2024-07-15 13:02:33.850  INFO 14156 --- [           main] example.Example
+                   : No active profile set, falling back to default profiles: default
+2024-07-15 13:02:36.170  INFO 14156 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-07-15 13:02:36.172  INFO 14156 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.38]
+2024-07-15 13:02:36.455  INFO 14156 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+DEBUG StatusLogger org.slf4j.helpers.Log4jLoggerFactory is not on classpath. Good!
+DEBUG StatusLogger Using ShutdownCallbackRegistry class org.apache.logging.log4j.core.util.DefaultShutdownCallbackRegistry
+WARN StatusLogger Multiple logging implementations found: Factory: org.apache.logging.log4j.core.impl.Log4jContextFactory, Weighting: 10 Factory: org.apache.logging.slf4j.SLF4JLoggerContextFactory, Weighting: 15 Using factory: org.apache.logging.slf4j.SLF4JLoggerContextFactory
+2024-07-15 13:02:36.754  INFO 14156 --- [           main] example.LogHelper                   : init message
+2024-07-15 13:02:36.755  WARN 14156 --- [           main] example.LogHelper                   : init message
+2024-07-15 13:02:36.756 DEBUG 14156 --- [           main] example.LogHelper                   : init message
+2024-07-15 13:02:37.744  INFO 14156 --- [           main] example.Example                   : Started Example in 4.252 seconds (JVM running for 4.858)
 ```
 and  produce the messages in `App.log` and console:
 ```sh
@@ -173,24 +65,23 @@ then
 ```sh
 for cnt in $(seq 0 1 3); do curl "http://localhost:8085/example?data='${cnt}+test'"; done
 ```
+if the application runs on another host update the command accordingly
+
 and check the appearance of new messages in `App.log` and console:
 ```sh
-[http-nio-8085-exec-10] INFO 20ogger - raw data '0 test'
-[http-nio-8085-exec-10] INFO 20ogger - raw data '0 test'
-[http-nio-8085-exec-10] INFO 20ogger - handler received: '0 test'
-[http-nio-8085-exec-10] INFO 20ogger - handler received: '0 test'
-[http-nio-8085-exec-9] INFO 20ogger - raw data '1 test'
-[http-nio-8085-exec-9] INFO 20ogger - raw data '1 test'
-[http-nio-8085-exec-9] INFO 20ogger - handler received: '1 test'
-[http-nio-8085-exec-9] INFO 20ogger - handler received: '1 test'
-[http-nio-8085-exec-8] INFO 20ogger - raw data '2 test'
-[http-nio-8085-exec-8] INFO 20ogger - raw data '2 test'
-[http-nio-8085-exec-8] INFO 20ogger - handler received: '2 test'
-[http-nio-8085-exec-8] INFO 20ogger - handler received: '2 test'
-[http-nio-8085-exec-7] INFO 20ogger - raw data '3 test'
-[http-nio-8085-exec-7] INFO 20ogger - raw data '3 test'
-[http-nio-8085-exec-7] INFO 20ogger - handler received: '3 test'
-[http-nio-8085-exec-7] INFO 20ogger - handler received: '3 test'
+2024-07-15 13:04:35.605  INFO 14156 --- [nio-8085-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-07-15 13:04:35.688  INFO 14156 --- [nio-8085-exec-2] example.LogHelper                   : raw data '0 test'
+2024-07-15 13:04:35.691 TRACE 14156 --- [nio-8085-exec-2] example.LogHelper                   : raw data '0 test'
+2024-07-15 13:04:35.693  INFO 14156 --- [nio-8085-exec-2] example.LogHelper                   : handler received: '0 test'
+2024-07-15 13:04:35.863  INFO 14156 --- [nio-8085-exec-1] example.LogHelper                   : raw data '1 test'
+2024-07-15 13:04:35.865 TRACE 14156 --- [nio-8085-exec-1] example.LogHelper                   : raw data '1 test'
+2024-07-15 13:04:35.865  INFO 14156 --- [nio-8085-exec-1] example.LogHelper                   : handler received: '1 test'
+2024-07-15 13:04:35.982  INFO 14156 --- [nio-8085-exec-4] example.LogHelper                   : raw data '2 test'
+2024-07-15 13:04:35.983 TRACE 14156 --- [nio-8085-exec-4] example.LogHelper                   : raw data '2 test'
+2024-07-15 13:04:35.984  INFO 14156 --- [nio-8085-exec-4] example.LogHelper                   : handler received: '2 test'
+2024-07-15 13:04:36.102  INFO 14156 --- [nio-8085-exec-7] example.LogHelper                   : raw data '3 test'
+2024-07-15 13:04:36.103 TRACE 14156 --- [nio-8085-exec-7] example.LogHelper                   : raw data '3 test'
+2024-07-15 13:04:36.104  INFO 14156 --- [nio-8085-exec-7] example.LogHelper                   : handler received: '3 test'
 ```
 ### Alternative log4j2 Configurations
 
@@ -414,6 +305,11 @@ Note, when there is no real APM server running on port 9200, APM re-attempts to 
 }
 ```
 this is cured by installing the real APM server
+
+### Note
+
+With Springboot parent __2.3.4__  the file logging is broken.
+
 ### See Also
 
  * [JSON logging](https://www.baeldung.com/java-log-json-output)
@@ -434,5 +330,6 @@ this is cured by installing the real APM server
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 
 
