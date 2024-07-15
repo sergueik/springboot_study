@@ -1,6 +1,6 @@
 package example.controller;
 /**
- * Copyright 2021,2022,2023 Serguei Kouzmine
+ * Copyright 2021-2024 Serguei Kouzmine
  */
 
 import java.io.File;
@@ -45,6 +45,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
+import example.exceptions.HTTPStatusException;
 import example.service.ExampleService;
 
 @RestController
@@ -266,8 +267,10 @@ public class ExampleController {
 			// HttpServletResponse response
 			// and then
 			// response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			// see also:
+			// see also (example is for Java 17+):
 			// https://stackoverflow.com/questions/16232833/how-to-respond-with-http-400-error-in-a-spring-mvc-responsebody-method-returnin
+			// https://github.com/eugenp/tutorials/blob/master/spring-web-modules/spring-rest-http/src/main/java/com/baeldung/responseheaders/controllers/FilterResponseHeaderController.java
+			// https://www.baeldung.com/spring-mvc-controller-custom-http-status-code
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(service.handleData(new Data(param.getFirst("name"))));
 	}
@@ -306,6 +309,24 @@ public class ExampleController {
 	@GetMapping(value = "/servererror", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> serverError() {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("");
+	}
+
+	// origin:
+	// https://github.com/eugenp/tutorials/blob/master/spring-web-modules/spring-rest-http/src/main/java/com/baeldung/responseheaders/controllers/FilterResponseHeaderController.java
+	@RequestMapping(value = "/exception1/{details}", method = RequestMethod.GET)
+	@ResponseBody
+	public String setHTTPStatusViaHttpServletResponse(@PathVariable String details, HttpServletResponse response) {
+		response.setStatus(HttpStatus.BAD_GATEWAY.value());
+		return null;
+	}
+
+	// based on:
+	// https://www.baeldung.com/spring-mvc-controller-custom-http-status-code
+	@RequestMapping(value = "/exception2", method = RequestMethod.GET)
+	@ResponseBody
+	public String sendHTTPStatusByThrowingException() {
+		throw new HTTPStatusException();
+		// return null;
 	}
 
 	public static class Data {
