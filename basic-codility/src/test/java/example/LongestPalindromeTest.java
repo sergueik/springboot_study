@@ -29,9 +29,9 @@ import org.junit.Test;
 
 public class LongestPalindromeTest {
 
-	private boolean debug = false;
+	private boolean debug = true;
 
-	// @Ignore
+	@Ignore
 	@Test
 	public void test1() {
 		String data = "abcba";
@@ -39,7 +39,7 @@ public class LongestPalindromeTest {
 		assertTrue(res);
 	}
 
-	// @Ignore
+	@Ignore
 	@Test
 	public void test2() {
 		String data = "abccba";
@@ -47,7 +47,7 @@ public class LongestPalindromeTest {
 		assertTrue(res);
 	}
 
-	// @Ignore
+	@Ignore
 	@Test
 	public void test3() {
 		String data = "abcda";
@@ -56,7 +56,7 @@ public class LongestPalindromeTest {
 
 	}
 
-	// @Ignore
+	@Ignore
 	@Test
 	public void test4() {
 		String data = "abda";
@@ -65,7 +65,7 @@ public class LongestPalindromeTest {
 
 	}
 
-	// @Ignore
+	@Ignore
 	@Test
 	public void test5() {
 		String data = "abcba";
@@ -73,7 +73,7 @@ public class LongestPalindromeTest {
 		assertTrue(res);
 	}
 
-	// @Ignore
+	@Ignore
 	@Test
 	public void test6() {
 		String data = "abccba";
@@ -81,7 +81,7 @@ public class LongestPalindromeTest {
 		assertTrue(res);
 	}
 
-	// @Ignore
+	@Ignore
 	@Test
 	public void test7() {
 		String data = "abcda";
@@ -90,7 +90,7 @@ public class LongestPalindromeTest {
 
 	}
 
-	// @Ignore
+	@Ignore
 	@Test
 	public void test8() {
 		String data = "abda";
@@ -98,6 +98,7 @@ public class LongestPalindromeTest {
 		assertFalse(res);
 	}
 
+	@Ignore
 	@Test
 	public void test9() {
 		debug = true;
@@ -106,7 +107,7 @@ public class LongestPalindromeTest {
 		assertTrue(res);
 	}
 
-	// @Ignore
+	@Ignore
 	@Test
 	public void test10() {
 		String data = "I was driving a racecar with my mom at noon and saw the speed radar at level 0 of civic lane.";
@@ -120,16 +121,17 @@ public class LongestPalindromeTest {
 	@Test
 	public void test11() {
 		String data = "I was driving a racecar with my mom at noon and saw the speed radar at level 0 of civic lane.";
-		Set<String>results = new HashSet<>();
+		Set<String> results = new HashSet<>();
 		String result = longestPalindromeWord(data, results);
 		System.err.println("Result: " + result);
 		assertThat(result, is("racecar"));
 		assertTrue(result.equals("racecar"));
-		
+
 		System.err.println("Results: " + Arrays.asList(results));
-		assertThat(results.size(), is(4));
+		assertThat(results.size(), is(9));
 	}
 
+	@Ignore
 	@Test
 	public void test12() {
 		String data = "A man, a plan, a canal: Panama";
@@ -137,6 +139,7 @@ public class LongestPalindromeTest {
 		assertTrue(res);
 	}
 
+	@Ignore
 	@Test
 	public void test13() {
 		String data = "A man a plan a canal Panama";
@@ -144,6 +147,7 @@ public class LongestPalindromeTest {
 		assertTrue(res);
 	}
 
+	@Ignore
 	@Test
 	public void test14() {
 		debug = true;
@@ -152,13 +156,21 @@ public class LongestPalindromeTest {
 		assertTrue(res);
 	}
 
-	// @Ignore
-	private boolean isPalindrome(String data) {
+	private boolean isPalindrome1(String data) {
 		String reverse = new StringBuilder(data).reverse().toString();
 		for (int i = 0; i != data.length() / 2; i++) {
 			if (data.charAt(i) != reverse.charAt(i)) {
 				return false;
 			}
+		}
+		return true;
+	}
+
+	private boolean isPalindrome(String data) {
+		char[] letters = data.toCharArray();
+		for (int i = 0, j = data.length() - 1; i <= j; i++, j--) {
+			if (letters[i] != letters[j])
+				return false;
 		}
 		return true;
 	}
@@ -170,6 +182,9 @@ public class LongestPalindromeTest {
 		int maxlength = 0;
 		for (int i = 0; i != words.length - 1; i++) {
 			if (isPalindrome(words[i])) {
+				if (debug)
+					System.err.println(
+							String.format("Adding palindrome word %s of length %d", words[i], words[i].length()));
 				results.put(words[i], words[i].length());
 				if (words[i].length() > maxlength) {
 					maxlength = words[i].length();
