@@ -9,7 +9,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.0',
 
 DOCUMENTATION = '''
 ---
-module: diff
+module: diff_module
 author: cytopia (@cytopia)
 
 short_description: Diff compare strings, files or command outputs
@@ -51,29 +51,29 @@ options:
 '''
 
 EXAMPLES = '''
-# Diff compare two strings
-- diff:
+# Diff_module compare two strings
+- diff_module:
     source: "foo"
     target: "bar"
     source_type: string
     target_type: string
 
 # Diff compare variable against template file (as strings)
-- diff:
+- diff_module:
     source: "{{ lookup('template', tpl.yml.j2) }}"
     target: "{{ my_var }}"
     source_type: string
     target_type: string
 
 # Diff compare string against command output
-- diff:
+- diff_module:
     source: "/bin/bash"
     target: "which bash"
     source_type: string
     target_type: command
 
 # Diff compare file against command output
-- diff:
+- diff_module:
     source: "/etc/hostname"
     target: "hostname"
     source_type: file
@@ -81,7 +81,7 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-diff:
+diff_module:
     description: diff output
     returned: success
     type: string
