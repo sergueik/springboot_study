@@ -43,6 +43,10 @@ unzip and copy the `terraform.exe`.
 to some directory listed in the `PATH` (e.g. `c:\tools` ) or add the terraform application home directory to the `PATH`, the exact syntax varies with the shell
   + in cmd
 ```cmd
+set PATH=%PATH%;c:\tools
+```
+or 
+```cmd
 PATH=%PATH%;c:\tools
 ```
   + in git bash
@@ -557,6 +561,7 @@ cp ../ec2/.terraform.lock.hcl .
 ```cmd
 set TF_CLI_ARGS=-no-color
 ```
+NOTE: does not get recognized by `terraform console`
 ### Docker Provider
 fails with warning on Linux:
 ```text

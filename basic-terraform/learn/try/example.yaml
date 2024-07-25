@@ -1,0 +1,8 @@
+---
+name: foo
+groups:
+  - one
+  - two
+tags:
+   name: some name
+   value: some value

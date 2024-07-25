@@ -3,11 +3,14 @@
 # .tfstate files
 *.tfstate
 *.tfstate.*
+# workspaces
+**/terraform.tfstate.d/**
 
 *box
 *out
 
-# provider hashes state lock and downloaded cache
+# provider hashes state lock and downloaded cached provider plugins and module
+# NOTE: should include this file in version control repository
 **/.terraform.lock.*
 **/.terraform/providers/**
 
