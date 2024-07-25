@@ -88,15 +88,6 @@ diff_module:
     sample: + this line was added
 '''
 
-# Python default imports
-import os
-import time
-import subprocess
-
-# Python Ansible imports
-from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils._text import to_bytes
-
 
 def shell_exec(command):
     '''
@@ -151,6 +142,16 @@ def diff_module_validation(module):
             module.fail_json(msg="diff does not support recursive diff of directory: %s" % (target))
 
     return module
+
+
+# Python default imports
+import os
+import time
+import subprocess
+
+# Python Ansible imports
+from ansible.module_utils.basic import *
+from ansible.module_utils._text import *
 
 
 def main():
@@ -236,4 +237,3 @@ def main():
 if __name__ == '__main__':
 
     main()
-
