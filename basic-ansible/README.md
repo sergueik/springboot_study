@@ -167,7 +167,10 @@ localhost                  : ok=2    changed=1    unreachable=0    failed=0    s
 
 
 ```
-
+reading the well formed module documentation
+```sh
+ANSIBLE_LIBRARY=./library ansible-doc diff_module
+```
 ### See Also
 
   * [ansible modules](https://docs.ansible.com/ansible/2.9/modules/modules_by_category.html)

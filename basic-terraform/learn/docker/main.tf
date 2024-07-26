@@ -1,6 +1,8 @@
 terraform {
   required_providers {
     docker = {
+      // NOTE: HOSTNAME is omitted, defaults to https://registry.terraform.io
+      // the hostname of the public Terraform Registry.
       // https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs
       source  = "kreuzwerker/docker"
       version = "~>3.0.1"
