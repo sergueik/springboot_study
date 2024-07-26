@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,6 +39,8 @@ import java.util.stream.Stream;
 import org.junit.Ignore;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 // origin: https://hellokoding.com/java-8-completablefuture-supplyasync-tutorial-with-examples/
 // https://github.com/hellokoding/hellokoding-courses
@@ -45,49 +48,63 @@ public class AsyncChainingTest {
 
 	private CompletableFuture<String> completableFuture;
 	private CompletableFuture<Void> procedureFuture;
+	private Supplier<String> supplier = null;
+	private Function<String, String> function = null;
+	private final String text1 = "message1";
+	private final String text2 = "message2";
 
 	@Test
 	public void test1() throws ExecutionException, InterruptedException {
-		completableFuture = CompletableFuture.supplyAsync(() -> "message");
-		assertThat(completableFuture.get(), is("message"));
+		supplier = () -> text1;
+		completableFuture = CompletableFuture.supplyAsync(supplier);
+		assertThat(completableFuture.get(), is(text1));
 	}
 
 	@Test
 	public void test2() throws ExecutionException, InterruptedException {
-		completableFuture = CompletableFuture.supplyAsync(() -> "message1");
-		completableFuture = completableFuture.thenApplyAsync((String s) -> s.concat(" message2"));
-		assertThat(completableFuture.get(), is("message1 message2"));
+		supplier = () -> text1;
+		function = (String s) -> s.concat(text2);
+		completableFuture = CompletableFuture.supplyAsync(supplier);
+		completableFuture = completableFuture.thenApplyAsync(function);
+		assertThat(completableFuture.get(), is(text1.concat(text2)));
 	}
 
 	@Test
 	// TODO: java.util.concurrent.RejectedExecutionException
 	public void test3() throws ExecutionException, InterruptedException, RejectedExecutionException {
+		supplier = () -> text1;
+		function = (String s) -> s.concat(text2);
+
 		ExecutorService executorService = Executors.newFixedThreadPool(2);
+		completableFuture = CompletableFuture.supplyAsync(supplier, executorService).thenApplyAsync(function,
+				executorService);
 
-		completableFuture = CompletableFuture.supplyAsync(() -> "message1", executorService)
-				.thenApplyAsync((s) -> s.concat(" message2"), executorService);
 
+		assertThat(completableFuture.get(), is(text1.concat(text2)));
 		shutdownAndAwaitTermination(executorService);
-
-		assertThat(completableFuture.get(), is("message1 message2"));
 	}
 
 	@Test
 	public void test4() throws ExecutionException, InterruptedException {
-		completableFuture = CompletableFuture.supplyAsync(() -> "message1")
-				.thenComposeAsync((String s) -> CompletableFuture.supplyAsync(() -> s.concat(" message2")));
+		supplier = () -> text1;
+		// TODO: how to decompose
+		Function<String, CompletionStage<String>> function2 = (String s) -> CompletableFuture
+				.supplyAsync(() -> s.concat(text2));
+		completableFuture = CompletableFuture.supplyAsync(supplier).thenComposeAsync(function2);
 
-		assertThat(completableFuture.get(), is("message1 message2"));
+		assertThat(completableFuture.get(), is(text1.concat(text2)));
 	}
 
 	@Test
 	public void test5() throws ExecutionException, InterruptedException {
-		CompletableFuture<String> completableFuture1 = CompletableFuture.supplyAsync(() -> "message1");
-		CompletableFuture<String> completableFuture2 = CompletableFuture.supplyAsync(() -> " message2");
+		supplier = () -> text1;
+		Supplier<String> supplier2 = () -> text2;
+		CompletableFuture<String> completableFuture1 = CompletableFuture.supplyAsync(supplier);
+		CompletableFuture<String> completableFuture2 = CompletableFuture.supplyAsync(supplier2);
 
 		completableFuture = completableFuture1.thenCombineAsync(completableFuture2, (s1, s2) -> s1.concat(s2));
 
-		assertThat(completableFuture.get(), is("message1 message2"));
+		assertThat(completableFuture.get(), is(text1.concat(text2)));
 	}
 
 	/*
@@ -121,16 +138,19 @@ public class AsyncChainingTest {
 
 	@Test
 	public void test9() throws ExecutionException, InterruptedException {
-		completableFuture = CompletableFuture.supplyAsync(() -> "Future");
+		supplier = () -> text1;
+		completableFuture = CompletableFuture.supplyAsync(supplier);
 		procedureFuture = completableFuture.thenAcceptAsync(System.out::println);
 		assertThat(procedureFuture.get(), nullValue());
 	}
 
 	@Test
 	public void test10() throws ExecutionException, InterruptedException {
-		completableFuture = CompletableFuture.supplyAsync(() -> "text");
+		supplier = () -> text1;
+		final Runnable action = () -> System.out.println("!");
+		completableFuture = CompletableFuture.supplyAsync(supplier);
 
-		procedureFuture = completableFuture.thenRunAsync(() -> System.out.println("!"));
+		procedureFuture = completableFuture.thenRunAsync(action);
 
 		assertThat(procedureFuture.get(), nullValue());
 	}
