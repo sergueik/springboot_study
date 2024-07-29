@@ -175,5 +175,7 @@ ANSIBLE_LIBRARY=./library ansible-doc diff_module
 
   * [ansible modules](https://docs.ansible.com/ansible/2.9/modules/modules_by_category.html)
   * https://spacelift.io/blog/ansible-modules  
+  * [how to run ansible playbooks locally](https://gist.github.com/alces/caa3e7e5f46f9595f715f0f55eef65c1)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
