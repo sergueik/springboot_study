@@ -18,7 +18,7 @@
     <joda-time.version>2.3</joda-time.version>
     <testng.version>6.9.4</testng.version>
     <mockito.version>1.10.19</mockito.version>
-    <h2.version>2.1.210</h2.version>
+    <h2.version>2.2.220</h2.version>
     <dbunit.version>2.2</dbunit.version>
     <java.version>1.8</java.version>
     <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
