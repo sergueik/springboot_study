@@ -14,7 +14,7 @@
     <java.version>1.8</java.version>
     <gson.version>2.8.9</gson.version>
     <start-class>example.Application</start-class>
-    <webjars.bootstrap.version>3.3.7</webjars.bootstrap.version>
+    <webjars.bootstrap.version>3.4.0</webjars.bootstrap.version>
     <webjars.jquery.version>3.2.1</webjars.jquery.version>
     <webjars.angular-version>1.5.8</webjars.angular-version>
     <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
