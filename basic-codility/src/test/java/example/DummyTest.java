@@ -7,15 +7,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-// better matchers
+//better matchers
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
 
