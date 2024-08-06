@@ -22,7 +22,7 @@
     <junit-jupiter.version>5.2.0</junit-jupiter.version>
     <java.version>1.8</java.version>
     <quartz.version>2.3.2</quartz.version>
-    <h2.version>2.1.210</h2.version>
+    <h2.version>2.2.220</h2.version>
     <testng.version>6.14.3</testng.version>
     <liquidbase.version>4.8.0</liquidbase.version>
     <java.version>1.8</java.version>
