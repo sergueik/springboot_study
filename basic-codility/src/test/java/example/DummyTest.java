@@ -40,4 +40,10 @@ import org.junit.Test;
 public class DummyTest {
 
 	private boolean debug = true;
+	@Ignore
+	@Test
+	public void test1() {
+		// assertThat(data, is("Hello Java!"));
+		// assertTrue();
+	}
 }
