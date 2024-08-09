@@ -28,11 +28,12 @@ CREATE TABLE `cache_table` (
   PRIMARY KEY (`id`)
 );
 ```
-The column `expose` is serving the needs of sharng the RRD data of different kilds and return lists of files selected by
+The column `expose` is serving the needs of sharng the __RRD__ data of different kilds and return lists of files selected by
 ```sql
-expose LIKE ?```
+expose LIKE ?
+```
 query template
-where the value of the `expose` string determined from the request header (more about it below).
+where the value of the `expose` string is determined from the request header (more about it below).
 
 ### Usage
 *  have mysql container up
