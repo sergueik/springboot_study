@@ -60,7 +60,7 @@ public class MutpltyPairTest {
 	}
 
 	@Test
-	public void test3() throws UnsupportedOperationException {
+	public void test3() {
 		final List<Integer> x = Arrays.asList(new Integer[] { 6, 3, 4, 2, 3, 4, 5, 6 });
 		final List<Integer> y = new ArrayList<>();
 		y.addAll(x);
@@ -69,11 +69,21 @@ public class MutpltyPairTest {
 	}
 
 	@Test
-	public void test4() throws UnsupportedOperationException {
+	public void test4() {
 		final List<Integer> x = Arrays.asList(new Integer[] { 6, 3, 2, 3, 3, 4, 5, 6 });
 		final List<Integer> y = new ArrayList<>();
 		y.addAll(x);
 		assertThat("test4", MultiplyAdjustemtPair2(y, 20), is(4));
+		// assertTrue();
+	}
+
+	@Test
+	public void test5() {
+		final List<Integer> x = Arrays.asList(new Integer[] { 7, 3, 1, 1, 1, 1, 1, 1, 1 });
+		final List<Integer> y = new ArrayList<>();
+		y.addAll(x);
+		assertThat("test5", MultiplyAdjustemtPair2(y, 20), is(2));
+		assertThat("test5", MultiplyAdjustemtPair(y, 20), is(y.size()));
 		// assertTrue();
 	}
 
