@@ -282,6 +282,10 @@ the Springboot Kafka configuration is incompete: cannot direct it to use remote 
     + [part1](https://www.elastic.co/blog/just-enough-kafka-for-the-elastic-stack-part1) and [part2](https://www.elastic.co/blog/just-enough-kafka-for-the-elastic-stack-part2) on using Kafka with Elastic Search, but as utility, not as a monitored target
    * [introduction to Apache Kafka](https://www.baeldung.com/apache-kafka)
    * [intro to Apache Kafka with Spring](https://www.baeldung.com/spring-kafka)
-    
+   * [Apache Kafka Essential - Getting Started](https://archive.org/details/apache-kafka-essential-training-getting-started)
+     + [source code](https://github.com/pfg-josecastillo/ApacheKafkaEssentialTraining_GettingStarted)
+   * [Apache Kafka Essential Scalable Apps](https://www.classcentral.com/course/linkedin-learning-apache-kafka-essential-training-building-scalable-applications-77215)
+  * https://github.com/PacktPublishing/Build-scalable-applications-with-Apache-Kafka?ysclid=lzrcfr40m4804042611 
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
