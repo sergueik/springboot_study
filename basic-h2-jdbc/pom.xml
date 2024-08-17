@@ -44,7 +44,7 @@
     <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
     <maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
     <mainClass>Domain</mainClass>
-    <h2.version>2.1.210</h2.version>
+    <h2.version>2.2.220</h2.version>
   </properties>
   <dependencies>
     <dependency>
