@@ -45,7 +45,8 @@ run "website_is_running" {
     condition     = data.http.index.status_code == 200
     error_message = "Website responded with HTTP status ${data.http.index.status_code}"
   }
-    assert {
+
+  assert {
     condition     = regex("[a-z]+", data.http.index.response_body ) != ""
     error_message = "Website response body ${data.http.index.response_body}"
   }

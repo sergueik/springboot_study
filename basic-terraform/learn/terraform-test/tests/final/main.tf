@@ -14,4 +14,9 @@ variable "endpoint" {
 data "http" "index" {
     url = var.endpoint
     method = "GET"
+    retry {
+         attempts = 2
+         max_delay_ms = 1000
+         min_delay_ms = 500
+    }
 }
