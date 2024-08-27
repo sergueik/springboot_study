@@ -45,4 +45,22 @@ run "website_is_running" {
     condition     = data.http.index.status_code == 200
     error_message = "Website responded with HTTP status ${data.http.index.status_code}"
   }
+    assert {
+    condition     = regex("[a-z]+", data.http.index.response_body ) != ""
+    error_message = "Website response body ${data.http.index.response_body}"
+  }
 }
+/*
+
+Error: Error in function call
+
+  on tests\website.tftest.hcl line 49, in run "website_is_running":
+  49:     condition     = regex("[a-z]+", data.http.index.response_body ) != ""
+    ├────────────────
+    │ while calling regex(pattern, string)
+    │ data.http.index.response_body is "12345\r\n"
+
+Call to function "regex" failed: pattern did not match any part of the given
+string.
+
+*/
