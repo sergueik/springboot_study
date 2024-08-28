@@ -150,7 +150,7 @@ resource_changes = {
 				"hibernation":                          null,
 				"iam_instance_profile":                 null,
 				"instance_initiated_shutdown_behavior": null,
-				"instance_type":                        "t2.micro",
+				"instance_type":                        "t2.large",
 				"monitoring":                           null,
 				"source_dest_check":                    true,
 				"tags": {
@@ -344,7 +344,7 @@ raw = {
 					"description": "EC2 instance name",
 				},
 				"instance_type": {
-					"default":     "t2.micro",
+					"default":     "t2.small",
 					"description": "Type of EC2 instance to provision",
 				},
 				"region": {

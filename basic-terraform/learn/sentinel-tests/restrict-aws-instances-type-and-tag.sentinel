@@ -1,8 +1,21 @@
 # Imports mock data
 import "tfplan/v2" as tfplan
+// https://github.com/hashicorp/terraform-sentinel-policies/blob/main/common-functions/tfplan-functions/tfplan-functions.sentinel
+// import "tfplan-functions" as tfplan_functions
+find_resources = func(type) {
+  resources = filter tfplan.resource_changes as address, rc {
+  	rc.type is type and
+  	rc.mode is "managed" and
+  	(rc.change.actions contains "create" or rc.change.actions contains "update" )
+  }
 
+
+  return resources
+}
+
+instances = find_resources("aws_instance")
 # Get all AWS instances from all modules
-ec2_instances = filter tfplan.resource_changes as _, rc {
+ec2_instances = filter instances as _, rc {
     rc.type is "aws_instance" and
         (rc.change.actions contains "create" or rc.change.actions is ["update"])
 }
@@ -27,7 +40,17 @@ mandatory_instance_tags = rule {
         }
     }
 }
+violatingResources = filter instances as _, instance {
+      not ( instance.change.after.instance_type  in allowed_types)
+}
 
+mandatory_instance_tags2 = rule {
+// NOTE: cannot "if" here:
+// expected operand, found 'if' (and 2 more errors)
+// if length(violatingResources) is 0 {
+ length(violatingResources) is 0 
+
+}
 # Rule to restrict instance types
 instance_type_allowed = rule {
     all ec2_instances as _, instance {
@@ -37,6 +60,7 @@ instance_type_allowed = rule {
 
 # Main rule that requires other rules to be true
 main = rule {
-    (instance_type_allowed and mandatory_instance_tags) else true 
+//    (instance_type_allowed and mandatory_instance_tags2) else true 
+    (mandatory_instance_tags2) else true 
 }
 
