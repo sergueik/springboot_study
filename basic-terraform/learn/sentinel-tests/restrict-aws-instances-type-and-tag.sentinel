@@ -44,11 +44,25 @@ violatingResources = filter instances as _, instance {
       not ( instance.change.after.instance_type  in allowed_types)
 }
 
+printresources = func(violatingResources) {
+if length(violatingResources) is 0 {
+//  error( "NOT OK")
+  return true
+
+} else { 
+  error(violatingResources)
+ return false 
+ }
+}
 mandatory_instance_tags2 = rule {
 // NOTE: cannot "if" here:
 // expected operand, found 'if' (and 2 more errors)
-// if length(violatingResources) is 0 {
- length(violatingResources) is 0 
+//if length(violatingResources) is 0 {
+//return true }
+// else { return false }
+printresources(violatingResources)
+ 
+
 
 }
 # Rule to restrict instance types
