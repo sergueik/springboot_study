@@ -265,7 +265,9 @@ f### Links to Google Cloud Platform Trainings and Documentation
   * https://cloud.google.com/iam/docs/permissions-reference
   * [IAM basic and predefined roles reference](https://cloud.google.com/iam/docs/understanding-roles)
   * [IAM Allow Policies](https://cloud.google.com/iam/docs/policies)
-
+  * [IAM Roles and Permissions](https://cloud.google.com/iam/docs/roles-overview)
+  * https://cloud.google.com/iam/docs/deny-overview
+  * https://cloud.google.com/iam/docs/policy-types
 #### Helm
   * https://cloud.google.com/learn/training/class-schedule
   * [Helm Chart Tests](https://helm.sh/docs/topics/chart_tests)
