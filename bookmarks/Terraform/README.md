@@ -411,6 +411,11 @@
   * https://registry.terraform.io/providers/hashicorp/tls/latest/docs
   * https://developer.hashicorp.com/terraform/tutorials?utm_source=tf_registry&utm_content=sidebar
   * https://registry.terraform.io/providers/hashicorp/assert/latest/docs/functions/http_client_error#terraform-test-example
+  
+#### Vertex AI Notebook
+  * https://cloud.google.com/vertex-ai/docs/tutorials/terraform/terraform-create-user-managed-notebooks-instance
+  * https://cloud.google.com/vertex-ai/docs/start/use-terraform-vertex-ai#terraform_resources_vertex_ai
+  * https://cloud.google.com/vertex-ai/docs/general/developer-tools-overview
 ### Kubernetes
 
   * https://www.terraform.io/use-cases/manage-kubernetes
@@ -427,18 +432,39 @@
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance_group_manager
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance_group
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance
+   
      + https://stackoverflow.com/questions/63401480/how-to-create-gcp-instance-with-public-ip-with-terraform
      + https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_address.html#example-usage-instance-with-ip
      + https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#access_config
      + https://github.com/LinkedInLearning/advanced-terraform-3099246
    * https://registry.terraform.io/modules/terraform-google-modules/service-accounts/google/latest 
      + https://github.com/terraform-google-modules/terraform-google-service-accounts/blob/master/main.tf - for argument processing
-   * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam#google_service_account_iam_member   
+   * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam#google_service_account_iam_member
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam 
      + https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_member
+   * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam_custom_role.html#example-usage
+      + https://stackoverflow.com/questions/49582977/gcp-custom-iam-role-creation-with-terraform
+
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam
-   * https://registry.terraform.io/providers/hashicorp/google/4.75.0/docs/resources/google_folder_iam
+   * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_organization_policy#example-usage
    
+   * [Terraform resource samples on GCP](https://cloud.google.com/docs/terraform/samples)
+   * [terraform on google cloud Validate policies guide](https://cloud.google.com/docs/terraform/policy-validation/validate-policies) (complex)
+
+   * [Implementing IAM access control as code with HashiCorp Terraform](https://cloud.google.com/blog/topics/developers-practitioners/implementing-iam-access-control-code-hashicorp-terraform) (example missing)
+      + `Service Account User` grants access for a user (referenced as member) to assume a service account (service_account_id)  by granting the user the iam.ServiceAccountUser role (referenced as role above).
+      + [Constraints](https://cloud.google.com/resource-manager/docs/organization-policy/understanding-constraints#available_constraints)
+      * [IAM Intro](https://cloud-dot-devsite-v2-prod.appspot.com/iam/docs/grant-role-console)
+   * [OpeN policy Agent](https://www.openpolicyagent.org/docs/latest/terraform)(in Golang) 
+   * [Rego policy language](https://www.openpolicyagent.org/docs/latest/policy-language/)
+   * https://cloud.google.com/docs/terraform/policy-validation/create-policy-library
+   * https://cloud.google.com/docs/terraform/samples
+     + https://github.com/terraform-google-modules/terraform-docs-samples/tree/main/iam/create_deny_policy
+   * [kitchen-terraform](https://newcontext-oss.github.io/kitchen-terraform/getting_started.html)
+   * https://registry.terraform.io/providers/hashicorp/google/4.75.0/docs/resources/google_folder_iam
+   * [workload Identity in GKE with Terraform](https://surajblog.medium.com/workload-identity-in-gke-with-terraform-9678a7a1d9c0) 
+      + allowing Kubernetes workloads to authenticate as Google Cloud service accounts
+   * https://cloud.google.com/vertex-ai/docs/start/use-terraform-vertex-ai 
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_subnetwork
@@ -487,6 +513,7 @@
      + https://github.com/rujwal-shrestha/generate-base-terratest/blob/main/genterratest.sh
      + https://github.com/bradib0y/terratest-demo
      + https://github.com/denis256/terratest-tests
+  * https://github.com/gruntwork-io/terratest/blob/master/examples/terraform-gcp-example     
   * https://docs.terrakube.io/
   * https://terrakube.org/
   * [terraform test framework](https://www.youtube.com/watch?v=N73chhccmo8)

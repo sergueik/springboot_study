@@ -258,6 +258,14 @@ f### Links to Google Cloud Platform Trainings and Documentation
   * https://cloud.google.com/blog/topics/developers-practitioners/implementing-iam-access-control-code-hashicorp-terraform
   * [Configuring IAM Permissions with gcloud](https://www.cloudskillsboost.google/focuses/7678?parent=catalog) 
   * https://antonputra.com/google/create-gke-cluster-using-terraform/#deploy-nginx-ingress-controller-on-gke-example-3 (complex)
+  * [architecting with Google Kubernetes Engine: Production](https://www.cloudskillsboost.google/course_templates/33?utm_source=youtube&utm_medium=video&utm_campaign=arch-gke-prod)
+  * https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies
+  * [introduction to the Organization Policy Service](https://cloud.google.com/resource-manager/docs/organization-policy/overview)
+  * https://sonraisecurity.com/blog/a-guide-to-gcp-organization-policy-managing-access/
+  * https://cloud.google.com/iam/docs/permissions-reference
+  * [IAM basic and predefined roles reference](https://cloud.google.com/iam/docs/understanding-roles)
+  * [IAM Allow Policies](https://cloud.google.com/iam/docs/policies)
+
 #### Helm
   * https://cloud.google.com/learn/training/class-schedule
   * [Helm Chart Tests](https://helm.sh/docs/topics/chart_tests)
