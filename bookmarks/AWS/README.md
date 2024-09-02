@@ -1,15 +1,17 @@
+### Info
+
   *  Amazon AWS Certified Cloud Practitioner Exam Actual Questions
 
-    + [CLF-C01](https://www.examtopics.com/exams/amazon/aws-certified-cloud-practitioner/view/)
-    + [CLF-C02](https://www.examtopics.com/exams/amazon/aws-certified-cloud-practitioner-clf-c02/view/)
-    + [10 Best AWS Courses On Udemy (2024)](https://forecastegy.com/posts/best-aws-courses-udemy/)
-    + [Ultimate AWS Certified Solutions Architect Associate SAA-C03](https://www.udemy.com/course/aws-certified-solutions-architect-associate-saa-c03/?ranMID=39197&ranEAID=VA5C3v2HuEI&ranSiteID=VA5C3v2HuEI-gam2mqYIQxnOQOf3l7GplA&LSNPUBID=VA5C3v2HuEI&utm_source=aff-campaign&utm_medium=udemyads)
-    + [Ultimate Aws Certified Developer Associate 2023 New Dva-C02](https://www.udemy.com/course/aws-certified-developer-associate-dva-c01/?couponCode=JUST4U02223)
-    + https://www.examtopics.com/exams/amazon/aws-certified-devops-engineer-professional-dop-c02/
-    + https://aws.amazon.com/certification/certified-devops-engineer-professional/    
-    + https://www.coursera.org/specializations/aws-devops
-    + https://explore.skillbuilder.aws/learn/course/external/view/elearning/14673/aws-certified-devops-engineer-professional-official-practice-question-set-dop-c02-english
-    + [DOP-C02](https://www.examtopics.com/exams/amazon/aws-certified-devops-engineer-professional-dop-c02/)
+  + [CLF-C01](https://www.examtopics.com/exams/amazon/aws-certified-cloud-practitioner/view/)
+  + [CLF-C02](https://www.examtopics.com/exams/amazon/aws-certified-cloud-practitioner-clf-c02/view/)
+  + [10 Best AWS Courses On Udemy (2024)](https://forecastegy.com/posts/best-aws-courses-udemy/)
+  + [Ultimate AWS Certified Solutions Architect Associate SAA-C03](https://www.udemy.com/course/aws-certified-solutions-architect-associate-saa-c03/?ranMID=39197&ranEAID=VA5C3v2HuEI&ranSiteID=VA5C3v2HuEI-gam2mqYIQxnOQOf3l7GplA&LSNPUBID=VA5C3v2HuEI&utm_source=aff-campaign&utm_medium=udemyads)
+  + [Ultimate Aws Certified Developer Associate 2023 New Dva-C02](https://www.udemy.com/course/aws-certified-developer-associate-dva-c01/?couponCode=JUST4U02223)
+   + https://www.examtopics.com/exams/amazon/aws-certified-devops-engineer-professional-dop-c02/
+  + https://aws.amazon.com/certification/certified-devops-engineer-professional/    
+  + https://www.coursera.org/specializations/aws-devops
+  + https://explore.skillbuilder.aws/learn/course/external/view/elearning/14673/aws-certified-devops-engineer-professional-official-practice-question-set-dop-c02-english
+  + [DOP-C02](https://www.examtopics.com/exams/amazon/aws-certified-devops-engineer-professional-dop-c02/)
     
   * Misc
      + https://jayendrapatil.com/aws-certified-devops-engineer-professional-dop-c02-exam-learning-path/
