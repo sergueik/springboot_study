@@ -29,8 +29,8 @@ provider "google" {
 // https://cloud.google.com/docs/terraform/deploy-flask-web-server
 
 //  https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network
-resource "google_compute_network" "vpc_network" {
-  name                    = "my-custom-mode-network"
+resource "google_compute_network" "custom" {
+  name                    = "custom"
   auto_create_subnetworks = false
   mtu                     = 1460
 }
@@ -39,15 +39,15 @@ resource "google_compute_network" "vpc_network" {
 resource "google_compute_subnetwork" "default" {
   name          = "my-custom-subnet"
   ip_cidr_range = "10.0.1.0/24"
-  region        = "us-west1"
-  network       = google_compute_network.vpc_network.id
+  region        = "us-central1"
+  network       = google_compute_network.custom.id
 }
 
-
+// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance
 resource "google_compute_instance" "default" {
   name         = "flask-vm"
   machine_type = "f1-micro"
-  zone         = "us-west1-a"
+  zone         = "us-central1-c"
   tags         = ["ssh"]
 
   boot_disk {
@@ -69,6 +69,7 @@ resource "google_compute_instance" "default" {
 }
 
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall
+
 resource "google_compute_firewall" "ssh" {
   name = "allow-ssh"
   allow {
@@ -76,7 +77,7 @@ resource "google_compute_firewall" "ssh" {
     protocol = "tcp"
   }
   direction     = "INGRESS"
-  network       = google_compute_network.vpc_network.id
+  network       = google_compute_network.custom.id
   priority      = 1000
   source_ranges = ["0.0.0.0/0"]
   target_tags   = ["ssh"]
@@ -84,7 +85,7 @@ resource "google_compute_firewall" "ssh" {
 
 resource "google_compute_firewall" "flask" {
   name    = "flask-app-firewall"
-  network = google_compute_network.vpc_network.id
+  network = google_compute_network.custom.id
 
   allow {
     protocol = "tcp"
@@ -93,6 +94,7 @@ resource "google_compute_firewall" "flask" {
   source_ranges = ["0.0.0.0/0"]
 }
 
-output "Web-server-URL" {
-  value = join("", ["http://", google_compute_instance.default.network_interface.0.access_config.0.nat_ip, ":5000"])
+output "url" {
+  // value = join("", ["http://", google_compute_instance.default.network_interface.0.access_config.0.nat_ip, ":5000"])
+  value = "http://${google_compute_instance.default.network_interface.0.access_config.0.nat_ip}:5000"
 }
