@@ -72,6 +72,25 @@ data "google_iam_policy" "report" {
 }
 
 output "xxx" {
-value = data.google_iam_policy.report
-
+  value = data.google_iam_policy.report
 }
+
+ data "google_compute_default_service_account" "default" {
+}
+
+// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam#importing-iam-policies
+
+
+// terraform import google_service_account_iam_binding.default "projects/spheric-alcove-430818-f9/serviceAccounts/terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com roles/compute.admin"
+
+/*
+ import {
+  id = "projects/spheric-alcove-430818-f9/serviceAccounts/terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com"
+  to = google_service_account_iam_binding.default
+ }
+
+resource "google_service_account_iam_binding" "default" {
+  # (resource arguments)
+}
+
+*/
