@@ -26,49 +26,21 @@ provider "google" {
   credentials = file("keys.json")
 }
 
-// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#example-usage
-
-resource "google_service_account" "default" {
-  account_id   = "spheric-alcove-sa"
-  display_name = "Custom SA for VM Instance"
+// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network#example-usage---network-basic
+resource "google_compute_network" "custom_network" {
+  name                    = "custom-network"
+  auto_create_subnetworks = false
+  //
 }
 
-resource "google_compute_instance" "default" {
-  name         = "my-instance"
-  machine_type = "e2-micro"
-  zone         = "us-central1-c"
+// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network#example-usage
+resource "google_compute_subnetwork" "custom_subnetwork" {
+  name          = "custom-subnetwork"
+  ip_cidr_range = "10.2.0.0/24"
+  region        = "us-central1"
+  network       = google_compute_network.custom_network.id
+}
 
-  tags = ["web"]
-
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-11"
-      labels = {
-        my_label = "value"
-      }
-    }
-  }
-
-scheduling { 
-preemptible = true
-automatic_restart = false
-}  
-
-  network_interface {
-    network = "default"
-
-    access_config {
-      // Ephemeral public IP
-    }
-  }
-
-  metadata_startup_script = "echo hi > /test.txt"
-
-  service_account {
-    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    email  = google_service_account.default.email
-    // allow full access to all Cloud APIs
-    //  https://cloud.google.com/sdk/gcloud/reference/alpha/compute/instances/set-scopes#--scopes
-    scopes = ["cloud-platform"]
-  }
+output "custom_network-id" {
+  value = google_compute_network.custom_network.id
 }
