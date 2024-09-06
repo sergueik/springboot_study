@@ -7,7 +7,7 @@ terraform {
 
     }
     google = {
-      source  = "hashicorp/google"
+      source = "hashicorp/google"
       // version = "~>6.1.0"
 
     }
@@ -26,71 +26,73 @@ provider "google" {
   credentials = file("keys.json")
 }
 
-// https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/service_account#argument-reference
-data "google_service_account" "exercise" {
-  account_id = "terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com"
-  project    = "spheric-alcove-430818-f9"
+// https://cloud.google.com/docs/terraform/deploy-flask-web-server
+
+//  https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network
+resource "google_compute_network" "vpc_network" {
+  name                    = "my-custom-mode-network"
+  auto_create_subnetworks = false
+  mtu                     = 1460
 }
 
-data "google_service_account_iam_policy" "exercise" {
-  service_account_id = data.google_service_account.exercise.name
+// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_subnetwork
+resource "google_compute_subnetwork" "default" {
+  name          = "my-custom-subnet"
+  ip_cidr_range = "10.0.1.0/24"
+  region        = "us-west1"
+  network       = google_compute_network.vpc_network.id
 }
 
-output "service_account_json" {
-  value = "${jsonencode(data.google_service_account.exercise)}"
-}
 
-output "service_account" {
-  value = data.google_service_account.exercise
-}
+resource "google_compute_instance" "default" {
+  name         = "flask-vm"
+  machine_type = "f1-micro"
+  zone         = "us-west1-a"
+  tags         = ["ssh"]
 
-output "service_account_iam_policy" {
-  value = data.google_service_account_iam_policy.exercise
-}
-// https://stackoverflow.com/questions/47006062/how-do-i-list-the-roles-associated-with-a-gcp-service-account
-/*
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+    }
+  }
 
-gcloud projects get-iam-policy "spheric-alcove-430818-f9" --flatten="bindings[].members"   --format="table(bindings.role)"   --filter="bindings.members:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com"
+  # Install Flask
+  metadata_startup_script = "sudo apt-get update; sudo apt-get install -yq build-essential python3-pip rsync; pip install flask"
 
-ROLE
-roles/compute.admin
-roles/iam.serviceAccountAdmin
-roles/iam.serviceAccountUser
-roles/servicemanagement.admin
-roles/serviceusage.serviceUsageAdmin
-roles/storage.admin
-*/
-// TODO: https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/iam_policy
-data "google_iam_policy" "report" {
-  binding {
-    role = "roles/compute.admin"
+  network_interface {
+    subnetwork = google_compute_subnetwork.default.id
 
-    members = [
-      "serviceAccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
-    ]
+    access_config {
+      # Include this section to give the VM an external IP address
+    }
   }
 }
 
-output "xxx" {
-  value = data.google_iam_policy.report
+// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall
+resource "google_compute_firewall" "ssh" {
+  name = "allow-ssh"
+  allow {
+    ports    = ["22"]
+    protocol = "tcp"
+  }
+  direction     = "INGRESS"
+  network       = google_compute_network.vpc_network.id
+  priority      = 1000
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["ssh"]
 }
 
- data "google_compute_default_service_account" "default" {
+resource "google_compute_firewall" "flask" {
+  name    = "flask-app-firewall"
+  network = google_compute_network.vpc_network.id
+
+  allow {
+    protocol = "tcp"
+    ports    = ["5000"]
+  }
+  source_ranges = ["0.0.0.0/0"]
 }
 
-// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam#importing-iam-policies
-
-
-// terraform import google_service_account_iam_binding.default "projects/spheric-alcove-430818-f9/serviceAccounts/terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com roles/compute.admin"
-
-/*
- import {
-  id = "projects/spheric-alcove-430818-f9/serviceAccounts/terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com"
-  to = google_service_account_iam_binding.default
- }
-
-resource "google_service_account_iam_binding" "default" {
-  # (resource arguments)
+output "Web-server-URL" {
+  value = join("", ["http://", google_compute_instance.default.network_interface.0.access_config.0.nat_ip, ":5000"])
 }
-
-*/
