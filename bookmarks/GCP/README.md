@@ -1,4 +1,4 @@
-f### Links to Google Cloud Platform Trainings and Documentation
+### Links to Google Cloud Platform Trainings and Documentation
 
   * Practice Exam
     + search for course and practice exam on "Google Certified Professional Cloud Developer"
