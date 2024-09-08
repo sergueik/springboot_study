@@ -1,4 +1,4 @@
-# Call the setup module to create a random bucket prefix
+﻿# Call the setup module to create a random bucket prefix
 run "setup_tests" {
   module {
     source = "./tests/setup"
@@ -6,6 +6,7 @@ run "setup_tests" {
 }
 
 # Apply run block to create the bucket
+#  no need to define outputs
 run "create_bucket" {
   variables {
     bucket_name = "${run.setup_tests.bucket_prefix}-aws-s3-website-test"
@@ -47,8 +48,8 @@ run "website_is_running" {
   }
 
   assert {
-    condition     = regex("[a-z]+", data.http.index.response_body ) != ""
-    error_message = "Website response body ${data.http.index.response_body}"
+    condition     = can(regex("[a-z]+", data.http.index.response_body ))
+    error_message = "Website response body ${data.http.index.response_body} should contain alphanumeric characters"
   }
 }
 /*
