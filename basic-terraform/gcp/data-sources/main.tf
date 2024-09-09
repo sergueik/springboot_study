@@ -27,14 +27,44 @@ provider "google" {
 }
 // https://github.com/PacktPublishing/Terraform-for-Google-Cloud-Essential-Guide/tree/main/chap03/data-source
 
-data "google_compute_zones" "available" {
+locals {
+  machine_type_mapping = {
+    small  = "e2-micro"
+    medium = "e2-medium"
+    large  = "n2-standard-2"
+  }
+  machine_type = local.machine_type_mapping[var.machine_size]
+
+}
+variable "machine_size" {
+  type    = string
+  default = "small"
+  validation {
+    condition     = contains(keys(local.machine_type_mapping), var.machine_size)
+    error_message = "The machine size must be one of small, medium, and large."
+  }
+}
+// terraform plan -var machine_size=tiny
+
+resource "google_compute_address" "static" {
+  count = var.static_ip ? 1 : 0
+  name  = "${var.name}-ipv4-address"
 }
 
+variable "static_ip" {
+  type    = bool
+  default = true
+}
+variable "name" {
+  type    = string
+  default = "dummy"
+}
+
+
 resource "google_compute_instance" "this" {
-  count        = var.instance_number
-  name         = "${var.server_name}-${count.index}"
-  machine_type = var.machine_type
-  zone         = data.google_compute_zones.available.names[count.index % length(data.google_compute_zones.available.names)]
+  name         = var.name
+  zone         = "us-central1-b"
+  machine_type = local.machine_type
 
   boot_disk {
     initialize_params {
@@ -44,42 +74,14 @@ resource "google_compute_instance" "this" {
 
   network_interface {
     network = "default"
-    access_config {
-
+    dynamic "access_config" {
+      for_each = google_compute_address.static
+      content {
+        nat_ip = access_config.value["address"]
+      }
     }
   }
-}
 
-variable "region" {
-  type        = string
-  description = "Default Region"
-  default     = "us-central1"
-}
-
-variable "zone" {
-  type        = string
-  description = "Default Zone"
-  default     = "us-central1-b"
-}
-
-variable "server_name" {
-  type        = string
-  description = "Name of Webserver"
-  default     = "webserver"
-}
-
-variable "machine_type" {
-  type        = string
-  description = "Machine Type"
-  default     = "e2-micro"
-}
-
-variable "instance_number" {
-  type    = number
-  default = 2
-}
-
-variable "network_name" {
-  type    = string
-  default = "default"
+  metadata_startup_script = file("${path.module}/startup.sh")
+  tags                    = ["http-server", ]
 }
