@@ -19,7 +19,12 @@
   * https://developer.hashicorp.com/terraform/tutorials/state/state-cli#replace-a-resource-with-cli
   * https://developer.hashicorp.com/terraform/language/state/locking
 
-
+  * https://developer.hashicorp.com/terraform/language/expressions/strings#interpolation
+  * https://developer.hashicorp.com/terraform/language/expressions/strings#indented-heredocs
+  * https://developer.hashicorp.com/terraform/language/expressions/strings#directives
+  * https://developer.hashicorp.com/terraform/language/expressions/strings#whitespace-stripping
+    + https://stackoverflow.com/questions/73169952/terraform-how-can-i-properly-do-a-string-interpolation-in-this-code
+    + https://stackoverflow.com/questions/55913451/heredoc-syntax-for-variable-values
   * https://developer.hashicorp.com/terraform/language/expressions/type-constraints#collection-types
   * https://developer.hashicorp.com/terraform/language/expressions/type-constraints#primitive-types
   * https://developer.hashicorp.com/terraform/language/expressions/type-constraints#conversion-of-complex-types
@@ -69,7 +74,16 @@
   * https://developer.hashicorp.com/terraform/tutorials/aws-get-started/aws-destroy
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel#sentinel-imports
+  * https://developer.hashicorp.com/sentinel/docs/language
+  * https://developer.hashicorp.com/sentinel/docs/language/lists
+  * https://developer.hashicorp.com/sentinel/docs/language/maps
+  * https://developer.hashicorp.com/sentinel/docs/language/rules
+    + the sentinel playground https://play.sentinelproject.io/p/3BJV7M65e-d
+  * https://developer.hashicorp.com/sentinel/docs/writing/testing
   * https://developer.hashicorp.com/sentinel/docs/language/spec#else-operator
+  * https://developer.hashicorp.com/sentinel/docs/language/spec#quantifier-expressions-any-all-filter-map
+  * https://developer.hashicorp.com/sentinel/docs/language/collection-operations
+    + https://discuss.hashicorp.com/t/delta-between-two-maps-in-sentinel/47873/3
   * https://developer.hashicorp.com/sentinel/docs/terraform#examples HCP Terraform evaluates Sentinel policy evaluations immediately before cost estimation
   * https://developer.hashicorp.com/sentinel/docs/language
    + https://github.com/hashicorp/terraform-sentinel-policies/tree/main/gcp
@@ -181,13 +195,14 @@
   * https://www.terraform.io/docs/configuration/provider-requirements.html#names-and-addresses
   * https://developer.hashicorp.com/terraform/language/values/variables#custom-validation-rules
   * https://www.terraform.io/docs/configuration/functions.html
-  * https://developer.hashicorp.com/terraform/language/functions/regex
+  * https://developer.hashicorp.com/terraform/language/functions/ 
   * https://developer.hashicorp.com/terraform/language/functions/list
   * https://developer.hashicorp.com/terraform/language/functions/tostring#examples
   * https://developer.hashicorp.com/terraform/language/functions/setproduct
   * https://developer.hashicorp.com/terraform/language/functions/setintersection
   * https://developer.hashicorp.com/terraform/language/functions/setsubtract
   * https://developer.hashicorp.com/terraform/language/functions/setunion
+  * https://developer.hashicorp.com/terraform/language/functions/values
   * https://developer.hashicorp.com/terraform/language/functions/transpose
   * https://developer.hashicorp.com/terraform/language/functions/zipmap
   * https://www.terraform.io/docs/configuration/functions/element.html
@@ -346,7 +361,6 @@
       + default, when Terraform must change a resource argument that cannot be updated in-place due to remote API limitations, Terraform will instead destroy the existing object and then create a new replacement object with the new configured arguments
   * https://developer.hashicorp.com/terraform/registry/private#terraform-cloud-private-registry
   * https://www.hashicorp.com/blog/deploying-terraform-enterprise-in-airgapped-environments !
-    + https://www.youtube.com/watch?v=hqCHQtXLpiI
   * https://developer.hashicorp.com/terraform/cloud-docs/users-teams-organizations/teams#managing-workspace-access
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/policy-results#policy-evaluation-run-stages
   * https://developer.hashicorp.com/terraform/cloud-docs/run/states complex
@@ -369,7 +383,8 @@
   * https://developer.hashicorp.com/terraform/tutorials/configuration-language/provider-versioning#upgrade-the-aws-provider-version
   * https://developer.hashicorp.com/terraform/language/meta-arguments/lifecycle#ignore_changes
   * https://registry.terraform.io/providers/hashicorp/vault/latest/docs
-    + https://www.youtube.com/watch?v=fOybhcbuxJ0
+    + https://www.youtube.com/watch?v=fOybhcbuxJ0 
+    + [using the Terraform Test Framework](https://www.youtube.com/watch?v=4U2S6sXcuac)
   * https://developer.hashicorp.com/terraform/intro/core-workflow
   * https://www.hashicorp.com/blog/using-terraform-to-improve-infrastructure-security
   * https://developer.hashicorp.com/terraform/tutorials/cloud/cloud-migrate#migrate-the-state-file
@@ -378,7 +393,7 @@
   * https://developer.hashicorp.com/terraform/cli/config/config-file#credentials-1
   * https://www.hashicorp.com/blog/detecting-and-managing-drift-with-terraform#Summary
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel
-  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/opa#example-policies
+  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/opa#example-policies - rego (complex)
   * https://developer.hashicorp.com/sentinel/docs/concepts/policy-as-code
   * https://developer.hashicorp.com/sentinel/docs/concepts/enforcement-levels
   * https://developer.hashicorp.com/terraform/tutorials/policy/sentinel-policy
@@ -386,15 +401,18 @@
   * [Sentinel Playground](https://play.sentinelproject.io)
   * [Introduction to Sentinel - problem Sentinel is designed to solve](https://www.youtube.com/watch?v=Vy8s7AAvU6g)
   * https://medium.com/slalom-technology/using-hashicorp-sentinel-to-implement-policy-as-code-within-your-terraform-provisioning-workflow-c89aac0ecc8
+  
      + https://github.com/BruceCutler/sentinel-aws-policies
+  * https://shadow-soft.com/content/using-terraform-sentinel-for-infrastructure-governance   
+  * https://developer.hashicorp.com/sentinel/docs/configuration
   * https://github.com/hashicorp/terraform-guides/tree/master/cloud-management-platform
   * [enforce policy as code for HashiCorp products](https://developer.hashicorp.com/sentinel?ajs_aid=1012049b-5d09-4ace-a41e-3985e6706b3b)
   * https://developer.hashicorp.com/sentinel/intro/what
   * [sentinel policy libraries](https://registry.terraform.io/browse/policies?ajs_aid=1012049b-5d09-4ace-a41e-3985e6706b3b&product_intent=terraform)
   * https://developer.hashicorp.com/terraform/tutorials/configuration-language/versions
-  * https://developer.hashicorp.com/terraform/cli/test
      + HashiCorp Terraform __1.6__   was released on October 4, 2023. It includes a testing framework to help developers validate their code
-     + https://www.youtube.com/watch?v=N73chhccmo8
+     + [terraform test framework](https://www.youtube.com/watch?v=N73chhccmo8)
+
   * https://developer.hashicorp.com/terraform/cli/commands/test
   * https://developer.hashicorp.com/terraform/language/tests
    + https://developer.hashicorp.com/terraform/language/tests#assertions
@@ -403,6 +421,7 @@
   * https://developer.hashicorp.com/terraform/tutorials/configuration-language/test
   * https://registry.terraform.io/providers/hashicorp/http/latest/docs
     + https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http#example-usage
+    
   * https://developer.hashicorp.com/terraform/language/checks
   * https://developer.hashicorp.com/terraform/tutorials/configuration-language/checks
   * https://registry.terraform.io/providers/hashicorp/local/latest/docs
@@ -416,12 +435,18 @@
   * https://cloud.google.com/vertex-ai/docs/tutorials/terraform/terraform-create-user-managed-notebooks-instance
   * https://cloud.google.com/vertex-ai/docs/start/use-terraform-vertex-ai#terraform_resources_vertex_ai
   * https://cloud.google.com/vertex-ai/docs/general/developer-tools-overview
+  * https://github.com/GoogleCloudPlatform/terraform-google-vertex-ai/blob/main/examples/workbench_simple_example/main.tf
+  * https://github.com/GoogleCloudPlatform/terraform-google-vertex-ai/blob/main/modules/workbench/main.tf
+  * https://github.com/GoogleCloudPlatform/terraform-google-vertex-ai/blob/main/examples/workbench_simple_example/network.tf
+  * https://github.com/terraform-google-modules/terraform-google-network
+  * https://github.com/terraform-google-modules/terraform-google-network/blob/master/main.tf
 ### Kubernetes
 
   * https://www.terraform.io/use-cases/manage-kubernetes
   * https://developer.hashicorp.com/terraform/tutorials/kubernetes/kubernetes-provider
 ### Modules Registy Search
   * https://registry.terraform.io/modules/terraform-google-modules/cloud-nat
+  
     + https://registry.terraform.io/modules/terraform-google-modules/cloud-nat/google/latest
     + NOTE: not found when browsing namespace https://registry.terraform.io/search/modules?namespace=terraform-google-modules
 
@@ -439,15 +464,19 @@
      + https://github.com/LinkedInLearning/advanced-terraform-3099246
    * https://registry.terraform.io/modules/terraform-google-modules/service-accounts/google/latest 
      + https://github.com/terraform-google-modules/terraform-google-service-accounts/blob/master/main.tf - for argument processing
+     + [create service account in google cloud using terraform](https://www.youtube.com/watch?v=jNRm3lqSFKk)
+     + https://github.com/Pruthvi360/google-cloud-services/blob/master/create-service-account/variables.tf
+   * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam#google_service_account_iam_member
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam 
      + https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_member
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam_custom_role.html#example-usage
       + https://stackoverflow.com/questions/49582977/gcp-custom-iam-role-creation-with-terraform
 
-   * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam
+
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_organization_policy#example-usage
-   
+   * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_health_check#example-usage---health-check-http
+   * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance_group
    * [Terraform resource samples on GCP](https://cloud.google.com/docs/terraform/samples)
    * [terraform on google cloud Validate policies guide](https://cloud.google.com/docs/terraform/policy-validation/validate-policies) (complex)
 
@@ -471,10 +500,16 @@
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_disk
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_attached_disk
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account
-
+   * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_service#example-usage
+   * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project#example-usage
+   * https://registry.terraform.io/modules/terraform-google-modules/network/google/latest
+   * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_instance
    * https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace
    * https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/replication_controller
      + https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/replication_controller#example-usage
+   * https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/deployment#example-usage
+   * https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service#example-usage
+
    * https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs
    * https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group
    * https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network
@@ -492,7 +527,7 @@
    * https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service_plan
    * https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service
      + https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service.html#linux_fx_version
-     
+   * https://registry.terraform.io/providers/hashicorp/template/latest/docs/data-sources/file.html  
 ### Misc
 
   * https://www.hashicorp.com/blog/testing-hashicorp-terraform
@@ -516,20 +551,18 @@
   * https://github.com/gruntwork-io/terratest/blob/master/examples/terraform-gcp-example     
   * https://docs.terrakube.io/
   * https://terrakube.org/
-  * [terraform test framework](https://www.youtube.com/watch?v=N73chhccmo8)
   * https://www.hashicorp.com/blog/testing-hashicorp-terraform
   * https://developer.hashicorp.com/terraform/tutorials/configuration-language/test
   * [test Terraform Code – Strategies & Tools](https://spacelift.io/blog/terraform-test)
   * https://developer.hashicorp.com/terraform/language/tests
   * [comprehensive Look at 14 Popular Terraform Testing Tools](https://zeet.co/blog/terraform-testing-tools)
-  * [comprehensive Guide to Testing in Terraform: Keep your tests, validations, checks, and policies in order](https://mattias.engineer/blog/2023/terraform-testing-and-validation/)
+  * [comprehensive Guide to Testing in Terraform: Keep your tests, validations, checks, and policies in order](https://mattias.engineer/blog/2023/terraform-testing-and-validation)
   * https://learn.microsoft.com/en-us/azure/developer/terraform/best-practices-testing-overview
   * [terraform Test Framework](https://tf2project.io/index.html)
-  * https://www.reddit.com/r/devops/comments/13g3vug/testing_terraform_code/
-  * https://medium.com/@monusraj/using-terraform-test-for-testing-your-terraform-code-b6fdbe170ba0
+  * https://www.reddit.com/r/devops/comments/13g3vug/testing_terraform_code
+  * https://medium.com/@monusraj/using-terraform-test-for-testing-your-terraform-code-b6fdbe170ba0 (too short)
   * https://developer.hashicorp.com/terraform/cli/test
-  * https://mattias.engineer/blog/2023/terraform-testing-deep-dive
-  * [terraform Test Framework](https://www.youtube.com/watch?v=oHW7dKBGwX8)
+  * https://mattias.engineer/blog/2023/terraform-testing-deep-dive (complex, many detals)
   * https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/use-serverspec-for-test-driven-development-of-infrastructure-code.html
   * https://blog.unif.io/test-driven-development-of-infrastructure-code-9146d3d6c780
   * https://medium.com/sumup-engineering/image-creation-and-testing-with-hashicorp-packer-and-serverspec-bb2bd065441
@@ -537,7 +570,64 @@
   * https://stackoverflow.com/questions/37844113/integrating-terraform-and-serverspec
   * https://thepracticalsysadmin.com/terraform-testing-tools/
   * https://abstraction.blog/2021/06/20/terraform-testing-tools-comparison
-  * https://devops.stackexchange.com/questions/863/how-to-test-a-terraform-configuration
   * https://lollyrock.com/posts/inspec-terraform/
   * [How to Create GKE Cluster Using TERRAFORM](https://www.youtube.com/watch?v=X_IK0GBbBTw)(complex)
+  * [Terraform Tutorials for Beginners](https://www.youtube.com/playlist?list=PLiMWaCMwGJXmJdmfJjG3aK1IkU7oWvxIj)
+    + [Loops Conditionals](
+    + https://cidr.xyz/
+    
+    https://www.youtube.com/watch?v=7S94oUTy2z4&list=PLiMWaCMwGJXmJdmfJjG3aK1IkU7oWvxIj&index=4)
   * https://registry.terraform.io/providers/
+  * [serverspec with terraform](https://www.contino.io/insights/top-3-terraform-testing-strategies-for-ultra-reliable-infrastructure-as-code)
+  
+### Terraform GCP  
+  * https://github.com/steinim/gcp-terraform-workshop (old code)
+  * https://www.udemy.com/course/mastering-terraform-on-google-cloud-platform-gcp/?ysclid=m0pivxvwli791541030
+  * https://sanet.st/blogs/bonnytuts/mastering_terraform_on_google_cloud_platform_gcp.4544191.html
+  * https://www.udemy.com/course/mastering-terraform-on-google-cloud-platform-gcp/
+  * https://cloudfoundation.com/terraform-gcp-training/
+  * https://github.com/iamashok1410/terraform-course-material 
+  * https://jayan-menon.medium.com/prepare-for-terraform-associate-exam-with-gcp-part-1-7657015c11cf
+  * https://sanet.st/blogs/exclusivetutorials/terraform_for_beginners_using_gcp_google_cloud_hands_on.3900106.html
+  * https://cloud.google.com/docs/terraform
+   + https://cloud.google.com/docs/terraform/deploy-flask-web-server
+   + https://cloud.google.com/docs/terraform/resource-management/export
+   
+   
+  * https://terraform-docs-common.vercel.app/terraform/tutorials/gcp-get-started/google-cloud-platform-change
+  * https://cloud.google.com/docs/terraform/samples
+  * https://medium.com/slalom-technology/a-complete-gcp-environment-with-terraform-c087190366f0 (-incomplete)
+  
+  * https://github.com/broisnischal/gcp-terraform/tree/master/infrastructure (cryptic)
+  * https://github.com/hashicorp/learn-terraform-provision-gke-cluster
+  * https://console.cloud.google.com/gcr/images/google-samples/global/hello-app  
+  
+  * https://github.com/liptun/gcp-test
+    + https://github.com/liptun/gcp-test/blob/master/terraform/cloud-run.tf
+    
+  * [Creating GCP Service Account in Console with IAM Role conditions](https://www.youtube.com/watch?v=u_S1RWNKiNU)  
+  * [Creating GCP Service Account in Terraform with IAM Role conditions](https://www.youtube.com/watch?v=nRpgZfAgXQc)
+    + https://cloud.google.com/certificate-authority-service/docs/using-cel#iam-policies
+    + https://cloud.google.com/iam/docs/configuring-temporary-access#iam-conditions-expirable-access-gcloud
+  * https://github.com/terraform-google-modules/terraform-google-kubernetes-engine
+  
+  * https://github.com/indrajitp/terraform-gcp-custom-roles/blob/master/modules/custom_role_iam/main.tf
+   + permissions from predefined roles
+  * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/iam_role 
+  
+  * [Terraform Test Framework | Terraform unit testing | Terraform Contract test | terraform testing](https://www.youtube.com/watch?v=oHW7dKBGwX8)
+  * https://www.hashicorp.com/blog/testing-hashicorp-terraform
+  * https://www.hashicorp.com/blog/terraform-1-7-adds-test-mocking-and-config-driven-remove
+  * [terratest](https://medium.com/@mohsenny/terraform-testing-a-qa-engineers-playbook-35385e147d88)
+  * [terraform to Create GKE cluster in Google Cloud](https://www.youtube.com/watch?v=JAjTTQEwO04)
+  * https://spacelift.io/blog/importing-exisiting-infrastructure-into-terraform
+  * https://www.cloudbolt.io/terraform-best-practices/terraform-import-example
+  * https://controlmonkey.io/blog/the-ultimate-devops-guide-to-terraform-import
+  
+  * https://github.com/gruntwork-io/terraform-google-static-assets/blob/4d2f6df1f07837437b00f892a5311cdfb6a5374a/modules/cloud-storage-static-website/main.tf
+  * https://medium.com/swlh/setup-a-static-website-cdn-with-terraform-on-gcp-23c6937382c6
+  * https://cloud.google.com/storage/docs/hosting-static-website
+  * https://cloud.google.com/storage/docs/hosting-static-website  
+  `storage.googleapis.com/[BUCKET_NAME]/[OBJECT_NAME]`
+  
+  * [Kubernetes Tutorials](https://www.youtube.com/playlist?list=PLiMWaCMwGJXnHmccp2xlBENZ1xr4FpjXF) (complex)

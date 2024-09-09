@@ -313,11 +313,11 @@
     + not restarted
     + no ports, liveness rediness
     + for troubeshooting crashed container
-  * https://kubernetes.io/docs/concepts/services+networking/service/#type+clusterip
-  * https://kubernetes.io/docs/concepts/services+networking/service/#type+nodeport
-  * https://kubernetes.io/docs/concepts/services+networking/service/#loadbalancer
-  * https://kubernetes.io/docs/concepts/services+networking/service/#externalname
-  * https://kubernetes.io/docs/concepts/services+networking/service/#headless+services
+  * https://kubernetes.io/docs/concepts/services-networking/service/#type+clusterip
+  * https://kubernetes.io/docs/concepts/services-networking/service/#type+nodeport
+  * https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer
+  * https://kubernetes.io/docs/concepts/services-networking/service/#externalname
+  * https://kubernetes.io/docs/concepts/services-networking/service/#headless+services
   * https://kubernetes.io/docs/concepts/workloads/autoscaling
   * https://kubernetes.io/docs/reference/generated/kubectl/kubectl+commands      
   * https://kubernetes.io/docs/concepts/workloads/controllers/deployment
