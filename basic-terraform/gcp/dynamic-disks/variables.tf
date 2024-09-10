@@ -1,3 +1,9 @@
+variable "attach_disks" {
+  type        = bool
+  description = "atach disk"
+  default     = true
+
+}
 variable "region" {
   type        = string
   description = "Default Region"

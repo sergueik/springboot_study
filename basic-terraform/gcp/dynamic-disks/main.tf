@@ -27,7 +27,7 @@ provider "google" {
 }
 
 resource "google_compute_disk" "this" {
-  for_each = var.disks
+  for_each = var.attach_disks ? var.disks : {}
   name     = each.key
   type     = each.value["type"]
   size     = each.value["size"]
@@ -46,7 +46,7 @@ resource "google_compute_instance" "this" {
   }
 
   dynamic "attached_disk" {
-    for_each = var.disks
+    for_each = var.attach_disks ? var.disks : {}
     content {
       source = google_compute_disk.this[attached_disk.key].name
       mode   = attached_disk.value["mode"]
