@@ -24,5 +24,5 @@ variable "machine_type" {
 
 variable "static_ip" {
   type    = bool
-  default = false
+  default = true
 }

@@ -45,8 +45,16 @@ resource "google_compute_instance" "this" {
 
   network_interface {
     network = "default"
-    access_config {
-      nat_ip = var.static_ip ? google_compute_address.static[0].address : null
+    dynamic "access_config" {
+      for_each = google_compute_address.static
+      content {
+        nat_ip = google_compute_address.static[0].address
+      }
     }
+    //   access_config {
+    //     nat_ip = var.static_ip ? google_compute_address.static[0].address : null
+    //  }
   }
-} 
+}
+// terraform state show 'google_compute_address.static[0]
+//
