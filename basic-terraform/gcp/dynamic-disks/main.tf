@@ -26,13 +26,6 @@ provider "google" {
   credentials = file("../keys.json")
 }
 
-resource "google_compute_disk" "this" {
-  count = length(var.disks)
-  name  = var.disks[count.index].name
-  type  = var.disks[count.index].type
-  size  = var.disks[count.index].size
-  zone  = var.zone
-}
 
 locals {
   disks_map = { for idx, val in var.disks : idx => val }
@@ -71,3 +64,4 @@ resource "google_compute_instance" "this" {
     network = "default"
   }
 }
+	

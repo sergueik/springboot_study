@@ -1,6 +1,3 @@
-output "attached_disks" {
-  value = google_compute_disk.this[*].name
-}
 
 output "attached_disks_map" {
   value = values(google_compute_disk.this_map)[*].name
