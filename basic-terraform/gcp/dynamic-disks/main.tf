@@ -27,12 +27,26 @@ provider "google" {
 }
 
 resource "google_compute_disk" "this" {
-  for_each = var.attach_disks ? var.disks : {}
-  name     = each.key
+  count = length(var.disks)
+  name  = var.disks[count.index].name
+  type  = var.disks[count.index].type
+  size  = var.disks[count.index].size
+  zone  = var.zone
+}
+
+locals {
+  disks_map = { for idx, val in var.disks : idx => val }
+}
+
+resource "google_compute_disk" "this_map" {
+  for_each = local.disks_map
+  name     = each.value["name"]
   type     = each.value["type"]
   size     = each.value["size"]
   zone     = var.zone
 }
+
+
 
 resource "google_compute_instance" "this" {
   name         = var.server_name
@@ -44,11 +58,11 @@ resource "google_compute_instance" "this" {
       image = "debian-cloud/debian-11"
     }
   }
-
+  // cannot dynamic with count
   dynamic "attached_disk" {
-    for_each = var.attach_disks ? var.disks : {}
+    for_each = var.attach_disks ? local.disks_map : {}
     content {
-      source = google_compute_disk.this[attached_disk.key].name
+      source = google_compute_disk.this_map[attached_disk.key].name
       mode   = attached_disk.value["mode"]
     }
   }

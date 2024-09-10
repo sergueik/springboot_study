@@ -17,7 +17,7 @@ variable "zone" {
 }
 
 variable "disks" {
-  type = map(any)
+  type = list(any)
 }
 
 variable "server_name" {
