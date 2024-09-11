@@ -264,6 +264,8 @@
   * https://sonraisecurity.com/blog/a-guide-to-gcp-organization-policy-managing-access/
   * https://cloud.google.com/iam/docs/permissions-reference
   * [IAM basic and predefined roles reference](https://cloud.google.com/iam/docs/understanding-roles)
+  * https://cloud.google.com/iam/docs/resource-types-with-conditional-roles
+  * https://medium.com/@4get.prakhar/google-cloud-iam-policies-69dc027d21a
   * [IAM Allow Policies](https://cloud.google.com/iam/docs/policies)
   * [IAM Roles and Permissions](https://cloud.google.com/iam/docs/roles-overview)
   * https://cloud.google.com/iam/docs/deny-overview
@@ -292,7 +294,7 @@
   * https://logisticslearningalliance.com/humanitarian-courses-helm
   * https://medium.com/geekculture/helm-chart-hooks-and-test-c914ee439341
   * https://rafay.co/the-kubernetes-current/helm-chart-hooks-tutorial
-
+  * https://devopscube.com/create-helm-chart/
 
 #### Kubernetes
 
@@ -380,7 +382,7 @@
   * https://cloud.google.com/kubernetes+engine/docs/how+to/cluster+autoscaler
   * https://kubernetes.io/docs/tutorials/kubernetes-basics/expose/expose-intro
   * https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces
-    
+  * https://spacelift.io/blog/kubernetes-networking#kubernetes-networking-architecture    
 #### Machine Learning
  * https://cloud.google.com/vertex-ai/docs/training/hyperparameter-tuning-overview
     + hyperparameters are parameters of the training algorithm itself that are not learned directly from the training process
@@ -470,6 +472,7 @@
       + [Kubernetes for Developers: Moving to the Cloud](https://app.pluralsight.com/library/courses/kubernetes-developers-cloud-moving)
       + [Getting Started with Kustomize](https://app.pluralsight.com/library/courses/kustomize-getting-started)
       + [Kubernetes Package Administration with Helm](https://app.pluralsight.com/library/courses/kubernetes-package-administration-helm)
+      + https://sanet.st/blogs/mecury-books/managing_kubernetes_resources_using_helm_simplifying_how_to_build_package_and_distribute_apps_for_kubernetes_nd_edition.4257046.html
       + [CKAD](https://app.pluralsight.com/paths/certificate/certified-kubernetes-application-developer-ckad-2023) (path)
       
     * Ansible

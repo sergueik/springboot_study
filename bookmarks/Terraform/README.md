@@ -105,6 +105,7 @@
     + `https://registry.terraform.io/v1/modules/search?q=network&limit=2`
     + `https://registry.terraform.io/v1/modules/hashicorp/consul/aws/versions`
     + `https://registry.terraform.io/v1/modules/hashicorp/consul/aws/0.0.1/download`
+  * https://registry.terraform.io/browse/modules?provider=google  
   * https://developer.hashicorp.com/terraform/cli/init#reinitializing-only-modules
      + get
   * https://developer.hashicorp.com/terraform/cli/cloud/settings#arguments
@@ -468,6 +469,7 @@
      + https://github.com/Pruthvi360/google-cloud-services/blob/master/create-service-account/variables.tf
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam#google_service_account_iam_member
+   * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_folder_iam#google_folder_iam_member
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam 
      + https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_member
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam_custom_role.html#example-usage
@@ -497,6 +499,8 @@
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_firewall
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_subnetwork
+   * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_subnetwork#example-usage
+     + (does not appear to be useful?)
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_disk
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_attached_disk
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account
@@ -571,9 +575,11 @@
   * https://thepracticalsysadmin.com/terraform-testing-tools/
   * https://abstraction.blog/2021/06/20/terraform-testing-tools-comparison
   * https://lollyrock.com/posts/inspec-terraform/
-  * [How to Create GKE Cluster Using TERRAFORM](https://www.youtube.com/watch?v=X_IK0GBbBTw)(complex)
+  * [How to Create GKE Cluster Using TERRAFORM](https://www.youtube.com/watch?v=X_IK0GBbBTw) (complex)
   * [Terraform Tutorials for Beginners](https://www.youtube.com/playlist?list=PLiMWaCMwGJXmJdmfJjG3aK1IkU7oWvxIj)
-    + [Loops Conditionals](
+    + [Loops Conditionals](https://youtu.be/7S94oUTy2z4)
+    + [lessons](https://github.com/antonputra/tutorials/blob/main/docs/contents.md)
+    + https://github.com/antonputra/tutorials/tree/main/lessons/161
     + https://cidr.xyz/
     
     https://www.youtube.com/watch?v=7S94oUTy2z4&list=PLiMWaCMwGJXmJdmfJjG3aK1IkU7oWvxIj&index=4)
@@ -631,3 +637,9 @@
   `storage.googleapis.com/[BUCKET_NAME]/[OBJECT_NAME]`
   
   * [Kubernetes Tutorials](https://www.youtube.com/playlist?list=PLiMWaCMwGJXnHmccp2xlBENZ1xr4FpjXF) (complex)
+  * https://sanet.st/blogs/mecury-books/terraform_for_google_cloud_essential_guide_learn_how_to_provision_infrastructure_in_google_cloud_securely_and_efficiently.4347394.html
+   *  https://stackoverflow.com/questions/49392448/possible-to-host-a-website-with-google-cloud-without-a-domain
+  * https://github.com/PacktPublishing/Terraform-for-Google-Cloud-Essential-Guide
+  * https://github.com/PacktPublishing/Terraform-for-Google-Cloud-Essential-Guide/blob/main/chap03
+  * https://cloud.google.com/firewall/docs/using-firewalls#rules-for-common-use-cases
+  * https://registry.terraform.io/providers/hashicorp/google/3.32.0/docs/data-sources/netblock_ip_ranges
