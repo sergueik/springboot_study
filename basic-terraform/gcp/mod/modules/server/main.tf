@@ -12,7 +12,7 @@ resource "google_compute_firewall" "allow_http" {
     protocol = "tcp"
   }
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["http-server"]
+  target_tags   = ["server"]
   priority      = 1000
 
 }
@@ -56,5 +56,5 @@ resource "google_compute_instance" "this" {
   }
 
   metadata_startup_script = file(join("/", [path.module, "./startup.sh"]))
-  tags                    = ["http-server"]
+  tags                    = ["server"]
 }
