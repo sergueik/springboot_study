@@ -32,23 +32,27 @@ resource "google_compute_network" "this" {
   auto_create_subnetworks = false
 }
 resource "google_compute_subnetwork" "this" {
-  // depends_on               = [resource.google_compute_network.this]
-  network                  = google_compute_network.this.name
-  for_each                 = var.subnets
-  name                     = each.key
-  region                   = each.value.region
-  ip_cidr_range            = each.value.ip_cidr_range
+  depends_on               = [resource.google_compute_network.this]
+  network = google_compute_network.this.name
+  for_each = var.subnets
+  name = each.key
+  region =  each.value.region
+  ip_cidr_range = each.value.ip_cidr_range
   private_ip_google_access = "true"
+  
+}
 
+resource "google_compute_firewall" "example" {
+  count = length(var.firewall)
+  name = "${google_compute_network.this.name}-${var.firewall[count.index]["name"]}" 
+  network = google_compute_network.this.id
+  direction =  var.firewall[count.index]["direction"]
+  source_ranges = var.firewall[count.index]["source_ranges"]
+  target_tags = var.firewall[count.index]["target_tags"]
+  allow {
+    protocol = var.firewall[count.index]["allow"]["protocol"]
+    ports =  var.firewall[count.index]["allow"]["ports"]
+  }
+
+  
 }
-/*
-resource "google_compute_subnetwork" "this" {
- // depends_on               = [resource.google_compute_network.this]
-  for_each                 = var.subnets
-  network                  = google_compute_network.this.name
-  name                     = each.key
-  region                   = each.value["region"]
-  ip_cidr_range            = each.value["ip_cidr_range"]
-  private_ip_google_access = "true"
-}
-*/

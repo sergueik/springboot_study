@@ -5,3 +5,7 @@ variable "network" {
 variable "subnets" {
   type = map(any)
 }
+
+variable "firewall" {
+  type = list(any)
+}
