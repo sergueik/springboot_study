@@ -31,9 +31,19 @@ resource "google_compute_network" "this" {
   name                    = var.network
   auto_create_subnetworks = false
 }
-
 resource "google_compute_subnetwork" "this" {
-  depends_on               = [resource.google_compute_network.this]
+  // depends_on               = [resource.google_compute_network.this]
+  network                  = google_compute_network.this.name
+  for_each                 = var.subnets
+  name                     = each.key
+  region                   = each.value.region
+  ip_cidr_range            = each.value.ip_cidr_range
+  private_ip_google_access = "true"
+
+}
+/*
+resource "google_compute_subnetwork" "this" {
+ // depends_on               = [resource.google_compute_network.this]
   for_each                 = var.subnets
   network                  = google_compute_network.this.name
   name                     = each.key
@@ -41,3 +51,4 @@ resource "google_compute_subnetwork" "this" {
   ip_cidr_range            = each.value["ip_cidr_range"]
   private_ip_google_access = "true"
 }
+*/
