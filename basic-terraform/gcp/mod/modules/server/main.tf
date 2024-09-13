@@ -5,19 +5,33 @@ resource "google_compute_address" "static" {
 
 resource "google_compute_firewall" "allow_http" {
   // count   = var.has_static_ip ? 1 : 0
-  name    = "allow-http-rule"
-  network = "default"
+  name      = "allow-http-rule"
+  direction = "INGRESS"
+  network   = "default"
   allow {
     ports    = ["80"]
     protocol = "tcp"
   }
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["server"]
+  target_tags   = ["http-server-1"]
   priority      = 1000
 
 }
 /*
+
+{
+    "name" : "allow-http",
+    "direction" : "INGRESS",
+    "priority": 50000
+    "allow" : {
+      "protocol" : "tcp",
+      "ports" : ["80"]
+    },
+    "source_ranges" : ["0.0.0.0/0"],
+    "target_tags" : ["http-server"],
+  },
 output "name" {
+
   value = google_compute_address.static.address
 }
 
@@ -56,5 +70,5 @@ resource "google_compute_instance" "this" {
   }
 
   metadata_startup_script = file(join("/", [path.module, "./startup.sh"]))
-  tags                    = ["server"]
+  tags                    = ["http-server-1"]
 }
