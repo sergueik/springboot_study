@@ -3,6 +3,20 @@ resource "google_compute_address" "static" {
   name  = "${var.name}-static-ipv4"
 }
 
+
+resource "google_compute_firewall" "allow_http" {
+  name    = "allow-http-rule"
+  network = "default"
+  allow {
+    ports    = ["80"]
+    protocol = "tcp"
+  } 
+  source_ranges = [ "0.0.0.0/0" ]
+  target_tags = ["http-server"]
+  priority    = 1000
+
+}
+
 resource "google_compute_instance" "this" {
   name         = var.name
   zone         = var.zone
