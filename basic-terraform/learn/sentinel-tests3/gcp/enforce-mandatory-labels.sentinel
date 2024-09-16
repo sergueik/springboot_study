@@ -1,4 +1,3 @@
-// origin: https://github.com/hashicorp/terraform-sentinel-policies/blob/main/gcp/enforce-mandatory-labels.sentinel 
 # specified GCP resources have all mandatory labels
 
 # Import common-functions/tfplan-functions/tfplan-functions.sentinel
@@ -20,9 +19,6 @@ param resource_types default [
 param mandatory_labels default [
   "name",
   "ttl",
-  "owner",
-  "extra1",
-  "extra2",
 ]
 
 # Get all GCP Resources with standard labels
@@ -34,9 +30,9 @@ print("length: " , keys(allGCPResourcesWithStandardLabels))
 violatingGCPResources =
       plan.filter_attribute_not_contains_list(allGCPResourcesWithStandardLabels,
                     "labels", mandatory_labels, true)
-
+print("mesages: ", violatingGCPResources["messages"])
 
 # Main rule
 main = rule {
-  length(violatingGCPResources["messages"]) is 0
+ print(keys(violatingGCPResources)) and (length(violatingGCPResources["messages"]) is 0   )
 }
