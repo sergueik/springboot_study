@@ -401,8 +401,11 @@
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan
     + `diff`
     + `applied`
+      - what does it mean in the diff key
+  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan  
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan#namespace-resource-diff
-   + `tfplan.resources.null_resource.bar[0].diff["triggers.%"].computed` ??
+     + `tfplan.resources.null_resource.bar[0].diff["triggers.%"].computed` ??
+      - Count keys are % for maps, and # for lists and sets
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan-v2#the-resource_changes-and-resource_drift-collections
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan-v2#after
   * https://developer.hashicorp.com/sentinel/docs/concepts/policy-as-code
