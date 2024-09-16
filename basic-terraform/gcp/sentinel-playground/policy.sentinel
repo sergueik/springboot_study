@@ -1,0 +1,31 @@
+import "tfplan/v2" as tfplan
+
+// Sentinel filter expression
+machines = filter tfplan.resource_changes as _, resource_changes {
+    resource_changes.address is "aws_instance.ubuntu" and
+        resource_changes.mode is "managed" and
+        (resource_changes.change.actions contains "create" or
+            resource_changes.change.actions is ["update"])
+}
+
+// Sentinel rule 
+machine_rule1 = rule {
+    all machines as _, instance {
+        instance.change.after.instance_type is "t2.micro"
+    }
+}
+
+allowed_machine_types = [
+  "t2.micro",
+]
+// Sentinel rule 
+machine_rule2 = rule {
+    all machines as _, instance {
+        instance.change.after.instance_type in allowed_machine_types
+        
+    }
+}
+main = rule {
+  machine_rule1 and machine_rule2 else true
+}
+
