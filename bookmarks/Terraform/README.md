@@ -79,6 +79,8 @@
   * https://developer.hashicorp.com/sentinel/docs/language/maps
   * https://developer.hashicorp.com/sentinel/docs/language/rules
     + the sentinel playground https://play.sentinelproject.io/p/3BJV7M65e-d
+  * https://support.hashicorp.com/hc/en-us/articles/29861232601107-How-to-Use-the-Sentinel-Playground-to-Troubleshoot-Sentinel-Policies
+  * [introduction to Sentinel Playground](https://www.youtube.com/watch?v=swtpqju6bJc)
   * https://developer.hashicorp.com/sentinel/docs/writing/testing
   * https://developer.hashicorp.com/sentinel/docs/language/spec#else-operator
   * https://developer.hashicorp.com/sentinel/docs/language/spec#quantifier-expressions-any-all-filter-map
@@ -87,6 +89,22 @@
   * https://developer.hashicorp.com/sentinel/docs/terraform#examples HCP Terraform evaluates Sentinel policy evaluations immediately before cost estimation
   * https://developer.hashicorp.com/sentinel/docs/language
    + https://github.com/hashicorp/terraform-sentinel-policies/tree/main/gcp
+   + https://github.com/hashicorp/terraform-sentinel-policies/blob/main/gcp/restrict-gce-machine-type.sentinel - cannot test in playground ?
+    + https://github.com/hashicorp/terraform-sentinel-policies/tree/main/gcp/gcp-functions
+  * https://github.com/hashicorp/terraform-guides/tree/master/governance/second-generation/cloud-agnostic - non woking ?
+  * https://github.com/hashicorp/terraform-guides/blob/master/governance/second-generation/gcp/enforce-mandatory-labels.sentinel  - non woking  (complex)
+  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/opa#example-policies - rego (complex)
+  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan
+    + `diff`
+    + `applied`
+      - what does it mean in the diff key
+  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan  
+  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan#namespace-resource-diff
+     + `tfplan.resources.null_resource.bar[0].diff["triggers.%"].computed` ??
+      - Count keys are % for maps, and # for lists and sets
+  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan-v2#the-resource_changes-and-resource_drift-collections
+  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan-v2#after
+    
   * https://developer.hashicorp.com/terraform/cli/config/environment-variables
   * https://developer.hashicorp.com/terraform/cli/config/environment-variables#tf_log_path
   * https://developer.hashicorp.com/terraform/cli/config/environment-variables#tf_log
@@ -210,6 +228,11 @@
      - index greater than the length of the list is "wrapped around" modulo the length of the list
   * https://developer.hashicorp.com/terraform/language/functions/can
   * https://developer.hashicorp.com/terraform/language/functions/cidrhost
+  * https://developer.hashicorp.com/terraform/language/functions/cidrsubnet complex
+  
+    + https://cidr.xyz
+    + https://ntwobike.medium.com/how-cidrsubnet-works-in-terraform-f6ccd8e1838f - complex when spread among 2 octals and  have 1s to clear
+    + https://truesparrow.com/blog/calculate-cidr-subnet-block-with-terraform
   * https://developer.hashicorp.com/terraform/language/functions/try
   * https://developer.hashicorp.com/terraform/language/functions/yamldecode
   * https://www.terraform.io/docs/commands/providers.html
@@ -395,19 +418,6 @@
   * https://www.hashicorp.com/blog/detecting-and-managing-drift-with-terraform#Summary
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel - reporting all violations
   * https://www.hashicorp.com/resources/writing-and-testing-sentinel-policies-for-terraform - tutorial -  guide !
-  * https://github.com/hashicorp/terraform-guides/tree/master/governance/second-generation/cloud-agnostic
-  * https://github.com/hashicorp/terraform-guides/blob/master/governance/second-generation/gcp/enforce-mandatory-labels.sentinel (complex)
-  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/opa#example-policies - rego (complex)
-  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan
-    + `diff`
-    + `applied`
-      - what does it mean in the diff key
-  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan  
-  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan#namespace-resource-diff
-     + `tfplan.resources.null_resource.bar[0].diff["triggers.%"].computed` ??
-      - Count keys are % for maps, and # for lists and sets
-  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan-v2#the-resource_changes-and-resource_drift-collections
-  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan-v2#after
   * https://developer.hashicorp.com/sentinel/docs/concepts/policy-as-code
   * https://developer.hashicorp.com/sentinel/docs/concepts/enforcement-levels
   * https://developer.hashicorp.com/terraform/tutorials/policy/sentinel-policy
@@ -665,3 +675,8 @@
   * https://kodekloud.com/community/t/how-to-login-ssh-into-gcp-machine-using-private-key-in-terraform/25392
   *   
   * https://developer.hashicorp.com/terraform/cli/state/resource-addressing
+  * https://dockerhosting.ru/blog/28-%D0%B2%D0%BE%D0%BF%D1%80%D0%BE%D1%81%D0%BE%D0%B2-%D0%B8-%D0%BE%D1%82%D0%B2%D0%B5%D1%82%D0%BE%D0%B2-%D0%BD%D0%B0-%D1%81%D0%BE%D0%B1%D0%B5%D1%81%D0%B5%D0%B4%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B8-%D0%BF/#%E2%84%96_10_%D0%A7%D1%82%D0%BE_%D1%82%D0%B0%D0%BA%D0%BE%D0%B5_%D0%A1%D0%B5%D0%BD%D1%82%D0%B8%D0%BD%D0%B5%D0%BB
+  
+  * https://cloud.google.com/blog/topics/developers-practitioners/using-google-cloud-service-account-impersonation-your-terraform-code
+  * https://medium.com/bluetuple-ai/terraform-remote-state-on-gcp-d50e2f69b967
+    + https://github.com/bluetuple/terraform-gcp/tree/main/account-impersonation
