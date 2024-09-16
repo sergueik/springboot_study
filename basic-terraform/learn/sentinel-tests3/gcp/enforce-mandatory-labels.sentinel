@@ -1,0 +1,42 @@
+// origin: https://github.com/hashicorp/terraform-sentinel-policies/blob/main/gcp/enforce-mandatory-labels.sentinel 
+# specified GCP resources have all mandatory labels
+
+# Import common-functions/tfplan-functions/tfplan-functions.sentinel
+# with alias "plan"
+import "tfplan-functions" as plan
+
+# Import gcp-functions/gcp-functions.sentinel
+# with alias "gcp"
+import "gcp-functions" as gcp
+
+# List of GCP resources that are required to have name/value labels.
+param resource_types default [
+  "google_project",
+  "google_compute_instance",
+  "google_storage_bucket",
+]
+
+# List of mandatory labels
+param mandatory_labels default [
+  "name",
+  "ttl",
+  "owner",
+  "extra1",
+  "extra2",
+]
+
+# Get all GCP Resources with standard labels
+allGCPResourcesWithStandardLabels =
+                        gcp.find_resources_with_standard_labels(resource_types)
+print("length: " , keys(allGCPResourcesWithStandardLabels))
+# Filter to GCP resources with violations using list of resources
+# Warnings will be printed for all violations since the last parameter is true
+violatingGCPResources =
+      plan.filter_attribute_not_contains_list(allGCPResourcesWithStandardLabels,
+                    "labels", mandatory_labels, true)
+
+
+# Main rule
+main = rule {
+  length(violatingGCPResources["messages"]) is 0
+}
