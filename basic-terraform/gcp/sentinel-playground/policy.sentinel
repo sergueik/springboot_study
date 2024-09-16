@@ -8,51 +8,30 @@ machines = filter tfplan.resource_changes as _, resource_changes {
             resource_changes.change.actions is ["update"])
 }
 
-// Sentinel rule 
-machine_rule1 = rule {
-    all machines as _, instance {
-        instance.change.after.instance_type is "t2.micro"
-    }
-}
-
-allowed_machine_types = [
-  "t2.micro",
-]
-
-mandatory_instance_tags = rule {
-    all ec2_instances as _, instance {
-        all mandatory_tags as mt {
-            instance.change.after.tags contains mt
-        }
-    }
-}
-
-# Mandatory Instance Tags
+// Mandatory Instance Tags
 mandatory_tags = [
     "Name",
+    "Other",
 ]
 
-machine_rule4 = rule {
-    all machines as _, instance {
-        all mandatory_tags as mt {
-            instance.change.after.tags contains mt
-        }
+verify_machine = func(instance, mandatory_tags) {
+  // print("mandatory_tags: " ,  mandatory_tags )
+  // print("tags: " ,   keys(instance.change.after.tags) )
+  validated = true
+  for mandatory_tags as mt {
+    print("trying: " ,  mt )
+    if not ( instance.change.after.tags contains mt) {
+      print("missing: " , mt, " from ", instance.address )
+      validated = false
     }
-}
-
-
-verify_address = func(instance, allowed_machine_types) {
-  if not (instance.change.after.instance_type in allowed_machine_types ){
-    print("xxx" , instance.address, "->", instance.change.after.instance_type )
   }
-
-  return true
+  return validated
 } 
 
 // Sentinel rule 
-machine_rule3 = rule {
+machine_rule4  = rule {
     all machines as _, instance { 
-      verify_address(instance, allowed_machine_types)
+      verify_machine(instance, mandatory_tags)
     }
 }
 // Sentinel rule 
