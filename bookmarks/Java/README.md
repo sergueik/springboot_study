@@ -171,3 +171,8 @@ spring:
   * https://www.baeldung.com/spring-inject-prototype-bean-into-singleton
   * https://www.geeksforgeeks.org/singleton-and-prototype-bean-scopes-in-java-spring/
   * https://www.baeldung.com/jsp
+  * https://www.baeldung.com/spring-jms
+  * https://spring.io/guides/gs/messaging-jms
+  * https://www.geeksforgeeks.org/spring-jms-integration/
+  * https://www.baeldung.com/jvm-parameters
+  * https://www.baeldung.com/jvm-vs-jre-vs-jdk

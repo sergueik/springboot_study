@@ -393,8 +393,18 @@
   * https://developer.hashicorp.com/terraform/tutorials/0-13/cloud-login
   * https://developer.hashicorp.com/terraform/cli/config/config-file#credentials-1
   * https://www.hashicorp.com/blog/detecting-and-managing-drift-with-terraform#Summary
-  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel
+  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel - reporting all violations
+  * https://www.hashicorp.com/resources/writing-and-testing-sentinel-policies-for-terraform - tutorial -  guide !
+  * https://github.com/hashicorp/terraform-guides/tree/master/governance/second-generation/cloud-agnostic
+  * https://github.com/hashicorp/terraform-guides/blob/master/governance/second-generation/gcp/enforce-mandatory-labels.sentinel (complex)
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/opa#example-policies - rego (complex)
+  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan
+    + `diff`
+    + `applied`
+  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan#namespace-resource-diff
+   + `tfplan.resources.null_resource.bar[0].diff["triggers.%"].computed` ??
+  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan-v2#the-resource_changes-and-resource_drift-collections
+  * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan-v2#after
   * https://developer.hashicorp.com/sentinel/docs/concepts/policy-as-code
   * https://developer.hashicorp.com/sentinel/docs/concepts/enforcement-levels
   * https://developer.hashicorp.com/terraform/tutorials/policy/sentinel-policy
@@ -643,3 +653,12 @@
   * https://github.com/PacktPublishing/Terraform-for-Google-Cloud-Essential-Guide/blob/main/chap03
   * https://cloud.google.com/firewall/docs/using-firewalls#rules-for-common-use-cases
   * https://registry.terraform.io/providers/hashicorp/google/3.32.0/docs/data-sources/netblock_ip_ranges
+  * https://stackoverflow.com/questions/38645002/how-to-add-an-ssh-key-to-an-gcp-instance-using-terraform
+  * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_project_metadata#argument-reference
+  * https://medium.com/google-cloud/terraform-remote-exec-on-google-compute-engine-vm-instance-d47def447072
+  * https://github.com/Sayed-Imran/Terraform-Scripts/blob/master/gcp-remote-exec
+  * https://gist.github.com/smford22/54aa5e96701430f1bb0ea6e1a502d23a
+  * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_project_metadata
+  * https://kodekloud.com/community/t/how-to-login-ssh-into-gcp-machine-using-private-key-in-terraform/25392
+  *   
+  * https://developer.hashicorp.com/terraform/cli/state/resource-addressing
