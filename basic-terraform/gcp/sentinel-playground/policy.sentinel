@@ -18,12 +18,34 @@ machine_rule1 = rule {
 allowed_machine_types = [
   "t2.micro",
 ]
+
+mandatory_instance_tags = rule {
+    all ec2_instances as _, instance {
+        all mandatory_tags as mt {
+            instance.change.after.tags contains mt
+        }
+    }
+}
+
+# Mandatory Instance Tags
+mandatory_tags = [
+    "Name",
+]
+
+machine_rule4 = rule {
+    all machines as _, instance {
+        all mandatory_tags as mt {
+            instance.change.after.tags contains mt
+        }
+    }
+}
+
+
 verify_address = func(instance, allowed_machine_types) {
-  if instance.change.after.instance_type in allowed_machine_types {
-  } else {
-  print("xxx" , instance.address, "->", instance.change.after.instance_type )
+  if not (instance.change.after.instance_type in allowed_machine_types ){
+    print("xxx" , instance.address, "->", instance.change.after.instance_type )
   }
-   
+
   return true
 } 
 
@@ -41,6 +63,6 @@ machine_rule2 = rule {
     }
 }
 main = rule {
-  machine_rule3 and machine_rule1 and machine_rule2 else true
+  machine_rule4 else true
 }
 
