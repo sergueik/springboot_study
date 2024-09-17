@@ -36,8 +36,8 @@ variables = {
 }
 
 resource_changes = {
-	"google_compute_disk.default": {
-		"address": "google_compute_disk.default",
+	"module.server[0].google_compute_disk.default": {
+		"address": "module.server[0].google_compute_disk.default",
 		"change": {
 			"actions": [
 				"create",
@@ -85,8 +85,8 @@ resource_changes = {
 		"provider_name":  "google",
 		"type":           "google_compute_disk",
 	},
-	"google_compute_instance.demo_1": {
-		"address": "google_compute_instance.demo_1",
+	"module.server[0].google_compute_instance.demo_1": {
+		"address": "module.server[0].google_compute_instance.demo_1",
 		"change": {
 			"actions": [
 				"create",
@@ -110,7 +110,7 @@ resource_changes = {
 				"labels": {
 					"name":  "roger-demo",
 					"owner": "roger",
-					"ttl":   "24",
+
 				},
 				"machine_type":            "n1-standard-1",
 				"metadata":                null,
@@ -204,8 +204,8 @@ resource_changes = {
 		"provider_name":  "google",
 		"type":           "google_compute_instance",
 	},
-	"google_compute_instance.demo_2": {
-		"address": "google_compute_instance.demo_2",
+	"module.server[0].google_compute_instance.demo_2": {
+		"address": "module.server[0].google_compute_instance.demo_2",
 		"change": {
 			"actions": [
 				"create",
