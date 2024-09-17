@@ -1,6 +1,9 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 variable "region" {
   description = "AWS region"
-  default     = "us-east-2"
+  default     = "us-west-1"
 }
 
 variable "instance_type" {
