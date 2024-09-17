@@ -1,3 +1,9 @@
+// https://stackoverflow.com/questions/72423719/terraform-count-method-with-modules
+variable "create_module" {
+  description = "enable module"
+  default     = "true"
+}
+
 variable "region" {
   description = "AWS region"
   default     = "us-east-2"
