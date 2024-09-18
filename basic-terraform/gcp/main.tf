@@ -1,4 +1,5 @@
 // based on: https://github.com/terraform-in-action/manning-code
+
 terraform {
   required_providers {
     local = {
@@ -28,6 +29,20 @@ provider "google" {
 
 // https://cloud.google.com/docs/terraform/deploy-flask-web-server
 
+
+variable custom_tags {
+  type = list
+  default = ["name", "ssh"]
+}
+
+
+
+
+locals  {
+  tags = [for value in var.custom_tags: lower(value) if value != "name"]
+}
+
+
 //  https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_network
 resource "google_compute_network" "custom" {
   name                    = "custom"
@@ -48,7 +63,7 @@ resource "google_compute_instance" "default" {
   name         = "flask-vm"
   machine_type = "f1-micro"
   zone         = "us-central1-c"
-  tags         = ["ssh"]
+  tags         = local.tags
 
   boot_disk {
     initialize_params {
@@ -61,7 +76,7 @@ resource "google_compute_instance" "default" {
 
   network_interface {
     subnetwork = google_compute_subnetwork.default.id
-
+	
     access_config {
       # Include this section to give the VM an external IP address
     }
