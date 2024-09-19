@@ -17,25 +17,6 @@ resource "google_compute_firewall" "allow_http" {
   priority      = 1000
 
 }
-/*
-
-{
-    "name" : "allow-http",
-    "direction" : "INGRESS",
-    "priority": 50000
-    "allow" : {
-      "protocol" : "tcp",
-      "ports" : ["80"]
-    },
-    "source_ranges" : ["0.0.0.0/0"],
-    "target_tags" : ["http-server"],
-  },
-output "name" {
-
-  value = google_compute_address.static.address
-}
-
-*/
 resource "google_compute_instance" "this" {
   name         = var.name
   zone         = var.zone
@@ -70,5 +51,5 @@ resource "google_compute_instance" "this" {
   }
 
   metadata_startup_script = file(join("/", [path.module, "./startup.sh"]))
-  tags                    = ["http-server-1"]
+  tags                    = ["http-server-1", "https-server-2"]
 }

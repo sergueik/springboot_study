@@ -11,7 +11,7 @@ terraform {
 }
 
 provider "google" {
-  project     = "spheric-alcove-430818-f9"
+  project     = var.project
   region      = "us-central1"
   zone        = "us-central1-c"
   credentials = file("../keys.json")
@@ -22,5 +22,5 @@ module "server" {
   name          = var.name
   zone          = var.zone
   has_static_ip = var.has_static_ip
-
+  // machine_size = "tiny"
 }

@@ -8,6 +8,5 @@ variable "zone" {
 variable "has_static_ip" {
   type        = bool
   description = "switch"
-  default     = false
 }
 
