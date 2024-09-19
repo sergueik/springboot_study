@@ -18,7 +18,6 @@
   * https://developer.hashicorp.com/terraform/registry/modules/publish#requirements
   * https://developer.hashicorp.com/terraform/tutorials/state/state-cli#replace-a-resource-with-cli
   * https://developer.hashicorp.com/terraform/language/state/locking
-
   * https://developer.hashicorp.com/terraform/language/expressions/strings#interpolation
   * https://developer.hashicorp.com/terraform/language/expressions/strings#indented-heredocs
   * https://developer.hashicorp.com/terraform/language/expressions/strings#directives
@@ -88,7 +87,10 @@
     + https://discuss.hashicorp.com/t/delta-between-two-maps-in-sentinel/47873/3
   * https://developer.hashicorp.com/sentinel/docs/terraform#examples HCP Terraform evaluates Sentinel policy evaluations immediately before cost estimation
   * https://developer.hashicorp.com/sentinel/docs/language
+  * https://www.hashicorp.com/blog/terraform-sentinel-v2-imports-now-in-technology-preview
+  * https://giters.com/hashicorp/terraform-sentinel-policies?ysclid=m157hw807x478278902 - good intro
    + https://github.com/hashicorp/terraform-sentinel-policies/tree/main/gcp
+   + https://github.com/hashicorp/terraform-sentinel-policies/blob/main/common-functions/tfplan-functions/tfplan-functions.sentinel#L262 - did not exist in second gen
    + https://github.com/hashicorp/terraform-sentinel-policies/blob/main/gcp/restrict-gce-machine-type.sentinel - cannot test in playground ?
     + https://github.com/hashicorp/terraform-sentinel-policies/tree/main/gcp/gcp-functions
   * https://github.com/hashicorp/terraform-guides/tree/master/governance/second-generation/cloud-agnostic - non woking ?
@@ -235,6 +237,7 @@
     + https://truesparrow.com/blog/calculate-cidr-subnet-block-with-terraform
   * https://developer.hashicorp.com/terraform/language/functions/try
   * https://developer.hashicorp.com/terraform/language/functions/yamldecode
+  * https://developer.hashicorp.com/terraform/language/functions/element
   * https://www.terraform.io/docs/commands/providers.html
   * https://www.terraform.io/docs/configuration/types.html#conversion-of-primitive-types
   * https://developer.hashicorp.com/terraform/tutorials/modules/module-use
@@ -429,6 +432,8 @@
      + https://github.com/BruceCutler/sentinel-aws-policies
   * https://shadow-soft.com/content/using-terraform-sentinel-for-infrastructure-governance   
   * https://developer.hashicorp.com/sentinel/docs/configuration
+  * https://developer.hashicorp.com/sentinel/docs/imports/strings
+
   * https://github.com/hashicorp/terraform-guides/tree/master/cloud-management-platform
   * [enforce policy as code for HashiCorp products](https://developer.hashicorp.com/sentinel?ajs_aid=1012049b-5d09-4ace-a41e-3985e6706b3b)
   * https://developer.hashicorp.com/sentinel/intro/what
@@ -487,6 +492,9 @@
      + https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance#access_config
      + https://github.com/LinkedInLearning/advanced-terraform-3099246
    * https://registry.terraform.io/modules/terraform-google-modules/service-accounts/google/latest 
+   * https://registry.terraform.io/modules/terraform-google-modules/network/google/latest
+
+   * https://registry.terraform.io/modules/terraform-google-modules/network/google/latest/submodules/firewall-rules (submodule)
      + https://github.com/terraform-google-modules/terraform-google-service-accounts/blob/master/main.tf - for argument processing
      + [create service account in google cloud using terraform](https://www.youtube.com/watch?v=jNRm3lqSFKk)
      + https://github.com/Pruthvi360/google-cloud-services/blob/master/create-service-account/variables.tf
@@ -497,7 +505,12 @@
      + https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_member
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam_custom_role.html#example-usage
       + https://stackoverflow.com/questions/49582977/gcp-custom-iam-role-creation-with-terraform
-
+   * [deny policy example](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/iam_deny_policy)
+   
+   * [principal access boundary example](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/iam_access_boundary_policy)
+   * [interactive](https://cloud.google.com/iam/docs/configuring-resource-based-access)
+   * [full resource names ](https://cloud.google.com/iam/docs/full-resource-names)
+   * https://cloud.google.com/iam/docs/configuring-resource-based-access
 
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_organization_policy#example-usage
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_health_check#example-usage---health-check-http
@@ -604,10 +617,11 @@
     + [lessons](https://github.com/antonputra/tutorials/blob/main/docs/contents.md)
     + https://github.com/antonputra/tutorials/tree/main/lessons/161
     + https://cidr.xyz/
-    
-    https://www.youtube.com/watch?v=7S94oUTy2z4&list=PLiMWaCMwGJXmJdmfJjG3aK1IkU7oWvxIj&index=4)
+    +  https://www.youtube.com/watch?v=7S94oUTy2z4&list=PLiMWaCMwGJXmJdmfJjG3aK1IkU7oWvxIj&index=4)
+  * https://developer.hashicorp.com/terraform/language/expressions/strings#directives     
+  * [building complex templates by string template interpolation](https://medium.com/ovni/terraform-templating-and-loops-9a88c0786c5c)
   * https://registry.terraform.io/providers/
-  * [serverspec with terraform](https://www.contino.io/insights/top-3-terraform-testing-strategies-for-ultra-reliable-infrastructure-as-code)
+  * [serverspec with terraform](https://www.contino.io/insights/top-3-terraform-testing-strategies-for-ultra-reliable-infrastructure-as-code) -
   
 ### Terraform GCP  
   * https://github.com/steinim/gcp-terraform-workshop (old code)
