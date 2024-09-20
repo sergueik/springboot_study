@@ -1,0 +1,5 @@
+zone          = "us-central1-c"
+name          = "module-example"
+has_static_ip = "true"
+project       = "spheric-alcove-430818-f9"
+hostname      = "abc123"
