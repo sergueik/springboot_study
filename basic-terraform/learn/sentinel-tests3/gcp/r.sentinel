@@ -8,27 +8,45 @@ import "tfplan-functions" as plan
 # Allowed GCE Instance Types
 # Include "null" to allow missing or computed values
 allowed_types = ["allUsers"]
-
+forbidden = ["roles/cloudfunctions.invoker"]
 # Get all GCE instances
 allGCEInstances = plan.find_resources("google_cloudfunctions_function_iam_member")
 
 # Filter to GCE instances with violations
 # Warnings will be printed for all violations since the last parameter is true
 xs = plan.filter_attribute_in_list(allGCEInstances,
-                        "member", allowed_types, true)
+                        "member", allowed_types, false)
 violations = 0
+
+  violators = {}
+  messages = {}
+
 z = xs["resources"] 
-print("z", z)
+// print("z", z)
 for z as address, rc {
-print("rc", rc)
-v = plan.evaluate_attribute(rc, "role") else null
-print("v", v)
-if v == "roles/cloudfunctions.invoker" { 
-violations  = 1
-} 
+  // print("rc", rc)
+  v = plan.evaluate_attribute(rc, "role") else null
+  print("v", v)
+  # Check if the value is null
+  if v is null {
+     v = "null"
+  }
+    # Check if the value is in the forbidden list
+  if v in forbidden {
+    print("v", v)
+      # Add the resource and a warning message to the violators list
+        message = plan.to_string(address) + "xxx"
+       messages[address] = message
+      violators[address] = rc
+  }
+//if v == "roles/cloudfunctions.invoker" { 
+//violations  = 1
+//} 
 }
-
-
+resuls = {"resources":violators,"messages":messages}
+print ("res: ", resuls["resources"])
+violations = length(resuls["messages"])
+// violations  = 1
 # Main rule
 main = rule {
   violations is 0
