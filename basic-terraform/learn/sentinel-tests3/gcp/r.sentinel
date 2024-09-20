@@ -5,49 +5,49 @@
 # with alias "plan"
 import "tfplan-functions" as plan
 
-# Allowed GCE Instance Types
-# Include "null" to allow missing or computed values
-allowed_types = ["allUsers"]
-forbidden = ["roles/cloudfunctions.invoker"]
-# Get all GCE instances
-allGCEInstances = plan.find_resources("google_cloudfunctions_function_iam_member")
 
-# Filter to GCE instances with violations
-# Warnings will be printed for all violations since the last parameter is true
-xs = plan.filter_attribute_in_list(allGCEInstances,
-                        "member", allowed_types, false)
-violations = 0
+filter2_attribute = func(resources, attr, forbidden, prtmsg) {
 
-  violators = {}
-  messages = {}
+violators = {}
+messages = {}
 
-z = xs["resources"] 
 // print("z", z)
-for z as address, rc {
-  // print("rc", rc)
-  v = plan.evaluate_attribute(rc, "role") else null
-  print("v", v)
-  # Check if the value is null
-  if v is null {
-     v = "null"
-  }
-    # Check if the value is in the forbidden list
-  if v in forbidden {
-    print("v", v)
-      # Add the resource and a warning message to the violators list
-        message = plan.to_string(address) + "xxx"
-       messages[address] = message
-      violators[address] = rc
-  }
-//if v == "roles/cloudfunctions.invoker" { 
-//violations  = 1
-//} 
+for resources as address, rc {
+	// print("rc", rc)
+	v = plan.evaluate_attribute(rc, attr) else null
+	// print("v", v)
+	# Check if the value is null
+	if v is null {
+		v = "null"
+	}
+	# Check if the value is in the forbidden list
+	if v in forbidden {
+		// print("v", v)
+		# Add the resource and a warning message to the violators list
+		message = plan.to_string(address) + " has " + v
+		messages[address] = message
+		violators[address] = rc
+	}
 }
-resuls = {"resources":violators,"messages":messages}
-print ("res: ", resuls["resources"])
-violations = length(resuls["messages"])
-// violations  = 1
+results = {"resources": violators, "messages": messages}
+   return results
+}
+
+allowed_types = ["roles/cloudfunctions.invoker"]
+forbidden = ["allUsers"]
+
+# Get all iam resources
+all_resources = plan.find_resources("google_cloudfunctions_function_iam_member")
+
+all_resources_with_member = plan.filter_attribute_in_list(all_resources, "role", allowed_types, false)
+z = all_resources_with_member["resources"]
+
+
+results = filter2_attribute(all_resources_with_member["resources"], "member", forbidden, true) 
+print("res: ", results["messages"])
+violations = length(results["messages"])
+
 # Main rule
 main = rule {
-  violations is 0
+	violations is 0
 }
