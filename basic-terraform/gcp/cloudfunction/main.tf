@@ -1,27 +1,10 @@
-terraform {
-  required_providers {
-    google = {
-      source = "hashicorp/google"
-      // version = "~>6.1.0"
-
-    }
-  }
-}
-
-provider "google" {
-  project     = "spheric-alcove-430818-f9"
-  region      = "us-central1"
-  zone        = "us-central1-c"
-  credentials = file("../keys.json")
-}
-
 
 
 
 // https://cloud.google.com/functions/docs/create-deploy-http-nodejs
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloudfunctions_function
 resource "google_storage_bucket" "bucket" {
-  name     = "test-bucket"
+  name     = "test-bucket-${var.project}"
   location = "US"
 }
 
