@@ -586,7 +586,7 @@
      + https://github.com/martinbaillie/terratest-istio
      + https://github.com/kuntrapakam/sample_terratest
      + https://github.com/rujwal-shrestha/generate-base-terratest/blob/main/genterratest.sh
-     + https://github.com/bradib0y/terratest-demo
+     + https://github.com/bradib0y/terratest-demox
      + https://github.com/denis256/terratest-tests
   * https://github.com/gruntwork-io/terratest/blob/master/examples/terraform-gcp-example     
   * https://docs.terrakube.io/
@@ -597,7 +597,7 @@
   * https://developer.hashicorp.com/terraform/language/tests
   * [comprehensive Look at 14 Popular Terraform Testing Tools](https://zeet.co/blog/terraform-testing-tools)
   * [comprehensive Guide to Testing in Terraform: Keep your tests, validations, checks, and policies in order](https://mattias.engineer/blog/2023/terraform-testing-and-validation)
-  * https://learn.microsoft.com/en-us/azure/developer/terraform/best-practices-testing-overview
+  *   
   * [terraform Test Framework](https://tf2project.io/index.html)
   * https://www.reddit.com/r/devops/comments/13g3vug/testing_terraform_code
   * https://medium.com/@monusraj/using-terraform-test-for-testing-your-terraform-code-b6fdbe170ba0 (too short)
@@ -611,6 +611,7 @@
   * https://thepracticalsysadmin.com/terraform-testing-tools/
   * https://abstraction.blog/2021/06/20/terraform-testing-tools-comparison
   * https://lollyrock.com/posts/inspec-terraform/
+  * https://developer.hashicorp.com/terraform/tutorials/state/resource-targeting - complex
   * [How to Create GKE Cluster Using TERRAFORM](https://www.youtube.com/watch?v=X_IK0GBbBTw) (complex)
   * [Terraform Tutorials for Beginners](https://www.youtube.com/playlist?list=PLiMWaCMwGJXmJdmfJjG3aK1IkU7oWvxIj)
     + [Loops Conditionals](https://youtu.be/7S94oUTy2z4)
@@ -694,3 +695,16 @@
   * https://cloud.google.com/blog/topics/developers-practitioners/using-google-cloud-service-account-impersonation-your-terraform-code
   * https://medium.com/bluetuple-ai/terraform-remote-state-on-gcp-d50e2f69b967
     + https://github.com/bluetuple/terraform-gcp/tree/main/account-impersonation
+  * [null resource provisioners](https://www.devopsschool.com/blog/terrafrom-example-code-for-remote-exec-provisioner)
+  * https://www.redhat.com/sysadmin/route-ip-route
+  * https://www.cyberciti.biz/faq/what-is-a-routing-table/
+#### Go
+  *   https://github.com/Ebazhanov/linkedin-skill-assessments-quizzes/blob/main/go/go-quiz.md?ysclid=m1d06h5hpd677110313
+  
+ #### Misc 
+ 
+    * https://community.t-mobile.com/troubleshooting-38/unable-to-use-t-mobile-home-internet-with-work-vpn-any-suggestions-52100
+    * https://community.t-mobile.com/troubleshooting-38/globalprotect-vpn-not-working-with-t-mobile-35992
+    * https://youtu.be/e9YavAW09hI?t=162
+      + `netsh intrface ipv4 show subinterfaces`
+      + `netsh interface ipv4 set subinterface "Wi-Fi" mtu=1478 store=persistent`
