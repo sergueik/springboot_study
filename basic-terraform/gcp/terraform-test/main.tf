@@ -28,28 +28,40 @@ provider "google" {
 
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket#attributes-reference
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket#example-usage---network-basic
-resource "google_storage_bucket" "bucket" {
+// alternative
+// https://github.com/PacktPublishing/Terraform-for-Google-Cloud-Essential-Guide/blob/main/chap07/main/bucket.tf
+// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket#nested_website
+resource "google_storage_bucket" "static_website" {
   name                        = var.bucket_name
   location                    = "us-central1"
   force_destroy               = true
-  uniform_bucket_level_access = false
-  public_access_prevention    = "inherited"
-}
+  uniform_bucket_level_access = true
 
+  website {
+    main_page_suffix = "index.html"
+  #  not_found_page   = "404.html"
+  }
+}
+// 
+// 
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object#example-usage---network-basic
 resource "google_storage_bucket_object" "indexpage" {
   name   = "butterfly01"
   source = "index.html"
-  bucket = google_storage_bucket.bucket.id
+  bucket = google_storage_bucket.static_website.id
+  cache_control = "no-store"
+}
+// page_hash        = "abe45d28281cfa2a4201c9b90a143095"
+// curl -I  https://storage.googleapis.com/spheric-alcove-1239340/butterfly01
+// etag: "abe45d28281cfa2a4201c9b90a143095"
+//
+// x-goog-hash: crc32c=/jfkuQ==
+// x-goog-hash: md5=q+RdKCgc+ipCAcm5ChQwlQ==
+
+resource "google_storage_bucket_iam_binding" "binding" {
+  bucket  = google_storage_bucket.static_website.name
+  role    = "roles/storage.objectViewer"
+  members = ["allUsers", ]
 }
 
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_object_access_control#example-usage---network-basic
-
-
-resource "google_storage_object_access_control" "public_rule" {
-  object = google_storage_bucket_object.indexpage.name
-  bucket = google_storage_bucket.bucket.name
-  role   = "READER"
-  entity = "allUsers"
-}
-

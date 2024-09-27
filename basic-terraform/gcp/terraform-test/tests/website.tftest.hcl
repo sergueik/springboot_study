@@ -15,7 +15,7 @@ run "create_bucket" {
 
   # Check that the bucket name is correct
   assert {
-    condition     = google_storage_bucket.bucket.name == "spheric-alcove-${run.setup_tests.bucket_prefix}"
+    condition     = google_storage_bucket.static_website.name == "spheric-alcove-${run.setup_tests.bucket_prefix}"
     error_message = "Invalid bucket name"
   }
 }
@@ -69,10 +69,19 @@ run "webpage_is_deployed" {
 
   # Check index.html hash matches
   // md5hash - (Computed) Base 64 MD5 hash of the uploaded data.
-  // does not wotk
+   
   assert {
-    condition     = google_storage_bucket_object.indexpage.md5hash == filemd5("./index.html")
+condition     = run.create_bucket.page_hash == filemd5("./index.html")
+
     error_message = "Invalid hash for index.html"
   }
+  // NOTE: index_hash (etag) does not work:
+// https://stackoverflow.com/questions/75723647/calculate-md5-from-aws-s3-etag
+  assert {
+    condition     = run.create_bucket.index_hash == filemd5("./index.html")
+
+    error_message = "Invalid hash for index.html"
+  }
+
 
 }

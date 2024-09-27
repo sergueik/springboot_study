@@ -1,7 +1,7 @@
 // https://stackoverflow.com/questions/49392448/possible-to-host-a-website-with-google-cloud-without-a-domain
 output "website_endpoint" {
   description = "Website endpoint URL"
-  value       = "https://storage.googleapis.com/${google_storage_bucket.bucket.name}/${google_storage_bucket_object.indexpage.name}"
+  value       = "https://storage.googleapis.com/${google_storage_bucket.static_website.name}/${google_storage_bucket_object.indexpage.name}"
 }
 
 // browsing selg_url will show JSON object
