@@ -31,17 +31,32 @@ run "bad_input_should_fail"{
     var.total_servers
   ]
 }
+// origin: https://github.com/kaushikgayal/terratest-gcp/tree/main
 
 // this will fail if the network is not constructed
 // one may manually delete the instance and run the test
 // the other option is add name argument
-run "http_server_name_check"{
+
+run "vpc"{
     command = apply
+    module {
+        source = "../../modules/vpc"
+    }
+}
+run "firewall"{
+    command = apply
+    module {
+        source = "../../modules/firewall"
+    }
+}
+
+  run "http_server_name_check"{
+  command = apply
     module {
         source = "../../modules/http_server"
     }
     variables {
-      subnet = "dev-subnet-01"
+      subnet = run.vpc.subnet
     }
     assert {
         condition = output.instance_name == "dev-apache2-instance"

@@ -8,6 +8,14 @@ module "vpc" {
   project = var.project
   env     = local.env
   region  = var.region
+  credentials = var.credentials
+}
+
+
+module "firewall" {
+  source  = "../../modules/firewall"
+  project = var.project
+  subnet  = module.vpc.subnet
 }
 
 module "http_server" {
@@ -19,10 +27,4 @@ module "http_server" {
   subnet = module.vpc.subnet
   // auth_token    = var.auth_token
   total_servers = var.total_servers
-}
-
-module "firewall" {
-  source  = "../../modules/firewall"
-  project = var.project
-  subnet  = module.vpc.subnet
 }

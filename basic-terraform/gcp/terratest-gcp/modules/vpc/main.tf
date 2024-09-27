@@ -1,10 +1,10 @@
 
 //  uses submodule
 module "vpc" {
-  source  = "terraform-google-modules/network/google"
-  project_id   = "${var.project}"
-  network_name = "${var.env}"
-
+  source       = "terraform-google-modules/network/google"
+  project_id   = var.project
+  network_name = var.env
+  // https://developer.hashicorp.com/terraform/language/functions/cidrsubnet
   subnets = [
     {
       subnet_name   = "${var.env}-subnet-01"
