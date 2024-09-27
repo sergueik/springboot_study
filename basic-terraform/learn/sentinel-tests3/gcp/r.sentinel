@@ -6,44 +6,30 @@
 import "tfplan-functions" as plan
 
 
-filter2_attribute = func(resources, attr, forbidden, prtmsg) {
-
 violators = {}
 messages = {}
 
-// print("z", z)
-for resources as address, rc {
-	// print("rc", rc)
-	v = plan.evaluate_attribute(rc, attr) else null
-	// print("v", v)
-	# Check if the value is null
-	if v is null {
-		v = "null"
-	}
-	# Check if the value is in the forbidden list
-	if v in forbidden {
-		// print("v", v)
-		# Add the resource and a warning message to the violators list
-		message = plan.to_string(address) + " has " + v
-		messages[address] = message
-		violators[address] = rc
-	}
-}
-results = {"resources": violators, "messages": messages}
-   return results
-}
-
 allowed_types = ["roles/cloudfunctions.invoker"]
+allowed_type = "roles/cloudfunctions.invoker"
 forbidden = ["allUsers"]
 
 # Get all iam resources
 all_resources = plan.find_resources("google_cloudfunctions_function_iam_member")
 
-all_resources_with_member = plan.filter_attribute_in_list(all_resources, "role", allowed_types, false)
-z = all_resources_with_member["resources"]
+all_resources_with_member = plan.filter_attribute_is_value(all_resources, "role", allowed_type, false).resources
 
+print("step 1: ", length(all_resources_with_member) )
+all_resources_with_member = plan.filter_attribute_is_value(all_resources, "role", allowed_type, false).resources
 
-results = filter2_attribute(all_resources_with_member["resources"], "member", forbidden, true) 
+print("step 2: ", length(all_resources_with_member) )
+all_resources_with_member = plan.filter_attribute_is_value(all_resources, "role", allowed_types[0], false).resources
+
+print("step 3: ", length(all_resources_with_member) )
+
+results = plan.filter_attribute_is_value(all_resources_with_member, "member", forbidden[0], false)
+print("step 4: ", length(results) )
+results = plan.filter_attribute_in_list(all_resources_with_member, "member", forbidden, false) 
+print("step 5: ", length(results) )
 print("res: ", results["messages"])
 violations = length(results["messages"])
 
