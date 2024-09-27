@@ -9,44 +9,39 @@ import "tfplan-functions" as plan
 violators = {}
 messages = {}
 
-allowed_types = ["roles/cloudfunctions.invoker"]
 allowed_type = "roles/cloudfunctions.invoker"
-forbidden = ["allUsers"]
+forbidden_member = "allUsers" 
+
+# Custom function
+get_resources_attribute = func(resources, attribute) {
+  res = {}
+  for resources as address, rc {
+    v = plan.evaluate_attribute(rc, attribute) else null
+    if v is null {
+       v = "null"
+    }
+    res[address] = v 
+  }
+  return values(res)
+}
+
 
 # Get all iam resources
+
+
 all_resources = plan.find_resources("google_cloudfunctions_function_iam_member")
 
-all_resources_with_member = plan.filter_attribute_is_value(all_resources, "role", allowed_type, false).resources
+resources_with_allowed_type = plan.filter_attribute_is_value(all_resources, "role", allowed_type, false).resources
 
-print("step 1: ", length(all_resources_with_member) )
-all_resources_with_member = plan.filter_attribute_is_value(all_resources, "role", allowed_type, false).resources
+results = plan.filter_attribute_is_value(resources_with_allowed_type, "member", forbidden_member, false)
 
-print("step 2: ", length(all_resources_with_member) )
-all_resources_with_member = plan.filter_attribute_is_value(all_resources, "role", allowed_types[0], false).resources
-
-print("step 3: ", length(all_resources_with_member) )
-
-results = plan.filter_attribute_is_value(all_resources_with_member, "member", forbidden[0], false)
-print("step 4: ", length(results) )
-
-// works with attribute values which are not lists
-results = plan.filter_attribute_contains_items_from_list(all_resources_with_member, "member", forbidden, false) 
-
-print("step 5: ", length(results) )
-print("res: ", results["messages"])
-
+print("step 1: ", length(results) )
 print("resources: ", plan.to_string (results.resources))
-cloud_function = ""
-res = results.resources
-for res as address, rc {
-  cloud_function = plan.evaluate_attribute(rc, "cloud_function") else null
-  if cloud_function is null {
-    cloud_function = "null"
-  }
-}
+cloud_function  = get_resources_attribute(results.resources, "cloud_function")
 print("cloud_function: ", cloud_function)
 
 violations = length(results["messages"])
+print("violations: ", violations)
 
 # Main rule
 main = rule {

@@ -53,8 +53,8 @@ planned_values = {
 				"vpc_connector": null,
 			},
 		},
-		"google_cloudfunctions_function_iam_member.invoker": {
-			"address":        "google_cloudfunctions_function_iam_member.invoker",
+		"google_cloudfunctions_function_iam_member.invoker1": {
+			"address":        "google_cloudfunctions_function_iam_member.invoker1",
 			"depends_on":     [],
 			"deposed_key":    "",
 			"index":          null,
@@ -66,6 +66,26 @@ planned_values = {
 			"type":           "google_cloudfunctions_function_iam_member",
 			"values": {
 				"cloud_function": "sample-http",
+				"condition":      [],
+				"member":         "allUsers",
+				"project":        "spheric-alcove-430818-f9",
+				"region":         "us-central1",	
+				"role":           "roles/cloudfunctions.invoker",
+			},
+		},
+		"google_cloudfunctions_function_iam_member.invoker2": {
+			"address":        "google_cloudfunctions_function_iam_member.invoker2",
+			"depends_on":     [],
+			"deposed_key":    "",
+			"index":          null,
+			"mode":           "managed",
+			"module_address": "",
+			"name":           "invoker",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"tainted":        false,
+			"type":           "google_cloudfunctions_function_iam_member",
+			"values": {
+				"cloud_function": "sample-http2",
 				"condition":      [],
 				"member":         "allUsers",
 				"project":        "spheric-alcove-430818-f9",
@@ -226,14 +246,43 @@ resource_changes = {
 		"provider_name":  "registry.terraform.io/hashicorp/google",
 		"type":           "google_cloudfunctions_function",
 	},
-	"google_cloudfunctions_function_iam_member.invoker": {
-		"address": "google_cloudfunctions_function_iam_member.invoker",
+	"google_cloudfunctions_function_iam_member.invoker1": {
+		"address": "google_cloudfunctions_function_iam_member.invoker1",
 		"change": {
 			"actions": [
 				"create",
 			],
 			"after": {
 				"cloud_function": "sample-http",
+				"condition":      [],
+				"member":         "allUsers",
+				"project":        "spheric-alcove-430818-f9",
+				"region":         "us-central1",
+				"role":           "roles/cloudfunctions.invoker",
+			},
+			"after_unknown": {
+				"condition": [],
+				"etag":      true,
+				"id":        true,
+			},
+			"before": null,
+		},
+		"deposed":        "",
+		"index":          null,
+		"mode":           "managed",
+		"module_address": "",
+		"name":           "invoker",
+		"provider_name":  "registry.terraform.io/hashicorp/google",
+		"type":           "google_cloudfunctions_function_iam_member",
+	},
+	"google_cloudfunctions_function_iam_member.invoker2": {
+		"address": "google_cloudfunctions_function_iam_member.invoker2",
+		"change": {
+			"actions": [
+				"create",
+			],
+			"after": {
+				"cloud_function": "sample-http2",
 				"condition":      [],
 				"member":         "allUsers",
 				"project":        "spheric-alcove-430818-f9",
