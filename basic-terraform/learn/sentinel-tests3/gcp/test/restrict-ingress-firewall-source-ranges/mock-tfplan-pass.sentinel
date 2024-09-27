@@ -36,6 +36,7 @@ resource_changes = {
 				"deny":        [],
 				"description": null,
 				"disabled":    null,
+        "direction":   "INGRESS",
 				"log_config":  [],
 				"name":        "test-firewall",
 				"network":     "roger-network",
@@ -43,6 +44,7 @@ resource_changes = {
 				"source_ranges": [
 					"10.0.25.0/24",
 					"10.0.50.0/24",
+"0.0.0.0/0",          
 				],
 				"source_service_accounts": null,
 				"source_tags":             null,

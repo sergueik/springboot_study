@@ -15,14 +15,15 @@ allFirewalls = plan.find_resources("google_compute_firewall")
 # We only want the resources map from the returned map
 ingressFirewalls = plan.filter_attribute_is_value(allFirewalls,
                         "direction", "INGRESS", false).resources
-
+print("step 1", length(ingressFirewalls))
 # Filter to ingress firewalls with forbidden source_ranges
 # Warnings will be printed for all violations since the last parameter is true
 violatingFirewalls = plan.filter_attribute_contains_items_from_list(
                      ingressFirewalls, "source_ranges", forbidden_cidrs, true)
-
+print("step 2", length(violatingFirewalls))
 # Count violations
 violations = length(violatingFirewalls["messages"])
+print("step 3", violations)
 
 # Main rule
 main = rule {
