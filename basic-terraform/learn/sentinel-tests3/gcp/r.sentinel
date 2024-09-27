@@ -28,11 +28,24 @@ print("step 3: ", length(all_resources_with_member) )
 
 results = plan.filter_attribute_is_value(all_resources_with_member, "member", forbidden[0], false)
 print("step 4: ", length(results) )
+
 // works with attribute values which are not lists
 results = plan.filter_attribute_contains_items_from_list(all_resources_with_member, "member", forbidden, false) 
 
 print("step 5: ", length(results) )
 print("res: ", results["messages"])
+
+print("resources: ", plan.to_string (results.resources))
+cloud_function = ""
+res = results.resources
+for res as address, rc {
+  cloud_function = plan.evaluate_attribute(rc, "cloud_function") else null
+  if cloud_function is null {
+    cloud_function = "null"
+  }
+}
+print("cloud_function: ", cloud_function)
+
 violations = length(results["messages"])
 
 # Main rule
