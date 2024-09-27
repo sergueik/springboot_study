@@ -28,7 +28,9 @@ print("step 3: ", length(all_resources_with_member) )
 
 results = plan.filter_attribute_is_value(all_resources_with_member, "member", forbidden[0], false)
 print("step 4: ", length(results) )
-results = plan.filter_attribute_in_list(all_resources_with_member, "member", forbidden, false) 
+// works with attribute values which are not lists
+results = plan.filter_attribute_contains_items_from_list(all_resources_with_member, "member", forbidden, false) 
+
 print("step 5: ", length(results) )
 print("res: ", results["messages"])
 violations = length(results["messages"])
