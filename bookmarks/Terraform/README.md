@@ -503,6 +503,10 @@
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_folder_iam#google_folder_iam_member
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam 
      + https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_member
+     
+   *  https://stackoverflow.com/questions/55400579/how-to-attach-custom-gcp-role-to-a-gcp-service-account-using-terraform
+   * https://stackoverflow.com/questions/73703967/terraform-gcp-how-to-specify-the-same-role-for-several-users
+   * https://stackoverflow.com/questions/63915353/what-is-the-meaning-of-authoritative-and-authoritative-for-gcp-iam-bindings
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam_custom_role.html#example-usage
       + https://stackoverflow.com/questions/49582977/gcp-custom-iam-role-creation-with-terraform
    * [deny policy example](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/iam_deny_policy)
@@ -707,4 +711,4 @@
     * https://community.t-mobile.com/troubleshooting-38/globalprotect-vpn-not-working-with-t-mobile-35992
     * https://youtu.be/e9YavAW09hI?t=162
       + `netsh intrface ipv4 show subinterfaces`
-      + `netsh interface ipv4 set subinterface "Wi-Fi" mtu=1478 store=persistent`
+       + `netsh interface ipv4 set subinterface "Wi-Fi" mtu=1478 store=persistent`
