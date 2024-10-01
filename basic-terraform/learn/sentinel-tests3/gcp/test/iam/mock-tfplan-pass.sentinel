@@ -255,15 +255,16 @@ resource_changes = {
 		"provider_name":  "registry.terraform.io/hashicorp/google",
 		"type":           "google_service_account_iam_member",
 	},
-	"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com\"]": {
-		"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com\"]",
+
+	"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--john.doe@gmail.com\"]": {
+		"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--john.doe@gmail.com\"]",
 		"change": {
 			"actions": [
 				"create",
 			],
 			"after": {
 				"condition":          [],
-				"member":             "user:kouzmine.serguei@gmail.com",
+				"member":             "user:john.doe@gmail.com",
 				"role":               "roles/iam.serviceAccountTokenCreator",
 				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
 			},

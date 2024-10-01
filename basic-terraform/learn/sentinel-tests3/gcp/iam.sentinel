@@ -5,8 +5,7 @@
 # with alias "plan"
 import "tfplan-functions" as plan
 
-# Forbidden CIDRs
-forbidden_cidrs = ["0.0.0.0/0"]
+import "strings"
 
 # Custom function
 get_resources_attribute = func(resources, attribute) {
@@ -33,13 +32,17 @@ keyadmins = plan.filter_attribute_is_value(service_account_iam_member, "role", r
 
 
 useradmins = plan.filter_attribute_matches_regex(keyadmins, "member", "user:.*", false).resources
-
-users = ["john.doe@gmail.com", "john.doe@gmail.com", "john.doe@gmail.com", "john.doe@gmail.com", "john.doe@gmail.com", "john.doe@gmail.com", "jane@gmail.com"]
-
+// NOTE: need "user:" prefix
+users = ["user:john.doe@gmail.com", "user:jane@gmail.com"]
+users = ["john.doe@gmail.com", "jane@gmail.com"]
+users_prefix = [] 
+for users as _,u {
+  append(users_prefix , "user:" + u)
+}
+print("step 2a", users_prefix)
 members = get_resources_attribute(useradmins, "member")
 print("step 2", keys(useradmins))
-violatingResources =
-      plan.filter_attribute_in_list(useradmins,  "members", users, true)
+violatingResources =  plan.filter_attribute_in_list(useradmins,  "member", users_prefix, true)
 
 
 print("step 3", members)
