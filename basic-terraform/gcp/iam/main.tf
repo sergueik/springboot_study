@@ -6,7 +6,7 @@ terraform {
     workspaces {
       name = "learn-terraform"
     }
-  } 
+  }
   required_providers {
     local = {
       source  = "hashicorp/local"
@@ -27,14 +27,14 @@ terraform {
 }
 
 provider "google" {
-  project     = "spheric-alcove-430818-f9"
-  region      = "us-central1"
-  zone        = "us-central1-c"
-//   credentials = file("../keys.json")
+  project = "spheric-alcove-430818-f9"
+  region  = "us-central1"
+  zone    = "us-central1-c"
+  //   credentials = file("../keys.json")
 }
 // TODO: cleanup
-variable "instance_type" { }
-variable "instance_name" { }
+variable "instance_type" {}
+variable "instance_name" {}
 variable "sa_email" {
   type        = string
   description = "Email for Service Account to receive roles (Ex. default-sa@example-project-id.iam.gserviceaccount.com)"
@@ -87,4 +87,11 @@ module "service_account_iam_binding" {
       "user:${var.user_email}",
     ]
   }
+}
+// https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_service_account_iam.html#google_service_account_iam_member
+resource "google_service_account_iam_member" "test" {
+  member             = "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com"
+  role               = "roles/iam.serviceAccountKeyAdmin"
+  service_account_id = "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com"
+
 }
