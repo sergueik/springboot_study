@@ -1,0 +1,1123 @@
+terraform_version = "1.7.5"
+
+planned_values = {
+	"outputs": {},
+	"resources": {
+		"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]": {
+			"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+			"depends_on":     [],
+			"deposed_key":    "",
+			"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"tainted":        false,
+			"type":           "google_service_account_iam_member",
+			"values": {
+				"condition":          [],
+				"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				"role":               "roles/iam.serviceAccountKeyAdmin",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+		},
+		"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com\"]": {
+			"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com\"]",
+			"depends_on":     [],
+			"deposed_key":    "",
+			"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"tainted":        false,
+			"type":           "google_service_account_iam_member",
+			"values": {
+				"condition":          [],
+				"member":             "user:kouzmine.serguei@gmail.com",
+				"role":               "roles/iam.serviceAccountKeyAdmin",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+		},
+		"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]": {
+			"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+			"depends_on":     [],
+			"deposed_key":    "",
+			"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"tainted":        false,
+			"type":           "google_service_account_iam_member",
+			"values": {
+				"condition":          [],
+				"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				"role":               "roles/iam.serviceAccountTokenCreator",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+		},
+		"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com\"]": {
+			"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com\"]",
+			"depends_on":     [],
+			"deposed_key":    "",
+			"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"tainted":        false,
+			"type":           "google_service_account_iam_member",
+			"values": {
+				"condition":          [],
+				"member":             "user:kouzmine.serguei@gmail.com",
+				"role":               "roles/iam.serviceAccountTokenCreator",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+		},
+		"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]": {
+			"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+			"depends_on":     [],
+			"deposed_key":    "",
+			"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"tainted":        false,
+			"type":           "google_service_account_iam_member",
+			"values": {
+				"condition":          [],
+				"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				"role":               "roles/iam.serviceAccountKeyAdmin",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+		},
+		"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com\"]": {
+			"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com\"]",
+			"depends_on":     [],
+			"deposed_key":    "",
+			"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"tainted":        false,
+			"type":           "google_service_account_iam_member",
+			"values": {
+				"condition":          [],
+				"member":             "user:kouzmine.serguei@gmail.com",
+				"role":               "roles/iam.serviceAccountKeyAdmin",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+		},
+		"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]": {
+			"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+			"depends_on":     [],
+			"deposed_key":    "",
+			"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"tainted":        false,
+			"type":           "google_service_account_iam_member",
+			"values": {
+				"condition":          [],
+				"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				"role":               "roles/iam.serviceAccountTokenCreator",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+		},
+		"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:john.doe@gmail.com\"]": {
+			"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:john.doe@gmail.com\"]",
+			"depends_on":     [],
+			"deposed_key":    "",
+			"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"tainted":        false,
+			"type":           "google_service_account_iam_member",
+			"values": {
+				"condition":          [],
+				"member":             "user:john.doe@gmail.com",
+				"role":               "roles/iam.serviceAccountTokenCreator",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+		},
+	},
+}
+
+variables = {
+	"sa_email": {
+		"name":  "sa_email",
+		"value": "terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+	},
+	"service_account_one": {
+		"name":  "service_account_one",
+		"value": "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+	},
+	"service_account_project": {
+		"name":  "service_account_project",
+		"value": "spheric-alcove-430818-f9",
+	},
+	"service_account_two": {
+		"name":  "service_account_two",
+		"value": "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+	},
+	"user_email": {
+		"name":  "user_email",
+		"value": "kouzmine.serguei@gmail.com",
+	},
+}
+
+resource_changes = {
+	"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]": {
+		"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+		"change": {
+			"actions": [
+				"create",
+			],
+			"after": {
+				"condition":          [],
+				"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				"role":               "roles/iam.serviceAccountKeyAdmin",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+			"after_unknown": {
+				"condition": [],
+				"etag":      true,
+				"id":        true,
+			},
+			"before": null,
+		},
+		"deposed":        "",
+		"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+		"mode":           "managed",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "service_account_iam_additive",
+		"provider_name":  "registry.terraform.io/hashicorp/google",
+		"type":           "google_service_account_iam_member",
+	},
+	"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com\"]": {
+		"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com\"]",
+		"change": {
+			"actions": [
+				"create",
+			],
+			"after": {
+				"condition":          [],
+				"member":             "user:kouzmine.serguei@gmail.com",
+				"role":               "roles/iam.serviceAccountKeyAdmin",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+			"after_unknown": {
+				"condition": [],
+				"etag":      true,
+				"id":        true,
+			},
+			"before": null,
+		},
+		"deposed":        "",
+		"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com",
+		"mode":           "managed",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "service_account_iam_additive",
+		"provider_name":  "registry.terraform.io/hashicorp/google",
+		"type":           "google_service_account_iam_member",
+	},
+	"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]": {
+		"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+		"change": {
+			"actions": [
+				"create",
+			],
+			"after": {
+				"condition":          [],
+				"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				"role":               "roles/iam.serviceAccountTokenCreator",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+			"after_unknown": {
+				"condition": [],
+				"etag":      true,
+				"id":        true,
+			},
+			"before": null,
+		},
+		"deposed":        "",
+		"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+		"mode":           "managed",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "service_account_iam_additive",
+		"provider_name":  "registry.terraform.io/hashicorp/google",
+		"type":           "google_service_account_iam_member",
+	},
+	"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com\"]": {
+		"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com\"]",
+		"change": {
+			"actions": [
+				"create",
+			],
+			"after": {
+				"condition":          [],
+				"member":             "user:kouzmine.serguei@gmail.com",
+				"role":               "roles/iam.serviceAccountTokenCreator",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+			"after_unknown": {
+				"condition": [],
+				"etag":      true,
+				"id":        true,
+			},
+			"before": null,
+		},
+		"deposed":        "",
+		"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com",
+		"mode":           "managed",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "service_account_iam_additive",
+		"provider_name":  "registry.terraform.io/hashicorp/google",
+		"type":           "google_service_account_iam_member",
+	},
+	"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]": {
+		"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+		"change": {
+			"actions": [
+				"create",
+			],
+			"after": {
+				"condition":          [],
+				"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				"role":               "roles/iam.serviceAccountKeyAdmin",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+			"after_unknown": {
+				"condition": [],
+				"etag":      true,
+				"id":        true,
+			},
+			"before": null,
+		},
+		"deposed":        "",
+		"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+		"mode":           "managed",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "service_account_iam_additive",
+		"provider_name":  "registry.terraform.io/hashicorp/google",
+		"type":           "google_service_account_iam_member",
+	},
+	"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com\"]": {
+		"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com\"]",
+		"change": {
+			"actions": [
+				"create",
+			],
+			"after": {
+				"condition":          [],
+				"member":             "user:kouzmine.serguei@gmail.com",
+				"role":               "roles/iam.serviceAccountKeyAdmin",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+			"after_unknown": {
+				"condition": [],
+				"etag":      true,
+				"id":        true,
+			},
+			"before": null,
+		},
+		"deposed":        "",
+		"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com",
+		"mode":           "managed",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "service_account_iam_additive",
+		"provider_name":  "registry.terraform.io/hashicorp/google",
+		"type":           "google_service_account_iam_member",
+	},
+	"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]": {
+		"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+		"change": {
+			"actions": [
+				"create",
+			],
+			"after": {
+				"condition":          [],
+				"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				"role":               "roles/iam.serviceAccountTokenCreator",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+			"after_unknown": {
+				"condition": [],
+				"etag":      true,
+				"id":        true,
+			},
+			"before": null,
+		},
+		"deposed":        "",
+		"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+		"mode":           "managed",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "service_account_iam_additive",
+		"provider_name":  "registry.terraform.io/hashicorp/google",
+		"type":           "google_service_account_iam_member",
+	},
+	"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com\"]": {
+		"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com\"]",
+		"change": {
+			"actions": [
+				"create",
+			],
+			"after": {
+				"condition":          [],
+				"member":             "user:kouzmine.serguei@gmail.com",
+				"role":               "roles/iam.serviceAccountTokenCreator",
+				"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+			"after_unknown": {
+				"condition": [],
+				"etag":      true,
+				"id":        true,
+			},
+			"before": null,
+		},
+		"deposed":        "",
+		"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com",
+		"mode":           "managed",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "service_account_iam_additive",
+		"provider_name":  "registry.terraform.io/hashicorp/google",
+		"type":           "google_service_account_iam_member",
+	},
+}
+
+resource_drift = {}
+
+output_changes = {}
+
+raw = {
+	"configuration": {
+		"provider_config": {
+			"google": {
+				"expressions": {
+					"project": {
+						"constant_value": "spheric-alcove-430818-f9",
+					},
+					"region": {
+						"constant_value": "us-central1",
+					},
+					"zone": {
+						"constant_value": "us-central1-c",
+					},
+				},
+				"full_name": "registry.terraform.io/hashicorp/google",
+				"name":      "google",
+			},
+			"local": {
+				"full_name":          "registry.terraform.io/hashicorp/local",
+				"name":               "local",
+				"version_constraint": "~> 2.5",
+			},
+			"random": {
+				"full_name":          "registry.terraform.io/hashicorp/random",
+				"name":               "random",
+				"version_constraint": "~> 3.6",
+			},
+		},
+		"root_module": {
+			"module_calls": {
+				"service_account_iam_binding": {
+					"expressions": {
+						"bindings": {
+							"references": [
+								"var.sa_email",
+								"var.user_email",
+								"var.sa_email",
+								"var.user_email",
+							],
+						},
+						"mode": {
+							"constant_value": "additive",
+						},
+						"project": {
+							"references": [
+								"var.service_account_project",
+							],
+						},
+						"service_accounts": {
+							"references": [
+								"var.service_account_one",
+								"var.service_account_two",
+							],
+						},
+					},
+					"module": {
+						"module_calls": {
+							"helper": {
+								"expressions": {
+									"bindings": {
+										"references": [
+											"var.bindings",
+										],
+									},
+									"conditional_bindings": {
+										"references": [
+											"var.conditional_bindings",
+										],
+									},
+									"entities": {
+										"references": [
+											"var.service_accounts",
+										],
+									},
+									"mode": {
+										"references": [
+											"var.mode",
+										],
+									},
+								},
+								"module": {
+									"outputs": {
+										"bindings_additive": {
+											"description": "Map of additive bindings for entities. Unwinded by members.",
+											"expression": {
+												"references": [
+													"local.bindings_additive",
+												],
+											},
+										},
+										"bindings_authoritative": {
+											"description": "Map of authoritative bindings for entities. Unwinded by roles.",
+											"expression": {
+												"references": [
+													"local.bindings_authoritative",
+												],
+											},
+										},
+										"bindings_by_member": {
+											"description": "List of bindings for entities unwinded by members.",
+											"expression": {
+												"references": [
+													"local.bindings_by_member",
+												],
+											},
+										},
+										"set_additive": {
+											"description": "A set of additive binding keys (from bindings_additive) to be used in for_each. Unwinded by members.",
+											"expression": {
+												"references": [
+													"local.set_additive",
+												],
+											},
+										},
+										"set_authoritative": {
+											"description": "A set of authoritative binding keys (from bindings_authoritative) to be used in for_each. Unwinded by roles.",
+											"expression": {
+												"references": [
+													"local.set_authoritative",
+												],
+											},
+										},
+									},
+									"variables": {
+										"bindings": {
+											"default":     {},
+											"description": "Map of role (key) and list of members (value) to add the IAM policies/bindings",
+										},
+										"conditional_bindings": {
+											"default":     [],
+											"description": "List of maps of role and respective conditions, and the members to add the IAM policies/bindings",
+										},
+										"entities": {
+											"description": "Entities list to add the IAM policies/bindings",
+										},
+										"mode": {
+											"default":     "additive",
+											"description": "Mode for adding the IAM policies/bindings, additive and authoritative",
+										},
+									},
+								},
+								"source": "../helper",
+							},
+						},
+						"outputs": {
+							"members": {
+								"description": "Members which were bound to the Service Account.",
+								"expression": {
+									"references": [
+										"module.helper.bindings_by_member",
+										"module.helper",
+									],
+								},
+							},
+							"roles": {
+								"description": "Roles which were assigned to members.",
+								"expression": {
+									"references": [
+										"module.helper.bindings_by_member",
+										"module.helper",
+									],
+								},
+							},
+							"service_accounts": {
+								"depends_on": [
+									"google_service_account_iam_binding.service_account_iam_authoritative",
+									"google_service_account_iam_member.service_account_iam_additive",
+								],
+								"description": "Service Accounts which received bindings.",
+								"expression": {
+									"references": [
+										"module.helper.bindings_by_member",
+										"module.helper",
+									],
+								},
+							},
+						},
+						"resources": [
+							{
+								"address": "google_service_account_iam_binding.service_account_iam_authoritative",
+								"expressions": {
+									"members": {
+										"references": [
+											"module.helper.bindings_authoritative",
+											"module.helper",
+											"each.key",
+										],
+									},
+									"role": {
+										"references": [
+											"module.helper.bindings_authoritative",
+											"module.helper",
+											"each.key",
+										],
+									},
+									"service_account_id": {
+										"references": [
+											"var.project",
+											"module.helper.bindings_authoritative",
+											"module.helper",
+											"each.key",
+										],
+									},
+								},
+								"for_each_expression": {
+									"references": [
+										"module.helper.set_authoritative",
+										"module.helper",
+									],
+								},
+								"mode":                "managed",
+								"name":                "service_account_iam_authoritative",
+								"provider_config_key": "google",
+								"schema_version":      0,
+								"type":                "google_service_account_iam_binding",
+							},
+							{
+								"address": "google_service_account_iam_member.service_account_iam_additive",
+								"expressions": {
+									"member": {
+										"references": [
+											"module.helper.bindings_additive",
+											"module.helper",
+											"each.key",
+										],
+									},
+									"role": {
+										"references": [
+											"module.helper.bindings_additive",
+											"module.helper",
+											"each.key",
+										],
+									},
+									"service_account_id": {
+										"references": [
+											"var.project",
+											"module.helper.bindings_additive",
+											"module.helper",
+											"each.key",
+										],
+									},
+								},
+								"for_each_expression": {
+									"references": [
+										"module.helper.set_additive",
+										"module.helper",
+									],
+								},
+								"mode":                "managed",
+								"name":                "service_account_iam_additive",
+								"provider_config_key": "google",
+								"schema_version":      0,
+								"type":                "google_service_account_iam_member",
+							},
+						],
+						"variables": {
+							"bindings": {
+								"default":     {},
+								"description": "Map of role (key) and list of members (value) to add the IAM policies/bindings",
+							},
+							"conditional_bindings": {
+								"default":     [],
+								"description": "List of maps of role and respective conditions, and the members to add the IAM policies/bindings",
+							},
+							"mode": {
+								"default":     "additive",
+								"description": "Mode for adding the IAM policies/bindings, additive and authoritative",
+							},
+							"project": {
+								"default":     "",
+								"description": "Project to add the IAM policies/bindings",
+							},
+							"service_accounts": {
+								"default":     [],
+								"description": "Service Accounts Email list to add the IAM policies/bindings",
+							},
+						},
+					},
+					"source":             "terraform-google-modules/iam/google//modules/service_accounts_iam",
+					"version_constraint": "~> 8.0",
+				},
+			},
+			"variables": {
+				"sa_email": {
+					"default":     "terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+					"description": "Email for Service Account to receive roles (Ex. default-sa@example-project-id.iam.gserviceaccount.com)",
+				},
+				"service_account_one": {
+					"default":     "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+					"description": "First service Account to add the IAM policies/bindings",
+				},
+				"service_account_project": {
+					"default":     "spheric-alcove-430818-f9",
+					"description": "Project id of the service account",
+				},
+				"service_account_two": {
+					"default":     "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+					"description": "First service Account to add the IAM policies/bindings",
+				},
+				"user_email": {
+					"default":     "kouzmine.serguei@gmail.com",
+					"description": "Email for group to receive roles (Ex. user@example.com)",
+				},
+			},
+		},
+	},
+	"format_version": "1.2",
+	"planned_values": {
+		"root_module": {
+			"child_modules": [
+				{
+					"address": "module.service_account_iam_binding",
+					"resources": [
+						{
+							"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+							"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+							"mode":           "managed",
+							"name":           "service_account_iam_additive",
+							"provider_name":  "registry.terraform.io/hashicorp/google",
+							"schema_version": 0,
+							"sensitive_values": {
+								"condition": [],
+							},
+							"type": "google_service_account_iam_member",
+							"values": {
+								"condition":          [],
+								"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+								"role":               "roles/iam.serviceAccountKeyAdmin",
+								"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+							},
+						},
+						{
+							"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com\"]",
+							"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com",
+							"mode":           "managed",
+							"name":           "service_account_iam_additive",
+							"provider_name":  "registry.terraform.io/hashicorp/google",
+							"schema_version": 0,
+							"sensitive_values": {
+								"condition": [],
+							},
+							"type": "google_service_account_iam_member",
+							"values": {
+								"condition":          [],
+								"member":             "user:kouzmine.serguei@gmail.com",
+								"role":               "roles/iam.serviceAccountKeyAdmin",
+								"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+							},
+						},
+						{
+							"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+							"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+							"mode":           "managed",
+							"name":           "service_account_iam_additive",
+							"provider_name":  "registry.terraform.io/hashicorp/google",
+							"schema_version": 0,
+							"sensitive_values": {
+								"condition": [],
+							},
+							"type": "google_service_account_iam_member",
+							"values": {
+								"condition":          [],
+								"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+								"role":               "roles/iam.serviceAccountTokenCreator",
+								"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+							},
+						},
+						{
+							"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com\"]",
+							"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com",
+							"mode":           "managed",
+							"name":           "service_account_iam_additive",
+							"provider_name":  "registry.terraform.io/hashicorp/google",
+							"schema_version": 0,
+							"sensitive_values": {
+								"condition": [],
+							},
+							"type": "google_service_account_iam_member",
+							"values": {
+								"condition":          [],
+								"member":             "user:kouzmine.serguei@gmail.com",
+								"role":               "roles/iam.serviceAccountTokenCreator",
+								"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+							},
+						},
+						{
+							"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+							"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+							"mode":           "managed",
+							"name":           "service_account_iam_additive",
+							"provider_name":  "registry.terraform.io/hashicorp/google",
+							"schema_version": 0,
+							"sensitive_values": {
+								"condition": [],
+							},
+							"type": "google_service_account_iam_member",
+							"values": {
+								"condition":          [],
+								"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+								"role":               "roles/iam.serviceAccountKeyAdmin",
+								"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+							},
+						},
+						{
+							"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com\"]",
+							"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com",
+							"mode":           "managed",
+							"name":           "service_account_iam_additive",
+							"provider_name":  "registry.terraform.io/hashicorp/google",
+							"schema_version": 0,
+							"sensitive_values": {
+								"condition": [],
+							},
+							"type": "google_service_account_iam_member",
+							"values": {
+								"condition":          [],
+								"member":             "user:kouzmine.serguei@gmail.com",
+								"role":               "roles/iam.serviceAccountKeyAdmin",
+								"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+							},
+						},
+						{
+							"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+							"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+							"mode":           "managed",
+							"name":           "service_account_iam_additive",
+							"provider_name":  "registry.terraform.io/hashicorp/google",
+							"schema_version": 0,
+							"sensitive_values": {
+								"condition": [],
+							},
+							"type": "google_service_account_iam_member",
+							"values": {
+								"condition":          [],
+								"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+								"role":               "roles/iam.serviceAccountTokenCreator",
+								"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+							},
+						},
+						{
+							"address":        "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com\"]",
+							"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com",
+							"mode":           "managed",
+							"name":           "service_account_iam_additive",
+							"provider_name":  "registry.terraform.io/hashicorp/google",
+							"schema_version": 0,
+							"sensitive_values": {
+								"condition": [],
+							},
+							"type": "google_service_account_iam_member",
+							"values": {
+								"condition":          [],
+								"member":             "user:kouzmine.serguei@gmail.com",
+								"role":               "roles/iam.serviceAccountTokenCreator",
+								"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+							},
+						},
+					],
+				},
+			],
+		},
+	},
+	"resource_changes": [
+		{
+			"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+			"change": {
+				"actions": [
+					"create",
+				],
+				"after": {
+					"condition":          [],
+					"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+					"role":               "roles/iam.serviceAccountKeyAdmin",
+					"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				},
+				"after_sensitive": {
+					"condition": [],
+				},
+				"after_unknown": {
+					"condition": [],
+					"etag":      true,
+					"id":        true,
+				},
+				"before":           null,
+				"before_sensitive": false,
+			},
+			"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"type":           "google_service_account_iam_member",
+		},
+		{
+			"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com\"]",
+			"change": {
+				"actions": [
+					"create",
+				],
+				"after": {
+					"condition":          [],
+					"member":             "user:kouzmine.serguei@gmail.com",
+					"role":               "roles/iam.serviceAccountKeyAdmin",
+					"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				},
+				"after_sensitive": {
+					"condition": [],
+				},
+				"after_unknown": {
+					"condition": [],
+					"etag":      true,
+					"id":        true,
+				},
+				"before":           null,
+				"before_sensitive": false,
+			},
+			"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"type":           "google_service_account_iam_member",
+		},
+		{
+			"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+			"change": {
+				"actions": [
+					"create",
+				],
+				"after": {
+					"condition":          [],
+					"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+					"role":               "roles/iam.serviceAccountTokenCreator",
+					"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				},
+				"after_sensitive": {
+					"condition": [],
+				},
+				"after_unknown": {
+					"condition": [],
+					"etag":      true,
+					"id":        true,
+				},
+				"before":           null,
+				"before_sensitive": false,
+			},
+			"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"type":           "google_service_account_iam_member",
+		},
+		{
+			"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com\"]",
+			"change": {
+				"actions": [
+					"create",
+				],
+				"after": {
+					"condition":          [],
+					"member":             "user:kouzmine.serguei@gmail.com",
+					"role":               "roles/iam.serviceAccountTokenCreator",
+					"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				},
+				"after_sensitive": {
+					"condition": [],
+				},
+				"after_unknown": {
+					"condition": [],
+					"etag":      true,
+					"id":        true,
+				},
+				"before":           null,
+				"before_sensitive": false,
+			},
+			"index":          "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"type":           "google_service_account_iam_member",
+		},
+		{
+			"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+			"change": {
+				"actions": [
+					"create",
+				],
+				"after": {
+					"condition":          [],
+					"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+					"role":               "roles/iam.serviceAccountKeyAdmin",
+					"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				},
+				"after_sensitive": {
+					"condition": [],
+				},
+				"after_unknown": {
+					"condition": [],
+					"etag":      true,
+					"id":        true,
+				},
+				"before":           null,
+				"before_sensitive": false,
+			},
+			"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"type":           "google_service_account_iam_member",
+		},
+		{
+			"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com\"]",
+			"change": {
+				"actions": [
+					"create",
+				],
+				"after": {
+					"condition":          [],
+					"member":             "user:kouzmine.serguei@gmail.com",
+					"role":               "roles/iam.serviceAccountKeyAdmin",
+					"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				},
+				"after_sensitive": {
+					"condition": [],
+				},
+				"after_unknown": {
+					"condition": [],
+					"etag":      true,
+					"id":        true,
+				},
+				"before":           null,
+				"before_sensitive": false,
+			},
+			"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountKeyAdmin--user:kouzmine.serguei@gmail.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"type":           "google_service_account_iam_member",
+		},
+		{
+			"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com\"]",
+			"change": {
+				"actions": [
+					"create",
+				],
+				"after": {
+					"condition":          [],
+					"member":             "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+					"role":               "roles/iam.serviceAccountTokenCreator",
+					"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				},
+				"after_sensitive": {
+					"condition": [],
+				},
+				"after_unknown": {
+					"condition": [],
+					"etag":      true,
+					"id":        true,
+				},
+				"before":           null,
+				"before_sensitive": false,
+			},
+			"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"type":           "google_service_account_iam_member",
+		},
+		{
+			"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive[\"sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com\"]",
+			"change": {
+				"actions": [
+					"create",
+				],
+				"after": {
+					"condition":          [],
+					"member":             "user:kouzmine.serguei@gmail.com",
+					"role":               "roles/iam.serviceAccountTokenCreator",
+					"service_account_id": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+				},
+				"after_sensitive": {
+					"condition": [],
+				},
+				"after_unknown": {
+					"condition": [],
+					"etag":      true,
+					"id":        true,
+				},
+				"before":           null,
+				"before_sensitive": false,
+			},
+			"index":          "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com--roles/iam.serviceAccountTokenCreator--user:kouzmine.serguei@gmail.com",
+			"mode":           "managed",
+			"module_address": "module.service_account_iam_binding",
+			"name":           "service_account_iam_additive",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"type":           "google_service_account_iam_member",
+		},
+	],
+	"terraform_version": "1.7.5",
+	"timestamp":         "2024-10-01T19:46:23Z",
+	"variables": {
+		"sa_email": {
+			"value": "terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+		},
+		"service_account_one": {
+			"value": "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+		},
+		"service_account_project": {
+			"value": "spheric-alcove-430818-f9",
+		},
+		"service_account_two": {
+			"value": "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+		},
+		"user_email": {
+			"value": "kouzmine.serguei@gmail.com",
+		},
+	},
+}
