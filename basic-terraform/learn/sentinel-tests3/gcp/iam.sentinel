@@ -23,6 +23,31 @@ find_resources = func(type) {
 
 }
 
+filter_attribute_is_value = func(resources, attr, value, prtmsg) {
+	violators = {}
+	messages = {}
+	for resources as address, rc {
+		v = evaluate_attribute(rc, attr) else null
+		if v is null {
+			v = "null"
+		}
+		if v is value {
+			# Add the resource and a warning message to the violators list
+			message = to_string(address) + " has " + to_string(attr) + " with value " +
+				to_string(v) +
+				" that is not allowed."
+			violators[address] = rc
+			messages[address] = message
+			if prtmsg {
+				print(message)
+			}
+		}
+	}
+	return {"resources": violators, "messages": messages}
+}
+
+### filter
+
 evaluate_attribute = func(r, attribute) {
 
 	# Split the attribute into a list, using "." as the separator
@@ -67,6 +92,45 @@ evaluate_attribute = func(r, attribute) {
 }
 
 ### p
+to_string = func(obj) {
+	case types.type_of(obj) {
+		when "string":
+			return obj
+		when "int", "float", "bool":
+			return string(obj)
+		when "null":
+			return "null"
+		when "undefined":
+			return "undefined"
+		when "list":
+			output = "["
+			lastIndex = length(obj) - 1
+			for obj as index, value {
+				if index < lastIndex {
+					output += to_string(value) + ", "
+				} else {
+					output += to_string(value)
+				}
+			}
+			output += "]"
+			return output
+		when "map":
+			output = "{"
+			theKeys = keys(obj)
+			lastIndex = length(theKeys) - 1
+			for theKeys as index, key {
+				if index < lastIndex {
+					output += to_string(key) + ": " + to_string(obj[key]) + ", "
+				} else {
+					output += to_string(key) + ": " + to_string(obj[key])
+				}
+			}
+			output += "}"
+			return output
+		else:
+			return ""
+	}
+}
 
 get_resources_attribute = func(resources, attribute) {
 	res = {}
@@ -80,9 +144,11 @@ get_resources_attribute = func(resources, attribute) {
 	return values(res)
 }
 
-resources = find_resources("google_service_account_iam_member")
-attributes = get_resources_attribute(resources, "member")
+service_account_iam_member = find_resources("google_service_account_iam_member")
+role = "roles/iam.serviceAccountTokenCreator"
+keyadmins = filter_attribute_is_value(service_account_iam_member, "role", role, false).resources
 
+attributes = get_resources_attribute(keyadmins, "member")
 
 print(attributes)
 violations = length(attributes)
