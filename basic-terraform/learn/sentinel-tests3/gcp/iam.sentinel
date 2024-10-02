@@ -1,57 +1,96 @@
-# This policy uses the Sentinel tfplan/v2 import to block use of the
-# forbidden CIDRs in ingress google_compute_firewall resources
-
-# Import common-functions/tfplan-functions/tfplan-functions.sentinel
-# with alias "plan"
-import "tfplan-functions" as plan
-
+##### Imports #####
+import "tfplan/v2" as tfplan
 import "strings"
+import "types"
 
-# Custom function
+### find_resources_with_standard_labels ###
+find_resources = func(type) {
+	resources = []
+	for tfplan.resource_changes as address, rc {
+		if rc.type is type and
+			rc.mode is "managed" and
+			(rc.change.actions contains "create" or rc.change.actions contains "update" or
+				rc.change.actions contains "read" or
+				(rc.change.actions contains "no-op" and
+					rc.change.after is not null)) {
+			// print (address)
+			append(resources, rc)
+
+		}
+	}
+
+	return resources
+
+}
+
+evaluate_attribute = func(r, attribute) {
+
+	# Split the attribute into a list, using "." as the separator
+	attributes = strings.split(attribute, ".")
+
+	# Convert numeric strings to integers for indices
+	if attributes[0] matches "^[0-9]+$" {
+		a = int(attributes[0])
+		# Make sure r is of type list
+		if types.type_of(r) is not "list" {
+			return undefined
+		}
+	} else {
+		a = attributes[0]
+	}
+
+	# Append the current attribute to the resource instance
+	if (types.type_of(r) is "map" and "change" in keys(r)) and
+		(types.type_of(r.change) is "map" and "after" in keys(r.change)) {
+		new_r = r.change.after[a] else null
+	} else {
+		new_r = r[a] else null
+	}
+
+	# Process based on length of attributes
+	# being greater than or equal to 1
+	if length(attributes) > 1 {
+
+		# Strip first element from attributes
+		attributes = attributes[1:length(attributes)]
+		attribute = strings.join(attributes, ".")
+
+		# Make recursive call
+		return evaluate_attribute(new_r, attribute)
+	} else {
+
+		# We reached the end of the attribute and can stop the
+		# recursive calls and return the value of the attribute
+		return new_r
+
+	}
+}
+
+### p
+
 get_resources_attribute = func(resources, attribute) {
-  res = {}
-  for resources as address, rc {
-    v = plan.evaluate_attribute(rc, attribute) else null
-    if v is null {
-       v = "null"
-    }
-    res[address] = v 
-  }
-  return values(res)
+	res = {}
+	for resources as address, rc {
+		v = evaluate_attribute(rc, attribute) else null
+		if v is null {
+			v = "null"
+		}
+		res[address] = v
+	}
+	return values(res)
 }
 
-
-# Get all resources of the type "module.service_account_iam_binding"
-
-service_account_iam_member = plan.find_resources("google_service_account_iam_member")
-print("step 1", keys(service_account_iam_member))
-
-role = "roles/iam.serviceAccountTokenCreator"
-# We only want the resources map from the returned map
-keyadmins = plan.filter_attribute_is_value(service_account_iam_member, "role", role, false).resources
+resources = find_resources("google_service_account_iam_member")
+attributes = get_resources_attribute(resources, "member")
 
 
-useradmins = plan.filter_attribute_matches_regex(keyadmins, "member", "user:.*", false).resources
-// NOTE: need "user:" prefix
-users = ["user:john.doe@gmail.com", "user:jane@gmail.com"]
-users = ["john.doe@gmail.com", "jane@gmail.com"]
-users_prefix = [] 
-for users as _,u {
-  append(users_prefix , "user:" + u)
-}
-print("step 2a", users_prefix)
-members = get_resources_attribute(useradmins, "member")
-print("step 2", keys(useradmins))
-violatingResources =  plan.filter_attribute_in_list(useradmins,  "member", users_prefix, true)
+print(attributes)
+violations = length(attributes)
 
+//
+print("step 5", violations)
 
-print("step 3", members)
-print("step 4", violatingResources)
-violations = length(violatingResources["messages"])
-
-print("step 5", violations)	
 # Main rule
 main = rule {
-  violations is 0
+	violations is 0
 }
-
