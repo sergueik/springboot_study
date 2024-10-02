@@ -4,7 +4,8 @@ import "strings"
 import "types"
 
 ### find_resources_with_standard_labels ###
-find_resources = func(type) {
+// 
+find_resources2 = func(type) {
 	resources = []
 	for tfplan.resource_changes as address, rc {
 		if rc.type is type and
@@ -22,28 +23,39 @@ find_resources = func(type) {
 	return resources
 
 }
+find_resources = func(type) {
+  resources = filter tfplan.resource_changes as address, rc {
+  	rc.type is type and
+  	rc.mode is "managed" and
+  	(rc.change.actions contains "create" or rc.change.actions contains "update" or
+     rc.change.actions contains "read" or (rc.change.actions contains "no-op" and
+     rc.change.after is not null))
+  }
 
+  return resources
+}
+
+// https://github.com/hashicorp/terraform-sentinel-policies/blob/main/common-functions/tfplan-functions/tfplan-functions.sentinel#L627
 filter_attribute_is_value = func(resources, attr, value, prtmsg) {
-	violators = {}
+  violators = {}
 	messages = {}
-	for resources as address, rc {
-		v = evaluate_attribute(rc, attr) else null
-		if v is null {
-			v = "null"
-		}
-		if v is value {
-			# Add the resource and a warning message to the violators list
-			message = to_string(address) + " has " + to_string(attr) + " with value " +
-				to_string(v) +
-				" that is not allowed."
-			violators[address] = rc
+  for resources as address, rc {
+    v = evaluate_attribute(rc, attr) else null
+    if v is null {
+      v = "null"
+    }
+    if v is value {
+      # Add the resource and a warning message to the violators list
+      message = to_string(address) + " has " + to_string(attr) + " with value " +
+                to_string(v) + " that is not allowed."
+      violators[address] = rc
 			messages[address] = message
-			if prtmsg {
-				print(message)
-			}
-		}
-	}
-	return {"resources": violators, "messages": messages}
+      if prtmsg {
+        print(message)
+      }
+    }
+  }
+  return {"resources":violators,"messages":messages}
 }
 
 ### filter
@@ -91,7 +103,8 @@ evaluate_attribute = func(r, attribute) {
 	}
 }
 
-### p
+### 
+// 
 to_string = func(obj) {
 	case types.type_of(obj) {
 		when "string":
@@ -147,74 +160,75 @@ get_resources_attribute = func(resources, attribute) {
 service_account_iam_member = find_resources("google_service_account_iam_member")
 role = "roles/iam.serviceAccountTokenCreator"
 keyadmins = filter_attribute_is_value(service_account_iam_member, "role", role, false).resources
-print("keyadmins: ",length(keyadmins))
+print("keyadmins: ", length(keyadmins))
 attributes = get_resources_attribute(keyadmins, "member")
-
-filter_attribute_matches_regex = func(items, attr, expr, prtmsg) {
+// https://github.com/hashicorp/terraform-sentinel-policies/blob/main/common-functions/tfplan-functions/tfplan-functions.sentinel#L850
+filter_attribute_matches_regex = func(resources, attr, expr, prtmsg) {
   violators = {}
 	messages = {}
-  for items as index, item {
-    val = evaluate_attribute(item, attr) else null
-print("val: ", val)	
-    if val is null {
-      val = "null"
+  for resources as address, rc {
+   print("address", address )
+    v = evaluate_attribute(rc, attr) else null
+    if v is null {
+      v = "null"
     }
-    # Process lists and maps
-    if types.type_of(val) in ["list", "map"] {
-      message = ""
-      # Check each item of list or map
-      for val as i, v {
-        if v matches expr {
-          # Add to the warning message
-          message += to_string(index) + " has " + to_string(attr) +
-                    " with value " + to_string(v) +
-                    " that matches the regex " + to_string(expr) + "\n"
-        }
-        if message is not "" {
-          # Add the item and warning message to the violators list
-          violators[index] = item
-          messages[index] = message
-          if prtmsg {
-            print(message)
-          }
-        } // end message not ""
-      } // end for
-    } else {
-      # Process single item
-      if val matches expr {
-print("val matches: ", val)	
-        # Add the item and a warning message to the violators list
-        message = to_string(index) + " has " + to_string(attr) +
-                  " with value " + to_string(val) +
-                  " that matches the regex " + to_string(expr)
-        violators[index] = item
-        messages[index] = message
-        if prtmsg {
-          print(message)
-        }
-      } // end if single item not matches
-    } // end single item
-  } // end for items
+    if v matches expr {
+      # Add the resource and a warning message to the violators list
+      message = to_string(address) + " has " + to_string(attr) + " with value " +
+                to_string(v) + " that matches the regex " + to_string(expr)
+      violators[address] = rc
+			messages[address] = message
+      if prtmsg {
+        print(message)
+      }
+    }
+  }
+  return {"resources":violators,"messages":messages}
+}
+useradmins = filter_attribute_matches_regex(keyadmins, "member", "user:.*", false).resources
+print("useradmins", length(useradmins))
+// 
+filter_attribute_in_list = func(resources, attr, forbidden, prtmsg) {
+  violators = {}
+  messages = {}
+  for resources as address, rc {
+    # Evaluate the value (v) of the attribute
+    v = evaluate_attribute(rc, attr) else null
+    # Check if the value is null
+    if v is null {
+      v = "null"
+    }
+    # Check if the value is in the forbidden list
+    if v in forbidden {
+      # Add the resource and a warning message to the violators list
+      message = to_string(address) + " has " + to_string(attr) + " with value " +
+                to_string(v) + " that is in the forbidden list: " +
+                to_string(forbidden)
+      violators[address] = rc
+      messages[address] = message
+      if prtmsg {
+        print(message)
+      }
+    }
+  }
   return {"resources":violators,"messages":messages}
 }
 
-
-useradmins = filter_attribute_matches_regex(keyadmins, "member", "user:.*", false).resources
-print("useradmins", length(useradmins))
 users = ["john.doe@gmail.com", "jane@gmail.com"]
-users_prefix = [] 
-for users as _,u {
-  append(users_prefix , "user:" + u)
+users_prefix = []
+for users as _, u {
+	append(users_prefix, "user:" + u)
 }
-// violatingResources =  filter_attribute_in_list(useradmins,  "member", users_prefix, true)
+print("useradmins: ",useradmins)
+violatingResources = filter_attribute_in_list(useradmins, "member", users_prefix, false).resources
 
-
-violations = length(attributes)
 
 //
-print("step 5", violations)
+print("violatingResources: ", violatingResources)
+violations = length(violatingResources)
 
 # Main rule
 main = rule {
 	violations is 0
 }
+	
