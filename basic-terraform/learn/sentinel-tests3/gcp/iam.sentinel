@@ -147,10 +147,68 @@ get_resources_attribute = func(resources, attribute) {
 service_account_iam_member = find_resources("google_service_account_iam_member")
 role = "roles/iam.serviceAccountTokenCreator"
 keyadmins = filter_attribute_is_value(service_account_iam_member, "role", role, false).resources
-
+print("keyadmins: ",length(keyadmins))
 attributes = get_resources_attribute(keyadmins, "member")
 
-print(attributes)
+filter_attribute_matches_regex = func(items, attr, expr, prtmsg) {
+  violators = {}
+	messages = {}
+  for items as index, item {
+    val = evaluate_attribute(item, attr) else null
+print("val: ", val)	
+    if val is null {
+      val = "null"
+    }
+    # Process lists and maps
+    if types.type_of(val) in ["list", "map"] {
+      message = ""
+      # Check each item of list or map
+      for val as i, v {
+        if v matches expr {
+          # Add to the warning message
+          message += to_string(index) + " has " + to_string(attr) +
+                    " with value " + to_string(v) +
+                    " that matches the regex " + to_string(expr) + "\n"
+        }
+        if message is not "" {
+          # Add the item and warning message to the violators list
+          violators[index] = item
+          messages[index] = message
+          if prtmsg {
+            print(message)
+          }
+        } // end message not ""
+      } // end for
+    } else {
+      # Process single item
+      if val matches expr {
+print("val matches: ", val)	
+        # Add the item and a warning message to the violators list
+        message = to_string(index) + " has " + to_string(attr) +
+                  " with value " + to_string(val) +
+                  " that matches the regex " + to_string(expr)
+        violators[index] = item
+        messages[index] = message
+        if prtmsg {
+          print(message)
+        }
+      } // end if single item not matches
+    } // end single item
+  } // end for items
+  return {"resources":violators,"messages":messages}
+}
+
+
+useradmins = filter_attribute_matches_regex(keyadmins, "member", "user:.*", false).resources
+print("useradmins", length(useradmins))
+users = ["john.doe@gmail.com", "jane@gmail.com"]
+users_prefix = [] 
+for users as _,u {
+  append(users_prefix , "user:" + u)
+}
+// violatingResources =  filter_attribute_in_list(useradmins,  "member", users_prefix, true)
+
+
 violations = length(attributes)
 
 //
