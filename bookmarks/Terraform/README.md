@@ -76,10 +76,28 @@
   * https://developer.hashicorp.com/sentinel/docs/language
   * https://developer.hashicorp.com/sentinel/docs/language/lists
   * https://developer.hashicorp.com/sentinel/docs/language/maps
-  * https://developer.hashicorp.com/sentinel/docs/language/rules
-    + the sentinel playground https://play.sentinelproject.io/p/3BJV7M65e-d
   * https://support.hashicorp.com/hc/en-us/articles/29861232601107-How-to-Use-the-Sentinel-Playground-to-Troubleshoot-Sentinel-Policies
   * [introduction to Sentinel Playground](https://www.youtube.com/watch?v=swtpqju6bJc)
+  * https://developer.hashicorp.com/sentinel/docs/language/rules
+    + the sentinel playground https://play.sentinelproject.io/p/3BJV7M65e-d
+  * [Testing Terraform Sentinel Policies Using Mocks](https://www.youtube.com/watch?v=y1ChJQQATTk) - multi part  
+  * https://www.hashicorp.com/resources/writing-and-testing-sentinel-policies-for-terraform - older syntax, 2019
+  * https://www.hashicorp.com/resources/writing-and-testing-sentinel-policies-for-terraform - tutorial -  guide !
+
+
+
+  ### Policies Library
+  
+  * https://registry.terraform.io/policies/hashicorp/gcp-storage-terraform/1.0.2
+  * https://registry.terraform.io/policies/hashicorp/gcp-compute-terraform/1.0.2
+  * https://registry.terraform.io/policies/hashicorp/gcp-networking-terraform/1.0.2
+    + https://github.com/hashicorp/policy-library-gcp-networking-terraform/blob/main/policies/ssh-is-restricted-from-internet/ssh-is-restricted-from-internet.sentinel 
+      - very complex logic
+    + https://github.com/hashicorp/policy-library-gcp-networking-terraform/blob/main/policies/private-google-access-is-enabled-for-all-vpc-subnets/private-google-access-is-enabled-for-all-vpc-subnets.sentinel 
+    - complex logic
+    + https://developer.hashicorp.com/sentinel/docs/language/spec#quantifier-expressions-any-all-filter-map
+    + https://developer.hashicorp.com/sentinel/docs/language/rules
+  * https://github.com/hashicorp/policy-library-gcp-storage-terraform/
   * https://developer.hashicorp.com/sentinel/docs/writing/testing
   * https://developer.hashicorp.com/sentinel/docs/language/spec#else-operator
   * https://developer.hashicorp.com/sentinel/docs/language/spec#quantifier-expressions-any-all-filter-map
@@ -90,16 +108,32 @@
   * https://www.hashicorp.com/blog/terraform-sentinel-v2-imports-now-in-technology-preview
   * https://giters.com/hashicorp/terraform-sentinel-policies?ysclid=m157hw807x478278902 - good intro
    + https://github.com/hashicorp/terraform-sentinel-policies/tree/main/gcp
-   + https://github.com/hashicorp/terraform-sentinel-policies/blob/main/common-functions/tfplan-functions/tfplan-functions.sentinel#L262 - did not exist in second gen
-   + https://github.com/hashicorp/terraform-sentinel-policies/blob/main/gcp/restrict-gce-machine-type.sentinel - cannot test in playground ?
-    + https://github.com/hashicorp/terraform-sentinel-policies/tree/main/gcp/gcp-functions
   * https://github.com/hashicorp/terraform-guides/tree/master/governance/second-generation/cloud-agnostic - non woking ?
+  * https://wangpp.medium.com/hashicorp-sentinel-policies-3rd-gen-part-2-of-3-12157934d437
+  * https://github.com/SPHTech-Platform/policy-library-aws
   * https://github.com/hashicorp/terraform-guides/blob/master/governance/second-generation/gcp/enforce-mandatory-labels.sentinel  - non woking  (complex)
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/opa#example-policies - rego (complex)
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan
+  
     + `diff`
     + `applied`
       - what does it mean in the diff key
+  * https://github.com/hashicorp/policy-library-gcp-compute-terraform/blob/main/policies/ensure-oslogin-is-enabled-for-a-project/ensure-oslogin-is-enabled-for-a-project.sentinel#L24 old syntax
+```
+  deny_undefined_compute_instance_template_metadata = rule {
+	all allComputeInstanceTemplates as _, templates {
+		keys(templates.change.after) contains "metadata"
+	}
+}
+
+deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny_undefined_compute_instance_template_metadata is true {
+	all allComputeInstanceTemplates as _, templates {
+		keys(templates.change.after.metadata) contains "block-project-ssh-keys"
+	}
+}
+
+```
+
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan  
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan#namespace-resource-diff
      + `tfplan.resources.null_resource.bar[0].diff["triggers.%"].computed` ??
@@ -391,6 +425,7 @@
   * https://developer.hashicorp.com/terraform/cloud-docs/users-teams-organizations/teams#managing-workspace-access
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/policy-results#policy-evaluation-run-stages
   * https://developer.hashicorp.com/terraform/cloud-docs/run/states complex
+  * https://developer.hashicorp.com/terraform/cloud-docs/run/states complex
   * https://developer.hashicorp.com/terraform/tutorials/state/refresh
   * https://developer.hashicorp.com/terraform/cloud-docs/users-teams-organizations/teams#the-owners-team
   * https://developer.hashicorp.com/terraform/language/settings/backends/configuration
@@ -420,7 +455,6 @@
   * https://developer.hashicorp.com/terraform/cli/config/config-file#credentials-1
   * https://www.hashicorp.com/blog/detecting-and-managing-drift-with-terraform#Summary
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel - reporting all violations
-  * https://www.hashicorp.com/resources/writing-and-testing-sentinel-policies-for-terraform - tutorial -  guide !
   * https://developer.hashicorp.com/sentinel/docs/concepts/policy-as-code
   * https://developer.hashicorp.com/sentinel/docs/concepts/enforcement-levels
   * https://developer.hashicorp.com/terraform/tutorials/policy/sentinel-policy
@@ -503,8 +537,17 @@
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_folder_iam#google_folder_iam_member
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam 
      + https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_member
-     
-   *  https://stackoverflow.com/questions/55400579/how-to-attach-custom-gcp-role-to-a-gcp-service-account-using-terraform
+     * [terraform-google-modules - iam](https://registry.terraform.io/modules/terraform-google-modules/iam/google/latest)
+   *  https://github.com/terraform-google-modules/terraform-google-iam
+     * [terraform-google-modules - gke](https://registry.terraform.io/modules/terraform-google-modules/kubernetes-engine/google/latest)
+       + https://github.com/terraform-google-modules/terraform-google-kubernetes-engine
+     * [terraform-google-modules - vertex ai](https://registry.terraform.io/modules/GoogleCloudPlatform/vertex-ai/google/latest)
+      + https://cloud.google.com/vertex-ai/docs/start/use-terraform-vertex-ai
+      + https://github.com/GoogleCloudPlatform/terraform-google-vertex-ai
+      + https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/workbench_instance#example-usage---workbench-instance-basic 
+     * https://github.com/terraform-google-modules/terraform-docs-samples/tree/main/vertex_ai -  big collection of terraform resources
+      
+   * https://stackoverflow.com/questions/55400579/how-to-attach-custom-gcp-role-to-a-gcp-service-account-using-terraform
    * https://stackoverflow.com/questions/73703967/terraform-gcp-how-to-specify-the-same-role-for-several-users
    * https://stackoverflow.com/questions/63915353/what-is-the-meaning-of-authoritative-and-authoritative-for-gcp-iam-bindings
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam_custom_role.html#example-usage
@@ -562,7 +605,7 @@
    * https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container
      + https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_container#attributes-reference
    * https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet
-   * https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface
+   * https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/ 
    * https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine
    * https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network
      + https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network#attributes-reference
@@ -572,7 +615,11 @@
    * https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service
      + https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/app_service.html#linux_fx_version
    * https://registry.terraform.io/providers/hashicorp/template/latest/docs/data-sources/file.html  
+   * [Sentinel for Terraform Part 1](https://www.youtube.com/watch?v=YZfA-TqkcV0)
+   * [Sentinel for Terraform Part 2](https://www.youtube.com/watch?v=DmlThcAAeIs)
+    
 ### Misc
+
 
   * https://www.hashicorp.com/blog/testing-hashicorp-terraform
   * https://github.com/hashicorp-education/learn-terraform-test 
@@ -580,6 +627,7 @@
   * https://github.com/in28minutes/course-material
   * https://terratest.gruntwork.io
      + https://github.com/gruntwork-io/terratest
+     + https://github.com/gruntwork-io/terratest/tree/master/modules/gcp
      + https://github.com/philjhale/terratest-gcp
      + https://github.com/retpolanne/gcp-terratest
      + https://github.com/srikantharun/terratest-on-gcp
@@ -702,6 +750,9 @@
   * [null resource provisioners](https://www.devopsschool.com/blog/terrafrom-example-code-for-remote-exec-provisioner)
   * https://www.redhat.com/sysadmin/route-ip-route
   * https://www.cyberciti.biz/faq/what-is-a-routing-table/
+  * https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference.html
+  * https://developer.hashicorp.com/terraform/tutorials/configuration-language/for-each
+
 #### Go
   *   https://github.com/Ebazhanov/linkedin-skill-assessments-quizzes/blob/main/go/go-quiz.md?ysclid=m1d06h5hpd677110313
   
@@ -712,3 +763,12 @@
     * https://youtu.be/e9YavAW09hI?t=162
       + `netsh intrface ipv4 show subinterfaces`
        + `netsh interface ipv4 set subinterface "Wi-Fi" mtu=1478 store=persistent`
+  * https://stackoverflow.com/questions/53162620/automate-gcp-persistent-disk-initialization?rq=4
+#### HCP VCS
+  * https://github-app-tutorial.readthedocs.io/en/latest/creating-github-app.html
+
+  * https://developer.hashicorp.com/terraform/cloud-docs/workspaces/settings/vcs  
+  * https://developer.hashicorp.com/terraform/cloud-docs/vcs/github-app
+  * [sentinel  through HCP](https://www.youtube.com/watch?v=7ohfIsnEVgU&list=PLBl7DXGGh5zgCvbngCNnG--tJup_HxRfL&index=12)
+  
+  
