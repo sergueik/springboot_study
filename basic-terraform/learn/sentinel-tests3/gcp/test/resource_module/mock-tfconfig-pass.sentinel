@@ -1,0 +1,431 @@
+import "strings"
+
+providers = {
+	"google": {
+		"alias": "",
+		"config": {
+			"project": {
+				"constant_value": "spheric-alcove-430818-f9",
+			},
+			"region": {
+				"constant_value": "us-central1",
+			},
+			"zone": {
+				"constant_value": "us-central1-c",
+			},
+		},
+		"full_name":           "registry.terraform.io/hashicorp/google",
+		"module_address":      "",
+		"name":                "google",
+		"provider_config_key": "google",
+		"version_constraint":  "",
+	},
+	"local": {
+		"alias":               "",
+		"config":              {},
+		"full_name":           "registry.terraform.io/hashicorp/local",
+		"module_address":      "",
+		"name":                "local",
+		"provider_config_key": "local",
+		"version_constraint":  "~> 2.5",
+	},
+	"random": {
+		"alias":               "",
+		"config":              {},
+		"full_name":           "registry.terraform.io/hashicorp/random",
+		"module_address":      "",
+		"name":                "random",
+		"provider_config_key": "random",
+		"version_constraint":  "~> 3.6",
+	},
+}
+
+resources = {
+	"google_service_account_iam_member.test": {
+		"address": "google_service_account_iam_member.test",
+		"config": {
+			"member": {
+				"constant_value": "serviceaccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+			"role": {
+				"constant_value": "roles/iam.serviceAccountKeyAdmin",
+			},
+			"service_account_id": {
+				"constant_value": "projects/spheric-alcove-430818-f9/serviceAccounts/sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "test",
+		"provider_config_key": "google",
+		"provisioners":        [],
+		"type":                "google_service_account_iam_member",
+	},
+	"module.service_account_iam_binding.google_service_account_iam_binding.service_account_iam_authoritative": {
+		"address": "module.service_account_iam_binding.google_service_account_iam_binding.service_account_iam_authoritative",
+		"config": {
+			"members": {
+				"references": [
+					"module.helper.bindings_authoritative",
+					"module.helper",
+					"each.key",
+				],
+			},
+			"role": {
+				"references": [
+					"module.helper.bindings_authoritative",
+					"module.helper",
+					"each.key",
+				],
+			},
+			"service_account_id": {
+				"references": [
+					"var.project",
+					"module.helper.bindings_authoritative",
+					"module.helper",
+					"each.key",
+				],
+			},
+		},
+		"count":      {},
+		"depends_on": [],
+		"for_each": {
+			"references": [
+				"module.helper.set_authoritative",
+				"module.helper",
+			],
+		},
+		"mode":                "managed",
+		"module_address":      "module.service_account_iam_binding",
+		"name":                "service_account_iam_authoritative",
+		"provider_config_key": "module.service_account_iam_binding:google",
+		"provisioners":        [],
+		"type":                "google_service_account_iam_binding",
+	},
+	"module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive": {
+		"address": "module.service_account_iam_binding.google_service_account_iam_member.service_account_iam_additive",
+		"config": {
+			"member": {
+				"references": [
+					"module.helper.bindings_additive",
+					"module.helper",
+					"each.key",
+				],
+			},
+			"role": {
+				"references": [
+					"module.helper.bindings_additive",
+					"module.helper",
+					"each.key",
+				],
+			},
+			"service_account_id": {
+				"references": [
+					"var.project",
+					"module.helper.bindings_additive",
+					"module.helper",
+					"each.key",
+				],
+			},
+		},
+		"count":      {},
+		"depends_on": [],
+		"for_each": {
+			"references": [
+				"module.helper.set_additive",
+				"module.helper",
+			],
+		},
+		"mode":                "managed",
+		"module_address":      "module.service_account_iam_binding",
+		"name":                "service_account_iam_additive",
+		"provider_config_key": "module.service_account_iam_binding:google",
+		"provisioners":        [],
+		"type":                "google_service_account_iam_member",
+	},
+}
+
+provisioners = {}
+
+variables = {
+	"instance_name": {
+		"default":        null,
+		"description":    "",
+		"module_address": "",
+		"name":           "instance_name",
+	},
+	"instance_type": {
+		"default":        null,
+		"description":    "",
+		"module_address": "",
+		"name":           "instance_type",
+	},
+	"module.service_account_iam_binding.module.helper:bindings": {
+		"default":        {},
+		"description":    "Map of role (key) and list of members (value) to add the IAM policies/bindings",
+		"module_address": "module.service_account_iam_binding.module.helper",
+		"name":           "bindings",
+	},
+	"module.service_account_iam_binding.module.helper:conditional_bindings": {
+		"default":        [],
+		"description":    "List of maps of role and respective conditions, and the members to add the IAM policies/bindings",
+		"module_address": "module.service_account_iam_binding.module.helper",
+		"name":           "conditional_bindings",
+	},
+	"module.service_account_iam_binding.module.helper:entities": {
+		"default":        null,
+		"description":    "Entities list to add the IAM policies/bindings",
+		"module_address": "module.service_account_iam_binding.module.helper",
+		"name":           "entities",
+	},
+	"module.service_account_iam_binding.module.helper:mode": {
+		"default":        "additive",
+		"description":    "Mode for adding the IAM policies/bindings, additive and authoritative",
+		"module_address": "module.service_account_iam_binding.module.helper",
+		"name":           "mode",
+	},
+	"module.service_account_iam_binding:bindings": {
+		"default":        {},
+		"description":    "Map of role (key) and list of members (value) to add the IAM policies/bindings",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "bindings",
+	},
+	"module.service_account_iam_binding:conditional_bindings": {
+		"default":        [],
+		"description":    "List of maps of role and respective conditions, and the members to add the IAM policies/bindings",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "conditional_bindings",
+	},
+	"module.service_account_iam_binding:mode": {
+		"default":        "additive",
+		"description":    "Mode for adding the IAM policies/bindings, additive and authoritative",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "mode",
+	},
+	"module.service_account_iam_binding:project": {
+		"default":        "",
+		"description":    "Project to add the IAM policies/bindings",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "project",
+	},
+	"module.service_account_iam_binding:service_accounts": {
+		"default":        [],
+		"description":    "Service Accounts Email list to add the IAM policies/bindings",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "service_accounts",
+	},
+	"sa_email": {
+		"default":        "terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+		"description":    "Email for Service Account to receive roles (Ex. default-sa@example-project-id.iam.gserviceaccount.com)",
+		"module_address": "",
+		"name":           "sa_email",
+	},
+	"service_account_one": {
+		"default":        "sa-tf-test-01@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+		"description":    "First service Account to add the IAM policies/bindings",
+		"module_address": "",
+		"name":           "service_account_one",
+	},
+	"service_account_project": {
+		"default":        "spheric-alcove-430818-f9",
+		"description":    "Project id of the service account",
+		"module_address": "",
+		"name":           "service_account_project",
+	},
+	"service_account_two": {
+		"default":        "sa-tf-test-02@spheric-alcove-430818-f9.iam.gserviceaccount.com",
+		"description":    "First service Account to add the IAM policies/bindings",
+		"module_address": "",
+		"name":           "service_account_two",
+	},
+	"user_email": {
+		"default":        "kouzmine.serguei@gmail.com",
+		"description":    "Email for group to receive roles (Ex. user@example.com)",
+		"module_address": "",
+		"name":           "user_email",
+	},
+}
+
+outputs = {
+	"module.service_account_iam_binding.module.helper:bindings_additive": {
+		"depends_on":     [],
+		"description":    "Map of additive bindings for entities. Unwinded by members.",
+		"module_address": "module.service_account_iam_binding.module.helper",
+		"name":           "bindings_additive",
+		"sensitive":      false,
+		"value": {
+			"references": [
+				"local.bindings_additive",
+			],
+		},
+	},
+	"module.service_account_iam_binding.module.helper:bindings_authoritative": {
+		"depends_on":     [],
+		"description":    "Map of authoritative bindings for entities. Unwinded by roles.",
+		"module_address": "module.service_account_iam_binding.module.helper",
+		"name":           "bindings_authoritative",
+		"sensitive":      false,
+		"value": {
+			"references": [
+				"local.bindings_authoritative",
+			],
+		},
+	},
+	"module.service_account_iam_binding.module.helper:bindings_by_member": {
+		"depends_on":     [],
+		"description":    "List of bindings for entities unwinded by members.",
+		"module_address": "module.service_account_iam_binding.module.helper",
+		"name":           "bindings_by_member",
+		"sensitive":      false,
+		"value": {
+			"references": [
+				"local.bindings_by_member",
+			],
+		},
+	},
+	"module.service_account_iam_binding.module.helper:set_additive": {
+		"depends_on":     [],
+		"description":    "A set of additive binding keys (from bindings_additive) to be used in for_each. Unwinded by members.",
+		"module_address": "module.service_account_iam_binding.module.helper",
+		"name":           "set_additive",
+		"sensitive":      false,
+		"value": {
+			"references": [
+				"local.set_additive",
+			],
+		},
+	},
+	"module.service_account_iam_binding.module.helper:set_authoritative": {
+		"depends_on":     [],
+		"description":    "A set of authoritative binding keys (from bindings_authoritative) to be used in for_each. Unwinded by roles.",
+		"module_address": "module.service_account_iam_binding.module.helper",
+		"name":           "set_authoritative",
+		"sensitive":      false,
+		"value": {
+			"references": [
+				"local.set_authoritative",
+			],
+		},
+	},
+	"module.service_account_iam_binding:members": {
+		"depends_on":     [],
+		"description":    "Members which were bound to the Service Account.",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "members",
+		"sensitive":      false,
+		"value": {
+			"references": [
+				"module.helper.bindings_by_member",
+				"module.helper",
+			],
+		},
+	},
+	"module.service_account_iam_binding:roles": {
+		"depends_on":     [],
+		"description":    "Roles which were assigned to members.",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "roles",
+		"sensitive":      false,
+		"value": {
+			"references": [
+				"module.helper.bindings_by_member",
+				"module.helper",
+			],
+		},
+	},
+	"module.service_account_iam_binding:service_accounts": {
+		"depends_on": [
+			"google_service_account_iam_binding.service_account_iam_authoritative",
+			"google_service_account_iam_member.service_account_iam_additive",
+		],
+		"description":    "Service Accounts which received bindings.",
+		"module_address": "module.service_account_iam_binding",
+		"name":           "service_accounts",
+		"sensitive":      false,
+		"value": {
+			"references": [
+				"module.helper.bindings_by_member",
+				"module.helper",
+			],
+		},
+	},
+}
+
+module_calls = {
+	"module.service_account_iam_binding:helper": {
+		"config": {
+			"bindings": {
+				"references": [
+					"var.bindings",
+				],
+			},
+			"conditional_bindings": {
+				"references": [
+					"var.conditional_bindings",
+				],
+			},
+			"entities": {
+				"references": [
+					"var.service_accounts",
+				],
+			},
+			"mode": {
+				"references": [
+					"var.mode",
+				],
+			},
+		},
+		"count":              {},
+		"depends_on":         [],
+		"for_each":           {},
+		"module_address":     "module.service_account_iam_binding",
+		"name":               "helper",
+		"source":             "../helper",
+		"version_constraint": "",
+	},
+	"service_account_iam_binding": {
+		"config": {
+			"bindings": {
+				"references": [
+					"var.sa_email",
+					"var.user_email",
+					"var.sa_email",
+					"var.user_email",
+				],
+			},
+			"mode": {
+				"constant_value": "additive",
+			},
+			"project": {
+				"references": [
+					"var.service_account_project",
+				],
+			},
+			"service_accounts": {
+				"references": [
+					"var.service_account_one",
+					"var.service_account_two",
+				],
+			},
+		},
+		"count":              {},
+		"depends_on":         [],
+		"for_each":           {},
+		"module_address":     "",
+		"name":               "service_account_iam_binding",
+		"source":             "terraform-google-modules/iam/google//modules/service_accounts_iam",
+		"version_constraint": "~> 8.0",
+	},
+}
+
+strip_index = func(addr) {
+	s = strings.split(addr, ".")
+	for s as i, v {
+		s[i] = strings.split(v, "[")[0]
+	}
+
+	return strings.join(s, ".")
+}

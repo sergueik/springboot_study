@@ -12,6 +12,9 @@
   * https://docs.ansible.com/ansible/latest/playbook_guide/guide_rolling_upgrade.html
   * https://docs.ansible.com/ansible/latest/playbook_guide/guide_rolling_upgrade.html#the-rolling-upgrade
   * https://www.redhat.com/en/topics/automation/what-is-an-ansible-role
+  * https://www.redhat.com/en/topics/automation/learning-ansible-tutorial
+  * https://www.redhat.com/en/topics/automation/what-is-an-ansible-module
+  * https://spacelift.io/blog/ansible-tutorial
   * https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html
   * https://docs.ansible.com/ansible-tower/latest/html/userguide/security.html
   * https://docs.ansible.com/automation-controller/latest/html/userguide/security.html  
