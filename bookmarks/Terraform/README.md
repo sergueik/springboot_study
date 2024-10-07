@@ -85,14 +85,29 @@
   * https://www.hashicorp.com/resources/writing-and-testing-sentinel-policies-for-terraform - tutorial -  guide !
 
 
-
+  * https://danielrandell93.medium.com/terraform-import-blocks-dedcdf453f45
   ### Policies Library
   
   * https://registry.terraform.io/policies/hashicorp/gcp-storage-terraform/1.0.2
   * https://registry.terraform.io/policies/hashicorp/gcp-compute-terraform/1.0.2
   * https://registry.terraform.io/policies/hashicorp/gcp-networking-terraform/1.0.2
     + https://github.com/hashicorp/policy-library-gcp-networking-terraform/blob/main/policies/ssh-is-restricted-from-internet/ssh-is-restricted-from-internet.sentinel 
-      - very complex logic
+      - very complex logic:
+      
+```
+deny_public_ssh_access = rule {
+	all allFirewallResources as _, firewall {
+		all filter firewall.change.after.allow as _, allow {
+			allow.ports contains "22"
+		} as _ {
+			all firewall.change.after.source_ranges as _, range {
+				range not in allUnsupportedSourceRanges
+			}
+		}
+	}
+}
+
+```      
     + https://github.com/hashicorp/policy-library-gcp-networking-terraform/blob/main/policies/private-google-access-is-enabled-for-all-vpc-subnets/private-google-access-is-enabled-for-all-vpc-subnets.sentinel 
     - complex logic
     + https://developer.hashicorp.com/sentinel/docs/language/spec#quantifier-expressions-any-all-filter-map
@@ -108,7 +123,7 @@
   * https://www.hashicorp.com/blog/terraform-sentinel-v2-imports-now-in-technology-preview
   * https://giters.com/hashicorp/terraform-sentinel-policies?ysclid=m157hw807x478278902 - good intro
    + https://github.com/hashicorp/terraform-sentinel-policies/tree/main/gcp
-  * https://github.com/hashicorp/terraform-guides/tree/master/governance/second-generation/cloud-agnostic - non woking ?
+  *   x - non woking ?
   * https://wangpp.medium.com/hashicorp-sentinel-policies-3rd-gen-part-2-of-3-12157934d437
   * https://github.com/SPHTech-Platform/policy-library-aws
   * https://github.com/hashicorp/terraform-guides/blob/master/governance/second-generation/gcp/enforce-mandatory-labels.sentinel  - non woking  (complex)
@@ -162,6 +177,8 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * https://registry.terraform.io/browse/modules?provider=google  
   * https://developer.hashicorp.com/terraform/cli/init#reinitializing-only-modules
      + get
+  * https://registry.terraform.io/modules/hashicorp/dir/template/latest
+  * https://github.com/hashicorp/terraform-template-dir/tree/master
   * https://developer.hashicorp.com/terraform/cli/cloud/settings#arguments
   * https://developer.hashicorp.com/terraform/cli/init#working-directory-contents
   * https://developer.hashicorp.com/terraform/cloud-docs/registry/using
@@ -764,6 +781,11 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
       + `netsh intrface ipv4 show subinterfaces`
        + `netsh interface ipv4 set subinterface "Wi-Fi" mtu=1478 store=persistent`
   * https://stackoverflow.com/questions/53162620/automate-gcp-persistent-disk-initialization?rq=4
+  * https://github.com/terraform-google-modules/terraform-google-network/tree/master/examples
+  * https://medium.com/@4get.prakhar/google-cloud-iam-policies-69dc027d21a
+  * https://www.blinkops.com/blog/managing-iam-policies-with-the-google-cloud-cli
+  * https://stackoverflow.com/questions/66016313/how-to-get-json-representation-from-search-all-iam-policies-results
+  
 #### HCP VCS
   * https://github-app-tutorial.readthedocs.io/en/latest/creating-github-app.html
 
@@ -771,4 +793,18 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * https://developer.hashicorp.com/terraform/cloud-docs/vcs/github-app
   * [sentinel  through HCP](https://www.youtube.com/watch?v=7ohfIsnEVgU&list=PLBl7DXGGh5zgCvbngCNnG--tJup_HxRfL&index=12)
   
-  
+ ### Data Sources
+ * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/iam_role - returns included_permissions
+ * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/folder_iam_policy returns policy_data
+ * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/iam_policy
+ * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/folder_organization_policy
+ * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/service_account_iam_policy
+ * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_instance
+ * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_instance_group
+ * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_instance_group_manager
+ * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_health_check
+ * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_subnetwork
+ * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_subnetworks
+ * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/container_cluster 
+ 
+ 

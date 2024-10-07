@@ -242,11 +242,6 @@ resource_changes = {
 				"name": "demo-2",
 				"network_interface": [
 					{
-						"access_config": [
-							{
-								"public_ptr_domain_name": null,
-							},
-						],
 						"alias_ip_range": [],
 						"network":        "default",
 					},
