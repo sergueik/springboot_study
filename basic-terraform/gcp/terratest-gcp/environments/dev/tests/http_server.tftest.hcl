@@ -36,13 +36,14 @@ run "bad_input_should_fail"{
 // this will fail if the network is not constructed
 // one may manually delete the instance and run the test
 // the other option is add name argument
-
+/*
 run "vpc"{
     command = apply
     module {
         source = "../../modules/vpc"
     }
 }
+*/
 run "firewall"{
     command = apply
     module {
