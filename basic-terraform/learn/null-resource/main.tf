@@ -15,10 +15,15 @@ resource "null_resource" "example" {
 locals {
   jsondata = "{\"a\": 234 }"
   testdata = file("${path.module}/a.txt")
+  input_data = jsondecode("${local.testdata}")
 }
 
 output "result" {
   value = local.testdata
+}
+
+output "result3" {
+  value = local.input_data
 }
 
 data "local_file" "a" {
