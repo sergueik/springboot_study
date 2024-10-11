@@ -88,7 +88,7 @@
   + https://app.pluralsight.com/library/courses/getting-started-application-development-10/table-of-contents
 
 #### Microservices
-  * [Microservices Architectural Design Patterns Playbook](https://app.pluralsight.com/library/courses/microservices-architectural-design-patterns-playbook/table-of-contents)
+  fsenti* [Microservices Architectural Design Patterns Playbook](https://app.pluralsight.com/library/courses/microservices-architectural-design-patterns-playbook/table-of-contents)
   * https://app.pluralsight.com/library/courses/microservices-fundamentals/table-of-contents
   * https://app.pluralsight.com/library/courses/building-microservices/table-of-contents
 
@@ -270,7 +270,9 @@
   * [IAM Roles and Permissions](https://cloud.google.com/iam/docs/roles-overview)
   * https://cloud.google.com/iam/docs/deny-overview
   * https://cloud.google.com/iam/docs/policy-types
+  * https://cloud.google.com/iam/docs/configuring-resource-based-access
 #### Helm
+  * https://middleware.io/blog/helm-chart-tutorial/
   * https://cloud.google.com/learn/training/class-schedule
   * [Helm Chart Tests](https://helm.sh/docs/topics/chart_tests)
   * https://medium.com/@zelldon91/advanced-test-practices-for-helm-charts-587caeeb4cb
@@ -297,17 +299,22 @@
   * https://devopscube.com/create-helm-chart/
 
 #### Kubernetes
-
+  * https://opensource.com/article/22/6/kubernetes-networking-fundamentals
   * https://kubernetes.io/docs/concepts/overview/components
      + control plane
-       - etcd 
-        - controllers: cloud and kube: node, route, service
         -  apiserver
+       - etcd 
+        - kube-controller-manager
+           - node
+           - job
+           - endpoint slice
      -   scheduler
+     - cloud-controller-manager
+     
      + node  
        - runtime 
        - kublet 
-       - proxy
+       - container runtim
   * https://kubernetes.io/docs/setup/production+environment/container+runtimes
      + 4 available: docker,containerd, cri+o
   * https://k21academy.com/docker+kubernetes/multi+container+pods
@@ -533,3 +540,20 @@
     +  `mongo`
   * [Harness Shell Script step example](https://developer.harness.io/docs/continuous-delivery/x-platform-cd-features/cd-steps/utilities/shell-script-step)
 
+
+### GCLOUD
+
+  * https://stackoverflow.com/questions/47006062/how-do-i-list-the-roles-associated-with-a-gcp-service-account
+  * https://stackoverflow.com/questions/47006062/how-do-i-list-the-roles-associated-with-a-gcp-service-account
+    + `gcloud projects get-iam-policy spheric-alcove-430818-f9 --filter="bindings.members:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com"  --flatten="bindings[].members" --format=json`
+    + `gcloud projects list --format='value(projectId)'`
+    + `gcloud projects get-iam-policy spheric-alcove-430818-f9 --filter="bindings.members:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com AND bindings.role:roles/serviceusage.serviceUsageAdmin"  --flatten="bindings[].members" --format=flattened`
+  * [short interactive tutorial about using the filter and format flags](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/GoogleCloudPlatform/cloud-shell-tutorials&page=editor&tutorial=cloudsdk/tutorial.md)
+  * https://cloud.google.com/sdk/gcloud/reference/topic/filters
+  * [gcloud-cheat-sheet.md](https://gist.github.com/pydevops/cffbd3c694d599c6ca18342d3625af97)
+       + with few  `flatten` examples
+  * [gcloud-fiters.sh](https://gist.github.com/rezamt/6ee102ee653e37280e35d649e7c221b5)
+  * https://cloud.google.com/sdk/gcloud/reference/iam/service-accounts/get-iam-policy
+  * https://cloud.google.com/sdk/gcloud/reference/projects/get-iam-policy
+  * https://cloud.google.com/sdk/gcloud/reference/iam/roles/describe
+   + `gcloud iam roles describe  roles/iam.serviceAccountTokenCreator`

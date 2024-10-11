@@ -495,10 +495,16 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
 
   * https://developer.hashicorp.com/terraform/cli/commands/test
   * https://developer.hashicorp.com/terraform/language/tests
+      + Assertions within tests can reference any existing named values that are available to other custom conditions within the main Terraform configuration
+   
    + https://developer.hashicorp.com/terraform/language/tests#assertions
    + https://developer.hashicorp.com/terraform/language/tests#modules
    + https://developer.hashicorp.com/terraform/language/tests#providers
   * https://developer.hashicorp.com/terraform/tutorials/configuration-language/test
+  * https://github.com/Derek-Ashmore/terraform-testing-examples/blob/main/modules/vnet/test_suite.tftest.hcl 
+   + complex, unclear
+   + apparently tftest.hcl can access module internals from run scope
+  * https://github.com/christosgalano/terraform-testing-example/blob/main/tests/integration.tftest.hcl 
   * https://registry.terraform.io/providers/hashicorp/http/latest/docs
     + https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http#example-usage
     
@@ -546,6 +552,7 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
    * https://registry.terraform.io/modules/terraform-google-modules/network/google/latest
 
    * https://registry.terraform.io/modules/terraform-google-modules/network/google/latest/submodules/firewall-rules (submodule)
+   * https://registry.terraform.io/modules/terraform-google-modules/service-accounts/google/latest/examples/multiple_service_accounts
      + https://github.com/terraform-google-modules/terraform-google-service-accounts/blob/master/main.tf - for argument processing
      + [create service account in google cloud using terraform](https://www.youtube.com/watch?v=jNRm3lqSFKk)
      + https://github.com/Pruthvi360/google-cloud-services/blob/master/create-service-account/variables.tf
@@ -555,7 +562,7 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam 
      + https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_member
      * [terraform-google-modules - iam](https://registry.terraform.io/modules/terraform-google-modules/iam/google/latest)
-   *  https://github.com/terraform-google-modules/terraform-google-iam
+   * https://github.com/terraform-google-modules/terraform-google-iam
      * [terraform-google-modules - gke](https://registry.terraform.io/modules/terraform-google-modules/kubernetes-engine/google/latest)
        + https://github.com/terraform-google-modules/terraform-google-kubernetes-engine
      * [terraform-google-modules - vertex ai](https://registry.terraform.io/modules/GoogleCloudPlatform/vertex-ai/google/latest)
@@ -679,7 +686,6 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * https://stackoverflow.com/questions/37844113/integrating-terraform-and-serverspec
   * https://thepracticalsysadmin.com/terraform-testing-tools/
   * https://abstraction.blog/2021/06/20/terraform-testing-tools-comparison
-  * https://lollyrock.com/posts/inspec-terraform/
   * https://developer.hashicorp.com/terraform/tutorials/state/resource-targeting - complex
   * [How to Create GKE Cluster Using TERRAFORM](https://www.youtube.com/watch?v=X_IK0GBbBTw) (complex)
   * [Terraform Tutorials for Beginners](https://www.youtube.com/playlist?list=PLiMWaCMwGJXmJdmfJjG3aK1IkU7oWvxIj)
@@ -778,13 +784,15 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
     * https://community.t-mobile.com/troubleshooting-38/unable-to-use-t-mobile-home-internet-with-work-vpn-any-suggestions-52100
     * https://community.t-mobile.com/troubleshooting-38/globalprotect-vpn-not-working-with-t-mobile-35992
     * https://youtu.be/e9YavAW09hI?t=162
-      + `netsh intrface ipv4 show subinterfaces`
+      + `netsh interface ipv4 show subinterfaces`
        + `netsh interface ipv4 set subinterface "Wi-Fi" mtu=1478 store=persistent`
   * https://stackoverflow.com/questions/53162620/automate-gcp-persistent-disk-initialization?rq=4
   * https://github.com/terraform-google-modules/terraform-google-network/tree/master/examples
   * https://medium.com/@4get.prakhar/google-cloud-iam-policies-69dc027d21a
   * https://www.blinkops.com/blog/managing-iam-policies-with-the-google-cloud-cli
   * https://stackoverflow.com/questions/66016313/how-to-get-json-representation-from-search-all-iam-policies-results
+  * [How to use short-lived credentials to authorize Terraform with GCP instead of service account keys](https://www.youtube.com/watch?v=UaRzdTTq9O4)  via env:GOOGLE_OAUTH_ACCESS_TOKEN
+  * https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication-configuration
   
 #### HCP VCS
   * https://github-app-tutorial.readthedocs.io/en/latest/creating-github-app.html
@@ -806,5 +814,50 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
  * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_subnetwork
  * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/compute_subnetworks
  * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/container_cluster 
- 
- 
+ * https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/service_account_access_token
+
+### Gloud  
+  * https://github.com/terraform-google-modules/terraform-google-gcloud/README.md - complex 
+  * https://registry.terraform.io/modules/terraform-google-modules/gcloud/google/latest
+  * https://stackoverflow.com/questions/75452076/gcp-output-csv-file-using-local-exec-in-terraform
+  * https://stackoverflow.com/questions/57454591/how-can-i-load-input-data-from-a-file-in-terraform
+  * https://www.reddit.com/r/Terraform/comments/xv39l0/output_of_localexec_to_variable/
+  * https://discuss.hashicorp.com/t/how-to-retrieve-the-null-resource-returned-value/9620/3
+  * https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external
+  * https://registry.terraform.io/providers/hashicorp/local/latest/docs/data-sources/file
+  * [external data source example](https://gist.github.com/irvingpop/968464132ded25a206ced835d50afa6b)
+  
+### Inspec GCP Tests
+   
+  * [Best practices for testing](https://cloud.google.com/docs/terraform/best-practices/testing)
+  * [InSpec GCP project](https://github.com/inspec/inspec-gcp)
+  * Linked documentation of inspec controls:
+     + https://github.com/inspec/inspec-gcp/blob/main/docs/resources/google_service_account.md
+  * [Google Cloud Platform support for InSpec](https://lollyrock.com/posts/inspec-cloud-gcp-setup/)
+  * [InSpec GCP Deep Dive](https://www.chef.io/blog/inspec-gcp-deep-dive)
+    + https://github.com/skpaterson/inspec-gcp-deep-dive-profile
+    + NOTE: may need to include terraform code in the fixture directory e.g.
+      - 
+    + NOTE:  the notation:`url: https://github.com/inspec/inspec-gcp/archive/master.tar.gz`
+    * [Chef InSpec Tutorials](https://origin.inspec.io/tutorials/)
+  * https://lollyrock.com/posts/inspec-terraform/
+    + https://github.com/chris-rock/testing-4-cloud/tree/master/gcp-example-profile
+  * https://github.com/terraform-google-modules/terraform-google-iam/blob/master/test/integration/authoritative/controls/authoritative.rb
+  * https://docs.chef.io/inspec/cli/
+  * https://www.chef.io/blog/understanding-singular-and-plural-inspec-resources
+  * https://docs.chef.io/inspec/install/ - installer is difficult to find
+  * [Windows Infrastructure Testing and Compliance with InSpec](https://lollyrock.com/posts/inspec-windows/)
+  * https://docs.chef.io/inspec/install/#installer
+  * https://www.rearc.io/blog/testing-terraform-with-kitchen-and-inspec
+  * https://github.com/terraform-google-modules/terraform-google-service-accounts/blob/master/main.tf - for argument processing
+  * https://github.com/terraform-google-modules/terraform-google-iam
+  * Free Tier  license key : `free-f47594c0-4e89-4f8a-a036-a40d5ce2c825-2747`
+  * [Use iggy to generate InSpec controls based on the terraform state file](https://www.youtube.com/watch?v=-PBq_qkTX5Q&pp=ygUKaW5zcGVjIGdjcA%3D%3D)
+  * https://www.youtube.com/watch?v=L8ZHcCNFko8 - complex
+  * [Generating InSpec coverage from Terraform with InSpec-Iggy](https://www.youtube.com/watch?v=4AJ8MS4BaQ0&pp=ygUKaW5zcGVjIGdjcA%3D%3D)
+  * https://www.youtube.com/watch?v=aeN_jZezhS8&pp=ygUKaW5zcGVjIGdjcA%3D%3D
+  * [Introduction to Test Kitchen - Google Cloud Platform](https://www.youtube.com/watch?v=HDOMXmp14es&list=PLKK5zTDXqzFMb-d7_K12W3ZwujfPvoDiK)
+  * https://docs.chef.io/inspec/#:~:text=Chef%20InSpec%20has%201189%20resources,resource%20that%20meets%20your%20needs.
+  * https://docs.chef.io/inspec/cloud/gcp/
+  * https://www.chef.io/blog/did-you-know-this-about-chef-compliance-and-chef-cloud-security-part-3
+  * https://www.chef.io/blog/making-use-of-google-inspec-cloud-resource
