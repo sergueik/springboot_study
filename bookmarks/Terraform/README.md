@@ -268,6 +268,8 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * https://www.terraform.io/docs/configuration/provider-requirements.html#names-and-addresses
   * https://developer.hashicorp.com/terraform/language/values/variables#custom-validation-rules
   * https://www.terraform.io/docs/configuration/functions.html
+  * https://developer.hashicorp.com/terraform/language/expressions/types
+   (shows tuple)
   * https://developer.hashicorp.com/terraform/language/functions/ 
   * https://developer.hashicorp.com/terraform/language/functions/list
   * https://developer.hashicorp.com/terraform/language/functions/tostring#examples
@@ -801,6 +803,10 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
     * https://youtu.be/e9YavAW09hI?t=162
       + `netsh interface ipv4 show subinterfaces`
        + `netsh interface ipv4 set subinterface "Wi-Fi" mtu=1478 store=persistent`
+  * https://live.paloaltonetworks.com/t5/globalprotect-discussions/globalprotect-vpn-not-working-on-t-mobile-home-internet/td-p/576846
+    + very recent
+   + decrease the MTU on the Virtual Ethernet connection for Global Protect: 
+   + https://community.t-mobile.com/troubleshooting-38/globalprotect-vpn-not-working-with-t-mobile-35992
   * https://stackoverflow.com/questions/53162620/automate-gcp-persistent-disk-initialization?rq=4
   * https://github.com/terraform-google-modules/terraform-google-network/tree/master/examples
   * https://medium.com/@4get.prakhar/google-cloud-iam-policies-69dc027d21a
