@@ -557,3 +557,14 @@
   * https://cloud.google.com/sdk/gcloud/reference/projects/get-iam-policy
   * https://cloud.google.com/sdk/gcloud/reference/iam/roles/describe
    + `gcloud iam roles describe  roles/iam.serviceAccountTokenCreator`
+ * https://cloud.google.com/kubernetes-engine/docs/concepts/network-overview#pods
+### TAINTS
+  * https://blog.kubecost.com/blog/kubernetes-taints/
+  * https://stackoverflow.com/questions/43379415/how-can-i-list-the-taints-on-kubernetes-nodes
+  
+### Istio
+  * https://www.baeldung.com/ops/istio-service-mesh  
+  
+### Helm
+
+  * https://opensource.com/article/20/5/helm-charts

@@ -245,6 +245,7 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * https://www.terraform.io/intro/use-cases.html#multi-cloud-deployment
   * https://learn.hashicorp.com/tutorials/terraform/aws-build#format-and-validate-the-configuration
   * https://developer.hashicorp.com/terraform/language/meta-arguments/module-providers
+  * https://developer.hashicorp.com/terraform/language/expressions/splat
   * https://registry.terraform.io/providers/hashicorp/vault/latest/docs#using-vault-credentials-in-terraform-configuration
   * https://www.terraform.io/docs/commands/state/rm.html
   * https://www.terraform.io/docs/state/remote.html
@@ -321,7 +322,6 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * https://www.terraform.io/docs/commands/taint.html#example-tainting-a-resource-within-a-module
   * https://developer.hashicorp.com/terraform/tutorials/state/state-cli#replace-a-resource-with-cli
   * https://www.terraform.io/docs/commands/validate.html
-  * https://www.terraform.io/docs/state/sensitive-data.html
   * https://www.terraform.io/docs/cloud/sentinel/index.html#sentinel-in-terraform-cloud
   * https://www.terraform.io/docs/configuration/modules.html#providers-within-modules
     + although provider configurations are shared between modules, each module must declare its own provider requirement
@@ -694,11 +694,26 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
     + https://github.com/antonputra/tutorials/tree/main/lessons/161
     + https://cidr.xyz/
     +  https://www.youtube.com/watch?v=7S94oUTy2z4&list=PLiMWaCMwGJXmJdmfJjG3aK1IkU7oWvxIj&index=4)
-  * https://developer.hashicorp.com/terraform/language/expressions/strings#directives     
+  * https://developer.hashicorp.com/terraform/language/expressions/strings#directives
+  * https://developer.hashicorp.com/terraform/language/expressions/splat
   * [building complex templates by string template interpolation](https://medium.com/ovni/terraform-templating-and-loops-9a88c0786c5c)
   * https://registry.terraform.io/providers/
   * [serverspec with terraform](https://www.contino.io/insights/top-3-terraform-testing-strategies-for-ultra-reliable-infrastructure-as-code) -
-  
+
+### Provisioners
+  * 
+   + `on_failure = continue`  
+  * https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/data-sources/config 
+  * [cloud-init](https://cloudinit.readthedocs.io/en/latest/explanation/format.html)
+  * https://cloudinit.readthedocs.io/en/latest/tutorial/qemu.html
+  * https://dev.to/adityapratapbh1/a-comprehensive-guide-to-cloud-init-automating-cloud-instance-initialization-4l28
+  * https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs/resources/config
+  * https://developer.hashicorp.com/terraform/tutorials/provision/cloud-init
+    + https://github.com/hashicorp/learn-terraform-provisioning ( `cloudinit` branch )
+  * https://cloudinit.readthedocs.io/en/latest/reference/examples.html  
+
+ 
+
 ### Terraform GCP  
   * https://github.com/steinim/gcp-terraform-workshop (old code)
   * https://www.udemy.com/course/mastering-terraform-on-google-cloud-platform-gcp/?ysclid=m0pivxvwli791541030
@@ -861,3 +876,5 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * https://docs.chef.io/inspec/cloud/gcp/
   * https://www.chef.io/blog/did-you-know-this-about-chef-compliance-and-chef-cloud-security-part-3
   * https://www.chef.io/blog/making-use-of-google-inspec-cloud-resource
+  Non-Commercial License
+  Unknown error occurred - installation failed.
