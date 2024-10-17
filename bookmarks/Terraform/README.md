@@ -28,6 +28,7 @@
   * https://developer.hashicorp.com/terraform/language/expressions/type-constraints#primitive-types
   * https://developer.hashicorp.com/terraform/language/expressions/type-constraints#conversion-of-complex-types
   * https://developer.hashicorp.com/terraform/language/expressions/dynamic-blocks
+  * https://developer.hashicorp.com/terraform/language/expressions/types
   * https://developer.hashicorp.com/terraform/language/expressions/types#type-conversion
   * https://developer.hashicorp.com/terraform/language/expressions/for
   * https://developer.hashicorp.com/terraform/language/expressions/version-constraints
@@ -807,6 +808,7 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
     + very recent
    + decrease the MTU on the Virtual Ethernet connection for Global Protect: 
    + https://community.t-mobile.com/troubleshooting-38/globalprotect-vpn-not-working-with-t-mobile-35992
+  * https://www.xfinity.com/broadband-labels 
   * https://stackoverflow.com/questions/53162620/automate-gcp-persistent-disk-initialization?rq=4
   * https://github.com/terraform-google-modules/terraform-google-network/tree/master/examples
   * https://medium.com/@4get.prakhar/google-cloud-iam-policies-69dc027d21a
@@ -864,6 +866,7 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * https://lollyrock.com/posts/inspec-terraform/
     + https://github.com/chris-rock/testing-4-cloud/tree/master/gcp-example-profile
   * https://github.com/terraform-google-modules/terraform-google-iam/blob/master/test/integration/authoritative/controls/authoritative.rb
+  * https://github.com/terraform-google-modules/terraform-google-gcloud/blob/v3.5.0/main.tf - gcloud runner.
   * https://docs.chef.io/inspec/cli/
   * https://www.chef.io/blog/understanding-singular-and-plural-inspec-resources
   * https://docs.chef.io/inspec/install/ - installer is difficult to find
@@ -878,9 +881,33 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * [Generating InSpec coverage from Terraform with InSpec-Iggy](https://www.youtube.com/watch?v=4AJ8MS4BaQ0&pp=ygUKaW5zcGVjIGdjcA%3D%3D)
   * https://www.youtube.com/watch?v=aeN_jZezhS8&pp=ygUKaW5zcGVjIGdjcA%3D%3D
   * [Introduction to Test Kitchen - Google Cloud Platform](https://www.youtube.com/watch?v=HDOMXmp14es&list=PLKK5zTDXqzFMb-d7_K12W3ZwujfPvoDiK)
-  * https://docs.chef.io/inspec/#:~:text=Chef%20InSpec%20has%201189%20resources,resource%20that%20meets%20your%20needs.
+  * https://docs.chef.io/inspec
   * https://docs.chef.io/inspec/cloud/gcp/
   * https://www.chef.io/blog/did-you-know-this-about-chef-compliance-and-chef-cloud-security-part-3
   * https://www.chef.io/blog/making-use-of-google-inspec-cloud-resource
+  
+#### Kitchen  Terraform
+  * https://newcontext-oss.github.io/kitchen-terraform/ - no longer developed after Terraform 1.6 (2023). May be limited to support very  old releases e.g. `0.12`
+    + https://newcontext-oss.github.io/kitchen-terraform/getting_started.html
+    + https://newcontext-oss.github.io/kitchen-terraform/tutorials/extensive_kitchen_terraform.html
+  * https://github.com/rearc/kitchen-terraform -  docker container (kitchen-terraform dependencies require Ruby version >= 2.6.0.)
+  * https://kitchen.ci/docs/getting-started/installing/
+    +  https://github.com/codeaprendiz/learn_terraform - no connection to Chef Kitchen Terraform plugin
+    +  https://github.com/codeaprendiz/terraform-kitchen  - redirects to `learn-terraform`
+  * https://medium.com/@megawan/integrating-terratest-and-kitchen-terraform-for-infrastructure-testing-de752b77d56a
+  * https://www.reddit.com/r/Terraform/comments/l4uiu8/terraformkitchen_tutorial_code_basics_to_advanced/
+  * https://www.rearc.io/blog/testing-terraform-with-kitchen-and-inspec
+  * https://github.com/terraform-google-modules/terraform-google-service-accounts/blob/master/CONTRIBUTING.md
+  
+    + covers running  Inspec Terraform tests   
+    + `DOCKER_IMAGE_DEVELOPER_TOOLS := cft/developer-tools`
+     + https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit/releases/tag/cli%2Fv1.5.4
+     + `pull gcr.io/cloud-foundation-cicd/cft/developer-tools`
+     + https://stackoverflow.com/questions/37905763/how-do-i-download-docker-images-without-using-the-pull-command
+  * https://codelabs.developers.google.com/codelabs/cft-onboarding#0
+  * https://codelabs.developers.google.com/codelabs/cft-onboarding#7
+  
   Non-Commercial License
   Unknown error occurred - installation failed.
+  
+  
