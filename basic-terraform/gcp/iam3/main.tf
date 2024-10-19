@@ -37,6 +37,26 @@ locals {
   ]
 }
 
+locals {
+  # Extract all bindings that have too privileged roles
+  privileged_bindings = [
+    for binding in data.google_iam_policy.project_policy.bindings : binding
+    if contains(var.too_privileged_roles, binding.role)
+  ]
+
+  # Collect violating users who have too privileged roles
+  violating_users = flatten([
+    for binding in local.privileged_bindings : [
+      for member in binding.members : member
+      if !contains(var.allowed_users, member)
+    ]
+  ])
+}
+
+output "violating_users" {
+  value = local.violating_users
+}
+
 # Output the violations
 output "iam_violations" {
   value = flatten(local.violations) # Flatten the list to remove nested arrays
