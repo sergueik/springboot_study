@@ -8,7 +8,7 @@ data "google_iam_policy" "project_policy" {
   project = var.project_id
 }
 
-# Example: Check for too privileged roles
+# Example: Check for too privileged roles, excluding allowed users
 locals {
   # List of too privileged roles
   too_privileged_roles = [
@@ -18,6 +18,12 @@ locals {
     "roles/iam.serviceAccountKeyAdmin"
   ]
 
+  # List of allowed users who can have too privileged roles
+  allowed_users = [
+    "user:alloweduser@example.com",
+    "serviceAccount:allowed-service-account@example.iam.gserviceaccount.com"
+  ]
+
   # Collecting violations where roles are too privileged
   violations = [
     for binding in data.google_iam_policy.project_policy.bindings : [
@@ -25,7 +31,7 @@ locals {
         role   = binding.role
         member = member
       }
-      if contains(local.too_privileged_roles, binding.role) # Check if the role is too privileged
+      if contains(local.too_privileged_roles, binding.role) && !contains(local.allowed_users, member) # Check role and exclude allowed users
     ]
     if length(binding.members) > 0
   ]
