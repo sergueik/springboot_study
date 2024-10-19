@@ -1,0 +1,53 @@
+# Import the terraform plan
+import "tfplan/v2" as tfplan
+
+# Define the allowed roles for IAM bindings
+allowed_roles = [
+  "roles/viewer",
+  "roles/editor",
+  "roles/storage.admin",
+  "roles/compute.admin"
+]
+
+# Define specific projects where 'roles/editor' can be applied
+allowed_editor_projects = [
+  "my-project-id-123",
+  "test-project-id-456"
+]
+
+# Function to check if the project is allowed for 'roles/editor'
+# Returns true if the project is violating the rule
+is_project_violation = func(role, project) {
+  return role == "roles/editor" and project not in allowed_editor_projects
+}
+
+
+# Define a function to count IAM binding violations
+count_editor_project_violations = func() {
+  violations = 0
+
+  # Iterate through the resources and count violations
+  for tfplan.resources as resource {
+    if resource.type == "google_project_iam_member" and resource.mode == "managed" {
+      for resource.instances as instance {
+        if is_project_violation(instance.attributes.role, instance.attributes.project) {
+          violations += 1
+        }
+      }
+    }
+  }
+  return violations
+}
+
+# Call the function and get the number of violations
+editor_project_violations = count_editor_project_violations()
+
+# Main rule: Ensure that there are no violations
+restrict_editor_role_to_projects = rule {
+  editor_project_violations == 0
+}
+
+# Main rule combining other rules (example)
+main = rule {
+  restrict_editor_role_to_projects
+}
