@@ -8,19 +8,24 @@ data "google_iam_policy" "project_policy" {
   project = var.project_id
 }
 
-# Example: Check if unauthorized members are assigned any roles
+# Example: Check for too privileged roles
 locals {
-  # List of unauthorized members
-  unauthorized_members = ["user:unauthorized@example.com"]
+  # List of too privileged roles
+  too_privileged_roles = [
+    "roles/owner",
+    "roles/editor",
+    "roles/iam.serviceAccountAdmin",
+    "roles/iam.serviceAccountKeyAdmin"
+  ]
 
-  # Collecting violations
+  # Collecting violations where roles are too privileged
   violations = [
     for binding in data.google_iam_policy.project_policy.bindings : [
       for member in binding.members : {
         role   = binding.role
         member = member
       }
-      if contains(local.unauthorized_members, member) # Check each member
+      if contains(local.too_privileged_roles, binding.role) # Check if the role is too privileged
     ]
     if length(binding.members) > 0
   ]
