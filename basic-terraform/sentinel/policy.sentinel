@@ -1,6 +1,12 @@
 # Import the terraform plan
 import "tfplan/v2" as tfplan
 
+# Function to check if the project is allowed for 'roles/editor'
+# Returns true if the project is violating the rule
+is_project_violation = func(role, project) {
+  return role == "roles/editor" and project not in allowed_editor_projects
+}
+
 # Define the allowed roles for IAM bindings
 allowed_roles = [
   "roles/viewer",
@@ -15,23 +21,21 @@ allowed_editor_projects = [
   "test-project-id-456"
 ]
 
-# Function to check if the project is allowed for 'roles/editor'
-# Returns true if the project is violating the rule
-is_project_violation = func(role, project) {
-  return role == "roles/editor" and project not in allowed_editor_projects
-}
+# Function to collect violating instances in an array
+collect_violating_instances = func() {
+  violations = []
 
-
-# Define a function to count IAM binding violations
-count_editor_project_violations = func() {
-  violations = 0
-
-  # Iterate through the resources and count violations
+  # Iterate through the resources and collect violating instances
   for tfplan.resources as resource {
     if resource.type == "google_project_iam_member" and resource.mode == "managed" {
       for resource.instances as instance {
+        # If violation is found, add the instance to the violations array
         if is_project_violation(instance.attributes.role, instance.attributes.project) {
-          violations += 1
+          violations.append({
+            "project": instance.attributes.project,
+            "role": instance.attributes.role,
+            "member": instance.attributes.member
+          })
         }
       }
     }
@@ -39,15 +43,26 @@ count_editor_project_violations = func() {
   return violations
 }
 
-# Call the function and get the number of violations
-editor_project_violations = count_editor_project_violations()
+# Call the function and get the array of violating instances
+violating_instances = collect_violating_instances()
 
-# Main rule: Ensure that there are no violations
+# Rule: Ensure that there are no violating instances
 restrict_editor_role_to_projects = rule {
-  editor_project_violations == 0
+  length(violating_instances) == 0
 }
 
-# Main rule combining other rules (example)
+# Main rule to print violations when they occur
 main = rule {
   restrict_editor_role_to_projects
+} else {
+  # Print the number of violations and details of each violating instance
+  print("Number of violations: %d", length(violating_instances))
+  print("Violating instances:")
+
+  # Iterate over the violations array and print details
+  for violating_instances as violation {
+    print("Project: %s, Role: %s, Member: %s", violation.project, violation.role, violation.member)
+  }
+
+  false
 }
