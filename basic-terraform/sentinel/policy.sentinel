@@ -1,13 +1,10 @@
+# Sentinel policy to control GCP IAM role assignment
+
 # Import the terraform plan
 import "tfplan/v2" as tfplan
 
-# Function to check if the project is allowed for 'roles/editor'
-# Returns true if the project is violating the rule
-is_project_violation = func(role, project) {
-  return role == "roles/editor" and project not in allowed_editor_projects
-}
-
 # Define the allowed roles for IAM bindings
+# Deny certain roles like 'roles/owner' to prevent over-privileged access
 allowed_roles = [
   "roles/viewer",
   "roles/editor",
@@ -21,48 +18,50 @@ allowed_editor_projects = [
   "test-project-id-456"
 ]
 
-# Function to collect violating instances in an array
-collect_violating_instances = func() {
-  violations = []
+# Define allowed members for IAM bindings (only these users/service accounts can be bound)
+allowed_members = [
+  "user:admin@example.com",
+  "serviceAccount:admin-service@example.com"
+]
 
-  # Iterate through the resources and collect violating instances
-  for tfplan.resources as resource {
-    if resource.type == "google_project_iam_member" and resource.mode == "managed" {
-      for resource.instances as instance {
-        # If violation is found, add the instance to the violations array
-        if is_project_violation(instance.attributes.role, instance.attributes.project) {
-          violations.append({
-            "project": instance.attributes.project,
-            "role": instance.attributes.role,
-            "member": instance.attributes.member
-          })
-        }
-      }
+# Rule 1: Ensure no IAM binding includes roles that are not in the allowed list
+deny_unallowed_roles = rule {
+  all tfplan.resources as resource {
+    resource.type == "google_project_iam_member" and
+    resource.mode == "managed" and
+    all resource.instances as instance {
+      instance.attributes.role in allowed_roles
     }
   }
-  return violations
 }
 
-# Call the function and get the array of violating instances
-violating_instances = collect_violating_instances()
-
-# Rule: Ensure that there are no violating instances
+# Rule 2: Ensure 'roles/editor' is only applied to specific projects
 restrict_editor_role_to_projects = rule {
-  length(violating_instances) == 0
+  all tfplan.resources as resource {
+    resource.type == "google_project_iam_member" and
+    resource.mode == "managed" and
+    all resource.instances as instance {
+      instance.attributes.role != "roles/editor" or
+      instance.attributes.project in allowed_editor_projects
+    }
+  }
 }
 
-# Main rule to print violations when they occur
-main = rule {
-  restrict_editor_role_to_projects
-} else {
-  # Print the number of violations and details of each violating instance
-  print("Number of violations: %d", length(violating_instances))
-  print("Violating instances:")
-
-  # Iterate over the violations array and print details
-  for violating_instances as violation {
-    print("Project: %s, Role: %s, Member: %s", violation.project, violation.role, violation.member)
+# Rule 3: Ensure IAM bindings are limited to specific users or service accounts
+restrict_iam_members = rule {
+  all tfplan.resources as resource {
+    resource.type == "google_project_iam_member" and
+    resource.mode == "managed" and
+    all resource.instances as instance {
+      instance.attributes.member in allowed_members
+    }
   }
+}
 
-  false
+# Combine rules into an enforcement policy
+# Enforce that all rules must pass
+main = rule {
+  deny_unallowed_roles and
+  restrict_editor_role_to_projects and
+  restrict_iam_members
 }
