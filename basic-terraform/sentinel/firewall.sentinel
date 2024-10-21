@@ -1,32 +1,74 @@
 import "tfplan/v2" as tfplan
 
+# List of unsupported source ranges
 allUnsupportedSourceRanges = [
-	"/0",
-	"0.0.0.0",
-	"0.0.0.0/0",
+    "/0",
+    "0.0.0.0",
+    "0.0.0.0/0",
 ]
 
-allFirewallResources = filter tfplan.resource_changes as _, resource_changes {
-	resource_changes.type is "google_compute_firewall" and
-		resource_changes.mode is "managed" and
-		(resource_changes.change.actions contains "create" or
-			resource_changes.change.actions is ["update"])
+# Function to filter all firewall resources of type "google_compute_firewall" that are managed and created/updated
+getFirewallResources = func() {
+    return filter tfplan.resource_changes as _, resource_changes {
+        resource_changes.type is "google_compute_firewall" and
+        resource_changes.mode is "managed" and
+        (resource_changes.change.actions contains "create" or
+            resource_changes.change.actions is ["update"])
+    }
 }
 
-print("Ensure that SSH access is restricted from the internet")
 
+# Function to check if a firewall allows SSH (port 22) access
+# terse version
+/*
+isSSHAllowed = func(firewall) {
+    return any filter firewall.change.after.allow as _, allow {
+        allow.ports contains "22"
+    }
+}
+
+*/
+
+# longer version
+isSSHAllowed = func(firewall) {
+    # Check if the firewall has any allow rules
+    allow_rules = firewall.change.after.allow
+
+    # Iterate over the allow rules
+    for _, allow in allow_rules {
+        # Check if the current allow rule contains port 22
+        if allow.ports contains "22" {
+            return true
+        }
+    }
+
+# Function to check if a firewall allows access from public IP ranges (i.e., violates the policy)
+isSourceRangePublic = func(firewall) {
+    return any firewall.change.after.source_ranges as _, range {
+        range in allUnsupportedSourceRanges
+    }
+}
+
+# Get list of violating firewall resources
+getViolatingResources = func() {
+    return filter getFirewallResources() as _, firewall {
+        isSSHAllowed(firewall) and isSourceRangePublic(firewall)
+    }
+}
+
+# Store violating resources in a local variable for logging
+violatingResources = getViolatingResources()
+
+# Logging for violated resources (if any)
+print("List of violating firewall resources:")
+print(violatingResources)
+
+# Main rule to deny public SSH access
 deny_public_ssh_access = rule {
-	all allFirewallResources as _, firewall {
-		all filter firewall.change.after.allow as _, allow {
-			allow.ports contains "22"
-		} as _ {
-			all firewall.change.after.source_ranges as _, range {
-				range not in allUnsupportedSourceRanges
-			}
-		}
-	}
+    count(violatingResources) is 0
 }
 
+# Main rule execution
 main = rule {
-	deny_public_ssh_access
+    deny_public_ssh_access
 }
