@@ -656,17 +656,17 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
      + https://github.com/gruntwork-io/terratest
      + https://github.com/gruntwork-io/terratest/tree/master/modules/gcp
      + https://github.com/philjhale/terratest-gcp
-     + https://github.com/retpolanne/gcp-terratest
+     + https://github.com/retpolanne/gcp-terratest complex - unclear how operates
      + https://github.com/srikantharun/terratest-on-gcp
      + https://github.com/kaushikgayal/terratest-gcp (pure Terraform)
      + https://github.com/sthirion/terratest-your-terraform
-     + https://github.com/akash123-eng/terratest-sample
+     + https://github.com/akash123-eng/terratest-sample - aws
      + https://github.com/krismorte/terraform-and-terratest-example
      + https://github.com/martinbaillie/terratest-istio
-     + https://github.com/kuntrapakam/sample_terratest
+     + https://github.com/kuntrapakam/sample_terratest - aws
      + https://github.com/rujwal-shrestha/generate-base-terratest/blob/main/genterratest.sh
      + https://github.com/bradib0y/terratest-demox
-     + https://github.com/denis256/terratest-tests
+     + https://github.com/denis256/terratest-tests - too generic
   * https://github.com/gruntwork-io/terratest/blob/master/examples/terraform-gcp-example     
   * https://docs.terrakube.io/
   * https://terrakube.org/
@@ -694,9 +694,14 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * [Terraform Tutorials for Beginners](https://www.youtube.com/playlist?list=PLiMWaCMwGJXmJdmfJjG3aK1IkU7oWvxIj)
     + [Loops Conditionals](https://youtu.be/7S94oUTy2z4)
     + [lessons](https://github.com/antonputra/tutorials/blob/main/docs/contents.md)
+    + https://learnk8s.io/terraform-gke
+    + https://overcast.blog/creating-kubernetes-clusters-with-terraform-in-depth-guide-344e22e7f73e
     + https://github.com/antonputra/tutorials/tree/main/lessons/161
     + https://cidr.xyz/
     +  https://www.youtube.com/watch?v=7S94oUTy2z4&list=PLiMWaCMwGJXmJdmfJjG3aK1IkU7oWvxIj&index=4)
+  * https://learnk8s.io/terraform-gke 
+  * https://antonputra.com/google/create-gke-cluster-using-terraform/#create-vpc-in-gcp-using-terraform
+  * https://github.com/k-mitevski/terraform-gke/tree/master/01_single-cluster
   * https://developer.hashicorp.com/terraform/language/expressions/strings#directives
   * https://developer.hashicorp.com/terraform/language/expressions/splat
   * [building complex templates by string template interpolation](https://medium.com/ovni/terraform-templating-and-loops-9a88c0786c5c)
@@ -911,3 +916,35 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   Unknown error occurred - installation failed.
   
   
+ * https://www.rubydoc.info/gems/kitchen-terraform/6.1.0/Kitchen/Terraform/OutputsManager
+ * https://www.trility.io/insights/complex-practical-examples-devops-unit-testing
+ * https://github.com/rubelw/terraform-kitchen - commented, complex
+ * https://blog.searce.com/infrastructure-provisioning-of-terraform-by-using-kitchen-terraform-65070d54491f
+   + https://github.com/ApurvShingne/kitchenTerraform
+   
+  * https://www.darkraiden.com/blog/test-terraform-with-kitchen-and-awspec/ - includes direct parsing of the teraform state and config  directly via rhcl and json
+  
+  * https://www.rubydoc.info/gems/kitchen-terraform/6.1.0
+  
+  * https://github.com/warestack/terraform-gcp-compute-instance/tree/main/account-impersonation
+  * https://developer.hashicorp.com/terraform/tutorials/kubernetes/gke 
+  
+  
+ #### Data Engineering
+ 
+  * [Data Engineering Foundations](https://www.linkedin.com/learning/data-engineering-foundations/what-is-data-engineering?u=67698794)
+  * [Master Data Engineering](https://www.linkedin.com/learning/paths/master-data-engineering?u=67698794)
+  * https://www.linkedin.com/learning/google-cloud-data-engineering-foundations?u=67698794
+  * [Data Engineering Hands-On Practice]()
+  * [Hands-On Introduction: Data Engineering](https://www.linkedin.com/learning/hands-on-introduction-data-engineering/hands-on-data-engineering?u=67698794)  
+  * https://www.linkedin.com/learning/apache-spark-essential-training-big-data-engineering-23165395?u=67698794
+  * https://www.linkedin.com/learning/apache-kafka-essential-training-building-scalable-applications-19204536?contextUrn=urn%3Ali%3AlyndaLearningPath%3A65fcc437498e6539e652f641&u=67698794
+  * https://www.linkedin.com/learning/complete-guide-to-python-for-data-engineering-from-beginner-to-advanced?contextUrn=urn%3Ali%3AlyndaLearningPath%3A65fcc437498e6539e652f641&u=67698794
+  * https://www.linkedin.com/learning/complete-guide-to-sql-for-data-engineering-from-beginner-to-advanced?contextUrn=urn%3Ali%3AlyndaLearningPath%3A65fcc437498e6539e652f641&u=67698794
+  
+  * https://www.linkedin.com/learning/introduction-to-terraform-on-google-cloud-platform/your-terraform-code-repo?resume=false&u=67698794
+  
+   + https://github.com/LinkedInLearning/advanced-terraform-3099246/blob/main/main.tf
+   
+  ### Linkedin Learning Terraform
+  * https://www.linkedin.com/learning/search?keywords=terraform&u=67698794
