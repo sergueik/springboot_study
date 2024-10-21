@@ -1,0 +1,40 @@
+# Sentinel policy to flag user accounts with high-privileged global roles in Google Cloud IAM
+
+# Import the Google Cloud IAM module to work with IAM policies
+import "gcp.iam"
+
+# Define the high-privileged global roles to flag
+# This list can be extended with other custom roles or additional roles as needed
+high_privileged_roles = [
+  "roles/owner",
+  "roles/editor",
+  "roles/viewer"
+  # Add any other roles considered high-privileged
+]
+
+# Check if any members have high-privileged global roles
+violation = rule {
+  iam_bindings as bindings {
+    # Iterate through all IAM bindings
+    all bindings as binding {
+      # Check if the role assigned is in the high-privileged roles list
+      binding.role in high_privileged_roles and
+      # Ensure it applies to user accounts (not service accounts, etc.)
+      all binding.members as member {
+        member matches "user:.*"
+      }
+    }
+  }
+}
+
+# Define the enforcement message to flag violations
+# If any user accounts are found with high-privileged roles, they will be flagged
+enforce {
+  violation as bindings {
+    print("Violation: The following user accounts have high-privileged global roles:")
+    print(bindings)
+  }
+
+  # The enforcement fails when there are violations (user accounts with high-privileged roles)
+  deny[violation]
+}
