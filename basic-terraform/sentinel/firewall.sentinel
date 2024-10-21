@@ -59,16 +59,15 @@ getViolatingResources = func() {
 # Store violating resources in a local variable for logging
 violatingResources = getViolatingResources()
 
-# Logging for violated resources (if any)
-print("List of violating firewall resources:")
-print(violatingResources)
-
-# Main rule to deny public SSH access
-deny_public_ssh_access = rule {
-    count(violatingResources) is 0
-}
-
-# Main rule execution
+# Main rule execution with conditional logging
 main = rule {
-    deny_public_ssh_access
+    if deny_public_ssh_access {
+        # If no violations, rule passes
+        true
+    } else {
+        # If violations are found, log the violating resources and fail the rule
+        print("The following firewall resources allow public SSH access:")
+        print(violatingResources)
+        false
+    }
 }
