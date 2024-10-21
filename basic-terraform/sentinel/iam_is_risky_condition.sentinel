@@ -1,0 +1,44 @@
+# Function to check if the IAM condition is considered risky
+is_risky_condition = func(condition) {
+  # Check if the condition is empty or missing (no condition means it's risky)
+  if condition is null or condition == "" {
+    return true
+  }
+
+  # Check for an IP restriction in the condition
+  if condition contains "request.auth.claims.ip" {
+    # Allow access only if it's from a trusted IP range
+    if condition contains "192.168.0.0/24" or condition contains "10.0.0.0/8" {
+      # Trusted IP ranges, consider this safe
+      return false
+    } else {
+      # Untrusted IP ranges, flag it as risky
+      return true
+    }
+  }
+
+  # Check for time-based restrictions in the condition
+  if condition contains "request.time" {
+    # Allow access only during business hours (example: 08:00 to 18:00)
+    if condition contains "08:00:00" and condition contains "18:00:00" {
+      # Business hours, consider this safe
+      return false
+    } else {
+      # Outside business hours, flag it as risky
+      return true
+    }
+  }
+
+  # Check if the condition involves resource types (e.g., sensitive resources)
+  if condition contains "resource.type" {
+    # Flag risky resource types (example: sensitive resources)
+    if condition contains "bigquery" or condition contains "cloudkms" {
+      return true  # Access to BigQuery or KMS is risky
+    }
+    # If condition is for non-sensitive resources, consider it safe
+    return false
+  }
+
+  # Default case: if we can't evaluate the condition, flag it as risky
+  return true
+}

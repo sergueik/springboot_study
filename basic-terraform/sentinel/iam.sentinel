@@ -1,4 +1,4 @@
-# Sentinel policy to flag user accounts with high-privileged global roles in Google Cloud IAM
+# Import the Google Cloud IAM module to work with IAM policies
 import "gcp.iam"
 
 # Define the high-privileged global roles to flag
@@ -9,39 +9,85 @@ high_privileged_roles = [
   # Add any other roles considered high-privileged
 ]
 
+# Function to check if the role is high-privileged
+is_high_privileged_role = func(role) {
+  return role in high_privileged_roles
+}
+
 # Function to check if the member is a user account
 is_user_account = func(member) {
   return member matches "user:.*"
 }
 
-# Function to check if the member is a service account or group (these are allowed)
-is_service_or_group_account = func(member) {
-  return member matches "serviceAccount:.*" or
-         member matches "group:.*"
+# Function to check if the binding has any IAM conditions applied
+# If the binding has conditions, they are considered as part of the evaluation
+has_conditions = func(binding) {
+  return binding.condition is not null and binding.condition != ""
 }
 
-# Check if any high-privileged global roles are assigned to user accounts
-violation = rule {
-  iam_bindings as bindings {
-    # Iterate through all IAM bindings
-    all bindings as binding {
-      # Check if the role is in the high-privileged roles list
-      binding.role in high_privileged_roles and
-      # Check if any members are user accounts (flag them if so)
-      any binding.members as member {
-        is_user_account(member)
+# Function to check if the conditions are risky or allow too much privilege
+# For simplicity, we consider all conditions as risky in this example.
+# You can customize this to evaluate the conditions based on your specific needs.
+is_risky_condition = func(condition) {
+  # Add custom logic to evaluate the condition's risk level
+  # In this simple example, we flag all conditions as risky.
+  return true
+}
+
+# Function to check for violations in IAM bindings
+check_iam_bindings_for_user_accounts = func(iam_bindings) {
+  # Initialize a list to collect violations
+  violations = []
+
+  # Iterate through all IAM bindings
+  for binding in iam_bindings {
+    # Check if the binding's role is high-privileged
+    if is_high_privileged_role(binding.role) {
+      # Iterate through the members of the binding
+      for member in binding.members {
+        # If a user account is found in this high-privileged binding
+        if is_user_account(member) {
+          # Check if the binding has conditions
+          if has_conditions(binding) {
+            # Evaluate the condition, flagging it if risky
+            if is_risky_condition(binding.condition) {
+              violations.append({
+                "role": binding.role,
+                "member": member,
+                "condition": binding.condition
+              })
+            }
+          } else {
+            # If no conditions are applied, flag the user account
+            violations.append({
+              "role": binding.role,
+              "member": member,
+              "condition": "None"
+            })
+          }
+        }
       }
     }
   }
+
+  return violations
 }
 
-# Define the enforcement block
-enforce {
-  violation as flagged_bindings {
-    print("Violation: The following user accounts are assigned high-privileged global roles:")
-    print(flagged_bindings)
-  }
+# Call the function to check for violations in the IAM bindings
+violations = check_iam_bindings_for_user_accounts(gcp.iam.bindings)
 
-  # The enforcement will deny the policy if violations (user accounts with high-privileged roles) are found
-  deny[violation]
+# Define the enforcement rule based on the results of the function
+enforce {
+  # If any violations are found, flag them
+  not violations.is_empty() else {
+    print("No violations found.")
+    true
+  }
+  
+  # Print and deny policy if there are any violations
+  print("Violation: The following user accounts have high-privileged global roles with risky or no conditions:")
+  print(violations)
+
+  # Deny the policy based on the violations found
+  deny[violations]
 }
