@@ -1,11 +1,14 @@
 import "tfplan/v2" as tfplan
 
-# List of unsupported source ranges
+# List of unsupported source ranges (e.g., public IP ranges)
 allUnsupportedSourceRanges = [
     "/0",
     "0.0.0.0",
     "0.0.0.0/0",
 ]
+
+# Maximum number of violations to collect before failing
+max_violations = 5
 
 # Function to filter all firewall resources of type "google_compute_firewall" that are managed and created/updated
 getFirewallResources = func() {
@@ -17,47 +20,54 @@ getFirewallResources = func() {
     }
 }
 
-
 # Function to check if a firewall allows SSH (port 22) access
-# terse version
-/*
 isSSHAllowed = func(firewall) {
-    return any filter firewall.change.after.allow as _, allow {
-        allow.ports contains "22"
-    }
-}
-
-*/
-
-# longer version
-isSSHAllowed = func(firewall) {
-    # Check if the firewall has any allow rules
     allow_rules = firewall.change.after.allow
-
-    # Iterate over the allow rules
     for _, allow in allow_rules {
-        # Check if the current allow rule contains port 22
         if allow.ports contains "22" {
             return true
         }
     }
+    return false
+}
 
 # Function to check if a firewall allows access from public IP ranges (i.e., violates the policy)
 isSourceRangePublic = func(firewall) {
-    return any firewall.change.after.source_ranges as _, range {
-        range in allUnsupportedSourceRanges
+    for _, range in firewall.change.after.source_ranges {
+        if range in allUnsupportedSourceRanges {
+            return true
+        }
     }
+    return false
 }
 
-# Get list of violating firewall resources
-getViolatingResources = func() {
-    return filter getFirewallResources() as _, firewall {
-        isSSHAllowed(firewall) and isSourceRangePublic(firewall)
+# Get list of violating firewall resources with a limit on how many to collect
+getViolatingResources = func(limit) {
+    violations = []
+    firewall_resources = getFirewallResources()
+    
+    # Iterate through each firewall resource and stop once we hit the limit
+    for _, firewall in firewall_resources {
+        if isSSHAllowed(firewall) and isSourceRangePublic(firewall) {
+            append(violations, firewall)
+        }
+
+        # Stop collecting once the limit is reached
+        if count(violations) >= limit {
+            break
+        }
     }
+    
+    return violations
 }
 
-# Store violating resources in a local variable for logging
-violatingResources = getViolatingResources()
+# Store violating resources in a local variable, with the limit applied
+violatingResources = getViolatingResources(max_violations)
+
+# Main rule to deny public SSH access
+deny_public_ssh_access = rule {
+    count(violatingResources) is 0
+}
 
 # Main rule execution with conditional logging
 main = rule {
@@ -66,7 +76,7 @@ main = rule {
         true
     } else {
         # If violations are found, log the violating resources and fail the rule
-        print("The following firewall resources allow public SSH access:")
+        print("The following firewall resources allow public SSH access (up to the limit of ${max_violations}):")
         print(violatingResources)
         false
     }
