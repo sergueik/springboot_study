@@ -1,15 +1,14 @@
-# Import the Google Cloud IAM module to work with IAM policies
-import "gcp.iam"
+# Import the terraform plan (or state) module
+import "tfplan"
 
-# Define the high-privileged global roles to flag
+# Define the high-privileged roles
 high_privileged_roles = [
   "roles/owner",
   "roles/editor",
   "roles/viewer"
-  # Add any other roles considered high-privileged
 ]
 
-# Function to check if the role is high-privileged
+# Function to check if a given role is high-privileged
 is_high_privileged_role = func(role) {
   return role in high_privileged_roles
 }
@@ -19,75 +18,51 @@ is_user_account = func(member) {
   return member matches "user:.*"
 }
 
-# Function to check if the binding has any IAM conditions applied
-# If the binding has conditions, they are considered as part of the evaluation
-has_conditions = func(binding) {
-  return binding.condition is not null and binding.condition != ""
+# Initialize an empty list to collect all IAM bindings
+all_bindings = []
+resources = tfplan.module_paths["root"].resources
+
+# Collect IAM policies from both google_project_iam_binding and google_project_iam_member resources
+for resource in resources {
+  if resource.type == "google_project_iam_binding" {
+    # Add all members from google_project_iam_binding
+    all_bindings.append({
+      "role": resource.change.after.role,
+      "members": resource.change.after.members
+    })
+  } else if resource.type == "google_project_iam_member" {
+    # Add a single member from google_project_iam_member
+    all_bindings.append({
+      "role": resource.change.after.role,
+      "members": [resource.change.after.member]  # Wrapping the member in a list for consistency
+    })
+  }
 }
 
-# Function to check if the conditions are risky or allow too much privilege
-# For simplicity, we consider all conditions as risky in this example.
-# You can customize this to evaluate the conditions based on your specific needs.
-is_risky_condition = func(condition) {
-  # Add custom logic to evaluate the condition's risk level
-  # In this simple example, we flag all conditions as risky.
-  return true
-}
+# Initialize a list for violations
+violations = []
 
-# Function to check for violations in IAM bindings
-check_iam_bindings_for_user_accounts = func(iam_bindings) {
-  # Initialize a list to collect violations
-  violations = []
-
-  # Iterate through all IAM bindings
-  for binding in iam_bindings {
-    # Check if the binding's role is high-privileged
-    if is_high_privileged_role(binding.role) {
-      # Iterate through the members of the binding
-      for member in binding.members {
-        # If a user account is found in this high-privileged binding
-        if is_user_account(member) {
-          # Check if the binding has conditions
-          if has_conditions(binding) {
-            # Evaluate the condition, flagging it if risky
-            if is_risky_condition(binding.condition) {
-              violations.append({
-                "role": binding.role,
-                "member": member,
-                "condition": binding.condition
-              })
-            }
-          } else {
-            # If no conditions are applied, flag the user account
-            violations.append({
-              "role": binding.role,
-              "member": member,
-              "condition": "None"
-            })
-          }
-        }
+# Iterate over all collected bindings
+for binding in all_bindings {
+  if is_high_privileged_role(binding.role) {
+    # Iterate through members for each binding
+    for member in binding.members {
+      # If the member is a user account, flag the violation
+      if is_user_account(member) {
+        violations.append({
+          "role": binding.role,
+          "member": member
+        })
       }
     }
   }
-
-  return violations
 }
 
-# Call the function to check for violations in the IAM bindings
-violations = check_iam_bindings_for_user_accounts(gcp.iam.bindings)
-
-# Define the enforcement rule based on the results of the function
+# Policy enforcement: If there are violations, deny the plan
 enforce {
-  # If any violations are found, flag them
-  not violations.is_empty() else {
-    print("No violations found.")
-    true
+  violations.is_empty() else {
+    print("Found the following high-privileged user accounts:")
+    print(violations)
+    deny("High-privileged roles assigned to user accounts without sufficient justification.")
   }
-  
-  # Print and deny policy if there are any violations
-  print("Violation: The following user accounts have high-privileged global roles with risky or no conditions:")
-  print(violations)
-
-  # Deny the policy based on the violations found
-  deny[violations]
 }
