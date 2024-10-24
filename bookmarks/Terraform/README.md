@@ -657,7 +657,8 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
      + https://github.com/gruntwork-io/terratest/tree/master/modules/gcp
      + https://github.com/philjhale/terratest-gcp
      + https://github.com/retpolanne/gcp-terratest complex - unclear how operates
-     + https://github.com/srikantharun/terratest-on-gcp
+     + https://github.com/srikantharun/terratest-on-gcp - simple, operates `terraform.Output`. truncated version of 
+      - https://github.com/gruntwork-io/terratest/blob/master/test/gcp/terraform_gcp_example_test.go  
      + https://github.com/kaushikgayal/terratest-gcp (pure Terraform)
      + https://github.com/sthirion/terratest-your-terraform
      + https://github.com/akash123-eng/terratest-sample - aws
@@ -907,7 +908,7 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
     + covers running  Inspec Terraform tests   
     + `DOCKER_IMAGE_DEVELOPER_TOOLS := cft/developer-tools`
      + https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit/releases/tag/cli%2Fv1.5.4
-     + `pull gcr.io/cloud-foundation-cicd/cft/developer-tools`
+     + `pull gcr.io/cloud-foundation-cicd/cft/developer-tools:1.5.4`
      + https://stackoverflow.com/questions/37905763/how-do-i-download-docker-images-without-using-the-pull-command
   * https://codelabs.developers.google.com/codelabs/cft-onboarding#0
   * https://codelabs.developers.google.com/codelabs/cft-onboarding#7
