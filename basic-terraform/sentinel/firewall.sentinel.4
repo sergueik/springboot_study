@@ -23,7 +23,7 @@ getFirewallResources = func() {
 # Function to check if a firewall allows SSH (port 22) access
 isSSHAllowed = func(firewall) {
     allow_rules = firewall.change.after.allow
-    for allow_rules as _, allow  {
+    for _, allow in allow_rules {
         if allow.ports contains "22" {
             return true
         }
@@ -33,7 +33,7 @@ isSSHAllowed = func(firewall) {
 
 # Function to check if a firewall allows access from public IP ranges (i.e., violates the policy)
 isSourceRangePublic = func(firewall) {
-    for firewall.change.after.source_ranges  as _, range {
+    for _, range in firewall.change.after.source_ranges {
         if range in allUnsupportedSourceRanges {
             return true
         }
@@ -47,13 +47,13 @@ getViolatingResources = func(limit) {
     firewall_resources = getFirewallResources()
     
     # Iterate through each firewall resource and stop once we hit the limit
-    for firewall_resources as _, firewall  {
+    for _, firewall in firewall_resources {
         if isSSHAllowed(firewall) and isSourceRangePublic(firewall) {
             append(violations, firewall)
         }
 
         # Stop collecting once the limit is reached
-        if length(violations) >= limit {
+        if count(violations) >= limit {
             break
         }
     }
@@ -66,25 +66,18 @@ violatingResources = getViolatingResources(max_violations)
 
 # Main rule to deny public SSH access
 deny_public_ssh_access = rule {
-    length(violatingResources) is 0
+    count(violatingResources) is 0
 }
-main_rule_func = func( max_violations ) {
 
-   if deny_public_ssh_access {
+# Main rule execution with conditional logging
+main = rule {
+    if deny_public_ssh_access {
         # If no violations, rule passes
-        return true
+        true
     } else {
         # If violations are found, log the violating resources and fail the rule
         print("The following firewall resources allow public SSH access (up to the limit of ${max_violations}):")
-        print("length:" , length(violatingResources))
         print(violatingResources)
-        return false
+        false
     }
-
-}
-
-# print(violatingResources)
-# Main rule execution with conditional logging
-main = rule {
-main_rule_func(max_violations)
 }
