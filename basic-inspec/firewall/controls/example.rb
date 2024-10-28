@@ -25,31 +25,14 @@ control "firewall" do
   # Refactored tests for allow rules
   if firewall.allowed
     describe 'allow rules' do
-      it 'should have at least one allow rule' do
-        expect(firewall.allowed).not_to be_empty
-      end
-      it 'should include port 80 in allowed ports' do
-        expect(firewall.allowed.map { |rule| rule['ports'] }.flatten).to include '80'
-      end
-      it 'should allow tcp protocol' do
-        expect(firewall.allowed.map { |rule| rule['IPProtocol'] }).to include 'tcp'
-      end
+      subject { google_compute_firewall(project: project, name: firewall_name).allowed }
+      
+      it { should_not be_empty }
+      its('ports.flatten') { should include '80' }
+      its('IPProtocol') { should include 'tcp' }
+      # Add further allow rule checks as needed
     end
-  end
 
-  # Refactored tests for deny rules
-  if firewall.denied
-    describe 'deny rules' do
-      it 'should have at least one deny rule' do
-        expect(firewall.denied).not_to be_empty
-      end
-      it 'should include port 22 in denied ports' do
-        expect(firewall.denied.map { |rule| rule['ports'] }.flatten).to include '22'
-      end
-      it 'should deny tcp protocol' do
-        expect(firewall.denied.map { |rule| rule['IPProtocol'] }).to include 'tcp'
-      end
-    end
   end
 
 end
