@@ -1238,3 +1238,75 @@ Linux: Full support for local backend, commonly used with InSpec.
 macOS: Also fully supported for the local backend.
 Windows: Supported, but there may be slight syntax differences in the command resource due to shell differences (PowerShell, cmd).
 For cross-platform compatibility, you might sometimes need to adjust commands or paths in the command resource to match the OS, especially when using Windows. But overall, the local backend is broadly compatible across major OS environments.
+
+
+Copy code
+control 'check-service-account-binding' do
+  impact 1.0
+  title 'Ensure known service account is in IAM policy bindings'
+  desc 'Parse JSON output from gcloud and verify that it includes the known service account'
+
+  # Run the gcloud command and parse the JSON output
+  describe command('gcloud projects get-iam-policy your-project-id --format=json') do
+    its('exit_status') { should eq 0 }
+
+    let(:json_output) { JSON.parse(subject.stdout) }
+    let(:known_service_account) { 'serviceAccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com' }
+
+    it 'should contain the known service account in bindings' do
+      # Flatten all members into a single array for easy searching
+      all_members = json_output.flat_map { |entry| entry.dig('bindings', 'members') }.compact
+      expect(all_members).to include(known_service_account)
+    end
+  end
+end
+Explanation
+Command Execution: Executes gcloud projects get-iam-policy your-project-id --format=json to retrieve IAM policies in JSON format. Be sure to replace your-project-id with the actual project ID.
+Exit Status Check: Ensures the command ran successfully.
+JSON Parsing: Parses the output as JSON.
+Known Service Account: Specifies the known service account you’re checking for.
+Flatten and Search: Uses flat_map to create a single array of all members entries in the bindings, making it easier to search for the known service account.
+Notes
+JSON Structure: Adjust paths if the JSON structure differs.
+Array of Objects: flat_map simplifies searching through nested arrays for specific entries.
+
+, if you’re using the InSpec GCP plugin, you can achieve this with a shorter, more efficient check by directly querying the IAM policy bindings using the InSpec GCP resources. The google_project_iam_binding or google_project_iam_policy resource allows you to inspect IAM roles and members directly without needing to parse JSON manually.
+
+Here’s how you can simplify the control:
+
+Example Using google_project_iam_binding
+ruby
+Copy code
+control 'check-service-account-binding' do
+  impact 1.0
+  title 'Ensure known service account is in IAM policy bindings'
+  desc 'Use InSpec GCP to verify that the IAM policy contains the known service account'
+
+  # Define the project and known service account
+  project_id = 'your-project-id'
+  known_service_account = 'serviceAccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com'
+
+  # Check across all IAM bindings for the project
+  describe google_project_iam_binding(project: project_id, role: 'roles/compute.admin') do
+    it { should exist }
+    its('members') { should include known_service_account }
+  end
+end
+Explanation
+Resource: google_project_iam_binding checks for a specific IAM role (roles/compute.admin) and verifies the members.
+should exist: Ensures that the binding exists for the specified role.
+Member Check: The its('members') syntax validates that the known service account is included in the specified role's members.
+Notes
+Efficiency: This approach is more efficient and easier to read than parsing JSON from the command output.
+No Parsing Needed: Since the google_project_iam_binding resource directly interfaces with GCP, it avoids the need for manual JSON parsing and the performance impact of handling potentially large IAM policy data.
+Role-Specific: If you need to check across all roles rather than specifying a role, consider using google_project_iam_policy to list all members.
+
+
+
+
+
+
+
+
+
+
