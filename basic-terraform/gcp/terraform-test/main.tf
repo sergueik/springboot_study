@@ -36,20 +36,30 @@ resource "google_storage_bucket" "static_website" {
   location                    = "us-central1"
   force_destroy               = true
   uniform_bucket_level_access = true
-
+  # NOTE:  when set, bucket cannot be immediately deleted. The policy will need to me disabled manually
+  #retention_policy {
+  # retention_period = 1000
+  #}
+  labels = {
+    "key" = "value"
+  }
   website {
     main_page_suffix = "index.html"
-  #  not_found_page   = "404.html"
+    not_found_page   = "404.html"
   }
 }
 // 
 // 
 // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket_object#example-usage---network-basic
 resource "google_storage_bucket_object" "indexpage" {
-  name   = "butterfly01"
-  source = "index.html"
-  bucket = google_storage_bucket.static_website.id
+  name          = "butterfly01"
+  source        = "index.html"
+  bucket        = google_storage_bucket.static_website.id
   cache_control = "no-store"
+  content_type  = "text/html"
+
+
+
 }
 // page_hash        = "abe45d28281cfa2a4201c9b90a143095"
 // curl -I  https://storage.googleapis.com/spheric-alcove-1239340/butterfly01
