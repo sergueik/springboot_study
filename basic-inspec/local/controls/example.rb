@@ -14,18 +14,13 @@ control "local" do
   end
 
   describe command("gcloud projects get-iam-policy #{attribute('project_id')} --flatten='bindings[].members' --filter='bindings.role:roles/compute.admin' --format='json'") do
-    let(:instance_info) { JSON.parse(subject.stdout) }
-    its('stdout') { should eq '[]' }  # uncomment to see the output
-    it 'should have a  state' do
-      expect(instance_info[0]['bindings']['members']).to include service_account_email
+    let(:json_output) { JSON.parse(subject.stdout) }
+    let(:known_service_account) {"serviceAccount:#{service_account_email}"} 
+    it 'should contain the known service account in bindings' do
+    ## https://docs.ruby-lang.org/en/3.1/dig_methods_rdoc.html
+      all_members = json_output.flat_map { |entry| entry.dig('bindings', 'members') }.compact
+      expect(all_members).to include(known_service_account)
     end
-    it 'should have a  state' do
-      expect(instance_info[0]['bindings']['members']).not_to eq []
-    end
-    it 'should have a  state' do
-      expect(instance_info[0]['bindings']['members']).to eq []
-    end
-    its('stdout') { should eq '[]' }  # uncomment to see the output
   end
 
 end
