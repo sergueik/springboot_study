@@ -24,9 +24,29 @@ provider "google" {
   project     = "spheric-alcove-430818-f9"
   region      = "us-central1"
   zone        = "us-central1-c"
+  // alternatively use envirionment
+ // export GOOGLE_CLOUD_KEYFILE_JSON=$(cat path/to/keys.json)
   credentials = file("keys.json")
+  // credentials = var.service_account_key != "" ? var.service_account_key : local.env_credentials
+  
+}
+/*
+
+locals {
+  env_credentials = jsondecode(env("GOOGLE_CLOUD_KEYFILE_JSON"))
 }
 
+*/
+
+/*
+variable "service_account_key" {
+  description = "Service account key in JSON format"
+  type        = string
+  default     = ""
+}
+*/
+// 
+// terraform apply -var="service_account_key=$GOOGLE_CLOUD_KEYFILE_JSON"
 // https://cloud.google.com/docs/terraform/deploy-flask-web-server
 
 
