@@ -4,6 +4,7 @@
 
 This example shows the implementation of an InSpec profile.
 
+See also https://github.com/inspec/inspec-gcp/issues/77
 https://docs.chef.io/inspec/profiles/controls/
 
 Add a Chef license key by using the CHEF_LICENSE_KEY environment variable.
@@ -13,7 +14,7 @@ set CHEF_LICENSE_KEY=free-f...
 ```
 
 ```
-https://docs.chef.io/inspec/profiles/controls/
+terraform apply -var "bucket_name=static_website_9384" 
 ```
 ```
 inspec exec . -t gcp:// --attrs attributes.yml
