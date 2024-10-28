@@ -1303,7 +1303,106 @@ Role-Specific: If you need to check across all roles rather than specifying a ro
 
 
 
+In InSpec GCP, you can use the google_compute_firewall resource to inspect both allow and deny rules for a Google Cloud firewall. Here’s a skeleton example that checks if both the allow and deny rules are configured according to your requirements.
 
+Example Skeleton InSpec Control for google_compute_firewall with Both Allow and Deny Rules
+ruby
+Copy code
+control 'check-google-compute-firewall-rules' do
+  impact 1.0
+  title 'Verify allow and deny rules in Google Compute firewall'
+  desc 'Ensure that the Google Compute firewall has correct allow and deny rules configured'
+
+  firewall_name = 'your-firewall-name'
+  project = 'your-project-id'
+
+  describe google_compute_firewall(project: project, name: firewall_name) do
+    it { should exist }
+    
+    # Check that there are allow rules and they meet specific criteria
+    describe 'allow rules' do
+      subject { google_compute_firewall(project: project, name: firewall_name).allowed }
+      
+      it { should_not be_empty }
+      its('ports.flatten') { should include '80' }
+      its('IPProtocol') { should include 'tcp' }
+      # Add further allow rule checks as needed
+    end
+
+    # Check that there are deny rules and they meet specific criteria
+    describe 'deny rules' do
+      subject { google_compute_firewall(project: project, name: firewall_name).denied }
+
+      it { should_not be_empty }
+      its('ports.flatten') { should include '22' }
+      its('IPProtocol') { should include 'tcp' }
+      # Add further deny rule checks as needed
+    end
+  end
+end
+
+
+
+
+this code is tese
+
+u can define reusable variables for allowed and denied rules, then apply tests to each one. This keeps the control structure organized and DRY (Don't Repeat Yourself).
+
+Here’s an example refactor of the google_compute_firewall InSpec control to remove redundant subject blocks:
+
+ruby
+Copy code
+control 'check-google-compute-firewall-rules' do
+  impact 1.0
+  title 'Verify allow and deny rules in Google Compute firewall'
+  desc 'Ensure that the Google Compute firewall has correct allow and deny rules configured'
+
+  firewall_name = 'your-firewall-name'
+  project = 'your-project-id'
+
+  # Fetch the firewall resource once
+  firewall = google_compute_firewall(project: project, name: firewall_name)
+
+  describe firewall do
+    it { should exist }
+  end
+
+  # Refactored tests for allow rules
+  if firewall.allowed
+    describe 'allow rules' do
+      it 'should have at least one allow rule' do
+        expect(firewall.allowed).not_to be_empty
+      end
+      it 'should include port 80 in allowed ports' do
+        expect(firewall.allowed.map { |rule| rule['ports'] }.flatten).to include '80'
+      end
+      it 'should allow tcp protocol' do
+        expect(firewall.allowed.map { |rule| rule['IPProtocol'] }).to include 'tcp'
+      end
+    end
+  end
+
+  # Refactored tests for deny rules
+  if firewall.denied
+    describe 'deny rules' do
+      it 'should have at least one deny rule' do
+        expect(firewall.denied).not_to be_empty
+      end
+      it 'should include port 22 in denied ports' do
+        expect(firewall.denied.map { |rule| rule['ports'] }.flatten).to include '22'
+      end
+      it 'should deny tcp protocol' do
+        expect(firewall.denied.map { |rule| rule['IPProtocol'] }).to include 'tcp'
+      end
+    end
+  end
+end
+Explanation of the Refactor
+Single Resource Fetch: We fetch the google_compute_firewall resource once and assign it to firewall.
+Conditionally Check Rules: We use if firewall.allowed and if firewall.denied to ensure tests only run if the respective rules are configured.
+Refactored Tests: Each rule type (allowed and denied) is checked within its own describe block, reducing redundancy by directly inspecting the firewall.allowed and firewall.denied arrays.
+Array Flattening: We map and flatten ports to handle the nested structure in each rule.
+This refactor makes the control cleaner, with improved readability and reduced repetition.
 
 
 
