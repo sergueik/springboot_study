@@ -1,0 +1,5 @@
+project_name: 'spheric-alcove-430818-f9'
+project_id: 'spheric-alcove-430818-f9'
+email: 'terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com'
+iam_email: 'serviceAccount:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com'
+zone_name: 'us-central1-c'
