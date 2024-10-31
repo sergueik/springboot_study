@@ -889,8 +889,8 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * [Introduction to Test Kitchen - Google Cloud Platform](https://www.youtube.com/watch?v=HDOMXmp14es&list=PLKK5zTDXqzFMb-d7_K12W3ZwujfPvoDiK)
   * https://docs.chef.io/inspec
   * https://docs.chef.io/inspec/cloud/gcp/
-  * https://www.chef.io/blog/did-you-know-this-about-chef-compliance-and-chef-cloud-security-part-3
   * https://www.chef.io/blog/making-use-of-google-inspec-cloud-resource
+  * https://www.chef.io/blog/did-you-know-this-about-chef-compliance-and-chef-cloud-security-part-3
   
 #### Kitchen  Terraform
   * https://newcontext-oss.github.io/kitchen-terraform/ - no longer developed after Terraform 1.6 (2023). May be limited to support very  old releases e.g. `0.12`
@@ -904,19 +904,25 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * https://www.reddit.com/r/Terraform/comments/l4uiu8/terraformkitchen_tutorial_code_basics_to_advanced/
   * https://www.rearc.io/blog/testing-terraform-with-kitchen-and-inspec
   * https://github.com/terraform-google-modules/terraform-google-service-accounts/blob/master/CONTRIBUTING.md
-  
     + covers running  Inspec Terraform tests   
     + `DOCKER_IMAGE_DEVELOPER_TOOLS := cft/developer-tools`
      + https://github.com/GoogleCloudPlatform/cloud-foundation-toolkit/releases/tag/cli%2Fv1.5.4
      + `pull gcr.io/cloud-foundation-cicd/cft/developer-tools:1.5.4`
      + https://stackoverflow.com/questions/37905763/how-do-i-download-docker-images-without-using-the-pull-command
+  * http://gitpoc.dhruvhbhavsar.joonix.net/dhruvb15/terraform-example-foundation/src/commit/86c254705664f295432915f91b38f9bde9fa2dd0/.kitchen.yml
+     + sample `kitchen.yml` - complex
+
   * https://codelabs.developers.google.com/codelabs/cft-onboarding#0
   * https://codelabs.developers.google.com/codelabs/cft-onboarding#7
-  
+
+  * [inspall inspec package](https://mitre-inspec-developer.netlify.app/installation/LinuxInstall.html#option-1-package-installer)
+  + note - after `gem install inspec` the inspec is not installed  
+  * https://docs.chef.io/inspec/config/
+  * https://docs.chef.io/workstation/config_yml_kitchen/
   Non-Commercial License
   Unknown error occurred - installation failed.
   
-  
+ 
  * https://www.rubydoc.info/gems/kitchen-terraform/6.1.0/Kitchen/Terraform/OutputsManager
  * https://www.trility.io/insights/complex-practical-examples-devops-unit-testing
  * https://github.com/rubelw/terraform-kitchen - commented, complex
@@ -949,3 +955,6 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
    
   ### Linkedin Learning Terraform
   * https://www.linkedin.com/learning/search?keywords=terraform&u=67698794
+
+  * httpsfinspec://www.youtube.com/watch?v=A33q6eE7v0c 
+  * https://www.youtube.com/watch?v=wDzTIe7lNmI
