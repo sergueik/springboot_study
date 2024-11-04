@@ -1,0 +1,17 @@
+instances:
+ instance1:
+   ami: ami1
+   shape: t2-micro
+   env: dev
+ instance2:
+   ami: ami2
+   shape: t2-micro
+   env: dev
+ instance3:
+   ami: ami1
+   shape: t2-micro
+   env: stage
+ instance4:
+   ami: ami2
+   shape: t2-micro
+   env: stage
