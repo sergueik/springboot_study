@@ -7,48 +7,38 @@ locals {
 // Terraform will extract only the values from the map and return them as a list. 
 // This is a common pattern to convert a map into a list of its values
 locals {
+  key0 = keys(local.data)
   // collects values
-  dev10 = [for instances in local.data : instances]
-  // just one cluster, get list of atttributes
-  // collects values
-  dev11 = [for row in local.dev10[0] : row]
-  dev12 = [for row in local.dev11 : row if row.env == "dev"]
+  dev0 = [for label, instances in local.data : instances]
+  // note: the syntax [FOR:IF:VALUE ] does not  work
+  // with one argument, collects values
+  dev1 = [for label, instances in local.data : { for instance_key, instance_value in instances : instance_key => instance_value
+  if instance_value.env == "dev" } if(label == "instancesA" || label == "instancesB")]
+  
+  // cryptic
+  dev2 = merge([
+    for data in local.data : { for instance_key, instance_value in data :
+      instance_key => instance_value
+    if instance_value.env == "dev" }
+  ]...)
   // https://developer.hashicorp.com/terraform/language/functions/merge
   // https://developer.hashicorp.com/terraform/language/expressions/function-calls#expanding-function-arguments
-  dev13 = merge(local.dev12...)
-}
-/*
-output "data" {
-  value = local.data
+  dev3 = merge(local.dev1...)
+  // NOTE: merge only operates on a list or tuple 
+  // see also: https://spacelift.io/blog/terraform-merge-function
 }
 
-output "dev10" {
-  value = local.dev10
+output "dev1" {
+  value = local.dev1
 }
 
 
-output "dev11" {
-  value = local.dev11
-}
-*/
-output "dev12" {
-  value = local.dev12
-}
 
-output "dev13" {
-  value = local.dev13
-}
-
-/*
-output "type_data" {
-  value = type(local.data)
-}
-Error: Call to unknown function
-*/
-
-
-/*output "dev2" {
+output "dev2" {
   value = keys(local.dev2)
 }
-*/
+
+output "dev3" {
+  value = local.dev3
+}
 
