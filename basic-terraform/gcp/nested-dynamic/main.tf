@@ -31,24 +31,29 @@ provider "google" {
 # see also
 
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket#example-usage---life-cycle-settings-for-storage-bucket-objectst
-resource "google_storage_bucket" "example" {
-  name     = "example-bucket"
-  location = "US"
+resource "google_compute_instance" "example" {
+  name         = "example-instance"
+  machine_type = "e2-medium"
+  zone         = "us-central1-a"
+  tags         = ["web", "production"]
 
-  dynamic "lifecycle_rule" {
-    for_each = var.lifecycle_rules
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-11"
+    }
+  }
+
+  dynamic "network_interface" {
+    for_each = var.network_interfaces
     content {
-      action {
-        type = lifecycle_rule.value.action_type
-      }
-      //  NOTE: Each dynamic block operates independently, so you can define the inner dynamic block within the content block of the outer one.
-      dynamic "condition" {
-        for_each = lifecycle_rule.value.conditions
+      // https://registry.terraform.io/providers/hashicorp/google/4.22.0/docs/resources/compute_instance#network_interface
+      network = network_interface.value.network
+      // https://registry.terraform.io/providers/hashicorp/google/4.22.0/docs/resources/compute_instance#access_config
+      dynamic "access_config" {
+        for_each = network_interface.value.access_configs
         content {
-          age                   = condition.value.age
-          created_before        = condition.value.created_before
-          with_state            = condition.value.with_state
-          matches_storage_class = condition.value.matches_storage_class
+          nat_ip       = access_config.value.nat_ip
+          network_tier = access_config.value.network_tier
         }
       }
     }

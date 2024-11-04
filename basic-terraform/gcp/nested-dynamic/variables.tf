@@ -1,12 +1,9 @@
-# 
-variable "lifecycle_rules" {
+variable "network_interfaces" {
   type = list(object({
-    action_type = string
-    conditions  = list(object({
-      age                   = number
-      created_before        = string
-      with_state            = string
-      matches_storage_class = list(string)
+    network = string
+    access_configs = list(object({
+      nat_ip       = string
+      network_tier = string
     }))
   }))
 }
