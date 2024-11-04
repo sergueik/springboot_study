@@ -44,13 +44,15 @@ resource "google_compute_instance" "example" {
   }
 
   dynamic "network_interface" {
-    for_each = var.network_interfaces
+    // recent versions of Terraform (0.12 and later), for_each supports both lists and maps
+    // When using a list with for_each, Terraform will use the list item itself as the identifier unless it’s a complex object. For maps, the keys serve as identifiers
+    for_each = toset(var.network_interfaces)
     content {
       // https://registry.terraform.io/providers/hashicorp/google/4.22.0/docs/resources/compute_instance#network_interface
       network = network_interface.value.network
       // https://registry.terraform.io/providers/hashicorp/google/4.22.0/docs/resources/compute_instance#access_config
       dynamic "access_config" {
-        for_each = network_interface.value.access_configs
+        for_each = toset(network_interface.value.access_configs)
         content {
           nat_ip       = access_config.value.nat_ip
           network_tier = access_config.value.network_tier
