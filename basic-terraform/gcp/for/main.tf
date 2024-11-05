@@ -9,23 +9,22 @@ locals {
 locals {
   key0 = keys(local.data)
   // collects values
-  dev0 = [for label, instances in local.data : instances]
+  dev0 = merge(flatten([for label, instances in local.data : instances])...)
   // note: the syntax [FOR:IF:VALUE ] does not  work
   // with one argument, collects values
-  dev1 = [for label, instances in local.data : { for instance_key, instance_value in instances : instance_key => instance_value
-  if instance_value.env == "dev" } if(label == "instancesA" || label == "instancesB")]
-  
-  // cryptic
-  dev2 = merge([
-    for data in local.data : { for instance_key, instance_value in data :
-      instance_key => instance_value
-    if instance_value.env == "dev" }
-  ]...)
+  dev1 = { for instance_key, instance_value in local.dev0 : instance_key => instance_value
+    if instance_value.env == "dev"
+  }
+
   // https://developer.hashicorp.com/terraform/language/functions/merge
   // https://developer.hashicorp.com/terraform/language/expressions/function-calls#expanding-function-arguments
-  dev3 = merge(local.dev1...)
+  // dev3 = merge(local.dev1...)
   // NOTE: merge only operates on a list or tuple 
   // see also: https://spacelift.io/blog/terraform-merge-function
+}
+
+output "dev0" {
+  value = local.dev0
 }
 
 output "dev1" {
@@ -34,11 +33,5 @@ output "dev1" {
 
 
 
-output "dev2" {
-  value = keys(local.dev2)
-}
 
-output "dev3" {
-  value = local.dev3
-}
 
