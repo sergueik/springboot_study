@@ -915,7 +915,7 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * https://codelabs.developers.google.com/codelabs/cft-onboarding#0
   * https://codelabs.developers.google.com/codelabs/cft-onboarding#7
 
-  * [inspall inspec package](https://mitre-inspec-developer.netlify.app/installation/LinuxInstall.html#option-1-package-installer)
+  * [install inspec package](https://mitre-inspec-developer.netlify.app/installation/LinuxInstall.html#option-1-package-installer)
   + note - after `gem install inspec` the inspec is not installed  
   * https://docs.chef.io/inspec/config/
   * https://docs.chef.io/workstation/config_yml_kitchen/
@@ -958,3 +958,8 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
 
   * httpsfinspec://www.youtube.com/watch?v=A33q6eE7v0c 
   * https://www.youtube.com/watch?v=wDzTIe7lNmI
+
+####  Usefil
+
+ * https://spacelift.io/blog/terraform-functions-expressions-loops  
+ * https://spacelift.io/blog/terraform-dynamic-blocks
