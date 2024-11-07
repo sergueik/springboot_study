@@ -115,3 +115,14 @@ kitchen converg
 
 gem install kitchen-inspec
 
+
+gem list kitchen-google
+
+
+```
+
+  ×  google-storage-bucket: Check Google Cloud Storage Bucket
+     ×  Control Source Code Error default/test.rb:14 
+     undefined method `google_storage_bucket' for #<Inspec::Rule:0x00007ea0f1df4ec0 @impact=1.0, @title="Check Google Cloud Storage Bucket", @descriptions={:default=>"Ensure the Google Cloud Storage bucket exists and has the expected properties."}, @refs=[], @tags={}, @resource_dsl=#<Module:0x00007ea0f2ff5160>, @__code=nil, @__block=#<Proc:0x00007ea0f3f03b98 default/test.rb:14>, @__source_location={:ref=>"default/test.rb", :line=>14}, @__rule_id="google-storage-bucket", @__profile_id="tests from default.", @__checks=[["describe", ["Control Source Code Error"], #<Proc:0x00007ea0f3f84fb8 /home/kouzmine_serguei/.gems/gems/inspec-core-6.8.1/lib/inspec/rule.rb:454>]], @__skip_rule={}, @__merge_count=0, @__merge_changes=[], @__skip_only_if_eval=false, @__na_rule={}, @__waiver_data=nil, @__file="default/test.rb", @__group_title=nil>
+
+```
