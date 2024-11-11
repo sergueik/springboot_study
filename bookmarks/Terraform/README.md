@@ -27,7 +27,8 @@
   * https://developer.hashicorp.com/terraform/language/expressions/type-constraints#collection-types
   * https://developer.hashicorp.com/terraform/language/expressions/type-constraints#primitive-types
   * https://developer.hashicorp.com/terraform/language/expressions/type-constraints#conversion-of-complex-types
-  * https://developer.hashicorp.com/terraform/language/expressions/dynamic-blocks
+  * https://developer.hashicorp.com/terraform/language/expressions/dynamic-blocks (incl nested)
+  * https://developer.hashicorp.com/terraform/language/modules/develop/composition (complex)
   * https://developer.hashicorp.com/terraform/language/expressions/types
   * https://developer.hashicorp.com/terraform/language/expressions/types#type-conversion
   * https://developer.hashicorp.com/terraform/language/expressions/for
@@ -936,8 +937,21 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * https://github.com/warestack/terraform-gcp-compute-instance/tree/main/account-impersonation
   * https://developer.hashicorp.com/terraform/tutorials/kubernetes/gke 
   
+### Inspec Shell
+
+  * https://mitre-inspec-developer.netlify.app/course/04.html#entering-the-inspec-shell  
+  * https://www.chef.io/blog/inspec-2-0-cloud-resources-mini-tutorial (does not work?)
+  * https://www.youtube.com/watch?v=7rHTu-qz5sQ
+  * https://docs.chef.io/inspec/shell/
+  * https://cloud.google.com/architecture/patterns-automated-compliance-testing-chef-inspec 
+  * https://docs.chef.io/inspec/cloud/gcp/
+  * https://docs.chef.io/inspec/cloud/aws/
+  * https://stackoverflow.com/questions/58771524/chef-inspec-undefined-local-variable-or-method-aws-region
+  * https://stackoverflow.com/questions/67258715/inspec-aws-errors-on-running-an-exec
   
- #### Data Engineering
+  
+  
+### Data Engineering
  
   * [Data Engineering Foundations](https://www.linkedin.com/learning/data-engineering-foundations/what-is-data-engineering?u=67698794)
   * [Master Data Engineering](https://www.linkedin.com/learning/paths/master-data-engineering?u=67698794)
@@ -959,7 +973,7 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * httpsfinspec://www.youtube.com/watch?v=A33q6eE7v0c 
   * https://www.youtube.com/watch?v=wDzTIe7lNmI
 
-####  Usefil
+####  Useful
 
  * https://spacelift.io/blog/terraform-functions-expressions-loops  
  * https://spacelift.io/blog/terraform-dynamic-blocks

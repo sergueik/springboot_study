@@ -412,7 +412,10 @@
     + https://www.coursera.org/learn/launching-machine-learning/lecture/WWXvO/improve-data-quality
   * https://developers.google.com/machine-learning/problem-framing/ml-framing
   * https://developers.google.com/machine-learning/crash-course
-  
+  * https://kubernetes.io/docs/reference/kubectl/generated/kubectl_scale/
+  * https://kubernetes.io/docs/concepts/workloads/controllers/deployment/  
+  * https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/
+  * https://spacelift.io/blog/kubernetes-deployment-strategies 
 ####  Node Js
 
     + https://app.pluralsight.com/library/courses/nodejs-docker-developing-apps/table-of-contents
@@ -543,16 +546,20 @@
 
 ### GCLOUD
 
+  * https://stackoverflow.com/questions/34600588/i-want-to-use-the-output-of-gcloud-in-a-script-but-the-format-changes-what-s
+  * https://cloud.google.com/blog/products/management-tools/filtering-and-formatting-fun-with (complex)
   * https://stackoverflow.com/questions/47006062/how-do-i-list-the-roles-associated-with-a-gcp-service-account
-  * https://stackoverflow.com/questions/47006062/how-do-i-list-the-roles-associated-with-a-gcp-service-account
+  
     + `gcloud projects get-iam-policy spheric-alcove-430818-f9 --filter="bindings.members:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com"  --flatten="bindings[].members" --format=json`
     + `gcloud projects list --format='value(projectId)'`
     + `gcloud projects get-iam-policy spheric-alcove-430818-f9 --filter="bindings.members:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com AND bindings.role:roles/serviceusage.serviceUsageAdmin"  --flatten="bindings[].members" --format=flattened`
+  * https://cloud.google.com/sdk/gcloud/reference/topic/filters 
   * [short interactive tutorial about using the filter and format flags](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/GoogleCloudPlatform/cloud-shell-tutorials&page=editor&tutorial=cloudsdk/tutorial.md)
   * https://cloud.google.com/sdk/gcloud/reference/topic/filters
   * [gcloud-cheat-sheet.md](https://gist.github.com/pydevops/cffbd3c694d599c6ca18342d3625af97)
        + with few  `flatten` examples
   * [gcloud-fiters.sh](https://gist.github.com/rezamt/6ee102ee653e37280e35d649e7c221b5)
+  * https://cloud.google.com/sdk/gcloud/reference/iam/service-accounts/get-iam-policy
   * https://cloud.google.com/sdk/gcloud/reference/iam/service-accounts/get-iam-policy
   * https://cloud.google.com/sdk/gcloud/reference/projects/get-iam-policy
   * https://cloud.google.com/sdk/gcloud/reference/iam/roles/describe
