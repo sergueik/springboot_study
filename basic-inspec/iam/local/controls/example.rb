@@ -8,6 +8,7 @@ service_account_email = attribute('email', description: 'Service Account Email')
 
 # Skipping profile: 'inspec-gcp-deep-dive-profile' on unsupported platform: 'windows_8.1/6.3.9600'.
 control "local" do
+  # https://docs.chef.io/inspec/resources/command/
   describe command("gcloud projects get-iam-policy #{attribute('project_id')} --flatten='bindings[].members' --filter='bindings.role:roles/iam.securityReviewer AND bindings.members:serviceAccount:#{service_account_email}' --format='json'") do
     its('exit_status') { should eq 0 }
     its('stdout') { should_not eq '[]' }  # Ensure that the role is attached
@@ -21,8 +22,24 @@ control "local" do
       all_members = json_output.flat_map { |entry| entry.dig('bindings', 'members') }.compact
       expect(all_members).to include(known_service_account)
     end
+    # result.class.name.split('::').last
   end
 
 end
 
+require 'csv'
 
+control 'csv-output-test' do
+  describe command("gcloud asset search-all-iam-policies --scope='projects/spheric-alcove-430818-f9' --query='roles:roles/iam.serviceAccountTokenCreator'  --format='csv(policy.bindings.members,policy.bindings.role)' --flatten='policy.bindings[].members' ").stdout do
+    let(:parsed_output) { CSV.parse(subject, headers: true) }
+
+    it 'should have more than one row' do
+      expect(parsed_output.size).to be > 1
+    end
+
+    it 'should contain specific data' do
+      # user:kouzmine.serguei@gmail.com,roles/iam.serviceAccountTokenCreator
+      expect(parsed_output.any? { |row| row['members'] == 'user:kouzmine.serguei@gmail.com' }).to be true
+    end
+  end
+end
