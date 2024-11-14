@@ -921,7 +921,7 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * https://docs.chef.io/inspec/config/
   * https://docs.chef.io/workstation/config_yml_kitchen/
   Non-Commercial License
-  Unknown error occurred - installation failed.
+  Unknown error occurred - installation failed.sa
   
  
  * https://www.rubydoc.info/gems/kitchen-terraform/6.1.0/Kitchen/Terraform/OutputsManager
@@ -948,9 +948,12 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * https://docs.chef.io/inspec/cloud/aws/
   * https://stackoverflow.com/questions/58771524/chef-inspec-undefined-local-variable-or-method-aws-region
   * https://stackoverflow.com/questions/67258715/inspec-aws-errors-on-running-an-exec
-  
-  
-  
+  * https://github.com/GoogleCloudPlatform/inspec-gcp-helpers
+
+### inspec Kubernetes
+
+  * https://www.chef.io/chefconf-keynotes/assess-the-security-of-kubernetes-with-inspec  (very complex)
+  https://github.com/GoogleCloudPlatform/inspec-gke-cis-benchmark/blob/master/run_profiles.sh
 ### Data Engineering
  
   * [Data Engineering Foundations](https://www.linkedin.com/learning/data-engineering-foundations/what-is-data-engineering?u=67698794)
@@ -977,3 +980,5 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
 
  * https://spacelift.io/blog/terraform-functions-expressions-loops  
  * https://spacelift.io/blog/terraform-dynamic-blocks
+ * https://spacelift.io/blog/terraform-merge-function
+ * https://spacelift.io/blog/terraform-count
