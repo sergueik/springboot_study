@@ -1,5 +1,6 @@
 # Example InSpec Profile
 ```
+export GOOGLE_APPLICATION_CREDENTIALS=~/my-profile/keys.json
 inspec exec . -t local:// --input-file attributes.yml
 ```
 
@@ -26,4 +27,10 @@ dificult to examine json:
     "version": 1
   }
 ]
+```
+
+command to use with console tests
+```shh
+gcloud asset search-all-iam-policies --scope='projects/spheric-alcove-430818-f9' --query='roles:roles/iam.serviceAccountTokenCreator'  --format='csv(policy.bindings.members,policy.bindings.role)' 
+--flatten='policy.bindings[].members' 
 ```
