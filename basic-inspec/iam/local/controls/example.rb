@@ -41,7 +41,7 @@ control 'csv-output-test' do
       # user:kouzmine.serguei@gmail.com,roles/iam.serviceAccountTokenCreator
       expect(parsed_output.any? { |row| row['members'] == 'user:kouzmine.serguei@gmail.com' }).to be true
     end
-it 'should have at least 2 rows where Filename matches a condition' do
+it 'should have at least 2 rows where members matches a type of user' do
       filtered_rows = parsed_output.select { |row| row['members'] =~ /user:.*/ }
       expect(filtered_rows.size).to be >= 2
     end
