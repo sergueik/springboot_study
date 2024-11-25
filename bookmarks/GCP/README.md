@@ -544,11 +544,12 @@
   * [Harness Shell Script step example](https://developer.harness.io/docs/continuous-delivery/x-platform-cd-features/cd-steps/utilities/shell-script-step)
 
 
+
 ### GCLOUD
 
   * https://stackoverflow.com/questions/34600588/i-want-to-use-the-output-of-gcloud-in-a-script-but-the-format-changes-what-s
   * https://cloud.google.com/blog/products/management-tools/filtering-and-formatting-fun-with (complex)
-  * [GCloud Filter Examples](https://gist.github.com/rezamt/6ee102ee653e37280e35d649e7c221b5)
+  * [GCloud Filter Examples ](https://gist.github.com/rezamt/6ee102ee653e37280e35d649e7c221b5)
   * https://stackoverflow.com/questions/47006062/how-do-i-list-the-roles-associated-with-a-gcp-service-account
   
     + `gcloud projects get-iam-policy spheric-alcove-430818-f9 --filter="bindings.members:terraform-with-gcp@spheric-alcove-430818-f9.iam.gserviceaccount.com"  --flatten="bindings[].members" --format=json`
@@ -565,6 +566,7 @@
   * https://cloud.google.com/sdk/gcloud/reference/projects/get-iam-policy
   * https://cloud.google.com/sdk/gcloud/reference/iam/roles/describe
    + `gcloud iam roles describe  roles/iam.serviceAccountTokenCreator`
+  * https://cloud.google.com/sdk/gcloud/reference/container/clusters/describe
   * https://gauravguptacloud.medium.com/gcp-deny-policy-6726313076a
  * https://cloud.google.com/kubernetes-engine/docs/concepts/network-overview#pods
 ### TAINTS
@@ -577,3 +579,6 @@
 ### Helm
 
   * https://opensource.com/article/20/5/helm-charts
+  * https://medium.com/@vijayalakshmiyvl/helm-basic-commands-535511050c54
+  * https://opensource.com/article/20/2/kubectl-helm-commands
+  https://medium.com/@vijayalakshmiyvl/helm-basic-commands-535511050c54

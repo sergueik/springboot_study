@@ -953,7 +953,8 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
 ### inspec Kubernetes
 
   * https://www.chef.io/chefconf-keynotes/assess-the-security-of-kubernetes-with-inspec  (very complex)
-  https://github.com/GoogleCloudPlatform/inspec-gke-cis-benchmark/blob/master/run_profiles.sh
+  * https://github.com/GoogleCloudPlatform/inspec-gke-cis-benchmark/blob/master/run_profiles.sh
+  * https://docs.chef.io/inspec/profiles/custom_resources/#stq=inspec-k8s&stp=1
 ### Data Engineering
  
   * [Data Engineering Foundations](https://www.linkedin.com/learning/data-engineering-foundations/what-is-data-engineering?u=67698794)
