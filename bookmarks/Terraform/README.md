@@ -118,8 +118,11 @@ deny_public_ssh_access = rule {
   * https://developer.hashicorp.com/sentinel/docs/writing/testing
   * https://developer.hashicorp.com/sentinel/docs/language/spec#else-operator
   * https://developer.hashicorp.com/sentinel/docs/language/spec#quantifier-expressions-any-all-filter-map
+  
   * https://developer.hashicorp.com/sentinel/docs/language/collection-operations
     + https://discuss.hashicorp.com/t/delta-between-two-maps-in-sentinel/47873/3
+    * https://hashicorp.github.io/field-workshops-terraform/slides/sentinel/index.html#59
+    + https://github.com/hashicorp/sentinel-training-solution
   * https://developer.hashicorp.com/sentinel/docs/terraform#examples HCP Terraform evaluates Sentinel policy evaluations immediately before cost estimation
   * https://developer.hashicorp.com/sentinel/docs/language
   * https://www.hashicorp.com/blog/terraform-sentinel-v2-imports-now-in-technology-preview
