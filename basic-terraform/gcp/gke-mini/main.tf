@@ -18,6 +18,7 @@ resource "google_container_cluster" "minimal_gke" {
 
   # Disable default node pool to avoid deletion issues
   remove_default_node_pool = true
+  initial_node_count       = 1
 
   # Optional: Specify the GKE cluster master configuration
   #  initial_cluster_version = "latest"
