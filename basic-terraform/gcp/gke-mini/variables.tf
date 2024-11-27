@@ -15,3 +15,8 @@ variable "zone" {
   default     = "us-central1-a"
 }
 
+variable "deploy_workload" {
+  description = "Whether to deploy the Nginx workload."
+  type        = bool
+  default     = false
+}

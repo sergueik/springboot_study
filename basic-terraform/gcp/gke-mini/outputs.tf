@@ -19,3 +19,6 @@ output "kubeconfig" {
   EOT
 }
 
+output "auth" {
+  value = google_container_cluster.minimal_gke.master_auth
+}

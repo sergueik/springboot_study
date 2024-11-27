@@ -19,7 +19,7 @@ resource "google_container_cluster" "minimal_gke" {
     node_count = 1
 
     node_config {
-      machine_type = "e2-medium"
+      machine_type = "e2-micro"
       preemptible  = true # Spot instance
       oauth_scopes = [
         "https://www.googleapis.com/auth/cloud-platform"
@@ -33,8 +33,9 @@ resource "google_container_cluster" "minimal_gke" {
   }
 }
 
-
 resource "kubernetes_deployment" "nginx" {
+  count = var.deploy_workload ? 1 : 0 # Deploy only if deploy_workload is true
+
   metadata {
     name = "nginx-deployment"
     labels = {
@@ -62,7 +63,7 @@ resource "kubernetes_deployment" "nginx" {
         container {
           image = "nginx:latest"
           name  = "nginx"
-          ports {
+          port {
             container_port = 80
           }
         }
@@ -72,6 +73,8 @@ resource "kubernetes_deployment" "nginx" {
 }
 
 resource "kubernetes_service" "nginx" {
+  count = var.deploy_workload ? 1 : 0 # Deploy only if deploy_workload is true
+
   metadata {
     name = "nginx-service"
   }
