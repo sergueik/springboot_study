@@ -14,22 +14,23 @@ resource "google_compute_subnetwork" "gke_subnet" {
 
 # Create the GKE cluster without default node pool
 resource "google_container_cluster" "minimal_gke" {
-  name     = "minimal-gke"
-  location = var.region
-
+  name = "minimal-gke"
+  # location = var.region
+  location = var.zone
   # Disable the default node pool creation
   remove_default_node_pool = true
   initial_node_count       = 1
   # initial_cluster_version = "latest"
-
+  # node_locations = [var.zone]
   network    = google_compute_network.gke_network.name
   subnetwork = google_compute_subnetwork.gke_subnet.name
 }
 
 # Create a custom node pool with exactly 1 node
 resource "google_container_node_pool" "minimal_pool" {
-  name       = "minimal-node-pool"
-  location   = var.region
+  name = "minimal-node-pool"
+  # location   = var.region
+  location   = var.zone
   cluster    = google_container_cluster.minimal_gke.name
   node_count = 1 # Ensure only 1 node in the pool
 

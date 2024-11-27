@@ -1,1 +1,5 @@
-inspec exec . -t local://
+### Info
+
+```
+inspec exec . -t local://  --input-file=attributes.yml 
+```

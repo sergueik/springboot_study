@@ -1,7 +1,9 @@
 control 'gcloud-node-pool-validation' do
   title 'Validate GKE Node Pool using gcloud command'
 
-  describe command('gcloud container node-pools describe minimal-node-pool --cluster=minimal-gke --region=us-central1 --format=json') do
+  #  # note command takes different arguments
+#  describe command('gcloud container node-pools describe minimal-node-pool --cluster=minimal-gke --region=us-central1 --format=json') do
+ describe command('gcloud container node-pools describe minimal-node-pool --cluster=minimal-gke --zone=us-central1-c --format=json') do
     its('exit_status') { should eq 0 }
     its('stdout') { should_not be_empty }
     its('stderr') { should be_empty }

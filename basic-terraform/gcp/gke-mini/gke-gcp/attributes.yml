@@ -1,3 +1,4 @@
 # Below is to be uncommented and set with your GCP project ID:
-  gcp_project_id: 'spheric-alcove-430818-f9'
-  ~                                              
+gcp_project_id: 'spheric-alcove-430818-f9'
+region_name:      "us-central1"
+zone_name:       "us-central1-c"
