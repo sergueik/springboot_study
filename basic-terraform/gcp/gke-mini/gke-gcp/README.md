@@ -29,3 +29,11 @@ Target ID: beabb9d4-4fc2-552b-a6be-3820a467f89c
      No tests executed.
 
 ```
+
+### Exploring 
+
+```
+×  google_container_clusters node_configs is expected to be empty
+     expected `[#<#<Class:0x000078166d7fc460>::GoogleInSpec::Container::Property::ClusterNodeConfig:0x000078165f8d93...container_clusters ClusterNodeConfig", @enable_secure_boot=nil, @enable_integrity_monitoring=true>>].empty?` to be truthy, got fals
+
+```
