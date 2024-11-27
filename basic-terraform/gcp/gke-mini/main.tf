@@ -1,8 +1,8 @@
 resource "google_container_cluster" "minimal_gke" {
-  name               = "minimal-gke-cluster"
-  location           = var.region
-  initial_node_count = 1
-
+  name     = "minimal-gke-cluster"
+  location = var.region
+  #  initial_node_count = 1
+  # It's invalid to specify both cluster.initial_node_count and a node pool. Please only provide a node pool.
   # Enable private nodes for security (optional)
   private_cluster_config {
     enable_private_nodes    = false
