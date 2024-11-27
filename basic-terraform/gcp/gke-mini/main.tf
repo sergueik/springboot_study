@@ -12,27 +12,26 @@ resource "google_compute_subnetwork" "gke_subnet" {
   ip_cidr_range = "10.0.0.0/24"
 }
 
+# Create the GKE cluster without default node pool
 resource "google_container_cluster" "minimal_gke" {
   name     = "minimal-gke"
   location = var.region
 
-  # Disable default node pool to avoid deletion issues
+  # Disable the default node pool creation
   remove_default_node_pool = true
   initial_node_count       = 1
+  # initial_cluster_version = "latest"
 
-  # Optional: Specify the GKE cluster master configuration
-  #  initial_cluster_version = "latest"
-
-  # Networking configurations
   network    = google_compute_network.gke_network.name
   subnetwork = google_compute_subnetwork.gke_subnet.name
 }
 
+# Create a custom node pool with exactly 1 node
 resource "google_container_node_pool" "minimal_pool" {
   name       = "minimal-node-pool"
   location   = var.region
   cluster    = google_container_cluster.minimal_gke.name
-  node_count = 1
+  node_count = 1 # Ensure only 1 node in the pool
 
   node_config {
     preemptible  = true
@@ -40,26 +39,31 @@ resource "google_container_node_pool" "minimal_pool" {
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
-
     metadata = {
       disable-legacy-endpoints = "true"
     }
   }
+  # Disable auto-scaling to ensure only 1 node is used
+  autoscaling {
+
+    min_node_count = 1
+    max_node_count = 1
+    # enabled = false # Disable auto-scaling
+  }
 }
 
+# Define Kubernetes workload (if applicable, but this should not affect node pool size)
 resource "kubernetes_deployment" "nginx" {
-  count = var.deploy_workload ? 1 : 0 # Deploy only if deploy_workload is true
-
+  count = var.deploy_workload ? 1 : 0 # Deploy only if `deploy_w
   metadata {
-    name = "nginx-deployment"
+    name = "nginx"
     labels = {
       app = "nginx"
     }
   }
 
   spec {
-    replicas = 1
-
+    replicas = 1 # Set to 1 replica to avoid scaling the node pool
     selector {
       match_labels = {
         app = "nginx"
@@ -75,34 +79,13 @@ resource "kubernetes_deployment" "nginx" {
 
       spec {
         container {
-          image = "nginx:latest"
           name  = "nginx"
+          image = "nginx:latest"
           port {
             container_port = 80
           }
         }
       }
     }
-  }
-}
-
-resource "kubernetes_service" "nginx" {
-  count = var.deploy_workload ? 1 : 0 # Deploy only if deploy_workload is true
-
-  metadata {
-    name = "nginx-service"
-  }
-
-  spec {
-    selector = {
-      app = "nginx"
-    }
-
-    port {
-      port        = 80
-      target_port = 80
-    }
-
-    type = "LoadBalancer"
   }
 }

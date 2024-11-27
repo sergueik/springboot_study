@@ -1,0 +1,1 @@
+inspec exec . -t local://
