@@ -1,34 +1,33 @@
 resource "google_container_cluster" "minimal_gke" {
-  name     = "minimal-gke-cluster"
+  name     = "minimal-gke"
   location = var.region
-  #  initial_node_count = 1
-  # It's invalid to specify both cluster.initial_node_count and a node pool. Please only provide a node pool.
-  # Enable private nodes for security (optional)
-  private_cluster_config {
-    enable_private_nodes    = false
-    enable_private_endpoint = false
-  }
 
-  # GKE default settings
+  # Disable default node pool to avoid deletion issues
   remove_default_node_pool = true
-  node_locations           = [var.zone]
 
-  # Add node pool
-  node_pool {
-    name       = "spot-pool"
-    node_count = 1
+  # Optional: Specify the GKE cluster master configuration
+  initial_cluster_version = "latest"
 
-    node_config {
-      machine_type = "e2-micro"
-      preemptible  = true # Spot instance
-      oauth_scopes = [
-        "https://www.googleapis.com/auth/cloud-platform"
-      ]
-    }
+  # Networking configurations
+  network    = google_compute_network.gke_network.name
+  subnetwork = google_compute_subnetwork.gke_subnet.name
+}
 
-    management {
-      auto_repair  = true
-      auto_upgrade = true
+resource "google_container_node_pool" "minimal_pool" {
+  name       = "minimal-node-pool"
+  location   = var.region
+  cluster    = google_container_cluster.minimal_gke.name
+  node_count = 1
+
+  node_config {
+    preemptible  = true
+    machine_type = "e2-micro" # Lightweight instance for cost optimization
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+
+    metadata = {
+      disable-legacy-endpoints = "true"
     }
   }
 }
