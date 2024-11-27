@@ -1,3 +1,17 @@
+# Create a VPC network
+resource "google_compute_network" "gke_network" {
+  name                    = "gke-network"
+  auto_create_subnetworks = false
+}
+
+# Create a subnetwork within the VPC network
+resource "google_compute_subnetwork" "gke_subnet" {
+  name          = "gke-subnet"
+  region        = var.region
+  network       = google_compute_network.gke_network.name
+  ip_cidr_range = "10.0.0.0/24"
+}
+
 resource "google_container_cluster" "minimal_gke" {
   name     = "minimal-gke"
   location = var.region
@@ -6,7 +20,7 @@ resource "google_container_cluster" "minimal_gke" {
   remove_default_node_pool = true
 
   # Optional: Specify the GKE cluster master configuration
-  initial_cluster_version = "latest"
+  #  initial_cluster_version = "latest"
 
   # Networking configurations
   network    = google_compute_network.gke_network.name
