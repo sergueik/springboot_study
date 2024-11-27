@@ -21,4 +21,5 @@ resource "aws_instance" "ubuntu" {
   tags = {
     Name = var.instance_name
   }
+  user_data                   = templatefile("${path.module}/user_data.tfpl", { department = var.user_department, name = var.user_name })
 }

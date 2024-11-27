@@ -1,12 +1,12 @@
 	
 provider "aws" {
   region     = "us-east-2"
-  access_key = ""
-  secret_key = ""
+  // access_key = ""
+  //secret_key = ""
 }
 
 module "server" {
-  count        = var.create_module ? 1 : 0
+  count        = var.create_module ? 2 : 0
   source        = "./modules/server"
   region = var.region
   instance_type = var.instance_type
