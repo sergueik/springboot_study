@@ -156,4 +156,44 @@ end
       end
     end
   end
+
+  describe 'validating Kubernetes node status' do
+    # Run the kubectl command to get node details in JSON format
+    subject do
+      command('kubectl get nodes -o jsonpath="{.items[*].status.nodeInfo}"')
+    end
+  
+    # Ensure the command executed successfully
+    its('exit_status') { should eq 0 }
+  
+    # Validate that the command outputs the necessary field (nodeInfo)
+    its('stdout') { should match /osImage/ }
+  
+  
+    # Check the structure and print the parsed JSON for debugging purposes
+    describe 'parsed JSON structure' do
+      # Load the stdout (JSON string) and parse it
+      it 'should have an array of nodeInfo' do
+        parsed_json = JSON.parse(subject.stdout)
+        expect(parsed_json).to be_an(Array)
+      end
+    
+        # Inspect the contents of the first element (if any)
+        it 'should have nodeInfo containing osImage' do
+          parsed_json = JSON.parse(subject.stdout)
+          node_info = parsed_json.first  # Get the first nodeInfo entry
+          expect(node_info).to have_key('osImage')
+        end
+    end
+  
+    # Extract and validate the 'osImage'
+    describe 'validating osImage' do
+      it 'should have the correct osImage' do
+        parsed_json = JSON.parse(subject.stdout)
+        node_info = parsed_json.first  # Get the first nodeInfo entry
+        os_image = node_info['osImage']  # Extract the osImage value
+        expect(os_image).to eq('Container-Optimized OS from Google')  # Expected value for osImage
+      end
+    end
+  end
 end
