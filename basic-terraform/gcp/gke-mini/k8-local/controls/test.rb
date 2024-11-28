@@ -1,4 +1,3 @@
-# k8s_cluster_setup.rb
 control 'k8s-cluster-setup' do
   impact 1.0
   title 'Ensure Kubernetes Cluster Setup is Correct'
@@ -10,61 +9,70 @@ control 'k8s-cluster-setup' do
   input_zone = attribute('zone')
   input_user_email = attribute('user_email')
   input_service_account_key = attribute('service_account_key')
+  input_kubeconfig_path = attribute('kubeconfig_path')  # New input for KUBECONFIG path
 
-  # Setup kubeconfig and RBAC permissions before tests
-  before do
-    # Check if the service account key exists to authenticate
-    if File.exist?(input_service_account_key)
-      # Set the environment variable for authentication using the service account key
-      ENV['GOOGLE_APPLICATION_CREDENTIALS'] = input_service_account_key
+  # Set environment variables and perform authentication
+    ENV['GOOGLE_APPLICATION_CREDENTIALS'] = input_service_account_key
+    ENV['KUBECONFIG'] = input_kubeconfig_path
 
-      # Authenticate using the service account credentials
-      system("gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS")
-
-      # Assign the necessary IAM roles
-      system("gcloud projects add-iam-policy-binding #{input_project_id} --member=\"user:#{input_user_email}\" --role=\"roles/container.viewer\"")
-      system("gcloud projects add-iam-policy-binding #{input_project_id} --member=\"user:#{input_user_email}\" --role=\"roles/container.developer\"")
-
-      # Get the credentials for the Kubernetes cluster
-      system("gcloud container clusters get-credentials #{input_cluster_name} --zone #{input_zone} --project #{input_project_id}")
-
-      # Explicitly set the KUBECONFIG environment variable for kubectl and InSpec
-      ENV['KUBECONFIG'] = "~/.kube/config"
-      
-      # Optionally, configure kubectl to point to the correct user context
-      system("kubectl config set-context --current --user=#{input_user_email}")
-
-      # Create RBAC permissions if needed (cluster-admin role)
-      system("kubectl create clusterrolebinding my-user-binding --clusterrole=cluster-admin --user=#{input_user_email}")
-    else
-      skip "Service account credentials file not found at #{input_service_account_key}, skipping setup."
+    describe file(input_service_account_key) do
+      it { should exist }
+      it { should be_file }
     end
-  end
 
-  # Example test: Check if the pod is running
+    # Setup Kubernetes credentials using the service account
+    describe command("gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS") do
+      its('exit_status') { should eq 0 }
+    end
+
+    # Assign IAM roles
+    describe command("gcloud projects add-iam-policy-binding #{input_project_id} --member=\"user:#{input_user_email}\" --role=\"roles/container.viewer\"") do
+      its('exit_status') { should eq 0 }
+    end
+
+    describe command("gcloud projects add-iam-policy-binding #{input_project_id} --member=\"user:#{input_user_email}\" --role=\"roles/container.developer\"") do
+      its('exit_status') { should eq 0 }
+    end
+
+    # Get credentials for the Kubernetes cluster
+    describe command("gcloud container clusters get-credentials #{input_cluster_name} --zone #{input_zone} --project #{input_project_id}") do
+      its('exit_status') { should eq 0 }
+    end
+
+    # Optionally configure kubectl for the user
+    describe command("kubectl config set-context --current --user=#{input_user_email}") do
+      its('exit_status') { should eq 0 }
+    end
+
+    # Ensure the necessary RBAC role exists
+    describe command("kubectl create clusterrolebinding my-user-binding --clusterrole=cluster-admin --user=#{input_user_email}") do
+      its('exit_status') { should eq 0 }
+    end
+  
+  # Test assertions after setup
   describe kubernetes_pod(name: 'my-pod') do
     it { should be_running }
     its('status') { should eq 'Running' }
   end
 
-  # Example test: Verify the service configuration
   describe kubernetes_service(name: 'my-service') do
     it { should exist }
     it { should have_port(80) }
     its('type') { should eq 'NodePort' }
   end
 
-  # Example test: Verify deployment exists and has correct number of replicas
   describe kubernetes_deployment(name: 'my-deployment') do
     it { should exist }
     it { should have_replicas(3) }
   end
 
-  # Cleanup: Remove the RBAC binding after tests
-  after do
-    # Clean up RBAC bindings if they were created
-    if system('kubectl get clusterrolebinding my-user-binding')
-      system('kubectl delete clusterrolebinding my-user-binding')
-    end
+  # Failing test: Check for a service that does not exist
+  describe kubernetes_service(name: 'nonexistent-service') do
+    it { should_not exist }
+  end
+
+  # Cleanup: Delete the RBAC binding
+  describe command('kubectl delete clusterrolebinding my-user-binding') do
+    its('exit_status') { should eq 0 }
   end
 end
