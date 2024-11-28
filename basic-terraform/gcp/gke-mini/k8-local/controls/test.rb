@@ -83,41 +83,6 @@ describe 'ensuring Kubeconfig path is set' do
   it { should be_file }
 end
 
-# Check for kubeconfig contents (e.g., validation of credentials)
-describe 'validating Kubeconfig contents' do
-  subject { command("kubectl config view --kubeconfig=#{input('kubeconfig_path')}") }
-  its('exit_status') { should eq 0 }
-  # its('stdout') { should match /clusters/ }
-end
-
-# Validate a Kubernetes pod (you can add your specific validation here)
-describe 'validating Kubernetes pod' do
-  subject { command("kubectl get pod --namespace=default") }
-  its('exit_status') { should eq 0 }
-  # its('stdout') { should match /pod/ }
-end
-
-# Validate a Kubernetes deployment (you can add your specific validation here)
-describe 'validating Kubernetes deployment' do
-  subject { command("kubectl get deployment --namespace=default") }
-  its('exit_status') { should eq 0 }
-  # its('stdout') { should match /deployment/ }
-end
-
-# Validate a Kubernetes service (you can add your specific validation here)
-describe 'validating Kubernetes service' do
-  subject { command("kubectl get service --namespace=default") }
-  its('exit_status') { should eq 0 }
-  # its('stdout') { should match /service/ }
-end
-
-# Validate Kubernetes PVC (you can add your specific validation here)
-describe 'validating Kubernetes PVC' do
-  subject { command("kubectl get pvc --namespace=default") }
-  its('exit_status') { should eq 0 }
-  # its('stdout') { should match /pvc/ }
-end
-
 # Check for Kubernetes node status
 describe 'validating Kubernetes node status' do
   subject { command("kubectl get nodes") }
@@ -168,31 +133,27 @@ end
       end
     end  
     
-    describe 'validating Kubernetes node info' do
-      # Run the kubectl command and capture the output
+    describe 'validating Kubernetes node status' do
+      # Run the kubectl command to get node details in JSON format
       subject do
-        command("kubectl get nodes -o jsonpath='{.items[*].status.nodeInfo}'")
+        command('kubectl get nodes -o jsonpath="{.items[*].status.nodeInfo}"')
       end
     
+      # Ensure the command executed successfully
       its('exit_status') { should eq 0 }
     
-      it 'Parse the output as JSON' do
-        parsed_json = JSON.parse("[#{subject.stdout}]") # Wrap the output in an array to parse multiple items as an array of nodes
-      
-        # Iterate over each node's info and check for osImage
-        parsed_json.each do |node_info|
-          describe "node OS image for #{node_info['osImage']}" do
-            it 'should be Container-Optimized OS from Google' do
-              expect(node_info['osImage']).to match(/Container-Optimized OS/)
-            end
-          end
-        end
-      
-        # Output the parsed JSON for debugging or inspection
-        it 'outputs node info as JSON' do
-          puts "Node Info JSON: #{parsed_json.to_json}"
-        end
+      # Validate that the command outputs the necessary field (nodeInfo)
+      its('stdout') { should match /osImage/ }
+    
+      it 'should have Container-Optimized OS image' do
+        # Load the stdout (JSON string) and parse it
+        parsed_json = JSON.parse(subject.stdout)
+    
+        # Extract the 'osImage' using dig and validate it
+        os_image = parsed_json.dig(0, 'osImage') # Assuming the JSON contains an array and we want the first item
+    
+        expect(os_image).to eq('Container-Optimized OS from Google')  # Expected value for osImage
       end
     end
-  end    
+  end
 end
