@@ -1,0 +1,6 @@
+project_id: spheric-alcove-430818-f9
+cluster_name: minimal-gke
+zone: us-central1-c
+user_email: kouzmine.serguei@gmail.com
+service_account_key: "~/my-profile/keys.json"
+kube_control: '~/.kube/config'

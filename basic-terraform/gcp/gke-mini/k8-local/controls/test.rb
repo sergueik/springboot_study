@@ -1,85 +1,70 @@
-control 'k8s-deployment-validation' do
-  # YAML definition for the deployment and service
-  deployment_yaml = <<-YAML
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: my-app
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: my-app
-  template:
-    metadata:
-      labels:
-        app: my-app
-    spec:
-      containers:
-        - name: my-app-container
-          image: nginx:1.19
-          ports:
-            - containerPort: 80
-  YAML
+# k8s_cluster_setup.rb
+control 'k8s-cluster-setup' do
+  impact 1.0
+  title 'Ensure Kubernetes Cluster Setup is Correct'
+  desc 'Check service account authentication, RBAC permissions, and cluster readiness'
 
-  service_yaml = <<-YAML
-apiVersion: v1
-kind: Service
-metadata:
-  name: my-service
-spec:
-  selector:
-    app: my-app
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-      nodePort: 30007
-  type: NodePort
-  YAML
+  # Load attributes from the attributes.yml
+  input_project_id = attribute('project_id')
+  input_cluster_name = attribute('cluster_name')
+  input_zone = attribute('zone')
+  input_user_email = attribute('user_email')
+  input_service_account_key = attribute('service_account_key')
 
-  # Deploy the Kubernetes resources (Deployment and Service)
-  describe command("echo '#{deployment_yaml}' | kubectl apply -f -") do
-    its('exit_status') { should eq 0 }
+  # Setup kubeconfig and RBAC permissions before tests
+  before do
+    # Check if the service account key exists to authenticate
+    if File.exist?(input_service_account_key)
+      # Set the environment variable for authentication using the service account key
+      ENV['GOOGLE_APPLICATION_CREDENTIALS'] = input_service_account_key
+
+      # Authenticate using the service account credentials
+      system("gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS")
+
+      # Assign the necessary IAM roles
+      system("gcloud projects add-iam-policy-binding #{input_project_id} --member=\"user:#{input_user_email}\" --role=\"roles/container.viewer\"")
+      system("gcloud projects add-iam-policy-binding #{input_project_id} --member=\"user:#{input_user_email}\" --role=\"roles/container.developer\"")
+
+      # Get the credentials for the Kubernetes cluster
+      system("gcloud container clusters get-credentials #{input_cluster_name} --zone #{input_zone} --project #{input_project_id}")
+
+      # Explicitly set the KUBECONFIG environment variable for kubectl and InSpec
+      ENV['KUBECONFIG'] = "~/.kube/config"
+      
+      # Optionally, configure kubectl to point to the correct user context
+      system("kubectl config set-context --current --user=#{input_user_email}")
+
+      # Create RBAC permissions if needed (cluster-admin role)
+      system("kubectl create clusterrolebinding my-user-binding --clusterrole=cluster-admin --user=#{input_user_email}")
+    else
+      skip "Service account credentials file not found at #{input_service_account_key}, skipping setup."
+    end
   end
 
-  describe command("echo '#{service_yaml}' | kubectl apply -f -") do
-    its('exit_status') { should eq 0 }
+  # Example test: Check if the pod is running
+  describe kubernetes_pod(name: 'my-pod') do
+    it { should be_running }
+    its('status') { should eq 'Running' }
   end
 
-  # Validate the Kubernetes Deployment (Check if it's running correctly)
-  describe command('kubectl get deployment my-app -o json') do
-    its('stdout') { should match /"replicas": 2/ }
+  # Example test: Verify the service configuration
+  describe kubernetes_service(name: 'my-service') do
+    it { should exist }
+    it { should have_port(80) }
+    its('type') { should eq 'NodePort' }
   end
 
-  # Validate the Kubernetes Service is of type NodePort and has NodePort configured
-  describe command('kubectl get service my-service -o json') do
-    its('stdout') { should match /"type": "NodePort"/ }
-    its('stdout') { should match /"nodePort": 30007/ }
+  # Example test: Verify deployment exists and has correct number of replicas
+  describe kubernetes_deployment(name: 'my-deployment') do
+    it { should exist }
+    it { should have_replicas(3) }
   end
 
-  # Failing Control: Check if the Pod is running, expecting it to fail
-  describe command('kubectl get pods -l app=my-app -o json') do
-    its('stdout') { should_not match /Running/ } # This should fail intentionally
-  end
-
-  # Passing Control: Check if the Pod is running (for a successful case)
-  describe command('kubectl get pods -l app=my-app -o json') do
-    its('stdout') { should match /Running/ } # This should pass
-  end
-
-  # Validate the Node (Check for specific taint or label)
-  describe command('kubectl describe node my-node') do
-    its('stdout') { should match /NoSchedule/ } # Check if the node has a taint for scheduling
-  end
-
-  # Teardown the resources after the test to ensure they don't persist
-  describe command("echo '#{deployment_yaml}' | kubectl delete -f -") do
-    its('exit_status') { should eq 0 }
-  end
-
-  describe command("echo '#{service_yaml}' | kubectl delete -f -") do
-    its('exit_status') { should eq 0 }
+  # Cleanup: Remove the RBAC binding after tests
+  after do
+    # Clean up RBAC bindings if they were created
+    if system('kubectl get clusterrolebinding my-user-binding')
+      system('kubectl delete clusterrolebinding my-user-binding')
+    end
   end
 end
-
