@@ -87,42 +87,42 @@ end
 describe 'validating Kubeconfig contents' do
   subject { command("kubectl config view --kubeconfig=#{input('kubeconfig_path')}") }
   its('exit_status') { should eq 0 }
-  xits('stdout') { should match /clusters/ }
+  # its('stdout') { should match /clusters/ }
 end
 
 # Validate a Kubernetes pod (you can add your specific validation here)
 describe 'validating Kubernetes pod' do
   subject { command("kubectl get pod --namespace=default") }
   its('exit_status') { should eq 0 }
-  xits('stdout') { should match /pod/ }
+  # its('stdout') { should match /pod/ }
 end
 
 # Validate a Kubernetes deployment (you can add your specific validation here)
 describe 'validating Kubernetes deployment' do
   subject { command("kubectl get deployment --namespace=default") }
   its('exit_status') { should eq 0 }
-  xits('stdout') { should match /deployment/ }
+  # its('stdout') { should match /deployment/ }
 end
 
 # Validate a Kubernetes service (you can add your specific validation here)
 describe 'validating Kubernetes service' do
   subject { command("kubectl get service --namespace=default") }
   its('exit_status') { should eq 0 }
-  xits('stdout') { should match /service/ }
+  # its('stdout') { should match /service/ }
 end
 
 # Validate Kubernetes PVC (you can add your specific validation here)
 describe 'validating Kubernetes PVC' do
   subject { command("kubectl get pvc --namespace=default") }
   its('exit_status') { should eq 0 }
-  xits('stdout') { should match /pvc/ }
+  # its('stdout') { should match /pvc/ }
 end
 
 # Check for Kubernetes node status
 describe 'validating Kubernetes node status' do
   subject { command("kubectl get nodes") }
   its('exit_status') { should eq 0 }
-  xits('stdout') { should match /Ready/ }
+  #its('stdout') { should match /Ready/ }
 end
 describe 'activate service account' do
   subject { command("gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS") }
@@ -167,4 +167,32 @@ end
         end
       end
     end  
+    
+    describe 'validating Kubernetes node info' do
+      # Run the kubectl command and capture the output
+      subject do
+        command("kubectl get nodes -o jsonpath='{.items[*].status.nodeInfo}'")
+      end
+    
+      its('exit_status') { should eq 0 }
+    
+      it 'Parse the output as JSON' do
+        parsed_json = JSON.parse("[#{subject.stdout}]") # Wrap the output in an array to parse multiple items as an array of nodes
+      
+        # Iterate over each node's info and check for osImage
+        parsed_json.each do |node_info|
+          describe "node OS image for #{node_info['osImage']}" do
+            it 'should be Container-Optimized OS from Google' do
+              expect(node_info['osImage']).to match(/Container-Optimized OS/)
+            end
+          end
+        end
+      
+        # Output the parsed JSON for debugging or inspection
+        it 'outputs node info as JSON' do
+          puts "Node Info JSON: #{parsed_json.to_json}"
+        end
+      end
+    end
+  end    
 end
