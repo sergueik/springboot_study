@@ -1,0 +1,20 @@
+name: gke-gcp
+title: GCP InSpec Profile
+maintainer: The Authors
+copyright: The Authors
+copyright_email: you@example.com
+license: Apache-2.0
+summary: An InSpec Compliance Profile For GCP
+version: 0.1.0
+inspec_version: '>= 4'
+inputs:
+- name: gcp_project_id
+  required: true
+  description: 'The GCP project identifier.'
+depends:
+- name: inspec-gcp
+  url: https://github.com/inspec/inspec-gcp/archive/main.tar.gz
+supports:
+- platform: gcp
+~
+~
