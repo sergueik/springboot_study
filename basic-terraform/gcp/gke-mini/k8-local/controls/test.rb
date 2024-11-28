@@ -196,4 +196,46 @@ end
       end
     end
   end
+
+  # makes inspec fail with exit 1
+  describe 'validating Kubernetes pod details' do
+    pod_name_jsonpath = '.metadata.name'
+    generate_name_jsonpath = '.metadata.generateName'
+    namespace_jsonpath = '.metadata.namespace'
+    container_images_jsonpath = '.spec.containers[*].image'
+  
+    # Helper method to extract pod data using kubectl --template
+    def extract_pod_data(pod_name, jsonpath)
+      command = "kubectl get pod #{pod_name} -o go-template='{{#{jsonpath}}}'"
+      result = command(command)
+      raise "Command failed with exit status #{result.exit_status}" unless result.exit_status == 0
+      result.stdout.strip.gsub(/\s+/, ' ')
+    end
+  
+    # Example: Pod name and expected check
+    pod_name = extract_pod_data('my-pod', pod_name_jsonpath)
+    it 'should match the expected pod name' do
+      expect(pod_name).to eq('my-pod')
+    end
+  
+    # Example: Generate name check
+    generate_name = extract_pod_data('my-pod', generate_name_jsonpath)
+    it 'should match the expected pod generateName' do
+      expect(generate_name).to eq('my-pod-')
+    end
+  
+    # Example: Namespace check
+    namespace = extract_pod_data('my-pod', namespace_jsonpath)
+    it 'should match the expected namespace' do
+      expect(namespace).to eq('default')
+    end
+  
+    # Example: Container image check (this can return multiple images)
+    container_images = extract_pod_data('my-pod', container_images_jsonpath)
+    it 'should have container image' do
+      expect(container_images).to include('nginx:latest')  # Adjust this to your expected image
+    end
+  end  
+
+    
 end
