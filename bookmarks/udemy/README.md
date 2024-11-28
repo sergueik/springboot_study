@@ -1,4 +1,30 @@
-f * [Ultimate Devops Interview assessment practice questions](https://www.udemy.com/cart/success/1092627976/)	- requires a cookie
+
+### info
+
+  * https://archive.org/search?query=swingrowers
+
+#### QA Engineering Certificates
+  * https://www.udemy.com/course/selenium-webdriver-and-python/?ranMID=39197&ranEAID=VA5C3v2HuEI&ranSiteID=VA5C3v2HuEI-CqxX5xlLkAjtR_fBMJvWhg&utm_source=aff-campaign&LSNPUBID=VA5C3v2HuEI&utm_medium=udemyads&couponCode=BFCPSALE24
+  * https://www.udemy.com/course/software-testing-masterclass-from-novice-to-expert/?ranMID=39197&ranEAID=VA5C3v2HuEI&ranSiteID=VA5C3v2HuEI-UXjGDyaYzHuT2sV2kawdSw&utm_source=aff-campaign&LSNPUBID=VA5C3v2HuEI&utm_medium=udemyads&couponCode=BFCPSALE24
+  * https://www.udemy.com/course/qa-automation-interview-questions/?ranMID=39197&ranEAID=VA5C3v2HuEI&ranSiteID=VA5C3v2HuEI-ngaCdmmF2T44B_VfQo1aWQ&LSNPUBID=VA5C3v2HuEI&utm_source=aff-campaign&utm_medium=udemyads&couponCode=BFCPSALE24
+  * https://www.educative.io/courses/performance-test-automation-101-gatling-lighthouse-jenkins/about-the-course?openHLOPage=true
+#### Prompt Engineering Certificates 
+* https://www.educative.io/courses/performance-test-automation-101-gatling-lighthouse-jenkins/about-the-course?openHLOPage=true
+  * https://www.udemy.com/course/chat-gpt/?ysclid=m41alj0mpo642277580&couponCode=BFCPSALE24
+    * https://www.blockchain-council.org/certifications/certified-prompt-engineer/ (300) 
+
+  * https://www.udemy.com/course/prompt-engineering-certification/?ysclid=m41aij5ds653143566&couponCode=BFCPSALE24    
+  * https://www.udemy.com/course/chat-gpt/?ysclid=m41alj0mpo642277580&couponCode=BFCPSALE24 
+  * https://www.udemy.com/course/prompt-engineering-certification/?ysclid=m41aij5ds653143566&couponCode=BFCPSALE24
+  * https://flowgpt.com/p/video-summarizer-gpt
+  * https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/
+  * https://learn.deeplearning.ai/courses/chatgpt-prompt-eng/lesson/1/introduction
+  * https://www.udemy.com/course/prompt-engineering-for-ai/?ysclid=m41avk3ypq872310967&couponCode=BFCPSALE24
+  * https://www.udemy.com/course/prompt-engineering-for-ai/?ysclid=m41avk3ypq872310967&couponCode=BFCPSALE24
+  * https://www.udemy.com/course/prompt-engineering-certification/?ysclid=m41aij5ds653143566&couponCode=BFCPSALE24
+#### Misc  
+  
+  * [Ultimate Devops Interview assessment practice questions](https://www.udemy.com/cart/success/1092627976/)	- requires a cookie
   * [Certified Jenkins Engineer (CJE) Practice Exam 2023](https://www.udemy.com/course/certified-jenkins-engineer-practice-exam/?ysclid=lyqj8tb0hg375369788)
   * https://www.coursera.org/learn/cje-certified-jenkins-engineer
   * [Ultimate Devops Interview assessment practice questions](https://www.udemy.com/course/ultimate-devops-interview-assessment-practice-questions-2023/learn/quiz/5946304/test#overview)
