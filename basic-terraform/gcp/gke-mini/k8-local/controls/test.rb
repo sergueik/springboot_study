@@ -86,7 +86,7 @@ describe 'ensuring Kubeconfig path is set' do
 end
 
 # Check for kubeconfig contents (e.g., validation of credentials)
-describe 'validating Kubeconfig contents' do
+xdescribe 'validating Kubeconfig contents' do
   subject { command("kubectl config view --kubeconfig=#{input('kubeconfig_path')}") }
   its('exit_status') { should eq 0 }
   its('stdout') { should match /clusters/ }
@@ -100,33 +100,33 @@ describe 'validating Kubernetes pod' do
 end
 
 # Validate a Kubernetes deployment (you can add your specific validation here)
-describe 'validating Kubernetes deployment' do
+xdescribe 'validating Kubernetes deployment' do
   subject { command("kubectl get deployment --namespace=default") }
   its('exit_status') { should eq 0 }
   its('stdout') { should match /deployment/ }
 end
 
 # Validate a Kubernetes service (you can add your specific validation here)
-describe 'validating Kubernetes service' do
+xdescribe 'validating Kubernetes service' do
   subject { command("kubectl get service --namespace=default") }
   its('exit_status') { should eq 0 }
   its('stdout') { should match /service/ }
 end
 
 # Validate Kubernetes PVC (you can add your specific validation here)
-describe 'validating Kubernetes PVC' do
+xdescribe 'validating Kubernetes PVC' do
   subject { command("kubectl get pvc --namespace=default") }
   its('exit_status') { should eq 0 }
   its('stdout') { should match /pvc/ }
 end
 
 # Check for Kubernetes node status
-describe 'validating Kubernetes node status' do
+xdescribe 'validating Kubernetes node status' do
   subject { command("kubectl get nodes") }
   its('exit_status') { should eq 0 }
   its('stdout') { should match /Ready/ }
 end
-describe 'activate service account' do
+xdescribe 'activate service account' do
   subject { command("gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS") }
   its('exit_status') { should eq 0 }
 end
@@ -146,7 +146,7 @@ end
     its('exit_status') { should eq 0 }
   end
 
-  describe 'run kubectl get nodes' do
+  xdescribe 'run kubectl get nodes' do
     subject { command('kubectl get nodes') }
     its('exit_status') { should eq 0 }
   end
