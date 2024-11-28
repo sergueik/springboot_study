@@ -154,4 +154,17 @@ end
     its('exit_status') { should eq 0 }
     its('stdout') { should match /True/ }  # Expecting the node to be in 'Ready' status
   end
+  describe 'validating Kubernetes node OS images' do
+    nodes = command("kubectl get nodes -o jsonpath='{.items[*].status.nodeInfo.osImage}'").stdout.strip.split(' ')
+  
+    nodes.each do |node_os_image|
+      describe "checking node OS image: #{node_os_image}" do
+        it { expect(node_os_image).to match(/Container-Optimized OS/) }
+        it 'outputs node OS image as JSON' do
+          node_info_json = { "osImage" => node_os_image, "expected_osImage" => "Container-Optimized OS from Google" }.to_json
+          puts "Node Info JSON: #{node_info_json}"
+          expect(JSON.parse(node_info_json)["osImage"]).to eq("Container-Optimized OS from Google")
+        end
+      end
+    end  
 end
