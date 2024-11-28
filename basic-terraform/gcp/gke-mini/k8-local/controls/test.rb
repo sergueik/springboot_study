@@ -64,10 +64,72 @@ control 'k8s-cluster-setup' do
   # Setting the KUBECONFIG environment variable
   ENV['KUBECONFIG'] = input_kubeconfig_path
 
-  describe 'run gcloud auth activate service account' do
-    subject { command("gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS") }
-    its('exit_status') { should eq 0 }
-  end
+# Ensure Kubernetes Cluster Setup is Correct
+describe 'running gcloud auth activate-service-account' do
+  subject { command("gcloud auth activate-service-account --key-file=#{input('service_account_key')}") }
+  it { should exist }
+  its('exit_status') { should eq 0 }
+end
+
+# Ensure gcloud container cluster credentials are configured correctly
+describe 'running gcloud container clusters get-credentials' do
+  subject { command("gcloud container clusters get-credentials #{input('cluster_name')} --zone #{input('zone')} --project #{input('project_id')}") }
+  it { should exist }
+  its('exit_status') { should eq 0 }
+end
+
+# Ensure the Kubeconfig path exists
+describe 'ensuring Kubeconfig path is set' do
+  subject { file(input('kubeconfig_path')) }
+  it { should exist }
+  it { should be_file }
+end
+
+# Check for kubeconfig contents (e.g., validation of credentials)
+describe 'validating Kubeconfig contents' do
+  subject { command("kubectl config view --kubeconfig=#{input('kubeconfig_path')}") }
+  its('exit_status') { should eq 0 }
+  its('stdout') { should match /clusters/ }
+end
+
+# Validate a Kubernetes pod (you can add your specific validation here)
+describe 'validating Kubernetes pod' do
+  subject { command("kubectl get pod --namespace=default") }
+  its('exit_status') { should eq 0 }
+  its('stdout') { should match /pod/ }
+end
+
+# Validate a Kubernetes deployment (you can add your specific validation here)
+describe 'validating Kubernetes deployment' do
+  subject { command("kubectl get deployment --namespace=default") }
+  its('exit_status') { should eq 0 }
+  its('stdout') { should match /deployment/ }
+end
+
+# Validate a Kubernetes service (you can add your specific validation here)
+describe 'validating Kubernetes service' do
+  subject { command("kubectl get service --namespace=default") }
+  its('exit_status') { should eq 0 }
+  its('stdout') { should match /service/ }
+end
+
+# Validate Kubernetes PVC (you can add your specific validation here)
+describe 'validating Kubernetes PVC' do
+  subject { command("kubectl get pvc --namespace=default") }
+  its('exit_status') { should eq 0 }
+  its('stdout') { should match /pvc/ }
+end
+
+# Check for Kubernetes node status
+describe 'validating Kubernetes node status' do
+  subject { command("kubectl get nodes") }
+  its('exit_status') { should eq 0 }
+  its('stdout') { should match /Ready/ }
+end
+describe 'activate service account' do
+  subject { command("gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS") }
+  its('exit_status') { should eq 0 }
+end
 
   describe 'run gcloud projects add-iam-policy-binding for container.viewer' do
     subject { command("gcloud projects add-iam-policy-binding #{input_project_id} --member=\"user:#{input_user_email}\" --role=\"roles/container.viewer\"") }
