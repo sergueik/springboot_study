@@ -198,47 +198,37 @@ end
   end
 
   describe 'validating Kubernetes pod details' do
-    pod_name_jsonpath = '.metadata.name'
+    # Define JSONPath expressions for each pod property
+    pod_jsonpath = '.metadata.name'
     generate_name_jsonpath = '.metadata.generateName'
     namespace_jsonpath = '.metadata.namespace'
     container_images_jsonpath = '.spec.containers[*].image'
   
-    # Helper method to extract pod data using kubectl --template
-    def extract_pod_data(pod_name, jsonpath)
-      # Use InSpec's `command` to run the kubectl command
-      result = command("kubectl get pod #{pod_name} -o go-template='{{#{jsonpath}}}'")
-      
-      # Raise error if the command fails
-      raise "Command failed with exit status #{result.exit_status}" unless result.exit_status == 0
-      
-      # Process and clean up output, remove extra spaces and newlines
-      result.stdout.strip.gsub(/\s+/, ' ')
-    end
-  
-    # Example: Pod name and expected check
-    pod_name = extract_pod_data('', pod_name_jsonpath)
+    # Extract Pod Name
+    pod_name = command("kubectl get pod my-pod -o go-template='{{#{pod_jsonpath}}}'").stdout.strip
     it 'should match the expected pod name' do
       expect(pod_name).to eq('my-pod')
     end
   
-    # Example: Generate name check
-    generate_name = extract_pod_data('my-pod', generate_name_jsonpath)
+    # Extract Generate Name
+    generate_name = command("kubectl get pod my-pod -o go-template='{{#{generate_name_jsonpath}}}'").stdout.strip
     it 'should match the expected pod generateName' do
       expect(generate_name).to eq('my-pod-')
     end
   
-    # Example: Namespace check
-    namespace = extract_pod_data('my-pod', namespace_jsonpath)
+    # Extract Namespace
+    namespace = command("kubectl get pod my-pod -o go-template='{{#{namespace_jsonpath}}}'").stdout.strip
     it 'should match the expected namespace' do
       expect(namespace).to eq('default')
     end
   
-    # Example: Container image check (this can return multiple images)
-    container_images = extract_pod_data('my-pod', container_images_jsonpath)
+    # Extract Container Images
+    container_images = command("kubectl get pod my-pod -o go-template='{{#{container_images_jsonpath}}}'").stdout.strip
     it 'should have container image' do
       expect(container_images).to include('nginx:latest')  # Adjust this to your expected image
     end
   end
+  
   
   
     
