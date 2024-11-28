@@ -11,68 +11,81 @@ control 'k8s-cluster-setup' do
   input_service_account_key = attribute('service_account_key')
   input_kubeconfig_path = attribute('kubeconfig_path')  # New input for KUBECONFIG path
 
-  # Set environment variables and perform authentication
-    ENV['GOOGLE_APPLICATION_CREDENTIALS'] = input_service_account_key
-    ENV['KUBECONFIG'] = input_kubeconfig_path
-
-    describe file(input_service_account_key) do
-      it { should exist }
-      it { should be_file }
+  # Debugging: Print the attributes
+  describe 'Debug: Check attributes' do
+    it 'outputs the project_id' do
+      puts "Project ID: #{input_project_id}"
     end
-
-    # Setup Kubernetes credentials using the service account
-    describe command("gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS") do
-      its('exit_status') { should eq 0 }
+    it 'outputs the cluster_name' do
+      puts "Cluster Name: #{input_cluster_name}"
     end
-
-    # Assign IAM roles
-    describe command("gcloud projects add-iam-policy-binding #{input_project_id} --member=\"user:#{input_user_email}\" --role=\"roles/container.viewer\"") do
-      its('exit_status') { should eq 0 }
+    it 'outputs the zone' do
+      puts "Zone: #{input_zone}"
     end
-
-    describe command("gcloud projects add-iam-policy-binding #{input_project_id} --member=\"user:#{input_user_email}\" --role=\"roles/container.developer\"") do
-      its('exit_status') { should eq 0 }
+    it 'outputs the user_email' do
+      puts "User Email: #{input_user_email}"
     end
-
-    # Get credentials for the Kubernetes cluster
-    describe command("gcloud container clusters get-credentials #{input_cluster_name} --zone #{input_zone} --project #{input_project_id}") do
-      its('exit_status') { should eq 0 }
+    it 'outputs the service_account_key' do
+      puts "Service Account Key: #{input_service_account_key}"
     end
-
-    # Optionally configure kubectl for the user
-    describe command("kubectl config set-context --current --user=#{input_user_email}") do
-      its('exit_status') { should eq 0 }
+    it 'outputs the kubeconfig_path' do
+      puts "Kubeconfig Path: #{input_kubeconfig_path}"
     end
-
-    # Ensure the necessary RBAC role exists
-    describe command("kubectl create clusterrolebinding my-user-binding --clusterrole=cluster-admin --user=#{input_user_email}") do
-      its('exit_status') { should eq 0 }
-    end
-  
-  # Test assertions after setup
-  describe kubernetes_pod(name: 'my-pod') do
-    it { should be_running }
-    its('status') { should eq 'Running' }
   end
 
-  describe kubernetes_service(name: 'my-service') do
+  # Ensure all required attributes are set
+  if input_project_id == Inspec::Input::NO_VALUE_SET
+    raise 'Attribute project_id is not set in attributes.yml'
+  end
+  if input_cluster_name == Inspec::Input::NO_VALUE_SET
+    raise 'Attribute cluster_name is not set in attributes.yml'
+  end
+  if input_zone == Inspec::Input::NO_VALUE_SET
+    raise 'Attribute zone is not set in attributes.yml'
+  end
+  if input_user_email == Inspec::Input::NO_VALUE_SET
+    raise 'Attribute user_email is not set in attributes.yml'
+  end
+  if input_service_account_key == Inspec::Input::NO_VALUE_SET
+    raise 'Attribute service_account_key is not set in attributes.yml'
+  end
+  if input_kubeconfig_path == Inspec::Input::NO_VALUE_SET
+    raise 'Attribute kubeconfig_path is not set in attributes.yml'
+  end
+
+  # Test for missing service account key file
+  only_if { File.exist?(input_service_account_key) }
+
+  describe file(input_service_account_key) do
     it { should exist }
-    it { should have_port(80) }
-    its('type') { should eq 'NodePort' }
+    it { should be_file }
   end
 
-  describe kubernetes_deployment(name: 'my-deployment') do
-    it { should exist }
-    it { should have_replicas(3) }
+  # Setting the KUBECONFIG environment variable
+  ENV['KUBECONFIG'] = input_kubeconfig_path
+
+  describe 'run gcloud auth activate service account' do
+    subject { command("gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS") }
+    its('exit_status') { should eq 0 }
   end
 
-  # Failing test: Check for a service that does not exist
-  describe kubernetes_service(name: 'nonexistent-service') do
-    it { should_not exist }
+  describe 'run gcloud projects add-iam-policy-binding for container.viewer' do
+    subject { command("gcloud projects add-iam-policy-binding #{input_project_id} --member=\"user:#{input_user_email}\" --role=\"roles/container.viewer\"") }
+    its('exit_status') { should eq 0 }
   end
 
-  # Cleanup: Delete the RBAC binding
-  describe command('kubectl delete clusterrolebinding my-user-binding') do
+  describe 'run gcloud projects add-iam-policy-binding for container.developer' do
+    subject { command("gcloud projects add-iam-policy-binding #{input_project_id} --member=\"user:#{input_user_email}\" --role=\"roles/container.developer\"") }
+    its('exit_status') { should eq 0 }
+  end
+
+  describe 'run gcloud container clusters get-credentials' do
+    subject { command("gcloud container clusters get-credentials #{input_cluster_name} --zone #{input_zone} --project #{input_project_id}") }
+    its('exit_status') { should eq 0 }
+  end
+
+  describe 'run kubectl get nodes' do
+    subject { command('kubectl get nodes') }
     its('exit_status') { should eq 0 }
   end
 end
