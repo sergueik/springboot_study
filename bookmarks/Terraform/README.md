@@ -26,6 +26,12 @@
     + https://stackoverflow.com/questions/55913451/heredoc-syntax-for-variable-values
   * https://developer.hashicorp.com/terraform/language/expressions/type-constraints#collection-types
   * https://developer.hashicorp.com/terraform/language/expressions/type-constraints#primitive-types
+  * https://developer.hashicorp.com/terraform/plugin/framework/handling-data/attributes/list-nested
+  * https://developer.hashicorp.com/terraform/language/tests/mocking  complex
+  * https://developer.hashicorp.com/terraform/language/tests
+  * https://developer.hashicorp.com/tutorials/library?product=sentinel
+  * https://github.com/hashicorp/terraform-provider-tfcoremock complex
+  * https://github.com/Integralist/terraform-provider-mock
   * https://developer.hashicorp.com/terraform/language/expressions/type-constraints#conversion-of-complex-types
   * https://developer.hashicorp.com/terraform/language/expressions/dynamic-blocks (incl nested)
   * https://developer.hashicorp.com/terraform/language/modules/develop/composition (complex)
@@ -83,7 +89,7 @@
   * https://developer.hashicorp.com/sentinel/docs/language/rules
     + the sentinel playground https://play.sentinelproject.io/p/3BJV7M65e-d
   * [Testing Terraform Sentinel Policies Using Mocks](https://www.youtube.com/watch?v=y1ChJQQATTk) - multi part  
-  * https://www.hashicorp.com/resources/writing-and-testing-sentinel-policies-for-terraform - older syntax, 2019
+  * https://www.hashicorp.com/resources/writing-and-testing-sentinel-policies-for-terraform  - older syntax, 2019
   * https://www.hashicorp.com/resources/writing-and-testing-sentinel-policies-for-terraform - tutorial -  guide !
 
 
@@ -110,6 +116,8 @@ deny_public_ssh_access = rule {
 }
 
 ```      
+
+
     + https://github.com/hashicorp/policy-library-gcp-networking-terraform/blob/main/policies/private-google-access-is-enabled-for-all-vpc-subnets/private-google-access-is-enabled-for-all-vpc-subnets.sentinel 
     - complex logic
     + https://developer.hashicorp.com/sentinel/docs/language/spec#quantifier-expressions-any-all-filter-map
@@ -118,10 +126,13 @@ deny_public_ssh_access = rule {
   * https://developer.hashicorp.com/sentinel/docs/writing/testing
   * https://developer.hashicorp.com/sentinel/docs/language/spec#else-operator
   * https://developer.hashicorp.com/sentinel/docs/language/spec#quantifier-expressions-any-all-filter-map
-  
+ * https://developer.hashicorp.com/terraform/tutorials/policy/sentinel-policy
+ * https://developer.hashicorp.com/terraform/tutorials/policy/sentinel-testing
+ * https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/google-continuous-validation  
   * https://developer.hashicorp.com/sentinel/docs/language/collection-operations
     + https://discuss.hashicorp.com/t/delta-between-two-maps-in-sentinel/47873/3
-    * https://hashicorp.github.io/field-workshops-terraform/slides/sentinel/index.html#59
+    * https://hashicorp.github.io/field-workshops-terraform/#3
+    * https://hashicorp.github.io/field-workshops-terraform/slides/sentinel
     + https://github.com/hashicorp/sentinel-training-solution
   * https://developer.hashicorp.com/sentinel/docs/terraform#examples HCP Terraform evaluates Sentinel policy evaluations immediately before cost estimation
   * https://developer.hashicorp.com/sentinel/docs/language
@@ -134,6 +145,7 @@ deny_public_ssh_access = rule {
   * https://github.com/hashicorp/terraform-guides/blob/master/governance/second-generation/gcp/enforce-mandatory-labels.sentinel  - non woking  (complex)
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/opa#example-policies - rego (complex)
   * https://developer.hashicorp.com/terraform/cloud-docs/policy-enforcement/sentinel/import/tfplan
+
   
     + `diff`
     + `applied`
@@ -568,7 +580,7 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_folder_iam#google_folder_iam_member
    * https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam 
      + https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_member
-     * [terraform-google-modules - iam](https://registry.terraform.io/modules/terraform-google-modules/iam/google/latest)
+     * [terraform-google-modules - iam](f)
    * https://github.com/terraform-google-modules/terraform-google-iam
      * [terraform-google-modules - gke](https://registry.terraform.io/modules/terraform-google-modules/kubernetes-engine/google/latest)
        + https://github.com/terraform-google-modules/terraform-google-kubernetes-engine
@@ -649,12 +661,17 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
    * [Sentinel for Terraform Part 1](https://www.youtube.com/watch?v=YZfA-TqkcV0)
    * [Sentinel for Terraform Part 2](https://www.youtube.com/watch?v=DmlThcAAeIs)
     
-### Misc
+### TerraTest etc. Msc.
 
 
   * https://www.hashicorp.com/blog/testing-hashicorp-terraform
   * https://github.com/hashicorp-education/learn-terraform-test 
- 
+  * https://spacelift.io/blog/what-is-tfsec
+  * https://spacelift.io/blog/what-is-terratest
+     + https://github.com/sumeetninawe/terratest-example/tree/main/1
+  * https://spacelift.io/blog/terraform-test (pure HCL)
+  * https://terratest.gruntwork.io/docs/getting-started/quick-start/
+  * https://aquasecurity.github.io/tfsec/latest/checks/google/compute/
   * https://github.com/in28minutes/course-material
   * https://terratest.gruntwork.io
      + https://github.com/gruntwork-io/terratest
@@ -863,7 +880,7 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
 ### Inspec GCP Tests
    
   * [Best practices for testing](https://cloud.google.com/docs/terraform/best-practices/testing)
-  * [InSpec GCP project](https://github.com/inspec/inspec-gcp)
+  * [InSpec GCP project](https://github.com/inspec/inspec-gcp )
   * Linked documentation of inspec controls:
      + https://github.com/inspec/inspec-gcp/blob/main/docs/resources/google_service_account.md
   * [Google Cloud Platform support for InSpec](https://lollyrock.com/posts/inspec-cloud-gcp-setup/)
@@ -986,3 +1003,8 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
  * https://spacelift.io/blog/terraform-dynamic-blocks
  * https://spacelift.io/blog/terraform-merge-function
  * https://spacelift.io/blog/terraform-count
+ 
+  *  https://developer.hashicorp.com/terraform/tutorials/configuration-language/locals
+  https://developer.hashicorp.com/terraform/tutorials/configuration-language/outputs (19 tutorials)
+  * https://developer.hashicorp.com/terraform/tutorials/policy/sentinel-policy
+
