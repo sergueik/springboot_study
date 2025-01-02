@@ -28,10 +28,15 @@
   * https://developer.hashicorp.com/terraform/language/expressions/type-constraints#primitive-types
   * https://developer.hashicorp.com/terraform/plugin/framework/handling-data/attributes/list-nested
   * https://developer.hashicorp.com/terraform/language/tests/mocking  complex
+  * https://developer.hashicorp.com/terraform/language/tests/mocking#override_data complex
+   https://discuss.hashicorp.com/t/terraform-test-mock-override-a-data-source-created-with-a-for-each-loop/61950
+    * https://www.youtube.com/watch?v=keMksdWPGjM
   * https://developer.hashicorp.com/terraform/language/tests
   * https://developer.hashicorp.com/tutorials/library?product=sentinel
   * https://github.com/hashicorp/terraform-provider-tfcoremock complex
   * https://github.com/Integralist/terraform-provider-mock
+  * https://developer.hashicorp.com/sentinel/tutorials/get-started/static-imports 
+  * https://developer.hashicorp.com/sentinel/tutorials/get-started/write-policy
   * https://developer.hashicorp.com/terraform/language/expressions/type-constraints#conversion-of-complex-types
   * https://developer.hashicorp.com/terraform/language/expressions/dynamic-blocks (incl nested)
   * https://developer.hashicorp.com/terraform/language/modules/develop/composition (complex)
@@ -933,7 +938,7 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * http://gitpoc.dhruvhbhavsar.joonix.net/dhruvb15/terraform-example-foundation/src/commit/86c254705664f295432915f91b38f9bde9fa2dd0/.kitchen.yml
      + sample `kitchen.yml` - complex
 
-  * https://codelabs.developers.google.com/codelabs/cft-onboarding#0
+  * [Cloud Foundation Toolkit 101](https://codelabs.developers.google.com/codelabs/cft-onboarding#0) -  integration tests are run using Kitchen, Kitchen-Terraform, and InSpec
   * https://codelabs.developers.google.com/codelabs/cft-onboarding#7
 
   * [install inspec package](https://mitre-inspec-developer.netlify.app/installation/LinuxInstall.html#option-1-package-installer)
@@ -975,6 +980,8 @@ deny_undefined_compute_instance_template_block_project_ssh_keys = rule when deny
   * https://www.chef.io/chefconf-keynotes/assess-the-security-of-kubernetes-with-inspec  (very complex)
   * https://github.com/GoogleCloudPlatform/inspec-gke-cis-benchmark/blob/master/run_profiles.sh
   * https://docs.chef.io/inspec/profiles/custom_resources/#stq=inspec-k8s&stp=1
+  * https://github.com/terraform-google-modules/terraform-google-kubernetes-engine/tree/master/test/integration/stub_domains_private/controls
+
 ### Data Engineering
  
   * [Data Engineering Foundations](https://www.linkedin.com/learning/data-engineering-foundations/what-is-data-engineering?u=67698794)
