@@ -1,0 +1,150 @@
+write basic python program to pull docker image from google cloud using python artifact registry sdk
+
+Here's a basic Python program to pull a Docker image from Google Cloud's Artifact Registry using the google-cloud-artifact-registry SDK and the docker Python library (Docker SDK for Python).
+Prerequisites:
+    1. Install required libraries:
+       sh
+       CopyEdit
+       pip install google-cloud-artifact-registry docker
+    2. Authenticate with Google Cloud:
+       sh
+       CopyEdit
+       gcloud auth application-default login
+       or if using a service account:
+       sh
+       CopyEdit
+       gcloud auth activate-service-account --key-file=your-key.json
+    3. Configure docker to use Google Artifact Registry:
+       sh
+       CopyEdit
+       gcloud auth configure-docker
+
+Python Program:
+
+from google.cloud import artifactregistry_v1
+import docker
+
+# Define the Google Artifact Registry details
+PROJECT_ID = "your-gcp-project-id"
+LOCATION = "your-region"  # e.g., "us-central1"
+REPOSITORY = "your-repo-name"
+IMAGE_NAME = "your-image-name"
+IMAGE_TAG = "latest"
+
+# Construct the full image path
+IMAGE_PATH = f"{LOCATION}-docker.pkg.dev/{PROJECT_ID}/{REPOSITORY}/{IMAGE_NAME}:{IMAGE_TAG}"
+
+def pull_image():
+    # Initialize Docker client
+    client = docker.from_env()
+
+    try:
+        print(f"Pulling image: {IMAGE_PATH}...")
+        image = client.images.pull(IMAGE_PATH)
+        print(f"Successfully pulled image: {image.tags}")
+    except Exception as e:
+        print(f"Failed to pull image: {e}")
+
+if __name__ == "__main__":
+    pull_image()
+
+Explanation:
+    1. Google Artifact Registry Client:
+        ◦ This script does not directly interact with google-cloud-artifact-registry, but Google authentication (gcloud auth configure-docker) is necessary to authenticate Docker to pull images from Artifact Registry.
+    2. Docker SDK:
+        ◦ The script uses the docker Python package to pull an image from Google Cloud's Artifact Registry.
+        ◦ The client.images.pull(IMAGE_PATH) command fetches the image.
+    3. Authentication:
+        ◦ Ensure gcloud auth configure-docker has been run to configure Docker authentication.
+
+Example Image Path:
+If your project ID is my-project, region is us-central1, repository is my-repo, and image is my-app with tag v1, the full path would be:
+sh
+CopyEdit
+us-central1-docker.pkg.dev/my-project/my-repo/my-app:v1
+Run the script, and it should pull the image successfully! 🚀
+4o
+You said:
+interested to see use of get_docker_image method
+ChatGPT said:
+The get_docker_image method is part of the google.cloud.artifactregistry_v1 API, which allows you to retrieve metadata about a Docker image stored in Google Artifact Registry. However, it does not pull the image—it only fetches metadata like tags, size, and digests.
+Here’s how you can use get_docker_image in a Python script:
+
+Prerequisites:
+    1. Install the Google Cloud Artifact Registry client:
+       sh
+       CopyEdit
+       pip install google-cloud-artifact-registry
+    2. Authenticate with Google Cloud:
+       sh
+       CopyEdit
+       gcloud auth application-default login
+       or use a service account:
+       sh
+       CopyEdit
+       gcloud auth activate-service-account --key-file=your-key.json
+
+```
+from google.cloud import artifactregistry_v1
+
+# Define Google Cloud project details
+PROJECT_ID = "your-gcp-project-id"
+LOCATION = "your-region"  # e.g., "us-central1"
+REPOSITORY = "your-repo-name"
+IMAGE_NAME = "your-image-name"
+IMAGE_TAG = "latest"  # or use a digest instead
+
+def get_image_metadata():
+    # Create the Artifact Registry client
+    client = artifactregistry_v1.ArtifactRegistryClient()
+
+    # Construct the image resource name
+    image_resource = f"projects/{PROJECT_ID}/locations/{LOCATION}/repositories/{REPOSITORY}/dockerImages/{IMAGE_NAME}@{IMAGE_TAG}"
+
+    try:
+        # Fetch metadata
+        docker_image = client.get_docker_image(name=image_resource)
+        
+        # Print image metadata
+        print(f"Image Name: {docker_image.name}")
+        print(f"Image Tags: {docker_image.tags}")
+        print(f"Image Digest: {docker_image.digest}")
+        print(f"Image Size (bytes): {docker_image.image_size_bytes}")
+        print(f"Upload Time: {docker_image.upload_time}")
+    except Exception as e:
+        print(f"Failed to get image metadata: {e}")
+
+if __name__ == "__main__":
+    get_image_metadata()
+
+Explanation:
+    • Artifact Registry Client: The script initializes a ArtifactRegistryClient() instance.
+    • Constructing the Image Path: Uses the format:
+
+      projects/{PROJECT_ID}/locations/{LOCATION}/repositories/{REPOSITORY}/dockerImages/{IMAGE_NAME}@{IMAGE_TAG}
+
+      You can replace @{IMAGE_TAG} with @sha256:<digest> if you want to specify an image by digest.
+    • Fetching Image Metadata: Calls get_docker_image to retrieve details like:
+        ◦ Tags
+        ◦ Digest
+        ◦ Size
+        ◦ Upload time
+    • Error Handling: Catches exceptions if the image is not found.
+
+Example Output:
+
+Image Name: projects/my-project/locations/us-central1/repositories/my-repo/dockerImages/my-app@sha256:abc123...
+Image Tags: ['latest', 'v1']
+Image Digest: sha256:abc123...
+Image Size (bytes): 104857600
+Upload Time: 2024-02-08T12:34:56Z
+
+
+The docker_image.uri field returned by get_docker_image contains the fully qualified name (FQN) of the Docker image in Google Artifact Registry.
+
+If your image is stored in Google Artifact Registry, the URI follows this pattern:
+
+LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY/IMAGE_NAME@sha256:DIGEST
+or
+
+LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY/IMAGE_NAME:TAG
