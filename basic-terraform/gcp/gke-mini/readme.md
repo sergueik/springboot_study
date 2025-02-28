@@ -34,3 +34,9 @@ title "Ensure Container-Optimized OS (COS) is used for GKE node images"
     end
   end     
 ```
+
+
+### See Aso
+
+  * https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-zonal-cluster
+  * https://cloud.google.com/kubernetes-engine/docs/deploy-app-cluster

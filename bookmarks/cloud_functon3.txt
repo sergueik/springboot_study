@@ -1,0 +1,42 @@
+import subprocess
+import os
+import base64
+
+def pubsub_handler(event, context):
+    """Extracts requirements.txt from a Pub/Sub message and writes it to /tmp/."""
+    try:
+        temp_dir = "/tmp"
+        requirements_file = os.path.join(temp_dir, "requirements.txt")
+        download_dir = os.path.join(temp_dir, "packages")
+
+        # Decode Base64-encoded message
+        if "data" not in event:
+            return "Missing 'data' in Pub/Sub message", 400
+
+        decoded_message = base64.b64decode(event["data"]).decode("utf-8")
+
+        # Write contents to /tmp/requirements.txt
+        with open(requirements_file, "w") as f:
+            f.write(decoded_message)
+
+        # Ensure the directory exists
+        os.makedirs(download_dir, exist_ok=True)
+
+        # Run pip download
+        result = subprocess.run(
+            ["pip", "download", "-r", requirements_file, "-d", download_dir],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+
+        # List the downloaded files
+        downloaded_files = os.listdir(download_dir)
+        
+        return f"Downloaded files:\n{downloaded_files}", 200
+
+    except subprocess.CalledProcessError as e:
+        return f"Error during pip download: {e.stderr}", 500
+    except Exception as e:
+        return f"Unexpected error: {str(e)}", 500
+
