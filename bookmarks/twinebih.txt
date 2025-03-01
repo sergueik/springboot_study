@@ -1,0 +1,33 @@
+twine itself does not have built-in retry logic, but you can make large file uploads more resilient and stable against timeouts and partial uploads (e.g., failing at 40%) when pushing to Google Artifact Registry. Here are a few strategies:
+
+1. Use requests with Retry Support
+twine uses the requests library internally, and you can wrap it with automatic retries:
+```
+import twine.commands.upload
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+# Set up retry logic for network errors and timeouts
+session = requests.Session()
+retries = Retry(
+    total=5,  # Max retries
+    backoff_factor=2,  # Exponential backoff (2s, 4s, 8s, etc.)
+    status_forcelist=[500, 502, 503, 504],  # Retry on server errors
+)
+session.mount("https://", HTTPAdapter(max_retries=retries))
+
+# Use twine with a more resilient session
+twine.commands.upload.upload(
+    dists=["dist/my_large_package.whl"],
+    repository_url="https://your-artifact-registry-url",
+    sign=False,
+    identity=None,
+    username="__token__",
+    password="your-access-token",
+    comment=None,
+    verbose=True,
+    disable_progress_bar=False,
+    retries=retries,  # Custom retry logic
+)
+```
