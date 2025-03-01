@@ -1,0 +1,195 @@
+How to collect files in the directory into two dictionaries : "heavy" and "regular" based on file size. Then chunk the regular dictionary into chunks of certain size, to batch the operationn against these files. keep the :heavy: one iten ib tne dict.Construct the operation through extend [<array of command tokens>], [kist of files in chunk ] extend [<array of post fix flags]. The array of command tokens can be "twine", "uplload" , "--url" ,"<url>"[ the post fx tlags can be just ine ellement array, e.g. ["--skip existing"]
+ChatGPT said:
+Here’s how you can achieve this in Python:
+    1. Categorize files into "heavy" and "regular" based on a size threshold.
+    2. Chunk the "regular" files into batches of a given size.
+    3. Construct command operations using the specified format.
+
+Implementation
+python
+
+import os
+from pathlib import Path
+from itertools import islice
+
+# Configuration
+directory = Path("/path/to/directory")
+size_threshold = 100 * 1024 * 1024  # 100 MB threshold for "heavy" files
+chunk_size = 5  # Number of files per batch
+
+# Dictionaries to categorize files
+heavy_files = {}
+regular_files = {}
+
+# Populate dictionaries
+for file in directory.iterdir():
+    if file.is_file():
+        file_size = file.stat().st_size
+        if file_size > size_threshold:
+            heavy_files[file.name] = file_size
+        else:
+            regular_files[file.name] = file_size
+
+# Function to chunk dictionary into batches
+def chunk_dict(d, chunk_size):
+    it = iter(d)
+    for _ in range(0, len(d), chunk_size):
+        yield {k: d[k] for k in islice(it, chunk_size)}
+
+# Create chunks of regular files
+regular_chunks = list(chunk_dict(regular_files, chunk_size))
+
+# Base command tokens
+command_prefix = ["twine", "upload", "--url", "<url>"]
+postfix_flags = ["--skip-existing"]
+
+# Generate commands
+commands = []
+
+# Command for heavy files (one operation per file)
+for file in heavy_files:
+    commands.append(command_prefix + [str(directory / file)] + postfix_flags)
+
+# Command for regular file batches
+for chunk in regular_chunks:
+    commands.append(command_prefix + [str(directory / file) for file in chunk] + postfix_flags)
+
+# Print or execute commands
+for command in commands:
+    print(" ".join(command))  # Or use subprocess.run(command) to execute
+
+Explanation:
+    1. Categorize files:
+        ◦ Files larger than size_threshold go into heavy_files.
+        ◦ Files smaller go into regular_files.
+    2. Chunk regular files:
+        ◦ The chunk_dict() function divides the regular_files dictionary into smaller dictionaries of chunk_size.
+    3. Construct commands:
+        ◦ Each heavy file gets its own command.
+        ◦ Each batch of regular files is grouped into a single command.
+    4. Execution:
+        ◦ Commands are printed, but you can replace print(" ".join(command)) with subprocess.run(command) to execute.
+
+Example Output
+css
+CopyEdit
+twine upload --url <url> /path/to/directory/bigfile1.zip --skip-existing
+twine upload --url <url> /path/to/directory/bigfile2.zip --skip-existing
+twine upload --url <url> /path/to/directory/smallfile1.txt /path/to/directory/smallfile2.txt /path/to/directory/smallfile3.txt --skip-existing
+twine upload --url <url> /path/to/directory/smallfile4.txt /path/t
+
+modify the program to skip files with certain 
+
+extensions, e.g. "vi" backups ".sw?", ".bak". and can one use just [a[i*size: (i+1)*size ] for i in range(ceil(fullsize/size)]
+
+
+
+Yes! You can filter out files with specific extensions using a set of patterns and modify the chunking logic using list slicing with a comprehension. Below is the updated script:
+```
+import os
+from pathlib import Path
+from math import ceil
+
+# Configuration
+directory = Path("/path/to/directory")
+size_threshold = 100 * 1024 * 1024  # 100 MB threshold for "heavy" files
+chunk_size = 5  # Number of files per batch
+skip_extensions = {".swp", ".swo", ".swx", ".bak", ".tmp", ".~"}  # Add extensions to skip
+
+# Dictionaries to categorize files
+heavy_files = {}
+regular_files = {}
+
+# Populate dictionaries, skipping unwanted extensions
+for file in directory.iterdir():
+    if file.is_file() and not any(file.suffix.endswith(ext) for ext in skip_extensions):
+        file_size = file.stat().st_size
+        if file_size > size_threshold:
+            heavy_files[file.name] = file_size
+        else:
+            regular_files[file.name] = file_size
+
+# Function to chunk dictionary keys into lists
+def chunk_list(lst, size):
+    return [lst[i * size:(i + 1) * size] for i in range(ceil(len(lst) / size))]
+
+# Create chunks of regular files
+regular_chunks = chunk_list(list(regular_files.keys()), chunk_size)
+
+# Base command tokens
+command_prefix = ["twine", "upload", "--url", "<url>"]
+postfix_flags = ["--skip-existing"]
+
+# Generate commands
+commands = []
+
+# Command for heavy files (one operation per file)
+for file in heavy_files:
+    commands.append(command_prefix + [str(directory / file)] + postfix_flags)
+
+# Command for regular file batches
+for chunk in regular_chunks:
+    commands.append(command_prefix + [str(directory / file) for file in chunk] + postfix_flags)
+
+# Print or execute commands
+for command in commands:
+    print(" ".join(command))  # Use subprocess.run(command) to execute
+```
+
+
+Instead of using a negative condition (not any(...)), you can invert the logic and use continue to skip unwanted files, making the code cleaner. Here’s how:
+```
+import os
+from pathlib import Path
+from math import ceil
+
+# Configuration
+directory = Path("/path/to/directory")
+size_threshold = 100 * 1024 * 1024  # 100 MB threshold for "heavy" files
+chunk_size = 5  # Number of files per batch
+skip_extensions = {".swp", ".swo", ".swx", ".bak", ".tmp", ".~"}  # Add extensions to skip
+
+# Dictionaries to categorize files
+heavy_files = {}
+regular_files = {}
+
+# Populate dictionaries
+for file in directory.iterdir():
+    if not file.is_file():  # Skip if not a file
+        continue
+
+    if any(file.suffix.endswith(ext) for ext in skip_extensions):  # Skip unwanted extensions
+        continue
+
+    file_size = file.stat().st_size
+    if file_size > size_threshold:
+        heavy_files[file.name] = file_size
+    else:
+        regular_files[file.name] = file_size
+
+# Function to chunk dictionary keys into lists
+def chunk_list(lst, size):
+    return [lst[i * size:(i + 1) * size] for i in range(ceil(len(lst) / size))]
+
+# Create chunks of regular files
+regular_chunks = chunk_list(list(regular_files.keys()), chunk_size)
+
+# Base command tokens
+command_prefix = ["twine", "upload", "--url", "<url>"]
+postfix_flags = ["--skip-existing"]
+
+# Generate commands
+commands = []
+
+# Command for heavy files (one operation per file)
+for file in heavy_files:
+    commands.append(command_prefix + [str(directory / file)] + postfix_flags)
+
+# Command for regular file batches
+for chunk in regular_chunks:
+    commands.append(command_prefix + [str(directory / file) for file in chunk] + postfix_flags)
+
+# Print or execute commands
+for command in commands:
+    print(" ".join(command))  # Use subprocess.run(command) to execute
+```

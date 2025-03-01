@@ -1,0 +1,36 @@
+You can use the os and os.path modules (or pathlib) to read filenames and their metadata (such as file sizes) into a dictionary, then sort them by size. Here’s how:
+
+Using os module
+```
+import os
+
+# Specify the directory path
+directory = "/path/to/directory"
+
+# Get files and their sizes
+files_dict = {f: os.path.getsize(os.path.join(directory, f)) for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))}
+
+# Sort the dictionary by file size (ascending order)
+sorted_files = dict(sorted(files_dict.items(), key=lambda item: item[1]))
+
+# Print sorted files
+for file, size in sorted_files.items():
+    print(f"{file}: {size} bytes")
+```
+Using pathlib (More Modern Approach)
+```
+from pathlib import Path
+
+# Specify the directory path
+directory = Path("/path/to/directory")
+
+# Get files and their sizes
+files_dict = {file.name: file.stat().st_size for file in directory.iterdir() if file.is_file()}
+
+# Sort by file size
+sorted_files = dict(sorted(files_dict.items(), key=lambda item: item[1]))
+
+# Print sorted files
+for file, size in sorted_files.items():
+    print(f"{file}: {size} bytes")
+```
