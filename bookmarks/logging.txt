@@ -1,0 +1,81 @@
+To achieve the desired behavior with popen in Python (or similar methods in other languages), here's how you can structure your code:
+
+Plan:
+Using subprocess.Popen to run a command: This will allow you to capture both stdout and stderr while the command is running.
+Reading stdout line by line: You will use poll() to check if the process is still running. While the process is running (poll() returns None), you will read lines from stdout.
+Regex filtering: You will apply the regex to check if the line contains "downloading filename". If it matches, you print it fully. Otherwise, print a truncated message ("running...").
+Buffer for the last few lines: Maintain a buffer of the last N lines of output (configurable) to print them fully once the process finishes.
+Print stderr after the process finishes: After the process terminates (i.e., when poll() returns a value other than None), print all of stderr.
+```
+import subprocess
+import re
+import collections
+
+def run_command(command, num_last_lines=5, download_regex=r"downloading filename"):
+    # Create a deque to keep the last N lines of stdout
+    stdout_buffer = collections.deque(maxlen=num_last_lines)
+    
+    # Start the subprocess
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    
+    # Regular expression for matching "downloading filename"
+    download_pattern = re.compile(download_regex)
+
+    while True:
+        # Poll the process to see if it's still running
+        retcode = process.poll()
+
+        # Read stdout line by line
+        line = process.stdout.readline()
+
+        if line == '' and retcode is not None:
+            # If no more output and process is done, break the loop
+            break
+        
+        if line:
+            # If the line matches the download regex, print it fully
+            if download_pattern.search(line):
+                print(line.strip())  # Print the full line for "downloading filename"
+            else:
+                # Otherwise, print truncated message
+                print("running...")
+
+            # Store the line in the buffer
+            stdout_buffer.append(line.strip())
+        
+    # After process finishes, print all stderr
+    stderr_output = process.stderr.read()
+    print(stderr_output, end='')
+
+    # Print the last N lines of stdout stored in the buffer
+    print("\nLast few lines of stdout:")
+    for line in stdout_buffer:
+        print(line)
+
+# Example usage
+command = ["your_command_here", "arg1", "arg2"]
+run_command(command, num_last_lines=5)
+```
+
+
+queue.Queue (Thread-Safe)
+If you're working in a multithreaded environment, you can use queue.Queue to store a fixed number of items. However, unlike deque, it doesn't have a maxlen argument built-in, so you'd need to manage the size manually.
+```
+import queue
+
+buffer = queue.Queue(maxsize=3)
+
+# Add items to the queue
+buffer.put("Line 1")
+buffer.put("Line 2")
+buffer.put("Line 3")
+
+# If we add another item and the queue is full, it will block (unless you set timeout).
+if buffer.full():
+    buffer.get()  # Remove the oldest item
+    buffer.put("Line 4")
+
+# Print the current contents
+items = list(buffer.queue)  # Access the internal deque of the Queue
+print(items)
+```
