@@ -1,0 +1,100 @@
+To achieve variable interpolation in multiline strings similar to f'values is {value}' or 'value is {}'.format(value) in Python, you have a couple of options. Below are ways to achieve this using both f-strings (Python 3.6 and above) and the format() method, while keeping the string multiline.
+
+1. Using f-strings (Python 3.6 and above)
+You can directly use f-strings inside a multiline string ("""...""") by embedding the variables within curly braces {}.
+```
+value = "example_value"
+
+multiline_string = f"""
+value is {value}
+and here is another line with {value}
+"""
+
+print(multiline_string)
+
+```
+
+Output:
+```
+value is example_value
+and here is another line with example_value
+The f-string syntax `f"""..."""` allows you to interpolate variables directly inside the multiline string.
+2. Using `str.format()` method
+Another way to achieve similar interpolation is by using the .format() method.
+```
+value = "example_value"
+
+multiline_string = """
+value is {}
+and here is another line with {}
+""".format(value, value)
+
+print(multiline_string)
+```
+Output:
+```
+value is example_value
+and here is another line with example_value
+```
+The `format()` method places the values inside `{}` placeholders, and you can specify the variables inside the format() call.
+
+3. Using `str.format()` with Positional or Keyword Arguments
+You can also use positional or keyword arguments to make it clearer which variable corresponds to which placeholder.
+
+```
+value1 = "example_value1"
+value2 = "example_value2"
+
+multiline_string = """
+first value is {0}
+second value is {1}
+""".format(value1, value2)
+
+print(multiline_string)
+```
+Output:
+```
+first value is example_value1
+second value is example_value2
+````
+Or with keyword arguments:
+```
+multiline_string = """
+first value is {first}
+second value is {second}
+""".format(first=value1, second=value2)
+
+print(multiline_string)
+```
+Output:
+
+```
+first value is example_value1
+second value is example_value2
+```
+4. Using Template strings from the string module
+If you're looking for a more flexible and safe approach for string interpolation, you can use the Template class from the string module, which allows you to substitute variables inside a template string.
+
+from string import Template
+
+value = "example_value"
+
+template_string = Template("""
+value is $value
+and here is another line with $value
+""")
+
+multiline_string = template_string.substitute(value=value)
+
+print(multiline_string)
+Output:
+
+pgsql
+Copy
+Edit
+value is example_value
+and here is another line with example_value
+Summary:
+f-strings (f"""...""") are the most concise and efficient way to do variable interpolation for Python 3.6 and above.
+.format() can also be used, with the flexibility to use either positional or keyword arguments.
+string.Template can be useful for situations where you need to use variable interpolation with a syntax that is less error-prone (e.g., when working with user inputs).

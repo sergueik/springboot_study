@@ -1,0 +1,33 @@
+You can test if a line matches one of several patterns in Python without merging them into a single hard-to-understand regular expression by using multiple re.search calls, each targeting a specific pattern. This approach keeps each pattern clear and easy to modify.
+
+```
+import re
+
+# Define the patterns you want to match
+patterns = [
+    r"downloading foo\.bar",        # Match "downloading foo.bar"
+    r"goo\.baz have been downloaded",  # Match "goo.baz have been downloaded"
+    r"using cached boo\.pam"        # Match "using cached boo.pam"
+]
+
+# Function to check if any pattern matches
+def match_any_pattern(line):
+    for pattern in patterns:
+        if re.search(pattern, line):
+            return True
+    return False
+
+# Test the function
+test_lines = [
+    "downloading foo.bar",
+    "goo.baz have been downloaded",
+    "using cached boo.pam",
+    "some other line"
+]
+
+for line in test_lines:
+    if match_any_pattern(line):
+        print(f"Pattern matched in line: {line}")
+    else:
+        print(f"No pattern matched in line: {line}")
+```
