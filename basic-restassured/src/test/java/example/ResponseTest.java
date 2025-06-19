@@ -46,7 +46,6 @@ public class ResponseTest {
 		RestAssured.basePath = "";
 	}
 
-
 	// plain Java code with intermediate objects
 	@Test
 	public void test1() {
@@ -97,7 +96,7 @@ public class ResponseTest {
 				.extract().response();
 		response = RestAssured.get(path);
 		// search through GPath
-		search = String.format("users.findAll { it.email = '%s' }", email);
+		search = String.format("users.findAll { it.email = '%s' && it.age > 10 }", email);
 		List<Map<String, ?>> results = response.path(search);
 		assertThat(results.get(0).keySet(), hasItem("firstName"));
 		result = results.get(0).get("firstName").toString();
@@ -106,7 +105,7 @@ public class ResponseTest {
 		System.out.println("result: " + result);
 	}
 
-	// https://support.smartbear.com/alertsite/docs/monitors/api/endpoint/jsonpath.html
+	// Advanced filter using Jayway's pure JSONPath syntax
 	// https://www.baeldung.com/guide-to-jayway-jsonpath
 	@Test
 	public void test5() {
@@ -116,11 +115,12 @@ public class ResponseTest {
 		assertThat(response.statusCode(), is(statusCode));
 		data = response.asString();
 		assertThat(data, notNullValue());
-		search = String.format("users[?(@.email == '%s' )].firstName", email);
+		search = String.format("users[?(@.email == '%s' && @.age > 10)].firstName", email);
 		// System.out.println("response: " + data);
 		result = JsonPath.parse(data).read(search).toString();
 		assertThat(result, containsString(name));
 		System.out.println("returned: " + result);
 	}
+
 
 }
