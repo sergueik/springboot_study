@@ -380,6 +380,438 @@ Facility "Seamless Mode": not active (last update: 2025/06/20 08:10:36 UTC)
 Facility "Graphics Mode": not active (last update: 2025/06/20 08:10:36 UTC)
 
 ```
+
+##### Linux Install
+
+* Mount Windows Disk on fuse (manual or auto)
+```
+```
+* Add minikube VM (only need to do once):  
+```sh
+vboxmanage registervm /media/sergueik/Windows8_OS/Users/Serguei/.minikube/machines/minikube/minikube/minikube.vbox
+```
+* Create Host-Only network
+```sh
+vboxmanage hostonlyif create 
+vboxmanage hostonlyif ipconfig "Virtual Box Host-Only Network #3" --ip 192.168.58.1 --netmask 255.255.255.0
+```
+
+the later command returns an error
+```text
+VBoxManage: error: The host network interface named 'Virtual Box Host-Only Network #3' could not be found
+```
+so replace argument:
+```sh
+vboxmanage hostonlyif ipconfig vboxnet0 --ip 192.168.59.1 --netmask 255.255.255.0
+```
+```sh
+sudo kill $(ps ax | grep -i vboxsvc | awk '{print $1}')
+```
+```sh
+vboxmanage modifyvm "minikube" --nic2 hostonly --hostonlyadapter2 "Virtual Box Host-Only Network #3"
+```
+```sh
+vboxmanage startvm "minikube" --type=headless
+```
+```sh
+curl -LO https://storage.googleapis.com/releases/latest/minikube-linux-amd64
+
+sudo install minikube-linux-amd64  /usr/local/bin/minikube
+
+```
+```text
+<?xml version='1.0' encoding='UTF-8'?><Error><Code>UserProjectAccountProblem</Code><Message>The project to be billed is associated with a closed billing account.</Message><Details>The billing account for the owning project is disabled in state closed</Details></Error>  
+```
+```sh
+curl -LO https://github.com/kubernetes/minikube/releases/latest/download/minikube_latest_amd64.deb
+
+sudo dpkg -i minikube_latest_amd64.deb
+```
+```sh
+minikube start -driver=virtualbox --image-repository=registry.k8.io
+```
+
+```text
+minikube start --driver=virtualbox --image-repository=registry.k8.io
+😄  minikube v1.36.0 on Ubuntu 18.04
+E0620 12:15:24.745999    4908 start.go:819] api.Load failed for minikube: filestore "minikube": Docker machine "minikube" does not exist. Use "docker-machine ls" to list machines. Use "docker-machine create" to add a new one.
+E0620 12:15:24.746488    4908 start.go:819] api.Load failed for minikube: filestore "minikube": Docker machine "minikube" does not exist. Use "docker-machine ls" to list machines. Use "docker-machine create" to add a new one.
+✨  Using the virtualbox driver based on existing profile
+👍  Starting "minikube" primary control-plane node in "minikube" cluster
+❗  The image 'registry.k8.io/kube-scheduler:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-apiserver:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/etcd:3.5.21-0' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/coredns/coredns:v1.12.0' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-proxy:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/pause:3.10' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-controller-manager:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/k8s-minikube/storage-provisioner:v5' was not found; unable to add it to cache.
+🔥  Creating virtualbox VM (CPUs=2, Memory=3900MB, Disk=20000MB) ...
+🔥  Deleting "minikube" in virtualbox ...
+🤦  StartHost failed, but will try again: creating host: create: creating: Error setting up host only network on machine start: The host-only adapter we just created is not visible. This is a well known VirtualBox bug. You might want to uninstall it and reinstall at least version 5.0.12 that is is supposed to fix this issue
+🔥  Creating virtualbox VM (CPUs=2, Memory=3900MB, Disk=20000MB) ...
+😿  Failed to start virtualbox VM. Running "minikube delete" may fix it: creating host: create: precreate: VirtualBox is configured with multiple host-only adapters with the same IP "192.168.58.1". Please remove one
+
+❌  Exiting due to IF_VBOX_SAME_IP: Failed to start host: creating host: create: precreate: VirtualBox is configured with multiple host-only adapters with the same IP "192.168.58.1". Please remove one
+💡  Suggestion: Use VirtualBox to remove the conflicting VM and/or network interfaces
+📘  Documentation: https://stackoverflow.com/questions/55573426/virtualbox-is-configured-with-multiple-host-only-adapters-with-the-same-ip-whe
+🍿  Related issue: https://github.com/kubernetes/minikube/issues/3584
+
+
+
+```
+
+modified `vboxnet0` to use `192.168.59.`1`
+
+the error becomes
+```text
+inikube start --driver=virtualbox --image-repository=registry.k8.io
+😄  minikube v1.36.0 on Ubuntu 18.04
+✨  Using the virtualbox driver based on user configuration
+✅  Using image repository registry.k8.io
+💿  Downloading VM boot image ...
+    > minikube-v1.36.0-amd64.iso....:  65 B / 65 B [---------] 100.00% ? p/s 0s
+    > minikube-v1.36.0-amd64.iso:  254.76 KiB / 360.83 MiB [>___] 0.07% ? p/s     > minikube-v1.36.0-amd64.iso:  1.69 MiB / 360.83 MiB [>_____] 0.47% ? p/s     > minikube-v1.36.0-amd64.iso:  6.16 MiB / 360.83 MiB [>_____] 1.71% ? p/s     > minikube-v1.36.0-amd64.iso:  11.84 MiB / 360.83 MiB  3.28% 19.32 MiB p/s    > minikube-v1.36.0-amd64.iso:  16.28 MiB / 360.83 MiB  4.51% 19.32 MiB p/s    > minikube-v1.36.0-amd64.iso:  22.53 MiB / 360.83 MiB  6.24% 19.32 MiB p/s    > minikube-v1.36.0-amd64.iso:  28.94 MiB / 360.83 MiB  8.02% 19.91 MiB p/s    > minikube-v1.36.0-amd64.iso:  35.41 MiB / 360.83 MiB  9.81% 19.91 MiB p/s    > minikube-v1.36.0-amd64.iso:  40.87 MiB / 360.83 MiB  11.33% 19.91 MiB p/    > minikube-v1.36.0-amd64.iso:  47.25 MiB / 360.83 MiB  13.09% 20.59 MiB p/    > minikube-v1.36.0-amd64.iso:  50.81 MiB / 360.83 MiB  14.08% 20.59 MiB p/    > minikube-v1.36.0-amd64.iso:  57.14 MiB / 360.83 MiB  15.84% 20.59 MiB p/    > minikube-v1.36.0-amd64.iso:  63.78 MiB / 360.83 MiB  17.68% 21.04 MiB p/    > minikube-v1.36.0-amd64.iso:  70.41 MiB / 360.83 MiB  19.51% 21.04 MiB p/    > minikube-v1.36.0-amd64.iso:  76.66 MiB / 360.83 MiB  21.24% 21.04 MiB p/    > minikube-v1.36.0-amd64.iso:  81.25 MiB / 360.83 MiB  22.52% 21.57 MiB p/    > minikube-v1.36.0-amd64.iso:  87.81 MiB / 360.83 MiB  24.34% 21.57 MiB p/    > minikube-v1.36.0-amd64.iso:  94.56 MiB / 360.83 MiB  26.21% 21.57 MiB p/    > minikube-v1.36.0-amd64.iso:  100.78 MiB / 360.83 MiB  27.93% 22.27 MiB p    > minikube-v1.36.0-amd64.iso:  107.12 MiB / 360.83 MiB  29.69% 22.27 MiB p    > minikube-v1.36.0-amd64.iso:  112.31 MiB / 360.83 MiB  31.13% 22.27 MiB p    > minikube-v1.36.0-amd64.iso:  118.97 MiB / 360.83 MiB  32.97% 22.79 MiB p    > minikube-v1.36.0-amd64.iso:  125.34 MiB / 360.83 MiB  34.74% 22.79 MiB p    > minikube-v1.36.0-amd64.iso:  131.84 MiB / 360.83 MiB  36.54% 22.79 MiB p    > minikube-v1.36.0-amd64.iso:  135.59 MiB / 360.83 MiB  37.58% 23.11 MiB p    > minikube-v1.36.0-amd64.iso:  138.78 MiB / 360.83 MiB  38.46% 23.11 MiB p    > minikube-v1.36.0-amd64.iso:  145.03 MiB / 360.83 MiB  40.19% 23.11 MiB p    > minikube-v1.36.0-amd64.iso:  151.66 MiB / 360.83 MiB  42.03% 23.35 MiB p    > minikube-v1.36.0-amd64.iso:  158.50 MiB / 360.83 MiB  43.93% 23.35 MiB p    > minikube-v1.36.0-amd64.iso:  165.37 MiB / 360.83 MiB  45.83% 23.35 MiB p    > minikube-v1.36.0-amd64.iso:  172.75 MiB / 360.83 MiB  47.87% 24.11 MiB p    > minikube-v1.36.0-amd64.iso:  177.78 MiB / 360.83 MiB  49.27% 24.11 MiB p    > minikube-v1.36.0-amd64.iso:  184.41 MiB / 360.83 MiB  51.11% 24.11 MiB p    > minikube-v1.36.0-amd64.iso:  190.87 MiB / 360.83 MiB  52.90% 24.50 MiB p    > minikube-v1.36.0-amd64.iso:  197.44 MiB / 360.83 MiB  54.72% 24.50 MiB p    > minikube-v1.36.0-amd64.iso:  202.84 MiB / 360.83 MiB  56.21% 24.50 MiB p    > minikube-v1.36.0-amd64.iso:  209.37 MiB / 360.83 MiB  58.02% 24.91 MiB p    > minikube-v1.36.0-amd64.iso:  216.06 MiB / 360.83 MiB  59.88% 24.91 MiB p    > minikube-v1.36.0-amd64.iso:  223.44 MiB / 360.83 MiB  61.92% 24.91 MiB p    > minikube-v1.36.0-amd64.iso:  230.25 MiB / 360.83 MiB  63.81% 25.54 MiB p    > minikube-v1.36.0-amd64.iso:  237.06 MiB / 360.83 MiB  65.70% 25.54 MiB p    > minikube-v1.36.0-amd64.iso:  244.12 MiB / 360.83 MiB  67.66% 25.54 MiB p    > minikube-v1.36.0-amd64.iso:  250.66 MiB / 360.83 MiB  69.47% 26.09 MiB p    > minikube-v1.36.0-amd64.iso:  257.66 MiB / 360.83 MiB  71.41% 26.09 MiB p    > minikube-v1.36.0-amd64.iso:  264.53 MiB / 360.83 MiB  73.31% 26.09 MiB p    > minikube-v1.36.0-amd64.iso:  271.19 MiB / 360.83 MiB  75.16% 26.62 MiB p    > minikube-v1.36.0-amd64.iso:  278.00 MiB / 360.83 MiB  77.04% 26.62 MiB p    > minikube-v1.36.0-amd64.iso:  283.66 MiB / 360.83 MiB  78.61% 26.62 MiB p    > minikube-v1.36.0-amd64.iso:  290.37 MiB / 360.83 MiB  80.47% 26.97 MiB p    > minikube-v1.36.0-amd64.iso:  297.09 MiB / 360.83 MiB  82.33% 26.97 MiB p    > minikube-v1.36.0-amd64.iso:  303.12 MiB / 360.83 MiB  84.01% 26.97 MiB p    > minikube-v1.36.0-amd64.iso:  305.12 MiB / 360.83 MiB  84.56% 26.81 MiB p    > minikube-v1.36.0-amd64.iso:  311.28 MiB / 360.83 MiB  86.27% 26.81 MiB p    > minikube-v1.36.0-amd64.iso:  317.91 MiB / 360.83 MiB  88.10% 26.81 MiB p    > minikube-v1.36.0-amd64.iso:  324.97 MiB / 360.83 MiB  90.06% 27.21 MiB p    > minikube-v1.36.0-amd64.iso:  331.47 MiB / 360.83 MiB  91.86% 27.21 MiB p    > minikube-v1.36.0-amd64.iso:  337.00 MiB / 360.83 MiB  93.39% 27.21 MiB p    > minikube-v1.36.0-amd64.iso:  344.22 MiB / 360.83 MiB  95.39% 27.53 MiB p    > minikube-v1.36.0-amd64.iso:  350.41 MiB / 360.83 MiB  97.11% 27.53 MiB p    > minikube-v1.36.0-amd64.iso:  357.53 MiB / 360.83 MiB  99.08% 27.53 MiB p    > minikube-v1.36.0-amd64.iso:  360.83 MiB / 360.83 MiB  100.00% 30.33 MiB p
+👍  Starting "minikube" primary control-plane node in "minikube" cluster
+🔥  Creating virtualbox VM (CPUs=2, Memory=3900MB, Disk=20000MB) ...❗  The image 'registry.k8.io/kube-scheduler:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-proxy:v1.33.1' was not found; unable to add it to cache.
+
+❗  The image 'registry.k8.io/pause:3.10' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/k8s-minikube/storage-provisioner:v5' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-apiserver:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/etcd:3.5.21-0' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-controller-manager:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/coredns/coredns:v1.12.0' was not found; unable to add it to cache.
+🔥  Deleting "minikube" in virtualbox ...
+
+
+🤦  StartHost failed, but will try again: creating host: create: creating: Error setting up host only network on machine start: The host-only adapter we just created is not visible. This is a well known VirtualBox bug. You might want to uninstall it and reinstall at least version 5.0.12 that is is supposed to fix this issue
+🔥  Creating virtualbox VM (CPUs=2, Memory=3900MB, Disk=20000MB) ...
+😿  Failed to start virtualbox VM. Running "minikube delete" may fix it: creating host: create: precreate: VirtualBox is configured with multiple host-only adapters with the same IP "192.168.58.1". Please remove one
+
+❌  Exiting due to IF_VBOX_SAME_IP: Failed to start host: creating host: create: precreate: VirtualBox is configured with multiple host-only adapters with the same IP "192.168.58.1". Please remove one
+💡  Suggestion: Use VirtualBox to remove the conflicting VM and/or network interfaces
+📘  Documentation: https://stackoverflow.com/questions/55573426/virtualbox-is-configured-with-multiple-host-only-adapters-with-the-same-ip-whe
+🍿  Related issue: https://github.com/kubernetes/minikube/issues/3584
+
+sergueik@lenovoy40-1:~$ 
+sergueik@lenovoy40-1:~$ 
+sergueik@lenovoy40-1:~$ minikube start --driver=virtualbox --image-repository=registry.k8.io
+😄  minikube v1.36.0 on Ubuntu 18.04
+E0620 12:12:52.485698    4298 start.go:819] api.Load failed for minikube: filestore "minikube": Docker machine "minikube" does not exist. Use "docker-machine ls" to list machines. Use "docker-machine create" to add a new one.
+E0620 12:12:52.485892    4298 start.go:819] api.Load failed for minikube: filestore "minikube": Docker machine "minikube" does not exist. Use "docker-machine ls" to list machines. Use "docker-machine create" to add a new one.
+✨  Using the virtualbox driver based on existing profile
+👍  Starting "minikube" primary control-plane node in "minikube" cluster
+🔥  Creating virtualbox VM (CPUs=2, Memory=3900MB, Disk=20000MB) .../ ❗  The image 'registry.k8.io/kube-controller-manager:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/etcd:3.5.21-0' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/coredns/coredns:v1.12.0' was not found; unable to add it to cache.
+
+❗  The image 'registry.k8.io/kube-apiserver:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-proxy:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-scheduler:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/pause:3.10' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/k8s-minikube/storage-provisioner:v5' was not found; unable to add it to cache.
+🔥  Deleting "minikube" in virtualbox ...
+🤦  StartHost failed, but will try again: creating host: create: creating: Error setting up host only network on machine start: The host-only adapter we just created is not visible. This is a well known VirtualBox bug. You might want to uninstall it and reinstall at least version 5.0.12 that is is supposed to fix this issue
+🔥  Creating virtualbox VM (CPUs=2, Memory=3900MB, Disk=20000MB) ...
+😿  Failed to start virtualbox VM. Running "minikube delete" may fix it: creating host: create: precreate: VirtualBox is configured with multiple host-only adapters with the same IP "192.168.58.1". Please remove one
+
+❌  Exiting due to IF_VBOX_SAME_IP: Failed to start host: creating host: create: precreate: VirtualBox is configured with multiple host-only adapters with the same IP "192.168.58.1". Please remove one
+💡  Suggestion: Use VirtualBox to remove the conflicting VM and/or network interfaces
+📘  Documentation: https://stackoverflow.com/questions/55573426/virtualbox-is-configured-with-multiple-host-only-adapters-with-the-same-ip-whe
+🍿  Related issue: https://github.com/kubernetes/minikube/issues/3584
+
+sergueik@lenovoy40-1:~$ minikube start --driver=virtualbox --image-repository=registry.k8.io
+😄  minikube v1.36.0 on Ubuntu 18.04
+E0620 12:13:45.879686    4685 start.go:819] api.Load failed for minikube: filestore "minikube": Docker machine "minikube" does not exist. Use "docker-machine ls" to list machines. Use "docker-machine create" to add a new one.
+E0620 12:13:45.880089    4685 start.go:819] api.Load failed for minikube: filestore "minikube": Docker machine "minikube" does not exist. Use "docker-machine ls" to list machines. Use "docker-machine create" to add a new one.
+✨  Using the virtualbox driver based on existing profile
+👍  Starting "minikube" primary control-plane node in "minikube" cluster
+🔥  Creating virtualbox VM (CPUs=2, Memory=3900MB, Disk=20000MB) ...❗  The image 'registry.k8.io/coredns/coredns:v1.12.0' was not found; unable to add it to cache.
+
+❗  The image 'registry.k8.io/kube-scheduler:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/pause:3.10' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/etcd:3.5.21-0' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/k8s-minikube/storage-provisioner:v5' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-controller-manager:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-proxy:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-apiserver:v1.33.1' was not found; unable to add it to cache.
+🤦  StartHost failed, but will try again: creating host: create: precreate: VirtualBox is configured with multiple host-only adapters with the same IP "192.168.58.1". Please remove one
+🔥  Creating virtualbox VM (CPUs=2, Memory=3900MB, Disk=20000MB) ...
+😿  Failed to start virtualbox VM. Running "minikube delete" may fix it: creating host: create: precreate: VirtualBox is configured with multiple host-only adapters with the same IP "192.168.58.1". Please remove one
+
+❌  Exiting due to IF_VBOX_SAME_IP: Failed to start host: creating host: create: precreate: VirtualBox is configured with multiple host-only adapters with the same IP "192.168.58.1". Please remove one
+💡  Suggestion: Use VirtualBox to remove the conflicting VM and/or network interfaces
+📘  Documentation: https://stackoverflow.com/questions/55573426/virtualbox-is-configured-with-multiple-host-only-adapters-with-the-same-ip-whe
+🍿  Related issue: https://github.com/kubernetes/minikube/issues/3584
+
+sergueik@lenovoy40-1:~$ minikube start --driver=virtualbox --image-repository=registry.k8.io
+😄  minikube v1.36.0 on Ubuntu 18.04
+E0620 12:15:24.745999    4908 start.go:819] api.Load failed for minikube: filestore "minikube": Docker machine "minikube" does not exist. Use "docker-machine ls" to list machines. Use "docker-machine create" to add a new one.
+E0620 12:15:24.746488    4908 start.go:819] api.Load failed for minikube: filestore "minikube": Docker machine "minikube" does not exist. Use "docker-machine ls" to list machines. Use "docker-machine create" to add a new one.
+✨  Using the virtualbox driver based on existing profile
+👍  Starting "minikube" primary control-plane node in "minikube" cluster
+❗  The image 'registry.k8.io/kube-scheduler:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-apiserver:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/etcd:3.5.21-0' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/coredns/coredns:v1.12.0' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-proxy:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/pause:3.10' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-controller-manager:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/k8s-minikube/storage-provisioner:v5' was not found; unable to add it to cache.
+🔥  Creating virtualbox VM (CPUs=2, Memory=3900MB, Disk=20000MB) ...
+🔥  Deleting "minikube" in virtualbox ...
+🤦  StartHost failed, but will try again: creating host: create: creating: Error setting up host only network on machine start: The host-only adapter we just created is not visible. This is a well known VirtualBox bug. You might want to uninstall it and reinstall at least version 5.0.12 that is is supposed to fix this issue
+🔥  Creating virtualbox VM (CPUs=2, Memory=3900MB, Disk=20000MB) ...
+😿  Failed to start virtualbox VM. Running "minikube delete" may fix it: creating host: create: precreate: VirtualBox is configured with multiple host-only adapters with the same IP "192.168.58.1". Please remove one
+
+❌  Exiting due to IF_VBOX_SAME_IP: Failed to start host: creating host: create: precreate: VirtualBox is configured with multiple host-only adapters with the same IP "192.168.58.1". Please remove one
+💡  Suggestion: Use VirtualBox to remove the conflicting VM and/or network interfaces
+📘  Documentation: https://stackoverflow.com/questions/55573426/virtualbox-is-configured-with-multiple-host-only-adapters-with-the-same-ip-whe
+🍿  Related issue: https://github.com/kubernetes/minikube/issues/3584
+
+sergueik@lenovoy40-1:~$ vboxmanage hostonlyif ipconfig vboxnet0 --ip 192.168.59.1 --netmask 255.255.255.0
+sergueik@lenovoy40-1:~$ 
+sergueik@lenovoy40-1:~$ minikube start --driver=virtualbox --image-repository=registry.k8.io
+😄  minikube v1.36.0 on Ubuntu 18.04
+E0620 12:21:31.510329    5593 start.go:819] api.Load failed for minikube: filestore "minikube": Docker machine "minikube" does not exist. Use "docker-machine ls" to list machines. Use "docker-machine create" to add a new one.
+E0620 12:21:31.510604    5593 start.go:819] api.Load failed for minikube: filestore "minikube": Docker machine "minikube" does not exist. Use "docker-machine ls" to list machines. Use "docker-machine create" to add a new one.
+✨  Using the virtualbox driver based on existing profile
+👍  Starting "minikube" primary control-plane node in "minikube" cluster
+🔥  Creating virtualbox VM (CPUs=2, Memory=3900MB, Disk=20000MB) ...❗  The image 'registry.k8.io/coredns/coredns:v1.12.0' was not found; unable to add it to cache.
+
+❗  The image 'registry.k8.io/pause:3.10' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/k8s-minikube/storage-provisioner:v5' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-scheduler:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/etcd:3.5.21-0' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-apiserver:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-proxy:v1.33.1' was not found; unable to add it to cache.
+❗  The image 'registry.k8.io/kube-controller-manager:v1.33.1' was not found; unable to add it to cache.
+❗  Image was not built for the current minikube version. To resolve this you can delete and recreate your minikube cluster using the latest images. Expected minikube version: v1.35.0 -> Actual minikube version: v1.36.0
+❗  Failing to connect to https://registry.k8.io/ from both inside the minikube VM and host machine
+💡  To pull new external images, you may need to configure a proxy: https://minikube.sigs.k8s.io/docs/reference/networking/proxy/
+🐳  Preparing Kubernetes v1.33.1 on Docker 28.0.4 ...
+❌  Unable to load cached images: LoadCachedImages: stat /home/sergueik/.minikube/cache/images/amd64/registry.k8.io/etcd_3.5.21-0: no such file or directory
+⌛  Another minikube instance is downloading dependencies... | ⌛  Another minikube instance is downloading dependencies... ⌛  Another minikube instance is    > kubeadm.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubelet.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubectl.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubeadm.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubelet.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubectl.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubeadm.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubelet.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubectl.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubeadm.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubelet.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubectl.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubeadm.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubelet.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubectl.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubeadm.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubelet.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubectl.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubeadm.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubelet.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubectl.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubeadm.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubelet.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubectl.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubectl.sha256:  64 B / 64 B [--------------------] 100.00% 42 B p/s 1.7s
+    > kubeadm.sha256:  64 B / 64 B [--------------------] 100.00% 41 B p/s 1.8s
+    > kubelet.sha256:  64 B / 64 B [------------------------->] 100.00% ? p/s     > kubelet.sha256:  64 B / 64 B [--------------------] 100.00% 39 B p/s 1.9s
+    > kubeadm:  512.00 KiB / 71.08 MiB [>_______________________] 0.70% ? p/s     > kubectl:  288.00 KiB / 57.34 MiB [>_______________________] 0.49% ? p/s     > kubelet:  303.67 KiB / 77.91 MiB [>_______________________] 0.38% ? p/s     > kubeadm:  3.28 MiB / 71.08 MiB [->________________________] 4.61% ? p/s     > kubectl:  795.00 KiB / 57.34 MiB [>_______________________] 1.35% ? p/s     > kubelet:  712.56 KiB / 77.91 MiB [>_______________________] 0.89% ? p/s     > kubeadm:  6.62 MiB / 71.08 MiB [-->_______________________] 9.32% ? p/s     > kubectl:  1.31 MiB / 57.34 MiB [>_________________________] 2.29% ? p/s     > kubelet:  1.19 MiB / 77.91 MiB [>_________________________] 1.53% ? p/s     > kubeadm:  10.48 MiB / 71.08 MiB [->_________] 14.75% 16.64 MiB p/s ETA 3    > kubectl:  1.92 MiB / 57.34 MiB [>____________] 3.35% 2.73 MiB p/s ETA 20    > kubelet:  1.71 MiB / 77.91 MiB [>____________] 2.19% 2.35 MiB p/s ETA 32    > kubeadm:  14.95 MiB / 71.08 MiB [-->________] 21.03% 16.64 MiB p/s ETA 3    > kubectl:  2.51 MiB / 57.34 MiB [>____________] 4.38% 2.73 MiB p/s ETA 20    > kubelet:  2.21 MiB / 77.91 MiB [>____________] 2.83% 2.35 MiB p/s ETA 32    > kubeadm:  19.32 MiB / 71.08 MiB [-->________] 27.19% 16.64 MiB p/s ETA 3    > kubectl:  3.28 MiB / 57.34 MiB [>____________] 5.72% 2.73 MiB p/s ETA 19    > kubelet:  2.85 MiB / 77.91 MiB [>____________] 3.65% 2.35 MiB p/s ETA 31    > kubeadm:  24.34 MiB / 71.08 MiB [--->_______] 34.25% 17.06 MiB p/s ETA 2    > kubectl:  3.96 MiB / 57.34 MiB [>____________] 6.91% 2.77 MiB p/s ETA 19    > kubelet:  3.48 MiB / 77.91 MiB [>____________] 4.47% 2.39 MiB p/s ETA 31    > kubeadm:  28.72 MiB / 71.08 MiB [---->______] 40.40% 17.06 MiB p/s ETA 2    > kubectl:  4.73 MiB / 57.34 MiB [->___________] 8.24% 2.77 MiB p/s ETA 18    > kubelet:  4.12 MiB / 77.91 MiB [>____________] 5.29% 2.39 MiB p/s ETA 30    > kubeadm:  33.72 MiB / 71.08 MiB [----->_____] 47.43% 17.06 MiB p/s ETA 2    > kubectl:  5.48 MiB / 57.34 MiB [->___________] 9.55% 2.77 MiB p/s ETA 18    > kubelet:  4.79 MiB / 77.91 MiB [>____________] 6.15% 2.39 MiB p/s ETA 30    > kubeadm:  38.46 MiB / 71.08 MiB [----->_____] 54.11% 17.48 MiB p/s ETA 1    > kubectl:  6.20 MiB / 57.34 MiB [->__________] 10.82% 2.84 MiB p/s ETA 18    > kubelet:  5.40 MiB / 77.91 MiB [>____________] 6.94% 2.44 MiB p/s ETA 29    > kubeadm:  43.62 MiB / 71.08 MiB [------>____] 61.36% 17.48 MiB p/s ETA 1    > kubectl:  7.08 MiB / 57.34 MiB [->__________] 12.34% 2.84 MiB p/s ETA 17    > kubelet:  6.09 MiB / 77.91 MiB [->___________] 7.82% 2.44 MiB p/s ETA 29    > kubeadm:  49.34 MiB / 71.08 MiB [------->___] 69.42% 17.48 MiB p/s ETA 1    > kubectl:  7.87 MiB / 57.34 MiB [->__________] 13.73% 2.84 MiB p/s ETA 17    > kubelet:  6.78 MiB / 77.91 MiB [->___________] 8.70% 2.44 MiB p/s ETA 29    > kubeadm:  53.56 MiB / 71.08 MiB [-------->__] 75.35% 17.97 MiB p/s ETA 0    > kubectl:  8.64 MiB / 57.34 MiB [->__________] 15.07% 2.91 MiB p/s ETA 16    > kubelet:  7.42 MiB / 77.91 MiB [->___________] 9.52% 2.50 MiB p/s ETA 28    > kubeadm:  58.24 MiB / 71.08 MiB [--------->_] 81.93% 17.97 MiB p/s ETA 0    > kubectl:  9.48 MiB / 57.34 MiB [->__________] 16.54% 2.91 MiB p/s ETA 16    > kubelet:  8.15 MiB / 77.91 MiB [->__________] 10.47% 2.50 MiB p/s ETA 27    > kubeadm:  63.27 MiB / 71.08 MiB [--------->_] 89.00% 17.97 MiB p/s ETA 0    > kubectl:  10.44 MiB / 57.34 MiB [-->________] 18.20% 2.91 MiB p/s ETA 16    > kubelet:  8.96 MiB / 77.91 MiB [->__________] 11.50% 2.50 MiB p/s ETA 27    > kubeadm:  68.40 MiB / 71.08 MiB [---------->] 96.23% 18.41 MiB p/s ETA 0    > kubectl:  11.44 MiB / 57.34 MiB [-->________] 19.95% 3.03 MiB p/s ETA 15    > kubelet:  9.77 MiB / 77.91 MiB [->__________] 12.55% 2.59 MiB p/s ETA 26    > kubeadm:  71.08 MiB / 71.08 MiB [------------] 100.00% 22.61 MiB p/s 3.3s
+    > kubectl:  13.22 MiB / 57.34 MiB [-->________] 23.05% 3.03 MiB p/s ETA 14    > kubelet:  11.44 MiB / 77.91 MiB [->_________] 14.68% 2.59 MiB p/s ETA 25    > kubectl:  15.94 MiB / 57.34 MiB [--->_______] 27.80% 3.03 MiB p/s ETA 13    > kubelet:  13.89 MiB / 77.91 MiB [->_________] 17.82% 2.59 MiB p/s ETA 24    > kubectl:  18.64 MiB / 57.34 MiB [--->_______] 32.51% 3.61 MiB p/s ETA 10    > kubelet:  16.18 MiB / 77.91 MiB [-->________] 20.77% 3.12 MiB p/s ETA 19    > kubectl:  21.86 MiB / 57.34 MiB [---->_______] 38.12% 3.61 MiB p/s ETA 9    > kubelet:  19.00 MiB / 77.91 MiB [-->________] 24.39% 3.12 MiB p/s ETA 18    > kubectl:  25.52 MiB / 57.34 MiB [----->______] 44.50% 3.61 MiB p/s ETA 8    > kubelet:  22.00 MiB / 77.91 MiB [--->_______] 28.24% 3.12 MiB p/s ETA 17    > kubectl:  29.05 MiB / 57.34 MiB [------>_____] 50.66% 4.49 MiB p/s ETA 6    > kubelet:  25.12 MiB / 77.91 MiB [--->_______] 32.25% 3.88 MiB p/s ETA 13    > kubectl:  32.87 MiB / 57.34 MiB [------>_____] 57.33% 4.49 MiB p/s ETA 5    > kubelet:  28.31 MiB / 77.91 MiB [--->_______] 36.34% 3.88 MiB p/s ETA 12    > kubectl:  37.06 MiB / 57.34 MiB [------->____] 64.64% 4.49 MiB p/s ETA 4    > kubelet:  31.63 MiB / 77.91 MiB [---->______] 40.60% 3.88 MiB p/s ETA 11    > kubectl:  40.73 MiB / 57.34 MiB [-------->___] 71.04% 5.46 MiB p/s ETA 3    > kubelet:  34.89 MiB / 77.91 MiB [----->______] 44.78% 4.67 MiB p/s ETA 9    > kubectl:  44.48 MiB / 57.34 MiB [--------->__] 77.57% 5.46 MiB p/s ETA 2    > kubelet:  38.50 MiB / 77.91 MiB [----->______] 49.42% 4.67 MiB p/s ETA 8    > kubectl:  47.87 MiB / 57.34 MiB [---------->_] 83.49% 5.46 MiB p/s ETA 1    > kubelet:  42.08 MiB / 77.91 MiB [------>_____] 54.01% 4.67 MiB p/s ETA 7    > kubectl:  50.66 MiB / 57.34 MiB [---------->_] 88.35% 6.17 MiB p/s ETA 1    > kubelet:  45.03 MiB / 77.91 MiB [------>_____] 57.80% 5.46 MiB p/s ETA 6    > kubectl:  52.92 MiB / 57.34 MiB [----------->] 92.29% 6.17 MiB p/s ETA 0    > kubelet:  47.00 MiB / 77.91 MiB [------->____] 60.32% 5.46 MiB p/s ETA 5    > kubectl:  56.32 MiB / 57.34 MiB [----------->] 98.23% 6.17 MiB p/s ETA 0    > kubelet:  50.40 MiB / 77.91 MiB [------->____] 64.70% 5.46 MiB p/s ETA 5    > kubectl:  57.34 MiB / 57.34 MiB [-------------] 100.00% 9.78 MiB p/s 6.1s
+    > kubelet:  54.44 MiB / 77.91 MiB [-------->___] 69.87% 6.12 MiB p/s ETA 3    > kubelet:  57.29 MiB / 77.91 MiB [-------->___] 73.54% 6.12 MiB p/s ETA 3    > kubelet:  61.14 MiB / 77.91 MiB [--------->__] 78.48% 6.12 MiB p/s ETA 2    > kubelet:  65.43 MiB / 77.91 MiB [---------->_] 83.98% 6.91 MiB p/s ETA 1    > kubelet:  69.23 MiB / 77.91 MiB [---------->_] 88.87% 6.91 MiB p/s ETA 1    > kubelet:  73.68 MiB / 77.91 MiB [----------->] 94.58% 6.91 MiB p/s ETA 0    > kubelet:  77.87 MiB / 77.91 MiB [----------->] 99.95% 7.80 MiB p/s ETA 0    > kubelet:  77.91 MiB / 77.91 MiB [------------] 100.00% 10.82 MiB p/s 7.4s
+
+💢  initialization failed, will try again: wait: /bin/bash -c "sudo env PATH="/var/lib/minikube/binaries/v1.33.1:$PATH" kubeadm init --config /var/tmp/minikube/kubeadm.yaml  --ignore-preflight-errors=DirAvailable--etc-kubernetes-manifests,DirAvailable--var-lib-minikube,DirAvailable--var-lib-minikube-etcd,FileAvailable--etc-kubernetes-manifests-kube-scheduler.yaml,FileAvailable--etc-kubernetes-manifests-kube-apiserver.yaml,FileAvailable--etc-kubernetes-manifests-kube-controller-manager.yaml,FileAvailable--etc-kubernetes-manifests-etcd.yaml,Port-10250,Swap,NumCPU,Mem": Process exited with status 1
+stdout:
+[init] Using Kubernetes version: v1.33.1
+[preflight] Running pre-flight checks
+[preflight] Pulling images required for setting up a Kubernetes cluster
+[preflight] This might take a minute or two, depending on the speed of your internet connection
+[preflight] You can also perform this action beforehand using 'kubeadm config images pull'
+
+stderr:
+	[WARNING Service-Kubelet]: kubelet service is not enabled, please run 'systemctl enable kubelet.service'
+error execution phase preflight: [preflight] Some fatal errors occurred:
+	[ERROR ImagePull]: failed to pull image registry.k8.io/kube-apiserver:v1.33.1: failed to pull image registry.k8.io/kube-apiserver:v1.33.1: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/kube-controller-manager:v1.33.1: failed to pull image registry.k8.io/kube-controller-manager:v1.33.1: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: server misbehaving
+	[ERROR ImagePull]: failed to pull image registry.k8.io/kube-scheduler:v1.33.1: failed to pull image registry.k8.io/kube-scheduler:v1.33.1: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/kube-proxy:v1.33.1: failed to pull image registry.k8.io/kube-proxy:v1.33.1: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: server misbehaving
+	[ERROR ImagePull]: failed to pull image registry.k8.io/coredns:v1.12.0: failed to pull image registry.k8.io/coredns:v1.12.0: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/pause:3.10: failed to pull image registry.k8.io/pause:3.10: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/etcd:3.5.21-0: failed to pull image registry.k8.io/etcd:3.5.21-0: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`
+To see the stack trace of this error execute with --v=5 or higher
+
+
+💣  Error starting cluster: wait: /bin/bash -c "sudo env PATH="/var/lib/minikube/binaries/v1.33.1:$PATH" kubeadm init --config /var/tmp/minikube/kubeadm.yaml  --ignore-preflight-errors=DirAvailable--etc-kubernetes-manifests,DirAvailable--var-lib-minikube,DirAvailable--var-lib-minikube-etcd,FileAvailable--etc-kubernetes-manifests-kube-scheduler.yaml,FileAvailable--etc-kubernetes-manifests-kube-apiserver.yaml,FileAvailable--etc-kubernetes-manifests-kube-controller-manager.yaml,FileAvailable--etc-kubernetes-manifests-etcd.yaml,Port-10250,Swap,NumCPU,Mem": Process exited with status 1
+stdout:
+[init] Using Kubernetes version: v1.33.1
+[preflight] Running pre-flight checks
+[preflight] Pulling images required for setting up a Kubernetes cluster
+[preflight] This might take a minute or two, depending on the speed of your internet connection
+[preflight] You can also perform this action beforehand using 'kubeadm config images pull'
+
+stderr:
+	[WARNING Service-Kubelet]: kubelet service is not enabled, please run 'systemctl enable kubelet.service'
+error execution phase preflight: [preflight] Some fatal errors occurred:
+	[ERROR ImagePull]: failed to pull image registry.k8.io/kube-apiserver:v1.33.1: failed to pull image registry.k8.io/kube-apiserver:v1.33.1: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/kube-controller-manager:v1.33.1: failed to pull image registry.k8.io/kube-controller-manager:v1.33.1: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/kube-scheduler:v1.33.1: failed to pull image registry.k8.io/kube-scheduler:v1.33.1: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/kube-proxy:v1.33.1: failed to pull image registry.k8.io/kube-proxy:v1.33.1: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/coredns:v1.12.0: failed to pull image registry.k8.io/coredns:v1.12.0: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/pause:3.10: failed to pull image registry.k8.io/pause:3.10: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/etcd:3.5.21-0: failed to pull image registry.k8.io/etcd:3.5.21-0: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`
+To see the stack trace of this error execute with --v=5 or higher
+
+
+╭───────────────────────────────────────────────────────────────────────────────────────────╮
+│                                                                                           │
+│    😿  If the above advice does not help, please let us know:                             │
+│    👉  https://github.com/kubernetes/minikube/issues/new/choose                           │
+│                                                                                           │
+│    Please run `minikube logs --file=logs.txt` and attach logs.txt to the GitHub issue.    │
+│                                                                                           │
+╰───────────────────────────────────────────────────────────────────────────────────────────╯
+
+❌  Exiting due to INET_LOOKUP_HOST: wait: /bin/bash -c "sudo env PATH="/var/lib/minikube/binaries/v1.33.1:$PATH" kubeadm init --config /var/tmp/minikube/kubeadm.yaml  --ignore-preflight-errors=DirAvailable--etc-kubernetes-manifests,DirAvailable--var-lib-minikube,DirAvailable--var-lib-minikube-etcd,FileAvailable--etc-kubernetes-manifests-kube-scheduler.yaml,FileAvailable--etc-kubernetes-manifests-kube-apiserver.yaml,FileAvailable--etc-kubernetes-manifests-kube-controller-manager.yaml,FileAvailable--etc-kubernetes-manifests-etcd.yaml,Port-10250,Swap,NumCPU,Mem": Process exited with status 1
+stdout:
+[init] Using Kubernetes version: v1.33.1
+[preflight] Running pre-flight checks
+[preflight] Pulling images required for setting up a Kubernetes cluster
+[preflight] This might take a minute or two, depending on the speed of your internet connection
+[preflight] You can also perform this action beforehand using 'kubeadm config images pull'
+
+stderr:
+	[WARNING Service-Kubelet]: kubelet service is not enabled, please run 'systemctl enable kubelet.service'
+error execution phase preflight: [preflight] Some fatal errors occurred:
+	[ERROR ImagePull]: failed to pull image registry.k8.io/kube-apiserver:v1.33.1: failed to pull image registry.k8.io/kube-apiserver:v1.33.1: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/kube-controller-manager:v1.33.1: failed to pull image registry.k8.io/kube-controller-manager:v1.33.1: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/kube-scheduler:v1.33.1: failed to pull image registry.k8.io/kube-scheduler:v1.33.1: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/kube-proxy:v1.33.1: failed to pull image registry.k8.io/kube-proxy:v1.33.1: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/coredns:v1.12.0: failed to pull image registry.k8.io/coredns:v1.12.0: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/pause:3.10: failed to pull image registry.k8.io/pause:3.10: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+	[ERROR ImagePull]: failed to pull image registry.k8.io/etcd:3.5.21-0: failed to pull image registry.k8.io/etcd:3.5.21-0: Error response from daemon: Get "https://registry.k8.io/v2/": dial tcp: lookup registry.k8.io on 10.0.2.3:53: no such host
+[preflight] If you know what you are doing, you can make a check non-fatal with `--ignore-preflight-errors=...`
+To see the stack trace of this error execute with --v=5 or higher
+
+💡  Suggestion: Verify that your HTTP_PROXY and HTTPS_PROXY environment variables are set correctly.
+📘  Documentation: https://minikube.sigs.k8s.io/docs/handbook/vpn_and_proxy/
+
+
+```
+```sh
+minikube status
+```
+```text
+E0620 12:26:39.168043    6385 status.go:458] kubeconfig endpoint: get endpoint: "minikube" does not appear in /home/sergueik/.kube/config
+minikube
+type: Control Plane
+host: Running
+kubelet: Stopped
+apiserver: Stopped
+kubeconfig: Misconfigured
+
+
+WARNING: Your kubectl is pointing to stale minikube-vm.
+To fix the kubectl context, run `minikube update-context`
+
+```
+
+```sh
+minikube delete
+
+```
+```text
+
+🔥  Deleting "minikube" in virtualbox ...
+💀  Removed all traces of the "minikube" cluster.
+```
+```sh
+minikube start --driver=virtualbox 
+```
+```txt
+😄  minikube v1.36.0 on Ubuntu 18.04
+✨  Using the virtualbox driver based on user configuration
+👍  Starting "minikube" primary control-plane node in "minikube" cluster
+💾  Downloading Kubernetes v1.33.1 preload ...
+    > preloaded-images-k8s-v18-v1...:  366.76 KiB / 347.04 MiB [] 0.10% ? p/s     > preloaded-images-k8s-v18-v1...:  2.00 MiB / 347.04 MiB [>_] 0.58% ? p/s     > preloaded-images-k8s-v18-v1...:  6.84 MiB / 347.04 MiB [>_] 1.97% ? p/s     > preloaded-images-k8s-v18-v1...:  13.31 MiB / 347.04 MiB  3.84% 21.61 MiB    > preloaded-images-k8s-v18-v1...:  18.94 MiB / 347.04 MiB  5.46% 21.61 MiB    > preloaded-images-k8s-v18-v1...:  25.78 MiB / 347.04 MiB  7.43% 21.61 MiB    > preloaded-images-k8s-v18-v1...:  32.53 MiB / 347.04 MiB  9.37% 22.28 MiB    > preloaded-images-k8s-v18-v1...:  39.44 MiB / 347.04 MiB  11.36% 22.28 Mi    > preloaded-images-k8s-v18-v1...:  46.41 MiB / 347.04 MiB  13.37% 22.28 Mi    > preloaded-images-k8s-v18-v1...:  53.31 MiB / 347.04 MiB  15.36% 23.08 Mi    > preloaded-images-k8s-v18-v1...:  60.22 MiB / 347.04 MiB  17.35% 23.08 Mi    > preloaded-images-k8s-v18-v1...:  67.34 MiB / 347.04 MiB  19.41% 23.08 Mi    > preloaded-images-k8s-v18-v1...:  72.84 MiB / 347.04 MiB  20.99% 23.69 Mi    > preloaded-images-k8s-v18-v1...:  79.66 MiB / 347.04 MiB  22.95% 23.69 Mi    > preloaded-images-k8s-v18-v1...:  86.47 MiB / 347.04 MiB  24.92% 23.69 Mi    > preloaded-images-k8s-v18-v1...:  93.69 MiB / 347.04 MiB  27.00% 24.40 Mi    > preloaded-images-k8s-v18-v1...:  100.47 MiB / 347.04 MiB  28.95% 24.40 M    > preloaded-images-k8s-v18-v1...:  107.12 MiB / 347.04 MiB  30.87% 24.40 M    > preloaded-images-k8s-v18-v1...:  114.53 MiB / 347.04 MiB  33.00% 25.07 M    > preloaded-images-k8s-v18-v1...:  121.25 MiB / 347.04 MiB  34.94% 25.07 M    > preloaded-images-k8s-v18-v1...:  127.78 MiB / 347.04 MiB  36.82% 25.07 M    > preloaded-images-k8s-v18-v1...:  132.16 MiB / 347.04 MiB  38.08% 25.34 M    > preloaded-images-k8s-v18-v1...:  137.81 MiB / 347.04 MiB  39.71% 25.34 M    > preloaded-images-k8s-v18-v1...:  143.81 MiB / 347.04 MiB  41.44% 25.34 M    > preloaded-images-k8s-v18-v1...:  149.72 MiB / 347.04 MiB  43.14% 25.60 M    > preloaded-images-k8s-v18-v1...:  153.09 MiB / 347.04 MiB  44.11% 25.60 M    > preloaded-images-k8s-v18-v1...:  156.56 MiB / 347.04 MiB  45.11% 25.60 M    > preloaded-images-k8s-v18-v1...:  163.94 MiB / 347.04 MiB  47.24% 25.48 M    > preloaded-images-k8s-v18-v1...:  170.31 MiB / 347.04 MiB  49.08% 25.48 M    > preloaded-images-k8s-v18-v1...:  176.19 MiB / 347.04 MiB  50.77% 25.48 M    > preloaded-images-k8s-v18-v1...:  182.41 MiB / 347.04 MiB  52.56% 25.82 M    > preloaded-images-k8s-v18-v1...:  189.50 MiB / 347.04 MiB  54.60% 25.82 Mi
+
+    > preloaded-images-k8s-v18-v1...:  195.97 MiB / 347.04 MiB  56.47% 25.82 M    > preloaded-images-k8s-v18-v1...:  347.04 MiB / 347.04 MiB  100.00% 19.03     > preloaded-images-k8s-v18-v1...:  347.04 MiB / 347.04 MiB  100.00% 19.03 M
+🔥  Creating virtualbox VM (CPUs=2, Memory=3900MB, Disk=20000MB) ...\ 
+
+❗  Image was not built for the current minikube version. To resolve this you can delete and recreate your minikube cluster using the latest images. Expected minikube version: v1.35.0 -> Actual minikube version: v1.36.0
+🐳  Preparing Kubernetes v1.33.1 on Docker 28.0.4 ...
+    ▪ Generating certificates and keys ...
+    ▪ Booting up control plane ...
+    ▪ Configuring RBAC rules ...
+🔗  Configuring bridge CNI (Container Networking Interface) ...
+🔎  Verifying Kubernetes components...
+    ▪ Using image gcr.io/k8s-minikube/storage-provisioner:v5
+🌟  Enabled addons: default-storageclass, storage-provisioner
+💡  kubectl not found. If you need it, try: 'minikube kubectl -- get pods -A'
+🏄  Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+
+```
+```sh
+minikube kubectl get ns
+
+```
+```text
+NAME              STATUS   AGE
+default           Active   4m39s
+kube-node-lease   Active   4m39s
+kube-public       Active   4m39s
+kube-system       Active   4m39s
+```
+```sh
+kubectl create deployment nginx --image=nginx:alpine
+```
+```text
+deployment.apps/nginx created
+```
+```sh
+
+minikube kubectl -- expose deployment nginx --type=NodePort --port=80
+```
+```text
+deployment.apps/nginx created
+```
+```sh
+minikube kubectl -- get svc
+```
+```text
+
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+kubernetes   ClusterIP   10.96.0.1      <none>        443/TCP        11m
+nginx        NodePort    10.108.15.59   <none>        80:30853/TCP   102s```
+```
+```sh
+curl -s $(minikube ip):30853
+```
+```text
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+
+```
+```sh
+minikube kubectl -- delete deployment nginx
+```
+```text
+
+deployment.apps "nginx" deleted
+```
+```sh
+minikube kubectl -- delete svc nginx
+```
+```text
+service "nginx" deleted
+```
+```sh
+minikube kubectl -- get pod
+```
+```text
+No resources found in default namespace.
+```
 ```text
 curl: (28) Failed to connect to 172.17.0.4 port 80: Timed out
 ```
