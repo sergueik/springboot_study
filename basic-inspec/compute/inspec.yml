@@ -1,0 +1,17 @@
+name: inspec-gcp-deep-dive-profile
+title: InSpec GCP Deep Dive Profile
+maintainer: Stuart Paterson
+copyright: Stuart Paterson
+copyright_email: spaterson@chef.io
+license: MPL-2.0
+summary: InSpec GCP Deep Dive Compliance Profile Examples
+version: 0.1.0
+inspec_version: '>= 2.2.10'
+depends:
+  - name: inspec-gcp
+    url: https://github.com/inspec/inspec-gcp/archive/master.tar.gz 
+# the below crashes the inspec:
+#  - name: inspec-gcp
+#    git: https://github.com/inspec/inspec-gcp.git
+supports:
+  - platform: gcp

@@ -1,0 +1,135 @@
+# specified GCP resources have all mandatory labels
+
+# Import common-functions/tfplan-functions/tfplan-functions.sentinel
+# with alias "plan"
+import "tfplan-functions" as plan
+
+# Import gcp-functions/gcp-functions.sentinel
+# with alias "gcp"
+import "gcp-functions" as gcp
+
+# List of GCP resources that are required to have name/value labels.
+param resource_types default [
+  "google_project",
+  "google_compute_instance",
+  "google_storage_bucket",
+]
+
+
+
+# List of mandatory labels
+param mandatory_labels default [
+  "name",
+  "ttl",
+]
+
+# Custom function
+get_resources_attribute = func(resources, attribute) {
+  res = {}
+  for resources as address, rc {
+    v = plan.evaluate_attribute(rc, attribute) else null
+    if v is null {
+       v = "null"
+    }
+    res[address] = v 
+  }
+  return values(res)
+}
+
+
+### filter_attribute_is_null ###
+### filter_attribute_is_not_null ###
+# Filter a list of resources to those with a specified
+# attribute attr (block) that was or was not specified. Useful with IAM Conditions condition
+# which modify the set of "google_project_iam_member" role
+filter_attribute_is_null = func(resources, attr, prtmsg) {
+  violators = {} 
+  messages = {}
+  for resources as address, rc {
+    v = plan.evaluate_attribute(rc, attr) else null
+    if v is null {
+      # Add the resource and a debug message to the list
+      message = plan.to_string(address) + " has " + plan.to_string(attr) +
+                " that is null or undefined. "
+      violators[address] = rc
+			messages[address] = message
+      if prtmsg {
+        print(message)
+      }
+    }
+  }
+  return {"resources":violators,"messages":messages}
+}
+
+filter_attribute_is_not_null = func(resources, attr, prtmsg) {
+  violators = {} 
+  messages = {}
+  for resources as address, rc {
+//    print("Evaluate attribute in address: ", address)
+    v = plan.evaluate_attribute(rc, attr) else null
+//     print("attribute is: ", v)
+    if v is not null {
+      # Add the resource and a debug message to the list
+      message = plan.to_string(address) + " has " + plan.to_string(attr) +
+                " that is not null."
+      violators[address] = rc
+			messages[address] = message
+      if prtmsg {
+        print(message)
+      }
+    }
+  }
+  return {"resources":violators,"messages":messages}
+}
+
+# Get all GCP Resources with standard labels
+allGCPResourcesWithStandardLabels =
+                        gcp.find_resources_with_standard_labels(resource_types)
+
+print("step 1", length(keys(allGCPResourcesWithStandardLabels)))
+// NOTE: cannot use just "access_config" for nested attribute
+// the "google_service_account_iam_member" "condition" is easier
+// check. The library filter_attribure_is_value allows "null" argument
+// but filter_attrribue_is_not_value does not allow "null" argument
+
+step21 = plan.filter_attribute_is_value(allGCPResourcesWithStandardLabels,
+                        "network_interface.0.access_config", "null", true)
+
+// cannot use simply "access_config
+
+// "filter_attribute_map_key_contains_items_in_list" is very specialized and does not get any
+
+x1= filter_attribute_is_not_null(allGCPResourcesWithStandardLabels, "network_interface.0.access_config", true)
+print("step 23", keys(x1["resources"]))
+
+x2 = filter_attribute_is_null(allGCPResourcesWithStandardLabels, "network_interface.0.access_config", true)
+print("step 24", keys(x2["resources"]))
+
+x2 = filter_attribute_is_null(allGCPResourcesWithStandardLabels, "network_interface.1.access_config", true)
+print("step 25", keys(x2["resources"]))
+
+
+step2 = plan.filter_attribute_is_not_value(allGCPResourcesWithStandardLabels,
+                        "network_interface.0", "null", false).resources
+
+print("step 2", length(step2))
+print("step 2", keys(step2))
+
+network_interface =  get_resources_attribute(step2, "network_interface")
+
+print("network_interface: ", length(network_interface))
+print("network_interface: ", network_interface)
+access_config  = get_resources_attribute(step2, "network_interface.0.access_config.0")
+print("access_config: ", access_config)
+
+# Filter to GCP resources with violations using list of resources
+# Warnings will be printed for all violations since the last parameter is true
+violatingGCPResources =
+      plan.filter_attribute_not_contains_list(step2,
+                    "labels", mandatory_labels, true)
+print("mesages: ", violatingGCPResources["messages"])
+
+# Main rule
+main = rule {
+ print(keys(violatingGCPResources)) and (length(violatingGCPResources["messages"]) is 0   )
+}

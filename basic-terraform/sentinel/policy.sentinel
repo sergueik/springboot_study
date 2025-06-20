@@ -1,0 +1,67 @@
+# Sentinel policy to control GCP IAM role assignment
+
+# Import the terraform plan
+import "tfplan/v2" as tfplan
+
+# Define the allowed roles for IAM bindings
+# Deny certain roles like 'roles/owner' to prevent over-privileged access
+allowed_roles = [
+  "roles/viewer",
+  "roles/editor",
+  "roles/storage.admin",
+  "roles/compute.admin"
+]
+
+# Define specific projects where 'roles/editor' can be applied
+allowed_editor_projects = [
+  "my-project-id-123",
+  "test-project-id-456"
+]
+
+# Define allowed members for IAM bindings (only these users/service accounts can be bound)
+allowed_members = [
+  "user:admin@example.com",
+  "serviceAccount:admin-service@example.com"
+]
+
+# Rule 1: Ensure no IAM binding includes roles that are not in the allowed list
+deny_unallowed_roles = rule {
+  all tfplan.resources as resource {
+    resource.type == "google_project_iam_member" and
+    resource.mode == "managed" and
+    all resource.instances as instance {
+      instance.attributes.role in allowed_roles
+    }
+  }
+}
+
+# Rule 2: Ensure 'roles/editor' is only applied to specific projects
+restrict_editor_role_to_projects = rule {
+  all tfplan.resources as resource {
+    resource.type == "google_project_iam_member" and
+    resource.mode == "managed" and
+    all resource.instances as instance {
+      instance.attributes.role != "roles/editor" or
+      instance.attributes.project in allowed_editor_projects
+    }
+  }
+}
+
+# Rule 3: Ensure IAM bindings are limited to specific users or service accounts
+restrict_iam_members = rule {
+  all tfplan.resources as resource {
+    resource.type == "google_project_iam_member" and
+    resource.mode == "managed" and
+    all resource.instances as instance {
+      instance.attributes.member in allowed_members
+    }
+  }
+}
+
+# Combine rules into an enforcement policy
+# Enforce that all rules must pass
+main = rule {
+  deny_unallowed_roles and
+  restrict_editor_role_to_projects and
+  restrict_iam_members
+}

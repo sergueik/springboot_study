@@ -1,0 +1,34 @@
+If someone is using your cell phone SIM to run conference calls without your permission, it may indicate SIM cloning, SIM swapping, or unauthorized access. Here’s what you should do immediately:
+
+🚨 Immediate Actions
+1️⃣ Check Call Logs & Carrier Account
+
+Look at your phone’s call history for unknown numbers.
+Log in to your mobile carrier’s online account and check for unusual activity.
+2️⃣ Contact Your Mobile Carrier
+
+Report unauthorized use and request a SIM block/replacement.
+Ask if there has been a SIM swap request on your number.
+3️⃣ Turn Off Your Phone & Reinsert the SIM
+
+Restarting the phone may disconnect unauthorized users.
+4️⃣ Enable SIM Lock (PIN Protection)
+
+On Android & iPhone:
+Go to Settings → Security → SIM card lock
+Enable "Lock SIM Card" and set a PIN
+5️⃣ Check for Spyware or Call Forwarding
+
+Dial ##002# to disable all call forwarding.
+Scan for spyware/malware using an antivirus app.
+6️⃣ Change Account Passwords & Enable 2FA
+
+Update email, banking, and social media passwords linked to your phone number.
+Enable Two-Factor Authentication (2FA) using an authenticator app instead of SMS.
+7️⃣ Report to Authorities
+
+If it's fraud, file a police report and notify your carrier.
+🚀 Next Steps
+Get a new SIM card from your carrier.
+Avoid using SMS for 2FA—switch to authenticator apps.
+Monitor your phone bill for unauthorized charges.

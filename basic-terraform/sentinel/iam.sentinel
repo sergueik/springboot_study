@@ -1,0 +1,68 @@
+# Import the terraform plan (or state) module
+import "tfplan"
+
+# Define the high-privileged roles
+high_privileged_roles = [
+  "roles/owner",
+  "roles/editor",
+  "roles/viewer"
+]
+
+# Function to check if a given role is high-privileged
+is_high_privileged_role = func(role) {
+  return role in high_privileged_roles
+}
+
+# Function to check if the member is a user account
+is_user_account = func(member) {
+  return member matches "user:.*"
+}
+
+# Initialize an empty list to collect all IAM bindings
+all_bindings = []
+resources = tfplan.module_paths["root"].resources
+
+# Collect IAM policies from both google_project_iam_binding and google_project_iam_member resources
+for resource in resources {
+  if resource.type == "google_project_iam_binding" {
+    # Add all members from google_project_iam_binding
+    all_bindings.append({
+      "role": resource.change.after.role,
+      "members": resource.change.after.members
+    })
+  } else if resource.type == "google_project_iam_member" {
+    # Add a single member from google_project_iam_member
+    all_bindings.append({
+      "role": resource.change.after.role,
+      "members": [resource.change.after.member]  # Wrapping the member in a list for consistency
+    })
+  }
+}
+
+# Initialize a list for violations
+violations = []
+
+# Iterate over all collected bindings
+for binding in all_bindings {
+  if is_high_privileged_role(binding.role) {
+    # Iterate through members for each binding
+    for member in binding.members {
+      # If the member is a user account, flag the violation
+      if is_user_account(member) {
+        violations.append({
+          "role": binding.role,
+          "member": member
+        })
+      }
+    }
+  }
+}
+
+# Policy enforcement: If there are violations, deny the plan
+enforce {
+  violations.is_empty() else {
+    print("Found the following high-privileged user accounts:")
+    print(violations)
+    deny("High-privileged roles assigned to user accounts without sufficient justification.")
+  }
+}

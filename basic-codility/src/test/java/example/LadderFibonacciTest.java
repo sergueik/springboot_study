@@ -157,17 +157,15 @@ public class LadderFibonacciTest {
 
 	}
 
+	// https://en.wikipedia.org/wiki/Fibonacci_sequence
 	private int fibonacciNR(int size) {
 		int[] fib = new int[size + 1];
-		// https://en.wikipedia.org/wiki/Fibonacci_sequence
 		fib[0] = 1;
 		fib[1] = 1;
-		fib[2] = 2;
-		if (size > 2) {
-			for (int k = 3; k <= size; k++)
+		if (size >= 2) {
+			for (int k = 2; k <= size; k++)
 				fib[k] = fib[k - 1] + fib[k - 2];
 		}
-		// The array is traversed only once so time complexity is O(N)\
 		return fib[size];
 	}
 

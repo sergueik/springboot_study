@@ -1,0 +1,43 @@
+
+
+import subprocess
+import os
+from flask import Request
+
+def handle_http_request(request: Request):
+    """Extracts requirements.txt content from an HTTP request and writes it to /tmp/."""
+    try:
+        temp_dir = "/tmp"
+        requirements_file = os.path.join(temp_dir, "requirements.txt")
+        download_dir = os.path.join(temp_dir, "packages")
+
+        # Extract request data (assumes JSON payload with "requirements" key)
+        request_json = request.get_json(silent=True)
+        if not request_json or "requirements" not in request_json:
+            return "Missing 'requirements' key in request body", 400
+
+        # Write contents to /tmp/requirements.txt
+        with open(requirements_file, "w") as f:
+            f.write(request_json["requirements"])
+
+        # Ensure the directory exists
+        os.makedirs(download_dir, exist_ok=True)
+
+        # Run pip download
+        result = subprocess.run(
+            ["pip", "download", "-r", requirements_file, "-d", download_dir],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+
+        # List the downloaded files
+        downloaded_files = os.listdir(download_dir)
+        
+        return f"Downloaded files:\n{downloaded_files}", 200
+
+    except subprocess.CalledProcessError as e:
+        return f"Error during pip download: {e.stderr}", 500
+    except Exception as e:
+        return f"Unexpected error: {str(e)}", 500
+

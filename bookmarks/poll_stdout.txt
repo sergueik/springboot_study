@@ -1,0 +1,41 @@
+Here's the refactored code where we don't call readli
+ne() on stderr during the polling phase. Instead, we will handle stderr after the process finishes and we no longer call readline() on stderr inside the loop.
+```
+import subprocess
+import sys
+
+def run_command_in_background(command):
+    # Start the subprocess with stdout and stderr set to PIPE
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
+    
+    # Continuously print stdout line by line
+    while True:
+        # Poll to check if the process is still running
+        retcode = process.poll()
+
+        # Read line from stdout
+        stdout_line = process.stdout.readline()
+
+        if stdout_line:
+            print(f"STDOUT: {stdout_line.strip()}")
+
+        # Exit the loop if the process has finished
+        if retcode is not None and stdout_line == '':
+            break
+    
+    # After the process finishes, print any remaining stderr
+    remaining_stderr = process.stderr.read()
+    if remaining_stderr:
+        print(f"STDERR (after completion): {remaining_stderr.strip()}", file=sys.stderr)
+
+    # Return the final return code of the process
+    return process.returncode
+
+# Example usage
+if __name__ == "__main__":
+    command = "your_command_here"  # Replace with the actual command you want to run
+    return_code = run_command_in_background(command)
+    print(f"Command finished with return code: {return_code}")
+
+```
+

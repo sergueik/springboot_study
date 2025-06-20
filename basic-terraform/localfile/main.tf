@@ -1,5 +1,4 @@
-# based on: https://github.com/terraform-in-action/manning-code
-// commen
+// based on: https://github.com/terraform-in-action/manning-code
 terraform {
   required_providers {
     local = {

@@ -32,7 +32,7 @@ public final class ExampleClass {
 		this.id = id;
 		this.name = name;
 
-		HashMap<String, String> tempMap = new HashMap<String, String>();
+		HashMap<String, String> tempMap = new HashMap<>();
 		Iterator<String> it = hashMap.keySet().iterator();
 		while (it.hasNext()) {
 			String key = it.next();

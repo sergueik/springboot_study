@@ -1,4 +1,4 @@
-### Info
+﻿### Info
 
 replica of [harness-cd-community](https://github.com/harness/harness-cd-community)
 
@@ -488,12 +488,25 @@ docker build -t $IMAGE -f Dockerfile .
 ```
 ### See Also
 
+  * [overview](https://developer.harness.io/docs/continuous-integration/get-started/overview)
   * [deploy to physical data center](https://developer.harness.io/docs/continuous-delivery/get-started/cd-tutorials/pdc) using a `harness/delegate` Docker instance
   * [deploy to Azure VM](https://developer.harness.io/docs/continuous-delivery/get-started/cd-tutorials/azure)
   * [Harness Community Edition](https://developer.harness.io/docs/continuous-delivery/deploy-srv-diff-platforms/community-ed/harness-community-edition-quickstart) [repo](https://github.com/harness/harness-cd-community/tree/main) - retired in favour of [Gitness](https://gitness.com/)
   * [Harness Community Edition deployments](https://developer.harness.io/docs/continuous-delivery/deploy-srv-diff-platforms/community-ed/harness-community-edition-quickstart)
   * [Harness Delegate overview](https://developer.harness.io/docs/platform/delegates/delegate-concepts/delegate-overview) - NOTE, Harness recommends that you create a custom image.
-  * running  in Docker compose [repo](https://github.com/harness/harness-cd-community) and [docker-compose.yml](https://github.com/harness/harness-cd-community/blob/main/docker-compose/harness/docker-compose.yml)  using `harness/nextgenui-signed` ,`harness/ng-auth-ui-signed` ,`harness/ng-manager-signed` ,`harness/pipeline-service-signed` ,`harness/platform-service-signed` , `harness/log-service-signed:release-70-ubi`, `harness/ci-scm-signed`, `harness/delegate-proxy-signed`, `harness/nginx`,`harness/redis`, and `mongo`
+  * running  in Docker compose [repo](https://github.com/harness/harness-cd-community) and [docker-compose.yml](https://github.com/harness/harness-cd-community/blob/main/docker-compose/harness/docker-compose.yml) using 
+    + `harness/nextgenui-signed` 
+    + `harness/ng-auth-ui-signed` 
+    + `harness/ng-manager-signed` 
+    + `harness/pipeline-service-signed`
+    + `harness/platform-service-signed` 
+    + `harness/log-service-signed:release-70-ubi`
+    + `harness/ci-scm-signed`
+    + `harness/delegate-proxy-signed`
+    + `harness/nginx`
+    + `harness/redis`
+    +  `mongo`
+
   * [Harness Shell Script step example](https://developer.harness.io/docs/continuous-delivery/x-platform-cd-features/cd-steps/utilities/shell-script-step)
   * https://hostadvice.com/how-to/web-hosting/ubuntu/how-to-configure-firewall-with-ufw-on-ubuntu-18/
 

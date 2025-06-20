@@ -1,0 +1,67 @@
+Merge the two strategies: one for smaller files using subprocess.Popen and the other for heavier files, where it decides based on the use_gcloud variable whether to use a Python retry mechanism or subprocess.Popen for Google Cloud Artifact handling.
+Here’s a merged script that handles the logic:
+```
+import os
+import subprocess
+import time
+from google.cloud import storage
+
+# Define retry class for handling heavy files with retries
+class RetryOperation:
+    def __init__(self, retries=3, delay=5):
+        self.retries = retries
+        self.delay = delay
+
+    def execute(self, operation):
+        for attempt in range(self.retries):
+            try:
+                return operation()
+            except Exception as e:
+                print(f"Attempt {attempt + 1} failed: {e}")
+                if attempt < self.retries - 1:
+                    time.sleep(self.delay)
+                else:
+                    raise
+
+# Function to upload small files using subprocess.Popen
+def upload_small_files(files):
+    for file in files:
+        dist_path = f"dist/{file}"
+        if os.path.exists(dist_path):
+            # Example: subprocess to upload the small file
+            subprocess.Popen(["gsutil", "cp", dist_path, "gs://your-bucket/"])
+
+# Function to upload heavy files with retries
+def upload_heavy_files(files, use_gcloud=False):
+    def upload_file(file):
+        if use_gcloud:
+            # Using Google Cloud storage client for upload
+            client = storage.Client()
+            bucket = client.get_bucket('your-bucket')
+            blob = bucket.blob(f"uploads/{file}")
+            blob.upload_from_filename(f"dist/{file}")
+            print(f"Uploaded {file} to Google Cloud")
+        else:
+            # Use subprocess to upload the file to GCloud
+            subprocess.Popen(["gsutil", "cp", f"dist/{file}", "gs://your-bucket/"])
+
+    retry_operation = RetryOperation(retries=3, delay=10)
+    for file in files:
+        retry_operation.execute(lambda: upload_file(file))
+
+# Main logic
+def main():
+    small_files = ['f1.whl', 'file2.whl']  # List of small files
+    heavy_files = ['large_file1.tar.gz', 'large_file2.tar.gz']  # List of heavy files
+    use_gcloud = True  # Set to True or False depending on the use case
+
+    # Upload small files using subprocess
+    upload_small_files(small_files)
+    
+    # Upload heavy files with retries (based on the use_gcloud flag)
+    upload_heavy_files(heavy_files, use_gcloud=use_gcloud)
+
+if __name__ == "__main__":
+    main()
+```
+

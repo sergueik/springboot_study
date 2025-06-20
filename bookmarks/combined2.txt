@@ -1,0 +1,106 @@
+If use_gcloud is True, the script will execute the gcloud artifacts packages upload command using subprocess.Popen with shell=True to handle credentials.
+If use_gcloud is False, the script will upload the file using twine and the custom retry logic for handling network issues.
+
+```
+import os
+import subprocess
+import time
+import twine.commands.upload
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+from google.cloud import storage
+
+# Define retry class for handling upload retries
+class RetryOperation:
+    def __init__(self, retries=3, delay=5):
+        self.retries = retries
+        self.delay = delay
+
+    def execute(self, operation):
+        for attempt in range(self.retries):
+            try:
+                return operation()
+            except Exception as e:
+                print(f"Attempt {attempt + 1} failed: {e}")
+                if attempt < self.retries - 1:
+                    time.sleep(self.delay)
+                else:
+                    raise
+
+# Function to upload small files using subprocess.Popen
+def upload_small_files(files):
+    for file in files:
+        dist_path = f"dist/{file}"
+        if os.path.exists(dist_path):
+            # Example: subprocess to upload the small file
+            subprocess.Popen(["gsutil", "cp", dist_path, "gs://your-bucket/"])
+
+# Function to upload heavy files with retry logic or subprocess
+def upload_heavy_files(files, use_gcloud=False):
+    def upload_file(file):
+        if use_gcloud:
+            # Using gcloud for upload when use_gcloud is True
+            gcloud_command = f"gcloud artifacts packages upload {file} " \
+                             f"--location=us --repository=my-repo --source=dist/{file}"
+            subprocess.Popen(gcloud_command, shell=True)
+            print(f"Uploaded {file} using gcloud artifacts")
+        else:
+            # Use twine with retry logic when use_gcloud is False
+            session = requests.Session()
+            retries = Retry(
+                total=5,  # Max retries
+                backoff_factor=2,  # Exponential backoff (2s, 4s, 8s, etc.)
+                status_forcelist=[500, 502, 503, 504],  # Retry on server errors
+            )
+            session.mount("https://", HTTPAdapter(max_retries=retries))
+            
+            twine.commands.upload.upload(
+                dists=[f"dist/{file}"],
+                repository_url="https://your-artifact-registry-url",
+                sign=False,
+                identity=None,
+                username="__token__",
+                password="your-access-token",
+                comment=None,
+                verbose=True,
+                disable_progress_bar=False,
+                retries=retries,  # Custom retry logic
+            )
+            print(f"Uploaded {file} using twine with retries")
+
+    retry_operation = RetryOperation(retries=3, delay=10)
+    for file in files:
+        retry_operation.execute(lambda: upload_file(file))
+
+# Main logic
+def main():
+    small_files = ['f1.whl', 'file2.whl']  # List of small files
+    heavy_files = ['large_file1.whl', 'large_file2.whl']  # List of heavy files
+    use_gcloud = True  # Set to True to use gcloud, False to use twine
+
+    # Upload small files using subprocess
+    upload_small_files(small_files)
+    
+    # Upload heavy files with retries (based on the use_gcloud flag)
+    upload_heavy_files(heavy_files, use_gcloud=use_gcloud)
+
+if __name__ == "__main__":
+    main()
+Key Features of the Script:
+Small File Uploads:
+
+For small files, the subprocess.Popen approach is used to upload using gsutil cp.
+This uses dist/* or the individual files from the small_files list.
+Heavy File Uploads:
+
+With use_gcloud=True: The script uploads large files using the gcloud artifacts packages upload command wrapped in subprocess.Popen. This uses shell=True to embed credentials and execute the command in the shell.
+With use_gcloud=False: The script uploads using twine, with retry logic added through the requests session. The retry logic handles exponential backoff and retries for certain network errors.
+Retry Logic:
+
+Both heavy file upload strategies include retry logic:
+For use_gcloud=False, it uses a requests session with retry handling through urllib3.
+For use_gcloud=True, retries are handled by retrying the gcloud command through the RetryOperation class.
+Customization:
+Modify the repository_url, gcloud location, and repository name as needed.
+Change the use_gcloud variable to switch between Google Cloud Artifact uploads and twine uploads with retries.

@@ -1,0 +1,10 @@
+name: inspec-gcp-deep-dive-profile
+title: InSpec GCP Deep Dive Profile
+maintainer: Stuart Paterson
+copyright: Stuart Paterson
+copyright_email: spaterson@chef.io
+license: MPL-2.0
+summary: InSpec GCP Local
+version: 0.1.0
+inspec_version: '>= 2.2.10'
+depends:

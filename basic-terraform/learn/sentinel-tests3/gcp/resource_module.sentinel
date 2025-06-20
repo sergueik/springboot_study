@@ -1,0 +1,34 @@
+import "tfconfig-functions" as config
+
+resources = config.find_resources_by_type("google_service_account_iam_member")
+resources_wrong_module = func(resources, module_address, prtmsg) {
+	violators = {}
+	messages = {}
+	for resources as address, r {
+		v = r.module_address else null
+		if v == "" {
+			v = "root"
+		}
+
+		if v is not module_address {
+			message = config.to_string(address) + " has r.module_address " +
+				v +
+				" that is not : " +
+				module_address
+			violators[address] = r
+			messages[address] = message
+			if prtmsg {
+				print(message)
+			}
+		} // end if
+	} // end for
+	return {"resources": violators, "messages": messages}
+
+}
+violatingResources = resources_wrong_module(resources, "module.service_account_iam_binding", true)
+violations = length(violatingResources["messages"])
+
+# Main rule
+main = rule {
+	violations is 0
+}

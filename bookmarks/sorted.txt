@@ -1,0 +1,27 @@
+1. Sorting in Ascending Order
+```
+my_dict = {'a': 3, 'b': 1, 'c': 2}
+
+sorted_dict = dict(sorted(my_dict.items(), key=lambda item: item[1]))
+print(sorted_dict)  # {'b': 1, 'c': 2, 'a': 3}
+```
+
+2. Sorting in Descending Order
+```
+sorted_dict_desc = dict(sorted(my_dict.items(), key=lambda item: item[1], reverse=True))
+print(sorted_dict_desc)  # {'a': 3, 'c': 2, 'b': 1}
+```
+1. Iterating Over a Dictionary Sorted by Values (Ascending)
+```
+
+my_dict = {'a': 3, 'b': 1, 'c': 2}
+
+for key, value in sorted(my_dict.items(), key=lambda item: item[1]):
+    print(key, value)
+```
+2.Iterating Over a Dictionary Sorted by Keys
+```
+
+for key, value in sorted(my_dict.items()):
+    print(key, value)
+```

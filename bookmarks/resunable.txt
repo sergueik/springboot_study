@@ -1,0 +1,11 @@
+Use gcloud artifacts Instead (Recommended for Google Artifact Registry)
+Since twine lacks retry logic, Google recommends using gcloud artifacts packages upload for resumable uploads:
+```
+gcloud artifacts packages upload my-package \
+  --location=us \
+  --repository=my-repo \
+  --source=dist/my_large_package.whl
+```
+Supports resumable uploads
+More stable for large files
+

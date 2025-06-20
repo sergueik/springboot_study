@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  become: no
+  vars:
+    flag: true
+    filename: test.json
+    username: vagrant
+  tasks:
+  - name: Simple Boolean Task Demo
+    debug:
+      msg: 'flag: {{ flag }}'
+    when: flag

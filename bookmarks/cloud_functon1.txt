@@ -1,0 +1,36 @@
+import subprocess
+import os
+
+def handle_pip_download(request):
+    """Writes a requirements.txt file, downloads dependencies, and returns the file list."""
+    try:
+        # Define the temporary directory
+        temp_dir = "/tmp"
+        requirements_file = os.path.join(temp_dir, "requirements.txt")
+        download_dir = os.path.join(temp_dir, "packages")
+
+        # Create requirements.txt (example with 'requests' and 'numpy')
+        with open(requirements_file, "w") as f:
+            f.write("requests\nnumpy\n")
+
+        # Ensure the directory exists
+        os.makedirs(download_dir, exist_ok=True)
+
+        # Run pip download to fetch dependencies into /tmp/packages
+        result = subprocess.run(
+            ["pip", "download", "-r", requirements_file, "-d", download_dir],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+
+        # List the downloaded files
+        downloaded_files = os.listdir(download_dir)
+        
+        return f"Downloaded files:\n{downloaded_files}", 200
+
+    except subprocess.CalledProcessError as e:
+        return f"Error during pip download: {e.stderr}", 500
+    except Exception as e:
+        return f"Unexpected error: {str(e)}", 500
+

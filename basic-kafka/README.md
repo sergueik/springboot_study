@@ -271,7 +271,7 @@ the Springboot Kafka configuration is incompete: cannot direct it to use remote 
      +  https://docs.bitnami.com/virtual-machine/faq/get-started/enable-ssh-password/
      +  https://docs.bitnami.com/virtual-machine/infrastructure/kafka/administration/run-producer-consumer/
 
-  * Distributed Tracing applications that subscribe to and publish data to Apache Kafka distributed event source and message queue
+  * Distributed Tracing applications that subscribes to and publishes data to Apache Kafka distributed event source and message queue
 
     + [documentation](https://newrelic.com/blog/how-to-relic/distributed-tracing-with-kafka) on how to achieve Tracing Kafka workflow with OpenTelemetry and newrelic
     + [discussion](https://community.dynatrace.com/t5/Alerting/Dynatrace-distributed-tracing-with-Kafka/td-p/126406)  of avalable options of handling Kafka workflows in Dynatrace and [some related Dynatrace documentation](https://www.dynatrace.com/support/help/how-to-use-dynatrace/services/service-detection-and-naming/service-types/define-messaging-services) - suport seems to be barely avialbale
@@ -280,7 +280,12 @@ the Springboot Kafka configuration is incompete: cannot direct it to use remote 
     + [how to monitor a standalone Kafka cluster with Metricbeat and Filebeat or with Elastic Agent](https://www.elastic.co/blog/how-to-monitor-containerized-kafka-with-elastic-observability)
     + [discussion](https://discuss.elastic.co/t/apm-distributed-tracing-with-kafka/268759) of can one do distributed tracing with kafka in the middle, solving challenge of discovering the consumer (no affirmative conclusion)
     + [part1](https://www.elastic.co/blog/just-enough-kafka-for-the-elastic-stack-part1) and [part2](https://www.elastic.co/blog/just-enough-kafka-for-the-elastic-stack-part2) on using Kafka with Elastic Search, but as utility, not as a monitored target
-    
-    
+   * [introduction to Apache Kafka](https://www.baeldung.com/apache-kafka)
+   * [intro to Apache Kafka with Spring](https://www.baeldung.com/spring-kafka)
+   * [Apache Kafka Essential - Getting Started](https://archive.org/details/apache-kafka-essential-training-getting-started)
+     + [source code](https://github.com/pfg-josecastillo/ApacheKafkaEssentialTraining_GettingStarted)
+   * [Apache Kafka Essential Scalable Apps](https://www.classcentral.com/course/linkedin-learning-apache-kafka-essential-training-building-scalable-applications-77215)
+  * https://github.com/PacktPublishing/Build-scalable-applications-with-Apache-Kafka?ysclid=lzrcfr40m4804042611 
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -1,0 +1,95 @@
+For small files: It uses subprocess.Popen to run the twine upload command, uploading the files to a specified URL, and skipping existing files.
+For big files:
+When use_gcloud=True: It uses subprocess.Popen to run the gcloud artifacts packages upload command.
+When use_gcloud=False: It uses twine with retry logic to upload files, just like in the previous implementation.
+
+```
+import os
+import subprocess
+import time
+import twine.commands.upload
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+# Define retry class for handling upload retries
+class RetryOperation:
+    def __init__(self, retries=3, delay=5):
+        self.retries = retries
+        self.delay = delay
+
+    def execute(self, operation):
+        for attempt in range(self.retries):
+            try:
+                return operation()
+            except Exception as e:
+                print(f"Attempt {attempt + 1} failed: {e}")
+                if attempt < self.retries - 1:
+                    time.sleep(self.delay)
+                else:
+                    raise
+
+# Function to upload small files using subprocess.Popen and twine
+def upload_small_files(files, url):
+    file_paths = [f"/path/to/directory/{file}" for file in files]
+    command = f"twine upload --url {url} " + " ".join(file_paths) + " --skip-existing"
+    
+    # Use subprocess to run the twine upload command for small files
+    subprocess.Popen(command, shell=True)
+    print(f"Uploaded small files: {', '.join(files)} using twine")
+
+# Function to upload big files with retry logic or subprocess (gcloud/twine)
+def upload_big_files(files, use_gcloud=False):
+    def upload_file(file):
+        if use_gcloud:
+            # Using gcloud for upload when use_gcloud is True
+            gcloud_command = f"gcloud artifacts packages upload {file} " \
+                             f"--location=us --repository=my-repo --source=dist/{file}"
+            subprocess.Popen(gcloud_command, shell=True)
+            print(f"Uploaded {file} using gcloud artifacts")
+        else:
+            # Use twine with retry logic when use_gcloud is False
+            session = requests.Session()
+            retries = Retry(
+                total=5,  # Max retries
+                backoff_factor=2,  # Exponential backoff (2s, 4s, 8s, etc.)
+                status_forcelist=[500, 502, 503, 504],  # Retry on server errors
+            )
+            session.mount("https://", HTTPAdapter(max_retries=retries))
+            
+            twine.commands.upload.upload(
+                dists=[f"dist/{file}"],
+                repository_url="https://your-artifact-registry-url",
+                sign=False,
+                identity=None,
+                username="__token__",
+                password="your-access-token",
+                comment=None,
+                verbose=True,
+                disable_progress_bar=False,
+                retries=retries,  # Custom retry logic
+            )
+            print(f"Uploaded {file} using twine with retries")
+
+    retry_operation = RetryOperation(retries=3, delay=10)
+    for file in files:
+        retry_operation.execute(lambda: upload_file(file))
+
+# Main logic
+
+
+def main():
+    small_files = ['smallfile1.txt', 'smallfile2.txt', 'smallfile3.txt']  # List of small files
+    big_files = ['largefile1.whl', 'largefile2.whl']  # List of big files
+    use_gcloud = True  # Set to True to use gcloud, False to use twine
+    url = "https://your-repository-url"  # URL for uploading small files via twine
+
+    # Upload small files using twine and subprocess
+    upload_small_files(small_files, url)
+    
+    # Upload big files with retries (based on the use_gcloud flag)
+    upload_big_files(big_files, use_gcloud=use_gcloud)
+
+if __name__ == "__main__":
+    main()
+```

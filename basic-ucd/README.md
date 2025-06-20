@@ -553,7 +553,7 @@ However the call to
  children= r.getResourceChildren(id);
  System.out.println("{\"" + id1 + "\": "+ children + " }");
 ```
-reveal the hoerarchy of resources:
+reveals the hierarchy of resources:
 ```js
 {
   "172f2041-bfa1-c87d-e2cd-f0f9bb270040": [
@@ -591,8 +591,133 @@ reveal the hoerarchy of resources:
       "impersonationUseSudo": false,
       "impersonationForce": false,
       "type": "subresource",
-    $ial run of Udeply server is remarkably time consuming and the docker image isabout to exprie Feb 11 2021.
-There is no out of the box say to preserve
+    "status": "ONLINE",
+      "hasAgent": true,
+      "tags": []
+    }
+  ],
+  "172f1c3c-8bcd-ca06-0e12-1331c3c8a0c1": [
+    {
+      "id": "172f1d46-ba77-1d34-73d1-149e8b2c6a80",
+      "securityResourceId": "172f1d46-b8c6-c626-715f-834d913ee701",
+      "name": "Component  2",
+      "path": "/TEST/agent-2181a1920431/Component  2",
+      "active": true,
+      "description": "",
+      "inheritTeam": true,
+      "discoveryFailed": false,
+      "prototype": false,
+      "impersonationPassword": "****",
+      "impersonationUseSudo": false,
+      "impersonationForce": false,
+      "type": "subresource",
+      "status": "ONLINE",
+      "hasAgent": true,
+      "tags": []
+    },
+    {
+      "id": "172f1c98-4dda-04c7-e61c-92b6d9e2a9d6",
+      "securityResourceId": "172f1c98-4bb6-5693-ef34-7d91c929466d",
+      "name": "Dummy Component",
+      "path": "/TEST/agent-2181a1920431/Dummy Component",
+      "active": true,
+      "description": "",
+      "inheritTeam": true,
+      "discoveryFailed": false,
+      "prototype": false,
+      "impersonationPassword": "****",
+      "impersonationUseSudo": false,
+      "impersonationForce": false,
+      "type": "subresource",
+      "status": "ONLINE",
+      "hasAgent": true,
+      "tags": []
+    }
+  ]
+}
+```
+
+![IBM Urbancode Udeploy Server Example](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/configured_agent_capture.png)
+
+
+On the agent create  directory to mock up the version import functionality:
+```sh
+export IMAGE='ibmcom/ucda'
+ID=$( docker container ls | grep $IMAGE | awk '{print $1}')
+docker exec -it $ID sh
+```
+
+```sh
+for V in 1 2 3 ; do mkdir -p /tmp/hello_World/$V.0 ; touch /tmp/hello_World/$V.0/data.txt; done
+find /tmp/hello_World/ -type f
+```
+Then import version via Component menu. This will allow selection ofversions via process component dialog:
+![Udeploy Selection Component Version](https://github.com/sergueik/springboot_study/blob/master/basic-ucd/screenshots/vertion_selection.png)
+
+### Snapshot Versions (Mockup data)
+
+```cmd
+mvn package
+java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshotVersions -data file:///c:/developer/sergueik/springboot_study/basic-ucd/snapshot.json
+```
+or
+```sh
+java -cp target/example.ucdclient.jar:target/lib/* example.GetApplicationSnapshotVersions -data file://$(pwd)/snapshot.json
+```
+will produce the following output
+```sh
+  -
+  id: "172f1d3c-35f2-7aa1-a9a3-d2fb56513b79"
+  name: "version 1"
+  created: "1593195086676"
+  id: "172f1d3c-3650-453c-0c06-279d5cbb3582"
+  name: "Component 2"
+  description: "Component 2 description"
+ -
+  id: "172f1d3c-35f2-7aa1-a9a3-d2fb56513b79"
+  name: "version 2"
+  created: "1593195086676"
+  description: "version 2 description"
+  id: "172f1d3c-3650-453c-0c06-279d5cbb3582"
+  name: "Component 3"
+  description: "Component 3 description"
+```
+used the `snapshot.json` JSON file for snapshot mockup
+
+### List and Confirm Snapshots (Mockup data)
+
+```cmd
+java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshots -data file:///c:/developer/sergueik/springboot_study/basic-ucd/snapshots.json -op list -snapshot "Snapshot 3"
+```
+```cmd
+Snapshot 1
+Snapshot 2
+Snapshot 3
+```
+
+```cmd
+java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshots -data file:///c:/developer/sergueik/springboot_study/basic-ucd/snapshots.json -op confirm -snapshot Snapshot_3 -application dummy
+```
+this will print
+
+```cmd
+Snapshot "Snapshot_3" is not valid
+Status: false
+```
+and set the exit status to 1
+```cmd
+
+java -cp target\example.ucdclient.jar;target\lib\* example.GetApplicationSnapshots -data file:///c:/developer/sergueik/springboot_study/basic-ucd/snapshots.json -op confirm -snapshot "Snapshot 3" -application dummy
+```
+this will print
+```cmd
+Snapshot "Snapshot 3" confirmed to be valid
+Status: true
+```
+and set the exit status to `0`
+
+The inital run of Udeploy server is remarkably time consuming and the Docker image is about to expire on Feb 11 2021.
+There is no out of the box way to preserve
 
 * Create a [backup](https://docs.docker.com/engine/reference/commandline/save/)
 ```sh

@@ -1,0 +1,68 @@
+﻿# Call the setup module to create a random bucket prefix
+run "setup_tests" {
+  module {
+    source = "./tests/setup"
+  }
+}
+
+# Apply run block to create the bucket
+#  no need to define outputs
+run "create_bucket" {
+  variables {
+    bucket_name = "${run.setup_tests.bucket_prefix}-aws-s3-website-test"
+  }
+
+  # Check that the bucket name is correct
+  assert {
+    condition     = aws_s3_bucket.s3_bucket.bucket == "${run.setup_tests.bucket_prefix}-aws-s3-website-test"
+    error_message = "Invalid bucket name"
+  }
+
+  # Check index.html hash matches
+  assert {
+    condition     = aws_s3_object.index.etag == filemd5("./www/index.html")
+    error_message = "Invalid eTag for index.html"
+  }
+
+  # Check error.html hash matches
+  assert {
+    condition     = aws_s3_object.error.etag == filemd5("./www/error.html")
+    error_message = "Invalid eTag for error.html"
+  }
+}
+
+run "website_is_running" {
+  command = plan
+
+  module {
+    source = "./tests/final"
+  }
+
+  variables {
+    endpoint = run.create_bucket.website_endpoint
+  }
+
+  assert {
+    condition     = data.http.index.status_code == 200
+    error_message = "Website responded with HTTP status ${data.http.index.status_code}"
+  }
+
+  assert {
+    condition     = can(regex("[a-z]+", data.http.index.response_body ))
+    error_message = "Website response body ${data.http.index.response_body} should contain alphanumeric characters"
+  }
+}
+/*
+
+Error: Error in function call
+
+  on tests\website.tftest.hcl line 49, in run "website_is_running":
+  49:     condition     = regex("[a-z]+", data.http.index.response_body ) != ""
+    ├────────────────
+    │ while calling regex(pattern, string)
+    │ data.http.index.response_body is "12345\r\n"
+
+Call to function "regex" failed: pattern did not match any part of the given
+string.
+
+*/

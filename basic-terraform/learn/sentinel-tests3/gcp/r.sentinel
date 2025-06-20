@@ -1,0 +1,49 @@
+# This policy uses the Sentinel tfplan/v2 import to require that
+# all GCE instances have machine types from an allowed list
+
+# Import common-functions/tfplan-functions/tfplan-functions.sentinel
+# with alias "plan"
+import "tfplan-functions" as plan
+
+
+violators = {}
+messages = {}
+
+allowed_type = "roles/cloudfunctions.invoker"
+forbidden_member = "allUsers" 
+
+# Custom function
+get_resources_attribute = func(resources, attribute) {
+  res = {}
+  for resources as address, rc {
+    v = plan.evaluate_attribute(rc, attribute) else null
+    if v is null {
+       v = "null"
+    }
+    res[address] = v 
+  }
+  return values(res)
+}
+
+
+# Get all iam resources
+
+
+all_resources = plan.find_resources("google_cloudfunctions_function_iam_member")
+
+resources_with_allowed_type = plan.filter_attribute_is_value(all_resources, "role", allowed_type, false).resources
+
+results = plan.filter_attribute_is_value(resources_with_allowed_type, "member", forbidden_member, false)
+
+print("step 1: ", length(results) )
+print("resources: ", plan.to_string (results.resources))
+cloud_function  = get_resources_attribute(results.resources, "cloud_function")
+print("cloud_function: ", cloud_function)
+
+violations = length(results["messages"])
+print("violations: ", violations)
+
+# Main rule
+main = rule {
+	violations is 0
+}

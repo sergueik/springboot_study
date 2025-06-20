@@ -49,5 +49,6 @@ comment the value in the `src\main\resources\application.properties`, then obser
    * [Runnable vs. Callable in Java](https://www.baeldung.com/java-runnable-callable)
    * [Quick Guide to Spring Bean Scopes](https://www.baeldung.com/spring-bean-scopes)
    * [Custom Scope in Spring](https://www.baeldung.com/spring-custom-scope)
+   * [Scoped bean injection problem](https://www.baeldung.com/spring-inject-prototype-bean-into-singleton)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

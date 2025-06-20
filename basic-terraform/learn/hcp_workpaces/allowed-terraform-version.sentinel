@@ -1,0 +1,6 @@
+import "tfplan"
+import "version"
+
+main = rule {
+  version.new(tfplan.terraform_version).greater_than("1.1.0")
+}
