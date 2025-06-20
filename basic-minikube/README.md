@@ -83,15 +83,8 @@ until the success completion message:
 * Enabled addons: default-storageclass, storage-provisioner
 * Verifying Kubernetes components...
 
-! C:\Minikube\kubectl.exe is version 1.22.2, which may have incompatibilities wi
-th Kubernetes 1.26.3.
+! C:\Minikube\kubectl.exe is version 1.22.2, which may have incompatibilities with Kubernetes 1.26.3.
   - Want kubectl v1.26.3? Try 'minikube kubectl -- get pods -A'
-* Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
-
-
-
-```
-```text
 * Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
 ```
 or (on Linux host)
