@@ -1,6 +1,6 @@
 ﻿### Install
 
-* follow the [steps](https://phoenixnap.com/kb/install-minikube-on-ubuntu) listed gfor bionic
+* follow the [steps](https://phoenixnap.com/kb/install-minikube-on-ubuntu) listed for bionic
 
 ```sh
 wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
@@ -29,8 +29,68 @@ if seeing the communication timeout
 ```cmd
 X minikube is unable to connect to the VM: dial tcp 192.168.59.100:22: i/o timeout
 ```
-rerun the command one more time
-until the success comletion message
+rerun the command one or more times
+```cmd
+minikube stop
+minikube.exe start --driver=virtualbox
+```
+from CMD whell
+
+if still seeing error and /or if there is no  kubectl or kubeadm inside the vm, recycle it and let minikube create it:
+```sh
+kubectl version
+```
+```text
+ kubectl: command not found
+```
+```sh
+which kubecl
+```
+no output
+```cmd
+minikube delete --all --purge
+```
+
+```text
+* Deleting "minikube" in virtualbox ...
+* Removed all traces of the "minikube" cluster.
+```
+```cmd
+minikube.exe start --driver=virtualbox
+
+```
+until the success completion message:
+
+```
+```text
+* minikube v1.30.1 on Microsoft Windows 8.1 6.3.9600.20778 Build 9600.20778
+  - MINIKUBE_IP=192.168.59.100
+* Using the virtualbox driver based on user configuration
+* Starting control plane node minikube in cluster minikube
+* Downloading Kubernetes v1.26.3 preload ...
+    > preloaded-images-k8s-v18-v1...:  397.02 MiB / 397.02 MiB  100.00% 27.45 M
+* Creating virtualbox VM (CPUs=2, Memory=4000MB, Disk=20000MB) ...
+* Found network options:
+  - NO_PROXY=192.168.99.100,192.168.99.101
+  - no_proxy=192.168.99.100,192.168.99.101
+* Preparing Kubernetes v1.26.3 on Docker 20.10.23 ...
+  - env NO_PROXY=192.168.99.100,192.168.99.101
+  - Generating certificates and keys ...
+  - Booting up control plane ...
+  - Configuring RBAC rules ...
+* Configuring bridge CNI (Container Networking Interface) ...
+  - Using image gcr.io/k8s-minikube/storage-provisioner:v5
+* Enabled addons: default-storageclass, storage-provisioner
+* Verifying Kubernetes components...
+
+! C:\Minikube\kubectl.exe is version 1.22.2, which may have incompatibilities wi
+th Kubernetes 1.26.3.
+  - Want kubectl v1.26.3? Try 'minikube kubectl -- get pods -A'
+* Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+
+
+
+```
 ```text
 * Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
 ```
