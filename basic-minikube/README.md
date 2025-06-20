@@ -110,7 +110,7 @@ to get bare name, use `jsonpath` argument
 kubectl get pods -o jsonpath="{.items[*].metadata.name}"
 ```
 ```text
-nginx-565785f75c-9kp98
+nginx-6c557cc74d-zcfhl
 ```
 ```sh
 kubectl get deployments -o name
@@ -130,8 +130,12 @@ kubectl get pods -o jsonpath="{.items[*].spec.containers[*].image}"
 ```text
 nginx:alpine
 ```
+in the following command replace the pod id with the otutput
 ```sh
-kubectl get pod/nginx-565785f75c-9v9jm -o jsonpath="{.status.podIP}"
+kubectl get pod/nginx-6c557cc74d-zcfhl -o jsonpath="{.status.podIP}"
+```
+```text
+10.244.0.3
 ```
 ```text
 172.17.0.4
@@ -164,6 +168,217 @@ NOTE:
 there will be timeout when accessing nginx directly in the pod:
 ```sh
 curl http://172.17.0.4:80/
+```
+
+```cmd
+kubectl get deployment
+```
+```text
+NAME    READY   UP-TO-DATE   AVAILABLE   AGE
+nginx   1/1     1            1           11m
+```
+
+```cmd
+kubectl expose deployment nginx --type=NodePort --port=80
+```
+```text
+service/nginx exposed
+```
+```cmd
+kubectl get svc
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP        21m
+nginx        NodePort    10.102.11.125   <none>        80:32683/TCP   103s
+```
+connect to the mapped port on the host with ip adress of `minikube ip`
+```cmd
+curl http://192.168.59.100:32683
+```
+```text
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   615  100   615    0     0   159k      0 --:--:-- --:--:-- --:--:--  200k<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+```
+#### Export VirtualBox MAchine XML
+```cmd
+set path=%PATH%;"c:\Program Files\Oracle\VirtualBox"
+vboxmanage showvminfo "minikube"  > minikue.config.txt
+type minikue.config.txt
+```
+```text
+Name:            minikube
+Groups:          /
+Guest OS:        Linux 2.6 / 3.x / 4.x (64-bit)
+UUID:            a8bb48c1-af2a-47bb-b11c-ec0a9ef0465f
+Config file:     C:\Users\Serguei\.minikube\machines\minikube\minikube\minikube.
+vbox
+Snapshot folder: C:\Users\Serguei\.minikube\machines\minikube\minikube\Snapshots
+
+Log folder:      C:\Users\Serguei\.minikube\machines\minikube\minikube\Logs
+Hardware UUID:   a8bb48c1-af2a-47bb-b11c-ec0a9ef0465f
+Memory size:     4000MB
+Page Fusion:     off
+VRAM size:       8MB
+CPU exec cap:    100%
+HPET:            on
+Chipset:         piix3
+Firmware:        BIOS
+Number of CPUs:  2
+PAE:             on
+Long Mode:       on
+Triple Fault Reset: off
+APIC:            on
+X2APIC:          off
+CPUID Portability Level: 0
+CPUID overrides: None
+Boot menu mode:  disabled
+Boot Device (1): DVD
+Boot Device (2): DVD
+Boot Device (3): HardDisk
+Boot Device (4): Not Assigned
+ACPI:            on
+IOAPIC:          on
+BIOS APIC mode:  APIC
+Time offset:     0ms
+RTC:             UTC
+Hardw. virt.ext: on
+Nested Paging:   on
+Large Pages:     on
+VT-x VPID:       on
+VT-x unr. exec.: on
+Paravirt. Provider: Default
+Effective Paravirt. Provider: KVM
+State:           running (since 2025-06-20T08:10:13.653000000)
+Monitor count:   1
+3D Acceleration: off
+2D Video Acceleration: off
+Teleporter Enabled: off
+Teleporter Port: 0
+Teleporter Address:
+Teleporter Password:
+Tracing Enabled: off
+Allow Tracing to Access VM: off
+Tracing Configuration:
+Autostart Enabled: off
+Autostart Delay: 0
+Default Frontend:
+Storage Controller Name (0):            SATA
+Storage Controller Type (0):            IntelAhci
+Storage Controller Instance Number (0): 0
+Storage Controller Max Port Count (0):  30
+Storage Controller Port Count (0):      30
+Storage Controller Bootable (0):        on
+SATA (0, 0): C:\Users\Serguei\.minikube\machines\minikube\boot2docker.iso (UUID:
+ 969b1bc1-683f-467f-be21-312360fa8fcf)
+SATA (1, 0): C:\Users\Serguei\.minikube\machines\minikube\disk.vmdk (UUID: ccd4c
+fd3-d3b0-431a-86c9-7d9dc330ced6)
+NIC 1:           MAC: 080027705228, Attachment: NAT, Cable connected: on, Trace:
+ off (file: none), Type: virtio, Reported speed: 0 Mbps, Boot priority: 0, Promi
+sc Policy: deny, Bandwidth group: none
+NIC 1 Settings:  MTU: 0, Socket (send: 64, receive: 64), TCP Window (send:64, re
+ceive: 64)
+NIC 1 Rule(0):   name = ssh, protocol = tcp, host ip = 127.0.0.1, host port = 49
+500, guest ip = , guest port = 22
+NIC 2:           MAC: 08002740970D, Attachment: Host-only Interface 'VirtualBox
+Host-Only Ethernet Adapter #3', Cable connected: on, Trace: off (file: none), Ty
+pe: virtio, Reported speed: 0 Mbps, Boot priority: 0, Promisc Policy: deny, Band
+width group: none
+NIC 3:           disabled
+NIC 4:           disabled
+NIC 5:           disabled
+NIC 6:           disabled
+NIC 7:           disabled
+NIC 8:           disabled
+Pointing Device: PS/2 Mouse
+Keyboard Device: PS/2 Keyboard
+UART 1:          disabled
+UART 2:          disabled
+UART 3:          disabled
+UART 4:          disabled
+LPT 1:           disabled
+LPT 2:           disabled
+Audio:           enabled (Driver: DSOUND, Controller: AC97, Codec: STAC9700)
+Audio playback:  disabled
+Audio capture: disabled
+Clipboard Mode:  disabled
+Drag and drop Mode: disabled
+Session name:    headless
+Video mode:      720x400x0 at 0,0 enabled
+VRDE:            disabled
+USB:             disabled
+EHCI:            disabled
+XHCI:            disabled
+
+USB Device Filters:
+
+<none>
+
+Available remote USB devices:
+
+<none>
+
+Currently Attached USB Devices:
+
+<none>
+
+Bandwidth groups:  <none>
+
+Shared folders:
+
+Name: 'c/Users', Host path: '\\?\c:\Users' (machine mapping), writable
+
+VRDE Connection:    not active
+Clients so far:     0
+
+Capturing:          not active
+Capture audio:      not active
+Capture screens:    0
+Capture file:       C:\Users\Serguei\.minikube\machines\minikube\minikube\miniku
+be.webm
+Capture dimensions: 1024x768
+Capture rate:       512 kbps
+Capture FPS:        25
+Capture options:
+
+Guest:
+
+Configured memory balloon size:      0 MB
+OS type:                             Linux26_64
+Additions run level:                 2
+Additions version:                   6.0.0 r127566
+
+
+Guest Facilities:
+
+Facility "VirtualBox Base Driver": active/running (last update: 2025/06/20 08:10
+:36 UTC)
+Facility "VirtualBox System Service": active/running (last update: 2025/06/20 08
+:10:36 UTC)
+Facility "Seamless Mode": not active (last update: 2025/06/20 08:10:36 UTC)
+Facility "Graphics Mode": not active (last update: 2025/06/20 08:10:36 UTC)
+
 ```
 ```text
 curl: (28) Failed to connect to 172.17.0.4 port 80: Timed out
