@@ -1,9 +1,10 @@
-FROM alpine:3.9.5.
+FROM alpine:3.9.5
 
 ARG VERSION=10.8.4
 ARG DOMAIN=example.com
 
 COPY build.sh entrypoint.sh /docker/
+RUN sed -i 's|\r||g' /docker/*sh
 RUN /docker/build.sh
 
 #VOLUME /var/opt/gitlab /var/log /etc/ssh

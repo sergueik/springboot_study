@@ -9,7 +9,9 @@ set -xe
 apk upgrade --no-cache
 
 # busybox contains bug in env command preventing gitaly setup, upgrade it
-apk add busybox=1.28.4-r0 --no-cache --repository=https://nl.alpinelinux.org/alpine/edge/main
+BUSYBOX_VERSION='1.28.4-r0'
+BUSYBOX_VERSION='1.29.3-r10'
+apk add busybox=${BUSYBOX_VERSION} --no-cache --repository=https://nl.alpinelinux.org/alpine/edge/main
 
 # install runtime deps
 apk add --no-cache openssh-server git nginx postgresql redis nodejs-current icu-libs libre2
@@ -19,9 +21,10 @@ apk add --no-cache sudo # considered bad practice but we really need it
 apk add --no-cache procps # to replace busybox pkill
 
 # install build deps
+# NOTE: the libre2 dev package is called re2-dev
 apk add --no-cache --virtual .build-deps \
 gcc g++ make cmake linux-headers \
-icu-dev ruby-dev musl-dev postgresql-dev zlib-dev libffi-dev libre2-dev \
+icu-dev ruby-dev musl-dev postgresql-dev zlib-dev libffi-dev re2-dev \
 python2 go yarn
 
 # generate server keys (replace them in production!)
@@ -74,8 +77,9 @@ echo "unixsocketperm 770" >>$CONFIG
 # !--chown redis:redis /var/run/redis
 # !--chmod 755 /var/run/redis
 sed --in-place "s/^redis:.*/&,git/" /etc/group # add git user to redis group
-sudo -u redis redis-server $CONFIG # start redis
-
+sudo -u redis redis-server $CONFIG &
+# start redis
+# NOTE: in the backgound
 # adjust git settings
 sudo -u $USER -H git config --global gc.auto 0
 sudo -u $USER -H git config --global core.autocrlf input
@@ -133,7 +137,8 @@ sudo -u $USER -H mkdir public/uploads
 chmod 0700 public/uploads
 
 # install bundler
-gem install bundler --no-ri --no-rdoc
+# gem install bundler --no-ri --no-rdoc
+gem install bundler -v 2.3.27 --no-ri --no-rdoc
 
 # to parallelize bundler jobs
 CPU_COUNT=`awk '/^processor/{n+=1}END{print n}' /proc/cpuinfo`

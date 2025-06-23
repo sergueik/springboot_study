@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    hostname: gitlab
+    container_name: gitlab
+    restart: always
+    ports:
+      - "8929:8929"  # Web UI
+      - "2224:22"     # SSH access (optional)
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://gitlab:8929'
+        gitlab_rails['initial_root_password'] = 'rootpassword'
+        gitlab_rails['initial_root_email'] = 'root@example.com'
+    volumes:
+      - gitlab-config:/etc/gitlab
+      - gitlab-logs:/var/log/gitlab
+      - gitlab-data:/var/opt/gitlab
+
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    container_name: gitlab-runner
+    depends_on:
+      - gitlab
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - gitlab-runner-config:/etc/gitlab-runner
+
+  java-executor:
+    build:
+      context: ./java-runner
+    image: my/java-runner:latest
+    container_name: java-executor
+    command: sleep infinity
+    profiles:
+      - executors
+
+volumes:
+  gitlab-config:
+  gitlab-logs:
+  gitlab-data:
+  gitlab-runner-config:
+    
