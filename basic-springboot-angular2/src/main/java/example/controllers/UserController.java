@@ -18,8 +18,7 @@ import example.repositories.UserRepository;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins= {"http://localhost:4200","http://techpoint.pro"}, allowedHeaders="*")
-//@CrossOrigin(origins = {"http://localhost:7777", "http://someserver:8080"})
+@CrossOrigin(origins = { "http://localhost:4200", "http://techpoint.pro" }, allowedHeaders = "*")
 public class UserController {
 	@Autowired
 	private UserRepository userRepository;

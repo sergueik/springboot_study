@@ -12,7 +12,8 @@ import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http'
 @Injectable()
 export class UserService {
   
-  private baseUrl:string='http://103.108.140.153:8084/api';
+  // private baseUrl:string='http://103.108.140.153:8084/api';
+  private baseUrl:string='http://localhost:8084/api';
   //old private headers = new Headers({'Content-Type':'application/json'});
   private headers = new Headers({ 
     'Content-Type':'application/json',
