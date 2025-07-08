@@ -1,1 +1,10 @@
 /target/
+# dependencies
+/angular_app/node_modules
+# compiled output
+/angular_app/dist
+/angular_app/tmp
+/angular_app/out-tsc
+# node js installed into the project dir
+node_modules/
+/src/main/resources/static

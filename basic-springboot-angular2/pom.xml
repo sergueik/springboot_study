@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>basic-springboot-angular2</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>basic_springboot_angular2</name>
   <description>Basic Springboot Angular2 H2 Hibernate Demo project</description>
@@ -17,8 +17,19 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
+    <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
   </properties>
   <dependencies>
+<dependency>
+    <groupId>jakarta.xml.bind</groupId>
+    <artifactId>jakarta.xml.bind-api</artifactId>
+    <version>2.3.2</version>
+</dependency>
+<dependency>
+    <groupId>org.glassfish.jaxb</groupId>
+    <artifactId>jaxb-runtime</artifactId>
+    <version>2.3.2</version>
+</dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -40,6 +51,42 @@
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>${maven-antrun-plugin.version}</version>
+	<!--
+	<version>3.0.0</version> -->
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <!-- Echo for debugging -->
+                <echo>Building Angular frontend...</echo>
+                <!-- Run npm install -->
+                <exec executable="npm.cmd">
+                  <arg value="install"/>
+                </exec>
+                <!-- Run Angular production build -->
+                <exec executable="npx.cmd">
+                  <arg value="run"/>
+                  <arg value="build"/>
+                  <arg value="--"/>
+                  <arg value="--prod"/>
+                </exec>
+                <!-- Copy built Angular dist files to Spring Boot static resources -->
+                <copy todir="src/main/resources/static" verbose="true" overwrite="true">
+                  <fileset dir="angular_app/dist"/>
+                </copy>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
