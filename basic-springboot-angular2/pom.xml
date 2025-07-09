@@ -65,23 +65,14 @@
             </goals>
             <configuration>
               <tasks>
-                <!-- Echo for debugging -->
-                <echo>Building Angular frontend...</echo>
-                <!-- Run npm install -->
                 <exec executable="npm.cmd">
                   <arg value="install"/>
                 </exec>
-                <!-- Run Angular production build -->
-                <exec executable="npx.cmd">
-                  <arg value="run"/>
-                  <arg value="build"/>
-                  <arg value="--"/>
-                  <arg value="--prod"/>
+                <exec executable="npx.cmd" dir="angular_app">
+                  <arg value="ng"/>
+                  <arg value="build"/> 
+                  <arg value="--output-path=&quot;../src/main/resources/static&quot;"/>
                 </exec>
-                <!-- Copy built Angular dist files to Spring Boot static resources -->
-                <copy todir="src/main/resources/static" verbose="true" overwrite="true">
-                  <fileset dir="angular_app/dist"/>
-                </copy>
               </tasks>
             </configuration>
           </execution>
