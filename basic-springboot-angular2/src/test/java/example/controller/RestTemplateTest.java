@@ -3,14 +3,17 @@ package example.controller;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.CoreMatchers.containsString;
+import org.json.JSONArray;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-//import org.junit.Before;
-//import org.junit.Ignore;
-//import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -25,10 +28,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
-// import com.jayway.jsonpath.JsonPath;
-// import com.jayway.jsonpath.Configuration;
-// import com.jayway.jsonpath.InvalidPathException;
-// import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.InvalidPathException;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.InvalidJsonException;
 
 import example.entities.User;
 
@@ -53,6 +57,9 @@ public class RestTemplateTest {
 	private RestTemplate restTemplate = new RestTemplate();
 	private static HttpHeaders headers = new HttpHeaders();
 	private static List<User> response = null;
+	private static String page = null;
+	private String url = null;
+	private String route = "/api/users";
 
 	@BeforeAll
 	public static void setUp() {
@@ -65,50 +72,59 @@ public class RestTemplateTest {
 	// solutions: close all other connection(s); use the server mode
 	@Test
 	public void test1() {
+		route = "/api/users";
+		url = "http://localhost:" + randomServerPort + route;
+
+		response = restTemplate.getForObject(url, List.class);
+		assertThat(response, notNullValue());
+		assertThat(response.size(), greaterThan(1));
+		// TODO: try JSON constructor
+		JSONArray json = new JSONArray(response);
+		assertThat(json, notNullValue());
+		assertThat(json.get(0), notNullValue());
+	}
+
+	@Test
+	public void test2() {
 		String route = "/api/users";
 		String url = "http://localhost:" + randomServerPort + route;
 
-		// String url = baseUrl + "api/users";
-		response = restTemplate.getForObject(url, List.class);
-		assertThat(response, notNullValue());
-		// assertThat(response)
-		// search = String.format("$.users[?(@.email == '%s' && @.company.department ==
-		// '%s')].firstName", email, department);
-// try {
-		// result = JsonPath.parse(data).read(search).toString();
-		// System.out.println("result: " + result);
+		page = restTemplate.getForObject(url, String.class);
+		assertThat(page, notNullValue());
 
-		// } catch (InvalidPathException e) {
-//		assertThat(e.getMessage(), containsString("Expected close predicate token"));
-		// }
+		String search = String.format("$[?(@.fname == '%s')].lname", "one");
+		String name = "one";
+
+		try {
+			String result = JsonPath.parse(page).read(search).toString();
+			assertThat(result, containsString(name));
+			System.out.println("returned: " + result);
+
+		} catch (InvalidPathException e) {
+			assertThat(e.getMessage(), containsString("Expected close predicate token"));
+		}
 	}
 
+	@Disabled
 	@Test
 	public void test3() {
 
 		EvaluatorException thrown = Assertions.assertThrows(EvaluatorException.class, () -> {
-			String url = baseUrl + "inline.bundle.js";
+			url = "http://localhost:" + randomServerPort + "/inline.bundle.js";
 			String page = restTemplate.getForObject(url, String.class);
 			assertThat(page, notNullValue());
-			System.err.println(page);
-			String scriptString = "var x = 10; function greet() { return 'Hello'; }";
 
-			// 1. Create a CompilerEnvirons instance
 			CompilerEnvirons compilerEnv = new CompilerEnvirons();
-
-			// 2. Create an ErrorReporter (can be customized)
 			ErrorReporter errorReporter = compilerEnv.getErrorReporter();
-
-			// 3. Create a Parser instance
 			Parser parser = new Parser(compilerEnv, errorReporter);
 
 			try {
-				// 4. Parse the JavaScript string
-				AstRoot astRoot = parser.parse(page, null, 1);
+				AstRoot ast = parser.parse(page, null, 1);
 
-				if (astRoot != null) {
-					System.out.println("Parsing successful! AST Root: " + astRoot.depth() + "\n" + astRoot.toSource());
-					// You can further process the AST (e.g., traverse it to analyze the code)
+				if (ast != null) {
+					System.out.println("Parsing successful! AST Root: " + ast.toSource());
+					// NOTE: can further process the AST
+					// e.g., traverse it to analyze the code
 				} else {
 					System.err.println("Parsing failed.");
 				}
@@ -123,37 +139,31 @@ public class RestTemplateTest {
 		assertThat(thrown.getMessage(), is("missing ; before statement"));
 	}
 
+	// safer to run when the code is clean
 	@Test
-	public void test2() {
+	public void test4() {
 
 		String url = baseUrl + "inline.bundle.js";
 		String page = restTemplate.getForObject(url, String.class);
 		assertThat(page, notNullValue());
-		System.err.println(page);
-		String scriptString = "var x = 10; function greet() { return 'Hello'; }";
-
-		// 1. Create a CompilerEnvirons instance
 		CompilerEnvirons compilerEnv = new CompilerEnvirons();
-
-		// 2. Create an ErrorReporter (can be customized)
 		ErrorReporter errorReporter = compilerEnv.getErrorReporter();
-
-		// 3. Create a Parser instance
 		Parser parser = new Parser(compilerEnv, errorReporter);
 
 		try {
-			// 4. Parse the JavaScript string
-			AstRoot astRoot = parser.parse(page, null, 1);
+			AstRoot ast = parser.parse(page, null, 1);
 
-			if (astRoot != null) {
-				System.out.println("Parsing successful! AST Root: " + astRoot.depth() + "\n" + astRoot.toSource());
-				// You can further process the AST (e.g., traverse it to analyze the code)
+			if (ast != null) {
+				System.out.println("Parsing successful! AST Root: " + ast.toSource());
+				// NOTE: can further process the AST (e.g., traverse it to analyze the code)
 			} else {
 				System.err.println("Parsing failed.");
 			}
 
 		} catch (EvaluatorException e) {
 			System.err.println("Error during parsing: " + e.getMessage());
+			assertThat(e.getMessage(), is("missing ; before statement"));
+			throw e;
 		}
 	}
 
