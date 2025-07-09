@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>basic-springboot-angular2</artifactId>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>basic_springboot_angular2</name>
   <description>Basic Springboot Angular2 H2 Hibernate Demo project</description>
@@ -23,8 +23,20 @@
     <rhino.version>1.7.14</rhino.version>
     <xml-bind.version>2.3.2</xml-bind.version>
     <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
+    <json.version>20231013</json.version>
+    <json-path.version>2.9.0</json-path.version>
   </properties>
   <dependencies>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>${json.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+      <version>${json-path.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.mozilla</groupId>
       <artifactId>rhino</artifactId>
@@ -106,8 +118,7 @@
         <configuration>
           <nodeVersion>v9.11.2</nodeVersion>
           <workingDirectory>angular_app</workingDirectory>
-	 <!-- <installDirectory>src/main/resources/static</installDirectory> -->
-	  <installDirectory>${user.home}/.m2/_node_cache</installDirectory>
+          <installDirectory>${user.home}/.m2/_node_cache</installDirectory>
         </configuration>
         <executions>
           <execution>
@@ -128,8 +139,7 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-		    <arguments>run build -e -- --output-path=..\\src\\main\\resources\\static</arguments>
-		    <!-- <arguments>run build</arguments> -->
+              <arguments>run build -e -- --output-path=../src/main/resources/static</arguments>
             </configuration>
           </execution>
         </executions>
