@@ -19,7 +19,7 @@
     <java.version>1.8</java.version>
     <jaxb.version>2.3.2</jaxb.version>
     <xml-bind.version>2.3.2</xml-bind.version>
-    <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
+    <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
   </properties>
   <dependencies>
     <dependency>
@@ -54,26 +54,34 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>${maven-antrun-plugin.version}</version>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>${frontend-maven-plugin.version}</version>
+        <configuration>
+          <nodeVersion>v9.11.2</nodeVersion>
+          <workingDirectory>angular_app</workingDirectory>
+          <installDirectory>src/main/resources/static</installDirectory>
+        </configuration>
         <executions>
           <execution>
-            <phase>generate-resources</phase>
+            <id>install-npm</id>
             <goals>
-              <goal>run</goal>
+              <goal>install-node-and-npm</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>npm-install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>npm run build</id>
+            <goals>
+              <goal>npm</goal>
             </goals>
             <configuration>
-              <tasks>
-                <exec executable="npm.cmd">
-                  <arg value="install"/>
-                </exec>
-                <exec executable="npx.cmd" dir="angular_app">
-                  <arg value="ng"/>
-                  <arg value="build"/> 
-                  <arg value="--output-path=&quot;../src/main/resources/static&quot;"/>
-                </exec>
-              </tasks>
+              <arguments>run build</arguments>
             </configuration>
           </execution>
         </executions>

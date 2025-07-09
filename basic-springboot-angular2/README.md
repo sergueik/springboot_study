@@ -5,7 +5,8 @@ with intent to get SQLite to replace H2, downgraded to Spring Boot __1.5.4__
 
 ### Build
 
-download `node.js` of relevant version from `https://nodejs.org/download/`:
+#### Skip
+if plugin run failed fallback to  manual download `node.js` of relevant version from `https://nodejs.org/download/`:
 
 ```cmd
 curl -O https://nodejs.org/download/release/latest-v9.x/node-v9.11.2-win-x64.zip
@@ -14,10 +15,12 @@ curl -O https://nodejs.org/download/release/latest-v9.x/node-v9.11.2-win-x64.zip
 unzip.exe node-v9.11.2-win-x64.zip
 path=%path%;%CD%\node-v9.11.2-win-x64
 ```
+create empty static resource dir
 ```cmd
 mkdir -p src/main/resources/static
 touch !$/.gitkeep
 ```
+
 build manually:
 
 ```cmd
@@ -25,41 +28,46 @@ cd angular_app
 call npm.cmd install
 call npx.cmd ng build --configuration production
 ```
-* add install operations to maven `pom.xml`:
+
+it should not be necessary, use plugin
+* the npm install operations to maven `pom.xml`:
 ```xml
-  <plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-antrun-plugin</artifactId>
-    <version>${maven-antrun-plugin.version}</version>
-    <executions>
-      <execution>
-        <phase>generate-resources</phase>
-        <goals>
-          <goal>run</goal>
-        </goals>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>${frontend-maven-plugin.version}</version>
         <configuration>
-          <tasks>
-            <echo>Building Angular frontend...</echo>
-            <exec executable="npm.cmd">
-              <arg value="install"/>
-            </exec>
-            <exec executable="npx.cmd">
-              <arg value="run"/>
-              <arg value="build"/>
-              <arg value="--"/>
-              <arg value="--prod"/>
-            </exec>
-            <copy todir="src/main/resources/static" verbose="true" overwrite="true">
-              <fileset dir="angular_app/dist"/>
-            </copy>
-          </tasks>
+          <nodeVersion>v9.11.2</nodeVersion>
+          <workingDirectory>angular_app</workingDirectory>
+          <installDirectory>src/main/resources/static</installDirectory>
         </configuration>
-      </execution>
-    </executions>
-  </plugin>
+        <executions>
+          <execution>
+            <id>install-npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>npm-install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>npm run build</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>run build</arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 ```
 
-note using an archaic version __1.8__ of the plugin. The later version neds swith from `<tasks>` to `<target>`...
+alternatively use `ant-run` version __1.8__ of the plugin. The later version needs switch from `<tasks>` to `<target>`...
 
 ### Package nd Launch
 
