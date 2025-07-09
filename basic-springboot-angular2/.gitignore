@@ -5,6 +5,7 @@
 /angular_app/dist
 /angular_app/tmp
 /angular_app/out-tsc
+/angular_app/node
 # node js installed into the project dir
 node_modules/
 /src/main/resources/static
