@@ -106,7 +106,8 @@
         <configuration>
           <nodeVersion>v9.11.2</nodeVersion>
           <workingDirectory>angular_app</workingDirectory>
-          <installDirectory>src/main/resources/static</installDirectory>
+	 <!-- <installDirectory>src/main/resources/static</installDirectory> -->
+	  <installDirectory>${user.home}/.m2/_node_cache</installDirectory>
         </configuration>
         <executions>
           <execution>
@@ -127,7 +128,8 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>run build</arguments>
+		    <arguments>run build -e -- --output-path=..\\src\\main\\resources\\static</arguments>
+		    <!-- <arguments>run build</arguments> -->
             </configuration>
           </execution>
         </executions>
