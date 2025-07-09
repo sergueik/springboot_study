@@ -66,7 +66,11 @@ it should not be necessary, use plugin
         </executions>
       </plugin>
 ```
+```text
+Caused by: java.lang.IllegalStateException: Unsupported type 17 [1.4.200/3]juna
+```
 
+remove db and make it rebuild
 alternatively use `ant-run` version __1.8__ of the plugin. The later version needs switch from `<tasks>` to `<target>`...
 
 ### Package nd Launch
@@ -288,9 +292,11 @@ see how to  modify `init.cmd`:
 
 ### See Also
   * [list](https://github.com/search?q=angular+2+language%3AJava&type=repositories&l=Java&s=updated&o=desc&p=35) of Java Angular 2 projects ordered by age, from 2023 or ealier 
-
   * https://www.baeldung.com/spring-boot-h2-database
-
+  * https://www.baeldung.com/spring-boot-h2-database
+  * [Running NPM Scripts through maven](https://gist.github.com/phillipgreenii/7c954e3c3911e5c32bd0)
+  * https://stackoverflow.com/questions/61986567/frontend-maven-plugin-when-it-runs-npm-run-build-cant-find-package-json-file
+  
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
