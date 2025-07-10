@@ -13,6 +13,8 @@ import org.json.JSONArray;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -25,6 +27,8 @@ import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.ast.AstRoot;
 import org.mozilla.javascript.Context;
+
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -56,9 +60,17 @@ public class RestTemplateTest {
 	// private int randomServerPort;
 	private int randomServerPort = 8084;
 
-	@Value("${example.version:org.mozilla.javascript.Context.VERSION_ECMASCRIPT.value}")
-	private int version;
 
+	@Value("${example.version:VERSION_1_8}")
+	private String version;
+
+	private int _version;
+
+	@PostConstruct
+	public void init() {
+	    this._version = RhinoVersion.valueOf(version).getValue();
+	}
+	
 	public static final String baseUrl = "http://localhost:8084/";
 
 	private RestTemplate restTemplate = new RestTemplate();
@@ -154,7 +166,8 @@ public class RestTemplateTest {
 		EvaluatorException thrown = Assertions.assertThrows(EvaluatorException.class, () -> {
 			try {
 				try {
-					context.setLanguageVersion(version);
+					System.out.println("XXXXXX setLanguageVersion: " + version);
+					context.setLanguageVersion(_version);
 				} catch (NumberFormatException e) {
 					System.err.println("NumberFormatException: " + e.getMessage());
 					throw e;
@@ -173,3 +186,4 @@ public class RestTemplateTest {
 	}
 
 }
+
