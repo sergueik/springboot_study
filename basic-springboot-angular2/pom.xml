@@ -20,7 +20,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>1.8</java.version>
     <jaxb.version>2.3.2</jaxb.version>
-    <rhino.version>1.7.14</rhino.version>
+    <rhino.version>1.8.0</rhino.version>
     <xml-bind.version>2.3.2</xml-bind.version>
     <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
     <json.version>20231013</json.version>
@@ -84,17 +84,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.junit.vintage</groupId>
-          <artifactId>junit-vintage-engine</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <scope>runtime</scope>
@@ -117,7 +106,7 @@
         <version>${frontend-maven-plugin.version}</version>
         <configuration>
           <nodeVersion>v9.11.2</nodeVersion>
-          <workingDirectory>angular_app</workingDirectory>
+          <workingDirectory>${project.basedir}/angular_app</workingDirectory>
           <installDirectory>${user.home}/.m2/_node_cache</installDirectory>
         </configuration>
         <executions>
@@ -146,4 +135,13 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <!-- TODO: cd angular_app npm start -->
+    <profile>
+      <id>skipFrontend</id>
+      <properties>
+        <skip.npm>true</skip.npm>
+      </properties>
+    </profile>
+  </profiles>
 </project>

@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.CoreMatchers.containsString;
+
 import org.json.JSONArray;
 
 import java.util.List;
@@ -21,7 +22,10 @@ import org.mozilla.javascript.CompilerEnvirons;
 import org.mozilla.javascript.ErrorReporter;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Parser;
+import org.mozilla.javascript.Script;
 import org.mozilla.javascript.ast.AstRoot;
+import org.mozilla.javascript.Context;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
@@ -52,6 +56,9 @@ public class RestTemplateTest {
 	// private int randomServerPort;
 	private int randomServerPort = 8084;
 
+	@Value("${example.version:org.mozilla.javascript.Context.VERSION_ECMASCRIPT.value}")
+	private int version;
+
 	public static final String baseUrl = "http://localhost:8084/";
 
 	private RestTemplate restTemplate = new RestTemplate();
@@ -60,16 +67,25 @@ public class RestTemplateTest {
 	private static String page = null;
 	private String url = null;
 	private String route = "/api/users";
+	private static Context context = null;
+	private static CompilerEnvirons compilerEnv = null;
+	private static ErrorReporter errorReporter = null;
+	private static Parser parser = null;
+	private static AstRoot ast = null;
+	private static Script script = null;
+	private static org.json.JSONArray json = new org.json.JSONArray();
 
 	@BeforeAll
 	public static void setUp() {
 		headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
+		context = Context.enter();
+		// context.setLanguageVersion(version);
+		compilerEnv = new CompilerEnvirons();
+		errorReporter = compilerEnv.getErrorReporter();
+		parser = new Parser(compilerEnv, errorReporter);
 	}
 
-	// @Disabled
-	// org.h2.jdbc.JdbcSQLException: Database may be already in use: null. Possible
-	// solutions: close all other connection(s); use the server mode
 	@Test
 	public void test1() {
 		route = "/api/users";
@@ -79,7 +95,7 @@ public class RestTemplateTest {
 		assertThat(response, notNullValue());
 		assertThat(response.size(), greaterThan(1));
 		// TODO: try JSON constructor
-		JSONArray json = new JSONArray(response);
+		json = new JSONArray(response);
 		assertThat(json, notNullValue());
 		assertThat(json.get(0), notNullValue());
 	}
@@ -105,7 +121,7 @@ public class RestTemplateTest {
 		}
 	}
 
-	@Disabled
+	// @Disabled
 	@Test
 	public void test3() {
 
@@ -114,21 +130,10 @@ public class RestTemplateTest {
 			String page = restTemplate.getForObject(url, String.class);
 			assertThat(page, notNullValue());
 
-			CompilerEnvirons compilerEnv = new CompilerEnvirons();
-			ErrorReporter errorReporter = compilerEnv.getErrorReporter();
-			Parser parser = new Parser(compilerEnv, errorReporter);
-
 			try {
-				AstRoot ast = parser.parse(page, null, 1);
-
-				if (ast != null) {
-					System.out.println("Parsing successful! AST Root: " + ast.toSource());
-					// NOTE: can further process the AST
-					// e.g., traverse it to analyze the code
-				} else {
-					System.err.println("Parsing failed.");
-				}
-
+				ast = parser.parse(page, null, 1);
+				System.out
+						.println((ast != null) ? "Parsing successful! AST Root: " + ast.toSource() : "Parsing failed.");
 			} catch (EvaluatorException e) {
 				System.err.println("Error during parsing: " + e.getMessage());
 				throw e;
@@ -139,32 +144,32 @@ public class RestTemplateTest {
 		assertThat(thrown.getMessage(), is("missing ; before statement"));
 	}
 
-	// safer to run when the code is clean
+	// @Disabled
 	@Test
-	public void test4() {
+	public void test4() throws NumberFormatException {
 
 		String url = baseUrl + "inline.bundle.js";
 		String page = restTemplate.getForObject(url, String.class);
 		assertThat(page, notNullValue());
-		CompilerEnvirons compilerEnv = new CompilerEnvirons();
-		ErrorReporter errorReporter = compilerEnv.getErrorReporter();
-		Parser parser = new Parser(compilerEnv, errorReporter);
+		EvaluatorException thrown = Assertions.assertThrows(EvaluatorException.class, () -> {
+			try {
+				try {
+					context.setLanguageVersion(version);
+				} catch (NumberFormatException e) {
+					System.err.println("NumberFormatException: " + e.getMessage());
+					throw e;
+					// getLanguageVersion()
+				}
+				script = context.compileString(page, null, 1, null);
+				System.out.println((script != null) ? "Parsing successful: " + script.toString() : "Parsing failed.");
 
-		try {
-			AstRoot ast = parser.parse(page, null, 1);
-
-			if (ast != null) {
-				System.out.println("Parsing successful! AST Root: " + ast.toSource());
-				// NOTE: can further process the AST (e.g., traverse it to analyze the code)
-			} else {
-				System.err.println("Parsing failed.");
+			} catch (EvaluatorException e) {
+				System.err.println("Error during parsing: " + e.getMessage());
+				assertThat(e.getMessage(), is("missing ; before statement"));
+				throw e;
 			}
-
-		} catch (EvaluatorException e) {
-			System.err.println("Error during parsing: " + e.getMessage());
-			assertThat(e.getMessage(), is("missing ; before statement"));
-			throw e;
-		}
+		});
+		assertThat(thrown.getMessage(), is("missing ; before statement"));
 	}
 
 }
