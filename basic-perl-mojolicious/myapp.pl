@@ -15,22 +15,21 @@ BEGIN {
 }
 use JSON::PP;
 use Mojolicious::Lite;
-use Mojo::Template;
-
+# use Mojo::Template;
+# push @{$app->static->paths}, app->home->rel_file('build')->to_string;
 app->static->paths(['./build']);  # React build folder
 
 get '/' => sub {
 	# Can't locate object method "render_file" via package "Mojolicious::Controller"
 
-	my $mt = Mojo::Template->new;
-	#  $_[0]->render_file('index.html');
-    my $c = shift;
-    say $mt->render_file('/build/index.html');
+	$_[0]->reply->static('index.html');
+	# my $c = shift;
+	# my $mt = Mojo::Template->new;
+	# say $mt->render_file('/build/index.html');
 };
 
 get '/api/greeting' => sub {
-    my $c = shift;
-    $c->render(json => { message => 'Hello from Mojolicious' });
+    shift->render(json => { message => 'Hello from Mojolicious' });
 };
 
 app->start;
