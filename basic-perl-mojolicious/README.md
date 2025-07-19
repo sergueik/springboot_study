@@ -1,4 +1,4 @@
-f### Info
+### Info
 
 Plain Alpine 3.9 container installing Perl with Mojolicious
 
@@ -56,7 +56,7 @@ docker-machine ip
 * update the `MACHINE_IP` in the following command
 ```sh
 MACHINE_IP=192.168.99.100
-curl -s http://$MACHINE_IP:9090/api/greeting |jq.exe  '.'
+curl -s http://$MACHINE_IP:9090/api/greeting |jq '.'
 ```
 ```json
 {

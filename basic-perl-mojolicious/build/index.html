@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React createElement Example</title>
+  </head>
+  <body>
+    <div id="root"/>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"/>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"/>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"/>
+    <script type="text/babel">
+        const heading = React.createElement( 'h1', { className: 'greeting' }, 'Hello, React!' );
+
+        const rootElement = document.getElementById('root');
+
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(heading);
+    </script>
+  </body>
+</html>
