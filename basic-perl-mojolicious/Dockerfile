@@ -36,10 +36,19 @@ RUN apk --allow-untrusted update && apk upgrade && \
     rm -rf /var/cache/apk/* 
 COPY lib /lib
 COPY build /build
+COPY templates /templates
 
 
 COPY myapp.pl /
+COPY jms.jsx /
 
 COPY --from=builder /usr/local/bin/esbuild /usr/local/bin/esbuild
-RUN /usr/local/bin/esbuild --version
+RUN esbuild --version
+# NOTE: bundling with --external:react --external:react-dom, which tells esbuild not to include them in the final output
+
+# RUN mkdir '/public' && \
+#    esbuild jms.jsx --bundle --platform=browser --format=esm --outfile=public/jms.js --loader:.jsx=jsx --external:react --external:react-dom
+
+RUN mkdir '/public' && \
+    esbuild jms.jsx --bundle --platform=browser --format=esm --outfile=public/jms.js --loader:.jsx=jsx
 ENTRYPOINT ["sh", "-c", "PIDFILE='/run/app.pid'; perl myapp.pl daemon -l http://*:80; PID=$(ps ax|grep [p]erl|awk '{print $1}'); if [ ! -z $PID ] ; then echo $PID>$PIDFILE; fi; while [ ! -f $PIDFILE ] ; do echo 'wait for app pid'; sleep 1; done; echo 'app is running with ID '$(cat $PIDFILE); while true ; do pgrep -P $(cat $PIDFILE) > /dev/null; if [ $? != 0 ] ; then echo 'app is gone'; exit 0; fi ; sleep 10; done" ]

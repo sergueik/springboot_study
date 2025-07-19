@@ -17,7 +17,8 @@ use JSON::PP;
 use Mojolicious::Lite;
 # use Mojo::Template;
 # push @{$app->static->paths}, app->home->rel_file('build')->to_string;
-app->static->paths(['./build']);  # React build folder
+app->static->paths(['./build', '/public']);  # React build folder
+app->renderer->paths(['/templates']);
 
 get '/inline' => sub {
 
@@ -52,4 +53,5 @@ app->start;
 # https://stackoverflow.com/questions/75999522/perl-mojolicious-whats-the-correct-way-to-render-a-response-from-a-promise
 
 1;
+
 
