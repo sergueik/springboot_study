@@ -1,13 +1,22 @@
 ### Info
 
-Plain Alpine 3.9 container installing Perl with Mojolicious
+Plain Alpine __3.9.5__ container installing Perl with [Mojolicious]() and [esbuild](https://esbuild.github.io/)
 
+### Building
 
+* build standalone `esbuild`
+```sh
+IMAGE=builder
+docker build -t $IMAGE -f Dockerfile.BUILD-esbuild .
+```
+* test `esbuild`
+```sh
+```
 ### Testing
 * build the image
 ```sh
 IMAGE=basic-perl-mojolicious
-docker build -t $IMAGE -f Dockerfile . --progress=plain
+docker build -t $IMAGE -f Dockerfile.myapp . --progress=plain
 ```
 * ignore the security warning if docker is run in a Toolbox on Windows:
 ```text

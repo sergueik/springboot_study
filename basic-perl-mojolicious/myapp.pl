@@ -19,13 +19,24 @@ use Mojolicious::Lite;
 # push @{$app->static->paths}, app->home->rel_file('build')->to_string;
 app->static->paths(['./build']);  # React build folder
 
-get '/' => sub {
-	# Can't locate object method "render_file" via package "Mojolicious::Controller"
+get '/inline' => sub {
 
-	$_[0]->reply->static('index.html');
+	my $c = shift;
+	$c->reply->static('inline/index.html');
+
+};
+
+get '/old' => sub {
+
+	$_[0]->reply->static('old/index.html');
 	# my $c = shift;
 	# my $mt = Mojo::Template->new;
 	# say $mt->render_file('/build/index.html');
+};
+
+get '/jsx' => sub {
+  my $c = shift;
+  $c->render(template => 'jsx');
 };
 
 get '/api/greeting' => sub {
