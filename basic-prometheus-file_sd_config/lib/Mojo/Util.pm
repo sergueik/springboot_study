@@ -15,7 +15,7 @@ use IO::Uncompress::Gunzip;
 use List::Util         qw(min);
 use MIME::Base64       qw(decode_base64 encode_base64);
 use Mojo::BaseUtil     qw(class_to_path monkey_patch);
-use Pod::Usage         qw(pod2usage);
+# use Pod::Usage         qw(pod2usage);
 use Socket             qw(inet_pton AF_INET6 AF_INET);
 use Symbol             qw(delete_package);
 use Time::HiRes        ();
@@ -51,8 +51,8 @@ use constant {
 my %ENTITIES;
 {
   # Don't use Mojo::File here due to circular dependencies
-  my $path = File::Spec->catfile(dirname(__FILE__), 'resources', 'html_entities.txt');
-
+  # my $path = File::Spec->catfile(dirname(__FILE__), 'resources', 'html_entities.txt');
+ my $path = dirname(__FILE__ ) . '/resources/html_entities.txt';
   open my $file, '<', $path or croak "Unable to open html entities file ($path): $!";
   my $lines = do { local $/; <$file> };
 
@@ -166,13 +166,14 @@ sub encrypt_cookie {
 
 sub extract_usage {
   my $file = @_ ? "$_[0]" : (caller)[1];
+  # convert to NOOP
+  # open my $handle, '>', \my $output;
+  # pod2usage -exitval => 'noexit', -input => $file, -output => $handle;
+  # $output =~ s/^.*\n|\n$//;
+  # $output =~ s/\n$//;
 
-  open my $handle, '>', \my $output;
-  pod2usage -exitval => 'noexit', -input => $file, -output => $handle;
-  $output =~ s/^.*\n|\n$//;
-  $output =~ s/\n$//;
-
-  return unindent($output);
+  # return unindent($output);
+  return ''
 }
 
 sub generate_secret {
