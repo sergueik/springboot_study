@@ -1,13 +1,13 @@
 ### Info
 
-Plain Alpine __3.9.5__ container installing Perl with [Mojolicious]() and [esbuild](https://esbuild.github.io/)
+Plain Alpine __3.9.5__ container installing Perl with [Mojolicious](https://metacpan.org/pod/Mojolicious) Real-time Web Framework and [esbuild](https://esbuild.github.io/) to host basic [JSX](https://en.wikipedia.org/wiki/JSX_(JavaScript)) [transpiled](https://en.wikipedia.org/wiki/Source-to-source_compiler) [React JS](https://react.dev/) application on it. The  intent is to let __Mojolicious__ act as the server that delivers transpiled JavaScript application to the user's browser, and then provides the necessary data and services through its API endpoints.
 
 ### Building
 
 * build standalone `esbuild`
 ```sh
 IMAGE=builder
-docker build -t $IMAGE -f Dockerfile.BUILD-esbuild .
+docker build -t $IMAGE -f Dockerfile.esbuild .
 ```
 * test `esbuild`
 ```sh
@@ -84,6 +84,9 @@ curl -s http://$MACHINE_IP:9090/api/greeting |jq '.'
 docker exec -it $NAME sh
 ```
 
+### Troubleshoooring Error #31
+
+TBD
 
 ### See Also
   * https://stackoverflow.com/questions/75999522/perl-mojolicious-whats-the-correct-way-to-render-a-response-from-a-promise

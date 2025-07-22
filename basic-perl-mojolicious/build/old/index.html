@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React createElement Example</title>
+  </head>
+  <body>
+   <!-- NOTE: no self-clisong tags -->
+    <div id="root">
+    </div>	    
+    <script src="https://unpkg.com/react@18/umd/react.development.js">
+    </script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js">
+    </script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js">
+    </script>
+    <script type="module">
+//  NOTE: the react library from UMD CDN doesn’t support import
+	// import { createElement } from 'react'
+        // import { createRoot } from "react-dom/client"
+        // import React from 'react'
+        const heading = React.createElement( 'h1', { className: 'greeting' }, 'Hello, React!' );
+
+        const rootElement = document.getElementById('root');
+
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(heading);
+    </script>
+  </body>
+</html>
