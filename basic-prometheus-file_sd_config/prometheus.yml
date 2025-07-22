@@ -1,0 +1,9 @@
+scrape_configs:
+  - job_name: 'stub_dynamic'
+    metrics_path: /probe
+    params:
+      module: [stub]
+    file_sd_configs:
+      - files:
+          - /etc/prometheus/dynamic_targets.json
+        refresh_interval: 30s

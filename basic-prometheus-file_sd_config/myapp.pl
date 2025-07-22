@@ -26,17 +26,11 @@ get '/data' => sub {
     # // checks if the value is defined (allows 0 to pass through).
     # // is available in Perl 5.10
 
-    my %render_data =
-      !defined $ts
-      ? (
-        status => 400,
-        json   => { error => "Missing required 'ts' query parameter" }
-      )
-      : $ts !~ /^\d{10}$/ ? (
-        status => 405,
-        json   => { error => "'ts' must be a valid Unix timestamp in seconds" }
-      )
-      : ( json => { metric_value => 42, timestamp => $ts } );
+    my %render_data = !defined $ts
+  ? ( status => 400, json => { error => "Missing required 'ts' query parameter" } )
+  : $ts !~ /^\d{10}$/
+  ? ( status => 405, json => { error => "'ts' must be a valid Unix timestamp in seconds" } )
+  : ( json => { metric_value => 42, timestamp => $ts } );
 
     $c->render(%render_data);
 

@@ -107,6 +107,11 @@ the console log will show
 [2025-07-22 21:00:30.87056] [6] [info] Received timestamp: 1753218030
 [2025-07-22 21:00:30.87117] [6] [trace] [3ZdbFDfRdy5J] 200 OK (0.001871s, 534.474/s)
 ```
+```sh
+docker exec $NAME cat /etc/prometheus/dynamic_targets.json
+```
+```json
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
