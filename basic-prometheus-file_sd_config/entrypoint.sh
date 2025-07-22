@@ -5,7 +5,8 @@ PORT=${1:-80}
 
 PIDFILE='/run/app.pid'; 
 perl myapp.pl daemon -l "http://*:$PORT" &
-echo "started"
+echo "started perl myapp.pl daemon -l \"http://*:$PORT\" &"
+
 PID=$(ps ax|grep [p]erl|tail -1| awk '{print $1}')
 if [ ! -z $PID ] ; 
 then 

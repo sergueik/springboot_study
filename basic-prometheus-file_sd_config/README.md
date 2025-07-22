@@ -111,6 +111,57 @@ the console log will show
 docker exec $NAME cat /etc/prometheus/dynamic_targets.json
 ```
 ```json
+[
+  {
+    "targets": [ "localhost:7979" ],
+    "labels": {
+      "job": "stub",
+      "timestamp": "1753226415"
+    }
+  }
+]
+```
+(the `timestamp` changes every 30 seconds).
+
+the inline entrypoint is (formatted  for readability):
+
+```sh
+  PIDFILE='/run/app.pid';
+
+  # Start Mojolicious app in daemon mode, listen on port 80
+  perl myapp.pl daemon -l http://*:80;
+
+  # Find the app PID and save to PIDFILE
+  PID=$(ps ax | grep [p]erl | awk '{print $1}');
+  if [ ! -z \"$PID\" ]; then
+    echo $PID > \"$PIDFILE\";
+  fi;
+
+  # Wait until PIDFILE exists
+  while [ ! -f \"$PIDFILE\" ]; do
+    echo 'wait for app pid';
+    sleep 1;
+  done;
+
+  echo 'app is running with ID ' $(cat $PIDFILE);
+
+  # Start update.sh loop in background (adjust path & interval)
+  (
+    while true; do
+      /path/to/update.sh
+      sleep 30
+    done
+  ) &
+
+  # Monitor app process, exit if gone
+  while true; do
+    if ! kill -0 $(cat \"$PIDFILE\") 2>/dev/null; then
+      echo 'app is gone';
+      exit 0;
+    fi;
+    sleep 10;
+  done
+
 ```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
