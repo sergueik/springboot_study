@@ -6,12 +6,13 @@
 
 * `exporter.log`	Probe requests and JSON errors:
 ```text
-basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T11:56:24.913Z level=INFO source=main.go:56 msg="Starting json_exporter" version="(version=0.7.0, branch=HEAD, revision=06fb506a4c5d242186f198b9c8bf072212f3a134)"
-basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T11:56:24.914Z level=INFO source=main.go:57 msg="Build context" build="(go=go1.23.6, platform=linux/amd64, user=root@6a86be1e0b11, date=20250205-13:57:47, tags=unknown)"
-basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T11:56:24.914Z level=INFO source=main.go:59 msg="Loading config file" file=/json_exporter_config.yml
-basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T11:56:24.916Z level=INFO source=main.go:69 msg="Loaded config file" config="{\"Modules\":{\"stub\":{\"Headers\":{\"Accept\":\"application/json\"},\"Metrics\":[{\"Name\":\"stub_metric_value\",\"Path\":\"{.metric_value}\",\"Labels\":null,\"Type\":\"value\",\"ValueType\":\"untyped\",\"EpochTimestamp\":\"\",\"Help\":\"stub_metric_value\",\"Values\":null}],\"HTTPClientConfig\":{\"tls_config\":{\"insecure_skip_verify\":false},\"follow_redirects\":false,\"enable_http2\":false,\"proxy_url\":null},\"Body\":{\"Content\":\"\",\"Templatize\":false},\"ValidStatusCodes\":null}}}"
-basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T11:56:24.920Z level=INFO source=tls_config.go:347 msg="Listening on" address=[::]:7979
-basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T11:56:24.920Z level=INFO source=tls_config.go:350 msg="TLS is disabled." http2=false address=[::]:7979
+basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T12:23:06.242Z level=INFO source=main.go:56 msg="Starting json_exporter" version="(version=0.7.0, branch=HEAD, revision=06fb506a4c5d242186f198b9c8bf072212f3a134)"
+basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T12:23:06.244Z level=INFO source=main.go:57 msg="Build context" build="(go=go1.23.6, platform=linux/amd64, user=root@6a86be1e0b11, date=20250205-13:57:47, tags=unknown)"
+basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T12:23:06.244Z level=INFO source=main.go:59 msg="Loading config file" file=/json_exporter_config.yml
+basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T12:23:06.245Z level=INFO source=main.go:69 msg="Loaded config file" config="{\"Modules\":{\"stub\":{\"Headers\":{\"Accept\":\"application/json\"},\"Metrics\":[{\"Name\":\"stub_metric_value\",\"Path\":\"{.metric_value}\",\"Labels\":null,\"Type\":\"value\",\"ValueType\":\"untyped\",\"EpochTimestamp\":\"\",\"Help\":\"stub_metric_value\",\"Values\":null}],\"HTTPClientConfig\":{\"tls_config\":{\"insecure_skip_verify\":false},\"follow_redirects\":false,\"enable_http2\":false,\"proxy_url\":null},\"Body\":{\"Content\":\"\",\"Templatize\":false},\"ValidStatusCodes\":null}}}"
+basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T12:23:06.252Z level=INFO source=tls_config.go:347 msg="Listening on" address=[::]:7979
+basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T12:23:06.255Z level=INFO source=tls_config.go:350 msg="TLS is disabled." http2=false address=[::]:7979
+
 
 ```
 * `app` logs	Backend API request/responses
@@ -84,3 +85,14 @@ modules:
 
 
 ```
+```sh
+wget -O - http://localhost:9090/api/v1/targets
+```
+```text
+Connecting to localhost:9090 (127.0.0.1:9090)
+writing to stdout
+{"status":"success","data":{"activeTargets":[{"discoveredLabels":{"__address__":"http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753275245","__meta_filepath":"/etc/prometheus/dynamic_targets.json","__metrics_path__":"/probe","__param_module":"stub","__scheme__":"http","__scrape_interval__":"1m","__scrape_timeout__":"10s","job":"json_exporter","module":"stub"},"labels":{"instance":"exporter:7979","job":"json_exporter","module":"stub"},"scrapePool":"json_exporter","scrapeUrl":"http://exporter:7979/probe?module=stub","globalUrl":"http://exporter:7979/probe?module=stub","lastError":"server returned HTTP status 400 Bad Request","lastScrape":"2025-07-23T12:53:14.449649828Z","lastScrapeDuration":0.000885487,"health":"down","scrapeInterval":"1m","scrapeTim-                    100% |***********************************|   824  0:00:00 ETA
+written to stdout
+```
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

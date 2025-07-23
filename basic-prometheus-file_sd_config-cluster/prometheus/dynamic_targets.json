@@ -1,6 +1,6 @@
 [
   {
-    "targets": ["http://app:80/data?ts=1753269645"],
+    "targets": ["http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D123456789"],
     "labels": {
       "module": "stub"
     }
