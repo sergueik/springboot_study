@@ -1,12 +1,8 @@
 [
   {
-    "targets": ["exporter:7979"],
+    "targets": ["http://app:80/data?ts=1753269645"],
     "labels": {
-      "job": "myapp",
-      "timestamp": "1753269209",
-      "target": "http://app:80/data?ts=1753269209",
       "module": "stub"
     }
   }
 ]
-
