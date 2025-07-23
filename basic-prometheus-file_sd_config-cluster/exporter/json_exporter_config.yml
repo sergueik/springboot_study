@@ -4,11 +4,7 @@ modules:
     method: GET
     headers:
       Accept: application/json
-    url: http://app:80/data
-    params:
-      ts: "{{.Labels.timestamp}}"  # passed from Prometheus target label
-    response_format:
-      type: json
     metrics:
-    - name: stub_metric_value
-      path: "{.metric_value}"
+      - name: stub_metric_value
+        path: '{.metric_value}'
+
