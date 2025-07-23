@@ -205,6 +205,14 @@ json_Exporter error
 ```text
 ts=2025-07-23T01:39:18.740Z caller=main.go:104 level=error msg="Failed to create metrics list from config" err="Unknown metric type: 'gauge', for metric: 'stub_metric_value'"
 ```
+```text
+$ curl "http://192.168.99.100:7979/probe?target=http://localhost:80/data?ts=1317532336&module=stub"
+# HELP stub_metric_value stub_metric_value
+# TYPE stub_metric_value untyped
+stub_metric_value 42
+
+
+```
 ### Turn on Prometheus Server
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
