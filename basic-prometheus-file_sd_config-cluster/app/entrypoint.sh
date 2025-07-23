@@ -18,7 +18,18 @@ echo 'wait for app pid'
 sleep 1 
 done 
 echo 'app is running with ID '$(cat $PIDFILE)
-
+# NOTE: should not exit 
+while true 
+do 
+  pgrep -P $(cat $PIDFILE) > /dev/null 
+  if [ $? != 0 ] 
+  then 
+    echo 'app is gone'
+    ps
+    # exit 0
+  fi 
+  sleep 10
+done
 
 
 

@@ -1,5 +1,5 @@
 scrape_configs:
-  - job_name: 'stub_dynamic'
+  - job_name: 'json_exporter'
     metrics_path: /probe
     params:
       module: [stub]
@@ -7,3 +7,10 @@ scrape_configs:
       - files:
           - /etc/prometheus/dynamic_targets.json
         refresh_interval: 30s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: exporter:7979        

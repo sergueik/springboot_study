@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   app:
-    restart: unless-stopped
+#    restart: unless-stopped
     build: app
     ports:
       - "8080:80"

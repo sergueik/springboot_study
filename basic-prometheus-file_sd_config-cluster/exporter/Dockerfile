@@ -11,5 +11,6 @@ RUN curl -sL -o  /tmp/json-exporter.tar.gz https://github.com/prometheus-communi
     mv /tmp/json_exporter-${JSON_EXPORTER_VERSION}.linux-amd64/json_exporter /usr/local/bin/  && \
     chmod +x /usr/local/bin/json_exporter
 
+COPY json_exporter_config.yml /
 EXPOSE 7979 
 ENTRYPOINT [ "json_exporter" , "--config.file=/json_exporter_config.yml", "--web.listen-address=:7979" ]
