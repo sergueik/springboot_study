@@ -94,5 +94,15 @@ writing to stdout
 {"status":"success","data":{"activeTargets":[{"discoveredLabels":{"__address__":"http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753275245","__meta_filepath":"/etc/prometheus/dynamic_targets.json","__metrics_path__":"/probe","__param_module":"stub","__scheme__":"http","__scrape_interval__":"1m","__scrape_timeout__":"10s","job":"json_exporter","module":"stub"},"labels":{"instance":"exporter:7979","job":"json_exporter","module":"stub"},"scrapePool":"json_exporter","scrapeUrl":"http://exporter:7979/probe?module=stub","globalUrl":"http://exporter:7979/probe?module=stub","lastError":"server returned HTTP status 400 Bad Request","lastScrape":"2025-07-23T12:53:14.449649828Z","lastScrapeDuration":0.000885487,"health":"down","scrapeInterval":"1m","scrapeTim-                    100% |***********************************|   824  0:00:00 ETA
 written to stdout
 ```
+```sh
+ wget -O - http://localhost:9090/api/v1/targets
+```
+```text
+Connecting to localhost:9090 (127.0.0.1:9090)
+writing to stdout
+{"status":"success","data":{"activeTargets":[{"discoveredLabels":{"__address__":"http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753275895","__meta_filepath":"/etc/prometheus/dynamic_targets.json","__metrics_path__":"/probe","__param_module":"stub","__scheme__":"http","__scrape_interval__":"1m","__scrape_timeout__":"10s","job":"json_exporter","module":"stub"},"labels":{"instance":"exporter:7979","job":"json_exporter","module":"stub"},"scrapePool":"json_exporter","scrapeUrl":"http://exporter:7979/probe?module=stub","globalUrl":"http://exporter:7979/probe?module=stub","lastError":"server returned HTTP status 400 Bad Request","lastScrape":"2025-07-23T13:04:48.66179468Z","lastScrapeDuration":0.003846283,"health":"down","scrapeInterval":"1m","scrapeTimeout":"10s"}],"droppedTargets":[],"droppedTargetCounts-                    100% |********************************|   823  0:00:00 ETA
+written to stdout
+
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
