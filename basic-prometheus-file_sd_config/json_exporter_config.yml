@@ -12,5 +12,6 @@ modules:
     metrics:
     - name: stub_metric_value
       path: "{.metric_value}"
-#      type: counter
-# 0.5.0 does not understand 'counter','gauge' - only untyped
+      # type: untyped
+      # NOTE: 0.5.0 does not understand 'counter','gauge' - only untyped
+      # NOTE: 0.7.0 (latest as of 07/22/2025)  claims it does but still does not understand 'counter','gauge', 'untyped' - only missing type:

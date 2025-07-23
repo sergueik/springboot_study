@@ -191,8 +191,11 @@ docker run -d -p 9090:80 -p 9443:443 -p 7979:7979 --name $NAME $IMAGE
 ]
 
 ```
+connect to the container and run locally:
 
 ```sh
+curl "http://localhost:7979/probe?target=http://localhost:80/data?ts=1317532336&module=stub"
+
 ```
 application log:
 ```text
@@ -201,16 +204,18 @@ application log:
 [2025-07-23 01:39:18.74590] [6] [info] Received timestamp: 1317532336
 [2025-07-23 01:39:18.74651] [6] [trace] [i-HYC2Yjz51c] 200 OK (0.002715s, 368.324/s)
 ```
-json_Exporter error
+obsrvejson_Exporter error
 ```text
 ts=2025-07-23T01:39:18.740Z caller=main.go:104 level=error msg="Failed to create metrics list from config" err="Unknown metric type: 'gauge', for metric: 'stub_metric_value'"
 ```
+alterbatively run remotely
+```sh
+curl "http://192.168.99.100:7979/probe?target=http://localhost:80/data?ts=1317532336&module=stub"
+```
 ```text
-$ curl "http://192.168.99.100:7979/probe?target=http://localhost:80/data?ts=1317532336&module=stub"
 # HELP stub_metric_value stub_metric_value
 # TYPE stub_metric_value untyped
 stub_metric_value 42
-
 
 ```
 ### Turn on Prometheus Server

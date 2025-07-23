@@ -16,10 +16,11 @@ RUN sed -i 's/\r$//' entrypoint.sh update_targets.sh && \
 
 RUN mkdir -p /etc/prometheus
 # added dummy dynamic_targets.json
-RUN curl -sL -o  /tmp/json-exporter.tar.gz https://github.com/prometheus-community/json_exporter/releases/download/v0.5.0/json_exporter-0.5.0.linux-amd64.tar.gz  && \
+ENV JSON_EXPORTER_VERSION=0.7.0
+RUN curl -sL -o  /tmp/json-exporter.tar.gz https://github.com/prometheus-community/json_exporter/releases/download/v${JSON_EXPORTER_VERSION}/json_exporter-${JSON_EXPORTER_VERSION}.linux-amd64.tar.gz  && \
     ls -l /tmp && \
     tar -C /tmp -xvf /tmp/json-exporter.tar.gz  && \
-    mv /tmp/json_exporter-0.5.0.linux-amd64/json_exporter /usr/local/bin/  && \
+    mv /tmp/json_exporter-${JSON_EXPORTER_VERSION}.linux-amd64/json_exporter /usr/local/bin/  && \
     chmod +x /usr/local/bin/json_exporter
 
 COPY dynamic_targets.json /etc/prometheus/
