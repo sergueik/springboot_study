@@ -4,7 +4,7 @@ modules:
     method: GET
     headers:
       Accept: application/json
-    url: http://localhost:80/data
+    url: http://app:80/data
     params:
       ts: "{{.Labels.timestamp}}"  # passed from Prometheus target label
     response_format:
@@ -12,6 +12,3 @@ modules:
     metrics:
     - name: stub_metric_value
       path: "{.metric_value}"
-      # type: untyped
-      # NOTE: 0.5.0 does not understand 'counter','gauge' - only untyped
-      # NOTE: 0.7.0 (latest as of 07/22/2025)  claims it does but still does not understand 'counter','gauge', 'untyped' - only missing type:

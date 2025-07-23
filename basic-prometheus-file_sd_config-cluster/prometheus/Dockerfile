@@ -1,7 +1,7 @@
 # NOTE: need pin version
 FROM prom/prometheus:latest
-user root
-
+USER root
+WORKDIR /
 COPY entrypoint.sh update_targets.sh prometheus.yml /
 RUN sed -i 's/\r$//' entrypoint.sh update_targets.sh && \
     chmod +x entrypoint.sh update_targets.sh

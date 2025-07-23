@@ -1,7 +1,6 @@
 #!/bin/sh
 
-# Optional: prometheus itself
-prometheus --config.file=/prometheus.yml --web.listen-address=:9090 &
+/prometheus --config.file=/prometheus.yml --web.enable-lifecycle --storage.tsdb.path=/prometheus
 
 
 # Start mock cron loop — every 30s

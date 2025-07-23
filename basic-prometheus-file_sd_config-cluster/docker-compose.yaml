@@ -9,7 +9,11 @@ services:
 
   exporter:
     build: exporter
-    depends_on: app
+    depends_on: 
+      - app
+      
+    ports:
+      - "7979:7979"
 
 #  exporter_patched:
 #    build: exporter_patched
@@ -17,7 +21,8 @@ services:
 
   prometheus:
     build: prometheus
-    depends_on: exporter 
+    depends_on: 
+      - exporter 
     ports:
       - "9090:9090"
 
