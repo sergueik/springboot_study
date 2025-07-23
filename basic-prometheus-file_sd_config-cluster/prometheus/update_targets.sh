@@ -1,16 +1,22 @@
-#!/bin/ash
+#!/bin/sh
 
-TS=$(date +%s)
-TARGET_FILE_PATH='/etc/prometheus'
-TMPFILE="${TARGET_FILE_PATH}/dynamic_targets.json.tmp"
-cat <<EOF>$TMPFILE
+OUTFILE="/etc/prometheus/dynamic_targets.json"
+TMPFILE="${OUTFILE}.tmp"
+
+while true; do
+  TS=$(date +%s)
+  cat <<EOF > "$TMPFILE"
 [
   {
-    "targets": ["http://app:80/data?ts=$TS"],
+    "targets": ["app:80"],
     "labels": {
-      "module": "stub"
+      "module": "stub",
+      "target": "http://app:80/data?ts=${TS}"
     }
   }
 ]
 EOF
-mv $TMPFILE ${TARGET_FILE_PATH}/dynamic_targets.json
+  mv "$TMPFILE" "$OUTFILE"
+  sleep 15
+done
+

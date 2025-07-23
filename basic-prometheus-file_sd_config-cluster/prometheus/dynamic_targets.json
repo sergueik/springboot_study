@@ -1,8 +1,9 @@
 [
   {
-    "targets": ["http://app:80/data?ts=1234567890"],
+    "targets": ["app:80"],
     "labels": {
-      "module": "stub"
+      "module": "stub",
+      "__param_target": "http://app:80/data?ts=1753276246"
     }
   }
 ]

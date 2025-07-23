@@ -104,5 +104,22 @@ writing to stdout
 written to stdout
 
 ```
+
+```sh
+ wget -O - http://localhost:9090/api/v1/targets
+```
+```text
+ Connecting to localhost:9090 (127.0.0.1:9090)
+writing to stdout
+{"status":"success","data":{"activeTargets":[{"discoveredLabels":{"__address__":"app:80","__meta_filepath":"/etc/prometheus/dynamic_targets.json","__metrics_path__":"/probe","__scheme__":"http","__scrape_interval__":"15s","__scrape_timeout__":"10s","job":"json_exporter","module":"stub","target":"http://app:80/data?ts=1753282328"},"labels":{"instance":"http://app:80/data?ts=1753282328","job":"json_exporter","module":"stub","target":"http://app:80/data?ts=1753282328"},"scrapePool":"json_exporter","scrapeUrl":"http://exporter:7979/probe?module=stub\u0026target=http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753282328","globalUrl":"http://exporter:7979/probe?module=stub\u0026target=http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753282328","lastError":"","lastScrape":"2025-07-23T14:52:10.628439493Z","lastScrapeDuration":0.005158172,"health":"up","scrapeInterval":"15s","scrapeTimeout":"10s"}],"-                    100% |********************************|   942  0:00:00 ETA
+written to stdout
+/ #
+
+
+![/not working](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/prometheus-broken.png)
+
+![working](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/prometheus-working.png)
+
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
