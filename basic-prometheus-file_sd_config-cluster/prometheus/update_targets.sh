@@ -2,7 +2,8 @@
 
 TS=$(date +%s)
 TARGET_FILE_PATH='/etc/prometheus'
-cat <<EOF> ${TARGET_FILE_PATH}/dynamic_targets.json
+TMPFILE="${TARGET_FILE_PATH}/dynamic_targets.json.tmp"
+cat <<EOF>$TMPFILE
 [
   {
     "targets": ["exporter:7979"],
@@ -14,4 +15,7 @@ cat <<EOF> ${TARGET_FILE_PATH}/dynamic_targets.json
     }
   }
 ]
+
+
 EOF
+mv $TMPFILE ${TARGET_FILE_PATH}/dynamic_targets.json
