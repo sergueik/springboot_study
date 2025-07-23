@@ -15,11 +15,8 @@ RUN sed -i 's/\r$//' entrypoint.sh update_targets.sh && \
     chmod +x entrypoint.sh update_targets.sh
 
 RUN mkdir -p /etc/prometheus
+# added dummy dynamic_targets.json
 
+COPY dynamic_targets.json /etc/prometheus/
 EXPOSE 80
-# NOTE: hanging
-# ENTRYPOINT ["sh", "-c", "PIDFILE='/run/app.pid'; perl myapp.pl daemon -l http://*:80; PID=$(ps ax|grep [p]erl|awk '{print $1}'); if [ ! -z $PID ] ; then echo $PID>$PIDFILE; fi; while [ ! -f $PIDFILE ] ; do echo 'wait for app pid'; sleep 1; done; echo 'app is running with ID '$(cat $PIDFILE); while true ; do pgrep -P $(cat $PIDFILE) > /dev/null; if [ $? != 0 ] ; then echo 'app is gone'; exit 0; fi ; /update.sh;  sleep 30;  done" ]
-# NOTE: hanging
-# ENTRYPOINT ["sh", "-c", "perl myapp.pl daemon -l http://*:80; ps ax|grep [p]erl|awk '{print $1}'; while true ; do /update.sh; sleep 30; done" ]
-# ENTRYPOINT [ "/entrypoint.sh" ]
 ENTRYPOINT ["./entrypoint.sh"]

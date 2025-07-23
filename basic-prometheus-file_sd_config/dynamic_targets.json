@@ -1,0 +1,9 @@
+[
+  {
+    "targets": [ "localhost:80" ],
+    "labels": {
+      "job": "stub",
+      "timestamp": "1721340000000"
+    }
+  }
+]

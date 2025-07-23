@@ -5,11 +5,10 @@ TARGET_FILE_PATH='/etc/prometheus'
 cat <<EOF> ${TARGET_FILE_PATH}/dynamic_targets.json
 [
   {
-    "targets": [ "localhost:7979" ],
+    "targets": ["http://localhost:80/data?ts=$TS"],
     "labels": {
-      "job": "stub",
-      "timestamp": "$TS"
-    }
+    "job": "myapp"
+    
   }
 ]
 EOF

@@ -36,15 +36,17 @@ docker logs -f $NAME
 
 this will respond with
 ```sh
-wait for app pid
-app is running with ID 500
+started perl myapp.pl daemon -l "http://*:80" &
+app is running with ID 7
+[Tue Jul 22 23:35:30 UTC 2025] Updating timestamp...
+[2025-07-22 23:35:31.15703] [7] [info] Listening at "http://*:80"
 ```
 the value of `ID` varies. Sometimes the script output is not shown immediately, re-running the `logs` command shows it
-
+The `Updaing timestamp` message is from the shell script `update_targets.sh` responsible for Prometheus invocation with moving timestamp parameter to pass to JSON exporter
 
 if the container was already constructed
 ```sh
-NAME=basic-perl-mojolicious
+NAME=basic-prometheus-file-sd-config
 ID=$(docker container ls -a | grep $NAME|cut -f 1 -d ' ')
 docker start $ID
 ```
@@ -126,43 +128,84 @@ docker exec $NAME cat /etc/prometheus/dynamic_targets.json
 the inline entrypoint is (formatted  for readability):
 
 ```sh
-  PIDFILE='/run/app.pid';
+ PIDFILE='/run/app.pid';
 
-  # Start Mojolicious app in daemon mode, listen on port 80
-  perl myapp.pl daemon -l http://*:80;
+ # Start Mojolicious app in daemon mode, listen on port 80
+ perl myapp.pl daemon -l http://*:80;
 
-  # Find the app PID and save to PIDFILE
-  PID=$(ps ax | grep [p]erl | awk '{print $1}');
-  if [ ! -z \"$PID\" ]; then
-    echo $PID > \"$PIDFILE\";
-  fi;
+ # Find the app PID and save to PIDFILE
+ PID=$(ps ax | grep [p]erl | awk '{print $1}');
+ if [ ! -z \"$PID\" ]; then
+   echo $PID > \"$PIDFILE\";
+ fi;
 
-  # Wait until PIDFILE exists
-  while [ ! -f \"$PIDFILE\" ]; do
-    echo 'wait for app pid';
-    sleep 1;
-  done;
+ # Wait until PIDFILE exists
+ while [ ! -f \"$PIDFILE\" ]; do
+   echo 'wait for app pid';
+   sleep 1;
+ done;
 
-  echo 'app is running with ID ' $(cat $PIDFILE);
+ echo 'app is running with ID ' $(cat $PIDFILE);
 
-  # Start update.sh loop in background (adjust path & interval)
-  (
-    while true; do
-      /path/to/update.sh
-      sleep 30
-    done
-  ) &
+ # Start update.sh loop in background (adjust path & interval)
+ (
+   while true; do
+     /path/to/update.sh
+     sleep 30
+   done
+ ) &
 
-  # Monitor app process, exit if gone
-  while true; do
-    if ! kill -0 $(cat \"$PIDFILE\") 2>/dev/null; then
-      echo 'app is gone';
-      exit 0;
-    fi;
-    sleep 10;
-  done
+ # Monitor app process, exit if gone
+ while true; do
+   if ! kill -0 $(cat \"$PIDFILE\") 2>/dev/null; then
+     echo 'app is gone';
+     exit 0;
+   fi;
+   sleep 10;
+ done
 
 ```
+
+### Turn on JSON Exporter
+```sh
+IMAGE=basic-prometheus-file-sd-config
+docker build -t $IMAGE -f Dockerfile .
+```
+```sh
+NAME=basic-prometheus-file-sd-config
+docker rm -f $NAME
+docker run -d -p 9090:80 -p 9443:443 -p 7979:7979 --name $NAME $IMAGE
+
+```
+```sh
+ docker exec $NAME sh -c "cat /etc/prometheus/dynamic_targets.json"
+```
+```json
+[
+  {
+    "targets": ["http://localhost:80/data?ts=1753233967"],
+    "labels": {
+    "job": "myapp"
+
+  }
+]
+
+```
+
+```sh
+```
+application log:
+```text
+[2025-07-23 01:39:18.74379] [6] [trace] [i-HYC2Yjz51c] GET "/data"
+[2025-07-23 01:39:18.74465] [6] [trace] [i-HYC2Yjz51c] Routing to a callback
+[2025-07-23 01:39:18.74590] [6] [info] Received timestamp: 1317532336
+[2025-07-23 01:39:18.74651] [6] [trace] [i-HYC2Yjz51c] 200 OK (0.002715s, 368.324/s)
+```
+json_Exporter error
+```text
+ts=2025-07-23T01:39:18.740Z caller=main.go:104 level=error msg="Failed to create metrics list from config" err="Unknown metric type: 'gauge', for metric: 'stub_metric_value'"
+```
+### Turn on Prometheus Server
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

@@ -19,9 +19,19 @@ sleep 1
 done 
 echo 'app is running with ID '$(cat $PIDFILE)
 
+# Start JSON exporter
+json_exporter --config.file=/json_exporter_config.yml --web.listen-address=:7979 &
+
+# Optional: prometheus itself
+# prometheus --config.file=/prometheus.yml --web.listen-address=:9090 &
+
+
 # Start mock cron loop — every 30s
 while true; do
   echo "[$(date)] Updating timestamp..."
   ./update_targets.sh
   sleep 30
 done
+
+
+
