@@ -1,0 +1,24 @@
+services:
+  myapp:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+
+  json_exporter:
+    build:
+      context: ./exporter
+      dockerfile: Dockerfile
+
+  json_exporter_patched:
+    build:
+      context: ./exporter_patched
+      dockerfile: Dockerfile
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/dynamic_targets.json:/etc/prometheus/dynamic_targets.json:ro
+    ports:
+      - "9090:9090"
+
