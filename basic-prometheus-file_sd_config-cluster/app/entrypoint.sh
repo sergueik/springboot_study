@@ -21,11 +21,13 @@ echo 'app is running with ID '$(cat $PIDFILE)
 # NOTE: should not exit 
 while true 
 do 
-  pgrep -P $(cat $PIDFILE) > /dev/null 
+  pgrep perl | grep -q $(cat $PIDFILE)	
+  # pgrep -P $(cat $PIDFILE) > /dev/null 
   if [ $? != 0 ] 
   then 
     echo 'app is gone'
-    ps
+    # pgrep command need to be updated
+    # ps
     # exit 0
   fi 
   sleep 10
