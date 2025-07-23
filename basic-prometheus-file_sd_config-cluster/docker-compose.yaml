@@ -1,24 +1,23 @@
+version: '3.5'
+
 services:
-  myapp:
-    build:
-      context: ./app
-      dockerfile: Dockerfile
+  app:
+    restart: unless-stopped
+    build: app
+    ports:
+      - "8080:80"
 
-  json_exporter:
-    build:
-      context: ./exporter
-      dockerfile: Dockerfile
+  exporter:
+    build: exporter
+    depends_on: app
 
-  json_exporter_patched:
-    build:
-      context: ./exporter_patched
-      dockerfile: Dockerfile
+#  exporter_patched:
+#    build: exporter_patched
+#      depends_on: app
 
   prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./prometheus/dynamic_targets.json:/etc/prometheus/dynamic_targets.json:ro
+    build: prometheus
+    depends_on: exporter 
     ports:
       - "9090:9090"
 

@@ -1,13 +1,9 @@
 FROM alpine:3.9.5
-user root
+USER root
 
 RUN apk --allow-untrusted update && apk upgrade && \
     apk add jq wget curl && \
     rm -rf /var/cache/apk/*
-
-COPY entrypoint.sh json_exporter_config.yml /
-RUN sed -i 's/\r$//' entrypoint.sh && \
-    chmod +x entrypoint.sh 
 
 ENV JSON_EXPORTER_VERSION=0.7.0
 RUN curl -sL -o  /tmp/json-exporter.tar.gz https://github.com/prometheus-community/json_exporter/releases/download/v${JSON_EXPORTER_VERSION}/json_exporter-${JSON_EXPORTER_VERSION}.linux-amd64.tar.gz  && \
@@ -16,4 +12,4 @@ RUN curl -sL -o  /tmp/json-exporter.tar.gz https://github.com/prometheus-communi
     chmod +x /usr/local/bin/json_exporter
 
 EXPOSE 7979 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT [ "json_exporter" , "--config.file=/json_exporter_config.yml", "--web.listen-address=:7979" ]
