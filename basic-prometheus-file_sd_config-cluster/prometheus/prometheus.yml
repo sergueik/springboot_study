@@ -8,9 +8,11 @@ scrape_configs:
           - /etc/prometheus/dynamic_targets.json
         refresh_interval: 30s
     relabel_configs:
-      - source_labels: [__address__]
+      - source_labels: [target]
         target_label: __param_target
       - source_labels: [__param_target]
         target_label: instance
+      - source_labels: [module]
+        target_label: __param_module
       - target_label: __address__
-        replacement: exporter:7979        
+        replacement: exporter:7979

@@ -1,9 +1,12 @@
 [
   {
-    "targets": [ "localhost:80" ],
+    "targets": ["exporter:7979"],
     "labels": {
-      "job": "stub",
-      "timestamp": "1721340000000"
+      "job": "myapp",
+      "timestamp": "1753269209",
+      "target": "http://app:80/data?ts=1753269209",
+      "module": "stub"
     }
   }
 ]
+
