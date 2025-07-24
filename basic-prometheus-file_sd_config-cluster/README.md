@@ -66,7 +66,9 @@ MACHINE_IP=192.168.99.100
 ```
 
 
-![working](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/prometheus-working.png)
+![working](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/prometeus-working.png)
+
+![grafana](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/grafana.png)
 
 ### Cleanup
 ```sh
@@ -129,7 +131,8 @@ basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 16:24:41.70436] [6]
 * `/prometheus.yml`	Confirm scrape & relabel config
 * `/etc/prometheus/dynamic_targets.json`	Confirm dynamic targets
 * `/json_exporter_config.yml`	Confirm JSON metrics config
-![not working](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/prometheus-broken.png)
+
+![not working](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/prometeus-broken.png)
 
 when there is a misconfiguration in `prometheus.yaml` and / or `dynamic_targets.json` and /or `json_exporter_config.yml`, examine closely
 
@@ -159,7 +162,7 @@ written to stdout
 ```
 
 ### See Also
-
+   * https://prometheus.io/docs/instrumenting/exporters/
    * https://github.com/prometheus-community/json_exporter/issues/393
 
 ### Author

@@ -6,6 +6,8 @@ services:
     build: app
     ports:
       - "8080:80"
+    networks:
+      - myapp
 
   exporter:
     build: exporter
@@ -14,10 +16,8 @@ services:
       
     ports:
       - "7979:7979"
-
-#  exporter_patched:
-#    build: exporter_patched
-#      depends_on: app
+    networks:
+      - myapp
 
   prometheus:
     build: prometheus
@@ -25,4 +25,23 @@ services:
       - exporter 
     ports:
       - "9090:9090"
+    networks:
+      - myapp
 
+  grafana:
+    container_name: grafana
+    build: grafana
+    ports:
+      - 3000:3000
+    working_dir: '/scripts'
+    restart: always
+    depends_on: 
+      - prometheus
+    tty: false
+    networks:
+      - myapp
+    extra_hosts:
+      - "host.docker.internal:192.168.99.100"
+networks:
+  myapp:
+    driver: bridge
