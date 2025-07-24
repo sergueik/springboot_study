@@ -1,5 +1,4 @@
-# NOTE: need pin version
-FROM prom/prometheus:latest
+FROM prom/prometheus:v3.5.0
 USER root
 WORKDIR /
 COPY entrypoint.sh update_targets.sh prometheus.yml /

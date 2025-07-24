@@ -1,93 +1,146 @@
 ### Info
 
-* `prometheus.log`	Scrape attempts and errors
-```text
+Custom json exporter `file_sd_configs` to pass the querystring (timestamp in this example).
+
+### Testing
+```sh
+docker pull prom/prometheus:v3.5.0
+```
+```sh
+docker-compose up --build -d
+```
+```sh
+docker-machine ip
 ```
 
-* `exporter.log`	Probe requests and JSON errors:
 ```text
-basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T12:23:06.242Z level=INFO source=main.go:56 msg="Starting json_exporter" version="(version=0.7.0, branch=HEAD, revision=06fb506a4c5d242186f198b9c8bf072212f3a134)"
-basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T12:23:06.244Z level=INFO source=main.go:57 msg="Build context" build="(go=go1.23.6, platform=linux/amd64, user=root@6a86be1e0b11, date=20250205-13:57:47, tags=unknown)"
-basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T12:23:06.244Z level=INFO source=main.go:59 msg="Loading config file" file=/json_exporter_config.yml
-basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T12:23:06.245Z level=INFO source=main.go:69 msg="Loaded config file" config="{\"Modules\":{\"stub\":{\"Headers\":{\"Accept\":\"application/json\"},\"Metrics\":[{\"Name\":\"stub_metric_value\",\"Path\":\"{.metric_value}\",\"Labels\":null,\"Type\":\"value\",\"ValueType\":\"untyped\",\"EpochTimestamp\":\"\",\"Help\":\"stub_metric_value\",\"Values\":null}],\"HTTPClientConfig\":{\"tls_config\":{\"insecure_skip_verify\":false},\"follow_redirects\":false,\"enable_http2\":false,\"proxy_url\":null},\"Body\":{\"Content\":\"\",\"Templatize\":false},\"ValidStatusCodes\":null}}}"
-basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T12:23:06.252Z level=INFO source=tls_config.go:347 msg="Listening on" address=[::]:7979
-basic-prometheus-file_sd_config-cluster-exporter-1  | time=2025-07-23T12:23:06.255Z level=INFO source=tls_config.go:350 msg="TLS is disabled." http2=false address=[::]:7979
+192.168.99.100
+```
+* update the `MACHINE_IP` in the following command
+```sh
+MACHINE_IP=192.168.99.100
+```
+```sh
+ curl -s - http://${MACHINE_IP}:9090/api/v1/targets | jq '.'
+```
+```json
+{
+  "status": "success",
+  "data": {
+    "activeTargets": [
+      {
+        "discoveredLabels": {
+          "__address__": "app:80",
+          "__meta_filepath": "/etc/prometheus/dynamic_targets.json",
+          "__metrics_path__": "/probe",
+          "__scheme__": "http",
+          "__scrape_interval__": "15s",
+          "__scrape_timeout__": "10s",
+          "job": "json_exporter",
+          "module": "stub",
+          "target": "http://app:80/data?ts=1753284427"
+        },
+        "labels": {
+          "instance": "http://app:80/data?ts=1753284427",
+          "job": "json_exporter",
+          "module": "stub",
+          "target": "http://app:80/data?ts=1753284427"
+        },
+        "scrapePool": "json_exporter",
+        "scrapeUrl": "http://exporter:7979/probe?module=stub&target=http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753284427",
+        "globalUrl": "http://exporter:7979/probe?module=stub&target=http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753284427",
+        "lastError": "",
+        "lastScrape": "2025-07-23T15:27:11.279718802Z",
+        "lastScrapeDuration": 0.010549505,
+        "health": "up",
+        "scrapeInterval": "15s",
+        "scrapeTimeout": "10s"
+      }
+    ],
+    "droppedTargets": [],
+    "droppedTargetCounts": {
+      "json_exporter": 0
+    }
+  }
+}
+```
 
 
+![working](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/prometheus-working.png)
+
+### Cleanup
+```sh
+$ docker-compose stop
+```
+```text
+[+] Running 0/1
+[+] Running 0/1sic-prometheus-file_sd_config-cluster-prometheus-1  Stopping 10.0
+[+] Running 2/3sic-prometheus-file_sd_config-cluster-prometheus-1  Stopping 10.1
+[+] Running 2/3sic-prometheus-file_sd_config-cluster-prometheus-1  Stopped 10.1s
+[+] Running 3/3sic-prometheus-file_sd_config-cluster-prometheus-1  Stopped 10.1s
+ - Container basic-prometheus-file_sd_config-cluster-prometheus-1  Stopped 10.1s
+ - Container basic-prometheus-file_sd_config-cluster-exporter-1    Stopped 0.1s1
+ - Container basic-prometheus-file_sd_config-cluster-app-1         Stopped 10.1s
+```
+
+```sh
+docker-compose rm -f
+```
+```text
+[+] Running 3/0
+ - Container basic-prometheus-file_sd_config-cluster-app-1         Removed 0.0s
+ - Container basic-prometheus-file_sd_config-cluster-prometheus-1  Removed 0.0s
+ - Container basic-prometheus-file_sd_config-cluster-exporter-1    Removed 0.0s
+```
+```sh
+docker images --format "{{.Repository}}: {{.ID}}" | grep basic-prometheus-file_sd_config-cluster
+```
+```text
+basic-prometheus-file_sd_config-cluster-prometheus: ada8ab456d6f
+basic-prometheus-file_sd_config-cluster-exporter: 2ed84e3dfe21
+basic-prometheus-file_sd_config-cluster-app: 3064af2d463c
+```
+```sh
+ docker images --format "{{.Repository}}: {{.ID}}" | grep basic-prometheus-file_sd_config-cluster |awk '{print $2}' | xargs -IX  docker image rm X
+```
+### Failing  Configurations
+Examine:
+
+* `prometheus.log`	Scrape attempts and errors
+```sh
+docker-compose logs -f prometheus
+```
+* `exporter.log`	Probe requests and JSON errors:
+```sh
+docker-compose logs -f exporter
 ```
 * `app` logs	Backend API request/responses
+```sh
+docker-compose logs -f app
+```
 ```text
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 06:20:35.54416] [6] [info] Received timestamp:  data missing
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 06:20:35.54462] [6] [trace] [Pz0BFUj9tlNQ] 400 Bad Request (0.001465s, 682.594/s)
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 06:20:54.51329] [6] [trace] [8OUgnK77dMuG] GET "/data"
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 06:20:54.51387] [6] [trace] [8OUgnK77dMuG] Routing to a callback
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 06:20:54.51445] [6] [info] Received timestamp: 1234567890
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 06:20:54.51495] [6] [trace] [8OUgnK77dMuG] 200 OK (0.001647s, 607.165/s)
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 06:21:03.16321] [6] [trace] [tLM93WP3aKtF] GET "/data"
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 06:21:03.16376] [6] [trace] [tLM93WP3aKtF] Routing to a callback
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 06:21:03.16421] [6] [info] Received timestamp: 12345678901
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 06:21:03.16457] [6] [trace] [tLM93WP3aKtF] 405 Method Not Allowed (0.001349s, 741.290/s)
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 06:21:09.99592] [6] [trace] [pSwtrdG167-O] GET "/data"
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 06:21:09.99648] [6] [trace] [pSwtrdG167-O] Routing to a callback
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 06:21:09.99699] [6] [info] Received timestamp:  data missing
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 06:21:09.99735] [6] [trace] [pSwtrdG167-O] 400 Bad Request (0.001415s, 706.714/s)
-basic-prometheus-file_sd_config-cluster-app-1  | started perl myapp.pl daemon -l "http://*:80" &
-basic-prometheus-file_sd_config-cluster-app-1  | app is running with ID 6
-basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 11:18:15.65740] [6] [info] Listening at "http://*:80"
+basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 16:24:41.70158] [6] [trace] [Ezro4AAkn9wa] GET "/data"
+basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 16:24:41.70257] [6] [trace] [Ezro4AAkn9wa] Routing to a callback
+basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 16:24:41.70312] [6] [info] Received timestamp: 1753287871
+basic-prometheus-file_sd_config-cluster-app-1  | [2025-07-23 16:24:41.70436] [6] [trace] [Ezro4AAkn9wa] 200 OK (0.002732s, 366.032/s)
 
 ```
 * `/targets` page screenshot	Quick visual status check
-* `prometheus.yml`	Confirm scrape & relabel config
-```yaml
-scrape_configs:
-  - job_name: 'json_exporter'
-    metrics_path: /probe
-    params:
-      module: [stub]
-    file_sd_configs:
-      - files:
-          - /etc/prometheus/dynamic_targets.json
-        refresh_interval: 30s
-    relabel_configs:
-      - source_labels: [target]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - source_labels: [module]
-        target_label: __param_module
-      - target_label: __address__
-        replacement: exporter:7979
+* `/prometheus.yml`	Confirm scrape & relabel config
+* `/etc/prometheus/dynamic_targets.json`	Confirm dynamic targets
+* `/json_exporter_config.yml`	Confirm JSON metrics config
+![not working](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/prometheus-broken.png)
 
+when there is a misconfiguration in `prometheus.yaml` and / or `dynamic_targets.json` and /or `json_exporter_config.yml`, examine closely
+
+```sh
+docker-compose exec -it prometheus sh
 ```
-* `dynamic_targets.json`	Confirm dynamic targets
-```json
-[
-  {
-    "targets": ["http://app:80/data?ts=1753272175"],
-    "labels": {
-      "module": "stub"
-    }
-  }
-]
-
-```
-* `json_exporter_config.yml`	Confirm JSON metrics config
-```yaml
----
-modules:
-  stub:
-    method: GET
-    headers:
-      Accept: application/json
-    metrics:
-      - name: stub_metric_value
-        path: '{.metric_value}'
-
-
-```
+in the container
 ```sh
 wget -O - http://localhost:9090/api/v1/targets
 ```
+this will print (there is no `jq` in `prom/prometheus:latest` image )
 ```text
 Connecting to localhost:9090 (127.0.0.1:9090)
 writing to stdout
@@ -105,21 +158,10 @@ written to stdout
 
 ```
 
-```sh
- wget -O - http://localhost:9090/api/v1/targets
-```
-```text
- Connecting to localhost:9090 (127.0.0.1:9090)
-writing to stdout
-{"status":"success","data":{"activeTargets":[{"discoveredLabels":{"__address__":"app:80","__meta_filepath":"/etc/prometheus/dynamic_targets.json","__metrics_path__":"/probe","__scheme__":"http","__scrape_interval__":"15s","__scrape_timeout__":"10s","job":"json_exporter","module":"stub","target":"http://app:80/data?ts=1753282328"},"labels":{"instance":"http://app:80/data?ts=1753282328","job":"json_exporter","module":"stub","target":"http://app:80/data?ts=1753282328"},"scrapePool":"json_exporter","scrapeUrl":"http://exporter:7979/probe?module=stub\u0026target=http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753282328","globalUrl":"http://exporter:7979/probe?module=stub\u0026target=http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753282328","lastError":"","lastScrape":"2025-07-23T14:52:10.628439493Z","lastScrapeDuration":0.005158172,"health":"up","scrapeInterval":"15s","scrapeTimeout":"10s"}],"-                    100% |********************************|   942  0:00:00 ETA
-written to stdout
-/ #
+### See Also
 
+   * https://github.com/prometheus-community/json_exporter/issues/393
 
-![/not working](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/prometheus-broken.png)
-
-![working](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/prometheus-working.png)
-
-```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
