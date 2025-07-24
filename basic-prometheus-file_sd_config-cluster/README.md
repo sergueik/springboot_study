@@ -68,7 +68,12 @@ MACHINE_IP=192.168.99.100
 
 ![working](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/prometeus-working.png)
 
+### Configuring Grafana
+
 ![grafana](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/grafana.png)
+
+By default Grafana shows data from json exporter with varying time stamp as a series of isolated dots.
+To change rendering need to modify Panel Visualization  
 
 ### Cleanup
 ```sh
@@ -164,6 +169,10 @@ written to stdout
 ### See Also
    * https://prometheus.io/docs/instrumenting/exporters/
    * https://github.com/prometheus-community/json_exporter/issues/393
+   * [Prometheus relabel_configs](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#relabel_config)
+   * [Prometheus file_sd_configs](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#file_sd_config)
+   * [Relabeling Examples](https://prometheus.io/docs/prometheus/latest/configuration/relabeling/)
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
