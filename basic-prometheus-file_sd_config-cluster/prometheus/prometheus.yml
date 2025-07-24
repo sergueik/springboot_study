@@ -8,14 +8,30 @@ scrape_configs:
       - files:
           - /etc/prometheus/dynamic_targets.json
         refresh_interval: 15s
+
     relabel_configs:
+      # Forward the target URL (with ts) as a param to json_exporter
+      - source_labels: [__meta_filepath]
+        target_label: source_file
+
       - source_labels: [target]
         target_label: __param_target
-      - source_labels: [module]
-        target_label: __param_module
-      - target_label: __address__
-        replacement: exporter:7979
+
+      # Keep the actual scrape address
+      - source_labels: [__address__]
+        target_label: __address__
+
+      # Strip `?ts=...` from the "instance" label to stabilize the time series identity
       - source_labels: [target]
+        regex: (http://[^?]+)\?ts=.*$
         target_label: instance
-        
+        replacement: $1
+        action: replace
+
+      # Same for the "target" label (optional if you graph on this)
+      - source_labels: [target]
+        regex: (http://[^?]+)\?ts=.*$
+        target_label: target
+        replacement: $1
+        action: replace
 
