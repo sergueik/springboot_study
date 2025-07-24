@@ -65,12 +65,22 @@ MACHINE_IP=192.168.99.100
 }
 ```
 
+```sh
+curl -s "http://$MACHINE_IP:7979/probe?module=stub&target=http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753284427"
+```
+```text
+# HELP stub_metric_value stub_metric_value
+# TYPE stub_metric_value untyped
+stub_metric_value 42
+```
 
 ![working](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/prometeus-working.png)
 
 ### Configuring Grafana
 
 ![grafana](https://github.com/sergueik/springboot_study/blob/master/basic-prometheus-file_sd_config-cluster/screenshots/grafana.png)
+
+* use data source `stub_metric_value`
 
 By default Grafana shows data from json exporter with varying time stamp as a series of isolated dots.
 To change rendering need to modify Panel Visualization  
