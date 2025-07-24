@@ -5,7 +5,7 @@ for PBKD password-based key derivation function and DES encryption compatible wi
 and .Net implementation [jasypt-csharp](https://github.com/sergueik/powershell_samples/tree/master/csharp/jasypt-csharp)
 
 ### NOTE 
-This works on Python __2.7__ but fails on Python __3.8.2__ wuith 
+This works on Python __2.7__ but fails on Python __3.8.2__ with 
 ```text
 TypeError: Object type <class 'str'> cannot be passed to C code
 ```
@@ -73,6 +73,9 @@ docker image prune -f
 ### See Also 
   * `PBEWithMD5AndDES` in Python [example](https://github.com/lemonprogis/python-jasypt)
   * https://github.com/hei1233212000/python-jasypt-pbewithmd5anddes-poc
+  * https://stackoverflow.com/questions/23406654/cant-import-win32crypt-python-module
+  * https://timgolden.me.uk/pywin32-docs/win32crypt__CryptProtectData_meth.html
+  * https://pypi.org/project/pywin32/
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

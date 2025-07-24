@@ -21,7 +21,7 @@ docker-machine ip
 MACHINE_IP=192.168.99.100
 ```
 ```sh
- curl -s - http://${MACHINE_IP}:9090/api/v1/targets | jq '.'
+ curl -s http://${MACHINE_IP}:9090/api/v1/targets | jq '.'
 ```
 ```json
 {
@@ -38,21 +38,22 @@ MACHINE_IP=192.168.99.100
           "__scrape_timeout__": "10s",
           "job": "json_exporter",
           "module": "stub",
-          "target": "http://app:80/data?ts=1753284427"
+          "target": "http://app:80/data?ts=1753369108"
         },
         "labels": {
-          "instance": "http://app:80/data?ts=1753284427",
+          "instance": "http://app:80/data",
           "job": "json_exporter",
           "module": "stub",
-          "target": "http://app:80/data?ts=1753284427"
+          "source_file": "/etc/prometheus/dynamic_targets.json",
+          "target": "http://app:80/data"
         },
         "scrapePool": "json_exporter",
-        "scrapeUrl": "http://exporter:7979/probe?module=stub&target=http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753284427",
-        "globalUrl": "http://exporter:7979/probe?module=stub&target=http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753284427",
-        "lastError": "",
-        "lastScrape": "2025-07-23T15:27:11.279718802Z",
-        "lastScrapeDuration": 0.010549505,
-        "health": "up",
+        "scrapeUrl": "http://app:80/probe?target=http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753369108",
+        "globalUrl": "http://app:80/probe?target=http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753369108",
+        "lastError": "server returned HTTP status 404 Not Found",
+        "lastScrape": "2025-07-24T14:58:32.882075254Z",
+        "lastScrapeDuration": 0.017043394,
+        "health": "down",
         "scrapeInterval": "15s",
         "scrapeTimeout": "10s"
       }
@@ -63,8 +64,9 @@ MACHINE_IP=192.168.99.100
     }
   }
 }
-```
 
+```
+* try exporter . NOTE:  ignore `http://app:80` in `scrapeUrl`:
 ```sh
 curl -s "http://$MACHINE_IP:7979/probe?module=stub&target=http%3A%2F%2Fapp%3A80%2Fdata%3Fts%3D1753284427"
 ```
