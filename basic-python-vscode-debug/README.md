@@ -5,6 +5,105 @@ by Kludex with a proxy application passing additional arguments before calling a
 
 ![working](screenshots/vscode.png)
 
+__Docker Toolbox__, though EOL and no longer maintained, remains useful for older or resource-constrained systems, especially Windows __7__/__8__ and even Windows Server and non-Pro editions of Windows __10__ where __Docker Desktop__ is unsupported. It leverages __Oracle VirtualBox__, avoiding the __Hyper-V__ dependency, making it viable for legacy setups or lightweight environments where stability and compatibility outweigh the need for new features.
+
+
+On a __Windows__ (especially with Docker Toolbox or non-WSL setups), named volumes lack transparent access, making file inspection or editing difficult. Unlike Unix-like systems, bind mounts to host directories often face path translation, permission issues, or require shared folder setups via VirtualBox. Visual Studio Code heavily relies on reliable mounts for DevContainers and debugging, making volume-based workflows harder without proper file system integration or WSL2.
+
+
+### GCP and Other Cloud Debugging
+
+Google’s recommended flow depends on the environment (Cloud Run, GKE, or Cloud Functions), but in general gets doown to :
+
+#### Use Cloud Logging & Tracing
+
+* Set up Cloud Logging and Cloud Trace with structured logs from your app.
+
+* Add request_id or custom labels to trace logs through services.
+
+engage Cloud Debugger (for GCE, App Engine, or GKE)
+
+* this  needs agent installed and user authenticated.
+
+Python must match supported versions (e.g., Python 3.7–3.9) — older/newer versions may trigger bugs.
+
+Install agent example for Python:
+
+```sh
+pip install google-cloud-debugger
+google-cloud-debugger --enable_debugger
+
+```
+```sh
+gcloud auth login
+```
+```sh
+gcloud config set project $PROJECT_ID
+gcloud auth application-default login
+```
+
+Attach to running pod:
+
+```sh
+kubectl exec -it $ID -- /bin/sh
+```
+* Port-forward locally:
+
+```sh
+kubectl port-forward service/myapp 8080:80 5678:5678
+```
+or for Docker
+```sh
+docker run -p 5678:5678 my-python-app
+```
+ __5678__ is the Python debugger commonly used with VSCode
+
+typically the following code is added:
+
+```python
+import debugpy
+debugpy.listen(("0.0.0.0", 5678))
+debugpy.wait_for_client()
+```
+
+* Install [Cloud Code VSCode plugin]()
+
+* patch ```
+Live debugging is harder at scale due to:
+
+*  Multiple replicas
+*  Autoscaling
+*  Serverless models (e.g., Cloud Functions) which don’t persist state
+
+the __Visual Studio Code__ is advertized as a lightweight, but under the hood it behaves more 
+like a full-blown Electron-based IDE, meaning:
+
+It consumes a lot of RAM and CPU like a browser (because it is one).
+
+Opening multiple windows often spawns new Electron processes, not cheap tabs.
+
+Clipboard sync, especially across windows or with plugins like Remote - SSH or Docker, is slow and buggy.
+
+It tries to be "smart" with file watching, Git integrations, and live linting — but this can bog down low-spec or VM-based systems.
+
+For vendors, VSCode is a dream:
+
+"Free", but encourages use of Azure, GitHub Copilot, Codespaces.
+
+It trains developers to depend on Microsoft's ecosystem.
+
+
+Geany (C-like IDE feel)
+
+Kate (great for larger files)
+
+Lite (ultra-light Lua-based editor)
+
+VSCodium (telemetry-free VSCode clone, still Electron but cleaner)
+
+Sublime Text (fast, proprietary but stable)
+
+
 ### Usage
 
 ```sh
@@ -379,6 +478,7 @@ Successfully tagged basic-python-vscode-debug_app:latest
 Creating basic-python-vscode-debug_app_1 ... done
 
 ```
+### Summary
 
 ### See Also
   * [debug Python within a container](https://code.visualstudio.com/docs/containers/debug-python)
