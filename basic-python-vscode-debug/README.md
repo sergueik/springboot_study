@@ -82,7 +82,112 @@ You should have "Python: Remote Attach" or similar in `.vscode/launch.json`. Not
   ]
 }
 ```
+### Install VS Code
 
+### NPM based
+
+install VSCode on Ubuntu 22.04 without using snap or apt, and optionally use it alongside npm, npx, or Playwright development (as you did before), here's a clean, minimalistic approach using the official .tar.gz portable release
+
+```sh
+sudo mkdir -p /etc/apt/keyrings && \
+curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | \
+  gpg --dearmor | sudo tee /etc/apt/keyrings/microsoft.gpg > /dev/null && \
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | \
+  sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null && \
+sudo apt update
+```
+follower with
+```sh
+sudo apt install code
+```
+if was not installed already or
+```sh
+sudo apt upgrade
+```
+otherwise
+
+alternatively grab the whole package
+```sh
+mkdir -p ~/tools/vscode && cd ~/tools/vscode
+wget -O vscode.tar.gz "https://update.code.visualstudio.com/latest/linux-x64/stable"
+```
+```sh
+tar -xzf vscode.tar.gz
+cd VSCode-linux-x64
+./code
+```
+```sh
+ln -s ~/tools/vscode/VSCode-linux-x64/code ~/bin/code
+```
+
+and add `code.desktop`
+```text
+[Desktop Entry]
+Name=Visual Studio Code
+Comment=Code Editing. Redefined.
+GenericName=Text Editor
+Exec=/usr/share/code/code %F
+Icon=vscode
+Type=Application
+StartupNotify=false
+StartupWMClass=Code
+Categories=TextEditor;Development;IDE;
+MimeType=application/x-code-workspace;
+Actions=new-empty-window;
+Keywords=vscode;
+
+[Desktop Action new-empty-window]
+Name=New Empty Window
+Name[cs]=Nové prázdné okno
+Name[de]=Neues leeres Fenster
+Name[es]=Nueva ventana vacía
+Name[fr]=Nouvelle fenêtre vide
+Name[it]=Nuova finestra vuota
+Name[ja]=新しい空のウィンドウ
+Name[ko]=새 빈 창
+Name[ru]=Новое пустое окно
+Name[zh_CN]=新建空窗口
+Name[zh_TW]=開新空視窗
+Exec=/usr/share/code/code --new-window %F
+Icon=vscode
+
+
+```
+is in `/usr/share/applications/code.desktop`
+if it is not there one cah have local file
+with the same content and install it
+with command
+```sh
+update-desktop-database ~/.local/share/applications
+```
+
+```sn
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+```
+```sh
+dpkg -l | grep '^ii' | grep code
+```
+
+```text
+ii  code                                   1.101.1-1750254731                      amd64        Code editing. Redefined.
+```
+```sh
+code -v
+```
+```text
+1.101.1
+```
+### Repository based
+install VSCode on Ubuntu __22.04__ with relying on `apt` and official Microsoft APT repository:
+
+```sh
+sudo apt install software-properties-common apt-transport-https wget gpg
+```
+```sh
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+```
 * In VS Code, click Run and Debug (__F5__), then choose “Python: Remote Attach”, hit Start Debugging. Alternatively set a breakpoint and execute correspondent endpoint
 
 * Your app should pause at `--wait-for-client` until VS Code connects.
@@ -226,7 +331,23 @@ Traceback (most recent call last):
 KeyError: 'ContainerConfig'
 
 ```
-and one has  to recycle and rebuidl all the  way:
+ 
+* NOTE: Likely Cause: VSCode `Node.js` Debugger Using Docker Metadata Internally
+In certain setups (especially with remote containers, or npm tasks configured in `launch.json`), the VSCode debug adapter (or some npm CLI plugin) may call out to Docker and rely on `Dockerode` or similar to inspect containers.
+
+
+js
+Copy
+Edit
+container.ContainerConfig  // undefined or missing
+Then something like:
+
+js
+Copy
+Edit
+const config = container['ContainerConfig'];  // KeyError in Python, undefined in JS
+
+and one has to recycle and rebuild fully:
 ```sh
  docker-compose -f docker-compose.debug.yaml stop ; docker-compose -f docker-compose.debug.yaml  rm  -f ; docker-compose -f docker-compose.debug.yaml  up --build -d
 ```
