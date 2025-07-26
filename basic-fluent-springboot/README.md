@@ -1,6 +1,6 @@
 ### Info
 
-Fluent Appliction clained to fail to write the flight recorder jar
+Fluent Application clained to fail to write the flight recorder jar
 
 ###  Test
 
@@ -27,7 +27,7 @@ start recording.jfr
 ```
 
 choose the app to open:
-![application](screenshots\jmc.png)
+![application](screenshots/jmc.png)
 
 ignore the dependency error:
 ```text
@@ -42,7 +42,7 @@ org.osgi.framework.BundleException: Could not resolve module: org.apache.felix.s
 ```
 open JMC and load file from there. You will be able to see performance details:
 
-![perf data](screenshots\jmc-data.png)
+![perf data](screenshots/jmc-data.png)
 ### See Also
   * [JDK Mission Control](https://docs.oracle.com/en/java/java-components/jdk-mission-control/)
 
