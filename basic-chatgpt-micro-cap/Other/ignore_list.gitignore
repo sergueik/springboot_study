@@ -1,0 +1,52 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.mypy_cache/
+.pyright/
+.pylance/
+
+# === VS Code ===
+.vscode/
+.vscode-test/
+
+# === OS/System Files ===
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# === Logs and Temporary Files ===
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# === Node/Frontend Artifacts ===
+node_modules/
+*.lock
+*.vsix
+
+# === User/System Profile Junk ===
+AppData/
+Application Data/
+Local Settings/
+My Documents/
+Cookies/
+Documents/
+.dotnet/
+.nuget/
+.ipython/
+.lesshst
+
+# === IDEs ===
+.idea/
+
+# === Environment Variables ===
+*.env
