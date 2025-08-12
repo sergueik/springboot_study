@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- origin: https://www.tutlane.com/tutorial/angularjs/angularjs-http-post-method-http-post-with-parameters-example  -->
+<title>
+AngularJs Post Service Response Example
+</title>
+
+<script src="js/angular.js"></script>
+<script type="text/javascript" src="js/form_post.js"></script>
+
+</head>
+
+<body>
+
+<div ng-app="postserviceApp" ng-controller="postserviceCtrl">
+
+<div>
+Name : <input ng-model="name" /><br/><br/>
+Age : <input ng-model="age" /><br/><br/>
+Adress : <input ng-model="adress" /><br/><br/>
+<input type="button" value="Send" ng-click="postdata(name, age, adress)" /> <br/><br/>
+</div>
+
+<p>Output Message : {{msg}}</p>
+<p>StatusCode: {{statusval}}</p>
+<p>Status: {{statustext}}</p>
+<p>Response Headers: {{headers}}</p>
+</div>
+</body>
+</html>

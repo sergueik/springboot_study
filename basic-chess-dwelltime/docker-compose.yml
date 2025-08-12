@@ -1,0 +1,40 @@
+version: '3.5'
+services:
+  app1:
+    restart: unless-stopped
+    build: app1
+    container_name: app1
+    environment:
+      - MONITOR=true
+    ports:
+      - "9090:80"
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:80/page.html
+    networks:
+      - app
+    depends_on:
+      app2:
+        condition: service_healthy
+
+  app2:
+    restart: unless-stopped
+    build: app2
+    container_name: app2
+    environment:
+      - MONITOR=true
+      - PORT=8080
+    ports:
+      - "8080:80"
+        # NOTE: when reporting unhealthy, shows no data in 'Observability'  
+        # Commenting healthcheck
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:80/health
+    networks:
+      - app
+
+networks:
+  app:
