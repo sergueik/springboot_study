@@ -2,8 +2,10 @@ FROM alpine:3.9.5
 user root
 ENV SCRIPT server.pl
 RUN apk --allow-untrusted update && apk upgrade && \
-    apk add jq curl perl && \
+    apk add jq curl perl perl-utils make gcc musl-dev perl-dev openssl-dev && \
     rm -rf /var/cache/apk/* 
+
+RUN cpan -i 'Perl::Tidy'
 COPY lib /lib
 COPY $SCRIPT /
 

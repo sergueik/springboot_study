@@ -153,9 +153,8 @@ fetch(url, {
     headers: {
         'Content-Type': 'application/json'
     },
-    body: JSON.stringify(data)
-})
-.then(response => {
+    body: JSON.stringify(dwellSeconds)
+    }).then(response => {
     // Collect and display response headers
     console.log('Response Headers:');
     for (let pair of response.headers.entries()) {

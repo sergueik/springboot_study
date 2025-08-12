@@ -16,6 +16,8 @@ BEGIN {
 use JSON::PP;
 use Mojolicious::Lite;
 
+our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
+
 # CORS headers
 app->hook(before_dispatch => sub {
   my $c = shift;
@@ -23,12 +25,20 @@ app->hook(before_dispatch => sub {
   $c->res->headers->header('Access-Control-Allow-Methods' => 'GET, POST, OPTIONS');
   $c->res->headers->header('Access-Control-Allow-Headers'=> 'Content-Type');
 });
+
+options '/data' => sub {
+   $_[0]->render(text => '', status => 200);
+};
+
 post '/data' => sub {
 
 	my $c = shift;
-	$c->reply->static('inline/index.html');
-# our $json_pp = JSON::PP->new->ascii->pretty->allow_nonref;
-# my $buffer;
+	my $body = $c->req->body || '{"status": "no data"}';
+	my $payload = eval { decode_json($body) } || {};
+	# Asume RAW DATA - headers seems to be ignored
+	app->log->info('Received headers: ' . $c->dumper($c->req->headers));
+	app->log->info("Received payload: " . $c->dumper($body));
+	 $c->render(json => {status => 'ok'});
 };
 
 get '/health' => sub {
