@@ -16,7 +16,7 @@ ELK does not have an official EUM part — Elastic focuses more on backend AP
 The cluster of applications run on docker consists of
 
    * `app1`: `nginx` / `alpine 3.9.5` server  with the subject `page.html` - a Dummy 3x3 chessboard bootstrap page — minimal footprint, illustrating the client side EUM without applcation integration.
-   * `app2`: EUM metric processor configured with full CORS access from subject pages (from any host, for simplicity) and capable of memorizing for offline statistical analysis and rolling up the the arriving data (JSON POST handling) illustrated with Perl [Mojolicious]() backend serving /data endpoint. Can be swapped with nodejs or a Python API server, if numpy / pandas integration is explored
+   * `app2`: EUM metric processor configured with full CORS access from subject pages (from any host, for simplicity) and capable of memorizing for offline statistical analysis and rolling up the the arriving data (JSON POST handling) illustrated with Perl [Mojolicious](https://metacpan.org/pod/Mojolicious) backend serving /data endpoint. Can be swapped with nodejs or a Python Fast-API  or some other REST PI server, if the `numpy` / `pandas` integration is explored
 
   * `app3`: additional business app pages with more advanced EUM data feeds including telemetry and /or distributed application tracking (WIP).
 
@@ -152,3 +152,5 @@ one can send simoler metric e.g. indicating page is opened:
 </script>
 
 ```
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
