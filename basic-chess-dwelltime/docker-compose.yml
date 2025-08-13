@@ -1,4 +1,5 @@
 version: '3.5'
+
 services:
   app1:
     restart: unless-stopped
@@ -15,13 +16,36 @@ services:
     networks:
       - app
     depends_on:
-      app2:
+      app3:
         condition: service_healthy
 
   app2:
     restart: unless-stopped
     build: app2
     container_name: app2
+    environment:
+      - MONITOR=true
+    ports:
+      - "7070:80"
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:80
+    networks:
+      - app
+    depends_on:
+      app3:
+        condition: service_healthy
+
+# NOTE: copy paste error leading to:
+# Additional property start is not allowed
+# app3:
+#
+
+  app3:
+    restart: unless-stopped
+    build: app3
+    container_name: app3
     environment:
       - MONITOR=true
       - PORT=8080
