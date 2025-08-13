@@ -11,12 +11,81 @@ While real-world EUM agents involve far more complexity—including performance 
 
 EUM solutions inject JavaScript snippets into web pages to monitor user interactions like clicks, page views, errors, timings, etc. Commercial tools like Dynatrace and AppDynamics have proprietary EUM agents that provide rich user interaction telemetry, but these are usually closed source and tied to their platforms.
 ELK does not have an official EUM part — Elastic focuses more on backend APM, logs, and metrics, but has limited frontend/user interaction support out of the box.
+### Application Architecture
 
+The cluster of applications run on docker consists of
+
+   * `app1`: `nginx` / `alpine 3.9.5` server  with the subject `page.html` - a Dummy 3x3 chessboard bootstrap page — minimal footprint, illustrating the client side EUM without applcation integration.
+   * `app2`: EUM metric processor configured with full CORS access from subject pages (from any host, for simplicity) and capable of memorizing for offline statistical analysis and rolling up the the arriving data (JSON POST handling) illustrated with Perl [Mojolicious]() backend serving /data endpoint. Can be swapped with nodejs or a Python API server, if numpy / pandas integration is explored
+
+  * `app3`: additional business app pages with more advanced EUM data feeds including telemetry and /or distributed application tracking (WIP).
+
+
+### Usage
+
+*   get  the pinned image
+```sh
+docker pull nginx:1.16.1-alpine
+```
+
+* build and run the cluster
+```sh
+docker-compose stop
+docker-compose rm -f
+
+docker-compose up -d --build --remove-orphans
+```
+
+* observe the cluster operational
+
+```text
+[+] Running 2/2
+ - Container app2  Healthy                                                11.0s
+ - Container app1  Started                                                 0.4s
+
+```
+* navigate to `$(docker-machine ip)` 9090 in the browser. and open developer console to see EUM in action
+
+move mouse to some square on the chessboard e.g. to 'A2'
+observe the metric arrive:
+
+```sh
+docker-compose logs -f app2
+```
++ before
+
+
+```text
+app2  | [2025-08-13 04:10:44.50742] [6] [trace] [aNYQ7XuhcTsy] POST "/data"
+app2  | [2025-08-13 04:10:44.50823] [6] [trace] [aNYQ7XuhcTsy] Routing to a callback
+app2  | [2025-08-13 04:10:44.50901] [6] [info] Received payload: "{}"
+app2  |
+app2  | [2025-08-13 04:10:44.50968] [6] [trace] [aNYQ7XuhcTsy] 200 OK (0.002232s, 448.029/s)
+
+```
++ after
+
+```text
+app2  | [2025-08-12 22:54:29.57301] [6] [info] Received payload: "{\"b3\":4.97,\"a2\":17.38,\"b2\":10.45,\"c3\":11.05,\"c2\":4.81,\"a1\":0.54,\"b1\":18.34,\"a3\":0.24,\"c1\":0.1}"
+```
+![example page](screenshots/page.png)
+
+browser console log shows one payload worth of EUM data:
+```text
+page.html:141 Console was cleared
+page.html:142 Dwell time per square (seconds):
+{
+  "c3": 0.25,
+  "b3": 11.25,
+  "c2": 0.03,
+  "b2": 0.06,
+  "a2": 0.25,
+  ...`
+}
+
+```
 
 ### NOTE
-
-
-
 
 
 This example is safe by design and does NOT perform any malicious or unauthorized actions, such as:
@@ -38,14 +107,6 @@ Cross-Origin Resource Sharing (CORS) is properly configured on the backend to al
 
 The example code is intended solely for learning and demonstration, not for production use or deployment in untrusted environments.
 
-### Application  Architecture
-
-The cluster of applications run on docker consists of
-
-  * `app1`:** Static content server (plain Apache2) serving the subject pages (e.g., chessboard UI) — minimal footprint, illustrating the client side EUM without applcation integration.
-   *   `app2`: EUM metric processoras EUM metric collector configured with full CORS access from subject pages and performing statistical analysis and wrappping arriving data (JSON POST handling) illustrated with Mojolicious backend serving .
-  * `app3` (optional, WIP): another subject app with alternative EUM processing including applicsation integration  (WIP) represented by an Nginx container for alternate data processing, proxying, or load balancing tasks.
-
 ### Note
  
    * CORS Configuration: In a production environment, avoid using a wildcard (*) for Access-Control-Allow-Origin. Instead, specify the exact origins that are allowed to access your resources.
@@ -55,25 +116,6 @@ The cluster of applications run on docker consists of
 
 on a related subject there was a exciting pure JS capable of rendering MRTD payload in canvas (i guess). Can Pure Perl emit mrtg formatted compact data files?
 
-![example page](screenshots/page.png)
-
-```text
-app2  | [2025-08-12 22:54:29.57301] [6] [info] Received payload: "{\"b3\":4.97,\"a2\":17.38,\"b2\":10.45,\"c3\":11.05,\"c2\":4.81,\"a1\":0.54,\"b1\":18.34,\"a3\":0.24,\"c1\":0.1}"
-```
-client console log shows one payload worth of EUM data:
-```text
-page.html:141 Console was cleared
-page.html:142 Dwell time per square (seconds):
-{
-  "c3": 0.25,
-  "b3": 11.25,
-  "c2": 0.03,
-  "b2": 0.06,
-  "a2": 0.25,
-  ...`
-}
-
-```
 ### Typical operational workflow in commercial EUM solutions (Dynatrace / AppDynamics):
     1. Customer adds JS snippet
 At build time or runtime, the customer’s origin web server injects a JavaScript agent snippet into all HTML pages. Sometimes this is done automatically by a plugin, middleware, or via manual template modification.

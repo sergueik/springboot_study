@@ -10,6 +10,7 @@ services:
     ports:
       - "9090:80"
     healthcheck:
+      # two minute warm up 
       interval: 10s
       retries: 12
       test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:80/page.html
@@ -18,6 +19,13 @@ services:
     depends_on:
       app3:
         condition: service_healthy
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:80
+    networks:
+      - app
+    depends_on:
+      app2:
+        condition: service_healthy
 
   app2:
     restart: unless-stopped
@@ -25,35 +33,11 @@ services:
     container_name: app2
     environment:
       - MONITOR=true
-    ports:
-      - "7070:80"
-    healthcheck:
-      interval: 10s
-      retries: 12
-      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:80
-    networks:
-      - app
-    depends_on:
-      app3:
-        condition: service_healthy
-
-# NOTE: copy paste error leading to:
-# Additional property start is not allowed
-# app3:
-#
-
-  app3:
-    restart: unless-stopped
-    build: app3
-    container_name: app3
-    environment:
-      - MONITOR=true
       - PORT=8080
     ports:
       - "8080:80"
-        # NOTE: when reporting unhealthy, shows no data in 'Observability'  
-        # Commenting healthcheck
     healthcheck:
+      # two minute warm up 
       interval: 10s
       retries: 12
       test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:80/health
