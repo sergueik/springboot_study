@@ -10,4 +10,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Utils\Utils.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- VaultSharp dependencies -->
+	  <PackageReference Include="VaultSharp" Version="1.17.5.1"/>
+  </ItemGroup> 
 </Project>
