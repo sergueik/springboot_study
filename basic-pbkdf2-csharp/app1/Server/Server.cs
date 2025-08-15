@@ -33,29 +33,36 @@ namespace CryptoService
 			app.MapGet("/password", async () => {
 
 				var result = "";
-				string vaultUri = "http://127.0.0.1:8200";
+				string vaultUri = "http://app2:8200/";
 
-				string vaultToken = "YOUR_VAULT_TOKEN"; 
-
-				string secretPath = "secret/data/my-application/config"; 
+				string vaultToken = "dmF1bHQgdG9rZW4K" ; 
+				vaultToken = "vault token"; 
+// # vaultToken = "dmF1bHQgdG9rZW4=";
+				string secretPath = "app1/config"; 
 
 				try {
 					var vaultClientSettings = new VaultClientSettings(vaultUri, new TokenAuthMethodInfo(vaultToken));
 
 					IVaultClient vaultClient = new VaultClient(vaultClientSettings);
 
-					Secret<SecretData> secret = await vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: secretPath);
+					Console.WriteLine($"getting secret path {secretPath}");
+//					Secret<SecretData> secret = await vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: secretPath);
 
+					Secret<SecretData> secret = await vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(
+    path: secretPath,
+    mountPoint: "secret" // KV mount name
+);
 					if (secret?.Data?.Data != null) {
 						foreach (var entry in secret.Data.Data) {
 							Console.WriteLine($"Key: {entry.Key}, Value: {entry.Value}");
 						}
 						result = secret.Data.Data["password"] as string;
+						Console.WriteLine($"Password from Vault: {result}");
 					} else {
 						Console.WriteLine($"Secret at path '{secretPath}' not found or has no data.");
 					}
 				} catch (Exception ex) {
-					Console.WriteLine($"An error occurred: {ex.Message}");
+					Console.WriteLine($"An exception {ex.GetType()} occurred: {ex.Message}");
 				}
 				return Results.Json(new { result = result});
 			});

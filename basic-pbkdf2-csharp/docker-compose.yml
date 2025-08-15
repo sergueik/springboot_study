@@ -1,0 +1,32 @@
+version: '3.5'
+
+services:
+  app1:
+    restart: unless-stopped
+    build: app1
+    container_name: app1
+    ports:
+      - "8080:8080"
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8080/
+    depends_on:
+      - app2
+    networks:
+      - vault
+
+  app2:
+    restart: unless-stopped
+    build: app2
+    container_name: app2
+    ports:
+      - "8200:8200"
+      - "8201:8201"
+        # NOTE: reporting unhealthy, shows no data in 'Observability'  
+        # Commenting healthcheck
+    networks:
+      - vault
+
+networks:
+  vault:
