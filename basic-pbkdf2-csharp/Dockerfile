@@ -3,7 +3,7 @@ WORKDIR /src
 COPY pbkdf2-csharp.sln ./
 ADD Server Server
 # ADD Program Program
-# ADD Utils Utils
+ADD Utils Utils
 # NOTE: omitted Test and Benchmarks folders
 # ADD Test Test
 

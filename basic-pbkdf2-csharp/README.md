@@ -1,0 +1,11 @@
+```
+http://192.168.99.100:8080/encrypt?password=secret&value=test
+```
+```json
+{"result":"jLMUcMfHHDctVdW06D1W9st6iIJIv1Obcd7jymV/y4yqo9Phspn0KxbVskVRHJaw","original":"test"}
+```
+```
+http://192.168.99.100:8080/decrypt?password=secret&value=jLMUcMfHHDctVdW06D1W9st6iIJIv1Obcd7jymV%2Fy4yqo9Phspn0KxbVskVRHJaw
+```json
+{"result":"test","original":"jLMUcMfHHDctVdW06D1W9st6iIJIv1Obcd7jymV/y4yqo9Phspn0KxbVskVRHJaw"}
+```
