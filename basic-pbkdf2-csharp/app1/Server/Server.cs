@@ -32,13 +32,9 @@ namespace CryptoService
 			});
 			app.MapGet("/password", async () => {
 
-				// object raw = null;
 				string result = "";
 				string vaultUri = "http://app2:8200/";
-
-				string vaultToken = "dmF1bHQgdG9rZW4K"; 
-				vaultToken = "vault token"; 
-				vaultToken = "dmF1bHQgdG9rZW4=";
+				string vaultToken = "dmF1bHQgdG9rZW4=";
 				string secretPath = "data/app1/config"; 
 
 				try {
@@ -47,7 +43,6 @@ namespace CryptoService
 					IVaultClient vaultClient = new VaultClient(vaultClientSettings);
 
 					Console.WriteLine($"getting secret path {secretPath} with vault token {vaultToken}");
-//					Secret<SecretData> secret = await vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: secretPath);
 
 					Secret<SecretData> secret = await vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(
 						                            path: secretPath,
@@ -57,12 +52,9 @@ namespace CryptoService
 						foreach (var entry in secret.Data.Data) {
 							Console.WriteLine($"Key: {entry.Key}, Value: {entry.Value}");
 						}
-						// if password is boxed, "as string" will return null.
+						// NOTE: if password is boxed, "as string" will return null
 						// result = secret.Data.Data["password"] as string;		
 						result = secret.Data.Data["password"]?.ToString();
-						// secret.Data.Data.TryGetValue("password", out raw);
-						// Console.WriteLine($"Password from Vault: {raw}");
-
 					} else {
 						Console.WriteLine($"Secret at path '{secretPath}' not found or has no data.");
 					}
@@ -73,9 +65,7 @@ namespace CryptoService
 				} catch (Exception ex) {
 					Console.WriteLine($"A general exception {ex.GetType()} occurred: {ex.Message}");
 				}
-				return Results.Json(new { result = result , original = ""});
-
-				// return Results.Json(new { result = raw , original = ""});
+				return Results.Json(new { result = result });
 			});
 
 
