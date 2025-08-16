@@ -32,7 +32,8 @@ namespace CryptoService
 			});
 			app.MapGet("/password", async () => {
 
-				object raw = null;
+				// object raw = null;
+				string result = "";
 				string vaultUri = "http://app2:8200/";
 
 				string vaultToken = "dmF1bHQgdG9rZW4K"; 
@@ -56,10 +57,11 @@ namespace CryptoService
 						foreach (var entry in secret.Data.Data) {
 							Console.WriteLine($"Key: {entry.Key}, Value: {entry.Value}");
 						}
-						// null
-						// result = secret.Data.Data["password"] as string;
-						secret.Data.Data.TryGetValue("password", out raw);
-						Console.WriteLine($"Password from Vault: {raw}");
+						// if password is boxed, "as string" will return null.
+						// result = secret.Data.Data["password"] as string;		
+						result = secret.Data.Data["password"]?.ToString();
+						// secret.Data.Data.TryGetValue("password", out raw);
+						// Console.WriteLine($"Password from Vault: {raw}");
 
 					} else {
 						Console.WriteLine($"Secret at path '{secretPath}' not found or has no data.");
@@ -71,7 +73,9 @@ namespace CryptoService
 				} catch (Exception ex) {
 					Console.WriteLine($"A general exception {ex.GetType()} occurred: {ex.Message}");
 				}
-				return Results.Json(new { result = raw , original = ""});
+				return Results.Json(new { result = result , original = ""});
+
+				// return Results.Json(new { result = raw , original = ""});
 			});
 
 
