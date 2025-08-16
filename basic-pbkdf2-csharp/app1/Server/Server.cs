@@ -30,7 +30,7 @@ namespace CryptoService {
 		private static String password = "password";
 		private static bool debug = false;
 		public static bool Debug { set { debug = value; } }
-		private static bool strong = false;
+		private static bool strong = true;
 		private static VaultConfig VaultSettings;
 		
 		public static void Main(string[] args) {

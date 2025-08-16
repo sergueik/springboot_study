@@ -158,6 +158,36 @@ http://192.168.99.100:8080/encrypt?password=secret&value=test
    "original ":"test"
 }
 ```
+alternatively
+```sh
+curl 'http://192.168.99.100:8080/encrypt?password=secret&value=message'
+```
+```json
+{
+  "result": "pMvAnDy7V9zv9VMrPfMXrxbTf3P5ONCibeF9XefllYUi/V5wNXZxj64+wWT4anbs",
+   "original": "message"
+}
+```
+you can verify that the encryption is compatible with Java Jasypt:
+```sh
+pushd ../basic-jasypt
+mvn jasypt:decrypt-value -Djasypt.encryptor.password=secret -Djasypt.plugin.value="pMvAnDy7V9zv9VMrPfMXrxbTf3P5ONCibeF9XefllYUi/V5wNXZxj64+wWT4anbs"
+```
+(ouput truncated)
+```text
+[INFO] Active Profiles: Default
+[INFO] Decrypting value pMvAnDy7V9zv9VMrPfMXrxbTf3P5ONCibeF9XefllYUi/V5wNXZxj64+wWT4anbs
+[INFO] String Encryptor custom Bean not found with name 'jasyptStringEncryptor'. Initializing Default String Encryptor
+[INFO] Encryptor config not found for property jasypt.encryptor.algorithm, using default value: PBEWITHHMACSHA512ANDAES_256
+[INFO] Encryptor config not found for property jasypt.encryptor.key-obtention-iterations, using default value: 1000
+[INFO] Encryptor config not found for property jasypt.encryptor.pool-size, using default value: 1
+[INFO] Encryptor config not found for property jasypt.encryptor.provider-name, using default value: null
+[INFO] Encryptor config not found for property jasypt.encryptor.provider-class-name, using default value: null
+[INFO] Encryptor config not found for property jasypt.encryptor.salt-generator-classname, using default value: org.jasypt.salt.RandomSaltGenerator
+[INFO] Encryptor config not found for property jasypt.encryptor.iv-generator-classname, using default value: org.jasypt.iv.RandomIvGenerator
+[INFO] Encryptor config not found for property jasypt.encryptor.string-output-type, using default value: base64``
+message
+```
 ```
 http://192.168.99.100:8080/decrypt?password=secret&value=jLMUcMfHHDctVdW06D1W9st6iIJIv1Obcd7jymV%2Fy4yqo9Phspn0KxbVskVRHJaw
 ```json
