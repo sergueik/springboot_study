@@ -32,39 +32,56 @@ namespace CryptoService
 			});
 			app.MapGet("/password", async () => {
 
-				var result = "";
+				string result = "";
 				string vaultUri = "http://app2:8200/";
 
-				string vaultToken = "dmF1bHQgdG9rZW4K" ; 
+				string vaultToken = "dmF1bHQgdG9rZW4K"; 
 				vaultToken = "vault token"; 
-// # vaultToken = "dmF1bHQgdG9rZW4=";
-				string secretPath = "app1/config"; 
+				vaultToken = "dmF1bHQgdG9rZW4=";
+				string secretPath = "data/app1/config"; 
 
 				try {
 					var vaultClientSettings = new VaultClientSettings(vaultUri, new TokenAuthMethodInfo(vaultToken));
 
 					IVaultClient vaultClient = new VaultClient(vaultClientSettings);
 
-					Console.WriteLine($"getting secret path {secretPath}");
+					Console.WriteLine($"getting secret path {secretPath} with vault token {vaultToken}");
 //					Secret<SecretData> secret = await vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(path: secretPath);
 
 					Secret<SecretData> secret = await vaultClient.V1.Secrets.KeyValue.V2.ReadSecretAsync(
-    path: secretPath,
-    mountPoint: "secret" // KV mount name
-);
+						                            path: secretPath,
+						                            mountPoint: "secret" // KV mount name
+					                            );
 					if (secret?.Data?.Data != null) {
 						foreach (var entry in secret.Data.Data) {
 							Console.WriteLine($"Key: {entry.Key}, Value: {entry.Value}");
+							// if (entry.Key.Equals("password"))
+							//	result = entry.Value as string;
 						}
-						result = secret.Data.Data["password"] as string;
-						Console.WriteLine($"Password from Vault: {result}");
+						//	result = secret.Data.Data["password"] as string;
+						Object raw = null;
+						secret.Data.Data.TryGetValue("password", out raw);
+						Console.WriteLine($"Password from Vault: {raw}");
+						result = raw as string;
+						return Results.Json(new { result = raw,original = "" });
+
 					} else {
 						Console.WriteLine($"Secret at path '{secretPath}' not found or has no data.");
 					}
+				} catch (VaultSharp.Core.VaultApiException ex) {
+					Console.WriteLine("Vault API Exception:");
+					Console.WriteLine($"Message: {ex.Message}");
+					// var errors = string.Join(", ", ex.Errors ?? new string[0]);
+					// Console.WriteLine($"Errors: {errors}");
+					Console.WriteLine("Stack Trace:");
+					Console.WriteLine(ex.StackTrace);
+
 				} catch (Exception ex) {
-					Console.WriteLine($"An exception {ex.GetType()} occurred: {ex.Message}");
+					Console.WriteLine($"A general exception {ex.GetType()} occurred: {ex.Message}");
 				}
-				return Results.Json(new { result = result});
+				// blank
+				Console.WriteLine($"Password from Vault: {result}");
+				return Results.Json(new { result = result , original = ""});
 			});
 
 
