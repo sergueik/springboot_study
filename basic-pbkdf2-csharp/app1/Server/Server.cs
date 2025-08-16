@@ -11,6 +11,8 @@ using VaultSharp.V1.AuthMethods.Token;
 using VaultSharp.V1.Commons;
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 
 // NOTE: avoid .NET 6 minimal APIs encouraged top-level statements code layout
@@ -19,10 +21,10 @@ namespace CryptoService
 {
 	public class VaultConfig
 	{
-     
+		public string EnvironmentName { get; set; } = string.Empty;
 		public string Uri { get; set; }
 		public string SecretPath { get; set; }
-		public string Token { get; set; }
+		public string Token { get; set; } = string.Empty;
 	}
 	public class Server
 	{
@@ -37,18 +39,33 @@ namespace CryptoService
 		{
 			var env = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Development";
 			var fileName = $"appsettings.{env}.json";
+			var builder = WebApplication.CreateBuilder(args);
 
-var configurationBuilder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: true)
-            .AddJsonFile($"appsettings.{env}.json", optional: true);
+			// var configurationBuilder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: true).AddJsonFile($"appsettings.{env}.json", optional: true);
+			// discard
+			
+			var configurationBuilder = builder.Configuration;
+			
+			builder.Services.Configure<VaultConfig>(options => {
+				builder.Configuration.GetSection("VaultConfig").Bind(options);
 
-			IConfiguration configuration = configurationBuilder.Build();
+				// enforce setting from runtime environment
+				options.EnvironmentName = env;
+			});
+
+			builder.Services.Configure<VaultConfig>(
+				builder.Configuration.GetSection("VaultConfig")
+			);
+
+			builder.Services.PostConfigure<VaultConfig>(options => {
+				options.EnvironmentName = env; // builder.Environment.EnvironmentName;
+			});
+			// IConfiguration configuration = configurationBuilder.Build();
+			IConfiguration configuration = builder.Configuration;
 			VaultSettings = configuration.GetSection("Vault").Get<VaultConfig>();
 
 			Console.WriteLine($"Vault URI: {VaultSettings.Uri}");
-//Uri			Console.WriteLine($"Env: {VaultSettings.EnvironmentName}");
-			var builder = WebApplication.CreateBuilder(args);
+			Console.WriteLine($"Env: {VaultSettings.EnvironmentName}");
 			var app = builder.Build();
 
 			app.Use(async (context, next) => {
