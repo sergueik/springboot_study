@@ -71,7 +71,7 @@ version            1
 ```
 
 ```sh
-docker-compose exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=dmF1bHQgdG9rZW4=  -it app2 vault kv  get secret/app1/config
+docker-compose exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=dmF1bHQgdG9rZW4= -it app2 vault kv get secret/app1/config
 ```
 ```text
 ===== Secret Path =====

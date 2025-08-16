@@ -1,16 +1,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+
 WORKDIR /src
 COPY pbkdf2-csharp.sln ./
 ADD Server Server
-# ADD Program Program
 ADD Utils Utils
 # NOTE: omitted Test and Benchmarks folders
 # ADD Test Test
 
-# Restore for alpine musl
 RUN dotnet restore pbkdf2-csharp.sln --runtime linux-musl-x64
 
-# Build + (optional) test
 RUN dotnet build pbkdf2-csharp.sln -c Release --no-restore
 # RUN dotnet test Test -c Release --no-build
 
