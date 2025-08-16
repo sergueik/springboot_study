@@ -167,6 +167,9 @@ http://192.168.99.100:8080/decrypt?password=secret&value=jLMUcMfHHDctVdW06D1W9st
 }
 
 ```
+### See Also 
+
+   * [powerShell bindings for HashiCorp Vault](https://github.com/zyborg/Zyborg.Vault)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

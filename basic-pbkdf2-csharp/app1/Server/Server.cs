@@ -17,17 +17,15 @@ using Microsoft.Extensions.Options;
 
 // NOTE: avoid .NET 6 minimal APIs encouraged top-level statements code layout
 //
-namespace CryptoService
-{
-	public class VaultConfig
-	{
+namespace CryptoService {
+	public class VaultConfig {
 		public string EnvironmentName { get; set; } = string.Empty;
 		public string Uri { get; set; }
 		public string SecretPath { get; set; }
 		public string Token { get; set; } = string.Empty;
 	}
-	public class Server
-	{
+
+	public class Server {
 		private static String saltString = null;
 		private static String password = "password";
 		private static bool debug = false;
@@ -35,20 +33,15 @@ namespace CryptoService
 		private static bool strong = false;
 		private static VaultConfig VaultSettings;
 		
-		public static void Main(string[] args)
-		{
+		public static void Main(string[] args) {
 			var env = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Development";
 			var fileName = $"appsettings.{env}.json";
 			var builder = WebApplication.CreateBuilder(args);
 
-			// var configurationBuilder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: true).AddJsonFile($"appsettings.{env}.json", optional: true);
-			// discard
-			
 			var configurationBuilder = builder.Configuration;
 			
 			builder.Services.Configure<VaultConfig>(options => {
 				builder.Configuration.GetSection("VaultConfig").Bind(options);
-
 				// enforce setting from runtime environment
 				options.EnvironmentName = env;
 			});
@@ -60,28 +53,33 @@ namespace CryptoService
 			builder.Services.PostConfigure<VaultConfig>(options => {
 				options.EnvironmentName = env; // builder.Environment.EnvironmentName;
 			});
-			// IConfiguration configuration = configurationBuilder.Build();
 			IConfiguration configuration = builder.Configuration;
 			VaultSettings = configuration.GetSection("Vault").Get<VaultConfig>();
+			// alternatively may
+			// VaultSettings = builder.Configuration.GetSection("Vault").Get<VaultConfig>() ?? new VaultConfig();
 
-			Console.WriteLine($"Vault URI: {VaultSettings.Uri}");
-			Console.WriteLine($"Env: {VaultSettings.EnvironmentName}");
+			// alternatively may
+			// var options = app.Services.GetRequiredService<IOptions<VaultConfig>>();
+			// var vaultConfig = options.Value;
+			// populate EnvironmentName explicitly
+			VaultSettings.EnvironmentName = env; // builder.Environment.EnvironmentName
+
+			// Console.WriteLine($"Vault URI: {VaultSettings.Uri}");
+			// Console.WriteLine($"Env: {VaultSettings.EnvironmentName}");
 			var app = builder.Build();
 
 			app.Use(async (context, next) => {
 				Console.WriteLine($"{context.Request.Method} {context.Request.Path}");
 				await next();
 			});
+
 			app.MapGet("/password", async () => {
 
 				// var vaultUri = builder.Configuration["Vault:Uri"] ?? "http://vault:8200";
-				// var vaultToken = builder.Configuration["Vault:Token"] ?? throw new ArgumentNullException("Vault:Token");
-				// var secretPath = builder.Configuration["Vault:SecretPath"] ?? "secret/data/myapp";
-
 				string result = "";
-				string vaultUri = VaultSettings.Uri; // "http://app2:8200/";
-				string vaultToken = VaultSettings.Token; // "dmF1bHQgdG9rZW4=";
-				string secretPath = VaultSettings.SecretPath; // "app1/config"; 
+				var vaultUri = VaultSettings.Uri;
+				var vaultToken = VaultSettings.Token;
+				var secretPath = VaultSettings.SecretPath; 
 
 				try {
 					var vaultClientSettings = new VaultClientSettings(vaultUri, new TokenAuthMethodInfo(vaultToken));
@@ -110,7 +108,9 @@ namespace CryptoService
 
 				} catch (Exception ex) {
 					Console.WriteLine($"A general exception {ex.GetType()} occurred: {ex.Message}");
+					// e.g. System.ArgumentException occurred: 'vaultToken' value is empty or contains white-space characters only. (Parameter 'vaultToken')
 				}
+
 				return Results.Json(new { result = result });
 			});
 
@@ -127,8 +127,8 @@ namespace CryptoService
 
 			app.Run();
 		}
-		public static string Decrypt(String payloadString, String passwordString)
-		{
+
+		public static string Decrypt(String payloadString, String passwordString) {
 			var aes = new AES();
 			aes.Strong = strong;
 			aes.Debug = debug;
@@ -137,8 +137,7 @@ namespace CryptoService
 			return decrypted;
 		}
 
-		public static string Encrypt(String payloadString, String passwordString, String saltString)
-		{
+		public static string Encrypt(String payloadString, String passwordString, String saltString) {
 			var aes = new AES();
 			aes.Strong = strong;
 			aes.Debug = debug;
