@@ -23,8 +23,12 @@ services:
     ports:
       - "8200:8200"
       - "8201:8201"
-        # NOTE: reporting unhealthy, shows no data in 'Observability'  
-        # Commenting healthcheck
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8201 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 10s  
     networks:
       - vault
 

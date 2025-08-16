@@ -35,7 +35,7 @@ namespace CryptoService
 				string result = "";
 				string vaultUri = "http://app2:8200/";
 				string vaultToken = "dmF1bHQgdG9rZW4=";
-				string secretPath = "data/app1/config"; 
+				string secretPath = "app1/config"; 
 
 				try {
 					var vaultClientSettings = new VaultClientSettings(vaultUri, new TokenAuthMethodInfo(vaultToken));
@@ -60,7 +60,7 @@ namespace CryptoService
 					}
 				} catch (VaultSharp.Core.VaultApiException ex) {
 					Console.WriteLine($"Message: {ex.Message}");
-					Console.WriteLine("Stack Trace:\n{ex.StackTrace}");
+					Console.WriteLine($"Stack Trace:\n{ex.StackTrace}");
 
 				} catch (Exception ex) {
 					Console.WriteLine($"A general exception {ex.GetType()} occurred: {ex.Message}");
