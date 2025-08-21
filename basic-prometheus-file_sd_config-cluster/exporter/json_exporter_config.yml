@@ -7,4 +7,5 @@ modules:
     metrics:
       - name: stub_metric_value
         path: '{.metric_value}'
-
+        valuetype: counter
+        # type: untyped  ← DO NOT include this line
