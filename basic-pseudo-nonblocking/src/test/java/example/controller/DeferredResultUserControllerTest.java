@@ -57,7 +57,8 @@ public class DeferredResultUserControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
-
+	
+	private static String endpoint = "/deferred/users";
 	private MvcResult mvcResult = null;
 	private ObjectMapper objectMapper = new ObjectMapper();
 	private String jsonResponse = null;
@@ -79,7 +80,7 @@ public class DeferredResultUserControllerTest {
 	@Test
 	void test10() throws Exception {
 		// Step 1: call GET /users/{id} with valid ID
-		mvcResult = mockMvc.perform(get("/deferred/users/1")).andExpect(request().asyncStarted()).andReturn();
+		mvcResult = mockMvc.perform(get(endpoint + "/1")).andExpect(request().asyncStarted()).andReturn();
 
 		// Step 2: async dispatch
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
@@ -130,7 +131,7 @@ public class DeferredResultUserControllerTest {
 	@Test
 	void test12() throws Exception {
 		// Step 1: call GET /users/{id} with valid ID
-		mvcResult = mockMvc.perform(get("/deferred/users/1")).andExpect(request().asyncStarted()).andReturn();
+		mvcResult = mockMvc.perform(get(endpoint + "/1")).andExpect(request().asyncStarted()).andReturn();
 
 		// Step 2: async dispatch
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
@@ -162,7 +163,7 @@ public class DeferredResultUserControllerTest {
 	@Test
 	void test13() throws Exception {
 		// Step 1: call GET /users/{id} with valid ID
-		mvcResult = mockMvc.perform(get("/deferred/users/1")).andExpect(request().asyncStarted()).andReturn();
+		mvcResult = mockMvc.perform(get(endpoint + "/1")).andExpect(request().asyncStarted()).andReturn();
 
 		// Step 2: async dispatch
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
@@ -214,7 +215,7 @@ public class DeferredResultUserControllerTest {
 	@DisplayName("Deserialize GET /deferred/users/1 via Gson")
 	@Test
 	void testGsonDeserialize() throws Exception {
-		MvcResult mvcResult = mockMvc.perform(get("/deferred/users/1")).andExpect(request().asyncStarted()).andReturn();
+		MvcResult mvcResult = mockMvc.perform(get(endpoint + "/1")).andExpect(request().asyncStarted()).andReturn();
 
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk());
 		objResponse = mvcResult.getAsyncResult();
@@ -250,7 +251,7 @@ public class DeferredResultUserControllerTest {
 		// Step 1: POST /users with valid payload
 		String jsonPayload = "{\"name\":\"John Doe\", \"email\":\"john@example.com\"}";
 
-		mvcResult = mockMvc.perform(post("/deferred/users").contentType("application/json").content(jsonPayload))
+		mvcResult = mockMvc.perform(post(endpoint).contentType("application/json").content(jsonPayload))
 				.andExpect(request().asyncStarted()).andReturn();
 
 		// Step 2: async dispatch
@@ -270,13 +271,13 @@ public class DeferredResultUserControllerTest {
 		for (String jsonPayload : Arrays.asList(new String[] { "{\"name\":\"Alice\", \"email\":\"a@example.com\"}",
 				"{\"name\":\"Bob\", \"email\":\"b@example.com\"}",
 				"{\"name\":\"Charlie\", \"email\":\"c@example.com\"}" })) {
-			mvcResult = mockMvc.perform(post("/deferred/users").contentType("application/json").content(jsonPayload))
+			mvcResult = mockMvc.perform(post(endpoint).contentType("application/json").content(jsonPayload))
 					.andExpect(request().asyncStarted()).andReturn();
 			// wait for async completion.
 			mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isCreated());
 		}
 		// GET /users (returns collection)
-		mvcResult = mockMvc.perform(get("/deferred/users")).andExpect(request().asyncStarted()).andReturn();
+		mvcResult = mockMvc.perform(get(endpoint)).andExpect(request().asyncStarted()).andReturn();
 		// NOTE: expectation to receive multiple users is unfinished
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
 				.andExpect(content().string(containsString("Alice"))).andExpect(content().string(containsString("Bob")))
@@ -295,12 +296,13 @@ public class DeferredResultUserControllerTest {
 	@DisplayName("GetUser Method Not Allowed for invalid verb (POST)")
 	@Test
 	void test20() throws Exception {
-		mockMvc.perform(post("/deferred/users/1").contentType("application/json")).andExpect(status().isMethodNotAllowed());
+		mockMvc.perform(post(endpoint + "/1").contentType("application/json")).andExpect(status().isMethodNotAllowed());
 	}
 
 	@DisplayName("GetUser Method Not Allowed for invalid verb (POST)")
 	@Test
 	void test21() throws Exception {
-		mockMvc.perform(post("/deferred/users")).andExpect(status().isUnsupportedMediaType());
+		mockMvc.perform(post(endpoint)).andExpect(status().isUnsupportedMediaType());
 	}
+	
 }

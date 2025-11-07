@@ -1,5 +1,10 @@
 package example.controller;
 
+
+/**
+ * Copyright 2025 Serguei Kouzmine
+ */
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
