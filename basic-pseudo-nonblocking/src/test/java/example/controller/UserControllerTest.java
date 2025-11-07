@@ -4,13 +4,13 @@ package example.controller;
  * Copyright 2025 Serguei Kouzmine
  */
 
-
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -30,11 +30,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
+
+	private ObjectMapper objectMapper = new ObjectMapper();
 
 	@BeforeEach
 	void setup() {
@@ -52,9 +58,19 @@ public class UserControllerTest {
 				.andExpect(status().isOk()).andExpect(content().string(containsString("id")))
 				.andExpect(content().string(containsString("name")));
 
-		// Optional: inspect async result object
-		Object resultObj = mvcResult.getAsyncResult();
-		assertThat(resultObj, is(notNullValue()));
+		// examine async result object
+		Object objResponse = mvcResult.getAsyncResult();
+		assertThat(objResponse, is(notNullValue()));
+		// deserialize to model type
+		String jsonResponse = objResponse.toString();
+		JsonNode node = objectMapper.readTree(jsonResponse);
+		assertThat(node.get("id").asLong(), is(1L));
+		assertThat(node.get("name").asText(), is(notNullValue()));
+		assertThat(node.get("email").asText(), containsString("@"));
+
+		// Step 3 (optional): use JsonPath for path-based assertions
+		String email = JsonPath.read(jsonResponse, "$.email");
+		assertThat(email, containsString("@"));
 	}
 
 	@DisplayName("GetUserDeferredInvalidId")
@@ -67,15 +83,15 @@ public class UserControllerTest {
 		mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch(mvcResult))
 				.andExpect(status().is4xxClientError()).andExpect(content().string(containsString("invalid id")));
 
-		Object resultObj = mvcResult.getAsyncResult();
-		assertThat(resultObj, is(notNullValue()));
+		Object objResponse = mvcResult.getAsyncResult();
+		assertThat(objResponse, is(notNullValue()));
 	}
 
 	@DisplayName("testPostUserDeferredSuccess")
 	@Test
 	void test3() throws Exception {
 		// Step 1: POST /users with valid payload
-		String jsonPayload = "{\"name\":\"John Doe\",\"email\":\"john@example.com\"}";
+		String jsonPayload = "{\"name\":\"John Doe\", \"email\":\"john@example.com\"}";
 
 		MvcResult mvcResult = mockMvc.perform(post("/users").contentType("application/json").content(jsonPayload))
 				.andExpect(request().asyncStarted()).andReturn();
@@ -85,8 +101,8 @@ public class UserControllerTest {
 				.andExpect(status().isCreated()).andExpect(content().string(containsString("id")))
 				.andExpect(content().string(containsString("John Doe")));
 
-		Object resultObj = mvcResult.getAsyncResult();
-		assertThat(resultObj, is(notNullValue()));
+		Object objResponse = mvcResult.getAsyncResult();
+		assertThat(objResponse, is(notNullValue()));
 	}
 
 	@DisplayName("testGetAllUsersDeferredCollection")
@@ -100,10 +116,10 @@ public class UserControllerTest {
 				.andExpect(content().string(containsString("Bob")))
 				.andExpect(content().string(containsString("Charlie")));
 
-		Object resultObj = mvcResult.getAsyncResult();
-		assertThat(resultObj, is(notNullValue()));
+		Object objResponse = mvcResult.getAsyncResult();
+		assertThat(objResponse, is(notNullValue()));
 
-		Set<String> users = new HashSet<>(Arrays.asList((String[]) resultObj)); // cast to actual type
+		Set<String> users = new HashSet<>(Arrays.asList((String[]) objResponse)); // cast to actual type
 		//
 		assertThat(users, containsInAnyOrder("Alice", "Bob", "Charlie"));
 	}
