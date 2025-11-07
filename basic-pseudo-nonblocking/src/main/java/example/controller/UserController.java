@@ -33,11 +33,11 @@ public class UserController {
 	public DeferredResult<HttpEntity<User>> getUser(@PathVariable("id") long id) {
 		DeferredResult<HttpEntity<User>> result = new DeferredResult<>();
 		// short-circuit request parameter validation before scheduling background work
-		// but wrap in method signature 
+		// but wrap in method signature
 		if (id <= 0) {
 			// reserve METHOD_NOT_ALLOWED for invalid verbs
 			result.setResult(ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(new User(id, String.format("Method not allowed with Invalid id: %d", id))));
+					.body(new User(id, String.format("Method not allowed with Invalid id: %d", id), null)));
 			return result;
 		}
 		Runnable producer = () -> {
