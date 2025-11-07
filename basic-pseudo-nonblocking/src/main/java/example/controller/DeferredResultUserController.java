@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.lang.Runnable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
+import static java.util.concurrent.ForkJoinPool.commonPool;
 
 import javax.annotation.PostConstruct;
 
@@ -26,10 +27,33 @@ import example.model.User;
 import example.service.UserService;
 
 @RestController
-@RequestMapping("/users")
-public class UserController {
+@RequestMapping("/deferred/users")
+public class DeferredResultUserController {
 
 	private final Map<Long, User> users = new ConcurrentHashMap<>();
+
+	@PostConstruct
+	public void init() {
+		// Add a default user after bean initialization
+		users.put(1L, new User(1L, "Alice", "alice@example.com"));
+	}
+
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	public DeferredResult<ResponseEntity<Collection<User>>> getAllUsers() {
+		DeferredResult<ResponseEntity<Collection<User>>> result = new DeferredResult<>();
+
+		Runnable producer = () -> {
+			try {
+				Collection<User> allUsers = users.values();
+				result.setResult(ResponseEntity.ok(allUsers));
+			} catch (Exception ex) {
+				result.setResult(ResponseEntity.status(HttpStatus.METHOD_FAILURE).build());
+			}
+		};
+
+		commonPool().submit(producer);
+		return result;
+	}
 
 	@GetMapping(value = "/{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public DeferredResult<HttpEntity<User>> getUser(@PathVariable("id") long id) {
@@ -59,14 +83,8 @@ public class UserController {
 			}
 		};
 
-		ForkJoinPool.commonPool().submit(producer);
+		commonPool().submit(producer);
 		return result;
-	}
-
-	@PostConstruct
-	public void init() {
-		// Add a default user after bean initialization
-		users.put(1L, new User(1L, "Alice", "alice@example.com"));
 	}
 
 	@PostMapping(value = "", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
@@ -80,7 +98,7 @@ public class UserController {
 				user.setId(newId);
 			}
 			users.put(user.getId(), user);
-			
+
 			return ResponseEntity.status(HttpStatus.CREATED).body(user);
 		};
 		return producer;

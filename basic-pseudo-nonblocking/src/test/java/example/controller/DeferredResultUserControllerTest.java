@@ -10,6 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -22,10 +23,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import javax.swing.text.html.HTMLDocument.Iterator;
 
@@ -49,8 +52,8 @@ import example.model.User;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-@WebMvcTest(UserController.class)
-public class UserControllerTest {
+@WebMvcTest(DeferredResultUserController.class)
+public class DeferredResultUserControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -76,7 +79,7 @@ public class UserControllerTest {
 	@Test
 	void test10() throws Exception {
 		// Step 1: call GET /users/{id} with valid ID
-		mvcResult = mockMvc.perform(get("/users/1")).andExpect(request().asyncStarted()).andReturn();
+		mvcResult = mockMvc.perform(get("/deferred/users/1")).andExpect(request().asyncStarted()).andReturn();
 
 		// Step 2: async dispatch
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
@@ -127,7 +130,7 @@ public class UserControllerTest {
 	@Test
 	void test12() throws Exception {
 		// Step 1: call GET /users/{id} with valid ID
-		mvcResult = mockMvc.perform(get("/users/1")).andExpect(request().asyncStarted()).andReturn();
+		mvcResult = mockMvc.perform(get("/deferred/users/1")).andExpect(request().asyncStarted()).andReturn();
 
 		// Step 2: async dispatch
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
@@ -159,7 +162,7 @@ public class UserControllerTest {
 	@Test
 	void test13() throws Exception {
 		// Step 1: call GET /users/{id} with valid ID
-		mvcResult = mockMvc.perform(get("/users/1")).andExpect(request().asyncStarted()).andReturn();
+		mvcResult = mockMvc.perform(get("/deferred/users/1")).andExpect(request().asyncStarted()).andReturn();
 
 		// Step 2: async dispatch
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
@@ -179,9 +182,9 @@ public class UserControllerTest {
 
 		// Step 4: extract fields via JsonPath
 		Object objId = JsonPath.read(jsonResponse, "$.id");
-		
+
 		if (objId instanceof Number) {
-		    id = ((Number) objId).longValue();
+			id = ((Number) objId).longValue();
 		}
 		name = JsonPath.read(jsonResponse, "$.name");
 		email = JsonPath.read(jsonResponse, "$.email");
@@ -208,20 +211,19 @@ public class UserControllerTest {
 
 	private Gson gson;
 
-	@DisplayName("Deserialize GET /users/1 via Gson")
+	@DisplayName("Deserialize GET /deferred/users/1 via Gson")
 	@Test
 	void testGsonDeserialize() throws Exception {
-		MvcResult mvcResult = mockMvc.perform(get("/users/1")).andExpect(request().asyncStarted()).andReturn();
+		MvcResult mvcResult = mockMvc.perform(get("/deferred/users/1")).andExpect(request().asyncStarted()).andReturn();
 
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk());
 		objResponse = mvcResult.getAsyncResult();
 		responseEntity = (ResponseEntity<User>) objResponse;
 		user = responseEntity.getBody();
-		
+
 		// jsonResponse = mvcResult.getAsyncResult().toString();
 		jsonResponse = new ObjectMapper().writeValueAsString(user);
-		
-		
+
 		gson = new Gson();
 
 		// correct class
@@ -248,7 +250,7 @@ public class UserControllerTest {
 		// Step 1: POST /users with valid payload
 		String jsonPayload = "{\"name\":\"John Doe\", \"email\":\"john@example.com\"}";
 
-		mvcResult = mockMvc.perform(post("/users").contentType("application/json").content(jsonPayload))
+		mvcResult = mockMvc.perform(post("/deferred/users").contentType("application/json").content(jsonPayload))
 				.andExpect(request().asyncStarted()).andReturn();
 
 		// Step 2: async dispatch
@@ -260,13 +262,22 @@ public class UserControllerTest {
 		assertThat(objResponse, is(notNullValue()));
 	}
 
-	@Disabled
+	// @Disabled
 	@DisplayName("testGetAllUsersDeferredCollection")
 	@Test
 	void test4() throws Exception {
-		// GET /users (returns collection)
-		MvcResult mvcResult = mockMvc.perform(get("/users")).andExpect(request().asyncStarted()).andReturn();
 
+		for (String jsonPayload : Arrays.asList(new String[] { "{\"name\":\"Alice\", \"email\":\"a@example.com\"}",
+				"{\"name\":\"Bob\", \"email\":\"b@example.com\"}",
+				"{\"name\":\"Charlie\", \"email\":\"c@example.com\"}" })) {
+			mvcResult = mockMvc.perform(post("/deferred/users").contentType("application/json").content(jsonPayload))
+					.andExpect(request().asyncStarted()).andReturn();
+			// wait for async completion.
+			mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isCreated());
+		}
+		// GET /users (returns collection)
+		mvcResult = mockMvc.perform(get("/deferred/users")).andExpect(request().asyncStarted()).andReturn();
+		// NOTE: expectation to receive multiple users is unfinished
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
 				.andExpect(content().string(containsString("Alice"))).andExpect(content().string(containsString("Bob")))
 				.andExpect(content().string(containsString("Charlie")));
@@ -274,20 +285,22 @@ public class UserControllerTest {
 		objResponse = mvcResult.getAsyncResult();
 		assertThat(objResponse, is(notNullValue()));
 
-		users = new HashSet<>(Arrays.asList((String[]) objResponse)); // cast to actual type
-		//
-		assertThat(users, containsInAnyOrder("Alice", "Bob", "Charlie"));
+		ResponseEntity<Collection<User>> responseEntity = (ResponseEntity<Collection<User>>) objResponse;
+		users = responseEntity.getBody().stream().map(o -> o.getName()).collect(Collectors.toSet());
+		// NOTE: strict assertion - have to include John
+		assertThat(users, containsInAnyOrder("Alice", "Bob", "Charlie", "John Doe"));
+		assertThat(users, hasItems("Alice", "Bob", "Charlie"));
 	}
 
 	@DisplayName("GetUser Method Not Allowed for invalid verb (POST)")
 	@Test
 	void test20() throws Exception {
-		mockMvc.perform(post("/users/1").contentType("application/json")).andExpect(status().isMethodNotAllowed());
+		mockMvc.perform(post("/deferred/users/1").contentType("application/json")).andExpect(status().isMethodNotAllowed());
 	}
 
 	@DisplayName("GetUser Method Not Allowed for invalid verb (POST)")
 	@Test
 	void test21() throws Exception {
-		mockMvc.perform(post("/users")).andExpect(status().isUnsupportedMediaType());
+		mockMvc.perform(post("/deferred/users")).andExpect(status().isUnsupportedMediaType());
 	}
 }
