@@ -20,6 +20,8 @@ import java.lang.Runnable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ForkJoinPool;
 
+import javax.annotation.PostConstruct;
+
 import example.model.User;
 import example.service.UserService;
 
@@ -61,12 +63,25 @@ public class UserController {
 		return result;
 	}
 
+	@PostConstruct
+	public void init() {
+		// Add a default user after bean initialization
+		users.put(1L, new User(1L, "Alice", "alice@example.com"));
+	}
+
 	@PostMapping(value = "", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
 	public Callable<HttpEntity<User>> addUser(@RequestBody User user) {
 		Callable<HttpEntity<User>> producer = () -> {
+
+			// assign an ID if missing
+			if (user.getId() == null || user.getId() == 0L) {
+				long newId = users.size() + 1L;
+				user.setId(newId);
+			}
 			users.put(user.getId(), user);
-			return ResponseEntity.ok(user);
+			
+			return ResponseEntity.status(HttpStatus.CREATED).body(user);
 		};
 		return producer;
 	}
