@@ -89,7 +89,7 @@ public class DeferredResultUserControllerTest {
 		// Step 3: get async result
 		objResponse = mvcResult.getAsyncResult();
 
-		assertThat(objResponse, is(notNullValue()));
+		assertThat(objResponse, notNullValue());
 
 		// Assert: examine async result object
 		responseEntity = (ResponseEntity<User>) objResponse;
@@ -98,7 +98,7 @@ public class DeferredResultUserControllerTest {
 		// jsonResponse = objResponse.toString();
 		// <200 OK OK,example.model.User@5600a5da,[]>
 
-		jsonResponse = new ObjectMapper().writeValueAsString(user);
+		jsonResponse = objectMapper.writeValueAsString(user);
 		jsonNode = objectMapper.readTree(jsonResponse);
 
 		assertThat(jsonNode.get("id").asLong(), is(1L));
@@ -148,13 +148,13 @@ public class DeferredResultUserControllerTest {
 		// jsonResponse = objResponse.toString();
 		// <200 OK OK,example.model.User@5600a5da,[]>
 
-		jsonResponse = new ObjectMapper().writeValueAsString(user);
+		jsonResponse = objectMapper.writeValueAsString(user);
 		user = objectMapper.readValue(jsonResponse, User.class);
 
 		// Step 5: assertions
 		assertThat(user, is(notNullValue()));
 		assertThat(user.getId(), is(1L));
-		assertThat(user.getName(), is(notNullValue()));
+		assertThat(user.getName(), notNullValue());
 		assertThat(user.getEmail(), containsString("@"));
 
 	}
@@ -206,7 +206,7 @@ public class DeferredResultUserControllerTest {
 		// Step 6: assertions
 		assertThat(newUser, is(notNullValue()));
 		assertThat(newUser.getId(), is(1L));
-		assertThat(newUser.getName(), is(notNullValue()));
+		assertThat(newUser.getName(), notNullValue());
 		assertThat(newUser.getEmail(), containsString("@"));
 	}
 
@@ -223,14 +223,14 @@ public class DeferredResultUserControllerTest {
 		user = responseEntity.getBody();
 
 		// jsonResponse = mvcResult.getAsyncResult().toString();
-		jsonResponse = new ObjectMapper().writeValueAsString(user);
+		jsonResponse = objectMapper.writeValueAsString(user);
 
 		gson = new Gson();
 
 		// correct class
 		user = gson.fromJson(jsonResponse, User.class);
 		assertThat(user.getId(), is(1L));
-		assertThat(user.getName(), is(notNullValue()));
+		assertThat(user.getName(), notNullValue());
 		assertThat(user.getEmail(), containsString("@"));
 
 		// attempt de-serialization into a mismatched class
@@ -241,7 +241,7 @@ public class DeferredResultUserControllerTest {
 			Foo foo = gson.fromJson(jsonResponse, Foo.class);
 		} catch (JsonSyntaxException e) {
 			System.err.println("Gson failed as expected: " + e.getMessage());
-			assertThat(e, is(notNullValue()));
+			assertThat(e, notNullValue());
 		}
 	}
 
@@ -260,7 +260,7 @@ public class DeferredResultUserControllerTest {
 				.andExpect(content().string(containsString("John Doe")));
 
 		objResponse = mvcResult.getAsyncResult();
-		assertThat(objResponse, is(notNullValue()));
+		assertThat(objResponse, notNullValue());
 	}
 
 	// @Disabled
@@ -284,7 +284,7 @@ public class DeferredResultUserControllerTest {
 				.andExpect(content().string(containsString("Charlie")));
 
 		objResponse = mvcResult.getAsyncResult();
-		assertThat(objResponse, is(notNullValue()));
+		assertThat(objResponse, notNullValue());
 
 		ResponseEntity<Collection<User>> responseEntity = (ResponseEntity<Collection<User>>) objResponse;
 		users = responseEntity.getBody().stream().map(o -> o.getName()).collect(Collectors.toSet());

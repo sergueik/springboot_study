@@ -1,76 +1,73 @@
 package example.controller;
 
-/**
- * Copyright 2025 Serguei Kouzmine
- */
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.ReadContext;
-
+import example.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.HttpEntity;
+
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Arrays;
-import example.model.User;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CallableForUserController.class)
-public class CallableForUserControllerTest {
+class CallableForUserControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
-	private String endpoint = "/callable/users";
-	private MvcResult mvcResult = null;
+
+	@Autowired
+	private CallableForUserController controller;
+
+	private final ObjectMapper objectMapper = new ObjectMapper();
+	ResponseEntity<User> responseEntity = null;
+	private Object objResponse;
 
 	@BeforeEach
-	void setup() throws Exception {
-		String jsonPayload = "{\"name\":\"Alice\", \"email\":\"a@example.com\", \"id\":1}";
-		mvcResult = mockMvc.perform(post(endpoint).contentType("application/json").content(jsonPayload))
-				.andExpect(request().asyncStarted()).andReturn();
-		// wait for async completion.
-		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isCreated());
+	void setup() {
+		// Ensure user 1 exists before GET
+		controller.init(); // must add User(1L, "Alice", "alice@example.com")
 	}
 
-	@DisplayName("GET /callable/users/1 returns non-null and valid User")
+	@DisplayName("GET /callable/users/1 returns User")
 	@Test
-	void test1() throws Exception {
+	void testGetUserCallable() throws Exception {
+		// Perform GET /callable/users/1
+		MvcResult mvcResult = mockMvc.perform(get("/callable/users/1").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(request().asyncStarted()).andReturn();
 
-		// Step 1: perform GET request to /callable/users/1
-		MvcResult mvcResult = mockMvc.perform(get(endpoint + "/1")).andExpect(request().asyncStarted()).andReturn();
+		// Dispatch async result
+		mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch(mvcResult))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(content().string(containsString("Alice")));
 
-		// Step 2: dispatch async result
-		mvcResult = mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk()).andReturn();
+		// Get async result as JSON string
+		objResponse = mvcResult.getAsyncResult(2000);
+		assertThat(objResponse, notNullValue());
 
-		// Step 3: get async result object
-		Object objResponse = mvcResult.getAsyncResult();
-		assertThat(objResponse, is(notNullValue()));
-
-		// Step 4: cast to HttpEntity<User>
-		@SuppressWarnings("unchecked")
-		HttpEntity<User> responseEntity = (HttpEntity<User>) objResponse;
+		// Deserialize response body to strongly typed User
+		responseEntity = (ResponseEntity<User>) objResponse;
 		User user = responseEntity.getBody();
-		assertThat(user, is(notNullValue()));
+		String jsonResponse = objectMapper.writeValueAsString(user);
 
-		// Step 5: serialize to JSON string for JsonPath querying
-		String jsonResponse = String.format("{\"id\":%d,\"name\":\"%s\",\"email\":\"%s\"}", user.getId(),
-				user.getName(), user.getEmail());
+		assertThat(user, notNullValue());
+		assertThat(user.getId(), is(1L));
+		assertThat(user.getName(), is("Alice"));
 
-		// Step 6: use JsonPath to verify name
-		ReadContext ctx = JsonPath.parse(jsonResponse);
-		String name = ctx.read("$.name", String.class);
-		assertThat(name, is(notNullValue()));
+		// Use JsonPath to query the JSON
+		String name = JsonPath.read(jsonResponse, "$.name");
+		assertThat(name, is("Alice"));
 	}
 }
