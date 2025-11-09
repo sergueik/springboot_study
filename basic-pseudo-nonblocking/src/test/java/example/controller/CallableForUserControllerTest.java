@@ -32,18 +32,22 @@ class CallableForUserControllerTest {
 	private CallableForUserController controller;
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
-	ResponseEntity<User> responseEntity = null;
+	private ResponseEntity<User> responseEntity = null;
+	private String jsonResponse = null;
 	private Object objResponse;
-
+	private User user = null;
+	private String name = null;
+	
 	@BeforeEach
 	void setup() {
 		// Ensure user 1 exists before GET
-		controller.init(); // must add User(1L, "Alice", "alice@example.com")
+		controller.init();
 	}
 
+	@SuppressWarnings("unchecked")
 	@DisplayName("GET /callable/users/1 returns User")
 	@Test
-	void testGetUserCallable() throws Exception {
+	void test1() throws Exception {
 		// Perform GET /callable/users/1
 		MvcResult mvcResult = mockMvc.perform(get("/callable/users/1").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(request().asyncStarted()).andReturn();
@@ -57,17 +61,21 @@ class CallableForUserControllerTest {
 		objResponse = mvcResult.getAsyncResult(2000);
 		assertThat(objResponse, notNullValue());
 
+		// NOTE:
+		// mvcResult.getAsyncResult().toString();
+		// <200 OK OK,example.model.User@4a864d4d,[]>
+		// System.err.println("objResponse: " + mvcResult.getAsyncResult().toString());
 		// Deserialize response body to strongly typed User
 		responseEntity = (ResponseEntity<User>) objResponse;
-		User user = responseEntity.getBody();
-		String jsonResponse = objectMapper.writeValueAsString(user);
+		user = responseEntity.getBody();
 
 		assertThat(user, notNullValue());
 		assertThat(user.getId(), is(1L));
 		assertThat(user.getName(), is("Alice"));
 
 		// Use JsonPath to query the JSON
-		String name = JsonPath.read(jsonResponse, "$.name");
+		jsonResponse = objectMapper.writeValueAsString(user);
+		name = JsonPath.read(jsonResponse, "$.name");
 		assertThat(name, is("Alice"));
 	}
 }

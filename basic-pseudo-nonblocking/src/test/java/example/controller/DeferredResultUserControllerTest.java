@@ -57,16 +57,20 @@ public class DeferredResultUserControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
-	
+
 	private static String endpoint = "/deferred/users";
+
 	private MvcResult mvcResult = null;
 	private ObjectMapper objectMapper = new ObjectMapper();
 	private String jsonResponse = null;
 	private JsonNode jsonNode;
 	private User user;
-	ResponseEntity<User> responseEntity = null;
+	private ResponseEntity<User> responseEntity = null;
 	private Object objResponse;
 	private Set<String> users = new HashSet<>();
+
+	private Gson gson;
+
 	private Long id = 0L;
 	private String name = null;
 	private String email = null;
@@ -76,9 +80,10 @@ public class DeferredResultUserControllerTest {
 		// optional: mock services if needed
 	}
 
-	@DisplayName("GetUser with valid ID Deferred Success")
+	@SuppressWarnings("unchecked")
+	@DisplayName("GET /deferred/users valid ID Deferred Success, verified via jsonpath")
 	@Test
-	void test10() throws Exception {
+	void test1() throws Exception {
 		// Step 1: call GET /users/{id} with valid ID
 		mvcResult = mockMvc.perform(get(endpoint + "/1")).andExpect(request().asyncStarted()).andReturn();
 
@@ -102,34 +107,36 @@ public class DeferredResultUserControllerTest {
 		jsonNode = objectMapper.readTree(jsonResponse);
 
 		assertThat(jsonNode.get("id").asLong(), is(1L));
-		assertThat(jsonNode.get("name").asText(), is(notNullValue()));
+		assertThat(jsonNode.get("name").asText(), notNullValue());
 		assertThat(jsonNode.get("email").asText(), containsString("@"));
 
 		// use JsonPath for path-based assertions
-		String email = JsonPath.read(jsonResponse, "$.email");
+		email = JsonPath.read(jsonResponse, "$.email");
 		assertThat(email, containsString("@"));
 
 		// Assert that only id, name, email exist
 
 		// Get the field names
 		java.util.Iterator<String> fieldsIterator = jsonNode.fieldNames();
-		List<String> fieldNames = new ArrayList<>();
+		var fieldNames = new ArrayList<>();
 		fieldsIterator.forEachRemaining(fieldNames::add);
 		assertThat(fieldNames, containsInAnyOrder("id", "name", "email"));
 		assertThat(fieldNames.size(), is(3)); // exactly three fields
 
 		// Optional: extract all top-level keys
+		// NOTE: cannot use var
 		Set<String> keys = JsonPath.read(jsonResponse, "$.keys()");
-		assertThat(keys, not(hasItem("unexpectedField"))); // ensure unwanted field is not present
+		assertThat(keys, not(hasItem("unwanted field"))); // ensure unwanted field is not present
 		assertThat(keys, hasItem("id"));
 		assertThat(keys, hasItem("name"));
 		assertThat(keys, hasItem("email"));
 
 	}
 
-	@DisplayName("GetUser Deferred Success")
+	@SuppressWarnings("unchecked")
+	@DisplayName("GET /deferred/users valid ID Deferred User deserialized")
 	@Test
-	void test12() throws Exception {
+	void test2() throws Exception {
 		// Step 1: call GET /users/{id} with valid ID
 		mvcResult = mockMvc.perform(get(endpoint + "/1")).andExpect(request().asyncStarted()).andReturn();
 
@@ -139,7 +146,7 @@ public class DeferredResultUserControllerTest {
 
 		// examine async result object
 		objResponse = mvcResult.getAsyncResult();
-		assertThat(objResponse, is(notNullValue()));
+		assertThat(objResponse, notNullValue());
 		// deserialize to model type
 
 		responseEntity = (ResponseEntity<User>) objResponse;
@@ -152,16 +159,17 @@ public class DeferredResultUserControllerTest {
 		user = objectMapper.readValue(jsonResponse, User.class);
 
 		// Step 5: assertions
-		assertThat(user, is(notNullValue()));
+		assertThat(user, notNullValue());
 		assertThat(user.getId(), is(1L));
 		assertThat(user.getName(), notNullValue());
 		assertThat(user.getEmail(), containsString("@"));
 
 	}
 
-	@DisplayName("GetUser Deferred Success - Strong Type w/o Jackson")
+	@SuppressWarnings("unchecked")
+	@DisplayName("GET /deferred/users valid ID reconstructing User")
 	@Test
-	void test13() throws Exception {
+	void test3() throws Exception {
 		// Step 1: call GET /users/{id} with valid ID
 		mvcResult = mockMvc.perform(get(endpoint + "/1")).andExpect(request().asyncStarted()).andReturn();
 
@@ -171,7 +179,7 @@ public class DeferredResultUserControllerTest {
 
 		// Step 3: examine async result object
 		objResponse = mvcResult.getAsyncResult();
-		assertThat(objResponse, is(notNullValue()));
+		assertThat(objResponse, notNullValue());
 
 		responseEntity = (ResponseEntity<User>) objResponse;
 		user = responseEntity.getBody();
@@ -210,44 +218,29 @@ public class DeferredResultUserControllerTest {
 		assertThat(newUser.getEmail(), containsString("@"));
 	}
 
-	private Gson gson;
-
-	@DisplayName("Deserialize GET /deferred/users/1 via Gson")
+	@DisplayName("GET /deferred/users invalid ID bad request")
 	@Test
-	void testGsonDeserialize() throws Exception {
-		MvcResult mvcResult = mockMvc.perform(get(endpoint + "/1")).andExpect(request().asyncStarted()).andReturn();
+	void test4() throws Exception {
+		// Step 1: call GET /users/{id} with invalid ID
+		mvcResult = mockMvc.perform(get(endpoint + "/0")).andExpect(request().asyncStarted()).andReturn();
 
-		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk());
-		objResponse = mvcResult.getAsyncResult();
-		responseEntity = (ResponseEntity<User>) objResponse;
-		user = responseEntity.getBody();
-
-		// jsonResponse = mvcResult.getAsyncResult().toString();
-		jsonResponse = objectMapper.writeValueAsString(user);
-
-		gson = new Gson();
-
-		// correct class
-		user = gson.fromJson(jsonResponse, User.class);
-		assertThat(user.getId(), is(1L));
-		assertThat(user.getName(), notNullValue());
-		assertThat(user.getEmail(), containsString("@"));
-
-		// attempt de-serialization into a mismatched class
-		class Foo {
-			public int bar;
-		}
-		try {
-			Foo foo = gson.fromJson(jsonResponse, Foo.class);
-		} catch (JsonSyntaxException e) {
-			System.err.println("Gson failed as expected: " + e.getMessage());
-			assertThat(e, notNullValue());
-		}
+		// Step 2: async dispatch
+		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isBadRequest());
 	}
-
-	@DisplayName("testPostUserDeferredSuccess")
+	
+	@DisplayName("GET /deferred/users invalid ID not found")
 	@Test
-	void test3() throws Exception {
+	void test5() throws Exception {
+		// Step 1: call GET /users/{id} with invalid ID
+		mvcResult = mockMvc.perform(get(endpoint + "/999")).andExpect(request().asyncStarted()).andReturn();
+
+		// Step 2: async dispatch
+		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isNotFound());
+	}
+	
+	@DisplayName("POST /deferred/users")
+	@Test
+	void test6() throws Exception {
 		// Step 1: POST /users with valid payload
 		String jsonPayload = "{\"name\":\"John Doe\", \"email\":\"john@example.com\"}";
 
@@ -264,9 +257,10 @@ public class DeferredResultUserControllerTest {
 	}
 
 	// @Disabled
-	@DisplayName("testGetAllUsersDeferredCollection")
+	@SuppressWarnings("unchecked")
+	@DisplayName("Get /users DeferredCollection")
 	@Test
-	void test4() throws Exception {
+	void test7() throws Exception {
 
 		for (String jsonPayload : Arrays.asList(new String[] { "{\"name\":\"Alice\", \"email\":\"a@example.com\"}",
 				"{\"name\":\"Bob\", \"email\":\"b@example.com\"}",
@@ -278,7 +272,7 @@ public class DeferredResultUserControllerTest {
 		}
 		// GET /users (returns collection)
 		mvcResult = mockMvc.perform(get(endpoint)).andExpect(request().asyncStarted()).andReturn();
-		// NOTE: expectation to receive multiple users is unfinished
+
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
 				.andExpect(content().string(containsString("Alice"))).andExpect(content().string(containsString("Bob")))
 				.andExpect(content().string(containsString("Charlie")));
@@ -293,16 +287,51 @@ public class DeferredResultUserControllerTest {
 		assertThat(users, hasItems("Alice", "Bob", "Charlie"));
 	}
 
-	@DisplayName("GetUser Method Not Allowed for invalid verb (POST)")
+	@SuppressWarnings({ "unchecked", "unused" })
+	@DisplayName("Deserialize response via Gson")
 	@Test
-	void test20() throws Exception {
+	void test8() throws Exception {
+		MvcResult mvcResult = mockMvc.perform(get(endpoint + "/1")).andExpect(request().asyncStarted()).andReturn();
+
+		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk());
+		objResponse = mvcResult.getAsyncResult();
+		responseEntity = (ResponseEntity<User>) objResponse;
+		user = responseEntity.getBody();
+
+		// NOTE:
+		// mvcResult.getAsyncResult().toString();
+		// <200 OK OK,example.model.User@5600a5da,[]>
+		jsonResponse = objectMapper.writeValueAsString(user);
+
+		gson = new Gson();
+
+		user = gson.fromJson(jsonResponse, User.class);
+		assertThat(user.getId(), is(1L));
+		assertThat(user.getName(), notNullValue());
+		assertThat(user.getEmail(), containsString("@"));
+
+		// attempt de-serialization into a mismatched class
+		class Other {
+			public int bar;
+		}
+		try {
+			Other foo = gson.fromJson(jsonResponse, Other.class);
+		} catch (JsonSyntaxException e) {
+			System.err.println("Gson failed as expected: " + e.getMessage());
+			assertThat(e, notNullValue());
+		}
+	}
+
+	@DisplayName("Method Not Allowed for invalid verb (POST)")
+	@Test
+	void test9() throws Exception {
 		mockMvc.perform(post(endpoint + "/1").contentType("application/json")).andExpect(status().isMethodNotAllowed());
 	}
 
-	@DisplayName("GetUser Method Not Allowed for invalid verb (POST)")
+	@DisplayName("Unsupported Media Type for invalid media type")
 	@Test
-	void test21() throws Exception {
-		mockMvc.perform(post(endpoint)).andExpect(status().isUnsupportedMediaType());
+	void test10() throws Exception {
+		mockMvc.perform(post(endpoint).contentType("text/plain")).andExpect(status().isUnsupportedMediaType());
 	}
-	
+
 }
