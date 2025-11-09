@@ -38,7 +38,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Disabled;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -48,15 +51,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 
 import example.model.User;
+import example.service.UserService;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-@WebMvcTest(DeferredResultUserController.class)
+//  @WebMvcTest(DeferredResultUserController.class)
+//	Only the web layer (controllers, filters, advice)	
+// must @MockBean any dependent services, repositories, etc. because they are not loaded automatically
+
+
+@SpringBootTest
+// Loads the entire Spring context
+@AutoConfigureMockMvc
 public class DeferredResultUserControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
+
+	// @MockBean
+	// UserService userService;
 
 	private static String endpoint = "/deferred/users";
 
@@ -78,6 +92,8 @@ public class DeferredResultUserControllerTest {
 	@BeforeEach
 	void setup() {
 		// optional: mock services if needed
+		// when(userService.getUser(anyLong())).thenThrow(new RuntimeException("test
+		// failure"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -227,7 +243,7 @@ public class DeferredResultUserControllerTest {
 		// Step 2: async dispatch
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isBadRequest());
 	}
-	
+
 	@DisplayName("GET /deferred/users invalid ID not found")
 	@Test
 	void test5() throws Exception {
@@ -237,7 +253,7 @@ public class DeferredResultUserControllerTest {
 		// Step 2: async dispatch
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isNotFound());
 	}
-	
+
 	@DisplayName("POST /deferred/users")
 	@Test
 	void test6() throws Exception {
@@ -258,7 +274,7 @@ public class DeferredResultUserControllerTest {
 
 	// @Disabled
 	@SuppressWarnings("unchecked")
-	@DisplayName("Get /users DeferredCollection")
+	@DisplayName("Get /users")
 	@Test
 	void test7() throws Exception {
 

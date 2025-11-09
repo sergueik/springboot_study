@@ -7,7 +7,7 @@ package example.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 
@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.lang.Runnable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,12 +37,20 @@ import example.service.UserService;
 @RequestMapping("/deferred/users")
 public class DeferredResultUserController {
 
+	private final UserService userService;
+
+    @Autowired
+    public DeferredResultUserController(UserService userService) {
+        this.userService = userService;
+    }
+
 	private final Map<Long, User> users = new ConcurrentHashMap<>();
 
 	@PostConstruct
 	public void init() {
 		// Add a default user after bean initialization
 		users.put(1L, new User(1L, "Alice", "alice@example.com"));
+		userService.createUser(new User(1L, "Alice", "alice@example.com"));
 	}
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -49,7 +59,8 @@ public class DeferredResultUserController {
 
 		Runnable producer = () -> {
 			try {
-				Collection<User> allUsers = users.values();
+				// Collection<User> allUsers = users.values();
+				List<User>allUsers = userService.getAllUsers();	
 				result.setResult(ResponseEntity.ok(allUsers));
 			} catch (Exception ex) {
 				result.setResult(ResponseEntity.status(HttpStatus.METHOD_FAILURE).build());
@@ -74,12 +85,12 @@ public class DeferredResultUserController {
 		Runnable producer = () -> {
 			try {
 
-				User user = users.get(id);
-
-				if (user == null) {
+				// User user = users.get(id);
+				Optional<User> user = userService.getUser(id);
+				if (user.isEmpty()) {
 					result.setResult(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 				} else {
-					result.setResult(ResponseEntity.status(HttpStatus.OK).body(user));
+					result.setResult(ResponseEntity.status(HttpStatus.OK).body(user.get()));
 				}
 
 			} catch (Exception ex) {
@@ -102,8 +113,8 @@ public class DeferredResultUserController {
 				long newId = users.size() + 1L;
 				user.setId(newId);
 			}
-			users.put(user.getId(), user);
-
+			// users.put(user.getId(), user);
+			userService.createUser(user);
 			return ResponseEntity.status(HttpStatus.CREATED).body(user);
 		};
 		return producer;
