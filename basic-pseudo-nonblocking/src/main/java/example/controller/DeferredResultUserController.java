@@ -44,12 +44,12 @@ public class DeferredResultUserController {
         this.userService = userService;
     }
 
-	private final Map<Long, User> users = new ConcurrentHashMap<>();
+	// private final Map<Long, User> users = new ConcurrentHashMap<>();
 
 	@PostConstruct
 	public void init() {
 		// Add a default user after bean initialization
-		users.put(1L, new User(1L, "Alice", "alice@example.com"));
+		// users.put(1L, new User(1L, "Alice", "alice@example.com"));
 		userService.createUser(new User(1L, "Alice", "alice@example.com"));
 	}
 
@@ -109,10 +109,12 @@ public class DeferredResultUserController {
 		Callable<HttpEntity<User>> producer = () -> {
 
 			// assign an ID if missing
+			/*
 			if (user.getId() == null || user.getId() == 0L) {
 				long newId = users.size() + 1L;
 				user.setId(newId);
 			}
+			*/
 			// users.put(user.getId(), user);
 			userService.createUser(user);
 			return ResponseEntity.status(HttpStatus.CREATED).body(user);
