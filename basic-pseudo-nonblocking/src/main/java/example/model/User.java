@@ -1,8 +1,17 @@
 package example.model;
+/**
+ * Copyright 2025 Serguei Kouzmine
+ */
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 public class User {
+	
     private Long id;
+    @NotBlank
     private String name;
+    @Email
     private String email;
 
     public User() {}
