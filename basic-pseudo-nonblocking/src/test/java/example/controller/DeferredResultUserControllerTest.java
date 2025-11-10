@@ -339,7 +339,13 @@ public class DeferredResultUserControllerTest {
 	@DisplayName("Unsupported Media Type for invalid media type")
 	@Test
 	void test10() throws Exception {
-		mockMvc.perform(post(endpoint).contentType("text/plain")).andExpect(status().isUnsupportedMediaType());
+		mockMvc.perform(post(endpoint ).contentType("text/plain")).andExpect(status().isUnsupportedMediaType());
+	}
+
+	@DisplayName("Bad Request for invalid path variable")
+	@Test
+	void test11() throws Exception {
+		mockMvc.perform(get(endpoint + "/z")).andExpect(status().isBadRequest());
 	}
 
 }
