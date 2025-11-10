@@ -6,6 +6,7 @@ package example.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
@@ -19,8 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.lang.Runnable;
@@ -30,6 +32,7 @@ import javax.annotation.PostConstruct;
 
 import example.model.User;
 import example.service.UserService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/deferred/users")
@@ -101,9 +104,27 @@ public class DeferredResultUserController {
 
 	@PostMapping(value = "", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
-	public Callable<HttpEntity<User>> addUser(@RequestBody User user) {
-		Callable<HttpEntity<User>> producer = () -> {
+	public Callable<HttpEntity<User>> addUser(@Valid @RequestBody User user, BindingResult bindingResult) {
 
+		// fix the race between validation vs async lambda pitfall in Spring MVC.
+		// jakarta @Valid annotation triggers validation before the controller method is
+		// entered.
+		// However, returning a Callable defers execution of the lambda.
+		// If the lambda references or constructs objects, validation exceptions may not
+		// propagate to RestControllerAdvice.
+		// Using BindingResult inside the lambda is one way to manually enforce
+		// validation checks.
+		// Failing to do so allows invalid User objects to be accepted despite @Valid
+		Callable<HttpEntity<User>> producer = () -> {
+			if (bindingResult.hasErrors()) {
+				// wrap errors inside the User object itself
+				String nameErrors = bindingResult.getFieldErrors("name").stream().map(e -> e.getDefaultMessage())
+						.findFirst().orElse(null);
+				String emailErrors = bindingResult.getFieldErrors("email").stream().map(e -> e.getDefaultMessage())
+						.findFirst().orElse(null);
+				return ResponseEntity.badRequest()
+						.body(new User(999L, nameErrors + " " + emailErrors, "dummy@example.com"));
+			}
 			userService.createUser(user);
 			return ResponseEntity.status(HttpStatus.CREATED).body(user);
 		};
