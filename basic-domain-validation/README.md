@@ -62,3 +62,82 @@ This project (`basic-domain-validation`) demonstrates domain-level validation in
   - Demonstrate migration differences and how DeferredResult / Callable endpoints behave under SB 3.x
   - Compare test results with 2.7.x for educational purp
 
+### basic-domain-validation
+
+Minimal Spring Boot 2.7.x / 3.x project to demonstrate model-level @Valid validation for blocking, Callable, and DeferredResult endpoints.
+
+#### Project Layout
+```
+./src/main/java/example/Application.java
+./src/main/java/example/controller/UserController.java
+./src/main/java/example/model/User.java
+./src/test/java/example/controller/UserControllerTest.java
+```
+#### Dependencies
+
+__Java 11__ (SB __2.7.x__) or __Java 17__ (SB __3.x__)
+
+Spring Boot starter-web
+
+Spring Boot starter-validation
+
+Spring Boot starter-test (JUnit 5)
+
+Maven 3.8.x+ (SB 3.x works; Gradle not required)
+
+#### Key Points
+##### Validation Behavior
+
+`@Valid` validates request payloads before controller execution.
+
+In SB 3.x, invalid payloads short-circuit async endpoints (Callable, DeferredResult) — 400 returned immediately.
+
+For valid payloads, async endpoints behave normally; use asyncDispatch() in tests.
+
+#### Testing
+
+Blocking endpoint: single MockMvc call.
+
+Callable / DeferredResult:
+
+Valid payload → 3-step async test (start async, asyncDispatch, assert)
+
+Invalid payload → may never start async; single call sufficient to assert 400
+
+Example:
+```
+mockMvc.perform(post("/users/deferred")
+.contentType(MediaType.APPLICATION_JSON)
+.content(objectMapper.writeValueAsString(validUser)))
+.andExpect(request().asyncStarted())
+.andReturn();
+mockMvc.perform(asyncDispatch(mvcResult))
+.andExpect(status().isOk());
+```
+Switching Java Versions
+
+Java 11 → SB 2.7.x
+
+Java 17 → SB 3.x
+
+Toggle via batch file or environment variables:
+```sh
+set JAVA_VERSION=17.0.12
+call init-tools.bat
+mvn clean spring-boot:run
+```
+Maven 3.8.x+ is sufficient for SB 3.x; no need for Gradle.
+
+#### Running Tests
+```sh
+mvn clean test
+```
+Tests include blocking, Callable, and DeferredResult endpoints.
+
+Invalid payloads are now validated synchronously in SB 3.x, so tests pass with a single MockMvc call.
+
+#### Notes
+
+Focused on minimal dependencies to avoid dependency hell with EL, validation, etc.
+
+Useful as a reference for @Valid + async endpoint behavior across SB versions.
