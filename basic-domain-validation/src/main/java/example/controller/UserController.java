@@ -6,7 +6,6 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.concurrent.Callable;
 
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -16,19 +15,16 @@ import example.model.User;
 @RequestMapping("/users")
 public class UserController {
 
-	// Blocking
 	@PostMapping("/blocking")
 	public ResponseEntity<String> createBlocking(@Valid @RequestBody User user) {
 		return ResponseEntity.ok("Created user: " + user.getName());
 	}
 
-	// Callable async
 	@PostMapping("/callable")
 	public Callable<ResponseEntity<String>> createCallable(@Valid @RequestBody User user) {
 		return () -> ResponseEntity.ok("Created user: " + user.getName());
 	}
 
-	// DeferredResult async
 	@PostMapping("/deferred")
 	public DeferredResult<ResponseEntity<String>> createDeferred(@Valid @RequestBody User user) {
 		DeferredResult<ResponseEntity<String>> result = new DeferredResult<>();

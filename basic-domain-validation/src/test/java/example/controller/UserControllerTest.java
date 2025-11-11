@@ -1,6 +1,6 @@
 package example.controller;
 
-
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
-
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -30,78 +29,80 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
+	@Autowired
+	private ObjectMapper objectMapper;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-    
-    @Test
-    void testBlockingValidationFail() throws Exception {
-        String invalidUser = "{\"name\":\"\",\"email\":\"invalid-email\"}";
-        mockMvc.perform(post("/users/blocking")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidUser))
-                .andExpect(status().isBadRequest());
-    }
+	private final String invalidUserJSON = "{\"name\":\"\",\"email\":\"invalid-email\"}";
+	// NOTE: will see warnings:
+	// HandlerExceptionResolver : Resolved
+	// [org.springframework.http.converter.HttpMessageNotReadableException:
+	// JSON parse error: Cannot construct instance of `example.model.User`
+	// (although at least one Creator exists): no String-argument
+	// constructor/factory method to deserialize from String value
+	// ('{"name":"","email":"invalid-email"}')]
+	private final User validUser = new User("John Doe", "john@example.com");
 
-    @Test
-    void testCallableValidationFail() throws Exception {
-        String invalidUser = "{\"name\":\"\",\"email\":\"invalid-email\"}";
-        mockMvc.perform(post("/users/callable")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidUser))
-                .andExpect(status().isBadRequest());
-    }
+	@DisplayName("Blocking: Invalid User")
+	@Test
+	void test1() throws Exception {
+		mockMvc.perform(post("/users/blocking").contentType(MediaType.APPLICATION_JSON).content(invalidUserJSON))
+				.andExpect(status().isBadRequest());
+	}
 
-    @Test
-    void testDeferredValidationFail() throws Exception {
-        String invalidUser = "{\"name\":\"\",\"email\":\"invalid-email\"}";
-        mockMvc.perform(post("/users/deferred")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidUser))
-                .andExpect(status().isBadRequest());
-    }
-    @Test
-    void testDeferredResultValidUser() throws Exception {
-        User validUser = new User("John Doe", "john@example.com");
+	@DisplayName("Callable: Invalid User")
+	@Test
+	void test2() throws Exception {
+		mockMvc.perform(post("/users/callable").contentType(MediaType.APPLICATION_JSON).content(invalidUserJSON))
+				.andExpect(status().isBadRequest());
+	}
 
-        MvcResult mvcResult = mockMvc.perform(post("/users/deferred")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(validUser)))
-            .andExpect(request().asyncStarted())
-            .andReturn();
+	@DisplayName("Callable: Valid User")
+	@Test
+	void test3() throws Exception {
+		mockMvc.perform(post("/users/callable").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(validUser))).andExpect(status().isOk());
+	}
 
-        // Dispatch async and assert success
-        mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Created user: John Doe"));
-    }
+	@DisplayName("Deferred Result: Invalid User")
+	@Test
+	void test4() throws Exception {
+		mockMvc.perform(post("/users/deferred").contentType(MediaType.APPLICATION_JSON).content(invalidUserJSON))
+				.andExpect(status().isBadRequest());
+	}
 
-    // ----------------------------
-    // Async test: Invalid User
-    // ----------------------------
-    @Test
-    void testDeferredResultInvalidUser() throws Exception {
-        User invalidUser = new User("", "bad-email"); // invalid name and email
+	@DisplayName("Deferred Result: Valid User")
+	@Test
+	void test5() throws Exception {
 
-        MvcResult mvcResult = mockMvc.perform(post("/users/deferred")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invalidUser)))
-            // In SB 3.x, validation may prevent async from starting
-            .andReturn();
+		MvcResult mvcResult = mockMvc
+				.perform(post("/users/deferred").contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(validUser)))
+				.andExpect(request().asyncStarted()).andReturn();
 
-        // If async never started due to validation, just check 400
-        if (mvcResult.getRequest().isAsyncStarted()) {
-            mockMvc.perform(asyncDispatch(mvcResult))
-                .andExpect(status().isBadRequest());
-        } else {
-            mockMvc.perform(post("/users/deferred")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(invalidUser)))
-                .andExpect(status().isBadRequest());
-        }
-    }
+		// Dispatch async and assert success
+		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk())
+				.andExpect(content().string("Created user: John Doe"));
+	}
+
+	@DisplayName("Deferred Result: Invalid User")
+	@Test
+	void test6() throws Exception {
+
+		MvcResult mvcResult = mockMvc
+				.perform(post("/users/deferred").contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(invalidUserJSON)))
+				// In SB 3.x, validation may prevent async from starting
+				.andReturn();
+
+		// If async never started due to validation, just check 400
+		if (mvcResult.getRequest().isAsyncStarted()) {
+			mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isBadRequest());
+		} else {
+			mockMvc.perform(post("/users/deferred").contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(invalidUserJSON))).andExpect(status().isBadRequest());
+		}
+	}
 }
-
