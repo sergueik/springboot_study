@@ -4,12 +4,11 @@ package example.model;
  * Copyright 2025 Serguei Kouzmine
  */
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 public class User {
 
-	private Long id;
 	@NotBlank(message = "Name is required")
 	private String name;
 
@@ -20,18 +19,9 @@ public class User {
 	public User() {
 	}
 
-	public User(Long id, String name, String email) {
-		this.id = id;
+	public User(String name, String email) {
 		this.name = name;
 		this.email = email;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public String getName() {
