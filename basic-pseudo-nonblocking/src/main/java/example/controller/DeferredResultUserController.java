@@ -135,4 +135,9 @@ public class DeferredResultUserController {
 		});
 		return result;
 	}
+
+	@PostMapping("justvalidation")
+	public ResponseEntity<String> validationOnly(@Valid @RequestBody User user) {
+		return ResponseEntity.ok("OK");
+	}
 }
