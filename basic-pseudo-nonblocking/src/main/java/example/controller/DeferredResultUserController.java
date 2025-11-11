@@ -19,6 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import jakarta.validation.Validation;
+import java.util.Set;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +44,11 @@ import jakarta.validation.Valid;
 public class DeferredResultUserController {
 
 	private final UserService userService;
+
+	// @Autowired
+	// private Validator validator;
+
+	private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
 	@Autowired
 	public DeferredResultUserController(UserService userService) {
@@ -104,17 +114,22 @@ public class DeferredResultUserController {
 
 	@PostMapping(value = "", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
-	public DeferredResult<HttpEntity<User>> addUser(@Valid @RequestBody User user, BindingResult bindingResult) {
+	public DeferredResult<HttpEntity<User>> addUser(@RequestBody User user) {
 
-		// fix the race between validation vs async lambda pitfall in Spring MVC.
-		// jakarta @Valid annotation triggers validation before the controller method is
-		// entered.
-		// However, returning a Callable defers execution of the lambda.
-		// If the lambda references or constructs objects, validation exceptions may not
-		// propagate to RestControllerAdvice.
-		// Using BindingResult inside the lambda is one way to manually enforce
-		// validation checks.
-		// Failing to do so allows invalid User objects to be accepted despite @Valid
+		// validate manually
+		Set<ConstraintViolation<User>> violations = validator.validate(user);
+		if (!violations.isEmpty()) {
+			// build error response using User object or custom payload
+			DeferredResult<HttpEntity<User>> errorUser = new DeferredResult<>();
+			String nameErrors = violations.stream().filter(v -> v.getPropertyPath().toString().equals("name"))
+					.map(ConstraintViolation::getMessage).findFirst().orElse(null);
+			String emailErrors = violations.stream().filter(v -> v.getPropertyPath().toString().equals("email"))
+					.map(ConstraintViolation::getMessage).findFirst().orElse(null);
+
+			errorUser.setResult(ResponseEntity.badRequest()
+					.body(new User(999L, nameErrors + " " + emailErrors, "dummy@example.com")));
+			return errorUser;
+		}
 
 		DeferredResult<HttpEntity<User>> result = new DeferredResult<>();
 		commonPool().submit(() -> {
