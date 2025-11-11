@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>pseudo-nonblocking</artifactId>
-  <version>0.16.2-SNAPSHOT</version>
+  <version>0.16.3-SNAPSHOT</version>
   <name>${project.artifactId}</name>
   <parent>
     <groupId>org.springframework.boot</groupId>

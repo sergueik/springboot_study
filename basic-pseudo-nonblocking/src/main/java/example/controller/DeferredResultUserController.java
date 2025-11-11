@@ -117,20 +117,10 @@ public class DeferredResultUserController {
 		// Failing to do so allows invalid User objects to be accepted despite @Valid
 
 		DeferredResult<HttpEntity<User>> result = new DeferredResult<>();
-		Runnable producer = () -> {
-			if (bindingResult.hasErrors()) {
-				// wrap errors inside the User object itself
-				String nameErrors = bindingResult.getFieldErrors("name").stream().map(e -> e.getDefaultMessage())
-						.findFirst().orElse(null);
-				String emailErrors = bindingResult.getFieldErrors("email").stream().map(e -> e.getDefaultMessage())
-						.findFirst().orElse(null);
-				result.setResult(ResponseEntity.badRequest()
-						.body(new User(999L, nameErrors + " " + emailErrors, "dummy@example.com")));
-			}
+		commonPool().submit(() -> {
 			userService.createUser(user);
 			result.setResult(ResponseEntity.status(HttpStatus.OK).body(user));
-		};
-		commonPool().submit(producer);
+		});
 		return result;
 	}
 }
