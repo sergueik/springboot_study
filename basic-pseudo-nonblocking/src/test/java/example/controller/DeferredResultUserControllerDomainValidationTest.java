@@ -23,6 +23,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import jakarta.validation.Validation;
+
 // note complex syntax to ensure bean creation
 // instruct Spring Boot to load only the web layer
 // and explicitly to a specific controller
@@ -90,4 +94,14 @@ public class DeferredResultUserControllerDomainValidationTest {
 		mockMvc.perform(post(endpoint + "/justvalidation").contentType("application/json")
 				.content("{\"name\":\"\", \"email\":\"notemail\"}")).andExpect(status().isBadRequest());
 	}
+
+	@Autowired
+	private Validator validator;
+
+	@DisplayName("Validator Presence")
+	@Test
+	void test4() {
+		System.out.println("Validator class = " + validator.getClass().getName());
+	}
+
 }

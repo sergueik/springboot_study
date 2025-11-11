@@ -140,4 +140,5 @@ public class DeferredResultUserController {
 	public ResponseEntity<String> validationOnly(@Valid @RequestBody User user) {
 		return ResponseEntity.ok("OK");
 	}
+	
 }
