@@ -35,7 +35,7 @@ public class UserControllerTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private final String invalidUserJSON = "{\"name\":\"\",\"email\":\"invalid-email\"}";
+	private final String invalidUserJSON = "{\"name\": \"\", \"email\": \"invalid email\",   \"age\": null,  \"phone\": \"1234\"}";
 	// NOTE: will see warnings:
 	// HandlerExceptionResolver : Resolved
 	// [org.springframework.http.converter.HttpMessageNotReadableException:
@@ -43,7 +43,7 @@ public class UserControllerTest {
 	// (although at least one Creator exists): no String-argument
 	// constructor/factory method to deserialize from String value
 	// ('{"name":"","email":"invalid-email"}')]
-	private final User validUser = new User("John Doe", "john@example.com");
+	private final User validUser = new User("John Doe", "john@example.com", 30, "1234567890");
 
 	@DisplayName("Blocking: Invalid User")
 	@Test
