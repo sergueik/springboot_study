@@ -45,9 +45,6 @@ public class DeferredResultUserController {
 
 	private final UserService userService;
 
-	// @Autowired
-	// private Validator validator;
-
 	private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
 	@Autowired
@@ -134,7 +131,7 @@ public class DeferredResultUserController {
 		DeferredResult<HttpEntity<User>> result = new DeferredResult<>();
 		commonPool().submit(() -> {
 			userService.createUser(user);
-			result.setResult(ResponseEntity.status(HttpStatus.OK).body(user));
+			result.setResult(ResponseEntity.status(HttpStatus.CREATED).body(user));
 		});
 		return result;
 	}
