@@ -104,7 +104,7 @@ public class DeferredResultUserController {
 
 	@PostMapping(value = "", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = {
 			MediaType.APPLICATION_JSON_VALUE })
-	public Callable<HttpEntity<User>> addUser(@Valid @RequestBody User user, BindingResult bindingResult) {
+	public DeferredResult<HttpEntity<User>> addUser(@Valid @RequestBody User user, BindingResult bindingResult) {
 
 		// fix the race between validation vs async lambda pitfall in Spring MVC.
 		// jakarta @Valid annotation triggers validation before the controller method is
@@ -115,19 +115,22 @@ public class DeferredResultUserController {
 		// Using BindingResult inside the lambda is one way to manually enforce
 		// validation checks.
 		// Failing to do so allows invalid User objects to be accepted despite @Valid
-		Callable<HttpEntity<User>> producer = () -> {
+
+		DeferredResult<HttpEntity<User>> result = new DeferredResult<>();
+		Runnable producer = () -> {
 			if (bindingResult.hasErrors()) {
 				// wrap errors inside the User object itself
 				String nameErrors = bindingResult.getFieldErrors("name").stream().map(e -> e.getDefaultMessage())
 						.findFirst().orElse(null);
 				String emailErrors = bindingResult.getFieldErrors("email").stream().map(e -> e.getDefaultMessage())
 						.findFirst().orElse(null);
-				return ResponseEntity.badRequest()
-						.body(new User(999L, nameErrors + " " + emailErrors, "dummy@example.com"));
+				result.setResult(ResponseEntity.badRequest()
+						.body(new User(999L, nameErrors + " " + emailErrors, "dummy@example.com")));
 			}
 			userService.createUser(user);
-			return ResponseEntity.status(HttpStatus.CREATED).body(user);
+			result.setResult(ResponseEntity.status(HttpStatus.OK).body(user));
 		};
-		return producer;
+		commonPool().submit(producer);
+		return result;
 	}
 }
