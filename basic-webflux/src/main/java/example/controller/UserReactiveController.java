@@ -23,9 +23,9 @@ public class UserReactiveController {
     public Mono<User> createUser(@Valid @RequestBody User user) {
         return repository.save(user);
     }
-
-    @GetMapping("/{email}")
-    public Mono<User> getUser(@PathVariable String email) {
+    @GetMapping("/{email:.+}")
+    // @GetMapping("/{email}")
+    public Mono<User> getUser(@PathVariable("email") String email) {
         return repository.findByEmail(email);
     }
 

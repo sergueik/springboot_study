@@ -24,7 +24,10 @@ class UserReactiveControllerTest {
     void testCreateUser() {
         User user = new User("John Doe", "john@example.com");
 
-        when(repository.save(user)).thenReturn(Mono.just(user));
+	// fix thr test Mockito argument evaluation - equality is too strict
+        // when(repository.save(user)).thenReturn(Mono.just(user));
+        when(repository.save(org.mockito.ArgumentMatchers.any(User.class)))
+        .thenReturn(Mono.just(user));
 
         client.post().uri("/users/reactive")
                 .bodyValue(user)
