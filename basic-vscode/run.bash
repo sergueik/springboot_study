@@ -51,14 +51,12 @@ docker build -t $MODULENAME $SCRIPTPATH/docker
 
 echo "# allow xHost"
 xhost +
-
+# NOTE: may need also run 
+# xhost +local:docker
 
 #make and run container
 echo "make container"
 echo "IMPORTANT: DONT close this terminal or vscode will close"
-# NOTE: temporary
-# MODULENAME=code.noble-min
-# DISPLAY=192.168.12.151:0.0
 
 cat <<EOF
 docker run --name $MODULENAME \

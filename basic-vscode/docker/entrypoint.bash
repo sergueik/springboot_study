@@ -17,4 +17,6 @@ deno --version
 echo "# start vscode as $USER"
 whoami
 echo "# start vscode"
-su $USER -c '/usr/bin/code --verbose --user-data-dir /userdata'
+# su $USER -c '/usr/bin/code --verbose --user-data-dir /userdata'
+su $USER -c '/usr/local/bin/code --verbose --user-data-dir /userdata'
+
