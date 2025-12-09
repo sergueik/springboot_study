@@ -1,7 +1,7 @@
 package ge.vakho.native_messaging.protocol;
 
-import jakarta.xml.bind.annotation.XmlElement;
-// import javax.xml.bind.annotation.XmlElement;
+// import jakarta.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElement;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
