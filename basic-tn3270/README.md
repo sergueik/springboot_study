@@ -168,8 +168,21 @@ A few observations from a 25-year WF retrospective:
 
 > In short: WF may be a quarter-century old, but with UiPath it finds a practical second life — especially for terminal automation, TN3270 emulation, and green-screen workflows.
 
+### Note
 
-### See Also
+Yes, there are CICS emulators, including cicsterm and cicsprnt provided with IBM's CICS Transaction Gateway, and commercial options like the Raincode QIX CICS emulator for modern platforms like .NET and Azure.
+
+Rocket Software (formerly Micro Focus) Enterprise Server: A leading solution in the field that provides a comprehensive environment for compiling and running mainframe COBOL and CICS applications on distributed systems.
+Raincode CICS emulator (Raincode QIX): An emulator specifically designed for the Microsoft .NET and Azure platforms, enabling CICS applications to run in a scalable cloud environment and integrate with C# or VB.NET code.
+IBM z Development and Test Environment (zD&T): A proper, licensed emulator of the entire IBM z/OS mainframe architecture, used for development and testing purposes. A free trial version is sometimes available via the IBM Z trial program.### See Also
+
+Hercules: An open-source, community-driven mainframe emulator that can run older MVS systems (like the TK4- distribution), allowing enthusiasts to learn and explore the mainframe environment for free
+
+The choice of "most popular" often depends on the user's specific goals:
+For enterprise development and migration, commercial products like Rocket Enterprise Server and Raincode QIX are dominant.
+For accessing a running mainframe, IBM PCOMM is a common terminal emulator.
+For learning or personal exploration, the open-source Hercules emulator is a popular free option
+
 
  * [automating Terminals and Mainframes](https://www.uipath.com/kb-articles/automating-terminals-and-mainframes)
  * [guide To Seamless Mainframe Automation](https://www.uipath.com/blog/automation/guide-to-seamless-mainframe-automation)

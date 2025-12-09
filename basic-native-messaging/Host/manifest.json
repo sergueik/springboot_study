@@ -1,0 +1,9 @@
+{
+  "name": "ge.vakho.native_messaging",
+  "description": "Native Messaging Application",
+  "path": "start.bat", // The path can be relative only on Windows OS!
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://knldjmfmopnpolahpmmgbagdohdnhkik/"
+  ]
+}

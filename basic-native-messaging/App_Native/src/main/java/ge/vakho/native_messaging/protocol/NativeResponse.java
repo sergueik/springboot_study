@@ -1,0 +1,22 @@
+package ge.vakho.native_messaging.protocol;
+
+// import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
+
+public class NativeResponse {
+
+	@XmlElement(name = "message")
+	private String message;
+
+	public NativeResponse() {
+		super();
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+}
