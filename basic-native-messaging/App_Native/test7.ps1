@@ -52,6 +52,11 @@ try {
 
     # Sanity check
     if ($respLen -gt 1024*1024) { throw "Response too big ($respLen bytes)" }
+    $body = $responseStreamReader.ReadToEnd()
+    Write-Verbose "Response actual byte length = $([System.Text.Encoding]::UTF8.GetByteCount($body))"
+    $raw = New-Object System.IO.MemoryStream
+$response.GetResponseStream().CopyTo($raw)
+Write-Verbose "Response actual byte length = $($raw.Length)"
 
     $respBytes = New-Object byte[] $respLen
     $offset = 0
