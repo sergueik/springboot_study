@@ -41,7 +41,6 @@ curl -sLko ~/Downloads/Seq-2022.1.7378.msi https://datalust.co/download/begin?ve
 run it an let it start admin panel 
 
 ![seq admin](screenshots/seq-admin.jpg)
-![seq admin](screenshots/seq-admin.jpg)
 
 and launch seq from there
 
@@ -55,7 +54,33 @@ java -jar target\app.jar
 
 ![seq data](screenshots/seq-data.jpg)
 
-NOTE: the error in the app needs resolutin (WIP)
+NOTE: the demo Exception logging in the app needs study (WIP)
+
+![console log](screenshots/console.jpg)
+
+```text
+[Mon Dec 15 10:13:59 EST 2025 Information] In outer operation (1)
+[Mon Dec 15 10:13:59 EST 2025 Information] In inner operation (2)
+[Mon Dec 15 10:13:59 EST 2025 Debug] Running iteration 0 ()
+[Mon Dec 15 10:14:01 EST 2025 Debug] Running iteration 1 ()
+[Mon Dec 15 10:14:03 EST 2025 Debug] Running iteration 2 ()
+[Mon Dec 15 10:14:05 EST 2025 Debug] Running iteration 3 ()
+[Mon Dec 15 10:14:07 EST 2025 Debug] Running iteration 4 ()
+[Mon Dec 15 10:14:09 EST 2025 Debug] Running iteration 5 ()
+[Mon Dec 15 10:14:11 EST 2025 Debug] Running iteration 6 ()
+[Mon Dec 15 10:14:13 EST 2025 Debug] Running iteration 7 ()
+[Mon Dec 15 10:14:15 EST 2025 Debug] Running iteration 8 ()
+[Mon Dec 15 10:14:17 EST 2025 Debug] Running iteration 9 ()
+[Mon Dec 15 10:14:19 EST 2025 Warning] Hello "World" from User { userName: "kouzm" } ()
+[Mon Dec 15 10:14:19 EST 2025 Error] An error occurred ()
+java.lang.Exception: Something went wrong
+java.lang.Exception: Something went wrong
+        at example.JavaConsole.main(JavaConsole.java:44)
+
+
+```
+with older version of `serilogj` the console log was:
+
 ```text
 [Sun Dec 14 21:19:13 EST 2025 Information] In outer operation (1)
 [Sun Dec 14 21:19:13 EST 2025 Information] In inner operation (2)
@@ -99,6 +124,42 @@ Caused by: java.lang.ClassCastException: class [B cannot be cast to class [C ([B
 
 ```
 
+###  Building Driver Locally
+```cmd
+type c:\Users\kouzm\.m2\repository\org\serilogj\serilogj\maven-metadata-local.xml
+```
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.serilogj</groupId>
+  <artifactId>serilogj</artifactId>
+  <versioning>
+    <versions>
+      <version>0.7.0-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20251215132259</lastUpdated>
+  </versioning>
+</metadata>
+
+```
+```sh
+mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout
+```
+```text
+org.serilogj
+```
+```sh
+mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout
+```
+```text
+serilogj
+```
+```sh
+mvn help:evaluate -Dexpression=project.version -q -DforceStdout
+```
+```text
+0.7.0-SNAPSHOT
+```
 ### NOTE 
 
 while in __.Net__  domain [sink collection](https://github.com/serilog/serilog/wiki/Provided-Sinks) there is [ElasticSearch Sink](https://github.com/serilog/serilog-sinks-elasticsearch) (actually more than one attemp existed historically) there is not one in __Java__ domain

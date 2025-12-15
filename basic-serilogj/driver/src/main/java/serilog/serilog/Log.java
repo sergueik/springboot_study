@@ -76,8 +76,7 @@ public class Log {
 	/**
 	 * Create a logger that enriches log events via the provided enrichers.
 	 * 
-	 * @param enrichers
-	 *            Enrichers that apply in the context.
+	 * @param enrichers Enrichers that apply in the context.
 	 * @return A logger that will enrich log events as specified.
 	 */
 	public static ILogger forContext(ILogEventEnricher[] enrichers) {
@@ -101,8 +100,7 @@ public class Log {
 	 * Create a logger that marks log events as being from the specified source
 	 * type.
 	 * 
-	 * @param source
-	 *            Type generating log messages in the context.
+	 * @param source Type generating log messages in the context.
 	 * @return A logger that will enrich log events as specified.
 	 */
 	public static ILogger forContext(Class<?> source) {
@@ -112,8 +110,7 @@ public class Log {
 	/**
 	 * Write an event to the log.
 	 * 
-	 * @param logEvent
-	 *            The event to write.
+	 * @param logEvent The event to write.
 	 */
 	public static void write(LogEvent logEvent) {
 		getLogger().write(logEvent);
@@ -122,12 +119,10 @@ public class Log {
 	/**
 	 * Write a log event with the specified level.
 	 * 
-	 * @param level
-	 *            The level of the event.
-	 * @param messageTemplate
-	 *            Message template describing the event.
-	 * @param propertyValues
-	 *            Objects positionally formatted into the message template.
+	 * @param level           The level of the event.
+	 * @param messageTemplate Message template describing the event.
+	 * @param propertyValues  Objects positionally formatted into the message
+	 *                        template.
 	 */
 	public static void write(LogEventLevel level, String messageTemplate, Object... propertyValues) {
 		getLogger().write(level, messageTemplate, propertyValues);
@@ -136,14 +131,11 @@ public class Log {
 	/**
 	 * Write a log event with the specified level and associated exception.
 	 * 
-	 * @param level
-	 *            The level of the event.
-	 * @param exception
-	 *            Exception related to the event.
-	 * @param messageTemplate
-	 *            Message template describing the event.
-	 * @param propertyValues
-	 *            Objects positionally formatted into the message template.
+	 * @param level           The level of the event.
+	 * @param exception       Exception related to the event.
+	 * @param messageTemplate Message template describing the event.
+	 * @param propertyValues  Objects positionally formatted into the message
+	 *                        template.
 	 */
 	public static void write(LogEventLevel level, Throwable exception, String messageTemplate,
 			Object... propertyValues) {
@@ -151,11 +143,10 @@ public class Log {
 	}
 
 	/**
-	 * Determine if events at the specified level will be passed through to the
-	 * log sinks.
+	 * Determine if events at the specified level will be passed through to the log
+	 * sinks.
 	 * 
-	 * @param level
-	 *            Level to check.
+	 * @param level Level to check.
 	 * @return True if the level is enabled; otherwise, false.
 	 */
 	public static boolean isEnabled(LogEventLevel level) {
@@ -165,12 +156,10 @@ public class Log {
 	/**
 	 * Write a log event with the <see cref="LogEventLevel.Verbose"/> level.
 	 * 
-	 * @param messageTemplate
-	 *            Message template describing the event.
-	 * @param propertyValues
-	 *            Objects positionally formatted into the message template.
-	 *            <example> Log.Verbose("Staring into space, wondering if we're
-	 *            alone."); </example>
+	 * @param messageTemplate Message template describing the event.
+	 * @param propertyValues  Objects positionally formatted into the message
+	 *                        template. <example> Log.Verbose("Staring into space,
+	 *                        wondering if we're alone."); </example>
 	 */
 	public static void verbose(String messageTemplate, Object... propertyValues) {
 		getLogger().verbose(messageTemplate, propertyValues);
@@ -180,14 +169,12 @@ public class Log {
 	 * Write a log event with the <see cref="LogEventLevel.Verbose"/> level and
 	 * associated exception.
 	 * 
-	 * @param exception
-	 *            Exception related to the event.
-	 * @param messageTemplate
-	 *            Message template describing the event.
-	 * @param propertyValues
-	 *            Objects positionally formatted into the message template.
-	 *            <example> Log.Verbose(ex, "Staring into space, wondering where
-	 *            this comet came from."); </example>
+	 * @param exception       Exception related to the event.
+	 * @param messageTemplate Message template describing the event.
+	 * @param propertyValues  Objects positionally formatted into the message
+	 *                        template. <example> Log.Verbose(ex, "Staring into
+	 *                        space, wondering where this comet came from.");
+	 *                        </example>
 	 */
 	public static void verbose(Throwable exception, String messageTemplate, Object... propertyValues) {
 		getLogger().verbose(exception, messageTemplate, propertyValues);
@@ -196,12 +183,10 @@ public class Log {
 	/**
 	 * Write a log event with the <see cref="LogEventLevel.Debug"/> level.
 	 * 
-	 * @param messageTemplate
-	 *            Message template describing the event.
-	 * @param propertyValues
-	 *            Objects positionally formatted into the message template.
-	 *            <example> Log.Debug("Starting up at {StartedAt}.",
-	 *            DateTime.Now); </example>
+	 * @param messageTemplate Message template describing the event.
+	 * @param propertyValues  Objects positionally formatted into the message
+	 *                        template. <example> Log.Debug("Starting up at
+	 *                        {StartedAt}.", DateTime.Now); </example>
 	 */
 	public static void debug(String messageTemplate, Object... propertyValues) {
 		getLogger().debug(messageTemplate, propertyValues);
@@ -211,14 +196,11 @@ public class Log {
 	 * Write a log event with the <see cref="LogEventLevel.Debug"/> level and
 	 * associated exception.
 	 * 
-	 * @param exception
-	 *            Exception related to the event.
-	 * @param messageTemplate
-	 *            Message template describing the event.
-	 * @param propertyValues
-	 *            Objects positionally formatted into the message template.
-	 *            <example> Log.Debug(ex, "Swallowing a mundane exception.");
-	 *            </example>
+	 * @param exception       Exception related to the event.
+	 * @param messageTemplate Message template describing the event.
+	 * @param propertyValues  Objects positionally formatted into the message
+	 *                        template. <example> Log.Debug(ex, "Swallowing a
+	 *                        mundane exception."); </example>
 	 */
 	public static void debug(Throwable exception, String messageTemplate, Object... propertyValues) {
 		getLogger().debug(exception, messageTemplate, propertyValues);
@@ -227,31 +209,26 @@ public class Log {
 	/**
 	 * Write a log event with the <see cref="LogEventLevel.Information"/> level.
 	 * 
-	 * @param messageTemplate
-	 *            Message template describing the event.
-	 * @param propertyValues
-	 *            Objects positionally formatted into the message template.
-	 *            <example> Log.Information("Processed {RecordCount} records in
-	 *            {TimeMS}.", records.Length, sw.ElapsedMilliseconds);
-	 *            </example>
+	 * @param messageTemplate Message template describing the event.
+	 * @param propertyValues  Objects positionally formatted into the message
+	 *                        template. <example> Log.Information("Processed
+	 *                        {RecordCount} records in {TimeMS}.", records.Length,
+	 *                        sw.ElapsedMilliseconds); </example>
 	 */
 	public static void information(String messageTemplate, Object... propertyValues) {
 		getLogger().information(messageTemplate, propertyValues);
 	}
 
 	/**
-	 * Write a log event with the <see cref="LogEventLevel.Information"/> level
-	 * and associated exception.
+	 * Write a log event with the <see cref="LogEventLevel.Information"/> level and
+	 * associated exception.
 	 * 
-	 * @param exception
-	 *            Exception related to the event.
-	 * @param messageTemplate
-	 *            Message template describing the event.
-	 * @param propertyValues
-	 *            Objects positionally formatted into the message template.
-	 *            <example> Log.Information(ex, "Processed {RecordCount} records
-	 *            in {TimeMS}.", records.Length, sw.ElapsedMilliseconds);
-	 *            </example>
+	 * @param exception       Exception related to the event.
+	 * @param messageTemplate Message template describing the event.
+	 * @param propertyValues  Objects positionally formatted into the message
+	 *                        template. <example> Log.Information(ex, "Processed
+	 *                        {RecordCount} records in {TimeMS}.", records.Length,
+	 *                        sw.ElapsedMilliseconds); </example>
 	 */
 	public static void information(Throwable exception, String messageTemplate, Object... propertyValues) {
 		getLogger().information(exception, messageTemplate, propertyValues);
@@ -260,12 +237,10 @@ public class Log {
 	/**
 	 * Write a log event with the <see cref="LogEventLevel.Warning"/> level.
 	 * 
-	 * @param messageTemplate
-	 *            Message template describing the event.
-	 * @param propertyValues
-	 *            Objects positionally formatted into the message template.
-	 *            <example> Log.Warning("Skipped {SkipCount} records.",
-	 *            skippedRecords.Length); </example>
+	 * @param messageTemplate Message template describing the event.
+	 * @param propertyValues  Objects positionally formatted into the message
+	 *                        template. <example> Log.Warning("Skipped {SkipCount}
+	 *                        records.", skippedRecords.Length); </example>
 	 */
 	public static void warning(String messageTemplate, Object... propertyValues) {
 		getLogger().warning(messageTemplate, propertyValues);
@@ -275,14 +250,12 @@ public class Log {
 	 * Write a log event with the <see cref="LogEventLevel.Warning"/> level and
 	 * associated exception.
 	 * 
-	 * @param exception
-	 *            Exception related to the event.
-	 * @param messageTemplate
-	 *            Message template describing the event.
-	 * @param propertyValues
-	 *            Objects positionally formatted into the message template.
-	 *            <example> Log.Warning(ex, "Skipped {SkipCount} records.",
-	 *            skippedRecords.Length); </example>
+	 * @param exception       Exception related to the event.
+	 * @param messageTemplate Message template describing the event.
+	 * @param propertyValues  Objects positionally formatted into the message
+	 *                        template. <example> Log.Warning(ex, "Skipped
+	 *                        {SkipCount} records.", skippedRecords.Length);
+	 *                        </example>
 	 */
 	public static void warning(Throwable exception, String messageTemplate, Object... propertyValues) {
 		getLogger().warning(exception, messageTemplate, propertyValues);
@@ -291,12 +264,10 @@ public class Log {
 	/**
 	 * Write a log event with the <see cref="LogEventLevel.Error"/> level.
 	 * 
-	 * @param messageTemplate
-	 *            Message template describing the event.
-	 * @param propertyValues
-	 *            Objects positionally formatted into the message template.
-	 *            <example> Log.Error("Failed {ErrorCount} records.",
-	 *            brokenRecords.Length); </example>
+	 * @param messageTemplate Message template describing the event.
+	 * @param propertyValues  Objects positionally formatted into the message
+	 *                        template. <example> Log.Error("Failed {ErrorCount}
+	 *                        records.", brokenRecords.Length); </example>
 	 */
 	public static void error(String messageTemplate, Object... propertyValues) {
 		getLogger().error(messageTemplate, propertyValues);
@@ -306,14 +277,11 @@ public class Log {
 	 * Write a log event with the <see cref="LogEventLevel.Error"/> level and
 	 * associated exception.
 	 * 
-	 * @param exception
-	 *            Exception related to the event.
-	 * @param messageTemplate
-	 *            Message template describing the event.
-	 * @param propertyValues
-	 *            Objects positionally formatted into the message template.
-	 *            <example> Log.Error(ex, "Failed {ErrorCount} records.",
-	 *            brokenRecords.Length); </example>
+	 * @param exception       Exception related to the event.
+	 * @param messageTemplate Message template describing the event.
+	 * @param propertyValues  Objects positionally formatted into the message
+	 *                        template. <example> Log.Error(ex, "Failed {ErrorCount}
+	 *                        records.", brokenRecords.Length); </example>
 	 */
 	public static void error(Throwable exception, String messageTemplate, Object... propertyValues) {
 		getLogger().error(exception, messageTemplate, propertyValues);
@@ -322,11 +290,10 @@ public class Log {
 	/**
 	 * Write a log event with the <see cref="LogEventLevel.Fatal"/> level.
 	 * 
-	 * @param messageTemplate
-	 *            Message template describing the event.
-	 * @param propertyValues
-	 *            Objects positionally formatted into the message template.
-	 *            <example> Log.Fatal("Process terminating."); </example>
+	 * @param messageTemplate Message template describing the event.
+	 * @param propertyValues  Objects positionally formatted into the message
+	 *                        template. <example> Log.Fatal("Process terminating.");
+	 *                        </example>
 	 */
 	public static void fatal(String messageTemplate, Object... propertyValues) {
 		getLogger().fatal(messageTemplate, propertyValues);
@@ -336,13 +303,11 @@ public class Log {
 	 * Write a log event with the <see cref="LogEventLevel.Fatal"/> level and
 	 * associated exception.
 	 * 
-	 * @param exception
-	 *            Exception related to the event.
-	 * @param messageTemplate
-	 *            Message template describing the event.
-	 * @param propertyValues
-	 *            Objects positionally formatted into the message template.
-	 *            <example> Log.Fatal(ex, "Process terminating."); </example>
+	 * @param exception       Exception related to the event.
+	 * @param messageTemplate Message template describing the event.
+	 * @param propertyValues  Objects positionally formatted into the message
+	 *                        template. <example> Log.Fatal(ex, "Process
+	 *                        terminating."); </example>
 	 */
 	public static void fatal(Throwable exception, String messageTemplate, Object... propertyValues) {
 		getLogger().fatal(exception, messageTemplate, propertyValues);
