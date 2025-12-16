@@ -1,4 +1,4 @@
-package serilogj.sinks.rollingfile;
+package serilogj.serilogj.sinks.rollingfile;
 
 import java.time.LocalDate;
 

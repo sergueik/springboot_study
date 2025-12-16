@@ -120,11 +120,10 @@ Caused by: java.lang.ClassCastException: class [B cannot be cast to class [C ([B
         at io.advantageous.boon.core.timer.TimeKeeperBasic.<init>(TimeKeeperBasic.java:52)
         at io.advantageous.boon.core.Sys.<clinit>(Sys.java:171)
         ... 17 more
-
-
 ```
 
 ###  Building Driver Locally
+
 ```cmd
 type c:\Users\kouzm\.m2\repository\org\serilogj\serilogj\maven-metadata-local.xml
 ```
@@ -140,13 +139,29 @@ type c:\Users\kouzm\.m2\repository\org\serilogj\serilogj\maven-metadata-local.xm
     <lastUpdated>20251215132259</lastUpdated>
   </versioning>
 </metadata>
-
+```
+```cmd
+type c:\Users\kouzm\.m2\repository\org\serilogj\serilogj\serilogj\maven-metadata-local.xml
+```
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.serilogj.serilogj</groupId>
+  <artifactId>serilogj</artifactId>
+  <versioning>
+    <versions>
+      <version>0.8.0-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20251215202518</lastUpdated>
+  </versioning>
+</metadata>
 ```
 ```sh
 mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout
 ```
 ```text
 org.serilogj
+org.serilogj.serilogj
 ```
 ```sh
 mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout
@@ -159,6 +174,8 @@ mvn help:evaluate -Dexpression=project.version -q -DforceStdout
 ```
 ```text
 0.7.0-SNAPSHOT
+
+0.8.0-SNAPSHOT
 ```
 ### NOTE 
 
@@ -167,6 +184,7 @@ while in __.Net__  domain [sink collection](https://github.com/serilog/serilog/w
 ### See Also
 
   * [maven cenral](https://mvnrepository.com/artifact/org.serilogj) - last Release on Nov 1, __ 2017__
+  * __Serilog__ [challenges and tweaks](https://habr.com/ru/articles/972118/) - in Russian
 
 ---
 ### Author

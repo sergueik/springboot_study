@@ -1,11 +1,11 @@
-package serilogj.core.sinks;
+package serilogj.serilogj.core.sinks;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
-import serilogj.events.*;
-import serilogj.core.*;
-import serilogj.debugging.SelfLog;
+import serilogj.serilogj.events.*;
+import serilogj.serilogj.core.*;
+import serilogj.serilogj.debugging.SelfLog;
 
 // Copyright 2013-2015 Serilog Contributors
 //

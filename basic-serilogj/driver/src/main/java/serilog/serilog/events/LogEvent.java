@@ -1,4 +1,4 @@
-package serilogj.events;
+package serilogj.serilogj.events;
 
 import java.io.IOException;
 import java.io.Writer;

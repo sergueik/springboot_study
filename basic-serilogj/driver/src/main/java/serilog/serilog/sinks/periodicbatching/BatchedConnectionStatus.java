@@ -1,4 +1,4 @@
-package serilogj.sinks.periodicbatching;
+package serilogj.serilogj.sinks.periodicbatching;
 
 import java.time.Duration;
 

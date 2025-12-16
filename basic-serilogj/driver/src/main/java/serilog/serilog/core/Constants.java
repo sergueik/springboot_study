@@ -1,4 +1,4 @@
-package serilogj.core;
+package serilogj.serilogj.core;
 
 // Copyright 2013-2015 Serilog Contributors
 //

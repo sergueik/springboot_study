@@ -1,7 +1,7 @@
-package serilogj.sinks.seq;
+package serilogj.serilogj.sinks.seq;
 
-import serilogj.debugging.SelfLog;
-import serilogj.events.LogEventLevel;
+import serilogj.serilogj.debugging.SelfLog;
+import serilogj.serilogj.events.LogEventLevel;
 
 // Serilog.Sinks.Seq Copyright 2016 Serilog Contributors
 //

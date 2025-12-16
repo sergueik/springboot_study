@@ -1,8 +1,8 @@
-package serilogj.formatting.display;
+package serilogj.serilogj.formatting.display;
 
 import java.util.*;
 import java.io.*;
-import serilogj.events.*;
+import serilogj.serilogj.events.*;
 
 // Copyright 2013-2015 Serilog Contributors
 //

@@ -1,9 +1,9 @@
-package serilogj.core.enrichers;
+package serilogj.serilogj.core.enrichers;
 
-import serilogj.core.ILogEventEnricher;
-import serilogj.core.ILogEventPropertyFactory;
-import serilogj.events.LogEvent;
-import serilogj.events.LogEventProperty;
+import serilogj.serilogj.core.ILogEventEnricher;
+import serilogj.serilogj.core.ILogEventPropertyFactory;
+import serilogj.serilogj.events.LogEvent;
+import serilogj.serilogj.events.LogEventProperty;
 
 // Copyright 2013-2015 Serilog Contributors
 //

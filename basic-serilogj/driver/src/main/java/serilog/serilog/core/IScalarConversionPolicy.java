@@ -1,4 +1,4 @@
-package serilogj.core;
+package serilogj.serilogj.core;
 
 /**
  * Determine how a simple value is carried through the logging pipeline as an

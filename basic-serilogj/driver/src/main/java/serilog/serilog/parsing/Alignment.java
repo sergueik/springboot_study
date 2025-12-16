@@ -1,4 +1,4 @@
-package serilogj.parsing;
+package serilogj.serilogj.parsing;
 
 public class Alignment {
 	private AlignmentDirection direction = AlignmentDirection.Left;

@@ -1,4 +1,4 @@
-package serilogj.formatting.json;
+package serilogj.serilogj.formatting.json;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,16 +16,16 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import serilogj.events.DictionaryValue;
-import serilogj.events.LogEvent;
-import serilogj.events.LogEventProperty;
-import serilogj.events.LogEventPropertyValue;
-import serilogj.events.ScalarValue;
-import serilogj.events.SequenceValue;
-import serilogj.events.StructureValue;
-import serilogj.formatting.ITextFormatter;
-import serilogj.parsing.MessageTemplateToken;
-import serilogj.parsing.PropertyToken;
+import serilogj.serilogj.events.DictionaryValue;
+import serilogj.serilogj.events.LogEvent;
+import serilogj.serilogj.events.LogEventProperty;
+import serilogj.serilogj.events.LogEventPropertyValue;
+import serilogj.serilogj.events.ScalarValue;
+import serilogj.serilogj.events.SequenceValue;
+import serilogj.serilogj.events.StructureValue;
+import serilogj.serilogj.formatting.ITextFormatter;
+import serilogj.serilogj.parsing.MessageTemplateToken;
+import serilogj.serilogj.parsing.PropertyToken;
 
 // Copyright 2013-2015 Serilog Contributors
 //

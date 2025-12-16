@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.serilogj</groupId>
+  <groupId>org.serilogj.serilogj</groupId>
   <artifactId>serilogj</artifactId>
-  <version>0.7.0-SNAPSHOT</version>
+  <version>0.8.0-SNAPSHOT</version>
   <name>serilogj</name>
-  <url>https://github.com/serilogj</url>
+  <url>https://github.com/serilogj/serilogj</url>
   <packaging>jar</packaging>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -51,7 +51,7 @@
     <repository>
       <id>github</id>
       <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/serilogj</url>
+      <url>https://maven.pkg.github.com/serilogj/serilogj</url>
     </repository>
   </distributionManagement>
 </project>

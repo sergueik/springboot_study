@@ -1,8 +1,8 @@
-package serilogj.sinks.coloredconsole;
+package serilogj.serilogj.sinks.coloredconsole;
 
 import java.util.Locale;
 
-import serilogj.core.ILogEventSink;
+import serilogj.serilogj.core.ILogEventSink;
 
 public class ColoredConsoleSinkConfigurator {
 	private static String DefaultConsoleOutputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level}] {Message}{NewLine}{Exception}";

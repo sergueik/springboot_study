@@ -1,10 +1,10 @@
-package serilogj.formatting.display;
+package serilogj.serilogj.formatting.display;
 
 import java.io.IOException;
 import java.io.Writer;
 
-import serilogj.parsing.Alignment;
-import serilogj.parsing.AlignmentDirection;
+import serilogj.serilogj.parsing.Alignment;
+import serilogj.serilogj.parsing.AlignmentDirection;
 
 public class Padding {
 	/**

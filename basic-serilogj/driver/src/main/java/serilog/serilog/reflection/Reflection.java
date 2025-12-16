@@ -1,11 +1,11 @@
-package serilogj.reflection;
+package serilogj.serilogj.reflection;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.*;
 import java.lang.reflect.*;
-import serilogj.reflection.Property;
-import serilogj.reflection.FieldProperty;
-import serilogj.reflection.MethodProperty;
+import serilogj.serilogj.reflection.Property;
+import serilogj.serilogj.reflection.FieldProperty;
+import serilogj.serilogj.reflection.MethodProperty;
 
 // Copyright 2013-2015 Serilog Contributors
 //

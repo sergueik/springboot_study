@@ -1,8 +1,8 @@
-package serilogj.reflection;
+package serilogj.serilogj.reflection;
 
 import java.lang.Exception;
 import java.lang.reflect.Field;
-import serilogj.reflection.Property;
+import serilogj.serilogj.reflection.Property;
 
 // Copyright 2013-2015 Serilog Contributors
 //

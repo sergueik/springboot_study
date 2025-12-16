@@ -1,9 +1,9 @@
-package serilogj.policies;
+package serilogj.serilogj.policies;
 
-import serilogj.core.ILogEventPropertyValueFactory;
-import serilogj.core.IScalarConversionPolicy;
-import serilogj.core.ScalarConversionPolicyResult;
-import serilogj.events.ScalarValue;
+import serilogj.serilogj.core.ILogEventPropertyValueFactory;
+import serilogj.serilogj.core.IScalarConversionPolicy;
+import serilogj.serilogj.core.ScalarConversionPolicyResult;
+import serilogj.serilogj.events.ScalarValue;
 
 public class BooleanScalarConversionPolicy implements IScalarConversionPolicy {
 	private final static ScalarValue TrueScalarValue = new ScalarValue(true);

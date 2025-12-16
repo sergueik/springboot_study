@@ -1,4 +1,4 @@
-package serilogj.sinks.rollingfile;
+package serilogj.serilogj.sinks.rollingfile;
 
 import java.io.Closeable;
 import java.io.File;
@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.Comparator;
-import serilogj.core.ILogEventSink;
-import serilogj.debugging.SelfLog;
-import serilogj.events.LogEvent;
-import serilogj.formatting.ITextFormatter;
+import serilogj.serilogj.core.ILogEventSink;
+import serilogj.serilogj.debugging.SelfLog;
+import serilogj.serilogj.events.LogEvent;
+import serilogj.serilogj.formatting.ITextFormatter;
 
 public class RollingFileSink implements ILogEventSink, Closeable {
 	private TemplatedPathRoller roller;

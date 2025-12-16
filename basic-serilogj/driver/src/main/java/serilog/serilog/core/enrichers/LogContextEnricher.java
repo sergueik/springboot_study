@@ -1,9 +1,9 @@
-package serilogj.core.enrichers;
+package serilogj.serilogj.core.enrichers;
 
-import serilogj.context.LogContext;
-import serilogj.core.ILogEventEnricher;
-import serilogj.core.ILogEventPropertyFactory;
-import serilogj.events.LogEvent;
+import serilogj.serilogj.context.LogContext;
+import serilogj.serilogj.core.ILogEventEnricher;
+import serilogj.serilogj.core.ILogEventPropertyFactory;
+import serilogj.serilogj.events.LogEvent;
 
 public class LogContextEnricher implements ILogEventEnricher {
 	@Override

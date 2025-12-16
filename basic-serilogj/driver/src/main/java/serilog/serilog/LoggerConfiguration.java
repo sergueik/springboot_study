@@ -1,9 +1,9 @@
-package serilogj;
+package serilogj.serilogj;
 
-import serilogj.core.*;
-import serilogj.events.*;
-import serilogj.parameters.*;
-import serilogj.core.sinks.*;
+import serilogj.serilogj.core.*;
+import serilogj.serilogj.events.*;
+import serilogj.serilogj.parameters.*;
+import serilogj.serilogj.core.sinks.*;
 import java.util.*;
 
 // Copyright 2013-2015 Serilog Contributors

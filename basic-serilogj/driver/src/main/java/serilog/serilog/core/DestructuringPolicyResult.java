@@ -1,6 +1,6 @@
-package serilogj.core;
+package serilogj.serilogj.core;
 
-import serilogj.events.LogEventPropertyValue;
+import serilogj.serilogj.events.LogEventPropertyValue;
 
 public class DestructuringPolicyResult {
 	public boolean isValid;

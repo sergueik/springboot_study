@@ -1,6 +1,6 @@
-package serilogj.core;
+package serilogj.serilogj.core;
 
-import serilogj.events.*;
+import serilogj.serilogj.events.*;
 
 public class ScalarConversionPolicyResult {
 	public boolean isValid;

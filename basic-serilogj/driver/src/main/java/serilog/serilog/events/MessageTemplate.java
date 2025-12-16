@@ -1,10 +1,10 @@
-package serilogj.events;
+package serilogj.serilogj.events;
 
 import java.util.*;
 import java.io.*;
 
-import serilogj.debugging.SelfLog;
-import serilogj.parsing.*;
+import serilogj.serilogj.debugging.SelfLog;
+import serilogj.serilogj.parsing.*;
 
 public class MessageTemplate {
 	private String text;

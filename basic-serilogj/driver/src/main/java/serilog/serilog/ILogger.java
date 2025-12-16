@@ -1,8 +1,8 @@
-package serilogj;
+package serilogj.serilogj;
 
-import serilogj.core.ILogEventEnricher;
-import serilogj.events.LogEvent;
-import serilogj.events.LogEventLevel;
+import serilogj.serilogj.core.ILogEventEnricher;
+import serilogj.serilogj.events.LogEvent;
+import serilogj.serilogj.events.LogEventLevel;
 
 // Copyright 2013-2015 Serilog Contributors
 //

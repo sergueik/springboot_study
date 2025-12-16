@@ -1,4 +1,4 @@
-package serilogj.sinks.rollingfile;
+package serilogj.serilogj.sinks.rollingfile;
 
 import java.io.BufferedWriter;
 import java.io.Closeable;
@@ -6,10 +6,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import serilogj.core.ILogEventSink;
-import serilogj.debugging.SelfLog;
-import serilogj.events.LogEvent;
-import serilogj.formatting.ITextFormatter;
+import serilogj.serilogj.core.ILogEventSink;
+import serilogj.serilogj.debugging.SelfLog;
+import serilogj.serilogj.events.LogEvent;
+import serilogj.serilogj.formatting.ITextFormatter;
 
 public class FileSink implements ILogEventSink, Closeable {
 	private String filename;

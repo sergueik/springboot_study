@@ -1,4 +1,4 @@
-package serilogj.events;
+package serilogj.serilogj.events;
 
 import java.io.*;
 import java.util.*;

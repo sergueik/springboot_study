@@ -1,9 +1,9 @@
-package serilogj.formatting.display;
+package serilogj.serilogj.formatting.display;
 
 import java.io.*;
 import java.util.*;
 
-import serilogj.events.LogEventPropertyValue;
+import serilogj.serilogj.events.LogEventPropertyValue;
 
 public class LiteralStringValue extends LogEventPropertyValue {
 	private String value;

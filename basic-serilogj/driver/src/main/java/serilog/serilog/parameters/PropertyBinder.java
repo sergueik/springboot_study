@@ -1,11 +1,11 @@
-package serilogj.parameters;
+package serilogj.serilogj.parameters;
 
 import java.util.ArrayList;
 
-import serilogj.debugging.SelfLog;
-import serilogj.events.LogEventProperty;
-import serilogj.events.MessageTemplate;
-import serilogj.parsing.PropertyToken;
+import serilogj.serilogj.debugging.SelfLog;
+import serilogj.serilogj.events.LogEventProperty;
+import serilogj.serilogj.events.MessageTemplate;
+import serilogj.serilogj.parsing.PropertyToken;
 
 // Copyright 2013-2015 Serilog Contributors
 //

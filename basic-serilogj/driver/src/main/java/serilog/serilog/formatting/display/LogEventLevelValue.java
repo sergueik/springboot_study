@@ -1,12 +1,12 @@
-package serilogj.formatting.display;
+package serilogj.serilogj.formatting.display;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Locale;
 
-import serilogj.events.LogEventLevel;
-import serilogj.events.LogEventPropertyValue;
-import serilogj.parsing.Alignment;
+import serilogj.serilogj.events.LogEventLevel;
+import serilogj.serilogj.events.LogEventPropertyValue;
+import serilogj.serilogj.parsing.Alignment;
 
 public class LogEventLevelValue extends LogEventPropertyValue {
 	private LogEventLevel value;

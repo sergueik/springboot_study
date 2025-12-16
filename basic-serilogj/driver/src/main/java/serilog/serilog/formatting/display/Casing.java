@@ -1,4 +1,4 @@
-package serilogj.formatting.display;
+package serilogj.serilogj.formatting.display;
 
 import java.util.Locale;
 

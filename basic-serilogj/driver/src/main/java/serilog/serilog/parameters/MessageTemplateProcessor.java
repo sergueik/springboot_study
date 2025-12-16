@@ -1,9 +1,9 @@
-package serilogj.parameters;
+package serilogj.serilogj.parameters;
 
-import serilogj.core.*;
-import serilogj.core.pipeline.*;
-import serilogj.events.*;
-import serilogj.parsing.*;
+import serilogj.serilogj.core.*;
+import serilogj.serilogj.core.pipeline.*;
+import serilogj.serilogj.events.*;
+import serilogj.serilogj.parsing.*;
 
 // Copyright 2013-2015 Serilog Contributors
 //

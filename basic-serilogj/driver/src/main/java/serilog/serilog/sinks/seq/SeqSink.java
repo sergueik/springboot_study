@@ -1,4 +1,4 @@
-package serilogj.sinks.seq;
+package serilogj.serilogj.sinks.seq;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,13 +17,13 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
 
-import serilogj.core.LoggingLevelSwitch;
-import serilogj.debugging.SelfLog;
-import serilogj.events.LogEvent;
-import serilogj.events.LogEventLevel;
-import serilogj.formatting.ITextFormatter;
-import serilogj.formatting.json.JsonFormatter;
-import serilogj.sinks.periodicbatching.PeriodicBatchingSink;
+import serilogj.serilogj.core.LoggingLevelSwitch;
+import serilogj.serilogj.debugging.SelfLog;
+import serilogj.serilogj.events.LogEvent;
+import serilogj.serilogj.events.LogEventLevel;
+import serilogj.serilogj.formatting.ITextFormatter;
+import serilogj.serilogj.formatting.json.JsonFormatter;
+import serilogj.serilogj.sinks.periodicbatching.PeriodicBatchingSink;
 
 public class SeqSink extends PeriodicBatchingSink {
 	public static final int DefaultBatchPostingLimit = 1000;

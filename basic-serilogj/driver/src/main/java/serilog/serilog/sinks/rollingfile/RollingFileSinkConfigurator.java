@@ -1,8 +1,8 @@
-package serilogj.sinks.rollingfile;
+package serilogj.serilogj.sinks.rollingfile;
 
-import serilogj.core.ILogEventSink;
-import serilogj.formatting.ITextFormatter;
-import serilogj.formatting.display.MessageTemplateTextFormatter;
+import serilogj.serilogj.core.ILogEventSink;
+import serilogj.serilogj.formatting.ITextFormatter;
+import serilogj.serilogj.formatting.display.MessageTemplateTextFormatter;
 
 public class RollingFileSinkConfigurator {
 	private static final int DefaultRetainedFileCountLimit = 31; // A long month

@@ -1,4 +1,4 @@
-package serilogj.parsing;
+package serilogj.serilogj.parsing;
 
 // Copyright 2013-2015 Serilog Contributors
 //

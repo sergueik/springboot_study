@@ -1,4 +1,4 @@
-package serilogj.sinks.rollingfile;
+package serilogj.serilogj.sinks.rollingfile;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.regex.*;
 
-import serilogj.debugging.SelfLog;
+import serilogj.serilogj.debugging.SelfLog;
 
 // Copyright 2013-2016 Serilog Contributors
 //

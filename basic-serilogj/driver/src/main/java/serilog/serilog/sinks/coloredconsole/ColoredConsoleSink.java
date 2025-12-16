@@ -1,11 +1,11 @@
-package serilogj.sinks.coloredconsole;
+package serilogj.serilogj.sinks.coloredconsole;
 
 import java.util.*;
 import java.io.*;
-import serilogj.core.*;
-import serilogj.events.*;
-import serilogj.formatting.display.*;
-import serilogj.parsing.*;
+import serilogj.serilogj.core.*;
+import serilogj.serilogj.events.*;
+import serilogj.serilogj.formatting.display.*;
+import serilogj.serilogj.parsing.*;
 
 public class ColoredConsoleSink implements ILogEventSink {
 	private static String Prefix = "\033[";

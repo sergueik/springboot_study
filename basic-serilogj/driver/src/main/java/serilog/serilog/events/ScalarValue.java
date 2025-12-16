@@ -1,4 +1,4 @@
-package serilogj.events;
+package serilogj.serilogj.events;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
-import serilogj.debugging.SelfLog;
+import serilogj.serilogj.debugging.SelfLog;
 
 public class ScalarValue extends LogEventPropertyValue {
 	private Object value;

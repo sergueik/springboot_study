@@ -1,4 +1,4 @@
-package serilogj.events;
+package serilogj.serilogj.events;
 
 // Copyright 2013-2015 Serilog Contributors
 //

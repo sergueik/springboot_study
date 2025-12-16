@@ -1,9 +1,9 @@
-package serilogj.parsing;
+package serilogj.serilogj.parsing;
 
 import java.io.*;
 import java.util.*;
 
-import serilogj.events.LogEventPropertyValue;
+import serilogj.serilogj.events.LogEventPropertyValue;
 
 public class TextToken extends MessageTemplateToken {
 	private String text;

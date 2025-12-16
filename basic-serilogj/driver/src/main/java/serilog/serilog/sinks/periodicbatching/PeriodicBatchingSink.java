@@ -1,4 +1,4 @@
-package serilogj.sinks.periodicbatching;
+package serilogj.serilogj.sinks.periodicbatching;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -10,9 +10,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 
-import serilogj.core.ILogEventSink;
-import serilogj.debugging.SelfLog;
-import serilogj.events.LogEvent;
+import serilogj.serilogj.core.ILogEventSink;
+import serilogj.serilogj.debugging.SelfLog;
+import serilogj.serilogj.events.LogEvent;
 
 // Copyright 2013-2016 Serilog Contributors
 //

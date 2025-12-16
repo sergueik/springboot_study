@@ -1,14 +1,14 @@
 package example;
 
-import serilogj.Log;
-import serilogj.LoggerConfiguration;
-import serilogj.context.LogContext;
-import serilogj.core.enrichers.LogContextEnricher;
-import serilogj.debugging.SelfLog;
-import serilogj.events.LogEventLevel;
-import static serilogj.sinks.coloredconsole.ColoredConsoleSinkConfigurator.*;
-import static serilogj.sinks.rollingfile.RollingFileSinkConfigurator.*;
-import static serilogj.sinks.seq.SeqSinkConfigurator.*;
+import serilogj.serilogj.Log;
+import serilogj.serilogj.LoggerConfiguration;
+import serilogj.serilogj.context.LogContext;
+import serilogj.serilogj.core.enrichers.LogContextEnricher;
+import serilogj.serilogj.debugging.SelfLog;
+import serilogj.serilogj.events.LogEventLevel;
+import static serilogj.serilogj.sinks.coloredconsole.ColoredConsoleSinkConfigurator.*;
+import static serilogj.serilogj.sinks.rollingfile.RollingFileSinkConfigurator.*;
+import static serilogj.serilogj.sinks.seq.SeqSinkConfigurator.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;

@@ -1,9 +1,9 @@
-package serilogj.parsing;
+package serilogj.serilogj.parsing;
 
 import java.util.ArrayList;
 
-import serilogj.core.IMessageTemplateParser;
-import serilogj.events.MessageTemplate;
+import serilogj.serilogj.core.IMessageTemplateParser;
+import serilogj.serilogj.events.MessageTemplate;
 
 public class MessageTemplateParser implements IMessageTemplateParser {
 	private class ParseResult {

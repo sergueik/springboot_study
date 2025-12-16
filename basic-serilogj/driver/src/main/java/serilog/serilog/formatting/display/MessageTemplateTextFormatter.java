@@ -1,10 +1,10 @@
-package serilogj.formatting.display;
+package serilogj.serilogj.formatting.display;
 
 import java.io.*;
 import java.util.*;
-import serilogj.events.*;
-import serilogj.formatting.*;
-import serilogj.parsing.*;
+import serilogj.serilogj.events.*;
+import serilogj.serilogj.formatting.*;
+import serilogj.serilogj.parsing.*;
 
 public class MessageTemplateTextFormatter implements ITextFormatter {
 	private MessageTemplate outputTemplate;

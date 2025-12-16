@@ -1,7 +1,7 @@
 package example;
 
-import serilogj.core.*;
-import serilogj.events.StructureValue;
+import serilogj.serilogj.core.*;
+import serilogj.serilogj.events.StructureValue;
 
 public class UserDestructor implements IDestructuringPolicy {
 	private class UserDto {

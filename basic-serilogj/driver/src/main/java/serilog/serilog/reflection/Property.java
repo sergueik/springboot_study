@@ -1,4 +1,4 @@
-package serilogj.reflection;
+package serilogj.serilogj.reflection;
 
 // Copyright 2013-2015 Serilog Contributors
 //

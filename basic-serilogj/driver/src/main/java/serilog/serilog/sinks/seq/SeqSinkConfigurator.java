@@ -1,6 +1,6 @@
-package serilogj.sinks.seq;
+package serilogj.serilogj.sinks.seq;
 
-import serilogj.core.ILogEventSink;
+import serilogj.serilogj.core.ILogEventSink;
 
 import java.util.Map;
 

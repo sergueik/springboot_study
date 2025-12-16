@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>app</artifactId>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <name>app</name>
   <packaging>jar</packaging>
   <properties>
@@ -12,6 +12,7 @@
     <java.version>1.8</java.version>
     <serilogj.version>0.5.1</serilogj.version>
     <serilogj.version>0.7.0-SNAPSHOT</serilogj.version>
+    <serilogj.version>0.8.0-SNAPSHOT</serilogj.version>
     
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
@@ -24,7 +25,7 @@
   </properties>
   <dependencies>
   <dependency>
-    <groupId>org.serilogj</groupId>
+    <groupId>org.serilogj.serilogj</groupId>
     <artifactId>serilogj</artifactId>
     <version>${serilogj.version}</version>
   </dependency>

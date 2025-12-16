@@ -1,13 +1,13 @@
-package serilogj.formatting.display;
+package serilogj.serilogj.formatting.display;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import serilogj.events.LogEvent;
-import serilogj.events.LogEventPropertyValue;
-import serilogj.events.ScalarValue;
+import serilogj.serilogj.events.LogEvent;
+import serilogj.serilogj.events.LogEventPropertyValue;
+import serilogj.serilogj.events.ScalarValue;
 
 // Copyright 2013-2015 Serilog Contributors
 //

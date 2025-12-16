@@ -1,6 +1,6 @@
-package serilogj.formatting;
+package serilogj.serilogj.formatting;
 
-import serilogj.events.*;
+import serilogj.serilogj.events.*;
 import java.io.*;
 
 // Copyright 2013-2015 Serilog Contributors

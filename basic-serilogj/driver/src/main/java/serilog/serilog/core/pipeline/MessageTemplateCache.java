@@ -1,8 +1,8 @@
-package serilogj.core.pipeline;
+package serilogj.serilogj.core.pipeline;
 
 import java.util.*;
-import serilogj.core.*;
-import serilogj.events.*;
+import serilogj.serilogj.core.*;
+import serilogj.serilogj.events.*;
 
 // Copyright 2013-2015 Serilog Contributors
 //

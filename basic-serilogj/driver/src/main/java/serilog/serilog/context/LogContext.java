@@ -1,11 +1,11 @@
-package serilogj.context;
+package serilogj.serilogj.context;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import serilogj.core.ILogEventEnricher;
-import serilogj.core.enrichers.PropertyEnricher;
+import serilogj.serilogj.core.ILogEventEnricher;
+import serilogj.serilogj.core.enrichers.PropertyEnricher;
 
 public class LogContext {
 	private static class LogContextItem implements AutoCloseable {

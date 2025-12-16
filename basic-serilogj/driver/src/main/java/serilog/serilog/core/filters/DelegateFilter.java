@@ -1,8 +1,8 @@
-package serilogj.core.filters;
+package serilogj.serilogj.core.filters;
 
 import java.util.function.Function;
-import serilogj.core.ILogEventFilter;
-import serilogj.events.*;
+import serilogj.serilogj.core.ILogEventFilter;
+import serilogj.serilogj.events.*;
 
 // Copyright 2013-2015 Serilog Contributors
 //

@@ -1,4 +1,4 @@
-package serilogj.debugging;
+package serilogj.serilogj.debugging;
 
 import java.io.PrintStream;
 import java.util.Date;

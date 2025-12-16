@@ -1,9 +1,9 @@
-package serilogj.parameters;
+package serilogj.serilogj.parameters;
 
 import java.util.ArrayList;
 
-import serilogj.events.LogEventProperty;
-import serilogj.events.MessageTemplate;
+import serilogj.serilogj.events.LogEventProperty;
+import serilogj.serilogj.events.MessageTemplate;
 
 public class MessageTemplateProcessorResult {
 	public MessageTemplate template;

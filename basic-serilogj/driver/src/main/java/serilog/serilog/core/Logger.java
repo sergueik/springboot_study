@@ -1,16 +1,16 @@
-package serilogj.core;
+package serilogj.serilogj.core;
 
 import java.io.Closeable;
 import java.util.Date;
 import java.io.IOException;
 
-import serilogj.ILogger;
-import serilogj.core.enrichers.FixedPropertyEnricher;
-import serilogj.debugging.SelfLog;
-import serilogj.events.LogEvent;
-import serilogj.events.LogEventLevel;
-import serilogj.parameters.MessageTemplateProcessor;
-import serilogj.parameters.MessageTemplateProcessorResult;
+import serilogj.serilogj.ILogger;
+import serilogj.serilogj.core.enrichers.FixedPropertyEnricher;
+import serilogj.serilogj.debugging.SelfLog;
+import serilogj.serilogj.events.LogEvent;
+import serilogj.serilogj.events.LogEventLevel;
+import serilogj.serilogj.parameters.MessageTemplateProcessor;
+import serilogj.serilogj.parameters.MessageTemplateProcessorResult;
 
 // Copyright 2013-2015 Serilog Contributors
 //

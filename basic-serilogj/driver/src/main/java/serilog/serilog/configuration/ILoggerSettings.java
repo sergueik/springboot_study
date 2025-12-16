@@ -1,6 +1,6 @@
-package serilogj.configuration;
+package serilogj.serilogj.configuration;
 
-import serilogj.LoggerConfiguration;
+import serilogj.serilogj.LoggerConfiguration;
 
 // Copyright 2013-2015 Serilog Contributors
 //

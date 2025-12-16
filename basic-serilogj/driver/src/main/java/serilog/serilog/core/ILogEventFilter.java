@@ -1,6 +1,6 @@
-package serilogj.core;
+package serilogj.serilogj.core;
 
-import serilogj.events.LogEvent;
+import serilogj.serilogj.events.LogEvent;
 
 // Copyright 2013-2015 Serilog Contributors
 //

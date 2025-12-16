@@ -1,10 +1,10 @@
-package serilogj.parsing;
+package serilogj.serilogj.parsing;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
 
-import serilogj.events.LogEventPropertyValue;
+import serilogj.serilogj.events.LogEventPropertyValue;
 
 public abstract class MessageTemplateToken {
 	private int startIndex;

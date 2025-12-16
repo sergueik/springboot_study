@@ -1,4 +1,4 @@
-package serilogj.parameters;
+package serilogj.serilogj.parameters;
 
 import java.lang.reflect.Modifier;
 import java.net.URI;
@@ -8,26 +8,26 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.lang.reflect.Array;
 
-import serilogj.reflection.Reflection;
-import serilogj.reflection.Property;
-import serilogj.core.DestructuringPolicyResult;
-import serilogj.core.IDestructuringPolicy;
-import serilogj.core.ILogEventPropertyFactory;
-import serilogj.core.ILogEventPropertyValueFactory;
-import serilogj.core.IScalarConversionPolicy;
-import serilogj.core.ScalarConversionPolicyResult;
-import serilogj.debugging.SelfLog;
-import serilogj.events.DictionaryValue;
-import serilogj.events.LogEventProperty;
-import serilogj.events.LogEventPropertyValue;
-import serilogj.events.ScalarValue;
-import serilogj.events.SequenceValue;
-import serilogj.events.StructureValue;
-import serilogj.parsing.Destructuring;
-import serilogj.policies.BooleanScalarConversionPolicy;
-import serilogj.policies.ByteArrayScalarConversionPolicy;
-import serilogj.policies.EnumScalarConversionPolicy;
-import serilogj.policies.SimpleScalarConversionPolicy;
+import serilogj.serilogj.reflection.Reflection;
+import serilogj.serilogj.reflection.Property;
+import serilogj.serilogj.core.DestructuringPolicyResult;
+import serilogj.serilogj.core.IDestructuringPolicy;
+import serilogj.serilogj.core.ILogEventPropertyFactory;
+import serilogj.serilogj.core.ILogEventPropertyValueFactory;
+import serilogj.serilogj.core.IScalarConversionPolicy;
+import serilogj.serilogj.core.ScalarConversionPolicyResult;
+import serilogj.serilogj.debugging.SelfLog;
+import serilogj.serilogj.events.DictionaryValue;
+import serilogj.serilogj.events.LogEventProperty;
+import serilogj.serilogj.events.LogEventPropertyValue;
+import serilogj.serilogj.events.ScalarValue;
+import serilogj.serilogj.events.SequenceValue;
+import serilogj.serilogj.events.StructureValue;
+import serilogj.serilogj.parsing.Destructuring;
+import serilogj.serilogj.policies.BooleanScalarConversionPolicy;
+import serilogj.serilogj.policies.ByteArrayScalarConversionPolicy;
+import serilogj.serilogj.policies.EnumScalarConversionPolicy;
+import serilogj.serilogj.policies.SimpleScalarConversionPolicy;
 
 // Copyright 2013-2015 Serilog Contributors
 //

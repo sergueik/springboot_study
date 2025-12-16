@@ -1,10 +1,10 @@
-package serilogj.parsing;
+package serilogj.serilogj.parsing;
 
 import java.io.*;
 import java.util.*;
 
-import serilogj.events.LogEventPropertyValue;
-import serilogj.formatting.display.Padding;
+import serilogj.serilogj.events.LogEventPropertyValue;
+import serilogj.serilogj.formatting.display.Padding;
 
 public class PropertyToken extends MessageTemplateToken {
 	private String rawText;
