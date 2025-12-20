@@ -1,0 +1,19 @@
+version: '3.5'
+services:
+  vscode-web:
+    # image: martinussuherman/alpine-vscode-web
+    restart: unless-stopped
+    build: .
+    container_name: vscode-web
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+    environment:
+      - EUID=1001 # TODO: handle user ID
+      - EGID=1001 # TODO: handle group ID
+    volumes:
+      - .:/home/vscode
+    ports:
+      - 8080:8080
