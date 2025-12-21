@@ -250,3 +250,76 @@ a3cfa3eabebdcbb677256227b9ff44dad88bff37fd9de886077d670dc8fddb6b  node-v20.9.0-l
 
 echo a3cfa3eabebdcbb677256227b9ff44dad88bff37fd9de886077d670dc8fddb6b  node-v20.9.0-linux-x64-musl.tar.xz | sha256sum -c  -
 node-v20.9.0-linux-x64-musl.tar.xz: OK
+
+
+### VS Code
+
+```sh
+docker pull martinussuherman/alpine-code-server
+```
+```sh
+docker inspect martinussuherman/alpine-code-server |jq '.[].Config|.Entrypoint,.Cmd'
+```
+```text
+[
+  "entrypoint-su-exec",
+  "code-server"
+]
+[
+  "--bind-addr 0.0.0.0:8080"
+]
+
+```
+```sh
+docker run -d martinussuherman/alpine-code-server
+```
+```text
+ed4e8d1b0a6e81aa2cca4af888e89c82a44cfc21605f03519a09bf0b6a27e026
+```
+```sh
+ID=$(docker ps --format '{{.ID}} {{.Image}}' | grep martinussuherman/alpine-code-server | cut -f 1 -d ' ')
+echo $ID
+```
+```text
+ed4e8d1b0a6e
+```
+```sh
+docker exec -it $ID sh
+```
+```sh
+# which code-server
+```
+```text
+/usr/bin/code-server
+```
+
+```
+```sh
+ps | grep code-serve[r]
+```
+```text
+    1 vscode    0:00 node /usr/lib/code-server --bind-addr 0.0.0.0:8080
+   37 vscode    0:00 /usr/bin/node /usr/lib/code-server --bind-addr 0.0.0.0:8080
+```
+
+#### Troubeshoot
+
+```sh
+/usr/bin/code-server
+```
+```text
+s1 [Error]: The "path" argument must be of type string. Received type undefined
+    at mt (file:///opt/vscode-server-linux-x64/out/server-main.js:3:20113)
+    at join (file:///opt/vscode-server-linux-x64/out/server-main.js:3:28810)
+    at _c (file:///opt/vscode-server-linux-x64/out/server-main.js:27:98090)
+    at b6 (file:///opt/vscode-server-linux-x64/out/server-main.js:27:96230)
+    at file:///opt/vscode-server-linux-x64/out/server-main.js:220:2124
+    at ModuleJob.run (node:internal/modules/esm/module_job:217:25)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:316:24)
+    at async loadESM (node:internal/process/esm_loader:34:7)
+    at async handleMainPromise (node:internal/modules/run_main:66:12) {
+  code: 'ERR_INVALID_ARG_TYPE'
+}
+
+```
+https://code.visualstudio.com/docs/remote/vscode-server

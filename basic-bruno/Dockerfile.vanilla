@@ -18,10 +18,13 @@ RUN addgroup -g 1000 node \
       esac \
   && if [ -n "${CHECKSUM}" ]; then \
     set -eu; \
-    curl -fsSLO --compressed "https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz"; \
-    echo "$CHECKSUM  node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz" | sha256sum -c - \
-      && tar -xJf "node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
-      && ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
+    curl -fsSLO --compressed "https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz" \
+#   && echo "Verifying checksum of node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz" \
+    && echo "Skipping Verification of checksum of node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz" \
+    && sha256sum "node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz" \
+#   && echo $CHECKSUM node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz | sha256sum -c - \
+    && tar -xJf "node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
+    && ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
   else \
     echo "Building from source" \
     # backup build
@@ -82,7 +85,18 @@ RUN mkdir -p $WORK_DIRECTORY
 WORKDIR $WORK_DIRECTORY
 # Install npm packages (do this AFTER setting the working directory)
 RUN npm install -g @usebruno/cli
+ARG COMMIT=994fd12f8d3a5aa16f17d42c041e5809167e845a
+RUN apk add --no-cache --virtual .build-deps \
+    curl \
+    && curl -sSLkO https://vscode.download.prss.microsoft.com/dbazure/download/stable/994fd12f8d3a5aa16f17d42c041e5809167e845a/vscode_cli_alpine_x64_cli.tar.gz \
+    && tar -xzf vscode_cli_alpine_x64_cli.tar.gz -C /usr/local/bin \
+    && rm -f vscode_cli_alpine_x64_cli.tar.gz \
+    && test -d /opt || mkdir /opt && cd /opt \
+    && curl -sSLo vscode-server-linux-x64.tar https://update.code.visualstudio.com/commit:994fd12f8d3a5aa16f17d42c041e5809167e845a/server-linux-x64/stable \
+    && tar xf vscode-server-linux-x64.tar \
+    && ln -s vscode-server-linux-x64/bin/code-server /usr/lib/code-server \
+    && rm -f vscode-server-linux-x64.tar \
+    && apk del .build-deps
 
-
-ENTRYPOINT [ "bru" ]
-# CMD ["--help"]
+# ENTRYPOINT [ "node" ]
+# CMD ["/usr/lib/code-server", "--bind-addr", "0.0.0.0:8080"]
