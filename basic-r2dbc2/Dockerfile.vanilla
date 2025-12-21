@@ -1,0 +1,21 @@
+FROM eclipse-temurin:17-jdk-alpine as builder
+WORKDIR /app
+
+COPY pom.xml .
+COPY .mvn/ .mvn/
+COPY mvnw .
+COPY src/ src/
+
+RUN chmod +x mvnw  && \
+    ./mvnw -ntp dependency:go-offline
+
+RUN ./mvnw package -DskipTests
+
+# NOTE: The openjdk:17-alpine3.14 does not have a separate JRE variant, it is a full JDK image and is deprecated old, early access (EA) build
+
+# FROM openjre:17-alpine3.14
+FROM eclipse-temurin:17-jre-alpine
+COPY --from=builder /tmp /tmp
+COPY --from=builder /app/target/hr-service-0.0.1-SNAPSHOT.jar  ./hr-service.jar
+
+ENTRYPOINT ["java" , "-jar", "./hr-service.jar"]

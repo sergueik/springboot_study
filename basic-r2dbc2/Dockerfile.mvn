@@ -1,0 +1,31 @@
+FROM maven:3.8.3-openjdk-17 as builder
+# FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+
+ARG UID=1000
+ARG GID=1000
+
+ENV UID=${UID}
+ENV GID=${GID}
+
+RUN groupadd --gid $GID app \
+  && useradd --create-home --uid $UID --gid app --shell /bin/bash app \
+  && chown -R app:app /app
+USER app
+
+COPY pom.xml .
+COPY src/ src/
+
+RUN mvn -ntp dependency:go-offline
+
+# RUN mvn package -Pnative -DskipTests
+RUN mvn package -DskipTests 
+# NOTE: The openjdk:17-alpine3.14 does not have a separate JRE variant, it is a full JDK image and is deprecated old, early access (EA) build
+
+# FROM openjre:17-alpine3.14
+FROM eclipse-temurin:17-jre-alpine
+COPY --from=builder /tmp /tmp
+COPY --from=builder /app/target/hr-service-0.0.1-SNAPSHOT.jar  ./hr-service.jar
+
+ENTRYPOINT ["java" , "-jar", "./hr-service.jar"]
+

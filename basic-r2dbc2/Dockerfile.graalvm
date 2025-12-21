@@ -1,0 +1,40 @@
+# FROM dyniri/liberica-nik:java-17
+# FROM container-registry.oracle.com/graalvm/jdk:17 as builder
+# #0 0.373 Fatal glibc error: CPU does not support x86-64-v3
+FROM vegardit/graalvm-maven:latest-java17 as builder
+ARG UID=1010
+ARG GID=1010
+
+ENV UID=${UID}
+ENV GID=${GID}
+USER root
+
+WORKDIR /app
+
+RUN groupadd --gid $GID app \
+  && useradd --create-home --uid $UID --gid app --shell /bin/bash app \
+  && chown -R app:app /app
+
+
+COPY .mvn/ .mvn/
+COPY mvnw .
+COPY pom.xml .
+COPY src/ src/
+
+RUN sed -i 's|\r||g' mvnw \
+    && chmod +x mvnw
+
+ENV JAVA_HOME=/opt/graalvm
+USER app
+RUN  ./mvnw -ntp dependency:go-offline
+
+
+RUN ./mvnw package -Pnative -DskipTests
+
+FROM scratch
+
+COPY --from=builder /tmp /tmp
+COPY --from=builder /app/target/hr-service .
+
+ENTRYPOINT ["./hr-service"]
+

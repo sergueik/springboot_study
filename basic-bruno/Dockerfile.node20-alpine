@@ -1,0 +1,6 @@
+FROM node:20-alpine
+
+RUN npm install -g @usebruno/cli
+
+ENTRYPOINT [ "bru" ]
+CMD ["--help"]
