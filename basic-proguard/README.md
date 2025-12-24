@@ -1,0 +1,97 @@
+### Info
+
+  * https://github.com/devslm/proguard-spring-boot-example
+```sh
+IMAGE=proguard-spring-boot-example
+docker build -t $IMAGE -f Dockerfile .
+```
+
+![Original Jar](https://github.com/sergueik/springboot_study/blob/master/basic-proguard/screenshots/original_jar.png)
+javaclassviewer
+
+```text
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  04:47 min (Wall Clock)
+[INFO] Finished at: 2025-12-24T22:42:59Z
+[INFO] ------------------------------------------------------------------------
+Removing intermediate container 08e3379de101
+ ---> 01fc97bc8565
+Step 5/5 : CMD java -jar ./target/spring.boot.jar
+ ---> Running in 053094999dbd
+Removing intermediate container 053094999dbd
+ ---> d5c941d0d73e
+Successfully built d5c941d0d73e
+Successfully tagged x:latest
+SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host.
+All files and directories added to build context will have '-rwxr-xr-x' permissions.
+It is recommended to double check and reset permissions for sensitive files and directories.
+```
+
+![ProGuard Jar](https://github.com/sergueik/springboot_study/blob/master/basic-proguard/screenshots/proguard_jar.png)
+
+```sh
+IMAGE=proguard-spring-boot-example
+CONTAINER=proguard-spring-boot-example
+docker run -p 8080:8080 --name $CONTAINER -d $IMAGE
+```
+> NOTE: risky, when the container fails to run
+```sh
+until [ "$(docker inspect -f '{{.State.Status}}' $CONTAINER)" == "running" ]; do sleep 1; done;
+```
+```sh
+docker logs $CONTAINER
+```
+```text
+ ____                                                         __        ____                                               ___
+/\  _`\                                                      /\ \      /\  _`\                                            /\_ \
+\ \ \L\ \ _ __    ___      __      __  __     __      _ __   \_\ \     \ \ \L\_\   __  _     __       ___ ___     _____   \//\ \       __
+ \ \ ,__//\`'__\ / __`\  /'_ `\   /\ \/\ \  /'__`\   /\`'__\ /'_` \     \ \  _\L  /\ \/'\  /'__`\   /' __` __`\  /\ '__`\   \ \ \    /'__`\
+  \ \ \/ \ \ \/ /\ \L\ \/\ \L\ \  \ \ \_\ \/\ \L\.\_ \ \ \/ /\ \L\ \     \ \ \L\ \\/>  </ /\ \L\.\_ /\ \/\ \/\ \ \ \ \L\ \   \_\ \_ /\  __/
+   \ \_\  \ \_\ \ \____/\ \____ \  \ \____/\ \__/.\_\ \ \_\ \ \___,_\     \ \____/ /\_/\_\\ \__/.\_\\ \_\ \_\ \_\ \ \ ,__/   /\____\\ \____\
+    \/_/   \/_/  \/___/  \/___L\ \  \/___/  \/__/\/_/  \/_/  \/__,_ /      \/___/  \//\/_/ \/__/\/_/ \/_/\/_/\/_/  \ \ \/    \/____/ \/____/
+                           /\____/                                                                                \ \_\
+                           \_/__/                                                                                  \/_/
+2025-12-24 23:18:03,531 [INFO ] [main      ] [c.s.p.e.s.b.Application       ] - Starting Application v2.2.0 using Java 11.0.10 on eb4d7669f19b with PID 18 (/usr/src/proguard-spring-boot-example/target/spring.boot.jar started by root in /usr/src/proguard-spring-boot-example)
+2025-12-24 23:18:03,539 [INFO ] [main      ] [c.s.p.e.s.b.Application       ] - No active profile set, falling back to default profiles: default
+2025-12-24 23:18:04,305 [WARN ] [main      ] [o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext] - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.slm.proguard.example.spring.boot.Application]; nested exception is org.springframework.context.annotation.ConflictingBeanDefinitionException: Annotation-specified bean name 'a' for bean class [com.slm.proguard.example.spring.boot.a.a] conflicts with existing, non-compatible bean definition of same name and class [com.slm.proguard.example.spring.boot.c.a]
+2025-12-24 23:18:04,404 [ERROR] [main      ] [o.s.b.SpringApplication       ] - Application run failed
+org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.slm.proguard.example.spring.boot.Application];
+nested exception is org.springframework.context.annotation.ConflictingBeanDefinitionException:
+Annotation-specified bean name 'a' for bean class [com.slm.proguard.example.spring.boot.a.a]
+conflicts with existing, non-compatible bean definition of same name and class [com.slm.proguard.example.spring.boot.c.a]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:189)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:331)
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:247)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:311)
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:112)
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:746)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:564)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:145)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:434)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:338)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1332)
+	at com.slm.proguard.example.spring.boot.Application.main(Application.java:21)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:49)
+	at org.springframework.boot.loader.Launcher.launch(Launcher.java:108)
+	at org.springframework.boot.loader.Launcher.launch(Launcher.java:58)
+	at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:88)
+Caused by: org.springframework.context.annotation.ConflictingBeanDefinitionException: Annotation-specified bean name 'a' for bean class [com.slm.proguard.example.spring.boot.a.a] conflicts with existing, non-compatible bean definition of same name and class [com.slm.proguard.example.spring.boot.c.a]
+	at org.springframework.context.annotation.ClassPathBeanDefinitionScanner.checkCandidate(ClassPathBeanDefinitionScanner.java:349)
+	at org.springframework.context.annotation.ClassPathBeanDefinitionScanner.doScan(ClassPathBeanDefinitionScanner.java:287)
+	at org.springframework.context.annotation.ComponentScanAnnotationParser.parse(ComponentScanAnnotationParser.java:132)
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:296)
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:250)
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:207)
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:175)
+	... 21 common frames omitted
+```
+### See Also
+  * https://www.guardsquare.com/manual/configuration/examples

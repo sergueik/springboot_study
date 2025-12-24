@@ -1,0 +1,9 @@
+version: "2"
+services:
+  maven-jdk-14:
+    image: maven:3.6.3-adoptopenjdk-11
+    container_name: maven-jdk-11
+    working_dir: /usr/src/proguard-spring-boot-example
+    command: bash -c "cp -r /tmp/* /usr/src/proguard-spring-boot-example &&
+        mvn -T 2C -Djava.version=11 clean install &&
+        java -jar ./target/spring.boot.jar"
