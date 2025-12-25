@@ -1,8 +1,9 @@
-package com.slm.proguard.example.spring.boot.service;
+package example.app.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.slm.proguard.example.spring.boot.dto.ExampleDto;
-import com.slm.proguard.example.spring.boot.dto.ExampleObjectMapperDto;
+
+import example.app.dto.ExampleDto;
+import example.app.dto.ExampleObjectMapperDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

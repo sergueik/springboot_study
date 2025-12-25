@@ -1,4 +1,4 @@
-package com.slm.proguard.example.spring.boot.controller;
+package example.app.controller;
 
 
 import java.nio.file.Paths;
@@ -27,13 +27,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import example.app.service.ExampleService;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import com.slm.proguard.example.spring.boot.service.ExampleService;
 
 @RestController
 @RequestMapping("/example")

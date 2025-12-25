@@ -1,4 +1,4 @@
-package com.slm.proguard.example.spring.boot.dto;
+package example.app.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

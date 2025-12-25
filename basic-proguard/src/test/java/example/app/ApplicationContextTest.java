@@ -1,9 +1,10 @@
-package com.slm.proguard.example.spring.boot;
+package example.app;
 
-import com.slm.proguard.example.spring.boot.service.ExampleService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import example.app.service.ExampleService;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

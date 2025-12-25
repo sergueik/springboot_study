@@ -1,6 +1,9 @@
 ### Info
 
-  * https://github.com/devslm/proguard-spring-boot-example
+  This directory containes example from [proguard-spring-boot-example](https://github.com/devslm/proguard-spring-boot-example)
+
+
+### Usage
 ```sh
 IMAGE=proguard-spring-boot-example
 docker build -t $IMAGE -f Dockerfile .
@@ -94,4 +97,15 @@ Caused by: org.springframework.context.annotation.ConflictingBeanDefinitionExcep
 	... 21 common frames omitted
 ```
 ### See Also
+   * https://medium.com/@ufuk.guler/obfuscate-spring-boot-applications-with-proguard-maven-plugin-1f34bb871776
+  * https://stackoverflow.com/questions/52875698/how-to-proguard-with-spring-boot-gradle-plugin
   * https://www.guardsquare.com/manual/configuration/examples
+  * https://stackoverflow.com/questions/12114096/how-do-i-use-proguard
+  * https://stackoverflow.com/questions/27714914/android-how-to-check-proguard-obfuscation-has-worked
+  * https://medium.com/@jonfinerty/beginner-to-proguard-b3327ff3a831
+
+
+---
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

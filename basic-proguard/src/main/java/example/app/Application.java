@@ -1,10 +1,11 @@
-package com.slm.proguard.example.spring.boot;
+package example.app;
 
-import com.slm.proguard.example.spring.boot.service.ExampleService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import example.app.service.ExampleService;
 
 import javax.annotation.PostConstruct;
 
