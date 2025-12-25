@@ -1,6 +1,21 @@
-FROM maven:3.6.3-adoptopenjdk-11
+FROM eclipse-temurin:11-jdk-alpine as builder
+ARG app_jar=com.bookportal.api.jar
+RUN apk upgrade -U -a \
+    && apk add --no-cache \
+    maven \
+    && rm -rf /var/cache/* \
+    && mkdir /var/cache/apk
 WORKDIR app
-ADD src app
-COPY pom.xml app
-RUN mvn -T 2C -Djava.version=11 -Pproguard clean install
-CMD java -jar ./target/spring.boot.jar
+ADD src src/
+COPY pom.xml proguard.conf proguard.txt ./
+RUN mvn -ntp dependency:go-offline
+RUN mvn -T 2C -Dmaven.test.skip=true clean package
+# comment the following layers is there is an obfuscation error
+RUN mvn -T 2C -Pproguard clean package
+
+FROM eclipse-temurin:11-jre-alpine
+# NOTE: need to re-introduce ARG
+ARG app_jar=com.bookportal.api.jar
+COPY --from=builder  "/app/target/${app_jar}" ./app.jar
+EXPOSE 8085
+ENTRYPOINT ["java", "-jar", "app.jar"]

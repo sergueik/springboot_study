@@ -52,19 +52,99 @@ com.bookportal.api.configs.EnvironmentVariables -> com.bookportal.api.proguard.v
 ```
 #### Package the Conatainer 
 ```sh
+docker pull mvertes/alpine-mongo
+docker pull eclipse-temurin:11-jre-alpine
+docker-pull eclipse-temurin:11-jdk-alpine
+```
+```sh
+docker-cpmpose up -build
+```
+if the error 
+
+```trxt
+#0 84.07 [ERROR] Failed to execute goal com.github.wvengen:proguard-maven-plugin:2.5.3:proguard (default) on project api: Obfuscation failed (result=1) -> [Help 1]
+#0 84.07 [ERROR]
+#0 84.07 [ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+#0 84.07 [ERROR] Re-run Maven using the -X switch to enable full debug logging.
+#0 84.07 [ERROR]
+#0 84.07 [ERROR] For more information about the errors and possible solutions, please read the following articles:
+#0 84.07 [ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+------
+failed to solve: failed to solve with frontend dockerfile.v0: failed to build LLB: executor failed running [/bin/sh -c mvn -T 2C -Pproguard -Dmaven.test.skip=true clean package]: runc did not terminate sucessfully
+```
+is oberved and the `docker-compose`’s "plain" progress ncurses mode is broken in your environment ( the `COMPOSE_PROGRESS=plain` has effect of 
+* early exit
+* no output
+* no error
+* build not even starting
+)  can run Dockerile
+
+```sh
 IMAGE=proguard-spring-boot-example
 docker build -t $IMAGE -f Dockerfile .
+```
+this will reveal the error
+```text
+ [proguard] ProGuard, version 7.2.0-beta4
+ [proguard] Unexpected error
+ [proguard] java.io.IOException: The input doesn't contain any classes. Did you specify the proper '-injars' options?
+ [proguard]     at proguard.InputReader.execute(InputReader.java:147) ~[proguard-base-7.2.0-beta4.jar:7.2.0-beta4]
+ [proguard]     at proguard.ProGuard.readInput(ProGuard.java:310) ~[proguard-base-7.2.0-beta4.jar:7.2.0-beta4]
+ [proguard]     at proguard.ProGuard.execute(ProGuard.java:119) ~[proguard-base-7.2.0-beta4.jar:7.2.0-beta4]
+ [proguard]     at proguard.ProGuard.main(ProGuard.java:675) [proguard-base-7.2.0-beta4.jar:7.2.0-beta4]
+```
+Add the *in between* command to `Dockerifle`:
+```sh
+RUN mvn -T 2C -Dmaven.test.skip=true clean package
+```
+before
+```sh
+RUN mvn -T 2C -Pproguard package
+```
+and rebuild
+see the errors
+```text
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:2.5.5:repackage (repackage) on project api: Execution repackage of goal org.springframework.boot:spring-boot-maven-plugin:2.5.5:repackage failed: Unable to find main class -> [Help 1]
+```
+which are caused by improperly copying the local workspace into container and then
+```text
+ [proguard] Unexpected error while performing partial evaluation:
+ [proguard]   Class       = [com/bookportal/api/proguard/WHbrCOvZqP]
+ [proguard]   Method      = [KAIFhQQxYo()Lcom/bookportal/api/proguard/PvFGhOKrpX;]
+ [proguard]   Exception   = [proguard.evaluation.IncompleteClassHierarchyException] (Can't find common super class of [org.springframework.boot.loader.archive.JarFileArchive] (with 1 known super classes: org.springframework.boot.loader.archive.JarFileArchive) and [org.springframework.boot.loader.archive.ExplodedArchive] (with 1 known super classes: org.springframework.boot.loader.archive.ExplodedArchive))
+```
+after that error it resolved continue as planned
+```sh
 IMAGE=proguard-spring-boot-example
 CONTAINER=proguard-spring-boot-example
 docker run -p 8080:8080 --name $CONTAINER -d $IMAGE
 ```
 ```sh
-until [ "$(docker inspect -f '{{.State.Status}}' $CONTAINER)" == "running" ]; do sleep 1; done;
+export CONTAINER=proguard-spring-boot-example;
+until [ "$(docker inspect -f '{{.State.Status}}' $CONTAINER)" == "running" ]; do sleep 1; done; echo 'Done';
+```
+```text
+Template parsing error: template: :1:8: executing "" at <.State.Status>: map has no entry for key "State"
+Template parsing error: template: :1:8: executing "" at <.State.Status>: map has no entry for key "State"
+Done
 ```
 > NOTE: risky, the app in the container may fail to start, 
 
 ```sh
 docker logs $CONTAINER
+```
+```text
+Error: Invalid or corrupt jarfile app.jar
+```
+examine
+```sh
+docker rm $CONTAINER
+docker run -it --entrypoint '' -p 8080:8080 --name $CONTAINER $IMAGE sh
+```
+### Errors From Obfuscation
+
+
+if something is brooken at app launch, investigate
 ```
 logs (taken from another project) will explain, why
 ```text
@@ -117,6 +197,42 @@ Caused by: org.springframework.context.annotation.ConflictingBeanDefinitionExcep
 	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:175)
 	... 21 common frames omitted
 ```
+also, the `mongo` dependency is unstable:
+```text
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.432+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"Invalid access at address: 0\n"}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.432+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"Dumping siginfo (si_code=128): 0b 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n"}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.432+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"Got signal: 11 (Segmentation fault).\n"}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.580+00:00"},"s":"I",  "c":"CONTROL",  "id":31380,   "ctx":"main","msg":"BACKTRACE","attr":{"bt":{"backtrace":[{"a":"5629CADC1D47","b":"5629C0ED9000","o":"9EE8D47","s":"_ZN5mongo15printStackTraceEv","C":"mongo::printStackTrace()","s+":"37"},{"a":"5629CADA0C45","b":"5629C0ED9000","o":"9EC7C45","s":"_ZN5mongo12_GLOBAL__N_115printErrorBlockEv","C":"mongo::(anonymous namespace)::printErrorBlock()","s+":"225"},{"a":"5629CADA0F30","b":"5629C0ED9000","o":"9EC7F30","s":"abruptQuitWithAddrSignal","s+":"150"},{"a":"7EFE804F9330","b":"7EFE804B4000","o":"45330"},{"a":"7EFE804DC9A2","b":"7EFE804B4000","o":"289A2","s":"abort","s+":"182"},{"a":"5629CB0B6D7B","b":"5629C0ED9000","o":"A1DDD7B","s":"_ZN10__cxxabiv111__terminateEPFvvE.cold","C":"__cxxabiv1::__terminate(void (*)()) [clone .cold]","s+":"D"},{"a":"5629CB0B6DF1","b":"5629C0ED9000","o":"A1DDDF1","s":"_ZSt9terminatev","C":"std::terminate()","s+":"12"},{"a":"5629C52EA1F8","b":"5629C0ED9000","o":"44111F8","s":"__cxa_throw","s+":"48"},{"a":"5629C53722D7","b":"5629C0ED9000","o":"44992D7","s":"__wrap___cxa_throw","s+":"57"},{"a":"5629CB1459A0","b":"5629C0ED9000","o":"A26C9A0","s":"_ZSt20__throw_system_errori","C":"std::__throw_system_error(int)","s+":"83"},{"a":"5629CB145BF3","b":"5629C0ED9000","o":"A26CBF3","s":"_ZNSt6thread15_M_start_threadESt10unique_ptrINS_6_StateESt14default_deleteIS1_EEPFvvE.cold","C":"std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) [clone .cold]","s+":"7"},{"a":"5629C662AD83","b":"5629C0ED9000","o":"5751D83","s":"_ZN5mongo27startSignalProcessingThreadENS_13LogFileStatusE","C":"mongo::startSignalProcessingThread(mongo::LogFileStatus)","s+":"1E3"},{"a":"5629C5409A36","b":"5629C0ED9000","o":"4530A36","s":"_ZN5mongo11mongod_mainEiPPc","C":"mongo::mongod_main(int, char**)","s+":"C6"},{"a":"5629C53F30E7","b":"5629C0ED9000","o":"451A0E7","s":"main","s+":"9"},{"a":"7EFE804DE1CA","b":"7EFE804B4000","o":"2A1CA"},{"a":"7EFE804DE28B","b":"7EFE804B4000","o":"2A28B","s":"__libc_start_main","s+":"8B"},{"a":"5629C53F2FC5","b":"5629C0ED9000","o":"4519FC5","s":"_start","s+":"25"}],"processInfo":{"mongodbVersion":"8.2.3","gitVersion":"36f41c9c30a2f13f834d033ba03c3463c891fb01","compiledModules":[],"uname":{"sysname":"Linux","release":"4.19.130-boot2docker","version":"#1 SMP Mon Jun 29 23:52:55 UTC 2020","machine":"x86_64"},"somap":[{"b":"5629C0ED9000","path":"/usr/bin/mongod","elfType":3,"buildId":"FD88BF8A90D336B4DEF4B7E1CA6695FA49D31A34"},{"b":"7EFE804B4000","path":"/lib/x86_64-linux-gnu/libc.so.6","elfType":3,"buildId":"274EEC488D230825A136FA9C4D85370FED7A0A5E"}]}}},"tags":[]}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.580+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CADC1D47","b":"5629C0ED9000","o":"9EE8D47","s":"_ZN5mongo15printStackTraceEv","C":"mongo::printStackTrace()","s+":"37"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.581+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CADA0C45","b":"5629C0ED9000","o":"9EC7C45","s":"_ZN5mongo12_GLOBAL__N_115printErrorBlockEv","C":"mongo::(anonymous namespace)::printErrorBlock()","s+":"225"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.581+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CADA0F30","b":"5629C0ED9000","o":"9EC7F30","s":"abruptQuitWithAddrSignal","s+":"150"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.581+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"7EFE804F9330","b":"7EFE804B4000","o":"45330"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"7EFE804DC9A2","b":"7EFE804B4000","o":"289A2","s":"abort","s+":"182"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CB0B6D7B","b":"5629C0ED9000","o":"A1DDD7B","s":"_ZN10__cxxabiv111__terminateEPFvvE.cold","C":"__cxxabiv1::__terminate(void (*)()) [clone .cold]","s+":"D"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CB0B6DF1","b":"5629C0ED9000","o":"A1DDDF1","s":"_ZSt9terminatev","C":"std::terminate()","s+":"12"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C52EA1F8","b":"5629C0ED9000","o":"44111F8","s":"__cxa_throw","s+":"48"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C53722D7","b":"5629C0ED9000","o":"44992D7","s":"__wrap___cxa_throw","s+":"57"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CB1459A0","b":"5629C0ED9000","o":"A26C9A0","s":"_ZSt20__throw_system_errori","C":"std::__throw_system_error(int)","s+":"83"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CB145BF3","b":"5629C0ED9000","o":"A26CBF3","s":"_ZNSt6thread15_M_start_threadESt10unique_ptrINS_6_StateESt14default_deleteIS1_EEPFvvE.cold","C":"std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) [clone .cold]","s+":"7"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C662AD83","b":"5629C0ED9000","o":"5751D83","s":"_ZN5mongo27startSignalProcessingThreadENS_13LogFileStatusE","C":"mongo::startSignalProcessingThread(mongo::LogFileStatus)","s+":"1E3"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C5409A36","b":"5629C0ED9000","o":"4530A36","s":"_ZN5mongo11mongod_mainEiPPc","C":"mongo::mongod_main(int, char**)","s+":"C6"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C53F30E7","b":"5629C0ED9000","o":"451A0E7","s":"main","s+":"9"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"7EFE804DE1CA","b":"7EFE804B4000","o":"2A1CA"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.584+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"7EFE804DE28B","b":"7EFE804B4000","o":"2A28B","s":"__libc_start_main","s+":"8B"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.584+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C53F2FC5","b":"5629C0ED9000","o":"4519FC5","s":"_start","s+":"25"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.584+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"\n"}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.584+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"\n"}}
+app-mongo exited with code 139
+```
+
+### Note
+
+* priguard versions should be pinned adequately 
+
+```txt
+[ERROR] Failed to execute goal com.github.wvengen:proguard-maven-plugin:2.5.3:proguard (default) on project api: Obfuscation failed ProGuard (proguard.ProGuard) not found in classpath -> [Help 1]
+
+```
 ### See Also
    * https://medium.com/@ufuk.guler/obfuscate-spring-boot-applications-with-proguard-maven-plugin-1f34bb871776
   * https://stackoverflow.com/questions/52875698/how-to-proguard-with-spring-boot-gradle-plugin
@@ -125,6 +241,10 @@ Caused by: org.springframework.context.annotation.ConflictingBeanDefinitionExcep
   * https://stackoverflow.com/questions/27714914/android-how-to-check-proguard-obfuscation-has-worked
   * https://medium.com/@jonfinerty/beginner-to-proguard-b3327ff3a831
   * https://habr.com/ru/articles/415499 (in Russian)
+  * https://huseyinabanozeng.blogspot.com/2018/07/obfuscating-spring-boot-projects-using.html
+  * https://stackoverflow.com/questions/8814312/how-to-run-proguard-in-my-spring-mvc-application-no-jar-but-for-classes
+  * https://www.sobyte.net/post/2021-11/use-proguard-maven-plugin-to-obfuscate-the-spring-boot-program/
+
 
 ---
 

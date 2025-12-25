@@ -1,0 +1,33 @@
+version: '3.5'
+networks:
+  backend:
+    name: backend
+services:
+  app-mongo:
+
+    container_name: app-mongo
+    image: mvertes/alpine-mongo
+    # NOTE: mvertes/alpine-mongo does not support MONGO_INITDB_ROOT_USERNAME, MONGO_INITDB_ROOT_PASSWORD 
+    image: 'mongo:latest'
+    restart: always
+    ports:
+      - '27017:27017'
+    networks:
+      - backend
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user-app
+      MONGO_INITDB_ROOT_PASSWORD: secret-pass
+
+  app-server:
+    container_name: app-server
+    ports:
+      - '8080:8080'
+    networks:
+      - backend
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATA_MONGODB_HOST: app-mongo
+      SPRING_DATA_MONGODB_database: app

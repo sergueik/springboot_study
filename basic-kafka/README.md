@@ -285,7 +285,8 @@ the Springboot Kafka configuration is incompete: cannot direct it to use remote 
    * [Apache Kafka Essential - Getting Started](https://archive.org/details/apache-kafka-essential-training-getting-started)
      + [source code](https://github.com/pfg-josecastillo/ApacheKafkaEssentialTraining_GettingStarted)
    * [Apache Kafka Essential Scalable Apps](https://www.classcentral.com/course/linkedin-learning-apache-kafka-essential-training-building-scalable-applications-77215)
-  * https://github.com/PacktPublishing/Build-scalable-applications-with-Apache-Kafka?ysclid=lzrcfr40m4804042611 
+  * https://github.com/PacktPublishing/Build-scalable-applications-with-Apache-Kafka?ysclid=lzrcfr40m4804042611
+  * [complex integration testing setup typical for kafka mediated explained](https://habr.com/ru/articles/824594/) (in Russian)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
