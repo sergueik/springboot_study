@@ -1,51 +1,72 @@
 ### Info
 
-  This directory containes example from [proguard-spring-boot-example](https://github.com/devslm/proguard-spring-boot-example)
+This directory containes example from [Obfuscate Spring Boot Applications with Proguard Maven Plugin example](https://medium.com/@ufuk.guler/obfuscate-spring-boot-applications-with-proguard-maven-plugin-1f34bb871776) modified to compile (the lombok was not working)
 
 
 ### Usage
+
+#### Build the App Jar
+
 ```sh
-IMAGE=proguard-spring-boot-example
-docker build -t $IMAGE -f Dockerfile .
+mvn clean package
 ```
+
+open the application jar in [Java Class Viewer](https://www.codeproject.com/Articles/35915/Java-Class-Viewer)
 
 ![Original Jar](https://github.com/sergueik/springboot_study/blob/master/basic-proguard/screenshots/original_jar.png)
-javaclassviewer
 
-```text
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  04:47 min (Wall Clock)
-[INFO] Finished at: 2025-12-24T22:42:59Z
-[INFO] ------------------------------------------------------------------------
-Removing intermediate container 08e3379de101
- ---> 01fc97bc8565
-Step 5/5 : CMD java -jar ./target/spring.boot.jar
- ---> Running in 053094999dbd
-Removing intermediate container 053094999dbd
- ---> d5c941d0d73e
-Successfully built d5c941d0d73e
-Successfully tagged x:latest
-SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host.
-All files and directories added to build context will have '-rwxr-xr-x' permissions.
-It is recommended to double check and reset permissions for sensitive files and directories.
+#### Proguard The Jar
+
+```sh
+mvn -Pproguard clean package
 ```
+
+the build log will contain (truncated):
+```text
+[INFO] proguard jar: [C:\Users\kouzm\.m2\repository\com\guardsquare\proguard-base\7.2.0-beta4\proguard-base-7.2.0-beta4.jar, C:\Users\kouzm\.m2\repository\com\guardsquare\proguard-core\8.0.3\proguard-core-8.0.3.jar]
+ [proguard] ProGuard, version 7.2.0-beta4
+```
+open the application jar in [Java Class Viewer](https://github.com/amosshi/freeinternals/tree/master/JavaClassViewer)
 
 ![ProGuard Jar](https://github.com/sergueik/springboot_study/blob/master/basic-proguard/screenshots/proguard_jar.png)
 
+the `proguard_map.txt` contains the deobfuscation mapping:
+```cmd
+findstr -i vjbt target\proguard_map.txt
+```
+```txt
+com.bookportal.api.configs.EnvironmentVariables -> com.bookportal.api.proguard.vjBtQDEgRu:
+    34:34:java.lang.String facebookIdAlreadyInUse() -> vjBtQDEgRu
+    com.bookportal.api.service.BookService bookService -> vjBtQDEgRu
+    48:50:reactor.core.publisher.Mono refuseComment(java.lang.String) -> vjBtQDEgRu
+    com.bookportal.api.service.BookService bookService -> vjBtQDEgRu
+    com.bookportal.api.service.BookService bookService -> vjBtQDEgRu
+    com.bookportal.api.service.BookService bookService -> vjBtQDEgRu
+    51:59:reactor.core.publisher.Mono updatePassword(reactor.core.publisher.Mono) -> vjBtQDEgRu
+    22:23:reactor.core.publisher.Mono getPublishersByPagination(int,int) -> vjBtQDEgRu
+    59:61:void lambda$save$1(java.lang.Throwable) -> vjBtQDEgRu
+    com.bookportal.api.service.BookService bookService -> vjBtQDEgRu
+    97:98:reactor.core.publisher.Mono initComment(java.lang.String,java.lang.String) -> vjBtQDEgRu
+    55:58:com.bookportal.api.entity.EmailConfirm initIfEmpty(com.bookportal.api.entity.User) -> vjBtQDEgRu
+
+```
+#### Package the Conatainer 
 ```sh
+IMAGE=proguard-spring-boot-example
+docker build -t $IMAGE -f Dockerfile .
 IMAGE=proguard-spring-boot-example
 CONTAINER=proguard-spring-boot-example
 docker run -p 8080:8080 --name $CONTAINER -d $IMAGE
 ```
-> NOTE: risky, when the container fails to run
 ```sh
 until [ "$(docker inspect -f '{{.State.Status}}' $CONTAINER)" == "running" ]; do sleep 1; done;
 ```
+> NOTE: risky, the app in the container may fail to start, 
+
 ```sh
 docker logs $CONTAINER
 ```
+logs (taken from another project) will explain, why
 ```text
  ____                                                         __        ____                                               ___
 /\  _`\                                                      /\ \      /\  _`\                                            /\_ \
@@ -103,7 +124,7 @@ Caused by: org.springframework.context.annotation.ConflictingBeanDefinitionExcep
   * https://stackoverflow.com/questions/12114096/how-do-i-use-proguard
   * https://stackoverflow.com/questions/27714914/android-how-to-check-proguard-obfuscation-has-worked
   * https://medium.com/@jonfinerty/beginner-to-proguard-b3327ff3a831
-
+  * https://habr.com/ru/articles/415499 (in Russian)
 
 ---
 

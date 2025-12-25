@@ -1,16 +1,40 @@
+spring:
+  data:
+    mongodb:
+      auto-index-creation: false
+      authentication-database: admin
+      username: user-app
+      password: secret-pass
+      port: 27017
+      host: 127.0.0.1
+      database: app
+      repositories:
+        type: reactive
+  mail:
+    host: smtp.yandex.com
+    port: 587
+    username: appmedia.api@yandex.com
+    password: tester123++
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          writetimeout: 5000
+          connectiontimeout: 5000
+          starttls:
+            enabled: true
+            required: true
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      enabled: 'true'
+      max-request-size: 3MB
 server:
-  port: 8080
+  port: '8080'
+  error:
+    include-stacktrace: never
 
 logging:
-  level:
-    root: "INFO"
-    com.slm.proguard: "INFO"
-  file:
-    path: "/tmp/proguard-example.log"
   pattern:
-    console: "%d{ISO8601} [%-5level] [%-10thread] [%-30logger{2}] - %m%n"
-    file: "%d{ISO8601} [%-5level] [%-10thread] [%-30logger{2}] - %m%n"
-
-spring:
-  application:
-    name: "proguard-example"
+    dateformat: yyyy-MM-dd HH:mm:ss.SSS,Europe/Istanbul
