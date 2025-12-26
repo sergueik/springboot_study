@@ -54,10 +54,10 @@ com.bookportal.api.configs.EnvironmentVariables -> com.bookportal.api.proguard.v
 ```sh
 docker pull mvertes/alpine-mongo
 docker pull eclipse-temurin:11-jre-alpine
-docker-pull eclipse-temurin:11-jdk-alpine
+docker pull eclipse-temurin:11-jdk-alpine
 ```
 ```sh
-docker-cpmpose up -build
+docker-compose up -build
 ```
 if the error 
 
@@ -224,14 +224,27 @@ app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.584+00:00"},"s":"F",  "c":"CONT
 app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.584+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"\n"}}
 app-mongo exited with code 139
 ```
+#### Copying Jar from the Image Without Running
+
+* Create container without running it
+
+```sh
+IMAGE=proguard-spring-boot-example
+CONTAINER=proguard-spring-boot-example
+docker container rm -f $CONTAINER
+docker create --name $CONTAINER  $IMAGE 
+```
+* copy the JAR file to host
+```sh
+docker cp $CONTAINER:/app/app.jar target/app.jar
+```
 
 ### Note
 
-* priguard versions should be pinned adequately 
+* proguard versions should be pinned adequately 
 
 ```txt
 [ERROR] Failed to execute goal com.github.wvengen:proguard-maven-plugin:2.5.3:proguard (default) on project api: Obfuscation failed ProGuard (proguard.ProGuard) not found in classpath -> [Help 1]
-
 ```
 ### See Also
    * https://medium.com/@ufuk.guler/obfuscate-spring-boot-applications-with-proguard-maven-plugin-1f34bb871776

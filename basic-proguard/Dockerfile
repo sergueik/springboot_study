@@ -15,7 +15,8 @@ RUN mvn -T 2C -Pproguard clean package
 
 FROM eclipse-temurin:11-jre-alpine
 # NOTE: need to re-introduce ARG
-ARG app_jar=com.bookportal.api.jar
-COPY --from=builder  "/app/target/${app_jar}" ./app.jar
+ARG app_jar=example.upload.jar
+WORKDIR app
+COPY --from=builder "/app/target/${app_jar}" /app/app.jar
 EXPOSE 8085
 ENTRYPOINT ["java", "-jar", "app.jar"]
