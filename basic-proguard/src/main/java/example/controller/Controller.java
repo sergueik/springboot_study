@@ -55,33 +55,21 @@ public class Controller {
 	};
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<User> put(@RequestParam Optional<Map<String, String>> param, @PathVariable int id) {
-		System.err.println("put begin");
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new User());
-		/*
-		try {
-			User user = users.get(id);
-			payload = gson.toJson(user);
-			System.err.println("put begin: " + payload);
+	public ResponseEntity<User> put(@RequestParam Map<String, String> param, @PathVariable int id) {
+		User user = users.get(id);
+		payload = gson.toJson(user);
+		System.err.println("put begin: " + payload);
 
-			if (user == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-			}
-			if (!param.isPresent() || !param.get().containsKey("name")) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-			}
-			user.setName(param.get().get("name"));
-
-			payload = gson.toJson(user);
-			System.err.println("put end: " + payload);
-			return ResponseEntity.ok(user);
-		} catch (Exception e) {
-			System.err.println(String.format("Exception: %s", e.toString()));
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new User());
-
+		if (user == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
-		*/
+		if (!param.containsKey("name")) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}	
+		user.setName(param.get("name"));
+
+		payload = gson.toJson(user);
+		System.err.println("put end: " + payload);
+		return ResponseEntity.ok(user);
 	}
 }
