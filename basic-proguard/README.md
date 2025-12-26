@@ -5,6 +5,24 @@ This directory containes example from [Obfuscate Spring Boot Applications with P
 
 ### Usage
 
+To succeeded with [ProGuard]() obfuscation of an dependency-heavy, DI-intensive Spring Boot / WebFlux apps one typically needs to Treat ProGuard as a linker with deliberate rule curation not a text transformer and preserve Spring framework internals untouched
++ annotations
++ reflection targets
++ proxy interfaces
++ configuration properties
+
+and obfuscate *business logic* packages only
+
+Consider the ProGuard mapping file becomes a private ABI between the runtime abd observability:
+
++ Containers expose minimal symbolic surface
++ Runtime stack traces are unintelligible without the map: APM gets legiblt transactions, attacker gets debugging noise
+
+Dependency-heavy microservices need symbol clarity more than raw logs.
+
+APMs almost always store telemetry in its original (obfuscated / cryptic) form and resolve to real symbols at query or render time. This is same architectural pattern as the Microsoft Symbol Server + [PDB](https://en.wikipedia.org/wiki/Program_database): during event ingestion, APM backend stores exactly what the agent sends: class and method names obfuscated,
+service name and version known through [trace context](https://www.w3.org/TR/trace-context/) `tracestate` which is specifically desiged for vendor-specific metadata. The symbol expansion happens late, not during ingestion, but during query/aggregation/render. Some derived metrics (aggregations, rollups) may store normalized names.
+
 #### Build the App Jar
 
 ```sh
@@ -137,16 +155,45 @@ docker logs $CONTAINER
 Error: Invalid or corrupt jarfile app.jar
 ```
 examine
+
 ```sh
 docker rm $CONTAINER
 docker run -it --entrypoint '' -p 8080:8080 --name $CONTAINER $IMAGE sh
 ```
+
+The `mongo` dependency is unstable when run on Docker Toolbox hosted on Windows OS / Virtual Box:
+```text
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.432+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"Invalid access at address: 0\n"}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.432+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"Dumping siginfo (si_code=128): 0b 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n"}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.432+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"Got signal: 11 (Segmentation fault).\n"}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.580+00:00"},"s":"I",  "c":"CONTROL",  "id":31380,   "ctx":"main","msg":"BACKTRACE","attr":{"bt":{"backtrace":[{"a":"5629CADC1D47","b":"5629C0ED9000","o":"9EE8D47","s":"_ZN5mongo15printStackTraceEv","C":"mongo::printStackTrace()","s+":"37"},{"a":"5629CADA0C45","b":"5629C0ED9000","o":"9EC7C45","s":"_ZN5mongo12_GLOBAL__N_115printErrorBlockEv","C":"mongo::(anonymous namespace)::printErrorBlock()","s+":"225"},{"a":"5629CADA0F30","b":"5629C0ED9000","o":"9EC7F30","s":"abruptQuitWithAddrSignal","s+":"150"},{"a":"7EFE804F9330","b":"7EFE804B4000","o":"45330"},{"a":"7EFE804DC9A2","b":"7EFE804B4000","o":"289A2","s":"abort","s+":"182"},{"a":"5629CB0B6D7B","b":"5629C0ED9000","o":"A1DDD7B","s":"_ZN10__cxxabiv111__terminateEPFvvE.cold","C":"__cxxabiv1::__terminate(void (*)()) [clone .cold]","s+":"D"},{"a":"5629CB0B6DF1","b":"5629C0ED9000","o":"A1DDDF1","s":"_ZSt9terminatev","C":"std::terminate()","s+":"12"},{"a":"5629C52EA1F8","b":"5629C0ED9000","o":"44111F8","s":"__cxa_throw","s+":"48"},{"a":"5629C53722D7","b":"5629C0ED9000","o":"44992D7","s":"__wrap___cxa_throw","s+":"57"},{"a":"5629CB1459A0","b":"5629C0ED9000","o":"A26C9A0","s":"_ZSt20__throw_system_errori","C":"std::__throw_system_error(int)","s+":"83"},{"a":"5629CB145BF3","b":"5629C0ED9000","o":"A26CBF3","s":"_ZNSt6thread15_M_start_threadESt10unique_ptrINS_6_StateESt14default_deleteIS1_EEPFvvE.cold","C":"std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) [clone .cold]","s+":"7"},{"a":"5629C662AD83","b":"5629C0ED9000","o":"5751D83","s":"_ZN5mongo27startSignalProcessingThreadENS_13LogFileStatusE","C":"mongo::startSignalProcessingThread(mongo::LogFileStatus)","s+":"1E3"},{"a":"5629C5409A36","b":"5629C0ED9000","o":"4530A36","s":"_ZN5mongo11mongod_mainEiPPc","C":"mongo::mongod_main(int, char**)","s+":"C6"},{"a":"5629C53F30E7","b":"5629C0ED9000","o":"451A0E7","s":"main","s+":"9"},{"a":"7EFE804DE1CA","b":"7EFE804B4000","o":"2A1CA"},{"a":"7EFE804DE28B","b":"7EFE804B4000","o":"2A28B","s":"__libc_start_main","s+":"8B"},{"a":"5629C53F2FC5","b":"5629C0ED9000","o":"4519FC5","s":"_start","s+":"25"}],"processInfo":{"mongodbVersion":"8.2.3","gitVersion":"36f41c9c30a2f13f834d033ba03c3463c891fb01","compiledModules":[],"uname":{"sysname":"Linux","release":"4.19.130-boot2docker","version":"#1 SMP Mon Jun 29 23:52:55 UTC 2020","machine":"x86_64"},"somap":[{"b":"5629C0ED9000","path":"/usr/bin/mongod","elfType":3,"buildId":"FD88BF8A90D336B4DEF4B7E1CA6695FA49D31A34"},{"b":"7EFE804B4000","path":"/lib/x86_64-linux-gnu/libc.so.6","elfType":3,"buildId":"274EEC488D230825A136FA9C4D85370FED7A0A5E"}]}}},"tags":[]}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.580+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CADC1D47","b":"5629C0ED9000","o":"9EE8D47","s":"_ZN5mongo15printStackTraceEv","C":"mongo::printStackTrace()","s+":"37"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.581+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CADA0C45","b":"5629C0ED9000","o":"9EC7C45","s":"_ZN5mongo12_GLOBAL__N_115printErrorBlockEv","C":"mongo::(anonymous namespace)::printErrorBlock()","s+":"225"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.581+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CADA0F30","b":"5629C0ED9000","o":"9EC7F30","s":"abruptQuitWithAddrSignal","s+":"150"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.581+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"7EFE804F9330","b":"7EFE804B4000","o":"45330"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"7EFE804DC9A2","b":"7EFE804B4000","o":"289A2","s":"abort","s+":"182"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CB0B6D7B","b":"5629C0ED9000","o":"A1DDD7B","s":"_ZN10__cxxabiv111__terminateEPFvvE.cold","C":"__cxxabiv1::__terminate(void (*)()) [clone .cold]","s+":"D"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CB0B6DF1","b":"5629C0ED9000","o":"A1DDDF1","s":"_ZSt9terminatev","C":"std::terminate()","s+":"12"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C52EA1F8","b":"5629C0ED9000","o":"44111F8","s":"__cxa_throw","s+":"48"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C53722D7","b":"5629C0ED9000","o":"44992D7","s":"__wrap___cxa_throw","s+":"57"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CB1459A0","b":"5629C0ED9000","o":"A26C9A0","s":"_ZSt20__throw_system_errori","C":"std::__throw_system_error(int)","s+":"83"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CB145BF3","b":"5629C0ED9000","o":"A26CBF3","s":"_ZNSt6thread15_M_start_threadESt10unique_ptrINS_6_StateESt14default_deleteIS1_EEPFvvE.cold","C":"std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) [clone .cold]","s+":"7"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C662AD83","b":"5629C0ED9000","o":"5751D83","s":"_ZN5mongo27startSignalProcessingThreadENS_13LogFileStatusE","C":"mongo::startSignalProcessingThread(mongo::LogFileStatus)","s+":"1E3"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C5409A36","b":"5629C0ED9000","o":"4530A36","s":"_ZN5mongo11mongod_mainEiPPc","C":"mongo::mongod_main(int, char**)","s+":"C6"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C53F30E7","b":"5629C0ED9000","o":"451A0E7","s":"main","s+":"9"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"7EFE804DE1CA","b":"7EFE804B4000","o":"2A1CA"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.584+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"7EFE804DE28B","b":"7EFE804B4000","o":"2A28B","s":"__libc_start_main","s+":"8B"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.584+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C53F2FC5","b":"5629C0ED9000","o":"4519FC5","s":"_start","s+":"25"}}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.584+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"\n"}}
+app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.584+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"\n"}}
+app-mongo exited with code 139
+```
+
 ### Errors From Obfuscation
 
+When something is broken at app launch, investigate
 
-if something is brooken at app launch, investigate
-```
-logs (taken from another project) will explain, why
+A typical bad obfuscation-induced runtime exception logs (taken from another project) will explain, why
 ```text
  ____                                                         __        ____                                               ___
 /\  _`\                                                      /\ \      /\  _`\                                            /\_ \
@@ -197,33 +244,7 @@ Caused by: org.springframework.context.annotation.ConflictingBeanDefinitionExcep
 	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:175)
 	... 21 common frames omitted
 ```
-also, the `mongo` dependency is unstable:
-```text
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.432+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"Invalid access at address: 0\n"}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.432+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"Dumping siginfo (si_code=128): 0b 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n"}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.432+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"Got signal: 11 (Segmentation fault).\n"}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.580+00:00"},"s":"I",  "c":"CONTROL",  "id":31380,   "ctx":"main","msg":"BACKTRACE","attr":{"bt":{"backtrace":[{"a":"5629CADC1D47","b":"5629C0ED9000","o":"9EE8D47","s":"_ZN5mongo15printStackTraceEv","C":"mongo::printStackTrace()","s+":"37"},{"a":"5629CADA0C45","b":"5629C0ED9000","o":"9EC7C45","s":"_ZN5mongo12_GLOBAL__N_115printErrorBlockEv","C":"mongo::(anonymous namespace)::printErrorBlock()","s+":"225"},{"a":"5629CADA0F30","b":"5629C0ED9000","o":"9EC7F30","s":"abruptQuitWithAddrSignal","s+":"150"},{"a":"7EFE804F9330","b":"7EFE804B4000","o":"45330"},{"a":"7EFE804DC9A2","b":"7EFE804B4000","o":"289A2","s":"abort","s+":"182"},{"a":"5629CB0B6D7B","b":"5629C0ED9000","o":"A1DDD7B","s":"_ZN10__cxxabiv111__terminateEPFvvE.cold","C":"__cxxabiv1::__terminate(void (*)()) [clone .cold]","s+":"D"},{"a":"5629CB0B6DF1","b":"5629C0ED9000","o":"A1DDDF1","s":"_ZSt9terminatev","C":"std::terminate()","s+":"12"},{"a":"5629C52EA1F8","b":"5629C0ED9000","o":"44111F8","s":"__cxa_throw","s+":"48"},{"a":"5629C53722D7","b":"5629C0ED9000","o":"44992D7","s":"__wrap___cxa_throw","s+":"57"},{"a":"5629CB1459A0","b":"5629C0ED9000","o":"A26C9A0","s":"_ZSt20__throw_system_errori","C":"std::__throw_system_error(int)","s+":"83"},{"a":"5629CB145BF3","b":"5629C0ED9000","o":"A26CBF3","s":"_ZNSt6thread15_M_start_threadESt10unique_ptrINS_6_StateESt14default_deleteIS1_EEPFvvE.cold","C":"std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) [clone .cold]","s+":"7"},{"a":"5629C662AD83","b":"5629C0ED9000","o":"5751D83","s":"_ZN5mongo27startSignalProcessingThreadENS_13LogFileStatusE","C":"mongo::startSignalProcessingThread(mongo::LogFileStatus)","s+":"1E3"},{"a":"5629C5409A36","b":"5629C0ED9000","o":"4530A36","s":"_ZN5mongo11mongod_mainEiPPc","C":"mongo::mongod_main(int, char**)","s+":"C6"},{"a":"5629C53F30E7","b":"5629C0ED9000","o":"451A0E7","s":"main","s+":"9"},{"a":"7EFE804DE1CA","b":"7EFE804B4000","o":"2A1CA"},{"a":"7EFE804DE28B","b":"7EFE804B4000","o":"2A28B","s":"__libc_start_main","s+":"8B"},{"a":"5629C53F2FC5","b":"5629C0ED9000","o":"4519FC5","s":"_start","s+":"25"}],"processInfo":{"mongodbVersion":"8.2.3","gitVersion":"36f41c9c30a2f13f834d033ba03c3463c891fb01","compiledModules":[],"uname":{"sysname":"Linux","release":"4.19.130-boot2docker","version":"#1 SMP Mon Jun 29 23:52:55 UTC 2020","machine":"x86_64"},"somap":[{"b":"5629C0ED9000","path":"/usr/bin/mongod","elfType":3,"buildId":"FD88BF8A90D336B4DEF4B7E1CA6695FA49D31A34"},{"b":"7EFE804B4000","path":"/lib/x86_64-linux-gnu/libc.so.6","elfType":3,"buildId":"274EEC488D230825A136FA9C4D85370FED7A0A5E"}]}}},"tags":[]}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.580+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CADC1D47","b":"5629C0ED9000","o":"9EE8D47","s":"_ZN5mongo15printStackTraceEv","C":"mongo::printStackTrace()","s+":"37"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.581+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CADA0C45","b":"5629C0ED9000","o":"9EC7C45","s":"_ZN5mongo12_GLOBAL__N_115printErrorBlockEv","C":"mongo::(anonymous namespace)::printErrorBlock()","s+":"225"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.581+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CADA0F30","b":"5629C0ED9000","o":"9EC7F30","s":"abruptQuitWithAddrSignal","s+":"150"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.581+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"7EFE804F9330","b":"7EFE804B4000","o":"45330"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"7EFE804DC9A2","b":"7EFE804B4000","o":"289A2","s":"abort","s+":"182"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CB0B6D7B","b":"5629C0ED9000","o":"A1DDD7B","s":"_ZN10__cxxabiv111__terminateEPFvvE.cold","C":"__cxxabiv1::__terminate(void (*)()) [clone .cold]","s+":"D"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CB0B6DF1","b":"5629C0ED9000","o":"A1DDDF1","s":"_ZSt9terminatev","C":"std::terminate()","s+":"12"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C52EA1F8","b":"5629C0ED9000","o":"44111F8","s":"__cxa_throw","s+":"48"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.582+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C53722D7","b":"5629C0ED9000","o":"44992D7","s":"__wrap___cxa_throw","s+":"57"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CB1459A0","b":"5629C0ED9000","o":"A26C9A0","s":"_ZSt20__throw_system_errori","C":"std::__throw_system_error(int)","s+":"83"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629CB145BF3","b":"5629C0ED9000","o":"A26CBF3","s":"_ZNSt6thread15_M_start_threadESt10unique_ptrINS_6_StateESt14default_deleteIS1_EEPFvvE.cold","C":"std::thread::_M_start_thread(std::unique_ptr<std::thread::_State, std::default_delete<std::thread::_State> >, void (*)()) [clone .cold]","s+":"7"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C662AD83","b":"5629C0ED9000","o":"5751D83","s":"_ZN5mongo27startSignalProcessingThreadENS_13LogFileStatusE","C":"mongo::startSignalProcessingThread(mongo::LogFileStatus)","s+":"1E3"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C5409A36","b":"5629C0ED9000","o":"4530A36","s":"_ZN5mongo11mongod_mainEiPPc","C":"mongo::mongod_main(int, char**)","s+":"C6"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C53F30E7","b":"5629C0ED9000","o":"451A0E7","s":"main","s+":"9"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.583+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"7EFE804DE1CA","b":"7EFE804B4000","o":"2A1CA"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.584+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"7EFE804DE28B","b":"7EFE804B4000","o":"2A28B","s":"__libc_start_main","s+":"8B"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.584+00:00"},"s":"I",  "c":"CONTROL",  "id":31445,   "ctx":"main","msg":"Frame","attr":{"frame":{"a":"5629C53F2FC5","b":"5629C0ED9000","o":"4519FC5","s":"_start","s+":"25"}}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.584+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"\n"}}
-app-mongo   | {"t":{"$date":"2025-12-25T22:56:19.584+00:00"},"s":"F",  "c":"CONTROL",  "id":6384300, "ctx":"main","msg":"Writing fatal message","attr":{"message":"\n"}}
-app-mongo exited with code 139
-```
+
 #### Copying Jar from the Image Without Running
 
 * Create container without running it
@@ -234,10 +255,52 @@ CONTAINER=proguard-spring-boot-example
 docker container rm -f $CONTAINER
 docker create --name $CONTAINER  $IMAGE 
 ```
-* copy the JAR file to host
+* copy the JAR file from the container to host
 ```sh
 docker cp $CONTAINER:/app/app.jar target/app.jar
 ```
+### Retrace
+
+When an obfuscated program throws an exception, the resulting stack trace typically isn't very informative: 
+the Class names and method names have been replaced by short meaningless strings. 
+[ReTrace](https://www.guardsquare.com/manual/tools/retrace) is a companion tool for 
+ProGuard and DexGuard that 'de-obfuscates' the stack traces.
+
+One does not have to  build it [manually](https://www.guardsquare.com/manual/building) and simpkly download the release
+
+```sh
+VERSION=7.8.2
+curl -skLo ~/Downloads/proguard.zip https://github.com/Guardsquare/proguard/releases/download/v${VERSION}/proguard-${VERSION}.zip
+```
+examine the contents of the release artifact:
+
+```sh
+unzip -l ~/Downloads/proguard.zip
+```
+extract the runtimes
+```sh
+VERSION=7.8.2
+unzip -x  ~/Downloads/proguard.zip "proguard-${VERSION}/lib/*" "proguard-${VERSION}/bin/*"
+```
+```text
+Archive:  /c/Users/kouzm/Downloads/proguard.zip
+  inflating: proguard-7.8.2/lib/proguard.jar
+  inflating: proguard-7.8.2/lib/proguardgui.jar
+  inflating: proguard-7.8.2/lib/retrace.jar
+  inflating: proguard-7.8.2/lib/proguard-ant.jar
+  inflating: proguard-7.8.2/bin/proguardgui.bat
+  inflating: proguard-7.8.2/bin/proguard.bat
+  inflating: proguard-7.8.2/bin/retrace.sh
+  inflating: proguard-7.8.2/bin/proguardgui.sh
+  inflating: proguard-7.8.2/bin/retrace.bat
+  inflating: proguard-7.8.2/bin/proguard.sh
+```
+
+optionally copy into tools and add to the PATH:
+```sh
+VERSION=7.8.2
+cp -R proguard-7.8.2/ /c/tools/proguard
+``` 
 
 ### Note
 
@@ -246,6 +309,8 @@ docker cp $CONTAINER:/app/app.jar target/app.jar
 ```txt
 [ERROR] Failed to execute goal com.github.wvengen:proguard-maven-plugin:2.5.3:proguard (default) on project api: Obfuscation failed ProGuard (proguard.ProGuard) not found in classpath -> [Help 1]
 ```
+---
+
 ### See Also
    * https://medium.com/@ufuk.guler/obfuscate-spring-boot-applications-with-proguard-maven-plugin-1f34bb871776
   * https://stackoverflow.com/questions/52875698/how-to-proguard-with-spring-boot-gradle-plugin
@@ -257,8 +322,10 @@ docker cp $CONTAINER:/app/app.jar target/app.jar
   * https://huseyinabanozeng.blogspot.com/2018/07/obfuscating-spring-boot-projects-using.html
   * https://stackoverflow.com/questions/8814312/how-to-run-proguard-in-my-spring-mvc-application-no-jar-but-for-classes
   * https://www.sobyte.net/post/2021-11/use-proguard-maven-plugin-to-obfuscate-the-spring-boot-program/
-
-
+  * [migrating COBOL to Java - why does one need ANTLR](https://habr.com/ru/companies/alfastrah/articles/980846/) (in Russian)
+  * proguard maven plugins:
+  + https://github.com/wvengen/proguard-maven-plugin
+  + https://github.com/dingxin/proguard-maven-plugin
 ---
 
 ### Author
