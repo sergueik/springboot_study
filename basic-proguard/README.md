@@ -338,8 +338,253 @@ On Windows  host have to use `retrace.bat` since the shell version relies on una
 c:\tools\proguard\bin\retrace.bat -verbose target\proguard_map.txt stacktrace.txt
 ```
 
-
 ![Retraced the exception](https://github.com/sergueik/springboot_study/blob/master/basic-proguard/screenshots/retraced.png)
+
+### APM && Guard Square == 0
+
+This appeaers like attempt to recreate the "symbol server" effect for Java microservices with Proguard obfuscation in the way.
+
+Out of the box, __ELK__ does *NOT* use __ProGuard__ mapping files at all.
+
+So in the minimal distributed tracing setup:
+
+  * Two ProGuarded Spring Boot apps nodes
+  * Elastic APM agent on both
+  * Distributed HTTP call
+  * Trace correlation via `trace.id`
+
+In this setup,
+
+  * The trace will be grouped correctly,
+  * but caller/callee method / class names will appear verbatim as the agent sees them - as random-looking hashes, not clearText. 
+
+This is because trace correlation
+
+  + works out of the box
+  + underlying `Trace ID` propagation is automatic
+  + the Parent/child spans are grouped correctly based on trace `Trace Context` [spec](https://www.w3.org/TR/trace-context/#parent-id)
+
+As of today, mainstream APM stacks (Elastic APM, OpenTelemetry-based pipelines, Jaeger, Zipkin) do not support using ProGuard/R8 mapping files to present cleartext Java class or method names in distributed traces at runtime.
+
+This is not a configuration gap. It is an architectural limitation.
+
+To make simultaneous obfuscation + cleartext tracing  work properly, an APM system would need all of the following:
+
+  * A way to ingest mapping files
+  * Version awareness (service.version)
+  * Late binding of symbols (like PDBs)
+  * Query-time or UI-time de‑obfuscation
+  * Secure handling of IP-sensitive symbols
+
+None of the current vendors implement this end‑to‑end.
+
+Switching to Otel does not solve the obfuscation vs clarity problem.
+
+Even __AppDynamics__ (and older APMs):
+
+ heavy on-demand instrumentation allowed (At huge performance cost)
+
+  * call graphs
+  * argument values
+  * object snapshots
+
+but not
+
+  * symbol-server-style remapping
+
+all extra serices App offer relied on non-obfuscated bytecode.
+
+One can define a hard trade-off triangle, where one can pick at most two:
+
+  * Code obfuscation (IP protection)
+  * Cleartext method-level tracing
+  * Zero custom tooling
+
+Today’s reality:
+
+  * Vendors choose (2) + (3)
+  * Security teams push for (1)
+  * Nobody ships (1) + (2) + (3)
+
+The common compromise is:
+
+* Obfuscate code
+* Do NOT rely on method names in tracing
+
+
+Another important usage of Sybol Server was:
+
+Certain Windows components shipped with reduced or restricted symbolic visibility due to security and IP concerns,
+while full symbols remained available internally. For that purpose, Microsoft has long maintained:
+
+* public symbol servers (limited symbols released here)
+* internal symbol servers (full symbols available here)
+
+#### Microsoft Symbol Server — historical context
+
+__Microsoft Symbol Server__ was introduced in the late 1990s and became broadly usable in the early 2000s as part of the Windows NT debugging ecosystem. Its primary purpose was to allow post-mortem debugging of compiled binaries without shipping debug symbols directly with the software.
+
+At a high level:
+
+  * Windows binaries (EXE/DLL) are shipped without symbols
+  * Debug symbols are stored separately in PDB files
+  * Each PDB is uniquely identified by a GUID + age
+  * Debuggers (Visual Studio, WinDbg) retrieve matching symbols on demand from a symbol server
+
+This design enabled several critical capabilities:
+
+  * Small production binaries
+  * Protection of proprietary implementation details
+  * Accurate stack traces and crash analysis
+  * Debugging across OS, driver, and application boundaries
+
+Symbol resolution is explicitly developer-initiated and happens after execution, typically during crash analysis or live debugging sessions.
+
+### Symbol Server Ecosystem
+
+In the early 2000s, the idea that a debugger could:
+
+ * automatically extract version identifiers from a binary
+ * construct a structured request (GUIDs, checksums, CPU architecture)
+ * accurately query a remote HTTP endpoint
+ * retrieve exactly the right symbol file
+ * seamlessly merge it into a debugging session
+
+was not obvious at all.
+
+At the time, this required developers to learn and embrace few new concepts that :
+
+  * debugging metadata could reside outside the binary
+  * symbol identity was defined by content hashes and GUIDs, not filenames
+  * remote services could be trusted to supply critical debugging data
+  * URLs and request parameters could encode rich, machine-readable meaning
+
+In hindsight, this looks trivial. For the early 2000s, it was a major conceptual shift.
+The __Windows Symbol Server__ succeeded because Microsoft invested heavily in:
+
+  * defining non-surprising, deterministic protocols
+  * making symbol lookup boring and reliable
+  * hiding complexity behind tooling (Visual Studio, WinDbg)
+  * standardizing identifiers across compilers, linkers, and OS builds
+
+By contrast, even modern Java APM systems:
+
+* assume runtime symbols are already meaningful
+* never had to solve late-binding symbol resolution
+* evolved in a world where HTTP, JSON, and trace IDs were already “obvious”
+
+Today, URL-based symbol resolution is taken for granted, but the Java observability ecosystem never had to re-learn that lesson 
+— until obfuscation reintroduced the problem
+
+What looks like a “missing feature” in APM is actually a missing historical pressure.
+
+Native debugging required symbol servers.
+
+Java observability did not, until IP protection became widespread in microservices.
+
+As a result, the ecosystem optimized for:
+
+  * runtime clarity
+  * immediate semantics
+  * low friction
+
+and never built a post-hoc symbol resolution layer.
+
+This makes your conclusion stronger:
+
+The absence of mapping-aware distributed tracing is not an oversight; it is the consequence of a different evolutionary path
+
+#### Could Microsoft technically offer “obfuscated but fully traceable” distributed tracing?
+
+Yes. Unequivocally.
+
+Microsoft already has:
+
+* Compiler toolchains
+* IL rewriting (for .NET)
+* Build pipelines
+* Symbol servers
+* IDE integration
+* Telemetry ingestion (Application Insights)
+* Full version control across the stack
+
+In other words:
+
+Microsoft already owns every technical building block required to implement a Java-style ProGuard + mapping + APM experience — and more.
+
+They could:
+
+* Obfuscate IL
+* Generate mapping/symbol artifacts
+* Associate them with service.version
+* Resolve symbols only inside Azure
+* Never expose raw symbols to customers
+
+This would be entirely consistent with their historical PDB model.
+
+So why don’t they?
+
+This is the important part — and it’s not technical.
+
+The reasons are primarily strategic and economic:
+* The audience didn’t demand it: Most Application Insights users:
+
+  + run first-party code
+  + value clarity over IP protection
+  + do not obfuscate .NET services
+
+Banks and governments are a smaller but demanding segment
+
+ * Observability value decreases with obfuscation. The APM value proposition depends on:
+
++ readable method names
++ actionable traces
+
+Obfuscation without perfect remapping would degrade UX
+
+* Trust and liability. Offering: "Only visible to you through us"
+
+means: Microsoft becomes custodian of:
+
+ + sensitive IP metadata
+ + symbol mappings
+
+That raises:
+
+ + compliance
+ + contractual
+ + legal questions
+
+Especially for government customers.
+
+* Azure already sells without it
+
+Azure adoption is driven by:
+
+ + platform breadth
+ + compliance certifications
+ + ecosystem lock-in
+
+Obfuscation-aware tracing is not currently a top-tier differentiator.
+
+* The hypothesis is valid — and valuable
+
+This is a fair analytical observation, not a conspiracy theory:
+
+Microsoft has previously shipped security-sensitive components with restricted symbolic visibility, while retaining full internal debugging capability. This demonstrates that the company is technically capable of offering developer-friendly observability over obfuscated code. The absence of such functionality in modern distributed tracing appears to be a strategic choice rather than a technical limitation.
+
+This strengthens your earlier point rather than contradicting it:
+
+The absence of symbol-aware APM is ecosystem-wide
+
+Even vendors who could do it haven’t
+
+Therefore:
+
+Java APM vendors aren’t “behind”
+
+They simply followed a different evolutionary path
+
 
 
 ### Note

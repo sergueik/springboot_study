@@ -32,7 +32,6 @@ import example.model.User;
 public class Controller {
 
 	private final Map<Long, User> users = new ConcurrentHashMap<>();
-	private Map<String, String> data = new HashMap<>();
 	private final Gson gson = new Gson();
 	private String payload;
 
@@ -66,7 +65,7 @@ public class Controller {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
 		System.err.println(
-				String.format("put set name: \"%s\"", (param.containsKey("name") ? "null" : param.get("name"))));
+				String.format("put set name: \"%s\"", (param.containsKey("name") ? param.get("name") : "null")));
 		if (!param.containsKey("name")) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
