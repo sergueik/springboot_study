@@ -40,6 +40,7 @@ public class User {
 	}
 
 	public void setName(String name) {
+		System.err.println(String.format("set  name: %s", (name == null ? "null" : name)));
 		if (name.isEmpty())
 			throw new IllegalArgumentException("name is required");
 		this.name = name;

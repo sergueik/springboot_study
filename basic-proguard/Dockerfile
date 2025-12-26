@@ -1,5 +1,4 @@
 FROM eclipse-temurin:11-jdk-alpine as builder
-ARG app_jar=com.bookportal.api.jar
 RUN apk upgrade -U -a \
     && apk add --no-cache \
     maven \
@@ -15,7 +14,7 @@ RUN mvn -T 2C -Pproguard clean package
 
 FROM eclipse-temurin:11-jre-alpine
 # NOTE: need to re-introduce ARG
-ARG app_jar=example.upload.jar
+ARG app_jar=example.proguard.jar
 WORKDIR app
 COPY --from=builder "/app/target/${app_jar}" /app/app.jar
 EXPOSE 8085

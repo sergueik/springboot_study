@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>proguard</artifactId>
-  <version>0.4.2-SNAPSHOT</version>
+  <version>0.5.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>proguard</name>
   <description>Demo app</description>
@@ -18,9 +18,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+    <!-- reverse‑engineering Maven’s effective dependency graph, then freezing it -->
     <proguard-base.version>7.2.0-beta4</proguard-base.version>
     <proguard-core.version>8.0.3</proguard-core.version>
-    <proguard.maven.plugin.version>2.5.3</proguard.maven.plugin.version>
+    <proguard.maven.plugin.version>2.7.0</proguard.maven.plugin.version>
     <jakarta.el.version>5.0.1</jakarta.el.version>
     <jakarta.validation.version>3.0.2</jakarta.validation.version>
     <gson.version>2.8.9</gson.version>
@@ -93,6 +94,20 @@
       </plugin>
     </plugins>
   </build>
+  <repositories>
+    <repository>
+      <id>guardsquare</id>
+      <name>Guardsquare ProGuard</name>
+      <url>https://maven.guardsquare.com</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>guardsquare</id>
+      <name>Guardsquare ProGuard Plugins</name>
+      <url>https://maven.guardsquare.com</url>
+    </pluginRepository>
+  </pluginRepositories>
   <profiles>
     <profile>
       <id>proguard</id>

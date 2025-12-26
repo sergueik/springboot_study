@@ -302,6 +302,46 @@ VERSION=7.8.2
 cp -R proguard-7.8.2/ /c/tools/proguard
 ``` 
 
+
+```text
+put updating user  {"xTzLLlWzoD":1,"vjBtQDEgRu":"Alice","agHeRrpWNx":"alice@example.com"}
+with param: {"name":""}
+put set name: "null"
+set  name:
+2025-12-26 11:53:15.564 ERROR 25792 --- [nio-8080-exec-1] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; nested exception is java.lang.IllegalArgumentException: name is required] with root cause
+
+java.lang.IllegalArgumentException: name is required
+        at example.PzHKbKynPU.setName(User.java:45) ~[classes!/:0.5.0-SNAPSHOT]
+        at example.ffyUbXipBD.ffyUbXipBD(Controller.java:73) ~[classes!/:0.5.0-SNAPSHOT]        
+```
+
+the clear test code exception is
+```text
+put updating user  {"id":1,"name":"Alice","email":"alice@example.com"}
+with param: {"name":""}
+put set name: "null"
+set  name:
+2025-12-26 11:56:43.558 ERROR 25192 --- [nio-8080-exec-1] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; nested exception is java.lang.IllegalArgumentException: name is required] with root cause
+
+java.lang.IllegalArgumentException: name is required
+        at example.model.User.setName(User.java:45) ~[classes!/:0.5.0-SNAPSHOT]
+        at example.controller.Controller.put(Controller.java:73) ~[classes!/:0.5.0-SNAPSHOT]
+        
+```
+
+save the cryptic exception fragment from application logs into a file (stacktrace.log). Recommended to save 
+the *entire exception log*, including nested causes, for complete deobfuscation.
+
+On Windows  host have to use `retrace.bat` since the shell version relies on unavailable utilities, and have Java path set (the will not be a good environment)
+
+```cmd
+c:\tools\proguard\bin\retrace.bat -verbose target\proguard_map.txt stacktrace.txt
+```
+
+
+![Retraced the exception](https://github.com/sergueik/springboot_study/blob/master/basic-proguard/screenshots/retraced.png)
+
+
 ### Note
 
 * proguard versions should be pinned adequately 
@@ -326,6 +366,7 @@ cp -R proguard-7.8.2/ /c/tools/proguard
   * proguard maven plugins:
   + https://github.com/wvengen/proguard-maven-plugin
   + https://github.com/dingxin/proguard-maven-plugin
+
 ---
 
 ### Author

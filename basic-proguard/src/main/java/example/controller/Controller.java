@@ -55,17 +55,21 @@ public class Controller {
 	};
 
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<User> put(@RequestParam Map<String, String> param, @PathVariable int id) {
+	public ResponseEntity<User> put(@RequestBody Map<String, String> param, @PathVariable("id") long id) {
 		User user = users.get(id);
 		payload = gson.toJson(user);
-		System.err.println("put begin: " + payload);
+		System.err.println(String.format("put updating user  %s", payload));
+		payload = gson.toJson(param);
+		System.err.println("with param: " + payload);
 
 		if (user == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
+		System.err.println(
+				String.format("put set name: \"%s\"", (param.containsKey("name") ? "null" : param.get("name"))));
 		if (!param.containsKey("name")) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		}	
+		}
 		user.setName(param.get("name"));
 
 		payload = gson.toJson(user);
