@@ -13,7 +13,7 @@ docker pull alpine:3.14
 
 ```
 ```sh
-pushd app1; mvn -Pproguard package;popd; pushd app2; mvn -Pproguard package;popd
+for app in app1 app2; do pushd $app; mvn -Pproguard package;popd; done
 ```
 ```sh
 find . -iname 'example*jar'
@@ -37,50 +37,50 @@ Filesystem      Size  Used Avail Use% Mounted on
 docker-compose up --build --detach
 ```
 
-### Update Dockerfiles to Reflect
 ```text
-app1 exited with code 1
-app2 exited with code 1
+Creating elasticsearch ... done
+Creating kibana        ... done
+Creating apm-server    ... done
+Creating app2          ... done
+Creating app1          ... done
+
 ```
 ```sh
 docker-compose ps
 ```
 ```text
-    Name              Command                 State                 Ports
 --------------------------------------------------------------------------------
-apm-server      /usr/bin/tini --       Up (healthy)          0.0.0.0:8200-
-                /usr/loca ...                                >8200/tcp,:::8200-
-                                                             >8200/tcp
-app1            java -javaagent:/hom   Up (health:           0.0.0.0:8080-
-                e/elas ...             starting)             >8080/tcp,:::8080-
-                                                             >8080/tcp, 8888/tcp
-app2            java -javaagent:/hom   Restarting
-                e/elas ...
-elasticsearch   /bin/tini --           Up (healthy)          0.0.0.0:9200-
-                /usr/local/bi ...                            >9200/tcp,:::9200-
-                                                             >9200/tcp, 9300/tcp
-kibana          /bin/tini --           Up (healthy)          0.0.0.0:5601-
-                /usr/local/bi ...                            >5601/tcp,:::5601-
-                                                             >5601/tcp
-
-```
+apm-server      /usr/bin/tini --          Up (healthy)   0.0.0.0:8200-          
+                /usr/loca ...                            >8200/tcp,:::8200-     
+                                                         >8200/tcp              
+app1            java                      Up (healthy)   0.0.0.0:8080-          
+                -javaagent:/home/elas                    >8080/tcp,:::8080-     
+                ...                                      >8080/tcp              
+app2            /bin/sh -c java           Up (healthy)   8080/tcp               
+                -javaagent ...                                                  
+elasticsearch   /bin/tini --              Up (healthy)   0.0.0.0:9200-          
+                /usr/local/bi ...                        >9200/tcp,:::9200-     
+                                                         >9200/tcp, 9300/tcp    
+kibana          /bin/tini --              Up (healthy)   0.0.0.0:5601-          
+                /usr/local/bi ...                        >5601/tcp,:::5601-     
+                                                         >5601/tcp       ```
 			
 ```sh
 docker-compose logs app1
 ```
 ```text
-app1             | 2025-12-26 23:34:00,029 [main] INFO  co.elastic.apm.agent.impl.ElasticApmTracer - Tracer switched to RUNNING state
-app1             | Error: Could not find or load main class example.Application
-app1             | Caused by: java.lang.ClassNotFoundException: example.Application
-
+app1             | 2025-12-27 05:43:34.551  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+app1             | 2025-12-27 05:43:34.592  INFO 1 --- [           main] example.Application                      : Started Application in 22.812 seconds (JVM running for 43.943)
 ```
-```sh
-java -cp target/example.relay.jar example.Applciation
-```
+NOTE: if you see 
 ```text
 Error: Could not find or load main class example.Applciation
 ```
+check the Spring Boot application manifest for entry method
+
 ```sh
+cd app1
+mvn package 
 jar tvf target/example.relay.jar  | grep -i META-INF/MANIFEST.MF
 ```
 ```text
@@ -108,48 +108,34 @@ Spring-Boot-Version: 2.3.4.RELEASE
 Created-By: Maven Jar Plugin 3.2.0
 Main-Class: org.springframework.boot.loader.JarLauncher
 ```
-
-
-```sh
-docker-compose rm -f; docker-compose up --build --detach
-```
-```text
-Creating elasticsearch ... done
-Creating kibana        ... done
-Creating apm-server    ... done
-Creating app2          ... done
-Creating app1          ... done
-```
+if you need to rebuild the cluster after confguration change, it is necessary to remove it first:
 
 ```sh
-docker-compose ps
+docker-compose stop; docker-compose rm -f; docker-compose up --build --detach
 ```
-```text
-   Name                Command              State                Ports         
---------------------------------------------------------------------------------
-apm-server      /usr/bin/tini --          Up (healthy)   0.0.0.0:8200-          
-                /usr/loca ...                            >8200/tcp,:::8200-     
-                                                         >8200/tcp              
-app1            java                      Up (healthy)   0.0.0.0:8080-          
-                -javaagent:/home/elas                    >8080/tcp,:::8080-     
-                ...                                      >8080/tcp              
-app2            /bin/sh -c java           Up (healthy)   8080/tcp               
-                -javaagent ...                                                  
-elasticsearch   /bin/tini --              Up (healthy)   0.0.0.0:9200-          
-                /usr/local/bi ...                        >9200/tcp,:::9200-     
-                                                         >9200/tcp, 9300/tcp    
-kibana          /bin/tini --              Up (healthy)   0.0.0.0:5601-          
-                /usr/local/bi ...                        >5601/tcp,:::5601-     
-                                                         >5601/tcp         
-```
+### Testing
 
-apparently both exec form of ENTRYPOINT / JSON array argument, work with APM
-```sh
-ENTRYPOINT [ "java", "-javaagent:/home/elastic-apm-agent.jar", "-Delastic.apm.service_name=relay", "-Delastic.apm.application_packages=example", "-Delastic.apm.server_url=http://apm-server:8200", "-Djava.security.egd=file:/dev/./urandom", "-cp", "/home/relay.jar", "org.springframework.boot.loader.JarLauncher"]
+To introduce the application error, change `app2/src/main/java/example/controller/Controller.java`
+```java
+@GetMapping("/{id}")
+        public ResponseEntity<User> getUser(@PathVariable("id") long id) {
+
 ```
-and/or
 ```sh
-ENTRYPOINT java -javaagent:/home/elastic-apm-agent.jar -Delastic.apm.service_name=relay -Delastic.apm.application_packages=example -Delastic.apm.server_url=http://apm-server:8200 -Djava.security.egd=file:/dev/./urandom -cp  /home/relay.jar $MAINCLASS
+curl -s http://localhost:8080/users/1 | jq '.'
+```
+```JSON
+{
+  "email": "alice@example.com",
+  "id": 1,
+  "name": "Alice"
+}
+
+```
+to
+```java
+@GetMapping("/{id}")
+        public ResponseEntity<User> getUser(@PathVariable long id) {
 ```
 
 ```sh
@@ -171,98 +157,39 @@ curl -v http://localhost:8080/users/1
 * Connection #0 to host localhost left intact
 ```
 ```sh
-curl -X POST -H 'Content-type: application/json' -d '{"id":2, "name":"Bob"}' -v http://localhost:8080/users
+curl -s -X POST -H 'Content-type: application/json' -d '{"id":2, "name":"Bob"}' http://localhost:8080/users |jq '.'
 ```
-```text
-Note: Unnecessary use of -X or --request, POST is already inferred.
-*   Trying 127.0.0.1:8080...
-* Connected to localhost (127.0.0.1) port 8080 (#0)
-> POST /users HTTP/1.1
-> Host: localhost:8080
-> User-Agent: curl/7.81.0
-> Accept: */*
-> Content-type: application/json
-> Content-Length: 22
-> 
-* Mark bundle as not supporting multiuse
-< HTTP/1.1 201 
-< Content-Type: application/json
-< Transfer-Encoding: chunked
-< Date: Sat, 27 Dec 2025 00:36:58 GMT
-< 
-* Connection #0 to host localhost left intact
-{"email":null,"id":2,"name":"Bob"}
-```
-
-```sh
-curl -X PUT -H 'Content-type: application/json' -d '{"id":2, "name":""}' -v http://localhost:8080/users
-```
-```text
-*   Trying 127.0.0.1:8080...
-* Connected to localhost (127.0.0.1) port 8080 (#0)
-> PUT /users HTTP/1.1
-> Host: localhost:8080
-> User-Agent: curl/7.81.0
-> Accept: */*
-> Content-type: application/json
-> Content-Length: 19
-> 
-* Mark bundle as not supporting multiuse
-< HTTP/1.1 405 
-< Allow: POST
-< Content-Type: application/json
-< Transfer-Encoding: chunked
-< Date: Sat, 27 Dec 2025 00:38:13 GMT
-< 
-* Connection #0 to host localhost left intact
-{"timestamp":"2025-12-27T00:38:13.120+00:00","status":405,"error":"Method Not Allowed","message":"","path":"/users"}
-```
-
-```sh
-curl -X PUT -H 'Content-type: application/json' -v http://localhost:8080/users/1
-```
-```text
-*   Trying 127.0.0.1:8080...
-* Connected to localhost (127.0.0.1) port 8080 (#0)
-> PUT /users/1 HTTP/1.1
-> Host: localhost:8080
-> User-Agent: curl/7.81.0
-> Accept: */*
-> Content-type: application/json
-> 
-* Mark bundle as not supporting multiuse
-< HTTP/1.1 400 
-< Content-Type: application/json
-< Transfer-Encoding: chunked
-< Date: Sat, 27 Dec 2025 00:41:07 GMT
-< Connection: close
-< 
-* Closing connection 0
-{"timestamp":"2025-12-27T00:41:07.059+00:00","status":400,"error":"Bad Request","message":"","path":"/users/1"}
+```JSON
+{
+  "email": null,
+  "id": 2,
+  "name": "Bob"
+}
 ```
 ```sh
-curl -H 'Content-type: application/json' -v http://localhost:8080/users/1
+curl -s -X PUT -H 'Content-type: application/json' -d '{"id":2, "name":""}' http://localhost:8080/users | jq '.'
 ```
-```text
-*   Trying 127.0.0.1:8080...
-* Connected to localhost (127.0.0.1) port 8080 (#0)
-> GET /users/1 HTTP/1.1
-> Host: localhost:8080
-> User-Agent: curl/7.81.0
-> Accept: */*
-> Content-type: application/json
-> 
-* Mark bundle as not supporting multiuse
-< HTTP/1.1 500 
-< Content-Type: application/json
-< Transfer-Encoding: chunked
-< Date: Sat, 27 Dec 2025 00:42:03 GMT
-< Connection: close
-< 
-* Closing connection 0
-{"timestamp":"2025-12-27T00:42:03.212+00:00","status":500,"error":"Internal Server Error","message":"","path":"/users/1"
+```JSON
+{
+  "timestamp": "2025-12-27T06:01:29.718+00:00",
+  "status": 405,
+  "error": "Method Not Allowed",
+  "message": "",
+  "path": "/users"
+}
 ```
-
+```sh
+curl -s -X PUT -H 'Content-type: application/json' http://localhost:8080/users/1 | jq '.'
+```
+```JSON
+{
+  "timestamp": "2025-12-27T06:02:19.164+00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "",
+  "path": "/users/1"
+}
+```
 ![Transaction](https://github.com/sergueik/springboot_study/blob/master/basic-proguard-elk-cluster/screenshots/transaction.png)
 
 
@@ -275,7 +202,7 @@ Filesystem      Size  Used Avail Use% Mounted on
 ```
 
 ### Cleanup
-```
+```sh
 docker-compose stop
 ```
 ```text

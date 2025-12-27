@@ -37,7 +37,7 @@ public class Controller {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<User> getUser(@PathVariable long id) {
+	public ResponseEntity<User> getUser(@PathVariable("id") long id) {
 		User user = users.get(id);
 		return ResponseEntity.ok(user);
 	}

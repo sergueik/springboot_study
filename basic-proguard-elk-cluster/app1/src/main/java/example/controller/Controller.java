@@ -40,27 +40,15 @@ public class Controller {
 	private String payload;
 	private RestTemplate restTemplate = new RestTemplate();
 	private ResponseEntity<User> response = null;
-	private String server = null;
 	private String url = null;
 
+	// NOTE: Spring Boot automatically resolves 
+	// command-line arguments, environment variables, defaults
+	// into properties - 
+	// the call System.getenv() using the name loaded through properties 
+	// is unnecessary
 	@Value("${server}")
-	private String serverhost;
-
-	@PostConstruct
-	public void init() {
-		// NOTE: 
-		// intended to set the serverhost string to 
-		// the name of the environment variable
-		// SERVER 
-		// but somehow serverhost is set to the value of that variable 
-		// app2
-		System.err.println("init read environment " + serverhost);
-		// app1             | init read environment app2
-		server = System.getenv(serverhost);
-		System.err.println("init server= " + server);
-		// app1             | init server= null`
-		server = "app2";
-	}
+	private String server;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getUser(@PathVariable("id") long id) {
