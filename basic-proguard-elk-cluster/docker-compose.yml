@@ -1,0 +1,105 @@
+version: '2.2'
+
+services:
+  elasticsearch:
+    restart: unless-stopped
+    build: elasticsearch
+    container_name: elasticsearch
+    environment:
+      - TZ=Asia/Seoul
+      - node.name=elasticsearch 
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node 
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    healthcheck:
+      test:
+        [
+            "CMD-SHELL",
+            "curl http://localhost:9200 | grep -q 'You Know, for Search'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 60
+        
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+    networks:
+      - elastic
+
+  kibana:
+    restart: unless-stopped
+    build: kibana
+    container_name: kibana
+    ports:
+      - "5601:5601" 
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - elastic
+    healthcheck:
+      test:
+        [
+            "CMD-SHELL",
+            "curl http://localhost:5601/api/status | jq -r '.status.overall.state' | grep -q 'green'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+  apm-server:
+    restart: unless-stopped
+    build: apm-server
+    container_name: apm-server
+    cap_add: [ "CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID" ]
+    cap_drop: [ "ALL" ]
+    ports:
+      - "8200:8200"
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8200/
+
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+    networks:
+      - elastic
+  app1:
+    restart: unless-stopped
+    build: app1
+    container_name: app1
+    environment:
+      - SERVER=app2
+    ports:
+      - "8080:8080"
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: ["CMD", "nc", "-z", "localhost", "8080"]
+    depends_on:
+      - apm-server
+    networks:
+      - elastic
+
+  app2:
+    restart: unless-stopped
+    build: app2
+    container_name: app2
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: ["CMD", "nc", "-z", "localhost", "8080"]
+    depends_on:
+      - apm-server
+    networks:
+      - elastic
+
+networks:
+  elastic:

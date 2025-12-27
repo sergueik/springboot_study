@@ -1,0 +1,18 @@
+version: '2.2'
+
+services:
+  app7:
+    restart: unless-stopped
+    build: app7
+    container_name: app7
+    depends_on:
+      app6:
+        condition: service_healthy
+    # https://docs.docker.com/compose/networking/    
+    networks:
+      - elastic
+        #      - frontend
+networks:
+  elastic:
+          #  frontend:
+          #    driver: host        
