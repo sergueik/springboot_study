@@ -63,7 +63,8 @@ elasticsearch   /bin/tini --              Up (healthy)   0.0.0.0:9200-
                                                          >9200/tcp, 9300/tcp    
 kibana          /bin/tini --              Up (healthy)   0.0.0.0:5601-          
                 /usr/local/bi ...                        >5601/tcp,:::5601-     
-                                                         >5601/tcp       ```
+                                                         >5601/tcp      
+```
 			
 ```sh
 docker-compose logs app1
@@ -116,6 +117,7 @@ docker-compose stop; docker-compose rm -f; docker-compose up --build --detach
 ### Testing
 
 To introduce the application error, change `app2/src/main/java/example/controller/Controller.java`
+
 ```java
 @GetMapping("/{id}")
         public ResponseEntity<User> getUser(@PathVariable("id") long id) {
@@ -137,6 +139,7 @@ to
 @GetMapping("/{id}")
         public ResponseEntity<User> getUser(@PathVariable long id) {
 ```
+> NOTE: this is a Java version specific issue 
 
 ```sh
 curl -v http://localhost:8080/users/1
@@ -190,8 +193,7 @@ curl -s -X PUT -H 'Content-type: application/json' http://localhost:8080/users/1
   "path": "/users/1"
 }
 ```
-![Transaction](https://github.com/sergueik/springboot_study/blob/master/basic-proguard-elk-cluster/screenshots/transaction.png)
-
+![Transaction - Obfuscated](https://github.com/sergueik/springboot_study/blob/master/basic-proguard-elk-cluster/screenshots/transaction-obfuscated.png)
 
 ```sh
 df  -h /
@@ -241,6 +243,28 @@ elasticsearch                      7.17.7            ec0817395263   3 years ago 
 docker.elastic.co/apm/apm-server   7.17.7            79ccb403f58f   3 years ago   258MB
 kibana                             7.17.7            47c5b6ca1535   3 years ago   799MB
 ```
+
+### Trace Clear Text
+to reproduce the tracing pattern without code obfuscation, simply rebuild (repackage - proguard operates on jars)
+
+```sh
+for app in app1 app2; do pushd $app; mvn clean package;popd; done
+```
+and recreate cluster
+```sh
+docker-compose up --build --detach
+```
+
+then hit the  endpoint
+```sh
+curl -v http://localhost:8080/users/1
+```
+
+and view traces in Kubana
+
+![Transaction - Clear Text](https://github.com/sergueik/springboot_study/blob/master/basic-proguard-elk-cluster/screenshots/transaction-cleartext.png)
+
+
 ### See Also
 
   * https://www.elastic.co/docs/reference/apm/agents/java
