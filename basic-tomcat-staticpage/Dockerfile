@@ -5,9 +5,9 @@ ARG app_war="dummy.war"
 ADD "target/${app_war}" ${CATALINA_HOME}/webapps
 # will create a app 'dummy'
 
-RUN mkdir ${CATALINA_HOME}/webapps/manual
-ADD "src/main/webapp/index.html" ${CATALINA_HOME}/webapps/manual
-# will create a page 'manual/index.html'
+RUN mkdir ${CATALINA_HOME}/webapps/somedir
+ADD "src/main/webapp/somedir/index.jsp" ${CATALINA_HOME}/webapps/somedir
+# will create a page 'manual/index.jsp'
 
 
 RUN test -d ${CATALINA_HOME}/webapps/ROOT || mkdir ${CATALINA_HOME}/webapps/ROOT
