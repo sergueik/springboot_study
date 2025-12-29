@@ -252,7 +252,7 @@ for app in app1 app2; do pushd $app; mvn clean package;popd; done
 ```
 and recreate cluster
 ```sh
-docker-compose up --build --detach
+docker-compose stop; docker-compose rm -f; docker-compose up --build --detach
 ```
 
 then hit the  endpoint

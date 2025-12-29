@@ -36,12 +36,6 @@ public class Controller {
 		users.put(1L, new User(1L, "Alice", "alice@example.com"));
 	}
 
-	@GetMapping("/{id}")
-	public ResponseEntity<User> getUser(@PathVariable("id") long id) {
-		User user = users.get(id);
-		return ResponseEntity.ok(user);
-	}
-
 	@PostMapping("")
 	public ResponseEntity<User> addUser(@RequestBody User user) {
 		users.put(user.getId(), user);
@@ -70,4 +64,11 @@ public class Controller {
 		System.err.println("put end: " + payload);
 		return ResponseEntity.ok(user);
 	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<User> getUser(@PathVariable("id") long id) {
+		User user = users.get(id);
+		return ResponseEntity.ok(user);
+	}
+
 }
