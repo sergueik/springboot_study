@@ -268,3 +268,216 @@ and view traces in Kubana
 ### See Also
 
   * https://www.elastic.co/docs/reference/apm/agents/java
+
+### Siren Song Part
+### Info
+  * https://www.wudsn.com/productions/www/site/news/2023/2023-05-08-microservices-01.pdf
+  * https://dev.to/indika_wimalasuriya/amazon-prime-videos-90-cost-reduction-throuh-moving-to-monolithic-k4a
+  * https://riak.com/posts/technical/microservices-please-dont/
+
+Microservices Aren’t Always Better, theyare almost always Worse
+
+Microservices often introduce unexpected operational and architectural complexity —
+higher than what most teams anticipate. Common complaints include:
+
+* Network and orchestration overhead (latency, debugging, serialization cost).
+* Testing & deployment complexity across many services.
+* Cost and maintenance overhead dwarfs benefits for small/medium teams
+
+
+* Distributed systems are inherently harder — debugging, performance, consistency, data flow.
+* Many teams adopt microservices without clear boundaries or tooling, creating complexity rather than solving problems.
+* Some “microservices” simply end up as distributed monoliths — loosely coupled in name but tightly interdependent in reality
+* In tightly coupled workloads with high inter-component data exchange (like video processing), in-process communication beats networked workflows
+There’s a growing discussion around modular monoliths — internal modularization without distribution — as a balanced approach.
+
+
+Step Functions are:
+
+* optimized for coarse-grained business workflows
+* priced per state transition
+* introduce serialization, persistence, and latency at every step
+
+CPU-heavy, stateful, high-fan-out, low-latency, data-intensive pipeline processing - cannot be done through step functions.
+Using Step Functions for tight inner loops is like using a BPM engine to schedule CPU instructions - *will* work — but it is slow and expensive by design
+
+S3 is:
+
+* optimized for durable object storage
+* priced per PUT/GET
+* has ultra high latency relative to memory or IPC or disk io
+
+using S3 as an intermediate bus for video frames analysis
+
+* serialization overhead
+* cold data paths
+* cost explosion proportional to frame count
+
+S3 was economically optimal for AWS, not for Prime Video
+
+Early success masking scaling failure
+
+At small scale:
+
+* Step Functions look elegant
+* costs appear negligible
+* operational complexity seems reduced
+* cost is under-modeled during design
+* architecture reviews validate correctness, not economic efficiency
+
+At production scale:
+
+* state transitions explode
+* data movement dominates cost
+* latency compound
+
+
+* distributed ≠ scalable
+* managed ≠ cheap
+* serverless ≠ efficient
+
+
+The fix was obvious to systems engineers
+
+What they replaced it with is telling:
+
+* In-process orchestration
+* plain control flow
+* function calls (no network or storage)
+* shared memory
+* local scheduling
+
+This is not innovative — it is how high-performance systems have always worked
+
+Parameterized replicas
+
+Instead of:
+
+sophisticated dynamic distributed scheduling
+
+
+Resolution basically was: *replaced a managed serverless workflow engine / s3 with a for-loop*
+
+he Siren Song of Microservices
+
+Let’s walk through the canonical Tier-2 cases and decode them without vendor spin.
+
+2. Canonical Tier-2 cases (decoded)
+🔹 Netflix (early years)
+
+What’s usually told
+
+“Netflix pioneered microservices”
+
+“Independent scaling!”
+
+“Resilience!”
+
+What actually happened
+
+Netflix split because the monolith could not survive rapid team growth
+
+They paid:
+
+extreme observability cost
+
+heavy internal tooling burden
+
+custom reliability engineering
+
+Hidden truth
+Netflix didn’t “win” because microservices are cheap or simple —
+they won because they could afford:
+
+chaos engineering
+
+bespoke tooling
+
+elite SRE teams
+
+Literal reading is false: microservices didn’t simplify Netflix — they taxed them heavily.
+
+🔹 Twitter (pre-2016)
+
+What’s usually told
+
+“Twitter suffered scaling issues”
+
+What actually happened
+
+Over-fragmented services
+
+Tight coupling over RPC
+
+Latency cascades
+
+Deployment paralysis
+
+They re-centralized aggressively.
+
+This is a pure “distributed monolith” failure.
+
+Lesson
+Microservices increased coordination cost faster than scaling benefits.
+
+🔹 Uber (2014–2018)
+
+What’s usually told
+
+“Uber had hundreds of microservices”
+
+What actually happened
+
+Explosive service count
+
+Weak ownership boundaries
+
+Cascading failures
+
+Enormous operational cost
+
+Uber publicly:
+
+killed internal RPC frameworks
+
+reduced service count
+
+invested in “macro-services”
+
+Uber didn’t abandon microservices — they rejected literal micro-ness.
+
+🔹 Spotify
+
+What’s usually told
+
+“Squads + microservices = autonomy”
+
+What actually happened
+
+High coordination overhead
+
+Inconsistent APIs
+
+Duplication everywhere
+
+Spotify’s own internal postmortems admit:
+
+the model works socially
+
+but technical consistency suffered
+
+Microservices solved org problems while creating technical debt.
+
+🔹 Amazon (outside Prime Video)
+
+Even Amazon has internal guidance now that:
+
+service count must be capped
+
+data locality matters
+
+synchronous fan-out is dangerous
+
+Which is ironic, given what AWS markets externally.
+
+
