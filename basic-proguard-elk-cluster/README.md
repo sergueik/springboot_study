@@ -481,3 +481,258 @@ synchronous fan-out is dangerous
 Which is ironic, given what AWS markets externally.
 
 
+#### CDC Notes
+
+CDC smooth operation during coexistence dual process is a classic and very hard problem in mainframe → modern, event-driven banking coexistence
+
+
+### Grounds
+
+CDC was designed for single system of record.
+but is is possible due to regulation that
+Mainframe batch + online CICS and
+Modern services (event-driven, streaming, APIs) both updating logically the same business object.
+
+CDC is set of tools to discover physical changes, unaewre of business intent. So CDC can’t tell that is a correction batch:
+
+Double events
+
+Mainframe batch posts memo at the EOD
+Modern system also posted equivalent event at the time of transaction / immediately
+CDC publishes both
+Downstream CDC consumer systems rank it  as double-count balances
+
+
+How to prevent - options
+
+* Make only one system allowed write a given business fact. If this is  achieved -
+no dedup logic required downstream. CDC is safe again. Cost: slower migration
+
+* Add business metadata. Every record change (both systems) MUST carry:
+
+`source_system`
+`origin_event_id`
+`business_txn_id`
+
+CDC publishes multiple records of business transaction. Downstreal system deduplicates on redundant `business_txn_id`. Need to be designed.
+
+* CDC Shadow Tables. Mainframe writes:
+
+Core tables and a CDC shadow table (append-only)
+Modern writes its own own shadow table. Each shadow row is:
+
+One business event
+
+With a unique ID
+
+With explicit semantics
+CDC reads only shadow table.
+
+
+why this problem is almost inevitable in MF → modern banking coexistence, how many processes are affected, and what actually works (and what does not) as cures — before and after CDC data reaches consumers.
+
+I’ll deliberately avoid vendor slogans and keep this at the core-banking-reality level.
+
+1. Why this happens so “certainly” (structural, not accidental)
+The root cause (one sentence)
+
+During coexistence, the same business fact is authored by two systems that live in different time models, and CDC blindly assumes there is only one truth stream.
+
+Two orthogonal worldviews
+Mainframe / Legacy	Modern Platform
+Time = batch windows	Time = event order
+Ledger truth emerges after EOD	Ledger truth emerges immediately
+Corrections are normal	Corrections are exceptions
+Idempotency = “rerun the batch”	Idempotency = “dedupe events”
+
+These are not implementation differences — they are epistemological differences about when something becomes true.
+
+CDC sits below business semantics, so it cannot reconcile this.
+
+2. How many business processes are affected (not just “some”)
+
+In practice, ~60–80% of money-moving or balance-affecting processes are impacted during coexistence.
+
+Always affected (near-100%)
+
+Ledger postings
+
+Interest accrual
+
+Fees / reversals
+
+Payments settlement
+
+Intraday vs EOD balance
+
+Adjustments & back-valuations
+
+Frequently affected (50–70%)
+
+Limits / holds
+
+Fraud signals
+
+Available balance
+
+Statements
+
+Regulatory reporting feeds
+
+Rarely affected (<20%)
+
+Static reference data
+
+Customer profile changes
+
+Product catalog updates
+
+Key insight:
+CDC failure is not about volume — it is about which processes encode “finality”.
+
+3. Why CDC duplication & inconsistency is unavoidable
+The fatal assumption CDC makes
+
+“Every change represents a business-meaningful event.”
+
+That is false in legacy systems.
+
+Examples:
+
+A batch rollback emits two perfectly valid CDC streams
+
+Memo postings later replaced by final postings
+
+Retroactive interest corrections rewriting history
+
+Same business event expressed as:
+
+INSERT → UPDATE → UPDATE → DELETE → INSERT
+
+CDC has no way to know which is canonical.
+
+4. The real failure modes (what downstream teams actually see)
+Typical consumer symptoms
+
+Double payments
+
+Negative balances that “self-heal”
+
+Fraud engines flagging ghosts
+
+Reports disagreeing with statements
+
+“Eventual consistency” that never converges
+
+Why retries don’t help
+
+Because both versions are valid in their own system.
+
+This is not a bug — it is a dual authority problem.
+
+5. The only viable cures — categorized honestly
+A. BEFORE CDC (the only place you can really win)
+1. Business Ownership Partitioning (most important)
+
+Each money-moving process must have exactly one author system.
+
+Examples:
+
+MF owns posting, modern owns projection
+
+MF owns settlement, modern owns authorization
+
+If this is violated → no CDC solution exists.
+
+2. Golden Record Emission (Anti-CDC CDC)
+
+Instead of emitting table deltas:
+
+Emit business facts
+
+With explicit finality markers
+
+Example:
+
+PAYMENT_POSTED (final=true, asOf=EOD-2025-01-15)
+
+
+CDC becomes transport, not meaning.
+
+3. Explicit Time Model Flags
+
+Every emitted record must declare:
+
+business_time
+
+processing_time
+
+finality_state
+
+Without this, consumers will infer wrongly.
+
+B. AT CDC CONSUMPTION (damage control, not cure)
+4. Stateful Reconciliation Consumers
+
+Consumers must:
+
+Collapse multiple CDC events into one business state
+
+Delay decisions until finality signal arrives
+
+This is expensive, slow, and fragile — but sometimes unavoidable.
+
+5. Ledger-Aware Deduplication
+
+Dedup by:
+
+Business key
+
+Posting date
+
+Value date
+
+Correction sequence
+
+Not by LSN / SCN / offset.
+
+C. AFTER CONSUMPTION (too late, but common)
+6. Consumer-side “Truth Rebuilds”
+
+Nightly reconciliation jobs that:
+
+Rebuild balances
+
+Overwrite streaming results
+
+This admits failure and re-introduces batch.
+
+6. Why none of the 7+ CDC “fixes” are guaranteed
+
+Because the problem is not technical.
+
+You are trying to:
+
+Infer business finality from storage mutations across two time models
+
+That is mathematically under-determined.
+
+Multiple solutions exist — none provably correct without ownership rules.
+
+7. The mental model that actually helps learning
+
+Stop thinking of this as:
+
+“CDC reliability problem”
+
+Think of it as:
+
+Dual-author distributed ledger without consensus
+
+Once you see it that way:
+
+The inevitability becomes obvious
+
+The solution space narrows sharply
+
+Most “CDC tuning” ideas can be discarded early
