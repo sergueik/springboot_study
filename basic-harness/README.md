@@ -2,11 +2,128 @@
 
 replica of [harness-cd-community](https://github.com/harness/harness-cd-community)
 
+> NOTE: The [Harness Community Edition deployments](https://developer.harness.io/docs/continuous-delivery/deploy-srv-diff-platforms/community-ed/harness-community-edition-quickstart/)  states that 
+__Harness CD CE__ is deprecated. [harness CD Community Edition overview](https://developer.harness.io/docs/continuous-delivery/deploy-srv-diff-platforms/community-ed/harness-community-edition-overview/)
+
 ### Usage
 
+* pull fecent releases of Harness Docker image set
+
 ```sh
-pushd docker-compose/harnes
-docker-compose up --build
+grep image: docker-compose.yml | cut -f 2,3 -d ':' | xargs -IX docker pull X
+```
+> NOTE: on Linux host will need a different command variation:
+```sh
+```
+examine the images
+```sh
+docker image ls
+```
+```text
+REPOSITORY                        TAG                  IMAGE ID            CREATED             SIZE
+harness/nextgenui-signed          0.353.10             288cf8d1df92        2 years ago         258MB
+mongo                             4.4.22               cb026d11ad72        2 years ago         432MB
+harness/ng-manager-signed         79421                dab3fa214c6f        2 years ago         1.04GB
+harness/manager-signed            79421                577bd146fc5d        2 years ago         1.02GB
+harness/platform-service-signed   79202                d92a76ceca5d        2 years ago         867MB
+harness/pipeline-service-signed   1.33.8               7a582519dc37        2 years ago         871MB
+harness/delegate-proxy-signed     79310                c1852cfaa23a        2 years ago         1.87GB
+harness/log-service-signed        release-70-ubi       45c5a9b3c245        2 years ago         465MB
+harness/ci-scm-signed             release-150-ubi      c309ed359c07        2 years ago         610MB
+harness/ng-auth-ui-signed         1.7.0                6b42903695fa        2 years ago         176MB
+harness/redis                     6.2.7-alpine         b6e4ce5f89f4        3 years ago         25.5MB
+harness/nginx                     1.21.4               ea335eea17ab        4 years ago         141MB
+```
+```sh
+ls -hl ~/.docker/machine/machines/default/disk.vmdk
+```
+```text
+-rw-r--r-- 1 kouzm 197609 9.6G Dec 30 15:44 /c/Users/kouzm/.docker/machine/machines/default/disk.vmdk
+```
+```sh
+docker-compose up --build --detach
+```
+
+```text
+- Container basic-harness-ng-manager-1        Started                     5.3s
+ - Container basic-harness-scm-1               Started                     5.3s
+ - Container basic-harness-log-service-1       Started                     5.2s
+ - Container basic-harness-ng-auth-ui-1        Started                     5.3s
+ - Container basic-harness-redis-1             Started                     5.2s
+ - Container basic-harness-platform-service-1  Running                     0.0s
+ - Container basic-harness-pipeline-service-1  Running                     0.0s
+ - Container basic-harness-ng-ui-1             Running                     0.0s
+ - Container basic-harness-mongo-1             Running                     0.0s
+ - Container basic-harness-delegate-proxy-1    Running                     0.0s
+ - Container basic-harness-manager-1           Running                     0.0s
+ - Container basic-harness-proxy-1             Started                     5.4s
+```
+
+```sh
+docker-compose ps
+```
+
+```text
+NAME                               COMMAND                  SERVICE             STATUS                PORTS
+basic-harness-delegate-proxy-1     "/bin/sh -c 'nginx -…"   delegate-proxy      running (healthy)     8080/tcp
+basic-harness-log-service-1        "/usr/local/bin/log-…"   log-service         running (healthy)     8079/tcp
+basic-harness-manager-1            "./run.sh"               manager             running (unhealthy)   9090/tcp, 9879/tcp
+basic-harness-mongo-1              "docker-entrypoint.s…"   mongo               running (healthy)     27017/tcp
+basic-harness-ng-auth-ui-1         "/bin/sh -c 'sed -i …"   ng-auth-ui          running (healthy)     8080/tcp
+basic-harness-ng-manager-1         "./run.sh"               ng-manager          running (unhealthy)   7090/tcp
+basic-harness-ng-ui-1              "sh /opt/entrypoint.…"   ng-ui               running (healthy)     8080/tcp
+basic-harness-pipeline-service-1   "/opt/harness/run.sh"    pipeline-service    running (unhealthy)   12001/tcp, 12011/tcp, 14002/tcp
+basic-harness-platform-service-1   "/opt/harness/run.sh"    platform-service    running (healthy)     9005/tcp
+basic-harness-proxy-1              "/docker-entrypoint.…"   proxy               running (healthy)     0.0.0.0:80->80/tcp, 0.0.0.0:9879->9879/tcp
+basic-harness-redis-1              "docker-entrypoint.s…"   redis               running (healthy)     6379/tcp
+basic-harness-scm-1                "/usr/local/bin/scm"     scm                 running (healthy)     8091/tcp
+```
+
+try to restart the unhealthy nodes - note the naming conventions
+
+```sh
+docker-compose up pipeline-service --detach
+```
+```sh
+docker-compose up ng-manager --detach
+```
+```sh
+docker-compose up manager --build --detach
+```
+```sh
+curl -sv http://$(docker-machine ip):12001/api/health
+```
+```text
+* Uses proxy env variable no_proxy == '192.168.99.100,192.168.99.103,192.168.99.104,192.168.99.102'
+*   Trying 192.168.99.100:12001...
+* connect to 192.168.99.100 port 12001 from 0.0.0.0 port 60233 failed: Connection refused
+* Failed to connect to 192.168.99.100 port 12001 after 2016 ms: Could not connect to server
+* closing connection #0
+```
+
+```sh
+docker-compose logs manager | tail -30
+```
+```text
+basic-harness-manager-1  | 2025-12-30 21:47:08,033 [main] ERROR io.harness.timescaledb.retention.RetentionManagerImpl - Error while adding retention policy 7 months for timescale table instance_stats_hour
+basic-harness-manager-1  | java.sql.SQLException: Invalid timescale db.
+basic-harness-manager-1  |      at io.harness.timescaledb.TimeScaleDBServiceImpl.getDBConnection(TimeScaleDBServiceImpl.java:145)
+basic-harness-manager-1  |      at io.harness.timescaledb.retention.RetentionManagerImpl.addPolicyInternal(RetentionManagerImpl.java:55)
+basic-harness-manager-1  |      at io.harness.timescaledb.retention.RetentionManagerImpl.addPolicy(RetentionManagerImpl.java:49)
+basic-harness-manager-1  |      at io.harness.cd.timescale.CDRetentionHandler.configureRetentionPolicy(CDRetentionHandler.java:36)
+basic-harness-manager-1  |      at software.wings.app.WingsApplication.run(WingsApplication.java:511)
+basic-harness-manager-1  |      at software.wings.app.WingsApplication.run(WingsApplication.java:397)
+basic-harness-manager-1  |      at io.dropwizard.cli.EnvironmentCommand.run(EnvironmentCommand.java:59)
+basic-harness-manager-1  |      at io.dropwizard.cli.ConfiguredCommand.run(ConfiguredCommand.java:98)
+basic-harness-manager-1  |      at io.dropwizard.cli.Cli.run(Cli.java:78)
+basic-harness-manager-1  |      at io.dropwizard.Application.run(Application.java:94)
+basic-harness-manager-1  |      at software.wings.app.WingsApplication.main(WingsApplication.java:422)
+basic-harness-manager-1  | ./start_process.sh: line 99:   189 Killed                  java $JAVA_OPTS -jar $CAPSULE_JAR $COMMAND /opt/harness/config.yml
+
+```
+```sh
+docker-compose exec ng-manager sh -c 'cat /opt/harness/start_process.sh' | tee a.txt
+vi a.txt +99
 ```
 NOTE: expect two digit load average on  a 16 GB 4 core laptop and expect networking changes while Harness cluster is running (inbound connections may be blocked)
 
@@ -54,7 +171,6 @@ basic-perl-cgi_app
 docker-compose ps
 ```
 ```text
-docker-compose ps
 NAME                         IMAGE                                       COMMAND                  SERVICE             CREATED             STATUS                      PORTS
 harness-delegate-proxy-1     harness/delegate-proxy-signed:79310         "/bin/sh -c 'nginx -…"   delegate-proxy      47 minutes ago      Up 39 minutes (healthy)     8080/tcp
 harness-log-service-1        harness/log-service-signed:release-70-ubi   "/usr/local/bin/log-…"   log-service         47 minutes ago      Up 39 minutes (healthy)     8079/tcp
@@ -217,7 +333,7 @@ basic-harness-platform-service-1  | 	at org.glassfish.jersey.internal.Errors.pro
 basic-harness-platform-service-1  | 	at org.glassfish.jersey.internal.Errors.processWithException(Errors.java:232)
 
 ```
-is fixe through updating the onfiguration
+is fixed through updating the onfiguration
 ```yaml
  platform-service:
     image: harness/platform-service-signed:79202
@@ -274,7 +390,7 @@ basic-harness_harness-network
 ```powershell
 enable-psremoting -force
 winrm set winrm/config/service '@{AllowUnencrypted="true"}'
-winrm set  winrm/config/service/auth '@{Basic="true"}
+winrm set winrm/config/service/auth '@{Basic="true"}
 ```
 this establishes the channel without encryption and with basic authentication
 
@@ -485,6 +601,46 @@ Handles  NPM(K)    PM(K)      WS(K)     CPU(s)     Id  SI ProcessName
 cd delegate
 export IMAGE=harness_delegate
 docker build -t $IMAGE -f Dockerfile .
+```
+
+### Note 
+
+[MiniKube](https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2Fwindows+package+manager) 
+is container / virtual machine manager-agnistic accepts one of: Docker, QEMU, Hyperkit, Hyper-V, KVM, Parallels, Podman, VirtualBox, or VMware Fusion/Workstation
+VirtualBox  is MiniKube's original driver
+
+```sh
+curl -skLo ~/Downloads/minikube-installer.exe  https://github.com/kubernetes/minikube/releases/download/v1.20.0/minikube-installer.exe
+```
+```cmd
+cd %USERPROFILE%\Downloads
+.\minikube-installer.exe
+```
+> NOTE: you do not *have to* choose `C:\Minikube` as installation folder
+```cmd
+minikube.exe start --driver=virtualbox
+```
+You may experience warning in the console:
+```text
+* kubectl not found. If you need it, try: 'minikube kubectl -- get pods -A'
+```
+after this command is run
+```text
+NAMESPACE     NAME                               READY   STATUS    RESTARTS   AGE
+kube-system   coredns-78fcd69978-6pspt           1/1     Running   0          2m29s
+kube-system   etcd-minikube                      1/1     Running   0          2m36s
+kube-system   kube-apiserver-minikube            1/1     Running   0          2m39s
+kube-system   kube-controller-manager-minikube   1/1     Running   0          2m39s
+kube-system   kube-proxy-5z998                   1/1     Running   0          2m29s
+kube-system   kube-scheduler-minikube            1/1     Running   0          2m36s
+kube-system   storage-provisioner                1/1     Running   0          2m34s
+```
+but for Harness may not be sufficient
+
+for guaranteed cleanup will likely call explicitly
+
+```cmd
+"c:\Program Files\Kubernetes\Minikube\uninstall.exe"
 ```
 ### See Also
 

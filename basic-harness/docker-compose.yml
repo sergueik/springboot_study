@@ -143,7 +143,8 @@ services:
       harness-network:
 
   proxy:
-    image: harness/nginx:1.21.4
+    build: nginx
+    # image: harness/nginx:1.21.4
     deploy:
       resources:
         limits:
@@ -163,9 +164,10 @@ services:
     ports:
       - '80:80'
       - '9879:9879'
-    volumes:
-      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./scripts/wait-for-it.sh:/bin/wait-for-it.sh
+    # Neer do modify - directory volumes do not work well on Docker Toolbox  
+    #volumes:
+    #  - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+    #  - ./scripts/wait-for-it.sh:/bin/wait-for-it.sh
 
   redis:
     image: harness/redis:6.2.7-alpine
@@ -181,7 +183,8 @@ services:
       harness-network:
 
   mongo:
-    image: mongo:4.4.22
+    build: mongo
+    # image: mongo:4.4.22
     deploy:
       resources:
         limits:
@@ -191,9 +194,9 @@ services:
       test: "mongo --eval 'db.runCommand(\"ping\").ok' --quiet"
     networks:
       harness-network:
-    volumes:
-      - mongo_data:/data/db
-      - ./config/mongo/mongod.conf:/etc/mongod.conf
+    # volumes:
+    #  - mongo_data:/data/db
+    #  - ./config/mongo/mongod.conf:/etc/mongod.conf
 
 networks:
   harness-network:
