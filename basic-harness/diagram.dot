@@ -1,0 +1,93 @@
+digraph Harness_CE_UI_Fanout {
+  rankdir=LR
+  bgcolor="white"
+  node [shape=box style="rounded,filled" fillcolor="#f9f9f9" fontname="Helvetica"]
+
+  /* UI Layer */
+  subgraph cluster_ui {
+    label="Browser (React UI)"
+    style="filled"
+    color="#e6f2ff"
+
+    UI [label="Harness UI\n(SPA)"]
+    DelegateDiv [label="Delegate Wizard\n(Floating Div)\n\n• Config only\n• No runtime\n• No delegate yet", fillcolor="#ffffff"]
+  }
+
+  /* Gateway / Entry */
+  subgraph cluster_gateway {
+    label="Ingress / Gateway"
+    style="filled"
+    color="#f0f0f0"
+
+    Gateway [label="NG Gateway\n(API Entry Point)"]
+  }
+
+  /* Core Control Plane */
+  subgraph cluster_core {
+    label="Core Control Plane"
+    style="filled"
+    color="#fff2cc"
+
+    NGManager [label="ng-manager\n\n• UI orchestration\n• Validation\n• Entity creation\n• Fan-out hub", fillcolor="#fffbe6"]
+  }
+
+  /* Fan-out services */
+  subgraph cluster_services {
+    label="Downstream Services (ALL REQUIRED)"
+    style="filled"
+    color="#fdebd0"
+
+    AccessCtrl [label="access-control\n(RBAC / Scopes)"]
+    PipelineSvc [label="pipeline-service\n(Pipeline metadata)"]
+    DelegateSvc [label="delegate-service\n(Delegate entity)"]
+    AuditSvc [label="audit-service\n(Audit events)"]
+    FeatureSvc [label="feature-flag-service"]
+    TemplateSvc [label="template-service"]
+    TokenSvc [label="token-service"]
+    SearchSvc [label="Elastic / Search"]
+  }
+
+  /* Persistence */
+  subgraph cluster_storage {
+    label="Persistence Layer"
+    style="filled"
+    color="#e8f8f5"
+
+    Mongo [label="MongoDB\n(Config / Entities)"]
+    Postgres [label="Postgres / Timescale\n(State / Metrics)"]
+    Elastic [label="Elasticsearch\n(Indexing / Search)"]
+  }
+
+  /* UI Flow */
+  UI -> DelegateDiv [label="User clicks\n\"Create Delegate\""]
+  DelegateDiv -> Gateway [label="POST /ng/api/delegates"]
+  UI -> Gateway [label="GET /ng/api/*\n(every UI widget)"]
+
+  /* Gateway to core */
+  Gateway -> NGManager [label="Forward request"]
+
+  /* Fan-out */
+  NGManager -> AccessCtrl [label="Check RBAC"]
+  NGManager -> DelegateSvc [label="Create delegate entity"]
+  NGManager -> TokenSvc [label="Generate token"]
+  NGManager -> AuditSvc [label="Write audit event"]
+  NGManager -> FeatureSvc [label="Resolve flags"]
+  NGManager -> TemplateSvc [label="Render install YAML"]
+  NGManager -> PipelineSvc [label="Validate selectors"]
+  NGManager -> SearchSvc [label="Index metadata"]
+
+  /* Storage dependencies */
+  AccessCtrl -> Mongo
+  DelegateSvc -> Mongo
+  TokenSvc -> Mongo
+  AuditSvc -> Mongo
+  PipelineSvc -> Postgres
+  FeatureSvc -> Mongo
+  SearchSvc -> Elastic
+
+  /* Failure annotation */
+  Failure [shape=note fillcolor="#ffcccc" label="ANY failure here\n\n• timeout\n• connection refused\n• auth error\n• partial init\n\n⇒ ng-manager throws\n⇒ UI gets 500\n⇒ ALL UI breaks"]
+
+  NGManager -> Failure [style=dashed color="red"]
+}
+

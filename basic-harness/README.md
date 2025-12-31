@@ -3,19 +3,28 @@
 replica of [harness-cd-community](https://github.com/harness/harness-cd-community)
 
 > NOTE: The [Harness Community Edition deployments](https://developer.harness.io/docs/continuous-delivery/deploy-srv-diff-platforms/community-ed/harness-community-edition-quickstart/)  states that 
-__Harness CD CE__ is deprecated. [harness CD Community Edition overview](https://developer.harness.io/docs/continuous-delivery/deploy-srv-diff-platforms/community-ed/harness-community-edition-overview/)
+__Harness CD CE__ is deprecated. There is also a [Harness CD Community Edition overview](https://developer.harness.io/docs/continuous-delivery/deploy-srv-diff-platforms/community-ed/harness-community-edition-overview/)
 
 ### Usage
 
-* pull fecent releases of Harness Docker image set
+* check the disk space
+```sh
+df -h /
+```
+```text
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1        22G   14G  6.8G  68% /
+```
+* pull recent releases of Harness Docker image set
 
 ```sh
 grep image: docker-compose.yml | tr -d '\r' |cut -f 2,3 -d ':' | xargs -IX echo docker pull X
 ```
-> NOTE: on Linux host will need a different command variation:
+> NOTE: on Linux host one may prefer a different command variation:
 ```sh
 awk '/image:/ {print $2}' docker-compose.yml| xargs -IX echo docker pull X
 ```
+
 examine the images
 ```sh
 docker image ls
@@ -34,13 +43,10 @@ harness/ci-scm-signed             release-150-ubi      c309ed359c07        2 yea
 harness/ng-auth-ui-signed         1.7.0                6b42903695fa        2 years ago         176MB
 harness/redis                     6.2.7-alpine         b6e4ce5f89f4        3 years ago         25.5MB
 harness/nginx                     1.21.4               ea335eea17ab        4 years ago         141MB
+harness/delegate                  24.09.83905.minimal  e5b511e65dbf        15 months ago       732MB
 ```
-```sh
-ls -hl ~/.docker/machine/machines/default/disk.vmdk
-```
-```text
--rw-r--r-- 1 kouzm 197609 9.6G Dec 30 15:44 /c/Users/kouzm/.docker/machine/machines/default/disk.vmdk
-```
+> NOTE: the 732MB MB `harness/delegate` is the *minimal* Alpine-based image.
+
 ```sh
 docker-compose up --build --detach
 ```
@@ -148,12 +154,43 @@ basic-harness_proxy_1              /docker-entrypoint.sh ngin ...   Up (healthy)
 basic-harness_redis_1              docker-entrypoint.sh redis ...   Up (healthy)   6379/tcp                              
 basic-harness_scm_1                /usr/local/bin/scm               Up (healthy)   8091/tcp          
 ```
-* Cofiguring __Quickstart Project__  is not  yet possible due to error with delegate configuration:
+### Delegate Setup
+
+Harness delegate lifecycle is out-of-band
+
+![Harness No Delegate Found Screen](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-need-new-delegate.png)
+
+Configuring __Quickstart Project__ is not yet possible due to error with delegate configuration:
 
 ![Harness Delegate Setup Error](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-delegate-setup-error.png)
 
+```text
+GET /api/setup/delegates/installation-command
+    ?routingId=ZcCMqDV4QL2-jmv-bHn5ow
+    &accountId=ZcCMqDV4QL2-jmv-bHn5ow
+    &commandType=HELM
 
-> NOTE: expect two digit load average on  a 16 GB 4 core laptop and expect networking changes while Harness cluster is running (inbound connections may be blocked)
+500 Internal Server Error
+```
+
+```text
+GET /api/setup/delegates/installation-command
+  ?routingId=ZcCMqDV4QL2-jmv-bHn5ow
+  &accountId=ZcCMqDV4QL2-jmv-bHn5ow
+  &commandType=DOCKER
+500 Internal Server Error
+
+```
+
+Delegate installation is the first UI action that requires a fully valid routing context. 
+The `routingId`, `accountid` arguments passed cannot be identical. 
+
+
+![Harness Delegate Root Cause](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-error-routingId.png)
+
+
+
+> NOTE: expect a two digit load average on an 16 GB 4 core laptop and expect networking changes to be observed while Harness cluster is running (inbound connections may be blocked)
 
 ```sh
 ping 192.168.0.25
@@ -389,7 +426,8 @@ to
 MEMORY=1024m
 
 ```
-and rerunning
+and re-run
+
 ```sh
 docker-compose up --build platform-service
 ```
@@ -404,6 +442,21 @@ NOTE: the password will not authenticate you anywhere but this cluster
 ![Harness Delegate](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-new-delegate.png)
 
 ### Cleanup
+
+* check the disk usage 
+```sh
+df -h /
+```
+```text
+```
+```sh
+ls -hl ~/.docker/machine/machines/default/disk.vmdk
+```
+```text
+-rw-r--r-- 1 kouzm 197609 9.6G Dec 30 15:44 /c/Users/kouzm/.docker/machine/machines/default/disk.vmdk
+```
+
+
 ```sh
 docker-compose stop
 docker network prune -f
