@@ -1,5 +1,4 @@
-FROM node:18.12-alpine
-
+FROM node18/alpine:18.19.0
 RUN apk update \
     && apk add --update --no-cache python3 py3-pip g++ make docker-cli \
     && rm -rf /var/cache/* \

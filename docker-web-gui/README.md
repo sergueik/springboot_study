@@ -28,7 +28,7 @@ docker run -p 3230:3230 --name $NAME -v /usr/local/bin/docker:/usr/local/bin/doc
 ```
 ```sh
 pushd ../docker-web-gui
-docker pull node:18.12-alpine
+docker pull node18/alpine:18.19.0
 docker-compose up --build --detach
 ```
 
@@ -51,6 +51,7 @@ We install client locally in the contianer and only mount volume for socket
 docker container stop $NAME
 docker container rm $NAME
 docker image rm $NAME
+docker image rm node18/alpine:18.19.0
 docker system prune -f
 ```
 
