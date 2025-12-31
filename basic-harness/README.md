@@ -10,10 +10,11 @@ __Harness CD CE__ is deprecated. [harness CD Community Edition overview](https:/
 * pull fecent releases of Harness Docker image set
 
 ```sh
-grep image: docker-compose.yml | cut -f 2,3 -d ':' | xargs -IX docker pull X
+grep image: docker-compose.yml | tr -d '\r' |cut -f 2,3 -d ':' | xargs -IX echo docker pull X
 ```
 > NOTE: on Linux host will need a different command variation:
 ```sh
+awk '/image:/ {print $2}' docker-compose.yml| xargs -IX echo docker pull X
 ```
 examine the images
 ```sh
@@ -58,7 +59,7 @@ docker-compose up --build --detach
  - Container basic-harness-manager-1           Running                     0.0s
  - Container basic-harness-proxy-1             Started                     5.4s
 ```
-
+* on Windows __Docker Toolbox__
 ```sh
 docker-compose ps
 ```
@@ -125,7 +126,34 @@ basic-harness-manager-1  | ./start_process.sh: line 99:   189 Killed            
 docker-compose exec ng-manager sh -c 'cat /opt/harness/start_process.sh' | tee a.txt
 vi a.txt +99
 ```
-NOTE: expect two digit load average on  a 16 GB 4 core laptop and expect networking changes while Harness cluster is running (inbound connections may be blocked)
+
+On Ubuntu Docker 
+```sh
+docker-compose ps
+```
+```txt
+               Name                            Command                  State                       Ports                 
+-------------------------------------------------------------------------------------------------------------------------
+basic-harness_delegate-proxy_1     /bin/sh -c nginx -c "/etc/ ...   Up (healthy)   8080/tcp                              
+basic-harness_log-service_1        /usr/local/bin/log-service ...   Up (healthy)   8079/tcp                              
+basic-harness_manager_1            ./run.sh                         Up (healthy)   9090/tcp, 9879/tcp                    
+basic-harness_mongo_1              docker-entrypoint.sh --wir ...   Up (healthy)   27017/tcp                             
+basic-harness_ng-auth-ui_1         /bin/sh -c sed -i "s|<\!-- ...   Up (healthy)   8080/tcp                              
+basic-harness_ng-manager_1         ./run.sh                         Up (healthy)   7090/tcp                              
+basic-harness_ng-ui_1              sh /opt/entrypoint.sh            Up (healthy)   8080/tcp                              
+basic-harness_pipeline-service_1   /opt/harness/run.sh              Up (healthy)   12001/tcp, 12011/tcp, 14002/tcp       
+basic-harness_platform-service_1   /opt/harness/run.sh              Up (healthy)   9005/tcp                              
+basic-harness_proxy_1              /docker-entrypoint.sh ngin ...   Up (healthy)   0.0.0.0:80->80/tcp,:::80->80/tcp, 0.0.
+                                                                                   0.0:9879->9879/tcp,:::9879->9879/tcp  
+basic-harness_redis_1              docker-entrypoint.sh redis ...   Up (healthy)   6379/tcp                              
+basic-harness_scm_1                /usr/local/bin/scm               Up (healthy)   8091/tcp          
+```
+* Cofiguring __Quickstart Project__  is not  yet possible due to error with delegate configuration:
+
+![Harness Delegate Setup Error](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-delegate-setup-error.png)
+
+
+> NOTE: expect two digit load average on  a 16 GB 4 core laptop and expect networking changes while Harness cluster is running (inbound connections may be blocked)
 
 ```sh
 ping 192.168.0.25
@@ -371,6 +399,10 @@ NOTE: the password will not authenticate you anywhere but this cluster
 
 ![Harness Login](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-harness-login.png)
 
+![Harness Pipeline](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-quickstart-pipeline.png)
+
+![Harness Delegate](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-new-delegate.png)
+
 ### Cleanup
 ```sh
 docker-compose stop
@@ -602,7 +634,15 @@ cd delegate
 export IMAGE=harness_delegate
 docker build -t $IMAGE -f Dockerfile .
 ```
+### Cleanup
 
+```sh
+docker-compose stop
+docker-compose rm -f
+docker system prune -f
+docker image ls |grep harness | awk '{print $3}' | cut -c1-4 | xargs -IX docker image rm X
+docker image rm cb02
+```
 ### Note 
 
 [MiniKube](https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2Fwindows+package+manager) 
@@ -665,8 +705,6 @@ for guaranteed cleanup will likely call explicitly
 
   * [Harness Shell Script step example](https://developer.harness.io/docs/continuous-delivery/x-platform-cd-features/cd-steps/utilities/shell-script-step)
   * https://hostadvice.com/how-to/web-hosting/ubuntu/how-to-configure-firewall-with-ufw-on-ubuntu-18/
-
-
   * https://medium.com/@raghavmnnit/setting-up-winrm-communication-between-linux-and-windows-using-python-and-pywinrm-88f47a68bf7d (requires creation of account to access the material)
   * https://adamtheautomator.com/python-winrm/
   * https://www.google.com/search?q=python%20pywinrm%20tutorial

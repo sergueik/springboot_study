@@ -142,9 +142,18 @@ services:
     networks:
       harness-network:
 
+  delegate:
+    image: harness/delegate:24.09.83905.minimal
+    deploy:
+      resources:
+        limits:
+          memory: 24m
+    networks:
+      harness-network:
+
   proxy:
     build: nginx
-    # image: harness/nginx:1.21.4
+    image: harness/nginx:1.21.4
     deploy:
       resources:
         limits:
@@ -164,7 +173,7 @@ services:
     ports:
       - '80:80'
       - '9879:9879'
-    # Neer do modify - directory volumes do not work well on Docker Toolbox  
+    # directory volumes do not work well on Docker Toolbox  
     #volumes:
     #  - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
     #  - ./scripts/wait-for-it.sh:/bin/wait-for-it.sh
@@ -184,7 +193,7 @@ services:
 
   mongo:
     build: mongo
-    # image: mongo:4.4.22
+    image: mongo:4.4.22
     deploy:
       resources:
         limits:
