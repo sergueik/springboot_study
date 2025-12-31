@@ -1,11 +1,14 @@
-FROM node:16.12.0-alpine3.11
+FROM node:18.12-alpine
 
-RUN apk update && apk add --update --no-cache python3 py3-pip g++ make
-RUN apk add --no-cache docker-cli
+RUN apk update \
+    && apk add --update --no-cache python3 py3-pip g++ make docker-cli \
+    && rm -rf /var/cache/* \
+    && mkdir /var/cache/apk
 WORKDIR /src
-ADD ./backend /src/backend
-ADD ./client /src/client
-ADD ./app.js /src/app.js
-RUN cd backend && npm install --silent
+COPY app.js ./
+COPY ./backend ./backend
+COPY ./client ./client
+RUN cd backend \
+    && npm install --silent
 EXPOSE 3230
 CMD ["node", "/src/app.js"]
