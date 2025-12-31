@@ -74,7 +74,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1024m
+          memory: 1000m
     env_file: environment/pipeline-service.env
     expose:
       - '12001'
@@ -91,7 +91,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1024m
+          memory: 244m
     env_file: environment/platform-service.env
     expose:
       - '9005'
@@ -142,17 +142,7 @@ services:
     networks:
       harness-network:
 
-  delegate:
-    image: harness/delegate:24.09.83905.minimal
-    deploy:
-      resources:
-        limits:
-          memory: 24m
-    networks:
-      harness-network:
-
   proxy:
-    build: nginx
     image: harness/nginx:1.21.4
     deploy:
       resources:
@@ -173,6 +163,9 @@ services:
     ports:
       - '80:80'
       - '9879:9879'
+    volumes:
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./scripts/wait-for-it.sh:/bin/wait-for-it.sh
 
   redis:
     image: harness/redis:6.2.7-alpine
@@ -188,7 +181,6 @@ services:
       harness-network:
 
   mongo:
-    build: mongo
     image: mongo:4.4.22
     deploy:
       resources:
@@ -199,6 +191,9 @@ services:
       test: "mongo --eval 'db.runCommand(\"ping\").ok' --quiet"
     networks:
       harness-network:
+    volumes:
+      - mongo_data:/data/db
+      - ./config/mongo/mongod.conf:/etc/mongod.conf
 
 networks:
   harness-network:

@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   ng-ui:
-    image: harness/nextgenui-signed:0.347.19
+    image: harness/nextgenui-signed:0.353.10
     deploy:
       resources:
         limits:
@@ -17,7 +17,7 @@ services:
       harness-network:
 
   ng-auth-ui:
-    image: harness/ng-auth-ui-signed:1.5.0
+    image: harness/ng-auth-ui-signed:1.7.0
     deploy:
       resources:
         limits:
@@ -32,7 +32,7 @@ services:
       harness-network:
 
   manager:
-    image: harness/manager-signed:79228
+    image: harness/manager-signed:79421
     deploy:
       resources:
         limits:
@@ -54,7 +54,7 @@ services:
       harness-network:
 
   ng-manager:
-    image: harness/ng-manager-signed:79228
+    image: harness/ng-manager-signed:79421
     deploy:
       resources:
         limits:
@@ -70,11 +70,11 @@ services:
       harness-network:
 
   pipeline-service:
-    image: harness/pipeline-service-signed:1.29.10
+    image: harness/pipeline-service-signed:1.33.8
     deploy:
       resources:
         limits:
-          memory: 1024m
+          memory: 1000m
     env_file: environment/pipeline-service.env
     expose:
       - '12001'
@@ -87,11 +87,11 @@ services:
       harness-network:
 
   platform-service:
-    image: harness/platform-service-signed:78903
+    image: harness/platform-service-signed:79202
     deploy:
       resources:
         limits:
-          memory: 1024m
+          memory: 244m
     env_file: environment/platform-service.env
     expose:
       - '9005'
@@ -117,7 +117,7 @@ services:
       harness-network:
 
   scm:
-    image: harness/ci-scm-signed:release-127-ubi
+    image: harness/ci-scm-signed:release-150-ubi
     deploy:
       resources:
         limits:
@@ -130,7 +130,7 @@ services:
       harness-network:
 
   delegate-proxy:
-    image: harness/delegate-proxy-signed:78918
+    image: harness/delegate-proxy-signed:79310
     deploy:
       resources:
         limits:
@@ -142,17 +142,7 @@ services:
     networks:
       harness-network:
 
-  delegate:
-    image: harness/delegate:24.09.83905.minimal
-    deploy:
-      resources:
-        limits:
-          memory: 24m
-    networks:
-      harness-network:
-
   proxy:
-    build: nginx
     image: harness/nginx:1.21.4
     deploy:
       resources:
@@ -173,6 +163,9 @@ services:
     ports:
       - '80:80'
       - '9879:9879'
+    volumes:
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./scripts/wait-for-it.sh:/bin/wait-for-it.sh
 
   redis:
     image: harness/redis:6.2.7-alpine
@@ -188,7 +181,6 @@ services:
       harness-network:
 
   mongo:
-    build: mongo
     image: mongo:4.4.22
     deploy:
       resources:
@@ -199,6 +191,9 @@ services:
       test: "mongo --eval 'db.runCommand(\"ping\").ok' --quiet"
     networks:
       harness-network:
+    volumes:
+      - mongo_data:/data/db
+      - ./config/mongo/mongod.conf:/etc/mongod.conf
 
 networks:
   harness-network:

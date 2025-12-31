@@ -1,13 +1,19 @@
 ﻿### Info
 
-replica of [harness-cd-community](https://github.com/harness/harness-cd-community)
+Replica of [harness-cd-community](https://github.com/harness/harness-cd-community) 
+- a retired [Harness CD]() Community Edition a modern self-service continuous
+delivery solution that allows to deploy, verify and automatically rollback Kubernetes and other cloud-native applications on any public or private cloud infrastructure of their choice.
 
 > NOTE: The [Harness Community Edition deployments](https://developer.harness.io/docs/continuous-delivery/deploy-srv-diff-platforms/community-ed/harness-community-edition-quickstart/)  states that 
 __Harness CD CE__ is deprecated. There is also a [Harness CD Community Edition overview](https://developer.harness.io/docs/continuous-delivery/deploy-srv-diff-platforms/community-ed/harness-community-edition-overview/)
+Harnes CICD is a heavy 12+ node cluster with complex workflows:
+
+![Harness Flow](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/harness_ui_fanout.png)
 
 ### Usage
 
-* check the disk space
+Check the disk space - you will need at minimum 6.5 GB for images and containers alone
+
 ```sh
 df -h /
 ```
@@ -18,11 +24,19 @@ Filesystem      Size  Used Avail Use% Mounted on
 * pull recent releases of Harness Docker image set
 
 ```sh
-grep image: docker-compose.yml | tr -d '\r' |cut -f 2,3 -d ':' | xargs -IX echo docker pull X
+FILE=docker-compose.yml.792xx
+FILE=docker-compose.yml.794xx
+FILE=docker-compose.yml
+
+grep image: $FILE | tr -d '\r' |cut -f 2,3 -d ':' | xargs -IX docker pull X
 ```
 > NOTE: on Linux host one may prefer a different command variation:
 ```sh
-awk '/image:/ {print $2}' docker-compose.yml| xargs -IX echo docker pull X
+
+FILE=docker-compose.yml.792xx
+FILE=docker-compose.yml.794xx
+FILE=docker-compose.yml
+awk '/image:/ {print $2}' $FILE| xargs -IX docker pull X
 ```
 
 examine the images
@@ -45,7 +59,7 @@ harness/redis                     6.2.7-alpine         b6e4ce5f89f4        3 yea
 harness/nginx                     1.21.4               ea335eea17ab        4 years ago         141MB
 harness/delegate                  24.09.83905.minimal  e5b511e65dbf        15 months ago       732MB
 ```
-> NOTE: the 732MB MB `harness/delegate` is the *minimal* Alpine-based image.
+> NOTE: the 732 MB `harness/delegate` is the *minimal* Alpine-based image.
 
 ```sh
 docker-compose up --build --detach
@@ -179,18 +193,16 @@ GET /api/setup/delegates/installation-command
   &accountId=ZcCMqDV4QL2-jmv-bHn5ow
   &commandType=DOCKER
 500 Internal Server Error
-
 ```
 
 Delegate installation is the first UI action that requires a fully valid routing context. 
 The `routingId`, `accountid` arguments passed cannot be identical. 
 
-
 ![Harness Delegate Root Cause](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-error-routingId.png)
 
+The defect was observed in two most recent releases of __Harness CD CE__.
 
-
-> NOTE: expect a two digit load average on an 16 GB 4 core laptop and expect networking changes to be observed while Harness cluster is running (inbound connections may be blocked)
+> NOTE: expect a two digit load average on an 16 GB 4 core laptop and expect networking changes to be occuring while Harness cluster is running (inbound connections may be blocked)
 
 ```sh
 ping 192.168.0.25
@@ -207,7 +219,6 @@ networks:
     ipam:
       config:
         - subnet: 192.168.0.0/24
-
 ```
 
 ```sh
@@ -415,7 +426,6 @@ to
       resources:
         limits:
           memory: 1024m
-
 ```
 and in `environment/platform-service.env`:
 ```text
@@ -431,6 +441,8 @@ and re-run
 ```sh
 docker-compose up --build platform-service
 ```
+navigate to `http://localhost/#/signup`, create user
+
 ![Harness Signup](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-harness-signup.png)
 
 NOTE: the password will not authenticate you anywhere but this cluster
@@ -702,8 +714,9 @@ Filesystem      Size  Used Avail Use% Mounted on
 docker-compose stop
 docker-compose rm -f
 docker system prune -f
+docker volume prune -f
 docker image ls |grep harness | awk '{print $3}' | cut -c1-4 | xargs -IX docker image rm X
-docker image rm e535 cb02
+docker image rm 7dd6 cb02
 ```
 ### Note 
 
