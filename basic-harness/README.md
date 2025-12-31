@@ -689,12 +689,21 @@ docker build -t $IMAGE -f Dockerfile .
 ```
 ### Cleanup
 
+Check disk usage
+```sh
+df  -h /
+```
+```text
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1        22G   20G  518M  98% /
+
+```
 ```sh
 docker-compose stop
 docker-compose rm -f
 docker system prune -f
 docker image ls |grep harness | awk '{print $3}' | cut -c1-4 | xargs -IX docker image rm X
-docker image rm cb02
+docker image rm e535 cb02
 ```
 ### Note 
 
