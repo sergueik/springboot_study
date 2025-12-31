@@ -6,7 +6,12 @@ delivery solution that allows to deploy, verify and automatically rollback Kuber
 
 > NOTE: The [Harness Community Edition deployments](https://developer.harness.io/docs/continuous-delivery/deploy-srv-diff-platforms/community-ed/harness-community-edition-quickstart/)  states that 
 __Harness CD CE__ is deprecated. There is also a [Harness CD Community Edition overview](https://developer.harness.io/docs/continuous-delivery/deploy-srv-diff-platforms/community-ed/harness-community-edition-overview/)
-Harnes CICD is a heavy 12+ node cluster with complex workflows:
+
+Harnes CICD is a heavy 12+ node cluster
+
+![Windows Target](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-cluster-docker-webgui.png)
+
+with complex workflows:
 
 ![Harness Flow](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/harness_ui_fanout.png)
 
@@ -38,13 +43,11 @@ FILE=docker-compose.yml.794xx
 FILE=docker-compose.yml
 awk '/image:/ {print $2}' $FILE| xargs -IX docker pull X
 ```
-
 examine the images
 ```sh
 docker image ls
 ```
 ```text
-REPOSITORY                        TAG                  IMAGE ID            CREATED             SIZE
 harness/nextgenui-signed          0.353.10             288cf8d1df92        2 years ago         258MB
 mongo                             4.4.22               cb026d11ad72        2 years ago         432MB
 harness/ng-manager-signed         79421                dab3fa214c6f        2 years ago         1.04GB
@@ -59,14 +62,14 @@ harness/redis                     6.2.7-alpine         b6e4ce5f89f4        3 yea
 harness/nginx                     1.21.4               ea335eea17ab        4 years ago         141MB
 harness/delegate                  24.09.83905.minimal  e5b511e65dbf        15 months ago       732MB
 ```
-> NOTE: the 732 MB `harness/delegate` is the *minimal* Alpine-based image.
+> NOTE: the 732 MB `harness/delegate` *is* the *minimal* Alpine-based image. Technically it is not a part of the cluster
 
 ```sh
 docker-compose up --build --detach
 ```
 
 ```text
-- Container basic-harness-ng-manager-1        Started                     5.3s
+ - Container basic-harness-ng-manager-1        Started                     5.3s
  - Container basic-harness-scm-1               Started                     5.3s
  - Container basic-harness-log-service-1       Started                     5.2s
  - Container basic-harness-ng-auth-ui-1        Started                     5.3s
@@ -79,10 +82,15 @@ docker-compose up --build --detach
  - Container basic-harness-manager-1           Running                     0.0s
  - Container basic-harness-proxy-1             Started                     5.4s
 ```
-* on Windows __Docker Toolbox__
+Examine the cluster status. 
+
 ```sh
 docker-compose ps
 ```
+
+
+There is probably dependencies across the nodes not configured in `docker-compsoe.yml` and the state of several nodes is 
+seen in particular in Windows environment on __Docker Toolbox__, but also on Ubuntu with older releases of the project
 
 ```text
 NAME                               COMMAND                  SERVICE             STATUS                PORTS
@@ -143,11 +151,17 @@ basic-harness-manager-1  | ./start_process.sh: line 99:   189 Killed            
 
 ```
 ```sh
-docker-compose exec ng-manager sh -c 'cat /opt/harness/start_process.sh' | tee a.txt
-vi a.txt +99
+docker-compose exec manager sh -c 'cat /opt/harness/start_process.sh' | tee a.txt
+sed -n '97,101p' a.txt
+```
+```text 
+        java $JAVA_OPTS -jar $CAPSULE_JAR $COMMAND /opt/harness/config.yml > /opt/harness/logs/portal.log 2>&1
+    fi
+fi
 ```
 
-On Ubuntu Docker 
+the happy status on Ubuntu Docker
+ 
 ```sh
 docker-compose ps
 ```
@@ -168,6 +182,32 @@ basic-harness_proxy_1              /docker-entrypoint.sh ngin ...   Up (healthy)
 basic-harness_redis_1              docker-entrypoint.sh redis ...   Up (healthy)   6379/tcp                              
 basic-harness_scm_1                /usr/local/bin/scm               Up (healthy)   8091/tcp          
 ```
+
+### Create User
+navigate to `http://localhost/#/signup`, create a user
+
+![Harness Signup](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-harness-signup.png)
+
+> NOTE: the password will not authenticate you anywhere but this cluster
+
+
+### Setting Org and Project
+
+The default organization will be used, but the project will need to be created explicitly
+
+![Harness Login](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-harness-login.png)
+
+it will prompt you to set up pipeline, but it is needed to create a delegate first (will need it)
+
+![Harness Install Delegate](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-install-new-delegate.png)
+
+### Create Pipeline
+![Harness Pipeline](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-quickstart-pipeline.png)
+
+### Create Delegate
+
+![Harness Delegate](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-new-delegate.png)
+
 ### Delegate Setup
 
 Harness delegate lifecycle is out-of-band
@@ -202,7 +242,39 @@ The `routingId`, `accountid` arguments passed cannot be identical.
 
 The defect was observed in two most recent releases of __Harness CD CE__.
 
-> NOTE: expect a two digit load average on an 16 GB 4 core laptop and expect networking changes to be occuring while Harness cluster is running (inbound connections may be blocked)
+
+The elements yet to explore:
+
+* Pipelines 
+* Services
+* Environments
+
+* Chaos
+* Feature Flags
+* Builds
+
+### TODO
+
+![Harness Delegate Root Cause](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-intrastructure-provisioning-underway.png)
+
+
+![Harness Delegate Root Cause](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-intrastructure-provisioning-failed.png)
+
+this may be related to
+
+```sh
+docker-compose logs  ng-manager | grep ERROR |grep io.harness.mongo | head -3
+```
+```text
+WARNING: Python-dotenv could not parse statement starting at line 17
+ng-manager_1        | 2025-12-31 15:58:12,062 [main] ERROR io.harness.mongo.IndexManagerSession - Index {"name": "accountIdentifier_1", "background": true} is a subsequence of index {"name": "unique_accountIdentifier_userIdentifier_type_idx", "unique": true} [collectionName=userSourceCodeManagers] 
+ng-manager_1        | 2025-12-31 15:58:12,351 [main] ERROR io.harness.mongo.IndexManagerSession - Index {"name": "accountId_organizationId_projectId_lastDeployedAt_idx", "background": true} is a subsequence of index {"name": "accountId_organizationId_projectId_lastDeployedAt_serviceIdentifier_idx", "background": true} [collectionName=instanceNG] 
+ng-manager_1        | 2025-12-31 15:58:14,047 [main] ERROR io.harness.mongo.IndexManagerSession - Index {"name": "unique_accountIdentifier_organizationIdentifier_projectIdentifier", "unique": true, "collation": {"locale": "en", "strength": 1}} is a subsequence of index {"name": "accountOrgIdentifierDeletedCreatedAtLastModifiedAtIdx", "background": true} [collectionName=projects] 
+```
+
+### Misc.
+
+Expect a two digit load average on an 16 GB 4 core laptop and expect networking changes to be occuring while Harness cluster is running (inbound connections may be blocked)
 
 ```sh
 ping 192.168.0.25
@@ -409,7 +481,7 @@ basic-harness-platform-service-1  | 	at org.glassfish.jersey.internal.Errors.pro
 basic-harness-platform-service-1  | 	at org.glassfish.jersey.internal.Errors.processWithException(Errors.java:232)
 
 ```
-is fixed through updating the onfiguration
+is fixed through updating the configuration
 ```yaml
  platform-service:
     image: harness/platform-service-signed:79202
@@ -441,17 +513,6 @@ and re-run
 ```sh
 docker-compose up --build platform-service
 ```
-navigate to `http://localhost/#/signup`, create user
-
-![Harness Signup](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-harness-signup.png)
-
-NOTE: the password will not authenticate you anywhere but this cluster
-
-![Harness Login](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-harness-login.png)
-
-![Harness Pipeline](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-quickstart-pipeline.png)
-
-![Harness Delegate](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-new-delegate.png)
 
 ### Cleanup
 
