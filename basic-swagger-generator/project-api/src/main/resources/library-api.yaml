@@ -1,0 +1,71 @@
+openapi: 3.0.0
+
+info:
+  version: 0.0.1
+  title: Library Service
+  description: |
+    This is a description
+
+servers:
+  - url: https://localhost:8080/
+    description: This is where my api is
+
+tags:
+
+  - name: "Books"
+  - name: "Users"
+
+
+paths:
+
+  /books:
+
+    post:
+      summary: Creates a book
+      operationId: createBook
+      requestBody:
+        description: HELLO
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        "201":
+          description: CREATED
+
+    get:
+      summary: This gets all books
+      description: This is a detailed description
+      tags:
+        - "Books"
+      operationId: getAllBooksInLibrary
+      responses:
+        "200":
+          description: This means its okay
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+        "400":
+          description: BAD REQUEST
+        "401":
+          description: UNAUTH
+
+components:
+  schemas:
+
+    Book:
+      description: This is the book object
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          description: The name of book
+          type: string
+        author:
+          description: The author
+          type: string
