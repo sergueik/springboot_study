@@ -1,13 +1,11 @@
 ### Info
 
-This directory contains a close replica of the
-
-[rakibtg/docker-web-gui](https://github.com/rakibtg/docker-web-gui) app -  node.js alpine docker hosted web based GUI for managing Docker containers and images
+This directory contains a close replica of the [rakibtg/docker-web-gui](https://github.com/rakibtg/docker-web-gui) app - a `node.js` alpine docker hosted web based GUI for managing Docker containers and images
 
 ### Modifications to the Project
 
-* pinned the base image `node:alpine` to `node:8.12-alpine`
-* added `python` and `docker` dependencies install - the host `docker` will not be runnable in container to allow reading the host inventory through socket which is exported volume mounted to the container during the run
+* pinned the base image `node:alpine` to `node:8.12-alpine` and later to `node18/alpine:18.19.0`
+* added `python` and `docker` dependencies install - the host `docker` application will not be runnable in musl container to allow reading the host inventory through socket which is exported volume mounted to the container during the run
 
 ### Usage
 
@@ -22,17 +20,18 @@ docker container rm $NAME
 docker run -p 3230:3230 --name $NAME -v /var/run/docker.sock:/var/run/docker.sock $NAME
 ```
 
-optionally run using host `docker`:
+* optionally run using host `docker`:
 ```sh
 docker run -p 3230:3230 --name $NAME -v /usr/local/bin/docker:/usr/local/bin/docker -v /var/run/docker.sock:/var/run/docker.sock $NAME
 ```
+
 ```sh
 pushd ../docker-web-gui
 docker pull node18/alpine:18.19.0
 docker-compose up --build --detach
 ```
 
-> NOTE: the original project was providing an invalid run command which attempts to map both the docker socket and the binary from the host into the container. The socker is the correct way to let docker process running in container access host inventory, but the binary is not compabile
+> NOTE: the original project was providing an invalid run command which attempts to map both the docker socket and the binary from the host into the container. The socker is the correct way to let docker process running in container access host inventory, but the binary is not compatible
 We install client locally in the contianer and only mount volume for socket
 
 ### Result
@@ -48,6 +47,7 @@ We install client locally in the contianer and only mount volume for socket
 ### Cleanup
 
 ```sh
+NAME=docker-web-gui
 docker container stop $NAME
 docker container rm $NAME
 docker image rm $NAME
@@ -57,9 +57,10 @@ docker system prune -f
 
 or
 ```sh
+NAME=docker-web-gui
 docker-compose stop
 docker-compose rm -f
-docker image ls | grep -i web-gui | awk '{print $3}' | cut -c1-4 | xargs docker image rm
+docker image ls | grep -i $NAME | awk '{print $3}' | cut -c1-4 | xargs docker image rm
 docker system prune -f
 ```
 
@@ -284,14 +285,14 @@ OK: 183 MiB in 24 packages
 ```
 +  and list hosts images
 ```sh
- docker container ls
+docker container ls
 ```
 ```text
 CONTAINER ID        IMAGE               COMMAND             CREATED              STATUS              PORTS               NAMES
 78ac98862051        node:8.12-alpine    "sh"                About a minute ago   Up About a minute 
 ```
 
-### Original Documentations
+### Original Documentation
 
   * [Backend API](https://github.com/rakibtg/$IMAGE/tree/master/backend)
   * [Client](https://github.com/rakibtg/$IMAGE/tree/master/client)

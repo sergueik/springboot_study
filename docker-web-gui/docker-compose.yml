@@ -3,6 +3,7 @@ version: "3"
 services:
   docker-web-gui:
     container_name: docker-web-gui
+    image: node18/alpine:18.19.0
     build:
       context: .
     ports:
