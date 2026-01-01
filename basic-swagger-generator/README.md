@@ -167,4 +167,26 @@ in the parent project
 01/01/2026  02:56 PM               710 resolver-status.properties
 01/01/2026  03:14 PM               180 _remote.repositories
 
+
+
+```
+
+```
+mvn -X compile | findstr -i LombokProcessor
+```
+
+expect to see
+
+```txt
+Running lombok.javac.apt.LombokProcessor
+```
+
+but one of the annotations prevents this
+
+```sh
+mvn dependency:tree | findstr slf4j-api
+```
+
+```text
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.30:compile
 ```
