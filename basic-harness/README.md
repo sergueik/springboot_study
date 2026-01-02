@@ -775,6 +775,34 @@ docker volume prune -f
 docker image ls |grep harness | awk '{print $3}' | cut -c1-4 | xargs -IX docker image rm X
 docker image rm 7dd6 cb02
 ```
+### Misc. Screenshots
+
+![screenshot](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-account-resources.png)
+
+![screenshot](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-add-change-source.png)
+
+![screenshot](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-add-healthsource.png)
+
+![screenshot](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-add-template.png)
+
+![screenshot](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-bad-custom-error.png)
+
+![screenshot](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-configure-notification.png)
+
+![screenshot](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-create-source-code-mananer.png)
+
+![screenshot](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-feature-flags.png)
+
+![screenshot](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-modules1.png)
+
+![screenshot](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-resource-groups-upgrade-required.png)
+
+![screenshot](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-targets.png)
+
+![screenshot](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-trial-security-testing.png)
+
+![screenshot](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-wizard-driven-start.png)
+
 ### Note 
 
 [MiniKube](https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2Fwindows+package+manager) 

@@ -224,3 +224,14 @@ popd
 2026-01-01 23:27:14.026  INFO 4052 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
 2026-01-01 23:27:14.035  INFO 4052 --- [           main] com.example.demo.Application             : Started Application in 1.885 seconds (JVM running for 2.219)
 ```
+
+On Windows 11 see the following error, with Java 1.8, 11.
+```sh
+mvn compile
+```
+```
+[ERROR] /C:/developer/sergueik/springboot_study/basic-swagger-generator/project-service/src/main/java/com/example/demo/controllers/BookController.java:[20,9] cannot find symbol
+[ERROR]   symbol:   variable log
+[ERROR]   location: class com.example.demo.controllers.BookController
+
+```
