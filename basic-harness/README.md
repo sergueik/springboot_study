@@ -197,35 +197,24 @@ The default organization will be used, but the project will need to be created e
 
 ![Harness Login](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-harness-login.png)
 
-it will prompt you to set up pipeline, but it is needed to create a delegate first (will need it)
+__Harness__ will prompt to set up pipeline 
+
+
+![Harness Pipeline](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-quickstart-pipeline.png)
+
+To run pipeline one is prompted to create a delegate first
 
 ![Harness Install Delegate](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-install-new-delegate.png)
 
-### Create Pipeline
-![Harness Pipeline](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-quickstart-pipeline.png)
 
-### Create Delegate
-
-![Harness Delegate](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-new-delegate.png)
-
-### Delegate Setup
-
-Harness delegate lifecycle is out-of-band
 
 ![Harness No Delegate Found Screen](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-need-new-delegate.png)
 
-Configuring __Quickstart Project__ is not yet possible due to error with delegate configuration:
+Error with delegate configuration:
 
 ![Harness Delegate Setup Error](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-delegate-setup-error.png)
 
-```text
-GET /api/setup/delegates/installation-command
-    ?routingId=ZcCMqDV4QL2-jmv-bHn5ow
-    &accountId=ZcCMqDV4QL2-jmv-bHn5ow
-    &commandType=HELM
-
-500 Internal Server Error
-```
+debugging the error in browser 
 
 ```text
 GET /api/setup/delegates/installation-command
@@ -234,26 +223,25 @@ GET /api/setup/delegates/installation-command
   &commandType=DOCKER
 500 Internal Server Error
 ```
+indicates misconfiguration. 
 
-Delegate installation is the first UI action that requires a fully valid routing context. 
-The `routingId`, `accountid` arguments passed cannot be identical. 
+Delegate lifecycle is out-of-band - installing one is the first UI action that requires a fully valid routing context. 
+The `routingId`, `accountid` arguments passed cannot be identical.
 
 ![Harness Delegate Root Cause](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-error-routingId.png)
 
-The defect was observed in two most recent releases of __Harness CD CE__.
+The `routingId` does not apppear to be saved in the session
 
+This defect was observed in two most recent releases of __Harness CD CE__.
 
-The elements yet to explore:
+Errors have been observed in other actions too:
 
-* Pipelines 
-* Services
-* Environments
+![Harness Generic Error Page](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-generic-error.png)
 
-* Chaos
-* Feature Flags
-* Builds
+![Harness Delegate Root Cause](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-custom-error.png)
 
-### TODO
+Some errors are reported after time consuming attempting to set up the environment:
+
 
 ![Harness Delegate Root Cause](https://github.com/sergueik/springboot_study/blob/master/basic-harness/screenshots/capture-intrastructure-provisioning-underway.png)
 
@@ -273,6 +261,14 @@ ng-manager_1        | 2025-12-31 15:58:14,047 [main] ERROR io.harness.mongo.Inde
 ```
 
 ### Misc.
+
+* Pipelines 
+* Services
+* Environments
+
+* Chaos
+* Feature Flags
+* Builds
 
 Expect a two digit load average on an 16 GB 4 core laptop and expect networking changes to be occuring while Harness cluster is running (inbound connections may be blocked)
 
