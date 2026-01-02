@@ -191,6 +191,7 @@ mvn dependency:tree | findstr slf4j-api
 [INFO] +- org.slf4j:slf4j-api:jar:1.7.30:compile
 ```
 
+
 * install parent project pom artifact
 ```sh
 mvn install

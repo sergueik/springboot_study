@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.example</groupId>
   <artifactId>swagger-generator</artifactId>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <name>swagger-generator</name>
   <description>demo swagger generator project</description>
   <packaging>pom</packaging>
@@ -18,7 +18,7 @@
     <relativePath/>
   </parent>
   <properties>
-    <java.version>1.8</java.version>
+    <java.version>11</java.version>
   </properties>
   <dependencyManagement>
     <dependencies>
