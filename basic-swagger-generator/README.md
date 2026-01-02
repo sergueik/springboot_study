@@ -190,3 +190,36 @@ mvn dependency:tree | findstr slf4j-api
 ```text
 [INFO] +- org.slf4j:slf4j-api:jar:1.7.30:compile
 ```
+
+* install parent project pom artifact
+```sh
+mvn install
+```
+```sh
+ls -l ~/.m2/repository/com/example/swagger-generator/0.3.0-SNAPSHOT/
+```
+```text
+total 12
+-rw-rw-r-- 1 sergueik sergueik  550 Jan  1 23:20 maven-metadata-local.xml
+-rw-rw-r-- 1 sergueik sergueik  179 Jan  1 23:20 _remote.repositories
+-rw-rw-r-- 1 sergueik sergueik 2778 Jan  1 23:19 swagger-generator-0.3.0-SNAPSHOT.pom
+
+```
+```sh
+pushd project-api
+mvn generate-sources
+mvn install   
+popd
+```
+```sh
+pushd project-service
+mvn compile
+mvn package
+mvn spring-boot:run
+popd
+```
+
+```text
+2026-01-01 23:27:14.026  INFO 4052 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2026-01-01 23:27:14.035  INFO 4052 --- [           main] com.example.demo.Application             : Started Application in 1.885 seconds (JVM running for 2.219)
+```
