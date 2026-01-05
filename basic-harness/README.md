@@ -357,7 +357,7 @@ Running Harness self-health check...
 ⏳ Waiting: starting=12 unhealthy=0 exited=0 (10s)
 ...
 ⏳ Waiting: starting=4 unhealthy=0 exited=0 (275s)
-⏳ Waiting: starting=4 unhealthy=0 exited=0 (280s)
+⏳ Waiting: starting=4 unhealthy=0 exited=0 (280s) 
 ❌ ERROR: unhealthy container detected
 ```
 
@@ -365,16 +365,23 @@ Running Harness self-health check...
 ./wait_harness.sh --inspect
 ```
 ```text
-Running Harness self-health check...
-❌ FAILURE detected
+Starting Harness self-health check
+FAILURE detected
 
 Exited containers:
 /basic-harness-manager-1: exited (code=137)
+/basic-harness-delegate-1: exited (code=1)
 
 Unhealthy containers:
 /basic-harness-manager-1: unhealthy
-
 ```
+#### Docker Machine Image Size 
+
+| Stage        | Estimate |
+| ------------ | -------- |
+| Initial      | 12M      |
+| Image Pull   | 9.8G     |
+| Compose Up   | 11G      |
 
 ### Misc.
 
