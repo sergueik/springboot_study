@@ -260,6 +260,109 @@ ng-manager_1        | 2025-12-31 15:58:12,351 [main] ERROR io.harness.mongo.Inde
 ng-manager_1        | 2025-12-31 15:58:14,047 [main] ERROR io.harness.mongo.IndexManagerSession - Index {"name": "unique_accountIdentifier_organizationIdentifier_projectIdentifier", "unique": true, "collation": {"locale": "en", "strength": 1}} is a subsequence of index {"name": "accountOrgIdentifierDeletedCreatedAtLastModifiedAtIdx", "background": true} [collectionName=projects] 
 ```
 
+
+### Harness Docker Toolbox / VirtualBox / Hypervisor-layer Pathology
+
+Harness self-bootstrap instability is an expected failure mode, 
+given the number of moving parts below Docker (VT-x, nested virt, NAT timing, clock skew, disk I/O)
+
+Adding a self-health gate to the repo
+
+* some nodes have no healthcheck
+* some nodes (delegate) are allowed to fail or exit
+* results vary across hypervisors
+
+
+#### Sample Runs
+```sh
+docker-compose ps
+```
+```text
+NAME                               COMMAND                  SERVICE             STATUS                PORTS
+basic-harness-delegate-1           "./start.sh"             delegate            exited (1)
+basic-harness-delegate-proxy-1     "/bin/sh -c 'nginx -…"   delegate-proxy      running (healthy)     8080/tcp
+basic-harness-log-service-1        "/usr/local/bin/log-…"   log-service         running (healthy)     8079/tcp
+basic-harness-manager-1            "./run.sh"               manager             exited (137)
+basic-harness-mongo-1              "docker-entrypoint.s…"   mongo               running (healthy)     27017/tcp
+basic-harness-ng-auth-ui-1         "/bin/sh -c 'sed -i …"   ng-auth-ui          running (healthy)     8080/tcp
+basic-harness-ng-manager-1         "./run.sh"               ng-manager          running (unhealthy)   7090/tcp
+basic-harness-ng-ui-1              "sh /opt/entrypoint.…"   ng-ui               running (healthy)     8080/tcp
+basic-harness-pipeline-service-1   "/opt/harness/run.sh"    pipeline-service    running (healthy)     12001/tcp, 12011/tcp, 14002/tcp
+basic-harness-platform-service-1   "/opt/harness/run.sh"    platform-service    running (healthy)     9005/tcp
+basic-harness-proxy-1              "/docker-entrypoint.…"   proxy               running (healthy)     0.0.0.0:80->80/tcp, 0.0.0.0:9879->9879/tcp
+basic-harness-redis-1              "docker-entrypoint.s…"   redis               running (healthy)     6379/tcp
+basic-harness-scm-1                "/usr/local/bin/scm"     scm                 running (healthy)     8091/tcpNAME                               COMMAND                  SERVICE             STATUS                PORTS
+basic-harness-delegate-1           "./start.sh"             delegate            exited (1)
+basic-harness-delegate-proxy-1     "/bin/sh -c 'nginx -…"   delegate-proxy      running (healthy)     8080/tcp
+basic-harness-log-service-1        "/usr/local/bin/log-…"   log-service         running (healthy)     8079/tcp
+basic-harness-manager-1            "./run.sh"               manager             exited (137)
+basic-harness-mongo-1              "docker-entrypoint.s…"   mongo               running (healthy)     27017/tcp
+basic-harness-ng-auth-ui-1         "/bin/sh -c 'sed -i …"   ng-auth-ui          running (healthy)     8080/tcp
+basic-harness-ng-manager-1         "./run.sh"               ng-manager          running (unhealthy)   7090/tcp
+basic-harness-ng-ui-1              "sh /opt/entrypoint.…"   ng-ui               running (healthy)     8080/tcp
+basic-harness-pipeline-service-1   "/opt/harness/run.sh"    pipeline-service    running (healthy)     12001/tcp, 12011/tcp, 14002/tcp
+basic-harness-platform-service-1   "/opt/harness/run.sh"    platform-service    running (healthy)     9005/tcp
+basic-harness-proxy-1              "/docker-entrypoint.…"   proxy               running (healthy)     0.0.0.0:80->80/tcp, 0.0.0.0:9879->9879/tcp
+basic-harness-redis-1              "docker-entrypoint.s…"   redis               running (healthy)     6379/tcp
+basic-harness-scm-1                "/usr/local/bin/scm"     scm                 running (healthy)     8091/tcp
+```
+
+```sh
+./wait_harness.sh
+```
+
+```text
+Running Harness self-health check...
+❌ ERROR: non-delegate container exited
+/basic-harness-manager-1: exited (137)
+```
+as usual one checks logs:
+```sh
+docker-compose logs ng-manager
+```
+and after discovering a communication error
+```text
+basic-harness-ng-manager-1  | 2026-01-05 20:41:25,693 [FreezeTemplateRegistrationService-0] WARN  io.harness.remote.client.NGRestUtils - Request failed. Attempt : 2.
+basic-harness-ng-manager-1  | java.net.ConnectException: Failed to connect to localhost/127.0.0.1:9005
+...
+basic-harness-ng-manager-1  | Caused by: java.net.ConnectException: Connection refused (Connection refused)
+basic-harness-ng-manager-1  |   at java.base/java.net.PlainSocketImpl.socketConnect(Native Method)
+basic-harness-ng-manager-1  |   ... 41 common frames omitted
+```
+and a typical cure attempt is to simply restart the cluser hoping that the odds will be better this time
+
+```sh
+docker-compose restart
+```
+```text
+ - Container basic-harness-redis-1             Started                                                     7.4s
+ - Container basic-harness-pipeline-service-1  Started                                                    16.7s
+ - Container basic-harness-ng-auth-ui-1        Started                                                     7.1s
+ - Container basic-harness-delegate-proxy-1    Started                                                     6.9s
+ - Container basic-harness-ng-ui-1             Started                                                    15.4s
+ - Container basic-harness-mongo-1             Started                                                    16.9s
+ - Container basic-harness-platform-service-1  Started                                                    16.2s
+ - Container basic-harness-ng-manager-1        Started                                                    16.0s
+ - Container basic-harness-log-service-1       Started                                                    15.1s
+ - Container basic-harness-manager-1           Started                                                     6.5s
+ - Container basic-harness-scm-1               Started                                                     6.8s
+ - Container basic-harness-delegate-1          Started                                                     6.6s
+ - Container basic-harness-proxy-1             Started                                                     2.3s
+```
+but
+```sh
+./wait_harness.sh
+Running Harness self-health check...
+⏳ Waiting: starting=12 unhealthy=0 exited=0 (5s)
+⏳ Waiting: starting=12 unhealthy=0 exited=0 (10s)
+...
+⏳ Waiting: starting=4 unhealthy=0 exited=0 (275s)
+⏳ Waiting: starting=4 unhealthy=0 exited=0 (280s)
+❌ ERROR: unhealthy container detected
+```
+
+
+
 ### Misc.
 
 * Pipelines 
@@ -844,7 +947,9 @@ for guaranteed cleanup will likely call explicitly
 ```
 ### See Also
 
+  * [Continuous Delivery and GitOps - Getting Started](https://developer.harness.io/docs/category/get-started)
   * [overview](https://developer.harness.io/docs/continuous-integration/get-started/overview)
+  * [CD pipeline modeling overview](https://developer.harness.io/docs/continuous-delivery/get-started/cd-pipeline-modeling-overview)
   * [deploy to physical data center](https://developer.harness.io/docs/continuous-delivery/get-started/cd-tutorials/pdc) using a `harness/delegate` Docker instance
   * [deploy to Azure VM](https://developer.harness.io/docs/continuous-delivery/get-started/cd-tutorials/azure)
   * [Harness Community Edition](https://developer.harness.io/docs/continuous-delivery/deploy-srv-diff-platforms/community-ed/harness-community-edition-quickstart) [repo](https://github.com/harness/harness-cd-community/tree/main) - retired in favour of [Gitness](https://gitness.com/)
