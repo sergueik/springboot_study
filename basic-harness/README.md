@@ -361,7 +361,20 @@ Running Harness self-health check...
 ❌ ERROR: unhealthy container detected
 ```
 
+```sh
+./wait_harness.sh --inspect
+```
+```text
+Running Harness self-health check...
+❌ FAILURE detected
 
+Exited containers:
+/basic-harness-manager-1: exited (code=137)
+
+Unhealthy containers:
+/basic-harness-manager-1: unhealthy
+
+```
 
 ### Misc.
 
