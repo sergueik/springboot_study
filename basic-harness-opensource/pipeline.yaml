@@ -1,0 +1,15 @@
+version: 1
+kind: pipeline
+spec:
+  stages:
+    - name: build
+      type: ci
+      spec:
+        steps:
+          - name: build
+            type: run
+            spec:
+              container: openjdk:8-jdk-alpine3.9
+            script: |-
+              mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+              mvn test -B
