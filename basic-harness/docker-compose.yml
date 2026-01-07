@@ -148,6 +148,8 @@ services:
       resources:
         limits:
           memory: 24m
+    env_file:
+      - environment/delegate.env
     networks:
       harness-network:
 
