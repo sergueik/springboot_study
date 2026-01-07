@@ -10,10 +10,16 @@ if [[ -z "$IMAGE" ]]; then
   echo "  $0 <image[:tag]> [jar-path] [trusted-ca-cn]"
   exit 2
 fi
+
+cleanup() { 
+if [ -z "$MSYSTEM_PREFIX" ] ;then 
+	rm -rf "$WORKDIR";
+fi
+
+}
 # NOTE: mktemp will likely fail on Windows MinGW
 if [ -z "$MSYSTEM_PREFIX" ] ;then 
   WORKDIR="$(mktemp -d)"
-  cleanup() { rm -rf "$WORKDIR"; }
   trap cleanup EXIT
 else
   WORKDIR='.'
@@ -66,17 +72,36 @@ docker cp "$CID:$JAR_PATH_IN_IMAGE" "$WORKDIR/app.jar" || {
 }
 
 ########################################
-# 5. Verify JAR signature
+# 5. Verify JAR signature (CORRECT)
 ########################################
 echo "▶ Verifying JAR signature..."
-if ! jarsigner -verify --verbose -certs "$WORKDIR/app.jar" >"$WORKDIR/jar.sig" 2>&1 ; then
-  echo "✖ JAR signature verification failed"
+
+jarsigner -verify -verbose -certs "$WORKDIR/app.jar" >"$WORKDIR/jar.sig" 2>&1 || true
+
+# Case 1: Unsigned JAR
+if grep -qi "jar is unsigned" "$WORKDIR/jar.sig"; then
+  echo "✖ JAR is NOT signed"
   exit 30
 fi
 
-if ! grep -q "$TRUSTED_CA_CN" "$WORKDIR/jar.sig"; then
-  echo "✖ JAR not signed by trusted authority $TRUSTED_CA_CN"
+# Case 2: Signature verification failed
+if grep -qiE "invalid signature|has been tampered" "$WORKDIR/jar.sig"; then
+  echo "✖ JAR signature is INVALID"
   exit 31
+fi
+
+# Case 3: Signed but untrusted CA
+if ! grep -q "$TRUSTED_CA_CN" "$WORKDIR/jar.sig"; then
+  echo "✖ JAR signed but NOT by trusted authority: $TRUSTED_CA_CN"
+  exit 32
+fi
+
+# Case 4: All good
+if grep -qi "jar verified" "$WORKDIR/jar.sig"; then
+  echo "✔ JAR signature valid and trusted"
+else
+  echo "✖ Unknown jarsigner state"
+  exit 33
 fi
 
 echo "✔ JAR signature valid and trusted"
