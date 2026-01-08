@@ -11,14 +11,14 @@ if [[ -z "$IMAGE" ]]; then
   exit 2
 fi
 
-cleanup() { 
-if [ -z "$MSYSTEM_PREFIX" ] ;then 
+cleanup() {
+if [ -z "$MSYSTEM_PREFIX" ] ;then
 	rm -rf "$WORKDIR";
 fi
 
 }
 # NOTE: mktemp will likely fail on Windows MinGW
-if [ -z "$MSYSTEM_PREFIX" ] ;then 
+if [ -z "$MSYSTEM_PREFIX" ] ;then
   WORKDIR="$(mktemp -d)"
   trap cleanup EXIT
 else

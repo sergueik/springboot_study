@@ -1,4 +1,4 @@
-### Info
+a### Info
 
 This directory contains a poc project to illustrate:
 
@@ -44,6 +44,7 @@ __Trivy__ does *not* parse JAR signing metadata and has no built-in rule like:
 So anything claiming "Trivy-native JAR signature rule" is misleading.
 
 But Trivy does integrate extremely well with external policy and CI logic, which is what DevSecOps actually want.
+
 ---
 ### Usage
 
@@ -52,14 +53,14 @@ But Trivy does integrate extremely well with external policy and CI logic, which
 echo "hello ops" > target/hello.txt
 jar cf target/app.jar -C target .
 ```
-  
+
   * create a demo CA
 ```sh
 keytool -genkeypair -alias demo-ca -keyalg RSA -keysize 4096 -validity 3650 -dname "CN=DemoRootCA, OU=Ops, O=ExampleCorp, L=NA, C=US" -ext bc:c -keystore demo-ca.jks -storepass changeit -keypass changeit
 ```
   * export CA certificate
 ```sh
-keytool -exportcert -alias demo-ca -keystore demo-ca.jks -storepass changeit -rfc -file demo-ca.crt 
+keytool -exportcert -alias demo-ca -keystore demo-ca.jks -storepass changeit -rfc -file demo-ca.crt
 ```
 
 ```txt
@@ -69,11 +70,11 @@ Certificate stored in file <demo-ca.crt>
 ```sh
 keytool -genkeypair -alias app-signer -keyalg RSA -keysize 2048 -validity 365 -dname "CN=DemoAppSigner, O=ExampleCorp, C=US" -keystore app-signer.jks -storepass changeit -keypass changeit
 ```
-  * Create CSR 
+  * Create CSR
 ```sh
 keytool -certreq -alias app-signer -keystore app-signer.jks -storepass changeit -file app-signer.csr
 ```
-  * sign CSR with CA: 
+  * sign CSR with CA:
 ```sh
 keytool -gencert -alias demo-ca -keystore demo-ca.jks -storepass changeit -infile app-signer.csr -outfile app-signer.crt -validity 365 -ext KU=digitalSignature -ext EKU=codeSigning
 ```
@@ -84,16 +85,17 @@ keytool -importcert -alias demo-ca -keystore app-signer.jks -storepass changeit 
 ```txt
 Certificate was added to keystore
 ```
+```sh
 keytool -importcert -alias app-signer -keystore app-signer.jks -storepass changeit -file app-signer.crt
 ```
-```
+```txt
 Certificate reply was installed in keystore
 ```
   * sign a jar
-```
+```sh
 jarsigner -keystore app-signer.jks -storepass changeit target\app.jar app-signer
 ```
-```
+```txt
 jar signed.
 
 Warning:
@@ -104,9 +106,9 @@ The signer certificate will expire on 2027-01-07.
 ```
   * Verify
 ```
-jarsigner -verify -certs -verbose target\app.jar
+jarsigner -verify -verbose  -certs target\app.jar
 ```
-expect to see in the output 
+expect to see in the output
 ```
 smk   1234 Mon Jan 01 ...
       X.509, CN=DemoAppSigner
@@ -147,15 +149,9 @@ sm        14 Wed Jan 07 15:52:34 EST 2026 hello.txt
 
 jar verified.
 
-Warning:
-This jar contains entries whose certificate chain is invalid. Reason: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
-This jar contains signatures that do not include a timestamp. Without a timestamp, users may not be able to validate this jar after any of the signer certificates expire (as early as 2027-01-07).
-
-The signer certificate will expire on 2027-01-07.
-
-
 ```
-  * on Windows Git MinGW environment, need to set JAVA_HOME differently than in vanilla Powershell/ CMD and update PATH accodringly.
+> NOTE: On Windows Git MinGW environment, need to set JAVA_HOME differently than in vanilla Powershell/ CMD and update PATH accodringly.
+
 ```sh
 which  java
 ```
@@ -163,14 +159,15 @@ if the output is (and it often is)
 ```
 /c/Program Files/Common Files/Oracle/Java/javapath/java
 ```
-then, assuming JDK 11 is installed under 'C:\JAVA\' directory
+then, assuming JDK 11 is installed under `C:\JAVA\` directory
 ```sh
 export JAVA_HOME=/c/java/jdk-11.0.12/
 export PATH=$PATH:$JAVA_HOME/bin
 ```
-```
+```sh
 jarsigner -verify -certs -verbose target/app.jar
-
+```
+```text
 s        138 Wed Jan 07 16:01:22 EST 2026 META-INF/MANIFEST.MF
 
       >>> Signer
@@ -212,7 +209,7 @@ The signer certificate will expire on 2027-01-07.
 The `keytool` and `jarsigner` are present in the typical JDK install
 
 * package the Docker image
-> NOTE the image is obsolete and will be flagged as such. It also is no longer download from Docker hub but may be present in the local Docker image cache
+> NOTE the image `openjdk:8-jre-alpine3.9` is obsolete and will be flagged as such. It also is no longer download from Docker hub but may be present in the local Docker image cache
 ```sh
 docker pull eclipse-temurin:11-jre-alpine
 ```
