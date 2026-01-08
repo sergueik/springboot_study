@@ -1,6 +1,6 @@
 ### info
 
-This directory contains the install of __Harness Open Source__ *an all-in-one platform that ...*  - It is not just the __Harness Delegate__, actually
+This directory contains the install of __Harness Open Source__ which is self defining to be an *everything developer needs to instantly start coding* on-demand remote development environment with dependencies, SDKs,IDEs and batteries included - but in practice appears largely a kind of rebranding exercise.
 
 ### Background
 
@@ -17,7 +17,7 @@ Under the hood, Harness Open Source functions primarily as a controller layer th
   * create, start, and stop containers,
   * mount volumes for workspace persistence.
 
-The system then exposes [VS Code Remote Server](https://code.visualstudio.com/docs/remote/remote-overview) through a browser interface, communicating over HTTP/WebSocket. The user experience closely mirrors that of a locally hosted Visual Studio Code instance. The actual remote editor / debuggerfunctionality is provided by Microsoft rather than implemented by Harness Open Source
+The system then exposes [VS Code Remote Server](https://code.visualstudio.com/docs/remote/remote-overview) through a browser interface, communicating over HTTP/WebSocket. The user experience closely mirrors that of a locally hosted Visual Studio Code instance. The actual Remote Development functionality is [provided by Microsoft](https://code.visualstudio.com/docs/remote/remote-overview) rather than implemented by Harness Open Source
 
 Functionally equivalent containerized VS Code Server environments (minus the vendor branding and orchestration layer) are widely available, including numerous prebuilt images [published on Docker Hub](https://hub.docker.com/search?q=vscode-server).
 
