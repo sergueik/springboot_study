@@ -1,13 +1,26 @@
+### Info
+
+The [API-first] lifecycle is where the API is defined first, packaged as a versioned JAR, and then consumed by server and client projects without any checked-in POJOs.
+
+
+![Project Source And Generated Files](screenshots/api-first.png)
+
+
+![Project Source And Generated Files](screenshots/example.png)
+
+
+![Project Source And Generated Files](screenshots/platforms.png)
+
+### Usage
 
 ```sh
 mvn -ntp dependency:go-offline
 ```
-```
-```
 ```sh
 mvn generate-sources
 ```
-```
+this gives
+```sh
 tree src
 ```
 ```txt
@@ -15,7 +28,7 @@ tree src
     └───resources
 
 ```
-```
+```sh
 tree target\generated-sources
 ```
 ```txt
@@ -30,6 +43,7 @@ tree target\generated-sources
                         └───models
 
 ```
+continue
 ```sh
 mvn clean package
 ```
@@ -233,5 +247,13 @@ mvn compile
 [ERROR] /C:/developer/sergueik/springboot_study/basic-swagger-generator/project-service/src/main/java/com/example/demo/controllers/BookController.java:[20,9] cannot find symbol
 [ERROR]   symbol:   variable log
 [ERROR]   location: class com.example.demo.controllers.BookController
-
 ```
+
+### See Also
+
+   * https://swagger.io/resources/articles/adopting-an-api-first-approach/
+
+---
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

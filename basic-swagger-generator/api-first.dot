@@ -1,0 +1,53 @@
+digraph ApiFirstLifecycle {
+  rankdir=LR;
+  fontsize=11;
+  labelloc="t";
+  label="API-First Lifecycle (API-only → Versioned JAR → Server & Client)";
+
+  node [shape=box, style=rounded];
+
+  subgraph cluster_api {
+    label="API-only (Fake / Contract Project)";
+    style=dashed;
+
+    yaml [label="OpenAPI YAML\nsrc/main/resources/api/\n- paths\n- schemas (complex types)\n- models only"];
+    gen [label="Code Generation\n(openapi-generator / swagger-codegen)"];
+    jar [label="api-<version>.jar\n(packaged artifact)"];
+  }
+
+  subgraph cluster_server {
+    label="Server Project";
+    style=rounded;
+
+    server_dep [label="Dependency:\napi-<version>.jar"];
+    server_api [label="domain.generated.api\n(interfaces / controllers)"];
+    server_models [label="domain.generated.models\n(POJOs)"];
+    server_impl [label="Server Implementation\n(no generated code checked in)"];
+  }
+
+  subgraph cluster_client {
+    label="Client Project";
+    style=rounded;
+
+    client_dep [label="Dependency:\napi-<version>.jar"];
+    client_api [label="domain.generated.api\n(client stubs)"];
+    client_models [label="domain.generated.models\n(POJOs)"];
+    client_impl [label="Client Logic\n(no generated code checked in)"];
+  }
+
+  yaml -> gen;
+  gen -> jar;
+
+  jar -> server_dep;
+  server_dep -> server_api;
+  server_dep -> server_models;
+  server_api -> server_impl;
+  server_models -> server_impl;
+
+  jar -> client_dep;
+  client_dep -> client_api;
+  client_dep -> client_models;
+  client_api -> client_impl;
+  client_models -> client_impl;
+}
+
