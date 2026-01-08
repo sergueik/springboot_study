@@ -50,6 +50,7 @@ But Trivy does integrate extremely well with external policy and CI logic, which
 
   *  build a dummy jar
 ```sh
+mkdir target
 echo "hello ops" > target/hello.txt
 jar cf target/app.jar -C target .
 ```
@@ -70,6 +71,22 @@ Certificate stored in file <demo-ca.crt>
 ```sh
 keytool -genkeypair -alias app-signer -keyalg RSA -keysize 2048 -validity 365 -dname "CN=DemoAppSigner, O=ExampleCorp, C=US" -keystore app-signer.jks -storepass changeit -keypass changeit
 ```
+> NOTE: `keytool` prints warning  
+```text
+Warning:
+The JKS keystore uses a proprietary format. 
+It is recommended to migrate to PKCS12 which is an industry standard format using
+"keytool -importkeystore -srckeystore app-signer.jks -destkeystore app-signer.jks -deststoretype pkcs12".
+```
+but
+
+```sh
+keytool -genkeypair -alias app-signer -keyalg RSA -keysize 2048 -validity 365 -dname "CN=DemoAppSigner, O=ExampleCorp, C=US" -deststoretype pkcs12 -keystore app-signer.jks -storepass changeit -keypass changeit
+```
+```text
+keytool error: java.io.IOException: DerInputStream.getLength(): lengthTag=109, too big
+```
+
   * Create CSR
 ```sh
 keytool -certreq -alias app-signer -keystore app-signer.jks -storepass changeit -file app-signer.csr
@@ -93,7 +110,7 @@ Certificate reply was installed in keystore
 ```
   * sign a jar
 ```sh
-jarsigner -keystore app-signer.jks -storepass changeit target\app.jar app-signer
+jarsigner -keystore app-signer.jks -storepass changeit target/app.jar app-signer
 ```
 ```txt
 jar signed.
@@ -267,6 +284,7 @@ Total: 14 (HIGH: 14, CRITICAL: 0)
 
 ▶ Creating container (no execution)...
 ▶ Extracting JAR from image...
+Successfully copied 5.63kB to /tmp/tmp.MrI1yvrmZj/app.jar
 ▶ Verifying JAR signature...
 ✔ JAR signature valid and trusted
 
