@@ -1,4 +1,5 @@
 ### Info
+ this directory demonstrates installing  Visual Studio Code server silently in a light Docker container and also attempts to pre-install [Bruno](https://www.usebruno.com/) [API Client](https://www.usebruno.com/downloads) and [VS Code Extension](https://marketplace.visualstudio.com/search?term=bruno&target=VSCode&category=All%20categories&sortBy=Relevance)
 
 ### Testing
 
@@ -197,12 +198,12 @@ Log in
 ![VS Code IDE Screen](screenshots/ide.png "IDE screen")
 
 
-alternatively, use provided `docker-compose.yaml` and
+alternatively, use provided `docker-compose.yaml` and run
 
 ```sh
-docker compose up --build --detach
+docker-compose up --build --detach
 ```
-> NOTE: the old version does not recognize `--wait`
+> NOTE: the old `docker-compose` version does not recognize `--wait`
 
 ```sh
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
@@ -361,3 +362,11 @@ requests                     2.32.4
 ```sh
 pip install requests==2.31.0
 ```
+
+### See Also
+
+  * Visual Studio Code Server release announcement [blog](https://code.visualstudio.com/blogs/2022/07/07/vscode-server)
+  * Visual Studio Code Server [documentation](https://code.visualstudio.com/docs/remote/vscode-server)
+
+  * __Bruno__ git-friendly Opensource API client with collections version contro[docker image](https://hub.docker.com/r/alpine/bruno/tags)
+  *  __Bruno__ [positions](https://www.usebruno.com/) it an Open source reinvented alternative to Postman with offline-first design and not a platform 

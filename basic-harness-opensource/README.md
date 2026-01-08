@@ -2,6 +2,35 @@
 
 This directory contains the install of __Harness Open Source__ *an all-in-one platform that ...*  - It is not just the __Harness Delegate__, actually
 
+### Background
+
+At its core, Harness Open Source Gitspaces appears to be a clear example of commercialization / platformization:
+
+  * a heavily vendor-branded, plain container-based development environment built on a domain-specific Docker image, containing:
+  * a checked-out Git workspace,
+  * Microsoft VS Code Server (remote) preinstalled,
+  * selected language SDKs and tooling.
+
+Under the hood, Harness Open Source functions primarily as a controller layer that interacts with a locally available Docker daemon via the standard Unix socket to:
+
+  * invoke core Docker APIs
+  * create, start, and stop containers,
+  * mount volumes for workspace persistence.
+
+The system then exposes [VS Code Remote Server](https://code.visualstudio.com/docs/remote/remote-overview) through a browser interface, communicating over HTTP/WebSocket. The user experience closely mirrors that of a locally hosted Visual Studio Code instance. The actual remote editor / debuggerfunctionality is provided by Microsoft rather than implemented by Harness Open Source
+
+Functionally equivalent containerized VS Code Server environments (minus the vendor branding and orchestration layer) are widely available, including numerous prebuilt images [published on Docker Hub](https://hub.docker.com/search?q=vscode-server).
+
+In addition to the containerized development environment itself, Harness Open Source provides an orchestration layer offering:
+
+  * workspace lifecycle management
+  * authentication and identity
+  * repository binding
+  * UI routing and access control
+  * secret and repository configuration
+
+Taken together, Harness Open Source primarily delivers centralized orchestration, integration, and management over otherwise commoditized container-based development tooling, packaged and presented as a unified platform.
+
 ---
 ### Usage
 ```sh
@@ -67,6 +96,8 @@ sudo chown -R root:root /tmp/harness/
 ```text
 Failed to load resource: http://192.168.99.100:3000/api/v1/spaces/test/+/gitspaces?page=1&limit=20 the server responded with a status of 500 (Internal Server Error)
 ```
+
+A latest version `3.20` of `open source harness` does not show an error, and is able to proceed to the next step pulling the `mcr.microsoft.com/devcontainers/base:dev-ubuntu-24.04` to run VS Code Server from there.
 
 ---
 ### See Also
