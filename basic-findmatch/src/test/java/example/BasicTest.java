@@ -1,29 +1,39 @@
 package example;
 
+/**
+ * Copyright 2014,2021,2026 Serguei Kouzmine
+ */
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.Rule;
-import org.junit.Assume;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import example.FindMatch;
 
-public class FindMatchTest {
+public class BasicTest {
 	private final String backgroundColorAttribute = "(100,150,250)";
 
 	private final String patternExression = "\\(\\s*(?<red>\\d+),\\s*(?<green>\\d+),\\s*(?<blue>\\d+)\\)";
@@ -35,9 +45,11 @@ public class FindMatchTest {
 
 	private final String tagMatcher = "(?:<(?<result>[^>]+)>)";
 
-	// origin:
-	// see also:
-	// https://stackoverflow.com/questions/415580/regex-named-groups-in-java
+	@BeforeEach
+	public void setup() {
+	}
+
+	@DisplayName("Verify that the straight-ahead")
 	@Test
 	public void test1() {
 
@@ -59,6 +71,7 @@ public class FindMatchTest {
 		}
 	}
 
+	@DisplayName("Verify the find match processing, long argument list")
 	@Test
 	public void test2() {
 
@@ -72,6 +85,7 @@ public class FindMatchTest {
 		}
 	}
 
+	@DisplayName("Verify the find match processing, short argument list")
 	@Test
 	public void test3() {
 
@@ -84,12 +98,12 @@ public class FindMatchTest {
 		}
 	}
 
+	@DisplayName("Verify the resolve groups processing")
 	@Test
 	public void test4() {
 		List<String> groups = findMatch.resolveGroups(patternExression);
 		assertThat(groups, notNullValue());
 		assertThat(groups.size(), is(3));
-
 	}
 
 }
