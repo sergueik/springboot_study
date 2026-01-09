@@ -109,14 +109,16 @@ REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
 vscode-web   latest    3ffdf4cfb9fa   36 seconds ago   899MB
 ```
 
+link vscode container to some basic container
+```sh
+docker pull clue/json-server
+```
+```sh
+echo '{ "posts": [ { "id": 1, "title": "json-server", "author": "typicode" } ], "comments": [ { "id": 1, "body": "some comment", "postId": 1 } ], "profile": { "name": "typicode" } }' > ./db.json
+```
 ```sh
 APP='app'
-APPDIR=../../basic-app
-pushd $APPDIR
-popd
-docker run -t $APP -f $APPDIR/Dockerfile .
-docker container rm -f $APP
-docker run -p 3306:3306 --name $APP $APP
+docker run --name $APP -d -p 80:80 -v "$(pwd)/db.json:/data/db.json" clue/json-server
 ```
 ```sh
 docker run -d -p 8080:8080 --link $APP vscode-web:latest
@@ -142,7 +144,7 @@ coder
 ```
 
 
-wait
+wait...
 
 ```sh
 docker container ls
@@ -163,10 +165,15 @@ CONTAINER ID   IMAGE               COMMAND                  CREATED          STA
 alternatively
 
 ```sh
-until [ "$(docker inspect -f {{.State.Health.Status}} $APP)" == "healthy" ]; do
-  echo "Waiting for container ${APP} to be healthy..."
+until [ "$(docker inspect -f {{.State.Status}} $APP)" == "running" ]; do
+  echo "Waiting for container ${APP} to be running..."
   sleep 2
 done
+```
+> Note: there is no `.State.Health.Status`:
+```text
+template parsing error: template: :1:8: executing "" 
+at <.State.Health.Status>: map has no entry for key "Health"
 ```
 
 ![VS Code Login Screen](screenshots/login.png "login screen")
@@ -216,94 +223,7 @@ Step 1/17 : FROM ruanbekker/vscode-server:slim
 Step 2/17 : ARG VERSION=4.4.0
  ---> Running in 7ba1481d3e39
  ---> Removed intermediate container 7ba1481d3e39
- ---> a27d7287225d
-Step 3/17 : ARG VSCODEUSER=coder
- ---> Running in 20a1bc58a529
- ---> Removed intermediate container 20a1bc58a529
- ---> 1ca49952bb3e
-Step 4/17 : ENV HOME=/home/${VSCODEUSER}
- ---> Running in dccb4db31848
- ---> Removed intermediate container dccb4db31848
- ---> 935f0c7b76e5
-Step 5/17 : USER root
- ---> Running in cc0afe9639a7
- ---> Removed intermediate container cc0afe9639a7
- ---> b839094857f1
-Step 6/17 : RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
- ---> Running in 0681d232faab
-Get:1 http://deb.debian.org/debian bullseye InRelease [75.1 kB]
-Get:2 http://deb.debian.org/debian-security bullseye-security InRelease [27.2 kB]
-Get:3 http://deb.debian.org/debian bullseye-updates InRelease [44.0 kB]
-Get:4 http://deb.debian.org/debian bullseye/main amd64 Packages [8,066 kB]
-Get:5 http://deb.debian.org/debian-security bullseye-security/main amd64 Packages [436 kB]
-Get:6 http://deb.debian.org/debian bullseye-updates/main amd64 Packages [18.8 kB]
-Fetched 8,667 kB in 5s (1,656 kB/s)
-Reading package lists...
-Reading package lists...
-Building dependency tree...
-Reading state information...
-The following additional packages will be installed:
-  libcurl4
-The following packages will be upgraded:
-  curl libcurl4
-2 upgraded, 0 newly installed, 0 to remove and 86 not upgraded.
-Need to get 619 kB of archives.
-After this operation, 4,096 B of additional disk space will be used.
-Get:1 http://deb.debian.org/debian-security bullseye-security/main amd64 curl amd64 7.74.0-1.3+deb11u15 [272 kB]
-Get:2 http://deb.debian.org/debian-security bullseye-security/main amd64 libcurl4 amd64 7.74.0-1.3+deb11u15 [347 kB]
-debconf: delaying package configuration, since apt-utils is not installed
-Fetched 619 kB in 1s (1,125 kB/s)
-(Reading database ... 27312 files and directories currently installed.)
-Preparing to unpack .../curl_7.74.0-1.3+deb11u15_amd64.deb ...
-Unpacking curl (7.74.0-1.3+deb11u15) over (7.74.0-1.3+deb11u3) ...
-Preparing to unpack .../libcurl4_7.74.0-1.3+deb11u15_amd64.deb ...
-Unpacking libcurl4:amd64 (7.74.0-1.3+deb11u15) over (7.74.0-1.3+deb11u3) ...
-Setting up libcurl4:amd64 (7.74.0-1.3+deb11u15) ...
-Setting up curl (7.74.0-1.3+deb11u15) ...
-Processing triggers for libc-bin (2.31-13+deb11u5) ...
- ---> Removed intermediate container 0681d232faab
- ---> 7a8b36be0f81
-Step 7/17 : WORKDIR /tmp
- ---> Running in 8c8b5faefee0
- ---> Removed intermediate container 8c8b5faefee0
- ---> 5f616749988b
-Step 8/17 : ADD bruno-api-client.bruno-${VERSION}.vsix .
- ---> 30b782f34150
-Step 9/17 : RUN mkdir -p ${HOME}/Files     && mv bruno-api-client.bruno-${VERSION}.vsix ${HOME}/Files/bruno-api-client.bruno.vsix
- ---> Running in 00d5e3203ee5
- ---> Removed intermediate container 00d5e3203ee5
- ---> c417542f9eca
-Step 10/17 : RUN mkdir -p "${HOME}/.local/share/code-server/User"
- ---> Running in be45fd574190
- ---> Removed intermediate container be45fd574190
- ---> e5bd73581c73
-Step 11/17 : COPY Files/settings.json "${HOME}/.local/share/code-server/User/settings.json"
- ---> 4dfc9532db50
-Step 12/17 : COPY Files/keybindings.json "${HOME}/.local/share/code-server/User/keybindings.json"
- ---> 661c3de30cbd
-Step 13/17 : RUN chown -R ${VSCODEUSER}:${VSCODEUSER} ${HOME}
- ---> Running in f497d0ebb6f4
- ---> Removed intermediate container f497d0ebb6f4
- ---> 9ec9a92cf000
-Step 14/17 : USER ${VSCODEUSER}
- ---> Running in 9ff2899fcf09
- ---> Removed intermediate container 9ff2899fcf09
- ---> 16f889106859
-Step 15/17 : RUN code-server --install-extension ${HOME}/Files/bruno-api-client.bruno.vsix --force
- ---> Running in 25e2fc16c5ef
-[2025-12-20T02:55:11.415Z] info  Wrote default config file to ~/.config/code-server/config.yaml
-Installing extensions...
-Extension 'bruno-api-client.bruno.vsix' was successfully installed.
- ---> Removed intermediate container 25e2fc16c5ef
- ---> 9e000a3ec907
-Step 16/17 : EXPOSE 8080
- ---> Running in 495e2426e417
- ---> Removed intermediate container 495e2426e417
- ---> 7843c5fe5af3
-Step 17/17 : HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD curl -f http://localhost:8080/ || exit 1
- ---> Running in ad0df70210d9
- ---> Removed intermediate container ad0df70210d9
- ---> 8f563d7c4dfa
+...
 Successfully built 8f563d7c4dfa
 Successfully tagged web_vscode-web:latest
 Creating vscode-web ... done
@@ -339,10 +259,16 @@ auth: password
 password: c518a1a61691354a9792e0e8
 cert: false
 ```
+Navigate to `http://localhost:8080/login` in the browser and provide password.  If seeing 
 
-![VS Code Bruon Local Screen](screenshots/vscode-bruno-local.png "VS Code with Bruno Operation - Local")
+![VS Code Bruno Plugin Reload Required](screenshots/reload-required.png "VS Code Bruno Plugin Reload Required")
 
-### NOTE
+
+do reload
+
+![VS Code Bruno Local Screen](screenshots/vscode-bruno-local.png "VS Code with Bruno Operation - Local")
+
+#### NOTE
 
 if seeing 
 ```text

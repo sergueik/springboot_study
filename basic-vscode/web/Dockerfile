@@ -6,14 +6,32 @@ ARG VSCODEUSER=coder
 # NOTE: do not use
 # ARG VSCODEUSER=$(whoami)
 # it will be read literally
-# NOTE: mkdir: cannot create directory ‘/home/$(whoami)’: Permission denied
+# NOTE: mkdir: cannot create directory "/home/$(whoami)": Permission denied
 ENV HOME=/home/${VSCODEUSER}
 
 USER root
 
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -qq -y  gpg curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /tmp
+
+RUN curl -fskSL -o bruno_3.0.2_amd64_linux.deb https://github.com/usebruno/bruno/releases/download/v3.0.2/bruno_3.0.2_amd64_linux.deb
+RUN apt-get update &&  apt-get install -qq -y libgtk-3-0 libnotify4 libnss3 libxss1 libxtst6 xdg-utils libatspi2.0-0 libsecret-1-0 libasound2 \
+   && dpkg -i bruno_3.0.2_amd64_linux.deb \
+   && rm -rf /var/lib/apt/lists/*
+# 
+# RUN curl -fsSL "keyserver.ubuntu.com" | gpg --dearmor | tee /etc/apt/keyrings/bruno.gpg > /dev/null \
+
+RUN test -d /etc/apt/keyrings ||mkdir -p /etc/apt/keyrings
+RUN curl -fsSL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x9FA6017ECABE0266" \
+    | gpg --dearmor | sudo tee /etc/apt/keyrings/bruno.gpg > /dev/null \
+    && chmod 644 /etc/apt/keyrings/bruno.gpg \
+    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/bruno.gpg] http://debian.usebruno.com/ bruno stable" | tee /etc/apt/sources.list.d/bruno.list
+RUN apt update && apt install bruno -qq -y
+# E: The repository 'https://apt.usebruno.com bruno Release' does not have a Release file.
+# W: GPG error: http://debian.usebruno.com bruno InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 56333D3B745C1FEC
+# E: The repository 'http://debian.usebruno.com bruno InRelease' is not signed.
+
 ADD bruno-api-client.bruno-${VERSION}.vsix .
 RUN mkdir -p ${HOME}/Files \
     && mv bruno-api-client.bruno-${VERSION}.vsix ${HOME}/Files/bruno-api-client.bruno.vsix
@@ -28,6 +46,8 @@ COPY Files/keybindings.json "${HOME}/.local/share/code-server/User/keybindings.j
 # NOTE: Different directory layout with VS Code "Server" than with VS Code "Desktop" 
 # COPY Files/settings.json $HOME/.config/Code/User/settings.json
 # COPY Files/keybindings.json $HOME/.config/Code/User/keybindings.json
+
+
 
 RUN chown -R ${VSCODEUSER}:${VSCODEUSER} ${HOME}
 
