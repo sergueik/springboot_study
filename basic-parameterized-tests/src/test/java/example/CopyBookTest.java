@@ -1,4 +1,4 @@
-package example.model;
+package example;
 
 /**
  * Copyright 2014,2021,2026 Serguei Kouzmine
@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import java.util.regex.PatternSyntaxException;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -52,6 +53,10 @@ public class CopyBookTest {
 	public void setup() {
 	}
 
+	// NOTE:
+	// Java 8 or earlier support letters and digits only in group names, not underscores. 
+	// TT_BRANCH_ID works in Java 11+, fails in Java 8
+	// NOTE: Java 11 still does not allow underscores in named groups
 	private static final String G_BRANCH = "(?<TT_BRANCH_ID>.{5})"; // PIC X(05)
 	private static final String G_TELLER = "(?<TT_TELLER_ID>.{6})"; // PIC X(06)
 	private static final String G_TERMINAL = "(?<TT_TERMINAL_ID>.{4})"; // PIC X(04)
@@ -97,9 +102,11 @@ public class CopyBookTest {
 	}
 	// @formatter:on
 
+	@Disabled
 	@DisplayName("Verify building of the regex")
 	@ParameterizedTest
 	@MethodSource("testData")
+	// java.util.regex.PatternSyntaxException
 	void test1(final String data) {
 		System.err.println(String.format("testing %s", data));
 		assertDoesNotThrow(() -> {
@@ -107,7 +114,7 @@ public class CopyBookTest {
 		});
 	}
 
-	@DisplayName("Verify building of the regex")
+	@DisplayName("Verify running of the regex")
 	@ParameterizedTest
 	@MethodSource("testDataStream")
 	public void test2(String data) {
@@ -118,5 +125,26 @@ public class CopyBookTest {
 			Matcher matcher = pattern.matcher(copybook);
 			matcher.find();
 		});
+	}
+
+	@DisplayName("Verify building of the regex with error reporting")
+	@ParameterizedTest
+	@MethodSource("testData")
+	void test3(final String data) {
+		System.err.println(String.format("testing length=%d", data.length()));
+		try {
+			Pattern.compile("^" + data + "$");
+		} catch (PatternSyntaxException e) {
+			// Report more information
+			System.err.println("PatternSyntaxException caught!");
+			System.err.println("Input length: " + data.length());
+			System.err
+					.println("First 50 chars (or full if smaller): " + data.substring(0, Math.min(50, data.length())));
+			System.err.println("Exception description: " + e.getDescription());
+			System.err.println("Exception index: " + e.getIndex());
+			System.err.println("Exception pattern: " + e.getPattern());
+			// Re-throw if you still want the test to fail
+			throw e;
+		}
 	}
 }
