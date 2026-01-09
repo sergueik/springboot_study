@@ -57,18 +57,18 @@ public class CopyBookTest {
 	// Java 8 or earlier support letters and digits only in group names, not underscores. 
 	// TT_BRANCH_ID works in Java 11+, fails in Java 8
 	// NOTE: Java 11 still does not allow underscores in named groups
-	private static final String G_BRANCH = "(?<TT_BRANCH_ID>.{5})"; // PIC X(05)
-	private static final String G_TELLER = "(?<TT_TELLER_ID>.{6})"; // PIC X(06)
-	private static final String G_TERMINAL = "(?<TT_TERMINAL_ID>.{4})"; // PIC X(04)
-	private static final String G_DATE = "(?<TT_TRAN_DATE>\\d{8})"; // PIC 9(08)
-	private static final String G_TIME = "(?<TT_TRAN_TIME>\\d{6})"; // PIC 9(06)
-	private static final String G_ACCOUNT = "(?<TT_ACCOUNT_NUMBER>\\d{12})"; // PIC 9(12)
-	private static final String G_CODE = "(?<TT_TRAN_CODE>.{4})"; // PIC X(04)
-	private static final String G_AMOUNT = "(?<TT_AMOUNT>[+-]?\\d{13})"; // PIC S9(11)V99
-	private static final String G_CURRENCY = "(?<TT_CURRENCY>[A-Z]{3})"; // PIC X(03)
-	private static final String G_DESC = "(?<TT_DESCRIPTION>.{30})"; // PIC X(30)
-	private static final String G_RESPONSE = "(?<TT_RESPONSE_CODE>.{2})"; // PIC X(02)
-	private static final String G_APPROVAL = "(?<TT_APPROVAL_CODE>.{6})"; // PIC X(06)
+	private static final String G_BRANCH = "(?<TT_BRANCH_ID>.{5})".replaceAll("_", ""); // PIC X(05)
+	private static final String G_TELLER = "(?<TT_TELLER_ID>.{6})".replaceAll("_", ""); // PIC X(06)
+	private static final String G_TERMINAL = "(?<TT_TERMINAL_ID>.{4})".replaceAll("_", ""); // PIC X(04)
+	private static final String G_DATE = "(?<TT_TRAN_DATE>\\d{8})".replaceAll("_", ""); // PIC 9(08)
+	private static final String G_TIME = "(?<TT_TRAN_TIME>\\d{6})".replaceAll("_", ""); // PIC 9(06)
+	private static final String G_ACCOUNT = "(?<TT_ACCOUNT_NUMBER>\\d{12}).replaceAll(\"_\", \"\")"; // PIC 9(12)
+	private static final String G_CODE = "(?<TT_TRAN_CODE>.{4})".replaceAll("_", ""); // PIC X(04)
+	private static final String G_AMOUNT = "(?<TT_AMOUNT>[+-]?\\d{13})".replaceAll("_", ""); // PIC S9(11)V99
+	private static final String G_CURRENCY = "(?<TT_CURRENCY>[A-Z]{3})".replaceAll("_", ""); // PIC X(03)
+	private static final String G_DESC = "(?<TT_DESCRIPTION>.{30})".replaceAll("_", ""); // PIC X(30)
+	private static final String G_RESPONSE = "(?<TT_RESPONSE_CODE>.{2})".replaceAll("_", ""); // PIC X(02)
+	private static final String G_APPROVAL = "(?<TT_APPROVAL_CODE>.{6})".replaceAll("_", ""); // PIC X(06)
 
 	public static String[] testData() {
 		return new String[] { G_BRANCH, G_BRANCH + G_TELLER, G_BRANCH + G_TELLER + G_TERMINAL,
