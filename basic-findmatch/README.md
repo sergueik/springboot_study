@@ -282,6 +282,71 @@ and output
 testing length=213
 PatternSyntaxException caught! Input length=213, First 50 chars="(?<TTBRANCHID>.{5})(?<TTTELLERID>.{6})(?<TTTERMINA", Description="named capturing group is missing trailing '>'", Index=105, Pattern="^(?<TTBRANCHID>.{5})(?<TTTELLERID>.{6})(?<TTTERMINALID>.{4})(?<TTTRANDATE>\d{8})(?<TTTRANTIME>\d{6})(?<TT_ACCOUNT_NUMBER>\d{12}).replaceAll("_", "")(?<TTTRANCODE>.{4})(?<TTAMOUNT>[+-]?\d{13})(?<TTCURRENCY>[A-Z]{3})$"
 ```
+### Work In Progress
+
+
+YAML → Regex utility (`TellerRegexBuilder`)
+
+Responsibility: translate metadata into a single contiguous regex string.
+Typically copybook-style YAMLs define fields as lists of maps with offsets/lengths/types:
+```yaml
+record: TELLER_TRANSACTION
+fields:
+  - name: TT-BRANCH-ID
+    length: 5
+  - name: TT-ACCOUNT
+    length: 12
+  - name: TT-TRAN-CODE
+    length: 3
+```
+this allows for the construction of pattern string 
+
+```java
+List<Map<String,Object>> fields = (List<Map<String,Object>>) yamlAccessor.getNode("record.fields", yamlRoot);
+for (Map<String,Object> field : fields) {
+    String name = (String) field.get("name");
+    int length = (Integer) field.get("length");
+    regexBuilder.append(String.format("(?<%s>.{%d})", name, length));
+}
+```
+or explicitly
+```java
+Map<String,Object> field = yamlAccessor.getMap("record.fields[0]");
+String name = (String) field.get("name");
+int length = (int) field.get("length");
+
+String regexPiece = String.format("(?<%s>.{%d})", name, length);
+```
+> NOTE: No chunking, no splitting, no “too many groups” logic done by YAML Regex.
+
+Simple, predictable output: one regex per record type.
+
+`FindMatch`
+
+Responsibility: handle field mapping, dealing with runtime limitations (hundreds of groups, __NFA__ load, chunking if needed).
+
+```text
+
+Chunk 1:  Fields 1–25  →  (?<FIELD1>...) ... (?<FIELD25>...) <any string><end of string>
+
+
+Chunk 2:  Fields 26–50  →  <end of match 1> (?<FIELD26>...) ... (?<FIELD50>...) <any string><end of string>
+
+Chunk 3:  Fields 51–75  → <end of match 2> (?<FIELD51>...) ... (?<FIELD75>...) <any string><end of string>
+
+Chunk 4:  Fields 76–100  → <end of match 3> (?<FIELD76>...) ... (?<FIELD100>...)<end of string>
+
+```
+Value-add: Can decide to probe-only, or split into sub-regexes when capturing too many groups.
+
+#### Recursive Chunked Capturing Strategy with head advancement
+
+This approach lets us capture extremely wide records safely, avoiding regex engine overload while keeping the parsing logic linear and predictable
+
+> Note: The phrasing is both punchy and accurate . It communicates the idea quickly to an executive- or engineer-level audience without diving into full technical weeds, while still hinting at the cleverness behind the approach: “recursive” signals repeated application, “chunked” signals manageable pieces, and “head advancement” conveys the subtlety of moving the starting point forward.
+
+
+
 ###  🧾 COBOL Copybook Parsers — Free & Commercial Tools
 
 This overview lists **available copybook parsing tools**, both open source and commercial, that can be used to interpret COBOL copybooks into structured metadata for processing in Java and other languages.
@@ -382,6 +447,7 @@ This overview lists **available copybook parsing tools**, both open source and c
 ### See Also
 
  * https://stackoverflow.com/questions/415580/regex-named-groups-in-java
+ * [sixface/YamlConfig](https://github.com/jsixface/YamlConfig) and [extension](https://github.com/sergueik/selenium_java/tree/master/yaml_config_extend)
 
 ---
 ### Author
