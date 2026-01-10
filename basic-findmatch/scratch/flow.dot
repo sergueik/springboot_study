@@ -1,0 +1,49 @@
+digraph CopyBookSerialization {
+    rankdir=LR;          // left-to-right layout
+    node [shape=box, style=filled, fontname="Courier"];
+
+    // Original Map (copybook fields)
+    subgraph cluster_map {
+        label="Copybook Map";
+        style=dashed;
+        color=gray;
+
+        BRANCH [label="BRANCH\n(5 chars)", fillcolor=lightblue];
+        TRANDATE [label="TRANDATE\n(8 chars)", fillcolor=lightyellow];
+        ACCOUNT [label="ACCOUNT\n(10 chars)", fillcolor=lightgreen];
+        CODE [label="CODE\n(3 chars)", fillcolor=lightpink];
+        AMOUNT [label="AMOUNT\n(9 chars)", fillcolor=lightgray];
+        CURRENCY [label="CURRENCY\n(3 chars)", fillcolor=lightcyan];
+        EIBCALEN [label="EIBCALEN", fillcolor=red];
+    }
+
+    // JSON output
+    subgraph cluster_json {
+        label="Serialized JSON";
+        style=dotted;
+        color=black;
+
+        j_BR [label="BRANCH", fillcolor=white];
+        j_TT [label="TRANDATE", fillcolor=white];
+        j_ACCT [label="ACCOUNT", fillcolor=white];
+        j_CODE [label="CODE", fillcolor=white];
+        j_AMT [label="AMOUNT", fillcolor=white];
+        j_CUR [label="CURRENCY", fillcolor=white];
+        j_OWNER [label="owner_uuid\n(synthetic)", fillcolor=lightgray];
+    }
+
+    // Passed fields
+    BRANCH -> j_BR;
+    TRANDATE -> j_TT;
+    ACCOUNT -> j_ACCT;
+    CODE -> j_CODE;
+    AMOUNT -> j_AMT;
+    CURRENCY -> j_CUR;
+
+    // Filtered field (crossed line)
+    EIBCALEN -> j_FILTERED [style=dashed, color=red, label="filtered", constraint=false];
+
+    // Synthetic field (hanging line)
+    j_OWNER [shape=note];
+}
+

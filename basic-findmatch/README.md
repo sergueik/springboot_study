@@ -148,7 +148,7 @@ fields:
     type: string
 
 ```
-![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-findmatch/screenshots/capture-illustration.png)
+![Mapper](https://github.com/sergueik/springboot_study/blob/master/basic-findmatch/screenshots/capture-mapper.png)
 
 resulting Map (in Java 11 syntax):
 ```java
@@ -350,6 +350,7 @@ This approach lets us capture extremely wide records safely, avoiding regex engi
 
 CICS Transaction Copybook Serialization: Deterministically filter out CICS-only fields, inject synthetic metadata (owner UUID, audit, replay, tracing) at emission time, preserve pristine immutable copybook domain data, operate directly on flat maps without requiring explicit POJO classes, enable projection-based transport for API-first services, support schema evolution, and provide human- and machine-readable visualization of field-to-byte associations for compliance, review, and documentation purposes.
 
+![Serializer](https://github.com/sergueik/springboot_study/blob/master/basic-findmatch/screenshots/capture-serializer.png)
 sample code:
 
 ```java
