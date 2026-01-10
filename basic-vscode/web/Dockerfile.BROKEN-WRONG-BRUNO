@@ -11,14 +11,21 @@ ENV HOME=/home/${VSCODEUSER}
 
 USER root
 
+RUN apt-get update && apt-get install -qq -y  gpg curl && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /tmp
 
-RUN apt-get update && apt-get install -qq -y gpg curl ca-certificates && rm -rf /var/lib/apt/lists/* \
-    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs \
-    && node -v \
-    && npm -v
-RUN npm install -g @usebruno/cli
+RUN curl -fskSL -o bruno_3.0.2_amd64_linux.deb https://github.com/usebruno/bruno/releases/download/v3.0.2/bruno_3.0.2_amd64_linux.deb
+RUN apt-get update &&  apt-get install -qq -y libgtk-3-0 libnotify4 libnss3 libxss1 libxtst6 xdg-utils libatspi2.0-0 libsecret-1-0 libasound2 \
+   && dpkg -i bruno_3.0.2_amd64_linux.deb \
+   && rm -rf /var/lib/apt/lists/*
+
+RUN test -d /etc/apt/keyrings ||mkdir -p /etc/apt/keyrings
+RUN curl -fsSL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x9FA6017ECABE0266" \
+    | gpg --dearmor | sudo tee /etc/apt/keyrings/bruno.gpg > /dev/null \
+    && chmod 644 /etc/apt/keyrings/bruno.gpg \
+    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/bruno.gpg] http://debian.usebruno.com/ bruno stable" | tee /etc/apt/sources.list.d/bruno.list
+RUN apt update && apt install bruno -qq -y
 
 ADD bruno-api-client.bruno-${VERSION}.vsix .
 RUN mkdir -p ${HOME}/Files \

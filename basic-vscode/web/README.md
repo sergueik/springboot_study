@@ -15,69 +15,10 @@ docker pull ruanbekker/vscode-server:slim
 ```sh
 docker build -t vscode-web -f Dockerfile .
 ```
-logging (first run)
 ```txt
-DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
-            Install the buildx component to build images with BuildKit:
-            https://docs.docker.com/go/buildx/
-
 Sending build context to Docker daemon  33.16MB
 Step 1/17 : FROM ruanbekker/vscode-server:slim
- ---> 03d71236aa80
-Step 2/17 : ARG VERSION=4.4.0
- ---> Using cache
- ---> e84f0a3f41b3
-Step 3/17 : ARG VSCODEUSER=coder
- ---> Using cache
- ---> b2ff4201667e
-Step 4/17 : ENV HOME=/home/${VSCODEUSER}
- ---> Using cache
- ---> fe69cda8e187
-Step 5/17 : USER root
- ---> Using cache
- ---> 84ea5b98c10d
-Step 6/17 : RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
- ---> Using cache
- ---> 52e291666671
-Step 7/17 : WORKDIR /tmp
- ---> Using cache
- ---> 4bdb2973fd9c
-Step 8/17 : ADD bruno-api-client.bruno-${VERSION}.vsix .
- ---> Using cache
- ---> 5e162b50f852
-Step 9/17 : RUN mkdir -p ${HOME}/Files     && mv bruno-api-client.bruno-${VERSION}.vsix ${HOME}/Files/bruno-api-client.bruno.vsix
- ---> Using cache
- ---> 96653fbe622f
-Step 10/17 : RUN mkdir -p "${HOME}/.local/share/code-server/User"
- ---> Using cache
- ---> efa7f458eb43
-Step 11/17 : COPY Files/settings.json "${HOME}/.local/share/code-server/User/settings.json"
- ---> 30cfe9c9e25a
-Step 12/17 : COPY Files/keybindings.json "${HOME}/.local/share/code-server/User/keybindings.json"
- ---> 4f5006f2f86a
-Step 13/17 : RUN chown -R ${VSCODEUSER}:${VSCODEUSER} ${HOME}
- ---> Running in 486ef8b472ae
- ---> Removed intermediate container 486ef8b472ae
- ---> 9c3078d93a3f
-Step 14/17 : USER ${VSCODEUSER}
- ---> Running in 670cce5651f3
- ---> Removed intermediate container 670cce5651f3
- ---> 0a29579fd3e6
-Step 15/17 : RUN code-server --install-extension ${HOME}/Files/bruno-api-client.bruno.vsix --force
- ---> Running in 07fd8ab6d034
-[2025-12-20T01:55:32.941Z] info  Wrote default config file to ~/.config/code-server/config.yaml
-Installing extensions...
-Extension 'bruno-api-client.bruno.vsix' was successfully installed.
- ---> Removed intermediate container 07fd8ab6d034
- ---> 8b559a615e63
-Step 16/17 : EXPOSE 8080
- ---> Running in 45b85e27c2b1
- ---> Removed intermediate container 45b85e27c2b1
- ---> 128fa1673140
-Step 17/17 : HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD curl -f http://localhost:8080/ || exit 1
- ---> Running in 5b307e3832b5
- ---> Removed intermediate container 5b307e3832b5
- ---> 3ffdf4cfb9fa
+...
 Successfully built 3ffdf4cfb9fa
 Successfully tagged vscode-web:latest
 ```
@@ -109,10 +50,13 @@ REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
 vscode-web   latest    3ffdf4cfb9fa   36 seconds ago   899MB
 ```
 
-link vscode container to some basic container
+link vscode container to some basic container.
 ```sh
 docker pull clue/json-server
 ```
+
+The `clue/json-server` image uses the `json-server` npm package to create a full fake __REST API__ from a single JSON file with zero coding. 
+
 ```sh
 echo '{ "posts": [ { "id": 1, "title": "json-server", "author": "typicode" } ], "comments": [ { "id": 1, "body": "some comment", "postId": 1 } ], "profile": { "name": "typicode" } }' > ./db.json
 ```
@@ -289,6 +233,81 @@ requests                     2.32.4
 pip install requests==2.31.0
 ```
 
+### Bruno Desktop App / Debian package
+
+The __Bruno__ Debian package `https://github.com/usebruno/bruno/releases/download/v3.0.2/bruno_3.0.2_amd64_linux.deb`
+is just the desktop Electron/API client app that does not include the
+CLI (command-line) tool that the VS Code extension expects.
+
+The __Bruno CLI__ (a.k.a. `bru`) is separate
+The CLI is published solely as an `npm` package named `@usebruno/cli`.
+It provides the `bru` command one can run in terminals and that
+the __VS Code extension__ expects for certain commands to be executed
+before wrapping the error. 
+
+```text
+command 'bruno.createCollection' not found
+```
+```ext
+command 'bruno.importCollection' not found
+```
+
+and similar “command not registered” problems. T
+
+This is a symptom of the *extension running without its required CLI*. 
+
+Troubleshooting involves trying to operate through Extention Host Developer Console.
+e.g. 
+```js
+Developer: Reload Window
+```
+```js
+```
+### Verdict
+
+
+Container / remote / browser VS Code will likely never work with Bruno extension reliably.
+#### How To Install the Bruno CLI on Debian/Ubuntu
+
+The official way (as documented) is via `npm`, since there isn’t a dedicated `.deb` for the CLI.
+
+
+* Make sure you have Node.js installed (Recommended LTS — Node 18+).
+
+
+* Install the CLI globally:
+`npm install -g @usebruno/cli`
+
+This installs the `bru` command. 
+
+
+* Confirm it’s on your path:
+```sh
+which bru
+bru --version
+```
+
+
+If your global npm binaries aren’t on `PATH` (common on __Debian__), add them:
+```sh
+export PATH=$PATH:$(npm bin -g)
+```
+recommended add that line to the user scope or system bash profile `~/.bashrc`.
+
+
+
+* Verify VS Code Sees the CLI
+
+Once installed:
+
+
++ Restart VS Code.
++ Open the Extension Output or Developer Tools Console (Help → Moore Tools → Developer Tools) and check for any errors.
+
+
+If VS Code still complains, open the Developer Tools console to see errors — extension command registration failures often show more details there. 
+
+
 ### See Also
 
   * Visual Studio Code Server release announcement [blog](https://code.visualstudio.com/blogs/2022/07/07/vscode-server)
@@ -296,3 +315,8 @@ pip install requests==2.31.0
 
   * __Bruno__ git-friendly Opensource API client with collections version contro[docker image](https://hub.docker.com/r/alpine/bruno/tags)
   *  __Bruno__ [positions](https://www.usebruno.com/) it an Open source reinvented alternative to Postman with offline-first design and not a platform 
+
+---
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
