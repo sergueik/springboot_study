@@ -19,10 +19,6 @@ public class FindMatch {
 
 	private final String tagMatcher = "(?:<(?<result>[^>]+)>)";
 
-	// origin:
-	// see also:
-	// https://stackoverflow.com/questions/415580/regex-named-groups-in-java
-
 	public Map<String, String> findMatch(String data, String patternExression) {
 		return findMatch(data, patternExression, resolveGroups(patternExression));
 	}
@@ -33,7 +29,7 @@ public class FindMatch {
 		pattern = Pattern.compile(patternExression);
 		matcher = pattern.matcher(data);
 		if (matcher.find()) {
-			System.err.println("data:" + data);
+			System.err.println("findMatch data:" + data);
 			for (String name : groups) {
 				String value = matcher.group(name).toString();
 				matches.put(name, value);

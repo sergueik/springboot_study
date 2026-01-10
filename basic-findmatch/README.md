@@ -187,7 +187,7 @@ recordMap.put("TT-APPROVAL-CODE", "APR123");
 
 ```
 
-and the realistic, single REGEX matcher expression that captures the entire teller record into named groups, respecting field widths and masks, in the same spirit as your current RGB
+and the realistic, single REGEX matcher expression that captures the entire teller record into named groups, respecting field widths and masks:
 ```java
 private static final String TELLER_RECORD_REGEX =
         "^" +
@@ -206,6 +206,39 @@ private static final String TELLER_RECORD_REGEX =
         "$";
 
 ```
+### Simplified CopyBook for Testing
+
+> Due to Java regex limitations for very long named-capturing patterns, we simplify the original teller record while keeping realistic, business-meaningful fields.
+
+**Fields included:**
+
+| Field | Length | Notes |
+|-------|--------|-------|
+| BRANCH | 5 | Branch code |
+| TRANDATE | 8 | Transaction date YYYYMMDD |
+| ACCOUNT | 12 | Account number |
+| CODE | 3 | Transaction code |
+| AMOUNT | 10 | Amount, unscaled |
+| CURRENCY | 3 | Currency code |
+
+---
+
+#### Sample simplified record
+
+```java
+String record =
+  "BR001" +        // BRANCH
+  "20240130" +     // TRANDATE
+  "123456789012" + // ACCOUNT
+  "DEP" +          // CODE
+  "0000123456" +   // AMOUNT
+  "USD";           // CURRENCY
+
+```
+The `FindMatch` class still will be able to construct `result` map keys dynamically from the named groups, it is simply a thin wrapper over library `RegEx` classes.
+
+> Note: in simple English, Feeding Java regex too much "stuff" can make it choke. The engine can slow down dramatically or even crash if patterns are extremely large or complex. Keep regexes simple and split them up when possible — it’s a proven, practical limitation, not just theory.
+
 ###  🧾 COBOL Copybook Parsers — Free & Commercial Tools
 
 This overview lists **available copybook parsing tools**, both open source and commercial, that can be used to interpret COBOL copybooks into structured metadata for processing in Java and other languages.

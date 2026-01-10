@@ -1,7 +1,7 @@
 package example;
 
 /**
- * Copyright 2014,2021,2026 Serguei Kouzmine
+ * Copyright 2021,2026 Serguei Kouzmine
  */
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
