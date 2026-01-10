@@ -212,15 +212,40 @@ private static final String TELLER_RECORD_REGEX =
 
 **Fields included:**
 
-| Field | Length | Notes |
-|-------|--------|-------|
-| BRANCH | 5 | Branch code |
-| TRANDATE | 8 | Transaction date YYYYMMDD |
-| ACCOUNT | 12 | Account number |
-| CODE | 3 | Transaction code |
-| AMOUNT | 10 | Amount, unscaled |
-| CURRENCY | 3 | Currency code |
+|  Field   | Length | Notes |
+|----------|--------|-------|
+| BRANCH   | 5      | Branch code |
+| TRANDATE | 8      | Transaction date YYYYMMDD |
+| ACCOUNT  | 12     | Account number |
+| CODE     | 3      | Transaction code |
+| AMOUNT   | 9..12  | Amount, unscaled |
+| CURRENCY | 3      | Currency code |
 
+it will get:
+```text
+matching "BR001202401301234567890DEP000012345USD"
+regex: ^(?<BRANCH>.{5})(?<TRANDATE>\d{8})(?<ACCOUNT>\d{10,12})(?<CODE>.{3})(?<AMOUNT>\d{9,12})(?<CURRENCY>[A-Z]{3})$
+Matched record:
+  BRANCH   = BR001
+  TRANDATE = 20240130
+  ACCOUNT  = 1234567890
+  CODE     = DEP
+  AMOUNT   = 000012345
+  CURRENCY = USD
+```
+with plain `Regex`
+and 
+```text
+findMatch data:BR003202306151234000001DEP000000789USD
+BRANCH: BR003
+CURRENCY: USD
+ACCOUNT: 1234000001
+CODE: DEP
+AMOUNT: 000000789
+TRANDATE: 20230615
+
+```
+with custom class
 ---
 
 #### Sample simplified record

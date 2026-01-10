@@ -4,7 +4,7 @@
   <groupId>example</groupId>
   <artifactId>findmatch</artifactId>
   <packaging>jar</packaging>
-  <version>0.3.0-SNAPSHOT</version>
+  <version>0.4.0-SNAPSHOT</version>
   <name>app</name>
   <url>http://maven.apache.org</url>
   <developers>
@@ -25,20 +25,20 @@
     <hamcrest-all.version>1.3</hamcrest-all.version>
     <hamcrest-date.version>2.0.4</hamcrest-date.version>
     <htmlunit.version>2.37.0</htmlunit.version>
-    <java.version>1.8</java.version>
+    <java.version>11</java.version>
     <json.version>20231013</json.version>
     <jackson.version>2.13.1</jackson.version>
     <jackson-databind.version>${jackson.version}</jackson-databind.version>
     <json-path.version>2.9.0</json-path.version>
     <jsoup.version>1.15.3</jsoup.version>
     <junit.version>5.12.1</junit.version>
-    <junit-platform.version>1.8.1</junit-platform.version>
+    <junit-platform.version>1.12.1</junit-platform.version>
     <log4j.version>2.17.1</log4j.version>
     <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-    <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
+    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
     <minimal-json.version>0.9.5</minimal-json.version>
     <snakeyaml.version>1.32</snakeyaml.version>
     <gson.version>2.8.9</gson.version>
@@ -181,7 +181,7 @@ rem ${encoding}
  -->
           <compilerArgument>-Xlint:all</compilerArgument>
           <compilerArgument>-Xlint:-processing</compilerArgument>
-		  <!-- NOTE: some compiler optimizatino flags not recognized on JDK 1.8.0.101 and were added in later builds e.g. 1.8.0.151:  
+          <!-- NOTE: some compiler optimizatino flags not recognized on JDK 1.8.0.101 and were added in later builds e.g. 1.8.0.151:  
                   Fatal error compiling: 
                   invalid flag: -XX:+AggressiveUnboxing
                   invalid flag: -XX:+AggressiveOpts
@@ -219,38 +219,12 @@ Fatal error compiling: invalid flag: -Dfile.encoding=UTF-8 -> [Help 1]
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
         <configuration>
+          <includes>
+            <include>**/*Test.java</include>
+          </includes>
+          <useModulePath>false</useModulePath>
           <trimStackTrace>false</trimStackTrace>
-          <encoding>${encoding}</encoding>
-          <!--
-          NOTE: specifying the suite XML file prevents surefile from scannint all tests casses and execute everything with the method name mask match
-          <suiteXmlFiles>
-            <suiteXmlFile>src/test/resources/suites/testng.xml</suiteXmlFile>
-          </suiteXmlFiles>
-          -->
-          <!-- For parallel runs with e.g. Vagrant https://github.com/sergueik/selenium-fluxbox
-          <argLine>-Dfile.encoding=${encoding} -Dparallel=tests -DthreadCount=2 </argLine>
-          -->
-          <argLine>-Dfile.encoding=${encoding}</argLine>
-          <!-- Skip the default running of this plug-in (or everything is run twice...see below) -->
-          <skip>true</skip>
         </configuration>
-        <executions>
-          <execution>
-            <id>unit-tests</id>
-            <phase>test</phase>
-            <goals>
-              <goal>test</goal>
-            </goals>
-            <configuration>
-              <skip>false</skip>
-              <systemPropertyVariables>
-                <webdriver.driver>${browser.name}</webdriver.driver>
-                <selenium.version>${selenium.version}</selenium.version>
-                <property.filepath>${property.filepath}</property.filepath>
-              </systemPropertyVariables>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
