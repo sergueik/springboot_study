@@ -148,6 +148,7 @@ fields:
     type: string
 
 ```
+![Docker Cluster](https://github.com/sergueik/springboot_study/blob/master/basic-findmatch/screenshots/capture-illustration.png)
 
 resulting Map (in Java 11 syntax):
 ```java
@@ -345,7 +346,37 @@ This approach lets us capture extremely wide records safely, avoiding regex engi
 
 > Note: The phrasing is both punchy and accurate . It communicates the idea quickly to an executive- or engineer-level audience without diving into full technical weeds, while still hinting at the cleverness behind the approach: “recursive” signals repeated application, “chunked” signals manageable pieces, and “head advancement” conveys the subtlety of moving the starting point forward.
 
+#### Serialization
 
+CICS Transaction Copybook Serialization: Deterministically filter out CICS-only fields, inject synthetic metadata (owner UUID, audit, replay, tracing) at emission time, preserve pristine immutable copybook domain data, operate directly on flat maps without requiring explicit POJO classes, enable projection-based transport for API-first services, support schema evolution, and provide human- and machine-readable visualization of field-to-byte associations for compliance, review, and documentation purposes.
+
+sample code:
+
+```java
+public class CopyBookSerializer implements JsonSerializer<Map<String,Object>> {
+
+    @Override
+    public void serialize(Map<String,Object> value, JsonGenerator jsonGeneraor, SerializerProvider unusedSerializerProvider )
+            throws IOException {
+
+        jsonGenerator.writeStartObject();
+
+        // Example: inject metadata
+        jsonGenerator.writeStringField("owner_uuid", UUID.randomUUID().toString());
+
+        // Example: filter out unwanted fields
+        for (Map.Entry<String,Object> e : value.entrySet()) {
+            if (!Set.of("CICS_ONLY_FIELD1","CICS_ONLY_FIELD2").contains(e.getKey())) {
+                jsonGenerator.writeObjectField(e.getKey(), e.getValue());
+            }
+        }
+
+        jsonGenerator.writeEndObject();
+    }
+}
+
+```
+> Note: using an explicit, type-safe, and readable `Map<String,Object>`, not a `T` or raw type `Map` - `JsonSerializer<Map<String,Object>>` is considered best practice.
 
 ###  🧾 COBOL Copybook Parsers — Free & Commercial Tools
 

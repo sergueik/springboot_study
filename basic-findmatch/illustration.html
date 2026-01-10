@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Copybook ↔ YAML Field Association</title>
+
+  <style>
+    /* ---------- Global ---------- */
+    body {
+      font-family: monospace;
+      background: #f6f6f6;
+      padding: 20px;
+    }
+
+    h3 {
+      font-family: sans-serif;
+      margin-bottom: 8px;
+    }
+
+    /* ---------- Bounded container ---------- */
+    .box {
+      width: 60ch;                 /* fixed logical width */
+      border: 1px solid #999;
+      background: #eeeeee;
+      padding: 10px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre;
+    }
+
+    /* ---------- Copybook emphasis ---------- */
+    .copybook {
+      font-size: 1.6em;            /* larger letters for copybook */
+      line-height: 1.4;
+    }
+
+    /* ---------- Field colors ---------- */
+    .branch {
+      background: #003366;
+      color: #ffffff;
+    }
+
+    .trandate {
+      background: #4b0082;
+      color: #ffe6ff;
+    }
+
+    .account {
+      background: #004d00;
+      color: #ffff99;
+    }
+
+    .code {
+      background: #8b0000;
+      color: #ffdddd;
+    }
+
+    .amount {
+      background: #5a2d0c;
+      color: #ffcc99;
+    }
+
+    .currency {
+      background: #003300;
+      color: #99ff99;
+    }
+
+    /* ---------- Fixed-width alignment ---------- */
+    .branch-w   { width: 5ch;  display: inline-block; }
+    .trandate-w { width: 8ch;  display: inline-block; }
+    .account-w  { width: 10ch; display: inline-block; }
+    .code-w     { width: 3ch;  display: inline-block; }
+    .amount-w   { width: 9ch;  display: inline-block; }
+    .currency-w { width: 3ch;  display: inline-block; }
+
+    /* ---------- YAML field blocks ---------- */
+    .yaml-field {
+      display: block;
+      margin-bottom: 10px;
+      padding-left: 2px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h3>COBOL Copybook Line (Mocked)</h3>
+
+<div class="box">
+  <pre class="copybook">
+<span class="branch branch-w">BR001</span><span class="trandate trandate-w">20240130</span><span class="account account-w">1234567890</span><span class="code code-w">DEP</span><span class="amount amount-w">000012345</span><span class="currency currency-w">USD</span>
+  </pre>
+</div>
+
+<h3>YAML Record Definition</h3>
+
+<div class="box">
+  <pre>
+record: TELLER_TRANSACTION
+encoding: ASCII
+
+fields:
+<span class="yaml-field branch">
+  - name: BRANCH
+    offset: 0
+    length: 5
+    type: string
+</span>
+
+<span class="yaml-field trandate">
+  - name: TRANDATE
+    offset: 5
+    length: 8
+    type: string
+    format: yyyyMMdd
+</span>
+
+<span class="yaml-field account">
+  - name: ACCOUNT
+    offset: 13
+    length: 10
+    type: string
+</span>
+
+<span class="yaml-field code">
+  - name: CODE
+    offset: 23
+    length: 3
+    type: string
+</span>
+
+<span class="yaml-field amount">
+  - name: AMOUNT
+    offset: 26
+    length: 9
+    type: numeric
+    scale: 0
+</span>
+
+<span class="yaml-field currency">
+  - name: CURRENCY
+    offset: 35
+    length: 3
+    type: string
+</span>
+  </pre>
+</div>
+
+</body>
+</html>
+
