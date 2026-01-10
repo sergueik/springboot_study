@@ -264,6 +264,24 @@ The `FindMatch` class still will be able to construct `result` map keys dynamica
 
 > Note: in simple English, Feeding Java regex too much "stuff" can make it choke. The engine can slow down dramatically or even crash if patterns are extremely large or complex. Keep regexes simple and split them up when possible — it’s a proven, practical limitation, not just theory.
 
+Examaple crashing Regex package:
+```
+	@DisplayName("Verify building of the regex with error reporting")
+	@ParameterizedTest
+	@MethodSource("testDataStream")
+	void test(final String data) {
+		System.err.println(String.format("testing length=%d", data.length()));
+		try {
+			Pattern.compile("^" + data + "$");
+		} catch (PatternSyntaxException e) {
+			// Report more information
+        }
+```
+and output
+```text
+testing length=213
+PatternSyntaxException caught! Input length=213, First 50 chars="(?<TTBRANCHID>.{5})(?<TTTELLERID>.{6})(?<TTTERMINA", Description="named capturing group is missing trailing '>'", Index=105, Pattern="^(?<TTBRANCHID>.{5})(?<TTTELLERID>.{6})(?<TTTERMINALID>.{4})(?<TTTRANDATE>\d{8})(?<TTTRANTIME>\d{6})(?<TT_ACCOUNT_NUMBER>\d{12}).replaceAll("_", "")(?<TTTRANCODE>.{4})(?<TTAMOUNT>[+-]?\d{13})(?<TTCURRENCY>[A-Z]{3})$"
+```
 ###  🧾 COBOL Copybook Parsers — Free & Commercial Tools
 
 This overview lists **available copybook parsing tools**, both open source and commercial, that can be used to interpret COBOL copybooks into structured metadata for processing in Java and other languages.
