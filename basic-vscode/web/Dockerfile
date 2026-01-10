@@ -6,14 +6,20 @@ ARG VSCODEUSER=coder
 # NOTE: do not use
 # ARG VSCODEUSER=$(whoami)
 # it will be read literally
-# NOTE: mkdir: cannot create directory ‘/home/$(whoami)’: Permission denied
+# NOTE: mkdir: cannot create directory "/home/$(whoami)": Permission denied
 ENV HOME=/home/${VSCODEUSER}
 
 USER root
 
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /tmp
+
+RUN apt-get update && apt-get install -qq -y gpg curl ca-certificates && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
+    && node -v \
+    && npm -v
+RUN npm install -g @usebruno/cli
+
 ADD bruno-api-client.bruno-${VERSION}.vsix .
 RUN mkdir -p ${HOME}/Files \
     && mv bruno-api-client.bruno-${VERSION}.vsix ${HOME}/Files/bruno-api-client.bruno.vsix
@@ -29,6 +35,8 @@ COPY Files/keybindings.json "${HOME}/.local/share/code-server/User/keybindings.j
 # COPY Files/settings.json $HOME/.config/Code/User/settings.json
 # COPY Files/keybindings.json $HOME/.config/Code/User/keybindings.json
 
+
+
 RUN chown -R ${VSCODEUSER}:${VSCODEUSER} ${HOME}
 
 USER ${VSCODEUSER}
@@ -39,4 +47,5 @@ EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
 CMD curl -f http://localhost:8080/ || exit 1
+
 
