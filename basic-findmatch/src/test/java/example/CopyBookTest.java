@@ -48,8 +48,20 @@ public class CopyBookTest {
 	private static final String COPYBOOK_REGEX = "^" + G_BRANCH + G_DATE + G_ACCOUNT + G_CODE + G_AMOUNT + G_CURRENCY
 			+ "$";
 
-	private static final String[] SAMPLE_DATA = { "BR001202401301234567890DEP000012345USD",
-			"BR002202312251111222233WDL000023456EUR", "BR003202306151234000001DEP000000789USD" };
+	private static final String[] SAMPLE_DATA = {
+
+		    // Built piece-by-piece (loose, readable copybook)
+		    "BR001" +          // BRANCH
+		    "20240130" +       // TRANDATE (yyyyMMdd)
+		    "1234567890" +     // ACCOUNT (10 digits)
+		    "DEP" +            // CODE
+		    "000012345" +      // AMOUNT (9 digits, unscaled)
+		    "USD",             // CURRENCY
+
+		    // Flat, literal samples (more compact / realistic ingestion)
+		    "BR002202312251111222233WDL000023456EUR",
+		    "BR003202306151234000001DEP000000789USD"
+		};
 
 	@DisplayName("Verify healthy building the vanilla regex")
 	@Test
@@ -71,26 +83,33 @@ public class CopyBookTest {
 			Pattern pattern = Pattern.compile(COPYBOOK_REGEX);
 
 			for (String copybook : SAMPLE_DATA) {
-				Matcher matcher = pattern.matcher(copybook.trim());
-				System.err.println(String.format("matching \"%s\"", copybook.trim()));
-				// Check that the regex actually matches the full input
+				Matcher matcher = pattern.matcher(copybook);
+				System.err.println(String.format("matching \"%s\"", copybook));
 				System.err.println(String.format("regex: %s", COPYBOOK_REGEX));
 				assertThat(matcher.matches(), is(true));
+				// @formatter:off
+				System.out.println(String.format(
+				    "Matched record:%n" +
+				    "  BRANCH   = %s%n" +
+				    "  TRANDATE = %s%n" +
+				    "  ACCOUNT  = %s%n" +
+				    "  CODE     = %s%n" +
+				    "  AMOUNT   = %s%n" +
+				    "  CURRENCY = %s",
+				    matcher.group("BRANCH"),
+				    matcher.group("TRANDATE"),
+				    matcher.group("ACCOUNT"),
+				    matcher.group("CODE"),
+				    matcher.group("AMOUNT"),
+				    matcher.group("CURRENCY")
+				));
+			// @formatter:on
 
-				// Optional: print captured groups for verification
-				System.out.println("Matched record:");
-				System.out.println("  BRANCH   = " + matcher.group("BRANCH"));
-				System.out.println("  TRANDATE = " + matcher.group("TRANDATE"));
-				System.out.println("  ACCOUNT  = " + matcher.group("ACCOUNT"));
-				System.out.println("  CODE     = " + matcher.group("CODE"));
-				System.out.println("  AMOUNT   = " + matcher.group("AMOUNT"));
-				System.out.println("  CURRENCY = " + matcher.group("CURRENCY"));
 			}
 		});
 	}
 
-	@DisplayName("Verify the resolve groups processing")
-	@Disabled
+	@DisplayName("Verify the resolve groups processing") 
 	@Test
 	public void test3() {
 		List<String> groups = findMatch.resolveGroups(COPYBOOK_REGEX);
@@ -100,7 +119,6 @@ public class CopyBookTest {
 	}
 
 	@DisplayName("Verify processing by FindMatch")
-	@Disabled
 	@Test
 	public void test4() {
 
@@ -113,8 +131,6 @@ public class CopyBookTest {
 				String result = results.get(name);
 				System.err.println(String.format("%s: %s", name, result));
 			}
-
 		}
-
 	}
 }
