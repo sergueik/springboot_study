@@ -99,6 +99,16 @@ Failed to load resource: http://192.168.99.100:3000/api/v1/spaces/test/+/gitspac
 
 A latest version `3.20` of `open source harness` does not show an error, and is able to proceed to the next step pulling the `mcr.microsoft.com/devcontainers/base:dev-ubuntu-24.04` to run VS Code Server from there.
 
+### Misc.
+
+__Docker in Docker__ (__DinD__) via socket mounting works by sharing the host machine's Docker daemon with the container through the host's Unix socket file, typically `/var/run/docker.sock`. The container does not run an independent Docker daemon but acts as a client to the host's daemon.
+
+__Docker-in-Docker__ without mounting the host's docker.sock works by running a completely separate, isolated Docker daemon inside the container, utilizing its own kernel namespaces and requiring the container to run in a privileged mode.
+
+Running __Docker-in-Docker__ in privileged mode is generally strongly not recommended due to significant security risks, as it grants the container near root access to the host, but it's often necessary for __Kubernetes__ __CI__/__CD__ builds where alternatives aren't suitable, highlighting a trade-off between security and functionality, with better alternatives like __Docker Socket Mounting__ or __Rootless DinD__
+
+The __Rootless Docker-in-Docker__ is a secure way to run a Docker daemon and its containers as a normal, unprivileged user instead of as root, using tools like __RootlessKit__, to significantly reduce security risks in CI/CD pipelines or testing environments, allowing you to build and run Docker images within a container without needing full host privileges, unlike traditional __DinD__. It achieves this by mapping user __ID__ (__UID__) and group __ID__ (__GID__) to unprivileged ranges on the host, using user namespaces, and often requires specific host packages like `newuidmap` and `newgidmap`
+
 ---
 ### See Also
 
