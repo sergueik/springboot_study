@@ -45,12 +45,12 @@ public class CopyBookTest {
 	private static final String G_AMOUNT = "(?<AMOUNT>[0-9.]{9,12})"; // Amount: 0 to 12 chars including decimals
 	private static final String G_CURRENCY = "(?<CURRENCY>[A-Z]{3})"; // Currency code: 3 chars
 
-	private static final String COPYBOOK_REGEX = "^" + G_BRANCH + G_DATE + G_ACCOUNT + G_CODE + G_AMOUNT + G_CURRENCY
+	private static final String regexString = "^" + G_BRANCH + G_DATE + G_ACCOUNT + G_CODE + G_AMOUNT + G_CURRENCY
 			+ "$";
 
 	private static final String[] SAMPLE_DATA = {
 
-		    // Built piece-by-piece (loose, readable copybook)
+		    // Built piece-by-piece (loose, readable copyBook)
 		    "BR001" +          // BRANCH
 		    "20240130" +       // TRANDATE (yyyyMMdd)
 		    "1234567890" +     // ACCOUNT (10 digits)
@@ -67,25 +67,25 @@ public class CopyBookTest {
 	@Test
 	public void test1() {
 		assertDoesNotThrow(() -> {
-			for (String copybook : SAMPLE_DATA) {
-				Pattern pattern = Pattern.compile(COPYBOOK_REGEX);
-				Matcher matcher = pattern.matcher(copybook);
+			for (String copyBook : SAMPLE_DATA) {
+				Pattern pattern = Pattern.compile(regexString);
+				Matcher matcher = pattern.matcher(copyBook);
 				matcher.find();
 			}
 		});
 
 	}
 
-	@DisplayName("Verify regex matches all simplified CopyBook samples")
+	@DisplayName("Verify regex matches all simplified copyBook samples")
 	@Test
 	public void test2() {
 		assertDoesNotThrow(() -> {
-			Pattern pattern = Pattern.compile(COPYBOOK_REGEX);
+			Pattern pattern = Pattern.compile(regexString);
 
-			for (String copybook : SAMPLE_DATA) {
-				Matcher matcher = pattern.matcher(copybook);
-				System.err.println(String.format("matching \"%s\"", copybook));
-				System.err.println(String.format("regex: %s", COPYBOOK_REGEX));
+			for (String copyBook : SAMPLE_DATA) {
+				Matcher matcher = pattern.matcher(copyBook);
+				System.err.println(String.format("matching \"%s\"", copyBook));
+				System.err.println(String.format("regex: %s", regexString));
 				assertThat(matcher.matches(), is(true));
 				// @formatter:off
 				System.out.println(String.format(
@@ -112,7 +112,7 @@ public class CopyBookTest {
 	@DisplayName("Verify the resolve groups processing") 
 	@Test
 	public void test3() {
-		List<String> groups = findMatch.resolveGroups(COPYBOOK_REGEX);
+		List<String> groups = findMatch.resolveGroups(regexString);
 		assertThat(groups, notNullValue());
 		assertThat(groups.size(), is(6));
 		groups.stream().forEach(System.err::println);
@@ -122,9 +122,9 @@ public class CopyBookTest {
 	@Test
 	public void test4() {
 
-		for (String copybook : SAMPLE_DATA) {
-			System.err.println(String.format("copybook: %s", copybook));
-			results = findMatch.findMatch(copybook, COPYBOOK_REGEX);
+		for (String copyBook : SAMPLE_DATA) {
+			System.err.println(String.format("copyBook: %s", copyBook));
+			results = findMatch.findMatch(copyBook, regexString);
 			assertThat(results, notNullValue());
 			assertThat(results.keySet().size(), is(6));
 			for (String name : results.keySet()) {

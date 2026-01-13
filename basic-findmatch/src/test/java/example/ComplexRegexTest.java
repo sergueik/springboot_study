@@ -102,7 +102,7 @@ public class ComplexRegexTest {
 	}
 	// @formatter:on
 
-	@DisplayName("Verify pattern constructor hits a hard JVM regex limit when building of the regex with error reporting")
+	@DisplayName("Verify if pattern constructor hits a hard JVM regex limit when building of the regex with error reporting")
 	@ParameterizedTest
 	@MethodSource("testDataStream")
 	void test(final String data) {

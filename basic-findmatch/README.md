@@ -385,6 +385,241 @@ public class CopyBookSerializer implements JsonSerializer<Map<String,Object>> {
 ```
 > Note: using an explicit, type-safe, and readable `Map<String,Object>`, not a `T` or raw type `Map` - `JsonSerializer<Map<String,Object>>` is considered best practice.
 
+### Going Mainframe Scale
+
+We generate a large (~100-field) mainframe-style record and its matching RegEx pattern without yet constructing the latter from metadata YAML.
+
+Purpose:
+- Demonstrate JVM `Pattern.compile()` scalability for fixed-width, simply formatted mainframe-style records.
+- Provide a concrete baseline before YAML-driven generation begins.
+
+
+⚠️ This code is *NOT* intended as a final implementation and will be removed once YAML-driven generation is in place.
+
+#### Generating The Test Code
+```sh
+$ ./scripts/emit-heavy-record.sh
+```
+```text
+RECORD LENGTH = 940
+BR001T12345202401301030151234567890120000000342391USDDEP  ATM WITHDRAWAL                APR123BR001T12345202401301030151234567890120000000342391USDDEP  ATM WITHDRAWAL                APR123BR001T12345202401301030151234567890120000000342391USDDEP  ATM WITHDRAWAL                APR123BR001T12345202401301030151234567890120000000342391USDDEP  ATM WITHDRAWAL                APR123BR001T12345202401301030151234567890120000000342391USDDEP  ATM WITHDRAWAL                APR123BR001T12345202401301030151234567890120000000342391USDDEP  ATM WITHDRAWAL                APR123BR001T12345202401301030151234567890120000000342391USDDEP  ATM WITHDRAWAL                APR123BR001T12345202401301030151234567890120000000342391USDDEP  ATM WITHDRAWAL                APR123BR001T12345202401301030151234567890120000000342391USDDEP  ATM WITHDRAWAL                APR123BR001T12345202401301030151234567890120000000342391USDDEP  ATM WITHDRAWAL                APR123
+
+JAVA-READY REGEX STRING:
+public static final String regexString = "^" +
+"(?<BRANCHID1>.{5})" +
+"(?<TELLERID1>.{6})" +
+"(?<TRANDATE1>\\d{8})" +
+"(?<TRANTIME1>\\d{6})" +
+"(?<ACCOUNTNUMBER1>\\d{12})" +
+"(?<AMOUNT1>[+-]?\\d{13})" +
+"(?<CURRENCY1>[A-Z]{3})" +
+"(?<BRANCH1>.{5})" +
+"(?<DESCRIPTION1>.{30})" +
+"(?<APPROVALCODE1>.{6})" +
+"(?<BRANCHID2>.{5})" +
+"(?<TELLERID2>.{6})" +
+"(?<TRANDATE2>\\d{8})" +
+"(?<TRANTIME2>\\d{6})" +
+"(?<ACCOUNTNUMBER2>\\d{12})" +
+"(?<AMOUNT2>[+-]?\\d{13})" +
+"(?<CURRENCY2>[A-Z]{3})" +
+"(?<BRANCH2>.{5})" +
+"(?<DESCRIPTION2>.{30})" +
+"(?<APPROVALCODE2>.{6})" +
+"(?<BRANCHID3>.{5})" +
+"(?<TELLERID3>.{6})" +
+"(?<TRANDATE3>\\d{8})" +
+"(?<TRANTIME3>\\d{6})" +
+"(?<ACCOUNTNUMBER3>\\d{12})" +
+"(?<AMOUNT3>[+-]?\\d{13})" +
+"(?<CURRENCY3>[A-Z]{3})" +
+"(?<BRANCH3>.{5})" +
+"(?<DESCRIPTION3>.{30})" +
+"(?<APPROVALCODE3>.{6})" +
+"(?<BRANCHID4>.{5})" +
+"(?<TELLERID4>.{6})" +
+"(?<TRANDATE4>\\d{8})" +
+"(?<TRANTIME4>\\d{6})" +
+"(?<ACCOUNTNUMBER4>\\d{12})" +
+"(?<AMOUNT4>[+-]?\\d{13})" +
+"(?<CURRENCY4>[A-Z]{3})" +
+"(?<BRANCH4>.{5})" +
+"(?<DESCRIPTION4>.{30})" +
+"(?<APPROVALCODE4>.{6})" +
+"(?<BRANCHID5>.{5})" +
+"(?<TELLERID5>.{6})" +
+"(?<TRANDATE5>\\d{8})" +
+"(?<TRANTIME5>\\d{6})" +
+"(?<ACCOUNTNUMBER5>\\d{12})" +
+"(?<AMOUNT5>[+-]?\\d{13})" +
+"(?<CURRENCY5>[A-Z]{3})" +
+"(?<BRANCH5>.{5})" +
+"(?<DESCRIPTION5>.{30})" +
+"(?<APPROVALCODE5>.{6})" +
+"(?<BRANCHID6>.{5})" +
+"(?<TELLERID6>.{6})" +
+"(?<TRANDATE6>\\d{8})" +
+"(?<TRANTIME6>\\d{6})" +
+"(?<ACCOUNTNUMBER6>\\d{12})" +
+"(?<AMOUNT6>[+-]?\\d{13})" +
+"(?<CURRENCY6>[A-Z]{3})" +
+"(?<BRANCH6>.{5})" +
+"(?<DESCRIPTION6>.{30})" +
+"(?<APPROVALCODE6>.{6})" +
+"(?<BRANCHID7>.{5})" +
+"(?<TELLERID7>.{6})" +
+"(?<TRANDATE7>\\d{8})" +
+"(?<TRANTIME7>\\d{6})" +
+"(?<ACCOUNTNUMBER7>\\d{12})" +
+"(?<AMOUNT7>[+-]?\\d{13})" +
+"(?<CURRENCY7>[A-Z]{3})" +
+"(?<BRANCH7>.{5})" +
+"(?<DESCRIPTION7>.{30})" +
+"(?<APPROVALCODE7>.{6})" +
+"(?<BRANCHID8>.{5})" +
+"(?<TELLERID8>.{6})" +
+"(?<TRANDATE8>\\d{8})" +
+"(?<TRANTIME8>\\d{6})" +
+"(?<ACCOUNTNUMBER8>\\d{12})" +
+"(?<AMOUNT8>[+-]?\\d{13})" +
+"(?<CURRENCY8>[A-Z]{3})" +
+"(?<BRANCH8>.{5})" +
+"(?<DESCRIPTION8>.{30})" +
+"(?<APPROVALCODE8>.{6})" +
+"(?<BRANCHID9>.{5})" +
+"(?<TELLERID9>.{6})" +
+"(?<TRANDATE9>\\d{8})" +
+"(?<TRANTIME9>\\d{6})" +
+"(?<ACCOUNTNUMBER9>\\d{12})" +
+"(?<AMOUNT9>[+-]?\\d{13})" +
+"(?<CURRENCY9>[A-Z]{3})" +
+"(?<BRANCH9>.{5})" +
+"(?<DESCRIPTION9>.{30})" +
+"(?<APPROVALCODE9>.{6})" +
+"(?<BRANCHID10>.{5})" +
+"(?<TELLERID10>.{6})" +
+"(?<TRANDATE10>\\d{8})" +
+"(?<TRANTIME10>\\d{6})" +
+"(?<ACCOUNTNUMBER10>\\d{12})" +
+"(?<AMOUNT10>[+-]?\\d{13})" +
+"(?<CURRENCY10>[A-Z]{3})" +
+"(?<BRANCH10>.{5})" +
+"(?<DESCRIPTION10>.{30})" +
+"(?<APPROVALCODE10>.{6})" +
+"$";
+
+```
+#### Running the Test
+```sh
+mvn test 2>a.json 
+cat a.json | jq '.'
+```
+```json
+{
+  "APPROVALCODE4": "APR123",
+  "TRANDATE9": "20240130",
+  "APPROVALCODE5": "APR123",
+  "ACCOUNTNUMBER1": "123456789012",
+  "APPROVALCODE6": "APR123",
+  "CURRENCY9": "USD",
+  "APPROVALCODE7": "APR123",
+  "ACCOUNTNUMBER3": "123456789012",
+  "APPROVALCODE1": "APR123",
+  "ACCOUNTNUMBER2": "123456789012",
+  "APPROVALCODE2": "APR123",
+  "ACCOUNTNUMBER5": "123456789012",
+  "APPROVALCODE3": "APR123",
+  "ACCOUNTNUMBER4": "123456789012",
+  "CURRENCY3": "USD",
+  "CURRENCY4": "USD",
+  "CURRENCY1": "USD",
+  "CURRENCY10": "USD",
+  "CURRENCY2": "USD",
+  "CURRENCY7": "USD",
+  "APPROVALCODE8": "APR123",
+  "CURRENCY8": "USD",
+  "APPROVALCODE9": "APR123",
+  "CURRENCY5": "USD",
+  "CURRENCY6": "USD",
+  "TRANDATE10": "20240130",
+  "TRANTIME9": "103015",
+  "TRANTIME8": "103015",
+  "ACCOUNTNUMBER7": "123456789012",
+  "ACCOUNTNUMBER6": "123456789012",
+  "ACCOUNTNUMBER9": "123456789012",
+  "ACCOUNTNUMBER8": "123456789012",
+  "DESCRIPTION5": "ATM WITHDRAWAL                ",
+  "DESCRIPTION4": "ATM WITHDRAWAL                ",
+  "TRANTIME10": "103015",
+  "DESCRIPTION7": "ATM WITHDRAWAL                ",
+  "DESCRIPTION6": "ATM WITHDRAWAL                ",
+  "DESCRIPTION9": "ATM WITHDRAWAL                ",
+  "DESCRIPTION8": "ATM WITHDRAWAL                ",
+  "DESCRIPTION1": "ATM WITHDRAWAL                ",
+  "DESCRIPTION3": "ATM WITHDRAWAL                ",
+  "DESCRIPTION2": "ATM WITHDRAWAL                ",
+  "TRANTIME5": "103015",
+  "TRANTIME4": "103015",
+  "DESCRIPTION10": "ATM WITHDRAWAL                ",
+  "TRANTIME7": "103015",
+  "TRANTIME6": "103015",
+  "TRANTIME1": "103015",
+  "TRANTIME3": "103015",
+  "TRANTIME2": "103015",
+  "BRANCH10": "BR001",
+  "AMOUNT10": "0000000342391",
+  "AMOUNT3": "0000000342391",
+  "AMOUNT2": "0000000342391",
+  "AMOUNT1": "0000000342391",
+  "TELLERID9": "T12345",
+  "AMOUNT7": "0000000342391",
+  "AMOUNT6": "0000000342391",
+  "AMOUNT5": "0000000342391",
+  "BRANCHID10": "BR001",
+  "AMOUNT4": "0000000342391",
+  "BRANCHID3": "BR001",
+  "BRANCHID4": "BR001",
+  "BRANCHID1": "BR001",
+  "BRANCHID2": "BR001",
+  "TELLERID3": "T12345",
+  "TELLERID4": "T12345",
+  "TELLERID1": "T12345",
+  "BRANCHID9": "BR001",
+  "AMOUNT9": "0000000342391",
+  "TELLERID10": "T12345",
+  "TELLERID2": "T12345",
+  "AMOUNT8": "0000000342391",
+  "BRANCHID7": "BR001",
+  "TELLERID7": "T12345",
+  "BRANCHID8": "BR001",
+  "TELLERID8": "T12345",
+  "BRANCHID5": "BR001",
+  "TELLERID5": "T12345",
+  "BRANCHID6": "BR001",
+  "TELLERID6": "T12345",
+  "APPROVALCODE10": "APR123",
+  "BRANCH1": "BR001",
+  "BRANCH3": "BR001",
+  "BRANCH2": "BR001",
+  "BRANCH5": "BR001",
+  "BRANCH4": "BR001",
+  "BRANCH7": "BR001",
+  "BRANCH6": "BR001",
+  "BRANCH9": "BR001",
+  "BRANCH8": "BR001",
+  "ACCOUNTNUMBER10": "123456789012",
+  "TRANDATE1": "20240130",
+  "TRANDATE2": "20240130",
+  "TRANDATE3": "20240130",
+  "TRANDATE4": "20240130",
+  "TRANDATE5": "20240130",
+  "TRANDATE6": "20240130",
+  "TRANDATE7": "20240130",
+  "TRANDATE8": "20240130"
+}
+
+
+```
 ###  🧾 COBOL Copybook Parsers — Free & Commercial Tools
 
 This overview lists **available copybook parsing tools**, both open source and commercial, that can be used to interpret COBOL copybooks into structured metadata for processing in Java and other languages.
