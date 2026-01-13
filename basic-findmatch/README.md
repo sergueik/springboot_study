@@ -281,8 +281,14 @@ Examaple crashing Regex package:
 and output
 ```text
 testing length=213
-PatternSyntaxException caught! Input length=213, First 50 chars="(?<TTBRANCHID>.{5})(?<TTTELLERID>.{6})(?<TTTERMINA", Description="named capturing group is missing trailing '>'", Index=105, Pattern="^(?<TTBRANCHID>.{5})(?<TTTELLERID>.{6})(?<TTTERMINALID>.{4})(?<TTTRANDATE>\d{8})(?<TTTRANTIME>\d{6})(?<TT_ACCOUNT_NUMBER>\d{12}).replaceAll("_", "")(?<TTTRANCODE>.{4})(?<TTAMOUNT>[+-]?\d{13})(?<TTCURRENCY>[A-Z]{3})$"
+PatternSyntaxException caught! 
+Input length=213, 
+First 50 chars="(?<TTBRANCHID>.{5})(?<TTTELLERID>.{6})(?<TTTERMINA", 
+Description="named capturing group is missing trailing '>'", 
+Index=105, 
+Pattern="^(?<TTBRANCHID>.{5})(?<TTTELLERID>.{6})(?<TTTERMINALID>.{4})(?<TTTRANDATE>\d{8})(?<TTTRANTIME>\d{6})(?<TT_ACCOUNT_NUMBER>\d{12}).replaceAll("_", "")(?<TTTRANCODE>.{4})(?<TTAMOUNT>[+-]?\d{13})(?<TTCURRENCY>[A-Z]{3})$"
 ```
+
 ### Work In Progress
 
 
@@ -475,6 +481,9 @@ This overview lists **available copybook parsing tools**, both open source and c
 - Open source parsers vary in completeness; choose based on your copybook features (e.g., OCCURS, REDEFINES).  
 - Commercial tools are generally used in **mainframe modernization projects**.
 
+### Note
+
+COBOL copybooks and derivative artifacts (including Excel spreadsheets) are treated like controlled source: their structure defines business logic. Distribution is restricted because even a single file can expose sensitive operational rules, so ‘need-to-know’ proof, approval workflows, artifact signing, and ACLs are universally enforced. Everyone in finance/legacy IT knows this is non-negotiable.
 
 ### See Also
 
