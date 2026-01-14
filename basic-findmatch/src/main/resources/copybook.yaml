@@ -1,0 +1,28 @@
+record: TELLER_TRANSACTION
+encoding: ASCII
+
+fields:
+  - name: BRANCH
+    length: 5
+    type: string
+
+  - name: TRANDATE
+    length: 8
+    type: date
+
+  - name: ACCOUNT
+    length: 10
+    type: number
+
+  - name: CODE
+    length: 3
+    type: string
+
+  - name: AMOUNT
+    length: 9
+    type: number
+
+  - name: CURRENCY
+    length: 3
+    type: string
+

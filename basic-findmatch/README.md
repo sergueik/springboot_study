@@ -648,6 +648,32 @@ JSON: {
 ```
 > Note removal of `BRANCH`  and injection of `owner_uuid`
 
+### Testing
+```cmd
+set JAVA_VERSION=17.0.12
+c:\java\init.cmd
+java -version
+```
+```text
+java version "17.0.12" 2024-07-16 LTS
+Java(TM) SE Runtime Environment (build 17.0.12+8-LTS-286)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.12+8-LTS-286, mixed mode, sharing)
+```
+```cmd
+mvn test
+```
+### TODO
+
+* API-First YAML generated sources
+* Switch from *unnecessary powerful regex cleverness* a.k.a *imperial*, *Gold-plated*  engine to *linear tape / deterministic transducer* a.k.a. *non-regex offset slicer* : every *serious* mainframe parser eventually switches to **offset** **→** **slice** **→** **decode**
+* Regex is acceptable as:
+  + validation tooli
+  + prototype
+  + spec generator
+
+  it is rarely the final engine - do not use a cannon to kill a mosquito
+
+
 ###  🧾 COBOL Copybook Parsers — Free & Commercial Tools
 
 This overview lists **available copybook parsing tools**, both open source and commercial, that can be used to interpret COBOL copybooks into structured metadata for processing in Java and other languages.
