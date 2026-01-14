@@ -4,51 +4,13 @@ package example;
  * Copyright 2026 Serguei Kouzmine
  */
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.jayway.jsonpath.JsonPath;
-import org.junit.jupiter.api.Test;
-
-import java.util.Map;
-import java.util.Set;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Map;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -56,11 +18,29 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import java.util.stream.Stream;
 
-import java.lang.reflect.Field;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import example.FindMatch;
 
@@ -175,7 +155,7 @@ public class CopyBookTest {
 	public void test6()
 			throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 
-		// Set<String> excluded = Set.of("BRANCH"); // effecively final
+		// NOTE: Set.of() enforcing final, UnsupportedOperationException
 		Set<String> excluded =  new HashSet<>(Set.of("BRANCH"));
 		CopyBookGsonSerializer copyBookGsonSerializer = new CopyBookGsonSerializer();
 		// Class<?> copyBookGsonSerializerClass = copyBookGsonSerializer.getClass();
