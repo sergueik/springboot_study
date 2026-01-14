@@ -6,6 +6,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -19,13 +20,32 @@ import java.util.UUID;
 
 public class CopyBookGsonSerializer implements JsonSerializer<Map<String, Object>> {
 
-	private final Set<String> excludeFields = Set.of(
-			"BRANCHID9", "AMOUNT3", "TRANDATE6", "CURSOR_POS");
+	private final Set<String> excludeKeys;
+	private static final Set<String> HARD_EXCLUDE_FIELDS = Set.of("EIBCALEN", "EIBTIME", "EIBTRNID", "CURSOR_POS");
+
+	// No-arg constructor: only hard-coded exclusions
+	public CopyBookGsonSerializer() {
+		// Create a mutable HashSet from the hard-coded exclusions
+		this.excludeKeys = new HashSet<>(HARD_EXCLUDE_FIELDS);
+	}
+
+	// Constructor with additional keys to exclude
+	public CopyBookGsonSerializer(Set<String> excludeKeys) {
+		// Start with hard exclusions
+		this.excludeKeys = new HashSet<>(HARD_EXCLUDE_FIELDS);
+
+		if (excludeKeys != null) {
+			// Only add keys not already present (HashSet automatically handles duplicates)
+			for (String key : excludeKeys) {
+				this.excludeKeys.add(key);
+			}
+		}
+	}
 
 	// make the code self-documenting by giving the parameter a “loud” descriptive
 	// name matching its type
 	@Override
-	public JsonElement serialize(Map<String, Object> src, Type typeOfSrc,
+	public JsonElement serialize(Map<String, Object> src, Type type,
 			JsonSerializationContext jsonSerializationContext) {
 		JsonObject jsonObject = new JsonObject();
 
@@ -34,8 +54,8 @@ public class CopyBookGsonSerializer implements JsonSerializer<Map<String, Object
 
 		// filtering
 		for (Map.Entry<String, Object> entry : src.entrySet()) {
-			if (!excludeFields.contains(entry.getKey())) {
-				// Gson will convert the Object value to JsonElement automatically
+			if (!this.excludeKeys.contains(entry.getKey())) {
+				// The Gson will convert the Object value to JsonElement automatically
 				jsonObject.add(entry.getKey(), jsonSerializationContext.serialize(entry.getValue()));
 			}
 		}

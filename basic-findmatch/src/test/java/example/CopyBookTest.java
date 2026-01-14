@@ -2,6 +2,7 @@ package example;
 
 /**
  * Copyright 2026 Serguei Kouzmine
+
  */
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,12 +22,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -48,26 +53,24 @@ public class CopyBookTest {
 	private static final String regexString = "^" + G_BRANCH + G_DATE + G_ACCOUNT + G_CODE + G_AMOUNT + G_CURRENCY
 			+ "$";
 
-	private static final String[] SAMPLE_DATA = {
+	private static final String[] rows = {
 
-		    // Built piece-by-piece (loose, readable copyBook)
-		    "BR001" +          // BRANCH
-		    "20240130" +       // TRANDATE (yyyyMMdd)
-		    "1234567890" +     // ACCOUNT (10 digits)
-		    "DEP" +            // CODE
-		    "000012345" +      // AMOUNT (9 digits, unscaled)
-		    "USD",             // CURRENCY
+			// Built piece-by-piece (loose, readable copyBook)
+			"BR001" + // BRANCH
+					"20240130" + // TRANDATE (yyyyMMdd)
+					"1234567890" + // ACCOUNT (10 digits)
+					"DEP" + // CODE
+					"000012345" + // AMOUNT (9 digits, unscaled)
+					"USD", // CURRENCY
 
-		    // Flat, literal samples (more compact / realistic ingestion)
-		    "BR002202312251111222233WDL000023456EUR",
-		    "BR003202306151234000001DEP000000789USD"
-		};
+			// Flat, literal samples (more compact / realistic ingestion)
+			"BR002202312251111222233WDL000023456EUR", "BR003202306151234000001DEP000000789USD" };
 
 	@DisplayName("Verify healthy building the vanilla regex")
 	@Test
 	public void test1() {
 		assertDoesNotThrow(() -> {
-			for (String copyBook : SAMPLE_DATA) {
+			for (String copyBook : rows) {
 				Pattern pattern = Pattern.compile(regexString);
 				Matcher matcher = pattern.matcher(copyBook);
 				matcher.find();
@@ -82,34 +85,24 @@ public class CopyBookTest {
 		assertDoesNotThrow(() -> {
 			Pattern pattern = Pattern.compile(regexString);
 
-			for (String copyBook : SAMPLE_DATA) {
+			for (String copyBook : rows) {
 				Matcher matcher = pattern.matcher(copyBook);
 				System.err.println(String.format("matching \"%s\"", copyBook));
 				System.err.println(String.format("regex: %s", regexString));
 				assertThat(matcher.matches(), is(true));
 				// @formatter:off
 				System.out.println(String.format(
-				    "Matched record:%n" +
-				    "  BRANCH   = %s%n" +
-				    "  TRANDATE = %s%n" +
-				    "  ACCOUNT  = %s%n" +
-				    "  CODE     = %s%n" +
-				    "  AMOUNT   = %s%n" +
-				    "  CURRENCY = %s",
-				    matcher.group("BRANCH"),
-				    matcher.group("TRANDATE"),
-				    matcher.group("ACCOUNT"),
-				    matcher.group("CODE"),
-				    matcher.group("AMOUNT"),
-				    matcher.group("CURRENCY")
-				));
-			// @formatter:on
+						"Matched record:%n" + "  BRANCH   = %s%n" + "  TRANDATE = %s%n" + "  ACCOUNT  = %s%n"
+								+ "  CODE     = %s%n" + "  AMOUNT   = %s%n" + "  CURRENCY = %s",
+						matcher.group("BRANCH"), matcher.group("TRANDATE"), matcher.group("ACCOUNT"),
+						matcher.group("CODE"), matcher.group("AMOUNT"), matcher.group("CURRENCY")));
+				// @formatter:on
 
 			}
 		});
 	}
 
-	@DisplayName("Verify the resolve groups processing") 
+	@DisplayName("Verify the resolve groups processing")
 	@Test
 	public void test3() {
 		List<String> groups = findMatch.resolveGroups(regexString);
@@ -122,7 +115,7 @@ public class CopyBookTest {
 	@Test
 	public void test4() {
 
-		for (String copyBook : SAMPLE_DATA) {
+		for (String copyBook : rows) {
 			System.err.println(String.format("copyBook: %s", copyBook));
 			results = findMatch.findMatch(copyBook, regexString);
 			assertThat(results, notNullValue());
@@ -133,4 +126,22 @@ public class CopyBookTest {
 			}
 		}
 	}
+
+	@DisplayName("Verify the results serialization")
+	@Test
+	public void test5() {
+
+		for (String copyBook : rows) {
+			System.err.println(String.format("copyBook: %s", copyBook));
+			results = findMatch.findMatch(copyBook, regexString);
+			assertThat(results, notNullValue());
+
+			Gson gson = new GsonBuilder()
+					.registerTypeAdapter(CopyBook.class, new CopyBookGsonSerializer(Set.of("BRANCH")))
+					.create();
+			String json = gson.toJson(new CopyBook(results));
+			System.err.println(String.format("JSON: %s", json));
+		}
+	}
+
 }
