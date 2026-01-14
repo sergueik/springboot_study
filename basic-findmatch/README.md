@@ -1,5 +1,11 @@
 ###  Info
 
+![Process Flow](https://github.com/sergueik/springboot_study/blob/master/basic-findmatch/screenshots/capture-process-flow.png)
+
+### Background
+
+#### Find Match
+
 designed the idea once, then expressed it naturally in each ecosystem:
 
 __C#__ → String extension method returning a single value (idiomatic for __.NET__ at the time)
@@ -8,13 +14,11 @@ __Java__ → utility + tests returning a `Map<String, String>` (idiomatic, test-
 
 That’s exactly how how experienced engineers work when moving ideas across stacks
 
-### Background
+This is a standalone Project derived from Java test class [`FindMatchTest.java`](https://github.com/sergueik/selenium_tests/blob/master/src/test/java/com/github/sergueik/selenium/FindMatchTest.java)
 
-This is a standwlone Project dreiver from Java test class [`FindMatchTest.java`](https://github.com/sergueik/selenium_tests/blob/master/src/test/java/com/github/sergueik/selenium/FindMatchTest.java)
+Which in turn was ported from and extended the c# [`Matcher.cs`](https://github.com/sergueik/powershell_selenium/blob/master/selenium4/csharp/basic/Extensions/Matcher.cs)
 
-Which in turn was a
-Ported/Exteding
-from c# [`Matcher.cs`](https://github.com/sergueik/powershell_selenium/blob/master/selenium4/csharp/basic/Extensions/Matcher.cs)
+
 ### Testing
 
 Many “copybook-grade” datasets can be flattened into a `Map<String,Object>`, especially for __teller__ / core-banking style records where:
@@ -719,6 +723,72 @@ This overview lists **available copybook parsing tools**, both open source and c
 ### Note
 
 COBOL copybooks and derivative artifacts (including Excel spreadsheets) are treated like controlled source: their structure defines business logic. Distribution is restricted because even a single file can expose sensitive operational rules, so ‘need-to-know’ proof, approval workflows, artifact signing, and ACLs are universally enforced. Everyone in finance/legacy IT knows this is non-negotiable.
+
+### Memo: Recreating the Canonical Pipeline Snake Flow in LibreOffice Impress
+
+Purpose:
+Guide for reconstructing the snake-style flow diagram entirely using native LibreOffice Impress shapes and connectors.
+
+---
+
+## 1️⃣ Shapes
+
+| Diagram Element | Suggested Shape | Notes |
+|-----------------|----------------|-------|
+| Start / End | Oval | Basic start/end points |
+| Processes | Rectangle (rounded) | Regex Builder, Deterministic Decomposition, Selective Projection |
+| Data / Inputs / Outputs | Parallelogram | Record Field Mapping YAML, CICS Copybook, Serialization Hints, Business JSON Object |
+| Transient / Canonical Object | Hexagon | Transient Copybook Object |
+| Cached / Expensive Objects | Flat Rectangle | Regex Scanner |
+
+Tip: Use manual line breaks (Shift+Enter) to fit text inside shapes.
+
+---
+
+## 2️⃣ Layout (S-shaped / snake)
+
+1. Row 1: Start → Record Field Mapping YAML → Regex Builder  
+2. Row 2: Regex Scanner (above) → CICS Copybook → Deterministic Decomposition  
+3. Row 3: Transient Copybook Object (centered)  
+4. Row 4: Selective Projection → Serialization Hints (right)  
+5. Row 5: Business JSON Object → End  
+
+Guideline: Alternate horizontal alignment of rows to achieve a snake effect, filling the slide rectangle.
+
+---
+
+## 3️⃣ Connectors
+
+- Use Connector lines (Insert → Shape → Lines → Connector)  
+- Snap to shape edges or centers for clean alignment  
+- Elbow connectors can reinforce the S-shaped flow  
+- Arrowheads indicate direction of flow
+
+---
+
+## 4️⃣ Styling
+
+- Processes: White or subtle gradient  
+- Objects / cached items: Light gray fill  
+- Hexagon (canonical object): Highlight with light yellow or green  
+- Arrows: Solid lines, consistent thickness
+
+---
+
+## 5️⃣ Tips
+
+- Use the grid / guidelines to keep vertical spacing even  
+- Use Ctrl+Arrow keys for fine positioning  
+- Once complete, group all shapes and connectors for easy resizing or moving (Right-click → Group)  
+- Can later animate each step for presentations
+
+---
+
+### Suggested Files for Commit
+
+- pipeline_snake_v6.dot — DOT source of the diagram  
+- pipeline_snake_v6.png — PNG snapshot for quick reference  
+- pipeline_snake_memo.txt — This memo describing how to recreate in LibreOffice Impress
 
 ### See Also
 

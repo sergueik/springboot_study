@@ -1,0 +1,115 @@
+digraph CanonicalPipeline_Snake_V6 {
+
+  rankdir=TB;          
+  splines=ortho;
+  nodesep=0.8;
+  ranksep=1.2;
+  fontname="Helvetica";
+
+  node [fontname="Helvetica", fontsize=11];
+
+  // Start
+  Start [label="Start", shape=oval];
+
+  // First row - input metadata
+  TellerYAML [
+    label="Record\nField\nMapping",
+    shape=parallelogram,
+    width=1.2, height=1.2,
+    fixedsize=true
+  ];
+
+  // Regex Builder process
+  RegexBuilder [
+    label="Regex\nBuilder",
+    shape=rectangle,
+    style=rounded
+  ];
+
+  // Regex Scanner object
+  RegexScanner [
+    label="Regex Scanner",
+    shape=rectangle,
+    style=filled,
+    fillcolor=lightgray,
+    width=1.5, height=0.6,
+    fixedsize=true
+  ];
+
+  // Second row - inputs to decomposition
+  CopybookInput [
+    label="CICS\nCopybook",
+    shape=parallelogram,
+    width=1.2, height=1.2,
+    fixedsize=true
+  ];
+
+  Decompose [
+    label="Deterministic Decomposition",
+    shape=rectangle,
+    style=rounded
+  ];
+
+  // Third row - hexagonal output
+  TransientObj [
+    label="Transient Copybook\nObject",
+    shape=hexagon,
+    width=1.5, height=1.5,
+    fontsize=11
+  ];
+
+  // Fourth row - projection
+  Project [
+    label="Selective Projection",
+    shape=rectangle,
+    style=rounded
+  ];
+
+  SerializationHints [
+    label="Serialization\nHints",
+    shape=parallelogram,
+    width=1.2, height=1.2,
+    fixedsize=true
+  ];
+
+  JSONOutput [
+    label="Business\nJSON Object",
+    shape=parallelogram,
+    width=1.2, height=1.2,
+    fixedsize=true
+  ];
+
+  End [label="End", shape=oval];
+
+  // --- Flow connections ---
+  Start -> TellerYAML -> RegexBuilder -> RegexScanner;
+
+  // Deterministic Decomposition takes two inputs
+  RegexScanner -> Decompose;
+  CopybookInput -> Decompose;
+
+  Decompose -> TransientObj;
+
+  // Projection takes two inputs
+  TransientObj -> Project;
+  SerializationHints -> Project;
+
+  Project -> JSONOutput -> End;
+
+  // --- Ranks to arrange snake layout ---
+  
+  // First row
+  { rank=same; Start -> TellerYAML -> RegexBuilder [style=invis]; }
+
+  // Second row - place RegexScanner above decomposition
+  { rank=same; RegexScanner -> Decompose [style=invis]; }
+
+  // Third row - hexagonal output
+  { rank=same; TransientObj -> Project [style=invis]; }
+
+  // Fourth row - projection and hints
+  { rank=same; Project -> SerializationHints [style=invis]; }
+
+  // Last row
+  { rank=same; JSONOutput -> End [style=invis]; }
+}
