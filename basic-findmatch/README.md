@@ -518,6 +518,7 @@ public static final String regexString = "^" +
 
 ```
 #### Running the Test
+
 ```sh
 mvn test 2>a.json 
 cat a.json | jq '.'
@@ -628,6 +629,25 @@ cat a.json | jq '.'
 
 
 ```
+```sh
+mvn test
+```
+```text
+
+copyBook: BR003202306151234000001DEP000000789USD
+data:[BRANCH, TRANDATE, ACCOUNT, CODE, AMOUNT, CURRENCY]
+findMatch data:BR003202306151234000001DEP000000789USD
+JSON: {
+  "owner_uuid": "384ded06-0585-46d8-94ac-56494fb3a979",
+  "CURRENCY": "USD",
+  "ACCOUNT": "1234000001",
+  "CODE": "DEP",
+  "AMOUNT": "000000789",
+  "TRANDATE": "20230615"
+}
+```
+> Note removal of `BRANCH`  and injection of `owner_uuid`
+
 ###  🧾 COBOL Copybook Parsers — Free & Commercial Tools
 
 This overview lists **available copybook parsing tools**, both open source and commercial, that can be used to interpret COBOL copybooks into structured metadata for processing in Java and other languages.

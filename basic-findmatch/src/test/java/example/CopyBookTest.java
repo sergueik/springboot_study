@@ -1,12 +1,15 @@
 package example;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
  * Copyright 2026 Serguei Kouzmine
  */
 
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 
@@ -39,8 +42,11 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.IsNot.not;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import example.FindMatch;
 
@@ -145,7 +151,7 @@ public class CopyBookTest {
 			Gson gson = new GsonBuilder()
 					.registerTypeAdapter(CopyBook.class, new CopyBookGsonSerializer(Set.of("BRANCH"))).create();
 			String json = gson.toJson(new CopyBook(results));
-			System.err.println(String.format("JSON: %s", json));
+			System.err.println(String.format("JSON: %s", prettyPrintJson(json)));
 		}
 	}
 
@@ -156,9 +162,8 @@ public class CopyBookTest {
 			throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 
 		// NOTE: Set.of() enforcing final, UnsupportedOperationException
-		Set<String> excluded =  new HashSet<>(Set.of("BRANCH"));
+		Set<String> excluded = new HashSet<>(Set.of("BRANCH"));
 		CopyBookGsonSerializer copyBookGsonSerializer = new CopyBookGsonSerializer();
-		// Class<?> copyBookGsonSerializerClass = copyBookGsonSerializer.getClass();
 		Field hardCodedExcludedKeys = copyBookGsonSerializer.getClass().getDeclaredField("hardCodedExcludedKeys");
 		hardCodedExcludedKeys.setAccessible(true);
 
@@ -166,25 +171,59 @@ public class CopyBookTest {
 		Map<String, String> results = Map.of("BRANCH", "DEP", "CURRENCY", "USD", "ACCOUNT", "1234000001", "CODE", "DEP",
 				"AMOUNT", "000000789", "TRANDATE", "20230615");
 
-		CopyBook copybook = new CopyBook(results);
-
 		Gson gson = new GsonBuilder().registerTypeAdapter(CopyBook.class, new CopyBookGsonSerializer(excluded))
 				.create();
 
-		String json = gson.toJson(copybook);
+		String json = gson.toJson(new CopyBook(results));
 		for (Map.Entry<String, String> entry : results.entrySet()) {
 			String key = entry.getKey();
 			String expectedValue = entry.getValue();
 
 			if (excluded.contains(key)) {
 				// excluded field should not be serialized — JUnit assertThrows
-				assertThrows(com.jayway.jsonpath.PathNotFoundException.class, () -> JsonPath.read(json, "$." + key));
+				assertThrows(PathNotFoundException.class, () -> JsonPath.read(json, "$." + key));
 			} else {
 				// Other fields should exist and match expected values
 				assertThat(JsonPath.read(json, "$." + key), equalTo(expectedValue));
 			}
-			// EIBCALEN
-			assertThrows(PathNotFoundException.class, () -> JsonPath.read(json, "$.EIBCALEN"));
 		}
 	}
+
+	@DisplayName("Verify the results filtering")
+	@Test
+	public void test7() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException,
+			SecurityException, JsonProcessingException {
+		Set<String> excluded = new HashSet<>(Set.of("BRANCH"));
+
+		CopyBookJacksonSerializer copyBookJacksonSerializer = new CopyBookJacksonSerializer();
+		Field hardCodedExcludedKeys = copyBookJacksonSerializer.getClass().getDeclaredField("hardCodedExcludedKeys");
+		hardCodedExcludedKeys.setAccessible(true);
+
+		excluded.addAll((Set<String>) hardCodedExcludedKeys.get(copyBookJacksonSerializer));
+
+		Map<String, String> results = Map.of("BRANCH", "DEP", "CURRENCY", "USD", "ACCOUNT", "1234000001", "CODE", "DEP",
+				"AMOUNT", "000000789", "TRANDATE", "20230615");
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new SimpleModule().addSerializer(new CopyBookJacksonSerializer(excluded)));
+
+		String json = mapper.writeValueAsString(new CopyBook(results));
+		System.err.println("Jackson JSON: " + json);
+
+		for (Map.Entry<String, String> entry : results.entrySet()) {
+			String key = entry.getKey();
+			String expectedValue = entry.getValue();
+
+			if (excluded.contains(key)) {
+				assertThrows(PathNotFoundException.class, () -> JsonPath.read(json, "$." + key));
+			} else {
+				assertThat(JsonPath.read(json, "$." + key), equalTo(expectedValue));
+			}
+		}
+	}
+
+	private static String prettyPrintJson(String json) {
+		return new GsonBuilder().setPrettyPrinting().create().toJson(JsonParser.parseString(json));
+	}
+
 }

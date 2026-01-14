@@ -23,15 +23,11 @@ public class CopyBookGsonSerializer implements JsonSerializer<Map<String, Object
 	private final Set<String> excludeKeys;
 	private static final Set<String> hardCodedExcludedKeys = Set.of("EIBCALEN", "EIBTIME", "EIBTRNID", "CURSOR_POS");
 
-	// No-arg constructor: only hard-coded exclusions
 	public CopyBookGsonSerializer() {
-		// Create a mutable HashSet from the hard-coded exclusions
 		this.excludeKeys = new HashSet<>(hardCodedExcludedKeys);
 	}
 
-	// Constructor with additional keys to exclude
 	public CopyBookGsonSerializer(final Set<String> excludeKeys) {
-		// Start with hard exclusions
 		this.excludeKeys = new HashSet<>(hardCodedExcludedKeys);
 
 		if (excludeKeys != null) {
