@@ -21,18 +21,18 @@ import java.util.UUID;
 public class CopyBookGsonSerializer implements JsonSerializer<Map<String, Object>> {
 
 	private final Set<String> excludeKeys;
-	private static final Set<String> hardCodedExcludedKeysS = Set.of("EIBCALEN", "EIBTIME", "EIBTRNID", "CURSOR_POS");
+	private static final Set<String> hardCodedExcludedKeys = Set.of("EIBCALEN", "EIBTIME", "EIBTRNID", "CURSOR_POS");
 
 	// No-arg constructor: only hard-coded exclusions
 	public CopyBookGsonSerializer() {
 		// Create a mutable HashSet from the hard-coded exclusions
-		this.excludeKeys = new HashSet<>(hardCodedExcludedKeysS);
+		this.excludeKeys = new HashSet<>(hardCodedExcludedKeys);
 	}
 
 	// Constructor with additional keys to exclude
-	public CopyBookGsonSerializer(Set<String> excludeKeys) {
+	public CopyBookGsonSerializer(final Set<String> excludeKeys) {
 		// Start with hard exclusions
-		this.excludeKeys = new HashSet<>(hardCodedExcludedKeysS);
+		this.excludeKeys = new HashSet<>(hardCodedExcludedKeys);
 
 		if (excludeKeys != null) {
 			// Only add keys not already present (HashSet automatically handles duplicates)
@@ -45,8 +45,8 @@ public class CopyBookGsonSerializer implements JsonSerializer<Map<String, Object
 	// make the code self-documenting by giving the parameter a “loud” descriptive
 	// name matching its type
 	@Override
-	public JsonElement serialize(Map<String, Object> src, Type type,
-			JsonSerializationContext jsonSerializationContext) {
+	public JsonElement serialize(final Map<String, Object> src, Type type,
+			final JsonSerializationContext jsonSerializationContext) {
 		JsonObject jsonObject = new JsonObject();
 
 		// Inject synthetic metadata
