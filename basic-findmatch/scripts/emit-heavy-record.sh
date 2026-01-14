@@ -30,7 +30,7 @@ regexJava='public static final String regexString = "^" +'
 declare -A counters
 
 # repeat 10 units
-for i in $(seq 1 10); do
+for i in $(seq 1 100); do
   for f in "${order[@]}"; do
     counters[$f]=$(( ${counters[$f]:-0} + 1 ))
     num=${counters[$f]}  # unique suffix

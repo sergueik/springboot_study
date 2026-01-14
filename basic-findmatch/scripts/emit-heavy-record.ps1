@@ -1,5 +1,9 @@
+param (
+    [int]$number = 10
+)
+
 # --------------------------
-# Dictionary of field values
+# Field dictionary
 # --------------------------
 $fields = @{
     BRANCHID      = "BR001"
@@ -28,15 +32,15 @@ $regexJava = "public static final String regexString = ""^"" +"
 # Track counts for unique group names
 $counters = @{}
 
-# Repeat 10 units (change as needed)
-1..10 | ForEach-Object {
+# Repeat $number units
+1..$number | ForEach-Object {
     foreach ($f in $order) {
         if (-not $counters.ContainsKey($f)) { $counters[$f] = 0 }
         $counters[$f]++
-        $num = $counters[$f]
+        $num = $counters[$f]  # unique suffix
 
         # ----------------------
-        # Prepare fixed-width copybook value
+        # Prepare fixed-width copybook value and Java regex fragment
         # ----------------------
         switch ($f) {
             "BRANCHID"      { $val = "{0,-5}" -f $fields[$f]; $frag = "(?<$f$num>.{5})" }
@@ -54,11 +58,8 @@ $counters = @{}
         # Append to copybook record
         $record += $val
 
-        # Escape backslashes for Java
-        $frag_java = $frag -replace '\\','\\\\'
-
-        # Append to Java regex string
-        $regexJava += "`n""$frag_java"" +"
+        # Already Java compatible; no extra replace needed
+        $regexJava += "`n""$frag"" +"
     }
 }
 
@@ -68,9 +69,9 @@ $regexJava += "`n""$"";"
 # --------------------------
 # Output
 # --------------------------
-"RECORD LENGTH = $($record.Length)"
-$record
-""
-"JAVA-READY REGEX STRING:"
-$regexJava
+Write-Output "RECORD LENGTH = $($record.Length)"
+Write-Output $record
+Write-Output ""
+Write-Output "JAVA-READY REGEX STRING:"
+Write-Output $regexJava
 
