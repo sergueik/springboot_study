@@ -2,8 +2,20 @@ package example;
 
 /**
  * Copyright 2026 Serguei Kouzmine
-
  */
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -11,7 +23,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
-
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -137,11 +149,40 @@ public class CopyBookTest {
 			assertThat(results, notNullValue());
 
 			Gson gson = new GsonBuilder()
-					.registerTypeAdapter(CopyBook.class, new CopyBookGsonSerializer(Set.of("BRANCH")))
-					.create();
+					.registerTypeAdapter(CopyBook.class, new CopyBookGsonSerializer(Set.of("BRANCH"))).create();
 			String json = gson.toJson(new CopyBook(results));
 			System.err.println(String.format("JSON: %s", json));
 		}
 	}
 
+	@DisplayName("Verify the results filtering")
+	@Test
+	public void test6() {
+		// ----------------------
+		// Sample data
+		// ----------------------
+		Map<String, String> results = Map.of("BRANCH", "DEP", "CURRENCY", "USD", "ACCOUNT", "1234000001", "CODE", "DEP",
+				"AMOUNT", "000000789", "TRANDATE", "20230615");
+
+		CopyBook copybook = new CopyBook(results);
+
+		// ----------------------
+		// Gson with exclusions
+		// ----------------------
+		Gson gson = new GsonBuilder().registerTypeAdapter(CopyBook.class, new CopyBookGsonSerializer(Set.of("BRANCH")))
+				.create();
+
+		String json = gson.toJson(copybook);
+		// Excluded field — JUnit assertThrows
+		// EIBCALEN
+		assertThrows(PathNotFoundException.class, () -> JsonPath.read(json, "$.EIBCALEN"));
+		assertThrows(PathNotFoundException.class, () -> JsonPath.read(json, "$.BRANCH"));
+
+		// Other fields should exist and match expected values
+		assertThat(JsonPath.read(json, "$.CURRENCY"), equalTo("USD"));
+		assertThat(JsonPath.read(json, "$.ACCOUNT"), equalTo("1234000001"));
+		assertThat(JsonPath.read(json, "$.CODE"), equalTo("DEP"));
+		assertThat(JsonPath.read(json, "$.AMOUNT"), equalTo("000000789"));
+		assertThat(JsonPath.read(json, "$.TRANDATE"), equalTo("20230615"));
+	}
 }

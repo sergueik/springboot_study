@@ -402,7 +402,11 @@ Purpose:
 
 #### Generating The Test Code
 ```sh
-$ ./scripts/emit-heavy-record.sh
+./scripts/emit-heavy-record.sh
+```
+of
+```powershell
+. ./scripts/emit-heavy-record.ps1 -number 10
 ```
 ```text
 RECORD LENGTH = 940

@@ -21,18 +21,18 @@ import java.util.UUID;
 public class CopyBookGsonSerializer implements JsonSerializer<Map<String, Object>> {
 
 	private final Set<String> excludeKeys;
-	private static final Set<String> HARD_EXCLUDE_FIELDS = Set.of("EIBCALEN", "EIBTIME", "EIBTRNID", "CURSOR_POS");
+	private static final Set<String> hardCodedExcludedKeysS = Set.of("EIBCALEN", "EIBTIME", "EIBTRNID", "CURSOR_POS");
 
 	// No-arg constructor: only hard-coded exclusions
 	public CopyBookGsonSerializer() {
 		// Create a mutable HashSet from the hard-coded exclusions
-		this.excludeKeys = new HashSet<>(HARD_EXCLUDE_FIELDS);
+		this.excludeKeys = new HashSet<>(hardCodedExcludedKeysS);
 	}
 
 	// Constructor with additional keys to exclude
 	public CopyBookGsonSerializer(Set<String> excludeKeys) {
 		// Start with hard exclusions
-		this.excludeKeys = new HashSet<>(HARD_EXCLUDE_FIELDS);
+		this.excludeKeys = new HashSet<>(hardCodedExcludedKeysS);
 
 		if (excludeKeys != null) {
 			// Only add keys not already present (HashSet automatically handles duplicates)
