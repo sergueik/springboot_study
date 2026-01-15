@@ -680,170 +680,235 @@ This overview lists **available copybook parsing tools**, both open source and c
 
 ---
 
-### 📦 Free / Open-Source COBOL Copybook Parsers
+###  Top 3 Contenders for Java-Friendly COBOL Copybook Processing - best  Alternatives to JRecord
 
-#### 🟢 **LegStar / Takada COBOL Copybook Parser**
-- **Language:** Java  
-- **What it does:** Parses COBOL copybooks into Java metadata structures.  
-- **Features:**
-  - Provides field names, lengths, and types
-  - Supports group structures
-  - Used in middleware and mainframe integration tools  
-- **GitHub:** https://github.com/legstm
 
-#### 🟢 **JRecord**
-- **Language:** Java  
-- **What it does:** Parses COBOL copybooks and produces record layouts and line value accessors.  
-- **Features:**
-  - Handles `OCCURS`
-  - Supports `REDEFINES`
-  - Deals with numeric comp-3 (packed decimals), signed types
-  - Works with EBCDIC and ASCII
-- **GitHub:** https://github.com/BigLou/jrecord
+#### 1️⃣ Cobrix — Apache Spark COBOL Parser (Java/Scala)
 
-#### 🟢 **RecordEditor**
-- **Built on:** JRecord  
-- **What it does:** Desktop application for viewing/editing records defined by copybooks.  
-- **Features:**
-  - Can export record definitions (e.g., to XML)
-  - Useful for inspection and manual mapping creation
+**Why it’s #1**
+- Designed for **modern data workflows** on Spark, producing **DataFrames** directly from COBOL data + copybook.
+- Excellent at handling **large, real datasets** (ASCII/EBCDIC, packed decimals, nested OCCURS, etc.).
+- Fits well if your team already has **Spark expertise** — you don’t need to write low-level parsers.
+- You can branch into **analytics, pipelines, ETL, distributed jobs** without extra tooling.
 
-#### 🟢 **OpenCobolParser**
-- **Language:** Java  
-- **What it does:** Full COBOL grammar parser that can parse COBOL source, including copybooks.  
-- **Features:**
-  - Produces an abstract syntax tree (AST)
-  - More complete language coverage than simple copybook text parsers  
-- **GitHub:** https://github.com/open-cobol/parser
+**Pros**
+- Very high real-world coverage (deep data structures supported).
+- Works great with JVM ecosystem (Java/Scala).
+- Great for **data engineering pipelines** — transformation, enrichment, datasets.
 
-#### 🟢 **Cobol85Parser (ANTLR Grammar)**
-- **Language:** ANTLR grammar usable in Java  
-- **What it does:** Grammar for COBOL 85 that can be used with ANTLR to build parsers.  
-- **Features:**
-  - Generates parser/lexer in Java
-  - Needs additional logic to pull out meaningful metadata
+**Cons**
+- Requires Spark knowledge (but if the team already prefers Spark, that’s an advantage).
 
 ---
 
-### 🏢 Commercial COBOL Copybook Tools
+#### 2️⃣ LegStar — COBOL ↔ Java Integration Framework
 
-#### 🔵 **Micro Focus Enterprise Analyzer**
-- **Type:** Commercial enterprise tool  
-- **What it does:** Analyzes and parses COBOL applications at scale.  
-- **Features:**
-  - Builds cross-reference databases
-  - Provides structural metadata about programs and copybooks
+**Why it’s #2**
+- Designed specifically for **Java ↔ COBOL copybook integration**.
+- Generates **Java models** from copybooks and supports **binary COBOL data conversion** into those models.
+- Strong for **enterprise integration** (Java apps that need to consume COBOL data without Spark).
 
-#### 🔵 **Heirloom Computing / COBOL Conversion Platforms**
-- **Type:** Commercial code transformation suite  
-- **What it does:** Translates COBOL to Java, C#, or other languages.  
-- **Features:**
-  - Copybook understanding embedded as part of conversion
-  - Generates intermediate schemas and metadata
+**Pros**
+- Full end-to-end: copybook → Java bindings → parse real records.
+- Good documentation and example workflows.
+- No extra tooling needed beyond Java.
 
-#### 🔵 **GnuCOBOL Copybook Utility**
-- **Type:** Free toolchain component with commercial usage support  
-- **What it does:** Converts COBOL copybooks to C headers.  
-- **Features:**
-  - Generates definitions that can be consumed by other tools
+**Cons**
+- Activity/maintenance level can vary (older project, but useful).
+- Less big-data integration than Cobrix (but excellent for Java apps).
 
 ---
 
-### 🧾 Summary Table
+#### 3️⃣ Koopa — COBOL Grammar/Parser Framework (Java)
 
-| Category     | Tool                       | Language   | Copybook Focus                   |
-|-------------|----------------------------|------------|----------------------------------|
-| Open Source | **LegStar**                | Java       | Metadata extraction              |
-| Open Source | **JRecord**                | Java       | Full layout, OCCURS, signed      |
-| Open Source | **RecordEditor**           | Java (GUI) | Visualization/export             |
-| Open Source | **OpenCobolParser**        | Java       | Full COBOL grammar               |
-| Open Source | **Cobol85Parser (ANTLR)**  | Java       | Grammar for custom parsing       |
-| Commercial  | **Micro Focus Enterprise Analyzer** | Enterprise | Full application parsing      |
-| Commercial  | **Heirloom Computing**     | Code migration | Copybook embedded             |
-| Commercial/Free | **GnuCOBOL**           | C          | Copybook → C headers             |
+**Why it’s #3**
+- A **true COBOL grammar parser** in Java, not just a record reader.
+- Supports granular parsing of **copybooks and COBOL source**, producing **AST/parse trees**.
+- Valuable if you want to **go deeper** than typical record parsing — e.g., static analysis, custom translators, rewriters, etc.
+
+**Pros**
+- Gives fine-grained control over parsing.
+- Great foundation for tooling (linters, converters, code generators).
+
+**Cons**
+- Requires more language/grammar understanding than the others.
+- Not focused primarily on data extraction workflows — more on **parsing and tooling construction**.
 
 ---
 
-**Notes:**
-- For **Java-centric workflows**, LegStar and JRecord are the most common starting points.  
-- **JRecord** has wide adoption for ETL and fixed-width file processing environments.  
-- Open source parsers vary in completeness; choose based on your copybook features (e.g., OCCURS, REDEFINES).  
-- Commercial tools are generally used in **mainframe modernization projects**.
+#### Quick Comparison
+
+| Feature / Use Case | **Cobrix (Spark‑based)** | **LegStar (Java)** | **Koopa (Full Parser)** |
+|-------------------|---------------------------|--------------------|-------------------------|
+| Big Data / Distributed | ⭐⭐⭐ | ⭐ | ⭐ |
+| Java Object Generation | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
+| Handles Complex Copybooks | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
+| Low Parser Expertise Needed | ⭐⭐ | ⭐⭐ | ⭐ |
+| Best for ETL/Data Pipelines | ⭐⭐⭐ | ⭐ | ⭐ |
+| Best for Classic Java Apps | ⭐⭐ | ⭐⭐⭐ | ⭐ |
+| Best for Tooling/Analysis | ⭐ | ⭐ | ⭐⭐⭐ |
+
+---
+
+### Notes on Picking
+
+- **If your team already knows Spark:** **Cobrix** is probably the most practical and powerful way to work with complex copybooks *at scale* without reinventing parsing logic.  
+- **If you need a traditional Java library for applications or microservices:** **LegStar** remains the most approachable Java-centric contender.  
+- **If you’re thinking about building deeper tooling or analyzers:** **Koopa** provides the parsing foundation — but expect a steeper learning curve.
 
 ### Note
 
 COBOL copybooks and derivative artifacts (including Excel spreadsheets) are treated like controlled source: their structure defines business logic. Distribution is restricted because even a single file can expose sensitive operational rules, so ‘need-to-know’ proof, approval workflows, artifact signing, and ACLs are universally enforced. Everyone in finance/legacy IT knows this is non-negotiable.
 
-### Memo: Recreating the Canonical Pipeline Snake Flow in LibreOffice Impress
 
-Purpose:
-Guide for reconstructing the snake-style flow diagram entirely using native LibreOffice Impress shapes and connectors.
 
----
+### Standalone JRecord based COBOL 2 JSON Download (Packaged with Java Modules)
+* download 
 
-## 1️⃣ Shapes
+```sh
+VERSION=0.93.1
 
-| Diagram Element | Suggested Shape | Notes |
-|-----------------|----------------|-------|
-| Start / End | Oval | Basic start/end points |
-| Processes | Rectangle (rounded) | Regex Builder, Deterministic Decomposition, Selective Projection |
-| Data / Inputs / Outputs | Parallelogram | Record Field Mapping YAML, CICS Copybook, Serialization Hints, Business JSON Object |
-| Transient / Canonical Object | Hexagon | Transient Copybook Object |
-| Cached / Expensive Objects | Flat Rectangle | Regex Scanner |
+curl -skLo ~/Downloads/CobolToJson.zip https://master.dl.sourceforge.net/project/coboltojson/Version_$VERSION/CobolToJson_$VERSION.zip
+```
+```sh
+unzip -l ~/Downloads/CobolToJson.zip
+```
+```sh
+mkdir "${TEMP}/CobolToJson"
+unzip -d "${TEMP}/CobolToJson" -x ~/Downloads/CobolToJson.zip
+```
+* using
+```sh
+${TEMP}/CobolToJson/lib/Cobol2Json.bat
+```
+```cmd
+c:\java\init.cmd
+java -version
+```
+```text
+openjdk version "11.0.12" 2021-07-20 LTS
 
-Tip: Use manual line breaks (Shift+Enter) to fit text inside shapes.
+OpenJDK Runtime Environment (build 11.0.12+7-LTS)
+OpenJDK 64-Bit Server VM (build 11.0.12+7-LTS, mixed mode)
+```
+```cmd
+cd /d %TEMP%\CobolToJson\lib
+call Cobol2Json.bat -cobol "%TEMP%\CobolToJson\Example\cobol\DTAR020a.cbl" -fileOrganisation FixedWidth -font cp037 -input "%TEMP%\CobolToJson\Example\in\DTAR020.bin" -output DTAR020.json
+```
 
----
+```cmd
+type DTAR020.json | c:\tools\jq "."
+```
+```JSON
+{
+  "sss": [
+    {
+      "DTAR020-KCODE-STORE-KEY": {
+        "DTAR020-KEYCODE-NO": "69684558",
+        "DTAR020-STORE-NO": 20
+      },
+      "DTAR020-DATE": 40118,
+      "DTAR020-DEPT-NO": 280,
+      "DTAR020-QTY-SOLD": 1,
+      "DTAR020-SALE-PRICE": 19.00
+    },
+    {
+      "DTAR020-KCODE-STORE-KEY": {
+        "DTAR020-KEYCODE-NO": "69684558",
+        "DTAR020-STORE-NO": 20
+      },
+      "DTAR020-DATE": 40118,
+      "DTAR020-DEPT-NO": 280,
+      "DTAR020-QTY-SOLD": -1,
+      "DTAR020-SALE-PRICE": -19.00
+    },
+    {
+      "DTAR020-KCODE-STORE-KEY": {
+        "DTAR020-KEYCODE-NO": "69684558",
+        "DTAR020-STORE-NO": 20
+      },
+      "DTAR020-DATE": 40118,
+      "DTAR020-DEPT-NO": 280,
+      "DTAR020-QTY-SOLD": 1,
+      "DTAR020-SALE-PRICE": 5.01
+    },
+    {
+      "DTAR020-KCODE-STORE-KEY": {
+        "DTAR020-KEYCODE-NO": "69694158",
+        "DTAR020-STORE-NO": 20
+      },
+      "DTAR020-DATE": 40118,
+      "DTAR020-DEPT-NO": 280,
+      "DTAR020-QTY-SOLD": 1,
+      "DTAR020-SALE-PRICE": 19.00
+    },
+...
+    {
+      "DTAR020-KCODE-STORE-KEY": {
+        "DTAR020-KEYCODE-NO": "69664668",
+        "DTAR020-STORE-NO": 184
+      },
+      "DTAR020-DATE": 40118,
+      "DTAR020-DEPT-NO": 903,
+      "DTAR020-QTY-SOLD": 1,
+      "DTAR020-SALE-PRICE": 8.95
+    }
+  ]
+}
+```
+to shorten the output, use
+```cmd
+type DTAR020.json | c:\tools\jq.exe '.sss |= .[:2]'
+```
+```JSON
+{
+  "sss": [
+    {
+      "DTAR020-KCODE-STORE-KEY": {
+        "DTAR020-KEYCODE-NO": "69684558",
+        "DTAR020-STORE-NO": 20
+      },
+      "DTAR020-DATE": 40118,
+      "DTAR020-DEPT-NO": 280,
+      "DTAR020-QTY-SOLD": 1,
+      "DTAR020-SALE-PRICE": 19.00
+    },
+    {
+      "DTAR020-KCODE-STORE-KEY": {
+        "DTAR020-KEYCODE-NO": "69684558",
+        "DTAR020-STORE-NO": 20
+      },
+      "DTAR020-DATE": 40118,
+      "DTAR020-DEPT-NO": 280,
+      "DTAR020-QTY-SOLD": -1,
+      "DTAR020-SALE-PRICE": -19.00
+    }
+  ]
+}
+```
+or 
+```cmd
+type DTAR020.json | c:\tools\jq "map_values(if type==\"array\" then .[:2] else . end)"
+```
 
-## 2️⃣ Layout (S-shaped / snake)
+to work around the classic __Windows__ `cmd.exe` *quoting problem*
+> Note: for `jq` query engine, which is strict about quotes inside the jq query - single quotes are NOT valid string delimiters - this makes jq not quote-choice ignorant. Why is so ? `jq` deliberately aligns with __JSON__ , not scripting languages when it comes to tolerating single quotes
 
-1. Row 1: Start → Record Field Mapping YAML → Regex Builder  
-2. Row 2: Regex Scanner (above) → CICS Copybook → Deterministic Decomposition  
-3. Row 3: Transient Copybook Object (centered)  
-4. Row 4: Selective Projection → Serialization Hints (right)  
-5. Row 5: Business JSON Object → End  
-
-Guideline: Alternate horizontal alignment of rows to achieve a snake effect, filling the slide rectangle.
-
----
-
-## 3️⃣ Connectors
-
-- Use Connector lines (Insert → Shape → Lines → Connector)  
-- Snap to shape edges or centers for clean alignment  
-- Elbow connectors can reinforce the S-shaped flow  
-- Arrowheads indicate direction of flow
-
----
-
-## 4️⃣ Styling
-
-- Processes: White or subtle gradient  
-- Objects / cached items: Light gray fill  
-- Hexagon (canonical object): Highlight with light yellow or green  
-- Arrows: Solid lines, consistent thickness
-
----
-
-## 5️⃣ Tips
-
-- Use the grid / guidelines to keep vertical spacing even  
-- Use Ctrl+Arrow keys for fine positioning  
-- Once complete, group all shapes and connectors for easy resizing or moving (Right-click → Group)  
-- Can later animate each step for presentations
-
----
-
-### Suggested Files for Commit
-
-- pipeline_snake_v6.dot — DOT source of the diagram  
-- pipeline_snake_v6.png — PNG snapshot for quick reference  
-- pipeline_snake_memo.txt — This memo describing how to recreate in LibreOffice Impress
 
 ### See Also
 
  * https://stackoverflow.com/questions/415580/regex-named-groups-in-java
  * [sixface/YamlConfig](https://github.com/jsixface/YamlConfig) and [extension](https://github.com/sergueik/selenium_java/tree/master/yaml_config_extend)
+ * https://sourceforge.net/u/bruce_a_martin/profile
+ * https://sourceforge.net/projects/coboltojson/ 
+ * [WinMergeU](https://winmerge.org/?lang=en) is the executable for WinMerge that visually compares and merges files and folders
+ * [JRecord](https://github.com/bmTas/JRecord) - core COBOL I/O & utilities
+ * [cb2xml](https://github.com/bmTas/cb2xml) - COBOL Copybook → XML / Java model parser - internal representation in __JRecord__ 
+ * [Using LegStar](https://www.legsem.com/legstar/ch04.html) in [LegStar User Guide](https://www.legsem.com/legstar/legstar-user-guide.html)
+ * [command line quick start for parsing COBOL and exporting XML with Koopa](https://koopa.sourceforge.net/faq.html)
+ * [Java embed CobolParser with a CobolProject programmatically](https://deepwiki.com/krisds/koopa/7.2-integration-guide)	
+ * [Quick Start & Usage Examples, Built‑in Examples](https://github.com/AbsaOSS/cobrix)
+ * [Spark Job Application Example](https://github.com/AbsaOSS/cobrix/tree/master/examples/spark-cobol-app)
 
 ---
 ### Author
