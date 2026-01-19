@@ -1,0 +1,43 @@
+digraph DependencyBuildProcess {
+    rankdir=LR;
+    splines=polyline;
+    labelfloat=false;
+    node [fontname="Helvetica"];
+
+    Clone [label="Clone Repo", shape=rect, style="rounded,bold", fontsize=12];
+
+    Preload [label="Preload Deps", shape=rect, style="rounded,bold", fontsize=12];
+    Build [label="Build Artifact", shape=rect, style="rounded,bold", fontsize=12];
+    RepoReady [label="Maven Repo Ready", shape=rect, style="rounded,bold", fontsize=12];
+    End [label="End", shape=ellipse, style=bold, fontsize=12];
+
+    // Diamonds
+    CommitCheck [label="Commit Exists?", shape=diamond, style=bold, fontsize=12];
+    Scan [label="Scan Deps", shape=diamond, style=bold, fontsize=12];
+
+    // Invisible anchors
+    CommitAnchor [shape=point, width=0, height=0, label=""];
+    ScanAnchor [shape=point, width=0, height=0, label=""];
+
+    // Exit circles
+    NoCommit [label="Commit\nMissing", shape=circle, style=bold, fontsize=11];
+    Forbidden [label="Forbidden\nDep", shape=circle, style=bold, fontsize=11];
+
+    // Main horizontal flow
+    Clone -> CommitCheck;
+    CommitCheck:e -> Preload:w [label="Yes"];
+    Preload:e -> Scan:w;
+    Scan:e -> Build:w [label="No"];
+    Build:e -> RepoReady:w;
+    RepoReady:e -> End:w;
+
+    // Vertical "No" paths
+    CommitCheck:s -> CommitAnchor:n;
+    CommitAnchor:s -> NoCommit:n [label="No"];
+
+    Scan:s -> ScanAnchor:n;
+    ScanAnchor:s -> Forbidden:n [label="Yes"];
+
+    edge [arrowsize=0.8];
+}
+

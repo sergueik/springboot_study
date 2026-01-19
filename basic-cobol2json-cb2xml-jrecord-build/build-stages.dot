@@ -1,0 +1,54 @@
+digraph CobolToJsonBuild {
+  rankdir=LR;
+  fontname="Helvetica";
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fillcolor="#f9f9f9"];
+
+  MavenBase   [label="maven:3.9.5\n+ temurin-11\n(alpine)", fillcolor="#e3f2fd"];
+  JREBase     [label="eclipse-temurin:11-jre\n(alpine)", fillcolor="#e8f5e9"];
+
+  subgraph cluster_cb2xml {
+    label="Stage 1: cb2xml build";
+    style="rounded";
+    cb2xml_src  [label="git clone\nbmTas/cb2xml"];
+    cb2xml_mvn  [label="mvn install\n(skipTests)"];
+    cb2xml_m2   [label=".m2 repository\ncb2xml artifact"];
+  }
+
+  subgraph cluster_jrecord {
+    label="Stage 2: JRecord build";
+    style="rounded";
+    jrecord_src [label="git clone\nbmTas/JRecord"];
+    jrecord_mvn [label="mvn install\n(skipTests)"];
+    jrecord_m2  [label=".m2 repository\nJRecord + deps"];
+  }
+
+  subgraph cluster_app {
+    label="Stage 3: CobolToJson build";
+    style="rounded";
+    app_src     [label="git clone\nbmTas/CobolToJson"];
+    app_mvn     [label="mvn package\n(shaded jar)"];
+    fat_jar     [label="cobolToJson-<ver>.jar\n(FAT / runnable)"];
+  }
+
+  subgraph cluster_runtime {
+    label="Runtime Image";
+    style="rounded";
+    runtime     [label="java -jar\n/app/app.jar"];
+  }
+
+  MavenBase -> cb2xml_src;
+  cb2xml_src -> cb2xml_mvn -> cb2xml_m2;
+
+  cb2xml_m2 -> jrecord_src;
+  MavenBase -> jrecord_src;
+  jrecord_src -> jrecord_mvn -> jrecord_m2;
+
+  jrecord_m2 -> app_src;
+  MavenBase  -> app_src;
+  app_src -> app_mvn -> fat_jar;
+
+  JREBase -> runtime;
+  fat_jar -> runtime;
+}
+
+

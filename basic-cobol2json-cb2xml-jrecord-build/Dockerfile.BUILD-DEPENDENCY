@@ -1,0 +1,39 @@
+FROM maven:3.9.5-eclipse-temurin-11-alpine as builder
+ARG REPO
+ARG COMMIT
+ARG VERSION
+
+WORKDIR /build
+RUN apk add --no-cache git bash curl unzip \
+   && rm -rf /var/cache/apk \
+   && mkdir /var/cache/apk
+
+COPY avoid_deps.txt /tmp/
+
+RUN git clone --depth 50 --quiet ${REPO} /build/src \
+ && cd /build/src \
+ && if ! git rev-parse --verify ${COMMIT} > /dev/null 2>&1; then \
+      echo "❗ ERROR: commit '${COMMIT}' not found in ${REPO}" >&2; exit 1; \
+    fi \
+ && git checkout --quiet ${COMMIT}
+
+ENV LOCAL_REPO=/build/.m2-repo
+RUN mkdir -p $LOCAL_REPO \
+    && cd /build/src \
+    && mvn -f pom.xml dependency:go-offline -Dmaven.repo.local=$LOCAL_REPO -ntp
+
+# NOTE: Maven default behavior is idiosyncrastic
+# "look for modules if the POM declares them"
+# and  not "just use the current directory POM."
+RUN set -eux; \
+    find $LOCAL_REPO -type f -name "*.jar" | sort > /tmp/deps.txt; \
+    while read jar; do \
+        if grep -qF "$(basename "$jar")" /tmp/avoid_deps.txt; then \
+            echo "❗ Forbidden dependency detected: $jar" >&2; exit 1; \
+        fi; \
+    done
+
+RUN cd /build/src && mvn -f pom.xml -DskipTests clean install -Dmaven.repo.local=$LOCAL_REPO -ntp
+
+RUN rm -rf /var/cache/apk/*
+

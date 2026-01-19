@@ -1,0 +1,65 @@
+# FROM eclipse-temurin:11-jdk-alpine AS builder
+# FROM maven:3.8.3-openjdk-17 as builder
+# FROM maven:3.8.3-openjdk-11 as builder
+FROM maven:3.9.5-eclipse-temurin-11-alpine as builder
+ARG REPO
+ARG COMMIT
+
+WORKDIR /build
+RUN apk add --no-cache git bash curl unzip \
+   && rm -rf /var/cache/apk \
+   && mkdir /var/cache/apk
+
+RUN mkdir -p /root/.m2/repository/net/sf/jrecord/JRecord/0.93.3/ \
+  && mkdir -p /root/.m2/repository/net/sf/cb2xml/1.01.08/
+
+COPY --from=jrecord /build/.m2-repo/net/sf/jrecord/JRecord/0.93.3/JRecord-0.93.3.* /root/.m2/repository/net/sf/jrecord/JRecord/0.93.3/
+
+COPY --from=cb2xml /build/.m2-repo/net/sf/cb2xml/1.01.08/cb2xml-1.01.08.* /root/.m2/repository/net/sf/cb2xml/1.01.08/
+
+ENV LOCAL_REPO=/build/.m2-repo
+
+RUN git clone --depth 50 --quiet ${REPO} /build/src \
+   && cd /build/src \
+   && if ! git rev-parse --verify ${COMMIT} > /dev/null 2>&1; then \
+      echo "❗ ERROR: commit '${COMMIT}' not found in ${REPO}" >&2; exit 1; \
+     fi \
+   && git checkout --quiet ${COMMIT} \
+   && mvn -DskipTests clean package
+
+
+RUN mvn install:install-file \
+      -Dfile=/root/.m2/repository/net/sf/cb2xml/1.01.08/cb2xml-1.01.08.jar \
+      -DpomFile=/root/.m2/repository/net/sf/cb2xml/1.01.08/cb2xml-1.01.08.pom \
+      -DgroupId=net.sf.cb2xml \
+      -DartifactId=cb2xml \
+      -Dversion=1.01.08 \
+      -Dpackaging=jar
+
+COPY pom.PACKAGE.xml /build/src/
+
+RUN mvn -f /build/src/pom.PACKAGE.xml -DskipTests package -Dmaven.repo.local=/root/.m2/repository
+
+# NOTE: positive attitude kept temporarily
+# RUN jar tf /build/src/target/cobolToJson-0.93.3.jar | grep "META-INF/MANIFEST.MF" && jar xf /build/src/target/cobolToJson-0.93.3.jar META-INF/MANIFEST.MF && grep "Main-Class: net.sf.cobolToJson.Data2Json" META-INF/MANIFEST.MF && echo "Runnable fat jar created"
+
+RUN set -eux; \
+    JAR_FILE=/build/src/target/cobolToJson-0.93.3.jar; \
+    echo "Inspecting jar $JAR_FILE ..."; \
+    # Check jar exists and manifest exists
+    jar tf "$JAR_FILE" | grep -q "META-INF/MANIFEST.MF" || { echo "ERROR: META-INF/MANIFEST.MF missing"; exit 1; }; \
+    # Extract manifest
+    jar xf "$JAR_FILE" META-INF/MANIFEST.MF; \
+    # Verify Main-Class is set
+    grep -q "^Main-Class: net.sf.cobolToJson.Data2Json" META-INF/MANIFEST.MF \
+        || { echo "ERROR: Main-Class not found or incorrect in manifest"; exit 1; }; \
+    echo "Main-Class verified"; \
+    # Optional: check Class-Path for dependency jars
+    grep -q "^Class-Path: .*\.jar" META-INF/MANIFEST.MF \
+        || echo "WARNING: No Class-Path entry found (dependencies expected inside fat jar)"; \
+    echo "Jar inspection complete"
+
+
+
+
+ENTRYPOINT ["java", "-jar", "/build/src/target/cobolToJson-0.93.3.jar"]
