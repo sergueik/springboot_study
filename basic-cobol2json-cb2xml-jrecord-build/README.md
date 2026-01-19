@@ -27,23 +27,24 @@ docker pull eclipse-temurin:11-jre-alpine
 ```
 export REPO=https://github.com/bmTas/cb2xml
 export COMMIT=97f8dc8
-export VERSION=1.01.08
-cp avoid_c2bxml_deps.txt avoid_deps.txt
-docker build -t cb2xml --build-arg REPO=$REPO --build-arg COMMIT=$COMMIT --build-arg VERSION=$VERSION -f Dockerfile.BUILD-DEPENDENCY .
+export POM=pom.cb2xml.xml
+cp avoid_cb2xml_deps.txt avoid_deps.txt
+docker build -t cb2xml --build-arg REPO=$REPO --build-arg COMMIT=$COMMIT --build-arg POM=$POM -f Dockerfile.BUILD-DEPENDENCY .
 ```
 * build 2nd dependdncy
 ```
 export REPO=https://github.com/bmTas/JRecord
 export COMMIT=f50ece71
-export VERSION=0.93.3
+export POM=pom.jrecord.xml
 cp avoid_jrecord_deps.txt avoid_deps.txt
-docker build -t jrecord --build-arg REPO=$REPO --build-arg COMMIT=$COMMIT --build-arg VERSION=$VERSION -f Dockerfile.BUILD-DEPENDENCY .
+docker build -t cb2xml --build-arg REPO=$REPO --build-arg COMMIT=$COMMIT --build-arg POM=$POM -f Dockerfile.BUILD-DEPENDENCY2 .
 ```
 build app
 ```sh
 export REPO=https://github.com/bmTas/CobolToJson
 export COMMIT=99b0aa2
-docker build -t cobol2json --build-arg REPO=$REPO --build-arg COMMIT=$COMMIT -f Dockerfile.BUILD-APP .
+export POM=pom.cobol2json.xml
+docker build -t cobol2json --build-arg REPO=$REPO --build-arg COMMIT=$COMMIT --build-arg POM=$POM -f Dockerfile.BUILD-APP .
 ```
 * build the app runtime container
 
@@ -290,7 +291,178 @@ unzip -l cobolToJson.jar  | grep Cobol2Json
      7962  01-19-2026 01:46   net/sf/cobolToJson/def/ICobol2Json.class
 ```
 
+```sh
+docker run -w /app/Example -v $(pwd)/Example:/app/Example app -cobol cobol/DTAR020a.cbl -fileOrganisation FixedWidth -font cp037 -input in/DTAR020.bin -output DTAR020.json
+```
+```text
+Exception in thread "main" java.lang.NoClassDefFoundError: net/sf/cb2xml/def/ICopybookJrUpd
+        at net.sf.cobolToJson.impl.Cobol2JsonImp.newCobol2Json(Cobol2JsonImp.java:959)
+        at net.sf.cobolToJson.Cobol2Json.newCobol2Json(Cobol2Json.java:41)
+        at net.sf.cobolToJson.Cobol2Json.newJsonConverter(Cobol2Json.java:95)
+        at net.sf.cobolToJson.Data2Json.main(Data2Json.java:30)
+Caused by: java.lang.ClassNotFoundException: net.sf.cb2xml.def.ICopybookJrUpd
+        at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(Unknown Source)
+        at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(Unknown Source)
+        at java.base/java.lang.ClassLoader.loadClass(Unknown Source)
+        ... 4 more
+```
+```sh
+docker run -it --entrypoint='' cobol2json sh
+```
 
+```sh
+unzip -l src/target/cobolToJson-0.93.3.jar  |grep cb2xml
+```
+```text
+     4443  01-19-2026 17:12   net/sf/cobolToJson/def/Icb2xml2Json.class
+        0  01-18-2026 22:18   net/sf/JRecord/External/cb2xml/
+      788  01-18-2026 22:18   net/sf/JRecord/External/cb2xml/CobolCopybookReader.class
+      236  01-18-2026 22:18   net/sf/JRecord/External/cb2xml/IReadCopybook.class
+     1130  01-18-2026 22:18   net/sf/JRecord/External/cb2xml/Cb2xmlCopybookReader.class
+      459  01-18-2026 22:18   net/sf/JRecord/def/IO/builders/Icb2xmlIOProvider.class
+      932  01-18-2026 22:18   net/sf/JRecord/def/IO/builders/Icb2xmlLoadOptions.class
+     2655  01-18-2026 22:18   net/sf/JRecord/def/IO/builders/Icb2xmlIOBuilder.class
+     4357  01-18-2026 22:18   net/sf/JRecord/def/IO/builders/Icb2xmlMultiFileIOBuilder.class
+```
+
+```sh
+jar tvf /root/.m2/repository/net/sf/cb2xml/1.01.08/cb2xml-1.01.08.jar  |grep ICopybookJrUpd
+```
+```text
+281 Mon Jan 19 13:39:38 GMT 2026 net/sf/cb2xml/def/ICopybookJrUpd.class
+```
+
+```sh
+unzip -c src/target/cobolToJson-0.93.3.jar  META-INF/MANIFEST.MF
+```
+```text
+Archive:  src/target/cobolToJson-0.93.3.jar
+  inflating: META-INF/MANIFEST.MF
+Manifest-Version: 1.0
+Created-By: Maven JAR Plugin 3.3.0
+Build-Jdk-Spec: 11
+Main-Class: net.sf.cobolToJson.Data2Json
+```
+
+error in `pom.cobol2json.xml`
+```xml
+<include>net.sf.cb2xml:cb2xml</include>
+```
+
+```xml
+<include>net.sf:cb2xml</include>
+```
+```sh
+docker run -w /app/Example -v $(pwd)/Example:/app/Example app -cobol cobol/DTAR020a.cbl -fileOrganisation FixedWidth -font cp037 -input in/DTAR020.bin -output DTAR020.json
+```
+```text
+Exception in thread "main" java.io.FileNotFoundException: in/DTAR020.bin (No such file or directory)
+        at java.base/java.io.FileInputStream.open0(Native Method)
+        at java.base/java.io.FileInputStream.open(Unknown Source)
+        at java.base/java.io.FileInputStream.<init>(Unknown Source)
+        at java.base/java.io.FileInputStream.<init>(Unknown Source)
+        at net.sf.cobolToJson.impl.Cobol2JsonImp.cobol2json(Cobol2JsonImp.java:108)
+        at net.sf.cobolToJson.Data2Json.main(Data2Json.java:31)
+```
+running from __WSL__
+```sh
+docker run -it --entrypoint='' cobol2json sh
+```
+
+```sh
+rm -fr /root/.m2/repository/com/github/bmTas/cb2xml/
+mvn -DskipTests package
+```
+```text
+[INFO] Scanning for projects...
+[INFO]
+[INFO] -------------------------< net.sf:cobolToJson >-------------------------
+[INFO] Building CobolToJson 0.93.3
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+Downloading from jitpack.io: https://jitpack.io/com/github/bmTas/cb2xml/1.01.08/cb2xml-1.01.08.pom
+Downloaded from jitpack.io: https://jitpack.io/com/github/bmTas/cb2xml/1.01.08/cb2xml-1.01.08.pom (2.3 kB at 1.3 kB/s)
+Downloading from jitpack.io: https://jitpack.io/com/github/bmTas/cb2xml/1.01.08/cb2xml-1.01.08.jar
+Downloaded from jitpack.io: https://jitpack.io/com/github/bmTas/cb2xml/1.01.08/cb2xml-1.01.08.jar (453 kB at 588 kB/s)
+[INFO]
+[INFO] --- resources:3.3.1:resources (default-resources) @ cobolToJson ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory /build/src/src/main/resources
+[INFO]
+[INFO] --- compiler:3.11.0:compile (default-compile) @ cobolToJson ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO]
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ cobolToJson ---
+[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+[INFO] Copying 73 resources from src/test/resources to target/test-classes
+[INFO]
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ cobolToJson ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO]
+[INFO] --- surefire:3.5.2:test (default-test) @ cobolToJson ---
+[INFO] Tests are skipped.
+[INFO]
+[INFO] --- jar:3.3.0:jar (default-jar) @ cobolToJson ---
+[INFO]
+[INFO] --- shade:3.5.0:shade (default) @ cobolToJson ---
+[INFO] Including net.sf:cb2xml:jar:1.01.08 in the shaded jar.
+[INFO] Including net.sf.jrecord:JRecord:jar:0.93.3 in the shaded jar.
+[INFO] Including com.fasterxml.jackson.core:jackson-core:jar:2.17.2 in the shaded jar.
+[INFO] Excluding com.github.bmTas:cb2xml:jar:1.01.08 from the shaded jar.
+[WARNING] JRecord-0.93.3.jar, cobolToJson-0.93.3.jar define 582 overlapping classes and resources:
+[WARNING]   - META-INF/maven/net.sf.jrecord/JRecord/pom.properties
+[WARNING]   - META-INF/maven/net.sf.jrecord/JRecord/pom.xml
+[WARNING]   - net.sf.JRecord.ByteIO.AbstractByteReader
+[WARNING]   - net.sf.JRecord.ByteIO.AbstractByteWriter
+[WARNING]   - net.sf.JRecord.ByteIO.BaseByteTextReader
+[WARNING]   - net.sf.JRecord.ByteIO.BaseByteTextReader$1
+[WARNING]   - net.sf.JRecord.ByteIO.BaseByteTextReader$FindLines
+[WARNING]   - net.sf.JRecord.ByteIO.BaseByteTextReader$StdFindLines
+[WARNING]   - net.sf.JRecord.ByteIO.BinaryByteWriter
+[WARNING]   - net.sf.JRecord.ByteIO.ByteIOProvider
+[WARNING]   - 572 more...
+[WARNING] JRecord-0.93.3.jar, cb2xml-1.01.08.jar, cobolToJson-0.93.3.jar, jackson-core-2.17.2.jar define 1 overlapping resource:
+[WARNING]   - META-INF/MANIFEST.MF
+[WARNING] cb2xml-1.01.08.jar, cobolToJson-0.93.3.jar define 333 overlapping classes and resources:
+[WARNING]   - META-INF/maven/net.sf/cb2xml/pom.properties
+[WARNING]   - META-INF/maven/net.sf/cb2xml/pom.xml
+[WARNING]   - net.sf.cb2xml.Cb2Xml
+[WARNING]   - net.sf.cb2xml.Cb2Xml2
+[WARNING]   - net.sf.cb2xml.Cb2Xml3
+[WARNING]   - net.sf.cb2xml.Cb2Xml3$BldrImp
+[WARNING]   - net.sf.cb2xml.Cb2Xml3$BldrImp$DoCblAnalyse
+[WARNING]   - net.sf.cb2xml.CobolPreprocessor
+[WARNING]   - net.sf.cb2xml.CopyBookAnalyzer
+[WARNING]   - net.sf.cb2xml.CopyBookAnalyzer$Item
+[WARNING]   - 323 more...
+[WARNING] cobolToJson-0.93.3.jar, jackson-core-2.17.2.jar define 226 overlapping classes and resources:
+[WARNING]   - META-INF.versions.11.com.fasterxml.jackson.core.io.doubleparser.BigSignificand
+[WARNING]   - META-INF.versions.11.com.fasterxml.jackson.core.io.doubleparser.FastDoubleSwar
+[WARNING]   - META-INF.versions.11.com.fasterxml.jackson.core.io.doubleparser.FastIntegerMath
+[WARNING]   - META-INF.versions.17.com.fasterxml.jackson.core.io.doubleparser.FastDoubleSwar
+[WARNING]   - META-INF.versions.17.com.fasterxml.jackson.core.io.doubleparser.FastIntegerMath
+[WARNING]   - META-INF.versions.21.com.fasterxml.jackson.core.io.doubleparser.FastDoubleSwar
+[WARNING]   - META-INF.versions.21.com.fasterxml.jackson.core.io.doubleparser.FastIntegerMath
+[WARNING]   - META-INF.versions.9.module-info
+[WARNING]   - META-INF/FastDoubleParser-LICENSE
+[WARNING]   - META-INF/FastDoubleParser-NOTICE
+[WARNING]   - 216 more...
+[WARNING] maven-shade-plugin has detected that some files are
+[WARNING] present in two or more JARs. When this happens, only one
+[WARNING] single version of the file is copied to the uber jar.
+[WARNING] Usually this is not harmful and you can skip these warnings,
+[WARNING] otherwise try to manually exclude artifacts based on
+[WARNING] mvn dependency:tree -Ddetail=true and the above output.
+[WARNING] See https://maven.apache.org/plugins/maven-shade-plugin/
+[INFO] Replacing original artifact with shaded artifact.
+[INFO] Replacing /build/src/target/cobolToJson-0.93.3.jar with /build/src/target/cobolToJson-0.93.3-shaded.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  14.678 s
+[INFO] Finished at: 2026-01-19T17:58:15Z
+[INFO] ------------------------------------------------------------------------
+```
 #### Maven Offline Dependency Installation and Fat JAR Integrity
 
 This project is built in a fully offline and restricted environment. Maven does not treat a dependency as available simply because a JAR file exists on disk. For Maven (via the Aether resolver), an artifact is considered installed only

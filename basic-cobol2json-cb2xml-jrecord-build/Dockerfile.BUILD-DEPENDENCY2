@@ -18,6 +18,8 @@ RUN git clone --depth 50 --quiet ${REPO} /build/src \
     fi \
  && git checkout --quiet ${COMMIT}
 
+# reuse full dependency graph
+COPY --from=cb2xml /build/.m2-repo /build/.m2-repo
 ENV LOCAL_REPO=/build/.m2-repo
 RUN mkdir -p $LOCAL_REPO \
     && cd /build/src \

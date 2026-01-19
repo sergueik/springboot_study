@@ -3,7 +3,7 @@ FROM maven:3.9.5-eclipse-temurin-11-alpine AS build-cb2xml
 ARG REPO=https://github.com/bmTas/cb2xml
 ARG COMMIT=97f8dc8
 
-WORKDIR /build
+WORKDIR /cb2xml
 
 RUN apk add --no-cache git
 
@@ -17,7 +17,7 @@ FROM maven:3.9.5-eclipse-temurin-11-alpine AS build-jrecord
 ARG REPO=https://github.com/bmTas/JRecord
 ARG COMMIT=f50ece71
 
-WORKDIR /build
+WORKDIR /jrecord
 
 RUN apk add --no-cache git
 
@@ -26,8 +26,11 @@ COPY --from=build-cb2xml /root/.m2 /root/.m2
 
 RUN git clone ${REPO} jrecord \
  && cd jrecord \
- && git checkout ${COMMIT} \
- && mvn -B -DskipTests -f pom.xml install
+ && git checkout ${COMMIT} 
+
+COPY pom.jrecord.xml /jrecord/pom.xml
+RUN cd /jrecord \
+    && mvn -B -DskipTests -f pom.xml install
 
 FROM maven:3.9.5-eclipse-temurin-11-alpine AS build-app
 
@@ -51,11 +54,13 @@ RUN mvn install:install-file \
 
 RUN git clone ${REPO} CobolToJson \
  && cd CobolToJson \
- && git checkout ${COMMIT} \
- && mvn -B -DskipTests package
+ && git checkout ${COMMIT}
 
-ADD pom.PACKAGE.xml /CobolToJson/pom.PACKAGE.xml
-RUN mvn -DskipTests -f pom.PACKAGE.xml package
+COPY pom.cobol2json.xml pom.xml
+
+RUN cd /CobolToJson \
+    && mvn -B -DskipTests package
+
 RUN ls -l target/* \
     && unzip -l target/cobolToJson-0.93.3.jar | grep CobolToJson
 
