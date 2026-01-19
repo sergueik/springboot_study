@@ -108,7 +108,7 @@ docker run -w /app/Example -v $(pwd)/Example:/app/Example app -cobol cobol/DTAR0
 ls -l Example/DTAR020.json
 ```
 ```text
--rw-r--r-- 1 root root 90174 Jan 18 20:57 Example/DTAR020.json```
+-rw-r--r-- 1 root root 90174 Jan 18 20:57 Example/DTAR020.json
 ```
 ```sh
 cat Example/DTAR020.json | jq '.sss[0:3]'
@@ -248,6 +248,49 @@ Error: Unable to access jarfile /app/cobolToJson.jar
 ```
 one should not map the developer machine directory to workdir
 
+
+
+* incorrectly packaged `app.jar`
+```sh
+docker run ap 
+```
+```text
+Error: Could not find or load main class net.sf.cobolToJson.Data2Json
+Caused by: java.lang.ClassNotFoundException: net.sf.cobolToJson.Data2Json
+```
+```sh
+docker run --entrypoint='' -it app sh
+```
+```sh
+unzip -l  app.jar  | grep Data2Json
+```
+*nothing output*
+
+compare
+
+```sh
+docker build -t app -f Dockerfile.APP .
+```
+```sh
+docker run --entrypoint='' -it app sh
+```
+
+```sh
+unzip -l cobolToJson.jar  | grep Cobol2Json
+```
+```text
+     6266  01-19-2026 01:46   net/sf/cobolToJson/Cobol2Json.class
+     1510  01-19-2026 01:46   net/sf/cobolToJson/impl/Cobol2JsonSchema$IntStack.class
+      244  01-19-2026 01:46   net/sf/cobolToJson/impl/Cobol2JsonSchema$1.class
+     1480  01-19-2026 01:46   net/sf/cobolToJson/impl/Cobol2JsonImp$ReadManager.class
+    14354  01-19-2026 01:46   net/sf/cobolToJson/impl/Cobol2JsonSchema.class
+     1483  01-19-2026 01:46   net/sf/cobolToJson/impl/Cobol2JsonImp$IntStack.class
+      235  01-19-2026 01:46   net/sf/cobolToJson/impl/Cobol2JsonImp$1.class
+    35925  01-19-2026 01:46   net/sf/cobolToJson/impl/Cobol2JsonImp.class
+     7962  01-19-2026 01:46   net/sf/cobolToJson/def/ICobol2Json.class
+```
+
+
 #### Maven Offline Dependency Installation and Fat JAR Integrity
 
 This project is built in a fully offline and restricted environment. Maven does not treat a dependency as available simply because a JAR file exists on disk. For Maven (via the Aether resolver), an artifact is considered installed only
@@ -274,9 +317,18 @@ In unrestricted environments this is typically done with:
 ```sh
 mvn -DskipTests install
 ```
+In this project, upstream source repositories cannot be collected from internet. 
+Instead, dependencies are built in isolated Docker builder images, and the resulting local Maven repository directories are copied verbatim into the application build image. Copying the entire artifac
 
-In this project, upstream source repositories cannot be collected from internet. Instead, dependencies are built in isolated Docker builder images, and the resulting local Maven repository directories are copied verbatim into the application build image. Copying the entire artifac
+### TODO:
 
+* in upstream `JRecord`, there is still dependency on `com.github.bmTas.cb2xml:1.01.08`: 
+```text
+[INFO] Downloading from jitpack.io: https://jitpack.io/com/github/bmTas/cb2xml/1.01.08/cb2xml-1.01.08.pom
+[INFO] Downloaded from jitpack.io: https://jitpack.io/com/github/bmTas/cb2xml/1.01.08/cb2xml-1.01.08.pom (2.3 kB at 792 B/s)
+[INFO] Downloading from jitpack.io: https://jitpack.io/com/github/bmTas/cb2xml/1.01.08/cb2xml-1.01.08.jar
+[INFO] Downloaded from jitpack.io: https://jitpack.io/com/github/bmTas/cb2xml/1.01.08/cb2xml-1.01.08.jar (453 kB at 1.1 MB/s)
+```
 ### See Also
  
  * [cb2xml](https://github.com/bmTas/cb2xml)
