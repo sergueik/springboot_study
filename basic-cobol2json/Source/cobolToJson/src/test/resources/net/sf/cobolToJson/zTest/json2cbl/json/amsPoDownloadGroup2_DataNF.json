@@ -1,0 +1,786 @@
+{
+  "amsPoDownloadGroup2" : [ {
+    "PO-Record" : {
+      "Record-Type" : "H1",
+      "Sequence-Number" : 45.349,
+      "Vendor" : 6060,
+      "PO" : 286225,
+      "Entry-Date" : {
+        "year" : 4,
+        "month" : 9,
+        "day-of-month" : 9
+      },
+      "beg01-code" : "00",
+      "Department" : "200",
+      "Expected-Reciept-Date" : {
+        "year" : 5,
+        "month" : 1,
+        "day-of-month" : 2
+      },
+      "Cancel-by-date" : {
+        "year" : 5,
+        "month" : 1,
+        "day-of-month" : 7
+      },
+      "Add-Date" : { },
+      "Department-Name" : "LADIES KNI",
+      "Prcoess-Type" : "C",
+      "Order-Type" : "FT"
+    }
+  }, {
+    "Product-Record" : {
+      "Record-Type" : "D1",
+      "Pack-Qty" : 7.0000,
+      "Pack-Cost" : 0.0002,
+      "APN" : 2222500000000,
+      "Product" : 43314531,
+      "pmg-dtl-tech-key" : "2075359",
+      "Case-Pack-id" : "45614531",
+      "Product-Name" : "DONKEY 24-006607 SHWL WRAP CARD"
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5043,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5045,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5065,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5076,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5079,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5151,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5072,
+        "Pack-Quantity" : 1
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      } ]
+    }
+  }, {
+    "Product-Record" : {
+      "Record-Type" : "D1",
+      "Pack-Qty" : 4.0000,
+      "Pack-Cost" : 148.3200,
+      "APN" : 0,
+      "Product" : 5614944,
+      "pmg-dtl-tech-key" : "2075360",
+      "Case-Pack-id" : "5614944",
+      "Product-Name" : "MILK 24-006607 SHWL WRAP CARD"
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5045,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5076,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5079,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 3331,
+        "Pack-Quantity" : 49440001
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      } ]
+    }
+  }, {
+    "PO-Record" : {
+      "Record-Type" : "H1",
+      "Sequence-Number" : 45.350,
+      "Vendor" : 6228,
+      "PO" : 222227,
+      "Entry-Date" : {
+        "year" : 4,
+        "month" : 9,
+        "day-of-month" : 9
+      },
+      "beg01-code" : "00",
+      "Department" : "200",
+      "Expected-Reciept-Date" : {
+        "year" : 5,
+        "month" : 1,
+        "day-of-month" : 2
+      },
+      "Cancel-by-date" : {
+        "year" : 5,
+        "month" : 1,
+        "day-of-month" : 7
+      },
+      "Add-Date" : { },
+      "Department-Name" : "LADIES KNI",
+      "Prcoess-Type" : "C",
+      "Order-Type" : "FT"
+    }
+  }, {
+    "Product-Record" : {
+      "Record-Type" : "D1",
+      "Pack-Qty" : 16.0000,
+      "Pack-Cost" : 6228148.3200,
+      "APN" : 2222,
+      "Product" : 2224531,
+      "pmg-dtl-tech-key" : "2075348",
+      "Case-Pack-id" : "5614531",
+      "Product-Name" : "DONKEY 24-006607 SHWL WRAP CARD"
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5019,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5037,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5074,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5078,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5085,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5091,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5093,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5095,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 51,
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      } ]
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5171,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5177,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5089,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5136,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5145,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5096,
+        "Pack-Quantity" : 1
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      } ]
+    }
+  }, {
+    "PO-Record" : {
+      "Record-Type" : "H1",
+      "Sequence-Number" : 45.351,
+      "Vendor" : 6228,
+      "PO" : 222243,
+      "Entry-Date" : {
+        "year" : 4,
+        "month" : 9,
+        "day-of-month" : 9
+      },
+      "beg01-code" : "00",
+      "Department" : "200",
+      "Expected-Reciept-Date" : {
+        "year" : 5,
+        "month" : 1,
+        "day-of-month" : 2
+      },
+      "Cancel-by-date" : {
+        "year" : 5,
+        "month" : 1,
+        "day-of-month" : 7
+      },
+      "Add-Date" : { },
+      "Department-Name" : "LADIES KNI",
+      "Prcoess-Type" : "C",
+      "Order-Type" : "FT"
+    }
+  }, {
+    "Product-Record" : {
+      "Record-Type" : "D1",
+      "Pack-Qty" : 6.0000,
+      "Pack-Cost" : 148.3200,
+      "APN" : 0,
+      "Product" : 45614531,
+      "pmg-dtl-tech-key" : "2075352",
+      "Case-Pack-id" : "45614531",
+      "Product-Name" : "DONKEY 24-006607 SHWL WRAP CARD"
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5009,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5021,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5024,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5025,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5026,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5127,
+        "Pack-Quantity" : 1
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      } ]
+    }
+  }, {
+    "Product-Record" : {
+      "Record-Type" : "D1",
+      "Pack-Qty" : 3.0000,
+      "Pack-Cost" : 148.3200,
+      "APN" : 0,
+      "Product" : 45614944,
+      "pmg-dtl-tech-key" : "2075353",
+      "Case-Pack-id" : "45614944",
+      "Product-Name" : "MILK 24-006607 SHWL WRAP CARD"
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5009,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5021,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5127,
+        "Pack-Quantity" : 1
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      } ]
+    }
+  }, {
+    "Product-Record" : {
+      "Record-Type" : "D1",
+      "Pack-Qty" : 44.0000,
+      "Pack-Cost" : 148.3200,
+      "APN" : 0,
+      "Product" : 45615071,
+      "pmg-dtl-tech-key" : "2075354",
+      "Case-Pack-id" : "45615071",
+      "Product-Name" : "M.ROSE 24-006607 SHWL WRAP CARD"
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5009,
+        "Pack-Quantity" : 5
+      }, {
+        "DC-Number" : 5021,
+        "Pack-Quantity" : 5
+      }, {
+        "DC-Number" : 5024,
+        "Pack-Quantity" : 4
+      }, {
+        "DC-Number" : 5025,
+        "Pack-Quantity" : 4
+      }, {
+        "DC-Number" : 5026,
+        "Pack-Quantity" : 4
+      }, {
+        "DC-Number" : 5047,
+        "Pack-Quantity" : 3
+      }, {
+        "DC-Number" : 5077,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5127,
+        "Pack-Quantity" : 5
+      }, {
+        "DC-Number" : 5134,
+        "Pack-Quantity" : 4
+      }, {
+        "DC-Number" : 5142,
+        "Pack-Quantity" : 2
+      } ]
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5044,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5071,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5159,
+        "Pack-Quantity" : 2
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      } ]
+    }
+  }, {
+    "PO-Record" : {
+      "Record-Type" : "H1",
+      "Sequence-Number" : 45.352,
+      "Vendor" : 5341,
+      "PO" : 294915,
+      "Entry-Date" : {
+        "year" : 4,
+        "month" : 10,
+        "day-of-month" : 13
+      },
+      "beg01-code" : "00",
+      "Department" : "475",
+      "Expected-Reciept-Date" : {
+        "year" : 4,
+        "month" : 12,
+        "day-of-month" : 31
+      },
+      "Cancel-by-date" : {
+        "year" : 5,
+        "month" : 1,
+        "day-of-month" : 7
+      },
+      "EDI-Type" : "P",
+      "Add-Date" : { },
+      "Department-Name" : "WOMENS SHO",
+      "Prcoess-Type" : "C",
+      "Order-Type" : "FT"
+    }
+  }, {
+    "Product-Record" : {
+      "Record-Type" : "D1",
+      "Pack-Qty" : 30.0000,
+      "Pack-Cost" : 292.6800,
+      "APN" : 0,
+      "Product" : 45846680,
+      "pmg-dtl-tech-key" : "2120736",
+      "Case-Pack-id" : "45615156",
+      "Product-Name" : "CONCERTO BLACK LEATHER ANKLE BOOT"
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5036,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5043,
+        "Pack-Quantity" : 3
+      }, {
+        "DC-Number" : 5045,
+        "Pack-Quantity" : 3
+      }, {
+        "DC-Number" : 5057,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5065,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5069,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5076,
+        "Pack-Quantity" : 3
+      }, {
+        "DC-Number" : 5079,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5094,
+        "Pack-Quantity" : 3
+      }, {
+        "DC-Number" : 5128,
+        "Pack-Quantity" : 3
+      } ]
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5151,
+        "Pack-Quantity" : 3
+      }, {
+        "DC-Number" : 5180,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5072,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5173,
+        "Pack-Quantity" : 1
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      } ]
+    }
+  }, {
+    "PO-Record" : {
+      "Record-Type" : "H1",
+      "Sequence-Number" : 45.353,
+      "Vendor" : 5341,
+      "PO" : 294987,
+      "Entry-Date" : {
+        "year" : 4,
+        "month" : 10,
+        "day-of-month" : 13
+      },
+      "beg01-code" : "00",
+      "Department" : "475",
+      "Expected-Reciept-Date" : {
+        "year" : 4,
+        "month" : 12,
+        "day-of-month" : 31
+      },
+      "Cancel-by-date" : {
+        "year" : 5,
+        "month" : 1,
+        "day-of-month" : 7
+      },
+      "EDI-Type" : "P",
+      "Add-Date" : { },
+      "Department-Name" : "WOMENS SHO",
+      "Prcoess-Type" : "C",
+      "Order-Type" : "FT"
+    }
+  }, {
+    "Product-Record" : {
+      "Record-Type" : "D1",
+      "Pack-Qty" : 29.0000,
+      "Pack-Cost" : 198.3600,
+      "APN" : 0,
+      "Product" : 45846772,
+      "pmg-dtl-tech-key" : "2121104",
+      "Case-Pack-id" : "5846772",
+      "Product-Name" : "ANGEL PINK SYNTHETIC MICRO SUEDE SLOUCH BOOT"
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5036,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5043,
+        "Pack-Quantity" : 3
+      }, {
+        "DC-Number" : 5045,
+        "Pack-Quantity" : 3
+      }, {
+        "DC-Number" : 5057,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5065,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5069,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5076,
+        "Pack-Quantity" : 3
+      }, {
+        "DC-Number" : 5079,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5094,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5128,
+        "Pack-Quantity" : 3
+      } ]
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5151,
+        "Pack-Quantity" : 3
+      }, {
+        "DC-Number" : 5180,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5072,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5173,
+        "Pack-Quantity" : 1
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      } ]
+    }
+  }, {
+    "PO-Record" : {
+      "Record-Type" : "H1",
+      "Sequence-Number" : 45.354,
+      "Vendor" : 5341,
+      "PO" : 295139,
+      "Entry-Date" : {
+        "year" : 4,
+        "month" : 10,
+        "day-of-month" : 13
+      },
+      "beg01-code" : "00",
+      "Department" : "475",
+      "Expected-Reciept-Date" : {
+        "year" : 4,
+        "month" : 12,
+        "day-of-month" : 31
+      },
+      "Cancel-by-date" : {
+        "year" : 5,
+        "month" : 1,
+        "day-of-month" : 7
+      },
+      "EDI-Type" : "P",
+      "Add-Date" : { },
+      "Department-Name" : "WOMENS SHO",
+      "Prcoess-Type" : "C",
+      "Order-Type" : "FT"
+    }
+  }, {
+    "Product-Record" : {
+      "Record-Type" : "D1",
+      "Pack-Qty" : 25.0000,
+      "Pack-Cost" : 465.4800,
+      "APN" : 0,
+      "Product" : 45848707,
+      "pmg-dtl-tech-key" : "2179843",
+      "Case-Pack-id" : "45848707A",
+      "Product-Name" : "ANGEL PINK SYNTHETIC MICRO SUEDE SLOUCH BOOT"
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5036,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5043,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5045,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5057,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5065,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5069,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5076,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5079,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5094,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5128,
+        "Pack-Quantity" : 2
+      } ]
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5151,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5180,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5072,
+        "Pack-Quantity" : 2
+      }, {
+        "DC-Number" : 5173,
+        "Pack-Quantity" : 1
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      } ]
+    }
+  }, {
+    "PO-Record" : {
+      "Record-Type" : "H1",
+      "Sequence-Number" : 45.355,
+      "Vendor" : 5341,
+      "PO" : 303662,
+      "Entry-Date" : {
+        "year" : 4,
+        "month" : 11,
+        "day-of-month" : 10
+      },
+      "beg01-code" : "00",
+      "Department" : "310",
+      "Expected-Reciept-Date" : {
+        "year" : 4,
+        "month" : 12,
+        "day-of-month" : 31
+      },
+      "Cancel-by-date" : {
+        "year" : 5,
+        "month" : 1,
+        "day-of-month" : 7
+      },
+      "EDI-Type" : "P",
+      "Add-Date" : { },
+      "Department-Name" : "YOUTH SHOE",
+      "Prcoess-Type" : "C",
+      "Order-Type" : "FT"
+    }
+  }, {
+    "Product-Record" : {
+      "Record-Type" : "D1",
+      "Pack-Qty" : 8.0000,
+      "Pack-Cost" : 82.1600,
+      "APN" : 0,
+      "Product" : 46164790,
+      "pmg-dtl-tech-key" : "2203070",
+      "Case-Pack-id" : "46164790B8",
+      "Product-Name" : "ANGEL PINK SYNTHETIC MICRO SUEDE SLOUCH BOOT     E"
+    }
+  }, {
+    "Location-Record" : {
+      "Record-Type" : "S1",
+      "location" : [ {
+        "DC-Number" : 5043,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5045,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5065,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5069,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5076,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5094,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5128,
+        "Pack-Quantity" : 1
+      }, {
+        "DC-Number" : 5151,
+        "Pack-Quantity" : 1
+      }, {
+        "Pack-Quantity" : 0
+      }, {
+        "Pack-Quantity" : 0
+      } ]
+    }
+  } ]
+}

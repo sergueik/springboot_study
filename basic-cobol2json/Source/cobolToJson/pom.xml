@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.sf</groupId>
+  <artifactId>cobolToJson</artifactId>
+  <version>0.90.2</version>
+  <name>CobolToJson</name>
+  <description>Convert Cobol data files to json with a Cobol copybook</description>
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+  <!--****************************************************************************
+	  There are Three choices for getting cb2xml
+	  1) Use jitpack (the default)
+	  2) Use jitHub package. You will also need to update the setting.xml in your 
+	  maven .m2 direectory
+	  3) Download and install cb2xml in wich case remove/comment out the repositries
+	****************************************************************************-->
+  <!-- *********** Jitpack repositry/dependency definition ************* -->
+  <!-- -->
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+    <!-- If you want to use Github package
+		<repository>
+            <id>
+				github2</id>
+            <name>GitHub bmTas Apache Maven Packages</name>
+            <url>
+				https://github.com/bmTas/JRecord</url>
+		</repository>
+		-->
+    <repository>
+      <id>PentahoOmni</id>
+      <name>PentahoOmni</name>
+      <url>https://nexus.pentaho.org/content/groups/omni/</url>
+    </repository>
+  </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>com.github.bmTas</groupId>
+      <artifactId>cb2xml</artifactId>
+      <version>1.01.08</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jrecord</groupId>
+      <artifactId>JRecord</artifactId>
+      <version>0.93.3</version>
+    </dependency>
+    <dependency>
+      <groupId>
+				com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>
+				2.17.2</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <!-- NOTE: The plugin org.apache.maven.plugins:maven-surefire-plugin:3.5.2 requires Maven version 3.6.3 -->
+        <!--  <version>3.5.2</version>-->
+        <version>3.2.5</version>
+        <configuration>
+          <includes>
+            <include>**/zTest/**/*.java</include>
+          </includes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>net.sf.cobolToJson.Data2Json</mainClass>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>lib/</classpathPrefix>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <!-- -->
+  <!-- *********** Github package repositry/dependency definition *************
+	
+	       Uncomment to use ( and remove
+	 -->
+  <!-- 
+	<repositories>
+		<repository>
+            <id>
+				github</id>
+            <name>GitHub bmTas Apache Maven Packages</name>
+            <url>
+				https://github.com/bmTas/cb2xml</url>
+		</repository>
+		<repository>
+            <id>
+				github2</id>
+            <name>GitHub bmTas Apache Maven Packages</name>
+            <url>
+				https://github.com/bmTas/JRecord</url>
+		</repository>
+	</repositories>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>
+				net.sf</groupId>
+			<artifactId>cb2xml</artifactId>
+			<version>1.01.08</version>
+		</dependency>
+		<dependency>
+			<groupId>
+				net.sf.jrecord</groupId>
+			<artifactId>jrecord</artifactId>
+			<version>0.93.3</version>
+		</dependency>
+		<dependency>
+			<groupId>
+				com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>
+				2.17.2</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>
+				4.13.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	-->
+  <!-- ********************* Download and build cb2xml/JRecord *****************************************
+  
+         Uncomment to use ( and remove
+	 -->
+  <!--
+	<dependencies>
+		<dependency>
+			<groupId>net.sf</groupId>
+			<artifactId>cb2xml</artifactId>
+			<version>1.01.08</version>
+		</dependency>
+		<dependency>
+			<groupId>
+				net.sf.jrecord</groupId>
+			<artifactId>jrecord</artifactId>
+			<version>0.93.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.17.2</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+   -->
+</project>
