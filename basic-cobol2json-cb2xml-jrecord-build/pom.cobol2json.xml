@@ -28,15 +28,6 @@
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
-		<!-- If you want to use Github package
-		<repository>
-            <id>
-				github2</id>
-            <name>GitHub bmTas Apache Maven Packages</name>
-            <url>
-				https://github.com/bmTas/JRecord</url>
-		</repository>
-		-->
 
 	</repositories>
 
@@ -112,61 +103,6 @@
     </plugins>
   </build>
 
-	<!-- -->
-
-	<!-- *********** Github package repositry/dependency definition *************
-	
-	       Uncomment to use ( and remove
-	 -->
-
-	<!-- 
-	<repositories>
-		<repository>
-            <id>
-				github</id>
-            <name>GitHub bmTas Apache Maven Packages</name>
-            <url>
-				https://github.com/bmTas/cb2xml</url>
-		</repository>
-		<repository>
-            <id>
-				github2</id>
-            <name>GitHub bmTas Apache Maven Packages</name>
-            <url>
-				https://github.com/bmTas/JRecord</url>
-		</repository>
-	</repositories>
-
-
-	<dependencies>
-		<dependency>
-			<groupId>
-				net.sf</groupId>
-			<artifactId>cb2xml</artifactId>
-			<version>1.01.08</version>
-		</dependency>
-		<dependency>
-			<groupId>
-				net.sf.jrecord</groupId>
-			<artifactId>jrecord</artifactId>
-			<version>0.93.3</version>
-		</dependency>
-		<dependency>
-			<groupId>
-				com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-			<version>
-				2.17.2</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>
-				4.13.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	-->
 
 	<!-- ********************* Download and build cb2xml/JRecord *****************************************
   
