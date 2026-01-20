@@ -35,8 +35,12 @@ RUN set -eux; \
             echo "❗ Forbidden dependency detected: $jar" >&2; exit 1; \
         fi; \
     done
-COPY $POM /build/src/pom.xml
-RUN cd /build/src && mvn -f pom.xml -DskipTests clean install -Dmaven.repo.local=$LOCAL_REPO -ntp
+RUN rm /build/src/pom.xml
+# observed file not replacing the one from source
+ADD $POM /build/src/
+ADD pom.jrecord.xml /build/src/
+
+RUN cd /build/src && mvn -f pom.jrecord.xml -DskipTests clean install -Dmaven.repo.local=$LOCAL_REPO -ntp
 
 RUN rm -rf /var/cache/apk/*
 

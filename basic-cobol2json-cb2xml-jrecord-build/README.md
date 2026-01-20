@@ -27,24 +27,27 @@ docker pull eclipse-temurin:11-jre-alpine
 ```
 export REPO=https://github.com/bmTas/cb2xml
 export COMMIT=97f8dc8
-export POM=pom.cb2xml.xml
-cp avoid_cb2xml_deps.txt avoid_deps.txt
-docker build -t cb2xml --build-arg REPO=$REPO --build-arg COMMIT=$COMMIT --build-arg POM=$POM -f Dockerfile.BUILD-DEPENDENCY .
+export NAME=cb2xml
+export POM=pom.$NAME.xml
+cp avoid_$NAME_deps.txt avoid_deps.txt
+docker build -t $NAME --build-arg REPO=$REPO --build-arg COMMIT=$COMMIT --build-arg POM=$POM -f Dockerfile.BUILD-DEPENDENCY .
 ```
-* build 2nd dependdncy
+* build 2nd dependency
 ```
 export REPO=https://github.com/bmTas/JRecord
 export COMMIT=f50ece71
-export POM=pom.jrecord.xml
-cp avoid_jrecord_deps.txt avoid_deps.txt
-docker build -t cb2xml --build-arg REPO=$REPO --build-arg COMMIT=$COMMIT --build-arg POM=$POM -f Dockerfile.BUILD-DEPENDENCY2 .
+export NAME=jrecord
+export POM=pom.$NAME.xml
+cp avoid_$NAME_deps.txt avoid_deps.txt
+docker build -t $NAME --build-arg REPO=$REPO --build-arg COMMIT=$COMMIT --build-arg POM=$POM -f Dockerfile.BUILD-DEPENDENCY2 .
 ```
 build app
 ```sh
 export REPO=https://github.com/bmTas/CobolToJson
 export COMMIT=99b0aa2
-export POM=pom.cobol2json.xml
-docker build -t cobol2json --build-arg REPO=$REPO --build-arg COMMIT=$COMMIT --build-arg POM=$POM -f Dockerfile.BUILD-APP .
+export NAME=cobol2json
+export POM=pom.$NAME.xml
+docker build -t $NAME --build-arg REPO=$REPO --build-arg COMMIT=$COMMIT --build-arg POM=$POM -f Dockerfile.BUILD-APP .
 ```
 * build the app runtime container
 
@@ -162,7 +165,53 @@ cb2xml            latest                            5e21966a2d42   24 minutes ag
 eclipse-temurin   11-jre-alpine                     f135099692b9   2 months ago     169MB
 maven             3.9.5-eclipse-temurin-11-alpine   37ef041f8432   2 years ago      305MB
 ```
+### Running Standalone Shell Script
+> Note: Source-based vendoring is a dependency management strategy where a project copies the source code of its third-party dependencies directly into its own repository, typically within a vendor directory, rather than relying on a package manager to install them on demand.This approach ensures that the exact version of the dependency is stored alongside the project's own code, creating a self-contained codebase that enhances build reproducibility and eliminates external dependencies during builds. 
 
+```sh
+./build_all.sh
+```
+```sh
+java -jar build/cobol2json/target/cobolToJson-0.93.3.jar -cobol Example/cobol/DTAR020a.cbl -fileOrganisation FixedWidth -font cp037 -input Example/in/DTAR020.bin -output DTAR020.json
+```
+```sh
+cat DTAR020.json  | jq '.sss[0:3]'
+```
+```json
+[
+  {
+    "DTAR020-KCODE-STORE-KEY": {
+      "DTAR020-KEYCODE-NO": "69684558",
+      "DTAR020-STORE-NO": 20
+    },
+    "DTAR020-DATE": 40118,
+    "DTAR020-DEPT-NO": 280,
+    "DTAR020-QTY-SOLD": 1,
+    "DTAR020-SALE-PRICE": 19
+  },
+  {
+    "DTAR020-KCODE-STORE-KEY": {
+      "DTAR020-KEYCODE-NO": "69684558",
+      "DTAR020-STORE-NO": 20
+    },
+    "DTAR020-DATE": 40118,
+    "DTAR020-DEPT-NO": 280,
+    "DTAR020-QTY-SOLD": -1,
+    "DTAR020-SALE-PRICE": -19
+  },
+  {
+    "DTAR020-KCODE-STORE-KEY": {
+      "DTAR020-KEYCODE-NO": "69684558",
+      "DTAR020-STORE-NO": 20
+    },
+    "DTAR020-DATE": 40118,
+    "DTAR020-DEPT-NO": 280,
+    "DTAR020-QTY-SOLD": 1,
+    "DTAR020-SALE-PRICE": 5.01
+  }
+]
+
+```
 ### Docker-specific Note
 
 The container is executed with an explicit working directory (`-w /app/Example`) and a narrowly scoped bind mount (`-v $(pwd)/Example:/app/Example`). This design choice is intentional and technically sound.
@@ -463,6 +512,40 @@ Downloaded from jitpack.io: https://jitpack.io/com/github/bmTas/cb2xml/1.01.08/c
 [INFO] Finished at: 2026-01-19T17:58:15Z
 [INFO] ------------------------------------------------------------------------
 ```
+
+```sh
+mvn dependency:tree -Dverbose
+```
+```text
+[INFO] Scanning for projects...
+[INFO]
+[INFO] -------------------------< net.sf:cobolToJson >-------------------------
+[INFO] Building CobolToJson 0.93.3
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- dependency:3.6.0:tree (default-cli) @ cobolToJson ---
+[INFO] net.sf:cobolToJson:jar:0.93.3
+[INFO] +- net.sf:cb2xml:jar:1.01.08:compile
+[INFO] +- net.sf.jrecord:JRecord:jar:0.93.3:compile
+[INFO] |  \- com.github.bmTas:cb2xml:jar:1.01.08:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-core:jar:2.17.2:compile
+[INFO] \- junit:junit:jar:4.13.1:test
+[INFO]    \- org.hamcrest:hamcrest-core:jar:1.3:test
+```
+
+in `/root/.m2/repository/net/sf/jrecord/JRecord/0.93.3/JRecord-0.93.3.pom` three is still
+
+```xml
+   <dependencies>
+                <dependency>
+                        <groupId>com.github.bmTas</groupId>
+                        <artifactId>cb2xml</artifactId>
+                        <version>1.01.08</version>
+                </dependency
+```
+
+
 #### Maven Offline Dependency Installation and Fat JAR Integrity
 
 This project is built in a fully offline and restricted environment. Maven does not treat a dependency as available simply because a JAR file exists on disk. For Maven (via the Aether resolver), an artifact is considered installed only
