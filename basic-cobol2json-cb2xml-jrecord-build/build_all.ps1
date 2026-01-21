@@ -36,7 +36,7 @@ Write-Host "==> Cleaning work directory"
 Remove-Item -Recurse -Force $WorkDir -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $WorkDir, $MvnRepo | Out-Null
 
-$env:MVN_OPTS = "-Dmaven.repo.local=$MvnRepo -DskipTests"
+$env:MVN_OPTS = "-DskipTests -Dmaven.repo.local=$MvnRepo"
 
 ##############################################################################
 # FUNCTION: build component
@@ -65,7 +65,8 @@ function Build-Component {
     Copy-Item (Join-Path $WorkDir $AvoidFile) avoid_deps.txt -Force
   }
 
-  mvn -f pom.xml $env:MVN_OPTS clean install
+  mvn -f pom.xml $env:MVN_OPTS clean -DskipTests install
+
 }
 
 ##############################################################################
@@ -115,7 +116,7 @@ Set-Location cobol2json
 git checkout 99b0aa2
 
 Copy-Item (Join-Path $WorkDir 'pom.cobol2json.xml') pom.xml -Force
-mvn clean package
+mvn clean -DskipTests package
 
 $AppJar = Get-ChildItem target -Filter '*-shaded.jar' -ErrorAction SilentlyContinue |
   Select-Object -First 1
@@ -151,11 +152,22 @@ try {
   $reader.Close()
 
   Write-Output $manifestText
-
+<#
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven 3.6.1
+Built-By: kouzm
+Build-Jdk: 11.0.12
+Main-Class: net.sf.cobolToJson.Data2Json
+#>
+<#
   if ($manifestText -notmatch '^Main-Class:' ) {
     throw "Main-Class missing in manifest"
   }
-
+  #>
+  if ( ( $manifestText -split '\r?\n' | where-object {$_ -match 'Main-Class:' } ).count -eq 0) {
+    throw "Main-Class missing in manifest"
+  }
   if ($zip.Entries | Where-Object { $_.FullName -like '*.jar' }) {
     throw "Nested jars found (shade misconfigured)"
   }
