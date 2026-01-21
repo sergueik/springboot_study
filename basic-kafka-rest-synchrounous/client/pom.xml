@@ -8,7 +8,7 @@
   <description>client</description>
   <properties>
     <java.version>1.8</java.version>
-    <kafka.version>2.8.1</kafka.version>
+    <kafka.version>2.9.11</kafka.version>
   </properties>
   <parent>
     <groupId>org.springframework.boot</groupId>
