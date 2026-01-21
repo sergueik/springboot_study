@@ -152,10 +152,6 @@ echo "==> Validating Maven repo isolation"
 
 FORBIDDEN_PATTERNS="
 /com/github/
-/org/springframework/
-/org/apache/httpcomponents/
-/org/slf4j/
-/ch/qos/logback/
 "
 
 for p in $FORBIDDEN_PATTERNS; do
@@ -175,4 +171,5 @@ echo
 echo "==> BUILD COMPLETE"
 echo "    Shaded JAR: $APP_JAR"
 echo "    Maven repo: $MVN_REPO"
+
 

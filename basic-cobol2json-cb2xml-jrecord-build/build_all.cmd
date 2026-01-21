@@ -37,6 +37,11 @@ if %JAVA_MAJOR% LSS %JAVA_REQUIRED_MAJOR% (REM
   exit /b 1
 )
 :SKIP_JAVA_VERSION_CHECK
+
+REM TODO: check
+REM for /F "tokens=*" %%. in ('ping -n 1 8.8.8.8 ^| findstr -i reply')  do @echo %%.
+REM Reply from 192.168.12.178: Destination host unreachable.
+
 REM ============================================================================
 REM CLEAN START
 REM ============================================================================
@@ -79,7 +84,7 @@ git checkout 99b0aa2 || exit /b 1
 
 copy "%WORKDIR%\pom.cobol2json.xml" pom.xml >nul
 
-mvn %MVN_OPTS% -DskipTests clean package || exit /b 1
+call mvn %MVN_OPTS% -DskipTests clean package || exit /b 1
 
 REM ============================================================================
 REM LOCATE APPLICATION JAR
@@ -185,6 +190,6 @@ git checkout %COMMIT% || exit /b 1
 copy "%WORKDIR%\%POM%" pom.xml >nul
 if exist "%WORKDIR%\%AVOID%" copy "%WORKDIR%\%AVOID%" avoid_deps.txt >nul
 
-mvn %MVN_OPTS% -f pom.xml -DskipTests clean install || exit /b 1
+call mvn %MVN_OPTS% -f pom.xml -DskipTests clean install || exit /b 1
 exit /b 0
 

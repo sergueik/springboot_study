@@ -166,16 +166,76 @@ eclipse-temurin   11-jre-alpine                     f135099692b9   2 months ago 
 maven             3.9.5-eclipse-temurin-11-alpine   37ef041f8432   2 years ago      305MB
 ```
 ### Running Standalone Shell Script
+
 > Note: Source-based vendoring is a dependency management strategy where a project copies the source code of its third-party dependencies directly into its own repository, typically within a vendor directory, rather than relying on a package manager to install them on demand.This approach ensures that the exact version of the dependency is stored alongside the project's own code, creating a self-contained codebase that enhances build reproducibility and eliminates external dependencies during builds. 
 
 ```sh
 ./build_all.sh
 ```
+or
+```cmd
+build_all.cmd
+```
+or 
+```powershell
+.\build_all.ps1   
+```
+these commands will product a lot of console output culminating with
+```text
+OK: dependencies are exploded
+
+==> Validating Maven repo isolation
+OK: Maven repo contains only pinned/vendor dependencies
+
+==> BUILD COMPLETE
+    Shaded JAR: target/cobolToJson-0.93.3.jar
+    Maven repo: /home/sergueik/src/springboot_study/basic-cobol2json-cb2xml-jrecord-build/build/m2
+```
+or
+```text
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:16 min
+[INFO] Finished at: 2026-01-20T15:21:34-05:00
+[INFO] ------------------------------------------------------------------------
+Built target\cobolToJson-0.93.3.jar
+
+OK: shaded jar structure valid
+
+
+    Shaded JAR: target\cobolToJson-0.93.3.jar
+    Maven repo: build\m2
+```
+or
+
+```text
+==> Inspecting shaded JAR
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven 3.6.1
+Built-By: kouzm
+Build-Jdk: 11.0.12
+Main-Class: net.sf.cobolToJson.Data2Json
+
+
+OK: shaded jar structure valid
+
+==> Validating Maven repo isolation
+
+==> BUILD COMPLETE
+    Shaded JAR: ...\build\cobol2json\target\cobolToJson-0.93.3.jar
+    Maven repo: ...\build\m2
+```
+
 ```sh
 java -jar build/cobol2json/target/cobolToJson-0.93.3.jar -cobol Example/cobol/DTAR020a.cbl -fileOrganisation FixedWidth -font cp037 -input Example/in/DTAR020.bin -output DTAR020.json
 ```
+or
+```cmd
+java -jar build\cobol2json\target\cobolToJson-0.93.3.jar -cobol Example\cobol\DTAR020a.cbl -fileOrganisation FixedWidth -font cp037 -input Example\in\DTAR020.bin -output DTAR020.json
+```
 ```sh
-cat DTAR020.json  | jq '.sss[0:3]'
+jq ".sss[0:3]" < DTAR020.json 
 ```
 ```json
 [
@@ -211,6 +271,66 @@ cat DTAR020.json  | jq '.sss[0:3]'
   }
 ]
 
+```
+### Standalone Dockerfile
+
+
+```sh
+docker build -f Dockerfile -t app .
+```
+```sh
+docker run --rm app
+```
+```text
+  Program options:
+
+          -cobol        - Cobol  copybook used to "interpret" the data (you must supply either a cobol or cb2xml copybook
+          -cb2xml       - Cb2xml copybook used to "interpret" the data
+
+          -input        - Input file
+          -output       - Output file
+          -font         - Characterset used in the Cobol data file (e.g. IBM037 for US-EBCIDIC)
+          -pretty       - Wether to pretty print the JSON
+
+          -dropCopybookName     - (true/false) wether to drop the cobol copybook name from the start of the Json Tags
+
+          -tagFormat            - How Cobol Variable names are reformated to Xml tags:
+                Asis       - Use the Cobol Variable name
+                Underscore - Convert - to _,         COBOL-VAR-NAME ==> COBOL_VAR_NAME
+                CamelCase  - Convert to Camel Case,  COBOL-VAR-NAME ==> cobolVarName
+
+          -fileOrganisation     - "file organisation" of the Cobol data file
+                Text            - Standard Windows/Unix text file (single byte characterset)
+                FixedWidth      - File where lines (records) are the same length no \n
+                UnicodeText     - Standard Windows/Unix Unicode text file
+                FixedText       - Fixed width Text (possibly unicode)
+                Mainframe_VB    - Mainframe VB, file consists of <record-length><record-data>
+                GNUCobol_VB     - GNU Cobol VB, file consists of <record-length><record-data>
+
+          -dialect      - Cobol Dialect
+                Mainframe       - Mainframe cobol
+                Futjitsu        - Fujitsu PC cobol
+                GNUCobol        - GNU Cobol (little endian, ie intel)
+                GNUCobolBE      - GNU Cobol (big endian, ie IBM, Sun(oracle))
+
+          -split        - Split Copybook Option
+                None    - No Split
+                01      - Split on 01
+                Highest - On Highest Repeating
+
+          -recordSelection      - Record Selection, can be used multiple times
+                                  format: -recordSelection RecordName field=value
+
+          -recordParent         - Record Parent, can be used multiple times
+                                  format: -recordParent    RecordName ParentRecord
+
+
+```
+```sh
+docker run -w /app/Example -v $(pwd)/Example:/app/Example app -cobol cobol/DTAR020a.cbl -fileOrganisation FixedWidth -font cp037 -input in/DTAR020.bin -output DTAR020.json
+```
+```
+jq '.sss[0:1]' <  DTAR020.json
 ```
 ### Docker-specific Note
 
@@ -589,5 +709,8 @@ Instead, dependencies are built in isolated Docker builder images, and the resul
  * [cb2xml](https://github.com/bmTas/cb2xml)
  * [JRecord](https://github.com/bmTas/JRecord)
  * [CobolToJson](https://github.com/bmTas/CobolToJson)
- * [Sourceforge download](https://sourceforge.net/projects/coboltojson/) - __CobolToJson__
-*Convert Cobol Data Files to JSON*
+ * [Sourceforge download](https://sourceforge.net/projects/coboltojson/) - __CobolToJson__ *Convert Cobol Data Files to JSON*
+
+---
+### Author
+[Serguei Kouzmine](mailto:kouzmine_serguei@yahoo.com)
