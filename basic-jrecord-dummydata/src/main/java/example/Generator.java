@@ -1,128 +1,73 @@
 package example;
 
-import net.sf.JRecord.JRecordInterface1;
-// import net.sf.JRecord.Common.AbstractLine;
-import net.sf.JRecord.Details.AbstractLine;
-import net.sf.JRecord.Common.IFileStructureConstants;
-import net.sf.JRecord.IO.AbstractLineWriter;
-import net.sf.JRecord.def.IO.builders.ICobolIOBuilder;
-
 import java.io.FileOutputStream;
-import java.util.HashMap;
-import java.util.Map;
-/**
- * Copyright 2026 Serguei Kouzmine
- */
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import example.CommandLineParser;
 
 public class Generator {
-	private static boolean debug = false;
-	private static String codepage = "CP1047";
-	private static CommandLineParser commandLineParser;
 
-	public static void main(String[] args) throws IOException {
+    // EBCDIC charset for Mainframe DISPLAY
+    private static final Charset EBCDIC = Charset.forName("CP037");
 
-		/*
-		commandLineParser = new CommandLineParser();
+    public static void main(String[] args) throws IOException {
+        String customerId = "ABC123";
+        BigDecimal balance = new BigDecimal("1050.75");
 
-		commandLineParser.saveFlagValue("inputfile");
-		commandLineParser.saveFlagValue("data");
-		commandLineParser.saveFlagValue("codepage");
-		commandLineParser.saveFlagValue("outputfile");
-		commandLineParser.saveFlagValue("operation");
+        int totalBytes = 6  // CUSTOMER-ID DISPLAY
+                + 10 // NAME DISPLAY (example)
+                + 5  // ACCOUNT COMP-3 S9(9)
+                + 3; // BALANCE COMP-3 S9(5)V99
+  
+        // allocate buffer: 6 bytes for CUSTOMER-ID + 3 bytes for COMP-3 (S9(5)V99)
+        ByteBuffer buffer = ByteBuffer.allocate(totalBytes);
+        
+        // 1️⃣ CUSTOMER-ID -> EBCDIC
+        buffer.put(customerId.getBytes(EBCDIC));
 
-		commandLineParser.parse(args);
+        // 2️⃣ BALANCE -> COMP-3 packed decimal
+        buffer.put(packComp3(balance, 5, 2)); // 5 digits before decimal, 2 after
 
-		if (commandLineParser.hasFlag("debug")) {
-			debug = true;
-		}
+        // 3️⃣ Write to file
+        try (FileOutputStream fos = new FileOutputStream("dummy_ebcdic_comp3.bin")) {
+            fos.write(buffer.array());
+        }
 
-		if (commandLineParser.hasFlag("help")) {
-			System.err.println(String.format(
-					"Usage: %s -operation=[encode|decode] -data <string> -inputfile <filename> -outputfile <filename> -codepage <codepage>",
-					"jar"));
-			return;
-		}
-		
-		String data = commandLineParser.getFlagValue("data");
-		String outputFile = commandLineParser.getFlagValue("outputfile");
-		String inputFile = commandLineParser.getFlagValue("inputfile");
-		String operation = commandLineParser.getFlagValue("operation");
-		if (commandLineParser.hasFlag("codepage"))
-			codepage = commandLineParser.getFlagValue("codepage");
+        System.out.println("✅ Dummy EBCDIC + COMP-3 row written to dummy_ebcdic_comp3.bin");
+    }
 
-		if (operation == null) {
-			System.err.println("Missing required argument: operation");
-			return;
-		}
-*/
-		Map<String, String> cli = parseArgs(args);
+    /**
+     * Pack a decimal number into COMP-3 (packed decimal).
+     * @param value BigDecimal value
+     * @param intDigits integer digits (without decimal)
+     * @param decDigits fractional digits
+     * @return byte[] packed decimal
+     */
+    private static byte[] packComp3(BigDecimal value, int intDigits, int decDigits) {
+        // scale value according to decimal digits
+        long scaled = value.movePointRight(decDigits).longValueExact();
 
-		String copybook = cli.get("copybook");
-		String outFile = cli.get("out");
+        // total nibbles = digits + 1 for sign
+        int totalNibbles = intDigits + decDigits + 1;
+        int len = (totalNibbles + 1) / 2; // total bytes
+        byte[] result = new byte[len];
 
-		if (copybook == null || outFile == null) {
-			System.err.println("Required: -copybook <file> -out <file>");
-			System.exit(1);
-		}
+        long tmp = scaled;
+        for (int i = len - 1; i >= 0; i--) {
+            int lowNibble;
+            if (i == len - 1) {
+                // last byte: low nibble = sign (0xC = positive, 0xD = negative)
+                lowNibble = 0xC;
+            } else {
+                lowNibble = (int)(tmp % 10);
+                tmp /= 10;
+            }
+            int highNibble = (int)(tmp % 10);
+            tmp /= 10;
+            result[i] = (byte)((highNibble << 4) | lowNibble);
+        }
 
-		ICobolIOBuilder builder = JRecordInterface1.COBOL.newIOBuilder(copybook)
-				.setFileOrganization(IFileStructureConstants.IO_FIXED_LENGTH);
-
-		AbstractLine line = builder.newLine();
-
-		// Optional field overrides
-		if (cli.containsKey("customerId")) {
-			line.getFieldValue("CUSTOMER-ID").set(cli.get("customerId"));
-		}
-
-		if (cli.containsKey("name")) {
-			line.getFieldValue("CUSTOMER-NAME").set(cli.get("name"));
-		}
-
-		if (cli.containsKey("account")) {
-			line.getFieldValue("ACCOUNT-NUMBER").set(Long.parseLong(cli.get("account")));
-		}
-
-		if (cli.containsKey("balance")) {
-			line.getFieldValue("BALANCE").set(Double.parseDouble(cli.get("balance")));
-		}
-		// 0.93.3 predates widespread try-with-resources adoption.
-			/*
-		try (AbstractLineWriter writer = builder.newWriter(new FileOutputStream(outFile))) {
-			writer.write(line);
-		}
-		*/
-		AbstractLineWriter writer = null;
-		try {
-		    writer = builder.newWriter(
-		        new FileOutputStream(outFile));
-		    writer.write(line);
-		} finally {
-		    if (writer != null) {
-		        writer.close();
-		    }
-		}
-
-		System.out.println("Written binary record: " + outFile);
-		System.out.println("Record length: " + line.getData().length);
-	}
-
-	// Extremely simple CLI parser: -key value
-	private static Map<String, String> parseArgs(String[] args) {
-		Map<String, String> map = new HashMap<>();
-		for (int i = 0; i < args.length - 1; i++) {
-			if (args[i].startsWith("-")) {
-				map.put(args[i].substring(1), args[i + 1]);
-				i++;
-			}
-		}
-		return map;
-	}
+        return result;
+    }
 }

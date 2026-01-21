@@ -43,6 +43,55 @@ java -jar build\cobol2json\target\cobolToJson-0.93.3.jar -cobol Example\cobol\ex
   } ]
 }
 ```
+### Troubleshooting
+
+in JRecord 0.93.3, the code is split across multiple JARs.
+JRecord_Cobol.jar → present ✅
+
+JRecord.jar → missing ❌
+
+net.sf.JRecord.External.Definition is NOT in the COBOL-only JAR
+
+it is difficult to find JRecord_Cobol
+
+[200~Go to the JRecord SourceForge downloads page:
+👉 https://sourceforge.net/projects/jrecord/files/0.93.3/
+n Maven
+
+There is no official Maven Central release for the COBOL JAR, so you will need to install it into your local Maven repo manually
+
+### Using SourceForge Flavor of JRecord
+```
+unzip -l ~/Downloads/JRecord_0.93.2.zip
+```
+```
+unzip -x ~/Downloads/JRecord_0.93.2.zip lib/JRecordJars2023_Feb_03.zip
+```
+```sh
+unzip -l lib/JRecordJars2023_Feb_03.zip
+
+```
+```sh
+unzip -x lib/JRecordJars2023_Feb_03.zip
+```
+
+```sh
+mvn deploy:deploy-file -DgroupId=net.sf.jrecord -DartifactId=JRecord -Dversion=0.93.2 -Dpackaging=jar -Dfile=./JRecord.jar -Durl=file://$HOME/.m2/repository -DrepositoryId=local && mvn deploy:deploy-file -DgroupId=net.sf.jrecord -DartifactId=JRecordCodeGen -Dversion=0.93.2 -Dpackaging=jar -Dfile=./JRecordCodeGen.jar -Durl=file://$HOME/.
+
+```
+```sh
+mkdir -p ./maven-local-repo && mvn deploy:deploy-file -DgroupId=net.sf.jrecord -DartifactId=JRecord -Dversion=0.93.2 -Dpackaging=jar -Dfile=./JRecord.jar -Durl=file://$PWD/maven-local-repo -DrepositoryId=local && mvn deploy:deploy-file -DgroupId=net.sf.jrecord -DartifactId=JRecordCodeGen -Dversion=0.93.2 -Dpackaging=jar -Dfile=./JRecordCodeGen.jar -Durl=file://$PWD/maven-local-repo -DrepositoryId=local && mvn deploy:deploy-file -DgroupId=net.sf.jrecord -DartifactId=cb2xml -Dversion=0.93.2 -Dpackaging=jar -Dfile=./cb2xml.jar -Durl=file://$PWD/maven-local-repo -DrepositoryId=local
+
+```
+```cmd
+mvn deploy:deploy-file -DgroupId=net.sf.jrecord -DartifactId=JRecord -Dversion=0.93.2 -Dpackaging=jar -Dfile=JRecord.jar -Durl=file:///%USERPROFILE%/.m2/repository -DrepositoryId=local & mvn deploy:deploy-file -DgroupId=net.sf.jrecord -DartifactId=JRecordCodeGen -Dversion=0.93.2 -Dpackaging=jar -Dfile=JRecordCodeGen.jar -Durl=file:///%USERPROFILE%/.m2/repository -DrepositoryId=local & mvn deploy:deploy-file -DgroupId=net.sf.jrecord -DartifactId=cb2xml -Dversion=0.93.2 -Dpackaging=jar -Dfile=cb2xml.jar -Durl=file:///%USERPROFILE%/.m2/repository -DrepositoryId=local
+
+```
+```cmd
+
+if not exist .\maven-local-repo mkdir .\maven-local-repo & mvn deploy:deploy-file -DgroupId=net.sf.jrecord -DartifactId=JRecord -Dversion=0.93.2 -Dpackaging=jar -Dfile=JRecord.jar -Durl=file:///%CD%/maven-local-repo -DrepositoryId=local & mvn deploy:deploy-file -DgroupId=net.sf.jrecord -DartifactId=JRecordCodeGen -Dversion=0.93.2 -Dpackaging=jar -Dfile=JRecordCodeGen.jar -Durl=file:///%CD%/maven-local-repo -DrepositoryId=local & mvn deploy:deploy-file -DgroupId=net.sf.jrecord -DartifactId=cb2xml -Dversion=0.93.2 -Dpackaging=jar -Dfile=cb2xml.jar -Durl=file:///%CD%/maven-local-repo -DrepositoryId=local
+
+```
 ### See Also:
  
  * [cb2xml](https://github.com/bmTas/cb2xml)
