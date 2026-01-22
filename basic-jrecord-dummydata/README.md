@@ -11,7 +11,7 @@
 * generate the binary data 
 
 ```cmd
-java -cp target\example.generator.jar;target\lib\* example.Generator -balance 1234.56 -name "Jim,y Smith" -outputfile example.bin -copybookfile example.cbl  -accountnumber 124356879
+java -cp target\example.generator.jar;target\lib\* example.Generator -balance 1234.56 -name "Jimmy Smith" -outputfile example.bin -copybookfile example.cbl  -accountnumber 124356879
 ```
 * examine the `example.bin`:
 ```text
@@ -22,21 +22,27 @@ java -cp target\example.generator.jar;target\lib\* example.Generator -balance 12
 ```cmd
 copy /y example.bin ..\basic-cobol2json-cb2xml-jrecord-build\Example\in
 ```
-
+```cmd
+pushd ..\basic-cobol2json-cb2xml-jrecord-build
+```
 ```sh
 java -jar build\cobol2json\target\cobolToJson-0.93.3.jar -cobol Example\cobol\example.cbl -fileOrganisation FixedWidth -font cp037 -input Example\in\example.bin -output example.json
 ```
 examine the `example.json`:
+```cmd
+jq.exe "."  <  example.json
+```
 ```json
 {
-  "SAMPLE-REC" : [ {
-    "CUSTOMER-ID" : "ABC123",
-    "CUSTOMER-NAME" : "JIMMY SMITH",
-    "ACCOUNT-NUMBER" : 124356879,
-    "BALANCE" : 1234.55
-  } ]
+  "SAMPLE-REC": [
+    {
+      "CUSTOMER-ID": "ABC123",
+      "CUSTOMER-NAME": "JIMMY SMITH",
+      "ACCOUNT-NUMBER": 124356879,
+      "BALANCE": 1234.55
+    }
+  ]
 }
-
 ```
 ### See Also:
  
@@ -44,6 +50,7 @@ examine the `example.json`:
  * [JRecord](https://github.com/bmTas/JRecord)
  * [CobolToJson](https://github.com/bmTas/CobolToJson)
  * [Sourceforge download](https://sourceforge.net/projects/coboltojson/) convert cobol Data Files to JSON
+ * [Sourceforge download](https://sourceforge.net/projects/jrecord/files/JRecord/0.93.3/JRecord-0.93.3-src.zip/download) of JRecord jar bundle (old version)
 
 ---
 ### Author

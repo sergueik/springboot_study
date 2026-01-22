@@ -3,16 +3,20 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>generator</artifactId>
-  <version>0.4.0-SNAPSHOT</version>
+  <version>0.4.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
   <properties>
-    <mainClass>${project.groupId}.ManageConfig</mainClass>
+    <mainClass>Generator</mainClass>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>11</java.version>
+    <!--
+    <cb2xml.version>0.93.2</cb2xml.version>
+    <jrecord.version>0.93.2</jrecord.version> -->
+    <cb2xml.version>1.01.08</cb2xml.version>
+    <jrecord.version>0.93.3</jrecord.version>
     <commandline-parser.version>0.12.1-SNAPSHOT</commandline-parser.version>
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-collections4.version>4.2</commons-collections4.version>
@@ -48,26 +52,26 @@
         </exclusion>
       </exclusions>
     </dependency>
-		<dependency>
-                        <groupId>net.sf</groupId>
-			<artifactId>cb2xml</artifactId>
-			<version>1.01.08</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.jrecord</groupId>
-			<artifactId>JRecord</artifactId>
-			<version>0.93.3</version>
-		</dependency>
-<!--
     <dependency>
-      <groupId>net.sf.jrecord</groupId>
+      <groupId>net.sf</groupId>
       <artifactId>cb2xml</artifactId>
-      <version>0.93.2</version>
+      <version>${cb2xml.version}</version>
     </dependency>
     <dependency>
       <groupId>net.sf.jrecord</groupId>
       <artifactId>JRecord</artifactId>
-      <version>0.93.2</version>
+      <version>${jrecord.version}</version>
+    </dependency>
+    <!--
+    <dependency>
+      <groupId>net.sf.jrecord</groupId>
+      <artifactId>cb2xml</artifactId>
+      <version>${cb2xml.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jrecord</groupId>
+      <artifactId>JRecord</artifactId>
+      <version>${jrecord.version}</version>
     </dependency> -->
     <dependency>
       <groupId>org.hamcrest</groupId>
@@ -172,10 +176,11 @@
       </plugin>
     </plugins>
   </build>
-<repositories>
+  <!-- TODO: use "sourceforge" and "github" profiles -->
+  <repositories>
     <repository>
-        <id>private-local</id>
-        <url>file:///${env.MAVEN_LOCAL_REPO}</url>
+      <id>private-local</id>
+      <url>file:///${env.MAVEN_LOCAL_REPO}</url>
     </repository>
-</repositories>
+  </repositories>
 </project>

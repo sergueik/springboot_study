@@ -12,6 +12,8 @@ import net.sf.JRecord.Common.IFileStructureConstants;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import example.CommandLineParser;
 
@@ -66,7 +68,8 @@ public class Generator {
 			balance = Double.parseDouble(commandLineParser.getFlagValue("balance"));
 
 		// Create COBOL IO builder
-		System.err.println(String.format("Create COBOL IO builder for %s", copybookFile));
+		if (debug)
+			System.err.println(String.format("Create COBOL IO builder for %s", copybookFile));
 		ICobolIOBuilder builder = JRecordInterface1.COBOL.newIOBuilder(copybookFile)
 				.setFileOrganization(IFileStructureConstants.IO_FIXED_LENGTH).setFont("cp037"); // EBCDIC
 
@@ -87,6 +90,19 @@ public class Generator {
 		writer.write(line);
 		writer.close();
 
-		System.out.println("✅ EBCDIC row written to: " + outputFile);
+		if (debug)
+			System.err.println("EBCDIC row written to: " + outputFile);
+	}
+
+	// Extremely simple CLI parser: -key value
+	private static Map<String, String> parseArgs(String[] args) {
+		Map<String, String> map = new HashMap<>();
+		for (int i = 0; i < args.length - 1; i++) {
+			if (args[i].startsWith("-")) {
+				map.put(args[i].substring(1), args[i + 1]);
+				i++;
+			}
+		}
+		return map;
 	}
 }
