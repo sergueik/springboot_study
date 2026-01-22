@@ -15,25 +15,13 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import example.CommandLineParser;
-
 public class Generator {
-	private static CommandLineParser commandLineParser;
 	private static boolean debug = false;
 
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws Exception {
 
-		commandLineParser = new CommandLineParser();
-
-		commandLineParser.saveFlagValue("copybookfile");
-		commandLineParser.saveFlagValue("outputfile");
-
-		commandLineParser.saveFlagValue("name");
-		commandLineParser.saveFlagValue("accountnumber");
-		commandLineParser.saveFlagValue("balance");
-
-		commandLineParser.parse(args);
+		Map<String, String> cli = parseArgs(args);
 
 		String copybookFile = "example.cbl";
 		String outputFile = "sample.bin";
@@ -41,32 +29,30 @@ public class Generator {
 		String name = "JOHN DOE";
 		Long accountnumber = 123456789L;
 
-		if (commandLineParser.hasFlag("debug")) {
+		if (cli.containsKey("debug")) {
 			debug = true;
 		}
 		if (debug)
-			System.err.println(commandLineParser.getFlags());
+			System.err.println(cli.keySet());
 
-		if (commandLineParser.hasFlag("help") || !commandLineParser.hasFlag("copybookfile")
-				|| !commandLineParser.hasFlag("outputfile")) {
+		if (cli.containsKey("help") || !cli.containsKey("copybookfile") || !cli.containsKey("outputfile")) {
 			System.err.println(String.format("Usage: %s "
 					+ "-copybookfile <filename> -outputfile <filename> -name <name> -accountnumber <accountnumber> -balance <balance>\r\n"
 					+ "default vlues are name:%s accountnumber = %d balance = %6.2f\r\n", "jar", name, accountnumber,
 					balance));
 			return;
 		}
-		if (commandLineParser.hasFlag("outputfile"))
-			outputFile = commandLineParser.getFlagValue("outputfile");
-		if (commandLineParser.hasFlag("copybookfile"))
-			copybookFile = commandLineParser.getFlagValue("copybookfile");
+		if (cli.containsKey("outputfile"))
+			outputFile = cli.get("outputfile");
+		if (cli.containsKey("copybookfile"))
+			copybookFile = cli.get("copybookfile");
 
-		if (commandLineParser.hasFlag("name"))
-			name = commandLineParser.getFlagValue("name").toUpperCase();
-		if (commandLineParser.hasFlag("accountnumber"))
-			accountnumber = Long.parseLong(commandLineParser.getFlagValue("accountnumber"));
-		if (commandLineParser.hasFlag("balance"))
-			balance = Double.parseDouble(commandLineParser.getFlagValue("balance"));
-
+		if (cli.containsKey("name"))
+			name = cli.get("name").toUpperCase();
+		if (cli.containsKey("accountnumber"))
+			accountnumber = Long.parseLong(cli.get("accountnumber"));
+		if (cli.containsKey("balance"))
+			balance = Double.parseDouble(cli.get("balance"));
 		// Create COBOL IO builder
 		if (debug)
 			System.err.println(String.format("Create COBOL IO builder for %s", copybookFile));
