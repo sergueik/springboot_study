@@ -13,6 +13,10 @@
 ```cmd
 java -cp target\example.generator.jar;target\lib\* example.Generator -balance 1234.56 -name "Jimmy Smith" -outputfile example.bin -copybookfile example.cbl  -accountnumber 124356879
 ```
+or
+```sh
+java -cp target/example.generator.jar:target/lib/* example.Generator -balance 1234.56 -name "Jimmy Smith" -outputfile example.bin -copybookfile example.cbl -accountnumber 124356879
+```
 * examine the `example.bin`:
 ```text
 ┴┬├±≥≤@@@@±≥⌠≤⌡÷°≈∙#E\
@@ -20,7 +24,15 @@ java -cp target\example.generator.jar;target\lib\* example.Generator -balance 12
 * extract the copybook data from binary record using Cobol2JSON (JRecord):
 
 ```cmd
+```
+```cmd
 copy /y example.bin ..\basic-cobol2json-cb2xml-jrecord-build\Example\in
+copy /y example.cobol ..\basic-cobol2json-cb2xml-jrecord-build\Example\cobol
+```
+or
+```sh
+cp example.cbl ../basic-cobol2json-cb2xml-jrecord-build/Example/cobol
+cp example.bin ../basic-cobol2json-cb2xml-jrecord-build/Example/in
 ```
 ```cmd
 pushd ..\basic-cobol2json-cb2xml-jrecord-build
@@ -44,6 +56,21 @@ jq.exe "."  <  example.json
   ]
 }
 ```
+
+### Build
+
+find where is the dependency
+```sh
+find .. -iname 'cb2xml*jar'
+```
+```text
+../basic-cobol2json-cb2xml-jrecord-build/build/m2/net/sf/cb2xml/1.01.08/cb2xml-1.01.08.jar
+../basic-cobol2json-cb2xml-jrecord-build/build/cb2xml/target/cb2xml.jar
+```
+```sh
+export MAVEN_LOCAL_REPO=$(pwd)/../basic-cobol2json-cb2xml-jrecord-build/build/m2
+```
+and then build
 ### See Also:
  
  * [cb2xml](https://github.com/bmTas/cb2xml)
