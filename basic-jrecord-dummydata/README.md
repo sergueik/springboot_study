@@ -1,4 +1,70 @@
 ### Usage
+#### Basic
+
+`example.cbl`:
+```text
+       01  SAMPLE-REC.
+           05 CUSTOMER-ID        PIC X(10).
+           05 CUSTOMER-NAME      PIC X(20).
+           05 ACCOUNT-NUMBER     PIC 9(9).
+           05 BALANCE            PIC S9(7)V99 COMP-3.
+```
+generate the binary data based on copybook using __JRecord__ `0.93.2` *SourceForge release*:
+
+```sh
+java -cp target\example.generator.jar;target\lib\* example.Generator
+```
+```text
+? EBCDIC row written to: sample.bin
+```
+`sample.bin`:
+```
+┴┬├±≥≤@@@@\
+```
+```cmd
+copy /y sample.bin ..\basic-cobol2json-cb2xml-jrecord-build\Example\in
+```
+extact copybook fields from binary "batch" record using `JRecord`:
+```sh
+java -jar build\cobol2json\target\cobolToJson-0.93.3.jar -cobol Example\cobol\example.cbl -fileOrganisation FixedWidth -font cp037 -input Example\in\sample.bin -output example.json
+```
+`example.json`:
+```json
+{
+  "SAMPLE-REC" : [ {
+    "CUSTOMER-ID" : "ABC123",
+    "BALANCE" : 1050.75
+  } ]
+}
+```
+>  NOTE: not all fields created in batch file
+
+```java
+
+        // Set fields by name (names must match the copybook)
+        line.setField("CUSTOMER-ID", "ABC123");
+        line.setField("NAME", "JOHN DOE");
+        line.setField("ACCOUNT", new BigDecimal("123456789"));
+        line.setField("BALANCE", new BigDecimal("1050.75"));
+
+```
+get recognized to `cobol2json`.
+It was the effect of the type in the field name ; `ACCOUNT` should be `ACCOUNT_NUMBER`.
+Fix and repeat, and observe:
+
+```json
+{
+  "SAMPLE-REC" : [ {
+    "CUSTOMER-ID" : "ABC123",
+    "ACCOUNT-NUMBER" : 123456789,
+    "BALANCE" : 1050.75
+  } ]
+}
+
+```
+#### Slightly more advanced
+
+
 create a simple dummy Copybook () file 
 ```
        01  SAMPLE-REC.
