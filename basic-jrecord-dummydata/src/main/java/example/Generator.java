@@ -1,5 +1,8 @@
 package example;
 
+/**
+ * Copyright 2026 Serguei Kouzmine
+ */
 import net.sf.JRecord.Details.AbstractLine;
 import net.sf.JRecord.IO.AbstractLineWriter;
 import net.sf.JRecord.IO.LineIOProvider;
@@ -10,36 +13,80 @@ import net.sf.JRecord.Common.IFileStructureConstants;
 import java.io.File;
 import java.math.BigDecimal;
 
+import example.CommandLineParser;
+
 public class Generator {
+	private static CommandLineParser commandLineParser;
+	private static boolean debug = false;
 
-    public static void main(String[] args) throws Exception {
-        String copybookFile = "example.cbl";
-        String outputFile = "sample.bin";
+	@SuppressWarnings("deprecation")
+	public static void main(String[] args) throws Exception {
 
-        // Create COBOL IO builder
-        ICobolIOBuilder builder = JRecordInterface1.COBOL
-                .newIOBuilder(copybookFile)
-                .setFileOrganization(IFileStructureConstants.IO_FIXED_LENGTH)
-                .setFont("cp037"); // EBCDIC
+		commandLineParser = new CommandLineParser();
 
-        // Create a new line
-        AbstractLine line = builder.newLine();
+		commandLineParser.saveFlagValue("copybookfile");
+		commandLineParser.saveFlagValue("outputfile");
 
-        // Set fields by name (names must match the copybook)
-        line.setField("CUSTOMER-ID", "ABC123");
-        line.setField("NAME", "JOHN DOE");
-        line.setField("ACCOUNT-NUMBER", new BigDecimal("123456789"));
-        line.setField("BALANCE", new BigDecimal("1050.75"));
+		commandLineParser.saveFlagValue("name");
+		commandLineParser.saveFlagValue("accountnumber");
+		commandLineParser.saveFlagValue("balance");
 
-        // Get writer via LineIOProvider using file structure
-        AbstractLineWriter writer = LineIOProvider.getInstance()
-                .getLineWriter(IFileStructureConstants.IO_FIXED_LENGTH);
+		commandLineParser.parse(args);
 
-        // Write line to FileOutputStream
-        writer.open(new java.io.FileOutputStream(outputFile));
-        writer.write(line);
-        writer.close();
+		String copybookFile = "example.cbl";
+		String outputFile = "sample.bin";
+		Double balance = 1050.75;
+		String name = "JOHN DOE";
+		Long accountnumber = 123456789L;
 
-        System.out.println("✅ EBCDIC row written to: " + outputFile);
-    }
+		if (commandLineParser.hasFlag("debug")) {
+			debug = true;
+		}
+		if (debug)
+			System.err.println(commandLineParser.getFlags());
+
+		if (commandLineParser.hasFlag("help") || !commandLineParser.hasFlag("copybookfile")
+				|| !commandLineParser.hasFlag("outputfile")) {
+			System.err.println(String.format("Usage: %s "
+					+ "-copybookfile <filename> -outputfile <filename> -name <name> -accountnumber <accountnumber> -balance <balance>\r\n"
+					+ "default vlues are name:%s accountnumber = %d balance = %6.2f\r\n", "jar", name, accountnumber,
+					balance));
+			return;
+		}
+		if (commandLineParser.hasFlag("outputfile"))
+			outputFile = commandLineParser.getFlagValue("outputfile");
+		if (commandLineParser.hasFlag("copybookfile"))
+			copybookFile = commandLineParser.getFlagValue("copybookfile");
+
+		if (commandLineParser.hasFlag("name"))
+			name = commandLineParser.getFlagValue("name").toUpperCase();
+		if (commandLineParser.hasFlag("accountnumber"))
+			accountnumber = Long.parseLong(commandLineParser.getFlagValue("accountnumber"));
+		if (commandLineParser.hasFlag("balance"))
+			balance = Double.parseDouble(commandLineParser.getFlagValue("balance"));
+
+		// Create COBOL IO builder
+		System.err.println(String.format("Create COBOL IO builder for %s", copybookFile));
+		ICobolIOBuilder builder = JRecordInterface1.COBOL.newIOBuilder(copybookFile)
+				.setFileOrganization(IFileStructureConstants.IO_FIXED_LENGTH).setFont("cp037"); // EBCDIC
+
+		// Create a new line
+		AbstractLine line = builder.newLine();
+
+		// Set fields by name (names must match the copybook)
+		line.setField("CUSTOMER-ID", "ABC123");
+		line.setField("CUSTOMER-NAME", name);
+		line.setField("ACCOUNT-NUMBER", new BigDecimal(accountnumber));
+		line.setField("BALANCE", new BigDecimal(balance));
+
+		// Get writer via LineIOProvider using file structure
+		AbstractLineWriter writer = LineIOProvider.getInstance().getLineWriter(IFileStructureConstants.IO_FIXED_LENGTH);
+
+		// Write line to FileOutputStream
+		writer.open(new java.io.FileOutputStream(outputFile));
+		writer.write(line);
+		writer.close();
+
+		System.out.println("✅ EBCDIC row written to: " + outputFile);
+	}
 }
