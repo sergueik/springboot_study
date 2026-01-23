@@ -96,7 +96,6 @@ Still produces a valid binary row even if some fields are skipped
 ```cmd
 java -cp target\example.generator.jar;target\lib\* example.Generator  -outputfile parse.bin -copybookfile parse.cbl -parse true -debug true
 ```
-
 instead of `commandline-parser`
 
 ```cmd
@@ -118,8 +117,9 @@ EBCDIC row written to: parse.bin
 ```
 `parse.bin`:
 ```text
-□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□
-```
+┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴≡≡≡≡≤≤≤≈÷┴┴≡≡≥⌡⌡⌠≈∙
+
+                                                 ┴≡≡≈±÷±÷⌠┴
 ```cmd
 copy /y parse.bin ..\basic-cobol2json-cb2xml-jrecord-build\Example\in
 copy /y parse.cbl ..\basic-cobol2json-cb2xml-jrecord-build\Example\cobol
@@ -137,8 +137,13 @@ jq.exe "." < parse.json
     {
       "CUSTOMER-ID": "AAAAAAAAAA",
       "CUSTOMER-NAME": "AAAAAAAAAAAAAAAAAAAA",
+      "ACCOUNT-NUMBER": 33376,
       "ACCOUNT-TYPE": "AA",
+      "OPEN-DATE": 255479,
+      "BALANCE": 0.00,
+      "CREDIT-LIMIT": 0.00,
       "STATUS-CODE": "A",
+      "LAST-ACTIVITY-DATE": 716164,
       "RESERVED-FLAG": "A"
     }
   ]

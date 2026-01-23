@@ -1,39 +1,59 @@
 package example;
+
 /**
  * Copyright 2026 Serguei Kouzmine
  */
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Random;
+
+import example.CopybookMetaParser.FieldDef;
+import example.CopybookMetaParser.PicType;
 
 public class DummyValueFactory {
 
-	public static Object valueFor(CopybookMetaParser.FieldDef f) {
+	private static final Random RND = new Random(42);
 
-		String pic = f.pic.replaceAll("\\s+", "");
+	public static Object valueFor(FieldDef f) {
 
-		if (pic.startsWith("X(")) {
-			int len = Integer.parseInt(pic.replaceAll("\\D", ""));
-			return DummyValueFactory.repeat("A", len);
+		switch (f.type) {
+
+		case ALPHA:
+			return repeat('A', f.intDigits);
+
+		case NUMERIC:
+			return numericValue(f);
+
+		default:
+			return null;
 		}
-
-		if (pic.matches("9+")) {
-			return new BigDecimal("1".repeat(pic.length()));
-		}
-
-		if (pic.matches("S9+V9+")) {
-			int scale = pic.substring(pic.indexOf('V') + 1).length();
-			return new BigDecimal("1050.75").setScale(scale);
-		}
-
-		if (f.usage.equals("COMP")) {
-			return 123;
-		}
-
-		System.err.println("Unsupported PIC: " + f.pic + " for " + f.name);
-		return null;
 	}
 
-	private static String repeat(String s, int n) {
-		return s.repeat(Math.max(0, n));
+	private static BigDecimal numericValue(FieldDef f) {
+
+		long base = (long) Math.pow(10, Math.min(f.intDigits, 6)) - 1;
+		long value = Math.abs(RND.nextLong()) % base;
+
+		BigDecimal bd = BigDecimal.valueOf(value);
+
+		if (f.fracDigits > 0) {
+			bd = bd.movePointLeft(f.fracDigits);
+			bd = bd.setScale(f.fracDigits, RoundingMode.UNNECESSARY);
+		}
+
+		if (f.signed && RND.nextBoolean()) {
+			bd = bd.negate();
+		}
+
+		return bd;
+	}
+
+	private static String repeat(char c, int n) {
+		StringBuilder sb = new StringBuilder(n);
+		for (int i = 0; i < n; i++) {
+			sb.append(c);
+		}
+		return sb.toString();
 	}
 }
