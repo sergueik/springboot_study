@@ -14,13 +14,22 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import example.CopybookMetaParser.FieldDef;
 
 @SuppressWarnings("unused")
 public class Generator {
 	private static boolean debug = false;
 	private static boolean parse = false;
+	private static Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws Exception {
@@ -68,29 +77,39 @@ public class Generator {
 
 		// Create a new line
 		AbstractLine line = builder.newLine();
-		if (parse) {
-			if (debug)
-				System.err.println(String.format("Parse %s", copybookFile));
+		if (debug)
+			System.err.println(String.format("Parse %s", copybookFile));
 
-			List<CopybookMetaParser.FieldDef> fields = CopybookMetaParser.parse(Path.of(copybookFile));
+		List<FieldDef> fields = CopybookMetaParser.parse(Path.of(copybookFile));
 
-			for (var f : fields) {
-				Object v = DummyValueFactory.valueFor(f);
-				if (v == null)
-					continue;
+		if (debug) {
+			System.out.println(gson.toJson(fields));
+		}
+		// future-you (or CI reviewers) will thank you.
+		Map<String, Object> populatedValues = new LinkedHashMap<>();
 
-				try {
-					line.setField(f.name, v);
-				} catch (Exception e) {
-					System.err.println("⚠ Failed to set " + f.name + ": " + e.getMessage());
-				}
+		for (var field : fields) {
+			Object value = DummyValueFactory.valueFor(field);
+			if (null == value)
+				continue;
+			try {
+				line.setField(field.name, value);
+				// NOTE: store what was actually written
+				populatedValues.put(field.name, value);
+			} catch (Exception e) {
+				System.err.println("Unable to set " + field.name + ": " + e.getMessage());
 			}
-		} else {
-			// Set fields by name (names must match the copybook)
-			line.setField("CUSTOMER-ID", "ABC123");
-			line.setField("CUSTOMER-NAME", name);
-			line.setField("ACCOUNT-NUMBER", new BigDecimal(accountnumber));
-			line.setField("BALANCE", new BigDecimal(balance));
+		}
+		JsonObject root = new JsonObject();
+		JsonArray jsonArray = new JsonArray();
+
+		// one record
+		jsonArray.add(gson.toJsonTree(populatedValues));
+
+		root.add("SAMPLE-REC", jsonArray);
+
+		if (debug) {
+			System.err.println(gson.toJson(root));
 		}
 		// Get writer via LineIOProvider using file structure
 		AbstractLineWriter writer = LineIOProvider.getInstance().getLineWriter(IFileStructureConstants.IO_FIXED_LENGTH);

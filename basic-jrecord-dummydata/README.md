@@ -2,62 +2,21 @@
 
 * create Cobol Copybook `example.cbl`:
 ```text
-       01  SAMPLE-REC.
-           05 CUSTOMER-ID        PIC X(10).
-           05 CUSTOMER-NAME      PIC X(20).
-           05 ACCOUNT-NUMBER     PIC 9(9).
-           05 BALANCE            PIC S9(7)V99 COMP-3.
+       01 SAMPLE-REC.
+          05 CUSTOMER-ID            PIC X(10).
+          05 CUSTOMER-NAME          PIC X(20).
+          05 ACCOUNT-NUMBER         PIC 9(9).
+          05 ACCOUNT-TYPE           PIC X(2).
+          05 OPEN-DATE              PIC 9(8).
+          05 BALANCE                PIC S9(7)V99 COMP-3.
+          05 CREDIT-LIMIT           PIC S9(7)V99 COMP-3.
+          05 STATUS-CODE            PIC X(1).
+          05 LAST-ACTIVITY-DATE     PIC 9(8).
+          05 RESERVED-FLAG          PIC X(1).
 ```
-* generate the binary data 
+#### Build Using Vendor Sourced Versions
 
-```cmd
-java -cp target\example.generator.jar;target\lib\* example.Generator -balance 1234.56 -name "Jimmy Smith" -outputfile example.bin -copybookfile example.cbl  -accountnumber 124356879
-```
-or
-```sh
-java -cp target/example.generator.jar:target/lib/* example.Generator -balance 1234.56 -name "Jimmy Smith" -outputfile example.bin -copybookfile example.cbl -accountnumber 124356879
-```
-* examine the `example.bin`:
-```text
-┴┬├±≥≤@@@@±≥⌠≤⌡÷°≈∙#E\
-```
-* extract the copybook data from binary record using Cobol2JSON (JRecord):
-
-```cmd
-copy /y example.bin ..\basic-cobol2json-cb2xml-jrecord-build\Example\in
-copy /y example.cbl ..\basic-cobol2json-cb2xml-jrecord-build\Example\cobol
-```
-or
-```sh
-cp example.cbl ../basic-cobol2json-cb2xml-jrecord-build/Example/cobol
-cp example.bin ../basic-cobol2json-cb2xml-jrecord-build/Example/in
-```
-```cmd
-pushd ..\basic-cobol2json-cb2xml-jrecord-build
-```
-```sh
-java -jar build\cobol2json\target\cobolToJson-0.93.3.jar -cobol Example\cobol\example.cbl -fileOrganisation FixedWidth -font cp037 -input Example\in\example.bin -output example.json
-```
-examine the `example.json`:
-```cmd
-jq.exe "."  <  example.json
-```
-```json
-{
-  "SAMPLE-REC": [
-    {
-      "CUSTOMER-ID": "ABC123",
-      "CUSTOMER-NAME": "JIMMY SMITH",
-      "ACCOUNT-NUMBER": 124356879,
-      "BALANCE": 1234.55
-    }
-  ]
-}
-```
-
-### Build
-
-find where is the dependency
+* find where is the dependency
 ```sh
 find .. -iname 'cb2xml*jar'
 ```
@@ -65,71 +24,176 @@ find .. -iname 'cb2xml*jar'
 ../basic-cobol2json-cb2xml-jrecord-build/build/m2/net/sf/cb2xml/1.01.08/cb2xml-1.01.08.jar
 ../basic-cobol2json-cb2xml-jrecord-build/build/cb2xml/target/cb2xml.jar
 ```
+* point maven to it
 ```sh
 export MAVEN_LOCAL_REPO=$(pwd)/../basic-cobol2json-cb2xml-jrecord-build/build/m2
 ```
 and then build
 
-### Meta-Programming style copybook parser
-
-Parses a COBOL data definition (copybook)
-
-Extracts simple level-05 fields
-
-Builds a Map<String,Object> with dummy values
-
-Feeds that map into line.setField(name, value)
-
-Warns and skips:
-
-nested groups
-
-OCCURS
-
-REDEFINES
-
-unsupported PICs
-
-Still produces a valid binary row even if some fields are skipped
 > NOTE: using minimalistic plain map `parseArgs` does not understand flags -  have to pass value for every arg:
 
 ```cmd
-java -cp target\example.generator.jar;target\lib\* example.Generator  -outputfile parse.bin -copybookfile parse.cbl -parse true -debug true
+java -cp target\example.generator.jar;target\lib\* example.Generator  -outputfile example.bin -copybookfile example.cbl -parse true -debug true
 ```
 instead of `commandline-parser`
 
 ```cmd
-java -cp target\example.generator.jar;target\lib\* example.Generator  -outputfile parse.bin -copybookfile parse.cbl  -parse
+java -cp target\example.generator.jar;target\lib\* example.Generator  -outputfile example.bin -copybookfile example.cbl  -parse
 ```
 this will print debug level messages:
 ```text
-[
-copybookfile, debug, outputfile, parse]
-Create COBOL IO builder for parse.cbl
-Parse parse.cbl
-Ignored unsupported line: 01 SAMPLE-REC.
-Unsupported PIC: 9(9) for ACCOUNT-NUMBER
-Unsupported PIC: 9(8) for OPEN-DATE
-Unsupported PIC: S9(7)V99 COMP-3 for BALANCE
-Unsupported PIC: S9(7)V99 COMP-3 for CREDIT-LIMIT
-Unsupported PIC: 9(8) for LAST-ACTIVITY-DATE
-EBCDIC row written to: parse.bin
+[copybookfile, debug, outputfile, parse]
+Create COBOL IO builder for example.cbl
+Parse example.cbl
+WARN: skipping group or unsupported field: SAMPLE-REC
+EBCDIC row written to: example.bin
 ```
-`parse.bin`:
+
+including the reference Copybook-pojo object JSON printed to console when `debug` is provided:
+```JSON
+[
+  {
+    "name": "CUSTOMER-ID",
+    "type": "ALPHA",
+    "intDigits": 10,
+    "fracDigits": 0,
+    "signed": false,
+    "comp3": false,
+    "level": 5
+  },
+  {
+    "name": "CUSTOMER-NAME",
+    "type": "ALPHA",
+    "intDigits": 20,
+    "fracDigits": 0,
+    "signed": false,
+    "comp3": false,
+    "level": 5
+  },
+  {
+    "name": "ACCOUNT-NUMBER",
+    "type": "NUMERIC",
+    "intDigits": 9,
+    "fracDigits": 0,
+    "signed": false,
+    "comp3": false,
+    "level": 5
+  },
+  {
+    "name": "ACCOUNT-TYPE",
+    "type": "ALPHA",
+    "intDigits": 2,
+    "fracDigits": 0,
+    "signed": false,
+    "comp3": false,
+    "level": 5
+  },
+  {
+    "name": "OPEN-DATE",
+    "type": "NUMERIC",
+    "intDigits": 8,
+    "fracDigits": 0,
+    "signed": false,
+    "comp3": false,
+    "level": 5
+  },
+  {
+    "name": "BALANCE",
+    "type": "NUMERIC",
+    "intDigits": 7,
+    "fracDigits": 9,
+    "signed": true,
+    "comp3": true,
+    "level": 5
+  },
+  {
+    "name": "CREDIT-LIMIT",
+    "type": "NUMERIC",
+    "intDigits": 7,
+    "fracDigits": 9,
+    "signed": true,
+    "comp3": true,
+    "level": 5
+  },
+  {
+    "name": "STATUS-CODE",
+    "type": "ALPHA",
+    "intDigits": 1,
+    "fracDigits": 0,
+    "signed": false,
+    "comp3": false,
+    "level": 5
+  },
+  {
+    "name": "LAST-ACTIVITY-DATE",
+    "type": "NUMERIC",
+    "intDigits": 8,
+    "fracDigits": 0,
+    "signed": false,
+    "comp3": false,
+    "level": 5
+  },
+  {
+    "name": "RESERVED-FLAG",
+    "type": "ALPHA",
+    "intDigits": 1,
+    "fracDigits": 0,
+    "signed": false,
+    "comp3": false,
+    "level": 5
+  }
+]
+```
+
+and the actual dummy record:
+```JSON
+{
+  "SAMPLE-REC": [
+    {
+      "CUSTOMER-ID": "AAAAAAAAAA",
+      "CUSTOMER-NAME": "AAAAAAAAAAAAAAAAAAAA",
+      "ACCOUNT-NUMBER": 33376,
+      "ACCOUNT-TYPE": "AA",
+      "OPEN-DATE": 255479,
+      "BALANCE": 0.000783380,
+      "CREDIT-LIMIT": 0.000197023,
+      "STATUS-CODE": "A",
+      "LAST-ACTIVITY-DATE": 716164,
+      "RESERVED-FLAG": "A"
+    }
+  ]
+}
+```
+
+* save the second JSON (`temp.json`), flatten the JSON output as `expected.json`:
+
+```sh
+jq ".[] | .[0]" temp.json > expected.json
+```
+
+
+examine the binary data: format is indeed in EBCDIC
+`example.bin`:
 ```text
 ┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴≡≡≡≡≤≤≤≈÷┴┴≡≡≥⌡⌡⌠≈∙
 
                                                  ┴≡≡≈±÷±÷⌠┴
-```cmd
-copy /y parse.bin ..\basic-cobol2json-cb2xml-jrecord-build\Example\in
-copy /y parse.cbl ..\basic-cobol2json-cb2xml-jrecord-build\Example\cobol
 ```
-verify:
+#### Verify
+generate the JSON from binary data:
+
+```cmd
+copy /y example.bin ..\basic-cobol2json-cb2xml-jrecord-build\Example\in
+copy /y example.cbl ..\basic-cobol2json-cb2xml-jrecord-build\Example\cobol
+```
+```
+pushd ..\basic-cobol2json-cb2xml-jrecord-build
+```
 ```powershell
-java -jar build\cobol2json\target\cobolToJson-0.93.3.jar -cobol Example\cobol\parse.cbl -fileOrganisation FixedWidth -font cp037 -input Example\in\parse.bin -output parse.json
+java -jar build\cobol2json\target\cobolToJson-0.93.3.jar -cobol Example\cobol\example.cbl -fileOrganisation FixedWidth -font cp037 -input Example\in\example.bin -output example.json
 ```
 ```sh
-jq.exe "." < parse.json
+jq.exe "." < example.json
 ```
 ```json
 {
@@ -148,6 +212,40 @@ jq.exe "." < parse.json
     }
   ]
 }
+```
+*  compare
+
+```sh
+jq -S . expected.json > expected.norm.json
+jq -S . example.json > actual.norm.json
+```
+
+```text
+ Directory of C:\developer\sergueik\springboot_study\basic-jrecord-dummydata
+
+01/23/2026  04:43 PM               298 expected.norm.json
+               1 File(s)            298 bytes
+
+ Directory of C:\developer\sergueik\springboot_study\basic-cobol2json-cb2xml-jrecord-build
+
+01/23/2026  04:42 PM               362 actual.norm.json
+```
+```sh
+diff -w expected.norm.json ..\basic-cobol2json-cb2xml-jrecord-build\actual.norm.json
+```
+```text
+1a2,3
+>   "SAMPLE-REC": [
+>     {
+4,5c6,7
+<   "BALANCE": 0.000783380,
+<   "CREDIT-LIMIT": 0.000197023,
+---
+>       "BALANCE": 0.00,
+>       "CREDIT-LIMIT": 0.00,
+11a14,15
+>     }
+>   ]
 ```
 ### See Also:
  
