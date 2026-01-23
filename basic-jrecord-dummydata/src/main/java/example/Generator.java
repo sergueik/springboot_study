@@ -12,11 +12,15 @@ import net.sf.JRecord.Common.IFileStructureConstants;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public class Generator {
 	private static boolean debug = false;
+	private static boolean parse = false;
 
 	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws Exception {
@@ -31,6 +35,9 @@ public class Generator {
 
 		if (cli.containsKey("debug")) {
 			debug = true;
+		}
+		if (cli.containsKey("parse")) {
+			parse = true;
 		}
 		if (debug)
 			System.err.println(cli.keySet());
@@ -61,13 +68,30 @@ public class Generator {
 
 		// Create a new line
 		AbstractLine line = builder.newLine();
+		if (parse) {
+			if (debug)
+				System.err.println(String.format("Parse %s", copybookFile));
 
-		// Set fields by name (names must match the copybook)
-		line.setField("CUSTOMER-ID", "ABC123");
-		line.setField("CUSTOMER-NAME", name);
-		line.setField("ACCOUNT-NUMBER", new BigDecimal(accountnumber));
-		line.setField("BALANCE", new BigDecimal(balance));
+			List<CopybookMetaParser.FieldDef> fields = CopybookMetaParser.parse(Path.of(copybookFile));
 
+			for (var f : fields) {
+				Object v = DummyValueFactory.valueFor(f);
+				if (v == null)
+					continue;
+
+				try {
+					line.setField(f.name, v);
+				} catch (Exception e) {
+					System.err.println("⚠ Failed to set " + f.name + ": " + e.getMessage());
+				}
+			}
+		} else {
+			// Set fields by name (names must match the copybook)
+			line.setField("CUSTOMER-ID", "ABC123");
+			line.setField("CUSTOMER-NAME", name);
+			line.setField("ACCOUNT-NUMBER", new BigDecimal(accountnumber));
+			line.setField("BALANCE", new BigDecimal(balance));
+		}
 		// Get writer via LineIOProvider using file structure
 		AbstractLineWriter writer = LineIOProvider.getInstance().getLineWriter(IFileStructureConstants.IO_FIXED_LENGTH);
 
