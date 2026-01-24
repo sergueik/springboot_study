@@ -30,7 +30,7 @@ export MAVEN_LOCAL_REPO=$(pwd)/../basic-cobol2json-cb2xml-jrecord-build/build/m2
 ```
 and then build
 
-> NOTE: using minimalistic plain map `parseArgs` does not understand flags -  have to pass value for every arg:
+> NOTE: using minimalistic plain map based `parseArgs()` does not understand flags - one has to pass true/false value for every "flag" arg:
 
 ```cmd
 java -cp target\example.generator.jar;target\lib\* example.Generator  -outputfile example.bin -copybookfile example.cbl -parse true -debug true
@@ -247,7 +247,89 @@ diff -w expected.norm.json ..\basic-cobol2json-cb2xml-jrecord-build\actual.norm.
 >     }
 >   ]
 ```
+
+### Generate Test Data
+
+```powershell
+format-Hex -Path "Example\in\example.bin"
+```
+```text
+           Path: Example\in\example.bin
+
+           00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F
+
+00000000   C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1  ÁÁÁÁÁÁÁÁÁÁÁÁÁÁÁÁ
+00000010   C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 C1 F0 F0  ÁÁÁÁÁÁÁÁÁÁÁÁÁÁðð
+00000020   F0 F0 F3 F3 F3 F7 F6 C1 C1 F0 F0 F2 F5 F5 F4 F7  ððóóó÷öÁÁððòõõô÷
+00000030   F9 00 00 00 00 0C 00 00 00 00 0C C1 F0 F0 F7 F1  ù..........Áðð÷ñ
+00000040   F6 F1 F6 F4 C1                                   öñöôÁ
+```
+```powershell
+$filePath =  (resolve-path -path "Example\in\example.bin" ).path
+[Object[]]$bytes = get-content -path $filepath -encoding Byte -readcount 0
+$hexString = [System.BitConverter]::ToString($bytes).Replace('-', '')
+write-output $hexString
+ ```
+```text
+C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1C1F0F0F0F0F3F3F3F7F6C1C1F0F0F2F5F5F4F7F9000000000C000000000CC1F0F0F7F1F6F1F6F4C1
+```
+
+```powershell
+$filepath =  (resolve-path -path "Example\in\example.bin" ).path
+[Object[]]$bytes = get-content -path $filepath -encoding Byte -readcount 0
+$hexString = ($bytes | foreach-object { $_.ToString('X2') }) -join ''
+write-output $hexString
+```
+
+### Running the test
+```cmd
+mvn test
+```
+```text
+Running command:
+[c:\java\jdk-11.0.12\bin\java, -jar, basic-cobol2json-cb2xml-jrecord-build\build\cobol2json\target\cobolToJson-0.93.3.jar, -cobol, AppData\Local\Temp\coboltest8287271525148015959\copybook.cpy, -fileOrganisation, FixedWidth, -font, cp037, -input, AppData\Local\Temp\coboltest8287271525148015959\input.bin, -output, AppData\Local\Temp\coboltest8287271525148015959\output.json]
+...
+Verified value:  $.SAMPLE-REC[0].CREDIT-LIMIT = 0.0
+Verified value:  $.SAMPLE-REC[0].ACCOUNT-NUMBER = 33376
+Verified value:  $.SAMPLE-REC[0].STATUS-CODE = A
+Verified value:  $.SAMPLE-REC[0].LAST-ACTIVITY-DATE = 716164
+Verified value:  $.SAMPLE-REC[0].BALANCE = 0.0
+Verified value:  $.SAMPLE-REC[0].OPEN-DATE = 255479
+Verified value:  $.SAMPLE-REC[0].ACCOUNT-TYPE = AA
+Verified value:  $.SAMPLE-REC[0].RESERVED-FLAG = A
+Verified value:  $.SAMPLE-REC[0].CUSTOMER-ID = AAAAAAAAAA
+Verified value:  $.SAMPLE-REC[0].CUSTOMER-NAME = AAAAAAAAAAAAAAAAAAAA
+...
+Expected exception caught: No results for path: $['SAMPLE-REC'][0]['STATUS_CODE']
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 14.278 s - in example.IntegrationTest
+```
+### Note
+
+
+
+The test validates copybook binary record field JSON extraction accuracy without assuming or depending on how the system under test constructs JSON from the copybook and binary input thus
+ensuring consistent verification regardless of internal JSON-building logic.
+
+Since we already have a reliable Cobol Copybook-driven, JRecord-compatible binary data generator, constructing robust tests for specific display, numeric, and even more complex data types is straightforward and scalable
+
+#### Why There are Two Tests
+
+While the generated JSON is fully valid, asserting multiple JSON paths in a single test `test2` resulted in random failures due to path-specific type and formatting differences; testing one path per test ensures deterministic and fully reliable validation of all COBOL copybook data types:
+in repeated runs will observe:
+
+```text
+ Expected exception caught: No results for path: $['SAMPLE-REC'][0]['CREDIT_LIMIT']
+ Expected exception caught: No results for path: $['SAMPLE-REC'][0]['LAST_ACTIVITY_DATE']
+ Expected exception caught: No results for path: $['SAMPLE-REC'][0]['RESERVED_FLAG']
+ Expected exception caught: No results for path: $['SAMPLE-REC'][0]['OPEN_DATE'] 
+ Expected exception caught: No results for path: $['SAMPLE-REC'][0]['STATUS_CODE']	
+
+```
+> NOTE, sometimes the `test2` will fail in assertThat(actual, is(expected)) throwing `AssertionError`, which is not a subclass of `Exception` in Java — it’s a subclass of `Error`
+
+
 ### See Also:
+
  
  * [cb2xml](https://github.com/bmTas/cb2xml)
  * [JRecord](https://github.com/bmTas/JRecord)
