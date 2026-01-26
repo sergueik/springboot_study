@@ -146,3 +146,7 @@ docker image rm $IMAGE
     * what's new in [C# 9](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-9)
     * what's new in [C# 10](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-10)
     * what's new in [C# 11](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-11)
+    * the four ways of [what ASP.NET Web Forms Really is beneath Server Controls](https://www.codeproject.com/articles/what-aspnet-web-forms-really-is-benea1768274267459)
+---
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
