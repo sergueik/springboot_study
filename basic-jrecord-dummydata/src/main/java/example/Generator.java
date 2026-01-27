@@ -65,7 +65,6 @@ public class Generator {
 		if (cli.containsKey("maxrows"))
 			maxRows = Long.parseLong(cli.get("maxrows"));
 
-
 		if (cli.containsKey("name"))
 			name = cli.get("name").toUpperCase();
 		if (cli.containsKey("accountnumber"))
@@ -118,13 +117,16 @@ public class Generator {
 		AbstractLineWriter writer = LineIOProvider.getInstance().getLineWriter(IFileStructureConstants.IO_FIXED_LENGTH);
 
 		// Write line to FileOutputStream
+		RandomValueFactory factory = new RandomValueFactory();
 		writer.open(new java.io.FileOutputStream(outputFile));
 		for (int i = 0; i < maxRows; i++) {
-		    writer.write(line);
+			line.getFieldValue("ACCOUNT-NUMBER").set(factory.randomInt(100000));
+			line.getFieldValue("CUSTOMER-NAME").set(factory.randomString(10));
+			line.getFieldValue("BALANCE").set(factory.randomDecimal());
+			writer.write(line);
 		}
 		writer.close();
 
-		
 		if (debug)
 			System.err.println("EBCDIC row written to: " + outputFile);
 	}
