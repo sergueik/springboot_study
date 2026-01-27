@@ -1,0 +1,60 @@
+package example;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import net.sf.JRecord.JRecordInterface1;
+import net.sf.JRecord.Common.FieldDetail;
+import net.sf.JRecord.Common.IFileStructureConstants;
+import net.sf.JRecord.Details.AbstractLine;
+import net.sf.JRecord.Details.LayoutDetail;
+import net.sf.JRecord.Details.Line;
+import net.sf.JRecord.Details.RecordDetail;
+import net.sf.JRecord.Details.fieldValue.IFieldValue;
+import net.sf.JRecord.IO.AbstractLineReader;
+import net.sf.JRecord.def.IO.builders.ICobolIOBuilder;
+
+public class CopybookBatchReader implements Closeable {
+
+	private AbstractLineReader reader;
+	private LayoutDetail layout;
+
+	public CopybookBatchReader(Path copybookFile, Path dataFile, String page) throws Exception {
+
+		ICobolIOBuilder ioBuilder = JRecordInterface1.COBOL.newIOBuilder(copybookFile.toString())
+				.setFileOrganization(IFileStructureConstants.IO_FIXED_LENGTH).setFont(page); // EBCDIC
+
+		/*
+		 * ICobolIOBuilder ioBuilder = CopybookLoaderFactory.getInstance()
+		 * .getCobolIOBuilder(copybookFile.toString())
+		 * .setFileOrganization(Constants.IO_FIXED_LENGTH) .setFont("cp037");
+		 */
+		reader = ioBuilder.newReader(dataFile.toString());
+	}
+
+	public Map<String, Object> readOne() throws Exception {
+		AbstractLine line = reader.read();
+		if (line == null)
+			return null;
+
+		Map<String, Object> record = new LinkedHashMap<>();
+		LayoutDetail layoutDetail = line.getLayout();
+		RecordDetail recordDetail = layoutDetail.getRecord(0);
+		for (FieldDetail fieldDetail : recordDetail.getFields()) {
+			String fieldName = fieldDetail.getName();
+			IFieldValue fieldValue = line.getFieldValue(fieldName);
+			// NOTE: need to use asObject()
+			Object value = fieldValue.asString().trim();
+			record.put(fieldName, value);
+		}
+		return record;
+	}
+
+	@Override
+	public void close() throws IOException {
+		reader.close();
+	}
+}
