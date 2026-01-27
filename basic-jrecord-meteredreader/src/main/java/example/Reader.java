@@ -26,7 +26,7 @@ public class Reader {
 
 		String copybookFile = "example.cbl";
 		String inputFile = "example.bin";
-		Long maxcount = 1L;
+		Long maxRows = 1L;
 		String page = "cp037";
 
 		if (cli.containsKey("debug")) {
@@ -37,7 +37,7 @@ public class Reader {
 
 		if (cli.containsKey("help") || !cli.containsKey("copybookfile") || !cli.containsKey("inputfile")) {
 			System.err.println(String.format(
-					"Usage: %s " + "-copybookfile <filename> -outputfile <filename> page <ACP> -maxcount <number>\r\n",
+					"Usage: %s " + "-copybookfile <filename> -outputfile <filename> page <ACP> -maxrows <number>\r\n",
 					"jar"));
 			return;
 		}
@@ -48,8 +48,8 @@ public class Reader {
 
 		if (cli.containsKey("page"))
 			page = cli.get("page");
-		if (cli.containsKey("count"))
-			maxcount = Long.parseLong(cli.get("maxcount"));
+		if (cli.containsKey("maxrows"))
+			maxRows = Long.parseLong(cli.get("maxrows"));
 
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -59,7 +59,7 @@ public class Reader {
 		try (CopybookBatchReader reader = new CopybookBatchReader(Path.of(copybookFile), Path.of(inputFile), page)) {
 
 			Map<String, Object> record;
-			while ((record = reader.readOne()) != null && count < maxcount) {
+			while ((record = reader.readOne()) != null && count < maxRows) {
 				System.out.println(mapper.writeValueAsString(record));
 				count++;
 			}

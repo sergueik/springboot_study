@@ -21,7 +21,15 @@ java -cp target\example.metered-reader.jar;target\lib\* example.Reader -inputfil
   "RESERVED-FLAG": "A"
 }
 ```
+```sh
+java -cp target\example.metered-reader.jar;target\lib\* example.Reader -inputfile example.bin -copybookfile example.cbl -maxrows 10 | c:\tools\jq.exe "[.]" | jq ".[0:10]"
+```
+```sh
+java -cp target\example.metered-reader.jar;target\lib\* example.Reader -inputfile example.bin -copybookfile example.cbl -maxrows 1000000 -debug true 1>nul
+[inputfile, copybookfile, maxrows, debug]
+Processed 1000000 records in 6720 ms
 
+```
 ### See Also:
 
  

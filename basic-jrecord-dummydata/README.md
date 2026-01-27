@@ -33,7 +33,7 @@ and then build
 > NOTE: using minimalistic plain map based `parseArgs()` does not understand flags - one has to pass true/false value for every "flag" arg:
 
 ```cmd
-java -cp target\example.generator.jar;target\lib\* example.Generator  -outputfile example.bin -copybookfile example.cbl -parse true -debug true
+java -cp target\example.generator.jar;target\lib\* example.Generator  -outputfile example.bin -copybookfile example.cbl -parse true -debug true -maxrows 100000
 ```
 instead of `commandline-parser`
 

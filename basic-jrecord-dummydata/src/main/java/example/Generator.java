@@ -41,7 +41,7 @@ public class Generator {
 		Double balance = 1050.75;
 		String name = "JOHN DOE";
 		Long accountnumber = 123456789L;
-
+		Long maxRows = 1L;
 		if (cli.containsKey("debug")) {
 			debug = true;
 		}
@@ -62,6 +62,9 @@ public class Generator {
 			outputFile = cli.get("outputfile");
 		if (cli.containsKey("copybookfile"))
 			copybookFile = cli.get("copybookfile");
+		if (cli.containsKey("maxrows"))
+			maxRows = Long.parseLong(cli.get("maxrows"));
+
 
 		if (cli.containsKey("name"))
 			name = cli.get("name").toUpperCase();
@@ -83,7 +86,7 @@ public class Generator {
 		List<FieldDef> fields = CopybookMetaParser.parse(Path.of(copybookFile));
 
 		if (debug) {
-			System.out.println(gson.toJson(fields));
+			System.err.println(gson.toJson(fields));
 		}
 		// future-you (or CI reviewers) will thank you.
 		Map<String, Object> populatedValues = new LinkedHashMap<>();
@@ -116,9 +119,12 @@ public class Generator {
 
 		// Write line to FileOutputStream
 		writer.open(new java.io.FileOutputStream(outputFile));
-		writer.write(line);
+		for (int i = 0; i < maxRows; i++) {
+		    writer.write(line);
+		}
 		writer.close();
 
+		
 		if (debug)
 			System.err.println("EBCDIC row written to: " + outputFile);
 	}
