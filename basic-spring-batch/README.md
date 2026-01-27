@@ -1,17 +1,16 @@
 ### Info
 
-This directory contains a replica of [spring Boot / Spring Batch Example](https://github.com/TechPrimers/spring-batch-example-1) repository illustrating running jobs synchronously. Added the nethod to check the job status (thre is only one named job)
+This directory contains a replica of [spring Boot / Spring Batch Example](https://github.com/TechPrimers/spring-batch-example-1) repository illustrating running jobs synchronously. Added the method to check the job status (there is currently only one named job)
 
 ### Usage
 * build and start application
 ```sh
-mvn  spring-boot:run
+mvn spring-boot:run
 ```
-* access
-* endpoint for starting single Spring Batch job which will load a CSV to DB
+* access the REST endpoint for starting single Spring Batch job which will load a CSV to DB
  `http://localhost:8081/load`:
 ```sh
-for  cnt in $(seq 1 1 100); do curl -s -k http://localhost:8081/load;done
+for CNT in $(seq 1 1 100); do curl -s -k http://localhost:8081/load; done
 ```
 * browse the status page:
 ```sh
@@ -26,6 +25,10 @@ http://localhost:8081/status
 - `password` - Password.
 
 ### See Also
+
   * stackoverflow [discussion](https://stackoverflow.com/questions/51085410/spring-batch-job-execution-status-in-response-body) of finding the started job info
   * [introduction to Spring Batch](https://www.baeldung.com/introduction-to-spring-batch) - a little heavy
   * https://www.programcreek.com/java-api-examples/?api=org.springframework.batch.core.explore.JobExplorer
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

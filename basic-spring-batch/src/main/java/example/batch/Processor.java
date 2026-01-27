@@ -14,7 +14,7 @@ public class Processor implements ItemProcessor<User, User> {
 
 	private static final Map<String, String> DEPT_NAMES = new HashMap<>();
 
-	private final int timeout = 2000;
+	private final int timeout = 1000;
 
 	public Processor() {
 		DEPT_NAMES.put("001", "Technology");

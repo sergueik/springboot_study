@@ -30,10 +30,10 @@ import org.apache.logging.log4j.Logger;
 @RequestMapping("/")
 public class LoadController {
 
-	private static final Logger logger = LogManager
-			.getLogger(LoadController.class);
+	private static final Logger logger = LogManager.getLogger(LoadController.class);
 
 	private final String jobName = "ETL-load";
+
 	@Autowired
 	JobExplorer jobExplorer;
 
@@ -47,13 +47,11 @@ public class LoadController {
 	JobRepository jobRepository;
 
 	@GetMapping("status")
-	public BatchStatus status() throws JobParametersInvalidException,
-			JobExecutionAlreadyRunningException, JobRestartException,
-			JobInstanceAlreadyCompleteException, NoSuchJobException {
+	public BatchStatus status() throws JobParametersInvalidException, JobExecutionAlreadyRunningException,
+			JobRestartException, JobInstanceAlreadyCompleteException, NoSuchJobException {
 		BatchStatus jobStatus;
 		logger.info("Job names: " + jobExplorer.getJobNames());
-		List<JobInstance> jobInstances = jobExplorer.getJobInstances(jobName, 0,
-				10);
+		List<JobInstance> jobInstances = jobExplorer.getJobInstances(jobName, 0, 10);
 		int cnt = jobExplorer.getJobInstanceCount(jobName);
 
 		cnt = jobInstances.size();
@@ -61,30 +59,26 @@ public class LoadController {
 		if (cnt != 0) {
 			logger.info(String.format("Job %s executions count: %d", jobName,
 					jobExplorer.getJobExecutions(jobInstances.get(0)).size()));
-			JobExecution jobExecution = jobExplorer
-					.getJobExecutions(jobInstances.get(0)).get(0);
+			JobExecution jobExecution = jobExplorer.getJobExecutions(jobInstances.get(0)).get(0);
 			jobStatus = jobExecution.getStatus();
 		} else {
-			logger
-					.info(String.format("Checking Job %s repository execution", jobName));
-			JobExecution repositoryJobExecution = jobRepository
-					.getLastJobExecution("ETL-file-load", new JobParameters());
+			logger.info(String.format("Checking Job %s repository execution", jobName));
+			JobExecution repositoryJobExecution = jobRepository.getLastJobExecution("ETL-file-load",
+					new JobParameters());
 			if (repositoryJobExecution != null) {
 				jobStatus = repositoryJobExecution.getStatus();
 			} else {
 				jobStatus = BatchStatus.UNKNOWN;
 			}
 		}
-		logger.info(
-				String.format("Job %s status is %s", jobName, jobStatus.toString()));
+		logger.info(String.format("Job %s status is %s", jobName, jobStatus.toString()));
 
 		return jobStatus;
 	}
 
 	@GetMapping("load")
-	public BatchStatus load() throws JobParametersInvalidException,
-			JobExecutionAlreadyRunningException, JobRestartException,
-			JobInstanceAlreadyCompleteException, NoSuchJobException {
+	public BatchStatus load() throws JobParametersInvalidException, JobExecutionAlreadyRunningException,
+			JobRestartException, JobInstanceAlreadyCompleteException, NoSuchJobException {
 
 		Map<String, JobParameter> maps = new HashMap<>();
 		maps.put("time", new JobParameter(System.currentTimeMillis()));
@@ -92,17 +86,22 @@ public class LoadController {
 		// do we need to match parameters ?
 		// parameters = new JobParameters();
 		JobExecution jobExecution = jobLauncher.run(job, parameters);
-
-		logger.info(String.format("Job %s instance (in load): %d", jobName,
-				jobExplorer.getLastJobInstance(jobName).getInstanceId()));
-		logger.info("JobExecution: " + jobExecution.getStatus());
-
+		logger.info(String.format("Job name: %s", jobName));
+		JobInstance jobInstance = jobExplorer.getLastJobInstance(jobName);
+		if (jobInstance != null) {
+			logger.info(String.format("Last Job Instance: %s", jobInstance));
+			logger.info(String.format("Job instance id: %d", jobName, jobInstance.getInstanceId()));
+		} else
+			logger.info("Last Job Instance is null");
+		if (jobExecution == null) {
+			logger.info("JobExecution is null");
+		} else {
+			logger.info("JobExecution: " + jobExecution.getStatus());
+		}
 		logger.info(String.format("Batch %s is launched", job.getName()));
 		/*
-		while (jobExecution.isRunning()) {
-			logger.info("...");
-		}
-		*/
+		 * while (jobExecution.isRunning()) { logger.info("..."); }
+		 */
 		return jobExecution.getStatus();
 	}
 }
