@@ -1,4 +1,4 @@
-version: '2'
+version: '3.5'
 
 services:
   static-ip-container:
@@ -15,7 +15,8 @@ networks:
       config:
         - subnet: 172.20.0.0/16
           # NOTE: docker-compose v3+ do not actually allow setting the ipam.config.ip_range
-          # the next line leads to the error:
+          # the next line may lead to an error:
           # Additional properties are not allowed ('ip_range' was unexpected)
-          ip_range: 172.28.5.0/24
+          ip_range: 172.20.5.0/24
+
 
