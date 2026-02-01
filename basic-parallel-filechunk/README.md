@@ -16,10 +16,15 @@ java -cp target\example.parallel-filechunk.jar;target\lib\* example.ParallelBatc
 ```
 ```txt
 Usage: jar -file <filename> -page <ACP> -records <number> -size <number>
-```cmd
 ```
+```cmd
+java -cp target\example.parallel-filechunk.jar;target\lib\* example.ParallelBatchRunner -file example.bin -size 64 -records 10 -page utf8 -generate true
+```
+```text
+Generated file: C:\developer\sergueik\springboot_study\basic-parallel-filechunk\plain\example.bin
 
-
+```
+```cmd
 java -cp target\example.parallel-filechunk.jar;target\lib\* example.ParallelBatchRunner -file example.bin -size 64 -records 10
 ```
 ```text

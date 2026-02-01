@@ -9,6 +9,7 @@ import java.util.concurrent.*;
 
 import example.FileChunk;
 import example.ChunkWorker;
+import example.utils.Generator;
 import example.utils.PretendJRecord;
 
 import org.slf4j.Logger;
@@ -16,32 +17,44 @@ import org.slf4j.LoggerFactory;
 
 public class ParallelBatchRunner {
 
-	private final Logger logger = LoggerFactory.getLogger(ParallelBatchRunner.class);
+	private final static Logger logger = LoggerFactory.getLogger(ParallelBatchRunner.class);
 	private static boolean debug = false;
 
 	public static void main(String[] args) throws Exception {
 		Map<String, String> cli = parseArgs(args);
 		String file = "example.bin";
+		String copybook = "example.cbl";
 		Long records = 20L;
 		int size = 64;
+		int pool = 4;
 		String page = "cp037";
 
 		if (cli.containsKey("help") || !cli.containsKey("file") || !cli.containsKey("records")) {
-			System.err.println(String
-					.format("Usage: %s " + "-file <filename> -page <ACP> -records <number> -size <number>\r\n", "jar"));
+			System.err.println(String.format(
+					"Usage: %s -file <filename> -page <ACP> -records <number> -size <number> -copybook <filename> -pool <number>\r\n",
+					"jar"));
 			return;
 		}
 		if (cli.containsKey("file"))
 			file = cli.get("file");
+		if (cli.containsKey("page"))
+			page = cli.get("page");
+		if (cli.containsKey("copybook"))
+			copybook = cli.get("copybook");
 		if (cli.containsKey("records"))
 			records = Long.parseLong(cli.get("records"));
 		if (cli.containsKey("size"))
 			size = Integer.parseInt(cli.get("size"));
-		generateTestFile(Paths.get(file), records, size); // 20 records, 64 bytes each
-		new ParallelBatchRunner().run(Paths.get(file));
+		if (cli.containsKey("pool"))
+			pool = Integer.parseInt(cli.get("pool"));
+		if (cli.containsKey("generate")) {
+			new Generator(file, copybook, page, records, size).generateTestFile();
+			return;
+		}
+		new ParallelBatchRunner().run(Paths.get(file), pool);
 	}
 
-	public void run(Path file) throws Exception {
+	public void run(Path file, int poolSize) throws Exception {
 
 		logger.info("Runner hash={}", System.identityHashCode(this));
 
@@ -50,7 +63,7 @@ public class ParallelBatchRunner {
 
 		List<FileChunk> chunks = chunkFile(file, chunkSize);
 
-		ExecutorService executor = Executors.newFixedThreadPool(4);
+		ExecutorService executor = Executors.newFixedThreadPool(poolSize);
 		List<Future<?>> futures = new ArrayList<>();
 
 		for (FileChunk chunk : chunks) {
@@ -89,20 +102,6 @@ public class ParallelBatchRunner {
 		}
 
 		return chunks;
-	}
-
-	static void generateTestFile(Path file, long records, int recordSize) throws IOException {
-
-		try (OutputStream out = Files.newOutputStream(file)) {
-			for (long i = 1; i <= records; i++) {
-				byte b = (byte) ('0' + ((int) i % 10));
-				for (int j = 0; j < recordSize; j++) {
-					out.write(b);
-				}
-			}
-		}
-
-		System.out.println("Generated file: " + file.toAbsolutePath());
 	}
 
 	// Extremely simple CLI parser: -key value
