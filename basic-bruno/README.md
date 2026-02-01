@@ -238,20 +238,16 @@ Assertions
 
 ```
  > Note: much faster, reason unclear
-### See Also
 
-  * Bruno CLI: Run and Test Your Collections from the Command Line [blog](https://blog.usebruno.com/bruno-cli)
-  * https://github.com/usebruno/bruno/issues/5331
-  * https://github.com/davidkarlsen/bruno-image - a maintained bruno-cli image.  focus on the CLI functionality for test execution, not the GUI. 
-  * https://docs.usebruno.com/vs-code-extension/install-config 
-  * https://marketplace.visualstudio.com/items?itemName=bruno-api-client.bruno
+###  Misc
+```
 Verifying checksum of node-v20.9.0-linux-x64-musl.tar.xz
 a3cfa3eabebdcbb677256227b9ff44dad88bff37fd9de886077d670dc8fddb6b  node-v20.9.0-linux-x64-musl.tar.xz
 
 echo a3cfa3eabebdcbb677256227b9ff44dad88bff37fd9de886077d670dc8fddb6b  node-v20.9.0-linux-x64-musl.tar.xz | sha256sum -c  -
 node-v20.9.0-linux-x64-musl.tar.xz: OK
 
-
+```
 ### VS Code
 
 ```sh
@@ -323,3 +319,114 @@ s1 [Error]: The "path" argument must be of type string. Received type undefined
 
 ```
 https://code.visualstudio.com/docs/remote/vscode-server
+
+### Bruno Desktop Application
+
+#### Bruno Desktop App / Debian package
+
+installing via apt. Not trying snap on older Ubuntu.
+For the Bruno APT repository (hosted at debian.usebruno.com), the GPG key ID is:
+```text
+9FA6017ECABE0266
+```
+proceed directly
+```sh
+sudo mkdir -p /etc/apt/keyrings
+sudo mkdir /root/.gnupg
+
+sudo gpg --no-default-keyring \
+  --keyring /etc/apt/keyrings/bruno.gpg \
+  --keyserver keyserver.ubuntu.com \
+  --recv-keys 9FA6017ECABE0266
+```
+```text
+gpg: WARNING: unsafe permissions on homedir '/root/.gnupg'
+
+gpg: /root/.gnupg/trustdb.gpg: trustdb created
+gpg: key 9FA6017ECABE0266: public key "Anoop M D <anoop.md1421@gmail.com>" imported
+gpg: Total number processed: 1
+gpg:               imported: 
+```
+```sh
+sudo chmod 700 /root/.gnupg
+```
+
+```sh
+echo "deb [signed-by=/etc/apt/keyrings/bruno.gpg] http://debian.usebruno.com/ bruno stable" \
+  | sudo tee /etc/apt/sources.list.d/bruno.list
+```
+
+```sh
+sudo apt update
+sudo apt install bruno
+```
+```
+/usr/bin/bruno &
+```
+![Bruno Desktop App](screenshots/capture-bruno-electron.png)
+
+
+NOTE: the default command does not work
+```sh
+curl -fsSL "https://keyserver.ubuntu.com" | gpg --dearmor | sudo tee /etc/apt/keyrings/bruno.gpg > /dev/null
+```
+```txt
+gpg: no valid OpenPGP data found.
+```
+because https://keyserver.ubuntu.com won’t work (that’s just the keyserver homepage, not a direct key export endpoint), and
+search for `bruno` returns the internal server  error page.
+
+
+The bruno Debian package you installed (e.g., /opt/Bruno/bruno) is just the desktop Electron/API client app.
+That package does not include the CLI (command-line) tool that the VS Code extension expects.
+
+####  Bruno CLI (bru) is separate
+The CLI is published as an npm package named @usebruno/cli. 
+```sh
+nodejs --version
+```
+```txt
+v20.19.2
+```
+the version newer than 18 LTS is OK. You may also upgrade nodejs if you know what you are doing.
+```sh
+sudo npm install -g @usebruno/cli
+```
+this command will use unicode pseudo progress bar, docker-compose style. at the end
+```txt
+added 2 packages, removed 5 packages, and changed 459 packages in 1m
+
+61 packages are looking for funding
+  run `npm fund` for details
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.8.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.8.0
+npm notice To update run: npm install -g npm@11.8.0
+npm notice
+```
+This provides the bru command that you run in terminals and that the VS Code extension expects for certain commands
+
+NOTE: the VS Code Bruno extension requires desktop Electron features that are missing from lightweight container / remote / browser VS Code environment.
+There is no workaround; one must use the CLI directly.
+
+Alternatively, install Bruno VS Code Extension and run Bruno from VS Code
+
+![VS Code Bruno Local Screen](screenshots/capture-vscode.png "VS Code with Bruno Operation - Local")
+
+
+Download __Bruno VSIX__ from within __VS Code__ -
+there is no explicit download link on the [Bruno VS Code extension page](https://marketplace.visualstudio.com/items?itemName=bruno-api-client.bruno)
+
+![VS Code Bruno Download Extension](screenshots/download-extension.png "VS Code Downloading Bruno Extenison VSIX - via VS Code")
+
+### See Also
+
+  * Bruno CLI: Run and Test Your Collections from the Command Line [blog](https://blog.usebruno.com/bruno-cli)
+  * https://github.com/usebruno/bruno/issues/5331
+  * https://github.com/davidkarlsen/bruno-image - a maintained bruno-cli image.  focus on the CLI functionality for test execution, not the GUI. 
+  * https://docs.usebruno.com/vs-code-extension/install-config 
+  * https://marketplace.visualstudio.com/items?itemName=bruno-api-client.bruno
+
+---
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -5,7 +5,7 @@
 
 * Download extension
 
-![VS Code Bruno Download Extension](screenshots/vdownload-extension.png "VS Code Downloading Bruno Extenison VSIX - via VS Code")
+![VS Code Bruno Download Extension](screenshots/download-extension.png "VS Code Downloading Bruno Extenison VSIX - via VS Code")
 
 * build the image
 
