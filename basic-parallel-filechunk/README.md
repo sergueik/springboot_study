@@ -1,6 +1,7 @@
 ### Info
 conceptual engine (ParallelBatchRunner + ChunkWorker) expressed in three runtimes:
 
+
 ✅ Vanilla console app
 
 ✅ Spring Boot CommandLineRunner
@@ -9,7 +10,51 @@ conceptual engine (ParallelBatchRunner + ChunkWorker) expressed in three runtime
 
 All sharing the same core idea:
 
+### Usage
+```cmd
+java -cp target\example.parallel-filechunk.jar;target\lib\* example.ParallelBatchRunner -help
+```
+```txt
+Usage: jar -file <filename> -page <ACP> -records <number> -size <number>
+```cmd
+```
 
+
+java -cp target\example.parallel-filechunk.jar;target\lib\* example.ParallelBatchRunner -file example.bin -size 64 -records 10
+```
+```text
+Generated file: C:\developer\sergueik\springboot_study\basic-parallel-filechunk\plain\example.bin
+01:07:39 INFO  [ParallelBatchRunner] Runner hash=1077072774
+PretendJRecord hash=1153907750
+Pretend JRecord chunk size = 128
+01:07:39 INFO  [ParallelBatchRunner] Worker hash=35984028
+01:07:39 INFO  [ParallelBatchRunner] Worker hash=1759250827
+01:07:39 INFO  [ParallelBatchRunner] Worker hash=220695851
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-2 WorkerHash=1759250827 ParserHash=111386684 Chunk=1{}
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-1 WorkerHash=35984028 ParserHash=2112567355 Chunk=0{}
+01:07:39 INFO  [ParallelBatchRunner] Worker hash=636782475
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-3 WorkerHash=220695851 ParserHash=935614957 Chunk=2{}
+01:07:39 INFO  [ParallelBatchRunner] Worker hash=2143139988
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-4 WorkerHash=636782475 ParserHash=737314765 Chunk=3{}
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-2 FileChannelHash=140791448{}
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-4 FileChannelHash=624258243{}
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-3 FileChannelHash=956543333{}
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-1 FileChannelHash=1932319222{}
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-4 BufferHash=554364093{}
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-1 BufferHash=1997755211{}
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-3 BufferHash=2017377118{}
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-2 BufferHash=1230587043{}
+01:07:39 INFO  [PretendJRecord] Thread=pool-2-thread-3 PretendJRecordHash=935614957 Chunk=2 FirstByte=5 Bytes=128{}
+01:07:39 INFO  [PretendJRecord] Thread=pool-2-thread-1 PretendJRecordHash=2112567355 Chunk=0 FirstByte=1 Bytes=128{}
+01:07:39 INFO  [PretendJRecord] Thread=pool-2-thread-2 PretendJRecordHash=111386684 Chunk=1 FirstByte=3 Bytes=128{}
+01:07:39 INFO  [PretendJRecord] Thread=pool-2-thread-4 PretendJRecordHash=737314765 Chunk=3 FirstByte=7 Bytes=128{}
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-4 WorkerHash=2143139988 ParserHash=1678272248 Chunk=4{}
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-4 FileChannelHash=1543194971{}
+01:07:39 INFO  [ChunkWorker] Thread=pool-2-thread-4 BufferHash=1428579731{}
+01:07:39 INFO  [PretendJRecord] Thread=pool-2-thread-4 PretendJRecordHash=1678272248 Chunk=4 FirstByte=9 Bytes=128{}
+01:07:39 INFO  [ParallelBatchRunner] ALL JOBS FINISHED
+
+```
 #### Chunking the Work 
 the `ChunkWorker` class operation logic is lonear, emulating that of `JRecord`:
 
@@ -288,9 +333,26 @@ The best movies about deception behave like honest magicians: they explain the t
 
 The film is saying:
 
-* I told you this is performance.
-* I told you deception is happening.
-* and you still emotionally bought it.
+  * I told you this is performance.
+  * I told you deception is happening.
+  * and you still emotionally bought it.
+
+The alcohol / AI parallel highlights structural human vulnerabilities: knowledge alone isn’t enough to prevent harm. Just like nicotine or alcohol:
+
+  * Long lag between knowledge and behavior change:
+  + Smoking took decades to centuries to decline substantially in Western countries, even after scientific proof of harm.
+ 
+* Humans are bad at resisting gradual, habitual, socially reinforced behaviors, even when the cost is clear.
+
+AI overreliance could follow a similar path:
+
+People know the risks (skill erosion, cognitive atrophy, overtrust).
+
+Social, economic, or workplace pressures push usage upward anyway.
+
+Partial mitigation is psychologically powerful but insufficient
+
+Like the “one day sober” in Moscow-Petushki, small successes are meaningful but don’t guarantee long-term safety. in fact those small successes are meaningful for the individual “achiever,” only but they don’t guarantee long-term safety and cannot impress or reassure anyone else.
 
 As Tarantino says:
 * you have been just warned — what are you looking at? what do you expect to see?*
