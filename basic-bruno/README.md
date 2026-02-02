@@ -419,6 +419,36 @@ there is no explicit download link on the [Bruno VS Code extension page](https:/
 
 ![VS Code Bruno Download Extension](screenshots/download-extension.png "VS Code Downloading Bruno Extenison VSIX - via VS Code")
 
+#### IntelliJ IDEA
+
+> NOTE, starting with release
+[Version 2025.3 build 253.30387.90](https://youtrack.jetbrains.com/articles/IDEA-A-2100662610/IntelliJ-IDEA-2025.3.2-253.30387.90-build-Release-Notes) 
+released 22 January 2026 [there is no longer](https://youtrack.jetbrains.com/projects/IDEA/issues/IDEA-333148/Missing-Community-Edition-download-of-IntelliJ-IDEA-on-https-www.jetbrains.com-idea-nextversion-or-https-www.jetbrains.com-idea) a __Community Edition__ - the last of the type is  
+is [Version 2025.2.6.1 Build: 252.28539.33](https://youtrack.jetbrains.com/articles/IDEA-A-2100662603/IntelliJ-IDEA-2025.2.6.1-252.28539.33-build-Release-Notes)
+
+```sh
+curl -skLo ~/Downloads/ideaIC-2025.2.6.1.tar.gz https://download.jetbrains.com/idea/ideaIC-2025.2.6.1.tar.gz
+```
+
+```sh
+pushd ~/Downloads
+ls -hl idea*
+```
+```text
+-rw-rw-r-- 1 sergueik sergueik 1.5G Feb  1 23:17 idea-2025.3.2.tar.gz
+-rw-rw-r-- 1 sergueik sergueik 1.2G Feb  1 23:24 ideaIC-2025.2.6.1.tar.gz
+```
+```
+pushd ~/Downloads
+
+tar xzvf  ideaIC-2025.2.6.1.tar.gz idea-IC-252.28539.33/lib/ idea-IC-252.28539.33/modules/  idea-IC-252.28539.33/jbr/ idea-IC-252.28539.33/bin/ idea-IC-252.28539.33/product-info.json idea-IC-252.28539.33/plugins/plugin-classpath.txt idea-IC-252.28539.33/plugins/java idea-IC-252.28539.33/plugins/maven/ idea-IC-252.28539.33/plugins/Kotlin
+```
+
+```sh
+~/Downloads/idea-IC-252.28539.33/bin/idea
+```
+there is currently no Bruno Plugin available on the official JetBrains Marketplace. There is an open-source initiative within the Bruno community to explore and develop potential IDE integrations, including one for the IntelliJ platform. These efforts are still in early stages
+
 ### See Also
 
   * Bruno CLI: Run and Test Your Collections from the Command Line [blog](https://blog.usebruno.com/bruno-cli)
@@ -426,7 +456,8 @@ there is no explicit download link on the [Bruno VS Code extension page](https:/
   * https://github.com/davidkarlsen/bruno-image - a maintained bruno-cli image.  focus on the CLI functionality for test execution, not the GUI. 
   * https://docs.usebruno.com/vs-code-extension/install-config 
   * https://marketplace.visualstudio.com/items?itemName=bruno-api-client.bruno
-
+  * [IntelliJ IDEA Downloads - Other versions](https://www.jetbrains.com/idea/download/other/)
+  
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
