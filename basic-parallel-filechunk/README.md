@@ -1,6 +1,35 @@
+### JMH Introduction 
+#### Benchmark Execution Model
+The Java Microbenchmark Harness (JMH) is designed to measure the performance of small, well-defined units of Java code
+ (typically methods or classes) while avoiding JVM pitfalls such as dead-code elimination, JIT warmup bias, and constant folding.
+
+A typical JMH-based benchmark requires:
+
+* Identifying the System Under Test (SUT) - The SUT is the production class or method whose performance is to be measured (for example, a service method, parser, or transformation routine).
+* Addinding a boilerplate Benchmark Wrapper Class: annotated with JMH metadata:
+
+`@Benchmark` – identifies benchmark methods
+`@State(Scope.X)` – defines shared state
+`@Param` – supplies controlled inputs
+
+these class-level properties convey configuration and inputs to the SUT
+
+This wrapper isolates the SUT from framework concerns and allows JMH to control lifecycle, warmup, and measurement.
+
+* Identifying the original Program Entry Point
+JMH may even generate its own main entry point using the Maven/Gradle plugin or directlyusing the default one `org.openjdk.jmh.Main`.
+This entry point is separate from the application’s normal main(). The command line often must be filtered or synthesized so that:
+
+* JMH sees only its own options (-wi, -i, -f, etc.)
+* original application-specific arguments are hidden and replaced with JMH equivalents
+* conflicting flags do not reach the SUT or framework code
+
+#### Benchmark Application Execution Path
+
+![JMH execution](screenshots/jmh-flow.png)
+
 ### Info
 conceptual engine (ParallelBatchRunner + ChunkWorker) expressed in three runtimes:
-
 
 ✅ Vanilla console app
 

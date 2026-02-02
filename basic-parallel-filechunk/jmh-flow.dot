@@ -1,0 +1,40 @@
+digraph SimpleComparison {
+    rankdir=LR;
+    node [shape=box, style=rounded];
+
+    Begin [label="Begin Program"];
+    End [label="End Program"];
+
+    SUT [label="SUT Class / Method\n(core business logic)", shape=ellipse, style=bold];
+
+    // ---- Normal execution path ----
+    subgraph cluster_normal {
+        label="Normal Console Execution";
+        style=dashed;
+
+        Main [label="main()"];
+        Wrapper [label="Wrapper / Orchestration Code"];
+
+        Main -> Wrapper -> SUT;
+    }
+
+    // ---- JMH execution path ----
+    subgraph cluster_jmh {
+        label="JMH Benchmark Execution";
+        style=dashed;
+
+        JMHMain [label="JMH Entry Point"];
+        BenchmarkWrapper [label="Benchmark Wrapper Class\n@State @Param"];
+        BenchmarkMethod [label="@Benchmark Method"];
+        JMHStats [label="JMH Statistics & Reporting"];
+
+        JMHMain -> BenchmarkWrapper -> BenchmarkMethod -> SUT -> JMHStats;
+    }
+
+    // ---- Common workflow ----
+    Begin -> Main;
+    Begin -> JMHMain [label="alternative path", style=dotted];
+
+    SUT -> End;
+    JMHStats -> End;
+}
