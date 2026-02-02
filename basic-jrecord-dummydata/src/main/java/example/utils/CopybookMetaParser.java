@@ -9,9 +9,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("unused")
 public class CopybookMetaParser {
+
+	private static final Logger logger = LoggerFactory.getLogger(CopybookMetaParser.class);
 
 	public static class FieldDef {
 		public final String name;
@@ -77,7 +81,7 @@ public class CopybookMetaParser {
 			if (!pm.find()) {
 				// group or unsupported field
 				levelStack.push(level);
-				System.err.println("WARN: skipping group or unsupported field: " + name);
+				logger.warn("Skipping group or unsupported field: {}", name);
 				continue;
 			}
 

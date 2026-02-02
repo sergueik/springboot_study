@@ -61,8 +61,7 @@ public class Runner {
 
 		if (cli.containsKey("page"))
 			page = cli.get("page");
-		// Create COBOL IO builder
-		new Generator(outputFile, copybookFile, page, maxRows).generate();
+		new Generator(copybookFile, outputFile, page, maxRows).generate();
 	}
 
 	// Extremely simple CLI parser: -key value
