@@ -1,4 +1,4 @@
-package example;
+package example.utils;
 
 /**
  * Copyright 2026 Serguei Kouzmine
@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Random;
 
-import example.CopybookMetaParser.FieldDef;
-import example.CopybookMetaParser.PicType;
+import example.utils.CopybookMetaParser.FieldDef;
+import example.utils.CopybookMetaParser.PicType;
 
 public class DummyValueFactory {
 

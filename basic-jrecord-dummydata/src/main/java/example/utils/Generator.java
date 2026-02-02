@@ -1,4 +1,4 @@
-package example;
+package example.utils;
 
 /**
  * Copyright 2026 Serguei Kouzmine
@@ -23,60 +23,34 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import example.CopybookMetaParser.FieldDef;
+import example.utils.CopybookMetaParser.FieldDef;
 
 @SuppressWarnings("unused")
 public class Generator {
-	private static boolean debug = false;
-	private static boolean parse = false;
+
+	private String copybookFile;
+	private String outputFile;
+	private Long maxRows;
+	private String page;
+
 	private static Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 
-	@SuppressWarnings("deprecation")
-	public static void main(String[] args) throws Exception {
+	private boolean debug = false;
 
-		Map<String, String> cli = parseArgs(args);
+	public Generator(String copybookFile, String outputFile, String page, Long maxRows) {
+		this.copybookFile = copybookFile;
+		this.outputFile = outputFile;
+		this.page = page;
+		this.maxRows = maxRows;
+	}
 
-		String copybookFile = "example.cbl";
-		String outputFile = "sample.bin";
-		Double balance = 1050.75;
-		String name = "JOHN DOE";
-		Long accountnumber = 123456789L;
-		Long maxRows = 1L;
-		if (cli.containsKey("debug")) {
-			debug = true;
-		}
-		if (cli.containsKey("parse")) {
-			parse = true;
-		}
-		if (debug)
-			System.err.println(cli.keySet());
+	public void generate() throws Exception {
 
-		if (cli.containsKey("help") || !cli.containsKey("copybookfile") || !cli.containsKey("outputfile")) {
-			System.err.println(String.format("Usage: %s "
-					+ "-copybookfile <filename> -outputfile <filename> -name <name> -accountnumber <accountnumber> -balance <balance>\r\n"
-					+ "default vlues are name:%s accountnumber = %d balance = %6.2f\r\n", "jar", name, accountnumber,
-					balance));
-			return;
-		}
-		if (cli.containsKey("outputfile"))
-			outputFile = cli.get("outputfile");
-		if (cli.containsKey("copybookfile"))
-			copybookFile = cli.get("copybookfile");
-		if (cli.containsKey("maxrows"))
-			maxRows = Long.parseLong(cli.get("maxrows"));
-
-		if (cli.containsKey("name"))
-			name = cli.get("name").toUpperCase();
-		if (cli.containsKey("accountnumber"))
-			accountnumber = Long.parseLong(cli.get("accountnumber"));
-		if (cli.containsKey("balance"))
-			balance = Double.parseDouble(cli.get("balance"));
 		// Create COBOL IO builder
 		if (debug)
 			System.err.println(String.format("Create COBOL IO builder for %s", copybookFile));
 		ICobolIOBuilder builder = JRecordInterface1.COBOL.newIOBuilder(copybookFile)
-				.setFileOrganization(IFileStructureConstants.IO_FIXED_LENGTH).setFont("cp037"); // EBCDIC
-
+				.setFileOrganization(IFileStructureConstants.IO_FIXED_LENGTH).setFont(page);
 		// Create a new line
 		AbstractLine line = builder.newLine();
 		if (debug)
@@ -129,17 +103,5 @@ public class Generator {
 
 		if (debug)
 			System.err.println("EBCDIC row written to: " + outputFile);
-	}
-
-	// Extremely simple CLI parser: -key value
-	private static Map<String, String> parseArgs(String[] args) {
-		Map<String, String> map = new HashMap<>();
-		for (int i = 0; i < args.length - 1; i++) {
-			if (args[i].startsWith("-")) {
-				map.put(args[i].substring(1), args[i + 1]);
-				i++;
-			}
-		}
-		return map;
 	}
 }

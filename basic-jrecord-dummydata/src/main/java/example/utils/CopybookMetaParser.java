@@ -1,4 +1,4 @@
-package example;
+package example.utils;
 
 /**
  * Copyright 2026 Serguei Kouzmine
