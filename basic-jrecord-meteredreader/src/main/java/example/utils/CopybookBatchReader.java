@@ -1,4 +1,4 @@
-package example;
+package example.utils;
 
 import java.io.Closeable;
 import java.io.IOException;

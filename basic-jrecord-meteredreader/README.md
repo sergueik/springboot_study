@@ -5,7 +5,7 @@ mvn clean package
 ```
 
 ```sh
-java -cp target\example.metered-reader.jar;target\lib\* example.Reader -inputfile example.bin -copybookfile example.cbl -debug true -maxcount 10 | c:\tools\jq.exe "."
+java -cp target\example.metered-reader.jar;target\lib\* example.Runner -inputfile example.bin -copybookfile example.cbl -debug true -maxcount 10 | c:\tools\jq.exe "."
 ```
 ```json
 {
@@ -22,7 +22,7 @@ java -cp target\example.metered-reader.jar;target\lib\* example.Reader -inputfil
 }
 ```
 ```sh
-java -cp target\example.metered-reader.jar;target\lib\* example.Reader -inputfile example.bin -copybookfile example.cbl -maxrows 10 | c:\tools\jq.exe "[.]" | jq ".[0:10]"
+java -cp target\example.metered-reader.jar;target\lib\* example.Runner -inputfile example.bin -copybookfile example.cbl -maxrows 10 | c:\tools\jq.exe "[.]" | jq ".[0:10]"
 ```
 ```sh
 java -cp target\example.metered-reader.jar;target\lib\* example.Reader -inputfile example.bin -copybookfile example.cbl -maxrows 1000000 -debug true 1>nul

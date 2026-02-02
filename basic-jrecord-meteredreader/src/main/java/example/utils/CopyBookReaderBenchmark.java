@@ -1,4 +1,4 @@
-package example;
+package example.utils;
 
 import org.openjdk.jmh.annotations.*;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +22,6 @@ public class CopyBookReaderBenchmark {
 
 	@Benchmark
 	public void parseRecordsBencmark() throws Exception {
-		Reader.parseRecords(copybookFile, inputFile, maxRows, page);
+		new Reader(copybookFile, inputFile, page, maxRows).parseRecords();
 	}
 }

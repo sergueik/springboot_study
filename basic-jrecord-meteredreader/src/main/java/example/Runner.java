@@ -16,8 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import example.utils.Reader;
 
-public class Reader {
+public class Runner {
 
 	private static boolean debug = false;
 	private static boolean benchmark = false;
@@ -49,6 +50,7 @@ public class Reader {
 					"jar"));
 			return;
 		}
+
 		if (cli.containsKey("inputFile"))
 			inputFile = cli.get("inputFile");
 		if (cli.containsKey("copybookfile"))
@@ -59,6 +61,9 @@ public class Reader {
 		if (cli.containsKey("maxrows"))
 			maxRows = Long.parseLong(cli.get("maxrows"));
 		if (benchmark) {
+			// filter command line arguments separate Reader's app flags from JMH's:
+			// JMH is said to ignore unknown arguments but 
+			// it will actually attempt to parse them and fail
 			List<String> jmhArgs = new ArrayList<>();
 			for (int i = 0; i < args.length; i++) {
 				String arg = args[i];
@@ -72,32 +77,7 @@ public class Reader {
 				System.err.printf("Run jmh benchmarks with %s", String.join(" ", jmhArgs));
 			org.openjdk.jmh.Main.main(jmhArgs.toArray(new String[0]));
 		} else
-			parseRecords(copybookFile, inputFile, maxRows, page);
-
-	}
-
-	public static void parseRecords(final String copybookFile, final String inputFile, final long maxRows,
-			final String page) throws Exception {
-
-		ObjectMapper mapper = new ObjectMapper();
-
-		long start = System.currentTimeMillis();
-		int count = 0;
-		try (CopybookBatchReader reader = new CopybookBatchReader(Path.of(copybookFile), Path.of(inputFile), page)) {
-
-			Map<String, Object> record;
-			while ((record = reader.readOne()) != null && count < maxRows) {
-				String data = mapper.writeValueAsString(record);
-				if (!benchmark)
-					if (debug)
-						System.out.println(data);
-				count++;
-			}
-		}
-		long end = System.currentTimeMillis();
-		if (!benchmark)
-			if (debug)
-				System.err.printf("Processed %d records in %d ms%n", count, (end - start));
+			new Reader(copybookFile, inputFile, page, maxRows).parseRecords();
 	}
 
 	// Extremely simple CLI parser: -key value
