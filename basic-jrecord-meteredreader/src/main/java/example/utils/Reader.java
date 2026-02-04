@@ -37,7 +37,7 @@ public class Reader {
 
 	public void parseRecords() throws Exception {
 
-		System.err.println("ParseRecords copybook:" + copybookFile);
+		System.err.println("ParseRecords copybook:" + copybookFile + " input:" + inputFile + " maxRows: " + maxRows);
 
 		ObjectMapper mapper = new ObjectMapper();
 

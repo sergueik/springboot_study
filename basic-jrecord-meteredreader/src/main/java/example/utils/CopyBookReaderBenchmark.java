@@ -4,6 +4,7 @@ import org.openjdk.jmh.annotations.*;
 import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.Throughput)
+// @BenchmarkMode(Mode.SingleShotTime)
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.SECONDS)
 public class CopyBookReaderBenchmark {
