@@ -17,8 +17,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Reader {
 
+	private final static Logger logger = LoggerFactory.getLogger(Reader.class);
 	private static boolean debug = true;
 	String copybookFile = "example.cbl";
 	String inputFile = "example.bin";
@@ -28,7 +32,6 @@ public class Reader {
 	private static Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 
 	public Reader(String copybookFile, String inputFile, String page, Long maxRows) {
-		super();
 		this.copybookFile = copybookFile;
 		this.inputFile = inputFile;
 		this.maxRows = maxRows;
@@ -37,7 +40,7 @@ public class Reader {
 
 	public void parseRecords() throws Exception {
 
-		System.err.println("ParseRecords copybook:" + copybookFile + " input:" + inputFile + " maxRows: " + maxRows);
+		logger.info("ParseRecords copybook: {}  input: {}  maxRows: {}", copybookFile, inputFile, maxRows);
 
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -48,14 +51,13 @@ public class Reader {
 			Map<String, Object> record;
 			while ((record = reader.readOne()) != null && count < maxRows) {
 				String data = mapper.writeValueAsString(record);
-				if (debug)
-					System.out.println(data);
+
+				logger.info(data);
 				count++;
 			}
 		}
 		long end = System.currentTimeMillis();
-		if (debug)
-			System.err.printf("Processed %d records in %d ms%n", count, (end - start));
+		logger.info("Processed {} records in {} ms", count, (end - start));
 	}
 
 }
