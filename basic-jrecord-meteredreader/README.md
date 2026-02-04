@@ -163,17 +163,39 @@ java -Dlogback.configurationFile=logback-perf.xml -cp target\example.metered-rea
 
 ```
 ```text
-...
-21:50:18 INFO  [Reader] {"CUSTOMER-ID":"AAAAAAAAAA","CUSTOMER-NAME":"f8fd2389-d","ACCOUNT-NUMBER":"15028","ACCOUNT-TYPE":"AA","OPEN-DATE":"255479","BALANCE":"9625.82","CREDIT-LIMIT":"0.00","STATUS-CODE":"A","LAST-ACTIVITY-DATE":"716164","RESERVED-FLAG":"A"}
-21:50:18 INFO  [Reader] Processed 10 records in 1 ms
-694.474 ops/s
+
+java -Dlogback.configurationFile=logback-perf.xml -cp target\example.metered-reader.jar;target\lib\* example.Runner -debug true -benchmark true -inputfile example.bin -copybookfile example.cbl -maxrows 10  -p copybookFile=example.cbl -p inputFile=example.bin -p maxRows=10
+[inputfile, copybookfile, maxrows, p, debug, benchmark]
+Run jmh benchmarks with -p copybookFile=example.cbl -p inputFile=example.bin -p maxRows=10 -r 1 -wi 1 -f 1WARNING: An illegal reflective access operation has occurred
+WARNING: Illegal reflective access by org.openjdk.jmh.util.Utils (file:/C:/developer/sergueik/springboot_study/basic-jrecord-meteredreader/target/lib/jmh-core-1.37.jar) to method java.io.Console.encoding()
+WARNING: Please consider reporting this to the maintainers of org.openjdk.jmh.util.Utils
+WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+WARNING: All illegal access operations will be denied in a future release
+# JMH version: 1.37
+# VM version: JDK 11.0.12, OpenJDK 64-Bit Server VM, 11.0.12+7-LTS
+# VM invoker: c:\java\jdk-11.0.12\bin\java.exe
+# VM options: -Dlogback.configurationFile=logback-perf.xml
+# Blackhole mode: full + dont-inline hint (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 1 iterations, 200 ms each
+# Measurement: 2 iterations, 1 s each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Throughput, ops/time
+# Benchmark: example.utils.CopyBookReaderBenchmark.parseRecordsBencmark
+# Parameters: (copybookFile = example.cbl, inputFile = example.bin, maxRows = 10, page = cp037)
+
+# Run progress: 0.00% complete, ETA 00:00:02
+# Fork: 1 of 1
+# Warmup Iteration   1: 1.917 ops/s
+Iteration   1: 516.887 ops/s
+Iteration   2: 963.301 ops/s
 
 
 Result "example.utils.CopyBookReaderBenchmark.parseRecordsBencmark":
-  514.336 ops/s
+  740.094 ops/s
 
 
-# Run complete. Total time: 00:00:03
+# Run complete. Total time: 00:00:02
 
 REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
 why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
@@ -182,7 +204,7 @@ the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from th
 Do not assume the numbers tell you what you want them to tell.
 
 Benchmark                                     (copybookFile)  (inputFile)  (maxRows)  (page)   Mode  Cnt    Score   Error  Units
-CopyBookReaderBenchmark.parseRecordsBencmark     example.cbl  example.bin         10   cp037  thrpt    2  514.336          ops/s
+CopyBookReaderBenchmark.parseRecordsBencmark     example.cbl  example.bin         10   cp037  thrpt    2  740.094          ops/s
 ```
 ### NOTE
 
