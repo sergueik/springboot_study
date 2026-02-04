@@ -226,6 +226,85 @@ This is intentional and required for accuracy.
 By default JMH uses time-based iterations, not count-based.
 
 Each iteration runs for about 1 second (default):
+### Cons Pros
+## Hot-Path vs End-to-End Spring Batch Benchmarking
+
+When benchmarking a system with Spring Batch and jRecord parsing, there are **two main approaches**, each with distinct trade-offs.
+
+### 1️⃣ Hot-Path / Microbenchmark
+
+**Goal:** Measure the actual work you care about (e.g., jRecord parsing) as cleanly as possible.
+
+**Characteristics:**
+- Calls only the **core method(s)** (`CopyBookReader.parseRecord`)
+- Uses **in-memory input**, minimal setup
+- Can be parallelized easily (ExecutorService / ForkJoinPool / Spring Batch Step TaskExecutor)
+- Logging silenced → no noisy output
+- JMH-friendly: iterations, warmup, forks controlled
+
+**Advantages:**
+- Measures **true acceleration** from chunking, multi-threading, or code changes
+- Results are reproducible and interpretable
+- Lightweight: no Spring Batch or DB overhead
+- Faster iterations → quicker tuning and experimentation
+
+**Challenges:**
+- Not “realistic” end-to-end: ignores Spring Batch infrastructure
+- No insight into framework-induced delays, transaction commits, or listeners
+- May be dismissed by some developers as “not the full job”
+
+**When to use:** To optimize and compare **algorithmic improvements** or parallelization effects.
+
+---
+
+### 2️⃣ End-to-End / Job Benchmark
+
+**Goal:** Measure performance of **the full Spring Batch Job**, including all Steps, readers, writers, and infrastructure.
+
+**Characteristics:**
+- Uses Spring Boot / Spring Batch context, JobLauncher, JobRepository, StepExecution
+- Might include in-memory or DB-based readers/writers
+- Parallel execution controlled via TaskExecutor in Steps
+- Logging may be suppressed for clarity
+
+**Advantages:**
+- Shows **realistic throughput** in production-like scenario
+- Includes framework overhead, so results represent what users actually experience
+- Good for **capacity planning**
+
+**Challenges:**
+- High overhead: Spring Batch setup, context initialization, listeners, commit operations dominate runtime
+- Harder to isolate improvements in the “hot path”
+- Slow iterations → slower JMH benchmarking
+- Results are noisier, harder to attribute to a single change
+- Requires careful configuration to silence logging and avoid extra I/O
+
+**When to use:** To benchmark **end-to-end job performance** or **validate production throughput**, after microbenchmarks are stable.
+
+---
+
+### 🔹 Summary Table
+
+| Aspect | Hot-path | End-to-end job |
+|--------|----------|----------------|
+| What is measured | Core processing / algorithm | Full Spring Batch execution |
+| Overhead | Minimal | Significant (Step, JobLauncher, listeners) |
+| Reproducibility | High | Medium |
+| Iteration speed | Fast | Slow |
+| Insights | Pure acceleration | Realistic throughput |
+| Complexity | Low | High |
+
+---
+
+### ✅ Practical approach
+
+1. **Start with hot-path benchmark** to tune the core jRecord logic and parallel chunk processing.
+2. **Optionally run end-to-end job benchmark** to see how framework overhead affects actual throughput.
+3. **Document both** — it’s very persuasive:
+   - “raw acceleration = X ops/sec, full job throughput = Y ops/sec”
+
+> Essentially, **hot-path is usually the winner** for understanding performance improvements.
+> End-to-end benchmarks are more for validation and real-world context.
 
 ### See Also:
 

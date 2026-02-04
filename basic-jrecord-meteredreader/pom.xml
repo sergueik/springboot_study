@@ -36,8 +36,8 @@
     <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
     <jmh.version>1.37</jmh.version>
     <json-path.version>2.9.0</json-path.version>
-    <logback.version>1.2.13</logback.version>
-    <slf4j.version>1.7.36</slf4j.version>
+    <logback.version>1.5.6</logback.version>
+    <slf4j.version>2.0.13</slf4j.version>
     <snakeyaml.version>2.0</snakeyaml.version>
   </properties>
   <dependencies>
