@@ -306,6 +306,62 @@ When benchmarking a system with Spring Batch and jRecord parsing, there are **tw
 > Essentially, **hot-path is usually the winner** for understanding performance improvements.
 > End-to-end benchmarks are more for validation and real-world context.
 
+### Bottom Line
+JobLauncher is the library interface for starting a Spring Batch Job.
+
+You cannot call jobLauncher.run() meaningfully without a Spring context containing the Job and Step beans.
+
+In a JMH benchmark:
+
+Initialize Spring context once:
+```java
+@Setup(Level.Trial)
+public void setup() {
+    context = new AnnotationConfigApplicationContext();
+    context.register(BatchConfig.class); // your Job/Step beans
+    context.refresh();
+
+    jobLauncher = context.getBean(JobLauncher.class);
+    job = context.getBean(Job.class);
+}
+```
+Fetch JobLauncher and Job beans.  Benchmark calls:
+```java
+@Benchmark
+public void runFullJob() throws Exception {
+    jobLauncher.run(job, params);
+}
+```
+Close context after all iterations:
+```java
+@TearDown(Level.Trial)
+public void tearDown() {
+   context.close();
+}
+```
+
+If one is calling Spring Batch code without a context:
+
+  * There is no `JobLauncher` bean
+  * There is no `JobRepository`, `StepExecution`, or `Step` beans
+  * Calling `new SimpleJobLauncher()` manually is possible, but one will need to manually configure the `JobRepository`, `PlatformTransactionManager`, etc. — essentially re-implementing the Spring Batch plumbing.
+
+Spring Batch is not a standalone process. It runs inside a Spring context. Normally you get JobLauncher by:
+```java
+@Autowired
+private JobLauncher jobLauncher;
+
+@Autowired
+private Job job;
+```
+
+or via manual context setup:
+
+```java
+AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+context.register(BatchConfig.class); // your @Configuration with Job/Step beans
+context.refresh();
+```
 ### See Also:
 
  
