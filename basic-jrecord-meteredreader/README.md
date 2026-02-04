@@ -362,6 +362,32 @@ AnnotationConfigApplicationContext context = new AnnotationConfigApplicationCont
 context.register(BatchConfig.class); // your @Configuration with Job/Step beans
 context.refresh();
 ```
+## 🔑 Concise Ranking Table (Key Arguments Only)
+
+| Criterion | **#1 Console App (CLI + Threads + Chunks)** | **#2 Spring CommandLineRunner (wraps #1)** | **#3 Spring Batch Job** |
+|----------|---------------------------------------------|---------------------------------------------|--------------------------|
+| Control of chunk & thread parameters | ⭐⭐⭐ **Full, direct** | ⭐⭐⭐ **Same as #1** | ⭐ Framework-controlled |
+| Code reuse from baseline | ⭐ Native | ⭐ Full reuse | ❌ Rewrite required |
+| Framework in hot path | ❌ None | ❌ None | ✅ Yes |
+| Validity of JMH performance findings | ⭐⭐⭐ Strong | ⭐⭐⭐ Strong | ⭐ Weak / assumed |
+| Effort vs performance insight | ⭐⭐⭐ Best ROI | ⭐⭐ Good | ⭐ Low ROI |
+| Risk of fighting the framework | ❌ None | ❌ None | ⭐ High |
+
+---
+
+## 🏆 Final Ranking (by stated priorities)
+
+1. **#1 Console App** – baseline & performance lab
+2. **#2 Spring CommandLineRunner** – same engine, better wiring
+3. **#3 Spring Batch** – different engine, uncertain carryover
+
+---
+
+## 🧠 One-paragraph takeaway
+
+The console implementation (#1) allows direct control of chunking and threading and is therefore the most reliable environment for discovering performance gains with JMH. These gains transfer trivially to the Spring CommandLineRunner variant (#2) because the same code path is reused. In contrast, Spring Batch (#3) enforces its own execution model, requires rewriting the core loop, and makes performance improvements only “expected to hold” rather than demonstrably reproducible.
+
+
 ### See Also:
 
  
