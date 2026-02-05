@@ -1,0 +1,72 @@
+digraph SpringBatchFlow {
+    rankdir=LR;  // Left-to-right flow
+
+    // Node styles
+    node [shape=box, style=rounded, fontname="Helvetica"];
+    edge [arrowhead=vee];
+
+    // BEGINNER COMPONENTS (left column)
+    subgraph cluster_beginner {
+        label="Beginner Components";
+        style=dashed;
+        fontcolor=blue;
+        color=blue;
+
+        chunkSize [label="pretendJRecordDetermineChunkSize()"];
+        chunkFile [label="chunkFile(file, chunkSize)"];
+        executor [label="ExecutorService"];
+        chunkWorker [label="ChunkWorker.run()"];
+        lineProcess [label="read/process/write line"];
+        futuresGet [label="futures.get() / wait"];
+    }
+
+    // SPRING BATCH COMPONENTS (main flow)
+    subgraph cluster_batch {
+        label="Spring Batch Industrial Flow";
+        style=solid;
+        color=black;
+
+        job [label="Job\n(FileProcessingJob)", shape=ellipse];
+        master [label="Master Step\n(PartitionedStep / Manager)"];
+        partitioner [label="Partitioner\ncreates ExecutionContext per chunk"];
+        taskExecutor [label="TaskExecutor\n(ThreadPoolTaskExecutor)"];
+
+        // Parallel slave steps
+        subgraph cluster_slaves {
+            label="Parallel Slave Steps";
+            style=dotted;
+            color=gray;
+            slave1 [label="Slave Step #1"];
+            slave2 [label="Slave Step #2"];
+            slave3 [label="Slave Step #3"];
+        }
+
+        // Chunk-oriented pipeline
+        subgraph cluster_pipeline {
+            label="Chunk-Oriented Processing";
+            style=dashed;
+            color=green;
+            reader [label="ItemReader\n(JRecord)"];
+            processor [label="ItemProcessor\n(business logic)"];
+            writer [label="ItemWriter\n(output)"];
+        }
+
+        job -> master -> partitioner -> taskExecutor;
+        taskExecutor -> slave1;
+        taskExecutor -> slave2;
+        taskExecutor -> slave3;
+
+        slave1 -> reader -> processor -> writer;
+        slave2 -> reader;
+        slave3 -> reader;
+    }
+
+    // Mapping beginner components to Spring Batch
+    chunkSize -> partitioner [label="maps to", style=dotted, color=blue];
+    chunkFile -> partitioner [label="maps to", style=dotted, color=blue];
+    executor -> taskExecutor [label="maps to", style=dotted, color=blue];
+    chunkWorker -> slave1 [label="maps to", style=dotted, color=blue];
+    lineProcess -> reader [label="maps to", style=dotted, color=blue];
+    futuresGet -> job [label="maps to", style=dotted, color=blue];
+}
+

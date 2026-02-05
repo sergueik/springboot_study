@@ -1,5 +1,65 @@
 ### Info
 
+### TODO
+
+![conversion](screenshots/conversion.png)
+
+### 🎯 Baby-goal simplified file processor
+
+#### 1️⃣ Assumptions
+
+| Aspect | Assumption in simplified project |
+|--------|--------------------------------|
+| Line validity | Every line is valid; no validation errors expected |
+| Inter-line dependencies | None; lines are independent |
+| Failure recovery | None; if a worker fails, the whole run fails |
+| Restartability | Not supported |
+| Metrics | Optional, lightweight; mainly throughput |
+| Thread safety | Trivial; each worker owns its own file chunk |
+
+---
+
+#### 2️⃣ Responsibilities
+
+- Split a **big file** into **N chunks** (`chunkFile`)  
+- Assign each chunk to a **ChunkWorker**  
+- Process chunks in parallel using a **fixed thread pool**  
+- Optionally log per-worker **lines processed / progress**  
+- Measure **throughput / elapsed time** to study acceleration vs chunk count and pool size  
+
+---
+
+#### 3️⃣ Benchmarking intent
+
+You are explicitly targeting **performance prediction**:
+
+| Parameter | What to test |
+|-----------|--------------|
+| Number of chunks | e.g., 10, 50, 100 |
+| Thread pool size | e.g., 10 |
+| Metrics | Wall-clock time, throughput |
+| Observation | Acceleration vs number of chunks / threads |
+
+- Expect **linear acceleration up to a point** (e.g., 10 threads + 10 chunks → ~10× speed improvement)  
+- Diminishing returns as chunks increase beyond a threshold (50 → 100 chunks)  
+
+This gives you **empirical insight** before committing to Spring Batch complexity.
+
+---
+
+#### 4️⃣ Advantages of freezing this version
+
+1. **Controlled benchmark**  
+   - Only parsing logic affects performance; no external Spring Batch metadata overhead  
+2. **Predictable behavior**  
+   - Every run is deterministic for given chunk/thread configuration  
+3. **Simple tuning knobs**  
+   - Adjust `chunkSize` and `poolSize` independently  
+4. **Baseline for next target**  
+   - Provides a “speed ceiling” reference when you eventually migrate to Spring Batch
+
+
+### Usage
 ```sh
 mvn clean package
 ```
