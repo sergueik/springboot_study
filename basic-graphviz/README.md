@@ -25,11 +25,22 @@ docker run --rm $NAME -help
 Usage: jar -outputFile <filename> -inputfile <filename>
 ```
 ```sh
-docker run --rm -w $(pwd):/app $NAME -inputfile example.dot -outputfile example.png
+docker run --rm -w /app -v $(pwd):/app $NAME -inputfile example.dot -outputfile example.png
 ```
 ```text
 03:47:15.860 INFO  example.Example - converting example.dot example.png
 ```
+
+### Troubleshooting
+
+```sh
+docker run --rm -w /app -v $(pwd):/app --entrypoint '' $NAME java -jar /app/app.jar -inputfile example.dot -outputfile example.png --help
+```
+```text
+Error: Unable to access jarfile /app/app.jar
+```
+
+
 ### See Also
   * https://github.com/omerio/graphviz-webapp
   * https://hub.docker.com/r/mejran/graphviz-server

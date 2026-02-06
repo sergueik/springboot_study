@@ -1,0 +1,26 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="
+            http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3
+            https://maven.apache.org/xsd/assembly-1.1.3.xsd">
+
+  <id>fat</id>
+  <formats>
+    <format>jar</format>
+  </formats>
+
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+  <dependencySets>
+    <dependencySet>
+      <unpack>true</unpack>
+      <useProjectArtifact>true</useProjectArtifact>
+
+      <excludes>
+        <exclude>com.eclipsesource.j2v8:*</exclude>
+      </excludes>
+    </dependencySet>
+  </dependencySets>
+
+</assembly>
+
