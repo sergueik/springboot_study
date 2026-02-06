@@ -3,22 +3,23 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>graphviz-java</artifactId>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
   <properties>
-    <mainClass>Example</mainClass>
+    <mainClass>${project.groupId}.Example</mainClass>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
     <java.version>11</java.version>
+    <slf4j.version>2.0.13</slf4j.version>
     <logback.version>1.5.6</logback.version>
     <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-    <slf4j.version>2.0.13</slf4j.version>
+    <maven-shade-plugin.version>3.5.0</maven-shade-plugin.version>
+
   </properties>
 
 <dependencies>
@@ -75,7 +76,7 @@
     <version>${slf4j.version}</version>
   </dependency>
 
-</dependencies>
+ </dependencies>
 
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
@@ -98,32 +99,36 @@
           <showDeprecation>true</showDeprecation>
         </configuration>
       </plugin>
-      <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/lib</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven-surefire-plugin.version}</version>
-        <configuration>
-          <includes>
-            <include>**/*Test.java</include>
-          </includes>
-          <useModulePath>false</useModulePath>
-          <trimStackTrace>false</trimStackTrace>
-        </configuration>
-      </plugin>
+ <plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-shade-plugin</artifactId>
+  <version>3.5.0</version>
+  <executions>
+    <execution>
+      <phase>package</phase>
+      <goals>
+        <goal>shade</goal>
+      </goals>
+      <configuration>
+        <filters>
+          <filter>
+            <artifact>com.eclipsesource.j2v8:*</artifact>
+            <excludes>
+              <exclude>**</exclude>
+            </excludes>
+          </filter>
+        </filters>
+
+        <transformers>
+          <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+            <mainClass>${mainClass}</mainClass>
+          </transformer>
+        </transformers>
+
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <version>${maven-resources-plugin.version}</version>
