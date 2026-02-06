@@ -456,6 +456,9 @@ The console implementation (#1) allows direct control of chunking and threading 
  * [CobolToJson](https://github.com/bmTas/CobolToJson)
  * [Sourceforge download](https://sourceforge.net/projects/coboltojson/) convert cobol Data Files to JSON
  * [Sourceforge download](https://sourceforge.net/projects/jrecord/files/JRecord/0.93.3/JRecord-0.93.3-src.zip/download) of JRecord jar bundle (old version)
+ * [sourceforge project](https://sourceforge.net/projects/jrecord/) 
+ * [JRecord Wiki](https://sourceforge.net/p/jrecord/wiki/Home/)
+ * [JRecord Discussion](https://sourceforge.net/p/jrecord/discussion/)
 
 ---
 ### Author
