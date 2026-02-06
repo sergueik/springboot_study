@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>info.dawelbeit</groupId>
-  <artifactId>dot-server</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <groupId>example</groupId>
+  <artifactId>graphviz-server</artifactId>
+  <version>0.2.0-SNAPSHOT</version>
   <repositories>
     <repository>
       <id>repository.jboss.org-public</id>
@@ -12,8 +12,7 @@
     </repository>
   </repositories>
   <properties>
-    <mainClass>${project.groupId}.Example</mainClass>
-              <mainClass>info.dawelbeit.graphviz.dot.DotGraphics</mainClass>
+    <mainClass>${project.groupId}.DotGraphics</mainClass>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
@@ -51,35 +50,22 @@
       <version>4.3</version>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.15</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.sun.jmx</groupId>
-          <artifactId>jmxri</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.jdmk</groupId>
-          <artifactId>jmxtools</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.jms</groupId>
-          <artifactId>jms</artifactId>
-        </exclusion>
-      </exclusions>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+	<version>${logback.version}</version>
+    </dependency>     
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
     </dependency>
   </dependencies>
   <build>
-    <sourceDirectory>src</sourceDirectory>
-    <!-- <sourceDirectory>src/main/java</sourceDirectory>-->
+    <sourceDirectory>src/main/java</sourceDirectory>
     <testSourceDirectory>src/test/java</testSourceDirectory>
     <resources>
       <resource>
-        <directory>src</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
+	      <directory>src/main/resources</directory>
       </resource>
     </resources>
     <plugins>
@@ -112,7 +98,7 @@
           </archive>
           <archive>
             <manifest>
-              <mainClass>info.dawelbeit.graphviz.dot.DotGraphics</mainClass>
+              <mainClass>example.DotGraphics</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
