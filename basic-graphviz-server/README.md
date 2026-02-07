@@ -175,6 +175,18 @@ docker run --rm \
 | GraalVM distributions           | ✅ Yes              | Full GraalVM CE or Enterprise builds include GraalJS and Truffle languages. |
 
 
+
+### Memorable ChatGPT Feedback Openers
+
+![That makes sense](screenshots/capture-chatgpt1.png)
+
+![That explains it completely](screenshots/capture-chatgpt2.png)
+
+![That's exactly what I was expecting](screenshots/capture-chatgpt3.png)
+
+
+
+
 ### See Also
   * https://github.com/omerio/graphviz-server
   * https://github.com/omerio/graphviz-webapp
