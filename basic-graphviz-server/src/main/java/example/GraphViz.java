@@ -1,8 +1,11 @@
 package example;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import guru.nidi.graphviz.engine.*;
+import guru.nidi.graphviz.model.*;
+import guru.nidi.graphviz.parse.Parser;
 
+import java.io.*;
+import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -13,17 +16,22 @@ import java.io.InputStreamReader;
 
 import org.apache.commons.lang3.StringUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GraphViz {
 
 	private static final Logger log = LoggerFactory.getLogger(GraphViz.class);
 
+	
+	static {
+		// Choose engine (JdkEngine = Nashorn/viz.js)
+	    Graphviz.useEngine(new GraphvizJdkEngine());
+	}
+	
 	private static String TEMP_DIR = "/tmp"; // Linux
 	// private static String TEMP_DIR = "c:/temp"; // Windows
 
-	// private static String DOT = "/usr/local/bin/dot"; // MAC
-	private static String DOT = "/usr/bin/dot"; // Linux
-	// private static String DOT = "c:/Program Files/Graphviz/bin/dot.exe"; //
-	// Windows
 
 	// public static final String GRAPH_START = "digraph G {";
 	public static final String GRAPH_START = "graph {";
@@ -64,9 +72,14 @@ public class GraphViz {
 				return img_stream;
 			}
 			return null;
-		} catch (java.io.IOException ioe) {
+		} catch (IOException e) {
+			log.error("Exdeption processing: {}", e.toString(), e);
+			return null;
+		} catch (Exception e) {
+			log.error("Exdeption processing: {}", e.toString(), e);
 			return null;
 		}
+
 	}
 
 	public int writeGraphToFile(byte[] img, String file) {
@@ -85,41 +98,24 @@ public class GraphViz {
 		return 1;
 	}
 
-	private byte[] get_img_stream(File dot, String type) {
-		File img;
-		byte[] img_stream = null;
-		log.info("get image stream from {}", dot.toString());
-		try {
-			img = File.createTempFile("graph_", "." + type, new File(GraphViz.TEMP_DIR));
-			Runtime rt = Runtime.getRuntime();
+	public byte[] get_img_stream(File dotFile, String type) throws Exception {
+		log.info("Rendering graph {} using graphviz-java engine, format={}", dotFile.toString(), type);
 
-			// patch by Mike Chenault
-			String[] args = { DOT, "-T" + type, dot.getAbsolutePath(), "-o", img.getAbsolutePath() };
-			Process p = rt.exec(args);
-
-			p.waitFor();
-
-			FileInputStream in = new FileInputStream(img.getAbsolutePath());
-			img_stream = new byte[in.available()];
-			in.read(img_stream);
-			// Close it if we need to
-			if (in != null)
-				in.close();
-
-			if (img.delete() == false)
-				log.warn("Warning: " + img.getAbsolutePath() + " could not be deleted!");
-		} catch (java.io.IOException ioe) {
-			log.warn("Error:    in I/O processing of tempfile in dir " + GraphViz.TEMP_DIR + "\n");
-			log.warn("       or in calling external command");
-			log.error("stacktrace", ioe);
-		} catch (java.lang.InterruptedException ie) {
-			log.error("Error: the execution of the external program was interrupted", ie);
+		MutableGraph g;
+		try (FileInputStream fis = new FileInputStream(dotFile)) {
+			g = new Parser().read(fis);
 		}
 
-		return img_stream;
+		Format format = Format.valueOf(type.toUpperCase());
+
+		try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+			Graphviz.fromGraph(g).render(format).toOutputStream(byteArrayOutputStream);
+
+			return byteArrayOutputStream.toByteArray();
+		}
 	}
 
-	private File writeDotSourceToFile(String str) throws java.io.IOException {
+	private File writeDotSourceToFile(String str) throws IOException {
 		File temp;
 		try {
 			temp = File.createTempFile("graph_", ".dot.tmp", new File(GraphViz.TEMP_DIR));
