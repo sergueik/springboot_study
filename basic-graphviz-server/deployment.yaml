@@ -1,0 +1,57 @@
+# k8s/fake-graphviz-deployment.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: graphviz-config
+data:
+  # placeholder for any app properties
+  application.properties: |
+    # stub engine selection
+    graphviz.engine=nashorn
+    # any other default properties
+    server.port=8080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graphviz-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: graphviz-server
+  template:
+    metadata:
+      labels:
+        app: graphviz-server
+    spec:
+      containers:
+        - name: graphviz-server
+          image: $NAME      # same as your container/image
+          ports:
+            - containerPort: 8080
+          env:
+            - name: JAVA_OPTS
+              value: "-Djava.util.logging.config.file=/config/logging.properties"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: graphviz-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: graphviz-server
+spec:
+  selector:
+    app: graphviz-server
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

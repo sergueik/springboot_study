@@ -102,12 +102,12 @@ docker run -p 8080:8080 --name $NAME -d $NAME
 ```
 if the container is hosted locally, run
 ```sh
-curl -sX POST http://localhost:8080/ -d @../basic-graphviz/color.dot -o result.png
+curl -sfX POST http://localhost:8080/ -d @../basic-graphviz/color.dot -o result.png
 ```
 when the docker is run in a VM update the host address 
 
 ```sh
-curl -sX POST http://192.168.99.102:8080/ -d @../basic-graphviz/color.dot -o result.png
+curl -sf --connect-timeout 5 --max-time 10 -X POST http://192.168.99.102:8080/ -d @../basic-graphviz/color.dot -o result.png
 ```
 the resulting file will be saved in local directory.
 ```sh
@@ -135,6 +135,44 @@ docker logs $NAME
 23:50:11.322 INFO  o.a.http.protocol.HttpRequestHandler - GET /health [Host: localhost:8080, User-Agent: curl/8.17.0, Accept: */*]
 23:50:11.323 INFO  o.a.http.protocol.HttpRequestHandler - Responded with Success
 ```
+
+### Pass properties individually via JVM command-line
+```sh
+docker run --rm \
+  -p 8080:8080 \
+  -e JAVA_OPTS="-Dgraphviz.engine=nashorn -Dserver.port=8080 -Dfile.encoding=UTF-8" \
+  --name $NAME \
+  $NAME
+
+```
+### Pass an application.properties via File Path or Via Volume
+NOTE: choosing GraalVM, which is not ready 
+
+```sh
+docker run --rm \
+  -p 8080:8080 \
+  -v /path/to/local/application.properties:/config/application.properties:ro \
+  --name $NAME \
+  $NAME
+
+```
+```sh
+docker run --rm \
+  -p 8080:8080 \
+  -e GRAPHVIZ_ENGINE=graal \
+  -e JAVA_OPTS="-Djava.util.logging.config.file=/config/logging.properties" \
+  --name graphviz-server \
+  example/graphviz-java-fat:latest
+```
+### NOTE
+
+| Vendor                         | GraalVM JS included? | Notes                                                                 |
+|--------------------------------|--------------------|-----------------------------------------------------------------------|
+| Eclipse Temurin / AdoptOpenJDK  | ❌ No               | Standard builds only include the JVM and core libraries. GraalJS is not bundled. |
+| Oracle JDK / Oracle OpenJDK     | ❌ No               | Same as above; Nashorn is included up to Java 15, removed in 17.      |
+| Amazon Corretto                 | ❌ No               | Standard builds do not include GraalVM.                               |
+| Zulu / Liberica / SAP Machine   | ❌ No               | GraalVM only via separate GraalVM release.                             |
+| GraalVM distributions           | ✅ Yes              | Full GraalVM CE or Enterprise builds include GraalJS and Truffle languages. |
 
 
 ### See Also

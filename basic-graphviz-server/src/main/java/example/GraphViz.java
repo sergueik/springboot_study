@@ -1,10 +1,14 @@
 package example;
 
-import guru.nidi.graphviz.engine.*;
-import guru.nidi.graphviz.model.*;
+// does not exist - not implemented yet
+// maven can’t find it — it simply doesn’t exist yet.
+// import guru.nidi.graphviz.engine.GraphvizGraalEngine;
+import guru.nidi.graphviz.engine.GraphvizJdkEngine;
+import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.parse.Parser;
+import guru.nidi.graphviz.model.MutableGraph;
 
-import java.io.*;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -12,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,8 +32,18 @@ public class GraphViz {
 
 	public static void init() {
 		try {
-			log.info("Initializing Graphviz engine...");
-			Graphviz.useEngine(new GraphvizJdkEngine());
+			String engine = Config.get("graphviz.engine", "jdk");
+			log.info("Using Graphviz engine: {}", engine);
+
+			switch (engine.toLowerCase()) {
+			case "graal":
+				Graphviz.useEngine(new GraphvizGraalEngine());
+				break;
+			case "jdk":
+			default:
+				Graphviz.useEngine(new GraphvizJdkEngine());
+				break;
+			}
 
 			// warmup render
 			String warmupDot = "graph { a -- b }";
@@ -115,36 +130,39 @@ public class GraphViz {
 		return 1;
 	}
 
-	public byte[] get_img_stream(File dotFile, String type) throws Exception {
-		log.info("Rendering graph {} using graphviz-java engine, format={}", dotFile.toString(), type);
+	public byte[] get_img_stream(File file, String type) throws Exception {
+		log.info("Rendering graph {} using graphviz-java engine, format={}", file.toString(), type);
 
-		MutableGraph g;
-		try (FileInputStream fis = new FileInputStream(dotFile)) {
-			g = new Parser().read(fis);
+		MutableGraph graph;
+		try (FileInputStream fileInputStream = new FileInputStream(file)) {
+			graph = new Parser().read(fileInputStream);
 		}
 
-		Format format = Format.valueOf(type.toUpperCase());
+		Format format = type == null ? Format.valueOf(Config.get("graphviz.defaultFormat", "PNG").toUpperCase())
+				: Format.valueOf(type.toUpperCase());
+
+		int width = Integer.parseInt(Config.get("graphviz.width", "700"));
 
 		try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-			Graphviz.fromGraph(g).render(format).toOutputStream(byteArrayOutputStream);
+			Graphviz.fromGraph(graph).width(width).render(format).toOutputStream(byteArrayOutputStream);
 
 			return byteArrayOutputStream.toByteArray();
 		}
 	}
 
 	private File writeDotSourceToFile(String str) throws IOException {
-		File temp;
+		File tempFile;
 		try {
-			temp = File.createTempFile("graph_", ".dot.tmp", new File(GraphViz.TEMP_DIR));
-			log.info("write image stream to {}", temp.toString());
-			FileWriter fout = new FileWriter(temp);
-			fout.write(str);
-			fout.close();
+			tempFile = File.createTempFile("graph_", ".dot.tmp", new File(GraphViz.TEMP_DIR));
+			log.info("write image stream to {}", tempFile.toString());
+			FileWriter fileWriter = new FileWriter(tempFile);
+			fileWriter.write(str);
+			fileWriter.close();
 		} catch (Exception e) {
 			log.error("Error: I/O error while writing the dot source to temp file!", e);
 			return null;
 		}
-		return temp;
+		return tempFile;
 	}
 
 	public String start_graph() {

@@ -8,4 +8,4 @@ ARG app_jar="example.graphviz-java-fat.jar"
 ADD "target/${app_jar}" app.jar
 HEALTHCHECK --interval=10s --timeout=3s --start-period=60s --retries=5 \
   CMD curl -f http://localhost:8080/health || exit 1
-ENTRYPOINT [ "java", "-jar", "/app/app.jar", "8080" ]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar 8080"]
