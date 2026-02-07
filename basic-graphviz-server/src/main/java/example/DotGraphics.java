@@ -60,6 +60,8 @@ public class DotGraphics {
 		Thread t = new RequestListenerThread(port, httpService);
 		t.setDaemon(false);
 		t.start();
+		// initialize and warm up the Graphviz service
+		GraphViz.init();
 	}
 
 	static class RequestListenerThread extends Thread {

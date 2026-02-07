@@ -23,13 +23,32 @@ public class GraphViz {
 
 	private static final Logger log = LoggerFactory.getLogger(GraphViz.class);
 
+	private static volatile boolean ready = false;
+
+	public static void init() {
+		try {
+			log.info("Initializing Graphviz engine...");
+			Graphviz.useEngine(new GraphvizJdkEngine());
+
+			// warmup render
+			String warmupDot = "graph { a -- b }";
+			MutableGraph g = new Parser().read(warmupDot);
+			Graphviz.fromGraph(g).render(Format.PNG).toImage();
+
+			ready = true;
+			log.info("Graphviz engine warmup complete.");
+		} catch (Exception e) {
+			log.error("Graphviz warmup failed", e);
+			ready = false;
+		}
+	}
+
+	public static boolean isReady() {
+		return ready;
+	}
+
 	private static String TEMP_DIR = "/tmp"; // Linux
 	// private static String TEMP_DIR = "c:/temp"; // Windows
-
-	// private static String DOT = "/usr/local/bin/dot"; // MAC
-	private static String DOT = "/usr/bin/dot"; // Linux
-	// private static String DOT = "c:/Program Files/Graphviz/bin/dot.exe"; //
-	// Windows
 
 	// public static final String GRAPH_START = "digraph G {";
 	public static final String GRAPH_START = "graph {";
@@ -98,9 +117,6 @@ public class GraphViz {
 
 	public byte[] get_img_stream(File dotFile, String type) throws Exception {
 		log.info("Rendering graph {} using graphviz-java engine, format={}", dotFile.toString(), type);
-
-		// Choose engine (JdkEngine = Nashorn/viz.js)
-		Graphviz.useEngine(new GraphvizJdkEngine());
 
 		MutableGraph g;
 		try (FileInputStream fis = new FileInputStream(dotFile)) {
