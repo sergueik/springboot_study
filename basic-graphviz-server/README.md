@@ -114,27 +114,26 @@ the resulting file will be saved in local directory.
 docker logs $NAME
 ```
 ```text
-22:07:30.885 INFO  example.DotGraphics - Listening on port 8080
-22:07:55.761 INFO  example.DotGraphics - Incoming connection from /192.168.99.1
-22:07:55.870 INFO  example.DotGraphics - New connection thread
-22:07:55.893 INFO  o.a.http.protocol.HttpRequestHandler - POST / [Host: 192.168.99.102:8080, User-Agent: curl/8.12.1, Accept: */*, Content-Length: 278, Content-Type: application/x-www-form-urlencoded]
-22:07:55.897 INFO  o.a.http.protocol.HttpRequestHandler - Incoming entity content (278 bytes): graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
-22:07:55.925 INFO  o.a.http.protocol.HttpRequestHandler - valid dot content
-22:07:55.929 INFO  o.a.http.protocol.HttpRequestHandler - requesting graph type:
-22:07:55.930 INFO  o.a.http.protocol.HttpRequestHandler - graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
-22:07:56.012 INFO  example.GraphViz - write image stream to /tmp/graph_1098592033874883478.dot.tmp
-22:07:56.018 INFO  example.GraphViz - Rendering graph /tmp/graph_1098592033874883478.dot.tmp using graphviz-java engine, format=png
-22:09:28.925 INFO  o.a.http.protocol.HttpRequestHandler - Responded with Success
-22:10:05.234 INFO  example.DotGraphics - Incoming connection from /192.168.99.1
-22:10:05.238 INFO  example.DotGraphics - New connection thread
-22:10:05.240 INFO  o.a.http.protocol.HttpRequestHandler - POST / [Host: 192.168.99.102:8080, User-Agent: curl/8.12.1, Accept: */*, Content-Length: 278, Content-Type: application/x-www-form-urlencoded]
-22:10:05.242 INFO  o.a.http.protocol.HttpRequestHandler - Incoming entity content (278 bytes): graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
-22:10:05.242 INFO  o.a.http.protocol.HttpRequestHandler - valid dot content
-22:10:05.243 INFO  o.a.http.protocol.HttpRequestHandler - requesting graph type:
-22:10:05.243 INFO  o.a.http.protocol.HttpRequestHandler - graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
-22:10:05.244 INFO  example.GraphViz - write image stream to /tmp/graph_8492550460302129611.dot.tmp
-22:10:05.246 INFO  example.GraphViz - Rendering graph /tmp/graph_8492550460302129611.dot.tmp using graphviz-java engine, format=png
-22:10:17.479 INFO  o.a.http.protocol.HttpRequestHandler - Responded with Success
+23:49:55.252 INFO  example.DotGraphics - Listening on port 8080
+23:49:55.225 INFO  example.GraphViz - Initializing Graphviz engine...
+23:50:00.251 INFO  example.DotGraphics - Incoming connection from /127.0.0.1
+23:50:00.490 INFO  example.DotGraphics - New connection thread
+23:50:00.566 INFO  o.a.http.protocol.HttpRequestHandler - GET /health [Host: localhost:8080, User-Agent: curl/8.17.0, Accept: */*]
+23:50:00.569 INFO  o.a.http.protocol.HttpRequestHandler - Responded with Success
+23:50:08.130 INFO  example.DotGraphics - Incoming connection from /192.168.99.1
+23:50:08.138 INFO  example.DotGraphics - New connection thread
+23:50:08.154 INFO  o.a.http.protocol.HttpRequestHandler - POST / [Host: 192.168.99.102:8080, User-Agent: curl/8.12.1, Accept: */*, Content-Length: 278, Content-Type: application/x-www-form-urlencoded]
+23:50:08.160 INFO  o.a.http.protocol.HttpRequestHandler - Incoming entity content (278 bytes): graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
+23:50:08.456 INFO  o.a.http.protocol.HttpRequestHandler - valid dot content
+23:50:08.470 INFO  o.a.http.protocol.HttpRequestHandler - requesting graph type:
+
+23:50:08.471 INFO  o.a.http.protocol.HttpRequestHandler - graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
+23:50:08.647 INFO  example.GraphViz - write image stream to /tmp/graph_5927018251725095829.dot.tmp
+23:50:08.655 INFO  example.GraphViz - Rendering graph /tmp/graph_5927018251725095829.dot.tmp using graphviz-java engine, format=png
+23:50:11.301 INFO  example.DotGraphics - Incoming connection from /127.0.0.1
+23:50:11.315 INFO  example.DotGraphics - New connection thread
+23:50:11.322 INFO  o.a.http.protocol.HttpRequestHandler - GET /health [Host: localhost:8080, User-Agent: curl/8.17.0, Accept: */*]
+23:50:11.323 INFO  o.a.http.protocol.HttpRequestHandler - Responded with Success
 ```
 
 
@@ -148,4 +147,5 @@ docker logs $NAME
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
 

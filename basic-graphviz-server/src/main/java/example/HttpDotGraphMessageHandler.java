@@ -17,6 +17,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.MethodNotSupportedException;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.protocol.HttpContext;
@@ -60,6 +61,18 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 		response.setStatusCode(HttpStatus.SC_OK);
 
 		if (request instanceof HttpEntityEnclosingRequest) {
+
+			if (request.getRequestLine().getUri().equals("/health")) {
+			    if (GraphViz.isReady()) {
+			        response.setStatusCode(200);
+			        response.setEntity(new StringEntity("OK\n"));
+			    } else {
+			        response.setStatusCode(503);
+			        response.setEntity(new StringEntity("PROBLEM WARMING UP\n"));
+			    }
+			    return;
+			}
+
 			HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
 			byte[] entityContent = EntityUtils.toByteArray(entity);
 			String dot = new String(entityContent, StandardCharsets.US_ASCII);

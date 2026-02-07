@@ -41,6 +41,7 @@ public class DotGraphics {
 			System.err.println("Usage java -jar DotGraphics.jar <port>");
 			System.exit(1);
 		}
+		
 		// Document root directory
 		// String docRoot = args[0];
 		int port = Integer.parseInt(args[0]);
@@ -60,6 +61,8 @@ public class DotGraphics {
 		Thread t = new RequestListenerThread(port, httpService);
 		t.setDaemon(false);
 		t.start();
+		// initialize and warm up the Graphviz service
+		GraphViz.init();
 	}
 
 	static class RequestListenerThread extends Thread {
