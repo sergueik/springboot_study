@@ -1,0 +1,24 @@
+digraph BrokenExample {
+  rankdir=LR;
+  node [shape=box];
+
+  subgraph cluster_A {
+    label="Domain A";
+    A_User [label="A\\john"];
+    A_Kerberos [label="Kerberos Ticket"];
+  }
+
+  subgraph cluster_B {
+    label="Domain B";
+    FSP_john [label="ForeignSecurityPrincipal"];
+    B_Group [label="Group"];
+  }
+
+  // Problematic rank constraint across clusters
+  { rank=same; A_Kerberos; FSP_john; }
+
+  A_User -> A_Kerberos;
+  A_Kerberos -> FSP_john;
+  FSP_john -> B_Group;
+}
+
