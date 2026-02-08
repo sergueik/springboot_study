@@ -164,6 +164,11 @@ docker run --rm \
   --name graphviz-server \
   example/graphviz-java-fat:latest
 ```
+### Troubleshooting
+
+There is a `<skip>` configuration option but it is *not* 100% reliable for executions in top-level `<build>` with descriptors. The __only__ fully reliable approach is to not have the `maven-assembly` plugin bound in top-level build at all, and move it entirely into a profile.
+
+
 ### NOTE
 
 | Vendor                         | GraalVM JS included? | Notes                                                                 |
