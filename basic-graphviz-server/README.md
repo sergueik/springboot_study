@@ -88,9 +88,11 @@ the console log shows
 
 ```
 package
+> NOTE: GraalJS is *much* faster at runtime compared to Nashorn which is interpreted, but the upfront JAR “cost” is *significant* - the dependency alone is ~50 MB.
+
 ```sh
-docker pull eclipse-temurin:11-jre-alpine
-export NAME=example-graphviz-java
+docker pull eclipse-temurin:17-jre-jammy
+export NAME=example-graphviz-graalvm-java
 docker build -t $NAME -f Dockerfile .
 ```
 ```sh
@@ -158,12 +160,35 @@ docker run --rm \
 ```
 ```sh
 docker run --rm \
+  --ulimit nproc=4096 \
+  --ulimit stack=8388608 \
   -p 8080:8080 \
   -e GRAPHVIZ_ENGINE=graal \
-  -e JAVA_OPTS="-Djava.util.logging.config.file=/config/logging.properties" \
-  --name graphviz-server \
-  example/graphviz-java-fat:latest
+  -e JAVA_OPTS="-Xms256m -Xmx512m -Dgraphviz.engine=graal -Dserver.port=8080 -Dfile.encoding=UTF-8 -Dpolyglotimpl.DisableMultiReleaseCheck=true" \
+  --name $NAME \
+  $NAME
 ```
+### Troubleshooting
+
+There is a `<skip>` configuration option but it is *not* 100% reliable for executions in top-level `<build>` with descriptors. The __only__ fully reliable approach is to not have the `maven-assembly` plugin bound in top-level build at all, and move it entirely into a profile.
+
+```text
+22:59:03.053 INFO  example.GraphViz - Using Graphviz engine: graal
+22:59:03.761 ERROR example.GraphViz - Graphviz warmup failed
+org.graalvm.polyglot.PolyglotException: java.lang.IllegalStateException: No language for id regex found. Supported languages are: [js]
+        at com.oracle.truffle.polyglot.PolyglotEngineException.illegalState(PolyglotEngineException.java:137)
+
+```
+WIP
+
+> NOTE: if seeing
+
+```txt
+[0.007s][warning][os,thread] Failed to start thread "VM Thread" - pthread_create failed (EPERM) for attributes: stacksize: 1024k, guardsize: 4k, detached. Error occurred during initialization of VM Cannot create VM thread. Out of system resources.
+```
+
+use a newer Docker environment
+
 ### NOTE
 
 | Vendor                         | GraalVM JS included? | Notes                                                                 |

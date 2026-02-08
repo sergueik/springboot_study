@@ -1,74 +1,62 @@
 package example;
 
-import guru.nidi.graphviz.engine.GraphvizEngine;
-import guru.nidi.graphviz.engine.Format;
-import guru.nidi.graphviz.model.MutableGraph;
-import guru.nidi.graphviz.engine.Options;
-import guru.nidi.graphviz.engine.Rasterizer;
-import guru.nidi.graphviz.engine.EngineResult;
-import java.io.File;
+import org.graalvm.polyglot.*;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
-import java.util.function.Consumer;
-import java.io.IOException;
+import org.apache.batik.transcoder.*;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class GraphvizGraalEngine {
 
-/**
- * Temporary placeholder for GraalJS engine to allow compilation and commit.
- * 
- * Notes:
- *  - Implements GraphvizEngine but does not perform real rendering.
- *  - Methods are stubs to allow compilation and basic testing.
- *  - EngineResult constructor is private in the library, so execute() returns null.
- */
-public class GraphvizGraalEngine implements GraphvizEngine {
-    private static final Logger log = LoggerFactory.getLogger(GraphvizGraalEngine.class);
+	private final Context context;
+	private final Value vizFunction;
 
-    /**
-     * Stub initialization.
-     */
-    @Override
-    public void init(Consumer<GraphvizEngine> successConsumer, Consumer<GraphvizEngine> errorConsumer) {
-        // No actual initialization yet
-        return;
-    }
+	public GraphvizGraalEngine() {
+		context = Context.newBuilder("js").allowAllAccess(true).option("engine.WarnInterpreterOnly", "false").build();
+		String basePath = "/META-INF/resources/webjars/viz.js-graphviz-java/";
+		String vizJs = loadResource(basePath + "2.1.3/" + "viz.js");
+		context.eval("js", vizJs);
 
-    /**
-     * Stub close method.
-     */
-    @Override
-    public void close() {
-        log.info("GraphvizGraalEngine.close() called");
-    }
+		vizFunction = context.getBindings("js").getMember("Viz");
+		if (vizFunction == null || !vizFunction.canExecute()) {
+			throw new IllegalStateException("Viz function not found in viz.js");
+		}
+	}
 
-    /**
-     * Render method.
-     * Must override in some versions of the library.
-     */
-    // @Override
-    public void render(MutableGraph graph, Format format, File outputFile) throws IOException {
-        log.info("GraphvizGraalEngine stub render called: {}", outputFile.getAbsolutePath());
-        // No file written in stub
-        return;
-    }
+	/** Render DOT source to PNG bytes using Batik */
+	public byte[] renderPng(String dotSource) {
+		try {
+			// Execute viz.js to get SVG string
+			String svg = vizFunction.execute(dotSource).asString();
 
-    /**
-     * Stub execute method.
-     * Returns null because EngineResult constructor is private.
-     */
-    @Override
-    public EngineResult execute(String dotSource, Options options, Rasterizer rasterizer) {
-        log.info("GraphvizGraalEngine stub execute called: {}", dotSource);
+			// Transcode SVG → PNG
+			try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+				Transcoder transcoder = new PNGTranscoder();
+				TranscoderInput input = new TranscoderInput(new StringReader(svg));
+				TranscoderOutput output = new TranscoderOutput(baos);
+				transcoder.transcode(input, output);
+				return baos.toByteArray();
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-        // Example of what we cannot do due to private constructor:
-        // return new EngineResult(
-        //     new File(System.getProperty("os.name").toLowerCase().contains("win") ? "NUL" : "/dev/null"), null);
+	private String loadResource(String path) {
+		try (InputStream is = getClass().getResourceAsStream(path)) {
+			if (is == null)
+				throw new RuntimeException("Resource not found: " + path);
+			return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-        // Another idea that does not exist in this version:
-        // return new EngineResult(new byte[0], Format.PNG);
-
-        // Currently returning null as a placeholder
-        return null;
-    }
+	public void close() {
+		context.close();
+	}
 }

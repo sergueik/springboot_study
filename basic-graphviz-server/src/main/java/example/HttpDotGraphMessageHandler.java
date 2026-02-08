@@ -133,7 +133,7 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 		// String type = "plain";
 		File out = new File(TEMP_PATH + graphType); // Linux
 
-		gv.writeGraphToFile(gv.getGraph(gv.getDotSource(), graphType), out);
+		gv.writeGraphToFile(gv.getGraph(gv.getDotSource()), out.getAbsolutePath());
 
 		FileEntity body = new FileEntity(out, contentType);
 
