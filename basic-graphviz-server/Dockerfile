@@ -1,4 +1,4 @@
-FROM eclipse-temurin:11-jre-alpine
+FROM eclipse-temurin:8-jre-alpine
 # RUN apk add --no-cache --virtual .dummy graphviz && apk del .dummy
 RUN apk add --no-cache graphviz curl \
    && rm -rf /var/cache/apk \

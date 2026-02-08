@@ -4,7 +4,7 @@ Clone of [graphviz-server](https://github.com/omerio/graphviz-server) lightweigh
 ### Usage
 
 ```sh
-mvn clean package
+mvn -Psingle clean package
 ```
 run in foreground
 ```sh
@@ -12,7 +12,7 @@ java -jar target/example.graphviz-java-fat.jar 8080
 ```
 interact with
 ```sh
-curl -v -X POST http://localhost:8080/ -d @../basic-graphviz/color.dot
+curl -v -X POST http://localhost:8080/ -d @../basic-graphviz/color.dot -o resultpng
 ```
 ```text
 > POST / HTTP/1.1
@@ -48,7 +48,7 @@ examine console logs
 
 after fixing the code,
 ```
-curl -v -X POST http://localhost:8080/ -d @../basic-graphviz/color.dot -o result.png
+curl -v -X POST http://localhost:8080/ -d @../basic-graphviz/color.dot -o color.png
 ```
 ```text
 onnected to localhost (127.0.0.1) port 8080 (#0)
@@ -71,7 +71,7 @@ onnected to localhost (127.0.0.1) port 8080 (#0)
 100 32825  100 32547  100   278   533k   4663 --:--:-- --:--:-- --:--:--  543k
 * Connection #0 to host localhost left intact
 ```
-the `result.png` is written to current directory
+the `color.png` is written to current directory
 
 the console log shows
 ```text
@@ -89,7 +89,7 @@ the console log shows
 ```
 package
 ```sh
-docker pull eclipse-temurin:11-jre-alpine
+docker pull eclipse-temurin:8-jre-alpine
 export NAME=example-graphviz-java
 docker build -t $NAME -f Dockerfile .
 ```
@@ -102,12 +102,12 @@ docker run -p 8080:8080 --name $NAME -d $NAME
 ```
 if the container is hosted locally, run
 ```sh
-curl -sfX POST http://localhost:8080/ -d @../basic-graphviz/color.dot -o result.png
+curl -sfX POST http://localhost:8080/ -d @../basic-graphviz/color.dot -o color.png
 ```
 when the docker is run in a VM update the host address
 
 ```sh
-curl -sf --connect-timeout 5 --max-time 10 -X POST http://192.168.99.102:8080/ -d @../basic-graphviz/color.dot -o result.png
+curl -sf --connect-timeout 5 --max-time 10 -X POST http://192.168.99.102:8080/ -d @../basic-graphviz/color.dot -o color.png
 ```
 the resulting file will be saved in local directory.
 ```sh
@@ -135,7 +135,17 @@ docker logs $NAME
 23:50:11.322 INFO  o.a.http.protocol.HttpRequestHandler - GET /health [Host: localhost:8080, User-Agent: curl/8.17.0, Accept: */*]
 23:50:11.323 INFO  o.a.http.protocol.HttpRequestHandler - Responded with Success
 ```
+> NOTE: the image sizes
 
+* alpine jdk 1.8 based
+```text
+example-graphviz-java   latest              445cf112dae2        2 minutes ago       201MB
+<none>
+```
+* alpine jdk 11 based
+```txt
+example-graphviz-java   latest              4550da7e6228        6 seconds ago       222MB
+```
 ### Pass properties individually via JVM command-line
 ```sh
 docker run --rm \

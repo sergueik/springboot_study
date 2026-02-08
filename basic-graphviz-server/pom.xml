@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>graphviz-java</artifactId>
-  <version>0.6.0-SNAPSHOT</version>
+  <version>0.7.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
   <properties>
-    <java.version>11</java.version>
+    <java.version>1.8</java.version>
     <mainClass>${project.groupId}.DotGraphics</mainClass>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -21,7 +21,6 @@
     <commons-exec.version>1.3</commons-exec.version>
     <commons-codec.version>1.16.1</commons-codec.version>
     <commons-lang3.version>3.3.1</commons-lang3.version>
-    <nashorn.version>15.4</nashorn.version>
     <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
     <maven-dependency-plugin.version>3.6.0</maven-dependency-plugin.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -83,17 +82,16 @@
           <groupId>org.apache.commons</groupId>
           <artifactId>commons-exec</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>com.kitfox.svg</groupId>
+          <artifactId>svgSalamander</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.webjars.npm</groupId>
       <artifactId>viz.js-graphviz-java</artifactId>
       <version>${js-graphviz-java.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.openjdk.nashorn</groupId>
-      <artifactId>nashorn-core</artifactId>
-      <version>${nashorn.version}</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -171,7 +169,7 @@
       <id>single</id>
       <activation/>
       <properties>
-        <java.version>11</java.version>
+        <java.version>1.8</java.version>
         <skip.assembly>false</skip.assembly>
       </properties>
       <build>
@@ -243,7 +241,7 @@
         -->
       </activation>
       <properties>
-        <java.version>11</java.version>
+        <java.version>1.8</java.version>
       </properties>
       <build>
         <plugins>
@@ -279,7 +277,7 @@
                     j2v8,j2v8_win32_x86_64,j2v8_linux_x86_64,j2v8_macosx_x86_64
                   </excludeArtifactIds>
                   <excludeGroupIds>com.eclipsesource.j2v8</excludeGroupIds>
-                  <includeScope>runtime</includeScope> 
+                  <includeScope>runtime</includeScope>
                 </configuration>
               </execution>
             </executions>
@@ -304,7 +302,7 @@
               </archive>
             </configuration>
           </plugin>
-          -->		  
+          -->		
         </plugins>
         <finalName>${finalName}</finalName>
       </build>
