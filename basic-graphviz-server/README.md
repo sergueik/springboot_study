@@ -113,7 +113,7 @@ mvn clean package
 
 > NOTE: GraalJS is *much* faster at runtime compared to Nashorn which is interpreted, but the upfront JAR “cost” is *significant* - the dependency alone is ~50 MB. 
 ```sh
-docker pull eclipse-temurin:17-jre-jammy
+docker pull eclipse-temurin:17-jre-alpine
 export NAME=example-graphviz-graalvm-java
 docker build -t $NAME -f Dockerfile .
 ```
@@ -130,6 +130,10 @@ if the container is hosted locally, run
 
 ```sh
 curl -sfX POST http://localhost:8080/ -d @../basic-graphviz/color.dot -o color.png
+echo $?
+```
+```text
+0
 ```
 when the docker is run in a VM update the host address 
 ```sh
