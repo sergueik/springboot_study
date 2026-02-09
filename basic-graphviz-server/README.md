@@ -290,7 +290,12 @@ use a newer Docker environment
 
 ![That explains it completely](screenshots/capture-chatgpt2.png) 
 
-![That's exactly what I was expecting](screenshots/capture-chatgpt3.png)  ### Graphviz Warning (Advanced) 
+![That's exactly what I was expecting](screenshots/capture-chatgpt3.png)
+
+
+![crossed all three hard boundaries](screenshots/capture-chatgpt4.png)
+
+### Graphviz Warning (Advanced) 
 
 When using Graphviz to draw swimlane-style diagrams with `subgraph cluster_*` instruction, be careful when combining clusters with explicit `rank` constraints such as `rank=same`. 
 Nodes that belong to a cluster should not also be forced into a global `rank` group. Mixing these two layout rules can confuse Graphviz’s layout engine and may lead to warnings such as:
