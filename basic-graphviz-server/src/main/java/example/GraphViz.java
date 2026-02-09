@@ -1,153 +1,49 @@
 package example;
 
-// does not exist - not implemented yet
-// maven can’t find it — it simply doesn’t exist yet.
-// import guru.nidi.graphviz.engine.GraphvizGraalEngine;
-import guru.nidi.graphviz.engine.GraphvizJdkEngine;
-import guru.nidi.graphviz.engine.Graphviz;
-import guru.nidi.graphviz.engine.Format;
-import guru.nidi.graphviz.parse.Parser;
-import guru.nidi.graphviz.model.MutableGraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 
 import org.apache.commons.lang3.StringUtils;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import example.GraphvizGraalEngine;
+import example.Config;
 
 public class GraphViz {
 
 	private static final Logger log = LoggerFactory.getLogger(GraphViz.class);
-
 	private static volatile boolean ready = false;
+	private static GraphvizGraalEngine graalEngine;
 
 	public static void init() {
-		try {
 			String engine = Config.get("graphviz.engine", "jdk");
 			log.info("Using Graphviz engine: {}", engine);
 
-			switch (engine.toLowerCase()) {
-			case "graal":
-				Graphviz.useEngine(new GraphvizGraalEngine());
-				break;
-			case "jdk":
-			default:
-				Graphviz.useEngine(new GraphvizJdkEngine());
-				break;
-			}
+			graalEngine = new GraphvizGraalEngine(); // initialize GraalJS engine
+			if (graalEngine != null)
+				log.info("Graphviz engine, {} created", graalEngine.hashCode());
+			else
+				log.info("Graphviz engine failed to initialize");
 
-			// warmup render
+			// optional warmup
 			String warmupDot = "graph { a -- b }";
-			MutableGraph g = new Parser().read(warmupDot);
-			Graphviz.fromGraph(g).render(Format.PNG).toImage();
+			byte[] warmup = graalEngine.renderPng(warmupDot);
+			log.info("Graphviz engine warmup complete, {} bytes generated", warmup.length);
 
 			ready = true;
-			log.info("Graphviz engine warmup complete.");
-		} catch (Exception e) {
-			log.error("Graphviz warmup failed", e);
-			ready = false;
-		}
 	}
 
 	public static boolean isReady() {
 		return ready;
-	}
-
-	private static String TEMP_DIR = "/tmp"; // Linux
-	// private static String TEMP_DIR = "c:/temp"; // Windows
-
-	// public static final String GRAPH_START = "digraph G {";
-	public static final String GRAPH_START = "graph {";
-
-	public static final String GRAPH_END = "}";
-
-	private StringBuilder graph = new StringBuilder();
-
-	public GraphViz() {
-	}
-
-	public String getDotSource() {
-		return graph.toString();
-	}
-
-	public void add(String line) {
-		graph.append(line);
-	}
-
-	public void addln(String line) {
-		graph.append(line + "\n");
-	}
-
-	public void addln() {
-		graph.append('\n');
-	}
-
-	public byte[] getGraph(String dot_source, String type) {
-		File dot;
-		byte[] img_stream = null;
-
-		try {
-			dot = writeDotSourceToFile(dot_source);
-			if (dot != null) {
-				img_stream = get_img_stream(dot, type);
-				if (dot.delete() == false)
-					log.warn("Warning: " + dot.getAbsolutePath() + " could not be deleted!");
-				return img_stream;
-			}
-			return null;
-		} catch (IOException e) {
-			log.error("Exdeption processing: {}", e.toString(), e);
-			return null;
-		} catch (Exception e) {
-			log.error("Exdeption processing: {}", e.toString(), e);
-			return null;
-		}
-
-	}
-
-	public int writeGraphToFile(byte[] img, String file) {
-		File to = new File(file);
-		return writeGraphToFile(img, to);
-	}
-
-	public int writeGraphToFile(byte[] img, File to) {
-		try {
-			FileOutputStream fos = new FileOutputStream(to);
-			fos.write(img);
-			fos.close();
-		} catch (java.io.IOException ioe) {
-			return -1;
-		}
-		return 1;
-	}
-
-	public byte[] get_img_stream(File file, String type) throws Exception {
-		log.info("Rendering graph {} using graphviz-java engine, format={}", file.toString(), type);
-
-		MutableGraph graph;
-		try (FileInputStream fileInputStream = new FileInputStream(file)) {
-			graph = new Parser().read(fileInputStream);
-		}
-
-		Format format = type == null ? Format.valueOf(Config.get("graphviz.defaultFormat", "PNG").toUpperCase())
-				: Format.valueOf(type.toUpperCase());
-
-		int width = Integer.parseInt(Config.get("graphviz.width", "700"));
-
-		try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-			Graphviz.fromGraph(graph).width(width).render(format).toOutputStream(byteArrayOutputStream);
-
-			return byteArrayOutputStream.toByteArray();
-		}
 	}
 
 	private File writeDotSourceToFile(String str) throws IOException {
@@ -165,35 +61,67 @@ public class GraphViz {
 		return tempFile;
 	}
 
-	public String start_graph() {
-		return GRAPH_START;
+	private StringBuilder graph = new StringBuilder();
+	private static final String TEMP_DIR = "/tmp"; // or "c:/temp" for Windows
+	public static final String GRAPH_START = "graph {";
+	public static final String GRAPH_END = "}";
+
+	public GraphViz() {
 	}
 
-	public String end_graph() {
-		return GRAPH_END;
+	public void add(String line) {
+		graph.append(line);
 	}
 
-	public void readSource(String input) {
-		StringBuilder sb = new StringBuilder();
+	public void addln(String line) {
+		graph.append(line).append('\n');
+	}
 
-		try {
-			FileInputStream fis = new FileInputStream(input);
-			DataInputStream dis = new DataInputStream(fis);
-			BufferedReader br = new BufferedReader(new InputStreamReader(dis));
-			String line;
-			while ((line = br.readLine()) != null) {
-				sb.append(line);
-			}
-			dis.close();
-		} catch (Exception e) {
-			log.error("Error: ", e);
-		}
+	public void addln() {
+		graph.append('\n');
+	}
 
-		this.graph = sb;
+	public String getDotSource() {
+		return graph.toString();
 	}
 
 	public void readString(String dot) {
 		this.graph = new StringBuilder(dot);
+	}
+
+	public byte[] getGraph(String dotSource) {
+		try {
+			return graalEngine.renderPng(dotSource);
+		} catch (Exception e) {
+			log.error("Failed to render graph", e);
+			return null;
+		}
+	}
+
+	public int writeGraphToFile(byte[] img, String filePath) {
+		if (img == null)
+			return -1;
+		try (FileOutputStream fos = new FileOutputStream(new File(filePath))) {
+			fos.write(img);
+		} catch (IOException e) {
+			log.error("Error writing image to file", e);
+			return -1;
+		}
+		return 1;
+	}
+
+	public String startGraph() {
+		return GRAPH_START;
+	}
+
+	public String endGraph() {
+		return GRAPH_END;
+	}
+
+	public static void closeEngine() {
+		if (graalEngine != null) {
+			graalEngine.close();
+		}
 	}
 
 	public static boolean isValidDotText(String dot) {

@@ -1,8 +1,6 @@
-FROM eclipse-temurin:8-jre-alpine
+FROM eclipse-temurin:17-jre-jammy
+
 # RUN apk add --no-cache --virtual .dummy graphviz && apk del .dummy
-RUN apk add --no-cache graphviz curl \
-   && rm -rf /var/cache/apk \
-   && mkdir /var/cache/apk
 WORKDIR /app
 ARG app_jar="example.graphviz-java-fat.jar"
 ADD "target/${app_jar}" app.jar

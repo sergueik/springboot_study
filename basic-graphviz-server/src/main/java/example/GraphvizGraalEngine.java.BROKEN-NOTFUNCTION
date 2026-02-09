@@ -1,0 +1,78 @@
+package example;
+import org.graalvm.polyglot.*;
+import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
+
+public class GraphvizGraalEngine {
+
+    private final Context context;
+    private final Value vizFunction;
+
+    public GraphvizGraalEngine() {
+        // 1️⃣ Create GraalJS context
+        context = Context.newBuilder("js")
+                .allowAllAccess(true)
+                .option("engine.WarnInterpreterOnly", "false")
+                .build();
+
+        // 2️⃣ Load Viz.js and full.render.js
+        String vizJs = loadResource("/META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/viz.js");
+        String fullRenderJs = loadResource("/META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/full.render.js");
+
+        context.eval("js", vizJs);
+        context.eval("js", fullRenderJs);
+
+        // 3️⃣ Create Viz constructor reference
+        Value vizConstructor = context.getBindings("js").getMember("Viz");
+        if (vizConstructor == null || !vizConstructor.canInstantiate()) {
+            throw new IllegalStateException("Viz constructor not found or not instantiable");
+        }
+
+        vizFunction = vizConstructor;
+    }
+
+    /** Render DOT source into PNG bytes (synchronously in JS) */
+    public byte[] renderPng(String dotSource) {
+        try {
+            // JS snippet: new Viz().renderStringSync(dot, { format: 'png-image' })
+            String jsCode = ""
+                    + "var viz = new Viz();"
+                    + "viz.renderStringSync(" + toJsString(dotSource) + ", { format: 'png-image' });";
+
+            Value result = context.eval("js", jsCode);
+
+            // Get Uint8Array as Java byte[]
+            if (result.hasArrayElements()) {
+                int len = (int) result.getArraySize();
+                byte[] bytes = new byte[len];
+                for (int i = 0; i < len; i++) {
+                    bytes[i] = (byte) result.getArrayElement(i).asInt();
+                }
+                return bytes;
+            } else {
+                throw new RuntimeException("Unexpected Viz result type: " + result);
+            }
+
+        } catch (PolyglotException e) {
+            throw new RuntimeException("Error rendering PNG: " + e.getMessage(), e);
+        }
+    }
+
+    private String loadResource(String path) {
+        try (InputStream is = getClass().getResourceAsStream(path)) {
+            if (is == null) throw new RuntimeException("Resource not found: " + path);
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String toJsString(String s) {
+        return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n") + "\"";
+    }
+
+    public void close() {
+        context.close();
+    }
+}
