@@ -4,7 +4,7 @@ Clone of [graphviz-server](https://github.com/omerio/graphviz-server) lightweigh
 
 ### Usage 
 ```sh
-mvn clean package
+mvn -Psingle clean package
 ```
 
 run in foreground
@@ -14,7 +14,7 @@ java -jar target/example.graphviz-java-fat.jar 8080
 
 interact with
 ```sh
-curl -v -X POST http://localhost:8080/ -d @../basic-graphviz/color.dot
+curl -v -X POST http://localhost:8080/ -d @../basic-graphviz/color.dota -o color.png
 ```
 
 ```text
@@ -83,18 +83,33 @@ the `color.png` is written to current directory
 the console log shows
 
 ```text
-15:46:00.094 INFO  example.DotGraphics - Incoming connection from /127.0.0.1
-15:46:00.094 INFO  example.DotGraphics - New connection thread
-15:46:00.095 INFO  o.a.http.protocol.HttpRequestHandler - POST / [Host: localhost:8080, User-Agent: curl/7.81.0, Accept: */*, Content-Length: 278, Content-Type: application/x-www-form-urlencoded]
-15:46:00.095 INFO  o.a.http.protocol.HttpRequestHandler - Incoming entity content (278 bytes): graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
-15:46:00.095 INFO  o.a.http.protocol.HttpRequestHandler - valid dot content
-15:46:00.095 INFO  o.a.http.protocol.HttpRequestHandler - requesting graph type:
-15:46:00.095 INFO  o.a.http.protocol.HttpRequestHandler - graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
-15:46:00.096 INFO  example.GraphViz - write image stream to /tmp/graph_10734618452734776524.dot.tmp
-15:46:00.096 INFO  example.GraphViz - get image stream from /tmp/graph_10734618452734776524.dot.tmp
-15:46:00.152 INFO  o.a.http.protocol.HttpRequestHandler - Responded with Success 
+20:11:07.181 INFO  example.GraphViz - Using Graphviz engine: graal
+20:11:07.182 INFO  example.DotGraphics - Listening on port 8080
+20:11:07.186 INFO  example.GraphvizGraalEngine - Initializing GraalJS context...
+20:11:07.411 INFO  example.GraphvizGraalEngine - Loading /META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/viz.js
+20:11:08.108 INFO  example.GraphvizGraalEngine - Loaded /META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/viz.js, length=11717
+20:11:08.108 INFO  example.GraphvizGraalEngine - Loading /META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/full.render.js
+20:11:10.672 INFO  example.GraphvizGraalEngine - Loaded /META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/full.render.js, length=2402990
+20:11:10.672 INFO  example.GraphvizGraalEngine - Viz.js loaded successfully.
+20:11:10.673 INFO  example.GraphViz - Graphviz engine, 19578363 created
+20:11:13.037 INFO  example.GraphvizGraalEngine - SVG generated, length=1178
+20:11:13.934 INFO  example.GraphViz - Graphviz engine warmup complete, 2614 bytes generated
+
+20:49:18.755 INFO  example.DotGraphics - Incoming connection from /0:0:0:0:0:0:0:1
+20:49:18.774 INFO  example.DotGraphics - New connection thread
+20:49:18.780 INFO  o.a.http.protocol.HttpRequestHandler - POST / [Host: localhost:8080, User-Agent: curl/8.12.1, Accept: */*, Content-Length: 278, Content-Type: application/x-www-form-urlencoded]
+20:49:18.782 INFO  o.a.http.protocol.HttpRequestHandler - Incoming entity content (278 bytes): graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
+20:49:18.786 INFO  o.a.http.protocol.HttpRequestHandler - valid dot content
+20:49:18.787 INFO  o.a.http.protocol.HttpRequestHandler - requesting graph type:
+20:49:18.787 INFO  o.a.http.protocol.HttpRequestHandler - graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
+20:49:19.628 INFO  example.GraphvizGraalEngine - SVG generated, length=4897
+20:49:19.775 INFO  o.a.http.protocol.HttpRequestHandler - Responded with Success
 ```
-package
+#### Package in Container
+
+```sh
+mvn clean package
+```
 
 > NOTE: GraalJS is *much* faster at runtime compared to Nashorn which is interpreted, but the upfront JAR “cost” is *significant* - the dependency alone is ~50 MB. 
 ```sh
@@ -129,28 +144,30 @@ docker logs $NAME
 ```text
 23:49:55.252 INFO  example.DotGraphics - Listening on port 8080
 23:49:55.225 INFO  example.GraphViz - Initializing Graphviz engine...
-23:50:00.251 INFO  example.DotGraphics - Incoming connection from /127.0.0.1
-23:50:00.490 INFO  example.DotGraphics - New connection thread
-23:50:00.566 INFO  o.a.http.protocol.HttpRequestHandler - GET /health [Host: localhost:8080, User-Agent: curl/8.17.0, Accept: */*]
-23:50:00.569 INFO  o.a.http.protocol.HttpRequestHandler - Responded with Success
-23:50:08.130 INFO  example.DotGraphics - Incoming connection from /192.168.99.1
-23:50:08.138 INFO  example.DotGraphics - New connection thread
-23:50:08.154 INFO  o.a.http.protocol.HttpRequestHandler - POST / [Host: 192.168.99.102:8080, User-Agent: curl/8.12.1, Accept: */*, Content-Length: 278, Content-Type: application/x-www-form-urlencoded]
-
-23:50:08.160 INFO  o.a.http.protocol.HttpRequestHandler - Incoming entity content (278 bytes): graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
-
-23:50:08.456 INFO  o.a.http.protocol.HttpRequestHandler - valid dot content
-
-23:50:08.470 INFO  o.a.http.protocol.HttpRequestHandler - requesting graph type: 
-23:50:08.471 INFO  o.a.http.protocol.HttpRequestHandler - graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
-
-23:50:08.647 INFO  example.GraphViz - write image stream to /tmp/graph_5927018251725095829.dot.tmp
-23:50:08.655 INFO  example.GraphViz - Rendering graph /tmp/graph_5927018251725095829.dot.tmp using graphviz-java engine, format=png
-23:50:11.301 INFO  example.DotGraphics - Incoming connection from /127.0.0.1
-23:50:11.315 INFO  example.DotGraphics - New connection thread
-23:50:11.322 INFO  o.a.http.protocol.HttpRequestHandler - GET /health [Host: localhost:8080, User-Agent: curl/8.17.0, Accept: */*]
-23:50:11.323 INFO  o.a.http.protocol.HttpRequestHandler - Responded with Success
-
+03:09:02.156 INFO  example.GraphViz - Using Graphviz engine: graal   
+03:09:02.160 INFO  example.GraphvizGraalEngine - Initializing GraalJS context...
+03:09:02.162 INFO  example.DotGraphics - Listening on port 8080
+03:09:02.473 INFO  example.GraphvizGraalEngine - Loading /META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/viz.js
+03:09:03.197 INFO  example.GraphvizGraalEngine - Loaded /META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/viz.js, length=11717
+03:09:03.197 INFO  example.GraphvizGraalEngine - Loading /META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/full.render.js
+03:09:05.222 INFO  example.GraphvizGraalEngine - Loaded /META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/full.render.js, length=2402990
+03:09:05.222 INFO  example.GraphvizGraalEngine - Viz.js loaded successfully.
+03:09:05.223 INFO  example.GraphViz - Graphviz engine, 1518529528 created
+03:09:06.901 INFO  example.DotGraphics - Incoming connection from /127.0.0.1
+03:09:06.927 INFO  example.DotGraphics - New connection thread
+03:09:06.937 INFO  o.a.http.protocol.HttpRequestHandler - GET /health [Host: localhost:8080, User-Agent: curl/7.81.0, Accept: */*]
+03:09:06.948 INFO  o.a.http.protocol.HttpRequestHandler - Responded with Success
+03:09:07.268 INFO  example.GraphvizGraalEngine - SVG generated, length=1178
+03:09:07.834 INFO  example.GraphViz - Graphviz engine warmup complete, 2731 bytes generated
+03:09:15.039 INFO  example.DotGraphics - Incoming connection from /172.17.0.1
+03:09:15.040 INFO  example.DotGraphics - New connection thread
+03:09:15.041 INFO  o.a.http.protocol.HttpRequestHandler - POST / [Host: localhost:8080, User-Agent: curl/7.81.0, Accept: */*, Content-Length: 278, Content-Type: application/x-www-form-urlencoded]
+03:09:15.042 INFO  o.a.http.protocol.HttpRequestHandler - Incoming entity content (278 bytes): graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
+03:09:15.045 INFO  o.a.http.protocol.HttpRequestHandler - valid dot content
+03:09:15.046 INFO  o.a.http.protocol.HttpRequestHandler - requesting graph type: 
+03:09:15.046 INFO  o.a.http.protocol.HttpRequestHandler - graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
+03:09:16.941 INFO  example.GraphvizGraalEngine - SVG generated, length=4897
+03:09:17.127 INFO  o.a.http.protocol.HttpRequestHandler - Responded with Success
 ``` 
 ### Pass properties individually via JVM command-line
 
@@ -227,53 +244,55 @@ java -cp target\lib\*;target\example.graphviz-java.jar example.DotGraphics 8080
 ```
 
 GraalVM JS runs in a single-threaded event loop for async operations like renderString. 
-That while loop blocks the event loop, so the .then() callback never runs. 
+That while loop blocks the event loop, so the `.then()` callback never runs. 
 Result: the code waits forever — appears *hang* in
 
 ```java
 String resultStr = fn.execute(dotSource).asString();
 ```
+
+
 ```txt
-
-
 20:00:39.120 INFO  example.GraphvizGraalEngine - Viz.js loaded successfully.
 20:00:39.120 INFO  example.GraphViz - Graphviz engine, 19578363 created
 20:00:39.120 INFO  example.GraphvizGraalEngine - renderPng called
 20:00:41.520 ERROR example.GraphvizGraalEngine - PNG conversion error
 java.lang.RuntimeException: Expected SVG string, got: Promise{[[PromiseStatus]]: "resolved", [[PromiseValue]]: "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n<!-- Generated by graphviz version 2.44.0 (20200408.0750)\n -->\n<!-- Pages: 1 -->\n<svg width=\"62pt\" height=\"116pt\"\n viewBox=\"0.00 0.00 62.00 116.00\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n<g id=\"graph0\" class=\"graph\" transform=\"scale(1 1) rotate(0) translate(4 112)\">\n<polygon fill=\"white\" stroke=\"transparent\" points=\"-4,4 -4,-112 58,-112 58,4 -4,4\"/>\n<!-- a -->\n<g id=\"node1\" class=\"node\">\n<title>a</title>\n<ellipse fill=\"none\" stroke=\"black\" cx=\"27\" cy=\"-90\" rx=\"27\" ry=\"18\"/>\n<text text-anchor=\"middle\" x=\"27\" y=\"-85.8\" font-family=\"Times,serif\" font-size=\"14.00\">a</text>\n</g>\n<!-- b -->\n<g id=\"node2\" class=\"node\">\n<title>b</title>\n<ellipse fill=\"none\" stroke=\"black\" cx=\"27\" cy=\"-18\" rx=\"27\" ry=\"18\"/>\n<text text-anchor=\"middle\" x=\"27\" y=\"-13.8\" font-family=\"Times,serif\" font-size=\"14.00\">b</text>\n</g>\n<!-- a&#45;&#45;b -->\n<g id=\"edge1\" class=\"edge\">\n<title>a&#45;&#45;b</title>\n<path fill=\"none\" stroke=\"black\" d=\"M27,-71.7C27,-60.85 27,-46.92 27,-36.1\"/>\n</g>\n</g>\n</svg>\n"}
-
 ```
-> NOTE: if seeing 
+
+`Viz.js` __2.x__ is fully asynchronous under the hood. Every render call (even `renderString`) now returns a JavaScript `Promise`.
+
+__GraalJS__ exposes that `Promise` as a `Value`, but `Value.asHostObject()` cannot convert a Promise directly to `byte[]`.
+
+
 ```txt
 [0.007s][warning][os,thread] Failed to start thread "VM Thread" - pthread_create failed (EPERM) for attributes: stacksize: 1024k, guardsize: 4k, detached. Error occurred during initialization of VM Cannot create VM thread. Out of system resources.
 ``` 
 use a newer Docker environment 
+
 ### NOTE 
+
 | Vendor                         | GraalVM JS included? | Notes                                                                 |
-
 |--------------------------------|--------------------|-----------------------------------------------------------------------|
-
 | Eclipse Temurin / AdoptOpenJDK  | ❌ No               | Standard builds only include the JVM and core libraries. GraalJS is not bundled. |
-
 | Oracle JDK / Oracle OpenJDK     | ❌ No               | Same as above; Nashorn is included up to Java 15, removed in 17.      |
-
 | Amazon Corretto                 | ❌ No               | Standard builds do not include GraalVM.                               |
-
 | Zulu / Liberica / SAP Machine   | ❌ No               | GraalVM only via separate GraalVM release.                             |
-
 | GraalVM distributions           | ✅ Yes              | Full GraalVM CE or Enterprise builds include GraalJS and Truffle languages. |  
 
 ### Memorable ChatGPT Feedback Openers 
+
 ![That makes sense](screenshots/capture-chatgpt1.png) 
+
 ![That explains it completely](screenshots/capture-chatgpt2.png) 
+
 ![That's exactly what I was expecting](screenshots/capture-chatgpt3.png)  ### Graphviz Warning (Advanced) 
+
 When using Graphviz to draw swimlane-style diagrams with `subgraph cluster_*` instruction, be careful when combining clusters with explicit `rank` constraints such as `rank=same`. 
 Nodes that belong to a cluster should not also be forced into a global `rank` group. Mixing these two layout rules can confuse Graphviz’s layout engine and may lead to warnings such as:
 
 ```text
-
 node X was already in a rankset, deleted from cluster
-
 ``` 
 and in some versions even a `segmentation fault` (crash) without detail. 
 This happens because: 
@@ -286,6 +305,7 @@ Let Graphviz decide node positioning automatically.
 Avoid `rank=same` when nodes are inside clusters. 
 Do not try to manually align nodes across different clusters unless you fully understand Graphviz ranking rules. 
 Keeping the layout simple makes the diagram more stable, easier to maintain, and portable across Graphviz versions.  ### Note on diagram layout and Graphviz limitations 
+
 Diagram **A**:
 
 ![Cross-domain flow 1](screenshots/cross-domain-flow-1.png) 
@@ -334,6 +354,7 @@ Using code-resembling tools such as [LaTeX](https://www.latex-project.org/) and 
 brings significant advantages for creating technical material compared to poor-format, raw data–based tools (__XML__, __JSON__) or visual workflow designers such as 
 
 [Drawio](https://www.drawio.com), [n8n](https://n8n.io/), [Windows Workflow Visual Studio Designer](), [UIPath](https://www.uipath.com/product/studio), [PEGA](https://help.roboticautomation.pega.com/80/Welcome_to_Pega_Robotics.htm), etc.: 
+
 1. **Clarity of intent** – Even in ASCII or code form, the logical structure and flow are immediately visible. Unlike XML/JSON or drag-and-drop blocks, the creator’s intention is explicit.
 
 2. **Readable abstraction** – You describe *what* you want (nodes, edges, clusters) rather than *how to serialize it*, keeping focus on design, not syntax.
