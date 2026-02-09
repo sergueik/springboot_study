@@ -459,6 +459,118 @@ Yet he chose to do it anyway, valuing the process, mastery, or simple enjoyment.
 
 Discussing “which is better — TeX or ChiWriter?” was off-limits because it would miss the point: the choice wasn’t about efficiency, it was about personal engagement and the reward of effort itself.
 
+### Authz Auth Lag
+
+Academically, what you observed is a mismatch between:
+
+* Authentication domain (Identity Store of IdP)
+* Authorization domain (Local Authorization Store of service)
+
+In formal language:
+
+The subject exists in the __Identity Store__ but has no entry in the __Authorization / Entitlement Store__ of the resource domain.
+
+Which is exactly the same class of problem as:
+
+AD ForeignSecurityPrincipals
+
+* Cross-realm Kerberos
+* OAuth external users
+* Federation mapping
+
+taxonomy you can use.
+
+## Authentication (AuthN) — “Who are you?”
+
+**Identity Store**
+- Stores users / principals
+- Examples: LDAP, Active Directory, RHDS
+- Academic term: Directory Information Base (DIB)
+
+**Credential Store**
+- Stores password hashes, certificates, MFA secrets
+- Also called: Authentication Database / Credential Repository
+
+**Directory Service**
+- Hierarchical identity store (LDAP, AD, X.500)
+
+**Security Principal Repository**
+- Users, service accounts, computer accounts
+
+
+## Authorization (AuthZ) — “What are you allowed to do?”
+
+**Authorization Store**
+- Stores roles, groups, permissions
+
+**Policy Store**
+- Stores authorization rules (XACML, OPA, etc.)
+
+**Access Control Database**
+- Subject → resource relationships
+
+**Entitlement Store**
+- Enterprise IAM term for permissions
+
+**Group / Role Repository**
+- RBAC-based systems (AD groups, LDAP groups)
+
+
+## Decision vs Storage (formal model)
+
+**PDP — Policy Decision Point**
+- Makes authorization decision
+
+**PEP — Policy Enforcement Point**
+- Enforces decision
+
+**PIP — Policy Information Point**
+- Supplies attributes from storage
+
+**Policy Information Store**
+- Backend data for PDP/PIP
+
+
+## Classical Access Control Models
+
+- RBAC — Role-Based Access Control  
+- ABAC — Attribute-Based Access Control  
+- DAC — Discretionary Access Control  
+- MAC — Mandatory Access Control  
+
+
+## OAuth / Federation Context
+
+**Identity Provider (IdP) Store**
+- Authenticates the user (Azure AD, Keycloak, Okta)
+
+**Authorization Server Store**
+- Stores scopes, clients, consent
+
+**Resource Server Authorization Store**
+- Local mapping of external identity → internal roles
+- Also called:
+  - Local Account Store
+  - Federated Identity Mapping Store
+  - Foreign Principal Store
+
+**Token / Session Store**
+- Short-lived auth state
+
+
+## Root Cause Pattern (your case)
+
+The subject exists in the **Identity Store**  
+but is missing or not yet effective in the **Authorization / Entitlement Store**.
+
+This is a synchronization / trust-boundary problem between:
+- Authentication domain
+- Authorization domain
+
+### Escalation Statemet
+
+Hello, John can authenticate successfully but is still not recognized as a member of organization Z. He was added to group X in domain D, but authorization has not taken effect. Could you help check the federation mapping and entitlement store synchronization?
+
 ### See Also
 
   * https://github.com/omerio/graphviz-server
