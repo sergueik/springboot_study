@@ -4,103 +4,113 @@ import org.graalvm.polyglot.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-/**
- * A minimal GraalJS-based engine for rendering Graphviz DOT graphs to PNG.
- */
-public class GraphvizGraalEngine implements AutoCloseable {
+import org.apache.batik.transcoder.*;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+import org.apache.batik.transcoder.svg2svg.SVGTranscoder;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+
+public class GraphvizGraalEngine {
 
     private static final Logger log = LoggerFactory.getLogger(GraphvizGraalEngine.class);
 
-    private final Context context;
-    private final Value vizFunction;
+    private Context context;
+    private Value vizClass;
 
-    /**
-     * Initialize GraalJS context and Viz.js
-     */
     public GraphvizGraalEngine() {
-        log.info("Initializing GraalJS context...");
-        context = Context.newBuilder("js")
-                .allowAllAccess(true)
-                .option("engine.WarnInterpreterOnly", "false")
-                .build();
-        log.info("GraalJS context created.");
-
         try {
-            // Load viz.js first
-            String vizJs = loadResource("/META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/viz.js");
-            log.info("Loaded viz.js, length={} bytes", vizJs.length());
-            context.eval("js", vizJs);
+            log.info("Initializing GraalJS context...");
 
-            // Load full.render.js after viz.js
-            String fullRenderJs = loadResource("/META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/full.render.js");
-            log.info("Loaded full.render.js, length={} bytes", fullRenderJs.length());
-            context.eval("js", fullRenderJs);
-            log.info("Evaluated full.render.js in GraalJS context.");
+            context = Context.newBuilder("js")
+                    .allowAllAccess(true)
+                    .option("engine.WarnInterpreterOnly", "false")
+                    .build();
 
-            // Grab Viz function (function, not class)
-            vizFunction = context.getBindings("js").getMember("Viz");
-            if (vizFunction == null || !vizFunction.canExecute()) {
-                throw new IllegalStateException("Viz function not found or not executable");
+            loadJsResource("/META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/viz.js");
+            loadJsResource("/META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/full.render.js");
+
+            vizClass = context.getBindings("js").getMember("Viz");
+
+            if (vizClass == null || !vizClass.canInstantiate()) {
+                throw new IllegalStateException("Viz constructor not found or not instantiable");
             }
-            log.info("Viz function found and executable.");
+
+            log.info("Viz class found and instantiable.");
+
         } catch (Exception e) {
             log.error("Failed to initialize Viz.js in GraalJS", e);
             throw new RuntimeException(e);
         }
     }
 
-    /**
-     * Render DOT source into PNG bytes
-     */
-    public byte[] renderPng(String dotSource) {
-        if (vizFunction == null || context == null) {
-            throw new IllegalStateException("GraalJS context or Viz not initialized");
-        }
-
-        try {
-            // Create a new Viz instance (class must be instantiated)
-            Value vizInstance = vizFunction.newInstance();
-
-            // Prepare render options
-            Value renderOptions = context.eval("js", "({ format: 'png-image' })");
-
-            // Call renderString
-            Value result = vizInstance.invokeMember("renderString", dotSource, renderOptions);
-
-            byte[] pngBytes = result.asHostObject();
-            log.info("Graph rendered to PNG, {} bytes", pngBytes.length);
-            return pngBytes;
-        } catch (PolyglotException pe) {
-            log.error("Exception while rendering PNG: {}", pe.getMessage(), pe);
-            throw new RuntimeException(pe);
-        }
-    }
-
-    /**
-     * Load a resource from classpath as UTF-8 string
-     */
-    private String loadResource(String path) {
+    private void loadJsResource(String path) throws IOException {
+        log.info("Loading {}", path);
         try (InputStream is = getClass().getResourceAsStream(path)) {
             if (is == null) {
                 throw new RuntimeException("Resource not found: " + path);
             }
-            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load resource: " + path, e);
+            String js = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            context.eval("js", js);
+            log.info("Loaded {}, length={}", path, js.length());
         }
     }
 
     /**
-     * Close GraalJS context
+     * Render DOT -> PNG (SVG via GraalJS, PNG via Batik)
      */
-    @Override
+    public byte[] renderPng(String dotSource) {
+        log.info("renderPng called");
+
+        try {
+            // new Viz()
+            Value viz = vizClass.newInstance();
+
+            // render SVG synchronously
+            Value svgValue = viz.invokeMember("renderString", dotSource);
+
+            if (!svgValue.isString()) {
+                throw new RuntimeException("Expected SVG string, got: " + svgValue);
+            }
+
+            String svg = svgValue.asString();
+            log.debug("SVG length={}", svg.length());
+
+            return svgToPng(svg);
+
+        } catch (PolyglotException e) {
+            log.error("JS rendering error", e);
+            throw new RuntimeException("Error rendering SVG in GraalJS", e);
+        } catch (Exception e) {
+            log.error("PNG conversion error", e);
+            throw new RuntimeException("Error converting SVG to PNG", e);
+        }
+    }
+
+    /**
+     * Convert SVG string to PNG bytes using Batik
+     */
+    private byte[] svgToPng(String svg) throws Exception {
+        PNGTranscoder transcoder = new PNGTranscoder();
+
+        TranscoderInput input = new TranscoderInput(
+                new StringReader(svg)
+        );
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        TranscoderOutput output = new TranscoderOutput(baos);
+
+        transcoder.transcode(input, output);
+        baos.flush();
+
+        return baos.toByteArray();
+    }
+
     public void close() {
         if (context != null) {
             context.close();
-            log.info("GraalJS context closed.");
         }
     }
 }
