@@ -253,7 +253,7 @@ dot -Tpng -o screenshots/oauth2-delegated-auth-flow-poor-layout.png scratch/oaut
 
 **Initial generated diagram (poor layout)**
 
-![Oauth2 delegated flow](screenshots/oauth2-delegated-auth-flow-poor-layout.png) 
+![Oauth2 delegated flow](screenshots/oauth2-delegated-auth-flow-poor-layout.png)
 
 **Natural-language correction prompt**
 
@@ -321,37 +321,37 @@ Final result:
 
 This demonstrates how Graphviz supports an intent-driven workflow:
 
-* Start from a conceptual description  
-* Render a first draft  
-* Refine the diagram using natural language (“move actors left/right”, “align lanes”, “clarify flow”)  
-* Preserve the diagram as reproducible code  
+* Start from a conceptual description
+* Render a first draft
+* Refine the diagram using natural language (“move actors left/right”, “align lanes”, “clarify flow”)
+* Preserve the diagram as reproducible code
 
 Instead of pixel-level manipulation, the author works at the level of meaning and structure, which makes the diagram:
 
-* auditable  
-* versionable  
-* repeatable  
-* and easy to evolve as understanding improves  
+* auditable
+* versionable
+* repeatable
+* and easy to evolve as understanding improves
 
-An additional advantage is that such diagrams are **combinable and scalable**.  
-Individual subflows can be refined independently and later merged into larger system-level views.  
-Unlike XML/JSON-based workflow tools (for example, [n8n](https://en.wikipedia.org/wiki/N8n) or 
+An additional advantage is that such diagrams are **combinable and scalable**.
+Individual subflows can be refined independently and later merged into larger system-level views.
+Unlike XML/JSON-based workflow tools (for example, [n8n](https://en.wikipedia.org/wiki/N8n) or
 [UiPath](https://en.wikipedia.org/wiki/UiPath), which quickly become hard to tweak and reason about
-even for relatively simple flows, DOT remains readable and malleable as complexity grows. 
-Compare the classic [Jenkins](https://en.wikipedia.org/wiki/Jenkins_(software)) 
+even for relatively simple flows, DOT remains readable and malleable as complexity grows.
+Compare the classic [Jenkins](https://en.wikipedia.org/wiki/Jenkins_(software))
 "Freestyle project" with [Pipeline](https://www.jenkins.io/doc/book/pipeline/).
 
-With a DSL-based diagrams, “polishing” a large flow piece by piece is not intimidating.  
-Changes remain local, understandable, and reversible.  
+With a DSL-based diagrams, “polishing” a large flow piece by piece is not intimidating.
+Changes remain local, understandable, and reversible.
 This encourages iterative improvement rather than discouraging modification through visual clutter or brittle GUI layouts.
 
-From a management perspective, this enables work to be distributed across a team according to **subject-matter expertise** rather than tooling expertise.  
-Each contributor can focus on the part of the flow they understand best (authentication, authorization, data flow, infrastructure, policy), without needing to master a complex visual editor.  
+From a management perspective, this enables work to be distributed across a team according to **subject-matter expertise** rather than tooling expertise.
+Each contributor can focus on the part of the flow they understand best (authentication, authorization, data flow, infrastructure, policy), without needing to master a complex visual editor.
 The “language-like” nature of DOT makes collaboration practical and inclusive.
 
-This also aligns with established practice in the [Jupyter](https://en.wikipedia.org/wiki/Project_Jupyter) and data science communities.  
-Just as [gnuplot](https://en.wikipedia.org/wiki/Gnuplot) has long been recognized for reproducible data visualization, Graphviz and DOT are implicitly used in modern AI and ML tooling.  
-Frameworks such as TensorFlow and scikit-learn already model computation and dependency graphs internally in ways that closely resemble DOT.  
+This also aligns with established practice in the [Jupyter](https://en.wikipedia.org/wiki/Project_Jupyter) and data science communities.
+Just as [gnuplot](https://en.wikipedia.org/wiki/Gnuplot) has long been recognized for reproducible data visualization, Graphviz and DOT are implicitly used in modern AI and ML tooling.
+Frameworks such as TensorFlow and scikit-learn already model computation and dependency graphs internally in ways that closely resemble DOT.
 For AI practitioners, this style of representation is natural and familiar.
 
 This provides a strong argument when communicating with senior management:
@@ -368,13 +368,43 @@ Even when people don’t write DOT directly, their tools generate and consume Gr
 If you embrace Jupyter, and [TensorFlow](https://en.wikipedia.org/wiki/TensorFlow), [scikit-learn](https://en.wikipedia.org/wiki/Scikit-learn), or [PyTorch](https://en.wikipedia.org/wiki/PyTorch) you already embraced __Graphviz__
 
 
-The focus shifts away from individual technical achievement in a narrow programming environment and toward shared understanding of system intent and behavior.  
+The focus shifts away from individual technical achievement in a narrow programming environment and toward shared understanding of system intent and behavior.
 This makes it easier for management to approve lightweight, standard tooling (for example, installing Graphviz via apt, yum, or chocolatey) in place of heavyweight proprietary diagram editors.
 
 In short, Graphviz turns diagrams into living artifacts:
 not pictures to be manually drawn and forgotten, but structured knowledge that can be reviewed, evolved, and trusted over time.
+### Confluence Graphviz Plugin
 
-## Memorable ChatGPT Feedback Openers
+This document summarizes what is meant by the Wikipedia note:
+
+> **"Confluence has a Graphviz plugin."**
+
+and explains which plugin this refers to, how it works, how it is installed, and how it is used.
+
+---
+
+## 1. Which “Graphviz plugin” for Confluence?
+
+Historically, this refers to third-party Confluence add-ons such as:
+
+- **Graphviz Plugin for Confluence**
+- **Graphviz Macro**
+- **DOT Macro**
+- **Graph Visualization Plugin**
+
+These plugins provide a **Confluence macro** that allows users to embed Graphviz DOT language directly into wiki pages and render diagrams.
+
+Example usage in a Confluence page:
+
+```text
+{graphviz}
+digraph G {
+  A -> B;
+  B -> C;
+}
+{graphviz}
+```
+### Memorable ChatGPT Feedback Openers
 
 - ![That makes sense](screenshots/capture-chatgpt1.png)
 - ![That explains it completely](screenshots/capture-chatgpt2.png)
@@ -383,6 +413,8 @@ not pictures to be manually drawn and forgotten, but structured knowledge that c
 
 ### See Also
 
+  * [Graphviz gallery](https://graphviz.org/gallery/)
+  * [Graphviz Visual Editor](https://magjac.com/graphviz-visual-editor/)
   * https://github.com/omerio/graphviz-server
   * https://github.com/omerio/graphviz-webapp
   * https://hub.docker.com/r/mejran/graphviz-server
@@ -392,7 +424,19 @@ not pictures to be manually drawn and forgotten, but structured knowledge that c
   * https://sergeytihon.com/tag/graphviz/
   * https://pikabu.ru/story/rub_goldberg_i_ego_mashinyi_9986808?ysclid=mlfs8nk32o584914016
   * https://youtu.be/GvnEBX9aedY
+  * https://sarielhp.org/misc/dot/gallery
+  * web based dor viewers:
+    + https://edotor.net
+    + `viz.js` based in-browser render [app](https://dreampuf.github.io/GraphvizOnline/?engine=dot) and [github source](https://github.com/dreampuf/GraphvizOnline)
+    + __graphviz-visual-editor__ - server-side, node.js [github project](https://github.com/magjac/graphviz-visual-editor) and [app](https://magjac.com/graphviz-visual-editor/) - uses [dot.js](https://github.com/magjac/graphviz-visual-editor/blob/master/src/dot.js)
+    + https://www.webgraphviz.com - also uses `viz.js`
+  * [Confluence Installing plugins overview](https://confluence.atlassian.com/spaces/CONF27/pages/145097161/Installing%2Bplugins%2Boverview)
+  * [Confluence Flowchart Macro documentation](https://confluence.atlassian.com/display/conf29/flowchart%2Bmacro)
+  * [Atlassian Marketplace](https://marketplace.atlassian.com/apps/257/graphviz-diagrams-for-confluence)
+  * [Forge-based Graphviz Confluence plugin - also on Atlassian Marketplace](https://marketplace.atlassian.com/apps/1230982/graphviz-for-confluence?utm_source)
+  * [Excalidraw Graphviz Diagrams Visual Editor for Confluence](https://marketplace.atlassian.com/apps/1237691/excalidraw-graphviz-diagrams-for-confluence)
+
 ---
 ### Author
 
-[Serguei Kouzmine](kouzmine_serguei@yahoo.com)  
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
