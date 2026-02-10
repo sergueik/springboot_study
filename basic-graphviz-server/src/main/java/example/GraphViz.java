@@ -25,21 +25,21 @@ public class GraphViz {
 	private static GraphvizGraalEngine graalEngine;
 
 	public static void init() {
-			String engine = Config.get("graphviz.engine", "jdk");
-			log.info("Using Graphviz engine: {}", engine);
+		String engine = Config.get("graphviz.engine", "jdk");
+		log.info("Using Graphviz engine: {}", engine);
 
-			graalEngine = new GraphvizGraalEngine(); // initialize GraalJS engine
-			if (graalEngine != null)
-				log.info("Graphviz engine, {} created", graalEngine.hashCode());
-			else
-				log.info("Graphviz engine failed to initialize");
+		graalEngine = new GraphvizGraalEngine(); // initialize GraalJS engine
+		if (graalEngine != null)
+			log.info("Graphviz engine, {} created", graalEngine.hashCode());
+		else
+			log.info("Graphviz engine failed to initialize");
 
-			// optional warmup
-			String warmupDot = "graph { a -- b }";
-			byte[] warmup = graalEngine.renderPng(warmupDot);
-			log.info("Graphviz engine warmup complete, {} bytes generated", warmup.length);
+		// optional warmup
+		String warmupDot = "graph { a -- b }";
+		byte[] warmup = graalEngine.renderPng(warmupDot);
+		log.info("Graphviz engine warmup complete, {} bytes generated", warmup.length);
 
-			ready = true;
+		ready = true;
 	}
 
 	public static boolean isReady() {
@@ -49,6 +49,7 @@ public class GraphViz {
 	private File writeDotSourceToFile(String str) throws IOException {
 		File tempFile;
 		try {
+
 			tempFile = File.createTempFile("graph_", ".dot.tmp", new File(GraphViz.TEMP_DIR));
 			log.info("write image stream to {}", tempFile.toString());
 			FileWriter fileWriter = new FileWriter(tempFile);
@@ -62,7 +63,7 @@ public class GraphViz {
 	}
 
 	private StringBuilder graph = new StringBuilder();
-	private static final String TEMP_DIR = "/tmp"; // or "c:/temp" for Windows
+	private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
 	public static final String GRAPH_START = "graph {";
 	public static final String GRAPH_END = "}";
 

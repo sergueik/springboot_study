@@ -25,6 +25,8 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.http.util.EntityUtils;
 
+import java.nio.file.Paths;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +34,7 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(HttpRequestHandler.class);
 
-	private static final String TEMP_PATH = "/tmp/graph.";
+	private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
 
 	// 3 supported types
 	private static final String GRAPH_TYPE_PNG = "png";
@@ -64,14 +66,14 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 		if (request instanceof HttpEntityEnclosingRequest) {
 
 			if (request.getRequestLine().getUri().equals("/health")) {
-			    if (GraphViz.isReady()) {
-			        response.setStatusCode(200);
-			        response.setEntity(new StringEntity("OK\n"));
-			    } else {
-			        response.setStatusCode(503);
-			        response.setEntity(new StringEntity("PROBLEM WARMING UP\n"));
-			    }
-			    return;
+				if (GraphViz.isReady()) {
+					response.setStatusCode(200);
+					response.setEntity(new StringEntity("OK\n"));
+				} else {
+					response.setStatusCode(503);
+					response.setEntity(new StringEntity("PROBLEM WARMING UP\n"));
+				}
+				return;
 			}
 
 			HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
@@ -131,7 +133,8 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 		// String type = "svg"; // open with inkscape
 		// String type = "png";
 		// String type = "plain";
-		File out = new File(TEMP_PATH + graphType); // Linux
+
+		File out = Paths.get(TEMP_DIR, "graph." + graphType).toFile(); // Linux
 
 		gv.writeGraphToFile(gv.getGraph(gv.getDotSource()), out.getAbsolutePath());
 

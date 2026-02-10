@@ -8,8 +8,45 @@ This version replaces direct `/usr/bin/dot` execution with **pure Java** using *
 
 ## Usage
 
-### Build
 
+```cmd
+set java_home=c:\java\jdk-17.0.12
+c:\java\init.cmd 
+```
+
+```cmd
+mvn package
+```
+```cmd
+java -cp target\example.graphviz-java.jar;target\lib\* example.DotGraphics 8080
+```
+```sh
+curl -s -X POST http://localhost:8080/ -d @../basic-graphviz/color.dot -o color.png
+```
+```text
+
+17:35:14.874 INFO  example.DotGraphics - Listening on port 8080
+17:35:14.872 INFO  example.GraphViz - Using Graphviz engine: graal
+17:35:14.882 INFO  example.GraphvizGraalEngine - Initializing GraalJS context...
+17:35:15.277 INFO  example.GraphvizGraalEngine - Loading /META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/viz.js
+17:35:16.149 INFO  example.GraphvizGraalEngine - Loaded /META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/viz.js, length=11717
+17:35:16.149 INFO  example.GraphvizGraalEngine - Loading /META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/full.render.js
+17:35:17.829 INFO  example.GraphvizGraalEngine - Loaded /META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/full.render.js, length=2402990
+17:35:17.829 INFO  example.GraphvizGraalEngine - Viz.js loaded successfully.
+17:35:17.830 INFO  example.GraphViz - Graphviz engine, 1488395499 created
+17:35:19.370 INFO  example.GraphvizGraalEngine - SVG generated, length=1178
+17:35:20.677 INFO  example.GraphViz - Graphviz engine warmup complete, 2614 bytes generated
+17:37:28.571 INFO  example.DotGraphics - Incoming connection from /0:0:0:0:0:0:0:1
+17:37:28.607 INFO  example.DotGraphics - New connection thread
+17:37:28.623 INFO  o.a.http.protocol.HttpRequestHandler - POST / [Host: localhost:8080, User-Agent: curl/8.12.1, Accept: */*, Content-Length: 278, Content-Type: application/x-www-form-urlencoded]
+17:37:28.625 INFO  o.a.http.protocol.HttpRequestHandler - Incoming entity content (278 bytes): graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
+17:37:28.635 INFO  o.a.http.protocol.HttpRequestHandler - valid dot content
+17:37:28.637 INFO  o.a.http.protocol.HttpRequestHandler - requesting graph type:
+17:37:28.638 INFO  o.a.http.protocol.HttpRequestHandler - graph {    { rank=same; white}    { rank=same; cyan; yellow; pink}    { rank=same; red; green; blue}    { rank=same; black}    white -- cyan -- blue    white -- yellow -- green    white -- pink -- red    cyan -- green -- black    yellow -- red -- black    pink -- blue -- black}
+17:37:30.804 INFO  example.GraphvizGraalEngine - SVG generated, length=4897
+17:37:31.158 INFO  o.a.http.protocol.HttpRequestHandler - Responded with Success
+
+```
 ```sh
 mvn -Psingle clean package
 ```
