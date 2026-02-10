@@ -1,0 +1,37 @@
+digraph OAuth2_Delegated_Flow {
+    rankdir=LR
+    splines=ortho
+    node [shape=rect, style=rounded]
+
+    subgraph cluster_IDE {
+        label="IDE / Plugin"
+        style=dashed
+        IDE_Login [label="Start Login / Click 'Sign in with GitHub'"]
+        IDE_ReceiveToken [label="Receive OAuth Token\n(Store in secret storage)"]
+        IDE_API_Call [label="Use token for API calls"]
+    }
+
+    subgraph cluster_Browser {
+        label="Browser"
+        style=dashed
+        Browser_Auth [label="User authenticates\n(SSO / Password / MFA)"]
+        Browser_Consent [label="Consent / 'Copy code and continue'"]
+    }
+
+    subgraph cluster_GitHub {
+        label="GitHub / OAuth Server"
+        style=dashed
+        AuthServer_AuthCode [label="Issue Authorization Code"]
+        AuthServer_Token [label="Exchange Code for Access Token"]
+        AuthServer_Check [label="Check Org / Group / License"]
+    }
+
+    IDE_Login -> Browser_Auth [label="Redirect with PKCE challenge"]
+    Browser_Auth -> Browser_Consent [label="MFA / Login complete"]
+    Browser_Consent -> IDE_ReceiveToken [label="Authorization Code"]
+    IDE_ReceiveToken -> AuthServer_Token [label="Exchange code + PKCE"]
+    AuthServer_Token -> IDE_ReceiveToken [label="Access token issued"]
+    IDE_ReceiveToken -> IDE_API_Call [label="Calls Copilot API on user behalf"]
+    IDE_API_Call -> AuthServer_Check [label="Token validated & permissions checked"]
+}
+
