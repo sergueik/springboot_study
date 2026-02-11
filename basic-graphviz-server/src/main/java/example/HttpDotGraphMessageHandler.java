@@ -48,7 +48,7 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 
 		log.info(request.toString());
 
-		String target = request.getRequestLine().getUri();
+		// String target = request.getRequestLine().getUri();
 		response.setStatusCode(HttpStatus.SC_OK);
 
 		if (request instanceof HttpEntityEnclosingRequest) {
@@ -73,14 +73,29 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 			if (StringUtils.isNotBlank(dot) && GraphViz.isValidDotText(dot)) {
 				log.info("valid dot content");
 
-				target = (StringUtils.isNotBlank(target)
+				// --- Future: extract output format from URL (svg/pdf/png) ---
+                /*
+				String format = (StringUtils.isNotBlank(target)
 						? StringUtils.remove(URLDecoder.decode(target, "UTF-8").trim().toLowerCase(), '/')
 						: null);
 
-				log.info("requesting graph type: {}", target);
+				log.info("requesting graph format: {}", format);
+                 */
+				try {
+					HttpEntity graph = generateGraph(dot);
+					response.setEntity(graph);
+				} catch (IllegalStateException e) {
+					log.error("Graphviz engine concurrency error", e);
+					response.setStatusCode(HttpStatus.SC_SERVICE_UNAVAILABLE);
+					response.setEntity(
+							new StringEntity("Graphviz engine busy, try again later\n", ContentType.TEXT_PLAIN));
 
-				HttpEntity graph = generateGraph(dot);
-				response.setEntity(graph);
+				} catch (Exception e) {
+					log.error("Graphviz render failed", e);
+					response.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+					response.setEntity(new StringEntity("Graphviz render failed\n", ContentType.TEXT_PLAIN));
+				}
+
 			} else {
 				log.info("not a valid dot content");
 			}
@@ -90,7 +105,8 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 	}
 
 	/**
-	 * Currently only renders PNG output. formats possibly to support in the future : SVG, PDF
+	 * Currently only renders PNG output. formats possibly to support in the future
+	 * : SVG, PDF
 	 */
 	private HttpEntity generateGraph(String dot) {
 
