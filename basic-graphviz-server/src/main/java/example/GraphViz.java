@@ -13,10 +13,13 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import example.GraphvizGraalEngine;
 import example.Config;
+
+// based on: https://github.com/nidi3/graphviz-java/blob/master/graphviz-java/src/main/java/guru/nidi/graphviz/engine/Graphviz.java
 
 public class GraphViz {
 
@@ -46,42 +49,11 @@ public class GraphViz {
 		return ready;
 	}
 
-	private File writeDotSourceToFile(String str) throws IOException {
-		File tempFile;
-		try {
-
-			tempFile = File.createTempFile("graph_", ".dot.tmp", new File(GraphViz.TEMP_DIR));
-			log.info("write image stream to {}", tempFile.toString());
-			FileWriter fileWriter = new FileWriter(tempFile);
-			fileWriter.write(str);
-			fileWriter.close();
-		} catch (Exception e) {
-			log.error("Error: I/O error while writing the dot source to temp file!", e);
-			return null;
-		}
-		return tempFile;
-	}
-
 	private StringBuilder graph = new StringBuilder();
-	private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
-	public static final String GRAPH_START = "graph {";
-	public static final String GRAPH_END = "}";
+	// private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
 
 	public GraphViz() {
 	}
-
-	public void add(String line) {
-		graph.append(line);
-	}
-
-	public void addln(String line) {
-		graph.append(line).append('\n');
-	}
-
-	public void addln() {
-		graph.append('\n');
-	}
-
 	public String getDotSource() {
 		return graph.toString();
 	}
@@ -111,22 +83,21 @@ public class GraphViz {
 		return 1;
 	}
 
-	public String startGraph() {
-		return GRAPH_START;
-	}
-
-	public String endGraph() {
-		return GRAPH_END;
-	}
-
-	public static void closeEngine() {
-		if (graalEngine != null) {
-			graalEngine.close();
-		}
-	}
-
 	public static boolean isValidDotText(String dot) {
-		return StringUtils.isNotBlank(dot) && (dot.indexOf(GRAPH_START) > -1);
+		// DOT grammar (simplified):
+		// [ strict ] (graph | digraph) [ ID ] { ... }
+	    return !StringUtils.isBlank(dot)
+	        && Pattern.compile(
+	            "(?x)                       # enable free-spacing & comments\n" +
+	            "^\\s*                      # leading whitespace\n" +
+	            "(strict\\s+)?              # optional 'strict'\n" +
+	            "(graph|digraph)\\s+        # graph type\n" +
+	            "([A-Za-z_][A-Za-z0-9_]*    # unquoted graph name\n" +
+	            "|\"[^\"]+\")?              # or quoted graph name\n" +
+	            "\\s*\\{                    # opening brace\n",
+	            Pattern.CASE_INSENSITIVE | Pattern.COMMENTS
+	        ).matcher(dot).find()
+	        && dot.indexOf('{') < dot.lastIndexOf('}');
 	}
 
 }

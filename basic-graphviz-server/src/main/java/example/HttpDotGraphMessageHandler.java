@@ -3,10 +3,8 @@ package example;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
+import java.nio.file.Paths;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,29 +23,20 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.http.util.EntityUtils;
 
-import java.nio.file.Paths;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+// origin: https://github.com/omerio/graphviz-server/blob/master/src/info/dawelbeit/graphviz/dot/HttpDotGraphMessageHandler.java
 
 public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(HttpRequestHandler.class);
 
-	private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
-
-	// 3 supported types
-	private static final String GRAPH_TYPE_PNG = "png";
-	private static final String GRAPH_TYPE_PDF = "pdf";
-	private static final String GRAPH_TYPE_SVG = "svg";
-
-	private static final String CONTENT_TYPE_PNG = "image/png";
-	private static final String CONTENT_TYPE_PDF = "application/pdf";
-
 	public HttpDotGraphMessageHandler() {
 		super();
 	}
 
+	@Override
 	public void handle(final HttpRequest request, final HttpResponse response, final HttpContext context)
 			throws HttpException, IOException {
 
@@ -60,17 +49,16 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 		log.info(request.toString());
 
 		String target = request.getRequestLine().getUri();
-
 		response.setStatusCode(HttpStatus.SC_OK);
 
 		if (request instanceof HttpEntityEnclosingRequest) {
 
-			if (request.getRequestLine().getUri().equals("/health")) {
+			if ("/health".equals(request.getRequestLine().getUri())) {
 				if (GraphViz.isReady()) {
-					response.setStatusCode(200);
+					response.setStatusCode(HttpStatus.SC_OK);
 					response.setEntity(new StringEntity("OK\n"));
 				} else {
-					response.setStatusCode(503);
+					response.setStatusCode(HttpStatus.SC_SERVICE_UNAVAILABLE);
 					response.setEntity(new StringEntity("PROBLEM WARMING UP\n"));
 				}
 				return;
@@ -79,69 +67,50 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 			HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
 			byte[] entityContent = EntityUtils.toByteArray(entity);
 			String dot = new String(entityContent, StandardCharsets.US_ASCII);
+
 			log.info("Incoming entity content ({} bytes): {}", entityContent.length, dot);
 
-			// only respond if we have a valid dot
 			if (StringUtils.isNotBlank(dot) && GraphViz.isValidDotText(dot)) {
 				log.info("valid dot content");
 
 				target = (StringUtils.isNotBlank(target)
-						? StringUtils.remove((URLDecoder.decode(target, "UTF-8")).trim().toLowerCase(), '/')
+						? StringUtils.remove(URLDecoder.decode(target, "UTF-8").trim().toLowerCase(), '/')
 						: null);
 
-				log.info("requesting graph type: " + target);
+				log.info("requesting graph type: {}", target);
 
-				HttpEntity graph = this.generateGraph(dot, target);
-
+				HttpEntity graph = generateGraph(dot);
 				response.setEntity(graph);
-			} else
+			} else {
 				log.info("not a valid dot content");
+			}
 		}
 
 		log.info("Responded with Success");
-
 	}
 
-	private HttpEntity generateGraph(String dot, String target) {
+	/**
+	 * Currently only renders PNG output. formats possibly to support in the future : SVG, PDF
+	 */
+	private HttpEntity generateGraph(String dot) {
 
 		GraphViz gv = new GraphViz();
 		gv.readString(dot);
 		log.info(gv.getDotSource());
 
-		ContentType contentType;
-		String graphType;
+		String graphType = "png";
+		ContentType contentType = ContentType.IMAGE_PNG;
 
-		if (GRAPH_TYPE_SVG.equals(target)) {
+		/*
+		 * if ("svg".equals(target)) { graphType = "svg"; contentType =
+		 * ContentType.APPLICATION_SVG_XML; } else if ("pdf".equals(target)) { graphType
+		 * = "pdf"; contentType = ContentType.create("application/pdf"); }
+		 */
 
-			graphType = GRAPH_TYPE_SVG;
-			contentType = ContentType.APPLICATION_SVG_XML;
-
-		} else if (GRAPH_TYPE_PDF.equals(target)) {
-			graphType = GRAPH_TYPE_PDF;
-			contentType = ContentType.create(CONTENT_TYPE_PDF, (Charset) null);
-
-		} else {
-			// default png
-			graphType = GRAPH_TYPE_PNG;
-			contentType = ContentType.create(CONTENT_TYPE_PNG, (Charset) null);
-		}
-
-		// String type = "dot";
-		// String type = "fig"; // open with xfig
-		// String type = "pdf";
-		// String type = "ps";
-		// String type = "svg"; // open with inkscape
-		// String type = "png";
-		// String type = "plain";
-
-		File out = Paths.get(TEMP_DIR, "graph." + graphType).toFile(); // Linux
+		File out = Paths.get(System.getProperty("java.io.tmpdir"), "graph." + graphType).toFile();
 
 		gv.writeGraphToFile(gv.getGraph(gv.getDotSource()), out.getAbsolutePath());
 
-		FileEntity body = new FileEntity(out, contentType);
-
-		return body;
-
+		return new FileEntity(out, contentType);
 	}
-
 }

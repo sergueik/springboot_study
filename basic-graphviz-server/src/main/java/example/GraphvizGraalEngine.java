@@ -27,8 +27,8 @@ public class GraphvizGraalEngine implements AutoCloseable {
                     .option("engine.WarnInterpreterOnly", "false")
                     .build();
 
-            loadJsResource("/META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/viz.js");
-            loadJsResource("/META-INF/resources/webjars/viz.js-graphviz-java/2.1.3/full.render.js");
+            loadJsResource(Config.get("libraryPath", "/META-INF/resources/webjars/viz.js-graphviz-java/2.1.3") + "/viz.js");
+            loadJsResource(Config.get("libraryPath", "/META-INF/resources/webjars/viz.js-graphviz-java/2.1.3") + "/full.render.js");
 
             log.info("Viz.js loaded successfully.");
 
@@ -56,6 +56,8 @@ public class GraphvizGraalEngine implements AutoCloseable {
     /**
      * Render DOT -> PNG
      */
+    // NOTE :java.lang.IllegalStateException: 
+    /// Multi threaded access requested by thread Thread[Thread-2,5,main] but is not allowed for language(s) js.
     public byte[] renderPng(String dotSource) {
         try {
             String js = """

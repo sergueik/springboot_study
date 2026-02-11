@@ -26,12 +26,8 @@ import org.apache.http.protocol.UriHttpRequestHandlerMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Bare-bones HTTP server to listen for graph rendering requests and call Dot
- * command line tool
- * 
- * @author omerio
- */
+// based on: https://github.com/omerio/graphviz-server/blob/master/src/info/dawelbeit/graphviz/dot/DotGraphics.java 
+
 public class DotGraphics {
 
 	private static final Logger log = LoggerFactory.getLogger(DotGraphics.class);
@@ -41,26 +37,22 @@ public class DotGraphics {
 			System.err.println("Usage java -jar DotGraphics.jar <port>");
 			System.exit(1);
 		}
-		// Document root directory
-		// String docRoot = args[0];
+
 		int port = Integer.parseInt(args[0]);
 
-		// Set up the HTTP protocol processor
 		HttpProcessor httpproc = HttpProcessorBuilder.create().add(new ResponseDate())
 				.add(new ResponseServer("DotGraphics/1.1")).add(new ResponseContent()).add(new ResponseConnControl())
 				.build();
 
-		// Set up request handlers
 		UriHttpRequestHandlerMapper reqistry = new UriHttpRequestHandlerMapper();
 		reqistry.register("*", new HttpDotGraphMessageHandler());
 
-		// Set up the HTTP service
 		HttpService httpService = new HttpService(httpproc, NoConnectionReuseStrategy.INSTANCE, null, reqistry, null);
 
 		Thread t = new RequestListenerThread(port, httpService);
 		t.setDaemon(false);
 		t.start();
-		// initialize and warm up the Graphviz service
+
 		GraphViz.init();
 	}
 
@@ -81,12 +73,10 @@ public class DotGraphics {
 			log.info("Listening on port " + this.serversocket.getLocalPort());
 			while (!Thread.interrupted()) {
 				try {
-					// Set up HTTP connection
 					Socket socket = this.serversocket.accept();
 					log.info("Incoming connection from " + socket.getInetAddress());
 					HttpServerConnection conn = this.connFactory.createConnection(socket);
 
-					// Start worker thread
 					Thread t = new WorkerThread(this.httpService, conn);
 					t.setDaemon(true);
 					t.start();
@@ -103,13 +93,13 @@ public class DotGraphics {
 
 	static class WorkerThread extends Thread {
 
-		private final HttpService httpservice;
-		private final HttpServerConnection conn;
+		private final HttpService httpService;
+		private final HttpServerConnection httpServerConnection;
 
-		public WorkerThread(final HttpService httpservice, final HttpServerConnection conn) {
+		public WorkerThread(final HttpService httpService, final HttpServerConnection httpServerConnection) {
 			super();
-			this.httpservice = httpservice;
-			this.conn = conn;
+			this.httpService = httpService;
+			this.httpServerConnection = httpServerConnection;
 		}
 
 		@Override
@@ -117,21 +107,21 @@ public class DotGraphics {
 			log.info("New connection thread");
 			HttpContext context = new BasicHttpContext(null);
 			try {
-				while (!Thread.interrupted() && this.conn.isOpen()) {
-					this.httpservice.handleRequest(this.conn, context);
+				while (!Thread.interrupted() && this.httpServerConnection.isOpen()) {
+					this.httpService.handleRequest(this.httpServerConnection, context);
 				}
-			} catch (ConnectionClosedException ex) {
-				log.error("Client closed connection", ex);
+			} catch (ConnectionClosedException e) {
+				log.error("Client closed connection {}", e.getMessage(), e);
 
-			} catch (IOException ex) {
-				log.error("I/O error: " + ex.getMessage(), ex);
+			} catch (IOException e) {
+				log.error("I/O error: {}", e.getMessage(), e);
 
-			} catch (HttpException ex) {
-				log.error("Unrecoverable HTTP protocol violation: " + ex.getMessage(), ex);
+			} catch (HttpException e) {
+				log.error("Unrecoverable HTTP protocol violation: {}", e.getMessage(), e);
 
 			} finally {
 				try {
-					this.conn.shutdown();
+					this.httpServerConnection.shutdown();
 				} catch (IOException ignore) {
 				}
 			}
