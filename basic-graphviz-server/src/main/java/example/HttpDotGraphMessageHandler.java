@@ -1,11 +1,14 @@
 package example;
+/**
+ * Copyright 2026 Serguei Kouzmine
+ */
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -42,14 +45,21 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 
 		String method = request.getRequestLine().getMethod().toUpperCase(Locale.ENGLISH);
 
-		if (!method.equals("GET") && !method.equals("HEAD") && !method.equals("POST")) {
-			throw new MethodNotSupportedException(method + " method not supported");
+		if (!(Set.of("GET", "HEAD", "POST").contains(method))) {
+			throw new MethodNotSupportedException(String.format("method %s not supported", method));
 		}
 
-		log.info(request.toString());
+		log.debug(request.toString());
 
-		// String target = request.getRequestLine().getUri();
-		response.setStatusCode(HttpStatus.SC_OK);
+		// Refuse all requests while GraphViz is warming up
+		if (!GraphViz.isReady()) {
+			log.warn("GraphViz not ready yet - refusing request: {}", request.getRequestLine());
+
+			response.setStatusCode(HttpStatus.SC_SERVICE_UNAVAILABLE);
+			response.setEntity(
+					new StringEntity("GraphViz engine is warming up, please retry shortly\n", ContentType.TEXT_PLAIN));
+			return;
+		}
 
 		if (request instanceof HttpEntityEnclosingRequest) {
 
@@ -66,42 +76,43 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 
 			HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
 			byte[] entityContent = EntityUtils.toByteArray(entity);
-			String dot = new String(entityContent, StandardCharsets.US_ASCII);
+			String payload = new String(entityContent, StandardCharsets.US_ASCII);
 
-			log.info("Incoming entity content ({} bytes): {}", entityContent.length, dot);
+			log.info("Incoming entity content ({} bytes): {}", entityContent.length, payload);
 
-			if (StringUtils.isNotBlank(dot) && GraphViz.isValidDotText(dot)) {
+			if (StringUtils.isNotBlank(payload) && GraphViz.isValidDotText(payload)) {
 				log.info("valid dot content");
 
 				// --- Future: extract output format from URL (svg/pdf/png) ---
-                /*
-				String format = (StringUtils.isNotBlank(target)
-						? StringUtils.remove(URLDecoder.decode(target, "UTF-8").trim().toLowerCase(), '/')
-						: null);
-
-				log.info("requesting graph format: {}", format);
-                 */
+				/*
+				 * String target = request.getRequestLine().getUri();
+				 * String format = (StringUtils.isNotBlank(target) ?
+				 * StringUtils.remove(URLDecoder.decode(target, "UTF-8").trim().toLowerCase(),
+				 * '/') : null);
+				 *
+				 * log.info("requesting graph format: {}", format);
+				 */
 				try {
-					HttpEntity graph = generateGraph(dot);
+					HttpEntity graph = generateGraph(payload);
+					log.info("Responded with {} bytes graph", graph.getContentLength());
+					response.setStatusCode(HttpStatus.SC_OK);
 					response.setEntity(graph);
 				} catch (IllegalStateException e) {
 					log.error("Graphviz engine concurrency error", e);
 					response.setStatusCode(HttpStatus.SC_SERVICE_UNAVAILABLE);
 					response.setEntity(
 							new StringEntity("Graphviz engine busy, try again later\n", ContentType.TEXT_PLAIN));
-
 				} catch (Exception e) {
 					log.error("Graphviz render failed", e);
 					response.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 					response.setEntity(new StringEntity("Graphviz render failed\n", ContentType.TEXT_PLAIN));
 				}
-
 			} else {
-				log.info("not a valid dot content");
+				response.setStatusCode(HttpStatus.SC_BAD_REQUEST);
+				response.setEntity(new StringEntity(String.format("not a valid dot content: %s", payload), ContentType.TEXT_PLAIN) );
+				log.info("not a valid dot content: {}", payload);
 			}
 		}
-
-		log.info("Responded with Success");
 	}
 
 	/**

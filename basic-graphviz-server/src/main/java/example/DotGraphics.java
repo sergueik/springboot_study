@@ -1,5 +1,9 @@
 package example;
 
+/**
+ * Copyright 2026 Serguei Kouzmine
+ */
+
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ServerSocket;

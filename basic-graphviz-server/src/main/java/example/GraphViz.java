@@ -1,4 +1,7 @@
 package example;
+/**
+ * Copyright 2026 Serguei Kouzmine
+ */
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
