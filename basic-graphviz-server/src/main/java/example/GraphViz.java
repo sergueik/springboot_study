@@ -16,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +28,7 @@ import example.Config;
 public class GraphViz {
 
 	private static final Logger log = LoggerFactory.getLogger(GraphViz.class);
-	private static volatile boolean ready = false;
+	private static final AtomicBoolean ready = new AtomicBoolean(false);
 	private static GraphvizGraalEngine graalEngine;
 
 	public static void init() {
@@ -45,14 +46,17 @@ public class GraphViz {
 		byte[] warmup = graalEngine.renderPng(warmupDot);
 		log.info("Graphviz engine warmup complete, {} bytes generated", warmup.length);
 
-		ready = true;
+		ready.set(true);
 	}
 
 	public static boolean isReady() {
-		return ready;
+		return ready.get();
 	}
 
-	private StringBuilder graph = new StringBuilder();
+	public static void setReady(boolean value) {
+		ready.set(value);
+	}
+ 	private StringBuilder graph = new StringBuilder();
 	// private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
 
 	public GraphViz() {

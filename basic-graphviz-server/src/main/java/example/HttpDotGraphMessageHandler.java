@@ -57,7 +57,7 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 
 			response.setStatusCode(HttpStatus.SC_SERVICE_UNAVAILABLE);
 			response.setEntity(
-					new StringEntity("GraphViz engine is warming up, please retry shortly\n", ContentType.TEXT_PLAIN));
+					new StringEntity("GraphViz engine is not ready\n", ContentType.TEXT_PLAIN));
 			return;
 		}
 

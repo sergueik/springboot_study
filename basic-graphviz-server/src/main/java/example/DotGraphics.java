@@ -35,15 +35,14 @@ import org.slf4j.LoggerFactory;
 public class DotGraphics {
 
 	private static final Logger log = LoggerFactory.getLogger(DotGraphics.class);
+	private final int port;
+	private Thread requestListenerThread;
 
-	public static void main(String[] args) throws Exception {
-		if (args.length != 1) {
-			System.err.println("Usage java -jar DotGraphics.jar <port>");
-			System.exit(1);
-		}
+	public DotGraphics(int port) {
+		this.port = port;
+	}
 
-		int port = Integer.parseInt(args[0]);
-
+	public void start() throws IOException {
 		HttpProcessor httpproc = HttpProcessorBuilder.create().add(new ResponseDate())
 				.add(new ResponseServer("DotGraphics/1.1")).add(new ResponseContent()).add(new ResponseConnControl())
 				.build();
@@ -53,11 +52,41 @@ public class DotGraphics {
 
 		HttpService httpService = new HttpService(httpproc, NoConnectionReuseStrategy.INSTANCE, null, reqistry, null);
 
-		Thread t = new RequestListenerThread(port, httpService);
-		t.setDaemon(false);
-		t.start();
-
+		requestListenerThread = new RequestListenerThread(port, httpService);
+		requestListenerThread.setDaemon(false);
+		requestListenerThread.start();
 		GraphViz.init();
+	}
+
+	public void stop2() throws InterruptedException {
+		try {
+			((DotGraphics.RequestListenerThread) requestListenerThread).getServerSocket().close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		requestListenerThread.interrupt();
+	}
+
+	public void stop() {
+		if (requestListenerThread instanceof RequestListenerThread) {
+			RequestListenerThread listener = (RequestListenerThread) requestListenerThread;
+			try {
+				listener.getServerSocket().close();
+			} catch (IOException e) {
+				log.warn("Failed to close server socket", e);
+			} finally {
+				listener.interrupt();
+			}
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		if (args.length != 1) {
+			System.err.println("Usage java -jar DotGraphics.jar <port>");
+			System.exit(1);
+		}
+		int port = Integer.parseInt(args[0]);
+		new DotGraphics(port).start();
 	}
 
 	static class RequestListenerThread extends Thread {
@@ -65,6 +94,10 @@ public class DotGraphics {
 		private final HttpConnectionFactory<DefaultBHttpServerConnection> connFactory;
 		private final ServerSocket serversocket;
 		private final HttpService httpService;
+
+		public ServerSocket getServerSocket() {
+			return this.serversocket;
+		}
 
 		public RequestListenerThread(final int port, final HttpService httpService) throws IOException {
 			this.connFactory = DefaultBHttpServerConnectionFactory.INSTANCE;
