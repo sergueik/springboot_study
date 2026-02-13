@@ -1,0 +1,93 @@
+digraph Host_JS_Bridge {
+
+  rankdir=TB
+  overlap=false
+  splines=ortho
+  nodesep=1.0
+  ranksep=1.2
+
+  node [shape=box, style=filled, fillcolor=lightgray]
+  edge [
+    color=gray,
+    arrowsize=0.8,
+    fontsize=10,
+    labelfloat=true
+  ]
+
+  subgraph cluster_java {
+    label="Java Host Runtime"
+    style=filled
+    color=lightblue
+
+    InjectJS     [label="Inject JS Code"]
+    JavaCallback [label="Java Callback"]
+    AwaitPromise [label="awaitPromise()"]
+  }
+
+  subgraph cluster_js {
+    label="GraalVM JavaScript Engine"
+    style=filled
+    color=lightyellow
+
+    Bootstrap [label="Bootstrap Script"]
+    Promise   [label="Promise"]
+    Library   [label="Library JS Code"]
+    Then      [label="Then"]
+    Catch     [label="Catch"]
+  }
+
+  // vertical order inside JS engine
+  { rank=same; Bootstrap }
+  { rank=same; Promise }
+  { rank=same; Library }
+  { rank=same; Then Catch }
+
+  // flow edges with arrow-parallel labels
+  InjectJS -> Bootstrap [
+    headlabel="inject JS code",
+    labeldistance=1.5,
+    labelangle=0
+  ];
+
+  Bootstrap -> Promise [
+    headlabel="create",
+    labeldistance=1.5,
+    labelangle=90
+  ];
+
+  Promise -> Library [
+    headlabel="execute",
+    labeldistance=1.5,
+    labelangle=90
+  ];
+
+  Library -> Then [
+    headlabel="resolve",
+    labeldistance=1.5,
+    labelangle=0
+  ];
+
+  Library -> Catch [
+    headlabel="reject",
+    labeldistance=1.5,
+    labelangle=0
+  ];
+
+  Then -> JavaCallback [
+    headlabel="invoke host method",
+    labeldistance=1.5,
+    labelangle=90
+  ];
+
+  Catch -> JavaCallback [
+    headlabel="invoke host method",
+    labeldistance=1.5,
+    labelangle=90
+  ];
+
+  JavaCallback -> AwaitPromise [
+    headlabel="resume thread",
+    labeldistance=1.5,
+    labelangle=90
+  ];
+}

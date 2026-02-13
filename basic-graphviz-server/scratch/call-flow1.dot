@@ -1,0 +1,55 @@
+digraph Host_JS_Bridge {
+
+  layout=fdp
+  overlap=false
+  splines=true
+
+  // spacing
+  K=1.6
+  sep=1.4
+  nodesep=2.0
+  ranksep=1.2
+
+  node [shape=box, style=filled, fillcolor=lightgray]
+  edge [color=gray, arrowsize=0.8]
+
+  subgraph cluster_java {
+    label="Java Host Runtime"
+    style=filled
+    color=lightblue
+
+    InjectJS     [label="Inject JS Code"]
+    JavaCallback [label="Java Callback"]
+    AwaitPromise [label="awaitPromise()"]
+  }
+
+  subgraph cluster_js {
+    label="GraalVM JavaScript Engine"
+    style=filled
+    color=lightyellow
+
+    Bootstrap [label="Bootstrap Script"]
+    Promise   [label="Promise"]
+    Library [label="Library JS Code"]
+    Then  [label="Then"]
+    Catch  [label="Catch"]
+  }
+
+  // force vertical temporal order (top → bottom)
+  Bootstrap -> Promise  [style=invis]
+  Promise   -> Library [style=invis]
+  Library -> Then [style=invis]
+  Library -> Catch [style=invis]
+
+  // directional interaction
+  InjectJS   -> Bootstrap    [label="inject JS code"]
+  Bootstrap  -> Promise      [label="create"]
+  Promise    -> Library    [label="execute"]
+  Library  -> Then     [label="resolve"]
+  Library  -> Catch     [label="reject"]
+  Then   -> JavaCallback [label="invoke host method"]
+  Catch   -> JavaCallback [label="invoke host method"]
+  JavaCallback -> AwaitPromise [label="resume thread"]
+
+}
+

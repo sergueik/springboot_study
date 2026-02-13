@@ -1,13 +1,39 @@
-# Graphviz Java HTTP Server (Pure Java Rendering)
+### Graphviz Java HTTP Server (Pure Java Rendering)
 
 Clone of [graphviz-server](https://github.com/omerio/graphviz-server), a lightweight Java HTTP server wrapping the locally installed [Graphviz](http://www.graphviz.org/) binary.
 
 This version replaces direct `/usr/bin/dot` execution with **pure Java** using **Nashorn** or **GraalVM JS**.
 
 ---
+#### Complex Host–Embedded Runtime Control Loop
 
+![Control Loop flow](screenshots/call-flow.png)
+
+> This diagram illustrates the terse control flow between a Java host runtime, embedded JavaScript engine (GraalVM) and Graphviz Js Library (Viz.js), showing bootstrap injection, Promise execution, and callback-based resumption of Java control flow (then/catch paths). Java does not do not strictly need two separate `CompletableFutures` for `resolve` and `reject` - a single `CompletableFuture<T>` is OK. if needed in JS callbacks one can do:
+```text
+Javacript Library
+            ├─ resolve → JavaCallback.resolve
+            └─ reject  → JavaCallback.reject
+```
+and on Java side,
+```text
+CompletableFuture<Result>
+                   ├─ thenAccept(...)        // Then path
+                   └─ exceptionally(...)     // Catch path
+```
+```java
+CompletableFuture<Result> future = new CompletableFuture<>();
+
+public void resolve(Result r) {
+    future.complete(r);
+}
+
+public void reject(String error) {
+    future.completeExceptionally(new RuntimeException(error));
+}
+
+```
 ## Usage
-
 
 ```cmd
 set java_home=c:\java\jdk-17.0.12
