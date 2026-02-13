@@ -72,6 +72,9 @@ public class DotGraphics {
 			RequestListenerThread listener = (RequestListenerThread) requestListenerThread;
 			try {
 				listener.getServerSocket().close();
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// ignore
 			} catch (IOException e) {
 				log.warn("Failed to close server socket", e);
 			} finally {
