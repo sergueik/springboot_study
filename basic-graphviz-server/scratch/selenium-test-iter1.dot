@@ -1,0 +1,33 @@
+digraph promptTestFlow {
+    rankdir=LR;
+    node [shape=box, style=rounded, fontname="Courier"];
+
+    // Test method node
+    TestMethod [label="promptTest()"];
+
+    // Actors / elements
+    Button [label="element.click()"];
+    AlertWait [label="wait.until(alertIsPresent)"];
+    Alert [label="Alert"];
+
+    // Callbacks
+    DialogOpenCB [label="javascriptDialogOpening callback", shape=ellipse, style=filled, fillcolor=lightgreen];
+    DialogClosedInputCB [label="javascriptDialogClosed callback (input check)", shape=ellipse, style=filled, fillcolor=yellow];
+    DialogClosedResultCB [label="javascriptDialogClosed callback (result check)", shape=ellipse, style=filled, fillcolor=orange];
+
+    // Flow edges
+    TestMethod -> Button [label="click button"];
+    Button -> AlertWait [label="wait for alert"];
+    AlertWait -> Alert [label="alert appears"];
+    Alert -> TestMethod [label="sendKeys(text) + accept()"];
+
+    // Callbacks edges
+    Alert -> DialogOpenCB [label="JS dialog opens", style=dashed];
+    Alert -> DialogClosedInputCB [label="JS dialog closes (input)", style=dashed];
+    Alert -> DialogClosedResultCB [label="JS dialog closes (result)", style=dashed];
+
+    // Callback assertions/logs back to test
+    DialogOpenCB -> TestMethod [label="log opening info", style=dotted];
+    DialogClosedInputCB -> TestMethod [label="assert input + log", style=dotted];
+    DialogClosedResultCB -> TestMethod [label="assert result", style=dotted];
+}

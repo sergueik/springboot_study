@@ -1,0 +1,29 @@
+digraph promptStory {
+    rankdir=LR;
+    node [shape=box, style=rounded, fontname="Courier"];
+
+    // Main action
+    ButtonClick [label="element.click()"];
+    AlertWait [label="wait until alert is present"];
+    Alert [label="Alert"];
+
+    // Callbacks
+    DialogOpenCB [label="javascriptDialogOpening", shape=ellipse, style=filled, fillcolor=lightgreen];
+    DialogClosedInputCB [label="javascriptDialogClosed (input check)", shape=ellipse, style=filled, fillcolor=yellow];
+    DialogClosedResultCB [label="javascriptDialogClosed (result check)", shape=ellipse, style=filled, fillcolor=orange];
+
+    // Main flow
+    ButtonClick -> AlertWait [label="trigger alert"];
+    AlertWait -> Alert [label="alert appears"];
+    Alert -> Alert [label="sendKeys(text) + accept()", style=solid];
+
+    // Async callbacks
+    Alert -> DialogOpenCB [label="opens", style=dashed];
+    Alert -> DialogClosedInputCB [label="closes (input)", style=dashed];
+    Alert -> DialogClosedResultCB [label="closes (result)", style=dashed];
+
+    // Feedback / logging
+    DialogOpenCB -> Alert [label="log opening info", style=dotted];
+    DialogClosedInputCB -> Alert [label="assert input + log", style=dotted];
+    DialogClosedResultCB -> Alert [label="assert result", style=dotted];
+}

@@ -474,6 +474,167 @@ digraph G {
 - ![That's exactly what I was expecting](screenshots/capture-chatgpt3.png)
 - ![Crossed all Three Hard Boundaries](screenshots/capture-chatgpt4.png)
 
+
+### Example Test Flow Visualization
+
+This example demonstrates how a dense test flow logic  
+can be visualized using __Graphviz__. 
+Each iteration simplifies the diagram to focus on key aspects of the test scenario.
+
+Sample Test Fragment (`@Before`/`@After` code not shown):
+
+```java
+@Test
+public void promptTest() {
+    // register listeners
+    chromeDevTools.addListener(Page.javascriptDialogOpening(),
+        event -> System.err.println("Dialog opening: " + event.getMessage()));
+    chromeDevTools.addListener(Page.javascriptDialogClosed(),
+        event -> {
+            assertThat(event.getUserInput(), notNullValue());
+            assertThat(event.getUserInput(), is(text));
+        });
+    chromeDevTools.addListener(Page.javascriptDialogClosed(),
+        event -> assertThat(event.getResult(), is(true)));
+
+    element = findButton();
+    element.click();
+    alert = wait.until(ExpectedConditions.alertIsPresent());
+    alert.sendKeys(text);
+    alert.accept();
+}
+```
+remarkably a lot of going on during this test
+
+#### Iteration 1 – Full Flow with promptTest() Node
+
+Rendered image:
+
+![test flow iteration 1](screenshots/selenium-test-iter1.png)
+
+Dot source:
+
+```java
+digraph promptTestFlow {
+    rankdir=LR;
+    node [shape=box, style=rounded];
+
+    TestMethod [label="promptTest()"];
+    Button [label="element.click()"];
+    AlertWait [label="wait until alert"];
+    Alert [label="Alert"];
+
+    DialogOpenCB [label="javascriptDialogOpening", shape=ellipse, style=filled, fillcolor=lightgreen];
+    DialogClosedInputCB [label="javascriptDialogClosed (input)", shape=ellipse, style=filled, fillcolor=yellow];
+    DialogClosedResultCB [label="javascriptDialogClosed (result)", shape=ellipse, style=filled, fillcolor=orange];
+
+    TestMethod -> Button;
+    Button -> AlertWait;
+    AlertWait -> Alert;
+    Alert -> TestMethod [label="sendKeys + accept()"];
+
+    Alert -> DialogOpenCB [style=dashed];
+    Alert -> DialogClosedInputCB [style=dashed];
+    Alert -> DialogClosedResultCB [style=dashed];
+
+    DialogOpenCB -> TestMethod [style=dotted];
+    DialogClosedInputCB -> TestMethod [style=dotted];
+    DialogClosedResultCB -> TestMethod [style=dotted];
+}
+```
+#### Iteration 2 – Removing promptTest() Node (Storybook Approach)
+
+Rendered image:
+
+![test flow iteration 2](screenshots/selenium-test-iter2.png)
+
+Dot source:
+
+
+```java
+digraph promptStory {
+    rankdir=LR;
+    node [shape=box, style=rounded];
+
+    ButtonClick [label="element.click()"];
+    AlertWait [label="wait until alert"];
+    Alert [label="Alert"];
+
+    DialogOpenCB [label="javascriptDialogOpening", shape=ellipse, style=filled, fillcolor=lightgreen];
+    DialogClosedInputCB [label="javascriptDialogClosed (input)", shape=ellipse, style=filled, fillcolor=yellow];
+    DialogClosedResultCB [label="javascriptDialogClosed (result)", shape=ellipse, style=filled, fillcolor=orange];
+
+    ButtonClick -> AlertWait;
+    AlertWait -> Alert;
+    Alert -> Alert [label="sendKeys + accept()"];
+
+    Alert -> DialogOpenCB [style=dashed];
+    Alert -> DialogClosedInputCB [style=dashed];
+    Alert -> DialogClosedResultCB [style=dashed];
+
+    DialogOpenCB -> Alert [style=dotted];
+    DialogClosedInputCB -> Alert [style=dotted];
+    DialogClosedResultCB -> Alert [style=dotted];
+}
+
+```
+#### Iteration 3 – SwimLane Approximation of Alert Lifecycle
+
+Rendered image:
+
+![test flow iteration 3](screenshots/selenium-test-iter3.png)
+
+Dot source:
+
+```java
+digraph alertSwimlane {
+    rankdir=TB;
+    node [shape=box, style=rounded];
+
+    subgraph lane_alert {
+        label="Alert"; style=dashed; color=lightblue;
+        AlertAppear [label="Alert appears"];
+        AlertInput [label="sendKeys(text)"];
+        AlertAccept [label="accept()"];
+    }
+
+    subgraph lane_openCB {
+        label="javascriptDialogOpening"; style=dashed; color=lightgreen;
+        DialogOpenCB [label="log opening info"];
+    }
+
+    subgraph lane_closedInputCB {
+        label="javascriptDialogClosed (input)"; style=dashed; color=yellow;
+        DialogClosedInputCB [label="assert input + log"];
+    }
+
+    subgraph lane_closedResultCB {
+        label="javascriptDialogClosed (result)"; style=dashed; color=orange;
+        DialogClosedResultCB [label="assert result"];
+    }
+
+    AlertAppear -> AlertInput -> AlertAccept;
+
+    AlertAppear -> DialogOpenCB [label="onOpen", style=dashed];
+    AlertAccept -> DialogClosedInputCB [label="onClose(input)", style=dashed];
+    AlertAccept -> DialogClosedResultCB [label="onClose(result)", style=dashed];
+
+    { rank=same; AlertAppear; DialogOpenCB; DialogClosedInputCB; DialogClosedResultCB; }
+    { rank=same; AlertInput; }
+    { rank=same; AlertAccept; }
+}
+
+```
+> Note: Graphviz does not provide true swimlane support; this layout approximates swimlanes using clusters and horizontal alignment.
+
+#### Conclusion
+
+This example demonstrates the progression from a full method diagram to a key storybook abstraction, and finally to a swimlane-style lifecycle of the "subject" (alert dialog).
+Each iteration performs a close-up refocus, isolating key actors and events and clarifying the flow of asynchronous callbacks in complex code.
+
+With the .dot sources and rendered images provided for reference, the diagrammatic approach allows quick comprehension of otherwise dense procedural logic.
+
+
 ### See Also
 
   * [Graphviz gallery](https://graphviz.org/gallery/)

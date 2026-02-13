@@ -1,0 +1,48 @@
+digraph alertSwimlane {
+    rankdir=TB;
+    node [shape=box, style=rounded, fontname="Courier"];
+
+    // Define swimlane actors
+    subgraph lane_alert {
+        label="Alert";
+        style=bold;
+        color=lightblue;
+        AlertAppear [label="Alert appears"];
+        AlertInput [label="sendKeys(text)"];
+        AlertAccept [label="accept()"];
+    }
+
+    subgraph lane_openCB {
+        label="javascriptDialogOpening";
+        style=bold;
+        color=lightgreen;
+        DialogOpenCB [label="log opening info"];
+    }
+
+    subgraph lane_closedInputCB {
+        label="javascriptDialogClosed (input)";
+        style=bold;
+        color=yellow;
+        DialogClosedInputCB [label="assert input + log"];
+    }
+
+    subgraph lane_closedResultCB {
+        label="javascriptDialogClosed (result)";
+        style=bold;
+        color=orange;
+        DialogClosedResultCB [label="assert result"];
+    }
+
+    // Main alert lifecycle (vertical timeline)
+    AlertAppear -> AlertInput -> AlertAccept;
+
+    // Callbacks as horizontal arrows across lanes
+    AlertAppear -> DialogOpenCB [label="onOpen", style=dashed];
+    AlertAccept -> DialogClosedInputCB [label="onClose(input)", style=dashed];
+    AlertAccept -> DialogClosedResultCB [label="onClose(result)", style=dashed];
+
+    // Align nodes horizontally per lane
+    { rank=same; AlertAppear; DialogOpenCB; DialogClosedInputCB; DialogClosedResultCB; }
+    { rank=same; AlertInput; }
+    { rank=same; AlertAccept; }
+}
