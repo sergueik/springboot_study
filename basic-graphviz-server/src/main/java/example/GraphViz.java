@@ -30,7 +30,8 @@ public class GraphViz {
 	private static final Logger log = LoggerFactory.getLogger(GraphViz.class);
 	private static final AtomicBoolean ready = new AtomicBoolean(false);
 	private static GraphvizGraalEngine graalEngine;
-
+	private static String format = "png";
+	
 	public static void init() {
 		String engine = Config.get("graphviz.engine", "jdk");
 		log.info("Using Graphviz engine: {}", engine);
@@ -43,7 +44,7 @@ public class GraphViz {
 
 		// optional warmup
 		String warmupDot = "graph { a -- b }";
-		byte[] warmup = graalEngine.renderPng(warmupDot);
+		byte[] warmup = graalEngine.renderDot(warmupDot, "png");
 		log.info("Graphviz engine warmup complete, {} bytes generated", warmup.length);
 
 		ready.set(true);
@@ -69,9 +70,9 @@ public class GraphViz {
 		this.graph = new StringBuilder(dot);
 	}
 
-	public byte[] getGraph(String dotSource) {
+	public byte[] getGraph(String dot, String format) {
 		try {
-			return graalEngine.renderPng(dotSource);
+			return graalEngine.renderDot(dot, format);
 		} catch (Exception e) {
 			log.error("Failed to render graph", e);
 			return null;

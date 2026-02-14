@@ -1,7 +1,9 @@
 package example;
+
 /**
  * Copyright 2026 Serguei Kouzmine
  */
+
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +31,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// origin: https://github.com/omerio/graphviz-server/blob/master/src/info/dawelbeit/graphviz/dot/HttpDotGraphMessageHandler.java
+//origin: https://github.com/omerio/graphviz-server/blob/master/src/info/dawelbeit/graphviz/dot/HttpDotGraphMessageHandler.java
 
 public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 
@@ -49,15 +51,13 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 			throw new MethodNotSupportedException(String.format("method %s not supported", method));
 		}
 
-		log.debug(request.toString());
+		log.debug("Incoming request: {}", request.getRequestLine());
 
 		// Refuse all requests while GraphViz is warming up
 		if (!GraphViz.isReady()) {
 			log.warn("GraphViz not ready yet - refusing request: {}", request.getRequestLine());
-
 			response.setStatusCode(HttpStatus.SC_SERVICE_UNAVAILABLE);
-			response.setEntity(
-					new StringEntity("GraphViz engine is not ready\n", ContentType.TEXT_PLAIN));
+			response.setEntity(new StringEntity("GraphViz engine is not ready\n", ContentType.TEXT_PLAIN));
 			return;
 		}
 
@@ -76,24 +76,35 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 
 			HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
 			byte[] entityContent = EntityUtils.toByteArray(entity);
-			String payload = new String(entityContent, StandardCharsets.US_ASCII);
 
-			log.info("Incoming entity content ({} bytes): {}", entityContent.length, payload);
+			String payload = new String(entityContent, StandardCharsets.US_ASCII);
+			log.debug("Incoming entity content ({} bytes): {}", entityContent.length, payload);
 
 			if (StringUtils.isNotBlank(payload) && GraphViz.isValidDotText(payload)) {
-				log.info("valid dot content");
+				log.debug("valid dot content");
 
-				// --- Future: extract output format from URL (svg/pdf/png) ---
-				/*
-				 * String target = request.getRequestLine().getUri();
-				 * String format = (StringUtils.isNotBlank(target) ?
-				 * StringUtils.remove(URLDecoder.decode(target, "UTF-8").trim().toLowerCase(),
-				 * '/') : null);
-				 *
-				 * log.info("requesting graph format: {}", format);
-				 */
+				String format = resolveFormat(request);
+				log.debug("processing request: format={}", format);
+
+				if (format == null || !(Set.of("png", "svg").contains(format))) {
+					log.info("rejecting request: format={}", format);
+
+					// !!! CAREFUL HERE !!!
+					// A common mistake: writing
+					// "Unsupported format: " + format == null ? format : "<null>"
+					// due to operator precedence
+					// Java interprets this as ("Unsupported format: " + format) == null ? format : "<null>"
+					// which passes null to StringEntity -> IllegalArgumentException if the format is null
+					// This would lead to the subtle null crash that can be very hard to debug in a running thread.
+					String message = "Unsupported format: " + (format != null ? format : "<null>");
+					response.setStatusCode(HttpStatus.SC_BAD_REQUEST);
+					response.setEntity(new StringEntity(message, ContentType.TEXT_PLAIN));
+					return;
+				}
+
+				log.debug("requesting graph format: {}", format);
 				try {
-					HttpEntity graph = generateGraph(payload);
+					HttpEntity graph = generateGraph(payload, format);
 					log.info("Responded with {} bytes graph", graph.getContentLength());
 					response.setStatusCode(HttpStatus.SC_OK);
 					response.setEntity(graph);
@@ -107,36 +118,80 @@ public class HttpDotGraphMessageHandler implements HttpRequestHandler {
 					response.setStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 					response.setEntity(new StringEntity("Graphviz render failed\n", ContentType.TEXT_PLAIN));
 				}
+
 			} else {
 				response.setStatusCode(HttpStatus.SC_BAD_REQUEST);
-				response.setEntity(new StringEntity(String.format("not a valid dot content: %s", payload), ContentType.TEXT_PLAIN) );
-				log.info("not a valid dot content: {}", payload);
+				String message = String.format("not a valid dot content: %s", payload);
+				response.setEntity(new StringEntity(message, ContentType.TEXT_PLAIN));
+				log.debug(message);
 			}
 		}
 	}
 
+	private String resolveFormat(HttpRequest request) {
+
+		// NOTE: request.getParams() is legacy HttpCore (pre-4.3) and does not parse query parameters.
+		// We therefore do NOT use request.getParams().getParameter("format") and parse everything manually
+ 
+		String uri = request.getRequestLine().getUri();
+		String path = uri;
+		String query = null;
+
+		int q = uri.indexOf('?');
+		if (q >= 0) {
+			path = uri.substring(0, q);
+			query = uri.substring(q + 1);
+		}
+
+		String format = null;
+
+		// 1. Query parameter takes priority
+		if (query != null) {
+			for (String pair : query.split("&")) {
+				String[] kv = pair.split("=", 2);
+				if (kv.length == 2 && kv[0].equalsIgnoreCase("format")) {
+					format = kv[1].toLowerCase();
+					break;
+				}
+			}
+
+			if (format != null) {
+				log.debug("Resolved format '{}' for uri '{}'", format, uri);
+				return format;
+			}
+		}
+
+		// 2. Path-based routing: only accept specific "paths"
+		if ("/svg".equals(path)) {
+			return "svg";
+		}
+
+		if ("/".equals(path) || path.isEmpty()) {
+			return "png";
+		}
+
+		// 3. Any other path is invalid, discarded
+		return null;
+	}
+
 	/**
-	 * Currently only renders PNG output. formats possibly to support in the future
-	 * : SVG, PDF
+	 * Currently only renders PNG or SVG output
 	 */
 	private HttpEntity generateGraph(String dot) {
+		return generateGraph(dot, "png");
+	}
+
+	private HttpEntity generateGraph(String dot, String format) {
 
 		GraphViz gv = new GraphViz();
 		gv.readString(dot);
-		log.info(gv.getDotSource());
+		log.debug("DOT source:\n{}", gv.getDotSource());
 
-		String graphType = "png";
-		ContentType contentType = ContentType.IMAGE_PNG;
+		ContentType contentType = "svg".equals(format) ? ContentType.APPLICATION_SVG_XML : ContentType.IMAGE_PNG;
 
-		/*
-		 * if ("svg".equals(target)) { graphType = "svg"; contentType =
-		 * ContentType.APPLICATION_SVG_XML; } else if ("pdf".equals(target)) { graphType
-		 * = "pdf"; contentType = ContentType.create("application/pdf"); }
-		 */
+		File out = Paths.get(System.getProperty("java.io.tmpdir"), "graph." + format).toFile();
 
-		File out = Paths.get(System.getProperty("java.io.tmpdir"), "graph." + graphType).toFile();
-
-		gv.writeGraphToFile(gv.getGraph(gv.getDotSource()), out.getAbsolutePath());
+		gv.writeGraphToFile(gv.getGraph(gv.getDotSource(), format), out.getAbsolutePath());
 
 		return new FileEntity(out, contentType);
 	}
