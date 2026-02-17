@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpResponse;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -53,11 +54,13 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import example.DotGraphics;
 import example.GraphViz;
 
-class GraphvizHttpIntegrationTest {
+class SvgTest {
 
 	// treat DotGraphics as a black-box server
 	static DotGraphics server;
 	static int port;
+	static String url = null;
+	private BodyPublisher body = HttpRequest.BodyPublishers.ofString("graph { a -- b }");
 
 	@BeforeAll
 	static void startServer() throws Exception {
@@ -65,6 +68,7 @@ class GraphvizHttpIntegrationTest {
 		// port = 18080; // or pick random free port
 		server = new DotGraphics(port);
 		server.start();
+		url = "http://localhost:" + port + "/";
 	}
 
 	@AfterAll
@@ -77,63 +81,55 @@ class GraphvizHttpIntegrationTest {
 		server.stop();
 	}
 
-	@DisplayName("returns 503 when Graphviz is not ready")
-	@Test
-	void test1() throws Exception {
-		GraphViz.setReady(false);
-
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:" + port + "/"))
-				.POST(HttpRequest.BodyPublishers.ofString("digraph { a->b }")).build();
-
-		HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-
-		assertThat(response.statusCode(), is(503));
-		assertThat(response.body(), containsString("not ready"));
-	}
-
 	// @Disabled
-	@DisplayName("returns 400 when payload is not a valid dot script")
+	@DisplayName("returns 400 when ?format argument is not svg or png")
 	@Test
 	void test2() throws Exception {
 		GraphViz.setReady(true);
-
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:" + port + "/"))
-				.POST(HttpRequest.BodyPublishers.ofString("nonsense")).build();
-
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url + "?format=unknown")).POST(body).build();
 		HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-
 		assertThat(response.statusCode(), is(400));
-		assertThat(response.body(), containsString("not a valid dot content"));
 	}
 
-	@DisplayName("returns 501 when method is not POST ot HEAD")
+	// @Disabled
+	@DisplayName("returns 400 when format is passed through uri but not svg or png")
 	@Test
 	void test3() throws Exception {
 		GraphViz.setReady(true);
-
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:" + port + "/"))
-				.PUT(HttpRequest.BodyPublishers.ofString("")).build();
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url + "unknownformat")).POST(body).build();
 		HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-		assertThat(response.statusCode(), is(501));
+		assertThat(response.statusCode(), is(400));
 	}
 
-	@DisplayName("returns 200 when payload is a valid dot script")
+	// @Disabled
+	@DisplayName("returns 200 and SVG payload when format=svg is requested")
 	@Test
 	void test4() throws Exception {
 		GraphViz.setReady(true);
 
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:" + port + "/"))
-				.POST(HttpRequest.BodyPublishers.ofString("graph { a -- b }")).build();
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url + "?format=svg")).POST(body).build();
+
 		HttpResponse<byte[]> response = HttpClient.newHttpClient().send(request,
 				HttpResponse.BodyHandlers.ofByteArray());
-		byte[] body = response.body();
+
+		// status
 		assertThat(response.statusCode(), is(200));
-		try (ByteArrayInputStream in = new ByteArrayInputStream(body)) {
-			BufferedImage img = ImageIO.read(in);
-			assertThat(img, notNullValue());
-			assertThat(img.getType(), is(BufferedImage.TYPE_4BYTE_ABGR));
-			System.out.printf("PNG image data, %d x %d%n", img.getWidth(), img.getHeight());
-		}
+
+		// content type (response header, not request!)
+		assertThat(response.headers().firstValue("Content-Type").orElse(""), containsString(ContentType.APPLICATION_SVG_XML.getMimeType()));
+
+		byte[] bytes = response.body();
+		assertThat(bytes, notNullValue());
+		assertThat(bytes.length, greaterThan(0));
+
+		// peek into SVG
+		String svg = new String(bytes, StandardCharsets.UTF_8);
+
+		assertThat(svg, containsString("<svg"));
+		assertThat(svg, containsString("a"));
+		assertThat(svg, containsString("b"));
+
+		System.out.println("SVG length = " + svg.length());
 	}
 
 	private static int getFreePort() throws IOException {
