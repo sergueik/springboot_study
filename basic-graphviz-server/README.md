@@ -672,6 +672,12 @@ Each iteration performs a close-up refocus, isolating key actors and events and 
 With the .dot sources and rendered images provided for reference, the diagrammatic approach allows quick comprehension of otherwise dense procedural logic.
 
 
+### NOTE
+
+* The curl exit status code `22`, also known as `CURLE_HTTP_RETURNED_ERROR`, indicates that the requested URL was not found or returned an HTTP error code of `400` or greater. This status code only appears if you use the --fail (-f) command-line option. 
+* The curl error `28` is `CURLE_OPERATION_TIMEDOUT`, means that the server failed to respond to the curl request within the specified time limit. The operation timed out, and no data was received. 
+
+
 ### See Also
 
   * [Graphviz gallery](https://graphviz.org/gallery/)

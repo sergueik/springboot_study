@@ -3,6 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Ultra Basic DOT Renderer</title>
+<style>
+  #output {
+    border: 1px solid #ccc;
+    padding: 5px;
+    overflow: auto;
+    max-height: 80vh;
+  }
+</style>
 
   <!-- Optional Bootstrap -->
   <link rel="stylesheet"
@@ -14,8 +22,6 @@
 </head>
 
 <body class="container mt-3">
-
-<h3>DOT Playground (Ultra Basic)</h3>
 
 <div class="row">
   <div class="col-6">
@@ -34,7 +40,6 @@ digraph G {
     <div id="output" style="border:1px solid #ccc; padding:10px;"></div>
   </div>
 </div>
-
 <script>
   const viz = new Viz();
 
@@ -43,6 +48,20 @@ digraph G {
 
     viz.renderSVGElement(dot)
       .then(function(svg) {
+
+        // Make SVG responsive
+        svg.removeAttribute("width");
+        svg.removeAttribute("height");
+        svg.style.width = "150%";
+        svg.style.height = "auto";
+
+        // Optional: set viewBox if missing
+        if (!svg.getAttribute("viewBox")) {
+          const width = svg.viewBox.baseVal.width || 1600;
+          const height = svg.viewBox.baseVal.height || 1200;
+          svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+        }
+
         const output = document.getElementById("output");
         output.innerHTML = "";
         output.appendChild(svg);
@@ -52,7 +71,7 @@ digraph G {
       });
   }
 </script>
-
 </body>
 </html>
+
 

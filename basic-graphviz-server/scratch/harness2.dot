@@ -1,0 +1,55 @@
+digraph VendorTenantFlow_Option3 {
+  rankdir=TB;
+  node [shape=box, fontsize=10];
+
+  // Vendor tail - opaque / non-transparent / not reusable
+  subgraph cluster_vendor {
+    label="SaaS Vendor Build & Internal Release (Opaque)";
+    style=filled;
+    color=grey20;
+    fillcolor=grey50;
+    fontcolor=white;
+
+    v1 [label="Source Code", style=filled, fillcolor=grey60, fontcolor=white];
+    v2 [label="Build & Package", style=filled, fillcolor=grey60, fontcolor=white];
+    v3 [label="Unit / Integration Tests", style=filled, fillcolor=grey60, fontcolor=white];
+    v4 [label="Internal Security Scan", style=filled, fillcolor=grey60, fontcolor=white];
+    v5 [label="Docker Image Creation", style=filled, fillcolor=grey60, fontcolor=white];
+    v6 [label="Vendor Internal Release", style=filled, fillcolor=grey60, fontcolor=white];
+  }
+
+  // Vendor edges
+  v1 -> v2;
+  v2 -> v3;
+  v3 -> v4;
+  v4 -> v5;
+  v5 -> v6;
+
+  // Tenant tail - vendor-triggered steps in gray
+  subgraph cluster_vendor_triggered_tenant {
+    label="Tenant Steps Kicked by Vendor (Opaque / Gray)";
+    style=filled;
+    color=grey50;
+    fillcolor=grey70;
+
+    t1 [label="AquaSec Scan", style=filled, fillcolor=lightgrey];
+    t2 [label="Optional JAR Checks\n(signature / checksum)", style=filled, fillcolor=lightgrey];
+    t3 [label="Push to Tenant Artifact Repo", style=filled, fillcolor=lightgrey];
+  }
+
+  // Tenant edges (vendor-triggered)
+  t1 -> t2 -> t3;
+
+  // Tenant-owned deploy (transparent / blue)
+  t4 [label="Deploy to Kubernetes", style=filled, fillcolor=lightblue];
+
+  // Sequential flow: vendor release -> tenant scan cluster
+  { rank=same; v6; t1; }
+
+  // Optional dotted arrow to show vendor triggers
+  v6 -> t1 [style=dotted, color=darkblue, label="Vendor-triggered start"];
+
+  // Connect vendor-triggered tenant tail to tenant deploy
+  t3 -> t4;
+}
+

@@ -1,0 +1,55 @@
+
+digraph VendorTenantFlow_Option2_Parallel {
+  rankdir=TB;
+  node [shape=box, fontsize=10];
+
+  // Vendor tail - opaque / non-transparent / not reusable
+  subgraph cluster_vendor {
+    label="SaaS Vendor Build & Internal Release (Opaque)";
+    style=filled;
+    color=grey20;
+    fillcolor=grey50;
+    fontcolor=white;
+
+    v1 [label="Source Code", style=filled, fillcolor=grey60, fontcolor=white];
+    v2 [label="Build & Package", style=filled, fillcolor=grey60, fontcolor=white];
+    v3 [label="Unit / Integration Tests", style=filled, fillcolor=grey60, fontcolor=white];
+    v4 [label="Internal Security Scan", style=filled, fillcolor=grey60, fontcolor=white];
+    v5 [label="Docker Image Creation", style=filled, fillcolor=grey60, fontcolor=white];
+    v6 [label="Vendor Internal Release", style=filled, fillcolor=grey60, fontcolor=white];
+  }
+
+  // Vendor edges (linear)
+  v1 -> v2;
+  v2 -> v3;
+  v3 -> v4;
+  v4 -> v5;
+  v5 -> v6;
+
+  // Tenant tail - transparent / controllable
+  subgraph cluster_tenant {
+    label="Tenant Post-Delivery Vetting & Deployment";
+    style=filled;
+    color=lightblue;
+    fillcolor=lightblue;
+
+    t2 [label="AquaSec Scan"];
+    t3 [label="Optional JAR Checks\n(signature / checksum)"];
+    t4 [label="Push to Tenant Artifact Repo"];
+    t5 [label="Approved Image Stored"];
+    t6 [label="Deploy to Kubernetes"];
+  }
+
+  // Tenant edges (linear)
+  t2 -> t3;
+  t3 -> t4;
+  t4 -> t5;
+  t5 -> t6;
+
+  // Align vendor release and tenant scan to show parallel / independent
+  { rank=same; v6; t2; }
+
+  // Optional visual cue: dotted arrow for “can start after release”
+  v6 -> t2 [style=dotted, color=darkblue, label="Scan can start after release"];
+}
+
