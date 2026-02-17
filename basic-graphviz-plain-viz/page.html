@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ultra Basic DOT Renderer</title>
+
+  <!-- Optional Bootstrap -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+  <!-- Viz.js -->
+  <script src="https://cdn.jsdelivr.net/npm/viz.js@2.1.2/viz.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/viz.js@2.1.2/full.render.js"></script>
+</head>
+
+<body class="container mt-3">
+
+<h3>DOT Playground (Ultra Basic)</h3>
+
+<div class="row">
+  <div class="col-6">
+    <textarea id="dotInput" class="form-control" rows="12">
+digraph G {
+  A -> B;
+  B -> C;
+  C -> A;
+}
+    </textarea>
+
+    <button class="btn btn-primary mt-2" onclick="renderDot()">Render</button>
+  </div>
+
+  <div class="col-6">
+    <div id="output" style="border:1px solid #ccc; padding:10px;"></div>
+  </div>
+</div>
+
+<script>
+  const viz = new Viz();
+
+  function renderDot() {
+    const dot = document.getElementById("dotInput").value;
+
+    viz.renderSVGElement(dot)
+      .then(function(svg) {
+        const output = document.getElementById("output");
+        output.innerHTML = "";
+        output.appendChild(svg);
+      })
+      .catch(function(error) {
+        document.getElementById("output").innerText = error.message;
+      });
+  }
+</script>
+
+</body>
+</html>
+
