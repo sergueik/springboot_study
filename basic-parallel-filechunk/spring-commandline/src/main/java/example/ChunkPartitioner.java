@@ -3,6 +3,10 @@ package example;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import example.FileChunk;
 
 import net.sf.JRecord.Details.AbstractLine;
@@ -17,8 +21,13 @@ import net.sf.JRecord.def.IO.builders.ICobolIOBuilder;
 import net.sf.JRecord.Common.Constants;
 import net.sf.JRecord.Common.FieldDetail;
 import net.sf.JRecord.Common.IFileStructureConstants;
+import net.sf.JRecord.Numeric.ICopybookDialects;
+
 
 public class ChunkPartitioner {
+	
+	private static final Logger log = LoggerFactory.getLogger(ChunkPartitioner.class);
+
 	private final String copybookPath;
 	private long fileSize;
 	private long recordSize;
@@ -42,11 +51,21 @@ public class ChunkPartitioner {
 	List<FileChunk> partitionFile() throws IOException {
 
 		List<FileChunk> chunks = new ArrayList<>();
-		iCobolIOBuilder = JRecordInterface1.COBOL.newIOBuilder(copybookPath)
-				.setFileOrganization(Constants.IO_FIXED_LENGTH);
+		log.info("instantiate Cobol IO builder with {} ", copybookPath);
+		// incorrect overload
+		//iCobolIOBuilder = JRecordInterface1.COBOL.newIOBuilder(copybookPath)
+		//		.setFileOrganization(Constants.IO_FIXED_LENGTH);
+		iCobolIOBuilder =
+			    JRecordInterface1.COBOL
+			        .newIOBuilder(copybookPath)
+			        .setDialect(ICopybookDialects.FMT_MAINFRAME)
+			        // .setCopybookFormat(Constants.FMT_FREE) 
+			        .setFileOrganization(Constants.IO_FIXED_LENGTH)
+			        .setFont("utf8");
+		// TODO: pass font
 		LayoutDetail layoutDetail = iCobolIOBuilder.getLayout();
 		if (layoutDetail.getRecordCount() == 0) {
-			throw new IllegalStateException("Copybook defines no records");
+			throw new IllegalStateException(String.format("Copybook %s defines no records" , copybookPath ));
 		}
 		recordSize = layoutDetail.getRecord(0).getLength();
 		long numRecords = approxChunkSize / recordSize;

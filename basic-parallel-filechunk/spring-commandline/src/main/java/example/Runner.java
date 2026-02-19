@@ -69,7 +69,7 @@ public class Runner implements CommandLineRunner {
 		List<CompletableFuture<Void>> futures = new ArrayList<>();
 
 		for (FileChunk chunk : chunks) {
-			CompletableFuture<Void> future = CompletableFuture.runAsync(() -> processChunk(dataFile, chunk), executor)
+			CompletableFuture<Void> future = CompletableFuture.runAsync(() -> processChunk(copybookFile, dataFile, chunk), executor)
 					.exceptionally(e -> {
 						log.error("Chunk {} failed with {}", chunk.getId(), e.getMessage(), e);
 						return null;
@@ -84,9 +84,9 @@ public class Runner implements CommandLineRunner {
 		log.info("All chunks processed");
 	}
 
-	private void processChunk(Path inputFile, FileChunk chunk) {
+	private void processChunk(Path copybookFile, Path inputFile, FileChunk chunk) {
 		LineProcessor lineProcessor = new LineProcessor();
-		ChunkWorker chunkWorker = new ChunkWorker(inputFile, chunk, lineProcessor, font);
+		ChunkWorker chunkWorker = new ChunkWorker(copybookFile, inputFile, chunk, lineProcessor, font);
 		log.info("Processing chunk {} [{} - {}]", chunk.getId(), chunk.getStartOffset(), chunk.getEndOffset());
 		chunkWorker.run();
 	}
