@@ -19,20 +19,22 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 
 import example.model.User;
-
+import example.listener.Listener; 
 @Configuration
 @EnableBatchProcessing
 public class Config {
 
 	@Bean
-	public Job job(JobBuilderFactory jobBuilderFactory,
-			StepBuilderFactory stepBuilderFactory, ItemReader<User> itemReader,
-			ItemProcessor<User, User> itemProcessor, ItemWriter<User> itemWriter) {
+	public Job job(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory,
+			ItemReader<User> itemReader, ItemProcessor<User, User> itemProcessor, ItemWriter<User> itemWriter,
+			Listener listener) { // inject listener
 
-		Step step = stepBuilderFactory.get("ETL-file-load").<User, User> chunk(100)
-				.reader(itemReader).processor(itemProcessor).writer(itemWriter).build();
+		Step step = stepBuilderFactory.get("ETL-file-load").<User, User>chunk(100).reader(itemReader)
+				.processor(itemProcessor).writer(itemWriter).build();
 
-		return jobBuilderFactory.get("ETL-Load").incrementer(new RunIdIncrementer())
+		return jobBuilderFactory.get("ETL-Load").incrementer(new RunIdIncrementer()).listener(listener) // attach
+																										// listener to
+																										// the job
 				.start(step).build();
 	}
 
@@ -40,8 +42,7 @@ public class Config {
 	public FlatFileItemReader<User> itemReader() {
 
 		FlatFileItemReader<User> flatFileItemReader = new FlatFileItemReader<>();
-		flatFileItemReader
-				.setResource(new FileSystemResource("src/main/resources/users.csv"));
+		flatFileItemReader.setResource(new FileSystemResource("src/main/resources/users.csv"));
 		flatFileItemReader.setName("CSV-Reader");
 		flatFileItemReader.setLinesToSkip(1);
 		flatFileItemReader.setLineMapper(lineMapper());
