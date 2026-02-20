@@ -194,3 +194,103 @@ cp /tmp/example.cbl src/main/resources/example.cbl
 This error is raised by the cb2xml grammar parser while reading the COBOL copybook, before any binary data is processed. It indicates that the copybook contains syntax that does not conform to the subset of COBOL grammar supported by cb2xml (often involving malformed level numbers, 88-level condition entries, or unsupported clauses).
 
 in Plain and Simple English: *I was reading your copybook and ran into something that does not look like valid COBOL (at least to me), so I gave up*
+
+Vanilla Spring `CommandLineRunner` is just a startup hook doesn’t define an eventing model which would support job/step completion event notify.
+
+One can implement an equivalent pattern oneself with plain Spring Boot in a few ways.
+
+### Observatbility
+The Spring Batch’s `JobCompletionNotificationListener` Gives
+
+* Callback when a job finishes
+* Stire and enable Access to status (`COMPLETED`/`FAILED`)
+* Easy wiring via `@Bean` listener
+
+```java
+Spring Batch’s JobCompletionNo@Bean
+public JobExecutionListener listener() {
+    return new JobCompletionNotificationListener();
+}
+```
+
+one has to handle the same within
+```java
+@Override
+    public void run(String... args) {
+```
+
+`try...catch...finally`
+
+```java
+public class TaskCompletedEvent extends ApplicationEvent {
+    public TaskCompletedEvent(Object source) { super(source); }
+}
+```
+and
+
+```java
+@Component
+public class MyRunner implements CommandLineRunner {
+
+    @Autowired private ApplicationEventPublisher publisher;
+
+    @Override
+    public void run(String... args) {
+        // do work...
+        publisher.publishEvent(new TaskCompletedEvent(this));
+    }
+}
+```
+and subscribe
+```java
+@Component
+public class TaskListener {
+
+    @EventListener
+    public void onComplete(TaskCompletedEvent event) {
+        System.out.println("Task completed!");
+    }
+}
+```
+few lifecycle events are already defined in vanilla Spring Boot:
+
+| Event                     | When                           |
+| ------------------------- | ------------------------------ |
+| `ApplicationStartedEvent`	| right after the context starts |
+| `ApplicationReadyEvent`   | after runners finish           |
+| `ApplicationFailedEvent`  | 	if startup fails             |
+
+
+and the following code will work
+```java
+@Component
+public class StartupListener {
+
+    @EventListener
+    public void onReady(ApplicationReadyEvent e) {
+        // works like completion notification
+    }
+
+    @EventListener
+    public void onFailure(ApplicationFailedEvent e) {
+        // handle failure
+    }
+}
+```
+one can also wrap Logic In a `Task Service` With `Callbacks`
+
+```java
+@Service
+public class MyTaskService {
+
+    public void execute(Runnable onSuccess, Consumer<Throwable> onFailure) {
+        try {
+            // work
+            onSuccess.run();
+        } catch (Throwable t) {
+            onFailure.accept(t);
+        }
+    }
+}
+```
+
