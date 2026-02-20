@@ -320,6 +320,17 @@ public void afterJob(JobExecution jobExecution) {
     }
 }
 ```
+### Spring  Batch Job Internals
+
+![Login](https://github.com/sergueik/springboot_study/blob/master/basic-spring-batch/screenshots/capture-login.png)
+
+![Console](https://github.com/sergueik/springboot_study/blob/master/basic-spring-batch/screenshots/capture-console.png)
+
+```sql
+SELECT STEP_NAME, READ_COUNT, WRITE_COUNT, STATUS, START_TIME, END_TIME
+FROM BATCH_STEP_EXECUTION;
+```
+
 ### See Also
 
   * stackoverflow [discussion](https://stackoverflow.com/questions/51085410/spring-batch-job-execution-status-in-response-body) of finding the started job info
