@@ -1,5 +1,6 @@
 package example.exceptions;
 
+@SuppressWarnings("serial")
 public class BusinessRuleViolationException extends RuntimeException {
 
     private final String rule;

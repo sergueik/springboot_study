@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>basic-tests</artifactId>
-  <version>0.35.0-SNAPSHOT</version>
+  <version>0.36.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>basic</name>
   <description>Demo Springboot 2.3.x with MVC tests</description>
