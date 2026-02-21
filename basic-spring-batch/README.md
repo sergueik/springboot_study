@@ -330,7 +330,122 @@ public void afterJob(JobExecution jobExecution) {
 SELECT STEP_NAME, READ_COUNT, WRITE_COUNT, STATUS, START_TIME, END_TIME
 FROM BATCH_STEP_EXECUTION;
 ```
+### After Shutdown
 
+* While the app is running best is to use H2 built-in SQL Console browser UI on
+* after shutdown will need to run explicitly
+```
+java ~/.m2/repository/com/h2database/h2/*/h2*jar org.h2.tools.Shell
+```
+> NOTE: one typically does not have explicit version pin but relies on the Spring Boot parent BOM dependency management
+The correct version to use is the one the main app actually ran with, which is found via
+```sh
+mvn dependency:tree | grep h2.database
+```
+which yields something like
+```txt
+[INFO] +- com.h2database:h2:jar:1.4.200:runtime
+```
+it is a time consuming call. Alternatively, still  slow is
+```sh
+mvn help:effective-pom | grep -A2 h2.database
+```
+
+which will output
+```xml
+<groupId>com.h2database</groupId>
+<artifactId>h2</artifactId>
+<version>1.4.200</version>
+```
+Rule of thumb: Do not mix __1.4__ with __2.x__ databases: the __H2__ changed file format and SQL behavior in __2.x__.
+
+so after launching app with `persistent` profile:
+```sh
+mvn spring-boot:run -Dspring-boot.run.profiles=persistent
+```
+run the H2 SQL shell:
+```sh
+java -cp ~/.m2/repository/com/h2database/h2/1.4.200/h2*jar org.h2.tools.Shell
+```
+
+```cmd
+java -cp %USERPROFILE%\.m2\repository\com\h2database\h2\1.4.200\h2-1.4.200.jar org.h2.tools.Shell
+```
+this will launch CLI
+```txt
+Exit with Ctrl+C
+[Enter]   jdbc:h2:mem:testdb
+URL
+```
+fill the inputs
+```cmd
+URL       jdbc:h2:file:~/testdb
+[Enter]   org.h2.Driver
+Driver    org.h2.Driver
+[Enter]   sa
+User
+Password
+
+```
+> NOTE: cannot use H2 SQL shell while the app is still running:
+```text
+SQL Exception: Database may be already in use: null. Possible solutions: close all other connection(s); use the server mode [90020-200]
+```
+> NOTE: have to use `~/testdb` with  h2 SQL shell: 
+```text
+A file path that is implicitly relative to the current working directory is not allowed in the database URL "jdbc:h2:file:${user.home}/testdb;IFEXISTS=TRUE". Use an absolute path, ~/name, ./name, or the baseDir setting instead. [90011-200]
+```
+```SQL
+sql> show tables;
+```
+```text
+TABLE_NAME                   | TABLE_SCHEMA
+BATCH_JOB_EXECUTION          | PUBLIC
+BATCH_JOB_EXECUTION_CONTEXT  | PUBLIC
+BATCH_JOB_EXECUTION_PARAMS   | PUBLIC
+BATCH_JOB_INSTANCE           | PUBLIC
+BATCH_STEP_EXECUTION         | PUBLIC
+BATCH_STEP_EXECUTION_CONTEXT | PUBLIC
+(6 rows, 29 ms)
+```
+```SQL
+SELECT STEP_NAME, READ_COUNT, WRITE_COUNT, STATUS, START_TIME, END_TIME
+FROM BATCH_STEP_EXECUTION;
+```
+```text
+...> STEP_NAME     | READ_COUNT | WRITE_COUNT | STATUS    | START_TIME              | END_TIME
+ETL-file-load | 5          | 5           | COMPLETED | 2026-02-21 13:16:28.676 | 2026-02-21 13:16:33.875
+(1 row, 15 ms)
+```
+if one is to store custom properties, use the `BATCH_STEP_EXECUTION_CONTEXT` table - the Spring Batch is actually very opinionated.
+Colect job custom data via:
+```SQL
+SELECT
+    STEP_EXECUTION_ID,
+    COALESCE(FILENAME, '') AS FILENAME,
+    COALESCE(CHECKSUM, '') AS CHECKSUM,
+    COALESCE(OTHER_KEY, '') AS OTHER_KEY
+FROM (
+    SELECT
+        STEP_EXECUTION_ID,
+        CAST(KEY_NAME AS VARCHAR) AS KEY_NAME,
+        CAST(KEY_VALUE AS VARCHAR) AS KEY_VALUE
+    FROM BATCH_STEP_EXECUTION_CONTEXT
+) AS ctx
+PIVOT (
+    MAX(KEY_VALUE) FOR KEY_NAME IN ('FILENAME','CHECKSUM','OTHER_KEY')
+) AS pvt;
+```
+and
+```SQL
+SELECT
+    STEP_EXECUTION_ID,
+    COALESCE(MAX(CASE WHEN KEY_NAME='FILENAME' THEN KEY_VALUE END), '') AS FILENAME,
+    COALESCE(MAX(CASE WHEN KEY_NAME='CHECKSUM' THEN KEY_VALUE END), '') AS CHECKSUM,
+    COALESCE(MAX(CASE WHEN KEY_NAME='OTHER_KEY' THEN KEY_VALUE END), '') AS OTHER_KEY
+FROM BATCH_STEP_EXECUTION_CONTEXT
+GROUP BY STEP_EXECUTION_ID;
+```
 ### See Also
 
   * stackoverflow [discussion](https://stackoverflow.com/questions/51085410/spring-batch-job-execution-status-in-response-body) of finding the started job info
