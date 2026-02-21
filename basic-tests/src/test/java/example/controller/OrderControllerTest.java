@@ -40,6 +40,9 @@ class OrderControllerTest {
 
 		mockMvc.perform(post("/orders").param("quantity", "20")).andExpect(status().isUnprocessableEntity())
 				.andExpect(jsonPath("$.title").value("Business rule violation"))
-				.andExpect(jsonPath("$.status").value(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+				.andExpect(jsonPath("$.status").value(HttpStatus.UNPROCESSABLE_ENTITY.value()))
+				.andExpect(jsonPath("$.errors").isArray())
+				.andExpect(jsonPath("$.errors[0].message").value("Order quantity must not exceed 10 items"))
+				.andExpect(jsonPath("$.errors[0].rule").value("MAX_ORDER_QUANTITY"));
 	}
 }

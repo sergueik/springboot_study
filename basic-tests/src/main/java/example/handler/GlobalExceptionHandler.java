@@ -43,8 +43,8 @@ public class GlobalExceptionHandler {
 
 		Map<String, Object> body = new HashMap<>();
 		body.putAll(Map.of("type", BUSINESS_RULE_VIOLATION_TYPE, "title", "Business rule violation", "status",
-				HttpStatus.UNPROCESSABLE_ENTITY.value(), "detail", e.getErrors().get(0).getMessage(), "rule",
-				e.getErrors().get(0).getRule()));
+				HttpStatus.UNPROCESSABLE_ENTITY.value(), "detail", "Several business rules violated", "errors",
+				e.getErrors()));
 
 		return ResponseEntity.unprocessableEntity().body(body);
 	}
