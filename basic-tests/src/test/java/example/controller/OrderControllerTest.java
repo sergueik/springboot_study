@@ -15,6 +15,13 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.assertj.core.util.Arrays;
+
+import example.handler.dto.BusinessError;
+
 @WebMvcTest(OrderController.class)
 @Import(GlobalExceptionHandler.class)
 class OrderControllerTest {
@@ -27,9 +34,9 @@ class OrderControllerTest {
 
 	@Test
 	void shouldReturn422WhenBusinessRuleViolated() throws Exception {
-
-		doThrow(new BusinessRuleViolationException("MAX_ORDER_QUANTITY", "Order quantity must not exceed 10 items"))
-				.when(orderService).placeOrder(20);
+		List<BusinessError> errors = new ArrayList<>();
+		errors.add(new BusinessError("MAX_ORDER_QUANTITY", "Order quantity must not exceed 10 items"));
+		doThrow(new BusinessRuleViolationException(errors)).when(orderService).placeOrder(20);
 
 		mockMvc.perform(post("/orders").param("quantity", "20")).andExpect(status().isUnprocessableEntity())
 				.andExpect(jsonPath("$.title").value("Business rule violation"))

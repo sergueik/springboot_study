@@ -1,16 +1,19 @@
 package example.exceptions;
 
+import java.util.List;
+import example.handler.dto.BusinessError;
+
 @SuppressWarnings("serial")
 public class BusinessRuleViolationException extends RuntimeException {
 
-    private final String rule;
+	private final List<BusinessError> errors;
 
-    public BusinessRuleViolationException(String rule, String message) {
-        super(message);
-        this.rule = rule;
-    }
+	public BusinessRuleViolationException(List<BusinessError> errors) {
+		super("Several business rules violated");
+		this.errors = errors;
+	}
 
-    public String getRule() {
-        return rule;
-    }
+	public List<BusinessError> getErrors() {
+		return errors;
+	}
 }

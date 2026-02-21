@@ -14,7 +14,7 @@ class OrderServiceTest {
 		BusinessRuleViolationException e = assertThrows(BusinessRuleViolationException.class,
 				() -> service.placeOrder(20));
 
-		assertEquals("MAX_ORDER_QUANTITY", e.getRule());
+		assertEquals("MAX_ORDER_QUANTITY", e.getErrors().get(0).getRule());
 		assertEquals("Order quantity must not exceed 10 items", e.getMessage());
 	}
 }

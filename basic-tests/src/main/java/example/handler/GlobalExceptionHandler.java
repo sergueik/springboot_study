@@ -39,11 +39,12 @@ public class GlobalExceptionHandler {
 	public static final String BUSINESS_RULE_VIOLATION_TYPE = "https://problems-registry.smartbear.com/business-rule-violation";
 
 	@ExceptionHandler(BusinessRuleViolationException.class)
-	public ResponseEntity<Map<String, Object>> handleBusinessRuleViolation(BusinessRuleViolationException ex) {
+	public ResponseEntity<Map<String, Object>> handleBusinessRuleViolation(BusinessRuleViolationException e) {
 
 		Map<String, Object> body = new HashMap<>();
 		body.putAll(Map.of("type", BUSINESS_RULE_VIOLATION_TYPE, "title", "Business rule violation", "status",
-				HttpStatus.UNPROCESSABLE_ENTITY.value(), "detail", ex.getMessage(), "rule", ex.getRule()));
+				HttpStatus.UNPROCESSABLE_ENTITY.value(), "detail", e.getErrors().get(0).getMessage(), "rule",
+				e.getErrors().get(0).getRule()));
 
 		return ResponseEntity.unprocessableEntity().body(body);
 	}
