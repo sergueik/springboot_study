@@ -446,6 +446,37 @@ SELECT
 FROM BATCH_STEP_EXECUTION_CONTEXT
 GROUP BY STEP_EXECUTION_ID;
 ```
+### Big Scheme Of Things Goal
+
+Use Spring Batch strictly as a transaction and orchestration framework, while retaining full ownership of line parsing, record semantics, and data partitioning.
+
+This design deliberately avoids undocumented behaviors and implicit parsing assumptions embedded in Spring Batch file abstractions, preventing the framework from becoming a black-box, data-layout-agnostic parser whose behavior cannot be reasoned about, tested, or audited.
+
+Unforutately unlike most of Spring Parts which are explained very openly
+down to first principles (IoC, AOP, transactions, proxies, scopes),
+the Spring Batch tutorials stop at wiring recipes.
+Effectively, the Spring Batch basics are presented through fluent configuration examples
+conceal the actual record-processing delegate methods behind layered abstractions
+
+One observes, Spring Batch is usually taught as configuration mechanics, not as an execution model.
+Furthermore parsing logic picture becomes implicit, undocumented, and difficult to audit, turning batch jobs into opaque black boxes rather than explicit data-processing programs.
+
+This situation mirrors a broader historical divide below.
+
+UNIX ecosystem benefited from a body of literature—most notably Advanced Programming in the UNIX Environment — that explained system behavior down to first principles, exposing control flow, system calls, and design rationale with exceptional clarity.
+
+No comparable tradition of transparent, first-principles documentation ever fully emerged for platforms such as Windows NT or VAX systems, which often presented developers with opaque abstractions and undocumented behaviors, fostering the impression that essential mechanisms were deliberately hidden.
+Naturally, this is leaving a developer with the impression of interacting with a black box whose rules were never fully disclosed.
+While such opacity may be unavoidable in commercial, proprietary systems, it is far more difficult to justify in a free and actively evolving framework, where transparency and first-principles explanation should be attainable expectations rather than optional luxuries.
+
+
+This project adopts the UNIX/APUE tradition of explicitness and transparency by making record parsing and execution semantics visible and controllable, rather than relying on opaque framework defaults.
+### TLDR
+
+two perfectly matched enemies wasting energy fighting… until they realize cooperation is strictly better
+
+*fable version*: Two goats on a bridge
+
 ### See Also
 
   * stackoverflow [discussion](https://stackoverflow.com/questions/51085410/spring-batch-job-execution-status-in-response-body) of finding the started job info
