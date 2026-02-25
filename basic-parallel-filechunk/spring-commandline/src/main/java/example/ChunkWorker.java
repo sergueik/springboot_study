@@ -59,7 +59,7 @@ public class ChunkWorker implements Runnable {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 		}
-
+		// see: https://github.com/svn2github/jrecord/blob/master/Source/JRecord/src/net/sf/JRecord/JRecordInterface1.java#L48
 		ICobolIOBuilder ioBuilder = JRecordInterface1.COBOL.newIOBuilder(copybookFile.toString())
 				.setFileOrganization(IFileStructureConstants.IO_FIXED_LENGTH).setFont(font);
 

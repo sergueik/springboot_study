@@ -23,9 +23,8 @@ import net.sf.JRecord.Common.FieldDetail;
 import net.sf.JRecord.Common.IFileStructureConstants;
 import net.sf.JRecord.Numeric.ICopybookDialects;
 
-
 public class ChunkPartitioner {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(ChunkPartitioner.class);
 
 	private final String copybookPath;
@@ -34,6 +33,7 @@ public class ChunkPartitioner {
 	private final long MIN_RECORDS = 10L;
 	private final long approxChunkSize;
 	private ICobolIOBuilder iCobolIOBuilder;
+	private String page="cp037";
 
 	public ChunkPartitioner(final String copybookPath, final long fileSize, final long approxChunkSize) {
 		this.copybookPath = copybookPath;
@@ -52,20 +52,20 @@ public class ChunkPartitioner {
 
 		List<FileChunk> chunks = new ArrayList<>();
 		log.info("instantiate Cobol IO builder with {} ", copybookPath);
-		// incorrect overload
-		//iCobolIOBuilder = JRecordInterface1.COBOL.newIOBuilder(copybookPath)
-		//		.setFileOrganization(Constants.IO_FIXED_LENGTH);
-		iCobolIOBuilder =
-			    JRecordInterface1.COBOL
-			        .newIOBuilder(copybookPath)
-			        .setDialect(ICopybookDialects.FMT_MAINFRAME)
-			        // .setCopybookFormat(Constants.FMT_FREE) 
-			        .setFileOrganization(Constants.IO_FIXED_LENGTH)
-			        .setFont("utf8");
-		// TODO: pass font
+		// NOTE: no .setCopybookFormat(Constants.FMT_FREE)
+		// NOTE: no .setDialect(ICopybookDialects.FMT_MAINFRAME)
+		iCobolIOBuilder = JRecordInterface1.COBOL.newIOBuilder(copybookPath)
+				.setFileOrganization(IFileStructureConstants.IO_FIXED_LENGTH).setFont(page); // EBCDIC
+
+		/*
+		 * ICobolIOBuilder ioBuilder = CopybookLoaderFactory.getInstance()
+		 * .getCobolIOBuilder(copybookFile.toString())
+		 * .setFileOrganization(Constants.IO_FIXED_LENGTH) .setFont("cp037");
+		 */
+
 		LayoutDetail layoutDetail = iCobolIOBuilder.getLayout();
 		if (layoutDetail.getRecordCount() == 0) {
-			throw new IllegalStateException(String.format("Copybook %s defines no records" , copybookPath ));
+			throw new IllegalStateException(String.format("Copybook %s defines no records", copybookPath));
 		}
 		recordSize = layoutDetail.getRecord(0).getLength();
 		long numRecords = approxChunkSize / recordSize;
