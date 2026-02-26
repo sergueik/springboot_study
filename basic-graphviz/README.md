@@ -39,7 +39,6 @@ docker run --rm -w /app -v $(pwd):/app --entrypoint '' $NAME java -jar /app/app.
 ```text
 Error: Unable to access jarfile /app/app.jar
 ```
-
 ### See Also
   * https://github.com/omerio/graphviz-server
   * https://github.com/omerio/graphviz-webapp
