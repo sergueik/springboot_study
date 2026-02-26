@@ -1,57 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:stylesheet version="1.0"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-  <!-- Root template -->
-  <xsl:template match="/">
-    <xsl:apply-templates select="//record"/>
+  <!-- Template for root copybook -->
+  <xsl:template match="/copybook">
+    <xsl:apply-templates select="item"/>
   </xsl:template>
 
-  <!-- Each COBOL field / record -->
-  <xsl:template match="record">
+  <!-- Template for each item -->
+  <xsl:template match="item">
     <!-- Level number -->
-    <xsl:variable name="level" select="level"/>
-    <xsl:value-of select="$level"/>
+    <xsl:value-of select="@level"/>
     <xsl:text> </xsl:text>
 
     <!-- Field name -->
-    <xsl:value-of select="name"/>
-    <xsl:text> </xsl:text>
-
-    <!-- PIC clause if exists -->
-    <xsl:choose>
-      <xsl:when test="pic">
-        <xsl:text>PIC </xsl:text>
-        <xsl:value-of select="pic"/>
-        <xsl:text> </xsl:text>
-      </xsl:when>
-      <xsl:otherwise/>
-    </xsl:choose>
-
-    <!-- Usage clause if exists -->
-    <xsl:if test="usage">
-      <xsl:text>USAGE </xsl:text>
-      <xsl:value-of select="usage"/>
-      <xsl:text> </xsl:text>
+    <xsl:value-of select="@name"/>
+    
+    <!-- PIC clause -->
+    <xsl:if test="@picture">
+      <xsl:text> PIC </xsl:text>
+      <xsl:value-of select="@picture"/>
     </xsl:if>
 
-    <!-- Occurs clause if exists -->
-    <xsl:if test="occurs">
-      <xsl:text>OCCURS </xsl:text>
-      <xsl:value-of select="occurs"/>
+    <!-- USAGE clause -->
+    <xsl:if test="@usage">
+      <xsl:text> USAGE </xsl:text>
+      <xsl:value-of select="@usage"/>
+    </xsl:if>
+
+    <!-- OCCURS clause (if exists in cb2xml) -->
+    <xsl:if test="@occurs">
+      <xsl:text> OCCURS </xsl:text>
+      <xsl:value-of select="@occurs"/>
       <xsl:text> TIMES</xsl:text>
     </xsl:if>
 
+    <!-- End line -->
     <xsl:text>&#10;</xsl:text>
 
-    <!-- Nested fields -->
-    <xsl:apply-templates select="record"/>
-  </xsl:template>
-
-  <!-- Handling continuation lines -->
-  <xsl:template match="continuation">
-    <xsl:text>     </xsl:text> <!-- 5-space indentation -->
-    <xsl:value-of select="text"/>
-    <xsl:text>&#10;</xsl:text>
+    <!-- Recurse for nested items -->
+    <xsl:apply-templates select="item"/>
   </xsl:template>
 
 </xsl:stylesheet>
