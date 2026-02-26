@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<copybook filename="cpy_6296129717620004970.tmp" dialect="Mainframe" cb2xml-format="2017">
+    <item level="01" name="SAMPLE-REC" position="1" storage-length="69" display-length="77" display-position="1">
+        <item level="05" name="CUSTOMER-ID" picture="X(10)" position="1" storage-length="10" display-length="10" display-position="1"/>
+        <item level="05" name="CUSTOMER-NAME" picture="X(20)" position="11" storage-length="20" display-length="20" display-position="11"/>
+        <item level="05" name="ACCOUNT-NUMBER" picture="9(9)" position="31" storage-length="9" display-length="9" numeric="COBOL_NUMERIC" display-position="31"/>
+        <item level="05" name="ACCOUNT-TYPE" picture="X(2)" position="40" storage-length="2" display-length="2" display-position="40"/>
+        <item level="05" name="OPEN-DATE" picture="9(8)" position="42" storage-length="8" display-length="8" numeric="COBOL_NUMERIC" display-position="42"/>
+        <item level="05" name="BALANCE" picture="S9(7)V99" usage="computational-3" position="50" storage-length="5" display-length="9" scale="2" numeric="COBOL_NUMERIC" display-position="50"/>
+        <item level="05" name="CREDIT-LIMIT" picture="S9(7)V99" usage="computational-3" position="55" storage-length="5" display-length="9" scale="2" numeric="COBOL_NUMERIC" display-position="59"/>
+        <item level="05" name="STATUS-CODE" picture="X(1)" position="60" storage-length="1" display-length="1" display-position="68"/>
+        <item level="05" name="LAST-ACTIVITY-DATE" picture="9(8)" position="61" storage-length="8" display-length="8" numeric="COBOL_NUMERIC" display-position="69"/>
+        <item level="05" name="RESERVED-FLAG" picture="X(1)" position="69" storage-length="1" display-length="1" display-position="77"/>
+    </item>
+</copybook>
