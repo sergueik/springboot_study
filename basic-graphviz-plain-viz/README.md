@@ -5,6 +5,8 @@ store locally. Replace with your enterprise artifactory or CDN
 curl -skLO https://cdn.jsdelivr.net/npm/viz.js@2.1.2/viz.js 
 curl -skLO https://cdn.jsdelivr.net/npm/viz.js@2.1.2/full.render.js
 ```
+![Page](https://github.com/sergueik/springboot_study/blob/master/basic-graphviz-plain-viz/screenshots/page.png)
+
 ### Tool Comparison
 
 The [Viz.js](https://visjs.org/) is a sharply purposed hierarchical acyclic dependency flowchart decision tree graph layout driver
