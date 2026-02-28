@@ -174,6 +174,15 @@ When bootstrap is broken, teams may see:
  * Hotfixes merged without tests
  * Gradual erosion of trust in CI/CD
  * This leads to: **Code health is no longer guarded by automation**.
+### NOTE
+
+**Defensive programming first**: assume things **will** fail; celebrate when they **don’t**.
+
+**TDD first**: define "done” by **passing tests**, either at runtime or in automated test runs — **not** before.
+
+Ask for **reasoning**: when advice is **good** or **bad**, ask **why**, **read** explanations, and **take notes**.
+
+**Razor principle**: implement the **minimal possible** change to **deliver a feature**. Keep it human-friendly—avoid outputs that look like a **Base64 dump**.
 
 ### See Also
   * [apache maven wrapper](https://maven.apache.org/tools/wrapper/)
