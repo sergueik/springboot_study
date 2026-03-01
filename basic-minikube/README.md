@@ -1059,6 +1059,11 @@ $s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.passwo
 ```text
 1f2d1e2e67df
 ```
+### Inspired  by MS Bug Bar Escrow Relese Domain Folklore
+
+[ 🩼  ← ]   degraded / allowed
+[ 🛏️  → ]   critical / blocked
+
 ### See Also
 
    * https://github.com/DanWahlin/DockerAndKubernetesCourseCode/tree/main/samples
@@ -1121,5 +1126,6 @@ $s = C:\Minikube\kubectl.exe get secrets/db-user-pass -o jsonpath="{.data.passwo
 
 
      + [k8 minikube docs](https://minikube.sigs.k8s.io/docs/start/)
+     + [building a Kubernetes Cluster from Scratch: A Detailed Guide](https://codeproject.com/articles/Building-a-Kubernetes-Cluster-from-Scratch-A-Detai)
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
