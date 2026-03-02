@@ -1,12 +1,30 @@
-## Info 
+### Info
 
-This project demonstrates how to validate the Maven Wrapper during initial project default branch setup by developer. The `mvnw*`, and `.mvn/wrapper` are sometimes incomplete in a local or enterprise setup leading to 
-Validation including confirming the successful downloader `MavenWrapperDownloader.java` execution, enterprise-specific `distribution URL` configuration in the `.mvn/wrapper/maven-wrapper.properties`, and proper artifact downloading into `~/m2/wrapper/dists/apache-maven-*/` and. `~/m2/wrapper/dists/apache-maven-*-bin`.  
+This project demonstrates how to validate the Maven Wrapper during initial project default branch setup by developer. The `mvnw*`, and `.mvn/wrapper` are sometimes incomplete in a local or enterprise setup leading to
+Validation including confirming the successful downloader `MavenWrapperDownloader.java` execution, enterprise-specific `distribution URL` configuration in the `.mvn/wrapper/maven-wrapper.properties`, and proper artifact downloading into `~/m2/wrapper/dists/apache-maven-*/` and. `~/m2/wrapper/dists/apache-maven-*-bin`.
+### Usage
+There are few (four) main distribution types defined in Apache Maven Wrapper plugin.
 
-Useful for hunting unfinished or partially configured "enterprise" Maven setups.
-Notes:
+Specifically the command
+```cmd
+mvn wrapper:wrapper -Dtype=source
+```
+produces the files:
 
-.gitignore should allow check-in of `.mvn/wrapper/maven-wrapper.jar` but ignore local Maven caches (like `~/.m2`).
+```text
+MavenWrapperDownloader.java
+maven-wrapper.properties
+```
+while the default run without specifying any distribution type produces the files:
+
+```text
+maven-wrapper.jar
+maven-wrapper.properties
+```
+The choice is based on binary check in policies.
+
+This project contains scripts which are useful for hunting unfinished or partially configured "enterprise" Maven setups.
+> Note: The `.gitignore` should allow check-in of `.mvn/wrapper/maven-wrapper.jar` but ignore local Maven caches (like `~/.m2`).
 
 `mvnw` / `mvnw.cmd` are the executable wrappers for bash / Windows.
 
@@ -16,7 +34,7 @@ Notes:
 
 `.mvn/wrapper/maven-wrapper.properties` – Configuration, contains:
 
-`distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.2/apache-maven-3.9.2-bin.zip` 
+`distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.2/apache-maven-3.9.2-bin.zip`
 
 This URL can be replaced by an enterprise mirror.
 
@@ -35,6 +53,28 @@ rm -rf ~/.m2/wrapper/dists/
 ```sh
 ./mvnw -v        # or mvnw.cmd on Windows
 ```
+the output will clearly show the version and home directory:
+```text
+Apache Maven 3.6.1 (d66c9c0b3152b2e69ee9bac180bb8fcc8e6af555; 2019-04-04T15:00:29-04:00)
+Maven home: C:\Users\kouzm\.m2\wrapper\dists\apache-maven-3.6.1-bin\ced06cd4\apache-maven-3.6.1
+Java version: 11.0.12, vendor: BellSoft, runtime: c:\java\jdk-11.0.12
+Default locale: en_US, platform encoding: Cp1252
+OS name: "windows 10", version: "10.0", arch: "amd64", family: "windows"
+
+```
+NOTE: the Windows path format will be observed in the `mvnw` output when run from Git Bash on Windows
+
+```text
+Apache Maven 3.6.1 (d66c9c0b3152b2e69ee9bac180bb8fcc8e6af555; 2019-04-04T15:00:29-04:00)
+Maven home: C:\Users\kouzm\.m2\wrapper\dists\apache-maven-3.6.1-bin\ced06cd4\apache-maven-3.6.1
+Java version: 11.0.12, vendor: BellSoft, runtime: C:\java\jdk-11.0.12
+Default locale: en_US, platform encoding: Cp1252
+OS name: "windows 10", version: "10.0", arch: "amd64", family: "windows"
+```
+>NOTE: mvnw.cmd does not recognize the *dash* options very well.
+
+> NOTE mvnw behavior may be slghtly different if the file `.mvn/jvm.config` is detected. We do not try to explore it here.
+
 Expected Results: the wrapper dists dir `.m2/wrapper/dists/apache-maven-*/` is created.
 
 ZIP distribution is unpacked.
@@ -81,9 +121,13 @@ No unexpected files appear (e.g., leftover temp directories).
 Change `distributionUrl` to a non-existent internal mirror:
 
 `distributionUrl=https://internal-mirror.company.com/maven/apache-maven-3.9.2-bin`
-Run 
+Run
 ```
 ./mvnw -v
+```
+or  
+```cmd
+mvnw.cmd -v
 ```
 
 Expected Outcome:
@@ -186,6 +230,7 @@ Ask for **reasoning**: when advice is **good** or **bad**, ask **why**, **read**
 
 ### See Also
   * [apache maven wrapper](https://maven.apache.org/tools/wrapper/)
+  * [usage](https://maven.apache.org/tools/wrapper/maven-wrapper-plugin/usage.html)
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
