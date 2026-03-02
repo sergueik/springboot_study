@@ -909,7 +909,11 @@ to work around the classic __Windows__ `cmd.exe` *quoting problem*
  * [Java embed CobolParser with a CobolProject programmatically](https://deepwiki.com/krisds/koopa/7.2-integration-guide)	
  * [Quick Start & Usage Examples, Built‑in Examples](https://github.com/AbsaOSS/cobrix)
  * [Spark Job Application Example](https://github.com/AbsaOSS/cobrix/tree/master/examples/spark-cobol-app)
-
+ * [introduction to Java Serialization](https://www.baeldung.com/java-serialization)
+ * [different Serialization Approaches for Java](https://www.baeldung.com/java-serialization-approaches)
+ * [guide to the Externalizable Interface in Java](https://www.baeldung.com/java-externalizable)
+ * [deserialization Vulnerabilities in Java](https://www.baeldung.com/java-deserialization-vulnerabilities)
+ * [guide to the @Serial Annotation in Java](https://www.baeldung.com/java-14-serial-annotation)
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

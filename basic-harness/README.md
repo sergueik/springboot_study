@@ -1073,6 +1073,7 @@ for guaranteed cleanup will likely call explicitly
     + [Harness Software Bill of Materians](https://www.youtube.com/watch?v=4Ym4uXJ6nXQ)
     + [Harness Pipeline Step Groups](https://www.youtube.com/watch?v=J5eHYSbE8cg)
     + [Haness CD Community Edition](https://www.youtube.com/watch?v=Tj8xFgqI-cw)
+    + [Harness Open Source](https://www.youtube.com/watch?v=ae2u0sobZs4)
     + [Getting Help with Harness](https://www.youtube.com/watch?v=tY0bfuUYGlk)
     + [Harness CD: A Beginner's Guide with a Step-by-Step Tutorial](https://www.youtube.com/watch?v=vybcppS6MCw)
     + [Demo: Harness Continuous Delivery in 2 minutes](https://www.youtube.com/watch?v=akM9df69XmI)
