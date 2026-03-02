@@ -18,15 +18,10 @@ WORKDIR /app
 ARG APP_UID=1000
 ARG APP_GID=1000
 
-RUN ["addgroup", "--gid", "${APP_GID}", "appgroup"]
-RUN ["adduser", "--disabled-password", "--gecos", "", "--uid", "${APP_UID}", "--gid", "${APP_GID}", "appuser"]
+COPY --chown=${APP_UID}:${APP_GID} --from=build /app/target/example.distroless.jar app.jar
 
-COPY --chown=appuser:appgroup --from=build /app/target/example.distroless.jar app.jar
-
-# NOTE: the chown is absent in distroless image, so the following will fail:
-# RUN ["chown", "-R", "appuser:appgroup", "/app"]
 EXPOSE 8080
 
-USER appuser:appgroup
+USER ${APP_UID}:${APP_GID}
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
