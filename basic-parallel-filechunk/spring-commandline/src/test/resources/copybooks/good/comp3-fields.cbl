@@ -1,0 +1,4 @@
+01  FINANCIAL-REC.
+05  ACCOUNT-ID        PIC 9(10).
+05  BALANCE           PIC S9(7)V99 COMP-3.
+05  TX-COUNT          PIC 9(3) COMP-3.

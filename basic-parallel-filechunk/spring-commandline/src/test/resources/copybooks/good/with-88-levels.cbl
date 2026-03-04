@@ -1,0 +1,4 @@
+01  STATUS-REC.
+05  STATUS-CODE       PIC X.
+88  STATUS-OK         VALUE 'Y'.
+88  STATUS-FAIL       VALUE 'N'.

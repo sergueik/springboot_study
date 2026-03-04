@@ -295,6 +295,21 @@ public class MyTaskService {
 ```
 
 The copybook file leading to this error was accepted for binary and mixed DISPLA and  packed decilam copybook binary data generation by [basic-jrecord-dummydata](https://github.com/sergueik/springboot_study/tree/master/basic-jrecord-dummydata) project
+
+### Testing
+```text
+copybooks/
+├── good/
+│   ├── simple-fixed.cbl
+│   ├── comp3-fields.cbl
+│   ├── occurs-array.cbl
+│   └── with-88-levels.cbl
+└── bad/
+    ├── example-dc3aa31c.cbl
+    ├── missing-level.cbl
+    ├── garbage-token.cbl
+    └── bad-88-placement.cbl
+```
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

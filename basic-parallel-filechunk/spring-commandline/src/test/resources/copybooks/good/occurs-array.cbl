@@ -1,0 +1,5 @@
+01  ARRAY-REC.
+05  ITEM-COUNT        PIC 9(2).
+05  ITEMS OCCURS 5 TIMES.
+10  ITEM-ID           PIC 9(4).
+10  ITEM-NAME         PIC X(10).
