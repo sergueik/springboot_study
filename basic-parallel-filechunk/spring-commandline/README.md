@@ -1,4 +1,4 @@
-### Treoublshooting
+### Troublshooting
 runtime errors
 
 ```txt
@@ -18,7 +18,7 @@ Caused by: java.lang.RuntimeException: Chunk 0 failed
 	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1736) ~[na:na]
 	... 3 common frames omitted
 ```
-the application code in question is very  boilerplate:
+the application code in question is very boilerplate:
 ```java
 public class ChunkWorker implements Runnable {
 	@Override
@@ -294,3 +294,7 @@ public class MyTaskService {
 }
 ```
 
+The copybook file leading to this error was accepted for binary and mixed DISPLA and  packed decilam copybook binary data generation by [basic-jrecord-dummydata](https://github.com/sergueik/springboot_study/tree/master/basic-jrecord-dummydata) project
+---
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

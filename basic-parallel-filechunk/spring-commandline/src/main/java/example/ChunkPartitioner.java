@@ -33,7 +33,7 @@ public class ChunkPartitioner {
 	private final long MIN_RECORDS = 10L;
 	private final long approxChunkSize;
 	private ICobolIOBuilder iCobolIOBuilder;
-	private String page="cp037";
+	private String page = "cp037"; // EBCDIC
 
 	public ChunkPartitioner(final String copybookPath, final long fileSize, final long approxChunkSize) {
 		this.copybookPath = copybookPath;
@@ -51,18 +51,14 @@ public class ChunkPartitioner {
 	List<FileChunk> partitionFile() throws IOException {
 
 		List<FileChunk> chunks = new ArrayList<>();
+		page = "utf8";
 		log.info("instantiate Cobol IO builder with {} ", copybookPath);
-		// NOTE: no .setCopybookFormat(Constants.FMT_FREE)
-		// NOTE: no .setDialect(ICopybookDialects.FMT_MAINFRAME)
-		iCobolIOBuilder = JRecordInterface1.COBOL.newIOBuilder(copybookPath)
-				.setFileOrganization(IFileStructureConstants.IO_FIXED_LENGTH).setFont(page); // EBCDIC
-
-		/*
-		 * ICobolIOBuilder ioBuilder = CopybookLoaderFactory.getInstance()
-		 * .getCobolIOBuilder(copybookFile.toString())
-		 * .setFileOrganization(Constants.IO_FIXED_LENGTH) .setFont("cp037");
-		 */
-
+		iCobolIOBuilder = JRecordInterface1.COBOL.newIOBuilder(copybookPath).setDialect(ICopybookDialects.FMT_MAINFRAME)
+				// .setCopybookFormat(Constants.FMT_FREE)
+				.setFileOrganization(Constants.IO_FIXED_LENGTH).setFont(page);
+		// NOTE: the last call is ignored
+		// NOTE: the unit tests are non existent in cb2xml
+		// lack of tests is not a badge of honor — it’s historical debt.
 		LayoutDetail layoutDetail = iCobolIOBuilder.getLayout();
 		if (layoutDetail.getRecordCount() == 0) {
 			throw new IllegalStateException(String.format("Copybook %s defines no records", copybookPath));

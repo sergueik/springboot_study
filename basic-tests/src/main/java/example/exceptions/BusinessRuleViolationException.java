@@ -13,6 +13,10 @@ public class BusinessRuleViolationException extends RuntimeException {
 		this.errors = errors;
 	}
 
+	// If we find multiple errors, and want to return all violations to the client
+	// rather than falling into a chatty type of engagement
+	// we can leverage the errors array extension to include details
+	// on all applicable errors for the associated problem type
 	public List<BusinessError> getErrors() {
 		return errors;
 	}
