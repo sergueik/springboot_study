@@ -1,0 +1,23 @@
+digraph ci_workflow {
+  rankdir=LR;
+  node [shape=box, style=rounded];
+
+  POM     [label="Copy / Pull POM"];
+  SYNC    [label="Sync Dependencies\n(mvn go-offline)"];
+  BUILD   [label="Build (offline)"];
+  TEST    [label="Test (offline)"];
+  DEPLOY  [label="Deploy (offline)"];
+
+  subgraph cluster_timeout {
+    label = "Timeout Guard (e.g. 7 minutes)";
+    style = dashed;
+    color = gray;
+
+    SYNC;
+  }
+
+  POM -> SYNC;
+  SYNC -> BUILD;
+  BUILD -> TEST;
+  TEST -> DEPLOY;
+}

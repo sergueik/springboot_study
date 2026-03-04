@@ -231,6 +231,101 @@ Ask for **reasoning**: when advice is **good** or **bad**, ask **why**, **read**
 ### See Also
   * [apache maven wrapper](https://maven.apache.org/tools/wrapper/)
   * [usage](https://maven.apache.org/tools/wrapper/maven-wrapper-plugin/usage.html)
+
+### Solution
+
+![Flow](https://github.com/sergueik/springboot_study/blob/master/basic-bootstrap-check/screenshots/flow.png)
+
+
+By applying the same discipline used in multi-stage Dockerfile optimization, we can significantly improve the reliability and predictability of our GitHub Actions workflows.
+
+Separating dependency synchronization from build, test, and deploy phases transforms the pipeline into a controlled, deterministic process. Network-sensitive steps are isolated and time-bounded, while compute-only steps remain fast and stable.
+
+This approach reduces unexpected CI failures, shortens feedback loops, and increases confidence in every commit. In effect, we are reusing proven container optimization principles to make our CI pipeline more resilient, more transparent, and easier to operate at scale.
+
+Outcome: higher build success rates, clearer diagnostics, and a workflow architecture that reflects engineering best practices rather than environmental luck.
+
+```yaml
+# GitHub Actions: Step-Level Timeout for Maven Dependency Sync
+
+GitHub Actions allows imposing a timeout on an individual step using:
+
+    timeout-minutes:
+
+This is supported natively and documented behavior.
+It prevents long-hanging operations (for example Maven downloads behind a firewall)
+from blocking the entire CI job for up to 1 hour.
+
+This pattern isolates the risky network phase from build/test/deploy.
+
+---
+
+## Pipeline Design
+
+Phases:
+
+1. Copy / inspect raw pom.xml
+2. Sync dependencies (with strict timeout)
+3. Build (offline)
+4. Test (offline)
+5. Deploy (offline)
+
+Only step #2 is allowed to fail quickly.
+
+---
+
+## Example Workflow (copyable)
+
+```yaml
+name: Maven CI with Step Timeout
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60   # global safety net
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 1: Copy / inspect POM only
+      - name: Show pom.xml
+        run: |
+          echo "==== pom.xml ===="
+          cat pom.xml
+
+      # Step 2: Dependency sync with strict timeout
+      - name: Sync Maven dependencies (timeout protected)
+        timeout-minutes: 7
+        env:
+          MAVEN_OPTS: >
+            -Dmaven.wagon.http.retryHandler.count=2
+            -Dmaven.wagon.http.timeout=20000
+            -Dmaven.wagon.httpconnectionManager.ttlSeconds=30
+        run: |
+          echo "Prefetching dependencies..."
+          mvn -B dependency:go-offline -U
+
+      # Step 3: Build offline
+      - name: Build (offline)
+        run: |
+          mvn -B clean compile -o
+
+      # Step 4: Test offline
+      - name: Test (offline)
+        run: |
+          mvn -B test -o
+
+      # Step 5: Package / Deploy offline
+      - name: Package
+        run: |
+          mvn -B package -o
+```
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
