@@ -41,6 +41,23 @@ echo Wrapper cache cleared.
 echo Running mvnw.cmd -v ...
 call mvnw.cmd -v
 
+
+:: Examine wrapper version, compare with distributionUrl 
+for /f "tokens=2 delims==" %%A in ('findstr distributionUrl .mvn\wrapper\maven-wrapper.properties') do set URL=%%A
+for %%B in (%URL%) do set DIST=%%~nB
+set DIST=%DIST:apache-maven-=%
+set DIST=%DIST:-bin=%
+
+for /f "tokens=3" %%V in ('mvnw.cmd -v ^| findstr "Apache Maven"') do set MVNVER=%%V
+
+if "%DIST%"=="%MVNVER%" (
+  echo OK: Maven Wrapper version matches %MVNVER%
+  REM exit /b 0
+) else (
+  echo Mismatch: wrapper=%DIST% runtime=%MVNVER%
+  exit /b 1
+)
+
 :: Inspect distribution folder
 if exist "%USERPROFILE%\.m2\wrapper\dists\apache-maven-*" (
     dir "%USERPROFILE%\.m2\wrapper\dists\apache-maven-*"

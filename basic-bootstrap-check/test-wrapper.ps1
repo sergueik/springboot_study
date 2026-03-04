@@ -27,8 +27,21 @@ if ($LASTEXITCODE -ne 0) {
     Write-Error "Maven Wrapper failed to bootstrap"
     exit 1
 }
+# 4. Examine wrapper version, compare with distributionUrl 
+$props = Get-Content ".mvn/wrapper/maven-wrapper.properties"
+$dist = ($props | Where-Object { $_ -match "^distributionUrl=" }) -replace ".*apache-maven-([0-9.]+)-bin.*", '$1'
 
-# 4. Inspect distribution folder
+$mvnOut = & .\mvnw.cmd -v 2>$null
+$mvnVer = ($mvnOut | Select-String "Apache Maven") -replace "Apache Maven\s+([0-9.]+).*", '$1'
+
+if ($dist -eq $mvnVer) {
+    Write-Host "OK: Maven Wrapper version matches ($mvnVer)"
+    # exit 0
+} else {
+    Write-Error "Mismatch: wrapper=$dist runtime=$mvnVer"
+    exit 1
+}
+# 5. Inspect distribution folder
 $dist = "$env:USERPROFILE\.m2\wrapper\dists\apache-maven-*"
 if (Test-Path $dist) {
     Get-ChildItem $dist -Recurse | Select-Object FullName
@@ -36,7 +49,7 @@ if (Test-Path $dist) {
     Write-Host "No distributions found!"
 }
 
-# 5. Optionally purge again
+# 6. Optionally purge again
 # NOTE |out-null is not sufficient
 # NOTE *> $null also does not work
 Remove-Item -Recurse -Force "$env:USERPROFILE\.m2\wrapper\dists\*" -ErrorAction SilentlyContinue *> $null
@@ -46,7 +59,6 @@ Remove-Item -Recurse -Force "$env:USERPROFILE\.m2\wrapper\dists\*" -ErrorAction 
 # Multiple streams – PowerShell has 6+ output streams (Success, Error, Warning, Verbose, Debug, Information). 
 # Redirecting one or two (Out-Null or *> $null) often isn’t enough.
 
-Host auto-forma
 $null = Remove-Item -Recurse -Force "$env:USERPROFILE\.m2\wrapper\dists\*" -ErrorAction SilentlyContinue
 Write-Host "Final purge done."
 
