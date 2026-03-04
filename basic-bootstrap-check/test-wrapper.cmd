@@ -43,7 +43,8 @@ call mvnw.cmd -v
 
 
 :: Examine wrapper version, compare with distributionUrl 
-REM --- Extract version from distributionUrl ---
+
+REM --- Read distributionUrl ---
 for /f "tokens=2 delims==" %%A in ('findstr "^distributionUrl=" .mvn\wrapper\maven-wrapper.properties') do set URL=%%A
 
 for %%B in (%URL%) do set FILE=%%~nB
@@ -51,32 +52,19 @@ set DIST=!FILE:apache-maven-=!
 set DIST=!DIST:-bin=!
 
 REM --- Extract runtime Maven version ---
-for /f "tokens=3" %%V in ('mvnw.cmd -v ^| findstr "^Apache Maven"') do set MVNVER=%%V
+REM
+REM --- Extract runtime Maven version (ONLY first line) ---
+for /f "tokens=3" %%V in ('mvnw.cmd -v ^| findstr -vc:"Maven home:" ^| findstr /Bc:"Apache Maven"') do set MVNVER=%%V
 
 REM --- Compare ---
 if "!DIST!"=="!MVNVER!" (
   echo OK: Maven Wrapper version matches !MVNVER!
-  exit /b 0
+  REM exit /b 0
 ) else (
   echo Mismatch: wrapper=!DIST! runtime=!MVNVER!
   exit /b 1
 )
 
-
-for /f "tokens=2 delims==" %%A in ('findstr distributionUrl .mvn\wrapper\maven-wrapper.properties') do set URL=%%A
-for %%B in (%URL%) do set DIST=%%~nB
-set DIST=%DIST:apache-maven-=%
-set DIST=%DIST:-bin=%
-
-for /f "tokens=3" %%V in ('mvnw.cmd -v ^| findstr "Apache Maven"') do set MVNVER=%%V
-
-if "%DIST%"=="%MVNVER%" (
-  echo OK: Maven Wrapper version matches %MVNVER%
-  REM exit /b 0
-) else (
-  echo Mismatch: wrapper=%DIST% runtime=%MVNVER%
-  exit /b 1
-)
 
 :: Inspect distribution folder
 if exist "%USERPROFILE%\.m2\wrapper\dists\apache-maven-*" (
