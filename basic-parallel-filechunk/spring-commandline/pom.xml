@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>filechunk-commandline</artifactId>
-  <version>0.6.1-SNAPSHOT</version>
+  <version>0.7.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>filechunk-commandline</name>
   <description>Demo Springboot Commandline Runner with filechunk</description>
@@ -16,18 +16,14 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <finalName>${project.groupId}.${project.artifactId}</finalName>
-    <java.version>11</java.version>
-    <cb2xml.version>1.01.08</cb2xml.version>
     <gson.version>2.8.9</gson.version>
-    <hamcrest-all.version>1.3</hamcrest-all.version>
+    <java.version>11</java.version>
+    <finalName>${project.groupId}.${project.artifactId}</finalName>
     <jrecord.version>0.93.3</jrecord.version>
-    <junit-platform.version>1.12.1</junit-platform.version>
-    <junit.version>5.12.1</junit.version>
+    <cb2xml.version>1.01.08</cb2xml.version>
     <log4j-core.version>2.20.0</log4j-core.version>
     <slf4j.version>1.7.36</slf4j.version>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
-    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
   </properties>
   <dependencies>
     <dependency>
@@ -41,12 +37,6 @@
       <version>${jrecord.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-all</artifactId>
-      <version>${hamcrest-all.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>${gson.version}</version>
@@ -58,10 +48,12 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
@@ -72,28 +64,6 @@
           <artifactId>junit-vintage-engine</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>${junit.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-params</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.platform</groupId>
-      <artifactId>junit-platform-launcher</artifactId>
-      <version>${junit-platform.version}</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
@@ -114,21 +84,6 @@
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
-        </configuration>
-      </plugin>
-      <!-- 
-       NOTE: error in running test: [ERROR] java.lang.NoSuchMethodError: 'void org.junit.platform.commons.util.CollectionUtils.forEachInReverseOrder(java.util.List, java.util.function.Consumer)'
-      -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${maven-surefire-plugin.version}</version>
-        <configuration>
-          <includes>
-            <include>**/*Test.java</include>
-          </includes>
-          <useModulePath>false</useModulePath>
-          <trimStackTrace>false</trimStackTrace>
         </configuration>
       </plugin>
     </plugins>

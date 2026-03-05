@@ -19,6 +19,8 @@ import net.sf.JRecord.Common.IFileStructureConstants;
 import net.sf.JRecord.Numeric.ICopybookDialects;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
@@ -28,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -42,12 +45,34 @@ import org.junit.jupiter.api.DisplayName;
 class CopybookParserTest {
 
 	private ICobolIOBuilder iCobolIOBuilder = null;
-	private String copybookPath = null;
+
+	// @formatter:off
+	public static String[] badCopybooks() {
+		return new String[] { 
+			"src/test/resources/copybooks/bad/bad-88-placement.cbl",
+			"src/test/resources/copybooks/bad/example-dc3aa31c.cbl",
+			"src/test/resources/copybooks/bad/garbage-token.cbl",
+			"src/test/resources/copybooks/bad/comp3-fields.cbl",
+			"src/test/resources/copybooks/bad/occurs-array.cbl",
+			"src/test/resources/copybooks/bad/simple-fixed.cbl",
+			"src/test/resources/copybooks/bad/with-88-levels.cbl",
+			"src/test/resources/copybooks/bad/missing-level.cbl"
+		};
+	}
+	// @formatter:on
+
+	// @formatter:off
+	public static Stream<String> goodCopybooksDataStream() {
+		return Stream.of(
+			"src/test/resources/copybooks/good/example.cbl"
+		);
+	}
+	// @formatter:on
 
 	@DisplayName("Fails on Simple crafted Copybook With the number not88 Error")
-	@Test
-	public void test1() {
-		copybookPath = "src/test/resources/copybooks/bad/example-dc3aa31c.cbl";
+	@ParameterizedTest
+	@MethodSource("badCopybooks")
+	void test1(final String copybookPath) {
 
 		iCobolIOBuilder = JRecordInterface1.COBOL.newIOBuilder(copybookPath).setDialect(ICopybookDialects.FMT_MAINFRAME)
 				.setFileOrganization(Constants.IO_FIXED_LENGTH).setFont("utf8");
@@ -58,9 +83,9 @@ class CopybookParserTest {
 	}
 
 	@DisplayName("Reads Copybook Without Error")
-	@Test
-	void test2() throws IOException {
-		copybookPath = "src/test/resources/copybooks/good/example.cbl";
+	@ParameterizedTest
+	@MethodSource("goodCopybooksDataStream")
+	void test2(final String copybookPath) {
 
 		iCobolIOBuilder = JRecordInterface1.COBOL.newIOBuilder(copybookPath).setDialect(ICopybookDialects.FMT_MAINFRAME)
 				.setFileOrganization(Constants.IO_FIXED_LENGTH).setFont("utf8");
