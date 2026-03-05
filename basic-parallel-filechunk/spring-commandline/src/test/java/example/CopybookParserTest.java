@@ -13,8 +13,11 @@ import net.sf.JRecord.Common.Constants;
 import net.sf.JRecord.Numeric.ICopybookDialects;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.stream.Stream;
 import java.util.Arrays;
@@ -26,28 +29,35 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SpringBootTest
 class CopybookParserTest {
+	@Value("${example.baseBadPath}")
+	private String baseBadPath;
 
-	private static final String BASE_BAD_PATH = "src/test/resources/copybooks/bad/";
-	private static final String BASE_GOOD_PATH = "src/test/resources/copybooks/good/";
+	@Value("${example.baseGoodPath}")
+	private String baseGoodPath;
+
+	@Value("#{'${example.badCopybooks}'.split(',')}")
+	private String[] badCopybooks;
+
+	@Value("#{'${example.goodCopybooks}'.split(',')}")
+	private String[] goodCopybooks;
 
 	private ICobolIOBuilder iCobolIOBuilder = null;
 
 	// NOTE: Maintains deterministic order — important for reproducible tests
-	public final static String[] badCopybooks() {
+	public final String[] badCopybooks() {
 
-		final String[] fileNames = new String[] { "bad-88-placement.cbl", "example-dc3aa31c.cbl", "garbage-token.cbl",
-				"comp3-fields.cbl", "occurs-array.cbl", "simple-fixed.cbl", "with-88-levels.cbl", "missing-level.cbl" };
-		String[] filePaths = new String[fileNames.length];
-		for (int cnt = 0; cnt < fileNames.length; cnt++) {
-			filePaths[cnt] = BASE_BAD_PATH + fileNames[cnt];
+		String[] filePaths = new String[badCopybooks.length];
+		for (int cnt = 0; cnt < badCopybooks.length; cnt++) {
+			filePaths[cnt] = baseBadPath + badCopybooks[cnt];
 		}
 		return filePaths;
 	}
 
-	public static Stream<String> goodCopybooks() {
-		List<String> files = Arrays.asList("example.cbl");
-		return files.stream().map(fileName -> BASE_GOOD_PATH + fileName);
+	public Stream<String> goodCopybooks() {
+		return Arrays.stream(goodCopybooks).map(fileName -> baseGoodPath + fileName);
 	}
 
 	@DisplayName("Fails on Simple crafted Copybook With the number not88 Error")
