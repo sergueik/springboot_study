@@ -310,6 +310,22 @@ copybooks/
     ├── garbage-token.cbl
     └── bad-88-placement.cbl
 ```
+
+
+| Property         | Description                       | Typical Use                                   | Safe in Spring? |
+|-----------------|-----------------------------------|----------------------------------------------|----------------|
+| `user.dir`       | Current working directory of JVM  | Resolving project-relative paths, source files | ✅ Yes |
+| `java.io.tmpdir` | Default temporary directory       | Writing temporary files in tests or runtime   | ✅ Yes |
+| `user.home`      | User’s home directory             | Storing user-specific configs or cache        | ✅ Yes |
+| `os.name`        | Operating system name             | OS-dependent logic or logging                 | ✅ Yes |
+| `os.version`     | OS version                        | OS-dependent logic                            | ✅ Yes |
+| `os.arch`        | OS architecture (x86, amd64, etc.)| Platform-specific logic                        | ✅ Yes |
+| `java.version`   | JVM version                       | Conditional logic based on JDK                | ✅ Yes |
+| `java.home`      | Path to JVM installation          | Locating tools or runtime binaries            | ✅ Yes |
+| `file.separator` | File path separator (`/` or `\`) | Constructing OS-independent paths            | ✅ Yes |
+| `path.separator` | Path list separator (`:` or `;`) | Constructing classpaths or PATH-like variables | ✅ Yes |
+| `line.separator` | Line separator (`\n`, `\r\n`)   | Generating platform-correct text files        | ✅ Yes |
+
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
