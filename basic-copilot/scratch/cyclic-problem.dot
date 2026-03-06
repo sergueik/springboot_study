@@ -1,0 +1,24 @@
+digraph DependencyLoopEscapeZebra {
+    rankdir=TB;
+    node [style=filled, fontname="Arial"];
+
+    // Events with zebra shading
+    E1 [label="Event: NoClassDefFoundError", shape=box, fillcolor=lightcoral];     // medium red
+    E2 [label="Event: NoSuchMethodError", shape=box, fillcolor=indianred1];        // darker red
+
+    // Cures
+    C1 [label="Cure: favor 'new'", shape=ellipse, fillcolor=cyan];
+    C2 [label="Cure: favor 'old'", shape=ellipse, fillcolor=lightblue];
+
+    // Escape
+    Escape [label="Reassess constraints", shape=box, fillcolor=lightgreen, fontcolor=black];
+
+    // Loop edges
+    E1 -> C1;
+    C1 -> E2;
+    E2 -> C2;
+    C2 -> E1 [label="...", style=dashed];
+
+    // Escape arrow
+    C2 -> Escape [color=green, penwidth=3];
+}
