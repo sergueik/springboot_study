@@ -17,3 +17,16 @@ Psychologically, the situation has a strong __Edge of Tomorrow__ feeling: while 
 Instead, one can pause with a simple question: *“Is there really no better approach?”*
 
 By carefully guiding the agent (and oneself) to __detect__ the endless loop, weigh __risks__ and __constraints__, and consider __constructive__ __exits__, the human-natural solution — __replace__ the component, __reassess__ constraints, and explore __boundaries__ — becomes the __`higher-value__ __strategy__, transforming repeated iteration into insight-driven progress.
+
+### Note
+
+While reviewing technical solutions and identifying the precise cause of a failure can be complex, spotting repetition of the same failure pattern is comparatively easy.
+$
+When identical error signatures reappear across iterations, it is an immediate indication that the troubleshooting process has stopped making progress and is likely exploring the same solution space repeatedly.
+
+Recognizing this early allows engineers to step back, reassess assumptions, and consider alternative approaches instead of continuing non-converging adjustments. 
+
+
+This low-cost detection saves one's mental cycles, allowing a shift from repeated troubleshooting attempts to deeper analysis of the underlying constraints.
+
+Words like “but”, “also”, “too”, “however”, “actually” often act as logical speed bumps.
