@@ -2,6 +2,36 @@
 
 this directory contains subject application and tests from the __API Testing an Application with Karate__ [pluralsight course](https://app.pluralsight.com/library/courses/karate-api-testing-application), amended to lower versions of Karate Framework and Java
 
+### Background
+
+Karate is an open-source test automation framework built on Java and JavaScript, yet designed to remove the entry barriers of either language. It uniquely integrates API testing, UI automation, scientifically accurate performance testing (via Gatling), and service virtualization (mocking) into a single cohesive tool. Inspired by Cucumber, Karate employs a simple Gherkin
+‑based syntax (`.feature` files) reminiscent of early BDD DSLs independently found in the Ruby ecosystem (`spec` files).
+Karate feature files achieve the same goals that spec-driven frameworks in Ruby, Puppet, or InSpec do: tests are understandable and even writable by domain experts without Java or JavaScript experience, making automation accessible.
+
+In the API testing domain, Karate deliberately abandons Cucumber’s full flexibility in favor of a “simple English,” precise scenario subset of Gherkin.
+
+*longer version*:
+
+In the API testing domain, Karate makes an important sacrifice by dropping Cucumber’s full flexibility in favor of a “simple English” precise formal scenario subset of Gherkin langage, naturally aligned with REST API testing. This eliminates the need for boilerplate Java plumbing code, making tests concise, readable, and maintainable without sacrificing clarity or expressiveness.
+
+For UI automation, Karate extends into Selenium-like capabilities, providing a DSL for waits, captures, Shadow DOM, iframe handling, file uploads/downloads, and visual verifications. This addresses all major modern web UI testing needs, from dynamic content synchronization to complex DOM manipulations, offering a comprehensive, low-code solution for both API and UI testing. 
+
+These features place Karate in the same league as advanced JavaScript-based frameworks like 
+* Playwright
+* Cypress
+* TestCafe
+* WebDriverIO
+
+but they also make it a clear productivity winner over classic pure Selenium, by reducing boilerplate, simplifying test maintenance, and providing richer built-in support for modern web UI challenges.
+
+
+Another standout aspect is Karate’s HTML page tree-view for step results and debugging, providing instant, clear, hierarchical visibility into every test step — a level of clarity and maintainability that most modern frameworks do not offer
+
+To get similar functionality with tools like TestNG, SpecFlow, Cucumber, or Selenium, teams typically add external reporting add‑ons that require setup, configuration, and often build tool/plugin work:
+* Allure Report – requires explicit setup
+* ExtentReports
+Combined with its scientifically accurate performance testing, Karate offers a complete, low-code automation ecosystem that is robust, accessible, and highly recognized by its community.
+
 ### Usage
 
 if seeing

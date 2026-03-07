@@ -206,3 +206,13 @@ So the good steamroller developer:
 
 solves problems before they become stories — but still knows which road should be paved.
 
+One important nuance
+
+The steamroller developer acts quickly not because they skip thinking,
+but because the thinking was already done in previous battles.
+
+The choice of a steamroller over a bicycle is a privilege of the experienced engineer - is a privilege earned through experience
+
+In "Casino", Sam "Ace" Rostein  explains why Nicky Santoro acts immediately:
+he has already fought at every level of escalation.
+Experience gives him the authority to act without hesitation.

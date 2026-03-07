@@ -2,6 +2,117 @@
 
 replica of [basic Karate tesst](https://github.com/KaterinaUK/automated_API_with_Karate) modified with simpler bootstrap Java code and `build.gradle` from [Karate Gradle Test](https://github.com/mbzebra/karategradletest)
 with `https://jsonplaceholder.typicode.com/` used as system under test.
+
+### Background
+
+
+Karate is an open-source API, performance, and UI test automation framework built on Java and JavaScript, yet designed to remove the entry barriers of either language. It uniquely integrates API testing, UI automation, scientifically accurate performance testing (via Gatling), and service virtualization (mocking) into a single cohesive tool. Inspired by Cucumber, Karate employs a simple Gherkin - based syntax (`.feature` files) reminiscent of early BDD DSLs independently found in the Ruby ecosystem (`spec` files).
+Karate feature files achieve the same goals that spec-driven frameworks in Ruby, Puppet, or InSpec do: tests are understandable and even writable by domain experts without Java or JavaScript experience, making automation accessible.
+
+Karate should not be viewed as Cucumber under a different brand, but rather as a specialized toolset designed specifically for API testing.
+
+In the API testing domain, Karate deliberately abandons Cucumber’s full flexibility in favor of a “simple English,” precise scenario subset of Gherkin`
+
+This leads to another advantage: Karate keeps HTTP requests, data and test logic in a single script, with optional embedded JavaScript for more complex scenarios, improving readability and maintainability
+
+```cucumber
+* def payload =
+"""
+{
+  sub: 'test-user',
+  role: 'admin',
+  iss: 'test-suite'
+}
+"""
+
+* def secret = 'dummy-secret'
+
+* def token = karate.jwtSign(payload, secret)
+
+Given url 'https://httpbin.org/something'
+And header Authorization = 'Bearer ' + token
+When method get
+Then status 200
+```
+or
+```cucumber
+Feature: Inline JWT generation demo
+
+Scenario: create a fake JWT with inline JS
+    # define payload
+    * def payload = { sub: 'test-user', role: 'admin', iss: 'karate-demo' }
+
+    # inline JS function to make a fake JWT
+    * def makeJwt =
+    """
+    function(payload){
+        function base64Encode(obj){
+            return java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(JSON.stringify(obj).getBytes('UTF-8'));
+        }
+        var header = { alg: 'HS256', typ: 'JWT' };
+        var token = base64Encode(header) + '.' + base64Encode(payload) + '.fake-signature';
+        return token;
+    }
+    """
+
+    # generate the token
+    * def token = makeJwt(payload)
+
+    # just print for demo
+    * print 'JWT:', token
+```
+*longer version*:
+
+Karate makes an important sacrifice by dropping Cucumber’s full flexibilityi — originally valuable for acceptance tests describing complex user journeys — in favor of a precise “simple-English” subset of the Gherkin language that aligns naturally with REST API testing
+This fully eliminates the need for boilerplate Java "step definitions" plumbing code:
+
+```cucumber
+@userStory("U02")
+Feature: Login and Logout
+
+  @scenarioID("U02-TS01")
+  Scenario: Login with valid credentials
+    When the user logs in with username "john" and password "secret123"
+    Then the login should succeed
+```
+```java
+   private String username;
+    private String password;
+    private boolean loginResult;
+
+    @When("^the user logs in with username \"([^\"]*)\" and password \"([^\"]*)\"$")
+    public void login_with_credentials(String username, String password) throws Throwable {
+        this.username = username;
+...
+```
+* Karate equivalent - note: the regex step-definition plumbing is gone
+
+```
+Scenario: Login with valid credentials
+  Given url baseUrl + '/login'
+  And request { username: 'john', password: 'secret123' }
+  When method post
+  Then status 200
+```
+making tests concise, readable, and maintainable without sacrificing clarity or expressiveness.
+For UI automation, Karate extends into Selenium-like capabilities, providing a DSL for waits, captures, Shadow DOM, iframe handling, file uploads/downloads, and visual verifications. This addresses all major modern web UI testing needs, from dynamic content synchronization to complex DOM manipulations, offering a comprehensive, low-code solution for both API and UI testing. 
+
+These features place Karate in the same league as advanced JavaScript-based frameworks like 
+* Playwright
+* Cypress
+* TestCafe
+* WebDriverIO
+
+but they also make it a clear productivity winner over classic pure Selenium, by reducing boilerplate, simplifying test maintenance, and providing richer built-in support for modern web UI challenges.
+
+
+Another standout aspect is Karate’s HTML page tree-view for step results and debugging, providing instant, clear, hierarchical visibility into every test step — a level of clarity and maintainability that most modern frameworks do not offer
+
+To get similar functionality with tools like TestNG, SpecFlow, Cucumber, or Selenium, teams typically add external reporting add‑ons that require setup, configuration, and often build tool/plugin work:
+* Allure Report – requires explicit setup
+* ExtentReports
+Combined with its scientifically accurate performance testing, Karate offers a complete, low-code automation ecosystem that is robust, accessible, and highly recognized by its community.
+
 ### Usage
 
 * run with maven (standalone run and run with gradle are alternatives)
@@ -2518,6 +2629,7 @@ build/karate-reports/res/vis.min.js
   * [docker image](https://hub.docker.com/r/ptrthomas/karate-chrome) with X server (XVFB), VNC, Google Chrome
 
   * [jenkins cucumber reports plugin](https://plugins.jenkins.io/cucumber-reports/)
+  * [Karate and Cucumber Frameworks: A Comparative Study](https://milestone.tech/tips-and-tricks/karate-framework-and-cucumber-framework-a-comparative-study)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
