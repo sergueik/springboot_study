@@ -49,6 +49,14 @@ while :; do
     (.Name + ": starting")
   ')
 
+  starting_warn=$(printf '%s\n' "$containers" | jq -r '
+    select(.State.Health.Status=="starting") |
+    select(.RestartCount > 0) |
+    select(.State.Health.Log | length > 0) |
+    select(.State.Health.Log[-1].ExitCode != 0) |
+    (.Name + ": starting after unhealthy (restartCount=" + (.RestartCount|tostring) + ")")
+  ')  
+
   # Policy for gating (domain-specific)
   exited_gate=$(printf '%s\n' "$containers" | jq -r '
     select(.State.Status=="exited") |
@@ -78,6 +86,12 @@ while :; do
         echo "Unhealthy containers:"
         printf '%s\n' "$unhealthy_all"
       fi
+      
+      if [ -n "$starting_warn" ]; then
+        echo ""
+        echo "Warning: restarting after unhealthy:"
+        printf '%s\n' "$starting_warn"
+      fi      
     else
       if [ "$exited_gate_count" -gt 0 ]; then
         echo "$exited_gate" | sed -n '1p'
