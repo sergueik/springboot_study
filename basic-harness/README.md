@@ -1043,6 +1043,13 @@ ready and the core service wasn’t meaningfully improved.
 
 Harness bets boldly on redefining CI/CD, reminiscent of Kaleidoscope’s card shark — clever, high stakes, but with no marked deck to guarantee success.
 
+>NOTE [Kaleidoscope](https://en.wikipedia.org/wiki/Kaleidoscope_(1966_film)) is a 1966 movie about a gambler criminal who uses [steganography](https://en.wikipedia.org/wiki/Steganography) hidden markings on card backs — to fix high-stakes poker games. 
+
+One may occasionally get the faint smell of “steganography”
+when learning the Harness terminology. Another parallel is the gambler criminal's trick only works if every deck in play is marked his way, so he has to operate at global scale. A similar nuance appears here: 
+Kaleidoscope's gambler’s trick works only if every deck is marked his way - 
+once a system introduces its own dense terminology and abstractions - private taxonomy or encoded terminology only works if everything in the environment follows it.
+
 Harness’s contrarian strategy may offer unique benefits, but the “invent-the-wheel” nature introduces adoption and
 operational risk — especially for clients recently migrated from other cloud automation tools.
 
