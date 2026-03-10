@@ -1,0 +1,650 @@
+{
+  "conference": {
+    "name": "Spring I/O",
+    "year": 2025,
+    "dates": ["2025-05-22", "2025-05-23"],
+    "location": "Barcelona, Fira de Barcelona"
+  },
+  "sessions": [
+    {
+      "day": "2025-05-22",
+      "time": "08:00",
+      "title": "Registration",
+      "type": "logistics",
+      "speakers": [],
+      "room": "General"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "09:00",
+      "title": "Welcome",
+      "type": "opening",
+      "speakers": ["Sergi Almar"],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "09:30",
+      "title": "Keynote",
+      "type": "keynote",
+      "speakers": [],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "10:30",
+      "title": "Coffee break",
+      "type": "break",
+      "speakers": [],
+      "room": "General"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "11:00-11:50",
+      "title": "Demystifying Spring Boot Magic",
+      "type": "talk",
+      "speakers": ["Patrick Baumgartner"],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "11:00-11:50",
+      "title": "Real-World AI Patterns with Spring AI and Vaadin",
+      "type": "talk",
+      "speakers": ["Marcus Hellberg", "Thomas Vitale"],
+      "room": "Track 2 (Room 6)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "11:00-11:50",
+      "title": "Better Assertions with AssertJ",
+      "type": "talk",
+      "speakers": ["Tim te Beek"],
+      "room": "Track 3 (Room 5)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "11:00-11:50",
+      "title": "Code Once, Use Everywhere: Building Shared Libraries for Multiple Projects",
+      "type": "talk",
+      "speakers": ["Vadzim Prudnikau"],
+      "room": "Track 4 (Room 3)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "11:00-11:50",
+      "title": "Spring on Kubernetes best practices",
+      "type": "workshop",
+      "speakers": ["Neven Cvetkovic", "David Caron"],
+      "room": "Workshops 1 (Room 8)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "11:00-11:50",
+      "title": "Streamline Your Codebase: Automating Improvements with Error Prone",
+      "type": "workshop",
+      "speakers": ["Rick Ossendrijver"],
+      "room": "Workshops 2 (Room 4)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "12:00-12:50",
+      "title": "Hexagonal Architecture in Practice, Live Coding That Will Make Your Applications More Sustainable",
+      "type": "talk",
+      "speakers": ["Julien Topçu"],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "12:00-12:50",
+      "title": "Panta rhei: runtime configuration updates with Spring Boot",
+      "type": "talk",
+      "speakers": ["Joris Kuipers"],
+      "room": "Track 2 (Room 6)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "12:00-12:50",
+      "title": "Code Smarter, Not Harder: AI-Powered Dev Hacks for All",
+      "type": "talk",
+      "speakers": ["Dan Vega"],
+      "room": "Track 3 (Room 5)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "12:00-12:50",
+      "title": "Secure Java Applications against Quantum Threats",
+      "type": "talk",
+      "speakers": ["Ana Maria Mihalceanu"],
+      "room": "Track 4 (Room 3)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "13:00",
+      "title": "Lunch",
+      "type": "break",
+      "speakers": [],
+      "room": "General"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "14:00-14:50",
+      "title": "Top 10 Rest API Design Pitfalls",
+      "type": "talk",
+      "speakers": ["Victor Rentea"],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "14:00-14:50",
+      "title": "Four Approaches to Reducing Java Startup Time: AppCDS, Native Image, Project Leyden, CRaC",
+      "type": "talk",
+      "speakers": ["Pasha Finkelshteyn", "Catherine Edelveis"],
+      "room": "Track 2 (Room 6)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "14:00-14:50",
+      "title": "What Every Spring Developer Should Know About Jakarta EE",
+      "type": "talk",
+      "speakers": ["Ivar Grimstad"],
+      "room": "Track 3 (Room 5)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "14:00-14:50",
+      "title": "Spring for Apache Kafka the advanced features",
+      "type": "talk",
+      "speakers": ["Tim van Baarsen", "Kosta Chuturkov"],
+      "room": "Track 4 (Room 3)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "14:00-14:50",
+      "title": "Spring AI Essentials: Building Intelligent Applications with Generative AI",
+      "type": "workshop",
+      "speakers": ["Mark Pollack"],
+      "room": "Workshops 1 (Room 8)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "14:00-14:50",
+      "title": "Fake it until you `make it`. Integration Testing with Spring, Testcontainers and WireMock",
+      "type": "workshop",
+      "speakers": ["Oleg Nenashev", "Oleg Šelajev"],
+      "room": "Workshops 2 (Room 4)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "15:00-15:50",
+      "title": "Dependency Injection Revisited",
+      "type": "talk",
+      "speakers": ["Juergen Hoeller"],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "15:00-15:50",
+      "title": "Spring Debugger: A New Way To Demystify Spring Boot's Magic",
+      "type": "talk",
+      "speakers": ["Marco Behler"],
+      "room": "Track 2 (Room 6)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "15:00-15:50",
+      "title": "Event-Driven Architectures with Spring Modulith and AsyncAPI",
+      "type": "talk",
+      "speakers": ["Ivan Garcia Sainz-Aja"],
+      "room": "Track 3 (Room 5)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "15:00-15:50",
+      "title": "A cloud cost saving journey: Strategies to balance CPU for containerized JAVA workloads in K8s",
+      "type": "talk",
+      "speakers": ["Laurentiu Marinescu", "Ajith Ganesan"],
+      "room": "Track 4 (Room 3)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "16:00",
+      "title": "Coffee break",
+      "type": "break",
+      "speakers": [],
+      "room": "General"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "16:30-17:20",
+      "title": "Cause of Death: Spring Data JPA",
+      "type": "talk",
+      "speakers": ["Thorben Janssen"],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "16:30-17:20",
+      "title": "Virtual Threads, Structured Concurrency and Scoped Values: Putting it all together",
+      "type": "talk",
+      "speakers": ["Balkrishna Rawool"],
+      "room": "Track 2 (Room 6)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "16:30-17:20",
+      "title": "Practical Agentic RAG with SpringAI in Modern Enterprise Applications",
+      "type": "talk",
+      "speakers": ["Dan Dobrin"],
+      "room": "Track 3 (Room 5)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "16:30-17:20",
+      "title": "What's (new) with Spring Boot and Containers?",
+      "type": "talk",
+      "speakers": ["Matthias Haeussler", "Eva Panadero"],
+      "room": "Track 4 (Room 3)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "16:30-17:20",
+      "title": "Demystifying Spring Boot's auto-configuration magic",
+      "type": "workshop",
+      "speakers": ["Fabian Krüger", "Moritz Halbritter"],
+      "room": "Workshops 1 (Room 8)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "16:30-17:20",
+      "title": "Building Context-Aware Applications with Spring, Vector Searches, and Redis",
+      "type": "workshop",
+      "speakers": ["Brian Sam-Bodden", "Ricardo Ferreira"],
+      "room": "Workshops 2 (Room 4)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "17:30-18:20",
+      "title": "Authorization in Spring Security: permissions, roles and beyond",
+      "type": "talk",
+      "speakers": ["Daniel Garnier-Moiroux"],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "17:30-18:20",
+      "title": "Bring back the joy in web development with HTMX and Hypermedia-Driven Applications",
+      "type": "talk",
+      "speakers": ["Frederik Hahne"],
+      "room": "Track 2 (Room 6)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "17:30-18:20",
+      "title": "Building 12-Factor Spring Boot Applications: Simplicity, Scalability, and Best Practices",
+      "type": "talk",
+      "speakers": ["Andrew Fawcett"],
+      "room": "Track 3 (Room 5)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "17:30-18:20",
+      "title": "Exposing the Interview Process",
+      "type": "talk",
+      "speakers": ["Taylor Desseyn"],
+      "room": "Track 4 (Room 3)"
+    },
+    {
+      "day": "2025-05-22",
+      "time": "18:30",
+      "title": "Beers & Networking",
+      "type": "networking",
+      "speakers": [],
+      "room": "General"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "09:00-09:05",
+      "title": "Java's 30th Anniversary Celebration",
+      "type": "celebration",
+      "speakers": [],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "09:05-09:50",
+      "title": "Null Safety in Java with JSpecify and NullAway",
+      "type": "talk",
+      "speakers": ["Sébastien Deleuze"],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "09:05-09:50",
+      "title": "The Ultimate Showdown of Database Migration Tools",
+      "type": "talk",
+      "speakers": ["Pasha Finkelshteyn", "Anton Arhipov"],
+      "room": "Track 2 (Room 6)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "09:05-09:50",
+      "title": "Can We Trust AI-Generated Code? Maybe We've Been Asking the Wrong Question.",
+      "type": "talk",
+      "speakers": ["Baruch Sadogursky"],
+      "room": "Track 3 (Room 5)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "09:05-09:50",
+      "title": "3 Dimensional Setup",
+      "type": "talk",
+      "speakers": ["Alessio Cecchin"],
+      "room": "Track 4 (Room 3)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "09:05-09:50",
+      "title": "How we develop and maintain our (12 year old) DDD app",
+      "type": "talk",
+      "speakers": ["Johan Doornenbal", "Dan Haywood"],
+      "room": "Track 5 (Room 8)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "09:05-09:50",
+      "title": "Spring AI Masterclass: Building Effective Agents and Exploring Model Context Protocol (MCP)",
+      "type": "workshop",
+      "speakers": ["Mark Pollack"],
+      "room": "Workshops 1 (Room 4)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "10:00-10:50",
+      "title": "Spring Data 4: Data Access Revisited",
+      "type": "talk",
+      "speakers": ["Mark Paluch"],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "10:00-10:50",
+      "title": "From Beans to Boot, Aspects to AI",
+      "type": "talk",
+      "speakers": ["Rod Johnson", "Juergen Hoeller", "Josh Long"],
+      "room": "Track 2 (Room 6)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "10:00-10:50",
+      "title": "Getting your application production-ready with Actuator",
+      "type": "talk",
+      "speakers": ["Michael Vitz"],
+      "room": "Track 3 (Room 5)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "10:00-10:50",
+      "title": "Improving Spring Boot test efficiency",
+      "type": "talk",
+      "speakers": ["Sergei Chernov"],
+      "room": "Track 4 (Room 3)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "10:00-10:50",
+      "title": "Handling 400000+ visitors at the world's largest physics lab (CERN)",
+      "type": "talk",
+      "speakers": ["Cristian Schuszter"],
+      "room": "Track 5 (Room 8)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "11:00",
+      "title": "Coffee break",
+      "type": "break",
+      "speakers": [],
+      "room": "General"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "11:30-12:20",
+      "title": "Modern Authentication Demystified: A Deep Dive into Spring Security's Latest Innovations",
+      "type": "talk",
+      "speakers": ["Andreas Falk"],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "11:30-12:20",
+      "title": "Effortless Spring Interface Clients with Auto-Configuration and Clients Registry",
+      "type": "talk",
+      "speakers": ["Olga Maciaszek-Sharma", "Rossen Stoyanchev"],
+      "room": "Track 2 (Room 6)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "11:30-12:20",
+      "title": "Say Goodbye to Microservices, Say Hello to Self-Contained Systems",
+      "type": "talk",
+      "speakers": ["Simon Martinelli"],
+      "room": "Track 3 (Room 5)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "11:30-12:20",
+      "title": "Taming Testing of AI apps",
+      "type": "talk",
+      "speakers": ["Alex Soto"],
+      "room": "Track 4 (Room 3)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "11:30-12:20",
+      "title": "Survival guide to continuously align and upgrade your Spring dependencies",
+      "type": "talk",
+      "speakers": ["Vicente Soriano", "Raquel Pau"],
+      "room": "Track 5 (Room 8)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "11:30-12:20",
+      "title": "Developing Cloud Applications with Spring Boot and Spring Cloud AWS",
+      "type": "workshop",
+      "speakers": ["Maciej Walkowiak", "Matej Nedić"],
+      "room": "Workshops 1 (Room 4)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "12:30-13:20",
+      "title": "From Single-Shot LLMs to Intelligent Agents: Building Scalable AI Systems with Spring AI and MCP",
+      "type": "talk",
+      "speakers": ["Christian Tzolov"],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "12:30-13:20",
+      "title": "Step up the performance game with Spring Boot and Project Leyden",
+      "type": "talk",
+      "speakers": ["Moritz Halbritter"],
+      "room": "Track 2 (Room 6)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "12:30-13:20",
+      "title": "El Rapido! Coding like Josh Long",
+      "type": "talk",
+      "speakers": ["Anton Arhipov"],
+      "room": "Track 3 (Room 5)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "12:30-13:20",
+      "title": "Making sense of Crypto Market Data in real time",
+      "type": "talk",
+      "speakers": ["Marcos Maia"],
+      "room": "Track 4 (Room 3)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "12:30-13:20",
+      "title": "Simplifying cloud-native app testing across environments",
+      "type": "talk",
+      "speakers": ["Mauricio Salatino", "Laurent Broudoux"],
+      "room": "Track 5 (Room 8)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "13:30",
+      "title": "Lunch",
+      "type": "break",
+      "speakers": [],
+      "room": "General"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "14:30-15:20",
+      "title": "Bootiful GraalVM",
+      "type": "talk",
+      "speakers": ["Thomas Wuerthinger", "Josh Long"],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "14:30-15:20",
+      "title": "Crafting a self-documenting Modular Monolith with DDD principles (theory not included)",
+      "type": "talk",
+      "speakers": ["Gregorio Palamà", "Mattia Ciriolo"],
+      "room": "Track 2 (Room 6)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "14:30-15:20",
+      "title": "Mastering Challenges of Cloud-Native Architectures With Spring",
+      "type": "talk",
+      "speakers": ["Timo Salm"],
+      "room": "Track 3 (Room 5)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "14:30-15:20",
+      "title": "Spring Cloud Function in action - how to leverage Serverless Java?",
+      "type": "talk",
+      "speakers": ["Maximilian Schellhorn", "Dennis Kieselhorst"],
+      "room": "Track 4 (Room 3)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "14:30-15:20",
+      "title": "Beyond REST: Using Full-Stack Signals for Real-Time Reactive UIs",
+      "type": "talk",
+      "speakers": ["Leif Åstrand"],
+      "room": "Track 5 (Room 8)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "14:30-15:20",
+      "title": "Next-Gen Security with Spring: Passkeys, Token Exchange, and Authorization Enhancements",
+      "type": "workshop",
+      "speakers": ["Andreas Falk"],
+      "room": "Workshops 1 (Room 4)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "15:30-16:20",
+      "title": "API Versioning In Spring Framework 7",
+      "type": "talk",
+      "speakers": ["Rossen Stoyanchev"],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "15:30-16:20",
+      "title": "Modular RAG Architectures with Java and Spring AI",
+      "type": "talk",
+      "speakers": ["Thomas Vitale"],
+      "room": "Track 2 (Room 6)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "15:30-16:20",
+      "title": "The simplest way to build resilient applications",
+      "type": "talk",
+      "speakers": ["Giselle van Dongen"],
+      "room": "Track 3 (Room 5)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "15:30-16:20",
+      "title": "Streamline Cloud-Native App Development Using CDEs",
+      "type": "talk",
+      "speakers": ["Saeed Zarinfam"],
+      "room": "Track 4 (Room 3)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "15:30-16:20",
+      "title": "Unlocking the unknowns: Cryptography Essentials for Spring Developers",
+      "type": "talk",
+      "speakers": ["Laurentiu Spilca"],
+      "room": "Track 5 (Room 8)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "16:30",
+      "title": "Coffee break",
+      "type": "break",
+      "speakers": [],
+      "room": "General"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "17:00-17:50",
+      "title": "Selling Maintainability",
+      "type": "talk",
+      "speakers": ["Tom Hombergs"],
+      "room": "Auditorium"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "17:00-17:50",
+      "title": "Next level Kotlin support in Spring Boot 4",
+      "type": "talk",
+      "speakers": ["Sébastien Deleuze"],
+      "room": "Track 2 (Room 6)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "17:00-17:50",
+      "title": "Life with Spring Boot inside a Monorepo",
+      "type": "talk",
+      "speakers": ["Fabio Mangione", "Peter Laird"],
+      "room": "Track 3 (Room 5)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "17:00-17:50",
+      "title": "You don't need Elasticsearch! Fuzzy Search with PostgreSQL and Spring Data",
+      "type": "talk",
+      "speakers": ["Thomas Gräfenstein"],
+      "room": "Track 4 (Room 3)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "17:00-17:50",
+      "title": "Putting your software on a low-carb diet",
+      "type": "talk",
+      "speakers": ["Jan Boonen"],
+      "room": "Track 5 (Room 8)"
+    },
+    {
+      "day": "2025-05-23",
+      "time": "18:00-18:15",
+      "title": "Closing",
+      "type": "closing",
+      "speakers": [],
+      "room": "Auditorium"
+    }
+  ]
+}
