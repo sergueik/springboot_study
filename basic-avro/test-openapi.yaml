@@ -1,0 +1,323 @@
+openapi: 3.0.3
+info:
+  title: Test API - Complete Type Coverage
+  version: 1.0.0
+  description: API for testing OpenAPI to Avro conversion with all supported types
+
+components:
+  schemas:
+    # ========================================
+    # ENUMS - String with restricted values
+    # ========================================
+    CardType:
+      type: string
+      enum:
+        - DEBIT
+        - CREDIT
+        - PREPAID
+      description: Credit card types (uppercase enum)
+
+    UserStatus:
+      type: string
+      enum:
+        - active
+        - inactive
+        - pending
+      description: User status (lowercase enum)
+
+    # ========================================
+    # PRIMITIVES - Basic types
+    # ========================================
+    Name:
+      type: object
+      properties:
+        first:
+          type: string
+          description: First name
+        middle:
+          type: string
+          description: Middle name (optional)
+        last:
+          type: string
+          description: Last name
+      required:
+        - first
+        - last
+
+    # ========================================
+    # STRINGS WITH PATTERNS - Validation patterns
+    # ========================================
+    ContactInfo:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+          pattern: '^\+?[1-9]\d{1,14}$'
+          description: Phone number in E.164 format
+        zipCode:
+          type: string
+          pattern: '^\d{5}(-\d{4})?$'
+          description: US ZIP code (5 digits or ZIP+4)
+        username:
+          type: string
+          pattern: '^[a-zA-Z0-9_-]{3,16}$'
+          description: Username (alphanumeric, 3-16 chars)
+      required:
+        - phoneNumber
+
+    # ========================================
+    # NUMBERS - Integer and floating point
+    # ========================================
+    Statistics:
+      type: object
+      properties:
+        totalUsers:
+          type: integer
+          format: int32
+          description: Total user count (int)
+        totalViews:
+          type: integer
+          format: int64
+          description: Total views (long)
+        averageRating:
+          type: number
+          format: float
+          description: Average rating (float)
+        revenue:
+          type: number
+          format: double
+          description: Total revenue (double)
+      required:
+        - totalUsers
+        - totalViews
+
+    # ========================================
+    # BOOLEANS - True/false values
+    # ========================================
+    UserFlags:
+      type: object
+      properties:
+        isActive:
+          type: boolean
+          description: User is active (required)
+        isVerified:
+          type: boolean
+          description: Email verified (optional)
+        isPremium:
+          type: boolean
+          description: Premium member (optional)
+        acceptsMarketing:
+          type: boolean
+          description: Accepts marketing emails
+      required:
+        - isActive
+        - acceptsMarketing
+
+    # ========================================
+    # STRINGS WITH FORMATS - Logical types
+    # ========================================
+    Timestamps:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: User ID as UUID
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        birthDate:
+          type: string
+          format: date
+          description: Birth date
+        website:
+          type: string
+          format: uri
+          description: Website URL
+        email:
+          type: string
+          format: email
+          description: Email address
+      required:
+        - userId
+        - createdAt
+
+    # ========================================
+    # ARRAYS - Collections
+    # ========================================
+    Coordinates:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+      required:
+        - latitude
+        - longitude
+
+    Location:
+      type: object
+      properties:
+        street:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        zip:
+          type: string
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+      required:
+        - street
+        - city
+        - country
+
+    # ========================================
+    # COMPLEX OBJECTS - Nested structures
+    # ========================================
+    CreditCard:
+      type: object
+      properties:
+        number:
+          type: string
+          description: Card number
+        cvv:
+          type: string
+          description: Security code (optional)
+        expiryMonth:
+          type: integer
+          format: int32
+          description: Expiry month (1-12)
+        expiryYear:
+          type: integer
+          format: int32
+          description: Expiry year
+        type:
+          $ref: '#/components/schemas/CardType'
+          description: Card type (enum reference)
+        isDefault:
+          type: boolean
+          description: Is default payment method
+      required:
+        - number
+        - expiryMonth
+        - expiryYear
+        - type
+        - isDefault
+
+    Job:
+      type: object
+      properties:
+        title:
+          type: string
+        company:
+          type: string
+        salary:
+          type: number
+          format: double
+        startDate:
+          type: string
+          format: date-time
+        isRemote:
+          type: boolean
+
+    # ========================================
+    # MAIN USER SCHEMA - All types combined
+    # ========================================
+    User:
+      type: object
+      properties:
+        # Strings
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+
+        # Booleans
+        flags:
+          $ref: '#/components/schemas/UserFlags'
+
+        # Numbers
+        age:
+          type: integer
+          format: int32
+        accountBalance:
+          type: number
+          format: double
+
+        # Enums
+        status:
+          $ref: '#/components/schemas/UserStatus'
+
+        # Nested objects
+        name:
+          $ref: '#/components/schemas/Name'
+        location:
+          $ref: '#/components/schemas/Location'
+        job:
+          $ref: '#/components/schemas/Job'
+        creditCard:
+          $ref: '#/components/schemas/CreditCard'
+
+        # Timestamps & formats
+        timestamps:
+          $ref: '#/components/schemas/Timestamps'
+
+        # Arrays
+        emails:
+          type: array
+          items:
+            type: string
+            format: email
+          description: List of email addresses
+
+        phoneNumbers:
+          type: array
+          items:
+            type: string
+          description: List of phone numbers
+
+        # Statistics
+        stats:
+          $ref: '#/components/schemas/Statistics'
+
+        # Contact information with patterns
+        contactInfo:
+          $ref: '#/components/schemas/ContactInfo'
+
+      required:
+        - username
+        - flags
+        - status
+        - name
+        - timestamps
+
+    # ========================================
+    # ROOT RESPONSE SCHEMA
+    # ========================================
+    ResultResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Request was successful
+        totalCount:
+          type: integer
+          format: int64
+          description: Total number of results
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+          description: List of users
+      required:
+        - success
+        - totalCount

@@ -1,0 +1,22 @@
+{
+  "type": "record",
+  "name": "User",
+  "namespace": "com.example",
+  "fields": [
+    {
+      "name": "id",
+      "type": "int"
+    },
+    {
+      "name": "username",
+      "type": "string"
+    },
+    {
+      "name": "followers",
+      "type": {
+        "type": "array",
+        "items": "string"
+      }
+    }
+  ]
+}
