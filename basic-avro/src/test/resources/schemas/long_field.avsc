@@ -1,0 +1,10 @@
+				{
+				  "type": "record",
+				  "name": "Test",
+				  "fields": [
+				    {"name": "views", "type": "long"},
+				    {"name": "rating", "type": "double"},
+				    {"name": "score", "type": "float"}
+				  ]
+				}
+

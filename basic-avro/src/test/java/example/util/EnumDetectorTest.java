@@ -5,91 +5,116 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.equalTo;
+
+import org.apache.avro.Schema;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 
 class EnumDetectorTest {
 
-    private EnumDetector detector;
-    private ObjectMapper objectMapper;
+	private EnumDetector detector;
+	private ObjectMapper objectMapper;
 
-    @BeforeEach
-    void setUp() {
-        detector = new EnumDetector();
-        objectMapper = new ObjectMapper();
-    }
+	@BeforeEach
+	void setUp() {
+		detector = new EnumDetector();
+		objectMapper = new ObjectMapper();
+	}
 
-    @Test
-    void shouldMatchValidEnumPatterns() {
-        // Enums with underscores
-        assertThat(detector.matches("STATUS_ACTIVE")).isTrue();
-        assertThat(detector.matches("USER_ROLE_ADMIN")).isTrue();
-        assertThat(detector.matches("TAG_PREMIUM")).isTrue();
-        assertThat(detector.matches("ERROR_CODE_404")).isTrue();
+	@DisplayName("should match valid enum patterns")
+	@Test
+	void test1() {
+		// Enums with underscores
+		assertThat(detector.matches("STATUS_ACTIVE"), is(true));
+		assertThat(detector.matches("USER_ROLE_ADMIN"), is(true));
+		assertThat(detector.matches("TAG_PREMIUM"), is(true));
+		assertThat(detector.matches("ERROR_CODE_404"), is(true));
 
-        // Enums without underscores
-        assertThat(detector.matches("OK")).isTrue();
-        assertThat(detector.matches("SUCCESS")).isTrue();
-        assertThat(detector.matches("ERROR")).isTrue();
-        assertThat(detector.matches("ACTIVE")).isTrue();
-        assertThat(detector.matches("PENDING")).isTrue();
-        assertThat(detector.matches("FAILED")).isTrue();
-    }
+		// Enums without underscores
+		assertThat(detector.matches("OK"), is(true));
+		assertThat(detector.matches("SUCCESS"), is(true));
+		assertThat(detector.matches("ERROR"), is(true));
+		assertThat(detector.matches("ACTIVE"), is(true));
+		assertThat(detector.matches("PENDING"), is(true));
+		assertThat(detector.matches("FAILED"), is(true));
+	}
 
-    @Test
-    void shouldNotMatchInvalidEnumPatterns() {
-        assertThat(detector.matches("lowercase")).isFalse();
-        assertThat(detector.matches("MixedCase")).isFalse();
-        assertThat(detector.matches("status_active")).isFalse();
-        assertThat(detector.matches("_STARTS_WITH_UNDERSCORE")).isFalse();
-        assertThat(detector.matches("ENDS_WITH_UNDERSCORE_")).isFalse();
-        assertThat(detector.matches("A")).isFalse();
-        assertThat(detector.matches("")).isFalse();
-        assertThat(detector.matches(null)).isFalse();
-    }
+	@DisplayName("should not match invalid enum patterns")
+	@Test
+	void test2() {
+		assertThat(detector.matches("lowercase"), is(false));
+		assertThat(detector.matches("MixedCase"), is(false));
+		assertThat(detector.matches("status_active"), is(false));
+		assertThat(detector.matches("_STARTS_WITH_UNDERSCORE"), is(false));
+		assertThat(detector.matches("ENDS_WITH_UNDERSCORE_"), is(false));
+		assertThat(detector.matches("A"), is(false));
+		assertThat(detector.matches(""), is(false));
+		assertThat(detector.matches(null), is(false));
+	}
 
-    @Test
-    void shouldMatchArrayOfEnums() throws Exception {
-        String json = "[\"STATUS_ACTIVE\", \"STATUS_INACTIVE\", \"STATUS_PENDING\"]";
-        JsonNode arrayNode = objectMapper.readTree(json);
-        assertThat(detector.matchesArray(arrayNode)).isTrue();
-    }
+	@DisplayName("should match array of enums")
+	@Test
+	void test3() throws Exception {
+		String json = "[\"STATUS_ACTIVE\", \"STATUS_INACTIVE\", \"STATUS_PENDING\"]";
+		JsonNode arrayNode = objectMapper.readTree(json);
+		assertThat(detector.matchesArray(arrayNode), is(true));
+	}
 
-    @Test
-    void shouldMatchArrayOfEnumsWithoutUnderscores() throws Exception {
-        String json = "[\"SUCCESS\", \"ERROR\", \"PENDING\", \"ACTIVE\"]";
-        JsonNode arrayNode = objectMapper.readTree(json);
-        assertThat(detector.matchesArray(arrayNode)).isTrue();
-    }
+	@DisplayName("should match array of enums without underscores")
+	@Test
+	void test4() throws Exception {
+		String json = "[\"SUCCESS\", \"ERROR\", \"PENDING\", \"ACTIVE\"]";
+		JsonNode arrayNode = objectMapper.readTree(json);
+		assertThat(detector.matchesArray(arrayNode), is(true));
+	}
 
-    @Test
-    void shouldNotMatchArrayWithMixedTypes() throws Exception {
-        String json = "[\"STATUS_ACTIVE\", \"lowercase\"]";
-        JsonNode arrayNode = objectMapper.readTree(json);
-        assertThat(detector.matchesArray(arrayNode)).isFalse();
-    }
+	@DisplayName("should not match array with mixed types")
+	@Test
+	void test5() throws Exception {
+		String json = "[\"STATUS_ACTIVE\", \"lowercase\"]";
+		JsonNode arrayNode = objectMapper.readTree(json);
+		assertThat(detector.matchesArray(arrayNode), is(false));
+	}
 
-    @Test
-    void shouldMatchArrayWithNullsAndEnums() throws Exception {
-        String json = "[\"TAG_PREMIUM\", null, \"TAG_VERIFIED\"]";
-        JsonNode arrayNode = objectMapper.readTree(json);
-        assertThat(detector.matchesArray(arrayNode)).isTrue();
-    }
+	@DisplayName("should match array with null and enums")
+	@Test
+	void test6() throws Exception {
+		String json = "[\"TAG_PREMIUM\", null, \"TAG_VERIFIED\"]";
+		JsonNode arrayNode = objectMapper.readTree(json);
+		assertThat(detector.matchesArray(arrayNode), is(true));
+	}
 
-    @Test
-    void shouldNotMatchEmptyArray() throws Exception {
-        String json = "[]";
-        JsonNode arrayNode = objectMapper.readTree(json);
-        assertThat(detector.matchesArray(arrayNode)).isFalse();
-    }
+	@DisplayName("should not match empty array")
+	@Test
+	void test7() throws Exception {
+		String json = "[]";
+		JsonNode arrayNode = objectMapper.readTree(json);
+		assertThat(detector.matchesArray(arrayNode), is(false));
+	}
 
-    @Test
-    void shouldReturnNullForLogicalType() {
-        assertThat(detector.getLogicalType()).isNull();
-    }
+	@DisplayName("should return null for logical type")
+	@Test
+	void test8() {
+		assertThat(detector.getLogicalType(), nullValue());
+	}
 
-    @Test
-    void shouldHaveModeratePriority() {
-        assertThat(detector.getPriority()).isGreaterThan(0);
-        assertThat(detector.getPriority()).isLessThan(new UuidDetector().getPriority());
-    }
+	@DisplayName("should have moderate priority")
+	@Test
+	void test9() {
+		assertThat(detector.getPriority(), greaterThan(0));
+		assertThat(detector.getPriority(), lessThan(new UuidDetector().getPriority()));
+	}
 }

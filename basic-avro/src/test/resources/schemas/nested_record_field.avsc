@@ -1,0 +1,17 @@
+				{
+				  "type": "record",
+				  "name": "Outer",
+				  "fields": [
+				    {
+				      "name": "inner",
+				      "type": {
+				        "type": "record",
+				        "name": "Inner",
+				        "fields": [
+				          {"name": "value", "type": "int"}
+				        ]
+				      }
+				    }
+				  ]
+				}
+

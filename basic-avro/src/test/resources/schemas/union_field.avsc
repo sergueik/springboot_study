@@ -1,0 +1,8 @@
+				{
+				  "type": "record",
+				  "name": "Test",
+				  "fields": [
+				    {"name": "nickname", "type": ["null", "string"], "default": null}
+				  ]
+				}
+

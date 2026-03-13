@@ -1,0 +1,7 @@
+			{
+				  "type": "record",
+				  "name": "Test",
+				  "fields": [
+				    {"name": "createdAt", "type": {"type": "long", "logicalType": "timestamp-millis"}}
+				  ]
+				}

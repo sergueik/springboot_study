@@ -1,0 +1,8 @@
+				{
+				  "type": "record",
+				  "name": "Test",
+				  "fields": [
+				    {"name": "status", "type": {"type": "enum", "name": "Status", "symbols": ["ACTIVE", "INACTIVE"]}}
+				  ]
+				}
+

@@ -5,19 +5,19 @@
   <artifactId>avro</artifactId>
   <packaging>jar</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <properties>
     <!-- text blocks are not supported in -source 11 -->
     <finalName>${project.groupId}.${project.artifactId}</finalName>
     <mainClass>${project.groupId}.App</mainClass>
     <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <junit.version>5.12.1</junit.version>
+    <hamcrest.version>2.1</hamcrest.version>
     <junit-platform.version>1.12.1</junit-platform.version>
-    <assertj.version>3.25.3</assertj.version>
-    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-    <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+    <junit.version>5.12.1</junit.version>
     <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
+    <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
   </properties>
@@ -27,7 +27,6 @@
       <artifactId>avro</artifactId>
       <version>1.11.3</version>
     </dependency>
-    <!-- Jackson pour le parsing JSON -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
@@ -38,18 +37,23 @@
       <artifactId>jackson-core</artifactId>
       <version>2.16.1</version>
     </dependency>
-    <!-- Swagger Parser pour le parsing OpenAPI/Swagger -->
     <dependency>
       <groupId>io.swagger.parser.v3</groupId>
       <artifactId>swagger-parser</artifactId>
       <version>2.1.22</version>
     </dependency>
     <dependency>
+	    <!-- NOTE: Artifact Relocated -->
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
+      <version>${hamcrest.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
       <version>${junit.version}</version>
     </dependency>
-
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
@@ -65,19 +69,6 @@
       <groupId>org.junit.platform</groupId>
       <artifactId>junit-platform-launcher</artifactId>
       <version>${junit-platform.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- AssertJ pour des assertions plus lisibles (optionnel) -->
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>${assertj.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>3.24.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
