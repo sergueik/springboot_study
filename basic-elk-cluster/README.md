@@ -2473,8 +2473,9 @@ also, seems that SOAP 1.2 requires the action to be set via the Content-Type hea
 
   * Elastic Clusters on docker-compose
 
-   + https://github.com/deviantony/docker-elk/commit/1a30af6e11f65323b0f3a75a4e4ab54861adc240 (NOTE: too many nodes)
-   + https://github.com/maxyermayank/docker-compose-elasticsearch-kibana
+    + https://github.com/deviantony/docker-elk/commit/1a30af6e11f65323b0f3a75a4e4ab54861adc240 (NOTE: too many nodes)
+    + https://github.com/maxyermayank/docker-compose-elasticsearch-kibana
+  * [distributedtracing basics refresher](https://habr.com/ru/articles/1008998/) (in Russian)
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
