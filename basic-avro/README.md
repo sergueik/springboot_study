@@ -43,6 +43,15 @@ Converting JSON to Avro schema...
 Conversion completed successfully!
 ```
 
+```cmd
+java -cp target\avro-0.4.0-SNAPSHOT.jar;target\lib\* example.App
+```
+```text
+operations:
+        generate        Generate sample JSON from an Avro schema
+        encode  Encode JSON data to Avro binary format
+        convert Convert JSON/OpenAPI to Avro schema (default)
+```
 Avro Schema → JSON exemple
 ```sh
 java -jar target\example.avro.jar -outputfile result.json -schemafile schema.avsc -operation generate -schema record 
