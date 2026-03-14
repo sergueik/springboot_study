@@ -48,22 +48,7 @@ class OpenApiToAvroTypeMapperTest {
 
 	@Test
 	void shouldMapStringFieldWithPatternAndLogicalType() throws IOException {
-		String yamlContent = """
-				openapi: 3.0.3
-				info:
-				  title: Test API
-				  version: 1.0.0
-				components:
-				  schemas:
-				    TestSchema:
-				      type: object
-				      properties:
-				        customId:
-				          type: string
-				          format: uuid
-				          pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
-				""";
-
+		String yamlContent = load("yaml/pattern.yaml");
 		OpenAPI openAPI = parser.parseFromString(yamlContent);
 		mapper = new OpenApiToAvroTypeMapper(openAPI);
 
@@ -80,19 +65,7 @@ class OpenApiToAvroTypeMapperTest {
 
 	@Test
 	void shouldMapStringFieldWithoutPattern() throws IOException {
-		String yamlContent = """
-				openapi: 3.0.3
-				info:
-				  title: Test API
-				  version: 1.0.0
-				components:
-				  schemas:
-				    TestSchema:
-				      type: object
-				      properties:
-				        simpleString:
-				          type: string
-				""";
+		String yamlContent = load("yaml/simple.yaml");
 
 		OpenAPI openAPI = parser.parseFromString(yamlContent);
 		mapper = new OpenApiToAvroTypeMapper(openAPI);
@@ -129,4 +102,9 @@ class OpenApiToAvroTypeMapperTest {
 		assertThat(usernameType.getPattern(), equalTo("^[a-zA-Z0-9_-]{3,16}$"));
 	}
 
+	private String load(String resource) throws IOException {
+		try (java.io.InputStream is = getClass().getClassLoader().getResourceAsStream(resource)) {
+			return new String(is.readAllBytes());
+		}
+	}
 }

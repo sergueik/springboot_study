@@ -1,0 +1,8 @@
+				{
+				  "type": "record",
+				  "name": "EnumRecord",
+				  "fields": [
+				    {"name": "status", "type": {"type": "enum", "name": "Status", "symbols": ["ACTIVE", "INACTIVE"]}}
+				  ]
+				}
+

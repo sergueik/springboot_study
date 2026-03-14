@@ -1,0 +1,9 @@
+				{
+				  "type": "record",
+				  "name": "NullableRecord",
+				  "fields": [
+				    {"name": "required", "type": "string"},
+				    {"name": "optional", "type": ["null", "string"], "default": null}
+				  ]
+				}
+
