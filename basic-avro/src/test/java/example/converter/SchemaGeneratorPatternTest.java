@@ -37,9 +37,8 @@ class SchemaGeneratorPatternTest {
 		assertThat(schema, notNullValue());
 		assertThat(schema.getType(), is(Schema.Type.STRING));
 		assertThat(schema.toString(), containsString("\"pattern\""));
-		final String pattern = "\"^[a-zA-Z0-9_-]{3,16}$\"";
-		// assertThat(schema.toString(), matchesPattern(".*" + pattern + ".*"));
-		assertThat(schema.toString(), containsString(pattern));
+		// assertThat(schema.toString(), matchesPattern(".*" + "\"^[a-zA-Z0-9_-]{3,16}$\"" + ".*"));
+		assertThat(schema.toString(), containsString("\"^[a-zA-Z0-9_-]{3,16}$\""));
 	}
 
 	@DisplayName("should generate schema with logical type")
@@ -72,13 +71,8 @@ class SchemaGeneratorPatternTest {
 		assertThat(schema, notNullValue());
 		assertThat(schema.toString(), containsString("\"pattern\""));
 		// JSON escapes backslashes, so \+ becomes \\+
-		String pattern = "\"^\\\\+?[1-9]\\\\d{1,14}$\"";
-		// assertThat(schema.toString(), matchesPattern(".*" + pattern + ".*"));
-		assertThat(schema.toString(), containsString(pattern));
-
-		pattern = "\"^\\\\d{5}(-\\\\d{4})?$\"";
-		// assertThat(schema.toString(), matchesPattern(".*" + pattern + ".*"));
-		assertThat(schema.toString(), containsString(pattern));
+		assertThat(schema.toString(), containsString("\"^\\\\+?[1-9]\\\\d{1,14}$\""));
+		assertThat(schema.toString(), containsString("\"^\\\\d{5}(-\\\\d{4})?$\""));
 	}
 
 	@DisplayName("should escape pattern special characters")
@@ -86,9 +80,7 @@ class SchemaGeneratorPatternTest {
 	void test4() {
 		AvroTypeInfo typeInfo = AvroTypeInfo.builder().avroType(Schema.Type.STRING).pattern("^\"test\"\\s+pattern$")
 				.build();
-
 		Schema schema = generator.generateSchema(typeInfo, "TestField");
-
 		assertThat(schema, notNullValue());
 		// The pattern should be properly escaped in JSON
 		assertThat(schema.toString(), containsString("pattern"));
@@ -98,9 +90,7 @@ class SchemaGeneratorPatternTest {
 	@Test
 	void test5() {
 		AvroTypeInfo typeInfo = AvroTypeInfo.builder().avroType(Schema.Type.STRING).build();
-
 		Schema schema = generator.generateSchema(typeInfo, "TestField");
-
 		assertThat(schema, notNullValue());
 		assertThat(schema.toString(), not(containsString("\"pattern\"")));
 	}

@@ -5,13 +5,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasKey;
 
 import io.swagger.v3.oas.models.OpenAPI;
@@ -55,7 +50,6 @@ class OpenApiParserTest {
 		Map<String, Schema> schemas = openAPI.getComponents().getSchemas();
 		assertThat(schemas.size(), is(not(equalTo(0))));
 		assertThat(schemas.keySet(), is(not(empty())));
-		// final Set<String> supportedKeywords = new HashSet<>();
 		for (String key : Arrays
 				.asList(new String[] { "CardType", "UserStatus", "Name", "ContactInfo", "Statistics", "UserFlags",
 						"Timestamps", "Coordinates", "Location", "CreditCard", "Job", "User", "ResultResponse" })) {
@@ -70,7 +64,7 @@ class OpenApiParserTest {
 		Schema<?> cardTypeSchema = openAPI.getComponents().getSchemas().get("CardType");
 		assertThat(cardTypeSchema, notNullValue());
 		assertThat(cardTypeSchema.getEnum(), notNullValue());
-		// assertThat(cardTypeSchema.getEnum().toString()).contains("DEBIT", "CREDIT",
+		// org.assertj.core.api.Assertions.assertThat(cardTypeSchema.getEnum().toString()).contains("DEBIT", "CREDIT",
 		// "PREPAID");
 		for (String s : Arrays.asList(new String[] { "DEBIT", "CREDIT", "PREPAID" })) {
 			assertThat(cardTypeSchema.getEnum().toString(), containsString(s));
@@ -80,7 +74,6 @@ class OpenApiParserTest {
 	@Test
 	void shouldParseSchemaWithPattern() throws IOException {
 		OpenAPI openAPI = parser.parse("test-openapi.yaml");
-
 		Schema<?> contactInfoSchema = openAPI.getComponents().getSchemas().get("ContactInfo");
 		assertThat(contactInfoSchema, notNullValue());
 		assertThat(contactInfoSchema.getProperties(), notNullValue());

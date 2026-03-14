@@ -34,7 +34,7 @@ jq < data.json
 
 ```
 ```cmd
-java -jar target\example.avro.jar data.json schema.avsc
+java -jar target\example.avro.jar -inputfile data.json -schemafile schema.avsc -operation convert
 ```
 ```text
 Converting JSON to Avro schema...
@@ -45,6 +45,7 @@ Conversion completed successfully!
 
 Avro Schema → JSON exemple
 ```sh
+java -jar target\example.avro.jar -outputfile result.json -schemafile schema.avsc -operation generate -schema record 
 
 java -jar target\example.avro.jar  generate schema.avsc result.json record
 ```
