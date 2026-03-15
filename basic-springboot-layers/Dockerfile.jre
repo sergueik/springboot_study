@@ -1,0 +1,23 @@
+
+# 1st stage: Extract the layers
+FROM maven:3.9.3-eclipse-temurin-11-alpine as builder
+WORKDIR app
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+ARG JAR_FILE=target/example.layered.jar
+ENV JAR_FILE $JAR_FILE
+# 2nd stage: package and extract the layers
+# Optional have a extra temporary container for extraction
+COPY src ./src
+RUN mvn clean package -DskipTests -B
+
+RUN java -Djarmode=layertools -jar $JAR_FILE extract
+
+# 3rd stage: Copy the extracted layers
+FROM adoptopenjdk/openjdk11:alpine-jre as jre
+WORKDIR app
+COPY --from=builder app/dependencies/ ./
+COPY --from=builder app/spring-boot-loader ./
+COPY --from=builder app/snapshot-dependencies/ ./
+COPY --from=builder app/application/ ./
+CMD ["java", "org.springframework.boot.loader.JarLauncher"]
