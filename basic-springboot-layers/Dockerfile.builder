@@ -1,6 +1,7 @@
 
 # 1st stage: Extract the layers
-FROM maven:3.9.3-eclipse-temurin-11-alpine as builder
+# FROM maven:3.9.3-eclipse-temurin-11-alpine as builder
+FROM maven:3.6.1-jdk-8-alpine as builder
 WORKDIR app
 COPY pom.xml .
 RUN mvn dependency:go-offline -B

@@ -264,6 +264,36 @@ acc8549a5445 /bin/sh -c #(nop) COPY dir:a06c3500a0e17c527… 16.4MB
 42b1763c76e2  175MB
 
 ```
+### Exit Clause
+switching to `maven:3.6.1-jdk-8-alpine` image  and __JDK__ `1.8` 
+turns the
+```
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-dependency-plugin:3.1.2:go-offline (default-cli) on
+project layered: org.eclipse.aether.resolution.DependencyResolutionException:
+Failed to read artifact descriptor for example:commandline-parser:jar:0.12.1-SNAPSHOT:
+The following artifacts could not be resolved: example:commandline-parser:pom:0.12.1-SNAPSHOT (absent):
+Could not transfer artifact example:commandline-parser:pom:0.12.1-SNAPSHOT from/to maven-default-http-blocker (http://0.0.0.0/):
+Blocked mirror for repositories: [hostonly-repository (http://192.168.99.1:8081, default, releases+snapshots)] -> [Help 1]
+[ERROR]
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+
+```
+into
+```
+[INFO] Resolved dependency: junit-platform-commons-1.6.2.jar
+[INFO] Resolved dependency: spring-boot-test-autoconfigure-2.3.4.RELEASE.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  02:41 min
+[INFO] Finished at: 2026-03-15T22:45:07Z
+[INFO] ------------------------------------------------------------------------
+```
+
 ### Cleanup
 ```sh
 docker container prune -f
