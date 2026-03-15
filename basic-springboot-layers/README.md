@@ -1,11 +1,11 @@
+### Info
 
-https://www.baeldung.com/docker-layers-spring-boot
+test [Reusing Docker Layers with Spring Boot](https://www.baeldung.com/docker-layers-spring-boot)
+
 ### Usage 
 
 ```sh
-docker image pull gcr.io/distroless/java11-debian11
-docker image pull maven:3.9.3-eclipse-temurin-11-alpine 
-docker pull adoptopenjdk/openjdk11:alpine-jrehttps://www.youtube.com/watch?v=96llGp-0pEQ
+for F in gcr.io/distroless/java11-debian11 maven:3.9.3-eclipse-temurin-11-alpine eclipse-temurin:11-jre-alpine; do docker image pull $F; done 
 ```
 ```sh
 IMAGE=basic-layered 
@@ -264,9 +264,18 @@ acc8549a5445 /bin/sh -c #(nop) COPY dir:a06c3500a0e17c527… 16.4MB
 42b1763c76e2  175MB
 
 ```
+### Cleanup
+```sh
+docker container prune -f
+docker image prune -f
+```
+```sh
+docker-machine stop default
+docker-machine rm default
+```
 ### See Also
 
   * [optimized docker images for Spring Boot applications with layering feature](https://redamessoudi.com/optimized-docker-images-for-spring-boot-apps/) and [repository](https://github.com/redamessoudi/optimized-docker-image-for-springboot/tree/optimized_dockerimage) - NOTE: git branches introduced for stages covered in the story 
-
+  * [dive](https://github.com/wagoodman/dive)
 
 ---  

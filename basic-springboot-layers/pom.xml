@@ -4,7 +4,7 @@
   <groupId>example</groupId>
   <artifactId>layered</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>Optimized Spring Boot Docker image</description>
   <url/>
@@ -28,6 +28,7 @@
     <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
     <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
     <java.version>11</java.version>
+    <commandline-parser.version>0.12.1-SNAPSHOT</commandline-parser.version>
   </properties>
   <dependencies>
     <dependency>
@@ -45,6 +46,25 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>example</groupId>
+      <artifactId>commandline-parser</artifactId>
+      <version>${commandline-parser.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.json</groupId>
+          <artifactId>json</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.google.code.gson</groupId>
+          <artifactId>gson</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
   <build>
     <finalName>${finalName}</finalName>
@@ -55,9 +75,31 @@
         <configuration>
           <layers>
             <enabled>true</enabled>
+            <configuration>${project.basedir}/src/layers.xml</configuration>
           </layers>
         </configuration>
       </plugin>
     </plugins>
   </build>
+  <repositories>
+    
+    <repository>
+      <id>local-repository</id>
+      <name>not really a repo</name>
+      <url>http://localhost:8081</url>
+    </repository>
+    <repository>
+      <id>hostonly-repository</id>
+      <name>not really a repo</name>
+      <!-- NOTE: not https -->
+      <url>http://192.168.99.1:8081</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <layout>default</layout>
+    </repository>
+  </repositories>
 </project>

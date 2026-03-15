@@ -15,8 +15,8 @@ RUN apk add --no-cache unzip
 
 # show layers index
 RUN echo "==== BOOT-INF/layers.idx ====" \
- && unzip -p $JAR_FILE BOOT-INF/layers.idx \
- || echo "layers.idx not found"
+ && unzip -p $JAR_FILE BOOT-INF/layers.idx || echo 'BOOT-INF/layers.idx not found'
 
 RUN java -Djarmode=layertools -jar $JAR_FILE extract || echo "something went wrong but we are ignoring it"
+RUN find . -maxdepth 2 -path ./target -prune -o \( -type d -a -print \)
 ENTRYPOINT ""
