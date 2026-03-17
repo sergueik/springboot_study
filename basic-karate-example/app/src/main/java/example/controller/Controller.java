@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/")
-public class CookieController {
-	private static final Logger logger = LoggerFactory.getLogger(CookieController.class);
+public class Controller {
+	private static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
 	private static final StringBuilder data = new StringBuilder();
 	private final static int value = 42;

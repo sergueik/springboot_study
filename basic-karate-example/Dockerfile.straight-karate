@@ -1,0 +1,9 @@
+FROM eclipse-temurin:11-jre-alpine
+
+WORKDIR /work
+ARG VERSION=1.4.1
+# Karate publishes a fat jar that already includes everything
+ADD https://github.com/karatelabs/karate/releases/download/v${VERSION}/karate-${VERSION}.jar karate.jar
+COPY src/test/resources features
+
+CMD ["java","-jar","karate.jar","features"]
