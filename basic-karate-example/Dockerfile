@@ -3,8 +3,7 @@ WORKDIR /work
 COPY pom.xml .
 RUN mvn dependency:go-offline -ntp -B
 COPY dummy/src src
-## bypass maven’s lazy plugin resolution
-RUN mvn -B -ntp -q test || true
-RUN rm -fr /work/src /work/target
+## bypass maven’s lazy plugin resolution without actually running the tests
+RUN mvn -B -ntp -DskipTests surefire:test
 COPY src src
 CMD ["mvn", "test"]

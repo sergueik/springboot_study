@@ -1,5 +1,7 @@
 package example.controller;
 
+import org.springframework.beans.factory.annotation.Value;
+
 /**
  * Copyright 2026 Serguei Kouzmine
  */
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.Base64;
 
 import org.slf4j.Logger;
@@ -23,8 +24,9 @@ import org.slf4j.LoggerFactory;
 public class Controller {
 	private static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
-	private static final StringBuilder data = new StringBuilder();
-	private final static int value = 42;
+	private static final StringBuilder stringBuilder = new StringBuilder();
+	@Value("${value}")
+	private int value = 42;
 	private final static String name = "question";
 
 	@GetMapping(produces = MediaType.TEXT_PLAIN_VALUE)
@@ -34,14 +36,14 @@ public class Controller {
 
 	@GetMapping("cookie")
 	public ResponseEntity<String> setCookie() {
-		data.append("value=" + value);
-		byte[] bytes = data.toString().getBytes();
-		String encoded = Base64.getEncoder().encodeToString(bytes);
-		logger.info("data: {}/{}", data.toString(), encoded);
+		stringBuilder.append("value=" + value);
+		byte[] bytes = stringBuilder.toString().getBytes();
+		String encodedString = Base64.getEncoder().encodeToString(bytes);
+		logger.info("data: {}/{}", stringBuilder.toString(), encodedString);
 
-		ResponseCookie resCookie = ResponseCookie.from(name, encoded).httpOnly(true).secure(true).path("/")
+		ResponseCookie responseCookie = ResponseCookie.from(name, encodedString).httpOnly(true).secure(true).path("/")
 				.maxAge(1 * 24 * 60 * 60).domain("localhost").build();
-		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, resCookie.toString()).build();
+		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).build();
 
 	}
 
