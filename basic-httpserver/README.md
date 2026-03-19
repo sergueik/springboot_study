@@ -1,5 +1,5 @@
 ### Info
-Tiny HTTP server in pure Java for [layered Dockerfile](https://www.baeldung.com/docker-layers-spring-boot) unpublished snapshot dependency.  
+Tiny HTTP server in pure Java for [layered Dockerfile](https://www.baeldung.com/docker-layers-spring-boot) unpublished snapshot dependency.
 
 ### Usage
 
@@ -72,7 +72,7 @@ popd
     </dependency>
 ```
 
- > NOTE: do not really need to use the API from dependency 
+ > NOTE: do not really need to use the API from dependency
 
  * make sure the `commandline-parser` of the desired version is not cached in `.m2`
 
@@ -119,19 +119,18 @@ mvn -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -U
 but if it errors:
 
 ```text
-[ERROR] Failed to execute goal on project layered: Could not resolve dependencies for project example:layered:jar:0.3.0-SNAPSHOT: 
-Failed to collect dependencies at example:commandline-parser:jar:0.12.1-SNAPSHOT: 
-Failed to read artifact descriptor for example:commandline-parser:jar:0.12.1-SNAPSHOT: 
-Could not transfer artifact example:commandline-parser:pom:0.12.1-SNAPSHOT from/to maven-default-http-blocker (http://0.0.0.0/): 
+[ERROR] Failed to execute goal on project layered: Could not resolve dependencies for project example:layered:jar:0.3.0-SNAPSHOT:
+Failed to collect dependencies at example:commandline-parser:jar:0.12.1-SNAPSHOT:
+Failed to read artifact descriptor for example:commandline-parser:jar:0.12.1-SNAPSHOT:
+Could not transfer artifact example:commandline-parser:pom:0.12.1-SNAPSHOT from/to maven-default-http-blocker (http://0.0.0.0/):
 Blocked mirror for repositories: [hostonly-repository (http://192.168.99.1:8081, default, releases+snapshots)]
 ```
 
 
 
-the only canonical option is through tweaking `~/.m2/settings.xml` in certain way: 
+the only canonical option is through tweaking `~/.m2/settings.xml` in certain way:
 
 ```xml
-
 <settings>
   <mirrors>
     <mirror>
@@ -159,31 +158,32 @@ the only canonical option is through tweaking `~/.m2/settings.xml` in certain wa
   </activeProfiles>
 </settings>
 ```
+The other altrnative is to downgrade the docker build container to pre-__3.81__ version of Maven
 
 ### Background Information
 
 During the experimentation with a tiny local HTTP server to serve an unpublished SNAPSHOT dependency for a layered Spring Boot Docker build, several key points were observed:
 
-1. **Local SNAPSHOT deployment**
+1. __Local SNAPSHOT deployment__
    - The `commandline-parser` project was deployed to a temporary file-based Maven repository using:
    ```sh
    mvn clean deploy -DaltDeploymentRepository=local::default::file:%TEMP%/repo
    ```
    - This created a repository layout with `.jar`, `.pom`, and `maven-metadata.xml` files.
 
-2. **Tiny HTTP server in Java**
+2. __Tiny HTTP server in Java__
    - A minimal Java HTTP server (`com.sun.net.httpserver.HttpServer`) was used to serve the repository on the host at port 8081.
    - From the host machine, accessing the repository via `http://localhost:8081` worked as expected, with successful artifact downloads.
 
-3. **Maven HTTP blocker behavior (3.8+)**
-   - Maven version 3.8 and later enforces the **`maven-default-http-blocker`**, which blocks plain HTTP repositories by default to encourage HTTPS usage.
+3. __Maven HTTP blocker behavior (3.8+)__
+   - Maven version 3.8 and later enforces the __`maven-default-http-blocker`__, which blocks plain HTTP repositories by default to encourage HTTPS usage.
    - Attempting to access the repository using any hostname other than `localhost` (e.g., `http://192.168.99.1:8081`) results in a blocked mirror error:
    ```
    Blocked mirror for repositories: [hostonly-repository (http://192.168.99.1:8081, default, releases+snapshots)]
    ```
    - This is a policy issue in Maven, not a network connectivity problem. The host-only gateway IP (`192.168.99.1`) is reachable from Docker Machine containers, as confirmed with `nc` tests.
 
-4. **Workarounds for local experimentation**
+4. __Workarounds for local experimentation__
    - For host-side builds, using `http://localhost:8081` is the simplest approach.
    - To allow HTTP on a non-localhost repository, Maven can be configured via `~/.m2/settings.xml`:
      - Create a mirror with `<blocked>false</blocked>`
@@ -194,11 +194,20 @@ During the experimentation with a tiny local HTTP server to serve an unpublished
      mvn -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -U clean package
      ```
 
-5. **Docker Machine / host-only networking**
-   - In a Docker Toolbox / Docker Machine setup, `host.docker.internal` is **not automatically available**.
+5. __Docker Machine / host-only networking__
+   - In a Docker Toolbox / Docker Machine setup, `host.docker.internal` is __not automatically available__.
    - Containers can access services on the Windows host via the host-only gateway IP (usually `192.168.99.1`), but Maven may block HTTP requests to that IP unless configured explicitly.
 
-6. **Key learning points**
-   - Maven 3.8+ enforces HTTPS and will block otherwise reachable HTTP repositories.
+6. __Key learning points__
+   - Maven __3.8__+ enforces HTTPS and will block otherwise reachable HTTP repositories.
    - Host-only networking via Docker Machine allows containers to reach host services, but special handling is required to avoid Maven HTTP-blocker errors.
    - Using `localhost` on the host is the most straightforward approach for local SNAPSHOT experiments, avoiding the need for advanced Maven settings tweaks.
+
+### See Also
+
+  * Maven versions __3.8.1__ and later blocking all external repository connections over plain HTTP by default for security reasons [release notes](https://maven.apache.org/docs/3.8.1/release-notes.html#cve-2021-26291)
+  * Maven __3.8.1__ mirror blocking "fix" [gist](https://gist.github.com/vegaasen/1d545aafeda867fcb48ae3f6cd8fd7c7)
+
+---
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
