@@ -61,8 +61,9 @@ public class ChunkWorker implements Runnable {
 		}
 		// see: https://github.com/svn2github/jrecord/blob/master/Source/JRecord/src/net/sf/JRecord/JRecordInterface1.java#L48
 		ICobolIOBuilder ioBuilder = JRecordInterface1.COBOL.newIOBuilder(copybookFile.toString())
-				.setFileOrganization(IFileStructureConstants.IO_FIXED_LENGTH).setFont(font);
-
+				.setFileOrganization(IFileStructureConstants.IO_FIXED_LENGTH)
+				.setFont(font);
+		
 		FileChannel fileChannel = null;
 		InputStream inputStream = null;
 		AbstractLineReader reader = null;
@@ -74,6 +75,9 @@ public class ChunkWorker implements Runnable {
 			inputStream = new ChunkStream(fileChannel, chunk.getStartOffset(), chunk.getEndOffset());
 
 			reader = ioBuilder.newReader(inputStream);
+			// NOTE there is another code pattern of creating LineReader 
+			// https://github.com/svn2github/jrecord/blob/master/Source/JRecord/src/net/sf/JRecord/IO/CobolIoProvider.java#L221
+			//  where JRecord assumes the fond based on dialect which is not always correct
 
 			AbstractLine line;
 			while ((line = reader.read()) != null) {

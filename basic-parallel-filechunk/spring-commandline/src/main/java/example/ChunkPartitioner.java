@@ -53,9 +53,15 @@ public class ChunkPartitioner {
 		List<FileChunk> chunks = new ArrayList<>();
 		page = "utf8";
 		log.info("instantiate Cobol IO builder with {} ", copybookPath);
-		iCobolIOBuilder = JRecordInterface1.COBOL.newIOBuilder(copybookPath).setDialect(ICopybookDialects.FMT_MAINFRAME)
+		iCobolIOBuilder = JRecordInterface1.COBOL.newIOBuilder(copybookPath)
+				.setDialect(ICopybookDialects.FMT_MAINFRAME)
 				// .setCopybookFormat(Constants.FMT_FREE)
-				.setFileOrganization(Constants.IO_FIXED_LENGTH).setFont(page);
+				.setFileOrganization(Constants.IO_FIXED_LENGTH)
+				.setFont(page);
+		
+		// NOTE there is another code pattern of creating LineReader 
+		// https://github.com/svn2github/jrecord/blob/master/Source/JRecord/src/net/sf/JRecord/IO/CobolIoProvider.java#L221
+		//  where JRecord assumes the fond based on dialect which is not always correct
 		// NOTE: the last call is ignored
 		// NOTE: the unit tests are non existent in cb2xml
 		// lack of tests is not a badge of honor — it’s historical debt.
