@@ -53,26 +53,25 @@ public class KafkaConfiguration {
 		return new DefaultKafkaConsumerFactory<>(config);
 	}
 
-	private static final Logger log = LoggerFactory.getLogger(DeadLetterPublishingRecoverer.class);
-
-	@Bean
-	public DefaultErrorHandler errorHandler(KafkaTemplate<String, String> template) {
-
-		DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(template,
-				(ConsumerRecord<?, ?> record, Exception ex) -> {
-					log.info("DLQ publish: {}", record.value());
-					return new TopicPartition(record.topic() + ".DLT", record.partition());
-				});
-		return new DefaultErrorHandler(recoverer);
-	}
+	private static final Logger log = LoggerFactory.getLogger(ConcurrentKafkaListenerContainerFactory.class);
 
 	@Bean
 	public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(
-			ConsumerFactory<String, String> consumerFactory, DefaultErrorHandler errorHandler) {
+			ConsumerFactory<String, String> consumerFactory, KafkaTemplate<String, String> template) {
+
+		DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(template, (record, ex) -> {
+			log.info("DLQ publish: {}", record.value());
+			return new TopicPartition(record.topic() + ".DLT", record.partition());
+		});
+
+		DefaultErrorHandler errorHandler = new DefaultErrorHandler(recoverer, new FixedBackOff(0L, 0L));
 
 		ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
 
 		factory.setConsumerFactory(consumerFactory);
+		factory.setCommonErrorHandler(errorHandler);
+
+		log.info("Active");
 
 		return factory;
 	}

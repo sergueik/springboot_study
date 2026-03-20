@@ -13,6 +13,10 @@ Simulate “bad message → DLQ” → ✔ can be modeled
 
 No Docker / host constraints, emulating enterprise restrictions → ✔ using embedded broker
 
+### TODO
+
+Explain the
+Declaring a bean ≠ it is used issue in [1a104b43b4](https://github.com/sergueik/springboot_study/commit/1a104b43b4416061b9b2c8cab42b8df4a9bf36f7)
 
 ### See Also
   * the original [source fork](https://github.com/alephzed/baeldung-tutorials/blob/main/spring-kafka/pom.xml) - favors the testcontainers over embedded
