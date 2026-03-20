@@ -11,7 +11,7 @@ public class KafkaService {
 
 	private static final Logger log = LoggerFactory.getLogger(KafkaService.class);
 
-	@KafkaListener(topics = "input-topic", groupId = "demo-group")
+	@KafkaListener(topics = "input-topic", groupId = "demo-group", containerFactory = "kafkaListenerContainerFactory")
 	public void listen(String message) {
 		log.info("Received: {}", message);
 
