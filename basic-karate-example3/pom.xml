@@ -4,51 +4,48 @@
   <groupId>com.intuit</groupId>
   <name>${project.groupId}:${project.artifactId}</name>
   <artifactId>karate</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <description>Demo Springboot 2.3.x with MVC tests</description>
+  <description>karate self-contained</description>
+  <properties>
+    <karate.version>1.4.1</karate.version>
+    <graalvm.version>22.3.3</graalvm.version>
+    <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+  </properties>
   <dependencies>
-    <!-- Core engine -->
     <dependency>
       <groupId>com.intuit.karate</groupId>
       <artifactId>karate-core</artifactId>
-      <version>1.4.1</version>
+      <version>${karate.version}</version>
     </dependency>
-    <!-- JUnit 5 integration -->
     <dependency>
       <groupId>com.intuit.karate</groupId>
       <artifactId>karate-junit5</artifactId>
-      <version>1.4.1</version>
-      <scope>test</scope>
+      <version>${karate.version}</version>
     </dependency>
-    <!-- Optional: if you use Apache HTTP client -->
     <dependency>
-      <groupId>com.intuit.karate</groupId>
-      <artifactId>karate-apache</artifactId>
-      <version>0.9.6</version>
-      <scope>test</scope>
+      <groupId>org.graalvm.js</groupId>
+      <artifactId>js</artifactId>
+      <version>${graalvm.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.graalvm.js</groupId>
+      <artifactId>js-scriptengine</artifactId>
+      <version>${graalvm.version}</version>
     </dependency>
   </dependencies>
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.5.0</version>
+        <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
             <phase>package</phase>
             <goals>
-              <goal>shade</goal>
+              <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <createDependencyReducedPom>false</createDependencyReducedPom>
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>com.intuit.karate.Main</mainClass>
-                </transformer>
-              </transformers>
-              <finalName>karate-tests.jar</finalName>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
             </configuration>
           </execution>
         </executions>

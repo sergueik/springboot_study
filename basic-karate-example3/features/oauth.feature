@@ -18,16 +18,26 @@ Scenario: Obtain access token
 
   # extract token
   * def token = response.access_token
+
   # examine JWT parts
   * def parts = java.util.Arrays.asList(token.split("."))
-  * def getMethods = function(obj){ return Object.getOwnPropertyNames(obj) }
-  # * def methods = getMethods(parts)
-  # * print 'Methods of the object:', methods
+  * def len = parts.length
+  * match len == 3
 
-  # workaround the Unknown identifier: fromBase64 error
   * def decode = function(obj){ return new java.lang.String(java.util.Base64.getUrlDecoder().decode(obj)) }
 
-  * def headerJson = decode(parts[0])
-  * print headerJson
-  * def payloadJson = decode(parts[1])
-  * print payloadJson
+  * def headerpart = karate.fromString(decode(parts[0]))
+  * print headerpart
+  * match headerpart contains { alg: 'HS256' }
+
+  * def payload = karate.fromString(decode(parts[1]))
+  * print payload
+  * match payload.sub == 'test'
+  * match payload.role == 'USER'
+  * match payload.iss == 'http://localhost:8085'
+
+  # timestamps
+  * match payload.iat == '#number'
+  * match payload.exp == '#number'
+  * assert payload.exp > payload.iat
+

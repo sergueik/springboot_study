@@ -25,19 +25,19 @@ Scenario: Obtain access token
 
   # decode header + payload
   # header validation
-  * def headerJson = karate.fromBase64(parts[0])
-  * print headerJson
-  * match headerJson contains { alg: 'HS256' }
+  * def headerpart = karate.fromBase64(parts[0])
+  * print headerpart
+  * match headerpart contains { alg: 'HS256' }
 
   # payload validation
-  * def payloadJson = karate.fromBase64(parts[1])
-  * print payloadJson
-  * match payloadJson.sub == 'test'
-  * match payloadJson.role == 'USER'
-  * match payloadJson.iss == 'http://localhost:8085'
+  * def payload = karate.fromBase64(parts[1])
+  * print payload
+  * match payload.sub == 'test'
+  * match payload.role == 'USER'
+  * match payload.iss == 'http://localhost:8085'
 
   # timestamps
-  * match payloadJson.iat == '#number'
-  * match payloadJson.exp == '#number'
-  * assert payloadJson.exp > payloadJson.iat
+  * match payload.iat == '#number'
+  * match payload.exp == '#number'
+  * assert payload.exp > payload.iat
 
