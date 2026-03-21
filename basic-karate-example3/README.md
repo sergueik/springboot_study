@@ -150,10 +150,11 @@ mvn clean package -ntp -q -B
 ```
 > Note - there will be no output from above. If you like to see maven messages omit the `-q` flag
 
-```sh
+```cmd
 java -cp target\lib\* com.intuit.karate.cli.Main features\oauth.feature
 ```
-![Html Report](screenshots/capture-karate-oauth2.png)
+
+![Html Report](screenshots/capture-karate-oauth2-1.png)
 
 ```text
 
@@ -244,6 +245,140 @@ review results in the browser
 ```cmd
 "C:\Program Files\Google\Chrome\Application\chrome.exe" -url "file:///C:/developer/sergueik/springboot_study/basic-karate-example3/target/karate-reports/karate-summary.html"
 ```
+### Passing Authentication Tokens
+
+run the following feature:
+```feature
+Feature: API hello with credentials
+
+Background:
+  * url 'http://localhost:8085'
+
+  # System property for username (default Pete)
+  * def username = karate.properties['username'] || 'Pete'
+  * def password = karate.properties['password'] || 'test'
+
+  * print 'USERNAME:', username
+  * print 'PASSWORD:', password
+
+Scenario: Authenticate and call protected API
+
+  # 1. Request token with credentials
+  Given path '/auth/token'
+  And request { username: '#(username)', password: '#(password)' }
+  When method post
+  Then status 200
+
+  # Extract token
+  * def token = response.access_token
+  * print 'TOKEN:', token
+
+  # 2. Call protected API
+  Given path '/api/hello'
+  And header Authorization = 'Bearer ' + token
+  When method get
+  Then status 200
+
+  # 3. Assert response
+  * print 'RESPONSE:', response
+  * match response == 'hello ' + username
+
+```
+* relaunch the app with a different "authorized user":
+```cmd
+mvn -DskipTests spring-boot:run -Dspring-boot.run.arguments="--example.username=Paul --example.password=test"
+```
+
+test accessing protected api `/api/hello` with JWT token:
+```cmd
+java -cp Dusername=Paul target\lib\* com.intuit.karate.cli.Main features\hello.feature
+```
+
+the server will log __Paul__ is visiting  
+```text
+2026-03-21T13:33:27.022-04:00  INFO 33688 --- [nio-8085-exec-1] example.controller.TokenController       : token request for Paul/test
+```
+
+the Karate test run log shows success
+
+```text
+13:33:25.590 [main]  INFO  com.intuit.karate - Karate version: 1.4.1
+13:33:25.833 [main]  INFO  com.intuit.karate.Suite - backed up existing 'target\karate-reports' dir to: target\karate-reports_1774114405830
+13:33:26.598 [main]  INFO  com.intuit.karate - [print] USERNAME: Paul
+13:33:26.601 [main]  INFO  com.intuit.karate - [print] PASSWORD: test
+13:33:26.874 [main]  DEBUG com.intuit.karate - request:
+1 > POST http://localhost:8085/auth/token
+1 > Content-Type: application/json; charset=UTF-8
+1 > Content-Length: 37
+1 > Host: localhost:8085
+1 > Connection: Keep-Alive
+1 > User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.12)
+1 > Accept-Encoding: gzip,deflate
+{"username":"Paul","password":"test"}
+
+13:33:27.076 [main]  DEBUG com.intuit.karate - response time in milliseconds: 201
+1 < 200
+1 < X-Content-Type-Options: nosniff
+1 < X-XSS-Protection: 0
+1 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+1 < Pragma: no-cache
+1 < Expires: 0
+1 < X-Frame-Options: DENY
+1 < Content-Type: application/json
+1 < Transfer-Encoding: chunked
+1 < Date: Sat, 21 Mar 2026 17:33:27 GMT
+1 < Keep-Alive: timeout=60
+1 < Connection: keep-alive
+{"token_type":"Bearer","expires_in":3600,"access_token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJQYXVsIiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzQxMTQ0MDcsImV4cCI6MTc3NDExODAwN30.KuoWas8FaNJ0-30QyPomXKAtLrwrjsdCqjHSzq21i9E"}
+
+13:33:27.079 [main]  INFO  com.intuit.karate - [print] TOKEN: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJQYXVsIiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzQxMTQ0MDcsImV4cCI6MTc3NDExODAwN30.KuoWas8FaNJ0-30QyPomXKAtLrwrjsdCqjHSzq21i9E
+13:33:27.088 [main]  DEBUG com.intuit.karate - request:
+2 > GET http://localhost:8085/api/hello
+2 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJQYXVsIiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzQxMTQ0MDcsImV4cCI6MTc3NDExODAwN30.KuoWas8FaNJ0-30QyPomXKAtLrwrjsdCqjHSzq21i9E
+2 > Host: localhost:8085
+2 > Connection: Keep-Alive
+2 > User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.12)
+2 > Accept-Encoding: gzip,deflate
+
+
+13:33:27.114 [main]  DEBUG com.intuit.karate - response time in milliseconds: 25
+2 < 200
+2 < X-Content-Type-Options: nosniff
+2 < X-XSS-Protection: 0
+2 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+2 < Pragma: no-cache
+2 < Expires: 0
+2 < X-Frame-Options: DENY
+2 < Content-Type: text/plain;charset=UTF-8
+2 < Content-Length: 10
+2 < Date: Sat, 21 Mar 2026 17:33:27 GMT
+2 < Keep-Alive: timeout=60
+2 < Connection: keep-alive
+hello Paul
+
+13:33:27.117 [main]  INFO  com.intuit.karate - [print] RESPONSE: hello Paul
+---------------------------------------------------------
+feature: features/hello.feature
+scenarios:  1 | passed:  1 | failed:  0 | time: 0.6298
+---------------------------------------------------------
+
+13:33:27.619 [main]  INFO  com.intuit.karate.Suite - <<pass>> feature 1 of 1 (0 remaining) features/hello.feature
+Karate version: 1.4.1
+======================================================
+elapsed:   1.85 | threads:    1 | thread time: 0.63
+features:     1 | skipped:    0 | efficiency: 0.34
+scenarios:    1 | passed:     1 | failed: 0
+======================================================
+
+HTML report: (paste into browser to view) | Karate version: 1.4.1
+file:///C:/developer/sergueik/springboot_study/basic-karate-example3/target/karate-reports/karate-summary.html
+===================================================================
+
+```
+indicating the user name was successfully extracted from the JWT token
+
+![Html Report](screenshots/capture-karate-oauth2-2.png)
+
 ### Notes on Karate + GraalVM compatibility and Java interop
 
 During implementation, a few Karate JS helper functions (e.g. `karate.fromBase64`, `karate.json`) were found to behave inconsistently, resulting in errors such as `Unknown identifier: json`.
