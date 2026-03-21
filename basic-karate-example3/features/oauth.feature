@@ -6,7 +6,7 @@ Background:
 
 Scenario: Obtain access token
 
-  Given path 'token'
+  Given path 'auth/token'
   And request credentials
   When method post
   Then status 200
@@ -41,3 +41,17 @@ Scenario: Obtain access token
   * match payload.exp == '#number'
   * assert payload.exp > payload.iat
 
+  # 2. Call protected endpoint
+  Given path '/api/hello'
+  And header Authorization = 'Bearer ' + token
+  When method get
+
+  # 3. Verify HTTP response
+  Then status 200
+
+  # 4. Parse and validate response body
+  * def responseText = response
+  * print 'RESPONSE:', responseText
+
+  # Example assertion
+  * match responseText contains 'hello test' 

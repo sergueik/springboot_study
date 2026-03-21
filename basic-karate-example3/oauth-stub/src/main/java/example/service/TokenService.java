@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 @Service
-public class AuthService {
+public class TokenService {
 
 	@Value("${server.port}")
 	private int port;

@@ -157,10 +157,11 @@ java -cp target\lib\* com.intuit.karate.cli.Main features\oauth.feature
 
 ```text
 
-10:59:37.379 [main]  INFO  com.intuit.karate - Karate version: 1.4.1
-10:59:37.689 [main]  INFO  com.intuit.karate.Suite - backed up existing 'target\karate-reports' dir to: target\karate-reports_1774105177685
-10:59:38.901 [main]  DEBUG com.intuit.karate - request:
-1 > POST http://localhost:8085/token
+
+12:34:23.526 [main]  INFO  com.intuit.karate - Karate version: 1.4.1
+12:34:23.802 [main]  INFO  com.intuit.karate.Suite - backed up existing 'target\karate-reports' dir to: target\karate-reports_1774110863798
+12:34:24.828 [main]  DEBUG com.intuit.karate - request:
+1 > POST http://localhost:8085/auth/token
 1 > Content-Type: application/json; charset=UTF-8
 1 > Content-Length: 37
 1 > Host: localhost:8085
@@ -169,37 +170,68 @@ java -cp target\lib\* com.intuit.karate.cli.Main features\oauth.feature
 1 > Accept-Encoding: gzip,deflate
 {"username":"test","password":"test"}
 
-10:59:38.933 [main]  DEBUG com.intuit.karate - response time in milliseconds: 30
+12:34:24.865 [main]  DEBUG com.intuit.karate - response time in milliseconds: 36
 1 < 200
+1 < X-Content-Type-Options: nosniff
+1 < X-XSS-Protection: 0
+1 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+1 < Pragma: no-cache
+1 < Expires: 0
+1 < X-Frame-Options: DENY
 1 < Content-Type: application/json
 1 < Transfer-Encoding: chunked
-1 < Date: Sat, 21 Mar 2026 14:59:38 GMT
+1 < Date: Sat, 21 Mar 2026 16:34:24 GMT
 1 < Keep-Alive: timeout=60
 1 < Connection: keep-alive
-{"token_type":"Bearer","expires_in":3600,"access_token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzQxMDUxNzgsImV4cCI6MTc3NDEwODc3OH0.ZnbQK3SZcQlTzsCdKxSdD5q4grWQjjFeWOSBVPl4rFc"}
+{"access_token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzQxMTA4NjQsImV4cCI6MTc3NDExNDQ2NH0.J6gHv4LF_xHJZZHwKmV75flqkQRvqrhZb1dABcdj_Bw","expires_in":3600,"token_type":"Bearer"}
 
-10:59:39.056 [main]  INFO  com.intuit.karate - [print] {
+12:34:24.978 [main]  INFO  com.intuit.karate - [print] {
   "alg": "HS256"
 }
 
-10:59:39.062 [main]  INFO  com.intuit.karate - [print] {
+12:34:24.981 [main]  INFO  com.intuit.karate - [print] {
   "sub": "test",
   "role": "USER",
   "iss": "http://localhost:8085",
-  "iat": 1774105178,
-  "exp": 1774108778
+  "iat": 1774110864,
+  "exp": 1774114464
 }
 
+12:34:24.994 [main]  DEBUG com.intuit.karate - request:
+2 > GET http://localhost:8085/api/hello
+2 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzQxMTA4NjQsImV4cCI6MTc3NDExNDQ2NH0.J6gHv4LF_xHJZZHwKmV75flqkQRvqrhZb1dABcdj_Bw
+2 > Host: localhost:8085
+2 > Connection: Keep-Alive
+2 > User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.12)
+2 > Accept-Encoding: gzip,deflate
+
+
+12:34:25.004 [main]  DEBUG com.intuit.karate - response time in milliseconds: 10
+2 < 200
+2 < X-Content-Type-Options: nosniff
+2 < X-XSS-Protection: 0
+2 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+2 < Pragma: no-cache
+2 < Expires: 0
+2 < X-Frame-Options: DENY
+2 < Content-Type: text/plain;charset=UTF-8
+2 < Content-Length: 10
+2 < Date: Sat, 21 Mar 2026 16:34:25 GMT
+2 < Keep-Alive: timeout=60
+2 < Connection: keep-alive
+hello test
+
+12:34:25.006 [main]  INFO  com.intuit.karate - [print] RESPONSE: hello test
 ---------------------------------------------------------
 feature: features/oauth.feature
-scenarios:  1 | passed:  1 | failed:  0 | time: 0.5696
+scenarios:  1 | passed:  1 | failed:  0 | time: 0.4955
 ---------------------------------------------------------
 
-10:59:39.707 [main]  INFO  com.intuit.karate.Suite - <<pass>> feature 1 of 1 (0 remaining) features/oauth.feature
+12:34:25.589 [main]  INFO  com.intuit.karate.Suite - <<pass>> feature 1 of 1 (0 remaining) features/oauth.feature
 Karate version: 1.4.1
 ======================================================
-elapsed:   2.11 | threads:    1 | thread time: 0.57
-features:     1 | skipped:    0 | efficiency: 0.27
+elapsed:   1.88 | threads:    1 | thread time: 0.50
+features:     1 | skipped:    0 | efficiency: 0.26
 scenarios:    1 | passed:     1 | failed: 0
 ======================================================
 

@@ -11,20 +11,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import example.dto.AuthRequest;
-import example.service.AuthService;
+import example.dto.TokenRequest;
+import example.service.TokenService;
 
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-public class AuthController {
+@RequestMapping("/auth")
+public class TokenController {
 
-	private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+	private static final Logger log = LoggerFactory.getLogger(TokenController.class);
 
 	@Autowired
-	private AuthService authService;
+	private TokenService tokenService;
 
 	@Value("${example.username}")
 	private String username;
@@ -34,7 +35,7 @@ public class AuthController {
 
 	@RequestMapping(method = RequestMethod.POST, value = "/token", produces = { MediaType.APPLICATION_JSON_VALUE })
 
-	public ResponseEntity<?> token(@RequestBody AuthRequest request) {
+	public ResponseEntity<?> token(@RequestBody TokenRequest request) {
 
 		log.info("token request for {}/{}", request.username, request.password);
 		// 🔐 STUB authentication against DB / LDAP / IdP
@@ -42,7 +43,7 @@ public class AuthController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
 		}
 
-		String response = authService.generateToken(request.username);
+		String response = tokenService.generateToken(request.username);
 
 		return ResponseEntity.ok(Map.of("access_token", response, "token_type", "Bearer", "expires_in", 3600));
 	}
