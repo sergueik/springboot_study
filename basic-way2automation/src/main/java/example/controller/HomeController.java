@@ -78,18 +78,11 @@ public class HomeController {
 		return _showEnv(name.isPresent() ? name.get() : null);
 	}
 
-	@GetMapping("/env2")
 	@ResponseBody
-	public String showEnv2(@RequestParam(defaultValue = defaultEnvKey) String name) {
-		log.info("showEnv2 name: " + name);
-		return _showEnv(name);
-	}
-
-	@ResponseBody
-	@GetMapping("/env3/{name}")
+	@GetMapping("/env/{name}")
 	// NOTE: No mapping found for HTTP request with URI [/application/env3/]
 	// unclear what is the point of required attribute property here
-	public String showEnv3(@RequestParam(required = false) String name) {
+	public String showEnv3(@PathVariable(required = false) String name) {
 		log.info("showEnv3 name: " + name);
 		return _showEnv(name);
 	}

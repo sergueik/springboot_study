@@ -4,7 +4,7 @@
   <groupId>example</groupId>
   <name>${project.groupId}:${project.artifactId}</name>
   <artifactId>way2automation</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>Springboot Template way2automation</description>
   <parent>
@@ -21,9 +21,10 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <failOnMissingWebXml>false</failOnMissingWebXml>
-    <assertj.version>3.8.0</assertj.version>
+    <webjars-angularjs.version>1.4.9</webjars-angularjs.version>
     <webjars-locator.version>0.30</webjars-locator.version>
     <webjars.bootstrap.version>3.3.7</webjars.bootstrap.version>
+    <webjars.angular-ui-router.version>1.0.30</webjars.angular-ui-router.version>
     <webjars.jquery.version>3.2.1</webjars.jquery.version>
   </properties>
   <dependencies>
@@ -42,6 +43,11 @@
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
+      <artifactId>angularjs</artifactId>
+      <version>${webjars-angularjs.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
       <artifactId>jquery</artifactId>
       <version>${webjars.jquery.version}</version>
     </dependency>
@@ -50,6 +56,11 @@
       <artifactId>webjars-locator</artifactId>
       <version>${webjars-locator.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>angular-ui-router</artifactId>
+      <version>${webjars.angular-ui-router.version}</version>
+   </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>

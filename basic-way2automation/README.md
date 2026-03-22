@@ -24,4 +24,16 @@ unzip -ql target\example.way2automation.jar
 ```sh
 java -jar target\example.way2automation.jar
 ```
-Use `http://localhost:8080/application#/` as in cucumber 
+Use `http://localhost:8080/application#/login` as in cucumber 
+
+### See Also
+
+  * [original static thymeleaf project](https://github.com/kolorobot/spring-boot-thymeleaf)
+  * [linking the thymeleaft page resources stored in local directory](https://stackoverflow.com/questions/29460618/inserting-an-image-from-local-directory-in-thymeleaf-spring-framework-with-mave)
+  * [thymeleaf in a Spring MVC application](https://www.baeldung.com/thymeleaf-in-spring-mvc)
+  * [properties](https://www.baeldung.com/properties-with-spring) with Spring and Spring Boot
+  * [static resources](https://www.baeldung.com/spring-mvc-static-resources) - customizing path to support legacy non-standard layouts
+  * [DAO patterns](https://www.baeldung.com/java-dao-pattern)
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

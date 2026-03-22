@@ -50,7 +50,7 @@ public class Config implements WebMvcConfigurer {
 	}
 
 	@Override
-	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> arg0) {
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> arg) {
 	}
 
 	@Override
@@ -59,68 +59,57 @@ public class Config implements WebMvcConfigurer {
 	}
 
 	@Override
-	public void addFormatters(FormatterRegistry arg0) {
+	public void addFormatters(FormatterRegistry arg) {
 
 	}
 
 	@Override
-	public void addInterceptors(InterceptorRegistry arg0) {
+	public void addInterceptors(InterceptorRegistry arg) {
+	}
+
+	@Override
+	public void addReturnValueHandlers(List<HandlerMethodReturnValueHandler> arg) {
+	}
+
+	@Override
+	public void addViewControllers(ViewControllerRegistry arg) {
+	}
+
+	@Override
+	public void configureAsyncSupport(AsyncSupportConfigurer arg) {
 
 	}
 
 	@Override
-	public void addReturnValueHandlers(List<HandlerMethodReturnValueHandler> arg0) {
-
+	public void configureContentNegotiation(ContentNegotiationConfigurer arg) {
 	}
 
 	@Override
-	public void addViewControllers(ViewControllerRegistry arg0) {
-
+	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer arg) {
 	}
 
 	@Override
-	public void configureAsyncSupport(AsyncSupportConfigurer arg0) {
-
+	public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> arg) {
 	}
 
 	@Override
-	public void configureContentNegotiation(ContentNegotiationConfigurer arg0) {
-
+	public void configureMessageConverters(List<HttpMessageConverter<?>> arg) {
 	}
 
 	@Override
-	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer arg0) {
-
+	public void configurePathMatch(PathMatchConfigurer arg) {
 	}
 
 	@Override
-	public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> arg0) {
-
+	public void configureViewResolvers(ViewResolverRegistry arg) {
 	}
 
 	@Override
-	public void configureMessageConverters(List<HttpMessageConverter<?>> arg0) {
-
+	public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> arg) {
 	}
 
 	@Override
-	public void configurePathMatch(PathMatchConfigurer arg0) {
-
-	}
-
-	@Override
-	public void configureViewResolvers(ViewResolverRegistry arg0) {
-
-	}
-
-	@Override
-	public void extendHandlerExceptionResolvers(List<HandlerExceptionResolver> arg0) {
-
-	}
-
-	@Override
-	public void extendMessageConverters(List<HttpMessageConverter<?>> arg0) {
-
+	public void extendMessageConverters(List<HttpMessageConverter<?>> arg) {
 	}
 
 	@Override
@@ -132,4 +121,5 @@ public class Config implements WebMvcConfigurer {
 	public Validator getValidator() {
 		return null;
 	}
+
 }
