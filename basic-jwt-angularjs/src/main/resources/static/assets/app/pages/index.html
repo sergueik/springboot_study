@@ -1,0 +1,72 @@
+<div class="row">
+   <div class="col-xs-12 text-right">
+      <a ng-click="vm.logout()">Logout</a>
+   </div>
+</div>
+<div class="row">
+   <div class="col-xs-12">
+      <div class="row">
+         <div class="col-xs-12">
+            <h3>Books List</h3>
+            <p><b>Note:</b> this section can be seeing by all levels of users. But deleting a book can only be done by Admin level users.</p>
+		      <table class="table table-bordered">
+		         <thead>
+		           <tr>
+		              <td>Title</td>
+		              <td>Published in</td>
+		              <td>ISBN</td>
+		              <td>Actions</td>
+		           </tr>
+		         </thead>
+		         <tbody>
+		           <tr ng-repeat="book in vm.foundBooks">
+		              <td>{{book.title}}</td>
+		              <td>{{book.yearPublished}}</td>
+		              <td>{{book.isbnCode}}</td>
+		              <td><button class="btn btn-default btn-sm" ng-click="vm.clickDeleteBook(book)">Delete</button></td>
+		           </tr>
+		         </tbody>
+		      </table>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-xs-12">
+            <div class="alert alert-danger" ng-if="vm.errorMsg != null && vm.errorMsg.trim() !== ''">
+               {{vm.errorMsg}}
+            </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="col-xs-12">
+            <h3>Add a Book</h3>
+            <p><b>Note:</b> this section can only be usable by Staff level or Admin level users.</p>
+            <form>
+               <div class="row">
+	               <div class="form-group col-xs-12 col-lg-6">
+	                  <label>Title</label>
+	                  <input class="form-control" type="text" maxlength="128" ng-model="vm.bookTitle"/>
+	               </div>
+               </div>
+               <div class="row">
+	               <div class="form-group col-xs-12 col-sm-4">
+	                  <label>Year of Publication</label>
+	                  <input class="form-control" type="number" ng-model="vm.bookPublishedYear"/>
+	               </div>
+               </div>
+               <div class="row">
+	               <div class="form-group col-xs-12 col-sm-6 col-md-4">
+	                  <label>ISBN</label>
+	                  <input class="form-control" type="text" maxlength="16" ng-model="vm.isbnCode"/>
+	               </div>
+               </div>
+               <div class="row">
+                  <div class="col-xs-12 text-right">
+                     <button class="btn btn-success" ng-click="vm.addBook()">Add Book</button>
+                     <button class="btn btn-default" ng-click="vm.clearInputs()">Clear</button>
+                  </div>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>

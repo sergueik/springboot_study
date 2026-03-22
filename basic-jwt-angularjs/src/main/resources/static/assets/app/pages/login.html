@@ -1,0 +1,31 @@
+<div class="row">
+   <div class="col-xs-12 col-md-offset-2 col-md-8 col-lg-offset-3 col-lg-6">
+      <div class="panel panel-default">
+         <div class="panel-body">
+            <form>
+               <div class="form-group">
+                  <label for="userName">User Name</label>
+                  <input class="form-control" type="text" ng-model="vm.userName" />
+               </div>
+               <div class="form-group">
+                  <label for="userName">Password</label>
+                  <input class="form-control" type="password" ng-model="vm.userPass" />
+               </div>
+               <div class="row" ng-if="vm.isLoggingIn">
+                  <div class="col-xs-12 text-center">
+                     <img src="/assets/images/spinner.gif" width="18" height="18"/>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-xs-12 col-sm-6 col-md-offset-2 col-md-4 col-lg-offset3 col-lg-3">
+                     <button class="btn btn-primary form-control" ng-click="vm.login()" ng-disabled="vm.isLoggingIn">Login</button>
+                  </div>
+                  <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+                     <button class="btn btn-default form-control" ng-click="vm.clearForm()" ng-disabled="vm.isLoggingIn">Clear</button>
+                  </div>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>

@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Login</title>
+    <link rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap-theme.min.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/css/index.css}"/>
+    <link rel="icon" type="image/png" th:href="@{/assets/images/favicon.png}">
+</head>
+<body>
+   <div class="container" ng-app="sampleApp">
+      <ui-view></ui-view>
+   </div>
+   
+   <script type="text/javascript" th:src="@{/assets/jquery/js/jquery.min.js}"></script>
+   <script type="text/javascript" th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
+   <script type="text/javascript" th:src="@{/assets/angularjs/1.7.5/angular.min.js}"></script>
+   <script type="text/javascript" th:src="@{/assets/angularjs/1.7.5/angular-resource.min.js}"></script>
+   <script type="text/javascript" th:src="@{/assets/angularjs/1.7.5/angular-route.min.js}"></script>
+   <script type="text/javascript" th:src="@{/assets/angularjs/1.7.5/angular-ui-router.min.js}"></script>
+   <script type="module" th:src="@{/assets/app/js/app.js}"></script>
+</body>
+</html>
