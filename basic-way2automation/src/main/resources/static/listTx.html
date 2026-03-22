@@ -1,0 +1,50 @@
+
+
+<div class="marTop tbStruct border box">
+	<div class="fixedTopBox">
+	<button style="float:left" class="btn" ng-click="back()">Back</button>
+	<div ng-show="showDate" style="margin-left:20%;">
+		<input style="width:130px;"  type="datetime-local" id="start" name="start" ng-model="startDate" placeholder="yyyy-MM-ddTHH:mm:ss" min="{{minSDate | date:'yyyy-MM-ddTHH:mm:ss'}}" max="{{maxSDate | date:'yyyy-MM-ddTHH:mm:ss'}}" required />
+		<input style="width:130px;" type="datetime-local" id="end" name="end" ng-model="end" placeholder="yyyy-MM-ddTHH:mm:ss" min="{{minEDate | date:'yyyy-MM-ddTHH:mm:ss'}}" max="{{maxEDate | date:'yyyy-MM-ddTHH:mm:ss'}}" required />
+
+<!-- 		<input style="border:1px solid black;width:80px;" id="start" type="text" date-time name="input1" ng-model="start" min-view="date" max-view="date" auto-close="true" readOnly />
+ 		<input style="border:1px solid black;width:80px;" id="end" type="datetime" name="input2" date-time ng-model="end" min-view="date" max-view="date" auto-close="true" readOnly/> -->
+	</div>
+	<button ng-show="showDate" class="btn" style="float:right;margin-top:-30px;" ng-click="reset()">Reset</button>
+	</div>
+
+<div style="height:300px;">
+	<div style="height:70px" id="anchor"></div>
+	<table class="table table-bordered table-striped">
+
+    <thead >
+      <tr>
+        <td>
+          <a href="#" ng-click="sortType = 'date'; sortReverse = !sortReverse">
+            Date-Time
+          </a>
+        </td>
+        <td><a>Amount</a></td>
+        <td><a>Transaction Type</a></td>
+      </tr>
+    </thead>
+
+    <tbody >
+
+
+      <tr id="anchor{{$index}}" ng-repeat="tx in transactions | orderBy:sortType:sortReverse | sDate:startDate:end">
+        <td>{{ tx.date | date:'medium'}}</td>
+        <td>{{ tx.amount }}</td>
+        <td>{{ tx.type }}</td>
+      </tr>
+    </tbody>
+
+  </table>
+</div>
+<div ng-show="showDate" class="fixedBottomBox" style="margin-top:58px;">
+<button class="btn btn-primary" style="float:left" ng-show="left" ng-click="scrollLeft()"><</button>
+<button class="btn btn-primary" style="margin-left:40%" ng-show="left" ng-click="scrollTop()">Top</button>
+<button class="btn btn-primary" style="float:right" ng-show="right" ng-click="scrollRight()">></button>
+</div>
+</div>
+

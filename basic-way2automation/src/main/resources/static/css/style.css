@@ -1,0 +1,118 @@
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+@media screen and (min-width: 480px) {
+.box {
+  width:90%;
+  }
+.fixedTopBox , .fixedBottomBox {
+  width:80%;
+  }
+}
+@media screen and (min-width: 768px) {
+.box {
+  width:70%;
+  }
+.fixedTopBox , .fixedBottomBox {
+  width:65%;
+  }
+}
+@media screen and (min-width: 1024px) {
+.box {
+  width:60%;
+  }
+.fixedTopBox , .fixedBottomBox {
+  width:55%;
+  }
+}
+@media screen and (min-width: 1200px) {
+.box {
+  width:50%;
+  }
+.fixedTopBox , .fixedBottomBox {
+  width:45%;
+  }
+}
+body {
+    font-family: Calibri, sans-serif; 
+}
+.mainhdr {
+    padding:20px;
+    text-align:center;
+    background-color: #424242;
+    margin : 20px auto;
+}
+.mainHeading {
+    font-size: 30px;
+    color:white;
+    text-align: center;
+}
+/*strong {
+    color : #424242;
+    text-align: center;
+}*/
+.home {
+    float:left;
+}
+.logout {
+    float:right;
+}
+.fontBig {
+    font-size: 25px;
+}
+.error {
+    color : red;
+    font-size : 20px;
+    font-weight: bold;
+}
+.center {
+    margin : 0 auto;
+    text-align: center;
+}
+.marTop {
+    margin-top: 20px;
+}
+.tbStruct {
+    max-height: 100%;
+    overflow: hidden;
+}
+.tab {
+    position: relative;
+}
+.fixedTopBox , .fixedBottomBox {
+    position:fixed;
+    background-color:white;
+    z-index:5;
+}
+.fixedTopBox {
+    padding-top: 20px;
+    padding-bottom: 5px;
+    border-bottom :2px solid #DCDCDC;
+}
+.fixedBottomBox {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border-top :2px solid #DCDCDC;
+}
+.notch {
+    position: absolute;
+    top: 44px;
+    left: 40%;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 15px solid #337ab7;
+}
+.border, .borderM {
+    position: relative;
+    border: 2px solid #DCDCDC;
+    border-radius:5px;
+    padding:0 20px;
+    margin : 0 auto;
+    background-color: white;
+    min-height :400px;
+    height : 100%;
+    margin-top : 20px;
+}
+.padT20 {
+    padding-top: 20px;
+}

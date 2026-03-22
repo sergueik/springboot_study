@@ -1,0 +1,61 @@
+
+<div class="marTop" style="max-height: 100%;overflow: scroll;">
+
+	  <form>
+	    <div class="form-group">
+	      <div class="input-group">
+	        <div class="input-group-addon"><i class="fa fa-search"></i></div>
+	        <input type="text" class="form-control" placeholder="Search Customer" ng-model="searchCustomer">
+	      </div>      
+	    </div>
+	  </form>
+
+<div style="height:250px;">
+	<table class="table table-bordered table-striped" >
+    
+    <thead>
+      <tr>
+        <td>
+          <a href="#" ng-click="sortType = 'fName'; sortReverse = !sortReverse">
+            First Name
+            <span ng-show="sortType == 'fName' && !sortReverse" class="fa fa-caret-down"></span>
+            <span ng-show="sortType == 'fName' && sortReverse" class="fa fa-caret-up"></span>
+          </a>
+        </td>
+        <td>
+          <a href="#" ng-click="sortType = 'lName'; sortReverse = !sortReverse">
+          	Last Name
+            <span ng-show="sortType == 'lName' && !sortReverse" class="fa fa-caret-down"></span>
+            <span ng-show="sortType == 'lName' && sortReverse" class="fa fa-caret-up"></span>
+          </a>
+        </td>
+        <td>
+          <a href="#" ng-click="sortType = 'postCd'; sortReverse = !sortReverse">
+          	Post Code
+            <span ng-show="sortType == 'postCd' && !sortReverse" class="fa fa-caret-down"></span>
+            <span ng-show="sortType == 'postCd' && sortReverse" class="fa fa-caret-up"></span>
+          </a>
+        </td>
+        <td>
+          Account Number
+        </td>
+        <td>
+          Delete Customer
+        </td>
+
+      </tr>
+    </thead>
+    
+    <tbody>
+      <tr ng-repeat="cust in Customers | orderBy:sortType:sortReverse | filter:searchCustomer">
+        <td>{{ cust.fName }}</td>
+        <td>{{ cust.lName }}</td>
+        <td>{{ cust.postCd }}</td>
+        <td><span ng-repeat="account in cust.accountNo">{{account}} </span></td>
+        <td><button ng-click="deleteCust(cust)">Delete</button></td>
+      </tr>
+    </tbody>
+    
+  </table>
+</div>
+</div>

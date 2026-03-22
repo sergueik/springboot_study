@@ -1,0 +1,14 @@
+
+<div class="border box padT20">
+	<div class="center">
+		<button ng-class="btnClass1" class="btn btn-lg tab" ng-click="addCust()">Add Customer
+		<b ng-show="btnClass1 === 'btn-primary'" id="notch" class="notch"></b></button>
+		<button ng-class="btnClass2" class="btn btn-lg tab" ng-click="openAccount()">Open Account
+		<b ng-show="btnClass2 === 'btn-primary'" id="notch" class="notch"></b></button>
+		<button ng-class="btnClass3" class="btn btn-lg tab" ng-click="showCust()">Customers
+		<b ng-show="btnClass3 === 'btn-primary'" id="notch" class="notch"></b></button>
+	</div>
+	<div class="" ui-view>
+	</div>
+
+</div>

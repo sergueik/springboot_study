@@ -1,0 +1,13 @@
+
+<div class="borderM box padT20">
+
+<form role="form" name="myForm" ng-submit="showAccount()">
+	<div class="form-group"><label>Your Name :</label>
+		<select class="form-control" name="userSelect" id="userSelect" ng-model="custId">
+	      <option value="">---Your Name---</option> <!-- not selected / blank option -->
+	      <option ng-repeat="cust in Customers" value="{{cust.id}}">{{cust.fName}} {{cust.lName}}</option>
+	    </select>
+	</div>
+    <button class="btn btn-default" type="submit" ng-show="custId != ''">Login</button>
+  </form>
+</div>
