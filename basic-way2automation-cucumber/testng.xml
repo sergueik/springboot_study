@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Custom suite" verbose="1" thread-count="1" parallel="tests" configfailurepolicy="continue">
+  <listeners>
+    <listener class-name="example.TestNGExecutionListener"/>
+  </listeners>
+  <test name="Cucumber Bank Test" annotations="JDK" preserve-order="true">
+    <classes>
+      <!-- full package name like com.github.developer.cucumber.testng.example, fragile against package move around  -->
+      <class name="example.RunCukes"/>
+    </classes>
+  </test>
+</suite>
