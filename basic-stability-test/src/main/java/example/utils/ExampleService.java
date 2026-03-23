@@ -22,6 +22,10 @@ import org.springframework.stereotype.Service;
 public class ExampleService {
 	private static final Logger log = LoggerFactory.getLogger(ExampleService.class);
 
+	// "Stability detection via successive sampling"
+	// considered stable once
+	// sequence of observations has converged:
+	// successive samples become identical (or within tolerance)
 	public boolean waitStable(final File file, int retries) {
 		int stableCount = 0;
 		int iteration = retries;

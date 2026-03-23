@@ -45,7 +45,7 @@ public class Config implements WebMvcConfigurer {
 
 			registry.addResourceHandler("/*").addResourceLocations("classpath:/static", String.format(
 					"file:///%s/src/main/resources/static/", System.getProperty("user.dir").replaceAll("\\\\", "/")));
-
+			registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
 		}
 	}
 

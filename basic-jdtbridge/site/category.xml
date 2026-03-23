@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="io.github.kaluchi.jdtbridge.feature" version="0.0.0">
+      <category name="jdtbridge"/>
+   </feature>
+
+   <category-def name="jdtbridge" label="JDT Bridge">
+      <description>
+         Eclipse plugin exposing JDT SearchEngine, refactoring, diagnostics,
+         and test runner over HTTP for AI coding assistants and CLI tools.
+      </description>
+   </category-def>
+</site>

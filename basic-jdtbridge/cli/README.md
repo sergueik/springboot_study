@@ -1,0 +1,103 @@
+# @kaluchi/jdtbridge — CLI reference
+
+CLI for [JDT Bridge](../README.md). Requires Eclipse running with the jdtbridge plugin installed.
+
+## Install
+
+```bash
+cd cli
+npm install
+npm link    # registers `jdt` and `jdtbridge` global commands
+```
+
+## Plugin setup
+
+```bash
+jdt setup                       # build + install into Eclipse
+jdt setup --check               # diagnostic: show status of all components
+jdt setup --skip-build          # reinstall last build
+jdt setup --clean               # clean build (mvn clean verify)
+jdt setup --remove              # uninstall plugin from Eclipse
+jdt setup --eclipse <path>      # specify Eclipse path (saved to config)
+```
+
+If Eclipse is running, you will be prompted to stop it. After install, Eclipse restarts automatically with the same workspace.
+
+## Commands
+
+Run `jdt help <command>` for detailed flags and examples. Most commands have short aliases.
+
+### Search & navigation
+
+```bash
+jdt projects                                           # list workspace projects
+jdt project-info <name> [--lines N]                    # (alias: pi) project overview
+jdt find <Name> [--source-only]                        # find type declarations (* wildcards)
+jdt references <FQN> [method] [--field <name>]         # (alias: refs) references to type/method/field
+jdt subtypes <FQN>                                     # (alias: subt) all subtypes/implementors
+jdt hierarchy <FQN>                                    # (alias: hier) supers + interfaces + subtypes
+jdt implementors <FQN> <method> [--arity N]            # (alias: impl) implementations of interface method
+jdt type-info <FQN>                                    # (alias: ti) class overview (fields, methods)
+jdt source <FQN> [method] [--arity N]                  # (alias: src) source code (project + libraries)
+```
+
+### Testing
+
+```bash
+jdt test <FQN> [method] [--timeout N]                  # run JUnit test class or method
+jdt test --project <name> [--package <pkg>]            # run tests in project/package
+```
+
+Tests auto-refresh from disk and wait for auto-build. Use `--no-refresh` to skip.
+
+### Diagnostics
+
+```bash
+jdt errors [--project <name>] [--file <path>]          # (alias: err) compilation errors
+jdt errors --build                                     # trigger incremental build
+jdt errors --clean --project <name>                    # clean + full rebuild
+jdt errors --warnings --all                            # include warnings and all marker types
+```
+
+File paths are workspace-relative: `my-app/src/main/java/.../Foo.java`.
+
+### Refactoring
+
+```bash
+jdt organize-imports <file>                            # (alias: oi) organize imports
+jdt format <file>                                      # (alias: fmt) format code (Eclipse settings)
+jdt rename <FQN> <newName>                             # rename type
+jdt rename <FQN> <newName> --method <old>              # rename method
+jdt rename <FQN> <newName> --field <old>               # rename field
+jdt move <FQN> <target.package>                        # move type to another package
+```
+
+### Editor
+
+```bash
+jdt active-editor                                      # (alias: ae) current file and cursor line
+jdt open <FQN> [method] [--arity N]                    # open in Eclipse editor
+```
+
+## Instance discovery
+
+The CLI reads `~/.jdtbridge/instances/*.json` to find running Eclipse instances. Each file contains port, auth token, PID, and workspace path. Stale instances are filtered by PID liveness.
+
+When multiple instances are running, use `--workspace <hint>` or the CLI picks the first live one.
+
+Override the home directory with `JDTBRIDGE_HOME` environment variable.
+
+## Color output
+
+Auto-detected from TTY. Override:
+
+- `--color` / `--no-color` flags
+- `FORCE_COLOR=1` / `NO_COLOR=1` env
+- `JDTBRIDGE_COLOR=1` env
+
+## Development
+
+```bash
+npm test              # run tests
+npm run test:watch    # watch mode
+```

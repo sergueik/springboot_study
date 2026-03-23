@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JDT Bridge Tests
+Bundle-Vendor: kaluchi
+Bundle-SymbolicName: io.github.kaluchi.jdtbridge.tests
+Bundle-Version: 1.0.0.qualifier
+Fragment-Host: io.github.kaluchi.jdtbridge
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Require-Bundle: org.junit;bundle-version="4.13"

@@ -2,16 +2,19 @@
 
 Replica of the [JDT Bridge](https://github.com/kaluchi/jdtbridge) project
 discoverd after the [article](https://habr.com/ru/articles/1008274/) (in Russian)
+
 ### Backgound
 
-Eclipse [JDT](https://projects.eclipse.org/projects/eclipse.jdt) (__Java Development Tools__) is a set of plugins for the Eclipse Foundation platform that transforms it into a fully functional Java IDE.
+Eclipse [JDT](https://projects.eclipse.org/projects/eclipse.jdt) (**Java Development Tools**) is a set of plugins for the Eclipse Foundation platform that transforms it into a fully functional Java IDE.
+
 
 
 ### See Also
-  * [JDT Tutorial: Creating Eclipse Java Projects Programmatically](https://sdq.kastel.kit.edu/wiki/JDT_Tutorial:_Creating_Eclipse_Java_Projects_Programmatically)
-  * [JDT Plug-in Developer Guide](https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.jdt.doc.isv%2Fguide%2Fjdt_int.htm)
-  * https://github.com/kaluchi/jdtbridge/issues
 
+* [JDT Tutorial: Creating Eclipse Java Projects Programmatically](https://sdq.kastel.kit.edu/wiki/JDT_Tutorial:_Creating_Eclipse_Java_Projects_Programmatically)
+* [JDT Plug-in Developer Guide](https://help.eclipse.org/latest/index.jsp?topic=%252Forg.eclipse.jdt.doc.isv%252Fguide%252Fjdt_int.htm)
+* https://github.com/kaluchi/jdtbridge/issues
+* https://github.com/eclipse-jdt/eclipse.jdt.core
 
 ### Rebase First Note
 
@@ -41,7 +44,7 @@ If someone has witnessed:
 
 a *bad merge into main*
 
-followed by a __forced history rewrite__ (git push --force)
+followed by a **forced history rewrite** (git push --force)
 
 and the fallout (broken clones, lost commits, confused CI, etc.)
 
@@ -61,6 +64,7 @@ How strongly the tool forces developer into a GUI vs letting one operate as code
 It’s actually a very useful mental model, especially the one who care about CI/CD, diffability, and *escaping the tool*
 
 #### 🧭 UI-boundedness spectrum (high → low)
+
 🟠 Postman
 
 Strong GUI-first workflow (collections, tabs, environments)
@@ -98,6 +102,7 @@ UI is optional-ish
 Data model closer to files/specs
 
 
+
 🟡 Bruno
 
 Low UI-bound (text-first, UI optional/minimal). Stores requests as plain text files (Git-friendly)
@@ -113,6 +118,7 @@ From community sentiment:
 👉 Verdict:
 
 “UI is just a viewer/editor — not the source of truth.”
+
 
 
 🟢 Karate
@@ -276,6 +282,7 @@ That knowledge is:
 ❌ not transferable
 
 🧱 Why this becomes a real engineering cost
+
 1. Onboarding tax
 
 New dev must learn:
@@ -359,7 +366,8 @@ IntelliJ IDEA
 
 “Press ⌘/Ctrl + Shift + …”
 
-That’s basically **vi-style thinking sneaking back in through the side door.
+That’s basically \*\*vi-style thinking sneaking back in through the side door.
+
 
 
 *someone who assumed the door would be open—but not for him*
@@ -383,6 +391,7 @@ Which results in a workflow where:
 Each “dance” produces a relatively small delta measured in entropy
 
 The cumulative output per sprint still resembles a compact patch of logic
+
 
 
 API tests are fundamentally execution artifacts, not interactive design artifacts, so the trade-offs that justify GUI-heavy IDEs don’t really apply.
@@ -542,4 +551,108 @@ Portability
 CI/CD integration
 
 Minimal surface area
+
+
+
+The IDE UI does not clearly prioritize the most semantically important operations in a way that is visually obvious to a user scanning menus.
+
+What makes Jupyter fundamentally different
+
+You captured it perfectly:
+
+“intended to those who have something to say”
+
+That’s the key.
+
+Core properties:
+
+1. Cell-based execution
+
+Code is broken into narrative chunks
+
+Each cell:
+
+runs independently
+
+produces visible output
+
+2. Rich output, minimal input structure
+
+Input: plain text/code (spartan)
+
+Output:
+
+tables
+
+plots
+
+HTML
+
+interactive visuals
+
+👉 Opposite of SAP:
+
+SAP → heavy input UI, minimal output richness
+
+Jupyter → minimal input UI, maximal output richness
+
+3. “Run button as the IDE”
+
+Instead of:
+
+build system
+
+compile
+
+test pipeline
+
+You get:
+
+Run cell → observe → iterate
+
+This is a very different loop:
+
+shorter
+
+more exploratory
+
+less structured
+
+4. Dependency model (your “moderately deep hell”)
+
+Jupyter quietly introduces:
+
+Hidden state between cells
+
+Execution order dependency
+
+Kernel state drift
+
+👉 So while it looks simple:
+
+It can accumulate invisible complexity
+
+⚖️ Where Jupyter sits in your framework
+
+Let’s map it using your concepts:
+
+Property	Jupyter
+GUI choreography	🟡 Low (mostly buttons, minimal flows)
+Wasted effort	🟡 Low–medium (state confusion instead)
+Change entropy	🟡 Medium (cell-level, not project-level)
+Portability	🟡 Medium (files portable, state not always)
+Structure	🔴 Minimal (can become chaotic)
+🧩 The key distinction
+
+Jupyter is not about:
+
+building systems
+
+enforcing structure
+
+enabling refactoring
+
+It is about:
+
+expressing and exploring an idea interactively
 

@@ -1,0 +1,44 @@
+{
+  "name": "@kaluchi/jdtbridge",
+  "version": "1.0.0",
+  "description": "CLI for Eclipse JDT Bridge — semantic Java analysis via Eclipse JDT SearchEngine",
+  "type": "module",
+  "bin": {
+    "jdt": "./bin/jdt.mjs",
+    "jdtbridge": "./bin/jdt.mjs"
+  },
+  "files": [
+    "bin/",
+    "src/"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "eclipse",
+    "jdt",
+    "java",
+    "refactoring",
+    "search"
+  ],
+  "license": "Apache-2.0",
+  "author": "kaluchi",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kaluchi/jdtbridge.git",
+    "directory": "cli"
+  },
+  "homepage": "https://github.com/kaluchi/jdtbridge/tree/master/cli",
+  "bugs": "https://github.com/kaluchi/jdtbridge/issues",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^3.2.4",
+    "vitest": "^3.0.0"
+  },
+  "dependencies": {
+    "picocolors": "^1.1.0"
+  }
+}
