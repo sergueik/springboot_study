@@ -291,7 +291,7 @@ mvn -DskipTests spring-boot:run -Dspring-boot.run.arguments="--example.username=
 
 test accessing protected api `/api/hello` with JWT token:
 ```cmd
-java -cp Dusername=Paul target\lib\* com.intuit.karate.cli.Main features\hello.feature
+java -Dusername=Paul -cp target\lib\* com.intuit.karate.cli.Main features\hello.feature
 ```
 
 the server will log __Paul__ is visiting  
