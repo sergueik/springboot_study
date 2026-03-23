@@ -1,12 +1,13 @@
 package example;
 
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.support.PageFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class OpenAccountPage extends Utility {
-	private static final Logger log = LogManager.getLogger(OpenAccountPage.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(BankSteps.class);
 
 	public OpenAccountPage() {
 		PageFactory.initElements(driver, this);

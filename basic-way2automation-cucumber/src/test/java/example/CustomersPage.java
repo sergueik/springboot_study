@@ -1,11 +1,11 @@
 package example;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openqa.selenium.support.PageFactory;
 
 public class CustomersPage extends Utility {
-	private static final Logger log = LogManager.getLogger(CustomersPage.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(Utility.class);
 
 	public CustomersPage() {
 		PageFactory.initElements(driver, this);

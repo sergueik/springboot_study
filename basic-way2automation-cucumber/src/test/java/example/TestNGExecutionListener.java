@@ -10,8 +10,6 @@ public class TestNGExecutionListener implements IExecutionListener {
 
 	@Override
 	public void onExecutionFinish() {
-		System.out.println("Generating the Masterthought Report");
-		GenerateReport.GenerateMasterthoughtReport();
 		System.out.println("TestNG execution has finished");
 	}
 }

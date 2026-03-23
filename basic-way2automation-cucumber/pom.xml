@@ -1,41 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>cucumber-jvm-testng</groupId>
-  <artifactId>cucumber-jvm-testng</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <groupId>example</groupId>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <artifactId>way2automation-cucumber</artifactId>
+  <version>0.2.0-SNAPSHOT</version>
+  <properties>
+    <encoding>UTF-8</encoding>
+    <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
+    <browser.name>chrome</browser.name>
+    <commons-io.version>2.7</commons-io.version>
+    <cucumber-extentsreport.version>3.0.2</cucumber-extentsreport.version>
+    <cucumber-java.version>1.2.6</cucumber-java.version>
+    <cucumber-jvm-deps.version>1.0.5</cucumber-jvm-deps.version>
+    <cucumber-reporting.version>0.6.0</cucumber-reporting.version>
+    <cucumber-testng.version>1.2.6</cucumber-testng.version>
+    <java.version>11</java.version>
+    <log4j.version>2.17.1</log4j.version>
+    <log4j-core.version>2.20.0</log4j-core.version>
+    <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+    <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
+    <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <selenium-chrome-driver.version>${selenium.version}</selenium-chrome-driver.version>
+    <selenium.version>4.41.0</selenium.version>
+    <slf4j.version>1.7.5</slf4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
+    <testng.version>6.14.3</testng.version>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>info.cukes</groupId>
       <artifactId>cucumber-java</artifactId>
-      <version>1.2.6</version>
+      <version>${cucumber-java.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.vimalselvam</groupId>
       <artifactId>cucumber-extentsreport</artifactId>
-      <version>3.0.2</version>
+      <version>${cucumber-extentsreport.version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
-      <version>4.9.0</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-devtools-v145</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>info.cukes</groupId>
       <artifactId>cucumber-jvm-deps</artifactId>
-      <version>1.0.5</version>
+      <version>${cucumber-jvm-deps.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>info.cukes</groupId>
       <artifactId>cucumber-testng</artifactId>
-      <version>1.2.6</version>
+      <version>${cucumber-testng.version}</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -47,13 +93,20 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>6.14.3</version>
+      <version>${testng.version}</version>
       <scope>test</scope>
     </dependency>
+    <!--
     <dependency>
       <groupId>net.masterthought</groupId>
       <artifactId>cucumber-reporting</artifactId>
-      <version>0.6.0</version>
+      <version>${cucumber-reporting.version}</version>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
     </dependency>
   </dependencies>
   <build>
@@ -61,7 +114,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.20</version>
+        <version>${maven-surefire-plugin.version}</version>
         <configuration>
           <suiteXmlFiles>
             <suiteXmlFile>testng.xml</suiteXmlFile>
@@ -74,10 +127,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.6.1</version>
+        <version>${maven-compiler-plugin.version}</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <encoding>${encoding}</encoding>
         </configuration>
       </plugin>
     </plugins>

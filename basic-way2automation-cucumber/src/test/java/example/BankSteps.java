@@ -4,13 +4,14 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.testng.Assert;
 
 public class BankSteps {
 
-	private static final Logger log = LogManager.getLogger(BankSteps.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(BankSteps.class);
 
 	@When("^I click on Bank Manager Login tab$")
 	public void iClickOnBankManagerLoginTab() {

@@ -2,16 +2,17 @@ package example;
 
 import cucumber.api.CucumberOptions;
 import cucumber.api.testng.TestNGCucumberRunner;
-import edu.emory.mathcs.backport.java.util.Arrays;
 import cucumber.api.testng.CucumberFeatureWrapper;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.testng.IAttributes;
 import org.testng.ITestContext;
 import org.testng.TestRunner;
@@ -27,9 +28,11 @@ import org.testng.internal.annotations.IDataProvidable;
 // @CucumberOptions(features = "src/test/resources/example", tags = "@calculator")
 @CucumberOptions(features = "src/test/resources/example/bank.feature", tags = { "@customer, @manager" })
 public class RunCukes {
-	private static final Logger log = LogManager.getLogger(RunCukes.class.getName());
+
+	private static final Logger log = LoggerFactory.getLogger(RunCukes.class);
 
 	private final boolean debug = true;
+	
 	private TestNGCucumberRunner runner;
 
 	@SuppressWarnings("rawtypes")

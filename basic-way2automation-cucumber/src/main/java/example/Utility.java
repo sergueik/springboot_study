@@ -1,9 +1,12 @@
 package example;
 
 import com.google.common.base.Function;
+
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.*;
@@ -16,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Utility extends ManageBrowser {
-	private static final Logger log = LogManager.getLogger(Utility.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(Utility.class);
 
 	public int generateRandomNumber() {
 		return (int) (Math.random() * 5000 + 1);

@@ -1,12 +1,14 @@
 package example;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.Configuration;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
+
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -15,8 +17,8 @@ import java.nio.file.Paths;
 import java.time.Duration;
 
 public class ManageBrowser {
+	private static final Logger log = LoggerFactory.getLogger(ManageBrowser.class);
 
-	private static final Logger log = LogManager.getLogger(ManageBrowser.class.getName());
 	public static WebDriver driver;
 
 	private static String osName;
@@ -42,7 +44,8 @@ public class ManageBrowser {
 
 	public ManageBrowser() {
 		PageFactory.initElements(driver, this);
-		PropertyConfigurator.configure(System.getProperty("user.dir") + "/src/test/resources/log4j2.properties");
+	//	Configuration configuration = new Configuration(); 
+	//	Configurator.reconfigure(System.getProperty("user.dir") + "/src/test/resources/log4j2.properties");
 	}
 
 	public void selectBrowser(String browser) {
