@@ -16,7 +16,7 @@ class ExampleTest {
 
 	@Test
 	public void testParallel() {
-		Results results = Runner.path("classpath:example").outputCucumberJson(true)
+		Results results = Runner.path("classpath:example/Bank.feature").outputCucumberJson(true)
 				.parallel(1);
 		generateReport(results.getReportDir());
 		assertTrue(results.getFailCount() == 0, results.getErrorMessages());

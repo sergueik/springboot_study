@@ -122,6 +122,76 @@ example.KarateTest: [1.1:34] -unknown-:4 - org.xml.sax.SAXParseException; lineNu
 the `outputCucumberJson` https://github.com/karatelabs/karate/blob/master/karate-core/src/main/java/com/intuit/karate/Runner.java#L446
 requires 1.3.1
 
+### Testing Real Application
+
+Testing local replica of [Way2Automation Banking App](http://www.way2automation.com/angularjs-protractor/banking/#/login) dummy website for Testing Selenium WebDriver / Protractor Automation scripts material by
+[Way2Automation](https://www.way2automation.com/protractor-angularjs-practice-website.html)
+
+with vintage __Cucumber__ and __Karate__ leads to discovery of the critical difference in the feature replay
+```feature
+@tag
+Feature: Bank Test
+
+  As a bank manager I want to login and add a customer and create a customer account
+
+  Background:
+    Given I am on homepage
+
+  @customer
+  Scenario: Customer should login and logout successfully
+    When I click on Customer Login tab
+    And I search customer that created in first test
+    And I click on Login button
+    Then I verify Logout tab displayed
+    And I click on Logout
+    Then I verify "Your Name :" text displayed
+
+
+```
+
+![Cucumber Run](screenshots/capture-way2automation-cucumber.png)
+
+
+
+```feature
+Feature: Bank Test
+
+  As a bank customer self service
+
+  Background:
+    * configure driver = {type: 'chromedriver', executable: 'C:/Users/Kouzm/Downloads/chromedriver.exe' , webDriverSession: { desiredCapabilities: { browserName: 'chrome' , "goog:chromeOptions": { args: ['window-size=1280,720' ] }  } } }
+
+  Scenario:  bank customer find name, log in, then log out
+
+    Given driver 'http://localhost:8080/application#/login'
+    And driver.maximize ()
+    And click("//button[normalize-space()='Customer Login']")
+    And waitFor('{label}Your Name :');
+    And waitFor("//label[contains(text(),'Your Name :')]")
+    And waitFor('#userSelect option')
+    And select('#userSelect', 'Harry Potter')
+    And click("//button[normalize-space()='Login']")
+    Then waitFor('{span}Harry Potter')
+    And click("//button[normalize-space()='Logout']")
+    * delay(5000)
+    And match driver.url == 'http://localhost:8080/application#/customer'
+
+```
+
+```js
+  vm.getUser = function() {
+          if (typeof(customer) === "undefined") {
+            var obj =localStorage.getItem('CurrentUser');
+            if (obj) customer = JSON.parse(obj);
+          }
+          return customer;
+        }
+```
+![Error in Karate Run](screenshots/capture-way2automation-karate-error.png)
+
+Another observation is 
+Cucumber → human friencly flexible step definitions = imperative glue layer
+Karate → somewhat more formal steps "simple english" understood by embedded runtime = fewer translation layers
 
 ### See Also
    *  youtube course
