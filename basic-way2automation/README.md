@@ -24,7 +24,14 @@ unzip -ql target\example.way2automation.jar
 ```sh
 java -jar target\example.way2automation.jar
 ```
-Use `http://localhost:8080/application#/login` as in cucumber 
+![screenshot](screenshots/capture-local.png)
+
+Use `http://localhost:8080/application#/login`. 
+
+Comaring with the original web site `http://www.way2automation.com/angularjs-protractor/banking/#/login` one may notice some style missing and some outgoing links disabled. The first defect is cosmetic and the work in progress; the latter is intentonal.
+
+
+![screenshot](screenshots/capture-original.png)
 
 ### See Also
 
