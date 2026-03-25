@@ -1,0 +1,13 @@
+<form action="#" th:action="${noteDto.id == null} ? @{/note} : @{/note/{id}(id=${noteDto.id})}" th:object="${noteDto}"
+      method="post">
+    <div class="input-group">
+        <input class="form-control" type="text" placeholder="Title" th:field="*{title}"/>
+        <input class="form-control" type="text" placeholder="Text" th:field="*{text}"/>
+        <input class="form-control" type="text" placeholder="E-Mail" th:field="*{email}"/>
+
+        <button class="btn btn-primary" id="submit">
+            <i class="far fa-save"></i>
+            Save
+        </button>
+    </div>
+</form>
