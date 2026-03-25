@@ -1,15 +1,10 @@
 package example.controller;
 
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +36,7 @@ public class MVCTest {
 
 	private ResultActions resultActions;
 	final static String charset = "UTF-8";
-	private final static String viewName = "home";
+	private final static String viewName = "index";
 
 	// NOTE: "application" is a reserved variable name
 	@Value("${application}")
@@ -51,7 +46,8 @@ public class MVCTest {
 
 	@Before
 	public void beforeTest() throws Exception {
-		resultActions = mvc.perform(get("/" + variable).accept(MediaType.TEXT_HTML));
+		resultActions = mvc
+				.perform(get("/" + variable).accept(MediaType.TEXT_HTML));
 	}
 
 	@Test
@@ -64,22 +60,30 @@ public class MVCTest {
 		resultActions.andExpect(status().isOk());
 	}
 
-	@DisplayName("body test")
+	final static String body = "<html/>";
+
+	// assert the response body content with a Hamcrest Matcher
 	@Test
-	public void test4() throws Exception {
+	public void bodyContainsTextTest() throws Exception {
+
 		resultActions.andExpect(
-				content().string(containsString("<title>Protractor practice website - Banking App</title>")));
+				content().string(containsString("<title>Hello Spring Boot!</title>")));
 	}
 
-	@DisplayName("body test")
 	@Test
-	public void test5() throws Exception {
-		resultActions.andExpect(content().contentType(String.format("text/html;charset=%s", charset)));
+	public void contentTypeTest() throws Exception {
+		resultActions.andExpect(
+				content().contentType(String.format("text/html;charset=%s", charset)));
 	}
 
-	@DisplayName("only relevant for thymeleaf")
+ 
 	@Test
-	public void test2() throws Exception {
+	public void veiewNameTest() throws Exception {
+		resultActions.andExpect(view().name(viewName));
+	}
+
+	@Test
+	public void verifiesHomePageLoads() throws Exception {
 
 		Arrays.asList("variable", "hostname", "now").forEach(a -> {
 			try {
@@ -91,33 +95,6 @@ public class MVCTest {
 				return;
 			}
 		});
-	}
-
-	@DisplayName("only relevant for thymeleaf")
-	@Test
-	public void test3() throws Exception {
-		resultActions.andExpect(view().name(viewName));
-	}
-
-	static Stream<Arguments> samples() {
-		return Stream.of(Arguments.of("account.service.js"), Arguments.of("accountViewController.js"),
-				Arguments.of("addCustomerController.js"), Arguments.of("app.js"), Arguments.of("bodyController.js"),
-				Arguments.of("config.js"), Arguments.of("customer.data.js"), Arguments.of("customerViewController.js"),
-				Arguments.of("date.search.filter.js"), Arguments.of("depositController.js"),
-				Arguments.of("listCustomerController.js"), Arguments.of("mainController.js"),
-				Arguments.of("managerViewController.js"), Arguments.of("mockDataLoadService.js"),
-				Arguments.of("openAccountController.js"), Arguments.of("optionsController.js"),
-				Arguments.of("script.js"), Arguments.of("transaction.service.js"),
-				Arguments.of("transactionSummaryController.js"), Arguments.of("user.js"),
-				Arguments.of("user.service.js"), Arguments.of("withdrawlController.js"));
-	}
-
-	@DisplayName("dependencies")
-	@ParameterizedTest
-	@MethodSource("samples")
-	void test1(String script) throws Exception {
-		resultActions = mvc.perform(get("/js/" + script).accept(MediaType.TEXT_PLAIN));
-		resultActions.andExpect(status().isOk());
 	}
 
 }

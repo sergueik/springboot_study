@@ -2,7 +2,14 @@
 local replica of the [Way2Automation Banking App](http://www.way2automation.com/angularjs-protractor/banking/#/login) dummy website for Testing Selenium WebDriver / Protractor Automation scripts material by
 [Way2Automation](https://www.way2automation.com/protractor-angularjs-practice-website.html)
 
+### Background
+
+The project works 
+ **because of your custom mappings**
+**Not** because Spring Boot is helping
+
 ```sh
+
 export FILES="app.js user.service.js account.service.js transaction.service.js mockDataLoadService.js customer.data.js config.js date.search.filter.js accountViewController.js addCustomerController.js customerViewController.js bodyController.js depositController.js listCustomerController.js mainController.js managerViewController.js openAccountController.js optionsController.js transactionSummaryController.js withdrawlController.js"
 pushd js
 for F in $FILES ;do curl -skLO http://www.way2automation.com/angularjs-protractor/banking/$F ;done
@@ -32,6 +39,16 @@ Comaring with the original web site `http://www.way2automation.com/angularjs-pro
 
 
 ![screenshot](screenshots/capture-original.png)
+
+### Troubleshooting
+NOTE when building with later Spring Boot, the application does not render
+```cmd
+mvn -f pom.BROKEN.xml DskipTests clean package
+```
+```cmd
+java -jar target\example.way2automation.jar
+```
+opening the `http://localhost:8080/application#/login` results in white page.
 
 ### See Also
 

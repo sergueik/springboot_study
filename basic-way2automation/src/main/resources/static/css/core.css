@@ -1,10 +1,10 @@
-body {
+.informational {
   padding-top: 60px;
   padding-bottom: 40px;
   background-color: #f5f5f5;
 }
 
-p {
-  font-size: 9px;
+.informational p {
+  font-size: 8px;
   font-family: Arial, Helvetica, sans-serif;
 }
