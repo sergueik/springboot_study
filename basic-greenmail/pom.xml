@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <groupId>example</groupId>
+  <artifactId>greenmail-example</artifactId>
+  <version>0.2.0-SNAPSHOT</version>
+  <name>greenmail-example</name>
+  <description>Example application using GreenMail</description>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>2.3.4.RELEASE</version>
     <relativePath/>
   </parent>
-  <groupId>de.jensknipper</groupId>
-  <artifactId>greenmail-example</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>greenmail-example</name>
-  <description>Example application using GreenMail</description>
   <properties>
     <java.version>11</java.version>
   </properties>
@@ -62,42 +62,6 @@
       <groupId>com.icegreen</groupId>
       <artifactId>greenmail</artifactId>
       <version>1.6.14</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-api</artifactId>
-      <version>4.13.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-http</artifactId>
-      <version>4.13.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-manager</artifactId>
-      <version>4.13.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-remote-driver</artifactId>
-      <version>4.13.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-java</artifactId>
-      <version>4.13.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-firefox-driver</artifactId>
-      <version>4.13.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
