@@ -4,42 +4,30 @@
   <groupId>example</groupId>
   <name>${project.groupId}:${project.artifactId}</name>
   <artifactId>way2automation</artifactId>
-  <version>0.6.0-SNAPSHOT</version>
+  <version>0.7.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>Springboot Template way2automation</description>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.5.4.RELEASE</version>
+    <version>2.3.4.RELEASE</version>
     <relativePath/>
   </parent>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.8</java.version>
-      <antisamy.version>1.7.5</antisamy.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
-    <jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
+    <java.version>11</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <failOnMissingWebXml>false</failOnMissingWebXml>
+    <thymeleaf-layout-dialect.version>2.5.3</thymeleaf-layout-dialect.version>
     <webjars.bootstrap.version>5.0.0</webjars.bootstrap.version>
-    <thymeleaf.version>3.0.8.RELEASE</thymeleaf.version>
-    <thymeleaf-extras-java8time.version>3.0.0.RELEASE</thymeleaf-extras-java8time.version>
-    <thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
-    <assertj.version>3.8.0</assertj.version>
-
-    <webjars-locator.version>0.30</webjars-locator.version>
     <webjars.jquery.version>3.2.1</webjars.jquery.version>
     <webjars.angular.version>1.5.8</webjars.angular.version>
     <webjars.angular-ui-router.version>1.0.30</webjars.angular-ui-router.version>
   </properties>
   <dependencies>
-	    <dependency>
-      <groupId>org.owasp.antisamy</groupId>
-      <artifactId>antisamy</artifactId>
-      <version>${antisamy.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
@@ -47,20 +35,12 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-thymeleaf</artifactId>
-<!-- NOTE: after switchihg 1.5.4.RELEASE to 2.3.4.RELEASE 
-[ERROR] Failed to execute goal on project static_page: Could not resolve dependencies for project
-Could not find artifact org.thymeleaf:thymeleaf-spring5:jar:3.0.6.RELEASE
-in central (https://repo.maven.apache.org/maven2)
-https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf-spring5
--->
     </dependency>
+    <!-- NOTE: *Must* declare it explicitly -->
     <dependency>
-      <groupId>org.thymeleaf.extras</groupId>
-      <artifactId>thymeleaf-extras-java8time</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-actuator</artifactId>
+      <groupId>nz.net.ultraq.thymeleaf</groupId>
+      <artifactId>thymeleaf-layout-dialect</artifactId>
+      <version>${thymeleaf-layout-dialect.version}</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
@@ -81,18 +61,7 @@ https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf-spring5
       <groupId>org.webjars</groupId>
       <artifactId>angular-ui-router</artifactId>
       <version>${webjars.angular-ui-router.version}</version>
-   </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>webjars-locator</artifactId>
-      <version>${webjars-locator.version}</version>
-<!-- NOTE: after switchihg 1.5.4.RELEASE to 2.3.4.RELEASE 
-[ERROR]     'dependencies.dependency.version' for org.webjars:webjars-locator:jar is missing. @ line 64, column 17
-[ERROR]
-
--->
     </dependency>
-    <!-- Test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
@@ -101,6 +70,11 @@ https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf-spring5
   </dependencies>
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>

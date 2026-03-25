@@ -1,11 +1,18 @@
 package example.controller;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -24,6 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 
 import example.controller.HomeController;
 
@@ -36,7 +45,7 @@ public class MVCTest {
 
 	private ResultActions resultActions;
 	final static String charset = "UTF-8";
-	private final static String viewName = "index";
+	private final static String viewName = "home";
 
 	// NOTE: "application" is a reserved variable name
 	@Value("${application}")
@@ -46,8 +55,7 @@ public class MVCTest {
 
 	@Before
 	public void beforeTest() throws Exception {
-		resultActions = mvc
-				.perform(get("/" + variable).accept(MediaType.TEXT_HTML));
+		resultActions = mvc.perform(get("/" + variable).accept(MediaType.TEXT_HTML));
 	}
 
 	@Test
@@ -60,30 +68,28 @@ public class MVCTest {
 		resultActions.andExpect(status().isOk());
 	}
 
-	final static String body = "<html/>";
-
-	// assert the response body content with a Hamcrest Matcher
+	@DisplayName("thymeleaf rendered body test")
 	@Test
-	public void bodyContainsTextTest() throws Exception {
-
+	public void test4() throws Exception {
 		resultActions.andExpect(
-				content().string(containsString("<title>Hello Spring Boot!</title>")));
+				content().string(containsString("<title>Protractor practice website - Banking App</title>")));
 	}
 
+	@DisplayName("canary for missing dialect processing")
 	@Test
-	public void contentTypeTest() throws Exception {
-		resultActions.andExpect(
-				content().contentType(String.format("text/html;charset=%s", charset)));
+	public void test5() throws Exception {
+		resultActions.andExpect(content().string(not(containsString("layout:decorate=\"~{layouts/layout}"))));
 	}
 
- 
+	@DisplayName("body test")
 	@Test
-	public void veiewNameTest() throws Exception {
-		resultActions.andExpect(view().name(viewName));
+	public void test6() throws Exception {
+		resultActions.andExpect(content().contentType(String.format("text/html;charset=%s", charset)));
 	}
 
+	@DisplayName("only relevant for thymeleaf")
 	@Test
-	public void verifiesHomePageLoads() throws Exception {
+	public void test2() throws Exception {
 
 		Arrays.asList("variable", "hostname", "now").forEach(a -> {
 			try {
@@ -95,6 +101,40 @@ public class MVCTest {
 				return;
 			}
 		});
+	}
+
+	@DisplayName("only relevant for thymeleaf")
+	@Test
+	public void test3() throws Exception {
+		resultActions.andExpect(view().name(viewName));
+	}
+
+	static Stream<Arguments> samples() {
+		return Stream.of(Arguments.of("/js/account.service.js"), Arguments.of("/js/accountViewController.js"),
+				Arguments.of("/js/addCustomerController.js"), Arguments.of("/js/app.js"),
+				Arguments.of("/js/bodyController.js"), Arguments.of("/js/config.js"),
+				Arguments.of("/js/customer.data.js"), Arguments.of("/js/customerViewController.js"),
+				Arguments.of("/js/date.search.filter.js"), Arguments.of("/js/depositController.js"),
+				Arguments.of("/js/listCustomerController.js"), Arguments.of("/js/mainController.js"),
+				Arguments.of("/js/managerViewController.js"), Arguments.of("/js/mockDataLoadService.js"),
+				Arguments.of("/js/openAccountController.js"), Arguments.of("/js/optionsController.js"),
+				Arguments.of("/js/script.js"), Arguments.of("/js/transaction.service.js"),
+				Arguments.of("/js/transactionSummaryController.js"), Arguments.of("/js/user.js"),
+				Arguments.of("/js/user.service.js"), Arguments.of("/js/withdrawlController.js"),
+				Arguments.of("/css/style.css"), Arguments.of("/css/frontend.min.css"),
+				Arguments.of("/webjars/jquery/3.2.1/jquery.min.js"),
+				Arguments.of("/webjars/angularjs/1.5.8/angular.js"),
+				Arguments.of("/webjars/bootstrap/5.0.0/css/bootstrap.min.css"),
+				Arguments.of("/webjars/bootstrap/5.0.0/js/bootstrap.min.js"),
+				Arguments.of("/webjars/angular-ui-router/1.0.30/angular-ui-router.min.js"));
+	}
+
+	@DisplayName("dependencies")
+	@ParameterizedTest
+	@MethodSource("samples")
+	void test1(final String resource) throws Exception {
+		resultActions = mvc.perform(get(resource).accept(MediaType.TEXT_PLAIN));
+		resultActions.andExpect(status().isOk());
 	}
 
 }
