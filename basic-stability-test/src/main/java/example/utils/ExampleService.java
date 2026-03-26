@@ -31,7 +31,7 @@ public class ExampleService {
 		int iteration = retries;
 		long prevSize = 0L;
 		long prevMtime = 0L;
-		long interval = 1000;
+		long interval = 100;
 		int threshold = 2;
 		while (retries-- > 0) {
 			long size = file.length();

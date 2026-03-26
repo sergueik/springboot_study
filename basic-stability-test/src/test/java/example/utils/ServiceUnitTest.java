@@ -1,8 +1,11 @@
 package example.utils;
 
+import java.util.Random;
+
 /**
- * Copyright 2026 Serguei Kouzmine
- */
+* Copyright 2026 Serguei Kouzmine
+*/
+
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +37,7 @@ public class ServiceUnitTest {
 	ExampleService exampleService;
 	int retries = 4;
 	private AtomicInteger cnt = new AtomicInteger(0);
-	private long[] sizes = { 10L, 20L, 30L, 40L };
+	private Long[] data = { 10L, 20L, 30L, 40L };
 
 	@BeforeEach
 	public void setup() {
@@ -59,11 +62,11 @@ public class ServiceUnitTest {
 		// The thenReturn() is evaluated once at stubbing time
 		// The getFilesize() is not called every invocation
 		when(file.length())
-				.thenAnswer((InvocationOnMock invocation) -> sizes[cnt.getAndUpdate(n -> (n + 1) % sizes.length)]);
+				.thenAnswer((InvocationOnMock invocation) -> data[cnt.getAndUpdate(n -> (n + 1) % data.length)]);
 		// NOTE: file.lastModified() is constant during the test.
 		// Using Math.random() (or any other function invocation) in thenReturn() would
 		// be evaluated once at stubbing time,
-		// creating a misleading illusion of variability. 
+		// creating a misleading illusion of variability.
 		// thenReturn() takes a value, not a supplier
 		// Keep it deterministic.
 		when(file.lastModified()).thenReturn(1L);
@@ -74,12 +77,50 @@ public class ServiceUnitTest {
 	@Test
 	public void test3() {
 		// Mockito returns next argument every call, then keep returning the last one
-		when(file.length()).thenReturn(sizes[0], sizes[2]);
+		when(file.length()).thenReturn(data[0], data[2]);
 		when(file.lastModified()).thenReturn(1L);
 		assertThat(exampleService.waitStable(file, retries), is(true));
 	}
 
-	private long getFilesize() {
-		return (long) sizes[cnt.getAndUpdate(n -> (n + 1) % sizes.length)];
+	@DisplayName("stable file size failed after exhausting probe calls")
+	@Test
+	public void test4() {
+		when(file.length()).thenReturn(data[0], data[1], data[2], data[3], data[0]);
+		when(file.lastModified()).thenReturn(1L);
+		assertThat(exampleService.waitStable(file, retries), is(false));
 	}
+
+	// Java does not have a "spread" because is a statically typed language
+	@DisplayName("stable file size failed  with  sampling with Repetition")
+	@Test
+	public void test5() {
+		// send one scalar + one array so it can bind to thenReturn(T, T...)
+		when(file.length()).thenReturn(data[0], (Long[]) makeSample(data, retries, false));
+		when(file.lastModified()).thenReturn(1L);
+		assertThat(exampleService.waitStable(file, retries), is(false));
+	}
+
+	// NOTE: this is how to NOT do it - it wil not work
+	private long getFilesize() {
+		return (long) data[cnt.getAndUpdate(n -> (n + 1) % data.length)];
+	}
+
+	// Sample with replacements
+	public static <T> T[] makeSample(T[] data, int count, boolean makerandom) {
+		if (data == null || data.length == 0) {
+			return null; // Or throw an exception as appropriate
+		}
+
+		T[] result = Arrays.copyOf(data, count);
+		Random random = new Random();
+		int sourceLength = data.length;
+
+		for (int cnt = 0; cnt < count; cnt++) {
+			// optionally generate a random index within the bounds of the source array
+			int index = makerandom ? random.nextInt(sourceLength - 1) : cnt % sourceLength;
+			result[cnt] = data[index];
+		}
+		return result;
+	}
+
 }
