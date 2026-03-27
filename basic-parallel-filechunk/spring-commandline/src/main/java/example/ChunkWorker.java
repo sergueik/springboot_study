@@ -77,7 +77,7 @@ public class ChunkWorker implements Runnable {
 			reader = ioBuilder.newReader(inputStream);
 			// NOTE there is another code pattern of creating LineReader 
 			// https://github.com/svn2github/jrecord/blob/master/Source/JRecord/src/net/sf/JRecord/IO/CobolIoProvider.java#L221
-			//  where JRecord assumes the fond based on dialect which is not always correct
+			// where JRecord assumes the font based on dialect which is not always correct
 
 			AbstractLine line;
 			while ((line = reader.read()) != null) {
