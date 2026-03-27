@@ -61,7 +61,7 @@ public class ChunkPartitioner {
 		
 		// NOTE there is another code pattern of creating LineReader 
 		// https://github.com/svn2github/jrecord/blob/master/Source/JRecord/src/net/sf/JRecord/IO/CobolIoProvider.java#L221
-		//  where JRecord assumes the fond based on dialect which is not always correct
+		// where JRecord assumes the font based on dialect which is not always correct
 		// NOTE: the last call is ignored
 		// NOTE: the unit tests are non existent in cb2xml
 		// lack of tests is not a badge of honor — it’s historical debt.
