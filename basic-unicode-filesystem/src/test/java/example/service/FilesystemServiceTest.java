@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.hamcrest.Matchers.not;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -121,6 +122,79 @@ class FilesystemServiceTest {
 				System.out.println("Entry: " + p);
 			}
 		}
+	}
+
+	@DisplayName("Invisible zero width space in filename")
+	@Test
+	void test5() /* testInvisibleSpaceInFilename */ throws Exception {
+
+		filename = "report.txt";
+		Path file = tmpDir.resolve(filename.replaceAll(".", "\u200B" + "."));
+		Files.writeString(file, "ok");
+
+		assertThat(file.getFileName().toString(), not(containsString(filename))); // 💣 looks identical
+	}
+
+	@DisplayName("Invisible BOM in filename")
+	@Test
+	void test6 /* testBomInFilename */ () throws Exception {
+		String bom = "\uFEFF";
+		filename = "report.txt";
+
+		Path file = tmpDir.resolve(bom + filename);
+		Files.writeString(file, "ok");
+
+		System.out.println("[" + file.getFileName() + "]");
+		assertThat(file.getFileName().toString().indexOf(bom), is(0));
+		assertThat(file.getFileName().toString(), matchesPattern(bom + filename));
+	}
+
+	@DisplayName("Lookalike characters in filenams - visually identical in many fonts")
+	@Test
+	void test7()/* testLookAlikeFilenames */ throws Exception {
+
+		String filename1 = "report-file.txt"; // ASCII hyphen '-'
+		String filename2 = "report–file.txt"; // EN DASH (U+2013)
+												// EM DASH: "report—file.txt" (U+2014)
+
+		Path path1 = tmpDir.resolve(filename1);
+		Path path2 = tmpDir.resolve(filename2);
+
+		Files.writeString(path1, "ok");
+		Files.writeString(path2, "ok");
+
+		System.out.println("normal: [" + path1.getFileName() + "]");
+		System.out.println("sneaky: [" + path2.getFileName() + "]");
+
+		assertThat(path1.getFileName().toString().equals(path2.getFileName().toString()), is(false));
+
+		assertThat(Files.exists(path1), is(true));
+		assertThat(Files.exists(path2), is(true));
+	}
+
+	@Test
+	void test8 /* testMisDecodedFilenameDoubleQuestionMark */() throws Exception {
+		// shouldExposeDoubleQuestionMarkEffect
+
+		Path dir = Path.of(System.getProperty("java.io.tmpdir"));
+
+		// bytes that do NOT form valid UTF-8
+		byte[] badUtf8 = new byte[] { (byte) 0xC3, (byte) 0x28 };
+
+		// decode incorrectly → replacement chars likely
+		String broken = new String(badUtf8, StandardCharsets.UTF_8);
+
+		Path file = dir.resolve("file_" + broken + ".txt");
+
+		Files.writeString(file, "data");
+
+		String actual = file.getFileName().toString();
+
+		System.out.println("Actual filename: " + actual);
+
+		// the important part: it is NOT what we intended
+		assertThat(actual, not(containsString("é")));
+		assertThat(actual, matchesPattern(".*[\\?�].*")); // '?' or replacement char
 	}
 
 	// Utilities
