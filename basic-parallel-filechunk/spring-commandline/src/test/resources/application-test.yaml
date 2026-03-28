@@ -1,0 +1,16 @@
+example:
+  baseBadPath:
+    src/test/resources/copybooks/bad/
+  baseGoodPath: 
+    src/test/resources/copybooks/good/
+  badCopybooks:
+    - bad-88-placement.cbl
+    - example-dc3aa31c.cbl
+    - garbage-token.cbl
+    - comp3-fields.cbl
+    - occurs-array.cbl
+    - simple-fixed.cbl
+    - with-88-levels.cbl
+    - missing-level.cbl
+  goodCopybooks: [ example.cbl]
+
