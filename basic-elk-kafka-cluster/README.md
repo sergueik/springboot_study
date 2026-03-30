@@ -1,3 +1,107 @@
+### Usage
+```sh
+for F in app1 app2; do pushd  $F; mvn package ;   popd; done
+```
+
+```sh
+docker-compose up --build -d
+```
+```sh
+docker-compose ps
+```
+```txt
+   Name                   Command                  State                            Ports                     
+---------------------------------------------------------------------------------------------------------------
+apm-server      /usr/bin/tini -- /usr/loca ...   Up (healthy)   0.0.0.0:8200->8200/tcp,:::8200->8200/tcp       
+app1            java -javaagent:/home/elas ...   Up (healthy)   0.0.0.0:8080->8080/tcp,:::8080->8080/tcp       
+app2            java -javaagent:/home/elas ...   Up                                                            
+elasticsearch   /bin/tini -- /usr/local/bi ...   Up (healthy)   0.0.0.0:9200->9200/tcp,:::9200->9200/tcp,      
+                                                                9300/tcp                                       
+kafka           /etc/confluent/docker/run        Up             0.0.0.0:9092->9092/tcp,:::9092->9092/tcp       
+kibana          /bin/tini -- /usr/local/bi ...   Up (healthy)   0.0.0.0:5601->5601/tcp,:::5601->5601/tcp  
+```
+
+
+```sh
+curl -sv -XPOST "http://localhost:8080/basic/publish?topic=demo-topic"  -H 'Content-Type: application/json' -d '{"name": "new value"}'
+```
+```text
+published 21 to demo-topic
+```
+>NOTE:  currently only one topic `demo-topic` is known to `app2` and is har oded.
+```sh
+docker-compose logs app1
+```
+```text
+app1             | 2026-03-30 21:42:50.221  INFO 1 --- [io-8080-exec-10] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: f8c67dc3ae0a3265
+app1             | 2026-03-30 21:42:50.221  INFO 1 --- [io-8080-exec-10] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1774906970218
+app1             | 2026-03-30 21:42:50.799  INFO 1 --- [ad | producer-1] org.apache.kafka.clients.Metadata        : [Producer clientId=producer-1] Resetting the last seen epoch of partition demo-topic-0 to 4 since the associated topicId changed from null to GuyR47BRTwmatE3NTgxTJQ
+app1             | 2026-03-30 21:42:50.803  INFO 1 --- [ad | producer-1] org.apache.kafka.clients.Metadata        : [Producer clientId=producer-1] Cluster ID: MkU3OEVBNTcwNTJENDM2Qg
+app1             | 2026-03-30 21:42:50.811  INFO 1 --- [ad | producer-1] o.a.k.c.p.internals.TransactionManager   : [Producer clientId=producer-1] ProducerId set to 1002 with epoch 0
+app1             | published 21 to demo-topic
+```
+```sh
+docker-compose exec kafka kafka-topics --bootstrap-server localhost:9092 --list
+```
+
+```text
+__consumer_offsets
+demo-topic
+your-topic
+```
+
+```sh
+docker-compose exec kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic demo-topic --from-beginning
+```
+abort by `^C`
+```text
+{"name": "value"}
+{"name": "new value"}
+^CProcessed a total of 2 messages
+```
+
+```sh
+docker-compose logs app2 
+```
+```text
+docker-compose logs app2 
+app2             | received: {"name": "new value"}
+	
+```
+
+The Elastic APM is operational:
+
+[Kibana starting](screenshots/capture-kibana-launching.png)
+
+Both services are known to Elastic
+
+[Service Visibility](screenshots/capture-kibana-observability-apm-services.png)
+
+To  see the trace context propagation over Kafka find the operation that starts it
+
+[Traces Visibility](screenshots/capture-kibana-observability-apm-traces.png)
+
+
+One can see the trace in action
+
+Dy drilling into waterfall steps  one can confirm through  Kibana that both applications have the same
+
+
+in :
+
+role | property               value 
+-----|------------------- | ---------------------
+__app1__ | `span.id`             | `f89f900d2ef87c5a`	
+__app2__  | `parent.id`          | `f89f900d2ef87c5a`
+
+
+There is also a flow fragments:
+
+[Fragment1](screenshots\capture-flow-fragment1.png)
+
+[Fragment2](screenshots\capture-flow-fragment2.png)
+
+
 ### Troubleshooting
 
 ```text
@@ -51,17 +155,6 @@ kibana           | [2026-03-30T11:45:08.979+00:00][INFO ][plugins.screenshotting
 ```
 
 
-```txt
-   Name                   Command                  State                            Ports                     
----------------------------------------------------------------------------------------------------------------
-apm-server      /usr/bin/tini -- /usr/loca ...   Up (healthy)   0.0.0.0:8200->8200/tcp,:::8200->8200/tcp       
-app1            java -javaagent:/home/elas ...   Up (healthy)   0.0.0.0:8080->8080/tcp,:::8080->8080/tcp       
-app2            java -javaagent:/home/elas ...   Up                                                            
-elasticsearch   /bin/tini -- /usr/local/bi ...   Up (healthy)   0.0.0.0:9200->9200/tcp,:::9200->9200/tcp,      
-                                                                9300/tcp                                       
-kafka           /etc/confluent/docker/run        Up             0.0.0.0:9092->9092/tcp,:::9092->9092/tcp       
-kibana          /bin/tini -- /usr/local/bi ...   Up (healthy)   0.0.0.0:5601->5601/tcp,:::5601->5601/tcp  
-```
 ```sh
 curl -X POST "http://localhost:9200/testindex/_doc/1" -H "Content-Type: application/json" -d '{"foo":"bar"}'
 ```
@@ -236,59 +329,3 @@ app2             | 2026-03-30 19:01:19.382  INFO 1 --- [ntainer#0-0-C-1] o.a.k.c
 app2             | 2026-03-30 19:01:19.412  INFO 1 --- [ntainer#0-0-C-1] o.a.k.c.c.internals.SubscriptionState    : [Consumer clientId=consumer-demo-group-1, groupId=demo-group] Resetting offset for partition demo-topic-0 to position FetchPosition{offset=1, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[kafka:9092 (id: 1 rack: null)], epoch=0}}.
 app2             | 2026-03-30 19:01:19.454  INFO 1 --- [ntainer#0-0-C-1] o.s.k.l.KafkaMessageListenerContainer    : demo-group: partitions assigned: [demo-topic-0]
 ```
-
-```sh
-docker-compose exec kafka kafka-topics --bootstrap-server localhost:9092 --list
-```
-
-```text
-__consumer_offsets
-demo-topic
-your-topic
-```
-
-```sh
-docker-compose exec kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic demo-topic --from-beginning
-```
-abort by `^C`
-```text
-%7B%22name%22%3A+%22value%22%7D=
-%7B%22name%22%3A+%22value%22%7D=
-^CProcessed a total of 2 messages
-```
-
-```sh
-docker-compose logs app2 
-```
-```text
-app2             | received: %7B%22name%22%3A+%22value%22%7D=```
-
-```
-
-```sh
-for i in 1 2 3 4 5; do
-  curl -XPOST http://localhost:8080/basic/publish \
-    -H "Content-Type: application/json" \
-    -d "{\"id\":$i,\"name\":\"value$i\"}"
-done
-```
-
-The Elastic APM is operational:
-
-[Kibana starting](screenshots/capture-kibana-launching.png)
-
-
-Both services are known to Elastic
-
-[Service Visibility](screenshots/capture-kibana-observability-apm-services.png)
-
-However the trace context propagation over Kafka is not yet happening
-
-[Traces Visibility](screenshots/capture-kibana-observability-apm-traces.png)
-
-
-Obsertvability → APM → Services
-app1
-app2
-
-Observability → APM → Traces
