@@ -1,0 +1,13 @@
+server.name: "kibana"
+server.host: "0.0.0.0"
+
+# Elasticsearch connection (HTTP, security off)
+elasticsearch.hosts: ["http://elasticsearch:9200"]
+
+# Minimal key to satisfy encrypted saved objects requirement
+xpack.encryptedSavedObjects.encryptionKey: "kibana_test_key_01234567890123456789"
+
+# Optional: disable heavy features that exist
+xpack.reporting.enabled: false
+xpack.monitoring.enabled: false
+xpack.monitoring.ui.enabled: false

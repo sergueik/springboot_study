@@ -1,0 +1,15 @@
+cluster.name: "docker-cluster"
+network.host: 0.0.0.0
+http.port: 9200
+
+xpack.security.enabled: false
+xpack.security.http.ssl.enabled: false
+xpack.security.authc.token.enabled: false
+xpack.security.authc.api_key.enabled: false
+
+xpack.monitoring.collection.enabled: true
+xpack.license.self_generated.type: basic
+
+script.painless.regex.enabled: true
+# Optional: script.painless.regex.limit-factor: 1000   # tweak if needed
+
