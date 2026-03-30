@@ -2393,7 +2393,307 @@ in index pattern there is a number of `mongodb.` fields
 
 NOTE: not seeing the query defails yet.
 
+### Kafka in The Middle
 
+Kafra connections tracing across is absolutely possible, and this is exactly what distributed tracing across asynchronous boundaries is for. The important nuance is:
+
+same business transaction / same trace = yes
+same ACID runtime transaction = usually no
+
+
+Kafka producer and consumer are decoupled in time, so they are almost never in the same technical transaction scope the way two JDBC calls inside one method would be.
+
+Instead, you create:
+
+one trace ID for the business flow
+one producer span
+one consumer span
+preserve the relationship through Kafka headers
+optionally add span links for retries / fan-out
+
+Kafka headers usually carry:
+
+traceparent
+tracestate
+optional business correlation ID
+
+The producer injects this automatically, and the consumer extracts it, so both services appear in one distributed trace
+
+Because Kafka is async, the consumer span should often be a linked span, not a strict child.
+
+Why?
+
+If the consumer runs 5 minutes later, making it a normal child would visually imply the producer call took 5 minutes.
+
+So better observability systems use:
+
+parent-child for near-immediate processing
+span links for delayed processing, retries, DLQ, replay
+
+This is especially useful in your kind of Prometheus + ELK + distributed systems debugging work, because retries become visually obvious.
+
+Practical “same transaction” answer
+
+If by “same transaction” you mean exactly-once Kafka transaction, that is a different feature:
+
+Kafka producer transaction
+consumer offset commit
+downstream produce
+read-process-write
+
+This ensures message atomicity, not tracing.
+
+So there are really two independent layers:
+
+1) Kafka transaction
+
+Prevents duplicates / half-commits.
+
+2) Distributed tracing
+
+Lets you see the flow.
+
+Best production systems use both.
+
+
+When you use both manual instrumentation and the Java agent, the goal is:
+
+manual spans must join the exact same active context created by the agent
+and
+you must avoid duplicate spans for the same operation
+
+Otherwise traces become fragmented, mis-parented, or doubled.
+
+1) Use the same OpenTelemetry instance as the agent
+
+The most important rule:
+
+never bootstrap a second SDK manually inside the app
+
+code should use:
+```
+Tracer tracer = GlobalOpenTelemetry.getTracer("my-app");
+```
+The Java agent initializes GlobalOpenTelemetry for you, so your custom spans automatically align with agent spans.
+
+If you create another SDK like this:
+```
+OpenTelemetrySdk.builder()...
+```
+you can accidentally create different trace pipelines, causing unrelated trace IDs.
+
+That is the #1 cause of “why are my custom spans in another trace”.
+
+2) Always attach spans to the current active context
+
+The agent creates active spans for:
+
+HTTP request
+Kafka consume
+DB calls
+outgoing HTTP
+scheduled tasks
+many frameworks
+
+Your manual spans should become children of the current active span:
+```
+Span span = tracer.spanBuilder("business-validation").startSpan();
+
+try (Scope scope = span.makeCurrent()) {
+    validateOrder();
+} finally {
+    span.end();
+}
+```
+Because the active context already comes from the agent, this child span aligns automatically.
+
+3) Do NOT manually instrument what the agent already instruments
+
+This is where misalignment often looks like “bad data”.
+
+Bad example:
+```
+Span span = tracer.spanBuilder("kafka send").startSpan();
+kafkaTemplate.send(...);
+```
+The Java agent already creates:
+
+producer span
+consumer span
+HTTP spans
+JDBC spans
+Kafka spans
+
+So your manual span duplicates the same semantic operation.
+
+Instead manually instrument business steps only:
+
+"parse-csv"
+"apply-discount-rules"
+"enrich-from-legacy-system"
+"load-average-calculation"
+
+This gives business visibility between agent spans.
+
+Kafka async boundary case is now a first-class, mainstream observability pattern, and all contemporary serious vendors support it similarly to REST auto-instrumentation.
+
+messaging spans today are treated almost like HTTP spans
+by Java agents, .NET profilers/startup hooks, and package/module-based interpreted language SDKs.
+
+The ecosystem has matured a lot.
+
+1) Java: yes, agent handles Kafka automatically
+
+In Java this is exactly like REST/JDBC:
+
+-javaagent:opentelemetry-javaagent.jar
+
+or vendor equivalents:
+
+Datadog dd-java-agent
+Elastic APM agent
+New Relic Java agent
+Dynatrace OneAgent
+AppDynamics agent
+
+These agents automatically instrument:
+
+KafkaProducer.send()
+KafkaConsumer.poll()
+Spring Kafka listeners
+Reactor Kafka
+Kafka Streams (vendor dependent)
+JMS / RabbitMQ / Pulsar often too
+
+and inject/extract headers like:
+
+traceparent
+tracestate
+baggage
+
+So yes — same zero-code feel as REST servlet tracing.
+
+2) .NET: same story through startup hooks / profiler env vars
+
+Your “environment tweaks” description is very accurate.
+
+In .NET this is usually:
+
+CORECLR_ENABLE_PROFILING=1
+CORECLR_PROFILER=...
+OTEL_DOTNET_AUTO_HOME=...
+
+or vendor env vars for Datadog / New Relic / Dynatrace.
+
+Then Kafka libraries such as:
+
+Confluent.Kafka
+MassTransit over Kafka
+CAP
+NServiceBus bridges
+
+are auto-instrumented.
+
+The runtime profiler intercepts method calls much like Java bytecode weaving.
+So yes, same philosophy as Java agent, just CLR profiler based.
+
+3) Python / Node / Ruby / PHP: package import wrappers
+
+For interpreted languages it is usually:
+
+Python
+opentelemetry-instrument python app.py
+
+or package wrappers for confluent-kafka.
+
+Node
+require("@opentelemetry/auto-instrumentations-node");
+PHP
+
+Composer auto-hooks.
+
+Exactly what you described:
+
+include package/module and bootstrap once
+
+Kafka propagation support exists here too.
+
+4) Vendors go beyond “simple spans”
+
+Modern vendors now understand stream semantics, not just request spans.
+
+This is where async tracing became much better.
+
+For Kafka they now model:
+
+produce
+broker transit
+consume
+retries
+DLQ
+repartition
+stream joins
+fan-out
+lag
+consumer group latency
+
+For example Datadog has Data Streams Monitoring, which is even richer than classic tracing for Kafka pipelines.
+
+So today the async path is often better visualized than REST.
+
+5) The key difference vs REST
+
+REST usually gives:
+
+strict parent -> child tree
+
+Kafka often gives:
+
+span links
+
+or
+
+producer -> linked consumer
+
+because the consumer may execute much later.
+
+This is now a well-known semantic convention, not a hack.
+
+That means vendors now natively support:
+
+delayed processing
+retries
+replay
+batch consume
+parallel fan-out
+stream topology branches
+6) Your bigger architecture question
+
+So yes, the pattern:
+
+REST -> Kafka -> Service -> Kafka -> DB
+
+is now considered the normal production tracing topology.
+
+Vendors expect this.
+
+In fact many cloud-native demos intentionally use:
+
+REST ingress
+Kafka async middle
+DB sink
+Tempo/Jaeger/Zipkin
+
+because it validates async trace propagation quality.
+
+So the short answer is:
+
+Yes — Kafka async boundaries are now as mainstream for auto-instrumentation as REST boundaries.
+Java agents, .NET profilers, and interpreted-language bootstrap packages all support this pattern out of the box.
+
+The only place where manual work is still common is:
+
+proprietary message envelopes, custom serializers, or home-grown queue abstractions
 
 ### See Also
 
