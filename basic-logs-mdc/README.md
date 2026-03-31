@@ -150,7 +150,70 @@ docker-compose logs app | grep --color=never "Hello" | tail -1 |cut -f 2 -d '|' 
 }
 
 ```
+add explicit transaction:
+```java
+    @Override
+    public void run(String... args) {
+        Transaction transaction = ElasticApm.startTransaction();
+        try {
+            transaction.setName("hello-lab");
+            transaction.setType("lab");
 
+            transaction.activate();
+            log.info("Hello structured logging");
+        } finally {
+            transaction.end();
+            System.exit(0);
+        }
+    }
+```
+repeat the build,run with java agent 
+```json
+{
+  "@timestamp": "2026-03-31T01:46:28.416467600Z",
+  "log": {
+    "level": "INFO",
+    "logger": "example.Application"
+  },
+  "process": {
+    "pid": 24388,
+    "thread": {
+      "name": "main"
+    }
+  },
+  "service": {
+    "version": "0.1.0-SNAPSHOT",
+    "node": {}
+  },
+  "message": "Hello structured logging",
+  "transaction": {
+    "id": "4fa7247e8da2ff6d"
+  },
+  "trace": {
+    "id": "71c4a9c44925fb8990e04a3bdd38a154"
+  },
+  "ecs": {
+    "version": "8.11"
+  }
+}
+
+```
+the closest Spring Batch equivalent is
+```java
+public class BatchMdcJobListener implements JobExecutionListener {
+
+    @Override
+    public void beforeJob(JobExecution jobExecution) {
+        MDC.put("jobName", jobExecution.getJobInstance().getJobName());
+        MDC.put("jobExecutionId", String.valueOf(jobExecution.getId()));
+    }
+
+    @Override
+    public void afterJob(JobExecution jobExecution) {
+        MDC.clear();
+    }
+}
+```
 ### Troubleshooting
 ```text
 docker-compose up --build -d

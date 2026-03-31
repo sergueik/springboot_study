@@ -5,6 +5,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
+import co.elastic.apm.api.ElasticApm;
+import co.elastic.apm.api.Transaction;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +24,16 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        log.info("Hello structured logging");
-        System.exit(0);
+        Transaction transaction = ElasticApm.startTransaction();
+        try {
+            transaction.setName("hello-lab");
+            transaction.setType("lab");
+
+            transaction.activate();
+            log.info("Hello structured logging");
+        } finally {
+            transaction.end();
+            System.exit(0);
+        }
     }
 }
