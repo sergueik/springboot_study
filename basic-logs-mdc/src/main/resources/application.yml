@@ -1,0 +1,8 @@
+logging:
+  structured:
+    format:
+      console: ecs
+  level:
+    root: INFO
+example:
+  property: value
