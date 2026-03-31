@@ -214,6 +214,7 @@ public class BatchMdcJobListener implements JobExecutionListener {
     }
 }
 ```
+<<<<<<< HEAD
 ### NOTE
 ```sh
 curl  http://localhost:8080/hello
@@ -292,6 +293,8 @@ xargs: echo: terminated by signal 13
 ```txt
 {@timestamp:2026-03-31T12:02:45.574100300Z,log:{level:INFO,logger:example.controller.ExampleController},process:{pid:25504,thread:{name:http-nio-8080-exec-1}},service:{version:0.3.0-SNAPSHOT,node:{}},message:hello,ecs:{version:8.11}}
 ```
+=======
+>>>>>>> 74c45e571c6e24295921a66bc5266e17294f7245
 ### Troubleshooting
 ```text
 docker-compose up --build -d
