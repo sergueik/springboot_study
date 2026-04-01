@@ -110,12 +110,14 @@ function applyZoom() {
 </script>
 
 </head>
+ <div class="app-shell">
+    <div class="titlebar">Ultra Basic DOT Renderer</div>
 
-<body class="container mt-3">
+    <div class="split">
+      <div class="pane">
+        <div class="panel-label">DOT Input</div>
+        <textarea id="dotInput">
 
-<div class="row">
-  <div class="col-6">
-    <textarea id="dotInput" class="form-control" rows="12">
 digraph if_else_flow {
   rankdir=LR;
   node [shape=circle];
@@ -135,17 +137,20 @@ digraph if_else_flow {
   Else  -> End;
 }
 
-    </textarea>
+     </textarea>
 
     <button class="btn btn-primary mt-2" onclick="renderDot()">Render</button>
     <button onclick="zoomIn()">+</button>
 <button onclick="zoomOut()">-</button>
   </div>
 
-  <div class="col-6">
-    <div id="output" style="border:1px solid #ccc; padding:10px;"></div>
+ <div class="pane">
+        <div class="panel-label">Rendered Graph</div>
+        <div id="output"></div>
+      </div>
+    </div>
   </div>
-</div>
+
 <script>
   const viz = new Viz();
 
