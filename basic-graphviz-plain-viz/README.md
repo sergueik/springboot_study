@@ -1,13 +1,51 @@
+### Info
+
+__Copilot__ and equivalent __AI__ prone to produce voluminous [Mermaid](https://en.wikipedia.org/wiki/Mermaid_(software)) or [Graphviz](https://graphviz.org/Gallery) [DOT](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) *flowchart-like* markdown that is technically correct but mentally expensive to parse.
+This lightweight __DOT__ renderer is for air-gapped and constrained environments
+for machine-generated flow descriptions
+
+An AI asissted engineer can:
+
+* copy/paste/render Mermaid/DOT-like structures
+* instantly reduce cognitive load
+* inspect loops, fanout, dead ends
+* reason visually
+
+do it even on isolated systems without exposing the subject infomation to official __Graphviz__ [Playground](https://magjac.com/graphviz-visual-editor) 
+
+* zero external dependencies
+* no web fonts
+* no CDN Bootstrap assumptions (bootstrap-free)
+* no icons from libraries
+* everything relative-path local
+* strong “runs from a USB stick or shared folder” nostalgia
+* behaves well in Explorer / Finder / Thunar / Dolphin / Nautilus
+
 ### Usage
-store locally. Replace with your enterprise artifactory or CDN
+
+![Launch](screenshots/capture-launch.png)
+
+>NOTE it will be rendere entirely locally
+
+![Page](screenshots/page.png)
+
+![Render](screenshots/capture-render.png)
+
+> NOTE: use zoom buttons to fit the graph to div
+
+#### Updating to Latest (Optional)
+
+store fikes locally. Replace URL with your enterprise artifactory or CDN
 
 ```sh
 curl -skLO https://cdn.jsdelivr.net/npm/viz.js@2.1.2/viz.js 
 curl -skLO https://cdn.jsdelivr.net/npm/viz.js@2.1.2/full.render.js
 ```
-![Page](https://github.com/sergueik/springboot_study/blob/master/basic-graphviz-plain-viz/screenshots/page.png)
 
-### Tool Comparison
+### Background
+
+
+### Unrelated Tool Comparison
 
 The [Viz.js](https://visjs.org/) is a sharply purposed hierarchical acyclic dependency flowchart decision tree graph layout driver
 much higher abstraction level than the other canonical library
