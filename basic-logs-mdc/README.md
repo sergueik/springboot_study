@@ -214,21 +214,74 @@ public class BatchMdcJobListener implements JobExecutionListener {
     }
 }
 ```
-<<<<<<< HEAD
-### NOTE
+Spring REST
+Contoller->Service->Component->...
+
+```java
+@RestController
+@RequestMapping("/hello")
+public class ExampleController {
+
+	private static final Logger log = LoggerFactory.getLogger(ExampleController.class);
+
+	@Autowired
+	public ExampleController(ExampleService data) {
+		service = data;
+	}
+
+	@GetMapping
+	public String hello() {
+		log.info("hello");
+		return service.hello();
+	}
+}
+
+```
+
+```java
+@Service
+public class ExampleService {
+	private static final Logger log = LoggerFactory.getLogger(ExampleService.class);
+
+	@Autowired
+	public ExampleService(ExampleComponent data) {
+		propertyComponent = data;
+	}
+	public String hello() {
+		log.info("hello");
+		return "Hello " + propertyComponent.getProperty1();
+	}
+}
+
+
+```
+
+```java
+@Component
+public class ExampleComponent {
+	private static final Logger log = LoggerFactory.getLogger(ExampleComponent.class);
+
+	@Value("${example.property:default}")
+	private String property;
+
+	public String getProperty1() {
+		log.info("hello");
+		return property;
+	}
+
+```
 ```sh
-curl  http://localhost:8080/hello
-Hello value
+curl http://localhost:8080/hello
 ```
 ```json
 {
-  "@timestamp": "2026-03-31T12:07:25.296197300Z",
+  "@timestamp": "2026-03-31T12:14:08.636130Z",
   "log": {
     "level": "INFO",
     "logger": "example.controller.ExampleController"
   },
   "process": {
-    "pid": 24296,
+    "pid": 27500,
     "thread": {
       "name": "http-nio-8080-exec-1"
     }
@@ -238,21 +291,48 @@ Hello value
     "node": {}
   },
   "message": "hello",
+  "transaction": {
+    "id": "f9aa56128b4f1062"
+  },
+  "trace": {
+    "id": "329080a6a80555602eb9b19c663f2e95"
+  },
   "ecs": {
     "version": "8.11"
   }
 }
-
-
-```
-```sh
-java -jar target\example.mdc.jar | tee a.log
-```
-```sh
-java -javaagent:elastic-apm-agent.jar -Delastic.apm.service_name=app1 -Delastic.apm.application_packages=example  -Djava.security.egd=file:/dev/./urandom -jar target/example.mdc.jar | tee a.log
 ```
 ```json
 {
+  "@timestamp": "2026-03-31T12:14:08.643007900Z",
+  "log": {
+    "level": "INFO",
+    "logger": "example.service.ExampleService"
+  },
+  "process": {
+    "pid": 27500,
+    "thread": {
+      "name": "http-nio-8080-exec-1"
+    }
+  },
+  "service": {
+    "version": "0.3.0-SNAPSHOT",
+    "node": {}
+  },
+  "message": "hello",
+  "transaction": {
+    "id": "f9aa56128b4f1062"
+  },
+  "trace": {
+    "id": "329080a6a80555602eb9b19c663f2e95"
+  },
+  "ecs": {
+    "version": "8.11"
+  }
+}
+```
+```json
+
   "@timestamp": "2026-03-31T12:14:08.644954900Z",
   "log": {
     "level": "INFO",
@@ -281,20 +361,6 @@ java -javaagent:elastic-apm-agent.jar -Delastic.apm.service_name=app1 -Delastic.
 }
 
 ```
-
-`echo` will strip quotes making console log  copy invalid JSON:
-```sh
-grep hello a.log | xargs -IX echo X | jq "."
-jq: parse error: Invalid numeric literal at line 1, column 12
-```
-```text
-xargs: echo: terminated by signal 13
-```
-```txt
-{@timestamp:2026-03-31T12:02:45.574100300Z,log:{level:INFO,logger:example.controller.ExampleController},process:{pid:25504,thread:{name:http-nio-8080-exec-1}},service:{version:0.3.0-SNAPSHOT,node:{}},message:hello,ecs:{version:8.11}}
-```
-=======
->>>>>>> 74c45e571c6e24295921a66bc5266e17294f7245
 ### Troubleshooting
 ```text
 docker-compose up --build -d
