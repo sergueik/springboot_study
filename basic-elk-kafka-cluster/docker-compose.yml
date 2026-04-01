@@ -126,6 +126,23 @@ services:
       - app1
     networks:
       - elastic
+    command:
+      - --app.kafka.group-id=demo-group-2  
+
+  app3:
+    restart: unless-stopped
+    build: app3
+    container_name: app3
+    environment:
+      APP_KAFKA_GROUP_ID: demo-group-3
+      APP_KAFKA_TOPIC: demo-topic
+    depends_on:
+      - apm-server
+      - kafka
+      - app1
+    networks:
+      - elastic
+
 
 networks:
   elastic:

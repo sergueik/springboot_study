@@ -2,7 +2,7 @@
 
 *  build app
 ```sh
-for F in app1 app2; do pushd  $F; mvn package ;   popd; done
+for F in app1 app2 app3; do pushd  $F; mvn package ;   popd; done
 ```
 * build cluster 
 ```sh
@@ -13,8 +13,8 @@ this will construct a minimal cluster running Java Spriung apps exchanging messa
 
 > NOTE if you want to only rebuild `app1`, `app2` then
 ```sh
-docker-compose stop app1 app2
-docker-compose rm -f app1 app2
+docker-compose stop app1 app2 app3
+docker-compose rm -f app1 app2 app3
 ``` 
 ```sh
 docker-compose ps
@@ -61,6 +61,7 @@ app1             | 2026-03-30 21:42:50.803  INFO 1 --- [ad | producer-1] org.apa
 app1             | 2026-03-30 21:42:50.811  INFO 1 --- [ad | producer-1] o.a.k.c.p.internals.TransactionManager   : [Producer clientId=producer-1] ProducerId set to 1002 with epoch 0
 app1             | published 21 to demo-topic
 ```
+
 * confirm the payload is present on Kafka
 
 ```sh
@@ -82,14 +83,23 @@ abort by `^C`
 {"name": "new value"}
 ^CProcessed a total of 2 messages
 ```
-* confirm the payload is colleted by `app2` from Kafka
+* confirm the payload is colleted by `app2`,`app3` from Kafka
 
 ```sh
-docker-compose logs app2 
+docker-compose logs app2
 ```
 ```text
-docker-compose logs app2 
 app2             | received: {"name": "new value"}
+```
+```sh
+docker-compose logs app3
+```
+```text
+container    : demo-group-3: partitions assigned: [demo-topic-0]
+app3             | received: {"name": "new value"}
+app3             | traceparent = 00-91de0612610170e0e2dac7e5f5f0e86b-931e2ce0a734206b-01
+app3             | elasticapmtraceparent = ��ap��������k�,�4 k
+app3             | tracestate = es=s:1
 ```
 
 Examine the Elastic APM Trace context propagation over Kafka find the operation that starts it
@@ -101,7 +111,6 @@ One can see the trace in action by drilling into waterfall steps
 
 in :
 
------|------------------- | ---------------------
 role | property           |    value 
 -----|------------------- | ---------------------
 __app1__ | `span.id`             | `f89f900d2ef87c5a`	
@@ -114,6 +123,23 @@ There is also a flow fragments:
 
 ![Fragment2](screenshots/capture-flow-fragment2.png)
 
+when `app2`, `app3` in same grop only one receives:
+![Fragment2](screenshots/capture-trace-fanout.png)
+
+when both `app2` and `app3` receive both are shown 
+
+![Fragment2](screenshots/capture-trace-fanout.png)
+
+to find out why  one was slower than the other onn can jump to trace logs:
+
+![trace logs](screenshots/capture-jump-logs.png)
+
+of course for the quety to return something one has to *collect the logs* first:
+
+```sql
+trace.id:"91de0612610170e0e2dac7e5f5f0e86b" OR
+ (not trace.id:* AND "91de0612610170e0e2dac7e5f5f0e86b")
+```
 
 ### Technical Details
 ```sh
@@ -138,10 +164,129 @@ docker-compose stop ; docker-compose rm -f
 docker image prune -f
 docker container prune -f
 docker image ls | grep -Ei '^basic-elk-kafka-cluster' | awk '{print $1'} | xargs -IX   docker image rm X
-ocker image rm "docker.elastic.co/apm/apm-server:8.17.8" "confluentinc/cp-kafka:7.6.0" "elasticsearch:8.17.8" "kibana:8.17.8"
+docker image rm "docker.elastic.co/apm/apm-server:8.17.8" "confluentinc/cp-kafka:7.6.0" "elasticsearch:8.17.8" "kibana:8.17.8"
 docker volume prune -f
 ```
+starving ELK:
+
+```sh
+curl -s http://localhost:9200/_cat/indices/.kibana*?v
+
+```
+```text
+health status index                                uuid                   pri rep docs.count docs.deleted store.size pri.store.size dataset.size
+red    open   .kibana_usage_counters_8.17.8_001    N77N1EtAQoy7G6IaF2DACg   1   0
+red    open   .kibana_security_solution_8.17.8_001 wIhZyk9JSIK1P9WFYRTQcw   1   0
+red    open   .kibana_8.17.8_001                   uBOSZBmMRYmRWVuZoK22OA   1   0
+red    open   .kibana_ingest_8.17.8_001            SZuzWKifQuqefK64RBPmMw   1   0
+red    open   .kibana_analytics_8.17.8_001         p8MOaDGdT_OgBvW_rx4dLA   1   0
+red    open   .kibana_task_manager_8.17.8_001      zufOYaw6Q8mc8rf55Ny0nw   1   0
+red    open   .kibana_alerting_cases_8.17.8_001    3jWr_-SsSP2XNQBk-1vlmQ   1   0
+
+```
+```sh
+curl -X DELETE "http://localhost:9200/.kibana*"
+```
+```json
+{
+  "error": {
+    "root_cause": [
+      {
+        "type": "illegal_argument_exception",
+        "reason": "Wildcard expressions or all indices are not allowed"
+      }
+    ],
+    "type": "illegal_argument_exception",
+    "reason": "Wildcard expressions or all indices are not allowed"
+  },
+  "status": 400
+}
+```
+```sh
+docker-compose exec elasticsearch sh
+```
+```sh
+curl -X DELETE "http://localhost:9200/.kibana_usage_counters_8.17.8_001"
+curl -X DELETE "http://localhost:9200/.kibana_security_solution_8.17.8_001"
+curl -X DELETE "http://localhost:9200/.kibana_8.17.8_001"
+curl -X DELETE "http://localhost:9200/.kibana_ingest_8.17.8_001"
+curl -X DELETE "http://localhost:9200/.kibana_analytics_8.17.8_001"
+curl -X DELETE "http://localhost:9200/.kibana_task_manager_8.17.8_001"
+curl -X DELETE "http://localhost:9200/.kibana_alerting_cases_8.17.8_001"
+
+```
+```json
+{
+  "acknowledged": true
+}
+
+```
+```sh
+curl -X GET "localhost:9200/_cluster/allocation/explain?pretty"
+```
+```json
+{
+  "note" : "No shard was specified in the explain API request, so this response explains a randomly chosen unassigned shard. There may be other unassigned shards in this cluster which cannot be assigned for different reasons. It may not be possible to assign this shard until one of the other shards is assigned correctly. To explain the allocation of other shards (whether assigned or unassigned) you must specify the target shard in the request to this API. See https://www.elastic.co/guide/en/elasticsearch/reference/8.17/cluster-allocation-explain.html for more information.",
+  "index" : ".kibana_ingest_8.17.8_001",
+  "shard" : 0,
+  "primary" : true,
+  "current_state" : "unassigned",
+  "unassigned_info" : {
+    "reason" : "INDEX_CREATED",
+    "at" : "2026-03-30T15:35:40.792Z",
+    "last_allocation_status" : "no"
+  },
+  "can_allocate" : "no",
+  "allocate_explanation" : "Elasticsearch isn't allowed to allocate this shard to any of the nodes in the cluster. Choose a node to which you expect this shard to be allocated, find this node in the node-by-node explanation, and address the reasons which prevent Elasticsearch from allocating this shard there.",
+  "node_allocation_decisions" : [
+    {
+      "node_id" : "YjIWHJOBTUujt4Uo9SLQ8g",
+      "node_name" : "elasticsearch",
+      "transport_address" : "172.18.0.2:9300",
+      "node_attributes" : {
+        "ml.allocated_processors" : "4",
+        "ml.machine_memory" : "8320856064",
+        "transform.config_version" : "10.0.0",
+        "xpack.installed" : "true",
+        "ml.config_version" : "12.0.0",
+        "ml.max_jvm_size" : "536870912",
+        "ml.allocated_processors_double" : "4.0"
+      },
+      "roles" : [
+        "data",
+        "data_cold",
+        "data_content",
+        "data_frozen",
+        "data_hot",
+        "data_warm",
+        "ingest",
+        "master",
+        "ml",
+        "remote_cluster_client",
+        "transform"
+      ],
+      "node_decision" : "no",
+      "weight_ranking" : 1,
+      "deciders" : [
+        {
+          "decider" : "disk_threshold",
+          "decision" : "NO",
+          "explanation" : "the node is above the high watermark cluster setting [cluster.routing.allocation.disk.watermark.high=90%], having less than the minimum required [2.1gb] free space, actual free: [361.4mb], actual used: [98.3%]"
+        }
+      ]
+    }
+  ]
+}
+
+```
+```sh
+df -h /
+```
+reveals just few (361 is a good  estimate) MB left after all unfinished Docker containers business
+
 ### Background
+
+
 
 Elasticsearch tracks asynchronous tracing in Kafka-based systems using distributed tracing, typically via Elastic APM, to link decoupled producers and consumers. Interceptors propagate trace metadata through Kafka headers, allowing end-to-end visibility of message flows. This enables monitoring of Kafka lag, latency, and message lifecycles in Kibana dashboards
 
