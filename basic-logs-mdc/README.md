@@ -1,5 +1,16 @@
 ### Info
-  Ilustrate the https://spring.io/blog/2024/08/23/structured-logging-in-spring-boot-3-4
+
+
+  Illustrate the https://spring.io/blog/2024/08/23/structured-logging-in-spring-boot-3-4
+
+### Backgorund Info
+
+The subject allows allows one navigate to all logs belonging to a particular trace and vice-versa: for a specific log, see in which context it has been logged and which parameters the user provided.
+
+Long time ago. It was originally tagged [Log Correlation](https://www.elastic.co/docs/reference/apm/agents/go/log-correlation)
+and home-invented by practically every  APM vendor
+though early pre- [trace context](https://www.w3.org/TR/trace-context/)  implemetaions and even terminology were incompatible.
+
 
 ### Usage
  * prior to __3.4.x__ was not logging in __JSON__
@@ -1109,14 +1120,29 @@ failed to get console mode for stdout: The handle is invalid.
 #16 4.134 E: Problem executing scripts APT::Update::Post-Invoke 'rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true'
 #16 4.135 E: Sub-process returned an error code
 ------
-
 ```
+I had always suspected there was something less Renaissance elegance and more steam-engine ugliness about the Spring Framework.
+Google tracing spring te`chnology back to 1493 merely confirmed the architectural direction
+
+
+Spring in general already feels closer to the age of steam engines than modern lightweight machinery: immense utility, formidable complexity, and an alarming number of moving parts.
+
+Spring Batch takes this aesthetic even further — so monumental that one can barely breathe near it, with a design philosophy that feels almost aggressively anti-agile and proudly non-reactive.
+
+huge XML / Java config surfaces
+chunk pipelines
+job repositories
+retry / restart semantics
+listener chains
+orchestration layers
+“once it starts moving, nobody touches it”
+
 ### See Also
 
   * [Mapped Diagostic Context](https://logback.qos.ch/manual/mdc.html)
   * [Elastic Common Schema](https://www.elastic.co/guide/en/ecs/8.11/ecs-reference.html)
-
-
+  * [Elasic APM Agent](https://www.elastic.co/docs/reference/apm/agents/java) 
+  * [Manual Log Correlation Guide](https://www.elastic.co/docs/reference/apm/agents/dotnet/log-correlation-manual) got increasingly rare case of agent-provided logging integrations are not suitable or not available for one's application, then you can use the agent’s API to inject trace IDs manually.
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
