@@ -5,12 +5,34 @@
 
 ### Backgorund Info
 
-The subject allows allows one navigate to all logs belonging to a particular trace and vice-versa: for a specific log, see in which context it has been logged and which parameters the user provided.
+The Mapped DiagnBackground Info
 
-Long time ago. It was originally tagged [Log Correlation](https://www.elastic.co/docs/reference/apm/agents/go/log-correlation)
-and home-invented by practically every  APM vendor
-though early pre- [trace context](https://www.w3.org/TR/trace-context/)  implemetaions and even terminology were incompatible.
+The [Mapped Diagnostic Context](https://en.wikipedia.org/wiki/Mapped_Diagnostic_Context) (__MDC__)
+is the glue that allows an [SRE engineer](https://en.wikipedia.org/wiki/Site_reliability_engineering)
+to navigate across logs tied to a particular [trace](https://wikitech.wikimedia.org/wiki/Distributed_tracing)
+— and vice versa. 
+For any single log entry, you can reconstruct the context in which it was emitted, 
+as well as which user-supplied parameters were present at the time,
+even when applications are only loosely connected through Kafka or MQ.
 
+All of this can often be achieved with practically no application code changes, 
+and sometimes without the application even being explicitly aware that it has been __DT__/__APM__-instrumented.
+
+Back in the day, before the standardization around [W3C Trace Context](https://www.w3.org/TR/trace-context)
+, this capability went by *many* names—most notably __Log Correlation__ (see the original 
+ [Elastic APM](https://www.elastic.co/docs/reference/apm/agents/go/log-correlation) documentation
+). Each APM vendor had its own twist on the idea, and often its own exotic names for the same primitive: 
+`EventThreadID`, `ContextToken`, `LogChain`, or even `MagicTraceID`.
+
+Most application stacks—especially web-facing REST services—could be instrumented on the fly through a variety of mechanisms: 
+[Java agents](https://docs.oracle.com/en/java/javase/11/docs/api/java.instrument/java/lang/instrument/package-summary.html), 
+.NET profiler environment hooks, or vendor-supplied modules added to `requirements.txt` or `package.json`.
+
+However, with headless applications such as [Spring Batch](https://en.wikipedia.org/wiki/Spring_Batch), 
+some explicit modification is usually required to inject the seed trace context into the Logback chain. 
+
+This must often be done using the vendor-specific SDK, which introduces a migration risk: such custom trace propagation is typically not vendor-agnostic, 
+and therefore may not survive platform migrations without rework.
 
 ### Usage
  * prior to __3.4.x__ was not logging in __JSON__

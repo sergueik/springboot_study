@@ -24,10 +24,18 @@ do it even on isolated systems without exposing the subject infomation to offici
 ### Usage
 
 ![Launch](screenshots/capture-launch.png)
+> NOTE: 
+Double-click index.html from:
+  
+  * Windows __Explorer__
+  * __Finder__
+  * __Thunar__
+  * __Dolphin__
+  * __Nautilus__
+  
+…and it *works*
 
 >NOTE it will be rendere entirely locally
-
-![Page](screenshots/page.png)
 
 ![Render](screenshots/capture-render.png)
 
@@ -182,6 +190,33 @@ Learning how to brute-force VS Code behavior changes is **extremely complex**.
 
 > So while VS Code looks lightweight, it still inherits a **core assumption from heavy IDEs**: one project = one authoritative workspace.
 
+
+#### 
+
+Spring in general already feels closer to the age of steam engines than modern lightweight machinery: immense utility, formidable complexity, and an alarming number of moving parts.
+
+Spring Batch takes this aesthetic even further — so monumental that one can barely breathe near it, with a design philosophy that feels almost aggressively anti-agile and proudly non-reactive.
+
+
+one who had always felt there was something distinctly vintage about the Spring Framework.
+Google eventually confirmed it by tracing spring technology back to 1493.
+
+
+Google tracing spring technology back to 1493 merely confirmed the architectural direction.
+
+The idea of storing mechanical energy in a compact spring so a device could be shorter, more controllable, and operable with one hand was genuinely advanced engineering thinking for the time. [Leonardo da Vinci](https://en.wikipedia.org/wiki/Leonardo_da_Vinci) studied spiral and steel springs extensively in the Madrid Codices.
+
+One may imagine that when Leonardo da Vinci was asked to solve the difficult problem of firing a 15th-century pistol with one hand, he thought for a while and finally declared:
+
+*You can use Spring*.
+
+
+Legend says that when  [Leonardo da Vinci](https://en.wikipedia.org/wiki/Leonardo_da_Vinci) was asked how to fire a 15th-century innovated [MatchLock](https://en.wikipedia.org/wiki/Matchlock) pistol - a decisive improvement over the older [Hand Cannon](https://en.wikipedia.org/wiki/Hand_cannon) - with *one hand* - 
+, he studied the matter long and hard then allegedly summarizes the solution in one line:
+
+* *"Use Spring"* 
+
+Five centuries later, software engineers are still recovering from that architectural decision.
 
 ---
 ### Author
