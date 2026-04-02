@@ -1,5 +1,11 @@
 package example.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.Arrays;
 
 import org.junit.Before;
@@ -69,13 +75,26 @@ public class HomeControllerTest {
 	@Test
 	public void bodyContainsTemplatLayoutTextTest() throws Exception {
 
-		resultActions.andExpect(content().string(containsString("<title>Protractor practice website - Banking App</title>")));
+		resultActions.andExpect(
+				content().string(containsString("<title>Protractor practice website - Banking App</title>")));
 	}
 	// assert the response body not the content with a Hamcrest Matcher
 
 	@Test
 	public void bodyNotContainsTemplateBoilleplateTextTest() throws Exception {
 		resultActions.andExpect(content().string(not(containsString("layout:decorate=\"~{layouts/layout}\""))));
+	}
+
+	@Test
+	public void bodyNotContainsTemplateResourceBoilleplateTextTest() throws Exception {
+		var resource = getScriptContent("templates/home.html");
+		resultActions.andExpect(content().string(not(containsString(resource.split("\\n")[1]))));
+	}
+
+	@Test
+	public void bodyNotContainsTemplateResourceURIBoilleplateTextTest() throws Exception {
+		var resource = Files.readAllLines(new File(getResourcePath("templates/home.html")).toPath()).get(1);
+		resultActions.andExpect(content().string(not(containsString(resource))));
 	}
 
 	@Test
@@ -101,6 +120,43 @@ public class HomeControllerTest {
 				return;
 			}
 		});
+	}
+
+	// NOTE: put inside "WEB-INF/classes" for web hosted app
+	public String getScriptContent(String resourceFileName) {
+		try {
+			System.err.println("Script contents: " + getResourceURI(resourceFileName));
+			final InputStream stream = getResourceStream(resourceFileName);
+			final byte[] bytes = new byte[stream.available()];
+			stream.read(bytes);
+			return new String(bytes, "UTF-8");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	// NOTE: getResourceURI may not work with standalone or web hosted
+	// application
+	public String getResourceURI(String resourceFileName) {
+		try {
+			System.err.println("Getting resource URI for: " + resourceFileName);
+			URI uri = this.getClass().getClassLoader().getResource(resourceFileName).toURI();
+			System.err.println("Resource URI: " + uri.toString());
+			return uri.toString();
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public InputStream getResourceStream(String resourceFilePath) {
+		return this.getClass().getClassLoader().getResourceAsStream(resourceFilePath);
+	}
+
+	public String getResourcePath(String resourceFileName) {
+		final String resourcePath = String.format("%s/src/main/resources/%s", System.getProperty("user.dir"),
+				resourceFileName);
+		System.err.println("Project based resource path: " + resourcePath);
+		return resourcePath;
 	}
 
 }
