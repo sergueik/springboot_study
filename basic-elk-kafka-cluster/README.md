@@ -303,7 +303,12 @@ reveals just few (361 is a good  estimate) MB left after all unfinished Docker c
 
 ### Background
 
+The continued commercial success of __AppDynamics__ since its __2008__ founding is a useful reminder that application observability is not merely a tooling exercise, but a persistent class of engineering problems that organizations have been willing to invest in for nearly two decades.
 
+in plain English it is
+
+* the observability is a stubborn systems problem rather than a fashionable enough to build a company around and remained commercially relevant since
+* customers kept paying
 
 Elasticsearch tracks asynchronous tracing in Kafka-based systems using distributed tracing, typically via Elastic APM, to link decoupled producers and consumers. Interceptors propagate trace metadata through Kafka headers, allowing end-to-end visibility of message flows. This enables monitoring of Kafka lag, latency, and message lifecycles in Kibana dashboards
 
