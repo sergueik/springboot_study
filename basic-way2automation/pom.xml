@@ -4,7 +4,7 @@
   <groupId>example</groupId>
   <name>${project.groupId}:${project.artifactId}</name>
   <artifactId>way2automation</artifactId>
-  <version>0.6.0-SNAPSHOT</version>
+  <version>0.7.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>Springboot Template way2automation</description>
   <parent>
@@ -16,8 +16,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.8</java.version>
-      <antisamy.version>1.7.5</antisamy.version>
+    <java.version>11</java.version>
+    <antisamy.version>1.7.5</antisamy.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
     <jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -47,12 +47,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-thymeleaf</artifactId>
-<!-- NOTE: after switchihg 1.5.4.RELEASE to 2.3.4.RELEASE 
-[ERROR] Failed to execute goal on project static_page: Could not resolve dependencies for project
-Could not find artifact org.thymeleaf:thymeleaf-spring5:jar:3.0.6.RELEASE
-in central (https://repo.maven.apache.org/maven2)
-https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf-spring5
--->
     </dependency>
     <dependency>
       <groupId>org.thymeleaf.extras</groupId>
@@ -86,13 +80,7 @@ https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf-spring5
       <groupId>org.webjars</groupId>
       <artifactId>webjars-locator</artifactId>
       <version>${webjars-locator.version}</version>
-<!-- NOTE: after switchihg 1.5.4.RELEASE to 2.3.4.RELEASE 
-[ERROR]     'dependencies.dependency.version' for org.webjars:webjars-locator:jar is missing. @ line 64, column 17
-[ERROR]
-
--->
     </dependency>
-    <!-- Test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>

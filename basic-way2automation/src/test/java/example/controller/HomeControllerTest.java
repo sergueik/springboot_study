@@ -6,13 +6,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -23,31 +21,36 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-import static org.hamcrest.CoreMatchers.containsString;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.containsString;
 
 import example.controller.HomeController;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = HomeController.class)
-public class MVCTest {
+public class HomeControllerTest {
 
 	@Autowired
 	private MockMvc mvc;
 
 	private ResultActions resultActions;
 	final static String charset = "UTF-8";
-	private final static String viewName = "index";
+	private final static String viewName = "home";
 
 	// NOTE: "application" is a reserved variable name
 	@Value("${application}")
 	private String variable;
 
-	// System.getProperty("application");
+	@Value("${title:title no set}")
+	private String title;
 
 	@Before
 	public void beforeTest() throws Exception {
-		resultActions = mvc
-				.perform(get("/" + variable).accept(MediaType.TEXT_HTML));
+		resultActions = mvc.perform(get("/" + variable).accept(MediaType.TEXT_HTML));
 	}
 
 	@Test
@@ -64,19 +67,22 @@ public class MVCTest {
 
 	// assert the response body content with a Hamcrest Matcher
 	@Test
-	public void bodyContainsTextTest() throws Exception {
+	public void bodyContainsTemplatLayoutTextTest() throws Exception {
 
-		resultActions.andExpect(
-				content().string(containsString("<title>Hello Spring Boot!</title>")));
+		resultActions.andExpect(content().string(containsString("<title>Protractor practice website - Banking App</title>")));
+	}
+	// assert the response body not the content with a Hamcrest Matcher
+
+	@Test
+	public void bodyNotContainsTemplateBoilleplateTextTest() throws Exception {
+		resultActions.andExpect(content().string(not(containsString("layout:decorate=\"~{layouts/layout}\""))));
 	}
 
 	@Test
 	public void contentTypeTest() throws Exception {
-		resultActions.andExpect(
-				content().contentType(String.format("text/html;charset=%s", charset)));
+		resultActions.andExpect(content().contentType(String.format("text/html;charset=%s", charset)));
 	}
 
- 
 	@Test
 	public void veiewNameTest() throws Exception {
 		resultActions.andExpect(view().name(viewName));
