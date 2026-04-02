@@ -1,9 +1,8 @@
 ### Info
 
-This directory includes simplified example code 
-from __Improved Java Logging with Mapped Diagnostic Context (MDC)__ [article](https://www.baeldung.com/mdc-in-log4j-2-logback)
+This directory includes simplified example code from __Improved Java Logging with Mapped Diagnostic Context (MDC)__ [article](https://www.baeldung.com/mdc-in-log4j-2-logback)
 
-- removed the custom `com.baeldung.mdc.TransactionFactory` and left just slf4j logger dependency.
+- removed the custom `com.baeldung.mdc.TransactionFactory` and left just plain `slf4j` logger dependency.
 Currently the application is run 
 
 ### Usage
@@ -36,9 +35,12 @@ this will launch the and log the `MDC` mediated information to its console logs:
 2772 [pool-1-thread-1]  INFO e.LogTransferService - Has transfer of 1866$ completed successfully ? true. - tx.id=9 tx.owner=Susan
 2872 [pool-1-thread-3]  INFO e.LogTransferService - Has transfer of 782$ completed successfully ? true. - tx.id=10 tx.owner=Marc
 ```
+
 ### See Also
 
-   * APM Log Correlation [documetation](https://github.com/elastic/apm-agent-java/blob/main/docs/log-correlation.asciidoc) - note, with APM Agent version 1.30.0 it is enabled by default. The implementation of the `traceid` is introducing `slf4j-api` [dependency](https://mvnrepository.com/artifact/org.slf4j/slf4j-api) 
+   *  APM Log Correlation [documentation](https://www.elastic.co/docs/reference/apm/agents/go/log-correlation) - note, with __APM Agent__ version __1.30.0__ it is enabled by default. The implementation of the `traceid` is introducing `slf4j-api` [dependency](https://mvnrepository.com/artifact/org.slf4j/slf4j-api)   
+   *  APM Log Correlation [documentation](https://github.com/elastic/apm-agent-java/blob/main/docs/log-correlation.asciidoc) (original link - no longer available )
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

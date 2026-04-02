@@ -4,19 +4,87 @@
   <meta charset="UTF-8">
   <title>Ultra Basic DOT Renderer</title>
 <style>
+  body {
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(#7d8086, #5d6168);
+    font-family: Verdana, sans-serif;
+    color: #111;
+  }
+
+  .app-shell {
+    max-width: 1400px;
+    margin: auto;
+    background: linear-gradient(#c8c8c8, #a9a9a9);
+    border: 2px solid #6d6d6d;
+    border-radius: 14px;
+    box-shadow:
+      inset 1px 1px 0 #f5f5f5,
+      inset -1px -1px 0 #6e6e6e,
+      0 8px 24px rgba(0,0,0,0.35);
+    padding: 18px;
+  }
+
+  .titlebar {
+    background: linear-gradient(#d8d8d8, #a8a8a8);
+    border: 1px solid #777;
+    border-radius: 10px;
+    padding: 8px 14px;
+    margin-bottom: 16px;
+    font-weight: bold;
+  }
+
+  .split {
+    display: flex;
+    gap: 20px;
+  }
+
+  .pane {
+    flex: 1;
+  }
+
+  .panel-label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+
+  textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background: #efefef;
+    border: 2px inset #9a9a9a;
+    border-radius: 8px;
+    font-family: Consolas, monospace;
+    min-height: 320px;
+    padding: 10px;
+  }
+
   #output {
-    border: 1px solid #ccc;
-    padding: 5px;
+    background: #f5f5f5;
+    border: 2px inset #999;
+    border-radius: 8px;
+    padding: 10px;
     overflow: auto;
-    max-height: 80vh;
+    min-height: 320px;
+  }
+
+  .toolbar {
+    margin-top: 10px;
+  }
+
+  .vintage-btn {
+    background: linear-gradient(#eeeeee, #bbbbbb);
+    border: 1px solid #666;
+    border-radius: 8px;
+    padding: 8px 18px;
+    margin-right: 6px;
+    font-weight: bold;
+    cursor: pointer;
   }
 </style>
+</style>
 
-  <!-- Optional Bootstrap -->
-  <link rel="stylesheet"
-        href="bootstrap.min.css">
-
-  <!-- Viz.js -->
   <script src="viz.js"></script>
   <script src="full.render.js"></script>
 <script>
@@ -42,28 +110,47 @@ function applyZoom() {
 </script>
 
 </head>
+ <div class="app-shell">
+    <div class="titlebar">Ultra Basic DOT Renderer</div>
 
-<body class="container mt-3">
+    <div class="split">
+      <div class="pane">
+        <div class="panel-label">DOT Input</div>
+        <textarea id="dotInput">
 
-<div class="row">
-  <div class="col-6">
-    <textarea id="dotInput" class="form-control" rows="12">
-digraph G {
-  A -> B;
-  B -> C;
-  C -> A;
+digraph if_else_flow {
+  rankdir=LR;
+  node [shape=circle];
+
+  Start [shape=point];
+  End   [shape=doublecircle];
+
+  Start -> Cond1;
+  Cond1 -> Then1   [label="if"];
+  Cond1 -> Cond2   [label="else"];
+
+  Cond2 -> Then2   [label="elseif"];
+  Cond2 -> Else    [label="else"];
+
+  Then1 -> End;
+  Then2 -> End;
+  Else  -> End;
 }
-    </textarea>
+
+     </textarea>
 
     <button class="btn btn-primary mt-2" onclick="renderDot()">Render</button>
     <button onclick="zoomIn()">+</button>
 <button onclick="zoomOut()">-</button>
   </div>
 
-  <div class="col-6">
-    <div id="output" style="border:1px solid #ccc; padding:10px;"></div>
+ <div class="pane">
+        <div class="panel-label">Rendered Graph</div>
+        <div id="output"></div>
+      </div>
+    </div>
   </div>
-</div>
+
 <script>
   const viz = new Viz();
 

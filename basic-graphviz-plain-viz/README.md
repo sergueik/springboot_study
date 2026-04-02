@@ -1,13 +1,59 @@
+### Info
+
+__Copilot__ and equivalent __AI__ prone to produce voluminous [Mermaid](https://en.wikipedia.org/wiki/Mermaid_(software)) or [Graphviz](https://graphviz.org/Gallery) [DOT](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) *flowchart-like* markdown that is technically correct but mentally expensive to parse.
+This lightweight __DOT__ renderer is for air-gapped and constrained environments
+for machine-generated flow descriptions
+
+An AI asissted engineer can:
+
+* copy/paste/render Mermaid/DOT-like structures
+* instantly reduce cognitive load
+* inspect loops, fanout, dead ends
+* reason visually
+
+do it even on isolated systems without exposing the subject infomation to official __Graphviz__ [Playground](https://magjac.com/graphviz-visual-editor) 
+
+* zero external dependencies
+* no web fonts
+* no CDN Bootstrap assumptions (bootstrap-free)
+* no icons from libraries
+* everything relative-path local
+* strong “runs from a USB stick or shared folder” nostalgia
+* behaves well in Explorer / Finder / Thunar / Dolphin / Nautilus
+
 ### Usage
-store locally. Replace with your enterprise artifactory or CDN
+
+![Launch](screenshots/capture-launch.png)
+> NOTE: 
+Double-click index.html from:
+  
+  * Windows __Explorer__
+  * __Finder__
+  * __Thunar__
+  * __Dolphin__
+  * __Nautilus__
+  
+…and it *works*
+
+>NOTE it will be rendere entirely locally
+
+![Render](screenshots/capture-render.png)
+
+> NOTE: use zoom buttons to fit the graph to div
+
+#### Updating to Latest (Optional)
+
+store fikes locally. Replace URL with your enterprise artifactory or CDN
 
 ```sh
 curl -skLO https://cdn.jsdelivr.net/npm/viz.js@2.1.2/viz.js 
 curl -skLO https://cdn.jsdelivr.net/npm/viz.js@2.1.2/full.render.js
 ```
-![Page](https://github.com/sergueik/springboot_study/blob/master/basic-graphviz-plain-viz/screenshots/page.png)
 
-### Tool Comparison
+### Background
+
+
+### Unrelated Tool Comparison
 
 The [Viz.js](https://visjs.org/) is a sharply purposed hierarchical acyclic dependency flowchart decision tree graph layout driver
 much higher abstraction level than the other canonical library
@@ -144,6 +190,33 @@ Learning how to brute-force VS Code behavior changes is **extremely complex**.
 
 > So while VS Code looks lightweight, it still inherits a **core assumption from heavy IDEs**: one project = one authoritative workspace.
 
+
+#### 
+
+Spring in general already feels closer to the age of steam engines than modern lightweight machinery: immense utility, formidable complexity, and an alarming number of moving parts.
+
+Spring Batch takes this aesthetic even further — so monumental that one can barely breathe near it, with a design philosophy that feels almost aggressively anti-agile and proudly non-reactive.
+
+
+one who had always felt there was something distinctly vintage about the Spring Framework.
+Google eventually confirmed it by tracing spring technology back to 1493.
+
+
+Google tracing spring technology back to 1493 merely confirmed the architectural direction.
+
+The idea of storing mechanical energy in a compact spring so a device could be shorter, more controllable, and operable with one hand was genuinely advanced engineering thinking for the time. [Leonardo da Vinci](https://en.wikipedia.org/wiki/Leonardo_da_Vinci) studied spiral and steel springs extensively in the Madrid Codices.
+
+One may imagine that when Leonardo da Vinci was asked to solve the difficult problem of firing a 15th-century pistol with one hand, he thought for a while and finally declared:
+
+*You can use Spring*.
+
+
+Legend says that when  [Leonardo da Vinci](https://en.wikipedia.org/wiki/Leonardo_da_Vinci) was asked how to fire a 15th-century innovated [MatchLock](https://en.wikipedia.org/wiki/Matchlock) pistol - a decisive improvement over the older [Hand Cannon](https://en.wikipedia.org/wiki/Hand_cannon) - with *one hand* - 
+, he studied the matter long and hard then allegedly summarizes the solution in one line:
+
+* *"Use Spring"* 
+
+Five centuries later, software engineers are still recovering from that architectural decision.
 
 ---
 ### Author

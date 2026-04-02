@@ -1,0 +1,148 @@
+version: '3.8'
+
+services:
+  elasticsearch:
+    restart: unless-stopped
+    build: elasticsearch
+    container_name: elasticsearch
+    # volumes:
+    #  - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
+    #  - ./elasticsearch/data:/usr/share/elasticsearch/data
+    environment:
+      - TZ=Asia/Seoul
+      # - ELASTIC_PASSWORD=elasticpassword
+      - node.name=elasticsearch 
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node 
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    healthcheck:
+      test:
+        [
+            "CMD-SHELL",
+            "curl http://localhost:9200 | grep -q 'You Know, for Search'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 60
+        
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+    networks:
+      - elastic
+
+  kibana:
+    restart: unless-stopped
+    build: kibana
+    container_name: kibana
+    # volumes:
+    #  - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,z
+    ports:
+      - "5601:5601" 
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - elastic
+    healthcheck:
+      test:
+        [
+            "CMD-SHELL",
+            "curl http://localhost:5601/api/status | jq -r '.status.overall.summary' | grep -iq 'All services and plugins are available'",
+        ]
+      interval: 10s
+      timeout: 90s
+      retries: 5 
+
+  apm-server:
+    restart: unless-stopped
+    build: apm-server
+    container_name: apm-server
+    cap_add: [ "CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID" ]
+    cap_drop: [ "ALL" ]
+    # volumes:
+      # NOTE: the 'z' option tells Docker that two containers share the volume content. it is unclear why it is needed here
+      #  - ./apm-server/config/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro,z
+    ports:
+      - "8200:8200"
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8200/
+    # curl: (56) Recv failure: Connection reset by peer
+
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+          #kibana:
+          # condition: service_healthy
+    networks:
+      - elastic
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - elastic
+  app1:
+    restart: unless-stopped
+    build: app1
+    container_name: app1
+    environment:
+      - MONITOR=true
+    ports:
+      - "8080:8080"
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8080/basic/health
+    depends_on:
+      - apm-server
+      - kafka
+    networks:
+      - elastic
+
+  app2:
+    restart: unless-stopped
+    build: app2
+    container_name: app2
+    depends_on:
+      - apm-server
+      - kafka
+      - app1
+    networks:
+      - elastic
+    command:
+      - --app.kafka.group-id=demo-group-2  
+
+  app3:
+    restart: unless-stopped
+    build: app3
+    container_name: app3
+    environment:
+      APP_KAFKA_GROUP_ID: demo-group-3
+      APP_KAFKA_TOPIC: demo-topic
+    depends_on:
+      - apm-server
+      - kafka
+      - app1
+    networks:
+      - elastic
+
+
+networks:
+  elastic:
