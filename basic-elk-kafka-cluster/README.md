@@ -6,6 +6,15 @@ for F in app1 app2 app3; do pushd  $F; mvn package ;   popd; done
 ```
 * build cluster 
 ```sh
+VERSION=8.17.8
+
+docker pull docker.elastic.co/apm/apm-server:$VERSION
+docker pull kibana:$VERSION
+docker pull elasticsearch:$VERSION
+docker pull confluentinc/cp-kafka:7.6.0
+docker pull eclipse-temurin:11-jre-alpine
+```
+```sh
 docker-compose up --build -d
 ```
 
@@ -42,7 +51,13 @@ Both services are known to Elastic
 * Start the transaction
 
 ```sh
-curl -sv -XPOST "http://localhost:8080/basic/publish?topic=demo-topic" -H 'Content-Type: application/json' -d '{"name": "new value"}'
+curl http://localhost:8080/basic/health; echo $?
+```
+```
+0
+```
+```sh
+curl -sv -XPOST "http://localhost:8080/basic/publish?topic=demo-topic" -H 'Content-Type: application/json' -d "{\"name\": \"new value $(date +%c)\"}"
 ```
 ```text
 published 21 to demo-topic
@@ -124,11 +139,11 @@ There is also a flow fragments:
 ![Fragment2](screenshots/capture-flow-fragment2.png)
 
 when `app2`, `app3` in same grop only one receives:
-![Fragment2](screenshots/capture-trace-fanout.png)
+![Fragment2](screenshots/capture-trace-fanout1.png)
 
 when both `app2` and `app3` receive both are shown 
 
-![Fragment2](screenshots/capture-trace-fanout.png)
+![Fragment2](screenshots/capture-trace-fanout2.png)
 
 to find out why  one was slower than the other onn can jump to trace logs:
 
@@ -140,6 +155,8 @@ of course for the quety to return something one has to *collect the logs* first:
 trace.id:"91de0612610170e0e2dac7e5f5f0e86b" OR
  (not trace.id:* AND "91de0612610170e0e2dac7e5f5f0e86b")
 ```
+
+> NOTE: In order to access ELK __Service Maps__, one must be subscribed to an __Elastic Platinum license__
 
 ### Technical Details
 ```sh
@@ -300,6 +317,10 @@ Kafka itself is just transporting bytes. The trace context lives in message head
   * [ELK Kafka Integration](https://www.elastic.co/docs/reference/integrations/kafka) 	
   * [micrometer Observation and Spring Kafka](https://www.baeldung.com/spring-kafka-micrometer)
   * [structured logging in Spring Boot 3.4](https://spring.io/blog/2024/08/23/structured-logging-in-spring-boot-3-4)
+  * https://github.com/blacktop/docker-elasticsearch-alpine
+  * https://github.com/lludlow/elasticsearch-kibana-alpine
+  
+
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

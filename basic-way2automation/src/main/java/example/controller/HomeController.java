@@ -46,6 +46,9 @@ public class HomeController {
 	@Value("${application}")
 	private String variable;
 
+	@Value("${title:title no set}")
+	private String title;
+
 	private final String viewName = "home";
 	private Log log = LogFactory.getLog(this.getClass());
 
@@ -54,7 +57,9 @@ public class HomeController {
 		model.addAttribute("now", LocalDateTime.now());
 		// https://stackoverflow.com/questions/56102116/access-application-properties-value-in-thymeleaf-template
 		model.addAttribute("variable", variable);
+		model.addAttribute("title", title);
 		log.info("Setting text from property " + "application" + ":" + variable);
+		log.info("Setting text from property " + "title" + ":" + title);
 		model.addAttribute("hostname", showHostName());
 		log.info("Setting text from environment " + "hostname" + ":" + showHostName());
 		return viewName;

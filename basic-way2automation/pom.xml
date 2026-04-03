@@ -4,7 +4,7 @@
   <groupId>example</groupId>
   <name>${project.groupId}:${project.artifactId}</name>
   <artifactId>way2automation</artifactId>
-  <version>0.7.0-SNAPSHOT</version>
+  <version>0.8.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>Springboot Template way2automation</description>
   <parent>
@@ -16,6 +16,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <java.version>11</java.version>
+    <antisamy.version>1.7.5</antisamy.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
     <java.version>11</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -28,6 +30,11 @@
     <webjars.angular-ui-router.version>1.0.30</webjars.angular-ui-router.version>
   </properties>
   <dependencies>
+    <dependency>
+      <groupId>org.owasp.antisamy</groupId>
+      <artifactId>antisamy</artifactId>
+      <version>${antisamy.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
