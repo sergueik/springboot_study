@@ -1,0 +1,16 @@
+digraph ci-pipeline {
+  rankdir=LR;
+
+  // draft mode
+  Trigger [shape=box, label="Schedule"];
+  // Trigger [shape=none, image="schedule.png", label="schedule", labelloc=b];
+
+  Approve [shape=diamond, label="Review"];
+  // Approve [shape=none, image="approval.png", label="Review", labelloc=b];
+
+  Publish [shape=box3d, label="Publish"];
+  // Publish [shape=none, image="upload.png", label="Publish", labelloc=b];
+
+  Trigger -> Approve -> Publish;
+}
+

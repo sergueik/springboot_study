@@ -1,0 +1,11 @@
+digraph ci-pipeline {
+  rankdir=LR;
+  node [shape=none];
+
+  Trigger  [image="local/assets/schedule.svg", label="Nightly", labelloc=b];
+  Approve  [image="local/assets/approval.svg", label="Review", labelloc=b];
+  Publish  [image="local/assets/upload.svg", label="Publish", labelloc=b];
+
+  Trigger -> Approve -> Publish;
+}
+

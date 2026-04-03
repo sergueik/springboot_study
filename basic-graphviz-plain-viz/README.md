@@ -235,6 +235,130 @@ Legend says that when  [Leonardo da Vinci](https://en.wikipedia.org/wiki/Leonard
 * *"Use Spring"* 
 
 Five centuries later, software engineers are still recovering from that architectural decision.
+```dot
+digraph ci-pipeline {
+  rankdir=LR;
+  node [shape=none];
+
+  Trigger [label=<
+    <svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="12" width="48" height="40" fill="#ddd" stroke="#333" stroke-width="2"/>
+      <line x1="8" y1="24" x2="56" y2="24" stroke="#333" stroke-width="2"/>
+      <line x1="20" y1="6" x2="20" y2="18" stroke="#333" stroke-width="3"/>
+      <line x1="44" y1="6" x2="44" y2="18" stroke="#333" stroke-width="3"/>
+    </svg>
+  >, labelloc=b];
+
+  Approve [label=<
+    <svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="20" r="10" fill="#ddd" stroke="#333" stroke-width="2"/>
+      <rect x="18" y="34" width="28" height="18" fill="#ddd" stroke="#333" stroke-width="2"/>
+    </svg>
+  >, labelloc=b];
+
+  Publish [label=<
+    <svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="34" width="44" height="18" fill="#ddd" stroke="#333" stroke-width="2"/>
+      <line x1="32" y1="10" x2="32" y2="40" stroke="#333" stroke-width="3"/>
+      <polygon points="24,20 32,10 40,20" fill="#333"/>
+    </svg>
+  >, labelloc=b];
+
+  Trigger -> Approve -> Publish;
+}
+```
+leads to
+```text
+DOT render error:
+in label of node Publish
+```
+the
+```dot
+digraph ci-pipeline {
+  rankdir=LR;
+  node [shape=none];
+
+  Publish [image="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iLi4uIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiPjxyZWN0ICB4PSIxMCIgeT0iMzQiIHdpZHRoPSI0NCIgaGVpZ2h0PSIxOCIgc3R5bGU9ImZpbGw6I2RkZDsiIC8+PC9zdmc+", labelloc=b];
+
+}
+
+```
+leads to
+```text
+DOT render error:
+renderer for svg is unavailable
+```
+
+the
+
+```dot
+
+digraph test {
+  node [shape=none];
+  A [image="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iLi4uIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiPjxyZWN0ICB4PSIxMCIgeT0iMzQiIHdpZHRoPSI0NCIgaGVpZ2h0PSIxOCIgc3R5bGU9ImZpbGw6I2RkZDsiIC8+PC9zdmc+"];
+}
+```
+
+leads to
+
+```text
+DOT render error:
+undefined
+```
+The raw `<svg>...</svg>` inside `label=<...>` is __NOT__ supported
+
+What Graphviz calls HTML-like labels is not real HTML/XML. It supports a small subset like:
+
+  * `<TABLE>`
+  * `<TR>`
+  * `<TD>`
+  * `<BR/>`
+  * `<FONT>`
+  * `<IMG/>`
+
+…but not arbitrary `<svg>` tag
+
+### Design vs. Publish
+```dot
+digraph ci-pipeline {
+  rankdir=LR;
+
+  // draft mode
+  Trigger [shape=box, label="Schedule"];
+  // Trigger [shape=none, image="schedule.png", label="schedule", labelloc=b];
+
+  Approve [shape=diamond, label="Review"];
+  // Approve [shape=none, image="approval.png", label="Review", labelloc=b];
+
+  Publish [shape=box3d, label="Publish"];
+  // Publish [shape=none, image="upload.png", label="Publish", labelloc=b];
+
+  Trigger -> Approve -> Publish;
+}
+
+```
+design can be viewed via `viz.js`:
+
+
+![CI Pipeline Design](screenshots/ci-pipeline-design.png)
+
+
+once design is finished the final version can be produced via `dot.exe` [download](https://graphviz.org/download/):
+
+```cmd
+dot.exe -Tpng -o screenshots/ci-pipeline.png  ci-pipeline.dot
+```
+![CI Pipeline Publish](screenshots/ci-pipeline-publish.png)
+> NOTE cannot include `svg` art this way due to missing plugin:
+```cmd
+dot.exe -Tpng -o ci-pipeline-svg.png  ci-pipeline-svg.dot
+```
+```text
+Warning: No loadimage plugin for "svg:cairo"
+```
+![CI Pipeline Design](screenshots/ci-pipeline-svg.png)
+
+
 ### See Also
  
   * [graphviz Node Shapes](https://graphviz.org/doc/info/shapes.html)
