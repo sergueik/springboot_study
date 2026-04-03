@@ -23,6 +23,10 @@ do it even on isolated systems without exposing the subject infomation to offici
 
 ### Usage
 
+* run local
+```sh
+start /c/Program\ Files/Google/Chrome/Application/chrome.exe local/page.html
+```
 ![Launch](screenshots/capture-launch.png)
 > NOTE: 
 Double-click index.html from:
@@ -37,10 +41,24 @@ Double-click index.html from:
 
 >NOTE it will be rendere entirely locally
 
-![Render](screenshots/capture-render.png)
+![Render Local](screenshots/capture-local.png)
+
 
 > NOTE: use zoom buttons to fit the graph to div
 
+* run as static page  on top of __Spring Boot__ or other runtime
+```cmd
+pushd static
+mvn -DskipTests package
+java -jar target\example.static_page.jar
+```
+```sh
+mvn -DskipTests spring-boot:run
+```
+```sh
+start /c/Program\ Files/Google/Chrome/Application/chrome.exe http://localhost:7070/application
+```
+![Render Static](screenshots/capture-static.png)
 #### Updating to Latest (Optional)
 
 store fikes locally. Replace URL with your enterprise artifactory or CDN
@@ -218,8 +236,10 @@ Legend says that when  [Leonardo da Vinci](https://en.wikipedia.org/wiki/Leonard
 
 Five centuries later, software engineers are still recovering from that architectural decision.
 ### See Also
-
-   * [graphviz Node Shapes](https://graphviz.org/doc/info/shapes.html)
+ 
+  * [graphviz Node Shapes](https://graphviz.org/doc/info/shapes.html)
+  * [forum discussion](https://qna.habr.com/q/734991)(in Russian)
+ 
 
 ---
 ### Author

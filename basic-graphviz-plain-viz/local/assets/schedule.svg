@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- origin: https://www.svgrepo.com/svg/456850/calendar-schedule -->
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<svg width="800px" height="800px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+
+<defs>
+
+<style>.cls-1,.cls-2{fill:none;stroke:#020202;stroke-miterlimit:10;stroke-width:1.91px;}.cls-1{stroke-linecap:square;}</style>
+
+</defs>
+
+<g id="calendar">
+
+<rect class="cls-1" x="1.5" y="2.43" width="21" height="4.77" transform="translate(24 9.64) rotate(180)"/>
+
+<line class="cls-2" x1="17.73" y1="0.52" x2="17.73" y2="4.34"/>
+
+<line class="cls-2" x1="6.27" y1="0.52" x2="6.27" y2="4.34"/>
+
+<polygon class="cls-1" points="22.5 11.98 22.5 7.21 1.5 7.21 1.5 22.48 22.5 22.48 22.5 15.79 22.5 11.98"/>
+
+<line class="cls-2" x1="9.14" y1="11.02" x2="11.05" y2="11.02"/>
+
+<line class="cls-2" x1="12.95" y1="11.02" x2="14.86" y2="11.02"/>
+
+<line class="cls-2" x1="16.77" y1="11.02" x2="18.68" y2="11.02"/>
+
+<line class="cls-2" x1="9.14" y1="14.84" x2="11.05" y2="14.84"/>
+
+<line class="cls-2" x1="5.32" y1="14.84" x2="7.23" y2="14.84"/>
+
+<line class="cls-2" x1="12.95" y1="14.84" x2="14.86" y2="14.84"/>
+
+<line class="cls-2" x1="16.77" y1="14.84" x2="18.68" y2="14.84"/>
+
+<line class="cls-2" x1="9.14" y1="18.66" x2="11.05" y2="18.66"/>
+
+<line class="cls-2" x1="5.32" y1="18.66" x2="7.23" y2="18.66"/>
+
+<line class="cls-2" x1="12.95" y1="18.66" x2="14.86" y2="18.66"/>
+
+</g>
+
+</svg>

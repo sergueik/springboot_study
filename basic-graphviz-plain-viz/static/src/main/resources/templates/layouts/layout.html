@@ -98,8 +98,8 @@
   }
 </style>
 
-  <script src="viz.js"></script>
-  <script src="full.render.js"></script>
+  <script src="/js/viz.js"></script>
+  <script src="/js/full.render.js"></script>
 <script>
 let scale = 1;
 
@@ -165,35 +165,50 @@ digraph if_else_flow {
   </div>
 
 <script>
+
   const viz = new Viz();
 
   function renderDot() {
     const dot = document.getElementById("dotInput").value;
 
-    viz.renderSVGElement(dot)
-      .then(function(svg) {
+    viz.renderSVGElement(dot,
+	    /*
+	    {
+      images: [
+        { name: "/assets/schedule.svg", width: 64, height: 64 },
+        { name: "/assets/approval.svg", width: 64, height: 64 },
+        { name: "/assets/upload.svg", width: 64, height: 64 }
+      ]
+    }
+    */
+    ).then(function(svg) {
+      svg.removeAttribute("width");
+      svg.removeAttribute("height");
 
-        // Make SVG responsive
-        svg.removeAttribute("width");
-        svg.removeAttribute("height");
-        svg.style.width = "150%";
-        svg.style.height = "auto";
+      svg.style.width = "100%";
+      svg.style.height = "auto";
+      svg.style.transformOrigin = "0 0";
 
-        // Optional: set viewBox if missing
-        if (!svg.getAttribute("viewBox")) {
-          const width = svg.viewBox.baseVal.width || 1600;
-          const height = svg.viewBox.baseVal.height || 1200;
-          svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-        }
+      // Safe fixed fallback only if missing
+      if (!svg.getAttribute("viewBox")) {
+        svg.setAttribute("viewBox", "0 0 1600 1200");
+      }
 
-        const output = document.getElementById("output");
-        output.innerHTML = "";
-        output.appendChild(svg);
-      })
-      .catch(function(error) {
-        document.getElementById("output").innerText = error.message;
-      });
+      const output = document.getElementById("output");
+      output.innerHTML = "";
+      output.appendChild(svg);
+
+      applyZoom();
+    })
+    .catch(function(error) {
+      document.getElementById("output").innerText =
+        "DOT render error:\n" + error.message;
+    });
   }
+
+  window.onload = renderDot;
+  // Optional: render default graph on page load
+  // window.onload = renderDot;
 </script>
 </body>
 </html>
