@@ -158,6 +158,21 @@ trace.id:"91de0612610170e0e2dac7e5f5f0e86b" OR
 
 > NOTE: In order to access ELK __Service Maps__, one must be subscribed to an __Elastic Platinum license__
 
+#### Service Maps
+
+| Vendor / Stack | Their name for “Service Maps” equivalent | Lean self-hosted / detached story |
+|---|---|---|
+| Elastic APM | Service Maps | Self-managed available, but advanced access often tied to Platinum-tier licensing |
+| Grafana Tempo + Grafana | Service Graphs | Excellent lean traces-only option, strong fit for single-node Docker Compose |
+| Datadog | Service Map / Service Catalog | SaaS-first, not really detached |
+| New Relic | Entity Map / Service Architecture Intelligence | SaaS-first |
+| Dynatrace | Smartscape | Excellent topology, but operationally heavy |
+| Jaeger | Dependency Graph / System Architecture | Very light standalone tracing topology |
+| SigNoz | Service Map / Trace Graph | Strong small self-hosted full-stack observability option |
+| AppDynamics | Flow Map / Application Flow Map | Mature commercial APM topology |
+| Instana | Dynamic Graph / Service Dependency | Powerful, but not especially lean |
+
+
 ### Technical Details
 ```sh
 docker-compose run kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic demo-topic --from-beginning --property print.headers=true
@@ -314,6 +329,12 @@ Elasticsearch tracks asynchronous tracing in Kafka-based systems using distribut
 
 > NOTE: To  engage disctibuted tracing one instruments the producer + consumer apps, not the Kafka broker container
 Kafka itself is just transporting bytes. The trace context lives in message headers, not inside the broker runtime.
+### Reduce the Docker Image
+The following set of ELK images apear a good candidate:
+
+ * https://github.com/blacktop/docker-kibana-alpine/blob/master/7.9/Dockerfile
+ * https://github.com/blacktop/docker-elasticsearch-alpine/blob/master/7.9/Dockerfile 
+ * https://www.elastic.co/downloads/past-releases/apm-server-7-9-3
 
 ### See Also
 
@@ -322,9 +343,6 @@ Kafka itself is just transporting bytes. The trace context lives in message head
   * [ELK Kafka Integration](https://www.elastic.co/docs/reference/integrations/kafka) 	
   * [micrometer Observation and Spring Kafka](https://www.baeldung.com/spring-kafka-micrometer)
   * [structured logging in Spring Boot 3.4](https://spring.io/blog/2024/08/23/structured-logging-in-spring-boot-3-4)
-  * https://github.com/blacktop/docker-elasticsearch-alpine
-  * https://github.com/lludlow/elasticsearch-kibana-alpine
-  
 
 ---
 ### Author
