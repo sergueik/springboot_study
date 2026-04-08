@@ -463,6 +463,8 @@ What is available in Maven Central are individual Karate modules to assemble via
 
 __REST__ relies heavily on [HTTP status spec](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status) , unlike __SOAP__ which had dedicated error area. In other words __SOAP__ faults are payload-embedded, while __REST__ tends to elevate failures into the transport contract itself
 
+![retry flow](screenshots/retry-flow.png)
+
 `HTTP 400 Bad Request` usually means:
 
 * malformed JSON
