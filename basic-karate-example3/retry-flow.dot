@@ -1,0 +1,20 @@
+digraph retry_nfa {
+    rankdir=LR;
+    node [shape=circle];
+
+    start [shape=point];
+    auth [label="Authenticate"];
+    call [label="GET /api/hello"];
+    retry [label="Retry Loop"];
+    success [shape=doublecircle, label="200 OK\naccept"];
+    fatal [shape=doublecircle, label="503/504\ninfra fail"];
+    business [shape=doublecircle, label="400/405/422\ncontract fail"];
+
+    start -> auth;
+    auth -> call [label="token"];
+    call -> success [label="200"];
+    call -> retry [label="302 | 429"];
+    retry -> call [label="backoff"];
+    call -> fatal [label="503 | 504"];
+    call -> business [label="400 | 405 | 422"];
+}
