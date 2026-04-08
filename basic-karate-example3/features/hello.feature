@@ -9,12 +9,17 @@ Background:
   * print 'USERNAME:', username
   * print 'PASSWORD:', password
 
-  * def retryableStatuses = [302, 429]
+  # transient statuses worth retrying
+  * def retryableStatuses = [202, 302, 304, 429]
+
   * def successStatus = 200
-  # API Gateway often masks the backend 50x with 504
-  * def fatalStatuses = [503, 504, 405]
-  # TODO: handle 422 unprocessable Content and 400 bad request to reveal possible business  
-  # built-in retry + fixed backoff
+
+  # infra / gateway / backend outage
+  * def fatalStatuses = [503, 504]
+
+  # request / business contract issues
+  * def seriousClientStatuses = [400, 422, 404, 405]
+
   * configure retry = { count: 6, interval: 1000 }
 
 Scenario: Authenticate and call protected API with retry
@@ -30,23 +35,20 @@ Scenario: Authenticate and call protected API with retry
   Given path '/api/hello'
   And header Authorization = 'Bearer ' + token
 
-  # Karate has retry and exponential backoff built-in 
-
-  # Karate built-in retry is expression-based
-  # keep retrying while status is 302 or 429, quit if 
-  And retry until responseStatus == successStatus || fatalStatuses.contains(responseStatus)
+  # retry until success, infra failure, or business failure
+  And retry until responseStatus == successStatus
+    || fatalStatuses.contains(responseStatus)
+    || seriousClientStatuses.contains(responseStatus)
   When method get
 
-  * if (responseStatus == 429) karate.log('WARN: server is throttling requests')
+  * if (responseStatus == 429) karate.log('WARN: throttling in progress')
 
-  # NOTE: a plain karate.log() is too soft
-  # unlike other logging frameworks Karate does not have karate.error() 
+  * if (fatalStatuses.contains(responseStatus))
+    karate.fail('SEVERE infrastructure failure, status=' + responseStatus)
 
-  if (fatalStatuses.contains(responseStatus))
-    karate.fail('SEVERE: status=' + responseStatus)
- 
+  * if (seriousClientStatuses.contains(responseStatus))
+    karate.fail('BUSINESS/API CONTRACT failure, status=' + responseStatus + ', body=' + response)
+
   * match responseStatus == successStatus
-
   * print 'RESPONSE:', response
   * match response contains username
-

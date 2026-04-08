@@ -459,5 +459,27 @@ Karate “fat JAR” is not something one would pull as aready-made artifact fro
 
 What is available in Maven Central are individual Karate modules to assemble via Maven Shade / Assembly plugin...
 
+### Retry Backoff with Status Examination
+
+__REST__ relies heavily on [HTTP status spec](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status) , unlike __SOAP__ which had dedicated error area. In other words __SOAP__ faults are payload-embedded, while __REST__ tends to elevate failures into the transport contract itself
+
+`HTTP 400 Bad Request` usually means:
+
+* malformed JSON
+* invalid parameter shape
+* missing required field
+* query mismatch
+
+`HTTP 422 Unprocessable Content (Entity)` usually means:
+
+* JSON syntax valid
+* business meaning invalid
+* domain rule violation
+* validation constraint
+* semantic rejection
+
+the `HTTP 405 Method Not Allowed` usully means
+request was using the known but disallowed method from server's perspective like a `DELETE` on a resource, or `TRACE` method entirely. In other words it signals: "method is recognized by server, is unsupported for target resource"
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
