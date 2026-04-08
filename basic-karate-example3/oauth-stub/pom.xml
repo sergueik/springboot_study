@@ -4,7 +4,7 @@
   <groupId>example</groupId>
   <name>${project.groupId}:${project.artifactId}</name>
   <artifactId>jwt-stub</artifactId>
-  <version>0.3.0-SNAPSHOT</version>
+  <version>0.4.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>Demo Springboot 2.3.x with MVC tests</description>
   <parent>
