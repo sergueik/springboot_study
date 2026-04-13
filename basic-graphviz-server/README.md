@@ -702,6 +702,10 @@ With the .dot sources and rendered images provided for reference, the diagrammat
   * [Atlassian Marketplace](https://marketplace.atlassian.com/apps/257/graphviz-diagrams-for-confluence)
   * [Forge-based Graphviz Confluence plugin - also on Atlassian Marketplace](https://marketplace.atlassian.com/apps/1230982/graphviz-for-confluence?utm_source)
   * [Excalidraw Graphviz Diagrams Visual Editor for Confluence](https://marketplace.atlassian.com/apps/1237691/excalidraw-graphviz-diagrams-for-confluence)
+  
+  * [wolray/seq](https://github.com/wolray/seq) A powerful generator-like streaming API for Java
+  * [graphviz-java](https://github.com/nidi3/graphviz-java) - use graphviz with pure java
+  * [jabbalaci/graphviz-java-api](https://github.com/jabbalaci/graphviz-java-api) - the Java class direct calls of `dot` from Java programs, as in `this.executable = "c:/Program Files (x86)/Graphviz 2.28/bin/dot.exe"`
 
 ---
 ### Author
