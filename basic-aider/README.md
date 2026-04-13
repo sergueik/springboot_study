@@ -369,6 +369,41 @@ best ratio of:
 - low-overhead deployment
 
 
+### Console Agentic Tools — Python-Centric Procurement Table
+
+| Tool | Python runtime | Produces Python well | Available in client VPN / Artifactory? | Most doubtful transient dependencies | Suggested packaging lane |
+|---|---|---|---|---|---|
+| Aider | Yes | Excellent | Likely YES if PyPI mirrored | `litellm`, provider SDKs, tokenizer libs, optional git helpers | **Best first candidate** |
+| RA.Aid | Yes | Excellent | TBD – PyPI / GitHub source mirror | `langgraph`, `langchain*`, provider adapters, tracing libs | Good for advanced orchestration |
+| Claude Code | No | Excellent | TBD – native installer / internal binary repo | native updater, optional plugins, shell hooks | Use only if native installer allowed |
+| Goose | No | Excellent | TBD – GitHub release binary / internal binary repo | MCP extensions, local provider bridges | Strong local/private candidate |
+| Continue CLI | No | Excellent | TBD – npm mirror required | npm tree, provider adapters, local model bridges | Good if npm is approved |
+| Qwen Code | No | Excellent | TBD – npm mirror required | npm dependency chain, OpenAI-compatible SDK wrappers | Very strong free-model candidate |
+| OpenCode | No | Very good | TBD – npm mirror or shell installer | npm dependency tree, shell installer scripts | Good experimental option |
+| Cursor CLI | No | Excellent | TBD – desktop ecosystem dependent | editor-side updater, telemetry modules | Better treated as IDE adjunct |
+| Zed CLI | No | Very good | TBD – binary distribution | Rust ecosystem crates, updater | More editor than agent |
+| Cline CLI | No | Excellent | TBD – npm / VS Code extension mirror | VS Code extension graph, MCP servers | Better in VS Code environments |
+| Kilo Code | No | Good | TBD – npm mirror | npm graph, provider SDK wrappers | Lower priority |
+| Continue (GUI-first mode) | No | Excellent | TBD – VS Code + npm | extension chain + model adapters | Use if IDE policy allows |
+
+---
+
+#### Enterprise-friendly shortlist
+##### Tier 1 — easiest to mirror and approve
+- Aider
+- RA.Aid
+
+##### Tier 2 — binary-friendly
+- Goose
+- Claude Code
+
+##### Tier 3 — requires npm governance
+- Continue CLI
+- Qwen Code
+- OpenCode
+- Kilo Code
+
+
 ### See Also
 
   * __Aider__ [article](https://habr.com/ru/articles/912016/) (in Russian)
