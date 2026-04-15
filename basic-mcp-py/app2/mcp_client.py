@@ -1,5 +1,6 @@
 import socket, os, socket, json, time, sys
 import logging
+import argparse
 
 
 from common.protocol import encode, decode
@@ -85,6 +86,19 @@ def validate_tools(response):
     return tools
 
 def main():
+    parser = argparse.ArgumentParser(prog = 'mcp_client.py')
+    parser.add_argument('--method', '-m', help = 'method to call', type = str, action = 'store')
+    parser.add_argument('--debug', '-d', help = 'debug', action = 'store_const', const = True)
+
+    args = parser.parse_args()
+    if args.debug:
+      print('running debug mode')
+      print('method'.format(args.method))
+
+    if args.method == None :
+      parser.print_help()
+      exit(1)
+    method = args.method
     mcp_client = MCPClient()
 
     print(mcp_client.send('initialize'))
@@ -96,21 +110,20 @@ def main():
     except Exception as e:
         log.error(f"Tool discovery failed: {e}")
         return
-    if 'echo' not in {tool['name'] for tool in tools }:
-        log.error('Required tool "echo" is NOT available — exiting')
+    if method not in {tool['name'] for tool in tools }:
+        log.error('Required tool method "{}" is NOT available — exiting'.format(method))
         sys.exit(1)
 
-    result = print(
-        mcp_client.send(
-            'tools/call',
-            {
-                'name': 'echo',
-                'arguments': {'text': 'hello from docker network'}
-            }
-        )
+    resp = mcp_client.send(
+        'tools/call',
+        {
+            'name': method,
+            'arguments': {'text': 'hello from docker network'}
+        }
     )
-
-    log.info(f"echo result: {result}")
+    # NOTE: to avoid brittle indexing:
+    # content = resp.get('result', {}).get('content')
+    log.info(f"{method} response content: {resp['result']['content']}")
 
 if __name__ == '__main__':
     main()

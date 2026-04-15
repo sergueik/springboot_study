@@ -69,15 +69,58 @@ the server console log will show
 
 the client console log will show
 ```text
-2026-04-15 16:18:59,716 | INFO | SEND [initialize] id=1 payload={'jsonrpc': '2.0', 'id': 1, 'method': 'initialize'}
-2026-04-15 16:18:59,717 | INFO | RECV id=1 time=1.01ms response={'jsonrpc': '2.0', 'id': 1, 'result': {'status': 'ok', 'server': 'mcp-lab'}}
+Attaching to mcp-client
+ 2026-04-15 22:20:49,557 | INFO | SEND [initialize] id=1 payload={'jsonrpc': '2.0', 'id': 1, 'method': 'initialize'}
+ 2026-04-15 22:20:49,558 | INFO | RECV id=1 time=0.54ms response={'jsonrpc': '2.0', 'id': 1, 'result': {'status': 'ok', 'server': 'mcp-lab'}}
+ {'jsonrpc': '2.0', 'id': 1, 'result': {'status': 'ok', 'server': 'mcp-lab'}}
+ 2026-04-15 22:20:49,559 | INFO | SEND [tools/list] id=2 payload={'jsonrpc': '2.0', 'id': 2, 'method': 'tools/list'}
+ 2026-04-15 22:20:49,560 | INFO | RECV id=2 time=0.38ms response={'jsonrpc': '2.0', 'id': 2, 'result': {'tools': [{'name': 'echo', 'description': 'Echo input text'}, {'name': 'uppercase', 'description': 'Uppercase text'}]}}
+ 2026-04-15 22:20:49,560 | INFO | Available tools: ['echo', 'uppercase']
+ 2026-04-15 22:20:49,561 | INFO | SEND [tools/call] id=3 payload={'jsonrpc': '2.0', 'id': 3, 'method': 'tools/call', 'params': {'name': 'echo', 'arguments': {'text': 'hello from docker network'}}}
+ 2026-04-15 22:20:49,562 | INFO | RECV id=3 time=0.53ms response={'jsonrpc': '2.0', 'id': 3, 'result': {'content': 'hello from docker network'}}
+ 2026-04-15 22:20:49,562 | INFO | response content: hello from docker network
+
+```
+
+```cmd
+python.exe mcp_client.py
+```
+```text
+usage: mcp_client.py [-h] [--method METHOD] [--debug]
+
+options:
+  -h, --help            show this help message and exit
+  --method METHOD, -m METHOD
+                        method to call
+  --debug, -d           debug
+```
+```cmd
+python.exe mcp_client.py  --method echo
+```
+```text
+2026-04-15 18:42:46,532 | INFO | SEND [initialize] id=1 payload={'jsonrpc': '2.0', 'id': 1, 'method': 'initialize'}
+2026-04-15 18:42:46,533 | INFO | RECV id=1 time=1.23ms response={'jsonrpc': '2.0', 'id': 1, 'result': {'status': 'ok', 'server': 'mcp-lab'}}
 {'jsonrpc': '2.0', 'id': 1, 'result': {'status': 'ok', 'server': 'mcp-lab'}}
-2026-04-15 16:18:59,718 | INFO | SEND [tools/list] id=2 payload={'jsonrpc': '2.0', 'id': 2, 'method': 'tools/list'}
-2026-04-15 16:18:59,718 | INFO | RECV id=2 time=0.00ms response={'jsonrpc': '2.0', 'id': 2, 'result': {'tools': [{'name': 'echo', 'description': 'Echo input text'}, {'name': 'uppercase', 'description': 'Uppercase text'}]}}
-2026-04-15 16:18:59,718 | INFO | Available tools: ['echo', 'uppercase']
-2026-04-15 16:18:59,718 | INFO | SEND [tools/call] id=3 payload={'jsonrpc': '2.0', 'id': 3, 'method': 'tools/call', 'params': {'name': 'echo', 'arguments': {'text': 'hello from docker network'}}}
-2026-04-15 16:18:59,719 | INFO | RECV id=3 time=0.00ms response={'jsonrpc': '2.0', 'id': 3, 'result': {'content': 'hello from docker network'}}
-{'jsonrpc': '2.0', 'id': 3, 'result': {'content': 'hello from docker network'}}
+2026-04-15 18:42:46,534 | INFO | SEND [tools/list] id=2 payload={'jsonrpc': '2.0', 'id': 2, 'method': 'tools/list'}
+2026-04-15 18:42:46,535 | INFO | RECV id=2 time=0.00ms response={'jsonrpc': '2.0', 'id': 2, 'result': {'tools': [{'name': 'echo', 'description': 'Echo input text'}, {'name': 'uppercase', 'description': 'Uppercase text'}]}}
+2026-04-15 18:42:46,535 | INFO | Available tools: ['echo', 'uppercase']
+2026-04-15 18:42:46,535 | INFO | SEND [tools/call] id=3 payload={'jsonrpc': '2.0', 'id': 3, 'method': 'tools/call', 'params': {'name': 'echo', 'arguments': {'text': 'hello from docker network'}}}
+2026-04-15 18:42:46,535 | INFO | RECV id=3 time=0.00ms response={'jsonrpc': '2.0', 'id': 3, 'result': {'content': 'hello from docker network'}}
+2026-04-15 18:42:46,536 | INFO | response content: hello from docker network
+
+```
+
+```cmd
+python.exe mcp_client.py  --method ops
+```
+```text
+2026-04-15 18:47:09,105 | INFO | SEND [initialize] id=1 payload={'jsonrpc': '2.0', 'id': 1, 'method': 'initialize'}
+2026-04-15 18:47:09,106 | INFO | RECV id=1 time=0.00ms response={'jsonrpc': '2.0', 'id': 1, 'result': {'status': 'ok', 'server': 'mcp-lab'}}
+{'jsonrpc': '2.0', 'id': 1, 'result': {'status': 'ok', 'server': 'mcp-lab'}}
+2026-04-15 18:47:09,109 | INFO | SEND [tools/list] id=2 payload={'jsonrpc': '2.0', 'id': 2, 'method': 'tools/list'}
+2026-04-15 18:47:09,109 | INFO | RECV id=2 time=0.00ms response={'jsonrpc': '2.0', 'id': 2, 'result': {'tools': [{'name': 'echo', 'description': 'Echo input text'}, {'name': 'uppercase', 'description': 'Uppercase text'}]}}
+2026-04-15 18:47:09,109 | INFO | Available tools: ['echo', 'uppercase']
+2026-04-15 18:47:09,110 | ERROR | Required tool method "ops" is NOT available — exiting
 
 ```
 ### Note on Python iterables

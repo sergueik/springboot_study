@@ -3,4 +3,5 @@ FROM python:3.11-slim
 WORKDIR /app
 COPY . /app
 
-CMD ["python", "mcp_client.py"]
+ENTRYPOINT ["python", "mcp_client.py"]
+CMD ["--method", "echo"]
