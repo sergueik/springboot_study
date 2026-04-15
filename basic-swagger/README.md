@@ -156,7 +156,11 @@ This means:
 - easier handoff across teams
 - improved best-practice enforcement
 
+![Swagger ui](https://github.com/sergueik/springboot_study/blob/master/basic-swagger/screenshots/capture-openapi.png)
+
+
 #### Important architectural distinction
+
 Swagger UI should be considered the default solution for:
 
 - backend developers
@@ -243,6 +247,22 @@ For many backend services, Swagger/OpenAPI already satisfies the required intera
  * Swagger Pluralsight Training
    + [Getting Started with Swagger 2 Tools](https://app.pluralsight.com/library/courses/getting-started-swagger-tools)
    + [Spring Framework: Documenting Spring Data Rest APIs with Swagger and Springfox](https://app.pluralsight.com/library/courses/spring-framework-documenting-spring-data-rest-apis-swagger-springfox)
- 
+  
+### See Also (Open API Resources):
+  * [OpenAPI Specification & Swagger Tools](https://github.com/eazybytes/openapi)
+  * [springdoc/springdoc-openapi](https://github.com/springdoc/springdoc-openapi) Library for OpenAPI 3 with spring-boot
+
+  * [Open API Website](https://www.openapis.org)
+  * [Swagger Website](https://swagger.io)
+  * [Swagger Editor](https://editor.swagger.io)
+  * [SwaggerHub Explore](https://explore.swaggerhub.com/)
+  * [OpenAPI Map](https://openapi-map.apihandyman.io/)
+  * [OpenAPI & SpringBoot library](https://springdoc.org)
+  * [List of OpenAPI tools](https://openapi.tools/)
+  * [Demo for OpenAPI 3 with spring-boot](https://github.com/springdoc/springdoc-openapi-demos)
+
+  * __OpenAPITools__ [openapi-petstore](https://github.com/OpenAPITools/openapi-petstore)
+  * [Mastercard/open-banking-us-openapi](https://github.com/Mastercard/open-banking-us-openapi)
+  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
