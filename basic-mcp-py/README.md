@@ -40,6 +40,22 @@ Attaching to mcp-client
  2026-04-15 22:11:08,594 | INFO | echo result: None
 mcp-client exited with code 0
 ```
+```sh
+docker-compose run mcp-client --method echo
+```
+```text
+Starting mcp-server ... done
+2026-04-15 23:13:49,420 | INFO | SEND [initialize] id=1 payload={'jsonrpc': '2.0', 'id': 1, 'method': 'initialize'}
+2026-04-15 23:13:49,423 | INFO | RECV id=1 time=0.24ms response={'jsonrpc': '2.0', 'id': 1, 'result': {'status': 'ok', 'server': 'mcp-lab'}}
+{'jsonrpc': '2.0', 'id': 1, 'result': {'status': 'ok', 'server': 'mcp-lab'}}
+2026-04-15 23:13:49,425 | INFO | SEND [tools/list] id=2 payload={'jsonrpc': '2.0', 'id': 2, 'method': 'tools/list'}
+2026-04-15 23:13:49,427 | INFO | RECV id=2 time=0.23ms response={'jsonrpc': '2.0', 'id': 2, 'result': {'tools': [{'name': 'echo', 'description': 'Echo input text'}, {'name': 'uppercase', 'description': 'Uppercase text'}]}}
+2026-04-15 23:13:49,429 | INFO | Available tools: ['echo', 'uppercase']
+2026-04-15 23:13:49,430 | INFO | SEND [tools/call] id=3 payload={'jsonrpc': '2.0', 'id': 3, 'method': 'tools/call', 'params': {'name': 'echo', 'arguments': {'text': 'hello from docker network'}}}
+2026-04-15 23:13:49,432 | INFO | RECV id=3 time=0.64ms response={'jsonrpc': '2.0', 'id': 3, 'result': {'content': 'hello from docker network'}}
+2026-04-15 23:13:49,434 | INFO | echo response content: hello from docker network
+
+```
 
 #### Windows
 
@@ -123,6 +139,27 @@ python.exe mcp_client.py  --method ops
 2026-04-15 18:47:09,110 | ERROR | Required tool method "ops" is NOT available — exiting
 
 ```
+### What Gain with `jsonschema`
+
+It lets one validate MCP tool calls like:
+```python
+schema = {
+    "type": "object",
+    "properties": {
+        "text": {"type": "string"}
+    },
+    "required": ["text"]
+}
+```
+```python
+jsonschema.validate(instance=args, schema=schema)
+```
+So instead of blind trust:
+```python
+{'arguments': {'text': '...'}}
+```
+the client can enforce structure.
+
 ### Note on Python iterables
 
 Python does not perform any “generator → set conversion” in set comprehensions.

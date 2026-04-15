@@ -1,15 +1,12 @@
 import socket, os, socket, json, time, sys
 import logging
 import argparse
-
+import jsonschema # currently unused
 
 from common.protocol import encode, decode
 logging.basicConfig(
     level=logging.INFO,
     stream=sys.stdout,
-    # NOTE: by default, Python logging writes to stderr
-    # which is technically fine because Docker captures both stdout and stderr
-    # but is conflicting with docker-compose logs
     format='%(asctime)s | %(levelname)s | %(message)s'
 )
 

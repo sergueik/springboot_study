@@ -29,6 +29,7 @@ services:
       - MCP_HOST=mcp-server
       - MCP_PORT=9000
     restart: "on-failure"    
+    # WARNING: the:re is no max_retries or max_restarts - workarounds possible 
     networks:
       - mcp
 networks:
