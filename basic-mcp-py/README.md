@@ -52,7 +52,21 @@ Starting mcp-server ... done
 2026-04-15 23:13:49,427 | INFO | RECV id=2 time=0.23ms response={'jsonrpc': '2.0', 'id': 2, 'result': {'tools': [{'name': 'echo', 'description': 'Echo input text'}, {'name': 'uppercase', 'description': 'Uppercase text'}]}}
 2026-04-15 23:13:49,429 | INFO | Available tools: ['echo', 'uppercase']
 2026-04-15 23:13:49,430 | INFO | SEND [tools/call] id=3 payload={'jsonrpc': '2.0', 'id': 3, 'method': 'tools/call', 'params': {'name': 'echo', 'arguments': {'text': 'hello from docker network'}}}
+2026-04docker-compose run mcp-client --method echo
+```
+```text
+Starting mcp-server ... done
+2026-04-15 23:13:49,420 | INFO | SEND [initialize] id=1 payload={'jsonrpc': '2.0', 'id': 1, 'method': 'initialize'}
+2026-04-15 23:13:49,423 | INFO | RECV id=1 time=0.24ms response={'jsonrpc': '2.0', 'id': 1, 'result': {'status': 'ok', 'server': 'mcp-lab'}}
+{'jsonrpc': '2.0', 'id': 1, 'result': {'status': 'ok', 'server': 'mcp-lab'}}
+2026-04-15 23:13:49,425 | INFO | SEND [tools/list] id=2 payload={'jsonrpc': '2.0', 'id': 2, 'method': 'tools/list'}
+2026-04-15 23:13:49,427 | INFO | RECV id=2 time=0.23ms response={'jsonrpc': '2.0', 'id': 2, 'result': {'tools': [{'name': 'echo', 'description': 'Echo input text'}, {'name': 'uppercase', 'description': 'Uppercase text'}]}}
+2026-04-15 23:13:49,429 | INFO | Available tools: ['echo', 'uppercase']
+2026-04-15 23:13:49,430 | INFO | SEND [tools/call] id=3 payload={'jsonrpc': '2.0', 'id': 3, 'method': 'tools/call', 'params': {'name': 'echo', 'arguments': {'text': 'hello from docker network'}}}
 2026-04-15 23:13:49,432 | INFO | RECV id=3 time=0.64ms response={'jsonrpc': '2.0', 'id': 3, 'result': {'content': 'hello from docker network'}}
+2026-04-15 23:13:49,434 | INFO | echo response content: hello from docker network
+
+-15 23:13:49,432 | INFO | RECV id=3 time=0.64ms response={'jsonrpc': '2.0', 'id': 3, 'result': {'content': 'hello from docker network'}}
 2026-04-15 23:13:49,434 | INFO | echo response content: hello from docker network
 
 ```
@@ -159,6 +173,119 @@ So instead of blind trust:
 {'arguments': {'text': '...'}}
 ```
 the client can enforce structure.
+
+### MCP Transport Note
+
+1. What transport means
+Transport = how JSON-RPC messages move between client and server.
+
+Protocol layer:
+  - JSON-RPC methods (initialize, tools/list, tools/call)
+
+Transport layer:
+  - mechanism that carries those messages (stdio, HTTP, etc.)
+
+---
+
+2. Common MCP transports
+
+A) stdio transport
+- Client spawns server process
+- Communication via stdin/stdout
+
+Pros:
+- simplest
+- no networking
+- great for CLI + Docker + local agents
+
+Cons:
+- 1:1 client-server process model
+- harder to debug interactively
+
+---
+
+B) HTTP / SSE transport
+- JSON-RPC over HTTP or Server-Sent Events
+
+Pros:
+- network accessible
+- scalable
+- multi-client capable
+
+Cons:
+- more complexity
+- auth + latency overhead
+
+---
+
+C) WebSocket transport
+- full duplex JSON-RPC stream
+
+Pros:
+- real-time interaction
+- bidirectional streaming
+
+Cons:
+- lifecycle + reconnect complexity
+
+---
+
+D) Docker / container transport (your setup)
+- still fundamentally stdio transport
+- container just isolates runtime
+
+Flow:
+  client → docker stdio → server → JSON-RPC → response
+
+---
+
+3. Key behavior from your log
+
+- initialize → OK handshake
+- tools/list → dynamic discovery
+- tools/call → synchronous execution
+
+Result:
+✔ protocol works correctly
+✔ tool registry is dynamic
+✔ transport is stable
+✔ latency is extremely low
+
+---
+
+4. Architecture insight
+
+You effectively built:
+
+Client
+  ↓ JSON-RPC
+Transport layer (stdio / docker / pipes)
+  ↓
+Tool runtime (echo, uppercase, etc.)
+
+Transport is replaceable without changing tools or protocol.
+
+---
+
+5. Why this matters
+
+- clean separation of protocol vs transport
+- same model as LSP / agent runtimes
+- Docker does not break RPC semantics
+- enables future swap: stdio → HTTP without refactoring tools
+
+---
+
+6. Current takeaway
+
+Your system already demonstrates:
+✔ tool registry introspection
+✔ RPC-style execution
+✔ transport abstraction
+✔ container isolation compatibility
+✔ deterministic request/response flow
+
+
 
 ### Note on Python iterables
 
