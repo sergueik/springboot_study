@@ -6,9 +6,20 @@ services:
     container_name: mcp-server
     ports:
       - "9000:9000"
+    environment:
+      - MCP_BIND=0.0.0.0
+      - MCP_PORT=9000
     networks:
       - mcp
-
+        #healthcheck:
+        #test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+        #interval: 2s
+        #retries: 10
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.create_connection(('localhost',9000),2); s.close()"]
+      interval: 5s
+      timeout: 3s
+      retries: 3  
   mcp-client:
     build: ./app2
     container_name: mcp-client
@@ -16,6 +27,8 @@ services:
       - mcp-server
     environment:
       - MCP_HOST=mcp-server
+      - MCP_PORT=9000
+    restart: "on-failure"    
     networks:
       - mcp
 networks:

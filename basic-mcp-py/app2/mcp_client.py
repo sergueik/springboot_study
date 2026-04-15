@@ -1,6 +1,19 @@
-import socket
+import socket, os, socket, json, time, sys
+import logging
+
 
 from common.protocol import encode, decode
+logging.basicConfig(
+    level=logging.INFO,
+    stream=sys.stdout,
+    # NOTE: by default, Python logging writes to stderr
+    # which is technically fine because Docker captures both stdout and stderr
+    # but is conflicting with docker-compose logs
+    format='%(asctime)s | %(levelname)s | %(message)s'
+)
+
+log = logging.getLogger('mcp-client')
+
 
 HOST = os.getenv('MCP_HOST', '127.0.0.1')
 PORT = int(os.getenv('MCP_PORT', '9000'))
@@ -14,18 +27,33 @@ class MCPClient:
         self.id = 1
 
     def send(self, method, params=None):
-        req = {
-            'jsonrpc': '2.0',
-            'id': self.id,
-            'method': method
-        }
+        req_id = self.id
         self.id += 1
 
-        if params:
-            req['params'] = params
+        msg = {
+            'jsonrpc': '2.0',
+            'id': req_id,
+            'method': method
+        }
 
-        self.sock.sendall(encode(req).encode())
-        return self.recv()
+        if params:
+            msg['params'] = params
+
+        raw = json.dumps(msg) + "\n"
+
+        log.info(f"SEND [{method}] id={req_id} payload={msg}")
+
+        start = time.time()
+        self.sock.sendall(raw.encode())
+
+        resp = self.recv()
+
+        duration = (time.time() - start) * 1000
+
+        log.info(f"RECV id={req_id} time={duration:.2f}ms response={resp}")
+
+        return resp
+
 
     def recv(self):
         while True:
@@ -40,32 +68,40 @@ class MCPClient:
                 return decode(line)
 
 def validate_tools(response):
-    if "error" in response:
+    if 'error' in response:
         raise RuntimeError(f"Server error: {response['error']}")
 
-    if "result" not in response:
-        raise RuntimeError("Invalid response: missing result")
+    if 'result' not in response:
+        raise RuntimeError('Invalid response: missing result')
 
-    tools = response["result"].get("tools")
+    tools = response['result'].get('tools')
 
     if tools is None:
-        raise RuntimeError("Protocol error: tools is None")
+        raise RuntimeError('Protocol error: tools is None')
 
     if len(tools) == 0:
-        raise RuntimeError("No tools available from server")
+        raise RuntimeError('No tools available from server')
 
     return tools
 
 def main():
-    c = MCPClient()
+    mcp_client = MCPClient()
 
-    print(c.send('initialize'))
-    # dump moving along immediately 
-    # should react intentionally, not silently continue.
-    print(c.send('tools/list'))
+    print(mcp_client.send('initialize'))
+    resp = mcp_client.send('tools/list')
 
-    print(
-        c.send(
+    try:
+        tools = validate_tools(resp)
+        log.info(f"Available tools: {[tool['name'] for tool in tools]}")
+    except Exception as e:
+        log.error(f"Tool discovery failed: {e}")
+        return
+    if 'echo' not in {tool['name'] for tool in tools }:
+        log.error('Required tool "echo" is NOT available — exiting')
+        sys.exit(1)
+
+    result = print(
+        mcp_client.send(
             'tools/call',
             {
                 'name': 'echo',
@@ -74,6 +110,7 @@ def main():
         )
     )
 
+    log.info(f"echo result: {result}")
 
 if __name__ == '__main__':
     main()

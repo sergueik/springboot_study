@@ -19,9 +19,13 @@ TOOLS = {
 }
 
 
+
 def handle_request(req: dict):
     method = req.get('method')
     req_id = req.get('id')
+    # plain REST health check very standard in MCP-style services and microservices in general
+    if method == 'health':
+        return {'status': 'ok'}
 
     if method == 'initialize':
         return {
@@ -36,8 +40,8 @@ def handle_request(req: dict):
             'id': req_id,
             'result': {
                 'tools': [
-                    {'name': k, 'description': v['description']}
-                    for k, v in TOOLS.items()
+                    {'name': key, 'description': val['description']}
+                    for key, val in TOOLS.items()
                 ]
             }
         }
