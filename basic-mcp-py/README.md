@@ -2,6 +2,10 @@
 
 ### Usage
 
+![Local](screenshots/local-mcp.png)
+
+![Docker](screenshots/docker-mcp.png)
+
 #### Docker
 
 ```sh
