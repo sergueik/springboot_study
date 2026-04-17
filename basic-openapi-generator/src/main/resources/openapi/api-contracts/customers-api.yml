@@ -1,0 +1,94 @@
+openapi: 3.0.3
+info:
+  title: Customer API
+  version: 1.0.0
+  description: Customer management operations
+
+servers:
+  - url: http://localhost:8080/api
+    description: Development server
+
+tags:
+  - name: Customer
+    description: Customer management operations
+
+paths:
+  /customers:
+    post:
+      tags:
+        - Customer
+      operationId: createCustomer
+      summary: Create a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../common/schemas.yaml#/components/schemas/CreateCustomerRequest'
+      responses:
+        '201':
+          description: Customer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '../common/schemas.yaml#/components/schemas/CustomerResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '../common/schemas.yaml#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Customer
+      operationId: listCustomers
+      summary: List all customers with pagination
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                $ref: '../common/schemas.yaml#/components/schemas/CustomerListResponse'
+
+  /customers/{customerId}:
+    get:
+      tags:
+        - Customer
+      operationId: getCustomer
+      summary: Get customer by ID
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Customer details
+          content:
+            application/json:
+              schema:
+                $ref: '../common/schemas.yaml#/components/schemas/CustomerResponse'
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '../common/schemas.yaml#/components/schemas/ErrorResponse'

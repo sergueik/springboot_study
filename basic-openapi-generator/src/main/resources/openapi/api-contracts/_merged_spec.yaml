@@ -1,0 +1,19 @@
+---
+servers:
+- url: "http://localhost:8080"
+openapi: "3.0.3"
+paths:
+  /customers/{customerId}:
+    $ref: "./customers-api.yml#/paths/~1customers~1{customerId}"
+  /accounts/{accountId}:
+    $ref: "./accounts-api.yml#/paths/~1accounts~1{accountId}"
+  /transactions:
+    $ref: "./transactions-api.yml#/paths/~1transactions"
+  /accounts:
+    $ref: "./accounts-api.yml#/paths/~1accounts"
+  /customers:
+    $ref: "./customers-api.yml#/paths/~1customers"
+info:
+  title: "merged spec"
+  description: "merged spec"
+  version: "1.0.0"

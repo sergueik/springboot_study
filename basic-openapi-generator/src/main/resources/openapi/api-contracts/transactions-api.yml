@@ -1,0 +1,86 @@
+openapi: 3.0.3
+info:
+  title: Transaction API
+  version: 1.0.0
+  description: Transaction management operations
+
+servers:
+  - url: http://localhost:8080/api
+    description: Development server
+
+tags:
+  - name: Transaction
+    description: Transactions management operations
+
+paths:
+  # Transaction Endpoints
+  /transactions:
+    post:
+      tags:
+        - Transaction
+      operationId: createTransaction
+      summary: Create a transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTransactionRequest'
+      responses:
+        '201':
+          description: Transaction created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+
+components:
+  schemas:
+    CreateTransactionRequest:
+      type: object
+      required:
+        - fromAccountId
+        - toAccountId
+        - amount
+        - currency
+      properties:
+        fromAccountId:
+          type: string
+          format: uuid
+        toAccountId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+          minimum: 0.01
+        currency:
+          type: string
+          enum: [ USD, EUR, GBP, ZAR ]
+        description:
+          type: string
+          maxLength: 200
+
+    TransactionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fromAccountId:
+          type: string
+          format: uuid
+        toAccountId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [ PENDING, COMPLETED, FAILED ]
+        createdAt:
+          type: string
+          format: date-time

@@ -1,0 +1,344 @@
+openapi: 3.0.3
+info:
+  title: Banking API
+  version: 1.0.0
+  description: Banking system REST API
+
+servers:
+  - url: http://localhost:8080/api
+    description: Development server
+
+tags:
+  - name: Customer
+    description: Customer management operations
+  - name: Account
+    description: Account operations
+  - name: Transaction
+    description: Transaction operations
+
+paths:
+  # Customer Endpoints
+  /customers:
+    post:
+      tags:
+        - Customer
+      operationId: createCustomer
+      summary: Create a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomerRequest'
+      responses:
+        '201':
+          description: Customer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      tags:
+        - Customer
+      operationId: listCustomers
+      summary: List all customers with pagination
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: List of customers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerListResponse'
+
+  /customers/{customerId}:
+    get:
+      tags:
+        - Customer
+      operationId: getCustomer
+      summary: Get customer by ID
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Customer details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerResponse'
+        '404':
+          description: Customer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Account Endpoints
+  /accounts:
+    post:
+      tags:
+        - Account
+      operationId: createAccount
+      summary: Create a new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAccountRequest'
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+
+  /accounts/{accountId}:
+    get:
+      tags:
+        - Account
+      operationId: getAccount
+      summary: Get account by ID
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Account details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+
+  # Transaction Endpoints
+  /transactions:
+    post:
+      tags:
+        - Transaction
+      operationId: createTransaction
+      summary: Create a transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTransactionRequest'
+      responses:
+        '201':
+          description: Transaction created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+
+components:
+  schemas:
+    CreateCustomerRequest:
+      type: object
+      required:
+        - email
+        - firstName
+        - lastName
+        - identificationType
+        - identificationNumber
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 100
+          example: "john.doe@example.com"
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: "John"
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: "Doe"
+        identificationType:
+          type: string
+          enum: [ID_CARD, PASSPORT, DRIVERS_LICENSE]
+          example: "ID_CARD"
+        identificationNumber:
+          type: string
+          minLength: 5
+          maxLength: 20
+          example: "1234567890123"
+        phoneNumber:
+          type: string
+          pattern: '^\+?[1-9]\d{1,14}$'
+          example: "+27123456789"
+
+    CustomerResponse:
+      type: object
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        status:
+          type: string
+          enum: [ACTIVE, INACTIVE, SUSPENDED]
+        createdAt:
+          type: string
+          format: date-time
+
+    CustomerListResponse:
+      type: object
+      properties:
+        customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerResponse'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+        currentPage:
+          type: integer
+
+    CreateAccountRequest:
+      type: object
+      required:
+        - customerId
+        - accountType
+        - currency
+      properties:
+        customerId:
+          type: string
+          format: uuid
+        accountType:
+          type: string
+          enum: [SAVINGS, CURRENT, FIXED_DEPOSIT]
+        currency:
+          type: string
+          enum: [USD, EUR, GBP, ZAR]
+
+    AccountResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        accountNumber:
+          type: string
+        customerId:
+          type: string
+          format: uuid
+        accountType:
+          type: string
+        currency:
+          type: string
+        balance:
+          type: number
+          format: double
+        status:
+          type: string
+          enum: [ACTIVE, FROZEN, CLOSED]
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateTransactionRequest:
+      type: object
+      required:
+        - fromAccountId
+        - toAccountId
+        - amount
+        - currency
+      properties:
+        fromAccountId:
+          type: string
+          format: uuid
+        toAccountId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+          minimum: 0.01
+        currency:
+          type: string
+          enum: [USD, EUR, GBP, ZAR]
+        description:
+          type: string
+          maxLength: 200
+
+    TransactionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        fromAccountId:
+          type: string
+          format: uuid
+        toAccountId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, COMPLETED, FAILED]
+        createdAt:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
