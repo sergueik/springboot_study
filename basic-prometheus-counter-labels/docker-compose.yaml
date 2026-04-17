@@ -1,0 +1,27 @@
+version: '3.5'
+
+services:
+  app:
+    build: ./app
+    ports:
+      - "8080:8080"
+  prometheus:
+    build: prometheus
+    depends_on: 
+      - app 
+    ports:
+      - "9090:9090"
+
+  grafana:
+    container_name: grafana
+    build: grafana
+    ports:
+      - 3000:3000
+    working_dir: '/scripts'
+    restart: always
+    depends_on: 
+      - prometheus
+    tty: false
+    extra_hosts:
+      - "host.docker.internal:192.168.99.100"
+
