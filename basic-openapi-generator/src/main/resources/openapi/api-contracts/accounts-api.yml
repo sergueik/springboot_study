@@ -1,0 +1,108 @@
+openapi: 3.0.3
+info:
+  title: Account API
+  version: 1.0.0
+  description: Account management operations
+
+servers:
+  - url: http://localhost:8080/api
+    description: Development server
+
+tags:
+  - name: Account
+    description: Account management operations
+
+paths:
+  # Account Endpoints
+  /accounts:
+    post:
+      tags:
+        - Account
+      operationId: createAccount
+      summary: Create a new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAccountRequest'
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+
+  /accounts/{accountId}:
+    get:
+      tags:
+        - Account
+      operationId: getAccount
+      summary: Get account by ID
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Account details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+
+components:
+  schemas:
+    AccountResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        accountNumber:
+          type: string
+        customerId:
+          type: string
+          format: uuid
+        accountType:
+          type: string
+        currency:
+          type: string
+        balance:
+          type: number
+          format: double
+        status:
+          type: string
+          enum: [ ACTIVE, FROZEN, CLOSED ]
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateTransactionRequest:
+      type: object
+      required:
+        - fromAccountId
+        - toAccountId
+        - amount
+        - currency
+      properties:
+        fromAccountId:
+          type: string
+          format: uuid
+        toAccountId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+          minimum: 0.01
+        currency:
+          type: string
+          enum: [ USD, EUR, GBP, ZAR ]
+        description:
+          type: string
+          maxLength: 200

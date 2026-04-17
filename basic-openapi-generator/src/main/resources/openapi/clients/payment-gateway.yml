@@ -1,0 +1,109 @@
+openapi: 3.0.3
+info:
+  title: Payment Gateway API
+  version: 1.0.0
+
+servers:
+  - url: /api/payments
+
+tags:
+  - name: Payment
+
+paths:
+  /:
+    post:
+      tags: [PaymentClient]
+      operationId: initiatePayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '201':
+          description: Payment initiated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+
+  /{paymentId}:
+    get:
+      tags: [PaymentClient]
+      operationId: getPaymentStatus
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+
+  /{paymentId}/refund:
+    post:
+      tags: [PaymentClient]
+      operationId: refundPayment
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundRequest'
+      responses:
+        '200':
+          description: Refund processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefundResponse'
+
+components:
+  schemas:
+    BaseResponse:
+      $ref: '../common/schemas.yaml#/components/schemas/BaseResponse'
+
+    PaymentRequest:
+      type: object
+      required: [amount, currency, sourceAccountId, destinationAccountId]
+      properties:
+        amount: { type: number, format: double, minimum: 0.01 }
+        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        sourceAccountId: { type: string, format: uuid }
+        destinationAccountId: { type: string, format: uuid }
+        reference: { type: string, maxLength: 100 }
+
+    PaymentResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            paymentId: { type: string, format: uuid }
+            status: { type: string, enum: [PENDING, COMPLETED, FAILED] }
+            amount: { type: number, format: double }
+            currency: { type: string }
+
+    RefundRequest:
+      type: object
+      required: [amount]
+      properties:
+        amount: { type: number, format: double, minimum: 0.01 }
+        reason: { type: string, maxLength: 500 }
+
+    RefundResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            refundId: { type: string, format: uuid }
+            status: { type: string, enum: [PENDING, COMPLETED, FAILED] }

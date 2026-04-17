@@ -1,0 +1,16 @@
+components:
+  schemas:
+    BaseResponse:
+      type: object
+      properties:
+        timestamp: { type: string, format: date-time }
+        correlationId: { type: string, format: uuid }
+        status: { type: string, enum: [SUCCESS, FAILURE] }
+
+    ErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            errorCode: { type: string }
+            message: { type: string }

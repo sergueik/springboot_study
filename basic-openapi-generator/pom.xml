@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.3.4.RELEASE</version>
+    <relativePath/>
+    <!-- lookup parent from repository -->
+  </parent>
+  <groupId>com.thulasizwe</groupId>
+  <artifactId>bank</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <name>bank</name>
+  <description>Banking POC</description>
+  <properties>
+    <!-- webflux version -->
+    <java.version>17</java.version>
+    <spring.boot.version>3.3.1</spring.boot.version>
+    <!-- or latest 3.x -->
+    <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+    <!-- web version -->
+    <java.version>11</java.version>
+    <spring.boot.version>2.3.4.RELEASE</spring.boot.version>
+    <!-- or latest 3.x -->
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <openapi-generator-maven-plugin.version>7.4.0</openapi-generator-maven-plugin.version>
+    <!--  The parameters 'inputSpec' for goal org.openapitools:openapi-generator-maven-plugin:5.4.0:generate are missing or invalid -->
+    <openapi-generator-maven-plugin.version>5.4.0</openapi-generator-maven-plugin.version>
+    <openapi-generator-maven-plugin.version>7.7.0</openapi-generator-maven-plugin.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <gson.version>2.8.9</gson.version>
+    <springdoc-openapi-starter-webmvc-ui.version>2.6.0</springdoc-openapi-starter-webmvc-ui.version>
+    <mockito.version>3.10.0</mockito.version>
+    <finalName>${project.groupId}.${project.artifactId}</finalName>
+    <jakarta.el.version>5.0.1</jakarta.el.version>
+    <jakarta.validation.version>3.0.2</jakarta.validation.version>
+    <jakarta.annotation-api.version>1.3.5</jakarta.annotation-api.version>
+    <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${gson.version}</version>
+      <exclusions>
+        <exclusion>
+          <!-- exclude side by side versions of guava jar from gson -->
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!--
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+	    </dependency>
+    -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.8</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
+      <version>${jakarta.validation.version}</version>
+    </dependency>
+    <dependency>
+	    <groupId>jakarta.annotation</groupId>
+    <artifactId>jakarta.annotation-api</artifactId>
+      <version>${jakarta.annotation-api.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>${hibernate-validator.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.el</groupId>
+      <artifactId>jakarta.el-api</artifactId>
+      <version>${jakarta.el.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.glassfish.expressly</groupId>
+      <artifactId>expressly</artifactId>
+      <version>5.0.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <version>${spring.boot.version}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.junit.vintage</groupId>
+          <artifactId>junit-vintage-engine</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>${springdoc-openapi-starter-webmvc-ui.version}</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>${openapi-generator-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>generate-api</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <!-- NOTE: the original project instruction is a little vague -->
+              <inputSpecRootDirectory>${project.basedir}/src/main/resources/openapi/api-contracts</inputSpecRootDirectory>
+              <generatorName>spring</generatorName>
+              <configurationFile>${project.basedir}/src/main/resources/openapi/config/server-config.json</configurationFile>
+              <apiPackage>com.thulasizwe.bank.api</apiPackage>
+              <!--
+)
+[ERROR]
+org.openapitools.codegen.SpecValidationException: There were issues with the specification. 
+ | Error count: 1, Warning count: 0
+Errors:
+	      -Could not find components/schemas/CustomerResponse in contents of ./../common/schemas.yaml
+
+
+	      -->
+              <!-- java.lang.RuntimeException: Could not generate supporting file 'SupportingFile[templateFile='pom-sb3.mustache', folder='', destinationFilename='pom.xml', canOverwrite=true]'
+	      -->
+              <generateSupportingFiles>false</generateSupportingFiles>
+              <supportingFilesToGenerate>
+              </supportingFilesToGenerate>
+              <!-- Disable validation -->
+              <skipValidateSpec>true</skipValidateSpec>
+              <modelPackage>com.thulasizwe.bank.dto</modelPackage>
+              <output>${project.build.directory}/generated-sources/openapi</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-payment-client</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/src/main/resources/openapi/clients/payment-gateway.yml</inputSpec>
+              <generatorName>spring</generatorName>
+              <configurationFile>${project.basedir}/src/main/resources/openapi/config/client-config.json</configurationFile>
+              <!-- TODO: switch to ${project.groupId}.api -->
+              <apiPackage>com.thulasizwe.bank.api</apiPackage>
+              <!-- TODO: switch to ${project.groupId}.dto -->
+              <modelPackage>com.thulasizwe.bank.dto</modelPackage>
+              <output>${project.build.directory}/generated-sources/openapi</output>
+              <generateSupportingFiles>false</generateSupportingFiles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Compiler Plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <release>${java.version}</release>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>1.18.8</version>
+              <!-- Resolution of annotationProcessorPath dependencies failed: For artifact {org.projectlombok:lombok:null:jar}: The version cannot be empty -->
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <finalName>${finalName}</finalName>
+          <excludes>
+            <exclude>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+            </exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
