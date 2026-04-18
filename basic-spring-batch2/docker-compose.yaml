@@ -17,23 +17,9 @@ services:
       - ./app/src/main/resources/metadata:/docker-entrypoint-initdb.d
     networks:
       - example
-  delayed_start:
-    container_name: delayed_start
-    build:
-      context: delayed_start
-      dockerfile: Dockerfile
-    image: alpine:3.9
-    depends_on:
-      - mysql-server
-    environment:
-      SERVICE_PORT: 3306
-      SERVICE_HOST: mysql-server
-    networks:
-      - example
   app:
     build: ./app
     depends_on:
-      - delayed_start
       - mysql-server
     networks:
       - example

@@ -2,7 +2,7 @@ spring:
   application:
     name: springboot-batch
   datasource:
-    url: jdbc:mysql://mysql-server:3306/example_db
+    url: jdbc:mysql://mysql-server:3306/example_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: example_db_user
     password: example_db_pass
     driverClassName: com.mysql.jdbc.Driver
