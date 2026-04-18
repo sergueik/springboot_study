@@ -1,4 +1,4 @@
-version: '3.5'
+version: '3.6'
 
 services:
   mysql-server:
@@ -12,15 +12,21 @@ services:
       - 'MYSQL_PASSWORD=example_db_pass'
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     volumes:
-      # - ./db:/docker-entrypoint-initdb.d
       - ./app/src/main/resources/metadata:/docker-entrypoint-initdb.d
     networks:
       - example
   app:
     build: ./app
     depends_on:
-      - mysql-server
+      mysql-server:
+        condition: service_healthy
+        # NOTE: may not work as expected in some 3.x docker-compose versions
     networks:
       - example
     environment:

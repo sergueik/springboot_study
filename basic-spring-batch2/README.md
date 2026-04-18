@@ -12,14 +12,14 @@ popd
 ```sh
 docker-compose up --build -d
 ```
+```sh
 docker-compose ps
 ```
 ```text
-basic-spring-            sh -c until nc -z        Up      0.0.0.0:8080-         
-batch2_app_1             mysql-se ...                     >8080/tcp,:::8080-    
-                                                          >8080/tcp             
-mysql-server             docker-entrypoint.sh     Up      0.0.0.0:3306-    
-```
+          Name                        Command                State                              Ports
+----------------------------------------------------------------------------------------------------------------------------
+basic-spring-batch2_app_1   java -jar /app.jar            Up             0.0.0.0:8080->8080/tcp,:::8080->8080/tcp
+mysql-server                docker-entrypoint.sh mysqld   Up (healthy)   0.0.0.0:3306->3306/tcp,:::3306->3306/tcp, 33060/tcp
 ```
 ```sh
 docker-compose exec mysql-server sh
@@ -68,7 +68,6 @@ mysql> show tables ;
 | access                       |
 +------------------------------+
 10 rows in set (0.00 sec)
-
 ```
 ```sh
 docker-compose logs --no-color app | less
@@ -77,7 +76,7 @@ docker-compose logs --no-color app | less
 Attaching to basic-spring-batch2_app_1
 app_1           | waiting for mysql
 app_1           | waiting for mysql
-app_1           | 
+app_1           |
 app_1           |   .   ____          _            __ _ _
 app_1           |  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
 app_1           | ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
@@ -85,7 +84,7 @@ app_1           |  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
 app_1           |   '  |____| .__|_| |_|_| |_\__, | / / / /
 app_1           |  =========|_|==============|___/=/_/_/_/
 app_1           |  :: Spring Boot ::        (v2.3.4.RELEASE)
-app_1           | 
+app_1           |
 app_1           | 2026-04-18 02:24:32.663  INFO 1 --- [           main] name.ealen.SpringBatchApplication        : Starting SpringBatchApplication v0.1.0-SNAPSNOT on 3a7c99382add with PID 1 (/app.jar started by root in /)
 app_1           | 2026-04-18 02:24:32.674  INFO 1 --- [           main] name.ealen.SpringBatchApplication        : No active profile set, falling back to default profiles: default
 app_1           | 2026-04-18 02:24:34.445  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFERRED mode.
@@ -240,7 +239,7 @@ mysql> select * from BATCH_JOB_EXECUTION_PARAMS;
 +------------------+---------+----------+------------+---------------------+----------+------------+-------------+
 |                1 | LONG    | run.id   |            | 1970-01-01 00:00:00 |        1 |          0 | Y           |
 +------------------+---------+----------+------------+---------------------+----------+------------+-------------+
-	
+
 ```
 
 ```sh
@@ -287,20 +286,19 @@ join BATCH_STEP_EXECUTION se
 +---------------+------------+-----------+-------------+------------+-------------+
 | dataHandleJob | COMPLETED  | getData   | COMPLETED   |        427 |         427 |
 +---------------+------------+-----------+-------------+------------+-------------+
-```  
+```
 
 ### Re-Running
 
-* if the `run.id` does not change 
-will get the `JobInstanceAlreadyCompleteException`
+* if the `run.id` does not change one will get the `JobInstanceAlreadyCompleteException`
 
 ```sh
 docker-compose ps
 ```
-```         Name                         Command               State                   Ports                
+```         Name                         Command               State                   Ports
 ----------------------------------------------------------------------------------------------------------
-basic-spring-batch2_app_1   sh -c until nc -z mysql-se ...   Exit 0                                       
-mysql-server                docker-entrypoint.sh mysqld      Up       0.0.0.0:3306->3306/tcp,:::3306-                                                                           >3306/tcp, 33060/tcp   
+basic-spring-batch2_app_1   sh -c until nc -z mysql-se ...   Exit 0
+mysql-server                docker-entrypoint.sh mysqld      Up       0.0.0.0:3306->3306/tcp,:::3306-                                                                           >3306/tcp, 33060/tcp
 ```
 ```sh
 docker-compose run app
@@ -317,15 +315,14 @@ repeating the SQL, see now
 ```
 
 ```sh
-mysql>
-SELECT
-    ->     bse.STEP_NAME,
-    ->     bse.READ_COUNT,
-    ->     bse.WRITE_COUNT,
-    ->     bse.COMMIT_COUNT,
-    ->     bse.STATUS
-    -> FROM BATCH_STEP_EXECUTION bse
-    -> ORDER BY bse.STEP_EXECUTION_ID DESC;
+mysql> SELECT
+         bse.STEP_NAME,
+         bse.READ_COUNT,
+         bse.WRITE_COUNT,
+         bse.COMMIT_COUNT,
+         bse.STATUS
+     FROM BATCH_STEP_EXECUTION bse
+     ORDER BY bse.STEP_EXECUTION_ID DESC;
 ```
 ```text
 +-----------+------------+-------------+--------------+-----------+
@@ -344,6 +341,10 @@ docker-compose stop
 docker-compose rm -f
 ```
 
+```sh
+rm -fr app/target
+find . -type f | xargs -IX sed -i 's|\r$||g' X
+```
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
