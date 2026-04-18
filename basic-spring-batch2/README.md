@@ -7,6 +7,7 @@ Basic docker-compose basic spring batch Demo [spring-batch](https://github.com/E
 ```sh
 pushd app
 mvn clean package
+popd
 ```
 ```sh
 docker-compose up --build -d
