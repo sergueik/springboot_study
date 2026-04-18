@@ -180,6 +180,161 @@ app_1           | 2026-04-18 02:24:42.125  INFO 1 --- [extShutdownHook] com.zaxx
 
 ```
 
+### Examination of Job Run
+```
+docker-compose exec mysql-server sh
+```
+
+
+```sh
+mysql -u example_db_user -p
+```
+
+```sh
+mysql> use example_db
+```
+```text
+
+Database changed
+```
+
+```sh
+mysql> select * from BATCH_JOB_INSTANCE;
+```
+```text
++-----------------+---------+---------------+----------------------------------+
+| JOB_INSTANCE_ID | VERSION | JOB_NAME      | JOB_KEY                          |
++-----------------+---------+---------------+----------------------------------+
+|               1 |       0 | dataHandleJob | 853d3449e311f40366811cbefb3d93d7 |
++-----------------+---------+---------------+----------------------------------+
+```
+
+```sh
+mysql> select
+    JOB_EXECUTION_ID,
+    JOB_INSTANCE_ID,
+    START_TIME,
+    END_TIME,
+    STATUS,
+    EXIT_CODE,
+    EXIT_MESSAGE,
+    CREATE_TIME,
+    LAST_UPDATED
+from BATCH_JOB_EXECUTION;
+```
+```text
++------------------+-----------------+---------------------+---------------------+-----------+-----------+--------------+---------------------+---------------------+
+| JOB_EXECUTION_ID | JOB_INSTANCE_ID | START_TIME          | END_TIME            | STATUS    | EXIT_CODE | EXIT_MESSAGE | CREATE_TIME         | LAST_UPDATED        |
++------------------+-----------------+---------------------+---------------------+-----------+-----------+--------------+---------------------+---------------------+
+|                1 |               1 | 2026-04-18 02:24:41 | 2026-04-18 02:24:42 | COMPLETED | COMPLETED |              | 2026-04-18 02:24:41 | 2026-04-18 02:24:42 |
++------------------+-----------------+---------------------+---------------------+-----------+-----------+--------------+---------------------+---------------------+
+
+```
+```sh
+mysql> select * from BATCH_JOB_EXECUTION_PARAMS;
+```
+```text
++------------------+---------+----------+------------+---------------------+----------+------------+-------------+
+| JOB_EXECUTION_ID | TYPE_CD | KEY_NAME | STRING_VAL | DATE_VAL            | LONG_VAL | DOUBLE_VAL | IDENTIFYING |
++------------------+---------+----------+------------+---------------------+----------+------------+-------------+
+|                1 | LONG    | run.id   |            | 1970-01-01 00:00:00 |        1 |          0 | Y           |
++------------------+---------+----------+------------+---------------------+----------+------------+-------------+
+	
+```
+
+```sh
+mysql> select
+    STEP_EXECUTION_ID,
+    STEP_NAME,
+    START_TIME,
+    END_TIME,
+    STATUS,
+    COMMIT_COUNT,
+    READ_COUNT,
+    WRITE_COUNT,
+    FILTER_COUNT,
+    READ_SKIP_COUNT,
+    WRITE_SKIP_COUNT
+from BATCH_STEP_EXECUTION;
+
+```
+```text
++-------------------+-----------+---------------------+---------------------+-----------+--------------+------------+-------------+--------------+-----------------+------------------+
+| STEP_EXECUTION_ID | STEP_NAME | START_TIME          | END_TIME            | STATUS    | COMMIT_COUNT | READ_COUNT | WRITE_COUNT | FILTER_COUNT | READ_SKIP_COUNT | WRITE_SKIP_COUNT |
++-------------------+-----------+---------------------+---------------------+-----------+--------------+------------+-------------+--------------+-----------------+------------------+
+|                 1 | getData   | 2026-04-18 02:24:41 | 2026-04-18 02:24:42 | COMPLETED |            5 |        427 |         427 |            0 |               0 |                0 |
++-------------------+-----------+---------------------+---------------------+-----------+--------------+------------+-------------+--------------+-----------------+------------------+
+```
+
+```sh
+mysql> select
+    ji.JOB_NAME,
+    je.STATUS as JOB_STATUS,
+    se.STEP_NAME,
+    se.STATUS as STEP_STATUS,
+    se.READ_COUNT,
+    se.WRITE_COUNT
+from BATCH_JOB_INSTANCE ji
+join BATCH_JOB_EXECUTION je
+    on ji.JOB_INSTANCE_ID = je.JOB_INSTANCE_ID
+join BATCH_STEP_EXECUTION se
+    on je.JOB_EXECUTION_ID = se.JOB_EXECUTION_ID;
+```
+```text
++---------------+------------+-----------+-------------+------------+-------------+
+| JOB_NAME      | JOB_STATUS | STEP_NAME | STEP_STATUS | READ_COUNT | WRITE_COUNT |
++---------------+------------+-----------+-------------+------------+-------------+
+| dataHandleJob | COMPLETED  | getData   | COMPLETED   |        427 |         427 |
++---------------+------------+-----------+-------------+------------+-------------+
+```  
+
+### Re-Running
+
+* if the `run.id` does not change 
+will get the `JobInstanceAlreadyCompleteException`
+
+```sh
+docker-compose ps
+```
+```         Name                         Command               State                   Ports                
+----------------------------------------------------------------------------------------------------------
+basic-spring-batch2_app_1   sh -c until nc -z mysql-se ...   Exit 0                                       
+mysql-server                docker-entrypoint.sh mysqld      Up       0.0.0.0:3306->3306/tcp,:::3306-                                                                           >3306/tcp, 33060/tcp   
+```
+```sh
+docker-compose run app
+```
+
+repeating the SQL, see now
+```text
++------------------+---------+----------+------------+---------------------+----------+------------+-------------+
+| JOB_EXECUTION_ID | TYPE_CD | KEY_NAME | STRING_VAL | DATE_VAL            | LONG_VAL | DOUBLE_VAL | IDENTIFYING |
++------------------+---------+----------+------------+---------------------+----------+------------+-------------+
+|                1 | LONG    | run.id   |            | 1970-01-01 00:00:00 |        1 |          0 | Y           |
+|                2 | LONG    | run.id   |            | 1970-01-01 00:00:00 |        2 |          0 | Y           |
++------------------+---------+----------+------------+---------------------+----------+------------+-------------+
+```
+
+```sh
+mysql>
+SELECT
+    ->     bse.STEP_NAME,
+    ->     bse.READ_COUNT,
+    ->     bse.WRITE_COUNT,
+    ->     bse.COMMIT_COUNT,
+    ->     bse.STATUS
+    -> FROM BATCH_STEP_EXECUTION bse
+    -> ORDER BY bse.STEP_EXECUTION_ID DESC;
+```
+```text
++-----------+------------+-------------+--------------+-----------+
+| STEP_NAME | READ_COUNT | WRITE_COUNT | COMMIT_COUNT | STATUS    |
++-----------+------------+-------------+--------------+-----------+
+| getData   |        427 |         427 |            5 | COMPLETED |
+| getData   |        427 |         427 |            5 | COMPLETED |
++-----------+------------+-------------+--------------+-----------+
+```
+
 ### Cleanup
 
 
