@@ -1,0 +1,73 @@
+version : '3'
+
+services:
+  weather_forecast_api:
+    # NOTE: uses image built locally ahead of time
+    image: weather_forecast_api
+    ports:
+      - 4000:5000
+    # presumably will create volume    
+    volumes:
+      - log_location:/var/log
+    networks:
+      - example
+  
+  prometheus:
+    image: prom/prometheus:v2.41.0
+    restart: always
+    ports:
+      - 9090:9090
+    volumes:
+      # NOTE: use . to prevent intepretation of direcrory as named volume reference  
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - example
+  
+  promtail:
+    image: grafana/promtail:2.5.0
+    volumes:
+      - log_location:/var/log
+        # NOTE: discourage using docker-compose volumes as 
+        # workaround for lack of direct `ADD` in docker-compose.yaml DSL  
+      - ./promtail/promtail.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - example
+
+  loki:
+    image: grafana/loki:2.5.0
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/loki.yml:/etc/loki/local-config.yml
+    command: -config.file=/etc/loki/local-config.yml
+    networks:
+      - example
+  
+  init-permissions:
+    image: alpine
+    user: "root"
+    volumes:
+      - app_data:/data
+    command: chown -R 1000:1000 /data # Sets ownership to UID 1000
+      
+  grafana:
+    image: grafana/grafana:10.4.13
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=P@ssw0rd
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+      - app_data:/var/lib/grafana
+    networks:
+      - example
+    depends_on:
+      - init-permissions  
+  
+networks:
+  example:
+    
+volumes:
+  log_location:
+  app_data:

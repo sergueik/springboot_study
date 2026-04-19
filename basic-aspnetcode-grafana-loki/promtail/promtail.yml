@@ -1,0 +1,41 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: system
+    pipeline_stages:      
+      - match:
+          pipeline_name: "security"
+          selector: '{app="api"}'
+          stages:
+            
+            - regex:
+                expression: '(?P<sensitive_creditcard>(?:\d[ -]*?){13,16})'
+            - regex:
+                expression: '(?P<sensitive_email>([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+))'
+                
+            - template:
+                source: sensitive_creditcard
+                template: '{{ not (empty .Value) }}'
+            - template:
+                source: sensitive_email
+                template: '{{ not (empty .Value) }}'            
+                
+            - labels:
+                sensitive_creditcard:
+                sensitive_email:
+                  
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: varlogs
+          __path__: /var/log/*local.log
+          app: 'api'
