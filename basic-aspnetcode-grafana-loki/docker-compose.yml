@@ -24,7 +24,7 @@ services:
       - example
   
   promtail:
-    image: grafana/promtail:2.5.0
+    image: grafana/promtail:2.9.6
     volumes:
       - log_location:/var/log
         # NOTE: discourage using docker-compose volumes as 
@@ -35,7 +35,7 @@ services:
       - example
 
   loki:
-    image: grafana/loki:2.5.0
+    image: grafana/loki:2.9.6
     ports:
       - "3100:3100"
     volumes:
@@ -49,9 +49,11 @@ services:
     user: "root"
     volumes:
       - app_data:/data
-    command: chown -R 1000:1000 /data # Sets ownership to UID 1000
+    command: chown -R ${GRAFANA_UID:-1000}:0 /data # Sets ownership to UID of Grafana app (1000 is unlikely be the right value)
       
   grafana:
+    # avoid sidecar chmod containers.
+    user: ${GRAFANA_UID:-472}
     image: grafana/grafana:10.4.13
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=P@ssw0rd
