@@ -347,20 +347,49 @@ find . -type f | xargs -IX sed -i 's|\r$||g' X
 ```
 ### 
 
-|-------|-------------|---------------------------------------|-----------------|
-| name   | hosting     | Dialect `database-platform` | Driver `driver-class-name`          |
-| __H2DB__   | file system | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver`| 
-| __H2DB__   | in memory   | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver` |
-| __SQLite__ |file system  | `example.sqlite.SQLiteDialect`   | `org.sqlite.JDBC`  |
-| __SQLite__ |in memory    |  `example.sqlite.SQLiteDialect`   | `org.sqlite.JDBC` |
-| __MySQL__ _8+_ |server       | `org.hibernate.dialect.MySQLDialect`| `com.mysql.cj.jdbc.Driver`|
-| __MySQL__ _5_ |server       | `org.hibernate.dialect.MySQL57Dialect`| `com.mysql.jdbc.Driver`|
+| name | hosting | Dialect `database-platform` | Driver `driver-class-name`  |
+|-----|----------|-----------------------------|-----------------------------|
+| __H2DB__  | file system | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver`| 
+| __H2DB__  | in memory  | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver` |
+| __SQLite__ |file system  | `example.sqlite.SQLiteDialect` | `org.sqlite.JDBC`|
+| __SQLite__ |in memory    | `example.sqlite.SQLiteDialect` | `org.sqlite.JDBC`|
+| __MySQL__ _8+_ |server   | `org.hibernate.dialect.MySQLDialect`| `com.mysql.cj.jdbc.Driver`|
+| __MySQL__ _5_ |server    | `org.hibernate.dialect.MySQL57Dialect`| `com.mysql.jdbc.Driver`|
 | __Postgres__| server     | `org.hibernate.dialect.PostgreSQL95Dialect`|`org.postgresql.Driver` |
 | __Postgres__| ephemeral  | `org.hibernate.dialect.PostgreSQL95Dialect`|`org.postgresql.Driver` |
 
-NOTE: The *__Embeded PostgreSQL__ database*  will actually requre: run under maven goal when `ru.yandex.qatools.embed.postgresql-embedded.jar` and would download a full `~200` Mb __Postgresql__ [installer](https://www.postgresql.org/download/linux/ubuntu/) and cache it in hidden folder under user home directory `~/.embedpostgresql`, and `dbdir` under `$TEMP`, was also observed to be unstable on Windows if configured to do ddl
+NOTE: Many so-called “embedded” solutions—especially *embedded* __PostgreSQL__ or *embedded* __Microsoft__ __SQL Server__ wrappers—are not truly embedded like __SQLite__ or __H2__ Database Engine. The *__Embeded PostgreSQL__ database*  will actually requre: run under maven goal when `ru.yandex.qatools.embed.postgresql-embedded.jar` and would download a full `~200` Mb __Postgresql__ [installer](https://www.postgresql.org/download/linux/ubuntu/) and unpack it in hidden folder under user home directory `~/.embedpostgresql`, create data dir under `$TEMP`, launch a full actual sever (daemon process) locally bound to a user `TCP` port.
+
+So it feels less like:
+
+  * embedded database
+
+and closer to:
+
+  * secretly installed local server
+
+and have also observed to be unstable on Windows if configured to do ddl
 
 ![screenshot](screenshots/table-screenshot.png)
+
+
+NOTE: The __H2__ __SQL__ is closer to traditional server databases (__PostgreSQL__ / __Oracle__ / __MySQL__ style) because it was designed as a pure Java __RDBMS__ with __JDBC__ compatibility and testing support.
+
+The __SQLite__ __SQL__ is its own lightweight dialect with looser typing and many special behaviorso
+
+This difference may cause some surprises in __JPA__ tests, and the same warning applies to schema-heavy, transaction-sensitive frameworks like __Spring Batch__: using __SQLite__ as a stand-in for a “real” server __RDBMS__ like Microsoft SQL Server, PostgreSQL, or Oracle Database is often risky, but __SQLite__ is ideal for
+
+  * offline analysis
+  * simple debugging
+  * quick reports
+  * restart diagnostics
+
+To reiterate __SQLite__ is optimized for embedded/local usage -  __Spring Batch__ assumes stronger enterprise-style __RDBMS__ behavior
+
+### See Also
+  
+   * __SQuirreL SQL Client__ [sourcforge](https://sourceforge.net/projects/squirrel-sql/) [github](https://github.com/squirrel-sql-client/squirrel-sql-code) pure Java / Swing - allows to browse database metadata, execute SQL queries, and visualize data structures. supports __SQLite__, __MySQL__, __PostgreSQL__, __Oracle__ Database, and Microsoft SQL Server__ through __JDBC__
+  * [DB Browser for SQLite](https://sqlitebrowser.org/) - best available Windows, macOS, and most versions of Linux and Unix (native code)
 
 ---
 ### Author
