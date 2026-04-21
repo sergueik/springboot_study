@@ -345,6 +345,23 @@ docker-compose rm -f
 rm -fr app/target
 find . -type f | xargs -IX sed -i 's|\r$||g' X
 ```
+### 
 
+|-------|-------------|---------------------------------------|-----------------|
+| name   | hosting     | Dialect `database-platform` | Driver `driver-class-name`          |
+| __H2DB__   | file system | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver`| 
+| __H2DB__   | in memory   | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver` |
+| __SQLite__ |file system  | `example.sqlite.SQLiteDialect`   | `org.sqlite.JDBC`  |
+| __SQLite__ |in memory    |  `example.sqlite.SQLiteDialect`   | `org.sqlite.JDBC` |
+| __MySQL__ _8+_ |server       | `org.hibernate.dialect.MySQLDialect`| `com.mysql.cj.jdbc.Driver`|
+| __MySQL__ _5_ |server       | `org.hibernate.dialect.MySQL57Dialect`| `com.mysql.jdbc.Driver`|
+| __Postgres__| server     | `org.hibernate.dialect.PostgreSQL95Dialect`|`org.postgresql.Driver` |
+| __Postgres__| ephemeral  | `org.hibernate.dialect.PostgreSQL95Dialect`|`org.postgresql.Driver` |
+
+NOTE: The *__Embeded PostgreSQL__ database*  will actually requre: run under maven goal when `ru.yandex.qatools.embed.postgresql-embedded.jar` and would download a full `~200` Mb __Postgresql__ [installer](https://www.postgresql.org/download/linux/ubuntu/) and cache it in hidden folder under user home directory `~/.embedpostgresql`, and `dbdir` under `$TEMP`, was also observed to be unstable on Windows if configured to do ddl
+
+![screenshot](screenshots/table-screenshot.png)
+
+---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
