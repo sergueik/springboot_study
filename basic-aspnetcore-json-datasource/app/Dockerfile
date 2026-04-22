@@ -8,6 +8,8 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 # NOTE: .Net fragile directory layout
 COPY json.grafana.datasources/json.grafana.datasources.csproj json.grafana.datasources/
+# 
+# RUN dotnet clean json.grafana.datasources/json.grafana.datasources.csproj
 RUN dotnet restore json.grafana.datasources/json.grafana.datasources.csproj
 COPY json.grafana.datasources json.grafana.datasources/
 WORKDIR /src/json.grafana.datasources
