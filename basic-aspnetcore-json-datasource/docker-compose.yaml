@@ -1,0 +1,28 @@
+version: '3.5'
+
+services:
+  grafana:
+    image: grafana/grafana:10.4.13
+    # image: grafana/grafana:6.5.0
+    ports:
+      - 8182:3000
+    networks:
+      default:
+        aliases:
+          - grafana      
+  jsongrafana:
+    build:
+      context: app
+      dockerfile: Dockerfile
+    image: my-json-grafana:local
+    container_name: jsongrafanadatasources
+    ports:
+      - 8181:80
+    networks:
+      default:
+        aliases:
+          - jsongrafana
+    volumes: []
+      # should be an array
+      #   - $PWD/data:/home/data
+    restart: always
