@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using Json.Grafana.DataSources.Models;
 
 namespace Json.Grafana.DataSources.Logic
 {
-    using System.Collections.Generic;
-    using Models;
 
     public static class GrafanaExtensions
     {

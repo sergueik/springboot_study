@@ -1,13 +1,14 @@
-﻿namespace Json.Grafana.DataSources.Controllers
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Json.Grafana.DataSources.Logic;
+using Microsoft.AspNetCore.Mvc;
+using Json.Grafana.DataSources.Models;
+using Newtonsoft.Json.Linq;
+
+namespace Json.Grafana.DataSources.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using Logic;
-    using Microsoft.AspNetCore.Mvc;
-    using Models;
-    using Newtonsoft.Json.Linq;
 
     // Meer info kijk op https://github.com/grafana/simple-json-datasource/
 
@@ -88,9 +89,9 @@
         // multi response kan wel met nswag:
         // https://blog.dangl.me/archive/different-response-schemas-in-aspnet-core-swagger-api-definition-with-nswag/
         [Produces("application/json")]
-        [Route("query")]        
+        [Route("query")]
         [ProducesResponseType(typeof(List<TimeSerie>), 200)] // Helaas werkt dit niet.. :(
-        [ProducesResponseType(typeof(List<Table>), 200)]        
+        [ProducesResponseType(typeof(List<Table>), 200)]
         [ProducesResponseType(500)]
         [HttpPost]
         public ActionResult<List<QueryResponse>> Query([FromBody] dynamic value)
@@ -114,7 +115,8 @@
                         response.Add(GetTimeSerie(GetDescription(enumerateDirectory.FullName), enumerateDirectory.FullName));
                     }
                 }
-            }else
+            }
+            else
             {
                 foreach (var target in data.targets)
                 {
@@ -133,7 +135,7 @@
                             else
                             {
                                 response.Add(GetTimeSerie(GetDescription(dir), dir));
-                            }                            
+                            }
                             break;
                         case TypeData.KeyValue:
                             if (target.type == "table")
@@ -165,7 +167,7 @@
             Func<TypeDataColumn, dynamic> getDefaultValueOfDynamic, bool boolToNumber)
         {
             FileHelper.CheckDataFiles(dir);
-            var table = new Table {Type = "table", Rows = new List<dynamic>(), Columns = new List<InfoJsonColumn>()};
+            var table = new Table { Type = "table", Rows = new List<dynamic>(), Columns = new List<InfoJsonColumn>() };
             var columns = FileHelper.GetJson<List<InfoJsonColumn>>($"{dir}/table.json");
             //We geven alleen dag standen!            
             var keys = new List<string>();
@@ -245,7 +247,7 @@
             table.Columns.Add(timeColum);
             var columns = FileHelper.GetJson<List<InfoJsonColumn>>($"{dir}/table.json");
 
-            table.Columns.AddRange(columns);            
+            table.Columns.AddRange(columns);
 
             var dirPrograms = new DirectoryInfo(dir);
             // laatste gegevens alleen weergeven in table
@@ -269,7 +271,7 @@
                     }
 
                     table.Rows.Add(values);
-                }                    
+                }
             }
 
             columns.BoolToNumber(boolToNumber);
@@ -308,7 +310,7 @@
 
                 if (items != null && items.Count != 0)
                 {
-                    floatList.Add(new[] {items.Count, dateData.GetTimeGrafana() });
+                    floatList.Add(new[] { items.Count, dateData.GetTimeGrafana() });
                 }
                 else
                 {
@@ -316,7 +318,7 @@
                 }
             }
 
-            return new TimeSerie {Target = name, Datapoints = floatList};
+            return new TimeSerie { Target = name, Datapoints = floatList };
         }
     }
 }

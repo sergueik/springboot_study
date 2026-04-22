@@ -1,13 +1,14 @@
-﻿namespace Json.Grafana.DataSources.Controllers
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using Json.Grafana.DataSources.Logic;
+using Microsoft.AspNetCore.Mvc;
+using Json.Grafana.DataSources.Models;
+using Newtonsoft.Json;
+
+namespace Json.Grafana.DataSources.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Net;
-    using Logic;
-    using Microsoft.AspNetCore.Mvc;
-    using Models;
-    using Newtonsoft.Json;
 
     [Route("storedata")]
     [ApiController]

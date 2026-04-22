@@ -1,10 +1,10 @@
-﻿namespace Json.Grafana.DataSources.Logic
-{
-    using System;
-    using System.IO;
-    using System.Linq;
-    using Newtonsoft.Json;
+﻿using System;
+using System.IO;
+using System.Linq;
+using Newtonsoft.Json;
 
+namespace Json.Grafana.DataSources.Logic
+{
     public static class FileHelper
     {
         public static void SaveJson<T>(string filePath, T jsonData, Formatting formatting = Formatting.None)

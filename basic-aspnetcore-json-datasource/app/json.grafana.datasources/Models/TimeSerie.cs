@@ -1,7 +1,8 @@
-﻿namespace Json.Grafana.DataSources.Models
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+
+namespace Json.Grafana.DataSources.Models
 {
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
 
     public class TimeSerie : QueryResponse
     {

@@ -1,7 +1,8 @@
-﻿namespace Json.Grafana.DataSources.Logic
+﻿using System;
+using System.IO;
+
+namespace Json.Grafana.DataSources.Logic
 {
-    using System;
-    using System.IO;
 
     public class PathServices : IPathServices
     {

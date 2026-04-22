@@ -1,8 +1,8 @@
-﻿namespace Json.Grafana.DataSources.Models
-{
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
+namespace Json.Grafana.DataSources.Models
+{
     public class Table : QueryResponse
     {
         [JsonProperty(PropertyName = "columns")]
