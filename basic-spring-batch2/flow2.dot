@@ -1,0 +1,108 @@
+digraph WSL_Docker_DB_Testing {
+    rankdir=TB;
+    compound=true;
+    splines=ortho;
+    fontname="Arial";
+
+    node [
+        shape=box
+        style="rounded"
+        fontname="Arial"
+    ];
+
+    /*
+      TOP LAYER : WINDOWS HOST
+      left -> right
+    */
+    subgraph cluster_windows {
+        label="Windows Host (Spring Batch development)";
+        style="rounded";
+        color="gray40";
+
+        rank=same;
+
+        spring_app [
+            label="Spring Batch App\nJDBC client"
+        ];
+
+        win_localhost [
+            label="localhost:5443"
+        ];
+
+        wsl_forwarder [
+            label="WSL Port Forwarder\nwslservice.exe\nHyper-V NAT"
+        ];
+
+        vethernet [
+            label="vEthernet (WSL)\n172.x.x.1"
+        ];
+
+        spring_app -> win_localhost [
+            label="JDBC URL"
+        ];
+
+        win_localhost -> wsl_forwarder [
+            label="localhost access"
+        ];
+
+        wsl_forwarder -> vethernet [
+            label="port proxy / NAT"
+        ];
+    }
+
+    /*
+      BOTTOM LAYER : WSL2 LINUX VM
+      right -> left (snake style)
+    */
+    subgraph cluster_wsl {
+        label="WSL2 Linux VM (Dockerized DB)";
+        style="rounded";
+        color="gray40";
+
+        rank=same;
+
+        db_container [
+            label="Postgres / MySQL\nContainer\n172.17.0.2:5432"
+        ];
+
+        docker_bridge [
+            label="docker0 bridge\n172.17.0.1"
+        ];
+
+        docker_daemon [
+            label="Docker Engine"
+        ];
+
+        linux_localhost [
+            label="localhost:5443"
+        ];
+
+        linux_eth0 [
+            label="eth0\n172.x.x.y"
+        ];
+
+        db_container -> docker_bridge [
+            label="DB listener"
+        ];
+
+        docker_bridge -> docker_daemon [
+            label="bridge NAT"
+        ];
+
+        docker_daemon -> linux_localhost [
+            label="docker -p 5443:5432"
+        ];
+
+        linux_localhost -> linux_eth0 [
+            label="Linux TCP stack"
+        ];
+    }
+
+    /*
+      VERTICAL DROP
+    */
+    vethernet -> linux_eth0 [
+        label="virtual switch"
+        lhead=cluster_wsl
+    ];
+}

@@ -1,6 +1,198 @@
 ﻿### Info
 
+### Schema
+
+
 Basic docker-compose basic spring batch Demo [spring-batch](https://github.com/EalenXie/springboot-batch) downgraded to MySQL __5.7__.
+
+### Background
+
+
+Classic Spring Batch metadata tables (NOTE: __H2__ / legacy __MySQL__-style schema) simplified) for readability, hierarchy, and relationship flow — no raw DDL noise:
+
+
+![Classic Spring Batch Metadata Tables](screenshots/database-schema.png)
+
+
+![Transient Virtual Database](screenshots/virtual-db.png)
+
+
+![Production Layout](screenshots/standard-roles.png)
+
+
+![WSL Routing](screenshots/trafic-routing-wsl.png)
+
+
+### Argument Combining
+
+These variations do not require any code change and are entirely configuration-driven:
+
+One wants  a clean separation:
+
+  * JVM args → infrastructure (memory, agent, logging baseline)
+  * Spring profiles → entire environment switching (DB, dialect, batch behavior)
+  * CLI args → only job parameters
+ 
+This is achieved through "Spring Batch Job Inventory" profile crafting:
+
+`application-mysql.yaml`:
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/example_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    driverClassName: com.mysql.jdbc.Driver
+    username: example_db_user
+    password: example_db_pass
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL57Dialect
+
+  logging:
+    level:
+      org.springframework.jdbc: WARN
+```
+`application-h2-transient.yaml`:
+```yaml
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  batch:
+    jdbc:
+      initialize-schema: always
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+```
+`application-h2-peristent.yaml`:
+```yaml
+spring:
+  datasource:
+    url: jdbc:h2:file:${user.home}/testdb;AUTO_SERVER=TRUE
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  logging:
+    level:
+      org.springframework.jdbc: DEBUG
+
+```
+which will naturally merge with already existing "Environment" progfile(s):
+
+```sh
+java \
+  -javaagent:/opt/monitoring/jmx_prometheus_javaagent.jar=9404:/opt/monitoring/config.yaml \
+  -Xms512m \
+  -Xmx2048m \
+  -jar target/spring-batch.jar \
+  --spring.profiles.active=h2-transient,dev \
+  --job.name=customerImportJob \
+  --job.runDate=2026-04-23
+```
+
+The only differences between Spring Batch Inventory profiles are in dialect the JPA statement are translated into SQL (`jpa.database-platform`) and connector the actual Database is accessed (`datasource.url`) and optional logging differences.
+
+
+Furthermore the pure [H2 Database](https://en.wikipedia.org/wiki/H2_Database_Engine) which is a pure Java SQL Database Engine implementation also offfers 
+
+![H2 Console](screenshots/capture-tty-h2-console.png)
+
+console 
+
+and 
+
+![H2 Console](screenshots/capture-login.png)
+
+web Dashboards
+from where one can examine the very same database Spring Batch Job inventories are stored:
+![H2 Console](screenshots/capture-console.png)
+
+After the Java Spring "fat" jar is packaged one can find out the exact version of the JDBC dependency that was used
+
+```cmd
+mvn dependency:tree | grep -i MySQL
+```
+
+```text
+[INFO] \- mysql:mysql-connector-java:jar:5.1.49:runtime
+
+```
+and either extract it from the jar:
+
+```sh
+jar tf target\example.springboot-batch.jar| findstr -i mysql
+```
+```text
+BOOT-INF/lib/mysql-connector-java-5.1.49.jar
+```
+
+or locate it in the Maven cache and combine it in the command to launch the dashboard which will be able to connect to the same database during or after the Spring Batch application run
+```sh
+java -cp h2.jar:mysql-connector-j.jar org.h2.tools.Console
+```
+
+```sh
+java -cp ~/.m2/repository/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar:~/.m2/repository/com/h2database/h2/1.4.200/h2-1.4.200.jar org.h2.tools.Console
+```
+```sh
+java ~/.m2/repository/com/h2database/h2/*/h2*jar org.h2.tools.Shell
+```
+In fact during development one may tune the Database schema in one provider and then port it to another. 
+
+There are several choices of provider and cons and pros to consder. There is absoilutely no need to start with the final vendor
+
+### Database Driver Choices
+
+| name | hosting | Dialect `database-platform` | Driver `driver-class-name`  |
+|-----|----------|-----------------------------|-----------------------------|
+| __H2DB__  | file system | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver`| 
+| __H2DB__  | in memory  | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver` |
+| __SQLite__ |file system  | `example.sqlite.SQLiteDialect` | `org.sqlite.JDBC`|
+| __SQLite__ |in memory    | `example.sqlite.SQLiteDialect` | `org.sqlite.JDBC`|
+| __MySQL__ _8+_ |server   | `org.hibernate.dialect.MySQLDialect`| `com.mysql.cj.jdbc.Driver`|
+| __MySQL__ _5_ |server    | `org.hibernate.dialect.MySQL57Dialect`| `com.mysql.jdbc.Driver`|
+| __Postgres__| server     | `org.hibernate.dialect.PostgreSQL95Dialect`|`org.postgresql.Driver` |
+| __Postgres__| ephemeral  | `org.hibernate.dialect.PostgreSQL95Dialect`|`org.postgresql.Driver` |
+
+NOTE: Many so-called “embedded” solutions—especially *embedded* __PostgreSQL__ or *embedded* __Microsoft__ __SQL Server__ wrappers—are not truly embedded like __SQLite__ or __H2__ Database Engine. The *__Embeded PostgreSQL__ database*  will actually requre: run under maven goal when `ru.yandex.qatools.embed.postgresql-embedded.jar` and would download a full `~200` Mb __Postgresql__ [installer](https://www.postgresql.org/download/linux/ubuntu/) and unpack it in hidden folder under user home directory `~/.embedpostgresql`, create data dir under `$TEMP`, launch a full actual sever (daemon process) locally bound to a user `TCP` port.
+
+So it feels less like:
+
+  * embedded database
+
+and closer to:
+
+  * secretly installed local server
+
+and have also observed to be unstable on Windows if configured to do ddl
+
+![screenshot](screenshots/table-screenshot.png)
+
+
+NOTE: The __H2__ __SQL__ is closer to traditional server databases (__PostgreSQL__ / __Oracle__ / __MySQL__ style) because it was designed as a pure Java __RDBMS__ with __JDBC__ compatibility and testing support.
+
+The __SQLite__ __SQL__ is its own lightweight dialect with looser typing and many special behaviorso
+
+This difference may cause some surprises in __JPA__ tests, and the same warning applies to schema-heavy, transaction-sensitive frameworks like __Spring Batch__: using __SQLite__ as a stand-in for a “real” server __RDBMS__ like Microsoft SQL Server, PostgreSQL, or Oracle Database is often risky, but __SQLite__ is ideal for
+
+  * offline analysis
+  * simple debugging
+  * quick reports
+  * restart diagnostics
+
+To reiterate __SQLite__ is optimized for embedded/local usage -  __Spring Batch__ assumes stronger enterprise-style __RDBMS__ behavior
 
 ### Usage
 
@@ -65,7 +257,6 @@ mysql> show tables ;
 | BATCH_STEP_EXECUTION         |
 | BATCH_STEP_EXECUTION_CONTEXT |
 | BATCH_STEP_EXECUTION_SEQ     |
-| access                       |
 +------------------------------+
 10 rows in set (0.00 sec)
 ```
@@ -345,47 +536,6 @@ docker-compose rm -f
 rm -fr app/target
 find . -type f | xargs -IX sed -i 's|\r$||g' X
 ```
-### 
-
-| name | hosting | Dialect `database-platform` | Driver `driver-class-name`  |
-|-----|----------|-----------------------------|-----------------------------|
-| __H2DB__  | file system | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver`| 
-| __H2DB__  | in memory  | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver` |
-| __SQLite__ |file system  | `example.sqlite.SQLiteDialect` | `org.sqlite.JDBC`|
-| __SQLite__ |in memory    | `example.sqlite.SQLiteDialect` | `org.sqlite.JDBC`|
-| __MySQL__ _8+_ |server   | `org.hibernate.dialect.MySQLDialect`| `com.mysql.cj.jdbc.Driver`|
-| __MySQL__ _5_ |server    | `org.hibernate.dialect.MySQL57Dialect`| `com.mysql.jdbc.Driver`|
-| __Postgres__| server     | `org.hibernate.dialect.PostgreSQL95Dialect`|`org.postgresql.Driver` |
-| __Postgres__| ephemeral  | `org.hibernate.dialect.PostgreSQL95Dialect`|`org.postgresql.Driver` |
-
-NOTE: Many so-called “embedded” solutions—especially *embedded* __PostgreSQL__ or *embedded* __Microsoft__ __SQL Server__ wrappers—are not truly embedded like __SQLite__ or __H2__ Database Engine. The *__Embeded PostgreSQL__ database*  will actually requre: run under maven goal when `ru.yandex.qatools.embed.postgresql-embedded.jar` and would download a full `~200` Mb __Postgresql__ [installer](https://www.postgresql.org/download/linux/ubuntu/) and unpack it in hidden folder under user home directory `~/.embedpostgresql`, create data dir under `$TEMP`, launch a full actual sever (daemon process) locally bound to a user `TCP` port.
-
-So it feels less like:
-
-  * embedded database
-
-and closer to:
-
-  * secretly installed local server
-
-and have also observed to be unstable on Windows if configured to do ddl
-
-![screenshot](screenshots/table-screenshot.png)
-
-
-NOTE: The __H2__ __SQL__ is closer to traditional server databases (__PostgreSQL__ / __Oracle__ / __MySQL__ style) because it was designed as a pure Java __RDBMS__ with __JDBC__ compatibility and testing support.
-
-The __SQLite__ __SQL__ is its own lightweight dialect with looser typing and many special behaviorso
-
-This difference may cause some surprises in __JPA__ tests, and the same warning applies to schema-heavy, transaction-sensitive frameworks like __Spring Batch__: using __SQLite__ as a stand-in for a “real” server __RDBMS__ like Microsoft SQL Server, PostgreSQL, or Oracle Database is often risky, but __SQLite__ is ideal for
-
-  * offline analysis
-  * simple debugging
-  * quick reports
-  * restart diagnostics
-
-To reiterate __SQLite__ is optimized for embedded/local usage -  __Spring Batch__ assumes stronger enterprise-style __RDBMS__ behavior
-
 ### Build Docker Image Locally
 
 * build the alpine based  mysql 5.x Docker image:
@@ -493,6 +643,282 @@ docker exec -it $SERVER mysql -P 3306 --protocol=socket --socket=/tmp/mysqld.soc
 | test               |
 +--------------------+
 ```
+### Connecting to other DB
+after the launch of the console, the following file is created: `~/.h2.server.properties`:
+```text
+#H2 Server Properties
+#Wed Apr 22 19:54:29 EDT 2026
+0=Generic JNDI Data Source|javax.naming.InitialContext|java\:comp/env/jdbc/Test|sa
+1=Generic Teradata|com.teradata.jdbc.TeraDriver|jdbc\:teradata\://whomooz/|
+10=Generic DB2|com.ibm.db2.jcc.DB2Driver|jdbc\:db2\://localhost/test|
+11=Generic Oracle|oracle.jdbc.driver.OracleDriver|jdbc\:oracle\:thin\:@localhost\:1521\:XE|sa
+12=Generic MS SQL Server 2000|com.microsoft.jdbc.sqlserver.SQLServerDriver|jdbc\:microsoft\:sqlserver\://localhost\:1433;DatabaseName\=sqlexpress|sa
+13=Generic MS SQL Server 2005|com.microsoft.sqlserver.jdbc.SQLServerDriver|jdbc\:sqlserver\://localhost;DatabaseName\=test|sa
+14=Generic PostgreSQL|org.postgresql.Driver|jdbc\:postgresql\:test|
+15=Generic MySQL|com.mysql.jdbc.Driver|jdbc\:mysql\://localhost\:3306/test|
+16=Generic HSQLDB|org.hsqldb.jdbcDriver|jdbc\:hsqldb\:test;hsqldb.default_table_type\=cached|sa
+17=Generic Derby (Server)|org.apache.derby.jdbc.ClientDriver|jdbc\:derby\://localhost\:1527/test;create\=true|sa
+18=Generic Derby (Embedded)|org.apache.derby.jdbc.EmbeddedDriver|jdbc\:derby\:test;create\=true|sa
+19=Generic H2 (Server)|org.h2.Driver|jdbc\:h2\:tcp\://localhost/~/test|sa
+2=Generic Snowflake|com.snowflake.client.jdbc.SnowflakeDriver|jdbc\:snowflake\://accountName.snowflakecomputing.com|
+20=Generic H2 (Embedded)|org.h2.Driver|jdbc\:h2\:~/testdb|sa
+3=Generic Redshift|com.amazon.redshift.jdbc42.Driver|jdbc\:redshift\://endpoint\:5439/database|
+4=Generic Impala|org.cloudera.impala.jdbc41.Driver|jdbc\:impala\://clustername\:21050/default|
+5=Generic Hive 2|org.apache.hive.jdbc.HiveDriver|jdbc\:hive2\://clustername\:10000/default|
+6=Generic Hive|org.apache.hadoop.hive.jdbc.HiveDriver|jdbc\:hive\://clustername\:10000/default|
+7=Generic Azure SQL|com.microsoft.sqlserver.jdbc.SQLServerDriver|jdbc\:sqlserver\://name.database.windows.net\:1433|
+8=Generic Firebird Server|org.firebirdsql.jdbc.FBDriver|jdbc\:firebirdsql\:localhost\:c\:/temp/firebird/test|sysdba
+9=Generic SQLite|org.sqlite.JDBC|jdbc\:sqlite\:test|sa
+webAllowOthers=false
+webPort=8082
+webSSL=false
+```
+### Examine Job Databases
+
+
+The __H2 Database Engine Console__ can act as a generic __JDBC__ browser, not  limited for __H2__ databases.
+
+During development/prototyping phase one can use the same __H2__ web console __UI__ to inspect a
+Docker-hosted __MySQL__ database
+
+The H2 console is basically: a small JDBC web client
+
+It can connect to whatever it mentions in its configuration file, typically:
+
+* __H2__
+* __MySQL__
+* __PostgreSQL__
+* __Oracle__
+* __SQL Server__
+* few others
+
+provided the correct __JDBC__ driver jar is available - it is not limited to H2.
+
+What one needs
+1. MySQL JDBC driver
+
+Typically:
+
+MySQL Connector/J
+
+for example:
+
+mysql-connector-j-8.x.jar
+
+or older:
+
+mysql-connector-java-5.x.jar
+2. Start H2 console with both JARs
+
+Example:
+
+java -cp h2.jar:mysql-connector-j.jar org.h2.tools.Console
+
+(on Linux/macOS)
+
+or
+
+java -cp h2.jar;mysql-connector-j.jar org.h2.tools.Console
+
+(on Windows)
+
+your Spring Boot app is packaged as a fat JAR (target/app.jar), the MySQL JDBC driver is usually already inside it, and you can extract it.
+
+That said, it is a little uglier than using .m2, because Spring Boot uses nested JARs.
+
+But yes, it can be done.
+
+Where the driver lives inside the Spring Boot JAR
+
+Typically:
+
+BOOT-INF/lib/mysql-connector-j-8.x.x.jar
+
+or older:
+
+BOOT-INF/lib/mysql-connector-java-5.x.x.jar
+
+Your app jar looks like:
+
+target/myapp.jar
+
+and inside:
+
+BOOT-INF/lib/
+
+contains all dependency jars.
+
+Quick inspection
+
+You can check with:
+
+jar tf target/myapp.jar | grep -i mysql
+
+or:
+
+unzip -l target/myapp.jar | grep -i mysql
+
+You should see something like:
+
+BOOT-INF/lib/mysql-connector-j-8.3.0.jar
+How to extract it
+
+Example:
+
+mkdir extracted
+cd extracted
+
+jar xf ../target/myapp.jar BOOT-INF/lib/mysql-connector-j-8.3.0.jar
+
+or:
+
+unzip ../target/myapp.jar BOOT-INF/lib/mysql-connector-j-8.3.0.jar
+
+Then use:
+
+extracted/BOOT-INF/lib/mysql-connector-j-8.3.0.jar
+
+in your classpath.
+
+Launch H2 console using extracted driver
+java -cp \
+~/.m2/repository/com/h2database/h2/1.4.200/h2-1.4.200.jar:\
+./extracted/BOOT-INF/lib/mysql-connector-j-8.3.0.jar \
+org.h2.tools.Console
+
+Works fine.
+
+Even more direct trick (sometimes)
+
+Sometimes you can even do:
+
+java -Djarmode=layertools -jar target/app.jar list
+
+for Spring Boot layered jars.
+
+Useful for inspection.
+
+My honest opinion
+
+Technically:
+
+yes, extract from fat jar works
+
+Practically:
+
+.m2 is much cleaner
+
+because:
+
+no unpacking
+no guessing version
+easier scripting
+
+But for:
+
+“I want to prove the exact packaged app dependency”
+
+extracting from fat jar is perfectly valid.
+
+Small warning
+
+Do NOT try:
+
+java -cp target/app.jar org.h2.tools.Console
+
+This won’t work for dependency reuse because Spring Boot fat jars are not normal flat classpaths.
+
+You need the nested jar extracted.
+
+Short answer
+
+Yes — you can extract the MySQL connector from:
+
+BOOT-INF/lib/
+
+inside the Spring Boot fat jar and use it for the H2 console, but it is less convenient than reusing the Maven cache copy.
+
+3. Use MySQL JDBC URL
+
+Example:
+
+jdbc:mysql://localhost:3306/mydb
+
+with:
+
+user
+password
+
+matching your Docker container config.
+
+Example for Spring Batch demo
+
+Suppose Docker Compose runs:
+
+mysql:
+  ports:
+    - "3306:3306"
+
+Then H2 console can inspect:
+
+jdbc:mysql://localhost:3306/batchdb
+
+and you can query:
+
+SELECT * FROM BATCH_JOB_EXECUTION;
+
+Very convenient.
+
+Is it a good idea?
+
+For:
+
+demos
+debugging
+quick SQL checks
+lightweight local work
+yes, absolutely
+
+For:
+
+serious DBA work
+schema migration management
+production admin
+better use dedicated tools
+
+like:
+
+DBeaver
+or
+SQuirreL SQL Client
+
+One caveat
+
+H2 Console UI is:
+
+old
+simple
+not amazing for MySQL-specific admin
+
+but for:
+
+“did Spring Batch write the rows?”
+
+it is more than enough.
+
+My honest recommendation
+
+For your progression:
+
+H2 Console → MySQL Docker → later SQuirreL
+
+is actually a very good path.
+
+No need to overcomplicate early.
+
+Short answer
+
+Yes — the same H2 console app can be used as a JDBC browser for your Docker-hosted MySQL Spring Batch database, as long as you add the MySQL JDBC driver to the classpath.
 ### See Also
   
    * __SQuirreL SQL Client__ [sourcforge](https://sourceforge.net/projects/squirrel-sql/) [github](https://github.com/squirrel-sql-client/squirrel-sql-code) pure Java / Swing - allows to browse database metadata, execute SQL queries, and visualize data structures. supports __SQLite__, __MySQL__, __PostgreSQL__, __Oracle__ Database, and Microsoft SQL Server__ through __JDBC__

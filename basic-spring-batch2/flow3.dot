@@ -1,0 +1,53 @@
+digraph Native_Linux_Deploy_Triangle {
+    rankdir=TB;
+    splines=ortho;
+    fontname="Arial";
+
+    node [
+        shape=box
+        style="rounded"
+        fontname="Arial"
+    ];
+
+    /*
+      TRIANGLE LAYOUT
+
+              Job Dashboard
+                   |
+                   |
+                   v
+
+        Spring App -------> Database
+
+      Job Dashboard only talks to Database
+      Spring App only talks to Database
+      DNS resolution intentionally invisible
+    */
+
+    job_dashboard [
+        label="Job Dashboard",
+        pos="2,4!"
+    ];
+
+    spring_app [
+        label="Spring Batch App",
+        pos="0,1!"
+    ];
+
+    database [
+        label="Database Server\nPostgres\n5432",
+        pos="4,1!"
+    ];
+
+    /*
+      ONLY REAL ROUTES
+    */
+
+    spring_app -> database [
+        label="Job run info (JDBC)"
+    ];
+
+    job_dashboard -> database [
+        label="Query (JDBC)"
+    ];
+}

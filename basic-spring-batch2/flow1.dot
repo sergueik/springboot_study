@@ -1,0 +1,99 @@
+digraph WSL_Docker_Network {
+    rankdir=LR;
+    compound=true;
+    splines=true;
+    fontname="Arial";
+
+    node [
+        shape=box
+        style="rounded"
+        fontname="Arial"
+    ];
+
+    edge [
+        fontname="Arial"
+    ];
+
+    /*
+      OUTER HOST: WINDOWS
+    */
+    subgraph cluster_windows {
+        label="Windows Host";
+        style="rounded";
+        color="gray40";
+
+        win_localhost [
+            label="localhost:9090\n(127.0.0.1)"
+        ];
+
+        wsl_forwarder [
+            label="WSL Port Forwarder\n(wslservice.exe /\nHyper-V NAT)"
+        ];
+
+        vethernet [
+            label="vEthernet (WSL)\n172.x.x.1"
+        ];
+    }
+
+    /*
+      INNER GUEST: WSL2 LINUX VM
+    */
+    subgraph cluster_wsl {
+        label="WSL2 Linux VM";
+        style="rounded";
+        color="gray40";
+
+        linux_eth0 [
+            label="eth0\n172.x.x.y"
+        ];
+
+        linux_localhost [
+            label="localhost:9090\n(inside WSL)"
+        ];
+
+        docker_daemon [
+            label="Docker Engine"
+        ];
+
+        docker_bridge [
+            label="docker0 bridge\n172.17.0.1"
+        ];
+
+        container_app [
+            label="Container App\n172.17.0.2:80"
+        ];
+    }
+
+    /*
+      FLOW
+    */
+
+    win_localhost -> wsl_forwarder [
+        label="localhost access"
+    ];
+
+    wsl_forwarder -> vethernet [
+        label="NAT / port proxy"
+    ];
+
+    vethernet -> linux_eth0 [
+        label="virtual switch"
+        lhead=cluster_wsl
+    ];
+
+    linux_eth0 -> linux_localhost [
+        label="Linux TCP stack"
+    ];
+
+    linux_localhost -> docker_daemon [
+        label="docker -p 9090:80"
+    ];
+
+    docker_daemon -> docker_bridge [
+        label="iptables / NAT"
+    ];
+
+    docker_bridge -> container_app [
+        label="container port 80"
+    ];
+}

@@ -1,0 +1,98 @@
+digraph SpringBatch_H2_Metadata {
+    rankdir=TB;
+    splines=ortho;
+    fontname="Arial";
+
+    node [
+        shape=box
+        style="rounded"
+        fontname="Arial"
+    ];
+
+    /*
+      CORE EXECUTION LIFECYCLE
+    */
+
+    job_instance [
+        label="BATCH_JOB_INSTANCE"
+    ];
+
+    job_execution [
+        label="BATCH_JOB_EXECUTION"
+    ];
+
+    job_params [
+        label="BATCH_JOB_EXECUTION_PARAMS"
+    ];
+
+    job_context [
+        label="BATCH_JOB_EXECUTION_CONTEXT"
+    ];
+
+    step_execution [
+        label="BATCH_STEP_EXECUTION"
+    ];
+
+    step_context [
+        label="BATCH_STEP_EXECUTION_CONTEXT"
+    ];
+
+    /*
+      SEQUENCES (IDs)
+    */
+
+    job_seq [
+        label="BATCH_JOB_SEQ"
+    ];
+
+    job_exec_seq [
+        label="BATCH_JOB_EXECUTION_SEQ"
+    ];
+
+    step_exec_seq [
+        label="BATCH_STEP_EXECUTION_SEQ"
+    ];
+
+    /*
+      RELATIONSHIPS
+    */
+
+    job_instance -> job_execution [
+        label="1 → N"
+    ];
+
+    job_execution -> step_execution [
+        label="1 → N"
+    ];
+
+    job_execution -> job_params [
+        label="params"
+    ];
+
+    job_execution -> job_context [
+        label="context"
+    ];
+
+    step_execution -> step_context [
+        label="context"
+    ];
+
+    /*
+      SEQUENCE GENERATION (implicit infrastructure)
+    */
+
+    job_seq -> job_instance [
+        label="job id"
+        style=dashed
+    ];
+
+    job_exec_seq -> job_execution [
+        label="exec id"
+        style=dashed
+    ];
+
+    step_exec_seq -> step_execution [
+        label="step id"
+        style=dashed
+    ];
+}

@@ -1,0 +1,53 @@
+digraph H2_Transient_Virtualized {
+    rankdir=TB;
+    splines=ortho;
+    fontname="Arial";
+
+    node [
+        shape=box
+        style="rounded"
+        fontname="Arial"
+    ];
+
+    subgraph cluster_virtual {
+        label="Spring Batch Runtime (H2 Transient)";
+        style="rounded";
+        color="gray40";
+
+        spring_app [
+            label="Spring Batch App"
+        ];
+
+        jdbc_driver [
+            label="JDBC Driver"
+        ];
+
+        job_state [
+            label="Job State"
+        ];
+
+        dashboard [
+            label="Dashboard"
+        ];
+
+        spring_app -> jdbc_driver [
+            label="JDBC API call"
+        ];
+
+        dashboard -> jdbc_driver [
+            label="Query (JDBC)"
+        ];
+
+        jdbc_driver -> job_state [
+            label="in-memory SQL execution"
+        ];
+
+        job_state -> jdbc_driver [
+            label="result set"
+        ];
+
+        jdbc_driver -> spring_app [
+            label="batch state feedback"
+        ];
+    }
+}
