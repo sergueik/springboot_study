@@ -1,5 +1,7 @@
 package example.config;
 
+import javax.sql.DataSource;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -14,6 +16,7 @@ import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
@@ -24,6 +27,15 @@ import example.listener.Listener;
 @EnableBatchProcessing
 public class Config {
 
+	@Bean
+	CommandLineRunner debug(DataSource ds) {
+	    return args -> {
+	        System.out.println("DS CLASS = " + ds.getClass());
+	        System.out.println("DS URL = " +
+	            ds.getConnection().getMetaData().getURL());
+	    };
+	}
+	
 	@Bean
 	public Job job(JobBuilderFactory jobBuilderFactory, StepBuilderFactory stepBuilderFactory,
 			ItemReader<User> itemReader, ItemProcessor<User, User> itemProcessor, ItemWriter<User> itemWriter,

@@ -1,3 +1,4 @@
+
 ### Info
 
 This directory contains a replica of [spring Boot / Spring Batch Example](https://github.com/TechPrimers/spring-batch-example-1) repository illustrating running jobs synchronously. Added the method to check the job status (there is currently only one named job).
@@ -44,7 +45,12 @@ Data Saved for Users: [User{id=1, name='Peter', dept='Technology', salary=12000}
 ```
 alternatively
 ```sh
-for CNT in $(seq 1 1 100); do curl -s -k http://localhost:8081/load; done
+for CNT in $(seq 1 1 10); do curl -s -k http://localhost:8081/load; done
+```
+this will print 
+```text
+"COMPLETED""COMPLETED""COMPLETED""COMPLETED""COMPLETED""COMPLETED""COMPLETED""COMPLETED""COMPLETED""COMPLETED""COMPLETED""COMPLETED""COMPLETED"...
+
 ```
 * browse the status page:
 ```sh
@@ -363,7 +369,33 @@ so after launching app with `persistent` profile:
 ```sh
 mvn spring-boot:run -Dspring-boot.run.profiles=persistent
 ```
-run the H2 SQL shell:
+or alternatively
+```sh
+mvn -DskipTests spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=persistent"
+```
+#### Run the H2 SQL shell to Query Job Database
+
+examine the maven cache
+
+```sh
+ls -l ~/.m2/repository/com/h2database/h2/1.4.200
+```
+```text
+-rw-r--r-- 1 kouzm 197610     225 Apr 20 19:42 _remote.repositories
+-rw-r--r-- 1 kouzm 197610 1598533 Apr 20 19:42 h2-1.4.200-sources.jar
+-rw-r--r-- 1 kouzm 197610      40 Apr 20 19:42 h2-1.4.200-sources.jar.sha1
+-rw-r--r-- 1 kouzm 197610 2303679 Apr 20 19:42 h2-1.4.200.jar
+-rw-r--r-- 1 kouzm 197610      40 Apr 20 19:42 h2-1.4.200.jar.sha1
+-rw-r--r-- 1 kouzm 197610     958 Apr 20 19:42 h2-1.4.200.pom
+-rw-r--r-- 1 kouzm 197610      40 Apr 20 19:42 h2-1.4.200.pom.sha1
+-rw-r--r-- 1 kouzm 197610     100 Apr 20 19:42 m2e-lastUpdated.properties
+```
+compose the command. 
+```sh
+java -cp ~/.m2/repository/com/h2database/h2/1.4.200/h2-1.4.200.jar org.h2.tools.Shell
+```
+NOTE, sometimes the glob version works too:
+
 ```sh
 java -cp ~/.m2/repository/com/h2database/h2/1.4.200/h2*jar org.h2.tools.Shell
 ```
@@ -372,26 +404,58 @@ java -cp ~/.m2/repository/com/h2database/h2/1.4.200/h2*jar org.h2.tools.Shell
 java -cp %USERPROFILE%\.m2\repository\com\h2database\h2\1.4.200\h2-1.4.200.jar org.h2.tools.Shell
 ```
 this will launch CLI
+
+To run Web shell change the main Class in the command:
+```sh
+java -cp ~/.m2/repository/com/h2database/h2/1.4.200/h2-1.4.200.jar org.h2.tools.Console -web
+```
+or 
+```sh
+java -cp ~/.m2/repository/com/h2database/h2/1.4.200/h2-1.4.200.jar org.h2.tools.Server -web
+```
+> NOTE: The __H2__ __web console__ __port__ is not fixed in code, it is controlled by the Web Server settings inside `org.h2.tools.Server` / `org.h2.tools.Console`, and by default it uses `8082` that __H2__ defines this as its built-in default web console port.
+
+NOTE:
+When you open the __H2__ console and only see: `INFORMATION_SCHEIMA`
+
+it means:
+
+You are connected to a different database instance than the one Spring Batch is using.
+
+Not that tables don’t exist.
+
+![dtabase in use](screenshots/capture-console-standalone.png)
+
+Will need to stop the dummy app to unlock database
+
+![database available](screenshots/capture-console-standalone-stopped.png)
+than can query
+
+
+ back in terminal console
+
+![tty](screenshots/capture-tty-h2-console.png)
+
 ```txt
 Exit with Ctrl+C
 [Enter]   jdbc:h2:mem:testdb
 URL
 ```
-fill the inputs
+fill the `URL` input:
 ```cmd
 URL       jdbc:h2:file:~/testdb
-[Enter]   org.h2.Driver
-Driver    org.h2.Driver
-[Enter]   sa
-User
-Password
-
 ```
+Confirm the Driver with `[ENTER]`:
+```cmd
+Driver    org.h2.Driver
+```
+provide `sa` for `user` and `password` for `Password`.
+
 > NOTE: cannot use H2 SQL shell while the app is still running:
 ```text
 SQL Exception: Database may be already in use: null. Possible solutions: close all other connection(s); use the server mode [90020-200]
 ```
-> NOTE: have to use `~/testdb` with  h2 SQL shell: 
+> NOTE: have to use `~/testdb` to refer to user's home directory with h2 SQL shell: 
 ```text
 A file path that is implicitly relative to the current working directory is not allowed in the database URL "jdbc:h2:file:${user.home}/testdb;IFEXISTS=TRUE". Use an absolute path, ~/name, ./name, or the baseDir setting instead. [90011-200]
 ```

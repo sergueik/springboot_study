@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    # spring batch tables to survive restarts
+    # NOTE: from H2\u2019s point of view, ${user.home} is just garbage text taken literally
+    url: jdbc:h2:file:${user.home}/testdb;AUTO_SERVER=TRUE
+    # url: jdbc:h2:file:c:\\Users\\kouzm\\Desktop\\testdb;AUTO_SERVER=TRUE
+    # url: jdbc:h2:file:/c/Users/kouzm/Desktop/testdb;AUTO_SERVER=TRUE
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      
+  logging:
+    level:
+      org.springframework.jdbc: DEBUG     

@@ -1,0 +1,10 @@
+server:
+  port: 8081
+spring: 
+  profiles:
+    # NOTE: prone to fail commandline argument override 
+    # active: persistent
+    active: transient
+  batch:
+    job:
+      enabled: false
