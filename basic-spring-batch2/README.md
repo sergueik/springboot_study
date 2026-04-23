@@ -386,6 +386,113 @@ This difference may cause some surprises in __JPA__ tests, and the same warning 
 
 To reiterate __SQLite__ is optimized for embedded/local usage -  __Spring Batch__ assumes stronger enterprise-style __RDBMS__ behavior
 
+### Build Docker Image Locally
+
+* build the alpine based  mysql 5.x Docker image:
+
+```sh
+export SERVER_IMAGE=alpine-mysql
+docker build -f Dockerfile -t $SERVER_IMAGE .
+```
+* run it with environments matching the `application.properties`:
+```sh
+export SERVER=alpine-mysql
+docker run --name $SERVER -e MYSQL_ROOT_PASSWORD=password -e MYSQL_USER=example_db_user -e MYSQL_DATABASE=example_db -e MYSQL_PASSWORD=example_db_pass -d $SERVER_IMAGE
+```
+to recall settings afterwards, use the command
+```sh
+docker container inspect $SERVER -f {{.Config.Env}}
+```
+the output will not be formatted
+```text
+[MYSQL_ROOT_PASSWORD=password MYSQL_USER=example_db_user MYSQL_DATABASE=example_db MYSQL_PASSWORD=example_db_pass PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin]
+```
+in about two minutes, observe
+
+```sh
+docker container ls | grep $SERVER
+```
+```text
+efdd52b2d1e4        alpine-mysql        "/startup.sh"       28 seconds ago      Up 29 seconds (health: starting)   3306/tcp            alpine-mysql
+```
+```text
+efdd52b2d1e4        alpine-mysql   "/startup.sh"   About a minute ago   Up About a minute (unhealthy)   3306/tcp   alpine-mysql
+```
+the container will be initially failing `HEALTHCHECK`:
+```sh
+HEALTHCHECK --interval=10s --timeout=30s --retries=10 CMD nc -z 127.0.0.1 3306 || exit 1
+```
+* observe the successful start log message in `mysql-server` container:
+```sh
+docker logs $SERVER
+```
+```text
+2026-04-23 12:39:39 0 [Note] Plugin 'FEEDBACK' is disabled.
+2026-04-23 12:39:39 0 [Note] Reading of all Master_info entries succeeded
+2026-04-23 12:39:39 0 [Note] Added new Master_info '' to hash table
+2026-04-23 12:39:39 0 [Note] /usr/bin/mysqld: ready for connections.
+O[OVersion: '10.3.25-MariaDB-log'  socket: '/tmp/mysqld.sock'  port: 0  MariaDB Server
+
+```
+* verify the console connection:
+```sh
+docker exec -it $SERVER mysql -P 3306 --protocol=socket --socket=/tmp/mysqld.sock -h localhost -u java -ppassword -e "set @var = '1'; select @var ;"
+```
+NOTE: some issues observed with authentication, if seeing error:
+```text
+ERROR 1045 (28000): Access denied for user 'java'@'localhost' (using password: YES)
+```
+
+repeat the command without `-ppassword argument`:
+
+```sh
+docker exec -it $SERVER mysql -P 3306 --protocol=socket --socket=/tmp/mysqld.sock -h localhost -u root -e "set @var = '1'; select @var ;"
+```
+```text
++------+
+| @var |
++------+
+| 1    |
++------+
+```
+both `root` and `java` users will be allowed to connect without the password
+
+```sh
+docker cp src/main/resources/metadata/batch_innodb.sql $SERVER:/tmp
+```
+```sh
+docker exec -it $SERVER sh -c "mysql -P 3306 --protocol=socket --socket=/tmp/mysqld.sock -h localhost -u root -D example_db < /tmp/batch_innodb.sql"
+```
+
+```sh
+docker exec -it $SERVER mysql -P 3306 --protocol=socket --socket=/tmp/mysqld.sock -h localhost -u root -e "use example_db;show tables;show databases;"
+
+```
+```text
++------------------------------+
+| Tables_in_test               |
++------------------------------+
+| BATCH_JOB_EXECUTION          |
+| BATCH_JOB_EXECUTION_CONTEXT  |
+| BATCH_JOB_EXECUTION_PARAMS   |
+| BATCH_JOB_EXECUTION_SEQ      |
+| BATCH_JOB_INSTANCE           |
+| BATCH_JOB_SEQ                |
+| BATCH_STEP_EXECUTION         |
+| BATCH_STEP_EXECUTION_CONTEXT |
+| BATCH_STEP_EXECUTION_SEQ     |
++------------------------------+
+
++--------------------+
+| Database           |
++--------------------+
+| example_db         |
+| information_schema |
+| mysql              |
+| performance_schema |
+| test               |
++--------------------+
+```
 ### See Also
   
    * __SQuirreL SQL Client__ [sourcforge](https://sourceforge.net/projects/squirrel-sql/) [github](https://github.com/squirrel-sql-client/squirrel-sql-code) pure Java / Swing - allows to browse database metadata, execute SQL queries, and visualize data structures. supports __SQLite__, __MySQL__, __PostgreSQL__, __Oracle__ Database, and Microsoft SQL Server__ through __JDBC__
