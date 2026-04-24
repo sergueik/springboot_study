@@ -10,7 +10,7 @@ services:
       default:
         aliases:
           - grafana      
-  jsongrafana:
+  app:
     build:
       context: app
       dockerfile: Dockerfile

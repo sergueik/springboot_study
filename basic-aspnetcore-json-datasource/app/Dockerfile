@@ -7,16 +7,16 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 # NOTE: .Net fragile directory layout
-COPY json.grafana.datasources/json.grafana.datasources.csproj json.grafana.datasources/
+COPY Program/Program.csproj Program/
 # 
-# RUN dotnet clean json.grafana.datasources/json.grafana.datasources.csproj
-RUN dotnet restore json.grafana.datasources/json.grafana.datasources.csproj
-COPY json.grafana.datasources json.grafana.datasources/
-WORKDIR /src/json.grafana.datasources
-RUN dotnet build json.grafana.datasources.csproj -c Release -o /app/build
+# RUN dotnet clean Program/Program.csproj
+RUN dotnet restore Program/Program.csproj
+COPY Program Program/
+WORKDIR /src/Program
+RUN dotnet build Program.csproj -c Release -o /app/build
  
 FROM build AS publish
-RUN dotnet publish json.grafana.datasources.csproj -c Release -o /app/publish
+RUN dotnet publish Program.csproj -c Release -o /app/publish
  
 FROM base AS final
 WORKDIR /app

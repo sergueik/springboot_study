@@ -156,3 +156,17 @@ docker-compose ps
 basic-aspnetcore-json-datasource_grafana_1   /run.sh                          Up      0.0.0.0:8182->3000/tcp
 jsongrafanadatasources                       dotnet Json.Grafana.DataSo ...   Up      443/tcp, 0.0.0.0:8181->80/tcp
 ```
+### Simplifying the Project Folder Structure and Settings
+
+```sh
+jq '.profiles.Program' < Program/Properties/launchSettings.json
+```
+```json
+{
+  "commandName": "Project",
+  "applicationUrl": "http://localhost:5000",
+  "environmentVariables": {
+    "ASPNETCORE_ENVIRONMENT": "Development"
+  }
+}
+```

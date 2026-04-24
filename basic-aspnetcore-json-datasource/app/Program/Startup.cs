@@ -31,7 +31,7 @@ namespace Json.Grafana.DataSources
                     NullValueHandling.Ignore;
             });
 
-
+		services.AddHostedService<MetricService>();
             var appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
 
             services.AddSingleton<IPathServices>(b => new PathServices(appSettings));
