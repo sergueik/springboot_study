@@ -6,6 +6,8 @@
 -- JOB_ID: Assigned by the `batch_job_seq` sequence.
 -- JOB_NAME: Must match the name specified in the Spring configuration.
 -- JOB_KEY: An MD5 hash of the job parameters. It is precisely because of this field that if a specific job runs successfully once, a subsequent attempt to run it will throw a `JobInstanceAlreadyCompleteException`.
+
+DROP TABLE IF EXISTS
 CREATE TABLE BATCH_JOB_INSTANCE  (
 	JOB_INSTANCE_ID BIGINT  NOT NULL PRIMARY KEY ,
 	VERSION BIGINT ,
@@ -113,22 +115,4 @@ CREATE TABLE BATCH_JOB_SEQ (
 ) ;
 
 INSERT INTO BATCH_JOB_SEQ (ID, UNIQUE_KEY) select * from (select 0 as ID, '0' as UNIQUE_KEY) as tmp where not exists(select * from BATCH_JOB_SEQ);
-
-CREATE TABLE BATCH_JOB_SEQ (
-    ID BIGINT NOT NULL
-);
-
-INSERT INTO BATCH_JOB_SEQ VALUES (0);
-
-CREATE TABLE BATCH_JOB_EXECUTION_SEQ (
-    ID BIGINT NOT NULL
-);
-
-INSERT INTO BATCH_JOB_EXECUTION_SEQ VALUES (0);
-
-CREATE TABLE BATCH_STEP_EXECUTION_SEQ (
-    ID BIGINT NOT NULL
-);
-
-INSERT INTO BATCH_STEP_EXECUTION_SEQ VALUES (0);
 

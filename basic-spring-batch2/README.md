@@ -32,7 +32,7 @@ One wants  a clean separation:
   * JVM args → infrastructure (memory, agent, logging baseline)
   * Spring profiles → entire environment switching (DB, dialect, batch behavior)
   * CLI args → only job parameters
- 
+
 This is achieved through "Spring Batch Job Inventory" profile crafting:
 
 `application-mysql.yaml`:
@@ -105,13 +105,13 @@ java \
 The only differences between Spring Batch Inventory profiles are in dialect the JPA statement are translated into SQL (`jpa.database-platform`) and connector the actual Database is accessed (`datasource.url`) and optional logging differences.
 
 
-Furthermore the pure [H2 Database](https://en.wikipedia.org/wiki/H2_Database_Engine) which is a pure Java SQL Database Engine implementation also offfers 
+Furthermore the pure [H2 Database](https://en.wikipedia.org/wiki/H2_Database_Engine) which is a pure Java SQL Database Engine implementation also offfers
 
 ![H2 Console](screenshots/capture-tty-h2-console.png)
 
-console 
+console
 
-and 
+and
 
 ![H2 Console](screenshots/capture-login.png)
 
@@ -149,7 +149,7 @@ java -cp ~/.m2/repository/mysql/mysql-connector-java/5.1.49/mysql-connector-java
 ```sh
 java ~/.m2/repository/com/h2database/h2/*/h2*jar org.h2.tools.Shell
 ```
-In fact during development one may tune the Database schema in one provider and then port it to another. 
+In fact during development one may tune the Database schema in one provider and then port it to another.
 
 There are several choices of provider and cons and pros to consder. There is absoilutely no need to start with the final vendor
 
@@ -157,7 +157,7 @@ There are several choices of provider and cons and pros to consder. There is abs
 
 | name | hosting | Dialect `database-platform` | Driver `driver-class-name`  |
 |-----|----------|-----------------------------|-----------------------------|
-| __H2DB__  | file system | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver`| 
+| __H2DB__  | file system | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver`|
 | __H2DB__  | in memory  | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver` |
 | __SQLite__ |file system  | `example.sqlite.SQLiteDialect` | `org.sqlite.JDBC`|
 | __SQLite__ |in memory    | `example.sqlite.SQLiteDialect` | `org.sqlite.JDBC`|
@@ -536,6 +536,73 @@ docker-compose rm -f
 rm -fr app/target
 find . -type f | xargs -IX sed -i 's|\r$||g' X
 ```
+### Run Vendor Docker Images with Minimal Bootstrap
+
+Because schema can be created interactively, in the H2 Web Console there is no need to support bootstrap and container synchronizarion for the task.
+
+* MySQL
+```sh
+docker run -d \
+  --name mysql-demo \
+  -p 3306:3306 \
+  -e MYSQL_DATABASE=batchdb \
+  -e MYSQL_USER=batchuser \
+  -e MYSQL_PASSWORD=batchpass \
+  -e MYSQL_ROOT_PASSWORD=rootpass \
+  mysql:latest
+```
+
+* PostgreSQL
+```sh
+docker run -d \
+  --name postgres-demo \
+  -p 5432:5432 \
+  -e POSTGRES_DB=batchdb \
+  -e POSTGRES_USER=batchuser \
+  -e POSTGRES_PASSWORD=batchpass \
+  postgres:latest
+```
+
+Alternatively one may use bootstrap direcrtory via `Dockerfile`
+```docker
+FROM mysql:latest
+COPY ./src/main/resources/metadata/batch_innodb.sql /docker-entrypoint-initdb.d/
+```
+```docker
+FROM postgres:latest
+
+COPY ./src/main/resources/metadata/batch_postgres.sql \
+     /docker-entrypoint-initdb.d/
+```
+
+All PostgreSQL and MySQL official image automatically execute:
+
+  * `*.sql`
+  * `*.sql.gz`
+  * `*.sh`
+
+found in:
+
+`/docker-entrypoint-initdb.d/`
+
+— only during first initialization, when the data directory is empty.
+There is also a init style convention to honor
+numeric prefix allowing developer control execution order or scripts.
+
+Alternarively one may use `docker-compose` volumes
+```yaml
+    volumes:
+     - ${PWD}/src/main/resources/metadata/batch_postgres.sql:/docker-entrypoint-initdb.d/
+```
+> NOTE: the explicit filename on the destination is considered more robust
+
+### H2 Database Engine
+
+The [H2 Database Engine]() technically can run in several primary configurations: embedded within a Java application offering endpoint, or as a standalone server accessed over TCP. It can also run purely in-memory for transient data need.
+
+Core features include a web-based and text-based consoles for data operation and schema management. As a SQL engine it offers __SQL-92__ compliance, triggers, stored procedured, user defined funcions.  It has very light memory footprint.
+
+
 ### Build Docker Image Locally
 
 * build the alpine based  mysql 5.x Docker image:
@@ -920,7 +987,7 @@ Short answer
 
 Yes — the same H2 console app can be used as a JDBC browser for your Docker-hosted MySQL Spring Batch database, as long as you add the MySQL JDBC driver to the classpath.
 ### See Also
-  
+
    * __SQuirreL SQL Client__ [sourcforge](https://sourceforge.net/projects/squirrel-sql/) [github](https://github.com/squirrel-sql-client/squirrel-sql-code) pure Java / Swing - allows to browse database metadata, execute SQL queries, and visualize data structures. supports __SQLite__, __MySQL__, __PostgreSQL__, __Oracle__ Database, and Microsoft SQL Server__ through __JDBC__
   * [DB Browser for SQLite](https://sqlitebrowser.org/) - best available Windows, macOS, and most versions of Linux and Unix (native code)
 
