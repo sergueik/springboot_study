@@ -2,6 +2,8 @@ package example.util;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
+
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 @Component
+@Profile("!test")
 public class JwtFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;

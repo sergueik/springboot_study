@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-public class ApiController {
+public class RandomFailingApiController {
 	@Value("${example.codes:429}")
 	private String failCodesProperty;
 
