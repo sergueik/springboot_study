@@ -482,6 +482,237 @@ __REST__ relies heavily on [HTTP status spec](https://developer.mozilla.org/en-U
 
 the `HTTP 405 Method Not Allowed` usully means
 request was using the known but disallowed method from server's perspective like a `DELETE` on a resource, or `TRACE` method entirely. In other words it signals: "method is recognized by server, is unsupported for target resource"
+### Data Processing
 
+and
+```
+curl -XPOST http://localhost:8085/auth/token  -H 'Content-Type: application/json' -d '{"username":"test", "password": "test"}'
+
+```
+```json
+{
+  "token_type": "Bearer",
+  "access_token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzcwODM3MDYsImV4cCI6MTc3NzA4NzMwNn0.uSYKSPV5_zM7b05x0QlAa3rHO3zTexvoWaH-YYcvj6s",
+  "expires_in": 3600
+}
+
+```
+```
+curl -sX POST -H 'Content-Type: application/json' http://localhost:8085/api/processdata -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzcwODMwMzMsImV4cCI6MTc3NzA4NjYzM30.V9kPX2tKgxL0trtrw7RwFyuRxPjofcKWd_so-8HozS0' -d '{"customer": "test", "what": "curl test"}' |jq '.'
+```
+```
+{
+  "customerId": "test",
+  "messageType": "processed",
+  "user": "test",
+  "payload": {
+    "isEmpty": false,
+    "normalizedWhat": "CURL TEST",
+    "length": 9,
+    "originalWhat": "curl test"
+  }
+}
+
+```
+### Karate CLI → Python client → (later) MCP tool layer
+
+__Karate__ is acting as:
+
+  * contract exerciser
+  * deterministic API probe
+  * human-readable spec runner
+
+__Karate CLI__ is great for:
+
+  * deterministic validation
+  * quick regression checks
+  * readable API specs
+
+__Karate__ is weak for:
+
+  * embedding into tools (__MCP__-flavour runtime)
+  * dynamic composition of requests
+  * programmatic orchestration across services
+  * integration into larger automation flows
+
+That’s where __Python__ naturally fits:
+
+__Karate__ = specification runner
+__Python__ = orchestration layer
+__MCP__ = tool exposure layer
+
+One should be especially careful to avoid implying __MCP__ is a design pattern. It’s not — it’s just a *protocol layer* + *schema convention* on top of *transport*
+
+
+The conversion of Karate features to Python is possible but should be treated as high-risk if not strictly constrained.
+
+It is feasible only if the Python implementation is deliberately kept structurally minimal and non-idiomatic, avoiding any drift into “Pythonic” design patterns or framework-driven architecture.
+
+The intended outcome is not a “strong Python application”, but a direct HTTP replay + validation layer that mirrors Karate behavior mechanically.
+
+This layer is intentionally simple enough to be safely exposed later as an (MCP-flavour RPC-style tool execution runtime), where Python acts purely as an execution adapter rather than a design or orchestration system.
+```feature
+Feature: Process data API with JWT authentication
+
+Background:
+  * url 'http://localhost:8085'
+  * def credentials = { username: 'test', password: 'test' }
+
+Scenario: Obtain token and call processdata endpoint
+
+  # 1. Get JWT token
+  Given path 'auth/token'
+  And request credentials
+  When method post
+  Then status 200
+
+  # Basic token validation
+  And match response.access_token != null
+  And match response.token_type == 'Bearer'
+  And match response.expires_in == 3600
+
+  # Extract token
+  * def token = response.access_token
+  * print 'TOKEN:', token
+
+  # Optional JWT structure validation
+  # examine JWT parts
+  * def parts = java.util.Arrays.asList(token.split("."))
+  * def len = parts.length
+  * match len == 3
+
+  * def decode = function(obj){ return new java.lang.String(java.util.Base64.getUrlDecoder().decode(obj)) }
+
+  * def headerpart = karate.fromString(decode(parts[0]))
+
+  * def payload = karate.fromString(decode(parts[1]))
+  * print 'JWT PAYLOAD:', payload
+
+  * match payload.sub == 'test'
+  * match payload.role == 'USER'
+
+  # 2. Call protected processdata endpoint
+  Given path 'api/processdata'
+  And header Authorization = 'Bearer ' + token
+  And request
+  """
+  {
+    "customer": "test",
+    "what": "karate validation"
+  }
+  """
+  When method post
+  Then status 200
+
+  # 3. Validate response body
+  * print 'RESPONSE:', response
+
+  * match response.customerId == 'test'
+  * match response.messageType == 'processed'
+  * match response.user == 'test'
+
+  * match response.payload.originalWhat == 'karate validation'
+  * match response.payload.normalizedWhat == 'KARATE VALIDATION'
+  * match response.payload.length == 17
+  * match response.payload.isEmpty == false
+
+
+```
+
+```sh
+java -cp target\lib\* com.intuit.karate.cli.Main features\processdata.feature
+```
+```text
+23:54:07.610 [main]  INFO  com.intuit.karate - Karate version: 1.4.1
+23:54:07.997 [main]  INFO  com.intuit.karate.Suite - backed up existing 'target\karate-reports' dir to: target\karate-reports_1777089247992
+23:54:09.561 [main]  DEBUG com.intuit.karate - request:
+1 > POST http://localhost:8085/auth/token
+1 > Content-Type: application/json; charset=UTF-8
+1 > Content-Length: 37
+1 > Host: localhost:8085
+1 > Connection: Keep-Alive
+1 > User-Agent: Apache-HttpClient/4.5.14 (Java/11.0.12)
+1 > Accept-Encoding: gzip,deflate
+{"username":"test","password":"test"}
+
+23:54:09.608 [main]  DEBUG com.intuit.karate - response time in milliseconds: 43
+1 < 200
+1 < X-Content-Type-Options: nosniff
+1 < X-XSS-Protection: 1; mode=block
+1 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+1 < Pragma: no-cache
+1 < Expires: 0
+1 < X-Frame-Options: DENY
+1 < Content-Type: application/json
+1 < Transfer-Encoding: chunked
+1 < Date: Sat, 25 Apr 2026 03:54:09 GMT
+1 < Keep-Alive: timeout=60
+1 < Connection: keep-alive
+{"token_type":"Bearer","access_token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzcwODkyNDksImV4cCI6MTc3NzA5Mjg0OX0.dZM2NPqlCuQfWGW_3-15Jk9lOURC1qGlU7duCqzHz7c","expires_in":3600}
+
+23:54:09.697 [main]  INFO  com.intuit.karate - [print] TOKEN: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzcwODkyNDksImV4cCI6MTc3NzA5Mjg0OX0.dZM2NPqlCuQfWGW_3-15Jk9lOURC1qGlU7duCqzHz7c
+23:54:09.755 [main]  INFO  com.intuit.karate - [print] JWT PAYLOAD: {
+  "sub": "test",
+  "role": "USER",
+  "iss": "http://localhost:8085",
+  "iat": 1777089249,
+  "exp": 1777092849
+}
+
+23:54:09.767 [main]  DEBUG com.intuit.karate - request:
+2 > POST http://localhost:8085/api/processdata
+2 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzcwODkyNDksImV4cCI6MTc3NzA5Mjg0OX0.dZM2NPqlCuQfWGW_3-15Jk9lOURC1qGlU7duCqzHz7c
+2 > Content-Type: application/json; charset=UTF-8
+2 > Content-Length: 46
+2 > Host: localhost:8085
+2 > Connection: Keep-Alive
+2 > User-Agent: Apache-HttpClient/4.5.14 (Java/11.0.12)
+2 > Accept-Encoding: gzip,deflate
+{"customer":"test","what":"karate validation"}
+
+23:54:09.801 [main]  DEBUG com.intuit.karate - response time in milliseconds: 33
+2 < 200
+2 < X-Content-Type-Options: nosniff
+2 < X-XSS-Protection: 1; mode=block
+2 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+2 < Pragma: no-cache
+2 < Expires: 0
+2 < X-Frame-Options: DENY
+2 < Content-Type: application/json
+2 < Transfer-Encoding: chunked
+2 < Date: Sat, 25 Apr 2026 03:54:09 GMT
+2 < Keep-Alive: timeout=60
+2 < Connection: keep-alive
+{"customerId":"test","messageType":"processed","user":"test","payload":{"isEmpty":false,"normalizedWhat":"KARATE VALIDATION","length":17,"originalWhat":"karate validation"}}
+
+23:54:09.804 [main]  INFO  com.intuit.karate - [print] RESPONSE: {
+  "customerId": "test",
+  "messageType": "processed",
+  "user": "test",
+  "payload": {
+    "isEmpty": false,
+    "normalizedWhat": "KARATE VALIDATION",
+    "length": 17,
+    "originalWhat": "karate validation"
+  }
+}
+
+---------------------------------------------------------
+feature: features/processdata.feature
+scenarios:  1 | passed:  1 | failed:  0 | time: 0.9021
+---------------------------------------------------------
+
+23:54:10.491 [main]  INFO  com.intuit.karate.Suite - <<pass>> feature 1 of 1 (0 remaining) features/processdata.feature
+Karate version: 1.4.1
+======================================================
+elapsed:   2.62 | threads:    1 | thread time: 0.90
+features:     1 | skipped:    0 | efficiency: 0.34
+scenarios:    1 | passed:     1 | failed: 0
+======================================================
+
+HTML report: (paste into browser to view) | Karate version: 1.4.1
+file:///C:/developer/sergueik/springboot_study/basic-karate-example3/target/karate-reports/karate-summary.html
+===================================================================
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
