@@ -714,5 +714,23 @@ HTML report: (paste into browser to view) | Karate version: 1.4.1
 file:///C:/developer/sergueik/springboot_study/basic-karate-example3/target/karate-reports/karate-summary.html
 ===================================================================
 ```
+### Python Version
+
+```sh
+mvn -DskipTests package
+```
+```sh
+java -Dexample.username=john -jar target\example.jwt-stub.jar
+```
+```sh
+python process_data.py --username john
+```
+```txt
+
+{'customerId': 'test', 'messageType': 'processed', 'user': 'john', 'payload': {'isEmpty': False, 'normalizedWhat': 'PYTHON VALIDATION', 'length': 17, 'originalWhat': 'python validation'}}
+
+```
+> NOTE: Python favors `dict` objects that look almost like JSON when printed to console, but aren't JSON
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

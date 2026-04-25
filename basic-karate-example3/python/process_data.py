@@ -1,45 +1,22 @@
+import argparse
+import json
 import requests
-
+import sys
 
 class ProcessDataTool:
     def __init__(self, config):
-        """
-        Centralized configuration only.
-        No per-method hardcoded values.
-        """
-
-        self.base_url = config["base_url"]
-        self.auth_path = config["auth_path"]
-        self.process_path = config["process_path"]
-
-        self.username = config["username"]
-        self.password = config["password"]
-
-        self.default_customer = config["default_customer"]
-        self.default_what = config["default_what"]
-
-        self.expected_message_type = config["expected_message_type"]
-        self.expected_token_type = config["expected_token_type"]
-
+        self.config = config
         self.token = None
 
     def get_token(self):
-        """
-        Authenticate and retrieve JWT token
-        """
-
-        url = f"{self.base_url}/{self.auth_path}"
+        url = f"{self.config['base_url']}/{self.config['auth_path']}"
 
         payload = {
-            "username": self.username,
-            "password": self.password
+            "username": self.config["username"],
+            "password": self.config["password"]
         }
 
-        response = requests.post(
-            url,
-            json=payload
-        )
-
+        response = requests.post(url, json=payload)
         response.raise_for_status()
 
         data = response.json()
@@ -47,34 +24,25 @@ class ProcessDataTool:
         if "access_token" not in data:
             raise Exception("access_token missing from auth response")
 
-        if data.get("token_type") != self.expected_token_type:
-            raise Exception(
-                f"unexpected token_type: {data.get('token_type')}"
-            )
+        if data.get("token_type") != self.config["expected_token_type"]:
+            raise Exception("unexpected token_type")
 
         self.token = data["access_token"]
         return self.token
 
-    def process_data(self, customer=None, what=None):
-        """
-        Call protected endpoint
-        """
-
+    def process_data(self):
         if not self.token:
             self.get_token()
 
-        customer = customer or self.default_customer
-        what = what or self.default_what
-
-        url = f"{self.base_url}/{self.process_path}"
+        url = f"{self.config['base_url']}/{self.config['process_path']}"
 
         headers = {
             "Authorization": f"Bearer {self.token}"
         }
 
         payload = {
-            "customer": customer,
-            "what": what
+            "customer": self.config["default_customer"],
+            "what": self.config["default_what"]
         }
 
         response = requests.post(
@@ -84,21 +52,19 @@ class ProcessDataTool:
         )
 
         response.raise_for_status()
-
         return response.json()
 
-    def validate_response(self, response, customer, what):
-        """
-        Validate response fields
-        """
+    def validate_response(self, response):
+        customer = self.config["default_customer"]
+        what = self.config["default_what"]
 
         if response.get("customerId") != customer:
             raise Exception("customerId validation failed")
 
-        if response.get("messageType") != self.expected_message_type:
+        if response.get("messageType") != self.config["expected_message_type"]:
             raise Exception("messageType validation failed")
 
-        if response.get("user") != self.username:
+        if response.get("user") != self.config["username"]:
             raise Exception("user validation failed")
 
         payload = response.get("payload", {})
@@ -112,55 +78,100 @@ class ProcessDataTool:
         if payload.get("length") != len(what):
             raise Exception("length validation failed")
 
-        expected_empty = (len(what) == 0)
-
-        if payload.get("isEmpty") != expected_empty:
+        if payload.get("isEmpty") != (len(what) == 0):
             raise Exception("isEmpty validation failed")
 
         return True
 
-    def run(self, customer=None, what=None):
-        """
-        Full execution flow
-        """
-
-        customer = customer or self.default_customer
-        what = what or self.default_what
-
+    def run(self):
         self.get_token()
+        response = self.process_data()
+        self.validate_response(response)
 
-        response = self.process_data(
-            customer=customer,
-            what=what
-        )
-
-        self.validate_response(
-            response=response,
-            customer=customer,
-            what=what
-        )
-
-        print("SUCCESS")
+        print("SUCCESS", file=sys.stderr)
         print(response)
 
         return response
 
 
-if __name__ == "__main__":
-    config = {
-        "base_url": "http://localhost:8085",
-        "auth_path": "auth/token",
-        "process_path": "api/processdata",
+def load_default_config():
+    return json.loads(DEFAULT_CONFIG_JSON)
 
-        "username": "test",
-        "password": "test",
 
-        "default_customer": "test",
-        "default_what": "karate validation",
+def load_file_config(config_file):
+    if not config_file:
+        return {}
 
-        "expected_message_type": "processed",
-        "expected_token_type": "Bearer"
+    with open(config_file, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description="Process data tool"
+    )
+
+    parser.add_argument(
+        "--config-file",
+        help="Optional external JSON config file"
+    )
+
+    parser.add_argument("--base-url")
+    parser.add_argument("--username")
+    parser.add_argument("--password")
+    parser.add_argument("--customer")
+    parser.add_argument("--what")
+
+    args = parser.parse_args()
+
+    return {
+        "config_file": args.config_file,
+        "base_url": args.base_url,
+        "username": args.username,
+        "password": args.password,
+        "default_customer": args.customer,
+        "default_what": args.what
     }
 
-    tool = ProcessDataTool(config)
+
+def merge_config(default_config, file_config, cli_args):
+    merged = dict(default_config)
+
+    for source in [file_config, cli_args]:
+        for key, value in source.items():
+            if value is not None:
+                merged[key] = value
+
+    return merged
+
+
+DEFAULT_CONFIG_JSON = """
+{
+  "base_url": "http://localhost:8085",
+  "auth_path": "auth/token",
+  "process_path": "api/processdata",
+  "username": "test",
+  "password": "test",
+  "default_customer": "test",
+  "default_what": "python validation",
+  "expected_message_type": "processed",
+  "expected_token_type": "Bearer"
+}
+"""
+
+
+
+if __name__ == "__main__":
+    default_config = load_default_config()
+    cli_args = parse_arguments()
+    file_config = load_file_config(cli_args.get("config_file"))
+
+    final_config = merge_config(
+        default_config,
+        file_config,
+        cli_args
+    )
+
+    tool = ProcessDataTool(final_config)
     tool.run()
+

@@ -40,11 +40,12 @@ public class TokenController {
 		log.info("token request for {}/{}", request.username, request.password);
 		// 🔐 STUB authentication against DB / LDAP / IdP
 		if (!username.equals(request.username) || !password.equals(request.password)) {
+			log.info("Wrong username or password {}/{}", request.username, request.password);
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
 		}
 
 		String response = tokenService.generateToken(request.username);
-
+		log.info("provided access token to {}", request.username);
 		return ResponseEntity.ok(Map.of("access_token", response, "token_type", "Bearer", "expires_in", 3600));
 	}
 }
