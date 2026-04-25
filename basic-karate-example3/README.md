@@ -730,7 +730,22 @@ python process_data.py --username john
 {'customerId': 'test', 'messageType': 'processed', 'user': 'john', 'payload': {'isEmpty': False, 'normalizedWhat': 'PYTHON VALIDATION', 'length': 17, 'originalWhat': 'python validation'}}
 
 ```
-> NOTE: Python favors `dict` objects that look almost like JSON when printed to console, but aren't JSON
+> NOTE: Python `requests.Response.json()` returns a Python `dict`, not raw JSON text.
+> When printed to the console, a `dict` looks similar to JSON, but it is not JSON:
+>
+> * Python uses single quotes: `'value'`
+> * JSON uses double quotes: `"value"`
+> * Python uses `True` / `False`
+> * JSON uses `true` / `false`
+>
+> So this:
+>
+> ```txt
+> {'customerId': 'test', 'messageType': 'processed'}
+> ```
+>
+> is a Python dictionary representation, not JSON text.
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
