@@ -1,126 +1,91 @@
-"""
-OperationController lifecycle tool (Karate → Python conversion)
-"""
-
 import requests
 import json
 from typing import Dict, Any
 
 
-class OperationControllerTool:
+class OperationLifecycleTool:
     """
-    Stateless workflow runner that mimics Karate feature execution.
+    Single MCP-style tool that executes full CRUD lifecycle.
     """
 
     def __init__(self, config: Dict[str, Any]):
         self.base_url = config.get("base_url", "http://localhost:8085")
-        self.credentials = config.get("credentials", {"username": "test", "password": "test"})
+        self.credentials = config.get("credentials", {})
 
         self.token = None
         self.last_id = None
 
     # -------------------------
-    # AUTH
+    # INTERNAL AUTH
     # -------------------------
-    def get_token(self) -> str:
-        url = f"{self.base_url}/auth/token"
-
-        resp = requests.post(url, json=self.credentials)
+    def _get_token(self):
+        resp = requests.post(
+            f"{self.base_url}/auth/token",
+            json=self.credentials
+        )
         resp.raise_for_status()
+        self.token = resp.json()["access_token"]
 
-        data = resp.json()
-        self.token = data["access_token"]
-
-        return self.token
-
-    # -------------------------
-    # HEADERS
-    # -------------------------
-    def _headers(self) -> Dict[str, str]:
+    def _headers(self):
         return {
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json"
         }
 
     # -------------------------
-    # CREATE
+    # FULL WORKFLOW TOOL (ONLY PUBLIC METHOD)
     # -------------------------
-    def create_operation(self, what: str) -> str:
-        url = f"{self.base_url}/operation"
+    def run(self, what: str = "hello") -> Dict[str, Any]:
 
-        resp = requests.post(
-            url,
+        self._get_token()
+
+        # CREATE
+        create_resp = requests.post(
+            f"{self.base_url}/operation",
             headers=self._headers(),
             json={"what": what}
         )
+        create_resp.raise_for_status()
+        op_id = create_resp.json()["id"]
 
-        resp.raise_for_status()
-        data = resp.json()
-
-        self.last_id = data["id"]
-        return self.last_id
-
-    # -------------------------
-    # UPDATE
-    # -------------------------
-    def update_operation(self, op_id: str, what: str) -> None:
-        url = f"{self.base_url}/operation/{op_id}"
-
-        resp = requests.put(
-            url,
+        # UPDATE
+        requests.put(
+            f"{self.base_url}/operation/{op_id}",
             headers=self._headers(),
-            json={"what": what}
+            json={"what": "updated"}
+        ).raise_for_status()
+
+        # GET
+        get_resp = requests.get(
+            f"{self.base_url}/operation/{op_id}",
+            headers=self._headers()
         )
+        get_data = get_resp.json()
 
-        resp.raise_for_status()
+        # DELETE
+        delete_status = requests.delete(
+            f"{self.base_url}/operation/{op_id}",
+            headers=self._headers()
+        ).status_code
 
-    # -------------------------
-    # GET
-    # -------------------------
-    def get_operation(self, op_id: str) -> Dict[str, Any]:
-        url = f"{self.base_url}/operation/{op_id}"
-
-        resp = requests.get(url, headers=self._headers())
-
-        if resp.status_code == 404:
-            return {"exists": False}
-
-        resp.raise_for_status()
-        return resp.json()
-
-    # -------------------------
-    # DELETE
-    # -------------------------
-    def delete_operation(self, op_id: str) -> int:
-        url = f"{self.base_url}/operation/{op_id}"
-
-        resp = requests.delete(url, headers=self._headers())
-        return resp.status_code
-
-    # -------------------------
-    # FULL WORKFLOW
-    # -------------------------
-    def run_full_lifecycle(self) -> Dict[str, Any]:
-        self.get_token()
-
-        op_id = self.create_operation("hello")
-        self.update_operation(op_id, "updated")
-
-        updated = self.get_operation(op_id)
-
-        delete_status = self.delete_operation(op_id)
-        after_delete = self.get_operation(op_id)
+        # VERIFY DELETION
+        final_get = requests.get(
+            f"{self.base_url}/operation/{op_id}",
+            headers=self._headers()
+        )
 
         return {
             "id": op_id,
-            "updated": updated,
+            "created": True,
+            "updated": True,
+            "get_after_update": get_data,
             "delete_status": delete_status,
-            "after_delete": after_delete
+            "exists_after_delete": final_get.status_code != 404
         }
 
 
 # -------------------------
-# CONFIG (your preferred style)
+# CONFIG (single entry point style)
 # -------------------------
 CONFIG = {
     "base_url": "http://localhost:8085",
@@ -132,11 +97,11 @@ CONFIG = {
 
 
 # -------------------------
-# ENTRY POINT
+# ENTRY POINT (MCP TOOL STYLE)
 # -------------------------
 if __name__ == "__main__":
-    tool = OperationControllerTool(CONFIG)
+    tool = OperationLifecycleTool(CONFIG)
 
-    result = tool.run_full_lifecycle()
+    result = tool.run(what="karate validation")
 
     print(json.dumps(result, indent=2))
