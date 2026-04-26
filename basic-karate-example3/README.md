@@ -917,5 +917,22 @@ HTML report: (paste into browser to view) | Karate version: 1.4.1
 file:///C:/developer/sergueik/springboot_study/basic-karate-example3/target/karate-reports/karate-summary.html
 ===================================================================
 ```
+### Python
+```sh
+python operationcontrolertest.py
+```
+```text
+{
+  "id": "043c990d-a3a2-4735-b613-eb1140856d24",
+  "updated": {
+    "id": "043c990d-a3a2-4735-b613-eb1140856d24",
+    "what": "updated"
+  },
+  "delete_status": 204,
+  "after_delete": {
+    "exists": false
+  }
+}
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
