@@ -3,7 +3,7 @@ import json
 import requests
 import sys
 
-class ProcessDataTool:
+class ProcessData:
     def __init__(self, config):
         self.config = config
         self.token = None
@@ -12,8 +12,8 @@ class ProcessDataTool:
         url = f"{self.config['base_url']}/{self.config['auth_path']}"
 
         payload = {
-            "username": self.config["username"],
-            "password": self.config["password"]
+            'username': self.config['username'],
+            'password': self.config['password']
         }
 
         response = requests.post(url, json=payload)
@@ -21,13 +21,13 @@ class ProcessDataTool:
 
         data = response.json()
 
-        if "access_token" not in data:
-            raise Exception("access_token missing from auth response")
+        if 'access_token' not in data:
+            raise Exception('access_token missing from auth response')
 
-        if data.get("token_type") != self.config["expected_token_type"]:
-            raise Exception("unexpected token_type")
+        if data.get('token_type') != self.config['expected_token_type']:
+            raise Exception('unexpected token_type')
 
-        self.token = data["access_token"]
+        self.token = data['access_token']
         return self.token
 
     def process_data(self):
@@ -37,12 +37,12 @@ class ProcessDataTool:
         url = f"{self.config['base_url']}/{self.config['process_path']}"
 
         headers = {
-            "Authorization": f"Bearer {self.token}"
+            'Authorization': f"Bearer {self.token}"
         }
 
         payload = {
-            "customer": self.config["default_customer"],
-            "what": self.config["default_what"]
+            'customer': self.config['default_customer'],
+            'what': self.config['default_what']
         }
 
         response = requests.post(
@@ -55,31 +55,31 @@ class ProcessDataTool:
         return response.json()
 
     def validate_response(self, response):
-        customer = self.config["default_customer"]
-        what = self.config["default_what"]
+        customer = self.config['default_customer']
+        what = self.config['default_what']
 
-        if response.get("customerId") != customer:
-            raise Exception("customerId validation failed")
+        if response.get('customerId') != customer:
+            raise Exception('customerId validation failed')
 
-        if response.get("messageType") != self.config["expected_message_type"]:
-            raise Exception("messageType validation failed")
+        if response.get('messageType') != self.config['expected_message_type']:
+            raise Exception('messageType validation failed')
 
-        if response.get("user") != self.config["username"]:
-            raise Exception("user validation failed")
+        if response.get('user') != self.config['username']:
+            raise Exception('user validation failed')
 
-        payload = response.get("payload", {})
+        payload = response.get('payload', {})
 
-        if payload.get("originalWhat") != what:
-            raise Exception("originalWhat validation failed")
+        if payload.get('originalWhat') != what:
+            raise Exception('originalWhat validation failed')
 
-        if payload.get("normalizedWhat") != what.upper():
-            raise Exception("normalizedWhat validation failed")
+        if payload.get('normalizedWhat') != what.upper():
+            raise Exception('normalizedWhat validation failed')
 
-        if payload.get("length") != len(what):
-            raise Exception("length validation failed")
+        if payload.get('length') != len(what):
+            raise Exception('length validation failed')
 
-        if payload.get("isEmpty") != (len(what) == 0):
-            raise Exception("isEmpty validation failed")
+        if payload.get('isEmpty') != (len(what) == 0):
+            raise Exception('isEmpty validation failed')
 
         return True
 
@@ -88,7 +88,7 @@ class ProcessDataTool:
         response = self.process_data()
         self.validate_response(response)
 
-        print("SUCCESS", file=sys.stderr)
+        print('SUCCESS', file=sys.stderr)
         print(response)
 
         return response
@@ -102,35 +102,35 @@ def load_file_config(config_file):
     if not config_file:
         return {}
 
-    with open(config_file, "r", encoding="utf-8") as f:
+    with open(config_file, 'r', encoding='utf-8') as f:
         return json.load(f)
 
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Process data tool"
+        description='Process data tool'
     )
 
     parser.add_argument(
-        "--config-file",
-        help="Optional external JSON config file"
+        '--config-file',
+        help='Optional external JSON config file'
     )
 
-    parser.add_argument("--base-url")
-    parser.add_argument("--username")
-    parser.add_argument("--password")
-    parser.add_argument("--customer")
-    parser.add_argument("--what")
+    parser.add_argument('--base-url')
+    parser.add_argument('--username')
+    parser.add_argument('--password')
+    parser.add_argument('--customer')
+    parser.add_argument('--what')
 
     args = parser.parse_args()
 
     return {
-        "config_file": args.config_file,
-        "base_url": args.base_url,
-        "username": args.username,
-        "password": args.password,
-        "default_customer": args.customer,
-        "default_what": args.what
+        'config_file': args.config_file,
+        'base_url': args.base_url,
+        'username': args.username,
+        'password': args.password,
+        'default_customer': args.customer,
+        'default_what': args.what
     }
 
 
@@ -161,10 +161,10 @@ DEFAULT_CONFIG_JSON = """
 
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     default_config = load_default_config()
     cli_args = parse_arguments()
-    file_config = load_file_config(cli_args.get("config_file"))
+    file_config = load_file_config(cli_args.get('config_file'))
 
     final_config = merge_config(
         default_config,
@@ -172,6 +172,6 @@ if __name__ == "__main__":
         cli_args
     )
 
-    tool = ProcessDataTool(final_config)
+    tool = ProcessData(final_config)
     tool.run()
 

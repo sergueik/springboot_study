@@ -746,10 +746,21 @@ python process_data.py --username john
 >
 > is a Python dictionary representation, not JSON text.
 
-### Operation Test
+### Operation LifeCycle Test
+
+
+Slightly more complex example
+The App now supports __CRUD__, __REST__ style.
+
+![Operation Lifecycle](screenshots/operation-lifecycle.png)
+
+each call is authenticated with an __JWT Token__ (there are also __SAAS__ tenant headers, which we do not show explicitly).
+
+![Token Flow](screenshots/token-flow.png)
+
 
 ```sh
-java -cp target\lib\* com.intuit.karate.cli.Main features\operationcontrolertest.feature
+java -cp target\lib\* com.intuit.karate.cli.Main features\operation_lifecycle.feature
 
 ```
 ```text
@@ -901,11 +912,11 @@ java -cp target\lib\* com.intuit.karate.cli.Main features\operationcontrolertest
 
 
 ---------------------------------------------------------
-feature: features/operationcontrolertest.feature
+feature: features/operation_lifecycle.feature
 scenarios:  1 | passed:  1 | failed:  0 | time: 1.0199
 ---------------------------------------------------------
 
-19:42:12.364 [main]  INFO  com.intuit.karate.Suite - <<pass>> feature 1 of 1 (0 remaining) features/operationcontrolertest.feature
+19:42:12.364 [main]  INFO  com.intuit.karate.Suite - <<pass>> feature 1 of 1 (0 remaining) features/operation_lifecycle.feature
 Karate version: 1.4.1
 ======================================================
 elapsed:   2.73 | threads:    1 | thread time: 1.02
@@ -919,7 +930,7 @@ file:///C:/developer/sergueik/springboot_study/basic-karate-example3/target/kara
 ```
 ### Python
 ```sh
-python operationcontrolertest.py
+python operation_lifecycle.py
 ```
 ```text
 {
@@ -933,6 +944,49 @@ python operationcontrolertest.py
     "exists": false
   }
 }
+```
+
+### MCP Server/Client
+
+
+Integrate the `operation_lifecycle.py` into `mcp_server.py` as module
+Verify syntax
+```sh
+python -m py_compile  mcp_server.py
+```
+Run Application
+```sh
+mvn -DskipTests package
+java -jar target/example.jwt-stub.jar
+```
+Run server
+```sh
+python mcp_server.py
+```
+Confirm "Do you want public and private networks to access this app?" Windows Firewall dialog
+run client
+
+```sh
+python mcp_client.py --method operation_lifecycle
+```
+the client output will be a little verbose, because the client will initialize the connection and list the available tools first:
+
+```text
+2026-04-26 18:13:07,580 | INFO | SEND [initialize] id=1 payload={'jsonrpc': '2.0', 'id': 1, 'method': 'initialize'}
+2026-04-26 18:13:07,581 | INFO | RECV id=1 time=0.00ms response={'jsonrpc': '2.0', 'id': 1, 'result': {'status': 'ok', 'server': 'mcp-lab'}}
+{'jsonrpc': '2.0', 'id': 1, 'result': {'status': 'ok', 'server': 'mcp-lab'}}
+2026-04-26 18:13:07,583 | INFO | SEND [tools/list] id=2 payload={'jsonrpc': '2.0', 'id': 2, 'method': 'tools/list'}
+2026-04-26 18:13:07,584 | INFO | RECV id=2 time=0.00ms response={'jsonrpc': '2.0', 'id': 2, 'result': {'tools': [{'name': 'echo', 'description': 'Echo input text'}, {'name': 'uppercase', 'description': 'Uppercase text'}, {'name': 'operation_lifecycle', 'description': 'Execute full CRUD lifecycle'}]}}
+2026-04-26 18:13:07,584 | INFO | SEND [tools/call] id=3 payload={'jsonrpc': '2.0', 'id': 3, 'method': 'tools/call', 'params': {'name': 'operation_lifecycle', 'arguments': {'text': 'hello from mcp client'}}}
+2026-04-26 18:13:07,629 | INFO | RECV id=3 time=44.82ms response={'jsonrpc': '2.0', 'id': 3, 'result': {'content': {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'created': True, 'updated': True, 'get_after_update': {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'what': 'updated'}, 'delete_status': 204, 'exists_after_delete': False}}}
+2026-04-26 18:13:07,630 | INFO | operation_lifecycle response content: {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'created': True, 'updated': True, 'get_after_update': {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'what': 'updated'}, 'delete_status': 204, 'exists_after_delete': False}
+```
+
+The most important message exchange is the last one:
+```text
+2026-04-26 18:13:07,584 | INFO | SEND [tools/call] id=3 payload={'jsonrpc': '2.0', 'id': 3, 'method': 'tools/call', 'params': {'name': 'operation_lifecycle', 'arguments': {'text': 'hello from mcp client'}}}
+2026-04-26 18:13:07,629 | INFO | RECV id=3 time=44.82ms response={'jsonrpc': '2.0', 'id': 3, 'result': {'content': {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'created': True, 'updated': True, 'get_after_update': {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'what': 'updated'}, 'delete_status': 204, 'exists_after_delete': False}}}
+2026-04-26 18:13:07,630 | INFO | operation_lifecycle response content: {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'created': True, 'updated': True, 'get_after_update': {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'what': 'updated'}, 'delete_status': 204, 'exists_after_delete': False}
 ```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

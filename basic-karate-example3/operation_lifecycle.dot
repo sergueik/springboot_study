@@ -1,0 +1,15 @@
+digraph operation_lifecycle {
+    rankdir=LR;
+    node [shape=box];
+
+    create [label="CREATE\nPOST /operation\n→ id returned"];
+    update [label="UPDATE\nPUT /operation/{id}\n→ modify state"];
+    get1 [label="READ\nGET /operation/{id}\n→ verify update"];
+    delete [label="DELETE\nDELETE /operation/{id}\n→ remove entity"];
+    get2 [label="VERIFY DELETION\nGET /operation/{id}\n→ 404 expected"];
+
+    create -> update;
+    update -> get1;
+    get1 -> delete;
+    delete -> get2;
+}

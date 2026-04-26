@@ -1,0 +1,19 @@
+digraph jwt_flow {
+    rankdir=LR;
+    node [shape=box];
+
+    start [label="Start"];
+    check [label="Token expired?"];
+    api [label="API Operation\n(Bearer JWT)"];
+    auth [label="POST /auth/token\nextract JWT"];
+    end [label="End"];
+
+    start -> check;
+
+    check -> api [label="no"];
+    check -> auth [label="yes"];
+
+    auth -> api;
+
+    api -> end;
+}
