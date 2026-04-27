@@ -42,9 +42,9 @@ Scenario: Authenticate and call protected API with retry
 
   * if (responseStatus == 429) karate.log('WARN: throttling in progress')
 
-  * if (fatalStatuses.contains(responseStatus)) karate.fail('SEVERE infrastructure failure, status=' + responseStatus)
+  * if (fatalStatuses.indexOf(responseStatus) > -1) karate.fail('SEVERE infrastructure failure, status=' + responseStatus)
 
-  * if (seriousClientStatuses.contains(responseStatus)) karate.fail('BUSINESS/API CONTRACT failure, status=' + responseStatus + ', body=' + response)
+  * if (seriousClientStatuses.includes(responseStatus)) karate.fail('BUSINESS/API CONTRACT failure, status=' + responseStatus + ', body=' + response)
 
   * match responseStatus == successStatus
   * print 'RESPONSE:', response

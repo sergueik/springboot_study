@@ -1336,6 +1336,32 @@ during the run the app log will show something like:
 |`header` Authorization	| `requests.Session.headers` |
 | scenario chaining	| method calls|
 
+### Troubleshooting
+
+if seeing weird looking errors
+```sh
+java -cp target\lib\* com.intuit.karate.cli.Main features\hello.feature
+```
+```text
+>>> failed features:
+js failed:
+>>>>
+01: if (seriousClientStatuses.contains(responseStatus)) karate.fail('BUSINESS/API CONTRACT failure, status=' + responseStatus + ', body=' + response)
+<<<<
+org.graalvm.polyglot.PolyglotException: TypeError: invokeMember (contains) on [400,422,404,405] failed due to: Message not supported.
+- <js>.:program(Unnamed:1)
+
+features/hello.feature:47
+<<<
+```
+
+the underlying issue is subtle: __GraalJS__/__Karate__ arrays are __JavaScript__ arrays, not __Java__ collections.
+
+Therefore:
+
+* use `includes()` or `indexOf()`
+* do not use `.contains()`
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
