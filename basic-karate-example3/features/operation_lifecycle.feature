@@ -1,7 +1,13 @@
 Feature: OperationController full lifecycle test (POST → PUT → GET → DELETE)
 Background:
   * url 'http://localhost:8085'
-  * def credentials = { username: 'test', password: 'test' }
+  * def username = karate.properties['username'] || 'test'
+  * def password = karate.properties['password'] || 'test'
+
+  * print 'USERNAME:', username
+  * print 'PASSWORD:', password
+  * def credentials = { username: '#(username)', password: '#(password)' }
+  * def what = karate.properties['what'] || 'something'
 
 Scenario: full lifecycle of an operation resource
 
@@ -22,7 +28,7 @@ Scenario: full lifecycle of an operation resource
   # 1. CREATE
   Given path 'operation'
   And header Authorization = 'Bearer ' + token
-  And request { what: 'hello' }
+  And request { what: "#(what)" }
   When method post
   Then status 201
   And match $.id == '#string'

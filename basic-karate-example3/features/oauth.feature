@@ -2,7 +2,13 @@ Feature: OAuth2 JWT token generation (stub server)
 
 Background:
   * url 'http://localhost:8085'
-  * def credentials = { username: 'test', password: 'test' }
+
+  * def username = karate.properties['username'] || 'test'
+  * def password = karate.properties['password'] || 'test'
+
+  * print 'USERNAME:', username
+  * print 'PASSWORD:', password
+  * def credentials = { username: '#(username)', password: '#(password)' }
 
 Scenario: Obtain access token
 

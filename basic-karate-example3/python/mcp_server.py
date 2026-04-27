@@ -1,4 +1,4 @@
-
+import sys
 import os
 import socket
 from common.protocol import encode, decode
@@ -50,6 +50,7 @@ def handle_request(req: dict):
                 'error': {'message': f"Unknown tool: {name}"}
             }
 
+        print(f'Invokig tool "name" with ({args})', file=sys.stderr)
         result = TOOLS[name]['handler'](args)
 
         return {

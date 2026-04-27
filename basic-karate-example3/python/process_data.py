@@ -41,8 +41,8 @@ class ProcessData:
         }
 
         payload = {
-            'customer': self.config['default_customer'],
-            'what': self.config['default_what']
+            'customer': self.config['customer'],
+            'what': self.config['what']
         }
 
         response = requests.post(
@@ -55,8 +55,8 @@ class ProcessData:
         return response.json()
 
     def validate_response(self, response):
-        customer = self.config['default_customer']
-        what = self.config['default_what']
+        customer = self.config['customer']
+        what = self.config['what']
 
         if response.get('customerId') != customer:
             raise Exception('customerId validation failed')
@@ -129,8 +129,8 @@ def parse_arguments():
         'base_url': args.base_url,
         'username': args.username,
         'password': args.password,
-        'default_customer': args.customer,
-        'default_what': args.what
+        'customer': args.customer,
+        'what': args.what
     }
 
 
@@ -152,8 +152,8 @@ DEFAULT_CONFIG_JSON = """
   "process_path": "api/processdata",
   "username": "test",
   "password": "test",
-  "default_customer": "test",
-  "default_what": "python validation",
+  "customer": "test",
+  "what": "python validation",
   "expected_message_type": "processed",
   "expected_token_type": "Bearer"
 }

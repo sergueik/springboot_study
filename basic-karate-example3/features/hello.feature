@@ -36,18 +36,15 @@ Scenario: Authenticate and call protected API with retry
   And header Authorization = 'Bearer ' + token
 
   # retry until success, infra failure, or business failure
-  And retry until responseStatus == successStatus
-    || fatalStatuses.contains(responseStatus)
-    || seriousClientStatuses.contains(responseStatus)
+  # NOTE: should be on single like due to limitations of Karate/Gherkin parser
+  And retry until responseStatus == successStatus || fatalStatuses.contains(responseStatus) || seriousClientStatuses.contains(responseStatus)
   When method get
 
   * if (responseStatus == 429) karate.log('WARN: throttling in progress')
 
-  * if (fatalStatuses.contains(responseStatus))
-    karate.fail('SEVERE infrastructure failure, status=' + responseStatus)
+  * if (fatalStatuses.contains(responseStatus)) karate.fail('SEVERE infrastructure failure, status=' + responseStatus)
 
-  * if (seriousClientStatuses.contains(responseStatus))
-    karate.fail('BUSINESS/API CONTRACT failure, status=' + responseStatus + ', body=' + response)
+  * if (seriousClientStatuses.contains(responseStatus)) karate.fail('BUSINESS/API CONTRACT failure, status=' + responseStatus + ', body=' + response)
 
   * match responseStatus == successStatus
   * print 'RESPONSE:', response

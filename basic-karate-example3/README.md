@@ -830,12 +830,14 @@ Scenario: full lifecycle of an operation resource
 ```
 Run Karate test
 ```sh
-java -cp target\lib\* com.intuit.karate.cli.Main features\operation_lifecycle.feature
-
+java  -Dwhat="something else" -cp target\lib\* com.intuit.karate.cli.Main features\operation_lifecycle.feature
 ```
 ```text
-19:42:09.409 [main]  INFO  com.intuit.karate - Karate version: 1.4.1
-19:42:11.032 [main]  DEBUG com.intuit.karate - request:
+17:56:39.323 [main]  INFO  com.intuit.karate - Karate version: 1.4.1
+17:56:39.667 [main]  INFO  com.intuit.karate.Suite - backed up existing 'target\karate-reports' dir to: target\karate-reports_1777326999661
+17:56:40.740 [main]  INFO  com.intuit.karate - [print] USERNAME: test
+17:56:40.744 [main]  INFO  com.intuit.karate - [print] PASSWORD: test
+17:56:41.205 [main]  DEBUG com.intuit.karate - request:
 1 > POST http://localhost:8085/auth/token
 1 > Content-Type: application/json; charset=UTF-8
 1 > Content-Length: 37
@@ -845,7 +847,7 @@ java -cp target\lib\* com.intuit.karate.cli.Main features\operation_lifecycle.fe
 1 > Accept-Encoding: gzip,deflate
 {"username":"test","password":"test"}
 
-19:42:11.416 [main]  DEBUG com.intuit.karate - response time in milliseconds: 380
+17:56:41.265 [main]  DEBUG com.intuit.karate - response time in milliseconds: 55
 1 < 200
 1 < X-Content-Type-Options: nosniff
 1 < X-XSS-Protection: 1; mode=block
@@ -855,23 +857,23 @@ java -cp target\lib\* com.intuit.karate.cli.Main features\operation_lifecycle.fe
 1 < X-Frame-Options: DENY
 1 < Content-Type: application/json
 1 < Transfer-Encoding: chunked
-1 < Date: Sat, 25 Apr 2026 23:42:11 GMT
+1 < Date: Mon, 27 Apr 2026 21:56:41 GMT
 1 < Keep-Alive: timeout=60
 1 < Connection: keep-alive
-{"access_token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzcxNjA1MzEsImV4cCI6MTc3NzE2NDEzMX0._jemoi0T3peWzN6OcsDjrjAyiCXVcJ63EuVX82VrCAI","token_type":"Bearer","expires_in":3600}
+{"token_type":"Bearer","expires_in":3600,"access_token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzczMjcwMDEsImV4cCI6MTc3NzMzMDYwMX0.-xM3OSSW4Pt4yQAGMyvcY9uLT7Z-A9n6m6ngkLMz5mg"}
 
-19:42:11.496 [main]  DEBUG com.intuit.karate - request:
+17:56:41.318 [main]  DEBUG com.intuit.karate - request:
 2 > POST http://localhost:8085/operation
-2 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzcxNjA1MzEsImV4cCI6MTc3NzE2NDEzMX0._jemoi0T3peWzN6OcsDjrjAyiCXVcJ63EuVX82VrCAI
+2 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzczMjcwMDEsImV4cCI6MTc3NzMzMDYwMX0.-xM3OSSW4Pt4yQAGMyvcY9uLT7Z-A9n6m6ngkLMz5mg
 2 > Content-Type: application/json; charset=UTF-8
-2 > Content-Length: 16
+2 > Content-Length: 25
 2 > Host: localhost:8085
 2 > Connection: Keep-Alive
 2 > User-Agent: Apache-HttpClient/4.5.14 (Java/11.0.12)
 2 > Accept-Encoding: gzip,deflate
-{"what":"hello"}
+{"what":"something else"}
 
-19:42:11.563 [main]  DEBUG com.intuit.karate - response time in milliseconds: 64
+17:56:41.335 [main]  DEBUG com.intuit.karate - response time in milliseconds: 16
 2 < 201
 2 < X-Content-Type-Options: nosniff
 2 < X-XSS-Protection: 1; mode=block
@@ -881,15 +883,15 @@ java -cp target\lib\* com.intuit.karate.cli.Main features\operation_lifecycle.fe
 2 < X-Frame-Options: DENY
 2 < Content-Type: application/json
 2 < Transfer-Encoding: chunked
-2 < Date: Sat, 25 Apr 2026 23:42:11 GMT
+2 < Date: Mon, 27 Apr 2026 21:56:41 GMT
 2 < Keep-Alive: timeout=60
 2 < Connection: keep-alive
-{"id":"546fa460-af73-405d-a9a3-aabe0b699a98"}
+{"id":"1facc5f1-7b48-4746-a0cd-fb61b125d65e"}
 
-19:42:11.606 [main]  INFO  com.intuit.karate - [print] CREATED ID: 546fa460-af73-405d-a9a3-aabe0b699a98
-19:42:11.618 [main]  DEBUG com.intuit.karate - request:
-3 > PUT http://localhost:8085/operation/546fa460-af73-405d-a9a3-aabe0b699a98
-3 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzcxNjA1MzEsImV4cCI6MTc3NzE2NDEzMX0._jemoi0T3peWzN6OcsDjrjAyiCXVcJ63EuVX82VrCAI
+17:56:41.349 [main]  INFO  com.intuit.karate - [print] CREATED ID: 1facc5f1-7b48-4746-a0cd-fb61b125d65e
+17:56:41.364 [main]  DEBUG com.intuit.karate - request:
+3 > PUT http://localhost:8085/operation/1facc5f1-7b48-4746-a0cd-fb61b125d65e
+3 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzczMjcwMDEsImV4cCI6MTc3NzMzMDYwMX0.-xM3OSSW4Pt4yQAGMyvcY9uLT7Z-A9n6m6ngkLMz5mg
 3 > Content-Type: application/json; charset=UTF-8
 3 > Content-Length: 18
 3 > Host: localhost:8085
@@ -898,7 +900,7 @@ java -cp target\lib\* com.intuit.karate.cli.Main features\operation_lifecycle.fe
 3 > Accept-Encoding: gzip,deflate
 {"what":"updated"}
 
-19:42:11.631 [main]  DEBUG com.intuit.karate - response time in milliseconds: 11
+17:56:41.380 [main]  DEBUG com.intuit.karate - response time in milliseconds: 14
 3 < 200
 3 < X-Content-Type-Options: nosniff
 3 < X-XSS-Protection: 1; mode=block
@@ -907,21 +909,21 @@ java -cp target\lib\* com.intuit.karate.cli.Main features\operation_lifecycle.fe
 3 < Expires: 0
 3 < X-Frame-Options: DENY
 3 < Content-Length: 0
-3 < Date: Sat, 25 Apr 2026 23:42:11 GMT
+3 < Date: Mon, 27 Apr 2026 21:56:41 GMT
 3 < Keep-Alive: timeout=60
 3 < Connection: keep-alive
 
 
-19:42:11.636 [main]  DEBUG com.intuit.karate - request:
-4 > GET http://localhost:8085/operation/546fa460-af73-405d-a9a3-aabe0b699a98
-4 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzcxNjA1MzEsImV4cCI6MTc3NzE2NDEzMX0._jemoi0T3peWzN6OcsDjrjAyiCXVcJ63EuVX82VrCAI
+17:56:41.388 [main]  DEBUG com.intuit.karate - request:
+4 > GET http://localhost:8085/operation/1facc5f1-7b48-4746-a0cd-fb61b125d65e
+4 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzczMjcwMDEsImV4cCI6MTc3NzMzMDYwMX0.-xM3OSSW4Pt4yQAGMyvcY9uLT7Z-A9n6m6ngkLMz5mg
 4 > Host: localhost:8085
 4 > Connection: Keep-Alive
 4 > User-Agent: Apache-HttpClient/4.5.14 (Java/11.0.12)
 4 > Accept-Encoding: gzip,deflate
 
 
-19:42:11.648 [main]  DEBUG com.intuit.karate - response time in milliseconds: 10
+17:56:41.402 [main]  DEBUG com.intuit.karate - response time in milliseconds: 13
 4 < 200
 4 < X-Content-Type-Options: nosniff
 4 < X-XSS-Protection: 1; mode=block
@@ -931,21 +933,21 @@ java -cp target\lib\* com.intuit.karate.cli.Main features\operation_lifecycle.fe
 4 < X-Frame-Options: DENY
 4 < Content-Type: application/json
 4 < Transfer-Encoding: chunked
-4 < Date: Sat, 25 Apr 2026 23:42:11 GMT
+4 < Date: Mon, 27 Apr 2026 21:56:41 GMT
 4 < Keep-Alive: timeout=60
 4 < Connection: keep-alive
-{"id":"546fa460-af73-405d-a9a3-aabe0b699a98","what":"updated"}
+{"id":"1facc5f1-7b48-4746-a0cd-fb61b125d65e","what":"updated"}
 
-19:42:11.653 [main]  DEBUG com.intuit.karate - request:
-5 > DELETE http://localhost:8085/operation/546fa460-af73-405d-a9a3-aabe0b699a98
-5 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzcxNjA1MzEsImV4cCI6MTc3NzE2NDEzMX0._jemoi0T3peWzN6OcsDjrjAyiCXVcJ63EuVX82VrCAI
+17:56:41.409 [main]  DEBUG com.intuit.karate - request:
+5 > DELETE http://localhost:8085/operation/1facc5f1-7b48-4746-a0cd-fb61b125d65e
+5 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzczMjcwMDEsImV4cCI6MTc3NzMzMDYwMX0.-xM3OSSW4Pt4yQAGMyvcY9uLT7Z-A9n6m6ngkLMz5mg
 5 > Host: localhost:8085
 5 > Connection: Keep-Alive
 5 > User-Agent: Apache-HttpClient/4.5.14 (Java/11.0.12)
 5 > Accept-Encoding: gzip,deflate
 
 
-19:42:11.666 [main]  DEBUG com.intuit.karate - response time in milliseconds: 10
+17:56:41.423 [main]  DEBUG com.intuit.karate - response time in milliseconds: 11
 5 < 204
 5 < X-Content-Type-Options: nosniff
 5 < X-XSS-Protection: 1; mode=block
@@ -953,21 +955,21 @@ java -cp target\lib\* com.intuit.karate.cli.Main features\operation_lifecycle.fe
 5 < Pragma: no-cache
 5 < Expires: 0
 5 < X-Frame-Options: DENY
-5 < Date: Sat, 25 Apr 2026 23:42:11 GMT
+5 < Date: Mon, 27 Apr 2026 21:56:41 GMT
 5 < Keep-Alive: timeout=60
 5 < Connection: keep-alive
 
 
-19:42:11.671 [main]  DEBUG com.intuit.karate - request:
-6 > GET http://localhost:8085/operation/546fa460-af73-405d-a9a3-aabe0b699a98
-6 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzcxNjA1MzEsImV4cCI6MTc3NzE2NDEzMX0._jemoi0T3peWzN6OcsDjrjAyiCXVcJ63EuVX82VrCAI
+17:56:41.427 [main]  DEBUG com.intuit.karate - request:
+6 > GET http://localhost:8085/operation/1facc5f1-7b48-4746-a0cd-fb61b125d65e
+6 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzczMjcwMDEsImV4cCI6MTc3NzMzMDYwMX0.-xM3OSSW4Pt4yQAGMyvcY9uLT7Z-A9n6m6ngkLMz5mg
 6 > Host: localhost:8085
 6 > Connection: Keep-Alive
 6 > User-Agent: Apache-HttpClient/4.5.14 (Java/11.0.12)
 6 > Accept-Encoding: gzip,deflate
 
 
-19:42:11.681 [main]  DEBUG com.intuit.karate - response time in milliseconds: 8
+17:56:41.439 [main]  DEBUG com.intuit.karate - response time in milliseconds: 9
 6 < 404
 6 < X-Content-Type-Options: nosniff
 6 < X-XSS-Protection: 1; mode=block
@@ -976,21 +978,191 @@ java -cp target\lib\* com.intuit.karate.cli.Main features\operation_lifecycle.fe
 6 < Expires: 0
 6 < X-Frame-Options: DENY
 6 < Content-Length: 0
-6 < Date: Sat, 25 Apr 2026 23:42:11 GMT
+6 < Date: Mon, 27 Apr 2026 21:56:41 GMT
 6 < Keep-Alive: timeout=60
 6 < Connection: keep-alive
 
 
 ---------------------------------------------------------
 feature: features/operation_lifecycle.feature
-scenarios:  1 | passed:  1 | failed:  0 | time: 1.0199
+scenarios:  1 | passed:  1 | failed:  0 | time: 0.8191
 ---------------------------------------------------------
 
-19:42:12.364 [main]  INFO  com.intuit.karate.Suite - <<pass>> feature 1 of 1 (0 remaining) features/operation_lifecycle.feature
+17:56:42.133 [main]  INFO  com.intuit.karate.Suite - <<pass>> feature 1 of 1 (0 remaining) features/operation_lifecycle.feature
 Karate version: 1.4.1
 ======================================================
-elapsed:   2.73 | threads:    1 | thread time: 1.02
-features:     1 | skipped:    0 | efficiency: 0.37
+elapsed:   2.59 | threads:    1 | thread time: 0.82
+features:     1 | skipped:    0 | efficiency: 0.32
+scenarios:    1 | passed:     1 | failed: 0
+======================================================
+
+HTML report: (paste into browser to view) | Karate version: 1.4.1
+file:///C:/developer/sergueik/springboot_study/basic-karate-example3/target/karate-reports/karate-summary.html
+===================================================================
+
+
+C:\developer\sergueik\springboot_study\basic-karate-example3>
+C:\developer\sergueik\springboot_study\basic-karate-example3>java  -Dwhat="something else" -cp target\lib\* com.intuit.karate.cli.Main features\operation_lifecycle.feature
+17:58:17.802 [main]  INFO  com.intuit.karate - Karate version: 1.4.1
+17:58:18.162 [main]  INFO  com.intuit.karate.Suite - backed up existing 'target\karate-reports' dir to: target\karate-reports_1777327098150
+17:58:19.147 [main]  INFO  com.intuit.karate - [print] USERNAME: test
+17:58:19.151 [main]  INFO  com.intuit.karate - [print] PASSWORD: test
+17:58:19.650 [main]  DEBUG com.intuit.karate - request:
+1 > POST http://localhost:8085/auth/token
+1 > Content-Type: application/json; charset=UTF-8
+1 > Content-Length: 37
+1 > Host: localhost:8085
+1 > Connection: Keep-Alive
+1 > User-Agent: Apache-HttpClient/4.5.14 (Java/11.0.12)
+1 > Accept-Encoding: gzip,deflate
+{"username":"test","password":"test"}
+
+17:58:19.692 [main]  DEBUG com.intuit.karate - response time in milliseconds: 38
+1 < 200
+1 < X-Content-Type-Options: nosniff
+1 < X-XSS-Protection: 1; mode=block
+1 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+1 < Pragma: no-cache
+1 < Expires: 0
+1 < X-Frame-Options: DENY
+1 < Content-Type: application/json
+1 < Transfer-Encoding: chunked
+1 < Date: Mon, 27 Apr 2026 21:58:19 GMT
+1 < Keep-Alive: timeout=60
+1 < Connection: keep-alive
+{"token_type":"Bearer","expires_in":3600,"access_token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzczMjcwOTksImV4cCI6MTc3NzMzMDY5OX0.BqykJ-3mqnJEpaSL5G6SMGXLib8WLel7YyoKEJN3DlA"}
+
+17:58:19.753 [main]  DEBUG com.intuit.karate - request:
+2 > POST http://localhost:8085/operation
+2 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzczMjcwOTksImV4cCI6MTc3NzMzMDY5OX0.BqykJ-3mqnJEpaSL5G6SMGXLib8WLel7YyoKEJN3DlA
+2 > Content-Type: application/json; charset=UTF-8
+2 > Content-Length: 25
+2 > Host: localhost:8085
+2 > Connection: Keep-Alive
+2 > User-Agent: Apache-HttpClient/4.5.14 (Java/11.0.12)
+2 > Accept-Encoding: gzip,deflate
+{"what":"something else"}
+
+17:58:19.777 [main]  DEBUG com.intuit.karate - response time in milliseconds: 23
+2 < 201
+2 < X-Content-Type-Options: nosniff
+2 < X-XSS-Protection: 1; mode=block
+2 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+2 < Pragma: no-cache
+2 < Expires: 0
+2 < X-Frame-Options: DENY
+2 < Content-Type: application/json
+2 < Transfer-Encoding: chunked
+2 < Date: Mon, 27 Apr 2026 21:58:19 GMT
+2 < Keep-Alive: timeout=60
+2 < Connection: keep-alive
+{"id":"bb2b7d96-7587-4cf9-9c63-9dcc1d6b54d5"}
+
+17:58:19.786 [main]  INFO  com.intuit.karate - [print] CREATED ID: bb2b7d96-7587-4cf9-9c63-9dcc1d6b54d5
+17:58:19.798 [main]  DEBUG com.intuit.karate - request:
+3 > PUT http://localhost:8085/operation/bb2b7d96-7587-4cf9-9c63-9dcc1d6b54d5
+3 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzczMjcwOTksImV4cCI6MTc3NzMzMDY5OX0.BqykJ-3mqnJEpaSL5G6SMGXLib8WLel7YyoKEJN3DlA
+3 > Content-Type: application/json; charset=UTF-8
+3 > Content-Length: 18
+3 > Host: localhost:8085
+3 > Connection: Keep-Alive
+3 > User-Agent: Apache-HttpClient/4.5.14 (Java/11.0.12)
+3 > Accept-Encoding: gzip,deflate
+{"what":"updated"}
+
+17:58:19.814 [main]  DEBUG com.intuit.karate - response time in milliseconds: 14
+3 < 200
+3 < X-Content-Type-Options: nosniff
+3 < X-XSS-Protection: 1; mode=block
+3 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+3 < Pragma: no-cache
+3 < Expires: 0
+3 < X-Frame-Options: DENY
+3 < Content-Length: 0
+3 < Date: Mon, 27 Apr 2026 21:58:19 GMT
+3 < Keep-Alive: timeout=60
+3 < Connection: keep-alive
+
+
+17:58:19.824 [main]  DEBUG com.intuit.karate - request:
+4 > GET http://localhost:8085/operation/bb2b7d96-7587-4cf9-9c63-9dcc1d6b54d5
+4 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzczMjcwOTksImV4cCI6MTc3NzMzMDY5OX0.BqykJ-3mqnJEpaSL5G6SMGXLib8WLel7YyoKEJN3DlA
+4 > Host: localhost:8085
+4 > Connection: Keep-Alive
+4 > User-Agent: Apache-HttpClient/4.5.14 (Java/11.0.12)
+4 > Accept-Encoding: gzip,deflate
+
+
+17:58:19.837 [main]  DEBUG com.intuit.karate - response time in milliseconds: 12
+4 < 200
+4 < X-Content-Type-Options: nosniff
+4 < X-XSS-Protection: 1; mode=block
+4 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+4 < Pragma: no-cache
+4 < Expires: 0
+4 < X-Frame-Options: DENY
+4 < Content-Type: application/json
+4 < Transfer-Encoding: chunked
+4 < Date: Mon, 27 Apr 2026 21:58:19 GMT
+4 < Keep-Alive: timeout=60
+4 < Connection: keep-alive
+{"id":"bb2b7d96-7587-4cf9-9c63-9dcc1d6b54d5","what":"updated"}
+
+17:58:19.843 [main]  DEBUG com.intuit.karate - request:
+5 > DELETE http://localhost:8085/operation/bb2b7d96-7587-4cf9-9c63-9dcc1d6b54d5
+5 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzczMjcwOTksImV4cCI6MTc3NzMzMDY5OX0.BqykJ-3mqnJEpaSL5G6SMGXLib8WLel7YyoKEJN3DlA
+5 > Host: localhost:8085
+5 > Connection: Keep-Alive
+5 > User-Agent: Apache-HttpClient/4.5.14 (Java/11.0.12)
+5 > Accept-Encoding: gzip,deflate
+
+
+17:58:19.857 [main]  DEBUG com.intuit.karate - response time in milliseconds: 12
+5 < 204
+5 < X-Content-Type-Options: nosniff
+5 < X-XSS-Protection: 1; mode=block
+5 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+5 < Pragma: no-cache
+5 < Expires: 0
+5 < X-Frame-Options: DENY
+5 < Date: Mon, 27 Apr 2026 21:58:19 GMT
+5 < Keep-Alive: timeout=60
+5 < Connection: keep-alive
+
+
+17:58:19.863 [main]  DEBUG com.intuit.karate - request:
+6 > GET http://localhost:8085/operation/bb2b7d96-7587-4cf9-9c63-9dcc1d6b54d5
+6 > Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0Iiwicm9sZSI6IlVTRVIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODUiLCJpYXQiOjE3NzczMjcwOTksImV4cCI6MTc3NzMzMDY5OX0.BqykJ-3mqnJEpaSL5G6SMGXLib8WLel7YyoKEJN3DlA
+6 > Host: localhost:8085
+6 > Connection: Keep-Alive
+6 > User-Agent: Apache-HttpClient/4.5.14 (Java/11.0.12)
+6 > Accept-Encoding: gzip,deflate
+
+
+17:58:19.874 [main]  DEBUG com.intuit.karate - response time in milliseconds: 10
+6 < 404
+6 < X-Content-Type-Options: nosniff
+6 < X-XSS-Protection: 1; mode=block
+6 < Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+6 < Pragma: no-cache
+6 < Expires: 0
+6 < X-Frame-Options: DENY
+6 < Content-Length: 0
+6 < Date: Mon, 27 Apr 2026 21:58:19 GMT
+6 < Keep-Alive: timeout=60
+6 < Connection: keep-alive
+
+
+---------------------------------------------------------
+feature: features/operation_lifecycle.feature
+scenarios:  1 | passed:  1 | failed:  0 | time: 0.8453
+---------------------------------------------------------
+
+17:58:20.618 [main]  INFO  com.intuit.karate.Suite - <<pass>> feature 1 of 1 (0 remaining) features/operation_lifecycle.feature
+Karate version: 1.4.1
+======================================================
+elapsed:   2.60 | threads:    1 | thread time: 0.85
+features:     1 | skipped:    0 | efficiency: 0.33
 scenarios:    1 | passed:     1 | failed: 0
 ======================================================
 
@@ -1160,7 +1332,7 @@ during the run the app log will show something like:
 |`retry until`	| while/for loop + condition checks |
 |`def` variables	| function/local vars |
 |`match`      |	manual asserts or return validation |
-|`karate.fail()`|	| `raise RuntimeError` |
+|`karate.fail()`| `raise RuntimeError` |
 |`header` Authorization	| `requests.Session.headers` |
 | scenario chaining	| method calls|
 
