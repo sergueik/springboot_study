@@ -1140,6 +1140,30 @@ The most important message exchange is the last one:
 2026-04-26 18:13:07,629 | INFO | RECV id=3 time=44.82ms response={'jsonrpc': '2.0', 'id': 3, 'result': {'content': {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'created': True, 'updated': True, 'get_after_update': {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'what': 'updated'}, 'delete_status': 204, 'exists_after_delete': False}}}
 2026-04-26 18:13:07,630 | INFO | operation_lifecycle response content: {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'created': True, 'updated': True, 'get_after_update': {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'what': 'updated'}, 'delete_status': 204, 'exists_after_delete': False}
 ```
+during the run the app log will show something like:
+```text
+2026-04-27 14:19:38.060  INFO 33424 --- [nio-8085-exec-1] example.controller.Tok    enController       : token request for test/test
+2026-04-27 14:19:38.155  INFO 33424 --- [nio-8085-exec-1] example.controller.Tok    enController       : provided access token to test
+2026-04-27 14:19:38.262  INFO 33424 --- [nio-8085-exec-2] example.controller.Ope    rationController   : created {"id":"79450c10-2a9a-4b58-9fd2-976ac4a001be","what"    :"python validation"}
+2026-04-27 14:19:38.295  INFO 33424 --- [nio-8085-exec-3] example.controller.Ope    rationController   : updated {"id":"79450c10-2a9a-4b58-9fd2-976ac4a001be","what"    :"updated"}
+2026-04-27 14:19:38.319  INFO 33424 --- [nio-8085-exec-5] example.controller.Ope    rationController   : found: 79450c10-2a9a-4b58-9fd2-976ac4a001be
+2026-04-27 14:19:38.344  INFO 33424 --- [nio-8085-exec-6] example.controller.Ope    rationController   : removed: 79450c10-2a9a-4b58-9fd2-976ac4a001be
+2026-04-27 14:19:38.366  INFO 33424 --- [nio-8085-exec-8] example.controller.Ope    rationController   : not found: 79450c10-2a9a-4b58-9fd2-976ac4a001be
+
+```
+### Mapping Karate → Python
+
+|Karate concept | Python equivalent |
+|---------------|-------------------|
+|`Background`	|`__init__` + config |
+|`configure retry`|	explicit retry loop |
+|`retry until`	| while/for loop + condition checks |
+|`def` variables	| function/local vars |
+|`match`      |	manual asserts or return validation |
+|`karate.fail()`|	| `raise RuntimeError` |
+|`header` Authorization	| `requests.Session.headers` |
+| scenario chaining	| method calls|
+
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
