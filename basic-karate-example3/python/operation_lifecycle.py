@@ -11,7 +11,6 @@ class OperationLifecycle:
     Pure YAML-driven execution engine.
     No CONFIG, no hardcoded workflow.
     """
-
     def __init__(self, yaml_path: str):
         with open(yaml_path, "r", encoding="utf-8") as f:
             self.spec = yaml.safe_load(f)
@@ -19,6 +18,8 @@ class OperationLifecycle:
         self.base_url = self.spec["base_url"]
         self.credentials = self.spec.get("credentials", {})
         self.workflow = self.spec.get("workflow", [])
+  
+        self.debug = False
 
         self.context: Dict[str, Any] = {}
         self.token = None
@@ -39,10 +40,22 @@ class OperationLifecycle:
     # TEMPLATE RESOLVER
     # -------------------------
     def _resolve(self, value):
-        if isinstance(value, str):
-            for k, v in self.context.items():
-                value = value.replace(f"${{{k}}}", str(v))
-        return value
+        if not isinstance(value, str):
+            return value
+    
+        def replace(match):
+            path = match.group(1).split(".")
+            obj = self.context
+    
+            for p in path:
+                if isinstance(obj, dict):
+                    obj = obj[p]
+                else:
+                    raise KeyError(f"Cannot resolve {match.group(0)}")
+    
+            return str(obj)
+    
+        return re.sub(r"\$\{([^}]+)\}", replace, value)
 
     def _resolve_obj(self, obj):
         if isinstance(obj, dict):
@@ -64,7 +77,7 @@ class OperationLifecycle:
 
             action = step["action"]
             endpoint = self._resolve(step.get("endpoint", ""))
-            print(f'endpoint: {endpoint}', file=sys.stderr)
+            print(f'endpoint: {endpoint}', file=sys.stderr) if self.debug else None
             body = self._resolve_obj(step.get("body", {}))
             headers = step.get("headers", {})
 
@@ -83,16 +96,16 @@ class OperationLifecycle:
                 resp = requests.post(url, json=body, headers=headers)
                 resp.raise_for_status()
                 data = resp.json()
-                print(f'data: {data}', file=sys.stderr)
+                print(f'data: {data}', file=sys.stderr) if self.debug else None
                 self.context["created"] = data
-                print(f'context: {self.context}', file=sys.stderr)
-                endpoint = self._resolve(step.get("endpoint", ""))
-                print(f'endpoint: {endpoint}', file=sys.stderr)
+                # print(f'context: {self.context}', file=sys.stderr)
+                # endpoint = self._resolve(step.get("endpoint", ""))
+                # print(f'endpoint: {endpoint}', file=sys.stderr)
                 results[step["name"]] = data
 
             elif action == "put":
 
-                print(f'put url: {url}', file=sys.stderr)
+                print(f'put url: {url}', file=sys.stderr) if self.debug else None
                 resp = requests.put(url, json=body, headers=headers)
                 resp.raise_for_status()
                 results[step["name"]] = "ok"
