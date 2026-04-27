@@ -294,7 +294,7 @@ test accessing protected api `/api/hello` with JWT token:
 java -Dusername=Paul -cp target\lib\* com.intuit.karate.cli.Main features\hello.feature
 ```
 
-the server will log __Paul__ is visiting  
+the server will log __Paul__ is visiting
 ```text
 2026-03-21T13:33:27.022-04:00  INFO 33688 --- [nio-8085-exec-1] example.controller.TokenController       : token request for Paul/test
 ```
@@ -383,7 +383,7 @@ indicating the user name was successfully extracted from the JWT token
 
 During implementation, a few Karate JS helper functions (e.g. `karate.fromBase64`, `karate.json`) were found to behave inconsistently, resulting in errors such as `Unknown identifier: json`.
 
-The root cause is believed to be related to classpath inconsistencies between Karate __1.4.x__ and fast evolving __GraalVM__ __JS__/__polyglot__ libraries. 
+The root cause is believed to be related to classpath inconsistencies between Karate __1.4.x__ and fast evolving __GraalVM__ __JS__/__polyglot__ libraries.
 When multiple or mismatched __GraalJS__ artifacts are present, the __Karate__ ScenarioBridge may fail confused to properly expose __JS__ helper functions to the execution context.
 
 As a practical workaround, Java standard library one-liner equivalents were used instead:
@@ -749,8 +749,13 @@ python process_data.py --username john
 ### Operation LifeCycle Test
 
 
-Slightly more complex example
+Slightly more complex example: added `/operation` opeeation to the application:
+
+![Operation operations](screenshots/swagger-ui.png)
+
 The App now supports __CRUD__, __REST__ style.
+
+One may create "something", query it, update it, delete it and confirm  it is no longer present.
 
 ![Operation Lifecycle](screenshots/operation-lifecycle.png)
 
@@ -759,6 +764,71 @@ each call is authenticated with an __JWT Token__ (there are also __SAAS__ tenant
 ![Token Flow](screenshots/token-flow.png)
 
 
+
+This will constitute the `operation_lifecycle` flow:
+
+It is shorter in __Karate__:
+
+```cucumber
+Feature: OperationController full lifecycle test (POST → PUT → GET → DELETE → GET)
+Background:
+  * url 'http://localhost:8085'
+  * def credentials = { username: 'test', password: 'test' }
+i * def what = 'something'
+Scenario: full lifecycle of an operation resource
+
+  # 1. Get JWT token
+  Given path 'auth/token'
+  And request credentials
+  When method post
+  Then status 200
+
+  # Basic token validation
+  And match response.access_token != null
+  And match response.token_type == 'Bearer'
+  And match response.expires_in == 3600
+
+  # Extract token
+  * def token = response.access_token
+
+  # 1. CREATE
+  Given path 'operation'
+  And header Authorization = 'Bearer ' + token
+  And request { what: "#(what)" }
+  When method post
+  Then status 201
+  And match $.id == '#string'
+
+  * def id = response.id
+  * print 'CREATED ID:', id
+
+  # 2. UPDATE
+  Given path 'operation', id
+  And request { what: 'updated' }
+  And header Authorization = 'Bearer ' + token
+  When method put
+  Then status 200
+
+  # 3. GET (verify update)
+  Given path 'operation', id
+  And header Authorization = 'Bearer ' + token
+  When method get
+  Then status 200
+  And match $.what == 'updated'
+
+  # 4. DELETE
+  Given path 'operation', id
+  And header Authorization = 'Bearer ' + token
+  When method delete
+  Then status 204
+
+  # 5. VERIFY DELETION
+  Given path 'operation', id
+  And header Authorization = 'Bearer ' + token
+  When method get
+  Then status 404
+```
+Run Karate test
 ```sh
 java -cp target\lib\* com.intuit.karate.cli.Main features\operation_lifecycle.feature
 
@@ -929,9 +999,71 @@ file:///C:/developer/sergueik/springboot_study/basic-karate-example3/target/kara
 ===================================================================
 ```
 ### Python
+Convert the __Karate__ `feature` into Python class using just `requests`
+shown below (partially)
+
+
+```python
+    def run(self, what: str = 'hello') -> Dict[str, Any]:
+
+        self._get_token()
+
+        create_resp = requests.post(
+            f"{self.base_url}/operation",
+            headers=self._headers(),
+            json={'what': what}
+        )
+        create_resp.raise_for_status()
+        op_id = create_resp.json()['id']
+
+        requests.put(
+            f"{self.base_url}/operation/{op_id}",
+            headers=self._headers(),
+            json={'what': 'updated'}
+        ).raise_for_status()
+
+        get_resp = requests.get(
+            f"{self.base_url}/operation/{op_id}",
+            headers=self._headers()
+        )
+        get_data = get_resp.json()
+
+        delete_status = requests.delete(
+            f"{self.base_url}/operation/{op_id}",
+            headers=self._headers()
+        ).status_code
+
+        final_get = requests.get(
+            f"{self.base_url}/operation/{op_id}",
+            headers=self._headers()
+        )
+
+        return {
+            'id': op_id,
+            'created': True,
+            'updated': True,
+            'get_after_update': get_data,
+            'delete_status': delete_status,
+            'exists_after_delete': final_get.status_code != 404
+        }
+
+
+CONFIG = {
+    'base_url': 'http://localhost:8085',
+    'credentials': {
+        'username': 'test',
+        'password': 'test'
+    }
+}
+
+```
+and run
+
 ```sh
 python operation_lifecycle.py
 ```
+this will print the summary if the execution was successful:
+
 ```text
 {
   "id": "043c990d-a3a2-4735-b613-eb1140856d24",
@@ -949,10 +1081,29 @@ python operation_lifecycle.py
 ### MCP Server/Client
 
 
-Integrate the `operation_lifecycle.py` into `mcp_server.py` as module
+Integrate the `operation_lifecycle.py` into __MCP Server__ `mcp_server.py` as module
+
+```python
+from operation_lifecycle import OperationLifecycle
+
+def run_operation_lifecycle(args):
+    what = args.get('what', 'hello')
+
+    operation_lifecycle = OperationLifecycle(CONFIG)
+
+    return operation_lifecycle.run(what=what)
+
+TOOLS = {
+    'operation_lifecycle': {
+        'description': 'Execute full CRUD lifecycle',
+        'handler': run_operation_lifecycle
+    }
+}
+```
+
 Verify syntax
 ```sh
-python -m py_compile  mcp_server.py
+python -m py_compile mcp_server.py
 ```
 Run Application
 ```sh
@@ -964,12 +1115,13 @@ Run server
 python mcp_server.py
 ```
 Confirm "Do you want public and private networks to access this app?" Windows Firewall dialog
-run client
+
+run Client (all that may be on separate Docker nodes)
 
 ```sh
 python mcp_client.py --method operation_lifecycle
 ```
-the client output will be a little verbose, because the client will initialize the connection and list the available tools first:
+the client output may look a little verbose, because the client will initialize the connection and list the available tools first:
 
 ```text
 2026-04-26 18:13:07,580 | INFO | SEND [initialize] id=1 payload={'jsonrpc': '2.0', 'id': 1, 'method': 'initialize'}
@@ -988,5 +1140,6 @@ The most important message exchange is the last one:
 2026-04-26 18:13:07,629 | INFO | RECV id=3 time=44.82ms response={'jsonrpc': '2.0', 'id': 3, 'result': {'content': {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'created': True, 'updated': True, 'get_after_update': {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'what': 'updated'}, 'delete_status': 204, 'exists_after_delete': False}}}
 2026-04-26 18:13:07,630 | INFO | operation_lifecycle response content: {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'created': True, 'updated': True, 'get_after_update': {'id': '28ba1fa5-5dac-4522-9d05-f8a0f27c8cfb', 'what': 'updated'}, 'delete_status': 204, 'exists_after_delete': False}
 ```
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

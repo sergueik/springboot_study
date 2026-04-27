@@ -17,8 +17,10 @@ import example.service.TokenService;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import io.swagger.v3.oas.annotations.Hidden;
 
 @RestController
+
 @RequestMapping("/auth")
 public class TokenController {
 
@@ -33,6 +35,7 @@ public class TokenController {
 	@Value("${example.password}")
 	private String password;
 
+	@Hidden
 	@RequestMapping(method = RequestMethod.POST, value = "/token", produces = { MediaType.APPLICATION_JSON_VALUE })
 
 	public ResponseEntity<?> token(@RequestBody TokenRequest request) {
