@@ -1,0 +1,34 @@
+base_url: http://localhost:8085
+
+credentials:
+  username: test
+  password: test
+
+workflow:
+  - name: auth
+    action: token
+    endpoint: /auth/token
+    save_as: token
+
+  - name: create
+    action: post
+    endpoint: /operation
+    headers:
+      Authorization: "Bearer ${token}"
+    body:
+      what: yaml-driven
+    save_as: created
+
+  - name: update
+    action: put
+    endpoint: /operation/${created.id}
+    body:
+      what: updated
+
+  - name: get
+    action: get
+    endpoint: /operation/${created.id}
+
+  - name: delete
+    action: delete
+    endpoint: /operation/${created.id}

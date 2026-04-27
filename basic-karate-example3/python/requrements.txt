@@ -1,1 +1,13 @@
+# HTTP client
+# NOTE: semantic
 requests>=2.31.0,<3.0.0
+
+# YAML parsing (workflow engine)
+PyYAML>=6.0
+
+# JWT handling (you already use jjwt in Java; this is Python side only if needed later)
+# pyjwt>=2.8.0
+
+# Optional: if you later add schema validation for YAML workflows
+# pydantic>=2.0
+
