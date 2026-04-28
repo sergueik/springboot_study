@@ -1,3 +1,4 @@
+:
 
 
  Docker hub [docker-wine](https://hub.docker.com/r/scottyhardy/docker-wine/) and [repository](https://github.com/scottyhardy/docker-wine)
@@ -90,6 +91,9 @@ sergueik@sergueik47:~/src/springboot_study/basic-wine-ndp$
 ### Usage
 
 ```sh
+docker build -f Dockerfile  -t basic-wine-ndp .
+```
+```sh
 docker images basic-wine-ndp:latest
 ```
                                                             i Info →   U  In Use
@@ -97,3 +101,97 @@ docker images basic-wine-ndp:latest
 IMAGE                   ID             DISK USAGE   CONTENT SIZE   EXTRA
 basic-wine-ndp:latest   0b0303f84ee4       3.52GB             0B
 ```
+```sh
+docker run --name basic-wine-ndp -it basic-wine-ndp sh
+```
+```sh
+docker cp . basic-wine-ndp:/tmp
+```
+in container
+```sh
+cd /tmp
+# wine MiniHttpdConsole.exe
+```
+```text
+error: XDG_RUNTIME_DIR not set in the environment.
+Server: MiniHttpd/1.2.0.19439
+CLR: 4.0.30319.17929
+Server running at http://dc87e98c210f:9091/
+
+Main Menu
+---------
+?       Show menu items
+u       Show server status
+a       Toggle auto start server on load (True)
+s       Stop server
+b       Browse file tree
+r       Toggle root folder type (VirtualDirectory)
+t       Set root path (None)
+i       Toggle index page style (IndexPage)
+n       Set host name (dc87e98c210f)
+p       Set port (9091)
+h       Help
+ls      Log to screen (True)
+lf      Log to file (False)
+lc      Log connections (False)
+lr      Log requests (False)
+w       Save settings
+wq      Save settings and quit
+q!      Discard changes and quit
+Selection: u
+
+MiniHttpd
+---------
+Running
+Server URL: http://dc87e98c210f:9091/
+Root type: VirtualDirectory
+Auto start: True
+Index page: IndexPage
+Log to screen: True
+Log to file: False
+Log connections: False
+Log requests: False
+
+Selection:
+```
+```sh
+docker exec -it basic-wine-ndp sh
+```
+in container
+```sh
+apt-get install net-tools
+apt-get install curl
+```
+```sh
+netstat -ant
+```
+```text
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 0.0.0.0:9091            0.0.0.0:*               LISTEN
+tcp        0      0 172.17.0.2:55318        151.101.130.132:80      TIME_WAIT
+```
+```sh
+curl http://localhost:9091
+```
+```text
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<head><title>Index of /</title></head>
+<body>
+<h2>Index of /</h2>
+<hr>MiniHttpd/1.2.0.19439
+</body></html>
+</body>
+</html>
+```
+```sh
+ curl http://localhost:9091/xx
+```
+```text
+<html><head><title>404 Not Found</title></head>
+<body><h2>404 Not Found</h2>
+<hr>MiniHttpd/1.2.0.19439
+</body></html>
+```
+
