@@ -5,6 +5,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class RandomFailingApiController {
+	private static final Logger log = LoggerFactory.getLogger(RandomFailingApiController.class);
+
 	@Value("${example.codes:429}")
 	private String failCodesProperty;
 
@@ -38,13 +42,13 @@ public class RandomFailingApiController {
 			HttpStatus status = failStatuses.get((currentAttempt - 1) % failStatuses.size());
 
 			if (status == HttpStatus.TOO_MANY_REQUESTS) {
-				System.out.println("WARNING: throttled request attempt " + currentAttempt);
+				log.warn("throttled request attempt: {}", currentAttempt);
 			}
 
 			if (status == HttpStatus.FOUND) {
 				return ResponseEntity.status(HttpStatus.FOUND).header("Location", "/api/hello").build();
 			}
-
+			log.info("simulated {} at attempt {}", status, currentAttempt);
 			return ResponseEntity.status(status).body("simulated " + status + " at attempt " + currentAttempt);
 		}
 

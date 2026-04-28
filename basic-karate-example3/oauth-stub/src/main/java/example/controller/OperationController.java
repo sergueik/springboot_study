@@ -21,17 +21,13 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import example.dto.OperationSerializer;
+// NOTE: poor class naming - collides with "io.swagger.v3.oas.annotations.Operation"
 // import example.dto.Operation;
 
 @RestController
@@ -57,6 +53,7 @@ public class OperationController {
 		log.info("created {}", gson.toJson(Map.of("id", id, "what", what)));
 
 		store.put(id, what);
+		log.info("returned {}", gson.toJson(Map.of("id", id)));
 		return ResponseEntity.status(201).body(Map.of("id", id));
 	}
 

@@ -723,6 +723,7 @@ mvn -DskipTests package
 java -Dexample.username=john -jar target\example.jwt-stub.jar
 ```
 ```sh
+pip install -r requrements.txt
 python process_data.py --username john
 ```
 ```txt
@@ -1232,6 +1233,7 @@ CONFIG = {
 and run
 
 ```sh
+pip install -r requrements.txt
 python operation_lifecycle.py
 ```
 this will print the summary if the execution was successful:

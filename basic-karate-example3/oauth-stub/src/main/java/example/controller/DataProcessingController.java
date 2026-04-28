@@ -7,6 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,9 +20,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.FieldNamingStrategy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 @RestController
 @RequestMapping("/api")
 public class DataProcessingController {
+	private static final Logger log = LoggerFactory.getLogger(DataProcessingController.class);
+	private Gson gson = new Gson();
+
 	@PostMapping(value = "/processdata", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> processJson(@RequestBody Map<String, Object> payload,
 			Authentication auth) {
@@ -36,6 +45,7 @@ public class DataProcessingController {
 		response.put("user", username);
 		response.put("payload", Map.of("originalWhat", what, "normalizedWhat", what.toUpperCase(), "length",
 				what.length(), "isEmpty", what.isEmpty()));
+		log.info("response {}", gson.toJson(response));
 
 		return ResponseEntity.ok(response);
 	}
