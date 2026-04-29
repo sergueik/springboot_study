@@ -3,20 +3,52 @@
 this directory contains some checks of the [alpinte python chromedriver](https://hub.docker.com/r/joyzoursky/python-chromedriver/) Docker container.
 
 NOTE: the author's `Dockerfile` does not reflect the switch to glibc he is made with his images:
+
+
 ### Usage
-pull the image
+
+
+```sh
+IMAGE=basic-selenium-python
+docker build -f Dockerfile -t $IMAGE .
+```
+unfortunatrly is observed random error:
+```txt
+13/17) Installing nss (3.68.4-r0)
+ERROR: nss-3.68.4-r0: temporary error (try again later)
+```
+will have to rerun: Apine APK transient download / repository / mirror issue _happen_
+
+run the test script launching Chromium headless and examining the version  via [CDP]() call:
+```sh
+IMAGE=basic-selenium-python
+docker run  --shm-size=2g --cap-add=SYS_ADMIN -w /usr/workspace -v $(pwd):/usr/workspace -it $IMAGE sh
+```
+in the container prompt `/usr/workspace #`, proceed with
+
+```sh
+python chromium_selenium4_test.py
+```
+```text
+Browser.getVersion:
+dict_keys(['jsVersion', 'product', 'protocolVersion', 'revision', 'userAgent'])
+jsVersion: 14.7.173.20
+product: Chrome/147.0.7727.116
+revision: @dbcf1b1bfb506cc580859bcb5ff9460a8443af90
+userAgent: "Chromium 95.0.4638.69"
+```
+Alternatively pull the image (note: 5 year old - may be causing conflicts with Python imports):
+
 ```sh
 docker pull joyzoursky/python-chromedriver:3.9-alpine-selenium
 ```
-
-run the test script launching Chromium headless and examining the version  via [CDP]() call:
 ```sh
 docker run -w /usr/workspace -v $(pwd):/usr/workspace -it joyzoursky/python-chromedriver:3.9-alpine-selenium sh
 ```
 in the container prompt `/usr/workspace #`, proceed with
 
 ```sh
-python chromium_ex.py
+python chromium_selenium3_test.py
 ```
 this will print (the *version* may vary)
 ```text

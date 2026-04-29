@@ -1,0 +1,39 @@
+FROM python:3.8.2-alpine
+ARG alpine_release="3.14"
+
+RUN echo "http://dl-4.alpinelinux.org/alpine/v${alpine_release}/main" >> /etc/apk/repositories && \
+    echo "http://dl-4.alpinelinux.org/alpine/v${alpine_release}/community" >> /etc/apk/repositories
+
+RUN apk update
+
+RUN apk add 
+# The command '/bin/sh -c apk add chromium chromium-chromedriver' returned a non-zero code: 1
+#
+# https://github.com/joyzoursky/docker-python-chromedriver/blob/master/deprecated/py3.6-xvfb-selenium/Dockerfile
+
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.edge.kernel.org/' /etc/apk/repositories
+RUN apk update && apk add --no-cache nss freetype fontconfig
+
+RUN apk update && \
+    apk add --no-cache \
+    freetype \
+    fontconfig \
+    ttf-dejavu \
+    freetype \
+    fontconfig \
+    harfbuzz \
+    nss \
+    alsa-lib    
+
+RUN apk update && \
+
+    apk add --no-cache \
+        chromium chromium-chromedriver xvfb x11vnc  fluxbox  xdpyinfo  st  vim  terminus-font  build-base  libffi-dev \
+	&& rm -vrf /var/cache/apk/*
+ENV DISPLAY=:99
+ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
+
+RUN pip install --upgrade pip
+
+RUN pip install selenium
+
