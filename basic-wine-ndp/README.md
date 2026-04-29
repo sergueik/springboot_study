@@ -1,118 +1,67 @@
-:
-
-
- Docker hub [docker-wine](https://hub.docker.com/r/scottyhardy/docker-wine/) and [repository](https://github.com/scottyhardy/docker-wine)
- by Scotty Hardy, with Wine и Winetricks. 
- Can be configured to run headless (RDP server mode) - based on ubuntu (through [scottyhardy/docker-remote-desktop](https://github.com/scottyhardy/docker-remote-desktop/blob/master/Dockerfile)) 
- NOTE: 1.2GB heavy packed image.
-
-The better alternative is to start with docker image with wine and .net included
-  * [chambm/wine-dotnet:wine7-net4.8-x64](https://hub.docker.com/layers/chambm/wine-dotnet/wine7-net4.8-x64/images/sha256-289fa007f8fe6d2fe34a5774c52ad0816208036dfe53a1aa3fc5a80042901983)
-  * [fireant456/hellion-wine-dotnet452](https://hub.docker.com/layers/fireant456/hellion-wine-dotnet452/pterodactyl/images/sha256-eaa1d8263e5c3e324d6d161382b6e7be42a6b56375d1a32ecdb38b3c7b346529)
-  * [nyamisty/docker-wine-dotnet](https://hub.docker.com/layers/nyamisty/docker-wine-dotnet/win32-stable-9.0/images/sha256-6aaa91819faac820db7ac9362e533492abcda62e2ce8fa2f891914631555169a) - both 32 and 64 bit available (over __1.9 GB__)
-  * [wine-dotnet/stable-45-vnc](https://hub.docker.com/layers/shiftinv/wine-dotnet/stable-45-vnc/images/sha256-2dbf61b8636142ad45ef23ebbb41747912f88f9543e3d310c9b80772cc5355e1P) 
-  * [shiftinv/wine-dotnet](https://hub.docker.com/layers/shiftinv/wine-dotnet/stable-45-vnc/images/sha256-2dbf61b8636142ad45ef23ebbb41747912f88f9543e3d310c9b80772cc5355e1) - ideal, wine-dotnet `stable-45-vnc` tag
-  
-yet another alternative is use one of the __WIX Toolset__ images
-
-
-```sh
-docker pull shiftinv/wine-dotnet:stable-45-vnc
-docker pull nyamisty/docker-wine-dotnet:win32-stable-9.0
-
-```
-```
-WINEPREFIX=~/.wine_dotnet WINEARCH=win32 winetricks -q dotnet48
-```
-
-.Net Framework Wine [compatibility matrix](https://appdb.winehq.org/objectManager.php?sClass=application&iId=2586) 
-.Net Framework 4.6.1 [ Offline installer](https://download.microsoft.com/download/E/4/1/E4173890-A24A-4936-9FC9-AF930FE3FA40/NDP461-KB3102436-x86-x64-AllOS-ENU.exe)  (NOTE: 64.5 MB)
-
-
-Alternatively
-```sh
-docker pull marinobantli/alpine-wine:latest
-```
-
-```
-docker run -it --name 'basic-wine-ndp' marinobantli/alpine-wine:latest sh 
-```
-ignore the messages from startup
-```text
-Starting Xvnc...
-
-Xvnc TigerVNC 1.13.1 - built Jun  5 2023 20:51:54
-Copyright (C) 1999-2022 TigerVNC Team and many others (see README.rst)
-See https://www.tigervnc.org for information on TigerVNC.
-Underlying X server release 12101007
-
-
-Sun Apr 26 17:42:22 2026
- vncext:      VNC extension running!
- vncext:      Listening for VNC connections on all interface(s), port 5900
- vncext:      created VNC server for screen 0
-The XKEYBOARD keymap compiler (xkbcomp) reports:
-> Warning:          Could not resolve keysym XF86CameraAccessEnable
-> Warning:          Could not resolve keysym XF86CameraAccessDisable
-> Warning:          Could not resolve keysym XF86CameraAccessToggle
-> Warning:          Could not resolve keysym XF86NextElement
-> Warning:          Could not resolve keysym XF86PreviousElement
-> Warning:          Could not resolve keysym XF86AutopilotEngageToggle
-> Warning:          Could not resolve keysym XF86MarkWaypoint
-> Warning:          Could not resolve keysym XF86Sos
-> Warning:          Could not resolve keysym XF86NavChart
-> Warning:          Could not resolve keysym XF86FishingChart
-> Warning:          Could not resolve keysym XF86SingleRangeRadar
-> Warning:          Could not resolve keysym XF86DualRangeRadar
-> Warning:          Could not resolve keysym XF86RadarOverlay
-> Warning:          Could not resolve keysym XF86TraditionalSonar
-> Warning:          Could not resolve keysym XF86ClearvuSonar
-> Warning:          Could not resolve keysym XF86SidevuSonar
-> Warning:          Could not resolve keysym XF86NavInfo
-Errors from xkbcomp are not fatal to the X server
-[mi] mieq: warning: overriding existing handler 0 with 0x55b2a51f6a31 for event 2
-[mi] mieq: warning: overriding existing handler 0 with 0x55b2a51f6a31 for event 3
-Starting window manager...
-Ready.
-Processing specified CMD...
-/ # Obt-Message: Xinerama extension is not present on the server
-/usr/libexec/openbox-autostart: line 34: /usr/libexec/openbox-xdg-autostart: not found
-
-
-```
-
-```sh
-
-    winetricks --unattended dotnet45
-```
-NOTE: [O[DEPRECATION NOTICE] Docker Image Format v1 and Docker Image manifest version 2, schema 1 support is disabled by default and will be removed in an upcoming release. Suggest the author of docker.io/boggart/alpine-apk-static-32bit:latest to upgrade the image to the OCI Format or Docker Image manifest v2, schema 2. More information at https://docs.docker.com/go/deprecated-image-specs/
-sergueik@sergueik47:~/src/springboot_study/basic-wine-ndp$ 
-
 ### Usage
 
 ```sh
-export IMAGE=basic-wine-ndp
-docker build -f Dockerfile -t $IMAGE .
+docker pull gaestraidr/winetricks-alpine
 ```
+
+```
+docker run -it --name 'basic-wine-ndp' gaestraidr/winetricks-alpine sh 
+```
+in the shell run
 ```sh
-docker images $IMAGE:latest
+winetricks --unattended dotnet45
+```
+ignore the warning 
+```text
+warning: taskset/cpuset not available on your platform!
+```
+> NOTE the app appears to be running forever:
+```text
+Preparing: C:\af69ea22571ec65635e2b6f24e944a6a\netfx_Full.mzz...
+exit status 194 - normal, user selected 'restart later'
+Using native override for following DLLs: mscoree
+Executing wine regedit /S C:\windows\Temp\_dotnet45\override-dll.reg
+------------------------------------------------------
+Setting Windows version to 2003, otherwise applications using .NET 4.5 will subtly fail
+------------------------------------------------------
+The operation completed successfully
+Setting Windows version to win2k3
+Executing wine regedit /S C:\windows\Temp\_dotnet45\set-winver.reg
+------------------------------------------------------
+Running /usr/bin/wineserver -w. This will hang until all wine processes in prefix=/home/container/.wine terminate
+------------------------------------------------------
+
+```
+
+
+```sh
+docker images ls 
+```
+```text
+gaestraidr/winetricks-alpine:latest
+                                6629b44292cb        864MB             0B 
+```
+```
+docker ps
+```
+```text
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS     NAMES
+0ea3fdacb3c8   19e669e6ac2d   "/bin/sh -c 'winetri…"   11 minutes ago   Up 11 minutes             nifty_shaw
+```
+copy binaries
 ```
 pushd Server\bin\Debug
-scp * sergueik@192.168.12.151:src/springboot_study/basic-wine-ndp/app```cmd
-```
-                                                            i Info →   U  In Use
-```text
-IMAGE                   ID             DISK USAGE   CONTENT SIZE   EXTRA
-basic-wine-ndp:latest   0b0303f84ee4       3.52GB             0B
+scp * sergueik@192.168.12.151:src/springboot_study/basic-wine-ndp/app
 ```
 ```sh
-export IMAGE=basic-wine-ndp
-export NAME=basic-wine-ndp
-docker run --name $NAME -it $IMAGE sh
+IMAGE='gaestraidr/winetricks-alpine'
+ID=$(docker container ls |grep $IMAGE | awk '{print $1'})
 ```
 ```sh
-export NAME=basic-wine-ndp
-docker cp ./app $NAME:/tmp
+docker cp ./app $ID:/tmp
+```
+```
+docker exec -it $ID sh
 ```
 in container shell
 ```sh
@@ -126,8 +75,9 @@ Sever is running at http://0.0.0.0:4050
 
 
 ```cmd
-NAME=basic-wine-ndp
-docker exec -it $NAME netstat -ant
+IMAGE='gaestraidr/winetricks-alpine'
+ID=$(docker container ls |grep $IMAGE | awk '{print $1'})
+docker exec -it $ID netstat -ant
 ```
 ```text
 Active Internet connections (servers and established)
@@ -135,15 +85,31 @@ Proto Recv-Q Send-Q Local Address           Foreign Address         State
 tcp        0      0 0.0.0.0:4050            0.0.0.0:*               LISTEN`:w
 ```
 ```sh
-NAME=basic-wine-ndp
-docker exec -it $NAME curl -s -H 'Content-Type: application/json' http://localhost:4050/data.json
+IMAGE='gaestraidr/winetricks-alpine'
+ID=$(docker container ls |grep $IMAGE | awk '{print $1'})
+docker exec -it $ID curl -s -H 'Content-Type: application/json' http://localhost:4050/data.json
 ```
 ```text
+<html><body><h1>404 - Not Found</h1></body></html>
+```
+```sh
+echo '{"foo": "bar"}' > data.json
+```
+```sh
+docker cp data.json $ID:/tmp/app
+```
+```text
+Successfully copied 2.05kB to c9df5669806f:/tmp/app
+```
+```sh
+docker exec -it $ID curl -s -H 'Content-Type: application/json' http://localhost:4050/data.json
+```
+```json
 {"foo": "bar"}
 ```
 ### Cleanup
 ```sh
-docker stop $NAME
+docker stop $ID
 docker container prune -f
 docker image rm $IMAGE
 ```
@@ -241,4 +207,29 @@ curl http://localhost:9091
 <hr>MiniHttpd/1.2.0.19439
 </body></html>
 ```
+
+
+### Related Info
+```
+WINEPREFIX=~/.wine_dotnet WINEARCH=win32 winetricks -q dotnet48
+```
+
+.Net Framework Wine [compatibility matrix](https://appdb.winehq.org/objectManager.php?sClass=application&iId=2586) 
+.Net Framework 4.6.1 [ Offline installer](https://download.microsoft.com/download/E/4/1/E4173890-A24A-4936-9FC9-AF930FE3FA40/NDP461-KB3102436-x86-x64-AllOS-ENU.exe)  (NOTE: 64.5 MB)
+
+### See Also
+
+ Docker hub [docker-wine](https://hub.docker.com/r/scottyhardy/docker-wine/) and [repository](https://github.com/scottyhardy/docker-wine)
+ by Scotty Hardy, with Wine и Winetricks. 
+ Can be configured to run headless (RDP server mode) - based on ubuntu (through [scottyhardy/docker-remote-desktop](https://github.com/scottyhardy/docker-remote-desktop/blob/master/Dockerfile)) 
+ NOTE: 1.2GB heavy packed image.
+
+The better alternative is to start with docker image with wine and .net included
+  * [chambm/wine-dotnet:wine7-net4.8-x64](https://hub.docker.com/layers/chambm/wine-dotnet/wine7-net4.8-x64/images/sha256-289fa007f8fe6d2fe34a5774c52ad0816208036dfe53a1aa3fc5a80042901983)
+  * [fireant456/hellion-wine-dotnet452](https://hub.docker.com/layers/fireant456/hellion-wine-dotnet452/pterodactyl/images/sha256-eaa1d8263e5c3e324d6d161382b6e7be42a6b56375d1a32ecdb38b3c7b346529)
+  * [nyamisty/docker-wine-dotnet](https://hub.docker.com/layers/nyamisty/docker-wine-dotnet/win32-stable-9.0/images/sha256-6aaa91819faac820db7ac9362e533492abcda62e2ce8fa2f891914631555169a) - both 32 and 64 bit available (over __1.9 GB__)
+  * [wine-dotnet/stable-45-vnc](https://hub.docker.com/layers/shiftinv/wine-dotnet/stable-45-vnc/images/sha256-2dbf61b8636142ad45ef23ebbb41747912f88f9543e3d310c9b80772cc5355e1P) 
+  * [shiftinv/wine-dotnet](https://hub.docker.com/layers/shiftinv/wine-dotnet/stable-45-vnc/images/sha256-2dbf61b8636142ad45ef23ebbb41747912f88f9543e3d310c9b80772cc5355e1) - ideal, wine-dotnet `stable-45-vnc` tag
+  
+yet another alternative is use one of the __WIX Toolset__ images
 
