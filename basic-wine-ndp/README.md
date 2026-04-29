@@ -91,10 +91,14 @@ sergueik@sergueik47:~/src/springboot_study/basic-wine-ndp$
 ### Usage
 
 ```sh
-docker build -f Dockerfile  -t basic-wine-ndp .
+export IMAGE=basic-wine-ndp
+docker build -f Dockerfile -t $IMAGE .
 ```
 ```sh
-docker images basic-wine-ndp:latest
+docker images $IMAGE:latest
+```
+pushd Server\bin\Debug
+scp * sergueik@192.168.12.151:src/springboot_study/basic-wine-ndp/app```cmd
 ```
                                                             i Info →   U  In Use
 ```text
@@ -102,15 +106,58 @@ IMAGE                   ID             DISK USAGE   CONTENT SIZE   EXTRA
 basic-wine-ndp:latest   0b0303f84ee4       3.52GB             0B
 ```
 ```sh
-docker run --name basic-wine-ndp -it basic-wine-ndp sh
+export IMAGE=basic-wine-ndp
+export NAME=basic-wine-ndp
+docker run --name $NAME -it $IMAGE sh
 ```
 ```sh
-docker cp . basic-wine-ndp:/tmp
+export NAME=basic-wine-ndp
+docker cp ./app $NAME:/tmp
 ```
-in container
+in container shell
 ```sh
-cd /tmp
-# wine MiniHttpdConsole.exe
+cd /tmp/app
+wine HttpServer.exe
+```
+this will reply with 
+```text
+Sever is running at http://0.0.0.0:4050
+```
+
+
+```cmd
+NAME=basic-wine-ndp
+docker exec -it $NAME netstat -ant
+```
+```text
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State
+tcp        0      0 0.0.0.0:4050            0.0.0.0:*               LISTEN`:w
+```
+```sh
+NAME=basic-wine-ndp
+docker exec -it $NAME curl -s -H 'Content-Type: application/json' http://localhost:4050/data.json
+```
+```text
+{"foo": "bar"}
+```
+### Cleanup
+```sh
+docker stop $NAME
+docker container prune -f
+docker image rm $IMAGE
+```
+
+### Alternative Application
+`simple-minihttpserver`
+```cmd
+pushd Tests\bin\Debug
+scp * sergueik@192.168.12.151:src/springboot_study/basic-wine-ndp/app```cmd
+```
+in container 
+
+```sn
+wine MiniHttpdConsole.exe
 ```
 ```text
 error: XDG_RUNTIME_DIR not set in the environment.
