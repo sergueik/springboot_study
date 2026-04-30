@@ -865,7 +865,7 @@ A set comprehension like:
 directly builds a set by iterating over the input, and is eager, not lazy.
 
 Only explicit generator expressions like `(x for x in y)` are lazy.
-### See Also 
+### See Also
 
   * https://github.com/forrestchang/andrej-karpathy-skills
   * [avaialble MCP SDKs](https://modelcontextprotocol.io/docs/sdk#available-sdks)
@@ -873,5 +873,25 @@ Only explicit generator expressions like `(x for x in y)` are lazy.
   * [MCP Inspector CLI](https://github.com/granludo/mcp-inspector-cli) contract limited to `stdio`
   * [Contract Inspector MCP project](https://github.com/ACaiSec/ContractInfoMCP/tree/main)
   * [MCP spec](https://modelcontextprotocol.io/specification/2025-06-18)
-  * [MCP basic](https://habr.com/ru/articles/960538/)( in Russian )
- 
+  * [MCP Client basic](https://habr.com/ru/articles/960538/) - relies on [fastmcp](https://gofastmcp.com/servers/tools) Python module, confuses server and client roles a little, implements `http` (`async`-heavy) variant. recommends involving [Pydantic](https://pydantic.dev/docs/validation/latest/get-started/) for the purpose it is often used with [FastAPI](https://fastapi.tiangolo.com/) to generate [OpenAPI](https://swagger.io/product/studio/) (Swagger) documentation more often than straight [openapi python client](https://pypi.org/project/openapi-python-client/) early  ( in Russian ) and [repository](https://github.com/Alexander-Panov/finam-mcp)
+  * [basic MCP Client](https://habr.com/ru/articles/980542/) using [FastMCP](https://gofastmcp.com/getting-started/welcome) ( a high-level Python framework) and [LangChain MCP Adapters](https://github.com/langchain-ai/langchain-mcp-adapters) and [CodeAct](https://jumpcloud.com/it-index/what-is-the-codeact-framework) - actually describes an MCP enabled chatbot (in Russian) and [repository](https://github.com/Alexander-Panov/fin-ai-agent)
+  * [CodeAct for c#](https://learn.microsoft.com/en-us/agent-framework/agents/code_act?pivots=programming-language-csharp)
+  * [About CodeAct](https://machinelearning.apple.com/research/codeact)
+  * [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector) is often compared with [Swagger UI](https://www.geeksforgeeks.org/python/swagger-ui/)
+  * [MCP Host Fundaments](https://habr.com/ru/articles/899088/) (in Russian)
+  * __Pydantyc__ [DataModel Code Generator](https://pydantic.dev/docs/validation/latest/integrations/dev-tools/datamodel_code_generator/) to write pydantic [models](https://pydantic.dev/docs/validation/latest/concepts/models/) from:
+   + OpenAPI 3 (YAML/JSON)
+   + JSON Schema
+   + JSON/YAML/CSV Data (which will be converted to JSON Schema)
+   + Python dictionary (which will be converted to JSON Schema)
+   + GraphQL schema
+  * [Pydantic: A Guide with Examples](https://www.datacamp.com/tutorial/pydantic)
+  * Python Pydantic [Tutorial](https://www.youtube.com/watch?v=M81pfi64eeM):Complete  Data Validation Course (Used by FastAPI)
+  * Pydantic [Tutorial](https://www.youtube.com/watch?v=XIdQ6gO3Anc) • Solving Python's Biggest Problem
+  * Python FastAPI [Tutorial](https://www.youtube.com/watch?v=iWS9ogMPOI0&pp=ugUEEgJlbg%3D%3D): Build a REST API in 15 Minute
+
+
+
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
