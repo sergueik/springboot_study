@@ -3,24 +3,23 @@
 # based on answering the topic https://qna.habr.com/q/732307
 # see also: http://www.programmersought.com/article/34791573956/
 
+
 import getopt
 import json, base64
+import re
+import sys
 from os import getenv
 from os.path import exists
-import re
+from selenium.common.exceptions import TimeoutException
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support import expected_conditions
-from selenium.webdriver.chrome.service import Service
-import sys
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 class Wait:
     def __init__(self, driver: WebDriver, timeout: int = 10):
@@ -95,12 +94,9 @@ url = 'https://www.wikipedia.org/'
 if debug:
   print('Loading url: "{}"'.format(url), file = sys.stderr)
 driver.get(url)
-print(driver.title)
-print(driver.current_url)
-print(driver.page_source[:2000])
 wait = Wait(driver)
 selector =  '#www-wikipedia-org > main img.central-featured-logo'
-logo = wait.for_element(By.CSS_SELECTOR, selector) 
+logo = wait.for_element(By.CSS_SELECTOR, selector)
 
 logo = driver.find_element(By.CSS_SELECTOR, selector)
 params = {'clip': {
@@ -112,18 +108,13 @@ params = {'clip': {
 }}
 result = element_screenshot(driver, params)
 output_file = 'wikipedia_screenshot.png'
-try:
-  with open(output_file, 'wb') as f:
-    f.write(result)
-  # NOTE: this existed for a while
-  # https://www.geeksforgeeks.org/screenshot_as_png-element-method-selenium-python/
-except TypeError as e:
-  # TypeError: a bytes-like object is required, not 'dict'
-  print('exception (ignored): {e}')
+with open(output_file, 'wb') as f:
+  data = base64.b64decode(result['data'])
+  f.write(data)
+
+# NOTE: this existed for a while: https://www.geeksforgeeks.org/screenshot_as_png-element-method-selenium-python/
 with open(file = f'wikipedia_screenshot_2.png', mode = 'wb') as f:
   f.write(logo.screenshot_as_png)
 
 driver.close()
 driver.quit()
-
-

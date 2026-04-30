@@ -102,10 +102,10 @@ try:
   # print the subset of result keys
   for data in result_keys:
     print('{}: {}'.format(data, result[data]))
- 
+
 except Exception as e:
   print(e)
- 
+
 finally:
   driver.close()
   driver.quit()
