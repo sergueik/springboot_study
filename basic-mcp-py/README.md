@@ -868,3 +868,10 @@ Only explicit generator expressions like `(x for x in y)` are lazy.
 ### See Also 
 
   * https://github.com/forrestchang/andrej-karpathy-skills
+  * [avaialble MCP SDKs](https://modelcontextprotocol.io/docs/sdk#available-sdks)
+  * [FastMCP](https://gofastmcp.com/getting-started/welcome) Python package. Has similar roots with [FastAPI](https://github.com/fastapi/fastapi)
+  * [MCP Inspector CLI](https://github.com/granludo/mcp-inspector-cli) contract limited to `stdio`
+  * [Contract Inspector MCP project](https://github.com/ACaiSec/ContractInfoMCP/tree/main)
+  * [MCP spec](https://modelcontextprotocol.io/specification/2025-06-18)
+  * [MCP basic](https://habr.com/ru/articles/960538/)( in Russian )
+ 

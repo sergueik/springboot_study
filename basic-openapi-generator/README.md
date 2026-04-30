@@ -8,6 +8,42 @@ The openapi-generator-maven-plugin is a build plugin hosted on Maven Central tha
 
 
 ![Project Source And Generated Files](screenshots/example.png)
+### Background
+
+__API-first__ is generally considered the more modern/default approach today, but __code-first__ is still perfectly valid
+
+Canonical definition of __API-first__ is define the contract (e.g., an __OpenAPI__ Specification file) *before* writing implementation code (a.k.a. __YAML__ as a source of truth
+
+This
+
+
+  * Encourages contract-driven development
+  * Works well with microservices + distributed teams
+  * Enables early:
+   + mocking
+   + client SDK generation
+   + parallel frontend/backend work
+  * Produced by evolved tooling ecosystems like __Swagger__ / __OpenAPI Generator__
+  
+  * naturally supports long-lived APIs where backward compatibility matters
+
+
+The __Code-first__ definition is code (controllers, annotations) is written, and later one generates the OpenAPI spec from it.
+
+Reasons it still exists (and is doing well) include
+  * Somewhat faster for small/internal services
+  * Less upfront design overhead
+  * Fits natural in annotation rich frameworks like:
+    + __Spring Boot__
+    + __ASP.NET Core__ (all variants)
+
+is often of choice in
+  * Solo dev or small team
+  * Internal APIs with low external dependency
+  * Rapid/Early prototyping / experimentation
+  * If/When the API is tightly coupled to implementation anyway
+
+Most mature teams end up with a __hybrid__ approach. The assertion _**API-first** = more enterprise, **code-first** = outdated_ is not quite true
 
 ### Usage
 

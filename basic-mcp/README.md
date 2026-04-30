@@ -32,6 +32,9 @@ purely idiosyncratic:
 
 ### See Also 
   * [Model Context Protocol (MCP) with Spring AI in Minutes](https://www.youtube.com/watch?v=MarSC2dFA9g)
+  * [avaialble MCP SDKs](https://modelcontextprotocol.io/docs/sdk#available-sdks)
+  * [MCP spec](https://modelcontextprotocol.io/specification/2025-06-18)
+  * [MCP basic](https://habr.com/ru/articles/960538/)( in Russian )
 
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
