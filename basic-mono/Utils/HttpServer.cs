@@ -8,7 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Runtime.InteropServices;
 
-namespace HTTPServerLib
+namespace Utils
 {
 
     public class HttpServer : IServer

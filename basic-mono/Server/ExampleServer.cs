@@ -3,18 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HTTPServerLib;
+using Utils;
 using System.IO;
 
-namespace HttpServer
+namespace Program
 {
-    public class ExampleServer : HTTPServerLib.HttpServer
+    public class ExampleServer : Utils.HttpServer
     {
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        /// <param name="ipAddress">IP地址</param>
-        /// <param name="port">端口号</param>
         public ExampleServer(string ipAddress, int port)
             : base(ipAddress, port)
         {
@@ -23,20 +18,16 @@ namespace HttpServer
 
         public override void OnPost(HttpRequest request, HttpResponse response)
         {
-            //获取客户端传递的参数
             string data = request.Params == null ? "" : string.Join(";", request.Params.Select(x => x.Key + "=" + x.Value).ToArray());
 
-            //设置返回信息
             string content = string.Format("这是通过Post方式返回的数据:{0}", data);
 
-            //构造响应报文
             response.SetContent(content);
             response.Content_Encoding = "utf-8";
             response.StatusCode = "200";
             response.Content_Type = "text/html; charset=UTF-8";
             response.Headers["Server"] = "ExampleServer";
 
-            //发送响应
             response.Send();
         }
 
@@ -116,7 +107,7 @@ namespace HttpServer
             var filesList = ConvertPath(files);
 
             //构造HTML
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             builder.Append(string.Format("<html><head><title>{0}</title></head>", requestDirectory));
             builder.Append(string.Format("<body><h1>{0}</h1><br/><ul>{1}{2}</ul></body></html>",
                  requestURL, filesList, foldersList));

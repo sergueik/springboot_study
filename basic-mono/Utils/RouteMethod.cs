@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace HTTPServerLib
-{
-    public enum RouteMethod
-    {
+namespace Utils {
+    public enum RouteMethod {
         Get,
         Post
     }

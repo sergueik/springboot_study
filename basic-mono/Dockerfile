@@ -18,11 +18,9 @@ apt-get install -qqy mono-complete
 
 RUN cert-sync /etc/ssl/certs/ca-certificates.crt
 
-RUN mkdir /usr/nuget/
-ARG NUGET_VERSION=4.6.2
 ARG NUGET_VERSION=6.8.0
-
-RUN wget -O /usr/nuget/nuget.exe https://dist.nuget.org/win-x86-commandline/v${NUGET_VERSION}/nuget.exe 
+RUN mkdir /usr/nuget/ && \
+    wget -O /usr/nuget/nuget.exe https://dist.nuget.org/win-x86-commandline/v${NUGET_VERSION}/nuget.exe 
 ENV NUGET="/usr/nuget/nuget.exe"
 
 ARG RUNNER_VERSION=3.12.0
@@ -37,4 +35,5 @@ COPY Utils /WorkSpace/Utils/
 COPY basic-httpserver.sln /WorkSpace/
 
 RUN msbuild /p:Configuration=Release ./basic-httpserver.sln
-ENTRYPOINT ["mono", "Server/bin/Release/HttpServer.exe" ]
+WORKDIR /tmp
+ENTRYPOINT ["mono", "/WorkSpace/Server/bin/Release/HttpServer.exe" ]
