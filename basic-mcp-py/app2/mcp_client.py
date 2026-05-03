@@ -1,7 +1,9 @@
 import socket, os, socket, json, time, sys
 import logging
 import argparse
-import jsonschema # currently unused
+
+# import jsonschema # currently unused
+# comment unless run in container
 
 from common.protocol import encode, decode
 logging.basicConfig(
@@ -99,23 +101,24 @@ def main():
     mcp_client = MCPClient()
 
     print(mcp_client.send('initialize'))
+
     resp = mcp_client.send('tools/list')
 
     try:
         tools = validate_tools(resp)
-        log.info(f"Available tools: {[tool['name'] for tool in tools]}")
     except Exception as e:
         log.error(f"Tool discovery failed: {e}")
         return
     if method not in {tool['name'] for tool in tools }:
         log.error('Required tool method "{}" is NOT available — exiting'.format(method))
+        log.info(f"Available tools: {[tool['name'] for tool in tools]}")
         sys.exit(1)
 
     resp = mcp_client.send(
         'tools/call',
         {
             'name': method,
-            'arguments': {'text': 'hello from docker network'}
+            'arguments': {'text': 'hello from mcp client'}
         }
     )
     # NOTE: to avoid brittle indexing:
