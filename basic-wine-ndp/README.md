@@ -4,8 +4,8 @@
 docker pull gaestraidr/winetricks-alpine
 ```
 
-```
-docker run -it --name 'basic-wine-ndp' gaestraidr/winetricks-alpine sh 
+```sh
+docker run -p 4050:4050 -it --name 'basic-wine-ndp' gaestraidr/winetricks-alpine sh 
 ```
 in the shell run
 ```sh
@@ -30,7 +30,6 @@ Executing wine regedit /S C:\windows\Temp\_dotnet45\set-winver.reg
 ------------------------------------------------------
 Running /usr/bin/wineserver -w. This will hang until all wine processes in prefix=/home/container/.wine terminate
 ------------------------------------------------------
-
 ```
 
 
@@ -48,11 +47,12 @@ docker ps
 CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS     NAMES
 0ea3fdacb3c8   19e669e6ac2d   "/bin/sh -c 'winetri…"   11 minutes ago   Up 11 minutes             nifty_shaw
 ```
-copy binaries
+copy binaries from __.Net Http server__ [project](https://github.com/sergueik/powershell_samples/tree/master/external/csharp/basic-httpserver)
 ```
-pushd Server\bin\Debug
+pushd Server/bin/Debug
 scp * sergueik@192.168.12.151:src/springboot_study/basic-wine-ndp/app
 ```
+in second console, run
 ```sh
 IMAGE='gaestraidr/winetricks-alpine'
 ID=$(docker container ls |grep $IMAGE | awk '{print $1'})
@@ -60,6 +60,7 @@ ID=$(docker container ls |grep $IMAGE | awk '{print $1'})
 ```sh
 docker cp ./app $ID:/tmp
 ```
+run the application
 ```
 docker exec -it $ID sh
 ```
@@ -73,6 +74,7 @@ this will reply with
 Sever is running at http://0.0.0.0:4050
 ```
 
+in new console, run
 
 ```cmd
 IMAGE='gaestraidr/winetricks-alpine'
@@ -83,14 +85,6 @@ docker exec -it $ID netstat -ant
 Active Internet connections (servers and established)
 Proto Recv-Q Send-Q Local Address           Foreign Address         State
 tcp        0      0 0.0.0.0:4050            0.0.0.0:*               LISTEN`:w
-```
-```sh
-IMAGE='gaestraidr/winetricks-alpine'
-ID=$(docker container ls |grep $IMAGE | awk '{print $1'})
-docker exec -it $ID curl -s -H 'Content-Type: application/json' http://localhost:4050/data.json
-```
-```text
-<html><body><h1>404 - Not Found</h1></body></html>
 ```
 ```sh
 echo '{"foo": "bar"}' > data.json
@@ -232,4 +226,8 @@ The better alternative is to start with docker image with wine and .net included
   * [shiftinv/wine-dotnet](https://hub.docker.com/layers/shiftinv/wine-dotnet/stable-45-vnc/images/sha256-2dbf61b8636142ad45ef23ebbb41747912f88f9543e3d310c9b80772cc5355e1) - ideal, wine-dotnet `stable-45-vnc` tag
   
 yet another alternative is use one of the __WIX Toolset__ images
+
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
