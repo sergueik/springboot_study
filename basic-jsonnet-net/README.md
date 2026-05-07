@@ -23,7 +23,7 @@ Thursday, 07 May 2026 13:40:22
 labels=All is deprecated and will be removed in a future release. Please use labels=Before instead.
 
 Runtime Environment
-   OS Version: Linux 5.15.0.177 
+   OS Version: Linux 5.15.0.177
    Runtime: .NET Framework CLR v4.0.30319.42000
 
 Test Files
@@ -113,10 +113,10 @@ at JsonnetBinding.Tests.JsonnetVmTest.NativeCallbackTypeMismatch () [0x00043] in
 Utils.JsonnetException : RUNTIME ERROR: max stack frames exceeded.
 		function <anonymous>
 	test.jsonnet:2:1-53	
-  at Utils.JsonnetVm.EvaluateSnippet (System.String filename, System.String snippet) [0x0002a] in /WorkSpace/JsonnetBinding/JsonnetVm.cs:108 
-  at JsonnetBinding.Tests.JsonnetVmTest.NativeCallbackUsingDelegate () [0x00061] in /WorkSpace/JsonnetBinding.Tests/JsonnetVmTest.cs:87 
+  at Utils.JsonnetVm.EvaluateSnippet (System.String filename, System.String snippet) [0x0002a] in /WorkSpace/JsonnetBinding/JsonnetVm.cs:108
+  at JsonnetBinding.Tests.JsonnetVmTest.NativeCallbackUsingDelegate () [0x00061] in /WorkSpace/JsonnetBinding.Tests/JsonnetVmTest.cs:87
   at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
-  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <d636f104d58046fd9b195699bcb1a744>:0 
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <d636f104d58046fd9b195699bcb1a744>:0
 
 Run Settings
     DisposeRunners: True
@@ -160,7 +160,7 @@ while observed errors are now higher-level semantic mismatches between JSONnet, 
 
 ```sh
 docker container prune -f
-docker image prune -f 
+docker image prune -f
 docker image rm $IMAGE ubuntu:22.04
 ```
 
@@ -206,5 +206,65 @@ The project may still happily compile on __Windows__ targeting __4.5__, bacause 
 __Mono__ is being stricter and exposing the real API surface.
 
 
+```text
+Restoring NuGet package NUnit.3.5.0.
+  GET https://api.nuget.org/v3-flatcontainer/nunit/3.5.0/nunit.3.5.0.nupkg
+  OK https://api.nuget.org/v3-flatcontainer/nunit/3.5.0/nunit.3.5.0.nupkg 5488ms
+Installed NUnit 3.5.0 from https://api.nuget.org/v3/index.json with content hash z/03NfC+ci3/OzlIlClH+nd0LZ99OU3wS74nAtLVnPo1oq6nvd+CGxTHZAc8n8xxDLeLMofZ8AjahxlROEhf/Q==.
+Adding package 'NUnit.3.5.0' to folder '/WorkSpace/packages'
+Added package 'NUnit.3.5.0' to folder '/WorkSpace/packages'
+
+NuGet Config files used:
+    /root/.config/NuGet/NuGet.Config
+
+Feeds used:
+    /root/.nuget/packages/
+    https://api.nuget.org/v3/index.json
+
+Installed:
+    1 package(s) to packages.config projects
+ ---> Removed intermediate container d49378ecc34a
+```
+
+but later:
+```text
+ResolveAssemblyReferences target) ->
+  /usr/lib/mono/msbuild/Current/bin/Microsoft.Common.CurrentVersion.targets(2218,5):
+  warning MSB3245: Could not resolve this reference.
+  Could not locate the assembly "nunit.framework". Check to make sure the assembly exists on disk.
+  If this reference is required by your code, you may get compilation errors.
+   [/WorkSpace/JsonnetBinding.Tests/JsonnetBinding.Tests.csproj]
+
+```
+
+the project file looks like below:
+
+```xml
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.3.5.0\lib\nunit.framework.dll</HintPath>
+    </Reference>
+```
+
+to troubleshoot,
+
+```sh
+ docker build -f Dockerfile.ignore-errors -t $IMAGE  .
+
+```
+```sh
+docker run --name $NAME -it --rm -p 4050:4050 $IMAGE sh
+```
+
+```sh
+find . -iname nunit.framework.dll
+```
+```text
+./packages/NUnit.3.5.0/lib/portable-net45+win8+wp8+wpa81+Xamarin.Mac+MonoAndroid10+MonoTouch10+Xamarin.iOS10/nunit.framework.dll
+./packages/NUnit.3.5.0/lib/net35/nunit.framework.dll
+./packages/NUnit.3.5.0/lib/net45/nunit.framework.dll
+./packages/NUnit.3.5.0/lib/dotnet/nunit.framework.dll
+./packages/NUnit.3.5.0/lib/net20/nunit.framework.dll
+./packages/NUnit.3.5.0/lib/net40/nunit.framework.dll
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -71,13 +71,8 @@
 
   <ItemGroup>
     <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.3.5.0\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
-  <!--  
-    <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
-    </Reference>
-  -->
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>

@@ -36,10 +36,3 @@ COPY JsonnetBinding.Tests/JsonnetBinding.Tests.csproj /WorkSpace/JsonnetBinding.
 COPY JsonnetBinding.Tests/packages.config /WorkSpace/JsonnetBinding.Tests/
 RUN mono $NUGET restore JsonnetBinding.sln
 
-COPY JsonnetBinding /WorkSpace/JsonnetBinding/
-COPY JsonnetBinding.Tests /WorkSpace/JsonnetBinding.Tests/
-# NOTE: the workspace is NuGetScratchroot
-RUN msbuild /p:Configuration=Debug ./JsonnetBinding.sln /t:Clean,Build
-WORKDIR /tmp
-# NOTE: the exec form is specifically designed to bypass the shell entirely
-CMD mono $NUNIT /WorkSpace/JsonnetBinding.Tests/bin/Debug/Tests.dll --labels=All --trace=Debug
