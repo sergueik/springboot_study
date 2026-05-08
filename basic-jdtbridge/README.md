@@ -11,10 +11,12 @@ Eclipse [JDT](https://projects.eclipse.org/projects/eclipse.jdt) (**Java Develop
 
 ### See Also
 
-* [JDT Tutorial: Creating Eclipse Java Projects Programmatically](https://sdq.kastel.kit.edu/wiki/JDT_Tutorial:_Creating_Eclipse_Java_Projects_Programmatically)
-* [JDT Plug-in Developer Guide](https://help.eclipse.org/latest/index.jsp?topic=%252Forg.eclipse.jdt.doc.isv%252Fguide%252Fjdt_int.htm)
-* https://github.com/kaluchi/jdtbridge/issues
-* https://github.com/eclipse-jdt/eclipse.jdt.core
+  * Why *everything* Copilot is written in heavy node.js? - pros and cons [discussion](https://www.reddit.com/r/GithubCopilot/comments/1rdf4sy/why_everything_is_written_in_heavy_nodejs/)
+  * GitHub Copilot for Eclipse  [is](https://devblogs.microsoft.com/java/ghc-eclipse-is-going-open-source/) Going Open Source - the github [repository](https://github.com/microsoft/copilot-for-eclipse)
+  * [JDT Tutorial: Creating Eclipse Java Projects Programmatically](https://sdq.kastel.kit.edu/wiki/JDT_Tutorial:_Creating_Eclipse_Java_Projects_Programmatically)
+  * [JDT Plug-in Developer Guide](https://help.eclipse.org/latest/index.jsp?topic=%252Forg.eclipse.jdt.doc.isv%252Fguide%252Fjdt_int.htm)
+  * https://github.com/kaluchi/jdtbridge/issues
+  * https://github.com/eclipse-jdt/eclipse.jdt.core
 
 ### Rebase First Note
 
