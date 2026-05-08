@@ -16,6 +16,31 @@ schemaTests:
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/invalid-account-type.json
       valid: false
+ 
+    - name: missing-transaction-id
+      schemaResource: schema/transaction.json
+      payloadResource: schema/invalid/missing-transaction-id.json
+      expectedMessage: "transactionId"
+      valid: false
+
+    - name: negative-amount
+      schemaResource: schema/transaction.json
+      payloadResource: schema/invalid/negative-amount.json
+      expectedMessage: "minimum"
+      valid: false
+
+    - name: extra-field-not-allowed
+      schemaResource: schema/transaction.json
+      payloadResource: schema/invalid/extra-field.json
+      expectedMessage: "is not defined in the schema and the schema does not allow additional properties"
+      valid: false
+
+    - name: missing-account-balance
+      schemaResource: schema/transaction.json
+      payloadResource: schema/invalid/missing-account-balance.json
+      expectedMessage: "required property"
+      # TODO: required property 'balance' not found
+      valid: false      
 
 app:
   # NOTE: Jackson will happily carry "$ref", "anyOf", "allOf" as JSON data

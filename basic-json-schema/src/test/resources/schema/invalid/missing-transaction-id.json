@@ -1,0 +1,11 @@
+{
+  "customer": {
+    "customerId": "C-100",
+    "name": "Alice"
+  },
+  "account": {
+    "accountType": "basic",
+    "balance": 100
+  },
+  "amount": 10
+}

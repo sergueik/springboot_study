@@ -1,0 +1,11 @@
+{
+  "transactionId": "T-1",
+  "customer": {
+    "customerId": "C-100",
+    "name": "Alice"
+  },
+  "account": {
+    "accountType": "basic"
+  },
+  "amount": 10
+}
