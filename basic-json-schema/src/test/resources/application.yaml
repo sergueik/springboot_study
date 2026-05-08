@@ -1,16 +1,21 @@
 schemaTests:
   validCases:
     - name: valid-basic-account
+      schemaResource: schema/transaction.json
       payloadResource: schema/valid/account.json
-
+      valid: true
   invalidCases:
     - name: missing-customer-name
       expectedMessage: "name"
+      schemaResource: schema/transaction.json
       payloadResource: schema/invalid/missing-customer-name.json
+      valid: false
 
     - name: invalid-account-type
-      expectedMessage: "anyOf"
+      expectedMessage: "does not have a value"
+      schemaResource: schema/transaction.json
       payloadResource: schema/invalid/invalid-account-type.json
+      valid: false
 
 app:
   # NOTE: Jackson will happily carry "$ref", "anyOf", "allOf" as JSON data

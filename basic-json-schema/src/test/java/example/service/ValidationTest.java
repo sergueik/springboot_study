@@ -18,12 +18,14 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,9 +40,21 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import example.ValidationTestConfig;
 
 // NOTE :needs jdk 16+
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@EnableConfigurationProperties(ValidationTestConfig.class)
+// @SpringBootApplication
+// @ConfigurationPropertiesScan
 public class ValidationTest {
+
+	@Autowired
+	ValidationTestConfig config;
+
+	record TestCase(String schemaResource, String payloadResource, boolean valid, String expectedMessage) {
+	};
 
 	private static JsonNode loadJson(String resourcePath) throws Exception {
 
@@ -52,39 +66,37 @@ public class ValidationTest {
 
 	private static final ObjectMapper mapper = new ObjectMapper();
 
-	record TestCase(String schema, String data, boolean valid, String message) {
+	Stream<Arguments> transactionCases() {
+		return Stream.concat(config.validCases().stream().map(tc -> Arguments.of(tc, true)),
+				config.invalidCases().stream().map(tc -> Arguments.of(tc, false)));
 	}
 
-	static Stream<TestCase> transactionCases() {
-		return Stream.of(
-
-				// expected success
-				new TestCase("/schema/transaction.json", "/schema/valid/account.json", true, null),
-				// expected failure
-				new TestCase("/schema/transaction.json", "/schema/invalid/missing-customer-name.json", false, "name"),
-				new TestCase("/schema/transaction.json", "/schema/invalid/invalid-account-type.json", false, "does not have a value"));
-	}
-
-	@ParameterizedTest(name = "[{index}] valid={2} schema={0} data={1}")
+	// @ParameterizedTest(name = "[{index}] valid={0.valid}
+	// schema={0.schemaResource} data={0.payloadResource}")
+	// org.junit.platform.commons.JUnitException: The display name pattern defined
+	// for the parameterized test is invalid
+	// caused by: java.lang.IllegalArgumentException: can't parse argument number:
+	// 0.valid
+	@ParameterizedTest
 	@MethodSource("transactionCases")
-	void validateTransactionSchema(TestCase testCase) throws Exception {
+	void validateTransactionSchema(ValidationTestConfig.ValidationTestCase testCase) throws Exception {
 
 		JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
 
 		JsonSchema schema;
 
-		try (InputStream schemaStream = getClass().getResourceAsStream(testCase.schema())) {
+		try (InputStream schemaStream = getClass().getClassLoader().getResourceAsStream(testCase.schemaResource())) {
 
-			assertThat("schema resource missing: " + testCase.schema(), schemaStream, notNullValue());
+			assertThat("schema resource missing: " + testCase.schemaResource(), schemaStream, notNullValue());
 			JsonNode schemaNode = mapper.readTree(schemaStream);
 			schema = factory.getSchema(schemaNode);
 		}
 
 		JsonNode input;
 
-		try (InputStream dataStream = getClass().getResourceAsStream(testCase.data())) {
+		try (InputStream dataStream = getClass().getClassLoader().getResourceAsStream(testCase.payloadResource())) {
 
-			assertThat("data resource missing: "  + testCase.data(), dataStream, notNullValue());
+			assertThat("data resource missing: " + testCase.payloadResource(), dataStream, notNullValue());
 
 			input = mapper.readTree(dataStream);
 		}
@@ -100,7 +112,7 @@ public class ValidationTest {
 			assertThat("Expected validation failure", errors.isEmpty(), is(false));
 			String combined = errors.stream().map(ValidationMessage::getMessage).reduce("", (a, b) -> a + "\n" + b);
 			assertThat("Expected fragment not found.\n" + "Actual messages:\n" + combined,
-					combined.contains(testCase.message()), is(true));
+					combined.contains(testCase.expectedMessage()), is(true));
 		}
 	}
 }
