@@ -1,5 +1,12 @@
 package example.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -23,14 +30,46 @@ public class JsonAssembler {
 	private Resource transaction;
 
 	public JsonNode assemble() throws Exception {
-
-		ObjectNode root = (ObjectNode) mapper.readTree(transaction.getInputStream());
-		JsonNode customerNode = mapper.readTree(customer.getInputStream());
-		JsonNode accountNode = mapper.readTree(account.getInputStream());
-
-		root.set("customer", customerNode);
-		root.set("account", accountNode);
-
-		return root;
+		JsonNode node = load(transaction.getFilename());
+		return assemble(node);
 	}
+	// interprets only two tokens:
+	// "$ref"
+	// "anyOf"
+	public JsonNode assemble(JsonNode node) throws Exception {
+
+		if (!node.isObject())
+			return node;
+
+		ObjectNode obj = (ObjectNode) node;
+
+		// 1. handle $ref
+		if (obj.has("$ref")) {
+			String ref = obj.get("$ref").asText();
+			return assemble(load(ref));
+		}
+
+		// 2. handle anyOf (VERY simple rule: pick first)
+		if (obj.has("anyOf")) {
+			JsonNode first = obj.get("anyOf").get(0);
+			return assemble(first);
+		}
+
+		// 3. recurse into fields
+		Iterator<Map.Entry<String, JsonNode>> it = obj.fields();
+		while (it.hasNext()) {
+			Map.Entry<String, JsonNode> e = it.next();
+			obj.set(e.getKey(), assemble(e.getValue()));
+		}
+
+		return obj;
+	}
+
+	private Path baseDir = Paths.get("src/main/resources/components");
+
+	private JsonNode load(String name) throws IOException {
+		Path file = baseDir.resolve(name);
+		return mapper.readTree(Files.newInputStream(file));
+	}
+
 }

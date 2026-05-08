@@ -1,7 +1,16 @@
 {
   "transactionId": "T-9001",
-  "timestamp": "2026-05-07T12:00:00Z",
-  "customer": {},
-  "account": {},
+
+  "customer": {
+    "$ref": "customer.json"
+  },
+
+  "account": {
+    "anyOf": [
+      { "$ref": "account-basic.json" },
+      { "$ref": "account-premium.json" }
+    ]
+  },
+
   "amount": 125.50
 }
