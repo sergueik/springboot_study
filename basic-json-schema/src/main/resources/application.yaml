@@ -1,0 +1,16 @@
+app:
+  # NOTE: Jackson will happily carry "$ref", "anyOf", "allOf" as JSON data
+  # but it will *NOT* understand or resolve any of it as a schema engine.
+  components:
+    customer: classpath:components/customer.json
+    account: classpath:components/account.json
+    transaction: classpath:components/transaction.json
+
+  assembly:
+    root: transaction
+    includes:
+      - customer
+      - account
+
+server:
+  port: 8080

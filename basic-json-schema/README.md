@@ -6,8 +6,41 @@ actually one of the strongest conceptual advantages of JSON Schema over things l
 
 In reality JSON Schema only looks like JSON
 
+### Usage
+```cmd
+mvn  -DskipTests spring-boot:run
+```
+```cmd
+curl -s http://localhost:8080/assembly/transaction
+```
+```json
+{
+  "transactionId": "T-9001",
+  "timestamp": "2026-05-07T12:00:00Z",
+  "customer": {
+    "accountNumber": "000111222",
+    "currency": "USD",
+    "balance": 2500.75
+  },
+  "account": {
+    "accountNumber": "000111222",
+    "currency": "USD",
+    "balance": 2500.75
+  },
+  "amount": 125.5
+}
+```
+```cmd
+curl -s http://localhost:8080/components/customer.json
+```
 
-
+```json
+{
+  "accountNumber": "000111222",
+  "currency": "USD",
+  "balance": 2500.75
+}
+```
 #### 1. JSON Schema constructs Jackson can handle directly
 
 | JSON Schema Construct / Keyword | Pure Jackson (`JsonNode` / databind) Can Parse & Manipulate? | Notes |
@@ -129,3 +162,51 @@ __Jsonnet__:
 - functional/programmatic
 - generates JSON
 - not itself JSON
+
+modern JSON-adjacent ecosystems quietly become:
+
+mini programming languages
+dependency graphs
+type systems
+inheritance systems
+runtime evaluators
+
+while pretending to be “just JSON.”
+
+And then suddenly:
+
+editor plugins become mandatory
+IntelliSense becomes mandatory
+schema registries become mandatory
+cloud infrastructure becomes mandatory
+
+
+one does not need full schema validation to demonstrate:
+
+compositional payload assembly
+copybook-style segmentation
+hierarchical output
+reusable fragments
+endpoint emission
+
+Here is a small reusable payload assembly technique
+
+JSON Schema is valid
+Validation could be added later if useful
+
+OpenAPI 3.x
+Swagger tooling
+contract documents
+schema sections inside specs
+
+### See Also
+
+
+  * Java - [jsonschema2pojo](https://github.com/joelittlejohn/jsonschema2pojo) - Generate Java types from JSON or JSON Schema and annotate those types for data-binding with Jackson, Gson, etc.
+  * [JSON Editor](https://github.com/jdorn/json-editor) - reads a JSON Schema file(s) and uses it to generate an HTML form for editing the JSON
+
+  * another [repo](https://github.com/json-editor/json-editor) of the same
+  * [SchemaStore/schemastore](https://github.com/SchemaStore/schemastore) - collection of independent JSON schemas (under `src/schemas/json`) - [MCP Server](https://github.com/SchemaStore/SchemaStoreMcpServer) (ASPNet Core, .Net 10)
+  * https://github.com/confluentinc/schema-registry - Confluent Schema Registry for Kafka
+  * https://github.com/ethlo/jsons2xsd - converter from JSON-schema to XML-schema (XSD)
+  * https://github.com/victools/jsonschema-generator - creating JSON Schema from Java classes
