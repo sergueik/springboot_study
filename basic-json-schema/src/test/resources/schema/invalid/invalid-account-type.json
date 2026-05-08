@@ -1,0 +1,15 @@
+      {
+          "transactionId": "T-9001",
+
+          "customer": {
+            "customerId": "C-100",
+            "name": "Alice"
+          },
+
+          "account": {
+            "accountType": "UNKNOWN"
+          },
+
+          "amount": 125.50
+        }
+

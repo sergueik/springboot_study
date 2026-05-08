@@ -4,9 +4,9 @@
   <groupId>example</groupId>
   <name>${project.groupId}:${project.artifactId}</name>
   <artifactId>assembler</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <description>Springboot JSON Schem Assembler</description>
+  <description>Springboot JSON Schema Validator and Assembler</description>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -17,18 +17,12 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>11</java.version>
-    <antisamy.version>1.7.5</antisamy.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
-    <java.version>11</java.version>
+    <java.version>17</java.version>
     <json-path.version>2.9.0</json-path.version>
+    <json-schema-validator.version>1.5.7</json-schema-validator.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <failOnMissingWebXml>false</failOnMissingWebXml>
-    <thymeleaf-layout-dialect.version>2.5.3</thymeleaf-layout-dialect.version>
-    <webjars.bootstrap.version>5.0.0</webjars.bootstrap.version>
-    <webjars.jquery.version>3.2.1</webjars.jquery.version>
-    <webjars.angular.version>1.5.8</webjars.angular.version>
-    <webjars.angular-ui-router.version>1.0.30</webjars.angular-ui-router.version>
   </properties>
   <dependencies>
     <dependency>
@@ -36,6 +30,11 @@
       <artifactId>json-path</artifactId>
       <scope>test</scope>
       <version>${json-path.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.networknt</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <version>${json-schema-validator.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>

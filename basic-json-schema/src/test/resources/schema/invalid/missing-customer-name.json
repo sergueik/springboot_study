@@ -1,0 +1,16 @@
+   {
+          "transactionId": "T-9001",
+
+          "customer": {
+            "customerId": "C-100"
+          },
+
+          "account": {
+            "accountType": "basic",
+            "balance": 150
+          },
+
+          "amount": 125.50
+        }
+
+

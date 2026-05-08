@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "type": "object",
+  "required": ["transactionId", "customer", "account", "amount"],
+
+  "properties": {
+
+    "transactionId": {
+      "type": "string",
+      "minLength": 1
+    },
+
+    "customer": {
+      "type": "object",
+      "required": ["customerId", "name"],
+      "properties": {
+        "customerId": { "type": "string" },
+        "name": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "account": {
+      "type": "object",
+      "required": ["accountType", "balance"],
+      "properties": {
+        "accountType": {
+          "type": "string",
+          "enum": ["basic", "premium"]
+        },
+        "balance": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "amount": {
+      "type": "number",
+      "minimum": 0
+    }
+  },
+
+  "additionalProperties": false
+}

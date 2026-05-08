@@ -2,9 +2,7 @@
 A JSON Schema document is just JSON data with a specific vocabulary. this is 
 actually one of the strongest conceptual advantages of JSON Schema over things like Jsonnet.
 
-### Capability Matrix a.k.a. Schema vs Jackson Capability Boundary
 
-In reality JSON Schema only looks like JSON
 
 ### Usage
 ```cmd
@@ -31,9 +29,32 @@ curl -s http://localhost:8080/assembly/transaction
 }
 ```
 ```cmd
+curl -s http://localhost:8080/components/transaction.json
+```
+reveals JSON Schema-signature DSL:
+```json
+{
+  "transactionId": "T-9001",
+
+  "customer": {
+    "$ref": "customer.json"
+  },
+
+  "account": {
+    "anyOf": [
+      { "$ref": "account-basic.json" },
+      { "$ref": "account-premium.json" }
+    ]
+  },
+
+  "amount": 125.50
+}
+```
+while
+```cmd
 curl -s http://localhost:8080/components/customer.json
 ```
-
+shows "regular" JSON
 ```json
 {
   "accountNumber": "000111222",
@@ -41,6 +62,74 @@ curl -s http://localhost:8080/components/customer.json
   "balance": 2500.75
 }
 ```
+In real enterprise systems, you typically see a thin but very influential "schema layer" sitting above plain JSON payloads that dominate volume
+
+
+
+JSON Schema is used for:
+
+  * contract definition (API boundary)
+  * validation rules
+  * documentation (OpenAPI)
+  * versioning rules
+  * compatibility checks
+  * code generation
+
+
+it is usually:
+
+  * centrally governed
+  * reused across many services
+  * not duplicated per message
+  * not embedded in every payload
+
+the ratio can be:
+  * 50–500 schemas in a large system
+  * millions/billions of JSON documents flowing through them
+
+The JSON Schema is *meta-data* about structure, not data
+
+`customer-type.json`:
+```json
+{
+  "type": "object",
+  "required": ["customerId"],
+  "properties": {
+    "customerId": { "type": "string" },
+    "balance": { "type": "number" }
+  }
+}
+```
+
+This is:
+
+  * low volume
+  * stable over time
+  * version-controlled like code
+  * often shared across team
+
+
+in other words, schena serves "type system + contract layer for a distributed system", not data iself. 
+
+There *are* systems where schema becomes heavier
+
+### Capability Matrix a.k.a. Schema vs Jackson Capability Boundary
+
+In reality JSON Schema only looks like JSON
+
+|Concern |	Jackson only|	External validator needed|
+|-------|---------------|----------------------------|
+|Build JSON trees	|Yes	|No |
+|Serialize schema JSON|	Yes	|No|
+|Manipulate `$ref`|	Yes|	No|
+|Walk schema nodes|	Yes|	No|
+|Parse arbitrary JSON|	Yes|	No|
+|Enforce JSON Schema rules|	No|	Yes|
+|Draft-aware validation	|No|	Yes|
+|`oneOf` / `allOf` semantics|	No|	Yes|
+|`if`/`then`/`else` logic|	No|	Yes|
+|format validators|	No|	Yes|
+
 #### 1. JSON Schema constructs Jackson can handle directly
 
 | JSON Schema Construct / Keyword | Pure Jackson (`JsonNode` / databind) Can Parse & Manipulate? | Notes |
@@ -139,11 +228,24 @@ Jackson Alone Is _NOT_ Sufficient For:
 - a good foundation for schema tooling
 - lightweight and dependency-friendly
 
+
 But Jackson is **not**:
 
 - a JSON Schema validator
 - a schema execution engine
 - a standards-compliant semantic evaluator
+
+
+
+NOTE: many financial payloads are fundamentally:
+
+
+* contractual structures
+* code/value lists
+* repeated segments
+* hierarchical records
+* deterministic layouts
+
 
 ---
 
