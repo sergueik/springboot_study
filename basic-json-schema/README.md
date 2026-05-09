@@ -66,8 +66,9 @@ In real enterprise systems, you typically see a thin but very influential "schem
 
 ### Testing
 
-Validation is the real power of JSON Schema belongs
-In the project resources put a more realistinc schema with certain requirements on the data shape and details:
+Validation is where the real power of JSON Schema becomes visible.
+
+The project resources contain a more realistic schema with explicit requirements on the data structure and field values:
 
 ```json
 {
@@ -130,21 +131,21 @@ The test then confirms the validation failure is reported with a clear error mes
 
 ```java
 JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
-JsonSchema schema = factory.getSchema(testCase.getSchemaResource());
+JsonSchema schema = factory.getSchema(testCase.schemaResource());
 Set<ValidationMessage> errors = schema.validate(input);
-if (!testCase.getValid()) {
+if (!testCase.valid()) {
 
 	assertThat("Expected validation failure", errors.isEmpty(), is(false));
 	errorMessage = errors.stream().map(ValidationMessage::getMessage).reduce("", (a, b) -> a + "\n" + b);
 	assertThat("Expected fragment not found.\n" + "Actual messages:\n" + errorMessage, errorMessage,
-			matchesPattern("(?s).*" + testCase.getExpectedMessage() + ".*"));
+			matchesPattern("(?s).*" + testCase.expectedMessage() + ".*"));
 }
 
 ```
 When the JSON payload is valid, the test verifies that no validation errors are reported:
 ```java
 errors = schema.validate(input);
-if (testCase.getValid())
+if (testCase.valid())
 	assertThat("Unexpected validation errors: " + errors, errors.isEmpty(), is(true));
 
 ```

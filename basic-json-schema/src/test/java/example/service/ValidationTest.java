@@ -11,7 +11,6 @@ import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.Set;
 
 import java.util.stream.Stream;
@@ -54,7 +53,7 @@ public class ValidationTest {
 
 	@Autowired
 	ValidationTestConfig config;
-
+	
 	private static final ObjectMapper mapper = new ObjectMapper();
 	private JsonSchemaFactory factory = null;
 	private JsonSchema schema = null;
@@ -62,6 +61,8 @@ public class ValidationTest {
 	private JsonNode input = null;
 	private Set<ValidationMessage> errors = null;
 	private String errorMessage = null;
+
+	private record TestCase(String schemaResource, String payloadResource, boolean valid, String expectedMessage) {};
 
 	private static JsonNode loadJson(String resourcePath) throws Exception {
 
@@ -71,43 +72,38 @@ public class ValidationTest {
 		}
 	}
 
-
 	Stream<Arguments> transactionCases() {
-		return Stream.concat(config.getValidCases().stream().map(Arguments::of),
-				config.getInvalidCases().stream().map(Arguments::of));
+		return Stream.concat(config.validCases().stream().map(tc -> Arguments.of(tc, true)),
+				config.invalidCases().stream().map(tc -> Arguments.of(tc, false)));
 	}
-
 
 	@DisplayName("validate Transaction Schema")
 	@ParameterizedTest(name = "[{index}] {0}")
 	@MethodSource("transactionCases")
-	void test(ValidationTestConfig.ValidationTestCase testCase) throws Exception {
+	void validateTransactionSchema(ValidationTestConfig.ValidationTestCase testCase) throws Exception {
 
 		factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
 
-		try (InputStream schemaStream = getClass().getClassLoader().getResourceAsStream(testCase.getSchemaResource())) {
-
-			assertThat("schema resource missing: " + testCase.getSchemaResource(), schemaStream, notNullValue());
-			JsonNode schemaNode = mapper.readTree(schemaStream);
+		try (InputStream schemaStream = getClass().getClassLoader().getResourceAsStream(testCase.schemaResource())) {
+			assertThat("schema resource missing: " + testCase.schemaResource(), schemaStream, notNullValue());
+			schemaNode = mapper.readTree(schemaStream);
 			schema = factory.getSchema(schemaNode);
 		}
 
-		try (InputStream dataStream = getClass().getClassLoader().getResourceAsStream(testCase.getPayloadResource())) {
-
-			assertThat("data resource missing: " + testCase.getPayloadResource(), dataStream, notNullValue());
+		try (InputStream dataStream = getClass().getClassLoader().getResourceAsStream(testCase.payloadResource())) {
+			assertThat("data resource missing: " + testCase.payloadResource(), dataStream, notNullValue());
 			input = mapper.readTree(dataStream);
 		}
 
 		errors = schema.validate(input);
 
-		if (testCase.getValid()) {
+		if (testCase.valid()) {
 			assertThat("Unexpected validation errors: " + errors, errors.isEmpty(), is(true));
 		} else {
-
 			assertThat("Expected validation failure", errors.isEmpty(), is(false));
 			errorMessage = errors.stream().map(ValidationMessage::getMessage).reduce("", (a, b) -> a + "\n" + b);
-			assertThat("Expected fragment not found.\n" + "Actual messages:\n" + errorMessage, errorMessage,
-					matchesPattern("(?s).*" + testCase.getExpectedMessage() + ".*"));
+			assertThat("Expected fragment not found.\n" + "Actual messages:\n" + errorMessage,
+					errorMessage, matchesPattern ("(?s).*" +  testCase.expectedMessage() + ".*"));
 		}
 	}
 }
