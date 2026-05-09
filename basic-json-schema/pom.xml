@@ -4,7 +4,7 @@
   <groupId>example</groupId>
   <name>${project.groupId}:${project.artifactId}</name>
   <artifactId>assembler</artifactId>
-  <version>0.6.0-SNAPSHOT</version>
+  <version>0.7.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>Springboot JSON Schema Validator and Assembler</description>
   <parent>
@@ -18,7 +18,6 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>11</java.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
-    <java.version>17</java.version>
     <json-path.version>2.9.0</json-path.version>
     <json-schema-validator.version>1.5.7</json-schema-validator.version>
     <lombok.version>1.18.24</lombok.version>

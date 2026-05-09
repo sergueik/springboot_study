@@ -64,8 +64,118 @@ shows "regular" JSON
 ```
 In real enterprise systems, you typically see a thin but very influential "schema layer" sitting above plain JSON payloads that dominate volume
 
+### Testing
 
+Validation is the real power of JSON Schema belongs
+In the project resources put a more realistinc schema with certain requirements on the data shape and details:
 
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "type": "object",
+  "required": ["transactionId", "customer", "account", "amount"],
+
+  "properties": {
+
+    "transactionId": {
+      "type": "string",
+      "minLength": 1
+    },
+
+    "customer": {
+      "type": "object",
+      "required": ["customerId", "name"],
+      "properties": {
+        "customerId": { "type": "string" },
+        "name": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+
+    "account": {
+      "type": "object",
+      "required": ["accountType", "balance"],
+      "properties": {
+        "accountType": {
+          "type": "string",
+          "enum": ["basic", "premium"]
+        },
+        "balance": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "amount": {
+      "type": "number",
+      "minimum": 0
+    }
+  },
+
+  "additionalProperties": false
+}
+```
+
+This schema requires:
+
+* the `amount` `value` to be positive,
+* the `transactionId` to be non-empty,
+* the `customer` and `account` objects to always exist,
+* and forbids unexpected fields from appearing in nested objects.
+
+To verify these constraints are enforced correctly, tests are executed with JSON payloads intentionally violating one rule at a time.
+The test then confirms the validation failure is reported with a clear error message
+
+```java
+JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+JsonSchema schema = factory.getSchema(testCase.getSchemaResource());
+Set<ValidationMessage> errors = schema.validate(input);
+if (!testCase.getValid()) {
+
+	assertThat("Expected validation failure", errors.isEmpty(), is(false));
+	errorMessage = errors.stream().map(ValidationMessage::getMessage).reduce("", (a, b) -> a + "\n" + b);
+	assertThat("Expected fragment not found.\n" + "Actual messages:\n" + errorMessage, errorMessage,
+			matchesPattern("(?s).*" + testCase.getExpectedMessage() + ".*"));
+}
+
+```
+When the JSON payload is valid, the test verifies that no validation errors are reported:
+```java
+errors = schema.validate(input);
+if (testCase.getValid())
+	assertThat("Unexpected validation errors: " + errors, errors.isEmpty(), is(true));
+
+```
+All test inputs are externalized into `application.yaml`:
+```yaml
+schemaTests:
+  validCases:
+    - name: valid-basic-account
+      schemaResource: schema/transaction.json
+      payloadResource: schema/valid/account.json
+      valid: true
+  invalidCases:
+
+    - name: extra-field-not-allowed
+      schemaResource: schema/transaction.json
+      payloadResource: schema/invalid/extra-field.json
+      expectedMessage: "is not defined in the schema and the schema does not allow additional properties"
+      valid: false
+
+    - name: missing-account-balance
+      schemaResource: schema/transaction.json
+      payloadResource: schema/invalid/missing-account-balance.json
+      expectedMessage: "required property '.*' not found"
+      valid: false
+```
+
+This turns new test creation into a YAML authoring task rather than a Java coding task.
+
+All validation functionality is provided by the `json-schema-validator` [library](https://github.com/java-json-tools/json-schema-validator), also [available](https://mvnrepository.com/artifact/io.rest-assured/json-schema-validator) from Maven Central
+
+### Background Information
 JSON Schema is used for:
 
   * contract definition (API boundary)
