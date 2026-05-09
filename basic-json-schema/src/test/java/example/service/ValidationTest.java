@@ -39,7 +39,8 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.hamcrest.Matchers.matchesPattern;
+
 import example.ValidationTestConfig;
 
 // NOTE :needs jdk 16+
@@ -112,7 +113,8 @@ public class ValidationTest {
 			assertThat("Expected validation failure", errors.isEmpty(), is(false));
 			String combined = errors.stream().map(ValidationMessage::getMessage).reduce("", (a, b) -> a + "\n" + b);
 			assertThat("Expected fragment not found.\n" + "Actual messages:\n" + combined,
-					combined.contains(testCase.expectedMessage()), is(true));
+					combined, matchesPattern ("(?s).*" +  testCase.expectedMessage() + ".*"));
+			// ;
 		}
 	}
 }

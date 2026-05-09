@@ -38,8 +38,7 @@ schemaTests:
     - name: missing-account-balance
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/missing-account-balance.json
-      expectedMessage: "required property"
-      # TODO: required property 'balance' not found
+      expectedMessage: "required property '.*' not found"
       valid: false      
 
 app:
