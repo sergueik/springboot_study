@@ -68,8 +68,8 @@ public class ValidationTest {
 	private static final ObjectMapper mapper = new ObjectMapper();
 
 	Stream<Arguments> transactionCases() {
-		return Stream.concat(config.validCases().stream().map(tc -> Arguments.of(tc, true)),
-				config.invalidCases().stream().map(tc -> Arguments.of(tc, false)));
+		return Stream.concat(config.getValidCases().stream().map(tc -> Arguments.of(tc, true)),
+				config.getInvalidCases().stream().map(tc -> Arguments.of(tc, false)));
 	}
 
 	// @ParameterizedTest(name = "[{index}] valid={0.valid}
@@ -78,7 +78,7 @@ public class ValidationTest {
 	// for the parameterized test is invalid
 	// caused by: java.lang.IllegalArgumentException: can't parse argument number:
 	// 0.valid
-	@ParameterizedTest
+	@ParameterizedTest(name = "[{index}] {0}")
 	@MethodSource("transactionCases")
 	void validateTransactionSchema(ValidationTestConfig.ValidationTestCase testCase) throws Exception {
 
@@ -86,35 +86,31 @@ public class ValidationTest {
 
 		JsonSchema schema;
 
-		try (InputStream schemaStream = getClass().getClassLoader().getResourceAsStream(testCase.schemaResource())) {
+		try (InputStream schemaStream = getClass().getClassLoader().getResourceAsStream(testCase.getSchemaResource())) {
 
-			assertThat("schema resource missing: " + testCase.schemaResource(), schemaStream, notNullValue());
+			assertThat("schema resource missing: " + testCase.getSchemaResource(), schemaStream, notNullValue());
 			JsonNode schemaNode = mapper.readTree(schemaStream);
 			schema = factory.getSchema(schemaNode);
 		}
 
 		JsonNode input;
 
-		try (InputStream dataStream = getClass().getClassLoader().getResourceAsStream(testCase.payloadResource())) {
+		try (InputStream dataStream = getClass().getClassLoader().getResourceAsStream(testCase.getPayloadResource())) {
 
-			assertThat("data resource missing: " + testCase.payloadResource(), dataStream, notNullValue());
-
+			assertThat("data resource missing: " + testCase.getPayloadResource(), dataStream, notNullValue());
 			input = mapper.readTree(dataStream);
 		}
 
 		Set<ValidationMessage> errors = schema.validate(input);
 
-		if (testCase.valid()) {
-
+		if (testCase.getValid()) {
 			assertThat("Unexpected validation errors: " + errors, errors.isEmpty(), is(true));
-
 		} else {
 
 			assertThat("Expected validation failure", errors.isEmpty(), is(false));
 			String combined = errors.stream().map(ValidationMessage::getMessage).reduce("", (a, b) -> a + "\n" + b);
 			assertThat("Expected fragment not found.\n" + "Actual messages:\n" + combined,
-					combined, matchesPattern ("(?s).*" +  testCase.expectedMessage() + ".*"));
-			// ;
+					combined, matchesPattern ("(?s).*" +  testCase.getExpectedMessage() + ".*"));
 		}
 	}
 }

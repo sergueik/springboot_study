@@ -1,19 +1,27 @@
 package example;
 
+import lombok.Data;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 
+@Data
 @ConfigurationProperties(prefix = "schema-tests")
-public record ValidationTestConfig(
-    List<ValidationTestCase> validCases,
-    List<ValidationTestCase> invalidCases
-) {
-    public record ValidationTestCase(
-        String name,
-        Boolean valid,
-        String schemaResource,
-        String payloadResource,
-        String expectedMessage
-    ) {}
+public class ValidationTestConfig {
+
+	private List<ValidationTestCase> validCases;
+	private List<ValidationTestCase> invalidCases;
+
+	@Data
+	public static class ValidationTestCase {
+
+		private String name;
+		private Boolean valid;
+
+		private String schemaResource;
+		private String payloadResource;
+
+		private String expectedMessage;
+	}
 }
