@@ -53,7 +53,7 @@ public class ValidationTest {
 
 	@Autowired
 	ValidationTestConfig config;
-	
+
 	private static final ObjectMapper mapper = new ObjectMapper();
 	private JsonSchemaFactory factory = null;
 	private JsonSchema schema = null;
@@ -61,8 +61,6 @@ public class ValidationTest {
 	private JsonNode input = null;
 	private Set<ValidationMessage> errors = null;
 	private String errorMessage = null;
-
-	private record TestCase(String schemaResource, String payloadResource, boolean valid, String expectedMessage) {};
 
 	private static JsonNode loadJson(String resourcePath) throws Exception {
 
@@ -73,8 +71,9 @@ public class ValidationTest {
 	}
 
 	Stream<Arguments> transactionCases() {
-		return Stream.concat(config.validCases().stream().map(tc -> Arguments.of(tc, true)),
-				config.invalidCases().stream().map(tc -> Arguments.of(tc, false)));
+
+		return Stream.concat(config.validCases().stream().map(Arguments::of),
+				config.invalidCases().stream().map(Arguments::of));
 	}
 
 	@DisplayName("validate Transaction Schema")
@@ -102,8 +101,8 @@ public class ValidationTest {
 		} else {
 			assertThat("Expected validation failure", errors.isEmpty(), is(false));
 			errorMessage = errors.stream().map(ValidationMessage::getMessage).reduce("", (a, b) -> a + "\n" + b);
-			assertThat("Expected fragment not found.\n" + "Actual messages:\n" + errorMessage,
-					errorMessage, matchesPattern ("(?s).*" +  testCase.expectedMessage() + ".*"));
+			assertThat("Expected fragment not found.\n" + "Actual messages:\n" + errorMessage, errorMessage,
+					matchesPattern("(?s).*" + testCase.expectedMessage() + ".*"));
 		}
 	}
 }
