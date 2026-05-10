@@ -423,6 +423,95 @@ schema sections inside specs
 |Draft 6      |April 21, 2017  |Introduced `const`, `contains`, and basic `$id` changes|
 |Draft 4      |Jan 2013        |One of the most long-lived legacy versions still found in many tools|
 
+### Python
+Python has a very mature JSON Schema ecosystem. The important distinction is:
+
+JSON parsing/manipulation → built into Python (json)
+JSON Schema validation → external libraries
+LLM structured output enforcement → increasingly built around JSON Schema subsets
+
+
+|Package|	Primary Role	|JSON Schema Support	|Typical Enterprise Use	|Relative Popularity|
+|-------|-------------------|-----------------------|------------------------|------------------|
+|`Pydantic`     | Typed models + validation	        |Generates JSON Schema	| FastAPI, GenAI structured outputs, API contracts |	Extremely high|
+|`jsonschema`   | Canonical JSON Schema validator	|Full validator	        | Contract validation, OpenAPI, standards compliance |Very high|
+|`fastjsonschema`| High-performance validator	    |Draft 04/06/07	        | Large-scale validation, pipelines, gateways      |	High|
+|`Marshmallow`  | Serialization/deserialization	    |Partial / addon-based  | Legacy APIs, Flask ecosystems, ETL               |	High but declining|
+
+### JSON Schema and GenAI Structured Outputs
+
+This is now one of the MOST important uses of JSON Schema
+
+Modern LLM systems use JSON Schema to constrain generation.
+Instead of:
+```text
+respond with JSON
+```
+the caller provides:
+```json
+{
+  "type": "object",
+  "properties": {
+    "sentiment": {
+      "type": "string",
+      "enum": [
+        "positive",
+        "negative"
+      ]
+    },
+    "score": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "sentiment",
+    "score"
+  ]
+}
+```
+The model is then forced toward valid output.
+
+JSON Schema Became Central to AI
+
+Without schema:
+
+* prompts become fragile prose
+* parsing becomes regex hell
+* failures become nondeterministic
+
+OpenAI / Anthropic / Google Direction
+All major vendors are moving toward:
+
+
+schema-constrained outputs
+
+* tool calling
+* function calling
+* typed responses
+
+
+Internally this almost always maps to:
+
+
+JSON Schema
+
+or a close subset of it. NOTE, genAI systems use only a subset of full JSON Schema
+
+
+In enterprise systems:
+
+* 90–99% of bytes are business data
+* schema layer is relatively thin compared to business payload JSON
+* but architecturally critical
+
+The schema acts like:
+
+* compiler metadata
+* COPYBOOK
+* IDL
+* contract
+* protocol grammar
+
 
 ### See Also
 
