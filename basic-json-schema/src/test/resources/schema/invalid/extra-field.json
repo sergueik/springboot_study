@@ -1,4 +1,5 @@
 {
+  "$schema": "../transaction.json",
   "transactionId": "T-1",
   "customer": {
     "customerId": "C-100",

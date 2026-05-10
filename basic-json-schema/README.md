@@ -412,6 +412,18 @@ Swagger tooling
 contract documents
 schema sections inside specs
 
+
+### Milestone Release History
+
+|Common Name  |Publication Date|Key Changes & Features|
+|-------------|----------------|----------------------|
+|Draft 2020-12|June 16, 2022   |Replaces `$recursiveRef` with `$dynamicRef`; introduces `prefixItems`|
+|Draft 2019-09|Sept 17, 2019   |Introduced vocabularies, `unevaluatedProperties`, and the `$anchor` keyword|
+|Draft 7      |March 19, 2018  |Widely supported version; added `if`/`then`/`else` conditional keywords|
+|Draft 6      |April 21, 2017  |Introduced `const`, `contains`, and basic `$id` changes|
+|Draft 4      |Jan 2013        |One of the most long-lived legacy versions still found in many tools|
+
+
 ### See Also
 
 
