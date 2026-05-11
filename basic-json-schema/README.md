@@ -172,7 +172,7 @@ schemaTests:
       valid: false
 ```
 
-This turns new test creation into a YAML authoring task rather than a Java coding task.
+This turns new test creation into a YAML authoring task rather than a Java coding task (adding new tests becomes mostly data authoring - not Java coding).
 
 All validation functionality is provided by the `json-schema-validator` [library](https://github.com/java-json-tools/json-schema-validator), also [available](https://mvnrepository.com/artifact/io.rest-assured/json-schema-validator) from Maven Central
 
@@ -524,3 +524,11 @@ The schema acts like:
   * https://github.com/confluentinc/schema-registry - Confluent Schema Registry for Kafka
   * https://github.com/ethlo/jsons2xsd - converter from JSON-schema to XML-schema (XSD)
   * https://github.com/victools/jsonschema-generator - creating JSON Schema from Java classes
+  * [awesome llm skills](https://github.com/feodal01/awesome-llm-skills) - curated list of awesome LLM and AI Agent Skills, resources and tools for customising AI Agent workflows. LLM Skills are customizable workflows that teach LLM how to perform specific tasks according to your unique requirements
+  * [feodal01/schema-guided-reasoning-pydantic](https://github.com/feodal01/schema-guided-reasoning-pydantic) - LLM skill for building strict Pydantic schemas for structured output using SGR
+  * https://abdullin.com/schema-guided-reasoning 
+  * [Structured Decoding in vLLM: a gentle introduction](https://vllm-project.github.io/2025/01/14/struct-decode-intro.html)
+
+ 
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
