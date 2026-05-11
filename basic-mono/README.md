@@ -6,7 +6,7 @@ compiling and running the [basic-httpserver](https://github.com/sergueik/powersh
 
 ```sh
 IMAGE=basic-mono
-docker pull ubuntu:22.04
+docker pull frolvlad/alpine-mono:5.20-glibc
 docker build -f Dockerfile -t $IMAGE .
 ```
 followed by
@@ -30,7 +30,6 @@ curl -s -H 'Content-Type: application/json' http://localhost:4050/data.json
 ```json
 {"foo": "bar"}
 ```
-
 ### Cleanup
 ```sh
 docker container stop $NAME
@@ -53,6 +52,10 @@ ERROR] FATAL UNHANDLED EXCEPTION: System.DllNotFoundException: urlmon.dll assemb
 
 Need to implement `MIME` mapping in pure __.Net__ - worked around with a  stub
 
+### TODO
+```sh
+curl -sL -o /dev/null -w "%{http_code}" http://localhost:4050/
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 

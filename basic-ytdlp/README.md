@@ -9,9 +9,10 @@
 ```sh
 TAG=latest
 TAG=2026.03.17
-docker pull  jauderho/yt-dlp:$TAG
-docker run --rm - jauderho/yt-dlp:$TAG
+docker pull jauderho/yt-dlp:$TAG
+docker run --rm jauderho/yt-dlp:$TAG
 ```
+NOTE, sometimes downloads do not finish
 
 ```sh
 TAG=2026.03.17
@@ -20,7 +21,7 @@ docker run --name $NAME --entrypoint='' -it jauderho/yt-dlp:$TAG sh
 ```
 in the container
 ```sh
-URL=https://www.youtube.com/watch?v=ZlLrqsnwPHM
+URL="https://www.youtube.com/watch?v=byK_Qta0Yyo&list=RDbyK_Qta0Yyo&start_radio=1"
 yt-dlp -x --audio-format mp3 --audio-quality 320K "$URL"
 ```
 > NOTE when rerun, may fail do detect the earlier (un)finished download and start over
@@ -43,10 +44,14 @@ Successfully copied 209MB to .
 ### Cleanup
 
 ```sh
-NAME=ytdlp
+export TAG=2026.03.17
+export IMAGE=jauderho/yt-dlp:$TAG
 docker stop $NAME
 docker container prune -f
 docker volume prune -f
 docker image prune -f
+docker image rm $IMAGE
 ```
 
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
