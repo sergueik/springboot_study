@@ -1,135 +1,14 @@
 ﻿### Info
 
-### Schema
-
-
-Basic docker-compose basic spring batch Demo [spring-batch](https://github.com/EalenXie/springboot-batch) downgraded to MySQL __5.7__.
-
-### Background
-
-
-Classic Spring Batch metadata tables (NOTE: __H2__ / legacy __MySQL__-style schema) simplified) for readability, hierarchy, and relationship flow — no raw DDL noise:
-
-
-![Classic Spring Batch Metadata Tables](screenshots/database-schema.png)
-
-
-![Transient Virtual Database](screenshots/virtual-db.png)
-
-
-![Production Layout](screenshots/standard-roles.png)
-
-
-![WSL Routing](screenshots/trafic-routing-wsl.png)
-
-
-### Argument Combining
-
-These variations do not require any code change and are entirely configuration-driven:
-
-One wants  a clean separation:
-
-  * JVM args → infrastructure (memory, agent, logging baseline)
-  * Spring profiles → entire environment switching (DB, dialect, batch behavior)
-  * CLI args → only job parameters
-
-This is achieved through "Spring Batch Job Inventory" profile crafting:
-
-`application-mysql.yaml`:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/example_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    driverClassName: com.mysql.jdbc.Driver
-    username: example_db_user
-    password: example_db_pass
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL57Dialect
-
-  logging:
-    level:
-      org.springframework.jdbc: WARN
-```
-`application-h2-transient.yaml`:
-```yaml
-spring:
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driverClassName: org.h2.Driver
-    username: sa
-    password: password
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-  batch:
-    jdbc:
-      initialize-schema: always
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-```
-`application-h2-peristent.yaml`:
-```yaml
-spring:
-  datasource:
-    url: jdbc:h2:file:${user.home}/testdb;AUTO_SERVER=TRUE
-    driverClassName: org.h2.Driver
-    username: sa
-    password: password
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-
-  logging:
-    level:
-      org.springframework.jdbc: DEBUG
-
-```
-which will naturally merge with already existing "Environment" progfile(s):
-
-```sh
-java \
-  -javaagent:/opt/monitoring/jmx_prometheus_javaagent.jar=9404:/opt/monitoring/config.yaml \
-  -Xms512m \
-  -Xmx2048m \
-  -jar target/spring-batch.jar \
-  --spring.profiles.active=h2-transient,dev \
-  --job.name=customerImportJob \
-  --job.runDate=2026-04-23
-```
-
-The only differences between Spring Batch Inventory profiles are in dialect the JPA statement are translated into SQL (`jpa.database-platform`) and connector the actual Database is accessed (`datasource.url`) and optional logging differences.
-
-
-Furthermore the pure [H2 Database](https://en.wikipedia.org/wiki/H2_Database_Engine) which is a pure Java SQL Database Engine implementation also offfers
-
-![H2 Console](screenshots/capture-tty-h2-console.png)
-
-console
-
-and
-
-![H2 Console](screenshots/capture-login.png)
-
-web Dashboards
-from where one can examine the very same database Spring Batch Job inventories are stored:
-![H2 Console](screenshots/capture-console.png)
-
-After the Java Spring "fat" jar is packaged one can find out the exact version of the JDBC dependency that was used
-
+###
+			
 ```cmd
 mvn dependency:tree | grep -i MySQL
 ```
-
 ```text
 [INFO] \- mysql:mysql-connector-java:jar:5.1.49:runtime
 
 ```
-and either extract it from the jar:
 
 ```sh
 jar tf target\example.springboot-batch.jar| findstr -i mysql
@@ -137,62 +16,17 @@ jar tf target\example.springboot-batch.jar| findstr -i mysql
 ```text
 BOOT-INF/lib/mysql-connector-java-5.1.49.jar
 ```
-
-or locate it in the Maven cache and combine it in the command to launch the dashboard which will be able to connect to the same database during or after the Spring Batch application run
-```sh
-java -cp h2.jar:mysql-connector-j.jar org.h2.tools.Console
+```cmd
+find ~/.m2/repository/ -iname 'mysql-connector*jar'
 ```
+```text
+/c/Users/kouzm/.m2/repository/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49-sources.jar
+/c/Users/kouzm/.m2/repository/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar
+/c/Users/kouzm/.m2/repository/mysql/mysql-connector-java/8.0.21/mysql-connector-java-8.0.21.jar
 
-```sh
-java -cp ~/.m2/repository/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar:~/.m2/repository/com/h2database/h2/1.4.200/h2-1.4.200.jar org.h2.tools.Console
+
 ```
-```sh
-java ~/.m2/repository/com/h2database/h2/*/h2*jar org.h2.tools.Shell
-```
-In fact during development one may tune the Database schema in one provider and then port it to another.
-
-There are several choices of provider and cons and pros to consder. There is absoilutely no need to start with the final vendor
-
-### Database Driver Choices
-
-| name | hosting | Dialect `database-platform` | Driver `driver-class-name`  |
-|-----|----------|-----------------------------|-----------------------------|
-| __H2DB__  | file system | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver`|
-| __H2DB__  | in memory  | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver` |
-| __SQLite__ |file system  | `example.sqlite.SQLiteDialect` | `org.sqlite.JDBC`|
-| __SQLite__ |in memory    | `example.sqlite.SQLiteDialect` | `org.sqlite.JDBC`|
-| __MySQL__ _8+_ |server   | `org.hibernate.dialect.MySQLDialect`| `com.mysql.cj.jdbc.Driver`|
-| __MySQL__ _5_ |server    | `org.hibernate.dialect.MySQL57Dialect`| `com.mysql.jdbc.Driver`|
-| __Postgres__| server     | `org.hibernate.dialect.PostgreSQL95Dialect`|`org.postgresql.Driver` |
-| __Postgres__| ephemeral  | `org.hibernate.dialect.PostgreSQL95Dialect`|`org.postgresql.Driver` |
-
-NOTE: Many so-called “embedded” solutions—especially *embedded* __PostgreSQL__ or *embedded* __Microsoft__ __SQL Server__ wrappers—are not truly embedded like __SQLite__ or __H2__ Database Engine. The *__Embeded PostgreSQL__ database*  will actually requre: run under maven goal when `ru.yandex.qatools.embed.postgresql-embedded.jar` and would download a full `~200` Mb __Postgresql__ [installer](https://www.postgresql.org/download/linux/ubuntu/) and unpack it in hidden folder under user home directory `~/.embedpostgresql`, create data dir under `$TEMP`, launch a full actual sever (daemon process) locally bound to a user `TCP` port.
-
-So it feels less like:
-
-  * embedded database
-
-and closer to:
-
-  * secretly installed local server
-
-and have also observed to be unstable on Windows if configured to do ddl
-
-![screenshot](screenshots/table-screenshot.png)
-
-
-NOTE: The __H2__ __SQL__ is closer to traditional server databases (__PostgreSQL__ / __Oracle__ / __MySQL__ style) because it was designed as a pure Java __RDBMS__ with __JDBC__ compatibility and testing support.
-
-The __SQLite__ __SQL__ is its own lightweight dialect with looser typing and many special behaviorso
-
-This difference may cause some surprises in __JPA__ tests, and the same warning applies to schema-heavy, transaction-sensitive frameworks like __Spring Batch__: using __SQLite__ as a stand-in for a “real” server __RDBMS__ like Microsoft SQL Server, PostgreSQL, or Oracle Database is often risky, but __SQLite__ is ideal for
-
-  * offline analysis
-  * simple debugging
-  * quick reports
-  * restart diagnostics
-
-To reiterate __SQLite__ is optimized for embedded/local usage -  __Spring Batch__ assumes stronger enterprise-style __RDBMS__ behavior
+Basic docker-compose basic spring batch Demo [spring-batch](https://github.com/EalenXie/springboot-batch) downgraded to MySQL __5.7__.
 
 ### Usage
 
@@ -257,6 +91,7 @@ mysql> show tables ;
 | BATCH_STEP_EXECUTION         |
 | BATCH_STEP_EXECUTION_CONTEXT |
 | BATCH_STEP_EXECUTION_SEQ     |
+| access                       |
 +------------------------------+
 10 rows in set (0.00 sec)
 ```
@@ -536,72 +371,46 @@ docker-compose rm -f
 rm -fr app/target
 find . -type f | xargs -IX sed -i 's|\r$||g' X
 ```
-### Run Vendor Docker Images with Minimal Bootstrap
+### 
 
-Because schema can be created interactively, in the H2 Web Console there is no need to support bootstrap and container synchronizarion for the task.
+| name | hosting | Dialect `database-platform` | Driver `driver-class-name`  |
+|-----|----------|-----------------------------|-----------------------------|
+| __H2DB__  | file system | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver`| 
+| __H2DB__  | in memory  | `org.hibernate.dialect.H2Dialect` | `org.h2.Driver` |
+| __SQLite__ |file system  | `example.sqlite.SQLiteDialect` | `org.sqlite.JDBC`|
+| __SQLite__ |in memory    | `example.sqlite.SQLiteDialect` | `org.sqlite.JDBC`|
+| __MySQL__ _8+_ |server   | `org.hibernate.dialect.MySQLDialect`| `com.mysql.cj.jdbc.Driver`|
+| __MySQL__ _5_ |server    | `org.hibernate.dialect.MySQL57Dialect`| `com.mysql.jdbc.Driver`|
+| __Postgres__| server     | `org.hibernate.dialect.PostgreSQL95Dialect`|`org.postgresql.Driver` |
+| __Postgres__| ephemeral  | `org.hibernate.dialect.PostgreSQL95Dialect`|`org.postgresql.Driver` |
 
-* MySQL
-```sh
-docker run -d \
-  --name mysql-demo \
-  -p 3306:3306 \
-  -e MYSQL_DATABASE=batchdb \
-  -e MYSQL_USER=batchuser \
-  -e MYSQL_PASSWORD=batchpass \
-  -e MYSQL_ROOT_PASSWORD=rootpass \
-  mysql:latest
-```
+NOTE: Many so-called “embedded” solutions—especially *embedded* __PostgreSQL__ or *embedded* __Microsoft__ __SQL Server__ wrappers—are not truly embedded like __SQLite__ or __H2__ Database Engine. The *__Embeded PostgreSQL__ database*  will actually requre: run under maven goal when `ru.yandex.qatools.embed.postgresql-embedded.jar` and would download a full `~200` Mb __Postgresql__ [installer](https://www.postgresql.org/download/linux/ubuntu/) and unpack it in hidden folder under user home directory `~/.embedpostgresql`, create data dir under `$TEMP`, launch a full actual sever (daemon process) locally bound to a user `TCP` port.
 
-* PostgreSQL
-```sh
-docker run -d \
-  --name postgres-demo \
-  -p 5432:5432 \
-  -e POSTGRES_DB=batchdb \
-  -e POSTGRES_USER=batchuser \
-  -e POSTGRES_PASSWORD=batchpass \
-  postgres:latest
-```
+So it feels less like:
 
-Alternatively one may use bootstrap direcrtory via `Dockerfile`
-```docker
-FROM mysql:latest
-COPY ./src/main/resources/metadata/batch_innodb.sql /docker-entrypoint-initdb.d/
-```
-```docker
-FROM postgres:latest
+  * embedded database
 
-COPY ./src/main/resources/metadata/batch_postgres.sql \
-     /docker-entrypoint-initdb.d/
-```
+and closer to:
 
-All PostgreSQL and MySQL official image automatically execute:
+  * secretly installed local server
 
-  * `*.sql`
-  * `*.sql.gz`
-  * `*.sh`
+and have also observed to be unstable on Windows if configured to do ddl
 
-found in:
+![screenshot](screenshots/table-screenshot.png)
 
-`/docker-entrypoint-initdb.d/`
 
-— only during first initialization, when the data directory is empty.
-There is also a init style convention to honor
-numeric prefix allowing developer control execution order or scripts.
+NOTE: The __H2__ __SQL__ is closer to traditional server databases (__PostgreSQL__ / __Oracle__ / __MySQL__ style) because it was designed as a pure Java __RDBMS__ with __JDBC__ compatibility and testing support.
 
-Alternarively one may use `docker-compose` volumes
-```yaml
-    volumes:
-     - ${PWD}/src/main/resources/metadata/batch_postgres.sql:/docker-entrypoint-initdb.d/
-```
-> NOTE: the explicit filename on the destination is considered more robust
+The __SQLite__ __SQL__ is its own lightweight dialect with looser typing and many special behaviorso
 
-### H2 Database Engine
+This difference may cause some surprises in __JPA__ tests, and the same warning applies to schema-heavy, transaction-sensitive frameworks like __Spring Batch__: using __SQLite__ as a stand-in for a “real” server __RDBMS__ like Microsoft SQL Server, PostgreSQL, or Oracle Database is often risky, but __SQLite__ is ideal for
 
-The [H2 Database Engine]() technically can run in several primary configurations: embedded within a Java application offering endpoint, or as a standalone server accessed over TCP. It can also run purely in-memory for transient data need.
+  * offline analysis
+  * simple debugging
+  * quick reports
+  * restart diagnostics
 
-Core features include a web-based and text-based consoles for data operation and schema management. As a SQL engine it offers __SQL-92__ compliance, triggers, stored procedured, user defined funcions.  It has very light memory footprint.
-
+To reiterate __SQLite__ is optimized for embedded/local usage -  __Spring Batch__ assumes stronger enterprise-style __RDBMS__ behavior
 
 ### Build Docker Image Locally
 
@@ -986,8 +795,157 @@ No need to overcomplicate early.
 Short answer
 
 Yes — the same H2 console app can be used as a JDBC browser for your Docker-hosted MySQL Spring Batch database, as long as you add the MySQL JDBC driver to the classpath.
-### See Also
+### MySQL in Docker
+```sh
+export IMAGE=database
+docker build -f Dockerfile -t $IMAGE .
+```
+```sh
+export NAME=$IMAGE
+ docker run --name $NAME -e MYSQL_ROOT_PASSWORD=root_pass -e MYSQL_PASSWORD=example_db_pass -e  MYSQL_USER=example_db_user -e MYSQL_DATABASE=example_db -d -p 3306:3306 $IM
+AGE
+```
+```
+docker logs $NAME
+```
+```text
+2026-05-11T21:09:51.556740Z 0 [Note] Server hostname (bind-address): '*'; port: 3306
+2026-05-11T21:09:51.557107Z 0 [Note] IPv6 is available.
+2026-05-11T21:09:51.557256Z 0 [Note]   - '::' resolves to '::';
+2026-05-11T21:09:51.557363Z 0 [Note] Server socket created on IP: '::'.
+2026-05-11T21:09:51.558523Z 0 [Warning] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+2026-05-11T21:09:51.573764Z 0 [Note] Event Scheduler: Loaded 0 events
+2026-05-11T21:09:51.574406Z 0 [Note] mysqld: ready for connections.
+Version: '5.7.44'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server (GPL)
+```
+```cmd
+mvn spring-boot:run
 
+```
+```text
+llowing parameters: [{run.id=2}]
+2026-05-11 17:10:41.998  INFO 28600 --- [           main] name.ealen.listener.JobListener          : job before {run.id=2}
+2026-05-11 17:10:42.020  INFO 28600 --- [           main] o.s.batch.core.job.SimpleStepHandler     : Executing step: [getData]
+2026-05-11 17:10:42.082  WARN 28600 --- [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 1146, SQLState: 42S02
+2026-05-11 17:10:42.082 ERROR 28600 --- [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Table 'example_db.access' doesn't exist
+```
+```text
+026-05-11 17:10:40.762  INFO 28600 --- [           main] name.ealen.SpringBatchApplication        : No active profile set, falling back to default profiles: default
+2026-05-11 17:10:41.011  INFO 28600 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFERRED mode.
+2026-05-11 17:10:41.026  INFO 28600 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 9ms. Found 0 JPA repository interfaces.
+2026-05-11 17:10:41.200  INFO 28600 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'threadPoolTaskExecutor'
+2026-05-11 17:10:41.204  INFO 28600 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-05-11 17:10:41.311  INFO 28600 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-05-11 17:10:41.337  INFO 28600 --- [      Data-Job1] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-11 17:10:41.366  INFO 28600 --- [      Data-Job1] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.4.21.Final
+2026-05-11 17:10:41.390  WARN 28600 --- [           main] o.s.b.a.batch.JpaBatchConfigurer         : JPA does not support custom isolation levels, so locks may not be taken when launching Jobs
+2026-05-11 17:10:41.392  INFO 28600 --- [           main] o.s.b.c.r.s.JobRepositoryFactoryBean     : No database type set, using meta data indicating: MYSQL
+2026-05-11 17:10:41.442  INFO 28600 --- [           main] o.s.b.c.l.support.SimpleJobLauncher      : No TaskExecutor has been set, defaulting to synchronous executor.
+2026-05-11 17:10:41.454  INFO 28600 --- [      Data-Job1] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.0.Final}
+2026-05-11 17:10:41.487  INFO 28600 --- [           main] DeferredRepositoryInitializationListener : Triggering deferred initialization of Spring Data repositoriesà
+2026-05-11 17:10:41.487  INFO 28600 --- [           main] DeferredRepositoryInitializationListener : Spring Data repositories initialized!
+2026-05-11 17:10:41.492  INFO 28600 --- [           main] name.ealen.SpringBatchApplication        : Started SpringBatchApplication in 0.958 seconds (JVM running for 1.195)
+2026-05-11 17:10:41.494  INFO 28600 --- [           main] o.s.b.a.b.JobLauncherApplicationRunner   : Running default command line with: []
+2026-05-11 17:10:41.640  INFO 28600 --- [      Data-Job1] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL57Dialect
+2026-05-11 17:10:41.901  INFO 28600 --- [      Data-Job1] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2026-05-11 17:10:41.907  INFO 28600 --- [      Data-Job1] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-11 17:10:41.983  INFO 28600 --- [           main] o.s.b.c.l.support.SimpleJobLauncher      : Job: [SimpleJob: [name=dataHandleJob]] launched with the following parameters: [{run.id=2}]
+2026-05-11 17:10:41.998  INFO 28600 --- [           main] name.ealen.listener.JobListener          : job before {run.id=2}
+2026-05-11 17:10:42.020  INFO 28600 --- [           main] o.s.batch.core.job.SimpleStepHandler     : Executing step: [getData]
+2026-05-11 17:10:42.082  WARN 28600 --- [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 1146, SQLState: 42S02
+2026-05-11 17:10:42.082 ERROR 28600 --- [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Table 'example_db.access' doesn't exist
+2026-05-11 17:10:42.101  INFO 28600 --- [           main] o.s.batch.core.step.AbstractStep         : Step: [getData] executed in 81ms
+2026-05-11 17:10:42.119  INFO 28600 --- [           main] name.ealen.listener.JobListener          : JOB STATUS : COMPLETED
+2026-05-11 17:10:42.120  INFO 28600 --- [           main] name.ealen.listener.JobListener          : JOB FINISHED
+2026-05-11 17:10:42.120  INFO 28600 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'threadPoolTaskExecutor'
+2026-05-11 17:10:42.120  INFO 28600 --- [           main] name.ealen.listener.JobListener          : Job Cost Time : 122ms
+2026-05-11 17:10:42.133  INFO 28600 --- [           main] o.s.b.c.l.support.SimpleJobLauncher      : Job: [SimpleJob: [name=dataHandleJob]] completed with the following parameters: [{run.id=2}] and the following status: [COMPLETED] in 126ms
+2026-05-11 17:10:42.136  INFO 28600 --- [extShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-05-11 17:10:42.140  INFO 28600 --- [extShutdownHook] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'threadPoolTaskExecutor'
+2026-05-11 17:10:42.142  INFO 28600 --- [extShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-05-11 17:10:42.152  INFO 28600 --- [extShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.781 s
+[INFO] Finished at: 2026-05-11T17:10:42-04:00
+[INFO] ------------------------------------------------------------------------1
+```
+```sh
+docker exec  -it 24ce mysql -D example_db -h localhost -P 3306 -u example_db_user -p
+```
+```text
+Enter password:
+```
+
+```sh
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 23
+Server version: 5.7.44 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2023, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show tables;
+```
+```text
++------------------------------+
+| Tables_in_example_db         |
++------------------------------+
+| BATCH_JOB_EXECUTION          |
+| BATCH_JOB_EXECUTION_CONTEXT  |
+| BATCH_JOB_EXECUTION_PARAMS   |
+| BATCH_JOB_EXECUTION_SEQ      |
+| BATCH_JOB_INSTANCE           |
+| BATCH_JOB_SEQ                |
+| BATCH_STEP_EXECUTION         |
+| BATCH_STEP_EXECUTION_CONTEXT |
+| BATCH_STEP_EXECUTION_SEQ     |
++------------------------------+
+9 rows in set (0.01 sec)
+```
+
+```sql
+select count(1) from BATCH_JOB_EXECUTION;
+```
+```text
++----------+
+| count(1) |
++----------+
+|        2 |
++----------+
+1 row in set (0.00 sec)
+```
+
+```
+unzip -ql target/example.springboot-batch.jar | grep mysql
+```
+```text
+  1006904  2020-04-20 05:10   BOOT-INF/lib/mysql-connector-java-5.1.49.jar
+```
+
+```sh
+java -cp $HOME/.m2/repository/com/h2database/h2/1.4.200/h2-1.4.200.jar:$HOME/.m2/repository/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar org.h2.tools.GUIConsole
+```
+![UIConsole](screenshots/capture-uiconsole.png)
+
+> NOTE: the `~` is only replaced in the beginning of the string. Better to use `$HOME` always:
+```sh
+java -cp ~/.m2/repository/com/h2database/h2/1.4.200/h2-1.4.200.jar:~/.m2/repository/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar  org.h2.tools.GUIConsole
+```
+
+```text
+Error: Could not find or load main class org.h2.tools.Console
+```
+
+
+### See Also
+  
    * __SQuirreL SQL Client__ [sourcforge](https://sourceforge.net/projects/squirrel-sql/) [github](https://github.com/squirrel-sql-client/squirrel-sql-code) pure Java / Swing - allows to browse database metadata, execute SQL queries, and visualize data structures. supports __SQLite__, __MySQL__, __PostgreSQL__, __Oracle__ Database, and Microsoft SQL Server__ through __JDBC__
   * [DB Browser for SQLite](https://sqlitebrowser.org/) - best available Windows, macOS, and most versions of Linux and Unix (native code)
 

@@ -2,7 +2,10 @@ spring:
   application:
     name: springboot-batch
   datasource:
-    url: jdbc:mysql://mysql-server:3306/example_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    # localhost for Unix- or WSL- hosted Docker run
+    # docker-compose service name for docker compose run
+    # ip of the docker machine for Docker Toolbox, VM or remote run
+    url: jdbc:mysql://192.168.99.100:3306/example_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: example_db_user
     password: example_db_pass
     driverClassName: com.mysql.jdbc.Driver
