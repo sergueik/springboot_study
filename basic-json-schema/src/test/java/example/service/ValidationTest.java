@@ -48,6 +48,21 @@ import static org.hamcrest.Matchers.matchesPattern;
 
 import example.ValidationTestConfig;
 
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.provider.Arguments;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import example.ValidationTestConfig;
+
 // Spring Boot:
 //
 // loads application.yml
@@ -59,24 +74,43 @@ import example.ValidationTestConfig;
 // there is a subtle timing issue:
 // JUnit tries to discover parameterized arguments *before* Spring injection has populated:
 //
+// un-commenting the next line and removing SprongBootTest leads to subtle:
+// java.lang.NullPointerException: Cannot invoke "java.util.List.stream()" because 
+// the return value of "example.ValidationTestConfig.validCases()" is null
+// at static_config.validCases()...
+// @ExtendWith(SpringExtension.class)
 
 @SpringBootTest(
+	    classes = ValidationTest.TestConfig.class,
 	    webEnvironment = SpringBootTest.WebEnvironment.NONE
 	)
-@EnableConfigurationProperties(ValidationTestConfig.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 
+
+@ContextConfiguration(classes = ValidationTest.TestConfig.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ValidationTest {
-	@Autowired
-	ValidationTestConfig config;
+
+    @Configuration
+    @EnableConfigurationProperties(ValidationTestConfig.class)
+    static class TestConfig {
+    }
+
+    @Autowired
+    ValidationTestConfig config;
 
     static ValidationTestConfig static_config;
 
     @BeforeAll
     void init() {
-    	static_config = config;
+        static_config = config;
     }
-    
+    // NOTE: manually import properties is Very verbose and not worth it.
+    static Stream<Arguments> transactionCases() {
+        return Stream.concat(
+            static_config.validCases().stream().map(Arguments::of),
+            static_config.invalidCases().stream().map(Arguments::of)
+        );
+    }
 	private static final ObjectMapper mapper = new ObjectMapper();
 	private JsonSchemaFactory factory = null;
 	private JsonSchema schema = null;
@@ -91,12 +125,6 @@ class ValidationTest {
 			assertThat("Missing resource: " + resourcePath, in, notNullValue());
 			return mapper.readTree(in);
 		}
-	}
-
-	static Stream<Arguments> transactionCases() {
-
-		return Stream.concat(static_config.validCases().stream().map(Arguments::of),
-				static_config.invalidCases().stream().map(Arguments::of));
 	}
 
 	@DisplayName("validate Transaction Schema")
