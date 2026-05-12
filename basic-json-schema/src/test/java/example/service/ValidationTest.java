@@ -15,6 +15,7 @@ import java.util.Set;
 
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,34 +48,35 @@ import static org.hamcrest.Matchers.matchesPattern;
 
 import example.ValidationTestConfig;
 
-// NOTE: this is not enough - yaml properties will not be loaded
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = ValidationTest.TestConfig.class)
-
 // Spring Boot:
 //
 // loads application.yml
 // binds @ConfigurationProperties
 // creates Binder infrastructure
 // but does NOT start the web server because of NONE
-@SpringBootTest(
-		classes= ValidationTest.TestConfig.class,
-webEnvironment = SpringBootTest.WebEnvironment.NONE
-)
 
+
+// there is a subtle timing issue:
+// JUnit tries to discover parameterized arguments *before* Spring injection has populated:
+//
+
+@SpringBootTest(
+	    webEnvironment = SpringBootTest.WebEnvironment.NONE
+	)
+@EnableConfigurationProperties(ValidationTestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 
-
-
-public class ValidationTest {
-@Configuration
-@EnableConfigurationProperties(ValidationTestConfig.class)
-public static class TestConfig {
-	private @Autowired
+class ValidationTest {
+	@Autowired
 	ValidationTestConfig config;
-}
-@Autowired
-ValidationTestConfig config;
+
+    static ValidationTestConfig static_config;
+
+    @BeforeAll
+    void init() {
+    	static_config = config;
+    }
+    
 	private static final ObjectMapper mapper = new ObjectMapper();
 	private JsonSchemaFactory factory = null;
 	private JsonSchema schema = null;
@@ -91,10 +93,10 @@ ValidationTestConfig config;
 		}
 	}
 
-	Stream<Arguments> transactionCases() {
+	static Stream<Arguments> transactionCases() {
 
-		return Stream.concat(config.validCases().stream().map(Arguments::of),
-				config.invalidCases().stream().map(Arguments::of));
+		return Stream.concat(static_config.validCases().stream().map(Arguments::of),
+				static_config.invalidCases().stream().map(Arguments::of));
 	}
 
 	@DisplayName("validate Transaction Schema")
