@@ -19,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -29,7 +30,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -43,17 +47,34 @@ import static org.hamcrest.Matchers.matchesPattern;
 
 import example.ValidationTestConfig;
 
-// NOTE :needs jdk 16+
-@SpringBootTest
+// NOTE: this is not enough - yaml properties will not be loaded
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = ValidationTest.TestConfig.class)
+
+// Spring Boot:
+//
+// loads application.yml
+// binds @ConfigurationProperties
+// creates Binder infrastructure
+// but does NOT start the web server because of NONE
+@SpringBootTest(
+		classes= ValidationTest.TestConfig.class,
+webEnvironment = SpringBootTest.WebEnvironment.NONE
+)
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@EnableConfigurationProperties(ValidationTestConfig.class)
-// @SpringBootApplication
-// @ConfigurationPropertiesScan
+
+
+
 public class ValidationTest {
-
-	@Autowired
+@Configuration
+@EnableConfigurationProperties(ValidationTestConfig.class)
+public static class TestConfig {
+	private @Autowired
 	ValidationTestConfig config;
-
+}
+@Autowired
+ValidationTestConfig config;
 	private static final ObjectMapper mapper = new ObjectMapper();
 	private JsonSchemaFactory factory = null;
 	private JsonSchema schema = null;
