@@ -140,7 +140,7 @@ open in the browser: `http://192.168.99.100:8080/`
 
 create a bpnm diagram (`diagram.bpnm`) to illustrate some other task, drag and drop into design area and work from there.
 
-
+![capture](screenshots/capture.png)
 ### Background Info
 
 
