@@ -1,5 +1,5 @@
 ### Overview
-A JSON Schema document is just JSON data with a specific vocabulary. this is 
+A JSON Schema document is just JSON data with a specific vocabulary. this is
 actually one of the strongest conceptual advantages of JSON Schema over things like Jsonnet.
 
 
@@ -161,23 +161,23 @@ schemaTests:
     - name: missing-customer-name
       expectedMessages:
         - name
-      errorCount: 1  
+      errorCount: 1
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/missing-customer-name.json
       valid: false
 
     - name: invalid-account-type
-      errorCount: 1  
+      errorCount: 1
       expectedMessages:
         - does not have a value
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/invalid-account-type.json
       valid: false
- 
+
     - name: missing-transaction-id
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/missing-transaction-id.json
-      errorCount: 1  
+      errorCount: 1
       expectedMessages:
         - transactionId
       valid: false
@@ -185,7 +185,7 @@ schemaTests:
     - name: negative-amount
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/negative-amount.json
-      errorCount: 1  
+      errorCount: 1
       expectedMessages:
         - minimum
       valid: false
@@ -193,7 +193,7 @@ schemaTests:
     - name: extra-field-not-allowed
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/extra-field.json
-      errorCount: 1  
+      errorCount: 1
       expectedMessages:
         - is not defined in the schema and the schema does not allow additional properties
       valid: false
@@ -201,12 +201,12 @@ schemaTests:
     - name: missing-account-balance
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/missing-account-balance.json
-      errorCount: 1 
+      errorCount: 1
       expectedMessages:
        - required property
        - not found
-      valid: false      
- 
+      valid: false
+
     - name: multiple-errors
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/verybad.json
@@ -215,7 +215,7 @@ schemaTests:
         - transactionId
         - minimum
         - required property
-        # 
+        #
         # - does not have a value
         - additional properties
       valid: false
@@ -269,7 +269,7 @@ This is:
   * often shared across team
 
 
-in other words, schena serves "type system + contract layer for a distributed system", not data iself. 
+in other words, schena serves "type system + contract layer for a distributed system", not data iself.
 
 There *are* systems where schema becomes heavier
 
@@ -588,6 +588,63 @@ Set<ValidationMessage>
 
 instead of throwing immediately.
 
+Internally the Java code is pretty textbook-style:
+```java
+JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+JsonSchema schema = factory.getSchema(testCase.schemaResource());
+Set<ValidationMessage> errors = schema.validate(input);
+
+Integer minimumErrors = Math.max(1, testCase.errorCount());
+assertThat(errors.size(), greaterThanOrEqualTo(minimumErrors));
+List<String> actualMessages = errors.stream().map(
+    ValidationMessage::getMessage).map(
+    (String s) -> s.replaceAll("(?:\\n|\\r)"," ")).collect(Collectors.toList());
+
+String errorMessage = errors.stream().map(ValidationMessage::getMessage).reduce("", (a, b) -> a + "\n" + b);
+
+List<String> expectedMessages = testCase.expectedMessages() == null ? new ArrayList<>():  testCase.expectedMessages();
+for (String expected : expectedMessages) {
+    assertThat(String.format("%s must contain error message: %s", errorMessage,  expected), actualMessages.stream().anyMatch(m -> m.contains(expected)), is(true));
+}
+```
+When the test is failing it shows the full actual errormessages and what was expected but not found:
+```text
+java.lang.AssertionError:
+
+$.customer: required property 'customerId' not found
+$.customer: required property 'name' not found
+$.amount: must have a minimum value of 0
+$: required property 'transactionId' not found
+$: required property 'account' not found
+$: property '$schema' is not defined in the schema and the schema does not allow additional properties
+$: property 'accountType' is not defined in the schema and the schema does not allow additional properties
+$: property 'unexpectedField' is not defined in the schema and the schema does not allow additional properties must contain error message: does not have a value
+Expected: is <true>
+     but: was <false>
+	at example.service.ValidationTest.test(ValidationTest.java:167)
+
+```
+if testing is limited to one error per sample, one may replace it with:
+```java
+JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+JsonSchema schema = factory.getSchema(testCase.schemaResource());
+Set<ValidationMessage> errors = schema.validate(input);
+if (!testCase.valid()) {
+
+	assertThat("Expected validation failure", errors.isEmpty(), is(false));
+	errorMessage = errors.stream().map(ValidationMessage::getMessage).reduce("", (a, b) -> a + "\n" + b);
+	assertThat("Expected fragment not found.\n" + "Actual messages:\n" + errorMessage, errorMessage,
+			matchesPattern("(?s).*" + testCase.expectedMessage() + ".*"));
+}
+```
+this version allows regular expressuion in test case error message expectation:
+```yaml
+- name: missing-account-balance
+  schemaResource: schema/transaction.json
+  payloadResource: schema/invalid/missing-account-balance.json
+  expectedMessage: "required property '.*' not found"
+  valid: false
+```
 ### See Also
 
 
@@ -601,9 +658,9 @@ instead of throwing immediately.
   * https://github.com/victools/jsonschema-generator - creating JSON Schema from Java classes
   * [awesome llm skills](https://github.com/feodal01/awesome-llm-skills) - curated list of awesome LLM and AI Agent Skills, resources and tools for customising AI Agent workflows. LLM Skills are customizable workflows that teach LLM how to perform specific tasks according to your unique requirements
   * [feodal01/schema-guided-reasoning-pydantic](https://github.com/feodal01/schema-guided-reasoning-pydantic) - LLM skill for building strict Pydantic schemas for structured output using SGR
-  * https://abdullin.com/schema-guided-reasoning 
+  * https://abdullin.com/schema-guided-reasoning
   * [Structured Decoding in vLLM: a gentle introduction](https://vllm-project.github.io/2025/01/14/struct-decode-intro.html)
 
- 
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

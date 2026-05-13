@@ -62,10 +62,12 @@ schemaTests:
         - transactionId
         - minimum
         - required property
+        - additional properties
+        # uncomment to see all errors
         # this validation is skipped because of other failures
         # - does not have a value
-        - additional properties
       valid: false
+
 app:
   # NOTE: Jackson will happily carry "$ref", "anyOf", "allOf" as JSON data
   # but it will *NOT* understand or resolve any of it as a schema engine.

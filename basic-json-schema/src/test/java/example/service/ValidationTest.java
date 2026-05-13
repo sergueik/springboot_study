@@ -79,7 +79,7 @@ import example.ValidationTestConfig;
 // JUnit tries to discover parameterized arguments *before* Spring injection has populated:
 //
 // un-commenting the next line and removing SprongBootTest leads to subtle:
-// java.lang.NullPointerException: Cannot invoke "java.util.List.stream()" because 
+// java.lang.NullPointerException: Cannot invoke "java.util.List.stream()" because
 // the return value of "example.ValidationTestConfig.validCases()" is null
 // at static_config.validCases()...
 // @ExtendWith(SpringExtension.class)
@@ -122,6 +122,8 @@ class ValidationTest {
 	private JsonNode input = null;
 	private Set<ValidationMessage> errors = null;
 	private String errorMessage = null;
+	private List<String> errorMessages = null;
+	private List<String> expectedErrorMessages = null;
 
 	private static JsonNode loadJson(String resourcePath) throws Exception {
 
@@ -130,43 +132,11 @@ class ValidationTest {
 			return mapper.readTree(in);
 		}
 	}
-/*
-	@DisplayName("validate Transaction Schema")
-	@ParameterizedTest(name = "[{index}] {0}")
-	@MethodSource("transactionCases")
-	void test1(ValidationTestConfig.ValidationTestCase testCase) throws Exception {
-
-		factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
-
-		try (InputStream schemaStream = getClass().getClassLoader().getResourceAsStream(testCase.schemaResource())) {
-			assertThat("schema resource missing: " + testCase.schemaResource(), schemaStream, notNullValue());
-			schemaNode = mapper.readTree(schemaStream);
-			schema = factory.getSchema(schemaNode);
-		}
-
-		try (InputStream dataStream = getClass().getClassLoader().getResourceAsStream(testCase.payloadResource())) {
-			assertThat("data resource missing: " + testCase.payloadResource(), dataStream, notNullValue());
-			input = mapper.readTree(dataStream);
-		}
-
-		errors = schema.validate(input);
-
-		if (testCase.valid()) {
-			assertThat("Unexpected validation errors: " + errors, errors.isEmpty(), is(true));
-		} else {
-			assertThat("Expected validation failure", errors.isEmpty(), is(false));
-			errorMessage = errors.stream().map(ValidationMessage::getMessage).reduce("", (a, b) -> a + "\n" + b);
-			assertThat("Expected fragment not found.\n" + "Actual messages:\n" + errorMessage, errorMessage,
-					matchesPattern("(?s).*" + testCase.expectedMessage() + ".*"));
-		}
-	}
-	
-	*/
 	
 	@DisplayName("validate Transaction Schema When Multiple Defects Are Observed")
 	@ParameterizedTest(name = "[{index}] {0}")
 	@MethodSource("transactionCases")
-	void test2(ValidationTestConfig.ValidationTestCase testCase) throws Exception {
+	void test(ValidationTestConfig.ValidationTestCase testCase) throws Exception {
 
 		factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
 
@@ -186,19 +156,16 @@ class ValidationTest {
 		if (testCase.valid()) {
 			assertThat("Unexpected validation errors: " + errors, errors.isEmpty(), is(true));
 		} else {
-			Integer minimumErrors = Math.max(1, testCase.errorCount());
-	        assertThat(errors.size(), greaterThanOrEqualTo(minimumErrors));
-			List<String> actualMessages =
-				    errors.stream()
+	        assertThat(errors.size(), greaterThanOrEqualTo(Math.max(1, testCase.errorCount())));
+	        errorMessages = errors.stream()
 				          .map(ValidationMessage::getMessage).map((String s) -> s.replaceAll("(?:\\n|\\r)"," ")).collect(Collectors.toList());
 			
-				String errorMessage = errors.stream().map(ValidationMessage::getMessage).reduce("", (a, b) -> a + "\n" + b);
+				errorMessage = errors.stream().map(ValidationMessage::getMessage).reduce("", (a, b) -> a + "\n" + b);
 
-				List<String> expectedMessages = testCase.expectedMessages() == null ? new ArrayList<>():  testCase.expectedMessages();
-				for (String expected : expectedMessages) {
-					// TODO: m.matchesPattern("(?s).*" + expected + ".*")
-				    assertThat(String.format("%s must contain error message: %s", errorMessage,  expected),
-				        actualMessages.stream().anyMatch(m -> m.contains(expected)),
+				expectedErrorMessages = testCase.expectedMessages() == null ? new ArrayList<>(): testCase.expectedMessages();
+				for (String expectedErrorMessage : expectedErrorMessages) {
+				    assertThat(String.format("%s must contain error message: %s", errorMessage,  expectedErrorMessage),
+				        errorMessages.stream().anyMatch(m -> m.contains(expectedErrorMessage)),
 				        is(true)
 				    );
 				}
