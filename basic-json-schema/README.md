@@ -158,17 +158,66 @@ schemaTests:
       payloadResource: schema/valid/account.json
       valid: true
   invalidCases:
+    - name: missing-customer-name
+      expectedMessages:
+        - name
+      errorCount: 1  
+      schemaResource: schema/transaction.json
+      payloadResource: schema/invalid/missing-customer-name.json
+      valid: false
+
+    - name: invalid-account-type
+      errorCount: 1  
+      expectedMessages:
+        - does not have a value
+      schemaResource: schema/transaction.json
+      payloadResource: schema/invalid/invalid-account-type.json
+      valid: false
+ 
+    - name: missing-transaction-id
+      schemaResource: schema/transaction.json
+      payloadResource: schema/invalid/missing-transaction-id.json
+      errorCount: 1  
+      expectedMessages:
+        - transactionId
+      valid: false
+
+    - name: negative-amount
+      schemaResource: schema/transaction.json
+      payloadResource: schema/invalid/negative-amount.json
+      errorCount: 1  
+      expectedMessages:
+        - minimum
+      valid: false
 
     - name: extra-field-not-allowed
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/extra-field.json
-      expectedMessage: "is not defined in the schema and the schema does not allow additional properties"
+      errorCount: 1  
+      expectedMessages:
+        - is not defined in the schema and the schema does not allow additional properties
       valid: false
 
     - name: missing-account-balance
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/missing-account-balance.json
-      expectedMessage: "required property '.*' not found"
+      errorCount: 1 
+      expectedMessages:
+       - required property
+       - not found
+      valid: false      
+ 
+    - name: multiple-errors
+      schemaResource: schema/transaction.json
+      payloadResource: schema/invalid/verybad.json
+      errorCount: 4
+      expectedMessages:
+        - transactionId
+        - minimum
+        - required property
+        # 
+        # - does not have a value
+        - additional properties
       valid: false
 ```
 
@@ -521,6 +570,24 @@ org.springframework.beans.factory.BeanCreationException: Error creating bean wit
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:658) ~[spring-beans-5.3.25.jar:5.3.25]
 	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:638) ~[spring-beans-5.3.25.jar:5.3.25]
 ```
+### New Features
+
+or onboarding pipelines, the important property is often:
+
+multiple independent schema violations
+→ all reported deterministically
+
+not merely:
+
+pass/fail
+first exception thrown
+
+In fact, one reason networknt/json-schema-validator became popular is precisely because it returns:
+
+Set<ValidationMessage>
+
+instead of throwing immediately.
+
 ### See Also
 
 

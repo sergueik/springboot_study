@@ -14,6 +14,7 @@ public record ValidationTestConfig(
         Boolean valid,
         String schemaResource,
         String payloadResource,
-        String expectedMessage
+        int errorCount,
+        List<String> expectedMessages
     ) {}
 }

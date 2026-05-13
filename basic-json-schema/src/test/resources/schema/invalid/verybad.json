@@ -1,0 +1,7 @@
+{
+  "$schema": "../transaction.json",
+  "amount": -100,
+  "accountType": "INVALID",
+  "unexpectedField": true,
+  "customer": {}
+}

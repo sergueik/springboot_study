@@ -6,41 +6,66 @@ schemaTests:
       valid: true
   invalidCases:
     - name: missing-customer-name
-      expectedMessage: "name"
+      expectedMessages:
+        - name
+      errorCount: 1
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/missing-customer-name.json
       valid: false
 
     - name: invalid-account-type
-      expectedMessage: "does not have a value"
+      errorCount: 1
+      expectedMessages:
+        - does not have a value
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/invalid-account-type.json
       valid: false
- 
+
     - name: missing-transaction-id
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/missing-transaction-id.json
-      expectedMessage: "transactionId"
+      errorCount: 1
+      expectedMessages:
+        - transactionId
       valid: false
 
     - name: negative-amount
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/negative-amount.json
-      expectedMessage: "minimum"
+      errorCount: 1
+      expectedMessages:
+        - minimum
       valid: false
 
     - name: extra-field-not-allowed
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/extra-field.json
-      expectedMessage: "is not defined in the schema and the schema does not allow additional properties"
+      errorCount: 1
+      expectedMessages:
+        - is not defined in the schema and the schema does not allow additional properties
       valid: false
 
     - name: missing-account-balance
       schemaResource: schema/transaction.json
       payloadResource: schema/invalid/missing-account-balance.json
-      expectedMessage: "required property '.*' not found"
-      valid: false      
+      errorCount: 1
+      expectedMessages:
+       - required property
+       - not found
+      valid: false
 
+    - name: multiple-errors
+      schemaResource: schema/transaction.json
+      payloadResource: schema/invalid/verybad.json
+      errorCount: 4
+      expectedMessages:
+        - transactionId
+        - minimum
+        - required property
+        # this validation is skipped because of other failures
+        # - does not have a value
+        - additional properties
+      valid: false
 app:
   # NOTE: Jackson will happily carry "$ref", "anyOf", "allOf" as JSON data
   # but it will *NOT* understand or resolve any of it as a schema engine.

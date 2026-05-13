@@ -11,8 +11,10 @@ import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -45,8 +47,10 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
-import example.ValidationTestConfig;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import java.util.stream.Stream;
 
@@ -126,11 +130,11 @@ class ValidationTest {
 			return mapper.readTree(in);
 		}
 	}
-
+/*
 	@DisplayName("validate Transaction Schema")
 	@ParameterizedTest(name = "[{index}] {0}")
 	@MethodSource("transactionCases")
-	void validateTransactionSchema(ValidationTestConfig.ValidationTestCase testCase) throws Exception {
+	void test1(ValidationTestConfig.ValidationTestCase testCase) throws Exception {
 
 		factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
 
@@ -156,4 +160,49 @@ class ValidationTest {
 					matchesPattern("(?s).*" + testCase.expectedMessage() + ".*"));
 		}
 	}
+	
+	*/
+	
+	@DisplayName("validate Transaction Schema When Multiple Defects Are Observed")
+	@ParameterizedTest(name = "[{index}] {0}")
+	@MethodSource("transactionCases")
+	void test2(ValidationTestConfig.ValidationTestCase testCase) throws Exception {
+
+		factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+
+		try (InputStream schemaStream = getClass().getClassLoader().getResourceAsStream(testCase.schemaResource())) {
+			assertThat("schema resource missing: " + testCase.schemaResource(), schemaStream, notNullValue());
+			schemaNode = mapper.readTree(schemaStream);
+			schema = factory.getSchema(schemaNode);
+		}
+
+		try (InputStream dataStream = getClass().getClassLoader().getResourceAsStream(testCase.payloadResource())) {
+			assertThat("data resource missing: " + testCase.payloadResource(), dataStream, notNullValue());
+			input = mapper.readTree(dataStream);
+		}
+
+		errors = schema.validate(input);
+
+		if (testCase.valid()) {
+			assertThat("Unexpected validation errors: " + errors, errors.isEmpty(), is(true));
+		} else {
+			Integer minimumErrors = Math.max(1, testCase.errorCount());
+	        assertThat(errors.size(), greaterThanOrEqualTo(minimumErrors));
+			List<String> actualMessages =
+				    errors.stream()
+				          .map(ValidationMessage::getMessage).map((String s) -> s.replaceAll("(?:\\n|\\r)"," ")).collect(Collectors.toList());
+			
+				String errorMessage = errors.stream().map(ValidationMessage::getMessage).reduce("", (a, b) -> a + "\n" + b);
+
+				List<String> expectedMessages = testCase.expectedMessages() == null ? new ArrayList<>():  testCase.expectedMessages();
+				for (String expected : expectedMessages) {
+					// TODO: m.matchesPattern("(?s).*" + expected + ".*")
+				    assertThat(String.format("%s must contain error message: %s", errorMessage,  expected),
+				        actualMessages.stream().anyMatch(m -> m.contains(expected)),
+				        is(true)
+				    );
+				}
+		}
+	}
+
 }
