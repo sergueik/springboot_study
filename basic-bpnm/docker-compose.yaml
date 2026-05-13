@@ -1,0 +1,33 @@
+# origin: JJ https://github.com/imixs/imixs-microservice/blob/master/docker-compose.yaml
+version: "3.6"
+services:
+  db:
+    image: postgres:13.11
+    environment:
+      POSTGRES_PASSWORD: adminadmin
+      POSTGRES_DB: workflow
+
+  app:
+    image: imixs/imixs-microservice
+    environment:
+      WILDFLY_PASS: adminadmin
+      POSTGRES_HOST: "db"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "adminadmin"
+      POSTGRES_DATABASE: "workflow"
+      POSTGRES_CONNECTION: "jdbc:postgresql://db/workflow"
+      MODEL_DEFAULT_DATA: "/home/imixs/model/"
+      MODEL_DEFAULT_DATA_OVERWRITE: "true"
+      # Metrics
+      METRICS_ENABLED: "true"
+      # Payara-Micor ENV
+      # MP_OPENAPI_SERVERS: "http://localhost:8080"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./workflow/:/home/imixs/model/
+
+  imixsadmin:
+    image: imixs/imixs-admin
+    ports:
+      - "8888:8080"

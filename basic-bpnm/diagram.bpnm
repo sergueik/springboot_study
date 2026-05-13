@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+  id="Definitions_1"
+  targetNamespace="http://example.com/junit-spring">
+
+  <bpmn:process id="Process_1" isExecutable="false">
+
+    <bpmn:laneSet id="LaneSet_1">
+      <bpmn:lane id="Lane_JUnit" name="JUnit Engine">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_MethodSource</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RunTest</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+      <bpmn:lane id="Lane_Spring" name="Spring Context">
+        <bpmn:flowNodeRef>Task_Context</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_BindProps</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Inject</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="StartEvent_1" name="Start Tests"/>
+
+    <bpmn:task id="Task_MethodSource" name="@MethodSource executed"/>
+    <bpmn:task id="Task_RunTest" name="Run Parameterized Test"/>
+
+    <bpmn:task id="Task_Context" name="Create Spring Context"/>
+    <bpmn:task id="Task_BindProps" name="Bind ConfigurationProperties"/>
+    <bpmn:task id="Task_Inject" name="Inject Beans"/>
+
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Task_MethodSource"/>
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_MethodSource" targetRef="Task_RunTest"/>
+
+  </bpmn:process>
+
+  <!-- DIAGRAM LAYOUT (required for most renderers) -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="100" y="100" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_MethodSource_di" bpmnElement="Task_MethodSource">
+        <dc:Bounds x="200" y="80" width="140" height="60"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Task_RunTest_di" bpmnElement="Task_RunTest">
+        <dc:Bounds x="380" y="80" width="140" height="60"/>
+      </bpmndi:BPMNShape>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>
