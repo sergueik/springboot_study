@@ -3,6 +3,9 @@
 This directory contains a `Dockerfile` from [zenika/alpine-chrome](https://github.com/Zenika/alpine-chrome/blob/master/Dockerfile) but switched to __maven/jdk8__ apline base [image]( https://hub.docker.com/r/zenika/alpine-maven/tags) with maven and chromium to run the test suites. Note: the `chromium` binary installs some X libraries but is runnable in headless mode in console mode.
 
 ### Usage
+
+#### Host Based Test
+
 * install the `chromium-browser` locally
 ```sh
 apt-get install -q -y chomium-browser
@@ -17,31 +20,70 @@ sudo mv chromedriver /usr/bin
 * compile test project. Note the need to remove the target directory
 
 ```sh
-cd demo.project
+cd demo
 sudo rm -fr target
 mvn test-compile
 mvn test
 cd ..
 ```
 - the test runs the chmromium headless and saves a pdf file into current directory
-* build the image with the `chromium` and `chromium-driver` installed via `apk` installer accepting that both will be relatively old versions
+
+#### Docker Test
+
+
+* Probe image availab ility in vendor mirror is needed:
 
 ```sh
+IMAGE=anapsix/alpine-java:8u202b08_jdk
+if docker manifest inspect vendor.mirror.com/docker-hub/library/$IMAGE >/dev/null 2>&1; then
+  1>&2 echo 'exists'
+else
+  1>&2 echo 'missing'
+fi
+	
+```
+* build the image with the `chromium` and `chromium-driver` installed via `apk` installer accepting that both will be relatively old versions
+
+
+```sh
+docker pull anapsix/alpine-java:8u202b08_jdk
 IMAGE='basic-maven-chromium'
 docker build -t $IMAGE -f Dockerfile .
+```
+Retry if observe intermittent
+```txt
+ERROR: http://dl-cdn.alpinelinux.org/alpine/v3.8/main: network error (check Internet connection and firewall)
+WARNING: Ignoring APKINDEX.adfa7ceb.tar.gz: No such file or directory
 ```
 * run chromium directly in the container:
 
 ```sh
 export NAME=$IMAGE
+docker run --rm --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --disable-gpu  --no-sandbox --dump-dom https://www.wikipedia.org | grep -i 'title="English"'
+```
+```text
+<li><a href="//en.wikipedia.org/" lang="en" title="English">English</a></li>
 
-docker run --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --disable-gpu  --no-sandbox --dump-dom https://www.wikipedia.org
+```
+> NOTE if using `eclipse-temurin:11-jdk-alpine` instead of `anapsix/alpine-java:8u202b08_jdk` one will need to add `glibc`/ `musl`layer - error in runtime:
+```text
+
+Error relocating /usr/lib/libshaderc_shared.so.1: spvValidatorOptionsSetFriendlyNames: symbol not found
+Error relocating /usr/lib/libglslang.so.15: spvValidatorOptionsSetWorkgroupScalarBlockLayout: symbol not found
+Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools38CreateEliminateDeadInputComponentsPassEv: symbol not found
+Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools23CreateAggressiveDCEPassEbb: symbol not found
+Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools39CreateEliminateDeadOutputComponentsPassEv: symbol not found
+Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools35CreateEliminateDeadOutputStoresPassEPSt13unordered_setIjSt4hashIjESt8equal_toIjESaIjEES7_: symbol not found
+Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools26CreateAnalyzeLiveInputPassEPSt13unordered_setIjSt4hashIjESt8equal_toIjESaIjEES7_: symbol not found
+Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools42CreateEliminateDeadInputComponentsSafePassEv: symbol not found
+Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools26CreateInterpolateFixupPassEv: symbol not found
+Error relocating /usr/lib/libglslang.so.15: spvValidatorOptionsSetAllowOffsetTextureOperand: symbol not found
 
 ```
 this will print HTML in console
 * NOTE: the version of chromium-browser in the container will be rather old, but common options (`dump-dom`, `print-to-pdf`,`screenshot`) are supported
 ```sh
-docker run -it $IMAGE sh
+docker run --rm -it $IMAGE sh
 ```
 or 
 ```sh
@@ -50,11 +92,32 @@ docker start $ID
 docker exec -it $ID sh
 ```
 - unfortunately this container instance may quit too quickly
+
+In container:
+
 ```sh
 /usr/bin/chromium-browser --headless --disable-gpu --no-sandbox --screenshot https://www.wikipedia.org
 ```
 ```text
+[0514/135855.716202:ERROR:gpu_process_transport_factory.cc(1016)] Lost UI shared context.
+[0514/135855.724092:WARNING:dns_config_service_posix.cc(333)] Failed to read DnsConfig.
+[0514/135855.877407:ERROR:gl_implementation.cc(292)] Failed to load /usr/lib/chromium/swiftshader/libGLESv2.so: Error loading shared library /usr/lib/chromium/swiftshader/libGLESv2.so: No such file or directory
+[0514/135855.883876:ERROR:viz_main_impl.cc(201)] Exiting GPU process due to errors during initialization
+[0514/135859.015076:INFO:headless_shell.cc(590)] Written to file screenshot.png.
+```
+What matters is the last line:
+```text
 Written to file screenshot.png.
+```
+```sh
+strings screenshot.png | head -5
+```
+```text
+IHDR
+sBIT
+IDATx
+AA@B
+2JMM
 ```
 ```sh
 /usr/bin/chromium-browser --headless --disable-gpu --no-sandbox --print-pdf https://www.wikipedia.org
@@ -63,12 +126,13 @@ Written to file screenshot.png.
 ```text
 Written to file output.pdf.
 ```
+> NOTE: the `print-pdf` chrome commandline option is not guaranteed to work
 
 
+* run some ultra basic regular Selenium test via maven providing the source dir via bind mount:
 
-* run some ultra basic regular Selenium test 
 ```sh
-docker run -it -v "$PWD/demo.project":/demo -w /demo $IMAGE mvn clean test
+docker run -it -v "$PWD/demo":/demo -w /demo $IMAGE mvn clean test
 ```
 for repeated runs use the commands:
 
@@ -78,9 +142,13 @@ docker start $ID
 docker exec -it -w /demo $ID mvn clean test
 ```
 which returns
-```sh
-Results :
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+```text
+[WARNING] Tests run: 2, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 11.261 s - in example.ChromiumBrowserTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[WARNING] Tests run: 2, Failures: 0, Errors: 0, Skipped: 1
+
 ```
 * NOTE: the same test will fail with Selenium __4.7.2__:
 ```text
@@ -148,7 +216,7 @@ public void downloadPDF() {
 }
 ```
 ```sh
-docker run -e DOWNLOAD_DIRECTORY=/tmp -it -v "$PWD/demo.selenium":/demo -w /demo $IMAGE mvn clean test ;  CONTAINER=$(docker container ls -a |grep $IMAGE | head -1 | cut -f1 -d ' '); docker container start $CONTAINER;docker exec -it $CONTAINER sh -c "find / -iname '*pdf' 2>/dev/null"
+docker run -e DOWNLOAD_DIRECTORY=/tmp -it -v "$PWD/demo":/demo -w /demo $IMAGE mvn clean test ;  CONTAINER=$(docker container ls -a |grep $IMAGE | head -1 | cut -f1 -d ' '); docker container start $CONTAINER;docker exec -it $CONTAINER sh -c "find / -iname '*pdf' 2>/dev/null"
 ```
 ```sh
 fe728cfc1b7e
