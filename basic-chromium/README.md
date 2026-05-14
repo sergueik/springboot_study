@@ -63,7 +63,14 @@ docker run --rm --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --d
 ```
 ```text
 <li><a href="//en.wikipedia.org/" lang="en" title="English">English</a></li>
+```
+```
+export NAME=$IMAGE
+docker run --rm --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --disable-gpu  --no-sandbox --dump-dom chrome://version
+```
 
+```text
+<html><head></head><body></body></html>
 ```
 > NOTE if using `eclipse-temurin:11-jdk-alpine` instead of `anapsix/alpine-java:8u202b08_jdk` one will need to add `glibc`/ `musl`layer - error in runtime:
 ```text
@@ -97,6 +104,14 @@ In container:
 
 ```sh
 /usr/bin/chromium-browser --headless --disable-gpu --no-sandbox --screenshot https://www.wikipedia.org
+```
+if there is a firewal issue preventing accessing `https://wikipedia.org` use the browser banner page instread:
+```sh
+export NAME=$IMAGE
+docker run --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --disable-gpu --no-sandbox --screenshot "chrome://history/"
+# chrome://whats-new/
+docker cp $NAME:/screenshot.png . 
+docker container rm -f $NAME 
 ```
 ```text
 [0514/135855.716202:ERROR:gpu_process_transport_factory.cc(1016)] Lost UI shared context.
@@ -262,6 +277,342 @@ ID=$(docker image ls  |grep 'zenika/alpine-maven' | head -1| awk '{print $1}')
 docker inspect --format='{{.Id}} {{.Parent}}'     $(docker images --filter since=$ID --quiet)
 ```
 and remove all and start over
+
+### Alternatrive CDP test
+```sh
+docker run -it -v "$PWD/demo.cdp":/demo -w /demo $IMAGE mvn clean test -Dtest=BrowserVersionTest 2>&1 | tee a.log
+```
+this produces massive output (it runs in debug mode) illustrating the browser is managed by Selenium (Chrome Driver, Chrome DevTools Protocol):
+
+```text
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running example.BrowserVersionTest
+HEADLESS: true
+...
+
+[1778787275.589][INFO]: Launching chrome: /usr/bin/chromium-browser -remote-debugging-port=9222 --disable-background-networking --disable-client-side-phishing-detection --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-gpu --disable-hang-monitor --disable-popup-blocking --disable-prompt-on-repost --disable-sync --disable-web-resources --enable-automation --enable-logging --force-fieldtrials=SiteIsolationExtensions/Control --headless --ignore-certificate-errors --ignore-ssl-errors=true --log-level=0 --metrics-recording-only --no-first-run --no-sandbox --password-store=basic --remote-debugging-port=0 --ssl-protocol=any --test-type=webdriver --use-mock-keychain --user-data-dir=/tmp/.org.chromium.Chromium.loAppp data:,
+[0514/193436.319136:ERROR:gpu_process_transport_factory.cc(1016)] Lost UI shared context.
+
+DevTools listening on ws://127.0.0.1:38983/devtools/browser/fdc65641-05a6-4ccb-b04a-0ad54fcc05f3
+[0514/193436.342378:WARNING:dns_config_service_posix.cc(333)] Failed to read DnsConfig.
+[1778787276.366][DEBUG]: DevTools request: http://localhost:38983/json/version
+[1778787276.455][DEBUG]: DevTools response: {
+   "Browser": "HeadlessChrome/68.0.3440.75",
+   "Protocol-Version": "1.3",
+   "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/68.0.3440.75 Safari/537.36",
+   "V8-Version": "6.8.275.24",
+   "WebKit-Version": "537.36 (@cf598d63a4f1b9e7cd14f2a8433276b196e3e07d)",
+   "webSocketDebuggerUrl": "ws://localhost:38983/devtools/browser/fdc65641-05a6-4ccb-b04a-0ad54fcc05f3"
+}
+
+[1778787276.455][DEBUG]: DevTools request: http://localhost:38983/json
+[1778787276.534][DEBUG]: DevTools response: [ {
+   "description": "",
+   "devtoolsFrontendUrl": "/devtools/inspector.html?ws=localhost:38983/devtools/page/B4D3A83EFF0C94B4C7BFB8983F242D95",
+   "id": "B4D3A83EFF0C94B4C7BFB8983F242D95",
+   "title": "",
+   "type": "page",
+   "url": "data:,",
+   "webSocketDebuggerUrl": "ws://localhost:38983/devtools/page/B4D3A83EFF0C94B4C7BFB8983F242D95"
+} ]
+
+[1778787276.534][DEBUG]: DevTools request: http://localhost:38983/json
+[1778787276.577][DEBUG]: DevTools response: [ {
+   "description": "",
+   "devtoolsFrontendUrl": "/devtools/inspector.html?ws=localhost:38983/devtools/page/B4D3A83EFF0C94B4C7BFB8983F242D95",
+   "id": "B4D3A83EFF0C94B4C7BFB8983F242D95",
+   "title": "",
+   "type": "page",
+   "url": "data:,",
+   "webSocketDebuggerUrl": "ws://localhost:38983/devtools/page/B4D3A83EFF0C94B4C7BFB8983F242D95"
+} ]
+
+[1778787276.577][INFO]: resolved localhost to ["::1","127.0.0.1"]
+[1778787276.604][DEBUG]: DEVTOOLS COMMAND Log.enable (id=1) {
+
+}
+[1778787276.604][DEBUG]: DEVTOOLS COMMAND DOM.getDocument (id=2) {
+
+}
+[1778787276.604][DEBUG]: DEVTOOLS COMMAND Target.setAutoAttach (id=3) {
+   "autoAttach": true,
+   "waitForDebuggerOnStart": false
+}
+[1778787276.604][DEBUG]: DEVTOOLS COMMAND Page.enable (id=4) {
+
+}
+[1778787276.604][DEBUG]: DEVTOOLS COMMAND Page.enable (id=5) {
+
+}
+[1778787276.690][DEBUG]: DEVTOOLS RESPONSE Log.enable (id=1) {
+
+}
+[1778787276.704][DEBUG]: DEVTOOLS RESPONSE DOM.getDocument (id=2) {
+   "root": {
+      "backendNodeId": 1,
+      "baseURL": "about:blank",
+      "childNodeCount": 1,
+      "children": [ {
+         "attributes": [  ],
+         "backendNodeId": 2,
+         "childNodeCount": 2,
+         "children": [ {
+            "attributes": [  ],
+            "backendNodeId": 3,
+            "childNodeCount": 0,
+            "localName": "head",
+            "nodeId": 3,
+            "nodeName": "HEAD",
+            "nodeType": 1,
+            "nodeValue": "",
+            "parentId": 2
+         }, {
+            "attributes": [  ],
+            "backendNodeId": 4,
+            "childNodeCount": 0,
+            "localName": "body",
+            "nodeId": 4,
+            "nodeName": "BODY",
+            "nodeType": 1,
+            "nodeValue": "",
+            "parentId": 2
+         } ],
+         "frameId": "B4D3A83EFF0C94B4C7BFB8983F242D95",
+         "localName": "html",
+         "nodeId": 2,
+         "nodeName": "HTML",
+         "nodeType": 1,
+         "nodeValue": "",
+         "parentId": 1
+      } ],
+      "documentURL": "",
+      "localName": "",
+      "nodeId": 1,
+      "nodeName": "#document",
+      "nodeType": 9,
+      "nodeValue": "",
+      "xmlVersion": ""
+   }
+}
+[1778787276.739][DEBUG]: DEVTOOLS RESPONSE Target.setAutoAttach (id=3) {
+
+}
+[1778787276.740][DEBUG]: DEVTOOLS RESPONSE Page.enable (id=4) {
+
+}
+[1778787276.742][DEBUG]: DEVTOOLS RESPONSE Page.enable (id=5) {
+
+}
+[1778787276.742][DEBUG]: DEVTOOLS COMMAND Runtime.enable (id=6) {
+
+}
+[1778787276.822][DEBUG]: DEVTOOLS EVENT Page.frameNavigated {
+   "frame": {
+      "id": "B4D3A83EFF0C94B4C7BFB8983F242D95",
+      "loaderId": "83F4445A670B99A62B9F4EFAC8784DA3",
+      "mimeType": "text/plain",
+      "securityOrigin": "://",
+      "url": "data:,"
+   }
+}
+[1778787276.822][DEBUG]: DEVTOOLS EVENT DOM.documentUpdated {
+
+}
+[1778787276.822][DEBUG]: DEVTOOLS COMMAND DOM.getDocument (id=7) {
+
+}
+[1778787276.823][DEBUG]: DEVTOOLS EVENT Page.loadEventFired {
+   "timestamp": 444170.79793
+}
+[1778787276.823][DEBUG]: DEVTOOLS EVENT Page.frameStoppedLoading {
+   "frameId": "B4D3A83EFF0C94B4C7BFB8983F242D95"
+}
+[1778787276.823][DEBUG]: DEVTOOLS EVENT DOM.documentUpdated {
+
+}
+[1778787276.823][DEBUG]: DEVTOOLS COMMAND DOM.getDocument (id=8) {
+
+}
+[1778787276.824][DEBUG]: DEVTOOLS EVENT Page.domContentEventFired {
+   "timestamp": 444170.80033
+}
+[1778787276.850][DEBUG]: DEVTOOLS EVENT Runtime.executionContextCreated {
+   "context": {
+      "auxData": {
+         "frameId": "B4D3A83EFF0C94B4C7BFB8983F242D95",
+         "isDefault": true
+      },
+      "id": 1,
+      "name": "",
+      "origin": "://"
+   }
+}
+[1778787276.853][DEBUG]: DEVTOOLS RESPONSE Runtime.enable (id=6) {
+
+}
+[1778787276.867][DEBUG]: DEVTOOLS RESPONSE DOM.getDocument (id=7) {
+   "root": {
+      "backendNodeId": 5,
+      "baseURL": "data:,",
+      "childNodeCount": 1,
+      "children": [ {
+         "attributes": [  ],
+         "backendNodeId": 6,
+         "childNodeCount": 2,
+         "children": [ {
+            "attributes": [  ],
+            "backendNodeId": 7,
+            "childNodeCount": 0,
+            "localName": "head",
+            "nodeId": 7,
+            "nodeName": "HEAD",
+            "nodeType": 1,
+            "nodeValue": "",
+            "parentId": 6
+         }, {
+            "attributes": [  ],
+            "backendNodeId": 8,
+            "childNodeCount": 0,
+            "localName": "body",
+            "nodeId": 8,
+            "nodeName": "BODY",
+            "nodeType": 1,
+            "nodeValue": "",
+            "parentId": 6
+         } ],
+         "frameId": "B4D3A83EFF0C94B4C7BFB8983F242D95",
+         "localName": "html",
+         "nodeId": 6,
+         "nodeName": "HTML",
+         "nodeType": 1,
+         "nodeValue": "",
+         "parentId": 5
+      } ],
+      "documentURL": "data:,",
+      "localName": "",
+      "nodeId": 5,
+      "nodeName": "#document",
+      "nodeType": 9,
+      "nodeValue": "",
+      "xmlVersion": ""
+   }
+}
+[1778787276.868][DEBUG]: DEVTOOLS RESPONSE DOM.getDocument (id=8) {
+   "root": {
+      "backendNodeId": 5,
+      "baseURL": "data:,",
+      "childNodeCount": 1,
+      "children": [ {
+         "attributes": [  ],
+         "backendNodeId": 6,
+         "childNodeCount": 2,
+         "children": [ {
+            "attributes": [  ],
+            "backendNodeId": 7,
+            "childNodeCount": 0,
+            "localName": "head",
+            "nodeId": 11,
+            "nodeName": "HEAD",
+            "nodeType": 1,
+            "nodeValue": "",
+            "parentId": 10
+         }, {
+            "attributes": [  ],
+            "backendNodeId": 8,
+            "childNodeCount": 0,
+            "localName": "body",
+            "nodeId": 12,
+            "nodeName": "BODY",
+            "nodeType": 1,
+            "nodeValue": "",
+            "parentId": 10
+         } ],
+         "frameId": "B4D3A83EFF0C94B4C7BFB8983F242D95",
+         "localName": "html",
+         "nodeId": 10,
+         "nodeName": "HTML",
+         "nodeType": 1,
+         "nodeValue": "",
+         "parentId": 9
+      } ],
+      "documentURL": "data:,",
+      "localName": "",
+      "nodeId": 9,
+      "nodeName": "#document",
+      "nodeType": 9,
+      "nodeValue": "",
+      "xmlVersion": ""
+   }
+}
+[1778787276.868][DEBUG]: DEVTOOLS COMMAND Page.enable (id=9) {
+
+}
+[1778787276.871][DEBUG]: DEVTOOLS RESPONSE Page.enable (id=9) {
+
+}
+[1778787276.871][DEBUG]: DEVTOOLS COMMAND Runtime.enable (id=10) {
+
+}
+[1778787276.873][DEBUG]: DEVTOOLS RESPONSE Runtime.enable (id=10) {
+
+}
+[1778787276.874][DEBUG]: DEVTOOLS COMMAND Runtime.evaluate (id=11) {
+   "expression": "(function() { // Copyright (c) 2012 The Chromium Authors. All rights reserved.\n// Use of this source code is governed by a BSD-style license that can be\n// found in the LICENSE file.\n\n/**\n * Enum f...",
+   "returnByValue": true
+}
+[1778787276.951][DEBUG]: DEVTOOLS RESPONSE Runtime.evaluate (id=11) {
+   "result": {
+      "type": "object",
+      "value": {
+         "status": 0,
+         "value": 1
+      }
+   }
+}
+[1778787276.951][INFO]: RESPONSE InitSession {
+   "acceptInsecureCerts": false,
+   "acceptSslCerts": false,
+   "applicationCacheEnabled": false,
+   "browserConnectionEnabled": false,
+   "browserName": "chrome",
+   "chrome": {
+      "chromedriverVersion": "2.38 (f91d32489882be7df38da3422a19713bfd113fa5)",
+      "userDataDir": "/tmp/.org.chromium.Chromium.loAppp"
+   },
+   "cssSelectorsEnabled": true,
+   "databaseEnabled": false,
+   "goog:chromeOptions": {
+      "debuggerAddress": "localhost:38983"
+   },
+   "handlesAlerts": true,
+   "hasTouchScreen": false,
+   "javascriptEnabled": true,
+   "locationContextEnabled": true,
+   "mobileEmulationEnabled": false,
+   "nativeEvents": true,
+   "networkConnectionEnabled": false,
+   "pageLoadStrategy": "normal",
+   "platform": "Linux",
+   "rotatable": false,
+   "~~~": "..."
+}
+```
+### Troubleshooting
+
+```text
+1778776694.598][INFO]: RESPONSE InitSession unknown error: Chrome failed to start: exited abnormally
+  (unknown error: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/chromium-browser is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+example.ShadowRootDomTest  Time elapsed: 1.231 sec  <<< ERROR!
+org.openqa.selenium.WebDriverException: unknown error: Chrome failed to start: exited abnormally
+  (unknown error: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/chromium-browser is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+  (Driver info: chromedriver=2.38 (f91d32489882be7df38da3422a19713bfd113fa5),platform=Linux 5.15.0-177-generic x86_64) (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 333 milliseconds
+
+```
 ### See Also
 
   * https://alpinelinux.org/releases/
