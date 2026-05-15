@@ -39,6 +39,19 @@ docker cp $NAME:/downloads .
 Successfully copied 209MB to .
 ```
 
+
+```sh
+export URL='https://www.youtube.com/watch?v=8gXkDz4yqBk&list=RD8gXkDz4yqBk&start_radio=1'; yt-dlp -x --audio-format mp3 --audio-quality 320K "$URL"
+
+URL='https://www.youtube.com/watch?v=8gXkDz4yqBk&list=RD8gXkDz4yqBk&start_radio=1'
+
+FILENAME='Sootmouth Boggie long version [8gXkDz4yqBk].mp3'
+# FILENAME=$(echo $FILENAME|sed 's|\([[]] \)|\\\\\1|g')
+FILENAME2=$(echo $FILENAME|sed 's|\[|\\\[|g; s|\]|\\\]|g; s| |\\ |g')
+export FILENAME2
+ID=$(docker container ls -a | grep $NAME|awk '{print $1}')
+docker cp $ID:"/downloads/$FILENAME" .
+```
 > NOTE: the destination directory will be world read,write, execute
 
 ### Cleanup
