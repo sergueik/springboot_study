@@ -1,8 +1,8 @@
 package example;
 
 /**
- * Copyright 2020,2021,2023,2026 Serguei Kouzmine
- */
+* Copyright 2023,2026 Serguei Kouzmine
+*/
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

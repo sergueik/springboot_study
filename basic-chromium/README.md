@@ -629,6 +629,8 @@ Mapping:
 |61|17|
 |65|21|
 
+> NOTE:  Maven/Gradle intentionally hide test sources from main compilation
+
 
 ```sh
 pushd demo
