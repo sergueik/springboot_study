@@ -108,8 +108,15 @@ In container:
 if there is a firewal issue preventing accessing `https://wikipedia.org` use the browser banner page instread:
 ```sh
 export NAME=$IMAGE
-docker run --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --disable-gpu --no-sandbox --screenshot "chrome://history/"
-# chrome://whats-new/
+docker run --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --disable-gpu --no-sandbox --screenshot "chrome://version"
+```
+
+> NOTE: the Chrome will discover it is run by application and headlessly and will provide a blank page  instead of usual
+
+![chrome version](screenshots/capture-chrome-version.png)
+
+
+```sh
 docker cp $NAME:/screenshot.png . 
 docker container rm -f $NAME 
 ```
@@ -125,14 +132,10 @@ What matters is the last line:
 Written to file screenshot.png.
 ```
 ```sh
-strings screenshot.png | head -5
+file screenshot.png
 ```
 ```text
-IHDR
-sBIT
-IDATx
-AA@B
-2JMM
+screenshot.png: PNG image data, 800 x 600, 8-bit/color RGBA, non-interlaced
 ```
 ```sh
 /usr/bin/chromium-browser --headless --disable-gpu --no-sandbox --print-pdf https://www.wikipedia.org
@@ -203,6 +206,8 @@ docker run -v demo -it $IMAGE sh
 if there is no other stopped containers 
 ```sh
 docker container prune -f
+docker image prune -f 
+docker volume prune -f
 ```
 
 selectively
@@ -611,6 +616,33 @@ org.openqa.selenium.WebDriverException: unknown error: Chrome failed to start: e
   (The process started from chrome location /usr/bin/chromium-browser is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
   (Driver info: chromedriver=2.38 (f91d32489882be7df38da3422a19713bfd113fa5),platform=Linux 5.15.0-177-generic x86_64) (WARNING: The server did not provide any stacktrace information)
 Command duration or timeout: 333 milliseconds
+
+```
+Mapping:
+
+
+|Major|	Java|
+|-----|-----|
+|52|8|
+|55|11|
+|57|13|
+|61|17|
+|65|21|
+
+
+```sh
+pushd demo
+mvn dependency:copy-dependencies compile test-compile
+popd
+```
+
+```sh
+docker run -it -v "$PWD/demo.cdp":/demo -w /demo -e USE_CHROMIUM=true $IMAGE java -cp target/test-classes:target/classes:target/dependency/* example.Application
+```
+```sh
+pushd demo.cdp
+mvn dependency:copy-dependencies compile test-compile
+popd
 
 ```
 ### See Also

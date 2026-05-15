@@ -1,6 +1,7 @@
 package example;
+
 /**
- * Copyright 2020,2021,2023 Serguei Kouzmine
+ * Copyright 2020,2021,2023,2026 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,7 +30,7 @@ public class BrowserVersionTest extends BaseTest {
 	}
 
 	@Test
-	public void test() {
+	public void chromeVersionTest() {
 		// Arrange
 		try {
 			CDPClient.setDebug(true);
@@ -39,13 +40,12 @@ public class BrowserVersionTest extends BaseTest {
 			// Assert
 			result = new JSONObject(CDPClient.getResponseMessage(id, null));
 			System.err.println("Get Broswer Version: " + result);
-			for (String field : Arrays.asList(new String[] { "protocolVersion",
-					"product", "revision", "userAgent", "jsVersion" })) {
+			for (String field : Arrays
+					.asList(new String[] { "protocolVersion", "product", "revision", "userAgent", "jsVersion" })) {
 				assertThat("Expect the key:" + field, result.has(field), is(true));
 			}
 
-		} catch (JSONException | InterruptedException | MessageTimeOutException
-				| IOException | WebSocketException e) {
+		} catch (JSONException | InterruptedException | MessageTimeOutException | IOException | WebSocketException e) {
 			System.err.println("Exception (ignored): " + e.toString());
 		}
 	}

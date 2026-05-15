@@ -104,9 +104,7 @@ public class ChromiumBrowserTest {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-
 		}
-
 		String source = driver.getPageSource();
 		System.err.println(source);
 		// NOTE: page is blank - must be js or chrome detecting the headless run
@@ -131,14 +129,13 @@ public class ChromiumBrowserTest {
 		assertThat(file.exists(), is(true));
 	}
 
-	@Ignore // unstable
+	@Ignore // firewall
 	@Test
 	public void canSearch() {
 		url = "https://www.wikipedia.org/";
 		driver.get(url);
 		driver.findElement(By.cssSelector(cssSelector)).sendKeys(text);
 		driver.findElement(By.cssSelector("button[type=\"submit\"]")).click();
-
 		assertThat(driver.getTitle(), containsString(text));
 	}
 
