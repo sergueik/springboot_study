@@ -118,12 +118,21 @@ sftp \
 ```sh
 mvn clean package
 ```
-```
-java -cp target/java-ftp-client-quickstart-1.2-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload
+```sh
+touch SFTP_UPLOADED_WITH_KEY.txt
+java -cp target/java-ftp-client-quickstart-1.3-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt
 ```
 ```text
 INFO: Authentication succeeded (publickey).
 File upload successful
+```
+```sh
+java -cp target/java-ftp-client-quickstart-1.3-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientDownload -filepath SFTP_UPLOADED_WITH_KEY.txt
+
+```
+```text
+INFO: Authentication succeeded (publickey).
+File download successfully
 ```
 ### Troubleshooting
 
