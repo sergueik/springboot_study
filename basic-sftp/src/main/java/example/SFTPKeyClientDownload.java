@@ -1,4 +1,4 @@
-package com.rodosaenz.ftp.client;
+package example;
 
 import java.io.File;
 import org.apache.commons.vfs2.FileObject;
@@ -13,7 +13,7 @@ import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
  *
  * @author Rodolfo
  */
-public class SFTPKeyClientUpload {
+public class SFTPKeyClientDownload {
 
     public static void main(String[] args) {
 
@@ -25,7 +25,7 @@ public class SFTPKeyClientUpload {
             StandardFileSystemManager manager = new StandardFileSystemManager();
 
             //check if the file exists
-            String filepath = "SFTP_UPLOADED_WITH_KEY.txt";
+            String filepath = "SFTP_DOWNLOADED_WITH_KEY.txt";
             File file = new File(filepath);
             if (!file.exists()) {
                 throw new RuntimeException("Error. Local file not found");
@@ -40,33 +40,30 @@ public class SFTPKeyClientUpload {
                     opts, "no");
             SftpFileSystemConfigBuilder.getInstance().setUserDirIsRoot(opts, true);
             SftpFileSystemConfigBuilder.getInstance().setTimeout(opts, 10000);
+			String sshDir = System.getenv().getOrDefault("SFTP_SSH_DIR",
+					System.getProperty("user.home") + "/.ssh_keys/simple-sftp");
+			IdentityInfo identities = new IdentityInfo(new File(sshDir + "/sftpuser_key"), // Private key
+					new File(sshDir + "/sftpuser_key.pub"), // Public key
+					null // Passphrase
+			);
 
-
-	    
-	    
-            IdentityInfo identites = new IdentityInfo(
-                    new File("/home/sergueik/.ssh_keys/simple-sftp/sftpuser_key"), // Private-Key (OpenSSH Format)
-                    new File("/home/sergueik/.ssh_keys/simple-sftp/sftpuser_key.pub"), // Public-Key (OpenSSH Format)
-                    null); // Passphrase
-            SftpFileSystemConfigBuilder.getInstance().setIdentityInfo(opts, identites);
-
+			SftpFileSystemConfigBuilder.getInstance().setIdentityInfo(opts, identities);
+            
             //Create the SFTP URI using the host name, userid, no password,  remote path and file name
-            String sftpUri = "sftp://" + user + ":@" + server + ":2222" + "/data/" + filepath;
 
+            String sftpUri = "sftp://" + user + "@" + server + ":2222" + "/data/" + filepath;
             // Create local file object
             FileObject localFile = manager.resolveFile(file.getAbsolutePath());
 
             // Create remote file object
             FileObject remoteFile = manager.resolveFile(sftpUri, opts);
 
-            // Copy local file to sftp server
-            remoteFile.copyFrom(localFile, Selectors.SELECT_SELF);
-            System.out.println("File upload successful");
-
+            // Copy local file from sftp server
+            localFile.copyFrom(remoteFile, Selectors.SELECT_SELF);
+            System.out.println("File download successful");
+            
         } catch (FileSystemException e) {
-		// org.apache.commons.vfs2.FileSystemException: Badly formed URI "sftp://sftpuser@localhost/share/SFTP_UPLOADED_WITH_KEY.txt".
-		System.out.println(e.toString());
-		e.printStackTrace();
+		System.err.println(e.toString());
         }
     }
 }

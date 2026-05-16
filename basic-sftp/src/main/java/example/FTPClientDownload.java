@@ -1,4 +1,4 @@
-package com.rodosaenz.ftp.client;
+package example;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -10,9 +10,7 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
 /**
- * http://www.codejava.net/java-se/networking/ftp/java-ftp-file-download-tutorial-and-example
- *
- * @author Rodolfo
+ * based on http://www.codejava.net/java-se/networking/ftp/java-ftp-file-download-tutorial-and-example
  */
 public class FTPClientDownload {
 

@@ -85,12 +85,45 @@ yes
 Connected to localhost.
 sftp> exit
 ```
+> NOTE: That warning only appears when using native CLI sftp, not Java.
 
+And it happens because:
+
+* Docker container regenerates host keys on restart
+* OpenSSH sees a different ED25519 key each time
+* it assumes MITM risk → refuses silently unless overridden
+
+
+The java code already has
+```java
+SftpFileSystemConfigBuilder.getInstance()
+    .setStrictHostKeyChecking(opts, "no");
+```
+This fully disables:
+
+* verification
+* persistence
+* prompts
+
+So test becomes stateless.
+One can also:
+```sh
+sftp \
+  -o StrictHostKeyChecking=no \
+  -o UserKnownHostsFile=/dev/null \
+  -i ~/.ssh_keys/simple-sftp/sftpuser_key \
+  -P 2222 \
+  sftpuser@localhost
+```
 ```sh
 mvn clean package
 ```
 ```
-java -cp target/java-ftp-client-quickstart-1.1-SNAPSHOT.jar:target/lib/* com.rodosaenz.ftp.client.SFTPKeyClientUpload
+java -cp target/java-ftp-client-quickstart-1.2-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload
+```
+```text
+INFO: Authentication succeeded (publickey).
+File upload successful
 ```
 ### Troubleshooting
 
@@ -366,6 +399,22 @@ Caused by: java.lang.ClassCastException: class java.lang.Integer cannot be cast 
 	... 8 more
 
 ```
+fixed by
+```java
+-            SftpFileSystemConfigBuilder.getInstance().setTimeout(opts, 10000);
++SftpFileSystemConfigBuilder.getInstance()
++    .setConnectTimeout(^M
++        opts,
++        java.time.Duration.ofSeconds(10)
++    );
+ 
++SftpFileSystemConfigBuilder.getInstance()
++    .setSessionTimeout(
++        opts,
++        java.time.Duration.ofSeconds(10)
++    );
+```
+root cause: incremetal maven runs were not necessarily running a fully consistent build graph every time.
 ### Cleanup
 ```
 ID=$(docker container ls | grep $IMAGE | awk '{print $1}')
