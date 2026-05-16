@@ -4,7 +4,7 @@ This directory contains a `Dockerfile` from [zenika/alpine-chrome](https://githu
 
 ### Usage
 
-#### Host Based Test
+#### Host Based Test (Optional)
 
 * install the `chromium-browser` locally
 ```sh
@@ -40,10 +40,8 @@ if docker manifest inspect vendor.mirror.com/docker-hub/library/$IMAGE >/dev/nul
 else
   1>&2 echo 'missing'
 fi
-	
 ```
 * build the image with the `chromium` and `chromium-driver` installed via `apk` installer accepting that both will be relatively old versions
-
 
 ```sh
 docker pull anapsix/alpine-java:8u202b08_jdk
@@ -64,7 +62,7 @@ docker run --rm --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --d
 ```text
 <li><a href="//en.wikipedia.org/" lang="en" title="English">English</a></li>
 ```
-```
+```sh
 export NAME=$IMAGE
 docker run --rm --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --disable-gpu  --no-sandbox --dump-dom chrome://version
 ```
@@ -74,7 +72,6 @@ docker run --rm --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --d
 ```
 > NOTE if using `eclipse-temurin:11-jdk-alpine` instead of `anapsix/alpine-java:8u202b08_jdk` one will need to add `glibc`/ `musl`layer - error in runtime:
 ```text
-
 Error relocating /usr/lib/libshaderc_shared.so.1: spvValidatorOptionsSetFriendlyNames: symbol not found
 Error relocating /usr/lib/libglslang.so.15: spvValidatorOptionsSetWorkgroupScalarBlockLayout: symbol not found
 Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools38CreateEliminateDeadInputComponentsPassEv: symbol not found
@@ -85,10 +82,9 @@ Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools26CreateAnalyzeLiveInput
 Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools42CreateEliminateDeadInputComponentsSafePassEv: symbol not found
 Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools26CreateInterpolateFixupPassEv: symbol not found
 Error relocating /usr/lib/libglslang.so.15: spvValidatorOptionsSetAllowOffsetTextureOperand: symbol not found
-
 ```
 this will print HTML in console
-* NOTE: the version of chromium-browser in the container will be rather old, but common options (`dump-dom`, `print-to-pdf`,`screenshot`) are supported
+> NOTE: the version of chromium-browser in the container will be rather old, but common options (`dump-dom`, `print-to-pdf`,`screenshot`) are supported
 ```sh
 docker run --rm -it $IMAGE sh
 ```
@@ -98,10 +94,7 @@ ID=$(docker container ls -a |grep $IMAGE| head -1 | awk '{print $1}')
 docker start $ID
 docker exec -it $ID sh
 ```
-- unfortunately this container instance may quit too quickly
-
 In container:
-
 ```sh
 /usr/bin/chromium-browser --headless --disable-gpu --no-sandbox --screenshot https://www.wikipedia.org
 ```
@@ -114,7 +107,6 @@ docker run --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --disabl
 > NOTE: the Chrome will discover it is run by application and headlessly and will provide a blank page  instead of usual
 
 ![chrome version](screenshots/capture-chrome-version.png)
-
 
 ```sh
 docker cp $NAME:/screenshot.png . 
@@ -150,7 +142,7 @@ Written to file output.pdf.
 * run some ultra basic regular Selenium test via maven providing the source dir via bind mount:
 
 ```sh
-docker run -it -v "$PWD/demo":/demo -w /demo $IMAGE mvn clean test
+docker run -it -v $PWD/demo:/demo -w /demo $IMAGE mvn clean test
 ```
 for repeated runs use the commands:
 
@@ -166,9 +158,8 @@ which returns
 [INFO] Results:
 [INFO] 
 [WARNING] Tests run: 2, Failures: 0, Errors: 0, Skipped: 1
-
 ```
-* NOTE: the same test will fail with Selenium __4.7.2__:
+> NOTE: the same test will fail with Selenium __4.7.2__:
 ```text
 [INFO]
 [INFO] Results:
@@ -629,21 +620,26 @@ Mapping:
 |61|17|
 |65|21|
 
+> NOTE:  Maven/Gradle intentionally hide test sources from main compilation
+
 
 ```sh
 pushd demo
 mvn dependency:copy-dependencies compile test-compile
 popd
 ```
-
 ```sh
-docker run -it -v "$PWD/demo.cdp":/demo -w /demo -e USE_CHROMIUM=true $IMAGE java -cp target/test-classes:target/classes:target/dependency/* example.Application
+docker run -it -v $PWD/demo:/demo -w /demo -e USE_CHROMIUM=true $IMAGE java -cp target/test-classes:target/classes:target/dependency/* example.Application
 ```
 ```sh
 pushd demo.cdp
 mvn dependency:copy-dependencies compile test-compile
 popd
+```
 
+
+```sh
+docker run -it -v $PWD/demo.cdp:/demo -w /demo -e USE_CHROMIUM=true $IMAGE java -cp target/test-classes:target/classes:target/dependency/* example.Application
 ```
 ### See Also
 

@@ -233,6 +233,191 @@ In enterprise contexts, the decision is not simply “can we build a UI”, but 
 > “Does the UI provide enough business value to justify the additional security, governance, and maintenance overhead compared to a standardized OpenAPI interface?”
 
 For many backend services, Swagger/OpenAPI already satisfies the required interaction and documentation needs without introducing additional approval complexity.
+### Code-First vs. API-First Race
+
+__Swagger__ specification / __API-first__ thinking — older
+__Swagger__ code-first generation from annotations — came slightly later as the ecosystem matured
+
+But the story is messy because early __Swagger__ evolved organically around Java/JAX-RS and both styles existed very early.
+
+Short chronology
+Pre-Swagger era (before ~2010)
+
+People mainly did:
+
+  * WSDL/XSD first (SOAP world)
+  * Handwritten __REST__ docs
+  * Framework-specific annotations
+  * WADL attempts (mostly failed to gain love)
+
+The dominant mentality in enterprise Java was often *"code is the source of truth"*.
+
+Early __Swagger__ (~2010–2011)
+
+__Swagger__ was created at Wordnik by Tony Tam.
+
+Original __Swagger__ idea:
+
+  * describe __REST__ APIs in a machine-readable format
+  * generate docs/UI/clients
+
+The specification itself was the foundational invention.
+
+So philosophically:
+
+* __API__-first is the older/core concept in __Swagger__.
+
+* The early __Swagger__ JSON description format predates the huge annotation ecosystems.
+
+__Swagger__ 1.x era (~2011–2014)
+
+This is where archaeology begins.
+
+The ecosystem rapidly became:
+
+  * Java annotation heavy
+  * JAX-RS integrated
+  * "scan the code and emit __Swagger__.json"
+
+This became what many developers remember as __Swagger__.
+
+Typical flow:
+
+```java
+@Api
+@Path("/users")
+public class UserController {
+   @ApiOperation(...)
+}
+```
+Then __Swagger__ scanned annotations and generated docs.
+
+This was effectively:
+
+  * code-first
+  * reflection-based
+  * annotation-driven
+
+And honestly, for years this was the dominant real-world adoption pattern.
+
+__Swagger__ 2.0 / OpenAPI era (~2014–2017)
+
+__Swagger__ 2.0 became much more formalized
+
+Then:
+
+  * __Swagger__ Specification was donated to the Linux Foundation
+renamed to __OpenAPI__ Initiative
+  * __Swagger__ became more tooling branding
+
+This is where:
+
+  * __API-first__ became heavily promoted
+  * contract-first design became fashionable
+  * generators became serious
+
+Typical __API-first__ workflow:
+```yaml
+openapi: 3.0.0
+paths:
+  /users:
+```
+then:
+
+  * generate server stubs
+  * generate clients
+  * generate docs
+
+
+Which is “older”?
+
+If you mean:
+
+Philosophically / architecturally
+
+API-first is older.
+
+The specification concept is the root invention.
+
+In practical enterprise Java adoption
+
+Many teams encountered:
+
+annotations
+springfox
+__Swagger__-ui
+
+auto-generated docs
+
+So code-first became culturally dominant for a long time.
+
+Especially in:
+
+  * __Spring MVC__
+  * __JAX-RS__
+  * Jersey
+  * early __Spring Boot__
+
+
+#### Relative age comparison
+
+|Style |	Approx Era	| Notes|
+|------|------------------------|------|
+|API-first / contract-first	|~2010 |root concept	original __Swagger__ DNA|
+|Code-first annotations	|~2011–2013 |mass adoption	exploded in Java ecosystem|
+|OpenAPI-first mature tooling	|~2016+	|generators became serious|
+
+Why *code-first* exploded first
+
+Because enterprise teams already had:
+
+  * giant Java codebases
+  * existing controllers
+  * existing endpoints
+
+Adding annotations was politically easy:
+
+```java
+@ApiOperation("Create user")
+```
+Rewriting architecture around __YAML__ contracts was not.
+
+So code-first won adoption initially.
+
+Modern trend (2020s)
+
+*New* greenfield systems increasingly prefer:
+
+  * API-first
+  * OpenAPI-first
+  * schema-first
+
+especially for:
+
+  * microservices
+  * SDK generation
+  * governance
+  * cross-language orgs
+  * platform engineering
+
+But code-first still dominates many Spring shops because:
+
+  * less ceremony
+  * faster iteration
+  * fewer duplicated files
+  * easier for small teams
+  * The irony
+
+__Swagger__/OpenAPI started as:
+
+  * *"describe APIs independently of implementation"*
+
+But the Java ecosystem rapidly transformed it into:
+
+  * *"generate documentation from annotations glued onto implementation"*
+
+That tension still exists today.
+
 ### See Also
   
  * [Generate Spring Boot REST Client project with Swagger](https://www.baeldung.com/spring-boot-rest-client-swagger-codegen)

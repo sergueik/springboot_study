@@ -1,7 +1,7 @@
 package example;
 
 /**
- * Copyright 2020,2021,2022 Serguei Kouzmine
+ * Copyright 2022,2026 Serguei Kouzmine
  */
 import java.io.IOException;
 import java.util.Objects;
@@ -26,8 +26,7 @@ public class BaseTest {
 	protected static UIUtils uiUtils;
 	protected static CDPClient CDPClient;
 	protected int id;
-	private final static int debugPort = Integer
-			.parseInt(TestUtils.getPropertyEnv("debugPort", "0"));
+	private final static int debugPort = Integer.parseInt(TestUtils.getPropertyEnv("debugPort", "0"));
 	// used to override the default port 9222
 	protected static boolean debug = false;
 	protected static boolean headless = false; // false;
@@ -55,12 +54,10 @@ public class BaseTest {
 			utils.setDebugPort(debugPort);
 		}
 		// force the headless flag to be true to support Unix console execution
-		if (!(Utils.getOsName().equals("windows"))
-				&& !(System.getenv().containsKey("DISPLAY"))) {
+		if (!(Utils.getOsName().equals("windows")) && !(System.getenv().containsKey("DISPLAY"))) {
 			headless = true;
 		}
-		if (System.getenv().containsKey("HEADLESS")
-				&& System.getenv("HEADLESS").matches("(?:true|yes|1)")){
+		if (System.getenv().containsKey("HEADLESS") && System.getenv("HEADLESS").matches("(?:true|yes|1)")) {
 			headless = true;
 		}
 
@@ -88,12 +85,12 @@ public class BaseTest {
 	public static void afterClass() {
 		if (!Objects.isNull(CDPClient))
 			// NOTE: java.lang.NullPointerException
-			try{
+			try {
 				CDPClient.disconnect();
 			} catch (Exception e) {
 				// ignore
 			}
-	
+
 		try {
 			utils.stopChrome();
 		} catch (WebDriverException e) {

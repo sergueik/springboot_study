@@ -21,6 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Copyright 2023,2026 Serguei Kouzmine
+ */
+
 public class ChromiumBrowserTest {
 
 	private WebDriver driver;
