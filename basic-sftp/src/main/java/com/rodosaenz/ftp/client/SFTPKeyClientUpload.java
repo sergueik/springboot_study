@@ -45,13 +45,13 @@ public class SFTPKeyClientUpload {
 	    
 	    
             IdentityInfo identites = new IdentityInfo(
-                    new File("~/.ssh_keys/simple-sftp/sftpuser_key"), // Private-Key (OpenSSH Format)
-                    new File("~/.ssh_keys/simple-sftp/sftpuser_key.pub"), // Public-Key (OpenSSH Format)
+                    new File("/home/sergueik/.ssh_keys/simple-sftp/sftpuser_key"), // Private-Key (OpenSSH Format)
+                    new File("/home/sergueik/.ssh_keys/simple-sftp/sftpuser_key.pub"), // Public-Key (OpenSSH Format)
                     null); // Passphrase
             SftpFileSystemConfigBuilder.getInstance().setIdentityInfo(opts, identites);
 
             //Create the SFTP URI using the host name, userid, no password,  remote path and file name
-            String sftpUri = "sftp://" + user + "@" + server + ":2222" + "/home/sftpuser/data/" + filepath;
+            String sftpUri = "sftp://" + user + ":@" + server + ":2222" + "/data/" + filepath;
 
             // Create local file object
             FileObject localFile = manager.resolveFile(file.getAbsolutePath());
@@ -65,7 +65,8 @@ public class SFTPKeyClientUpload {
 
         } catch (FileSystemException e) {
 		// org.apache.commons.vfs2.FileSystemException: Badly formed URI "sftp://sftpuser@localhost/share/SFTP_UPLOADED_WITH_KEY.txt".
-		System.err.println(e.toString());
+		System.out.println(e.toString());
+		e.printStackTrace();
         }
     }
 }
