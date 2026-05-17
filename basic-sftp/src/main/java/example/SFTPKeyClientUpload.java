@@ -84,6 +84,7 @@ public class SFTPKeyClientUpload {
 			SftpFileSystemConfigBuilder.getInstance().setSessionTimeout(opts, java.time.Duration.ofSeconds(10));
 			String sshDir = System.getenv().getOrDefault("SFTP_SSH_DIR",
 					System.getProperty("user.home") + "/" + keydir);
+			// https://commons.apache.org/proper/commons-vfs/commons-vfs2/apidocs/org/apache/commons/vfs2/provider/sftp/IdentityInfo.html
 			IdentityInfo identities = new IdentityInfo(new File(sshDir + "/sftpuser_key"), // Private key
 					new File(sshDir + "/sftpuser_key.pub"), // Public key
 					null // Passphrase
