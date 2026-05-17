@@ -31,7 +31,8 @@ public class Application {
 		String server = "localhost";
 		String scheme = "http";
 		int port = 8200;
-		String dir = "sftp";
+		String dir = null;
+		String key = null;
 
 		if (cli.containsKey("debug")) {
 			debug = true;
@@ -40,9 +41,9 @@ public class Application {
 		if (debug)
 			System.err.println(cli.keySet());
 
-		if (cli.containsKey("help") || !cli.containsKey("token")) {
-			System.err.println(String.format("Usage: jar "
-					+ "-token <token> -server <server> -port <port> -dir <dir>\r\n"));
+		if (cli.containsKey("help") || !cli.containsKey("token") || !cli.containsKey("dir") || !cli.containsKey("key")) {
+			System.err.println(
+					String.format("Usage: jar " + "-token <token> -server <server> -port <port> -dir <dir> -key <key>\r\n"));
 			return;
 		}
 		if (cli.containsKey("server"))
@@ -54,14 +55,17 @@ public class Application {
 
 		if (cli.containsKey("dir"))
 			dir = cli.get("dir");
+		if (cli.containsKey("key"))
+			key = cli.get("key");
 
 		try {
 			String vault_server_url = scheme + "://" + server + ":" + port;
 			vault = new Vault(vault_server_url, token);
 
 			VaultResponse vaultResponse = vault.read(dir);
-			System.out.println(vaultResponse.getData().get("public_key"));
-			System.out.println(vaultResponse.getData().get("srivate_key"));
+			@SuppressWarnings("unchecked")
+			Map<String, Object> data = (Map<String, Object>) vaultResponse.getData().get("data");
+			System.out.println(String.format("key: %s value: %s", key, data.get(key)));
 
 		} catch (Exception e) {
 			System.out.println(e.toString() + " " + e.getMessage());
@@ -69,7 +73,6 @@ public class Application {
 		}
 	}
 
-	// Extremely simple CLI parser: -key value
 	private static Map<String, String> parseArgs(String[] args) {
 		Map<String, String> map = new HashMap<>();
 		for (int i = 0; i < args.length - 1; i++) {

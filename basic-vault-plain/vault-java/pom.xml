@@ -6,10 +6,9 @@
     <groupId>se.jhaals</groupId>
     <artifactId>vault-java</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <description>Java API for the Vault secret store</description>
     <url>https://github.com/jhaals/vault-java</url>
-
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -17,18 +16,15 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
     <scm>
         <url>https://github.com/jhaals/vault-java</url>
         <connection>scm:git:git@github.com:jhaals/vault-java.git</connection>
         <developerConnection>scm:git:git@github.com:jhaals/vault-java.git</developerConnection>
     </scm>
-
     <issueManagement>
         <system>Github issues</system>
         <url>https://github.com/jhaals/vault-java/issues</url>
     </issueManagement>
-
     <developers>
         <developer>
             <name>Johan Haals</name>
@@ -37,7 +33,6 @@
             <id>jhaals</id>
         </developer>
     </developers>
-
     <dependencies>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
@@ -71,23 +66,19 @@
     <artifactId>jaxb-api</artifactId>
     <version>2.3.1</version>
 </dependency>
-
 <!-- JAXB Implementation (Reference Implementation) -->
 <dependency>
     <groupId>org.glassfish.jaxb</groupId>
     <artifactId>jaxb-runtime</artifactId>
     <version>2.3.1</version>
 </dependency>
-
 <!-- JavaBeans Activation Framework (JAF) -->
 <dependency>
     <groupId>javax.activation</groupId>
     <artifactId>javax.activation-api</artifactId>
     <version>1.2.0</version>
 </dependency>
-
     </dependencies>
-
     <build>
         <plugins>
             <plugin>

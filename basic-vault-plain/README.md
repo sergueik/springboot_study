@@ -186,7 +186,8 @@ this wll print
 No value found at secret/data/application
 ```
 ```
-docker exec -e VAULT_TOKEN=$TOKEN -e VAULT_ADDR=http://127.0.0.1:8200/ $NAME vault kv put secret/application public_key=testuser secret_key=test123
+# docker exec -e VAULT_TOKEN=$TOKEN -e VAULT_ADDR=http://127.0.0.1:8200/ $NAME vault kv put secret/application public_key=testuser secret_key=test123
+docker exec -e VAULT_TOKEN=$TOKEN -e VAULT_ADDR=http://127.0.0.1:8200/ $NAME vault kv put secret/application public_key="$(cat ~/.ssh_keys/simple-sftp/sftpuser_key.pub)"
 ```
 ===== Secret Path =====
 secret/data/application
@@ -204,24 +205,24 @@ version            1
 repeat
 ```sh
 docker exec -e VAULT_TOKEN=$TOKEN -e VAULT_ADDR=http://127.0.0.1:8200/ $NAME vault kv get secret/application
+```
+```text
 ===== Secret Path =====
 secret/data/application
 
 ======= Metadata =======
 Key                Value
 ---                -----
-created_time       2026-05-17T15:36:19.427219926Z
+created_time       2026-05-17T16:45:53.800619817Z
 custom_metadata    <nil>
 deletion_time      n/a
 destroyed          false
-version            1
+version            2
 
 ======= Data =======
 Key           Value
 ---           -----
-public_key    testuser
-secret_key    test123
-
+public_key    ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK1Z10lDTa9ThKWzLedGHMnbCkbfNT6aaJz3X5nHVqiC
 ```
 * print the full JSON
 ```sh
@@ -229,23 +230,21 @@ vault kv get -format=json secret/application| jq -r '.'
 ```
 this will print
 ```json
-
 {
-  "request_id": "1082b408-df32-2079-93b9-9e5691ac3769",
+  "request_id": "1f664a6b-2c51-5967-b1f8-b7fb3b404e4c",
   "lease_id": "",
   "lease_duration": 0,
   "renewable": false,
   "data": {
     "data": {
-      "login": "testuser",
-      "password": "test123"
+      "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK1Z10lDTa9ThKWzLedGHMnbCkbfNT6aaJz3X5nHVqiC sftpuser@sftp-server"
     },
     "metadata": {
-      "created_time": "2023-07-06T01:38:37.055689815Z",
+      "created_time": "2026-05-17T16:45:53.800619817Z",
       "custom_metadata": null,
       "deletion_time": "",
       "destroyed": false,
-      "version": 5
+      "version": 2
     }
   },
   "warnings": null
@@ -261,7 +260,7 @@ run the application on development host
 
 ```sh
 pushd app
-java -cp target/vault-0.1.0-SNAPSHOT.jar:target/lib/* example.Application -token c7e6d2f3-dc1a-a841-cf29-0cf7bec8ed42 -server localhost -port 8200 2>&1 |tee a.log
+java -cp target/vault-0.2.0-SNAPSHOT.jar:target/lib/* example.Application -token c7e6d2f3-dc1a-a841-cf29-0cf7bec8ed42 -server localhost -port 8200 -dir secret/data/application -key public_key  2>&1 |tee a.log
 ```
 
 this will fail
@@ -357,8 +356,7 @@ javax.ws.rs.ProcessingException: Error reading entity from input stream.
 
 ```
 ```sh
-java -cp target/vault-0.1.0-SNAPSHOT.jar:target/lib/* example.Application -token c7e6d2f3-dc1a-a841-cf29-0cf7bec8ed42 -server localhost -dir secret/data/application  -port 8200 2>&1 |tee a.log
-/v1/secret/data/application
+java -cp target/vault-0.2.0-SNAPSHOT.jar:target/lib/* example.Application -token c7e6d2f3-dc1a-a841-cf29-0cf7bec8ed42 -server localhost -dir secret/data/application -key public_key -port 8200 2>&1 |tee a.log
 /v1/secret/data/application
 HTTP Status: 200
 HTTP-Read: 
@@ -424,12 +422,25 @@ Caused by: com.fasterxml.jackson.databind.JsonMappingException: Can not deserial
 
 
 ```
+updated the `VaultResponse.java`
+```text
+HTTP Status: 200
 
+
+javax.ws.rs.ProcessingException: Error reading entity from input stream. Error reading entity from input stream.
+javax.ws.rs.ProcessingException: Error reading entity from input stream.
+	at org.glassfish.jersey.message.internal.InboundMessageContext.readEntity(InboundMessageContext.java:868)
+
+caused by: com.fasterxml.jackson.databind.JsonMappingException: 
+Can not deserialize instance of java.lang.String out of START_OBJECT token
+ at [Source: 
+ org.glassfish.jersey.message.internal.ReaderInterceptorExecutor$UnCloseableInputStream@1890516e; line: 1, column: 113] 
+ (through reference chain: 
+ se.jhaals.VaultResponse["data"]->java.util.LinkedHashMap["data"])
+```
 this will print to console the starnard Spring banned and possibly few ignorable warnings, then print the sensitive data received from Vault:
 ```text
-Login: testuser
-Password: test123
-
+key: public_key value: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK1Z10lDTa9ThKWzLedGHMnbCkbfNT6aaJz3X5nHVqiC 
 ```
 ### See Also:
 
