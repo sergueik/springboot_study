@@ -130,7 +130,7 @@ mvn clean package
 ```
 ```sh
 touch SFTP_UPLOADED_WITH_KEY.txt
-java -cp target/java-sftp-0.3.2-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt -debug true
+java -cp target/java-sftp-0.3.3-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt -debug true
 ```
 will see a lot of output concluded with
 ```text
@@ -142,7 +142,7 @@ INFO: Authentication succeeded (publickey).
 File upload successfully
 ```
 ```sh
-java -cp target/java-sftp-0.3.2-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientDownload -filepath SFTP_UPLOADED_WITH_KEY.txt
+java -cp target/java-sftp-0.3.3-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientDownload -filepath SFTP_UPLOADED_WITH_KEY.txt
 ```
 ```text
 INFO: Authentication succeeded (publickey).
@@ -151,7 +151,7 @@ File download successfully
 ```sh
 mkdir -p a/b/c
 touch a/b/c/SFTP_UPLOADED_WITH_KEY.txt
-java -cp target/java-sftp-0.3.2-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath a/b/c/SFTP_UPLOADED_WITH_KEY.txt
+java -cp target/java-sftp-0.3.3-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath a/b/c/SFTP_UPLOADED_WITH_KEY.txt
 ```
 ```sh
 IMAGE='pacnpal/simple-sftp-server'
@@ -521,7 +521,7 @@ OpenJDK Runtime Environment (build 17.0.18+8-Ubuntu-122.04.1)
 
 examine if application still works (it does):
 ```sh
-java -cp target/java-sftp-0.3.2-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt -debug true 2>&1 | tee a.log
+java -cp target/java-sftp-0.3.3-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt -debug true 2>&1 | tee a.log
 ```
 ```text
 [debug, filepath]

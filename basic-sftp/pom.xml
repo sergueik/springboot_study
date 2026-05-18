@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>java-sftp</artifactId>
-  <version>0.3.2-SNAPSHOT</version>
+  <version>0.3.3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -14,7 +14,7 @@
     <bcprov.version>1.78.1</bcprov.version>
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-net.version>3.9.0</commons-net.version>
-    <commons-vfs2.version>2.9.0</commons-vfs2.version>
+    <commons-vfs2.version>2.10.0</commons-vfs2.version>
     <jsch.version>2.27.7</jsch.version>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
   </properties>
