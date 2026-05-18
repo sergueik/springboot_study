@@ -8,6 +8,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.Selectors;
+import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.sftp.IdentityInfo;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
@@ -15,6 +16,7 @@ import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
 import java.io.File;
 import java.math.BigDecimal;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -66,6 +68,8 @@ public class SFTPKeyClientUpload {
 		try {
 
 			StandardFileSystemManager manager = new StandardFileSystemManager();
+			if (debug)
+				System.out.println("schemes: " + Arrays.toString(VFS.getManager().getSchemes()));
 
 			// check if the file exists
 			File file = new File(filepath);

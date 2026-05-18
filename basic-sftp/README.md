@@ -12,6 +12,8 @@ Follow the instructions from [docker hub](https://hub.docker.com/r/pacnpal/simpl
 
 ```sh
 IMAGE='pacnpal/simple-sftp-server'
+REPO=''
+if [ ! -z "$REPO" ]; then IMAGE="${REPO}/${IMAGE}" ; fi
 docker pull $IMAGE
 ```
 
@@ -76,7 +78,11 @@ remove the old key:
 ```sh
 sed -i '7d' ~/.ssh/known_hosts
 ```
-you may need to repeat
+you may need to repeat:
+```sh
+sed -i '6d' ~/.ssh/known_hosts
+sed -i '5d' ~/.ssh/known_hosts
+```
 ```txt
 The authenticity of host '[localhost]:2222 ([127.0.0.1]:2222)' can't be established.
 ED25519 key fingerprint is SHA256:EjGKbMD2iRX8cRTeLN7GGoHyWh9H9ZefyDqD41xJyjk.
@@ -124,15 +130,18 @@ mvn clean package
 ```
 ```sh
 touch SFTP_UPLOADED_WITH_KEY.txt
-java -cp target/java-sftp-0.3.0-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt
+java -cp target/java-sftp-0.3.1-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt -debug true
 ```
 will see a lot of output concluded with
 ```text
+[debug, filepath]
+Schemes: [zip, par, ftps, res, ftp, sar, war, file, gz, tmp, ear, ejb3, jar, sftp, ram]
+
 INFO: Authentication succeeded (publickey).
 File upload successfully
 ```
 ```sh
-java -cp target/java-sftp-0.3.0-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientDownload -filepath SFTP_UPLOADED_WITH_KEY.txt
+java -cp target/java-sftp-0.3.1-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientDownload -filepath SFTP_UPLOADED_WITH_KEY.txt
 ```
 ```text
 INFO: Authentication succeeded (publickey).
@@ -141,7 +150,7 @@ File download successfully
 ```sh
 mkdir -p a/b/c
 touch a/b/c/SFTP_UPLOADED_WITH_KEY.txt
-java -cp target/java-sftp-0.3.0-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath a/b/c/SFTP_UPLOADED_WITH_KEY.txt
+java -cp target/java-sftp-0.3.1-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath a/b/c/SFTP_UPLOADED_WITH_KEY.txt
 ```
 ```sh
 IMAGE='pacnpal/simple-sftp-server'
@@ -441,7 +450,21 @@ fixed by
 +        java.time.Duration.ofSeconds(10)
 +    );
 ```
-root cause: incremetal maven runs were not necessarily running a fully consistent build graph every time.
+root cause: incremental maven runs were not necessarily running a fully consistent build graph every time.
+
+```text
+FileSystemException: Could not find file with URI: "sftp://sftpuser@localhost:2222/data/file.txt" because if is a relative pth and no base URI was provided.
+```
+
+the claim about URI `sftp://...` becomes *"relative path, no base URI"*
+
+means:
+
+* sftp provider is NOT being discovered at runtime
+
+Even though the jars are pinned and present.
+
+
 ### Cleanup
 ```
 ID=$(docker container ls | grep $IMAGE | awk '{print $1}')
@@ -450,7 +473,6 @@ docker container rm $ID
 docker volume prune -f
 docker image rm $IMAGE
 ```
-
 
 ### Background: Record vs. Lombok Legacy
 
@@ -692,8 +714,9 @@ Many modern teams now use:
    * https://github.com/emberstack/docker-sftp - .net core (__.Net__ __6.0__) SFTP Server in Docker
    * [FTPS vs. SFTP vs. SCP](https://www.baeldung.com/cs/transfer-files-protocols)
    * [RFC4253](https://datatracker.ietf.org/doc/html/rfc4253)
-
-
+   * [Difference Between PPK and PEM (Conversion Guide for SSH Access) - GeeksforGeeks](https://www.geeksforgeeks.org/devops/difference-between-ppk-and-pem/)
+   * [Convert a .pem file to .ppk or a .ppk file to .pem](https://repost.aws/knowledge-center/ec2-ppk-pem-conversion)
+ 
 --
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
