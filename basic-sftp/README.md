@@ -101,8 +101,7 @@ And it happens because:
 
 The java code already has
 ```java
-SftpFileSystemConfigBuilder.getInstance()
-    .setStrictHostKeyChecking(opts, "no");
+SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(opts, "no");
 ```
 This fully disables:
 
@@ -125,7 +124,7 @@ mvn clean package
 ```
 ```sh
 touch SFTP_UPLOADED_WITH_KEY.txt
-java -cp target/java-sftp-0.2.0-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt
+java -cp target/java-sftp-0.3.0-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt
 ```
 will see a lot of output concluded with
 ```text
@@ -133,13 +132,26 @@ INFO: Authentication succeeded (publickey).
 File upload successfully
 ```
 ```sh
-java -cp target/java-sftp-0.2.0-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientDownload -filepath SFTP_UPLOADED_WITH_KEY.txt
-
+java -cp target/java-sftp-0.3.0-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientDownload -filepath SFTP_UPLOADED_WITH_KEY.txt
 ```
 ```text
 INFO: Authentication succeeded (publickey).
 File download successfully
 ```
+```sh
+mkdir -p a/b/c
+touch a/b/c/SFTP_UPLOADED_WITH_KEY.txt
+java -cp target/java-sftp-0.3.0-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath a/b/c/SFTP_UPLOADED_WITH_KEY.txt
+```
+```sh
+IMAGE='pacnpal/simple-sftp-server'
+ID=$(docker container ls | grep $IMAGE | awk '{print $1}')
+docker exec -it $ID ls /home/sftpuser/data/a/b/c
+```
+```text 
+/home/sftpuser/data/a/b/c/SFTP_UPLOADED_WITH_KEY.txt
+```
+
 ### Troubleshooting
 
 ```sh
@@ -438,34 +450,34 @@ docker container rm $ID
 docker volume prune -f
 docker image rm $IMAGE
 ```
-### See Also
 
-   * https://github.com/emberstack/docker-sftp - .net core (__.Net__ __6.0__) SFTP Server in Docker
 
 ### Background: Record vs. Lombok Legacy
+
 For new Spring Framework / Spring Boot applications with no legacy baggage, Java record is increasingly considered the cleaner default for DTOs, immutable config objects, API payloads, and simple domain carriers.
 
 Quick age comparison:
 
-Technology	First appeared	Relative age
-JavaBean / POJO style	late 1990s	ancient but battle-tested
-Lombok	~2009	mature workaround era
-Java records	preview 2020, stable in Java 16 (2021)	modern language-level solution
+|Technology	| First appeared	|Age |
+|-----------|-------------------|----|
+|JavaBean / POJO style	|late 1990s	|ancient but battle-tested|
+|Lombok	|~2009	|mature workaround era|
+|Java records	|preview 2020, stable in Java 16 (2021)	|modern language-level solution|
 
 So yes — records are much younger, but unlike many trends, they are not merely "new abstraction layers". They are a core Java language feature designed largely to eliminate accidental boilerplate that Lombok had been patching for years.
 
 Why many new Spring apps prefer records
 
 Example:
-
+```java
 public record CustomerDto(
     String id,
     String name,
     int age
 ) {}
-
+```
 instead of:
-
+```java
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -475,6 +487,7 @@ public class CustomerDto {
     private String name;
     private int age;
 }
+```
 Main advantages of records
 1. Native Java feature
 
@@ -482,29 +495,30 @@ No annotation processor magic.
 
 That alone removes:
 
-Lombok plugin issues
-IDE inconsistencies
-weird compilation edge cases
-annotation processing headaches
-incremental build surprises
+  * Lombok plugin issues
+  * IDE inconsistencies
+  * weird compilation edge cases
+  * annotation processing headaches
+  * incremental build surprises
 
 This is especially nice in:
 
-Maven multi-module builds
-CI pipelines
-mixed IDE teams
-containerized builds
+  * Maven multi-module builds
+  * CI pipelines
+  * mixed IDE teams
+  * containerized builds
+
 2. Immutability by default
 
 Records are naturally immutable.
 
 That aligns extremely well with:
 
-REST DTOs
-Kafka/event payloads
-config snapshots
-request/response models
-concurrent programming
+  * REST DTOs
+  * Kafka/event payloads
+  * config snapshots
+  * request/response models
+  * concurrent programming
 
 You avoid a large class of bugs caused by mutable state.
 
@@ -520,10 +534,10 @@ That is stronger and clearer than a mutable POJO with 8 Lombok annotations.
 
 Lombok can become annotation soup:
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+  * `@Data`
+  * `@Builder`
+  * `@NoArgsConstructor`
+  * `@AllArgsConstructor`
 
 Records expose structure directly in the constructor signature.
 
@@ -531,11 +545,11 @@ Records expose structure directly in the constructor signature.
 
 Modern Spring Boot versions handle records well for:
 
-JSON serialization/deserialization (Jackson)
-configuration properties
-request bodies
-validation
-constructor injection
+  * JSON serialization/deserialization (Jackson)
+  * configuration properties
+  * request bodies
+  * validation
+  * constructor injection
 
 In 2026 this is no longer experimental territory.
 
@@ -546,56 +560,58 @@ Teams raised on setters often initially fight records.
 
 Typical confusion:
 
-"How do I partially update?"
-"Where do setters go?"
-"How do frameworks inject values?"
+ * *How do I partially update?*
+ * *Where do setters go?*
+ * *How do frameworks inject values?*
 
 This is mostly a mindset transition.
 
 2. JPA entities are still awkward
 
-Records are usually not ideal as full Hibernate / JPA entities.
+Records are usually not ideal as full __Hibernate__ / __JPA__ entities.
 
 Reasons:
 
-proxies
-lazy loading
-no no-args constructor
-identity mutation expectations
+  * proxies
+  * lazy loading
+  * no no-args constructor
+  * identity mutation expectations
 
 Common modern pattern:
 
-Layer	Recommendation
-REST DTOs	records
-config objects	records
-event payloads	records
-internal immutable models	records
-JPA entities	traditional classes
+|Layer|	Recommendation|
+|-----|---------------|
+|REST DTOs|records|
+|config objects	|records|
+|event payloads| records|
+|internal immutable models| records|
+|JPA entities|traditional classes|
+
 3. Some frameworks still assume mutable beans
 
 Mostly older libraries.
 
 Occasionally you hit:
 
-reflection oddities
-bean conventions
-mapper assumptions
+* reflection oddities
+* bean conventions
+* mapper assumptions
 
 But this is steadily shrinking.
 
 4. Builders are less natural
 
 Very large records can become ugly:
-
+```java
 new CustomerDto(a,b,c,d,e,f,g,h,i)
-
+```
 Solutions:
 
 static factories
 compact constructors
 dedicated builders where truly needed
 
-Some teams still keep Lombok @Builder around selectively.
+Some teams still keep Lombok `@Builder` around selectively
 
 DI and property loading
 
@@ -603,31 +619,31 @@ You mentioned the reconciliation effort around DI/config.
 
 That pain was real around:
 
-Spring Boot 2.2–2.5 era
-older Jackson
-older binding systems
+  * Spring Boot 2.2–2.5 era
+  * older Jackson
+  * older binding systems
 
 Modern Spring heavily embraces constructor-based binding anyway, which aligns perfectly with records.
 
 Example:
-
+```java
 @ConfigurationProperties("app")
 public record AppProperties(
     String url,
     int timeout
 ) {}
-
+```
 This now feels natural rather than exotic.
 
 Architectural impact
 
 Records subtly push teams toward:
 
-immutability
-constructor injection
-explicit modeling
-functional-ish design
-reduced hidden mutation
+* immutability
+* constructor injection
+* explicit modeling
+* functional-ish design
+* reduced hidden mutation
 
 That generally improves long-term maintainability.
 
@@ -641,29 +657,29 @@ Practical recommendation for greenfield Spring apps
 
 A very common modern compromise:
 
-Use case	Recommendation
-DTOs	records
-API payloads	records
-Config classes	records
-Events/messages	records
-Simple immutable domain models	records
-JPA entities	classic classes
-Extremely mutable objects	classic classes
-Huge optional-field construction flows	maybe Lombok builder
-Short version
+|Use case	|Recommendation|
+|-----------|--------------|
+|DTOs	    |records|
+|API payloads |records   |
+|Config classes | records |
+|Events/messages | records |
+|Simple immutable domain models | records |
+|JPA entities | classic classes |
+|Extremely mutable objects | classic classes |
+|Huge optional-field construction flows | maybe Lombok builder|
 
 For new Spring applications:
 
-records are usually the cleaner default
-Spring support is mature now
-Lombok is no longer automatically necessary
-immutable-by-default architecture tends to age better
+  * records are usually the cleaner default
+  * Spring support is mature now
+  * Lombok is no longer automatically necessary
+  * immutable-by-default architecture tends to age better
 
 But:
 
-JPA/Hibernate still favors traditional classes
-very mutation-heavy models may remain awkward with records
-teams need a mental shift from setter-centric JavaBeans thinking
+  * JPA/Hibernate still favors traditional classes
+  * very mutation-heavy models may remain awkward with records
+  * teams need a mental shift from setter-centric JavaBeans thinking
 
 Many modern teams now use:
 
@@ -671,5 +687,13 @@ Many modern teams now use:
 
 ---
 
+### See Also
+
+   * https://github.com/emberstack/docker-sftp - .net core (__.Net__ __6.0__) SFTP Server in Docker
+   * [FTPS vs. SFTP vs. SCP](https://www.baeldung.com/cs/transfer-files-protocols)
+   * [RFC4253](https://datatracker.ietf.org/doc/html/rfc4253)
+
+
+--
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
