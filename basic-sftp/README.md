@@ -130,18 +130,19 @@ mvn clean package
 ```
 ```sh
 touch SFTP_UPLOADED_WITH_KEY.txt
-java -cp target/java-sftp-0.3.1-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt -debug true
+java -cp target/java-sftp-0.3.2-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt -debug true
 ```
 will see a lot of output concluded with
 ```text
 [debug, filepath]
-Schemes: [zip, par, ftps, res, ftp, sar, war, file, gz, tmp, ear, ejb3, jar, sftp, ram]
+Schemes: [zip, par, ftps, res, ftp, sar, war, file, gz, tmp, eSchemes: [zip, par, ftps, res, ftp, sar, war, file, gz, tmp, ear, ejb3, jar, sftp, ram]
+ar, ejb3, jar, sftp, ram]
 
 INFO: Authentication succeeded (publickey).
 File upload successfully
 ```
 ```sh
-java -cp target/java-sftp-0.3.1-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientDownload -filepath SFTP_UPLOADED_WITH_KEY.txt
+java -cp target/java-sftp-0.3.2-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientDownload -filepath SFTP_UPLOADED_WITH_KEY.txt
 ```
 ```text
 INFO: Authentication succeeded (publickey).
@@ -150,7 +151,7 @@ File download successfully
 ```sh
 mkdir -p a/b/c
 touch a/b/c/SFTP_UPLOADED_WITH_KEY.txt
-java -cp target/java-sftp-0.3.1-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath a/b/c/SFTP_UPLOADED_WITH_KEY.txt
+java -cp target/java-sftp-0.3.2-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath a/b/c/SFTP_UPLOADED_WITH_KEY.txt
 ```
 ```sh
 IMAGE='pacnpal/simple-sftp-server'
@@ -464,7 +465,73 @@ means:
 
 Even though the jars are pinned and present.
 
+run in `debug` on JDK 17 and see
+```text
+Schemes: [zip, par, ftps, res, ftp, sar, wrs, file, gz, tmp, ear, ejb3, jar, ram]
+```
 
+- no `sftp`.
+
+Why is so ?
+The Commons VFS registers protocols via `ServiceLoader` scanning of provider descriptor
+
+The Commons VFS is notorious for this:
+
+  * Provider loading failures are often swallowed unless explicitly logged
+
+* exclude `hadoop`:
+
+```sh
+mvn dependency:tree | grep hadoop
+[INFO] |  +- org.apache.hadoop:hadoop-hdfs-client:jar:3.3.1:compile
+```
+```sh
+mvn dependency:tree  > dependency.log
+```
+Added exclusion:
+
+```xml
+  <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-vfs2</artifactId>
+      <version>${commons-vfs2.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+```
+
+#### Install Java 17 (and keep 11)
+```sh
+sudo apt update
+sudo apt install -y openjdk-17-jdk openjdk-11-jdk
+```
+confirm 
+```sh
+java -version
+```
+```text
+penjdk version "17.0.18" 2026-01-20
+OpenJDK Runtime Environment (build 17.0.18+8-Ubuntu-122.04.1)
+```
+
+examine if application still works (it does):
+```sh
+java -cp target/java-sftp-0.3.2-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt -debug true 2>&1 | tee a.log
+```
+```text
+[debug, filepath]
+schemes: [zip, par, ftps, res, ftp, sar, war, file, gz, tmp, ear, ejb3, jar, sftp, ram]
+May 18, 2026 4:58:42 PM org.apache.commons.vfs2.provider.sftp.SftpClientFactory log
+INFO: Connecting to localhost port 2222
+...
+INFO: Authentication succeeded (publickey).
+File upload successfuly
+```
 ### Cleanup
 ```
 ID=$(docker container ls | grep $IMAGE | awk '{print $1}')
@@ -582,9 +649,9 @@ Teams raised on setters often initially fight records.
 
 Typical confusion:
 
- * *How do I partially update?*
- * *Where do setters go?*
- * *How do frameworks inject values?*
+  * *How do I partially update?*
+  * *Where do setters go?*
+  * *How do frameworks inject values?*
 
 This is mostly a mindset transition.
 
