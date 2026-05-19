@@ -151,11 +151,11 @@ run the application on development host
 
 ```sh
 pushd app
-java -cp target/vault-0.2.0-SNAPSHOT.jar:target/lib/* example.Application -token c7e6d2f3-dc1a-a841-cf29-0cf7bec8ed42 -server localhost -port 8200 -dir secret/data/application -key public_key  2>&1 |tee a.log
+java -cp target/vault-0.3.0-SNAPSHOT.jar:target/lib/* example.Application -token c7e6d2f3-dc1a-a841-cf29-0cf7bec8ed42 -server localhost -port 8200 -dir secret/data/application -key public_key  2>&1 |tee a.log
 ```
 when run on Docker Toolbox update the command to
 ```cmd
-java -cp target/vault-0.2.0-SNAPSHOT.jar;target\lib\* example.Application -token c7e6d2f3-dc1a-a841-cf29-0cf7bec8ed42 -server 192.168.99.100 -port 8200 -dir secret/data/application -key public_key
+java -cp target/vault-0.3.0-SNAPSHOT.jar;target\lib\* example.Application -token c7e6d2f3-dc1a-a841-cf29-0cf7bec8ed42 -server 192.168.99.100 -port 8200 -dir secret/data/application -key public_key
 ```
 this will print
 ```text

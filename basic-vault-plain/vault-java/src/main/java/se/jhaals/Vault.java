@@ -6,9 +6,13 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.net.ConnectException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,35 +57,37 @@ public class Vault {
 	}
 
 	/**
-     * Read value from vault
-     *
-     * @param path the vault path where secret is stored
-     * @return the response object containing your secret
-     * @throws VaultException if API returns anything except 200
-     */
-    public VaultResponse read(String path) {
-	// System.out.println(String.format("/v1/%s",path));
-        WebTarget target = baseTarget.path(String.format("/v1/%s", path));
-        Response response = null;
-        try {
-            response = target.request()
-                    .accept("application/json")
-                    .header("X-Vault-Token", this.vaultToken)
-                    .get(Response.class);
-            // System.out.println("HTTP Status: " + response.getStatus());        
-            if (response.getStatus() == 200) {
-		// TODO: add debug flag
-                // System.out.println("HTTP-Read: " + response.readEntity(String.class));
-                return response.readEntity(VaultResponse.class);
-            }
-            ErrorResponse error = response.readEntity(ErrorResponse.class);
-            throw new VaultException(response.getStatus(), error.getErrors());
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-        }
-    }
+	 * Read value from vault
+	 *
+	 * @param path the vault path where secret is stored
+	 * @return the response object containing your secret
+	 * @throws VaultException if API returns anything except 200
+	 */
+	public VaultResponse read(String path) {
+		// System.out.println(String.format("/v1/%s",path));
+		WebTarget target = baseTarget.path(String.format("/v1/%s", path));
+		Response response = null;
+		try {
+			response = target.request().accept("application/json").header("X-Vault-Token", this.vaultToken)
+					.get(Response.class);
+			// System.out.println("HTTP Status: " + response.getStatus());
+			if (response.getStatus() == 200) {
+				// TODO: add debug flag
+				// System.out.println("HTTP-Read: " + response.readEntity(String.class));
+				return response.readEntity(VaultResponse.class);
+			}
+			ErrorResponse error = response.readEntity(ErrorResponse.class);
+			List<String> messages = Arrays.asList(new String[] { "HTTP Status: " + response.getStatus() });
+			messages.addAll(error.getErrors());
+			throw new VaultException(response.getStatus(), messages);
+		} catch (ProcessingException e) {
+			throw new VaultException(-1, Arrays.asList(new String[] { "Connection refused" }));
+		} finally {
+			if (response != null) {
+				response.close();
+			}
+		}
+	}
 
 	/**
 	 * Write key/value secret to vault

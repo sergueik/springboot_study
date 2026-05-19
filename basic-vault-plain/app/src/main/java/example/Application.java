@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import se.jhaals.Vault;
+import se.jhaals.VaultException;
 import se.jhaals.VaultResponse;
 
 public class Application {
@@ -41,9 +42,10 @@ public class Application {
 		if (debug)
 			System.err.println(cli.keySet());
 
-		if (cli.containsKey("help") || !cli.containsKey("token") || !cli.containsKey("dir") || !cli.containsKey("key")) {
-			System.err.println(
-					String.format("Usage: jar " + "-token <token> -server <server> -port <port> -dir <dir> -key <key>\r\n"));
+		if (cli.containsKey("help") || !cli.containsKey("token") || !cli.containsKey("dir")
+				|| !cli.containsKey("key")) {
+			System.err.println(String
+					.format("Usage: jar " + "-token <token> -server <server> -port <port> -dir <dir> -key <key>\r\n"));
 			return;
 		}
 		if (cli.containsKey("server"))
@@ -66,7 +68,8 @@ public class Application {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> data = (Map<String, Object>) vaultResponse.getData().get("data");
 			System.out.println(String.format("key: %s value: %s", key, data.get(key)));
-
+		} catch (VaultException e) {
+			System.out.println("Vault Exception: " + String.join("\n", e.getMessages()));
 		} catch (Exception e) {
 			System.out.println(e.toString() + " " + e.getMessage());
 			e.printStackTrace();

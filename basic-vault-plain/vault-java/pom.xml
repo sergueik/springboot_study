@@ -6,7 +6,7 @@
     <groupId>se.jhaals</groupId>
     <artifactId>vault-java</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <description>Java API for the Vault secret store</description>
     <url>https://github.com/jhaals/vault-java</url>
     <licenses>

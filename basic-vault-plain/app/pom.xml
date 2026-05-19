@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>vault</artifactId>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -13,7 +13,7 @@
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-net.version>3.9.0</commons-net.version>
     <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
-    <vault-java.version>0.0.2</vault-java.version>
+    <vault-java.version>0.0.3</vault-java.version>
   </properties>
   <dependencies>
     <dependency>
