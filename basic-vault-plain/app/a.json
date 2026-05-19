@@ -1,2 +1,0 @@
-{"request_id":"162d5ea8-eb01-d9eb-4a51-1195811d5b3f","lease_id":"","renewable":false,"lease_duration":0,"data":{"data":{"public_key":"testuser","secret_key":"test123"},"metadata":{"created_time":"2026-05-17T15:36:19.427219926Z","custom_metadata":null,"deletion_time":"","destroyed":false,"version":1}},"wrap_info":null,"warnings":null,"auth":null}
-
