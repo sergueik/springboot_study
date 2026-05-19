@@ -4,7 +4,15 @@ Upgraded replica of [rodossaenz/java-ftp-client-quickstart](https://github.com/r
 
 Java samples to download and upload files to SFTP server hosted in Docker [pacnpal/simple-sftp-server](https://hub.docker.com/r/pacnpal/simple-sftp-server)
 
-Confirmed Upload /Download file from SFTP using key-based authentication
+> NOTE: The class implements __JDBC__-style resource addressing
+  * object-storage semantics
+  * URI-driven transport abstraction
+
+rathet that the old stateful FTP session model.
+
+And that aligns very naturally with how __Commons VFS__ wants to be used
+
+Confirmed Upload /Download file from __SFTP__ server using key-based authentication
 
 ### Usage
 
@@ -129,29 +137,26 @@ sftp \
 mvn clean package
 ```
 ```sh
-touch SFTP_UPLOADED_WITH_KEY.txt
-java -cp target/java-sftp-0.3.3-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt -debug true
+touch file.txt
+java -cp target/java-sftp-0.4.0-SNAPSHOT.jar:target/lib/* example.Runner -filepath file.txt -operation upload
 ```
 will see a lot of output concluded with
 ```text
-[debug, filepath]
-Schemes: [zip, par, ftps, res, ftp, sar, war, file, gz, tmp, eSchemes: [zip, par, ftps, res, ftp, sar, war, file, gz, tmp, ear, ejb3, jar, sftp, ram]
-ar, ejb3, jar, sftp, ram]
-
 INFO: Authentication succeeded (publickey).
-File upload successfully
+Done: upload
 ```
 ```sh
-java -cp target/java-sftp-0.3.3-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientDownload -filepath SFTP_UPLOADED_WITH_KEY.txt
+rm file.txt
+java -cp target/java-sftp-0.4.0-SNAPSHOT.jar:target/lib/* example.Runner -filepath file.txt -operation download
 ```
 ```text
 INFO: Authentication succeeded (publickey).
-File download successfully
+Done: download
 ```
 ```sh
 mkdir -p a/b/c
-touch a/b/c/SFTP_UPLOADED_WITH_KEY.txt
-java -cp target/java-sftp-0.3.3-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath a/b/c/SFTP_UPLOADED_WITH_KEY.txt
+touch a/b/c/file.txt
+java -cp target/java-sftp-0.4.0-SNAPSHOT.jar:target/lib/* example.Runner -filepath a/b/c/file.txt -operation upload
 ```
 ```sh
 IMAGE='pacnpal/simple-sftp-server'
@@ -159,9 +164,25 @@ ID=$(docker container ls | grep $IMAGE | awk '{print $1}')
 docker exec -it $ID ls /home/sftpuser/data/a/b/c
 ```
 ```text 
-/home/sftpuser/data/a/b/c/SFTP_UPLOADED_WITH_KEY.txt
+/home/sftpuser/data/a/b/c/file.txt
 ```
 
+```sh
+rm a/b/c/file.txt
+java -cp target/java-sftp-0.4.0-SNAPSHOT.jar:target/lib/* example.Runner -filepath a/b/c/file.txt -operation download
+```
+```text
+INFO: Authentication succeeded (publickey).
+Done: download
+```
+
+
+```sh
+ls a/b/c
+```
+```text
+file.txt
+```
 ### Troubleshooting
 
 ```sh
@@ -521,7 +542,7 @@ OpenJDK Runtime Environment (build 17.0.18+8-Ubuntu-122.04.1)
 
 examine if application still works (it does):
 ```sh
-java -cp target/java-sftp-0.3.3-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt -debug true 2>&1 | tee a.log
+java -cp target/java-sftp-0.4.0-SNAPSHOT.jar:target/lib/* example.SFTPKeyClientUpload -filepath SFTP_UPLOADED_WITH_KEY.txt -debug true 2>&1 | tee a.log
 ```
 ```text
 [debug, filepath]
