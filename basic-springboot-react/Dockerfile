@@ -1,9 +1,4 @@
 FROM alpine:3.15
-# NOTE: with  alpine:3.9.5 Docker is failing to build image due to unresolved symbols:
-#
-# Error relocating /usr/local/bin/node: _ZNSt7__cxx1119basic_ostringstreamIcSt11char_traitsIcESaIcEEC1Ev: symbol not found
-# Error relocating /usr/local/bin/node: _ZNSt19_Sp_make_shared_tag5_S_eqERKSt9type_info: symbol not found
-# Error relocating /usr/local/bin/node: _ZNSt7__cxx1118basic_stringstreamIcSt11char_traitsIcESaIcEEC1Ev: symbol not found
 
 ENV NODE_VERSION 18.10.0
 
@@ -11,6 +6,7 @@ RUN addgroup -g 1000 node \
     && adduser -u 1000 -G node -s /bin/sh -D node \
     && apk add --no-cache \
         libstdc++ \
+        openjdk8-jre \
     && apk add --no-cache --virtual .build-deps \
         curl \
     && ARCH= && alpineArch="$(apk --print-arch)" \
