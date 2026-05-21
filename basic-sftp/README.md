@@ -802,9 +802,13 @@ Many modern teams now use:
    * https://github.com/emberstack/docker-sftp - .net core (__.Net__ __6.0__) SFTP Server in Docker
    * [FTPS vs. SFTP vs. SCP](https://www.baeldung.com/cs/transfer-files-protocols)
    * [RFC4253](https://datatracker.ietf.org/doc/html/rfc4253)
-   * [Difference Between PPK and PEM (Conversion Guide for SSH Access) - GeeksforGeeks](https://www.geeksforgeeks.org/devops/difference-between-ppk-and-pem/)
+   * [Difference Between PPK and PEM (Conversion Guide for SSH Access) - GeeksforGeeks](https://www.geeksforgeeks.org/devops/difference-between-ppk-and-pem/) - note that even the __PPK__ even is simply a *PuTTY Private Key* - that is how narrow its usage is - while PEM abbreviation means *Privacy Enhanced Mail* - that is how old the stadard is.
    * [Convert a .pem file to .ppk or a .ppk file to .pem](https://repost.aws/knowledge-center/ec2-ppk-pem-conversion)
- 
+   * [SshNet.Keygen](https://github.com/darinkes/SshNet.Keygen) - SSH.NET Extension to generate and export Authentication Keys in OpenSSH and PuTTY Format. Documents but not contain implementatio of the `PrivateKeyFile` class
+   * [SshNet.PuttyKeyFile](https://github.com/darinkes/SshNet.PuttyKeyFile) - `SSH.NET` Extension to read and use Authentication Keys in "PuTTY-Format".
+   * [SSH.NET](https://github.com/sshnet/SSH.NET) - Secure Shell (SSH) library for .NET
+
 --
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
