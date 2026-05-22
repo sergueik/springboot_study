@@ -29,7 +29,7 @@ import example.dto.UploadRequest;
 //
 
 @RestController
-@RequestMapping("/api/upload")
+@RequestMapping("/upload")
 public class ObjectController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ObjectController.class);

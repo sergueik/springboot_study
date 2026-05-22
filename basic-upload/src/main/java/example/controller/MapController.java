@@ -12,8 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import example.dto.UploadRequest;
 
-@RestController
-@RequestMapping("/api/upload")
 // uplods potentially heavy payloads, expects submitter to compose the JSON with unusual layout:
 /*
  * { "foo": "alpha", "bar": "beta", "filename": "sample.txt", "contentType":
@@ -25,6 +23,8 @@ import example.dto.UploadRequest;
 // Line1
 // Line2
 //
+@RestController
+@RequestMapping("/upload")
 public class MapController {
 
 	private static final Logger logger = LoggerFactory.getLogger(MapController.class);
