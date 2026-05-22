@@ -193,6 +193,241 @@ spring.servlet.multipart.max-request-size = 10KB
 ```
 therefore to test the `org.springframework.web.multipart.MaxUploadSizeExceededException` exception one needs to upload a real file
 
+### Background Info
+
+the original flow was effectively:
+```
+browser uploads binary
+ ->
+server converts to base64
+ ->
+server returns base64 string
+ ->
+React stores giant string in browser memory
+ ->
+user clicks upload
+ ->
+browser sends giant JSON payload
+ ->
+backend decodes again
+ ->
+processing
+```
+Meaning:
+
+the file crosses the network **twice**
+
+and
+
+gets transformed unnecessarily in the middle.
+
+So the system is paying for:
+
+|Step	|Cost|
+|-------|----|
+|upload raw file	|expensive |
+|encode to base64	|CPU |
+|return base64 to browser	|very expensive |
+|React/browser stores payload	|memory |
+|upload base64 JSON again|	extremely expensive|
+|decode base64	|CPU|
+|actual work	|finally|
+
+
+```sh
+curl \
+  -F "foo=alpha" \
+  -F "bar=beta" \
+  -F "file=@input.dat" \
+  http://host/upload
+```
+is automatically multipart.
+
+The traditional web page 
+```html
+<form enctype="multipart/form-data" method="post">
+  <input type="file" name="file">
+  <input type="submit">
+</form>
+``` 
+
+instructs the browser to  handled:
+
+* multipart boundaries
+* streaming
+* buffering
+* content disposition
+* filenames
+* upload state
+* memory management
+
+which is does automatically - The developer barely had to think about transport mechanics
+
+SPA frameworks shifted responsibility into JavaScript:
+
+browser
+ ->
+JS application runtime
+ ->
+virtual page construction
+ ->
+state orchestration
+ ->
+custom API choreography
+
+So suddenly frontend code became responsible for:
+
+transport
+serialization
+retries
+orchestration
+upload state
+encoding choices
+
+That enabled:
+
+richer UX
+dynamic interactions
+client-side workflows
+
+but also encouraged:
+
+reinventing lower-level mechanisms poorly.
+3. File upload is one of the clearest examples
+
+Old world:
+
+<form enctype=multipart/form-data>
+
+Done.
+
+Modern world:
+
+FileReader
+ArrayBuffer
+Blob
+base64
+fetch
+Redux state
+upload progress
+JSON wrapping
+
+Many more moving parts.
+
+Sometimes for legitimate UX reasons.
+Sometimes because:
+
+the frontend became a general-purpose application platform.
+4. Ironically browsers were already very good at uploads
+
+Native multipart upload had decades of optimization:
+
+streaming
+low memory overhead
+interoperability
+content-type handling
+
+And tools like curl naturally matched that model.
+
+Which is why your earlier instinct:
+
+multipart was trivial for clients
+
+was correct in the traditional web architecture sense.
+
+5. React did not create the problem alone
+
+The deeper shift was:
+
+“everything becomes an API”
+
+Once backend communication became:
+
+JSON-first
+SPA-driven
+transport-abstracted
+
+teams began preferring:
+
+single payload shape
+DTO uniformity
+OpenAPI friendliness
+state-centric UI models
+
+even when binary transport suffered.
+
+6. Your system is almost a symptom of that evolution
+
+The flow you described:
+
+file
+ ->
+base64
+ ->
+JSON
+ ->
+workflow trigger
+
+feels less like:
+
+HTTP upload
+
+and more like:
+
+remote procedure invocation with embedded payload.
+
+That is a very “post-form-browser” design mentality.
+
+7. There is a broader historical irony here
+
+Older “primitive” web stacks often had:
+
+simpler transport
+fewer copies
+less memory pressure
+better streaming semantics
+
+because they leaned on:
+
+browser-native protocol machinery.
+
+Modern stacks gained:
+
+flexibility
+interactivity
+composability
+
+but sometimes lost:
+
+transport discipline.
+8. Your educational upload project is actually illustrating this evolution
+
+You now effectively have:
+
+Style	Era
+multipart form upload	classic web
+JSON/base64 DTO upload	SPA/API era
+synthetic SDK caller	automation/integration era
+
+That is a surprisingly useful comparison framework.
+
+9. One subtle point
+
+React itself does NOT require base64 uploads.
+
+Modern browsers can still upload multipart via:
+
+FormData
+fetch
+streaming APIs
+
+So:
+
+the architecture choice was cultural/organizational,
+
+not technically mandated by React.
+
+That distinction matters.
 
 ### See Also
 
