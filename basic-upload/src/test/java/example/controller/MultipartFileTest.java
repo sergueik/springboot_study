@@ -1,6 +1,7 @@
 package example.controller;
+
 /**
- * Copyright 2021 Serguei Kouzmine
+ * Copyright 2021,2026 Serguei Kouzmine
  */
 
 import static org.hamcrest.CoreMatchers.is;
@@ -15,6 +16,7 @@ import java.io.IOException;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import java.util.ArrayList;
@@ -44,35 +46,52 @@ public class MultipartFileTest {
 	private ResultActions resultActions;
 	private MvcResult result;
 	private MockHttpServletRequest request;
+	private static Path tempFilePath = null;
 
 	@BeforeClass
 	public static void setUp() throws IOException {
-		String filePath = Paths.get(System.getProperty("user.dir"))
+
+		// File tempFile = File.createTempFile("log_", ".txt");
+		// tempFile.deleteOnExit();
+
+		tempFilePath = Files.createTempFile("test", ".txt");
+
+		String filePath = Paths.get(System.getProperty("user.dir")).resolve("src/test/resources/files")
 				.resolve(filename).toAbsolutePath().toString();
-		data = new String(Files.readAllBytes(Paths.get(filePath)),
-				Charset.forName("UTF-8"));
+		data = new String(Files.readAllBytes(Paths.get(filePath)), Charset.forName("UTF-8"));
 
 		mvc = MockMvcBuilders.standaloneSetup(controller).build();
+		// In standard Java, you cannot change the current working directory (CWD) of a
+		// running process using built-in methods like a "cd" command.
+		// The CWD is established by the operating system when the Java Virtual Machine
+		// (JVM) starts and remains fixed for that process's lifetime.
 		// uses real file "test.txt"
-		file = new MockMultipartFile("file", "test.txt", MediaType.TEXT_PLAIN_VALUE,
+		// https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/mock/web/MockMultipartFile.html
+		file = new MockMultipartFile("file", filename, MediaType.TEXT_PLAIN_VALUE,
 				data.getBytes());
 	}
 
 	// examine response status and body
 	@Test
 	public void test1() throws Exception {
-		resultActions = mvc.perform(multipart(
-				route + "?operation=send&param=some+non+empty+value&servername=host")
-						.file(file).characterEncoding("utf-8"));
+		resultActions = mvc.perform(multipart(route + "?operation=send&param=some+non+empty+value&servername=host")
+				.file(file).characterEncoding("utf-8"));
 		resultActions.andExpect(status().isOk()).andExpect(content().string(data));
+	}
+
+	@Test
+	public void test2() throws Exception {
+		resultActions = mvc.perform(multipart(route + "?operation=send&param=some+non+empty+value&servername=host")
+				.file(new MockMultipartFile("file", tempFilePath.toAbsolutePath().toString(), MediaType.TEXT_PLAIN_VALUE,
+						data.getBytes())).characterEncoding("utf-8"));
+		resultActions.andExpect(status().isBadRequest());
 	}
 
 	// examine response status and body
 	@Test
-	public void test2() throws Exception {
-		resultActions = mvc.perform(multipart(route).file(file)
-				.characterEncoding("utf-8").param("operation", new String[] { "send" })
-				.param("param", new String[] { "some non empty value" })
+	public void test3() throws Exception {
+		resultActions = mvc.perform(multipart(route).file(file).characterEncoding("utf-8")
+				.param("operation", new String[] { "send" }).param("param", new String[] { "some non empty value" })
 				.param("servername", new String[] { "host" }));
 		resultActions.andExpect(status().isOk()).andExpect(content().string(data));
 	}
@@ -83,10 +102,9 @@ public class MultipartFileTest {
 	// null character encoding. Consider setting the characterEncoding in the
 	// request.
 	@Test
-	public void test3() throws Exception {
-		resultActions = mvc.perform(multipart(route).file(file)
-				.characterEncoding("utf-8").param("operation", new String[] { "send" })
-				.param("param", new String[] { "some non empty value" })
+	public void test4() throws Exception {
+		resultActions = mvc.perform(multipart(route).file(file).characterEncoding("utf-8")
+				.param("operation", new String[] { "send" }).param("param", new String[] { "some non empty value" })
 				.param("servername", new String[] { "host" }));
 		result = resultActions.andReturn();
 		request = result.getRequest();
@@ -106,39 +124,32 @@ public class MultipartFileTest {
 
 	// examine response status
 	@Test
-	public void test4() throws Exception {
-		resultActions = mvc
-				.perform(multipart(route).file(file).characterEncoding("utf-8")
-						.param("operation", new String[] { "unknown" })
-						.param("param", new String[] { "non empty" })
-						.param("servername", new String[] { "localhost" }));
+	public void test5() throws Exception {
+		resultActions = mvc.perform(multipart(route).file(file).characterEncoding("utf-8")
+				.param("operation", new String[] { "unknown" }).param("param", new String[] { "non empty" })
+				.param("servername", new String[] { "localhost" }));
 		resultActions.andExpect(status().isMethodNotAllowed());
 	}
 
 	// examine response status
 	@Test
-	public void test5() throws Exception {
-		resultActions = mvc
-				.perform(multipart(route).file(file).characterEncoding("utf-8")
-						.param("operation", new String[] { "unknown" }));
-		resultActions.andExpect(status().isBadRequest());
-	}
-
-	@Test
 	public void test6() throws Exception {
 		resultActions = mvc.perform(
-				multipart(route).file(file).characterEncoding("utf-8")
-						.param("operation", new String[] { "unknown" }).param("param",
-								new String[] { "" }));
+				multipart(route).file(file).characterEncoding("utf-8").param("operation", new String[] { "unknown" }));
 		resultActions.andExpect(status().isBadRequest());
 	}
 
 	@Test
 	public void test7() throws Exception {
-		resultActions = mvc.perform(
-				multipart(route).file(file).characterEncoding("utf-8")
-						.param("operation", new String[] { "unknown" }).param("param",
-								new String[] { "non empty" }));
+		resultActions = mvc.perform(multipart(route).file(file).characterEncoding("utf-8")
+				.param("operation", new String[] { "unknown" }).param("param", new String[] { "" }));
+		resultActions.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	public void test8() throws Exception {
+		resultActions = mvc.perform(multipart(route).file(file).characterEncoding("utf-8")
+				.param("operation", new String[] { "unknown" }).param("param", new String[] { "non empty" }));
 		// missing "servername" param
 		resultActions.andExpect(status().isBadRequest());
 	}

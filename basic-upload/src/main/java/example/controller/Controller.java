@@ -1,11 +1,12 @@
 package example.controller;
 /**
- * Copyright 2021,2023,2024 Serguei Kouzmine
+ * Copyright 2021,2023,2024,2026 Serguei Kouzmine
  */
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import java.nio.file.Path;
@@ -97,7 +98,7 @@ public class Controller {
 			logger.info("data size: " + data.length()  /* + "\n"
 					+ "raw data(base64 encoded):" + "\n" + data.toString() */);
 		} catch (IOException e) {
-			logger.info("Exception (caught):" + e.toString());
+			logger.info("Exception (caught): " + e.toString());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		return new ResponseEntity<String>(HttpStatus.OK);
@@ -169,8 +170,11 @@ public class Controller {
 					logger.info("data size: " + data.length() + "\n"
 							+ "raw data(base64 encoded):" + "\n" + data.toString());
 
+			} catch ( FileNotFoundException e) {
+				logger.info("Exception (caught): " + e.toString());
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			} catch (IOException e) {
-				logger.info("Exception (caught):" + e.toString());
+				logger.info("Exception (caught): " + e.toString());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}
 			return ResponseEntity.status(HttpStatus.OK).body(data.toString());

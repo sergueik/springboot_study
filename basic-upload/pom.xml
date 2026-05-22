@@ -3,20 +3,21 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>upload</artifactId>
-  <version>0.11.0-SNAPSHOT</version>
+  <version>0.12.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>basic-upload</name>
   <description>Demo Springboot multipart-form-data upload app</description>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
+    <!-- NOTE : cannot upgrade to 2.7.8 while using Junit 4 -->
     <version>2.3.4.RELEASE</version>
     <relativePath/>
   </parent>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.8</java.version>
+    <java.version>11</java.version>
     <commons-codec.version>1.13</commons-codec.version>
     <httpclient.version>5.0</httpclient.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
