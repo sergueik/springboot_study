@@ -350,7 +350,7 @@ transport-abstracted
 teams began preferring:
 
 single payload shape
-DTO uniformity
+DTO uniformity	
 OpenAPI friendliness
 state-centric UI models
 
@@ -428,6 +428,14 @@ the architecture choice was cultural/organizational,
 not technically mandated by React.
 
 That distinction matters.
+
+|Adapter|	Role|
+|-------|-----------|
+|Bash	|operational scripting|
+|PowerShell|	Windows automation|
+|Java helper|	test/reference SDK|
+|curl	|manual replay|
+|React	|UI orchestration|
 
 ### See Also
 
