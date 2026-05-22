@@ -10,10 +10,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @ComponentScan("example")
 // NOTE: the @PropertySource is required
-// for "application.properties" to be read
+// for "application.yaml" to be read
 // see also;
 // https://github.com/eugenp/tutorials/blob/master/spring-scheduling/src/main/java/com/baeldung/scheduling/ScheduledAnnotationExample.java
-
-@PropertySource("classpath:application.properties")
+// NOTE: one should NOT use @PropertySource for YAML - it does not work
+// @PropertySource("classpath:application.yaml")
 public class AppConfiguration {
 }

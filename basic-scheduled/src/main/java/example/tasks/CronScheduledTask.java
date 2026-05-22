@@ -17,23 +17,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CronScheduledTask {
 	private final Logger logger = LoggerFactory.getLogger(CronScheduledTask.class);
 
-	private AtomicInteger count = new AtomicInteger(0);
-
-	private Instant lastExecution = null;
-
 	@Scheduled(cron = "${example.cron:0 * * * * *}")
 	public void cron() {
-		lastExecution = Instant.now();
-		logger.info(String.format("executed at %s %d time%s", lastExecution.toEpochMilli(), count.get(),
-				((count.incrementAndGet() == 2) ? "" : "s")));
-
+		logger.info(String.format("executed cron() at %s", Instant.now().toEpochMilli()));
 	}
 
+	// Methods added solely for test instrumentation:
+	// Mockito spy/mock proxies cannot expose methods
+	// that do not already exist on the subject class.
 	public Instant getLastExecution() {
-		return lastExecution;
+		return null;
 	}
 
 	public int getCount() {
-		return count.get();
+		return 0;
 	}
 }

@@ -1,0 +1,8 @@
+---
+example:
+  # Rule of thumb: quote cron expressions in YAML for Spring Boot configuration
+  # This avoids edge cases with '*' parsing, CI linters, and shell expansion
+  cron: '*/1 * * * * *'
+
+  # fixed-rate periodic spring schedule (milliseconds)
+  fixed-rate: 3000

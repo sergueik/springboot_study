@@ -6,7 +6,7 @@ package example.tasks;
 
 import static org.awaitility.Awaitility.await;
 import org.awaitility.core.ConditionFactory;
-// before 4.x there	was Awaitility’s own custom type, before they switched to Java 8+
+
 import java.time.Duration;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verify;
 // import org.awaitility.Duration;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.convert.DurationStyle;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.PropertySource;
@@ -27,18 +28,17 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import example.tasks.FixedRateScheduledTask;
 
 @SpringJUnitConfig(example.Application.class)
-@PropertySource("classpath:application.properties")
-
+@PropertySource("classpath:application.yaml")
 public class FixedRateScheduledTaskTest {
 
 	@SpyBean
-	FixedRateScheduledTask taskMock;
+	FixedRateScheduledTask task;
 	private static int num = 2;
 
 	@Test
 	public void test() {
-		await().atMost(10, SECONDS).untilAsserted(() -> verify(taskMock, atLeast(num)).fixedRate());
+		await().atMost(10, SECONDS).untilAsserted(() -> verify(task, atLeast(num)).fixedRate());
 		// TODO: check the time spent running tasks
-		assertThat(taskMock.getCount(), lessThan(3));
+		assertThat("task run too many times: " + task.getCount(), task.getCount(), lessThan(3));
 	}
 }

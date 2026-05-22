@@ -14,7 +14,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 @SpringJUnitConfig(example.Application.class)
-@PropertySource("classpath:application.properties")
+// NOTE: one should NOT use @PropertySource for YAML - it does not work
+// @PropertySource("classpath:application.yaml")
 
 public class BasicTest {
 
@@ -23,9 +24,9 @@ public class BasicTest {
 
 	@Test
 	public void test() throws InterruptedException {
-		Thread.sleep(7000L);
-		assertThat(task.getCount(), greaterThan(2));
-		assertThat(task.getCount(), lessThan(4));
+		Thread.sleep(10000L);
+		assertThat("task run too few times: " + task.getCount(),task.getCount(), greaterThan(2));
+		assertThat("task run too many times: " + task.getCount(), task.getCount(), lessThan(4));
 	}
 
 	@AfterEach
