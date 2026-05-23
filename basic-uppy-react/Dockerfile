@@ -25,6 +25,7 @@ COPY backend /app/
 # copy React static frontend bundle 
 COPY --from=react_builder /app/dist /app/src/main/resources/static/ 
 
+RUN cd /app && mvn dependency:go-offline -q
 RUN cd /app && mvn package -DskipTests
 
 FROM eclipse-temurin:11-jre-alpine as run

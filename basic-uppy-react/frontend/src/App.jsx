@@ -1,51 +1,43 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 
 import Uppy from '@uppy/core'
-// import { Dashboard } from '@uppy/react'
-// import Dashboard from '@uppy/react/lib/Dashboard'
 import Dashboard from '@uppy/dashboard'
 import XHRUpload from '@uppy/xhr-upload'
 
-// import '@uppy/core/dist/style.min.css'
-// import '@uppy/dashboard/dist/style.min.css'
 import '@uppy/core/css/style.min.css'
 import '@uppy/dashboard/css/style.min.css'
 
-function App() {
+export default function App() {
 
-  const [uppy] = useState(() => {
+  useEffect(() => {
 
-    return new Uppy({
-
+    const uppy = new Uppy({
       restrictions: {
         maxNumberOfFiles: 1
       }
+    })
 
-    }).use(XHRUpload, {
+    uppy.use(Dashboard, {
+      inline: true,
+      target: '#uppy',
+      proudlyDisplayPoweredByUppy: false
+    })
 
+    uppy.use(XHRUpload, {
       endpoint: '/uploadMultipleFiles',
-
       fieldName: 'files',
-
       formData: true,
-
       bundle: true
     })
-  })
+
+    return () => uppy.destroy()
+
+  }, [])
 
   return (
-    <div style={{ padding: '20px' }}>
-
-      <h2>Multipart Upload Demo</h2>
-
-      <Dashboard
-        uppy={uppy}
-        proudlyDisplayPoweredByUppy={false}
-      />
-
+    <div style={{ padding: 20 }}>
+      <h2>Upload Demo</h2>
+      <div id="uppy" />
     </div>
   )
 }
-
-export default App
-
