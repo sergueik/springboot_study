@@ -2,11 +2,15 @@
 https://github.com/judsonc/react-upload-uppy
 https://uppy.io/
 https://github.com/transloadit/uppy with over 10K commits
+
 ### Usage
 
 
-```
-  docker build -t example -f Dockerfile  .
+```sh
+docker pull node:22.18.0-alpine
+docker pull maven:3.9.5-eclipse-temurin-11-alpine
+docker pull eclipse-temurin:11-jre-alpine
+docker build -t example -f Dockerfile .
 ```
 ```text
 Sending build context to Docker daemon  20.72MB
@@ -190,77 +194,70 @@ Removing intermediate container c80e26adccc4
 ```
 docker run -d -p 8080:8080 --name example example
 ```
+```sh
+dd if=/dev/urandom of=test.bin bs=1M count=100
 ```
-81c8222aebe1386779c724b6bea4b11f20e1511e4454ca99fbd0b8983bd363e8
-
+```text
+100+0 records in
+100+0 records out
+104857600 bytes (105 MB, 100 MiB) copied, 0.13182 s, 795 MB/s
 ```
-
 ![execute](screenshots/capture-app.png)
 
-The error to debug:
-![execute](screenshots/capture-upload-error.png)
-```text
-[Uppy] [11:47:28] @uppy/xhr-upload expects a JSON response (with a `url` property). To parse non-JSON responses, use `getResponseData` to turn your response into JSON.
-```
+![execute](screenshots/capture-upload-progress.png)
+The success on the frontend:
+![execute](screenshots/capture-upload-success.png)
+
 The application console log:
 ```text
-2026-05-23 15:47:31.783  INFO 1 --- [nio-8080-exec-7] example.controller.FileUploadController  : upload 1 files: [test.txt]
-2026-05-23 15:47:31.787  INFO 1 --- [nio-8080-exec-7] example.controller.FileUploadController  : upload file: test.txt
-2026-05-23 15:47:31.788  INFO 1 --- [nio-8080-exec-7] example.service.FileStorageService       : UploadDir defined: /tmp/upload
-2026-05-23 15:47:31.797  INFO 1 --- [nio-8080-exec-7] example.service.FileStorageService       : UploadDir: /tmp/upload
-2026-05-23 15:47:31.803  INFO 1 --- [nio-8080-exec-7] example.controller.FileUploadController  : Listing: test.txt
-
+2026-05-23 17:07:48.667 DEBUG 1 --- [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : POST "/uploadMultipleFiles", parameters={multipart}
+2026-05-23 17:07:52.889 DEBUG 1 --- [io-8080-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to example.controller.FileUploadController#uploadMultipleFiles(MultipartFile[])
+2026-05-23 17:07:52.891  INFO 1 --- [io-8080-exec-10] example.controller.FileUploadController  : upload 1 files: [test.bin]
+2026-05-23 17:07:52.893  INFO 1 --- [io-8080-exec-10] example.controller.FileUploadController  : upload file: test.bin
+2026-05-23 17:07:53.398  INFO 1 --- [io-8080-exec-10] example.service.FileStorageService       : UploadDir: /tmp/upload
+2026-05-23 17:07:53.400  INFO 1 --- [io-8080-exec-10] example.controller.FileUploadController  : Listing: test.bin,test.txt
+2026-05-23 17:07:53.403 DEBUG 1 --- [io-8080-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json]
+2026-05-23 17:07:53.410 DEBUG 1 --- [io-8080-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Writing [{success=true, uploaded=[test.bin], url=/upload-success}]
+2026-05-23 17:07:53.442 DEBUG 1 --- [io-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
 ```
 and the file is present on container:
 ```sh
-docker exec -it example ls /tmp/upload
+docker exec -it example ls -hl /tmp/upload/test.bin
 ```
-```text
-test.txt
 ```
-```sh
-
-docker exec -it example sha256sum /tmp/upload/test.txt
-```
-```text
-6b4a40d5711a17f884838a652a8b398b3e7bcaacc94c6c5ee801b585b19ead3f  /tmp/upload/test.txt
+-rw-r--r-- 1 root root 100M May 23 17:07 /tmp/upload/test.bin
 ```
 ```sh
-sha256sum.exe  test.txt
+docker exec -it example sha256sum /tmp/upload/test.bin
 ```
 ```text
-6b4a40d5711a17f884838a652a8b398b3e7bcaacc94c6c5ee801b585b19ead3f *test.txt
+e37c10c86f56c0ca4778727e8bc8cdc7e428a68ac2daaddfd73429d134a7dd3e  /tmp/upload/test.bin
 ```
-> NOTE: the "test.txt" is small - but ready to test file which woild warrant chunking
+```sh
+sha256sum.exe test.bin
+```
+```text
+e37c10c86f56c0ca4778727e8bc8cdc7e428a68ac2daaddfd73429d134a7dd3e *test.bin
+```
+> NOTE: the "test.bin" is sufficiently large to test file chunking
 
-
-> NOTE: the app is highly version sensitive:
-
-![execute](screenshots/capture-error.png)
-
+### Cleanup
+```sh
+docker stop example; docker container prune -f ; docker image prune -f
+```
 ### Background
 
+__React__ is very unbeleivably complex - age?. Over the years.
+
+creating the frontend from scratch with __Vite__ __React__ *template* is what is recmmended instead of manually assembling:
+
+  * `package.json`
+  * `Babel`
+  * `webpack`
+  * `React` bootstrap files
+  * `ESLint`
+  * `build config`
 
 
-React is very complex. Over the years.
-
-creating the frontend from scratch with Vite React template is what is recmmended instead of manually assembling:
-
-`package.json`
-`Babel`
-`webpack`
-`React` bootstrap files
-`ESLint`
-`build config`
-
-
-However this seems seriously feels backwards if you come from:
-
-Java
-Maven
-C/C++
-PowerShell
-traditional build systems
-
-where source layout is explicit and inspectable
+However this seems seriously feels backwards if you come from traditional build systems where source layout is explicit and inspectable. One has to accept it.
 

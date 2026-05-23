@@ -3,6 +3,8 @@ package example.utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -21,17 +23,25 @@ public class Utils {
 		return listDirecroryFiles("c:/temp/upload");
 	}
 
+	public static String listDirecroryFiles(String uploadDir) {
+		return listDirecroryFiles(uploadDir, true);
+	}
+
 	// origin:
 	// http://www.java2s.com/ref/java/java-file-list-all-files-and-directories-under-a-folder.html
-	public static String listDirecroryFiles(String uploadDir) {
+	public static String listDirecroryFiles(String uploadDir, boolean format) {
 		String line = null;
+		String delimiter = ",";
 		// NOTE: not checking that directory exists. This is just minimal demo
 		// example
 		File dir = new File(uploadDir);
 		if (dir.exists()) {
 			File[] listFiles = dir.listFiles();
 			if (listFiles.length > 0) {
-				return formattedList(listFiles);
+				return format ? formattedList(listFiles)
+						: Arrays.asList(listFiles).stream().map(o -> o.getName())
+								.collect(Collectors.joining(delimiter));
+				// Arrays.join
 			} else {
 				return "";
 			}

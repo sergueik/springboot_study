@@ -27,7 +27,8 @@ export default function App() {
       endpoint: '/uploadMultipleFiles',
       fieldName: 'files',
       formData: true,
-      bundle: true
+      bundle: true,
+      responseType: 'json'
     })
 
     return () => uppy.destroy()

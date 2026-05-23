@@ -1,17 +1,26 @@
 package example.controller;
+
 /**
- * Copyright 2023-2024 Serguei Kouzmine
+ * Copyright 2023,2024,2026 Serguei Kouzmine
  */
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,14 +60,21 @@ public class FileUploadController {
 		return fileName;
 	}
 
-	@PostMapping("/uploadMultipleFiles")
-	public String uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
+	@RequestMapping(value = "/uploadMultipleFiles", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Map<String, Object> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
+
 		logger.info("upload " + files.length + " files: "
 				+ Arrays.asList(files).stream().map(file -> file.getOriginalFilename()).collect(Collectors.toList()));
 		// no longer showing the uploaded files urls
 		Arrays.asList(files).stream().forEach(file -> uploadFile(file));
-		String listing = Utils.listDirecroryFiles(fileStorageService.getUploadDir());
+		String listing = Utils.listDirecroryFiles(fileStorageService.getUploadDir(), false);
 		logger.info("Listing: {}", listing);
-		return listing;
+		String delimiter = ",";
+		Map<String, Object> response = new HashMap<>();
+		response.put("success", true);
+		response.put("uploaded", Arrays.asList(listing.split(delimiter)));
+		response.put("url", "/upload-success");
+		return response;
 	}
 }
