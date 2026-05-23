@@ -1,4 +1,7 @@
 package example.controller;
+/**
+ * Copyright 2026 Serguei Kouzmine
+ */
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -9,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/")
-public class UploadController {
+public class ReactRedirectUploadController {
 
 	@Value("${debug}")
 	private boolean debug;

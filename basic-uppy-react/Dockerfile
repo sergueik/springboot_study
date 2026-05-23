@@ -26,7 +26,7 @@ COPY backend /app/
 COPY --from=react_builder /app/dist /app/src/main/resources/static/ 
 
 RUN cd /app && mvn dependency:go-offline -q
-RUN cd /app && mvn package -DskipTests
+RUN cd /app && mvn clean package -DskipTests
 
 FROM eclipse-temurin:11-jre-alpine as run
 COPY --from=builder /app/target/example.uppy-react-multipart-upload-backend.jar /app/app.jar 

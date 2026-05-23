@@ -28,6 +28,10 @@ export default function App() {
       fieldName: 'files',
       formData: true,
       bundle: true,
+      chunking: {
+        enabled: true,
+        size: 5 * 1024 * 1024
+      },
       responseType: 'json'
     })
 

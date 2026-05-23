@@ -1,11 +1,14 @@
 package example.controller;
 
+import java.io.IOException;
+
 /**
  * Copyright 2023,2024,2026 Serguei Kouzmine
  */
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +30,10 @@ import org.springframework.web.multipart.MultipartFile;
 import example.service.FileStorageService;
 import example.utils.Utils;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 // based on: https://github.com/callicoder/spring-boot-file-upload-download-rest-api-example
+import javax.servlet.http.Part;
 
 @RestController
 public class FileUploadController {
@@ -60,13 +66,46 @@ public class FileUploadController {
 		return fileName;
 	}
 
+	// To log the number of chunks of a file received in a Spring Boot application,
+	// it must capture the metadata sent by the client during a chunked upload
+	// process.
 	@RequestMapping(value = "/uploadMultipleFiles", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public Map<String, Object> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
+	public Map<String, Object> uploadMultipleFiles(HttpServletRequest request,
+			@RequestParam("files") MultipartFile[] files,
+			@RequestParam(value = "chunk", required = false) Integer chunk,
+			@RequestParam(value = "chunks", required = false) Integer totalChunks) {
+
+		logger.info("Content-Type: {}", request.getContentType());
+		logger.info("Content-Length: {}", request.getContentLengthLong());
+
+		try {
+			Collection<Part> parts = request.getParts();
+			logger.info("Servlet parts count: {}", parts.size());
+
+			for (Part part : parts) {
+				logger.info("part name={} submittedFileName={} size={} contentType={}", part.getName(),
+						part.getSubmittedFileName(), part.getSize(), part.getContentType());
+			}
+		} catch (IOException | ServletException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		logger.info("upload " + files.length + " files: "
 				+ Arrays.asList(files).stream().map(file -> file.getOriginalFilename()).collect(Collectors.toList()));
-		// no longer showing the uploaded files urls
+
+		String filesList = Arrays.asList(files).stream().map(file -> file.getOriginalFilename())
+				.collect(Collectors.joining(","));
+		if (totalChunks != null) {
+			logger.info("Receiving chunk {} of {} for files set: {}", chunk + 1, totalChunks, filesList);
+		} else {
+			logger.info("Received full payload (non-chunked): {}", filesList);
+		}
+
+		for (MultipartFile file : files) {
+			logger.info("file={} size={}", file.getOriginalFilename(), file.getSize());
+		}
 		Arrays.asList(files).stream().forEach(file -> uploadFile(file));
 		String listing = Utils.listDirecroryFiles(fileStorageService.getUploadDir(), false);
 		logger.info("Listing: {}", listing);
