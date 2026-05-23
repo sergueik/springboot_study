@@ -1,0 +1,22 @@
+{
+  "name": "uppy-react-upload",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@uppy/core": "5.1.1",
+    "@uppy/dashboard": "5.1.1",
+    "@uppy/xhr-upload": "5.1.1",
+    "@uppy/react": "5.1.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.2",
+    "vite": "^7.1.3"
+  }
+}
