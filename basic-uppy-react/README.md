@@ -15,6 +15,7 @@ docker pull eclipse-temurin:11-jre-alpine
 ```sh
 docker build -t example -f Dockerfile  .
 ```
+the `Dockerfile` compiles `react` frontend and puts it into Spring as static resource then packages the jar:
 
 ```text
 Step 1/15 : FROM node:22.18.0-alpine AS react_builder
@@ -71,74 +72,56 @@ Step 10/15 : RUN cd /app && mvn dependency:go-offline -q
  ---> Running in 436b669e40f5
 Removing intermediate container 436b669e40f5
  ---> 0fec68d3a68a
-Step 11/15 : RUN cd /app && mvn package -DskipTests
+Step 11/15 : RUN cd /app && mvn package -DskipTests -q
  ---> Running in bf520793b4a5
-[INFO] Scanning for projects...
-[INFO]
-[INFO] ------------< example:uppy-react-multipart-upload-backend >-------------
-[INFO] Building example:uppy-react-multipart-upload-backend 0.1.0-SNAPSHOT
-[INFO]   from pom.xml
-[INFO] --------------------------------[ jar ]---------------------------------
-Downloading from atlassian-3rd-P: https://maven.atlassian.com/3rdparty/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
-Downloading from ossrh: https://oss.sonatype.org/content/repositories/snapshots/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
-Downloading from maven-central: https://mvnrepository.com/repos/central/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
-Downloading from osgeo: https://download.osgeo.org/webdav/geotools/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
-Downloading from seasar: https://www.seasar.org/maven/maven2/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
-Downloading from jcenter: https://jcenter.bintray.com/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
-Downloaded from jcenter: https://jcenter.bintray.com/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar (41 kB at 54 kB/s)
-[INFO]
-[INFO] --- resources:3.2.0:resources (default-resources) @ uppy-react-multipart-upload-backend ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] Using 'UTF-8' encoding to copy filtered properties files.
-[INFO] Copying 1 resource
-[INFO] Copying 3 resources
-[INFO]
-[INFO] --- compiler:3.10.1:compile (default-compile) @ uppy-react-multipart-upload-backend ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 5 source files to /app/target/classes
-[INFO]
-[INFO] --- resources:3.2.0:testResources (default-testResources) @ uppy-react-multipart-upload-backend ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] Using 'UTF-8' encoding to copy filtered properties files.
-[INFO] skip non existing resourceDirectory /app/src/test/resources
-[INFO]
-[INFO] --- compiler:3.10.1:testCompile (default-testCompile) @ uppy-react-multipart-upload-backend ---
-[INFO] No sources to compile
-[INFO]
-[INFO] --- surefire:2.22.2:test (default-test) @ uppy-react-multipart-upload-backend ---
-[INFO] Tests are skipped.
-[INFO]
-[INFO] --- jar:3.2.2:jar (default-jar) @ uppy-react-multipart-upload-backend ---
-[INFO] Building jar: /app/target/uppy-react-multipart-upload-backend-0.1.0-SNAPSHOT.jar
-[INFO]
-[INFO] --- spring-boot:2.7.8:repackage (repackage) @ uppy-react-multipart-upload-backend ---
-[WARNING]  Parameter 'finalName' is read-only, must not be used in configuration
-[INFO] Replacing main artifact with repackaged archive
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  18.926 s
-[INFO] Finished at: 2026-05-23T15:34:28Z
-[INFO] ------------------------------------------------------------------------
 Removing intermediate container bf520793b4a5
  ---> 3dd394c259e7
 Step 12/15 : FROM eclipse-temurin:11-jre-alpine as run
  ---> 642de1708b20
 Step 13/15 : COPY --from=builder /app/target/example.uppy-react-multipart-upload-backend.jar /app/app.jar
+Step 14/17 : RUN apk update     && apk add --update --no-cache curl     && rm -rf /var/cache/*     && m                                     kdir /var/cache/apk
+ ---> Running in c0367ea9ce57
+v3.23.4-268-gdcc713e014f [https://dl-cdn.alpinelinux.org/alpine/v3.23/main]
+v3.23.4-271-g3e9e0da6943 [https://dl-cdn.alpinelinux.org/alpine/v3.23/community]
+OK: 27581 distinct packages available
+(1/5) Installing c-ares (1.34.6-r0)
+(2/5) Installing nghttp2-libs (1.69.0-r0)
+(3/5) Installing libpsl (0.21.5-r3)
+(4/5) Installing libcurl (8.19.0-r0)
+(5/5) Installing curl (8.19.0-r0)
+Executing busybox-1.37.0-r30.trigger
+OK: 41.8 MiB in 78 packages
+Removing intermediate container c0367ea9ce57 
  ---> 77267e2fec25
-Step 14/15 : ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+Step 15/15 : ENTRYPOINT ["java", "-jar", "/app/app.jar"]
  ---> Running in 6791750bfdd7
 Removing intermediate container 6791750bfdd7
  ---> f0605d87417e
-Step 15/15 : EXPOSE 8080
+Step 16/17 : HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD curl -f http://localhost:80                                     80/upload || exit 1
+ ---> Running in 6b05c52541ef
+Removing intermediate container 6b05c52541ef
+Step 17/15 : EXPOSE 8080
  ---> Running in c80e26adccc4
 Removing intermediate container c80e26adccc4
  ---> 8e645532396e
 Successfully built 8e645532396e
 Successfully tagged example:latest
 ```
+run both
 ```sh
 docker run -d -p 8080:8080 --name example example
+```
+```sh
+docker ps
+```
+```txt
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                                                                  PORTS                    NAMES
+9fac7e1b533d        example             "java -jar /app/app.…"   27 seconds ago      Up 26 seconds (health: starting)   0.0.0.0:8080->8080/tcp   example
+```
+```txt
+CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS                        PORTS                    NAMES
+9fac7e1b533d        example             "java -jar /app/app.…"   About a minute ago   Up About a minute (healthy)   0.0.0.0:8080->8080/tcp   example
+
 ```
 ```sh
 docker logs -f example

@@ -26,10 +26,18 @@ COPY backend /app/
 COPY --from=react_builder /app/dist /app/src/main/resources/static/ 
 
 RUN cd /app && mvn dependency:go-offline -q
-RUN cd /app && mvn clean package -DskipTests
+RUN cd /app && mvn clean package -DskipTests -q
 
 FROM eclipse-temurin:11-jre-alpine as run
 COPY --from=builder /app/target/example.uppy-react-multipart-upload-backend.jar /app/app.jar 
 
+RUN apk update \
+    && apk add --update --no-cache curl \
+    && rm -rf /var/cache/* \
+    && mkdir /var/cache/apk
+
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
+CMD curl -f http://localhost:8080/upload || exit 1
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 EXPOSE 8080
