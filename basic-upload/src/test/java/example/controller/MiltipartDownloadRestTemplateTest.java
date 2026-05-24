@@ -1,6 +1,6 @@
 package example.controller;
 /**
- * Copyright 2023 Serguei Kouzmine
+ * Copyright 2023,2026 Serguei Kouzmine
  */
 
 // based on: https://www.baeldung.com/spring-rest-template-multipart-upload
@@ -18,6 +18,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.PropertySource;

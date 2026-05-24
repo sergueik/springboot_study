@@ -1,7 +1,7 @@
 package example.controller;
 
 /**
- * Copyright 2021 Serguei Kouzmine
+ * Copyright 2021,2026 Serguei Kouzmine
  */
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import static org.hamcrest.Matchers.containsString;
@@ -9,9 +9,10 @@ import static org.hamcrest.text.IsEmptyString.isEmptyString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -37,12 +38,12 @@ public class CookieTest {
 
 	private static Controller controller = new Controller();
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp() {
 		mvc = MockMvcBuilders.standaloneSetup(controller).build();
 	}
 
-	@Before
+	@BeforeEach
 	public void beforeTest() throws Exception {
 	}
 

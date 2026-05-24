@@ -1,6 +1,6 @@
 package example.controller;
 /**
- * Copyright 2023 Serguei Kouzmine
+ * Copyright 2023,2026 Serguei Kouzmine
  */
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -12,6 +12,8 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.PropertySource;
@@ -23,8 +25,9 @@ import org.springframework.web.client.RestTemplate;
 
 // NOTE: property annotations have no effect
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
-		"serverPort=8086" })
+"serverPort=8086" })
 @PropertySource("classpath:application.properties")
+
 public class PartialFileDownloadTest {
 
 	// NOTE:

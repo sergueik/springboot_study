@@ -1,6 +1,6 @@
 package example.controller;
 /**
- * Copyright 2023 Serguei Kouzmine
+ * Copyright 2023,2026 Serguei Kouzmine
  */
 
 import static org.hamcrest.Matchers.containsString;
@@ -10,8 +10,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.IOException;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -24,7 +27,7 @@ public class ClassPathTest {
 	private static Controller controller = new Controller();
 	private ResultActions resultActions;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp() throws IOException {
 		mvc = MockMvcBuilders.standaloneSetup(controller).build();
 	}

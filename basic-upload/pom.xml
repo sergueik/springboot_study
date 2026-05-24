@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>upload</artifactId>
-  <version>0.13.0-SNAPSHOT</version>
+  <version>0.14.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>basic-upload</name>
   <description>Demo Springboot multipart-form-data upload app</description>
@@ -36,15 +36,12 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
-      <!-- the tests in this projects use junit 4.x -->
-      <!--
       <exclusions>
         <exclusion>
           <groupId>org.junit.vintage</groupId>
           <artifactId>junit-vintage-engine</artifactId>
         </exclusion>
-	      </exclusions>
-      -->
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>

@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -48,7 +50,7 @@ public class MultipartFileTest {
 	private MockHttpServletRequest request;
 	private static Path tempFilePath = null;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUp() throws IOException {
 
 		// File tempFile = File.createTempFile("log_", ".txt");

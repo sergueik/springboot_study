@@ -15,20 +15,20 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import org.springframework.test.context.junit4.SpringRunner;
 
 import org.springframework.web.client.RestTemplate;
 
@@ -36,12 +36,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import example.dto.UploadRequest;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+//NOTE: property annotations have no effect
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = {
+"serverPort=8086" })
+@PropertySource("classpath:application.properties")
 public class JsonRequestBodyUploadControllerTest {
 
 	@LocalServerPort
-	private int port;
+	private int port = 8086;
+
 	private static String filename = "test.txt";
 
 	private RestTemplate restTemplate;
@@ -53,7 +56,7 @@ public class JsonRequestBodyUploadControllerTest {
 
 	private String filePath = null;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		filePath = Paths.get(System.getProperty("user.dir")).resolve("src/test/resources/files").resolve(filename)
 				.toAbsolutePath().toString();

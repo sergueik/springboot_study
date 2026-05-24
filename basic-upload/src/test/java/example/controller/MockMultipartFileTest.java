@@ -3,7 +3,6 @@ package example.controller;
 /**
  * Copyright 2024 Serguei Kouzmine
  */
-import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,14 +12,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-// import org.junit.jupiter.api.Test;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,8 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Random;
 
 @WebAppConfiguration
+@SpringJUnitWebConfig
 @ContextConfiguration(classes = { Controller.class })
-@RunWith(SpringJUnit4ClassRunner.class)
 // based on:
 // https://github.com/eugenp/tutorials/blob/master/spring-web-modules/spring-mvc-java-2/src/test/java/com/baeldung/multiparttesting/MultipartPostRequestControllerUnitTest.java
 // see also

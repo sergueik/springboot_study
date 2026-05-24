@@ -1,6 +1,6 @@
 package example.controller;
 /**
- * Copyright 2021 Serguei Kouzmine
+ * Copyright 2021,2026 Serguei Kouzmine
  */
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -12,6 +12,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.PropertySource;
