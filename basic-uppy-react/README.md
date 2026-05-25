@@ -13,9 +13,10 @@ docker pull eclipse-temurin:11-jre-alpine
 ```
 
 ```sh
-docker build -t example -f Dockerfile  .
+docker build -t example -f Dockerfile .
 ```
 the `Dockerfile` compiles `react` frontend and puts it into Spring as static resource then packages the jar:
+
 
 ```text
 Step 1/15 : FROM node:22.18.0-alpine AS react_builder
@@ -107,6 +108,37 @@ Removing intermediate container c80e26adccc4
 Successfully built 8e645532396e
 Successfully tagged example:latest
 ```
+
+```sh
+docker create --name example example
+docker export example |tar tv | grep /app/app.jar
+```
+```text
+-rw-r--r-- 0/0        18133112 2026-05-25 11:14 app/app.jar
+```
+```sh
+docker export example |tar xv app/app.jar
+[O
+docker container rm example
+```
+```sh
+unzip -ql app/app.jar |grep -E '(static|templates)'
+```
+```text
+        0  2026-05-25 15:33   BOOT-INF/classes/templates/
+        0  2026-05-25 15:33   BOOT-INF/classes/static/
+        0  2026-05-25 15:33   BOOT-INF/classes/static/js/
+        0  2026-05-25 15:33   BOOT-INF/classes/static/css/
+        0  2026-05-25 15:33   BOOT-INF/classes/static/assets/
+     1240  2026-05-25 15:33   BOOT-INF/classes/templates/upload.html
+     3151  2026-05-25 15:33   BOOT-INF/classes/static/js/main.js
+      311  2026-05-25 15:33   BOOT-INF/classes/static/index.html
+       56  2026-05-25 15:33   BOOT-INF/classes/static/css/style.css
+   378022  2026-05-25 15:33   BOOT-INF/classes/static/assets/index-C6DRwziu.js
+    65603  2026-05-25 15:33   BOOT-INF/classes/static/assets/index-D9e3sqm0.css
+```
+it has both AngularJS (bare-bones non-styled, without drop zone) and [ReactJS](https://legacy.reactjs.org/) A JavaScript library for building user interfaces) driven upload pages with [uppy](https://uppy.io/) 
+
 run both
 ```sh
 docker run -d -p 8080:8080 --name example example
@@ -177,14 +209,23 @@ dd if=/dev/urandom of=test.bin bs=1M count=100
 ```
 launch application
 
-![execute](screenshots/capture-app.png)
+#### Angular
+![execute](screenshots/capture-upload-angular.png)
+
+
+![execute](screenshots/capture-upload-success-angular.png)
+#### React
+
+![execute](screenshots/capture-upload-react.png)
+
+![execute](screenshots/capture-upload-app.png)
 
 ![execute](screenshots/capture-upload-progress.png)
 
 observe success on the frontend:
 ![execute](screenshots/capture-upload-success.png)
 
-The application console log:
+The application console log shows similar information in both scenarios:
 ```text
 Servlet        : POST "/uploadMultipleFiles", parameters={multipart}
 2026-05-23 18:49:11.469 DEBUG 1 --- [nio-8080-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to example.controller.FileUploadController#uploadMultipleFiles(MultipartFile[], Integer, Integer)
@@ -302,3 +343,19 @@ creating the frontend from scratch with __Vite__ __React__ *template* is what is
 
 However this seems seriously feels backwards if you come from traditional build systems where source layout is explicit and inspectable. One has to accept it.
 
+
+### See Also
+
+  * [React Introduction](https://www.geeksforgeeks.org/reactjs/reactjs-introduction/)
+  * [AngularJS Tutorial](https://www.geeksforgeeks.org/angular-js/angularjs/)
+  * [AngularJS Examples](https://www.geeksforgeeks.org/angular-js/angularjs-examples/)
+
+
+
+
+
+
+---
+
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

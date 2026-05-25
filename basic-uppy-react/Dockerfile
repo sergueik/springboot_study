@@ -38,6 +38,6 @@ RUN apk update \
 
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
-CMD curl -f http://localhost:8080/upload || exit 1
+CMD curl -f http://localhost:8080/ || exit 1
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 EXPOSE 8080

@@ -4,7 +4,7 @@
   <groupId>example</groupId>
   <name>${project.groupId}:${project.artifactId}</name>
   <artifactId>uppy-react-multipart-upload-backend</artifactId>
-  <version>0.2.0-SNAPSHOT</version>
+  <version>0.3.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -21,6 +21,10 @@
     <java.version>11</java.version>
   </properties>
   <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
@@ -42,49 +46,4 @@
       </plugin>
     </plugins>
   </build>
-  <repositories>
-    <repository>
-      <id>atlassian-3rd-P</id>
-      <url>https://maven.atlassian.com/3rdparty/</url>
-    </repository>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </repository>
-    <repository>
-      <id>maven-central</id>
-      <name>maven central repo</name>
-      <url>https://mvnrepository.com/repos/central</url>
-    </repository>
-    <repository>
-      <id>osgeo</id>
-      <name>osgeo repo</name>
-      <url>https://download.osgeo.org/webdav/geotools/</url>
-    </repository>
-    <repository>
-      <id>seasar</id>
-      <name>seasar repo</name>
-      <url>https://www.seasar.org/maven/maven2</url>
-    </repository>
-    <repository>
-      <id>jcenter</id>
-      <url>https://jcenter.bintray.com/</url>
-    </repository>
-    <repository>
-      <id>swt-repo</id>
-      <url>https://swt-repo.googlecode.com/svn/repo/</url>
-    </repository>
-    <repository>
-      <id>central</id>
-      <!--
-      https://central.maven.org/maven2/ Error 403 Use https://repo1.maven.org
-      -->
-      <url>https://repo1.maven.org/maven2/</url>
-    </repository>
-    <repository>
-      <id>project.local</id>
-      <name>project</name>
-      <url>file:${project.basedir}/repo</url>
-    </repository>
-  </repositories>
 </project>
