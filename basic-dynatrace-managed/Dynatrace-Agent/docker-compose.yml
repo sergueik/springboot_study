@@ -1,0 +1,37 @@
+version: "3"
+services:
+    dtagent:
+      build:
+        context: .
+        dockerfile: Dockerfile
+        args:
+          - DT_HOME=${DT_HOME}
+          - VERSION=${VERSION}
+          - BUILD_VERSION=${BUILD_VERSION}
+          - CUID=${CUID}
+          - CGID=${CGID}
+      container_name: "${DT_AGENT_NAME}"
+      image: "dynatrace/agent:7.0"
+      env_file:
+        - ../.env
+      environment:
+        - COMPOSE_PROJECT_NAME
+        - DT_HOME
+        - DT_AGENT_COLLECTOR="${DT_COLLECTOR_NAME}:9998"
+        - AGENT_LIB32
+        - AGENT_LIB64
+        - NODE_AGENT_LIB32
+        - NODE_AGENT_LIB64
+        - WSAGENT_BIN64
+        - WSAGENT_INI
+      volumes:
+        - ${DT_HOME}
+        - ${DT_HOME}/agent/lib64
+        - "${DT_AGENT_LOG_PATH_ON_HOST}:${DT_HOME}/log/agent"
+      networks:
+        - appmon
+      user: "${CUID}:${CGID}"
+
+networks:
+    appmon:
+        driver: bridge
