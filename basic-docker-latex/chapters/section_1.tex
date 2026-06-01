@@ -1,0 +1,60 @@
+\subsection{Subsection}
+This document shows the basic LateX features
+
+\subsubsection{Subsubsection with numbering}
+Lorem ipsum
+
+\subsubsection*{Subsubsection without numbering}
+Lorem ipsum
+
+\subsection{Text format}
+This chapter shows the basic text formatting styles: \textbf{Bold text}, \textit{Italic text}, and \texttt{Monospaced}.
+
+\subsection{If/then condition example}
+\newboolean{draft}
+\setboolean{draft}{true}
+\ifthenelse{\boolean{draft}}
+{This is the \textbf{DRAFT} version of the document. TODO: create cool doc}
+{This is the \textbf{FINAL} version of the document.}
+
+\subsection{Tables}
+\begin{table}[H]
+    \begin{center}
+    \begin{tabular}{l|c|r}
+        \textbf{Value 1} & \textbf{Value 2} & \textbf{Value 3}\\
+        $\alpha$ & $\beta$ & $\gamma$ \\
+        \hline
+        1 & 1110.1 & a\\
+        2 & 10.1 & b\\
+        3 & 23.113231 & c\\
+        4 & 25.113231 & d\\ % <-- add row here
+    \end{tabular}
+    \caption{First table}
+    \end{center}
+\end{table}
+
+\subsection{Drawio rendering}
+% First param - path to drawio file without extension
+% Second param - scale settings
+% Third param - caption text
+\RenderDrawio{diagrams/Example}{0.5\textwidth}{Example of importing drawio figure}
+
+\subsection{PlantUML rendering}
+% First param - path to plantUML source file without extension
+% Second param - scale settings
+% Third param - caption text
+\RenderPlantUML{diagrams/PlantUML}{0.5\textwidth}{Plant UML rendering example}
+
+
+\subsection{Itemized list}
+Simple list:
+
+\begin{itemize}
+    \item First item
+    \item Second item
+    \item Third item
+\end{itemize}
+
+\subsection{Internal links}
+
+\hyperref[sec:sec2_label]{\textcolor{blue}{Link}} to the next section.

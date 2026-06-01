@@ -1,0 +1,101 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[12pt,a4paper]{article}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{svg}
+\usepackage{tikz}
+\usepackage{plantuml}
+\usepackage{import}
+\usepackage{float}
+
+\usepackage{tabularx} 
+\usepackage{multirow}
+
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{fontspec}
+\usepackage{luacode}
+\usepackage{caption}
+\usepackage[bottom]{footmisc}
+
+% Setup watermark on whole document
+% Uncomment the next line to add watermark
+% \usepackage[color={[gray]{0.85}},text=DRAFT]{draftwatermark}
+
+% Set up the main and monospaced fonts
+\setmainfont{SourceSansPro}[
+  Path=./fonts/SourceSansPro/,
+  Extension = .ttf,
+  UprightFont = *-Regular,
+  BoldFont = *-Bold,
+  ItalicFont = *-Italic,
+  BoldItalicFont = *-BoldItalic,
+]
+
+\setmonofont{SourceCodePro}[
+  Path=./fonts/SourceCodePro/,
+  Extension = .ttf,
+  UprightFont = *-Regular,
+  BoldFont = *-Bold,
+  ItalicFont = *-Italic,
+  BoldItalicFont = *-BoldItalic,
+]
+
+% Custom command to create a pdf from a PlantUML source and insert it into the final doc
+% First param - path to plantUML source file without extension
+% Second param - scale settings
+% Third param - caption text
+\newcommand{\RenderPlantUML}[3]{
+    \IfFileExists{#1.pdf}{}{
+        \immediate\write18{plantuml -tpdf #1.tex}
+    }
+    % Include the pdf:
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=#2]{#1.pdf}
+      \ifx#3\empty
+      \else
+      \caption{#3}
+      \fi
+  \end{figure}
+}
+
+% Custom command to create a pdf from a Drawio source and insert it into the final doc
+% First param - path to drawio file without extension
+% Second param - scale settings
+% Third param - caption text
+\newcommand{\RenderDrawio}[3]{
+  \IfFileExists{#1.pdf}{}{%
+      \immediate\write18{drawio -x -f pdf -o #1.pdf #1.drawio --no-sandbox --no-gpu --crop}
+  }
+  % Include the pdf:
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=#2]{#1.pdf}
+      \ifx#3\empty
+      \else
+      \caption{#3}
+      \fi
+  \end{figure}
+}
+
+\begin{document}
+
+\import{./}{title.tex}
+
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+\import{chapters/}{section_1.tex}
+\pagebreak
+
+\section{Section 2}
+\import{chapters/}{section_2.tex}
+\pagebreak
+
+\end{document}
