@@ -1,6 +1,6 @@
 ﻿### Info
 
-This dieectory contains a project that started from the clone of
+This directory contains a project that started from the clone of
 [Elastic APM-Server Lab](https://github.com/SMin1620/Elastic_APM_Lab) ELK applications cluster for APM learning.
 A vanilla Vagrant box  install of `apm-server` combined with other components turns out to be complex to maintain.
 
@@ -168,7 +168,7 @@ cd app5;  mvn clean package
 docker-compose -f docker-compose.yml -f docker-compose-javasoap.yml up --build
 ```
 
-To exercise the SOAP call from the Python applicstion, interact with the latter through the browser "Currency Convertor" web page `http://192.168.0.92:8000/`
+To exercise the SOAP call from the Python application, interact with the latter through the browser "Currency Convertor" web page `http://192.168.0.92:8000/`
 On Kibana side you will be able to inspect the transaction from either step (the "View Full Trace" button will indicate)
 
 #### Add NPM Express Blog page node

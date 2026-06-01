@@ -1,0 +1,47 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:55768/",
+      "sslPort": 0
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "pdfviewer",
+      "environmentVariables": {
+        "SYNCFUSION_LICENSE_KEY": "<License_Key_Development>",
+        "REDIS_CACHE_CONNECTION_STRING": "",
+        "DOCUMENT_SLIDING_EXPIRATION_TIME": "10",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "ej2_pdfviewer_web_service": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "pdfviewer",
+      "environmentVariables": {
+        "SYNCFUSION_LICENSE_KEY": "<License_Key_Development>",
+        "DOCUMENT_SLIDING_EXPIRATION_TIME": "10",
+        "REDIS_CACHE_CONNECTION_STRING": "",
+        "DOCUMENT_PATH": "",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:62978/"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/api/pdfviewer",
+      "environmentVariables": {
+        "SYNCFUSION_LICENSE_KEY": "<License_Key_Development>",
+        "DOCUMENT_SLIDING_EXPIRATION_TIME": "10",
+        "REDIS_CACHE_CONNECTION_STRING": "",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
