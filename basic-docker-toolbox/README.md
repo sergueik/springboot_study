@@ -45,7 +45,7 @@ followed by the command from the original `Docker Quickstart Terminal` desktop s
 ```cmd
 "C:\Program Files\Git\bin\bash.exe" --login -i "C:\Program Files\Docker Toolbox\start.sh"
 ```
-Alternatively make these system environment settings permanently via __Control Panel__. The __Docker Toolbox__ installer apparently does not manage to do that on some machines.
+Alternatively make these system environment settings permanent via Windows __Control Panel__. The __Docker Toolbox__ installer apparently does not manage to do that on some machines.
 
 ### Challenge with Upgrade Docker compose to Certain 2.x Versions
 
@@ -59,7 +59,7 @@ First in git bash that is launched by __Docker Toolbox__
 cd /c/Program Files/Docker Toolbox
 cd $TEMP
 VERSION=2.14.0
-curl -sL https://github.com/docker/compose/releases/download/v$VERSION/docker-compose-windows-x86_64.exe -o docker-compose.exe
+curl -skLo docker-compose.exe https://github.com/docker/compose/releases/download/v$VERSION/docker-compose-windows-x86_64.exe 
 ```
 one can try later releases e.g. `VERSION=2.21.0`
 verify
@@ -136,19 +136,12 @@ docker-compose up --build
 ```
 ```text
 ?[1A?[1B?[0G?[?25l[+] Building 0.0s (0/0)
-
 ?[?25h?[1A?[0G?[?25l[+] Building 0.0s (0/0)
-
 ?[?25h?[1A?[0G?[?25l[+] Building 0.0s (0/0)
-
 ?[?25h?[1A?[0G?[?25l[+] Building 0.0s (0/0)
-
 ?[?25h?[1A?[0G?[?25l[+] Building 0.0s (0/0)
-
 ?[?25h?[1A?[0G?[?25l[+] Building 0.0s (0/0)
-
 ?[?25h?[1A?[0G?[?25l[+] Building 0.0s (0/0)
-
 ?[?25h?[1A?[0G?[?25l[+] Building 0.0s (0/2)
 
  => [internal] load build definition from Dockerfile                       0.0s
@@ -157,7 +150,6 @@ docker-compose up --build
 ?[36m => => transferring context: 2B
 0.0s
 ?[0m?[?25h?[1A?[1A?[1A?[1A?[1A?[0G?[?25l[+] Building 0.2s (11/12)
-
 ?[36m => [internal] load build definition from Dockerfile
 0.1s
 ?[0m?[36m => => transferring dockerfile: 32B
@@ -310,7 +302,7 @@ docker-compose logs app
 ```
 ```text
 app  | 127.0.0.1 - - [23/Apr/2023 22:04:42] "GET / HTTP/1.1" 200 -
-app    | 192.168.99.1 - - [20/Apr/2023 22:34:02] "GET /hello/docker-toolbox HTTP/1.1" 200 -
+app  | 192.168.99.1 - - [20/Apr/2023 22:34:02] "GET /hello/docker-toolbox HTTP/1.1" 200 -
 ```
 
 the connection to docker machine will takes place over __Virtual Box__ __Host-Only Ethernet Adapter__ with IP Address `192.168.99.1` and net mask `255.255.255.0`
@@ -352,6 +344,98 @@ github.com/docker/compose/v2/pkg/progress.NewWriter({0x22f8180, 0xc0002b40a0}, {
 
 one will have to restore the original version of `docker-compose.exe`
 
+### Directory Bind Mounts
+
+ * examine the __VM Configuration__:
+
+```powershell
+[xml]$config = [xml] (get-content -path "$env:{USERPROFILE}\.docker\machine\machines\default\default\default.vbox")
+$config.VirtualBox.Machine.Hardware.SharedFolders.SharedFolder | format-list name,histPath
+```
+```text
+name      : c/Users
+hostPath  : \\?\c:\Users
+```
+* examine the mount
+```sh
+docker-machine ssh
+```
+```text
+   ( '>')
+  /) TC (\   Core is distributed with ABSOLUTELY NO WARRANTY.
+ (/-_--_-\)           www.tinycorelinux.net
+```
+```sh
+df
+```
+```text
+Filesystem           1K-blocks      Used Available Use% Mounted on
+tmpfs                   908136    281424    626712  31% /
+tmpfs                   504516         0    504516   0% /dev/shm
+/dev/sda1             18714000    719944  17004928   4% /mnt/sda1
+cgroup                  504516         0    504516   0% /sys/fs/cgroup
+/c/Users             997872636 832537280 165335356  83% /c/Users
+/dev/sda1             18714000    719944  17004928   4% /mnt/sda1/var/lib/docker
+```
+```sh
+exit
+```
+```text
+logout
+exit status 127
+```
+```sh
+DIR %USERPROFILE%\ /ad
+```
+```text
+ Volume in drive C is Windows-SSD
+ Volume Serial Number is 3C37-0A74
+
+ Directory of C:\Users\kouzm
+
+06/01/2026  02:37 PM    <DIR>          .
+11/16/2025  02:19 PM    <DIR>          ..
+02/13/2025  08:21 PM    <DIR>          AppData
+02/13/2025  08:19 PM    <JUNCTION>     Application Data [C:\Users\kouzm\AppData\Roaming]
+02/13/2025  08:22 PM    <DIR>          Contacts
+02/13/2025  08:19 PM    <JUNCTION>     Cookies [C:\Users\kouzm\AppData\Local\Microsoft\Windows\INetCookies]
+04/06/2026  10:12 PM    <DIR>          Desktop
+08/30/2025  12:36 AM    <DIR>          Documents
+05/30/2026  11:31 PM    <DIR>          Downloads
+02/13/2025  08:22 PM    <DIR>          Favorites
+02/13/2025  08:22 PM    <DIR>          Links
+02/13/2025  08:19 PM    <JUNCTION>     Local Settings [C:\Users\kouzm\AppData\Local]
+02/13/2025  08:22 PM    <DIR>          Music
+02/13/2025  08:19 PM    <JUNCTION>     My Documents [C:\Users\kouzm\Documents]
+02/13/2025  08:19 PM    <JUNCTION>     NetHood [C:\Users\kouzm\AppData\Roaming\Microsoft\Windows\Network Shortcuts]
+05/10/2025  04:19 AM    <DIR>          OneDrive
+05/18/2025  10:14 PM    <DIR>          PCAppStore
+02/13/2025  08:19 PM    <JUNCTION>     PrintHood [C:\Users\kouzm\AppData\Roaming\Microsoft\Windows\Printer Shortcuts]
+02/13/2025  08:19 PM    <JUNCTION>     Recent [C:\Users\kouzm\AppData\Roaming\Microsoft\Windows\Recent]
+02/13/2025  08:22 PM    <DIR>          Saved Games
+02/13/2025  08:22 PM    <DIR>          Searches
+02/13/2025  08:19 PM    <JUNCTION>     SendTo [C:\Users\kouzm\AppData\Roaming\Microsoft\Windows\SendTo]
+02/13/2025  08:19 PM    <JUNCTION>     Start Menu [C:\Users\kouzm\AppData\Roaming\Microsoft\Windows\Start Menu]
+02/13/2025  08:19 PM    <JUNCTION>     Templates [C:\Users\kouzm\AppData\Roaming\Microsoft\Windows\Templates]
+12/19/2025  08:14 PM    <DIR>          Videos
+05/25/2026  05:47 PM    <DIR>          VirtualBox VMs
+
+```
+
+```sh
+docker pull alpine:3.9.5
+```
+```sh
+docker run --rm -it -v /c/Users/$USERNAME/Documents:/tmp/documments alpine:3.9.5 sh
+```
+```sh
+ls /tmp/documments/
+Audacity                 My Music                 My Videos
+My Pictures
+```
+```sh
+exit
+```
 ### Copying the Docker Machine VM across development hosts
 
 * to prevent error
