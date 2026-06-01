@@ -421,6 +421,7 @@ DIR %USERPROFILE%\ /ad
 05/25/2026  05:47 PM    <DIR>          VirtualBox VMs
 
 ```
+avoid using  `<JUNCTION>` in volume bind arguments
 
 ```sh
 docker pull alpine:3.9.5
