@@ -437,6 +437,68 @@ My Pictures
 ```sh
 exit
 ```
+
+#### Junction vs Symbolic Link
+
+For local NTFS directories one should prefer a junction:
+```cmd
+mklink.exe /J %USERPROFILE%\workspace %CD%
+```
+instead of:
+```
+mklink.exe /D %USERPROFILE%\workspace %CD%
+```
+because:
+
+Junctions work on older Windows versions.
+Running the command  does not require special symlink privileges.
+
+
+To avoid using the same link name for multiple projects one can
+
+```cmd
+for %_ in ("%CD%") do @rd /q "%USERPROFILE%\%~nx_" && mklink.exe /J "%USERPROFILE%\%~nx_" "%_"
+```
+the first working and final correct version of the command is below (both look a little heavy):
+
+```
+for %_ in ("%CD%") do @set T="%USERPROFILE%\%~nx_" && if exist %T% (rd /q %T% ) else (echo.) && cmd.exe /c MKLINK /J %T% %_
+```
+```text
+Junction created for C:\Users\kouzm\basic-docker-toolbox <<===>> c:\developer\sergueik\springboot_study\basic-docker-toolbox
+```
+```cmd
+dir C:\Users\kouzm | findstr basic-docker-toolbox
+```
+```text
+06/02/2026  03:04 PM    <JUNCTION>     basic-docker-toolbox [c:\developer\sergueik\springboot_study\basic-docker-toolbox]
+```
+> NOTE:
+
+
+OMITTING cmd and accidentally typing `mklink.exe` causes it cese to work:
+
+```cmd
+for %_ in ("%CD%") do @set T="%USERPROFILE%\%~nx_" && if exist %T% (rd /q %T% ) else (echo.) && echo mklink.exe /J %T% %_
+```
+```text
+mklink.exe /J "C:\Users\kouzm\basic-docker-toolbox"  "C:\Users\kouzm\AppData\Local\Temp"
+```
+
+```cmd
+md %TEMP%\a
+md %TEMP%\b
+rd %TEMP%\b
+
+mklink.exe /J %TEMP%\b %TEMP%\a
+```
+```text
+Junction created for C:\Users\kouzm\AppData\Local\Temp\b <<===>> C:\Users\kouzm\AppData\Local\Temp\a
+```
+
+```cmd
+for %_ in ("%CD%") do @set T="%USERPROFILE%\%~nx_" && (rd /q %T%  || echo .) &&  cmd.exe /c MKLINK /J %T% %_
+```
 ### Copying the Docker Machine VM across development hosts
 
 * to prevent error
