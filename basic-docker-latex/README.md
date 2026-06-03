@@ -1,45 +1,204 @@
 ### Info
+Custom image based on [TeX Live](https://tug.org/texlive/) downgraded from base image Debian [Sid](https://www.debian.org/releases/sid/) a.k.a. "Unstable"  development and testing branch of the OS to resolve the challenge with aging Docker ToolBox.
+### Intermediate
 
+It turns out that the published tag `texlive/texlive:TL2015-historic-tree` is not a runnable operating-system image at all.
 
-### Usage
-
-To download the Source Sans Pro TTF font directly, pull the file from the official Adobe Fonts Source Sans GitHub Repository:
 
 ```sh
-pushd fonts/SourceSansPro
-curl -skLo SourceSansPro-Black.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-Black.ttf
-curl -skLo SourceSansPro-BlackItalic.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-BlackIt.ttf
-curl -skLo SourceSansPro-Bold.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-Bold.ttf
-curl -skLo SourceSansPro-BoldItalic.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-BoldIt.ttf
-curl -skLo SourceSansPro-ExtraLight.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-ExtraLight.ttf
-curl -skLo SourceSansPro-ExtraLightItalic.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-ExtraLightIt.ttf
-curl -skLo SourceSansPro-Italic.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-It.ttf
-curl -skLo SourceSansPro-Light.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-Light.ttf
-curl -skLo SourceSansPro-LightItalic.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-LightIt.ttf
-curl -skLo SourceSansPro-Regular.ttf  https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-Regular.ttf
-curl -skLo SourceSansPro-SemiBold.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-Semibold.ttf
-curl -skLo SourceSansPro-SemiBoldItalic.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-SemiboldIt.ttf
-popd
+docker inspect texlive/texlive:TL2015-historic-tree | jq '.[0].Config.Cmd,.[0].Config.Etrypointm,.[0].Os, .[0].Architecture'
+```
+```text
+null
+null
+"linux"
+"amd64"
+```
+```sh
+docker run --rm texlive/texlive:TL2015-historic-tree latex --version
+```
+```text
+C:\Program Files\Docker Toolbox\docker.exe: 
+Error response from daemon: 
+OCI runtime create failed: 
+container_linux.go:349: 
+starting container process caused "exec: \"latex\": 
+executable file not found in $PATH": unknown.
+```
+same with
+```sh
+docker run --rm -it texlive/texlive:TL2015-historic-tree sh
+```
+```sh
+cat /etc/os-release
+cat /etc/debian_version
+```
+
+The fact is some __TeX Live__ Docker artifacts were published as data/container filesystem trees rather than complete runtime environments
+
+Therefore the `TL2015-historic-tree` is probably the wrong artifact to construct a historically frozen TeX Live environment
+
+### Take 2
+
+```sh
+docker pull mfisherman/texlive-minimal:latest
 ```
 
 ```sh
-pushd fonts/SourceCodePro
-BASE_URL=https://github.com/adobe-fonts/source-code-pro/tree/release/TTF
-curl -skLo SourceCodePro-Black.ttf $BASE_URL/SourceCodePro-Black.ttf
-curl -skLo SourceCodePro-BlackItalic.ttf $BASE_URL/SourceCodePro-BlackIt.ttf
-curl -skLo SourceCodePro-Bold.ttf $BASE_URL/SourceCodePro-Bold.ttf
-curl -skLo SourceCodePro-BoldItalic.ttf $BASE_URL/SourceCodePro-BoldIt.ttf
-curl -skLo SourceCodePro-ExtraLight.ttf $BASE_URL/SourceCodePro-ExtraLight.ttf
-curl -skLo SourceCodePro-ExtraLightItalic.ttf $BASE_URL/SourceCodePro-ExtraLightIt.ttf
-curl -skLo SourceCodePro-Italic.ttf $BASE_URL/SourceCodePro-It.ttf
-curl -skLo SourceCodePro-Light.ttf $BASE_URL/SourceCodePro-Light.ttf
-curl -skLo SourceCodePro-LightItalic.ttf $BASE_URL/SourceCodePro-LightIt.ttf
-curl -skLo SourceCodePro-Medium.ttf $BASE_URL/SourceCodePro-Medium.ttf
-curl -skLo SourceCodePro-MediumItalic.ttf $BASE_URL/SourceCodePro-MediumIt.ttf
-curl -skLo SourceCodePro-Regular.ttf $BASE_URL/SourceCodePro-Regular.ttf
-curl -skLo SourceCodePro-SemiBold.ttf $BASE_URL/SourceCodePro-Semibold.ttf
-curl -skLo SourceCodePro-SemiBoldItalic.ttf $BASE_URL/SourceCodePro-SemiboldIt.ttf
+docker run --rm -it mfisherman/texlive-minimal:latest sh
 ```
+```sh
+apk add inkscape
+```
+success:
+```text
+OK: 661 MiB in 280 packages
+```
+```sh
+apk add openjdk17-jre graphviz
+```
+success:
+```text
+OK: 845 MiB in 295 packages
+```
+```sh
+dot -v
+```
+```text
+dot - graphviz version 12.2.1 (20241206.2353)
+```
+```sh
+java -version
+```
+
+```text
+openjdk version "17.0.19" 2026-04-21
+```
+```sh
+cat /etc/os-release
+uname -
+a
+df -h
+df -i
+```
+
+```text
+Linux 58b31ac6f2eb 4.19.130-boot2docker #1 SMP Mon Jun 29 23:52:55 UTC 2020 x86_64 Linux
+```
+```text
+Filesystem                Size      Used Available Use% Mounted on
+
+overlay                  17.8G      4.2G     12.7G  25% /
+tmpfs                    64.0M         0     64.0M   0% /dev
+tmpfs                     1.9G         0      1.9G   0% /sys/fs/cgroup
+shm                      64.0M         0     64.0M   0% /dev/shm
+/dev/sda1                17.8G      4.2G     12.7G  25% /etc/resolv.conf
+/dev/sda1                17.8G      4.2G     12.7G  25% /etc/hostname
+/dev/sda1                17.8G      4.2G     12.7G  25% /etc/hosts
+tmpfs                     1.9G         0      1.9G   0% /proc/asound
+tmpfs                     1.9G         0      1.9G   0% /proc/acpi
+tmpfs                    64.0M         0     64.0M   0% /proc/kcore
+tmpfs                    64.0M         0     64.0M   0% /proc/keys
+tmpfs                    64.0M         0     64.0M   0% /proc/timer_list
+tmpfs                     1.9G         0      1.9G   0% /proc/scsi
+tmpfs                     1.9G         0      1.9G   0% /sys/firmware
+
+```
+```text
+Filesystem              Inodes      Used Available Use% Mounted on
+overlay                2434064    116262   2317802   5% /
+tmpfs                   504954        17    504937   0% /dev
+tmpfs                   504954        13    504941   0% /sys/fs/cgroup
+shm                     504954         1    504953   0% /dev/shm
+/dev/sda1              2434064    116262   2317802   5% /etc/resolv.conf
+/dev/sda1              2434064    116262   2317802   5% /etc/hostname
+/dev/sda1              2434064    116262   2317802   5% /etc/hosts
+tmpfs                   504954         1    504953   0% /proc/asound
+tmpfs                   504954         1    504953   0% /proc/acpi
+tmpfs                   504954        17    504937   0% /proc/kcore
+tmpfs                   504954        17    504937   0% /proc/keys
+tmpfs                   504954        17    504937   0% /proc/timer_list
+tmpfs                   504954         1    504953   0% /proc/scsi
+tmpfs                   504954         1    504953   0% /sys/firmware
+```
+
+```sh
+apk add xvfb
+```
+success
+```text
+OK: 1167 MiB in 320 packages
+```
+```sh
+apk add plantuml
+```
+success
+```text
+OK: 1193 MiB in 322 packages
+```
+```sh 
+plantuml -version
+```
+```text
+PlantUML version 1.2025.2 (Tue Jan 07 17:35:36 GMT 2025)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: US
+
+PLANTUML_LIMIT_SIZE: 4096
+
+Dot version: dot - graphviz version 12.2.1 (20241206.2353)
+Installation seems OK. File generation OK
+```
+```sh
+ docker build -t docker-latex-alpine -f Dockerfile.alpine  .
+```
+`test.tex`:
+```tex
+\documentclass{article}
+\usepackage{graphicx}
+
+\begin{document}
+
+\immediate\write18{plantuml -tpng testuml.tex}
+
+\includegraphics{testuml.png}
+
+\end{document}
+```
+`testuml.tex`:
+```tex
+@startuml
+Alice -> Bob : Hello
+@enduml
+```
+```sh
+lualatex --shell-escape test.tex
+```
+```text
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/share/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+(/usr/share/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg))
+plantuml -tpng testuml.tex
+
+[1{/usr/share/texmf-var/fonts/map/pdftex/updmap/pdftex.map}<./testuml.png>]
+(./test.aux))
+ 406 words of node memory still in use:
+   3 hlist, 1 vlist, 1 rule, 2 glue, 3 kern, 1 glyph, 4 attribute, 48 glue_spec
+, 4 attribute_list, 1 write nodes
+   avail lists: 1:1,2:34,3:4,4:1,5:23,6:2,7:34,9:38
+</usr/share/texmf-dist/fonts/opentype/public/lm/lmroman10-regular.otf>
+Output written on test.pdf (1 page, 5162 bytes).
+Transcript written on test.log.
+/workdir # ls -l test.pdf
+-rw-r--r--    1 root     root          5162 Jun  3 17:13 test.pdf
+
+```
+
+![test.pdf](screenshotr/capture-test-luatex.png)
 
 ```bash
 xvfb-run lualatex --shell-escape main.tex
@@ -984,9 +1143,59 @@ xvfb-run -a drawio \
   --output diagram.pdf \
   diagram.drawio
 ```
-### See Also
- 
+### Font Usage
 
+To download the Source Sans Pro TTF font directly, pull the file from the official Adobe Fonts Source Sans GitHub Repository:
+
+```sh
+pushd fonts/SourceSansPro
+curl -skLo SourceSansPro-Black.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-Black.ttf
+curl -skLo SourceSansPro-BlackItalic.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-BlackIt.ttf
+curl -skLo SourceSansPro-Bold.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-Bold.ttf
+curl -skLo SourceSansPro-BoldItalic.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-BoldIt.ttf
+curl -skLo SourceSansPro-ExtraLight.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-ExtraLight.ttf
+curl -skLo SourceSansPro-ExtraLightItalic.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-ExtraLightIt.ttf
+curl -skLo SourceSansPro-Italic.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-It.ttf
+curl -skLo SourceSansPro-Light.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-Light.ttf
+curl -skLo SourceSansPro-LightItalic.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-LightIt.ttf
+curl -skLo SourceSansPro-Regular.ttf  https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-Regular.ttf
+curl -skLo SourceSansPro-SemiBold.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-Semibold.ttf
+curl -skLo SourceSansPro-SemiBoldItalic.ttf https://github.com/adobe-fonts/source-sans/raw/refs/heads/release/TTF/SourceSans3-SemiboldIt.ttf
+popd
+```
+
+```sh
+pushd fonts/SourceCodePro
+BASE_URL=https://github.com/adobe-fonts/source-code-pro/tree/release/TTF
+curl -skLo SourceCodePro-Black.ttf $BASE_URL/SourceCodePro-Black.ttf
+curl -skLo SourceCodePro-BlackItalic.ttf $BASE_URL/SourceCodePro-BlackIt.ttf
+curl -skLo SourceCodePro-Bold.ttf $BASE_URL/SourceCodePro-Bold.ttf
+curl -skLo SourceCodePro-BoldItalic.ttf $BASE_URL/SourceCodePro-BoldIt.ttf
+curl -skLo SourceCodePro-ExtraLight.ttf $BASE_URL/SourceCodePro-ExtraLight.ttf
+curl -skLo SourceCodePro-ExtraLightItalic.ttf $BASE_URL/SourceCodePro-ExtraLightIt.ttf
+curl -skLo SourceCodePro-Italic.ttf $BASE_URL/SourceCodePro-It.ttf
+curl -skLo SourceCodePro-Light.ttf $BASE_URL/SourceCodePro-Light.ttf
+curl -skLo SourceCodePro-LightItalic.ttf $BASE_URL/SourceCodePro-LightIt.ttf
+curl -skLo SourceCodePro-Medium.ttf $BASE_URL/SourceCodePro-Medium.ttf
+curl -skLo SourceCodePro-MediumItalic.ttf $BASE_URL/SourceCodePro-MediumIt.ttf
+curl -skLo SourceCodePro-Regular.ttf $BASE_URL/SourceCodePro-Regular.ttf
+curl -skLo SourceCodePro-SemiBold.ttf $BASE_URL/SourceCodePro-Semibold.ttf
+curl -skLo SourceCodePro-SemiBoldItalic.ttf $BASE_URL/SourceCodePro-SemiboldIt.ttf
+```
+
+### See Also
+   
+  * original Dockerfile [](https://gitlab.com/islandoftex/images/texlive/-/blob/master/Dockerfile) extracted via command:
+```sh
+docker image inspect 'texlive/texlive:latest-small' |jq '.[0].Config.Labels'
+```
+```json
+{
+  "org.opencontainers.image.authors": "Island of TeX",
+  "org.opencontainers.image.source": "https://gitlab.com/islandoftex/images/texlive/-/blob/master/Dockerfile",
+  "org.opencontainers.image.url": "https://gitlab.com/islandoftex/images/texlive"
+}
+```
   * https://github.com/natlownes/docker-latex
 
 ### Author

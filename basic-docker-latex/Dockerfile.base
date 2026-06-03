@@ -1,0 +1,55 @@
+# This image is based on Debian instead of e.g. Alpine as at the time of its
+# creation there were binaries (e.g. biber) that were not distributed for the
+# Linux/MUSL platform (at least not via default TeX Live). Now downstream
+# images rely on this, so do not change the base OS without good reason.
+FROM debian:testing-slim
+
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    # ConTeXt cache can be created on runtime and does not need to
+    # increase image size
+    TEXLIVE_INSTALL_NO_CONTEXT_CACHE=1 \
+    # As we will not install regular documentation why would we want to
+    # install perl docs…
+    NOPERLDOC=1 \
+    # Make sure apt-get never asks a question (https://manpages.debian.org/testing/debconf-doc/debconf.7.fr.html#noninteractive)
+    DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+  # basic utilities for TeX Live installation
+  apt-get install -qy --no-install-recommends curl git unzip \
+  # miscellaneous dependencies for TeX Live tools
+  make fontconfig perl default-jre libgetopt-long-descriptive-perl \
+  libdigest-perl-md5-perl libncurses6 \
+  # for latexindent (see #13)
+  libunicode-linebreak-perl libfile-homedir-perl libyaml-tiny-perl \
+  # for eps conversion (see #14)
+  ghostscript \
+  # for metafont (see #24)
+  libsm6 \
+  # for memoize (see #57)
+  libpdf-api2-perl \
+  # for syntax highlighting
+  python3 python3-pygments python-is-python3 \
+  # for gnuplot backend of pgfplots (see !13)
+  gnuplot-nox \
+  # for asymptote (see #48)
+  libglut3.12 libtirpc3t64 \
+  # for tex4ebook (see #54)
+  tidy zip && \
+  rm -rf /var/lib/apt/lists/* && \
+  rm -rf /var/cache/apt/ && \
+  export LIBDIR && \
+  LIBDIR="$(find /usr/lib -type d -name '*-linux-*')" && \
+  export BASELIBDIR && \
+  BASELIBDIR="$(basename "${LIBDIR}")" && \
+  ln -sf "/usr/lib/${BASELIBDIR}/libglut.so.3.12" "/usr/lib/${BASELIBDIR}/libglut.so.3"
+
+# Add a dedicated non-root user `texlive` that downstream can simply switch
+# into (see #52).
+RUN useradd -m -s /bin/bash texlive && \
+  chown -R texlive:texlive /home/texlive
+
+LABEL org.opencontainers.image.authors="Island of TeX" \
+  org.opencontainers.image.url=https://gitlab.com/islandoftex/images/texlive \
+  org.opencontainers.image.source=https://gitlab.com/islandoftex/images/texlive/-/blob/master/Dockerfile.base

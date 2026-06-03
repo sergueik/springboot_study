@@ -1,4 +1,5 @@
-FROM texlive/texlive:latest-small
+# FROM texlive/texlive:latest-small
+FROM texlive/texlive:TL2015-historic-tree
 
 RUN grep -R Post-Invoke /etc/apt/apt.conf.d/ || true
 

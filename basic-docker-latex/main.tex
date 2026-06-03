@@ -65,23 +65,15 @@
 }
 
 % Custom command to create a pdf from a Drawio source and insert it into the final doc
-% First param - path to drawio file without extension
-% Second param - scale settings
-% Third param - caption text
+
 \newcommand{\RenderDrawio}[3]{
-  \IfFileExists{#1.pdf}{}{%
-      \immediate\write18{drawio -x -f pdf -o #1.pdf #1.drawio --no-sandbox --no-gpu --crop}
-  }
-  % Include the pdf:
   \begin{figure}[H]
-      \centering
-      \includegraphics[width=#2]{#1.pdf}
-      \ifx#3\empty
-      \else
-      \caption{#3}
-      \fi
+    \centering
+    \fbox{\texttt{Draw.io disabled in Alpine build}}
+    \caption{#3}
   \end{figure}
 }
+
 
 \begin{document}
 
