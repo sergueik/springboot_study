@@ -475,8 +475,7 @@ dir C:\Users\kouzm | findstr basic-docker-toolbox
 ```
 > NOTE:
 
-
-OMITTING cmd and accidentally typing `mklink.exe` causes it cese to work:
+Omitting `cmd` and accidentally typing `mklink.exe` causes it cese to work:
 
 ```cmd
 for %_ in ("%CD%") do @set T="%USERPROFILE%\%~nx_" && if exist %T% (rd /q %T% ) else (echo.) && echo mklink.exe /J %T% %_
@@ -484,6 +483,10 @@ for %_ in ("%CD%") do @set T="%USERPROFILE%\%~nx_" && if exist %T% (rd /q %T% ) 
 ```text
 mklink.exe /J "C:\Users\kouzm\basic-docker-toolbox"  "C:\Users\kouzm\AppData\Local\Temp"
 ```
+```text
+```
+
+compare:
 
 ```cmd
 md %TEMP%\a
@@ -499,6 +502,124 @@ Junction created for C:\Users\kouzm\AppData\Local\Temp\b <<===>> C:\Users\kouzm\
 ```cmd
 for %_ in ("%CD%") do @set T="%USERPROFILE%\%~nx_" && (rd /q %T%  || echo .) &&  cmd.exe /c MKLINK /J %T% %_
 ```
+Compare to much more complex scenario with WSL2:
+
+What often surprises Linux and virtualization veterans is that when you open:
+
+\\wsl$\Ubuntu\tmp
+
+in Explorer, you're not looking at a simple shared folder in the VirtualBox sense.
+
+There is a fairly elaborate stack involved:
+```
+Explorer
+  -> Windows SMB client
+      -> special \\wsl$ provider
+          -> WSL service
+              -> Hyper-V VM
+                  -> Linux VFS
+                      -> ext4.vhdx
+```
+Depending on the operation, a file copy may also lead to:
+
+* Windows Defender scanning
+* Windows Search indexing
+* Explorer thumbnail generation
+* Alternate stream handling
+* File metadata translation
+* Permission mapping
+* Case-sensitivity translation
+* Inotify ↔ Windows notification translation
+
+
+#### SCP 
+
+In the corporate controlled domain, if application is using WSL2 and the WSL instance binds to an IPv6 address, there are several ways to use `scp`. The easiest depends on whether you're connecting from Windows to __WSL__ on host or from another machine to __WSL__.
+
+##### First: Is SSH running inside WSL?
+
+Inside WSL:
+```sh
+ps -ef | grep sshd
+```
+or
+```sh
+sudo service ssh status
+```
+or
+```sh
+sudo ss -tlnp | grep :22
+```
+If `sshd` is not running, start it:
+```sh
+sudo service ssh start
+```
+or
+```sh
+sudo systemctl start ssh
+```
+on newer WSL configurations
+
+##### Find the WSL IP
+
+Inside WSL:
+```sh
+ip addr
+```
+or
+```sh
+hostname -I
+```
+You may see something like:
+```text
+172.27.150.88
+```
+or an IPv6 address such as:
+```text
+fd12:3456:789a::1234
+```
+
+
+##### SCP using IPv6
+
+IPv6 addresses must be enclosed in brackets:
+```sh
+scp myfile.txt user@[fd12:3456:789a::1234]:/tmp/
+```
+and:
+```
+scp user@[fd12:3456:789a::1234]:/tmp/myfile.txt .
+```
+##### From Git Bash on Windows
+
+Git Bash's __OpenSSH__ client generally supports __IPv6__:
+```sh
+scp file.txt user@[fd12:3456:789a::1234]:/tmp/
+```
+If the shell interprets brackets oddly, quote the remote target:
+```sh
+scp file.txt 'user@[fd12:3456:789a::1234]:/tmp/'
+```
+
+##### Easiest: Use localhost
+
+Many modern __WSL2__ configurations automatically forward ports from Windows to WSL.
+
+Test:
+```sh
+ssh user@localhost
+```
+If that works, then:
+```sh
+scp file.txt user@localhost:/tmp/
+```
+and:
+```sh
+scp user@localhost:/tmp/file.txt .
+```
+This is usually much easier than dealing with changing WSL IP addresses.
+
+
 ### Copying the Docker Machine VM across development hosts
 
 * to prevent error
