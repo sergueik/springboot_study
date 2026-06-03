@@ -278,7 +278,7 @@ app  | Press CTRL+C to quit
 
 ```
 
-in seperate console, run
+in separate console, run
 ```sh
 docker-compose ps
 ```
@@ -349,7 +349,7 @@ one will have to restore the original version of `docker-compose.exe`
  * examine the __VM Configuration__:
 
 ```powershell
-[xml]$config = [xml] (get-content -path "$env:{USERPROFILE}\.docker\machine\machines\default\default\default.vbox")
+[xml]$config = [xml] (get-content -path "${env:USERPROFILE}\.docker\machine\machines\default\default\default.vbox")
 $config.VirtualBox.Machine.Hardware.SharedFolders.SharedFolder | format-list name,histPath
 ```
 ```text
@@ -619,6 +619,75 @@ scp user@localhost:/tmp/file.txt .
 ```
 This is usually much easier than dealing with changing WSL IP addresses.
 
+
+### Reconfigure Docker Toolbox
+* this will not achieve
+```powershell
+$RAMSize = 1024
+$filepath = "${env:USERPROFILE}\.docker\machine\machines\default\default\default.vbox"
+[xml]$config = [xml] (get-content -path $filepath )
+# NOTE:
+# <Memory RAMSize="4096"/>
+#  Cannot set "RAMSize" because only strings can be used as values to set XmlNode properties
+$config.VirtualBox.Machine.Hardware.Memory.RAMSize = ( "{0}" -f $RAMSize )
+$config.Save($filepath)
+
+```
+> NOTE: it is not enough to restart the machine: 
+```sh
+docker-machine restart
+```
+```sh
+docker-machine ssh
+```
+
+```sh
+free
+```
+```text
+              total        used        free      shared  buff/cache   available
+Mem:        4039632       70072     3666632      281428      302928     3644556
+Swap:       1948692 
+```
+one probably has to stop machine, reconfigure then start machine
+the command
+```powershell
+& 'C:\Program Files\Oracle\VirtualBox\VBoxSVC.exe' /ReregServer
+```
+does not help
+```text
+---------------------------
+Usage
+---------------------------
+Options:
+
+/RegServer:	register COM out-of-proc server
+/UnregServer:	unregister COM out-of-proc server
+/ReregServer:	unregister and register COM server
+no options:	run the server
+---------------------------
+OK   
+---------------------------
+
+```
+```powershell
+docker-machine stop default
+& 'C:\Program Files\Oracle\VirtualBox\VBoxManage.exe' modifyvm default --memory 1024
+docker-machine start default
+```
+```powershell
+& 'C:\Program Files\Oracle\VirtualBox\VBoxManage.exe' showvminfo default | findstr Memory
+```
+
+Reason: there are multiple actors:
+
+* docker-machine
+* VBoxManage
+* VBoxSVC
+* VirtualBox GUI
+
+all touching the same VM definition. Therefore editing the generated ".vbox" file directly 
+loses to the management layer that owns it.
 
 ### Copying the Docker Machine VM across development hosts
 
