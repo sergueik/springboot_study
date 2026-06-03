@@ -1,21 +1,13 @@
 FROM mfisherman/texlive-minimal:latest
 
-# Core UML / diagramming tooling
-RUN apk update && \
-    apk add --no-cache \
-        openjdk17-jre \
-        graphviz \
-        xvfb \
-        inkscape \
-        plantuml
+RUN apk update && apk add --no-cache \
+        ncurses openjdk17-jre graphviz xvfb inkscape plantuml
 
-# Sanity checks during build
-RUN java -version
-RUN dot -V
-RUN plantuml -version
-RUN inkscape --version
+RUN java -version && \
+    dot -V && \
+    plantuml -version && \
+    inkscape --version
 
-# Optional convenience variables
 ENV GRAPHVIZ_DOT=/usr/bin/dot
 
 WORKDIR /workdir

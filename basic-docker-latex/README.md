@@ -198,7 +198,7 @@ Transcript written on test.log.
 
 ```
 
-![test.pdf](screenshotr/capture-test-luatex.png)
+![test.pdf](screenshots/capture-test-luatex.png)
 
 ```bash
 xvfb-run lualatex --shell-escape main.tex
