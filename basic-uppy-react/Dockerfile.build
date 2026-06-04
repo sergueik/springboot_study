@@ -1,6 +1,6 @@
-FROM maven:3.9.5-eclipse-temurin-11-alpine
+FROM maven:3.9.5-eclipse-temurin-11
 
-RUN apk add --no-cache nodejs npm
+RUN apt-get update && apt-get install -q -y nodejs npm
 
 WORKDIR /app
 COPY . /app

@@ -850,8 +850,61 @@ or similar.
 
 
 Therefore `frontend-maven-plugin` is probably the wrong plugin for the task
+#### Try Debian Temurin Maven
+
+```
+docker pull maven:3.9.5-eclipse-temurin-11
+```
+
+```
+docker run --rm maven:3.9.5-eclipse-temurin-11 cat /etc/os-release
+```
+```
+PRETTY_NAME="Ubuntu 22.04.3 LTS"
+NAME="Ubuntu"
+VERSION_ID="22.04"
+VERSION="22.04.3 LTS (Jammy Jellyfish)"
+VERSION_CODENAME=jammy
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=jammy
+
+```
 
 
+```
+docker run --rm maven:3.9.5-eclipse-temurin-11 apt-key list
+```
+```
+E: gnupg, gnupg2 and gnupg1 do not seem to be installed, but one of them is required for this operation
+```
+```
+docker build -t x -f Dockerfile.build .
+```
+```
+Step 2/7 : RUN apt-get update && apt-get install -q -y nodejs npm
+ ---> Running in 12a588ee67a3
+Get:1 http://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]
+Get:2 http://archive.ubuntu.com/ubuntu jammy InRelease [270 kB]
+Err:1 http://security.ubuntu.com/ubuntu jammy-security InRelease
+  The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 871920D1991BC93C
+Get:3 http://archive.ubuntu.com/ubuntu jammy-updates InRelease [128 kB]
+Err:2 http://archive.ubuntu.com/ubuntu jammy InRelease
+  The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 871920D1991BC93C
+Get:4 http://archive.ubuntu.com/ubuntu jammy-backports InRelease [127 kB]
+Err:3 http://archive.ubuntu.com/ubuntu jammy-updates InRelease
+  The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 871920D1991BC93C
+Err:4 http://archive.ubuntu.com/ubuntu jammy-backports InRelease
+  The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 871920D1991BC93C
+Reading package lists...
+```
+```text
+The command '/bin/sh -c apt-get update && apt-get install -q -y nodejs npm' returned a non-zero code: 100
+```
 ### Cleanup
 ```sh
 docker stop example; docker container prune -f ; docker image prune -f
