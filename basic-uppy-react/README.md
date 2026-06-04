@@ -850,13 +850,15 @@ or similar.
 
 
 Therefore `frontend-maven-plugin` is probably the wrong plugin for the task
+
 #### Try Debian Temurin Maven
 
-```
+```sh
 docker pull maven:3.9.5-eclipse-temurin-11
 ```
 
-```
+
+```sh
 docker run --rm maven:3.9.5-eclipse-temurin-11 cat /etc/os-release
 ```
 ```
@@ -882,10 +884,11 @@ docker run --rm maven:3.9.5-eclipse-temurin-11 apt-key list
 ```
 E: gnupg, gnupg2 and gnupg1 do not seem to be installed, but one of them is required for this operation
 ```
+```sh
+docker build -t uppy-react-build -f Dockerfile.build .
 ```
-docker build -t x -f Dockerfile.build .
-```
-```
+> NOTE: network prox issuses
+```txt
 Step 2/7 : RUN apt-get update && apt-get install -q -y nodejs npm
  ---> Running in 12a588ee67a3
 Get:1 http://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]
@@ -904,6 +907,99 @@ Reading package lists...
 ```
 ```text
 The command '/bin/sh -c apt-get update && apt-get install -q -y nodejs npm' returned a non-zero code: 100
+```
+
+
+```text
+
+[INFO] Copying node binary from /app/frontend/node/tmp/node-v22.18.0-linux-x64/bin/node to /app/frontend/node/node
+[INFO] Extracting NPM
+[INFO] Installed node locally.
+[INFO] 
+[INFO] --- frontend:1.15.0:npm (npm-install) @ uppy-react-multipart-upload-backend ---
+[INFO] Running 'npm install' in /app/frontend
+[INFO] npm error code ERESOLVE
+[INFO] npm error ERESOLVE unable to resolve dependency tree
+[INFO] npm error
+[INFO] npm error While resolving: uppy-react-upload@1.0.0
+[INFO] npm error Found: @uppy/core@5.1.1
+[INFO] npm error node_modules/@uppy/core
+[INFO] npm error   @uppy/core@"5.1.1" from the root project
+[INFO] npm error
+[INFO] npm error Could not resolve dependency:
+[INFO] npm error peer @uppy/core@"^5.2.0" from @uppy/dashboard@5.1.1
+[INFO] npm error node_modules/@uppy/dashboard
+[INFO] npm error   @uppy/dashboard@"5.1.1" from the root project
+[INFO] npm error
+[INFO] npm error Fix the upstream dependency conflict, or retry
+[INFO] npm error this command with --force or --legacy-peer-deps
+[INFO] npm error to accept an incorrect (and potentially broken) dependency resolution.
+[INFO] npm error
+[INFO] npm error
+[INFO] npm error For a full report see:
+[INFO] npm error /root/.npm/_logs/2026-06-04T16_22_26_410Z-eresolve-report.txt
+[INFO] npm notice
+[INFO] npm notice New major version of npm available! 10.9.3 -> 11.16.0
+[INFO] npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.16.0
+[INFO] npm notice To update run: npm install -g npm@11.16.0
+[INFO] npm notice
+[INFO] npm error A complete log of this run can be found in: /root/.npm/_logs/2026-06-04T16_22_26_410Z-debug-0.log
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:15 min
+[INFO] Finished at: 2026-06-04T16:22:27Z
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal com.github.eirslett:frontend-maven-plugin:1.15.0:npm (npm-install) on project uppy-react-multipart-upload-backend: Failed to run task: 'npm install' failed. org.apache.commons.exec.ExecuteException: Process exited with an error: 1 (Exit value: 1) -> [Help 1]
+[ERROR] 
+```
+```text
+[INFO] --- frontend:1.15.0:npm (npm-install) @ uppy-react-multipart-upload-backend ---
+[INFO] Running 'npm install' in /app/frontend
+[INFO] npm error code ERESOLVE
+[INFO] npm error ERESOLVE unable to resolve dependency tree
+[INFO] npm error
+[INFO] npm error While resolving: uppy-react-upload@1.0.0
+[INFO] npm error Found: @uppy/core@5.1.1
+[INFO] npm error node_modules/@uppy/core
+[INFO] npm error   @uppy/core@"5.1.1" from the root project
+[INFO] npm error
+[INFO] npm error Could not resolve dependency:
+[INFO] npm error peer @uppy/core@"^5.2.0" from @uppy/dashboard@5.1.1
+[INFO] npm error node_modules/@uppy/dashboard
+[INFO] npm error   @uppy/dashboard@"5.1.1" from the root project
+[INFO] npm error
+[INFO] npm error Fix the upstream dependency conflict, or retry
+[INFO] npm error this command with --force or --legacy-peer-deps
+[INFO] npm error to accept an incorrect (and potentially broken) dependency resolution.
+[INFO] npm error
+[INFO] npm error
+[INFO] npm error For a full report see:
+[INFO] npm error /root/.npm/_logs/2026-06-04T16_29_28_588Z-eresolve-report.txt
+[INFO] npm notice
+```
+```sh
+docker pull node:18-bookworm
+```
+```sh
+docker build -t uppy-react-build2 -f Dockerfile.build2 .
+```
+
+```text
+Step 1/8 : FROM node:18-bookworm
+ ---> b50082bc3670
+Step 2/8 : RUN apt-get update  && apt-cache search openjdk-11-jdk   && apt-get install -qqy maven openjdk-11-jdk
+ ---> Running in 85bca5b004ed
+Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [48.0 kB]
+Get:4 http://deb.debian.org/debian bookworm/main amd64 Packages [8790 kB]
+Get:5 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [6924 B]
+Get:6 http://deb.debian.org/debian-security bookworm-security/main amd64 Packages [306 kB]
+Fetched 9358 kB in 7s (1377 kB/s)
+Reading package lists...
+E: Unable to locate package openjdk-11-jdk
+
 ```
 ### Cleanup
 ```sh

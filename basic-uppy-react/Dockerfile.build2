@@ -1,0 +1,18 @@
+FROM node:18-bookworm
+
+RUN apt-get update \
+ && apt-cache search openjdk-11-jdk  \
+ && apt-get install -qqy maven openjdk-11-jdk
+
+WORKDIR /app
+COPY pom.xml /app/
+RUN mvn dependency:go-offline -q
+COPY . .
+
+RUN node --version
+RUN npm --version
+RUN mvn --version
+
+RUN mvn -Preact clean package
+
+
