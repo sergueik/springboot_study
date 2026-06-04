@@ -22,4 +22,12 @@ public class ReactRedirectUploadController {
         return "redirect:/";
     }
 
+    // alternatively,
+    /* 
+      @GetMapping("/")
+public String redirectToReact() {
+    return "forward:/index.html";
+}
+     */ 
+// Spring Boot automatically serves: "src/main/resources/static/index.html" as: "/"
 }

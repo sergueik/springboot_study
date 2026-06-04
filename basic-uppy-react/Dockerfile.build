@@ -1,0 +1,11 @@
+FROM maven:3.9.5-eclipse-temurin-11-alpine
+
+RUN apk add --no-cache nodejs npm
+
+WORKDIR /app
+COPY . /app
+
+RUN node --version
+RUN npm --version
+
+RUN mvn -Preact clean package

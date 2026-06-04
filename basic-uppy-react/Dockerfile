@@ -20,13 +20,13 @@ FROM maven:3.9.5-eclipse-temurin-11-alpine as builder
 
 WORKDIR /app
 
-COPY backend /app/
+COPY pom.xml /app/
+RUN mvn dependency:go-offline -q
+ADD src /app/src/
 
-# copy React static frontend bundle 
 COPY --from=react_builder /app/dist /app/src/main/resources/static/ 
 
-RUN cd /app && mvn dependency:go-offline -q
-RUN cd /app && mvn clean package -DskipTests -q
+RUN mvn clean package -DskipTests -q
 
 FROM eclipse-temurin:11-jre-alpine as run
 COPY --from=builder /app/target/example.uppy-react-multipart-upload-backend.jar /app/app.jar 
