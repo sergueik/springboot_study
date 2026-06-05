@@ -5,7 +5,6 @@ package example.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,16 +17,9 @@ public class ReactRedirectUploadController {
 	private boolean debug;
 
     @GetMapping("/react")
-    public String redirectToReact() {
-        return "redirect:/";
-    }
-
-    // alternatively,
-    /* 
-      @GetMapping("/")
 public String redirectToReact() {
     return "forward:/index.html";
 }
-     */ 
-// Spring Boot automatically serves: "src/main/resources/static/index.html" as: "/"
+// Spring Boot automatically serves: 
+// "src/main/resources/static/index.html" as: "/"
 }

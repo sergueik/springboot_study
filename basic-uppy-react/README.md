@@ -121,11 +121,20 @@ docker export $CONTAINER |tar tv | grep /app/app.jar
 ```
 ```sh
 docker export $CONTAINER |tar xv app/app.jar
-docker container rm $CONTAINER
+docker container rm -f $CONTAINER
 ```
 ```sh
 unzip -ql app/app.jar |grep -E '(static|templates)'
 ```
+
+```text
+        0  2026-06-05 17:34   BOOT-INF/classes/static/
+        0  2026-06-05 17:34   BOOT-INF/classes/static/assets/
+      311  2026-06-05 17:34   BOOT-INF/classes/static/index.html
+    65603  2026-06-05 17:34   BOOT-INF/classes/static/assets/index-D9e3sqm0.css
+   378022  2026-06-05 17:34   BOOT-INF/classes/static/assets/index-CY9HpG0p.js
+```
+In earlier versions it has both AngularJS (bare-bones non-styled, without drop zone) and [ReactJS](https://legacy.reactjs.org/) A JavaScript library for building user interfaces) driven upload pages with [uppy](https://uppy.io/) 
 ```text
         0  2026-05-25 15:33   BOOT-INF/classes/templates/
         0  2026-05-25 15:33   BOOT-INF/classes/static/
@@ -139,13 +148,12 @@ unzip -ql app/app.jar |grep -E '(static|templates)'
    378022  2026-05-25 15:33   BOOT-INF/classes/static/assets/index-C6DRwziu.js
     65603  2026-05-25 15:33   BOOT-INF/classes/static/assets/index-D9e3sqm0.css
 ```
-it has both AngularJS (bare-bones non-styled, without drop zone) and [ReactJS](https://legacy.reactjs.org/) A JavaScript library for building user interfaces) driven upload pages with [uppy](https://uppy.io/) 
 
-run both
+run both frontend and backend on port `8080`:
 ```sh
 IMAGE=uppy-react
 CONTAINER=example
-dockder container rm $CONTAINER
+docker container rm $CONTAINER
 docker run -d -p 8080:8080 --name $CONTAINER $IMAGE
 ```
 ```sh
