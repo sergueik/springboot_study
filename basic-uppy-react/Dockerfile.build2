@@ -12,6 +12,6 @@ RUN node --version
 RUN npm --version
 RUN mvn --version
 
-RUN mvn -Preact clean package
+RUN mvn -Preact2 clean package
 
 

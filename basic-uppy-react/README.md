@@ -502,7 +502,28 @@ INFO] --- frontend:1.15.0:npm (npm-build) @ uppy-react-multipart-upload-backend 
 Successfully built fadcfb45af84
 Successfully tagged uppy-react-build1:latest
 ```
-#### Use Node Based Dockerfile
+
+```
+IMAGE=uppy-react-build1
+CONTAINER=example
+docker container stop $CONTAINER
+docker container rm $CONTAINER
+docker run -d -p 8080:8080 --name $CONTAINER $IMAGE java -jar target/example.uppy-react-multipart-upload-backend.jar
+```
+
+
+```sh
+docker logs $CONTAINER
+```
+
+```text
+2026-06-06 01:45:14.891  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2026-06-06 01:45:14.904  INFO 1 --- [           main] example.Application                      : Started Application in 2.361 seconds (JVM running for 2.753)
+2026-06-06 01:45:14.906 DEBUG 1 --- [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state LivenessState changed to CORRECT
+2026-06-06 01:45:14.907 DEBUG 1 --- [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state ReadinessState changed to ACCEPTING_TRAFFIC
+
+```
+#### Use Node Based Dockerfile and System Node.js
 
 ```sh
 docker pull node:22-bookworm
@@ -510,16 +531,9 @@ docker pull node:22-bookworm
 ```sh
 docker run -it --rm node:22-bookworm node --version
 ```
-```
+```text
 v22.22.3
 ```
-update `pom.xml` 
-
-```xml
-   <nodeVersion>v22.22.3</nodeVersion>
-```
-hoping to speed up the build to allow maven skip installing its own node:
-
 ```sh
 docker build -t uppy-react-build2 -f Dockerfile.build2 .
 ```
@@ -648,16 +662,15 @@ docker logs $CONTAINER
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v2.7.8)
 ...
-2026-06-05 15:57:15.910 DEBUG 1 --- [           main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
-2026-06-05 15:57:16.118  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
-2026-06-05 15:57:16.162  INFO 1 --- [           main] example.Application                      : Started Application in 4.025 seconds (JVM running for 4.507)
-2026-06-05 15:57:16.164 DEBUG 1 --- [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state LivenessState changed to CORRECT
-2026-06-05 15:57:16.167 DEBUG 1 --- [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state ReadinessState changed to ACCEPTING_TRAFFIC
+2026-06-06 01:43:25.913  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2026-06-06 01:43:25.925  INFO 1 --- [           main] example.Application                      : Started Application in 2.242 seconds (JVM running for 2.6)
+2026-06-06 01:43:25.927 DEBUG 1 --- [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state LivenessState changed to CORRECT
+2026-06-06 01:43:25.929 DEBUG 1 --- [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state ReadinessState changed to ACCEPTING_TRAFFIC
 ```
 browse `http://localhost:8080/react`
 
 ```sh
-docker container top $CONTAINER 
+docker container stop $CONTAINER 
 docker container rm $CONTAINER
 ```
 #### Compare Images
@@ -670,6 +683,14 @@ uppy-react:latest               923b5c4ec24a        193MB             0B
 ```sh
 docker stop example; docker container prune -f ; docker image prune -f
 ```
+
+### Use System Node.js
+
+The `frontend-maven-plugin` by default cannot directly use a globally installed system `Node.js` binary:
+the plugin's core philosophy is to always download and isolate a local `Node` installation
+to guarantee identical build environments across different machines.
+To use system node, switch to plugin `exec-maven-plugin` - this is done in profile 'react2'
+
 ### Background
 
 __React__ is very unbeleivably complex - age?. Over the years.

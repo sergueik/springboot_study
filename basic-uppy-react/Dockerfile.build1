@@ -1,13 +1,8 @@
 FROM maven:3.9.5-eclipse-temurin-11
 
-RUN apt-get update && apt-get install -q -y nodejs npm
-
 WORKDIR /app
 COPY pom.xml /app/
 RUN mvn dependency:go-offline -q
 COPY . /app
 
-RUN node --version
-RUN npm --version
-
-RUN mvn -Preact clean package
+RUN mvn -Preact1 clean package
