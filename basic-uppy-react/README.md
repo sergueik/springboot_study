@@ -733,20 +733,81 @@ mvn spring-boot:run
 ```
 
 open in the browser `http://localhost:8080/react` 
+
 #### Cleanup
+
 ```cmd
+msiexec.exe /l*vx "uninstall.log" /qn /x %USERPROFILE%\Downloads\node.msi
+```
+find in `uninstall.log`:
+```text
+MSI (s) (74:B0) [00:33:54:941]: Product: Node.js -- Removal completed successfully.
+
+MSI (s) (74:B0) [00:33:54:941]: Windows Installer removed the product. Product Name: Node.js. Product Version: 22.18.0. Product Language: 1033. Manufacturer: Node.js Foundation. Removal success or error status: 0.
+
 ```
 #### Troubleshooting
 
-id the install is not successful and the log contains
+if the install is not successful and the log contains
+
 ```text
+MSI (s) (C8:D4) [23:30:45:230]: Product: Node.js -- Error 1925. You do not have sufficient privileges to complete this installation for all users of the machine. Log on as administrator and then retry this installation.
+
+Error 1925. You do not have sufficient privileges to complete this installation for all users of the machine. Log on as administrator and then retry this installation.
+MSI (s) (C8:D4) [23:30:45:236]: Note: 1: 2265 2:  3: -2147287035
+MSI (s) (C8:D4) [23:30:45:236]: User policy value 'DisableRollback' is 0
+MSI (s) (C8:D4) [23:30:45:236]: Machine policy value 'DisableRollback' is 0
+Action ended 23:30:45: InstallFinalize. Return value 3.
+MSI (s) (C8:D4) [23:30:45:236]: Note: 1: 2318 2:
+
+
 MSI (s) (C8:D4) [23:30:45:297]: Note: 1: 1708
 MSI (s) (C8:D4) [23:30:45:297]: Product: Node.js -- Installation failed.
+...
 
 MSI (s) (C8:D4) [23:30:45:298]: Windows Installer installed the product. Product Name: Node.js. Product Version: 22.18.0. Product Language: 1033. Manufacturer: Node.js Foundation. Installation success or error status: 1603.
 ```
 The error disappears if the `msiexec.exe` run by `Administrator` user elevated shell.
+> NOTE: The Exit code `1603` is a generic Microsoft Installer (MSI) error meaning "Fatal error during installation" a.k.a. the famous "something went wrong, good luck"
 
+to find the actual error via grep:
+```sh
+file install.FAILED.log
+```
+```text
+install.FAILED.log: Unicode text, UTF-16, little-endian text, with CRLF line terminators
+```
+```sh
+iconv -f UTF-16LE -t UTF-8 install.FAILED.log > install.FAILED.utf8.log
+grep -n "Return value 3" install.FAILED.utf8.log
+```
+```txt
+6785:Action ended 23:30:45: InstallFinalize. Return value 3.
+6795:Action ended 23:30:45: INSTALL. Return value 3.
+```
+alternatively
+```sh
+strings -e l install.FAILED.log | grep "Return value 3"
+```
+> NOTE: `strings` may be absent in Git Bash
+
+```sh
+perl -CS -MEncode -ne '
+  print decode("UTF-16LE", $_)
+' install.FAILED.log | grep "Return value
+```
+> NOTE: this may not work as expected
+the correct command is to instuct Perl to "slurp the whole file as raw bytes):
+
+```sh
+perl -MEncode -0777 -ne '
+  print encode("UTF-8", decode("UTF-16LE", $_))
+' install.FAILED.log | grep 'Return value 3'
+```
+```text
+Action ended 23:30:45: InstallFinalize. Return value 3.
+Action ended 23:30:45: INSTALL. Return value 3.
+```
 ### Cleanup
 ```sh
 docker stop example; docker container prune -f ; docker image prune -f
