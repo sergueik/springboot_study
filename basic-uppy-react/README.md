@@ -679,6 +679,74 @@ uppy-react-build1:latest        fadcfb45af84        1.8GB             0B
 uppy-react-build2:latest        94a426b3f647       2.18GB             0B
 uppy-react:latest               923b5c4ec24a        193MB             0B    
 ```
+
+### Windows Build
+
+```sh
+curl -skLo ~/Downloads/node.msi https://nodejs.org/dist/v22.18.0/node-v22.18.0-x64.msi
+```
+```cmd
+msiexec.exe /l*vx "install.log" /qn /i %USERPROFILE%\Downloads\node.msi
+```
+examine the `install.log`
+```txt
+Action ended 23:34:39: WixBroadcastEnvironmentChange. Return value 1.
+Action ended 23:34:39: INSTALL. Return value 1.
+Property(S): ALLUSERS = 1
+Property(S): ARPPRODUCTICON = NodeIcon
+Property(S): ApplicationFolderName = nodejs
+Property(S): WIXUI_INSTALLDIR = INSTALLDIR
+Property(S): INSTALLDIR = C:\Program Files\nodejs\
+Property(S): WixShellExecTarget = [#InstallToolsBat]
+Property(S): DefaultUIFont = WixUI_Font_Normal
+Property(S): WixUI_Mode = FeatureTree
+Property(S): WIXUI_EXITDIALOGOPTIONALTEXT = Node.js has been successfully installed.
+Property(S): Manufacturer = Node.js Foundation
+Property(S): ProductCode = {DDBAF135-0177-467C-9C52-495EA778B218}
+Property(S): ProductLanguage = 1033
+Property(S): ProductName = Node.js
+Property(S): ProductVersion = 22.18.0
+Property(S): UpgradeCode = {47C07A3A-42EF-4213-A85D-8F5A59077C28}
+Property(S): ErrorDialog = ErrorDlg
+Property(S): WixUIRMOption = UseRM
+Property(S): SecureCustomProperties = BURNMSIMODIFY;BURNMSIREPAIR;BURNMSIUNINSTALL;EARLY_IO_DETECTED;INSTALLDIR;NODE_0X_DETECTED;WIX_DOWNGRADE_DETECTED;WIX_UPGRADE_DETECTED
+Property(S): ApplicationProgramsFolder = C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Node.js\
+Property(S): ProgramMenuFolder = C:\ProgramData\Microsoft\Windows\Start Menu\Programs\
+Property(S): ProgramFiles64Folder = C:\Program Files\
+Property(S): NpmFolder = C:\Program Files\nodejs\node_modules\npm\
+Property(S): NodeModulesFolder = C:\Program Files\nodejs\node_modules\
+Property(S): dirTiA7JcpxSTlEZ23O12BxmoWk2HM = C:\Program Files\nodejs\node_modules\corepack\
+Property(S): dirqIncVs5c60xArtPE3B33fnwswpo = C:\Program Files\nodejs\node_modules\corepack\dist\
+Property(S): dirlSlPjn6_vbTgLIBGe2pJVFxy.9I = C:\Program Files\nodejs\node_modules\corepack\dist\lib\
+...
+Property(S): dir91QdlEXejgAq6y2TzGht7YkFxWg = C:\Program Files\nodejs\node_modules\npm\node_modules\write-file-atomic\lib\
+Property(S): dirpy0sbmHKcWeK_j.LF51NrFNGUfU = C:\Program Files\nodejs\node_modules\npm\node_modules\yallist\
+Property(S): TARGETDIR = C:\
+Property(S): SourceDir = C:\Users\kouzm\Downloads\
+
+```
+> NOTE - typical size of `install.log`: 15K+ lines.
+```
+set PATH=%PATH%;c:\Program Files\nodejs
+mvn -Preact2 package
+mvn spring-boot:run
+```
+
+open in the browser `http://localhost:8080/react` 
+#### Cleanup
+```cmd
+```
+#### Troubleshooting
+
+id the install is not successful and the log contains
+```text
+MSI (s) (C8:D4) [23:30:45:297]: Note: 1: 1708
+MSI (s) (C8:D4) [23:30:45:297]: Product: Node.js -- Installation failed.
+
+MSI (s) (C8:D4) [23:30:45:298]: Windows Installer installed the product. Product Name: Node.js. Product Version: 22.18.0. Product Language: 1033. Manufacturer: Node.js Foundation. Installation success or error status: 1603.
+```
+The error disappears if the `msiexec.exe` run by `Administrator` user elevated shell.
+
 ### Cleanup
 ```sh
 docker stop example; docker container prune -f ; docker image prune -f
