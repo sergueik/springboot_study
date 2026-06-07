@@ -542,6 +542,7 @@ docker export $CONTAINER |tar tv | grep /app/target/example.uppy-react.jar
 ```sh
 IMAGE=uppy-react-build2
 CONTAINER=example
+docker container stop $CONTAINER
 docker container rm $CONTAINER
 docker run -d -p 8080:8080 --name $CONTAINER $IMAGE java -jar target/example.uppy-react.jar
 ```
@@ -580,12 +581,173 @@ docker container stop $CONTAINER
 docker container rm $CONTAINER
 ```
 #### Compare Images
+
 ```text
 uppy-react-build1:latest        fadcfb45af84        1.8GB             0B        
 uppy-react-build2:latest        94a426b3f647       2.18GB             0B
 uppy-react:latest               923b5c4ec24a        193MB             0B    
 ```
 
+### Using EOL Node Release 18
+
+```sh
+docker build -t uppy-react-build3 -f Dockerfile.build3 .
+```
+```text
+Sending build context to Docker daemon  16.38MB
+Step 1/7 : FROM node:18-bullseye
+ ---> 31819134fee7
+Step 2/7 : RUN apt-get update  && apt-get install -qqy maven openjdk-11-jdk
+ ---> Running in 78d7cf38b891
+Get:1 http://deb.debian.org/debian bullseye InRelease [75.1 kB]
+Get:2 http://deb.debian.org/debian-security bullseye-security InRelease [27.2 kB]
+Get:3 http://deb.debian.org/debian bullseye-updates InRelease [44.0 kB]
+Get:4 http://deb.debian.org/debian bullseye/main amd64 Packages [8066 kB]
+Get:5 http://deb.debian.org/debian-security bullseye-security/main amd64 Packages [454 kB]
+Get:6 http://deb.debian.org/debian bullseye-updates/main amd64 Packages [18.8 kB]
+Fetched 8685 kB in 3s (2600 kB/s)
+Reading package lists...
+debconf: delaying package configuration, since apt-utils is not installed
+Selecting previously unselected package libapparmor1:amd64.
+(Reading database ... 22801 files and directories currently installed.)
+Preparing to unpack .../000-libapparmor1_2.13.6-10_amd64.deb ...
+Unpacking libapparmor1:amd64 (2.13.6-10) ...
+Selecting previously unselected package libdbus-1-3:amd64.
+...
+Adding debian:emSign_Root_CA_-_G1.pem
+done.
+Setting up openjdk-11-jre:amd64 (11.0.31+11-1~deb11u1) ...
+Setting up openjdk-11-jdk-headless:amd64 (11.0.31+11-1~deb11u1) ...
+update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jar to provide /usr/bin/jar (jar) in auto mode
+...
+update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jhsdb to provide /usr/bin/jhsdb (jhsdb) in auto mode
+Setting up maven (3.6.3-5) ...
+update-alternatives: using /usr/share/maven/bin/mvn to provide /usr/bin/mvn (mvn) in auto mode
+Setting up openjdk-11-jdk:amd64 (11.0.31+11-1~deb11u1) ...
+update-alternatives: using /usr/lib/jvm/java-11-openjdk-amd64/bin/jconsole to provide /usr/bin/jconsole (jconsole) in auto mode
+Setting up default-jre-headless (2:1.11-72) ...
+Removing intermediate container 78d7cf38b891
+ ---> f8ccc667766c
+Step 3/7 : WORKDIR /app
+ ---> Running in ccb429cbde71
+Removing intermediate container ccb429cbde71
+ ---> 287f1264299a
+Step 4/7 : COPY pom.xml /app/
+ ---> 7ae6bc5f5070
+Step 5/7 : RUN mvn dependency:go-offline -q
+ ---> Running in 2425a9731bdc
+Removing intermediate container 2425a9731bdc
+ ---> a61e06b971c3
+Step 6/7 : COPY . .
+ ---> b5858be11dd5
+Step 7/7 : RUN mvn -Preact2 clean package
+ ---> Running in c6f20e3da6a5
+[INFO] Scanning for projects...
+[INFO]
+[INFO] -------------------------< example:uppy-react >-------------------------
+[INFO] Building example:uppy-react 0.7.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/exec-maven-plugin/3.1.1/exec-maven-plugin-3.1.1.pom
+...
+Downloaded from central: https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar (41 kB at 162 kB/s)
+[INFO]
+[INFO] --- maven-clean-plugin:3.2.0:clean (default-clean) @ uppy-react ---
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/1.1/plexus-utils-1.1.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/1.1/plexus-utils-1.1.jar (169 kB at 357 kB/s)
+[INFO]
+[INFO] --- exec-maven-plugin:3.1.1:exec (npm-install) @ uppy-react ---
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/resolver/maven-resolver-util/1.4.1/maven-resolver-util-1.4.1.pom
+...
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/4.0.0/plexus-utils-4.0.0.jar (192 kB at 80 kB/s)
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@vitejs/plugin-react@5.2.0',
+npm warn EBADENGINE   required: { node: '^20.19.0 || >=22.12.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'vite@7.3.5',
+npm warn EBADENGINE   required: { node: '^20.19.0 || >=22.12.0' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+
+added 96 packages, and audited 97 packages in 11s
+
+16 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.16.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.16.0
+npm notice To update run: npm install -g npm@11.16.0
+npm notice
+[INFO]
+[INFO] --- exec-maven-plugin:3.1.1:exec (npm-build) @ uppy-react ---
+
+> uppy-react-upload@1.0.0 build
+> vite build
+
+You are using Node.js 18.20.8. Vite requires Node.js version 20.19+ or 22.12+. Please upgrade your Node.js version.
+vite v7.3.5 building client environment for production...
+transforming...
+✓ 212 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.31 kB │ gzip:   0.22 kB
+dist/assets/index-D9e3sqm0.css   65.60 kB │ gzip:  10.45 kB
+dist/assets/index-CY9HpG0p.js   378.02 kB │ gzip: 118.44 kB
+✓ built in 7.90s
+[INFO]
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ uppy-react ---
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.5.1/plexus-utils-3.5.1.pom
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.5.1/plexus-utils-3.5.1.pom (8.8 kB at 57 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/10/plexus-10.pom
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/10/plexus-10.pom (25 kB at 132 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-filtering/3.3.1/maven-filtering-3.3.1.pom
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-filtering/3.3.1/maven-filtering-3.3.1.pom (6.0 kB at 38 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-shared-components/39/maven-shared-components-39.pom
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-shared-components/39/maven-shared-components-39.pom (3.2 kB at 24 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.5.0/plexus-utils-3.5.0.pom
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.5.0/plexus-utils-3.5.0.pom (8.0 kB at 58 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.5.1/plexus-utils-3.5.1.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-filtering/3.3.1/maven-filtering-3.3.1.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-filtering/3.3.1/maven-filtering-3.3.1.jar (55 kB at 146 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.5.1/plexus-utils-3.5.1.jar (269 kB at 401 kB/s)
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO]
+[INFO] --- maven-resources-plugin:3.3.1:copy-resources (copy-react-build) @ uppy-react ---
+[INFO] Copying 3 resources from frontend/dist to target/classes/static
+[INFO]
+[INFO] --- maven-compiler-plugin:3.10.1:compile (default-compile) @ uppy-react ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 5 source files to /app/target/classes
+[INFO]
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ uppy-react ---
+[INFO] skip non existing resourceDirectory /app/src/test/resources
+[INFO]
+[INFO] --- maven-compiler-plugin:3.10.1:testCompile (default-testCompile) @ uppy-react ---
+[INFO] No sources to compile
+[INFO]
+[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ uppy-react ---
+[INFO] No tests to run.
+[INFO]
+[INFO] --- maven-jar-plugin:3.2.2:jar (default-jar) @ uppy-react ---
+[INFO] Building jar: /app/target/uppy-react-0.7.0-SNAPSHOT.jar
+[INFO]
+[INFO] --- spring-boot-maven-plugin:2.7.8:repackage (repackage) @ uppy-react ---
+[INFO] Replacing main artifact with repackaged archive
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  45.667 s
+[INFO] Finished at: 2026-06-07T21:27:36Z
+[INFO] ------------------------------------------------------------------------
+Removing intermediate container c6f20e3da6a5
+ ---> 31f7db21f082
+Successfully built 31f7db21f082
+Successfully tagged uppy-react-build3:latest
+```
 ### Windows Build
 
 ```sh

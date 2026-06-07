@@ -1,4 +1,4 @@
-FROM node:22-bullseye
+FROM node:18-bullseye
 RUN apt-get update \
  && apt-get install -qqy maven openjdk-11-jdk
 
