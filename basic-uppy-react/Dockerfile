@@ -29,7 +29,7 @@ COPY --from=react_builder /app/dist /app/src/main/resources/static/
 RUN mvn clean package -DskipTests -q
 
 FROM eclipse-temurin:11-jre-alpine as run
-COPY --from=builder /app/target/example.uppy-react-multipart-upload-backend.jar /app/app.jar 
+COPY --from=builder /app/target/example.uppy-react.jar /app/app.jar 
 
 RUN apk update \
     && apk add --update --no-cache curl \

@@ -2,6 +2,7 @@ FROM maven:3.9.5-eclipse-temurin-11
 
 WORKDIR /app
 COPY pom.xml /app/
+ENV JAVA_HOME=/opt/java/openjdk
 RUN mvn dependency:go-offline -q
 COPY . /app
 

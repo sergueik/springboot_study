@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/")
-public class ReactRedirectUploadController {
+public class ReactRedirectController {
 
 	@Value("${debug}")
 	private boolean debug;

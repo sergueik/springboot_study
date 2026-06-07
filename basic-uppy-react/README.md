@@ -20,72 +20,77 @@ the `Dockerfile` compiles `react` frontend and puts it into Spring as static res
 
 
 ```text
-Step 1/15 : FROM node:22.18.0-alpine AS react_builder
+Sending build context to Docker daemon  105.8MB
+Step 1/18 : FROM node:22.18.0-alpine AS react_builder
  ---> 8a3ae2e7d0c5
-Step 2/15 : WORKDIR /app
- ---> Running in c220d46b825d
-Removing intermediate container c220d46b825d
- ---> e93a4c73beb2
-Step 3/15 : COPY frontend /app/
- ---> 1b3ccda6b500
-Step 4/15 : RUN cd /app   && rm -rf node_modules package-lock.json   && npm install     @uppy/core@5.2.0     @uppy/dashboard@5.1.1     @uppy/xhr-upload@5.2.0     @uppy/react@5.1.1
- ---> Running in 1bb8ac5018e6
+Step 2/18 : WORKDIR /app
+ ---> Running in 52cd39e36245
+Removing intermediate container 52cd39e36245
+ ---> ddb96951c3bc
+Step 3/18 : COPY frontend /app/
+ ---> d575d7d69c13
+Step 4/18 : RUN cd /app   && rm -rf node_modules package-lock.json   && npm install     @uppy/core@5.2.0     @uppy/dashboard@5.1.1     @uppy/xhr-upload@5.2.0     @uppy/react@5.1.1
+ ---> Running in f7769739efee
 
-added 95 packages, and audited 96 packages in 44s
+added 95 packages, and audited 96 packages in 60s
 
 16 packages are looking for funding
   run `npm fund` for details
 
 found 0 vulnerabilities
 npm notice
-npm notice New major version of npm available! 10.9.3 -> 11.15.0
-npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.15.0
-npm notice To update run: npm install -g npm@11.15.0
+npm notice New major version of npm available! 10.9.3 -> 11.16.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.16.0
+npm notice To update run: npm install -g npm@11.16.0
 npm notice
-Removing intermediate container 1bb8ac5018e6
- ---> baa8e4643a12
-Step 5/15 : RUN npm run build
- ---> Running in ffcff40738c9
+Removing intermediate container f7769739efee
+ ---> 6b76618a53bf
+Step 5/18 : RUN npm run build
+ ---> Running in 5bee65ace2e0
 
 > uppy-react-upload@1.0.0 build
 > vite build
 
-vite v7.3.3 building client environment for production...
+vite v7.3.5 building client environment for production...
 transforming...
 ✓ 212 modules transformed.
 rendering chunks...
 computing gzip size...
 dist/index.html                   0.31 kB │ gzip:   0.22 kB
 dist/assets/index-D9e3sqm0.css   65.60 kB │ gzip:  10.45 kB
-dist/assets/index-BpCiVfFe.js   377.96 kB │ gzip: 118.41 kB
-✓ built in 8.21s
-Removing intermediate container ffcff40738c9
- ---> 812ae8962c65
-Step 6/15 : FROM maven:3.9.5-eclipse-temurin-11-alpine as builder
+dist/assets/index-CY9HpG0p.js   378.02 kB │ gzip: 118.44 kB
+✓ built in 11.73s
+Removing intermediate container 5bee65ace2e0
+ ---> 0ef8a7f89fad
+Step 6/18 : FROM maven:3.9.5-eclipse-temurin-11-alpine as builder
  ---> 37ef041f8432
-Step 7/15 : WORKDIR /app
- ---> Using cache
- ---> cb7dd4b470ab
-Step 8/15 : COPY backend /app/
- ---> bfe19ff22fe1
-Step 9/15 : COPY --from=react_builder /app/dist /app/src/main/resources/static/
- ---> d101b966ccef
-Step 10/15 : RUN cd /app && mvn dependency:go-offline -q
- ---> Running in 436b669e40f5
-Removing intermediate container 436b669e40f5
- ---> 0fec68d3a68a
-Step 11/15 : RUN cd /app && mvn package -DskipTests -q
- ---> Running in bf520793b4a5
-Removing intermediate container bf520793b4a5
- ---> 3dd394c259e7
-Step 12/15 : FROM eclipse-temurin:11-jre-alpine as run
+Step 7/18 : WORKDIR /app
+ ---> Running in f20177dc28b1
+Removing intermediate container f20177dc28b1
+ ---> 6f1f7f4279a3
+Step 8/18 : COPY pom.xml /app/
+ ---> 9e62f5d5294d
+Step 9/18 : RUN mvn dependency:go-offline -q
+ ---> Running in c501f3968af5
+Removing intermediate container c501f3968af5
+ ---> 886b36a34d08
+Step 10/18 : ADD src /app/src/
+ ---> 1dcc7adaa503
+Step 11/18 : COPY --from=react_builder /app/dist /app/src/main/resources/static/
+ ---> dae60d14a842
+Step 12/18 : RUN mvn clean package -DskipTests -q
+ ---> Running in 670735bd3b24
+Removing intermediate container 670735bd3b24
+ ---> 617fde3fb90d
+Step 13/18 : FROM eclipse-temurin:11-jre-alpine as run
  ---> 642de1708b20
-Step 13/15 : COPY --from=builder /app/target/example.uppy-react-multipart-upload-backend.jar /app/app.jar
-Step 14/17 : RUN apk update     && apk add --update --no-cache curl     && rm -rf /var/cache/*     && m                                     kdir /var/cache/apk
- ---> Running in c0367ea9ce57
-v3.23.4-268-gdcc713e014f [https://dl-cdn.alpinelinux.org/alpine/v3.23/main]
-v3.23.4-271-g3e9e0da6943 [https://dl-cdn.alpinelinux.org/alpine/v3.23/community]
-OK: 27581 distinct packages available
+Step 14/18 : COPY --from=builder /app/target/example.uppy-react.jar /app/app.jar
+ ---> fa0bf4804d7a
+Step 15/18 : RUN apk update     && apk add --update --no-cache curl     && rm -rf /var/cache/*     && mkdir /var/cache/apk
+ ---> Running in b858b3b41898
+v3.23.4-346-gff2b7e080d6 [https://dl-cdn.alpinelinux.org/alpine/v3.23/main]
+v3.23.4-347-gc34e61564a8 [https://dl-cdn.alpinelinux.org/alpine/v3.23/community]
+OK: 27586 distinct packages available
 (1/5) Installing c-ares (1.34.6-r0)
 (2/5) Installing nghttp2-libs (1.69.0-r0)
 (3/5) Installing libpsl (0.21.5-r3)
@@ -93,28 +98,28 @@ OK: 27581 distinct packages available
 (5/5) Installing curl (8.19.0-r0)
 Executing busybox-1.37.0-r30.trigger
 OK: 41.8 MiB in 78 packages
-Removing intermediate container c0367ea9ce57 
- ---> 77267e2fec25
-Step 15/15 : ENTRYPOINT ["java", "-jar", "/app/app.jar"]
- ---> Running in 6791750bfdd7
-Removing intermediate container 6791750bfdd7
- ---> f0605d87417e
-Step 16/17 : HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD curl -f http://localhost:80                                     80/upload || exit 1
- ---> Running in 6b05c52541ef
-Removing intermediate container 6b05c52541ef
-Step 17/15 : EXPOSE 8080
- ---> Running in c80e26adccc4
-Removing intermediate container c80e26adccc4
- ---> 8e645532396e
-Successfully built 8e645532396e
-Successfully tagged example:latest
+Removing intermediate container b858b3b41898
+ ---> edcc7e0ea479
+Step 16/18 : HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD curl -f http://localhost:8080/ || exit 1
+ ---> Running in 4383b3f2d8fc
+Removing intermediate container 4383b3f2d8fc
+ ---> 7e511fe05daa
+Step 17/18 : ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ ---> Running in a29a10a03950
+Removing intermediate container a29a10a03950
+ ---> 3a3b5dd634e1
+Step 18/18 : EXPOSE 8080
+ ---> Running in ba21ce0a88a6
+Removing intermediate container ba21ce0a88a6
+ ---> bd1080c912ad
+Successfully built bd1080c912ad
+Successfully tagged uppy-react:latest
 ```
-
 ```sh
 IMAGE=uppy-react
 CONTAINER=example
 docker create --name $CONTAINER $IMAGE
-docker export $CONTAINER |tar tv | grep /app/app.jar
+docker export $CONTAINER |tar tv | grep app/app.jar	
 ```
 ```text
 -rw-r--r-- 0/0        18133112 2026-05-25 11:14 app/app.jar
@@ -131,10 +136,10 @@ unzip -ql app/app.jar |grep -E '(static|templates)'
         0  2026-06-05 17:34   BOOT-INF/classes/static/
         0  2026-06-05 17:34   BOOT-INF/classes/static/assets/
       311  2026-06-05 17:34   BOOT-INF/classes/static/index.html
-    65603  2026-06-05 17:34   BOOT-INF/classes/static/assets/index-D9e3sqm0.css
    378022  2026-06-05 17:34   BOOT-INF/classes/static/assets/index-CY9HpG0p.js
+    65603  2026-06-05 17:34   BOOT-INF/classes/static/assets/index-D9e3sqm0.css
 ```
-In earlier versions it has both AngularJS (bare-bones non-styled, without drop zone) and [ReactJS](https://legacy.reactjs.org/) A JavaScript library for building user interfaces) driven upload pages with [uppy](https://uppy.io/) 
+In earlier versions app had both [AngularJS](https://folio3.com/angularjs-file-upload-example-tutorial/) (bare-bones non-styled, without drop zone) and [ReactJS](https://legacy.reactjs.org/) A JavaScript library for building user interfaces) driven upload pages with [uppy](https://uppy.io/) 
 ```text
         0  2026-05-25 15:33   BOOT-INF/classes/templates/
         0  2026-05-25 15:33   BOOT-INF/classes/static/
@@ -243,11 +248,12 @@ launch application
 
 ![execute](screenshots/capture-upload-react.png)
 
-![execute](screenshots/capture-upload-app.png)
+![execute](screenshots/capture-app.png)
 
 ![execute](screenshots/capture-upload-progress.png)
 
 observe success on the frontend:
+
 ![execute](screenshots/capture-upload-success.png)
 
 The application console log shows similar information in both scenarios:
@@ -286,7 +292,8 @@ e37c10c86f56c0ca4778727e8bc8cdc7e428a68ac2daaddfd73429d134a7dd3e *test.bin
 > NOTE: the "test.bin" is sufficiently large to test file chunking
 
 with `300` __MB__  attempt, the `FileSizeLimitExceededException` error before  controller fully processed the request
-```
+
+```text
 org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException: The field files exceeds its maximum permitted size of 209715200 bytes.
         at org.apache.tomcat.util.http.fileupload.impl.FileItemStreamImpl$1.raiseError(FileItemStreamImpl.java:117) ~[tomcat-embed-core-9.0.71.jar!/:na]
 
@@ -302,7 +309,7 @@ org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException: The 
 - frontend still retries full upload 4 or so more times before concluding 0 of  file uploaded 
 
 with `190` __MB__ - stil one  chunk:
-```
+```text
 HandlerMapping : Mapped to example.controller.FileUploadController#uploadMultipleFiles(HttpServletRequest, MultipartFile[], Integer, Integer)
 2026-05-23 19:30:39.508  INFO 1 --- [nio-8080-exec-6] example.controller.FileUploadController  : Content-Type: multipart/form-data; boundary=----WebKitFormBoundary9MBEBwXB9rODKLN0
 2026-05-23 19:30:39.509  INFO 1 --- [nio-8080-exec-6] example.controller.FileUploadController  : Content-Length: 199229637
@@ -323,10 +330,10 @@ chunking: {
 in `XHRUpload` is not a guaranteed "server-visible chunk protocol" switch.
 
 With `@uppy/xhr-upload`, it generally still behaves like:
-```
-ONE POST request
-ONE multipart body
-```
+
+* ONE POST request
+* ONE multipart body
+
 ### Simulation
 
 to simulate
@@ -349,112 +356,8 @@ done
 ```
 one also needs to implement assbmbly the result on the backend.
 
-### Profile
-
-```sh
-docker build -t example_build -f Dockerfile.build .
-```
-```text
-Sending build context to Docker daemon  738.3kB
-Step 1/7 : FROM maven:3.9.5-eclipse-temurin-11-alpine
- ---> 37ef041f8432
-Step 2/7 : RUN apk add --no-cache nodejs npm
- ---> Running in b95eeab3274e
-fetch https://dl-cdn.alpinelinux.org/alpine/v3.18/main/x86_64/APKINDEX.tar.gz
-fetch https://dl-cdn.alpinelinux.org/alpine/v3.18/community/x86_64/APKINDEX.tar.gz
-(1/7) Installing c-ares (1.19.1-r1)
-(2/7) Installing libgcc (12.2.1_git20220924-r10)
-(3/7) Installing icu-data-en (73.2-r2)
-Executing icu-data-en-73.2-r2.post-install
-*
-* If you need ICU with non-English locales and legacy charset support, install
-* package icu-data-full.
-*
-(4/7) Installing libstdc++ (12.2.1_git20220924-r10)
-(5/7) Installing icu-libs (73.2-r2)
-(6/7) Installing nodejs (18.20.1-r0)
-(7/7) Installing npm (9.6.6-r0)
-Executing busybox-1.36.1-r5.trigger
-OK: 94 MiB in 56 packages
-Removing intermediate container b95eeab3274e
- ---> 43886baaa5f9
-Step 3/7 : WORKDIR /app
- ---> Running in 396508b3c916
-Removing intermediate container 396508b3c916
- ---> 3b7935a06eba
-Step 4/7 : COPY . /app
- ---> bd7f45adc722
-Step 5/7 : RUN node --version
- ---> Running in c9fe445cb98a
-v18.20.1
-Removing intermediate container c9fe445cb98a
- ---> 20d4ab0ee57c
-Step 6/7 : RUN npm --version
- ---> Running in d919df3cb533
-9.6.6
-Removing intermediate container d919df3cb533
- ---> 47aa9d060e05
-Step 7/7 : RUN mvn -Preact clean package
- ---> Running in 470a2c9b3e3d
-[INFO] Scanning for projects...
-```
-then
-```text
-Downloading from central: https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-starter-parent/2.7.8/spring-boot-starter-parent-2.7.8.pom
-Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-starter-parent/2.7.8/spring-boot-starter-parent-2.7.8.pom (9.2 kB at 5.2 kB/s)
-...
-Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/session/spring-session-bom/2021.2.0/spring-session-bom-2021.2.0.pom (3.1 kB at 23 kB/s)
-[INFO]
-[INFO] ------------< example:uppy-react-multipart-upload-backend >-------------
-[INFO] Building example:uppy-react-multipart-upload-backend 0.5.0-SNAPSHOT
-[INFO]   from pom.xml
-[INFO] --------------------------------[ jar ]---------------------------------
-Downloading from central: https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-maven-plugin/2.7.8/spring-boot-maven-plugin-2.7.8.pom
-Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-maven-plugin/2.7.8/spring-boot-maven-plugin-2.7.8.pom (3.0 kB at 15 kB/s)
-...
-Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/tomcat/embed/tomcat-embed-core/9.0.71/tomcat-embed-core-9.0.71.jar (3.4 MB at 323 kB/s)
-[INFO]
-[INFO] --- clean:3.2.0:clean (default-clean) @ uppy-react-multipart-upload-backend ---
-Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-shared-utils/3.3.4/maven-shared-utils-3.3.4.pom
-...
-Downloaded from central: https://repo.maven.apache.org/maven2/commons-io/commons-io/2.6/commons-io-2.6.jar (215 kB at 1.1 MB/s)
-[INFO]
-[INFO] --- frontend:1.15.0:install-node-and-npm (install-node-and-npm) @ uppy-react-multipart-upload-backend ---
-Downloading from central: https://repo.maven.apache.org/maven2/com/github/eirslett/frontend-plugin-core/1.15.0/frontend-plugin-core-1.15.0.pom
-...
-Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar (780 kB at 244 kB/s)
-[INFO] Installing node version v22.18.0
-[INFO] Downloading https://unofficial-builds.nodejs.org/download/release/v22.18.0/node-v22.18.0-linux-x64-musl.tar.gz to /root/.m2/repository/com/github/eirslett/node/22.18.0/node-22.18.0-linux-x64-musl.tar.gz
-[INFO] No proxies configured
-[INFO] No proxy was configured, downloading directly
-[INFO] Unpacking /root/.m2/repository/com/github/eirslett/node/22.18.0/node-22.18.0-linux-x64-musl.tar.gz into /app/frontend/node/tmp
-[INFO] Copying node binary from /app/frontend/node/tmp/node-v22.18.0-linux-x64-musl/bin/node to /app/frontend/node/node
-[INFO] Extracting NPM
-[INFO] Installed node locally.
-```
-> NOTE: the node `v22.18.0` is installed by `frontend-maven-plugin` - the system version `v18.20.1` is ignored
-
-then
-```text
-[INFO]
-[INFO] --- frontend:1.15.0:npm (npm-install) @ uppy-react-multipart-upload-backend ---
-[INFO] Running 'npm install' in /app/frontend
-[INFO] Error relocating /app/frontend/node/node: _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE15_M_replace_coldEPcmPKcmm: symbol not found
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD FAILURE
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  03:20 min
-[INFO] Finished at: 2026-06-04T14:55:20Z
-[INFO] ------------------------------------------------------------------------
-[ERROR] Failed to execute goal com.github.eirslett:frontend-maven-plugin:1.15.0:npm (npm-install) on project uppy-react-multipart-upload-backend: Failed to run task: 'npm install' failed. org.apache.commons.exec.ExecuteException: Process exited with an error: 127 (Exit value: 127) -> [Help 1]
-[ERROR]
-
-```
-
->NOTE: when the docker build is retried, all downloads will run again, making it quote time consuming
-
-
-This is because `frontend-maven-plugin` is not using the system Node 18. It downloaded its own Node binary into `frontend/node/` and is attempting to execute it.
+> NOTE: The  `frontend-maven-plugin` plugin is not using the system Node 18.
+It downloaded its own Node binary into `frontend/node/` and is attempting to execute it.
 
 The downloaded binary appears incompatible with the __Alpine__ environment 
 
@@ -471,15 +374,18 @@ and similar.
 
 ```sh
 docker container stop $CONTAINER
-docker container   rm $CONTAINER
+docker container rm $CONTAINER
+docker image prune -f
+docker image rm $IMAGE
 ```
 #### Use Debian Temurin Maven Based Dockerfile
 
 ```sh
+docker pull maven:3.9.5-eclipse-temurin-11
 docker build -t uppy-react-build1 -f Dockerfile.build1 .
 ```
 ```text
-INFO] --- frontend:1.15.0:npm (npm-build) @ uppy-react-multipart-upload-backend ---
+INFO] --- frontend:1.15.0:npm (npm-build) @ uppy-react ---
 [INFO] Running 'npm run build' in /app/frontend
 [INFO] 
 [INFO] > uppy-react-upload@1.0.0 build
@@ -503,12 +409,12 @@ Successfully built fadcfb45af84
 Successfully tagged uppy-react-build1:latest
 ```
 
-```
+```sh
 IMAGE=uppy-react-build1
 CONTAINER=example
 docker container stop $CONTAINER
 docker container rm $CONTAINER
-docker run -d -p 8080:8080 --name $CONTAINER $IMAGE java -jar target/example.uppy-react-multipart-upload-backend.jar
+docker run -d -p 8080:8080 --name $CONTAINER $IMAGE java -jar target/example.uppy-react.jar
 ```
 
 
@@ -549,7 +455,7 @@ INFO] Installing node version v22.22.3
 [INFO] Extracting NPM
 [INFO] Installed node locally.
 [INFO] 
-[INFO] --- frontend-maven-plugin:1.15.0:npm (npm-install) @ uppy-react-multipart-upload-backend ---
+[INFO] --- frontend-maven-plugin:1.15.0:npm (npm-install) @ uppy-react ---
 [INFO] Running 'npm install' in /app/frontend
 [INFO] 
 [INFO] added 95 packages, and audited 96 packages in 14s
@@ -558,7 +464,7 @@ INFO] Installing node version v22.22.3
 [INFO]   run `npm fund` for details
 ```
 ```text
-[INFO] --- frontend-maven-plugin:1.15.0:npm (npm-build) @ uppy-react-multipart-upload-backend ---
+[INFO] --- frontend-maven-plugin:1.15.0:npm (npm-build) @ uppy-react ---
 [INFO] Running 'npm run build' in /app/frontend
 [INFO] 
 [INFO] > uppy-react-upload@1.0.0 build
@@ -574,7 +480,7 @@ INFO] Installing node version v22.22.3
 [INFO] dist/assets/index-CY9HpG0p.js   378.02 kB ??? gzip: 118.44 kB
 [INFO] ??? built in 2.49s
 [INFO] 
-[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ uppy-react-multipart-upload-backend ---
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ uppy-react ---
 Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.5.1/plexus-utils-3.5.1.pom
 Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.5.1/plexus-utils-3.5.1.pom (8.8 kB at 59 kB/s)
 Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus/10/plexus-10.pom
@@ -592,26 +498,26 @@ Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexu
 [INFO] Copying 1 resource from src/main/resources to target/classes
 [INFO] Copying 4 resources from src/main/resources to target/classes
 [INFO] 
-[INFO] --- maven-resources-plugin:3.3.1:copy-resources (copy-react-build) @ uppy-react-multipart-upload-backend ---
+[INFO] --- maven-resources-plugin:3.3.1:copy-resources (copy-react-build) @ uppy-react ---
 [INFO] Copying 3 resources from frontend/dist to target/classes/static
 [INFO] 
-[INFO] --- maven-compiler-plugin:3.10.1:compile (default-compile) @ uppy-react-multipart-upload-backend ---
+[INFO] --- maven-compiler-plugin:3.10.1:compile (default-compile) @ uppy-react ---
 [INFO] Changes detected - recompiling the module!
 [INFO] Compiling 6 source files to /app/target/classes
 [INFO] 
-[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ uppy-react-multipart-upload-backend ---
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ uppy-react ---
 [INFO] skip non existing resourceDirectory /app/src/test/resources
 [INFO] 
-[INFO] --- maven-compiler-plugin:3.10.1:testCompile (default-testCompile) @ uppy-react-multipart-upload-backend ---
+[INFO] --- maven-compiler-plugin:3.10.1:testCompile (default-testCompile) @ uppy-react ---
 [INFO] No sources to compile
 [INFO] 
-[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ uppy-react-multipart-upload-backend ---
+[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ uppy-react ---
 [INFO] No tests to run.
 [INFO] 
-[INFO] --- maven-jar-plugin:3.2.2:jar (default-jar) @ uppy-react-multipart-upload-backend ---
-[INFO] Building jar: /app/target/uppy-react-multipart-upload-backend-0.5.0-SNAPSHOT.jar
+[INFO] --- maven-jar-plugin:3.2.2:jar (default-jar) @ example.uppy-react ---
+[INFO] Building jar: /app/target/uppy-react-0.7.0-SNAPSHOT.jar
 [INFO] 
-[INFO] --- spring-boot-maven-plugin:2.7.8:repackage (repackage) @ uppy-react-multipart-upload-backend ---
+[INFO] --- spring-boot-maven-plugin:2.7.8:repackage (repackage) @ example.uppy-react ---
 [INFO] Replacing main artifact with repackaged archive
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
@@ -628,16 +534,16 @@ Successfully tagged uppy-react-build2:latest
 IMAGE=uppy-react-build2
 CONTAINER=example
 docker create --name $CONTAINER $IMAGE
-docker export $CONTAINER |tar tv | grep /app/target/example.uppy-react-multipart-upload-backend.jar
+docker export $CONTAINER |tar tv | grep /app/target/example.uppy-react.jar
 ```
 ```text
--rw-r--r-- 0/0        19650713 2026-06-05 11:22 app/target/example.uppy-react-multipart-upload-backend.jar
+-rw-r--r-- 0/0        19650713 2026-06-05 11:22 app/target/example.uppy-react.jar
 ```
 ```sh
 IMAGE=uppy-react-build2
 CONTAINER=example
 docker container rm $CONTAINER
-docker run -d -p 8080:8080 --name $CONTAINER $IMAGE java -jar target/example.uppy-react-multipart-upload-backend.jar
+docker run -d -p 8080:8080 --name $CONTAINER $IMAGE java -jar target/example.uppy-react.jar
 ```
 
 ```sh
@@ -813,6 +719,142 @@ Action ended 23:30:45: INSTALL. Return value 3.
 docker stop example; docker container prune -f ; docker image prune -f
 ```
 
+### Troubleshooting
+
+* only observed on Windows Docker Toolbox environment
+
+```sh
+docker build -t uppy-react-build1 -f Dockerfile.build1 .
+``` 
+```text
+Sending build context to Docker daemon  210.6MB
+Step 1/7 : FROM maven:3.9.5-eclipse-temurin-11
+ ---> bdfd63b5bcff
+Step 2/7 : WORKDIR /app
+ ---> Running in a0977d5b01c6
+Removing intermediate container a0977d5b01c6
+ ---> 757fe740ce55
+Step 3/7 : COPY pom.xml /app/
+ ---> bf0f2248653a
+Step 4/7 : ENV JAVA_HOME=/opt/java/openjdk
+ ---> Running in 3a65039f01f1
+Removing intermediate container 3a65039f01f1
+ ---> 0444a1fe4e6a
+Step 5/7 : RUN mvn dependency:go-offline -q
+ ---> Running in 745fa0dcf6be
+The JAVA_HOME environment variable is not defined correctly,
+this environment variable is needed to run this program.
+The command '/bin/sh -c mvn dependency:go-offline -q' returned a non-zero code: 1
+```
+```sh
+docker run -it --rm maven:3.9.5-eclipse-temurin-11 sh
+# which java
+# find / -iname javac
+/opt/java/openjdk/bin/javac
+```
+
+```sh
+docker run -it --rm maven:3.9.5-eclipse-temurin-11 sh
+```
+```sh
+# ls /opt/java/openjdk
+bin  conf  include  jmods  legal  lib  man  NOTICE  release
+# ls /opt/java/openjdk/bin
+jaotc      javadoc   jdeprscan  jinfo  jps         jstatd   rmiregistry
+jar        javap     jdeps      jjs    jrunscript  keytool  serialver
+jarsigner  jcmd      jfr        jlink  jshell      pack200  unpack200
+java       jconsole  jhsdb      jmap   jstack      rmic
+javac      jdb       jimage     jmod   jstat       rmid
+# export JAVA_HOME=/opt/java/openjdk
+# ls -l "$JAVA_HOME/bin/java"
+```
+```text
+-rwxr-xr-x 1 root root 12768 Oct 17  2023 /opt/java/openjdk/bin/java
+```
+```sh
+# mvn
+```
+```text
+The JAVA_HOME environment variable is not defined correctly,
+this environment variable is needed to run this program.
+```
+
+
+```sh
+docker build -t uppy-react-build2 -f Dockerfile.build2 .
+```
+
+```text
+Sending build context to Docker daemon  105.8MB
+Step 1/10 : FROM node:22-bookworm
+ ---> 46550293359e
+Step 2/10 : RUN apt-get update  && apt-cache search openjdk-17-jdk   && apt-get install -qqy maven openjdk-17-jdk
+ ---> Running in 10bec5300896
+Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [48.0 kB]
+Err:1 http://deb.debian.org/debian bookworm InRelease
+  The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 6ED0E7B82643E131 NO_PUBKEY 78DBA3BC47EF2265 NO_PUBKEY F8D2585B8783D481
+Err:2 http://deb.debian.org/debian bookworm-updates InRelease
+  The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 6ED0E7B82643E131 NO_PUBKEY 78DBA3BC47EF2265
+Err:3 http://deb.debian.org/debian-security bookworm-security InRelease
+  The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 54404762BBB6E853 NO_PUBKEY BDE6D2B9216EC7A8
+Reading package lists...
+W: GPG error: http://deb.debian.org/debian bookworm InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 6ED0E7B82643E131 NO_PUBKEY 78DBA3BC47EF2265 NO_PUBKEY F8D2585B8783D481
+E: The repository 'http://deb.debian.org/debian bookworm InRelease' is not signed.
+W: GPG error: http://deb.debian.org/debian bookworm-updates InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 6ED0E7B82643E131 NO_PUBKEY 78DBA3BC47EF2265
+E: The repository 'http://deb.debian.org/debian bookworm-updates InRelease' is not signed.
+W: GPG error: http://deb.debian.org/debian-security bookworm-security InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 54404762BBB6E853 NO_PUBKEY BDE6D2B9216EC7A8
+E: The repository 'http://deb.debian.org/debian-security bookworm-security InRelease' is not signed.
+E: Problem executing scripts APT::Update::Post-Invoke 'rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true'
+E: Sub-process returned an error code
+The command '/bin/sh -c apt-get update  && apt-cache search openjdk-17-jdk   && apt-get install -qqy maven openjdk-17-jdk' returned a non-zero code: 100
+```
+
+```sh
+docker run -it --rm node:22-bookworm sh
+```
+
+```sh
+apt-get update
+```
+```text
+Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [48.0 kB]
+Err:1 http://deb.debian.org/debian bookworm InRelease
+  The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 6ED0E7B82643E131 NO_PUBKEY 78DBA3BC47EF2265 NO_PUBKEY F8D2585B8783D481
+Err:2 http://deb.debian.org/debian bookworm-updates InRelease
+  The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 6ED0E7B82643E131 NO_PUBKEY 78DBA3BC47EF2265
+Err:3 http://deb.debian.org/debian-security bookworm-security InRelease
+  The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 54404762BBB6E853 NO_PUBKEY BDE6D2B9216EC7A8
+Reading package lists... Done
+W: GPG error: http://deb.debian.org/debian bookworm InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 6ED0E7B82643E131 NO_PUBKEY 78DBA3BC47EF2265 NO_PUBKEY F8D2585B8783D481
+E: The repository 'http://deb.debian.org/debian bookworm InRelease' is not signed.
+N: Updating from such a repository can't be done securely, and is therefore disabled by default.
+N: See apt-secure(8) manpage for repository creation and user configuration details.
+W: GPG error: http://deb.debian.org/debian bookworm-updates InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 6ED0E7B82643E131 NO_PUBKEY 78DBA3BC47EF2265
+E: The repository 'http://deb.debian.org/debian bookworm-updates InRelease' is not signed.
+N: Updating from such a repository can't be done securely, and is therefore disabled by default.
+N: See apt-secure(8) manpage for repository creation and user configuration details.
+W: GPG error: http://deb.debian.org/debian-security bookworm-security InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 54404762BBB6E853 NO_PUBKEY BDE6D2B9216EC7A8
+E: The repository 'http://deb.debian.org/debian-security bookworm-security InRelease' is not signed.
+N: Updating from such a repository can't be done securely, and is therefore disabled by default.
+N: See apt-secure(8) manpage for repository creation and user configuration details.
+E: Problem executing scripts APT::Update::Post-Invoke 'rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true'
+E: Sub-process returned an error code
+```
+ * https://forums.debian.net/viewtopic.php?t=155019
+ 
+```sh
+gpg --keyserver pgp.mit.edu --recv-keys 54404762BBB6E853 BDE6D2B9216EC7A8 648ACFD622F3D138 0E98404D386FA1D9 F8D2585B8783D481 0E98404D386FA1D9 6ED0E7B82643E131
+```
+
+```text
+gpg: connecting dirmngr at '/root/.gnupg/S.dirmngr' failed: End of file
+gpg: keyserver receive failed: No dirmngr
+
+```
 ### Use System Node.js
 
 The `frontend-maven-plugin` by default cannot directly use a globally installed system `Node.js` binary:
@@ -842,10 +884,8 @@ However this seems seriously feels backwards if you come from traditional build 
   * [React Introduction](https://www.geeksforgeeks.org/reactjs/reactjs-introduction/)
   * [AngularJS Tutorial](https://www.geeksforgeeks.org/angular-js/angularjs/)
   * [AngularJS Examples](https://www.geeksforgeeks.org/angular-js/angularjs-examples/)
-
-
-
-
+  * https://github.com/nervgh/angular-file-upload
+  * https://nodejs.org/en/about/previous-releases
 
 
 ---
