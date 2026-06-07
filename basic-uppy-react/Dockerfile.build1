@@ -1,8 +1,10 @@
-FROM maven:3.9.5-eclipse-temurin-11
-
+# FROM maven:3.9.5-eclipse-temurin-11
+FROM openjdk:11.0.14-slim-bullseye
+RUN apt-get update \
+    && apt-get install -qy maven
 WORKDIR /app
+RUN mvn -version
 COPY pom.xml /app/
-ENV JAVA_HOME=/opt/java/openjdk
 RUN mvn dependency:go-offline -q
 COPY . /app
 

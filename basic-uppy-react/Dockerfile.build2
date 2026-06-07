@@ -1,7 +1,8 @@
-FROM node:22-bookworm
+# FROM node:22-bookworm
+FROM node:22-bullseye
 RUN apt-get update \
- && apt-cache search openjdk-17-jdk  \
- && apt-get install -qqy maven openjdk-17-jdk
+ && apt-cache search openjdk-11-jdk  \
+ && apt-get install -qqy maven openjdk-11-jdk
 
 WORKDIR /app
 COPY pom.xml /app/

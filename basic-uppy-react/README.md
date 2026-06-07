@@ -432,10 +432,10 @@ docker logs $CONTAINER
 #### Use Node Based Dockerfile and System Node.js
 
 ```sh
-docker pull node:22-bookworm
+docker pull node:22-bullseye
 ```
 ```sh
-docker run -it --rm node:22-bookworm node --version
+docker run -it --rm node:22-bullseye node --version
 ```
 ```text
 v22.22.3
@@ -854,6 +854,13 @@ gpg --keyserver pgp.mit.edu --recv-keys 54404762BBB6E853 BDE6D2B9216EC7A8 648ACF
 gpg: connecting dirmngr at '/root/.gnupg/S.dirmngr' failed: End of file
 gpg: keyserver receive failed: No dirmngr
 
+```
+
+```sh
+
+mv -i /etc/apt/trusted.gpg.d/debian-archive-*.asc  /root/     
+### move /etc/apt/trusted.gpg.d/debian-archive-*.asc to /root/ or to any persistent place you will remember.
+#> ln -s /usr/share/keyrings/debian-archive-* /etc/apt/trusted.gpg.d/
 ```
 ### Use System Node.js
 
