@@ -284,7 +284,7 @@ database system is ready to accept connections
 ```
 confirm the warning dialog
 
-![PG Admin III](https://github.com/sergueik/springboot_study/blob/master/basic-postgresql/screenshots/capture_pgadmin_iii.png)
+![PG Admin III](screenshots/capture_pgadmin_iii.png)
 
 - turns out one cannot use PG Admin III with Postresql __12.x__, so for desktop testing one needs __bionic__ __18.04__ or later release of Ubuntu
 
@@ -302,7 +302,7 @@ docker exec -it $SERVER_NAME psql -h localhost -p 5432 --username postgres --dbn
 ```
 * create table `rest` by running the script noninteractively:
 ```sh
-docker exec -it $SERVER_NAME psql -h localhost -p 5432 --username postgres --dbname example -c "CREATE TABLE IF NOT EXISTS rest ( id serial PRIMARY KEY NOT NULL, key varchar(100) NOT NULL, value varchar(250) NOT NULL, timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT clock_timestamp(), rand smallint NOT NULL );"
+docker exec -it $SERVER_NAME psql -h localhost	 -p 5432 --username postgres --dbname example -c "CREATE TABLE IF NOT EXISTS rest ( id serial PRIMARY KEY NOT NULL, key varchar(100) NOT NULL, value varchar(250) NOT NULL, timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT clock_timestamp(), rand smallint NOT NULL );"
 ```
 
 * create function in database `example` by running interactively:
@@ -452,7 +452,7 @@ id | key | value |           timestamp           | rand
 ```
 
 NOTE: the table may not exist yet.
-* update the `application.properties` to use docker dns hostname:
+* update the `application.properties` to use docker dns hostname (use `docker-machine -ip` or `localhost`):
 ```java
 # for container deployed app
 # uncomment the following line
@@ -465,6 +465,7 @@ and repackage:
 ```sh
 mvn clean package
 ```
+
 * optionlly rebuild the java container
 ```sh
 IMAGE=postgres-example
@@ -580,6 +581,49 @@ curl -s -X PUT -H "Content-Type: application/json" -d '{"key":"example", "value"
 }
 
 ```
+
+
+The error
+```sh
+curl -s http://127.0.0.1:8080/rest/ | jq '.'
+```
+```json
+{
+  "timestamp": "2026-06-08T20:39:47.229+00:00",
+  "status": 500,
+  "error": "Internal Server Error",
+  "message": "",
+  "path": "/rest/"
+}
+```
+and the server console error
+```text
+
+2026-06-08 16:39:47.146 ERROR 22204 --- [nio-8080-exec-2] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; nested exception is org.springframework.transaction.CannotCreateTransactionException: Could not open JPA EntityManager for transaction; nested exception is java.lang.NoSuchMethodError: 'void org.springframework.orm.jpa.JpaTransactionManager$JpaTransactionObject.setReadOnly(boolean)'] with root cause
+
+java.lang.NoSuchMethodError: 'void org.springframework.orm.jpa.JpaTransactionManager$JpaTransactionObject.setReadOnly(boolean)'
+	at org.springframework.orm.jpa.JpaTransactionManager.doBegin(JpaTransactionManager.java:405) ~[spring-orm-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+	at org.springframework.transaction.support.AbstractPlatformTransactionManager.startTransaction(AbstractPlatformTransactionManager.java:400) ~[spring-tx-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+	at org.springframework.transaction.support.AbstractPlatformTransactionManager.getTransaction(AbstractPlatformTransactionManager.java:373) ~[spring-tx-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.createTransactionIfNecessary(TransactionAspectSupport.java:574) ~[spring-tx-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:361) ~[spring-tx-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:118) ~[spring-tx-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186) ~[spring-aop-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:749) ~[spring-aop-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:691) ~[spring-aop-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+	at example.dao.BackendDataDaoImp$$EnhancerBySpringCGLIB$$897175dd.getAll(<generated>) ~[classes!/:0.11.0-SNAPSHOT]
+```
+
+```cmd
+java -cp c:\Users\kouzm\.m2\repository\com\h2database\h2\1.4.200\h2-1.4.200.jar;c:\Users\kouzm\.m2\repository\org\postgresql\postgresql\42.3.9\postgresql-42.3.9.jar  org.h2.tools.Console
+```
+
+![H2 DB Test Connection Screen](screenshots/capture-h2-test-connection.png)
+
+Inspect database
+
+![H2 Query](screenshots/capture-h2-examine.png)
+
 ### TODO:
 
 The current configuration of java app does not accept the `application/x-www-form-urlencoded` content-type POST requests:
@@ -705,10 +749,11 @@ sudo apt-get install pgadmin4-desktop
 ```
 this will install version __6.14__
 
-![PG Admin 4 Splash Screen](https://github.com/sergueik/springboot_study/blob/master/basic-postgresql/screenshots/capture-pg4_splash.png)
+![PG Admin 4 Splash Screen](screenshots/capture-pg4_splash.png)
 
 if the application was installed, you may need to find out the last used master password and unlock it:
-![PG Admin 4 Splash Screen](https://github.com/sergueik/springboot_study/blob/master/basic-postgresql/screenshots/capture-pg4_unlock_password.png)
+
+![PG Admin 4 Splash Screen](screenshots/capture-pg4_unlock_password.png)
 
 Follow the Debian system install [steps](https://www.pgadmin.org/download/pgadmin-4-apt/)
 ```sh
@@ -720,7 +765,7 @@ sudo sh -c 'echo "deb https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/$(lsb_
 ```sh
 sudo apt install pgadmin4-desktop
 ```
-![PG Admin 4](https://github.com/sergueik/springboot_study/blob/master/basic-postgresql/screenshots/capture_pgadmin_4.png)
+![PG Admin 4](screenshots/capture_pgadmin_4.png)
 
 ignore the warning on __Xenial__
 ```text
