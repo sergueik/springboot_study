@@ -500,9 +500,59 @@ ns for JMX exposure on startup
 * run aplication linked to postgres container
 * repeat the curl checks
 
+
+```sh
+curl -s http://192.168.99.102:8080/rest/ | jq '.'
 ```
+```text
+[]
+```
+```sh
+ curl -s -X POST -H "Content-Type: application/json" -d '{"key":"example", "value":"new data"}' http://192.168.99.102:8080/rest/| jq '.'
+```
+```json
+{
+  "id": 1,
+  "rand": 18,
+  "key": "example",
+  "value": "new data",
+  "timestamp": 1780959223013
+}
+```
+```sh
+ curl -s -X PUT -H "Content-Type: application/json" -d '{"key":"example", "value":"changed data"}' http://192.168.99.102:8080/rest/1 | jq '.'
+```
+```json
+{
+  "id": 1,
+  "rand": 46,
+  "key": "example",
+  "value": "changed data",
+  "timestamp": 1780959223013
+}
+```
+
+
+```sh
+curl -s http://192.168.99.102:8080/rest/ | jq '.'
+```
+```json
+[
+  {
+    "id": 1,
+    "rand": 46,
+    "key": "example",
+    "value": "changed data",
+    "timestamp": 1780959223013
+  }
+]
+```
+
+```sh
 curl -s -X PUT -H "Content-Type: application/json" -d '{"key":"example", "value":"new data"}' http://127.0.0.1:8080/rest/1 | jq '.'
 ```
+
+
 NOTE: will see the error, and code does not does process the exceptions
 ```js
 {
