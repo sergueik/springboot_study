@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>postgresql</artifactId>
-  <version>0.12.0-SNAPSHOT</version>
+  <version>0.13.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>springboot-jdbc-postgres</name>
   <description>springboot postgresql jdbc</description>
@@ -16,7 +16,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.8</java.version>
+    <java.version>11</java.version>
     <spring-jdbc.version>4.3.10.RELEASE</spring-jdbc.version>
     <postgresql.version>42.3.9</postgresql.version>
     <mysql-connector-java.version>8.0.28</mysql-connector-java.version>

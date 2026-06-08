@@ -468,6 +468,7 @@ mvn clean package
 
 * optionlly rebuild the java container
 ```sh
+docker pull eclipse-temurin:11-jre-alpine
 IMAGE=postgres-example
 docker build -f Dockerfile -t $IMAGE .
 ```
@@ -619,6 +620,7 @@ java -cp c:\Users\kouzm\.m2\repository\com\h2database\h2\1.4.200\h2-1.4.200.jar;
 ```
 
 ![H2 DB Test Connection Screen](screenshots/capture-h2-test-connection.png)
+
 
 Inspect database
 
