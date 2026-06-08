@@ -1,4 +1,4 @@
-FROM node:22.18.0-alpine AS react_builder
+FROM node:18.1.0-alpine AS react_builder
 
 WORKDIR /app
 
@@ -11,7 +11,9 @@ RUN cd /app \
     @uppy/core@5.2.0 \
     @uppy/dashboard@5.1.1 \
     @uppy/xhr-upload@5.2.0 \
-    @uppy/react@5.1.1
+    @uppy/react@5.2.0 \
+    @vitejs/plugin-react@4.3.4 \
+    vite@5.4.19
 
 RUN npm run build
 

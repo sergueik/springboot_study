@@ -7,7 +7,7 @@ https://github.com/transloadit/uppy with over 10K commits
 
 
 ```sh
-docker pull node:22.18.0-alpine
+docker pull node:18.1.0-alpine
 docker pull maven:3.9.5-eclipse-temurin-11-alpine
 docker pull eclipse-temurin:11-jre-alpine
 ```
@@ -591,6 +591,7 @@ uppy-react:latest               923b5c4ec24a        193MB             0B
 ### Using EOL Node Release 18
 
 ```sh
+docker pull node:18-bullseye
 docker build -t uppy-react-build3 -f Dockerfile.build3 .
 ```
 ```text
@@ -751,10 +752,10 @@ Successfully tagged uppy-react-build3:latest
 ### Windows Build
 
 ```sh
-curl -skLo ~/Downloads/node.msi https://nodejs.org/dist/v22.18.0/node-v22.18.0-x64.msi
+curl -skLo ~/Downloads/node.msi https://nodejs.org/dist/v18.1.0/node-v18.1.0-x64.msi
 ```
 ```cmd
-msiexec.exe /l*vx "install.log" /qn /i %USERPROFILE%\Downloads\node.msi
+msiexec.exe /l*vx "install.log" /qn /i c:\Users\%USERNAME%\Downloads\node.msi
 ```
 examine the `install.log`
 ```txt
@@ -796,12 +797,21 @@ Property(S): SourceDir = C:\Users\kouzm\Downloads\
 > NOTE - typical size of `install.log`: 15K+ lines.
 ```
 set PATH=%PATH%;c:\Program Files\nodejs
+
 mvn -Preact2 package
 mvn spring-boot:run
 ```
 
 open in the browser `http://localhost:8080/react` 
 
+alternatively
+```
+set PATH=%PATH%;c:\Program Files\nodejs
+
+cd frontend
+npm install
+npm run build
+```
 #### Cleanup
 
 ```cmd
