@@ -469,6 +469,7 @@ mvn clean package
 * optionlly rebuild the java container
 ```sh
 docker pull eclipse-temurin:11-jre-alpine
+docker pull eclipse-temurin:8u492-b09-jre-alpine
 IMAGE=postgres-example
 docker build -f Dockerfile -t $IMAGE .
 ```
