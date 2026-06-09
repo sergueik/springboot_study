@@ -469,7 +469,6 @@ mvn clean package
 * optionlly rebuild the java container
 ```sh
 docker pull eclipse-temurin:11-jre-alpine
-docker pull eclipse-temurin:8u492-b09-jre-alpine
 IMAGE=postgres-example
 docker build -f Dockerfile -t $IMAGE .
 ```
@@ -509,7 +508,7 @@ curl -s http://192.168.99.102:8080/rest/ | jq '.'
 []
 ```
 ```sh
- curl -s -X POST -H "Content-Type: application/json" -d '{"key":"example", "value":"new data"}' http://192.168.99.102:8080/rest/| jq '.'
+curl -s -X POST -H "Content-Type: application/json" -d '{"key":"example", "value":"new data"}' http://192.168.99.102:8080/rest/| jq '.'
 ```
 ```json
 {
@@ -521,7 +520,7 @@ curl -s http://192.168.99.102:8080/rest/ | jq '.'
 }
 ```
 ```sh
- curl -s -X PUT -H "Content-Type: application/json" -d '{"key":"example", "value":"changed data"}' http://192.168.99.102:8080/rest/1 | jq '.'
+curl -s -X PUT -H "Content-Type: application/json" -d '{"key":"example", "value":"changed data"}' http://192.168.99.102:8080/rest/1 | jq '.'
 ```
 ```json
 {
@@ -1076,6 +1075,66 @@ docker container stop postgres-database
 ```sh
 docker container ls -a | grep -i postgres-database | awk '{print $1}'| xargs -IX docker container rm X
 ```
+
+### Conflict Check
+
+```cmd
+mvn dependency:tree  -Dincludes=org.springframework
+```
+
+```text
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.2:tree (default-cli) @ postgresql ---
+[INFO] example:postgresql:jar:0.15.0-SNAPSHOT
+[INFO] +- org.springframework.boot:spring-boot-devtools:jar:2.3.4.RELEASE:runtime
+[INFO] |  \- org.springframework.boot:spring-boot:jar:2.3.4.RELEASE:compile
+[INFO] |     \- org.springframework:spring-context:jar:5.2.9.RELEASE:compile
+[INFO] +- org.springframework.boot:spring-boot-starter-test:jar:2.3.4.RELEASE:test
+[INFO] |  +- org.springframework:spring-core:jar:5.2.9.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-jcl:jar:5.2.9.RELEASE:compile
+[INFO] |  \- org.springframework:spring-test:jar:5.2.9.RELEASE:test
+[INFO] +- org.springframework.boot:spring-boot-starter-web:jar:2.3.4.RELEASE:compile
+[INFO] |  +- org.springframework:spring-web:jar:5.2.9.RELEASE:compile
+[INFO] |  \- org.springframework:spring-webmvc:jar:5.2.9.RELEASE:compile
+[INFO] |     +- org.springframework:spring-aop:jar:5.2.9.RELEASE:compile
+[INFO] |     \- org.springframework:spring-expression:jar:5.2.9.RELEASE:compile
+[INFO] +- org.springframework.boot:spring-boot-starter-data-jpa:jar:2.3.4.RELEASE:compile
+[INFO] |  +- org.springframework.data:spring-data-jpa:jar:2.3.4.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-orm:jar:5.2.9.RELEASE:compile
+[INFO] |  \- org.springframework:spring-aspects:jar:5.2.9.RELEASE:compile
+[INFO] \- org.springframework:spring-jdbc:jar:5.2.9.RELEASE:compile
+[INFO]    +- org.springframework:spring-beans:jar:5.2.9.RELEASE:compile
+[INFO]    \- org.springframework:spring-tx:jar:5.2.9.RELEASE:compile
+```
+
+broken depednencies:
+```
+[INFO] example:postgresql:jar:0.13.0-SNAPSHOT
+[INFO] +- org.springframework.boot:spring-boot-devtools:jar:2.3.4.RELEASE:runtime
+[INFO] |  \- org.springframework.boot:spring-boot:jar:2.3.4.RELEASE:compile
+[INFO] |     \- org.springframework:spring-context:jar:5.2.9.RELEASE:compile
+[INFO] +- org.springframework.boot:spring-boot-starter-test:jar:2.3.4.RELEASE:test
+[INFO] |  +- org.springframework:spring-core:jar:5.2.9.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-jcl:jar:5.2.9.RELEASE:compile
+[INFO] |  \- org.springframework:spring-test:jar:5.2.9.RELEASE:test
+[INFO] +- org.springframework.boot:spring-boot-starter-web:jar:2.3.4.RELEASE:compile
+[INFO] |  +- org.springframework:spring-web:jar:5.2.9.RELEASE:compile
+[INFO] |  \- org.springframework:spring-webmvc:jar:5.2.9.RELEASE:compile
+[INFO] |     +- org.springframework:spring-aop:jar:5.2.9.RELEASE:compile
+[INFO] |     \- org.springframework:spring-expression:jar:5.2.9.RELEASE:compile
+[INFO] +- org.springframework.boot:spring-boot-starter-data-jpa:jar:2.3.4.RELEASE:compile
+[INFO] |  +- org.springframework.data:spring-data-jpa:jar:2.3.4.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-orm:jar:5.2.9.RELEASE:compile
+[INFO] |  \- org.springframework:spring-aspects:jar:5.2.9.RELEASE:compile
+[INFO] \- org.springframework:spring-jdbc:jar:4.3.10.RELEASE:compile
+[INFO]    +- org.springframework:spring-beans:jar:5.2.9.RELEASE:compile
+[INFO]    \- org.springframework:spring-tx:jar:5.2.9.RELEASE:compile
+[INFO] ------------------------------------------------------------------------
+
+```
+
+The `spring-jdbc 4.3.10` alone neads to strange runtime errors.
+ 
 ### See also
 
   * another basic [jdbc postgress example](https://github.com/christosperis/spring-jdbctemplate-postgresql-example)
