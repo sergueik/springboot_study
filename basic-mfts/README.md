@@ -102,6 +102,62 @@ The exact URLs and authentication scheme depend on how that particular MFT insta
 If there is access to the __MFT server__ of specific version (__8.x__, __7.x__, etc.), one can find whether the mailbox itself is exposed through the `REST` __API__ or whether mailbox access requires one of the older `JSON`/`SOAP` interfaces
 
 
+TIBCO explicitly documents container deployment for MFT Internet Server and provides sample Dockerfiles and Kubernetes deployment artifacts as part of the product distribution. TIBCO states that MFT Internet Server "supports Docker and Kubernetes" and includes a Dockerfile under the installation's cloud/container deployment samples
+
+
+However, there is an important distinction:
+
+TIBCO is not distributing a self-contained Docker image on Docker Hub that you simply docker pull.
+The documented process is typically:
+Install MFT.
+Use the supplied Dockerfile and scripts.
+Build your own image containing your licensed MFT installation.
+Connect it to an external database.
+Run it under Docker or Kubernetes.
+
+From the deployment guide, a running container still requires:
+
+Database configuration.
+Environment variables.
+Port mappings for HTTPS, SFTP, FTP, etc.
+Persistent storage for logs and configuration.
+
+For your use case—evaluating the Mailbox API and experimenting with uploads/downloads—I would recommend Docker if:
+
+You already use Docker Compose.
+You want a disposable test environment.
+You do not want to maintain a dedicated VM.
+You are comfortable with externalizing the database and persistent volumes.
+
+I would be somewhat cautious if your goal is simply:
+
+"I want to quickly play with the Mailbox REST API."
+
+Because MFT is an enterprise product with a non-trivial setup. Even in containers you still need licensing, database connectivity, and product configuration before the mailbox functionality becomes useful. The container deployment guide assumes familiarity with Docker/Kubernetes and explicitly notes that orchestration support is largely the customer's responsibility.
+
+For a proof of concept, my preference would be:
+
+Docker
+ ├── mftis
+ └── postgres/oracle/sqlserver
+
+using bind-mounted volumes so that:
+
+configuration survives container restarts, mailbox data survives image rebuilds, you can easily inspect logs from the host.
+
+One thing I would verify before starting is which MFT component you have access to:
+
+* MFT Internet Server (MFTIS) — exposes the web UI, mailboxes, REST APIs, HTTPS endpoints.
+
+* MFT Command Center (MFTCC) — administration and orchestration.
+Platform Server — managed transfer engine.
+
+If your interest is specifically "browser mailbox + REST API to list/upload/download files", then MFT Internet Server is the component you want to containerize first.
+
+If you have the installation media available, I can help determine whether the package you received already contains the Docker deployment samples and what the minimum Docker Compose stack would look like.
 
 ### See Also 
   * https://docs.tibco.com/pub/mftis/8.5.1/doc/pdf/TIB_mftis_8.5.1_container-deployment.pdf
+  * https://docs.tibco.com/products/tibco-managed-file-transfer-internet-server-8-7-0
+  * https://docs.tibco.com/pub/mftis/8.7.0/doc/pdf/TIB_mftis_8.7.0_container-deployment.pdf?id=7
+

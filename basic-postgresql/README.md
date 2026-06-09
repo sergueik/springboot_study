@@ -665,8 +665,18 @@ java.lang.NoSuchMethodError: 'void org.springframework.orm.jpa.JpaTransactionMan
 	at example.dao.BackendDataDaoImp$$EnhancerBySpringCGLIB$$897175dd.getAll(<generated>) ~[classes!/:0.11.0-SNAPSHOT]
 ```
 
+Launch H2BD with PostgreSQL JDBC of the matching version
+
 ```cmd
-java -cp c:\Users\kouzm\.m2\repository\com\h2database\h2\1.4.200\h2-1.4.200.jar;c:\Users\kouzm\.m2\repository\org\postgresql\postgresql\42.3.9\postgresql-42.3.9.jar  org.h2.tools.Console
+set H2_VERSION=1.4.200
+set POSTGRES_JDBC_VERSION=42.3.9
+java -cp %USERPROFILE%\.m2\repository\com\h2database\h2\%H2_VERSION%\h2-%H2_VERSION%.jar;%USERPROFILE%\.m2\repository\org\postgresql\postgresql\%POSTGRES_JDBC_VERSION%\postgresql-%POSTGRES_JDBC_VERSION%.jar  org.h2.tools.Console
+```
+
+```sql
+SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, COLUMN_DEFAULT
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'YOUR_TABLE_NAME';
 ```
 
 ![H2 DB Test Connection Screen](screenshots/capture-h2-test-connection.png)

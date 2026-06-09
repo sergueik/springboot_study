@@ -1057,6 +1057,15 @@ creating the frontend from scratch with __Vite__ __React__ *template* is what is
 
 However this seems seriously feels backwards if you come from traditional build systems where source layout is explicit and inspectable. One has to accept it.
 
+### Rest vs . reactive Spring
+
+|Feature	| Spring MVC (REST)	| Spring WebFlux (Reactive)|
+|---------------|-----------------------|--------------------------|
+|Large file uploads| Supported| Supported|
+|Streaming upload processing| Limited / servlet-based|Excellent|
+|Backpressure|No|Yes|
+|Resume interrupted upload|Custom implementation	|Custom implementation|
+|Chunked uploads	|Custom implementation|	Custom implementation|
 
 ### See Also
 
@@ -1065,7 +1074,10 @@ However this seems seriously feels backwards if you come from traditional build 
   * [AngularJS Examples](https://www.geeksforgeeks.org/angular-js/angularjs-examples/)
   * https://github.com/nervgh/angular-file-upload
   * https://nodejs.org/en/about/previous-releases
-
+  * https://aiundecided.com/posts/tus-uppy-resumable-upload-architecture/
+  * https://tus.io/protocols/resumable-upload
+  * https://github.com/rea9r/tus-upload-sample
+  * https://github.com/tomdesair/tus-java-server-spring-demo (includes uppy-file-upload as submodule)
 
 ---
 
