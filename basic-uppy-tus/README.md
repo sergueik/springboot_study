@@ -1,6 +1,34 @@
 ### Info
 
 replica of [tus-java-server-spring-demo](https://github.com/tomdesair/tus-java-server-spring-demo) and [tus-java-server](https://github.com/tomdesair/tus-java-server)
+with minimal twaks to trigger chunking and logging added
+server side
+
+### Intro
+ 
+[Uppy](https://uppy.io/) has excellent support for resumable, chunked uploads. It handles this primarily through the [Tus](https://tus.io/) protocol, which splits files into smaller chunks and sends them sequentially, ensuring that dropped connections or browser crashes don't force you to start from scratch
+
+![TUS in Action](screenshots/capture-tus-chunks.png)
+
+### Usage
+
+> NOTE: some of the original project workflow is currently unused (webpack, maven `frontend-maven-plugin` plugin pending replacement with `exec-maven-plugin` plugin). The `tus-java-server` source is not currently used - the jar is uploaded from [maven central](https://mvnrepository.com/artifact/me.desair.tus/tus-java-server)
+
+
+```cmd
+pushd uppy-file-upload
+npm install
+npm run build
+copy /y target\classes\META-INF\resources\webjars\uppy-spring-file-upload\0.0.1-SNAPSHOT\app-bundle.js ..\spring-boot-rest\src\main\resources\public
+popd
+pushd spring-boot-rest
+mvn clean spring-boot:run
+```
+navigate to `http://localhost:8080`
+
+```sh
+dd if=/dev/urandom of=test.bin bs=1M count=100
+```
 ### Background
 
 With a tus upload, the interesting part is not the usual Spring MVC controller logging because the upload is handled by the `TusFileUploadService` directly through the `servlet` `request`/`response` objects. The protocol consists of multiple HTTP requests:
@@ -146,3 +174,8 @@ for the final chunk of a 50 MB file.
 
   * https://blog.rasc.ch/2019/06/upload-with-tus.html
   * https://tus.io/protocols/resumable-upload#core-protocol 
+  * https://aiundecided.com/posts/tus-uppy-resumable-upload-architecture/
+
+  
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
