@@ -5,7 +5,7 @@ with minimal twaks to trigger chunking and logging added
 server side
 
 ### Intro
- 
+
 [Uppy](https://uppy.io/) has excellent support for resumable, chunked uploads. It handles this primarily through the [Tus](https://tus.io/) protocol, which splits files into smaller chunks and sends them sequentially, ensuring that dropped connections or browser crashes don't force you to start from scratch
 
 ![TUS in Action](screenshots/capture-tus-chunks.png)
@@ -72,7 +72,7 @@ after file upload starts the log shows:
 2026-06-09 19:56:42.514 DEBUG 25120 --- [nio-8080-exec-4] o.s.w.f.CommonsRequestLoggingFilter      : After request [PATCH /api/upload/76494ffe-ba65-49af-8d4a-f60f045ad76a, client=0:0:0:0:0:0:0:1, headers=[host:"localhost:8080", connection:"keep-alive", content-length:"52428800", sec-ch-ua-platform:""Windows"", tus-resumable:"1.0.0", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36", sec-ch-ua:""Chromium";v="148", "Google Chrome";v="148", "Not/A)Brand";v="99"", upload-offset:"0", sec-ch-ua-mobile:"?0", accept:"*/*", origin:"http://localhost:8080", sec-fetch-site:"same-origin", sec-fetch-mode:"cors", sec-fetch-dest:"empty", referer:"http://localhost:8080/", accept-encoding:"gzip, deflate, br, zstd", accept-language:"en-US,en;q=0.9", Content-Type:"application/offset+octet-stream;charset=UTF-8"]]
 
 
-there is only one Upload-Offset 
+there is only one Upload-Offset
 
 because the file was only 50MB
 
@@ -173,9 +173,18 @@ for the final chunk of a 50 MB file.
 ### See Also
 
   * https://blog.rasc.ch/2019/06/upload-with-tus.html
-  * https://tus.io/protocols/resumable-upload#core-protocol 
+  * https://tus.io/protocols/resumable-upload#core-protocol
   * https://aiundecided.com/posts/tus-uppy-resumable-upload-architecture/
+  * `PATCH` Method for `HTTP` [RFC5789](https://www.rfc-editor.org/info/rfc5789/)
+  * [tusdotnet/tusdotnet](https://github.com/tusdotnet/tusdotnet) .Net implementation of TUS Server supporting platformes ranging from __net452__, __net6.0__
+  * [nuget package](https://www.nuget.org/packages/tusdotnet). NOTE: latest suported version is __2.11.1__, first release __1.0.0__ is from 2016. This versioning schema is unrelated to tus protocol version which is currenty __1.0.0__ (the __1.0.3__ relies on Java 17 features. Running on a Windows machine might require configuring IIS.
+  * [gerdus/tus-dotnet-client](https://github.com/gerdus/tus-dotnet-client) - tus.io Client for .Net (supported range of NDP from .Net __4.0__)
+  * .Net __5.0__ [Tus.Net.Client](https://github.com/hoss-green/Tus.Net.Client)
+  * .Net __9.0__ [Newex/solidTUS](https://github.com/Newex/solidTUS) - .net TUS Server
+  * .Net  __5.0__ and newer [bluetianx/BirdMessenger](https://github.com/bluetianx/BirdMessenger) Tus client
+  * https://github.com/FuGuangzhi1/tus-demo - uses `tusdotnet`
+  * [TwistingTwists/tusd-node-uppy---resumable-upload](https://github.com/TwistingTwists/tusd-node-uppy---resumable-upload) - node.js backend (presumably swappable) and uppy/tus frontend (elementary)
 
-  
 ### Author
+
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
