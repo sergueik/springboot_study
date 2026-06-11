@@ -8,6 +8,16 @@ import org.slf4j.LoggerFactory;
 public class UploadRequest {
 	private static final Logger logger = LoggerFactory.getLogger(UploadRequest.class);
 
+	private int id;
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int value) {
+		this.id = value;
+	}
+
 	private String foo;
 	private String bar;
 
@@ -67,4 +77,11 @@ public class UploadRequest {
 		return String.format("foo = %s bar = %s filename = %s data: %d bytes", this.getFoo(), this.getBar(),
 				this.getFilename(), this.data.length());
 	}
+
+	private static String staticInfo;
+
+	public /* static */ String getStaticInfo() {
+		return UploadRequest.staticInfo;
+	}
+
 }
