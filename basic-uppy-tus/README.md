@@ -1,6 +1,7 @@
 ### Info
 
-replica of [tus-java-server-spring-demo](https://github.com/tomdesair/tus-java-server-spring-demo) and [tus-java-server](https://github.com/tomdesair/tus-java-server)
+replica of [tus-java-server-spring-demo](https://github.com/tomdesair/tus-java-server-spring-demo) 
+and [tus-java-server](https://github.com/tomdesair/tus-java-server)
 with minimal twaks to trigger chunking and logging added
 server side
 
@@ -42,7 +43,7 @@ With a tus upload, the interesting part is not the usual Spring MVC controller l
 To see these requests, I would start with a request logging filter
 {endpoint:"http://localhost:8080/api/upload"
 
-
+```
 2026-06-09 19:53:41.782  INFO 19720 --- [  restartedMain] me.desair.spring.tus.App                 : Starting App on sergueik59 with PID 19720 (C:\developer\sergueik\springboot_study\basic-uppy-tus\spring-boot-rest\target\classes started by kouzm in C:\developer\sergueik\springboot_study\basic-uppy-tus\spring-boot-rest)
 2026-06-09 19:53:41.790  INFO 19720 --- [  restartedMain] me.desair.spring.tus.App                 : The following profiles are active: dev
 2026-06-09 19:53:41.889  INFO 19720 --- [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
@@ -61,16 +62,16 @@ To see these requests, I would start with a request logging filter
 2026-06-09 19:53:44.910  INFO 19720 --- [  restartedMain] me.desair.spring.tus.App                 : App running with active profiles: dev
 2026-06-09 19:53:44.917  INFO 19720 --- [  restartedMain] me.desair.spring.tus.App                 : =======================================
 2026-06-09 19:53:44.930  INFO 19720 --- [  restartedMain] me.desair.spring.tus.App                 : Started App in 4.155 seconds (JVM running for 5.039)
-
+```
 after file upload starts the log shows:
-
+```
 2026-06-09 19:56:41.053 DEBUG 25120 --- [nio-8080-exec-6] o.s.w.f.CommonsRequestLoggingFilter      : Before request [POST /api/upload, client=0:0:0:0:0:0:0:1, headers=[host:"localhost:8080", connection:"keep-alive", content-length:"0", sec-ch-ua-platform:""Windows"", tus-resumable:"1.0.0", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36", upload-length:"52428800", sec-ch-ua:""Chromium";v="148", "Google Chrome";v="148", "Not/A)Brand";v="99"", upload-metadata:"relativePath bnVsbA==,name dGVzdC5iaW4=,type YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFt,filetype YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFt,filename dGVzdC5iaW4=", sec-ch-ua-mobile:"?0", accept:"*/*", origin:"http://localhost:8080", sec-fetch-site:"same-origin", sec-fetch-mode:"cors", sec-fetch-dest:"empty", referer:"http://localhost:8080/", accept-encoding:"gzip, deflate, br, zstd", accept-language:"en-US,en;q=0.9"]]
 2026-06-09 19:56:41.243  INFO 25120 --- [nio-8080-exec-6] m.d.t.s.c.CreationPostRequestHandler     : Created upload with ID 76494ffe-ba65-49af-8d4a-f60f045ad76a at 1781049401170 for ip address 0:0:0:0:0:0:0:1 with location /api/upload/76494ffe-ba65-49af-8d4a-f60f045ad76a
 2026-06-09 19:56:41.251 DEBUG 25120 --- [nio-8080-exec-6] o.s.w.f.CommonsRequestLoggingFilter      : After request [POST /api/upload, client=0:0:0:0:0:0:0:1, headers=[host:"localhost:8080", connection:"keep-alive", content-length:"0", sec-ch-ua-platform:""Windows"", tus-resumable:"1.0.0", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36", upload-length:"52428800", sec-ch-ua:""Chromium";v="148", "Google Chrome";v="148", "Not/A)Brand";v="99"", upload-metadata:"relativePath bnVsbA==,name dGVzdC5iaW4=,type YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFt,filetype YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFt,filename dGVzdC5iaW4=", sec-ch-ua-mobile:"?0", accept:"*/*", origin:"http://localhost:8080", sec-fetch-site:"same-origin", sec-fetch-mode:"cors", sec-fetch-dest:"empty", referer:"http://localhost:8080/", accept-encoding:"gzip, deflate, br, zstd", accept-language:"en-US,en;q=0.9"]]
 2026-06-09 19:56:41.289 DEBUG 25120 --- [nio-8080-exec-4] o.s.w.f.CommonsRequestLoggingFilter      : Before request [PATCH /api/upload/76494ffe-ba65-49af-8d4a-f60f045ad76a, client=0:0:0:0:0:0:0:1, headers=[host:"localhost:8080", connection:"keep-alive", content-length:"52428800", sec-ch-ua-platform:""Windows"", tus-resumable:"1.0.0", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36", sec-ch-ua:""Chromium";v="148", "Google Chrome";v="148", "Not/A)Brand";v="99"", upload-offset:"0", sec-ch-ua-mobile:"?0", accept:"*/*", origin:"http://localhost:8080", sec-fetch-site:"same-origin", sec-fetch-mode:"cors", sec-fetch-dest:"empty", referer:"http://localhost:8080/", accept-encoding:"gzip, deflate, br, zstd", accept-language:"en-US,en;q=0.9", Content-Type:"application/offset+octet-stream;charset=UTF-8"]]
 2026-06-09 19:56:42.504  INFO 25120 --- [nio-8080-exec-4] m.d.t.s.core.CorePatchRequestHandler     : Upload with ID 76494ffe-ba65-49af-8d4a-f60f045ad76a at location /api/upload/76494ffe-ba65-49af-8d4a-f60f045ad76a finished successfully
 2026-06-09 19:56:42.514 DEBUG 25120 --- [nio-8080-exec-4] o.s.w.f.CommonsRequestLoggingFilter      : After request [PATCH /api/upload/76494ffe-ba65-49af-8d4a-f60f045ad76a, client=0:0:0:0:0:0:0:1, headers=[host:"localhost:8080", connection:"keep-alive", content-length:"52428800", sec-ch-ua-platform:""Windows"", tus-resumable:"1.0.0", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36", sec-ch-ua:""Chromium";v="148", "Google Chrome";v="148", "Not/A)Brand";v="99"", upload-offset:"0", sec-ch-ua-mobile:"?0", accept:"*/*", origin:"http://localhost:8080", sec-fetch-site:"same-origin", sec-fetch-mode:"cors", sec-fetch-dest:"empty", referer:"http://localhost:8080/", accept-encoding:"gzip, deflate, br, zstd", accept-language:"en-US,en;q=0.9", Content-Type:"application/offset+octet-stream;charset=UTF-8"]]
-
+```
 
 there is only one Upload-Offset
 
@@ -139,36 +140,201 @@ and observe TUS protocol in action:
 2026-06-09 20:09:06.370 DEBUG 23540 --- [nio-8080-exec-5] o.s.w.f.CommonsRequestLoggingFilter      : Before request [PATCH /api/upload/d3ad2a50-7b4f-4179-8a3e-28d74366ad17, client=0:0:0:0:0:0:0:1, headers=[host:"localhost:8080", connection:"keep-alive", content-length:"5242880", sec-ch-ua-platform:""Windows"", tus-resumable:"1.0.0", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36", sec-ch-ua:""Chromium";v="148", "Google Chrome";v="148", "Not/A)Brand";v="99"", upload-offset:"47185920", sec-ch-ua-mobile:"?0", accept:"*/*", origin:"http://localhost:8080", sec-fetch-site:"same-origin", sec-fetch-mode:"cors", sec-fetch-dest:"empty", referer:"http://localhost:8080/", accept-encoding:"gzip, deflate, br, zstd", accept-language:"en-US,en;q=0.9", Content-Type:"application/offset+octet-stream;charset=UTF-8"]]
 2026-06-09 20:09:06.411  INFO 23540 --- [nio-8080-exec-5] m.d.t.s.core.CorePatchRequestHandler     : Upload with ID d3ad2a50-7b4f-4179-8a3e-28d74366ad17 at location /api/upload/d3ad2a50-7b4f-4179-8a3e-28d74366ad17 finished successfully
 2026-06-09 20:09:06.413 DEBUG 23540 --- [nio-8080-exec-5] o.s.w.f.CommonsRequestLoggingFilter      : After request [PATCH /api/upload/d3ad2a50-7b4f-4179-8a3e-28d74366ad17, client=0:0:0:0:0:0:0:1, headers=[host:"localhost:8080", connection:"keep-alive", content-length:"5242880", sec-ch-ua-platform:""Windows"", tus-resumable:"1.0.0", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36", sec-ch-ua:""Chromium";v="148", "Google Chrome";v="148", "Not/A)Brand";v="99"", upload-offset:"47185920", sec-ch-ua-mobile:"?0", accept:"*/*", origin:"http://localhost:8080", sec-fetch-site:"same-origin", sec-fetch-mode:"cors", sec-fetch-dest:"empty", referer:"http://localhost:8080/", accept-encoding:"gzip, deflate, br, zstd", accept-language:"en-US,en;q=0.9", Content-Type:"application/offset+octet-stream;charset=UTF-8"]]
-
-
 ```
 Server creates:
-
-Location: /api/upload/d3ad2a50-...
-
+```
+Location: /api/upload/$ID
+```
+(`ID` is `d3ad2a50-7b4f-4179-8a3e-28d74366ad17`)
 Then a sequence of PATCH requests:
-
+```
 PATCH
 Upload-Offset: 0
 Content-Length: 5242880
-
+```
 followed by:
-
+```
 PATCH
 Upload-Offset: 5242880
 Content-Length: 5242880
-
+```
 then:
-
+```
 PATCH
 Upload-Offset: 10485760
 Content-Length: 5242880
-
+```
 and so on until:
-
+```
 Upload-Offset: 47185920
-
+```
 for the final chunk of a 50 MB file.
+
+TUS upload is usually not initiated by uploading any file bytes. The first request is typically a resource creation request.
+
+The simplest TUS flow is:
+
+1. Create upload
+```
+POST /api/upload
+Tus-Resumable: 1.0.0
+Upload-Length: 1234567
+Upload-Metadata: filename Zm9vLnppcA==
+```
+No file body is sent.
+
+Server responds:
+```
+HTTP/1.1 201 Created
+Location: /api/upload/d3ad2a50-7b4f-4179-8a3e-28d74366ad17
+Tus-Resumable: 1.0.0
+```
+The important thing is the `Location` header.
+
+At this point the server has created an upload resource but has received zero bytes.
+
+2. Upload first chunk
+```
+PATCH /api/upload/d3ad2a50-7b4f-4179-8a3e-28d74366ad17
+Tus-Resumable: 1.0.0
+Content-Type: application/offset+octet-stream
+Upload-Offset: 0
+```
+followed by
+```
+<binary bytes>
+```
+Server replies:
+```
+204 No Content
+Upload-Offset: 5242880
+```
+meaning *I have `5 MB` now*.
+
+3. Continue
+
+Client sends another PATCH:
+```
+PATCH /api/upload/d3ad2a50-7b4f-4179-8a3e-28d74366ad17
+Upload-Offset: 5242880
+```
+with the next chunk.
+
+4. Resume after interruption
+
+Before sending more data, client asks:
+```
+HEAD /api/upload/d3ad2a50-7b4f-4179-8a3e-28d74366ad17
+Tus-Resumable: 1.0.0
+```
+Server replies:
+```
+204 No Content
+Upload-Offset: 5242880
+```
+Client learns where to continue.
+
+This is why Uppy looked "magical". Internally it was doing roughly:
+|---|---|
+|`POST`  | create upload|
+|`PATCH` | chunk #1|
+|`PATCH` | chunk #2|
+|`PATCH` | chunk #3|
+|...     |         |
+|HEAD  | recover after interruption|
+|PATCH | continue |
+
+How to explore with curl
+
+You can manually create an upload:
+```
+curl -i \
+  -X POST \
+  -H "Tus-Resumable: 1.0.0" \
+  -H "Upload-Length: 1000" \
+  http://localhost:8080/api/upload
+```
+Look at the `Location:` header in the response:
+
+Then pipe the data through curl:
+```sh
+dd if=test.bin bs=100 count=1 | \
+curl -i -X PATCH -H 'Tus-Resumable: 1.0.0' -H 'Content-Type: application/offset+octet-stream' -H 'Upload-Offset: 0' \
+http://localhost:8080/api/upload/<id>  --data-binary @- 
+```			
+Then:
+```sh
+curl -i -X HEAD -H 'Tus-Resumable: 1.0.0' http://localhost:8080/api/upload/<id>
+```
+to see the current offset.
+
+How I'd learn it
+
+Since you've already got an Uppy client talking to your Spring server, open your browser DevTools Network tab and filter by:
+
+  * `POST`
+  * `PATCH`
+  * `HEAD`
+
+Then upload a small file (10 MB is good).
+
+
+### TUS ecosystem
+
+|Component	|Language	|GitHub Stars| Forks|
+|-----------|-----------|------------|------|
+|Uppy       |TypeScript<br/>Browser upload framework|30k| |
+|tusd *          | 	Go          | 3800      | 550 |
+|tus-js-client   | JavaScript	| 2600      | 338  |
+|tus-node-server |	TypeScript/Node	|1100   | 227  |
+|tusdotnet       |.NET Server       | 750   |      |
+|tus-java-client |	Java         	| 230    |      |
+| tus-java-server |                 | 170    |      |
+| TUSKit         | iOS              | 240    |      |
+|tus-android-client|Android         |180     |      |
+
+
+notably,
+Uppy and TUS solve different problems:
+```
+Uppy
+  |
+  +-- Dashboard UI
+  +-- Drag & Drop
+  +-- Progress bars
+  +-- Retry handling
+  +-- File selection
+  +-- React integration
+  +-- Companion integrations
+  |
+  +-- TUS plugin
+          |
+          +-- TUS protocol
+```
+
+Notable about __.NET__:
+
+The .NET implementation is not a tiny hobby project.
+
+  * tusdotnet GitHub
+  * ASP.NET Core support
+  * .NET Framework support
+  * Implements all major TUS extensions
+  * Recent commits in 2026
+  * Active NuGet releases in 2026
+
+
+What this says about adoption
+
+The ecosystem center of gravity is clearly:
+
+  * Browser / JavaScript
+  * Go servers
+  * Node servers
+  * Mobile clients
+  * Java
+
+This is not surprising because resumable uploads are primarily a browser problem.
 
 ### See Also
 
