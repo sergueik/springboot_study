@@ -83,6 +83,54 @@ navigate to `http://localhost:8080`
 ```sh
 dd if=/dev/urandom of=test.bin bs=1M count=100
 ```
+Processing the TUS upload
+
+The server logs
+```text
+2026-06-12 17:15:03.236 DEBUG 15800 --- [nio-8080-exec-1] o.s.w.f.CommonsRequestLoggingFilter      : Before request [HEAD /api/upload/3704fec5-1362-49b1-a379-0b323328e4a6, client=0:0:0:0:0:0:0:1, headers=[host:"localhost:8080", connection:"keep-alive", sec-ch-ua-platform:""Windows"", tus-resumable:"1.0.0", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36", sec-ch-ua:""Google Chrome";v="149", "Chromium";v="149", "Not)A;Brand";v="24"", sec-ch-ua-mobile:"?0", accept:"*/*", sec-fetch-site:"same-origin", sec-fetch-mode:"cors", sec-fetch-dest:"empty", referer:"http://localhost:8080/", accept-encoding:"gzip, deflate, br, zstd", accept-language:"en-US,en;q=0.9"]]
+2026-06-12 17:15:03.262  WARN 15800 --- [nio-8080-exec-1] m.d.tus.server.TusFileUploadService      : Unable to process request HEAD http://localhost:8080/api/upload/3704fec5-1362-49b1-a379-0b323328e4a6. Sent response status 404 with message "The upload for path /api/upload/3704fec5-1362-49b1-a379-0b323328e4a6 and owner null was not found."
+2026-06-12 17:15:03.272 DEBUG 15800 --- [nio-8080-exec-1] o.s.w.f.CommonsRequestLoggingFilter      : After request [HEAD /api/upload/3704fec5-1362-49b1-a379-0b323328e4a6, client=0:0:0:0:0:0:0:1, headers=[host:"localhost:8080", connection:"keep-alive", sec-ch-ua-platform:""Windows"", tus-resumable:"1.0.0", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36", sec-ch-ua:""Google Chrome";v="149", "Chromium";v="149", "Not)A;Brand";v="24"", sec-ch-ua-mobile:"?0", accept:"*/*", sec-fetch-site:"same-origin", sec-fetch-mode:"cors", sec-fetch-dest:"empty", referer:"http://localhost:8080/", accept-encoding:"gzip, deflate, br, zstd", accept-language:"en-US,en;q=0.9"]]
+2026-06-12 17:15:03.331 DEBUG 15800 --- [nio-8080-exec-2] o.s.w.f.CommonsRequestLoggingFilter      : Before request [POST /api/upload, client=0:0:0:0:0:0:0:1, headers=[host:"localhost:8080", connection:"keep-alive", content-length:"0", sec-ch-ua-platform:""Windows"", tus-resumable:"1.0.0", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36", upload-length:"209715200", sec-ch-ua:""Google Chrome";v="149", "Chromium";v="149", "Not)A;Brand";v="24"", upload-metadata:"relativePath bnVsbA==,name dGVzdC5iaW4=,type YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFt,filetype YXBwbGljYXRpb24vb2N0ZXQtc3RyZWFt,filename dGVzdC5iaW4=", sec-ch-ua-mobile:"?0", accept:"*/*", origin:"http://localhost:8080", sec-fetch-site:"same-origin", sec-fetch-mode:"cors", sec-fetch-dest:"empty", referer:"http://localhost:8080/", accept-encoding:"gzip, deflate, br, zstd", accept-language:"en-US,en;q=0.9"]]
+2026-06-12 17:15:03.338  INFO 15800 --- [nio-8080-exec-2] m.d.t.s.c.CreationPostRequestHandler     : Created upload with ID d7d31ad7-e4cf-46cc-b837-a1de53ba4487 at 1781298903333 for ip address 0:0:0:0:0:0:0:1 with location /api/upload/d7d31ad7-e4cf-46cc-b837-a1de53ba4487
+2026-06-12 19:04:25.106  INFO 3008 --- [nio-8080-exec-4] example.controller.FileUploadController  : upload complete
+2026-06-12 19:04:25.126  INFO 3008 --- [nio-8080-exec-4] example.controller.FileUploadController  : info: id: d7d31ad7-e4cf-46cc-b837-a1de53ba4487 filename: test.bin local path: C:\Users\kouzm\AppData\Local\Temp\tus\uploads\d7d31ad7-e4cf-46cc-b837-a1de53ba4487\data
+```
+the code in the client example to read that information:
+
+```java
+	@Autowired
+	private Environment env;
+
+	@RequestMapping(value = { "", "/**" }, method = { RequestMethod.POST, RequestMethod.PATCH, RequestMethod.HEAD,
+			RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.GET })
+	public void processUpload(final HttpServletRequest servletRequest, final HttpServletResponse servletResponse)
+			throws IOException, TusException {
+		tusFileUploadService.process(servletRequest, servletResponse);
+		UploadInfo info = tusFileUploadService.getUploadInfo(servletRequest.getRequestURI());
+		logger.info("info: id: {} filename: {} local path: {}", info.getId(), info.getFileName(),
+					tusStorageResolver.resolve(info));
+
+
+```
+the file is found under `${java.tmpdir}/$ID`:
+```text
+Directory of C:\Users\kouzm\AppData\Local\Temp\tus\uploads\d7d31ad7-e4cf-46cc-b837-a1de53ba4487
+
+06/12/2026  05:15 PM       209,715,200 data
+```
+
+it is the same file:
+```cmd
+pushd %TEMP%
+sha256sum.exe tus\uploads\d7d31ad7-e4cf-46cc-b837-a1de53ba4487\data
+```
+```text
+\f8ebb932e2dab47e96c90260e2a0539bb14f92f8b909c6de6304eb4a2c2e68de *tus\\uploads\\d7d31ad7-e4cf-46cc-b837-a1de53ba4487\\data
+```
+```sh
+$ sha256sum test.bin
+f8ebb932e2dab47e96c90260e2a0539bb14f92f8b909c6de6304eb4a2c2e68de *test.bin
+```
 ### Background
 
 With a tus upload, the interesting part is not the usual Spring MVC controller logging because the upload is handled by the `TusFileUploadService` directly through the `servlet` `request`/`response` objects. The protocol consists of multiple HTTP requests:
@@ -394,6 +442,192 @@ The ecosystem center of gravity is clearly:
   * Java
 
 This is not surprising because resumable uploads are primarily a browser problem.
+
+### Growth Scenarios
+
+Architectural Evolution of Large File Upload Infrastructure
+Executive Summary
+
+Adopting Uppy and the TUS protocol provides benefits beyond resumable uploads.
+
+The primary architectural advantage is preserving future deployment options while avoiding a proprietary upload protocol. Initial implementations may use a monolithic architecture where the business application directly receives uploaded files. As upload volume and file sizes grow, the upload tier can be separated from the business tier without requiring frontend changes.
+
+Phase 1 - Initial Deployment
+
+The application directly receives uploaded files.
+
+Characteristics
+Simple deployment
+Minimal infrastructure
+Suitable for moderate upload volume
+Business application owns upload lifecycle
+Responsibilities of the Business Application
+Authentication
+Upload reception
+Chunk assembly
+Resumability state
+Temporary storage
+Validation
+Business processing
+Diagram
+digraph phase1 {
+    rankdir=TB;
+
+    Browser [label="Browser\n(Uppy + TUS)"];
+    Spring [label="Spring Boot\nApplication"];
+    Storage [label="Filesystem / Storage"];
+
+    Browser -> Spring;
+    Spring -> Storage;
+}
+Phase 2 - Growth
+
+As file sizes and upload volume increase, the application begins spending substantial resources on upload management rather than business processing.
+
+Typical Growth Drivers
+100 MB uploads become 1 GB uploads
+1 GB uploads become 10+ GB uploads
+Increased user concurrency
+Increased storage requirements
+Longer upload durations
+Emerging Challenges
+Network I/O saturation
+Memory pressure
+Temporary storage management
+Retry handling
+Upload state persistence
+Horizontal scalability
+
+At this stage the upload subsystem becomes an infrastructure concern rather than a business concern.
+
+Phase 3 - Dedicated Upload Tier
+
+Upload processing is separated from business processing.
+
+Characteristics
+Dedicated upload infrastructure
+Independent scaling
+Reduced load on business services
+Improved operational flexibility
+Diagram
+digraph phase3 {
+    rankdir=LR;
+
+    Browser [label="Browser\n(Uppy + TUS)"];
+
+    LB [label="Load Balancer"];
+
+    Upload [label="TUS Upload Tier"];
+
+    API [label="Business API\n(Spring Boot)"];
+
+    Storage [label="Shared Storage"];
+
+    Browser -> LB;
+
+    LB -> Upload;
+    LB -> API;
+
+    Upload -> Storage;
+    API -> Storage;
+}
+Workflow
+Browser uploads file to TUS endpoint.
+Upload tier stores data.
+Upload completion event is generated.
+Business application receives metadata.
+Business processing begins.
+
+Example completion notification:
+
+{
+  "uploadId": "12345",
+  "fileName": "archive.zip",
+  "size": 1234567890,
+  "location": "/uploads/12345"
+}
+Phase 4 - Infrastructure Optimization
+
+The upload tier may be replaced without changing browser behavior.
+
+Possible implementations include:
+
+Embedded Java TUS server
+Dedicated Java TUS cluster
+tusd (Go reference implementation)
+ASP.NET TUS server
+Cloud storage upload gateway
+Managed upload service
+Diagram
+digraph phase4 {
+    rankdir=TB;
+
+    Browser [label="Browser\n(Uppy + TUS)"];
+
+    Upload [label="Any TUS-Compatible\nUpload Service"];
+
+    Backend [label="Business Services"];
+
+    Storage [label="Shared Storage"];
+
+    Browser -> Upload;
+    Upload -> Storage;
+    Backend -> Storage;
+}
+Strategic Benefit of TUS
+
+The primary value of TUS is not resumable uploads alone.
+
+The primary value is establishing a stable protocol boundary between:
+
+Upload infrastructure
+Business applications
+TUS-Based Architecture
+Browser
+    |
+    | TUS Protocol
+    v
+Upload Service
+    |
+    v
+Storage
+
+Any TUS-compliant server can potentially replace another implementation with minimal impact on the frontend.
+
+Custom Upload Protocol
+Browser
+    |
+    | Proprietary Protocol
+    v
+Custom Java Endpoint
+
+The frontend and backend become tightly coupled.
+
+Future migration to:
+
+tusd
+cloud-native upload services
+dedicated upload appliances
+alternate technology stacks
+
+typically requires protocol redesign and frontend changes.
+
+Long-Term Architectural Conclusion
+
+Adopting Uppy and TUS today preserves future architectural options.
+
+A project may evolve through:
+
+Monolithic Java upload handling
+Dedicated upload subsystem
+Horizontally scaled upload infrastructure
+Specialized upload middleware
+Cloud-native storage gateways
+
+while maintaining a consistent browser-side integration.
+
+This reduces long-term technical debt and avoids ownership of a proprietary upload protocol.
+
 
 ### See Also
 
