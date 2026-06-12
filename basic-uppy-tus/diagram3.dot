@@ -1,0 +1,15 @@
+digraph phase4 {
+    rankdir=TB;
+
+    Browser [label="Browser\n(Uppy + TUS)"];
+
+    Upload [label="Any TUS-Compatible\nUpload Service"];
+
+    Backend [label="Business Services"];
+
+    Storage [label="Shared Storage"];
+
+    Browser -> Upload;
+    Upload -> Storage;
+    Backend -> Storage;
+}

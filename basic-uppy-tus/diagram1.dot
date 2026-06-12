@@ -1,0 +1,10 @@
+digraph phase1 {
+    rankdir=TB;
+
+    Browser [label="Browser\n(Uppy + TUS)"];
+    Spring [label="Spring Boot\nApplication"];
+    Storage [label="Filesystem / Storage"];
+
+    Browser -> Spring;
+    Spring -> Storage;
+}

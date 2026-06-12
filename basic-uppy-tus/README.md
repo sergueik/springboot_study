@@ -9,8 +9,61 @@ server side
 
 [Uppy](https://uppy.io/) has excellent support for resumable, chunked uploads. It handles this primarily through the [Tus](https://tus.io/) protocol, which splits files into smaller chunks and sends them sequentially, ensuring that dropped connections or browser crashes don't force you to start from scratch
 
+
+The __tus__ protocol was [created](https://tus.io/blog) in 2013 (the __tus 1.0__ was released in 2015) by the team at Transloadit (Kevin van Zonneveld and Tim Koschützki). It was designed as an open-source standard to allow resumable file uploads over HTTP, meaning large file transfers can be paused or recovered after network drops without restarting
+
 ![TUS in Action](screenshots/capture-tus-chunks.png)
 
+The protocol has:
+
+  - official specification
+  - reference server
+  - official JS client
+  - official Java client
+  - official Node server
+  - iOS client
+  - Android client
+  - conformance testing tools
+  - cloud storage integrations
+  - documented production users including [Vimeo](https://en.wikipedia.org/wiki/Vimeo)
+
+
+#### Publicly documented users
+
+__Vimeo__
+
+* Early adopter
+* Contributor to protocol design
+* Uses __TUS__ for large video uploads
+* Uses __TUS__-related infrastructure internally as well
+
+__Transloadit__
+
+* Creator of __TUS__
+* Uses it in production for its own upload/processing platform
+* Reports moving very large volumes of uploaded content through the protocol
+
+__San Diego Supercomputer Center__ (__SDSC__)
+
+* Mentioned as having rolled out __TUS__ support for scientific data transfer workloads
+
+Should one use a mature upload ecosystem instead of inventing one?
+
+> NOTE: most Java shops do not expose Java as the public upload endpoint.  A very common architecture is:
+
+```sh
+Browser (Uppy)
+        |
+        v
+TUS endpoint
+        |
+        v
+S3 / Blob Storage
+        |
+        v
+Java backend processing
+```
+ 
 ### Usage
 
 > NOTE: some of the original project workflow is currently unused (webpack, maven `frontend-maven-plugin` plugin pending replacement with `exec-maven-plugin` plugin). The `tus-java-server` source is not currently used - the jar is uploaded from [maven central](https://mvnrepository.com/artifact/me.desair.tus/tus-java-server)
@@ -228,21 +281,25 @@ HEAD /api/upload/d3ad2a50-7b4f-4179-8a3e-28d74366ad17
 Tus-Resumable: 1.0.0
 ```
 Server replies:
-```
+
+```text
 204 No Content
 Upload-Offset: 5242880
 ```
+
 Client learns where to continue.
 
-This is why Uppy looked "magical". Internally it was doing roughly:
+Internally __tus__ was doing roughly:
+
+| step| effect |
 |---|---|
 |`POST`  | create upload|
 |`PATCH` | chunk #1|
 |`PATCH` | chunk #2|
 |`PATCH` | chunk #3|
 |...     |         |
-|HEAD  | recover after interruption|
-|PATCH | continue |
+|`HEAD`  | recover after interruption|
+|`PATCH` | continue |
 
 How to explore with curl
 
@@ -289,7 +346,7 @@ Then upload a small file (10 MB is good).
 |tus-node-server |	TypeScript/Node	|1100   | 227  |
 |tusdotnet       |.NET Server       | 750   |      |
 |tus-java-client |	Java         	| 230    |      |
-| tus-java-server |                 | 170    |      |
+| tus-java-server |  Java           | 170    |      |
 | TUSKit         | iOS              | 240    |      |
 |tus-android-client|Android         |180     |      |
 
@@ -324,6 +381,8 @@ The .NET implementation is not a tiny hobby project.
   * Active NuGet releases in 2026
 
 
+The .NET implementation is particularly useful as a reference implementation because modern .NET projects often emphasize API discoverability, strong typing, XML/API documentation, unit testing, and readable framework integration. Even in organizations that do not deploy .NET in production, the tusdotnet source can be a valuable learning resource for understanding protocol internals and extension points.
+
 What this says about adoption
 
 The ecosystem center of gravity is clearly:
@@ -341,6 +400,7 @@ This is not surprising because resumable uploads are primarily a browser problem
   * https://blog.rasc.ch/2019/06/upload-with-tus.html
   * https://tus.io/protocols/resumable-upload#core-protocol
   * https://aiundecided.com/posts/tus-uppy-resumable-upload-architecture/
+  * [tus implementations](https://tus.io/implementations). Notably, GitHub's tus-protocol topic currently shows roughly 60+ public repositories implementing or extending the protocol across multiple languages
   * `PATCH` Method for `HTTP` [RFC5789](https://www.rfc-editor.org/info/rfc5789/)
   * [tusdotnet/tusdotnet](https://github.com/tusdotnet/tusdotnet) .Net implementation of TUS Server supporting platformes ranging from __net452__, __net6.0__
   * [nuget package](https://www.nuget.org/packages/tusdotnet). NOTE: latest suported version is __2.11.1__, first release __1.0.0__ is from 2016. This versioning schema is unrelated to tus protocol version which is currenty __1.0.0__ (the __1.0.3__ relies on Java 17 features. Running on a Windows machine might require configuring IIS.

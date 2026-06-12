@@ -1,0 +1,21 @@
+digraph phase3 {
+    rankdir=LR;
+
+    Browser [label="Browser\n(Uppy + TUS)"];
+
+    LB [label="Load Balancer"];
+
+    Upload [label="TUS Upload Tier"];
+
+    API [label="Business API\n(Spring Boot)"];
+
+    Storage [label="Shared Storage"];
+
+    Browser -> LB;
+
+    LB -> Upload;
+    LB -> API;
+
+    Upload -> Storage;
+    API -> Storage;
+}
