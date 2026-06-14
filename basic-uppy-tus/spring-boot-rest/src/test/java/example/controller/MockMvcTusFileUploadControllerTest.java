@@ -43,15 +43,16 @@ import me.desair.tus.server.TusFileUploadService;
 
 @SpringBootTest(properties = { "tus.server.data.directory=${java.io.tmpdir}/tus" })
 @AutoConfigureMockMvc
-class MockMvcTusFileUploadController2Test {
+class MockMvcTusFileUploadControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
+	private final static String route = "/api/upload";
 
 	@DisplayName("This server does not support tus protocol version")
 	@Test
 	void test1() throws Exception {
-		mockMvc.perform(post("/api/upload")).andDo(print()).andExpect(status().isPreconditionFailed());
+		mockMvc.perform(post(route)).andDo(print()).andExpect(status().isPreconditionFailed());
 	}
 
 	@DisplayName("Error message = No valid value was found in headers Upload-Length and Upload-Defer-Length\r\n"
@@ -59,14 +60,14 @@ class MockMvcTusFileUploadController2Test {
 
 	@Test
 	void test2() throws Exception {
-		mockMvc.perform(post("/api/upload").header("Tus-Resumable", "1.0.0")).andDo(print())
+		mockMvc.perform(post(route).header("Tus-Resumable", "1.0.0")).andDo(print())
 				.andExpect(status().isBadRequest());
 	}
 
 	@DisplayName("Known length")
 	@Test
 	void test3() throws Exception {
-		mockMvc.perform(post("/api/upload").header("Tus-Resumable", "1.0.0").header("Upload-Length", 1000))
+		mockMvc.perform(post(route).header("Tus-Resumable", "1.0.0").header("Upload-Length", 1000))
 				.andDo(print()).andExpect(status().isCreated()).andExpect(header().exists("Location"))
 				.andExpect(header().string("Tus-Resumable", "1.0.0"));
 		;
@@ -78,7 +79,7 @@ class MockMvcTusFileUploadController2Test {
 		// NOTE: Upload-Defer-Length as a flag, not a length
 
 		MvcResult result = mockMvc
-				.perform(post("/api/upload").header("Tus-Resumable", "1.0.0").header("Upload-Defer-Length", 1))
+				.perform(post(route).header("Tus-Resumable", "1.0.0").header("Upload-Defer-Length", 1))
 				.andDo(print()).andExpect(status().isCreated()).andExpect(header().string("Tus-Resumable", "1.0.0"))
 				.andReturn();
 

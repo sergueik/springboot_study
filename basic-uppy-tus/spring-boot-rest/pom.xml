@@ -1,43 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>example</groupId>
   <artifactId>tus-server</artifactId>
-  <version>0.5.0-SNAPSHOT</version>
-
-  <properties>
-    <java.version>11</java.version>
-  </properties>
-
+  <version>0.7.0-SNAPSHOT</version>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.3.4.RELEASE</version>
+    <version>3.2.4</version>
   </parent>
-
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <java.version>17</java.version>
+    <finalName>${project.groupId}.${project.artifactId}</finalName>
+    <commons-codec.version>1.13</commons-codec.version>
+    <httpclient.version>5.3.1</httpclient.version>
+    <tus-java-server.version>1.0.0-3.1</tus-java-server.version>
+    <tus-java-client.version>0.4.0</tus-java-client.version>
+  </properties>
   <dependencies>
+    <dependency>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+      <version>${httpclient.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents.core5</groupId>
+      <artifactId>httpcore5</artifactId>
+      <version>${httpclient.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents.core5</groupId>
+      <artifactId>httpcore5-h2</artifactId>
+      <version>${httpclient.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>me.desair.spring</groupId>
-      <artifactId>uppy-file-upload</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-	    </dependency>
-    -->
     <dependency>
       <groupId>me.desair.tus</groupId>
       <artifactId>tus-java-server</artifactId>
-      <version>1.0.0-2.1</version>
+      <version>${tus-java-server.version}</version>
     </dependency>
     <dependency>
       <groupId>io.tus.java.client</groupId>
       <artifactId>tus-java-client</artifactId>
-      <version>0.4.0</version>
+      <version>${tus-java-client.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -51,7 +61,6 @@
       </exclusions>
     </dependency>
   </dependencies>
-
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
     <testSourceDirectory>src/test/java</testSourceDirectory>
@@ -65,5 +74,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>
