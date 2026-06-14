@@ -7,31 +7,34 @@ import java.nio.file.Paths;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import me.desair.tus.server.TusFileUploadService;
-import me.desair.tus.server.exception.TusException;
-import me.desair.tus.server.upload.UploadInfo;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
+import org.springframework.core.env.Environment;
+
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import example.utils.TusStorageResolver;
-
-import org.springframework.core.env.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import me.desair.tus.server.TusFileUploadService;
+import me.desair.tus.server.exception.TusException;
+import me.desair.tus.server.upload.UploadInfo;
+
+
+import example.utils.TusStorageResolver;
 
 @Controller
 @RequestMapping(value = "/api/upload")
 
 @CrossOrigin(origins = "*")
-public class FileUploadController {
+public class TusFileUploadController {
 
-	private static final Logger logger = LoggerFactory.getLogger(FileUploadController.class);
+	private static final Logger logger = LoggerFactory.getLogger(TusFileUploadController.class);
 
 	@Autowired
 	private Environment env;
