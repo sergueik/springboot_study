@@ -25,7 +25,6 @@ import me.desair.tus.server.TusFileUploadService;
 import me.desair.tus.server.exception.TusException;
 import me.desair.tus.server.upload.UploadInfo;
 
-
 import example.utils.TusStorageResolver;
 
 @Controller
@@ -58,8 +57,7 @@ public class TusFileUploadController {
 			logger.info("info: id: {} filename: {} local path: {}", info.getId(), info.getFileName(),
 					tusStorageResolver.resolve(info));
 		} else if (info != null)
-			logger.info("upload in progress: {} / {} / {}", info.getOffset(), info.getLength(),
-					(info.getOffset() - info.getLength()));
+			logger.info("upload in progress: offset: {} length: {} / {}", info.getOffset(), info.getLength());
 		else
 			logger.info("upload not started");
 		// access response header Location,Upload-Offset,Upload-length
