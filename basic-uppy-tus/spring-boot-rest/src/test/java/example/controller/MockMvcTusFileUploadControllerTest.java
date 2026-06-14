@@ -100,7 +100,7 @@ class MockMvcTusFileUploadControllerTest {
 		// examine response headers to verify the payload supplied
 		// has actually being persisted and the offset is advancing
 		result = mockMvc.perform(head(location).header("Tus-Resumable", "1.0.0")).andDo(print()).andReturn();
-		System.out.println("PATCH headers: " + result.getResponse().getHeaderNames());
+		System.out.println("PATCH Response Headers: " + result.getResponse().getHeaderNames());
 
 		// NOTE: the assertion failed, commented
 		// mockMvc.perform(head(location).header("Tus-Resumable",

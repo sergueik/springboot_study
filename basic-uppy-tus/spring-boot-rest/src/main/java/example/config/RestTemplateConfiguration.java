@@ -4,7 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.apache.hc.client5.http.classic.HttpClient;
+
+import org.apache.http.client.HttpClient;
 
 @Configuration
 public class RestTemplateConfiguration {

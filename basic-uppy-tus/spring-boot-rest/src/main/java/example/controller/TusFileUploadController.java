@@ -1,21 +1,15 @@
 package example.controller;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
-// import javax.servlet.http.HttpServletRequest;
-// import javax.servlet.http.HttpServletResponse;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.core.env.Environment;
 
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,7 +57,6 @@ public class TusFileUploadController {
 			logger.info("upload in progress: offset: {} length: {} / {}", info.getOffset(), info.getLength());
 		else
 			logger.info("upload not started");
-		// access response header Location,Upload-Offset,Upload-length
 		servletResponse.addHeader("Access-Control-Expose-Headers", "Location,Upload-Offset,Upload-Length");
 	}
 }

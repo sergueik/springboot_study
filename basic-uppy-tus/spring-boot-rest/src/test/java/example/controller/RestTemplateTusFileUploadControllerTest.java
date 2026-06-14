@@ -179,6 +179,10 @@ public class RestTemplateTusFileUploadControllerTest {
 		RequestEntity<Void> request = RequestEntity.head(URI.create(url)).header("Tus-Resumable", "1.0.0").build();
 
 		ResponseEntity<String> response = restTemplate.exchange(request, String.class);
+		
+		// examine response headers to verify the payload supplied
+		// has actually being persisted and the offset is advancing
+
 		headers = response.getHeaders();
 		System.err.println("Response Headers: " + headers.toString());
 		assertThat(headers.containsKey("Upload-Offset"), is(true));
