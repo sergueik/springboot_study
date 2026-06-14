@@ -23,8 +23,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
+
 // TODO : find relevant version of junit import
 // import org.junit.jupiter.api.MethodOrderer.MethodName;
+
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -32,8 +34,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-// import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.boot.test.web.server.LocalServerPort;
+
+import org.springframework.boot.web.server.LocalServerPort;
+// import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -47,6 +50,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.LoggingEvent;
 
 import me.desair.tus.server.HttpMethod;
 
@@ -103,6 +112,14 @@ public class RestTemplateTusFileUploadControllerTest {
 	@Test
 	@Order(2)
 	public void test2() throws Exception {
+
+		ListAppender<ILoggingEvent> logWatcher = new ListAppender<>();
+		logWatcher.start();
+
+		Logger tusLogger = (Logger) LoggerFactory.getLogger("me.desair.tus.server.TusFileUploadService");
+
+		tusLogger.addAppender(logWatcher);
+
 		url = "http://localhost:" + randomServerPort + location;
 		try {
 			headers = restTemplate.headForHeaders(url);
@@ -123,12 +140,11 @@ public class RestTemplateTusFileUploadControllerTest {
 			headers = e.getResponseHeaders();
 			System.err.println("Response Headers: " + headers.toString());
 			assertThat(headers.getFirst("Tus-Resumable"), is("1.0.0"));
-			System.err.println("Response Body: " + e.getResponseBodyAsString());
-			// empty
-			System.err.println("Status Text: " + e.getStatusText());
-			// not useful
-			// System.err.println("Stack Trace: ");
-			// e.printStackTrace();
+
+			boolean found = logWatcher.list.stream().anyMatch((ILoggingEvent loggingEvent) -> loggingEvent
+					.getFormattedMessage().contains("does not support tus protocol"));
+
+			assertThat(found, is(true));
 		}
 	}
 
@@ -179,7 +195,7 @@ public class RestTemplateTusFileUploadControllerTest {
 		RequestEntity<Void> request = RequestEntity.head(URI.create(url)).header("Tus-Resumable", "1.0.0").build();
 
 		ResponseEntity<String> response = restTemplate.exchange(request, String.class);
-		
+
 		// examine response headers to verify the payload supplied
 		// has actually being persisted and the offset is advancing
 
