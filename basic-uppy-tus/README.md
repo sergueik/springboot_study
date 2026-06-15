@@ -628,7 +628,106 @@ while maintaining a consistent browser-side integration.
 
 This reduces long-term technical debt and avoids ownership of a proprietary upload protocol.
 
+### Shell Client
 
+#### Broken Version (one byte mismatch)
+```sh
+./client.sh
+```
+```text
+Uploading:
+RESP=HTTP/1.1 201
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Tus-Resumable: 1.0.0
+Location: /api/upload/62b1dc5f-636b-4c77-938e-e7fa0ce74fe9
+Access-Control-Expose-Headers: Location,Upload-Offset,Upload-Length
+Content-Length: 0
+Date: Sun, 14 Jun 2026 23:23:21 GMT
+Create upload LOCATION: /api/upload/62b1dc5f-636b-4c77-938e-e7fa0ce74fe9
+Get file size: 446
+Uploading to : http://localhost:8080/api/upload/62b1dc5f-636b-4c77-938e-e7fa0ce74fe9
+Uploading: offset=0 len=256
+curl -si -X PATCH "http://localhost:8080/api/upload/62b1dc5f-636b-4c77-938e-e7fa0ce74fe9" -H 'Tus-Resumable: 1.0.0' -H "Upload-Offset: 0" -H 'Content-Type: application/offset+octet-stream' --data-binary "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in"
+HTTP/1.1 204
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Tus-Resumable: 1.0.0
+Upload-Offset: 256
+Access-Control-Expose-Headers: Location,Upload-Offset,Upload-Length
+Date: Sun, 14 Jun 2026 23:23:21 GMT
+
+Uploading: offset=256 len=190
+curl -si -X PATCH "http://localhost:8080/api/upload/62b1dc5f-636b-4c77-938e-e7fa0ce74fe9" -H 'Tus-Resumable: 1.0.0' -H "Upload-Offset: 256" -H 'Content-Type: application/offset+octet-stream' --data-binary " reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+HTTP/1.1 204
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Tus-Resumable: 1.0.0
+Upload-Offset: 445
+Access-Control-Expose-Headers: Location,Upload-Offset,Upload-Length
+Date: Sun, 14 Jun 2026 23:23:21 GMT
+```
+and the final check
+```text
+56293a80e0394d252e995f2debccea8223e4b5b2b150bee212729b3b39ac4d46 *test.txt
+2d8c2f6d978ca21712b5f6de36c9d31fa8e96a4fa5d8ff8b0188dfb9e7c171bb */tmp/tus/uploads/62b1dc5f-636b-4c77-938e-e7fa0ce74fe9/data
+```
+reveals the mismatch which is otherwise esasy to overlook:
+```txt
+Uploading: offset=256 len=190
+```
+vs:
+```text
+Upload-Offset: 445
+```
+
+#### Fixed Version
+```sh
+./client.sh
+```
+```text
+Uploading:
+RESP=HTTP/1.1 201
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Tus-Resumable: 1.0.0
+Location: /api/upload/a7e9464e-c1c8-4156-999a-0543edd5afd7
+Access-Control-Expose-Headers: Location,Upload-Offset,Upload-Length
+Content-Length: 0
+Date: Sun, 14 Jun 2026 23:46:33 GMT
+Create upload LOCATION: /api/upload/a7e9464e-c1c8-4156-999a-0543edd5afd7
+Get file size: 446
+Uploading to : http://localhost:8080/api/upload/a7e9464e-c1c8-4156-999a-0543edd5afd7
+Uploading: offset=0 len=256
+curl -si -X PATCH "http://localhost:8080/api/upload/a7e9464e-c1c8-4156-999a-0543edd5afd7" -H 'Tus-Resumable: 1.0.0' -H "Upload-Offset: 0" -H 'Content-Type: application/offset+octet-stream' --data-binary "@/tmp/tmp.Phhg5k04v9"
+HTTP/1.1 204
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Tus-Resumable: 1.0.0
+Upload-Offset: 256
+Access-Control-Expose-Headers: Location,Upload-Offset,Upload-Length
+Date: Sun, 14 Jun 2026 23:46:33 GMT
+
+Uploading: offset=256 len=190
+curl -si -X PATCH "http://localhost:8080/api/upload/a7e9464e-c1c8-4156-999a-0543edd5afd7" -H 'Tus-Resumable: 1.0.0' -H "Upload-Offset: 256" -H 'Content-Type: application/offset+octet-stream' --data-binary "@/tmp/tmp.K2yTYSfdEd"
+HTTP/1.1 204
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Tus-Resumable: 1.0.0
+Upload-Offset: 446
+Access-Control-Expose-Headers: Location,Upload-Offset,Upload-Length
+Date: Sun, 14 Jun 2026 23:46:33 GMT
+
+56293a80e0394d252e995f2debccea8223e4b5b2b150bee212729b3b39ac4d46 *test.txt
+56293a80e0394d252e995f2debccea8223e4b5b2b150bee212729b3b39ac4d46 */tmp/tus/uploads/a7e9464e-c1c8-4156-999a-0543edd5afd7/data
+
+```
 ### See Also
 
   * https://blog.rasc.ch/2019/06/upload-with-tus.html

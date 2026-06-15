@@ -18,7 +18,7 @@ SIZE=$(wc -c < "$FILE")
 OFFSET=0
 BASE_URL="http://localhost:8080"
 PATCH_URL="${BASE_URL}${LOCATION}"
-1>&2 echo "Uploading to : $PATCH_URL" 
+1>&2 echo "Uploading to : $PATCH_URL"
 while [ $OFFSET -lt $SIZE ]
 do
   END=$((OFFSET + CHUNK_SIZE))
@@ -28,12 +28,16 @@ do
 
   CNT=$((END - OFFSET))
 
-  CHUNK=$(dd if="$FILE" bs=1 skip=$OFFSET count=$CNT 2>/dev/null)
+  # NOTE: do not store upload data in a shell variable
+  # it is prone to stripping the trailing newline
+
+  TMPFILE=$(mktemp)
+  dd if="$FILE" bs=1 skip=$OFFSET count=$CNT of="$TMPFILE" 2>/dev/null
 
   1>&2 echo "Uploading: offset=$OFFSET len=$CNT"
-  1>&2 echo "curl -si -X PATCH \"$PATCH_URL\" -H 'Tus-Resumable: 1.0.0' -H \"Upload-Offset: $OFFSET\" -H 'Content-Type: application/offset+octet-stream' --data-binary \"$CHUNK\""
-  
-  curl -si -X PATCH "$PATCH_URL" -H 'Tus-Resumable: 1.0.0' -H "Upload-Offset: $OFFSET" -H 'Content-Type: application/offset+octet-stream' --data-binary "$CHUNK"
+  1>&2 echo "curl -si -X PATCH \"$PATCH_URL\" -H 'Tus-Resumable: 1.0.0' -H \"Upload-Offset: $OFFSET\" -H 'Content-Type: application/offset+octet-stream' --data-binary \"@$TMPFILE\""
+
+  curl -si -X PATCH "$PATCH_URL" -H 'Tus-Resumable: 1.0.0' -H "Upload-Offset: $OFFSET" -H 'Content-Type: application/offset+octet-stream' --data-binary "@$TMPFILE"
 
   OFFSET=$END
 done
