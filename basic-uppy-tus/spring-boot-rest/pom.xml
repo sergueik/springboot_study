@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>tus-server</artifactId>
-  <version>0.8.0-SNAPSHOT</version>
+  <version>0.8.1-SNAPSHOT</version>
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
@@ -15,11 +15,17 @@
     <java.version>11</java.version>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
     <commons-codec.version>1.13</commons-codec.version>
+    <commons-io.version>2.8.0</commons-io.version>
     <httpclient.version>4.5.1</httpclient.version>
     <tus-java-server.version>1.0.0-2.1</tus-java-server.version>
     <tus-java-client.version>0.4.0</tus-java-client.version>
   </properties>
   <dependencies>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
@@ -33,6 +39,12 @@
       <groupId>me.desair.tus</groupId>
       <artifactId>tus-java-server</artifactId>
       <version>${tus-java-server.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>		
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.tus.java.client</groupId>
