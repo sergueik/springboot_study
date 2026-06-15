@@ -728,6 +728,60 @@ Date: Sun, 14 Jun 2026 23:46:33 GMT
 56293a80e0394d252e995f2debccea8223e4b5b2b150bee212729b3b39ac4d46 */tmp/tus/uploads/a7e9464e-c1c8-4156-999a-0543edd5afd7/data
 
 ```
+### Alternatives
+
+#### Frontend & Modular Uploaders
+
+__Uppy__: Built by the same team that created tus, Uppy is a sleek, modular JavaScript file uploader that acts perfectly as a frontend for tus servers, but also connects to AWS S3 or XHR uploads.
+
+__Resumable.js__: An older but reliable JavaScript library that provides multiple simultaneous, stable, and resumable uploads via the HTML5 File API.
+
+__Fine Uploader__: A highly customizable library supporting chunked uploads, auto-resume, and integrations with numerous cloud storage platforms.
+
+#### Backend & All-in-One File APIs
+
+__Uploadcare__: A comprehensive cloud-based file management platform that covers uploading, processing, and CDN delivery, offering a robust alternative to building an infrastructure from scratch.
+
+__Filestack__: An all-in-one file upload and transformation service designed to easily integrate directly into your web applications, bypassing the need for low-level protocol development.
+
+__Dropzone.js__: A popular open-source library that provides drag-and-drop file uploads with image previews. Though traditionally XHR-based, it can be configured for chunked and resumable workflows.
+
+#### Cloud Storage Native Uploads, SAAS, BAAS,
+
+__AWS S3 Direct Uploads__: If your main goal is simply storing large files securely, you can skip third-party protocols and use the Amazon S3 multipart upload API directly from the client.
+
+__Uploadthing__: Highly popular in the React/Next.js ecosystem, it provides fully typed, built-in endpoints and S3-backed storage.
+
+__Uploadcare__: An enterprise-grade, all-in-one file uploader and CDN that handles adaptive delivery, image cropping, and resumable chunks without needing a custom tus backend.
+
+__Bytescale__: A lightweight, developer-friendly alternative with client SDKs that handles CDN, storage, and media processing in one API.
+
+### Ranking Solutions
+
+
+When looking for resumable, high-volume file upload solutions, __tus__ is the most widely adopted open standard, favored for its agnostic nature and robust ecosystem of client/server implementations
+
+if not taking tus, one may try:
+
+#### All-in-One Self-Hosted Servers:
+
+__Copyparty__ & __Filebrowser__ : If you need an immediately deployable server with a Web UI and resumable uploads rather than a custom developer integration, look to these community favorites:
+
+__Copyparty__: Highly recommended on the r/selfhosted subreddit. It features built-in chunked/resumable uploads, zero file size limits, parallel transfer speeds, and write-only guest drop folders without requiring user authentication.
+
+__Filebrowser__: A highly popular, lightweight Docker container with over 20k+ stars. It provides a clean, searchable, folder-based file management UI with fine-grained, resumable file uploading capabilities.
+
+__Sharry__: A self-hosted Java web application that allows users to upload files and generates tokenized, expiring URLs for easy sharing.
+
+#### Direct Cloud / Object Storage Approaches
+
+For high volume and maximum scalability without dedicated UI servers, organizations rely on the following APIs:
+
+__MinIO__: A high-performance, S3-compatible object storage server that supports direct chunked S3 Multipart uploads.
+
+__Google Cloud Storage__ / __AWS S3__: Both have native APIs for resumable stream uploads and can be paired with an NGINX proxy to rate-limit traffic
+
+### See Also
 ### See Also
 
   * https://blog.rasc.ch/2019/06/upload-with-tus.html
@@ -743,6 +797,8 @@ Date: Sun, 14 Jun 2026 23:46:33 GMT
   * .Net  __5.0__ and newer [bluetianx/BirdMessenger](https://github.com/bluetianx/BirdMessenger) Tus client
   * https://github.com/FuGuangzhi1/tus-demo - uses `tusdotnet`
   * [TwistingTwists/tusd-node-uppy---resumable-upload](https://github.com/TwistingTwists/tusd-node-uppy---resumable-upload) - node.js backend (presumably swappable) and uppy/tus frontend (elementary)
+  * [RFC 3659](https://datatracker.ietf.org/doc/html/rfc3659) - FTP commands to obtain listings of remote directories in a defined format, and to permit restarts of interrupted data transfers in STREAM mode
+  * [RFC959](https://www.w3.org/Protocols/rfc959/4_FileTransfer.html) to resume an interrupted FTP download exactly where it left off client sends the REST (Restart) command specifying the exact byte offset, followed immediately by the RETR (Retrieve) command.
 
 ### Author
 
