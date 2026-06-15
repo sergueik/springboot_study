@@ -29,11 +29,14 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.is;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.head;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collection;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -60,28 +63,42 @@ class MockMvcTusFileUploadControllerTest {
 
 	@Test
 	void test2() throws Exception {
-		mockMvc.perform(post(route).header("Tus-Resumable", "1.0.0")).andDo(print())
-				.andExpect(status().isBadRequest());
+		mockMvc.perform(post(route).header("Tus-Resumable", "1.0.0")).andDo(print()).andExpect(status().isBadRequest());
+	}
+
+	@DisplayName("Tus response to OPTIONS")
+	@Test
+	void test3() throws Exception {
+		MvcResult result = mockMvc
+				.perform(options(route).header("Tus-Resumable", "1.0.0").header("Upload-Length", 1000)).andDo(print())
+				.andReturn();
+		Collection<String> headerNames = result.getResponse().getHeaderNames();
+		System.err.println(Arrays.asList(headerNames));
+		String version = result.getResponse().getHeader("Tus-Version");
+
+		assertThat(version, notNullValue());
+		assertThat(version, containsString("1.0.0"));
+		System.err.println("Tus-Version: " + version);
+
 	}
 
 	@DisplayName("Known length")
 	@Test
-	void test3() throws Exception {
-		mockMvc.perform(post(route).header("Tus-Resumable", "1.0.0").header("Upload-Length", 1000))
-				.andDo(print()).andExpect(status().isCreated()).andExpect(header().exists("Location"))
+	void test4() throws Exception {
+		mockMvc.perform(post(route).header("Tus-Resumable", "1.0.0").header("Upload-Length", 1000)).andDo(print())
+				.andExpect(status().isCreated()).andExpect(header().exists("Location"))
 				.andExpect(header().string("Tus-Resumable", "1.0.0"));
 		;
 	}
 
 	@DisplayName("Specify Deferred length, perform HEAD, PATCH, HEAD")
 	@Test
-	void test4() throws Exception {
+	void test5() throws Exception {
 		// NOTE: Upload-Defer-Length as a flag, not a length
 
 		MvcResult result = mockMvc
-				.perform(post(route).header("Tus-Resumable", "1.0.0").header("Upload-Defer-Length", 1))
-				.andDo(print()).andExpect(status().isCreated()).andExpect(header().string("Tus-Resumable", "1.0.0"))
-				.andReturn();
+				.perform(post(route).header("Tus-Resumable", "1.0.0").header("Upload-Defer-Length", 1)).andDo(print())
+				.andExpect(status().isCreated()).andExpect(header().string("Tus-Resumable", "1.0.0")).andReturn();
 
 		String location = result.getResponse().getHeader("Location");
 
@@ -107,4 +124,5 @@ class MockMvcTusFileUploadControllerTest {
 		// "1.0.0")).andDo(print()).andExpect(header().string("Upload-Offset", "5"));
 
 	}
+
 }

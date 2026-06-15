@@ -130,19 +130,12 @@ public class RestTemplateTusFileUploadControllerTest {
 			System.err.println("Exception: " + e.getMessage());
 			// Exception: 412 : [no body]
 
-			// TODO: capture
-			// 2026-06-14 13:01:04.937 WARN 16408 --- [nio-8080-exec-2]
-			// m.d.tus.server.TusFileUploadService : Unable to process request HEAD
-			// http://localhost:8080/api/upload/6d02d4e1-0011-4571-b3fc-702bd64f1a01. Sent
-			// response status 412 with message "This server does not support tus protocol
-			// version "
-
 			headers = e.getResponseHeaders();
 			System.err.println("Response Headers: " + headers.toString());
 			assertThat(headers.getFirst("Tus-Resumable"), is("1.0.0"));
 
 			boolean found = logWatcher.list.stream().anyMatch((ILoggingEvent loggingEvent) -> loggingEvent
-					.getFormattedMessage().contains("does not support tus protocol"));
+					.getFormattedMessage().contains("This server does not support tus protocol version"));
 
 			assertThat(found, is(true));
 		}
