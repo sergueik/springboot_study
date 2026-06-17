@@ -29,15 +29,21 @@ function sendfile {
   param(
     [string]$file_path = (resolve-path 'data.txt'),
     [int] $chunk_size = 256,
+    [int] $offset = 0,
     [string]$url = 'http://localhost:8085/basic/upload',
     [bool] $debug = $true
   )
 
-
+  
   [byte[]]$data = getPayload -file_path $file_path -debug $debug
-
+  if ($data.length -eq $offset) { 
+    return $false	  
+  }
+  if ($chunk_size -gt $data.length - $offset) {
+    $chunk_size = $data.length - $offset 
+  }
   [byte[]] $payload = [byte[]]::new($chunk_size)
-  [System.Array]::Copy($data, 0, $payload, 0, $chunk_size)
+  [System.Array]::Copy($data, $offset, $payload, 0, $chunk_size)
   if ($debug) {
     write-host ('payload:' + [char]10 + [System.Text.Encoding]::GetEncoding('UTF-8').GetString($payload))
   }
@@ -47,7 +53,7 @@ function sendfile {
   $request.Method = 'PATCH'
 
   $request.Headers.Add('Tus-Resumable','1.0.0')
-  $request.Headers.Add('Upload-Offset','0')
+  $request.Headers.Add('Upload-Offset', $offset )
 
   $request.ContentType = 'application/offset+octet-stream'
   $request.ContentLength = $payload.Length
@@ -67,10 +73,10 @@ function sendfile {
       [System.Net.WebHeaderCollection]$response_headers = $response.Headers
       $result = $response_headers['Upload-Offset']
       if ($debug)  {
-       write-host ('Response: Upload-Offset: {1}{0}' -f $result, [char]10 )
+       write-host ('Response: Upload-Offset: {0}' -f $result )
        # write-host ($response.Headers -join [char]10)
-	   # TUS responses are mostly communicated via headers:
-	   # $response.Headers.AllKeys | foreach-object { write-host ('{0} = {1}' -f $_ , $response.Headers[$_]) }
+       # TUS responses are mostly communicated via headers:
+       # $response.Headers.AllKeys | foreach-object { write-host ('{0} = {1}' -f $_ , $response.Headers[$_]) }
       }
     }
   } catch [System.Net.WebException] {
@@ -83,7 +89,9 @@ function sendfile {
         write-host $reader.ReadToEnd()
         $reader.Close()
     }
+    return $false
   }
+  return $true
 }
 
 function getHead{
@@ -94,7 +102,6 @@ function getHead{
   $result = $null
   [System.Net.HttpWebRequest] $request = [System.Net.HttpWebRequest]( [System.Net.WebRequest]::Create($url) )
 
-#  $request.Method = 'PATCH'
    $request.Method = 'HEAD'
 
   $request.Headers.Add('Tus-Resumable','1.0.0')
@@ -111,7 +118,7 @@ function getHead{
       [System.Net.WebHeaderCollection]$response_headers = $response.Headers
       $result = $response_headers['Upload-Offset']
       if ($debug)  {
-       write-host ('Response: Upload-Offset: {1}{0}' -f $result, [char]10 )
+       write-host ('Response: Upload-Offset: {0}' -f $result )
        # write-host ($response.Headers -join [char]10)
 	   # TUS responses are mostly communicated via headers:
 	   # $response.Headers.AllKeys | foreach-object { write-host ('{0} = {1}' -f $_ , $response.Headers[$_]) }
@@ -158,11 +165,7 @@ function getLocation{
   $headers = @{ 'Tus-Resumable' = '1.0.0'; 'Upload-Defer-Length' = '1' }
 
   [System.Collections.Specialized.NameValueCollection] $obj = new-object System.Collections.Specialized.NameValueCollection
-  $headers.Keys | foreach-object {
-    $key = $_
-    $value = $headers.Item($key)
-    $obj.Add($key, $value)
-  }
+  $headers.Keys | foreach-object { $key = $_; $value = $headers.Item($key ) ; $obj.Add($key, $value) }
 
   $webRequest.Headers.Add($obj)
   try {
@@ -193,12 +196,20 @@ function getLocation{
 [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
 
 
-write-host 'Getting location'
-$result = getLocation -debug $debug -url $url
-$url = 'http://localhost:8080' + $result
+write-host 'Getting upload location'
+$location = getLocation -debug $debug -url $url
+$url = 'http://localhost:8080' + $location
 
-if ($debug) {
-  write-host ('send the first {0} bytes to {1}' -f $chunk_size, $url )
+$offset  = 0 
+$status = $true
+while ($status) { 
+  if ($debug) {
+    write-host ('send the {0} bytes to {1}' -f $chunk_size, $url )
+  }
+  $status = sendfile -url $url -file_path (resolve-path $filename) -debug $debug -offset $offset 
+  $offset = getHead -url $url -debug $debug
+
+  if ($debug) {
+    write-host ('new offset: {0}' -f $offset )
+  }
 }
-sendfile -url $url -file_path (resolve-path $filename) -debug $debug
-getHead -url $url -debug $debug
