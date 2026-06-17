@@ -63,6 +63,9 @@ import me.desair.tus.server.HttpMethod;
 @PropertySource("classpath:application.properties")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
+// NOTE: need to run separately:
+// RestTemplateTusFileUploadControllerTest
+// MockMvcTusFileUploadControllerTest,BadPayloadTest
 public class RestTemplateTusFileUploadControllerTest {
 
 	@LocalServerPort

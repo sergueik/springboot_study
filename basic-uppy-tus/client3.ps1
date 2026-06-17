@@ -42,10 +42,7 @@ function sendfile {
     write-host ('payload:' + [char]10 + [System.Text.Encoding]::GetEncoding('UTF-8').GetString($payload))
   }
 
-  # using System.Net.HttpWebRequest ?!
-
-  [Reflection.Assembly]::LoadWithPartialName('System.Net.Http') | out-null
-  $request = [System.Net.HttpWebRequest]::Create($url)
+  $request = [System.Net.HttpWebRequest]( [System.Net.WebRequest]::Create($url) )
 
   $request.Method = 'PATCH'
 
@@ -89,6 +86,50 @@ function sendfile {
   }
 }
 
+function getHead{
+  param(
+    [string]$url = 'http://localhost:8085/basic/upload',
+    [bool] $debug = $true
+  )
+  $result = $null
+  [System.Net.HttpWebRequest] $request = [System.Net.HttpWebRequest]( [System.Net.WebRequest]::Create($url) )
+
+#  $request.Method = 'PATCH'
+   $request.Method = 'HEAD'
+
+  $request.Headers.Add('Tus-Resumable','1.0.0')
+  $request.Headers.Add('Upload-Offset','0')
+
+  try {
+
+    $response = $request.GetResponse()
+    [System.Net.HttpStatusCode]$statuscode = $response.StatusCode
+    if ($debug)  {
+      write-host ('Response status code: {0}' -f $statuscode.value__)
+    }
+    if (($statusCode.value__ -eq 204)){
+      [System.Net.WebHeaderCollection]$response_headers = $response.Headers
+      $result = $response_headers['Upload-Offset']
+      if ($debug)  {
+       write-host ('Response: Upload-Offset: {1}{0}' -f $result, [char]10 )
+       # write-host ($response.Headers -join [char]10)
+	   # TUS responses are mostly communicated via headers:
+	   # $response.Headers.AllKeys | foreach-object { write-host ('{0} = {1}' -f $_ , $response.Headers[$_]) }
+      }
+    }
+  } catch [System.Net.WebException] {
+
+    $e = $_.Exception
+    write-host $e.Status
+
+    if ($e.Response -ne $null) {
+        $reader =  new-object System.IO.StreamReader( $e.Response.GetResponseStream() )
+        write-host $reader.ReadToEnd()
+        $reader.Close()
+    }
+  }
+  return $result
+}
 function getPayload{
   param (
     [string]$file_path = $null,
@@ -105,8 +146,6 @@ function getPayload{
   return $payload
 }
 
-
-[System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
 
 function getLocation{
   param(
@@ -151,6 +190,8 @@ function getLocation{
   }
   return $result
 }
+[System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
+
 
 write-host 'Getting location'
 $result = getLocation -debug $debug -url $url
@@ -160,3 +201,4 @@ if ($debug) {
   write-host ('send the first {0} bytes to {1}' -f $chunk_size, $url )
 }
 sendfile -url $url -file_path (resolve-path $filename) -debug $debug
+getHead -url $url -debug $debug

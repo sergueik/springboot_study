@@ -63,39 +63,25 @@ class MockMvcTusFileUploadControllerTest {
 	MockMvc mockMvc;
 	private final static String route = "/api/upload";
 
-	@Disabled
 	@DisplayName("This server does not support tus protocol version")
 	@Test
 	void test1() throws Exception {
 		mockMvc.perform(post(route)).andDo(print()).andExpect(status().isPreconditionFailed());
 	}
 
-	@Disabled
 	@DisplayName("The upload for path /api/upload and owner null was not found.")
 	@Test
 	void test11() throws Exception {
 		mockMvc.perform(patch(route).header("Tus-Resumable", "1.0.0")).andDo(print()).andExpect(status().isNotFound());
 	}
-	// m.d.tus.server.TusFileUploadService :
-	// Unable to process request PATCH
-	// http://localhost:8080/api/upload.
-	// Sent response status 404 with message
-	// "The upload for path /api/upload and owner null was not found."
 
-	@Disabled
 	@DisplayName("A POST request should have a Content-Length header with value 0 and no content")
 	@Test
 	void test12() throws Exception {
 		mockMvc.perform(post(route).header("Tus-Resumable", "1.0.0").content("dummy")).andDo(print())
 				.andExpect(status().isBadRequest());
 	}
-	// m.d.tus.server.TusFileUploadService :
-	// Unable to process request POST http://localhost:8080/api/upload.
-	// Sent response status 400 with message
-	// "A POST request should have a Content-Length header with value 0 and no
-	// content"
 
-	@Disabled
 	@DisplayName("The Content-Type header must contain value application/offset+octet-stream")
 	@Test
 	void test13() throws Exception {
@@ -111,7 +97,6 @@ class MockMvcTusFileUploadControllerTest {
 
 		mockMvc.perform(patch(location).header("Tus-Resumable", "1.0.0").header("Upload-Offset", "0")
 				.content("hello".getBytes(StandardCharsets.UTF_8))).andExpect(status().isNotAcceptable());
-
 	}
 
 	@Disabled("getting Content-Type:\"application/offset+octet-stream;charset=UTF-8\"")
@@ -134,15 +119,12 @@ class MockMvcTusFileUploadControllerTest {
 				"application/offset+octet-stream")).andExpect(status().isConflict());
 	}
 
-	@Disabled
-	@DisplayName("Error message = No valid value was found in headers Upload-Length and Upload-Defer-Length\r\n"
-			+ "Headers = [Vary:\"Origin\", \"Access-Control-Request-Method\", \"Access-Control-Request-Headers\", Tus-Resumable:\"1.0.0\", Content-Length:\"0\", Access-Control-Expose-Headers:\"Location,Upload-Offset,Upload-Length\"]")
+	@DisplayName("Error message = No valid value was found in headers Upload-Length and Upload-Defer-Length")
 	@Test
 	void test2() throws Exception {
 		mockMvc.perform(post(route).header("Tus-Resumable", "1.0.0")).andDo(print()).andExpect(status().isBadRequest());
 	}
 
-	@Disabled
 	@DisplayName("Tus response to OPTIONS")
 	@Test
 	void test3() throws Exception {
@@ -159,7 +141,6 @@ class MockMvcTusFileUploadControllerTest {
 
 	}
 
-	@Disabled
 	@DisplayName("Known length")
 	@Test
 	void test4() throws Exception {
@@ -169,8 +150,7 @@ class MockMvcTusFileUploadControllerTest {
 		;
 	}
 
-	@Disabled
-	@DisplayName("Specify Deferred length, perform HEAD, PATCH, HEAD")
+	@DisplayName("Perform HEAD, PATCH, HEAD")
 	@Test
 	void test5() throws Exception {
 		// NOTE: Upload-Defer-Length as a flag, not a length
@@ -204,7 +184,6 @@ class MockMvcTusFileUploadControllerTest {
 
 	}
 
-	@Disabled
 	@DisplayName("Invalid PATCH without payload is not accepted")
 	@Test
 	void test6() throws Exception {
@@ -217,18 +196,6 @@ class MockMvcTusFileUploadControllerTest {
 		mockMvc.perform(patch(location).header("Tus-Resumable", "1.0.0").header("Upload-Offset", "0"))
 				.andExpect(status().isNotAcceptable());
 	}
-
-	// NOTE: the Content-Length mismatch → 409
-	// client sees:
-	// "The request was aborted: The request was canceled."
-	// Content-Length mismatch
-	// is not easy to trigger with RestTemplate or MockMVC
-
-	// : Unable to lock upload for request URI
-	// /api/upload/0efb19b1-4f53-4ccf-96e1-110f79989b4b
-	// me.desair.tus.server.exception.UploadAlreadyLockedException: The upload
-	// /api/upload/0efb19b1-4f53-4ccf-96e1-110f79989b4b is already locked
-	@Disabled
 
 	@DisplayName("Race condition: Unable to lock upload for request URI - The upload is already locked")
 	@Test
