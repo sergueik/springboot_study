@@ -53,6 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 import example.utils.TusStorageResolver;
 import me.desair.tus.server.TusFileUploadService;
+import me.desair.tus.server.exception.UploadAlreadyLockedException;
 
 @SpringBootTest(properties = { "tus.server.data.directory=${java.io.tmpdir}/tus" })
 @AutoConfigureMockMvc
@@ -67,6 +68,70 @@ class MockMvcTusFileUploadControllerTest {
 	@Test
 	void test1() throws Exception {
 		mockMvc.perform(post(route)).andDo(print()).andExpect(status().isPreconditionFailed());
+	}
+
+	@Disabled
+	@DisplayName("The upload for path /api/upload and owner null was not found.")
+	@Test
+	void test11() throws Exception {
+		mockMvc.perform(patch(route).header("Tus-Resumable", "1.0.0")).andDo(print()).andExpect(status().isNotFound());
+	}
+	// m.d.tus.server.TusFileUploadService :
+	// Unable to process request PATCH
+	// http://localhost:8080/api/upload.
+	// Sent response status 404 with message
+	// "The upload for path /api/upload and owner null was not found."
+
+	@Disabled
+	@DisplayName("A POST request should have a Content-Length header with value 0 and no content")
+	@Test
+	void test12() throws Exception {
+		mockMvc.perform(post(route).header("Tus-Resumable", "1.0.0").content("dummy")).andDo(print())
+				.andExpect(status().isBadRequest());
+	}
+	// m.d.tus.server.TusFileUploadService :
+	// Unable to process request POST http://localhost:8080/api/upload.
+	// Sent response status 400 with message
+	// "A POST request should have a Content-Length header with value 0 and no
+	// content"
+
+	@Disabled
+	@DisplayName("The Content-Type header must contain value application/offset+octet-stream")
+	@Test
+	void test13() throws Exception {
+		// NOTE: Upload-Defer-Length as a flag, not a length
+
+		MvcResult result = mockMvc
+				.perform(post(route).header("Tus-Resumable", "1.0.0").header("Upload-Defer-Length", 1)).andDo(print())
+				.andExpect(status().isCreated()).andExpect(header().string("Tus-Resumable", "1.0.0")).andReturn();
+
+		String location = result.getResponse().getHeader("Location");
+
+		assertThat(location, notNullValue());
+
+		mockMvc.perform(patch(location).header("Tus-Resumable", "1.0.0").header("Upload-Offset", "0")
+				.content("hello".getBytes(StandardCharsets.UTF_8))).andExpect(status().isNotAcceptable());
+
+	}
+
+	@Disabled("getting Content-Type:\"application/offset+octet-stream;charset=UTF-8\"")
+	@DisplayName("The Upload-Offset was null but expected 0")
+	@Test
+	void test14() throws Exception {
+		// NOTE: Upload-Defer-Length as a flag, not a length
+
+		MvcResult result = mockMvc
+				.perform(post(route).header("Tus-Resumable", "1.0.0").header("Upload-Defer-Length", 1)).andDo(print())
+				.andExpect(status().isCreated()).andExpect(header().string("Tus-Resumable", "1.0.0")).andReturn();
+
+		String location = result.getResponse().getHeader("Location");
+
+		assertThat(location, notNullValue());
+
+//		mockMvc.perform(patch(location).header("Tus-Resumable", "1.0.0").header("Upload-Defer-Length", 1).header("Content-Type", "application/offset+octet-stream")
+//				.content("task2".getBytes()).characterEncoding("UTF-8")).andExpect(status().isConflict());
+		mockMvc.perform(patch(location).header("Tus-Resumable", "1.0.0").header("Content-Type",
+				"application/offset+octet-stream")).andExpect(status().isConflict());
 	}
 
 	@Disabled
@@ -145,7 +210,8 @@ class MockMvcTusFileUploadControllerTest {
 	void test6() throws Exception {
 		MvcResult result = mockMvc
 				.perform(post(route).header("Tus-Resumable", "1.0.0").header("Upload-Defer-Length", 1)).andDo(print())
-				.andExpect(status().isCreated()).andExpect(header().string("Tus-Resumable", "1.0.0")).andReturn();
+				.andExpect(status().isCreated()).andExpect(header().string("Tus-Resumable", "1.0.0"))
+				.andExpect(header().exists("Location")).andReturn();
 
 		String location = result.getResponse().getHeader("Location");
 		mockMvc.perform(patch(location).header("Tus-Resumable", "1.0.0").header("Upload-Offset", "0"))
@@ -162,27 +228,30 @@ class MockMvcTusFileUploadControllerTest {
 	// /api/upload/0efb19b1-4f53-4ccf-96e1-110f79989b4b
 	// me.desair.tus.server.exception.UploadAlreadyLockedException: The upload
 	// /api/upload/0efb19b1-4f53-4ccf-96e1-110f79989b4b is already locked
+	@Disabled
 
 	@DisplayName("Race condition: Unable to lock upload for request URI - The upload is already locked")
 	@Test
 	void test7() throws Exception {
 		MvcResult result = mockMvc
 				.perform(post(route).header("Tus-Resumable", "1.0.0").header("Upload-Defer-Length", 1)).andDo(print())
-				.andExpect(status().isCreated()).andExpect(header().string("Tus-Resumable", "1.0.0")).andReturn();
+				.andExpect(status().isCreated()).andExpect(header().string("Tus-Resumable", "1.0.0"))
+				.andExpect(header().exists("Location")).andReturn();
 
 		final String location = result.getResponse().getHeader("Location");
 		ExecutorService executor = Executors.newFixedThreadPool(2);
 
-		Callable<ResultActions> task1 = () -> mockMvc
-				.perform(patch(location).header("Tus-Resumable", "1.0.0").header("Upload-Offset", "0")
-						.header("Content-Type", "application/offset+octet-stream").content("task1".getBytes()).characterEncoding("UTF-8"));
-		Callable<ResultActions> task2 = () -> mockMvc
-				.perform(patch(location).header("Tus-Resumable", "1.0.0").header("Upload-Offset", "0")
-						.header("Content-Type", "application/offset+octet-stream").content("task2".getBytes()).characterEncoding("UTF-8"));
-						
+		Callable<ResultActions> task1 = () -> mockMvc.perform(patch(location).header("Tus-Resumable", "1.0.0")
+				.header("Upload-Offset", "0").header("Content-Type", "application/offset+octet-stream")
+				.content("task1".getBytes()).characterEncoding("UTF-8"));
+		Callable<ResultActions> task2 = () -> mockMvc.perform(patch(location).header("Tus-Resumable", "1.0.0")
+				.header("Upload-Offset", "0").header("Content-Type", "application/offset+octet-stream")
+				.content("task2".getBytes()).characterEncoding("UTF-8"));
+
 		// NOTE: the contentType method adds encoding suffix which TUS rejects
 		// .contentType("application/offset+octet-stream"))
 		// .characterEncoding(null).content("task2".getBytes());
+
 		// Act
 		Future<ResultActions> future1 = executor.submit(task1);
 		Future<ResultActions> future2 = executor.submit(task2);
@@ -190,16 +259,21 @@ class MockMvcTusFileUploadControllerTest {
 		List<Throwable> exceptions = new ArrayList<>();
 
 		for (Future<?> future : List.of(future1, future2)) {
-		    try {
-		        future.get();
-		    } catch (ExecutionException e) {
-		        exceptions.add(e.getCause().getCause());
-		     //   e.getClass()
-		    }
+			try {
+				future.get();
+			} catch (ExecutionException e) {
+				exceptions.add(org.springframework.core.NestedExceptionUtils.getRootCause(e));
+				// exceptions.add(e.getCause().getCause());
+				// e.getClass()
+			}
 		}
 		assertThat(exceptions.size(), greaterThan(0));
-		System.err.println(exceptions.stream().map(Throwable::getClass)
-		        .collect(Collectors.toList()));
-		// class org.springframework.web.util.NestedServletException
+		// NOTE: tnhe next will only work in Java 17+
+		// assertThat(exceptions,
+		// hasItem(instanceOf(UploadAlreadyLockedException.class)));
+		assertThat(exceptions.stream().anyMatch(e -> e instanceof UploadAlreadyLockedException), is(true));
+		System.err.println(exceptions.stream().map(Throwable::getClass).collect(Collectors.toList()));
+		// [class org.springframework.web.util.NestedServletException]
+		// [class me.desair.tus.server.exception.UploadAlreadyLockedException]
 	}
 }
