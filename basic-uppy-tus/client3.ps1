@@ -27,7 +27,7 @@ param(
 
 function sendfile {
   param(
-    [string]$file_path = (resolve-path 'data.txt'),
+    [byte[]] $data,
     [int] $chunk_size = 256,
     [int] $offset = 0,
     [string]$url = 'http://localhost:8085/basic/upload',
@@ -35,7 +35,6 @@ function sendfile {
   )
 
   
-  [byte[]]$data = getPayload -file_path $file_path -debug $debug
   if ($data.length -eq $offset) { 
     return $false	  
   }
@@ -199,6 +198,8 @@ function getLocation{
 write-host 'Getting upload location'
 $location = getLocation -debug $debug -url $url
 $url = 'http://localhost:8080' + $location
+$file_path = (resolve-path $filename)
+[byte[]]$data = getPayload -file_path $file_path -debug $debug
 
 $offset  = 0 
 $status = $true
@@ -206,7 +207,7 @@ while ($status) {
   if ($debug) {
     write-host ('send the {0} bytes to {1}' -f $chunk_size, $url )
   }
-  $status = sendfile -url $url -file_path (resolve-path $filename) -debug $debug -offset $offset 
+  $status = sendfile -url $url -data $data -debug $debug -offset $offset 
   $offset = getHead -url $url -debug $debug
 
   if ($debug) {
