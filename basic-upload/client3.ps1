@@ -26,12 +26,12 @@ param(
 
 function getPayload{
   param (
-    [string]$filePath = $null,
+    [string]$file_path = $null,
     [bool]$debug = $false
   )
   [String]$payload = ''
-  if(($filePath -ne $null ) -and ($filePath -ne '')){
-    $payload = [System.Text.Encoding]::GetEncoding('UTF-8').GetString([System.IO.File]::ReadAllBytes($filePath))
+  if(($file_path -ne $null ) -and ($file_path -ne '')){
+    $payload = [System.Text.Encoding]::GetEncoding('UTF-8').GetString([System.IO.File]::ReadAllBytes($file_path))
   }
   if ($debug){
     write-host ('payload:' + [char]10 + $payload)
@@ -41,7 +41,7 @@ function getPayload{
 
 function sendfile {
   param(
-    [string]$filePath = (resolve-path 'data.txt'),
+    [string]$file_path = (resolve-path 'data.txt'),
     [string]$boundary = [System.Guid]::NewGuid().ToString(),
     [string]$url = 'http://localhost:8085/basic/upload',
     [System.Collections.Hashtable]$params = @{
@@ -54,8 +54,8 @@ function sendfile {
   )
   [string]$result = $null
   $date = get-date -format 'yyyy-MM-dd HH:mm'
-  $filename = ($filePath -replace '^.*\\', '') + '_' + ($date -replace '[\-: ]', '_')
-  [String]$payload = getPayload -filePath $filePath -debug $debug
+  $filename = ($file_path -replace '^.*\\', '') + '_' + ($date -replace '[\-: ]', '_')
+  [String]$payload = getPayload -file_path $file_path -debug $debug
 
   $LF = "`r`n";
   $B = '--' + $boundary
@@ -144,7 +144,7 @@ function sendfile {
 }
 
 [bool]$debug_flag = [bool]$psboundparameters['debug'].ispresent
-$result = sendfile -url $url -filePath $datafile -debug $debug_flag
+$result = sendfile -url $url -file_path $datafile -debug $debug_flag
 if ([bool]$psboundparameters['print'].ispresent) {
   write-output ('The sendfile result is:{1}{0}' -f $result,[char]10)
 }

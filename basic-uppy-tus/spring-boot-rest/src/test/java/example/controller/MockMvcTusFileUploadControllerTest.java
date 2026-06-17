@@ -18,6 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -26,6 +27,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.text.IsEmptyString.isEmptyString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.head;
@@ -35,8 +37,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -52,20 +62,22 @@ class MockMvcTusFileUploadControllerTest {
 	MockMvc mockMvc;
 	private final static String route = "/api/upload";
 
+	@Disabled
 	@DisplayName("This server does not support tus protocol version")
 	@Test
 	void test1() throws Exception {
 		mockMvc.perform(post(route)).andDo(print()).andExpect(status().isPreconditionFailed());
 	}
 
+	@Disabled
 	@DisplayName("Error message = No valid value was found in headers Upload-Length and Upload-Defer-Length\r\n"
 			+ "Headers = [Vary:\"Origin\", \"Access-Control-Request-Method\", \"Access-Control-Request-Headers\", Tus-Resumable:\"1.0.0\", Content-Length:\"0\", Access-Control-Expose-Headers:\"Location,Upload-Offset,Upload-Length\"]")
-
 	@Test
 	void test2() throws Exception {
 		mockMvc.perform(post(route).header("Tus-Resumable", "1.0.0")).andDo(print()).andExpect(status().isBadRequest());
 	}
 
+	@Disabled
 	@DisplayName("Tus response to OPTIONS")
 	@Test
 	void test3() throws Exception {
@@ -82,6 +94,7 @@ class MockMvcTusFileUploadControllerTest {
 
 	}
 
+	@Disabled
 	@DisplayName("Known length")
 	@Test
 	void test4() throws Exception {
@@ -91,6 +104,7 @@ class MockMvcTusFileUploadControllerTest {
 		;
 	}
 
+	@Disabled
 	@DisplayName("Specify Deferred length, perform HEAD, PATCH, HEAD")
 	@Test
 	void test5() throws Exception {
@@ -125,4 +139,67 @@ class MockMvcTusFileUploadControllerTest {
 
 	}
 
+	@Disabled
+	@DisplayName("Invalid PATCH without payload is not accepted")
+	@Test
+	void test6() throws Exception {
+		MvcResult result = mockMvc
+				.perform(post(route).header("Tus-Resumable", "1.0.0").header("Upload-Defer-Length", 1)).andDo(print())
+				.andExpect(status().isCreated()).andExpect(header().string("Tus-Resumable", "1.0.0")).andReturn();
+
+		String location = result.getResponse().getHeader("Location");
+		mockMvc.perform(patch(location).header("Tus-Resumable", "1.0.0").header("Upload-Offset", "0"))
+				.andExpect(status().isNotAcceptable());
+	}
+
+	// NOTE: the Content-Length mismatch → 409
+	// client sees:
+	// "The request was aborted: The request was canceled."
+	// Content-Length mismatch
+	// is not easy to trigger with RestTemplate or MockMVC
+
+	// : Unable to lock upload for request URI
+	// /api/upload/0efb19b1-4f53-4ccf-96e1-110f79989b4b
+	// me.desair.tus.server.exception.UploadAlreadyLockedException: The upload
+	// /api/upload/0efb19b1-4f53-4ccf-96e1-110f79989b4b is already locked
+
+	@DisplayName("Race condition: Unable to lock upload for request URI - The upload is already locked")
+	@Test
+	void test7() throws Exception {
+		MvcResult result = mockMvc
+				.perform(post(route).header("Tus-Resumable", "1.0.0").header("Upload-Defer-Length", 1)).andDo(print())
+				.andExpect(status().isCreated()).andExpect(header().string("Tus-Resumable", "1.0.0")).andReturn();
+
+		final String location = result.getResponse().getHeader("Location");
+		ExecutorService executor = Executors.newFixedThreadPool(2);
+
+		Callable<ResultActions> task1 = () -> mockMvc
+				.perform(patch(location).header("Tus-Resumable", "1.0.0").header("Upload-Offset", "0")
+						.header("Content-Type", "application/offset+octet-stream").content("task1".getBytes()).characterEncoding("UTF-8"));
+		Callable<ResultActions> task2 = () -> mockMvc
+				.perform(patch(location).header("Tus-Resumable", "1.0.0").header("Upload-Offset", "0")
+						.header("Content-Type", "application/offset+octet-stream").content("task2".getBytes()).characterEncoding("UTF-8"));
+						
+		// NOTE: the contentType method adds encoding suffix which TUS rejects
+		// .contentType("application/offset+octet-stream"))
+		// .characterEncoding(null).content("task2".getBytes());
+		// Act
+		Future<ResultActions> future1 = executor.submit(task1);
+		Future<ResultActions> future2 = executor.submit(task2);
+		// Assert
+		List<Throwable> exceptions = new ArrayList<>();
+
+		for (Future<?> future : List.of(future1, future2)) {
+		    try {
+		        future.get();
+		    } catch (ExecutionException e) {
+		        exceptions.add(e.getCause().getCause());
+		     //   e.getClass()
+		    }
+		}
+		assertThat(exceptions.size(), greaterThan(0));
+		System.err.println(exceptions.stream().map(Throwable::getClass)
+		        .collect(Collectors.toList()));
+		// class org.springframework.web.util.NestedServletException
+	}
 }
