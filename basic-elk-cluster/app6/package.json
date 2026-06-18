@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "elastic-apm-node": "^3.42.0",
+    "elastic-apm-node": "^4.8.0",
     "cors": "^2.8.5",
     "express": "^4.16.3",
     "request": "^2.88.0"
