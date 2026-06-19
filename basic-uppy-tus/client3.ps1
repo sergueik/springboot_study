@@ -34,12 +34,12 @@ function sendfile {
     [bool] $debug = $true
   )
 
-  
-  if ($data.length -eq $offset) { 
-    return $false	  
+
+  if ($data.length -eq $offset) {
+    return $false	
   }
   if ($chunk_size -gt $data.length - $offset) {
-    $chunk_size = $data.length - $offset 
+    $chunk_size = $data.length - $offset
   }
   [byte[]] $payload = [byte[]]::new($chunk_size)
   [System.Array]::Copy($data, $offset, $payload, 0, $chunk_size)
@@ -200,21 +200,16 @@ function finalize {
     [bool] $debug = $true
   )
 
-  [String]$payload = @{'uploadId' = $uploadId } | convertto-json 
-  if ($debug) { 
+  [String]$payload = @{'uploadId' = $uploadId } | convertto-json
+  if ($debug) {
     write-host ('connecting to {0}' -f $url)
   }
   $webRequest = [System.Net.WebRequest]::Create($url)
   $webRequest.Method = 'POST'
-  $headers = @{ 'Tus-Resumable' = '1.0.0'; 'Upload-Defer-Length' = '1' ; 'Content-Type' = 'application/json'}
 
-  [System.Collections.Specialized.NameValueCollection] $obj = new-object System.Collections.Specialized.NameValueCollection
-  $headers.Keys | foreach-object { $key = $_; $value = $headers.Item($key ) ; $obj.Add($key, $value) }
-
-  # $webRequest.Headers.Add($obj)
-  # Note: The 'Content-Type' header must be modified using the appropriate property or method.
   # https://learn.microsoft.com/en-us/dotnet/api/system.net.webrequest.contenttype?view=netframework-4.5
   $webRequest.ContentType = 'application/json'
+
   [System.IO.Stream]$requestStream = $webRequest.GetRequestStream()
   [byte[]]$payloadBytes = [System.Text.Encoding]::GetEncoding('ASCII').GetBytes($payload)
   $requestStream.Write($payloadBytes, 0, $payloadBytes.Length)
@@ -252,20 +247,14 @@ function validate {
     [bool] $debug = $true
   )
 
-  [String]$payload = @{'uploadId' = $uploadId; 'hash' = $hash } | convertto-json 
-  if ($debug) { 
+  [String]$payload = @{'uploadId' = $uploadId; 'hash' = $hash } | convertto-json
+  if ($debug) {
     write-host ('connecting to {0}' -f $url)
   }
   $webRequest = [System.Net.WebRequest]::Create($url)
   $webRequest.Method = 'POST'
-  $headers = @{ 'Tus-Resumable' = '1.0.0'; 'Upload-Defer-Length' = '1' ; 'Content-Type' = 'application/json'}
 
-  [System.Collections.Specialized.NameValueCollection] $obj = new-object System.Collections.Specialized.NameValueCollection
-  $headers.Keys | foreach-object { $key = $_; $value = $headers.Item($key ) ; $obj.Add($key, $value) }
-
-  # Note: The 'Content-Type' header must be modified using the appropriate property or method.
   # https://learn.microsoft.com/en-us/dotnet/api/system.net.webrequest.contenttype?view=netframework-4.5
-  # $webRequest.Headers.Add($obj)
   $webRequest.ContentType = 'application/json'
   [System.IO.Stream]$requestStream = $webRequest.GetRequestStream()
   [byte[]]$payloadBytes = [System.Text.Encoding]::GetEncoding('ASCII').GetBytes($payload)
@@ -302,7 +291,7 @@ function checksum_file {
   )
   # https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha256cryptoserviceprovider?view=netframework-4.5
   # https://learn-powershell.net/2013/03/25/use-powershell-to-calculate-the-hash-of-a-file/
-  return [System.BitConverter]::ToString((new-object -TypeName 'System.Security.Cryptography.SHA256CryptoServiceProvider').ComputeHash([System.IO.File]::ReadAllBytes((get-item -path $file_path).FullName)))
+  return ( [System.BitConverter]::ToString((new-object -TypeName 'System.Security.Cryptography.SHA256CryptoServiceProvider').ComputeHash([System.IO.File]::ReadAllBytes((get-item -path $file_path).FullName))) -replace '-', '' )
 }
 
 
@@ -317,20 +306,21 @@ $url = 'http://localhost:8080' + $location
 $file_path = (resolve-path $filename)
 [byte[]]$data = getPayload -file_path $file_path -debug $debug
 
-$offset  = 0 
+$offset  = 0
 $status = $true
-while ($status) { 
+while ($status) {
   if ($debug) {
     write-host ('send the {0} bytes to {1}' -f $chunk_size, $url )
   }
-  $status = sendfile -url $url -data $data -debug $debug -offset $offset 
+  $status = sendfile -url $url -data $data -debug $debug -offset $offset
   $offset = getHead -url $url -debug $debug
 
   if ($debug) {
-    write-host ('new offset: {0}' -f $offset )
+    write-host ('new offset: {0} length: {1}' -f $offset, $data.Length )
   }
 }
-
+write-host 'Done'
+start-sleep -millisecond 1000
 finalize -uploadId $uploadId
 validate -uploadId $uploadId -hash (checksum_file -file_path $file_path)
 

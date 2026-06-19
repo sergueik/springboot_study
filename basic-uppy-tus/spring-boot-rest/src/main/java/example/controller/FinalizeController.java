@@ -49,7 +49,6 @@ public class FinalizeController {
 		try {
 			String uploadId = request.getUploadId();
 			data.put("uploadId", uploadId);
-			tusFileUploadService.
 			info = tusFileUploadService.getUploadInfo(String.format("/api/upload/%s", uploadId));
 			if (info == null) {
 				data.put("status", "NOT FOUND");
