@@ -26,7 +26,8 @@ import org.slf4j.LoggerFactory;
 import me.desair.tus.server.TusFileUploadService;
 import me.desair.tus.server.exception.TusException;
 import me.desair.tus.server.upload.UploadInfo;
-import example.dto.FinalizeRequest;
+
+
 import example.dto.FinalizeRequest;
 
 @Controller
@@ -48,6 +49,7 @@ public class FinalizeController {
 		try {
 			String uploadId = request.getUploadId();
 			data.put("uploadId", uploadId);
+			tusFileUploadService.
 			info = tusFileUploadService.getUploadInfo(String.format("/api/upload/%s", uploadId));
 			if (info == null) {
 				data.put("status", "NOT FOUND");

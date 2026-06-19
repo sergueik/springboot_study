@@ -13,7 +13,8 @@
     "@uppy/tus": "^5.1.1",
     "@uppy/react": "5.2.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "js-sha256": "^0.11.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "4.3.4",

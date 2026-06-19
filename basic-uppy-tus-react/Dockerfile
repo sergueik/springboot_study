@@ -13,6 +13,7 @@ RUN cd /app \
     @uppy/tus@5.1.1 \
     @uppy/react@5.2.0 \
     @vitejs/plugin-react@4.3.4 \
+    js-sha256@0.11.0 \
     vite@5.4.19
 
 RUN npm run build
@@ -31,6 +32,8 @@ RUN mvn clean package -DskipTests -q
 
 FROM eclipse-temurin:11-jre-alpine as run
 COPY --from=builder /app/target/example.tus-java-server.jar /app/app.jar 
+# to save the generateed package-lock.json oncomment the following line
+# COPY --from=react_builder /app/package-lock.json /app
 
 RUN apk update \
     && apk add --update --no-cache curl \

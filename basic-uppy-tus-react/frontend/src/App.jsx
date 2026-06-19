@@ -3,9 +3,19 @@ import { useEffect } from 'react'
 import Uppy from '@uppy/core'
 import Dashboard from '@uppy/dashboard'
 import Tus from '@uppy/tus'
+import { sha256 } from 'js-sha256';
 
 import '@uppy/core/css/style.min.css'
 import '@uppy/dashboard/css/style.min.css'
+
+
+// NOTE: does not scale
+async function calculateHash(file) {
+  const buffer = await file.data.arrayBuffer();
+  return sha256(buffer);
+}
+
+// NOTE: on HTTP, browser hosted crypto.subtle is unavailable by design
 
 export default function App() {
 
@@ -26,9 +36,17 @@ export default function App() {
 
     uppy.use(Tus, {
       endpoint: '/api/upload',
+      // NOTE: the underlying library (tus-js-client) defaults to chunkSize: Infinity - send the entire file in a single PATCH request regardless of the size
       chunkSize: 5 * 1024 * 1024,
       retryDelays: [0,500,1000,3000]
     })
+
+    let cached;
+
+    uppy.on('file-added', (file) => {
+      cached = file;
+      console.dir(cached);
+    });
 
     uppy.on('upload-success', async (file, response) => {
       const uploadUrl = response?.uploadURL||response?.url;
@@ -40,8 +58,33 @@ export default function App() {
         },
         body: JSON.stringify({uploadId})
       });
-      const data = await res.json().catch(()=>({}));
+      const data = await res.json().catch(() => ({}));
       console.log('finalize: ', res.status, data );
+      // NOTE: there is a TUS protocol extension called Checksum that allows the client to send a checksum per chunk.
+
+     const rawFile = cached;
+
+     if (!rawFile) {
+       console.error("No file data available for hashing");
+       return;
+     }
+
+     const hash = await calculateHash(rawFile);
+
+     console.log('client side: ', hash);
+
+	    // const hash = 'hash';	   
+      const res2 =  await fetch('/api/uploads/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ uploadId, hash })
+      });
+
+      const data2 = await res2.json();
+
+      console.log('verify: ', res2.status, data2);    
     });
 
     return () => uppy.destroy()
