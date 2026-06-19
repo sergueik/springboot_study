@@ -1,4 +1,4 @@
-#Copyright (c) 2021-2023 Serguei Kouzmine
+#Copyright (c) 2026 Serguei Kouzmine
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
 #of this software and associated documentation files (the "Software"), to deal
@@ -192,11 +192,127 @@ function getLocation{
   }
   return $result
 }
+
+function finalize {
+  param(
+    [string]$url = 'http://localhost:8080/api/uploads/finalize',
+    [string]$uploadId = $null,
+    [bool] $debug = $true
+  )
+
+  [String]$payload = @{'uploadId' = $uploadId } | convertto-json 
+  if ($debug) { 
+    write-host ('connecting to {0}' -f $url)
+  }
+  $webRequest = [System.Net.WebRequest]::Create($url)
+  $webRequest.Method = 'POST'
+  $headers = @{ 'Tus-Resumable' = '1.0.0'; 'Upload-Defer-Length' = '1' ; 'Content-Type' = 'application/json'}
+
+  [System.Collections.Specialized.NameValueCollection] $obj = new-object System.Collections.Specialized.NameValueCollection
+  $headers.Keys | foreach-object { $key = $_; $value = $headers.Item($key ) ; $obj.Add($key, $value) }
+
+  # $webRequest.Headers.Add($obj)
+  # Note: The 'Content-Type' header must be modified using the appropriate property or method.
+  # https://learn.microsoft.com/en-us/dotnet/api/system.net.webrequest.contenttype?view=netframework-4.5
+  $webRequest.ContentType = 'application/json'
+  [System.IO.Stream]$requestStream = $webRequest.GetRequestStream()
+  [byte[]]$payloadBytes = [System.Text.Encoding]::GetEncoding('ASCII').GetBytes($payload)
+  $requestStream.Write($payloadBytes, 0, $payloadBytes.Length)
+  $requestStream.Close()
+  try {
+    # https://learn.microsoft.com/en-us/dotnet/api/system.net.webresponse?view=netframework-4.5
+    [System.Net.WebResponse] $response =  $webRequest.GetResponse()
+    [System.Net.HttpStatusCode]$statuscode = $response.StatusCode
+    if ($debug)  {
+      write-host ('Response status code: {0}' -f $statuscode.value__)
+    }
+    [System.IO.StreamReader] $responseStream = new-object System.IO.StreamReader($response.GetResponseStream())
+    $result = $responseStream.ReadToEnd()
+    $responseStream.Close()
+    if ($debug)  {
+      write-host ('Response:{1}{0}' -f $result, [char]10 )
+    }
+  } catch [Exception] {
+     # System.Management.Automation.ErrorRecord -> System.Net.WebException
+     $e = $_[0].Exception
+     write-host ('Exception:{3}Status: {0}{3}StatusCode: {1}{3}Message: {2}' -f  $e.Status, $e.Response.StatusCode, $e.Message,[char]10 )
+  } finally {
+    if ($response -ne $null){
+      $response.Dispose()
+    }
+  }
+  return $result
+}
+
+function validate {
+  param(
+    [string]$url = 'http://localhost:8080/api/uploads/validate',
+    [string]$uploadId = $null,
+    [string]$hash = $null,
+    [bool] $debug = $true
+  )
+
+  [String]$payload = @{'uploadId' = $uploadId; 'hash' = $hash } | convertto-json 
+  if ($debug) { 
+    write-host ('connecting to {0}' -f $url)
+  }
+  $webRequest = [System.Net.WebRequest]::Create($url)
+  $webRequest.Method = 'POST'
+  $headers = @{ 'Tus-Resumable' = '1.0.0'; 'Upload-Defer-Length' = '1' ; 'Content-Type' = 'application/json'}
+
+  [System.Collections.Specialized.NameValueCollection] $obj = new-object System.Collections.Specialized.NameValueCollection
+  $headers.Keys | foreach-object { $key = $_; $value = $headers.Item($key ) ; $obj.Add($key, $value) }
+
+  # Note: The 'Content-Type' header must be modified using the appropriate property or method.
+  # https://learn.microsoft.com/en-us/dotnet/api/system.net.webrequest.contenttype?view=netframework-4.5
+  # $webRequest.Headers.Add($obj)
+  $webRequest.ContentType = 'application/json'
+  [System.IO.Stream]$requestStream = $webRequest.GetRequestStream()
+  [byte[]]$payloadBytes = [System.Text.Encoding]::GetEncoding('ASCII').GetBytes($payload)
+  $requestStream.Write($payloadBytes, 0, $payloadBytes.Length)
+  $requestStream.Close()
+  try {
+	# https://learn.microsoft.com/en-us/dotnet/api/system.net.webresponse?view=netframework-4.5
+    [System.Net.WebResponse] $response =  $webRequest.GetResponse()
+    [System.Net.HttpStatusCode]$statuscode = $response.StatusCode
+    if ($debug)  {
+      write-host ('Response status code: {0}' -f $statuscode.value__)
+    }
+    [System.IO.StreamReader] $responseStream = new-object System.IO.StreamReader($response.GetResponseStream())
+    $result = $responseStream.ReadToEnd()
+    $responseStream.Close()
+    if ($debug)  {
+      write-host ('Response:{1}{0}' -f $result, [char]10 )
+    }
+  } catch [Exception] {
+     # System.Management.Automation.ErrorRecord -> System.Net.WebException
+     $e = $_[0].Exception
+     write-host ('Exception:{3}Status: {0}{3}StatusCode: {1}{3}Message: {2}' -f  $e.Status, $e.Response.StatusCode, $e.Message,[char]10 )
+  } finally {
+    if ($response -ne $null){
+      $response.Dispose()
+    }
+  }
+  return $result
+}
+
+function checksum_file {
+  param(
+    [string]$file_path
+  )
+  # https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha256cryptoserviceprovider?view=netframework-4.5
+  # https://learn-powershell.net/2013/03/25/use-powershell-to-calculate-the-hash-of-a-file/
+  return [System.BitConverter]::ToString((new-object -TypeName 'System.Security.Cryptography.SHA256CryptoServiceProvider').ComputeHash([System.IO.File]::ReadAllBytes((get-item -path $file_path).FullName)))
+}
+
+
+# https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.sha256cryptoserviceprovider?view=netframework-4.5
 [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
 
 
 write-host 'Getting upload location'
 $location = getLocation -debug $debug -url $url
+$uploadId = ($location -replace '^.+/', '')
 $url = 'http://localhost:8080' + $location
 $file_path = (resolve-path $filename)
 [byte[]]$data = getPayload -file_path $file_path -debug $debug
@@ -214,3 +330,7 @@ while ($status) {
     write-host ('new offset: {0}' -f $offset )
   }
 }
+
+finalize -uploadId $uploadId
+validate -uploadId $uploadId -hash (checksum_file -file_path $file_path)
+
