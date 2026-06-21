@@ -781,9 +781,67 @@ __MinIO__: A high-performance, S3-compatible object storage server that supports
 
 __Google Cloud Storage__ / __AWS S3__: Both have native APIs for resumable stream uploads and can be paired with an NGINX proxy to rate-limit traffic
 
-### See Also
-### See Also
 
+
+### CLI Test
+
+```powershell
+. .\client3.ps1 -filename .\test.bin
+```
+```text
+Getting upload location
+Response status code: 201
+Response:
+/api/upload/c4a8844e-9da2-48b2-8dd5-23b7153f42ba
+send the 256 bytes to http://localhost:8080/api/upload/c4a8844e-9da2-48b2-8dd5-23b7153f42ba
+payload:
+���ܾ�8�c���bY��ب���9'en^X���
+���=��7�G��z��ia������@tFiը���r^�@��ڵ�h�Ze�>7I�K�b
+�������ТCp�S�>V�$��ŗM�i�cI
+
+<�␦��N �1�nQ`�PV��Z�9��4�1A(HDЬ_;��$��7�N       qy�FJ<W�<�e�ĹRư��%���PQҊ�,3]�P�w+Eb��gp-��
+���E}�'����
+Response status code: 204
+Response: Upload-Offset: 256
+new offset: 256 length: 10240
+send the 256 bytes to http://localhost:8080/api/upload/c4a8844e-9da2-48b2-8dd5-23b7153f42ba
+payload:
+...
+new offset: 9984 length: 10240
+send the 256 bytes to http://localhost:8080/api/upload/c4a8844e-9da2-48b2-8dd5-23b7153f42ba
+payload:
+��h�*��̎m����{��+r_`C\�/&��r+�1P��j�:'Xo4����G�v
+...
+
+Response status code: 204
+Response: Upload-Offset: 10240
+Response status code: 204
+Response: Upload-Offset: 10240
+new offset: 10240 length: 10240
+send the 256 bytes to http://localhost:8080/api/upload/c4a8844e-9da2-48b2-8dd5-23b7153f42ba
+Response status code: 204
+Response: Upload-Offset: 10240
+new offset: 10240 length: 10240
+Done
+connecting to http://localhost:8080/api/uploads/finalize
+Response status code: 202
+Response:
+{"uploadId":"c4a8844e-9da2-48b2-8dd5-23b7153f42ba","status":"IN PROGRESS"}
+{"uploadId":"c4a8844e-9da2-48b2-8dd5-23b7153f42ba","status":"IN PROGRESS"}
+connecting to http://localhost:8080/api/uploads/validate
+Response status code: 200
+Response:
+{"uploadHash":"48FA43FD09B0911D95794A93AE7515830D97D0961C60078F20C569D73C0A8EE6","filename":"c4a8844e-9da2-48b2-8dd5-23b7153f42ba","uploadId":"c4a8844e-9da2-48b2-8dd5-23b7153f42ba","hash":"48FA43FD09B0911D95794A93AE7515830D97D0961C60078F20C569D73C0A8EE6","status":"OK"}
+{"uploadHash":"48FA43FD09B0911D95794A93AE7515830D97D0961C60078F20C569D73C0A8EE6","filename":"c4a8844e-9da2-48b2-8dd5-23b7153f42ba","uploadId":"c4a8844e-9da2-48b2-8dd5-23b7153f42ba","hash":"48FA43FD09B0911D95794A93AE7515830D97D0961C60078F20C569D73C0A8EE6","status":"OK"}
+```
+
+
+```sh
+docker pull tusproject/tusd:v2.9.1
+docker run -d -p 8080:8080 tusproject/tusd:v2.9.1
+```
+### See Also
+  * official Docker image for running a tus server is [tusproject/tusd](https://hub.docker.com/r/tusproject/tusd) . Images are alpine based
   * https://blog.rasc.ch/2019/06/upload-with-tus.html
   * https://tus.io/protocols/resumable-upload#core-protocol
   * https://aiundecided.com/posts/tus-uppy-resumable-upload-architecture/
