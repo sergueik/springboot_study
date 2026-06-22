@@ -70,6 +70,7 @@ public class ValidateController {
 	@PostMapping("/validate")
 	public ResponseEntity<?> uploadJson(@RequestBody ValidateRequest request) throws Exception {
 		UploadInfo info = null;
+		String uploadURI = null;
 		HttpStatus status = HttpStatus.BAD_REQUEST;
 		Map<String, Object> data = new HashMap<>();
 		data.put("status", "UNKNOWN");
@@ -79,12 +80,14 @@ public class ValidateController {
 			data.put("uploadId", uploadId);
 			data.put("uploadHash", uploadHash);
 			logger.info("Loading request: {}", data);
-			info = tusFileUploadService.getUploadInfo(String.format("/api/upload/%s", uploadId));
+			uploadURI = String.format("/api/upload/%s", uploadId);
+			info = tusFileUploadService.getUploadInfo(uploadURI);
 			if (info == null) {
 				data.put("status", "NOT FOUND");
 				status = HttpStatus.NOT_FOUND;
 			} else {
-				inputFile = tusStorageResolver.resolve(info).toAbsolutePath().toString();
+				inputFile = Paths.get(String.format("%s%starget%sdata%s%s", System.getProperty("user.dir"),
+						File.separator, File.separator, File.separator, uploadId)).toString();
 				digest();
 				data.put("filename", info.getFileName());
 				data.put("hash", this.hash);

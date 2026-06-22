@@ -24,8 +24,34 @@ CONTAINER=example
 docker container rm $CONTAINER
 docker run -d -p 8080:8080 --name $CONTAINER $IMAGE
 ```
+after the upload verify the file:
+```sh
+docker exec -it $CONTAINER sha256sum target/data/de59f17c-de11-4ccc-a892-66b944e450b6
+```
+```txt
+2886a81556fad0999ddff880956d6e452a45c09f73b8eedf5193e5fc0371d0d4  target/data/de59f17c-de11-4ccc-a892-66b944e450b6
+```
+compare to local:
+```sh
+sha256sum.exe  test.bin
+```
+```text
+2886a81556fad0999ddff880956d6e452a45c09f73b8eedf5193e5fc0371d0d4 *test.bin
+```
+```sh
+docker logs $CONTAINER
 
 ```
+
+```text
+026-06-22 21:51:42.306 DEBUG 1 --- [nio-8080-exec-6] o.s.w.f.CommonsRequestLoggingFilter      : Before request [POST /api/uploads/finalize, client=192.168.99.1, headers=[host:"192.168.99.101:8080", connection:"keep-alive", content-length:"51", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36", accept:"*/*", origin:"http://192.168.99.101:8080", referer:"http://192.168.99.101:8080/", accept-encoding:"gzip, deflate", accept-language:"en-US,en;q=0.9", Content-Type:"application/json;charset=UTF-8"]]
+2026-06-22 21:51:42.585  INFO 1 --- [nio-8080-exec-6] example.controller.FinalizeController    : move /tmp/tus/uploads/1d5e6618-b439-4425-a209-6d8e849441b4/data to /target/data/1d5e6618-b439-4425-a209-6d8e849441b4
+2026-06-22 21:51:42.602  INFO 1 --- [nio-8080-exec-6] example.controller.FinalizeController    : delete the upload /api/upload/1d5e6618-b439-4425-a209-6d8e849441b4
+2026-06-22 21:51:42.628  INFO 1 --- [nio-8080-exec-6] example.controller.FinalizeController    : cleanup
+2026-06-22 21:51:42.635  INFO 1 --- [nio-8080-exec-6] example.controller.FinalizeController    : Returning status: {filename=example.bin, uploadId=1d5e6618-b439-4425-a209-6d8e849441b4, status=OK}
+
+```
+```sh
 docker logs $CONRAINER
 ```
 
