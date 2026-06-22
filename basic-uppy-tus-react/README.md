@@ -1,6 +1,12 @@
 ### Info
+
+
 https://github.com/judsonc/react-upload-uppy
+
 https://uppy.io/
+
+### Background
+
 https://github.com/transloadit/uppy with over 10K commits
 
 ### Usage
@@ -98,3 +104,26 @@ curl -X POST -d '{"uploadId":"30dacb9b-1ca6-49cb-9b5f-fc1af9d740df"}' -H 'Conten
 ```sh
 dd if=/dev/urandom of=test.bin bs=1M count=50
 ```
+
+### Pause / Resume
+
+The dasbhoard has `pause` / `resume` functioality default styled in walkman button fashion:
+
+![Pause/Resume - Dashboard](screenshots/capture-pause-dashboard.png)
+
+it is possible to hide and provide a custom buttons
+
+![Pause / Resume - Custom](screenshots/capture-pause-custom.png)
+
+### See Also
+
+  * official Docker image for running a tus server is [tusproject/tusd](https://hub.docker.com/r/tusproject/tusd) . Images are alpine based
+  * https://blog.rasc.ch/2019/06/upload-with-tus.html
+  * https://tus.io/protocols/resumable-upload#core-protocol
+  * https://aiundecided.com/posts/tus-uppy-resumable-upload-architecture/
+  * [tus implementations](https://tus.io/implementations). Notably, GitHub's tus-protocol topic currently shows roughly 60+ public repositories implementing or extending the protocol across multiple languages
+  * `PATCH` Method for `HTTP` [RFC5789](https://www.rfc-editor.org/info/rfc5789/)
+
+### Author
+
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

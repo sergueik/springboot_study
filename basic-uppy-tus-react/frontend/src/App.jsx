@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 import Uppy from '@uppy/core'
 import Dashboard from '@uppy/dashboard'
@@ -19,14 +19,27 @@ async function calculateHash(file) {
 
 export default function App() {
 
+  const uppyRef = useRef(null);
+  const pauseUploads = () => {
+    uppyRef.current?.pauseAll();
+  };
+  
+  const resumeUploads = () => {
+    uppyRef.current?.resumeAll();
+  };
+
   useEffect(() => {
 
     const uppy = new Uppy({ autoProceed: false })
 
+    uppyRef.current = uppy;
+
     uppy.use(Dashboard, {
       inline: true,
       target: '#uppy',
-      proudlyDisplayPoweredByUppy: false
+      proudlyDisplayPoweredByUppy: false,
+      showProgressDetails: false,
+      hidePauseResumeButtons: true,
     })
 
     uppy.setMeta({
@@ -93,6 +106,13 @@ export default function App() {
   return (
     <div style={{ padding: 20 }}>
       <h2>Upload Demo</h2>
+      <button onClick={pauseUploads}>
+        Pause
+      </button>
+  
+      <button onClick={resumeUploads}>
+        Resume
+      </button>	  
       <div id="uppy" />
     </div>
   )
