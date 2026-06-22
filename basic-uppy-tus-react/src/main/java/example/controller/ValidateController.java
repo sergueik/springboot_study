@@ -88,12 +88,18 @@ public class ValidateController {
 			} else {
 				inputFile = Paths.get(String.format("%s%starget%sdata%s%s", System.getProperty("user.dir"),
 						File.separator, File.separator, File.separator, uploadId)).toString();
+				logger.info("validate hash of the upload {} {}", inputFile, uploadHash);
 				digest();
 				data.put("filename", info.getFileName());
 				data.put("hash", this.hash);
+				
 				if (this.hash.equalsIgnoreCase(uploadHash)) {
 					data.put("status", "OK");
 					status = HttpStatus.OK;
+					logger.info("delete the upload {}", uploadURI);
+					tusFileUploadService.deleteUpload(uploadURI);
+					logger.info("cleanup");
+					tusFileUploadService.cleanup();
 				} else {
 					data.put("status", "MISMATCH");
 					status = HttpStatus.CONFLICT;

@@ -78,10 +78,6 @@ public class FinalizeController {
 				mkdirs(targetFilePath.toFile());
 				logger.info("move {} to {}", inputFilePath, targetFilePath);
 				Files.move(inputFilePath, targetFilePath, StandardCopyOption.REPLACE_EXISTING);
-				logger.info("delete the upload {}", uploadURI);
-				tusFileUploadService.deleteUpload(uploadURI);
-				logger.info("cleanup");
-				tusFileUploadService.cleanup();
 			}
 			logger.info("Returning status: {}", data);
 			return ResponseEntity.status(status).body(data);
