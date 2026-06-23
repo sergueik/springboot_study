@@ -3,6 +3,8 @@
 
 https://github.com/judsonc/react-upload-uppy
 
+![PATCH HEAD Strategy](screenshots/c91572d3-f8bb-485c-a6c7-cb7a13249732.png)
+
 https://uppy.io/
 
 ### Background
@@ -115,7 +117,106 @@ it is possible to hide and provide a custom buttons
 
 ![Pause / Resume - Custom](screenshots/capture-pause-custom.png)
 
+### Docker Compose with Vendor Server
+```sh
+mkdir $USERPROFILE/Documents/tus_data
+```
+```sh
+docker-compose up -d --build
+```
+
+health check
+
+```sh
+curl -s http://192.168.99.101:8080/files
+```
+```text
+method not allowed
+```
+this is expected — tusd does not list uploads
+
+* follow the protocol:
+```sh
+curl -vs -X POST -H 'Tus-Resumable: 1.0.0' -H 'Upload-Length: 0' http://192.168.99.101:8080/files
+* Uses proxy env variable no_proxy == '192.168.99.100,192.168.99.101,192.168.99.102'
+*   Trying 192.168.99.101:8080...
+* Connected to 192.168.99.101 (192.168.99.101) port 8080 (#0)
+> POST /files HTTP/1.1
+> Host: 192.168.99.101:8080
+> User-Agent: curl/7.84.0
+> Accept: */*
+> Tus-Resumable: 1.0.0
+> Upload-Length: 0
+>
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 201 Created
+< Location: http://192.168.99.101:8080/files/bd0413160e9b645a6882c2617bd52caa
+< Tus-Resumable: 1.0.0
+< X-Content-Type-Options: nosniff
+< Date: Mon, 22 Jun 2026 23:58:38 GMT
+< Content-Length: 0
+```
+use the `docker-machine ip` address instead of `192.168.99.101` in the `frontend/src/App.jsx`
+
+`http://192.168.99.101:3000/`
+dev tools console log:
+
+```text
+index-22dXv-bu.js:74
+ HEAD http://192.168.99.101:8080/files/0f6e531… 500 (Internal Server Error)
+
+index-22dXv-bu.js:74
+ PATCH http://192.168.99.101:8080/files/4d3260f… net::ERR_CONNECTION_RESET
+```
+
+```sh
+docker container ls
+```
+```text
+CONTAINER ID        IMAGE                           COMMAND                  CREATED             STATUS              PORTS                    NAMES
+491298cfba58        basic-uppy-tus-react_frontend   "docker-entrypoint.s…"   7 minutes ago       Up 7 minutes        0.0.0.0:3000->3000/tcp   react_runtime
+a50005f94a2b        tusproject/tusd:v2.9.1          "/usr/local/share/do…"   7 minutes ago       Up 7 minutes        0.0.0.0:8080->8080/tcp   tusd_server
+
+```
+```sh
+docker container logs a500
+```
+```text
+2026/06/23 00:16:15.985927 level=INFO event=RequestIncoming method=PATCH path=b75472975df68e2bbc5b87e968daa006 requestId=""
+2026/06/23 00:16:15.998819 level=ERROR event=InternalServerError method=PATCH path=b75472975df68e2bbc5b87e968daa006 requestId="" id=b75472975df68e2bbc5b87e968daa006 message="link /data/b75472975df68e2bbc5b87e968daa006.lock.3461794582 /data/b75472975df68e2bbc5b87e968daa006.lock: operation not permitted"
+2026/06/23 00:16:16.001792 level=INFO event=ResponseOutgoing method=PATCH path=b75472975df68e2bbc5b87e968daa006 requestId="" id=b75472975df68e2bbc5b87e968daa006 status=500 body="ERR_INTERNAL_SERVER_ERROR: link /data/b75472975df68e2bbc5b87e968daa006.lock.3461794582 /data/b75472975df68e2bbc5b87e968daa006.lock: operation not permitted\n"
+
+```
+```sh
+ls /c/Users/$USERNAME/Documents/tus_data/ac9*
+```
+```text
+/c/Users/kouzm/Documents/tus_data/ac9e4151f6dd3cb6fda4e3d56dee20b2  /c/Users/kouzm/Documents/tus_data/ac9e4151f6dd3cb6fda4e3d56dee20b2.info[[O
+```
+It means tusd is trying to do atomic file locking using hard links, and the filesystem backing /data does NOT support it.
+
+mounted into a __Docker Toolbox__ VM.
+
+That means:
+
+VirtualBox shared folder (vboxsf)
+NOT a real Linux filesystem
+does NOT support:
+hard links
+some POSIX atomic rename semantics
+lock file strategies used by tusd
+
+So tusd crashes during PATCH when it tries:
+```sh
+ln /data/file.lock.tmp /data/file.lock
+```
+and gets:
+```text
+operation not permitted
+```
+
 ### See Also
+
 
   * official Docker image for running a tus server is [tusproject/tusd](https://hub.docker.com/r/tusproject/tusd) . Images are alpine based
   * https://blog.rasc.ch/2019/06/upload-with-tus.html

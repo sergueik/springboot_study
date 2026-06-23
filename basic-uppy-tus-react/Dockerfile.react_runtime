@@ -1,0 +1,28 @@
+FROM node:18.1.0-alpine AS react_builder
+
+WORKDIR /app
+
+COPY frontend/package*.json /app/
+
+RUN npm install
+
+COPY frontend/index.html frontend/vite.config.js /app/
+ADD frontend/src /app/src
+
+RUN npm run build
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY --from=react_builder /app/dist /app/dist
+
+RUN npm install -g serve
+
+# HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
+# CMD curl -f http://localhost:8080/ || exit 1
+
+EXPOSE 3000
+
+CMD ["serve", "-s", "dist", "-l", "3000"]
+
