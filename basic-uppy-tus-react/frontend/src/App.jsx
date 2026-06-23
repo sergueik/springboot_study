@@ -48,7 +48,7 @@ export default function App() {
     })
 
     uppy.use(Tus, {
-      endpoint: 'http://192.168.99.101:8080/files',
+      endpoint: '/api/upload',
       // NOTE: the underlying library (tus-js-client) defaults to chunkSize: Infinity - send the entire file in a single PATCH request regardless of the size
       chunkSize: 5 * 1024 * 1024,
       retryDelays: [0,500,1000,3000]
@@ -60,11 +60,11 @@ export default function App() {
       cached = file;
       console.dir(cached);
     });
-    /*
+
     uppy.on('upload-success', async (file, response) => {
       const uploadUrl = response?.uploadURL||response?.url;
       const uploadId = uploadUrl?.split('/').pop();
-      const res = await fetch ('http://192.168.99.101:8080/files/finalize',{
+      const res = await fetch ('/api/uploads/finalize',{
         method: 'POST',
         headers: {
           'Content-Type':'application/json'
@@ -87,7 +87,7 @@ export default function App() {
      console.log('client side: ', hash);
 
 	    // const hash = 'hash';	   
-      const res2 =  await fetch('http://192.168.99.101:8080/files/validate', {
+      const res2 =  await fetch('/api/uploads/validate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -99,7 +99,7 @@ export default function App() {
 
       console.log('verify: ', res2.status, data2);    
     });
-    */ 
+
     return () => uppy.destroy()
   }, [])
 

@@ -106,18 +106,50 @@ curl -X POST -d '{"uploadId":"30dacb9b-1ca6-49cb-9b5f-fc1af9d740df"}' -H 'Conten
 ```sh
 dd if=/dev/urandom of=test.bin bs=1M count=50
 ```
+At the end a few regular REST calls are made:
 
+![Finalize - Validate - 1](screenshots/capture-finalize-validate1.png)
+
+![Finalize - Validate - 2 ](screenshots/capture-finalize-validate2.png)
+
+leading baskend to move the upload session data into final position and clear the upload state:
+
+```text
+-52e4-4934-8e82-963deb16c268, client=192.168.99.1, headers=[host:"192.168.99.102:8080", connection:"keep-alive", content-length:"5242880", tus-resumable:"1.0.0", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36", upload-offset:"519045120", accept:"*/*", origin:"http://192.168.99.102:8080", referer:"http://192.168.99.102:8080/", accept-encoding:"gzip, deflate", accept-language:"en-US,en;q=0.9", Content-Type:"application/offset+octet-stream;charset=UTF-8"]]
+2026-06-23 14:09:11.200 DEBUG 1 --- [nio-8080-exec-4] o.s.w.f.CommonsRequestLoggingFilter      : Before request [POST /api/uploads/finalize, client=192.168.99.1, headers=[host:"192.168.99.102:8080", connection:"keep-alive", content-length:"51", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36", accept:"*/*", origin:"http://192.168.99.102:8080", referer:"http://192.168.99.102:8080/", accept-encoding:"gzip, deflate", accept-language:"en-US,en;q=0.9", Content-Type:"application/json;charset=UTF-8"]]
+2026-06-23 14:09:11.489  INFO 1 --- [nio-8080-exec-4] example.service.FinalizeService          : move /tmp/tus/uploads/7007a5d3-52e4-4934-8e82-963deb16c268/data to /target/data/7007a5d3-52e4-4934-8e82-963deb16c268
+2026-06-23 14:09:11.495  INFO 1 --- [nio-8080-exec-4] example.controller.FinalizeController    : Returning status: {filename=example.bin, uploadId=7007a5d3-52e4-4934-8e82-963deb16c268, status=OK}
+2026-06-23 14:09:11.507 DEBUG 1 --- [nio-8080-exec-4] o.s.w.f.CommonsRequestLoggingFilter      : After request [POST /api/uploads/finalize, client=192.168.99.1, headers=[host:"192.168.99.102:8080", connection:"keep-alive", content-length:"51", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36", accept:"*/*", origin:"http://192.168.99.102:8080", referer:"http://192.168.99.102:8080/", accept-encoding:"gzip, deflate", accept-language:"en-US,en;q=0.9", Content-Type:"application/json;charset=UTF-8"]]
+2026-06-23 14:09:19.790 DEBUG 1 --- [nio-8080-exec-5] o.s.w.f.CommonsRequestLoggingFilter      : Before request [POST /api/uploads/validate, client=192.168.99.1, headers=[host:"192.168.99.102:8080", connection:"keep-alive", content-length:"125", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36", accept:"*/*", origin:"http://192.168.99.102:8080", referer:"http://192.168.99.102:8080/", accept-encoding:"gzip, deflate", accept-language:"en-US,en;q=0.9", Content-Type:"application/json;charset=UTF-8"]]
+2026-06-23 14:09:19.797  INFO 1 --- [nio-8080-exec-5] example.controller.ValidateController    : Loading request: {uploadHash=3ac95eae554ed0a131ea5baad2c0d43e6829220f697ff3e237cf03ee7728f953, uploadId=7007a5d3-52e4-4934-8e82-963deb16c268, status=UNKNOWN}
+2026-06-23 14:09:19.800  INFO 1 --- [nio-8080-exec-5] example.controller.ValidateController    : validate hash of the upload /target/data/7007a5d3-52e4-4934-8e82-963deb16c268 3ac95eae554ed0a131ea5baad2c0d43e6829220f697ff3e237cf03ee7728f953
+2026-06-23 14:09:27.822  INFO 1 --- [nio-8080-exec-5] example.service.DigestService            : Digest input: /target/data/7007a5d3-52e4-4934-8e82-963deb16c268 hash: 3AC95EAE554ED0A131EA5BAAD2C0D43E6829220F697FF3E237CF03EE7728F953
+2026-06-23 14:09:27.823  INFO 1 --- [nio-8080-exec-5] example.service.DigestService            : Processed 524288000 bytes in 8023 ms
+2026-06-23 14:09:27.825  INFO 1 --- [nio-8080-exec-5] example.controller.ValidateController    : delete the upload /api/upload/7007a5d3-52e4-4934-8e82-963deb16c268
+2026-06-23 14:09:27.835  INFO 1 --- [nio-8080-exec-5] example.controller.ValidateController    : cleanup
+2026-06-23 14:09:27.841  INFO 1 --- [nio-8080-exec-5] example.controller.ValidateController    : Returning status: {uploadHash=3ac95eae554ed0a131ea5baad2c0d43e6829220f697ff3e237cf03ee7728f953, filename=example.bin, uploadId=7007a5d3-52e4-4934-8e82-963deb16c268, hash=3AC95EAE554ED0A131EA5BAAD2C0D43E6829220F697FF3E237CF03EE7728F953, status=OK}
+2026-06-23 14:09:27.843 DEBUG 1 --- [nio-8080-exec-5] o.s.w.f.CommonsRequestLoggingFilter      : After request [POST /api/uploads/validate
+```
 ### Pause / Resume
 
-The dasbhoard has `pause` / `resume` functioality default styled in walkman button fashion:
+The dashboard offers its own `pause` / `position` / `resume` transport panel - styled in an miniature walkman fashion:
 
 ![Pause/Resume - Dashboard](screenshots/capture-pause-dashboard.png)
 
-it is possible to hide and provide a custom buttons
+but it is entirely possible to hide and provide a custom skinned buttons
 
 ![Pause / Resume - Custom](screenshots/capture-pause-custom.png)
 
+which is actuallty a pure CSS manipulation
+
+![Pause / Resume - Both](screenshots/capture-pause-both.png)
+```css
+.uppy-StatusBar-actionCircleBtn svg {
+  display: none !important;
+}
+```
 ### Docker Compose with Vendor Server
+
 ```sh
 mkdir $USERPROFILE/Documents/tus_data
 ```
@@ -130,14 +162,21 @@ health check
 ```sh
 curl -s http://192.168.99.101:8080/files
 ```
+this will return
 ```text
 method not allowed
 ```
-this is expected — tusd does not list uploads
+this is expected — `tusd` does not list uploads
 
-* follow the protocol:
+* follow the protocol (headers are mandatory):
+
 ```sh
 curl -vs -X POST -H 'Tus-Resumable: 1.0.0' -H 'Upload-Length: 0' http://192.168.99.101:8080/files
+```
+
+this will provide important information about the created session through the response headers:
+
+```text
 * Uses proxy env variable no_proxy == '192.168.99.100,192.168.99.101,192.168.99.102'
 *   Trying 192.168.99.101:8080...
 * Connected to 192.168.99.101 (192.168.99.101) port 8080 (#0)
@@ -159,7 +198,10 @@ curl -vs -X POST -H 'Tus-Resumable: 1.0.0' -H 'Upload-Length: 0' http://192.168.
 use the `docker-machine ip` address instead of `192.168.99.101` in the `frontend/src/App.jsx`
 
 `http://192.168.99.101:3000/`
-dev tools console log:
+
+NOTE: The application will not work as designed if hosted on Windows host (HTFS does not support the hard links):
+
+examine Chrome Dev Tools console log:
 
 ```text
 index-22dXv-bu.js:74
@@ -185,28 +227,28 @@ docker container logs a500
 2026/06/23 00:16:15.985927 level=INFO event=RequestIncoming method=PATCH path=b75472975df68e2bbc5b87e968daa006 requestId=""
 2026/06/23 00:16:15.998819 level=ERROR event=InternalServerError method=PATCH path=b75472975df68e2bbc5b87e968daa006 requestId="" id=b75472975df68e2bbc5b87e968daa006 message="link /data/b75472975df68e2bbc5b87e968daa006.lock.3461794582 /data/b75472975df68e2bbc5b87e968daa006.lock: operation not permitted"
 2026/06/23 00:16:16.001792 level=INFO event=ResponseOutgoing method=PATCH path=b75472975df68e2bbc5b87e968daa006 requestId="" id=b75472975df68e2bbc5b87e968daa006 status=500 body="ERR_INTERNAL_SERVER_ERROR: link /data/b75472975df68e2bbc5b87e968daa006.lock.3461794582 /data/b75472975df68e2bbc5b87e968daa006.lock: operation not permitted\n"
-
 ```
+check the VFS 
 ```sh
 ls /c/Users/$USERNAME/Documents/tus_data/ac9*
 ```
 ```text
-/c/Users/kouzm/Documents/tus_data/ac9e4151f6dd3cb6fda4e3d56dee20b2  /c/Users/kouzm/Documents/tus_data/ac9e4151f6dd3cb6fda4e3d56dee20b2.info[[O
+/c/Users/kouzm/Documents/tus_data/ac9e4151f6dd3cb6fda4e3d56dee20b2  /c/Users/kouzm/Documents/tus_data/ac9e4151f6dd3cb6fda4e3d56dee20b2.info
 ```
-It means tusd is trying to do atomic file locking using hard links, and the filesystem backing /data does NOT support it.
+It means `tusd` is trying to do atomic file locking using hard links, and the filesystem backing /data does NOT support it.
 
 mounted into a __Docker Toolbox__ VM.
 
 That means:
 
-VirtualBox shared folder (vboxsf)
-NOT a real Linux filesystem
-does NOT support:
-hard links
-some POSIX atomic rename semantics
-lock file strategies used by tusd
+* VirtualBox shared folder (vboxsf)
+* this is __NOT__ a real Linux filesystem
+   + does NOT support:
+   + hard links
+   + lacks some POSIX atomic rename semantics
+lock file strategies used by `tusd`
 
-So tusd crashes during PATCH when it tries:
+So `tusd` crashes during PATCH when it tries:
 ```sh
 ln /data/file.lock.tmp /data/file.lock
 ```
@@ -222,8 +264,10 @@ operation not permitted
   * https://blog.rasc.ch/2019/06/upload-with-tus.html
   * https://tus.io/protocols/resumable-upload#core-protocol
   * https://aiundecided.com/posts/tus-uppy-resumable-upload-architecture/
-  * [tus implementations](https://tus.io/implementations). Notably, GitHub's tus-protocol topic currently shows roughly 60+ public repositories implementing or extending the protocol across multiple languages
+  * [tus implementations](https://tus.io/implementations). Notably, GitHub search `tus-protocol` topic currently shows roughly 60+ public repositories implementing or extending the protocol across multiple languages
+  * [tus-java-server](https://github.com/tomdesair/tus-java-server)
   * `PATCH` Method for `HTTP` [RFC5789](https://www.rfc-editor.org/info/rfc5789/)
+  * [Guide to Java FileChannel](https://www.baeldung.com/java-filechannel)
 
 ### Author
 
