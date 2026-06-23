@@ -11,4 +11,8 @@ public class FinalizeRequest {
 	public void setUploadId(String value) {
 		uploadId = value;
 	}
+
+	public FinalizeRequest(String uploadId) {
+		this.uploadId = uploadId;
+	}
 }

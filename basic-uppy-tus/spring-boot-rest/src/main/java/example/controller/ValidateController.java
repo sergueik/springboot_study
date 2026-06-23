@@ -44,13 +44,13 @@ public class ValidateController {
 	public ResponseEntity<?> uploadJson(@RequestBody ValidateRequest request) throws Exception {
 		UploadInfo info = null;
 		String uploadURI = null;
-		String hash = null;
+
 		HttpStatus status = HttpStatus.BAD_REQUEST;
-		Map<String, Object> data = new HashMap<>();
+		final Map<String, Object> data = new HashMap<>();
 		data.put("status", "UNKNOWN");
 		try {
-			String uploadId = request.getUploadId();
-			String uploadHash = request.getHash();
+			final String uploadId = request.getUploadId();
+			final String uploadHash = request.getHash();
 			data.put("uploadId", uploadId);
 			data.put("uploadHash", uploadHash);
 			logger.info("Loading request: {}", data);
@@ -60,10 +60,10 @@ public class ValidateController {
 				data.put("status", "NOT FOUND");
 				status = HttpStatus.NOT_FOUND;
 			} else {
-				String inputFile = Paths.get(String.format("%s%starget%sdata%s%s", System.getProperty("user.dir"),
+				final String inputFile = Paths.get(String.format("%s%starget%sdata%s%s", System.getProperty("user.dir"),
 						File.separator, File.separator, File.separator, uploadId)).toString();
 				logger.info("validate hash of the upload {} {}", inputFile, uploadHash);
-				hash = digestService.digest(inputFile);
+				final String hash = digestService.digest(inputFile);
 				data.put("filename", info.getFileName());
 				data.put("hash", hash);
 
