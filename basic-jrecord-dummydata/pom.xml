@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>example</groupId>
   <artifactId>generator</artifactId>
-  <version>0.13.0-SNAPSHOT</version>
+  <version>0.14.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>${project.groupId}:${project.artifactId}</name>
   <properties>
@@ -12,11 +12,8 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <finalName>${project.groupId}.${project.artifactId}</finalName>
     <java.version>11</java.version>
-    <!--
     <cb2xml.version>0.93.2</cb2xml.version>
-    <jrecord.version>0.93.2</jrecord.version> -->
-    <cb2xml.version>1.01.08</cb2xml.version>
-    <jrecord.version>0.93.3</jrecord.version>
+   <jrecord.version>0.90.2</jrecord.version>
     <gson.version>2.8.9</gson.version>
     <log4j-core.version>2.20.0</log4j-core.version>
     <slf4j.version>1.7.36</slf4j.version>
@@ -44,27 +41,6 @@
       <scope>test</scope>
       <version>${json-path.version}</version>
     </dependency>
-    <dependency>
-      <groupId>net.sf</groupId>
-      <artifactId>cb2xml</artifactId>
-      <version>${cb2xml.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.jrecord</groupId>
-      <artifactId>JRecord</artifactId>
-      <version>${jrecord.version}</version>
-    </dependency>
-    <!--
-    <dependency>
-      <groupId>net.sf.jrecord</groupId>
-      <artifactId>cb2xml</artifactId>
-      <version>${cb2xml.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.jrecord</groupId>
-      <artifactId>JRecord</artifactId>
-      <version>${jrecord.version}</version>
-    </dependency> -->
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
@@ -264,11 +240,42 @@ rem ${encoding}
     </plugins>
     <finalName>${finalName}</finalName>
   </build>
-  <!-- TODO: use "sourceforge" and "github" profiles -->
   <repositories>
     <repository>
-      <id>private-local</id>
-      <url>file:///${env.MAVEN_LOCAL_REPO}</url>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </repository>
+    <repository>
+      <id>maven-central</id>
+      <name>maven central repo</name>
+      <url>https://mvnrepository.com/repos/central</url>
+    </repository>
+    <repository>
+      <id>osgeo</id>
+      <name>osgeo repo</name>
+      <url>https://download.osgeo.org/webdav/geotools/</url>
+    </repository>
+    <repository>
+      <id>seasar</id>
+      <name>seasar repo</name>
+      <url>https://www.seasar.org/maven/maven2</url>
+    </repository>
+    <repository>
+      <id>jcenter</id>
+      <url>https://jcenter.bintray.com/</url>
+    </repository>
+    <repository>
+      <id>swt-repo</id>
+      <url>https://swt-repo.googlecode.com/svn/repo/</url>
+    </repository>
+    <repository>
+      <id>central</id>
+      <url>https://repo1.maven.org/maven2/</url>
+    </repository>
+    <repository>
+      <id>pentahoOmni</id>
+      <url>https://nexus.pentaho.org/content/groups/omni/</url>
     </repository>
   </repositories>
+  
 </project>

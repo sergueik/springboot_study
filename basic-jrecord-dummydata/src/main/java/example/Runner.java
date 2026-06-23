@@ -3,12 +3,6 @@ package example;
 /**
  * Copyright 2026 Serguei Kouzmine
  */
-import net.sf.JRecord.Details.AbstractLine;
-import net.sf.JRecord.IO.AbstractLineWriter;
-import net.sf.JRecord.IO.LineIOProvider;
-import net.sf.JRecord.JRecordInterface1;
-import net.sf.JRecord.def.IO.builders.ICobolIOBuilder;
-import net.sf.JRecord.Common.IFileStructureConstants;
 
 import java.io.File;
 import java.math.BigDecimal;

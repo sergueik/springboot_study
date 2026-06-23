@@ -10,6 +10,7 @@ import java.util.*;
 import java.io.*;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 // import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 // import org.junit.jupiter.api.Test;
@@ -44,6 +45,7 @@ public class IntegrationTest {
 		output = tempDir.resolve("output.json");
 	}
 
+	@Disabled
 	@DisplayName("Parse a binary file and a copybook, examine the fields")
 	@ParameterizedTest
 	@MethodSource("testData")
@@ -60,7 +62,7 @@ public class IntegrationTest {
 	    System.err.println(String.format("Verified value:  %s = %s", jsonPath, value));
 	}
 
-	// @Disabled
+	@Disabled
 	@DisplayName("Parse a binary file and a copybook, expect failure on invalid data")
 	@ParameterizedTest
 	@MethodSource("testData2")

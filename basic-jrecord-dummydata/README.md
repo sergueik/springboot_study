@@ -327,7 +327,33 @@ in repeated runs will observe:
 ```
 > NOTE, sometimes the `test2` will fail in assertThat(actual, is(expected)) throwing `AssertionError`, which is not a subclass of `Exception` in Java — it’s a subclass of `Error`
 
+### Troubleshooting
 
+```txt
+[ERROR] error reading C:\Users\kouzm\.m2\repository\net\sf\jrecord\0.90.2\jrecord-0.90.2.jar; zip END header not found
+```
+```sh
+ Directory of C:\Users\kouzm\.m2\repository\net\sf\jrecord\0.90.2
+
+06/23/2026  04:28 PM            25,372 jrecord-0.90.2.jar
+               1 File(s)         25,372 bytes
+               0 Dir(s)  106,373,591,040 bytes free
+```
+```sh
+unzip -ql C:\Users\kouzm\.m2\repository\net\sf\jrecord\0.90.2\jrecord-0.90.2.jar
+```
+```text
+[C:\Users\kouzm\.m2\repository\net\sf\jrecord\0.90.2\jrecord-0.90.2.jar]
+  End-of-central-directory signature not found.  Either this file is not
+  a zipfile, or it constitutes one disk of a multi-part archive.  In the
+  latter case the central directory and zipfile comment will be found on
+  the last disk(s) of this archive.
+
+```
+```cmd
+set MAVEN_LOCAL_REPO=%CD%\..\basic-cobol2json-cb2xml-jrecord-build\build\m2 Directory of C:\Users\kouzm\.m2\repository\net\sf\jrecord\0.90.2
+
+```
 ### See Also:
 
  

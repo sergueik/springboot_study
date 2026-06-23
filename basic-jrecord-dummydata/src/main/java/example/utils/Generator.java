@@ -3,12 +3,6 @@ package example.utils;
 /**
  * Copyright 2026 Serguei Kouzmine
  */
-import net.sf.JRecord.Details.AbstractLine;
-import net.sf.JRecord.IO.AbstractLineWriter;
-import net.sf.JRecord.IO.LineIOProvider;
-import net.sf.JRecord.JRecordInterface1;
-import net.sf.JRecord.def.IO.builders.ICobolIOBuilder;
-import net.sf.JRecord.Common.IFileStructureConstants;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -51,13 +45,6 @@ public class Generator {
 
 	public void generate() throws Exception {
 
-		// Create COBOL IO builder
-		if (debug)
-			logger.info("Create COBOL IO builder for {}", copybookFile);
-		ICobolIOBuilder builder = JRecordInterface1.COBOL.newIOBuilder(copybookFile)
-				.setFileOrganization(IFileStructureConstants.IO_FIXED_LENGTH).setFont(page);
-		// Create a new line
-		AbstractLine line = builder.newLine();
 		if (debug)
 			logger.info("Parse {}", copybookFile);
 
@@ -74,7 +61,6 @@ public class Generator {
 			if (null == value)
 				continue;
 			try {
-				line.setField(field.name, value);
 				// NOTE: store what was actually written
 				populatedValues.put(field.name, value);
 			} catch (Exception e) {
@@ -92,21 +78,5 @@ public class Generator {
 		if (debug) {
 			logger.info("row: {}", gson.toJson(root));
 		}
-		// Get writer via LineIOProvider using file structure
-		AbstractLineWriter writer = LineIOProvider.getInstance().getLineWriter(IFileStructureConstants.IO_FIXED_LENGTH);
-
-		// Write line to FileOutputStream
-		RandomValueFactory randomValueFactory = new RandomValueFactory();
-		writer.open(new java.io.FileOutputStream(outputFile));
-		for (int i = 0; i < maxRows; i++) {
-			line.getFieldValue("ACCOUNT-NUMBER").set(randomValueFactory.randomInt(100000));
-			line.getFieldValue("CUSTOMER-NAME").set(randomValueFactory.randomString(10));
-			line.getFieldValue("BALANCE").set(randomValueFactory.randomDecimal());
-			writer.write(line);
-		}
-		writer.close();
-
-		if (debug)
-			logger.info("EBCDIC row written to: {}", outputFile);
 	}
 }
