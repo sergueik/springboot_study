@@ -1,0 +1,28 @@
+SAMPLE-REC:
+  ACCOUNT-PLAIN:
+    CUSTOMER-ID:
+      pic: X(10)
+
+    CUSTOMER-NAME:
+      pic: X(20)
+
+    ACCOUNT-NUMBER-BUNDLE:
+      alternatives:
+        - ACCOUNT-NUMBER:
+            pic: 9(9)
+
+        - ACCOUNT-NUMBER-ALPHA:
+            pic: X(9)
+
+    BALANCE:
+      pic: S9(7)V99
+      store: COMP-3
+
+  ACCOUNT-LAYOUTS:
+    alternatives:
+      - ACCOUNT-LINK: {}
+      - ACCOUNT-FIXED: {}
+
+  FILLER:
+    type: filler
+    pic: X

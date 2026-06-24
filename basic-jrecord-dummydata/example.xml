@@ -1,0 +1,22 @@
+<record name="SAMPLE-REC" level="1">
+
+  <group name="ACCOUNT-PLAIN" level="3">
+
+    <element name="CUSTOMER-ID" level="5" pic="X(10)"/>
+    <element name="CUSTOMER-NAME" level="5" pic="X(20)"/>
+
+    <alternatives name="ACCOUNT-NUMBER-BUNDLE">
+      <element name="ACCOUNT-NUMBER" pic="9(9)"/>
+      <element name="ACCOUNT-NUMBER-ALPHA" pic="X(9)"/>
+    </alternatives>
+
+    <element name="BALANCE" pic="S9(7)V99" store="COMP-3"/>
+  </group>
+
+  <alternatives name="ACCOUNT-LAYOUTS">
+    <group name="ACCOUNT-LINK"/>
+    <group name="ACCOUNT-FIXED"/>
+  </alternatives>
+
+  <filler pic="X"/>
+</record>

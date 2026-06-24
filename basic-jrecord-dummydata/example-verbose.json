@@ -1,0 +1,89 @@
+{
+  "type": "record",
+  "name": "SAMPLE-REC",
+  "level": 1,
+
+  "children": [
+    {
+      "type": "group",
+      "name": "ACCOUNT-PLAIN",
+      "level": 3,
+
+      "children": [
+        {
+          "type": "element",
+          "name": "CUSTOMER-ID",
+          "level": 5,
+          "pic": "X(10)",
+          "redefines": null,
+          "value": null,
+          "store": null,
+          "raw": "05 CUSTOMER-ID PIC X(10)."
+        },
+
+        {
+          "type": "element",
+          "name": "CUSTOMER-NAME",
+          "level": 5,
+          "pic": "X(20)",
+          "raw": "05 CUSTOMER-NAME PIC X(20)."
+        },
+
+        {
+          "type": "alternatives",
+          "name": "ACCOUNT-NUMBER-BUNDLE",
+          "level": 5,
+
+          "options": [
+            {
+              "type": "element",
+              "name": "ACCOUNT-NUMBER",
+              "pic": "9(9)",
+              "raw": "05 ACCOUNT-NUMBER PIC 9(9)."
+            },
+            {
+              "type": "element",
+              "name": "ACCOUNT-NUMBER-ALPHA",
+              "pic": "X(9)",
+              "raw": "05 ACCOUNT-NUMBER-ALPHA REDEFINES ACCOUNT-NUMBER PIC X(9)."
+            }
+          ]
+        },
+
+        {
+          "type": "element",
+          "name": "BALANCE",
+          "pic": "S9(7)V99",
+          "store": "COMP-3",
+          "raw": "05 BALANCE PIC S9(7)V99 COMP-3."
+        }
+      ]
+    },
+
+    {
+      "type": "alternatives",
+      "name": "ACCOUNT-LAYOUTS",
+      "level": 3,
+
+      "options": [
+        {
+          "type": "group",
+          "name": "ACCOUNT-LINK",
+          "children": []
+        },
+        {
+          "type": "group",
+          "name": "ACCOUNT-FIXED",
+          "children": []
+        }
+      ]
+    },
+
+    {
+      "type": "filler",
+      "level": 5,
+      "pic": "X",
+      "raw": "05 FILLER PIC X."
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "group": "SAMPLE-REC",
+  "alternatives": [
+    {
+      "group": "ACCOUNT-PLAIN",
+      "contents": [
+        { "element": "CUSTOMER-ID", "PIC": "X(10)" },
+        { "element": "CUSTOMER-NAME", "PIC": "X(20)" },
+        {
+          "alternatives": [
+            { "element": "ACCOUNT-NUMBER", "PIC": "9(9)" },
+            { "element": "ACCOUNT-NUMBER-ALPHA", "PIC": "X(9)" }
+          ]
+        },
+        { "element": "BALANCE", "PIC": "S9(7)V99", "STORE": "COMP-3" }
+      ]
+    },
+
+    {
+      "group": "ACCOUNT-LINK",
+      "contents": [
+        {
+          "alternatives": [
+            {
+              "group": "ACC-ONLINE-KEY",
+              "contents": [
+                {
+                  "group": "ACC-CONTROL",
+                  "contents": [
+                    { "element": "FIELD1", "PIC": "XX" },
+                    { "element": "FIELD2", "PIC": "XXX" },
+                    { "element": "FIELD3", "PIC": "X(10)" }
+                  ]
+                }
+              ]
+            },
+            {
+              "group": "SOMETHING",
+              "contents": [
+                { "element": "NUM_DAYS", "PIC": "S999", "STORE": "COMP-3" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "group": "ACCOUNT-FIXED",
+      "contents": [
+        { "element": "ACC3-FIXED1", "VALUE": "01" },
+        { "element": "ACC3-FIXED2", "VALUE": "C" },
+        { "element": "ACC3-FIXED3", "VALUE": "E" },
+        { "element": "FILLER", "PIC": "X" }
+      ]
+    }
+  ]
+}
