@@ -354,6 +354,14 @@ unzip -ql C:\Users\kouzm\.m2\repository\net\sf\jrecord\0.90.2\jrecord-0.90.2.jar
 set MAVEN_LOCAL_REPO=%CD%\..\basic-cobol2json-cb2xml-jrecord-build\build\m2 Directory of C:\Users\kouzm\.m2\repository\net\sf\jrecord\0.90.2
 
 ```
+### Example css selecrtor style:
+```text
+$..[?(@.pic=="S9(7)V99")]
+    → annotation: "financial numeric field"
+    → annotation: "COMP-3 encoded"
+    → validator: decimal-range
+    → formatter: accounting-style
+```
 ### See Also:
 
  
