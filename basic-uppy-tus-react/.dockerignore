@@ -1,2 +1,6 @@
+#  this project compiles JS files in the container
 **/dist/
 **/node_modules/
+# project-specific setting
+src/main/resources/public/
+

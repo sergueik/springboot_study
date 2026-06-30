@@ -9,6 +9,16 @@ import '@uppy/core/css/style.min.css'
 import '@uppy/dashboard/css/style.min.css'
 import uploadConfig from './uploadConfig'; 
 
+const config = {
+  TUS_ENDPOINT: window.APP_CONFIG?.TUS_ENDPOINT ?? uploadConfig.TUS_ENDPOINT,
+  UPPY_SHOW_PROGRESS_DETAILS:
+    window.APP_CONFIG?.UPPY_SHOW_PROGRESS_DETAILS ?? uploadConfig.UPPY_SHOW_PROGRESS_DETAILS,
+  TUS_CHUNK_SIZE:
+    window.APP_CONFIG?.TUS_CHUNK_SIZE ?? uploadConfig.TUS_CHUNK_SIZE,
+  TUS_RETRY_DELAYS:
+    window.APP_CONFIG?.TUS_RETRY_DELAYS ?? uploadConfig.TUS_RETRY_DELAYS
+};
+
 // NOTE: does not scale
 async function calculateHash(file) {
   const buffer = await file.data.arrayBuffer();
@@ -48,10 +58,10 @@ export default function App() {
     })
 
     uppy.use(Tus, {
-      endpoint: uploadConfig.TUS_ENDPOINT,
+      endpoint: config.TUS_ENDPOINT,
       // NOTE: the underlying library (tus-js-client) defaults to chunkSize: Infinity - send the entire file in a single PATCH request regardless of the size
-      chunkSize:  uploadConfig.TUS_CHUNK_SIZE,
-      retryDelays: uploadConfig.TUS_RETRY_DELAYS
+      chunkSize:  config.TUS_CHUNK_SIZE,
+      retryDelays: config.TUS_RETRY_DELAYS
     })
 
     let cached;

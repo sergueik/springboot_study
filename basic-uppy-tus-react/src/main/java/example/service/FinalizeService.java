@@ -6,8 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,24 +28,9 @@ public class FinalizeService {
 		String uploadId = info.getId().toString();
 		Path targetFilePath = Paths.get(String.format("%s%starget%sdata%s%s", System.getProperty("user.dir"),
 				File.separator, File.separator, File.separator, uploadId));
-		mkdirs(targetFilePath.toFile());
+		Files.createDirectories(targetFilePath.getParent());
 		Path inputFilePath = tusStorageResolver.resolve(info).toAbsolutePath();
 		logger.info("move {} to {}", inputFilePath, targetFilePath);
 		Files.move(inputFilePath, targetFilePath, StandardCopyOption.REPLACE_EXISTING);
 	}
-
-	public static void mkdirs(File dir) {
-		File parent = dir.getAbsoluteFile();
-		List<File> mkdir = new ArrayList<File>();
-		for (; !parent.exists() || !parent.isDirectory(); parent = parent.getParentFile()) {
-			mkdir.add(parent);
-		}
-		for (int i = mkdir.size(); --i >= 0;) {
-			File d = mkdir.get(i);
-			d.mkdir();
-			d.setReadable(true, false);
-			d.setWritable(true, false);
-		}
-	}
-
 }

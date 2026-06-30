@@ -291,9 +291,9 @@ String apiUrl = dotenv.get("API_URL");
  using the library dependency:
 ```xml
 <dependency>
-    <groupId>io.github.cdimascio</groupId>
-    <artifactId>java-dotenv</artifactId>
-    <version>5.2.2</version>
+  <groupId>io.github.cdimascio</groupId>
+  <artifactId>java-dotenv</artifactId>
+  <version>5.2.2</version>
 </dependency>
 ```
 This implements the closest equivalent to Node dotenv.
@@ -340,17 +340,25 @@ properties.load(".env.dev.local");
 
 A complication is that browser JavaScript cannot read server environment variables after deployment is addressed via runtime injection:
 
+```js
+const cfg = await fetch('/api/uploads/config')
+  .then(r => r.json());
+```
+where Spring backend returns just data (not Javascript code):
+
+```json
+{
+  "TUS_CHUNK_SIZE": 5242880
+}
+```
+the other option is to update response headers accordingly and make Spring backend return a real Javascript code:
+```js
+window.APP_CONFIG = {  "TUS_CHUNK_SIZE": 5242880 };
+```
+Then React uses `window.APP_CONFIG.apiUrl` after rendering the HTML:
 ```html
 <script src="/config.js"></script>
 ```
-where Spring returns:
-
-```js
-window.APP_CONFIG = {
-  apiUrl: "https://api.example.com"
-};
-```
-Then React uses `window.APP_CONFIG.apiUrl`
 
 This pattern is fairly common in enterprise deployments because it allows changing endpoints without rebuilding the React bundle.
 

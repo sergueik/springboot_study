@@ -5,6 +5,9 @@
 **/dist/
 **/node_modules/
 
+# project-specific setting
+src/main/resources/public/
+
 # Log file
 *.log
 

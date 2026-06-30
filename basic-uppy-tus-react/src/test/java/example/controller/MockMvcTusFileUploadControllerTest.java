@@ -51,8 +51,6 @@ import java.util.stream.Collectors;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-import example.utils.TusStorageResolver;
-import me.desair.tus.server.TusFileUploadService;
 import me.desair.tus.server.exception.UploadAlreadyLockedException;
 
 @SpringBootTest(properties = { "tus.server.data.directory=${java.io.tmpdir}/tus" })
