@@ -256,6 +256,107 @@ and gets:
 ```text
 operation not permitted
 ```
+### React Application Configuration
+
+Vite's .env mechanism is primarily a build-time configuration system, not a Node runtime requirement.
+
+Vite roughly doesi reads and merges in precedence order:
+
+  * `.env`
+  * `.env.local`
+  * `.env.[mode]`
+  * `.env.[mode].local`
+
+Spring Boot already has a similar concept
+of has layered configurations:
+ 
+
+  * OS environment variabl`es
+  * JVM `-D` system properties
+  * `application.properties`
+  * `application.yml`
+  * profile-specific files mapped by filename suffix (`application-dev.yml`, `application-prod.yml`)
+  * command-line arguments
+
+Spring own property resolution system is actually quite sophisticated.
+
+Spring does not natively parse `.env` files in the same way Vite does, but it is easy to retrofit:
+
+* load `.env` explicitly:
+```java
+var dotenv = Dotenv.configure().ignoreIfMissing().load();
+String apiUrl = dotenv.get("API_URL");
+```
+
+ using the library dependency:
+```xml
+<dependency>
+    <groupId>io.github.cdimascio</groupId>
+    <artifactId>java-dotenv</artifactId>
+    <version>5.2.2</version>
+</dependency>
+```
+This implements the closest equivalent to Node dotenv.
+
+* populate system properties
+
+```java
+var dotenv = Dotenv.load();
+
+dotenv.entries().forEach(entry ->
+    System.setProperty(
+        entry.getKey().toLowerCase().replace('_', '.'),
+        entry.getValue()
+    )
+);
+```
+Then Spring can simply use `@Value` annotation:
+```java
+@Value("${my.api.url}")
+private String url;
+```
+or
+```java
+service:
+  endpoint: ${MY_API_URL:http://localhost:8080}
+
+```
+Advanced – custom precedence strategy like Vite:
+
+  * `.env`
+  * `.env.local`
+  * `.env.dev`
+  * `.env.dev.local`
+
+load them in certain order:
+
+```java
+var properties = new Properties();
+properties.load(".env");
+properties.load(".env.local");
+properties.load(".env.dev");
+properties.load(".env.dev.local");
+```
+
+A complication is that browser JavaScript cannot read server environment variables after deployment is addressed via runtime injection:
+
+```html
+<script src="/config.js"></script>
+```
+where Spring returns:
+
+```js
+window.APP_CONFIG = {
+  apiUrl: "https://api.example.com"
+};
+```
+Then React uses `window.APP_CONFIG.apiUrl`
+
+This pattern is fairly common in enterprise deployments because it allows changing endpoints without rebuilding the React bundle.
+
+```text
+Uncaught ReferenceError: envValue is not defined at index-DQCLnW4U.js:81:9244
+```
 
 ### See Also
 

@@ -7,7 +7,7 @@ import { sha256 } from 'js-sha256';
 
 import '@uppy/core/css/style.min.css'
 import '@uppy/dashboard/css/style.min.css'
-
+import uploadConfig from './uploadConfig'; 
 
 // NOTE: does not scale
 async function calculateHash(file) {
@@ -38,7 +38,7 @@ export default function App() {
       inline: true,
       target: '#uppy',
       proudlyDisplayPoweredByUppy: false,
-      showProgressDetails: false,
+      showProgressDetails: uploadConfig.UPPY_SHOW_PROGRESS_DETAILS,
       hidePauseResumeButtons: true,
     })
 
@@ -48,10 +48,10 @@ export default function App() {
     })
 
     uppy.use(Tus, {
-      endpoint: '/api/upload',
+      endpoint: uploadConfig.TUS_ENDPOINT,
       // NOTE: the underlying library (tus-js-client) defaults to chunkSize: Infinity - send the entire file in a single PATCH request regardless of the size
-      chunkSize: 5 * 1024 * 1024,
-      retryDelays: [0,500,1000,3000]
+      chunkSize:  uploadConfig.TUS_CHUNK_SIZE,
+      retryDelays: uploadConfig.TUS_RETRY_DELAYS
     })
 
     let cached;
