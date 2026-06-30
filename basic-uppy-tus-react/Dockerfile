@@ -4,7 +4,6 @@ WORKDIR /app
 
 COPY frontend /app/
 
-
 RUN cd /app \
   && rm -rf node_modules package-lock.json \
   && npm install \
@@ -35,13 +34,18 @@ COPY --from=builder /app/target/example.tus-java-server.jar /app/app.jar
 # to save the generateed package-lock.json oncomment the following line
 # COPY --from=react_builder /app/package-lock.json /app
 
+COPY --from=react_builder /app/.env /app
+
 RUN apk update \
     && apk add --update --no-cache curl \
     && rm -rf /var/cache/* \
     && mkdir /var/cache/apk
 
+WORKDIR /app
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
 CMD curl -f http://localhost:8080/ || exit 1
+
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+
 EXPOSE 8080

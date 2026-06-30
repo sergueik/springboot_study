@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import Uppy from '@uppy/core'
 import Dashboard from '@uppy/dashboard'
@@ -28,8 +28,10 @@ async function calculateHash(file) {
 // NOTE: on HTTP, browser hosted crypto.subtle is unavailable by design
 
 export default function App() {
+  const [config, setConfig] = useState(null);
 
   const uppyRef = useRef(null);
+
   const pauseUploads = () => {
     uppyRef.current?.pauseAll();
   };
@@ -39,7 +41,19 @@ export default function App() {
   };
 
   useEffect(() => {
+	  
+    fetch('/api/uploads/config')
+      .then(r => r.json())
+      .then(setConfig)
+      .catch(console.error);
+  }, []);
 
+  useEffect(() => {
+    if (!config) {
+      console.log('config undefined');
+      return;
+    }
+    //  giard the effect
     const uppy = new Uppy({ autoProceed: false })
 
     uppyRef.current = uppy;
@@ -111,7 +125,7 @@ export default function App() {
     });
 
     return () => uppy.destroy()
-  }, [])
+  }, [config])
 
   return (
     <div style={{ padding: 20 }}>

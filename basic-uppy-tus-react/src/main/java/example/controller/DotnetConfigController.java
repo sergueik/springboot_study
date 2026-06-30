@@ -1,16 +1,13 @@
 package example.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -20,13 +17,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import me.desair.tus.server.TusFileUploadService;
-import me.desair.tus.server.exception.TusException;
-import me.desair.tus.server.upload.UploadInfo;
-
-import example.dto.FinalizeRequest;
 import example.service.DotnetConfigService;
-import example.service.FinalizeService;
 
 @Controller
 @RequestMapping(value = "/api/uploads")
@@ -40,11 +31,18 @@ public class DotnetConfigController {
 
 	@PostMapping("/config")
 	@RequestMapping(value = { "/config" }, method = { RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> config() throws Exception {
+	public ResponseEntity<Map<String, Object>> config() throws Exception {
 		dotnetConfigService.load();
 		HttpStatus status = HttpStatus.BAD_REQUEST;
 		Map<String, Object> data = new HashMap<>();
-		data.put("TUS_CHUNK_SIZE", System.getProperty("tus.chunk.size"));
+		// chop the "VITE_" prefix.
+		// NOTE: if not set chunkSize, tus behaves like: send the whole file in one request (effectively no chunking override)
+		data.put("TUS_CHUNK_SIZE", System.getProperty("vite.tus.chunk.size"));
+		data.put("TUS_ENDPOINT", System.getProperty("vite.tus.endpoint"));
+		data.put("MAX_NUMBER_OF_FILES", System.getProperty("vite.max.number.of.files"));
+		data.put("MAX_FILE_SIZE_BYTES", System.getProperty("vite.max.file.size.bytes"));
+		data.put("TUS_RETRY_DELAYS", System.getProperty("vite.tus.retry.delays").split(",")) ;
+
 		logger.info("Returning config: {}", data);
 		return ResponseEntity.status(HttpStatus.OK).body(data);
 	}

@@ -13,8 +13,12 @@ public class DotnetConfigService {
 
 	public void load() throws Exception {
 		var dotenv = Dotenv.configure().ignoreIfMissing().load();
+		logger.info("Working dir: {}", System.getProperty("user.dir"));
 
+		dotenv.entries().forEach(e -> logger.info("dotenv: {}={}", e.getKey(), e.getValue()));
 		dotenv.entries()
 				.forEach(entry -> System.setProperty(entry.getKey().toLowerCase().replace('_', '.'), entry.getValue()));
+
+		logger.info("vite.tus.chunk.size={}", System.getProperty("vite.tus.chunk.size"));
 	}
 }
