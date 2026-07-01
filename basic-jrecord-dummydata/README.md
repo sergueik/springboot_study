@@ -362,6 +362,136 @@ $..[?(@.pic=="S9(7)V99")]
     → validator: decimal-range
     → formatter: accounting-style
 ```
+### TODO
+
+### Deterministic Record Boundary Fault-Injection Test Harness
+
+#### Overview
+
+This project is a small deterministic data generation and fault-injection harness designed to evaluate parser behavior under mixed-quality input and controlled stream interruption conditions.
+
+The primary goal is not bulk data validation, but precise observation of **boundary behavior in record-oriented parsers** (e.g., COBOL copybook-based systems such as jRecord).
+
+---
+
+#### Core Concept
+
+The system generates sequential records with explicit row indexing and introduces controlled variation in data quality and structure to observe how downstream systems handle:
+
+- partial record streams
+- boundary corruption
+- transition between valid and invalid segments
+- stream truncation and mid-record interruption
+
+The central hypothesis is that parser behavior is determined primarily by **failure boundary semantics**, not bulk input correctness.
+
+---
+
+#### Data Model
+
+The dataset is composed of three logical regions:
+
+##### 1. Bulk Region (Rows 1–99)
+- Sequentially generated records
+- May contain lower-fidelity or noisy data
+- Purpose: simulate realistic baseline load conditions
+- Row indexing is strictly preserved for deterministic traceability
+
+##### 2. Boundary Anchor Region (Rows 100–101)
+- High-fidelity or strictly schema-compliant records
+- Either:
+  - generated with stricter validation rules, or
+  - injected as preformatted JSON payloads
+- Purpose: create a known-valid structural reference point
+
+##### 3. Failure Injection Region (optional)
+- Stream is intentionally truncated or corrupted:
+  - mid-record cut
+  - byte-level interruption
+  - or partial transmission simulation
+- Purpose: simulate real-world transport or ingestion failure
+
+---
+
+#### Key Mechanism: Row Index Tracking
+
+A deterministic row counter is maintained during generation to ensure:
+
+- reproducible record positions
+- stable boundary definition (e.g., row 100 / 101)
+- consistent mapping between logical and physical record layout
+
+This enables controlled failure injection at exact stream locations.
+
+---
+
+#### Fault Injection Techniques
+
+The following techniques may be used independently or in combination:
+
+##### 1. Mid-Stream Truncation
+Cutting the stream at a computed byte offset inside a valid record.
+
+##### 2. Boundary Record Injection
+Introducing strictly valid records at known positions (e.g., rows 100–101) within a noisier dataset.
+
+##### 3. Mixed-Quality Dataset Generation
+Combining baseline noisy records with high-fidelity anchor records.
+
+---
+
+#### Example Test Pattern
+
+- Generate rows 1–99 (baseline dataset)
+- Generate row 100 (valid anchor record)
+- Generate row 101 (valid anchor or target record)
+- Optionally truncate stream at:
+  - mid-point of row 101
+  - or after row 100 + ½ row 101 size
+
+---
+
+#### Observed Behavior Targets
+
+The system is designed to evaluate:
+
+- whether parsing stops at first corruption or continues
+- how partial records are handled
+- whether valid segments remain accessible after failure
+- how much of the stream is recoverable or usable
+- whether behavior is deterministic under repeated runs
+
+---
+
+#### Rationale
+
+Traditional validation focuses on full dataset correctness. This harness focuses instead on:
+
+> **system behavior under partial failure and stream interruption**
+
+This is critical for understanding real-world ingestion systems where data transmission is not atomic.
+
+---
+
+#### Intended Use Cases
+
+- parser robustness testing
+- stream ingestion failure modeling
+- boundary condition analysis
+- ETL resilience validation
+- record-based format behavior exploration
+
+---
+
+#### Notes
+
+This project intentionally separates:
+- bulk data generation concerns
+- boundary correctness evaluation
+- failure injection logic
+
+to isolate and observe parser behavior under controlled conditions.
+
 ### See Also:
 
  
