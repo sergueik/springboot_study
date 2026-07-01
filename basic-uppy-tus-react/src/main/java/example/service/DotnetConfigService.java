@@ -1,5 +1,8 @@
 package example.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,5 +23,23 @@ public class DotnetConfigService {
 				.forEach(entry -> System.setProperty(entry.getKey().toLowerCase().replace('_', '.'), entry.getValue()));
 
 		logger.info("vite.tus.chunk.size={}", System.getProperty("vite.tus.chunk.size"));
+	}
+
+	public Map<String, Object> buildConfig() throws Exception {
+		this.load();
+		Map<String, Object> data = new HashMap<>();
+		// chop the "VITE_" prefix.
+		// NOTE: if not set chunkSize, tus behaves like: send the whole file in one
+		// request (effectively no chunking override)
+		if (System.getProperties().containsKey("vite.tus.chunk.size"))
+			data.put("TUS_CHUNK_SIZE", Long.parseLong(System.getProperty("vite.tus.chunk.size")));
+		data.put("TUS_ENDPOINT", System.getProperty("vite.tus.endpoint"));
+		if (System.getProperties().containsKey("vite.max.number.of.files"))
+			data.put("MAX_NUMBER_OF_FILES", Integer.parseInt(System.getProperty("vite.max.number.of.files")));
+		if (System.getProperties().containsKey("vite.max.file.size.bytes"))
+			data.put("MAX_FILE_SIZE_BYTES", Long.parseLong(System.getProperty("vite.max.file.size.bytes")));
+		data.put("TUS_RETRY_DELAYS", System.getProperty("vite.tus.retry.delays").split(","));
+
+		return data;
 	}
 }
