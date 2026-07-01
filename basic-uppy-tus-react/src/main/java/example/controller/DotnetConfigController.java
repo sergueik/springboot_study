@@ -8,14 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -35,22 +32,33 @@ public class DotnetConfigController {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	@PostMapping("/config")
-	@RequestMapping(value = { "/config" }, method = { RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
+	// NOTE: for error reporting do not return empty body, but a meaningful
+	// {};
+	@GetMapping(value = "/config", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, Object>> config() throws Exception {
 		Map<String, Object> config = dotnetConfigService.buildConfig();
-		logger.info("Returning config: {}", objectMapper.writeValueAsString(config));
+		logger.info("Returning config JSON: {}", objectMapper.writeValueAsString(config));
 		return ResponseEntity.status(HttpStatus.OK).body(config);
 	}
 
+	// NOTE: there is no "MediaType..APPLICATION_JAVASCRIPT_VALUE"
+	// NOTE: for error reporting do not return empty body, but a meaningful
+	// window.APP_CONFIG = {};
+	// window.APP_CONFIG_ERROR = "Failed to build runtime configuration";
+	// then the browser still executes valid JavaScript, and the page can inspect:
 	@GetMapping(value = "/config.js", produces = "application/javascript")
 	@ResponseBody
-	public String configJs() throws Exception {
+	public ResponseEntity<String> configJs() throws Exception {
+		try {
+			Map<String, Object> config = dotnetConfigService.buildConfig();
+			String javascript = "window.APP_CONFIG = " + objectMapper.writeValueAsString(config) + ";";
+			logger.info("Returning javascript: {}", javascript);
 
-		Map<String, Object> config = dotnetConfigService.buildConfig();
-		String javascript = "window.APP_CONFIG = " + objectMapper.writeValueAsString(config) + ";";
-		logger.info("Returning javascript: {}", javascript);
-
-		return javascript;
+			return ResponseEntity.status(HttpStatus.OK).body(javascript);
+		} catch (Exception e) {
+			logger.info("Exception: {}", e);
+			var errorPayload = "window.APP_CONFIG = {}; window.APP_CONFIG_ERROR = 'Failed to build runtime configuration'";
+			return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorPayload);
+		}
 	}
 }

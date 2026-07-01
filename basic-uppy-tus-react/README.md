@@ -410,6 +410,18 @@ java.nio.file.NoSuchFileException: /app/target/data/a6738ae3-816f-4c6b-8ef9-bbbb
 2026-06-30 22:42:50.127  INFO 1 --- [nio-8080-exec-6] e.controller.TusFileUploadController     : upload in progress: offset: 0 length: 26214400 / {}
 2026-06-30 22:42:50.128 DEBUG 1 --- [nio-8080-exec-6] o.s.w.f.CommonsRequestLoggingFilter      : After request [PATCH /api/upload/c716feaa-ba6d-4ea4-9ae6-8e931f718ca2, client=192.168.99.1, headers=[host:"192.168.99.100:8080", connection:"keep-alive", content-length:"0", tus-resumable:"1.0.0", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36", upload-offset:"0", accept:"*/*", origin:"http://192.168.99.100:8080", referer:"http://192.168.99.100:8080/", accept-encoding:"gzip, deflate", accept-language:"en-US,en;q=0.9", Content-Type:"application/offset+octet-stream;charset=UTF-8"]]
 ```
+### Summary of Architecture Discussion – Resumable Upload Approaches and Operational Trade-Offs
+
+This discussion reviewed different approaches to large file transfer and resumable upload handling, focusing on trade-offs between custom chunk-based implementations and standardized protocols such as tus. 
+
+The key distinction is not performance under ideal conditions, but system behavior under partial failure and operational recovery scenarios. Chunk-based approaches typically defer usability until full reconstruction, whereas streaming or tus-like models preserve meaningful partial state throughout the transfer lifecycle. 
+
+This directly impacts observability, debugging capability, and recovery during incidents where transfers are incomplete or interrupted. 
+
+A custom implementation also introduces a dependency on the availability of a compatible client and precise protocol documentation to support troubleshooting and recovery when issues occur deep within the transfer pipeline. In contrast, standardized protocols provide broadly understood semantics and existing tooling that reduce reliance on system-specific knowledge. 
+
+In hybrid cloud environments, this often translates into better interoperability and more consistent integration with managed services. Overall, the primary evaluation criterion is operational recoverability and long-term maintainability rather than marginal gains in transfer speed.
+
 ### See Also
 
 
