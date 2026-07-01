@@ -27,8 +27,9 @@ ADD src /app/src/
 
 COPY --from=react_builder /app/dist /app/src/main/resources/public/ 
 
-RUN mvn clean package -DskipTests -q
-
+RUN mvn clean package -DskipTests -q 
+# RUN mvn clean package -DskipTests -q  -o
+# 
 FROM eclipse-temurin:11-jre-alpine as run
 COPY --from=builder /app/target/example.tus-java-server.jar /app/app.jar 
 # to save the generateed package-lock.json oncomment the following line

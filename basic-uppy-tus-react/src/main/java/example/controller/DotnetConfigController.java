@@ -36,12 +36,16 @@ public class DotnetConfigController {
 		HttpStatus status = HttpStatus.BAD_REQUEST;
 		Map<String, Object> data = new HashMap<>();
 		// chop the "VITE_" prefix.
-		// NOTE: if not set chunkSize, tus behaves like: send the whole file in one request (effectively no chunking override)
-		data.put("TUS_CHUNK_SIZE", System.getProperty("vite.tus.chunk.size"));
+		// NOTE: if not set chunkSize, tus behaves like: send the whole file in one
+		// request (effectively no chunking override)
+		if (System.getProperties().containsKey("vite.tus.chunk.size"))
+			data.put("TUS_CHUNK_SIZE", Long.parseLong(System.getProperty("vite.tus.chunk.size")));
 		data.put("TUS_ENDPOINT", System.getProperty("vite.tus.endpoint"));
-		data.put("MAX_NUMBER_OF_FILES", System.getProperty("vite.max.number.of.files"));
-		data.put("MAX_FILE_SIZE_BYTES", System.getProperty("vite.max.file.size.bytes"));
-		data.put("TUS_RETRY_DELAYS", System.getProperty("vite.tus.retry.delays").split(",")) ;
+		if (System.getProperties().containsKey("vite.max.number.of.files"))
+			data.put("MAX_NUMBER_OF_FILES", Integer.parseInt(System.getProperty("vite.max.number.of.files")));
+		if (System.getProperties().containsKey("vite.max.file.size.bytes"))
+			data.put("MAX_FILE_SIZE_BYTES", Long.parseLong(System.getProperty("vite.max.file.size.bytes")));
+		data.put("TUS_RETRY_DELAYS", System.getProperty("vite.tus.retry.delays").split(","));
 
 		logger.info("Returning config: {}", data);
 		return ResponseEntity.status(HttpStatus.OK).body(data);

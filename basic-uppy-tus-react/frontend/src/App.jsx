@@ -7,14 +7,14 @@ import { sha256 } from 'js-sha256';
 
 import '@uppy/core/css/style.min.css'
 import '@uppy/dashboard/css/style.min.css'
-import uploadConfig from './uploadConfig'; 
+import uploadConfig from './uploadConfig';
 
 const config = {
   TUS_ENDPOINT: window.APP_CONFIG?.TUS_ENDPOINT ?? uploadConfig.TUS_ENDPOINT,
   UPPY_SHOW_PROGRESS_DETAILS:
     window.APP_CONFIG?.UPPY_SHOW_PROGRESS_DETAILS ?? uploadConfig.UPPY_SHOW_PROGRESS_DETAILS,
   TUS_CHUNK_SIZE:
-    window.APP_CONFIG?.TUS_CHUNK_SIZE ?? uploadConfig.TUS_CHUNK_SIZE,
+    parseInt(window.APP_CONFIG?.TUS_CHUNK_SIZE ?? uploadConfig.TUS_CHUNK_SIZE, undefined),
   TUS_RETRY_DELAYS:
     window.APP_CONFIG?.TUS_RETRY_DELAYS ?? uploadConfig.TUS_RETRY_DELAYS
 };
@@ -35,13 +35,13 @@ export default function App() {
   const pauseUploads = () => {
     uppyRef.current?.pauseAll();
   };
-  
+
   const resumeUploads = () => {
     uppyRef.current?.resumeAll();
   };
 
   useEffect(() => {
-	  
+	
     fetch('/api/uploads/config')
       .then(r => r.json())
       .then(setConfig)
@@ -52,6 +52,9 @@ export default function App() {
     if (!config) {
       console.log('config undefined');
       return;
+    } else {
+      console.dir(config); 
+      console.log('typeof config.TUS_CHUNK_SIZE: ' + typeof config.TUS_CHUNK_SIZE);
     }
     //  giard the effect
     const uppy = new Uppy({ autoProceed: false })
@@ -72,10 +75,12 @@ export default function App() {
     })
 
     uppy.use(Tus, {
+      retryDelays: config.TUS_RETRY_DELAYS,
       endpoint: config.TUS_ENDPOINT,
       // NOTE: the underlying library (tus-js-client) defaults to chunkSize: Infinity - send the entire file in a single PATCH request regardless of the size
-      chunkSize:  config.TUS_CHUNK_SIZE,
-      retryDelays: config.TUS_RETRY_DELAYS
+     // chunkSize:  config.TUS_CHUNK_SIZE,
+     // inline conditional spread
+     ...( config.TUS_CHUNK_SIZE && { chunkSize: config.TUS_CHUNK_SIZE })	
     })
 
     let cached;
@@ -110,7 +115,7 @@ export default function App() {
 
      console.log('client side: ', hash);
 
-	    // const hash = 'hash';	   
+	    // const hash = 'hash';	
       const res2 =  await fetch('/api/uploads/validate', {
         method: 'POST',
         headers: {
@@ -121,7 +126,7 @@ export default function App() {
 
       const data2 = await res2.json();
 
-      console.log('verify: ', res2.status, data2);    
+      console.log('verify: ', res2.status, data2);
     });
 
     return () => uppy.destroy()
@@ -133,10 +138,10 @@ export default function App() {
       <button onClick={pauseUploads}>
         Pause
       </button>
-  
+
       <button onClick={resumeUploads}>
         Resume
-      </button>	  
+      </button>	
       <div id="uppy" />
     </div>
   )

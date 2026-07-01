@@ -52,12 +52,15 @@ public class FinalizeController {
 			uploadURI = String.format("/api/upload/%s", uploadId);
 			info = tusFileUploadService.getUploadInfo(uploadURI);
 			if (info == null) {
+				logger.info("no info found for: {}", uploadURI);
 				data.put("status", "NOT FOUND");
 				status = HttpStatus.NOT_FOUND;
 			} else if (info.isUploadInProgress()) {
+				logger.info("upload in progress: {}", uploadURI);
 				data.put("status", "IN PROGRESS");
 				status = HttpStatus.ACCEPTED;
 			} else {
+				logger.info("upload completed: {}", uploadURI);
 				data.put("status", "OK");
 				data.put("filename", info.getFileName());
 				status = HttpStatus.OK;

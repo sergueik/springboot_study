@@ -29,6 +29,7 @@ public class FinalizeService {
 		Path targetFilePath = Paths.get(String.format("%s%starget%sdata%s%s", System.getProperty("user.dir"),
 				File.separator, File.separator, File.separator, uploadId));
 		Files.createDirectories(targetFilePath.getParent());
+		logger.info("created target file path: {}", targetFilePath.toString());
 		Path inputFilePath = tusStorageResolver.resolve(info).toAbsolutePath();
 		logger.info("move {} to {}", inputFilePath, targetFilePath);
 		Files.move(inputFilePath, targetFilePath, StandardCopyOption.REPLACE_EXISTING);

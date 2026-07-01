@@ -42,7 +42,7 @@ const uploadConfig = {
   ),
   TUS_CHUNK_SIZE: envInt(
     'VITE_TUS_CHUNK_SIZE',
-    5 * 1024 * 1024
+    undefined
   ),
   TUS_RETRY_DELAYS: envArray(
     'VITE_TUS_RETRY_DELAYS',

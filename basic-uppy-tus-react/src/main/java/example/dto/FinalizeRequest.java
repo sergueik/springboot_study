@@ -4,6 +4,9 @@ public class FinalizeRequest {
 
 	private String uploadId;
 
+	public FinalizeRequest() {
+    }
+
 	public String getUploadId() {
 		return uploadId;
 	}
