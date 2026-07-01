@@ -1,0 +1,5 @@
+<mirror>
+  <id>internal-nexus</id>
+  <mirrorOf>*</mirrorOf>
+  <url>https://nexus.company.local/repository/maven-public</url>
+</mirror>
