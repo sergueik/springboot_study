@@ -420,6 +420,28 @@ This directly impacts observability, debugging capability, and recovery during i
 
 A custom implementation also introduces a dependency on the availability of a compatible client and precise protocol documentation to support troubleshooting and recovery when issues occur deep within the transfer pipeline. In contrast, standardized protocols provide broadly understood semantics and existing tooling that reduce reliance on system-specific knowledge. 
 
+### Risk Assessment Illustration
+
+“It’s like ordering dinner versus cooking yourself—the interface stays simple while execution is delegated to a specialized system.”
+
+"A jigsaw puzzle derives its value primarily from complete reconstruction. Even a small number of missing pieces can significantly reduce its usefulness and may discourage further assembly altogether"
+
+| Approach| Tag|Essentials |
+|---------|----|------------------|
+|Streaming / Tus-like |cassette tape |continuous, marginal recoverable damage|
+|Custom chunked | jigsaw |piecewise, value emerges after assembly|
+
+
+|Approach	|Tag	|Essentials|
+|---------------|-------|----------|
+|Streaming / Tus-like|	Cassette tape	|Continuous transfer; partial progress remains meaningful; damage is typically local and partially recoverable|
+|Custom chunked	|Jigsaw puzzle|	Piecewise transfer; value emerges after assembly; a missing piece may ruin the usefulness of the whole|
+
+
+Jigsaw puzzle: Value depends on successful assembly; a missing piece may render the result unusable. For example, when acceptance requires an exact checksum match, the payload is rejected regardless of whether the missing bytes were "important" or seemingly insignificant. A checksum can verify integrity but cannot reconstruct missing information, so an incomplete payload cannot be recovered from the checksum alone.
+
+The acceptance policy belongs to the payload owner, not to the transport mechanism
+
 In hybrid cloud environments, this often translates into better interoperability and more consistent integration with managed services. Overall, the primary evaluation criterion is operational recoverability and long-term maintainability rather than marginal gains in transfer speed.
 
 
