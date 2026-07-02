@@ -1,0 +1,20 @@
+digraph TusProxyArchitecture {
+
+  rankdir=LR;
+  node [shape=box, style=rounded];
+
+  Client [label="Client"];
+
+  JavaFacade [label="Java Spring Façade\n(Control Plane)\n- processUpload()\n- finalize()\n- validate()"];
+
+  Tusd [label="Go tusd Service\n(Data Plane)\n- chunk handling\n- resume\n- storage"];
+
+  Storage [label="Shared Storage\n(Docker Volume)\n- uploaded files"];
+
+  Client -> JavaFacade [label="HTTP Tus-like API"];
+  JavaFacade -> Tusd [label="HTTP forward / proxy\n(streaming)"];
+  Tusd -> Storage [label="write chunks"];
+
+  JavaFacade -> Storage [label="validate / inspect\n(local read)"];
+  JavaFacade -> Client [label="finalize response"];
+}

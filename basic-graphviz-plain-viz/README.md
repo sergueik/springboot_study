@@ -27,6 +27,10 @@ do it even on isolated systems without exposing the subject infomation to offici
 ```sh
 start /c/Program\ Files/Google/Chrome/Application/chrome.exe local/page.html
 ```
+or with full path in URI form e.g.
+```cmd
+"c:\Program Files\Google\Chrome\Application\chrome.exe" file:///c:/developer/sergueik/springboot_study/basic-graphviz-plain-viz/local/page.html
+```
 ![Launch](screenshots/capture-launch.png)
 > NOTE: 
 Double-click index.html from:

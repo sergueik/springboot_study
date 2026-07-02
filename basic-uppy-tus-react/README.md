@@ -422,6 +422,58 @@ A custom implementation also introduces a dependency on the availability of a co
 
 In hybrid cloud environments, this often translates into better interoperability and more consistent integration with managed services. Overall, the primary evaluation criterion is operational recoverability and long-term maintainability rather than marginal gains in transfer speed.
 
+
+### TUS Proxy Architecture (Conceptual Summary)
+
+![flow](screenshots/flow-diagram.png)
+
+1. System Flow
+---------------
+```
+Client
+  → Java Spring Façade (control plane)
+      → Go tusd service (data plane)
+          → Shared storage (Docker volume)
+```
+2. Responsibilities split
+-------------------------
+Java Spring Façade:
+- Receives Tus-like HTTP requests
+- Implements processUpload(HttpServletRequest, HttpServletResponse)
+- Forwards upload traffic to tusd (streaming proxy)
+- Handles finalize endpoint (retrieve metadata, completion logic)
+- Performs validate endpoint (reads local stored file, runs checks)
+- Maintains business-level state and orchestration
+
+Go tusd service:
+- Handles actual chunked upload protocol
+- Manages resume, offsets, partial uploads
+- Writes file data to storage volume
+- Ensures streaming correctness and efficiency
+
+Shared storage:
+- Persistent file location used by tusd
+- Read by Java for validation and post-processing
+
+3. Key design idea
+------------------
+- Java = control plane (business logic, orchestration, validation)
+- Go tusd = data plane (high-performance streaming upload engine)
+
+4. Important architectural property
+-----------------------------------
+- Java façade can act as a transparent reverse proxy
+- Upload semantics remain Tus-compliant if streaming is preserved
+- Finalization and validation happen outside upload path
+
+5. Why this works well
+----------------------
+- Offloads complex streaming logic to tusd
+- Keeps Java focused on business rules
+- Enables clean separation of failure domains
+- Makes system easier to replace or evolve independently
+
+
 ### See Also
 
 
