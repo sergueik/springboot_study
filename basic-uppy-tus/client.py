@@ -61,15 +61,20 @@ def create_upload(url, file_path):
 
 def base_origin(url: str) -> str:
   # keep only scheme + host, drop path completely
-  p = urlparse(url)
-  return f"{p.scheme}://{p.netloc}"
+  urlparsed = urlparse(url)
+  return f"{urlparsed.scheme}://{urlparsed.netloc}"
 
 def finalize(upload_url: str, upload_id: str) -> None:
   finalize_url = base_origin(upload_url) + '/api/uploads/finalize'
   payload = { 'uploadId': upload_id}
   body = json.dumps(payload).encode('ascii')
+  # print(f'send {body}')
   response = requests.post(finalize_url,data=body, headers={ 'Content-Type': 'application/json' })
   response.raise_for_status()
+  # use the built-in
+  response_json = response.json()
+  print("HTTP Code: {code} status: {status} file: {file}".format( code=response.status_code, status=response_json.get("status"), file=response_json.get("filename")))
+
 
 def validate(upload_url: str, upload_id: str, hash: str, file_path: str) -> None:
   pass
@@ -144,7 +149,7 @@ def main():
   # TODO: fix the error: the following arguments are required: url
   base_url = args.url or args.url_opt
   if not base_url:
-    parser.error('url is required')  
+    parser.error('url is required')
 
   if args.create:
     upload_url,upload_id = create_upload(base_url, file_path)

@@ -760,9 +760,10 @@ options:
 python client.py --chunk-size 5242880 test.bin http://localhost:8080/api/upload --create
 ```
 ```text
-Created upload: http://localhost:8080/api/upload/928d9439-947a-497f-b35e-7bd6ebdade03
+Created upload: http://localhost:8080/api/upload/eb73da67-a4c4-4146-bd90-078357d2c7b5
 Uploaded 10240/10240 bytes (100.00%)
 Done.
+HTTP Code: 200 status: OK file: test.bin
 ```
 ### Alternatives
 
