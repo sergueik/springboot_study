@@ -631,6 +631,7 @@ This reduces long-term technical debt and avoids ownership of a proprietary uplo
 ### Shell Client
 
 #### Broken Version (one byte mismatch)
+
 ```sh
 ./client.sh
 ```
@@ -675,7 +676,7 @@ and the final check
 56293a80e0394d252e995f2debccea8223e4b5b2b150bee212729b3b39ac4d46 *test.txt
 2d8c2f6d978ca21712b5f6de36c9d31fa8e96a4fa5d8ff8b0188dfb9e7c171bb */tmp/tus/uploads/62b1dc5f-636b-4c77-938e-e7fa0ce74fe9/data
 ```
-reveals the mismatch which is otherwise esasy to overlook:
+reveals the mismatch which is otherwise easy to overlook:
 ```txt
 Uploading: offset=256 len=190
 ```
@@ -727,6 +728,41 @@ Date: Sun, 14 Jun 2026 23:46:33 GMT
 56293a80e0394d252e995f2debccea8223e4b5b2b150bee212729b3b39ac4d46 *test.txt
 56293a80e0394d252e995f2debccea8223e4b5b2b150bee212729b3b39ac4d46 */tmp/tus/uploads/a7e9464e-c1c8-4156-999a-0543edd5afd7/data
 
+```
+
+```
+python client.py -h
+```
+```text
+usage: client.py [-h] [--file FILE] [--url URL] [--chunk-size CHUNK_SIZE]
+                 [--create] [--resume] [--from-offset FROM_OFFSET]
+                 file url
+
+Simple TUS upload CLI client
+
+positional arguments:
+  file                  File to upload
+  url                   TUS server base URL (e.g. http://localhost:8080/api/upload)
+
+options:
+  -h, --help            show this help message and exit
+  --file FILE           File to upload
+  --url URL             TUS server base URL 
+  --chunk-size CHUNK_SIZE
+                        Chunk size (e.g. 256K, 10M, 1GB)
+  --create              Create new upload before uploading
+  --resume              Resume upload from server offset
+  --from-offset FROM_OFFSET
+                        Force start offset (advanced override)
+```
+```sh
+
+python client.py --chunk-size 5242880 test.bin http://localhost:8080/api/upload --create
+```
+```text
+Created upload: http://localhost:8080/api/upload/928d9439-947a-497f-b35e-7bd6ebdade03
+Uploaded 10240/10240 bytes (100.00%)
+Done.
 ```
 ### Alternatives
 
@@ -841,6 +877,7 @@ docker pull tusproject/tusd:v2.9.1
 docker run -d -p 8080:8080 tusproject/tusd:v2.9.1
 ```
 ### See Also
+
   * official Docker image for running a tus server is [tusproject/tusd](https://hub.docker.com/r/tusproject/tusd) . Images are alpine based
   * https://blog.rasc.ch/2019/06/upload-with-tus.html
   * https://tus.io/protocols/resumable-upload#core-protocol
