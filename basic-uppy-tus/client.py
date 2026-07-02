@@ -6,7 +6,8 @@ import os
 import sys
 import requests
 import re
-
+import json
+from urllib.parse import urlparse
 
 TUS_VERSION = '1.0.0'
 
@@ -58,10 +59,19 @@ def create_upload(url, file_path):
   location = url + '/' + upload_id
   return location, upload_id
 
-def finalize(upload_id: str) -> None:
-  pass
+def base_origin(url: str) -> str:
+  # keep only scheme + host, drop path completely
+  p = urlparse(url)
+  return f"{p.scheme}://{p.netloc}"
 
-def validate(upload_id: str, hash: str, file_path: str) -> None:
+def finalize(upload_url: str, upload_id: str) -> None:
+  finalize_url = base_origin(upload_url) + '/api/uploads/finalize'
+  payload = { 'uploadId': upload_id}
+  body = json.dumps(payload).encode('ascii')
+  response = requests.post(finalize_url,data=body, headers={ 'Content-Type': 'application/json' })
+  response.raise_for_status()
+
+def validate(upload_url: str, upload_id: str, hash: str, file_path: str) -> None:
   pass
 
 def get_offset(upload_url):
@@ -145,13 +155,14 @@ def main():
       m = re.search(r'/([^/]+)$', upload_url)
       if m:
         upload_id = m.group(1)
-
+  if upload_id is None:
+    parser.error( 'upload_id is undefined; use --create or specify an upload resource URL')
   upload( upload_url=upload_url, file_path=file_path, chunk_size=args.chunk_size, start_offset=args.from_offset)
   if args.profile is None or args.profile == 'java':
-    finalize(upload_id)
+    finalize(upload_url,upload_id)
     # TODO
     digest = None
-    validate(upload_id, digest, file_path)
+    validate(upload_url, upload_id, digest, file_path)
   elif args.profile == 'tusd':
     pass
   else:
