@@ -1,4 +1,4 @@
-package example;
+package example.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,18 +68,36 @@ public class MinimalCalculator {
 		}
 
 		// Primary -> NUMBER
-		public int parsePrimary() {
+		public long parsePrimary() {
 			Token token = consume();
-			return Integer.parseInt(token.text);
+			String text = token.text.toUpperCase();
+
+			long multiplier = 1;
+
+			if (text.endsWith("K")) {
+				multiplier = 1024L;
+				text = text.substring(0, text.length() - 1);
+			} else if (text.endsWith("M")) {
+				multiplier = 1024L * 1024;
+				text = text.substring(0, text.length() - 1);
+			} else if (text.endsWith("G")) {
+				multiplier = 1024L * 1024 * 1024;
+				text = text.substring(0, text.length() - 1);
+			} else if (text.endsWith("T")) {
+				multiplier = 1024L * 1024 * 1024 * 1024;
+				text = text.substring(0, text.length() - 1);
+			}
+
+			return Long.parseLong(text) * multiplier;
 		}
 
-		public int parseTerm() {
-			int result = parsePrimary();
+		public long parseTerm() {
+			long result = parsePrimary();
 
 			while (peek().type == Type.MUL || peek().type == Type.DIV) {
 
 				Token op = consume();
-				int next = parsePrimary();
+				long next = parsePrimary();
 
 				if (op.type == Type.MUL) {
 					result *= next;
@@ -92,13 +110,13 @@ public class MinimalCalculator {
 		}
 
 		// Expression -> Primary ( (PLUS|MINUS) Primary )*
-		public int parseExpression() {
-			int result = parseTerm();
+		public long parseExpression() {
+			long result = parseTerm();
 
 			while (peek().type == Type.PLUS || peek().type == Type.MINUS) {
 
 				Token op = consume();
-				int next = parseTerm();
+				long next = parseTerm();
 
 				if (op.type == Type.PLUS) {
 					result += next;
@@ -112,6 +130,14 @@ public class MinimalCalculator {
 
 	}
 
+	public static long evaluate(String expr) {
+		List<Token> tokens = tokenize(expr);
+		Parser parser = new Parser(tokens);
+		// System.out.println(expr + " = " + parser.parseExpression() + " / Expected: "
+		// + entry.getValue());
+		return parser.parseExpression();
+	}
+
 	public static void main(String[] args) {
 		Map<String, Integer> examples = new HashMap<>();
 		examples.put("2 + 2 - 1", 3);
@@ -122,9 +148,7 @@ public class MinimalCalculator {
 
 		for (Map.Entry<String, Integer> entry : examples.entrySet()) {
 			String expr = entry.getKey();
-			List<Token> tokens = tokenize(expr);
-			Parser parser = new Parser(tokens);
-			System.out.println(expr + " = " + parser.parseExpression() + " / Expected: " + entry.getValue());
+			System.out.println(expr + " = " + evaluate(expr) + " / Expected: " + entry.getValue());
 		}
 	}
 }

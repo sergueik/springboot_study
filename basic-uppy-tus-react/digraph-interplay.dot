@@ -1,0 +1,45 @@
+digraph ConfigDomains {
+
+    rankdir=LR;
+    graph [splines=true];
+    node [shape=box];
+
+    env [
+        shape=note,
+        style="filled",
+        fillcolor=lightyellow,
+        label=".env\n(shared configuration)"
+    ];
+
+    subgraph cluster_java {
+        label="Java Runtime Domain";
+        style=rounded;
+
+        dotenv  [label="[dotenv] helper jar"];
+        spring  [label="Spring Boot"];
+        config  [label="/api/uploads/config.js"];
+
+        dotenv -> spring -> config;
+    }
+
+    subgraph cluster_react {
+        label="React Domain";
+        style=rounded;
+
+        vite    [label="Vite build\n(optional future)"];
+        browser [label="Browser"];
+        appcfg  [label="window.APP_CONFIG"];
+        react   [label="React App"];
+
+        vite -> react;
+        browser -> appcfg -> react;
+    }
+
+    env -> dotenv [style=dashed,
+                   label="runtime\n(today)"];
+
+    env -> vite [style=dashed,
+                 label="direct\n(future)"];
+
+    config -> browser;
+}

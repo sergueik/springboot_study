@@ -28,6 +28,114 @@ docker pull eclipse-temurin:11-jre-alpine
 IMAGE=uppy-tus-react
 docker build -t $IMAGE -f Dockerfile .
 ```
+
+```text
+Sending build context to Docker daemon     57MB
+Step 1/20 : FROM node:18.1.0-alpine AS react_builder
+ ---> d94913fe64df
+Step 2/20 : WORKDIR /app
+ ---> Using cache
+ ---> 81eb9c0fb83b
+Step 3/20 : COPY frontend /app/
+ ---> 400190b80d7a
+Step 4/20 : RUN cd /app   && rm -rf node_modules package-lock.json   && npm install     @uppy/core@5.2.0     @uppy/dashboard@5.1.1     @uppy/tus@5.1.1     @uppy/react@5.2.0     @vitejs/plugin-react@4.3.4     js-sha256@0.11.0     vite@5.4.19
+ ---> Running in e2e10f29b6e1
+
+added 114 packages, and audited 115 packages in 1m
+
+15 packages are looking for funding
+  run `npm fund` for details
+
+2 vulnerabilities (1 moderate, 1 high)
+
+To address all issues, run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+npm notice
+npm notice New major version of npm available! 8.8.0 -> 11.18.0
+npm notice Changelog: <https://github.com/npm/cli/releases/tag/v11.18.0>
+npm notice Run `npm install -g npm@11.18.0` to update!
+npm notice
+Removing intermediate container e2e10f29b6e1
+ ---> d2cbfbfae05b
+Step 5/20 : RUN npm run build
+ ---> Running in 13c56361d6c9
+
+> uppy-react-upload@1.0.0 build
+> vite build
+
+vite v5.4.19 building for production...
+<script src="/api/uploads/config.js"> in "/index.html" can't be bundled without type="module" attribute
+transforming...
+✓ 254 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.55 kB │ gzip:   0.33 kB
+dist/assets/index-C_U7NcPb.css   66.05 kB │ gzip:  10.51 kB
+dist/assets/index-DV05mx44.js   456.21 kB │ gzip: 139.28 kB
+✓ built in 11.63s
+Removing intermediate container 13c56361d6c9
+ ---> 73e41cde2674
+Step 6/20 : FROM maven:3.9.5-eclipse-temurin-11-alpine as builder
+ ---> 37ef041f8432
+Step 7/20 : WORKDIR /app
+ ---> Using cache
+ ---> b97cbf0b9ff3
+Step 8/20 : COPY pom.xml /app/
+ ---> Using cache
+ ---> f5bfeec72f5b
+Step 9/20 : RUN mvn dependency:go-offline -q
+ ---> Using cache
+ ---> 242ab401fce7
+Step 10/20 : ADD src /app/src/
+ ---> 7ee872031879
+Step 11/20 : COPY --from=react_builder /app/dist /app/src/main/resources/public/
+ ---> 56c76bc1748f
+Step 12/20 : RUN mvn clean package -DskipTests -q
+ ---> Running in 827426ec7aba
+Removing intermediate container 827426ec7aba
+ ---> 7351e349cda3
+Step 13/20 : FROM eclipse-temurin:11-jre-alpine as run
+ ---> eda029f40d3e
+Step 14/20 : COPY --from=builder /app/target/example.tus-java-server.jar /app/app.jar
+ ---> 97e2c025ac10
+Step 15/20 : COPY --from=react_builder /app/.env /app
+ ---> 396180602637
+Step 16/20 : RUN apk update     && apk add --update --no-cache curl     && rm -rf /var/cache/*     && mkdir /var/cache/apk
+ ---> Running in dc14e7501147
+v3.23.5-22-gaa6632a22aa [https://dl-cdn.alpinelinux.org/alpine/v3.23/main]
+v3.23.5-20-g80e818b4aac [https://dl-cdn.alpinelinux.org/alpine/v3.23/community]
+OK: 27587 distinct packages available
+(1/5) Installing c-ares (1.34.6-r0)
+(2/5) Installing nghttp2-libs (1.69.0-r0)
+(3/5) Installing libpsl (0.21.5-r3)
+(4/5) Installing libcurl (8.19.0-r0)
+(5/5) Installing curl (8.19.0-r0)
+Executing busybox-1.37.0-r30.trigger
+OK: 41.8 MiB in 78 packages
+Removing intermediate container dc14e7501147
+ ---> 64fcab030f06
+Step 17/20 : WORKDIR /app
+ ---> Running in 7eea6feb32df
+Removing intermediate container 7eea6feb32df
+ ---> 1d20143283df
+Step 18/20 : HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD curl -f http://localhost:8080/ || exit 1
+ ---> Running in eda31725c928
+Removing intermediate container eda31725c928
+ ---> 18ccc2a11a64
+Step 19/20 : ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ ---> Running in 3674394f1858
+Removing intermediate container 3674394f1858
+ ---> 511544729931
+Step 20/20 : EXPOSE 8080
+ ---> Running in 6d0534f37aa4
+Removing intermediate container 6d0534f37aa4
+ ---> 7ac7aa6e8e8f
+Successfully built 7ac7aa6e8e8f
+Successfully tagged uppy-tus-react:latest
+SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host. All files and directories added to build context will have '-rwxr-xr-x' permissions. It is recommended to double check and reset permissions for sensitive files and directories.
+```
 ignore the warning:
 ```text
 <script src="/api/uploads/config.js"> in "/index.html" can't be bundled without type="module" attribute
@@ -61,14 +169,48 @@ index-D1PlX4wM.js:81 client side:  2886a81556fad0999ddff880956d6e452a45c09f73b8e
 index-D1PlX4wM.js:81 verify:  200 {uploadHash: '2886a81556fad0999ddff880956d6e452a45c09f73b8eedf5193e5fc0371d0d4', filename: 'example.bin', uploadId: '0b2fdb09-7281-4250-bd6e-79210ea26fd0', hash: '2886A81556FAD0999DDFF880956D6E452A45C09F73B8EEDF5193E5FC0371D0D4', status: 'OK'}
 ```
 ```sh
+CONTAINER=example
 docker logs $CONTAINER
 ```
-```text
-2026-07-03 03:09:10.388 DEBUG 1 --- [nio-8080-exec-5] o.s.w.f.CommonsRequestLoggingFilter      : After request [GET /api/uploads/config.js, client=192.168.99.1, headers=[host:"192.168.99.100:8080", connection:"keep-alive", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36", accept:"*/*", referer:"http://192.168.99.100:8080/", accept-encoding:"gzip, deflate", accept-language:"en-US,en;q=0.9"]]
-```
+open the url `http://192.168.99.100:8080/` in the browser. Update with the IP address of Docker Toolbox machine
 
 ![React Congiuration Loaded](screenshots/capture-initial.png)
 
+confirm the back end 
+```text
+2026-07-03 03:09:10.388 DEBUG 1 --- [nio-8080-exec-5] o.s.w.f.CommonsRequestLoggingFilter      : After request [GET /api/uploads/config.js, client=192.168.99.1, headers=[host:"192.168.99.100:8080", connection:"keep-alive", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36", accept:"*/*", referer:"http://192.168.99.100:8080/", accept-encoding:"gzip, deflate", accept-language:"en-US,en;q=0.9"]]
+```
+and
+```text
+2026-07-03 15:01:06.466  INFO 1 --- [nio-8080-exec-8] e.controller.DotnetConfigController      : Returning javascript: window.APP_CONFIG = {"MAX_FILE_SIZE_BYTES":2147439648,"TUS_RETRY_DELAYS":["0","500","1000","3000"],"MAX_NUMBER_OF_FILES":1,"TUS_ENDPOINT":"/api/upload","TUS_CHUNK_SIZE":5242880};
+2026-07-03 15:01:06.498 DEBUG 1 --- [nio-8080-exec-8] o.s.w.f.CommonsRequestLoggingFilter      : After request [GET /api/uploads/config.js, client=192.168.99.1, headers=[host:"192.168.99.100:8080", connection:"keep-alive", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36", accept:"*/*", referer:"http://192.168.99.100:8080/", accept-encoding:"gzip, deflate", accept-language:"en-US,en;q=0.9"]]
+```
+and
+
+```text
+
+2026-07-03 15:23:10.791 DEBUG 1 --- [nio-8080-exec-3] o.s.w.f.CommonsRequestLoggingFilter      : Before request [GET /api/uploads/config, client=192.168.99.1, headers=[host:"192.168.99.100:8080", connection:"keep-alive", upgrade-insecure-requests:"1", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36", accept:"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", accept-encoding:"gzip, deflate", accept-language:"en-US,en;q=0.9"]]
+2026-07-03 15:23:10.802  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : Working dir: /app
+2026-07-03 15:23:10.806  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: VITE_TUS_CHUNK_SIZE=5 * 1024 * 1024
+2026-07-03 15:23:10.807  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: VITE_TUS_RETRY_DELAYS=0,500,1000,3000
+2026-07-03 15:23:10.808  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: VITE_TUS_ENDPOINT=/api/upload
+2026-07-03 15:23:10.808  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: VITE_MAX_NUMBER_OF_FILES=1
+2026-07-03 15:23:10.808  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: VITE_MAX_FILE_SIZE_BYTES=2147439648
+2026-07-03 15:23:10.808  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: VITE_UPPY_SHOW_PROGRESS_DETAILS=true
+2026-07-03 15:23:10.809  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: VITE_JOB_REDIRECT_DELAY_MS=500
+2026-07-03 15:23:10.809  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: LANGUAGE=en_US:en
+2026-07-03 15:23:10.809  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+2026-07-03 15:23:10.809  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: HOSTNAME=a30747860229
+2026-07-03 15:23:10.810  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: LC_ALL=en_US.UTF-8
+2026-07-03 15:23:10.810  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: LD_LIBRARY_PATH=/opt/java/openjdk/lib/server:/opt/java/openjdk/lib:/opt/java/openjdk/../lib
+2026-07-03 15:23:10.810  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: JAVA_HOME=/opt/java/openjdk
+2026-07-03 15:23:10.812  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: JAVA_VERSION=jdk-11.0.31+11
+2026-07-03 15:23:10.812  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: LANG=en_US.UTF-8
+2026-07-03 15:23:10.812  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : dotenv: HOME=/root
+2026-07-03 15:23:10.813  INFO 1 --- [nio-8080-exec-3] example.service.DotnetConfigService      : vite.tus.chunk.size=5 * 1024 * 1024
+2026-07-03 15:23:10.814  INFO 1 --- [nio-8080-exec-3] e.controller.DotnetConfigController      : Returning config JSON: {"MAX_FILE_SIZE_BYTES":2147439648,"TUS_RETRY_DELAYS":["0","500","1000","3000"],"MAX_NUMBER_OF_FILES":1,"TUS_ENDPOINT":"/api/upload","TUS_CHUNK_SIZE":5242880}
+2026-07-03 15:23:10.844 DEBUG 1 --- [nio-8080-exec-3] o.s.w.f.CommonsRequestLoggingFilter      : After request [GET /api/uploads/config, client=192.168.99.1, headers=[host:"192.168.99.100:8080", connection:"keep-alive", upgrade-insecure-requests:"1", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36", accept:"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", accept-encoding:"gzip, deflate", accept-language:"en-US,en;q=0.9"]]
+```
 ```text
 LoggingFilter      : Before request [POST /api/upload, client=0:0:0:0:0:0:0:1, headers=[host:"localhost:8080", connection:"keep-alive", content-length:"0", sec-ch-ua-platform:""Windows"", tus-resumable:"1.0.0", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36", upload-length:"447", sec-ch-ua:""Google Chrome";v="149", "Chromium";v="149", "Not)A;Brand";v="24"", upload-metadata:"relativePath bnVsbA==,name dGVzdC50eHQ=,type dGV4dC9wbGFpbg==,filetype dGV4dC9wbGFpbg==,filename dGVzdC50eHQ=", sec-ch-ua-mobile:"?0", accept:"*/*", origin:"http://192.168.99.100:8080", sec-fetch-site:"cross-site", sec-fetch-mode:"cors", sec-fetch-dest:"empty", referer:"http://192.168.99.100:8080/", accept-encoding:"gzip, deflate, br, zstd", accept-language:"en-US,en;q=0.9"]]
 2026-06-18 15:18:50.314  INFO 34304 --- [nio-8080-exec-6] m.d.t.s.c.CreationPostRequestHandler     : Created upload with ID 21b73f31-647a-45be-b010-6701031015da at 1781810330301 for ip address 0:0:0:0:0:0:0:1 with location /api/upload/21b73f31-647a-45be-b010-6701031015da
@@ -510,10 +652,51 @@ Shared storage:
 ### Minimal Calculator
 
 ```sh
-javac src\main\java\example\MinimalCalculator.java
-java -cp src\main\java example.MinimalCalculator
+javac src\main\java\example\utils\MinimalCalculator.java
+```
+```
+cd src\main\java
+
+java -cp . example.utils.MinimalCalculator
+```
+```text
+2 + 3 * 4 = 14 / Expected: 14
+2 + 2 - 1 = 3 / Expected: 3
+2 * 3 + 4 * 5 = 26 / Expected: 26
+2 + 0 * 4  = 2 / Expected: 2
+20 - 6 / 2 = 17 / Expected: 17
 ```
 
+> NOTE
+
+```sh
+mvn -DskipTests package
+```
+```sh
+java -cp target\example.tus-java-server.jar example.utils.MinimalCalculator
+```
+```
+Error: Could not find or load main class example.utils.MinimalCalculator
+Caused by: java.lang.ClassNotFoundException: example.utils.MinimalCalculator
+```
+```sh
+unzip -ql target\example.tus-java-server.jar | findstr -i Calc
+```
+```
+     2552  2026-07-03 10:18   BOOT-INF/classes/example/utils/MinimalCalculator$Parser.class
+      718  2026-07-03 10:18   BOOT-INF/classes/example/utils/MinimalCalculator$Token.class
+     1392  2026-07-03 10:18   BOOT-INF/classes/example/utils/MinimalCalculator$Type.class
+     4003  2026-07-03 10:18   BOOT-INF/classes/example/utils/MinimalCalculator.class
+```
+
+how to run it ? other than. The 
+```
+java -cp target\example.tus-java-server.jar example.utils.MinimalCalculator
+```
+will never work
+```sh
+java -cp target\classes example.utils.MinimalCalculator
+```
 ```text
 2 + 3 * 4 = 14 / Expected: 14
 2 + 2 - 1 = 3 / Expected: 3

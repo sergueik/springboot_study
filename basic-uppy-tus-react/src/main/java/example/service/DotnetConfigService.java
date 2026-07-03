@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import example.utils.MinimalCalculator;
 
 @Service
 public class DotnetConfigService {
@@ -18,9 +19,10 @@ public class DotnetConfigService {
 		var dotenv = Dotenv.configure().ignoreIfMissing().load();
 		logger.info("Working dir: {}", System.getProperty("user.dir"));
 
-		dotenv.entries().forEach(e -> logger.info("dotenv: {}={}", e.getKey(), e.getValue()));
-		dotenv.entries()
-				.forEach(entry -> System.setProperty(entry.getKey().toLowerCase().replace('_', '.'), entry.getValue()));
+		dotenv.entries().stream().peek(e -> logger.info("dotenv: {}={}", e.getKey(), e.getValue()))
+				.map(e -> new HashMap.SimpleEntry<>(e.getKey().toLowerCase().replace('_', '.'), e.getValue()))
+				.peek(e -> System.setProperty(e.getKey(), e.getValue()))
+				.forEach(e -> logger.debug("sysprop: {}={}", e.getKey(), e.getValue()));
 
 		logger.info("vite.tus.chunk.size={}", System.getProperty("vite.tus.chunk.size"));
 	}
@@ -31,8 +33,16 @@ public class DotnetConfigService {
 		// chop the "VITE_" prefix.
 		// NOTE: if not set chunkSize, tus behaves like: send the whole file in one
 		// request (effectively no chunking override)
-		if (System.getProperties().containsKey("vite.tus.chunk.size"))
-			data.put("TUS_CHUNK_SIZE", Long.parseLong(System.getProperty("vite.tus.chunk.size")));
+		if (System.getProperties().containsKey("vite.tus.chunk.size")) {
+			// data.put("TUS_CHUNK_SIZE",
+			// Long.parseLong(System.getProperty("vite.tus.chunk.size")));
+			String chunkSize = System.getProperty("vite.tus.chunk.size");
+			// Map<String, Long> data = new HashMap<>();
+			if (chunkSize != null && !chunkSize.isBlank()) {
+				data.put("TUS_CHUNK_SIZE", MinimalCalculator.evaluate(chunkSize));
+			}
+		}
+
 		data.put("TUS_ENDPOINT", System.getProperty("vite.tus.endpoint"));
 		if (System.getProperties().containsKey("vite.max.number.of.files"))
 			data.put("MAX_NUMBER_OF_FILES", Integer.parseInt(System.getProperty("vite.max.number.of.files")));
