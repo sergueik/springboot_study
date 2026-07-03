@@ -13,6 +13,10 @@ https://github.com/transloadit/uppy with over 10K commits
 
 ### Usage
 
+![Reusing Configuration Material](screenshots/diagram-interplay.png)
+
+![Resource Sharing](screenshots/diagram-resource-sharing.png)
+
 
 ```sh
 docker pull node:18.1.0-alpine
@@ -24,7 +28,10 @@ docker pull eclipse-temurin:11-jre-alpine
 IMAGE=uppy-tus-react
 docker build -t $IMAGE -f Dockerfile .
 ```
-
+ignore the warning:
+```text
+<script src="/api/uploads/config.js"> in "/index.html" can't be bundled without type="module" attribute
+```
 run both frontend and backend on port `8080`:
 ```sh
 IMAGE=uppy-tus-react
@@ -500,7 +507,20 @@ Shared storage:
 - Enables clean separation of failure domains
 - Makes system easier to replace or evolve independently
 
+### Minimal Calculator
 
+```sh
+javac src\main\java\example\MinimalCalculator.java
+java -cp src\main\java example.MinimalCalculator
+```
+
+```text
+2 + 3 * 4 = 14 / Expected: 14
+2 + 2 - 1 = 3 / Expected: 3
+2 * 3 + 4 * 5 = 26 / Expected: 26
+2 + 0 * 4  = 2 / Expected: 2
+20 - 6 / 2 = 17 / Expected: 17
+```
 ### See Also
 
 
@@ -512,7 +532,8 @@ Shared storage:
   * [tus-java-server](https://github.com/tomdesair/tus-java-server)
   * `PATCH` Method for `HTTP` [RFC5789](https://www.rfc-editor.org/info/rfc5789/)
   * [Guide to Java FileChannel](https://www.baeldung.com/java-filechannel)
-
+  * [dotenv-java](https://github.com/cdimascio/dotenv-java) - is a no-dep, pure Java module that loads environment variables from a .env file
+  
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
