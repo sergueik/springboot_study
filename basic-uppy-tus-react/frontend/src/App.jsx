@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import Uppy from '@uppy/core'
 import Dashboard from '@uppy/dashboard'
@@ -12,9 +12,7 @@ import uploadConfig from './uploadConfig';
 const config = {
   TUS_ENDPOINT: window.APP_CONFIG?.TUS_ENDPOINT ?? uploadConfig.TUS_ENDPOINT,
   UPPY_SHOW_PROGRESS_DETAILS:
-    window.APP_CONFIG?.UPPY_SHOW_PROGRESS_DETAILS ??
-    uploadConfig.UPPY_SHOW_PROGRESS_DETAILS,
-
+    window.APP_CONFIG?.UPPY_SHOW_PROGRESS_DETAILS ?? uploadConfig.UPPY_SHOW_PROGRESS_DETAILS,
   TUS_CHUNK_SIZE: (() => {
     const v =
       window.APP_CONFIG?.TUS_CHUNK_SIZE ??
@@ -23,10 +21,8 @@ const config = {
     const n = parseInt(v, 10);
     return Number.isNaN(n) ? undefined : n;
   })(),
-
   TUS_RETRY_DELAYS:
-    window.APP_CONFIG?.TUS_RETRY_DELAYS ??
-    uploadConfig.TUS_RETRY_DELAYS,
+    window.APP_CONFIG?.TUS_RETRY_DELAYS ?? uploadConfig.TUS_RETRY_DELAYS
 };
 
 // NOTE: does not scale
@@ -38,6 +34,8 @@ async function calculateHash(file) {
 // NOTE: on HTTP, browser hosted crypto.subtle is unavailable by design
 
 export default function App() {
+  const [config, setConfig] = useState(null);
+
   const uppyRef = useRef(null);
 
   const pauseUploads = () => {
@@ -49,13 +47,21 @@ export default function App() {
   };
 
   useEffect(() => {
+
+    fetch('/api/uploads/config')
+      .then(r => r.json())
+      .then(setConfig)
+      .catch(console.error);
+  }, []);
+
+  useEffect(() => {
     if (!config) {
       console.log('config undefined');
       return;
     } else {
-      console.dir(config); 
+      console.dir(config);
     }
-    //  guard the effect
+    // guard the effect
     const uppy = new Uppy({ autoProceed: false })
 
     uppyRef.current = uppy;
@@ -71,14 +77,15 @@ export default function App() {
     uppy.setMeta({
       filetype: 'application/octet-stream',
       filename: 'example.bin',
-    });
+    })
 
     uppy.use(Tus, {
-      endpoint: config.TUS_ENDPOINT,
       retryDelays: config.TUS_RETRY_DELAYS,
-      ...(config.TUS_CHUNK_SIZE && {
-        chunkSize: config.TUS_CHUNK_SIZE,
-      }),
+      endpoint: config.TUS_ENDPOINT,
+      // NOTE: the underlying library (tus-js-client) defaults to chunkSize: Infinity - send the entire file in a single PATCH request regardless of the size
+     // chunkSize:  config.TUS_CHUNK_SIZE,
+     // inline conditional spread
+     ...( config.TUS_CHUNK_SIZE && { chunkSize: config.TUS_CHUNK_SIZE })
     });
 
     let cached;
@@ -127,8 +134,8 @@ export default function App() {
       console.log('verify: ', res2.status, data2);
     });
 
-    return () => uppy.destroy();
-  }, []);
+    return () => uppy.destroy()
+  }, [config]);
 
   return (
     <div style={{ padding: 20 }}>
