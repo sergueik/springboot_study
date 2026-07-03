@@ -16,7 +16,8 @@ public class RequestLoggingConfig {
 		filter.setIncludeClientInfo(true);
 		filter.setIncludeQueryString(true);
 		filter.setIncludeHeaders(true);
-		filter.setIncludePayload(false); // IMPORTANT for large uploads
+		// filter.setIncludePayload(false); // IMPORTANT for large uploads
+		filter.setIncludePayload(true); // for debugging
 		filter.setMaxPayloadLength(1024);
 
 		return filter;

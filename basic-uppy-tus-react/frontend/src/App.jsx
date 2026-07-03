@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 import Uppy from '@uppy/core'
 import Dashboard from '@uppy/dashboard'
@@ -12,11 +12,21 @@ import uploadConfig from './uploadConfig';
 const config = {
   TUS_ENDPOINT: window.APP_CONFIG?.TUS_ENDPOINT ?? uploadConfig.TUS_ENDPOINT,
   UPPY_SHOW_PROGRESS_DETAILS:
-    window.APP_CONFIG?.UPPY_SHOW_PROGRESS_DETAILS ?? uploadConfig.UPPY_SHOW_PROGRESS_DETAILS,
-  TUS_CHUNK_SIZE:
-    parseInt(window.APP_CONFIG?.TUS_CHUNK_SIZE ?? uploadConfig.TUS_CHUNK_SIZE, undefined),
+    window.APP_CONFIG?.UPPY_SHOW_PROGRESS_DETAILS ??
+    uploadConfig.UPPY_SHOW_PROGRESS_DETAILS,
+
+  TUS_CHUNK_SIZE: (() => {
+    const v =
+      window.APP_CONFIG?.TUS_CHUNK_SIZE ??
+      uploadConfig.TUS_CHUNK_SIZE;
+
+    const n = parseInt(v, 10);
+    return Number.isNaN(n) ? undefined : n;
+  })(),
+
   TUS_RETRY_DELAYS:
-    window.APP_CONFIG?.TUS_RETRY_DELAYS ?? uploadConfig.TUS_RETRY_DELAYS
+    window.APP_CONFIG?.TUS_RETRY_DELAYS ??
+    uploadConfig.TUS_RETRY_DELAYS,
 };
 
 // NOTE: does not scale
@@ -28,8 +38,6 @@ async function calculateHash(file) {
 // NOTE: on HTTP, browser hosted crypto.subtle is unavailable by design
 
 export default function App() {
-  const [config, setConfig] = useState(null);
-
   const uppyRef = useRef(null);
 
   const pauseUploads = () => {
@@ -41,22 +49,13 @@ export default function App() {
   };
 
   useEffect(() => {
-	
-    fetch('/api/uploads/config')
-      .then(r => r.json())
-      .then(setConfig)
-      .catch(console.error);
-  }, []);
-
-  useEffect(() => {
     if (!config) {
       console.log('config undefined');
       return;
     } else {
       console.dir(config); 
-      console.log('typeof config.TUS_CHUNK_SIZE: ' + typeof config.TUS_CHUNK_SIZE);
     }
-    //  giard the effect
+    //  guard the effect
     const uppy = new Uppy({ autoProceed: false })
 
     uppyRef.current = uppy;
@@ -65,23 +64,22 @@ export default function App() {
       inline: true,
       target: '#uppy',
       proudlyDisplayPoweredByUppy: false,
-      showProgressDetails: uploadConfig.UPPY_SHOW_PROGRESS_DETAILS,
+      showProgressDetails: config.UPPY_SHOW_PROGRESS_DETAILS,
       hidePauseResumeButtons: true,
-    })
+    });
 
     uppy.setMeta({
       filetype: 'application/octet-stream',
-      filename: 'example.bin'
-    })
+      filename: 'example.bin',
+    });
 
     uppy.use(Tus, {
-      retryDelays: config.TUS_RETRY_DELAYS,
       endpoint: config.TUS_ENDPOINT,
-      // NOTE: the underlying library (tus-js-client) defaults to chunkSize: Infinity - send the entire file in a single PATCH request regardless of the size
-     // chunkSize:  config.TUS_CHUNK_SIZE,
-     // inline conditional spread
-     ...( config.TUS_CHUNK_SIZE && { chunkSize: config.TUS_CHUNK_SIZE })	
-    })
+      retryDelays: config.TUS_RETRY_DELAYS,
+      ...(config.TUS_CHUNK_SIZE && {
+        chunkSize: config.TUS_CHUNK_SIZE,
+      }),
+    });
 
     let cached;
 
@@ -91,7 +89,7 @@ export default function App() {
     });
 
     uppy.on('upload-success', async (file, response) => {
-      const uploadUrl = response?.uploadURL||response?.url;
+      const uploadUrl = response?.uploadURL || response?.url;
       const uploadId = uploadUrl?.split('/').pop();
       const res = await fetch ('/api/uploads/finalize',{
         method: 'POST',
@@ -107,7 +105,7 @@ export default function App() {
      const rawFile = cached;
 
      if (!rawFile) {
-       console.error("No file data available for hashing");
+       console.error('No file data available for hashing');
        return;
      }
 
@@ -129,8 +127,8 @@ export default function App() {
       console.log('verify: ', res2.status, data2);
     });
 
-    return () => uppy.destroy()
-  }, [config])
+    return () => uppy.destroy();
+  }, []);
 
   return (
     <div style={{ padding: 20 }}>
@@ -144,5 +142,5 @@ export default function App() {
       </button>	
       <div id="uppy" />
     </div>
-  )
+  );
 }
