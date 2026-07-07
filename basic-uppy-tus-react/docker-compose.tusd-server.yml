@@ -3,8 +3,8 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.react_runtime
-    container_name: react_runtime
+      dockerfile: Dockerfile.frontend
+    container_name: frontend
     ports:
       - "3000:3000"
     depends_on:

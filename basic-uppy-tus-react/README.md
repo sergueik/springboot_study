@@ -810,6 +810,107 @@ java -cp target\classes example.utils.MinimalCalculator
 2 + 0 * 4  = 2 / Expected: 2
 20 - 6 / 2 = 17 / Expected: 17
 ```
+### Usage
+```
+IMAGE=frontend
+docker build -t $IMAGE -f Dockerfile.frontend  .
+```
+```text
+Sending build context to Docker daemon  57.01MB
+Step 1/13 : FROM node:18.1.0-alpine AS react_builder
+ ---> d94913fe64df
+Step 2/13 : WORKDIR /app
+ ---> Using cache
+ ---> 42233862edb1
+Step 3/13 : COPY frontend/package*.json /app/
+ ---> d9ab88045f9b
+Step 4/13 : RUN npm install
+ ---> Running in 6cac253aa2da
+
+added 114 packages, and audited 115 packages in 29s
+
+15 packages are looking for funding
+  run `npm fund` for details
+
+2 vulnerabilities (1 moderate, 1 high)
+
+To address all issues, run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+npm notice
+npm notice New major version of npm available! 8.8.0 -> 11.18.0
+npm notice Changelog: <https://github.com/npm/cli/releases/tag/v11.18.0>
+npm notice Run `npm install -g npm@11.18.0` to update!
+npm notice
+Removing intermediate container 6cac253aa2da
+ ---> 23e5a0244db0
+Step 5/13 : COPY frontend/index.html frontend/vite.config.js /app/
+ ---> c1a65fafa526
+Step 6/13 : ADD frontend/src /app/src
+ ---> 09d4e830b7fd
+Step 7/13 : RUN npm run build
+ ---> Running in 7689c8df8dba
+
+> uppy-react-upload@1.0.0 build
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 254 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.48 kB │ gzip:   0.30 kB
+dist/assets/index-C_U7NcPb.css   66.05 kB │ gzip:  10.51 kB
+dist/assets/index-C_5vY8FU.js   455.99 kB │ gzip: 139.18 kB
+✓ built in 18.79s
+Removing intermediate container 7689c8df8dba
+ ---> 4f401b052400
+Step 8/13 : FROM node:18-alpine
+ ---> ee77c6cd7c18
+Step 9/13 : WORKDIR /app
+ ---> Running in a8183d654566
+Removing intermediate container a8183d654566
+ ---> 667f9faa8a19
+Step 10/13 : COPY --from=react_builder /app/dist /app/dist
+ ---> 0e0067c3bcb8
+Step 11/13 : RUN npm install -g serve
+ ---> Running in 5e6ae1276e3e
+
+added 85 packages in 16s
+
+26 packages are looking for funding
+  run `npm fund` for details
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.18.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.18.0
+npm notice To update run: npm install -g npm@11.18.0
+npm notice
+Removing intermediate container 5e6ae1276e3e
+ ---> c7fff22900da
+Step 12/13 : EXPOSE 3000
+ ---> Running in e20f5f4aa121
+Removing intermediate container e20f5f4aa121
+ ---> f145aeaabb89
+Step 13/13 : CMD ["serve", "-s", "dist", "-l", "3000"]
+ ---> Running in a2f6b289ff1f
+Removing intermediate container a2f6b289ff1f
+ ---> 45d08abc08e7
+Successfully built 45d08abc08e7
+Successfully tagged frontend:latest
+SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host. All files and directories added to build context will have '-rwxr-xr-x' permissions. It is recommended to double check and reset permissions for sensitive files and directories.
+```
+```sh
+CONTAINER=frontend
+docker run -d --name $CONTAINER -p 3000:3000 $IMAGE 
+```
+```sh
+docker logs $CONTAINER
+```
+```text
+ WARN  Checking for updates failed (use `--debug` to see full error)
+ INFO  Accepting connections at http://localhost:3000
+```
 ### See Also
 
 

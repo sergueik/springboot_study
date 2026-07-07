@@ -4,7 +4,13 @@ WORKDIR /app
 
 COPY frontend/package*.json /app/
 
-RUN npm install
+ARG NPM_REGISTRY
+
+RUN if [ -n "$NPM_REGISTRY" ]; then \
+        npm config set registry "$NPM_REGISTRY"; \
+    fi
+RUN npm install \
+ || { cat /root/.npm/_logs/*.log; exit 1; }
 
 COPY frontend/index.html frontend/vite.config.js /app/
 ADD frontend/src /app/src
@@ -12,12 +18,18 @@ ADD frontend/src /app/src
 RUN npm run build
 
 FROM node:18-alpine
+ARG NPM_REGISTRY
+
+RUN if [ -n "$NPM_REGISTRY" ]; then \
+        npm config set registry "$NPM_REGISTRY"; \
+    fi
 
 WORKDIR /app
 
 COPY --from=react_builder /app/dist /app/dist
 
-RUN npm install -g serve
+RUN npm install -g serve \
+ || { cat /root/.npm/_logs/*.log; exit 1; }
 
 # HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
 # CMD curl -f http://localhost:8080/ || exit 1

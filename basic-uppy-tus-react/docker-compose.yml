@@ -3,24 +3,21 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.react_runtime
-    container_name: react_runtime
+      dockerfile: Dockerfile.frontend
+    container_name: frontend
     ports:
       - "3000:3000"
+    # TODO: configure frontend to use backend server explicitly 
     depends_on:
-      - tusd
+      - backend
 
-  tusd:
-    image: tusproject/tusd:v2.9.1
-    container_name: tusd_server
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
     ports:
       - "8080:8080"
-    command: >
-      -host 0.0.0.0
-      -port 8080
-      -upload-dir /data
-    volumes:
-      - /c/Users/$USERNAME/Documents/tus_data:/data
 
 # volumes:
 #  tus_data:

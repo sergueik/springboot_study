@@ -2,16 +2,16 @@ FROM maven:3.9.5-eclipse-temurin-11-alpine as builder
 
 WORKDIR /app
 
-COPY pom.xml /app/
+COPY pom.xml ./
 RUN mvn dependency:go-offline -q
-ADD src /app/src/
+ADD src ./src/
 
 RUN mvn clean package -DskipTests -q 
 # RUN mvn clean package -DskipTests -q  -o
 # 
 FROM eclipse-temurin:11-jre-alpine as run
 COPY --from=builder /app/target/example.tus-java-server.jar /app/app.jar 
-COPY frontend/.env /app
+COPY frontend/.env ./
 
 RUN apk update \
     && apk add --update --no-cache curl \
