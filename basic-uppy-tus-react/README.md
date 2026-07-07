@@ -26,86 +26,78 @@ docker pull eclipse-temurin:11-jre-alpine
 
 ```sh
 IMAGE=uppy-tus-react
-docker build -t $IMAGE -f Dockerfile .
+docker build -t $IMAGE -f Dockerfile.spa .
 ```
 
 ```text
-Sending build context to Docker daemon     57MB
-Step 1/20 : FROM node:18.1.0-alpine AS react_builder
+$ docker build -t $IMAGE -f Dockerfile.spa .
+Sending build context to Docker daemon  57.01MB
+Step 1/21 : FROM node:18.1.0-alpine AS react_builder
  ---> d94913fe64df
-Step 2/20 : WORKDIR /app
- ---> Using cache
- ---> 81eb9c0fb83b
-Step 3/20 : COPY frontend /app/
- ---> 400190b80d7a
-Step 4/20 : RUN cd /app   && rm -rf node_modules package-lock.json   && npm install     @uppy/core@5.2.0     @uppy/dashboard@5.1.1     @uppy/tus@5.1.1     @uppy/react@5.2.0     @vitejs/plugin-react@4.3.4     js-sha256@0.11.0     vite@5.4.19
- ---> Running in e2e10f29b6e1
-
-added 114 packages, and audited 115 packages in 1m
-
-15 packages are looking for funding
-  run `npm fund` for details
-
-2 vulnerabilities (1 moderate, 1 high)
-
-To address all issues, run:
-  npm audit fix --force
-
-Run `npm audit` for details.
+Step 2/21 : WORKDIR /app
+ ---> Running in febeb108d3fe
+Removing intermediate container febeb108d3fe
+ ---> 42233862edb1
+Step 3/21 : COPY frontend/package*.json ./
+ ---> 5865484ea0c1
+Step 4/21 : RUN npm ci --silent
+ ---> Running in af7bb7c63487
 npm notice
 npm notice New major version of npm available! 8.8.0 -> 11.18.0
 npm notice Changelog: <https://github.com/npm/cli/releases/tag/v11.18.0>
 npm notice Run `npm install -g npm@11.18.0` to update!
 npm notice
-Removing intermediate container e2e10f29b6e1
- ---> d2cbfbfae05b
-Step 5/20 : RUN npm run build
- ---> Running in 13c56361d6c9
+Removing intermediate container af7bb7c63487
+ ---> a8620208db96
+Step 5/21 : COPY frontend/ ./
+ ---> 2b0df5cb39e2
+Step 6/21 : RUN npm run build
+ ---> Running in 36f0d06809aa
 
 > uppy-react-upload@1.0.0 build
 > vite build
 
 vite v5.4.19 building for production...
-<script src="/api/uploads/config.js"> in "/index.html" can't be bundled without type="module" attribute
 transforming...
 ✓ 254 modules transformed.
 rendering chunks...
 computing gzip size...
-dist/index.html                   0.55 kB │ gzip:   0.33 kB
+dist/index.html                   0.48 kB │ gzip:   0.30 kB
 dist/assets/index-C_U7NcPb.css   66.05 kB │ gzip:  10.51 kB
-dist/assets/index-DV05mx44.js   456.21 kB │ gzip: 139.28 kB
-✓ built in 11.63s
-Removing intermediate container 13c56361d6c9
- ---> 73e41cde2674
-Step 6/20 : FROM maven:3.9.5-eclipse-temurin-11-alpine as builder
+dist/assets/index-CXOVey5E.js   456.24 kB │ gzip: 139.28 kB
+✓ built in 9.56s
+Removing intermediate container 36f0d06809aa
+ ---> 899a3857092e
+Step 7/21 : FROM maven:3.9.5-eclipse-temurin-11-alpine as builder
  ---> 37ef041f8432
-Step 7/20 : WORKDIR /app
- ---> Using cache
- ---> b97cbf0b9ff3
-Step 8/20 : COPY pom.xml /app/
- ---> Using cache
- ---> f5bfeec72f5b
-Step 9/20 : RUN mvn dependency:go-offline -q
- ---> Using cache
- ---> 242ab401fce7
-Step 10/20 : ADD src /app/src/
- ---> 7ee872031879
-Step 11/20 : COPY --from=react_builder /app/dist /app/src/main/resources/public/
- ---> 56c76bc1748f
-Step 12/20 : RUN mvn clean package -DskipTests -q
- ---> Running in 827426ec7aba
-Removing intermediate container 827426ec7aba
- ---> 7351e349cda3
-Step 13/20 : FROM eclipse-temurin:11-jre-alpine as run
+Step 8/21 : WORKDIR /app
+ ---> Running in a5ac2315bd62
+Removing intermediate container a5ac2315bd62
+ ---> 69ed292cac90
+Step 9/21 : COPY pom.xml /app/
+ ---> 54dc117e6f07
+Step 10/21 : RUN mvn dependency:go-offline -q
+ ---> Running in ecd7c3ca6247
+Removing intermediate container ecd7c3ca6247
+ ---> b5ed077850ab
+Step 11/21 : ADD src /app/src/
+ ---> c62383495566
+Step 12/21 : COPY --from=react_builder /app/dist /app/src/main/resources/public/
+ ---> be6d4ff8475b
+Step 13/21 : RUN mvn clean package -DskipTests -q
+ ---> Running in 7eb0553e8b77
+Removing intermediate container 7eb0553e8b77
+ ---> ad6bd4d0b3cb
+Step 14/21 : FROM eclipse-temurin:11-jre-alpine as run
  ---> eda029f40d3e
-Step 14/20 : COPY --from=builder /app/target/example.tus-java-server.jar /app/app.jar
- ---> 97e2c025ac10
-Step 15/20 : COPY --from=react_builder /app/.env /app
- ---> 396180602637
-Step 16/20 : RUN apk update     && apk add --update --no-cache curl     && rm -rf /var/cache/*     && mkdir /var/cache/apk
- ---> Running in dc14e7501147
-v3.23.5-22-gaa6632a22aa [https://dl-cdn.alpinelinux.org/alpine/v3.23/main]
-v3.23.5-20-g80e818b4aac [https://dl-cdn.alpinelinux.org/alpine/v3.23/community]
+Step 15/21 : COPY --from=builder /app/target/example.tus-java-server.jar /app/app.jar
+ ---> 75487c4b4aff
+Step 16/21 : COPY --from=react_builder /app/.env /app
+ ---> 23c81a39c689
+Step 17/21 : RUN apk update     && apk add --update --no-cache curl     && rm -rf /var/cache/*     && mkdir /var/cache/apk
+ ---> Running in 8f740fa13bc0
+v3.23.5-31-g3b811432299 [https://dl-cdn.alpinelinux.org/alpine/v3.23/main]
+v3.23.5-31-g3b811432299 [https://dl-cdn.alpinelinux.org/alpine/v3.23/community]
 OK: 27587 distinct packages available
 (1/5) Installing c-ares (1.34.6-r0)
 (2/5) Installing nghttp2-libs (1.69.0-r0)
@@ -114,31 +106,27 @@ OK: 27587 distinct packages available
 (5/5) Installing curl (8.19.0-r0)
 Executing busybox-1.37.0-r30.trigger
 OK: 41.8 MiB in 78 packages
-Removing intermediate container dc14e7501147
- ---> 64fcab030f06
-Step 17/20 : WORKDIR /app
- ---> Running in 7eea6feb32df
-Removing intermediate container 7eea6feb32df
- ---> 1d20143283df
-Step 18/20 : HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD curl -f http://localhost:8080/ || exit 1
- ---> Running in eda31725c928
-Removing intermediate container eda31725c928
- ---> 18ccc2a11a64
-Step 19/20 : ENTRYPOINT ["java", "-jar", "/app/app.jar"]
- ---> Running in 3674394f1858
-Removing intermediate container 3674394f1858
- ---> 511544729931
-Step 20/20 : EXPOSE 8080
- ---> Running in 6d0534f37aa4
-Removing intermediate container 6d0534f37aa4
- ---> 7ac7aa6e8e8f
-Successfully built 7ac7aa6e8e8f
+Removing intermediate container 8f740fa13bc0
+ ---> 14f54afdb1a1
+Step 18/21 : WORKDIR /app
+ ---> Running in c4857add6ffb
+Removing intermediate container c4857add6ffb
+ ---> 18b948aa9659
+Step 19/21 : HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD curl -f http://localhost:8080/ || exit 1
+ ---> Running in 4eda485dde50
+Removing intermediate container 4eda485dde50
+ ---> 8c7912ad3d44
+Step 20/21 : ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ ---> Running in 9bf14f846f92
+Removing intermediate container 9bf14f846f92
+ ---> 848f5dff5372
+Step 21/21 : EXPOSE 8080
+ ---> Running in 163205dacbbd
+Removing intermediate container 163205dacbbd
+ ---> fc63153d8343
+Successfully built fc63153d8343
 Successfully tagged uppy-tus-react:latest
 SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host. All files and directories added to build context will have '-rwxr-xr-x' permissions. It is recommended to double check and reset permissions for sensitive files and directories.
-```
-ignore the warning:
-```text
-<script src="/api/uploads/config.js"> in "/index.html" can't be bundled without type="module" attribute
 ```
 run both frontend and backend on port `8080`:
 ```sh
@@ -147,6 +135,15 @@ CONTAINER=example
 docker container rm -f $CONTAINER
 docker run -d -p 8080:8080 --name $CONTAINER $IMAGE
 ```
+```sh
+docker ps
+```
+```text
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                            PORTS                    NAMES
+e40092782a3f        uppy-tus-react      "java -jar /app/app.…"   8 seconds ago       Up 7 seconds (health: starting)   0.0.0.0:8080->8080/tcp   example
+```
+interact with applicatio  through the broser
+
 after the upload verify the file:
 ```sh
 docker exec -it $CONTAINER sha256sum target/data/de59f17c-de11-4ccc-a892-66b944e450b6

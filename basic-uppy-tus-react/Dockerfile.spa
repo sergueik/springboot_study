@@ -1,3 +1,14 @@
+FROM node:18.1.0-alpine AS react_builder
+
+WORKDIR /app
+
+COPY frontend/package*.json ./
+
+RUN npm ci --silent
+
+COPY frontend/ ./
+RUN npm run build
+
 FROM maven:3.9.5-eclipse-temurin-11-alpine as builder
 
 WORKDIR /app
@@ -6,12 +17,17 @@ COPY pom.xml /app/
 RUN mvn dependency:go-offline -q
 ADD src /app/src/
 
+COPY --from=react_builder /app/dist /app/src/main/resources/public/ 
+
 RUN mvn clean package -DskipTests -q 
 # RUN mvn clean package -DskipTests -q  -o
 # 
 FROM eclipse-temurin:11-jre-alpine as run
 COPY --from=builder /app/target/example.tus-java-server.jar /app/app.jar 
-COPY frontend/.env /app
+# to save the generateed package-lock.json oncomment the following line
+# COPY --from=react_builder /app/package-lock.json /app
+
+COPY --from=react_builder /app/.env /app
 
 RUN apk update \
     && apk add --update --no-cache curl \
