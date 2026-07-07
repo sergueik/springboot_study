@@ -142,7 +142,116 @@ docker ps
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                            PORTS                    NAMES
 e40092782a3f        uppy-tus-react      "java -jar /app/app.…"   8 seconds ago       Up 7 seconds (health: starting)   0.0.0.0:8080->8080/tcp   example
 ```
-interact with applicatio  through the broser
+
+perform preflight test to see the CORS headers through CLI (curl does not react on response in a strict way the browser does:
+
+```sh
+curl -si -v -X OPTIONS http://192.168.99.101:8080/api/upload -H 'Origin: http://192.168.99.101:3000' -H 'Access-Control-Request-Method: PATCH' -H 'Access-Control-Request-Headers: Tus-Resumable,Upload-Offset,Content-Type'
+```
+```text
+HTTP/1.1 200
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: POST,PATCH,HEAD,DELETE,OPTIONS,GET
+Access-Control-Allow-Headers: Tus-Resumab;e, Upload-Offset, Content-Type
+Access-Control-Max-Age: 1800
+Allow: GET, HEAD, POST, PUT, DELETE, OPTIONS, PATCH
+Content-Length: 0
+Date: Tue, 07 Jul 2026 00:19:45 GMT
+
+* Uses proxy env variable no_proxy == '192.168.99.100,192.168.99.101,192.168.99.102'
+*   Trying 192.168.99.101:8080...
+* Connected to 192.168.99.101 (192.168.99.101) port 8080 (#0)
+> OPTIONS /api/upload HTTP/1.1
+> Host: 192.168.99.101:8080
+> User-Agent: curl/7.84.0
+> Accept: */*
+> Origin: http://192.168.99.101:3000
+> Access-Control-Request-Method: PATCH
+> Access-Control-Request-Headers: Tus-Resumab;e,Upload-Offset,Content-Type
+>
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 200
+< Vary: Origin
+< Vary: Access-Control-Request-Method
+< Vary: Access-Control-Request-Headers
+< Access-Control-Allow-Origin: *
+< Access-Control-Allow-Methods: POST,PATCH,HEAD,DELETE,OPTIONS,GET
+< Access-Control-Allow-Headers: Tus-Resumab;e, Upload-Offset, Content-Type
+< Access-Control-Max-Age: 1800
+< Allow: GET, HEAD, POST, PUT, DELETE, OPTIONS, PATCH
+< Content-Length: 0
+< Date: Tue, 07 Jul 2026 00:19:45 GMT
+<
+* Connection #0 to host 192.168.99.101 left intact
+```
+NOTE the `Access-Control-Allow-Origin` header and `Allow` list of HTTP methods (TUS uses additional methods compared to Spring). Sometimes there is also `Access-Control-Expose-Headers` header.
+
+try a real `POST` (but without the expected headers) note the `Access-Control-Allow-Origin` response header:
+
+```sh
+curl -si -X POST -v http://192.168.99.101:8080/api/upload -H 'Origin: http://192.168.99.101:3000'
+```
+```text
+HTTP/1.1 412
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Access-Control-Allow-Origin: *
+Tus-Resumable: 1.0.0
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Tue, 07 Jul 2026 00:31:17 GMT
+
+{"timestamp":"2026-07-07T00:31:17.887+00:00","status":412,"error":"Precondition Failed","path":"/api/upload"}
+```
+Alternatively do it in Powershell:
+
+```powershell
+$response = invoke-webrequest -uri 'http://192.168.99.101:8080/api/upload' -Method 'OPTIONS'  -headers @{ 'Origin'= 'http://192.168.99.101:3000' ; 'Access-Control-Request-Method'= 'PATCH';  'Access-Control-Request-Headers'='Tus-Resumable,Upload-Offset,Content-Type' } -verbose 
+```
+
+```text
+Security Warning: Script Execution Risk
+Invoke-WebRequest parses the content of the web page. Script code in the web
+page might be run when the page is parsed.
+      RECOMMENDED ACTION:
+      Use the -UseBasicParsing switch to avoid script code execution.
+
+      Do you want to continue?
+
+[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help
+(default is "N"):
+```
+
+```text
+Y
+```
+```powershell
+$response.StatusCode
+```
+```
+200
+```
+```powershell
+$response.Headers
+```
+```text
+Key                          Value
+---                          -----
+Vary                         Origin,Access-Control-Request-Method,Access-Con...
+Access-Control-Allow-Origin  *
+Access-Control-Allow-Methods POST,PATCH,HEAD,DELETE,OPTIONS,GET
+Access-Control-Allow-Headers Tus-Resumable, Upload-Offset, Content-Type
+Access-Control-Max-Age       1800
+Allow                        GET, HEAD, POST, PUT, DELETE, OPTIONS, PATCH
+Content-Length               0
+Date                         Tue, 07 Jul 2026 00:42:34 GMT
+```
+
+interact with application  through the browser
 
 after the upload verify the file:
 ```sh
@@ -173,7 +282,7 @@ open the url `http://192.168.99.100:8080/` in the browser. Update with the IP ad
 
 ![React Congiuration Loaded](screenshots/capture-initial.png)
 
-confirm the back end 
+confirm the back end
 ```text
 2026-07-03 03:09:10.388 DEBUG 1 --- [nio-8080-exec-5] o.s.w.f.CommonsRequestLoggingFilter      : After request [GET /api/uploads/config.js, client=192.168.99.1, headers=[host:"192.168.99.100:8080", connection:"keep-alive", user-agent:"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36", accept:"*/*", referer:"http://192.168.99.100:8080/", accept-encoding:"gzip, deflate", accept-language:"en-US,en;q=0.9"]]
 ```
@@ -379,7 +488,7 @@ docker container logs a500
 2026/06/23 00:16:15.998819 level=ERROR event=InternalServerError method=PATCH path=b75472975df68e2bbc5b87e968daa006 requestId="" id=b75472975df68e2bbc5b87e968daa006 message="link /data/b75472975df68e2bbc5b87e968daa006.lock.3461794582 /data/b75472975df68e2bbc5b87e968daa006.lock: operation not permitted"
 2026/06/23 00:16:16.001792 level=INFO event=ResponseOutgoing method=PATCH path=b75472975df68e2bbc5b87e968daa006 requestId="" id=b75472975df68e2bbc5b87e968daa006 status=500 body="ERR_INTERNAL_SERVER_ERROR: link /data/b75472975df68e2bbc5b87e968daa006.lock.3461794582 /data/b75472975df68e2bbc5b87e968daa006.lock: operation not permitted\n"
 ```
-check the VFS 
+check the VFS
 ```sh
 ls /c/Users/$USERNAME/Documents/tus_data/ac9*
 ```
@@ -420,7 +529,7 @@ Vite roughly doesi reads and merges in precedence order:
 
 Spring Boot already has a similar concept
 of has layered configurations:
- 
+
 
   * OS environment variabl`es
   * JVM `-D` system properties
@@ -563,13 +672,13 @@ java.nio.file.NoSuchFileException: /app/target/data/a6738ae3-816f-4c6b-8ef9-bbbb
 ```
 ### Summary of Architecture Discussion – Resumable Upload Approaches and Operational Trade-Offs
 
-This discussion reviewed different approaches to large file transfer and resumable upload handling, focusing on trade-offs between custom chunk-based implementations and standardized protocols such as tus. 
+This discussion reviewed different approaches to large file transfer and resumable upload handling, focusing on trade-offs between custom chunk-based implementations and standardized protocols such as tus.
 
-The key distinction is not performance under ideal conditions, but system behavior under partial failure and operational recovery scenarios. Chunk-based approaches typically defer usability until full reconstruction, whereas streaming or tus-like models preserve meaningful partial state throughout the transfer lifecycle. 
+The key distinction is not performance under ideal conditions, but system behavior under partial failure and operational recovery scenarios. Chunk-based approaches typically defer usability until full reconstruction, whereas streaming or tus-like models preserve meaningful partial state throughout the transfer lifecycle.
 
-This directly impacts observability, debugging capability, and recovery during incidents where transfers are incomplete or interrupted. 
+This directly impacts observability, debugging capability, and recovery during incidents where transfers are incomplete or interrupted.
 
-A custom implementation also introduces a dependency on the availability of a compatible client and precise protocol documentation to support troubleshooting and recovery when issues occur deep within the transfer pipeline. In contrast, standardized protocols provide broadly understood semantics and existing tooling that reduce reliance on system-specific knowledge. 
+A custom implementation also introduces a dependency on the availability of a compatible client and precise protocol documentation to support troubleshooting and recovery when issues occur deep within the transfer pipeline. In contrast, standardized protocols provide broadly understood semantics and existing tooling that reduce reliance on system-specific knowledge.
 
 ### Risk Assessment Illustration
 
@@ -686,7 +795,7 @@ unzip -ql target\example.tus-java-server.jar | findstr -i Calc
      4003  2026-07-03 10:18   BOOT-INF/classes/example/utils/MinimalCalculator.class
 ```
 
-how to run it ? other than. The 
+how to run it ? other than. The
 ```
 java -cp target\example.tus-java-server.jar example.utils.MinimalCalculator
 ```
@@ -713,7 +822,7 @@ java -cp target\classes example.utils.MinimalCalculator
   * `PATCH` Method for `HTTP` [RFC5789](https://www.rfc-editor.org/info/rfc5789/)
   * [Guide to Java FileChannel](https://www.baeldung.com/java-filechannel)
   * [dotenv-java](https://github.com/cdimascio/dotenv-java) - is a no-dep, pure Java module that loads environment variables from a .env file
-  
+
 ### Author
 
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
