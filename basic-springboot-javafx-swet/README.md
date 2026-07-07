@@ -5,7 +5,7 @@ based on [Skeleton SpringBoot + JavaFx](https://github.com/ruslanys/sample-sprin
 
 The SWET JavaFx in turn is the JavaFx port of [SWT based Selenum recorder](https://github.com/sergueik/SWET).
 
-![icon](https://github.com/sergueik/springboot_study/tree/master/javafx_swet/screenshots/swet_javafx.png)
+![icon](screenshots/swet_javafx.png)
 
 ### Run application
 
