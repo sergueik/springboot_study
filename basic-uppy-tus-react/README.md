@@ -1089,6 +1089,28 @@ docker run -d -p 80:80 --link backend --name $CONTAINER $IMAGE
 ```sh
 docker logs frontend-nginx
 ```
+If using *modern* alternatives like [podman](https://podman.io/docs/tutorials/basic_networking?utm_source=chatgpt.com) please run the following commands:
+
+```sh
+NETWORK=uppy-demo
+podman network create $NETWORK 2>/dev/null || true
+```
+```sh
+IMAGE=backend
+CONTAINER=backend
+podman container rm -f $CONTAINER podman run -d --network $NETWORK --name $CONTAINER -p 8080:8080 $IMAGE
+```
+```sh
+IMAGE=uppy-tus-react-nginx
+CONTAINER=frontend-nginx
+
+podman container rm -f $CONTAINER
+podman run -d --network $NETWORK --name $CONTAINER -p 8080:8080 $IMAGE
+```
+the podman's a product philosophy choice is:
+```text
+Error: --link is a deprecated option
+```
 ```text
 /docker-entrypoint.sh: Configuration complete; ready for start up
 2026/07/08 13:07:31 [notice] 1#1: using the "epoll" event method
