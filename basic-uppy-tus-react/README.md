@@ -22,6 +22,7 @@ https://github.com/transloadit/uppy with over 10K commits
 docker pull node:18.1.0-alpine
 docker pull maven:3.9.5-eclipse-temurin-11-alpine
 docker pull eclipse-temurin:11-jre-alpine
+docker pull nginx:1.30.3-alpine3.23
 ```
 
 ```sh
@@ -30,7 +31,6 @@ docker build -t $IMAGE -f Dockerfile.spa .
 ```
 
 ```text
-$ docker build -t $IMAGE -f Dockerfile.spa .
 Sending build context to Docker daemon  57.01MB
 Step 1/21 : FROM node:18.1.0-alpine AS react_builder
  ---> d94913fe64df
@@ -126,7 +126,6 @@ Removing intermediate container 163205dacbbd
  ---> fc63153d8343
 Successfully built fc63153d8343
 Successfully tagged uppy-tus-react:latest
-SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host. All files and directories added to build context will have '-rwxr-xr-x' permissions. It is recommended to double check and reset permissions for sensitive files and directories.
 ```
 run both frontend and backend on port `8080`:
 ```sh
@@ -898,7 +897,6 @@ Removing intermediate container a2f6b289ff1f
  ---> 45d08abc08e7
 Successfully built 45d08abc08e7
 Successfully tagged frontend:latest
-SECURITY WARNING: You are building a Docker image from Windows against a non-Windows Docker host. All files and directories added to build context will have '-rwxr-xr-x' permissions. It is recommended to double check and reset permissions for sensitive files and directories.
 ```
 ```sh
 CONTAINER=frontend
@@ -911,6 +909,235 @@ docker logs $CONTAINER
  WARN  Checking for updates failed (use `--debug` to see full error)
  INFO  Accepting connections at http://localhost:3000
 ```
+### Alternative
+
+
+
+host frontend on nginx
+
+```sh
+docker pull node:18.1.0-alpine
+docker pull maven:3.9.5-eclipse-temurin-11-alpine
+docker pull eclipse-temurin:11-jre-alpine
+docker pull nginx:1.30.3-alpine3.23
+```
+
+```sh
+IMAGE=uppy-tus-react-nginx
+docker build -t $IMAGE -f Dockerfile.nginx .
+```
+```text
+Sending build context to Docker daemon  9.356MB
+Step 1/15 : FROM node:18.1.0-alpine AS builder
+ ---> d94913fe64df
+Step 2/15 : WORKDIR /app
+ ---> Running in 444f089d49b2
+Removing intermediate container 444f089d49b2
+ ---> 4bd6619e6bb5
+Step 3/15 : COPY frontend/package*.json /app/
+ ---> 3508ae46e16b
+Step 4/15 : ARG NPM_REGISTRY
+ ---> Running in ca4fec531a2d
+Removing intermediate container ca4fec531a2d
+ ---> 6ede91d99b89
+Step 5/15 : RUN if [ -n "$NPM_REGISTRY" ]; then         npm config set registry "$NPM_REGISTRY";     fi
+ ---> Running in c7da0e772f78
+Removing intermediate container c7da0e772f78
+ ---> 7c5280dac852
+Step 6/15 : RUN npm install  || { cat /root/.npm/_logs/*.log; exit 1; }
+ ---> Running in 66b1ee2c0e9f
+
+added 114 packages, and audited 115 packages in 24s
+
+15 packages are looking for funding
+  run `npm fund` for details
+
+2 vulnerabilities (1 moderate, 1 high)
+
+To address all issues, run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+npm notice
+npm notice New major version of npm available! 8.8.0 -> 11.18.0
+npm notice Changelog: <https://github.com/npm/cli/releases/tag/v11.18.0>
+npm notice Run `npm install -g npm@11.18.0` to update!
+npm notice
+Removing intermediate container 66b1ee2c0e9f
+ ---> a9c1ceb3ec9e
+Step 7/15 : COPY frontend/index.html frontend/vite.config.js /app/
+ ---> ea838309bc7b
+Step 8/15 : ADD frontend/src /app/src
+ ---> d712291f1987
+Step 9/15 : RUN npm run build
+ ---> Running in 226b277619e5
+
+> uppy-react-upload@1.0.0 build
+> vite build
+
+vite v5.4.19 building for production...
+transforming...
+✓ 254 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.49 kB │ gzip:   0.31 kB
+dist/assets/index-C_U7NcPb.css   66.05 kB │ gzip:  10.51 kB
+dist/assets/index-C_5vY8FU.js   455.99 kB │ gzip: 139.18 kB
+✓ built in 15.44s
+Removing intermediate container 226b277619e5
+ ---> 8e0415403dc0
+Step 10/15 : FROM nginx:1.30.3-alpine3.23
+ ---> d0701bd41f82
+Step 11/15 : WORKDIR /usr/share/nginx/html
+ ---> Running in cb7bd0d21637
+Removing intermediate container cb7bd0d21637
+ ---> b1da4598af4c
+Step 12/15 : COPY --from=builder /app/dist ./
+ ---> 459c3a8b3266
+Step 13/15 : COPY default.conf /etc/nginx/conf.d/
+ ---> d3a1d06d0124
+Step 14/15 : EXPOSE 80
+ ---> Running in 1b280d14b2f8
+Removing intermediate container 1b280d14b2f8
+ ---> 7a30e77964e8
+Step 15/15 : CMD ["nginx", "-g", "daemon off;"]
+ ---> Running in 0a92486b478a
+Removing intermediate container 0a92486b478a
+ ---> 65ec2d62b30b
+Successfully built 65ec2d62b30b
+Successfully tagged uppy-tus-react-nginx:latest
+```
+
+```sh
+IMAGE=backend
+docker build -t $IMAGE -f Dockerfile.backend .
+```
+```text
+Sending build context to Docker daemon  9.425MB
+Step 1/14 : FROM maven:3.9.5-eclipse-temurin-11-alpine as builder
+ ---> 37ef041f8432
+Step 2/14 : WORKDIR /app
+ ---> Running in 22a3e1b72328
+Removing intermediate container 22a3e1b72328
+ ---> 29b4f9311b2d
+Step 3/14 : COPY pom.xml /app/
+ ---> 6afc354898ce
+Step 4/14 : RUN mvn dependency:go-offline -q
+ ---> Running in 7775bd6e339b
+Removing intermediate container 7775bd6e339b
+ ---> 6a9d67b6a6a9
+Step 5/14 : ADD src /app/src/
+ ---> d945af3dc5f6
+Step 6/14 : RUN mvn clean package -DskipTests -q
+ ---> Running in 50607e974f72
+Removing intermediate container 50607e974f72
+ ---> a6268b62208f
+Step 7/14 : FROM eclipse-temurin:11-jre-alpine as run
+ ---> eda029f40d3e
+Step 8/14 : COPY --from=builder /app/target/example.tus-java-server.jar /app/app.jar
+ ---> 420683420e47
+Step 9/14 : COPY frontend/.env /app
+ ---> 9ea8a06737fb
+Step 10/14 : RUN apk update     && apk add --update --no-cache curl     && rm -rf /var/cache/*     && mkdir /var/cache/apk
+ ---> Running in 71580780c503
+v3.23.5-34-g1efc4535b53 [https://dl-cdn.alpinelinux.org/alpine/v3.23/main]
+v3.23.5-33-g38cb93d5451 [https://dl-cdn.alpinelinux.org/alpine/v3.23/community]
+OK: 27587 distinct packages available
+(1/5) Installing c-ares (1.34.6-r0)
+(2/5) Installing nghttp2-libs (1.69.0-r0)
+(3/5) Installing libpsl (0.21.5-r3)
+(4/5) Installing libcurl (8.19.0-r0)
+(5/5) Installing curl (8.19.0-r0)
+Executing busybox-1.37.0-r30.trigger
+OK: 41.8 MiB in 78 packages
+Removing intermediate container 71580780c503
+ ---> 9802c7b18507
+Step 11/14 : WORKDIR /app
+ ---> Running in 7756e6bf7368
+Removing intermediate container 7756e6bf7368
+ ---> 6b252e279765
+Step 12/14 : HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD curl -f http://localhost:8080/ || exit 1
+ ---> Running in bdc0473e1fb5
+Removing intermediate container bdc0473e1fb5
+ ---> 6629071d5c78
+Step 13/14 : ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ ---> Running in 98d7f0ac9c11
+Removing intermediate container 98d7f0ac9c11
+ ---> 6c13d96ecb1f
+Step 14/14 : EXPOSE 8080
+ ---> Running in a64a158ad4c8
+Removing intermediate container a64a158ad4c8
+ ---> 01d24f425f0c
+Successfully built 01d24f425f0c
+Successfully tagged backend:latest
+```
+run both frontend and backend linked:
+
+```sh
+IMAGE=backend
+CONTAINER=backend
+docker container rm -f $CONTAINER
+docker run -d -p 8080:8080 --name $CONTAINER $IMAGE
+```
+
+```sh
+IMAGE=uppy-tus-react-nginx
+CONTAINER=frontend-nginx
+docker container rm -f $CONTAINER
+docker run -d -p 80:80 --link backend --name $CONTAINER $IMAGE
+```
+```sh
+docker logs frontend-nginx
+```
+```text
+/docker-entrypoint.sh: Configuration complete; ready for start up
+2026/07/08 13:07:31 [notice] 1#1: using the "epoll" event method
+2026/07/08 13:07:31 [notice] 1#1: nginx/1.30.3
+2026/07/08 13:07:31 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0)
+2026/07/08 13:07:31 [notice] 1#1: OS: Linux 4.19.130-boot2docker
+2026/07/08 13:07:31 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2026/07/08 13:07:31 [notice] 1#1: start worker processes
+2026/07/08 13:07:31 [notice] 1#1: start worker process 28
+192.168.99.1 - - [08/Jul/2026:13:07:35 +0000] "GET / HTTP/1.1" 200 488 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36" "-"
+192.168.99.1 - - [08/Jul/2026:13:07:35 +0000] "GET /assets/index-C_U7NcPb.css HTTP/1.1" 200 66046 "http://192.168.99.103/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36" "-"
+192.168.99.1 - - [08/Jul/2026:13:07:35 +0000] "GET /assets/index-C_5vY8FU.js HTTP/1.1" 200 456006 "http://192.168.99.103/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36" "-"
+192.168.99.1 - - [08/Jul/2026:13:07:35 +0000] "GET /favicon.ico HTTP/1.1" 200 488 "http://192.168.99.103/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36" "-"
+
+```
+open `http://192.168.99.100/` in the browser
+```sh
+dd if=/dev/urandom of=test.bin bs=1M count=50
+```
+```sh
+cygpath -w $(pwd) | clip
+```
+
+with default nginx configuration will see in broeser dev tools console the error:
+```text
+index-C_5vY8FU.js:74
+ PATCH http://192.168.99.103/api/upload/460eded6-e56c-4f49-921a-435471cb92ce 413 (Request Entity Too Large)
+
+index-C_5vY8FU.js:58 [Uppy] [09:10:51] tus: unexpected response while uploading chunk, originated from request (method: PATCH, url: /api/upload/460eded6-e56c-4f49-921a-435471cb92ce, response code: 413, response text: <html>
+<head><title>413 Request Entity Too Large</title></head>
+<body>
+<center><h1>413 Request Entity Too Large</h1></center>
+<hr><center>nginx/1.30.3</center>
+</body>
+</html>
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+, request id: n/a)
+```
+the Nginx's default limit is only:
+```
+client_max_body_size 1m;
+```
+fix is to apply a desired limit explicitly through `nginx.conf`  (already done)
+
 ### See Also
 
 

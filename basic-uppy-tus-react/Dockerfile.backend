@@ -1,0 +1,31 @@
+FROM maven:3.9.5-eclipse-temurin-11-alpine as builder
+
+WORKDIR /app
+
+COPY pom.xml /app/
+RUN mvn dependency:go-offline -q
+ADD src /app/src/
+
+RUN mvn clean package -DskipTests -q 
+# RUN mvn clean package -DskipTests -q  -o
+# 
+FROM eclipse-temurin:11-jre-alpine as run
+COPY --from=builder /app/target/example.tus-java-server.jar /app/app.jar 
+# to save the generateed package-lock.json oncomment the following line
+# COPY --from=react_builder /app/package-lock.json /app
+
+COPY frontend/.env /app
+
+RUN apk update \
+    && apk add --update --no-cache curl \
+    && rm -rf /var/cache/* \
+    && mkdir /var/cache/apk
+
+WORKDIR /app
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
+CMD curl -f http://localhost:8080/ || exit 1
+
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+
+EXPOSE 8080
