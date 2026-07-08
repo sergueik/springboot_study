@@ -1,3 +1,71 @@
+### Background
+
+A COBOL Copybook is a reusable file containing pre-written code structures—most commonly data declarations and record layouts—that can be inserted into multiple COBOL programs. Often a copybook resource  is pulled into the COBOL primary code using the `COPY` statement: 
+```
+   COPY CUSTOMER.CPY.
+```   
+The mainframe compiler replaces the COPY statement with the actual contents of the copybook file at compilation time
+
+> NOTE: binary files generated from COBOL Copybook are often also, confusingly, called copybooks
+
+
+The binary/runtime artifacts associated with a copybook-defined layout are usually named according to their role, not according to their origin.
+There is no single universal IBM/mainframe-standard name for such artifacts; terminology depends on whether the artifact is data, metadata, or an interface definition.
+
+|---------------|---------------------|
+|`CUSTOMER.CPY` | COBOL source copybook (record layout definition)|
+|`CUSTOMER.dat` | serialized *customer* records (data conforming to the layout) |
+
+This avoids implying that  `CUSTOMER.dat` was generated *from* `CUSTOMER.CPY`. 
+The copybook is more like a __schema/contrac__t; the `.dat` file is an *instance of that schema*.
+
+For a mainframe audience, an even more idiomatic phrase might be:
+
+"The copybook describes the record layout; the data sets or messages contain records that conform to that layout."
+
+That maps nicely to the COBOL/JCL world: the copybook defines the 01 record structure, while the actual records live in VSAM files, sequential datasets, DB2 extracts, MQ messages, etc.
+
+there is no single "evil genius" inventor of COBOL COMP formats. They are the result of several waves of hardware-oriented optimization decisions made by different groups, mostly around the early COBOL standard and vendor implementations.
+
+The "wonderful" COMP family is really a story of making business data fit efficiently into expensive memory and slow storage.
+
+A rough historical map:
+
+|Format|	Meaning|	Historical origin|
+|------|-----------|---------------------|
+|DISPLAY|	Normal character representation	|COBOL's original business-data philosophy|
+|COMP / COMPUTATIONAL|	Binary integer storage	|Added to allow efficient machine arithmetic|
+|COMP-1	|Single-precision floating point	|Vendor/hardware dependent (especially IBM)|
+|COMP-2	|Double-precision floating point	|Vendor/hardware dependent|
+|COMP-3	|Packed decimal (BCD)	|Driven by business arithmetic needs|
+|COMP-4	|Often binary (vendor-specific)	| Mainly IBM extensions|
+|COMP-5	|Native binary integer	|Later IBM COBOL extension|
+
+The packed decimal (COMP-3) one is probably the one that inspires the most "who thought this was a good idea?" reactions.
+
+The "inventors" are therefore more like a committee:
+
+CODASYL designed and standardized much of early COBOL.
+IBM and other mainframe vendors heavily influenced implementation details because COBOL lived on their hardware.
+Hardware teams created decimal arithmetic instructions that made packed decimal attractive.
+
+A number like:
+
+```
+123456.78
+```
+in `DISPLAY`:
+```
+F1 F2 F3 F4 F5 F6 F7 F8
+```
+takes 8 bytes (plus sign handling).
+
+As __Packed decimal__:
+```
+12 34 56 78 C
+```
+stores two digits per byte plus the sign nibble.
+
 ### Usage
 
 * create Cobol Copybook `example.cbl`:

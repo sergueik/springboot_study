@@ -1184,7 +1184,126 @@ docker image prune -f
 docker image rm uppy-tus-react-nginx backend
 docker image rm nginx:1.30.3-alpine3.23 eclipse-temurin:11-jre-alpine maven:3.9.5-eclipse-temurin-11-alpine node:18.1.0-alpine
 ```
+### Podman-Specific Setup Failures
+
+```sh
+podman pull <image>
+```
+```text
+copying blob....
+error copying system image from manifest list
+writing blob:
+adding layer
+processing the file
+potentially insufficiennd GID or UID available in user namespace
+requested 0:42 for /etc/shadow
+check /etc/subuid and /etc/subgid if configured locally and run "posman system migrate"
+```
+podman is saying:
+
+> NOTE "I'm trying to unpack this image using a user namespace, but I don't have enough UID/GID mappings to represent all of the file ownerships inside the image."
+
+That error is one of the biggest conceptual hurdles for people coming from Docker.
+
+A Linux container image stores ownership of files by numeric `UID`/`GID`.
+
+For example:
+```
+/etc/passwd      uid=0
+/etc/shadow      uid=42
+/usr/bin/bash    uid=0
+...
+```
+When Docker runs as root, that's easy:
+```
+container uid 42
+      ↓
+host uid 42
+```
+No translation is needed.
+
+Podman, however, is usually rootless.
+
+Instead of giving your user actual root privileges, it creates a user namespace.
+
+Inside the container:
+```
+uid 0
+uid 1
+uid 2
+...
+uid 65535
+```
+must be translated into some unused range on the host, such as
+```
+host uid 100000
+host uid 100001
+host uid 100002
+...
+```
+Those translation ranges come from `/etc/subuid`, `/etc/subgid`
+
+Why `/etc/shadow`?
+Suppose the image contains
+```text
+-r-------- 42 42 /etc/shadow
+```
+while Podman only has a mapping for `0...31` `GID`s
+
+When it reaches `/etc/shadow`, it asks:
+
+  * "Where do I map UID 42?"
+
+Answer:
+
+  * "Nowhere."
+
+So extraction fails.
+
+That is what "potentially insufficient UIDs or GIDs available in user namespace" really means.
+
+Why does it mention `0:42`?
+```
+uid = 0
+gid = 42
+```
+or vice versa depending on the operation.
+
+The important part is `42`.
+
+Podman needed to represent group (or user) ID `42`, but your namespace doesn't include it.
+
+What are `/etc/subuid` and `/etc/subgid`?
+These files allocate "fake" `UID`/`GID` ranges to ordinary users.
+
+Typical entry:
+```text
+serguei:100000:65536
+```
+meaning
+```
+container uid 0
+↓
+
+host uid 100000
+```
+```
+container uid 65535
+↓
+
+host uid 165535
+```
+The same idea applies to groups in `/etc/subgid`.
+
+If those files are missing, empty, or allocate too small a range, Podman cannot unpack many images.
+The WSL `pipe-to-bash` Podman installation has a valid 65,536-ID subordinate UID/GID allocation, while the failing installation either has no subordinate ID mapping or an insufficiently large one.
+
+
 ### Unrelated: Dorian
+
+Hurricane Dorian was a catastrophic Category 5 storm and the strongest hurricane to ever hit the Bahamas. Peaking at 185 mph (295 km/h) winds, it stalled over the Abaco Islands and Grand Bahama in early September 2019. It caused at least 84 fatalities and over $5 billion in damages. 
+
+However it was also memorable by Florida residents precisely because of the enormous gap between the forecast and what ultimately happened in South Florida.
 
 During Hurricane Dorian in 2019, our original plan was to fly from Fort Lauderdale to Paris, spend a few days there at a hotel we had booked months in advance, and then continue from Paris Orly to Florence.
 
