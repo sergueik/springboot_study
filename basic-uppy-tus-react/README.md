@@ -1138,6 +1138,47 @@ client_max_body_size 1m;
 ```
 fix is to apply a desired limit explicitly through `nginx.conf`  (already done)
 
+> NOTE: one has to deliberately disable built-in nginx buffering when hosting tus client on nginx, becaise normally Nginx:
+
+  * reads the entire request body
+  * stores it in memory or a temporary file
+  * only then forwards it to Spring
+
+__Tus__ is designed for streaming uploads, so buffering defeats part of its purpose.
+
+```nginx
+proxy_buffering off;
+```
+
+is essential setting to avoid buffering responses.
+
+### Cleanup
+```sh
+docker ps -q | awk '{print $1}'  | xargs docker container stop
+```
+```sh
+docker container prune -f
+docker image prune -f
+docker image rm uppy-tus-react-nginx backend
+docker image rm nginx:1.30.3-alpine3.23 eclipse-temurin:11-jre-alpine maven:3.9.5-eclipse-temurin-11-alpine node:18.1.0-alpine
+```
+### Unrelated: Dorian
+
+During Hurricane Dorian in 2019, our original plan was to fly from Fort Lauderdale to Paris, spend a few days there at a hotel we had booked months in advance, and then continue from Paris Orly to Florence.
+
+As Dorian approached Florida, Fort Lauderdale Airport suspended part of its operations. Norwegian gave us an unexpected option: instead of canceling the trip, they could reroute us through Stockholm.
+
+We accepted. Rather than flying directly to Paris, we flew to Stockholm, spent a few hours exploring the airport (which later proved useful on another trip), and even stayed overnight at the airport hotel. The next day we continued from Stockholm to Paris Charles de Gaulle.
+
+Naturally, we lost our original hotel reservation in Paris, but we simply booked another hotel for the following night. From there, the rest of the itinerary went almost exactly as planned: Paris Orly to Florence, and eventually home via Florence → Paris Orly → Paris Charles de Gaulle → Miami.
+
+Looking back, it's a good example of how airline disruption management works. The hurricane never actually made landfall in South Florida, yet its forecast was serious enough to force airlines to rearrange aircraft and crews. The result was that our vacation unexpectedly began with a one-day stop in Sweden before continuing to France and Italy. In the end, the only real cost was one missed hotel night—and we gained an unexpected visit to Stockholm that we had never planned.
+
+TLDR: Dorian accidentally gave us a free bonus country on the itinerary and feellike seasoned travelers.
+
+We also won Norwegian's Business Class upgrade lottery on the Fort Lauderdale–Stockholm flight and ended up sitting next to a genuine seasoned traveler. We exchanged Facebook contacts and I followed his travels afterward. Sometimes the best travel stories begin with a disrupted itinerary rather than a perfectly executed one.
+
+
 ### See Also
 
 
