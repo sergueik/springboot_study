@@ -85,42 +85,10 @@ jobs:
 ```sh
 ../act
 ```
-with pinned image
-get error:
+
+The very first run is a little different: `act` auto switches to interactive mode: 
 
 ```text
-INFO[0000] Using docker host 'unix:///var/run/docker.sock', and daemon socket 'unix:///var/run/docker.sock' 
-[CI/test] ⭐ Run Set up job
-[CI/test] 🚀  Start image=node:18-alpine
-[CI/test]   🐳  docker pull image=node:18-alpine platform= username= forcePull=true
-[CI/test]   🐳  docker create image=node:18-alpine platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
-[CI/test]   🐳  docker run image=node:18-alpine platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
-[CI/test]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
-[CI/test]   ✅  Success - Set up job
-[CI/test]   ☁  git clone 'https://github.com/actions/setup-node' # ref=v1
-[CI/test] ⭐ Run Main actions/checkout@v2
-[CI/test]   🐳  docker cp src=/home/sergueik/src/springboot_study/basic-act/nodejs/. dst=/home/sergueik/src/springboot_study/basic-act/nodejs
-[CI/test]   ✅  Success - Main actions/checkout@v2 [14.303455ms]
-[CI/test] ⭐ Run Main actions/setup-node@v1
-[CI/test]   🐳  docker cp src=/home/sergueik/.cache/act/actions-setup-node@v1/ dst=/var/run/act/actions/actions-setup-node@v1/
-[CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v1/dist/index.js] user= workdir=
-| [command]/opt/hostedtoolcache/node/10.24.1/x64/bin/node --version
-[CI/test]   ❗  ::error::There was an error when attempting to execute the process '/opt/hostedtoolcache/node/10.24.1/x64/bin/node'. This may indicate the process failed to start. Error: spawn /opt/hostedtoolcache/node/10.24.1/x64/bin/node ENOENT
-[CI/test]   ❌  Failure - Main actions/setup-node@v1 [712.193257ms]
-[CI/test]   ⚙  ::add-path:: /opt/hostedtoolcache/node/10.24.1/x64/bin
-[CI/test] exitcode '1': failure
-[CI/test] ⭐ Run Complete job
-[CI/test]   ✅  Success - Complete job
-[CI/test] 🏁  Job failed
-Error: Job 'test' failed
-```
-fix the root cause: old library assumption
-```text
-spawn /opt/hostedtoolcache/node/10.24.1/x64/bin/node ENOENT
-``` 
-```text
-INFO[0000] Using docker host 'unix:///var/run/docker.sock', and daemon socket 'unix:///var/run/docker.sock' 
-
 ? Please choose the default image you want to use with act:
   - Large size image: ca. 17GB download + 53.1GB storage, you will need 75GB of free disk space, 
     snapshots of GitHub Hosted Runners without snap and pulled docker images
@@ -199,19 +167,264 @@ or the user's home directory `~/.actrc`. One can edit this file at any time to c
 ```
 the syntax can be found in [act Usage guide](https://nektosact.com/usage/)
 
+
+try to update to a later pinned `node` image (node:18-alpine) without modifying anything else 
+and get `act` error:
+
+```text
+[CI/test] ⭐ Run Set up job
+[CI/test] 🚀  Start image=node:18-alpine
+[CI/test]   🐳  docker pull image=node:18-alpine platform= username= forcePull=true
+[CI/test]   🐳  docker create image=node:18-alpine platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[CI/test]   🐳  docker run image=node:18-alpine platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[CI/test]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
+[CI/test]   ✅  Success - Set up job
+[CI/test]   ☁  git clone 'https://github.com/actions/setup-node' # ref=v1
+[CI/test] ⭐ Run Main actions/checkout@v2
+[CI/test]   🐳  docker cp src=/home/sergueik/src/springboot_study/basic-act/nodejs/. dst=/home/sergueik/src/springboot_study/basic-act/nodejs
+[CI/test]   ✅  Success - Main actions/checkout@v2 [14.303455ms]
+[CI/test] ⭐ Run Main actions/setup-node@v1
+[CI/test]   🐳  docker cp src=/home/sergueik/.cache/act/actions-setup-node@v1/ dst=/var/run/act/actions/actions-setup-node@v1/
+[CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v1/dist/index.js] user= workdir=
+| [command]/opt/hostedtoolcache/node/10.24.1/x64/bin/node --version
+[CI/test]   ❗  ::error::There was an error when attempting to execute the process '/opt/hostedtoolcache/node/10.24.1/x64/bin/node'. This may indicate the process failed to start. Error: spawn /opt/hostedtoolcache/node/10.24.1/x64/bin/node ENOENT
+[CI/test]   ❌  Failure - Main actions/setup-node@v1 [712.193257ms]
+[CI/test]   ⚙  ::add-path:: /opt/hostedtoolcache/node/10.24.1/x64/bin
+[CI/test] exitcode '1': failure
+[CI/test] ⭐ Run Complete job
+[CI/test]   ✅  Success - Complete job
+[CI/test] 🏁  Job failed
+Error: Job 'test' failed
+```
+fix the root cause: old library assumption
+```text
+spawn /opt/hostedtoolcache/node/10.24.1/x64/bin/node ENOENT
+```
+because `actions/setup-node@v1` was written with the assumption that it is running on a GitHub-hosted runner. 
+
+after updating versions of actions the act succeds:
+```
+[CI/test] ⭐ Run Set up job
+[CI/test] 🚀  Start image=node:18-alpine
+[CI/test]   🐳  docker pull image=node:18-alpine platform= username= forcePull=true
+[CI/test]   🐳  docker create image=node:18-alpine platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[CI/test]   🐳  docker run image=node:18-alpine platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[CI/test]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
+[CI/test]   ✅  Success - Set up job
+[CI/test]   ☁  git clone 'https://github.com/actions/setup-node' # ref=v4
+[CI/test] ⭐ Run Main actions/checkout@v4
+[CI/test]   🐳  docker cp src=/home/sergueik/src/springboot_study/basic-act/nodejs/. dst=/home/sergueik/src/springboot_study/basic-act/nodejs
+[CI/test]   ✅  Success - Main actions/checkout@v4 [12.898925ms]
+[CI/test] ⭐ Run Main actions/setup-node@v4
+[CI/test]   🐳  docker cp src=/home/sergueik/.cache/act/actions-setup-node@v4/ dst=/var/run/act/actions/actions-setup-node@v4/
+[CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v4/dist/setup/index.js] user= workdir=
+| Attempting to download 18...
+| Acquiring 18.20.8 - x64 from https://github.com/actions/node-versions/releases/download/18.20.8-14110393767/node-18.20.8-linux-x64.tar.gz
+| Extracting ...
+| [command]/bin/tar xz --strip 1 -C /tmp/a05d052f-b644-473e-975d-9c89e9136218 -f /tmp/ff70a279-0e6b-4a34-9f62-24d39b4aeae8
+| Adding to the cache ...
+[CI/test]   ❓  ::group::Environment details
+| node: 
+| npm: 10.8.2
+| yarn: 1.22.22
+[CI/test]   ❓  ::endgroup::
+[CI/test]   ❓ add-matcher /run/act/actions/actions-setup-node@v4/.github/tsc.json
+[CI/test]   ❓ add-matcher /run/act/actions/actions-setup-node@v4/.github/eslint-stylish.json
+[CI/test]   ❓ add-matcher /run/act/actions/actions-setup-node@v4/.github/eslint-compact.json
+[CI/test]   ✅  Success - Main actions/setup-node@v4 [24.899641543s]
+[CI/test]   ⚙  ::set-output:: node-version=
+[CI/test]   ⚙  ::add-path:: /opt/hostedtoolcache/node/18.20.8/x64/bin
+[CI/test] ⭐ Run Main npm install
+[CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/2.sh] user= workdir=
+| npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+| npm warn deprecated rimraf@2.6.3: Rimraf versions prior to v4 are no longer supported
+| npm warn deprecated glob@7.1.2: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+| npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+| npm warn deprecated superagent@8.1.2: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
+| npm warn deprecated mkdirp@0.5.1: Legacy versions of mkdirp are no longer supported. Please update to mkdirp 1.x. (Note that the API surface has changed to use Promises in 1.x.)
+| npm warn deprecated eslint@6.8.0: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+| 
+| added 375 packages, and audited 376 packages in 22s
+| 
+| 104 packages are looking for funding
+|   run `npm fund` for details
+| 
+| 12 vulnerabilities (3 low, 6 high, 3 critical)
+| 
+| To address all issues (including breaking changes), run:
+|   npm audit fix --force
+| 
+| Run `npm audit` for details.
+[CI/test]   ✅  Success - Main npm install [22.489104074s]
+[CI/test] ⭐ Run Main npm test
+[CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/3.sh] user= workdir=
+| 
+| > github-actions-demo@1.0.0 test
+| > mocha ./tests --recursive
+| 
+| 
+| 
+|   GET /
+|     ✓ should respond with hello world
+| 
+| 
+|   1 passing (46ms)
+| 
+[CI/test]   ✅  Success - Main npm test [956.340369ms]
+[CI/test] ⭐ Run Post actions/setup-node@v4
+[CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v4/dist/cache-save/index.js] user= workdir=
+[CI/test]   ✅  Success - Post actions/setup-node@v4 [387.633206ms]
+[CI/test] ⭐ Run Complete job
+[CI/test] Cleaning up container for job test
+[CI/test]   ✅  Success - Complete job
+[CI/test] 🏁  Job succeeded
+```
+Note that the actoon is  approach
+and update
+
+to finalize the commit for 'Provision on demand' I
+```
+docker run  --rm -it node:18-alpine  cat /etc/alpine-release
+```
+```text
+3.21.3
+```
+ and updated workflow with the eatlier  commens in README.md
+ but check first - one can not be overly specific:
+```text
+[CI/test]   ❌  Failure - Set up job
+[CI/test] 🏁  Job failed
+Error: Error response from daemon: Head "https://registry-1.docker.io/v2/library/alpine/manifests/3.21.3": Get "https://auth.docker.io/token?scope=repository%3Alibrary%2Falpine%3Apull&service=registry.docker.io": net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+```
+debugging CI often feels like peeling an onion
+
+```text
+[CI/test] ⭐ Run Set up job
+[CI/test] 🚀  Start image=alpine:3.21
+[CI/test]   🐳  docker pull image=alpine:3.21 platform= username= forcePull=true
+[CI/test]   🐳  docker create image=alpine:3.21 platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[CI/test]   🐳  docker run image=alpine:3.21 platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[CI/test]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
+[CI/test]   ✅  Success - Set up job
+[CI/test]   ☁  git clone 'https://github.com/actions/setup-node' # ref=v4
+[CI/test] ⭐ Run Main actions/checkout@v4
+[CI/test]   🐳  docker cp src=/home/sergueik/src/springboot_study/basic-act/nodejs/. dst=/home/sergueik/src/springboot_study/basic-act/nodejs
+[CI/test]   ✅  Success - Main actions/checkout@v4 [12.78728ms]
+[CI/test] ⭐ Run Main actions/setup-node@v4
+[CI/test]   🐳  docker cp src=/home/sergueik/.cache/act/actions-setup-node@v4/ dst=/var/run/act/actions/actions-setup-node@v4/
+[CI/test]   🐳  docker exec cmd=[node /var/run/act/actions/actions-setup-node@v4/dist/setup/index.js] user= workdir=
+| OCI runtime exec failed: exec failed: unable to start container process: exec: "node": executable file not found in $PATH
+[CI/test]   ❌  Failure - Main actions/setup-node@v4 [489.510089ms]
+[CI/test] exitcode '127': command not found, please refer to https://github.com/nektos/act/issues/107 for more information
+[CI/test] ⭐ Run Complete job
+[CI/test]   ✅  Success - Complete job
+[CI/test] 🏁  Job failed
+Error: Job 'test' failed
+
+```
+indicates there is a 
+
+
+```text
+there is a bootstrap dependency:
+
+Need Node
+    ↓
+to run setup-node
+    ↓
+whose job is to install Node
+```
+this workflow commit demonstrates a semi-circular dependency: `setup-node` requires a __Node__ runtime in order to *set up __Node__*.
+
+After the workflow is fixed the log shows healthy run:
+
+```text
+[CI/test] ⭐ Run Set up job
+[CI/test] 🚀  Start image=node:18-alpine
+[CI/test]   🐳  docker pull image=node:18-alpine platform= username= forcePull=true
+[CI/test]   🐳  docker create image=node:18-alpine platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[CI/test]   🐳  docker run image=node:18-alpine platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[CI/test]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
+[CI/test]   ✅  Success - Set up job
+[CI/test]   ☁  git clone 'https://github.com/actions/setup-node' # ref=v4
+[CI/test] ⭐ Run Main actions/checkout@v4
+[CI/test]   🐳  docker cp src=/home/sergueik/src/springboot_study/basic-act/nodejs/. dst=/home/sergueik/src/springboot_study/basic-act/nodejs
+[CI/test]   ✅  Success - Main actions/checkout@v4 [10.73517ms]
+[CI/test] ⭐ Run Main actions/setup-node@v4
+[CI/test]   🐳  docker cp src=/home/sergueik/.cache/act/actions-setup-node@v4/ dst=/var/run/act/actions/actions-setup-node@v4/
+[CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v4/dist/setup/index.js] user= workdir=
+| Found in cache @ /opt/hostedtoolcache/node/18.20.8/x64
+[CI/test]   ❓  ::group::Environment details
+| node: 
+| npm: 10.8.2
+| yarn: 1.22.22
+[CI/test]   ❓  ::endgroup::
+[CI/test]   ❓ add-matcher /run/act/actions/actions-setup-node@v4/.github/tsc.json
+[CI/test]   ❓ add-matcher /run/act/actions/actions-setup-node@v4/.github/eslint-stylish.json
+[CI/test]   ❓ add-matcher /run/act/actions/actions-setup-node@v4/.github/eslint-compact.json
+[CI/test]   ✅  Success - Main actions/setup-node@v4 [1.035348523s]
+[CI/test]   ⚙  ::set-output:: node-version=
+[CI/test]   ⚙  ::add-path:: /opt/hostedtoolcache/node/18.20.8/x64/bin
+[CI/test] ⭐ Run Main npm install
+[CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/2.sh] user= workdir=
+| npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+| npm warn deprecated glob@7.1.2: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+| npm warn deprecated rimraf@2.6.3: Rimraf versions prior to v4 are no longer supported
+| npm warn deprecated superagent@8.1.2: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
+| npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+| npm warn deprecated mkdirp@0.5.1: Legacy versions of mkdirp are no longer supported. Please update to mkdirp 1.x. (Note that the API surface has changed to use Promises in 1.x.)
+| npm warn deprecated eslint@6.8.0: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+| 
+| added 375 packages, and audited 376 packages in 23s
+| 
+| 104 packages are looking for funding
+|   run `npm fund` for details
+| 
+| 12 vulnerabilities (3 low, 6 high, 3 critical)
+| 
+| To address all issues (including breaking changes), run:
+|   npm audit fix --force
+| 
+| Run `npm audit` for details.
+[CI/test]   ✅  Success - Main npm install [23.143761578s]
+[CI/test] ⭐ Run Main npm test
+[CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/3.sh] user= workdir=
+| 
+| > github-actions-demo@1.0.0 test
+| > mocha ./tests --recursive
+| 
+| 
+| 
+|   GET /
+|     ✓ should respond with hello world
+| 
+| 
+|   1 passing (31ms)
+| 
+[CI/test]   ✅  Success - Main npm test [810.713437ms]
+[CI/test] ⭐ Run Post actions/setup-node@v4
+[CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v4/dist/cache-save/index.js] user= workdir=
+[CI/test]   ✅  Success - Post actions/setup-node@v4 [402.368825ms]
+[CI/test] ⭐ Run Complete job
+[CI/test] Cleaning up container for job test
+[CI/test]   ✅  Success - Complete job
+[CI/test] 🏁  Job succeeded
+
+```
 * examine inventory
 ```
 docker image ls
 ```
 ```text
-node:16-buster-slim             eb8b8b8a3610        179MB             0B        
+alpine:3.21                   2607caa98058       7.83MB             0B        
+node:18-alpine                ee77c6cd7c18        127MB             0B        
 ```
 > NOTE: The Micro runner image uses `node:16-buster-slim`, which is pulled by act if it is not already available locally.
 ### Cleanup
 ```sh
 rm act_Linux_x86_64.tar.gz
 docker container prune -f
-docker image rm node:16-buster-slim || true
+docker image rm node:16-buster-slim alpine:3.21  node:18-alpine|| true
 ```
 
 ### See Also

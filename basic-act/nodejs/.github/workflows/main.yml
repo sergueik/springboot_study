@@ -6,8 +6,15 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: node:18-alpine
+      # NOTE: cannot use plain alpine:
+      # due to semi-circular dependency:
+      # the setup-node action is JS based and requires "node" runtime
+      # before it can provision requested version of "node"
+      # # image: alpine:3.21 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
     - run: npm install
     - run: npm test
