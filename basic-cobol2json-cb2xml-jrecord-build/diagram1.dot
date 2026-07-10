@@ -1,10 +1,39 @@
-digraph OO_Inheritance {
+digraph UML_Inheritance {
+
     rankdir=BT;
 
-    Z [label="Z\n(base class)\n+ render()\n+ validate()"];
-    X [label="X\n(subclass)\n+ render() override"];
-    Y [label="Y\n(subclass)\n+ render() override"];
+    graph [
+        fontname="Helvetica"
+        labelloc="t"
+        label="Object-Oriented Inheritance"
+    ];
 
-    X -> Z [arrowhead=empty];
-    Y -> Z [arrowhead=empty];
+    node [
+        shape=record
+        style=filled
+        fillcolor=gray95
+        fontname="Helvetica"
+    ];
+
+    edge [
+        dir=back
+        arrowtail=empty
+        arrowsize=1.4
+        penwidth=1.5
+    ];
+
+    Z [
+        label="{Z|+ commonField|+ render()\l+ validate()\l}"
+    ];
+
+    X [
+        label="{X|+ xField|+ render()\l}"
+    ];
+
+    Y [
+        label="{Y|+ yField|+ render()\l}"
+    ];
+
+    X -> Z;
+    Y -> Z;
 }

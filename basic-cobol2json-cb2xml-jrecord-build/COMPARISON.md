@@ -94,3 +94,38 @@ A more provocative (and perhaps closer to your intuition) version:
 REDEFINES was one of the pre-OO ways programmers dealt with "one thing having multiple forms"; OO later moved that idea from the memory layout level into the type-and-behavior level.
 That transition—from "interpret these bytes differently" to "this object behaves differently"—is essentially one of the big conceptual jumps from procedural to object-oriented design.
 
+```
+                 +----------------------+
+                 | 01 TRANSACTION-AREA. |
+                 +----------------------+
+                  /      |        \
+         REDEFINES  REDEFINES  REDEFINES
+               /        |          \
+              /         |           \
++----------------+ +----------------+ +----------------+
+|01 TRANS-X.     | |01 TRANS-Y.     | |01 TRANS-Z.     |
+|HEADER          | |HEADER          | |HEADER          |
+|X fields        | |Y fields        | |Z fields        |
++----------------+ +----------------+ +----------------+
+```
+or
+```
+             +===========================+
+             |        STORAGE            |
+             | 01 TRANSACTION-AREA       |
+             +===========================+
+                 |      |      |
+            REDEFINES REDEFINES REDEFINES
+                 |      |      |
+          .------------. .------------. .------------.
+          :01 TRANS-X  : :01 TRANS-Y  : :01 TRANS-Z  :
+          :------------: :------------: :------------:
+          :05 HEADER   : :05 HEADER   : :05 HEADER   :
+          :05 X-FIELDS : :05 Y-FIELDS : :05 Z-FIELDS :
+          '------------' '------------' '------------
+```
+
+![UML](screenshots/capture-uml-like-alt.png)
+
+![COBOL](screenshots/capture-teller-like-alt.png)
+
