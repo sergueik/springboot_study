@@ -1,5 +1,10 @@
 ### Info 
 
+[GitHub Actions](https://docs.github.com/en/actions) 
+allow auyomatically
+[Building and testing your code](https://docs.github.com/en/actions/tutorials/build-and-test-code)
+
+
 [act](https://nektosact.com/)
 is an open-source command-line tool developed by Nektos that allows
 one run and test GitHub Actions workflows locally  not bound to committing
@@ -11,9 +16,7 @@ execution environment directly on one's developer machine.
 ### Background 
 
 When executed, `act` parses [Workflow Definitions](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax)
-and 
-[GitHub Actions](https://docs.github.com/en/actions) 
-from `.github/workflows/`, determines which jobs and actions need to run
+and __GitHub Actions__ from `.github/workflows/`, determines which jobs and actions need to run
 
 It resolves the job dependency graph (needs) and determines the order in which jobs should execute.
 
@@ -39,10 +42,14 @@ While highly compatible, it is not guaranteed byte-for-byte replica of __GitHub_
 curl -skLo act_Linux_x86_64.tar.gz https://github.com/nektos/act/releases/download/v0.2.89/act_Linux_x86_64.tar.gz
 ```
 ```sh
-tar xzf act_Linux_x86_64.tar.gz  act
+tar xzf act_Linux_x86_64.tar.gz act
 chmod +x act
 ```
-the Example demo project workflow (.github/workflows/ci.yml) is:
+Run Example demo project workflows (`.github/workflows/main.yml` in `nodejs` and `java`):
+```
+pushd nodejs
+cat .github/workflows/main.yml
+```
 ```yaml
 name: CI
 on: push
@@ -56,11 +63,61 @@ jobs:
     - run: npm install
     - run: npm test
 ```
-* run interactively
+update workflow definition to
+```
+name: CI
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: node:18-alpine
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+    - run: npm install
+    - run: npm test
 
 ```
-./act
+* run interactively
+
+```sh
+../act
 ```
+with pinned image
+get error:
+
+```text
+INFO[0000] Using docker host 'unix:///var/run/docker.sock', and daemon socket 'unix:///var/run/docker.sock' 
+[CI/test] ⭐ Run Set up job
+[CI/test] 🚀  Start image=node:18-alpine
+[CI/test]   🐳  docker pull image=node:18-alpine platform= username= forcePull=true
+[CI/test]   🐳  docker create image=node:18-alpine platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[CI/test]   🐳  docker run image=node:18-alpine platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[CI/test]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
+[CI/test]   ✅  Success - Set up job
+[CI/test]   ☁  git clone 'https://github.com/actions/setup-node' # ref=v1
+[CI/test] ⭐ Run Main actions/checkout@v2
+[CI/test]   🐳  docker cp src=/home/sergueik/src/springboot_study/basic-act/nodejs/. dst=/home/sergueik/src/springboot_study/basic-act/nodejs
+[CI/test]   ✅  Success - Main actions/checkout@v2 [14.303455ms]
+[CI/test] ⭐ Run Main actions/setup-node@v1
+[CI/test]   🐳  docker cp src=/home/sergueik/.cache/act/actions-setup-node@v1/ dst=/var/run/act/actions/actions-setup-node@v1/
+[CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v1/dist/index.js] user= workdir=
+| [command]/opt/hostedtoolcache/node/10.24.1/x64/bin/node --version
+[CI/test]   ❗  ::error::There was an error when attempting to execute the process '/opt/hostedtoolcache/node/10.24.1/x64/bin/node'. This may indicate the process failed to start. Error: spawn /opt/hostedtoolcache/node/10.24.1/x64/bin/node ENOENT
+[CI/test]   ❌  Failure - Main actions/setup-node@v1 [712.193257ms]
+[CI/test]   ⚙  ::add-path:: /opt/hostedtoolcache/node/10.24.1/x64/bin
+[CI/test] exitcode '1': failure
+[CI/test] ⭐ Run Complete job
+[CI/test]   ✅  Success - Complete job
+[CI/test] 🏁  Job failed
+Error: Job 'test' failed
+```
+fix the root cause: old library assumption
+```text
+spawn /opt/hostedtoolcache/node/10.24.1/x64/bin/node ENOENT
+``` 
 ```text
 INFO[0000] Using docker host 'unix:///var/run/docker.sock', and daemon socket 'unix:///var/run/docker.sock' 
 

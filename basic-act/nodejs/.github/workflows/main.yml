@@ -4,6 +4,8 @@ on: push
 jobs:
   test:
     runs-on: ubuntu-latest
+    container:
+      image: node:18-alpine
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
