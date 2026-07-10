@@ -1,0 +1,13 @@
+digraph Cobol_Redefines {
+    rankdir=TB;
+
+    STORAGE [label="01 SCREEN-BUFFER\n(same bytes)", shape=box];
+
+    Z [label="Layout Z\nbytes:\n1-10 HEADER\n11-20 DATA"];
+    X [label="Layout X\nbytes:\n1-10 HEADER\n11-20 CUSTOMER"];
+    Y [label="Layout Y\nbytes:\n1-10 HEADER\n11-20 ORDER"];
+
+    STORAGE -> Z [label="interpret as"];
+    STORAGE -> X [label="interpret as"];
+    STORAGE -> Y [label="interpret as"];
+}

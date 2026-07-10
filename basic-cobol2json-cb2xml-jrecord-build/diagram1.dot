@@ -1,0 +1,10 @@
+digraph OO_Inheritance {
+    rankdir=BT;
+
+    Z [label="Z\n(base class)\n+ render()\n+ validate()"];
+    X [label="X\n(subclass)\n+ render() override"];
+    Y [label="Y\n(subclass)\n+ render() override"];
+
+    X -> Z [arrowhead=empty];
+    Y -> Z [arrowhead=empty];
+}
