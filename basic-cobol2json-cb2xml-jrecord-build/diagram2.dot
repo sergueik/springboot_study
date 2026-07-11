@@ -1,0 +1,37 @@
+digraph CobolRedefines {
+    rankdir=TB;
+    splines=ortho;
+    nodesep=0.6;
+    ranksep=0.8;
+    node [
+        shape=record
+        fontname="Courier New"
+        fontsize=11
+    ];
+
+    Storage [
+        label="{01 TRANSACTION-AREA|Physical storage allocated}"
+        style="filled,bold"
+        fillcolor=lightgray
+    ];
+
+    X [
+        label="{01 TRANS-X|05 HEADER|05 X-FIELDS}"
+        style=dashed
+    ];
+
+    Y [
+        label="{01 TRANS-Y|05 HEADER|05 Y-FIELDS}"
+        style=dashed
+    ];
+
+    Z [
+        label="{01 TRANS-Z|05 HEADER|05 Z-FIELDS}"
+        style=dashed
+    ];
+
+    Storage -> X [label="REDEFINES"];
+    Storage -> Y [label="REDEFINES"];
+    Storage -> Z [label="REDEFINES"];
+}
+
