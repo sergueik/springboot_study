@@ -20,10 +20,12 @@ jobs:
       - name: Build with Maven test phase
         run: |
           mvn -q dependency:go-offline
-          mvn --batch-mode --update-snapshots test
-          mvn --batch-mode -DskipTests package
-      - run: mkdir staging && cp target/*.jar staging
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Package
-          path: staging
+          mvn -B test
+          mvn -B -DskipTests package
+
+      # error: Unable to get the ACTIONS_RUNTIME_TOKEN env variable
+      #- run: mkdir staging && cp target/*.jar staging
+      #- uses: actions/upload-artifact@v4
+      #  with:
+      #    name: Package
+      #    path: staging

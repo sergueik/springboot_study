@@ -1,33 +1,31 @@
-### Info 
+ ### Info
 
-[GitHub Actions](https://docs.github.com/en/actions) 
-allow auyomatically
-[Building and testing your code](https://docs.github.com/en/actions/tutorials/build-and-test-code)
+[GitHub Actions](https://docs.github.com/en/actions)
+allows automatic [building and testing your code](https://docs.github.com/en/actions/tutorials/build-and-test-code)
 
 
-[act](https://nektosact.com/)
-is an open-source command-line tool developed by Nektos that allows
+[act](https://nektosact.com/) is an open-source command-line tool developed by Nektos that allows
 one run and test GitHub Actions workflows locally  not bound to committing
-and pushing changes to GitHub trigger real github events 
-and to verify that one's CI/CD pipeline works. 
-One can use `act` to replicate much of the GitHub Actions 
+and pushing changes to GitHub trigger real github events
+and to verify that one's CI/CD pipeline works.
+One can use `act` to replicate much of the GitHub Actions
 execution environment directly on one's developer machine.
 
-### Background 
+### Background
 
 When executed, `act` parses [Workflow Definitions](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax)
 and __GitHub Actions__ from `.github/workflows/`, determines which jobs and actions need to run
 
 It resolves the job dependency graph (needs) and determines the order in which jobs should execute.
 
-then performs  run uses the [Docker API](https://docs.docker.com/reference/api/engine/) 
+then performs  run uses the [Docker API](https://docs.docker.com/reference/api/engine/)
 of local Docker instance through socket `/var/run/docker.sock`
-making it seamless  to either pull or build the necessary images, 
-as defined in workflow files and finally determines the execution path based on the dependencies that were defined. 
+making it seamless  to either pull or build the necessary images,
+as defined in workflow files and finally determines the execution path based on the dependencies that were defined.
 
-Once it has the execution path, it then uses the Docker API to run containers for each action based on the images prepared earlier. 
+Once it has the execution path, it then uses the Docker API to run containers for each action based on the images prepared earlier.
 
-`act` attempts to emulate the __GitHub Actions__ runtime by providing similar environment variables, filesystem layout, and runner behavior. 
+`act` attempts to emulate the __GitHub Actions__ runtime by providing similar environment variables, filesystem layout, and runner behavior.
 While highly compatible, it is not guaranteed byte-for-byte replica of __GitHub__-hosted runners
 
 ### Runner Images
@@ -86,10 +84,10 @@ jobs:
 ../act
 ```
 
-The very first run is a little different: `act` auto switches to interactive mode: 
+The very first run is a little different: `act` auto switches to interactive mode:
 
 ```text
-INFO[0000] Using docker host 'unix:///var/run/docker.sock', and daemon socket 'unix:///var/run/docker.sock' 
+INFO[0000] Using docker host 'unix:///var/run/docker.sock', and daemon socket 'unix:///var/run/docker.sock'
 [CI/test] ⭐ Run Set up job
 [CI/test] 🚀  Start image=node:18-alpine
 [CI/test]   🐳  docker pull image=node:18-alpine platform= username= forcePull=true
@@ -118,7 +116,7 @@ fix the root cause: old library assumption
 ```text
 spawn /opt/hostedtoolcache/node/10.24.1/x64/bin/node ENOENT
 ```
-because `actions/setup-node@v1` was written with the assumption that it is running on a GitHub-hosted runner. 
+because `actions/setup-node@v1` was written with the assumption that it is running on a GitHub-hosted runner.
 
 after updating versions of actions the act succeds:
 ```
@@ -142,7 +140,7 @@ after updating versions of actions the act succeds:
 | [command]/bin/tar xz --strip 1 -C /tmp/a05d052f-b644-473e-975d-9c89e9136218 -f /tmp/ff70a279-0e6b-4a34-9f62-24d39b4aeae8
 | Adding to the cache ...
 [CI/test]   ❓  ::group::Environment details
-| node: 
+| node:
 | npm: 10.8.2
 | yarn: 1.22.22
 [CI/test]   ❓  ::endgroup::
@@ -161,33 +159,33 @@ after updating versions of actions the act succeds:
 | npm warn deprecated superagent@8.1.2: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
 | npm warn deprecated mkdirp@0.5.1: Legacy versions of mkdirp are no longer supported. Please update to mkdirp 1.x. (Note that the API surface has changed to use Promises in 1.x.)
 | npm warn deprecated eslint@6.8.0: This version is no longer supported. Please see https://eslint.org/version-support for other options.
-| 
+|
 | added 375 packages, and audited 376 packages in 22s
-| 
+|
 | 104 packages are looking for funding
 |   run `npm fund` for details
-| 
+|
 | 12 vulnerabilities (3 low, 6 high, 3 critical)
-| 
+|
 | To address all issues (including breaking changes), run:
 |   npm audit fix --force
-| 
+|
 | Run `npm audit` for details.
 [CI/test]   ✅  Success - Main npm install [22.489104074s]
 [CI/test] ⭐ Run Main npm test
 [CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/3.sh] user= workdir=
-| 
+|
 | > github-actions-demo@1.0.0 test
 | > mocha ./tests --recursive
-| 
-| 
-| 
+|
+|
+|
 |   GET /
 |     ✓ should respond with hello world
-| 
-| 
+|
+|
 |   1 passing (46ms)
-| 
+|
 [CI/test]   ✅  Success - Main npm test [956.340369ms]
 [CI/test] ⭐ Run Post actions/setup-node@v4
 [CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v4/dist/cache-save/index.js] user= workdir=
@@ -240,7 +238,7 @@ debugging CI often feels like peeling an onion
 Error: Job 'test' failed
 
 ```
-indicates there is a 
+indicates there is a
 
 
 ```text
@@ -255,7 +253,7 @@ whose job is to install Node
 this workflow commit demonstrates a semi-circular dependency: `setup-node` requires a __Node__ runtime in order to *set up __Node__*.
 ```text
 ? Please choose the default image you want to use with act:
-  - Large size image: ca. 17GB download + 53.1GB storage, you will need 75GB of free disk space, 
+  - Large size image: ca. 17GB download + 53.1GB storage, you will need 75GB of free disk space,
     snapshots of GitHub Hosted Runners without snap and pulled docker images
   - Medium size image: ~500MB, includes only necessary tools to bootstrap actions
     and aims to be compatible with most actions
@@ -293,27 +291,27 @@ this workflow commit demonstrates a semi-circular dependency: `setup-node` requi
 [CI/test]   🐳  docker exec cmd=[bash -e /var/run/act/workflow/2] user= workdir=
 | npm notice This endpoint is being retired. Use the bulk advisory endpoint instead. See the following docs for more info: https://api-docs.npmjs.com/#tag/Audit
 | added 280 packages from 643 contributors and audited 280 packages in 9.367s
-| 
+|
 | 24 packages are looking for funding
 |   run `npm fund` for details
-| 
+|
 | found 79 vulnerabilities (12 low, 26 moderate, 37 high, 4 critical)
 |   run `npm audit fix` to fix them, or `npm audit` for details
 [CI/test]   ✅  Success - Main npm install [10.001451828s]
 [CI/test] ⭐ Run Main npm test
 [CI/test]   🐳  docker exec cmd=[bash -e /var/run/act/workflow/3] user= workdir=
-| 
+|
 | > github-actions-demo@1.0.0 test /home/sergueik/src/springboot_study/basic-act/github-actions-demo
 | > mocha ./tests --recursive
-| 
-| 
-| 
+|
+|
+|
 |   GET /
 |     ✓ should respond with hello world
-| 
-| 
+|
+|
 |   1 passing (22ms)
-| 
+|
 [CI/test]   ✅  Success - Main npm test [506.939229ms]
 [CI/test] ⭐ Run Complete job
 [CI/test] Cleaning up container for job test
@@ -321,7 +319,7 @@ this workflow commit demonstrates a semi-circular dependency: `setup-node` requi
 [CI/test] 🏁  Job succeeded
 ```
 
->NOTE: On the first execution, `act` stores the selected default runner image in its configuration file. 
+>NOTE: On the first execution, `act` stores the selected default runner image in its configuration file.
 Depending on the platform and version, the file is created in either the `XDG` configuration directory `~/.config/act/actrc`
 or the user's home directory `~/.actrc`. One can edit this file at any time to change the default runner image or add other default command-line options:
 ```text
@@ -333,7 +331,7 @@ or the user's home directory `~/.actrc`. One can edit this file at any time to c
 the syntax can be found in [act Usage guide](https://nektosact.com/usage/)
 
 
-try to update to a later pinned `node` image (node:18-alpine) without modifying anything else 
+try to update to a later pinned `node` image (node:18-alpine) without modifying anything else
 and get `act` error:
 
 ```text
@@ -365,7 +363,7 @@ fix the root cause: old library assumption
 ```text
 spawn /opt/hostedtoolcache/node/10.24.1/x64/bin/node ENOENT
 ```
-because `actions/setup-node@v1` was written with the assumption that it is running on a GitHub-hosted runner. 
+because `actions/setup-node@v1` was written with the assumption that it is running on a GitHub-hosted runner.
 
 after updating versions of actions the act succeds:
 ```
@@ -389,7 +387,7 @@ after updating versions of actions the act succeds:
 | [command]/bin/tar xz --strip 1 -C /tmp/a05d052f-b644-473e-975d-9c89e9136218 -f /tmp/ff70a279-0e6b-4a34-9f62-24d39b4aeae8
 | Adding to the cache ...
 [CI/test]   ❓  ::group::Environment details
-| node: 
+| node:
 | npm: 10.8.2
 | yarn: 1.22.22
 [CI/test]   ❓  ::endgroup::
@@ -408,33 +406,33 @@ after updating versions of actions the act succeds:
 | npm warn deprecated superagent@8.1.2: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
 | npm warn deprecated mkdirp@0.5.1: Legacy versions of mkdirp are no longer supported. Please update to mkdirp 1.x. (Note that the API surface has changed to use Promises in 1.x.)
 | npm warn deprecated eslint@6.8.0: This version is no longer supported. Please see https://eslint.org/version-support for other options.
-| 
+|
 | added 375 packages, and audited 376 packages in 22s
-| 
+|
 | 104 packages are looking for funding
 |   run `npm fund` for details
-| 
+|
 | 12 vulnerabilities (3 low, 6 high, 3 critical)
-| 
+|
 | To address all issues (including breaking changes), run:
 |   npm audit fix --force
-| 
+|
 | Run `npm audit` for details.
 [CI/test]   ✅  Success - Main npm install [22.489104074s]
 [CI/test] ⭐ Run Main npm test
 [CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/3.sh] user= workdir=
-| 
+|
 | > github-actions-demo@1.0.0 test
 | > mocha ./tests --recursive
-| 
-| 
-| 
+|
+|
+|
 |   GET /
 |     ✓ should respond with hello world
-| 
-| 
+|
+|
 |   1 passing (46ms)
-| 
+|
 [CI/test]   ✅  Success - Main npm test [956.340369ms]
 [CI/test] ⭐ Run Post actions/setup-node@v4
 [CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v4/dist/cache-save/index.js] user= workdir=
@@ -487,7 +485,7 @@ debugging CI often feels like peeling an onion
 Error: Job 'test' failed
 
 ```
-indicates there is a 
+indicates there is a
 
 
 ```text
@@ -520,7 +518,7 @@ After the workflow is fixed the log shows healthy run:
 [CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v4/dist/setup/index.js] user= workdir=
 | Found in cache @ /opt/hostedtoolcache/node/18.20.8/x64
 [CI/test]   ❓  ::group::Environment details
-| node: 
+| node:
 | npm: 10.8.2
 | yarn: 1.22.22
 [CI/test]   ❓  ::endgroup::
@@ -539,33 +537,33 @@ After the workflow is fixed the log shows healthy run:
 | npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 | npm warn deprecated mkdirp@0.5.1: Legacy versions of mkdirp are no longer supported. Please update to mkdirp 1.x. (Note that the API surface has changed to use Promises in 1.x.)
 | npm warn deprecated eslint@6.8.0: This version is no longer supported. Please see https://eslint.org/version-support for other options.
-| 
+|
 | added 375 packages, and audited 376 packages in 23s
-| 
+|
 | 104 packages are looking for funding
 |   run `npm fund` for details
-| 
+|
 | 12 vulnerabilities (3 low, 6 high, 3 critical)
-| 
+|
 | To address all issues (including breaking changes), run:
 |   npm audit fix --force
-| 
+|
 | Run `npm audit` for details.
 [CI/test]   ✅  Success - Main npm install [23.143761578s]
 [CI/test] ⭐ Run Main npm test
 [CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/3.sh] user= workdir=
-| 
+|
 | > github-actions-demo@1.0.0 test
 | > mocha ./tests --recursive
-| 
-| 
-| 
+|
+|
+|
 |   GET /
 |     ✓ should respond with hello world
-| 
-| 
+|
+|
 |   1 passing (31ms)
-| 
+|
 [CI/test]   ✅  Success - Main npm test [810.713437ms]
 [CI/test] ⭐ Run Post actions/setup-node@v4
 [CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v4/dist/cache-save/index.js] user= workdir=
@@ -581,16 +579,10 @@ After the workflow is fixed the log shows healthy run:
 docker image ls
 ```
 ```text
-alpine:3.21                   2607caa98058       7.83MB             0B        
-node:18-alpine                ee77c6cd7c18        127MB             0B        
+alpine:3.21                   2607caa98058       7.83MB             0B
+node:18-alpine                ee77c6cd7c18        127MB             0B
 ```
 > NOTE: The Micro runner image uses `node:16-buster-slim`, which is pulled by act if it is not already available locally.
-### Cleanup
-```sh
-rm act_Linux_x86_64.tar.gz
-docker container prune -f
-docker image rm node:16-buster-slim alpine:3.21  node:18-alpine|| true
-```
 
 ```sh
 pushd java
@@ -605,11 +597,9 @@ pushd java
 [CI/test]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
 [CI/test]   ✅  Success - Set up job
 [CI/test]   ☁  git clone 'https://github.com/actions/setup-java' # ref=v4
-[CI/test] Non-terminating error while running 'git clone': some refs were not updated
-[CI/test]   ☁  git clone 'https://github.com/actions/upload-artifact' # ref=v4
 [CI/test] ⭐ Run Main actions/checkout@v6
 [CI/test]   🐳  docker cp src=/home/sergueik/src/springboot_study/basic-act/java/. dst=/home/sergueik/src/springboot_study/basic-act/java
-[CI/test]   ✅  Success - Main actions/checkout@v6 [16.295732ms]
+[CI/test]   ✅  Success - Main actions/checkout@v6 [47.062251ms]
 [CI/test] ⭐ Run Main Set up JDK 11 for x64
 [CI/test]   🐳  docker cp src=/home/sergueik/.cache/act/actions-setup-java@v4/ dst=/var/run/act/actions/actions-setup-java@v4/
 [CI/test]   🐳  docker exec cmd=[/usr/bin/node /var/run/act/actions/actions-setup-java@v4/dist/setup/index.js] user= workdir=
@@ -618,18 +608,18 @@ pushd java
 | Setting Java 11.0.31+11 as the default
 | Creating toolchains.xml for JDK version 11 from temurin
 | Writing to /root/.m2/toolchains.xml
-| 
+|
 | Java configuration:
 |   Distribution: temurin
 |   Version: 11.0.31+11
 |   Path: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.31-11/x64
-| 
+|
 [CI/test]   ❓  ::endgroup::
 [CI/test]   ❓ add-matcher /run/act/actions/actions-setup-java@v4/.github/java.json
 | Creating settings.xml with server-id: github
 | Writing to /root/.m2/settings.xml
 | maven cache is not found
-[CI/test]   ✅  Success - Main Set up JDK 11 for x64 [1.039528965s]
+[CI/test]   ✅  Success - Main Set up JDK 11 for x64 [1.241658079s]
 [CI/test]   ⚙  ::set-env:: JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.31-11/x64
 [CI/test]   ⚙  ::set-env:: JAVA_HOME_11_X64=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.31-11/x64
 [CI/test]   ⚙  ::set-output:: version=11.0.31+11
@@ -640,128 +630,176 @@ pushd java
 [CI/test] ⭐ Run Main Build with Maven test phase
 [CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/2.sh] user= workdir=
 | [INFO] Scanning for projects...
-| [WARNING] 
-| [WARNING] Some problems were encountered while building the effective model for example:basic-tests:jar:0.38.0-SNAPSHOT
-| [WARNING] 'repositories.repository.id' must not be 'local', this identifier is reserved for the local repository, using it for other repositories will corrupt your repository metadata. @ line 115, column 11
-| [WARNING] 
+| [WARNING]
+| [WARNING] Some problems were encountered while building the effective model for example:basic-tests:jar:0.1.0-SNAPSHOT
+| [WARNING] 'repositories.repository.id' must not be 'local', this identifier is reserved for the local repository, using it for other repositories will corrupt your repository metadata. @ line 78, column 11
+| [WARNING]
 | [WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
-| [WARNING] 
+| [WARNING]
 | [WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
-| [WARNING] 
-| [INFO] 
+| [WARNING]
+| [INFO]
 | [INFO] ------------------------< example:basic-tests >-------------------------
-| [INFO] Building basic 0.38.0-SNAPSHOT
+| [INFO] Building basic 0.1.0-SNAPSHOT
 | [INFO] --------------------------------[ jar ]---------------------------------
-| [INFO] Downloading from local: file:///root/.m2/repository/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.pom
-| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.pom
-| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.pom
-| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.pom (991 B at 1.3 kB/s)
-| [INFO] Downloading from local: file:///root/.m2/repository/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.jar
-| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.jar
-| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.jar
-| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.jar (4.6 kB at 16 kB/s)
-| [INFO] 
-| [INFO] --- maven-resources-plugin:3.1.0:resources (default-resources) @ basic-tests ---
+| [INFO] Downloading from local: file:///root/.m2/repository/net/minidev/json-smart/2.4.8/json-smart-2.4.8.pom
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/net/minidev/json-smart/2.4.8/json-smart-2.4.8.pom
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/minidev/json-smart/2.4.8/json-smart-2.4.8.pom
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/minidev/json-smart/2.4.8/json-smart-2.4.8.pom (8.3 kB at 6.9 kB/s)
+| [INFO] Downloading from local: file:///root/.m2/repository/net/minidev/accessors-smart/2.4.8/accessors-smart-2.4.8.pom
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/net/minidev/accessors-smart/2.4.8/accessors-smart-2.4.8.pom
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/minidev/accessors-smart/2.4.8/accessors-smart-2.4.8.pom
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/minidev/accessors-smart/2.4.8/accessors-smart-2.4.8.pom (10 kB at 24 kB/s)
+| [INFO] Downloading from local: file:///root/.m2/repository/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.13.4/jackson-dataformat-yaml-2.13.4.pom
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.13.4/jackson-dataformat-yaml-2.13.4.pom
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.13.4/jackson-dataformat-yaml-2.13.4.pom
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.13.4/jackson-dataformat-yaml-2.13.4.pom (2.6 kB at 5.4 kB/s)
+| [INFO] Downloading from local: file:///root/.m2/repository/com/fasterxml/jackson/dataformat/jackson-dataformats-text/2.13.4/jackson-dataformats-text-2.13.4.pom
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/com/fasterxml/jackson/dataformat/jackson-dataformats-text/2.13.4/jackson-dataformats-text-2.13.4.pom
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/com/fasterxml/jackson/dataformat/jackson-dataformats-text/2.13.4/jackson-dataformats-text-2.13.4.pom
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/com/fasterxml/jackson/dataformat/jackson-dataformats-text/2.13.4/jackson-dataformats-text-2.13.4.pom (2.9 kB at 7.2 kB/s)
+| [INFO] Downloading from local: file:///root/.m2/repository/net/bytebuddy/byte-buddy/1.12.22/byte-buddy-1.12.22.pom
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/net/bytebuddy/byte-buddy/1.12.22/byte-buddy-1.12.22.pom
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/bytebuddy/byte-buddy/1.12.22/byte-buddy-1.12.22.pom
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/bytebuddy/byte-buddy/1.12.22/byte-buddy-1.12.22.pom (16 kB at 29 kB/s)
+| [INFO] Downloading from local: file:///root/.m2/repository/net/bytebuddy/byte-buddy-parent/1.12.22/byte-buddy-parent-1.12.22.pom
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/net/bytebuddy/byte-buddy-parent/1.12.22/byte-buddy-parent-1.12.22.pom
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/bytebuddy/byte-buddy-parent/1.12.22/byte-buddy-parent-1.12.22.pom
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/bytebuddy/byte-buddy-parent/1.12.22/byte-buddy-parent-1.12.22.pom (58 kB at 98 kB/s)
+| [INFO] Downloading from local: file:///root/.m2/repository/net/bytebuddy/byte-buddy-agent/1.12.22/byte-buddy-agent-1.12.22.pom
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/net/bytebuddy/byte-buddy-agent/1.12.22/byte-buddy-agent-1.12.22.pom
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/bytebuddy/byte-buddy-agent/1.12.22/byte-buddy-agent-1.12.22.pom
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/bytebuddy/byte-buddy-agent/1.12.22/byte-buddy-agent-1.12.22.pom (10 kB at 28 kB/s)
+| [INFO] Downloading from local: file:///root/.m2/repository/net/minidev/json-smart/2.4.8/json-smart-2.4.8.jar
+| [INFO] Downloading from local: file:///root/.m2/repository/net/minidev/accessors-smart/2.4.8/accessors-smart-2.4.8.jar
+| [INFO] Downloading from local: file:///root/.m2/repository/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.13.4/jackson-dataformat-yaml-2.13.4.jar
+| [INFO] Downloading from local: file:///root/.m2/repository/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
+| [INFO] Downloading from local: file:///root/.m2/repository/net/bytebuddy/byte-buddy-agent/1.12.22/byte-buddy-agent-1.12.22.jar
+| [INFO] Downloading from local: file:///root/.m2/repository/net/bytebuddy/byte-buddy/1.12.22/byte-buddy-1.12.22.jar
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/net/minidev/json-smart/2.4.8/json-smart-2.4.8.jar
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/net/minidev/accessors-smart/2.4.8/accessors-smart-2.4.8.jar
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.13.4/jackson-dataformat-yaml-2.13.4.jar
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/net/bytebuddy/byte-buddy/1.12.22/byte-buddy-1.12.22.jar
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/net/bytebuddy/byte-buddy-agent/1.12.22/byte-buddy-agent-1.12.22.jar
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/minidev/json-smart/2.4.8/json-smart-2.4.8.jar
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/minidev/accessors-smart/2.4.8/accessors-smart-2.4.8.jar
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.13.4/jackson-dataformat-yaml-2.13.4.jar
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/bytebuddy/byte-buddy/1.12.22/byte-buddy-1.12.22.jar
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/minidev/json-smart/2.4.8/json-smart-2.4.8.jar (120 kB at 204 kB/s)
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/bytebuddy/byte-buddy-agent/1.12.22/byte-buddy-agent-1.12.22.jar
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/minidev/accessors-smart/2.4.8/accessors-smart-2.4.8.jar (30 kB at 32 kB/s)
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar (41 kB at 42 kB/s)
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.13.4/jackson-dataformat-yaml-2.13.4.jar (52 kB at 51 kB/s)
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/bytebuddy/byte-buddy/1.12.22/byte-buddy-1.12.22.jar (3.9 MB at 1.8 MB/s)
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/net/bytebuddy/byte-buddy-agent/1.12.22/byte-buddy-agent-1.12.22.jar (257 kB at 114 kB/s)
+| [INFO]
+| [INFO] --- maven-resources-plugin:3.2.0:resources (default-resources) @ basic-tests ---
 | [INFO] Using 'UTF-8' encoding to copy filtered resources.
+| [INFO] Using 'UTF-8' encoding to copy filtered properties files.
 | [INFO] skip non existing resourceDirectory /home/sergueik/src/springboot_study/basic-act/java/src/main/resources
-| [INFO] skip non existing resourceDirectory /home/sergueik/src/springboot_study/basic-act/java/src/main/resources
-| [INFO] 
-| [INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ basic-tests ---
-| [INFO] Nothing to compile - all classes are up to date
-| [INFO] 
-| [INFO] --- maven-resources-plugin:3.1.0:testResources (default-testResources) @ basic-tests ---
+| [INFO]
+| [INFO] --- maven-compiler-plugin:3.10.1:compile (default-compile) @ basic-tests ---
+| [INFO] Changes detected - recompiling the module!
+| [INFO] Compiling 7 source files to /home/sergueik/src/springboot_study/basic-act/java/target/classes
+| [INFO]
+| [INFO] --- maven-resources-plugin:3.2.0:testResources (default-testResources) @ basic-tests ---
 | [INFO] Using 'UTF-8' encoding to copy filtered resources.
+| [INFO] Using 'UTF-8' encoding to copy filtered properties files.
 | [INFO] skip non existing resourceDirectory /home/sergueik/src/springboot_study/basic-act/java/src/test/resources
-| [INFO] 
-| [INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ basic-tests ---
+| [INFO]
+| [INFO] --- maven-compiler-plugin:3.10.1:testCompile (default-testCompile) @ basic-tests ---
 | [INFO] No sources to compile
-| [INFO] 
+| [INFO]
 | [INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ basic-tests ---
 | [INFO] No tests to run.
 | [INFO] ------------------------------------------------------------------------
 | [INFO] BUILD SUCCESS
 | [INFO] ------------------------------------------------------------------------
-| [INFO] Total time:  3.949 s
-| [INFO] Finished at: 2026-07-11T05:50:39Z
+| [INFO] Total time:  14.483 s
+| [INFO] Finished at: 2026-07-11T13:22:09Z
 | [INFO] ------------------------------------------------------------------------
 | [INFO] Scanning for projects...
-| [WARNING] 
-| [WARNING] Some problems were encountered while building the effective model for example:basic-tests:jar:0.38.0-SNAPSHOT
-| [WARNING] 'repositories.repository.id' must not be 'local', this identifier is reserved for the local repository, using it for other repositories will corrupt your repository metadata. @ line 115, column 11
-| [WARNING] 
+| [WARNING]
+| [WARNING] Some problems were encountered while building the effective model for example:basic-tests:jar:0.1.0-SNAPSHOT
+| [WARNING] 'repositories.repository.id' must not be 'local', this identifier is reserved for the local repository, using it for other repositories will corrupt your repository metadata. @ line 78, column 11
+| [WARNING]
 | [WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
-| [WARNING] 
+| [WARNING]
 | [WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
-| [WARNING] 
-| [INFO] 
+| [WARNING]
+| [INFO]
 | [INFO] ------------------------< example:basic-tests >-------------------------
-| [INFO] Building basic 0.38.0-SNAPSHOT
+| [INFO] Building basic 0.1.0-SNAPSHOT
 | [INFO] --------------------------------[ jar ]---------------------------------
-| [INFO] 
-| [INFO] --- maven-resources-plugin:3.1.0:resources (default-resources) @ basic-tests ---
+| [INFO]
+| [INFO] --- maven-resources-plugin:3.2.0:resources (default-resources) @ basic-tests ---
 | [INFO] Using 'UTF-8' encoding to copy filtered resources.
+| [INFO] Using 'UTF-8' encoding to copy filtered properties files.
 | [INFO] skip non existing resourceDirectory /home/sergueik/src/springboot_study/basic-act/java/src/main/resources
-| [INFO] skip non existing resourceDirectory /home/sergueik/src/springboot_study/basic-act/java/src/main/resources
-| [INFO] 
-| [INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ basic-tests ---
+| [INFO]
+| [INFO] --- maven-compiler-plugin:3.10.1:compile (default-compile) @ basic-tests ---
 | [INFO] Nothing to compile - all classes are up to date
-| [INFO] 
-| [INFO] --- maven-resources-plugin:3.1.0:testResources (default-testResources) @ basic-tests ---
+| [INFO]
+| [INFO] --- maven-resources-plugin:3.2.0:testResources (default-testResources) @ basic-tests ---
 | [INFO] Using 'UTF-8' encoding to copy filtered resources.
+| [INFO] Using 'UTF-8' encoding to copy filtered properties files.
 | [INFO] skip non existing resourceDirectory /home/sergueik/src/springboot_study/basic-act/java/src/test/resources
-| [INFO] 
-| [INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ basic-tests ---
+| [INFO]
+| [INFO] --- maven-compiler-plugin:3.10.1:testCompile (default-testCompile) @ basic-tests ---
 | [INFO] No sources to compile
-| [INFO] 
+| [INFO]
 | [INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ basic-tests ---
 | [INFO] Tests are skipped.
-| [INFO] 
-| [INFO] --- maven-jar-plugin:3.2.0:jar (default-jar) @ basic-tests ---
-| [INFO] Building jar: /home/sergueik/src/springboot_study/basic-act/java/target/basic-tests-0.38.0-SNAPSHOT.jar
-| [INFO] 
-| [INFO] --- spring-boot-maven-plugin:2.3.4.RELEASE:repackage (repackage) @ basic-tests ---
+| [INFO]
+| [INFO] --- maven-jar-plugin:3.2.2:jar (default-jar) @ basic-tests ---
+| [INFO] Building jar: /home/sergueik/src/springboot_study/basic-act/java/target/basic-tests-0.1.0-SNAPSHOT.jar
+| [INFO]
+| [INFO] --- spring-boot-maven-plugin:2.7.8:repackage (repackage) @ basic-tests ---
 | [INFO] Replacing main artifact with repackaged archive
 | [INFO] ------------------------------------------------------------------------
 | [INFO] BUILD SUCCESS
 | [INFO] ------------------------------------------------------------------------
-| [INFO] Total time:  3.020 s
-| [INFO] Finished at: 2026-07-11T05:50:45Z
+| [INFO] Total time:  5.369 s
+| [INFO] Finished at: 2026-07-11T13:22:18Z
 | [INFO] ------------------------------------------------------------------------
-[CI/test]   ✅  Success - Main Build with Maven test phase [2m17.331640934s]
-[CI/test] ⭐ Run Main mkdir staging && cp target/*.jar staging
-[CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/3.sh] user= workdir=
-[CI/test]   ✅  Success - Main mkdir staging && cp target/*.jar staging [221.656324ms]
-[CI/test] ⭐ Run Main actions/upload-artifact@v4
-[CI/test]   🐳  docker cp src=/home/sergueik/.cache/act/actions-upload-artifact@v4/ dst=/var/run/act/actions/actions-upload-artifact@v4/
-[CI/test]   🐳  docker exec cmd=[/usr/bin/node /var/run/act/actions/actions-upload-artifact@v4/dist/upload/index.js] user= workdir=
-| With the provided path, there will be 2 files uploaded
-| Artifact name is valid!
-| Root directory input is valid!
-[CI/test]   ❗  ::error::Unable to get the ACTIONS_RUNTIME_TOKEN env variable
-[CI/test]   ❌  Failure - Main actions/upload-artifact@v4 [1.072284724s]
-[CI/test] exitcode '1': failure
+[CI/test]   ✅  Success - Main Build with Maven test phase [3m17.237246008s]
 [CI/test] ⭐ Run Post Set up JDK 11 for x64
 [CI/test]   🐳  docker exec cmd=[/usr/bin/node /var/run/act/actions/actions-setup-java@v4/dist/cleanup/index.js] user= workdir=
-[CI/test]   ✅  Success - Post Set up JDK 11 for x64 [595.226607ms]
+| [command]/bin/tar --posix -cf cache.tgz --exclude cache.tgz -P -C /home/sergueik/src/springboot_study/basic-act/java --files-from manifest.txt -z
+| Cache Size: ~95 MB (99931307 B)
+| Cache saved successfully
+| Cache saved with the key: setup-java-Linux-x64-maven-aeaffdb5d437ef2e6d439c319ea15fe6fe24aca560944eadcb0762746cc0daf9
+[CI/test]   ✅  Success - Post Set up JDK 11 for x64 [7.611009354s]
 [CI/test] ⭐ Run Complete job
+[CI/test] Cleaning up container for job test
 [CI/test]   ✅  Success - Complete job
-[CI/test] 🏁  Job failed
-Error: Job 'test' failed
+[CI/test] 🏁  Job succeeded
 ```
 
-workaround : suppress `artifact upload`.
+> NOTE: suppressed `artifact upload` step and offline option in maven.
+The `dependency:go-offline` often misses transitive dependencies, especially those pulled in by plugins, Surefire, ByteBuddy
 
+
+### Cleanup
+
+```sh
+rm act_Linux_x86_64.tar.gz
+docker container prune -f
+docker image rm alpine:3.21 node:18-alpine node:16-buster-slim atools/jdk-maven-node:mvn3-jdk11-node16|| true
+```
 
 ### See Also
 
    * [introduction to GitHub Actions with Docker](https://docs.docker.com/guides/gha/)
    * [curated list of awesome actions to use on GitHub](https://github.com/cplee/awesome-actions/tree/master#collection-of-actions)
-   * Runners - 
+   * Runners -
      + https://hub.docker.com/search?q=act-runner
      + https://hub.docker.com/search?q=act_runner
      + https://hub.docker.com/search?q=act
 The Workflows that themselves invoke __Docker++ may require [Docker-in-Docker (DinD)](https://github.com/jpetazzo/dind) or access to the host Docker socket.
-   * recommended for Java maven [gitea/act_runner](https://hub.docker.com/r/gitea/act_runner): 
+   * recommended for Java maven [gitea/act_runner](https://hub.docker.com/r/gitea/act_runner):
 ```sh
 docker pull gitea/act_runner:0.6.1
 docker pull gitea/act_runner:0.6-dind
