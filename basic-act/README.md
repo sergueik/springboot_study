@@ -609,7 +609,7 @@ pushd java
 [CI/test]   ☁  git clone 'https://github.com/actions/upload-artifact' # ref=v4
 [CI/test] ⭐ Run Main actions/checkout@v6
 [CI/test]   🐳  docker cp src=/home/sergueik/src/springboot_study/basic-act/java/. dst=/home/sergueik/src/springboot_study/basic-act/java
-[CI/test]   ✅  Success - Main actions/checkout@v6 [18.98786ms]
+[CI/test]   ✅  Success - Main actions/checkout@v6 [16.295732ms]
 [CI/test] ⭐ Run Main Set up JDK 11 for x64
 [CI/test]   🐳  docker cp src=/home/sergueik/.cache/act/actions-setup-java@v4/ dst=/var/run/act/actions/actions-setup-java@v4/
 [CI/test]   🐳  docker exec cmd=[/usr/bin/node /var/run/act/actions/actions-setup-java@v4/dist/setup/index.js] user= workdir=
@@ -629,13 +629,13 @@ pushd java
 | Creating settings.xml with server-id: github
 | Writing to /root/.m2/settings.xml
 | maven cache is not found
-[CI/test]   ✅  Success - Main Set up JDK 11 for x64 [962.262249ms]
-[CI/test]   ⚙  ::set-env:: JAVA_HOME_11_X64=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.31-11/x64
+[CI/test]   ✅  Success - Main Set up JDK 11 for x64 [1.039528965s]
 [CI/test]   ⚙  ::set-env:: JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.31-11/x64
-[CI/test]   ⚙  ::set-output:: distribution=Temurin-Hotspot
-[CI/test]   ⚙  ::set-output:: path=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.31-11/x64
+[CI/test]   ⚙  ::set-env:: JAVA_HOME_11_X64=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.31-11/x64
 [CI/test]   ⚙  ::set-output:: version=11.0.31+11
 [CI/test]   ⚙  ::set-output:: cache-hit=false
+[CI/test]   ⚙  ::set-output:: distribution=Temurin-Hotspot
+[CI/test]   ⚙  ::set-output:: path=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.31-11/x64
 [CI/test]   ⚙  ::add-path:: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.31-11/x64/bin
 [CI/test] ⭐ Run Main Build with Maven test phase
 [CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/2.sh] user= workdir=
@@ -652,101 +652,105 @@ pushd java
 | [INFO] ------------------------< example:basic-tests >-------------------------
 | [INFO] Building basic 0.38.0-SNAPSHOT
 | [INFO] --------------------------------[ jar ]---------------------------------
-| [WARNING] The POM for org.slf4j:jul-to-slf4j:jar:1.7.34 is missing, no dependency information available
+| [INFO] Downloading from local: file:///root/.m2/repository/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.pom
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.pom
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.pom
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.pom (991 B at 1.3 kB/s)
+| [INFO] Downloading from local: file:///root/.m2/repository/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.jar
+| [INFO] Downloading from maven-central: https://mvnrepository.com/repos/central/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.jar
+| [INFO] Downloading from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.jar
+| [INFO] Downloaded from verve: https://verve.jfrog.io/artifactory/verve-gradle-release/org/slf4j/jul-to-slf4j/1.7.34/jul-to-slf4j-1.7.34.jar (4.6 kB at 16 kB/s)
+| [INFO] 
+| [INFO] --- maven-resources-plugin:3.1.0:resources (default-resources) @ basic-tests ---
+| [INFO] Using 'UTF-8' encoding to copy filtered resources.
+| [INFO] skip non existing resourceDirectory /home/sergueik/src/springboot_study/basic-act/java/src/main/resources
+| [INFO] skip non existing resourceDirectory /home/sergueik/src/springboot_study/basic-act/java/src/main/resources
+| [INFO] 
+| [INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ basic-tests ---
+| [INFO] Nothing to compile - all classes are up to date
+| [INFO] 
+| [INFO] --- maven-resources-plugin:3.1.0:testResources (default-testResources) @ basic-tests ---
+| [INFO] Using 'UTF-8' encoding to copy filtered resources.
+| [INFO] skip non existing resourceDirectory /home/sergueik/src/springboot_study/basic-act/java/src/test/resources
+| [INFO] 
+| [INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ basic-tests ---
+| [INFO] No sources to compile
+| [INFO] 
+| [INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ basic-tests ---
+| [INFO] No tests to run.
 | [INFO] ------------------------------------------------------------------------
-| [INFO] BUILD FAILURE
+| [INFO] BUILD SUCCESS
 | [INFO] ------------------------------------------------------------------------
-| [INFO] Total time:  1.336 s
-| [INFO] Finished at: 2026-07-11T05:36:52Z
+| [INFO] Total time:  3.949 s
+| [INFO] Finished at: 2026-07-11T05:50:39Z
 | [INFO] ------------------------------------------------------------------------
-| [ERROR] Failed to execute goal on project basic-tests: Could not resolve dependencies for project example:basic-tests:jar:0.38.0-SNAPSHOT: Cannot access local (file:///root/.m2/repository) in offline mode and the artifact org.slf4j:jul-to-slf4j:jar:1.7.34 has not been downloaded from it before. -> [Help 1]
-| [ERROR] 
-| [ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
-| [ERROR] Re-run Maven using the -X switch to enable full debug logging.
-| [ERROR] 
-| [ERROR] For more information about the errors and possible solutions, please read the following articles:
-| [ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException
-[CI/test]   ❌  Failure - Main Build with Maven test phase [2m12.558808471s]
+| [INFO] Scanning for projects...
+| [WARNING] 
+| [WARNING] Some problems were encountered while building the effective model for example:basic-tests:jar:0.38.0-SNAPSHOT
+| [WARNING] 'repositories.repository.id' must not be 'local', this identifier is reserved for the local repository, using it for other repositories will corrupt your repository metadata. @ line 115, column 11
+| [WARNING] 
+| [WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+| [WARNING] 
+| [WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+| [WARNING] 
+| [INFO] 
+| [INFO] ------------------------< example:basic-tests >-------------------------
+| [INFO] Building basic 0.38.0-SNAPSHOT
+| [INFO] --------------------------------[ jar ]---------------------------------
+| [INFO] 
+| [INFO] --- maven-resources-plugin:3.1.0:resources (default-resources) @ basic-tests ---
+| [INFO] Using 'UTF-8' encoding to copy filtered resources.
+| [INFO] skip non existing resourceDirectory /home/sergueik/src/springboot_study/basic-act/java/src/main/resources
+| [INFO] skip non existing resourceDirectory /home/sergueik/src/springboot_study/basic-act/java/src/main/resources
+| [INFO] 
+| [INFO] --- maven-compiler-plugin:3.8.1:compile (default-compile) @ basic-tests ---
+| [INFO] Nothing to compile - all classes are up to date
+| [INFO] 
+| [INFO] --- maven-resources-plugin:3.1.0:testResources (default-testResources) @ basic-tests ---
+| [INFO] Using 'UTF-8' encoding to copy filtered resources.
+| [INFO] skip non existing resourceDirectory /home/sergueik/src/springboot_study/basic-act/java/src/test/resources
+| [INFO] 
+| [INFO] --- maven-compiler-plugin:3.8.1:testCompile (default-testCompile) @ basic-tests ---
+| [INFO] No sources to compile
+| [INFO] 
+| [INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ basic-tests ---
+| [INFO] Tests are skipped.
+| [INFO] 
+| [INFO] --- maven-jar-plugin:3.2.0:jar (default-jar) @ basic-tests ---
+| [INFO] Building jar: /home/sergueik/src/springboot_study/basic-act/java/target/basic-tests-0.38.0-SNAPSHOT.jar
+| [INFO] 
+| [INFO] --- spring-boot-maven-plugin:2.3.4.RELEASE:repackage (repackage) @ basic-tests ---
+| [INFO] Replacing main artifact with repackaged archive
+| [INFO] ------------------------------------------------------------------------
+| [INFO] BUILD SUCCESS
+| [INFO] ------------------------------------------------------------------------
+| [INFO] Total time:  3.020 s
+| [INFO] Finished at: 2026-07-11T05:50:45Z
+| [INFO] ------------------------------------------------------------------------
+[CI/test]   ✅  Success - Main Build with Maven test phase [2m17.331640934s]
+[CI/test] ⭐ Run Main mkdir staging && cp target/*.jar staging
+[CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/3.sh] user= workdir=
+[CI/test]   ✅  Success - Main mkdir staging && cp target/*.jar staging [221.656324ms]
+[CI/test] ⭐ Run Main actions/upload-artifact@v4
+[CI/test]   🐳  docker cp src=/home/sergueik/.cache/act/actions-upload-artifact@v4/ dst=/var/run/act/actions/actions-upload-artifact@v4/
+[CI/test]   🐳  docker exec cmd=[/usr/bin/node /var/run/act/actions/actions-upload-artifact@v4/dist/upload/index.js] user= workdir=
+| With the provided path, there will be 2 files uploaded
+| Artifact name is valid!
+| Root directory input is valid!
+[CI/test]   ❗  ::error::Unable to get the ACTIONS_RUNTIME_TOKEN env variable
+[CI/test]   ❌  Failure - Main actions/upload-artifact@v4 [1.072284724s]
 [CI/test] exitcode '1': failure
 [CI/test] ⭐ Run Post Set up JDK 11 for x64
 [CI/test]   🐳  docker exec cmd=[/usr/bin/node /var/run/act/actions/actions-setup-java@v4/dist/cleanup/index.js] user= workdir=
-[CI/test]   ✅  Success - Post Set up JDK 11 for x64 [1.054757607s]
+[CI/test]   ✅  Success - Post Set up JDK 11 for x64 [595.226607ms]
 [CI/test] ⭐ Run Complete job
 [CI/test]   ✅  Success - Complete job
 [CI/test] 🏁  Job failed
 Error: Job 'test' failed
 ```
-```sh
-mvn depednency:tree
-```
-```text
-[INFO] +- net.bytebuddy:byte-buddy:jar:1.10.20:compile
-[INFO] +- com.google.code.gson:gson:jar:2.8.9:compile
-[INFO] +- org.springframework.boot:spring-boot-starter-web:jar:2.3.4.RELEASE:compile
-[INFO] |  +- org.springframework.boot:spring-boot-starter:jar:2.3.4.RELEASE:compile
-[INFO] |  |  +- org.springframework.boot:spring-boot:jar:2.3.4.RELEASE:compile
-[INFO] |  |  +- org.springframework.boot:spring-boot-autoconfigure:jar:2.3.4.RELEASE:compile
-[INFO] |  |  +- org.springframework.boot:spring-boot-starter-logging:jar:2.3.4.RELEASE:compile
-[INFO] |  |  |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
-[INFO] |  |  |  |  \- ch.qos.logback:logback-core:jar:1.2.3:compile
-[INFO] |  |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.13.3:compile
-[INFO] |  |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.13.3:compile
-[INFO] |  |  |  \- org.slf4j:jul-to-slf4j:jar:1.7.30:compile
-[INFO] |  |  +- jakarta.annotation:jakarta.annotation-api:jar:1.3.5:compile
-[INFO] |  |  \- org.yaml:snakeyaml:jar:1.26:compile
-[INFO] |  +- org.springframework.boot:spring-boot-starter-json:jar:2.3.4.RELEASE:compile
-[INFO] |  |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.11.2:compile
-[INFO] |  |  |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.11.2:compile
-[INFO] |  |  |  \- com.fasterxml.jackson.core:jackson-core:jar:2.11.2:compile
-[INFO] |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.11.2:compile
-[INFO] |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.11.2:compile
-[INFO] |  |  \- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.11.2:compile
-[INFO] |  +- org.springframework.boot:spring-boot-starter-tomcat:jar:2.3.4.RELEASE:compile
-[INFO] |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:9.0.38:compile
-[INFO] |  |  +- org.glassfish:jakarta.el:jar:3.0.3:compile
-[INFO] |  |  \- org.apache.tomcat.embed:tomcat-embed-websocket:jar:9.0.38:compile
-[INFO] |  +- org.springframework:spring-web:jar:5.2.9.RELEASE:compile
-[INFO] |  |  \- org.springframework:spring-beans:jar:5.2.9.RELEASE:compile
-[INFO] |  \- org.springframework:spring-webmvc:jar:5.2.9.RELEASE:compile
-[INFO] |     +- org.springframework:spring-aop:jar:5.2.9.RELEASE:compile
-[INFO] |     +- org.springframework:spring-context:jar:5.2.9.RELEASE:compile
-[INFO] |     \- org.springframework:spring-expression:jar:5.2.9.RELEASE:compile
-[INFO] +- org.springframework.boot:spring-boot-starter-test:jar:2.3.4.RELEASE:test
-[INFO] |  +- org.springframework.boot:spring-boot-test:jar:2.3.4.RELEASE:test
-[INFO] |  +- org.springframework.boot:spring-boot-test-autoconfigure:jar:2.3.4.RELEASE:test
-[INFO] |  +- com.jayway.jsonpath:json-path:jar:2.4.0:test
-[INFO] |  |  \- net.minidev:json-smart:jar:2.3:test
-[INFO] |  |     \- net.minidev:accessors-smart:jar:1.2:test
-[INFO] |  |        \- org.ow2.asm:asm:jar:5.0.4:test
-[INFO] |  +- jakarta.xml.bind:jakarta.xml.bind-api:jar:2.3.3:test
-[INFO] |  |  \- jakarta.activation:jakarta.activation-api:jar:1.2.2:test
-[INFO] |  +- org.assertj:assertj-core:jar:3.16.1:test
-[INFO] |  +- org.hamcrest:hamcrest:jar:2.2:test
-[INFO] |  +- org.junit.jupiter:junit-jupiter:jar:5.6.2:test
-[INFO] |  |  +- org.junit.jupiter:junit-jupiter-params:jar:5.6.2:test
-[INFO] |  |  \- org.junit.jupiter:junit-jupiter-engine:jar:5.6.2:test
-[INFO] |  |     \- org.junit.platform:junit-platform-engine:jar:1.6.2:test
-[INFO] |  +- org.mockito:mockito-core:jar:3.10.0:test
-[INFO] |  |  +- net.bytebuddy:byte-buddy-agent:jar:1.10.14:test
-[INFO] |  |  \- org.objenesis:objenesis:jar:3.2:test
-[INFO] |  +- org.skyscreamer:jsonassert:jar:1.5.0:test
-[INFO] |  |  \- com.vaadin.external.google:android-json:jar:0.0.20131108.vaadin1:test
-[INFO] |  +- org.springframework:spring-core:jar:5.2.9.RELEASE:compile
-[INFO] |  |  \- org.springframework:spring-jcl:jar:5.2.9.RELEASE:compile
-[INFO] |  +- org.springframework:spring-test:jar:5.2.9.RELEASE:test
-[INFO] |  \- org.xmlunit:xmlunit-core:jar:2.7.0:test
-[INFO] +- org.slf4j:slf4j-api:jar:1.7.34:compile
-[INFO] \- org.mockito:mockito-junit-jupiter:jar:3.10.0:test
-[INFO]    \- org.junit.jupiter:junit-jupiter-api:jar:5.6.2:test
-[INFO]       +- org.apiguardian:apiguardian-api:jar:1.1.0:test
-[INFO]       +- org.opentest4j:opentest4j:jar:1.2.0:test
-[INFO]       \- org.junit.platform:junit-platform-commons:jar:1.6.2:test
-[INFO] ------------------------------------------------------------------------
-```
 
-> NOTE: fixing through exclusions is very time consuming
+workaround : suppress `artifact upload`.
 
-workaround: temporariy remove offline flag.
 
 ### See Also
 

@@ -20,8 +20,8 @@ jobs:
       - name: Build with Maven test phase
         run: |
           mvn -q dependency:go-offline
-          mvn -o --batch-mode --update-snapshots test
-          mvn -o --batch-mode --DskipTests package
+          mvn --batch-mode --update-snapshots test
+          mvn --batch-mode -DskipTests package
       - run: mkdir staging && cp target/*.jar staging
       - uses: actions/upload-artifact@v4
         with:
