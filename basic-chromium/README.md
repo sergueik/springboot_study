@@ -4,6 +4,38 @@ This directory contains a `Dockerfile` from [zenika/alpine-chrome](https://githu
 
 ### Usage
 
+
+### Setup Check
+
+Verify the `eclipse-temurin:11-jdk-alpine` base image and its configured Alpine repositories:
+
+```sh
+docker run --rm eclipse-temurin:11-jdk-alpine cat /etc/alpine-release
+```
+
+Expected output (at the time of writing):
+
+```text
+3.23.5
+```
+
+```sh
+docker run --rm eclipse-temurin:11-jdk-alpine cat /etc/apk/repositories
+```
+
+Expected output:
+
+```text
+https://dl-cdn.alpinelinux.org/alpine/v3.23/main
+https://dl-cdn.alpinelinux.org/alpine/v3.23/community
+```
+
+If the Alpine release or repository URLs change, review the `Dockerfile` before making changes.
+
+The official `eclipse-temurin` image already configures the correct repositories; 
+therefore, explicit `apk update` or repository modifications are unlikely to be needed.
+
+
 #### Host Based Test (Optional)
 
 * install the `chromium-browser` locally
@@ -34,7 +66,7 @@ cd ..
 * Probe image availab ility in vendor mirror is needed:
 
 ```sh
-IMAGE=anapsix/alpine-java:8u202b08_jdk
+IMAGE=eclipse-temurin:11-jdk-alpine
 if docker manifest inspect vendor.mirror.com/docker-hub/library/$IMAGE >/dev/null 2>&1; then
   1>&2 echo 'exists'
 else
@@ -44,7 +76,7 @@ fi
 * build the image with the `chromium` and `chromium-driver` installed via `apk` installer accepting that both will be relatively old versions
 
 ```sh
-docker pull anapsix/alpine-java:8u202b08_jdk
+docker pull eclipse-temurin:11-jdk-alpine
 IMAGE='basic-maven-chromium'
 docker build -t $IMAGE -f Dockerfile .
 ```
@@ -59,30 +91,19 @@ WARNING: Ignoring APKINDEX.adfa7ceb.tar.gz: No such file or directory
 export NAME=$IMAGE
 docker run --rm --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --disable-gpu  --no-sandbox --dump-dom https://www.wikipedia.org | grep -i 'title="English"'
 ```
+this will print
 ```text
 <li><a href="//en.wikipedia.org/" lang="en" title="English">English</a></li>
 ```
 ```sh
 export NAME=$IMAGE
-docker run --rm --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --disable-gpu  --no-sandbox --dump-dom chrome://version
+docker run --rm --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --disable-gpu  --no-sandbox --dump-dom chrome://version | tee a.log /dev/null > /dev/null
+```
+you will find in `a.log`
+```html
+<g id="chrome-product" viewBox="0 -960 960 960">
 ```
 
-```text
-<html><head></head><body></body></html>
-```
-> NOTE if using `eclipse-temurin:11-jdk-alpine` instead of `anapsix/alpine-java:8u202b08_jdk` one will need to add `glibc`/ `musl`layer - error in runtime:
-```text
-Error relocating /usr/lib/libshaderc_shared.so.1: spvValidatorOptionsSetFriendlyNames: symbol not found
-Error relocating /usr/lib/libglslang.so.15: spvValidatorOptionsSetWorkgroupScalarBlockLayout: symbol not found
-Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools38CreateEliminateDeadInputComponentsPassEv: symbol not found
-Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools23CreateAggressiveDCEPassEbb: symbol not found
-Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools39CreateEliminateDeadOutputComponentsPassEv: symbol not found
-Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools35CreateEliminateDeadOutputStoresPassEPSt13unordered_setIjSt4hashIjESt8equal_toIjESaIjEES7_: symbol not found
-Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools26CreateAnalyzeLiveInputPassEPSt13unordered_setIjSt4hashIjESt8equal_toIjESaIjEES7_: symbol not found
-Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools42CreateEliminateDeadInputComponentsSafePassEv: symbol not found
-Error relocating /usr/lib/libglslang.so.15: _ZN8spvtools26CreateInterpolateFixupPassEv: symbol not found
-Error relocating /usr/lib/libglslang.so.15: spvValidatorOptionsSetAllowOffsetTextureOperand: symbol not found
-```
 this will print HTML in console
 > NOTE: the version of chromium-browser in the container will be rather old, but common options (`dump-dom`, `print-to-pdf`,`screenshot`) are supported
 ```sh
@@ -144,6 +165,25 @@ Written to file output.pdf.
 ```sh
 docker run -it -v $PWD/demo:/demo -w /demo $IMAGE mvn clean test
 ```
+this will print log of running the test:
+```
+[INFO] Running example.ChromiumBrowserTest
+os.name: linux
+Starting ChromeDriver 149.0.7827.53 (9d2c8156a72129edca4785abb98866fad60ea338-refs/branch-heads/7827@{#1980}) on port 19475
+All remote connections are allowed. Use an allowlist instead!
+Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+ChromeDriver was started successfully on port 19475.
+Jul 11, 2026 3:14:41 PM org.openqa.selenium.remote.ProtocolHandshake createSession
+INFO: Detected dialect: W3C
+<html id="t" dir="ltr" lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
+    <title>About Version</title>
+    <base href="chrome://version">
+
+
+...
+```
 for repeated runs use the commands:
 
 ```sh
@@ -158,6 +198,11 @@ which returns
 [INFO] Results:
 [INFO] 
 [WARNING] Tests run: 2, Failures: 0, Errors: 0, Skipped: 1
+```
+
+
+```sh
+docker run -it -v $PWD/demo.cdp:/demo -w /demo $IMAGE mvn clean test
 ```
 > NOTE: the same test will fail with Selenium __4.7.2__:
 ```text
@@ -274,11 +319,42 @@ docker inspect --format='{{.Id}} {{.Parent}}'     $(docker images --filter since
 ```
 and remove all and start over
 
-### Alternatrive CDP test
+### Alternative CDP test
+```sh
+docker run -it -v $PWD/demo.cdp:/demo -w /demo $IMAGE mvn clean test | tee a.log /dev/null > /dev/null
+```
+or 
 ```sh
 docker run -it -v "$PWD/demo.cdp":/demo -w /demo $IMAGE mvn clean test -Dtest=BrowserVersionTest 2>&1 | tee a.log
 ```
-this produces massive output (it runs in debug mode) illustrating the browser is managed by Selenium (Chrome Driver, Chrome DevTools Protocol):
+this produces massive output containing
+
+```text
+[1783783253.925][DEBUG]: DevTools WebSocket Command: Target.getTargets (id=19) (session_id=) browser {
+   "filter": [ {
+      "exclude": true,
+      "type": "browser"
+   }, {
+      "exclude": true,
+      "type": "page"
+   }, {
+      "exclude": false
+   } ]
+}
+[1783783253.942][DEBUG]: DevTools WebSocket Response: Target.getTargets (id=19) (session_id=) browser {
+   "targetInfos": [ {
+      "attached": true,
+      "browserContextId": "3F3DFD545FEA037AA419C3A2691A7590",
+      "canAccessOpener": false,
+      "targetId": "1CE97FCEABB1D0099A30F7C17473C970",
+      "title": "about:blank",
+      "type": "tab",
+      "url": "about:blank"
+   } ]
+}
+
+```
+(it runs in debug mode) illustrating the browser is managed by Selenium (Chrome Driver, Chrome DevTools Protocol):
 
 ```text
 -------------------------------------------------------
