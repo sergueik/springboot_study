@@ -592,6 +592,162 @@ docker container prune -f
 docker image rm node:16-buster-slim alpine:3.21  node:18-alpine|| true
 ```
 
+```sh
+pushd java
+../act
+```
+```text
+[CI/test] ⭐ Run Set up job
+[CI/test] 🚀  Start image=atools/jdk-maven-node:mvn3-jdk11-node16
+[CI/test]   🐳  docker pull image=atools/jdk-maven-node:mvn3-jdk11-node16 platform= username= forcePull=true
+[CI/test]   🐳  docker create image=atools/jdk-maven-node:mvn3-jdk11-node16 platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[CI/test]   🐳  docker run image=atools/jdk-maven-node:mvn3-jdk11-node16 platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[CI/test]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
+[CI/test]   ✅  Success - Set up job
+[CI/test]   ☁  git clone 'https://github.com/actions/setup-java' # ref=v4
+[CI/test] Non-terminating error while running 'git clone': some refs were not updated
+[CI/test]   ☁  git clone 'https://github.com/actions/upload-artifact' # ref=v4
+[CI/test] ⭐ Run Main actions/checkout@v6
+[CI/test]   🐳  docker cp src=/home/sergueik/src/springboot_study/basic-act/java/. dst=/home/sergueik/src/springboot_study/basic-act/java
+[CI/test]   ✅  Success - Main actions/checkout@v6 [18.98786ms]
+[CI/test] ⭐ Run Main Set up JDK 11 for x64
+[CI/test]   🐳  docker cp src=/home/sergueik/.cache/act/actions-setup-java@v4/ dst=/var/run/act/actions/actions-setup-java@v4/
+[CI/test]   🐳  docker exec cmd=[/usr/bin/node /var/run/act/actions/actions-setup-java@v4/dist/setup/index.js] user= workdir=
+[CI/test]   ❓  ::group::Installed distributions
+| Resolved Java 11.0.31+11 from tool-cache
+| Setting Java 11.0.31+11 as the default
+| Creating toolchains.xml for JDK version 11 from temurin
+| Writing to /root/.m2/toolchains.xml
+| 
+| Java configuration:
+|   Distribution: temurin
+|   Version: 11.0.31+11
+|   Path: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.31-11/x64
+| 
+[CI/test]   ❓  ::endgroup::
+[CI/test]   ❓ add-matcher /run/act/actions/actions-setup-java@v4/.github/java.json
+| Creating settings.xml with server-id: github
+| Writing to /root/.m2/settings.xml
+| maven cache is not found
+[CI/test]   ✅  Success - Main Set up JDK 11 for x64 [962.262249ms]
+[CI/test]   ⚙  ::set-env:: JAVA_HOME_11_X64=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.31-11/x64
+[CI/test]   ⚙  ::set-env:: JAVA_HOME=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.31-11/x64
+[CI/test]   ⚙  ::set-output:: distribution=Temurin-Hotspot
+[CI/test]   ⚙  ::set-output:: path=/opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.31-11/x64
+[CI/test]   ⚙  ::set-output:: version=11.0.31+11
+[CI/test]   ⚙  ::set-output:: cache-hit=false
+[CI/test]   ⚙  ::add-path:: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/11.0.31-11/x64/bin
+[CI/test] ⭐ Run Main Build with Maven test phase
+[CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/2.sh] user= workdir=
+| [INFO] Scanning for projects...
+| [WARNING] 
+| [WARNING] Some problems were encountered while building the effective model for example:basic-tests:jar:0.38.0-SNAPSHOT
+| [WARNING] 'repositories.repository.id' must not be 'local', this identifier is reserved for the local repository, using it for other repositories will corrupt your repository metadata. @ line 115, column 11
+| [WARNING] 
+| [WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+| [WARNING] 
+| [WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+| [WARNING] 
+| [INFO] 
+| [INFO] ------------------------< example:basic-tests >-------------------------
+| [INFO] Building basic 0.38.0-SNAPSHOT
+| [INFO] --------------------------------[ jar ]---------------------------------
+| [WARNING] The POM for org.slf4j:jul-to-slf4j:jar:1.7.34 is missing, no dependency information available
+| [INFO] ------------------------------------------------------------------------
+| [INFO] BUILD FAILURE
+| [INFO] ------------------------------------------------------------------------
+| [INFO] Total time:  1.336 s
+| [INFO] Finished at: 2026-07-11T05:36:52Z
+| [INFO] ------------------------------------------------------------------------
+| [ERROR] Failed to execute goal on project basic-tests: Could not resolve dependencies for project example:basic-tests:jar:0.38.0-SNAPSHOT: Cannot access local (file:///root/.m2/repository) in offline mode and the artifact org.slf4j:jul-to-slf4j:jar:1.7.34 has not been downloaded from it before. -> [Help 1]
+| [ERROR] 
+| [ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+| [ERROR] Re-run Maven using the -X switch to enable full debug logging.
+| [ERROR] 
+| [ERROR] For more information about the errors and possible solutions, please read the following articles:
+| [ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException
+[CI/test]   ❌  Failure - Main Build with Maven test phase [2m12.558808471s]
+[CI/test] exitcode '1': failure
+[CI/test] ⭐ Run Post Set up JDK 11 for x64
+[CI/test]   🐳  docker exec cmd=[/usr/bin/node /var/run/act/actions/actions-setup-java@v4/dist/cleanup/index.js] user= workdir=
+[CI/test]   ✅  Success - Post Set up JDK 11 for x64 [1.054757607s]
+[CI/test] ⭐ Run Complete job
+[CI/test]   ✅  Success - Complete job
+[CI/test] 🏁  Job failed
+Error: Job 'test' failed
+```
+```sh
+mvn depednency:tree
+```
+```text
+[INFO] +- net.bytebuddy:byte-buddy:jar:1.10.20:compile
+[INFO] +- com.google.code.gson:gson:jar:2.8.9:compile
+[INFO] +- org.springframework.boot:spring-boot-starter-web:jar:2.3.4.RELEASE:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter:jar:2.3.4.RELEASE:compile
+[INFO] |  |  +- org.springframework.boot:spring-boot:jar:2.3.4.RELEASE:compile
+[INFO] |  |  +- org.springframework.boot:spring-boot-autoconfigure:jar:2.3.4.RELEASE:compile
+[INFO] |  |  +- org.springframework.boot:spring-boot-starter-logging:jar:2.3.4.RELEASE:compile
+[INFO] |  |  |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |  |  |  |  \- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] |  |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.13.3:compile
+[INFO] |  |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.13.3:compile
+[INFO] |  |  |  \- org.slf4j:jul-to-slf4j:jar:1.7.30:compile
+[INFO] |  |  +- jakarta.annotation:jakarta.annotation-api:jar:1.3.5:compile
+[INFO] |  |  \- org.yaml:snakeyaml:jar:1.26:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-json:jar:2.3.4.RELEASE:compile
+[INFO] |  |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.11.2:compile
+[INFO] |  |  |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.11.2:compile
+[INFO] |  |  |  \- com.fasterxml.jackson.core:jackson-core:jar:2.11.2:compile
+[INFO] |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.11.2:compile
+[INFO] |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.11.2:compile
+[INFO] |  |  \- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.11.2:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-tomcat:jar:2.3.4.RELEASE:compile
+[INFO] |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:9.0.38:compile
+[INFO] |  |  +- org.glassfish:jakarta.el:jar:3.0.3:compile
+[INFO] |  |  \- org.apache.tomcat.embed:tomcat-embed-websocket:jar:9.0.38:compile
+[INFO] |  +- org.springframework:spring-web:jar:5.2.9.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-beans:jar:5.2.9.RELEASE:compile
+[INFO] |  \- org.springframework:spring-webmvc:jar:5.2.9.RELEASE:compile
+[INFO] |     +- org.springframework:spring-aop:jar:5.2.9.RELEASE:compile
+[INFO] |     +- org.springframework:spring-context:jar:5.2.9.RELEASE:compile
+[INFO] |     \- org.springframework:spring-expression:jar:5.2.9.RELEASE:compile
+[INFO] +- org.springframework.boot:spring-boot-starter-test:jar:2.3.4.RELEASE:test
+[INFO] |  +- org.springframework.boot:spring-boot-test:jar:2.3.4.RELEASE:test
+[INFO] |  +- org.springframework.boot:spring-boot-test-autoconfigure:jar:2.3.4.RELEASE:test
+[INFO] |  +- com.jayway.jsonpath:json-path:jar:2.4.0:test
+[INFO] |  |  \- net.minidev:json-smart:jar:2.3:test
+[INFO] |  |     \- net.minidev:accessors-smart:jar:1.2:test
+[INFO] |  |        \- org.ow2.asm:asm:jar:5.0.4:test
+[INFO] |  +- jakarta.xml.bind:jakarta.xml.bind-api:jar:2.3.3:test
+[INFO] |  |  \- jakarta.activation:jakarta.activation-api:jar:1.2.2:test
+[INFO] |  +- org.assertj:assertj-core:jar:3.16.1:test
+[INFO] |  +- org.hamcrest:hamcrest:jar:2.2:test
+[INFO] |  +- org.junit.jupiter:junit-jupiter:jar:5.6.2:test
+[INFO] |  |  +- org.junit.jupiter:junit-jupiter-params:jar:5.6.2:test
+[INFO] |  |  \- org.junit.jupiter:junit-jupiter-engine:jar:5.6.2:test
+[INFO] |  |     \- org.junit.platform:junit-platform-engine:jar:1.6.2:test
+[INFO] |  +- org.mockito:mockito-core:jar:3.10.0:test
+[INFO] |  |  +- net.bytebuddy:byte-buddy-agent:jar:1.10.14:test
+[INFO] |  |  \- org.objenesis:objenesis:jar:3.2:test
+[INFO] |  +- org.skyscreamer:jsonassert:jar:1.5.0:test
+[INFO] |  |  \- com.vaadin.external.google:android-json:jar:0.0.20131108.vaadin1:test
+[INFO] |  +- org.springframework:spring-core:jar:5.2.9.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-jcl:jar:5.2.9.RELEASE:compile
+[INFO] |  +- org.springframework:spring-test:jar:5.2.9.RELEASE:test
+[INFO] |  \- org.xmlunit:xmlunit-core:jar:2.7.0:test
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.34:compile
+[INFO] \- org.mockito:mockito-junit-jupiter:jar:3.10.0:test
+[INFO]    \- org.junit.jupiter:junit-jupiter-api:jar:5.6.2:test
+[INFO]       +- org.apiguardian:apiguardian-api:jar:1.1.0:test
+[INFO]       +- org.opentest4j:opentest4j:jar:1.2.0:test
+[INFO]       \- org.junit.platform:junit-platform-commons:jar:1.6.2:test
+[INFO] ------------------------------------------------------------------------
+```
+
+> NOTE: fixing through exclusions is very time consuming
+
+workaround: temporariy remove offline flag.
+
 ### See Also
 
    * [introduction to GitHub Actions with Docker](https://docs.docker.com/guides/gha/)
@@ -601,6 +757,10 @@ docker image rm node:16-buster-slim alpine:3.21  node:18-alpine|| true
      + https://hub.docker.com/search?q=act_runner
      + https://hub.docker.com/search?q=act
 The Workflows that themselves invoke __Docker++ may require [Docker-in-Docker (DinD)](https://github.com/jpetazzo/dind) or access to the host Docker socket.
-
+   * recommended for Java maven [gitea/act_runner](https://hub.docker.com/r/gitea/act_runner): 
+```sh
+docker pull gitea/act_runner:0.6.1
+docker pull gitea/act_runner:0.6-dind
+```
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

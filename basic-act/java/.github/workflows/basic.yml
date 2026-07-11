@@ -1,0 +1,29 @@
+name: CI
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      # note: need node - eclipse-temurin-alpine will not work
+      # image: eclipse-temurin:11-jdk-alpine
+      image: atools/jdk-maven-node:mvn3-jdk11-node16
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up JDK 11 for x64
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          architecture: x64
+          cache: maven
+      - name: Build with Maven test phase
+        run: |
+          mvn -q dependency:go-offline
+          mvn -o --batch-mode --update-snapshots test
+          mvn -o --batch-mode --DskipTests package
+      - run: mkdir staging && cp target/*.jar staging
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Package
+          path: staging
