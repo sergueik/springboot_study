@@ -1,3 +1,4 @@
+;
 ### Info
 
 ### Notes
@@ -59,8 +60,15 @@ while cloud storage emulators usually give a *behavioral substitute*
    * [podman as better docker alternative](https://habr.com/ru/companies/cdnnow/articles/825828/) (in Russiain)
    * [podman vs. docker](https://selectel.ru/blog/podman-vs-docker/?ysclid=mnrd8145no645085943) (in Russiain)
    * [podman vs docker](https://selectel.ru/blog/podman-vs-docker/?ysclid=mnrd8145no645085943)
-   * [podmn tutorial for beginners](https://devopscube.com/podman-tutorial-beginners/)
+   * [podman tutorial for beginners](https://devopscube.com/podman-tutorial-beginners/)
    * [Rootless Podman](https://docs.rockylinux.org/10/es/guides/containers/rootless_podman_advanced/)
    * [Understanding rootless Podman's user namespace modes](https://www.redhat.com/en/blog/rootless-podman-user-namespace-modes)
    * [Basic Setup and Use of Podman in a Rootless environment](https://github.com/podman-container-tools/podman/blob/main/docs/tutorials/rootless_tutorial.md) 
-   * []()
+   * [Podman Usage Transfer](https://github.com/podman-container-tools/podman/blob/main/transfer.md)
+   * [Podman HealthCheck Instrumenhttps://habr.com/ru/companies/selectel/articles/1016820/) (in Russian)
+   * [Katacoda: «Containers without Docker — Launching Containers using Podman and Libpod](https://www.katacoda.com/courses/containers-without-docker/running-containers-with-podman)(no longer active)
+   * [Install](https://podman.io/docs/installation#ubuntu)
+   * [Infro Tutorial](https://github.com/podman-container-tools/podman/blob/main/docs/tutorials/podman_tutorial.md)
+   * [Podman Overview](https://habr.com/ru/companies/flant/articles/426141/) (in Russian)
+   * [Podman-Compose difference with Docker-compose](https://habr.com/ru/companies/selectel/articles/1020170/) (in Russian)
+   * [Podman and Buildah intro for Docker user](https://habr.com/ru/companies/redhatrussia/articles/467105/) (in Russian)
