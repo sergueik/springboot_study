@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: ai-proxy
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: ALLOWED_IPS
+        sync: false
+      - key: ADMIN_TOKEN
+        sync: false
+      - key: PROVIDERS_JSON
+        sync: false

@@ -1,0 +1,26 @@
+server:
+  port: ${PORT:8085}
+
+spring:
+  application:
+    name: ai-proxy
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+logging:
+  level:
+    root: INFO
+
+app:
+
+  security:
+    enabled: true
+    allowed-ips: ${ALLOWED_IPS:}
+    admin-token: ${ADMIN_TOKEN:}
+    dynamic-ip-ttl-minutes: 720
+
+  providers-json: '${PROVIDERS_JSON:{"gemini":{"baseUrl":"https://generativelanguage.googleapis.com"},"openai":{"baseUrl":"https://api.openai.com"},"anthropic":{"baseUrl":"https://api.anthropic.com"}}}'

@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  ai-proxy:
+    # image: ai-proxy:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai-proxy
+    ports:
+      - '8080:8080'
+    env_file:
+      - .env
+    environment:
+      PORT: 8080
+      PROVIDERS_JSON: >-
+        {"gemini":{"baseUrl":"https://generativelanguage.googleapis.com"},
+        "openai":{"baseUrl":"https://api.openai.com"},
+        "anthropic":{"baseUrl":"https://api.anthropic.com"}}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
