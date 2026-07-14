@@ -2,12 +2,19 @@ package example.service;
 
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpMethod;
+// NOTE: The class introduced in Spring Framework 6.x / Spring Boot 3.x
+// import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.function.Function;
 
 import example.model.ProxyRequest;
 import reactor.core.publisher.Flux;
@@ -35,14 +42,25 @@ public class ProxyService {
 				? requestBodySpec.body(request.body(), DataBuffer.class)
 				: requestBodySpec;
 
+		// NOTE: The signature depends on your Spring version
+		// Spring Boot 2.x:
+				
 		Mono<ResponseEntity<Flux<DataBuffer>>> responseMono = clientRequest.retrieve()
-				.onStatus(status -> true, errorResponse -> Mono.empty()).toEntityFlux(DataBuffer.class);
-
-		return responseMono.flatMap(entity -> {
+				.onStatus((HttpStatus status) -> true, (ClientResponse errorResponse) -> Mono.empty())
+				.toEntityFlux(DataBuffer.class);
+				 
+		// Spring Boot 3.x
+		/*
+		Mono<ResponseEntity<Flux<DataBuffer>>> responseMono = clientRequest.retrieve()
+				.onStatus((Predicate<HttpStatusCode> status) -> true, (Function<ClientResponse, Mono<? extends Throwable>> errorResponse) -> Mono.empty())
+				.toEntityFlux(DataBuffer.class);
+				*/
+		return responseMono.flatMap((ResponseEntity<Flux<DataBuffer>> entity) -> {
 			HttpHeaders filteredHeaders = filterHeaders(entity.getHeaders());
 			Flux<DataBuffer> body = entity.getBody() != null ? entity.getBody() : Flux.empty();
 
-			return ServerResponse.status(entity.getStatusCode()).headers(h -> h.addAll(filteredHeaders))
+			return ServerResponse.status(entity.getStatusCode())
+					.headers((HttpHeaders headers) -> headers.addAll(filteredHeaders))
 					.body(BodyInserters.fromPublisher(body, DataBuffer.class));
 		});
 	}
@@ -53,7 +71,7 @@ public class ProxyService {
 
 	private HttpHeaders filterHeaders(HttpHeaders source) {
 		HttpHeaders filtered = new HttpHeaders();
-		source.forEach((name, values) -> {
+		source.forEach((String name, List<String> values) -> {
 			if (HttpHeaders.CONTENT_LENGTH.equalsIgnoreCase(name))
 				return;
 			if (HttpHeaders.TRANSFER_ENCODING.equalsIgnoreCase(name))
@@ -66,14 +84,14 @@ public class ProxyService {
 	}
 
 	private void copyHeaders(HttpHeaders source, WebClient.RequestBodySpec target) {
-		source.forEach((name, values) -> {
+		source.forEach((String name, List<String> values) -> {
 			if (HttpHeaders.HOST.equalsIgnoreCase(name))
 				return;
 			if (HttpHeaders.CONTENT_LENGTH.equalsIgnoreCase(name))
 				return;
 			if (HttpHeaders.ACCEPT_ENCODING.equalsIgnoreCase(name))
 				return;
-			values.forEach(value -> target.header(name, value));
+			values.forEach((String value) -> target.header(name, value));
 		});
 	}
 }

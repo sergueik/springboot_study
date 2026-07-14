@@ -3,6 +3,7 @@ package example.service;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class IpAllowlistService {
     }
 
     public boolean isAllowed(String remoteAddress) {
-        boolean staticMatch = appProperties.getSecurity().getAllowedIps().stream().anyMatch(pattern -> new IpAddressMatcher(pattern).matches(remoteAddress));
+        boolean staticMatch = appProperties.getSecurity().getAllowedIps().stream().anyMatch((String pattern) -> new IpAddressMatcher(pattern).matches(remoteAddress));
 
         if (staticMatch) {
             return true;
@@ -39,6 +40,6 @@ public class IpAllowlistService {
 
     private void cleanupExpired() {
         Instant now = Instant.now();
-        dynamicIps.entrySet().removeIf(entry -> entry.getValue().isBefore(now));
+        dynamicIps.entrySet().removeIf((Entry<String, Instant> entry) -> entry.getValue().isBefore(now));
     }
 }
