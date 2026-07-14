@@ -27,7 +27,7 @@ popd
 
 Add-Type -AssemblyName 'System.Web'
 
-$wr = Invoke-WebRequest -Uri $uri.AbsoluteUri
+$wr = Invoke-WebRequest -UseBasicParsing -Uri $uri.AbsoluteUri
 $doc = New-Object htmlagilitypack.htmldocument
 $doc.LoadHtml($wr.Content)
 $name = [Web.HttpUtility]::HtmlDecode($name)

@@ -260,7 +260,7 @@ function getHttpStatusCode {
     [boolean]$debug
   
   )
-  # workaround for the error ininvoke-webrequest cmdlet:
+  # workaround for the error in invoke-webrequest cmdlet:
   # the underlying connection was closed: could not establish trust relationship for the SSL/TLSsecure channel
   # see also: https://stackoverflow.com/questions/11696944/powershell-v3-invoke-webrequest-https-error
   # https://learn.microsoft.com/en-us/dotnet/api/system.net.icertificatepolicy?view=netframework-4.0
@@ -293,9 +293,9 @@ function getHttpStatusCode {
     $ProgressPreference = 'SilentlyContinue'
     # let the invoke-restmethod write the server response to the file, read it afterwards
     if ($debug)  {
-      write-host ('Invoke-WebRequest -uri {0} -OutFile {1} -passthru' -f $url, $outfile)
+      write-host ('Invoke-WebRequest -UseBasicParsing -uri {0} -OutFile {1} -passthru' -f $url, $outfile)
     }
-    $response  = Invoke-WebRequest -uri $url -OutFile $outfile -passthru
+    $response  = Invoke-WebRequest -UseBasicParsing -uri $url -OutFile $outfile -passthru
 
     if ($debug)  {
       write-host ('Response Headers' -f $response.Headers )

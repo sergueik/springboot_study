@@ -72,18 +72,33 @@ Host: localhost:8085
 ```
 
 #### Powershell
+> NOTE: now one has to provide the `-UseBasicParsing` agument to prevent the apperance of __Security Warning: Script Execution Risk__ interative confirmation prompt:
 
+```text
+Security Warning: Script Execution Risk
+Invoke-WebRequest parses the content of the web page. Script code in the web
+page might be run when the page is parsed.
+      RECOMMENDED ACTION:
+      Use the -UseBasicParsing switch to avoid script code execution.
+
+      Do you want to continue?
+
+[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help
+(default is "N"):
+
+```
 * vanilla try of the stock `Invoke-WebRequest` cmdlet with intent to get the status like
 
 ```powershell
-$WebObjVariable = Invoke-WebRequest -Uri <URL>
+$WebObjVariable = Invoke-WebRequest -UseBasicParsing -Uri <URL>
 $WebObjVariable.StatusCode
 $WebObjVariable.StatusDescription
 ```
 will throw a runtime error from the script to convey the received HTTP Status Codes `304` (`208`?), similarly how it handles real `40x` and `50x` errors reported by the backend:
 
+
 ```powershell
-Invoke-WebRequest -Uri 'http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244' -erroraction silentlycontinue
+Invoke-WebRequest -UseBasicParsing -Uri 'http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244' -erroraction silentlycontinue
 ```
 ```text
 Invoke-WebRequest : The remote server returned an error: (304) Not Modified.
@@ -95,7 +110,7 @@ At line:1 char:19
 ```
 
 ```powershell
-Invoke-WebRequest -Uri 'http://localhost:8085/configs/file_hash_status?filename=?data.son&hash=0DFA1329F15FEFA8648856794EB33244' -erroraction silentlycontinue
+Invoke-WebRequest -UseBasicParsing -Uri 'http://localhost:8085/configs/file_hash_status?filename=?data.son&hash=0DFA1329F15FEFA8648856794EB33244' -erroraction silentlycontinue
 ```
 ```text
 Invoke-WebRequest : The remote server returned an error: (500) Internal Server Error.
@@ -106,7 +121,7 @@ At line:1 char:19
     + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
 ```
 ```powershell
-Invoke -WebRequest -Uri 'http://localhost:8085/configs/file_hash_status2?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244' -erroraction silentlycontinue
+Invoke -WebRequest -UseBasicParsing -Uri 'http://localhost:8085/configs/file_hash_status2?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244' -erroraction silentlycontinue
 ```
 ```text
 Invoke-WebRequest : The remote server returned an error: (404) Not Found.
@@ -132,7 +147,7 @@ arguments does not change this exception throwing behavior
 will print
 
 ```text
-Invoke-WebRequest -uri http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244 -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json -passthru
+Invoke-WebRequest -UseBasicParsing -uri http://localhost:8085/configs/file_hash_status?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244 -OutFile "${enc:TEMP}\data.json" -passthru
 Exception (intercepted): The remote server returned an error: (304) Not Modified.
 Status Description:
 Status code: 304
@@ -418,7 +433,7 @@ rm .\data.json
 ```
 ```text
 GET http://localhost:8085/configs/file_hash_status?filename=data.json
-Invoke-WebRequest -uri http://localhost:8085/configs/file_hash_status?filename=data.json -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json -passthru
+Invoke-WebRequest -UseBasicParsing -uri http://localhost:8085/configs/file_hash_status?filename=data.json -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json -passthru
 status code: 200
 ```
 ```text
@@ -454,7 +469,7 @@ rm .\data.json
 ```text
 
 GET http://localhost:8085/configs/file_hash?filename=data.json
-Invoke-WebRequest -uri http://localhost:8085/configs/file_hash?filename=data.json -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json -passthru
+Invoke-WebRequest -UseBasicParsing -uri http://localhost:8085/configs/file_hash?filename=data.json -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json -passthru
 status code: 200
 saved the server response into C:\Users\Serguei\AppData\Local\Temp\data.json
 {  "host1": {    "netstat": [      22,      443,      3306    ]  },  "host2": {   "netstat": [    ]  },  "host3": {}}
@@ -474,7 +489,7 @@ Updating: C:\developer\sergueik\springboot_study\basic-config\data.json
 ```
 ```text
 GET http://localhost:8085/configs/file_hash?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244
-Invoke-WebRequest -uri http://localhost:8085/configs/file_hash?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244 -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json -passthru
+Invoke-WebRequest -UseBasicParsing -uri http://localhost:8085/configs/file_hash?filename=data.json&hash=0DFA1329F15FEFA8648856794EB33244 -OutFile C:\Users\Serguei\AppData\Local\Temp\data.json -passthru
 status code: 200
 ```
 ```text

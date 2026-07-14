@@ -108,7 +108,7 @@ write-output $snapshot_names
 $cred = get-Credential
 $BASE_URL = 'http://localhost:8443'
 # NOTE: not really REST API
-Invoke-WebRequest -Uri "$BASE_URL/rest/deploy/application/${APPLICATION}/snapshots/false" -ContentType 'text/json' -Credential $cred
+Invoke-WebRequest -UseBasicParsing -Uri "$BASE_URL/rest/deploy/application/${APPLICATION}/snapshots/false" -ContentType 'text/json' -Credential $cred
 $username = 'user'
 
 $password = 'pass'
@@ -123,5 +123,5 @@ $Headers = @{
     Authorization = $basic_auth
 }
 
-Invoke-WebRequest -Uri "$BASE_URL/cli/snapshot/getSnapshotVersions?application=${APPLICATION}&snapshot=${SNAPSHOT}" -ContentType 'text/json' -Headers $Headers
+Invoke-WebRequest -UseBasicParsing -Uri "$BASE_URL/cli/snapshot/getSnapshotVersions?application=${APPLICATION}&snapshot=${SNAPSHOT}" -ContentType 'text/json' -Headers $Headers
 #>

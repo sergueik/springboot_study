@@ -24,5 +24,5 @@ $ms = New-Object System.IO.MemoryStream
 $ca = $form.CopyToAsync($ms)
 $ca.Wait()
 
-Invoke-WebRequest -Method Post -Body $ms.ToArray() -Uri $uri -ContentType $form.Headers.ContentType.ToString()
+Invoke-WebRequest -UseBasicParsing -Method Post -Body $ms.ToArray() -Uri $uri -ContentType $form.Headers.ContentType.ToString()
 
