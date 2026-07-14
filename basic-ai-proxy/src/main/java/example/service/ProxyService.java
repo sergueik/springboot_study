@@ -5,7 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpMethod;
 // NOTE: The class introduced in Spring Framework 6.x / Spring Boot 3.x
-// import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -42,19 +42,21 @@ public class ProxyService {
 				? requestBodySpec.body(request.body(), DataBuffer.class)
 				: requestBodySpec;
 
-		// NOTE: The signature depends on your Spring version
+		// NOTE: The signature depends on target Spring version
+		// The compilation failure incompatible types: incompatible parameter types in lambda expression
+
 		// Spring Boot 2.x:
-				
+		/*		
 		Mono<ResponseEntity<Flux<DataBuffer>>> responseMono = clientRequest.retrieve()
 				.onStatus((HttpStatus status) -> true, (ClientResponse errorResponse) -> Mono.empty())
 				.toEntityFlux(DataBuffer.class);
-				 
+		*/ 
+				
 		// Spring Boot 3.x
-		/*
 		Mono<ResponseEntity<Flux<DataBuffer>>> responseMono = clientRequest.retrieve()
-				.onStatus((Predicate<HttpStatusCode> status) -> true, (Function<ClientResponse, Mono<? extends Throwable>> errorResponse) -> Mono.empty())
+				.onStatus((HttpStatusCode status) -> true, (ClientResponse errorResponse) -> Mono.empty())
 				.toEntityFlux(DataBuffer.class);
-				*/
+
 		return responseMono.flatMap((ResponseEntity<Flux<DataBuffer>> entity) -> {
 			HttpHeaders filteredHeaders = filterHeaders(entity.getHeaders());
 			Flux<DataBuffer> body = entity.getBody() != null ? entity.getBody() : Flux.empty();
