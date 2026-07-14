@@ -46,13 +46,13 @@ Hello some value
 ```
 
 
-and updates instantly when the file  `application.properties` is changed.
+and reads the new values (updates) instantly when the file `application.properties` is changed.
 It is also possible to pass the absolute path outside the project dir:
 ```sh
 mvn -Dspring.config.location=$(pwd)/src/main/resources/application.properties spring-boot:run
 ```
 
-one can place properties ouside of the project dir pass full path:
+one can place properties ouside of the project dir providing the absolute path:
 
 ```sh
 cp src/main/resources/application.properties /tmp
@@ -60,7 +60,7 @@ sed -i 's|\(application.property\)=.*$|\1=different value|' /tmp/application.pro
 grep -E 'application.property' '/tmp/application.properties'
 mvn -Dspring.config.location=/tmp/application.properties spring-boot:run
 ```
-One can also use `file://` prefix with no harm.
+One can also use URI `file://` prefix with no harm.
 ```sh
 mvn -Dspring.config.location=file:///tmp/application.properties spring-boot:run
 ```
@@ -102,13 +102,23 @@ final String value = properties.getProperty("value.property");
 return value == null ? "unknown" : value;
 ```
 
-note that one can remove the drive letter from the path assuming the configuration properfies file is on the same drive
+note that one can remove the drive letter from the path assuming the configuration properfies file is on the same "DOS drive"
 ```sh
 
 mvn -Dspring.config.location=file:///temp/application.properties spring-boot:run
 ```
 (in the absence of `file://` prefix the relative `application.properties` path will be attempted)
+
+One can also pass the Spring property using java launch command:
+
 ```sh
+mvn package
+```
+```sh
+java -jar target/example.properties.jar --spring.config.location=file:/"path/to/config/directory"/
+```
+```sh
+java -jar target/example.properties.jar --spring.config.location=file:/"path/to/your/custom-application.properties"
 ```
 so proceed to the next step of dockerizing the app.
 
