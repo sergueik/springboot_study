@@ -704,6 +704,13 @@ Instead, dependencies are built in isolated Docker builder images, and the resul
 [INFO] Downloading from jitpack.io: https://jitpack.io/com/github/bmTas/cb2xml/1.01.08/cb2xml-1.01.08.jar
 [INFO] Downloaded from jitpack.io: https://jitpack.io/com/github/bmTas/cb2xml/1.01.08/cb2xml-1.01.08.jar (453 kB at 1.1 MB/s)
 ```
+### About Redefines
+
+![Classic Cobol Redefines](screenshots/capture-cobol_redefines.png)
+
+![Equivalent UML Diagram Fragment](screenshots/capture-uml.png)
+	
+
 ### See Also
  
  * [cb2xml](https://github.com/bmTas/cb2xml)
