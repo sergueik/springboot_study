@@ -37,15 +37,9 @@ invoke-webrequest : The request was aborted: Could not create SSL/TLS secure cha
 ```
 and the fix is not possible to apply (no admin rights) or does not work , download the package using the browser using the exact download url `https://releases.hashicorp.com/terraform/1.7.5/terraform_1.7.5_windows_amd64.zip` (update if desired a later version) or download page `https://developer.hashicorp.com/terraform/install`
 
-unzip and copy the `terraform.exe`.
-
-
-to some directory listed in the `PATH` (e.g. `c:\tools` ) or add the terraform application home directory to the `PATH`, the exact syntax varies with the shell
+unzip and copy the `terraform.exe` to directory listed in the `PATH` 
+e.g. `c:\tools` or add the terraform application home directory to the `PATH`, the exact syntax varies with the shell
   + in cmd
-```cmd
-set PATH=%PATH%;c:\tools
-```
-or 
 ```cmd
 PATH=%PATH%;c:\tools
 ```
@@ -128,7 +122,7 @@ terraform  show -json |jq '.'
   }
 }
 ```
-NOTE: no longer can display the contents of the applies plan:
+NOTE: no longer can display the contents of the plan after it has been applied:
 ```sh
 terraform show -json plan.zip |jq '.'
 ```
@@ -244,12 +238,13 @@ terraform apply plan.zip
 to help it prepare `c:\Users\Serguei\.terraform\virtualbox\gold\virtualbox` need to install `tar.exe`
 https://docs.microsoft.com/en-us/virtualization/community/team-blog/2017/20171219-tar-and-curl-come-to-windows
 http://libarchive.org/downloads/libarchive-v3.5.2-win64.zip
-NOTE: the [gnu tar](https://sourceforge.net/projects/gnuwin32/files/tar/1.13-1/tar-1.13-1-bin.zip/download?use_mirror=iweb&download=) is failing at runtime.
-NOTE: one cannot copy the tar.exe from  Windows 10 to Windows 8 -  the runtime error would be:
+> NOTE: the [gnu tar](https://sourceforge.net/projects/gnuwin32/files/tar/1.13-1/tar-1.13-1-bin.zip/download?use_mirror=iweb&download=) is failing at runtime.
+> NOTE: one cannot run the __Windows 10__  version of `tar.exe` on __Windows 8__ - the runtime error would be:
+
 ```text
 Program 'tar.exe' failed to run: The specified executable is not a valid application for this OS platform.
 ```
-The only option on Windows 8 is add git binary directory to the `PATH` 
+The only option on __Windows 8__ is add git binary directory to the `PATH` 
 
 ```powershell
 $env:PATH="${env:PATH};C:\Program Files\Git\usr\bin"
@@ -269,6 +264,7 @@ tar tvf virtualbox.box
 -rw-rw-r-- ladar/ladar       301 2022-02-01 06:13 info.json
 -rw-rw-r-- ladar/ladar        26 2022-02-01 06:13 metadata.json
 ```
+![Box Contents](screenshots/capture-7zip.png)
 this tar should be expanded into the `~/.terraform/virtualbox/gold/virtualbox/` which must be created first
 ```cmd
 dir %userprofile%\.terraform\virtualbox\gold\virtualbox
@@ -296,8 +292,8 @@ terraform validate
 ```text
 Success! The configuration is valid.
 ```
-by default it will use console ASI colors, so in CMD console one will have to append a `-no-color` option
-```
+by default it will use console ANSI colors, so in CMD console one will have to provide an `-no-color` option
+```cmd
 terraform.exe validate -no-color
 ```
 ```text
@@ -357,7 +353,7 @@ export TF_LOG=info
 terraform apply a.out
 ```
 
-this will fail with the version 0.22 of the virtualbox provider with
+this will fail with the version __0.22__ of the VirtualBox provider with the error:
 ```text
 Error: [ERROR] Unable to fetch remote image: unsupported scheme file
 ```
@@ -373,6 +369,8 @@ update the network configuration as available locally in Virtual Box:
     host_interface = "vboxnet0"
   }
 ```
+
+> NOTE: on Windows the interface will probably be `Intel PRO/100 MT Desktop `
 and re-aplly
 ```sh
 terraform apply a.out
@@ -394,19 +392,18 @@ and
 
 ```text
 2022-08-09T21:10:25.947-0400 [INFO]  Starting apply for virtualbox_vm.node[0]
-virtualbox_vm.node[1]: Creating...
+  virtualbox_vm.node[1]: Creating...
 2022-08-09T21:10:25.958-0400 [INFO]  Starting apply for virtualbox_vm.node[1]
-virtualbox_vm.node[0]: Still creating... [10s elapsed]
-virtualbox_vm.node[1]: Still creating... [10s elapsed]
-virtualbox_vm.node[0]: Still creating... [20s elapsed]
-virtualbox_vm.node[1]: Still creating... [20s elapsed]
+  virtualbox_vm.node[0]: Still creating... [10s elapsed]
+  virtualbox_vm.node[1]: Still creating... [10s elapsed]
+  virtualbox_vm.node[0]: Still creating... [20s elapsed]
+  virtualbox_vm.node[1]: Still creating... [20s elapsed]
 2022-08-09T21:10:49.148-0400 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr=tar
 2022-08-09T21:10:49.150-0400 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr=": C\:\\Users\\Serguei\\.terraform\virtualbox\\gold\virtualbox: Cannot open: No such file or directory"
 2022-08-09T21:10:49.157-0400 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr="tar: Error is not recoverable: exiting now"
 2022-08-09T21:10:49.193-0400 [ERROR] vertex "virtualbox_vm.node[1]" error: [ERROR] Unpacking image https://app.vagrantup.com/generic/boxes/alpine39/versions/3.6.8/providers/virtualbox.box: unpacking gold image virtualbox.box: exit status 2
 2022-08-09T21:10:54.677-0400 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr=tar
-2022-08-09T21:10:54.678-0400 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr=": C\:\\Users\\Serguei\\.terraform\virtualbox\\gold\virtualbox: Cannot open: No such file or directory
-tar: Error is not recoverable: exiting now"
+2022-08-09T21:10:54.678-0400 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stderr=": C\:\\Users\\Serguei\\.terraform\virtualbox\\gold\virtualbox: Cannot open: No such file or directory tar: Error is not recoverable: exiting now"
 2022-08-09T21:10:54.706-0400 [ERROR] vertex "virtualbox_vm.node[0]" error: [ERROR] Unpacking image https://app.vagrantup.com/generic/boxes/alpine39/versions/3.6.8/providers/virtualbox.box: unpacking gold image virtualbox.box: exit status 2
 
 Error: [ERROR] Unpacking image https://app.vagrantup.com/generic/boxes/alpine39/versions/3.6.8/providers/virtualbox.box: unpacking gold image virtualbox.box: exit status 2
@@ -435,7 +432,8 @@ if a log was set fo info, there will be some more low level information:
 2022-02-11T17:01:57.275-0500 [WARN]  unexpected data: registry.terraform.io/terra-farm/virtualbox:stdout="Waiting for VM "node-02" to power on...VM "node-02" has been successfully started."
 ```
 
-after a failed run terraform may fail to recognize virtual box images were  still created:
+after a failed run Terraform may fail to recogniz
+the Virtual Box images were still created:
 
 
 ```sh
@@ -475,6 +473,14 @@ NOTE: all temporary resources will be found in the working directory and need to
 
 If the machine directory `c:\Users\Serguei\.terraform\virtualbox\machine\node-02` was not removed, remove it manually
 
+### Interactive Import 
+
+use the `box.ova` with __Virtual Box__:
+
+![Import](screenshots/capture-vagrantbox-import.png)
+the generic __Vagrant__ boxes typically accept `vagrant`/`vagrant` crednetials (__Vagrant__ itself uses unsecure key based auithentication in `vagrant login`):
+
+![Login](screenshots/capture-vagrantbox-login.png)
 ### Plugins
 
 * e.g. terraform plugin for creating random ids is a 13 MB executable on Windows or Linux
@@ -531,14 +537,6 @@ Terraform will perform the following actions:
 nano"  [33m-> [0m  [0m"t2.micro"
          [1m [0mtags [0m [0m                                 = {}
          [90m# (28 unchanged attributes hidden) [0m [0m
-
-
-
-
-
-
-
-
          [90m# (8 unchanged blocks hidden) [0m [0m
     }
 
@@ -553,7 +551,8 @@ copy ..\ec2\.terraform.lock.hcl .
 ```
 ```sh
 cp -R ../ec2/.terraform .
-
+```
+```sh
 cp ../ec2/.terraform.lock.hcl .
 ```
 ### CMD Runs
@@ -561,9 +560,10 @@ cp ../ec2/.terraform.lock.hcl .
 ```cmd
 set TF_CLI_ARGS=-no-color
 ```
-NOTE: does not get recognized by `terraform console`
 ### Docker Provider
-fails with warning on Linux:
+
+>NOTE: fails with warning on Linux:
+
 ```text
 2024-06-09T02:41:15.253+0200 [WARN]  Provider "provider[\"registry.terraform.io/kreuzwerker/docker\"]" produced an unexpected new value for docker_container.alpine_test, but we are tolerating it because it is using the legacy plugin SDK.
     The following problems may be the cause of any confusing errors from downstream operations:
@@ -581,20 +581,15 @@ fails with warning on Linux:
       - .publish_all_ports: was null, but now cty.False
       - .pid_mode: was null, but now cty.StringVal("")
 
-
-
-
 ```
 
-the conatiner is created but there is no service causing it to exit:
+the container is created but there is no service causing it to exit:
 ```sh
 docker container ls
 ```
 ```text
 CONTAINER ID   IMAGE          COMMAND     CREATED         STATUS                     PORTS     NAMES
 3ac610b99dc7   82f67be598eb   "/bin/sh"   2 minutes ago   Exited (0) 2 minutes ago             alpine_test
-
-
 ```
 uncommenting the `host` argument,
 ```hcl
@@ -602,13 +597,12 @@ provider "docker" {
   host = "unix:///var/run/docker.sock"
 }
 ```
-leads to better interplay between Docker and Terraform but the container exit still not processed properly:
+leads to better interplay between Docker and Terraform but the container exit still is not processed properly:
 ```text
 2024-06-09T02:47:15.693+0200 [ERROR] vertex "docker_container.alpine_test" error: timeout while waiting for state to become 'running' (last state: 'pending', timeout: 15s): container exited immediately
 ╷
 │ Error: timeout while waiting for state to become 'running' (last state: 'pending', timeout: 15s): container exited immediately
 │
-
 ```
 ### See Also
 
@@ -619,7 +613,10 @@ leads to better interplay between Docker and Terraform but the container exit st
   * https://registry.terraform.io/browse/providers
   * https://registry.terraform.io
   * [terraform CLI Configuration File](https://developer.hashicorp.com/terraform/cli/config/config-file) - `.terraformrc` or `terraform.rc`
-
+  * [discover Vagrant Boxes](https://portal.cloud.hashicorp.com/vagrant/discover?query=alpine)
+  
+  
+---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 
