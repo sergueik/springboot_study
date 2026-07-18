@@ -3,7 +3,7 @@ on: push
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     container:
       image: node:18-alpine
       # NOTE: cannot use plain alpine:
