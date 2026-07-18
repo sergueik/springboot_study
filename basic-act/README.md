@@ -789,7 +789,328 @@ rm act_Linux_x86_64.tar.gz
 docker container prune -f
 docker image rm alpine:3.21 node:18-alpine node:16-buster-slim atools/jdk-maven-node:mvn3-jdk11-node16|| true
 ```
+### Dockerized Act
+```sh
+IMAGE=efrecon/act:v0.2.89
+docker pull $IMAGE
+```
+```sh
+docker run --entrypoint '' -it --rm --name actrunner $IMAGE sh
+```
+```sh
+/ # find / -iname 'act'
+```
+```text
+/usr/local/bin/act
+/sys/module/thermal/parameters/act
+```
 
+```sh
+act -h
+```
+```text
+Run GitHub actions locally by specifying the event name (e.g. `push`) or an action name directly.
+
+Usage:
+  act [event name to run] [flags]
+
+If no event name passed, will default to "on: push"
+...
+```
+run with the job name defined in the workflow:
+```sh
+docker run --rm  -v "$PWD/nodejs":/workspace -w /workspace -v /var/run/docker.sock:/var/run/docker.sock -it $IMAGE -w ./.github/workflows/main.yaml   -j test
+INFO[0000] Using docker host 'unix:///var/run/docker.sock', and daemon socket 'unix:///var/run/docker.sock'
+```
+```
+? Please choose the default image you want to use with act:
+  - Large size image: ca. 17GB download + 53.1GB storage, you will need 75GB of free disk space, snapshots of GitHub Hosted Runners without snap and pulled docker images
+  - Medium size image: ~500MB, includes only necessary tools to bootstrap actions and aims to be compatible with most actions
+  - Micro size image: <200MB, contains only NodeJS required to bootstrap actions, doesn't work with all actions
+```
+select `Micro`
+```text
+Default image and other options can be changed manually in /root/.config/act/actrc (please refer to https://nektosact.com/usage/index.html?highlight=configur#configuration-file for additional information about file structure) Micro
+ERRO[0001] path/workspacenot located inside a git repository  error="repository does not exist"
+WARN[0001] unable to get git ref: repository does not exist
+ERRO[0001] path/workspacenot located inside a git repository  error="repository does not exist"
+WARN[0001] unable to get git revision: repository does not exist
+[CI/test] ⭐ Run Set up job
+[CI/test] 🚀  Start image=node:18-alpine
+[CI/test]   🐳  docker pull image=node:18-alpine platform= username= forcePull=true
+[CI/test]   🐳  docker create image=node:18-alpine platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[CI/test]   🐳  docker run image=node:18-alpine platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[CI/test]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
+[CI/test]   ✅  Success - Set up job
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test]   ☁  git clone 'https://github.com/actions/setup-node' # ref=v4
+
+
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] ⭐ Run Main actions/checkout@v4
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test]   🐳  docker cp src=/workspace/. dst=/workspace
+[CI/test]   ✅  Success - Main actions/checkout@v4 [38.24288ms]
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] ⭐ Run Main actions/setup-node@v4
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test]   🐳  docker cp src=/root/.cache/act/actions-setup-node@v4/ dst=/var/run/act/actions/actions-setup-node@v4/
+[CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v4/dist/setup/index.js] user= workdir=
+| Found in cache @ /opt/hostedtoolcache/node/18.20.8/x64
+[CI/test]   ❓  ::group::Environment details
+| node:
+| npm: 10.8.2
+| yarn: 1.22.22
+[CI/test]   ❓  ::endgroup::
+[CI/test]   ❓ add-matcher /run/act/actions/actions-setup-node@v4/.github/tsc.json
+[CI/test]   ❓ add-matcher /run/act/actions/actions-setup-node@v4/.github/eslint-stylish.json
+[CI/test]   ❓ add-matcher /run/act/actions/actions-setup-node@v4/.github/eslint-compact.json
+[CI/test]   ✅  Success - Main actions/setup-node@v4 [1.237633009s]
+[CI/test]   ⚙  ::set-output:: node-version=
+[CI/test]   ⚙  ::add-path:: /opt/hostedtoolcache/node/18.20.8/x64/bin
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] ⭐ Run Main npm install
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/2.sh] user= workdir=
+| npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+| npm warn deprecated glob@7.1.2: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+| npm warn deprecated rimraf@2.6.3: Rimraf versions prior to v4 are no longer supported
+| npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+| npm warn deprecated mkdirp@0.5.1: Legacy versions of mkdirp are no longer supported. Please update to mkdirp 1.x. (Note that the API surface has changed to use Promises in 1.x.)
+| npm warn deprecated superagent@8.1.2: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
+| npm warn deprecated eslint@6.8.0: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+|
+| added 375 packages, and audited 376 packages in 20s
+|
+| 104 packages are looking for funding
+|   run `npm fund` for details
+|
+| 12 vulnerabilities (3 low, 6 high, 3 critical)
+|
+| To address all issues (including breaking changes), run:
+|   npm audit fix --force
+|
+| Run `npm audit` for details.
+[CI/test]   ✅  Success - Main npm install [19.898321236s]
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] ⭐ Run Main npm test
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/3.sh] user= workdir=
+|
+| > github-actions-demo@1.0.0 test
+| > mocha ./tests --recursive
+|
+|
+|
+|   GET /
+|     ✓ should respond with hello world
+|
+|
+|   1 passing (33ms)
+|
+[CI/test]   ✅  Success - Main npm test [738.443476ms]
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test] ⭐ Run Post actions/setup-node@v4
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v4/dist/cache-save/index.js] user= workdir=
+[CI/test]   ✅  Success - Post actions/setup-node@v4 [315.404976ms]
+[CI/test] ⭐ Run Complete job
+[CI/test] Cleaning up container for job test
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git ref: repository does not exist
+[CI/test] path/workspacenot located inside a git repository
+[CI/test] unable to get git revision: repository does not exist
+[CI/test]   ✅  Success - Complete job
+[CI/test] 🏁  Job succeeded
+
+```
+
+ignore all errors:
+```text
+[CI/test] path/workspacenot located inside a git repository
+```
+> NOTE: the `Dockerfile` is buukdkit-specific:
+```docker
+ADD alpine-minirootfs-3.18.12-x86_64.tar.gz / # buildkit
+CMD ["/bin/sh"]
+ARG ACT_VERSION=v0.2.89
+ARG ACT_GHPROJ=nektos/act
+ARG ACT_RELROOT=https://github.com/nektos/act/releases
+ARG ACT_DWROOT=https://github.com/nektos/act/releases/download
+LABEL MAINTAINER=efrecon+github@gmail.com
+LABEL org.opencontainers.image.title=act
+LABEL org.opencontainers.image.description=act in Docker
+LABEL org.opencontainers.image.authors=Emmanuel Frécon <efrecon+github@gmail.com>
+LABEL org.opencontainers.image.url=https://github.com/efrecon/docker-images/act
+LABEL org.opencontainers.image.documentation=https://github.com/efrecon/docker-images/act/README.md
+LABEL org.opencontainers.image.source=https://github.com/efrecon/docker-images/act/Dockerfile
+RUN |4 ACT_VERSION=v0.2.89 ACT_GHPROJ=nektos/act ACT_RELROOT=https://github.com/nektos/act/releases
+COPY bininstall/*.sh /usr/local/bin/ # buildkit
+RUN |4 ACT_VERSION=v0.2.89 ACT_GHPROJ=nektos/act ACT_RELROOT=https://github.com/nektos/act/releases
+ENTRYPOINT ["/usr/local/bin/act"]
+CMD ["--help"]
+```
 ### See Also
 
    * [introduction to GitHub Actions with Docker](https://docs.docker.com/guides/gha/)
@@ -799,10 +1120,11 @@ docker image rm alpine:3.21 node:18-alpine node:16-buster-slim atools/jdk-maven-
      + https://hub.docker.com/search?q=act_runner
      + https://hub.docker.com/search?q=act
 The Workflows that themselves invoke __Docker++ may require [Docker-in-Docker (DinD)](https://github.com/jpetazzo/dind) or access to the host Docker socket.
-   * recommended for Java maven [gitea/act_runner](https://hub.docker.com/r/gitea/act_runner):
-```sh
-docker pull gitea/act_runner:0.6.1
-docker pull gitea/act_runner:0.6-dind
-```
+   * "recommended" for Java maven [gitea/act_runner](https://hub.docker.com/r/gitea/act_runner) - is a huge overkill, and there is *no* `act` inside `act_runner`
+     + [gitea/act_runner](https://hub.docker.com/r/gitea/act_runner) - older (deprecated)
+     + [gitea/runner](https://hub.docker.com/r/gitea/runner) - newer
+
+   * Emmanuel Frecon [repositories](https://github.com/efrecon?tab=repositories)
+
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
