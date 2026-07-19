@@ -15,6 +15,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
     entrypoint:
+      # use blank lines aggressively - everything is concatenated by '>'
       - /bin/sh
       - -ec
       - >
@@ -28,7 +29,7 @@ services:
 
         RELEASE=https://github.com/nektos/act/releases
         VERSION=$$VERSION
-        
+
         if [ "$$VERSION" = "latest" ]; then
             VERSION=$$(
               wget -q -O - "$$RELEASE" |
@@ -48,11 +49,23 @@ services:
             -O "$$TMP/act.tar.gz" \
             "$$RELEASE/download/v$${VERSION#v}/act_Linux_x86_64.tar.gz"
 
-        tar -C "$$TMP" -xf "$$TMP/act.tar.gz"
+        tar -C "$$TMP" -xvf "$$TMP/act.tar.gz"
+
+        echo "install -m755 \"$$TMP/act\" /usr/local/bin/act"
 
         install -m755 "$$TMP/act" /usr/local/bin/act
 
+        echo "rm -rf \"$$TMP\""
+
         rm -rf "$$TMP"
+
+        mkdir -p /root/.config/act
+
+        echo "-P ubuntu-18.04=node:16-buster-slim">/root/.config/act/actrc
+
+        whoami
+
+        cat /root/.config/act/actrc
 
         exec act "$$@"
 

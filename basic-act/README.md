@@ -1154,12 +1154,277 @@ KeyError: 'id'
 
 
 ```
+```sh
+WORKSPACE=$(pwd)/nodejs docker-compose run --rm --build act
+```
+```text
+Creating basic-act_act_1 ... done
+Attaching to basic-act_act_1
+act_1  | fetch https://dl-cdn.alpinelinux.org/alpine/v3.18/main/x86_64/APKINDEX.tar.gz
+act_1  | fetch https://dl-cdn.alpinelinux.org/alpine/v3.18/community/x86_64/APKINDEX.tar.gz
+act_1  | (1/18) Installing ncurses-terminfo-base (6.4_p20230506-r0)
+act_1  | (2/18) Installing libncursesw (6.4_p20230506-r0)
+act_1  | (3/18) Installing readline (8.2.1-r1)
+act_1  | (4/18) Installing bash (5.2.15-r5)
+act_1  | Executing bash-5.2.15-r5.post-install
+act_1  | (5/18) Installing ca-certificates (20241121-r1)
+act_1  | (6/18) Installing brotli-libs (1.0.9-r14)
+act_1  | (7/18) Installing libunistring (1.1-r1)
+act_1  | (8/18) Installing libidn2 (2.3.4-r1)
+act_1  | (9/18) Installing nghttp2-libs (1.57.0-r0)
+act_1  | (10/18) Installing libpsl (0.21.5-r0)
+act_1  | (11/18) Installing libcurl (8.12.1-r0)
+act_1  | (12/18) Installing curl (8.12.1-r0)
+act_1  | (13/18) Installing libexpat (2.7.0-r0)
+act_1  | (14/18) Installing pcre2 (10.42-r1)
+act_1  | (15/18) Installing git (2.40.4-r0)
+act_1  | (16/18) Installing libacl (2.3.1-r3)
+act_1  | (17/18) Installing tar (1.34-r3)
+act_1  | (18/18) Installing wget (1.21.4-r0)
+act_1  | Executing busybox-1.36.1-r7.trigger
+act_1  | Executing ca-certificates-20241121-r1.trigger
+act_1  | OK: 22 MiB in 33 packages
+act_1  | LICENSE
+act_1  | README.md
+act_1  | act
+act_1  | install -m755 "/tmp/tmp.deFdfO/act" /usr/local/bin/act
+act_1  | rm -rf "/tmp/tmp.deFdfO"
+act_1  | root
+act_1  | -P ubuntu-18.04=node:16-buster-slim
+act_1  | time="2026-07-19T14:06:15Z" level=info msg="Using docker host 'unix:///var/run/docker.sock', and daemon socket 'unix:///var/run/docker.sock'"
+act_1  | time="2026-07-19T14:06:15Z" level=error msg="path/workspacenot located inside a git repository" error="repository does not exist"
+act_1  | time="2026-07-19T14:06:15Z" level=warning msg="unable to get git ref: repository does not exist"
+act_1  | time="2026-07-19T14:06:15Z" level=error msg="path/workspacenot located inside a git repository" error="repository does not exist"
+act_1  | time="2026-07-19T14:06:15Z" level=warning msg="unable to get git revision: repository does not exist"
+act_1  | [CI/test] ⭐ Run Set up job
+act_1  | [CI/test] 🚀  Start image=node:18-alpine
+act_1  | [CI/test]   🐳  docker pull image=node:18-alpine platform= username= forcePull=true
+act_1  | [CI/test]   🐳  docker create image=node:18-alpine platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+act_1  | [CI/test]   🐳  docker run image=node:18-alpine platform= entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+act_1  | [CI/test]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
+act_1  | [CI/test]   ✅  Success - Set up job
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git ref: repository does not exist
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git revision: repository does not exist
+...
+act_1  | [CI/test]   ☁  git clone 'https://github.com/actions/setup-node' # ref=v4
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git ref: repository does not exist
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git revision: repository does not exist
+...
+act_1  | [CI/test] ⭐ Run Main actions/checkout@v4
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git ref: repository does not exist
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git revision: repository does not exist
+...
+act_1  | [CI/test] ⭐ Run Main actions/setup-node@v4
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git ref: repository does not exist
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git revision: repository does not exist
+...
+act_1  | [CI/test]   🐳  docker cp src=/root/.cache/act/actions-setup-node@v4/ dst=/var/run/act/actions/actions-setup-node@v4/
+act_1  | [CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v4/dist/setup/index.js] user= workdir=
+act_1  | [CI/test]   | Attempting to download 18...
+act_1  | [CI/test]   | Acquiring 18.20.8 - x64 from https://github.com/actions/node-versions/releases/download/18.20.8-14110393767/node-18.20.8-linux-x64.tar.gz
+act_1  | [CI/test]   | Extracting ...
+act_1  | [CI/test]   | [command]/bin/tar xz --strip 1 -C /tmp/7ca6ec3e-aa6f-486f-92d2-300e6d36183c -f /tmp/c0a58a12-3d09-4f7a-8827-4d11923bd2c0
+act_1  | [CI/test]   | Adding to the cache ...
+act_1  | [CI/test]   ❓  ::group::Environment details
+act_1  | [CI/test]   | node: 
+act_1  | [CI/test]   | npm: 10.8.2
+act_1  | [CI/test]   | yarn: 1.22.22
+act_1  | [CI/test]   ❓  ::endgroup::
+act_1  | [CI/test]   ❓ add-matcher /run/act/actions/actions-setup-node@v4/.github/tsc.json
+act_1  | [CI/test]   ❓ add-matcher /run/act/actions/actions-setup-node@v4/.github/eslint-stylish.json
+act_1  | [CI/test]   ❓ add-matcher /run/act/actions/actions-setup-node@v4/.github/eslint-compact.json
+act_1  | [CI/test]   ✅  Success - Main actions/setup-node@v4 [28.274747217s]
+act_1  | [CI/test]   ⚙  ::set-output:: node-version=
+act_1  | [CI/test]   ⚙  ::add-path:: /opt/hostedtoolcache/node/18.20.8/x64/bin
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git ref: repository does not exist
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git revision: repository does not exist
+...
+act_1  | [CI/test] ⭐ Run Main npm install
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git ref: repository does not exist
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git revision: repository does not exist
+...
+act_1  | [CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/2.sh] user= workdir=
+act_1  | [CI/test]   | npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+act_1  | [CI/test]   | npm warn deprecated rimraf@2.6.3: Rimraf versions prior to v4 are no longer supported
+act_1  | [CI/test]   | npm warn deprecated glob@7.1.2: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+act_1  | [CI/test]   | npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+act_1  | [CI/test]   | npm warn deprecated mkdirp@0.5.1: Legacy versions of mkdirp are no longer supported. Please update to mkdirp 1.x. (Note that the API surface has changed to use Promises in 1.x.)
+act_1  | [CI/test]   | npm warn deprecated superagent@8.1.2: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
+act_1  | [CI/test]   | npm warn deprecated eslint@6.8.0: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+act_1  | [CI/test]   | 
+act_1  | [CI/test]   | added 375 packages, and audited 376 packages in 49s
+act_1  | [CI/test]   | 
+act_1  | [CI/test]   | 104 packages are looking for funding
+act_1  | [CI/test]   |   run `npm fund` for details
+act_1  | [CI/test]   | 
+act_1  | [CI/test]   | 12 vulnerabilities (3 low, 6 high, 3 critical)
+act_1  | [CI/test]   | 
+act_1  | [CI/test]   | To address all issues (including breaking changes), run:
+act_1  | [CI/test]   |   npm audit fix --force
+act_1  | [CI/test]   | 
+act_1  | [CI/test]   | Run `npm audit` for details.
+act_1  | [CI/test]   ✅  Success - Main npm install [49.043529443s]
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git ref: repository does not exist
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git revision: repository does not exist
+...
+act_1  | [CI/test] ⭐ Run Main npm test
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git ref: repository does not exist
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git revision: repository does not exist
+...
+act_1  | [CI/test]   🐳  docker exec cmd=[sh -e /var/run/act/workflow/3.sh] user= workdir=
+act_1  | [CI/test]   | 
+act_1  | [CI/test]   | > github-actions-demo@1.0.0 test
+act_1  | [CI/test]   | > mocha ./tests --recursive
+act_1  | [CI/test]   | 
+act_1  | [CI/test]   | 
+act_1  | [CI/test]   | 
+act_1  | [CI/test]   |   GET /
+act_1  | [CI/test]   |     ✓ should respond with hello world
+act_1  | [CI/test]   | 
+act_1  | [CI/test]   | 
+act_1  | [CI/test]   |   1 passing (71ms)
+act_1  | [CI/test]   | 
+act_1  | [CI/test]   ✅  Success - Main npm test [1.147521229s]
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git ref: repository does not exist
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git revision: repository does not exist
+...
+
+act_1  | [CI/test] ⭐ Run Post actions/setup-node@v4
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git ref: repository does not exist
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git revision: repository does not exist
+act_1  | [CI/test]   🐳  docker exec cmd=[/usr/local/bin/node /var/run/act/actions/actions-setup-node@v4/dist/cache-save/index.js] user= workdir=
+act_1  | [CI/test]   ✅  Success - Post actions/setup-node@v4 [467.150968ms]
+act_1  | [CI/test] ⭐ Run Complete job
+act_1  | [CI/test] Cleaning up container for job test
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git ref: repository does not exist
+act_1  | [CI/test] path/workspacenot located inside a git repository
+act_1  | [CI/test] unable to get git revision: repository does not exist
+act_1  | [CI/test]   ✅  Success - Complete job
+act_1  | [CI/test] 🏁  Job succeeded
+```
 ### Cleanup
 ```sh
+docker-compose stop
+docker-compose rm -f
 docker container prune -f
 docker image prune -f
 docker image rm act
 ```
+
+### Troubleshooting
+
+```sh
+WORKSPACE=$(pwd)/nodejs docker-compose up --build 
+```
+```text
+Creating basic-act_act_1 ... done
+Attaching to basic-act_act_1
+act_1  | fetch https://dl-cdn.alpinelinux.org/alpine/v3.18/main/x86_64/APKINDEX.tar.gz
+act_1  | fetch https://dl-cdn.alpinelinux.org/alpine/v3.18/community/x86_64/APKINDEX.tar.gz
+act_1  | (1/18) Installing ncurses-terminfo-base (6.4_p20230506-r0)
+act_1  | (2/18) Installing libncursesw (6.4_p20230506-r0)
+act_1  | (3/18) Installing readline (8.2.1-r1)
+act_1  | (4/18) Installing bash (5.2.15-r5)
+act_1  | Executing bash-5.2.15-r5.post-install
+act_1  | (5/18) Installing ca-certificates (20241121-r1)
+act_1  | (6/18) Installing brotli-libs (1.0.9-r14)
+act_1  | (7/18) Installing libunistring (1.1-r1)
+act_1  | (8/18) Installing libidn2 (2.3.4-r1)
+act_1  | (9/18) Installing nghttp2-libs (1.57.0-r0)
+act_1  | (10/18) Installing libpsl (0.21.5-r0)
+act_1  | (11/18) Installing libcurl (8.12.1-r0)
+act_1  | (12/18) Installing curl (8.12.1-r0)
+act_1  | (13/18) Installing libexpat (2.7.0-r0)
+act_1  | (14/18) Installing pcre2 (10.42-r1)
+act_1  | (15/18) Installing git (2.40.4-r0)
+act_1  | (16/18) Installing libacl (2.3.1-r3)
+act_1  | (17/18) Installing tar (1.34-r3)
+act_1  | (18/18) Installing wget (1.21.4-r0)
+act_1  | Executing busybox-1.36.1-r7.trigger
+act_1  | Executing ca-certificates-20241121-r1.trigger
+act_1  | OK: 22 MiB in 33 packages
+act_1  | LICENSE
+act_1  | README.md
+act_1  | act
+act_1  | install -m755 "/tmp/tmp.khNeCb/act" /usr/local/bin/act
+act_1  | rm -rf "/tmp/tmp.khNeCb"
+act_1  | rm: unrecognized option: p
+act_1  | BusyBox v1.36.1 (2024-06-12 11:52:11 UTC) multi-call binary.
+act_1  | 
+act_1  | Usage: rm [-irf] FILE...
+act_1  | 
+act_1  | Remove (unlink) FILEs
+act_1  | 
+act_1  | 	-i	Always prompt before removing
+act_1  | 	-f	Never prompt
+act_1  | 	-R,-r	Recurse
+Exception in thread Thread-4 (watch_events):
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/threading.py", line 1016, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.10/threading.py", line 953, in run
+    self._target(*self._args, **self._kwargs)
+basic-act_act_1 exited with code 1
+```
+
+workaround - provide blank line after every command in `docker-compose.yml`.
+
+```sh
+WORKSPACE=$(pwd)/nodejs docker-compose up --build
+```
+```text
+...
+act_1  | [CI/test]   ✅  Success - Complete job
+act_1  | [CI/test] 🏁  Job succeeded
+basic-act_act_1 exited with code 0
+
+Exception in thread Thread-4 (watch_events):
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/threading.py", line 1016, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.10/threading.py", line 953, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3/dist-packages/compose/cli/log_printer.py", line 202, in watch_events
+    for event in event_stream:
+  File "/usr/lib/python3/dist-packages/compose/project.py", line 626, in yield_loop
+    yield build_container_event(event)
+  File "/usr/lib/python3/dist-packages/compose/project.py", line 594, in build_container_event
+    container = Container.from_id(self.client, event['id'])
+KeyError: 'id'
+
+```
+the workflow has already completed successfully.
+
+This "error" is emitted by the legacy `docker-compose` v1 Python event watcher during container teardown. It is not an `act` failure.
+
+Run the one-shot command form instead:
+```sh
+WORKSPACE=$(pwd)/nodejs docker-compose run --rm --build act
+```
+`run` is the appropriate `docker-compose` command for a disposable CLI tool such as `act`;
+`up` is intended for long-running services
+
 ### See Also
 
    * [introduction to GitHub Actions with Docker](https://docs.docker.com/guides/gha/)
