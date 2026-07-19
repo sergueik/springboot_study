@@ -1089,6 +1089,71 @@ Removing intermediate container 9d16ea96f7b0
 Successfully built 221d30eabbd0
 Successfully tagged act:latest
 ```
+
+```sh
+WORKSPACE=$(pwd)/nodejs docker-compose up --build 
+```
+```text
+Creating network "basic-act_default" with the default driver
+Pulling act (alpine:3.18)...
+3.18: Pulling from library/alpine
+44cf07d57ee4: Pull complete
+Digest: sha256:de0eb0b3f2a47ba1eb89389859a9bd88b28e82f5826b6969ad604979713c2d4f
+Status: Downloaded newer image for alpine:3.18
+Creating basic-act_act_1 ... done
+Attaching to basic-act_act_1
+act_1  | fetch https://dl-cdn.alpinelinux.org/alpine/v3.18/main/x86_64/APKINDEX.tar.gz
+act_1  | fetch https://dl-cdn.alpinelinux.org/alpine/v3.18/community/x86_64/APKINDEX.tar.gz
+act_1  | (1/18) Installing ncurses-terminfo-base (6.4_p20230506-r0)
+act_1  | (2/18) Installing libncursesw (6.4_p20230506-r0)
+act_1  | (3/18) Installing readline (8.2.1-r1)
+act_1  | (4/18) Installing bash (5.2.15-r5)
+act_1  | Executing bash-5.2.15-r5.post-install
+act_1  | (5/18) Installing ca-certificates (20241121-r1)
+act_1  | (6/18) Installing brotli-libs (1.0.9-r14)
+act_1  | (7/18) Installing libunistring (1.1-r1)
+act_1  | (8/18) Installing libidn2 (2.3.4-r1)
+act_1  | (9/18) Installing nghttp2-libs (1.57.0-r0)
+act_1  | (10/18) Installing libpsl (0.21.5-r0)
+act_1  | (11/18) Installing libcurl (8.12.1-r0)
+act_1  | (12/18) Installing curl (8.12.1-r0)
+act_1  | (13/18) Installing libexpat (2.7.0-r0)
+act_1  | (14/18) Installing pcre2 (10.42-r1)
+act_1  | (15/18) Installing git (2.40.4-r0)
+act_1  | (16/18) Installing libacl (2.3.1-r3)
+act_1  | (17/18) Installing tar (1.34-r3)
+act_1  | (18/18) Installing wget (1.21.4-r0)
+act_1  | Executing busybox-1.36.1-r7.trigger
+act_1  | Executing ca-certificates-20241121-r1.trigger
+act_1  | OK: 22 MiB in 33 packages
+act_1  | time="2026-07-19T13:41:25Z" level=info msg="Using docker host 'unix:///var/run/docker.sock', and daemon socket 'unix:///var/run/docker.sock'"
+? Please choose the default image you want to use with act:
+act_1  |   - Large size image: ca. 17GB download + 53.1GB storage, you will need 75GB of free disk space, snapshots of GitHub Hosted Runners without snap and pulled docker images
+act_1  |   - Medium size image: ~500MB, includes only necessary tools to bootstrap actions and aims to be compatible with most actions
+act_1  |   - Micro size image: <200MB, contains only NodeJS required to bootstrap actions, doesn't work with all actions
+act_1  | 
+act_1  | Default image and other options can be changed manually in /root/.config/act/actrc (please refer to https://nektosact.com/usage/index.html?highlight=configur#configuration-file for additional information about file structure)  [Use arrows to move, type to filter, ? for more help]
+act_1  |   Large
+act_1  | > Medium
+act_1  |   Micro
+act_1  | time="2026-07-19T13:41:25Z" level=fatal msg=EOF
+basic-act_act_1 exited with code 1
+Exception in thread Thread-4 (watch_events):
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/threading.py", line 1016, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.10/threading.py", line 953, in run
+    self._target(*self._args, **self._kwargs)
+  File "/usr/lib/python3/dist-packages/compose/cli/log_printer.py", line 202, in watch_events
+    for event in event_stream:
+  File "/usr/lib/python3/dist-packages/compose/project.py", line 626, in yield_loop
+    yield build_container_event(event)
+  File "/usr/lib/python3/dist-packages/compose/project.py", line 594, in build_container_event
+    container = Container.from_id(self.client, event['id'])
+KeyError: 'id'
+
+
+```
 ### Cleanup
 ```sh
 docker container prune -f

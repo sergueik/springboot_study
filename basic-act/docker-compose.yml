@@ -1,0 +1,61 @@
+version: "3.5"
+
+services:
+  act:
+    image: alpine:3.18
+
+    working_dir: /workspace
+
+    environment:
+      VERSION: latest
+    volumes:
+      - ${WORKSPACE:-.}:/workspace
+      # NOTE: compose does not execute shell:
+      # - ${WORKSPACE:-$(pwd)}:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - >
+        apk add --no-cache \
+            bash \
+            curl \
+            wget \
+            git \
+            tar \
+            ca-certificates
+
+        RELEASE=https://github.com/nektos/act/releases
+        VERSION=$$VERSION
+        
+        if [ "$$VERSION" = "latest" ]; then
+            VERSION=$$(
+              wget -q -O - "$$RELEASE" |
+              grep 'href="/nektos/act/releases/tag/v' |
+              grep -v no-underline |
+              head -n1 |
+              sed 's/^.*href=//g' |
+              cut -d'"' -f2 |
+              awk '{n=split($$NF,a,"/");print a[n]}' |
+              awk 'a!=$$0{print};{a=$$0}'
+            )
+        fi
+
+        TMP=$$(mktemp -d)
+
+        wget -q \
+            -O "$$TMP/act.tar.gz" \
+            "$$RELEASE/download/v$${VERSION#v}/act_Linux_x86_64.tar.gz"
+
+        tar -C "$$TMP" -xf "$$TMP/act.tar.gz"
+
+        install -m755 "$$TMP/act" /usr/local/bin/act
+
+        rm -rf "$$TMP"
+
+        exec act "$$@"
+
+
+    command:
+      - --help
