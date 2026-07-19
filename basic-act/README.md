@@ -1028,37 +1028,7 @@ ignore all errors:
 
 - there is no .git directory in the container - this is intentional 
 
-> NOTE: the `Dockerfile` ([origin](https://github.com/efrecon/docker-images/blob/master/act/Dockerfile)) is buidkit-specific:
-
-```docker
-FROM alpine:3.18
-
-ARG ACT_VERSION=latest
-ARG ACT_GHPROJ=nektos/act
-ARG ACT_RELROOT=https://github.com/${ACT_GHPROJ}/releases
-ARG ACT_DWROOT=${ACT_RELROOT}/download
-
-# Metadata
-LABEL MAINTAINER efrecon+github@gmail.com
-LABEL org.opencontainers.image.title="act"
-LABEL org.opencontainers.image.description="act in Docker"
-LABEL org.opencontainers.image.authors="Emmanuel Frécon <efrecon+github@gmail.com>"
-LABEL org.opencontainers.image.url="https://github.com/efrecon/docker-images/act"
-LABEL org.opencontainers.image.documentation="https://github.com/efrecon/docker-images/act/README.md"
-LABEL org.opencontainers.image.source="https://github.com/efrecon/docker-images/act/Dockerfile"
-
-RUN apk add --no-cache less curl git ca-certificates
-COPY bininstall/*.sh /usr/local/bin/
-
-# Install act
-RUN if [ "$ACT_VERSION" = "latest" ]; then ACT_VERSION=$(wget -q  -O - "$ACT_RELROOT"|grep "href=\"/${ACT_GHPROJ}/releases/tag/v[0-9].[0-9]*.[0-9]*\"" | grep -v no-underline | head -n 1 | cut -d '"' -f 2 | awk '{n=split($NF,a,"/");print a[n]}' | awk 'a !~ $0{print}; {a=$0}'); fi \
-    && tarinstall.sh -v -x "act" "${ACT_DWROOT%/}/v${ACT_VERSION#v*}/act_Linux_x86_64.tar.gz"
-
-ENTRYPOINT [ "/usr/local/bin/act" ]
-CMD [ "--help" ]
-```
-
-it is essentially bare minimal possible example of a binary wrapper container featuring the fabulous [tarinstall.sh](https://github.com/efrecon/bininstall/blob/5b6a31a0e2c6f38491ec02491dd6c151ed05d708/tarinstall.sh)
+NOTE: the [Dockerfile](https://github.com/efrecon/docker-images/blob/master/act/Dockerfile) is essentially bare minimal possible example of a binary wrapper container featuring the fabulous [tarinstall.sh](https://github.com/efrecon/bininstall/blob/5b6a31a0e2c6f38491ec02491dd6c151ed05d708/tarinstall.sh)
 
 ```sh
 Alpine rootfs
@@ -1070,6 +1040,60 @@ Alpine rootfs
     +-- /usr/local/bin/act
     |
     +-- ENTRYPOINT act
+```
+### Usage
+
+```sh
+docker build -f Dockefile -t act .
+```
+```text
+Sending build context to Docker daemon  593.4kB
+Step 1/10 : FROM alpine:3.18
+ ---> 802c91d52981
+Step 2/10 : ARG VERSION=latest
+ ---> Using cache
+ ---> c4d62cba6f70
+Step 3/10 : ARG PROJECT=nektos/act
+ ---> Using cache
+ ---> 60e0367eefae
+Step 4/10 : ARG RELEASE=https://github.com/${PROJECT}/releases
+ ---> Using cache
+ ---> b63e9f2c2c72
+Step 5/10 : ARG ACT_DWROOT=${RELEASE}/download
+ ---> Using cache
+ ---> cf9a1344528e
+Step 6/10 : RUN apk add --no-cache less curl git ca-certificates
+ ---> Using cache
+ ---> 52b381fd4c96
+Step 7/10 : COPY tarinstall.sh /usr/local/bin/
+ ---> Using cache
+ ---> 45e7058c1a4b
+Step 8/10 : RUN if [ "$VERSION" = "latest" ]; then VERSION=$(wget -q  -O - "$RELEASE"|grep "href=\"/${PROJECT}/releases/tag/v[0-9].[0-9]*.[0-9]*\"" | grep -v no-underline | head -n 1 | sed 's/^.*href=//g' | cut -d '"' -f 2 | awk '{n=split($NF,a,"/");print a[n]}' | awk 'a !~ $0{print}; {a=$0}'); fi     && echo "tarinstall.sh -v -x \"act\" \"${RELEASE}/download/v${VERSION#v*}/act_Linux_x86_64.tar.gz\""     && tarinstall.sh -v -x "act" "${RELEASE}/download/v${VERSION#v*}/act_Linux_x86_64.tar.gz"
+ ---> Running in 154d1d3d7b7b
+tarinstall.sh -v -x "act" "https://github.com/nektos/act/releases/download/v0.2.89/act_Linux_x86_64.tar.gz"
+Downloading https://github.com/nektos/act/releases/download/v0.2.89/act_Linux_x86_64.tar.gz
+LICENSE
+README.md
+act
+Installing as /usr/local/bin/act
+Removing intermediate container 154d1d3d7b7b
+ ---> bfe5228f9b23
+Step 9/10 : ENTRYPOINT [ "/usr/local/bin/act" ]
+ ---> Running in 79297518cc5d
+Removing intermediate container 79297518cc5d
+ ---> ab3d835eb286
+Step 10/10 : CMD [ "--help" ]
+ ---> Running in 9d16ea96f7b0
+Removing intermediate container 9d16ea96f7b0
+ ---> 221d30eabbd0
+Successfully built 221d30eabbd0
+Successfully tagged act:latest
+```
+### Cleanup
+```sh
+docker container prune -f
+docker image prune -f
+docker image rm act
 ```
 ### See Also
 
