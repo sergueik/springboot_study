@@ -1429,15 +1429,21 @@ WORKSPACE=$(pwd)/nodejs docker-compose run --rm --build act
   
   * [GitHub Local Actions (VS Code)](https://marketplace.visualstudio.com/items?itemName=SanjulaGanepola.github-local-actions)
 
-![GitHub Local Actions](screenshots/captute-vscode1.png)
+![GitHub Local Actions](screenshots/capture-vscode1.png)
 
   * [Act-cli](https://marketplace.visualstudio.com/items?itemName=ShabeerThazhathethil.act-cli)
 
-![Act-cli](screenshots/captute-vscode2.png)
+![Act-cli](screenshots/capture-vscode2.png)
 
 * [Act/Run](https://marketplace.visualstudio.com/items?itemName=fean-developer.act-visual-runner)
 
-![Act/Run](screenshots/captute-vscode3.png)
+![Act/Run](screenshots/capture-vscode3.png)
+
+unfortunately none  of these exentions is standalone:
+
+![Act/Run Extension Prerequisite](screenshots/capture-vscode14.png)
+
+![GitHub Local Runner Extension Prrerequisites](screenshots/capture-vI[Iscode13.png)
 
    
 For __IntelliJ__ __IDEA__, the picture is different.
