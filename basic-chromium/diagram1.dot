@@ -1,0 +1,55 @@
+digraph production {
+
+    graph [
+        bgcolor="white",
+        rankdir=LR,
+        splines=ortho,
+        nodesep=0.7,
+        ranksep=0.8
+    ];
+
+    node [
+        shape=box,
+        style="rounded",
+        fontsize=18,
+        fontname="Helvetica"
+    ];
+
+    edge [
+        penwidth=1.5,
+        arrowsize=0.8
+    ];
+
+    W [label="W"]; // Windows machine 
+
+    subgraph cluster_L {
+        label="L"; // Linux Developer machine
+        style="rounded";
+        color="gray40";
+        penwidth=2;
+
+        subgraph cluster_docker {
+            label=""; // Container cluster (Docker/Podman/Kubernetes) 
+            style="rounded,dashed";
+            color="gray65";
+
+            F [label="F"];
+            B [label="B"];
+            D [label="D"];
+        }
+    }
+
+    W -> L [ // ssh
+        style=solid,
+        label=""
+    ];
+
+    F -> B ; // REST
+    
+    B -> F [ // WebSocket
+        style=dashed,
+        constraint=false
+    ]; 
+
+    B -> D; // JDBC
+}

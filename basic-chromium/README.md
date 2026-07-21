@@ -717,6 +717,187 @@ popd
 ```sh
 docker run -it -v $PWD/demo.cdp:/demo -w /demo -e USE_CHROMIUM=true $IMAGE java -cp target/test-classes:target/classes:target/dependency/* example.Application
 ```
+### Use Case
+
+> NOTE: goal is to make it look more like an architecture sketch than a network diagram; one can rely almost entirely on placement, clusters, and edge styles instead of labels
+
+```dot
+digraph production {
+
+    graph [
+        bgcolor="white",
+        rankdir=LR,
+        splines=ortho,
+        nodesep=0.7,
+        ranksep=0.8
+    ];
+
+    node [
+        shape=box,
+        style="rounded",
+        fontsize=18,
+        fontname="Helvetica"
+    ];
+
+    edge [
+        penwidth=1.5,
+        arrowsize=0.8
+    ];
+
+    W [label="W"]; // Windows machine 
+
+    subgraph cluster_L {
+        label="L"; // Linux Developer machine
+        style="rounded";
+        color="gray40";
+        penwidth=2;
+
+        subgraph cluster_docker {
+            label=""; // Container cluster (Docker/Podman/Kubernetes) 
+            style="rounded,dashed";
+            color="gray65";
+
+            F [label="F"];
+            B [label="B"];
+            D [label="D"];
+        }
+    }
+
+    W -> L [ // ssh
+        style=solid,
+        label=""
+    ];
+
+    F -> B ; // REST
+    
+    B -> F [ // WebSocket
+        style=dashed,
+        constraint=false
+    ]; 
+
+    B -> D; // JDBC
+}
+```
+
+adding intelligent browser automation agent __C__ to the cluster
+
+![Capture Cluster](screenshots/diagram1.png)
+
+```dot
+digraph with_testing {
+
+    graph [
+        bgcolor="white",
+        rankdir=LR,
+        splines=ortho,
+        nodesep=0.7,
+        ranksep=0.8
+    ];
+
+    node [
+        shape=box,
+        style="rounded",
+        fontsize=18,
+        fontname="Helvetica"
+    ];
+
+    edge [
+        penwidth=1.5,
+        arrowsize=0.8
+    ];
+
+    W [label="W"]; // Windows machine 
+
+    subgraph cluster_L {
+        label="L"; // Linux Developer machine
+        style="rounded";
+        color="gray40";
+        penwidth=2;
+
+        subgraph cluster_docker {
+            label=""; // Container cluster (Docker/Podman/Kubernetes)
+            style="rounded,dashed";
+            color="gray65";
+
+            C [label="🌐\nC"]; // Chrome Browser/Selenium observer
+            F [label="F"]; // Application Front End
+            B [label="B"]; // Application Back End
+            D [label="D"]; // Application Database
+        }
+    }
+
+    W -> L; // SSH
+
+    C -> F; // Web
+
+    F -> B ; // REST
+    
+    B -> F [ // WebSocket
+        style=dashed,
+        constraint=false
+    ]; 
+
+    B -> D; // JDBC
+
+    C -> L [ // Evidence collection (Volumes, Logs)
+        style=dotted,
+        arrowhead=none,
+        splines=polyline,
+        constraint=false
+    ];
+}
+```
+![Capture Cluster with Test Agent](screenshots/diagram2.png)
+
+
+> NOTE: the Linux host (__L__) remains "boring":
+
+  * Podman
+  * networking
+  * volume mounts
+  * orchestration
+  * no X11
+  * no Chromium
+  * no ChromeDriver
+  * no Java/Python runtime unless needed for orchestration
+
+verything GUI-related lives inside __C__. The browser never needs to be reachable from outside. Hence,
+
+  * no firewall hole to __C__
+  * no X or Wayland server on __L__
+  * no VNC / XVFB on __L__
+  * no Chrome installation on __L__
+  * no ChromeDriver on __L__
+
+> NOTE: this is actually quite close to how Selenium Grid or CI systems are often deployed: the browser is disposable infrastructure inside a container, not something installed on the host. From a security perspective it's also nice because L exposes exactly one thing (typically SSH), while C, F, B, and D are isolated on the private container network. If someone later asks for direct access to the frontend for testing, you can make that a separate decision instead of having designed it in from the beginning
+
+__C__/__L__'s not there merely to drive Chromium—it is the component that produces the evidence that the system is healthy (or broken)
+
+Remarkably, the Chrome/Selenium test agent runs inside the same isolated environment and validates the application through the user interface. It produces health evidence (logs, screenshots, test results) without requiring application ports to be exposed to the developer workstation.
+
+The *only* information that really needs to cross the firewall is the evidence, not the browser traffic
+
+The model does not depend on whether L is bare metal, a VM, or a cloud instance; the boundary simply moves as a whole
+
+> NOTE: __C___ is not a monitoring agent poking internal APIs. __C__ is a real browser agent that enters through the same doors a user enters. It collects proof.
+
+Instead of exposing:
+
+  * Chrome
+  * Chrome DevTools
+  * the frontend
+  * Selenium
+  * VNC/Display
+
+one expose only artifacts such as:
+
+  ✅ pass/fail
+  📷 screenshots
+  🎥 optional video
+  📄 HTML report
+  📜 logs
+  📈 metrics (Prometheus Pushgateway would fit nicely with your earlier experiments)
+  
 ### See Also
 
   * https://alpinelinux.org/releases/
