@@ -1425,6 +1425,37 @@ WORKSPACE=$(pwd)/nodejs docker-compose run --rm --build act
 `run` is the appropriate `docker-compose` command for a disposable CLI tool such as `act`;
 `up` is intended for long-running services
 
+### Alternative Way
+  
+  * [GitHub Local Actions (VS Code)](https://marketplace.visualstudio.com/items?itemName=SanjulaGanepola.github-local-actions)
+
+![GitHub Local Actions](screenshots/captute-vscode1.png)
+
+  * [Act-cli](https://marketplace.visualstudio.com/items?itemName=ShabeerThazhathethil.act-cli)
+
+![Act-cli](screenshots/captute-vscode2.png)
+
+* [Act/Run](https://marketplace.visualstudio.com/items?itemName=fean-developer.act-visual-runner)
+
+![Act/Run](screenshots/captute-vscode3.png)
+
+   
+For __IntelliJ__ __IDEA__, the picture is different.
+
+__JetBrains__ has excellent editing support built in:
+
+  * YAML completion
+  * workflow syntax
+  * action parameter completion
+  * cron validation
+  * navigation between actions
+
+But it does not itself execute workflows locally:
+There is __no__ explicit runner of __Act__ in the __intelli J__.
+
+> NOTE: these IDE plugins are generally nothing but simply *front-ends* to `act`, __not__ independent workflow engines
+
+
 ### See Also
 
    * [introduction to GitHub Actions with Docker](https://docs.docker.com/guides/gha/)
