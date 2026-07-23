@@ -782,6 +782,12 @@ These two implementations represent a classic trade-off:
 
 Both converge on the same goal: enabling __Graphviz__-style visualization without requiring traditional Graphviz tooling, even in constrained or air-gapped environments.
 
+#### Enterprise Platform Integration Checklist
+
+- Identify the approved enterprise platform and integration approach.
+- Complete onboarding (training, access, approvals, application registration).
+- Integrate using the approved APIs, SDKs, and implementation guidance.
+- Validate the integration through enterprise testing and operational acceptance.
 
 ### See Also
 
