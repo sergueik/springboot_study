@@ -1,0 +1,11 @@
+{
+	"include": [
+		"src/**/*.d.ts",
+		"src/**/*.ts",
+		"src/**/*.svelte",
+		"cypress/**/*.ts",
+		"cypress/**/*.js",
+		"static/**/*.js"
+	],
+	"extends": "./.svelte-kit/tsconfig.json"
+}
