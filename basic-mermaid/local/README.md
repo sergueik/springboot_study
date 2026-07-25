@@ -39,12 +39,32 @@ cp package/dist/mermaid.min.js .
 ```sh
 sudo apt-get purge -qqy npm
 ```
+alternatively
+
+```sh
+curl -skLO https://cdn.jsdelivr.net/npm/mermaid@9.4.3/dist/mermaid.min.js
+```
+or
+```sh
+wget -nv --no-cookies --no-check-certificate -O mermaid.min.js https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js
+```
+```sh
+md5sum mermaid.min.js
+```
+```text
+e1bdcac49c3a6464a9aa3c6082b1833e *mermaid.min.js
+```
 ```cmd
 start "c:\Program Files\Google\Chrome\Application\chrome.exe" file://%cd%\page.html
 ```
 ![Run Locally](../screenshots/capture-local.png)
 
-### Note: Not Using the Latest Version
+### Background
+
+This project uses __Mermaid__ version __9.4.3__ which is a stable legacy release of the JavaScript-based diagramming and charting tool that uses Markdown-inspired text.
+it is available directly via package delivery networks like UNPKG under specific version paths
+
+> Note: Why not using the latest version
 
 [Mermaid](https://github.com/mermaid-js/mermaid), which originally started as a
 vanilla JavaScript browser library distributed as a single deployable artifact,
@@ -85,6 +105,11 @@ still provides the traditional browser bundle
 <script src="mermaid.min.js"></script>
 ```
 with no `Node.js`, `npm`, `bundler`, or preprocessing step required.
+
+### See Also 
+
+  * [Mermaid npm packge](https://www.npmjs.com/package/mermaid)
+  * [Mermaid CDN](https://cdnjs.com/libraries/mermaid) 
 
 ---
 ### Author

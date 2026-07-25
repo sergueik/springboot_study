@@ -243,8 +243,8 @@ run the `index.html` with Live server
 
 ![Run Live Server](screenshots/capture-vscode2.png)
 
-and it will automatically open `http://localhost:5000/index.html` in the browser. 
-There is an error
+and it will automatically open `http://localhost:5000/index.html` in the browser (port will be assigned dynamically)
+There is an error on the page
 ```text
 Live reload enabled.
 undefined:1  Failed to load resource: the server responded with a status of 404 (Not Found)
@@ -261,6 +261,19 @@ start-d8e4d14a.js:1 Uncaught (in promise) Error: Version check failed: 404
 
 
 There official __Mermaid Live Editor__  Docker image is hosted on [GitHub Container Registry](ghcr.io/mermaid-js/mermaid-live-editor/mermaid-live-editor) (__GHCR__) 
+### See Also
+  * [github allows including diagrams in Markdown files with Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) 
+
+```mermaid
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+```  
+  * [InjelliJ Mermain Plugin](https://www.jetbrains.com/help/idea/markdown.html#diagrams) (disabled by default and requires additional steps)  
+  * [Generate and view Mermaid diagrams with Copilot](https://www.youtube.com/watch?v=SgPYIfxk4Ok)
+  * __GitHub Copilot__ __Chat__ natively renders and previews __Mermaid__ diagrams directly within its [chat interface](https://mermaid.ai/docs/plugins/github-copilot)
 
 ---
 ### Author
