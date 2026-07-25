@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ultra Basic Mermaid Renderer</title>
+
+<style>
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: Verdana, sans-serif;
+  background: linear-gradient(#7d8086, #5d6168);
+  color: #111;
+}
+
+body {
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.app-shell {
+  width: 100%;
+  height: calc(100vh - 12px);
+  background: linear-gradient(#c8c8c8,#a9a9a9);
+  border: 2px solid #6d6d6d;
+  box-shadow:
+      inset 1px 1px 0 #f5f5f5,
+      inset -1px -1px 0 #6e6e6e,
+      0 4px 12px rgba(0,0,0,0.35);
+  padding:8px;
+  box-sizing:border-box;
+}
+
+.titlebar{
+  background:linear-gradient(#d8d8d8,#a8a8a8);
+  border:1px solid #777;
+  padding:6px 10px;
+  margin-bottom:8px;
+  font-weight:bold;
+}
+
+.split{
+  display:flex;
+  gap:8px;
+  height:calc(100% - 42px);
+}
+
+.pane-input{
+  flex:0 0 25%;
+  display:flex;
+  flex-direction:column;
+  min-width:220px;
+}
+
+.pane-output{
+  flex:0 0 75%;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+
+.panel-label{
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:4px;
+}
+
+textarea{
+  width:100%;
+  flex:1;
+  box-sizing:border-box;
+  background:#efefef;
+  border:2px inset #999;
+  font-family:Consolas,monospace;
+  padding:8px;
+  resize:vertical;
+}
+
+#output{
+  flex:1;
+  overflow:auto;
+  background:#f5f5f5;
+  border:2px inset #999;
+  padding:6px;
+}
+
+button{
+  padding:6px 12px;
+  margin-right:4px;
+  border:1px solid #666;
+  background:linear-gradient(#eeeeee,#bbbbbb);
+  cursor:pointer;
+  font-weight:bold;
+}
+</style>
+
+<script src="mermaid.min.js">
+</script>
+
+<script>
+mermaid.initialize({
+    startOnLoad:false,
+    securityLevel:"loose"
+});
+
+let scale=1;
+
+window.zoomIn=function(){
+    scale+=0.1;
+    applyZoom();
+}
+
+window.zoomOut=function(){
+    scale=Math.max(0.2,scale-0.1);
+    applyZoom();
+}
+
+window.applyZoom=function(){
+
+    const svg=document.querySelector("#output svg");
+
+    if(svg){
+        svg.style.transform="scale("+scale+")";
+        svg.style.transformOrigin="0 0";
+    }
+}
+
+window.renderMermaid = function () {
+
+    const source = document.getElementById("diagramInput").value;
+    const output = document.getElementById("output");
+
+    try {
+
+        mermaid.mermaidAPI.render(
+            "graph1",
+            source,
+            function(svgCode) {
+
+                output.innerHTML = svgCode;
+                applyZoom();
+
+            }
+        );
+
+    } catch (e) {
+
+        output.innerHTML = "<pre>" + e + "</pre>";
+
+    }
+}
+
+// ---
+
+window.onload=renderMermaid;
+
+</script>
+
+</head>
+
+<body>
+
+<div class="app-shell">
+
+<div class="titlebar">
+Ultra Basic Mermaid Renderer
+</div>
+
+<div class="split">
+
+<div class="pane-input">
+
+<div class="panel-label">
+Mermaid Input
+</div>
+
+<textarea id="diagramInput">
+
+flowchart LR
+
+Start((Start))
+
+Cond1{Condition}
+
+Cond2{Condition}
+
+Then1[Then]
+
+Then2[Else If]
+
+Else[Else]
+
+End((End))
+
+Start --> Cond1
+
+Cond1 -->|Yes| Then1
+
+Cond1 -->|No| Cond2
+
+Cond2 -->|Yes| Then2
+
+Cond2 -->|No| Else
+
+Then1 --> End
+
+Then2 --> End
+
+Else --> End
+
+</textarea>
+
+<div style="margin-top:6px">
+
+<button onclick="renderMermaid()">Render</button>
+
+<button onclick="zoomIn()">+</button>
+
+<button onclick="zoomOut()">-</button>
+
+</div>
+
+</div>
+
+<div class="pane-output">
+
+<div class="panel-label">
+Rendered Diagram
+</div>
+
+<div id="output"></div>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>

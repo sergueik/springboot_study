@@ -262,5 +262,6 @@ start-d8e4d14a.js:1 Uncaught (in promise) Error: Version check failed: 404
 
 There official __Mermaid Live Editor__  Docker image is hosted on [GitHub Container Registry](ghcr.io/mermaid-js/mermaid-live-editor/mermaid-live-editor) (__GHCR__) 
 
+---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
