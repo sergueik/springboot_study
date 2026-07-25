@@ -273,8 +273,9 @@ There official __Mermaid Live Editor__  Docker image is hosted on [GitHub Contai
 ```  
   * [InjelliJ Mermain Plugin](https://www.jetbrains.com/help/idea/markdown.html#diagrams) (disabled by default and requires additional steps)  
   * [Generate and view Mermaid diagrams with Copilot](https://www.youtube.com/watch?v=SgPYIfxk4Ok)
-  * __GitHub Copilot__ __Chat__ natively renders and previews __Mermaid__ diagrams directly within its [chat interface](https://mermaid.ai/docs/plugins/github-copilot)
-
+  * __GitHub Copilot__ __Chat__ natively renders and previews __Mermaid__ diagrams directly within its [cohat interface](https://mermaid.ai/docs/plugins/github-copilot)
+  * [Python adapter for rendering Mermaid fragment](https://habr.com/ru/articles/1061160/) ( basic, in Roussian)
+  * [Mermaid winning the default drawing standard over PlantUML](https://habr.com/ru/news/1015912/)(in Russian) 
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

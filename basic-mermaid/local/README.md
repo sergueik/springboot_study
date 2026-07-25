@@ -99,17 +99,61 @@ does not provide the same experience as the previous standalone library model.
 When opened directly from `file://`, the browser applies module security rules,
 and the imported dependency chain fails without a server or bundling step.
 
-For a self-contained offline viewer, __Mermaid__ __9.4.3__ was selected because it
-still provides the traditional browser bundle
+The newer approach is optimized for build systems rather than direct browser use.
+
+Therefore for a self-contained offline viewer, an older __Mermaid__ __9.4.3__ release was selected that still provides the traditional browser bundle
 ```html
 <script src="mermaid.min.js"></script>
 ```
 with no `Node.js`, `npm`, `bundler`, or preprocessing step required.
 
-### See Also 
+In other words, the
+
+* *Just import the module*
+
+is actually leaving implicit:
+
+* *...provided you already have npm, a package manager, a module resolver, a bundler, a development server, and the expected project structure*
+
+Whether this is an improvement depends on the intended deployment model. For applications already using modern JavaScript build systems, the new packaging is natural. For a lightweight offline viewer opened directly from file://, however, the older standalone distribution remains considerably simpler
+
+> The __Mermaid__ switched to modern JavaScript modules..
+> ...which means it is no longer a drop-in standalone browser library for an offline `file://` page.
+
+In many enterprise environments:
+
+* Internet access is monitored. Transmitting internal or confidential information outside the corporate VPN or approved channels is a serious security policy violation.
+* One *may* request any external tool. It *will* become available once the business need is established and the formal review process is complete
+
+* Installing npm packages on every workstation is undesirable.
+Running a local build toolchain is unnecessary overhead.
+
+
+A single HTML file plus mermaid.min.js is easy to archive, review, and redistribute internally.
+
+An air-gapped static Mermaid page idea is actually much closer to an enterprise-friendly artifact compared  to
+> Here is a wonderful Mermaid live tool. Install Docker, pull this image, build this Dockerfile, and run it
+
+the latter "internal developer tool"  will likely never be approved:
+
+* install a new execution platform
+* execute an unknown image
+* execute an unknown build chain
+* download dependencies from the public internet
+* run a web server
+* expose a port
+* trust a package supply chain
+* allow a tool with unclear ownership and lifecycle
+
+The tool itself (Mermaid rendering) is harmless. The path to obtaining the tool is what triggers concern
+
+
+### See Also
 
   * [Mermaid npm packge](https://www.npmjs.com/package/mermaid)
   * [Mermaid CDN](https://cdnjs.com/libraries/mermaid) 
+  * [collection of examples of diagrams and charts that can be created through mermaid](https://mermaid.ai/open-source/syntax/examples.html)
+  * [Mac vs PC - Box](https://www.youtube.com/watch?v=1PwiljBN5-8) commercial Justin Lon noticing regarding John Hodgman: *"it sounds like you have a lot of stuff to do before you do any stuff"*
 
 ---
 ### Author
