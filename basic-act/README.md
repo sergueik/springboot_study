@@ -1439,11 +1439,11 @@ WORKSPACE=$(pwd)/nodejs docker-compose run --rm --build act
 
 ![Act/Run](screenshots/capture-vscode3.png)
 
-unfortunately none  of these exentions is standalone:
+unfortunately none of these extensions is standalone - they need the dependencies installed explicitly:
 
 ![Act/Run Extension Prerequisite](screenshots/capture-vscode14.png)
 
-![GitHub Local Runner Extension Prrerequisites](screenshots/capture-vI[Iscode13.png)
+![GitHub Local Runner Extension Prrerequisites](screenshots/capture-vscode13.png)
 
    
 For __IntelliJ__ __IDEA__, the picture is different.

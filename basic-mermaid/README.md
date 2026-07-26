@@ -171,10 +171,10 @@ nginx               1.30.3-alpine3.23   d0701bd41f82        4 weeks ago         
 node                18.1.0-alpine       d94913fe64df        4 years ago         171MB
 ```
 ```sh
-docker run --name mermaid-live -p 8080:80 -d test 
+docker run --name mermaid-live -p 8080:80 -d test
 ```
 ```sh
-docker ps 
+docker ps
 ```
 ```text
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
@@ -235,11 +235,11 @@ Serving HTTP on :: port 8000 (http://[::]:8000/) ...
 ```
 then open the site in the browser `http://localhost:8000`
 
-Alternatively install [Live Server VS Code extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer), and 
+Alternatively install [Live Server VS Code extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer), and
 
 ![Install Live Server](screenshots/capture-vscode1.png)
 
-run the `index.html` with Live server 
+run the `index.html` with Live server
 
 ![Run Live Server](screenshots/capture-vscode2.png)
 
@@ -260,9 +260,9 @@ start-d8e4d14a.js:1 Uncaught (in promise) Error: Version check failed: 404
 [Live App](https://mermaid.live/) to learn practice
 
 
-There official __Mermaid Live Editor__  Docker image is hosted on [GitHub Container Registry](ghcr.io/mermaid-js/mermaid-live-editor/mermaid-live-editor) (__GHCR__) 
+There official __Mermaid Live Editor__  Docker image is hosted on [GitHub Container Registry](ghcr.io/mermaid-js/mermaid-live-editor/mermaid-live-editor) (__GHCR__)
 ### See Also
-  * [github allows including diagrams in Markdown files with Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) 
+  * [github allows including diagrams in Markdown files with Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) - also embedded in GitLab, Gitea, Joplin, Notion.
 
 ```mermaid
   graph TD;
@@ -270,12 +270,19 @@ There official __Mermaid Live Editor__  Docker image is hosted on [GitHub Contai
       A-->C;
       B-->D;
       C-->D;
-```  
-  * [InjelliJ Mermain Plugin](https://www.jetbrains.com/help/idea/markdown.html#diagrams) (disabled by default and requires additional steps)  
+```
+  * [InjelliJ Mermain Plugin](https://www.jetbrains.com/help/idea/markdown.html#diagrams) (disabled by default and requires additional steps)
   * [Generate and view Mermaid diagrams with Copilot](https://www.youtube.com/watch?v=SgPYIfxk4Ok)
   * __GitHub Copilot__ __Chat__ natively renders and previews __Mermaid__ diagrams directly within its [cohat interface](https://mermaid.ai/docs/plugins/github-copilot)
   * [Python adapter for rendering Mermaid fragment](https://habr.com/ru/articles/1061160/) ( basic, in Roussian)
-  * [Mermaid winning the default drawing standard over PlantUML](https://habr.com/ru/news/1015912/)(in Russian) 
+  * [Mermaid winning the default drawing standard over PlantUML](https://habr.com/ru/news/1015912/)(in Russian):
+  * [Github Doc on Creating diagrams](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams)
+  * [Mermaid primer](https://habr.com/ru/articles/652867)(in Russian)
+  * [Mermaid User Guide](https://mermaid.ai/open-source/intro/getting-started.html)
+  * [overview of creating flowcharts using Mermaid](https://ckeditor.com/blog/basic-overview-of-creating-flowcharts-using-mermaid/)
+  * [diagrams in Markdown with Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) (redundant)
+  * [list of Mermaid Tutorials](https://mermaid.ai/open-source/ecosystem/tutorials.html)
+
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

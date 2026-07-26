@@ -1,0 +1,33 @@
+FROM node:22.12.0-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json /app/
+
+ARG NPM_REGISTRY
+
+RUN if [ -n "$NPM_REGISTRY" ]; then \
+        npm config set registry "$NPM_REGISTRY"; \
+    fi
+RUN npm install \
+ || { cat /root/.npm/_logs/*.log; exit 1; }
+
+COPY index.html vite.config.js /app/
+ADD src /app/src
+
+RUN npm run build
+
+FROM nginx:1.30.3-alpine3.23
+
+WORKDIR /usr/share/nginx/html
+
+COPY --from=builder /app/dist ./
+COPY default.conf /etc/nginx/conf.d/
+
+# HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
+# CMD curl -f http://localhost:8080/ || exit 1
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+
