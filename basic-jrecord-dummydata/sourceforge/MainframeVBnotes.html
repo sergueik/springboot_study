@@ -1,0 +1,66 @@
+<html><head><link rel="stylesheet" type="text/css" href="syntax.css">
+</head>
+<body>
+<h1>Variable Length Records on the Mainframe</h1>
+<p>On the mainframe, Variable length (VB) files are stored in the
+following format</p>
+
+<table>
+ <tr><TD width="20%">Block&nbsp;Length</TD><TD width="28%">&nbsp;</TD><td>&nbsp;</td></tr>
+ <tr><td>&nbsp;</td><td>Record&nbsp;Length</td><td>Data Line 1</td></tr>
+ <tr><td>&nbsp;</td><td>Record Length</td><td>Data Line 2</td></tr>
+ <tr><td>&nbsp;</td><td>...</td><td>...</td></tr>
+ <tr><td>&nbsp;</td><td>Record Length</td><td>Data Line n</td></tr>
+ <tr><TD>Block Length</TD><TD>&nbsp;</TD><td>&nbsp;</td></tr>
+ <tr><td>&nbsp;</td><td>Record Length</td><td>Data Line n+1</td></tr>
+ <tr><td>&nbsp;</td><td>Record Length</td><td>Data Line n+2</td></tr>
+ <tr><td>&nbsp;</td><td>...</td><td>...</td></tr>
+</table>
+
+<p>When the file is transported to another system, the Block Length/Record Length is normally
+dropped leaving just the data. But you can copy a RECFM=VB file to a RECFM=U and then transport the RECFM=U
+file (with all the record lengths intact) to a PC/Unix system. The JCL to do this on the Mainframe:<p>
+
+<Table border="3" cellpadding="7" cellspacing="3"><tr><TD BGCOLOR="#000000"><FONT COLOR="#00ff00"><pre>
+// <font color="red">SET</font> IN<font color="yellow"><b>=</b></font>VB.FILE.TO.TRANSMIT
+// <font color="red">SET</font> OUT<font color="yellow"><b>=</b></font>USER.&amp;IN..RECFMU
+//*
+//STEP010 <font color="red">EXEC</font> PGM<font color="yellow"><b>=</b></font>IEFBR14,COND<font color="yellow"><b>=</b></font>(0,NE)
+//SORTOUT  <font color="red">DD</font>  DSN<font color="yellow"><b>=</b></font>&amp;OUT,
+//             DISP<font color="yellow"><b>=</b></font>(MOD,DELETE),
+//             SPACE<font color="yellow"><b>=</b></font>(TRK,(30,30),RLSE),
+//             DCB<font color="yellow"><b>=</b></font>BLKSIZE<font color="yellow"><b>=</b></font>0
+//*
+//STEP020 <font color="red">EXEC</font> PGM<font color="yellow"><b>=</b></font>IEBGENER,COND<font color="yellow"><b>=</b></font>(0,NE)
+//SYSUT1   <font color="red">DD</font>  DSN<font color="yellow"><b>=</b></font>&amp;IN,DISP<font color="yellow"><b>=</b></font>SHR,DCB<font color="yellow"><b>=</b></font>RECFM<font color="yellow"><b>=</b></font>U
+//SYSUT2   <font color="red">DD</font>  DSN<font color="yellow"><b>=</b></font>&amp;OUT,
+//             DISP<font color="yellow"><b>=</b></font>(NEW,CATLG),
+//             SPACE<font color="yellow"><b>=</b></font>(TRK,(115,45),RLSE)
+//SYSPRINT <font color="red">DD</font>  SYSOUT<font color="yellow"><b>=</b></font>*
+//SYSOUT   <font color="red">DD</font>  SYSOUT<font color="yellow"><b>=</b></font>*
+//SORTMSG  <font color="red">DD</font>  SYSOUT<font color="yellow"><b>=</b></font>*
+//SYSIN    <font color="red">DD</font>  DUMMY
+
+</pre></font></td></tr></pre></table>
+<p>&nbsp;</p>
+<p>Then to read it from java. <b>Note:</b> I am using
+<ul>
+ <li><b>Constants.IO_VB_DUMP</b> for the File Structure
+ <li><b>Convert.FMT_MAINFRAME</b> for the format
+</ul>
+
+<pre>
+
+
+<span class="gutter">   9:</span>            CobolIoProvider ioProvider <span class="syntax18">=</span> CobolIoProvider.<span class="syntax6">getInstance</span>();
+<span class="gutterH">  10:</span>            AbstractLineReader reader  <span class="syntax18">=</span> ioProvider.<span class="syntax6">getLineReader</span>(
+<span class="gutter">  11:</span>                    <b>Constants.IO_VB_DUMP</b>, <b>Convert.FMT_MAINFRAME</b>,
+<span class="gutter">  12:</span>                    CopybookLoader.SPLIT_NONE, copybookName, vendorFile
+<span class="gutter">  13:</span>            );
+
+   or
+
+<span class="gutter">  19:</span>           AbstractLineReader reader  <span class="syntax18">=</span> LineIOProvider.<span class="syntax6">getInstance</span>().<span class="syntax6">getLineReader</span>(<b>Constants.IO_VB_DUMP</b>);
+
+</pre>
+</body>

@@ -1,6 +1,6 @@
 ### Info
 
-Tnis directory contains a replica of [Zipkin](https://zipkin.io)-based [MDC](http://logback.qos.ch/manual/mdc.html)
+Tnis directory contains a replica of [Zipkin](https://zipkin.io)-based __Mapped Diagnostic Context__ ( [MDC](http://logback.qos.ch/manual/mdc.html) )
 [demo](https://github.com/TilinC/demo)  applications converted to maven. 
 
 
