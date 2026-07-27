@@ -127,7 +127,7 @@ Cannot open in the browser via `file://` when using the real DOS Drive letters:
 when launched with 
 
 ```cmd
-"C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir=C:\temp\chrome-file-test --allow-file-access-from-files file:///C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\index.html
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir=C:\temp\chrome-file-test --allow-file-access-from-files file:///..\dist\index.html
 ```
 or
 ```cmd
@@ -155,28 +155,26 @@ Failed to load resource: net::ERR_FILE_NOT_FOUND chunk-ZGVPDNZ5-7E3CyR1q.js:1
 Failed to load resource: net::ERR_FILE_NOT_FOUND chunk-7BUUIJ7U-Bb538aSH.js:1  
 ```
 
-
 all files are present:
 ```cmd
 dir /b/s /a-d assets | findstr -i "index-BGiIaHVw.js chunk-Y2CYZVJY-DsF7k-Jl.js src-BMa7vLb8.js  chunk-WYO6CB5R-C36byBU-.js dist-Q9n2Bb2K.js chunk-ICXQ74PX-_B4UKQEp.js  path-BWPyau1x.js array-BifhSqXX.js line-BjeXKALW.js chunk-C7G6YPKG-WgqYOC9I.js  chunk-OGEWGWER-q1FVTapY.jschunk-OGEWGWER-q1FVTapY.js chunk-HOUHSVGY-BrlsNa-I.js chunk-Q4XR5HBZ-DuMv4AAJ.js rough.esm-CSKSodPl.js chunk-ZGVPDNZ5-7E3CyR1q.js chunk-7BUUIJ7U-Bb538aSH.js"
 ```
 ```text
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\array-BifhSqXX.js
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\chunk-7BUUIJ7U-Bb538aSH.js
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\chunk-C7G6YPKG-WgqYOC9I.js
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\chunk-HOUHSVGY-BrlsNa-I.js
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\chunk-ICXQ74PX-_B4UKQEp.js
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\chunk-Q4XR5HBZ-DuMv4AAJ.js
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\chunk-WYO6CB5R-C36byBU-.js
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\chunk-Y2CYZVJY-DsF7k-Jl.js
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\chunk-ZGVPDNZ5-7E3CyR1q.js
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\dist-Q9n2Bb2K.js
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\index-BGiIaHVw.js
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\line-BjeXKALW.js
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\path-BWPyau1x.js
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\rough.esm-CSKSodPl.js
-C:\developer\sergueik\springboot_study\basic-mermaid-react\dist\assets\src-BMa7vLb8.js
-
+..\dist\assets\array-BifhSqXX.js
+..\dist\assets\chunk-7BUUIJ7U-Bb538aSH.js
+..\dist\assets\chunk-C7G6YPKG-WgqYOC9I.js
+..\dist\assets\chunk-HOUHSVGY-BrlsNa-I.js
+..\dist\assets\chunk-ICXQ74PX-_B4UKQEp.js
+..\dist\assets\chunk-Q4XR5HBZ-DuMv4AAJ.js
+..\dist\assets\chunk-WYO6CB5R-C36byBU-.js
+..\dist\assets\chunk-Y2CYZVJY-DsF7k-Jl.js
+..\dist\assets\chunk-ZGVPDNZ5-7E3CyR1q.js
+..\dist\assets\dist-Q9n2Bb2K.js
+..\dist\assets\index-BGiIaHVw.js
+..\dist\assets\line-BjeXKALW.js
+..\dist\assets\path-BWPyau1x.js
+..\dist\assets\rough.esm-CSKSodPl.js
+..\dist\assets\src-BMa7vLb8.js
 ```
 > NOTE: moving the files around does not help:
 
@@ -211,6 +209,103 @@ docker container prune -f
 docker image prune -f
 docker image rm $IMAGE node:22.12.0-alpine nginx:1.30.3-alpine3.23
 ```
+### TODO: Investigate `file://` behavior on Windows by drive type / drive letter
+
+#### Observation
+
+The generated Vite/React/Mermaid application is fully static and works correctly when served over HTTP (nginx).
+
+When opened directly via `file://`, Chrome exhibits inconsistent behavior depending on the underlying Windows drive.
+
+#### Current results
+
+| Location | Result |
+|----------|--------|
+| `file:///E:/index.html` (`subst E: <dist>`) | ✅ Works |
+| `file:///E:/newdir/index.html` | ✅ Works |
+| `file:///C:/temp/dist/index.html` | ❌ Requests `file:///C:/assets/...` |
+| `file:///C:/developer/.../dist/index.html` | ❌ Same behavior |
+
+The generated JavaScript contains **relative** module imports, e.g.
+
+```js
+import "./chunk-XXXX.js";
+```
+
+The referenced files are present and individually accessible via `file://`.
+
+#### Unsolved Questions
+
+- Is this a Chromium/Chrome `file://` module loader issue?
+- Is Windows treating `subst` drives differently from physical NTFS volumes?
+- Does Chrome classify different drive types (physical, `subst`, network, removable, virtual) differently for security/origin purposes?
+- Is the behavior related to the native NT object namespace (`\GLOBAL??`, `\Device\...`)?
+- Does Microsoft expose different metadata for `subst` drives through Win32 or shell APIs?
+- Is the issue specific to ES module resolution, rather than ordinary file I/O?
+
+#### Future experiments
+
+- Test on a clean Windows installation.
+- Test without `--allow-file-access-from-files`.
+- Compare:
+  - physical NTFS (`C:`)
+  - `subst` drive
+  - mapped network drive
+  - removable USB drive
+  - VHD/VHDX mounted volume
+- Compare Chrome, Edge, and Firefox.
+- Capture Process Monitor (ProcMon) traces to compare actual file opens.
+- Inspect the generated HTML and module graph for absolute vs. relative URL resolution.
+- Determine whether this is a browser issue, a Windows filesystem abstraction issue, or an interaction between the two.
+
+
+## Project observations
+
+### Enterprise portability
+
+The current Mermaid package is available from the enterprise Artifactory repository (multiple package variants were found).
+
+This means the project can be built entirely from enterprise package repositories without depending on the public npm registry.
+
+### Industry adoption
+
+Mermaid is no longer just a standalone diagramming library.
+
+It has become part of the modern software engineering toolchain, including:
+
+- GitHub Markdown rendering
+- GitHub Copilot and Agent workflows
+- VS Code preview/presentation features
+- GitLab documentation
+- various CI/CD platforms and documentation generators
+- developer portals and knowledge bases
+
+Mermaid diagrams are increasingly becoming a common interchange format for lightweight architecture and workflow documentation.
+
+### Enterprise Toolbox candidate
+
+A small standalone Mermaid viewer/editor remains valuable even when IDE integrations exist.
+
+Potential users include:
+
+- developers without VS Code or Copilot
+- QA engineers
+- release engineers
+- documentation authors
+- project managers
+- support engineers
+- users on locked-down enterprise desktops
+
+A portable static application avoids IDE dependencies while providing a simple way to preview and validate Mermaid diagrams.
+
+### Current status
+
+- ✅ Modern Mermaid successfully builds as a static application.
+- ✅ Build can be performed in a disposable Docker environment.
+- ✅ Resulting artifact is static.
+- ⚠ Browser `file://` behavior still requires additional investigation.
+- ✅ HTTP deployment (nginx or any static web server) works correctly.
+
 ---
 
 ### Author
