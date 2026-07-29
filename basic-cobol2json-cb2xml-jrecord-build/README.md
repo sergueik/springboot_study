@@ -19,6 +19,7 @@ This directory contains docker build flow to construct  __CobolToJson__ - *Conve
 ### Usage
 
 * get images
+
 ```sh
 docker pull maven:3.9.5-eclipse-temurin-11-alpine
 docker pull eclipse-temurin:11-jre-alpine
@@ -706,10 +707,163 @@ Instead, dependencies are built in isolated Docker builder images, and the resul
 ```
 ### About Redefines
 
+* Copybook-Like Flowchart (Graphviz)
+
 ![Classic Cobol Redefines](screenshots/capture-cobol_redefines.png)
+
+> NOTE, __Graphviz__ counterpart __Mermaid__ is fully supported by GitHub -
+one gets the diagram embedded by annotating the fenced area with `mermaid` 
+
+Source
+```code
+flowchart TB
+
+    Storage["01 TRANSACTION-AREA<br/>──────────────<br/>Physical storage allocated"]
+
+    X["01 TRANS-X<br/>05 HEADER<br/>05 X-FIELDS"]
+    Y["01 TRANS-Y<br/>05 HEADER<br/>05 Y-FIELDS"]
+    Z["01 TRANS-Z<br/>05 HEADER<br/>05 Z-FIELDS"]
+
+    Storage -->|REDEFINES| X
+    Storage -->|REDEFINES| Y
+    Storage -->|REDEFINES| Z
+
+    classDef storage fill:#ddd,stroke:#000,stroke-width:2;
+    classDef redefine fill:#fff,stroke:#000,stroke-dasharray:5 5;
+
+    class Storage storage;
+    class X,Y,Z redefine;
+```
+
+* Copybook-Like Flowchart (Mermaid)
+
+```mermaid
+flowchart TB
+
+    Storage["01 TRANSACTION-AREA<br/>──────────────<br/>Physical storage allocated"]
+
+    X["01 TRANS-X<br/>05 HEADER<br/>05 X-FIELDS"]
+    Y["01 TRANS-Y<br/>05 HEADER<br/>05 Y-FIELDS"]
+    Z["01 TRANS-Z<br/>05 HEADER<br/>05 Z-FIELDS"]
+
+    Storage -->|REDEFINES| X
+    Storage -->|REDEFINES| Y
+    Storage -->|REDEFINES| Z
+
+    classDef storage fill:#ddd,stroke:#000,stroke-width:2;
+    classDef redefine fill:#fff,stroke:#000,stroke-dasharray:5 5;
+
+    class Storage storage;
+    class X,Y,Z redefine;
+```
+
+![Classic Cobol Redefines (Mermaid)](screenshots/capture-cobol_redefines-mermaid.png)
+
+
+There is apparently resemblence to successor UML
 
 ![Equivalent UML Diagram Fragment](screenshots/capture-uml.png)
 	
+
+####
+| Engineering Style | Typical Origin | Mermaid Fidelity |
+|-------------------|----------------|------------------|
+| UML Class | Rational Rose, Enterprise Architect, Visio | ★★★★★ |
+| Entity Relationship / SQL Schema | ERWin, Oracle Designer, pgModeler | ★★★★★ |
+| Sequence / OAuth2 / OIDC | PlantUML, MSC, RFC illustrations | ★★★★★ |
+| State Machine | Harel Statecharts | ★★★★★ |
+| Flowchart | Graphviz DOT, Visio | ★★★★☆ |
+| COBOL Copybook (`REDEFINES`) | IBM mainframe documentation | ★★★★☆ |
+| C `struct` / `union` Memory Layout | Compiler and ABI documentation | ★★★★☆ |
+| Binary File / Packet Layout | RFCs, protocol specifications | ★★★★☆ |
+| Workflow Foundation | Visual Studio WF Designer | ★★★★☆ |
+| UiPath Workflow | UiPath Studio | ★★★★☆ |
+| BPMN-style Business Process | Visio, BizTalk, Blue Prism | ★★★★☆ |
+| CI/CD Pipeline | Jenkins, GitHub Actions, GitLab CI | ★★★★★ |
+| Kubernetes Architecture | CNCF ecosystem | ★★★★★ |
+| Git Graph | gitk, GitHub | ★★★★★ |
+| Gantt Timeline | Microsoft Project | ★★★★☆ |
+| Organization Chart | Visio, PowerPoint | ★★★★★ |
+| Mind Map | XMind, FreeMind | ★★★★★ |
+
+#### Blue Prism Learning Edition
+
+The official free demo version for learning __Blue Prism__ on a virtual machine is the 
+__Blue Prism Learning Edition__
+, which offers a standalone local database installation and an extended 180-day license.
+
+The __Blue Prism__ has a very distinctive visual language.
+It is usually called a __Blue Prism Process Diagram__ (at the business level) or __Blue Prism Object Diagram__
+ (inside a __Business Object__). Collectively they are often referred to simply as __Blue Prism Process Studio__ diagrams.
+ 
+the notation is proprietary, although it borrows heavily from classic __Business Process Model and Notation__ ([BPMN](https://en.wikipedia.org/wiki/Business_Process_Model_and_Notation)) flowcharts chrome.
+
+The core stages are:
+
+|Shape	Stage	Purpose|
+|------|--------|------|
+|Rounded ellipse	| Start	|Entry point|
+|Rounded ellipse	|End	|Exit point|
+|Rectangle	|Action	|Call Business Object or Process|
+|Diamond	|Decision|	Branch|
+|Page icon	|Page	|Jump to another page|
+|Data symbol|	Calculation	|Expression / variable assignment|
+|Document/grid	|Collection	|Table-like data|
+|Envelope/database	|Data Item	|Variables|
+|Lightning / warning|	Exception	|Throw or catch exception|
+|Wait symbol	|Wait|	Synchronization / polling|
+|Loop connector	|Loop|	Iterate over Collection|
+ 
+
+Unlike __`BPMN__, the notation is proprietary, although it borrows heavily from classic flowcharts.
+
+__Mermaid__ can emulate  ★★★★☆ (4.5/5).
+
+It can reproduce
+
+  * Start / End
+  * Decisions
+  * Actions
+  * Exception paths
+  * Loops
+  * Orthogonal flow (mostly)
+  * Page grouping
+  * Swimlanes (using subgraphs)
+  
+The only things missing are Blue Prism's exact stencil icons and its routing algorithm
+
+__Blue Prism__ stores processes internally in its repository database, but it also supports exporting them as `XML` packages (`.bprelease`).
+
+
+These exports contain
+
+* Processes
+  * Business Objects
+  * Pages
+  * Stages
+  * Variables
+  * Links
+  * Metadata
+
+The emitted `XML` describes the graph explicitly—each stage has an `ID`, type, coordinates, and outgoing links—so 
+in principle it is quite feasible to write a converter to __Mermaid__ or __Graphviz__
+
+
+__Blue Prism__ is actually one of the more promising candidates for such conversion because its model is fundamentally a `graph`:
+
+A converter could map approximately as follows:
+
+| Blue Prism |	Mermaid |
+|-----------|-------------| 
+| Start|	`([Start])` |
+| End  |	`([End])`  |
+| Action |	`[Action]`  |
+| Decision |	`{Decision}`  |
+| Calculation |	`[Calculation]`  |
+| Collection |  `[(Collection)]`  |
+| Exception	|`[/Exception/`] or a *styled* node  |
+| Page	|subgraph  |
+| Link	|`-->`  |
 
 ### See Also
  

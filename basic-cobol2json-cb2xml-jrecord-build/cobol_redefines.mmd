@@ -1,0 +1,17 @@
+flowchart TB
+
+    Storage["01 TRANSACTION-AREA<br/>──────────────<br/>Physical storage allocated"]
+
+    X["01 TRANS-X<br/>05 HEADER<br/>05 X-FIELDS"]
+    Y["01 TRANS-Y<br/>05 HEADER<br/>05 Y-FIELDS"]
+    Z["01 TRANS-Z<br/>05 HEADER<br/>05 Z-FIELDS"]
+
+    Storage -->|REDEFINES| X
+    Storage -->|REDEFINES| Y
+    Storage -->|REDEFINES| Z
+
+    classDef storage fill:#ddd,stroke:#000,stroke-width:2;
+    classDef redefine fill:#fff,stroke:#000,stroke-dasharray:5 5;
+
+    class Storage storage;
+    class X,Y,Z redefine;
