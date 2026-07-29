@@ -4,7 +4,217 @@ Single page browser using Mermaid 9.x releases which were the last shipped a sta
 
 ### Usage
 
-pick an oldr version
+pick an older version for vanilla JS Library release.
+
+
+### Example Copilot Session
+
+* GitHub Copilot Chat Screen - Graphics
+
+![swimline diagram](../screenshots/capture-github-copilot.png)
+
+* GitHub Copilot Chat Screen - Source
+
+![swimline diagram source](../screenshots/capture-github-copilot-source.png)
+
+* Verbatim Source
+```code
+sequenceDiagram
+    participant Browser as Headless Chrome
+    participant Frontend as React SPA
+    participant Backend as Spring Boot
+    participant DB as Database
+
+    Browser->>Frontend: Load landing page
+    Frontend->>Frontend: Start React
+
+    Frontend->>Backend: GET /health
+
+    alt Backend sleeping
+        Backend-->>Frontend: 503 Not Ready
+        Frontend->>Browser: Show waiting toast
+        Frontend->>Backend: Retry
+    else Backend ready
+        Backend-->>Frontend: 200 OK
+        Frontend->>Backend: Load data
+        Backend->>DB: Query
+        DB-->>Backend: Result
+        Backend-->>Frontend: JSON
+        Frontend->>Browser: Render application
+    end
+```
+
+* Rendered by GitHub
+```mermaid
+sequenceDiagram
+    participant Browser as Headless Chrome
+    participant Frontend as React SPA
+    participant Backend as Spring Boot
+    participant DB as Database
+
+    Browser->>Frontend: Load landing page
+    Frontend->>Frontend: Start React
+
+    Frontend->>Backend: GET /health
+
+    alt Backend sleeping
+        Backend-->>Frontend: 503 Not Ready
+        Frontend->>Browser: Show waiting toast
+        Frontend->>Backend: Retry
+    else Backend ready
+        Backend-->>Frontend: 200 OK
+        Frontend->>Backend: Load data
+        Backend->>DB: Query
+        DB-->>Backend: Result
+        Backend-->>Frontend: JSON
+        Frontend->>Browser: Render application
+    end
+```
+* Rendered Locally, `file:///C:/developer/sergueik/springboot_study/basic-mermaid/local/page.html`
+
+![swimline diagram, Mermaid 9.4.3](../screenshots/capture-local-swinline-9.4.3.png)
+
+* Rendered Locally, `http://localhost:8000/`
+```sh
+python -m http.server
+Serving HTTP on :: port 8000 (http://[::]:8000/) ...
+```
+
+![swimline diagram Mermaid 11](../screenshots/capture-local-swinline-11.png)
+
+* Rendered Locally, `http://localhost:8000/`, different syntax
+
+![new syntax diagram Mermaid 11](../screenshots/capture-local-generic-shape.png)
+
+
+* fails to rended by __9.4.3__
+
+![new syntax diagram Mermaid 9.4.3](../screenshots/capture-syntax-error-9.4.3.png)
+
+* Source
+
+```code
+%% NOTE: requires 11.x
+flowchart LR
+
+    %% Nodes
+    A([Cluster starts])
+    B[Launch Headless Chrome]
+    C[GET /]
+    D[React Bootstrap]
+    E["REST: /api/health"]
+
+    F{"Backend Ready?"}
+
+    G["Show 'Connecting...'<br/>Toast"]
+    H["Wait 2 seconds"]
+    I["Retry /api/health"]
+
+    J["Backend returns 200 OK"]
+    K["Load Config"]
+    L["Load Dashboard Data"]
+    M["Hide Toast"]
+    N([Application Ready])
+
+    %% Flow
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+
+    F -- No --> G
+    G --> H
+    H --> I
+    I --> F
+
+    F -- Yes --> J
+    J --> K
+    K --> L
+    L --> M
+    M --> N
+
+    %% Styles
+    classDef browser fill:#cce5ff,stroke:#1565c0,stroke-width:2px;
+    classDef react fill:#d6f5d6,stroke:#2e7d32,stroke-width:2px;
+    classDef backend fill:#ffe0b2,stroke:#ef6c00,stroke-width:2px;
+    classDef decision fill:#fff9c4,stroke:#f9a825,stroke-width:2px;
+    classDef success fill:#c8e6c9,stroke:#1b5e20,stroke-width:3px;
+    classDef warning fill:#ffebee,stroke:#c62828,stroke-width:2px;
+
+    class B,C browser
+    class D,E,K,L react
+    class J backend
+    class F decision
+    class G,H,I warning
+    class N success
+
+
+```
+* rendered by GitHub
+
+```mermaid
+%% NOTE: requires 11.x
+flowchart LR
+
+    %% Nodes
+    A([Cluster starts])
+    B[Launch Headless Chrome]
+    C[GET /]
+    D[React Bootstrap]
+    E["REST: /api/health"]
+
+    F{"Backend Ready?"}
+
+    G["Show 'Connecting...'<br/>Toast"]
+    H["Wait 2 seconds"]
+    I["Retry /api/health"]
+
+    J["Backend returns 200 OK"]
+    K["Load Config"]
+    L["Load Dashboard Data"]
+    M["Hide Toast"]
+    N([Application Ready])
+
+    %% Flow
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+
+    F -- No --> G
+    G --> H
+    H --> I
+    I --> F
+
+    F -- Yes --> J
+    J --> K
+    K --> L
+    L --> M
+    M --> N
+
+    %% Styles
+    classDef browser fill:#cce5ff,stroke:#1565c0,stroke-width:2px;
+    classDef react fill:#d6f5d6,stroke:#2e7d32,stroke-width:2px;
+    classDef backend fill:#ffe0b2,stroke:#ef6c00,stroke-width:2px;
+    classDef decision fill:#fff9c4,stroke:#f9a825,stroke-width:2px;
+    classDef success fill:#c8e6c9,stroke:#1b5e20,stroke-width:3px;
+    classDef warning fill:#ffebee,stroke:#c62828,stroke-width:2px;
+
+    class B,C browser
+    class D,E,K,L react
+    class J backend
+    class F decision
+    class G,H,I warning
+    class N success
+
+
+```
+
+
+
+### Usage
 
 ```sh
 sudo apt-get install -qqy npm

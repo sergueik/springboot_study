@@ -1,0 +1,24 @@
+sequenceDiagram
+    participant Browser as Headless Chrome
+    participant Frontend as React SPA
+    participant Backend as Spring Boot
+    participant DB as Database
+
+    Browser->>Frontend: Load landing page
+    Frontend->>Frontend: Start React
+
+    Frontend->>Backend: GET /health
+
+    alt Backend sleeping
+        Backend-->>Frontend: 503 Not Ready
+        Frontend->>Browser: Show waiting toast
+        Frontend->>Backend: Retry
+    else Backend ready
+        Backend-->>Frontend: 200 OK
+        Frontend->>Backend: Load data
+        Backend->>DB: Query
+        DB-->>Backend: Result
+        Backend-->>Frontend: JSON
+        Frontend->>Browser: Render application
+    end
+
