@@ -6,10 +6,10 @@ at `efafad1e8709854e77bea2d6f1abf212ed7482a9` to use node 18
 ### Usage
 
 ```sh
+docker pull node:18.1.0-alpine
 docker build -t test-alpine -f Dockerfile .
 ```
 ```text
-
 Sending build context to Docker daemon  564.2kB
 Step 1/10 : FROM node:18.1.0-alpine AS builder
 18.1.0-alpine: Pulling from library/node
@@ -171,7 +171,7 @@ nginx               1.30.3-alpine3.23   d0701bd41f82        4 weeks ago         
 node                18.1.0-alpine       d94913fe64df        4 years ago         171MB
 ```
 ```sh
-docker run --name mermaid-live -p 8080:80 -d test
+docker run --name mermaid-live -p 8080:80 -d test-alpine
 ```
 ```sh
 docker ps
@@ -179,7 +179,6 @@ docker ps
 ```text
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
 653671f1d219        test-alpine         "/docker-entrypoint.…"   6 seconds ago       Up 6 seconds        0.0.0.0:8080->80/tcp   mermaid-live
-
 ```
 
 ```sh
@@ -201,7 +200,10 @@ open in the browser
 
 #### Using the generated static site without Docker
 
+> NOTE: may need to stop Python server if running and leave `dist`
+
 ```sh
+rm -fr dist
 docker cp mermaid-live:/usr/share/nginx/html dist
 ```
 The application is generated as a static web site (`docs/`). It can be served by any HTTP server.
@@ -234,6 +236,255 @@ python.exe -m http.server
 Serving HTTP on :: port 8000 (http://[::]:8000/) ...
 ```
 then open the site in the browser `http://localhost:8000`
+
+if seeing errors:
+```text
+Fetch event handler is recognized as no-op. No-op fetch handler may bring overhead during navigation. Consider removing the handler if possible.
+(index):5  GET http://localhost:8000/assets/index-BGiIaHVw.js net::ERR_ABORTED 404 (File not found)
+(index):6  GET http://localhost:8000/assets/chunk-Y2CYZVJY-DsF7k-Jl.js net::ERR_ABORTED 404 (File not found)
+```
+rebuild and copy the `dist`
+
+if seeing 
+```text
+
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.15/main/x86_64/APKINDEX.tar.gz
+ERROR: https://dl-cdn.alpinelinux.org/alpine/v3.15/main: temporary error (try again later)
+WARNING: Ignoring https://dl-cdn.alpinelinux.org/alpine/v3.15/main: No such file or directory
+```
+while 
+```sh
+curl -I https://dl-cdn.alpinelinux.org/alpine/v3.15/main/x86_64/APKINDEX.tar.gz
+```
+
+
+```text
+HTTP/2 200
+content-security-policy: script-src 'self'
+content-type: application/octet-stream
+etag: "6a08aac9-9c436"
+last-modified: Sat, 16 May 2026 17:35:05 GMT
+referrer-policy: origin-when-cross-origin
+server: nginx/1.29.0
+strict-transport-security: max-age=63072000; includeSubDomains; preload
+x-content-type-options: nosniff
+x-frame-options: DENY
+via: 1.1 varnish, 1.1 varnish
+accept-ranges: bytes
+age: 3
+date: Wed, 29 Jul 2026 12:17:02 GMT
+x-served-by: cache-ams-eham8680062-AMS, cache-mia-kfll1870035-MIA
+x-cache: HIT, HIT
+x-cache-hits: 2491882, 0
+x-timer: S1785327423.519932,VS0,VE110
+vary: Origin
+content-length: 640054
+```
+examine network connection
+
+
+### Fixing a Chrome "Cache Miss" / Stale Asset Problem Caused by a Service Worker
+
+If you see an Alpine package fetch failure such as:
+
+```text
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.15/main/x86_64/APKINDEX.tar.gz
+ERROR: https://dl-cdn.alpinelinux.org/alpine/v3.15/main: temporary error (try again later)
+WARNING: Ignoring https://dl-cdn.alpinelinux.org/alpine/v3.15/main: No such file or directory
+```
+
+but a direct request succeeds:
+
+```sh
+curl -I https://dl-cdn.alpinelinux.org/alpine/v3.15/main/x86_64/APKINDEX.tar.gz
+```
+
+```text
+HTTP/2 200
+...
+```
+
+first verify that the network connection is actually working. A successful `curl` response indicates the CDN is reachable, so the problem is likely elsewhere.
+
+Likewise, if your local HTTP server logs contain a long sequence of `404` responses for hashed Vite assets, followed by:
+
+```text
+GET /service-worker.js HTTP/1.1" 304 -
+```
+
+but **no**
+
+```text
+GET / HTTP/1.1
+```
+
+request, for example:
+
+```text
+GET /assets/index-BGiIaHVw.js HTTP/1.1" 404 -
+GET /assets/path-BWPyau1x.js HTTP/1.1" 404 -
+...
+GET /service-worker.js HTTP/1.1" 304 -
+```
+
+then Chrome may still be running a previously installed **Service Worker** that is intercepting navigation requests and serving an outdated application shell.
+
+The stale Service Worker continues referencing JavaScript bundles that no longer exist after a rebuild, producing many `404` errors.
+
+![Cache miss error](screenshots/capture-cache-miss-error.png)
+
+### Verify the Service Worker
+
+Open:
+
+```text
+chrome://serviceworker-internals/
+```
+
+Locate the registration whose scope matches your application, for example:
+
+```text
+Scope: http://localhost:8000/
+```
+
+You should see information similar to:
+
+```text
+Scope: http://localhost:8000/
+Storage key:
+Origin: http://localhost:8000
+Registration ID: 133
+
+Active worker:
+Installation Status: ACTIVATED
+Running Status: RUNNING
+Fetch handler existence: EXISTS
+
+Script:
+http://localhost:8000/service-worker.js
+
+Clients:
+http://localhost:8000/
+...
+```
+
+![Service Worker management](screenshots/capture-service-workers.png)
+
+### Remove the stale Service Worker
+
+1. Click **Unregister**.
+2. Open **Application → Storage** in Chrome DevTools.
+3. Click **Clear site data**.
+4. Reload the page.
+
+The HTTP server should now receive a normal navigation request:
+
+```text
+GET / HTTP/1.1" 200 -
+```
+
+instead of immediately requesting obsolete hashed assets.
+
+The application should now load correctly.
+
+![After Service Worker cleanup](screenshots/capture-fixed-cache-issue.png)
+
+### Notes
+
+- A `304 Not Modified` for `service-worker.js` simply means Chrome reused the existing Service Worker because the server indicated it had not changed.
+- The absence of `GET /` in the server log is a strong indicator that the Service Worker is intercepting navigation before it reaches the web server.
+- This issue commonly appears after rebuilding a Vite application because each build generates new hashed asset names while an old Service Worker may continue referencing the previous ones.
+
+As an alternative during development, you can serve the project using the VS Code **Live Server** extension instead of a manually started HTTP server. This often provides a simpler workflow for static content and makes it easier to verify that you're serving the latest build.
+
+also if the web sevrer logs  have `304`  wirh `service-worker.js`:
+```text
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/index-BGiIaHVw.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/path-BWPyau1x.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/array-BifhSqXX.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/src-BMa7vLb8.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/line-BjeXKALW.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/chunk-C7G6YPKG-WgqYOC9I.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/chunk-WYO6CB5R-C36byBU-.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/chunk-ICXQ74PX-_B4UKQEp.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/chunk-Y2CYZVJY-DsF7k-Jl.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/chunk-OGEWGWER-q1FVTapY.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/chunk-HOUHSVGY-BrlsNa-I.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/chunk-Q4XR5HBZ-DuMv4AAJ.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/dist-Q9n2Bb2K.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/rough.esm-CSKSodPl.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/chunk-7BUUIJ7U-Bb538aSH.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] code 404, message File not found
+::1 - - [29/Jul/2026 08:48:14] "GET /assets/chunk-ZGVPDNZ5-7E3CyR1q.js HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:14] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+::1 - - [29/Jul/2026 08:48:15] "GET /service-worker.js HTTP/1.1" 304 -
+
+```
+
+![cache miss error](screenshots/capture-cache-miss-error.png)
+
+but no `GET /`, the broser may still be running the Service Worker which intercepting navigation
+open
+`chrome://serviceworker-internals/`
+and find the service worker by scope `http://localhost:8080`
+
+there will be
+```text
+Scope: http://localhost:8000/
+Storage key:
+Origin: http://localhost:8000
+Top level site: http://localhost
+Ancestor chain bit: SameSite
+Registration ID: 133
+Navigation preload enabled: false
+Navigation preload header length: 4
+Active worker:
+Installation Status: ACTIVATED
+Running Status: RUNNING
+Fetch handler existence: EXISTS
+Fetch handler type: EMPTY_FETCH_HANDLER
+Script: http://localhost:8000/service-worker.js
+Version ID: 538
+Renderer process ID: 36312
+Renderer thread ID: 1
+DevTools agent route ID: 9
+Client:
+ID: 8bee0f0a-b7ec-48cd-827c-c725310c5483
+URL: http://localhost:8000/
+Client:
+ID: e16eb72b-516f-4f35-916b-4cf42eb45257
+URL: http://localhost:8000/
+Log:
+
+```
+![service worker management](screenshots/capture-service-workers.png)
+
+
+Click `Unregister` then navigate `Application>Storage` and click `Clear Site Daya`
+
+Then raload
+HTTP Server will log
+```text
+::1 - - [29/Jul/2026 09:23:22] "GET / HTTP/1.1" 200 -
+```
+and the page show heathy
+![After Sevice Worker Recycle Reload](screenshots/capture-fixed-cache-issue.png)
 
 Alternatively install [Live Server VS Code extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer), and
 
