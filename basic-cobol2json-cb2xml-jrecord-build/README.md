@@ -800,7 +800,7 @@ the notation is proprietary, although it borrows heavily from classic __Business
 
 The core stages are:
 
-|Shape	Stage	Purpose|
+|Shape  | 	Stage |	Purpose|
 |------|--------|------|
 |Rounded ellipse	| Start	|Entry point|
 |Rounded ellipse	|End	|Exit point|
@@ -865,6 +865,128 @@ A converter could map approximately as follows:
 | Page	|subgraph  |
 | Link	|`-->`  |
 
+
+| Style	| Recognition |
+|------|------| 
+| Microsoft Visio Flowchart| 	★★★★★ |
+| Windows Workflow Foundation (XAML designer)| 	★★★★☆ |
+| Blue Prism Process Studio	| ★★★★☆ |
+| UiPath Workflow	| ★★★★★ |
+| BizTalk Orchestration	| ★★★☆☆ |
+| BPMN 2.0	| ★★★★★ |
+
+
+When the original `.bprelease` `XML` is available, 
+roughly 90–99% of the information needed to reconstruct the process is already present in structured form. 
+The remaining effort is primarily translation into another notation. 
+
+
+Starting from a screenshot, by contrast, first requires recovering that structure from pixels, making the task substantially more difficult.
+
+
+A `.bprelease` (or __WF__ `XAML`, or __BPMN__ `XML`) is effectively a lossless representation of the process. 
+A screenshot is a lossy rendering.
+
+Even if one had an ideal computer vision system, some information simply no longer exists in the image.
+
+For example, a screenshot may irretrievably lose:
+
+  * exact connector attachment points
+  * z-order of overlapping connectors
+  * hidden or collapsed regions
+  * stage identifiers
+  * object IDs
+  * namespace/type information
+  * data types
+  * properties not rendered visually
+  * off-screen pages
+  * comments not expanded
+  * metadata
+
+typical enterprise screenshot might be:
+
+  * 1920×1080 pixels
+  * JPEG or PNG
+  * anti-aliased fonts
+  * scaled to 125% or 150% DPI
+  * compressed for email or documentation
+  
+If a process contains 150–300 stages, each stage may occupy only a few thousand pixels. 
+Text can be blurred, connector endpoints merge visually, and thin orthogonal lines become ambiguous.
+
+
+That's not an AI limitation—it's an information theory limitation.
+
+Worst of all, A raster image has no notion of semantic completeness. A reconstructed workflow cannot be measured by visual similarity alone because the remaining uncertainty is concentrated in precisely the elements that define behavior.
+
+```code
+flowchart LR
+
+    A([Start / End])
+
+    B[Rectangle<br/>Process]
+
+    C(Rounded Rectangle)
+
+    D{Decision<br/>Diamond}
+
+    E[(Database)]
+
+    F[[Subroutine]]
+
+    G[/Parallelogram<br/>Input Output/]
+
+    H>Flag / Asymmetric]
+
+    I{{Hexagon}}
+
+    J((Circle))
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+	
+```
+
+```mermaid
+flowchart LR
+
+    A([Start / End])
+
+    B[Rectangle<br/>Process]
+
+    C(Rounded Rectangle)
+
+    D{Decision<br/>Diamond}
+
+    E[(Database)]
+
+    F[[Subroutine]]
+
+    G[/Parallelogram<br/>Input Output/]
+
+    H>Flag / Asymmetric]
+
+    I{{Hexagon}}
+
+    J((Circle))
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+```
 ### See Also
  
  * [cb2xml](https://github.com/bmTas/cb2xml)
