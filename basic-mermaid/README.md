@@ -333,7 +333,43 @@ The stale Service Worker continues referencing JavaScript bundles that no longer
 
 ![Cache miss error](screenshots/capture-cache-miss-error.png)
 
-### Verify the Service Worker
+
+#### Confirm the Issue 
+
+Examine page source as seen on the browser
+
+```html
+
+<!doctype html>
+<html>
+<head>
+  <title>Mermaid React</title>
+  <script type="module" crossorigin src="/assets/index-BGiIaHVw.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/chunk-Y2CYZVJY-DsF7k-Jl.js">
+  <link rel="modulepreload" crossorigin href="/assets/src-BMa7vLb8.js">
+  <link rel="modulepreload" crossorigin href="/assets/chunk-WYO6CB5R-C36byBU-.js">
+  <link rel="modulepreload" crossorigin href="/assets/dist-Q9n2Bb2K.js">
+  <link rel="modulepreload" crossorigin href="/assets/chunk-ICXQ74PX-_B4UKQEp.js">
+  <link rel="modulepreload" crossorigin href="/assets/path-BWPyau1x.js">
+  <link rel="modulepreload" crossorigin href="/assets/array-BifhSqXX.js">
+  <link rel="modulepreload" crossorigin href="/assets/line-BjeXKALW.js">
+  <link rel="modulepreload" crossorigin href="/assets/chunk-C7G6YPKG-WgqYOC9I.js">
+  <link rel="modulepreload" crossorigin href="/assets/chunk-OGEWGWER-q1FVTapY.js">
+  <link rel="modulepreload" crossorigin href="/assets/chunk-HOUHSVGY-BrlsNa-I.js">
+  <link rel="modulepreload" crossorigin href="/assets/chunk-Q4XR5HBZ-DuMv4AAJ.js">
+  <link rel="modulepreload" crossorigin href="/assets/rough.esm-CSKSodPl.js">
+  <link rel="modulepreload" crossorigin href="/assets/chunk-ZGVPDNZ5-7E3CyR1q.js">
+  <link rel="modulepreload" crossorigin href="/assets/chunk-7BUUIJ7U-Bb538aSH.js">
+</head>
+<body>
+  <div id="root"></div>
+</body>
+</html>
+
+```
+to see it is indeed stale
+
+#### Verify the Service Worker
 
 Open:
 
@@ -370,7 +406,7 @@ http://localhost:8000/
 
 ![Service Worker management](screenshots/capture-service-workers.png)
 
-### Remove the stale Service Worker
+#### Recycle the stale Service Worker
 
 1. Click **Unregister**.
 2. Open **Application → Storage** in Chrome DevTools.
@@ -389,7 +425,7 @@ The application should now load correctly.
 
 ![After Service Worker cleanup](screenshots/capture-fixed-cache-issue.png)
 
-### Notes
+#### Notes
 
 - A `304 Not Modified` for `service-worker.js` simply means Chrome reused the existing Service Worker because the server indicated it had not changed.
 - The absence of `GET /` in the server log is a strong indicator that the Service Worker is intercepting navigation before it reaches the web server.
@@ -533,7 +569,7 @@ There official __Mermaid Live Editor__  Docker image is hosted on [GitHub Contai
   * [overview of creating flowcharts using Mermaid](https://ckeditor.com/blog/basic-overview-of-creating-flowcharts-using-mermaid/)
   * [diagrams in Markdown with Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) (redundant)
   * [list of Mermaid Tutorials](https://mermaid.ai/open-source/ecosystem/tutorials.html)
-
+  * great tools are transparent
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
