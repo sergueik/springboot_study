@@ -897,7 +897,21 @@ one expose only artifacts such as:
   📄 HTML report
   📜 logs
   📈 metrics (Prometheus Pushgateway would fit nicely with your earlier experiments)
-  
+ 
+### Advanced One Shot Health Test of Modern SPA
+
+Inspired by typical Payment Card Industry security test scenario
+
+one may add the Docker container hosting a regular Chrome browser to already existing application cluster (technical details vary betwewn Docker/Podman and Kubernetes (Helm) but the effect is the same).
+
+This container will serve as health probe. One can easily arrange the browser to load the subject application landing page (Headless mode or effectively display-less full X Windows environment - steps to setup these were well understood in Selenium domain.
+
+The React page launches Service Worker javascript code which typically performs some health check on the backend application resulting in the banner indicating if server is still loading. This is effectively a full scale integration test Ж
+
+### Technical Info
+
+Fiserv PEP+ (Post-Processing Electronic Payments or PEP+) is an industry-standard software platform used by banks and credit unions to process electronic payments through the Automated Clearing House (ACH) network. It automates sending and receiving funds, handles same-day settlement rules, and manages fraud protection.
+
 ### See Also
 
   * https://alpinelinux.org/releases/
