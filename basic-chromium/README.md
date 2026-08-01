@@ -849,7 +849,50 @@ digraph with_testing {
 ```
 ![Capture Cluster with Test Agent](screenshots/diagram2.png)
 
+```text
++----------------------------+
+|             L              |   <-- cluster label (Linux host)
+|                            |
+|  .----------------------.  |
+|  |                      |  |   <-- Podman / container network
+|  |  C   F   B   D       |  |
+|  |                      |  |
+|  '----------------------'  |
+|                            |
++----------------------------+
 
+
+                 W
+                 |
+                 |
+        +----------------------+
+        |          L           |
+        |                      |
+        |   +--------------+   |
+        |   |              |   |
+        |   |  🌐C → F → B |   |
+        |   |       ↕    ↘ |   |
+        |   |         → D  |   |
+        |   |              |   |
+        |   +--------------+   |
+        |                      |
+        +----------------------+
+
+             evidence ↑
+
+
+        W
+        |
+        |
+   +----------------+
+   |  Hypervisor    |
+   |                |
+   |   +--------+   |
+   |   |   L    |   |    virtual Linux host
+   |   | C F B D|   |
+   |   +--------+   |
+   +----------------+
+```
 > NOTE: the Linux host (__L__) remains "boring":
 
   * Podman
