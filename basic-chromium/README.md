@@ -32,7 +32,7 @@ https://dl-cdn.alpinelinux.org/alpine/v3.23/community
 
 If the Alpine release or repository URLs change, review the `Dockerfile` before making changes.
 
-The official `eclipse-temurin` image already configures the correct repositories; 
+The official `eclipse-temurin` image already configures the correct repositories;
 therefore, explicit `apk update` or repository modifications are unlikely to be needed.
 
 
@@ -109,7 +109,7 @@ this will print HTML in console
 ```sh
 docker run --rm -it $IMAGE sh
 ```
-or 
+or
 ```sh
 ID=$(docker container ls -a |grep $IMAGE| head -1 | awk '{print $1}')
 docker start $ID
@@ -130,8 +130,8 @@ docker run --name $NAME -it $IMAGE /usr/bin/chromium-browser --headless --disabl
 ![chrome version](screenshots/capture-chrome-version.png)
 
 ```sh
-docker cp $NAME:/screenshot.png . 
-docker container rm -f $NAME 
+docker cp $NAME:/screenshot.png .
+docker container rm -f $NAME
 ```
 ```text
 [0514/135855.716202:ERROR:gpu_process_transport_factory.cc(1016)] Lost UI shared context.
@@ -188,15 +188,15 @@ for repeated runs use the commands:
 
 ```sh
 ID=$(docker container ls -a |grep $IMAGE| head -1 | awk '{print $1}')
-docker start $ID 
+docker start $ID
 docker exec -it -w /demo $ID mvn clean test
 ```
 which returns
 ```text
 [WARNING] Tests run: 2, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 11.261 s - in example.ChromiumBrowserTest
-[INFO] 
+[INFO]
 [INFO] Results:
-[INFO] 
+[INFO]
 [WARNING] Tests run: 2, Failures: 0, Errors: 0, Skipped: 1
 ```
 
@@ -239,10 +239,10 @@ docker run -v demo -it $IMAGE sh
 ```
 ### Cleanup
 
-if there is no other stopped containers 
+if there is no other stopped containers
 ```sh
 docker container prune -f
-docker image prune -f 
+docker image prune -f
 docker volume prune -f
 ```
 
@@ -323,7 +323,7 @@ and remove all and start over
 ```sh
 docker run -it -v $PWD/demo.cdp:/demo -w /demo $IMAGE mvn clean test | tee a.log /dev/null > /dev/null
 ```
-or 
+or
 ```sh
 docker run -it -v "$PWD/demo.cdp":/demo -w /demo $IMAGE mvn clean test -Dtest=BrowserVersionTest 2>&1 | tee a.log
 ```
@@ -744,7 +744,7 @@ digraph production {
         arrowsize=0.8
     ];
 
-    W [label="W"]; // Windows machine 
+    W [label="W"]; // Windows machine
 
     subgraph cluster_L {
         label="L"; // Linux Developer machine
@@ -753,7 +753,7 @@ digraph production {
         penwidth=2;
 
         subgraph cluster_docker {
-            label=""; // Container cluster (Docker/Podman/Kubernetes) 
+            label=""; // Container cluster (Docker/Podman/Kubernetes)
             style="rounded,dashed";
             color="gray65";
 
@@ -769,11 +769,11 @@ digraph production {
     ];
 
     F -> B ; // REST
-    
+
     B -> F [ // WebSocket
         style=dashed,
         constraint=false
-    ]; 
+    ];
 
     B -> D; // JDBC
 }
@@ -806,7 +806,7 @@ digraph with_testing {
         arrowsize=0.8
     ];
 
-    W [label="W"]; // Windows machine 
+    W [label="W"]; // Windows machine
 
     subgraph cluster_L {
         label="L"; // Linux Developer machine
@@ -831,11 +831,11 @@ digraph with_testing {
     C -> F; // Web
 
     F -> B ; // REST
-    
+
     B -> F [ // WebSocket
         style=dashed,
         constraint=false
-    ]; 
+    ];
 
     B -> D; // JDBC
 
@@ -897,6 +897,7 @@ flowchart LR
 ```
 
 ```code
+
 flowchart LR
 
     W[W]
@@ -904,9 +905,9 @@ flowchart LR
     subgraph L[Linux Developer machine]
         direction LR
 
-        subgraph Docker[ ]
+        subgraph Docker[Container cluster]
             direction LR
-            C["🌐<br/>C"]
+            C["🌐Chrome C"]
             F[F]
             B[B]
             D[D]
@@ -931,9 +932,9 @@ flowchart LR
     subgraph L[Linux Developer machine]
         direction LR
 
-        subgraph Docker[ ]
+        subgraph Docker[Container cluster]
             direction LR
-            C["🌐<br/>C"]
+            C["🌐Chrome C"]
             F[F]
             B[B]
             D[D]
@@ -950,6 +951,10 @@ flowchart LR
 
     C -.->|Logs| L
 ```
+
+![Diagram3](screenshots/diagram3.png)
+
+
 #### Alternative (Old School) ASCII drawing Diagram
 
 ```code
@@ -1044,7 +1049,7 @@ one expose only artifacts such as:
   📄 HTML report
   📜 logs
   📈 metrics (Prometheus Pushgateway would fit nicely with your earlier experiments)
- 
+
 ### Advanced One Shot Health Test of Modern SPA
 
 Inspired by typical Payment Card Industry security test scenario
