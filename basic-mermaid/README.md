@@ -547,10 +547,17 @@ start-d8e4d14a.js:1 Uncaught (in promise) Error: Version check failed: 404
 [Live App](https://mermaid.live/) to learn practice
 
 
-There official __Mermaid Live Editor__  Docker image is hosted on [GitHub Container Registry](ghcr.io/mermaid-js/mermaid-live-editor/mermaid-live-editor) (__GHCR__)
+There official __Mermaid Live Editor__ Docker image is hosted on [GitHub Container Registry](ghcr.io/mermaid-js/mermaid-live-editor/mermaid-live-editor) (__GHCR__)
 ### See Also
   * [github allows including diagrams in Markdown files with Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) - also embedded in GitLab, Gitea, Joplin, Notion.
 
+```code
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+```
 ```mermaid
   graph TD;
       A-->B;
@@ -558,6 +565,16 @@ There official __Mermaid Live Editor__  Docker image is hosted on [GitHub Contai
       B-->D;
       C-->D;
 ```
+
+There is an __Mermaid diagram previewer for Visual Studio Code__ [extension](https://marketplace.visualstudio.com/items?itemName=vstirbu.vscode-mermaid-preview)
+
+
+![Preview Mermaid](screenshots/capture-vscode3.png)
+
+along with several other extensions
+
+![Available Extensions](screenshots/capture-vscode-extensions.png)
+
   * [InjelliJ Mermain Plugin](https://www.jetbrains.com/help/idea/markdown.html#diagrams) (disabled by default and requires additional steps)
   * [Generate and view Mermaid diagrams with Copilot](https://www.youtube.com/watch?v=SgPYIfxk4Ok)
   * __GitHub Copilot__ __Chat__ natively renders and previews __Mermaid__ diagrams directly within its [cohat interface](https://mermaid.ai/docs/plugins/github-copilot)
