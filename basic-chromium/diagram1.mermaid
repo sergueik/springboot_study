@@ -1,0 +1,20 @@
+flowchart LR
+
+    W[W]
+
+    subgraph L[Linux Developer machine]
+        direction LR
+
+        subgraph Docker[ ]
+            direction LR
+            F[F]
+            B[B]
+            D[D]
+        end
+    end
+
+    W -->|ssh| L
+
+    F -->|REST| B
+    B -.->|WebSocket| F
+    B -->|JDBC| D

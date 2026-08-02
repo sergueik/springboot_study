@@ -849,6 +849,110 @@ digraph with_testing {
 ```
 ![Capture Cluster with Test Agent](screenshots/diagram2.png)
 
+####  Alternative Drawing
+
+```code
+flowchart LR
+
+    W[W]
+
+    subgraph L[Linux Developer machine]
+        direction LR
+
+        subgraph Docker[ ]
+            direction LR
+            F[F]
+            B[B]
+            D[D]
+        end
+    end
+
+    W -->|ssh| L
+
+    F -->|REST| B
+    B -.->|WebSocket| F
+    B -->|JDBC| D
+```
+```mermaid
+flowchart LR
+
+    W[W]
+
+    subgraph L[Linux Developer machine]
+        direction LR
+
+        subgraph Docker[ ]
+            direction LR
+            F[F]
+            B[B]
+            D[D]
+        end
+    end
+
+    W -->|ssh| L
+
+    F -->|REST| B
+    B -.->|WebSocket| F
+    B -->|JDBC| D
+```
+
+```code
+flowchart LR
+
+    W[W]
+
+    subgraph L[Linux Developer machine]
+        direction LR
+
+        subgraph Docker[ ]
+            direction LR
+            C["🌐<br/>C"]
+            F[F]
+            B[B]
+            D[D]
+        end
+    end
+
+    W --> L
+
+    C -->|Web| F
+
+    F -->|REST| B
+    B -.->|WebSocket| F
+    B -->|JDBC| D
+
+    C -.->|Logs| L
+```
+```mermaid
+flowchart LR
+
+    W[W]
+
+    subgraph L[Linux Developer machine]
+        direction LR
+
+        subgraph Docker[ ]
+            direction LR
+            C["🌐<br/>C"]
+            F[F]
+            B[B]
+            D[D]
+        end
+    end
+
+    W --> L
+
+    C -->|Web| F
+
+    F -->|REST| B
+    B -.->|WebSocket| F
+    B -->|JDBC| D
+
+    C -.->|Logs| L
+```
+#### Alternative (Old School) ASCII drawing Diagram
+
+```code
 ```text
 +----------------------------+
 |             L              |   <-- cluster label (Linux host)
