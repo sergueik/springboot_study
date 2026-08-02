@@ -924,6 +924,9 @@ flowchart LR
 
     C -.->|Logs| L
 ```
+
+![screenshot of the error](screenshots/github-unable-render-simple-mermaid.png)
+
 ```mermaid
 flowchart LR
 
@@ -934,7 +937,7 @@ flowchart LR
 
         subgraph Docker[Container cluster]
             direction LR
-            C["🌐Chrome C"]
+            C[Chrome C]
             F[F]
             B[B]
             D[D]
