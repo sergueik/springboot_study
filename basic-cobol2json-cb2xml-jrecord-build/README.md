@@ -989,11 +989,14 @@ flowchart LR
 ```
 ### See Also
  
- * [cb2xml](https://github.com/bmTas/cb2xml)
- * [JRecord](https://github.com/bmTas/JRecord)
- * [CobolToJson](https://github.com/bmTas/CobolToJson)
- * [Sourceforge download](https://sourceforge.net/projects/coboltojson/) - __CobolToJson__ *Convert Cobol Data Files to JSON*
+  * [cb2xml](https://github.com/bmTas/cb2xml)
+  * [JRecord](https://github.com/bmTas/JRecord)
+  * [CobolToJson](https://github.com/bmTas/CobolToJson)
+  * [Sourceforge download](https://sourceforge.net/projects/coboltojson/) - __CobolToJson__ *Convert Cobol Data Files to JSON*
+  * [jrperin/cobol-copybook.jsonifier](https://github.com/jrperin/cobol-copybook.jsonifier) - an Python package allows to receive data files from mainframe in EBCDIC format and parse it into JSON based on the COBOL COPYBOOK schema
+  * [Cobol-REKT (Cobol Reverse Engineering KiT)](https://github.com/avishek-sen-gupta/cobol-rekt) - Java based toolkit for reverse engineering legacy COBOL code offering capabilities ranging from building flowcharts of the underlying code to translating COBOL into a hybrid Intermediate Representation (graph- and instruction- based) potentially suitable for transpilation to other languages. With release directory (10 releases), in adtive development
 
 ---
+
 ### Author
 [Serguei Kouzmine](mailto:kouzmine_serguei@yahoo.com)
