@@ -1,0 +1,1048 @@
+"""
+Scraping Tools Module for MCP Server
+
+This module contains all scraping-related MCP tool implementations:
+- estimate_pages_tool: Estimate page count before scraping
+- scrape_docs_tool: Scrape documentation (legacy or unified)
+- scrape_github_tool: Scrape GitHub repositories
+- scrape_pdf_tool: Scrape PDF documentation
+- scrape_codebase_tool: Analyze local codebase and extract code knowledge
+- scrape_generic_tool: Generic scraper for new source types (jupyter, html,
+  openapi, asciidoc, pptx, word, confluence, notion, rss, manpage, chat)
+
+Extracted from server.py for better modularity and organization.
+"""
+
+import io
+import json
+import os
+import tempfile
+from pathlib import Path
+
+# MCP types - with graceful fallback for testing
+from skill_seekers.mcp.tools._common import TextContent, capture_cli_logs, run_cli_tool
+
+
+def _run_converter(converter, progress_msg: str) -> list:
+    """Run a converter in-process with log capture.
+
+    Args:
+        converter: An initialized SkillConverter instance.
+        progress_msg: Progress message to prepend to output.
+
+    Returns:
+        List[TextContent] with success/error message.
+    """
+    log_capture = io.StringIO()
+    try:
+        with capture_cli_logs(log_capture):
+            result = converter.run()
+    except Exception as exc:
+        captured = log_capture.getvalue()
+        return [
+            TextContent(
+                type="text",
+                text=f"{progress_msg}{captured}\n\n❌ Converter raised an exception:\n{exc}",
+            )
+        ]
+
+    captured = log_capture.getvalue()
+    output = progress_msg + captured
+
+    if result == 0:
+        return [TextContent(type="text", text=output)]
+    else:
+        return [
+            TextContent(
+                type="text",
+                text=f"{output}\n\n❌ Converter returned non-zero exit code ({result})",
+            )
+        ]
+
+
+async def estimate_pages_tool(args: dict) -> list[TextContent]:
+    """
+    Estimate page count from a config file.
+
+    Performs fast preview without downloading content to estimate
+    how many pages will be scraped.
+
+    Args:
+        args: Dictionary containing:
+            - config_path (str): Path to config JSON file
+            - max_discovery (int, optional): Maximum pages to discover (default: 1000)
+            - unlimited (bool, optional): Remove discovery limit (default: False)
+
+    Returns:
+        List[TextContent]: Tool execution results
+
+    Note:
+        Runs estimate_pages.main() in-process (Phase 5d). The old subprocess
+        timeout no longer applies — the "Estimated time" line in the output is
+        an advisory estimate only (same precedent as converter scrapes via
+        _run_converter, which run unbounded).
+    """
+    config_path = args["config_path"]
+    max_discovery = args.get("max_discovery", 1000)
+    unlimited = args.get("unlimited", False)
+
+    # Handle unlimited mode. The timeout is advisory-only (output text); the
+    # in-process call is not bounded by it.
+    if unlimited or max_discovery == -1:
+        max_discovery = -1
+        timeout = 1800  # 30 minutes for unlimited discovery
+    else:
+        # Estimate: 0.5s per page discovered
+        timeout = max(300, max_discovery // 2)  # Minimum 5 minutes
+
+    argv = [config_path, "--max-discovery", str(max_discovery)]
+
+    progress_msg = "🔄 Estimating page count...\n"
+    progress_msg += f"⏱️ Estimated time: ~{timeout // 60} minutes (advisory — not enforced)\n\n"
+
+    from skill_seekers.cli import estimate_pages
+
+    return run_cli_tool(estimate_pages.main, argv, progress_msg)
+
+
+async def scrape_docs_tool(args: dict) -> list[TextContent]:
+    """
+    Scrape documentation and build skill.
+
+    Auto-detects unified vs legacy format and routes to appropriate scraper.
+    Supports both single-source (legacy) and unified multi-source configs.
+    Creates SKILL.md and reference files.
+
+    Args:
+        args: Dictionary containing:
+            - config_path (str): Path to config JSON file
+            - unlimited (bool, optional): Remove page limit (default: False)
+            - enhance_local (bool, optional): Open terminal for local enhancement (default: False)
+            - skip_scrape (bool, optional): Skip scraping, use cached data (default: False).
+              Legacy configs rebuild from each converter's cached extraction file;
+              unified configs rebuild from .skillseeker-cache per-source data.
+            - dry_run (bool, optional): Preview without saving (default: False)
+            - merge_mode (str, optional): Override merge mode for unified configs
+
+    Returns:
+        List[TextContent]: Tool execution results
+    """
+    config_path = args["config_path"]
+    unlimited = args.get("unlimited", False)
+    dry_run = args.get("dry_run", False)
+    skip_scrape = args.get("skip_scrape", False)
+    merge_mode = args.get("merge_mode")
+
+    # Load config to detect format
+    with open(config_path) as f:
+        config = json.load(f)
+
+    # Detect if unified format (has 'sources' array)
+    is_unified = "sources" in config and isinstance(config["sources"], list)
+
+    # Handle unlimited mode by modifying config temporarily
+    if unlimited:
+        # Set max_pages to None (unlimited)
+        if is_unified:
+            # For unified configs, set max_pages on documentation sources
+            for source in config.get("sources", []):
+                if source.get("type") == "documentation":
+                    source["max_pages"] = None
+        else:
+            # For legacy configs
+            config["max_pages"] = None
+
+        # Create a UNIQUE temporary config file. The previous
+        # config_path.replace(".json", "_unlimited_temp.json") collided when two
+        # unlimited scrapes of the same config ran concurrently, and rewrote any
+        # ".json" substring elsewhere in the path.
+        fd, temp_config_path = tempfile.mkstemp(suffix="_unlimited.json", prefix="skillseeker_")
+        with os.fdopen(fd, "w") as f:
+            json.dump(config, f, indent=2)
+
+        config_to_use = temp_config_path
+    else:
+        config_to_use = config_path
+
+    # Build progress message
+    if is_unified:
+        progress_msg = "🔄 Starting unified multi-source scraping...\n"
+        progress_msg += "📦 Config format: Unified (multiple sources)\n"
+    else:
+        progress_msg = "🔄 Starting scraping process...\n"
+        progress_msg += "📦 Config format: Legacy (single source)\n"
+
+    progress_msg += "📝 Progress will be shown below:\n\n"
+
+    # Run converter in-process
+    try:
+        from skill_seekers.cli.skill_converter import get_converter
+
+        if is_unified:
+            # UnifiedScraper consumes the factory-shaped dict (config_path +
+            # merge_mode/dry_run overrides). dry_run must go through the
+            # constructor: UnifiedScraper.run() previews-and-returns and
+            # __init__ skips directory creation.
+            # skip_scrape is honored by UnifiedScraper.run(), which reloads
+            # cached per-source data from .skillseeker-cache before building.
+            converter = get_converter(
+                "config",
+                {"config_path": config_to_use, "merge_mode": merge_mode, "dry_run": dry_run},
+            )
+            converter.skip_scrape = skip_scrape
+        else:
+            # For legacy format, detect type from config keys
+            with open(config_to_use) as f:
+                config_to_pass = json.load(f)
+
+            # Detect source type from config content
+            if "base_url" in config_to_pass:
+                source_type = "web"
+            elif "repo" in config_to_pass:
+                source_type = "github"
+            elif "pdf_path" in config_to_pass:
+                source_type = "pdf"
+            elif "directory" in config_to_pass:
+                source_type = "local"
+            else:
+                source_type = "web"  # default fallback
+
+            # Inject dry_run into the config BEFORE construction — converters
+            # resolve it (and skip directory creation) in __init__; setting the
+            # attribute afterwards would be too late for the mkdir guard.
+            config_to_pass["dry_run"] = dry_run
+            converter = get_converter(source_type, config_to_pass)
+            converter.skip_scrape = skip_scrape
+
+        result = _run_converter(converter, progress_msg)
+    finally:
+        # Clean up temporary config
+        if unlimited and Path(config_to_use).exists():
+            Path(config_to_use).unlink()
+
+    return result
+
+
+async def scrape_pdf_tool(args: dict) -> list[TextContent]:
+    """
+    Scrape PDF documentation and build Claude skill.
+
+    Extracts text, code, and images from PDF files and builds
+    a skill package with organized references.
+
+    Args:
+        args: Dictionary containing:
+            - config_path (str, optional): Path to PDF config JSON file
+            - pdf_path (str, optional): Direct PDF path (alternative to config_path)
+            - name (str, optional): Skill name (required with pdf_path)
+            - description (str, optional): Skill description
+            - from_json (str, optional): Build from extracted JSON file
+
+    Returns:
+        List[TextContent]: Tool execution results
+    """
+    config_path = args.get("config_path")
+    pdf_path = args.get("pdf_path")
+    name = args.get("name")
+    description = args.get("description")
+    from_json = args.get("from_json")
+
+    progress_msg = "📄 Scraping PDF documentation...\n\n"
+
+    # Mode 1: Config file
+    if config_path:
+        with open(config_path) as f:
+            pdf_config = json.load(f)
+
+    # Mode 2: Direct PDF
+    elif pdf_path and name:
+        pdf_config = {"name": name, "pdf_path": pdf_path}
+        if description:
+            pdf_config["description"] = description
+
+    # Mode 3: From JSON — use PDFToSkillConverter.load_extracted_data
+    elif from_json:
+        from skill_seekers.cli.pdf_scraper import PDFToSkillConverter
+
+        # Build a minimal config; name is derived from the JSON filename
+        json_name = Path(from_json).stem.replace("_extracted", "")
+        pdf_config = {"name": json_name}
+        converter = PDFToSkillConverter(pdf_config)
+        converter.load_extracted_data(from_json)
+        converter.build_skill()
+        return [
+            TextContent(
+                type="text",
+                text=f"{progress_msg}✅ Skill built from extracted JSON: {from_json}",
+            )
+        ]
+
+    else:
+        return [
+            TextContent(
+                type="text",
+                text="❌ Error: Must specify --config, --pdf + --name, or --from-json",
+            )
+        ]
+
+    from skill_seekers.cli.skill_converter import get_converter
+
+    converter = get_converter("pdf", pdf_config)
+    return _run_converter(converter, progress_msg)
+
+
+async def scrape_video_tool(args: dict) -> list[TextContent]:
+    """
+    Scrape video content (YouTube, local files) and build Claude skill.
+
+    Extracts transcripts, metadata, and optionally visual content from videos
+    to create skills.
+
+    Args:
+        args: Dictionary containing:
+            - url (str, optional): Video URL (YouTube, Vimeo)
+            - video_file (str, optional): Local video file path
+            - playlist (str, optional): Playlist URL
+            - name (str, optional): Skill name
+            - description (str, optional): Skill description
+            - languages (str, optional): Language preferences (comma-separated)
+            - from_json (str, optional): Build from extracted JSON file
+            - visual (bool, optional): Enable visual frame extraction (default: False)
+            - whisper_model (str, optional): Whisper model size (default: base)
+            - visual_interval (float, optional): Seconds between frame captures (default: 5.0)
+            - visual_min_gap (float, optional): Minimum seconds between kept frames (default: 2.0)
+            - visual_similarity (float, optional): Similarity threshold to skip duplicate frames (default: 0.95)
+            - vision_ocr (bool, optional): Use vision model for OCR on frames (default: False)
+            - start_time (str, optional): Start time for extraction (seconds, MM:SS, or HH:MM:SS)
+            - end_time (str, optional): End time for extraction (seconds, MM:SS, or HH:MM:SS)
+            - setup (bool, optional): Auto-detect GPU and install visual extraction deps
+
+    Returns:
+        List[TextContent]: Tool execution results
+    """
+    # Handle --setup early exit
+    if args.get("setup", False):
+        from skill_seekers.cli.video_setup import run_setup
+
+        rc = run_setup(interactive=False)
+        msg = "Setup completed successfully." if rc == 0 else "Setup failed. Check logs."
+        return [TextContent(type="text", text=msg)]
+
+    url = args.get("url")
+    video_file = args.get("video_file")
+    playlist = args.get("playlist")
+    name = args.get("name")
+    description = args.get("description")
+    languages = args.get("languages")
+    from_json = args.get("from_json")
+    visual = args.get("visual", False)
+    whisper_model = args.get("whisper_model")
+    visual_interval = args.get("visual_interval")
+    visual_min_gap = args.get("visual_min_gap")
+    visual_similarity = args.get("visual_similarity")
+    vision_ocr = args.get("vision_ocr", False)
+    start_time = args.get("start_time")
+    end_time = args.get("end_time")
+
+    # Build config dict for the converter
+    video_config: dict = {}
+
+    if from_json:
+        video_config["from_json"] = from_json
+        video_config["name"] = name or Path(from_json).stem.replace("_video_extracted", "")
+    elif url:
+        video_config["url"] = url
+        if not name:
+            return [TextContent(type="text", text="❌ Error: --name is required with --url")]
+        video_config["name"] = name
+    elif video_file:
+        video_config["video_file"] = video_file
+        video_config["name"] = name or Path(video_file).stem
+    elif playlist:
+        video_config["playlist"] = playlist
+        video_config["name"] = name or "playlist"
+    else:
+        return [
+            TextContent(
+                type="text",
+                text="❌ Error: Must specify --url, --video-file, --playlist, or --from-json",
+            )
+        ]
+
+    if description:
+        video_config["description"] = description
+    if languages:
+        video_config["languages"] = languages
+    video_config["visual"] = visual
+    if whisper_model:
+        video_config["whisper_model"] = whisper_model
+    if visual_interval is not None:
+        video_config["visual_interval"] = visual_interval
+    if visual_min_gap is not None:
+        video_config["visual_min_gap"] = visual_min_gap
+    if visual_similarity is not None:
+        video_config["visual_similarity"] = visual_similarity
+    video_config["vision_ocr"] = vision_ocr
+    if start_time:
+        video_config["start_time"] = start_time
+    if end_time:
+        video_config["end_time"] = end_time
+
+    progress_msg = "🎬 Scraping video content...\n\n"
+
+    from skill_seekers.cli.skill_converter import get_converter
+
+    converter = get_converter("video", video_config)
+    return _run_converter(converter, progress_msg)
+
+
+async def scrape_github_tool(args: dict) -> list[TextContent]:
+    """
+    Scrape GitHub repository and build Claude skill.
+
+    Extracts README, Issues, Changelog, Releases, and code structure
+    from GitHub repositories to create comprehensive skills.
+
+    Args:
+        args: Dictionary containing:
+            - repo (str, optional): GitHub repository (owner/repo)
+            - config_path (str, optional): Path to GitHub config JSON file
+            - name (str, optional): Skill name (default: repo name)
+            - description (str, optional): Skill description
+            - token (str, optional): GitHub personal access token
+            - no_issues (bool, optional): Skip GitHub issues extraction (default: False)
+            - no_changelog (bool, optional): Skip CHANGELOG extraction (default: False)
+            - no_releases (bool, optional): Skip releases extraction (default: False)
+            - max_issues (int, optional): Maximum issues to fetch (default: 100)
+            - scrape_only (bool, optional): Only scrape, don't build skill (default: False)
+
+    Returns:
+        List[TextContent]: Tool execution results
+    """
+    repo = args.get("repo")
+    config_path = args.get("config_path")
+    name = args.get("name")
+    description = args.get("description")
+    token = args.get("token")
+    no_issues = args.get("no_issues", False)
+    no_changelog = args.get("no_changelog", False)
+    no_releases = args.get("no_releases", False)
+    max_issues = args.get("max_issues", 100)
+    scrape_only = args.get("scrape_only", False)
+
+    # Build config dict for the converter
+    if config_path:
+        with open(config_path) as f:
+            github_config = json.load(f)
+    elif repo:
+        github_config: dict = {"repo": repo}
+        if name:
+            github_config["name"] = name
+        if description:
+            github_config["description"] = description
+        if token:
+            github_config["token"] = token
+        if no_issues:
+            github_config["no_issues"] = True
+        if no_changelog:
+            github_config["no_changelog"] = True
+        if no_releases:
+            github_config["no_releases"] = True
+        if max_issues != 100:
+            github_config["max_issues"] = max_issues
+        if scrape_only:
+            github_config["scrape_only"] = True
+    else:
+        return [TextContent(type="text", text="❌ Error: Must specify --repo or --config")]
+
+    progress_msg = "🐙 Scraping GitHub repository...\n\n"
+
+    from skill_seekers.cli.skill_converter import get_converter
+
+    converter = get_converter("github", github_config)
+    return _run_converter(converter, progress_msg)
+
+
+async def scrape_codebase_tool(args: dict) -> list[TextContent]:
+    """
+    Analyze local codebase and extract code knowledge.
+
+    Walks directory tree, analyzes code files, extracts signatures,
+    docstrings, and generates API reference documentation, dependency graphs,
+    design patterns, test examples, and how-to guides.
+
+    All features are ON by default. Use skip_* parameters to disable specific features.
+
+    Args:
+        args: Dictionary containing:
+            - directory (str): Directory to analyze
+            - output (str, optional): Output directory for results (default: output/codebase/)
+            - depth (str, optional): Analysis depth - surface, deep, full (default: deep)
+            - languages (str, optional): Comma-separated languages (e.g., "Python,JavaScript,C++")
+            - file_patterns (str, optional): Comma-separated file patterns (e.g., "*.py,src/**/*.js")
+            - enhance_level (int, optional): AI enhancement level 0-3 (default: 0)
+                - 0: No AI enhancement
+                - 1: SKILL.md enhancement only
+                - 2: SKILL.md + Architecture + Config enhancement
+                - 3: Full enhancement (patterns, tests, config, architecture, SKILL.md)
+            - skip_api_reference (bool, optional): Skip API reference generation (default: False)
+            - skip_dependency_graph (bool, optional): Skip dependency graph (default: False)
+            - skip_patterns (bool, optional): Skip design pattern detection (default: False)
+            - skip_test_examples (bool, optional): Skip test example extraction (default: False)
+            - skip_how_to_guides (bool, optional): Skip how-to guide generation (default: False)
+            - skip_config_patterns (bool, optional): Skip config pattern extraction (default: False)
+            - skip_docs (bool, optional): Skip project documentation extraction (default: False)
+
+    Returns:
+        List[TextContent]: Tool execution results
+
+    Example:
+        scrape_codebase(
+            directory="/path/to/repo",
+            depth="deep",
+            enhance_level=1
+        )
+        scrape_codebase(
+            directory="/path/to/repo",
+            enhance_level=2,
+            skip_patterns=True
+        )
+    """
+    directory = args.get("directory")
+    if not directory:
+        return [TextContent(type="text", text="❌ Error: directory parameter is required")]
+
+    output_dir = args.get("output", "output/codebase/")
+    depth = args.get("depth", "deep")
+    languages = args.get("languages", "")
+    file_patterns = args.get("file_patterns", "")
+    enhance_level = args.get("enhance_level", 0)
+
+    # Skip flags (features are ON by default)
+    skip_api_reference = args.get("skip_api_reference", False)
+    skip_dependency_graph = args.get("skip_dependency_graph", False)
+    skip_patterns = args.get("skip_patterns", False)
+    skip_test_examples = args.get("skip_test_examples", False)
+    skip_how_to_guides = args.get("skip_how_to_guides", False)
+    skip_config_patterns = args.get("skip_config_patterns", False)
+    skip_docs = args.get("skip_docs", False)
+
+    # Derive a name from the directory for the converter
+    dir_name = Path(directory).resolve().name or "codebase"
+
+    # Build config dict for CodebaseAnalyzer
+    codebase_config: dict = {
+        "name": dir_name,
+        "directory": directory,
+        "output_dir": output_dir,
+        "depth": depth,
+        "enhance_level": enhance_level,
+        "build_api_reference": not skip_api_reference,
+        "build_dependency_graph": not skip_dependency_graph,
+        "detect_patterns": not skip_patterns,
+        "extract_test_examples": not skip_test_examples,
+        "build_how_to_guides": not skip_how_to_guides,
+        "extract_config_patterns": not skip_config_patterns,
+        "extract_docs": not skip_docs,
+    }
+    if languages:
+        codebase_config["languages"] = languages
+    if file_patterns:
+        codebase_config["file_patterns"] = file_patterns
+
+    level_names = {0: "off", 1: "SKILL.md only", 2: "standard", 3: "full"}
+    progress_msg = "🔍 Analyzing local codebase...\n"
+    progress_msg += f"📁 Directory: {directory}\n"
+    progress_msg += f"📊 Depth: {depth}\n"
+    if enhance_level > 0:
+        progress_msg += f"🤖 AI Enhancement: Level {enhance_level} ({level_names.get(enhance_level, 'unknown')})\n"
+    progress_msg += "\n"
+
+    from skill_seekers.cli.skill_converter import get_converter
+
+    converter = get_converter("local", codebase_config)
+    return _run_converter(converter, progress_msg)
+
+
+async def detect_patterns_tool(args: dict) -> list[TextContent]:
+    """
+    Detect design patterns in source code.
+
+    Analyzes source files or directories to detect common design patterns
+    (Singleton, Factory, Observer, Strategy, Decorator, Builder, Adapter,
+    Command, Template Method, Chain of Responsibility).
+
+    Supports 9 languages: Python, JavaScript, TypeScript, C++, C, C#,
+    Go, Rust, Java, Ruby, PHP.
+
+    Args:
+        args: Dictionary containing:
+            - file (str, optional): Single file to analyze
+            - directory (str, optional): Directory to analyze (analyzes all source files)
+            - output (str, optional): Output directory for JSON results
+            - depth (str, optional): Detection depth - surface, deep, full (default: deep)
+            - json (bool, optional): Output JSON format (default: False)
+
+    Returns:
+        List[TextContent]: Pattern detection results
+
+    Note:
+        Runs pattern_recognizer.main() in-process (Phase 5d). The old
+        subprocess timeout no longer applies — the "Estimated time" line in
+        the output is advisory only.
+
+    Example:
+        detect_patterns(file="src/database.py", depth="deep")
+        detect_patterns(directory="src/", output="patterns/", json=True)
+    """
+    file_path = args.get("file")
+    directory = args.get("directory")
+
+    if not file_path and not directory:
+        return [
+            TextContent(
+                type="text", text="❌ Error: Must specify either 'file' or 'directory' parameter"
+            )
+        ]
+
+    output = args.get("output", "")
+    depth = args.get("depth", "deep")
+    json_output = args.get("json", False)
+
+    argv = []
+    if file_path:
+        argv.extend(["--file", file_path])
+    if directory:
+        argv.extend(["--directory", directory])
+    if output:
+        argv.extend(["--output", output])
+    if depth:
+        argv.extend(["--depth", depth])
+    if json_output:
+        argv.append("--json")
+
+    timeout = 300  # Advisory only (output text); the in-process call is unbounded
+
+    progress_msg = "🔍 Detecting design patterns...\n"
+    if file_path:
+        progress_msg += f"📄 File: {file_path}\n"
+    if directory:
+        progress_msg += f"📁 Directory: {directory}\n"
+    progress_msg += f"🎯 Detection depth: {depth}\n"
+    progress_msg += f"⏱️ Estimated time: ~{timeout // 60} minutes (advisory — not enforced)\n\n"
+
+    # pattern_recognizer.main() takes no args parameter and parses sys.argv
+    # through its own parser — run_cli_main patches sys.argv for the call.
+    from skill_seekers.cli import pattern_recognizer
+
+    return run_cli_tool(pattern_recognizer.main, argv, progress_msg)
+
+
+async def extract_test_examples_tool(args: dict) -> list[TextContent]:
+    """
+    Extract usage examples from test files.
+
+    Analyzes test files to extract real API usage patterns including:
+    - Object instantiation with real parameters
+    - Method calls with expected behaviors
+    - Configuration examples
+    - Setup patterns from fixtures/setUp()
+    - Multi-step workflows from integration tests
+
+    Supports 9 languages: Python (AST-based deep analysis), JavaScript,
+    TypeScript, Go, Rust, Java, C#, PHP, Ruby (regex-based).
+
+    Args:
+        args: Dictionary containing:
+            - file (str, optional): Single test file to analyze
+            - directory (str, optional): Directory containing test files
+            - language (str, optional): Filter by language (python, javascript, etc.)
+            - min_confidence (float, optional): Minimum confidence threshold 0.0-1.0 (default: 0.5)
+            - max_per_file (int, optional): Maximum examples per file (default: 10)
+            - json (bool, optional): Output JSON format (default: False)
+            - markdown (bool, optional): Output Markdown format (default: False)
+
+    Returns:
+        List[TextContent]: Extracted test examples
+
+    Note:
+        Runs test_example_extractor.main() in-process (Phase 5d). The old
+        subprocess timeout no longer applies — the "Estimated time" line in
+        the output is advisory only.
+
+    Example:
+        extract_test_examples(directory="tests/", language="python")
+        extract_test_examples(file="tests/test_scraper.py", json=True)
+    """
+    file_path = args.get("file")
+    directory = args.get("directory")
+
+    if not file_path and not directory:
+        return [
+            TextContent(
+                type="text", text="❌ Error: Must specify either 'file' or 'directory' parameter"
+            )
+        ]
+
+    language = args.get("language", "")
+    min_confidence = args.get("min_confidence", 0.5)
+    max_per_file = args.get("max_per_file", 10)
+    json_output = args.get("json", False)
+    markdown_output = args.get("markdown", False)
+
+    argv = []
+    if directory:
+        argv.append(directory)
+    if file_path:
+        argv.extend(["--file", file_path])
+    if language:
+        argv.extend(["--language", language])
+    if min_confidence:
+        argv.extend(["--min-confidence", str(min_confidence)])
+    if max_per_file:
+        argv.extend(["--max-per-file", str(max_per_file)])
+    if json_output:
+        argv.append("--json")
+    if markdown_output:
+        argv.append("--markdown")
+
+    timeout = 180  # Advisory only (output text); the in-process call is unbounded
+
+    progress_msg = "🧪 Extracting usage examples from test files...\n"
+    if file_path:
+        progress_msg += f"📄 File: {file_path}\n"
+    if directory:
+        progress_msg += f"📁 Directory: {directory}\n"
+    if language:
+        progress_msg += f"🔤 Language: {language}\n"
+    progress_msg += f"🎯 Min confidence: {min_confidence}\n"
+    progress_msg += f"📊 Max per file: {max_per_file}\n"
+    progress_msg += f"⏱️ Estimated time: ~{timeout // 60} minutes (advisory — not enforced)\n\n"
+
+    from skill_seekers.cli import test_example_extractor
+
+    return run_cli_tool(test_example_extractor.main, argv, progress_msg)
+
+
+async def build_how_to_guides_tool(args: dict) -> list[TextContent]:
+    """
+    Build how-to guides from workflow test examples.
+
+    Transforms workflow examples extracted from test files into step-by-step
+    educational guides. Automatically groups related workflows, extracts steps,
+    and generates comprehensive markdown guides.
+
+    Features:
+    - Python AST-based step extraction (heuristic for other languages)
+    - 4 grouping strategies: ai-tutorial-group, file-path, test-name, complexity
+    - Detects prerequisites, setup code, and verification points
+    - Generates troubleshooting tips and next steps
+    - Creates index with difficulty levels
+
+    Args:
+        args: Dictionary containing:
+            - input (str): Path to test_examples.json from extract_test_examples
+            - output (str, optional): Output directory for guides (default: output/codebase/tutorials)
+            - group_by (str, optional): Grouping strategy - ai-tutorial-group, file-path, test-name, complexity
+            - no_ai (bool, optional): Disable AI enhancement for grouping (default: False)
+            - json_output (bool, optional): Output JSON format alongside markdown (default: False)
+
+    Returns:
+        List[TextContent]: Guide building results
+
+    Note:
+        Runs how_to_guide_builder.main() in-process (Phase 5d). The old
+        subprocess timeout no longer applies — the "Estimated time" line in
+        the output is advisory only.
+
+    Example:
+        build_how_to_guides(
+            input="output/codebase/test_examples/test_examples.json",
+            group_by="ai-tutorial-group",
+            output="output/codebase/tutorials"
+        )
+    """
+    input_file = args.get("input")
+    if not input_file:
+        return [
+            TextContent(
+                type="text",
+                text="❌ Error: input parameter is required (path to test_examples.json)",
+            )
+        ]
+
+    output = args.get("output", "output/codebase/tutorials")
+    group_by = args.get("group_by", "ai-tutorial-group")
+    no_ai = args.get("no_ai", False)
+    json_output = args.get("json_output", False)
+
+    argv = [input_file]
+    if output:
+        argv.extend(["--output", output])
+    if group_by:
+        argv.extend(["--group-by", group_by])
+    if no_ai:
+        argv.append("--no-ai")
+    if json_output:
+        argv.append("--json-output")
+
+    timeout = 180  # Advisory only (output text); the in-process call is unbounded
+
+    progress_msg = "📚 Building how-to guides from workflow examples...\n"
+    progress_msg += f"📄 Input: {input_file}\n"
+    progress_msg += f"📁 Output: {output}\n"
+    progress_msg += f"🔀 Grouping: {group_by}\n"
+    if no_ai:
+        progress_msg += "🚫 AI enhancement disabled\n"
+    progress_msg += f"⏱️ Estimated time: ~{timeout // 60} minutes (advisory — not enforced)\n\n"
+
+    # how_to_guide_builder.main() takes no args parameter and parses sys.argv
+    # through its own parser — run_cli_main patches sys.argv for the call.
+    from skill_seekers.cli import how_to_guide_builder
+
+    return run_cli_tool(how_to_guide_builder.main, argv, progress_msg)
+
+
+async def extract_config_patterns_tool(args: dict) -> list[TextContent]:
+    """
+    Extract configuration patterns from config files (C3.4).
+
+    Analyzes configuration files in the codebase to extract settings,
+    detect common patterns (database, API, logging, cache, etc.), and
+    generate comprehensive documentation.
+
+    Supports 9 config formats: JSON, YAML, TOML, ENV, INI, Python modules,
+    JavaScript/TypeScript configs, Dockerfile, Docker Compose.
+
+    Detects 7 common patterns:
+    - Database configuration (host, port, credentials)
+    - API configuration (endpoints, keys, timeouts)
+    - Logging configuration (level, format, handlers)
+    - Cache configuration (backend, TTL, keys)
+    - Email configuration (SMTP, credentials)
+    - Authentication configuration (providers, secrets)
+    - Server configuration (host, port, workers)
+
+    Args:
+        args: Dictionary containing:
+            - directory (str): Directory to analyze
+            - output (str, optional): Output directory (default: output/codebase/config_patterns)
+            - max_files (int, optional): Maximum config files to process (default: 100)
+            - enhance (bool, optional): Enable AI enhancement - API mode (default: False, requires ANTHROPIC_API_KEY)
+            - enhance_local (bool, optional): Enable AI enhancement - LOCAL mode (default: False, uses Claude Code CLI)
+            - ai_mode (str, optional): AI mode - auto, api, local, none (default: none)
+            - json (bool, optional): Output JSON format (default: True)
+            - markdown (bool, optional): Output Markdown format (default: True)
+
+    Returns:
+        List[TextContent]: Config extraction results with optional AI enhancements
+
+    Note:
+        Runs config_extractor.main() in-process (Phase 5d). The old subprocess
+        timeout no longer applies — the "Estimated time" line in the output is
+        advisory only.
+
+        The 'enhance'/'enhance_local' booleans are mapped to '--ai-mode api' /
+        '--ai-mode local': config_extractor parses --enhance/--enhance-local
+        but never reads them (enhancement is driven solely by --ai-mode). An
+        explicit 'ai_mode' takes precedence over the booleans.
+
+        The 'json'/'markdown' parameters are accepted for backward
+        compatibility but ignored: config_extractor has no such flags (the old
+        subprocess call passed --directory/--json/--markdown, which its parser
+        REJECTED, so this tool always failed with an argparse error before
+        Phase 5d). Results are always written as JSON to the output file.
+
+    Example:
+        extract_config_patterns(directory=".", output="output/configs")
+        extract_config_patterns(directory="/path/to/repo", max_files=50, enhance_local=True)
+    """
+    directory = args.get("directory")
+    if not directory:
+        return [TextContent(type="text", text="❌ Error: directory parameter is required")]
+
+    output = args.get("output", "output/codebase/config_patterns")
+    max_files = args.get("max_files", 100)
+    enhance = args.get("enhance", False)
+    enhance_local = args.get("enhance_local", False)
+    ai_mode = args.get("ai_mode", "none")
+
+    # config_extractor parses --enhance/--enhance-local but never reads them —
+    # enhancement is driven solely by --ai-mode (choices: auto/api/local/none).
+    # Map the booleans onto --ai-mode so they actually take effect; an explicit
+    # ai_mode wins over the booleans.
+    if not ai_mode or ai_mode == "none":
+        if enhance:
+            ai_mode = "api"
+        elif enhance_local:
+            ai_mode = "local"
+        else:
+            ai_mode = "none"
+
+    # Map to config_extractor's REAL flags: positional directory, --output
+    # (a JSON *file* path — the tool's `output` parameter is documented as a
+    # directory, so map dir → <dir>/config_patterns.json), --max-files,
+    # --ai-mode.
+    argv = [directory]
+    if output:
+        output_path = Path(output)
+        if output_path.suffix != ".json":
+            output_path = output_path / "config_patterns.json"
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        argv.extend(["--output", str(output_path)])
+    if max_files:
+        argv.extend(["--max-files", str(max_files)])
+    if ai_mode != "none":
+        argv.extend(["--ai-mode", ai_mode])
+
+    # Advisory only (output text); the in-process call is unbounded
+    timeout = 180  # 3 minutes base
+    if ai_mode != "none":
+        timeout = 360  # 6 minutes with AI enhancement
+
+    progress_msg = "⚙️ Extracting configuration patterns...\n"
+    progress_msg += f"📁 Directory: {directory}\n"
+    progress_msg += f"📄 Max files: {max_files}\n"
+    if ai_mode != "none":
+        progress_msg += f"🤖 AI enhancement: {ai_mode}\n"
+    progress_msg += f"⏱️ Estimated time: ~{timeout // 60} minutes (advisory — not enforced)\n\n"
+
+    # config_extractor.main() takes no args parameter and parses sys.argv
+    # through its own parser — run_cli_main patches sys.argv for the call.
+    from skill_seekers.cli import config_extractor
+
+    return run_cli_tool(config_extractor.main, argv, progress_msg)
+
+
+# Valid source types for the generic scraper
+GENERIC_SOURCE_TYPES = (
+    "jupyter",
+    "html",
+    "openapi",
+    "asciidoc",
+    "pptx",
+    "word",
+    "confluence",
+    "notion",
+    "rss",
+    "manpage",
+    "chat",
+)
+
+# Mapping from source type to the CLI flag used for the primary input argument.
+# URL-based types use --url; file/path-based types use --path.
+_URL_BASED_TYPES = {"confluence", "notion", "rss"}
+
+# Friendly emoji labels per source type
+_SOURCE_EMOJIS = {
+    "jupyter": "📓",
+    "html": "🌐",
+    "openapi": "📡",
+    "asciidoc": "📄",
+    "pptx": "📊",
+    "word": "📃",
+    "confluence": "🏢",
+    "notion": "📝",
+    "rss": "📰",
+    "manpage": "📖",
+    "chat": "💬",
+}
+
+
+async def scrape_generic_tool(args: dict) -> list[TextContent]:
+    """
+    Generic scraper for new source types.
+
+    Handles all 10 new source types by building the appropriate subprocess
+    command and delegating to the corresponding CLI scraper module.
+
+    Supported source types: jupyter, html, openapi, asciidoc, pptx,
+    confluence, notion, rss, manpage, chat.
+
+    Args:
+        args: Dictionary containing:
+            - source_type (str): One of the supported source types
+            - path (str, optional): File or directory path (for file-based sources)
+            - url (str, optional): URL (for URL-based sources like confluence, notion, rss)
+            - name (str): Skill name for the output
+
+    Returns:
+        List[TextContent]: Tool execution results
+    """
+    source_type = args.get("source_type", "")
+    path = args.get("path")
+    url = args.get("url")
+    name = args.get("name")
+
+    # Validate source_type
+    if source_type not in GENERIC_SOURCE_TYPES:
+        return [
+            TextContent(
+                type="text",
+                text=(
+                    f"❌ Error: Unknown source_type '{source_type}'. "
+                    f"Must be one of: {', '.join(GENERIC_SOURCE_TYPES)}"
+                ),
+            )
+        ]
+
+    # Validate that we have either path or url
+    if not path and not url:
+        return [
+            TextContent(
+                type="text",
+                text="❌ Error: Must specify either 'path' (file/directory) or 'url'",
+            )
+        ]
+
+    if not name:
+        return [
+            TextContent(
+                type="text",
+                text="❌ Error: 'name' parameter is required",
+            )
+        ]
+
+    # Build config dict for the converter — map MCP args to the keys
+    # each converter expects in its __init__.
+    _CONFIG_KEY: dict[str, str] = {
+        "jupyter": "notebook_path",
+        "html": "html_path",
+        "openapi": "spec_path",
+        "asciidoc": "asciidoc_path",
+        "pptx": "pptx_path",
+        "word": "docx_path",
+        "manpage": "man_path",
+        "confluence": "export_path",
+        "notion": "export_path",
+        "rss": "feed_path",
+        "chat": "export_path",
+    }
+    _URL_CONFIG_KEY: dict[str, str] = {
+        "confluence": "base_url",
+        "notion": "page_id",
+        "rss": "feed_url",
+        "openapi": "spec_url",
+    }
+
+    config: dict = {"name": name}
+
+    if source_type in _URL_BASED_TYPES and url:
+        config[_URL_CONFIG_KEY.get(source_type, "url")] = url
+    elif path:
+        config[_CONFIG_KEY.get(source_type, "path")] = path
+    elif url:
+        config[_URL_CONFIG_KEY.get(source_type, "url")] = url
+
+    emoji = _SOURCE_EMOJIS.get(source_type, "🔧")
+    progress_msg = f"{emoji} Scraping {source_type} source...\n"
+    if path:
+        progress_msg += f"📁 Path: {path}\n"
+    if url:
+        progress_msg += f"🔗 URL: {url}\n"
+    progress_msg += f"📛 Name: {name}\n\n"
+
+    from skill_seekers.cli.skill_converter import get_converter
+
+    converter = get_converter(source_type, config)
+    return _run_converter(converter, progress_msg)

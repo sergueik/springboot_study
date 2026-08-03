@@ -1,0 +1,568 @@
+#!/usr/bin/env python3
+"""
+Utility functions for Skill Seeker CLI tools
+"""
+
+import bisect
+import logging
+import os
+import platform
+import subprocess
+import time
+from collections.abc import Callable
+from pathlib import Path
+from typing import TypeVar
+
+logger = logging.getLogger(__name__)
+
+T = TypeVar("T")
+
+
+def setup_logging(verbose: bool = False, quiet: bool = False) -> None:
+    """Configure root logging level based on verbosity flags.
+
+    Args:
+        verbose: Enable DEBUG level logging
+        quiet: Enable WARNING level logging only (suppress INFO)
+    """
+    if quiet:
+        level = logging.WARNING
+    elif verbose:
+        level = logging.DEBUG
+    else:
+        level = logging.INFO
+    logging.basicConfig(level=level, format="%(message)s", force=True)
+
+
+def open_folder(folder_path: str | Path) -> bool:
+    """
+    Open a folder in the system file browser
+
+    Args:
+        folder_path: Path to folder to open
+
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    folder_path = Path(folder_path).resolve()
+
+    if not folder_path.exists():
+        print(f"⚠️  Folder not found: {folder_path}")
+        return False
+
+    system = platform.system()
+
+    try:
+        if system == "Linux":
+            # Try xdg-open first (standard)
+            subprocess.run(["xdg-open", str(folder_path)], check=True)
+        elif system == "Darwin":  # macOS
+            subprocess.run(["open", str(folder_path)], check=True)
+        elif system == "Windows":
+            subprocess.run(["explorer", str(folder_path)], check=True)
+        else:
+            print(f"⚠️  Unknown operating system: {system}")
+            return False
+
+        return True
+
+    except subprocess.CalledProcessError:
+        print("⚠️  Could not open folder automatically")
+        return False
+    except FileNotFoundError:
+        print("⚠️  File browser not found on system")
+        return False
+
+
+def has_api_key() -> bool:
+    """
+    Check if any AI API key is set in environment.
+
+    Checks: ANTHROPIC_API_KEY, MOONSHOT_API_KEY, GOOGLE_API_KEY, OPENAI_API_KEY
+
+    Returns:
+        bool: True if any API key is set, False otherwise
+    """
+    for env_var in ("ANTHROPIC_API_KEY", "MOONSHOT_API_KEY", "GOOGLE_API_KEY", "OPENAI_API_KEY"):
+        if os.environ.get(env_var, "").strip():
+            return True
+    return False
+
+
+def get_api_key() -> str | None:
+    """
+    Get the first available AI API key from environment.
+
+    Checks: ANTHROPIC_API_KEY, ANTHROPIC_AUTH_TOKEN, MOONSHOT_API_KEY,
+            GOOGLE_API_KEY, OPENAI_API_KEY
+
+    Returns:
+        str: API key or None if not set
+    """
+    for env_var in (
+        "ANTHROPIC_API_KEY",
+        "ANTHROPIC_AUTH_TOKEN",
+        "MOONSHOT_API_KEY",
+        "GOOGLE_API_KEY",
+        "OPENAI_API_KEY",
+    ):
+        key = os.environ.get(env_var, "").strip()
+        if key:
+            return key
+    return None
+
+
+def get_upload_url() -> str:
+    """
+    Get the skills upload URL
+
+    Returns:
+        str: Skills upload URL
+    """
+    return "https://claude.ai/skills"
+
+
+def print_upload_instructions(zip_path: str | Path) -> None:
+    """
+    Print clear upload instructions for manual upload
+
+    Args:
+        zip_path: Path to the .zip file to upload
+    """
+    zip_path = Path(zip_path)
+
+    print()
+    print("╔══════════════════════════════════════════════════════════╗")
+    print("║                     NEXT STEP                            ║")
+    print("╚══════════════════════════════════════════════════════════╝")
+    print()
+    print(f"📤 Upload to platform: {get_upload_url()}")
+    print()
+    print(f"1. Go to {get_upload_url()}")
+    print('2. Click "Upload Skill"')
+    print(f"3. Select: {zip_path}")
+    print("4. Done! ✅")
+    print()
+
+
+def format_file_size(size_bytes: int) -> str:
+    """
+    Format file size in human-readable format
+
+    Args:
+        size_bytes: Size in bytes
+
+    Returns:
+        str: Formatted size (e.g., "45.3 KB")
+    """
+    if size_bytes < 1024:
+        return f"{size_bytes} bytes"
+    elif size_bytes < 1024 * 1024:
+        return f"{size_bytes / 1024:.1f} KB"
+    else:
+        return f"{size_bytes / (1024 * 1024):.1f} MB"
+
+
+def validate_skill_directory(skill_dir: str | Path) -> tuple[bool, str | None]:
+    """
+    Validate that a directory is a valid skill directory
+
+    Args:
+        skill_dir: Path to skill directory
+
+    Returns:
+        tuple: (is_valid, error_message)
+    """
+    skill_path = Path(skill_dir)
+
+    if not skill_path.exists():
+        return False, f"Directory not found: {skill_dir}"
+
+    if not skill_path.is_dir():
+        return False, f"Not a directory: {skill_dir}"
+
+    skill_md = skill_path / "SKILL.md"
+    if not skill_md.exists():
+        return False, f"SKILL.md not found in {skill_dir}"
+
+    return True, None
+
+
+def validate_zip_file(zip_path: str | Path) -> tuple[bool, str | None]:
+    """
+    Validate that a file is a valid skill .zip file
+
+    Args:
+        zip_path: Path to .zip file
+
+    Returns:
+        tuple: (is_valid, error_message)
+    """
+    zip_path = Path(zip_path)
+
+    if not zip_path.exists():
+        return False, f"File not found: {zip_path}"
+
+    if not zip_path.is_file():
+        return False, f"Not a file: {zip_path}"
+
+    if zip_path.suffix != ".zip":
+        return False, f"Not a .zip file: {zip_path}"
+
+    return True, None
+
+
+def read_reference_files(
+    skill_dir: str | Path, max_chars: int = 100000, preview_limit: int = 40000
+) -> dict[str, dict]:
+    """Read reference files from a skill directory with enriched metadata.
+
+    This function reads markdown files from the references/ subdirectory
+    of a skill, applying both per-file and total content limits.
+    Returns enriched metadata including source type, confidence, and path.
+
+    Args:
+        skill_dir (str or Path): Path to skill directory
+        max_chars (int): Maximum total characters to read (default: 100000)
+        preview_limit (int): Maximum characters per file (default: 40000)
+
+    Returns:
+        dict: Dictionary mapping filename to metadata dict with keys:
+            - 'content': File content
+            - 'source': Source type (documentation/github/pdf/api/codebase_analysis)
+            - 'confidence': Confidence level (high/medium/low)
+            - 'path': Relative path from references directory
+            - 'repo_id': Repository identifier for multi-source (e.g., 'encode_httpx'), None for single-source
+
+    Example:
+        >>> refs = read_reference_files('output/react/', max_chars=50000)
+        >>> refs['documentation/api.md']['source']
+        'documentation'
+        >>> refs['documentation/api.md']['confidence']
+        'high'
+    """
+    from pathlib import Path
+
+    skill_path = Path(skill_dir)
+    references_dir = skill_path / "references"
+    references: dict[str, dict] = {}
+
+    if not references_dir.exists():
+        print(f"⚠ No references directory found at {references_dir}")
+        return references
+
+    def _determine_source_metadata(relative_path: Path) -> tuple[str, str, str | None]:
+        """Determine source type, confidence level, and repo_id from path.
+
+        For multi-source support, extracts repo_id from paths like:
+        - codebase_analysis/encode_httpx/ARCHITECTURE.md -> repo_id='encode_httpx'
+        - github/README.md -> repo_id=None (single source)
+
+        Returns:
+            tuple: (source_type, confidence_level, repo_id)
+        """
+        path_str = str(relative_path)
+        repo_id = None  # Default: no repo identity
+
+        # Documentation sources (official docs)
+        if path_str.startswith("documentation/"):
+            return "documentation", "high", None
+
+        # GitHub sources
+        elif path_str.startswith("github/"):
+            # README and releases are medium confidence
+            if "README" in path_str or "releases" in path_str:
+                return "github", "medium", None
+            # Issues are low confidence (user reports)
+            elif "issues" in path_str:
+                return "github", "low", None
+            else:
+                return "github", "medium", None
+
+        # PDF sources (books, manuals)
+        elif path_str.startswith("pdf/"):
+            return "pdf", "high", None
+
+        # Merged API (synthesized from multiple sources)
+        elif path_str.startswith("api/"):
+            return "api", "high", None
+
+        # Codebase analysis (C3.x automated analysis)
+        elif path_str.startswith("codebase_analysis/"):
+            # Extract repo_id from path: codebase_analysis/{repo_id}/...
+            parts = Path(path_str).parts
+            if len(parts) >= 2:
+                repo_id = parts[1]  # e.g., 'encode_httpx', 'encode_httpcore'
+
+            # ARCHITECTURE.md is high confidence (comprehensive)
+            if "ARCHITECTURE" in path_str:
+                return "codebase_analysis", "high", repo_id
+            # Patterns and examples are medium (heuristic-based)
+            elif "patterns" in path_str or "examples" in path_str:
+                return "codebase_analysis", "medium", repo_id
+            # Configuration is high (direct extraction)
+            elif "configuration" in path_str:
+                return "codebase_analysis", "high", repo_id
+            else:
+                return "codebase_analysis", "medium", repo_id
+
+        # Video tutorial sources (video_*.md from video scraper)
+        elif relative_path.name.startswith("video_"):
+            return "video_tutorial", "high", None
+
+        # Conflicts report (discrepancy detection)
+        elif "conflicts" in path_str:
+            return "conflicts", "medium", None
+
+        # Fallback
+        else:
+            return "unknown", "medium", None
+
+    total_chars = 0
+    # Search recursively for all .md files (including subdirectories like github/README.md)
+    for ref_file in sorted(references_dir.rglob("*.md")):
+        # Note: We now include index.md files as they contain important content
+        # (patterns, examples, configuration analysis)
+
+        content = ref_file.read_text(encoding="utf-8")
+
+        # Limit size per file
+        truncated = False
+        if len(content) > preview_limit:
+            content = content[:preview_limit] + "\n\n[Content truncated...]"
+            truncated = True
+
+        # Use relative path from references_dir as key for nested files
+        relative_path = ref_file.relative_to(references_dir)
+        source_type, confidence, repo_id = _determine_source_metadata(relative_path)
+
+        # Build enriched metadata (with repo_id for multi-source support)
+        references[str(relative_path)] = {
+            "content": content,
+            "source": source_type,
+            "confidence": confidence,
+            "path": str(relative_path),
+            "truncated": truncated,
+            "size": len(content),
+            "repo_id": repo_id,  # None for single-source, repo identifier for multi-source
+        }
+
+        total_chars += len(content)
+
+        # Stop if we've read enough
+        if total_chars > max_chars:
+            print(f"  ℹ Limiting input to {max_chars:,} characters")
+            break
+
+    return references
+
+
+def retry_with_backoff(
+    operation: Callable[[], T],
+    max_attempts: int = 3,
+    base_delay: float = 1.0,
+    operation_name: str = "operation",
+) -> T:
+    """Retry an operation with exponential backoff.
+
+    Useful for network operations that may fail due to transient errors.
+    Waits progressively longer between retries (exponential backoff).
+
+    Args:
+        operation: Function to retry (takes no arguments, returns result)
+        max_attempts: Maximum number of attempts (default: 3)
+        base_delay: Base delay in seconds, doubles each retry (default: 1.0)
+        operation_name: Name for logging purposes (default: "operation")
+
+    Returns:
+        Result of successful operation
+
+    Raises:
+        Exception: Last exception if all retries fail
+
+    Example:
+        >>> def fetch_page():
+        ...     response = requests.get(url, timeout=30)
+        ...     response.raise_for_status()
+        ...     return response.text
+        >>> content = retry_with_backoff(fetch_page, max_attempts=3, operation_name=f"fetch {url}")
+    """
+    last_exception: Exception | None = None
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return operation()
+        except Exception as e:
+            last_exception = e
+            if attempt < max_attempts:
+                delay = base_delay * (2 ** (attempt - 1))
+                logger.warning(
+                    "%s failed (attempt %d/%d), retrying in %.1fs: %s",
+                    operation_name,
+                    attempt,
+                    max_attempts,
+                    delay,
+                    e,
+                )
+                time.sleep(delay)
+            else:
+                logger.error("%s failed after %d attempts: %s", operation_name, max_attempts, e)
+
+    # This should always have a value, but mypy doesn't know that
+    if last_exception is not None:
+        raise last_exception
+    raise RuntimeError(f"{operation_name} failed with no exception captured")
+
+
+async def retry_with_backoff_async(
+    operation: Callable[[], T],
+    max_attempts: int = 3,
+    base_delay: float = 1.0,
+    operation_name: str = "operation",
+) -> T:
+    """Async version of retry_with_backoff for async operations.
+
+    Args:
+        operation: Async function to retry (takes no arguments, returns awaitable)
+        max_attempts: Maximum number of attempts (default: 3)
+        base_delay: Base delay in seconds, doubles each retry (default: 1.0)
+        operation_name: Name for logging purposes (default: "operation")
+
+    Returns:
+        Result of successful operation
+
+    Raises:
+        Exception: Last exception if all retries fail
+
+    Example:
+        >>> async def fetch_page():
+        ...     response = await client.get(url, timeout=30.0)
+        ...     response.raise_for_status()
+        ...     return response.text
+        >>> content = await retry_with_backoff_async(fetch_page, operation_name=f"fetch {url}")
+    """
+    import asyncio
+
+    last_exception: Exception | None = None
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return await operation()
+        except Exception as e:
+            last_exception = e
+            if attempt < max_attempts:
+                delay = base_delay * (2 ** (attempt - 1))
+                logger.warning(
+                    "%s failed (attempt %d/%d), retrying in %.1fs: %s",
+                    operation_name,
+                    attempt,
+                    max_attempts,
+                    delay,
+                    e,
+                )
+                await asyncio.sleep(delay)
+            else:
+                logger.error("%s failed after %d attempts: %s", operation_name, max_attempts, e)
+
+    if last_exception is not None:
+        raise last_exception
+    raise RuntimeError(f"{operation_name} failed with no exception captured")
+
+
+# ---------------------------------------------------------------------------
+# Line-index utilities for O(log n) offset-to-line-number lookups
+# ---------------------------------------------------------------------------
+
+
+def build_line_index(content: str) -> list[int]:
+    """Build a sorted list of newline byte-offsets for O(log n) line lookups.
+
+    Args:
+        content: Source text whose newline positions to index.
+
+    Returns:
+        Sorted list of character offsets where '\\n' occurs.
+    """
+    return [i for i, ch in enumerate(content) if ch == "\n"]
+
+
+def offset_to_line(newline_offsets: list[int], offset: int) -> int:
+    """Convert a character offset to a 1-based line number.
+
+    Uses ``bisect`` for O(log n) lookup against an index built by
+    :func:`build_line_index`.
+
+    Args:
+        newline_offsets: Sorted newline positions from :func:`build_line_index`.
+        offset: Character offset into the source text.
+
+    Returns:
+        1-based line number corresponding to *offset*.
+    """
+    return bisect.bisect_left(newline_offsets, offset) + 1
+
+
+# ---------------------------------------------------------------------------
+# URL sanitisation
+# ---------------------------------------------------------------------------
+
+
+def sanitize_url(url: str) -> str:
+    """Percent-encode square brackets in a URL's path and query components.
+
+    Unencoded ``[`` and ``]`` in the path are technically invalid per
+    RFC 3986 (they are only legal in the host for IPv6 literals).  Libraries
+    such as *httpx* and *urllib3* interpret them as IPv6 address markers and
+    raise ``Invalid IPv6 URL``.
+
+    Python 3.14+ also raises ``ValueError: Invalid IPv6 URL`` from
+    ``urlparse()`` itself when brackets appear in the URL, so we must
+    encode them with simple string splitting BEFORE calling ``urlparse``.
+
+    This function encodes **only** the path and query — the scheme, host,
+    and fragment are left untouched.
+
+    Args:
+        url: Absolute or scheme-relative URL to sanitise.
+
+    Returns:
+        The URL with ``[`` → ``%5B`` and ``]`` → ``%5D`` in its path/query,
+        or the original URL unchanged when no brackets are present.
+        Returns the original URL if it is malformed beyond repair.
+
+    Examples:
+        >>> sanitize_url("https://example.com/api/[v1]/users")
+        'https://example.com/api/%5Bv1%5D/users'
+        >>> sanitize_url("https://example.com/docs/guide")
+        'https://example.com/docs/guide'
+    """
+    if "[" not in url and "]" not in url:
+        return url
+
+    # Encode brackets BEFORE urlparse — Python 3.14 raises ValueError
+    # on unencoded brackets because it tries to parse them as IPv6.
+    # We split scheme://authority from the rest manually to avoid
+    # encoding brackets in legitimate IPv6 host literals like [::1].
+    try:
+        # Try urlparse first — works if brackets are in a valid position
+        # (e.g., legitimate IPv6 host)
+        from urllib.parse import urlparse, urlunparse
+
+        parsed = urlparse(url)
+        encoded_path = parsed.path.replace("[", "%5B").replace("]", "%5D")
+        encoded_query = parsed.query.replace("[", "%5B").replace("]", "%5D")
+        return urlunparse(parsed._replace(path=encoded_path, query=encoded_query))
+    except ValueError:
+        # urlparse rejected the URL (Python 3.14+ strict IPv6 validation).
+        # Encode ALL brackets and try again. This is safe because if
+        # urlparse failed, the brackets are NOT valid IPv6 host literals.
+        pre_encoded = url.replace("[", "%5B").replace("]", "%5D")
+        try:
+            from urllib.parse import urlparse, urlunparse
+
+            parsed = urlparse(pre_encoded)
+            return urlunparse(parsed)
+        except ValueError:
+            # URL is fundamentally malformed — return the pre-encoded
+            # version which is at least safe for HTTP libraries.
+            return pre_encoded

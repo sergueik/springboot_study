@@ -1,0 +1,630 @@
+#!/usr/bin/env python3
+"""
+SKILL.md Enhancement Script
+Uses platform AI APIs to improve SKILL.md by analyzing reference documentation.
+
+Usage:
+    # Anthropic (default)
+    skill-seekers enhance output/react/
+    skill-seekers enhance output/react/ --api-key sk-ant-...
+
+    # Gemini
+    skill-seekers enhance output/react/ --target gemini --api-key AIzaSy...
+
+    # OpenAI
+    skill-seekers enhance output/react/ --target openai --api-key sk-proj-...
+"""
+
+import argparse
+import os
+import sys
+from pathlib import Path
+
+from skill_seekers.cli.constants import API_CONTENT_LIMIT, API_PREVIEW_LIMIT
+from skill_seekers.cli.utils import read_reference_files
+
+from skill_seekers.cli.agent_client import AgentClient
+
+
+class SkillEnhancer:
+    def __init__(self, skill_dir, api_key=None):
+        self.skill_dir = Path(skill_dir)
+        self.references_dir = self.skill_dir / "references"
+        self.skill_md_path = self.skill_dir / "SKILL.md"
+
+        # Get API key - support both ANTHROPIC_API_KEY and ANTHROPIC_AUTH_TOKEN
+        self.api_key = (
+            api_key or os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN")
+        )
+        if not self.api_key:
+            raise ValueError(
+                "No API key provided. Set ANTHROPIC_API_KEY or ANTHROPIC_AUTH_TOKEN "
+                "environment variable or use --api-key argument"
+            )
+
+        # All AI calls go through AgentClient (single transport: truncation
+        # gate, timeout policy, error classification, ANTHROPIC_BASE_URL).
+        self.client = AgentClient(mode="api", api_key=self.api_key, provider="anthropic")
+        if self.client.client is None:
+            raise RuntimeError(
+                "anthropic package not installed. Install with: pip3 install anthropic"
+            )
+
+    def read_current_skill_md(self):
+        """Read existing SKILL.md"""
+        if not self.skill_md_path.exists():
+            return None
+        return self.skill_md_path.read_text(encoding="utf-8")
+
+    def enhance_skill_md(self, references, current_skill_md):
+        """Use AI to enhance SKILL.md"""
+
+        # Build prompt
+        prompt = self._build_enhancement_prompt(references, current_skill_md)
+
+        print("\n🤖 Asking AI to enhance SKILL.md...")
+        print(f"   Input: {len(prompt):,} characters")
+
+        # AgentClient enforces the truncation gate (max_tokens → None), finds
+        # the first text block (ThinkingBlock-safe), resolves the model from
+        # ANTHROPIC_MODEL/defaults, and classifies API errors with logging.
+        # 16384: a rewritten SKILL.md can exceed ~16 KB; 4096 made any such
+        # skill permanently un-enhanceable (truncation gate → None every run).
+        enhanced_content = self.client.call(prompt, max_tokens=16384, temperature=0.3)
+        if not enhanced_content:
+            print(
+                "❌ Error: AI enhancement failed or returned truncated/empty "
+                "content. Refusing to overwrite SKILL.md."
+            )
+            return None
+        return enhanced_content
+
+    def _is_video_source(self, references):
+        """Check if the references come from video tutorial extraction."""
+        return any(meta["source"] == "video_tutorial" for meta in references.values())
+
+    def _build_enhancement_prompt(self, references, current_skill_md):
+        """Build the prompt for AI with multi-source awareness"""
+
+        # Dispatch to video-specific prompt if video source detected
+        if self._is_video_source(references):
+            return self._build_video_enhancement_prompt(references, current_skill_md)
+
+        # Extract skill name and description
+        skill_name = self.skill_dir.name
+
+        # Analyze sources
+        sources_found = set()
+        for metadata in references.values():
+            sources_found.add(metadata["source"])
+
+        # Analyze conflicts if present
+        has_conflicts = any("conflicts" in meta["path"] for meta in references.values())
+
+        prompt = f"""You are enhancing an LLM skill's SKILL.md file. This skill is about: {skill_name}
+
+I've scraped documentation from multiple sources and organized it into reference files. Your job is to create an EXCELLENT SKILL.md that synthesizes knowledge from these sources.
+
+SKILL OVERVIEW:
+- Name: {skill_name}
+- Source Types: {", ".join(sorted(sources_found))}
+- Multi-Source: {"Yes" if len(sources_found) > 1 else "No"}
+- Conflicts Detected: {"Yes - see conflicts.md in references" if has_conflicts else "No"}
+
+CURRENT SKILL.MD:
+{"```markdown" if current_skill_md else "(none - create from scratch)"}
+{current_skill_md or "No existing SKILL.md"}
+{"```" if current_skill_md else ""}
+
+SOURCE ANALYSIS:
+This skill combines knowledge from {len(sources_found)} source type(s):
+
+"""
+
+        # Group references by (source_type, repo_id) for multi-source support
+        by_source = {}
+        for filename, metadata in references.items():
+            source = metadata["source"]
+            repo_id = metadata.get("repo_id")  # None for single-source
+            key = (source, repo_id) if repo_id else (source, None)
+
+            if key not in by_source:
+                by_source[key] = []
+            by_source[key].append((filename, metadata))
+
+        # Add source breakdown with repo identity
+        for source, repo_id in sorted(by_source.keys()):
+            files = by_source[(source, repo_id)]
+            if repo_id:
+                prompt += f"\n**{source.upper()} - {repo_id} ({len(files)} file(s))**\n"
+            else:
+                prompt += f"\n**{source.upper()} ({len(files)} file(s))**\n"
+            for filename, metadata in files[:5]:  # Top 5 per source
+                prompt += f"- {filename} (confidence: {metadata['confidence']}, {metadata['size']:,} chars)\n"
+            if len(files) > 5:
+                prompt += f"- ... and {len(files) - 5} more\n"
+
+        prompt += "\n\nREFERENCE DOCUMENTATION:\n"
+
+        # Add references grouped by (source, repo_id) with metadata
+        for source, repo_id in sorted(by_source.keys()):
+            if repo_id:
+                prompt += f"\n### {source.upper()} SOURCES - {repo_id}\n\n"
+            else:
+                prompt += f"\n### {source.upper()} SOURCES\n\n"
+
+            for filename, metadata in by_source[(source, repo_id)]:
+                content = metadata["content"]
+                # Limit per-file to 30K
+                if len(content) > 30000:
+                    content = content[:30000] + "\n\n[Content truncated for size...]"
+
+                prompt += f"\n#### {filename}\n"
+                if repo_id:
+                    prompt += f"*Source: {metadata['source']} ({repo_id}), Confidence: {metadata['confidence']}*\n\n"
+                else:
+                    prompt += (
+                        f"*Source: {metadata['source']}, Confidence: {metadata['confidence']}*\n\n"
+                    )
+                prompt += f"```markdown\n{content}\n```\n"
+
+        prompt += """
+
+REFERENCE PRIORITY (when sources differ):
+1. **Code patterns (codebase_analysis)**: Ground truth - what the code actually does
+2. **Official documentation**: Intended API and usage patterns
+3. **GitHub issues**: Real-world usage and known problems
+4. **PDF documentation**: Additional context and tutorials
+
+MULTI-REPOSITORY HANDLING:
+"""
+
+        # Detect multiple repos from same source type
+        repo_ids = set()
+        for metadata in references.values():
+            if metadata.get("repo_id"):
+                repo_ids.add(metadata["repo_id"])
+
+        if len(repo_ids) > 1:
+            prompt += f"""
+⚠️ MULTIPLE REPOSITORIES DETECTED: {", ".join(sorted(repo_ids))}
+
+This skill combines codebase analysis from {len(repo_ids)} different repositories.
+Each repo has its own ARCHITECTURE.md, patterns, examples, and configuration.
+
+When synthesizing:
+- Clearly identify which content comes from which repo
+- Compare and contrast patterns across repos (e.g., "httpx uses Strategy pattern 50 times, httpcore uses it 32 times")
+- Highlight relationships (e.g., "httpx is a client library built on top of httpcore")
+- Present examples from BOTH repos to show different use cases
+- If repos serve different purposes, explain when to use each
+"""
+        else:
+            prompt += "\nSingle repository - standard synthesis applies.\n"
+
+        prompt += """
+
+YOUR TASK:
+Create an enhanced SKILL.md that synthesizes knowledge from multiple sources:
+
+1. **Multi-Source Synthesis**
+   - Acknowledge that this skill combines multiple sources
+   - Highlight agreements between sources (builds confidence)
+   - Note discrepancies transparently (if present)
+   - Use source priority when synthesizing conflicting information
+
+2. **Clear "When to Use This Skill" section**
+   - Be SPECIFIC about trigger conditions
+   - List concrete use cases
+   - Include perspective from both docs AND real-world usage (if GitHub/codebase data available)
+
+3. **Excellent Quick Reference section**
+   - Extract 5-10 of the BEST, most practical code examples
+   - Prefer examples from HIGH CONFIDENCE sources first
+   - If code examples exist from codebase analysis, prioritize those (real usage)
+   - If docs examples exist, include those too (official patterns)
+   - Choose SHORT, clear examples (5-20 lines max)
+   - Use proper language tags (cpp, python, javascript, json, etc.)
+   - Add clear descriptions noting the source (e.g., "From official docs" or "From codebase")
+
+4. **Detailed Reference Files description**
+   - Explain what's in each reference file
+   - Note the source type and confidence level
+   - Help users navigate multi-source documentation
+
+5. **Practical "Working with This Skill" section**
+   - Clear guidance for beginners, intermediate, and advanced users
+   - Navigation tips for multi-source references
+   - How to resolve conflicts if present
+
+6. **Key Concepts section** (if applicable)
+   - Explain core concepts
+   - Define important terminology
+   - Reconcile differences between sources if needed
+
+7. **Conflict Handling** (if conflicts detected)
+   - Add a "Known Discrepancies" section
+   - Explain major conflicts transparently
+   - Provide guidance on which source to trust in each case
+
+8. **Keep the frontmatter** (---\nname: ...\n---) intact
+
+IMPORTANT:
+- Extract REAL examples from the reference docs, don't make them up
+- Prioritize HIGH CONFIDENCE sources when synthesizing
+- Note source attribution when helpful (e.g., "Official docs say X, but codebase shows Y")
+- Make discrepancies transparent, not hidden
+- Prioritize SHORT, clear examples (5-20 lines max)
+- Make it actionable and practical
+- Don't be too verbose - be concise but useful
+- Maintain the markdown structure for LLM skills
+- Keep code examples properly formatted with language tags
+
+OUTPUT:
+Return ONLY the complete SKILL.md content, starting with the frontmatter (---).
+"""
+
+        return prompt
+
+    def _build_video_enhancement_prompt(self, references, current_skill_md):
+        """Build a video-specific enhancement prompt.
+
+        Video tutorial references contain transcript text, OCR'd code panels,
+        code timelines with edits, and audio-visual alignment pairs. This prompt
+        is tailored to reconstruct clean code from noisy OCR, detect programming
+        languages from context, and synthesize a coherent tutorial skill.
+        """
+        skill_name = self.skill_dir.name
+
+        prompt = f"""You are enhancing an LLM skill built from VIDEO TUTORIAL extraction. This skill is about: {skill_name}
+
+The raw data was extracted from video tutorials using:
+1. **Transcript** (speech-to-text) — HIGH quality, this is the primary signal
+2. **OCR on code panels** — NOISY, may contain line numbers, UI chrome, garbled text
+3. **Code Timeline** — Tracks code evolution across frames with diffs
+4. **Audio-Visual Alignment** — Pairs of on-screen code + narrator explanation
+
+CURRENT SKILL.MD:
+{"```markdown" if current_skill_md else "(none - create from scratch)"}
+{current_skill_md or "No existing SKILL.md"}
+{"```" if current_skill_md else ""}
+
+REFERENCE FILES:
+"""
+
+        # Add all reference content
+        for filename, metadata in references.items():
+            content = metadata["content"]
+            if len(content) > 30000:
+                content = content[:30000] + "\n\n[Content truncated for size...]"
+            prompt += f"\n#### {filename}\n"
+            prompt += f"*Source: {metadata['source']}, Confidence: {metadata['confidence']}*\n\n"
+            prompt += f"```markdown\n{content}\n```\n"
+
+        prompt += """
+
+VIDEO-SPECIFIC ENHANCEMENT INSTRUCTIONS:
+
+You are working with data extracted from programming tutorial videos. The data has
+specific characteristics you MUST handle:
+
+## 1. OCR Code Reconstruction (CRITICAL)
+
+The OCR'd code blocks are NOISY. Common issues you MUST fix:
+- **Line numbers in code**: OCR captures line numbers (1, 2, 3...) as part of the code — STRIP THEM
+- **UI chrome contamination**: Tab bars, file names, button text appear in code blocks — REMOVE
+- **Garbled characters**: OCR errors like `l` → `1`, `O` → `0`, `rn` → `m` — FIX using context
+- **Duplicate fragments**: Same code appears across multiple frames with minor OCR variations — DEDUPLICATE
+- **Incomplete lines**: Lines cut off at panel edges — RECONSTRUCT from transcript context
+- **Animation/timeline numbers**: Frame counters or timeline numbers in code — REMOVE
+
+When reconstructing code:
+- The TRANSCRIPT is the ground truth for WHAT the code does
+- The OCR is the ground truth for HOW the code looks (syntax, structure)
+- Combine both: use transcript to understand intent, OCR for actual code structure
+- If OCR is too garbled, reconstruct the code based on what the narrator describes
+
+## 2. Language Detection
+
+The OCR-based language detection is often WRONG. Fix it by:
+- Reading the transcript for language mentions ("in GDScript", "this Python function", "our C# class")
+- Using code patterns: `extends`, `func`, `var`, `signal` = GDScript; `def`, `class`, `import` = Python;
+  `function`, `const`, `let` = JavaScript/TypeScript; `using`, `namespace` = C#
+- Looking at file extensions mentioned in the transcript or visible in tab bars
+- Using proper language tags in all code fences (```gdscript, ```python, etc.)
+
+## 3. Code Timeline Processing
+
+The "Code Timeline" section shows how code EVOLVES during the tutorial. Use it to:
+- Show the FINAL version of each code block (not intermediate states)
+- Optionally show key intermediate steps if the tutorial is about building up code progressively
+- The edit diffs show exactly what changed between frames — use these to understand the tutorial flow
+
+## 4. Audio-Visual Alignment
+
+These are the MOST VALUABLE pairs: each links on-screen code with the narrator's explanation.
+- Use these to create annotated code examples with inline comments
+- The narrator text explains WHY each piece of code exists
+- Cross-reference these pairs to build the "how-to" sections
+
+## 5. Tutorial Structure
+
+Transform the raw chronological data into a LOGICAL tutorial structure:
+- Group by TOPIC, not by timestamp (e.g., "Setting Up the State Machine" not "Segment 3")
+- Create clear section headers that describe what is being TAUGHT
+- Build a progressive learning path: concepts build on each other
+- Include prerequisite knowledge mentioned by the narrator
+
+YOUR TASK — Create an enhanced SKILL.md:
+
+1. **Clean Overview Section**
+   - What does this tutorial teach? (from transcript, NOT generic)
+   - Prerequisites mentioned by the narrator
+   - Key technologies/frameworks used (from actual code, not guesses)
+
+2. **"When to Use This Skill" Section**
+   - Specific trigger conditions based on what the tutorial covers
+   - Use cases directly from the tutorial content
+   - Reference the framework/library/tool being taught
+
+3. **Quick Reference Section** (MOST IMPORTANT)
+   - Extract 5-10 CLEAN, reconstructed code examples
+   - Each example must be:
+     a. Denoised (no line numbers, no UI chrome, no garbled text)
+     b. Complete (not cut off mid-line)
+     c. Properly language-tagged
+     d. Annotated with a description from the transcript
+   - Prefer code from Audio-Visual Alignment pairs (they have narrator context)
+   - Show the FINAL working version of each code block
+
+4. **Step-by-Step Tutorial Section**
+   - Follow the tutorial's teaching flow
+   - Each step includes: clean code + explanation from transcript
+   - Use narrator's explanations as the descriptions (paraphrase, don't copy verbatim)
+   - Show code evolution where the tutorial builds up code incrementally
+
+5. **Key Concepts Section**
+   - Extract terminology and concepts the narrator explains
+   - Define them using the narrator's own explanations
+   - Link concepts to specific code examples
+
+6. **Reference Files Description**
+   - Explain what each reference file contains
+   - Note that OCR data is raw and may contain errors
+   - Point to the most useful sections (Audio-Visual Alignment, Code Timeline)
+
+7. **Keep the frontmatter** (---\\nname: ...\\n---) intact if present
+
+CRITICAL RULES:
+- NEVER include raw OCR text with line numbers or UI chrome — always clean it first
+- ALWAYS use correct language tags (detect from context, not from OCR metadata)
+- The transcript is your BEST source for understanding content — trust it over garbled OCR
+- Extract REAL code from the references, reconstruct where needed, but never invent code
+- Keep code examples SHORT and focused (5-30 lines max per example)
+- Make the skill actionable: someone reading it should be able to implement what the tutorial teaches
+
+OUTPUT:
+Return ONLY the complete SKILL.md content, starting with the frontmatter (---).
+"""
+        return prompt
+
+    def save_enhanced_skill_md(self, content):
+        """Save the enhanced SKILL.md (atomic, with a copy backup).
+
+        The previous rename-then-write left only SKILL.md.backup (no SKILL.md)
+        if the write failed after the rename.
+        """
+        from skill_seekers.cli.adaptors.base import save_skill_md_atomic
+
+        save_skill_md_atomic(self.skill_md_path, content)
+
+    def run(self):
+        """Main enhancement workflow"""
+        print(f"\n{'=' * 60}")
+        print(f"ENHANCING SKILL: {self.skill_dir.name}")
+        print(f"{'=' * 60}\n")
+
+        # Read reference files
+        print("📖 Reading reference documentation...")
+        references = read_reference_files(
+            self.skill_dir, max_chars=API_CONTENT_LIMIT, preview_limit=API_PREVIEW_LIMIT
+        )
+
+        if not references:
+            print("❌ No reference files found to analyze")
+            return False
+
+        # Analyze sources
+        sources_found = set()
+        for metadata in references.values():
+            sources_found.add(metadata["source"])
+
+        print(f"  ✓ Read {len(references)} reference files")
+        print(f"  ✓ Sources: {', '.join(sorted(sources_found))}")
+        total_size = sum(meta["size"] for meta in references.values())
+        print(f"  ✓ Total size: {total_size:,} characters\n")
+
+        # Read current SKILL.md
+        current_skill_md = self.read_current_skill_md()
+        if current_skill_md:
+            print(f"  ℹ Found existing SKILL.md ({len(current_skill_md)} chars)")
+        else:
+            print("  ℹ No existing SKILL.md, will create new one")
+
+        # Enhance with AI
+        enhanced = self.enhance_skill_md(references, current_skill_md)
+
+        if not enhanced:
+            print("❌ Enhancement failed")
+            return False
+
+        print(f"  ✓ Generated enhanced SKILL.md ({len(enhanced)} chars)\n")
+
+        # Save
+        print("💾 Saving enhanced SKILL.md...")
+        self.save_enhanced_skill_md(enhanced)
+
+        print("\n✅ Enhancement complete!")
+        print("\nNext steps:")
+        print(f"  1. Review: {self.skill_md_path}")
+        print(
+            f"  2. If you don't like it, restore backup: {self.skill_md_path.with_suffix('.md.backup')}"
+        )
+        print("  3. Package your skill:")
+        print(f"     skill-seekers package {self.skill_dir}/")
+
+        return True
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Enhance SKILL.md using platform AI APIs",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Anthropic (default)
+  export ANTHROPIC_API_KEY=sk-ant-...
+  skill-seekers enhance output/react/
+
+  # Gemini
+  export GOOGLE_API_KEY=AIzaSy...
+  skill-seekers enhance output/react/ --target gemini
+
+  # OpenAI
+  export OPENAI_API_KEY=sk-proj-...
+  skill-seekers enhance output/react/ --target openai
+
+  # With explicit API key
+  skill-seekers enhance output/react/ --api-key sk-ant-...
+
+  # Dry run
+  skill-seekers enhance output/godot/ --dry-run
+""",
+    )
+
+    parser.add_argument(
+        "skill_dir", type=str, help="Path to skill directory (e.g., output/steam-inventory/)"
+    )
+    parser.add_argument(
+        "--api-key", type=str, help="Platform API key (or set environment variable)"
+    )
+    from skill_seekers.cli.adaptors import get_enhancement_platforms
+
+    parser.add_argument(
+        "--target",
+        choices=get_enhancement_platforms(),
+        default=None,
+        help="Target LLM platform (auto-detected from API keys, or 'claude' if none set)",
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        default=None,
+        help="Override the enhancement model (e.g. 'MiniMax-M2.7'). Defaults to the platform default.",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be done without calling API"
+    )
+
+    args = parser.parse_args()
+
+    # Auto-detect target platform if not specified
+    if args.target is None:
+        from skill_seekers.cli.agent_client import AgentClient
+
+        args.target = AgentClient.detect_default_target()
+
+    # Validate skill directory
+    skill_dir = Path(args.skill_dir)
+    if not skill_dir.exists():
+        print(f"❌ Error: Directory not found: {skill_dir}")
+        sys.exit(1)
+
+    if not skill_dir.is_dir():
+        print(f"❌ Error: Not a directory: {skill_dir}")
+        sys.exit(1)
+
+    # Dry run mode
+    if args.dry_run:
+        print("🔍 DRY RUN MODE")
+        print(f"   Would enhance: {skill_dir}")
+        print(f"   References: {skill_dir / 'references'}")
+        print(f"   SKILL.md: {skill_dir / 'SKILL.md'}")
+
+        refs_dir = skill_dir / "references"
+        if refs_dir.exists():
+            ref_files = list(refs_dir.glob("*.md"))
+            print(f"   Found {len(ref_files)} reference files:")
+            for rf in ref_files:
+                size = rf.stat().st_size
+                print(f"     - {rf.name} ({size:,} bytes)")
+
+        print("\nTo actually run enhancement:")
+        print(f"  skill-seekers enhance {skill_dir}")
+        return
+
+    # Check if platform supports enhancement
+    try:
+        from skill_seekers.cli.adaptors import get_adaptor
+
+        adaptor_config = {"custom_model": args.model} if getattr(args, "model", None) else None
+        adaptor = get_adaptor(args.target, adaptor_config)
+
+        if not adaptor.supports_enhancement():
+            print(f"❌ Error: {adaptor.PLATFORM_NAME} does not support AI enhancement")
+            print("\nSupported platforms for enhancement:")
+            print("  - Anthropic (Claude AI)")
+            print("  - Google Gemini")
+            print("  - OpenAI ChatGPT")
+            sys.exit(1)
+
+        # Get API key
+        api_key = args.api_key
+        if not api_key:
+            api_key = os.environ.get(adaptor.get_env_var_name(), "").strip()
+
+        if not api_key:
+            print(f"❌ Error: {adaptor.get_env_var_name()} not set")
+            print(f"\nSet your API key for {adaptor.PLATFORM_NAME}:")
+            print(f"  export {adaptor.get_env_var_name()}=...")
+            print("Or provide it directly:")
+            print(f"  skill-seekers enhance {skill_dir} --target {args.target} --api-key ...")
+            sys.exit(1)
+
+        # Run enhancement using adaptor
+        print(f"\n{'=' * 60}")
+        print(f"ENHANCING SKILL: {skill_dir}")
+        print(f"Platform: {adaptor.PLATFORM_NAME}")
+        print(f"{'=' * 60}\n")
+
+        success = adaptor.enhance(Path(skill_dir), api_key)
+
+        if success:
+            print("\n✅ Enhancement complete!")
+            print("\nNext steps:")
+            print(f"  1. Review: {Path(skill_dir) / 'SKILL.md'}")
+            print(
+                f"  2. If you don't like it, restore backup: {Path(skill_dir) / 'SKILL.md.backup'}"
+            )
+            print("  3. Package your skill:")
+            print(f"     skill-seekers package {skill_dir}/ --target {args.target}")
+
+        sys.exit(0 if success else 1)
+
+    except ImportError as e:
+        print(f"❌ Error: {e}")
+        print("\nAdaptor system not available. Reinstall skill-seekers.")
+        sys.exit(1)
+    except ValueError as e:
+        print(f"❌ Error: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}")
+        import traceback
+
+        traceback.print_exc()
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

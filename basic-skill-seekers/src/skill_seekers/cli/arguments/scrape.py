@@ -1,0 +1,216 @@
+"""Scrape command argument definitions.
+
+This module defines ALL arguments for the scrape command in ONE place.
+Both doc_scraper.py (standalone) and parsers/scrape_parser.py (unified CLI)
+import and use these definitions.
+
+This ensures the parsers NEVER drift out of sync.
+
+Shared arguments (name, description, output, enhance-level, api-key,
+dry-run, verbose, quiet, workflow args) come from common.py / workflow.py
+via ``add_all_standard_arguments()``.
+"""
+
+import argparse
+from typing import Any
+
+from skill_seekers.cli.constants import DEFAULT_RATE_LIMIT
+from .common import add_all_standard_arguments, RAG_ARGUMENTS
+
+# Scrape-specific argument definitions as data structure
+# NOTE: Shared args (name, description, enhance_level, api_key, dry_run,
+#       verbose, quiet, workflow args) are registered by add_all_standard_arguments().
+SCRAPE_ARGUMENTS: dict[str, dict[str, Any]] = {
+    # Positional argument
+    "url_positional": {
+        "flags": ("url",),
+        "kwargs": {
+            "nargs": "?",
+            "type": str,
+            "help": "Base documentation URL (alternative to --url)",
+        },
+    },
+    # Config file (scrape-specific — loads selectors, categories, etc.)
+    "config": {
+        "flags": ("--config", "-c"),
+        "kwargs": {
+            "type": str,
+            "help": "Load configuration from JSON file (e.g., configs/react.json)",
+            "metavar": "FILE",
+        },
+    },
+    # Scrape-specific options
+    "interactive": {
+        "flags": ("--interactive", "-i"),
+        "kwargs": {
+            "action": "store_true",
+            "help": "Interactive configuration mode",
+        },
+    },
+    "url": {
+        "flags": ("--url",),
+        "kwargs": {
+            "type": str,
+            "help": "Base documentation URL (alternative to positional URL)",
+            "metavar": "URL",
+        },
+    },
+    "max_pages": {
+        "flags": ("--max-pages",),
+        "kwargs": {
+            "type": int,
+            "metavar": "N",
+            "help": "Maximum pages to scrape (overrides config). Use with caution - for testing/prototyping only.",
+        },
+    },
+    "skip_scrape": {
+        "flags": ("--skip-scrape",),
+        "kwargs": {
+            "action": "store_true",
+            "help": "Skip scraping, use existing data",
+        },
+    },
+    "resume": {
+        "flags": ("--resume",),
+        "kwargs": {
+            "action": "store_true",
+            "help": "Resume from last checkpoint (for interrupted scrapes)",
+        },
+    },
+    "fresh": {
+        "flags": ("--fresh",),
+        "kwargs": {
+            "action": "store_true",
+            "help": "Clear checkpoint and start fresh",
+        },
+    },
+    "rate_limit": {
+        "flags": ("--rate-limit", "-r"),
+        "kwargs": {
+            "type": float,
+            "metavar": "SECONDS",
+            "help": f"Override rate limit in seconds (default: from config or {DEFAULT_RATE_LIMIT}). Use 0 for no delay.",
+        },
+    },
+    "workers": {
+        "flags": ("--workers", "-w"),
+        "kwargs": {
+            "type": int,
+            "metavar": "N",
+            "help": "Number of parallel workers for faster scraping (default: 1, max: 10)",
+        },
+    },
+    "async_mode": {
+        "flags": ("--async",),
+        "kwargs": {
+            "dest": "async_mode",
+            "action": "store_true",
+            "help": "Enable async mode for better parallel performance (2-3x faster than threads)",
+        },
+    },
+    "no_rate_limit": {
+        "flags": ("--no-rate-limit",),
+        "kwargs": {
+            "action": "store_true",
+            "help": "Disable rate limiting completely (same as --rate-limit 0)",
+        },
+    },
+    "browser": {
+        "flags": ("--browser",),
+        "kwargs": {
+            "action": "store_true",
+            "help": "Use headless browser (Playwright) to render JavaScript SPA sites. Install: pip install 'skill-seekers[browser]'",
+        },
+    },
+    "interactive_enhancement": {
+        "flags": ("--interactive-enhancement",),
+        "kwargs": {
+            "action": "store_true",
+            "help": "Open terminal window for enhancement (use with --enhance-local)",
+        },
+    },
+    # RAG chunking options (imported from common.py - see RAG_ARGUMENTS)
+    # Note: RAG arguments will be merged at runtime
+    "no_preserve_code_blocks": {
+        "flags": ("--no-preserve-code-blocks",),
+        "kwargs": {
+            "action": "store_true",
+            "help": "Allow splitting code blocks across chunks (not recommended)",
+        },
+    },
+    "no_preserve_paragraphs": {
+        "flags": ("--no-preserve-paragraphs",),
+        "kwargs": {
+            "action": "store_true",
+            "help": "Ignore paragraph boundaries when chunking (not recommended)",
+        },
+    },
+}
+
+# Merge RAG arguments from common.py
+SCRAPE_ARGUMENTS.update(RAG_ARGUMENTS)
+
+
+def add_scrape_arguments(parser: argparse.ArgumentParser) -> None:
+    """Add all scrape command arguments to a parser.
+
+    This is the SINGLE SOURCE OF TRUTH for scrape arguments.
+    Used by:
+    - doc_scraper.py (standalone scraper)
+    - parsers/scrape_parser.py (unified CLI)
+
+    Registers shared args (name, description, output, enhance-level, api-key,
+    dry-run, verbose, quiet, workflow args) via add_all_standard_arguments(),
+    then adds scrape-specific args on top.
+
+    Args:
+        parser: The ArgumentParser to add arguments to
+
+    Example:
+        >>> parser = argparse.ArgumentParser()
+        >>> add_scrape_arguments(parser)
+    """
+    # Shared universal args first
+    add_all_standard_arguments(parser)
+
+    # Scrape-specific args
+    for arg_name, arg_def in SCRAPE_ARGUMENTS.items():
+        flags = arg_def["flags"]
+        kwargs = arg_def["kwargs"]
+        parser.add_argument(*flags, **kwargs)
+
+    # Deprecated alias for backward compatibility (removed in v4.0.0)
+    parser.add_argument(
+        "--no-preserve-code",
+        dest="no_preserve_code_blocks",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
+
+
+def get_scrape_argument_names() -> set:
+    """Get the set of scrape argument destination names.
+
+    Returns:
+        Set of argument dest names (includes shared + scrape-specific)
+    """
+    from .common import get_all_standard_argument_names
+
+    return get_all_standard_argument_names() | set(SCRAPE_ARGUMENTS.keys())
+
+
+def get_scrape_argument_count() -> int:
+    """Get the total number of scrape arguments.
+
+    Returns:
+        Number of arguments
+    """
+    from .common import COMMON_ARGUMENTS, BEHAVIOR_ARGUMENTS
+    from .workflow import WORKFLOW_ARGUMENTS
+
+    return (
+        len(SCRAPE_ARGUMENTS)
+        + len(COMMON_ARGUMENTS)
+        + len(BEHAVIOR_ARGUMENTS)
+        + len(WORKFLOW_ARGUMENTS)
+    )

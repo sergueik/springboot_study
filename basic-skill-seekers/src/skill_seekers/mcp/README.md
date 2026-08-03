@@ -1,0 +1,671 @@
+# Skill Seeker MCP Server
+
+> Works with **Claude Code**, **Cursor**, **Windsurf**, **VS Code + Cline**, and **IntelliJ IDEA**.
+> Supports API mode (Anthropic, Moonshot/Kimi, Google Gemini, OpenAI) and LOCAL mode (any AI coding agent).
+
+Model Context Protocol (MCP) server for Skill Seeker - enables AI coding agents to generate documentation skills directly.
+
+## What is This?
+
+This MCP server allows your AI coding agent to use Skill Seeker's tools directly through natural language commands. Instead of running CLI commands manually, you can ask your agent to:
+
+- Generate config files for any documentation site
+- Estimate page counts before scraping
+- Scrape documentation and build skills
+- Package skills into `.zip` files
+- List and validate configurations
+- Split large documentation (10K-40K+ pages) into focused sub-skills
+- Generate intelligent router/hub skills for split documentation
+- **NEW:** Scrape PDF documentation and extract code/images
+
+## Quick Start
+
+### 1. Install Dependencies
+
+```bash
+# From repository root
+pip3 install -e ".[mcp]"
+```
+
+**Note:** The `[mcp]` extra installs FastMCP and all required dependencies.
+
+### 2. Quick Setup (Automated)
+
+```bash
+# Run the setup script
+./setup_mcp.sh
+
+# Follow the prompts - it will:
+# - Install dependencies
+# - Test the server
+# - Generate configuration
+# - Guide you through agent setup
+```
+
+### 3. Manual Setup
+
+**For Claude Code** - add to `~/.claude.json`:
+
+```json
+{
+  "mcpServers": {
+    "skill-seeker": {
+      "type": "stdio",
+      "command": "python3",
+      "args": [
+        "-m",
+        "skill_seekers.mcp.server_fastmcp"
+      ],
+      "cwd": "/path/to/Skill_Seekers",
+      "env": {}
+    }
+  }
+}
+```
+
+**Replace `/path/to/Skill_Seekers`** with your actual repository path!
+
+**For Cursor/Windsurf** - use HTTP transport mode. See your editor's MCP documentation for configuration details.
+
+### 4. Restart Your Agent
+
+Quit and reopen your AI coding agent (don't just close the window).
+
+### 5. Test
+
+In your AI coding agent, type:
+```
+List all available configs
+```
+
+You should see a list of preset configurations (Godot, React, Vue, etc.).
+
+## Available Tools
+
+The MCP server exposes 40 tools (see `docs/reference/MCP_REFERENCE.md` for the full list). Key tools include:
+
+### 1. `generate_config`
+Create a new configuration file for any documentation website.
+
+**Parameters:**
+- `name` (required): Skill name (e.g., "tailwind")
+- `url` (required): Documentation URL (e.g., "https://tailwindcss.com/docs")
+- `description` (required): When to use this skill
+- `max_pages` (optional): Maximum pages to scrape (default: 100)
+- `rate_limit` (optional): Delay between requests in seconds (default: 0.5)
+
+**Example:**
+```
+Generate config for Tailwind CSS at https://tailwindcss.com/docs
+```
+
+### 2. `estimate_pages`
+Estimate how many pages will be scraped from a config (fast, no data downloaded).
+
+**Parameters:**
+- `config_path` (required): Path to config file (e.g., "configs/react.json")
+- `max_discovery` (optional): Maximum pages to discover (default: 1000)
+
+**Example:**
+```
+Estimate pages for configs/react.json
+```
+
+### 3. `scrape_docs`
+Scrape documentation and build LLM skill.
+
+**Parameters:**
+- `config_path` (required): Path to config file
+- `enhance_local` (optional): Open terminal for local enhancement (default: false)
+- `skip_scrape` (optional): Use cached data (default: false)
+- `dry_run` (optional): Preview without saving (default: false)
+
+**Example:**
+```
+Scrape docs using configs/react.json
+```
+
+### 4. `package_skill`
+Package skill directory into platform-specific format. Automatically uploads if platform API key is set.
+
+**Parameters:**
+- `skill_dir` (required): Path to skill directory (e.g., "output/react/")
+- `target` (optional): Target platform - "claude", "gemini", "openai", "markdown", and more (default: auto-detected from environment)
+- `auto_upload` (optional): Try to upload automatically if API key is available (default: true)
+
+**Platform-specific outputs:**
+- Claude/OpenAI/Markdown/Kimi/DeepSeek/Qwen: `.zip` file
+- Gemini: `.tar.gz` file
+
+**Examples:**
+```
+Package skill (auto-detected platform): output/react/
+Package skill for Claude: output/react/ with target claude
+Package skill for Gemini: output/react/ with target gemini
+Package skill for OpenAI: output/react/ with target openai
+Package skill for Markdown: output/react/ with target markdown
+```
+
+### 5. `upload_skill`
+Upload skill package to target LLM platform (requires platform-specific API key).
+
+**Parameters:**
+- `skill_zip` (required): Path to skill package (`.zip` or `.tar.gz`)
+- `target` (optional): Target platform - "claude", "gemini", "openai" (default: auto-detected from environment)
+
+**Examples:**
+```
+Upload to Claude: output/react.zip
+Upload to Gemini: output/react-gemini.tar.gz with target gemini
+Upload to OpenAI: output/react-openai.zip with target openai
+```
+
+**Note:** Requires platform-specific API key (ANTHROPIC_API_KEY, GOOGLE_API_KEY, or OPENAI_API_KEY)
+
+### 6. `enhance_skill`
+Enhance SKILL.md with AI using target platform's model. Transforms basic templates into comprehensive guides.
+
+**Parameters:**
+- `skill_dir` (required): Path to skill directory (e.g., "output/react/")
+- `target` (optional): Target platform - "claude", "gemini", "openai" (default: auto-detected from environment)
+- `mode` (optional): "local" (AI coding agent, no API key) or "api" (requires API key) (default: "local")
+- `api_key` (optional): Platform API key (uses env var if not provided)
+
+**What it does:**
+- Transforms basic SKILL.md templates into comprehensive 500+ line guides
+- Uses platform-specific AI models (Claude Sonnet 4, Gemini 2.0 Flash, GPT-4o)
+- Extracts best examples from references
+- Adds platform-specific formatting
+
+**Examples:**
+```
+Enhance locally (no API key): output/react/
+Enhance with Gemini API: output/react/ with target gemini and mode api
+Enhance with OpenAI API: output/react/ with target openai and mode api
+```
+
+**Note:** Local mode uses your AI coding agent (no API key needed). API mode requires a platform-specific API key.
+
+### 7. `list_configs`
+List all available preset configurations.
+
+**Parameters:** None
+
+**Example:**
+```
+List all available configs
+```
+
+### 8. `validate_config`
+Validate a config file for errors.
+
+**Parameters:**
+- `config_path` (required): Path to config file
+
+**Example:**
+```
+Validate configs/godot.json
+```
+
+### 9. `split_config`
+Split large documentation config into multiple focused skills. For 10K+ page documentation.
+
+**Parameters:**
+- `config_path` (required): Path to config JSON file (e.g., "configs/godot.json")
+- `strategy` (optional): Split strategy - "auto", "none", "category", "router", "size" (default: "auto")
+- `target_pages` (optional): Target pages per skill (default: 5000)
+- `dry_run` (optional): Preview without saving files (default: false)
+
+**Example:**
+```
+Split configs/godot.json using router strategy with 5000 pages per skill
+```
+
+**Strategies:**
+- **auto** - Intelligently detects best strategy based on page count and config
+- **category** - Split by documentation categories (creates focused sub-skills)
+- **router** - Create router/hub skill + specialized sub-skills (RECOMMENDED for 10K+ pages)
+- **size** - Split every N pages (for docs without clear categories)
+
+### 10. `generate_router`
+Generate router/hub skill for split documentation. Creates intelligent routing to sub-skills.
+
+**Parameters:**
+- `config_pattern` (required): Config pattern for sub-skills (e.g., "configs/godot-*.json")
+- `router_name` (optional): Router skill name (inferred from configs if not provided)
+
+**Example:**
+```
+Generate router for configs/godot-*.json
+```
+
+**What it does:**
+- Analyzes all sub-skill configs
+- Extracts routing keywords from categories and names
+- Creates router SKILL.md with intelligent routing logic
+- Users can ask questions naturally, router directs to appropriate sub-skill
+
+### 11. `scrape_pdf`
+Scrape PDF documentation and build LLM skill. Extracts text, code blocks, images, and tables from PDF files with advanced features.
+
+**Parameters:**
+- `config_path` (optional): Path to PDF config JSON file (e.g., "configs/manual_pdf.json")
+- `pdf_path` (optional): Direct PDF path (alternative to config_path)
+- `name` (optional): Skill name (required with pdf_path)
+- `description` (optional): Skill description
+- `from_json` (optional): Build from extracted JSON file (e.g., "output/manual_extracted.json")
+- `use_ocr` (optional): Use OCR for scanned PDFs (requires pytesseract)
+- `password` (optional): Password for encrypted PDFs
+- `extract_tables` (optional): Extract tables from PDF
+- `parallel` (optional): Process pages in parallel for faster extraction
+- `max_workers` (optional): Number of parallel workers (default: CPU count)
+
+**Examples:**
+```
+Scrape PDF at docs/manual.pdf and create skill named api-docs
+Create skill from configs/example_pdf.json
+Build skill from output/manual_extracted.json
+Scrape scanned PDF with OCR: --pdf docs/scanned.pdf --ocr
+Scrape encrypted PDF: --pdf docs/manual.pdf --password mypassword
+Extract tables: --pdf docs/data.pdf --extract-tables
+Fast parallel processing: --pdf docs/large.pdf --parallel --workers 8
+```
+
+**What it does:**
+- Extracts text and markdown from PDF pages
+- Detects code blocks using 3 methods (font, indent, pattern)
+- Detects programming language with confidence scoring (19+ languages)
+- Validates syntax and scores code quality (0-10 scale)
+- Extracts images with size filtering
+- **NEW:** Extracts tables from PDFs (Priority 2)
+- **NEW:** OCR support for scanned PDFs (Priority 2, requires pytesseract + Pillow)
+- **NEW:** Password-protected PDF support (Priority 2)
+- **NEW:** Parallel page processing for faster extraction (Priority 3)
+- **NEW:** Intelligent caching of expensive operations (Priority 3)
+- Detects chapters and creates page chunks
+- Categorizes content automatically
+- Generates complete skill structure (SKILL.md + references)
+
+**Performance:**
+- Sequential: ~30-60 seconds per 100 pages
+- Parallel (8 workers): ~10-20 seconds per 100 pages (3x faster)
+
+**See:** `docs/PDF_SCRAPER.md` for complete PDF documentation guide
+
+## Example Workflows
+
+### Generate a New Skill from Scratch
+
+```
+User: Generate config for Svelte at https://svelte.dev/docs
+
+Agent: ✅ Config created: configs/svelte.json
+
+User: Estimate pages for configs/svelte.json
+
+Agent: 📊 Estimated pages: 150
+
+User: Scrape docs using configs/svelte.json
+
+Agent: ✅ Skill created at output/svelte/
+
+User: Package skill at output/svelte/
+
+Agent: ✅ Created: output/svelte.zip
+       Ready to upload!
+```
+
+### Use Existing Preset
+
+```
+User: List all available configs
+
+Agent: [Shows all configs: godot, react, vue, django, fastapi, etc.]
+
+User: Scrape docs using configs/react.json
+
+Agent: ✅ Skill created at output/react/
+
+User: Package skill at output/react/
+
+Agent: ✅ Created: output/react.zip
+```
+
+### Validate Before Scraping
+
+```
+User: Validate configs/godot.json
+
+Agent: ✅ Config is valid!
+        Name: godot
+        Base URL: https://docs.godotengine.org/en/stable/
+        Max pages: 500
+        Rate limit: 0.5s
+
+User: Scrape docs using configs/godot.json
+
+Agent: [Starts scraping...]
+```
+
+### PDF Documentation - NEW
+
+```
+User: Scrape PDF at docs/api-manual.pdf and create skill named api-docs
+
+Agent: 📄 Scraping PDF documentation...
+       ✅ Extracted 120 pages
+       ✅ Found 45 code blocks (Python, JavaScript, C++)
+       ✅ Extracted 12 images
+       ✅ Created skill at output/api-docs/
+       📦 Package with: skill-seekers package output/api-docs/
+
+User: Package skill at output/api-docs/
+
+Agent: ✅ Created: output/api-docs.zip
+       Ready to upload!
+```
+
+### Large Documentation (40K Pages)
+
+```
+User: Estimate pages for configs/godot.json
+
+Agent: 📊 Estimated pages: 40,000
+       ⚠️  Large documentation detected!
+       💡 Recommend splitting into multiple skills
+
+User: Split configs/godot.json using router strategy
+
+Agent: ✅ Split complete!
+        Created 5 sub-skills:
+        - godot-scripting.json (5,000 pages)
+        - godot-2d.json (8,000 pages)
+        - godot-3d.json (10,000 pages)
+        - godot-physics.json (6,000 pages)
+        - godot-shaders.json (11,000 pages)
+
+User: Scrape all godot sub-skills in parallel
+
+Agent: [Starts scraping all 5 configs in parallel...]
+       ✅ All skills created in ~4-8 hours instead of 20-40 (estimated, not benchmarked)!
+
+User: Generate router for configs/godot-*.json
+
+Agent: ✅ Router skill created at output/godot/
+        Routing logic:
+        - "scripting", "gdscript" → godot-scripting
+        - "2d", "sprites", "tilemap" → godot-2d
+        - "3d", "meshes", "camera" → godot-3d
+        - "physics", "collision" → godot-physics
+        - "shaders", "visual shader" → godot-shaders
+
+User: Package all godot skills
+
+Agent: ✅ 6 skills packaged:
+       - godot.zip (router)
+       - godot-scripting.zip
+       - godot-2d.zip
+       - godot-3d.zip
+       - godot-physics.zip
+       - godot-shaders.zip
+
+       Upload all to your LLM platform!
+       Users just ask questions naturally - router handles routing!
+```
+
+## Architecture
+
+### Server Structure
+
+```
+mcp/
+├── server_fastmcp.py       # Main MCP server (FastMCP, 40 tools)
+├── server.py               # Server entry point
+├── server_legacy.py        # Legacy server
+├── agent_detector.py       # Environment/agent detection
+├── source_manager.py       # Back-compat shim → skill_seekers.services.source_manager
+├── git_repo.py             # Back-compat shim → skill_seekers.services.git_repo
+├── marketplace_publisher.py # Back-compat shim → skill_seekers.services.marketplace_publisher
+├── marketplace_manager.py  # Back-compat shim → skill_seekers.services.marketplace_manager
+├── config_publisher.py     # Back-compat shim → skill_seekers.services.config_publisher
+├── tools/                  # Tool implementations by category
+│   ├── _common.py          # Shared helpers: run_cli_main() (in-process CLI dispatch), log capture
+│   ├── config_tools.py
+│   ├── marketplace_tools.py
+│   ├── packaging_tools.py
+│   ├── scraping_tools.py
+│   ├── source_tools.py
+│   ├── splitting_tools.py
+│   ├── sync_config_tools.py
+│   ├── vector_db_tools.py
+│   └── workflow_tools.py
+├── requirements.txt        # MCP dependencies
+└── README.md               # This file
+```
+
+### How It Works
+
+1. **AI coding agent** (Claude Code, Cursor, Windsurf, etc.) sends MCP requests to the server
+2. **Server** routes requests to appropriate tool functions
+3. **Tools** run the CLI logic **in-process** — either through the converter factory (`get_converter(...)` for scraping tools) or through the real CLI command's `main()` via the shared `run_cli_main()` helper
+4. **Results** (captured stdout/stderr + return code) returned to the agent via MCP protocol
+
+Shared domain logic (marketplace publishing, config publishing, git config sources)
+lives in the `skill_seekers.services` package — importable by the CLI without the
+`[mcp]` extra; the `mcp/` modules listed above are thin back-compat shims. There
+are no `sys.path` hacks; everything uses absolute `skill_seekers.*` imports.
+
+### Tool Implementation
+
+Each tool is implemented as an async function:
+
+```python
+async def generate_config_tool(args: dict) -> list[TextContent]:
+    """Generate a config file"""
+    # Create config JSON
+    # Save to configs/
+    # Return success message
+```
+
+CLI-backed tools call the command's real `main()` in-process via `run_cli_main()`
+(`mcp/tools/_common.py`), which parses the same argv with the command's real
+parser, captures stdout/stderr (including worker-thread logs via contextvars),
+and returns the same `(stdout, stderr, returncode)` contract the old subprocess
+path had:
+
+```python
+stdout, stderr, returncode = run_cli_main(estimate_pages.main, argv)
+```
+
+**Deliberate exceptions:** `enhance_skill` (LOCAL agent mode) and `install_skill`'s
+enhancement step still spawn a subprocess — the AI agent must run as a real child
+process so the fork-bomb recursion guard (`SKILL_SEEKER_ENHANCE_ACTIVE` env
+semantics) works.
+
+## Testing
+
+The MCP server has comprehensive test coverage:
+
+```bash
+# Run MCP server tests (40 tests)
+python3 -m pytest tests/test_mcp_server.py tests/test_mcp_fastmcp.py -v
+
+# Expected output: ~40 passed in ~0.5s
+```
+
+### Test Coverage
+
+- **Server initialization** (2 tests)
+- **Tool listing** (2 tests)
+- **generate_config** (3 tests)
+- **estimate_pages** (3 tests)
+- **scrape_docs** (4 tests)
+- **package_skill** (3 tests)
+- **upload_skill** (2 tests)
+- **list_configs** (3 tests)
+- **validate_config** (3 tests)
+- **split_config** (3 tests)
+- **generate_router** (3 tests)
+- **Tool routing** (2 tests)
+- **Integration** (1 test)
+
+**Total: 40 tests | Pass rate: 100%**
+
+## Troubleshooting
+
+### MCP Server Not Loading
+
+**Symptoms:**
+- Tools don't appear in your AI coding agent
+- No response to skill-seeker commands
+
+**Solutions:**
+
+1. Check configuration (for Claude Code):
+   ```bash
+   cat ~/.config/claude-code/mcp.json
+   ```
+
+2. Verify server can start:
+   ```bash
+   python3 -m skill_seekers.mcp.server_fastmcp
+   # Should start without errors (Ctrl+C to exit)
+   ```
+
+3. Check dependencies:
+   ```bash
+   pip3 install -e ".[mcp]"
+   ```
+
+4. Completely restart your AI coding agent (quit and reopen)
+
+5. Check agent logs:
+   - Claude Code (macOS): `~/Library/Logs/Claude Code/`
+   - Claude Code (Linux): `~/.config/claude-code/logs/`
+   - Cursor/Windsurf: Check your editor's output panel for MCP errors
+
+### "ModuleNotFoundError: No module named 'mcp'"
+
+```bash
+pip install -e ".[mcp]"
+```
+
+### Tools Appear But Don't Work
+
+**Solutions:**
+
+1. Verify `cwd` in config points to repository root
+2. Check CLI tools exist:
+   ```bash
+   which skill-seekers
+   skill-seekers create --help
+   ```
+
+3. Test CLI tools directly:
+   ```bash
+   python -m skill_seekers.cli.doc_scraper --help
+   ```
+
+### Slow Operations
+
+1. Check rate limit in configs (increase if needed)
+2. Use smaller `max_pages` for testing
+3. Use `skip_scrape` to avoid re-downloading data
+
+## Advanced Configuration
+
+### Using Virtual Environment
+
+```bash
+# Create venv
+python3 -m venv venv
+source venv/bin/activate
+pip install -e ".[mcp]"
+pip install -e .
+which python3  # Copy this path
+```
+
+Configure your AI coding agent to use venv Python (example for Claude Code):
+
+```json
+{
+  "mcpServers": {
+    "skill-seeker": {
+      "command": "/path/to/Skill_Seekers/venv/bin/python3",
+      "args": ["-m", "skill_seekers.mcp.server_fastmcp"],
+      "cwd": "/path/to/Skill_Seekers"
+    }
+  }
+}
+```
+
+### Debug Mode
+
+Enable verbose logging:
+
+```json
+{
+  "mcpServers": {
+    "skill-seeker": {
+      "command": "python3",
+      "args": ["-u", "-m", "skill_seekers.mcp.server_fastmcp"],
+      "cwd": "/path/to/Skill_Seekers",
+      "env": {
+        "DEBUG": "1"
+      }
+    }
+  }
+}
+```
+
+### With API Enhancement
+
+For API-based enhancement (requires Anthropic API key):
+
+```json
+{
+  "mcpServers": {
+    "skill-seeker": {
+      "command": "python3",
+      "args": ["-m", "skill_seekers.mcp.server_fastmcp"],
+      "cwd": "/path/to/Skill_Seekers",
+      "env": {
+        "ANTHROPIC_API_KEY": "sk-ant-your-key-here"
+      }
+    }
+  }
+}
+```
+
+## Performance
+
+| Operation | Time | Notes |
+|-----------|------|-------|
+| List configs | <1s | Instant |
+| Generate config | <1s | Creates JSON file |
+| Validate config | <1s | Quick validation |
+| Estimate pages | 1-2min | Fast, no data download |
+| Split config | 1-3min | Analyzes and creates sub-configs |
+| Generate router | 10-30s | Creates router SKILL.md |
+| Scrape docs | 15-45min | First time only |
+| Scrape docs (40K pages) | 20-40hrs | Sequential |
+| Scrape docs (40K pages, parallel) | ~4-8hrs (estimated) | 5 skills in parallel |
+| Scrape (cached) | <1min | With `skip_scrape` |
+| Package skill | 5-10s | Creates .zip |
+| Package multi | 30-60s | Packages 5-10 skills |
+
+## Documentation
+
+- **Full Setup Guide**: [docs/guides/MCP_SETUP.md](../../../docs/guides/MCP_SETUP.md)
+- **Main README**: [README.md](../../../README.md)
+- **Usage Guide**: [docs/README.md](../../../docs/README.md)
+- **Testing Guide**: [docs/guides/TESTING_GUIDE.md](../../../docs/guides/TESTING_GUIDE.md)
+
+## Support
+
+- **Issues**: [GitHub Issues](https://github.com/yusufkaraaslan/Skill_Seekers/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yusufkaraaslan/Skill_Seekers/discussions)
+
+## License
+
+MIT License - See [LICENSE](../LICENSE) for details

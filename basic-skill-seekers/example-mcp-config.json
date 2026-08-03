@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "skill-seeker": {
+      "type": "stdio",
+      "command": "/path/to/your/Skill_Seekers/.venv/bin/python3",
+      "args": [
+        "-m",
+        "skill_seekers.mcp.server_fastmcp"
+      ],
+      "cwd": "/path/to/your/Skill_Seekers",
+      "env": {}
+    }
+  }
+}

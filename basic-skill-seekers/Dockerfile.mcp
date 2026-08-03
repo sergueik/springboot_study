@@ -1,0 +1,59 @@
+# Skill Seekers MCP Server - Docker Image
+# Optimized for MCP server deployment (stdio + HTTP modes)
+
+FROM python:3.12-slim
+
+LABEL maintainer="Skill Seekers <noreply@skillseekers.dev>"
+LABEL description="Skill Seekers MCP Server - 40 tools for AI skills generation"
+LABEL version="3.9.0.dev0"
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN useradd -m -u 1000 -s /bin/bash mcp && \
+    mkdir -p /app /data /configs /output && \
+    chown -R mcp:mcp /app /data /configs /output
+
+# Copy application files
+COPY --chown=mcp:mcp src/ src/
+COPY --chown=mcp:mcp configs/ configs/
+COPY --chown=mcp:mcp pyproject.toml README.md ./
+
+# Install dependencies.
+# NOTE: install mcp via the [mcp] extra, never as a bare `pip install mcp`.
+# pyproject pins `mcp>=1.25,<2`; a bare install resolves to mcp 2.x, where
+# FastMCP moved out of `mcp.server` and the server fails to start.
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -e ".[all-llms,mcp]"
+
+# Switch to non-root user
+USER mcp
+
+# Environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    MCP_TRANSPORT=http \
+    MCP_PORT=8765 \
+    SKILL_SEEKERS_HOME=/data \
+    SKILL_SEEKERS_OUTPUT=/output
+
+# Health check for HTTP mode
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:${MCP_PORT}/health || exit 1
+
+# Volumes
+VOLUME ["/data", "/configs", "/output"]
+
+# Expose MCP server port (default 8765, overridden by $PORT on cloud platforms)
+EXPOSE ${MCP_PORT:-8765}
+
+# Start MCP server in HTTP mode by default
+# Uses shell form so $PORT/$MCP_PORT env vars are expanded at runtime
+# Cloud platforms (Render, Railway, etc.) set $PORT automatically
+CMD python -m skill_seekers.mcp.server_fastmcp --http --host 0.0.0.0 --port ${PORT:-${MCP_PORT:-8765}}

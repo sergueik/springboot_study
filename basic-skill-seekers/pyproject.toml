@@ -1,0 +1,452 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "skill-seekers"
+version = "3.10.0.dev0"
+description = "Convert documentation websites, GitHub repositories, and PDFs into Claude AI skills. International support with Chinese (简体中文) documentation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Yusuf Karaaslan"}
+]
+keywords = [
+    "claude",
+    "ai",
+    "documentation",
+    "scraping",
+    "skills",
+    "llm",
+    "mcp",
+    "automation",
+    "i18n",
+    "chinese",
+    "international"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Documentation",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing :: Markup :: Markdown",
+    "Natural Language :: English",
+    "Natural Language :: Chinese (Simplified)",
+]
+
+# Core dependencies
+dependencies = [
+    "requests>=2.32.5",
+    "beautifulsoup4>=4.14.2",
+    "html5lib>=1.1", # Lenient HTML parser fallback for broken markup (#96)
+    "PyGithub>=2.5.0",
+    "GitPython>=3.1.40",
+    "httpx>=0.28.1", # Required for async scraping (core feature)
+    "anthropic>=0.76.0", # Required for AI enhancement (core feature)
+    "PyMuPDF>=1.24.14",
+    "Pillow>=11.0.0",
+    "pydantic>=2.12.3",
+    "pydantic-settings>=2.11.0",
+    "python-dotenv>=1.1.1",
+    "jsonschema>=4.25.1",
+    "click>=8.3.0",
+    "Pygments>=2.19.2",
+    "pathspec>=0.12.1",
+    "networkx>=3.0",
+    "tomli>=2.0.0; python_version < '3.11'", # TOML parser for version reading
+    "schedule>=1.2.0", # Required for sync monitoring
+    "PyYAML>=6.0", # Required for workflow preset management
+    "langchain>=1.2.10",
+    "llama-index>=0.14.15",
+]
+
+[project.optional-dependencies]
+# MCP server dependencies (NOW TRULY OPTIONAL)
+mcp = [
+    "mcp>=1.25,<2",
+    "httpx>=0.28.1",
+    "httpx-sse>=0.4.3",
+    "uvicorn>=0.38.0",
+    "starlette>=0.48.0",
+    "sse-starlette>=3.0.2",
+]
+
+# LLM platform-specific dependencies
+# Google Gemini support
+gemini = [
+    "google-generativeai>=0.8.0",
+]
+
+# OpenAI ChatGPT support
+openai = [
+    "openai>=1.0.0",
+]
+
+# MiniMax AI support (uses OpenAI-compatible API)
+minimax = [
+    "openai>=1.0.0",
+]
+
+# Kimi (Moonshot AI) support (uses OpenAI-compatible API)
+kimi = [
+    "openai>=1.0.0",
+]
+
+# DeepSeek AI support (uses OpenAI-compatible API)
+deepseek = [
+    "openai>=1.0.0",
+]
+
+# Qwen (Alibaba) support (uses OpenAI-compatible API)
+qwen = [
+    "openai>=1.0.0",
+]
+
+# OpenRouter support (uses OpenAI-compatible API)
+openrouter = [
+    "openai>=1.0.0",
+]
+
+# Together AI support (uses OpenAI-compatible API)
+together = [
+    "openai>=1.0.0",
+]
+
+# Fireworks AI support (uses OpenAI-compatible API)
+fireworks = [
+    "openai>=1.0.0",
+]
+
+# All LLM platforms combined
+all-llms = [
+    "google-generativeai>=0.8.0",
+    "openai>=1.0.0",
+]
+
+# Cloud storage support
+s3 = [
+    "boto3>=1.34.0",
+]
+
+gcs = [
+    "google-cloud-storage>=2.10.0",
+]
+
+azure = [
+    "azure-storage-blob>=12.19.0",
+]
+
+# Word document (.docx) support
+docx = [
+    "mammoth>=1.6.0",
+    "python-docx>=1.1.0",
+]
+
+# EPUB (.epub) support
+epub = [
+    "ebooklib>=0.18",
+]
+
+# Video processing (lightweight: YouTube transcripts + metadata)
+video = [
+    "yt-dlp>=2024.12.0",
+    "youtube-transcript-api>=1.2.0",
+]
+
+# Video processing (full: + Whisper + visual extraction)
+# NOTE: easyocr removed — it pulls torch with the wrong GPU variant.
+# Use: skill-seekers video --setup  (auto-detects GPU, installs correct PyTorch + easyocr)
+video-full = [
+    "yt-dlp>=2024.12.0",
+    "youtube-transcript-api>=1.2.0",
+    "faster-whisper>=1.0.0",
+    "scenedetect[opencv]>=0.6.4",
+    "opencv-python-headless>=4.9.0",
+    "pytesseract>=0.3.13",
+]
+
+# RAG vector database upload support
+chroma = [
+    "chromadb>=0.4.0",
+]
+
+weaviate = [
+    "weaviate-client>=3.25.0,<4",
+]
+
+sentence-transformers = [
+    "sentence-transformers>=2.2.0",
+]
+
+pinecone = [
+    "pinecone>=5.0.0",
+]
+
+rag-upload = [
+    "chromadb>=0.4.0",
+    "weaviate-client>=3.25.0,<4",
+    "sentence-transformers>=2.2.0",
+    "pinecone>=5.0.0",
+]
+
+# All cloud storage providers combined
+all-cloud = [
+    "boto3>=1.34.0",
+    "google-cloud-storage>=2.10.0",
+    "azure-storage-blob>=12.19.0",
+]
+
+# New source type dependencies (v3.2.0+)
+jupyter = [
+    "nbformat>=5.9.0",
+]
+
+asciidoc = [
+    "asciidoc>=10.0.0",
+]
+
+pptx = [
+    "python-pptx>=0.6.21",
+]
+
+confluence = [
+    "atlassian-python-api>=3.41.0",
+]
+
+notion = [
+    "notion-client>=2.0.0",
+]
+
+rss = [
+    "feedparser>=6.0.0",
+]
+
+chat = [
+    "slack-sdk>=3.27.0",
+]
+
+# Headless browser for JavaScript SPA sites
+browser = [
+    "playwright>=1.40.0",
+]
+
+# Embedding server support
+embedding = [
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
+    "sentence-transformers>=2.3.0",
+    "numpy>=1.24.0",
+    "voyageai>=0.2.0",
+]
+
+# All optional dependencies combined (dev dependencies now in [dependency-groups])
+# Note: video-full deps (opencv, easyocr, faster-whisper) excluded due to heavy
+# native dependencies. Install separately: pip install skill-seekers[video-full]
+all = [
+    "mammoth>=1.6.0",
+    "python-docx>=1.1.0",
+    "ebooklib>=0.18",
+    "yt-dlp>=2024.12.0",
+    "youtube-transcript-api>=1.2.0",
+    "mcp>=1.25,<2",
+    "httpx>=0.28.1",
+    "httpx-sse>=0.4.3",
+    "uvicorn>=0.38.0",
+    "starlette>=0.48.0",
+    "sse-starlette>=3.0.2",
+    "google-generativeai>=0.8.0",
+    "openai>=1.0.0",
+    "boto3>=1.34.0",
+    "google-cloud-storage>=2.10.0",
+    "azure-storage-blob>=12.19.0",
+    "chromadb>=0.4.0",
+    "weaviate-client>=3.25.0,<4",
+    "pinecone>=5.0.0",
+    "fastapi>=0.109.0",
+    "sentence-transformers>=2.3.0",
+    "numpy>=1.24.0",
+    "voyageai>=0.2.0",
+    # New source types (v3.2.0+)
+    "nbformat>=5.9.0",
+    "asciidoc>=10.0.0",
+    "python-pptx>=0.6.21",
+    "atlassian-python-api>=3.41.0",
+    "notion-client>=2.0.0",
+    "feedparser>=6.0.0",
+    "slack-sdk>=3.27.0",
+]
+
+[project.urls]
+Homepage = "https://skillseekersweb.com/"
+Website = "https://skillseekersweb.com/"
+Repository = "https://github.com/yusufkaraaslan/Skill_Seekers"
+"Bug Tracker" = "https://github.com/yusufkaraaslan/Skill_Seekers/issues"
+Documentation = "https://skillseekersweb.com/"
+"Config Browser" = "https://skillseekersweb.com/"
+"中文文档 (Chinese)" = "https://github.com/yusufkaraaslan/Skill_Seekers/blob/main/README.zh-CN.md"
+"Author" = "https://x.com/_yUSyUS_"
+"Website Repository" = "https://github.com/yusufkaraaslan/skillseekersweb"
+"Community Configs" = "https://github.com/yusufkaraaslan/skill-seekers-configs"
+"GitHub Action" = "https://github.com/yusufkaraaslan/skill-seekers-action"
+"Plugin" = "https://github.com/yusufkaraaslan/skill-seekers-plugin"
+"Homebrew Tap" = "https://github.com/yusufkaraaslan/homebrew-skill-seekers"
+
+[project.scripts]
+# Main CLI entry point
+skill-seekers = "skill_seekers.cli.main:main"
+
+# Core commands
+skill-seekers-create = "skill_seekers.cli.create_command:main"
+skill-seekers-enhance = "skill_seekers.cli.enhance_command:main"
+skill-seekers-enhance-status = "skill_seekers.cli.enhance_status:main"
+skill-seekers-package = "skill_seekers.cli.package_skill:main"
+skill-seekers-upload = "skill_seekers.cli.upload_skill:main"
+skill-seekers-install = "skill_seekers.cli.install_skill:main"
+skill-seekers-install-agent = "skill_seekers.cli.install_agent:main"
+
+# Analysis & utilities
+skill-seekers-estimate = "skill_seekers.cli.estimate_pages:main"
+skill-seekers-patterns = "skill_seekers.cli.pattern_recognizer:main"
+skill-seekers-how-to-guides = "skill_seekers.cli.how_to_guide_builder:main"
+skill-seekers-quality = "skill_seekers.cli.quality_metrics:main"
+skill-seekers-workflows = "skill_seekers.cli.workflows_command:main"
+
+# Configuration & setup
+skill-seekers-config = "skill_seekers.cli.config_command:main"
+skill-seekers-doctor = "skill_seekers.cli.doctor:main"
+skill-seekers-setup = "skill_seekers.cli.setup_wizard:main"
+skill-seekers-resume = "skill_seekers.cli.resume_command:main"
+skill-seekers-sync-config = "skill_seekers.cli.sync_config:main"
+
+# Advanced
+skill-seekers-cloud = "skill_seekers.cli.cloud_storage_cli:main"
+skill-seekers-embed = "skill_seekers.embedding.server:main"
+skill-seekers-sync = "skill_seekers.cli.sync_cli:main"
+skill-seekers-benchmark = "skill_seekers.cli.benchmark_cli:main"
+skill-seekers-stream = "skill_seekers.cli.streaming_ingest:main"
+skill-seekers-update = "skill_seekers.cli.incremental_updater:main"
+skill-seekers-multilang = "skill_seekers.cli.multilang_support:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["skill_seekers*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+skill_seekers = ["py.typed", "workflows/*.yaml", "cli/defaults.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --strict-markers"
+markers = [
+    "asyncio: mark test as an async test",
+    "slow: mark test as slow running (>5 seconds)",
+    "integration: mark test as integration test (requires external services)",
+    "e2e: mark test as end-to-end (resource-intensive, may create files)",
+    "venv: mark test as requiring virtual environment setup",
+    "bootstrap: mark test as bootstrap feature specific",
+    "benchmark: mark test as performance benchmark",
+    "serial: tests that must run alone (shared HTTP server, singleton mutation)",
+    "network: tests that make real HTTP calls or need Docker services",
+    "mcp_only: tests that require the mcp package installed",
+]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.coverage.run]
+source = ["src/skill_seekers"]
+omit = ["*/tests/*", "*/__pycache__/*", "*/venv/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "I",      # isort
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "UP",     # pyupgrade
+    "ARG",    # flake8-unused-arguments
+    "SIM",    # flake8-simplify
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "F541",   # f-string without placeholders (style preference)
+    "ARG002", # unused method argument (often needed for interface compliance)
+    "B007",   # loop control variable not used (sometimes intentional)
+    "I001",   # import block unsorted (handled by formatter)
+    "SIM114", # combine if branches (style preference, can reduce readability)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["skill_seekers"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+ignore_missing_imports = true
+show_error_codes = true
+pretty = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+check_untyped_defs = false
+
+[dependency-groups]
+dev = [
+    # Core testing
+    "pytest>=8.4.2",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=7.0.0",
+    "coverage>=7.11.0",
+
+    # Code quality
+    "ruff>=0.14.13",
+    "mypy>=1.19.1",
+
+    # Test dependencies (Kimi's finding #3)
+    "psutil>=5.9.0",        # Process utilities for testing
+    "numpy>=1.24.0",        # Numerical operations
+    "starlette>=0.31.0",    # HTTP transport testing
+    "httpx>=0.24.0",        # HTTP client for testing
+
+    # Cloud storage testing (Kimi's finding #2)
+    "boto3>=1.26.0",                    # AWS S3
+    "google-cloud-storage>=2.10.0",     # Google Cloud Storage
+    "azure-storage-blob>=12.17.0",      # Azure Blob Storage
+]

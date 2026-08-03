@@ -1,0 +1,187 @@
+"""
+MCP Tool Implementations
+
+This package contains modular tool implementations for the Skill Seekers MCP server.
+Tools are organized by functionality:
+
+- config_tools: Configuration management (generate, list, validate)
+- scraping_tools: Scraping operations (docs, GitHub, PDF, estimation)
+- packaging_tools: Skill packaging and upload
+- splitting_tools: Config splitting and router generation
+- source_tools: Config source management (fetch, submit, add/remove sources)
+- marketplace_tools: Marketplace management (add, list, remove, publish)
+- vector_db_tools: Vector database export (Weaviate, Chroma, FAISS, Qdrant)
+"""
+
+# Import centralized version
+from skill_seekers._version import __version__
+
+from .config_tools import (
+    generate_config as generate_config_impl,
+)
+from .config_tools import (
+    list_configs as list_configs_impl,
+)
+from .config_tools import (
+    validate_config as validate_config_impl,
+)
+from .packaging_tools import (
+    enhance_skill_tool as enhance_skill_impl,
+)
+from .packaging_tools import (
+    install_skill_tool as install_skill_impl,
+)
+from .packaging_tools import (
+    package_skill_tool as package_skill_impl,
+)
+from .packaging_tools import (
+    upload_skill_tool as upload_skill_impl,
+)
+from .scraping_tools import (
+    build_how_to_guides_tool as build_how_to_guides_impl,
+)
+from .scraping_tools import (
+    detect_patterns_tool as detect_patterns_impl,
+)
+from .scraping_tools import (
+    estimate_pages_tool as estimate_pages_impl,
+)
+from .scraping_tools import (
+    extract_config_patterns_tool as extract_config_patterns_impl,
+)
+from .scraping_tools import (
+    extract_test_examples_tool as extract_test_examples_impl,
+)
+from .scraping_tools import (
+    scrape_codebase_tool as scrape_codebase_impl,
+)
+from .scraping_tools import (
+    scrape_docs_tool as scrape_docs_impl,
+)
+from .scraping_tools import (
+    scrape_github_tool as scrape_github_impl,
+)
+from .scraping_tools import (
+    scrape_pdf_tool as scrape_pdf_impl,
+)
+from .scraping_tools import (
+    scrape_generic_tool as scrape_generic_impl,
+)
+from .scraping_tools import (
+    scrape_video_tool as scrape_video_impl,
+)
+from .source_tools import (
+    add_config_source_tool as add_config_source_impl,
+)
+from .source_tools import (
+    fetch_config_tool as fetch_config_impl,
+)
+from .source_tools import (
+    list_config_sources_tool as list_config_sources_impl,
+)
+from .source_tools import (
+    remove_config_source_tool as remove_config_source_impl,
+)
+from .source_tools import (
+    submit_config_tool as submit_config_impl,
+)
+from .marketplace_tools import (
+    add_marketplace_tool as add_marketplace_impl,
+)
+from .marketplace_tools import (
+    list_marketplaces_tool as list_marketplaces_impl,
+)
+from .marketplace_tools import (
+    publish_to_marketplace_tool as publish_to_marketplace_impl,
+)
+from .marketplace_tools import (
+    remove_marketplace_tool as remove_marketplace_impl,
+)
+from .splitting_tools import (
+    generate_router as generate_router_impl,
+)
+from .splitting_tools import (
+    split_config as split_config_impl,
+)
+from .vector_db_tools import (
+    export_to_chroma_impl,
+)
+from .vector_db_tools import (
+    export_to_faiss_impl,
+)
+from .vector_db_tools import (
+    export_to_qdrant_impl,
+)
+from .vector_db_tools import (
+    export_to_weaviate_impl,
+)
+from .sync_config_tools import (
+    sync_config_tool as sync_config_impl,
+)
+from .workflow_tools import (
+    create_workflow_tool as create_workflow_impl,
+)
+from .workflow_tools import (
+    delete_workflow_tool as delete_workflow_impl,
+)
+from .workflow_tools import (
+    get_workflow_tool as get_workflow_impl,
+)
+from .workflow_tools import (
+    list_workflows_tool as list_workflows_impl,
+)
+from .workflow_tools import (
+    update_workflow_tool as update_workflow_impl,
+)
+
+__all__ = [
+    "__version__",
+    # Config tools
+    "generate_config_impl",
+    "list_configs_impl",
+    "validate_config_impl",
+    # Scraping tools
+    "estimate_pages_impl",
+    "scrape_docs_impl",
+    "scrape_github_impl",
+    "scrape_pdf_impl",
+    "scrape_video_impl",
+    "scrape_codebase_impl",
+    "detect_patterns_impl",
+    "extract_test_examples_impl",
+    "build_how_to_guides_impl",
+    "extract_config_patterns_impl",
+    "scrape_generic_impl",
+    # Packaging tools
+    "package_skill_impl",
+    "upload_skill_impl",
+    "enhance_skill_impl",
+    "install_skill_impl",
+    # Splitting tools
+    "split_config_impl",
+    "generate_router_impl",
+    # Marketplace tools
+    "add_marketplace_impl",
+    "list_marketplaces_impl",
+    "remove_marketplace_impl",
+    "publish_to_marketplace_impl",
+    # Source tools
+    "fetch_config_impl",
+    "submit_config_impl",
+    "add_config_source_impl",
+    "list_config_sources_impl",
+    "remove_config_source_impl",
+    # Vector database tools
+    "export_to_weaviate_impl",
+    "export_to_chroma_impl",
+    "export_to_faiss_impl",
+    "export_to_qdrant_impl",
+    # Sync config tools
+    "sync_config_impl",
+    # Workflow tools
+    "list_workflows_impl",
+    "get_workflow_impl",
+    "create_workflow_impl",
+    "update_workflow_impl",
+    "delete_workflow_impl",
+]

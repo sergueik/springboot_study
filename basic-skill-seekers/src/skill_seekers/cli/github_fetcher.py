@@ -1,0 +1,572 @@
+"""
+GitHub Three-Stream Fetcher
+
+Fetches from GitHub and splits into 3 streams:
+- Stream 1: Code (for C3.x analysis)
+- Stream 2: Documentation (README, CONTRIBUTING, docs/*.md)
+- Stream 3: Insights (issues, metadata)
+
+This is the foundation of the unified codebase analyzer architecture.
+"""
+
+import os
+import subprocess
+import tempfile
+from collections import Counter
+from dataclasses import dataclass
+from pathlib import Path
+
+import requests
+
+from .config_manager import get_config_manager
+from .rate_limit_handler import RateLimitError, RateLimitHandler, create_github_headers
+
+
+@dataclass
+class CodeStream:
+    """Code files for C3.x analysis."""
+
+    directory: Path
+    files: list[Path]
+
+
+@dataclass
+class DocsStream:
+    """Documentation files from repository."""
+
+    readme: str | None
+    contributing: str | None
+    docs_files: list[dict]  # [{"path": "docs/oauth.md", "content": "..."}]
+
+
+@dataclass
+class InsightsStream:
+    """GitHub metadata and issues."""
+
+    metadata: dict  # stars, forks, language, etc.
+    common_problems: list[dict]
+    known_solutions: list[dict]
+    top_labels: list[dict]
+
+
+@dataclass
+class ThreeStreamData:
+    """Complete output from GitHub fetcher."""
+
+    code_stream: CodeStream
+    docs_stream: DocsStream
+    insights_stream: InsightsStream
+
+
+class GitHubThreeStreamFetcher:
+    """
+    Fetch from GitHub and split into 3 streams.
+
+    Usage:
+        fetcher = GitHubThreeStreamFetcher(
+            repo_url="https://github.com/facebook/react",
+            github_token=os.getenv('GITHUB_TOKEN')
+        )
+
+        three_streams = fetcher.fetch()
+
+        # Now you have:
+        # - three_streams.code_stream (for C3.x)
+        # - three_streams.docs_stream (for doc parser)
+        # - three_streams.insights_stream (for issue analyzer)
+    """
+
+    def __init__(
+        self,
+        repo_url: str,
+        github_token: str | None = None,
+        interactive: bool = True,
+        profile_name: str | None = None,
+        issue_since: str | None = None,
+        issue_labels: list[str] | None = None,
+        issue_state: str | None = None,
+    ):
+        """
+        Initialize fetcher.
+
+        Args:
+            repo_url: GitHub repository URL (e.g., https://github.com/owner/repo)
+            github_token: Optional GitHub API token for higher rate limits
+            interactive: Whether to show interactive prompts (False for CI/CD)
+            profile_name: Name of the GitHub profile being used
+            issue_since: Only fetch issues updated after this ISO8601 date
+            issue_labels: Filter issues by these label names
+            issue_state: Filter issues by state ("open", "closed", or "all")
+        """
+        self.repo_url = repo_url
+        self.github_token = github_token or os.getenv("GITHUB_TOKEN")
+        self.owner, self.repo = self.parse_repo_url(repo_url)
+        self.interactive = interactive
+        self.issue_since = issue_since
+        self.issue_labels = issue_labels or []
+        self.issue_state = issue_state or "all"
+
+        # Initialize rate limit handler
+        config = get_config_manager()
+        if not profile_name and self.github_token:
+            profile_name = config.get_profile_for_token(self.github_token)
+
+        self.rate_limiter = RateLimitHandler(
+            token=self.github_token, interactive=interactive, profile_name=profile_name
+        )
+
+    def parse_repo_url(self, url: str) -> tuple[str, str]:
+        """
+        Parse GitHub URL to extract owner and repo.
+
+        Args:
+            url: GitHub URL (https://github.com/owner/repo or git@github.com:owner/repo.git)
+
+        Returns:
+            Tuple of (owner, repo)
+        """
+        # Remove .git suffix if present
+        if url.endswith(".git"):
+            url = url[:-4]  # Remove last 4 characters (.git)
+
+        # Handle git@ URLs (SSH format)
+        if url.startswith("git@github.com:"):
+            parts = url.replace("git@github.com:", "").split("/")
+            if len(parts) >= 2:
+                return parts[0], parts[1]
+
+        # Handle HTTPS URLs
+        if "github.com/" in url:
+            parts = url.split("github.com/")[-1].split("/")
+            if len(parts) >= 2:
+                return parts[0], parts[1]
+
+        raise ValueError(f"Invalid GitHub URL: {url}")
+
+    def fetch(self, output_dir: Path = None) -> ThreeStreamData:
+        """
+        Fetch everything and split into 3 streams.
+
+        Args:
+            output_dir: Directory to clone repository to (default: /tmp)
+
+        Returns:
+            ThreeStreamData with all 3 streams
+
+        Raises:
+            RateLimitError: If rate limit cannot be handled
+        """
+        # Check rate limit upfront
+        if not self.rate_limiter.check_upfront():
+            raise RateLimitError("Rate limit check failed during startup")
+
+        if output_dir is None:
+            output_dir = Path(tempfile.mkdtemp(prefix="github_fetch_"))
+
+        print(f"📦 Cloning {self.repo_url}...")
+        local_path = self.clone_repo(output_dir)
+
+        print("🔍 Fetching GitHub metadata...")
+        metadata = self.fetch_github_metadata()
+
+        print("🐛 Fetching issues...")
+        issues = self.fetch_issues(max_issues=100)
+
+        print("📂 Classifying files...")
+        code_files, doc_files = self.classify_files(local_path)
+        print(f"  - Code: {len(code_files)} files")
+        print(f"  - Docs: {len(doc_files)} files")
+
+        print(f"📊 Analyzing {len(issues)} issues...")
+        issue_insights = self.analyze_issues(issues)
+
+        # Build three streams
+        return ThreeStreamData(
+            code_stream=CodeStream(directory=local_path, files=code_files),
+            docs_stream=DocsStream(
+                readme=self.read_file(local_path / "README.md"),
+                contributing=self.read_file(local_path / "CONTRIBUTING.md"),
+                docs_files=[
+                    {"path": str(f.relative_to(local_path)), "content": self.read_file(f)}
+                    for f in doc_files
+                    if f.name not in ["README.md", "CONTRIBUTING.md"]
+                ],
+            ),
+            insights_stream=InsightsStream(
+                metadata=metadata,
+                common_problems=issue_insights["common_problems"],
+                known_solutions=issue_insights["known_solutions"],
+                top_labels=issue_insights["top_labels"],
+            ),
+        )
+
+    def clone_repo(self, output_dir: Path) -> Path:
+        """
+        Clone repository to local directory.
+
+        Args:
+            output_dir: Parent directory for clone
+
+        Returns:
+            Path to cloned repository
+        """
+        repo_dir = output_dir / self.repo
+        repo_dir.mkdir(parents=True, exist_ok=True)
+
+        # Clone with depth 1 for speed
+        cmd = ["git", "clone", "--depth", "1", self.repo_url, str(repo_dir)]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+
+        if result.returncode != 0:
+            raise RuntimeError(f"Failed to clone repository: {result.stderr}")
+
+        return repo_dir
+
+    def fetch_github_metadata(self) -> dict:
+        """
+        Fetch repo metadata via GitHub API.
+
+        Returns:
+            Dict with stars, forks, language, open_issues, etc.
+
+        Raises:
+            RateLimitError: If rate limit cannot be handled
+        """
+        url = f"https://api.github.com/repos/{self.owner}/{self.repo}"
+        headers = create_github_headers(self.github_token)
+
+        try:
+            response = requests.get(url, headers=headers, timeout=10)
+
+            # Check for rate limit
+            if not self.rate_limiter.check_response(response):
+                raise RateLimitError("Rate limit exceeded and cannot continue")
+
+            response.raise_for_status()
+            data = response.json()
+
+            return {
+                "stars": data.get("stargazers_count", 0),
+                "forks": data.get("forks_count", 0),
+                "open_issues": data.get("open_issues_count", 0),
+                "language": data.get("language", "Unknown"),
+                "description": data.get("description", ""),
+                "homepage": data.get("homepage", ""),
+                "created_at": data.get("created_at", ""),
+                "updated_at": data.get("updated_at", ""),
+                "html_url": data.get("html_url", ""),  # NEW: Repository URL
+                "license": data.get("license", {}),  # NEW: License info
+            }
+        except RateLimitError:
+            raise
+        except Exception as e:
+            print(f"⚠️  Failed to fetch metadata: {e}")
+            return {
+                "stars": 0,
+                "forks": 0,
+                "open_issues": 0,
+                "language": "Unknown",
+                "description": "",
+                "homepage": "",
+                "created_at": "",
+                "updated_at": "",
+                "html_url": "",  # NEW: Repository URL
+                "license": {},  # NEW: License info
+            }
+
+    def fetch_issues(self, max_issues: int = 100) -> list[dict]:
+        """
+        Fetch GitHub issues with optional state/label/since filters.
+
+        Args:
+            max_issues: Maximum number of issues to fetch
+
+        Returns:
+            List of issue dicts
+        """
+        all_issues = []
+
+        if self.issue_state in ("open", "closed"):
+            # Single-state fetch: use full quota
+            all_issues.extend(self._fetch_issues_page(state=self.issue_state, max_count=max_issues))
+        else:
+            # Default "all": fetch open first, then fill the REMAINING quota with
+            # closed. A rigid //2 split under-fetched when one state had fewer
+            # than half the quota and never reallocated the unused half.
+            open_issues = self._fetch_issues_page(state="open", max_count=max_issues)
+            all_issues.extend(open_issues)
+            remaining = max_issues - len(open_issues)
+            if remaining > 0:
+                all_issues.extend(self._fetch_issues_page(state="closed", max_count=remaining))
+
+        return all_issues
+
+    def _fetch_issues_page(self, state: str, max_count: int) -> list[dict]:
+        """
+        Fetch one page of issues.
+
+        Args:
+            state: 'open' or 'closed'
+            max_count: Maximum issues to fetch
+
+        Returns:
+            List of issues
+
+        Raises:
+            RateLimitError: If rate limit cannot be handled
+        """
+        url = f"https://api.github.com/repos/{self.owner}/{self.repo}/issues"
+        headers = create_github_headers(self.github_token)
+
+        params = {
+            "state": state,
+            # Don't over-fetch: with a small remaining quota (e.g. 5 after the
+            # open/closed split) a full 100-issue page is ~20x the payload.
+            # 100 is the GitHub API max page size.
+            "per_page": min(max_count, 100),
+            "sort": "comments",
+            "direction": "desc",
+        }
+        if self.issue_since:
+            params["since"] = self.issue_since
+        if self.issue_labels:
+            params["labels"] = ",".join(self.issue_labels)
+
+        # Follow Link: rel="next" pagination until we have max_count issues.
+        # A single page caps at 100, so without this any max_count > 100 was
+        # silently truncated (and PR filtering reduced it further).
+        collected: list[dict] = []
+        try:
+            page = 1
+            while len(collected) < max_count:
+                params["page"] = page
+                response = requests.get(url, headers=headers, params=params, timeout=10)
+
+                if not self.rate_limiter.check_response(response):
+                    raise RateLimitError("Rate limit exceeded and cannot continue")
+
+                response.raise_for_status()
+                batch = response.json()
+                if not batch:
+                    break
+
+                # Filter out pull requests (they appear in the issues endpoint).
+                collected.extend(i for i in batch if "pull_request" not in i)
+
+                link_header = response.headers.get("Link", "") or ""
+                if not isinstance(link_header, str) or 'rel="next"' not in link_header:
+                    break
+                page += 1
+
+            return collected[:max_count]
+        except RateLimitError:
+            raise
+        except Exception as e:
+            print(f"⚠️  Failed to fetch {state} issues: {e}")
+            # Keep the pages already fetched: returning [] discarded them AND
+            # let fetch_issues spend the full quota on the other state.
+            return collected[:max_count]
+
+    def classify_files(self, repo_path: Path) -> tuple[list[Path], list[Path]]:
+        """
+        Split files into code vs documentation.
+
+        Code patterns:
+        - *.py, *.js, *.ts, *.go, *.rs, *.java, etc.
+        - In src/, lib/, pkg/, etc.
+
+        Doc patterns:
+        - README.md, CONTRIBUTING.md, CHANGELOG.md
+        - docs/**/*.md, doc/**/*.md
+        - *.rst (reStructuredText)
+
+        Args:
+            repo_path: Path to repository
+
+        Returns:
+            Tuple of (code_files, doc_files)
+        """
+        code_files = []
+        doc_files = []
+
+        # Documentation patterns
+        doc_patterns = [
+            "**/README.md",
+            "**/CONTRIBUTING.md",
+            "**/CHANGELOG.md",
+            "**/LICENSE.md",
+            "docs/*.md",  # Files directly in docs/
+            "docs/**/*.md",  # Files in subdirectories of docs/
+            "doc/*.md",  # Files directly in doc/
+            "doc/**/*.md",  # Files in subdirectories of doc/
+            "documentation/*.md",  # Files directly in documentation/
+            "documentation/**/*.md",  # Files in subdirectories of documentation/
+            "**/*.rst",
+        ]
+
+        # Code extensions
+        code_extensions = [
+            ".py",
+            ".js",
+            ".ts",
+            ".jsx",
+            ".tsx",
+            ".go",
+            ".rs",
+            ".java",
+            ".kt",
+            ".c",
+            ".cpp",
+            ".h",
+            ".hpp",
+            ".rb",
+            ".php",
+            ".swift",
+            ".cs",
+            ".scala",
+            ".clj",
+            ".cljs",
+        ]
+
+        # Directories to exclude
+        exclude_dirs = [
+            "node_modules",
+            "__pycache__",
+            "venv",
+            ".venv",
+            ".git",
+            "build",
+            "dist",
+            ".tox",
+            ".pytest_cache",
+            "htmlcov",
+            ".mypy_cache",
+            ".eggs",
+            "*.egg-info",
+        ]
+
+        for file_path in repo_path.rglob("*"):
+            if not file_path.is_file():
+                continue
+
+            # Check excluded directories first
+            if any(exclude in str(file_path) for exclude in exclude_dirs):
+                continue
+
+            # Skip hidden files (but allow docs in docs/ directories)
+            is_in_docs_dir = any(
+                pattern in str(file_path) for pattern in ["docs/", "doc/", "documentation/"]
+            )
+            if any(part.startswith(".") for part in file_path.parts) and not is_in_docs_dir:
+                continue
+
+            # Check if documentation
+            is_doc = any(file_path.match(pattern) for pattern in doc_patterns)
+
+            if is_doc:
+                doc_files.append(file_path)
+            elif file_path.suffix in code_extensions:
+                code_files.append(file_path)
+
+        return code_files, doc_files
+
+    def analyze_issues(self, issues: list[dict]) -> dict:
+        """
+        Analyze GitHub issues to extract insights.
+
+        Returns:
+        {
+            "common_problems": [
+                {
+                    "title": "OAuth setup fails",
+                    "number": 42,
+                    "labels": ["question", "oauth"],
+                    "comments": 15,
+                    "state": "open"
+                },
+                ...
+            ],
+            "known_solutions": [
+                {
+                    "title": "Fixed OAuth redirect",
+                    "number": 35,
+                    "labels": ["bug", "oauth"],
+                    "comments": 8,
+                    "state": "closed"
+                },
+                ...
+            ],
+            "top_labels": [
+                {"label": "question", "count": 23},
+                {"label": "bug", "count": 15},
+                ...
+            ]
+        }
+        """
+        common_problems = []
+        known_solutions = []
+        all_labels = []
+
+        for issue in issues:
+            # Handle both string labels and dict labels (GitHub API format)
+            raw_labels = issue.get("labels", [])
+            labels = []
+            for label in raw_labels:
+                if isinstance(label, dict):
+                    labels.append(label.get("name", ""))
+                else:
+                    labels.append(str(label))
+            all_labels.extend(labels)
+
+            issue_data = {
+                "title": issue.get("title", ""),
+                "number": issue.get("number", 0),
+                "labels": labels,
+                "comments": issue.get("comments", 0),
+                "state": issue.get("state", "unknown"),
+            }
+
+            # Open issues with many comments = common problems
+            if issue["state"] == "open" and issue.get("comments", 0) >= 5:
+                common_problems.append(issue_data)
+
+            # Closed issues with comments = known solutions
+            elif issue["state"] == "closed" and issue.get("comments", 0) > 0:
+                known_solutions.append(issue_data)
+
+        # Count label frequency
+        label_counts = Counter(all_labels)
+
+        return {
+            "common_problems": sorted(common_problems, key=lambda x: x["comments"], reverse=True)[
+                :10
+            ],
+            "known_solutions": sorted(known_solutions, key=lambda x: x["comments"], reverse=True)[
+                :10
+            ],
+            "top_labels": [
+                {"label": label, "count": count} for label, count in label_counts.most_common(10)
+            ],
+        }
+
+    def read_file(self, file_path: Path) -> str | None:
+        """
+        Read file content safely.
+
+        Args:
+            file_path: Path to file
+
+        Returns:
+            File content or None if file doesn't exist or can't be read
+        """
+        if not file_path.exists():
+            return None
+
+        try:
+            return file_path.read_text(encoding="utf-8")
+        except Exception:
+            # Try with different encoding
+            try:
+                return file_path.read_text(encoding="latin-1")
+            except Exception:
+                return None

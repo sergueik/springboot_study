@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Environment variables (secrets)
+.env
+.env.local
+.env.*.local
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# Output directory
+output/
+*.zip
+
+# Skill Seekers cache (intermediate files)
+.skillseeker-cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backups
+*.backup
+
+# Testing artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+*.cover
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+
+# Build artifacts
+.build/
+skill-seekers-configs/
+.claude/skills
+.mcp.json
+!/.mcp.json
+!distribution/claude-plugin/.mcp.json
+settings.json
+USER_GUIDE.md
+
+# Local tooling artifacts (per-developer state, not project state)
+# chromadb's default persistence directory
+chroma_db/
+# Superpowers SDK output
+docs/superpowers/

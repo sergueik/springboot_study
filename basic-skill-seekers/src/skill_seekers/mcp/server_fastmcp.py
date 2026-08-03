@@ -1,0 +1,1797 @@
+#!/usr/bin/env python3
+"""
+Skill Seeker MCP Server (FastMCP Implementation)
+
+Modern, decorator-based MCP server using FastMCP for simplified tool registration.
+Provides 34 tools for generating LLM skills from documentation.
+
+This is a streamlined alternative to server.py (2200 lines → 708 lines, 68% reduction).
+All tool implementations are delegated to modular tool files in tools/ directory.
+
+**Architecture:**
+- FastMCP server with decorator-based tool registration
+- 34 tools organized into 7 categories:
+  * Config tools (3): generate_config, list_configs, validate_config
+  * Scraping tools (11): estimate_pages, scrape_docs, scrape_github, scrape_pdf, scrape_video, scrape_codebase, detect_patterns, extract_test_examples, build_how_to_guides, extract_config_patterns, scrape_generic
+  * Packaging tools (4): package_skill, upload_skill, enhance_skill, install_skill
+  * Splitting tools (2): split_config, generate_router
+  * Source tools (6): fetch_config, submit_config, push_config, add_config_source, list_config_sources, remove_config_source
+  * Marketplace tools (4): add_marketplace, list_marketplaces, remove_marketplace, publish_to_marketplace
+  * Vector Database tools (4): export_to_weaviate, export_to_chroma, export_to_faiss, export_to_qdrant
+  * Workflow tools (5): list_workflows, get_workflow, create_workflow, update_workflow, delete_workflow
+
+**Usage:**
+  # Stdio transport (default, backward compatible)
+  python -m skill_seekers.mcp.server_fastmcp
+
+  # HTTP transport (new)
+  python -m skill_seekers.mcp.server_fastmcp --http
+  python -m skill_seekers.mcp.server_fastmcp --http --port 8080
+
+**MCP Integration:**
+  Stdio (default):
+  {
+    "mcpServers": {
+      "skill-seeker": {
+        "command": "python",
+        "args": ["-m", "skill_seekers.mcp.server_fastmcp"]
+      }
+    }
+  }
+
+  HTTP (alternative):
+  {
+    "mcpServers": {
+      "skill-seeker": {
+        "url": "http://localhost:8000/sse"
+      }
+    }
+  }
+"""
+
+import argparse
+import logging
+import sys
+
+# Import FastMCP
+MCP_AVAILABLE = False
+FastMCP = None
+
+try:
+    from mcp.server import FastMCP
+
+    MCP_AVAILABLE = True
+except ImportError as e:
+    # Only exit if running as main module, not when importing for tests
+    if __name__ == "__main__":
+        print("❌ Error: mcp package not installed")
+        print("Install with: pip install mcp")
+        print(f"Import error: {e}")
+        sys.exit(1)
+
+# Import all tool implementations (absolute import: works both as a package
+# module and under direct script execution, as long as skill-seekers is
+# installed — `pip install -e .` is required anyway).
+from skill_seekers.mcp.tools import (  # noqa: E402  (must follow the FastMCP availability check)
+    add_config_source_impl,
+    build_how_to_guides_impl,
+    detect_patterns_impl,
+    enhance_skill_impl,
+    # Scraping tools
+    estimate_pages_impl,
+    # Vector database tools
+    export_to_chroma_impl,
+    export_to_faiss_impl,
+    export_to_qdrant_impl,
+    export_to_weaviate_impl,
+    extract_config_patterns_impl,
+    extract_test_examples_impl,
+    # Source tools
+    fetch_config_impl,
+    # Marketplace tools
+    add_marketplace_impl,
+    list_marketplaces_impl,
+    remove_marketplace_impl,
+    publish_to_marketplace_impl,
+    # Config tools
+    generate_config_impl,
+    generate_router_impl,
+    install_skill_impl,
+    list_config_sources_impl,
+    list_configs_impl,
+    # Packaging tools
+    package_skill_impl,
+    remove_config_source_impl,
+    scrape_codebase_impl,
+    scrape_docs_impl,
+    scrape_generic_impl,
+    scrape_github_impl,
+    scrape_pdf_impl,
+    scrape_video_impl,
+    # Splitting tools
+    split_config_impl,
+    submit_config_impl,
+    # Sync config tools
+    sync_config_impl,
+    upload_skill_impl,
+    validate_config_impl,
+    # Workflow tools
+    list_workflows_impl,
+    get_workflow_impl,
+    create_workflow_impl,
+    update_workflow_impl,
+    delete_workflow_impl,
+)
+
+# Initialize FastMCP server
+mcp = None
+if MCP_AVAILABLE and FastMCP is not None:
+    mcp = FastMCP(
+        name="skill-seeker",
+        instructions="Skill Seeker MCP Server - Generate LLM skills from documentation",
+    )
+
+
+# Helper decorator for tests (when MCP is not available)
+def safe_tool_decorator(*args, **kwargs):
+    """Decorator that works when mcp is None (for testing)"""
+    if mcp is not None:
+        return mcp.tool(*args, **kwargs)
+    else:
+        # Return a pass-through decorator for testing
+        def wrapper(func):
+            return func
+
+        return wrapper
+
+
+# ============================================================================
+# CONFIG TOOLS (3 tools)
+# ============================================================================
+
+
+@safe_tool_decorator(
+    description="Generate a config file for documentation scraping. Interactively creates a JSON config for any documentation website."
+)
+async def generate_config(
+    name: str,
+    url: str,
+    description: str,
+    max_pages: int = 100,
+    unlimited: bool = False,
+    rate_limit: float = 0.5,
+    force: bool = False,
+) -> str:
+    """
+    Generate a config file for documentation scraping.
+
+    Args:
+        name: Skill name (lowercase, alphanumeric, hyphens, underscores)
+        url: Base documentation URL (must include http:// or https://)
+        description: Description of when to use this skill
+        max_pages: Maximum pages to scrape (default: 100, use -1 for unlimited)
+        unlimited: Remove all limits - scrape all pages (default: false). Overrides max_pages.
+        rate_limit: Delay between requests in seconds (default: 0.5)
+        force: Overwrite an existing config of the same name (default: false).
+
+    Returns:
+        Success message with config path and next steps, or error message.
+    """
+    args = {
+        "name": name,
+        "url": url,
+        "description": description,
+        "max_pages": max_pages,
+        "unlimited": unlimited,
+        "rate_limit": rate_limit,
+        "force": force,
+    }
+    result = await generate_config_impl(args)
+    # Extract text from TextContent objects
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(description="List all available preset configurations.")
+async def list_configs() -> str:
+    """
+    List all available preset configurations.
+
+    Returns:
+        List of available configs with categories and descriptions.
+    """
+    result = await list_configs_impl({})
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(description="Validate a config file for errors.")
+async def validate_config(config_path: str) -> str:
+    """
+    Validate a config file for errors.
+
+    Args:
+        config_path: Path to config JSON file
+
+    Returns:
+        Validation result with any errors or success message.
+    """
+    result = await validate_config_impl({"config_path": config_path})
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+# ============================================================================
+# SYNC CONFIG TOOLS (1 tool)
+# ============================================================================
+
+
+@safe_tool_decorator(description="Sync a config's start_urls against what's live on the docs site.")
+async def sync_config(
+    config_path: str,
+    apply: bool = False,
+    depth: int = 2,
+    max_pages: int = 500,
+    rate_limit: float | None = None,
+    source_index: int = 0,
+) -> str:
+    """
+    Sync a config file's start_urls against the live docs site.
+
+    Crawls seed/nav pages, discovers internal links, and diffs against the
+    config's existing start_urls. Optionally writes the update with apply=True.
+
+    Args:
+        config_path: Path to the config JSON file.
+        apply: Write changes back to the config file (default: False).
+        depth: BFS crawl depth from seed pages (default: 2).
+        max_pages: Maximum URLs to discover (default: 500).
+        rate_limit: Override config rate limit (seconds between requests).
+        source_index: Index of the documentation source to sync (default: 0).
+
+    Returns:
+        Report of added/removed URLs.
+    """
+    result = await sync_config_impl(
+        {
+            "config_path": config_path,
+            "apply": apply,
+            "depth": depth,
+            "max_pages": max_pages,
+            "rate_limit": rate_limit,
+            "source_index": source_index,
+        }
+    )
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+# ============================================================================
+# SCRAPING TOOLS (11 tools)
+# ============================================================================
+
+
+@safe_tool_decorator(
+    description="Estimate how many pages will be scraped from a config. Fast preview without downloading content."
+)
+async def estimate_pages(
+    config_path: str,
+    max_discovery: int = 1000,
+    unlimited: bool = False,
+) -> str:
+    """
+    Estimate how many pages will be scraped from a config.
+
+    Args:
+        config_path: Path to config JSON file (e.g., configs/react.json)
+        max_discovery: Maximum pages to discover during estimation (default: 1000, use -1 for unlimited)
+        unlimited: Remove discovery limit - estimate all pages (default: false). Overrides max_discovery.
+
+    Returns:
+        Estimation results with page count and recommendations.
+    """
+    args = {
+        "config_path": config_path,
+        "max_discovery": max_discovery,
+        "unlimited": unlimited,
+    }
+    result = await estimate_pages_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Scrape documentation and build LLM skill. Supports both single-source (legacy) and unified multi-source configs. Creates SKILL.md and reference files. Automatically detects llms.txt files for 10x faster processing. Falls back to HTML scraping if not available."
+)
+async def scrape_docs(
+    config_path: str,
+    unlimited: bool = False,
+    enhance_local: bool = False,
+    skip_scrape: bool = False,
+    dry_run: bool = False,
+    merge_mode: str | None = None,
+) -> str:
+    """
+    Scrape documentation and build LLM skill.
+
+    Args:
+        config_path: Path to config JSON file (e.g., configs/react.json or configs/godot_unified.json)
+        unlimited: Remove page limit - scrape all pages (default: false). Overrides max_pages in config.
+        enhance_local: Open terminal for local enhancement with AI coding agent (default: false)
+        skip_scrape: Skip scraping, use cached data (default: false)
+        dry_run: Preview what will be scraped without saving (default: false)
+        merge_mode: Override merge mode for unified configs: 'rule-based' or 'claude-enhanced' (default: from config)
+
+    Returns:
+        Scraping results with file paths and statistics.
+    """
+    args = {
+        "config_path": config_path,
+        "unlimited": unlimited,
+        "enhance_local": enhance_local,
+        "skip_scrape": skip_scrape,
+        "dry_run": dry_run,
+    }
+    if merge_mode:
+        args["merge_mode"] = merge_mode
+    result = await scrape_docs_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Scrape GitHub repository and build Claude skill. Extracts README, Issues, Changelog, Releases, and code structure."
+)
+async def scrape_github(
+    repo: str | None = None,
+    config_path: str | None = None,
+    name: str | None = None,
+    description: str | None = None,
+    token: str | None = None,
+    no_issues: bool = False,
+    no_changelog: bool = False,
+    no_releases: bool = False,
+    max_issues: int = 100,
+    scrape_only: bool = False,
+) -> str:
+    """
+    Scrape GitHub repository and build Claude skill.
+
+    Args:
+        repo: GitHub repository (owner/repo, e.g., facebook/react)
+        config_path: Path to GitHub config JSON file (e.g., configs/react_github.json)
+        name: Skill name (default: repo name)
+        description: Skill description
+        token: GitHub personal access token (or use GITHUB_TOKEN env var)
+        no_issues: Skip GitHub issues extraction (default: false)
+        no_changelog: Skip CHANGELOG extraction (default: false)
+        no_releases: Skip releases extraction (default: false)
+        max_issues: Maximum issues to fetch (default: 100)
+        scrape_only: Only scrape, don't build skill (default: false)
+
+    Returns:
+        GitHub scraping results with file paths.
+    """
+    args = {}
+    if repo:
+        args["repo"] = repo
+    if config_path:
+        args["config_path"] = config_path
+    if name:
+        args["name"] = name
+    if description:
+        args["description"] = description
+    if token:
+        args["token"] = token
+    args["no_issues"] = no_issues
+    args["no_changelog"] = no_changelog
+    args["no_releases"] = no_releases
+    args["max_issues"] = max_issues
+    args["scrape_only"] = scrape_only
+
+    result = await scrape_github_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Scrape PDF documentation and build Claude skill. Extracts text, code, and images from PDF files."
+)
+async def scrape_pdf(
+    config_path: str | None = None,
+    pdf_path: str | None = None,
+    name: str | None = None,
+    description: str | None = None,
+    from_json: str | None = None,
+) -> str:
+    """
+    Scrape PDF documentation and build Claude skill.
+
+    Args:
+        config_path: Path to PDF config JSON file (e.g., configs/manual_pdf.json)
+        pdf_path: Direct PDF path (alternative to config_path)
+        name: Skill name (required with pdf_path)
+        description: Skill description (optional)
+        from_json: Build from extracted JSON file (e.g., output/manual_extracted.json)
+
+    Returns:
+        PDF scraping results with file paths.
+    """
+    args = {}
+    if config_path:
+        args["config_path"] = config_path
+    if pdf_path:
+        args["pdf_path"] = pdf_path
+    if name:
+        args["name"] = name
+    if description:
+        args["description"] = description
+    if from_json:
+        args["from_json"] = from_json
+
+    result = await scrape_pdf_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Extract transcripts and metadata from videos (YouTube, Vimeo, local files) and build Claude skill."
+)
+async def scrape_video(
+    url: str | None = None,
+    video_file: str | None = None,
+    playlist: str | None = None,
+    name: str | None = None,
+    description: str | None = None,
+    languages: str | None = None,
+    from_json: str | None = None,
+    visual: bool = False,
+    whisper_model: str | None = None,
+    visual_interval: float | None = None,
+    visual_min_gap: float | None = None,
+    visual_similarity: float | None = None,
+    vision_ocr: bool = False,
+    start_time: str | None = None,
+    end_time: str | None = None,
+    setup: bool = False,
+) -> str:
+    """
+    Scrape video content and build Claude skill.
+
+    Args:
+        url: Video URL (YouTube, Vimeo)
+        video_file: Local video file path
+        playlist: Playlist URL
+        name: Skill name
+        description: Skill description
+        languages: Transcript language preferences (comma-separated)
+        from_json: Build from extracted JSON file
+        visual: Enable visual frame extraction (requires video-full extras)
+        whisper_model: Whisper model size for local transcription (e.g., base, small, medium, large)
+        visual_interval: Seconds between frame captures (default: 5.0)
+        visual_min_gap: Minimum seconds between kept frames (default: 2.0)
+        visual_similarity: Similarity threshold to skip duplicate frames 0.0-1.0 (default: 0.95)
+        vision_ocr: Use the configured vision provider for OCR on extracted frames
+        start_time: Start time for extraction (seconds, MM:SS, or HH:MM:SS). Single video only.
+        end_time: End time for extraction (seconds, MM:SS, or HH:MM:SS). Single video only.
+        setup: Auto-detect GPU and install visual extraction deps (PyTorch, easyocr, etc.)
+
+    Returns:
+        Video scraping results with file paths.
+    """
+    if setup:
+        from skill_seekers.cli.video_setup import run_setup
+
+        rc = run_setup(interactive=False)
+        return "Setup completed successfully." if rc == 0 else "Setup failed. Check logs."
+
+    args = {}
+    if url:
+        args["url"] = url
+    if video_file:
+        args["video_file"] = video_file
+    if playlist:
+        args["playlist"] = playlist
+    if name:
+        args["name"] = name
+    if description:
+        args["description"] = description
+    if languages:
+        args["languages"] = languages
+    if from_json:
+        args["from_json"] = from_json
+    if start_time:
+        args["start_time"] = start_time
+    if end_time:
+        args["end_time"] = end_time
+    if visual:
+        args["visual"] = visual
+    if whisper_model:
+        args["whisper_model"] = whisper_model
+    if visual_interval is not None:
+        args["visual_interval"] = visual_interval
+    if visual_min_gap is not None:
+        args["visual_min_gap"] = visual_min_gap
+    if visual_similarity is not None:
+        args["visual_similarity"] = visual_similarity
+    if vision_ocr:
+        args["vision_ocr"] = vision_ocr
+
+    result = await scrape_video_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Analyze local codebase and extract code knowledge. Walks directory tree, analyzes code files, extracts signatures, docstrings, and optionally generates API reference documentation and dependency graphs."
+)
+async def scrape_codebase(
+    directory: str,
+    output: str = "output/codebase/",
+    depth: str = "deep",
+    languages: str = "",
+    file_patterns: str = "",
+    build_api_reference: bool = False,
+    build_dependency_graph: bool = False,
+) -> str:
+    """
+    Analyze local codebase and extract code knowledge.
+
+    Args:
+        directory: Directory to analyze (required)
+        output: Output directory for results (default: output/codebase/)
+        depth: Analysis depth - surface, deep, full (default: deep)
+        languages: Comma-separated languages to analyze (e.g., "Python,JavaScript,C++")
+        file_patterns: Comma-separated file patterns (e.g., "*.py,src/**/*.js")
+        build_api_reference: Generate API reference markdown (default: false)
+        build_dependency_graph: Generate dependency graph and detect circular dependencies (default: false)
+
+    Returns:
+        Codebase analysis results with file paths.
+    """
+    args = {
+        "directory": directory,
+        "output": output,
+        "depth": depth,
+        "languages": languages,
+        "file_patterns": file_patterns,
+        "build_api_reference": build_api_reference,
+        "build_dependency_graph": build_dependency_graph,
+    }
+
+    result = await scrape_codebase_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Detect design patterns in source code (Singleton, Factory, Observer, Strategy, Decorator, Builder, Adapter, Command, Template Method, Chain of Responsibility). Supports 9 languages: Python, JavaScript, TypeScript, C++, C, C#, Go, Rust, Java, Ruby, PHP."
+)
+async def detect_patterns(
+    file: str = "",
+    directory: str = "",
+    output: str = "",
+    depth: str = "deep",
+    json: bool = False,
+) -> str:
+    """
+    Detect design patterns in source code.
+
+    Analyzes source files or directories to identify common design patterns.
+    Provides confidence scores and evidence for each detected pattern.
+
+    Args:
+        file: Single file to analyze (optional)
+        directory: Directory to analyze all source files (optional)
+        output: Output directory for JSON results (optional)
+        depth: Detection depth - surface (fast), deep (balanced), full (thorough). Default: deep
+        json: Output JSON format instead of human-readable (default: false)
+
+    Returns:
+        Pattern detection results with confidence scores and evidence.
+
+    Example:
+        detect_patterns(file="src/database.py", depth="deep")
+        detect_patterns(directory="src/", output="patterns/", json=true)
+    """
+    args = {
+        "file": file,
+        "directory": directory,
+        "output": output,
+        "depth": depth,
+        "json": json,
+    }
+
+    result = await detect_patterns_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Extract usage examples from test files. Analyzes test files to extract real API usage patterns including instantiation, method calls, configs, setup patterns, and workflows. Supports 9 languages (Python AST-based, others regex-based)."
+)
+async def extract_test_examples(
+    file: str = "",
+    directory: str = "",
+    language: str = "",
+    min_confidence: float = 0.5,
+    max_per_file: int = 10,
+    json: bool = False,
+    markdown: bool = False,
+) -> str:
+    """
+    Extract usage examples from test files.
+
+    Analyzes test files to extract real API usage patterns including:
+    - Object instantiation with real parameters
+    - Method calls with expected behaviors
+    - Configuration examples
+    - Setup patterns from fixtures/setUp()
+    - Multi-step workflows from integration tests
+
+    Supports 9 languages: Python (AST-based), JavaScript, TypeScript, Go, Rust, Java, C#, PHP, Ruby.
+
+    Args:
+        file: Single test file to analyze (optional)
+        directory: Directory containing test files (optional)
+        language: Filter by language (python, javascript, etc.)
+        min_confidence: Minimum confidence threshold 0.0-1.0 (default: 0.5)
+        max_per_file: Maximum examples per file (default: 10)
+        json: Output JSON format (default: false)
+        markdown: Output Markdown format (default: false)
+
+    Examples:
+        extract_test_examples(directory="tests/", language="python")
+        extract_test_examples(file="tests/test_scraper.py", json=true)
+    """
+    args = {
+        "file": file,
+        "directory": directory,
+        "language": language,
+        "min_confidence": min_confidence,
+        "max_per_file": max_per_file,
+        "json": json,
+        "markdown": markdown,
+    }
+
+    result = await extract_test_examples_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Build how-to guides from workflow test examples. Transforms workflow examples extracted from test files into step-by-step educational guides with prerequisites, verification points, and troubleshooting tips."
+)
+async def build_how_to_guides(
+    input: str,
+    output: str = "output/codebase/tutorials",
+    group_by: str = "ai-tutorial-group",
+    no_ai: bool = False,
+    json_output: bool = False,
+) -> str:
+    """
+    Build how-to guides from workflow test examples.
+
+    Transforms workflow examples extracted from test files into step-by-step
+    educational guides. Automatically groups related workflows, extracts steps,
+    and generates comprehensive markdown guides.
+
+    Features:
+    - Python AST-based step extraction (heuristic for other languages)
+    - 4 grouping strategies: ai-tutorial-group, file-path, test-name, complexity
+    - Detects prerequisites, setup code, and verification points
+    - Generates troubleshooting tips and next steps
+
+    Args:
+        input: Path to test_examples.json from extract_test_examples
+        output: Output directory for guides (default: output/codebase/tutorials)
+        group_by: Grouping strategy - ai-tutorial-group, file-path, test-name, complexity (default: ai-tutorial-group)
+        no_ai: Disable AI enhancement for grouping (default: false)
+        json_output: Output JSON format alongside markdown (default: false)
+
+    Examples:
+        build_how_to_guides(input="output/codebase/test_examples/test_examples.json")
+        build_how_to_guides(input="examples.json", group_by="file-path", no_ai=true)
+    """
+    args = {
+        "input": input,
+        "output": output,
+        "group_by": group_by,
+        "no_ai": no_ai,
+        "json_output": json_output,
+    }
+
+    result = await build_how_to_guides_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Extract configuration patterns from config files (C3.4) with optional AI enhancement. Analyzes config files, detects patterns (database, API, logging, etc.), generates documentation, and optionally enhances with AI insights (security analysis, best practices, migration suggestions). Supports 9 formats."
+)
+async def extract_config_patterns(
+    directory: str,
+    output: str = "output/codebase/config_patterns",
+    max_files: int = 100,
+    enhance: bool = False,
+    enhance_local: bool = False,
+    ai_mode: str = "none",
+    json: bool = True,
+    markdown: bool = True,
+) -> str:
+    """
+    Extract configuration patterns from config files with optional AI enhancement.
+
+    Analyzes configuration files in the codebase to extract settings,
+    detect common patterns, and generate comprehensive documentation.
+
+    **AI Enhancement (NEW)**: Optional AI-powered insights including:
+    - Explanations of what each config does
+    - Best practice suggestions
+    - Security analysis (hardcoded secrets, exposed credentials)
+    - Migration suggestions (consolidation opportunities)
+    - Context-aware documentation
+
+    Supports 9 config formats: JSON, YAML, TOML, ENV, INI, Python modules,
+    JavaScript/TypeScript configs, Dockerfile, Docker Compose.
+
+    Detects 7 common patterns:
+    - Database configuration (host, port, credentials)
+    - API configuration (endpoints, keys, timeouts)
+    - Logging configuration (level, format, handlers)
+    - Cache configuration (backend, TTL, keys)
+    - Email configuration (SMTP, credentials)
+    - Authentication configuration (providers, secrets)
+    - Server configuration (host, port, workers)
+
+    Args:
+        directory: Directory to analyze (required)
+        output: Output directory for results (default: output/codebase/config_patterns)
+        max_files: Maximum config files to process (default: 100)
+        enhance: Enable AI enhancement - API mode (default: false, requires ANTHROPIC_API_KEY)
+        enhance_local: Enable AI enhancement - LOCAL mode (default: false, uses Claude Code CLI)
+        ai_mode: AI enhancement mode - auto, api, local, none (default: none)
+        json: Output JSON format (default: true)
+        markdown: Output Markdown format (default: true)
+
+    Returns:
+        Config extraction results with patterns, settings, and optional AI insights.
+
+    Examples:
+        extract_config_patterns(directory=".")
+        extract_config_patterns(directory="/path/to/repo", max_files=50)
+        extract_config_patterns(directory=".", enhance_local=true)  # With AI enhancement (LOCAL mode)
+        extract_config_patterns(directory=".", ai_mode="api")  # With AI enhancement (API mode)
+    """
+    args = {
+        "directory": directory,
+        "output": output,
+        "max_files": max_files,
+        "enhance": enhance,
+        "enhance_local": enhance_local,
+        "ai_mode": ai_mode,
+        "json": json,
+        "markdown": markdown,
+    }
+
+    result = await extract_config_patterns_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Scrape content from new source types: jupyter, html, openapi, asciidoc, pptx, word, confluence, notion, rss, manpage, chat. A generic entry point that delegates to the appropriate CLI scraper module."
+)
+async def scrape_generic(
+    source_type: str,
+    name: str,
+    path: str | None = None,
+    url: str | None = None,
+) -> str:
+    """
+    Scrape content from various source types and build a skill.
+
+    A generic scraper that supports 11 new source types. It delegates to the
+    corresponding CLI scraper module (e.g., skill_seekers.cli.jupyter_scraper).
+
+    File-based types (jupyter, html, openapi, asciidoc, pptx, word, manpage, chat)
+    typically use the 'path' parameter. URL-based types (confluence, notion, rss)
+    typically use the 'url' parameter.
+
+    Args:
+        source_type: Source type to scrape. One of: jupyter, html, openapi,
+            asciidoc, pptx, word, confluence, notion, rss, manpage, chat.
+        name: Skill name for the output
+        path: File or directory path (for file-based sources like jupyter, html, pptx)
+        url: URL (for URL-based sources like confluence, notion, rss)
+
+    Returns:
+        Scraping results with file paths and statistics.
+    """
+    args = {
+        "source_type": source_type,
+        "name": name,
+    }
+    if path:
+        args["path"] = path
+    if url:
+        args["url"] = url
+
+    result = await scrape_generic_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+# ============================================================================
+# PACKAGING TOOLS (4 tools)
+# ============================================================================
+
+
+@safe_tool_decorator(
+    description="Package skill directory into platform-specific format (ZIP for Claude/OpenAI/Markdown, tar.gz for Gemini). Supports all platforms: claude, gemini, openai, markdown. Automatically uploads if platform API key is set."
+)
+async def package_skill(
+    skill_dir: str,
+    target: str = "auto",
+    auto_upload: bool = True,
+) -> str:
+    """
+    Package skill directory for target LLM platform.
+
+    Args:
+        skill_dir: Path to skill directory to package (e.g., output/react/)
+        target: Target platform (default: 'auto'). Options: auto, claude, gemini, openai, markdown
+        auto_upload: Auto-upload after packaging if API key is available (default: true). Requires platform-specific API key: ANTHROPIC_API_KEY, GOOGLE_API_KEY, or OPENAI_API_KEY.
+
+    Returns:
+        Packaging results with file path and platform info.
+    """
+    if target == "auto":
+        from skill_seekers.cli.agent_client import AgentClient
+
+        target = AgentClient.detect_default_target()
+    args = {
+        "skill_dir": skill_dir,
+        "target": target,
+        "auto_upload": auto_upload,
+    }
+    result = await package_skill_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Upload skill package to target LLM platform API. Requires platform-specific API key. Supports: claude (Anthropic Skills API), gemini (Google Files API), openai (Assistants API). Does NOT support markdown."
+)
+async def upload_skill(
+    skill_zip: str,
+    target: str = "auto",
+    api_key: str | None = None,
+) -> str:
+    """
+    Upload skill package to target platform.
+
+    Args:
+        skill_zip: Path to skill package (.zip or .tar.gz, e.g., output/react.zip)
+        target: Target platform (default: 'auto'). Options: auto, claude, gemini, openai
+        api_key: Optional API key (uses env var if not provided: ANTHROPIC_API_KEY, GOOGLE_API_KEY, or OPENAI_API_KEY)
+
+    Returns:
+        Upload results with skill ID and platform URL.
+    """
+    if target == "auto":
+        from skill_seekers.cli.agent_client import AgentClient
+
+        target = AgentClient.detect_default_target()
+    args = {
+        "skill_zip": skill_zip,
+        "target": target,
+    }
+    if api_key:
+        args["api_key"] = api_key
+
+    result = await upload_skill_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Enhance SKILL.md with AI using target platform's model. Local mode uses AI coding agent (no API key). API mode uses platform API (requires key). Transforms basic templates into comprehensive 500+ line guides with examples."
+)
+async def enhance_skill(
+    skill_dir: str,
+    target: str = "auto",
+    mode: str = "local",
+    api_key: str | None = None,
+) -> str:
+    """
+    Enhance SKILL.md with AI.
+
+    Args:
+        skill_dir: Path to skill directory containing SKILL.md (e.g., output/react/)
+        target: Target platform (default: 'auto'). Options: auto, claude, gemini, openai
+        mode: Enhancement mode (default: 'local'). Options: local (AI coding agent, no API), api (uses platform API)
+        api_key: Optional API key for 'api' mode (uses env var if not provided: ANTHROPIC_API_KEY, GOOGLE_API_KEY, or OPENAI_API_KEY)
+
+    Returns:
+        Enhancement results with backup location.
+    """
+    if target == "auto":
+        from skill_seekers.cli.agent_client import AgentClient
+
+        target = AgentClient.detect_default_target()
+    args = {
+        "skill_dir": skill_dir,
+        "target": target,
+        "mode": mode,
+    }
+    if api_key:
+        args["api_key"] = api_key
+
+    result = await enhance_skill_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Complete one-command workflow: fetch config → scrape docs → AI enhance (MANDATORY) → package → upload. Enhancement required for quality (3/10→9/10). Takes 20-45 min depending on config size. Supports multiple LLM platforms: auto (detects from environment), claude, gemini, openai, markdown. Auto-uploads if platform API key is set."
+)
+async def install_skill(
+    config_name: str | None = None,
+    config_path: str | None = None,
+    destination: str = "output",
+    auto_upload: bool = True,
+    unlimited: bool = False,
+    dry_run: bool = False,
+    target: str = "auto",
+) -> str:
+    """
+    Complete one-command workflow to install a skill.
+
+    Args:
+        config_name: Config name from API (e.g., 'react', 'django'). Mutually exclusive with config_path. Tool will fetch this config from the official API before scraping.
+        config_path: Path to existing config JSON file (e.g., 'configs/custom.json'). Mutually exclusive with config_name. Use this if you already have a config file.
+        destination: Output directory for skill files (default: 'output')
+        auto_upload: Auto-upload after packaging (requires platform API key). Default: true. Set to false to skip upload.
+        unlimited: Remove page limits during scraping (default: false). WARNING: Can take hours for large sites.
+        dry_run: Preview workflow without executing (default: false). Shows all phases that would run.
+        target: Target LLM platform (default: 'auto'). Options: auto, claude, gemini, openai, markdown. Requires corresponding API key: ANTHROPIC_API_KEY, GOOGLE_API_KEY, or OPENAI_API_KEY.
+
+    Returns:
+        Workflow results with all phase statuses.
+    """
+    if target == "auto":
+        from skill_seekers.cli.agent_client import AgentClient
+
+        target = AgentClient.detect_default_target()
+    args = {
+        "destination": destination,
+        "auto_upload": auto_upload,
+        "unlimited": unlimited,
+        "dry_run": dry_run,
+        "target": target,
+    }
+    if config_name:
+        args["config_name"] = config_name
+    if config_path:
+        args["config_path"] = config_path
+
+    result = await install_skill_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+# ============================================================================
+# SPLITTING TOOLS (2 tools)
+# ============================================================================
+
+
+@safe_tool_decorator(
+    description="Split large configs into multiple focused skills. Supports documentation (10K+ pages) and unified multi-source configs. Auto-detects config type and recommends best strategy."
+)
+async def split_config(
+    config_path: str,
+    strategy: str = "auto",
+    target_pages: int = 5000,
+    dry_run: bool = False,
+) -> str:
+    """
+    Split large configs into multiple skills.
+
+    Supports:
+    - Documentation configs: Split by categories, size, or create router skills
+    - Unified configs: Split by source type (documentation, github, pdf)
+
+    Args:
+        config_path: Path to config JSON file (e.g., configs/godot.json or configs/react_unified.json)
+        strategy: Split strategy: auto, none, source, category, router, size (default: auto). 'source' is for unified configs.
+        target_pages: Target pages per skill for doc configs (default: 5000)
+        dry_run: Preview without saving files (default: false)
+
+    Returns:
+        Splitting results with generated config paths.
+    """
+    args = {
+        "config_path": config_path,
+        "strategy": strategy,
+        "target_pages": target_pages,
+        "dry_run": dry_run,
+    }
+    result = await split_config_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Generate router/hub skill for split documentation. Creates intelligent routing to sub-skills."
+)
+async def generate_router(
+    config_pattern: str,
+    router_name: str | None = None,
+) -> str:
+    """
+    Generate router/hub skill for split documentation.
+
+    Args:
+        config_pattern: Config pattern for sub-skills (e.g., 'configs/godot-*.json')
+        router_name: Router skill name (optional, inferred from configs)
+
+    Returns:
+        Router generation results with file paths.
+    """
+    args = {"config_pattern": config_pattern}
+    if router_name:
+        args["router_name"] = router_name
+
+    result = await generate_router_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+# ============================================================================
+# SOURCE TOOLS (5 tools)
+# ============================================================================
+
+
+@safe_tool_decorator(
+    description="Fetch config from API, git URL, or registered source. Supports three modes: (1) Named source from registry, (2) Direct git URL, (3) API (default). List available configs or download a specific one by name."
+)
+async def fetch_config(
+    config_name: str | None = None,
+    destination: str = "configs",
+    list_available: bool = False,
+    category: str | None = None,
+    git_url: str | None = None,
+    source: str | None = None,
+    branch: str = "main",
+    token: str | None = None,
+    refresh: bool = False,
+) -> str:
+    """
+    Fetch config from API, git URL, or registered source.
+
+    Args:
+        config_name: Name of the config to download (e.g., 'react', 'django', 'godot'). Required for git modes. Omit to list all available configs in API mode.
+        destination: Directory to save the config file (default: 'configs/')
+        list_available: List all available configs from the API (only works in API mode, default: false)
+        category: Filter configs by category when listing in API mode (e.g., 'web-frameworks', 'game-engines', 'devops')
+        git_url: Git repository URL containing configs. If provided, fetches from git instead of API. Supports HTTPS and SSH URLs. Example: 'https://github.com/myorg/configs.git'
+        source: Named source from registry (highest priority). Use add_config_source to register sources first. Example: 'team', 'company'
+        branch: Git branch to use (default: 'main'). Only used with git_url or source.
+        token: Authentication token for private repos (optional). Prefer using environment variables (GITHUB_TOKEN, GITLAB_TOKEN, etc.).
+        refresh: Force refresh cached git repository (default: false). Deletes cache and re-clones. Only used with git modes.
+
+    Returns:
+        Fetch results with config path or list of available configs.
+    """
+    args = {
+        "destination": destination,
+        "list_available": list_available,
+        "branch": branch,
+        "refresh": refresh,
+    }
+    if config_name:
+        args["config_name"] = config_name
+    if category:
+        args["category"] = category
+    if git_url:
+        args["git_url"] = git_url
+    if source:
+        args["source"] = source
+    if token:
+        args["token"] = token
+
+    result = await fetch_config_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Submit a custom config file to the community. Validates config (legacy or unified format) and creates a GitHub issue in skill-seekers-configs repo for review."
+)
+async def submit_config(
+    config_path: str | None = None,
+    config_json: str | None = None,
+    testing_notes: str | None = None,
+    github_token: str | None = None,
+) -> str:
+    """
+    Submit a custom config file to the community.
+
+    Args:
+        config_path: Path to config JSON file to submit (e.g., 'configs/myframework.json')
+        config_json: Config JSON as string (alternative to config_path)
+        testing_notes: Notes about testing (e.g., 'Tested with 20 pages, works well')
+        github_token: GitHub personal access token (or use GITHUB_TOKEN env var)
+
+    Returns:
+        Submission results with GitHub issue URL.
+    """
+    args = {}
+    if config_path:
+        args["config_path"] = config_path
+    if config_json:
+        args["config_json"] = config_json
+    if testing_notes:
+        args["testing_notes"] = testing_notes
+    if github_token:
+        args["github_token"] = github_token
+
+    result = await submit_config_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Register a git repository as a config source. Allows fetching configs from private/team repos. Use this to set up named sources that can be referenced by fetch_config. Supports GitHub, GitLab, Gitea, Bitbucket, and custom git servers."
+)
+async def add_config_source(
+    name: str,
+    git_url: str,
+    source_type: str = "github",
+    token_env: str | None = None,
+    branch: str = "main",
+    priority: int = 100,
+    enabled: bool = True,
+) -> str:
+    """
+    Register a git repository as a config source.
+
+    Args:
+        name: Source identifier (lowercase, alphanumeric, hyphens/underscores allowed). Example: 'team', 'company-internal', 'my_configs'
+        git_url: Git repository URL (HTTPS or SSH). Example: 'https://github.com/myorg/configs.git' or 'git@github.com:myorg/configs.git'
+        source_type: Source type (default: 'github'). Options: 'github', 'gitlab', 'gitea', 'bitbucket', 'custom'
+        token_env: Environment variable name for auth token (optional). Auto-detected if not provided. Example: 'GITHUB_TOKEN', 'GITLAB_TOKEN', 'MY_CUSTOM_TOKEN'
+        branch: Git branch to use (default: 'main'). Example: 'main', 'master', 'develop'
+        priority: Source priority (lower = higher priority, default: 100). Used for conflict resolution when same config exists in multiple sources.
+        enabled: Whether source is enabled (default: true)
+
+    Returns:
+        Registration results with source details.
+    """
+    args = {
+        "name": name,
+        "git_url": git_url,
+        "source_type": source_type,
+        "branch": branch,
+        "priority": priority,
+        "enabled": enabled,
+    }
+    if token_env:
+        args["token_env"] = token_env
+
+    result = await add_config_source_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="List all registered config sources. Shows git repositories that have been registered with add_config_source. Use this to see available sources for fetch_config."
+)
+async def list_config_sources(enabled_only: bool = False) -> str:
+    """
+    List all registered config sources.
+
+    Args:
+        enabled_only: Only show enabled sources (default: false)
+
+    Returns:
+        List of registered sources with details.
+    """
+    result = await list_config_sources_impl({"enabled_only": enabled_only})
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Remove a registered config source. Deletes the source from the registry. Does not delete cached git repository data."
+)
+async def remove_config_source(name: str) -> str:
+    """
+    Remove a registered config source.
+
+    Args:
+        name: Source identifier to remove. Example: 'team', 'company-internal'
+
+    Returns:
+        Removal results with success/error message.
+    """
+    result = await remove_config_source_impl({"name": name})
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Push a config to a registered config source repository. Validates, places in category directory, commits, and pushes."
+)
+async def push_config(
+    config_path: str,
+    source_name: str,
+    category: str = "auto",
+    create_branch: bool = False,
+    force: bool = False,
+) -> str:
+    """
+    Push a config to a registered config source repository.
+
+    Args:
+        config_path: Path to config JSON file. Example: 'configs/unity-spine.json'
+        source_name: Registered source name. Example: 'spyke'
+        category: Category directory (e.g., 'game-engines'). Auto-detected if 'auto'.
+        create_branch: Create feature branch instead of pushing to main. Default: false
+        force: Overwrite existing config if it exists. Default: false
+
+    Returns:
+        Push results with commit SHA and config location.
+    """
+    from skill_seekers.mcp.tools.source_tools import push_config_tool
+
+    result = await push_config_tool(
+        {
+            "config_path": config_path,
+            "source_name": source_name,
+            "category": category,
+            "create_branch": create_branch,
+            "force": force,
+        }
+    )
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+# ============================================================================
+# MARKETPLACE TOOLS (4 tools)
+# ============================================================================
+
+
+@safe_tool_decorator(
+    description="Register a plugin marketplace repository. Allows publishing skills to private/team plugin repos. Supports GitHub, GitLab, Bitbucket with per-repo authentication."
+)
+async def add_marketplace(
+    name: str,
+    git_url: str,
+    token_env: str = None,
+    branch: str = "main",
+    author_name: str = "",
+    author_email: str = "",
+    enabled: bool = True,
+) -> str:
+    """
+    Register a plugin marketplace repository.
+
+    Args:
+        name: Marketplace identifier (lowercase, alphanumeric + hyphens/underscores). Example: 'spyke'
+        git_url: Git repository URL. Example: 'https://github.com/myorg/plugins.git'
+        token_env: Environment variable name for auth token (auto-detected from URL). Example: 'GITHUB_TOKEN'
+        branch: Git branch to use (default: "main")
+        author_name: Default author name for generated plugin.json files
+        author_email: Default author email for generated plugin.json files
+        enabled: Whether marketplace is enabled (default: true)
+    """
+    result = await add_marketplace_impl(
+        {
+            "name": name,
+            "git_url": git_url,
+            "token_env": token_env,
+            "branch": branch,
+            "author_name": author_name,
+            "author_email": author_email,
+            "enabled": enabled,
+        }
+    )
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(description="List all registered plugin marketplace repositories.")
+async def list_marketplaces(enabled_only: bool = False) -> str:
+    """List all registered plugin marketplace repositories."""
+    result = await list_marketplaces_impl({"enabled_only": enabled_only})
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Remove a registered plugin marketplace. Deletes from registry but not cached data."
+)
+async def remove_marketplace(name: str) -> str:
+    """Remove a registered plugin marketplace."""
+    result = await remove_marketplace_impl({"name": name})
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Publish a packaged skill to a plugin marketplace repository. Creates a Claude Code plugin in the target marketplace repo."
+)
+async def publish_to_marketplace(
+    skill_dir: str,
+    marketplace: str,
+    category: str = "development",
+    skill_name: str = None,
+    description: str = None,
+    create_branch: bool = False,
+    force: bool = False,
+) -> str:
+    """
+    Publish a skill to a plugin marketplace repository.
+
+    Args:
+        skill_dir: Path to skill directory containing SKILL.md. Example: 'output/react/'
+        marketplace: Registered marketplace name. Example: 'spyke'
+        category: Plugin category (default: "development")
+        skill_name: Override skill name (optional)
+        description: Override description (optional)
+        create_branch: Create feature branch instead of committing to main (default: false)
+        force: Overwrite existing plugin (default: false)
+    """
+    result = await publish_to_marketplace_impl(
+        {
+            "skill_dir": skill_dir,
+            "marketplace": marketplace,
+            "category": category,
+            "skill_name": skill_name,
+            "description": description,
+            "create_branch": create_branch,
+            "force": force,
+        }
+    )
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+# ============================================================================
+# VECTOR DATABASE TOOLS (4 tools)
+# ============================================================================
+
+
+@safe_tool_decorator(
+    description="Export skill to Weaviate vector database format. Weaviate supports hybrid search (vector + BM25 keyword) with 450K+ users. Ideal for production RAG applications."
+)
+async def export_to_weaviate(
+    skill_dir: str,
+    output_dir: str | None = None,
+) -> str:
+    """
+    Export skill to Weaviate vector database format.
+
+    Args:
+        skill_dir: Path to skill directory (e.g., output/react/)
+        output_dir: Output directory (default: same as skill_dir parent)
+
+    Returns:
+        Export results with package path and usage instructions.
+    """
+    args = {"skill_dir": skill_dir}
+    if output_dir:
+        args["output_dir"] = output_dir
+
+    result = await export_to_weaviate_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Export skill to Chroma vector database format. Chroma is a popular open-source embedding database designed for local-first development with 800K+ developers."
+)
+async def export_to_chroma(
+    skill_dir: str,
+    output_dir: str | None = None,
+) -> str:
+    """
+    Export skill to Chroma vector database format.
+
+    Args:
+        skill_dir: Path to skill directory (e.g., output/react/)
+        output_dir: Output directory (default: same as skill_dir parent)
+
+    Returns:
+        Export results with package path and usage instructions.
+    """
+    args = {"skill_dir": skill_dir}
+    if output_dir:
+        args["output_dir"] = output_dir
+
+    result = await export_to_chroma_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Export skill to FAISS vector index format. FAISS (Facebook AI Similarity Search) supports billion-scale vector search with GPU acceleration."
+)
+async def export_to_faiss(
+    skill_dir: str,
+    output_dir: str | None = None,
+) -> str:
+    """
+    Export skill to FAISS vector index format.
+
+    Args:
+        skill_dir: Path to skill directory (e.g., output/react/)
+        output_dir: Output directory (default: same as skill_dir parent)
+
+    Returns:
+        Export results with package path and usage instructions.
+    """
+    args = {"skill_dir": skill_dir}
+    if output_dir:
+        args["output_dir"] = output_dir
+
+    result = await export_to_faiss_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Export skill to Qdrant vector database format. Qdrant is a modern vector database with native payload filtering and high-performance search, serving 100K+ users."
+)
+async def export_to_qdrant(
+    skill_dir: str,
+    output_dir: str | None = None,
+) -> str:
+    """
+    Export skill to Qdrant vector database format.
+
+    Args:
+        skill_dir: Path to skill directory (e.g., output/react/)
+        output_dir: Output directory (default: same as skill_dir parent)
+
+    Returns:
+        Export results with package path and usage instructions.
+    """
+    args = {"skill_dir": skill_dir}
+    if output_dir:
+        args["output_dir"] = output_dir
+
+    result = await export_to_qdrant_impl(args)
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+# ============================================================================
+# WORKFLOW TOOLS (5 tools)
+# ============================================================================
+
+
+@safe_tool_decorator(
+    description="List all available enhancement workflows (bundled defaults + user-created). Returns name, description, and source (bundled/user) for each."
+)
+async def list_workflows() -> str:
+    """List all available enhancement workflow presets."""
+    result = list_workflows_impl({})
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Get the full YAML content of a named enhancement workflow. Searches user dir first, then bundled defaults."
+)
+async def get_workflow(name: str) -> str:
+    """
+    Get full YAML content of a workflow.
+
+    Args:
+        name: Workflow name (e.g. 'security-focus', 'default')
+
+    Returns:
+        YAML content of the workflow, or error message if not found.
+    """
+    result = get_workflow_impl({"name": name})
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Create a new user workflow from YAML content. The workflow is saved to ~/.config/skill-seekers/workflows/."
+)
+async def create_workflow(name: str, content: str) -> str:
+    """
+    Create a new user workflow.
+
+    Args:
+        name: Workflow name (becomes the filename stem, e.g. 'my-custom')
+        content: Full YAML content of the workflow
+
+    Returns:
+        Success message with file path, or error message.
+    """
+    result = create_workflow_impl({"name": name, "content": content})
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Update (overwrite) an existing user workflow. Cannot update bundled workflows."
+)
+async def update_workflow(name: str, content: str) -> str:
+    """
+    Update an existing user workflow.
+
+    Args:
+        name: Workflow name to update
+        content: New YAML content
+
+    Returns:
+        Success message, or error if workflow is bundled or invalid.
+    """
+    result = update_workflow_impl({"name": name, "content": content})
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+@safe_tool_decorator(
+    description="Delete a user workflow by name. Bundled workflows cannot be deleted."
+)
+async def delete_workflow(name: str) -> str:
+    """
+    Delete a user workflow.
+
+    Args:
+        name: Workflow name to delete
+
+    Returns:
+        Success message, or error if workflow is bundled or not found.
+    """
+    result = delete_workflow_impl({"name": name})
+    if isinstance(result, list) and result:
+        return result[0].text if hasattr(result[0], "text") else str(result[0])
+    return str(result)
+
+
+# ============================================================================
+# MAIN ENTRY POINT
+# ============================================================================
+
+
+def parse_args():
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Skill Seeker MCP Server - Generate Claude AI skills from documentation",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Transport Modes:
+  stdio (default): Standard input/output communication for Claude Desktop
+  http: HTTP server with SSE for web-based MCP clients
+
+Examples:
+  # Stdio transport (default, backward compatible)
+  python -m skill_seekers.mcp.server_fastmcp
+
+  # HTTP transport on default port 8000
+  python -m skill_seekers.mcp.server_fastmcp --http
+
+  # HTTP transport on custom port
+  python -m skill_seekers.mcp.server_fastmcp --http --port 8080
+
+  # Debug logging
+  python -m skill_seekers.mcp.server_fastmcp --http --log-level DEBUG
+        """,
+    )
+
+    parser.add_argument(
+        "--http",
+        action="store_true",
+        help="Use HTTP transport instead of stdio (default: stdio)",
+    )
+
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="Port for HTTP server (default: 8000)",
+    )
+
+    parser.add_argument(
+        "--host",
+        type=str,
+        default="127.0.0.1",
+        help="Host for HTTP server (default: 127.0.0.1)",
+    )
+
+    parser.add_argument(
+        "--log-level",
+        type=str,
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        help="Logging level (default: INFO)",
+    )
+
+    return parser.parse_args()
+
+
+def setup_logging(log_level: str):
+    """Configure logging."""
+    logging.basicConfig(
+        level=getattr(logging, log_level),
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+
+
+async def run_http_server(host: str, port: int):
+    """Run the MCP server with HTTP transport using uvicorn."""
+    try:
+        import uvicorn
+    except ImportError:
+        logging.error("❌ Error: uvicorn package not installed")
+        logging.error("Install with: pip install uvicorn")
+        sys.exit(1)
+
+    try:
+        # Get the SSE Starlette app from FastMCP
+        app = mcp.sse_app()
+
+        # Add CORS middleware for cross-origin requests. Origins are configurable
+        # via CORS_ORIGINS; credentials auto-disable for wildcard origins because
+        # browsers reject allow_credentials=True with allow_origins=["*"].
+        try:
+            from starlette.middleware.cors import CORSMiddleware
+
+            from ..cors_config import resolve_cors_config
+
+            _allow_origins, _allow_credentials = resolve_cors_config()
+            app.add_middleware(
+                CORSMiddleware,
+                allow_origins=_allow_origins,
+                allow_credentials=_allow_credentials,
+                allow_methods=["*"],
+                allow_headers=["*"],
+            )
+            logging.info("✓ CORS middleware enabled")
+        except ImportError:
+            logging.warning("⚠ CORS middleware not available (starlette not installed)")
+
+        # Add health check endpoint
+        from starlette.responses import JSONResponse
+        from starlette.routing import Route
+
+        async def health_check(_request):
+            """Health check endpoint."""
+            return JSONResponse(
+                {
+                    "status": "healthy",
+                    "server": "skill-seeker-mcp",
+                    "version": "2.1.1",
+                    "transport": "http",
+                    "endpoints": {
+                        "health": "/health",
+                        "sse": "/sse",
+                        "messages": "/messages/",
+                    },
+                }
+            )
+
+        # Add route before the catch-all SSE route
+        app.routes.insert(0, Route("/health", health_check, methods=["GET"]))
+
+        logging.info("🚀 Starting Skill Seeker MCP Server (HTTP mode)")
+        logging.info(f"📡 Server URL: http://{host}:{port}")
+        logging.info(f"🔗 SSE Endpoint: http://{host}:{port}/sse")
+        logging.info(f"💚 Health Check: http://{host}:{port}/health")
+        logging.info(f"📝 Messages: http://{host}:{port}/messages/")
+        logging.info("")
+        logging.info("Claude Desktop Configuration (HTTP):")
+        logging.info("{")
+        logging.info('  "mcpServers": {')
+        logging.info('    "skill-seeker": {')
+        logging.info(f'      "url": "http://{host}:{port}/sse"')
+        logging.info("    }")
+        logging.info("  }")
+        logging.info("}")
+        logging.info("")
+        logging.info("Press Ctrl+C to stop the server")
+
+        # Run the uvicorn server
+        config = uvicorn.Config(
+            app=app,
+            host=host,
+            port=port,
+            log_level=logging.getLogger().level,
+            access_log=True,
+        )
+        server = uvicorn.Server(config)
+        await server.serve()
+
+    except Exception as e:
+        logging.error(f"❌ Failed to start HTTP server: {e}")
+        import traceback
+
+        traceback.print_exc()
+        sys.exit(1)
+
+
+def main():
+    """Run the MCP server with stdio or HTTP transport."""
+    import asyncio
+
+    # Check if MCP is available
+    if not MCP_AVAILABLE or mcp is None:
+        print("❌ Error: mcp package not installed or FastMCP not available")
+        print("Install with: pip install mcp>=1.25")
+        sys.exit(1)
+
+    # Parse command-line arguments
+    args = parse_args()
+
+    # Setup logging
+    setup_logging(args.log_level)
+
+    if args.http:
+        # HTTP transport mode
+        logging.info(f"🌐 Using HTTP transport on {args.host}:{args.port}")
+        try:
+            asyncio.run(run_http_server(args.host, args.port))
+        except KeyboardInterrupt:
+            logging.info("\n👋 Server stopped by user")
+            sys.exit(0)
+    else:
+        # Stdio transport mode (default, backward compatible)
+        logging.info("📺 Using stdio transport (default)")
+        try:
+            asyncio.run(mcp.run_stdio_async())
+        except KeyboardInterrupt:
+            logging.info("\n👋 Server stopped by user")
+            sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

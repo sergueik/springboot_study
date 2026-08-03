@@ -1,0 +1,620 @@
+"""
+AI Enhancement for How-To Guides (C3.3)
+
+This module provides comprehensive AI enhancement for how-to guides with dual-mode support:
+- API mode: Uses Anthropic API (requires ANTHROPIC_API_KEY)
+- LOCAL mode: Uses a coding agent CLI (no API key needed)
+
+Provides 5 automatic enhancements:
+1. Step Descriptions - Natural language explanations (not just syntax)
+2. Troubleshooting Solutions - Diagnostic flows + solutions for common errors
+3. Prerequisites Explanations - Why each prerequisite is needed + setup instructions
+4. Next Steps Suggestions - Related guides, variations, learning paths
+5. Use Case Examples - Real-world scenarios showing when to use guide
+"""
+
+import json
+import logging
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
+
+# Avoid circular imports by using TYPE_CHECKING
+if TYPE_CHECKING:
+    from .how_to_guide_builder import PrerequisiteItem, TroubleshootingItem
+else:
+    # Import at runtime to avoid circular dependency issues
+    try:
+        from .how_to_guide_builder import PrerequisiteItem, TroubleshootingItem
+    except ImportError:
+        # Fallback definitions if import fails
+        @dataclass
+        class PrerequisiteItem:
+            name: str
+            why: str
+            setup: str
+
+        @dataclass
+        class TroubleshootingItem:
+            problem: str
+            symptoms: list[str] = field(default_factory=list)
+            solution: str = ""
+            diagnostic_steps: list[str] = field(default_factory=list)
+
+
+logger = logging.getLogger(__name__)
+
+# ANTHROPIC_AVAILABLE kept for backward compatibility — AgentClient handles detection
+ANTHROPIC_AVAILABLE = True  # Detection delegated to AgentClient
+
+
+@dataclass
+class StepEnhancement:
+    """Enhanced step information (internal use only)"""
+
+    step_index: int
+    explanation: str  # Natural language explanation
+    variations: list[str] = field(default_factory=list)  # Alternative approaches
+
+
+class GuideEnhancer:
+    """
+    AI enhancement for how-to guides with dual-mode support.
+
+    Modes:
+    - api: Uses Anthropic API (requires ANTHROPIC_API_KEY)
+    - local: Uses a coding agent CLI (no API key needed)
+    - auto: Automatically detect best mode
+    """
+
+    def __init__(self, mode: str = "auto"):
+        """
+        Initialize GuideEnhancer.
+
+        Args:
+            mode: Enhancement mode - "api", "local", or "auto"
+        """
+        from skill_seekers.cli.agent_client import AgentClient
+
+        self._agent = AgentClient(mode=mode)
+        self.mode = self._agent.mode
+
+        if self._agent.is_available():
+            self._agent.log_mode()
+        else:
+            logger.warning("⚠️  No AI enhancement available")
+            self.mode = "none"
+
+    def enhance_guide(self, guide_data: dict) -> dict:
+        """
+        Apply all 5 enhancements to a guide.
+
+        Args:
+            guide_data: Guide data dictionary with title, steps, etc.
+
+        Returns:
+            Enhanced guide data with all 5 enhancements
+        """
+        if self.mode == "none":
+            logger.warning("⚠️  AI enhancement unavailable - returning original guide")
+            return guide_data
+
+        try:
+            if self.mode == "api":
+                return self._enhance_via_api(guide_data)
+            else:
+                return self._enhance_via_local(guide_data)
+        except Exception as e:
+            logger.error(f"❌ AI enhancement failed: {e}")
+            logger.info("📝 Returning original guide without enhancement")
+            return guide_data
+
+    def enhance_step_descriptions(self, steps: list[dict]) -> list[StepEnhancement]:
+        """
+        Enhancement 1: Add natural language explanations to steps.
+
+        Args:
+            steps: List of workflow steps
+
+        Returns:
+            List of step enhancements with explanations
+        """
+        if not steps or self.mode == "none":
+            return []
+
+        prompt = self._create_step_description_prompt(steps)
+        response = self._call_ai(prompt)
+
+        if not response:
+            return []
+
+        try:
+            data = json.loads(response)
+            return self._parse_step_enhancements(data.get("step_descriptions", []))
+        except (json.JSONDecodeError, KeyError) as e:
+            logger.warning(f"⚠️  Failed to parse step descriptions: {e}")
+            return []
+
+    @staticmethod
+    def _parse_step_enhancements(items: list) -> list[StepEnhancement]:
+        """Build StepEnhancements, mapping each to its step by the model's
+        explicit ``step_index``. Only fall back to enumerate position when NO
+        item carries an index — otherwise a dropped/reordered entry would shift
+        every subsequent explanation onto the wrong step.
+        """
+        any_explicit = any(
+            isinstance(it, dict) and isinstance(it.get("step_index"), int) for it in items
+        )
+        result: list[StepEnhancement] = []
+        for i, item in enumerate(items):
+            if not isinstance(item, dict):
+                continue
+            if any_explicit:
+                idx = item.get("step_index")
+                if not isinstance(idx, int):
+                    continue  # skip indexless items when others are indexed
+            else:
+                idx = i  # no indices provided at all → best-effort positional
+            result.append(
+                StepEnhancement(
+                    step_index=idx,
+                    explanation=item.get("explanation", ""),
+                    variations=item.get("variations", []),
+                )
+            )
+        return result
+
+    def enhance_troubleshooting(self, guide_data: dict) -> list[TroubleshootingItem]:
+        """
+        Enhancement 2: Generate diagnostic flows + solutions.
+
+        Args:
+            guide_data: Guide data with title, steps, language
+
+        Returns:
+            List of troubleshooting items with solutions
+        """
+        if self.mode == "none":
+            return []
+
+        prompt = self._create_troubleshooting_prompt(guide_data)
+        response = self._call_ai(prompt)
+
+        if not response:
+            return []
+
+        try:
+            data = json.loads(response)
+            return [
+                TroubleshootingItem(
+                    problem=item.get("problem", ""),
+                    symptoms=item.get("symptoms", []),
+                    diagnostic_steps=item.get("diagnostic_steps", []),
+                    solution=item.get("solution", ""),
+                )
+                for item in data.get("troubleshooting", [])
+            ]
+        except (json.JSONDecodeError, KeyError) as e:
+            logger.warning(f"⚠️  Failed to parse troubleshooting items: {e}")
+            return []
+
+    def enhance_prerequisites(self, prereqs: list[str]) -> list[PrerequisiteItem]:
+        """
+        Enhancement 3: Explain why prerequisites are needed.
+
+        Args:
+            prereqs: List of prerequisite names
+
+        Returns:
+            List of enhanced prerequisites with explanations
+        """
+        if not prereqs or self.mode == "none":
+            return []
+
+        prompt = self._create_prerequisites_prompt(prereqs)
+        response = self._call_ai(prompt)
+
+        if not response:
+            return []
+
+        try:
+            data = json.loads(response)
+            return [
+                PrerequisiteItem(
+                    name=item.get("name", ""), why=item.get("why", ""), setup=item.get("setup", "")
+                )
+                for item in data.get("prerequisites_detailed", [])
+            ]
+        except (json.JSONDecodeError, KeyError) as e:
+            logger.warning(f"⚠️  Failed to parse prerequisites: {e}")
+            return []
+
+    def enhance_next_steps(self, guide_data: dict) -> list[str]:
+        """
+        Enhancement 4: Suggest related guides and variations.
+
+        Args:
+            guide_data: Guide data with title, topic
+
+        Returns:
+            List of next step suggestions
+        """
+        if self.mode == "none":
+            return []
+
+        prompt = self._create_next_steps_prompt(guide_data)
+        response = self._call_ai(prompt)
+
+        if not response:
+            return []
+
+        try:
+            data = json.loads(response)
+            return data.get("next_steps", [])
+        except (json.JSONDecodeError, KeyError) as e:
+            logger.warning(f"⚠️  Failed to parse next steps: {e}")
+            return []
+
+    def enhance_use_cases(self, guide_data: dict) -> list[str]:
+        """
+        Enhancement 5: Generate real-world scenario examples.
+
+        Args:
+            guide_data: Guide data with title, description
+
+        Returns:
+            List of use case examples
+        """
+        if self.mode == "none":
+            return []
+
+        prompt = self._create_use_cases_prompt(guide_data)
+        response = self._call_ai(prompt)
+
+        if not response:
+            return []
+
+        try:
+            data = json.loads(response)
+            return data.get("use_cases", [])
+        except (json.JSONDecodeError, KeyError) as e:
+            logger.warning(f"⚠️  Failed to parse use cases: {e}")
+            return []
+
+    # === AI Call Methods ===
+
+    def _call_ai(self, prompt: str, max_tokens: int = 4000) -> str | None:
+        """
+        Call AI with the given prompt via AgentClient.
+
+        Args:
+            prompt: Prompt text
+            max_tokens: Maximum tokens in response
+
+        Returns:
+            AI response text or None if failed
+        """
+        return self._agent.call(prompt, max_tokens=max_tokens)
+
+    # === Prompt Creation Methods ===
+
+    def _enhance_via_api(self, guide_data: dict) -> dict:
+        """
+        Enhance guide via API mode.
+
+        Args:
+            guide_data: Guide data dictionary
+
+        Returns:
+            Enhanced guide data
+        """
+        prompt = self._create_enhancement_prompt(guide_data)
+        response = self._call_ai(prompt)
+
+        if not response:
+            return guide_data
+
+        return self._parse_enhancement_response(response, guide_data)
+
+    def _enhance_via_local(self, guide_data: dict) -> dict:
+        """
+        Enhance guide via LOCAL mode.
+
+        Args:
+            guide_data: Guide data dictionary
+
+        Returns:
+            Enhanced guide data
+        """
+        prompt = self._create_enhancement_prompt(guide_data)
+        # _call_ai routes to API or LOCAL via AgentClient; there is no
+        # _call_claude_local method (calling it raised AttributeError, which the
+        # broad except in enhance_guide swallowed — silently disabling LOCAL-mode
+        # enhancement).
+        response = self._call_ai(prompt)
+
+        if not response:
+            return guide_data
+
+        return self._parse_enhancement_response(response, guide_data)
+
+    def _create_enhancement_prompt(self, guide_data: dict) -> str:
+        """
+        Create comprehensive enhancement prompt for all 5 enhancements.
+
+        Args:
+            guide_data: Guide data dictionary
+
+        Returns:
+            Complete prompt text
+        """
+        title = guide_data.get("title", "Unknown Guide")
+        steps = guide_data.get("steps", [])
+        language = guide_data.get("language", "python")
+        prerequisites = guide_data.get("prerequisites", [])
+
+        steps_text = self._format_steps_for_prompt(steps)
+        prereqs_text = ", ".join(prerequisites) if prerequisites else "None specified"
+
+        prompt = f"""I need you to enhance this how-to guide with 5 improvements:
+
+CURRENT GUIDE:
+Title: {title}
+Steps: {len(steps)} steps
+Code Language: {language}
+Prerequisites: {prereqs_text}
+
+STEP CODE:
+{steps_text}
+
+YOUR TASK - Provide JSON output with these 5 enhancements:
+
+1. STEP_DESCRIPTIONS: For each step, write natural language explanation (not just syntax)
+   - Explain what the code does
+   - Explain why it's needed
+   - Provide context and best practices
+
+2. TROUBLESHOOTING: Generate 3-5 common errors with diagnostic flows + solutions
+   - Identify likely errors for this type of workflow
+   - Provide symptoms to recognize the error
+   - Give diagnostic steps to confirm the issue
+   - Provide clear solution steps
+
+3. PREREQUISITES: Explain WHY each prerequisite is needed + setup instructions
+   - For each prerequisite, explain its purpose
+   - Provide installation/setup commands
+   - Explain when it's used in the workflow
+
+4. NEXT_STEPS: Suggest 3-5 related guides, variations, learning paths
+   - Related guides that build on this one
+   - Variations (e.g., async version, different approaches)
+   - Next logical learning steps
+
+5. USE_CASES: Provide 2-3 real-world scenarios when to use this guide
+   - Specific situations where this workflow applies
+   - Problems it solves
+   - When NOT to use this approach
+
+OUTPUT FORMAT (strict JSON):
+{{
+  "step_descriptions": [
+    {{"step_index": 0, "explanation": "...", "variations": ["..."]}},
+    {{"step_index": 1, "explanation": "...", "variations": ["..."]}},
+    ...
+  ],
+  "troubleshooting": [
+    {{
+      "problem": "ImportError: No module named 'requests'",
+      "symptoms": ["Import fails", "Module not found error"],
+      "diagnostic_steps": ["Check pip list", "Verify virtual env"],
+      "solution": "Run: pip install requests"
+    }},
+    ...
+  ],
+  "prerequisites_detailed": [
+    {{"name": "requests", "why": "HTTP client for making web requests", "setup": "pip install requests"}},
+    ...
+  ],
+  "next_steps": [
+    "How to handle async workflows",
+    "How to add error handling",
+    ...
+  ],
+  "use_cases": [
+    "Use when you need to automate web scraping tasks",
+    "Ideal for building documentation archives",
+    ...
+  ]
+}}
+
+IMPORTANT: Return ONLY valid JSON, no markdown code blocks or extra text.
+"""
+        return prompt
+
+    def _create_step_description_prompt(self, steps: list[dict]) -> str:
+        """Create prompt for step descriptions only."""
+        steps_text = self._format_steps_for_prompt(steps)
+        return f"""Generate natural language explanations for these code steps:
+
+{steps_text}
+
+Return JSON:
+{{
+  "step_descriptions": [
+    {{"step_index": 0, "explanation": "...", "variations": [""]}},
+    ...
+  ]
+}}
+
+IMPORTANT: Return ONLY valid JSON.
+"""
+
+    def _create_troubleshooting_prompt(self, guide_data: dict) -> str:
+        """Create prompt for troubleshooting items."""
+        title = guide_data.get("title", "Unknown")
+        language = guide_data.get("language", "python")
+        steps = guide_data.get("steps", [])
+        steps_text = self._format_steps_for_prompt(steps)
+
+        return f"""Generate troubleshooting guidance for this {language} workflow:
+
+Title: {title}
+Steps:
+{steps_text}
+
+Return JSON with 3-5 common errors:
+{{
+  "troubleshooting": [
+    {{
+      "problem": "...",
+      "symptoms": ["...", "..."],
+      "diagnostic_steps": ["...", "..."],
+      "solution": "..."
+    }},
+    ...
+  ]
+}}
+
+IMPORTANT: Return ONLY valid JSON.
+"""
+
+    def _create_prerequisites_prompt(self, prereqs: list[str]) -> str:
+        """Create prompt for prerequisites enhancement."""
+        prereqs_text = ", ".join(prereqs)
+        return f"""Explain why these prerequisites are needed and how to install them:
+
+Prerequisites: {prereqs_text}
+
+Return JSON:
+{{
+  "prerequisites_detailed": [
+    {{"name": "...", "why": "...", "setup": "..."}},
+    ...
+  ]
+}}
+
+IMPORTANT: Return ONLY valid JSON.
+"""
+
+    def _create_next_steps_prompt(self, guide_data: dict) -> str:
+        """Create prompt for next steps suggestions."""
+        title = guide_data.get("title", "Unknown")
+        return f"""Suggest 3-5 related guides and learning paths after completing: {title}
+
+Return JSON:
+{{
+  "next_steps": [
+    "How to ...",
+    "How to ...",
+    ...
+  ]
+}}
+
+IMPORTANT: Return ONLY valid JSON.
+"""
+
+    def _create_use_cases_prompt(self, guide_data: dict) -> str:
+        """Create prompt for use case examples."""
+        title = guide_data.get("title", "Unknown")
+        description = guide_data.get("description", "")
+
+        return f"""Generate 2-3 real-world use cases for this guide:
+
+Title: {title}
+Description: {description}
+
+Return JSON:
+{{
+  "use_cases": [
+    "Use when you need to ...",
+    "Ideal for ...",
+    ...
+  ]
+}}
+
+IMPORTANT: Return ONLY valid JSON.
+"""
+
+    def _format_steps_for_prompt(self, steps: list[dict]) -> str:
+        """Format steps for inclusion in prompts."""
+        if not steps:
+            return "No steps provided"
+
+        formatted = []
+        for i, step in enumerate(steps):
+            desc = step.get("description", "")
+            code = step.get("code", "")
+            if code:
+                formatted.append(f"Step {i + 1}: {desc}\n```\n{code}\n```")
+            else:
+                formatted.append(f"Step {i + 1}: {desc}")
+
+        return "\n\n".join(formatted)
+
+    def _parse_enhancement_response(self, response: str, guide_data: dict) -> dict:
+        """
+        Parse AI enhancement response.
+
+        Args:
+            response: AI response text (should be JSON)
+            guide_data: Original guide data
+
+        Returns:
+            Enhanced guide data
+        """
+        try:
+            # Try to extract JSON from response (in case there's extra text)
+            json_start = response.find("{")
+            json_end = response.rfind("}") + 1
+            if json_start >= 0 and json_end > json_start:
+                json_text = response[json_start:json_end]
+                data = json.loads(json_text)
+            else:
+                data = json.loads(response)
+
+            # Merge enhancements into guide_data
+            enhanced = guide_data.copy()
+
+            # Step descriptions
+            if "step_descriptions" in data:
+                enhanced["step_enhancements"] = self._parse_step_enhancements(
+                    data["step_descriptions"]
+                )
+
+            # Troubleshooting
+            if "troubleshooting" in data:
+                enhanced["troubleshooting_detailed"] = [
+                    TroubleshootingItem(
+                        problem=item.get("problem", ""),
+                        symptoms=item.get("symptoms", []),
+                        diagnostic_steps=item.get("diagnostic_steps", []),
+                        solution=item.get("solution", ""),
+                    )
+                    for item in data["troubleshooting"]
+                ]
+
+            # Prerequisites
+            if "prerequisites_detailed" in data:
+                enhanced["prerequisites_detailed"] = [
+                    PrerequisiteItem(
+                        name=item.get("name", ""),
+                        why=item.get("why", ""),
+                        setup=item.get("setup", ""),
+                    )
+                    for item in data["prerequisites_detailed"]
+                ]
+
+            # Next steps
+            if "next_steps" in data:
+                enhanced["next_steps_detailed"] = data["next_steps"]
+
+            # Use cases
+            if "use_cases" in data:
+                enhanced["use_cases"] = data["use_cases"]
+
+            logger.info("✅ Successfully enhanced guide with all 5 improvements")
+            return enhanced
+
+        except (json.JSONDecodeError, KeyError) as e:
+            logger.warning(f"⚠️  Failed to parse AI response: {e}")
+            logger.debug(f"Response was: {response[:500]}...")
+            return guide_data
