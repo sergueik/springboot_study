@@ -9,7 +9,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <ant.version>1.10.9</ant.version>
+    <ant.version>1.10.11</ant.version>
     <dom4j.version>2.1.3</dom4j.version>
     <maven-plugin-api.version>3.6.3</maven-plugin-api.version>
     <java.version>1.8</java.version>
