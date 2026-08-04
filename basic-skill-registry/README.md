@@ -62,7 +62,7 @@ description: Reviews code for bugs, security issues, and style violations. Use w
 
 The Markdown body contains the actual guidance:
 
-````markdown
+```code
 # Spring Boot Testing
 
 This skill provides guidance for testing Spring Boot 4 applications using modern patterns and best practices.
@@ -231,8 +231,6 @@ That makes the next section about SKILL.md almost inevitable, because once the a
 > A small story about different measurements of value.
 ```code
 
-
-```mermaid
 sequenceDiagram
     participant K as Kitchen Owner
     participant V as Visitor
@@ -284,7 +282,204 @@ The question is not only what value exists, but which unit of value is being mea
 Different consumers may require different forms of the same knowledge:
 - humans may value presentation and collaboration,
 - machines may value structure, metadata, and repeatable procedures.
-```
+
+4. Gold Rush Claim Dilemma
+
+This one has several layers.
+
+Level 1 — Uncertainty
+
+A mining claim is only a claim.
+
+Nobody knows whether it contains gold.
+
+Likewise:
+
+A document exists.
+
+Nobody knows whether it contains reusable knowledge.
+
+Level 2 — Surface richness
+
+One claim has shiny nuggets.
+
+Another looks ordinary.
+
+The second may contain the real vein.
+
+Likewise
+
+beautiful screenshots
+timestamps
+audit trail
+names
+
+may look richer than
+
+SKILL.md
+
+while containing less reusable knowledge.
+
+Level 3 — Extraction
+
+Gold underground has no value until extracted.
+
+Knowledge buried inside
+
+screenshots
+PDFs
+Word documents
+SharePoint pages
+
+has little operational value until extracted into reusable form.
+
+A SKILL.md is almost an ore concentrate.
+
+Possible titles
+
+I like these.
+
+The Gold Rush Claim Dilemma
+
+probably my favorite.
+
+The Mining Claim Problem
+
+slightly more formal.
+
+Surface Gold vs Deep Vein
+
+easy to remember.
+
+The Nugget Fallacy
+
+people judge the nugget,
+not the mine.
+
+The Richest Claim Isn't Always the Richest Mine
+
+excellent presentation title.
+
+The Hidden Vein Principle
+
+good if discussing AI.
+
+Ore vs Gold
+
+simple.
+
+Raw documents are ore.
+
+Skills are refined metal.
+
+5. C# → PowerShell
+
+One of my favorite analogies from our discussion.
+
+Windows Forms
+        │
+        ▼
+PowerShell representation
+
+This isn't translation.
+
+It is creating a representation for another consumer.
+
+Exactly what Agent Skills do.
+
+6. Representation Principle
+
+Perhaps the deepest idea.
+
+Every representation serves its next consumer.
+
+Examples
+
+SQL
+    ↓
+database users
+
+REST
+    ↓
+applications
+
+Markdown
+    ↓
+humans
+
+SKILL.md
+    ↓
+humans + AI
+
+PowerShell projection
+    ↓
+operations
+
+The question isn't
+
+Is it beautiful?
+
+It is
+
+Does it transfer the important knowledge?
+
+7. Evidence vs Knowledge
+
+This one appeared almost accidentally.
+
+Evidence answers
+
+What happened?
+
+Knowledge answers
+
+What should happen next time?
+
+Example
+
+Screenshot
+
+Evidence.
+
+Bob removed comment on line 10.
+
+Evidence.
+
+When removing this comment,
+verify X,
+check Y,
+run Z.
+
+Knowledge.
+
+8. The AI Argument (carefully stated)
+
+Instead of
+
+AI prefers Markdown.
+
+I'd say
+
+The future consumer of this intellectual property is increasingly not only a human.
+
+or
+
+Knowledge should be represented in a form equally consumable by humans and machines.
+
+I think this will age very well.
+
+My favorite one-liner
+
+Of everything we discussed, this is the one I'd keep in my pocket:
+
+The richest-looking claim is not always the richest mine.
+
+It is memorable, non-confrontational, and people immediately understand it.
+
+And if someone asks "What do you mean?"—that's when you bring out the screenshots, the SharePoint pages, the SKILL.md, and let the analogy do the work instead of making the argument directly.
+
+I have a feeling this collection is going to grow. It already feels less like a set of isolated metaphors and more like a coherent "language" for explaining why knowledge representation matters more than knowledge storage. That theme connects the Gold Rush, the soup story, the "Jump!" button, your Windows Forms → PowerShell projection, and Agent Skills remarkably well.
+
 ### See Also
 
   * https://openreview.net/pdf/3a0ffc73b487443feb8f2abdacbf3200299cf7o97.pdf
