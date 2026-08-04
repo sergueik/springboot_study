@@ -170,14 +170,7 @@ digraph if_else_flow {
   function renderDot() {
     const dot = document.getElementById("dotInput").value;
 
-    viz.renderSVGElement(dot, /* {
-      images: [
-        { name: "/assets/schedule.svg", width: 64, height: 64 },
-        { name: "/assets/approval.svg", width: 64, height: 64 },
-        { name: "/assets/upload.svg", width: 64, height: 64 }
-      ]
-    } */ )
-      .then(function(svg) {
+    viz.renderSVGElement(dot).then(function(svg) {
 
         // Make SVG responsive
         svg.removeAttribute("width");
