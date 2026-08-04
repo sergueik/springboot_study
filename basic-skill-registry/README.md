@@ -1,16 +1,23 @@
-###
+### Info
 
-Under the current standard, Agent Skills are SKILL.md files
-that combine instructions with supporting resources, enabling Large Language Model (LLM) agents to reuse procedures beyond a single conversation. 
+Under the current standard, Agent Skills are `SKILL.md` files that combine instructions with supporting resources, enabling Large Language Model (LLM) agents to reuse procedures beyond a single conversation. 
 
-Recently, AI skills have become a practical way to extend
-Large Language Model (LLM) agents beyond the immediate
-promp
+Recently, AI skills have become a practical way to extend Large Language Model (LLM) agents beyond the immediate prompt.
 
-Under the Agent Skills standard, a skill is packaged as a SKILL.md file: frontmatter tells the agent when to
-load it, the body gives instructions, and optional files provide
-scripts, references, or assets [2]. In this form, skills turn task
-experience into reusable software artifacts
+Under the Agent Skills standard, a skill is packaged as a `SKILL.md` file: frontmatter tells the agent when to load it, the body gives instructions, and optional files provide scripts, references, or assets. In this form, skills turn task experience into reusable software artifacts
+### Usage
+```sh
+git clone --depth 1 https://github.com/majiayu000/claude-skill-registry/tree/main/skills
+pushd claude-skill-registry
+find skills -iname 'SKILL.md' | tee ../catalog.txt 
+popd
+```
+
+```powershell
+. ./catlog-rebuilder.ps1
+```
+it generates the flat HTML table with search.
+
 ### Background
 
 
@@ -50,4 +57,9 @@ That makes the next section about SKILL.md almost inevitable, because once the a
 ### See Also
 
   * https://openreview.net/pdf/3a0ffc73b487443feb8f2abdacbf3200299cf797.pdf
+  * [Agent Skills Specification](https://agentskills.io/specification) - complete format specification for Agent Skill
 
+
+---  
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

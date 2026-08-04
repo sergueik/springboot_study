@@ -961,7 +961,6 @@ flowchart LR
 #### Alternative (Old School) ASCII drawing Diagram
 
 ```code
-```text
 +----------------------------+
 |             L              |   <-- cluster label (Linux host)
 |                            |
@@ -1074,6 +1073,7 @@ Fiserv PEP+ (Post-Processing Electronic Payments or PEP+) is an industry-standar
   * [python - Running Selenium with Headless Chrome Webdriver - Stack Overflow](https://stackoverflow.com/questions/53657215/running-selenium-with-headless-chrome-webdriver)
   * [python - Selenium: WebDriverException:Chrome failed to start: crashed as google-chrome is no longer running so ChromeDriver is assuming that Chrome has crashed](https://stackoverflow.com/questions/53073411/selenium-webdriverexceptionchrome-failed-to-start-crashed-as-google-chrome-is)
   * [how To Run Selenium With Chrome In Docker](https://stackoverflow.com/questions/45323271/how-to-run-selenium-with-chrome-in-docker)
-
+  * https://peter.sh/experiments/chromium-command-line-switches/
+  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
