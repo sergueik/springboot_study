@@ -1476,6 +1476,7 @@ The Workflows that themselves invoke __Docker++ may require [Docker-in-Docker (D
      + [gitea/runner](https://hub.docker.com/r/gitea/runner) - newer
 
    * Emmanuel Frecon [repositories](https://github.com/efrecon?tab=repositories)
-
+   * [woodpecker-ci](https://github.com/woodpecker-ci) - lightweight, community-driven CI application for self-hosted environments
+   
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

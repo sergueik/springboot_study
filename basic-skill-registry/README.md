@@ -216,6 +216,75 @@ That makes the next section about SKILL.md almost inevitable, because once the a
 "How does the assistant know the way this project expects things to be done?"
 
 
+
+"What are you doing here?"
+"Eating my frugal bread and water dinner.  Enjoying the wonderful smell from your kitchen."
+"You must pay for what you have consumed!
+"Here is the payment." (tinkling the coin in the wallet)
+"But were is the no money."
+"Do you hear the sound of coins?"
+"yes"
+"We are even."
+
+## The Value Exchange
+
+> A small story about different measurements of value.
+```code
+
+
+```mermaid
+sequenceDiagram
+    participant K as Kitchen Owner
+    participant V as Visitor
+
+    K->>V: What are you doing here?
+
+    V->>K: Eating my frugal bread-and-water dinner.<br/>Enjoying the wonderful smell from your kitchen.
+
+    K->>V: You must pay for what you have consumed!
+
+    V->>K: Here is the payment.
+    V->>V: 🔔 *Tinkling coins in the wallet*
+
+    K->>V: But there is no money.
+
+    V->>K: Do you hear the sound of coins?
+
+    K->>V: Yes.
+
+    V->>K: Then we are even.
+```
+
+```mermaid
+
+sequenceDiagram
+    participant K as Kitchen Owner
+    participant V as Visitor
+
+    K->>V: What are you doing here?
+
+    V->>K: Eating my frugal bread-and-water dinner.<br/>Enjoying the wonderful smell from your kitchen.
+
+    K->>V: You must pay for what you have consumed!
+
+    V->>K: Here is the payment.
+    V->>V: 🔔 *Tinkling coins in the wallet*
+
+    K->>V: But there is no money.
+
+    V->>K: Do you hear the sound of coins?
+
+    K->>V: Yes.
+
+    V->>K: Then we are even.
+```
+
+The question is not only what value exists, but which unit of value is being measured.
+
+Different consumers may require different forms of the same knowledge:
+- humans may value presentation and collaboration,
+- machines may value structure, metadata, and repeatable procedures.
+```
 ### See Also
 
   * https://openreview.net/pdf/3a0ffc73b487443feb8f2abdacbf3200299cf7o97.pdf
