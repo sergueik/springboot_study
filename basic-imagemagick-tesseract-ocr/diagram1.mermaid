@@ -1,0 +1,31 @@
+flowchart LR
+
+Start((Order Received))
+
+Cond1{"Customer account active?"}
+
+Cond2{"Order value exceeds $10,000?"}
+
+Then1["Create shipment"]
+
+Then2["Request manager approval"]
+
+Else["Reject order and notify customer"]
+
+End((Process Complete))
+
+Start --> Cond1
+
+Cond1 -->|Yes| Cond2
+
+Cond1 -->|No| Else
+
+Cond2 -->|Yes| Then2
+
+Cond2 -->|No| Then1
+
+Then1 --> End
+
+Then2 --> End
+
+Else --> End

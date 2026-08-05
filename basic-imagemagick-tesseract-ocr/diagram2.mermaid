@@ -1,0 +1,17 @@
+flowchart LR
+
+Start([Purchase request received])
+
+Decision{"Has the purchasing manager approved the request?"}
+
+Approve["Create purchase order and notify supplier"]
+
+Reject["Reject request and notify requestor with explanation"]
+
+End([Process completed])
+
+Start --> Decision
+Decision -->|Yes| Approve
+Decision -->|No| Reject
+Approve --> End
+Reject --> End
