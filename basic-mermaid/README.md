@@ -586,6 +586,8 @@ along with several other extensions
   * [overview of creating flowcharts using Mermaid](https://ckeditor.com/blog/basic-overview-of-creating-flowcharts-using-mermaid/)
   * [diagrams in Markdown with Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) (redundant)
   * [list of Mermaid Tutorials](https://mermaid.ai/open-source/ecosystem/tutorials.html)
+  * [custom SVG shapes library for Mermaid](https://mermaid.ai/open-source/adding-new-shape.html)
+  * [full emoji list](https://unicode.org/emoji/charts/full-emoji-list.html#keycap)
   * great tools are transparent
 ---
 ### Author
