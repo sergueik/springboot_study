@@ -549,6 +549,33 @@ The initial scope intentionally focuses on reusable guidance rather than a
 large collection of examples. Additional production patterns and references
 can be added as the skill evolves.
 
+
+### Why this skill is useful
+
+Authentication and authorization are among the strongest and most security-sensitive
+areas of the Azure development ecosystem.
+
+Microsoft Entra ID provides enterprise-grade identity capabilities, but using
+those capabilities correctly requires coordinating several layers:
+
+- identity provider configuration
+- OAuth2/OIDC protocol flows
+- application registration
+- frontend authentication libraries
+- token acquisition
+- backend token validation
+- authorization mapping
+
+The complexity comes less from any individual component and more from the
+number of components that must align correctly.
+
+Capturing these integration patterns as a skill helps developers and agents
+apply the established approach consistently.
+
+### Timing
+
+This skill is intentionally introduced early in the development cycle. The objective is to provide an initial architectural reference before implementation patterns become embedded in the codebase.
+
 ### See Also
   * https://openreview.net/pdf/3a0ffc73b487443feb8f2abdacbf3200299cf7o97.pdf
   * [Agent Skills Specification](https://agentskills.io/specification) - complete format specification for Agent Skill
