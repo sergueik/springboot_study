@@ -158,15 +158,6 @@ That makes the next section about SKILL.md almost inevitable, because once the a
 "How does the assistant know the way this project expects things to be done?"
 
 
-### See Also
-
-  * https://openreview.net/pdf/3a0ffc73b487443feb8f2abdacbf3200299cf797.pdf
-  * [Agent Skills Specification](https://agentskills.io/specification) - complete format specification for Agent Skill
-  * [vibe coding cases overview](https://habr.com/ru/articles/1065582/) (in Russian)
-
----  
-### Author
-[Serguei Kouzmine](kouzmine_serguei@yahoo.com)
 ### Usage
 ```sh
 git clone --depth 1 https://github.com/majiayu000/claude-skill-registry/tree/main/skills
@@ -479,14 +470,92 @@ It is memorable, non-confrontational, and people immediately understand it.
 And if someone asks "What do you mean?"—that's when you bring out the screenshots, the SharePoint pages, the SKILL.md, and let the analogy do the work instead of making the argument directly.
 
 I have a feeling this collection is going to grow. It already feels less like a set of isolated metaphors and more like a coherent "language" for explaining why knowledge representation matters more than knowledge storage. That theme connects the Gold Rush, the soup story, the "Jump!" button, your Windows Forms → PowerShell projection, and Agent Skills remarkably well.
+### Manual Skill for Gap
+
+### Manual Skill for Gap
+
+This skill was created from a practical integration need.
+
+Microsoft provides comprehensive guidance for the individual building blocks:
+Microsoft Entra ID, OAuth2/OpenID Connect, MSAL libraries, Azure Identity,
+and Spring Boot integration.
+
+During application development, however, the implementation effort often
+requires combining guidance from several areas:
+
+- React SPA authentication flow
+- Microsoft Entra application registration
+- OAuth2 Authorization Code Flow with PKCE
+- MSAL client configuration
+- Spring Security 6 resource server configuration
+- JWT validation and authorization mapping
+
+This skill captures the recurring decisions and implementation patterns
+required when these components are assembled into a single application.
+
+The intent is not to replace existing documentation, but to provide an
+agent-oriented integration guide for a common enterprise application pattern.
+
+Create the initial skill structure:
+### Manual Skill for Gap
+
+This skill was created from a practical integration need.
+
+Microsoft provides comprehensive guidance for the individual building blocks:
+Microsoft Entra ID, OAuth2/OpenID Connect, MSAL libraries, Azure Identity,
+and Spring Boot integration.
+
+During application development, however, the implementation effort often
+requires combining guidance from several areas:
+
+- React SPA authentication flow
+- Microsoft Entra application registration
+- OAuth2 Authorization Code Flow with PKCE
+- MSAL client configuration
+- Spring Security 6 resource server configuration
+- JWT validation and authorization mapping
+
+This skill captures the recurring decisions and implementation patterns
+required when these components are assembled into a single application.
+
+The intent is not to replace existing documentation, but to provide an
+agent-oriented integration guide for a common enterprise application pattern.
+
+Create the initial skill structure:
+
+```sh
+mkdir -p custom/skills/entra-springboot-react-auth
+mkdir -p custom/skills/entra-springboot-react-auth/{examples,references,checklists,diagrams}
+
+for D in examples references checklists diagrams
+do
+  touch custom/skills/entra-springboot-react-auth/$D/.gitkeep
+done
+
+# author:
+custom/skills/entra-springboot-react-auth/SKILL.md
+custom/skills/entra-springboot-react-auth/examples/README.md
+...
+```
+The supporting directories establish extension points for future contributions.
+The initial change intentionally keeps the artifact set small so that review
+can focus on the skill structure and guidance.
+
+This contribution establishes the skill and its information architecture.
+The skill is immediately usable. Supporting material has an obvious home
+and can be expanded incrementally as common implementation patterns emerge.
+
+The initial scope intentionally focuses on reusable guidance rather than a
+large collection of examples. Additional production patterns and references
+can be added as the skill evolves.
 
 ### See Also
-
   * https://openreview.net/pdf/3a0ffc73b487443feb8f2abdacbf3200299cf7o97.pdf
   * [Agent Skills Specification](https://agentskills.io/specification) - complete format specification for Agent Skill
   * [vibe coding cases overview](https://habr.com/ru/articles/1065582/) (in Russian)
   * https://www.markdownguide.org/basic-syntax/
   * https://www.markdownguide.org/extended-syntax/
+
 ---  
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

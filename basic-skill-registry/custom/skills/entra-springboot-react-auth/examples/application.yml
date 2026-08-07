@@ -1,0 +1,10 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://login.microsoftonline.com/${TENANT_ID}/v2.0
+
+azure:
+  tenant-id: ${TENANT_ID}
+  client-id: ${CLIENT_ID}
