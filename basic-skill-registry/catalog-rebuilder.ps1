@@ -139,19 +139,14 @@ select-Object -first $count |
 foreach-object {
     $line = $_
     $cnt = $cnt + 1
-    # [Void]$i.Items.Add($line)
 
-    # claude-skill-registry/skills/agent/35-google-adk-reliable-agents/SKILL.md
-    if ($debug_flag) {
-      write-host ('read Data (raw):' + [char]10 + '"' + $line + '"' + [char]10)
-    }
+    write-verbose ('read Data (raw):' + [char]10 + '"' + $line + '"' + [char]10)
     $o = $null
 
     $pattern = '^claude-skill-registry/skills/([^/]+)(?:/[^/]+)*/([^/]+)/SKILL.md$'
     [Microsoft.PowerShell.Commands.MatchInfo]$m = $null
     $m = select-string -pattern $pattern -InputObject $line
     if (($m -ne $null ) -and ($m.matches -ne $null)) {
-      try {
         $g = $m.Matches.Groups
         $c = $g.Item(1).Value
         $n = $g.Item(2).Value
@@ -162,9 +157,9 @@ foreach-object {
   		    $a +=$technology[$p]
   	      }
         }
-        write-host ('Category: {0} Skill Name: {1}'-f $c , $n )
+        write-verbose ('Category: {0} Skill Name: {1}'-f $c , $n )
         if ($a.count -ne 0 ) {
-          write-host('Technology: {0}' -f ($a -join ',' ))
+          write-verbose('Technology: {0}' -f ($a -join ',' ))
         }
 
         $r = @{ 'Skill Name' = $n;
@@ -174,15 +169,8 @@ foreach-object {
 		 'Id'   = $cnt;
   	      };
         # $results += $r
-		$results.Add($r)
-        write-host ('Skill Name: {0}' -f $r['Skill Name'])
-      } catch [InvalidOperationException] {
-        # not outermost
-      } catch [System.Management.Automation.RuntimeException] {
-  	    write-host ("Exception (ignored): {0} {1}" -f $_.Exception.GetType().FullName, $_.Exception.Message)
-        # https://devblogs.microsoft.com/scripting/troubleshoot-the-invokemethodonnull-error-with-powershell/
-        # PowerShell FullyQualifiedErrorId : InvokeMethodOnNull (commonly stated as "You cannot call a method on a null-valued expression") means your code tries to run a method on a variable, object, or property that evaluates to $null
-      }
+		[Void]$results.Add($r)
+        write-verbose ('Skill Name: {0}' -f $r['Skill Name'])
       }
   }
   write-host ('Returning: {0} results' -f $results.Count)
@@ -192,21 +180,18 @@ foreach-object {
 [System.Collections.Hashtable]$row = ${ }
 $results_ref = proces_file
 write-host ('Exporting {0} entries' -f $results_ref.value.Count)
-# Exporting 900 entries
-$results_ref.value | foreach-object {
-	if ($_.Item('id') -eq 10 ) {
-		write-host $_.Item('id')
-	}
-}
-# 10
-# 10
-# 10
-# ...
 $template = (get-content -raw ((resolve-path -path '.' ).path + '\' + $templatefile))
 [xml]$template_xml = [xml]$template
 [System.Xml.XmlElement]$documentElement = $template_xml.documentElement
-[System.Xml.XmlElement]$template_row = $documentElement.SelectNodes("//*[@id=""template""]").Item(0)
+
+[System.Xml.XmlElement]$template_row = $documentElement.SelectNodes("//*[contains(@class, ""template"")]").Item(0)
+# Simple class lookup. Safe because this template generates the HTML and no other class names contain "template"
+# [System.Xml.XmlElement]$template_row = $documentElement.SelectNodes("//*[contains(concat("" "", normalize-space(@class), "" ""), "" template "")]").Item(0)
+if ($template_row -eq $null) {
+  # TODO: report error with template	
+}
 [string]$template_row_html = $template_row.outerXML
+
 [Object[]]$rows = $results_ref.value
 [string]$html = $null
 # NOTE: You must provide a value expression following the '..' operator.
@@ -229,10 +214,12 @@ $spinIndex = 0
   [System.Xml.XmlDocumentFragment]$fragment = $template_xml.CreateDocumentFragment()
   ($fragment.InnerXml = $html ) |out-null
   $template_row.ParentNode.InsertAfter($fragment, $template_row)|out-null
-  # write-host $cnt
-  if (($cnt % 1000) -eq 0) {
-    write-Host "`rReading $cnt $($spin[$spinIndex])" -nonewline
+  if ((($cnt % 1000) -eq 0 ) -or ($cnt -eq $rows.Count-1 )) {
+    write-host "`rReading $($cnt+1) $($spin[$spinIndex])" -nonewline
     $spinIndex = ($spinIndex + 1) % $spin.Count
+	<#
+	write-Progress -activity 'Generating HTML' -status "$($cnt + 1) of $($rows.Count)" -percentComplete (($cnt + 1) * 100 / $rows.Count)
+	#>
   }
 }
 # $spinner = @('⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏')
