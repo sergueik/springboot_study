@@ -5,7 +5,7 @@
         var text = input.value.toLowerCase();
 
         var rows = document.querySelectorAll("#catalog tbody tr");
-
+	// searches for all columns
         rows.forEach(function(row) {
             var visible =
                 row.textContent.toLowerCase().indexOf(text) >= 0;
