@@ -95,8 +95,48 @@ $cnt = 0
 [System.Collections.Generic.List[object]]$results = [System.Collections.Generic.List[object]]::new()
 
 write-host ('reading {0} rows from {1}' -f $count, $filepath)
+# reading 90 rows from ...\catalog10.txt
 $debug_flag = $false
-get-content $filepath | foreach-object {
+# NOTE:
+
+
+# Limit the upstream pipeline rather than exiting from inside ForEach-Object.
+#
+# Returning from a pipeline callback does not terminate the pipeline; it emits
+# a value back to the caller and subsequent input objects continue to invoke
+# the callback. The function returns only after the pipeline completes.
+#
+# This is analogous to Java Stream.limit(count), where the upstream iterator is
+# truncated before the callback executes:
+#
+#   Files.lines(path)
+#       .limit(count)
+#       .forEach(...);
+#
+# or LINQ:
+#
+#   File.ReadLines(path)
+#       .Take(count)
+#       .ToList();
+#
+# The below are code smells: treating map() as if it were a for loop.
+# .stream()
+#     .map(x -> {
+#         if (enough(x))
+#             return null;   // hoping to stop
+#         return transform(x);
+#     })
+#     .collect(...);
+# .stream
+#    .map(x -> {
+#        if (found)
+#            return ...;    // hoping to terminate
+#        ...
+#    });
+# The key idea is to stop the producer, not to escape from the consumer.
+get-content $filepath |
+select-Object -first $count |
+foreach-object {
     $line = $_
     $cnt = $cnt + 1
     # [Void]$i.Items.Add($line)
@@ -106,13 +146,6 @@ get-content $filepath | foreach-object {
       write-host ('read Data (raw):' + [char]10 + '"' + $line + '"' + [char]10)
     }
     $o = $null
-    if ($cnt -gt $count ){
-      # write-host ('Loaded: {0} results' -f $results.Count)
-      # write-host ('example: {0}' -f ($results[0]|format-list))
-      return ([ref]$results)
-      # https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_continue?view=powershell-5.1
-      continue
-    }
 
     $pattern = '^claude-skill-registry/skills/([^/]+)(?:/[^/]+)*/([^/]+)/SKILL.md$'
     [Microsoft.PowerShell.Commands.MatchInfo]$m = $null
@@ -152,10 +185,23 @@ get-content $filepath | foreach-object {
       }
       }
   }
+  write-host ('Returning: {0} results' -f $results.Count)
+  # write-host ('example: {0}' -f ($results[0]|format-list))
+  return ([ref]$results)
 }
 [System.Collections.Hashtable]$row = ${ }
 $results_ref = proces_file
-write-output ('Exporting {0} entries' -f $results_ref.value.Count)
+write-host ('Exporting {0} entries' -f $results_ref.value.Count)
+# Exporting 900 entries
+$results_ref.value | foreach-object {
+	if ($_.Item('id') -eq 10 ) {
+		write-host $_.Item('id')
+	}
+}
+# 10
+# 10
+# 10
+# ...
 $template = (get-content -raw ((resolve-path -path '.' ).path + '\' + $templatefile))
 [xml]$template_xml = [xml]$template
 [System.Xml.XmlElement]$documentElement = $template_xml.documentElement
