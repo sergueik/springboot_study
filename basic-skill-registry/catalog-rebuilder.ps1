@@ -157,19 +157,15 @@ foreach-object {
 
     write-verbose ('read Data (raw):' + [char]10 + '"' + $line + '"' + [char]10)
 
-    if ((($cnt % 1000) -eq 0 ) -or ($cnt -eq $input_lines.Count-1 )) {
-	  write-host  -nonewline ("`rReading {0} {1}  Elapsed: {2:hh\:mm\:ss}" -f ($cnt + 1), $spin[$spinIndex], $stopwatch.Elapsed)
-	  $spinIndex = ($spinIndex + 1) % $spin.Count
+    if (($cnt -ne 0 ) -and ((($cnt % 1000) -eq 0 ) -or ($cnt -eq $input_lines.Count-1 ))) {
+      write-host -nonewline ("`rReading {0} {1}  Elapsed: {2:hh\:mm\:ss}" -f ($cnt), $spin[$spinIndex], $stopwatch.Elapsed)
+      $spinIndex = ($spinIndex + 1) % $spin.Count
     }
 
     $pattern = '^claude-skill-registry/skills/([^/]+)(?:/[^/]+)*/([^/]+)/SKILL.md$'
     $m = select-string -pattern $pattern -InputObject $line
-	$name = $null
-	$category = $null
-    # if (($m -ne $null ) -and ($m.matches -ne $null) ) {
-    # You cannot call a method on a null-valued expression.
-    # CategoryInfo : InvalidOperation: (Item:String) [], RuntimeException FullyQualifiedErrorId : InvokeMethodOnNull
-    # if (($m -ne $null ) -and ($m.Matches -ne $null) -and $m.Matches.Success -and ($m.Matches.Groups -ne $null)) {
+    $name = $null
+    $category = $null
     if (($m -ne $null ) -and ($m.Matches -ne $null) -and $m.Matches.Success ) {
       $g = $m.Matches.Groups
       $category = $g.Item(1).Value
@@ -207,8 +203,6 @@ foreach-object {
   # write-host ('example: {0}' -f ($results[0]|format-list))
   return ([ref]$results)
 }
-
-
 
 function initialize_data_reader {
   param(
@@ -269,6 +263,7 @@ function initialize_data_reader {
   $local:command.Connection = $connection
 
   [void]$ole_db_adapter.Fill($local:data_table)
+  # Exception calling "Fill" with "1" argument(s): "'Catalog$' is not a valid name.  Make sure that it does not include invalid characters or punctuation and that it is not too long."
   $local:connection.open()
   # http://stackoverflow.com/questions/24648081/error-the-type-system-data-oledb-oledbdatareader-has-no-constructors-defined
   $global:data_reader = $local:command.ExecuteReader()
@@ -295,67 +290,42 @@ function insert_row_new {
 
   $columns | foreach-object {
     $column_name = $_
-    write-host ('column_name: {0}' -f $column_name)
     if ($column_name -eq $null) { return }
     $column_data = $new_row_data[$column_name]
-	# Index operation failed; the array index evaluated to null.
     $local:command.Parameters.Add(('@{0}' -f $column_name),$column_data['type']).Value = $column_data['value']
-    write-output ('@{0} = {1}' -f $column_name,$column_data['value'])
-	# Cannot index into a null array.
+    write-verbose ('@{0} = {1}' -f $column_name,$column_data['value'])
     $local:insert_name_part += ('[{0}]' -f $column_name)
     $local:insert_value_part += ('@{0}' -f $column_name)
   }
 
   $local:generated_sql = (($sql -replace '@insert_name_part',($local:insert_name_part -join ',')) -replace '@insert_value_part',($local:insert_value_part -join ','))
 
-  write-host ('Insert query: {0}' -f $local:generated_sql)
+  write-verbose ('Insert query: {0}' -f $local:generated_sql)
 
   $new_row_data.Keys | ForEach-Object {
     $column_name = $_
     $column_data = $new_row_data[$column_name]
-    write-host ('@{0} = {1}' -f $column_name,$column_data['value'])
+    write-verbose ('@{0} = {1}' -f $column_name,$column_data['value'])
   }
   $local:command.CommandText = $local:generated_sql
 
-  $local:result = $local:command.ExecuteNonQuery()
-  # Exception calling "ExecuteNonQuery" with "0" argument(s): "Invalid bracketing of name '[]'."
-  # Exception calling "ExecuteNonQuery" with "0" argument(s): "Syntax error (missing operator) in query expression '@Skill Name'."
-  # Exception calling "ExecuteNonQuery" with "0" argument(s): "Parameter @id has no default value."
-  write-host ('Insert result: {0}' -f $local:result)
-<#
+  try {
+      $local:result = $local:command.ExecuteNonQuery()
+  }
+  catch [System.Data.OleDb.OleDbException] {
+    # Exception calling "ExecuteNonQuery" with "0" argument(s): "Spreadsheet is full."	
+    # other possible exceptions, from the error in the caller code / data	
+    # Exception calling "ExecuteNonQuery" with "0" argument(s): "Invalid bracketing of name '[]'."
+    # Exception calling "ExecuteNonQuery" with "0" argument(s): "Syntax error (missing operator) in query expression '@Skill Name'."
+    # Exception calling "ExecuteNonQuery" with "0" argument(s): "Parameter @id has no default value."
+  
+    write-host ('ERROR inserting row: {0}' -f $new_row_data['id']['value'])
+    write-host ('Skill: {0}' -f $new_row_data['Skill_Name']['value'])
+    write-host ('Exception: {0}' -f $_.Exception.Message)
 
-Reading 100 ⠋  Elapsed: 00:00:00.1333166Returning: 100 results
-Exporting 100 entries
-column_name: id
-@id = 1
-column_name: Select
-@Select = False
-column_name: guid
-@guid = 4956505c-46fb-426b-b9e0-19ad3fcf4401
-column_name: Category
-@Category = agent
-column_name: Skill_Name
-@Skill_Name = 0000-dorgonman-kano-agent-backlog-s-59370436
-column_name: Link
-@Link =
-column_name: Repository
-@Repository =
-column_name: Technology
-@Technology =
-Insert query: Insert into [Catalog$] ([id],[Select],[guid],[Category],[Skill_Nam
-e],[Link],[Repository],[Technology]) values (@id,@Select,@guid,@Category,@Skill_
-Name,@Link,@Repository,@Technology)
-@id = 1
-@Select = False
-@guid = 4956505c-46fb-426b-b9e0-19ad3fcf4401
-@Category = agent
-@Skill_Name = 0000-dorgonman-kano-agent-backlog-s-59370436
-@Link =
-@Repository =
-@Technology =
-Insert result: 1
-1
-#>
+    throw
+  }
+  write-verbose ('Insert result: {0}' -f $local:result)
   $local:command.Dispose()
   return $local:result
 }
@@ -386,6 +356,8 @@ initialize_data_reader -datafile_filename $datafile_filename -sheet_name $sheet_
 # https://learn.microsoft.com/en-us/dotnet/api/system.data.oledb.oledbtype?view=netframework-4.5
 # https://learn.microsoft.com/en-us/dotnet/api/system.data.oledb.oledbparameter.oledbtype?view=netframework-4.5
 $rows = $results_ref.Value
+$spinIndex = 0
+
 @(0..($rows.Count-1)) | foreach-object {
   $cnt = $_
   $row = $rows[$cnt]
@@ -427,8 +399,11 @@ $rows = $results_ref.Value
     };
   
   }
-  # Exception calling "ExecuteNonQuery" with "0" argument(s): "Invalid bracketing of name '[]'."
-  insert_row_new -connection $connection -new_row_data $new_row_data -sql "Insert into [${sheet_name}] (@insert_name_part) values (@insert_value_part)"
+  [void](insert_row_new -new_row_data $new_row_data -connection $connection -sql "Insert into [${sheet_name}] (@insert_name_part) values (@insert_value_part)"    )
+  if (($cnt -ne 0 ) -and ((($cnt % 1000) -eq 0 ) -or ($cnt -eq $input_lines.Count-1 ))) {
+    write-host -nonewline ("`rInserred {0} {1} Elapsed: {2:hh\:mm\:ss}" -f ($cnt), $spin[$spinIndex], $stopwatch.Elapsed)
+    $spinIndex = ($spinIndex + 1) % $spin.Count
+  }
 }
 $command.Dispose()
 
@@ -470,13 +445,13 @@ $spinIndex = 0
   ($fragment.InnerXml = $html ) |out-null
   $template_row.ParentNode.InsertAfter($fragment, $template_row)|out-null
   if ((($cnt % 1000) -eq 0 ) -or ($cnt -eq $rows.Count-1 )) {
-	# NOTE: performance
-	$rate = [math]::Round(($cnt + 1) / $stopwatch.Elapsed.TotalSeconds)
-	write-host  -nonewline ("`rReading {0} {1}  Elapsed: {2:hh\:mm\:ss} | {3} rows/sec " -f ($cnt + 1), $spin[$spinIndex], $stopwatch.Elapsed, $rate)
+    # NOTE: performance
+    $rate = [math]::Round(($cnt + 1) / $stopwatch.Elapsed.TotalSeconds)
+    write-host  -nonewline ("`rReading {0} {1}  Elapsed: {2:hh\:mm\:ss} | {3} rows/sec " -f ($cnt + 1), $spin[$spinIndex], $stopwatch.Elapsed, $rate)
     $spinIndex = ($spinIndex + 1) % $spin.Count
-	<#
-	write-Progress -activity 'Generating HTML' -status "$($cnt + 1) of $($rows.Count)" -percentComplete (($cnt + 1) * 100 / $rows.Count)
-	#>
+    <#
+      write-Progress -activity 'Generating HTML' -status "$($cnt + 1) of $($rows.Count)" -percentComplete (($cnt + 1) * 100 / $rows.Count)
+    #>
   }
 }
 $result_filepath = ((resolve-path -path '.' ).path + '\' + $outputfile )

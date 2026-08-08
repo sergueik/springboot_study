@@ -77,14 +77,14 @@ This skill provides guidance for testing Spring Boot 4 applications using modern
 ```
 Optionally, a skill may include additional files containing scripts, templates, reference material, datasets, or other supporting assets.
 
-Recently, AI skills recognition  have become explosive 
+Recently, AI skills recognition  have become explosive
 
 Agent Skills have rapidly emerged as a practical way to extend Large Language Model (LLM) agents beyond the immediate prompt. Rather than repeating detailed instructions in every conversation, developers can package reusable expertise into portable skills.
 Tools developed to convert other classig presentation formats: Video, PDF, etc. into Skills are highly popular.
 
 ### Info
 
-[Agent Skills](https://agentskills.io/home) is standardized way to give AI agents new capabilities and expertise. 
+[Agent Skills](https://agentskills.io/home) is standardized way to give AI agents new capabilities and expertise.
 
 Under the current standard, Agent Skills are `SKILL.md` files that combine instructions with supporting resources, enabling Large Language Model (LLM) agents to reuse procedures beyond a single conversation. There is an YAML area and markdown area in the `SKILL.md`, that is the findamental compomnent.
 
@@ -100,7 +100,7 @@ Tactically, full instructions load only when a task calls for them, thus agents 
 
 Recently, AI skills have become widelyy recognized as a highly practical way to extend Large Language Model (LLM) agents beyond the immediate prompt.
 
-Under the Agent Skills standard, a skill at a minimum is packaged as a `SKILL.md` file: frontmatter 
+Under the Agent Skills standard, a skill at a minimum is packaged as a `SKILL.md` file: frontmatter
 ```yaml
 ---
 name: code-reviewer
@@ -113,7 +113,7 @@ tells the agent when to load it, the body gives instructions, and optional files
 ```sh
 git clone --depth 1 https://github.com/majiayu000/claude-skill-registry/tree/main/skills
 pushd claude-skill-registry
-find skills -iname 'SKILL.md' | tee ../catalog.txt 
+find skills -iname 'SKILL.md' | tee ../catalog.txt
 popd
 ```
 
@@ -179,7 +179,7 @@ That makes the next section about SKILL.md almost inevitable, because once the a
 ```sh
 git clone --depth 1 https://github.com/majiayu000/claude-skill-registry/tree/main/skills
 pushd claude-skill-registry
-find skills -iname 'SKILL.md' | tee ../catalog.txt 
+find skills -iname 'SKILL.md' | tee ../catalog.txt
 popd
 ```
 
@@ -593,13 +593,83 @@ apply the established approach consistently.
 
 This skill is intentionally introduced early in the development cycle. The objective is to provide an initial architectural reference before implementation patterns become embedded in the codebase.
 
+### Excel Storage
+
+|format | max rows|
+|-------|---------|
+|.xls   | 65,536  |
+|.xlsx  | 1,048,576 |
+
+#### Setup
+
+![installing Access Database Engine 2010](screenshots/capture-access-database-engine-2010.png)
+
+![Re-installing Access Database Engine 2010](screenshots/capture-reinstall.png)
+
+On older Windows, one may also switch to using
+`Provider=Microsoft.Jet.OLEDB.4.0`
+
+For Windows 7 or later, the __Microsoft Access Database Engine__ __2016__ Redistributable,
+preferably the 32-bit (`accessdatabaseengine.exe`)
+
+![installing Access Database Engine 2016](screenshots/capture-access-database-engine-2016.png)
+
+According to Microsoft documentation the __2016__ engine can be used with: `Provider=Microsoft.ACE.OLEDB.12.0`
+
+Probing the success is critical: the install may silently fail
+```powershell
+$provider = 'Microsoft.ACE.OLEDB.12.0';
+[System.Data.OleDb.OleDbEnumerator]::GetRootEnumerator() | where-object {  $_.SOURCES_NAME -eq $provider } |format-list *
+```
+
+#### Excel 8.0
+
+We will still be using the old __Excel__ __8.0__ / `.xls` format:
+
+```cmd
+. .\catalog-rebuilder.ps1 -count 40000
+```
+```text
+reading 40000 rows from C:\developer\sergueik\catalog.txt
+Reading 40000 ⠋  Elapsed: 00:01:06.3391869Returning: 40000 results
+Exporting 40000 entries
+Inserred 40000 ⠇ Elapsed: 00:03:00.
+```
+![Excel](screenshots/capture-work-excel.png)
+
+![LibreOffice](screenshots/capture-work-libreoffice.png)
+
+> NOTE An `.xls` worksheet has a *maximum capacity* of __65,536__ rows
+
+```cmd
+. .\catalog-rebuilder.ps1
+```
+```text
+reading rows from C:\developer\sergueik\catalog.txt
+Reading 203634 ⠸  Elapsed: 00:02:43.4498979
+Returning: 203634 results
+Exporting 203634 entries
+ERROR inserting row: 65524
+Skill: v3-performance-optimization
+Exception: Spreadsheet is full.
+Spreadsheet is full.
+At catalog-rebuilder.ps1:329 char:10
++     throw <<<<
+    + CategoryInfo          : OperationStopped: (:) [], OleDbException
+    + FullyQualifiedErrorId : Spreadsheet is full.
+```
+![Excel 8.0 error](screenshots/capture-error.png)
+
+
 ### See Also
   * https://openreview.net/pdf/3a0ffc73b487443feb8f2abdacbf3200299cf7o97.pdf
   * [Agent Skills Specification](https://agentskills.io/specification) - complete format specification for Agent Skill
   * [vibe coding cases overview](https://habr.com/ru/articles/1065582/) (in Russian)
   * https://www.markdownguide.org/basic-syntax/
   * https://www.markdownguide.org/extended-syntax/
-
----  
+  * [Microsoft Access Database Engine 2016 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=54920&msockid=2cabb1f015b366df1b68a73514bf67b7)
+  * [misleading Link related to Access Database Engine Redistributable 2010](https://www.microsoft.com/en-us/microsoft-365/blog/2010/05/10/download-access-2010-runtime-database-engine-redistributable-and-source-code-control/)
+  * [Access Database Engine Redistributable 2010 download](https://download.cnet.com/microsoft-access-database-engine-2010-redistributable-32-bit/3000-10254_4-75452795.html)
+---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
