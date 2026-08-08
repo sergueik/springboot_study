@@ -24,7 +24,7 @@ param(
   [String]$datafile = 'catalog.txt',
   [String]$templatefile = 'catalog.html',
   [String]$outputfile = 'output.html',
-  [String[]]$fields =  @( 'Skill Name', 'Category','Technology','Repository', 'Link','Select','GUID', 'Id'),
+  [String[]]$fields =  @( 'Skill_Name', 'Category','Technology','Repository', 'Link','Select','GUID', 'Id'),
   [int]$count = 0
 )
 # NOTE: the original path remains the __source of truth__, while the derived columns are just search *aids*
@@ -77,7 +77,7 @@ param(
     'openai'      = 'openai';
 };
 
-[String[]]$columns =  @( 'Skill Name', 'Category','Technology','Repository', 'Link');
+[String[]]$columns =  @( 'Skill_Name', 'Category','Technology','Repository', 'Link');
 [bool]$debug_flag  = $false
 # git clone  --depth 1 https://github.com/majiayu000/claude-skill-registry
 # write-host ('written {0}' -f $filepath)
@@ -189,24 +189,177 @@ foreach-object {
         $a +=$technology[$p]
       }
     }
-    write-verbose ('Category: {0} Skill Name: {1}'-f $category , $name )
+    write-verbose ('Category: {0} Skill_Name: {1}'-f $category , $name )
     if ($a.count -ne 0 ) {
       write-verbose('Technology: {0}' -f ($a -join ',' ))
     }
     $r = @{
-      'Skill Name' = $name;
+      'Skill_Name' = $name;
       'Category' = $category;
       'Technology' = ( $a -join ',' );
       'Link' = $line;
       'Id'   = $cnt;
     };
     [void]$results.Add($r)
-    write-verbose ('Skill Name: {0}' -f $r['Skill Name'])
+    write-verbose ('Skill_Name: {0}' -f $r['Skill_Name'])
   }
   write-host ('Returning: {0} results' -f $results.Count)
   # write-host ('example: {0}' -f ($results[0]|format-list))
   return ([ref]$results)
 }
+
+
+
+function initialize_data_reader {
+  param(
+    [string]$format = 'excel',
+    [string]$datafile_filename,
+    [string]$sheet_name,
+    [string]$query,
+    [System.Management.Automation.PSReference]$connection_ref,
+    [System.Management.Automation.PSReference]$command_ref,
+    [System.Management.Automation.PSReference]$data_table_ref,
+    [bool]$debug
+
+  )
+
+  [string]$datafile_directory = (resolve-path -path '.').Path
+  [string]$datafile_fullpath = ('{0}\{1}' -f $datafile_directory,$datafile_filename)
+
+  switch ($format) {
+    'excel' {
+      [string]$oledb_provider = 'Provider=Microsoft.ACE.OLEDB.12.0'
+      [string]$data_source = "Data Source = ${datafile_fullpath}"
+      [string]$ext_arg = 'Extended Properties=Excel 8.0'
+      [string]$table = $sheet_name
+    }
+    'excel_legacy' {
+      # 32-bit instances only, Jet Engine has been included with core image for Windows XP, Server 2013
+      [string]$oledb_provider = 'Provider=Microsoft.Jet.OLEDB.4.0'
+      [string]$data_source = "Data Source = ${datafile_fullpath}"
+      [string]$ext_arg = 'Extended Properties=Excel 8.0;IMEX=1;'
+      [string]$table = $sheet_name
+    }
+    'csv' {
+      [string]$oledb_provider = 'Provider=Microsoft.ACE.OLEDB.12.0'
+      [string]$ext_arg = 'Extended Properties="Text;IMEX=1;HDR=Yes;FMT=Delimited(,)";'
+      [string]$data_source = "Data Source = ${$datafile_directory}"
+      [string]$table = $datafile_filename
+    }
+    'csv_legacy' {
+      # 32-bit instances only:
+      [string]$oledb_provider = 'Provider=Microsoft.Jet.OLEDB.4.0'
+      [string]$ext_arg = 'Extended Properties="Text;IMEX=1;HDR=Yes;FMT=Delimited(,)";'
+      [string]$data_source = "Data Source = ${$datafile_directory}"
+      [string]$table = $datafile_filename
+    }
+    default { throw }
+  }
+  $connection_string = "$oledb_provider;$data_source;$ext_arg"
+  
+  [string]$query = "SELECT * FROM [${table}] WHERE ISNULL(guid)"
+
+  [System.Data.OleDb.OleDbConnection]$local:connection = new-object System.Data.OleDb.OleDbConnection($connection_string)
+  [System.Data.OleDb.OleDbCommand]$local:command = new-object System.Data.OleDb.OleDbCommand($query)
+
+  [System.Data.DataTable]$local:data_table = new-object System.Data.DataTable
+  [System.Data.OleDb.OleDbDataAdapter]$ole_db_adapter = new-object System.Data.OleDb.OleDbDataAdapter
+  $ole_db_adapter.SelectCommand = $local:command
+
+  $local:command.Connection = $connection
+
+  [void]$ole_db_adapter.Fill($local:data_table)
+  $local:connection.open()
+  # http://stackoverflow.com/questions/24648081/error-the-type-system-data-oledb-oledbdatareader-has-no-constructors-defined
+  $global:data_reader = $local:command.ExecuteReader()
+  $data_table_ref.Value = $local:data_table
+  $connection_ref.Value = $local:connection
+  $command_ref.Value = $local:command
+  return $local:data_reader
+}
+
+function insert_row_new {
+  param(
+    [string]$sql,
+    [System.Data.OleDb.OleDbConnection]$connection,
+    [System.Collections.Hashtable]$new_row_data
+  )
+
+  [string[]]$columns = [string[]]($new_row_data.Keys)
+
+  [System.Data.OleDb.OleDbCommand]$local:command = new-object System.Data.OleDb.OleDbCommand
+  $local:command.Connection = $connection
+
+  $local:insert_name_part = @()
+  $local:insert_value_part = @()
+
+  $columns | foreach-object {
+    $column_name = $_
+    write-host ('column_name: {0}' -f $column_name)
+    if ($column_name -eq $null) { return }
+    $column_data = $new_row_data[$column_name]
+	# Index operation failed; the array index evaluated to null.
+    $local:command.Parameters.Add(('@{0}' -f $column_name),$column_data['type']).Value = $column_data['value']
+    write-output ('@{0} = {1}' -f $column_name,$column_data['value'])
+	# Cannot index into a null array.
+    $local:insert_name_part += ('[{0}]' -f $column_name)
+    $local:insert_value_part += ('@{0}' -f $column_name)
+  }
+
+  $local:generated_sql = (($sql -replace '@insert_name_part',($local:insert_name_part -join ',')) -replace '@insert_value_part',($local:insert_value_part -join ','))
+
+  write-host ('Insert query: {0}' -f $local:generated_sql)
+
+  $new_row_data.Keys | ForEach-Object {
+    $column_name = $_
+    $column_data = $new_row_data[$column_name]
+    write-host ('@{0} = {1}' -f $column_name,$column_data['value'])
+  }
+  $local:command.CommandText = $local:generated_sql
+
+  $local:result = $local:command.ExecuteNonQuery()
+  # Exception calling "ExecuteNonQuery" with "0" argument(s): "Invalid bracketing of name '[]'."
+  # Exception calling "ExecuteNonQuery" with "0" argument(s): "Syntax error (missing operator) in query expression '@Skill Name'."
+  # Exception calling "ExecuteNonQuery" with "0" argument(s): "Parameter @id has no default value."
+  write-host ('Insert result: {0}' -f $local:result)
+<#
+
+Reading 100 ⠋  Elapsed: 00:00:00.1333166Returning: 100 results
+Exporting 100 entries
+column_name: id
+@id = 1
+column_name: Select
+@Select = False
+column_name: guid
+@guid = 4956505c-46fb-426b-b9e0-19ad3fcf4401
+column_name: Category
+@Category = agent
+column_name: Skill_Name
+@Skill_Name = 0000-dorgonman-kano-agent-backlog-s-59370436
+column_name: Link
+@Link =
+column_name: Repository
+@Repository =
+column_name: Technology
+@Technology =
+Insert query: Insert into [Catalog$] ([id],[Select],[guid],[Category],[Skill_Nam
+e],[Link],[Repository],[Technology]) values (@id,@Select,@guid,@Category,@Skill_
+Name,@Link,@Repository,@Technology)
+@id = 1
+@Select = False
+@guid = 4956505c-46fb-426b-b9e0-19ad3fcf4401
+@Category = agent
+@Skill_Name = 0000-dorgonman-kano-agent-backlog-s-59370436
+@Link =
+@Repository =
+@Technology =
+Insert result: 1
+1
+#>
+  $local:command.Dispose()
+  return $local:result
+}
+
 [System.Collections.Hashtable]$row = ${ }
 # NOTE: Braille spinner characters are Unicode code points U+280B through U+284F
 # each is represented by one char
@@ -220,6 +373,68 @@ $spin = @(
 
 $results_ref = proces_file
 write-host ('Exporting {0} entries' -f $results_ref.value.Count)
+
+$datafile_filename = 'catalog-template.xls'
+
+$command = new-object System.Data.OleDb.OleDbCommand
+$connection = new-object System.Data.OleDb.OleDbConnection
+
+$sheet_name = 'Catalog$'
+$data_table = new-object System.Data.DataTable
+
+initialize_data_reader -datafile_filename $datafile_filename -sheet_name $sheet_name -connection_ref ([ref]$connection) -command_ref ([ref]$command) -data_table_ref ([ref]$data_table)
+# https://learn.microsoft.com/en-us/dotnet/api/system.data.oledb.oledbtype?view=netframework-4.5
+# https://learn.microsoft.com/en-us/dotnet/api/system.data.oledb.oledbparameter.oledbtype?view=netframework-4.5
+$rows = $results_ref.Value
+@(0..($rows.Count-1)) | foreach-object {
+  $cnt = $_
+  $row = $rows[$cnt]
+  
+  $new_row_data = @{
+    'id' = @{
+      'value' = $row['Id'];
+      'type' = [System.Data.OleDb.OleDbType]::Numeric;
+    };
+    'Skill_Name' = @{
+      'value' = $row['Skill_Name'];
+      'type' = [System.Data.OleDb.OleDbType]::VarChar;
+    };
+    'Category' = @{
+      'value' = $row['Category'];
+      'type' = [System.Data.OleDb.OleDbType]::VarChar;
+    };
+    'Technology' = @{
+      'value' = $row['Technology'];
+      'type' = [System.Data.OleDb.OleDbType]::VarChar;
+    };
+    'Repository' = @{
+      'value' = '';
+      'type' = [System.Data.OleDb.OleDbType]::VarChar;
+    };
+    
+    'Link' = @{
+      'value' = '';
+      'type' = [System.Data.OleDb.OleDbType]::Variant;
+    };
+    'Select' = @{
+      'value' = $false;
+      'type' = [System.Data.OleDb.OleDbType]::Boolean;
+    };
+  
+    'guid' = @{
+      'value' = ([guid]::NewGuid()).ToString();
+      'type' = [System.Data.OleDb.OleDbType]::VarChar;
+    };
+  
+  }
+  # Exception calling "ExecuteNonQuery" with "0" argument(s): "Invalid bracketing of name '[]'."
+  insert_row_new -connection $connection -new_row_data $new_row_data -sql "Insert into [${sheet_name}] (@insert_name_part) values (@insert_value_part)"
+}
+$command.Dispose()
+
+$connection.close()
+
+
 exit
 $template = (get-content -raw ((resolve-path -path '.' ).path + '\' + $templatefile))
 [xml]$template_xml = [xml]$template
