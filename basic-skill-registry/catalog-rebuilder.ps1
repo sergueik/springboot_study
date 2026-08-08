@@ -82,7 +82,7 @@ param(
 # git clone  --depth 1 https://github.com/majiayu000/claude-skill-registry
 # write-host ('written {0}' -f $filepath)
 $filepath = (resolve-path -path '.').path + '\' + $datafile
-
+$stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 function proces_file {
 
 param(
@@ -96,7 +96,6 @@ $cnt = 0
 [System.Collections.Generic.List[object]]$results = [System.Collections.Generic.List[object]]::new()
 
 write-host ('reading {0} rows from {1}' -f $count, $filepath)
-# reading 90 rows from ...\catalog10.txt
 $debug_flag = $false
 
 # NOTE:
@@ -156,7 +155,7 @@ foreach-object {
     write-verbose ('read Data (raw):' + [char]10 + '"' + $line + '"' + [char]10)
 
     if ((($cnt % 1000) -eq 0 ) -or ($cnt -eq $input_lines.Count-1 )) {
-	  write-host "`rReading $($cnt+1) $($spin[$spinIndex])" -nonewline
+	  write-host  -nonewline ("`rReading {0} {1}  Elapsed: {2:hh\:mm\:ss}" -f ($cnt + 1), $spin[$spinIndex], $stopwatch.Elapsed)
 	  $spinIndex = ($spinIndex + 1) % $spin.Count
     }
 
@@ -234,7 +233,9 @@ $spinIndex = 0
   ($fragment.InnerXml = $html ) |out-null
   $template_row.ParentNode.InsertAfter($fragment, $template_row)|out-null
   if ((($cnt % 1000) -eq 0 ) -or ($cnt -eq $rows.Count-1 )) {
-    write-host "`rReading $($cnt+1) $($spin[$spinIndex])" -nonewline
+	# NOTE: performance
+	$rate = [math]::Round(($cnt + 1) / $stopwatch.Elapsed.TotalSeconds)
+	write-host  -nonewline ("`rReading {0} {1}  Elapsed: {2:hh\:mm\:ss} | {3} rows/sec " -f ($cnt + 1), $spin[$spinIndex], $stopwatch.Elapsed, $rate)
     $spinIndex = ($spinIndex + 1) % $spin.Count
 	<#
 	write-Progress -activity 'Generating HTML' -status "$($cnt + 1) of $($rows.Count)" -percentComplete (($cnt + 1) * 100 / $rows.Count)
