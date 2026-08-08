@@ -23,8 +23,9 @@ param(
   [Parameter(Mandatory = $false,Position = 1)]
   [String]$datafile = 'catalog2.txt',
   [String]$templatefile = 'catalog.html',
+  [String]$outputfile = 'output.html',
   [String[]]$fields =  @( 'Skill Name', 'Category','Technology','Repository', 'Link','Select','GUID', 'Id'),
-  [int]$count =  10
+  [int]$count = 0
 )
 # NOTE: the original path remains the __source of truth__, while the derived columns are just search *aids*
 
@@ -97,6 +98,7 @@ $cnt = 0
 write-host ('reading {0} rows from {1}' -f $count, $filepath)
 # reading 90 rows from ...\catalog10.txt
 $debug_flag = $false
+
 # NOTE:
 
 
@@ -133,15 +135,30 @@ $debug_flag = $false
 #            return ...;    // hoping to terminate
 #        ...
 #    });
-# The key idea is to stop the producer, not to escape from the consumer.
-get-content $filepath |
-select-Object -first $count |
+# The key idea is to stop the producer, not to escape from the consumer
+
+# PSBoundParameters.ContainsKey does not work
+if ($PSBoundParameters.ContainsKey('count')) {
+  [string[]]$input_lines = Get-Content $filepath | Select-Object -First $count
+} elseif ($count -eq 0)  {
+  [string[]]$input_lines = Get-Content $filepath
+} else {
+  [string[]]$input_lines = Get-Content $filepath | Select-Object -First $count
+  # [string[]]$input_lines = Get-Content $filepath
+}
+
+$spinIndex = 0
+$input_lines |
 foreach-object {
     $line = $_
     $cnt = $cnt + 1
 
     write-verbose ('read Data (raw):' + [char]10 + '"' + $line + '"' + [char]10)
-    $o = $null
+
+    if ((($cnt % 1000) -eq 0 ) -or ($cnt -eq $input_lines.Count-1 )) {
+	  write-host "`rReading $($cnt+1) $($spin[$spinIndex])" -nonewline
+	  $spinIndex = ($spinIndex + 1) % $spin.Count
+    }
 
     $pattern = '^claude-skill-registry/skills/([^/]+)(?:/[^/]+)*/([^/]+)/SKILL.md$'
     [Microsoft.PowerShell.Commands.MatchInfo]$m = $null
@@ -168,8 +185,7 @@ foreach-object {
                  'Link' = $line;
 		 'Id'   = $cnt;
   	      };
-        # $results += $r
-		[Void]$results.Add($r)
+		[void]$results.Add($r)
         write-verbose ('Skill Name: {0}' -f $r['Skill Name'])
       }
   }
@@ -178,6 +194,10 @@ foreach-object {
   return ([ref]$results)
 }
 [System.Collections.Hashtable]$row = ${ }
+$spin = @('⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏')
+$spin = @('|','/','-','\')
+
+
 $results_ref = proces_file
 write-host ('Exporting {0} entries' -f $results_ref.value.Count)
 $template = (get-content -raw ((resolve-path -path '.' ).path + '\' + $templatefile))
@@ -196,7 +216,6 @@ if ($template_row -eq $null) {
 [string]$html = $null
 # NOTE: You must provide a value expression following the '..' operator.
 
-$spin = @('|','/','-','\')
 $spinIndex = 0
 
 @(0..($rows.Count-1)) | foreach-object {
@@ -222,8 +241,7 @@ $spinIndex = 0
 	#>
   }
 }
-# $spinner = @('⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏')
-$result_filepath = ((resolve-path -path '.' ).path + '\' + 'output.html' )
+$result_filepath = ((resolve-path -path '.' ).path + '\' + $outputfile )
 
 $settings = new-object System.Xml.XmlWriterSettings
 $settings.Indent = $true

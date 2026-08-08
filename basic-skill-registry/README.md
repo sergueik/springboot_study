@@ -120,8 +120,25 @@ popd
 ```powershell
 . ./catlog-rebuilder.ps1
 ```
+```powedshell
+. .\catalog-rebuilder.ps1 -output k8.html -data .\catalog.k8.txt
+```
+```text
+reading 0 rows from C:\developer\sergueik\springboot_study\basic-skill-registry\.\catalog.k8.txt
+Reading 744 |Returning: 744 results
+Exporting 744 entries
+Reading 744 /
+```
 it generates the flat HTML table with search.
+```powershell
+start k8.html
+```
 
+you can search through skill registry.
+
+![browsing the skill registry catalog](screenshots/capture-browse.png)
+
+>NOTE: this still does not scale over the full 100+MB file
 ### Background
 
 
