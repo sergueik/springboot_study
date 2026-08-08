@@ -21,7 +21,7 @@
 
 param(
   [Parameter(Mandatory = $false,Position = 1)]
-  [String]$datafile = 'catalog2.txt',
+  [String]$datafile = 'catalog.txt',
   [String]$templatefile = 'catalog.html',
   [String]$outputfile = 'output.html',
   [String[]]$fields =  @( 'Skill Name', 'Category','Technology','Repository', 'Link','Select','GUID', 'Id'),
@@ -93,8 +93,11 @@ $cnt = 0
 # very += creates a new array and copies the previous contents.
 # with 2 million entries, this becomes catastrophic.
 # $results = @();
-[System.Collections.Generic.List[object]]$results = [System.Collections.Generic.List[object]]::new()
-
+[System.Collections.ArrayList]$results = new-object System.Collections.ArrayList
+# Windows XP .net 4.0 Powerhell 2.0
+# Method invocation failed because [System.Collections.Generic.List`1[[System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]] doesn't contain a method named 'new'.
+# [System.Collections.Generic.List[object]]$results = [System.Collections.Generic.List[object]]::new()
+# $results = new-object 'System.Collections.Generic.List[object]'
 write-host ('reading {0} rows from {1}' -f $count, $filepath)
 $debug_flag = $false
 
@@ -160,45 +163,64 @@ foreach-object {
     }
 
     $pattern = '^claude-skill-registry/skills/([^/]+)(?:/[^/]+)*/([^/]+)/SKILL.md$'
-    [Microsoft.PowerShell.Commands.MatchInfo]$m = $null
     $m = select-string -pattern $pattern -InputObject $line
-    if (($m -ne $null ) -and ($m.matches -ne $null)) {
-        $g = $m.Matches.Groups
-        $c = $g.Item(1).Value
-        $n = $g.Item(2).Value
-        $a = @()
-        $technology.keys | foreach-object {
-  	      $p = $_
-  	      if (($n -match "${p}[^a-z]" ) -or  ($n -match "${p}$" )){
-  		    $a +=$technology[$p]
-  	      }
-        }
-        write-verbose ('Category: {0} Skill Name: {1}'-f $c , $n )
-        if ($a.count -ne 0 ) {
-          write-verbose('Technology: {0}' -f ($a -join ',' ))
-        }
-
-        $r = @{ 'Skill Name' = $n;
-                 'Category' = $c;
-                 'Technology' = ( $a -join ',' );
-                 'Link' = $line;
-		 'Id'   = $cnt;
-  	      };
-		[void]$results.Add($r)
-        write-verbose ('Skill Name: {0}' -f $r['Skill Name'])
+	$name = $null
+	$category = $null
+    # if (($m -ne $null ) -and ($m.matches -ne $null) ) {
+    # You cannot call a method on a null-valued expression.
+    # CategoryInfo : InvalidOperation: (Item:String) [], RuntimeException FullyQualifiedErrorId : InvokeMethodOnNull
+    # if (($m -ne $null ) -and ($m.Matches -ne $null) -and $m.Matches.Success -and ($m.Matches.Groups -ne $null)) {
+    if (($m -ne $null ) -and ($m.Matches -ne $null) -and $m.Matches.Success ) {
+      $g = $m.Matches.Groups
+      $category = $g.Item(1).Value
+      $name = $g.Item(2).Value
+    }
+    if ($name -eq $null) {
+      $regex = new-object System.Text.RegularExpressions.Regex($pattern) 
+      $match = $regex.Match($line)
+      if ($match.Success) {
+        $category = $match.Groups.Item(1).Value
+        $name = $match.Groups.Item(2).Value
       }
+    }
+    $a = @()
+    $technology.keys | foreach-object { $p = $_
+      if (($name -match "${p}[^a-z]" ) -or ($name -match "${p}$" )){ 
+        $a +=$technology[$p]
+      }
+    }
+    write-verbose ('Category: {0} Skill Name: {1}'-f $category , $name )
+    if ($a.count -ne 0 ) {
+      write-verbose('Technology: {0}' -f ($a -join ',' ))
+    }
+    $r = @{
+      'Skill Name' = $name;
+      'Category' = $category;
+      'Technology' = ( $a -join ',' );
+      'Link' = $line;
+      'Id'   = $cnt;
+    };
+    [void]$results.Add($r)
+    write-verbose ('Skill Name: {0}' -f $r['Skill Name'])
   }
   write-host ('Returning: {0} results' -f $results.Count)
   # write-host ('example: {0}' -f ($results[0]|format-list))
   return ([ref]$results)
 }
 [System.Collections.Hashtable]$row = ${ }
-$spin = @('⠋','⠙','⠹','⠸','⠼','⠴','⠦','⠧','⠇','⠏')
-$spin = @('|','/','-','\')
+# NOTE: Braille spinner characters are Unicode code points U+280B through U+284F
+# each is represented by one char
+$spin = @(
+    [char]0x280B, [char]0x2819, [char]0x2839, [char]0x2838,
+    [char]0x283C, [char]0x2834, [char]0x2826, [char]0x2827,
+    [char]0x2807, [char]0x280F
+)
+# $spin = @('|','/','-','\')
 
 
 $results_ref = proces_file
 write-host ('Exporting {0} entries' -f $results_ref.value.Count)
+exit
 $template = (get-content -raw ((resolve-path -path '.' ).path + '\' + $templatefile))
 [xml]$template_xml = [xml]$template
 [System.Xml.XmlElement]$documentElement = $template_xml.documentElement
