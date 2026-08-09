@@ -24,6 +24,7 @@ param(
   [String]$datafile = 'catalog.txt',
   [String]$templatefile = 'catalog.html',
   [String]$outputfile = 'output.html',
+  [String]$datafile_filename = 'catalog-template.xlsx',
   [String[]]$fields =  @( 'Skill_Name', 'Category','Technology','Repository', 'Link','Select','GUID', 'Id'),
   [int]$count = 0
 )
@@ -222,7 +223,7 @@ function initialize_data_reader {
 
   switch ($format) {
     'excel' {
-      [string]$oledb_provider = 'Provider=Microsoft.ACE.OLEDB.12.0'
+      [string]$oledb_provider = 'Provider=Microsoft.ACE.OLEDB.16.0'
       [string]$data_source = "Data Source = ${datafile_fullpath}"
       [string]$ext_arg = 'Extended Properties=Excel 8.0'
       [string]$table = $sheet_name
@@ -235,7 +236,7 @@ function initialize_data_reader {
       [string]$table = $sheet_name
     }
     'csv' {
-      [string]$oledb_provider = 'Provider=Microsoft.ACE.OLEDB.12.0'
+      [string]$oledb_provider = 'Provider=Microsoft.ACE.OLEDB.16.0'
       [string]$ext_arg = 'Extended Properties="Text;IMEX=1;HDR=Yes;FMT=Delimited(,)";'
       [string]$data_source = "Data Source = ${$datafile_directory}"
       [string]$table = $datafile_filename
@@ -343,8 +344,6 @@ $spin = @(
 
 $results_ref = proces_file
 write-host ('Exporting {0} entries' -f $results_ref.value.Count)
-
-$datafile_filename = 'catalog-template.xls'
 
 $command = new-object System.Data.OleDb.OleDbCommand
 $connection = new-object System.Data.OleDb.OleDbConnection

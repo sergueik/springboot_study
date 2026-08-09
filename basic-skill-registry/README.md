@@ -621,7 +621,18 @@ Probing the success is critical: the install may silently fail
 $provider = 'Microsoft.ACE.OLEDB.12.0';
 [System.Data.OleDb.OleDbEnumerator]::GetRootEnumerator() | where-object {  $_.SOURCES_NAME -eq $provider } |format-list *
 ```
+or more Registry oriented:
+```powershell
+$clsid = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Classes\Microsoft.ACE.OLEDB.12.0\CLSID').'(default)'
 
+Write-Host "CLSID: ${clsid}"
+
+$inprocPath = 'HKLM:\SOFTWARE\Classes\CLSID\{0}\InprocServer32' -f $clsid
+
+Write-Host "InProcServer32: ${inprocPath}"
+
+(get-ItemProperty -Path ($inprocPath)).'(default)'
+```
 #### Excel 8.0
 
 We will still be using the old __Excel__ __8.0__ / `.xls` format:
