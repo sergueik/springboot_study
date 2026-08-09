@@ -1,5 +1,7 @@
 ### Info
 
+  Artifacts from [majiayu000/claude-skill-registry](https://github.com/majiayu000/claude-skill-registry/tree/main/skills) - the most comprehensive Claude Code skills registry | Web Search: - note massive 
+- converted into searchable  __Excel 2007__ resource/standalone searchable web page with vanilla Javascript. 
 
 ## What are Agent Skills?
 
