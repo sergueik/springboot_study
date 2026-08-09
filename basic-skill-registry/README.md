@@ -632,6 +632,29 @@ $inprocPath = 'HKLM:\SOFTWARE\Classes\CLSID\{0}\InprocServer32' -f $clsid
 Write-Host "InProcServer32: ${inprocPath}"
 
 (get-ItemProperty -Path ($inprocPath)).'(default)'
+
+```
+> NOTR
+```cmd
+sc.exe stop wuauserv
+sc.exe config wuauserv start=disabled
+sc.exe queryex wuauserv
+```
+```text
+SERVICE_NAME: wuauserv
+        TYPE               : 20  WIN32_SHARE_PROCESS
+        STATE              : 1  STOPPED
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
+        PID                : 0
+        FLAGS              :
+```
+```cmd
+pushd C:\Windows\SoftwareDistribution
+del /s/q *.*
+popd
 ```
 #### Excel 8.0
 
@@ -670,6 +693,19 @@ At catalog-rebuilder.ps1:329 char:10
     + FullyQualifiedErrorId : Spreadsheet is full.
 ```
 ![Excel 8.0 error](screenshots/capture-error.png)
+
+
+with Excel __2007__
+```powershell
+. .\catalog-rebuilder.ps1
+```
+```text
+reading C:\developer\sergueik\catalog.txt
+Reading 203633 ⠸  Elapsed: 00:01:12Returning: 203634 results
+Exporting 203634 entries
+Inserred 203000 ⠹ Elapsed: 00:05:59
+```
+![Excel 2007](screenshots/capture-work-excel2007.png)
 
 
 ### See Also

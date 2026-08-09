@@ -1,4 +1,3 @@
-
 #Copyright (c) 2026 Serguei Kouzmine
 #
 #Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -90,64 +89,25 @@ param(
 )
 
 $cnt = 0
-# NOTE: cannot handle large data in +=
-# very += creates a new array and copies the previous contents.
-# with 2 million entries, this becomes catastrophic.
+# NOTE: += cannot handle large data in +=
 # $results = @();
 [System.Collections.ArrayList]$results = new-object System.Collections.ArrayList
-# Windows XP .net 4.0 Powerhell 2.0
-# Method invocation failed because [System.Collections.Generic.List`1[[System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]] doesn't contain a method named 'new'.
 # [System.Collections.Generic.List[object]]$results = [System.Collections.Generic.List[object]]::new()
+# NOTE: for Powerhell 2.0
 # $results = new-object 'System.Collections.Generic.List[object]'
-write-host ('reading {0} rows from {1}' -f $count, $filepath)
 $debug_flag = $false
 
 # NOTE:
-
-
-# Limit the upstream pipeline rather than exiting from inside ForEach-Object.
-#
-# Returning from a pipeline callback does not terminate the pipeline; it emits
-# a value back to the caller and subsequent input objects continue to invoke
-# the callback. The function returns only after the pipeline completes.
-#
-# This is analogous to Java Stream.limit(count), where the upstream iterator is
-# truncated before the callback executes:
-#
-#   Files.lines(path)
-#       .limit(count)
-#       .forEach(...);
-#
-# or LINQ:
-#
-#   File.ReadLines(path)
-#       .Take(count)
-#       .ToList();
-#
-# The below are code smells: treating map() as if it were a for loop.
-# .stream()
-#     .map(x -> {
-#         if (enough(x))
-#             return null;   // hoping to stop
-#         return transform(x);
-#     })
-#     .collect(...);
-# .stream
-#    .map(x -> {
-#        if (found)
-#            return ...;    // hoping to terminate
-#        ...
-#    });
-# The key idea is to stop the producer, not to escape from the consumer
-
-# PSBoundParameters.ContainsKey does not work
+# PSBoundParameters.ContainsKey does not work here
 if ($PSBoundParameters.ContainsKey('count')) {
-  [string[]]$input_lines = Get-Content $filepath | Select-Object -First $count
-} elseif ($count -eq 0)  {
-  [string[]]$input_lines = Get-Content $filepath
+  write-host ('reading {0} rows from {1}' -f $count, $filepath)
+  [string[]]$input_lines = get-content $filepath | select-object -first $count
+} elseif ($count -eq 0) {
+  write-host ('reading {0}' -f $filepath)
+  [string[]]$input_lines = get-content $filepath
 } else {
-  [string[]]$input_lines = Get-Content $filepath | Select-Object -First $count
-  # [string[]]$input_lines = Get-Content $filepath
+  write-host ('reading {0} rows from {1}' -f $count, $filepath)
+  [string[]]$input_lines = get-content $filepath | select-object -first $count
 }
 
 $spinIndex = 0
@@ -400,7 +360,7 @@ $spinIndex = 0
   }
   [void](insert_row_new -new_row_data $new_row_data -connection $connection -sql "Insert into [${sheet_name}] (@insert_name_part) values (@insert_value_part)"    )
   if (($cnt -ne 0 ) -and ((($cnt % 1000) -eq 0 ) -or ($cnt -eq $input_lines.Count-1 ))) {
-    write-host -nonewline ("`rInserred {0} {1} Elapsed: {2:hh\:mm\:ss}" -f ($cnt), $spin[$spinIndex], $stopwatch.Elapsed)
+    write-host -nonewline ("`rInserted {0} {1} Elapsed: {2:hh\:mm\:ss}" -f ($cnt), $spin[$spinIndex], $stopwatch.Elapsed)
     $spinIndex = ($spinIndex + 1) % $spin.Count
   }
 }
