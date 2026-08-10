@@ -631,16 +631,39 @@ Write-Host "CLSID: ${clsid}"
 
 $inprocPath = 'HKLM:\SOFTWARE\Classes\CLSID\{0}\InprocServer32' -f $clsid
 
-Write-Host "InProcServer32: ${inprocPath}"
+write-host "InProcServer32: ${inprocPath}"
 
 (get-ItemProperty -Path ($inprocPath)).'(default)'
 
 ```
-> NOTR
+> NOTE
 ```cmd
 sc.exe stop wuauserv
 sc.exe config wuauserv start=disabled
 sc.exe queryex wuauserv
+```
+or
+```powershell
+Stop-Service -Name wuauserv -Force
+Set-Service -Name wuauserv -StartupType Disabled
+Get-Service -Name wuauserv
+```
+
+```text
+[SC] ChangeServiceConfig SUCCESS
+```
+```text
+SERVICE_NAME: wuauserv
+        TYPE               : 20  WIN32_SHARE_PROCESS
+        STATE              : 3  STOP_PENDING
+                                (NOT_STOPPABLE, NOT_PAUSABLE, IGNORES_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x2
+        WAIT_HINT          : 0x7530
+        PID                : 1000
+        FLAGS              :
+
 ```
 ```text
 SERVICE_NAME: wuauserv
@@ -653,10 +676,40 @@ SERVICE_NAME: wuauserv
         PID                : 0
         FLAGS              :
 ```
+occasionally
+
+```cmd
+sc.exe queryex wuauserv
+```
+```text
+Not enough memory resources are available to process this command.
+```
 ```cmd
 pushd C:\Windows\SoftwareDistribution
 del /s/q *.*
 popd
+```
+
+```cmd
+shutdown.exe -r -t 0
+```
+```cmd
+Get-ScheduledTask |
+    Where-Object {
+        $_.TaskPath -like '\Microsoft\Windows\WindowsUpdate\*' -or
+        $_.TaskPath -like '\Microsoft\Windows\UpdateOrchestrator\*'
+    } |
+    Select-Object TaskPath, TaskName, State
+```
+
+```text
+TaskPath                          TaskName           State
+--------                          --------           -----
+\Microsoft\Windows\WindowsUpdate\ Scheduled Start Disabled
+```
+
+```powershell
+get-cimInstance Win32_OperatingSystem |select-Object -property TotalVisibleMemorySize, FreePhysicalMemory,TotalVirtualMemorySize,FreeVirtualMemory
 ```
 #### Excel 8.0
 
@@ -697,9 +750,9 @@ At catalog-rebuilder.ps1:329 char:10
 ![Excel 8.0 error](screenshots/capture-error.png)
 
 
-with Excel __2007__
+with __Excel 2007__
 ```powershell
-. .\catalog-rebuilder.ps1
+. .\catalog-rebuilder.ps1 -template_filename catalog-template.xlsx
 ```
 ```text
 reading C:\developer\sergueik\catalog.txt
@@ -719,6 +772,9 @@ Inserred 203000 ⠹ Elapsed: 00:05:59
   * [Microsoft Access Database Engine 2016 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=54920&msockid=2cabb1f015b366df1b68a73514bf67b7)
   * [misleading Link related to Access Database Engine Redistributable 2010](https://www.microsoft.com/en-us/microsoft-365/blog/2010/05/10/download-access-2010-runtime-database-engine-redistributable-and-source-code-control/)
   * [Access Database Engine Redistributable 2010 download](https://download.cnet.com/microsoft-access-database-engine-2010-redistributable-32-bit/3000-10254_4-75452795.html)
+  * https://habrastorage.org/vid/s1/0f55/8d1a/c6d3/0f558d1ac6d3f6de5d4b7cc3dd5d4e11.webm
+  * https://habrastorage.org/vid/s1/6f8b/a676/2fbc/6f8ba6762fbc6f1920d24b5dd2017388.webm
+  * https://habrastorage.org/vid/s1/4a49/6d02/a780/4a496d02a780e2951fd2eef7dba8e441.mp4
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

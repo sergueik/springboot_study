@@ -23,7 +23,7 @@ param(
   [String]$datafile = 'catalog.txt',
   [String]$templatefile = 'catalog.html',
   [String]$outputfile = 'output.html',
-  [String]$datafile_filename = 'catalog-template.xlsx',
+  [String]$template_filename = 'catalog-template.xlsx',
   [String[]]$fields =  @( 'Skill_Name', 'Category','Technology','Repository', 'Link','Select','GUID', 'Id'),
   [int]$count = 0
 )
@@ -168,7 +168,7 @@ foreach-object {
 function initialize_data_reader {
   param(
     [string]$format = 'excel',
-    [string]$datafile_filename,
+    [string]$template_filename,
     [string]$sheet_name,
     [string]$query,
     [System.Management.Automation.PSReference]$connection_ref,
@@ -179,7 +179,7 @@ function initialize_data_reader {
   )
 
   [string]$datafile_directory = (resolve-path -path '.').Path
-  [string]$datafile_fullpath = ('{0}\{1}' -f $datafile_directory,$datafile_filename)
+  [string]$datafile_fullpath = ('{0}\{1}' -f $datafile_directory,$template_filename)
 
   switch ($format) {
     'excel' {
@@ -199,14 +199,14 @@ function initialize_data_reader {
       [string]$oledb_provider = 'Provider=Microsoft.ACE.OLEDB.16.0'
       [string]$ext_arg = 'Extended Properties="Text;IMEX=1;HDR=Yes;FMT=Delimited(,)";'
       [string]$data_source = "Data Source = ${$datafile_directory}"
-      [string]$table = $datafile_filename
+      [string]$table = $template_filename
     }
     'csv_legacy' {
       # 32-bit instances only:
       [string]$oledb_provider = 'Provider=Microsoft.Jet.OLEDB.4.0'
       [string]$ext_arg = 'Extended Properties="Text;IMEX=1;HDR=Yes;FMT=Delimited(,)";'
       [string]$data_source = "Data Source = ${$datafile_directory}"
-      [string]$table = $datafile_filename
+      [string]$table = $template_filename
     }
     default { throw }
   }
@@ -280,10 +280,7 @@ function insert_row_new {
     # Exception calling "ExecuteNonQuery" with "0" argument(s): "Syntax error (missing operator) in query expression '@Skill Name'."
     # Exception calling "ExecuteNonQuery" with "0" argument(s): "Parameter @id has no default value."
   
-    write-host ('ERROR inserting row: {0}' -f $new_row_data['id']['value'])
-    write-host ('Skill: {0}' -f $new_row_data['Skill_Name']['value'])
-    write-host ('Exception: {0}' -f $_.Exception.Message)
-
+    write-host ("ERROR inserting row: {0}$([Environment]::NewLine)Skill: {1}$([Environment]::NewLine)Exception: {2}" -f $new_row_data['id']['value'], $new_row_data['Skill_Name']['value'], $_.Exception.Message)
     throw
   }
   write-verbose ('Insert result: {0}' -f $local:result)
@@ -311,7 +308,7 @@ $connection = new-object System.Data.OleDb.OleDbConnection
 $sheet_name = 'Catalog$'
 $data_table = new-object System.Data.DataTable
 
-initialize_data_reader -datafile_filename $datafile_filename -sheet_name $sheet_name -connection_ref ([ref]$connection) -command_ref ([ref]$command) -data_table_ref ([ref]$data_table)
+initialize_data_reader -template_filename $template_filename -sheet_name $sheet_name -connection_ref ([ref]$connection) -command_ref ([ref]$command) -data_table_ref ([ref]$data_table)
 # https://learn.microsoft.com/en-us/dotnet/api/system.data.oledb.oledbtype?view=netframework-4.5
 # https://learn.microsoft.com/en-us/dotnet/api/system.data.oledb.oledbparameter.oledbtype?view=netframework-4.5
 $rows = $results_ref.Value
