@@ -727,7 +727,7 @@ Inserred 40000 ⠇ Elapsed: 00:03:00.
 ![Excel](screenshots/capture-work-excel.png)
 
 ```powershell
-. .\catalog-rebuilder.ps1 -template_filename catalog-template.xls -count 10
+. .\catalog-rebuilder.ps1 -template_filename catalog-template.xls -count 10 -outputfile result.xls
 ```
 ```text
 reading 10 rows from catalog.txt

@@ -21,7 +21,7 @@
 param(
   [Parameter(Mandatory = $false,Position = 1)]
   [String]$datafile = 'catalog.txt',
-  [String]$outputfile = 'output.html',
+  [String]$outputfile = 'result.xls',
  # [String]$template_filename = 'catalog.html',
   [String]$template_filename = 'catalog-template.xlsx',
   [String[]]$fields = @( 'Skill_Name', 'Category', 'Technology', 'Repository', 'Link', 'Select', 'GUID', 'Id'),
@@ -188,7 +188,7 @@ foreach-object {
 function initialize_data_reader {
   param(
     [string]$format = 'excel',
-    [string]$template_filename,
+    [string]$template_fullpath,
     [string]$sheet_name,
     [string]$query,
     [System.Management.Automation.PSReference]$connection_ref,
@@ -197,11 +197,8 @@ function initialize_data_reader {
     [bool]$debug
 
   )
-
-  [string]$working_directory = (resolve-path -path '.').Path
-  [string]$template_fullpath = ('{0}\{1}' -f $working_directory,$template_filename)
-  $template_fullpath = create_temporaryfile -template_fullpath $template_fullpath
-  write-host ('writing temporary file: {0}' -f $template_fullpath)
+  
+  $template_filename = split-path -path $template_fullpath -leaf
   [string]$oledb_provider = $null
   [string]$data_source = $null
   [string]$table = $null
@@ -333,7 +330,12 @@ $connection = new-object System.Data.OleDb.OleDbConnection
 $sheet_name = 'Catalog$'
 $data_table = new-object System.Data.DataTable
 
-initialize_data_reader -template_filename $template_filename -sheet_name $sheet_name -connection_ref ([ref]$connection) -command_ref ([ref]$command) -data_table_ref ([ref]$data_table)
+[string]$working_directory = (resolve-path -path '.').Path
+[string]$template_fullpath = ('{0}\{1}' -f $working_directory, $template_filename)
+$template_fullpath = create_temporaryfile -template_fullpath $template_fullpath
+write-host ('writing temporary file: {0}' -f $template_fullpath)
+
+initialize_data_reader -template_fullpath $template_fullpath -sheet_name $sheet_name -connection_ref ([ref]$connection) -command_ref ([ref]$command) -data_table_ref ([ref]$data_table)
 # https://learn.microsoft.com/en-us/dotnet/api/system.data.oledb.oledbtype?view=netframework-4.5
 # https://learn.microsoft.com/en-us/dotnet/api/system.data.oledb.oledbparameter.oledbtype?view=netframework-4.5
 $rows = $results_ref.Value
@@ -389,10 +391,17 @@ $spinIndex = 0
 $command.Dispose()
 
 $connection.close()
-
-
+# NOTE: in Powershell 2.0
+# Rename-Item : Cannot rename because the target specified represents a path or device name.
+# rename-item -path $template_fullpath -newname (join-path -path $working_directory -childpath $outputfile) -force
+rename-item -path $template_fullpath -newname $outputfile -force -erroraction silentlycontinue
+# NOTE: in PowerShell 2.0, the Rename-Item cmdlet does not support overwriting existing files
+# Rename-Item : Cannot create a file when that file already exists
+# NOTE: the $outputfile still in $env:TEMP (split-path -path $template_fullpath -parent)
+copy-item -path (join-path -path (split-path -path $template_fullpath -parent) -childpath $outputfile ) -destination $working_directory -force
+move-item -literalpath $template_fullpath -destination (join-path -path $working_directory -childpath $outputfile) -force
 exit
-$template = (get-content -raw ((resolve-path -path '.' ).path + '\' + $template_filename))
+$template = (get-content -raw (join-path -path $working_directory -childpath $template_filename))
 [xml]$template_xml = [xml]$template
 [System.Xml.XmlElement]$documentElement = $template_xml.documentElement
 
@@ -435,7 +444,8 @@ $spinIndex = 0
     #>
   }
 }
-$result_filepath = ((resolve-path -path '.' ).path + '\' + $outputfile )
+# write to $outputfile directly
+$result_filepath = (join-path -path $working_directory -childpath $outputfile )
 
 $settings = new-object System.Xml.XmlWriterSettings
 $settings.Indent = $true
