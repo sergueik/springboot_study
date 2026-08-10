@@ -21,61 +21,59 @@
 param(
   [Parameter(Mandatory = $false,Position = 1)]
   [String]$datafile = 'catalog.txt',
-  [String]$templatefile = 'catalog.html',
   [String]$outputfile = 'output.html',
+ # [String]$template_filename = 'catalog.html',
   [String]$template_filename = 'catalog-template.xlsx',
-  [String[]]$fields =  @( 'Skill_Name', 'Category','Technology','Repository', 'Link','Select','GUID', 'Id'),
+  [String[]]$fields = @( 'Skill_Name', 'Category', 'Technology', 'Repository', 'Link', 'Select', 'GUID', 'Id'),
   [int]$count = 0
 )
-# NOTE: the original path remains the __source of truth__, while the derived columns are just search *aids*
-
 
 [System.Collections.Hashtable]$technology = @{
-    # Languages;
-    'java'        = 'java';
-    'kotlin'      = 'kotlin';
-    'scala'       = 'scala';
-    'groovy'      = 'groovy';
-    'python'      = 'python';
-    'py'          = 'python';
-    'javascript'  = 'javascript';
-    'typescript'  = 'typescript';
-    'node'        = 'node';
-    'cobol'       = 'cobol';
-    'fortran'     = 'fortran';
-
-    # Java ecosystem;
-    'spring'      = 'spring';
-    'springboot'  = 'spring';
-    'hibernate'   = 'hibernate';
-    'maven'       = 'maven';
-    'gradle'      = 'gradle';
-
-    # Python ecosystem;
-    'fastapi'     = 'fastapi';
-    'django'      = 'django';
-    'flask'       = 'flask';
-    'pandas'      = 'pandas';
-
-    # Web;
-    'react'       = 'react';
-    'angular'     = 'angular';
-    'vue'         = 'vue';
-
-    # Cloud / DevOps;
-    'docker'      = 'docker';
-    'aws'         = 'aws';
-    'azure'       = 'azure';
-    'kubernetes'  = 'kubernetes';
-    'k8s'         = 'kubernetes';
-    'terraform'   = 'terraform';
-
-    # AI / Agent ecosystem;
-    'mcp'         = 'mcp';
-    'model-context-protocol' = 'mcp';
-    'claude'      = 'claude';
-    'openai'      = 'openai';
-};
+  # Languages;
+  'java'        = 'java';
+  'kotlin'      = 'kotlin';
+  'scala'       = 'scala';
+  'groovy'      = 'groovy';
+  'python'      = 'python';
+  'py'          = 'python';
+  'javascript'  = 'javascript';
+  'typescript'  = 'typescript';
+  'node'        = 'node';
+  'cobol'       = 'cobol';
+  'fortran'     = 'fortran';
+  
+  # Java ecosystem;
+  'spring'      = 'spring';
+  'springboot'  = 'spring';
+  'hibernate'   = 'hibernate';
+  'maven'       = 'maven';
+  'gradle'      = 'gradle';
+  
+  # Python ecosystem;
+  'fastapi'     = 'fastapi';
+  'django'      = 'django';
+  'flask'       = 'flask';
+  'pandas'      = 'pandas';
+  
+  # Web;
+  'react'       = 'react';
+  'angular'     = 'angular';
+  'vue'         = 'vue';
+  
+  # Cloud / DevOps;
+  'docker'      = 'docker';
+  'aws'         = 'aws';
+  'azure'       = 'azure';
+  'kubernetes'  = 'kubernetes';
+  'k8s'         = 'kubernetes';
+  'terraform'   = 'terraform';
+  
+  # AI / Agent ecosystem;
+  'mcp'         = 'mcp';
+  'model-context-protocol' = 'mcp';
+  'claude'      = 'claude';
+  'openai'      = 'openai';
+  };
 
 [String[]]$columns =  @( 'Skill_Name', 'Category','Technology','Repository', 'Link');
 [bool]$debug_flag  = $false
@@ -83,6 +81,28 @@ param(
 # write-host ('written {0}' -f $filepath)
 $filepath = (resolve-path -path '.').path + '\' + $datafile
 $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+
+function create_temporaryfile {
+    param (
+      # [Parameter(Mandatory)]
+        [string]$template_fullpath
+    )
+    $temp_file = [System.IO.Path]::GetTempFileName()
+    $template_extension = [System.IO.Path]::GetExtension($template_fullpath)
+    $temp_fullpath = [System.IO.Path]::ChangeExtension($temp_file, $template_extension)
+    rename-item -path $temp_file -newname $temp_fullpath -force
+    # The term 'new-temporaryfile' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+    <#
+    $temp_file = new-temporaryfile
+    copy-item -path $template_fullpath -destination $temp_file.FullName -force
+    return $temp_file.FullName
+    #>
+    copy-item -path $template_fullpath -destination $temp_fullpath -force
+    return $temp_fullpath
+}
+
+
+
 function proces_file {
 
 param(
@@ -178,35 +198,40 @@ function initialize_data_reader {
 
   )
 
-  [string]$datafile_directory = (resolve-path -path '.').Path
-  [string]$datafile_fullpath = ('{0}\{1}' -f $datafile_directory,$template_filename)
-
+  [string]$working_directory = (resolve-path -path '.').Path
+  [string]$template_fullpath = ('{0}\{1}' -f $working_directory,$template_filename)
+  $template_fullpath = create_temporaryfile -template_fullpath $template_fullpath
+  write-host ('writing temporary file: {0}' -f $template_fullpath)
+  [string]$oledb_provider = $null
+  [string]$data_source = $null
+  [string]$table = $null
+  [string]$ext_arg = $null
   switch ($format) {
     'excel' {
-      [string]$oledb_provider = 'Provider=Microsoft.ACE.OLEDB.16.0'
-      [string]$data_source = "Data Source = ${datafile_fullpath}"
-      [string]$ext_arg = 'Extended Properties=Excel 8.0'
-      [string]$table = $sheet_name
+      $oledb_provider = 'Provider=Microsoft.ACE.OLEDB.12.0'
+      $data_source = ('Data Source = {0}' -f $template_fullpath )
+      $ext_arg = 'Extended Properties=Excel 8.0'
+      $table = $sheet_name
     }
     'excel_legacy' {
       # 32-bit instances only, Jet Engine has been included with core image for Windows XP, Server 2013
-      [string]$oledb_provider = 'Provider=Microsoft.Jet.OLEDB.4.0'
-      [string]$data_source = "Data Source = ${datafile_fullpath}"
-      [string]$ext_arg = 'Extended Properties=Excel 8.0;IMEX=1;'
-      [string]$table = $sheet_name
+      $oledb_provider = 'Provider=Microsoft.Jet.OLEDB.4.0'
+      $data_source = ('Data Source = {0}' -f $template_fullpath )
+      $ext_oarg = 'Extended Properties=Excel 8.0;IMEX=1;'
+      $table = $sheet_name
     }
     'csv' {
-      [string]$oledb_provider = 'Provider=Microsoft.ACE.OLEDB.16.0'
-      [string]$ext_arg = 'Extended Properties="Text;IMEX=1;HDR=Yes;FMT=Delimited(,)";'
-      [string]$data_source = "Data Source = ${$datafile_directory}"
-      [string]$table = $template_filename
+      $oledb_provider = 'Provider=Microsoft.ACE.OLEDB.12.0'
+      $data_source = ('Data Source = {0}' -f $working_directory )
+      $ext_arg = 'Extended Properties="Text;IMEX=1;HDR=Yes;FMT=Delimited(,)";'
+      $table = $template_filename
     }
     'csv_legacy' {
       # 32-bit instances only:
-      [string]$oledb_provider = 'Provider=Microsoft.Jet.OLEDB.4.0'
-      [string]$ext_arg = 'Extended Properties="Text;IMEX=1;HDR=Yes;FMT=Delimited(,)";'
-      [string]$data_source = "Data Source = ${$datafile_directory}"
-      [string]$table = $template_filename
+      $oledb_provider = 'Provider=Microsoft.Jet.OLEDB.4.0'
+      $data_source = ('Data Source = {0}' -f $working_directory )
+      $ext_arg = 'Extended Properties="Text;IMEX=1;HDR=Yes;FMT=Delimited(,)";'
+      $table = $template_filename
     }
     default { throw }
   }
@@ -367,7 +392,7 @@ $connection.close()
 
 
 exit
-$template = (get-content -raw ((resolve-path -path '.' ).path + '\' + $templatefile))
+$template = (get-content -raw ((resolve-path -path '.' ).path + '\' + $template_filename))
 [xml]$template_xml = [xml]$template
 [System.Xml.XmlElement]$documentElement = $template_xml.documentElement
 

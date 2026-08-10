@@ -726,6 +726,36 @@ Inserred 40000 ⠇ Elapsed: 00:03:00.
 ```
 ![Excel](screenshots/capture-work-excel.png)
 
+```powershell
+. .\catalog-rebuilder.ps1 -template_filename catalog-template.xls -count 10
+```
+```text
+reading 10 rows from catalog.txt
+Reading 9 ⠋  Elapsed: 00:00:05.1121441
+Returning: 10 results
+Exporting 10 entries
+writing temporary file: C:\Documents and Settings\Admin\Local Settings\Temp\tmp26.xls
+```
+```powershell
+ dir "C:\Documents and Settings\Admin\Local Settings\Temp\tmp26.xls", .\catalog-template.xls
+```
+```text
+    Directory: C:\Documents and Settings\Admin\Local Settings\Temp
+
+
+Mode                LastWriteTime     Length Name
+----                -------------     ------ ----
+-a---         8/10/2026   6:37 AM      14848 tmp26.xls
+
+
+    Directory: C:\developer\sergueik
+
+
+Mode                LastWriteTime     Length Name
+----                -------------     ------ ----
+-a---         8/10/2026  12:13 AM       6656 catalog-template.xls
+```
+
 ![LibreOffice](screenshots/capture-work-libreoffice.png)
 
 > NOTE An `.xls` worksheet has a *maximum capacity* of __65,536__ rows
