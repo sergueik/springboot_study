@@ -1,7 +1,26 @@
 ### Info
 
-  Artifacts from [majiayu000/claude-skill-registry](https://github.com/majiayu000/claude-skill-registry/tree/main/skills) - the most comprehensive Claude Code skills registry | Web Search: - note massive 
-- converted into searchable  __Excel 2007__ resource/standalone searchable web page with vanilla Javascript. 
+#### Skill Skimmer
+
+* *skim the ocean of skills*
+* *There are hundreds of thousands of skills. Naturally, we need a piece of precision pool equipment.*
+![Engineering Drawing](screenshots/capture-engineering-drawing.png)
+
+
+Artifacts from [majiayu000/claude-skill-registry](https://github.com/majiayu000/claude-skill-registry/tree/main/skills) — apparently an aggregator describing itself as *"the most comprehensive Claude Code skills registry | Web Search"*.
+
+* Converted into a searchable **Excel 2007** resource or a standalone searchable static web page with a vanilla JavaScript.
+
+> NOTE The Office or browser-hosted searchable page promises a slightly more practical way to explore the aggregated catalog than browsing the repository directly.
+
+> **NOTE:** The browser-hosted searchable page is intended specifically for exploring the catalog.
+
+The massive size of this and similar skill-aggregator repositories exposes a practical limitation of GitHub's web interface: while GitHub is well suited for hosting and versioning these resources, its web UI is not particularly convenient for exploring very large generated/catalog files.
+
+![truncation warning](screenshots/capture-github-truncate.png)
+
+This motivates creating an adequate tool for exploring these valuable resources.*
+
 
 ## What are Agent Skills?
 
@@ -805,6 +824,9 @@ Inserred 203000 ⠹ Elapsed: 00:05:59
   * https://habrastorage.org/vid/s1/0f55/8d1a/c6d3/0f558d1ac6d3f6de5d4b7cc3dd5d4e11.webm
   * https://habrastorage.org/vid/s1/6f8b/a676/2fbc/6f8ba6762fbc6f1920d24b5dd2017388.webm
   * https://habrastorage.org/vid/s1/4a49/6d02/a780/4a496d02a780e2951fd2eef7dba8e441.mp4
+  * [majiayu000/claude-skill-registry](https://github.com/majiayu000/claude-skill-registry/tree/main/skills) - the most comprehensive Claude Code skills registry | Web Search: - note massive 
+  * [skills for interfacing UiPath capabilities to external developers](https://github.com/UiPath/skills) - these are focused on __UiPath__ but there is almost 1700 individual files so browsing aid is needed
+  * https://github.com/membranedev/application-skills/tree/main/skills
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
