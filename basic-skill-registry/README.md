@@ -812,6 +812,113 @@ Inserred 203000 ⠹ Elapsed: 00:05:59
 ![Excel 2007](screenshots/capture-work-excel2007.png)
 
 
+| Tool / Technology | Role | Status | Notes |
+|---|---|:---:|---|
+| **OpenXML** | Inspect/extract embedded document artifacts | ✅ | Used to expose embedded Visio content in the original documents |
+| **Visio** | Native rendering / authoritative interpretation of `.vsd` diagrams | ⏳ | Installation required enterprise approval and delivery of ~4 GB install media; now available |
+| **WSL2** | Linux-side execution of conversion/XML tooling | ⚠️ | Only partly operational through the vendor application layer; Windows ↔ Linux transfer required `\\WSL$` and similar workarounds |
+| **RHEL** | Existing Linux processing environment | ❓ | Pandoc was initially assumed by Copilot, but its availability on RHEL was not initially verified |
+| **LibreOffice** | Convert legacy Visio artifacts to inspectable formats | ✅ | Successfully converted `.vsd` artifacts, including to Draw/FODG |
+| **Python** | Auxiliary extraction and processing | ✅ | Used for processing and experimentation around the extracted artifacts |
+| **XMLStarlet** | Inspect and validate XML structure | ✅ | Confirmed the XML nature of converted Draw/FODG artifacts and assisted structural analysis |
+| **Mermaid** | Alternative / reconstructed representation of diagram flow | ⚠️ | Used experimentally as a target for reconstructing meaningful flow from recovered structures |
+| **MarkItDown** | Document-to-Markdown extraction | ❓ | Considered as an alternative extraction path |
+| **VS Code extensions** | Interactive inspection / visualization | ❓ | Considered as an interactive aid rather than the core conversion mechanism |
+| **Windows host** | Primary authoring and coordination environment | ✅ | Authoring and interactive work remained on Windows |
+| **VM** | Labor-intensive XML interpretation and reconstruction | ✅ | The more intellectually demanding work of combining XML fragments into meaningful flow was performed here |
+| **Clipboard** | Exchange of intermediate artifacts between environments | ⚠️ | Became a practical integration mechanism where filesystem/application integration was inadequate |
+
+
+### Process Flow
+
+
+```code
+flowchart TB
+    subgraph SOURCES["Skill sources"]
+        MS["Microsoft<br/>~10⁵ SKILL.md"]
+        UIP["UiPath<br/>~10³ SKILL.md"]
+        VEN["Other vendor repositories"]
+        AGG["Community / scraper repositories<br/>e.g. skill registries"]
+    end
+
+    subgraph WORK["Work / scratch area"]
+        GIT["Git acquisition"]
+        EXT["Extract / normalize"]
+    end
+
+    subgraph INDEX["Search aid"]
+        CAT["Catalog"]
+        META["Metadata + provenance"]
+        RX["Cached search columns<br/>regex-friendly"]
+    end
+
+    subgraph RESULT["Distributable result"]
+        ACE["Jet / ACE"]
+        XLS["Excel / Office"]
+        HTML["HTML / browser"]
+    end
+
+    MS --> GIT
+    UIP --> GIT
+    VEN --> GIT
+    AGG --> GIT
+
+    GIT --> EXT
+
+    EXT --> CAT
+    EXT --> META
+    CAT --> RX
+    META --> RX
+
+    RX --> ACE
+    RX --> XLS
+    RX --> HTML
+```
+
+![Flow Screenshot](screenshots/capture-skimmer-flow.png)
+
+```mermaid
+flowchart TB
+    subgraph SOURCES["Skill sources"]
+        MS["Microsoft<br/>~10⁵ SKILL.md"]
+        UIP["UiPath<br/>~10³ SKILL.md"]
+        VEN["Other vendor repositories"]
+        AGG["Community / scraper repositories<br/>e.g. skill registries"]
+    end
+
+    subgraph WORK["Work / scratch area"]
+        GIT["Git acquisition"]
+        EXT["Extract / normalize"]
+    end
+
+    subgraph INDEX["Search aid"]
+        CAT["Catalog"]
+        META["Metadata + provenance"]
+        RX["Cached search columns<br/>regex-friendly"]
+    end
+
+    subgraph RESULT["Distributable result"]
+        ACE["Jet / ACE"]
+        XLS["Excel / Office"]
+        HTML["HTML / browser"]
+    end
+
+    MS --> GIT
+    UIP --> GIT
+    VEN --> GIT
+    AGG --> GIT
+
+    GIT --> EXT
+
+    EXT --> CAT
+    EXT --> META
+    CAT --> RX
+    META --> RX
+
+    RX --> ACE
+    RX --> XLS
+    RX --> HTML
+```
 ### See Also
   * https://openreview.net/pdf/3a0ffc73b487443feb8f2abdacbf3200299cf7o97.pdf
   * [Agent Skills Specification](https://agentskills.io/specification) - complete format specification for Agent Skill
