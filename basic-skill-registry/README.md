@@ -1231,12 +1231,98 @@ process
 └── view
     ├── camerax
     ├── cameray
-    └── zoom
-    
+    └── zoom    
 ```
 
 ![BP OBject XML Tree](screenshots/capture-bpobject-mermaid.png)
+
+
 ```code
+
+flowchart RL
+    process["process"]
+
+    process --> appdef["appdef"]
+    process --> endpoint["endpoint"]
+    process --> preconditions["preconditions"]
+    process --> stage["stage"]
+    process --> subsheet["subsheet"]
+    process --> view["view"]
+
+    appdef --> element["element"]
+    element --> basetype["basetype"]
+    element --> datatype["datatype"]
+    element --> diagnose["diagnose"]
+    element --> id["id"]
+    element --> type["type"]
+
+    stage --> alwaysinit["alwaysinit"]
+    stage --> calculation["calculation"]
+    stage --> code["code"]
+    stage --> collectioninfo["collectioninfo"]
+    stage --> datatype_stage["datatype"]
+    stage --> decision["decision"]
+    stage --> display["display"]
+    stage --> exception["exception"]
+    stage --> font["font"]
+    stage --> globalcode["globalcode"]
+    stage --> groupid["groupid"]
+    stage --> imports["imports"]
+    stage --> initialvalue["initialvalue"]
+    stage --> inputs["inputs"]
+    stage --> language["language"]
+    stage --> loginhibit["loginhibit"]
+    stage --> loopdata["loopdata"]
+    stage --> looptype["looptype"]
+    stage --> narrative["narrative"]
+    stage --> onfalse["onfalse"]
+    stage --> onsuccess["onsuccess"]
+    stage --> ontrue["ontrue"]
+    stage --> outputs["outputs"]
+    stage --> postconditions["postconditions"]
+    stage --> preconditions_stage["preconditions"]
+    stage --> private["private"]
+    stage --> processid["processid"]
+    stage --> pythondllpath["pythondllpath"]
+    stage --> pythonenvpath["pythonenvpath"]
+    stage --> references["references"]
+    stage --> resource["resource"]
+    stage --> steps["steps"]
+    stage --> subsheetid["subsheetid"]
+
+    collectioninfo --> field["field"]
+
+    imports --> import_element["import"]
+
+    initialvalue --> row["row"]
+    row --> row_field["field"]
+
+    inputs --> input["input"]
+
+    outputs --> output["output"]
+
+    postconditions --> postcondition_condition["condition"]
+
+    preconditions_stage --> precondition_condition["condition"]
+
+    references --> reference["reference"]
+
+    steps --> step_calculation["calculation"]
+
+    subsheet --> subsheet_name["name"]
+    subsheet --> subsheet_view["view"]
+    subsheet_view --> camerax_subsheet["camerax"]
+    subsheet_view --> cameray_subsheet["cameray"]
+    subsheet_view --> zoom_subsheet["zoom"]
+
+    view --> camerax["camerax"]
+    view --> cameray["cameray"]
+    view --> zoom["zoom"]
+```
+
+
+
+```mermaid
 flowchart LR
     process["process"]
 

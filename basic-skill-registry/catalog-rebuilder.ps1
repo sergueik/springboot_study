@@ -101,7 +101,16 @@ function create_temporaryfile {
     return $temp_fullpath
 }
 
+<#
 
+$git = Get-Command git.exe -ErrorAction Stop
+
+& $git.Source clone --depth 1 $repository $destination
+if ($LASTEXITCODE -ne 0) {
+    throw "git clone failed: $LASTEXITCODE"
+}
+
+#>
 
 function proces_file {
 
