@@ -919,6 +919,491 @@ flowchart TB
     RX --> XLS
     RX --> HTML
 ```
+
+### ASCII
+```
+                         ┌───────────────┐
+                         │  Original     │
+                         │  Document     │
+                         │  + embedded   │
+                         │  Visio        │
+                         └───────┬───────┘
+                                 │
+                                 ▼
+                         ┌───────────────┐
+                         │   OpenXML     │
+                         │   extraction  │
+                         └───────┬───────┘
+                                 │
+                    ┌────────────┴────────────┐
+                    │                         │
+                    ▼                         ▼
+              ┌──────────┐              ┌──────────┐
+              │ Windows  │◄────────────►│  WSL2    │
+              │ authoring│   \\WSL$     │ tooling  │
+              └────┬─────┘              └────┬─────┘
+                   │                         │
+                   │                    ┌────▼─────┐
+                   │                    │  RHEL /  │
+                   │                    │ Linux    │
+                   │                    └────┬─────┘
+                   │                         │
+                   │                    ┌────▼─────┐
+                   │                    │ Libre-   │
+                   │                    │ Office   │
+                   │                    └────┬─────┘
+                   │                         │
+                   │                         ▼
+                   │                    ┌──────────┐
+                   │                    │ FODG /   │
+                   │                    │ XML      │
+                   │                    └────┬─────┘
+                   │                         │
+                   │                    ┌────▼─────┐
+                   │                    │XMLStarlet│
+                   │                    └────┬─────┘
+                   │                         │
+                   │              ┌──────────▼─────────┐
+                   │              │ XML fragments /    │
+                   │              │ structural pieces  │
+                   │              └──────────┬─────────┘
+                   │                         │
+                   │                    ┌────▼─────┐
+                   │                    │   VM     │
+                   │                    │reconstruct│
+                   │                    └────┬─────┘
+                   │                         │
+                   │                    clipboard
+                   │                         │
+                   └─────────────────────────▼
+                                      ┌────────────┐
+                                      │ meaningful │
+                                      │ flow /     │
+                                      │ Mermaid    │
+                                      └────────────┘
+```
+
+### DOCX vs. Markdown
+
+Neither DOCX nor Markdown is intended to be retained in source control as part of
+the extracted artifacts. Both are transient working products: they are copied
+locally, evaluated or annotated, and subsequently removed.
+
+The distinction therefore becomes practical rather than archival.
+
+For ordinary document processing, DOCX may be useful because it preserves the
+original OpenXML document structure and presentation. However, when the
+investigation produces an observation that needs to be communicated to an SME —
+for example, a suspected **"missing link"** in the reconstructed flow —
+Markdown is considerably more attractive. It is lightweight, trivially
+annotable, easy to edit, and produces an intelligible textual diff.
+
+By contrast, modifying or annotating the corresponding OpenXML/DOCX artifact
+introduces a large amount of structural markup. Even a small conceptual change
+can result in a substantial and largely unintelligible diff.
+
+Thus the practical rule is:
+
+| Purpose | Preferred transient format |
+|---|---|
+| Preserve / process the original document structure | **DOCX / OpenXML** |
+| Inspect or annotate extracted information | **Markdown** |
+| Communicate an observation or suspected missing link to an SME | **Markdown** |
+| Commit either artifact to source control | **Neither** |
+
+
+![Head Mounted Hands Free Loupe for Precision Work](screenshot/capture-simpsons.png)
+
+### Blue Prism
+
+one may explore alternive route 
+
+__Blue Prism__ actually had a concept called "Skills" years before the current `SKILL.md` movement. 
+With __Blue Prism__ digital exchange (DX) there is  the rich collection links including 
+
+the [Blue Prism Core VBOs](https://digitalexchange.blueprism.com/cardDetails?id=138317) - download page.
+
+The `Blue Prism Enterprise - Core VBOs.zip` is arvhive containing *all* of the core __BP__ __VBO__s that use to be included in the __Blue Prism__ software installer.
+
+```sh
+unzip -ql ~/Downloads/Blue\ Prism\ Enterprise\ -\ Core\ VBOs_20260511.zip | awk '{$1="";$2="";$3="";print $0}'
+```
+```text
+   Name
+   ----
+   Blue Prism Enterprise - Core VBOs/
+   Blue Prism Enterprise - Core VBOs/Data - OLEDB v10.2.bpobject
+   Blue Prism Enterprise - Core VBOs/Data - SQL Server 10.2.bpobject
+   Blue Prism Enterprise - Core VBOs/Email - POP3 SMTP IMAP 10.5.0.bpobject
+   Blue Prism Enterprise - Core VBOs/Google Drive API VBO v1.0.0.bprelease
+   Blue Prism Enterprise - Core VBOs/Microsoft Outlook Email VBO (NetOffice) v10.4.7.bpobject
+   Blue Prism Enterprise - Core VBOs/Microsoft Outlook Email VBO v10.4.7.bpobject
+   Blue Prism Enterprise - Core VBOs/MS Excel VBO v10.6.4.bpobject
+   Blue Prism Enterprise - Core VBOs/MS Word VBO v10.2.0.bpobject
+   Blue Prism Enterprise - Core VBOs/System - Active Directory v10.1.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - Collection Manipulation V10.4.0.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - Date and Time Manipulation V10.1.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - Encryption v10.0.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - Environment v10.1.8.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - File Management v10.3.5.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - Foreground Locker v10.0.0.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - General v10.0.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - HTTP v10.0.2.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - Image Manipulation v10.1.0.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - JSON V10.0.3.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - Locking v10.0.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - Network v10.0.2.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - Numeric Operations v10.0.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - Strings v10.0.bpobject
+   Blue Prism Enterprise - Core VBOs/Utility - Windows Compressed File v10.0.bpobject
+   Blue Prism Enterprise - Core VBOs/Webservices - OAuth2 v10.0.bpobject
+   Blue Prism Enterprise - Core VBOs/Webservices - REST v10.0.bpobject
+
+
+```
+And instead of adding another gigantic collection of generic AI skills, you'd be demonstrating that existing specialist developer ecosystems contain thousands of latent skills that can potentially be compiled into Agent Skills.
+
+Can some of those be turned it into a proper SKILL.md and we can judge whether the result is genuinely useful rather than merely an LLM-generated description. 
+
+```sh
+unzip -x ~/Downloads/Blue\ Prism\ Enterprise\ -\ Core\ VBOs_20260511.zip  "Blue Prism Enterprise - Core VBOs/Utility - Collection Manipulation V10.4.0.bpobject"
+cp Blue\ Prism\ Enterprise\ -\ Core\ VBOs/*bpobject .
+```
+
+```text
+Archive:  /c/Users/kouzm/Downloads/Blue Prism Enterprise - Core VBOs_20260511.zip
+  inflating: Blue Prism Enterprise - Core VBOs/Utility - Collection Manipulation V10.4.0.bpobject
+```
+confirmed via xmlstarlert / xmllint it is a valid XML but unlike e.g. Maven xml, it does not have explicit schema. The elemenrs are recognized by 
+the *"vendor shell"*
+the vendor XML element grammar is examined next
+
+```sh
+xml.exe sel -t -m '//*' -v 'name()' -n  "Utility - Collection Manipulation V10.4.0.bpobject" | sort | uniq -c |sort -nr | tee collection-manipulation.element-vocabulary.txt /dev/stderr 
+```
+```text
+    347 stage
+    347 display
+    341 subsheetid
+    172 loginhibit
+    150 input
+    135 datatype
+    134 alwaysinit
+    132 private
+    105 output
+     91 onsuccess
+     71 outputs
+     71 inputs
+     63 initialvalue
+     56 condition
+     45 narrative
+     41 field
+     35 zoom
+     35 view
+     35 cameray
+     35 camerax
+     34 subsheet
+     34 name
+     33 code
+     29 preconditions
+     22 postconditions
+     19 font
+     15 ontrue
+     15 onfalse
+     15 decision
+     14 import
+      9 exception
+      8 row
+      6 reference
+      6 groupid
+      5 calculation
+      4 resource
+      4 collectioninfo
+      3 looptype
+      3 loopdata
+      2 processid
+      1 type
+      1 steps
+      1 references
+      1 pythonenvpath
+      1 pythondllpath
+      1 process
+      1 language
+      1 imports
+      1 id
+      1 globalcode
+      1 endpoint
+      1 element
+      1 diagnose
+      1 basetype
+      1 appdef
+
+```  
+> NOTE    The windows package of xmlstarlet executable name  is (drum roll). xml.exe 
+
+There is the separation between:
+```
+stage
+  ├── input
+  ├── output
+  ├── condition
+  ├── calculation
+  ├── decision
+  ├── code
+  ├── looptype
+  └── ...
+```
+and the higher-level:
+```
+subsheet
+collectioninfo
+resource
+references
+globalcode
+appdef
+```
+That is beginning to look like an AST-ish representation of the __Blue Prism__ __Object Studio__ 
+rather than merely a configuration file.
+```sh
+xml.exe el -u "Utility - Collection Manipulation V10.4.0.bpobject" | tee collection-manipulation.grammar.txt /dev/stderr
+```
+```text
+process
+├── appdef
+│   └── element
+│       ├── basetype
+│       ├── datatype
+│       ├── diagnose
+│       ├── id
+│       └── type
+├── endpoint
+├── preconditions
+├── stage
+│   ├── alwaysinit
+│   ├── calculation
+│   ├── code
+│   ├── collectioninfo
+│   │   └── field
+│   ├── datatype
+│   ├── decision
+│   ├── display
+│   ├── exception
+│   ├── font
+│   ├── globalcode
+│   ├── groupid
+│   ├── imports
+│   │   └── import
+│   ├── initialvalue
+│   │   └── row
+│   │       └── field
+│   ├── inputs
+│   │   └── input
+│   ├── language
+│   ├── loginhibit
+│   ├── loopdata
+│   ├── looptype
+│   ├── narrative
+│   ├── onfalse
+│   ├── onsuccess
+│   ├── ontrue
+│   ├── outputs
+│   │   └── output
+│   ├── postconditions
+│   │   └── condition
+│   ├── preconditions
+│   │   └── condition
+│   ├── private
+│   ├── processid
+│   ├── pythondllpath
+│   ├── pythonenvpath
+│   ├── references
+│   │   └── reference
+│   ├── resource
+│   ├── steps
+│   │   └── calculation
+│   └── subsheetid
+├── subsheet
+│   ├── name
+│   └── view
+│       ├── camerax
+│       ├── cameray
+│       └── zoom
+└── view
+    ├── camerax
+    ├── cameray
+    └── zoom
+    
+```
+
+![BP OBject XML Tree](screenshots/capture-bpobject-mermaid.png)
+```code
+flowchart LR
+    process["process"]
+
+    process --> appdef["appdef"]
+    process --> endpoint["endpoint"]
+    process --> preconditions["preconditions"]
+    process --> stage["stage"]
+    process --> subsheet["subsheet"]
+    process --> view["view"]
+
+    appdef --> element["element"]
+    element --> basetype["basetype"]
+    element --> datatype["datatype"]
+    element --> diagnose["diagnose"]
+    element --> id["id"]
+    element --> type["type"]
+
+    stage --> alwaysinit["alwaysinit"]
+    stage --> calculation["calculation"]
+    stage --> code["code"]
+    stage --> collectioninfo["collectioninfo"]
+    stage --> datatype_stage["datatype"]
+    stage --> decision["decision"]
+    stage --> display["display"]
+    stage --> exception["exception"]
+    stage --> font["font"]
+    stage --> globalcode["globalcode"]
+    stage --> groupid["groupid"]
+    stage --> imports["imports"]
+    stage --> initialvalue["initialvalue"]
+    stage --> inputs["inputs"]
+    stage --> language["language"]
+    stage --> loginhibit["loginhibit"]
+    stage --> loopdata["loopdata"]
+    stage --> looptype["looptype"]
+    stage --> narrative["narrative"]
+    stage --> onfalse["onfalse"]
+    stage --> onsuccess["onsuccess"]
+    stage --> ontrue["ontrue"]
+    stage --> outputs["outputs"]
+    stage --> postconditions["postconditions"]
+    stage --> preconditions_stage["preconditions"]
+    stage --> private["private"]
+    stage --> processid["processid"]
+    stage --> pythondllpath["pythondllpath"]
+    stage --> pythonenvpath["pythonenvpath"]
+    stage --> references["references"]
+    stage --> resource["resource"]
+    stage --> steps["steps"]
+    stage --> subsheetid["subsheetid"]
+
+    collectioninfo --> field["field"]
+
+    imports --> import_element["import"]
+
+    initialvalue --> row["row"]
+    row --> row_field["field"]
+
+    inputs --> input["input"]
+
+    outputs --> output["output"]
+
+    postconditions --> postcondition_condition["condition"]
+
+    preconditions_stage --> precondition_condition["condition"]
+
+    references --> reference["reference"]
+
+    steps --> step_calculation["calculation"]
+
+    subsheet --> subsheet_name["name"]
+    subsheet --> subsheet_view["view"]
+    subsheet_view --> camerax_subsheet["camerax"]
+    subsheet_view --> cameray_subsheet["cameray"]
+    subsheet_view --> zoom_subsheet["zoom"]
+
+    view --> camerax["camerax"]
+    view --> cameray["cameray"]
+    view --> zoom["zoom"]
+```
+
+![BP OBject XML Tree](screenshots/capture-bpobject-graphviz.png)
+
+```code
+
+digraph BPObject {
+    rankdir=TB;
+    node [shape=box];
+
+    process -> appdef;
+    process -> endpoint;
+    process -> preconditions;
+    process -> stage;
+    process -> subsheet;
+    process -> view;
+
+    appdef -> element;
+    element -> basetype;
+    element -> datatype;
+    element -> diagnose;
+    element -> id;
+    element -> type;
+
+    stage -> alwaysinit;
+    stage -> calculation;
+    stage -> code;
+    stage -> collectioninfo;
+    stage -> datatype_stage;
+    stage -> decision;
+    stage -> display;
+    stage -> exception;
+    stage -> font;
+    stage -> globalcode;
+    stage -> groupid;
+    stage -> imports;
+    stage -> initialvalue;
+    stage -> inputs;
+    stage -> language;
+    stage -> loginhibit;
+    stage -> loopdata;
+    stage -> looptype;
+    stage -> narrative;
+    stage -> onfalse;
+    stage -> onsuccess;
+    stage -> ontrue;
+    stage -> outputs;
+    stage -> postconditions;
+    stage -> preconditions_stage;
+    stage -> private;
+    stage -> processid;
+    stage -> pythondllpath;
+    stage -> pythonenvpath;
+    stage -> references;
+    stage -> resource;
+    stage -> steps;
+    stage -> subsheetid;
+
+    collectioninfo -> field;
+
+    imports -> import_element;
+
+    initialvalue -> row;
+    row -> row_field;
+
+    inputs -> input;
+
+    outputs -> output;
+
+    postconditions -> postcondition_condition;
+
+    preconditions_stage -> precondition_condition;
+
+    references -> reference;
+
+    steps -> step_calculation;
+
+    subsheet -> subsheet_name;
+    subsheet -> subsheet_view;
+    subsheet_view -> camerax_subsheet;
+    subsheet_view -> cameray_subsheet;
+    subsheet_view -> zoom_subsheet;
+
+    view -> camerax;
+    view -> cameray;
+    view -> zoom;
+}
+```
 ### See Also
   * https://openreview.net/pdf/3a0ffc73b487443feb8f2abdacbf3200299cf7o97.pdf
   * [Agent Skills Specification](https://agentskills.io/specification) - complete format specification for Agent Skill
@@ -934,6 +1419,19 @@ flowchart TB
   * [majiayu000/claude-skill-registry](https://github.com/majiayu000/claude-skill-registry/tree/main/skills) - the most comprehensive Claude Code skills registry | Web Search: - note massive 
   * [skills for interfacing UiPath capabilities to external developers](https://github.com/UiPath/skills) - these are focused on __UiPath__ but there is almost 1700 individual files so browsing aid is needed
   * https://github.com/membranedev/application-skills/tree/main/skills
+  * https://developercommunity.visualstudio.com/t/Add-Emojis-for-Quick-Responses-In-PR-Rev/10651469?ftype=idea&q=quick+add+default+file+
+  
+  
+https://icons8.com/icons/set/shared-folder
+https://icons8.com/icons/set/docker-containers
+
+
+https://icons8.com/icon/kUIdznZvxAud/docker
+
+https://icons8.com icon for podman
+https://icons8.com/icon/120105/shared-folder
+https://icons8.com/icon/25902/virtualbox
+
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

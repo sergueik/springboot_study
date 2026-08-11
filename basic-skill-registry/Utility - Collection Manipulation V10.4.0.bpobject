@@ -1,0 +1,4094 @@
+﻿<process name="Utility - Collection Manipulation" version="6.9.0.26970" bpversion="7.4.1.15931" narrative="Utility functions for manipulating collections." byrefcollection="true" processrunningmessage="" disableversioning="false" type="object" runmode="Background" preferredid="6f9680f1-616c-4884-b58c-42ed51446377">
+  <appdef>
+    <element name="Application Root">
+      <id>b30f5d67-5c3c-49c9-8f9b-66d573097498</id>
+      <type>Application</type>
+      <basetype>Application</basetype>
+      <datatype>unknown</datatype>
+      <diagnose>False</diagnose>
+    </element>
+  </appdef>
+  <view>
+    <camerax>45</camerax>
+    <cameray>0</cameray>
+    <zoom version="2">1.25</zoom>
+  </view>
+  <preconditions />
+  <endpoint narrative="" />
+  <subsheet subsheetid="9a74af4c-280a-4e30-bdbb-21295b6256ca" type="CleanUp" published="True">
+    <name>Clean Up</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>42</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="524a0a3c-118a-4343-ba4b-bc184a72404e" type="Normal" published="True">
+    <name>Append Calculated Field</name>
+    <view>
+      <camerax>-100</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="65451129-b7a2-4c2f-a12d-9086bd314f53" type="Normal" published="True">
+    <name>Append Field (Number)</name>
+    <view>
+      <camerax>-100</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="a474299b-5c1c-4873-a3af-4dd0d3bd03ff" type="Normal" published="True">
+    <name>Append Field (Text)</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="51f694a8-5305-4a38-9b41-a98998f2f7ca" type="Normal" published="True">
+    <name>Append Rows to Collection</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="7a9aa259-fe07-4035-8411-23737559c975" type="Normal" published="True">
+    <name>Collection Contains Field</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>21</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a" type="Normal" published="True">
+    <name>Collection Contains Value</name>
+    <view>
+      <camerax>-317</camerax>
+      <cameray>-24</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="cdf2a7f1-a351-441a-8d36-bc92af66650a" type="Normal" published="True">
+    <name>Copy Rows</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="df662579-558c-4cc9-88df-8c680b67b41d" type="Normal" published="True">
+    <name>Delete Column</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="1d7b6202-d743-4485-9101-839f4651c406" type="Normal" published="True">
+    <name>Delete Field</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="4d41bfc8-e552-41ae-9e45-65dc3d1f7276" type="Normal" published="True">
+    <name>Field Exists</name>
+    <view>
+      <camerax>144</camerax>
+      <cameray>-41</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="d1eee74f-1582-4c3e-96c8-b94f1535d7e1" type="Normal" published="True">
+    <name>Fill Blanks</name>
+    <view>
+      <camerax>-195</camerax>
+      <cameray>-105</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="a9f3108d-ca87-4551-b567-9c64ef05cf0c" type="Normal" published="True">
+    <name>Filter Collection</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="e277cc2b-72b8-47e9-8a1b-e8530eb19a09" type="Normal" published="True">
+    <name>Get Collection Fields</name>
+    <view>
+      <camerax>42</camerax>
+      <cameray>-4</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="d35c0ad8-d252-4d67-b4d2-0654438d8bb8" type="Normal" published="True">
+    <name>Get Distinct Records</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>21</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="5abe0172-955b-476b-ad10-8c94292f2304" type="Normal" published="True">
+    <name>Get Matched Records</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>42</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="cd8dfc11-f248-4b63-9116-1ae3637913ea" type="Normal" published="True">
+    <name>Get Union of Collections</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>42</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="c63b2d7a-01d2-4a51-a0c0-edc02a4669cb" type="Normal" published="True">
+    <name>Get Unique Records</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>21</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="1b217763-c8fd-4c04-a40d-9c65089ffc73" type="Normal" published="True">
+    <name>Get Unmatched Records</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>42</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="cd8fefb9-4622-4ea7-8287-e64b86d7e513" type="Normal" published="True">
+    <name>Merge Collection</name>
+    <view>
+      <camerax>-100</camerax>
+      <cameray>3</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="198ce3c6-ecbf-4203-a609-b15429defe0e" type="Normal" published="True">
+    <name>Read Collection Field</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="eb03a051-75a8-4093-a383-6c6fecfbb736" type="Normal" published="True">
+    <name>Remove dots from headers</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>-43</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="fa6ed646-8ae1-479e-9845-b1dc9ac3b560" type="Normal" published="True">
+    <name>Remove Empty Rows</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="3a772458-463d-46cf-8451-6cf5b4aeae30" type="Normal" published="True">
+    <name>Remove Null Rows</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="bcde64eb-f856-4440-a6c0-d83f40f0cf4b" type="Normal" published="True">
+    <name>Rename Collection Fields</name>
+    <view>
+      <camerax>207</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="ccc0c027-8c9f-41f6-9ba6-af44eac6a9a9" type="Normal" published="True">
+    <name>Rename Field</name>
+    <view>
+      <camerax>-100</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="ffab882f-007c-48a5-8f84-8f5f1bfd4d6a" type="Normal" published="True">
+    <name>Reverse Collection</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="2d0438d1-70b1-4151-b8a1-33e7bab117ad" type="Normal" published="True">
+    <name>Save Collection to CSV File</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="05992810-1be4-4455-84e8-10579308ab87" type="Normal" published="True">
+    <name>Set Collection Field</name>
+    <view>
+      <camerax>276</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="87541f35-d834-4d99-8fd3-16ec994a9990" type="Normal" published="True">
+    <name>Set Column Names From Expected Collection</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>-62</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="b8e3b975-d485-49a3-b962-864d13a96e05" type="Normal" published="True">
+    <name>Set Column Names From First Row</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="d8e5be7a-93aa-4322-99bf-00edea37bbc2" type="Normal" published="True">
+    <name>Sort Collection</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="76943739-36b9-46bc-8f95-e1b6342bc8a6" type="Normal" published="True">
+    <name>Split Collection</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>-3</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <subsheet subsheetid="a0cf6615-20c0-4910-9990-0f79f5f30bca" type="Normal" published="True">
+    <name>Transpose Collection</name>
+    <view>
+      <camerax>0</camerax>
+      <cameray>0</cameray>
+      <zoom version="2">1.25</zoom>
+    </view>
+  </subsheet>
+  <stage stageid="d8c547cc-60d0-459b-876f-90bf696a5757" name="Start" type="Start">
+    <loginhibit />
+    <display x="15" y="-105" />
+    <onsuccess>807e7d33-91e2-4241-a85e-ea0718fc487d</onsuccess>
+  </stage>
+  <stage stageid="807e7d33-91e2-4241-a85e-ea0718fc487d" name="End" type="End">
+    <loginhibit />
+    <display x="15" y="90" />
+  </stage>
+  <stage stageid="1a8c9ebd-54e1-442f-a6c7-e87df3b59232" name="Stage1" type="ProcessInfo">
+    <display x="-150" y="-105" w="180" h="90" />
+    <references>
+      <reference>System.Data.dll</reference>
+      <reference>System.Xml.dll</reference>
+      <reference>System.Drawing.dll</reference>
+      <reference>Microsoft.VisualBasic.dll</reference>
+      <reference>System.Core.dll</reference>
+      <reference>System.Data.DataSetExtensions.dll</reference>
+    </references>
+    <imports>
+      <import>System</import>
+      <import>System.Drawing</import>
+      <import>System.Data</import>
+      <import>System.IO</import>
+      <import>System.XML</import>
+      <import>System.Diagnostics</import>
+      <import>Microsoft.VisualBasic</import>
+      <import>System.Data</import>
+      <import>system.text.regularexpressions</import>
+      <import>Microsoft.VisualBasic</import>
+      <import>System.Collections</import>
+      <import>System.Reflection</import>
+      <import>System.Linq</import>
+      <import>System.Text</import>
+    </imports>
+    <language>visualbasic</language>
+    <pythondllpath>
+    </pythondllpath>
+    <pythonenvpath>
+    </pythonenvpath>
+    <globalcode><![CDATA[
+
+
+]]></globalcode>
+    <code><![CDATA[Public CommonDictionary as New System.Collections.Generic.Dictionary(Of String, String)
+
+Private Iterator as Generic.IEnumerator(Of String)
+
+Function CloneColumn(col As DataColumn) As DataColumn
+	Dim tp = col.GetType()
+	Return TryCast(
+		tp.GetMethod("Clone", BindingFlags.Instance Or BindingFlags.NonPublic).
+			Invoke(col, Nothing),
+		DataColumn
+	)
+End Function
+
+Function GetStringValue(row As DataRow, fieldName As String) As String
+	Dim col As DataColumn = row.Table.Columns(fieldName)
+	Dim val = row(fieldName)
+	Select Case True
+		Case IsDateColumn(col)
+			Return CDate(val).ToString("d") 
+		Case IsTimeColumn(col)
+			Return CDate(val).ToString("T")
+		Case IsDateTimeColumn(col)
+			Return CDate(val).ToString("G")
+		Case Else
+			Return CStr(val)
+	End Select
+End Function
+
+Function GetBPType(col As DataColumn) As String
+	If col Is Nothing Then Return Nothing
+	If Not col.ExtendedProperties.ContainsKey("bptype") Then Return Nothing
+	Return col.ExtendedProperties("bptype").ToString()
+End Function
+
+Function IsDateColumn(col as DataColumn) as Boolean
+	Return (GetBPType(col) = "date")
+End Function
+
+Function IsTimeColumn(col as DataColumn) as Boolean
+	Return (GetBPType(col) = "time")
+End Function
+
+Function IsDateTimeColumn(col as DataColumn) as Boolean
+	Return (GetBPType(col) = "datetime")
+End Function
+
+Public Function GetDataTable(ByVal ColumnNamesCSV As String, ByVal ColumnTypesCSV As String) As DataTable
+
+	Dim objTable As DataTable
+	Dim objColumn As DataColumn
+	Dim aColumnNames As String() = ColumnNamesCSV.Split(",")
+	Dim aColumnTypes As String() = ColumnTypesCSV.Split(",")
+
+	Try
+		objTable = New DataTable
+		For i As Integer = 0 To aColumnNames.Length - 1
+			objColumn = New DataColumn 
+			objColumn.DataType = System.Type.GetType(aColumnTypes(i).Trim)
+			objColumn.ColumnName = aColumnNames(i).Trim
+			objTable.Columns.Add(objColumn)
+		Next
+		
+	Catch e As Exception
+		objTable = nothing	
+	End Try
+
+	Return objTable
+
+End Function
+
+
+private function GetBluePrismDAtaType(DotNetType AS Type) As String
+   Select Case True
+      Case DotNetType.Equals(GetType(Timespan))
+         return "timespan"
+      Case DotNetType Is GetType(DAteTime)
+         return "datetime"
+      Case DotNetType Is GetType(Decimal), _
+				DotNetType Is GetType(Integer), _
+					DotNetType Is GetType(Double), _
+						DotNetType Is GetType(Single)
+         return "number"
+      Case DotNetType Is GetType(System.Drawing.Bitmap)
+         return "image"
+      Case DotNetType Is GetType(Byte())
+         return "binary"
+      Case DotNetType Is GetType(Boolean)
+         return "flag"
+      Case DotNetType Is GetType(System.Data.DataTable)
+         return "collection"
+      Case Else
+         return "text"
+   End Select
+End Function
+
+
+Private Function CloneDataRow(R As DataRow, ColumnCount As Integer) As Object()
+	Dim RetVal(ColumnCount - 1) As Object
+	For I As Integer = 0 to ColumnCount - 1
+		RetVal(I) = R(I)
+	Next
+
+	Return RetVal
+End Function
+
+Private Shared Sub SaveDataTableToCSV(ByVal dt As DataTable, ByVal csvFilePath As String, ByVal addHeadings As Boolean)
+    Dim csvData As StringBuilder = New StringBuilder()
+
+    If addHeadings Then
+
+        For i As Integer = 0 To dt.Columns.Count - 1
+            csvData.Append(dt.Columns(i).ColumnName)
+
+            If i < dt.Columns.Count - 1 Then
+                csvData.Append(",")
+            End If
+        Next
+
+        csvData.AppendLine()
+    End If
+
+    For Each row As DataRow In dt.Rows
+
+        For i As Integer = 0 To dt.Columns.Count - 1
+            csvData.Append(row(i).ToString())
+
+            If i < dt.Columns.Count - 1 Then
+                csvData.Append(",")
+            End If
+        Next
+			csvData.AppendLine()
+    Next
+
+    File.WriteAllText(csvFilePath, csvData.ToString())
+End Sub]]></code>
+  </stage>
+  <stage stageid="0bf7814a-647b-4bcb-b6a6-3d24dfd5b736" name="Clean Up" type="SubSheetInfo">
+    <subsheetid>9a74af4c-280a-4e30-bdbb-21295b6256ca</subsheetid>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="0c56e2f8-68ce-48a3-97ad-81e1f076e9ce" name="new" type="Note">
+    <narrative>Initialise Page
+
+This is an optional page where you might choose to perform some initialisation tasks after your business object is loaded.
+
+The initialise action will be called automatically immediately after loading your business object.
+
+You will not be able to call this action from a business process, nor will it be called at any other time than after the creation of the object.</narrative>
+    <display x="-150" y="60" w="180" h="230" />
+  </stage>
+  <stage stageid="2271a79e-27e5-4434-b5be-146e02946317" name="new" type="Note">
+    <subsheetid>9a74af4c-280a-4e30-bdbb-21295b6256ca</subsheetid>
+    <narrative>Clean Up Page
+
+This is an optional page where you might choose to perform some finalisation (or "cleanup") tasks as your business object is closed down.
+
+The cleanup action will be called automatically immediately after closing your business object at the end of a business process.
+
+You will not be able to call this action from a business process, nor will it be called at any other time than before the disposal of the business object.</narrative>
+    <display x="-180" y="60" w="180" h="230" />
+  </stage>
+  <stage stageid="36451c72-b274-4817-a153-beb1e8a6e76a" name="Start" type="Start">
+    <subsheetid>9a74af4c-280a-4e30-bdbb-21295b6256ca</subsheetid>
+    <loginhibit />
+    <display x="30" y="-120" />
+    <onsuccess>9a8c4505-8606-4a0c-b118-09a6b9932b3b</onsuccess>
+  </stage>
+  <stage stageid="9a8c4505-8606-4a0c-b118-09a6b9932b3b" name="End" type="End">
+    <subsheetid>9a74af4c-280a-4e30-bdbb-21295b6256ca</subsheetid>
+    <loginhibit />
+    <display x="30" y="90" />
+  </stage>
+  <stage stageid="1d87c6c0-f260-46fc-99c2-ffcbf6ee0497" name="Sort Collection" type="SubSheetInfo">
+    <subsheetid>d8e5be7a-93aa-4322-99bf-00edea37bbc2</subsheetid>
+    <narrative>Sorts a collection according to the specified field.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="785a8eca-82a6-43fe-9f16-1803844d88ce" name="Start" type="Start">
+    <subsheetid>d8e5be7a-93aa-4322-99bf-00edea37bbc2</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collection will have been sorted." />
+    </postconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Collection" narrative="The collection to sort." stage="Collection In" />
+      <input type="text" name="Sort Field" narrative="The field to sort by." stage="Sort Field" />
+      <input type="flag" name="Ascending Order" narrative="True to sort in ascending order." stage="Ascending Order" />
+    </inputs>
+    <onsuccess>fbac0e5c-5410-45f1-98d7-646797398b04</onsuccess>
+  </stage>
+  <stage stageid="0c95c136-f8cf-49a1-98c0-a4c1e2334eca" name="End" type="End">
+    <subsheetid>d8e5be7a-93aa-4322-99bf-00edea37bbc2</subsheetid>
+    <loginhibit />
+    <display x="15" y="90" />
+    <outputs>
+      <output type="collection" name="Sorted Collection" narrative="The sorted collection." stage="Collection Out" />
+      <output type="flag" name="Success" narrative="True if sorting was successful." stage="Success" />
+      <output type="text" name="Message" narrative="An error message when sorting failed." stage="Message" />
+    </outputs>
+  </stage>
+  <stage stageid="e8e991cc-351b-4484-9825-b5c1f0d894d1" name="Collection Out" type="Collection">
+    <subsheetid>d8e5be7a-93aa-4322-99bf-00edea37bbc2</subsheetid>
+    <loginhibit />
+    <display x="-195" y="135" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="fbac0e5c-5410-45f1-98d7-646797398b04" name="Sort Collection" type="Code">
+    <subsheetid>d8e5be7a-93aa-4322-99bf-00edea37bbc2</subsheetid>
+    <loginhibit />
+    <display x="15" y="-15" />
+    <inputs>
+      <input type="collection" name="Collection" expr="[Collection In]" />
+      <input type="text" name="Sort Field" expr="[Sort Field]" />
+      <input type="flag" name="Ascending" expr="[Ascending Order]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Sorted Collection" stage="Collection Out" />
+      <output type="flag" name="Success" stage="Success" />
+      <output type="text" name="Message" stage="Message" />
+    </outputs>
+    <onsuccess>0c95c136-f8cf-49a1-98c0-a4c1e2334eca</onsuccess>
+    <code><![CDATA[Try
+
+ 
+
+            If Ascending Then
+
+                        Collection.DefaultView.Sort = Sort_Field & " ASC"
+
+            Else
+
+                        Collection.DefaultView.Sort = Sort_Field & " DESC"
+
+            End If
+
+ 
+
+            Sorted_Collection = Collection.DefaultView.ToTable
+
+ 
+
+            Success = True
+
+            Message = ""
+
+ 
+
+Catch e As Exception
+
+            Success = False
+
+            Message = e.Message
+
+End Try]]></code>
+  </stage>
+  <stage stageid="6f6e54f2-77b8-4f24-ae2f-46a2143d9815" name="Ascending Order" type="Data">
+    <subsheetid>d8e5be7a-93aa-4322-99bf-00edea37bbc2</subsheetid>
+    <display x="-195" y="60" w="150" h="30" />
+    <datatype>flag</datatype>
+    <initialvalue>True</initialvalue>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="2fb49db2-332e-4bdb-a52e-53546b2a25e8" name="Message" type="Data">
+    <subsheetid>d8e5be7a-93aa-4322-99bf-00edea37bbc2</subsheetid>
+    <display x="-195" y="210" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="8170a296-23ef-4f36-88ea-12b93bc41486" name="Success" type="Data">
+    <subsheetid>d8e5be7a-93aa-4322-99bf-00edea37bbc2</subsheetid>
+    <display x="-195" y="180" w="150" h="30" />
+    <datatype>flag</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="d46e7f41-9e7a-4a0a-b1be-d440d57e4020" name="Sort Field" type="Data">
+    <subsheetid>d8e5be7a-93aa-4322-99bf-00edea37bbc2</subsheetid>
+    <display x="-180" y="30" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="adfd612b-98f8-4902-8526-2bda2e03f814" name="Get Collection Fields" type="SubSheetInfo">
+    <subsheetid>e277cc2b-72b8-47e9-8a1b-e8530eb19a09</subsheetid>
+    <narrative>Creates a collection with a Name and Datatype field which is then populated using the incoming collections field names and data types.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="73b6f098-584e-441e-8b2d-e231b971bdb2" name="Start" type="Start">
+    <subsheetid>e277cc2b-72b8-47e9-8a1b-e8530eb19a09</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="A new collection will be created containing the collections field data." />
+    </postconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Input Collection" narrative="The collection to get the fields from." stage="Input Collection" />
+    </inputs>
+    <onsuccess>39b91b36-f03d-4fa7-9bf2-47470e1d9703</onsuccess>
+  </stage>
+  <stage stageid="e2308e18-4f98-4f62-9ff6-a4c52222c3aa" name="End" type="End">
+    <subsheetid>e277cc2b-72b8-47e9-8a1b-e8530eb19a09</subsheetid>
+    <loginhibit />
+    <display x="15" y="90" />
+    <outputs>
+      <output type="collection" name="Collection Fields" narrative="A collection containing the fields." stage="Fields" />
+    </outputs>
+  </stage>
+  <stage stageid="39b91b36-f03d-4fa7-9bf2-47470e1d9703" name="Get Collection Fields" type="Code">
+    <subsheetid>e277cc2b-72b8-47e9-8a1b-e8530eb19a09</subsheetid>
+    <loginhibit />
+    <display x="15" y="-15" w="90" h="30" />
+    <inputs>
+      <input type="collection" name="Input Collection" expr="[Input Collection]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Fields" stage="Fields" />
+    </outputs>
+    <onsuccess>e2308e18-4f98-4f62-9ff6-a4c52222c3aa</onsuccess>
+    <code><![CDATA[Fields = New DataTable()
+Fields.Columns.Add("Field Name", GetType(String))
+Fields.Columns.Add("Data Type", GetType(String))
+
+For Each Column As DataColumn In Input_Collection.Columns
+   Dim DataType As String = GetBluePrismDataType(Column.DataType)
+   Fields.Rows.Add(New Object() {Column.ColumnName, DataType})
+Next
+]]></code>
+  </stage>
+  <stage stageid="a16b1987-a205-4bf6-8a33-ed2167c201ff" name="Fields" type="Collection">
+    <subsheetid>e277cc2b-72b8-47e9-8a1b-e8530eb19a09</subsheetid>
+    <display x="135" y="90" w="120" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+    <collectioninfo>
+      <field name="Field Name" type="text" />
+      <field name="Data Type" type="text" />
+    </collectioninfo>
+  </stage>
+  <stage stageid="d402363f-8a48-4418-b0d9-2bef5037bc67" name="Input Collection" type="Collection">
+    <subsheetid>e277cc2b-72b8-47e9-8a1b-e8530eb19a09</subsheetid>
+    <display x="90" y="-105" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="0e6f80ff-bfb9-4d47-8e5a-5299a5873467" name="Read Collection Field" type="SubSheetInfo">
+    <subsheetid>198ce3c6-ecbf-4203-a609-b15429defe0e</subsheetid>
+    <narrative>Reads a field with a given name and at the specified row from the collection.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="9d660720-4bed-4ea8-8ad6-56fa0b19cfb4" name="Start" type="Start">
+    <subsheetid>198ce3c6-ecbf-4203-a609-b15429defe0e</subsheetid>
+    <loginhibit />
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="number" name="Row Index" narrative="The row index within the collection to read from. The index is from 0 to N-1 (where N is the total number of rows in the collection)." stage="Row Index" />
+      <input type="collection" name="Collection" narrative="The collection to read." stage="Collection" />
+      <input type="text" name="Field Name" narrative="The field within the collection to read." stage="Field Name" />
+    </inputs>
+    <onsuccess>c4bf6e49-1d07-4d60-8b44-fd35a2009654</onsuccess>
+  </stage>
+  <stage stageid="2a6d86a8-8937-4d4b-9da4-32813d06a0bf" name="End" type="End">
+    <subsheetid>198ce3c6-ecbf-4203-a609-b15429defe0e</subsheetid>
+    <loginhibit />
+    <display x="15" y="90" />
+    <outputs>
+      <output type="text" name="Value Read" narrative="The value of the requested field as text." stage="Value Read" />
+    </outputs>
+  </stage>
+  <stage stageid="d43ae257-4559-4fa8-9b0b-1f49bd80a301" name="Row Index" type="Data">
+    <subsheetid>198ce3c6-ecbf-4203-a609-b15429defe0e</subsheetid>
+    <display x="90" y="-105" />
+    <datatype>number</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="bd207bc4-8fe0-4f01-94e6-b289cdb60e38" name="Collection" type="Collection">
+    <subsheetid>198ce3c6-ecbf-4203-a609-b15429defe0e</subsheetid>
+    <display x="225" y="-105" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="745ce225-df49-4b02-b12c-e9e2068ca6aa" name="Field Name" type="Data">
+    <subsheetid>198ce3c6-ecbf-4203-a609-b15429defe0e</subsheetid>
+    <display x="150" y="-105" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="c4bf6e49-1d07-4d60-8b44-fd35a2009654" name="Read Field" type="Code">
+    <subsheetid>198ce3c6-ecbf-4203-a609-b15429defe0e</subsheetid>
+    <loginhibit />
+    <display x="15" y="0" w="90" h="30" />
+    <inputs>
+      <input type="collection" name="Coll" expr="[Collection]" />
+      <input type="text" name="FieldName" expr="[Field Name]" />
+      <input type="number" name="RowIndex" expr="[Row Index]" />
+    </inputs>
+    <outputs>
+      <output type="text" name="Value Read" stage="Value Read" />
+    </outputs>
+    <onsuccess>2a6d86a8-8937-4d4b-9da4-32813d06a0bf</onsuccess>
+    <code><![CDATA[
+If RowIndex < 0 OrElse Coll.Rows.Count <= RowIndex Then
+	Throw New ApplicationException("The supplied row index falls outside of the valid range.")
+End If
+
+If Not Coll.Columns.Contains(FieldName) Then
+   Throw New ApplicationException("The collection does not contain a field with the name '" & FieldName & "'")
+End If
+
+Value_Read = GetStringValue(Coll.Rows(RowIndex), FieldName)]]></code>
+  </stage>
+  <stage stageid="43376e9f-73fa-4757-affa-330da5d1e6b1" name="Value Read" type="Data">
+    <subsheetid>198ce3c6-ecbf-4203-a609-b15429defe0e</subsheetid>
+    <display x="105" y="0" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="ee1c02ab-bf62-48df-b0de-79c4f254d5df" name="Set Collection Field" type="SubSheetInfo">
+    <subsheetid>05992810-1be4-4455-84e8-10579308ab87</subsheetid>
+    <narrative>Updates a single value in a collection by the given field name and row index.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="4fe6d4f3-e989-4636-b373-9a32fc41d450" name="Start" type="Start">
+    <subsheetid>05992810-1be4-4455-84e8-10579308ab87</subsheetid>
+    <loginhibit />
+    <display x="120" y="-105" />
+    <inputs>
+      <input type="number" name="Row Index" narrative="The index of the row in which to set the value. The index is from 0 to N-1 (where N is the total number of rows in the collection)." stage="Row Index" />
+      <input type="collection" name="Collection" narrative="The collection in which to set the value." stage="Collection" />
+      <input type="text" name="Field Name" narrative="The name of the field in which to set the value" stage="Field Name" />
+      <input type="text" name="New Value" narrative="The value as text to set." stage="New Value" />
+    </inputs>
+    <onsuccess>c7b9c9ed-85d9-4449-a150-5182797dc6f3</onsuccess>
+  </stage>
+  <stage stageid="2be33601-0c29-45c7-bc7e-1a5a8d1c19b2" name="End" type="End">
+    <subsheetid>05992810-1be4-4455-84e8-10579308ab87</subsheetid>
+    <loginhibit />
+    <display x="120" y="90" />
+    <outputs>
+      <output type="collection" name="Updated Collection" narrative="The collection which now has the value set." stage="Updated Collection" />
+    </outputs>
+  </stage>
+  <stage stageid="e2d67695-6463-4e93-b5cd-e3b9805bb0cf" name="Row Index" type="Data">
+    <subsheetid>05992810-1be4-4455-84e8-10579308ab87</subsheetid>
+    <display x="195" y="-105" />
+    <datatype>number</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="26046a1c-efef-4b6b-baa7-1880ae887576" name="Collection" type="Collection">
+    <subsheetid>05992810-1be4-4455-84e8-10579308ab87</subsheetid>
+    <display x="330" y="-105" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="9459f512-1cb5-4884-b551-4dcace90d77f" name="Field Name" type="Data">
+    <subsheetid>05992810-1be4-4455-84e8-10579308ab87</subsheetid>
+    <display x="255" y="-105" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="c7b9c9ed-85d9-4449-a150-5182797dc6f3" name="Set Field" type="Code">
+    <subsheetid>05992810-1be4-4455-84e8-10579308ab87</subsheetid>
+    <loginhibit />
+    <display x="120" y="0" w="90" h="30" />
+    <inputs>
+      <input type="collection" name="Coll" expr="[Collection]" />
+      <input type="text" name="FieldName" expr="[Field Name]" />
+      <input type="number" name="RowIndex" expr="[Row Index]" />
+      <input type="text" name="New Value" expr="[New Value]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Updated Collection" stage="Updated Collection" />
+    </outputs>
+    <onsuccess>2be33601-0c29-45c7-bc7e-1a5a8d1c19b2</onsuccess>
+    <code><![CDATA[
+If RowIndex < 0 OrElse Coll.Rows.Count <= RowIndex Then
+	Throw New ApplicationException("The supplied row index falls outside of the valid range.")
+End If
+
+If Not Coll.Columns.Contains(FieldName) Then
+   Throw New ApplicationException("The collection does not contain a field with the name '" & FieldName & "'")
+End If
+
+Coll.Rows(RowIndex)(FieldName) = New_Value
+
+Updated_Collection = Coll]]></code>
+  </stage>
+  <stage stageid="2c198fde-25d6-4009-a434-256fd08044b1" name="New Value" type="Data">
+    <subsheetid>05992810-1be4-4455-84e8-10579308ab87</subsheetid>
+    <display x="390" y="-105" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="532e300d-c8f5-4049-9b1e-490a9a85884c" name="Updated Collection" type="Collection">
+    <subsheetid>05992810-1be4-4455-84e8-10579308ab87</subsheetid>
+    <display x="195" y="90" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="6164801d-51c0-428e-976d-23828f70767d" name="Collection Contains Field" type="SubSheetInfo">
+    <subsheetid>7a9aa259-fe07-4035-8411-23737559c975</subsheetid>
+    <narrative>Tests a collection to see whether it contains a specific field.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="1ed16edd-07a7-459b-abc4-c29fc16117eb" name="Start" type="Start">
+    <subsheetid>7a9aa259-fe07-4035-8411-23737559c975</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="Whether the collection contains the field will have been determined." />
+    </postconditions>
+    <display x="15" y="-120" />
+    <inputs>
+      <input type="collection" name="Input Collection" narrative="The collection to check." stage="Input Collection" />
+      <input type="text" name="Field" narrative="The field to see if the collection has." stage="Field" />
+    </inputs>
+    <onsuccess>a76de6a5-ad0f-42b0-8cea-1cc827be1d45</onsuccess>
+  </stage>
+  <stage stageid="15854162-6197-477a-873b-73c9b453d0d3" name="End" type="End">
+    <subsheetid>7a9aa259-fe07-4035-8411-23737559c975</subsheetid>
+    <loginhibit />
+    <display x="15" y="240" />
+    <outputs>
+      <output type="flag" name="Success" narrative="True if the collection contains the field." stage="Success" />
+      <output type="text" name="Error Message" narrative="Unused" stage="Error Message" />
+    </outputs>
+  </stage>
+  <stage stageid="a76de6a5-ad0f-42b0-8cea-1cc827be1d45" name="Get Collection Fields" type="SubSheet">
+    <subsheetid>7a9aa259-fe07-4035-8411-23737559c975</subsheetid>
+    <loginhibit />
+    <display x="15" y="-45" w="90" h="60" />
+    <inputs>
+      <input type="collection" name="Input Collection" expr="[Input Collection]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Collection Fields" stage="Field Names" />
+    </outputs>
+    <onsuccess>73ed00ea-d816-4343-8fe2-09924b85491f</onsuccess>
+    <processid>e277cc2b-72b8-47e9-8a1b-e8530eb19a09</processid>
+  </stage>
+  <stage stageid="09779833-6862-44cb-a355-04cb35350208" name="Input Collection" type="Collection">
+    <subsheetid>7a9aa259-fe07-4035-8411-23737559c975</subsheetid>
+    <display x="150" y="-120" w="120" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="1343f537-262d-4113-8953-31173a54fdf9" name="Field" type="Data">
+    <subsheetid>7a9aa259-fe07-4035-8411-23737559c975</subsheetid>
+    <display x="285" y="-120" w="120" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="73ed00ea-d816-4343-8fe2-09924b85491f" name="Loop Start Collection Fields" type="LoopStart">
+    <subsheetid>7a9aa259-fe07-4035-8411-23737559c975</subsheetid>
+    <loginhibit />
+    <display x="15" y="30" w="120" h="30" />
+    <onsuccess>11a28026-8164-4066-97bb-6f7cc6a3f6de</onsuccess>
+    <groupid>53f9e518-2d0e-4a03-a2ac-5ffa45e0ab8a</groupid>
+    <looptype>ForEach</looptype>
+    <loopdata>Field Names</loopdata>
+  </stage>
+  <stage stageid="c2b21dab-e784-43a7-b09a-19e8bf2d5672" name="Loop End Collection Fields" type="LoopEnd">
+    <subsheetid>7a9aa259-fe07-4035-8411-23737559c975</subsheetid>
+    <loginhibit />
+    <display x="15" y="180" w="120" h="30" />
+    <onsuccess>15854162-6197-477a-873b-73c9b453d0d3</onsuccess>
+    <groupid>53f9e518-2d0e-4a03-a2ac-5ffa45e0ab8a</groupid>
+  </stage>
+  <stage stageid="04208d31-4ee8-45a6-af69-2dd8140cc92a" name="Field Names" type="Collection">
+    <subsheetid>7a9aa259-fe07-4035-8411-23737559c975</subsheetid>
+    <display x="150" y="-45" w="120" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+    <collectioninfo>
+      <field name="Field Name" type="text" />
+      <field name="Data Type" type="text" />
+    </collectioninfo>
+  </stage>
+  <stage stageid="d010b7fb-5d33-4636-bea8-2195b0f22738" name="Success" type="Data">
+    <subsheetid>7a9aa259-fe07-4035-8411-23737559c975</subsheetid>
+    <display x="135" y="240" w="120" h="30" />
+    <datatype>flag</datatype>
+    <initialvalue>False</initialvalue>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="ac2d5cc5-ddee-4785-bf6a-410b0e478722" name="Error Message" type="Data">
+    <subsheetid>7a9aa259-fe07-4035-8411-23737559c975</subsheetid>
+    <display x="240" y="240" w="120" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="11a28026-8164-4066-97bb-6f7cc6a3f6de" name="Match?" type="Decision">
+    <subsheetid>7a9aa259-fe07-4035-8411-23737559c975</subsheetid>
+    <loginhibit />
+    <display x="15" y="105" w="60" h="60" />
+    <decision expression="[Field Names.Field Name] = Trim([Field])" />
+    <ontrue>95c39a4f-2e55-45cb-a622-5cdec6b2d75b</ontrue>
+    <onfalse>c2b21dab-e784-43a7-b09a-19e8bf2d5672</onfalse>
+  </stage>
+  <stage stageid="6bd78de4-b21e-4741-af66-a88c72496d0f" name="anchor2" type="Anchor">
+    <subsheetid>7a9aa259-fe07-4035-8411-23737559c975</subsheetid>
+    <loginhibit />
+    <display x="-120" y="240" w="10" h="10" />
+    <onsuccess>15854162-6197-477a-873b-73c9b453d0d3</onsuccess>
+  </stage>
+  <stage stageid="95c39a4f-2e55-45cb-a622-5cdec6b2d75b" name="Set Success" type="Calculation">
+    <subsheetid>7a9aa259-fe07-4035-8411-23737559c975</subsheetid>
+    <loginhibit />
+    <display x="-120" y="105" w="90" h="60" />
+    <onsuccess>6bd78de4-b21e-4741-af66-a88c72496d0f</onsuccess>
+    <calculation expression="True" stage="Success" />
+  </stage>
+  <stage stageid="e6748536-1050-482b-86e6-cd57cce3bc6d" name="Copy Rows" type="SubSheetInfo">
+    <subsheetid>cdf2a7f1-a351-441a-8d36-bc92af66650a</subsheetid>
+    <narrative>Copies the rows of the given collection into a new collection.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="46e0886c-ea0a-4778-ad1e-9b7878e04a43" name="Append Rows to Collection" type="SubSheetInfo">
+    <subsheetid>51f694a8-5305-4a38-9b41-a98998f2f7ca</subsheetid>
+    <narrative>Combines two collections into one, provided they share the same set of fields</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="d3ec306e-f0c9-4bbc-a4da-a38b21969f5c" name="Reverse Collection" type="SubSheetInfo">
+    <subsheetid>ffab882f-007c-48a5-8f84-8f5f1bfd4d6a</subsheetid>
+    <narrative>Reverses the order of the rows in the collection.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="98b20289-3b73-4776-9912-d679291e392e" name="Reverse Collection" type="Code">
+    <subsheetid>ffab882f-007c-48a5-8f84-8f5f1bfd4d6a</subsheetid>
+    <loginhibit />
+    <display x="15" y="-30" />
+    <inputs>
+      <input type="collection" name="CollectionIn" expr="[Collection In]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="CollectionOut" stage="Collection Out" />
+    </outputs>
+    <onsuccess>661b2b7b-7862-4db1-b71c-747437b534da</onsuccess>
+    <code><![CDATA[If CollectionIn.Columns.Count = 0 Then Throw new ApplicationException("Zero columns in collection")
+
+CollectionOut = CollectionIn.Clone()
+
+For I As integer = CollectionIn.Rows.Count - 1 To 0 Step -1
+	Dim Objs(CollectionIn.Columns.Count - 1) As Object
+	For J As integer = 0 to CollectionIn.Columns.Count - 1
+		Objs(J) = collectionIn.Rows(I)(J)
+	Next
+	CollectionOut.Rows.Add(Objs)
+Next]]></code>
+  </stage>
+  <stage stageid="48fd9b49-12a4-490d-8741-7cb0e6de6ac2" name="Collection In" type="Collection">
+    <subsheetid>ffab882f-007c-48a5-8f84-8f5f1bfd4d6a</subsheetid>
+    <display x="135" y="-105" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+    <initialvalue>
+      <row>
+        <field name="CIS" type="number" value="1" />
+        <field name="Sort Code" type="text" value="123456" />
+        <field name="Account Number" type="text" value="12345678" />
+        <field name="Balance" type="number" value="1" />
+        <field name="Cancelled Items" type="text" value="" />
+      </row>
+      <row>
+        <field name="CIS" type="number" value="3" />
+        <field name="Sort Code" type="text" value="223456" />
+        <field name="Account Number" type="text" value="22345678" />
+        <field name="Balance" type="number" value="2" />
+        <field name="Cancelled Items" type="text" value="" />
+      </row>
+      <row>
+        <field name="CIS" type="number" value="2" />
+        <field name="Sort Code" type="text" value="323456" />
+        <field name="Account Number" type="text" value="32345678" />
+        <field name="Balance" type="number" value="3" />
+        <field name="Cancelled Items" type="text" value="" />
+      </row>
+      <row>
+        <field name="CIS" type="number" value="5" />
+        <field name="Sort Code" type="text" value="423456" />
+        <field name="Account Number" type="text" value="42345678" />
+        <field name="Balance" type="number" value="4" />
+        <field name="Cancelled Items" type="text" value="" />
+      </row>
+      <row>
+        <field name="CIS" type="number" value="6" />
+        <field name="Sort Code" type="text" value="523456" />
+        <field name="Account Number" type="text" value="52345678" />
+        <field name="Balance" type="number" value="5" />
+        <field name="Cancelled Items" type="text" value="" />
+      </row>
+      <row>
+        <field name="CIS" type="number" value="4" />
+        <field name="Sort Code" type="text" value="623456" />
+        <field name="Account Number" type="text" value="62345678" />
+        <field name="Balance" type="number" value="6" />
+        <field name="Cancelled Items" type="text" value="" />
+      </row>
+    </initialvalue>
+  </stage>
+  <stage stageid="862d18c4-1bd0-4542-b3e2-8baf8a977af8" name="Start" type="Start">
+    <subsheetid>ffab882f-007c-48a5-8f84-8f5f1bfd4d6a</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collection will have been sorted." />
+    </postconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Collection" narrative="The collection to be reversed." stage="Collection In" />
+    </inputs>
+    <onsuccess>98b20289-3b73-4776-9912-d679291e392e</onsuccess>
+  </stage>
+  <stage stageid="661b2b7b-7862-4db1-b71c-747437b534da" name="End" type="End">
+    <subsheetid>ffab882f-007c-48a5-8f84-8f5f1bfd4d6a</subsheetid>
+    <loginhibit />
+    <display x="15" y="60" />
+    <outputs>
+      <output type="collection" name="Reversed Collection" narrative="The reversed collection." stage="Collection Out" />
+    </outputs>
+  </stage>
+  <stage stageid="1965b145-70ec-4ee0-a936-3c32f57e587e" name="Collection Out" type="Collection">
+    <subsheetid>ffab882f-007c-48a5-8f84-8f5f1bfd4d6a</subsheetid>
+    <loginhibit />
+    <display x="150" y="45" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="ca7dbfca-b97f-43d4-9601-6fa4d4eacc4b" name="Rename Collection Fields" type="SubSheetInfo">
+    <subsheetid>bcde64eb-f856-4440-a6c0-d83f40f0cf4b</subsheetid>
+    <narrative>Renames the fields of a collection based on the fields of a given name mapping collection.</narrative>
+    <display x="-60" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="be8b9084-5d06-424d-8086-89d565e39887" name="Start" type="Start">
+    <subsheetid>bcde64eb-f856-4440-a6c0-d83f40f0cf4b</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collection fields will have been renamed." />
+    </postconditions>
+    <display x="105" y="-105" />
+    <inputs>
+      <input type="collection" name="Main Collection" narrative="The main collection, whose headers are to be modified" stage="Main Collection" />
+      <input type="collection" name="New Headers" narrative="A collection of new headers. This must be a one-row collection matching the fields of the first. The first row will contain the new field names under the corresponding field names" stage="New Headers" />
+    </inputs>
+    <onsuccess>2dfc16b3-737a-4ff7-9843-9e66c78b23d4</onsuccess>
+  </stage>
+  <stage stageid="7eadbd5a-bba1-4128-ac2a-9bbe81d6ec77" name="End" type="End">
+    <subsheetid>bcde64eb-f856-4440-a6c0-d83f40f0cf4b</subsheetid>
+    <loginhibit />
+    <display x="105" y="120" />
+    <outputs>
+      <output type="collection" name="Amended Collection" stage="Amended Collection" />
+      <output type="flag" name="Success" stage="Success" />
+      <output type="text" name="Error Message" stage="Error Message" />
+    </outputs>
+  </stage>
+  <stage stageid="5c64c0b3-6819-410a-be71-587501d42504" name="New Headers" type="Collection">
+    <subsheetid>bcde64eb-f856-4440-a6c0-d83f40f0cf4b</subsheetid>
+    <display x="375" y="-90" w="150" h="90" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+    <initialvalue>
+      <row>
+        <field name="Column 1" type="text" value="Name" />
+        <field name="Column 2" type="text" value="Age" />
+      </row>
+    </initialvalue>
+  </stage>
+  <stage stageid="2dfc16b3-737a-4ff7-9843-9e66c78b23d4" name="Rename Headers" type="Code">
+    <subsheetid>bcde64eb-f856-4440-a6c0-d83f40f0cf4b</subsheetid>
+    <loginhibit />
+    <display x="105" y="0" w="150" h="60" />
+    <inputs>
+      <input type="collection" name="Main Collection" expr="[Main Collection]" />
+      <input type="collection" name="New Headers" expr="[New Headers]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Amended Collection" stage="Amended Collection" />
+      <output type="flag" name="Success" stage="Success" />
+      <output type="text" name="Error Message" stage="Error Message" />
+    </outputs>
+    <onsuccess>7eadbd5a-bba1-4128-ac2a-9bbe81d6ec77</onsuccess>
+    <code><![CDATA[If Main_Collection IsNot Nothing AndAlso New_Headers IsNot Nothing Then
+	If Main_Collection.Columns.Count = New_Headers.Columns.count Then
+		For Each Col1 As DataColumn In Main_Collection.Columns
+			If Not New_Headers.Columns.Contains(Col1.ColumnName) Then
+				Success = False
+				Error_Message = "New Headers collection does not contain the field '" & Col1.ColumnName & "' found in the Main Collection"
+				Exit Sub
+			End If
+		Next
+
+		'We can now assume that fields match
+		'and start copying rows
+		For Each C As DataColumn In Main_Collection.Columns
+			Dim NewName As String = Cstr(New_Headers.Rows(0)(C.ColumnName))
+			If String.IsNullOrEmpty(NewName) Then
+				Throw New ApplicationException("Blank field names are not acceptable")
+			Else
+				C.ColumnName = Trim(NewName)
+			End If
+		Next
+
+		Main_Collection.AcceptChanges()
+		Amended_Collection = Main_Collection
+		Success = True
+	Else
+		Success = False
+		Error_Message = "Collection field definitions do not match - the number of columns in each is different."
+	End If
+Else
+	Success = False
+	Error_Message = "Neither Collection may be null"
+End If]]></code>
+  </stage>
+  <stage stageid="73981b01-1a93-4c6e-a35f-fa6c194f63ec" name="Success" type="Data">
+    <subsheetid>bcde64eb-f856-4440-a6c0-d83f40f0cf4b</subsheetid>
+    <display x="240" y="120" />
+    <datatype>flag</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="73dcc958-035e-40f7-ab25-a8f22d06bf4f" name="Error Message" type="Data">
+    <subsheetid>bcde64eb-f856-4440-a6c0-d83f40f0cf4b</subsheetid>
+    <display x="180" y="120" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="0af7f983-37fd-47c4-971a-5c0ca70b60c4" name="Main Collection" type="Collection">
+    <subsheetid>bcde64eb-f856-4440-a6c0-d83f40f0cf4b</subsheetid>
+    <display x="210" y="-90" w="150" h="90" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+    <initialvalue>
+      <row>
+        <field name="Column 1" type="text" value="asdf" />
+        <field name="Column 2" type="text" value="34" />
+      </row>
+    </initialvalue>
+  </stage>
+  <stage stageid="e86fffbd-3537-4ed9-9e32-20c8f55b6cb6" name="Amended Collection" type="Collection">
+    <subsheetid>bcde64eb-f856-4440-a6c0-d83f40f0cf4b</subsheetid>
+    <display x="360" y="120" w="150" h="90" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="6b6aa002-ceed-4ea9-ab37-e3cc338e349c" name="Collection Contains Value" type="SubSheetInfo">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <narrative>Searches for the existence of a value or a regular expression in a specified column in a collection. This will return true and, if a regular expression was provided, the groups defined in that regex for the first matched value it finds in the collection.</narrative>
+    <display x="-255" y="-105" w="270" h="90" />
+  </stage>
+  <stage stageid="29ece439-17ef-4972-aa97-b373f2d68616" name="Start" type="Start">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="A collection exists with the specified column name which may or may not contain a particular value" />
+      <condition narrative="The collection being searched has no date or time columns (A code stage restriction)" />
+      <condition narrative="" />
+      <condition narrative="" />
+    </preconditions>
+    <postconditions>
+      <condition narrative="No change" />
+    </postconditions>
+    <narrative>Note that if neither 'Exact Value' nor 'Regex' are supplied, this will always return FALSE / ie. not found. If a match is found, groups will return all of the groups specified in the regular expression when applied to the value found.</narrative>
+    <display x="-30" y="-135" />
+    <inputs>
+      <input type="collection" name="Collection" narrative="Required : The collection to search" stage="Collection" />
+      <input type="text" name="Column Name" narrative="Required : The name of the column to search" stage="Column Name" />
+      <input type="text" name="Exact Value" narrative="Optional : The exact value to search for - this is case insensitive" stage="Exact Value" />
+      <input type="text" name="Regex" narrative="Optional : The regular expression to search for - this is case sensitive unless specified otherwise in the regular expression using &quot;(?i)&quot;" stage="Regex" />
+    </inputs>
+    <onsuccess>aa1a4d89-5218-4bbe-a743-0d3484968cb6</onsuccess>
+  </stage>
+  <stage stageid="ebc6a036-6449-4acd-ac3c-bf1c0cdb652a" name="End" type="End">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <loginhibit />
+    <display x="-30" y="90" />
+    <outputs>
+      <output type="flag" name="Contains Search Term" narrative="Flag indicating if the collection found the given search term or not" stage="Contains Search Term" />
+      <output type="collection" name="Groups" narrative="The groups defined in the regular expression when it is applied to the found term" stage="Groups" />
+    </outputs>
+  </stage>
+  <stage stageid="63287049-53dd-4e10-b6fa-809c255a8f63" name="Collection" type="Collection">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <display x="-330" y="0" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="14def48d-230f-4041-99c7-0af7c0dd5e0f" name="Column Name" type="Data">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <display x="-330" y="30" w="120" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="965f0a82-f3be-4fcf-b43d-33b5a31b45d1" name="Exact Value" type="Data">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <display x="-330" y="60" w="120" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="f2df8ab8-a7dc-408c-962c-efe2dd44d403" name="Regex" type="Data">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <display x="-330" y="90" w="120" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="6c87975d-a017-4b35-923d-19816f41b5b3" name="Contains Search Term" type="Data">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <display x="-180" y="0" w="120" h="30" />
+    <datatype>flag</datatype>
+    <initialvalue>False</initialvalue>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="f7c0f14b-16b5-4e13-b3e9-71fd7bf59990" name="Groups" type="Collection">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <display x="-180" y="45" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="ca62b1b4-f73d-422a-b21a-ac4cfcc71041" name="Note2" type="Note">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <loginhibit />
+    <narrative>Inputs</narrative>
+    <display x="-330" y="-30" w="120" h="30" />
+  </stage>
+  <stage stageid="86ee4f07-c603-44e1-b307-e53cd7d9eff4" name="Note2" type="Note">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <loginhibit />
+    <narrative>Outputs</narrative>
+    <display x="-180" y="-30" w="120" h="30" />
+  </stage>
+  <stage stageid="a408f364-ecb4-4548-9556-57f4a26f3ada" name="Both Search Strings Empty?" type="Decision">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <loginhibit />
+    <display x="-30" y="-30" w="120" h="30" />
+    <decision expression="Len([Exact Value]) = 0 AND Len ([Regex]) = 0" />
+    <ontrue>612f50dc-0fcc-4765-800b-e65e5bf3861f</ontrue>
+    <onfalse>7cdc88ed-891c-4f88-a51d-2da37bd56d4d</onfalse>
+  </stage>
+  <stage stageid="aa1a4d89-5218-4bbe-a743-0d3484968cb6" name="Trim Search Strings" type="MultipleCalculation">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <loginhibit />
+    <display x="-30" y="-75" w="120" h="30" />
+    <onsuccess>a408f364-ecb4-4548-9556-57f4a26f3ada</onsuccess>
+    <steps>
+      <calculation expression="Trim([Exact Value])" stage="Exact Value" />
+      <calculation expression="Trim([Regex])" stage="Regex" />
+    </steps>
+  </stage>
+  <stage stageid="612f50dc-0fcc-4765-800b-e65e5bf3861f" name="anchor3" type="Anchor">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <loginhibit />
+    <display x="75" y="-30" w="10" h="10" />
+    <onsuccess>7e121ceb-3f72-4655-8e21-38d3e5be7cec</onsuccess>
+  </stage>
+  <stage stageid="7e121ceb-3f72-4655-8e21-38d3e5be7cec" name="anchor4" type="Anchor">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <loginhibit />
+    <display x="75" y="90" w="10" h="10" />
+    <onsuccess>ebc6a036-6449-4acd-ac3c-bf1c0cdb652a</onsuccess>
+  </stage>
+  <stage stageid="7cdc88ed-891c-4f88-a51d-2da37bd56d4d" name="Search Collection" type="Code">
+    <subsheetid>5b8e4ed2-8ba9-4b0f-966e-a0e392f44e7a</subsheetid>
+    <loginhibit />
+    <display x="-30" y="30" w="120" h="30" />
+    <inputs>
+      <input type="collection" name="coll" expr="[Collection]" />
+      <input type="text" name="colname" expr="[Column Name]" />
+      <input type="text" name="exactVal" expr="[Exact Value]" />
+      <input type="text" name="regexVal" expr="[Regex]" />
+    </inputs>
+    <outputs>
+      <output type="flag" name="found" stage="Contains Search Term" />
+      <output type="collection" name="groups" stage="Groups" />
+    </outputs>
+    <onsuccess>ebc6a036-6449-4acd-ac3c-bf1c0cdb652a</onsuccess>
+    <code><![CDATA[If Not Coll.Columns.Contains(colname) Then
+  Throw New ApplicationException(String.Format( _
+   "The collection does not contain a field " & _
+   "with the name '{0}'", colname))
+End If
+
+Dim rx as Regex
+If Not String.IsNullOrEmpty(exactVal) Then
+  rx = New Regex("^" & Regex.Escape(exactVal) & "$", RegexOptions.IgnoreCase)
+Else
+  ' If ignore case is required it can be inlined using "(?i)..rest of search"
+  rx = New Regex(regexVal)
+End If
+
+' Initialise output params
+found = False
+groups = New DataTable()
+groups.Columns.Add("CollectionRowID", GetType(Decimal))
+groups.Columns.Add("Group", GetType(String))
+
+Dim groupRow as DataRow
+For Each row as DataRow in coll.Rows
+  Dim val as String = CStr(row(colname))
+  Dim m as Match = rx.Match(val)
+  If m.Success Then
+    found = True
+    For i as Integer = 0 to m.Groups.Count-1
+		groupRow = groups.NewRow
+		groupRow(0) = coll.Rows.IndexOf(row)
+		groupRow(1) = m.Groups(i).Value
+		groups.Rows.Add(groupRow)
+    Next
+    'Return ' removed to allow multiple matches to be observed.
+  End If
+
+Next
+
+]]></code>
+  </stage>
+  <stage stageid="365e481a-8567-48cf-babf-40039e151df7" name="Delete Column" type="SubSheetInfo">
+    <subsheetid>df662579-558c-4cc9-88df-8c680b67b41d</subsheetid>
+    <narrative>Deletes a field from a collection.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="4421e0d9-6181-4872-aa85-8ad310427d30" name="Start" type="Start">
+    <subsheetid>df662579-558c-4cc9-88df-8c680b67b41d</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collections field will have been removed." />
+    </postconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Input Collection" narrative="The collection from which you want to delete a column from" stage="Input Collection" />
+      <input type="text" name="Column Name" narrative="The column number to delete" stage="Column Name" />
+    </inputs>
+    <onsuccess>000581d7-9978-4295-826f-a20472874878</onsuccess>
+  </stage>
+  <stage stageid="d0f8de6d-03ac-4a92-8658-0998d1849bdf" name="End" type="End">
+    <subsheetid>df662579-558c-4cc9-88df-8c680b67b41d</subsheetid>
+    <loginhibit />
+    <display x="15" y="90" />
+    <outputs>
+      <output type="collection" name="Output Collection" narrative="A collection with a column removed" stage="Output Collection" />
+      <output type="flag" name="Success" stage="Success" />
+      <output type="text" name="Error Message" stage="Message" />
+    </outputs>
+  </stage>
+  <stage stageid="000581d7-9978-4295-826f-a20472874878" name="Remove Column" type="Code">
+    <subsheetid>df662579-558c-4cc9-88df-8c680b67b41d</subsheetid>
+    <loginhibit />
+    <display x="15" y="-15" w="150" h="30" />
+    <inputs>
+      <input type="collection" name="BP Collection In" expr="[Input Collection]" />
+      <input type="text" name="Column Name" expr="[Column Name]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="BP Collection Out" stage="Output Collection" />
+      <output type="text" name="Error Message" stage="Message" />
+      <output type="flag" name="Success" stage="Success" />
+    </outputs>
+    <onsuccess>d0f8de6d-03ac-4a92-8658-0998d1849bdf</onsuccess>
+    <code><![CDATA[Try
+	BP_Collection_Out = BP_Collection_In
+	BP_Collection_Out.Columns.Remove(Column_Name)
+	Success = True
+Catch e as Exception
+	Error_Message = e.ToString()
+	Success = False
+End Try
+]]></code>
+  </stage>
+  <stage stageid="140b41b2-3138-4b5d-b5f3-4bddff6db48f" name="Input Collection" type="Collection">
+    <subsheetid>df662579-558c-4cc9-88df-8c680b67b41d</subsheetid>
+    <display x="120" y="-105" w="90" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="1ae60809-2da8-468d-8d88-e605b185530b" name="Output Collection" type="Collection">
+    <subsheetid>df662579-558c-4cc9-88df-8c680b67b41d</subsheetid>
+    <display x="120" y="90" w="90" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="787dae64-5d33-4783-84ff-db2365c12e31" name="Message" type="Data">
+    <subsheetid>df662579-558c-4cc9-88df-8c680b67b41d</subsheetid>
+    <display x="-180" y="90" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="a3216578-e35c-4bf0-84db-80b9d3fe07e3" name="Success" type="Data">
+    <subsheetid>df662579-558c-4cc9-88df-8c680b67b41d</subsheetid>
+    <display x="-180" y="60" w="150" h="30" />
+    <datatype>flag</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="714ec185-fd95-4265-88e6-54eb452242b3" name="Column Name" type="Data">
+    <subsheetid>df662579-558c-4cc9-88df-8c680b67b41d</subsheetid>
+    <display x="210" y="-105" w="90" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="25782854-2b5d-4f7d-a1f4-671555060370" name="Remove Null Rows" type="SubSheetInfo">
+    <subsheetid>3a772458-463d-46cf-8451-6cf5b4aeae30</subsheetid>
+    <narrative>Deletes rows in which a given key field is blank.</narrative>
+    <display x="-180" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="7b68a8ca-8280-464d-acac-807f219d226e" name="Set Column Names From First Row" type="SubSheetInfo">
+    <subsheetid>b8e3b975-d485-49a3-b962-864d13a96e05</subsheetid>
+    <narrative>If you have a collection with the column names all in the first row, this will set the column names to the values in that row and then detete the first row.
+Handy for collections read using Get Table</narrative>
+    <display x="-195" y="-105" w="270" h="60" />
+  </stage>
+  <stage stageid="966db302-1751-4a8a-bbbf-cbfc8ff28563" name="Start" type="Start">
+    <subsheetid>b8e3b975-d485-49a3-b962-864d13a96e05</subsheetid>
+    <loginhibit />
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Input Collection" narrative="The collection with the column to rename" stage="Input Collection" />
+    </inputs>
+    <onsuccess>5732b352-4376-4727-b423-13df1e00f900</onsuccess>
+  </stage>
+  <stage stageid="80cc4a73-fa55-4504-bf38-941a29fd4499" name="End" type="End">
+    <subsheetid>b8e3b975-d485-49a3-b962-864d13a96e05</subsheetid>
+    <loginhibit />
+    <display x="15" y="120" />
+    <outputs>
+      <output type="collection" name="Output Collection" narrative="The amended collection" stage="Output Collection" />
+    </outputs>
+  </stage>
+  <stage stageid="5732b352-4376-4727-b423-13df1e00f900" name="Set Column Name" type="Code">
+    <subsheetid>b8e3b975-d485-49a3-b962-864d13a96e05</subsheetid>
+    <loginhibit />
+    <display x="15" y="-45" w="90" h="30" />
+    <inputs>
+      <input type="collection" name="Input Collection" expr="[Input Collection]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Output Collection" stage="Output Collection" />
+    </outputs>
+    <onsuccess>1129bf72-f0d4-4c3a-8823-68de39f5138b</onsuccess>
+    <code><![CDATA[
+'Input_Collection.Columns(3).ColumnName="NewColumnName"
+'Output_Collection = Input_Collection
+
+Dim iThisColumn as integer = -1
+For Each Column As DataColumn In Input_Collection.Columns
+   iThisColumn +=1
+   Column.ColumnName=CStr(Input_Collection.Rows.Item(0).Item(iThisColumn))
+Next
+Output_Collection = Input_Collection
+
+'If RowIndex < 0 OrElse Coll.Rows.Count <= RowIndex Then
+'	Throw New ApplicationException("The supplied row index falls outside of the valid range.")
+'End If
+
+'If Not Coll.Columns.Contains(FieldName) Then
+'   Throw New ApplicationException("The collection does not contain a field with the name '" & FieldName & "'")
+'End If
+
+'Value_Read = CStr(Coll.Rows(RowIndex)(FieldName))]]></code>
+  </stage>
+  <stage stageid="83beff52-ce08-4f4c-acdd-39a43fce3528" name="Input Collection" type="Collection">
+    <subsheetid>b8e3b975-d485-49a3-b962-864d13a96e05</subsheetid>
+    <display x="120" y="-105" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="0735b980-7ff2-49c5-a67b-41a6444db630" name="Output Collection" type="Collection">
+    <subsheetid>b8e3b975-d485-49a3-b962-864d13a96e05</subsheetid>
+    <display x="120" y="105" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="299628df-bec6-4f77-8b4a-c6bc38824e1c" name="Remove First Row" type="Action">
+    <subsheetid>b8e3b975-d485-49a3-b962-864d13a96e05</subsheetid>
+    <loginhibit />
+    <narrative>First row was actually the header row, can now be deleted</narrative>
+    <display x="15" y="60" />
+    <inputs>
+      <input type="text" name="Collection Name" narrative="The name of the collection to act upon" expr="&quot;Output Collection&quot;" />
+    </inputs>
+    <onsuccess>80cc4a73-fa55-4504-bf38-941a29fd4499</onsuccess>
+    <resource object="Blueprism.AutomateProcessCore.clsCollectionActions" action="Remove Row" />
+  </stage>
+  <stage stageid="1129bf72-f0d4-4c3a-8823-68de39f5138b" name="Output Collection" type="LoopStart">
+    <subsheetid>b8e3b975-d485-49a3-b962-864d13a96e05</subsheetid>
+    <loginhibit />
+    <display x="15" y="0" />
+    <onsuccess>299628df-bec6-4f77-8b4a-c6bc38824e1c</onsuccess>
+    <groupid>265b5de8-c5fa-44dc-bcd0-64db001c133a</groupid>
+    <looptype>ForEach</looptype>
+    <loopdata>Output Collection</loopdata>
+  </stage>
+  <stage stageid="35a49bfb-e611-4681-b332-cadbcfa74fc3" name="Output Collection" type="LoopEnd">
+    <subsheetid>b8e3b975-d485-49a3-b962-864d13a96e05</subsheetid>
+    <loginhibit />
+    <display x="-60" y="60" />
+    <onsuccess>d0febcf9-b538-4995-85c1-02dddff5fb51</onsuccess>
+    <groupid>265b5de8-c5fa-44dc-bcd0-64db001c133a</groupid>
+  </stage>
+  <stage stageid="d0febcf9-b538-4995-85c1-02dddff5fb51" name="anchor1" type="Anchor">
+    <subsheetid>b8e3b975-d485-49a3-b962-864d13a96e05</subsheetid>
+    <loginhibit />
+    <display x="-60" y="120" w="10" h="10" />
+    <onsuccess>80cc4a73-fa55-4504-bf38-941a29fd4499</onsuccess>
+  </stage>
+  <stage stageid="7b3c5ed5-f585-4240-a2ab-8cb996684c24" name="Set Column Names From Expected Collection" type="SubSheetInfo">
+    <subsheetid>87541f35-d834-4d99-8fd3-16ec994a9990</subsheetid>
+    <narrative>Renames the fields of a collection to those of a collection containing expected field names.</narrative>
+    <display x="-180" y="-210" w="150" h="90" />
+  </stage>
+  <stage stageid="ae4a6ef5-a22c-4292-8471-eb02cdd4b1cf" name="End" type="End">
+    <subsheetid>87541f35-d834-4d99-8fd3-16ec994a9990</subsheetid>
+    <loginhibit />
+    <display x="15" y="90" />
+    <outputs>
+      <output type="collection" name="Output Collection" narrative="The collection with the renamed column" stage="Output Collection" />
+    </outputs>
+  </stage>
+  <stage stageid="130f8b77-3ec8-46c9-8826-e401399e4c92" name="Rename Column" type="Code">
+    <subsheetid>87541f35-d834-4d99-8fd3-16ec994a9990</subsheetid>
+    <loginhibit />
+    <display x="15" y="-45" w="90" h="30" />
+    <inputs>
+      <input type="collection" name="Input Collection" expr="[Input Collection]" />
+      <input type="collection" name="Expected Fields/Columns" expr="[Expected Fields/Columns]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Output Collection" stage="Output Collection" />
+    </outputs>
+    <onsuccess>ae4a6ef5-a22c-4292-8471-eb02cdd4b1cf</onsuccess>
+    <code><![CDATA[Dim iTotalColumns as integer = Expected_Fields_Columns.Rows.Count-1
+Dim iThisColumn as integer = -1
+For Each Column As DataColumn In Input_Collection.Columns
+   If iThisColumn>=iTotalColumns Then Exit For
+   iThisColumn +=1 
+   Column.ColumnName=CStr(Expected_Fields_Columns.Rows.Item(iThisColumn).Item(0))
+Next
+Output_Collection = Input_Collection]]></code>
+  </stage>
+  <stage stageid="9e32e67d-d7f9-46b2-8df2-6fca9a395352" name="Input Collection" type="Collection">
+    <subsheetid>87541f35-d834-4d99-8fd3-16ec994a9990</subsheetid>
+    <display x="-180" y="-75" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="c66d8d30-cef9-4cab-8ee8-2acb512a3129" name="Start" type="Start">
+    <subsheetid>87541f35-d834-4d99-8fd3-16ec994a9990</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collection fields will have been renamed." />
+    </postconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Input Collection" narrative="The collection with the column to rename" stage="Input Collection" />
+      <input type="collection" name="Expected Fields/Columns" narrative="The expected column names" stage="Expected Fields/Columns" />
+    </inputs>
+    <onsuccess>130f8b77-3ec8-46c9-8826-e401399e4c92</onsuccess>
+  </stage>
+  <stage stageid="c865f7af-a9f9-4fb9-88da-e04e43b0bac8" name="Note1" type="Note">
+    <subsheetid>87541f35-d834-4d99-8fd3-16ec994a9990</subsheetid>
+    <loginhibit />
+    <narrative>Inputs</narrative>
+    <display x="-180" y="-120" w="150" h="30" />
+  </stage>
+  <stage stageid="c29dd25d-3cf7-4435-ba56-6f735329a71a" name="Output Collection" type="Collection">
+    <subsheetid>87541f35-d834-4d99-8fd3-16ec994a9990</subsheetid>
+    <display x="-180" y="135" w="150" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="235be3b3-8a37-4bac-b740-50cfcd6da05f" name="Note1" type="Note">
+    <subsheetid>87541f35-d834-4d99-8fd3-16ec994a9990</subsheetid>
+    <loginhibit />
+    <narrative>Outputs</narrative>
+    <display x="-180" y="105" w="150" h="30" />
+  </stage>
+  <stage stageid="688d2271-65ed-4be7-84b1-cbfe018c6777" name="Expected Fields/Columns" type="Collection">
+    <subsheetid>87541f35-d834-4d99-8fd3-16ec994a9990</subsheetid>
+    <display x="-180" y="-15" w="150" h="60" />
+    <datatype>collection</datatype>
+    <alwaysinit />
+    <collectioninfo>
+      <field name="Column Name" type="text" />
+    </collectioninfo>
+  </stage>
+  <stage stageid="df1f7e11-20da-4f67-a68c-bc7c03be861a" name="Fill Blanks" type="SubSheetInfo">
+    <subsheetid>d1eee74f-1582-4c3e-96c8-b94f1535d7e1</subsheetid>
+    <narrative>Fills a collection that has empty values with empty text.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="7908b17c-920d-4114-9fa0-cd4f161c5185" name="Start" type="Start">
+    <subsheetid>d1eee74f-1582-4c3e-96c8-b94f1535d7e1</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collection will have its empty values filled with empty text." />
+    </postconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Blanks" narrative="A collection with blank text fields" stage="Blanks" />
+    </inputs>
+    <onsuccess>06913dc6-a17f-4d64-965d-7cb7642f486f</onsuccess>
+  </stage>
+  <stage stageid="544cc959-75ad-4b6c-a150-ce414ae50424" name="End" type="End">
+    <subsheetid>d1eee74f-1582-4c3e-96c8-b94f1535d7e1</subsheetid>
+    <loginhibit />
+    <display x="15" y="75" />
+    <outputs>
+      <output type="collection" name="No Blanks" narrative="The collection with empty string instead of blanks" stage="No Blanks" />
+    </outputs>
+  </stage>
+  <stage stageid="34873761-d9a4-4a71-9c63-993645ca4e22" name="Blanks" type="Collection">
+    <subsheetid>d1eee74f-1582-4c3e-96c8-b94f1535d7e1</subsheetid>
+    <display x="-195" y="0" w="150" h="90" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="5cfec416-7db4-4734-9a1f-76d62db9bbd9" name="No Blanks" type="Collection">
+    <subsheetid>d1eee74f-1582-4c3e-96c8-b94f1535d7e1</subsheetid>
+    <display x="-195" y="105" w="150" h="90" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="06913dc6-a17f-4d64-965d-7cb7642f486f" name="Fill Blanks" type="Code">
+    <subsheetid>d1eee74f-1582-4c3e-96c8-b94f1535d7e1</subsheetid>
+    <loginhibit />
+    <display x="15" y="-15" />
+    <inputs>
+      <input type="collection" name="Blanks" expr="[Blanks]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="No Blanks" stage="No Blanks" />
+    </outputs>
+    <onsuccess>544cc959-75ad-4b6c-a150-ce414ae50424</onsuccess>
+    <code><![CDATA[try
+  for each dr as datarow in blanks.rows
+    for each c as datacolumn in blanks.columns
+      if isdbnull(dr(c.columnname)) then
+        dr(c.columnname) = ""
+      end if
+    next
+  next
+  no_blanks = blanks
+catch e as exception
+
+end try]]></code>
+  </stage>
+  <stage stageid="c491f60e-4aa7-4abb-a203-5a78c0b64469" name="End" type="End">
+    <subsheetid>3a772458-463d-46cf-8451-6cf5b4aeae30</subsheetid>
+    <loginhibit />
+    <display x="15" y="90" />
+    <outputs>
+      <output type="collection" name="Output Collection" narrative="The given input collection with all the null rows removed" stage="Output Collection" />
+    </outputs>
+  </stage>
+  <stage stageid="c8499a69-da78-40b1-9e30-3b2b66b78a63" name="Start" type="Start">
+    <subsheetid>3a772458-463d-46cf-8451-6cf5b4aeae30</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The rows with blank keys will have been deleted." />
+      <condition narrative="" />
+    </postconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Input Collection" narrative="The collection from which you want null rows to be removed" stage="Input Collection" />
+      <input type="text" name="Key Field" narrative="The key field to check, if blank the row will be deleted.  The field that is referred to as the key field in the collection must be a text data type as well." stage="Key Field" />
+    </inputs>
+    <onsuccess>85077240-20a2-46ad-81ba-a1eca720ae81</onsuccess>
+  </stage>
+  <stage stageid="e14452d8-589d-478a-ab1b-309897b8560b" name="End" type="End">
+    <subsheetid>3a772458-463d-46cf-8451-6cf5b4aeae30</subsheetid>
+    <loginhibit />
+    <display x="15" y="90" />
+    <outputs>
+      <output type="collection" name="Output Collection" narrative="The given input collection with all the null rows removed" stage="Output Collection" />
+    </outputs>
+  </stage>
+  <stage stageid="13091eb3-458e-46d2-a20e-59eb5eb5d748" name="Input Collection" type="Collection">
+    <subsheetid>3a772458-463d-46cf-8451-6cf5b4aeae30</subsheetid>
+    <display x="120" y="-105" w="90" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="6ab2855e-0511-49ff-ac26-c731dbf8c432" name="Output Collection" type="Collection">
+    <subsheetid>3a772458-463d-46cf-8451-6cf5b4aeae30</subsheetid>
+    <display x="120" y="90" w="90" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="cab44f8f-583a-4529-911c-392030a2dee3" name="Message" type="Data">
+    <subsheetid>3a772458-463d-46cf-8451-6cf5b4aeae30</subsheetid>
+    <display x="-165" y="15" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="e1203642-ce03-48bd-ba00-aad2a0dcde1e" name="Success" type="Data">
+    <subsheetid>3a772458-463d-46cf-8451-6cf5b4aeae30</subsheetid>
+    <display x="-165" y="-15" w="150" h="30" />
+    <datatype>flag</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="1478eda2-b43b-4609-aef4-ff3ad3c2a708" name="Key Field" type="Data">
+    <subsheetid>3a772458-463d-46cf-8451-6cf5b4aeae30</subsheetid>
+    <display x="225" y="-105" w="90" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="85077240-20a2-46ad-81ba-a1eca720ae81" name="Remove Null rows from collection" type="Code">
+    <subsheetid>3a772458-463d-46cf-8451-6cf5b4aeae30</subsheetid>
+    <loginhibit />
+    <narrative>can't loop through the core customer details table collection as some of the rows are NULL.</narrative>
+    <display x="15" y="-45" w="150" h="30" />
+    <inputs>
+      <input type="collection" name="CCD Table In" expr="[Input Collection]" />
+      <input type="text" name="Key Field" expr="[Key Field]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="CCD Table Out" stage="Output Collection" />
+      <output type="text" name="Error Message" stage="Message" />
+      <output type="flag" name="Success" stage="Success" />
+    </outputs>
+    <onsuccess>2e050fc0-fed0-49b4-bafc-a33a0aee5ad9</onsuccess>
+    <code><![CDATA[Try
+CCD_Table_In.AcceptChanges()
+
+	For Each row As DataRow in CCD_Table_In.Rows
+			If String.IsNullOrEmpty(row(Key_Field).ToString().Trim()) Then
+				row.Delete()
+			End If
+	Next
+
+CCD_Table_In.AcceptChanges()
+
+	CCD_Table_Out = CCD_Table_In
+	Success = True
+
+Catch ex as Exception
+	Error_Message = ex.ToString()
+	Success = False
+End Try
+
+]]></code>
+  </stage>
+  <stage stageid="9e92c3e9-666f-47a3-b5a4-712191368127" name="Remove dots from headers" type="SubSheetInfo">
+    <subsheetid>eb03a051-75a8-4093-a383-6c6fecfbb736</subsheetid>
+    <narrative>Collections with dots in the field names cannot be properly indexed so this functinon renames the headers so that the fields contain no dots.</narrative>
+    <display x="-165" y="-195" w="150" h="90" />
+  </stage>
+  <stage stageid="9e9143b5-5aa7-475d-a944-466bfbc2c71d" name="Rename Column1" type="Code">
+    <subsheetid>eb03a051-75a8-4093-a383-6c6fecfbb736</subsheetid>
+    <loginhibit />
+    <display x="0" y="-15" w="90" h="30" />
+    <inputs>
+      <input type="collection" name="Input Collection" expr="[Input Collection]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Output Collection" stage="Output Collection" />
+    </outputs>
+    <onsuccess>ce865562-7be4-4739-95c5-3b5e05d7901f</onsuccess>
+    <code><![CDATA[For Each Column As DataColumn In Input_Collection.Columns
+   Column.ColumnName=Microsoft.Visualbasic.Replace(Column.ColumnName,".","")
+Next
+Output_Collection = Input_Collection]]></code>
+  </stage>
+  <stage stageid="ce865562-7be4-4739-95c5-3b5e05d7901f" name="End" type="End">
+    <subsheetid>eb03a051-75a8-4093-a383-6c6fecfbb736</subsheetid>
+    <loginhibit />
+    <display x="0" y="90" />
+    <outputs>
+      <output type="collection" name="Output Collection" narrative="The collection with the renamed column" stage="Output Collection" />
+    </outputs>
+  </stage>
+  <stage stageid="c2200054-2838-45a0-a8b2-c1da235391b0" name="Input Collection" type="Collection">
+    <subsheetid>eb03a051-75a8-4093-a383-6c6fecfbb736</subsheetid>
+    <display x="-195" y="-75" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="c865c672-39f2-4b5d-b96c-f44c5f3b9a89" name="Start" type="Start">
+    <subsheetid>eb03a051-75a8-4093-a383-6c6fecfbb736</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collection will have fields with no dots." />
+    </postconditions>
+    <display x="0" y="-105" />
+    <inputs>
+      <input type="collection" name="Input Collection" narrative="The collection with the column to rename" stage="Input Collection" />
+    </inputs>
+    <onsuccess>9e9143b5-5aa7-475d-a944-466bfbc2c71d</onsuccess>
+  </stage>
+  <stage stageid="02864eb4-432c-4b37-9199-c28dd7fe654b" name="Note1" type="Note">
+    <subsheetid>eb03a051-75a8-4093-a383-6c6fecfbb736</subsheetid>
+    <loginhibit />
+    <narrative>Inputs</narrative>
+    <display x="-195" y="-120" w="150" h="30" />
+  </stage>
+  <stage stageid="99cb4759-fd39-4084-a262-e2ac589fdc28" name="Output Collection" type="Collection">
+    <subsheetid>eb03a051-75a8-4093-a383-6c6fecfbb736</subsheetid>
+    <display x="-195" y="135" w="150" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="c1388967-ebc6-462c-bad7-66359084fab0" name="Note1" type="Note">
+    <subsheetid>eb03a051-75a8-4093-a383-6c6fecfbb736</subsheetid>
+    <loginhibit />
+    <narrative>Outputs</narrative>
+    <display x="-195" y="105" w="150" h="30" />
+  </stage>
+  <stage stageid="4e265aee-0021-418d-8655-61d995e170a0" name="Append Field (Text)" type="SubSheetInfo">
+    <subsheetid>a474299b-5c1c-4873-a3af-4dd0d3bd03ff</subsheetid>
+    <narrative>Appends a field to a collection and allows you to provide a default value as text fot the field.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="c8bd0a3b-3343-43fd-bef7-1414593f62b6" name="Field Name" type="Data">
+    <subsheetid>a474299b-5c1c-4873-a3af-4dd0d3bd03ff</subsheetid>
+    <display x="-195" y="30" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="ddaf3d76-462d-41ac-8cdd-92050ea01b79" name="Append Text" type="Code">
+    <subsheetid>a474299b-5c1c-4873-a3af-4dd0d3bd03ff</subsheetid>
+    <loginhibit />
+    <display x="15" y="-15" />
+    <inputs>
+      <input type="collection" name="Collection" expr="[Collection In]" />
+      <input type="text" name="Column" expr="[Field Name]" />
+      <input type="text" name="Value" expr="[Value]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="New Collection" stage="Collection Out" />
+    </outputs>
+    <onsuccess>072e40e3-3858-4528-aa1b-7b4cfb7861f9</onsuccess>
+    <code><![CDATA[
+If Not Collection.Columns.Contains(Column) Then
+	Collection.Columns.Add(Column, Type.GetType("System.String"))
+End If
+
+For Each dr As System.Data.DataRow In Collection.Rows
+	dr(Column) = Value
+Next
+
+New_Collection = Collection
+]]></code>
+  </stage>
+  <stage stageid="7c2f4495-6f2c-4dc5-845c-58f3036c5ec9" name="Collection Out" type="Collection">
+    <subsheetid>a474299b-5c1c-4873-a3af-4dd0d3bd03ff</subsheetid>
+    <display x="-195" y="120" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="8493982d-24c5-4d6b-96c0-060ed614f8c3" name="Collection In" type="Collection">
+    <subsheetid>a474299b-5c1c-4873-a3af-4dd0d3bd03ff</subsheetid>
+    <display x="-195" y="-15" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="6542d3cd-7831-4ebb-93dc-09b64ff85bbf" name="Value" type="Data">
+    <subsheetid>a474299b-5c1c-4873-a3af-4dd0d3bd03ff</subsheetid>
+    <display x="-195" y="60" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="6c1475ad-07b2-4993-abb1-4060046ce8eb" name="Start" type="Start">
+    <subsheetid>a474299b-5c1c-4873-a3af-4dd0d3bd03ff</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collection will have a new field appended to it." />
+    </postconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Collection" narrative="The collection to append a field to." stage="Collection In" />
+      <input type="text" name="Field Name" narrative="The name of the new field." stage="Field Name" />
+      <input type="text" name="Value" narrative="The value to be put in the new field." stage="Value" />
+    </inputs>
+    <onsuccess>ddaf3d76-462d-41ac-8cdd-92050ea01b79</onsuccess>
+  </stage>
+  <stage stageid="072e40e3-3858-4528-aa1b-7b4cfb7861f9" name="End" type="End">
+    <subsheetid>a474299b-5c1c-4873-a3af-4dd0d3bd03ff</subsheetid>
+    <loginhibit />
+    <display x="15" y="90" />
+    <outputs>
+      <output type="collection" name="Appended Collection" narrative="The collection with field appended." stage="Collection Out" />
+    </outputs>
+  </stage>
+  <stage stageid="4c0d7072-e36c-465b-89f0-fbe7e21e95fb" name="Append Field (Number)" type="SubSheetInfo">
+    <subsheetid>65451129-b7a2-4c2f-a12d-9086bd314f53</subsheetid>
+    <narrative>Appends a field to a collection and allows you to provide a default number value for the field.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="433e0a45-d9b6-48e5-b62f-67815cc1461a" name="Start" type="Start">
+    <subsheetid>65451129-b7a2-4c2f-a12d-9086bd314f53</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collection will have the new field appended to it." />
+    </postconditions>
+    <display x="30" y="-105" />
+    <inputs>
+      <input type="collection" name="Collection" narrative="The collection to append a field to." stage="Collection In" />
+      <input type="text" name="Field Name" narrative="The name of the new field." stage="Field Name" />
+      <input type="number" name="Value" narrative="The value to be put in the new field." stage="Value" />
+    </inputs>
+    <onsuccess>560df05e-a20c-4c85-addb-accc35d19f0e</onsuccess>
+  </stage>
+  <stage stageid="5dc78a95-36a2-4324-a366-ccd5f941ea7b" name="End" type="End">
+    <subsheetid>65451129-b7a2-4c2f-a12d-9086bd314f53</subsheetid>
+    <loginhibit />
+    <display x="30" y="90" />
+    <outputs>
+      <output type="collection" name="Appended Collection" narrative="The collection with field appended." stage="Collection Out" />
+    </outputs>
+  </stage>
+  <stage stageid="560df05e-a20c-4c85-addb-accc35d19f0e" name="Append Number" type="Code">
+    <subsheetid>65451129-b7a2-4c2f-a12d-9086bd314f53</subsheetid>
+    <loginhibit />
+    <display x="30" y="-15" />
+    <inputs>
+      <input type="collection" name="Collection" expr="[Collection In]" />
+      <input type="text" name="Column" expr="[Field Name]" />
+      <input type="number" name="Value" expr="[Value]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="New Collection" stage="Collection Out" />
+    </outputs>
+    <onsuccess>5dc78a95-36a2-4324-a366-ccd5f941ea7b</onsuccess>
+    <code><![CDATA[
+If Not Collection.Columns.Contains(Column) Then
+	Collection.Columns.Add(Column, Type.GetType("System.Decimal"))
+End If
+
+For Each dr As System.Data.DataRow In Collection.Rows
+	dr(Column) = Value
+Next
+
+New_Collection = Collection
+]]></code>
+  </stage>
+  <stage stageid="a8f65fc6-9524-4ba5-ab7c-4bf16b825bb8" name="Collection Out" type="Collection">
+    <subsheetid>65451129-b7a2-4c2f-a12d-9086bd314f53</subsheetid>
+    <display x="-180" y="120" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="1265e994-416c-4b2d-ab0c-c81e1288f072" name="Field Name" type="Data">
+    <subsheetid>65451129-b7a2-4c2f-a12d-9086bd314f53</subsheetid>
+    <display x="-180" y="30" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="4ac81567-c224-4270-a0ef-e57562e06fb5" name="Collection In" type="Collection">
+    <subsheetid>65451129-b7a2-4c2f-a12d-9086bd314f53</subsheetid>
+    <display x="-180" y="-15" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="f9a670a2-2e34-4e79-a184-369ddc70c75e" name="Value" type="Data">
+    <subsheetid>65451129-b7a2-4c2f-a12d-9086bd314f53</subsheetid>
+    <display x="-180" y="60" w="150" h="30" />
+    <datatype>number</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="5979fe4e-6f4d-4683-8d7f-bb932ec88a2e" name="Rename Field" type="SubSheetInfo">
+    <subsheetid>ccc0c027-8c9f-41f6-9ba6-af44eac6a9a9</subsheetid>
+    <narrative>Renames a field within a collection.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="5030c234-e021-4ff1-b9ea-751e186a63a8" name="Start" type="Start">
+    <subsheetid>ccc0c027-8c9f-41f6-9ba6-af44eac6a9a9</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collections field will be renamed." />
+    </postconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Collection In" narrative="The collection to rename a field in." stage="Collection In" />
+      <input type="text" name="Field Name" narrative="The name of the existing field to rename." stage="Field Name" />
+      <input type="text" name="New Name" narrative="The new name for the field." stage="New Name" />
+    </inputs>
+    <onsuccess>278ed0f4-d7d0-4ca7-908e-55569a965852</onsuccess>
+  </stage>
+  <stage stageid="404be5b2-7ad7-429a-9e8b-b6a561112f47" name="End" type="End">
+    <subsheetid>ccc0c027-8c9f-41f6-9ba6-af44eac6a9a9</subsheetid>
+    <loginhibit />
+    <display x="15" y="90" />
+    <outputs>
+      <output type="collection" name="Collection Out" narrative="The collection with field renamed." stage="Collection Out" />
+    </outputs>
+  </stage>
+  <stage stageid="67c49160-5821-48b0-82fd-371ecbaea386" name="Collection In" type="Collection">
+    <subsheetid>ccc0c027-8c9f-41f6-9ba6-af44eac6a9a9</subsheetid>
+    <display x="-195" y="0" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="f0ef8f48-7f60-47fc-89b2-3aa04ef39792" name="Field Name" type="Data">
+    <subsheetid>ccc0c027-8c9f-41f6-9ba6-af44eac6a9a9</subsheetid>
+    <display x="-195" y="60" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="8c1db25c-d091-4900-8b9e-529d60df0f8f" name="Collection Out" type="Collection">
+    <subsheetid>ccc0c027-8c9f-41f6-9ba6-af44eac6a9a9</subsheetid>
+    <display x="-195" y="165" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="278ed0f4-d7d0-4ca7-908e-55569a965852" name="Rename" type="Code">
+    <subsheetid>ccc0c027-8c9f-41f6-9ba6-af44eac6a9a9</subsheetid>
+    <loginhibit />
+    <display x="15" y="-15" />
+    <inputs>
+      <input type="collection" name="Collection In" expr="[Collection In]" />
+      <input type="text" name="Field_Name" expr="[Field Name]" />
+      <input type="text" name="New Name" expr="[New Name]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Collection Out" stage="Collection Out" />
+    </outputs>
+    <onsuccess>404be5b2-7ad7-429a-9e8b-b6a561112f47</onsuccess>
+    <code><![CDATA[
+Collection_Out = Collection_In.Copy
+
+For Each c As DataColumn in Collection_Out.Columns
+	If c.ColumnName = Field_Name Then
+		c.ColumnName = New_Name
+		Exit For
+	End If
+Next
+]]></code>
+  </stage>
+  <stage stageid="b2e64d6d-9ac8-43b9-aeed-e58e65d8067c" name="New Name" type="Data">
+    <subsheetid>ccc0c027-8c9f-41f6-9ba6-af44eac6a9a9</subsheetid>
+    <display x="-195" y="105" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <alwaysinit />
+  </stage>
+  <stage stageid="c935b0c8-a0cb-4251-9e63-af4ed27f9a91" name="Delete Field" type="SubSheetInfo">
+    <subsheetid>1d7b6202-d743-4485-9101-839f4651c406</subsheetid>
+    <narrative>Deletes a field from a collection.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="a7662efd-3d51-4d9a-adbc-1a2e626613e5" name="Start" type="Start">
+    <subsheetid>1d7b6202-d743-4485-9101-839f4651c406</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collections field will have been removed." />
+    </postconditions>
+    <display x="30" y="-105" />
+    <inputs>
+      <input type="collection" name="Collection In" narrative="The collection to delete the field from." stage="Collection In" />
+      <input type="text" name="Field Name" narrative="The field to delete." stage="Field Name" />
+    </inputs>
+    <onsuccess>b52dad46-ca6d-4860-82c7-f1d9320f66bc</onsuccess>
+  </stage>
+  <stage stageid="4e6ae3ea-d232-4ff3-b93b-ab90f6e93c1b" name="End" type="End">
+    <subsheetid>1d7b6202-d743-4485-9101-839f4651c406</subsheetid>
+    <loginhibit />
+    <display x="30" y="90" />
+    <outputs>
+      <output type="collection" name="Collection Out" narrative="The collection with the field removed." stage="Collection Out" />
+    </outputs>
+  </stage>
+  <stage stageid="4eb487df-f7e9-4146-a35f-e5e7c6461d01" name="Collection In" type="Collection">
+    <subsheetid>1d7b6202-d743-4485-9101-839f4651c406</subsheetid>
+    <display x="-180" y="-15" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="719f7d25-ec64-43bd-9466-c822213aa069" name="Field Name" type="Data">
+    <subsheetid>1d7b6202-d743-4485-9101-839f4651c406</subsheetid>
+    <display x="-180" y="30" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="0b32e1ce-deb0-4107-ac7c-c4af81ceedaf" name="Collection Out" type="Collection">
+    <subsheetid>1d7b6202-d743-4485-9101-839f4651c406</subsheetid>
+    <display x="-180" y="105" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="b52dad46-ca6d-4860-82c7-f1d9320f66bc" name="Delete Column1" type="Code">
+    <subsheetid>1d7b6202-d743-4485-9101-839f4651c406</subsheetid>
+    <loginhibit />
+    <display x="30" y="-15" />
+    <inputs>
+      <input type="collection" name="Collection In" expr="[Collection In]" />
+      <input type="text" name="Field_Name" expr="[Field Name]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Collection Out" stage="Collection Out" />
+    </outputs>
+    <onsuccess>4e6ae3ea-d232-4ff3-b93b-ab90f6e93c1b</onsuccess>
+    <code><![CDATA[
+Collection_Out = Collection_In.Copy
+
+For Each c As DataColumn in Collection_Out.Columns
+	If c.ColumnName = Field_Name Then
+		Collection_Out.Columns.Remove(c)
+		Exit For
+	End If
+Next
+]]></code>
+  </stage>
+  <stage stageid="63e447be-76ae-4566-a7e9-ead3373b7fe6" name="Merge Collection" type="SubSheetInfo">
+    <subsheetid>cd8fefb9-4622-4ea7-8287-e64b86d7e513</subsheetid>
+    <narrative>Merges two collections with different structures (and where the field names across both collections are unique) and forms a single collection with a combination  of the two structures and associated data values.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="d427bb44-b573-475a-aa7d-176f2803e033" name="Start" type="Start">
+    <subsheetid>cd8fefb9-4622-4ea7-8287-e64b86d7e513</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="The merge will fail if both collections contain any field names which are identical." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collections will have been merged." />
+    </postconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Collection 1" narrative="The first collection to be merged." stage="Collection 1" />
+      <input type="collection" name="Collection 2" narrative="The second collection to be merged." stage="Collection 2" />
+    </inputs>
+    <onsuccess>6459a0e3-6f86-4efa-8b87-a9eb0b9a8460</onsuccess>
+  </stage>
+  <stage stageid="570e4b26-4aa8-48ac-b435-1ca8fe10f2cd" name="End" type="End">
+    <subsheetid>cd8fefb9-4622-4ea7-8287-e64b86d7e513</subsheetid>
+    <loginhibit />
+    <display x="15" y="90" />
+    <outputs>
+      <output type="collection" name="Collection 3" narrative="The resulting merged collection." stage="Collection 3" />
+    </outputs>
+  </stage>
+  <stage stageid="6459a0e3-6f86-4efa-8b87-a9eb0b9a8460" name="Merge" type="Code">
+    <subsheetid>cd8fefb9-4622-4ea7-8287-e64b86d7e513</subsheetid>
+    <loginhibit />
+    <display x="15" y="-15" />
+    <inputs>
+      <input type="collection" name="c1" expr="[Collection 1]" />
+      <input type="collection" name="c2" expr="[Collection 2]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="c3" stage="Collection 3" />
+    </outputs>
+    <onsuccess>570e4b26-4aa8-48ac-b435-1ca8fe10f2cd</onsuccess>
+    <code><![CDATA[
+For Each c As DataColumn in c2.Columns
+	c1.Columns.Add(CloneColumn(c))
+Next
+
+For r As Integer = 0 To c1.Rows.Count - 1
+	If r < c2.Rows.Count Then
+		For Each c As DataColumn in c2.Columns
+			c1.Rows(r)(c.ColumnName) = c2.Rows(r)(c.ColumnName)
+		Next
+	Else
+		Exit For
+	End If
+Next
+
+c3 = c1]]></code>
+  </stage>
+  <stage stageid="c325b6be-e358-4eab-8e9b-0b74a98490f3" name="Collection 1" type="Collection">
+    <subsheetid>cd8fefb9-4622-4ea7-8287-e64b86d7e513</subsheetid>
+    <display x="-195" y="-15" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="61e7bd9a-18d4-475d-b131-95dc839d1518" name="Collection 2" type="Collection">
+    <subsheetid>cd8fefb9-4622-4ea7-8287-e64b86d7e513</subsheetid>
+    <display x="-195" y="45" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="3ff4ed5f-abbc-4668-9ebb-816c8f0884db" name="Collection 3" type="Collection">
+    <subsheetid>cd8fefb9-4622-4ea7-8287-e64b86d7e513</subsheetid>
+    <display x="-195" y="120" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="741d8892-31ef-497b-a1ab-dca99ebd1f06" name="Split Collection" type="SubSheetInfo">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <narrative>Splits a collection into two colllections containing the fields as defined by templates.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="61860248-5b8d-41de-8e28-092ca8b989e5" name="Split" type="Code">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <loginhibit />
+    <display x="15" y="300" />
+    <inputs>
+      <input type="collection" name="c1" expr="[Collection 1]" />
+      <input type="collection" name="c2t" expr="[Collection 2 Template]" />
+      <input type="collection" name="c3t" expr="[Collection 3 Template]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="c2" stage="Collection 2" />
+      <output type="collection" name="c3" stage="Collection 3" />
+    </outputs>
+    <onsuccess>e08e6b18-850a-427c-9eba-5065c9c619dd</onsuccess>
+    <code><![CDATA[
+c2 = c2t.Clone()
+
+c3 = c3t.Clone()
+
+Dim r2, r3 As DataRow
+Dim bAdd2, bAdd3 As Boolean
+
+For Each r1 As DataRow In c1.Rows
+
+	r2 = c2.NewRow()
+	r3 = c3.NewRow()
+	bAdd2 = False
+	bAdd3 = False
+
+	For Each c As DataColumn In c1.Columns
+
+		If c2.Columns.Contains(c.ColumnName) Then
+			r2(c.ColumnName) = r1(c.ColumnName)
+			bAdd2 = True
+		End If
+		If c3.Columns.Contains(c.ColumnName) Then
+			r3(c.ColumnName) = r1(c.ColumnName)
+			bAdd3 = True
+		End If
+
+	Next
+
+	If bAdd2 Then
+		c2.Rows.Add(r2)
+	End If
+	If bAdd3 Then
+		c3.Rows.Add(r3)
+	End If
+
+Next]]></code>
+  </stage>
+  <stage stageid="d00a67c4-977f-49ab-ac41-225ebdb3ad8d" name="Collection 3 Template" type="Collection">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <display x="-195" y="105" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="e2ce96fd-e590-46fa-a95d-effcca153782" name="Start" type="Start">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+      <condition narrative="" />
+    </preconditions>
+    <postconditions>
+      <condition narrative="Collections will be split." />
+      <condition narrative="" />
+    </postconditions>
+    <display x="15" y="-120" />
+    <inputs>
+      <input type="collection" name="Collection 1" stage="Collection 1" />
+      <input type="collection" name="Collection 2 Template" stage="Collection 2 Template" />
+      <input type="collection" name="Collection 3 Template" stage="Collection 3 Template" />
+    </inputs>
+    <onsuccess>2c7d51f8-a340-4629-9d93-0526f6ed07cc</onsuccess>
+  </stage>
+  <stage stageid="e08e6b18-850a-427c-9eba-5065c9c619dd" name="End" type="End">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <loginhibit />
+    <display x="105" y="300" />
+    <outputs>
+      <output type="collection" name="Collection 2" stage="Collection 2" />
+      <output type="collection" name="Collection 3" stage="Collection 3" />
+    </outputs>
+  </stage>
+  <stage stageid="67449419-0f6c-463b-bf1a-2d94b16c5be3" name="Collection 2" type="Collection">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <display x="-195" y="285" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="78bbd50d-b3cd-4066-80e3-d4cb236662b8" name="Collection 3" type="Collection">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <display x="-195" y="345" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="2c7d51f8-a340-4629-9d93-0526f6ed07cc" name="Count Template 2 Rows" type="Action">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <loginhibit />
+    <display x="15" y="-60" />
+    <inputs>
+      <input type="text" name="Collection Name" narrative="The name of the collection to act upon" expr="&quot;Collection 2 Template&quot;" />
+    </inputs>
+    <outputs>
+      <output type="number" name="Count" narrative="The number of rows counted in the collection" stage="Row Count" />
+    </outputs>
+    <onsuccess>2dbb3bb5-1526-4f1c-818d-aa4eb0acc677</onsuccess>
+    <resource object="Blueprism.AutomateProcessCore.clsCollectionActions" action="Count Rows" />
+  </stage>
+  <stage stageid="5a6c9426-a48f-4861-b7fe-b020ea824cc5" name="Row Count" type="Data">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <display x="-195" y="165" w="150" h="30" />
+    <datatype>number</datatype>
+    <initialvalue>0</initialvalue>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="2dbb3bb5-1526-4f1c-818d-aa4eb0acc677" name="Rows?" type="Decision">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <loginhibit />
+    <display x="15" y="0" />
+    <decision expression="[Row Count]&gt;0" />
+    <ontrue>17c0ae90-3784-40c5-816f-a0dfb4c97eab</ontrue>
+    <onfalse>6a04f2d4-b2f3-4afd-b837-ddaf0d40a9d5</onfalse>
+  </stage>
+  <stage stageid="17c0ae90-3784-40c5-816f-a0dfb4c97eab" name="Count Template 3 Rows" type="Action">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <loginhibit />
+    <display x="15" y="60" />
+    <inputs>
+      <input type="text" name="Collection Name" narrative="The name of the collection to act upon" expr="&quot;Collection 3 Template&quot;" />
+    </inputs>
+    <outputs>
+      <output type="number" name="Count" narrative="The number of rows counted in the collection" stage="Row Count" />
+    </outputs>
+    <onsuccess>525e699d-df7d-4c61-b5fd-0ae540b94a94</onsuccess>
+    <resource object="Blueprism.AutomateProcessCore.clsCollectionActions" action="Count Rows" />
+  </stage>
+  <stage stageid="525e699d-df7d-4c61-b5fd-0ae540b94a94" name="Rows?" type="Decision">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <loginhibit />
+    <display x="15" y="120" />
+    <decision expression="[Row Count]&gt;0" />
+    <ontrue>01cbd6ed-952e-4ae8-8420-496581701364</ontrue>
+    <onfalse>c7cd5499-3bd2-49c8-a5e0-2c190b350abe</onfalse>
+  </stage>
+  <stage stageid="74cfea1c-af9f-4c0b-86aa-ac76097c3940" name="Collection 1" type="Collection">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <display x="-195" y="-15" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="2af4b9c5-d3f3-4ecc-9a3a-4b52f1cee481" name="Collection 2 Template" type="Collection">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <display x="-195" y="45" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="c7cd5499-3bd2-49c8-a5e0-2c190b350abe" name="System Exception" type="Exception">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <display x="105" y="120" />
+    <exception type="System Exception" detail="&quot;Template collection cannot be empty&quot;" />
+  </stage>
+  <stage stageid="6a04f2d4-b2f3-4afd-b837-ddaf0d40a9d5" name="anchor1" type="Anchor">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <loginhibit />
+    <display x="105" y="0" w="10" h="10" />
+    <onsuccess>c7cd5499-3bd2-49c8-a5e0-2c190b350abe</onsuccess>
+  </stage>
+  <stage stageid="01cbd6ed-952e-4ae8-8420-496581701364" name="Count Data Rows" type="Action">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <loginhibit />
+    <display x="15" y="180" />
+    <inputs>
+      <input type="text" name="Collection Name" narrative="The name of the collection to act upon" expr="&quot;Collection 1&quot;" />
+    </inputs>
+    <outputs>
+      <output type="number" name="Count" narrative="The number of rows counted in the collection" stage="Row Count" />
+    </outputs>
+    <onsuccess>69ae2e43-547a-4cef-abc9-a57284282b82</onsuccess>
+    <resource object="Blueprism.AutomateProcessCore.clsCollectionActions" action="Count Rows" />
+  </stage>
+  <stage stageid="69ae2e43-547a-4cef-abc9-a57284282b82" name="Rows?" type="Decision">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <loginhibit />
+    <display x="15" y="240" />
+    <decision expression="[Row Count]&gt;0" />
+    <ontrue>61860248-5b8d-41de-8e28-092ca8b989e5</ontrue>
+    <onfalse>4cffbd60-ffb8-4da0-aa50-3639bc6ff8ef</onfalse>
+  </stage>
+  <stage stageid="4cffbd60-ffb8-4da0-aa50-3639bc6ff8ef" name="Assign Outputs" type="Code">
+    <subsheetid>76943739-36b9-46bc-8f95-e1b6342bc8a6</subsheetid>
+    <loginhibit />
+    <display x="105" y="240" />
+    <inputs>
+      <input type="collection" name="c2t" expr="[Collection 2 Template]" />
+      <input type="collection" name="c3t" expr="[Collection 3 Template]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="c2" stage="Collection 2" />
+      <output type="collection" name="c3" stage="Collection 3" />
+    </outputs>
+    <onsuccess>e08e6b18-850a-427c-9eba-5065c9c619dd</onsuccess>
+    <code><![CDATA[
+c3 = c3t
+
+c2 = c2t
+]]></code>
+  </stage>
+  <stage stageid="8140b508-3840-4291-8122-7d9633f50e96" name="Collection In" type="Collection">
+    <subsheetid>d8e5be7a-93aa-4322-99bf-00edea37bbc2</subsheetid>
+    <display x="-180" y="-15" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="cc074354-584f-4eba-ab53-2f96462259a0" name="Filter Collection" type="SubSheetInfo">
+    <subsheetid>a9f3108d-ca87-4551-b567-9c64ef05cf0c</subsheetid>
+    <narrative>Filters a collection using the given query.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="4ee491db-1747-4f76-a969-78ebc05942c3" name="Start" type="Start">
+    <subsheetid>a9f3108d-ca87-4551-b567-9c64ef05cf0c</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collection will be filtered." />
+    </postconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Collection In" narrative="The collection to filter." stage="Collection In" />
+      <input type="text" name="Filter" narrative="The filter query." stage="Filter" />
+    </inputs>
+    <onsuccess>0c063487-d7ee-42db-8059-92687b655e7d</onsuccess>
+  </stage>
+  <stage stageid="bda88544-a5a8-4bf6-9c9b-c645f76b7fed" name="End" type="End">
+    <subsheetid>a9f3108d-ca87-4551-b567-9c64ef05cf0c</subsheetid>
+    <loginhibit />
+    <display x="15" y="90" />
+    <outputs>
+      <output type="collection" name="Collection Out" narrative="The filtered collection." stage="Collection Out" />
+    </outputs>
+  </stage>
+  <stage stageid="0c063487-d7ee-42db-8059-92687b655e7d" name="Filter Collection1" type="Code">
+    <subsheetid>a9f3108d-ca87-4551-b567-9c64ef05cf0c</subsheetid>
+    <loginhibit />
+    <display x="15" y="-15" />
+    <inputs>
+      <input type="collection" name="Collection In" expr="[Collection In]" />
+      <input type="text" name="Select Condition" expr="[Filter]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Collection Out" stage="Collection Out" />
+    </outputs>
+    <onsuccess>bda88544-a5a8-4bf6-9c9b-c645f76b7fed</onsuccess>
+    <code><![CDATA[Dim NewRow As DataRow
+
+Collection_Out = Collection_In.Clone
+
+For Each parentRow As DataRow In Collection_In.Select(Select_Condition)
+	NewRow = Collection_Out.NewRow
+	For Each c As DataColumn In NewRow.Table.Columns
+		NewRow(c.ColumnName) = parentRow(c.ColumnName)
+	Next
+	Collection_Out.Rows.Add(NewRow)
+Next
+
+NewRow = Nothing
+Collection_In = Nothing]]></code>
+  </stage>
+  <stage stageid="ab9df972-dcc0-4384-ae57-8f0207f70978" name="Collection Out" type="Collection">
+    <subsheetid>a9f3108d-ca87-4551-b567-9c64ef05cf0c</subsheetid>
+    <display x="-195" y="105" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="ee8d1e79-1554-41d5-9dec-d9cb9153d483" name="Collection In" type="Collection">
+    <subsheetid>a9f3108d-ca87-4551-b567-9c64ef05cf0c</subsheetid>
+    <display x="-195" y="-15" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="7b601fa9-308d-4e40-8366-62ebe909f792" name="Filter" type="Data">
+    <subsheetid>a9f3108d-ca87-4551-b567-9c64ef05cf0c</subsheetid>
+    <display x="-195" y="45" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="6f60641e-4454-45d1-b678-62b0a6c6b784" name="Start" type="Start">
+    <subsheetid>cdf2a7f1-a351-441a-8d36-bc92af66650a</subsheetid>
+    <loginhibit />
+    <display x="-15" y="-120" />
+    <inputs>
+      <input type="number" name="Start Row" narrative="The row index to start copying from. The index is from 0 to N-1 (where N is the total number of rows in the collection)." stage="Start Row" />
+      <input type="number" name="Number of Rows to Copy" narrative="The number of rows to copy." stage="Number of Rows to Copy" />
+      <input type="collection" name="Source Collection" narrative="The collection to copy." stage="Source Collection" />
+    </inputs>
+    <onsuccess>25337bba-f357-42a8-bc61-876a9582d5d0</onsuccess>
+  </stage>
+  <stage stageid="002b5c58-ec2b-4e02-91e5-68fbeffe2b84" name="End" type="End">
+    <subsheetid>cdf2a7f1-a351-441a-8d36-bc92af66650a</subsheetid>
+    <loginhibit />
+    <display x="-15" y="75" />
+    <outputs>
+      <output type="collection" name="Output Collection" narrative="The copied collection." stage="Output Collection" />
+    </outputs>
+  </stage>
+  <stage stageid="1cd8f0a3-e382-4ad5-8948-7f0dc5cd17cd" name="Start Row" type="Data">
+    <subsheetid>cdf2a7f1-a351-441a-8d36-bc92af66650a</subsheetid>
+    <display x="60" y="-120" />
+    <datatype>number</datatype>
+    <initialvalue>0</initialvalue>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="abc78fcd-9654-47c6-9aa9-5cd8f505bd60" name="Number of Rows to Copy" type="Data">
+    <subsheetid>cdf2a7f1-a351-441a-8d36-bc92af66650a</subsheetid>
+    <display x="135" y="-120" w="90" h="30" />
+    <datatype>number</datatype>
+    <initialvalue>0</initialvalue>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="c3aa2821-e68a-4985-9fd7-e0330638a935" name="Source Collection" type="Collection">
+    <subsheetid>cdf2a7f1-a351-441a-8d36-bc92af66650a</subsheetid>
+    <display x="255" y="-120" w="120" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="25337bba-f357-42a8-bc61-876a9582d5d0" name="Copy Rows1" type="Code">
+    <subsheetid>cdf2a7f1-a351-441a-8d36-bc92af66650a</subsheetid>
+    <loginhibit />
+    <display x="-15" y="-30" w="120" h="30" />
+    <inputs>
+      <input type="collection" name="Source Collection" expr="[Source Collection]" />
+      <input type="number" name="Start Row" expr="[Start Row]" />
+      <input type="number" name="Number of Rows to Copy" expr="[Number of Rows to Copy]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Output Collection" stage="Output Collection" />
+      <output type="flag" name="Success" stage="Success" />
+      <output type="text" name="Error Message" stage="Error Message" />
+    </outputs>
+    <onsuccess>ff821741-f1ec-47ff-bd26-00c56a44a6c7</onsuccess>
+    <code><![CDATA[Try
+	If Start_Row < 0 Then
+		Throw New ApplicationException("Start Row must be at least zero.")
+	End If
+	Dim LastIndex As Integer = Source_Collection.Rows.Count -1
+	If Start_Row > LastIndex Then
+		Throw New ApplicationException("Start Row must not point beyond the end of the collection.")
+	End If
+	If Start_Row + Number_of_Rows_to_Copy -1 > LastIndex Then
+		Throw New ApplicationException("The number of requested rows extends beyond the end of the collection (based on a start row of " & Start_Row.ToString() & ").")
+	End If
+
+	'Set up the new collection with columns
+	Output_Collection = Source_Collection.Clone()
+
+	'copy the requested rows one by one
+	For I As integer = Start_Row To Start_Row + Number_of_Rows_to_Copy - 1
+		Dim Values(Source_Collection.Columns.Count - 1) As Object
+		For J As Integer = 0 To Source_Collection.Columns.Count - 1
+			Values(J) = Source_Collection.Rows(I)(J)
+		Next
+		Output_collection.Rows.Add(Values)
+	Next	
+	
+	Success = True
+Catch Ex As Exception
+	Success = False
+	Error_Message = Ex.ToString()
+End Try]]></code>
+  </stage>
+  <stage stageid="33698fa1-b8d8-467c-bb0d-b8e838d42c69" name="Output Collection" type="Collection">
+    <subsheetid>cdf2a7f1-a351-441a-8d36-bc92af66650a</subsheetid>
+    <display x="-180" y="45" w="150" h="90" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="4f882206-da67-4422-ac01-a53a5d765354" name="Success" type="Data">
+    <subsheetid>cdf2a7f1-a351-441a-8d36-bc92af66650a</subsheetid>
+    <display x="60" y="75" />
+    <datatype>flag</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="6551589d-b7f2-48b7-a867-b398647d0180" name="Error Message" type="Data">
+    <subsheetid>cdf2a7f1-a351-441a-8d36-bc92af66650a</subsheetid>
+    <display x="120" y="75" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="ff821741-f1ec-47ff-bd26-00c56a44a6c7" name="Success?" type="Decision">
+    <subsheetid>cdf2a7f1-a351-441a-8d36-bc92af66650a</subsheetid>
+    <loginhibit />
+    <display x="-15" y="30" />
+    <decision expression="[Success]" />
+    <ontrue>002b5c58-ec2b-4e02-91e5-68fbeffe2b84</ontrue>
+    <onfalse>fd5c51f5-e900-44ce-a169-84565580d402</onfalse>
+  </stage>
+  <stage stageid="fd5c51f5-e900-44ce-a169-84565580d402" name="System Exception" type="Exception">
+    <subsheetid>cdf2a7f1-a351-441a-8d36-bc92af66650a</subsheetid>
+    <display x="90" y="30" />
+    <exception type="System Exception" detail="[Error Message]" />
+  </stage>
+  <stage stageid="c6165073-bfc9-495f-98e5-62a224f52226" name="Start" type="Start">
+    <subsheetid>51f694a8-5305-4a38-9b41-a98998f2f7ca</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collections will be combined." />
+    </postconditions>
+    <display x="15" y="-120" />
+    <inputs>
+      <input type="collection" name="Main Collection" narrative="The collection to append to." stage="Main Collection" />
+      <input type="collection" name="Collection to Append" narrative="The collection to append." stage="Collection to Append" />
+    </inputs>
+    <onsuccess>77e19cde-e0fa-40aa-8bea-05c4743275c2</onsuccess>
+  </stage>
+  <stage stageid="5d1a3d8d-2e99-49b5-9863-6a866e2e03dd" name="End" type="End">
+    <subsheetid>51f694a8-5305-4a38-9b41-a98998f2f7ca</subsheetid>
+    <loginhibit />
+    <display x="15" y="75" />
+    <outputs>
+      <output type="collection" name="Combined Collection" narrative="The combined collection." stage="Combined Collection" />
+    </outputs>
+  </stage>
+  <stage stageid="e3a95b76-e1ba-4bf1-92c1-653ae937120a" name="Main Collection" type="Collection">
+    <subsheetid>51f694a8-5305-4a38-9b41-a98998f2f7ca</subsheetid>
+    <display x="90" y="-120" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="320afdfe-675f-44a8-b563-5cf2cf3212d3" name="Collection to Append" type="Collection">
+    <subsheetid>51f694a8-5305-4a38-9b41-a98998f2f7ca</subsheetid>
+    <display x="150" y="-120" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="77e19cde-e0fa-40aa-8bea-05c4743275c2" name="Combine Collections" type="Code">
+    <subsheetid>51f694a8-5305-4a38-9b41-a98998f2f7ca</subsheetid>
+    <loginhibit />
+    <display x="15" y="-45" w="90" h="60" />
+    <inputs>
+      <input type="collection" name="Main Collection" expr="[Main Collection]" />
+      <input type="collection" name="Collection to Append" expr="[Collection to Append]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Combined Collection" stage="Combined Collection" />
+      <output type="flag" name="Success" stage="Success" />
+      <output type="text" name="Error Message" stage="Error Message" />
+    </outputs>
+    <onsuccess>35415fae-0f6d-4f78-b7b9-b39a6e3095ff</onsuccess>
+    <code><![CDATA[Success = False
+
+If Main_Collection.Columns.Count > 0 AndAlso Main_Collection.Columns.Count <> Collection_to_Append.Columns.Count Then
+	Error_Message = "Field definitions do not match - the number of columns in each is different."
+	Exit Sub
+End If
+
+For Each Col1 As DataColumn In Main_Collection.Columns
+
+	If Not Collection_to_Append.Columns.Contains(Col1.ColumnName) Then
+		Error_Message = "The Main Collection does not contain '" & Col1.ColumnName & "'"
+		Exit Sub
+	End If
+
+	If Collection_to_Append.Columns(Col1.ColumnName).DataType.Name <> Col1.DataType.Name Then
+		Error_Message = "The data type of '" & Col1.ColumnName & "' do not match."
+		Exit Sub
+	End If
+
+Next
+
+If Main_Collection.Columns.Count = 0 Then
+	Combined_Collection = Collection_to_Append
+Else
+	'We can now assume that fields match and start copying rows
+	For Each R As DataRow in Collection_to_Append.Rows
+		Main_Collection.ImportRow(R)
+	Next
+	Combined_Collection = Main_Collection
+End If
+
+Success = True]]></code>
+  </stage>
+  <stage stageid="d0521477-9847-4a70-834b-9c1d315bd817" name="Combined Collection" type="Collection">
+    <subsheetid>51f694a8-5305-4a38-9b41-a98998f2f7ca</subsheetid>
+    <display x="-90" y="75" w="120" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="35415fae-0f6d-4f78-b7b9-b39a6e3095ff" name="Success?" type="Decision">
+    <subsheetid>51f694a8-5305-4a38-9b41-a98998f2f7ca</subsheetid>
+    <loginhibit />
+    <display x="15" y="15" />
+    <decision expression="[Success]" />
+    <ontrue>5d1a3d8d-2e99-49b5-9863-6a866e2e03dd</ontrue>
+    <onfalse>e4269f55-7633-4d19-9ebf-299956a4a5ec</onfalse>
+  </stage>
+  <stage stageid="e4269f55-7633-4d19-9ebf-299956a4a5ec" name="System Exception" type="Exception">
+    <subsheetid>51f694a8-5305-4a38-9b41-a98998f2f7ca</subsheetid>
+    <display x="120" y="15" />
+    <exception type="System Exception" detail="[Error Message]" />
+  </stage>
+  <stage stageid="7923c865-f484-411d-815a-24fe9832f941" name="Success" type="Data">
+    <subsheetid>51f694a8-5305-4a38-9b41-a98998f2f7ca</subsheetid>
+    <display x="90" y="75" />
+    <datatype>flag</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="710fce6c-64f2-4e2d-8c89-9c2c41b9e9cb" name="Error Message" type="Data">
+    <subsheetid>51f694a8-5305-4a38-9b41-a98998f2f7ca</subsheetid>
+    <display x="150" y="75" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="bdd84939-c1c2-4ec3-9ec2-f19a6b55f056" name="Remove Empty Rows" type="SubSheetInfo">
+    <subsheetid>fa6ed646-8ae1-479e-9845-b1dc9ac3b560</subsheetid>
+    <narrative>Removes empty rows from a collection.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="46ac86fc-42a2-49f4-a2be-86a452176e2b" name="Start" type="Start">
+    <subsheetid>fa6ed646-8ae1-479e-9845-b1dc9ac3b560</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collection will have empty rows removed." />
+    </postconditions>
+    <display x="-15" y="-105" />
+    <inputs>
+      <input type="collection" name="Collection In" narrative="The collection to remove empty rows from" stage="Collection In" />
+    </inputs>
+    <onsuccess>6c450e6a-55ae-4382-a419-e4c6d59fc580</onsuccess>
+  </stage>
+  <stage stageid="0e663c5b-fb8a-4f15-999d-feb951956864" name="End" type="End">
+    <subsheetid>fa6ed646-8ae1-479e-9845-b1dc9ac3b560</subsheetid>
+    <loginhibit />
+    <display x="-15" y="90" />
+    <outputs>
+      <output type="collection" name="Collection Out" narrative="The collection with the empty rows removed" stage="Collection Out" />
+    </outputs>
+  </stage>
+  <stage stageid="613bed47-0c41-4155-93a3-5b31823f6048" name="Collection In" type="Collection">
+    <subsheetid>fa6ed646-8ae1-479e-9845-b1dc9ac3b560</subsheetid>
+    <display x="60" y="-105" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="af6c216c-aac3-4b4e-b7cb-bbf0a7863c49" name="Collection Out" type="Collection">
+    <subsheetid>fa6ed646-8ae1-479e-9845-b1dc9ac3b560</subsheetid>
+    <display x="60" y="90" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="6c450e6a-55ae-4382-a419-e4c6d59fc580" name="Remove empty rows" type="Code">
+    <subsheetid>fa6ed646-8ae1-479e-9845-b1dc9ac3b560</subsheetid>
+    <loginhibit />
+    <display x="-15" y="-15" w="90" h="30" />
+    <inputs>
+      <input type="collection" name="Collection In" expr="[Collection In]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Collection Out" stage="Collection Out" />
+    </outputs>
+    <onsuccess>0e663c5b-fb8a-4f15-999d-feb951956864</onsuccess>
+    <code><![CDATA[
+Dim bRemove as Boolean
+Dim iRow as integer
+' Loop through each row
+For iRow = Collection_In.Rows.Count - 1 to 0 step -1
+'For each Row as DataRow in Collection_In.Rows
+	bRemove=True
+	' Loop through every column for this row
+	For each Column as DataColumn in Collection_In.Columns
+		if Trim(Collection_In.Rows(iRow)(Column.ColumnName).ToString()) & "" <> "" then
+			bRemove=False
+			exit for
+		end if
+	Next
+
+	if bRemove=True then
+		Collection_In.Rows.Remove(Collection_In.Rows(iRow))
+	end if
+Next
+
+Collection_Out = Collection_In.Copy]]></code>
+  </stage>
+  <stage stageid="28f98de9-8408-4312-9e37-37197c2d8822" name="Transpose Collection" type="SubSheetInfo">
+    <subsheetid>a0cf6615-20c0-4910-9990-0f79f5f30bca</subsheetid>
+    <narrative>Creates a new collection with the fields Name and Value and for each row in the original collection creates an entry for each column.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="26ce26e2-1a34-4a20-97d8-34ab15954720" name="Start" type="Start">
+    <subsheetid>a0cf6615-20c0-4910-9990-0f79f5f30bca</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collection will be transposed." />
+    </postconditions>
+    <display x="30" y="-120" />
+    <inputs>
+      <input type="collection" name="Collection" narrative="The collection to transpose." stage="Collection In" />
+    </inputs>
+    <onsuccess>c3e45cac-9a76-4b70-a119-ffed9ceeaeac</onsuccess>
+  </stage>
+  <stage stageid="c9852e45-8999-4b73-a581-4a3f66b95b3a" name="End" type="End">
+    <subsheetid>a0cf6615-20c0-4910-9990-0f79f5f30bca</subsheetid>
+    <loginhibit />
+    <display x="30" y="75" />
+    <outputs>
+      <output type="collection" name="Appended Collection" narrative="The transposed collection." stage="Collection Out" />
+    </outputs>
+  </stage>
+  <stage stageid="c3e45cac-9a76-4b70-a119-ffed9ceeaeac" name="Transpose" type="Code">
+    <subsheetid>a0cf6615-20c0-4910-9990-0f79f5f30bca</subsheetid>
+    <loginhibit />
+    <display x="30" y="-30" />
+    <inputs>
+      <input type="collection" name="Collection" expr="[Collection In]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="New Collection" stage="Collection Out" />
+    </outputs>
+    <onsuccess>c9852e45-8999-4b73-a581-4a3f66b95b3a</onsuccess>
+    <code><![CDATA[
+New_Collection = GetDataTable("Name,Value", "System.String,System.String")
+Dim New_Row As System.Data.DataRow
+
+For Each r As System.Data.DataRow In Collection.Rows
+	For Each c As System.Data.DataColumn In Collection.Columns
+		New_Row = New_Collection.NewRow()
+		New_Row("Name") = c.ColumnName
+		New_Row("Value") = GetStringValue(r, c.ColumnName)
+		New_Collection.Rows.Add(New_Row)
+	Next
+Next
+]]></code>
+  </stage>
+  <stage stageid="d2f68cb8-90cf-4414-8554-daf4fa4c9f29" name="Collection Out" type="Collection">
+    <subsheetid>a0cf6615-20c0-4910-9990-0f79f5f30bca</subsheetid>
+    <display x="-180" y="60" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="99b09a03-6901-47ee-af4d-d43bfcf3bb42" name="Collection In" type="Collection">
+    <subsheetid>a0cf6615-20c0-4910-9990-0f79f5f30bca</subsheetid>
+    <display x="-180" y="0" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="90d519f8-3075-478e-a49f-b681d1ddd033" name="Field Exists" type="SubSheetInfo">
+    <subsheetid>4d41bfc8-e552-41ae-9e45-65dc3d1f7276</subsheetid>
+    <narrative>Finds out whether the collection contatins a given field.</narrative>
+    <display x="-135" y="-120" w="150" h="90" />
+  </stage>
+  <stage stageid="8605b0b2-ff16-473b-ba5d-1956390f48bd" name="Start" type="Start">
+    <subsheetid>4d41bfc8-e552-41ae-9e45-65dc3d1f7276</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <display x="75" y="-105" />
+    <inputs>
+      <input type="collection" name="Input Collection" narrative="The collection to check." stage="Input Collection" />
+      <input type="text" name="Field" narrative="The field to check for." stage="Field" />
+    </inputs>
+    <onsuccess>da5abfb8-f52a-4a03-8f9f-ec5e42dd4566</onsuccess>
+  </stage>
+  <stage stageid="26b8ca01-8895-483f-93ef-66df5bbb0a34" name="End" type="End">
+    <subsheetid>4d41bfc8-e552-41ae-9e45-65dc3d1f7276</subsheetid>
+    <loginhibit />
+    <display x="75" y="255" />
+    <outputs>
+      <output type="flag" name="Exists" narrative="True if the collection contains the field." stage="Exists" />
+    </outputs>
+  </stage>
+  <stage stageid="da5abfb8-f52a-4a03-8f9f-ec5e42dd4566" name="Get Collection Fields" type="SubSheet">
+    <subsheetid>4d41bfc8-e552-41ae-9e45-65dc3d1f7276</subsheetid>
+    <loginhibit />
+    <display x="75" y="-30" w="90" h="60" />
+    <inputs>
+      <input type="collection" name="Input Collection" expr="[Input Collection]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="Collection Fields" stage="Field Names" />
+    </outputs>
+    <onsuccess>470c6c27-3ed4-43b7-8c01-3fc7415ec55e</onsuccess>
+    <processid>e277cc2b-72b8-47e9-8a1b-e8530eb19a09</processid>
+  </stage>
+  <stage stageid="a910c0ad-5130-4073-8f3a-8cf76bc7d74e" name="Input Collection" type="Collection">
+    <subsheetid>4d41bfc8-e552-41ae-9e45-65dc3d1f7276</subsheetid>
+    <display x="-135" y="15" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="66e1609e-c3e7-4e35-82df-90254a0d842f" name="Field" type="Data">
+    <subsheetid>4d41bfc8-e552-41ae-9e45-65dc3d1f7276</subsheetid>
+    <display x="-135" y="-30" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="470c6c27-3ed4-43b7-8c01-3fc7415ec55e" name="Field Names" type="LoopStart">
+    <subsheetid>4d41bfc8-e552-41ae-9e45-65dc3d1f7276</subsheetid>
+    <loginhibit />
+    <display x="75" y="45" w="120" h="30" />
+    <onsuccess>eb7af2be-1265-40b6-8ea7-89fdda2b0ab1</onsuccess>
+    <groupid>755a928d-1109-4393-b44a-e265a1395a22</groupid>
+    <looptype>ForEach</looptype>
+    <loopdata>Field Names</loopdata>
+  </stage>
+  <stage stageid="54fa6a7b-f874-43d4-ac4a-4c16f28d1a9f" name="Field Names" type="LoopEnd">
+    <subsheetid>4d41bfc8-e552-41ae-9e45-65dc3d1f7276</subsheetid>
+    <loginhibit />
+    <display x="75" y="195" w="120" h="30" />
+    <onsuccess>26b8ca01-8895-483f-93ef-66df5bbb0a34</onsuccess>
+    <groupid>755a928d-1109-4393-b44a-e265a1395a22</groupid>
+  </stage>
+  <stage stageid="15f784c0-4879-4a2e-ab6f-c44f5c384d85" name="Field Names" type="Collection">
+    <subsheetid>4d41bfc8-e552-41ae-9e45-65dc3d1f7276</subsheetid>
+    <display x="-135" y="120" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+    <collectioninfo>
+      <field name="Field Name" type="text" />
+      <field name="Data Type" type="text" />
+    </collectioninfo>
+  </stage>
+  <stage stageid="905724f1-237f-4641-9511-289841ec3498" name="Exists" type="Data">
+    <subsheetid>4d41bfc8-e552-41ae-9e45-65dc3d1f7276</subsheetid>
+    <display x="-135" y="255" w="150" h="30" />
+    <datatype>flag</datatype>
+    <initialvalue>False</initialvalue>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="eb7af2be-1265-40b6-8ea7-89fdda2b0ab1" name="Match?" type="Decision">
+    <subsheetid>4d41bfc8-e552-41ae-9e45-65dc3d1f7276</subsheetid>
+    <loginhibit />
+    <display x="75" y="120" w="90" h="60" />
+    <decision expression="[Field Names.Field Name] = Trim([Field])" />
+    <ontrue>c4532590-c3c0-4014-98f4-bc3e1f30e5df</ontrue>
+    <onfalse>54fa6a7b-f874-43d4-ac4a-4c16f28d1a9f</onfalse>
+  </stage>
+  <stage stageid="d656772f-8ec9-4848-8f30-a4bda4f01837" name="anchor2" type="Anchor">
+    <subsheetid>4d41bfc8-e552-41ae-9e45-65dc3d1f7276</subsheetid>
+    <loginhibit />
+    <display x="210" y="255" w="10" h="10" />
+    <onsuccess>26b8ca01-8895-483f-93ef-66df5bbb0a34</onsuccess>
+  </stage>
+  <stage stageid="c4532590-c3c0-4014-98f4-bc3e1f30e5df" name="Exists" type="Calculation">
+    <subsheetid>4d41bfc8-e552-41ae-9e45-65dc3d1f7276</subsheetid>
+    <loginhibit />
+    <display x="210" y="120" />
+    <onsuccess>d656772f-8ec9-4848-8f30-a4bda4f01837</onsuccess>
+    <calculation expression="True" stage="Exists" />
+  </stage>
+  <stage stageid="2e050fc0-fed0-49b4-bafc-a33a0aee5ad9" name="Success?" type="Decision">
+    <subsheetid>3a772458-463d-46cf-8451-6cf5b4aeae30</subsheetid>
+    <loginhibit />
+    <display x="15" y="15" />
+    <decision expression="[Success]" />
+    <ontrue>c491f60e-4aa7-4abb-a203-5a78c0b64469</ontrue>
+    <onfalse>510a1b6e-59d7-40a0-8886-483ef66093e9</onfalse>
+  </stage>
+  <stage stageid="510a1b6e-59d7-40a0-8886-483ef66093e9" name="FAIL" type="Exception">
+    <subsheetid>3a772458-463d-46cf-8451-6cf5b4aeae30</subsheetid>
+    <display x="120" y="15" w="30" h="30" />
+    <exception type="UtilityException" detail="&quot;Error occurred removing null rows: &quot; &amp; [Message]" />
+  </stage>
+  <stage stageid="d21a0d38-763e-4c60-a2ee-196651324403" name="Note3" type="Note">
+    <loginhibit />
+    <narrative>Version 10.4.0</narrative>
+    <display x="15" y="-150" w="90" h="30" />
+    <font family="Segoe UI" size="14" style="Bold" color="FF0000" />
+  </stage>
+  <stage stageid="89ce9a42-60b8-483b-ae61-e87db8beec5c" name="Get Unmatched Records" type="SubSheetInfo">
+    <subsheetid>1b217763-c8fd-4c04-a40d-9c65089ffc73</subsheetid>
+    <narrative>This action returns the records from the first Collection that do not exist in the second Collection.
+
+NOTE: The Collections must have the same column definitions.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="130be03d-6d7d-461d-8541-81fb9c6c4e79" name="Start" type="Start">
+    <subsheetid>1b217763-c8fd-4c04-a40d-9c65089ffc73</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="The two Collections must have identical column definitions." />
+    </preconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Main Collection" narrative="The primary Collection. This is the Collection from which records will be returned if they do not have a matching record in 'Comparison Collection'." stage="Main Collection" />
+      <input type="collection" name="Comparison Collection" narrative="The comparison Collection. This is the Collection that 'Main Collection' is compared against to look for matching records." stage="Comparison Collection" />
+    </inputs>
+    <onsuccess>d8164d30-1f24-437f-b946-4faa61c823c7</onsuccess>
+  </stage>
+  <stage stageid="e3619b42-fa4c-4699-8888-91c77c148d9a" name="End" type="End">
+    <subsheetid>1b217763-c8fd-4c04-a40d-9c65089ffc73</subsheetid>
+    <loginhibit />
+    <display x="15" y="75" />
+    <outputs>
+      <output type="collection" name="Unmatched Records" narrative="A Collection of records that exist in the Main Collection but do not exist in the Comparison Collection." stage="Unmatched Records" />
+    </outputs>
+  </stage>
+  <stage stageid="adf99ec3-cd9e-45a4-9cdd-cc063d6ecac4" name="Main Collection" type="Collection">
+    <subsheetid>1b217763-c8fd-4c04-a40d-9c65089ffc73</subsheetid>
+    <display x="-195" y="-15" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="bf5db2be-322c-49c9-b60b-c04d3a7a0beb" name="Comparison Collection" type="Collection">
+    <subsheetid>1b217763-c8fd-4c04-a40d-9c65089ffc73</subsheetid>
+    <display x="-195" y="15" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="ccfb713c-ac9b-46e0-8852-f391f1ca01e2" name="Input" type="Block">
+    <subsheetid>1b217763-c8fd-4c04-a40d-9c65089ffc73</subsheetid>
+    <loginhibit />
+    <display x="-270" y="-45" w="150" h="90" />
+    <font family="Segoe UI" size="10" style="Regular" color="7FB2E5" />
+  </stage>
+  <stage stageid="62009e7a-6480-426d-a5e5-6d3a3b635655" name="Output" type="Block">
+    <subsheetid>1b217763-c8fd-4c04-a40d-9c65089ffc73</subsheetid>
+    <loginhibit />
+    <display x="-270" y="60" w="150" h="60" />
+    <font family="Segoe UI" size="10" style="Regular" color="CCFFCC" />
+  </stage>
+  <stage stageid="ff9c0d74-401e-47ea-93e8-5d1f3cd0c65b" name="Local Data" type="Block">
+    <subsheetid>1b217763-c8fd-4c04-a40d-9c65089ffc73</subsheetid>
+    <loginhibit />
+    <display x="-270" y="135" w="150" h="90" />
+    <font family="Segoe UI" size="10" style="Regular" color="FFCC99" />
+  </stage>
+  <stage stageid="d8164d30-1f24-437f-b946-4faa61c823c7" name="Linq - Except" type="Code">
+    <subsheetid>1b217763-c8fd-4c04-a40d-9c65089ffc73</subsheetid>
+    <loginhibit />
+    <display x="15" y="-45" w="90" h="30" />
+    <inputs>
+      <input type="collection" name="Main Collection" expr="[Main Collection]" />
+      <input type="collection" name="Comparison Collection" expr="[Comparison Collection]" />
+    </inputs>
+    <outputs>
+      <output type="flag" name="Success" stage="Success" />
+      <output type="text" name="Error Message" stage="Error Message" />
+      <output type="collection" name="Unmatched Records" stage="Unmatched Records" />
+    </outputs>
+    <onsuccess>3602c39e-d674-46b6-9806-b6923f8c664e</onsuccess>
+    <code><![CDATA[Success = False
+
+If Main_Collection.Columns.Count > 0 AndAlso Main_Collection.Columns.Count <> Comparison_Collection.Columns.Count Then
+	Error_Message = "Field definitions do not match. The number of columns in each collection is different."
+	Exit Sub
+End If
+
+For Each Col1 As DataColumn In Main_Collection.Columns
+	If Not Comparison_Collection.Columns.Contains(Col1.ColumnName) Then
+		Error_Message = "The Main Collection does not contain a column named '" & Col1.ColumnName & "'."
+		Exit Sub
+	End If
+
+	If Comparison_Collection.Columns(Col1.ColumnName).DataType.Name <> Col1.DataType.Name Then
+		Error_Message = "The data type of column '" & Col1.ColumnName & "' does not match between the two collections."
+		Exit Sub
+	End If
+Next
+
+Try
+	Unmatched_Records = Main_Collection.AsEnumerable().Except(Comparison_Collection.AsEnumerable(), DataRowComparer.Default).CopyToDataTable()
+Catch ex As InvalidOperationException
+	' We'll get this error if all of the records in the main collection are found in the comparison collection.
+	Unmatched_Records = Main_Collection.Clone()
+End Try
+
+Success = True
+Error_Message = ""]]></code>
+  </stage>
+  <stage stageid="8a921dd2-1737-4d96-a588-c3e6ebb40024" name="Success" type="Data">
+    <subsheetid>1b217763-c8fd-4c04-a40d-9c65089ffc73</subsheetid>
+    <display x="-195" y="165" w="120" h="30" />
+    <datatype>flag</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="3622ddaa-8166-4d0f-bcc8-f1e6f7dd3b57" name="Error Message" type="Data">
+    <subsheetid>1b217763-c8fd-4c04-a40d-9c65089ffc73</subsheetid>
+    <display x="-195" y="195" w="120" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="f89adecd-0827-429b-8de3-8b01e5ccc89e" name="Unmatched Records" type="Collection">
+    <subsheetid>1b217763-c8fd-4c04-a40d-9c65089ffc73</subsheetid>
+    <display x="-195" y="90" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="3602c39e-d674-46b6-9806-b6923f8c664e" name="Success?" type="Decision">
+    <subsheetid>1b217763-c8fd-4c04-a40d-9c65089ffc73</subsheetid>
+    <loginhibit />
+    <display x="15" y="15" />
+    <decision expression="[Success]" />
+    <ontrue>e3619b42-fa4c-4699-8888-91c77c148d9a</ontrue>
+    <onfalse>8a86a8d9-d10b-4088-967a-2e9c1c368676</onfalse>
+  </stage>
+  <stage stageid="8a86a8d9-d10b-4088-967a-2e9c1c368676" name="System Exception" type="Exception">
+    <subsheetid>1b217763-c8fd-4c04-a40d-9c65089ffc73</subsheetid>
+    <display x="120" y="15" w="90" h="30" />
+    <exception type="System Exception" detail="[Error Message]" />
+  </stage>
+  <stage stageid="0fb01066-3d3b-47fc-b63c-511e5bb33ad5" name="Get Matched Records" type="SubSheetInfo">
+    <subsheetid>5abe0172-955b-476b-ad10-8c94292f2304</subsheetid>
+    <narrative>This action returns the records that exist in both input Collections.
+
+NOTE: The Collections must have the same column definitions.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="8cff5de5-b6a7-4663-8b01-bd753a5c4c62" name="Start" type="Start">
+    <subsheetid>5abe0172-955b-476b-ad10-8c94292f2304</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="The two Collections must have identical column definitions." />
+    </preconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Main Collection" narrative="The primary Collection. This is the Collection from which records will be returned if they do not have a matching record in 'Comparison Collection'." stage="Main Collection" />
+      <input type="collection" name="Comparison Collection" narrative="The comparison Collection. This is the Collection that 'Main Collection' is compared against to look for matching records." stage="Comparison Collection" />
+    </inputs>
+    <onsuccess>f846fbd0-6ac6-47f4-8ae5-29608f424daa</onsuccess>
+  </stage>
+  <stage stageid="845396ae-206a-41f4-bc19-44551981df7a" name="End" type="End">
+    <subsheetid>5abe0172-955b-476b-ad10-8c94292f2304</subsheetid>
+    <loginhibit />
+    <display x="15" y="75" />
+    <outputs>
+      <output type="collection" name="Matched Records" narrative="A Collection of records that exist in both input Collections." stage="Matched Records" />
+    </outputs>
+  </stage>
+  <stage stageid="2e074afe-6f8f-4657-9d75-f6693c7f5d2e" name="Main Collection" type="Collection">
+    <subsheetid>5abe0172-955b-476b-ad10-8c94292f2304</subsheetid>
+    <display x="-195" y="-15" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="4c76f2c0-e4fe-4890-b929-4cabb3e10263" name="Comparison Collection" type="Collection">
+    <subsheetid>5abe0172-955b-476b-ad10-8c94292f2304</subsheetid>
+    <display x="-195" y="15" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="23746902-9876-4974-938d-a0ed9a20293c" name="Input" type="Block">
+    <subsheetid>5abe0172-955b-476b-ad10-8c94292f2304</subsheetid>
+    <loginhibit />
+    <display x="-270" y="-45" w="150" h="90" />
+    <font family="Segoe UI" size="10" style="Regular" color="7FB2E5" />
+  </stage>
+  <stage stageid="6e992ef5-02e9-4a05-bc31-bcbf17ce23c6" name="Output" type="Block">
+    <subsheetid>5abe0172-955b-476b-ad10-8c94292f2304</subsheetid>
+    <loginhibit />
+    <display x="-270" y="60" w="150" h="60" />
+    <font family="Segoe UI" size="10" style="Regular" color="CCFFCC" />
+  </stage>
+  <stage stageid="f22bc52b-8dfd-4ebc-9c33-a4c4062e4896" name="Local Data" type="Block">
+    <subsheetid>5abe0172-955b-476b-ad10-8c94292f2304</subsheetid>
+    <loginhibit />
+    <display x="-270" y="135" w="150" h="90" />
+    <font family="Segoe UI" size="10" style="Regular" color="FFCC99" />
+  </stage>
+  <stage stageid="f846fbd0-6ac6-47f4-8ae5-29608f424daa" name="Linq - Intersect" type="Code">
+    <subsheetid>5abe0172-955b-476b-ad10-8c94292f2304</subsheetid>
+    <loginhibit />
+    <display x="15" y="-45" w="90" h="30" />
+    <inputs>
+      <input type="collection" name="Main Collection" expr="[Main Collection]" />
+      <input type="collection" name="Comparison Collection" expr="[Comparison Collection]" />
+    </inputs>
+    <outputs>
+      <output type="flag" name="Success" stage="Success" />
+      <output type="text" name="Error Message" stage="Error Message" />
+      <output type="collection" name="Matched Records" stage="Matched Records" />
+    </outputs>
+    <onsuccess>1cf943f4-3c9e-4913-a20b-7dcfe1481d4b</onsuccess>
+    <code><![CDATA[Success = False
+
+If Main_Collection.Columns.Count > 0 AndAlso Main_Collection.Columns.Count <> Comparison_Collection.Columns.Count Then
+	Error_Message = "Field definitions do not match. The number of columns in each collection is different."
+	Exit Sub
+End If
+
+For Each Col1 As DataColumn In Main_Collection.Columns
+	If Not Comparison_Collection.Columns.Contains(Col1.ColumnName) Then
+		Error_Message = "The Main Collection does not contain a column named '" & Col1.ColumnName & "'."
+		Exit Sub
+	End If
+
+	If Comparison_Collection.Columns(Col1.ColumnName).DataType.Name <> Col1.DataType.Name Then
+		Error_Message = "The data type of column '" & Col1.ColumnName & "' does not match between the two collections."
+		Exit Sub
+	End If
+Next
+
+Try
+	Matched_Records = Main_Collection.AsEnumerable().Intersect(Comparison_Collection.AsEnumerable(), DataRowComparer.Default).CopyToDataTable()
+Catch ex As InvalidOperationException
+	' We'll get this exception if there are no records returned by the Linq query (Intersect), so we just eat the exception and move on.
+	Matched_Records = Main_Collection.Clone()
+End Try
+
+Success = True
+Error_Message = ""]]></code>
+  </stage>
+  <stage stageid="317028a6-4ee4-4968-a171-9ad37391f8c9" name="Success" type="Data">
+    <subsheetid>5abe0172-955b-476b-ad10-8c94292f2304</subsheetid>
+    <display x="-195" y="165" w="120" h="30" />
+    <datatype>flag</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="fa3d3598-5364-45f3-aae6-227de0a985db" name="Error Message" type="Data">
+    <subsheetid>5abe0172-955b-476b-ad10-8c94292f2304</subsheetid>
+    <display x="-195" y="195" w="120" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="1073bfab-d432-43df-92eb-3bb3e3a09e5c" name="Matched Records" type="Collection">
+    <subsheetid>5abe0172-955b-476b-ad10-8c94292f2304</subsheetid>
+    <display x="-195" y="90" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="1cf943f4-3c9e-4913-a20b-7dcfe1481d4b" name="Success?" type="Decision">
+    <subsheetid>5abe0172-955b-476b-ad10-8c94292f2304</subsheetid>
+    <loginhibit />
+    <display x="15" y="15" />
+    <decision expression="[Success]" />
+    <ontrue>845396ae-206a-41f4-bc19-44551981df7a</ontrue>
+    <onfalse>f1142b28-450d-40b4-9962-027b2aa7f9a9</onfalse>
+  </stage>
+  <stage stageid="f1142b28-450d-40b4-9962-027b2aa7f9a9" name="System Exception" type="Exception">
+    <subsheetid>5abe0172-955b-476b-ad10-8c94292f2304</subsheetid>
+    <display x="120" y="15" w="90" h="30" />
+    <exception type="System Exception" detail="[Error Message]" />
+  </stage>
+  <stage stageid="9c12429d-e57f-4f04-b2fb-6a7f4a991590" name="Get Union of Collections" type="SubSheetInfo">
+    <subsheetid>cd8dfc11-f248-4b63-9116-1ae3637913ea</subsheetid>
+    <narrative>This action returns the union (a combined Collection of unique records) of the two input Collections.
+
+NOTE: The Collections must have the same column definitions.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="c149caca-4c1e-48b7-9dc9-a55f40ba231e" name="Start" type="Start">
+    <subsheetid>cd8dfc11-f248-4b63-9116-1ae3637913ea</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="The two Collections must have identical column definitions." />
+    </preconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Collection1" narrative="The first Collection to use in calculating the union." stage="Collection1" />
+      <input type="collection" name="Collection2" narrative="The second Collection to use in calculating the union." stage="Collection2" />
+    </inputs>
+    <onsuccess>aacf5f2c-fe64-463a-abfc-735f7403db87</onsuccess>
+  </stage>
+  <stage stageid="34ee905f-f445-4856-b08b-f9c8252da8b9" name="End" type="End">
+    <subsheetid>cd8dfc11-f248-4b63-9116-1ae3637913ea</subsheetid>
+    <loginhibit />
+    <display x="15" y="75" />
+    <outputs>
+      <output type="collection" name="Union" narrative="A Collection of unique records that exist in both input Collections." stage="Union" />
+    </outputs>
+  </stage>
+  <stage stageid="b0772f48-b18c-4772-b4a4-d5b2de6a127f" name="Collection1" type="Collection">
+    <subsheetid>cd8dfc11-f248-4b63-9116-1ae3637913ea</subsheetid>
+    <display x="-195" y="-15" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="569d0969-6f5a-4e96-b9cb-5c05b10a9c14" name="Collection2" type="Collection">
+    <subsheetid>cd8dfc11-f248-4b63-9116-1ae3637913ea</subsheetid>
+    <display x="-195" y="15" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="737dafa5-37d3-46b9-bd5c-967612f87b67" name="Input" type="Block">
+    <subsheetid>cd8dfc11-f248-4b63-9116-1ae3637913ea</subsheetid>
+    <loginhibit />
+    <display x="-270" y="-45" w="150" h="90" />
+    <font family="Segoe UI" size="10" style="Regular" color="7FB2E5" />
+  </stage>
+  <stage stageid="d104ec15-cb63-441b-906b-2fe09fb97737" name="Output" type="Block">
+    <subsheetid>cd8dfc11-f248-4b63-9116-1ae3637913ea</subsheetid>
+    <loginhibit />
+    <display x="-270" y="60" w="150" h="60" />
+    <font family="Segoe UI" size="10" style="Regular" color="CCFFCC" />
+  </stage>
+  <stage stageid="ed53674a-0bed-4e1f-bc7d-c9d1b7410b5a" name="Local Data" type="Block">
+    <subsheetid>cd8dfc11-f248-4b63-9116-1ae3637913ea</subsheetid>
+    <loginhibit />
+    <display x="-270" y="135" w="150" h="90" />
+    <font family="Segoe UI" size="10" style="Regular" color="FFCC99" />
+  </stage>
+  <stage stageid="aacf5f2c-fe64-463a-abfc-735f7403db87" name="Linq - Union" type="Code">
+    <subsheetid>cd8dfc11-f248-4b63-9116-1ae3637913ea</subsheetid>
+    <loginhibit />
+    <display x="15" y="-45" w="90" h="30" />
+    <inputs>
+      <input type="collection" name="Collection1" expr="[Collection1]" />
+      <input type="collection" name="Collection2" expr="[Collection2]" />
+    </inputs>
+    <outputs>
+      <output type="flag" name="Success" stage="Success" />
+      <output type="text" name="Error Message" stage="Error Message" />
+      <output type="collection" name="Union" stage="Union" />
+    </outputs>
+    <onsuccess>6829427f-d974-42a3-b200-4d920aee2c26</onsuccess>
+    <code><![CDATA[Success = False
+
+If Collection1.Columns.Count > 0 AndAlso Collection1.Columns.Count <> Collection2.Columns.Count Then
+	Error_Message = "Field definitions do not match. The number of columns in each collection is different."
+	Exit Sub
+End If
+
+For Each Col1 As DataColumn In Collection1.Columns
+	If Not Collection2.Columns.Contains(Col1.ColumnName) Then
+		Error_Message = "Collection1 does not contain a column named '" & Col1.ColumnName & "'."
+		Exit Sub
+	End If
+
+	If Collection2.Columns(Col1.ColumnName).DataType.Name <> Col1.DataType.Name Then
+		Error_Message = "The data type of column '" & Col1.ColumnName & "' does not match between the two collections."
+		Exit Sub
+	End If
+Next
+
+Try
+	Union = Collection1.AsEnumerable().Union(Collection2.AsEnumerable(), DataRowComparer.Default).CopyToDataTable()
+Catch ex As InvalidOperationException
+	' We get this exception in cases where the returned collection from the Union contains no records because 
+	' there's no data to copy, so we just eat the exception. 
+	Union = Collection1.Clone()
+End Try
+
+Success = True
+Error_Message = ""]]></code>
+  </stage>
+  <stage stageid="fc41aab5-2bf4-47e2-a2ab-83a39804edd0" name="Success" type="Data">
+    <subsheetid>cd8dfc11-f248-4b63-9116-1ae3637913ea</subsheetid>
+    <display x="-195" y="165" w="120" h="30" />
+    <datatype>flag</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="3d5656ed-d71f-49fa-b0c6-9229de2785fe" name="Error Message" type="Data">
+    <subsheetid>cd8dfc11-f248-4b63-9116-1ae3637913ea</subsheetid>
+    <display x="-195" y="195" w="120" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="8e57bffe-c18b-49be-a668-6adcd0e32395" name="Union" type="Collection">
+    <subsheetid>cd8dfc11-f248-4b63-9116-1ae3637913ea</subsheetid>
+    <display x="-195" y="90" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="6829427f-d974-42a3-b200-4d920aee2c26" name="Success?" type="Decision">
+    <subsheetid>cd8dfc11-f248-4b63-9116-1ae3637913ea</subsheetid>
+    <loginhibit />
+    <display x="15" y="15" />
+    <decision expression="[Success]" />
+    <ontrue>34ee905f-f445-4856-b08b-f9c8252da8b9</ontrue>
+    <onfalse>d659bb38-8d3b-4797-8768-d3396c64868a</onfalse>
+  </stage>
+  <stage stageid="d659bb38-8d3b-4797-8768-d3396c64868a" name="System Exception" type="Exception">
+    <subsheetid>cd8dfc11-f248-4b63-9116-1ae3637913ea</subsheetid>
+    <display x="120" y="15" w="90" h="30" />
+    <exception type="System Exception" detail="[Error Message]" />
+  </stage>
+  <stage stageid="b2a46636-144a-42cc-9290-9df9dc802ce9" name="Append Calculated Field" type="SubSheetInfo">
+    <subsheetid>524a0a3c-118a-4343-ba4b-bc184a72404e</subsheetid>
+    <narrative>Appends a new field to the collection with the value of that field, for each row, calculated based on the input expression.
+
+NOTE: If the value of a field used in the expression is changed after the caluculated field is initially created, the calculated field will not be updated. The calculation expression only applies at the point where the field is created.</narrative>
+    <display x="-195" y="-105" w="240" h="90" />
+  </stage>
+  <stage stageid="e6a147f0-f64c-4454-a74e-d2b422c0df75" name="Start" type="Start">
+    <subsheetid>524a0a3c-118a-4343-ba4b-bc184a72404e</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="None." />
+    </preconditions>
+    <postconditions>
+      <condition narrative="The collection will have the new field appended to it." />
+    </postconditions>
+    <display x="30" y="-105" />
+    <inputs>
+      <input type="collection" name="Collection" narrative="The collection to append a field to." stage="Collection In" />
+      <input type="text" name="Field Name" narrative="The name of the new field." stage="Field Name" />
+      <input type="text" name="Expression" narrative="The expression value to apply to the field for each row." stage="Expression" />
+      <input type="text" name="Data Type" narrative="The Blue Prism data type of the new field." stage="Data Type" />
+    </inputs>
+    <onsuccess>9bad9a3a-e53b-4925-932e-944d77af88f3</onsuccess>
+  </stage>
+  <stage stageid="0ac07106-6a92-4828-b060-03e8a91ff2e1" name="End" type="End">
+    <subsheetid>524a0a3c-118a-4343-ba4b-bc184a72404e</subsheetid>
+    <loginhibit />
+    <display x="30" y="90" />
+    <outputs>
+      <output type="collection" name="Appended Collection" narrative="The collection with field appended." stage="Collection Out" />
+    </outputs>
+  </stage>
+  <stage stageid="9bad9a3a-e53b-4925-932e-944d77af88f3" name="Append Expression Field" type="Code">
+    <subsheetid>524a0a3c-118a-4343-ba4b-bc184a72404e</subsheetid>
+    <loginhibit />
+    <display x="30" y="-15" />
+    <inputs>
+      <input type="collection" name="Collection" expr="[Collection In]" />
+      <input type="text" name="Column" expr="[Field Name]" />
+      <input type="text" name="Expression" expr="[Expression]" />
+      <input type="text" name="DataType" expr="[Data Type]" />
+    </inputs>
+    <outputs>
+      <output type="collection" name="New Collection" stage="Collection Out" />
+    </outputs>
+    <onsuccess>0ac07106-6a92-4828-b060-03e8a91ff2e1</onsuccess>
+    <code><![CDATA[DataType = DataType.ToLower()
+
+If Not Collection.Columns.Contains(Column) Then
+	Select DataType
+		Case "number"
+			Collection.Columns.Add(Column, Type.GetType("System.Decimal"), Expression)
+		Case "date", "datetime", "time"
+			Collection.Columns.Add(Column, Type.GetType("System.DateTime"), Expression)
+		Case "timespan"
+			Collection.Columns.Add(Column, Type.GetType("System.TimeSpan"), Expression)
+		Case "flag"
+			Collection.Columns.Add(Column, Type.GetType("System.Boolean"), Expression)
+		Case "binary"
+			Collection.Columns.Add(Column, Type.GetType("System.Byte[]"), Expression)
+		Case Else
+			Collection.Columns.Add(Column, Type.GetType("System.String"), Expression)
+	End Select
+End If
+
+New_Collection = Collection
+]]></code>
+  </stage>
+  <stage stageid="b702a8a4-e1de-4878-a917-029f8147b685" name="Collection Out" type="Collection">
+    <subsheetid>524a0a3c-118a-4343-ba4b-bc184a72404e</subsheetid>
+    <display x="-180" y="165" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="965af2e9-9a3c-4877-a43d-3782bc2ed8f8" name="Field Name" type="Data">
+    <subsheetid>524a0a3c-118a-4343-ba4b-bc184a72404e</subsheetid>
+    <display x="-180" y="30" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="4bcd1496-990d-42fc-a96b-e29237041a9c" name="Collection In" type="Collection">
+    <subsheetid>524a0a3c-118a-4343-ba4b-bc184a72404e</subsheetid>
+    <display x="-180" y="-15" w="150" h="60" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="96f24399-6f1c-4b04-ac55-828597e3dc4c" name="Expression" type="Data">
+    <subsheetid>524a0a3c-118a-4343-ba4b-bc184a72404e</subsheetid>
+    <display x="-180" y="60" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="7778dfe1-fe4c-4f51-9089-d4703a81b9b7" name="Data Type" type="Data">
+    <subsheetid>524a0a3c-118a-4343-ba4b-bc184a72404e</subsheetid>
+    <display x="-180" y="90" w="150" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="ad600498-c148-4bc1-838e-0cea022c338a" name="Note2" type="Note">
+    <narrative>© 2025 Blue Prism Limited
+Licensed under Blue Prism Asset Terms for Modifiable Assets
+https://portal.blueprism.com/agreements
+</narrative>
+    <display x="210" y="-15" w="330" h="90" />
+    <font family="Segoe UI" size="12" style="Regular" color="0000FF" />
+  </stage>
+  <stage stageid="eb481d3b-bee5-423e-9701-4a63d97e36b3" name="Save Collection to CSV File" type="SubSheetInfo">
+    <subsheetid>2d0438d1-70b1-4151-b8a1-33e7bab117ad</subsheetid>
+    <display x="-150" y="-150" w="150" h="90" />
+  </stage>
+  <stage stageid="7c395a70-605f-45b1-ae21-26f3b64519a3" name="Start" type="Start">
+    <subsheetid>2d0438d1-70b1-4151-b8a1-33e7bab117ad</subsheetid>
+    <loginhibit />
+    <display x="60" y="-150" />
+    <inputs>
+      <input type="collection" name="CollectionData" narrative="The collection to export to CSV" stage="CollectionData" />
+      <input type="text" name="CSVFilePath" narrative="The path to save the file to." stage="CSVFilePath" />
+      <input type="flag" name="Include Column Headers" narrative="True if you wish to include column headers as the first line." stage="Include Headers?" />
+    </inputs>
+    <onsuccess>e24d39a7-4848-4f47-b8ca-000479ce1649</onsuccess>
+  </stage>
+  <stage stageid="32fe5ed5-2082-465b-9cfb-253144b564ee" name="End" type="End">
+    <subsheetid>2d0438d1-70b1-4151-b8a1-33e7bab117ad</subsheetid>
+    <loginhibit />
+    <display x="60" y="135" />
+    <outputs>
+      <output type="text" name="ErrorMessage" narrative="Any resulting exception message." stage="ErrorMessage" />
+    </outputs>
+  </stage>
+  <stage stageid="1cada6a0-371a-4153-b378-fe72063152f0" name="CSVFilePath" type="Data">
+    <subsheetid>2d0438d1-70b1-4151-b8a1-33e7bab117ad</subsheetid>
+    <loginhibit />
+    <display x="-150" y="-60" w="120" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="5ed11ca9-c329-409a-9a45-34936029b439" name="CollectionData" type="Collection">
+    <subsheetid>2d0438d1-70b1-4151-b8a1-33e7bab117ad</subsheetid>
+    <loginhibit />
+    <display x="-150" y="0" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="651619ed-4ba5-470c-b33d-e388f8fc06b4" name="Save to CSV File" type="Code">
+    <subsheetid>2d0438d1-70b1-4151-b8a1-33e7bab117ad</subsheetid>
+    <loginhibit />
+    <display x="60" y="-30" />
+    <inputs>
+      <input type="collection" name="CollectionData" expr="[CollectionData]" />
+      <input type="text" name="CSVFilePath" expr="[CSVFilePath]" />
+      <input type="flag" name="Include Column Headers" expr="[Include Headers?]" />
+    </inputs>
+    <outputs>
+      <output type="text" name="ErrorMessage" stage="ErrorMessage" />
+    </outputs>
+    <onsuccess>32fe5ed5-2082-465b-9cfb-253144b564ee</onsuccess>
+    <code><![CDATA[ErrorMessage = "No Error"
+Try
+	SaveDataTableToCSV(CollectionData, CSVFilePath, Include_Column_Headers)
+Catch ex as Exception
+	if not ex.InnerException is nothing then
+		ErrorMessage = string.Format("Error:{0}:IE:{1}",ex.Message, ex.InnerException.Message)
+	else
+		ErrorMessage = string.Format("Error:{0}", ex.Message)
+	End if
+End Try
+]]></code>
+  </stage>
+  <stage stageid="e24d39a7-4848-4f47-b8ca-000479ce1649" name="File path has content" type="Decision">
+    <subsheetid>2d0438d1-70b1-4151-b8a1-33e7bab117ad</subsheetid>
+    <loginhibit />
+    <display x="60" y="-90" />
+    <decision expression="Len([CSVFilePath]) &gt; 0" />
+    <ontrue>651619ed-4ba5-470c-b33d-e388f8fc06b4</ontrue>
+    <onfalse>5ba6fc9d-84d3-46d3-82bb-e0ea86acfd10</onfalse>
+  </stage>
+  <stage stageid="d156b399-9e4a-49d9-a023-3327ab2c1102" name="Include Headers?" type="Data">
+    <subsheetid>2d0438d1-70b1-4151-b8a1-33e7bab117ad</subsheetid>
+    <loginhibit />
+    <display x="-150" y="60" />
+    <datatype>flag</datatype>
+    <initialvalue>True</initialvalue>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="6cb8162d-c4b9-41b3-95a4-b5d512e720e7" name="Inputs" type="Block">
+    <subsheetid>2d0438d1-70b1-4151-b8a1-33e7bab117ad</subsheetid>
+    <loginhibit />
+    <display x="-225" y="-90" w="150" h="195" />
+    <font family="Segoe UI" size="10" style="Regular" color="FFCC00" />
+  </stage>
+  <stage stageid="5ba6fc9d-84d3-46d3-82bb-e0ea86acfd10" name="Anchor1" type="Anchor">
+    <subsheetid>2d0438d1-70b1-4151-b8a1-33e7bab117ad</subsheetid>
+    <loginhibit />
+    <display x="180" y="-90" w="10" h="10" />
+    <onsuccess>02b300b2-f9e0-492d-93d5-89088cb26256</onsuccess>
+  </stage>
+  <stage stageid="c457c4d5-bf7d-4309-b9e6-df3d33795a77" name="ErrorMessage" type="Data">
+    <subsheetid>2d0438d1-70b1-4151-b8a1-33e7bab117ad</subsheetid>
+    <loginhibit />
+    <display x="-150" y="165" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="02b300b2-f9e0-492d-93d5-89088cb26256" name="Set Error Message" type="Calculation">
+    <subsheetid>2d0438d1-70b1-4151-b8a1-33e7bab117ad</subsheetid>
+    <loginhibit />
+    <display x="180" y="-30" />
+    <onsuccess>25778783-cbb2-44b8-abb9-44a1b910decc</onsuccess>
+    <calculation expression="&quot;Check provided file path variable. It is currently empty.&quot;" stage="ErrorMessage" />
+  </stage>
+  <stage stageid="25778783-cbb2-44b8-abb9-44a1b910decc" name="Anchor2" type="Anchor">
+    <subsheetid>2d0438d1-70b1-4151-b8a1-33e7bab117ad</subsheetid>
+    <loginhibit />
+    <display x="180" y="135" w="10" h="10" />
+    <onsuccess>32fe5ed5-2082-465b-9cfb-253144b564ee</onsuccess>
+  </stage>
+  <stage stageid="e4a28c6f-101b-486e-9581-76bd12c7eedb" name="Outputs" type="Block">
+    <subsheetid>2d0438d1-70b1-4151-b8a1-33e7bab117ad</subsheetid>
+    <loginhibit />
+    <display x="-225" y="120" w="150" h="75" />
+    <font family="Segoe UI" size="10" style="Regular" color="FF0000" />
+  </stage>
+  <stage stageid="d7c8aceb-4576-4fdf-9089-fdebf6934111" name="Get Unique Records" type="SubSheetInfo">
+    <subsheetid>c63b2d7a-01d2-4a51-a0c0-edc02a4669cb</subsheetid>
+    <narrative>This action returns the records from the input Collection where the value of the specified column is unique across all records.</narrative>
+    <display x="-195" y="-105" w="150" h="90" />
+  </stage>
+  <stage stageid="4fd518ae-a437-41e2-9859-3ff5e26fc1bb" name="Start" type="Start">
+    <subsheetid>c63b2d7a-01d2-4a51-a0c0-edc02a4669cb</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="The two Collections must have identical column definitions." />
+    </preconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Input Collection" narrative="The Collection to be checked." stage="Input Collection" />
+      <input type="text" name="Column Name" narrative="The name of the column to check for unique values." stage="Column Name" />
+    </inputs>
+    <onsuccess>2963fe3a-0cca-4869-84d8-edd12819c82a</onsuccess>
+  </stage>
+  <stage stageid="332aaa56-4d26-4eed-b94f-7b30b596b537" name="End" type="End">
+    <subsheetid>c63b2d7a-01d2-4a51-a0c0-edc02a4669cb</subsheetid>
+    <loginhibit />
+    <display x="15" y="75" />
+    <outputs>
+      <output type="collection" name="Unique Records" narrative="A Collection of unique records." stage="Unique Records" />
+    </outputs>
+  </stage>
+  <stage stageid="e26acfd6-54ba-4e68-828b-0ea62d1b05a8" name="Input" type="Block">
+    <subsheetid>c63b2d7a-01d2-4a51-a0c0-edc02a4669cb</subsheetid>
+    <loginhibit />
+    <display x="-270" y="-45" w="150" h="90" />
+    <font family="Segoe UI" size="10" style="Regular" color="7FB2E5" />
+  </stage>
+  <stage stageid="13e8c4c9-2dee-4dd1-96a7-fc8f07d2c511" name="Output" type="Block">
+    <subsheetid>c63b2d7a-01d2-4a51-a0c0-edc02a4669cb</subsheetid>
+    <loginhibit />
+    <display x="-270" y="60" w="150" h="60" />
+    <font family="Segoe UI" size="10" style="Regular" color="CCFFCC" />
+  </stage>
+  <stage stageid="2fb82201-c251-43ee-a548-2553841ba94b" name="Local Data" type="Block">
+    <subsheetid>c63b2d7a-01d2-4a51-a0c0-edc02a4669cb</subsheetid>
+    <loginhibit />
+    <display x="-270" y="135" w="150" h="90" />
+    <font family="Segoe UI" size="10" style="Regular" color="FFCC99" />
+  </stage>
+  <stage stageid="2963fe3a-0cca-4869-84d8-edd12819c82a" name="Linq - Get Unique" type="Code">
+    <subsheetid>c63b2d7a-01d2-4a51-a0c0-edc02a4669cb</subsheetid>
+    <loginhibit />
+    <display x="15" y="-45" w="90" h="30" />
+    <inputs>
+      <input type="collection" name="inputCollection" expr="[Input Collection]" />
+      <input type="text" name="columnName" expr="[Column Name]" />
+    </inputs>
+    <outputs>
+      <output type="flag" name="Success" stage="Success" />
+      <output type="text" name="Error Message" stage="Error Message" />
+      <output type="collection" name="uniqueRecords" stage="Unique Records" />
+    </outputs>
+    <onsuccess>ed36252a-0a94-4f29-b20c-75fa146ef5ff</onsuccess>
+    <code><![CDATA[Success = False
+
+Try
+	' Get a list of values in the specified column
+	Dim testValues = inputCollection.AsEnumerable() _
+				   .GroupBy(Function(row) row(columnName)) _
+				   .Where(Function(group) group.Count() = 1) _
+				   .Select(Function(group) group.Key) _
+				   .ToList()
+
+	' Create a copy of the existing DatTable structure.
+	uniqueRecords = inputCollection.Clone() 
+
+	' Filter rows where the value of columnName is unique
+	For Each row As DataRow In inputCollection.Rows
+		If testValues.Contains(row(columnName)) Then
+			uniqueRecords.ImportRow(row)
+		End If
+	Next
+Catch ex As Exception
+	Error_Message = ex.Message
+	uniqueRecords = Nothing
+	Exit Sub
+End Try
+
+Success = True
+Error_Message = ""]]></code>
+  </stage>
+  <stage stageid="c73632a0-dc6c-4916-8871-b0e64eaafe64" name="Success" type="Data">
+    <subsheetid>c63b2d7a-01d2-4a51-a0c0-edc02a4669cb</subsheetid>
+    <display x="-195" y="165" w="120" h="30" />
+    <datatype>flag</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="3a5f5e99-69e7-473b-a12b-7fbeee439eae" name="Error Message" type="Data">
+    <subsheetid>c63b2d7a-01d2-4a51-a0c0-edc02a4669cb</subsheetid>
+    <display x="-195" y="195" w="120" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="d64994f9-6899-4f4a-a301-60b7df657e95" name="Unique Records" type="Collection">
+    <subsheetid>c63b2d7a-01d2-4a51-a0c0-edc02a4669cb</subsheetid>
+    <display x="-195" y="90" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="ed36252a-0a94-4f29-b20c-75fa146ef5ff" name="Success?" type="Decision">
+    <subsheetid>c63b2d7a-01d2-4a51-a0c0-edc02a4669cb</subsheetid>
+    <loginhibit />
+    <display x="15" y="15" />
+    <decision expression="[Success]" />
+    <ontrue>332aaa56-4d26-4eed-b94f-7b30b596b537</ontrue>
+    <onfalse>30052cf2-9cfc-48ae-be2d-e5cc46694486</onfalse>
+  </stage>
+  <stage stageid="30052cf2-9cfc-48ae-be2d-e5cc46694486" name="System Exception" type="Exception">
+    <subsheetid>c63b2d7a-01d2-4a51-a0c0-edc02a4669cb</subsheetid>
+    <display x="120" y="15" w="90" h="30" />
+    <exception type="System Exception" detail="[Error Message]" />
+  </stage>
+  <stage stageid="1d3ebc32-3891-40a9-8564-f7fd74d43fd2" name="Input Collection" type="Collection">
+    <subsheetid>c63b2d7a-01d2-4a51-a0c0-edc02a4669cb</subsheetid>
+    <display x="-195" y="-15" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="dad025e7-abb7-40e9-a90a-e3a3d1c37019" name="Column Name" type="Data">
+    <subsheetid>c63b2d7a-01d2-4a51-a0c0-edc02a4669cb</subsheetid>
+    <display x="-195" y="15" w="120" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="75c877a1-7852-4f0c-9f0f-4e56e2869404" name="Get Distinct Records" type="SubSheetInfo">
+    <subsheetid>d35c0ad8-d252-4d67-b4d2-0654438d8bb8</subsheetid>
+    <narrative>This action returns the records from the input Collection where the value of the specified column is distinct across all records. In other words, even if there are repeasted values in the column, only the first appearance of a value in the specific column will be included in the output Collection.</narrative>
+    <display x="-195" y="-105" w="180" h="90" />
+  </stage>
+  <stage stageid="d0f1854f-7474-4b46-b877-81fa460362e1" name="Start" type="Start">
+    <subsheetid>d35c0ad8-d252-4d67-b4d2-0654438d8bb8</subsheetid>
+    <loginhibit />
+    <preconditions>
+      <condition narrative="The two Collections must have identical column definitions." />
+    </preconditions>
+    <display x="15" y="-105" />
+    <inputs>
+      <input type="collection" name="Input Collection" narrative="The Collection to be checked." stage="Input Collection" />
+      <input type="text" name="Column Name" narrative="The name of the column to check for unique values." stage="Column Name" />
+    </inputs>
+    <onsuccess>6e2e038f-dea3-4791-aeb4-3cbde338dc1f</onsuccess>
+  </stage>
+  <stage stageid="0f1c44ca-9f42-4fc0-bfe8-77d4d579369a" name="End" type="End">
+    <subsheetid>d35c0ad8-d252-4d67-b4d2-0654438d8bb8</subsheetid>
+    <loginhibit />
+    <display x="15" y="75" />
+    <outputs>
+      <output type="collection" name="Distinct Records" narrative="A Collection of distinct records." stage="Distinct Records" />
+    </outputs>
+  </stage>
+  <stage stageid="06c143bd-5e7e-4598-a203-e285e63a58a9" name="Input" type="Block">
+    <subsheetid>d35c0ad8-d252-4d67-b4d2-0654438d8bb8</subsheetid>
+    <loginhibit />
+    <display x="-270" y="-45" w="150" h="90" />
+    <font family="Segoe UI" size="10" style="Regular" color="7FB2E5" />
+  </stage>
+  <stage stageid="6587eaae-9226-4ba3-a8bf-fede698f28d3" name="Output" type="Block">
+    <subsheetid>d35c0ad8-d252-4d67-b4d2-0654438d8bb8</subsheetid>
+    <loginhibit />
+    <display x="-270" y="60" w="150" h="60" />
+    <font family="Segoe UI" size="10" style="Regular" color="CCFFCC" />
+  </stage>
+  <stage stageid="0eac0ebf-e16b-40ed-925c-d84445021c7a" name="Local Data" type="Block">
+    <subsheetid>d35c0ad8-d252-4d67-b4d2-0654438d8bb8</subsheetid>
+    <loginhibit />
+    <display x="-270" y="135" w="150" h="90" />
+    <font family="Segoe UI" size="10" style="Regular" color="FFCC99" />
+  </stage>
+  <stage stageid="6e2e038f-dea3-4791-aeb4-3cbde338dc1f" name="Linq - Get Distinct" type="Code">
+    <subsheetid>d35c0ad8-d252-4d67-b4d2-0654438d8bb8</subsheetid>
+    <loginhibit />
+    <display x="15" y="-45" w="90" h="30" />
+    <inputs>
+      <input type="collection" name="inputCollection" expr="[Input Collection]" />
+      <input type="text" name="columnName" expr="[Column Name]" />
+    </inputs>
+    <outputs>
+      <output type="flag" name="Success" stage="Success" />
+      <output type="text" name="Error Message" stage="Error Message" />
+      <output type="collection" name="outputRecords" stage="Distinct Records" />
+    </outputs>
+    <onsuccess>5bc54855-1483-4d1d-a749-5873d5418577</onsuccess>
+    <code><![CDATA[Success = False
+
+Try
+	' Use LINQ to project distinct values of the specified column
+	Dim distinctValues = inputCollection.AsEnumerable().
+		Select(Function(row) row.Field(Of Object)(columnName)).
+		Distinct()
+
+	' Clone the same table structure
+	outputRecords = inputCollection.Clone()
+
+	' Add the first matching row for each distinct value
+	For Each value In distinctValues
+		Dim firstMatch = inputCollection.AsEnumerable().
+			FirstOrDefault(Function(row) row.Field(Of Object)(columnName).Equals(value))
+		If firstMatch IsNot Nothing Then
+			outputRecords.ImportRow(firstMatch)
+		End If
+	Next
+
+Catch ex As Exception
+	Error_Message = ex.Message
+	outputRecords = Nothing
+	Exit Sub
+End Try
+
+Success = True
+Error_Message = ""]]></code>
+  </stage>
+  <stage stageid="e99768bc-d309-43ee-9a9e-07ceec342156" name="Success" type="Data">
+    <subsheetid>d35c0ad8-d252-4d67-b4d2-0654438d8bb8</subsheetid>
+    <display x="-195" y="165" w="120" h="30" />
+    <datatype>flag</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="dd5b4b3f-07ca-4dfe-a9cb-eaba42d4a164" name="Error Message" type="Data">
+    <subsheetid>d35c0ad8-d252-4d67-b4d2-0654438d8bb8</subsheetid>
+    <display x="-195" y="195" w="120" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="f435ff08-82d3-4bac-b9ff-de7799985b25" name="Distinct Records" type="Collection">
+    <subsheetid>d35c0ad8-d252-4d67-b4d2-0654438d8bb8</subsheetid>
+    <display x="-195" y="90" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="5bc54855-1483-4d1d-a749-5873d5418577" name="Success?" type="Decision">
+    <subsheetid>d35c0ad8-d252-4d67-b4d2-0654438d8bb8</subsheetid>
+    <loginhibit />
+    <display x="15" y="15" />
+    <decision expression="[Success]" />
+    <ontrue>0f1c44ca-9f42-4fc0-bfe8-77d4d579369a</ontrue>
+    <onfalse>82274992-f589-4408-9f1a-c2c10628e9fe</onfalse>
+  </stage>
+  <stage stageid="82274992-f589-4408-9f1a-c2c10628e9fe" name="System Exception" type="Exception">
+    <subsheetid>d35c0ad8-d252-4d67-b4d2-0654438d8bb8</subsheetid>
+    <display x="120" y="15" w="90" h="30" />
+    <exception type="System Exception" detail="[Error Message]" />
+  </stage>
+  <stage stageid="8beaf881-9047-4092-ac3f-d1945aaeb6b4" name="Input Collection" type="Collection">
+    <subsheetid>d35c0ad8-d252-4d67-b4d2-0654438d8bb8</subsheetid>
+    <display x="-195" y="-15" w="120" h="30" />
+    <datatype>collection</datatype>
+    <private />
+    <alwaysinit />
+  </stage>
+  <stage stageid="fb0da049-3a35-42fe-b019-ff514ecc47c5" name="Column Name" type="Data">
+    <subsheetid>d35c0ad8-d252-4d67-b4d2-0654438d8bb8</subsheetid>
+    <display x="-195" y="15" w="120" h="30" />
+    <datatype>text</datatype>
+    <initialvalue />
+    <private />
+    <alwaysinit />
+  </stage>
+</process>
