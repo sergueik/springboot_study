@@ -212,6 +212,8 @@ sequenceDiagram
     API-->>SPA: Protected resource
 ```    
 
+![Flow 1](screenshots/flow1.png)
+
 ```mermaid
 sequenceDiagram
     participant U as User
@@ -268,6 +270,8 @@ sequenceDiagram
     API-->>BE: Protected resource
     BE-->>FE: Application data
 ```
+![Flow 2](screenshots/flow2.png)
+
 ```mermaid
 sequenceDiagram
     participant U as User
@@ -311,6 +315,8 @@ sequenceDiagram
     APP->>API: Request + access token
     API-->>APP: Protected resource
 ```
+![Flow 3](screenshots/flow3.png)
+
 ```mermaid
 sequenceDiagram
     participant APP as Backend Service
@@ -352,6 +358,8 @@ sequenceDiagram
     D->>API: Request + access token
     API-->>D: Protected resource
 ```
+![Flow 4](screenshots/flow4.png)
+
 
 ```mermaid
 sequenceDiagram
@@ -397,6 +405,9 @@ sequenceDiagram
     C->>API: Retry with new access token
     API-->>C: Protected resource
 ```
+
+![Flow 5](screenshots/flow5.png)
+
 ```mermaid
 sequenceDiagram
     participant C as Client
@@ -412,9 +423,6 @@ sequenceDiagram
     C->>API: Retry with new access token
     API-->>C: Protected resource
 ``` 
-
-
-
 
 |#||Pattern||User?||Browser?||Typical case|
 |-|-|-|-|-|
@@ -441,6 +449,7 @@ sequenceDiagram
    "on behalf of user"
 
 ```
+
 ```code
 sequenceDiagram
     participant U as User
@@ -460,6 +469,8 @@ sequenceDiagram
     C->>API: Access token
     API-->>C: User's protected data
 ```
+
+![Flow 6](screenshots/flow6.png)
 
 ```mermaid
 sequenceDiagram
@@ -526,6 +537,9 @@ sequenceDiagram
     B-->>A: User-authorized data
     A-->>FE: Response
 ```
+
+![Flow 7](screenshots/flow7.png)
+
 ```mermaid
 sequenceDiagram
     participant U as User
