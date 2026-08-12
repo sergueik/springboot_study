@@ -1,4 +1,7 @@
 package example.controller;
+/**
+ * Copyright 2022,2026 Serguei Kouzmine
+ */
 
 import java.io.File;
 import java.io.IOException;
@@ -45,13 +48,15 @@ public class HomeControllerTest {
 
 	private ResultActions resultActions;
 	final static String charset = "UTF-8";
-	private final static String viewName = "home";
+	final static String body = "<html/>";
+	@Value("${view:home}")
+	private String viewName;
 
 	// NOTE: "application" is a reserved variable name
 	@Value("${application}")
 	private String variable;
 
-	@Value("${title:title no set}")
+	@Value("${title:title not set}")
 	private String title;
 
 	@Before
@@ -69,14 +74,10 @@ public class HomeControllerTest {
 		resultActions.andExpect(status().isOk());
 	}
 
-	final static String body = "<html/>";
-
 	// assert the response body content with a Hamcrest Matcher
 	@Test
 	public void bodyContainsTemplatLayoutTextTest() throws Exception {
-
-		resultActions.andExpect(
-				content().string(containsString("<title>Protractor practice website - Banking App</title>")));
+		resultActions.andExpect(content().string(containsString(String.format("<title>%s</title>", title))));
 	}
 	// assert the response body not the content with a Hamcrest Matcher
 
@@ -87,13 +88,14 @@ public class HomeControllerTest {
 
 	@Test
 	public void bodyNotContainsTemplateResourceBoilleplateTextTest() throws Exception {
-		var resource = getScriptContent("templates/home.html");
+		var resource = getScriptContent(String.format("templates/%s.html", viewName));
 		resultActions.andExpect(content().string(not(containsString(resource.split("\\n")[1]))));
 	}
 
 	@Test
 	public void bodyNotContainsTemplateResourceURIBoilleplateTextTest() throws Exception {
-		var resource = Files.readAllLines(new File(getResourcePath("templates/home.html")).toPath()).get(1);
+		var resource = Files
+				.readAllLines(new File(getResourcePath(String.format("templates/%s.html", viewName))).toPath()).get(1);
 		resultActions.andExpect(content().string(not(containsString(resource))));
 	}
 
