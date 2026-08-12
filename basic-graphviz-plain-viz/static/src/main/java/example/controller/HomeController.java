@@ -1,4 +1,7 @@
 package example.controller;
+/**
+ * Copyright 2022,2026 Serguei Kouzmine
+ */
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -46,7 +49,9 @@ public class HomeController {
 	@Value("${application}")
 	private String variable;
 
-	private final String viewName = "index";
+	@Value("${view:home}")
+	private String viewName;
+
 	private Log log = LogFactory.getLog(this.getClass());
 
 	@GetMapping
