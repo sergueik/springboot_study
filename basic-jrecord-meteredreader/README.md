@@ -447,6 +447,80 @@ context.refresh();
 
 The console implementation (#1) allows direct control of chunking and threading and is therefore the most reliable environment for discovering performance gains with JMH. These gains transfer trivially to the Spring CommandLineRunner variant (#2) because the same code path is reused. In contrast, Spring Batch (#3) enforces its own execution model, requires rewriting the core loop, and makes performance improvements only “expected to hold” rather than demonstrably reproducible.
 
+### Reneisance
+
+
+   
+One is advised not to reconstruct the Copybook row's physical
+representation from the JRecord AbstractLine fields:
+nobody expects to reconstruct the orange from the juice.
+   
+```code
+JRecord AbstractLine
+        │
+        │ 🗜️ squeeze
+        ▼
+Map<String,Object>
+        │
+        │ 🔧 mapping
+        ▼
+      JSON
+```
+
+For a COBOL copybook, the original bytes can contain distinctions
+that disappear once JRecord has parsed them
+
+lost details:
+```
+raw bytes
+   │
+   ├── field boundaries              💀
+   ├── COMP / COMP-3 representation 💀
+   ├── sign representation          💀
+   ├── padding                      💀
+   ├── encoding                     💀
+   └── unused / reserved bytes      💀
+                                      │
+                                      ▼
+                                     🗑️   
+ 
+```
+ 
+
+NIO provides direct positioning in a seekable file:
+native fast forward support 
+
+```
+                 N
+                 │
+                 ▼
+          offset = N × R
+                 │
+                 ▼
+        FileChannel.position()
+                 │
+                 ▼
+          read chunk
+```
+Thus one can extend the JRecord reader with a lazy chunk/record
+representation:
+``` 
+Record N
+
+📍 offset = N × R
+📏 length = R
+
+        │
+        ├──────────────► 🗜️ JRecord
+        │                    │
+        │                    ▼
+        │              semantic fields 💀
+        │
+        └──────────────► raw()
+                              │
+                              ▼
+                         ByteBuffer 
+```                         
 
 ### See Also:
 
