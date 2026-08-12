@@ -56,8 +56,8 @@ public class HomeController {
 		model.addAttribute("variable", variable);
 		log.info("Setting text from property " + "application" + ":" + variable);
 		model.addAttribute("hostname", showHostName());
-		log.info(
-				"Setting text from environment " + "hostname" + ":" + showHostName());
+		log.info("Setting text from environment " + "hostname" + ":" + showHostName());
+		log.info("Returning view " + viewName);
 		return viewName;
 	}
 
@@ -81,8 +81,7 @@ public class HomeController {
 
 	@GetMapping("/env2")
 	@ResponseBody
-	public String showEnv2(
-			@RequestParam(defaultValue = defaultEnvKey) String name) {
+	public String showEnv2(@RequestParam(defaultValue = defaultEnvKey) String name) {
 		log.info("showEnv2 name: " + name);
 		return _showEnv(name);
 	}
@@ -114,12 +113,10 @@ public class HomeController {
 
 	// dump environment as JSON
 	@ResponseBody
-	@RequestMapping(method = {
-			RequestMethod.GET }, value = "/env/json", produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = { RequestMethod.GET }, value = "/env/json", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Map<String, String>> showEnvJSON() {
 		Map<String, String> systemEnvironment = new HashMap<>();
-		final List<String> keepKeys = Arrays.asList("USERNAME", "USER",
-				"COMPUTERNAME", "WINDIR", "HOSTNAME");
+		final List<String> keepKeys = Arrays.asList("USERNAME", "USER", "COMPUTERNAME", "WINDIR", "HOSTNAME");
 		for (String key : System.getenv().keySet()) {
 			String keyCheck = key;
 			if (keepKeys.contains(keyCheck.toUpperCase())) {
@@ -128,8 +125,7 @@ public class HomeController {
 				systemEnvironment.put(key, System.getenv(key));
 			}
 		}
-		log.info("Returning object from environment "
-				+ Arrays.asList(systemEnvironment.keySet()));
+		log.info("Returning object from environment " + Arrays.asList(systemEnvironment.keySet()));
 		return ResponseEntity.status(HttpStatus.OK).body(systemEnvironment);
 	}
 }

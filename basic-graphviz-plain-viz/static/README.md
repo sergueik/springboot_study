@@ -88,6 +88,27 @@ this will print the page
 </body>
 </html>
 ```
+
+### Troubleshooting
+
+```cmd
+mvn -Dapplication=test clean spring-boot:run
+```
+
+
+```text
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'homeController': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'application' in value "${application}"
+...
+        at example.Application.main(Application.java:9) ~[classes/:na]
+Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'application' in value "${application}"
+```
+same error if
+```cmd
+mvn clean spring-boot:run -Dspring-boot.run.arguments="-application=test"
+```
+
+Apparently `application` is a reserved variable name. Adding `application.properties` "fixes" the issue. It simply was missed in earlier commit 
+
 NOTE: the attempt to directly set the propery on the command line without default(`src/main/resources/application.propetries`) 
 
 ```sh
@@ -98,6 +119,28 @@ occasionally does not work:
 Invocation of init method failed; 
 nested exception is java.lang.IllegalStateException: 
 Invalid mapping on handler class [example.controllers.DesignTacoController]: public java.lang.String example.controllers.DesignTacoController.showDesignForm(org.springframework.ui.Model)
+```
+probing application
+```sh
+curl -s http://localhost:7070/application
+```
+reveals that template is likely not rendered
+```text
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/layout}">
+</html>
+```
+the server log shows
+```text
+2026-08-12 08:33:49.604  INFO 8312 --- [           main] example.Application                      : Started Application in 1.725 seconds (JVM running for 2.036)
+2026-08-12 08:33:51.590  INFO 8312 --- [nio-7070-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-12 08:33:51.591  INFO 8312 --- [nio-7070-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-08-12 08:33:51.595  INFO 8312 --- [nio-7070-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-08-12 09:05:59.476  INFO 28072 --- [nio-7070-exec-1] example.controller.HomeController        : Setting text from property application:application
+2026-08-12 09:05:59.477  INFO 28072 --- [nio-7070-exec-1] example.controller.HomeController        : Setting text from environment hostname:Server:sergueik59
+2026-08-12 09:05:59.478  INFO 28072 --- [nio-7070-exec-1] example.controller.HomeController        : Returning view index
+2026-08-12 09:05:59.781  WARN 28072 --- [nio-7070-exec-3] o.s.web.servlet.PageNotFound             : No mapping for GET /.well-known/appspecific/com.chrome.devtools.json
+
 ```
 ### See Also
 
