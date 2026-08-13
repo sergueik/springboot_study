@@ -667,6 +667,12 @@ Stop-Service -Name wuauserv -Force
 Set-Service -Name wuauserv -StartupType Disabled
 Get-Service -Name wuauserv
 ```
+```cmd
+pushd C:\Windows\SoftwareDistribution
+del /s/q *.*
+popd
+```
+
 
 ```text
 [SC] ChangeServiceConfig SUCCESS
@@ -1507,7 +1513,11 @@ digraph BPObject {
   * https://github.com/membranedev/application-skills/tree/main/skills
   * https://developercommunity.visualstudio.com/t/Add-Emojis-for-Quick-Responses-In-PR-Rev/10651469?ftype=idea&q=quick+add+default+file+
   
-  
+   * [Basic Syntax | Markdown Guide](https://www.markdownguide.org/basic-syntax/)
+   * [Extended Syntax | Markdown Guide](https://www.markdownguide.org/extended-syntax/)
+   * [MarkItDown](https://github.com/microsoft/markitdown) is a lightweight GitHub Repository for MarkItDown utility by Microsoft designed to convert various files—such as PDFs, Word, Excel, PowerPoint, images, and audio—into clean, LLM-ready Markdown
+
+
 https://icons8.com/icons/set/shared-folder
 https://icons8.com/icons/set/docker-containers
 
