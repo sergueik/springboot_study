@@ -54,7 +54,35 @@ One can run a `docker-compose.yml` file on  __Podman__ using two primary methods
 
 
 The official `docker compose` binary method provides full feature compatibility, while `podman-compose` runs natively without any background services
+### Illustration
 
+```code
+                      🎭
+👦 AD account JOE ─── SSH ────────► 🕵Linux identity 10283492
+                                 │
+                                 │
+                                 ├── UID/GID
+                                 ├── NSS resolution
+                                 └── user-namespace mappings ❌
+```
+
+  then
+```code
+🕵 Linux identity ─────► 👑 root  ────► 🤖 service account
+                                            │
+                                            ▼
+                                            podman commands
+
+```              
+```code
+                      🎭
+👦 AD account JOE ───► 🏢 Enterprise registry identity
+                                  │
+                                  └── registry credentials
+                                      (yet another "JOE")
+
+```
+> I logged in as JOE. NSS gave me Linux identity 10283492. That identity isn't suitable for the rootless-container machinery. So I temporarily become root, then become the properly configured service account, and that account runs Podman
 ### See Also
 
   * https://podman.io/
