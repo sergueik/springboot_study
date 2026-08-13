@@ -20,13 +20,151 @@
 
 param(
   [Parameter(Mandatory = $false,Position = 1)]
+  [String]$location = 'https://github.com/membranedev/application-skills',
+  [Parameter(Mandatory = $false,Position = 2)]
   [String]$datafile = 'catalog.txt',
+  [Parameter(Mandatory = $false,Position = 2)]
+  [String]$format = 'html',
   [String]$outputfile = 'result.xls',
  # [String]$template_filename = 'catalog.html',
   [String]$template_filename = 'catalog-template.xlsx',
   [String[]]$fields = @( 'Skill_Name', 'Category', 'Technology', 'Repository', 'Link', 'Select', 'GUID', 'Id'),
   [int]$count = 0
 )
+
+Add-Type -TypeDefinition @'
+using System;
+using System.Diagnostics;
+using System.IO;
+
+namespace Utils {
+	// NOTE:
+	// will cannot declare instance members in a static class
+	public class Program {
+		private string filename = "SKILL.md";
+		public string Filename {
+			get { return filename; }
+			set { filename = value; } }
+		private string[] files;
+
+		public string[] Files { get { return files; }}
+		private string tempPath;
+		public string TempPath {
+			get { return tempPath; }
+		}
+		private string location;
+		private string project; 
+		public string Location {
+			get { return location; }
+			set { location = value;
+				string[] parts = location.Split('/');
+				project = parts[parts.Length - 1 ];
+			}
+		}
+		// .Net 4.0: Default parameter specifiers are not permitted
+		public static string CreateTempSubdirectory() {
+			return CreateTempSubdirectory("");
+		}
+
+		public static string CreateTempSubdirectory(string prefix) {
+			// Get the system temp path
+			string tempRoot = Path.GetTempPath();
+
+			// Create a unique folder name (optional prefix + GUID)
+			string uniqueFolderName = string.IsNullOrEmpty(prefix)
+            ? Guid.NewGuid().ToString()
+            : prefix + "_" + Guid.NewGuid().ToString();
+
+			// Combine root and unique subfolder name
+			string uniquePath = Path.Combine(tempRoot, uniqueFolderName);
+
+			// Create and return the physical directory
+			Directory.CreateDirectory(uniquePath);
+			return uniquePath;
+		}
+
+		public void Run() {
+
+			// NOTE: custom extension returning String, not DirectryInfo hence no FullPath
+			// built-in Directory.CreateTempSubdirectory() method does not exist in .NET 4.5 (it was introduced later in .NET Core 3.0 / .NET Standard 2.1).
+			// therefore the following
+			// https://learn.microsoft.com/en-us/dotnet/api/system.io.directory.createtempsubdirectory?view=net-10.0?view=netframework-4.5
+			//	is redirect
+			// https://learn.microsoft.com/en-us/dotnet/api/system.io.directory.createtempsubdirectory?view=net-10.0&viewFallbackFrom=net-10.0%3Fview%3Dnetframework-4.5
+			this.tempPath = CreateTempSubdirectory(Path.GetTempPath());
+			// .Net 4.0  A new expression requires () or [] after type
+			// .Net 4.0 The type or namespace name 'var' could not be found
+			Process process = new Process();
+			// https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.processstartinfo?view=netframework-4.5
+			process.StartInfo = new ProcessStartInfo();
+
+			process.StartInfo.WorkingDirectory = tempPath;
+			// NOTE: @"" does not appear to work under add-type
+			// FileName = @"C:\Program Files\Git\bin\git.exe";
+			process.StartInfo.FileName = "C:\\Program Files\\Git\\bin\\git.exe";
+			process.StartInfo.Arguments = String.Format("clone --depth 1 \"{0}\"", this.location);
+			process.StartInfo.UseShellExecute = false;
+
+			process.Start();
+			process.WaitForExit();
+      if (!Directory.Exists(Path.Combine(tempPath, project)))
+        return;      
+			this.files = Directory.GetFiles( Path.Combine(tempPath, project), filename, SearchOption.AllDirectories);
+			try {
+				Directory.Delete(tempPath, true);
+			} catch (Exception) {
+			}
+		}
+	}
+}
+'@
+# $git_install_path = ( Get-ItemProperty -Path 'HKLM:\SOFTWARE\GitForWindows').InstallPath
+
+function create_temporaryfile {
+    param (
+      # [Parameter(Mandatory)]
+        [string]$template_fullpath
+    )
+    $temp_file = [System.IO.Path]::GetTempFileName()
+    $template_extension = [System.IO.Path]::GetExtension($template_fullpath)
+    $temp_fullpath = [System.IO.Path]::ChangeExtension($temp_file, $template_extension)
+    rename-item -path $temp_file -newname $temp_fullpath -force
+    # The term 'new-temporaryfile' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+    <#
+    $temp_file = new-temporaryfile
+    copy-item -path $template_fullpath -destination $temp_file.FullName -force
+    return $temp_file.FullName
+    #>
+    copy-item -path $template_fullpath -destination $temp_fullpath -force
+    return $temp_fullpath
+}
+
+function read_location {
+  
+  param(
+    $helper_ref = $null,
+    [string]$location = $null,
+    [string]$logfile = $null
+  )
+  $helper = $helper_ref.Value
+  $helper = new-object Utils.Program
+  # -ArgumentList (([int]$window_handle))
+  
+  $helper.Location = $location
+  $helper.Run()
+  # Exception calling "Run" with "0" argument(s): "Could not find a part of the path 'C:\Documents and Settings\Admin\Local Settings\Temp\_d6a741e8-48b4-48fe-a141-26ef3d393b86\application-skills'."
+  
+  # Powershell 2.x The term 'new-temporaryfile' is not recognized
+  
+  if ($PSBoundParameters.ContainsKey('Verbose')) {
+    tee-object -filepath $tempFile -inputObject @($helper.Files)
+  } else {
+    out-file -filepath $tempFile -inputObject @($helper.Files)
+  }
+  # why (measure-object -inputObject @($helper.Files)).Count = 1
+  write-host ('{0} items ({1} bytes) written' -f ($helper.Files.Count), (get-item $tempFile).Length)
+}
+
 
 [System.Collections.Hashtable]$technology = @{
   # Languages;
@@ -77,44 +215,13 @@ param(
 
 [String[]]$columns =  @( 'Skill_Name', 'Category','Technology','Repository', 'Link');
 [bool]$debug_flag  = $false
-# git clone  --depth 1 https://github.com/majiayu000/claude-skill-registry
-# write-host ('written {0}' -f $filepath)
-$filepath = (resolve-path -path '.').path + '\' + $datafile
 $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 
-function create_temporaryfile {
-    param (
-      # [Parameter(Mandatory)]
-        [string]$template_fullpath
-    )
-    $temp_file = [System.IO.Path]::GetTempFileName()
-    $template_extension = [System.IO.Path]::GetExtension($template_fullpath)
-    $temp_fullpath = [System.IO.Path]::ChangeExtension($temp_file, $template_extension)
-    rename-item -path $temp_file -newname $temp_fullpath -force
-    # The term 'new-temporaryfile' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
-    <#
-    $temp_file = new-temporaryfile
-    copy-item -path $template_fullpath -destination $temp_file.FullName -force
-    return $temp_file.FullName
-    #>
-    copy-item -path $template_fullpath -destination $temp_fullpath -force
-    return $temp_fullpath
-}
-
-<#
-
-$git = Get-Command git.exe -ErrorAction Stop
-
-& $git.Source clone --depth 1 $repository $destination
-if ($LASTEXITCODE -ne 0) {
-    throw "git clone failed: $LASTEXITCODE"
-}
-
-#>
 
 function proces_file {
 
 param(
+  [string] $filepath = $null
 )
 
 $cnt = 0
@@ -329,10 +436,35 @@ $spin = @(
 )
 # $spin = @('|','/','-','\')
 
+if ($location -ne $null) {
+  <#
+    $git = Get-Command git.exe -ErrorAction Stop
+    
+    & $git.Source clone --depth 1 $repository $destination
+    if ($LASTEXITCODE -ne 0) {
+        throw "git clone failed: $LASTEXITCODE"
+    }
+    git clone  --depth 1 https://github.com/majiayu000/claude-skill-registry
+    write-host ('written {0}' -f $filepath)
+  #>
+  $tempfile = (new-temporaryfile)
+  # $window_handle = [System.Diagnostics.Process]::GetCurrentProcess().MainWindowHandle
 
-$results_ref = proces_file
+  read_location -helper_ref [ref]($helper) -logfile $tempfile -location $location
+   $filepath = $tempFile.fullName
+  # Exception calling "run" with "0" argument(s): "Access to the path 'C:\Users\kouzm\AppData\Local\Temp\_e57611bf-0351-4731-916f-f082e1bd671e' is denied."
+  <#
+    Cloning into 'application-skills'...
+    fatal: unable to access 'https://github.com/membranedev/application-skills/': Couldn't resolve host 'github.com'
+    C:\Documents and Settings\Admin\Local Settings\Temp\_1b1db0d8-4001-457d-8128-6f8655389fe8
+  #>
+} else {
+   $filepath = (resolve-path -path '.').path + '\' + $datafile
+}
+
+$results_ref = proces_file -filepath $filepath
 write-host ('Exporting {0} entries' -f $results_ref.value.Count)
-
+if ($format -like 'excel') {
 $command = new-object System.Data.OleDb.OleDbCommand
 $connection = new-object System.Data.OleDb.OleDbConnection
 
@@ -410,6 +542,7 @@ rename-item -path $template_fullpath -newname $outputfile -force -erroraction si
 copy-item -path (join-path -path (split-path -path $template_fullpath -parent) -childpath $outputfile ) -destination $working_directory -force
 move-item -literalpath $template_fullpath -destination (join-path -path $working_directory -childpath $outputfile) -force
 exit
+} else {
 $template = (get-content -raw (join-path -path $working_directory -childpath $template_filename))
 [xml]$template_xml = [xml]$template
 [System.Xml.XmlElement]$documentElement = $template_xml.documentElement
@@ -467,4 +600,6 @@ try {
 finally {
   $writer.Flush()
   $writer.Close()
+}
+
 }
