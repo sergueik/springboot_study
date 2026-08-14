@@ -11,14 +11,30 @@
   }
 .id {
   padding: 5px 15px 5px;
-}	
+}
+
+#catalog-search {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: white;
+    padding: 4px
+}
+
+#catalog-container {
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+}
 </style>
 </head>
 
   <body>
 <script src="catalog-nav.js">
 </script>
+    <div id="catalog-toolbar">
     <input id="catalog-search" type="text"/>
+    </div>
+    <div id="catalog-container">
     <table id="catalog" border="0" cellspacing="0" cellpadding="0" class="table-ta1">
       <colgroup>
         <col width="46"/>
@@ -49,7 +65,7 @@
           <p>ID</p>
         </td>
         <td style="text-align:left;" class="cell-ce1">
-          <p>SKILL NAME</p>
+          <p>SKILL_NAME</p>
         </td>
         <td style="text-align:left;" class="cell-ce1">
           <p>CATEGORY</p>
@@ -62,5 +78,6 @@
         </td>
       </tr>
     </table>
+    </div>
   </body>
 </html>

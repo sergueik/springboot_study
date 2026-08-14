@@ -54,6 +54,9 @@ namespace Utils {
 		}
 		private string location;
 		private string project;
+		public string Project {
+			get { return project; }
+    }
 		public string Location {
 			get { return location; }
 			set { location = value;
@@ -162,7 +165,10 @@ function read_location {
     out-file -filepath $tempFile -inputObject @($helper.Files)
   }
   # why (measure-object -inputObject @($helper.Files)).Count = 1
-  write-host ('{0} items ({1} bytes) written' -f ($helper.Files.Count), (get-item $tempFile).Length)
+  $project = $helper.Project
+  
+  write-host ('{0} items ({1} bytes) of "{2}" written' -f ($helper.Files.Count), (get-item $tempFile).Length, $project)
+  return $project
 }
 
 
@@ -260,12 +266,16 @@ foreach-object {
       $spinIndex = ($spinIndex + 1) % $spin.Count
     }
 
+    write-verbose ('line: "{0}"' -f $line)
     $line = $line.Replace('\', '/')
     $pattern1 = ('^.+/(?={0})' -f  $repository_name )
     $r1 = new-object System.Text.RegularExpressions.Regex($pattern1)
     $line = $r1.replace($line, '')
-    write-host $line
-    $pattern = ('^{0}/skills/([^/]+)(?:/[^/]+)*/([^/]+)/SKILL.md$' -f $repository_name )
+    write-verbose ('parsing prepared line: "{0}"' -f $line)
+    # claude-skill-registry/skills/agent/adk/SKILL.md
+    # application-skills/skills/zype/SKILL.md
+    $pattern = ('^{0}/skills(?:/([^/]+))*(?:/[^/]+)*/([^/]+)/SKILL.md$' -f $repository_name )
+    write-verbose $pattern
     $m = select-string -pattern $pattern -InputObject $line
     $name = $null
     $category = $null
@@ -498,7 +508,7 @@ if ($location -ne $null) {
   $tempfile = (new-temporaryfile)
   # $window_handle = [System.Diagnostics.Process]::GetCurrentProcess().MainWindowHandle
 
-  read_location -helper_ref [ref]($helper) -logfile $tempfile -location $location
+  $repository_name = read_location -helper_ref [ref]($helper) -logfile $tempfile -location $location
   $filepath = $tempFile.fullName
   # Exception calling "run" with "0" argument(s): "Access to the path 'C:\Users\kouzm\AppData\Local\Temp\_e57611bf-0351-4731-916f-f082e1bd671e' is denied."
   <#
@@ -507,10 +517,10 @@ if ($location -ne $null) {
     C:\Documents and Settings\Admin\Local Settings\Temp\_1b1db0d8-4001-457d-8128-6f8655389fe8
   #>
 } else {
+   # TODO move code
+   $repository_name = 'claude-skill-registry' 
    $filepath = (resolve-path -path '.').path + '\' + $datafile
 }
-# TODO move code
-$repository_name = 'application-skills' 
 $results_ref = proces_file -filepath $filepath -repository_name $repository_name
 write-host ('Exporting {0} entries' -f $results_ref.value.Count)
 
@@ -629,8 +639,10 @@ $spinIndex = 0
     }
   }
   [System.Xml.XmlDocumentFragment]$fragment = $template_xml.CreateDocumentFragment()
-  ($fragment.InnerXml = $html ) |out-null
-  $template_row.ParentNode.InsertAfter($fragment, $template_row)|out-null
+  ($fragment.InnerXml = $html)|out-null
+  # logic
+  # $template_row.ParentNode.InsertAfter($fragment, $template_row)|out-null
+  $template_row.ParentNode.InsertBefore($fragment, $template_row)|out-null
   if ((($cnt % 1000) -eq 0 ) -or ($cnt -eq $rows.Count-1 )) {
     # NOTE: performance
     $rate = [math]::Round(($cnt + 1) / $stopwatch.Elapsed.TotalSeconds)

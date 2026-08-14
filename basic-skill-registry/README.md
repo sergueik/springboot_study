@@ -173,7 +173,23 @@ Mode                 LastWriteTime         Length Name
 -a----         8/13/2026   7:05 PM        1611396 result.html
 
 ```
-```powedshell
+
+```powershell
+. .\catalog-rebuilder.ps1 -template catalog.html -output result.html -verbose |tee.exe a.log
+```
+```text
+VERBOSE: line:
+"C:\Users\kouzm\AppData\Local\Temp\_d150c0da-5c19-4d50-8eb1-0d7baa4c4b27\application-skills\skills\zyte-api\SKILL.md"
+VERBOSE: parsing prepared line: "application-skills/skills/zyte-api/SKILL.md"
+VERBOSE: ^application-skills/skills(?:/([^/]+))*(?:/[^/]+)*/([^/]+)/SKILL.md$
+VERBOSE: Category:  Skill_Name: zyte-api
+VERBOSE: Skill_Name: zyte-api
+...
+Returning: 3074 results
+Exporting 3074 entries
+Reading 3074 ⠼  Elapsed: 00:00:14 | 212 rows/sec
+```
+```powershell
 . .\catalog-rebuilder.ps1 -output k8.html -data .\catalog.k8.txt
 ```
 
