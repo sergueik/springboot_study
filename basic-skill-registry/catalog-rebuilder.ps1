@@ -221,7 +221,8 @@ $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 function proces_file {
 
 param(
-  [string] $filepath = $null
+  [string] $filepath = $null,
+  [string] $repository_name = 'claude-skill-registry'
 )
 
 $cnt = 0
@@ -259,7 +260,12 @@ foreach-object {
       $spinIndex = ($spinIndex + 1) % $spin.Count
     }
 
-    $pattern = '^claude-skill-registry/skills/([^/]+)(?:/[^/]+)*/([^/]+)/SKILL.md$'
+    $line = $line.Replace('\', '/')
+    $pattern1 = ('^.+/(?={0})' -f  $repository_name )
+    $r1 = new-object System.Text.RegularExpressions.Regex($pattern1)
+    $line = $r1.replace($line, '')
+    write-host $line
+    $pattern = ('^{0}/skills/([^/]+)(?:/[^/]+)*/([^/]+)/SKILL.md$' -f $repository_name )
     $m = select-string -pattern $pattern -InputObject $line
     $name = $null
     $category = $null
@@ -493,7 +499,7 @@ if ($location -ne $null) {
   # $window_handle = [System.Diagnostics.Process]::GetCurrentProcess().MainWindowHandle
 
   read_location -helper_ref [ref]($helper) -logfile $tempfile -location $location
-   $filepath = $tempFile.fullName
+  $filepath = $tempFile.fullName
   # Exception calling "run" with "0" argument(s): "Access to the path 'C:\Users\kouzm\AppData\Local\Temp\_e57611bf-0351-4731-916f-f082e1bd671e' is denied."
   <#
     Cloning into 'application-skills'...
@@ -503,8 +509,9 @@ if ($location -ne $null) {
 } else {
    $filepath = (resolve-path -path '.').path + '\' + $datafile
 }
-
-$results_ref = proces_file -filepath $filepath
+# TODO move code
+$repository_name = 'application-skills' 
+$results_ref = proces_file -filepath $filepath -repository_name $repository_name
 write-host ('Exporting {0} entries' -f $results_ref.value.Count)
 
 
