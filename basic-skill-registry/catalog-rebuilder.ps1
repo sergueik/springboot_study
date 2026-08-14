@@ -53,7 +53,7 @@ namespace Utils {
 			get { return tempPath; }
 		}
 		private string location;
-		private string project; 
+		private string project;
 		public string Location {
 			get { return location; }
 			set { location = value;
@@ -108,7 +108,7 @@ namespace Utils {
 			process.Start();
 			process.WaitForExit();
       if (!Directory.Exists(Path.Combine(tempPath, project)))
-        return;      
+        return;
 			this.files = Directory.GetFiles( Path.Combine(tempPath, project), filename, SearchOption.AllDirectories);
 			try {
 				Directory.Delete(tempPath, true);
@@ -140,7 +140,7 @@ function create_temporaryfile {
 }
 
 function read_location {
-  
+
   param(
     $helper_ref = $null,
     [string]$location = $null,
@@ -149,13 +149,13 @@ function read_location {
   $helper = $helper_ref.Value
   $helper = new-object Utils.Program
   # -ArgumentList (([int]$window_handle))
-  
+
   $helper.Location = $location
   $helper.Run()
   # Exception calling "Run" with "0" argument(s): "Could not find a part of the path 'C:\Documents and Settings\Admin\Local Settings\Temp\_d6a741e8-48b4-48fe-a141-26ef3d393b86\application-skills'."
-  
+
   # Powershell 2.x The term 'new-temporaryfile' is not recognized
-  
+
   if ($PSBoundParameters.ContainsKey('Verbose')) {
     tee-object -filepath $tempFile -inputObject @($helper.Files)
   } else {
@@ -179,25 +179,25 @@ function read_location {
   'node'        = 'node';
   'cobol'       = 'cobol';
   'fortran'     = 'fortran';
-  
+
   # Java ecosystem;
   'spring'      = 'spring';
   'springboot'  = 'spring';
   'hibernate'   = 'hibernate';
   'maven'       = 'maven';
   'gradle'      = 'gradle';
-  
+
   # Python ecosystem;
   'fastapi'     = 'fastapi';
   'django'      = 'django';
   'flask'       = 'flask';
   'pandas'      = 'pandas';
-  
+
   # Web;
   'react'       = 'react';
   'angular'     = 'angular';
   'vue'         = 'vue';
-  
+
   # Cloud / DevOps;
   'docker'      = 'docker';
   'aws'         = 'aws';
@@ -205,7 +205,7 @@ function read_location {
   'kubernetes'  = 'kubernetes';
   'k8s'         = 'kubernetes';
   'terraform'   = 'terraform';
-  
+
   # AI / Agent ecosystem;
   'mcp'         = 'mcp';
   'model-context-protocol' = 'mcp';
@@ -269,7 +269,7 @@ foreach-object {
       $name = $g.Item(2).Value
     }
     if ($name -eq $null) {
-      $regex = new-object System.Text.RegularExpressions.Regex($pattern) 
+      $regex = new-object System.Text.RegularExpressions.Regex($pattern)
       $match = $regex.Match($line)
       if ($match.Success) {
         $category = $match.Groups.Item(1).Value
@@ -278,7 +278,7 @@ foreach-object {
     }
     $a = @()
     $technology.keys | foreach-object { $p = $_
-      if (($name -match "${p}[^a-z]" ) -or ($name -match "${p}$" )){ 
+      if (($name -match "${p}[^a-z]" ) -or ($name -match "${p}$" )){
         $a +=$technology[$p]
       }
     }
@@ -313,7 +313,7 @@ function initialize_data_reader {
     [bool]$debug
 
   )
-  
+
   $template_filename = split-path -path $template_fullpath -leaf
   [string]$oledb_provider = $null
   [string]$data_source = $null
@@ -349,7 +349,7 @@ function initialize_data_reader {
     default { throw }
   }
   $connection_string = "$oledb_provider;$data_source;$ext_arg"
-  
+
   [string]$query = "SELECT * FROM [${table}] WHERE ISNULL(guid)"
 
   [System.Data.OleDb.OleDbConnection]$local:connection = new-object System.Data.OleDb.OleDbConnection($connection_string)
@@ -417,7 +417,7 @@ function insert_row_new {
     # Exception calling "ExecuteNonQuery" with "0" argument(s): "Invalid bracketing of name '[]'."
     # Exception calling "ExecuteNonQuery" with "0" argument(s): "Syntax error (missing operator) in query expression '@Skill Name'."
     # Exception calling "ExecuteNonQuery" with "0" argument(s): "Parameter @id has no default value."
-  
+
     write-host ("ERROR inserting row: {0}$([Environment]::NewLine)Skill: {1}$([Environment]::NewLine)Exception: {2}" -f $new_row_data['id']['value'], $new_row_data['Skill_Name']['value'], $_.Exception.Message)
     throw
   }
@@ -435,11 +435,53 @@ $spin = @(
     [char]0x2807, [char]0x280F
 )
 # $spin = @('|','/','-','\')
+[string]$working_directory = (resolve-path -path '.').Path
 
+
+# NOTE: use the extension as the primary contract. Can perform magic bytes also but only as a sanity check:
+$template_extension = [IO.Path]::GetExtension($template_filename).ToLower()
+
+if ($format -eq 'html' -and $template_extension -match '.xlsx?') {
+  throw ('Inconsistent arguments: format "{0}" cannot be used with Excel template "{1}"' -f $format, $template_filename  )
+}
+
+if ($format -eq 'excel' -and (-not ($template_extension -ne '.xlsx?'))) {
+  throw ('Inconsistent arguments: format "{0}" requires an Excel (.xlsx|.xls) template' -f $format)
+}
+
+$inferred_format = switch ($template_extension) {
+  '.xlsx' { 'excel' }
+  '.xls'  { 'excel' }
+  '.html' { 'html' }
+  '.htm'  { 'html' }
+  default { throw ('Unsupported template extension: {0}' -f $template_extension )}
+}
+
+if ($format -ne $inferred_format) {
+  throw ('Template "{0}" inferred format ({1}) mismatch with supplied format argument {2}' -f $template_filename, $inferred_format, $format )
+}
+
+if ($format -like 'excel') {
+  # [byte[]]$bytes = [byte[]]::new(8)
+  $bytes = new-object byte[] 8
+  $file_probe_stream = new-object IO.FileStream( $template_filename, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read )
+
+  try {
+    [void]$file_probe_stream.Read($bytes, 0, 8)
+    write-host ('successfully read bytea {0}' -f  [String]::join("", $bytes.ForEach('ToString', 'X2')) )
+  }
+  finally {
+    $file_probe_stream.Close()
+  }
+
+  if ($bytes[0] -ne 0x50 -or $bytes[1] -ne 0x4B) {
+    throw ('Template "{0}" does not appear to be a valid XLSX file' -f $template_filename)
+  }
+}
 if ($location -ne $null) {
   <#
     $git = Get-Command git.exe -ErrorAction Stop
-    
+
     & $git.Source clone --depth 1 $repository $destination
     if ($LASTEXITCODE -ne 0) {
         throw "git clone failed: $LASTEXITCODE"
@@ -464,6 +506,8 @@ if ($location -ne $null) {
 
 $results_ref = proces_file -filepath $filepath
 write-host ('Exporting {0} entries' -f $results_ref.value.Count)
+
+
 if ($format -like 'excel') {
 $command = new-object System.Data.OleDb.OleDbCommand
 $connection = new-object System.Data.OleDb.OleDbConnection
@@ -471,8 +515,7 @@ $connection = new-object System.Data.OleDb.OleDbConnection
 $sheet_name = 'Catalog$'
 $data_table = new-object System.Data.DataTable
 
-[string]$working_directory = (resolve-path -path '.').Path
-[string]$template_fullpath = ('{0}\{1}' -f $working_directory, $template_filename)
+[string]$template_fullpath = join-path -path $working_directory -childpath  $template_filename
 $template_fullpath = create_temporaryfile -template_fullpath $template_fullpath
 write-host ('writing temporary file: {0}' -f $template_fullpath)
 
@@ -485,7 +528,7 @@ $spinIndex = 0
 @(0..($rows.Count-1)) | foreach-object {
   $cnt = $_
   $row = $rows[$cnt]
-  
+
   $new_row_data = @{
     'id' = @{
       'value' = $row['Id'];
@@ -507,7 +550,7 @@ $spinIndex = 0
       'value' = '';
       'type' = [System.Data.OleDb.OleDbType]::VarChar;
     };
-    
+
     'Link' = @{
       'value' = '';
       'type' = [System.Data.OleDb.OleDbType]::Variant;
@@ -516,12 +559,12 @@ $spinIndex = 0
       'value' = $false;
       'type' = [System.Data.OleDb.OleDbType]::Boolean;
     };
-  
+
     'guid' = @{
       'value' = ([guid]::NewGuid()).ToString();
       'type' = [System.Data.OleDb.OleDbType]::VarChar;
     };
-  
+
   }
   [void](insert_row_new -new_row_data $new_row_data -connection $connection -sql "Insert into [${sheet_name}] (@insert_name_part) values (@insert_value_part)"    )
   if (($cnt -ne 0 ) -and ((($cnt % 1000) -eq 0 ) -or ($cnt -eq $input_lines.Count-1 ))) {
@@ -543,6 +586,11 @@ copy-item -path (join-path -path (split-path -path $template_fullpath -parent) -
 move-item -literalpath $template_fullpath -destination (join-path -path $working_directory -childpath $outputfile) -force
 exit
 } else {
+  <#
+   TODO: probe to avoid
+   Cannot convert value "PK^C^D^T^@... to type "System.Xml.XmlDocument". Error: "'^C', hexadecimal value 0x03, is an invalid character. Line 1, position 3."
+   when arguments are inconsistent
+ #>
 $template = (get-content -raw (join-path -path $working_directory -childpath $template_filename))
 [xml]$template_xml = [xml]$template
 [System.Xml.XmlElement]$documentElement = $template_xml.documentElement

@@ -141,9 +141,43 @@ popd
 ```powershell
 . ./catlog-rebuilder.ps1
 ```
+
+```poweshell
+ .\catalog-rebuilder.ps1 -template_filename .\catalog.html  -outputfile result.html
+```
+```text
+Cloning into 'application-skills'...
+remote: Enumerating objects: 6156, done.
+remote: Counting objects: 100% (6156/6156), done.
+remote: Compressing objects: 100% (2572/2572), done.
+remote: Total 6156 (delta 3024), reused 3601 (delta 509), pack-reused 0 (from 0
+Receiving objects: 100% (6156/6156), 2.06 MiB | 1.19 MiB/s, done.
+Resolving deltas: 100% (3024/3024), done.
+Updating files: 100% (3077/3077), done.
+3074 items (726064 bytes) written
+reading C:\Users\kouzm\AppData\Local\Temp\tmp6C13.tmp
+Reading 3073 ⠸  Elapsed: 00:00:10Returning: 3074 results
+Exporting 3074 entries
+Reading 3074 ⠼  Elapsed: 00:00:11 | 278 rows/sec
+```
+```powershell
+dir result.html
+```
+```text
+
+    Directory: C:\developer\sergueik\springboot_study\basic-skill-registry
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         8/13/2026   7:05 PM        1611396 result.html
+
+```
 ```powedshell
 . .\catalog-rebuilder.ps1 -output k8.html -data .\catalog.k8.txt
 ```
+
+
 ```text
 reading 0 rows from C:\developer\sergueik\springboot_study\basic-skill-registry\.\catalog.k8.txt
 Reading 744 |Returning: 744 results
@@ -1496,6 +1530,38 @@ digraph BPObject {
     view -> zoom;
 }
 ```
+### Scenario Dialogue
+
+```
+You:
+"I need a spreadsheet with 203,634 rows."
+
+OOXML:
+"Sure."
+
+You:
+"How?"
+
+OOXML:
+"Here is a specification explaining how."
+
+You:
+"How big?"
+
+OOXML:
+"Yes."
+```
+|Year|What happened|
+|----|-------------|
+|1996–97|During Exchange 5.5 development, OWA used hidden frames to communicate with the server without replacing the visible document.|
+|1998|Microsoft began rewriting OWA for Exchange 2000. They were working with the then-pre-beta IE5, DHTML, and WebDAV.|
+|1998–99-ish|The OWA team initially used an ActiveX control to make WebDAV requests (SEARCH, PROPFIND, etc.), because the browser couldn't make those requests directly.|
+|~1999|The OWA team, with Shawn Bracewell, developed XMLHTTP in partnership with the SQL Server Webdata team. Microsoft says XMLHTTP was created as something that needed to be installed with IE5.|
+|2000|Exchange 2000 shipped, incorporating the technology.|
+|2001–02|Other applications started exploiting essentially the same style of interaction; Microsoft specifically mentions Oddpost, appearing about a year after Exchange 2000 shipped.|
+|2005|Jesse James Garrett coined Ajax as the name for the broader technique.|
+
+
 ### See Also
   * https://openreview.net/pdf/3a0ffc73b487443feb8f2abdacbf3200299cf7o97.pdf
   * [Agent Skills Specification](https://agentskills.io/specification) - complete format specification for Agent Skill
