@@ -2,107 +2,8 @@
 
 replica of the [mermaid-live-editor](https://github.com/mermaid-js/mermaid-live-editor) container for Edit, preview and share mermaid charts/diagrams taken
 at `efafad1e8709854e77bea2d6f1abf212ed7482a9` to use node 18
-
-
-
-### Background
-
-`Mermaid.js` is a JavaScript library that allows users to create different types of diagrams, using a simple syntax. It supports a variety of diagram types, including [Swimlane flowcharts](https://en.wikipedia.org/wiki/Swimlane), [Sequence Diagrams](https://en.wikipedia.org/wiki/Sequence_diagram), [Gantt charts](https://en.wikipedia.org/wiki/Gantt_chart), [Entiy Relationship](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model),  and [UML](https://en.wikipedia.org/wiki/Unified_Modeling_Language) class diagrams
-
-__Mermaid__ diagrams can be easily embedded in websites, blogs, and documentation, making them a popular choice for technical writers, software developers, and other professionals who need to visualize complex information
-
-[Mermaid](https://en.wikipedia.org/wiki/Mermaid_(software)) is open-source and can be integrated in both personal and commercial projects, making it a versatile tool for a variety of applications
-
-Like many other WYSIWYG alternatives Mermaid Diagrams are authored in plain Text and possible to design
-im a plain text editor (Syntax-aware editors can provide IntelliSense typcally vis extensions and plugins)
-which makes it easier to version, review, and maintain compared to graphical design tools like
-
-* [Blue Prism](https://en.wikipedia.org/wiki/Blue_Prism) 
-* [UiPath](https://en.wikipedia.org/wiki/UiPath) 
-* [Windows Workfllow Foundation](https://en.wikipedia.org/wiki/Windows_Workflow_Foundation) 
-* [Mule AnyPoint Design Studio Flows](https://www.mulesoft.com/platform/studio), 
-* Eclipse extensions and plugins for visual designing flows 
-* [Microsoft Visio](https://en.wikipedia.org/wiki/Microsoft_Visio)
-
-and others.
-
-these are very different kinds of development systems, but they share a graphical/WYSIWYG authoring model, 
-whereas __Mermaid__ deliberately makes the diagram itself source text.
-```text
-Traditional visual authoring
-        │
-        ▼
-   Office / Visio
-        │
-        ▼
-binary / structured document
-        │
-        ├── application required for editing
-        ├── awkward textual diff
-        ├── difficult merge semantics
-        └── visual inspection
-```
-              versus
-```
-textual authoring
-        │
-        ▼
-   Markdown + Mermaid
-        │
-        ▼
-       source
-        │
-        ├── plain text
-        ├── Git-friendly
-        ├── diffable
-        ├── mergeable
-        ├── scriptable
-        └── rendered when needed
-```
-
-A 2007-era .docx can effectively become a container of historical debris:
-```code
-10-page document
-│
-├── 🧾 current prose - visible content
-├── 🖼 thumbnails of current diagrams
-├── 🗄 embedd  ed Visio
-├── 🗄 embedded Excel
-├── 🗄 embedded Word 97/2003
-├── ️‍⛓ obsolete revisions
-├── ✂ pasted copies
-├── ⚒ OLE objects
-├── 🗑 backup-ish material
-└── 200 historical remnants ?
-```
-suddenly discoverred hundreds of embedded objects, 
-the mere fact that they are physically present tells you almost nothing about their current semantic relevance.
-
-That's a fundamentally different problem from a Markdown/Mermaid source tree:
-```code
-README.md
-diagram.md
-    └── Mermaid source
-``` 
-With the Office/OLE case, you first have to perform archaeology:
-
-  * *Is this object referenced by the document?*
-  * *Is it visible?*
-  * *Is it current?*
-  * *Is it an alternate version?*
-  * *Is it an old OLE embedding that somebody forgot to remove?*
-  * *Is it merely a copied object from an earlier revision?*
-
-
-But:
-
-"Sorry, there's only one Korben Dallas — and he already boarded."
-
-Microsoft's own development of [MarkItDown](https://markitdown.online)
- is an interesting acknowledgment of the value of extracting information from rich document formats into a more portable, text-oriented representation. The goal is not necessarily to replace Office documents, but to make their contents accessible to downstream tooling, search, automation, and AI systems.
-
-
 ### Usage
+
 
 ```sh
 docker pull node:18.1.0-alpine
@@ -344,14 +245,14 @@ Fetch event handler is recognized as no-op. No-op fetch handler may bring overhe
 ```
 rebuild and copy the `dist`
 
-if seeing 
+if seeing
 ```text
 
 fetch https://dl-cdn.alpinelinux.org/alpine/v3.15/main/x86_64/APKINDEX.tar.gz
 ERROR: https://dl-cdn.alpinelinux.org/alpine/v3.15/main: temporary error (try again later)
 WARNING: Ignoring https://dl-cdn.alpinelinux.org/alpine/v3.15/main: No such file or directory
 ```
-while 
+while
 ```sh
 curl -I https://dl-cdn.alpinelinux.org/alpine/v3.15/main/x86_64/APKINDEX.tar.gz
 ```
@@ -433,7 +334,7 @@ The stale Service Worker continues referencing JavaScript bundles that no longer
 ![Cache miss error](screenshots/capture-cache-miss-error.png)
 
 
-#### Confirm the Issue 
+#### Confirm the Issue
 
 Examine page source as seen on the browser
 
@@ -639,14 +540,127 @@ start-d8e4d14a.js:1 Uncaught (in promise) Error: Version check failed: 404
     at async me (start-d8e4d14a.js:1:13827)
     at async we (start-d8e4d14a.js:1:19667)
 ```
+
 ### Background
-[Mermaid](https://en.wikipedia.org/wiki/Mermaid_(software)) - is an open-source JavaScript-based diagramming and charting software from a Markdown-like syntax flow DSL similar and more advanded than Graphviz scored in the Most Exciting Use of Technology
-[Mermaid Wiki](https://mermaid.ai/open-source/intro/index.html)
 
-[Live App](https://mermaid.live/) to learn practice
+`Mermaid.js` is a JavaScript library that allows users to create different types of diagrams, using a simple syntax. It supports a variety of diagram types, including [Swimlane flowcharts](https://en.wikipedia.org/wiki/Swimlane), [Sequence Diagrams](https://en.wikipedia.org/wiki/Sequence_diagram), [Gantt charts](https://en.wikipedia.org/wiki/Gantt_chart), [Entiy Relationship](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model),  and [UML](https://en.wikipedia.org/wiki/Unified_Modeling_Language) class diagrams
+
+__Mermaid__ diagrams can be easily embedded in websites, blogs, and documentation, making them a popular choice for technical writers, software developers, and other professionals who need to visualize complex information
+
+[Mermaid](https://en.wikipedia.org/wiki/Mermaid_(software)) is open-source and can be integrated in both personal and commercial projects, making it a versatile tool for a variety of applications
+
+Like many other WYSIWYG alternatives Mermaid Diagrams are authored in plain Text and possible to design
+im a plain text editor (Syntax-aware editors can provide IntelliSense typcally vis extensions and plugins)
+which makes it easier to version, review, and maintain compared to graphical design tools like
+
+* [Blue Prism](https://en.wikipedia.org/wiki/Blue_Prism)
+* [UiPath](https://en.wikipedia.org/wiki/UiPath)
+* [Windows Workfllow Foundation](https://en.wikipedia.org/wiki/Windows_Workflow_Foundation)
+* [Mule AnyPoint Design Studio Flows](https://www.mulesoft.com/platform/studio),
+* Eclipse extensions and plugins for visual designing flows
+* [Microsoft Visio](https://en.wikipedia.org/wiki/Microsoft_Visio)
+
+and others.
+
+these are very different kinds of development systems, but they share a graphical/WYSIWYG authoring model,
+whereas __Mermaid__ deliberately makes the diagram itself source text.
+
+```code
+Traditional visual authoring
+        │
+        ▼
+   Office / Visio
+        │
+        ▼
+binary / structured document
+        │
+        ├── application required for editing
+        ├── awkward textual diff
+        ├── difficult merge semantics
+        └── visual inspection
+```
+versus
+```code
+textual authoring
+        │
+        ▼
+   Markdown + Mermaid
+        │
+        ▼
+       source
+        │
+        ├── plain text
+        ├── Git-friendly
+        ├── diffable
+        ├── mergeable
+        ├── scriptable
+        └── rendered when needed
+```
+
+A 2007-era .docx can effectively become a container of historical debris:
+```code
+10-page document
+│
+├── 🧾 current prose - visible content
+├── 🖼 thumbnails of current diagrams
+├── 🗄 embedd  ed Visio
+├── 🗄 embedded Excel
+├── 🗄 embedded Word 97/2003
+├── ⛓ obsolete revisions
+├── ✂ pasted copies
+├── ⚒ OLE objects
+├── 🗑 backup-ish material
+└── 200 historical remnants ?
+```
+suddenly discoverred hundreds of embedded objects,
+the mere fact that they are physically present tells you almost nothing about their current semantic relevance.
+
+That's a fundamentally different problem from a Markdown/Mermaid source tree:
+```code
+README.md
+diagram.md
+    └── Mermaid source
+```
+With the Office/OLE case, you first have to perform archaeology:
+
+  * *Is this object referenced by the document?*
+  * *Is it visible?*
+  * *Is it current?*
+  * *Is it an alternate version?*
+  * *Is it an old OLE embedding that somebody forgot to remove?*
+  * *Is it merely a copied object from an earlier revision?*
 
 
-There official __Mermaid Live Editor__ Docker image is hosted on [GitHub Container Registry](ghcr.io/mermaid-js/mermaid-live-editor/mermaid-live-editor) (__GHCR__)
+But:
+
+*Sorry, there's only one Korben Dallas — and he already boarded*
+
+Microsoft's own development of [MarkItDown](https://markitdown.online)
+ is an interesting acknowledgment of the value of extracting information from rich document formats into a more portable, text-oriented representation. The goal is not necessarily to replace Office documents, but to make their contents accessible to downstream tooling, search, automation, and AI systems.
+
+####  Enterprise Provisioning/Policy Reality Constraint
+
+> Enterprise note: A locally installed Office application is not necessarily a zero-cost alternative simply because the organization provides the corresponding cloud service. Local Visio may require separate justification/provisioning and licensing. This matters particularly for automation scenarios requiring the Visio COM interface, which is available only through the locally installed application.
+
+
+COM automation requirement:
+```code
+Python
+  │
+  ▼
+Visio COM automation
+  │
+  ▼
+locally installed Visio
+  │
+  ▼
+open / inspect / manipulate VSD
+```
+A browser/cloud Visio experience doesn't give Python the same local COM automation surface. So "use the cloud version" isn't necessarily an equivalent substitute for programmatic legacy-document archaeology.
+
+Historically, a Word document (and its OLE object hierarchy) could easily retain artifacts of the document's revision history, making some embeddings largely duplicates of one another.
+No need to spell out the entire causal chain.
+
 ### See Also
   * [github allows including diagrams in Markdown files with Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) - also embedded in GitLab, Gitea, Joplin, Notion.
 
@@ -693,6 +707,9 @@ along with several other extensions
   * [top 6 Mermaid.js alternatives](https://swimm.io/learn/mermaid-js/top-6-mermaid-js-alternatives)
   * [MermaidJS and Graphviz side by side](https://www.devtoolsdaily.com/diagrams/graphviz_vs_mermaid/)
   * [Python MarkItDown: Convert Documents Into LLM-Ready Markdown](https://realpython.com/python-markitdown/)
+  * [Mermaid Wiki](https://mermaid.ai/open-source/intro/index.html)
+  * [Live App](https://mermaid.live/) to learn practice
+  * official __Mermaid Live Editor__ Docker image is hosted on [GitHub Container Registry](ghcr.io/mermaid-js/mermaid-live-editor/mermaid-live-editor) (__GHCR__)
 
 
 ---
