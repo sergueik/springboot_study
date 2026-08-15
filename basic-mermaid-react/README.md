@@ -197,7 +197,9 @@ docker run --name $NAME -d -p 8080:80 $IMAGE
 
 ![Run Nginx Docker](screenshots/capture-nginx-docker.png)
 
-### Note
+![Bookmark](screenshots/capture-container-bookmark.png)
+
+> NOTE: the following command expects the `dist` directory be deleted
 
 ```sh
 rm -fr dist
@@ -213,6 +215,8 @@ Serving HTTP on :: port 8000 (http://[::]:8000/) ...
 then open the site in the browser `http://localhost:8000`
 
 ![Running Python Http Server](screenshots/capture-python.png)
+
+![Bookmark](screenshots/capture-python-bookmark.png)
 
 ### Local File
 

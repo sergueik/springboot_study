@@ -6,13 +6,10 @@ COPY package*.json /app/
 
 ARG NPM_REGISTRY
 
-RUN if [ -n "$NPM_REGISTRY" ]; then \
-        npm config set registry "$NPM_REGISTRY"; \
-    fi
-RUN npm install \
- || { cat /root/.npm/_logs/*.log; exit 1; }
+RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi
+RUN npm install || { cat /root/.npm/_logs/*.log; exit 1; }
 
-COPY index.html vite.config.js /app/
+COPY index.html vite.config.js favicon.png /app/
 ADD src /app/src
 
 RUN npm run build
