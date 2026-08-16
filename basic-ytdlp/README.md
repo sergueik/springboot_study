@@ -120,21 +120,19 @@ For audio use the different command
 URL="https://www.youtube.com/watch?v=byK_Qta0Yyo&list=RDbyK_Qta0Yyo&start_radio=1"
 yt-dlp -x --audio-format mp3 --audio-quality 320K "$URL"
 ```
+#### Troubeshootng
 
-i am trying to downoad playlist using  yt-dlp  for offline listening
-```
+When trying to downoad playlist using  `yt-dlp` for offline listening
+```sh
 TAG=2026.03.17
 NAME=ytdlp
 docker pull jauderho/yt-dlp:$TAG
 docker run --name $NAME --entrypoint='' -it jauderho/yt-dlp:$TAG sh
-
 ```
 
-```
-URL="https://www.youtube.com/watch?v=V5TDl7EtpjY&list=PLN9Z4tXPWmyn
-70o52-zWkNBjcTrIqKcQV"
+```sh
+URL="https://www.youtube.com/watch?v=V5TDl7EtpjY&list=PLN9Z4tXPWmyn70o52-zWkNBjcTrIqKcQV"
 yt-dlp -x --audio-format mp3 --audio-quality 320K "$URL"
-
 ```
 One may be getting the following error on each of the audios:
 
@@ -263,6 +261,7 @@ Zat You Santa Claus - the Speakeasies' Swing Band! [6gRWSruPUN8].m4a
 NAME=ytdlp
 docker exec -it $NAME sh -c "ls /downloads/*.mp3"
 ```
+copy files locally
 
 ```sh
 NAME=ytdlp
