@@ -138,12 +138,9 @@ find skills -iname 'SKILL.md' | tee ../catalog.txt
 popd
 ```
 
-```powershell
-. ./catlog-rebuilder.ps1
-```
 
 ```poweshell
- .\rebuilder.ps1 -template_filename .\catalog.html  -outputfile result.html
+.\rebuilder.ps1 -template_filename .\catalog.html  -outputfile result.html
 ```
 ```text
 Cloning into 'application-skills'...
@@ -189,18 +186,40 @@ Returning: 3074 results
 Exporting 3074 entries
 Reading 3074 ⠼  Elapsed: 00:00:14 | 212 rows/sec
 ```
-```powershell
-. .\rebuilder.ps1 -output k8.html -data .\catalog.k8.txt
+
+#### Argument Errors
+
+* not all arguments supplied in consistenc fashion:
+
+```cmd
+rebuilder.cmd -template_filename catalog-template.xls -count 10 -outputfile result.xls
+```
+```text
+Inconsistent arguments: format "html" cannot be used with Excel template "catalog-template.xls"
+At ...\basic-skill-registry\rebuilder.ps1:461 char:3
++   throw ('Inconsistent arguments: format "{0}" cannot be used with Ex ...
+```
+* new default is Excel 2007 - The Excel 97/2003 needs to be configured by changing some code  
+```cmd
+rebuilder.cmd -template_filename catalog-template.xls -count 10 -outputfile result.xls -format excel
+```
+```text
+successfully read bytea D0CF11E0A1B11AE1
+Template "catalog-template.xls" does not appear to be a valid XLSX file
+At ...\basic-skill-registry\rebuilder.ps1:494 char:5
 ```
 
+
+```powershell
+rebuilder.cmd -template_filename catalog-template.xls -count 10 -outputfile result.xlsx -format excel
+```
 
 ```text
-reading 0 rows from C:\developer\sergueik\springboot_study\basic-skill-registry\.\catalog.k8.txt
-Reading 744 |Returning: 744 results
-Exporting 744 entries
-Reading 744 /
+Provider "Microsoft.ACE.OLEDB.12.0" is not registered on the local machine
+At C:\developer\sergueik\springboot_study\basic-skill-registry\rebuilder.ps1:510 char:5
 ```
-it generates the flat HTML table with search.
+
+With `html` format, it generates the flat HTML table with search.
 ```powershell
 start k8.html
 ```
@@ -707,8 +726,8 @@ write-host "InProcServer32: ${inprocPath}"
 ```
 > NOTE
 ```cmd
-sc.exe stop wuauserv
-sc.exe config wuauserv start=disabled
+sc.exe stop wuauserv &&
+sc.exe config wuauserv start=disabled &&
 sc.exe queryex wuauserv
 ```
 or

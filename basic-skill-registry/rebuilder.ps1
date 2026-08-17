@@ -484,7 +484,7 @@ if ($format -like 'excel') {
 
   try {
     [void]$file_probe_stream.Read($bytes, 0, 8)
-    write-host ('successfully read bytea {0}' -f  [String]::join("", $bytes.ForEach('ToString', 'X2')) )
+    write-verbose ('successfully read bytea {0}' -f  [String]::join('', $bytes.ForEach('ToString', 'X2')) )
   }
   finally {
     $file_probe_stream.Close()
@@ -494,17 +494,24 @@ if ($format -like 'excel') {
     throw ('Template "{0}" does not appear to be a valid XLSX file' -f $template_filename)
   }
 }
-if ($location -ne $null) {
-  <#
-    $git = Get-Command git.exe -ErrorAction Stop
+if ($format -like 'excel' ) {
 
-    & $git.Source clone --depth 1 $repository $destination
-    if ($LASTEXITCODE -ne 0) {
-        throw "git clone failed: $LASTEXITCODE"
+  $clsid =  (get-itemproperty -path 'HKLM:\Software\Classes\Microsoft.ACE.OLEDB.12.0\CLSID' -name '(default)' -erroraction silentlycontinue).'(default)'
+  if ($clsid) {
+    $registry_path = ('HKLM:\Software\Classes\{0}' -f  $clsid)
+
+    get-item -path $registry_path  -erroraction silentlycontinue
+    $status = $?
+
+    if (-not $status ) {
+      throw ('Provider "{0}" is not registered on the local machine' -f 'Microsoft.ACE.OLEDB.12.0')
     }
-    git clone  --depth 1 https://github.com/majiayu000/claude-skill-registry
-    write-host ('written {0}' -f $filepath)
-  #>
+  } else {
+    throw ('Provider "{0}" is not registered on the local machine' -f 'Microsoft.ACE.OLEDB.12.0')
+  }     
+}
+if ($location -ne $null) {
+
   $tempfile = (new-temporaryfile)
   # $window_handle = [System.Diagnostics.Process]::GetCurrentProcess().MainWindowHandle
 
