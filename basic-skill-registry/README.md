@@ -143,7 +143,7 @@ popd
 ```
 
 ```poweshell
- .\catalog-rebuilder.ps1 -template_filename .\catalog.html  -outputfile result.html
+ .\rebuilder.ps1 -template_filename .\catalog.html  -outputfile result.html
 ```
 ```text
 Cloning into 'application-skills'...
@@ -175,7 +175,7 @@ Mode                 LastWriteTime         Length Name
 ```
 
 ```powershell
-. .\catalog-rebuilder.ps1 -template catalog.html -output result.html -verbose |tee.exe a.log
+. .\rebuilder.ps1 -template catalog.html -output result.html -verbose |tee.exe a.log
 ```
 ```text
 VERBOSE: line:
@@ -190,7 +190,7 @@ Exporting 3074 entries
 Reading 3074 ⠼  Elapsed: 00:00:14 | 212 rows/sec
 ```
 ```powershell
-. .\catalog-rebuilder.ps1 -output k8.html -data .\catalog.k8.txt
+. .\rebuilder.ps1 -output k8.html -data .\catalog.k8.txt
 ```
 
 
@@ -791,7 +791,7 @@ get-cimInstance Win32_OperatingSystem |select-Object -property TotalVisibleMemor
 We will still be using the old __Excel__ __8.0__ / `.xls` format:
 
 ```cmd
-. .\catalog-rebuilder.ps1 -count 40000
+. .\rebuilder.ps1 -count 40000
 ```
 ```text
 reading 40000 rows from C:\developer\sergueik\catalog.txt
@@ -802,7 +802,7 @@ Inserred 40000 ⠇ Elapsed: 00:03:00.
 ![Excel](screenshots/capture-work-excel.png)
 
 ```powershell
-. .\catalog-rebuilder.ps1 -template_filename catalog-template.xls -count 10 -outputfile result.xls
+. .\rebuilder.ps1 -template_filename catalog-template.xls -count 10 -outputfile result.xls
 ```
 ```text
 reading 10 rows from catalog.txt
@@ -836,7 +836,7 @@ Mode                LastWriteTime     Length Name
 > NOTE An `.xls` worksheet has a *maximum capacity* of __65,536__ rows
 
 ```cmd
-. .\catalog-rebuilder.ps1
+. .\rebuilder.ps1
 ```
 ```text
 reading rows from C:\developer\sergueik\catalog.txt
@@ -847,7 +847,7 @@ ERROR inserting row: 65524
 Skill: v3-performance-optimization
 Exception: Spreadsheet is full.
 Spreadsheet is full.
-At catalog-rebuilder.ps1:329 char:10
+At rebuilder.ps1:329 char:10
 +     throw <<<<
     + CategoryInfo          : OperationStopped: (:) [], OleDbException
     + FullyQualifiedErrorId : Spreadsheet is full.
@@ -857,7 +857,7 @@ At catalog-rebuilder.ps1:329 char:10
 
 with __Excel 2007__
 ```powershell
-. .\catalog-rebuilder.ps1 -template_filename catalog-template.xlsx
+. .\rebuilder.ps1 -template_filename catalog-template.xlsx
 ```
 ```text
 reading C:\developer\sergueik\catalog.txt
