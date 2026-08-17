@@ -166,7 +166,7 @@ function read_location {
   }
   # why (measure-object -inputObject @($helper.Files)).Count = 1
   $project = $helper.Project
-  
+
   write-host ('{0} items ({1} bytes) of "{2}" written' -f ($helper.Files.Count), (get-item $tempFile).Length, $project)
   return $project
 }
@@ -268,7 +268,7 @@ foreach-object {
 
     write-verbose ('line: "{0}"' -f $line)
     $line = $line.Replace('\', '/')
-    $pattern1 = ('^.+/(?={0})' -f  $repository_name )
+    $pattern1 = ('^.+/(?={0})' -f $repository_name )
     $r1 = new-object System.Text.RegularExpressions.Regex($pattern1)
     $line = $r1.replace($line, '')
     write-verbose ('parsing prepared line: "{0}"' -f $line)
@@ -484,7 +484,7 @@ if ($format -like 'excel') {
 
   try {
     [void]$file_probe_stream.Read($bytes, 0, 8)
-    write-verbose ('successfully read bytea {0}' -f  [String]::join('', $bytes.ForEach('ToString', 'X2')) )
+    write-verbose ('successfully read bytea {0}' -f [String]::join('', $bytes.ForEach('ToString', 'X2')) )
   }
   finally {
     $file_probe_stream.Close()
@@ -496,21 +496,39 @@ if ($format -like 'excel') {
 }
 if ($format -like 'excel' ) {
 
+  # NOTE: may actually need to look for
+  # Microsoft.ACE.OLEDB.16.0 {3BE786A2-0366-4F5C-9434-25CF162E475E}
+  # and not "Microsoft.ACE.OLEDB.12.0""{3BE786A0-0366-4F5C-9434-25CF162E475E}"
   $clsid =  (get-itemproperty -path 'HKLM:\Software\Classes\Microsoft.ACE.OLEDB.12.0\CLSID' -name '(default)' -erroraction silentlycontinue).'(default)'
   if ($clsid) {
-    $registry_path = ('HKLM:\Software\Classes\{0}' -f  $clsid)
+    $registry_path = ('HKLM:\Software\Classes\CLSID\{0}' -f $clsid)
 
-    get-item -path $registry_path  -erroraction silentlycontinue
+    [void](get-item -path $registry_path  -erroraction silentlycontinue)
     $status = $?
 
     if (-not $status ) {
-      throw ('Provider "{0}" is not registered on the local machine' -f 'Microsoft.ACE.OLEDB.12.0')
+      throw ('Provider "{0}" CLSSID "{1}" is not registered on the local machine' -f 'Microsoft.ACE.OLEDB.12.0', $clsid)
     }
+	# TODO: check dll on disk
+
+  # '{3BE786A0-0366-4F5C-9434-25CF162E475F}' 'InprocServer32' '(default)'
+  # 'C:\Program Files\Common Files\Microsoft Shared\OFFICE16\ACEOLEDB.DLL'
+  #
+  # '{3BE786A2-0366-4F5C-9434-25CF162E475E}''InprocServer32' '(default)'
+  # 'C:\Program Files\Common Files\Microsoft Shared\OFFICE16\ACEOLEDB.DLL'
+	# '{3BE786A2-0366-4F5C-9434-25CF162E475E}' 'OLE DB Provider' '(default'
+  # 'Microsoft Office 16.0 Access Database Engine OLE DB Provider'
   } else {
-    throw ('Provider "{0}" is not registered on the local machine' -f 'Microsoft.ACE.OLEDB.12.0')
-  }     
+    throw ('Provider "{0}" is not registered on the local machine (not in Software/Classes)' -f 'Microsoft.ACE.OLEDB.12.0')
+  }
 }
 if ($location -ne $null) {
+  if (-not (test-path -path 'C:\Program Files\Git\bin\git.exe')) {
+    throw ('Git Application needs to be installed')
+  }
+}
+if ($location -ne $null) {
+  # TODO: switch to create_temporaryfile
 
   $tempfile = (new-temporaryfile)
   # $window_handle = [System.Diagnostics.Process]::GetCurrentProcess().MainWindowHandle
@@ -525,7 +543,7 @@ if ($location -ne $null) {
   #>
 } else {
    # TODO move code
-   $repository_name = 'claude-skill-registry' 
+   $repository_name = 'claude-skill-registry'
    $filepath = (resolve-path -path '.').path + '\' + $datafile
 }
 $results_ref = proces_file -filepath $filepath -repository_name $repository_name

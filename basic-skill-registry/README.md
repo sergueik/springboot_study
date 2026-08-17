@@ -219,6 +219,20 @@ Provider "Microsoft.ACE.OLEDB.12.0" is not registered on the local machine
 At C:\developer\sergueik\springboot_study\basic-skill-registry\rebuilder.ps1:510 char:5
 ```
 
+```text
+Git Application needs to be installed
+C:\developer\sergueik\springboot_study\basic-skill-registry\rebuilder.ps1:520 char:5
++     throw ('Git Application needs to be insyalled')
+```
+> NOTE: in the current version the WOW6432 is not supported
+
+![Capture Conflict 32 and 64 bit server](screenshots/capture-access-database-engine-wow-conflict.png)
+
+> NOTE: do not modify registry, Access Engine will fial to repair
+
+![Capture Conflict 32 and 64 bit server](screenshots/capture-access-database-engine-repair-error.png)
+
+
 With `html` format, it generates the flat HTML table with search.
 ```powershell
 start k8.html
