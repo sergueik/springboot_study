@@ -473,23 +473,6 @@ TypeError: Cannot read properties of undefined (reading 'first_line')
 - ⚠ Browser `file://` behavior still requires additional investigation.
 - ✅ HTTP deployment (nginx or any static web server) works correctly.
 
-### Markdown / Dillinger
-```sh
-docker pull linuxserver/dillinger:3.39.1
-docker pull joemccann/dillinger:3.37.2
-```
-```sh
-docker image ls
-```
-```text
-REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
-linuxserver/dillinger   3.39.1              ba7ab914577c        2 years ago         788MB
-joemccann/dillinger     3.37.2              444909d517c9        6 years ago         1.01GB
-```
-```sh
-docker run -d --name=linuxserver-dillinger -p 9090:8080 linuxserver/dillinger:3.39.1
-```
-
 ### See Also:
   * [Mermaid Live Editor](https://mermaid.live/edit): Online FlowChart & Diagrams Editor
   * [Diagram as Code: Comparing the Major Tools](https://diagrams.so/learn/diagram-as-code-comparison)
@@ -497,11 +480,7 @@ docker run -d --name=linuxserver-dillinger -p 9090:8080 linuxserver/dillinger:3.
   * [MermaidJS and Graphviz side by side](https://www.devtoolsdaily.com/diagrams/graphviz_vs_mermaid/)
   * [Python MarkItDown: Convert Documents Into LLM-Ready Markdown](https://realpython.com/python-markitdown/)
   * [Complete markdown syntax guide and cheat sheet](https://dillinger.io/guide)
-  * __Dillinger__ - free, online, browser-based AngularJS-powered HTML5 live Markdown editor featuring a split-pane interface with real-time live preview.
-   + [joemccann/dillinger](https://hub.docker.com/r/joemccann/dillinger) (NOTE: latest releases __3.41.0__ are significantly heavier than __3.39.0__ or earlier 
-   + [live](https://dillinger.io) 
-   + [joemccann/dillinger](https://github.com/joemccann/dillinger)
-   + [dillinger](https://hub.docker.com/r/linuxserver/dillinger) - smaller Docker image (older, deprecated) and [repository](https://github.com/linuxserver-archive/docker-dillinger)
+
 ---
 
 ### Author

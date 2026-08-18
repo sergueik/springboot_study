@@ -1,7 +1,5 @@
 ### Dillinger Live As Static
 
-
-
 ```
 Full Dillinger container
 788 MB
@@ -9,7 +7,7 @@ Full Dillinger container
     ├── Node
     ├── Express
     ├── plugins
-    ├── OAuth integrationsa
+    ├── OAuth integrations
     ├── node_modules
     ├── build machinery
     └── public/  ← 6.4 MB
@@ -19,17 +17,74 @@ Full Dillinger container
 ```
 > The useful artifact for the target audience is the public/ browser application, not the 788 MB container.
 
-| Deployment | Prerequisite |
-|---|---|
-| container | Docker/Podman, Virtualization (WSL2) |
-| Express application | Node.js |
-| SPA | **None** - browser only |
+| Variant | Dependency | Prerequisite | Status |
+|---|---|---|---|
+| live | none | enterprise network access | ❌ Firewall |
+| container | Docker/Podman | WSL2, VirtualBox or other suitable infrastructure | ⚠️ |
+| Express application | Node.js | Node.js or VS Code installed | ⚠️ |
+| SPA | none | browser | ✅ |
 
 
 ### Background
 
-__Dillinger__ - free, online, browser-based AngularJS-powered HTML5 live Markdown editor featuring a split-pane interface with real-time live preview.
+[Dillinger](https://www.markdownguide.org/tools/dillinger) - free, online, browser-based [AngularJS](https://en.wikipedia.org/wiki/AngularJS)
+powered HTML5 live [Markdown](https://en.wikipedia.org/wiki/Markdown) editor featuring a split-pane interface with real-time live preview.
+There is no need to download and install an application on computer.
 
+```text
+1960s
+  runoff
+    │
+    ├── CTSS / Multics
+    │
+1970s
+    ▼
+  roff
+    │
+    ├── nroff  → terminal / text output
+    └── troff  → typesetter output
+             │
+             ▼
+          man pages
+             │
+             ▼
+           groff
+
+2004
+  Markdown
+    │
+    ▼
+  HTML / web / GitHub / documentation
+```
+> Write a textual description; let another program render it
+
+
+__Windows__ world had its own documentation machinery.
+
+The name you were probably remembering is WinHelp.
+
+A WinHelp project could involve:
+
+|content|role                       |
+|-----|-----------------------------|
+|`.HPJ` |  project/build configuration|
+|`.RTF` |  topic content              |
+|`.CNT`  | table of contents          |
+|`.BMP` | graphics                   |
+|`.SHG`  | "hotspot" graphics / image maps|
+|   ↓  |                            |
+|`.HLP`  | compiled Windows Help      |
+
+
+__Markdown__ isn't the invention of "documentation markup." It is one of the unusually successful attempts to make markup pleasant enough that the source itself remains readable.
+
+|Era|Authoring source|Renderer/compiler|Typical result|Trade-off|
+|1960s–70s|runoff / roff|runoff / nroff / troff|text, printed documents|Powerful but command-oriented|
+|1970s onward|TeX / LaTeX|TeX engine|DVI / PDF|Exceptional typesetting, steeper learning curve|
+|Windows era|RTF + HPJ + CNT + graphics|WinHelp compiler|.HLP|Tool-specific documentation system|
+|1980s–90s|WYSIWYG editors|editor itself|proprietary/native document|Immediate visual editing|
+|2004 onward|Markdown|Markdown renderer|HTML and many other formats|Extremely low authoring overhead|
+|2010s onward|Mermaid|Mermaid renderer|SVG/diagram|Textual description of diagrams|
 
 ### Usage
 
@@ -151,16 +206,6 @@ Examining `package.json` reveals imporant info:
 ```sh
 node app
 ```
-```text
-Dropbox config not found at C:\developer\sergueik\springboot_study\basic-mermaid-react\dillinger\configs\dropbox\dropbox-config.json. Plugin disabled.
-Bitbucket config not found at C:\developer\sergueik\springboot_study\basic-mermaid-react\dillinger\configs\bitbucket\bitbucket-config.json. Plugin disabled.
-Github config not found at C:\developer\sergueik\springboot_study\basic-mermaid-react\dillinger\configs\github\github-config.json. Plugin disabled.
-Medium config not found at C:\developer\sergueik\springboot_study\basic-mermaid-react\dillinger\configs\medium\medium-config.json. Plugin disabled.
-Google Drive config not found at C:\developer\sergueik\springboot_study\basic-mermaid-react\dillinger\configs\googledrive\googledrive-config.json. Plugin disabled.
-OneDrive config not found at C:\developer\sergueik\springboot_study\basic-mermaid-react\dillinger\configs\onedrive\onedrive-config.json. Plugin disabled.
-Sponsored config not found at C:\developer\sergueik\springboot_study\basic-mermaid-react\dillinger\configs\sponsored\sponsored-config.json. Plugin disabled.
-GoogleAnalytics config not found at C:\developer\sergueik\springboot_study\basic-mermaid-react\dillinger\configs\googleanalytics\googleanalytics-config.json. Plugin disabled.
-```
 ```
 Express server listening on port 8080
 http://localhost:8080
@@ -201,7 +246,7 @@ subst E: %CD%
 cygpath -wa .
 ```
 
-if necesary can package the files and distribute
+if necessary can package the files and distribute
 
 ```sh
 "c:\Program Files\7-Zip\7z.exe" a ..\dillinger.zip -r .
@@ -229,8 +274,59 @@ docker container prune -f
 docker image prune -f
 docker image rm linuxserver/dillinger:3.39.1
 ```
-The latest revisions of `joemccann/dillinger` are using [Next.js](https://en.wikipedia.org/wiki/Next.js) while originally if has been a plain
- [AngularJS](https://en.wikipedia.org/wiki/AngularJS) powered HTML5 Markdown editor
+
+### NOTE
+
+The latest revisions of `joemccann/dillinger` are using [Next.js](https://en.wikipedia.org/wiki/Next.js) while originally if has been using plain
+ [AngularJS](https://en.wikipedia.org/wiki/AngularJS)
+
+### Technical Info
+
+```sh
+pushd dillinger
+find . -path './node_modules' -prune -o   -type f \( -name '*.js' -o -name '*.html' -o -name '*.ejs' \)  -print | grep -Ei 'app|editor|markdown|angular|index' | head -200
+```
+
+```text
+./app.js
+./gulp/index.js
+./plugins/core/markdown-it.js
+./public/js/app.js
+./public/scss/vendor/bootstrap-sass-3.2.0/test/dummy_rails/app/assets/javascripts/application.js
+./routes/index.js
+./views/editor-headers.ejs
+./views/editor.ejs
+./views/index.ejs
+```
+
+```sh
+pushd dillinger
+grep -RnilE 'markdown-it|angular\.module|ng-app|ng-controller'   .  --exclude-dir=node_modules   --exclude='package-lock.json' | head -200
+```
+```text
+./package.json
+./plugins/core/markdown-it.js
+./plugins/core/server.js
+./public/js/app.js
+./public/js/main.bundle.js
+./public/js/main.js
+./public/js/plugins/google-drive/google-drive-modal.controller.js
+./public/js/plugins/google-drive/google-drive.controller.js
+./public/js/plugins/google-drive/google-drive.service.js
+./public/js/plugins/medium/medium.service.js
+./public/js/plugins/one-drive/one-drive-modal.controller.js
+./public/js/plugins/one-drive/one-drive.controller.js
+./public/js/plugins/one-drive/one-drive.service.js
+./README.md
+./views/dropdowns/export_as.ejs
+./views/dropdowns/import_from.ejs
+./views/dropdowns/link_unlink.ejs
+./views/dropdowns/save_to.ejs
+./views/dropdowns/settings.ejs
+./views/index.ejs
+./views/sidebar.ejs
+./webpack.config.js
+```
  
 ### See Also:
 
@@ -239,9 +335,10 @@ The latest revisions of `joemccann/dillinger` are using [Next.js](https://en.wik
   * [joemccann/dillinger](https://github.com/joemccann/dillinger)
   * [dillinger](https://hub.docker.com/r/linuxserver/dillinger) - smaller Docker image (older, deprecated) and [repository](https://github.com/linuxserver-archive/docker-dillinger)
 
-
+  * https://unicode.org/emoji/charts/full-emoji-list.html#keycap
+  * [Python MarkItDown: Convert Documents Into LLM-Ready Markdown](https://realpython.com/python-markitdown/)
+  * [Complete markdown syntax guide and cheat sheet](https://dillinger.io/guide)
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
 
