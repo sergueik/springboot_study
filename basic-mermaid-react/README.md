@@ -202,9 +202,13 @@ docker run --name $NAME -d -p 8080:80 $IMAGE
 > NOTE: the following command expects the `dist` directory be deleted
 
 ```sh
+NAME=mermaid-react
 rm -fr dist
+if test -d dist ; then echo "cannot continue"; else 
 docker cp $NAME:/usr/share/nginx/html dist
+fi
 ```
+(You may need to switch to Windows environment shell)
 ```cmd
 pushd dist
 python.exe -m http.server
@@ -396,6 +400,71 @@ Potential users include:
 
 A portable static application avoids IDE dependencies while providing a simple way to preview and validate Mermaid diagrams.
 
+#### Troubleshooting
+a slightly older release `9.4.5` is unable to render flowcharts containing [emoji]()
+
+```code
+flowchart TD
+    A[🚀 Start] --> B[🔨 Build]
+    B --> C[🧪 Test]
+
+    C -->|✅ Pass| D[📦 Deploy]
+    C -->|❌ Fail| B
+
+    D --> E[🔍 Verify]
+    E -->|✅ Verified| F[🎉 Complete]
+    E -->|❌ Failed| C
+```
+```mermaid
+flowchart TD
+    A[🚀 Start] --> B[🔨 Build]
+    B --> C[🧪 Test]
+
+    C -->|✅ Pass| D[📦 Deploy]
+    C -->|❌ Fail| B
+
+    D --> E[🔍 Verify]
+    E -->|✅ Verified| F[🎉 Complete]
+    E -->|❌ Failed| C
+```
+there are actually *two* errors
+```text
+
+
+Error
+  {str: 'Lexical error on line 2. Unrecognized text.\nflowch… TD    A[🚀 Start] --> B[🔨 B\n------------------^', hash: {…}}
+  
+Uncaught Error: Cannot read properties of undefined (reading 'first_line')
+
+TypeError: Cannot read properties of undefined (reading 'first_line')
+    at Rn.S (edit.svelte-cf77660e.js:109:13637)
+    at index-3ccfa173.js:4:906
+    at Array.forEach (<anonymous>)
+    at index-3ccfa173.js:4:892
+    at edit.svelte-cf77660e.js:14:1891
+    at i.invoke (event.ts:554:17)
+    at o.fire (event.ts:721:15)
+    at codeEditorWidget.ts:1472:88
+    at textModel.ts:201:79
+    at i.invoke (event.ts:554:17)
+    at Rn.S (edit.svelte-cf77660e.js:109:13637)
+    at index-3ccfa173.js:4:906
+    at Array.forEach (<anonymous>)
+    at index-3ccfa173.js:4:892
+    at edit.svelte-cf77660e.js:14:1891
+    at i.invoke (event.ts:554:17)
+    at o.fire (event.ts:721:15)
+    at codeEditorWidget.ts:1472:88
+    at textModel.ts:201:79
+    at i.invoke (event.ts:554:17)
+    at errors.ts:22:12
+```
+
+|-------|-------------------|-------|--------------|----------------------|--------|
+|Variant|Runtime / packaging|Mermaid|Main advantage|Main nuisance / caveat|Best use|
+|1. Docker + nginx + Svelte + Mermaid|Container serves the Svelte dist through nginx|Mermaid bundled into the application|Cleanest and most reproducible; browser sees an ordinary HTTP application; no file:// restrictions|Requires Docker/container lifecycle; image rebuild when dependencies change|Primary development/test environment and closest to a deployable application|
+|2. Python local server + dist|Python HTTP server serves the locally built dist directory|Mermaid bundled in dist|Extremely lightweight; no nginx/Docker required; behaves like a normal web application|Smart cache cleanup is important, particularly after power-down/reboot or when changing Mermaid bundles; stale JS/assets can make debugging deceptively confusing|Fast local development / experimentation|
+|3. file:// + Z: drive trick|Browser opens the generated dist/index.html directly; Z: is a subst/mapped-style convenience rather than a physical/network drive|Mermaid bundled in dist|No server at all; convenient for examining the finished artifact|Browser file:// security/CORS behavior; Chrome may require --allow-file-access-from-files and a separate --user-data-dir; not a faithful HTTP deployment environment|Pre-render / inspect the final artifact before publishing, especially when a server is undesirable|
 ### Current status
 
 - ✅ Modern Mermaid successfully builds as a static application.
@@ -404,12 +473,35 @@ A portable static application avoids IDE dependencies while providing a simple w
 - ⚠ Browser `file://` behavior still requires additional investigation.
 - ✅ HTTP deployment (nginx or any static web server) works correctly.
 
+### Markdown / Dillinger
+```sh
+docker pull linuxserver/dillinger:3.39.1
+docker pull joemccann/dillinger:3.37.2
+```
+```sh
+docker image ls
+```
+```text
+REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
+linuxserver/dillinger   3.39.1              ba7ab914577c        2 years ago         788MB
+joemccann/dillinger     3.37.2              444909d517c9        6 years ago         1.01GB
+```
+```sh
+docker run -d --name=linuxserver-dillinger -p 9090:8080 linuxserver/dillinger:3.39.1
+```
+
 ### See Also:
   * [Mermaid Live Editor](https://mermaid.live/edit): Online FlowChart & Diagrams Editor
   * [Diagram as Code: Comparing the Major Tools](https://diagrams.so/learn/diagram-as-code-comparison)
   * [top 6 Mermaid.js alternatives](https://swimm.io/learn/mermaid-js/top-6-mermaid-js-alternatives)
   * [MermaidJS and Graphviz side by side](https://www.devtoolsdaily.com/diagrams/graphviz_vs_mermaid/)
   * [Python MarkItDown: Convert Documents Into LLM-Ready Markdown](https://realpython.com/python-markitdown/)
+  * [Complete markdown syntax guide and cheat sheet](https://dillinger.io/guide)
+  * __Dillinger__ - free, online, browser-based AngularJS-powered HTML5 live Markdown editor featuring a split-pane interface with real-time live preview.
+   + [joemccann/dillinger](https://hub.docker.com/r/joemccann/dillinger) (NOTE: latest releases __3.41.0__ are significantly heavier than __3.39.0__ or earlier 
+   + [live](https://dillinger.io) 
+   + [joemccann/dillinger](https://github.com/joemccann/dillinger)
+   + [dillinger](https://hub.docker.com/r/linuxserver/dillinger) - smaller Docker image (older, deprecated) and [repository](https://github.com/linuxserver-archive/docker-dillinger)
 ---
 
 ### Author
