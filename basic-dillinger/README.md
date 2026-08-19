@@ -1,5 +1,12 @@
 ### Dillinger Live As Static
 
+Online Markdown Editor with Live Preview
+
+
+![Live](screenshots/capture-live.png)
+
+Dillinger is a free online markdown editor with live preview, cloud sync, and zero signup friction.
+
 ```
 Full Dillinger container
 788 MB
@@ -19,8 +26,8 @@ Full Dillinger container
 
 | Variant | Dependency | Prerequisite | Status |
 |---|---|---|---|
-| live | none | enterprise network access | ❌ Firewall |
-| container | Docker/Podman | WSL2, VirtualBox or other suitable infrastructure | ⚠️ |
+| live | none | network access to https://dillinger.io | ❌ enterprise Firewall |
+| container | Docker/Podman | Docker (Podman)<br/>WSL2, VirtualBox or other suitable hypervisor<br/>access to enterprise Docker hub registry| ⚠️ |
 | Express application | Node.js | Node.js or VS Code installed | ⚠️ |
 | SPA | none | browser | ✅ |
 
@@ -78,7 +85,8 @@ A WinHelp project could involve:
 
 __Markdown__ isn't the invention of "documentation markup." It is one of the unusually successful attempts to make markup pleasant enough that the source itself remains readable.
 
-|Era|Authoring source|Renderer/compiler|Typical result|Trade-off|
+|Era|Authoring source|Renderer         |Typical result|Trade-off|
+|---|----------------|-----------------|--------------|---------|
 |1960s–70s|runoff / roff|runoff / nroff / troff|text, printed documents|Powerful but command-oriented|
 |1970s onward|TeX / LaTeX|TeX engine|DVI / PDF|Exceptional typesetting, steeper learning curve|
 |Windows era|RTF + HPJ + CNT + graphics|WinHelp compiler|.HLP|Tool-specific documentation system|
@@ -563,17 +571,13 @@ That makes the historical background directly relevant to your tutorial instead 
 
 And I particularly like the contrast with your 1.5 MB file:// Dillinger SPA. It gives you a modern practical endpoint to that history:
 
-1970s: learn troff and its macros
-1980s: learn TeX / LaTeX
-1990s: install a documentation toolchain
-2000s: install an IDE and plugins
-2020s: unzip 1.5 MB
-       ↓
-       open index.html
-       ↓
-       write Markdown
-       ↓
-       see the result
+|period|approach|
+|------|--------|
+|1970s | learn troff and its macros |
+|1980s | learn TeX / LaTeX |
+|1990s | install a documentation toolchain |
+|2000s | install an IDE and plugins |
+|2020s | unzip 1.5 MB ⇒  open index.html ⇒  type Markdown ⇒  see the result|
 
 That is probably a very effective opening for engineers who have "completely missed Markdown." It tells them that Markdown is not some fashionable replacement for writing documents — it is a very lightweight point in a much older continuum of describing content separately from its rendered appearance.
 
@@ -641,7 +645,6 @@ C:\work\dillinger\dist\
         ▼
 Windows pathname presented to application:
 
-
 Z:\
  ├── index.html
  ├── assets\
@@ -653,7 +656,7 @@ The application doesn't need to know that `Z:` is merely a directory mapping.
 
 This is where your networking-history intuition becomes particularly plausible.
 
-When MS-DOS 3.1 introduced networking support in 1984, there was already a huge installed base of software assuming that a fully-qualified filename had the form:
+When __MS-DOS__ __3.1__ introduced networking support in 1984, there was already a huge installed base of software assuming that a fully-qualified filename had the form:
 ```
 C:\DIRECTORY\FILE
 │
@@ -832,25 +835,29 @@ For example, compare prose:
 > the application is deployed. Otherwise the developers need to build a corrected version again
 
 with:
-````
-## Deployment flow
 
 
+```code
 | Step | Owner | Result |
-|---|---|---|
+|---|---|-------|
 | 🔨 Build | Development | Artifact |
 | 🧪 Test | QA | Pass / Fail |
 | 📦 Deploy | Operations | Deployment |
-
 ```
-that  becomes
+that becomes
+
+![Markdown Table](screenshots/capture-table.png)
+
+
 | Step | Owner | Result |
-|---|---|---|
+|---|---|-------|
 | 🔨 Build | Development | Artifact |
 | 🧪 Test | QA | Pass / Fail |
 | 📦 Deploy | Operations | Deployment |
 
-or
+
+likewise one may use
+
 ```code
 flowchart TD
     A[🔨 Build] --> B[🧪 Test]
@@ -858,14 +865,9 @@ flowchart TD
     B -->|❌ Fail| A
 ````
 
-that becomes 
+that becomes
 
-```mermaid
-flowchart TD
-    A[🔨 Build] --> B[🧪 Test]
-    B -->|✅ Pass| C[📦 Deploy]
-    B -->|❌ Fail| A
-````
+![Memaid Flowchart](screenshots/capture-mermaid.png)
 
 The second representation contains not necessarily *more information*, 
 but **more explicit structure per line of context**.
@@ -940,29 +942,27 @@ TeX
     ↓
 "Describe mathematical and typographic structure"
 ```
-I particularly like "accepted due to its powerful content enhancement" as the underlying idea.
- The tutorial does not need to tell people
-
+I particularly like "accepted due to its powerful content enhancement" as the underlying idea. The tutorial does not ask:
 > *You must become a Mermaid expert*
 
 Instead:
 
-> *Every notation has a syntax tax. Markdown has an exceptionally low tax. YAML and Mermaid charge more, but can express things that ordinary Markdown cannot. TeX charges considerably more still, but earns its place when mathematical or typographic precision justifies it*
+> *Every notation has a syntax tax. __Markdown__ has an exceptionally low tax. __YAML__ and __Mermaid__ charge more, but can express things that ordinary __Markdown__ cannot. __TeX__ charges considerably more still, but earns its place when mathematical or typographic precision justifies it*
 
 That also connects nicely to the AI point:
-```
-                Syntax tax
-                    ▲
-                    │                           TeX
-                    │                            ●
-                    │                  Mermaid ●
-                    │             YAML ●
-                    │
-                    │       Markdown ●
-                    │
-                    │ Plain text ●
-                    └────────────────────────────────►
-                         Structure / expressive power
+```code
+  
+         ▲
+         │                           TeX
+         │                            ●
+  syntax │                  Mermaid ●
+   tax   │             YAML ●
+         │
+         │       Markdown ●
+         │
+         │ Plain text ●
+         └────────────────────────────────►
+           expressive power
 ```
 The nice message for the engineers is therefore not "learn markup because documentation people like markup."
 

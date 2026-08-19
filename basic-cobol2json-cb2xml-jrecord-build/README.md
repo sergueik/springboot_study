@@ -987,6 +987,50 @@ flowchart LR
     H --> I
     I --> J
 ```
+
+### Concernting Visio 
+
+Visio reconstruction is only a visual approximation of a workflow.
+A .vsdx drawing fundamentally consists of shapes, connections, groups, and related metadata.
+Even if it looks somewhat like a original workflow, there is no general guarantee that the collection of
+shapes corresponds to one coherent, directly executable process.
+
+You could formulate the remark roughly as:
+
+Prefer an export from the owning process system whenever possible. A Visio reconstruction or "lookalike" version may preserve the appearance of the diagram, but it fundamentally represents a collection of shapes and connections. There is no guarantee that those shapes collectively represent one coherent, operation-ready workflow object.
+
+In contrast, systems such as Windows Workflow Foundation or Blue Prism model a process as a first-class executable object by design. Its activities, relationships, structure, and execution semantics belong to the same process definition. Reconstructing such a process from a diagram can therefore be rather like producing an "alcohol-free" version of the original: it may resemble the original and convey useful information, but some of the properties that made the original operational are no longer necessarily present.
+
+I particularly like "operation-ready object" here, because it captures something stronger than merely machine-readable or structured. The original artifact has an intended runtime semantics and integrity as a whole.
+
+You might even sharpen the contrast with:
+
+A diagram can depict a process without itself being the process.
+
+That seems to be the fundamental point behind your preference for asking the owner process for an export rather than trying to reverse-engineer an equivalent-looking Visio artifact.
+
+
+If a workflow were merely a random collection of boxes and arrows, how exactly would Blue Prism know what “assigned work” means, where to deliver it, and which runtime agent should execute it?
+
+That applies not only to BP, but broadly to workflow, automation, orchestration, and CI/CD systems. The diagram is usually just one projection of an underlying executable model.
+
+“Magic?”
+No. Serialization.
+
+The workflow engine does not hand an agent a picture of a workflow and hope that the rectangles mean something. It serializes the process/work item into a representation from which the runtime can reconstruct the relevant object and state.
+
+A Visio drawing, by contrast, can be a perfectly faithful picture of a process while still being merely a collection of graphical objects. The fact that the picture looks right does not make it the serialized representation of the executable process.
+
+
+“Magic?”
+No. Serialization.
+
+The workflow engine does not hand an agent a picture of a workflow and hope that the rectangles mean something. It serializes the process/work item into a representation from which the runtime can reconstruct the relevant object and state.
+
+A Visio drawing, by contrast, can be a perfectly faithful picture of a process while still being merely a 
+collection of graphical objects. The fact that the picture looks right does not make it the serialized 
+representation of the executable process.
+
 ### See Also
  
   * [cb2xml](https://github.com/bmTas/cb2xml)
