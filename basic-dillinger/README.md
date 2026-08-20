@@ -94,6 +94,9 @@ __Markdown__ isn't the invention of "documentation markup." It is one of the unu
 |2004 onward|Markdown|Markdown renderer|HTML and many other formats|Extremely low authoring overhead|
 |2010s onward|Mermaid|Mermaid renderer|SVG/diagram|Textual description of diagrams|
 
+
+![Drawing](screenshots/capture-impress.png)
+
 ### Usage
 
 
@@ -193,7 +196,7 @@ tar: dillinger/configs: Cannot create symlink to ‘/config/configs’: No such 
 tar: Exiting with failure status due to previous errors
 ```
 
-> NOTE: attempt to modify flags to let tar run quite does not work, but was unnecessary 
+> NOTE: attempt to modify flags to let tar run quite does not work, but was unnecessary
 
 ```sh
  tar --ignore-command-error -xf a.tar
@@ -237,7 +240,7 @@ subst E: "%CD%"
 
 ![Run as File](screenshots/capture-file.png)
 
-> NOTE: use 
+> NOTE: use
 ```sh
 cygpath -wa .
 ```
@@ -367,7 +370,7 @@ The lineage goes roughly:
     ▼
   HTML / web / GitHub / documentation
 ```
-The `roff` family is considerably older: its roots go back to Jerry Saltzer's `runoff` on CTSS around 1961; Unix's `nroff`/`troff` 
+The `roff` family is considerably older: its roots go back to Jerry Saltzer's `runoff` on CTSS around 1961; Unix's `nroff`/`troff`
 evolved from that lineage in the 1970s.
 
 And there is a particularly nice historical detail for engineers: `nroff` and `troff`
@@ -610,7 +613,7 @@ The historical part is actually stronger than I initially thought. You can conne
 
 1. A drive letter really is a namespace abstraction
 
-Internally, Windows does not have to think of `Z:` as "a physical disk." 
+Internally, Windows does not have to think of `Z:` as "a physical disk."
 Microsoft's documentation says that __MS-DOS__ device names and drive letters are implemented as __junctions__
 in the MS-DOS device namespace, and path conversion uses those mappings to resolve drive letters.
 `DefineDosDevice` can create or modify such mappings, and `QueryDosDevice` can inspect them.
@@ -785,7 +788,7 @@ TeX:
 Windows drive letter:
     X:\ hides storage / mapping / network machinery
 
-The common engineering 
+The common engineering
 idea is remarkably similar: a simple representation at the boundary, with potentially very different and much more complicated implementations underneath.
 
 ### C.O.
@@ -822,10 +825,10 @@ Increasing entry barrier
 
 YAML and Mermaid are powerful in different dimensions:
  * YAML describes data/configuration
- * Mermaid describes relationships visually 
+ * Mermaid describes relationships visually
 
 
-AI-assisted development increases the value of compact, structured context. 
+AI-assisted development increases the value of compact, structured context.
 A well-organized Markdown document can communicate headings, lists, tables, code, examples, and relationships
 more precisely and densely than an equivalent block of loosely organized prose.
 
@@ -869,7 +872,7 @@ that becomes
 
 ![Memaid Flowchart](screenshots/capture-mermaid.png)
 
-The second representation contains not necessarily *more information*, 
+The second representation contains not necessarily *more information*,
 but **more explicit structure per line of context**.
 
 
@@ -951,7 +954,7 @@ Instead:
 
 That also connects nicely to the AI point:
 ```code
-  
+
          ▲
          │                           TeX
          │                            ●
@@ -970,11 +973,220 @@ It is:
 
 Learn the cheapest notation that expresses the structure you need. Markdown is often the first and cheapest step, which is precisely why basic Markdown proficiency has become disproportionately valuable in AI-assisted development.
 
+```
+Application
+    │
+    │  X:\some\path
+    ▼
+Win32 file/path APIs
+    │
+    ├── ordinary filesystem
+    │
+    ├── SUBST / DOS-device mapping
+    │
+    └── network namespace / mapped drive
+              │
+              ▼
+            MPR
+              │
+       ┌──────┼───────┬─────┐
+       ▼      ▼       ▼     ▼
+     SMB    Citrix    IPX   other
+           provider   SPX   providers
+```
+> Windows deliberately made the application-facing filesystem namespace boring, while allowing increasingly sophisticated providers underneath it.
+
+```code
+Corporate platform team
+        │
+        │ builds / scans / approves
+        ▼
+   ┌──────────────┐
+   │ static SPA   │
+   └──────────────┘
+        │
+        │ approved artifact
+        ▼
+Engineer receives ZIP
+        │
+        ▼
+      Browser
+```
+
+> I can start with the supplied artifact, cross a boundary, verify the result, and then destroy the previous source without losing reproducibility.
+
+
+progressive destruction of the dependencies on the previous environment
+```text
+PUBLIC IMAGE
+    │
+    │ verify tag / digest
+    ▼
+ENTERPRISE IMAGE
+    │
+    │ pull + save
+    ▼
+TAR ARTIFACT
+    │
+    │ transfer
+    ▼
+WINDOWS / MATCHING NODE
+    │
+    │ rebuild successfully
+    ▼
+NEW STATIC PAYLOAD
+    │
+    │ verify independently
+    ▼
+SELF-HOSTED CLIENT
+
+```
+
+> __Public registry__ → no longer needed once enterprise image identity is verified
+> __Enterprise registry__ → no longer needed once the image has been saved and its digest recorded
+> __Original container__ → no longer needed once the application payload has been extracted
+> __Original Node environment__ → no longer needed once your Windows Node build reproduces the application
+> __Original HTTP server__ → no longer needed once the static client works from your own server
+> Eventually even the __original application packaging__ becomes irrelevant
+
+> Cut every bridge, pull the network cable, and see whether the thing still works
+
+```text
+
+             supplied artifact
+                    │
+             verify what it is
+                    │
+              make it yours
+                    │
+             ┌──────┴──────┐
+             │             │
+          rebuild       externalize
+             │             │
+             └──────┬──────┘
+                    │
+             destroy the
+             original path
+                    │
+                    ▼
+             still works?
+```
+> The artifact is self-contained enough to process in an air-gapped environment
+
+### TODO
+
+* examine the available historic tags
+```sh
+curl -u "$USER:$PASSWORD" -I -H 'Accept: application/vnd.docker.distribution.manifest.v2+json'  https://enterprise/v2/library/linuxserver/dillinger/manifests/latest
+```
+```sh
+curl -u "$USER:$PASSWORD"  https://enterprise/v2/library/linuxserver/dillinger/tags/list | jq '.'
+```
+expect entries of the shape
+```json
+{
+  "name": "library/linuxserver/dillinger",
+  "tags": [
+    "latest",
+    "...",
+    "..."
+  ]
+}
+```
+```sh
+docker image inspect <image> | jq '.[0].RepoTags, .[0].RepoDigests'
+```
+> NOTE: replace `https://enterprise/v2/library/linuxserver` with real Artifact repository URL
+
+
+For public Docker Hub, the current documented API endpoint for listing repository tags is
+
+```sh
+curl -sS 'https://hub.docker.com/v2/namespaces/linuxserver/repositories/dillinger/tags?page_size=100' | jq -cr '.results[0:10]| map({name})'
+```
+
+```json
+[{"name":"latest"},{"name":"3.39.1"},{"name":"version-v3.39.1"},{"name":"v3.39.1-ls196"},{"name":"arm64v8-3.39.1"},{"name":"amd64-3.39.1"},{"name":"arm64v8-version-v3.39.1"},{"name":"arm64v8-latest"},{"name":"arm64v8-v3.39.1-ls196"},{"name":"amd64-latest"}]
+```
+
+one element is 
+
+```json
+{
+  "creator": 936126,
+  "id": 58126414,
+  "images": [
+    {
+      "architecture": "amd64",
+      "features": "",
+      "variant": null,
+      "digest": "sha256:ee1fdfc15daa4a6c37ea1f51ae99da3d072a259baee87c0ae44a9f3422cf3dd6",
+      "os": "linux",
+      "os_features": "",
+      "os_version": null,
+      "size": 301097210,
+      "status": "active",
+      "last_pulled": "2026-08-19T14:17:37.982368528Z",
+      "last_pushed": "2024-03-20T20:08:27Z"
+    },
+    {
+      "architecture": "arm64",
+      "features": "",
+      "variant": null,
+      "digest": "sha256:55dc1c65baf136cfff9d0fce5db2597296cf3401ead7ce582ac4d8e5fd842fd1",
+      "os": "linux",
+      "os_features": "",
+      "os_version": null,
+      "size": 294558355,
+      "status": "active",
+      "last_pulled": "2026-08-19T17:09:02.431065465Z",
+      "last_pushed": "2024-03-20T20:10:43Z"
+    }
+  ],
+  "last_updated": "2024-03-20T20:11:07.183053Z",
+  "last_updater": 936126,
+  "last_updater_username": "linuxserverci",
+  "name": "latest",
+  "repository": 7223431,
+  "full_size": 301097210,
+  "v2": true,
+  "tag_status": "active",
+  "tag_last_pulled": "2026-08-20T03:00:12.257905741Z",
+  "tag_last_pushed": "2024-03-20T20:11:07.183053Z",
+  "media_type": "application/vnd.docker.distribution.manifest.list.v2+json",
+  "content_type": "image",
+  "digest": "sha256:58dc39f6cddee732241c78f89805bca608299471f66ec90a8028e10b2cadd1b4"
+}
+
+```
+
+for formatting one may use
+
+```sh
+curl -sLS 'https://hub.docker.com/v2/namespaces/linuxserver/repositories/dillinger/tags?page_size=100' | jq -r '.results[] | [ .name, .digest, (.images[] | select(.architecture == "amd64") | .digest) ] | @tsv '
+```
+> NOTE: of need the slice, modify to 'map({ })':
+
+```sh
+curl -sLS 'https://hub.docker.com/v2/namespaces/linuxserver/repositories/dillinger/tags?page_size=100' | jq -r '.results[0:1] | map({ name, digest, amd64_digest: (.images[] | select(.architecture == "amd64") | .digest)})'
+```
+
+```json
+[
+  {
+    "name": "latest",
+    "digest": "sha256:58dc39f6cddee732241c78f89805bca608299471f66ec90a8028e10b2cadd1b4",
+    "amd64_digest": "sha256:ee1fdfc15daa4a6c37ea1f51ae99da3d072a259baee87c0ae44a9f3422cf3dd6"
+  }
+]
+
+```
+> NOTE Can write `jq '.[-10:]'` to fetch the last 10 *oldest* tags
 
 ### See Also:
 
-  * [joemccann/dillinger](https://hub.docker.com/r/joemccann/dillinger) (NOTE: latest releases __3.41.0__ are significantly heavier than __3.39.0__ or earlier 
-  * [live](https://dillinger.io) 
+  * [joemccann/dillinger](https://hub.docker.com/r/joemccann/dillinger) (NOTE: latest releases __3.41.0__ are significantly heavier than __3.39.0__ or earlier
+  * [live](https://dillinger.io)
   * [joemccann/dillinger](https://github.com/joemccann/dillinger)
   * [dillinger](https://hub.docker.com/r/linuxserver/dillinger) - smaller Docker image (older, deprecated) and [repository](https://github.com/linuxserver-archive/docker-dillinger)
 
