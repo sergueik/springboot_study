@@ -329,6 +329,44 @@ S4 = brown on dark gray
 S5 = vintage / color-shifted
 S6 = slight character-position jitter
 
+
+![CICS login screen mock](images/console5.png)
+
+
+```sh
+./scan_screenshot.sh images/console5.png
+```
+```txt
+Estimating resolution as 185
+=>
+ADIPISCING:
+SED:
+
+ENIM:
+MINIM:
+QUIS:
+COMMODO :
+
+PF1=HELP PF2=SPLIT
+PF 7=UP
+
+LORE-MF
+
+IPSUM:
+AMET:
+CONSECTETUR:
+ELIT:
+DO:
+AD:
+VENIAM:
+NOSTRUD:
+CONSEQUAT:
+
+PF3=END PF4=RETURN PFS=RFIND PF6=RCHANGE
+WAP PF1O=LEFT PF11=RIGHT PF12=RETRIEVE
+
+
+```
 ### Unrelated
 
 The next step is understanding what information exists, categorizing it, and identifying the relationships that make it valuable.

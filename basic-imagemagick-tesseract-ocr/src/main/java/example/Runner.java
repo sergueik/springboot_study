@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -20,17 +21,19 @@ public class Runner {
 
 	public static void main(String[] args) throws Exception {
 
-		List<String> screen = List.of(
-				"                                                                                ",
-				"                    MOCK MAINFRAME LOGIN SCREEN                                 ",
-				"                                                                                ",
-				" USER ID  ===> __________                                                       ",
-				" PASSWORD ===> __________                                                       ",
-				"                                                                                ",
-				"                                                                                ",
-				"                                                                                ",
-				"                                                                                ",
-				" PF3=EXIT                                  ENTER=CONTINUE                       ");
+		List<String> screen = List.of("                         LORE-MF",
+				"                                                                ",
+				"LOREM:  ___________                         IPSUM: _____________",
+				"DOLOR:  __________                 AMET:  _____________",
+				"AMET ====> _____________                 CONSECTETUR: _________",
+				"ADIPISCING: __________      ELIT: __________",
+				"SED: _________                              DO: _______________",
+				"ENIM: _____________                  AD: __________",
+				"MINIM: _____________       VENIAM: _____________",
+				"QUIS: _____________                 NOSTRUD: ___________",
+				"COMMODO: _____________       CONSEQUAT: __________", "",
+				"PF1=HELP  PF2=SPLIT  PF3=END  PF4=RETURN  PF5=RFIND  PF6=RCHANGE",
+				"PF7=UP    PF8=DOWN   PF9=SWAP  PF10=LEFT  PF11=RIGHT  PF12=RETRIEVE");
 
 		// To achieve a lookalike screenshot of Blue Prism IBM 3270 mainframe/CICS
 		// terminal emulator
@@ -40,12 +43,17 @@ public class Runner {
 
 		// Fallback for a standard monospace font
 		Font font = new Font(Font.MONOSPACED, Font.PLAIN, FONT_SIZE);
-		String filename = "3270NerdFontMono-Regular.ttf";
-		String name = "3270 Nerd Font Mono";
-		font = Font
-				.createFont(Font.TRUETYPE_FONT,
-						new File(String.format("%s\\Downloads\\%s", System.getenv("USERPROFILE"), filename)))
-				.deriveFont((float) FONT_SIZE);
+
+		String fontPath = System.getenv().containsKey("FONT_PATH") ? System.getenv("FONT_PATH")
+				: getOSName().equals("windows")
+						? Paths.get(System.getProperty("user.home")).resolve("Downloads")
+								.resolve("3270NerdFontMono-Regular.ttf").toAbsolutePath().toString()
+						: "/usr/share/fonts/opentype/3270/3270-Regular.otf";
+
+		font = Font.createFont(Font.TRUETYPE_FONT, new File(fontPath)).deriveFont((float) FONT_SIZE);
+
+		// String name = "3270 Nerd Font Mono";
+		font = Font.createFont(Font.TRUETYPE_FONT, new File(fontPath)).deriveFont((float) FONT_SIZE);
 
 		// create a temporary image to compute FontMetrics.
 		BufferedImage metricsImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
@@ -133,4 +141,17 @@ public class Runner {
 
 		System.out.println("Wrote console.png");
 	}
+
+	private static String osName;
+
+	public static String getOSName() {
+		if (osName == null) {
+			osName = System.getProperty("os.name").toLowerCase();
+			if (osName.startsWith("windows")) {
+				osName = "windows";
+			}
+		}
+		return osName;
+	}
+
 }
