@@ -142,7 +142,35 @@ docker inspect jitesoft/tesseract-ocr | grep -i User
 docker image rm jitesoft/tesseract-ocr:latest minidocks/imagemagick:latest
 ```
 
+### Input
 
+```sh
+apt-get install fonts-3270
+```
+apt source entry to add:
+
+|Distro | Package                                        | repo|
+|-------|------------------------------------------------|-----|
+|Debian |https://packages.debian.org/sid/fonts/fonts-3270| https://packages.debian.org/sid/fonts/fonts-3270|
+|Ubuntu |http://packages.ubuntu.com/impish/fonts-3270| https://packages.ubuntu.com/impish/fonts/fonts-3270|
+
+direct
+```sh
+BASE_URL='https://github.com/ryanoasis/nerd-fonts'
+curl -skLo ~/Downloads/3270NerdFontMono-Regular.ttf "$BASE_URL/raw/refs/heads/master/patched-fonts/3270/3270NerdFontMono-Regular.ttf"
+```
+switch to Windows console (elevated)
+```cmd
+set FILENAME=3270NerdFontMono-Regular.ttf
+copy /y "%USERPROFILE%\Downloads\%FILENAME%" "C:\Windows\Fonts\"
+set FONT_NAME=3270 Nerd Font Mono
+reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" /v "%FONT_NAME% (TrueType)" /t REG_SZ /d "%FILENAME%" /f
+```
+>NOTR there is quite a lot of 3270 fonts there
+> NOTE: the direct s3 link suggested in https://github.com/rbanffy/3270font no longer works:
+> ```sh
+> curl -skLo ~/Downloads/fonts-3270.zip https://3270font.s3.amazonaws.com/3270_fonts_d916271.zip
+> ```
 ### Unrelated
 
 The next step is understanding what information exists, categorizing it, and identifying the relationships that make it valuable.
