@@ -367,8 +367,6 @@ WAP PF1O=LEFT PF11=RIGHT PF12=RETRIEVE
 
 
 ```
-<<<<<<< HEAD
-=======
 
 ```
 cat example.text 
@@ -424,9 +422,7 @@ mkdir results
 ```sh
 java -jar target/example.teller-screen.jar  -screenfile example.text  -outputfile images/console.png 
 ```
-```
-```
-```
+```sh
 ./scan_screenshot.sh  images/console.png | tee results/console.txt /dev/stderr
 ```
 ```text
@@ -472,8 +468,128 @@ ALIQUA: UT:
 ENIM: AD:
 
 ```
-* add a Python loop arond it
->>>>>>> c8885904ad1f5446d408da51ece03b9d796cfef0
+
+### Python Corner
+```sh
+sudo python3 -m pip install pillow
+```
+```text
+Requirement already satisfied: pillow in /usr/lib/python3/dist-packages (9.0.1)
+```
+
+```sh
+python3 teller_screen.py --screenfile example.txt --outputfile images/console6.png --textfile console6.txt
+```
+
+![Python Generated, Default Font](screenshots/console6.png)
+
+```sh
+./scan_screenshot.sh  images/console6.png "-channel RGB -negate" | tee results/console.txt /dev/stderr
+```
+```
+Estimating resolution as 180
+Detected 11 diacritics
+MOCK L&F
+
+LOREM:
+
+DOLOR: AMET:
+AMET ====> ___-
+
+QPIPISCING
+
+INCIDIDUNT:
+LABORE:
+DOLORE:
+ALIQUA:
+ENIM:
+MINIM:
+Quis: NOSTRUD:
+EXERCITATION: ULLAMCO:
+LABORIS: __9- NISI: __-_--_e
+UT: ALIQUIP: _-o
+EX: _ EA:
+
+BESEHE HELP BE: =SPLIT BESZENR PE4=RETURN BE? REIND PE eT RCHANGE
+PFr=UP =D PF4=SWAP PFIQ=LEFT PF11=RIGHT PF12=RETRIEVE
+MOCK L&F
+
+LOREM:
+
+DOLOR: AMET:
+AMET ====> ___-
+
+QPIPISCING
+
+INCIDIDUNT:
+LABORE:
+DOLORE:
+ALIQUA:
+ENIM:
+MINIM:
+Quis: NOSTRUD:
+EXERCITATION: ULLAMCO:
+LABORIS: __9- NISI: __-_--_e
+UT: ALIQUIP: _-o
+EX: _ EA:
+
+BESEHE HELP BE: =SPLIT BESZENR PE4=RETURN BE? REIND PE eT RCHANGE
+PFr=UP =D PF4=SWAP PFIQ=LEFT PF11=RIGHT PF12=RETRIEVE
+
+```
+```sh
+cat console6.txt
+```
+```text
+                         MOCK L&F
+
+LOREM:  ___________                         IPSUM: _____________
+
+DOLOR:  __________                 AMET:  _____________
+
+AMET ====> _____________                 CONSECTETUR: _________
+
+ADIPISCING: __________      ELIT: __________
+SED: _________                              DO: _______________
+
+EIUSMOD: _____________       TEMPOR: _____________
+
+INCIDIDUNT: _________                     UT: _________
+
+LABORE: _____________        ET: _____________
+
+DOLORE: _________          MAGNA: _____________
+
+ALIQUA: _____________       UT: __________
+
+ENIM: _____________                  AD: __________
+
+MINIM: _____________       VENIAM: _____________
+
+QUIS: _____________                 NOSTRUD: ___________
+
+EXERCITATION: _________          ULLAMCO: _____________
+
+LABORIS: _____________       NISI: __________
+
+UT: _____________                  ALIQUIP: ___________
+
+EX: _____________          EA: _____________
+
+COMMODO: _____________       CONSEQUAT: __________
+
+                         ...
+
+PF1=HELP  PF2=SPLIT  PF3=END  PF4=RETURN  PF5=RFIND  PF6=RCHANGE
+PF7=UP    PF8=DOWN   PF9=SWAP  PF10=LEFT  PF11=RIGHT  PF12=RETRIEVE
+
+```
+> NOTE: visually it is clear that the quality of screen image from Python generator is inferior compared to Java due primarily less advanced font metric and appropriate line-spacing calculation calculation
+
+#### Next Steps
+
+Add a Python loop around it with a more ML oriented options - labeling, exloring all ML options
+ 
 ### Unrelated
 
 The next step is understanding what information exists, categorizing it, and identifying the relationships that make it valuable.
