@@ -142,12 +142,16 @@ docker inspect jitesoft/tesseract-ocr | grep -i User
 docker image rm jitesoft/tesseract-ocr:latest minidocks/imagemagick:latest
 ```
 
-### Input
+### 3270 Terminal Text Extaction
+
+a.k.a. OCR'ing teller screens
+
+Font shape and spacing is important. One may need to find a close match to fonts used by Blue Prism , UiPath - these are likely resular True Type fonts. For the purpose of exercise take a public 3270 fonts
 
 ```sh
 apt-get install fonts-3270
 ```
-apt source entry to add:
+apt source entry to add if not present:
 
 |Distro | Package                                        | repo|
 |-------|------------------------------------------------|-----|
@@ -166,11 +170,165 @@ copy /y "%USERPROFILE%\Downloads\%FILENAME%" "C:\Windows\Fonts\"
 set FONT_NAME=3270 Nerd Font Mono
 reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" /v "%FONT_NAME% (TrueType)" /t REG_SZ /d "%FILENAME%" /f
 ```
->NOTR there is quite a lot of 3270 fonts there
-> NOTE: the direct s3 link suggested in https://github.com/rbanffy/3270font no longer works:
+> NOTE there is quite a lot of 3270 fonts in the dir
+> NOTE: the direct s3 link suggested in `https://github.com/rbanffy/3270font` no longer works:
 > ```sh
 > curl -skLo ~/Downloads/fonts-3270.zip https://3270font.s3.amazonaws.com/3270_fonts_d916271.zip
 > ```
+
+![CICS login screen mock](images/console1.png)
+
+```sh
+./scan_screenshot.sh images/console1.png 
+```
+result is printed to console:
+```text
+Estimating resolution as 172 
+MOCK MAINFRAME LOGIN SCREEN 
+USER ID) ===> _ 
+PASSWORD ===> _. 
+
+PF3=EXIT ENTER=CONT INUE
+```
+
+
+```sh
+mvn package
+pushd images
+java -jar ../target/example.teller-screen.jar 
+popd
+```
+
+![CICS login screen mock](images/console2.png)
+
+```sh
+./scan_screenshot.sh images/console2.png
+```
+result is printed to console:
+```text
+MOCK MAINFRAME LOGIN SCREEN
+
+USER ID
+PASSWORD ===
+
+PF3=EXIT ENTER=CONT INUE
+```
+```
+sudo apt-get install ttf-mscorefonts-installer
+```
+```sh
+export FONT_PATH=/usr/share/fonts/truetype/msttcorefonts/Courier_New.ttf
+```
+```sh
+mvn package
+pushd images
+java -jar ../target/example.teller-screen.jar 
+popd
+```
+![CICS login screen mock](images/console3.png)
+
+```sh
+./scan_screenshot.sh images/console3.png
+```
+
+
+```text
+Estimating resolution as 184
+MOCK MAINFRAME LOGIN SCREEN
+
+USER ID
+PASSWORD ===>
+
+PF3=EXIT ENTER=CONT INUE
+```
+__close inspection__:
+
+|defect |explanation |
+|-------|------------|
+|`ID)` instead of `ID` | glyph/spacing recognition issue|
+|underscore runs collapsing to single `_` | exactly the kind of character/grid issue worth investigating.
+|`_ .` after PASSWORD | likely rendering/segmentation interaction|
+|extra space in `CONT INUE` | character spacing / word segmentation|
+
+
+### Troublshooting
+
+missing dependency - :
+```text
+java -jar target/example.teller-screen.jar 
+
+Exception in thread "main" java.lang.UnsatisfiedLinkError: 
+Can't load library: /usr/lib/jvm/java-11-openjdk-amd64/lib/libawt_xawt.so 
+at java.base/java.lang.ClassLoader.loadLibrary(ClassLoader.java:2638) 
+at java.base/java.lang.Runtime.load0(Runtime.java:768)
+```
+```sh
+find /usr/lib/jvm -name 'libawt_xawt.so'
+```
+machine has no jdk, only heaadless jre:
+```sh
+java -version
+```
+```text
+openjdk version "11.0.31" 2026-04-21
+OpenJDK Runtime Environment (build 11.0.31+11-post-1ubuntu1-22.04.2-Ubuntu)
+OpenJDK 64-Bit Server VM (build 11.0.31+11-post-1ubuntu1-22.04.2-Ubuntu, mixed mode, sharing)
+```
+```sh
+readlink -f "$(which java)"
+```
+```text
+/usr/lib/jvm/java-11-openjdk-amd64/bin/java
+```
+```sh
+dpkg -l | grep openjdk
+```
+```text
+ii  openjdk-11-jre-headless:amd64           11.0.31+11-1ubuntu1~22.04.2                      amd64        OpenJDK Java runtime, using Hotspot JIT (headless)
+```
+```sh
+sudo apt install openjdk-11-jdk
+```
+
+The `libawt` error goes away
+but now need to tune the code to use 
+```text
+ii  fonts-3270     2.3.1-1      all          monospaced font based on IBM 3270 
+```
+
+```sh
+dpkg -L fonts-3270
+```
+```text
+/.
+/usr
+/usr/share
+/usr/share/doc
+/usr/share/doc/fonts-3270
+/usr/share/doc/fonts-3270/README.md.gz
+/usr/share/doc/fonts-3270/changelog.Debian.gz
+/usr/share/doc/fonts-3270/copyright
+/usr/share/fonts
+/usr/share/fonts/opentype
+/usr/share/fonts/opentype/3270
+/usr/share/fonts/opentype/3270/3270-Regular.otf
+/usr/share/fonts/opentype/3270/3270Condensed-Regular.otf
+/usr/share/fonts/opentype/3270/3270SemiCondensed-Regular.otf
+/usr/share/metainfo
+/usr/share/metainfo/fonts-3270.metainfo.xml
+```
+### Next Step
+S0 = pristine synthetic 3270-looking screen
+
+Then create:
+
+S1 = slightly overexposed
+S2 = noisy
+S3 = reduced contrast
+S4 = brown on dark gray
+S5 = vintage / color-shifted
+S6 = slight character-position jitter
+
 ### Unrelated
 
 The next step is understanding what information exists, categorizing it, and identifying the relationships that make it valuable.

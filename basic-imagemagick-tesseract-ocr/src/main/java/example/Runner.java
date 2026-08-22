@@ -10,147 +10,127 @@ import java.util.List;
 
 public class Runner {
 
-    static final int COLS = 80;
-    static final int ROWS = 24;
+	static final int COLS = 80;
+	static final int ROWS = 24;
 
-    static final int FONT_SIZE = 24;
+	static final int FONT_SIZE = 24;
 
-    static final int LEFT = 30;
-    static final int TOP  = 30;
+	static final int LEFT = 30;
+	static final int TOP = 30;
 
-    public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
 
-        // Normal human text. This is also our ground truth.
-        List<String> screen = List.of(
-            "                                                                                ",
-            "                    MOCK MAINFRAME LOGIN SCREEN                                 ",
-            "                                                                                ",
-            " USER ID  ===> __________                                                       ",
-            " PASSWORD ===> __________                                                       ",
-            "                                                                                ",
-            "                                                                                ",
-            "                                                                                ",
-            "                                                                                ",
-            " PF3=EXIT                                  ENTER=CONTINUE                       "
-        );
+		List<String> screen = List.of(
+				"                                                                                ",
+				"                    MOCK MAINFRAME LOGIN SCREEN                                 ",
+				"                                                                                ",
+				" USER ID  ===> __________                                                       ",
+				" PASSWORD ===> __________                                                       ",
+				"                                                                                ",
+				"                                                                                ",
+				"                                                                                ",
+				"                                                                                ",
+				" PF3=EXIT                                  ENTER=CONTINUE                       ");
 
-        // To achieve a lookalike screenshot of Blue Prism IBM 3270 mainframe/CICS terminal emulator 
-        // one may use the open-source TrueType font  
-        // download 
-        // https://github.com/rbanffy/3270font
-   
-        // Fallback for a standard monospace font
-        Font font = new Font(Font.MONOSPACED, Font.PLAIN, FONT_SIZE);
-        String filename = "3270NerdFontMono-Regular.ttf";
-        String name = "3270 Nerd Font Mono";
-         font = Font.createFont(
-                     Font.TRUETYPE_FONT,
-                     new File(String.format("%s\\Downloads\\%s",System.getenv("USERPROFILE"), filename))
-                 ).deriveFont((float) FONT_SIZE);
-        
+		// To achieve a lookalike screenshot of Blue Prism IBM 3270 mainframe/CICS
+		// terminal emulator
+		// one may use the open-source TrueType font
+		// download
+		// https://github.com/rbanffy/3270font
 
-        // First create a tiny temporary image to obtain FontMetrics.
-        BufferedImage metricsImage =
-            new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
+		// Fallback for a standard monospace font
+		Font font = new Font(Font.MONOSPACED, Font.PLAIN, FONT_SIZE);
+		String filename = "3270NerdFontMono-Regular.ttf";
+		String name = "3270 Nerd Font Mono";
+		font = Font
+				.createFont(Font.TRUETYPE_FONT,
+						new File(String.format("%s\\Downloads\\%s", System.getenv("USERPROFILE"), filename)))
+				.deriveFont((float) FONT_SIZE);
 
-        Graphics2D mg = metricsImage.createGraphics();
-        mg.setFont(font);
-        FontMetrics fm = mg.getFontMetrics();
+		// create a temporary image to compute FontMetrics.
+		BufferedImage metricsImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
 
-        int cellWidth  = fm.charWidth('M');
-        int cellHeight = fm.getHeight();
+		Graphics2D mg = metricsImage.createGraphics();
+		mg.setFont(font);
+		FontMetrics fm = mg.getFontMetrics();
 
-        mg.dispose();
+		int cellWidth = fm.charWidth('M');
+		int cellHeight = fm.getHeight();
 
-        int width  = LEFT * 2 + COLS * cellWidth;
-        int height = TOP  * 2 + ROWS * cellHeight;
+		mg.dispose();
 
-        BufferedImage image =
-            new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		int width = LEFT * 2 + COLS * cellWidth;
+		int height = TOP * 2 + ROWS * cellHeight;
 
-        Graphics2D g = image.createGraphics();
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-        // ---- Terminal appearance -------------------------------------
+		Graphics2D g = image.createGraphics();
 
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, width, height);
+		// ---- Terminal appearance -------------------------------------
 
-        g.setFont(font);
-        g.setColor(Color.GREEN);
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, width, height);
 
-        // Slightly nicer text rendering for the initial clean version.
-        g.setRenderingHint(
-            RenderingHints.KEY_TEXT_ANTIALIASING,
-            RenderingHints.VALUE_TEXT_ANTIALIAS_ON
-        );
+		g.setFont(font);
+		g.setColor(Color.GREEN);
 
-        // ===============================================================
-        // MODE 1: LINE-GRANULAR
-        // ===============================================================
+		// Slightly nicer text rendering for the initial clean version.
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        boolean characterGranular = true;
+		// ===============================================================
+		// MODE 1: LINE-GRANULAR
+		// ===============================================================
 
-        if (!characterGranular) {
+		boolean characterGranular = true;
 
-            for (int row = 0; row < screen.size(); row++) {
+		if (!characterGranular) {
 
-                String line = screen.get(row);
+			for (int row = 0; row < screen.size(); row++) {
 
-                int x = LEFT;
-                int y = TOP + fm.getAscent() + row * cellHeight;
+				String line = screen.get(row);
 
-                g.drawString(line, x, y);
-            }
-        }
+				int x = LEFT;
+				int y = TOP + fm.getAscent() + row * cellHeight;
 
-        // ===============================================================
-        // MODE 2: CHARACTER-GRANULAR
-        // ===============================================================
+				g.drawString(line, x, y);
+			}
+		}
 
-        if (characterGranular) {
+		// ===============================================================
+		// MODE 2: CHARACTER-GRANULAR
+		// ===============================================================
 
-            for (int row = 0; row < screen.size(); row++) {
+		if (characterGranular) {
 
-                String line = screen.get(row);
+			for (int row = 0; row < screen.size(); row++) {
 
-                for (int col = 0; col < line.length(); col++) {
+				String line = screen.get(row);
 
-                    char ch = line.charAt(col);
+				for (int col = 0; col < line.length(); col++) {
 
-                    int x = LEFT + col * cellWidth;
-                    int y = TOP
-                        + fm.getAscent()
-                        + row * cellHeight;
+					char ch = line.charAt(col);
 
-                    /*
-                     * Future deliberate imperfection hooks:
-                     *
-                     * x += randomOffset(-1, 1);
-                     * y += randomOffset(-1, 1);
-                     *
-                     * change brightness per character
-                     * omit a pixel
-                     * blur selected cells
-                     * slightly alter spacing
-                     */
+					int x = LEFT + col * cellWidth;
+					int y = TOP + fm.getAscent() + row * cellHeight;
 
-                    g.drawString(
-                        String.valueOf(ch),
-                        x,
-                        y
-                    );
-                }
-            }
-        }
+					/*
+					 * Future deliberate imperfection hooks:
+					 *
+					 * x += randomOffset(-1, 1); y += randomOffset(-1, 1);
+					 *
+					 * change brightness per character omit a pixel blur selected cells slightly
+					 * alter spacing
+					 */
 
-        g.dispose();
+					g.drawString(String.valueOf(ch), x, y);
+				}
+			}
+		}
 
-        ImageIO.write(
-            image,
-            "png",
-            new File("console.png")
-        );
+		g.dispose();
 
-        System.out.println("Wrote console.png");
-    }
+		ImageIO.write(image, "png", new File("console.png"));
+
+		System.out.println("Wrote console.png");
+	}
 }
