@@ -367,6 +367,113 @@ WAP PF1O=LEFT PF11=RIGHT PF12=RETRIEVE
 
 
 ```
+<<<<<<< HEAD
+=======
+
+```
+cat example.text 
+```
+```
+                        MOCK L&F
+
+LOREM:  ___________                         IPSUM: _____________
+
+DOLOR:  __________                 AMET:  _____________
+
+AMET ====> _____________                 CONSECTETUR: _________
+
+ADIPISCING: __________      ELIT: __________
+SED: _________                              DO: _______________
+
+EIUSMOD: _____________       TEMPOR: _____________
+
+INCIDIDUNT: _________                     UT: _________
+
+LABORE: _____________        ET: _____________
+
+DOLORE: _________          MAGNA: _____________
+
+ALIQUA: _____________       UT: __________
+
+ENIM: _____________                  AD: __________
+
+MINIM: _____________       VENIAM: _____________
+
+QUIS: _____________                 NOSTRUD: ___________
+
+EXERCITATION: _________          ULLAMCO: _____________
+
+LABORIS: _____________       NISI: __________
+
+UT: _____________                  ALIQUIP: ___________
+
+EX: _____________          EA: _____________
+
+COMMODO: _____________       CONSEQUAT: __________
+
+                         ...
+
+			 PF1=HELP  PF2=SPLIT  PF3=END  PF4=RETURN  PF5=RFIND  PF6=RCHANGE
+			 PF7=UP    PF8=DOWN   PF9=SWAP  PF10=LEFT  PF11=RIGHT  PF12=RETRIEVE
+
+```
+```
+mvn package
+mkdir results
+```
+```sh
+java -jar target/example.teller-screen.jar  -screenfile example.text  -outputfile images/console.png 
+```
+```
+```
+```
+./scan_screenshot.sh  images/console.png | tee results/console.txt /dev/stderr
+```
+```text
+Estimating resolution as 179
+MOCK L&F
+
+LOREM: IPSUM:
+DOLOR: AMET:
+
+AMET =
+
+ADIPISCING: __________ ELIT: ~_________
+
+SED: ______-__ DO: _______________
+EIUSMOD: _____________ TEMPOR: __________
+INCIDIDUNT: _________ UT: ~W
+LABORE: _____________ ET: ~----_--
+
+DOLORE: _________ MAGNA: ___--
+
+ALIQUA: UT:
+
+ENIM: AD:
+
+MOCK L&F
+
+LOREM: IPSUM:
+DOLOR: AMET:
+
+AMET =
+
+ADIPISCING: __________ ELIT: ~_________
+
+SED: ______-__ DO: _______________
+EIUSMOD: _____________ TEMPOR: __________
+INCIDIDUNT: _________ UT: ~W
+LABORE: _____________ ET: ~----_--
+
+DOLORE: _________ MAGNA: ___--
+
+ALIQUA: UT:
+
+ENIM: AD:
+
+```
+* add a Python loop arond it
+>>>>>>> c8885904ad1f5446d408da51ece03b9d796cfef0
 ### Unrelated
 
 The next step is understanding what information exists, categorizing it, and identifying the relationships that make it valuable.
