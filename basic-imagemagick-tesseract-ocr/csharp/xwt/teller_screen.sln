@@ -4,7 +4,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # SharpDevelop 5.1
 VisualStudioVersion = 12.0.20827.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI", "UI\UI.csproj", "{B9A39DD8-ED43-4D21-8F68-BB3A1664634E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Program", "Program\Program.csproj", "{B9A39DD8-ED43-4D21-8F68-BB3A1664634E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utils", "Utils\Utils.csproj", "{F3C21CA7-90AC-4119-9E10-26FC272E07AE}"
 EndProject

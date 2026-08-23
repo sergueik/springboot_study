@@ -44,25 +44,27 @@ namespace Program {
 		public static void Main() {
 			
 			var parseArgs = new ParseArgs(System.Environment.CommandLine);
-			// NOTE: have to set debug with value true, switch arguments are not supported
 
+			// NOTE: have to set debug with value true, switch arguments are not supported
 			if (parseArgs.GetMacro("debug") != String.Empty)
 				debug = true;
 			// debug = Boolean.Parse(parseArgs.GetMacro("debug"));
 
-			if (parseArgs.GetMacro("outputfile") != String.Empty)
-				outputfile = parseArgs.GetMacro("outputfile");
-
-			if (parseArgs.GetMacro("font") != String.Empty)
-				fontPath = parseArgs.GetMacro("font");
-
 			if (parseArgs.GetMacro("version") != String.Empty) {
-				var versionObj = Assembly.GetExecutingAssembly().GetName().Version;
-				Console.Error.WriteLine("version: " + versionObj.ToString());
+				Console.Error.WriteLine("version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
 				Environment.Exit(0);
 				// https://stackoverflow.com/questions/12977924/how-do-i-properly-exit-a-c-sharp-application 
 				// Application.Exit();
 			}
+			if ((parseArgs.GetMacro("screenfile") == String.Empty ) || false)  {
+				Console.Error.WriteLine("Usage: " + Assembly.GetExecutingAssembly().GetName().Name + " -screenfile=<filename> [-outputfile=<filename>] [-font=<font>] [-antialias] [-debug]");
+				Environment.Exit(0);
+			}
+
+			if (parseArgs.GetMacro("outputfile") != String.Empty)
+				outputfile = parseArgs.GetMacro("outputfile");
+			if (parseArgs.GetMacro("font") != String.Empty)
+				fontPath = parseArgs.GetMacro("font");
 			if (parseArgs.GetMacro("screenfile") != String.Empty)
 				screenfile = parseArgs.GetMacro("screenfile");
 			if (parseArgs.GetMacro("textfile") != String.Empty)
@@ -80,9 +82,26 @@ namespace Program {
 
 			string[] screenLines = File.ReadAllLines("example.txt");
 
-			// using (var font = Font.FromName("3270", FontSize))
-			var	font = Xwt.Drawing.Font.SystemMonospaceFont.WithSize(FontSize);
-
+			if (fontPath == null) {
+				string basePath = Environment.GetEnvironmentVariable("USERPROFILE");
+				string folder = "Downloads";
+				string filename = "3270NerdFontMono-Regular.ttf";
+				fontPath = (Environment.GetEnvironmentVariables().Contains("FONT_PATH")) ?
+					Environment.GetEnvironmentVariable("FONT_PATH") : (Environment.GetEnvironmentVariables().Contains("WINDIR")) ? 
+					Path.Combine(new string[] {basePath, folder, filename})
+					: "/usr/share/fonts/opentype/3270/3270-Regular.otf";
+			}
+			Font font = null;
+			try {
+				// very old Xwt 0.2.251
+				// The 'Xwt.Drawing.Font' does not contain a definition for 'FromFile' (CS0117)
+				// font = Font.FromFile(fontPath, FontSize);
+				// TODO: try
+				font = Font.FromName("Courier New").WithSize( FontSize);
+			} catch (Exception e ) {
+				System.Diagnostics.Debug.WriteLine("Exception :" + e.ToString());
+				font = Font.SystemMonospaceFont.WithSize(FontSize);
+			}
 			using (var textLayout = new TextLayout()) {
 				textLayout.Font = font;
 				textLayout.Text = "M";

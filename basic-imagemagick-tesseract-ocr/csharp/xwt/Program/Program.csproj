@@ -6,7 +6,7 @@
     <ProjectGuid>{B9A39DD8-ED43-4D21-8F68-BB3A1664634E}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Program</RootNamespace>
-    <AssemblyName>UI</AssemblyName>
+    <AssemblyName>teller_screen</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>

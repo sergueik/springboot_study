@@ -1,30 +1,92 @@
+### Info
+This is essentially the same code as in Windows Forms, but it uses the currently abandoned 
+uses [mono/xwt](https://github.com/mono/xwt)
+ cross-platform UI toolkit for creating desktop applications with .NET and Mono
+
 ### Usage
-uses [](https://github.com/mono/xwt)
 
-* download nuget packages and construct `packages` directory
-
-```text
-Downloads/xwt.0.2.251.nupkg
-Downloads/xwt.gtk.0.2.251.nupkg
-Downloads/xwt.gtk.windows.0.2.251.nupkg
+* download nuget packages and construct `packages` directory manually to avoid fighting with old `nuget.exe` problems:
+```sh
+curl -sLko ~/Downloads/xwt.0.2.251.nupkg https://www.nuget.org/api/v2/package/Xwt/0.2.251
+curl -sLko ~/Downloads/xwt.gtk.0.2.251.nupkg https://www.nuget.org/api/v2/package/Xwt.Gtk/0.2.251
+curl -sLko ~/Downloads/xwt.gtk.windows.0.2.251.nupkg https://www.nuget.org/api/v2/package/Xwt.Gtk.Windows/0.2.251
 ```
 
-https://www.mono-project.com/docs/gui/gtksharp/
-select download labeled
-
-GTK# for .NET
-Installer for running Gtk#-based applications on Microsoft .NET:
+```sh
+mkdir -p packages/{Xwt.0.2.251,Xwt.Gtk.0.2.251,Xwt.Gtk.Windows.0.2.251}
+```
+```text
+pushd packages/Xwt.0.2.251
+unzip -x ~/Downloads/xwt.0.2.251.nupkg lib/net472/Xwt.dll
+popd
+pushd packages/Xwt.Gtk.0.2.251
+unzip -x ~/Downloads/xwt.gtk.0.2.251.nupkg lib/net472/*
+popd
+pushd packages/Xwt.Gtk.Windows.0.2.251
+unzip -x ~/Downloads/xwt.gtk.windows.0.2.251.nupkg lib/net472/*
+popd
+```
+the `packages` directory will have
 
 ```txt
-csharp/xwt/packages/Xwt.0.2.251/lib/net472/Xwt.dll
-csharp/xwt/packages/Xwt.Gtk.0.2.251/lib/net472/Xwt.Gtk.dll
-csharp/xwt/packages/Xwt.Gtk.Windows.0.2.251/lib/net472/Xwt.Gtk.Windows.dll
+Xwt.0.2.251/lib/net472/Xwt.dll
+Xwt.Gtk.0.2.251/lib/net472/Xwt.Gtk.dll
+Xwt.Gtk.Windows.0.2.251/lib/net472/Xwt.Gtk.Windows.dll
+```
+compile the app.
+Install two MSI 
+
+  * `mono-5.16.1-gtksharp-2.12.45-win32-0`
+  * `mono-5.16.1-x64-0.msi`
+from https://download.mono-project.com/archive/5.16.1/windows-installer/index.html
+followed by installing the `gtk-sharp-2.12.45.msi`
+__GTK#__ __2__ (__GTK Sharp__ __2__) runtime package downloaded from  https://www.mono-project.com/docs/gui/gtksharp/
+
+select download labeled
+
+__GTK# for .NET__
+Installer for running Gtk#-based applications on Microsoft .NET.
+
+![capture installer](../../screenshots/capture-installer.png)
+
+Launch 32 bit Windows environment
+```cmd
+c:\windows\syswow64\cmd.exe
 ```
 
+the compiled teller_screen.exe was an WOW64 / 32-bit application
+```
+.\teller_screen.exe -screenfile=example.txt
+```
+this  produces `console.png` in the default monospace font.
+
+https://www.mono-project.com/docs/gui/gtksharp/
+select download labeled __GTK# for .NET__ Installer for running Gtk#-based applications on __Microsoft .NET__:
+
+
+run the application
       
 ```cmd
-.\UI.exe -screenfile=example.txt
+.\teller_screen.exe -screenfile=example.txt
 ```
+> NOTE: the `screenfille` argument is required if one has not provided, the application prints usage message and exits
+```
+Usage: teller_screen -screenfile=<filename> [-outputfile=<filename>] [-font=<font>] [-antialias] [-debug]
+```
+
+![capture Xwt App Result](../../images/console6.png)
+
+#### Troubleshooting
+
+When the GTK stack is missing or some other inconsistency in the setup the following errors will be observed at application start time
+```cmd
+.\teller_screen.exe -screenfile=example.txt
+```
+> NOTE: the `screenfille` argument is required if one has not provided, the application prints usage message and exits
+```
+Usage: teller_screen -screenfile=<filename> [-outputfile=<filename>] [-font=<font>] [-antialias] [-debug]
+```
+
 ```
 Необработанное исключение: System.Exception: Toolkit could not be loaded ---> 
 System.IO.FileNotFoundException: 
@@ -114,7 +176,7 @@ https://download.mono-project.com/archive/6.12.0/windows-installer/index.html
 copy /y "c:\Program Files (x86)\GtkSharp\2.12\bin\glibsharpglue-2.dll" .
 ```
 ```cmd
-.\UI.exe -screenfile=example.txt
+.\teller_screen.exe -screenfile=example.txt
 ```
 ```
 Необработанное исключение: System.Exception: Toolkit could not be loaded ---> 
@@ -149,16 +211,10 @@ System.Reflection.TargetInvocationException: Адресат вызова соз�
    в Program.TellerScreen.Main() в c:\developer\sergueik\springboot_study\basic-imagemagick-tesseract-ocr\csharp\xwt\UI\TellerScreen.cs:строка 81
 ```
 
+### See Also:
 
-Install two MSI from https://download.mono-project.com/archive/5.16.1/windows-installer/index.html
-followed by installing the `gtk-sharp-2.12.45.msi`
 
-download GTK# 2 (GTK Sharp 2) runtime package  downloaded from  https://www.mono-project.com/docs/gui/gtksharp/
-select download labeled
+---
 
-GTK# for .NET
-Installer for running Gtk#-based applications on Microsoft .NET:
-
-```
-.\UI.exe -screenfile=example.txt
-```
+### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

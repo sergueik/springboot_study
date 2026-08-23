@@ -11,11 +11,9 @@ using System.Windows.Forms;
 using System.Reflection;
 using Utils;
 
-namespace Program
-{
+namespace Program {
 	
-	public partial class TellerScreen
-	{
+	public partial class TellerScreen {
 
 		private static string outputfile = "console.png";
 		private static string textfile = null;
@@ -39,8 +37,7 @@ namespace Program
 				{ "ibm037", Color.Brown }
 			};
 		[STAThread]
-		public static void Main()
-		{
+		public static void Main() {
 			
 			var parseArgs = new ParseArgs(System.Environment.CommandLine);
 			// NOTE: have to set debug with value true, switch arguments are not supported
@@ -56,13 +53,16 @@ namespace Program
 				fontPath = parseArgs.GetMacro("font");
 
 			if (parseArgs.GetMacro("version") != String.Empty) {
-				var versionObj = Assembly.GetExecutingAssembly().GetName().Version;
-				Console.Error.WriteLine("version: " + versionObj.ToString());
+				Console.Error.WriteLine("version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
 				Environment.Exit(0);
-
 				// https://stackoverflow.com/questions/12977924/how-do-i-properly-exit-a-c-sharp-application 
 				// Application.Exit();
 			}
+			if ((parseArgs.GetMacro("screenfile") == String.Empty ) || false)  {
+				Console.Error.WriteLine("Usage: " + Assembly.GetExecutingAssembly().GetName().Name + " -screenfile=<filename> [-outputfile=<filename>] [-font=<font>] [-antialias] [-debug]");
+				Environment.Exit(0);
+			}
+
 			if (parseArgs.GetMacro("screenfile") != String.Empty)
 				screenfile = parseArgs.GetMacro("screenfile");
 			if (parseArgs.GetMacro("textfile") != String.Empty)
@@ -86,10 +86,14 @@ namespace Program
 					Path.Combine(new string[] {basePath, folder, filename})
 					: "/usr/share/fonts/opentype/3270/3270-Regular.otf";
 			}
-			privateFontCollection.AddFontFile(fontPath);
-
-			var font = new Font(privateFontCollection.Families[0], 24, FontStyle.Regular, GraphicsUnit.Pixel);
-
+			Font font = null;
+			try {
+				privateFontCollection.AddFontFile(fontPath);
+				font = new Font(privateFontCollection.Families[0], 24, FontStyle.Regular, GraphicsUnit.Pixel);
+			} catch (Exception e){
+				System.Diagnostics.Debug.WriteLine("Exception :" + e.ToString());
+				font = new Font(FontFamily.GenericMonospace, 24);
+			}
 			Size textSize = TextRenderer.MeasureText("M", font);
 			int cellWidth = textSize.Width;
 
