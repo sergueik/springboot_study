@@ -317,6 +317,23 @@ dpkg -L fonts-3270
 /usr/share/metainfo
 /usr/share/metainfo/fonts-3270.metainfo.xml
 ```
+getting via curl yields exotic error:
+```sh
+curl -skI https://mochasoft.dk/images/tn3270_1.png
+```
+```text
+455 is not a standard status code defined by the core HTTP specifications. Here the useful clues are:
+
+HTTP/2 455
+server: Microsoft-IIS/10.0
+content-length: 54
+
+followed by:
+
+The custom error module does not recognize this error
+
+That strongly suggests the IIS site/application (or something in front of it) is deliberately generating a nonstandard 455 response, rather than the PNG simply being unavailable in the ordinary 404 Not Found sense.
+```
 ### Next Step
 S0 = pristine synthetic 3270-looking screen
 
