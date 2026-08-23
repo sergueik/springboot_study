@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ public class Runner {
 		String fontPath = null;
 		// reserved for future
 		String labelFile = "console.json";
-		String screenfile = "example.txt";
+		String screenfile = null;
 		String page = "cp037"; // EBCDIC
 		Long words = 1L;
 		Long length = 1L;
@@ -59,7 +60,7 @@ public class Runner {
 		if (debug)
 			System.err.println(cli.keySet());
 
-		if (cli.containsKey("help") || !cli.containsKey("outputfile")) {
+		if (cli.containsKey("help") || !cli.containsKey("outputfile") || !cli.containsKey("screenfile")) {
 			System.err.println(
 					String.format("Usage: jar " + "-screenfile <filename> -outputfile <filename> -font <font>\r\n"));
 			return;
@@ -85,28 +86,14 @@ public class Runner {
 			labelFile = cli.get("labelfile");
 		// new Generator(copybookFile, outputFile, page, maxRows).generate();
 
-		List<String> screen = List.of("                         LORE-MF",
-				"                                                                ",
-				"LOREM:  ___________                         IPSUM: _____________",
-				"DOLOR:  __________                 AMET:  _____________",
-				"AMET ====> _____________                 CONSECTETUR: _________",
-				"ADIPISCING: __________      ELIT: __________",
-				"SED: _________                              DO: _______________",
-				"ENIM: _____________                  AD: __________",
-				"MINIM: _____________       VENIAM: _____________",
-				"QUIS: _____________                 NOSTRUD: ___________",
-				"COMMODO: _____________       CONSEQUAT: __________", "",
-				"PF1=HELP  PF2=SPLIT  PF3=END  PF4=RETURN  PF5=RFIND  PF6=RCHANGE",
-				"PF7=UP    PF8=DOWN   PF9=SWAP  PF10=LEFT  PF11=RIGHT  PF12=RETRIEVE");
+		List<String> screenLines = new ArrayList<>();
 
-		if (screenfile != null) {
-			Path path = Paths.get(screenfile);
+		Path path = Paths.get(screenfile);
 
-			try {
-				screen = Files.readAllLines(path);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		try {
+			screenLines = Files.readAllLines(path);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		// To achieve a lookalike screenshot of Blue Prism IBM 3270 mainframe/CICS
 		// terminal emulator
@@ -123,57 +110,55 @@ public class Runner {
 									.resolve("3270NerdFontMono-Regular.ttf").toAbsolutePath().toString()
 							: "/usr/share/fonts/opentype/3270/3270-Regular.otf";
 
-		font = Font.createFont(Font.TRUETYPE_FONT, new File(fontPath)).deriveFont((float) FONT_SIZE);
-
 		// String name = "3270 Nerd Font Mono";
 		font = Font.createFont(Font.TRUETYPE_FONT, new File(fontPath)).deriveFont((float) FONT_SIZE);
 
 		// create a temporary image to compute FontMetrics.
 		BufferedImage metricsImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
 
-		Graphics2D mg = metricsImage.createGraphics();
-		mg.setFont(font);
-		FontMetrics fm = mg.getFontMetrics();
+		Graphics2D graphics2 = metricsImage.createGraphics();
+		graphics2.setFont(font);
+		FontMetrics fontMetrics = graphics2.getFontMetrics();
 
-		int cellWidth = fm.charWidth('M');
-		int cellHeight = fm.getHeight();
+		int cellWidth = fontMetrics.charWidth('M');
+		int cellHeight = fontMetrics.getHeight();
 
-		mg.dispose();
+		graphics2.dispose();
 
 		int width = LEFT * 2 + COLS * cellWidth;
 		int height = TOP * 2 + ROWS * cellHeight;
 
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-		Graphics2D g = image.createGraphics();
+		Graphics2D graphics = bufferedImage.createGraphics();
 
 		// ---- Terminal appearance -------------------------------------
 
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, width, height);
+		graphics.setColor(Color.BLACK);
+		graphics.fillRect(0, 0, width, height);
 
-		g.setFont(font);
-		g.setColor(Color.GREEN);
+		graphics.setFont(font);
+		graphics.setColor(Color.GREEN);
 
 		// Slightly nicer text rendering for the initial clean version.
-		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
 		// ===============================================================
 		// MODE 1: LINE-GRANULAR
 		// ===============================================================
 
-		boolean characterGranular = true;
+		boolean letterGranular = true;
 
-		if (!characterGranular) {
+		if (!letterGranular) {
 
-			for (int row = 0; row < screen.size(); row++) {
+			for (int row = 0; row < screenLines.size(); row++) {
 
-				String line = screen.get(row);
+				String line = screenLines.get(row);
 
 				int x = LEFT;
-				int y = TOP + fm.getAscent() + row * cellHeight;
+				int y = TOP + fontMetrics.getAscent() + row * cellHeight;
 
-				g.drawString(line, x, y);
+				graphics.drawString(line, x, y);
 			}
 		}
 
@@ -181,18 +166,18 @@ public class Runner {
 		// MODE 2: CHARACTER-GRANULAR
 		// ===============================================================
 
-		if (characterGranular) {
+		if (letterGranular) {
 
-			for (int row = 0; row < screen.size(); row++) {
+			for (int row = 0; row < screenLines.size(); row++) {
 
-				String line = screen.get(row);
+				String line = screenLines.get(row);
 
 				for (int col = 0; col < line.length(); col++) {
 
-					char ch = line.charAt(col);
+					String letter = String.valueOf(line.charAt(col));
 
 					int x = LEFT + col * cellWidth;
-					int y = TOP + fm.getAscent() + row * cellHeight;
+					int y = TOP + fontMetrics.getAscent() + row * cellHeight;
 
 					/*
 					 * Future deliberate imperfection hooks:
@@ -203,14 +188,14 @@ public class Runner {
 					 * alter spacing
 					 */
 
-					g.drawString(String.valueOf(ch), x, y);
+					graphics.drawString(letter, x, y);
 				}
 			}
 		}
 
-		g.dispose();
+		graphics.dispose();
 
-		ImageIO.write(image, "png", new File(outputFile));
+		ImageIO.write(bufferedImage, "png", new File(outputFile));
 
 		System.out.println(String.format("Wrote %s", outputFile));
 	}
@@ -239,4 +224,3 @@ public class Runner {
 		return map;
 	}
 }
-

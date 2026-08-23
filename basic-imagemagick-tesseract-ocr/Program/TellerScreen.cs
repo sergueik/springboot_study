@@ -1,52 +1,94 @@
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Configuration;
 using System.Diagnostics;
-using System.ComponentModel;
 using System.Linq;
 using System;
+using System.IO;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-using System.Threading;
-using System.Timers;
+ // note: not a Form
+using System.Reflection;
+using Utils;
 
+namespace Program
+{
+	
+	public partial class TellerScreen
+	{
 
-namespace Program {
-	public partial class Form1 {
+		private static string outputfile = "console.png";
+		private static string textfile = null;
+		private static string screenfile = null;
+		private static string foreground = null;
+		private static bool debug = false;
+		public static bool Debug { set { debug = value; } }
+		private static bool antialias = false;
+		private static string fontPath = null;
 
 		private static int rows = 24;
-		private static int cols = 80;	
+		private static int cols = 80;
 		private static int width = 0;
 		private static int height = 0;
 
 		static readonly int left = 30;
 		static readonly int top = 30;
-
+		static readonly Dictionary<string, Color> ColorAliases = 
+			new Dictionary<string, Color>(StringComparer.OrdinalIgnoreCase) {
+				{ "lime", Color.Lime },
+				{ "ibm037", Color.Brown }
+			};
 		[STAThread]
 		public static void Main()
 		{
-			string[] screenArray = { 
-				"                                                                                ",
-				"                    MOCK MAINFRAME LOGIN SCREEN                                 ",
-				"                                                                                ",
-				" USER ID  ===> __________                                                       ",
-				" PASSWORD ===> __________                                                       ",
-				"                                                                                ",
-				"                                                                                ",
-				"                                                                                ",
-				"                                                                                ",
-				" PF3=EXIT                                  ENTER=CONTINUE                       "
+			
+			var parseArgs = new ParseArgs(System.Environment.CommandLine);
+			// NOTE: have to set debug with value true, switch arguments are not supported
 
-			};
-			List<String> screen = new List<String>(screenArray);
-  
+			if (parseArgs.GetMacro("debug") != String.Empty)
+				debug = true;
+			// debug = Boolean.Parse(parseArgs.GetMacro("debug"));
 
-			var fonts = new PrivateFontCollection();
-			fonts.AddFontFile(String.Format("{0}\\Downloads\\3270NerdFontMono-Regular.ttf", Environment.GetEnvironmentVariable("USERPROFILE")));
+			if (parseArgs.GetMacro("outputfile") != String.Empty)
+				outputfile = parseArgs.GetMacro("outputfile");
 
-			var font = new Font(fonts.Families[0], 24, FontStyle.Regular, GraphicsUnit.Pixel);
+			if (parseArgs.GetMacro("font") != String.Empty)
+				fontPath = parseArgs.GetMacro("font");
+
+			if (parseArgs.GetMacro("version") != String.Empty) {
+				var versionObj = Assembly.GetExecutingAssembly().GetName().Version;
+				Console.Error.WriteLine("version: " + versionObj.ToString());
+				Environment.Exit(0);
+
+				// https://stackoverflow.com/questions/12977924/how-do-i-properly-exit-a-c-sharp-application 
+				// Application.Exit();
+			}
+			if (parseArgs.GetMacro("screenfile") != String.Empty)
+				screenfile = parseArgs.GetMacro("screenfile");
+			if (parseArgs.GetMacro("textfile") != String.Empty)
+				textfile = parseArgs.GetMacro("textfile");
+			if (parseArgs.GetMacro("foreground") != String.Empty)
+				foreground = parseArgs.GetMacro("foreground");
+
+			if (parseArgs.GetMacro("antialias") != String.Empty)
+				antialias = true;
+			// antialias = Boolean.Parse(parseArgs.GetMacro("antialias"));
+
+			var screenlines = new List<string>(File.ReadAllLines(screenfile));
+			var privateFontCollection = new PrivateFontCollection();
+
+			if (fontPath == null) {
+				string basePath = Environment.GetEnvironmentVariable("USERPROFILE");
+				string folder = "Downloads";
+				string filename = "3270NerdFontMono-Regular.ttf";
+				fontPath = (Environment.GetEnvironmentVariables().Contains("FONT_PATH")) ?
+					Environment.GetEnvironmentVariable("FONT_PATH") : (Environment.GetEnvironmentVariables().Contains("WINDIR")) ? 
+					Path.Combine(new string[] {basePath, folder, filename})
+					: "/usr/share/fonts/opentype/3270/3270-Regular.otf";
+			}
+			privateFontCollection.AddFontFile(fontPath);
+
+			var font = new Font(privateFontCollection.Families[0], 24, FontStyle.Regular, GraphicsUnit.Pixel);
 
 			Size textSize = TextRenderer.MeasureText("M", font);
 			int cellWidth = textSize.Width;
@@ -57,21 +99,25 @@ namespace Program {
 			height = top * 2 + rows * cellHeight;
 			
 			var bitmap = new Bitmap(width, height);
-			var g = Graphics.FromImage(bitmap);
+			var graphics = Graphics.FromImage(bitmap);
 
-			g.Clear(Color.Black);
+			graphics.Clear(Color.Black);
+			// https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.textrenderer?view=netframework-4.5
+			// https://learn.microsoft.com/en-us/dotnet/api/system.drawing.text.textrenderinghint?view=netframework-4.5
+			// graphics.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
+			// graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+			graphics.TextRenderingHint = antialias ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.SingleBitPerPixelGridFit;
+			
+			// foreground
+			var brush = new SolidBrush(ColorAliases.ContainsKey(foreground) ? ColorAliases[foreground] : Color.White);
+		
+			graphics.DrawString("USER ID  ===> __________", font, brush, 30, 30);
 
-			g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
-
-			var brush = new SolidBrush(Color.Lime);
-
-			g.DrawString("USER ID  ===> __________", font, brush, 30, 30);
-
-			for (int row = 0; row < screen.Count; row++) {
-				string line = screen[row];
+			for (int row = 0; row < screenlines.Count; row++) {
+				string line = screenlines[row];
 
 				for (int col = 0; col < line.Length; col++) {
-					char ch = line[col];
+					var letter = line[col].ToString();
 	
 					float x = left + col * cellWidth;
 					float y = top + row * cellHeight;
@@ -80,12 +126,12 @@ namespace Program {
 					// x += jitterX;
 					// y += jitterY;
 
-					g.DrawString(ch.ToString(), font, brush, x, y);
+					graphics.DrawString(letter, font, brush, x, y);
 				}
 			}
 			// https://learn.microsoft.com/en-us/dotnet/api/system.drawing.bitmap?view=netframework-4.5
 			// https://learn.microsoft.com/en-us/dotnet/api/system.drawing.imaging.imageformat?view=netframework-4.5
-			bitmap.Save("console.png", ImageFormat.Png);
+			bitmap.Save(outputfile, ImageFormat.Png);
 		}
 	}
 }

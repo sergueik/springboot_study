@@ -72,14 +72,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Windows.Forms">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TellerScreen.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Utils\Utils.csproj">
+      <Project>{5e8a8396-1d35-4495-ba65-b564e3d33282}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

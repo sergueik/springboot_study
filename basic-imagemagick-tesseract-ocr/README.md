@@ -589,12 +589,55 @@ PF7=UP    PF8=DOWN   PF9=SWAP  PF10=LEFT  PF11=RIGHT  PF12=RETRIEVE
 #### Next Steps
 
 Add a Python loop around it with a more ML oriented options - labeling, exloring all ML options
- 
+
+```
+3270/Courier-like glyph geometry
+        +
+hard/pixel-ish rasterization
+        +
+yellow / gray-ish phosphor foreground
+        +
+very dark blue/black background
+        +
+display/photo/capture artifacts
+        +
+color fringing at high-contrast edges
+```
+```sh
+              logical screen
+                    │
+                    ▼
+             font + metrics
+                    │
+                    ▼
+              rasterization
+                    │
+          ┌─────────┴─────────┐
+          │                   │
+     rendering hint       color scheme
+          │                   │
+          └─────────┬─────────┘
+                    ▼
+              pristine PNG
+                    │
+                    ▼
+             degradation
+          ┌─────────┼─────────┐
+          │         │         │
+       noise    exposure   color fringe
+          │         │         │
+          └─────────┼─────────┘
+                    ▼
+               OCR input
+``` 
 ### Unrelated
 
 The next step is understanding what information exists, categorizing it, and identifying the relationships that make it valuable.
 
 ---
 
+### See Also
+
+  * https://www.bollynook.com/en/lyrics/19270/urvasi/
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
