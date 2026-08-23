@@ -7,7 +7,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Program</RootNamespace>
     <AssemblyName>teller_screen</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <StartupObject>Program.TellerScreen</StartupObject>
@@ -34,7 +34,6 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System.Data" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="Xwt">

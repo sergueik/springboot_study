@@ -1,10 +1,432 @@
 ### Usage
 
+This experiment evaluates whether a simple OCR pipeline (ImageMagick + Tesseract) can extract reusable business knowledge from workflow diagrams
+
+
 ```
 docker pull minidocks/imagemagick
 docker pull jitesoft/tesseract-ocr
-```	
-This experiment evaluates whether a simple OCR pipeline (ImageMagick + Tesseract) can extract reusable business knowledge from workflow diagrams
+```
+
+* run code to generate 3270 screen mock for a given sceen text input 
+* run code to improve the bitmap quality with Image Magick and OCR with tecerct
+* evaluate, adjust model paramers
+
+=>  able to construct intelligent `ALT` text
+
+
+
+### 3270 Terminal Text Extaction
+
+a.k.a. OCR'ing teller screens
+
+Font shape and spacing is important. One may need to find a close match to fonts used by Blue Prism , UiPath - these are likely resular True Type fonts. For the purpose of exercise take a public 3270 fonts
+
+```sh
+apt-get install fonts-3270
+```
+apt source entry to add if not present:
+
+|Distro | Package                                        | repo|
+|-------|------------------------------------------------|-----|
+|Debian |https://packages.debian.org/sid/fonts/fonts-3270| https://packages.debian.org/sid/fonts/fonts-3270|
+|Ubuntu |http://packages.ubuntu.com/impish/fonts-3270| https://packages.ubuntu.com/impish/fonts/fonts-3270|
+
+direct
+```sh
+BASE_URL='https://github.com/ryanoasis/nerd-fonts'
+curl -skLo ~/Downloads/3270NerdFontMono-Regular.ttf "$BASE_URL/raw/refs/heads/master/patched-fonts/3270/3270NerdFontMono-Regular.ttf"
+```
+switch to Windows console (elevated)
+```cmd
+set FILENAME=3270NerdFontMono-Regular.ttf
+copy /y "%USERPROFILE%\Downloads\%FILENAME%" "C:\Windows\Fonts\"
+set FONT_NAME=3270 Nerd Font Mono
+reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" /v "%FONT_NAME% (TrueType)" /t REG_SZ /d "%FILENAME%" /f
+```
+> NOTE there is quite a lot of 3270 fonts in the dir
+> NOTE: the direct s3 link suggested in `https://github.com/rbanffy/3270font` no longer works:
+> ```sh
+> curl -skLo ~/Downloads/fonts-3270.zip https://3270font.s3.amazonaws.com/3270_fonts_d916271.zip
+> ```
+
+![CICS login screen mock](images/console1.png)
+
+```sh
+./scan_screenshot.sh images/console1.png 
+```
+result is printed to console:
+```text
+Estimating resolution as 172 
+MOCK MAINFRAME LOGIN SCREEN 
+USER ID) ===> _ 
+PASSWORD ===> _. 
+
+PF3=EXIT ENTER=CONT INUE
+```
+
+
+```sh
+mvn package
+pushd images
+java -jar ../target/example.teller-screen.jar 
+popd
+```
+
+![CICS login screen mock](images/console2.png)
+
+```sh
+./scan_screenshot.sh images/console2.png
+```
+result is printed to console:
+```text
+MOCK MAINFRAME LOGIN SCREEN
+
+USER ID
+PASSWORD ===
+
+PF3=EXIT ENTER=CONT INUE
+```
+```
+sudo apt-get install ttf-mscorefonts-installer
+```
+```sh
+export FONT_PATH=/usr/share/fonts/truetype/msttcorefonts/Courier_New.ttf
+```
+```sh
+mvn package
+pushd images
+java -jar ../target/example.teller-screen.jar 
+popd
+```
+![CICS login screen mock](images/console3.png)
+
+```sh
+./scan_screenshot.sh images/console3.png
+```
+
+
+```text
+Estimating resolution as 184
+MOCK MAINFRAME LOGIN SCREEN
+
+USER ID
+PASSWORD ===>
+
+PF3=EXIT ENTER=CONT INUE
+```
+__close inspection__:
+
+|defect |explanation |
+|-------|------------|
+|`ID)` instead of `ID` | glyph/spacing recognition issue|
+|underscore runs collapsing to single `_` | exactly the kind of character/grid issue worth investigating.
+|`_ .` after PASSWORD | likely rendering/segmentation interaction|
+|extra space in `CONT INUE` | character spacing / word segmentation|
+
+
+
+### Cleanup
+```
+docker image rm jitesoft/tesseract-ocr:latest minidocks/imagemagick:latest
+```
+###  ### Background / FaaS analogy
+
+Although this project is primarily a small cross-platform drawing/rendering
+experiment, its structure is closely analogous to a common FaaS textbook
+scenario: an event-driven image-processing function.
+
+In the typical example, an image upload (or an embedded image discovered while
+processing a document) triggers a function which processes the image and
+produces a derived artifact. Depending on the example, that processing may
+include:
+
+* generating a thumbnail / scaling the image;
+* discovering and extracting image metadata;
+* tagging or classifying the image;
+* applying privacy-oriented transformations, such as blurring detected
+  sensitive regions.
+
+This project follows the same basic pattern at a much smaller scale:
+
+```text
+input data
+    │
+    ▼
+event / invocation
+    │
+    ▼
+renderer
+    │
+    ├── font/layout processing
+    ├── drawing
+    └── image generation
+    │
+    ▼
+PNG artifact
+```
+This project follows the same general idea, but uses the image-processing
+pipeline to investigate a different problem: extracting reusable business
+knowledge from screenshots and workflow diagrams.
+
+The processing can be viewed conceptually as:
+
+```text
+image / document
+       │
+       ▼
+   extraction event
+       │
+       ▼
+ image-processing pipeline
+       │
+       ├── image normalization / scaling
+       ├── OCR
+       ├── diagram / screen interpretation
+       └── other image analysis
+              │
+              ▼
+       reusable knowledge
+```
+
+### Controlled image generation and possible ML use
+
+The 3270 terminal renderer is also intended as a controlled image generator for
+a possible later machine-learning experiment.
+
+The C# implementation was originally copied from the Windows Forms version
+deliberately. Applications such as Blue Prism, Pega and UiPath may use drawing
+and text-rendering APIs that are closer to the Windows/.NET rendering stack
+than the Java or Python implementations. Keeping that implementation provides
+a potentially useful rendering path for generating images that resemble the
+screens encountered by the business applications themselves.
+
+The Java, C# and Python implementations can therefore serve as independent
+generators of labeled synthetic training data. This has an important practical
+advantage over collecting screenshots from the actual RPA products: the
+generator can produce controlled variations that would be difficult or
+impractical to obtain from the products themselves.
+
+Potential image-generation parameters include:
+
+* font selection and font characteristics;
+* rendering backend;
+* image quality and rasterization;
+* character spacing and alignment;
+* CICS screen wording;
+* screen length and density;
+* deliberately introduced rendering imperfections.
+
+For example, longer and denser terminal screens are expected to provide a
+progressively harder OCR problem. Rather than assuming that relationship,
+synthetic data makes it possible to generate a range of densities and measure
+the resulting effect on OCR and ML performance.
+
+Conceptually:
+
+```text
+                    synthetic screen specification
+                              │
+             ┌────────────────┼────────────────┐
+             ▼                ▼                ▼
+          Java             C# / Xwt          Python
+        renderer          renderer(s)        renderer
+             │                │                │
+             └────────────────┼────────────────┘
+                              ▼
+                         console.png
+                              │
+                              ▼
+                    ImageMagick / Tesseract
+                              │
+                              ▼
+                    labeled / extracted data
+                              │
+                              ▼
+                       ML / Jupyter
+                              │
+                              ▼
+                  training / evaluation
+```
+
+
+### Accessibility as a target domain
+
+Accessibility is an important target domain for this work.
+
+A screenshot of a terminal screen, workflow diagram, scanned document, or other
+image may contain information that is effectively unavailable to a visually
+impaired consumer unless an equivalent textual representation is provided.
+
+An OCR and image-understanding pipeline can potentially produce substantially
+richer alternative text than the traditional generic:
+
+> "Image"
+
+For example, instead of merely identifying an image as a screenshot, the
+pipeline could describe the meaningful content of a 3270/CICS screen:
+
+```text
+CICS login screen XY01. 
+The screen contains input fields for USER ID and PASSWORD,
+with PF3 assigned to EXIT and ENTER assigned to CONTINUE.
+```
+
+From a manager/business-owner perspective, the question may be very simple:
+
+What inputs does this screen take?
+
+But obtaining the answer has a nontrivial human cost:
+```
+Question
+   │
+   ▼
+Identify screen owner
+   │
+   ▼
+Obtain permission to contact them
+   │
+   ▼
+Find time when they are available
+   │
+   ▼
+Explain what you are asking
+   │
+   ▼
+Owner examines / remembers the screen
+   │
+   ▼
+Answer
+```
+The expensive part isn't necessarily the knowledge. It is getting access to the person who possesses the knowledge.
+
+And the owner may be:
+  * busy
+  * changed team
+  * someone you have never met
+  * unavailable when you need the answer
+  * reluctant to interrupt their current work for what appears to be a small question
+
+That makes the image itself potentially valuable as a knowledge-recovery interface. If the system can infer:
+```
+USER ID
+PASSWORD
+PF3 = EXIT
+ENTER = CONTINUE
+```
+then you have already answered a surprisingly useful part of the manager's question without scheduling the meeting.
+
+
+The value isn't only "extract information from important documents." It is also "cheaply determine which artifacts are not worth further human attention."
+### Inventory and triage
+
+Another possible outcome is deliberately negative:
+
+> "We do not need to worry about this document."
+
+For business-critical operations, a human-to-human conversation with the
+application owner or subject-matter expert will eventually be appropriate.
+The purpose of automated extraction is not to eliminate that conversation
+where authoritative knowledge is required.
+
+The situation is different for the large population of low-value,
+obsolete, redundant, or effectively disposable artifacts. Spending human
+time identifying and classifying each of them may cost more than the value of
+the information they contain.
+
+An automated image/OCR pipeline can therefore be useful even when its only
+conclusion is that an artifact does not warrant further investigation:
+
+```text
+artifact
+   │
+   ▼
+automated extraction / classification
+   │
+   ├── potentially important ──► human review / owner
+   │
+   └── apparently disposable ──► no further action
+   
+```
+### The cost of manual archaeology
+
+A practical motivation for the experiment came from a real work situation:
+an FTE subject-matter expert reported that they had spent the previous week
+studying diagrams and screenshots to determine where a particular bot was
+mentioned and where it was not.
+
+The resulting observation may be very small:
+
+> Bot Z is mentioned here, but not there.
+
+But establishing that fact can require a substantial amount of manual
+archaeology when the source material consists of screenshots, diagrams,
+embedded images, and other documents that are not readily searchable.
+
+This is an important distinction for the project. The expensive part is not
+necessarily understanding the final answer. It is finding and examining the
+artifacts from which the answer can be derived.
+
+An automated extraction and indexing pass could make that first stage much
+cheaper:
+
+```text
+documents / screenshots / diagrams
+              │
+              ▼
+       automated extraction
+              │
+              ▼
+       searchable inventory
+              │
+       ┌──────┴──────┐
+       ▼             ▼
+  "probably nothing"  "interesting"
+       │             │
+       ▼             ▼
+    move on       SME / owner
+```
+    
+### Accessibility and knowledge recovery
+
+Accessibility is one potential application of the extracted information.
+
+A screenshot may contain information that is not otherwise readily available
+to a consumer or analyst. Even a relatively simple question such as "what
+inputs does this screen take?" may require contacting the application owner
+or subject-matter expert. The knowledge itself may be simple, while obtaining
+it can involve identifying the appropriate person, obtaining permission to
+ask, finding time to talk, and waiting for an answer.
+
+An image-understanding pipeline provides a complementary way to recover such
+information directly from existing screenshots and other visual artifacts.
+
+For a 3270/CICS screen, for example, recognizing that the screen contains a
+USER ID and PASSWORD input and that PF3 and ENTER have specific functions can
+already provide useful business information, independently of whether the
+ultimate consumer is a human analyst, an accessibility tool, or an ML
+pipeline.
+
+This does not replace the application owner as the authoritative source.
+Rather, it can reduce the number of questions that need to be escalated to
+the owner and provide useful context before that conversation takes place.
+
+That last sentence is important. The system doesn't have to "know the business" perfectly to be useful.
+
+It can turn:
+
+"I have a screenshot of some mysterious legacy screen; who owns this thing?"
+
+into:
+
+"This appears to be a login screen with USER ID and PASSWORD fields and PF3/ENTER actions. I now have enough context to ask the owner a much more precise question."
+
+And that is a very plausible benefit even before getting anywhere near sophisticated ML.
+
+
+
+
+
 
 #### Control experiment: plain text
 
@@ -136,120 +558,6 @@ docker inspect jitesoft/tesseract-ocr | grep -i User
 ```text
 "User": "tesseract",
 ```
-
-### Cleanup
-```
-docker image rm jitesoft/tesseract-ocr:latest minidocks/imagemagick:latest
-```
-
-### 3270 Terminal Text Extaction
-
-a.k.a. OCR'ing teller screens
-
-Font shape and spacing is important. One may need to find a close match to fonts used by Blue Prism , UiPath - these are likely resular True Type fonts. For the purpose of exercise take a public 3270 fonts
-
-```sh
-apt-get install fonts-3270
-```
-apt source entry to add if not present:
-
-|Distro | Package                                        | repo|
-|-------|------------------------------------------------|-----|
-|Debian |https://packages.debian.org/sid/fonts/fonts-3270| https://packages.debian.org/sid/fonts/fonts-3270|
-|Ubuntu |http://packages.ubuntu.com/impish/fonts-3270| https://packages.ubuntu.com/impish/fonts/fonts-3270|
-
-direct
-```sh
-BASE_URL='https://github.com/ryanoasis/nerd-fonts'
-curl -skLo ~/Downloads/3270NerdFontMono-Regular.ttf "$BASE_URL/raw/refs/heads/master/patched-fonts/3270/3270NerdFontMono-Regular.ttf"
-```
-switch to Windows console (elevated)
-```cmd
-set FILENAME=3270NerdFontMono-Regular.ttf
-copy /y "%USERPROFILE%\Downloads\%FILENAME%" "C:\Windows\Fonts\"
-set FONT_NAME=3270 Nerd Font Mono
-reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" /v "%FONT_NAME% (TrueType)" /t REG_SZ /d "%FILENAME%" /f
-```
-> NOTE there is quite a lot of 3270 fonts in the dir
-> NOTE: the direct s3 link suggested in `https://github.com/rbanffy/3270font` no longer works:
-> ```sh
-> curl -skLo ~/Downloads/fonts-3270.zip https://3270font.s3.amazonaws.com/3270_fonts_d916271.zip
-> ```
-
-![CICS login screen mock](images/console1.png)
-
-```sh
-./scan_screenshot.sh images/console1.png 
-```
-result is printed to console:
-```text
-Estimating resolution as 172 
-MOCK MAINFRAME LOGIN SCREEN 
-USER ID) ===> _ 
-PASSWORD ===> _. 
-
-PF3=EXIT ENTER=CONT INUE
-```
-
-
-```sh
-mvn package
-pushd images
-java -jar ../target/example.teller-screen.jar 
-popd
-```
-
-![CICS login screen mock](images/console2.png)
-
-```sh
-./scan_screenshot.sh images/console2.png
-```
-result is printed to console:
-```text
-MOCK MAINFRAME LOGIN SCREEN
-
-USER ID
-PASSWORD ===
-
-PF3=EXIT ENTER=CONT INUE
-```
-```
-sudo apt-get install ttf-mscorefonts-installer
-```
-```sh
-export FONT_PATH=/usr/share/fonts/truetype/msttcorefonts/Courier_New.ttf
-```
-```sh
-mvn package
-pushd images
-java -jar ../target/example.teller-screen.jar 
-popd
-```
-![CICS login screen mock](images/console3.png)
-
-```sh
-./scan_screenshot.sh images/console3.png
-```
-
-
-```text
-Estimating resolution as 184
-MOCK MAINFRAME LOGIN SCREEN
-
-USER ID
-PASSWORD ===>
-
-PF3=EXIT ENTER=CONT INUE
-```
-__close inspection__:
-
-|defect |explanation |
-|-------|------------|
-|`ID)` instead of `ID` | glyph/spacing recognition issue|
-|underscore runs collapsing to single `_` | exactly the kind of character/grid issue worth investigating.
-|`_ .` after PASSWORD | likely rendering/segmentation interaction|
-|extra space in `CONT INUE` | character spacing / word segmentation|
-
 
 ### Troublshooting
 

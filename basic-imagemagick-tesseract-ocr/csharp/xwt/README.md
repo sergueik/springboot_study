@@ -1,6 +1,6 @@
 ### Info
 This is essentially the same code as in Windows Forms, but it uses the currently abandoned 
-uses [mono/xwt](https://github.com/mono/xwt)
+ [mono/xwt](https://github.com/mono/xwt)
  cross-platform UI toolkit for creating desktop applications with .NET and Mono
 
 ### Usage
@@ -40,7 +40,7 @@ Install two MSI
   * `mono-5.16.1-x64-0.msi`
 from https://download.mono-project.com/archive/5.16.1/windows-installer/index.html
 followed by installing the `gtk-sharp-2.12.45.msi`
-__GTK#__ __2__ (__GTK Sharp__ __2__) runtime package downloaded from  https://www.mono-project.com/docs/gui/gtksharp/
+__GTK#__ __2__ (__GTK Sharp__ __2__) runtime package downloaded from https://www.mono-project.com/download/stable/
 
 select download labeled
 
@@ -75,6 +75,136 @@ Usage: teller_screen -screenfile=<filename> [-outputfile=<filename>] [-font=<fon
 ```
 
 ![capture Xwt App Result](../../images/console6.png)
+
+> NOTE: Both the Mono distribution and the standalone GTK# for .NET
+> runtime install their own `gtksharpglue-2.dll`. This is intentional in
+> the tested setup: the two runtime installations are separate, even though
+> they contain similarly named GTK# glue libraries.
+> ```cmd
+> dir /b/s c:\gtksharpglue*
+> 
+> ```
+> ```
+> c:\Program Files (x86)\GtkSharp\2.12\bin\gtksharpglue-2.dll
+> c:\Program Files (x86)\Mono\bin\gtksharpglue-2.dll
+> ```
+
+
+#### Building on Ubuntu
+
+The existing Xwt project/solution can also be built and run on Ubuntu using
+the historical Mono/xbuild toolchain. No application-code port was required
+for this experiment.
+
+Install the initial Mono build tooling:
+
+```sh
+sudo apt-get install mono-xbuild mono-tools-devel
+```
+The first build attemot failed during Csc execution:
+```text
+Target CoreCompile:
+    Target CoreCompile needs to be built as output file 'obj/x86/Debug/Utils.dll' does not exist.
+    Task "Csc"
+        ...
+    Task "Csc" execution -- FAILED
+```
+
+Installing the complete Mono environment allowed the build to progress:
+```
+sudo apt install -qqy mono-complete
+```
+The next build exposed the project's old Xwt dependencies:
+```
+warning : Reference 'Xwt' not resolved
+warning : Reference 'Xwt.Gtk' not resolved
+warning : Reference 'Xwt.Gtk.Windows' not resolved
+```
+These assemblies were already present in the Windows-side packages
+directory. Rather than repeating the semi-manual dependency collection
+process on the second host, the existing directory was copied across:
+```
+scp -r . sergueik@192.168.12.161:Downloads/packages
+
+```
+and restored into the project on Ubuntu.
+
+This was reasonable for this particular experiment because the Xwt packages
+being used here contain the managed assemblies required by the project and
+there was no native code in these project dependencies that needed to be
+rebuilt for the target host.
+
+The project explicitly references:
+
+```text
+Xwt
+Xwt.Gtk
+Xwt.Gtk.Windows
+```
+
+There was initially some concern that the Windows-specific
+Xwt.Gtk.Windows reference might have to be removed for the Linux build.
+It turned out not to be necessary: the existing project could be built
+without pruning that reference.
+
+The resulting executable could then be invoked with Mono:
+
+```sg
+mono Program/bin/Debug/teller_screen.exe
+```
+which confirmed that the application had built successfully:
+```text
+Usage: teller_screen -screenfile=<filename> [-outputfile=<filename>] [-font=<font>] [-antialias] [-debug]
+```
+
+The first actual runtime failure was the Xwt reaching for GTK backend:
+```text
+Unhandled Exception:
+System.Exception: Toolkit could not be loaded
+---> System.IO.FileNotFoundException:
+Could not load file or assembly 'gtk-sharp, Version=2.12.0.0'
+```
+This identified GTK# 2 as a separate runtime dependency of the old Xwt GTK
+backend.
+
+Install it with:
+```sh
+sudo apt-get install gtk-sharp2
+```
+After that the application progressed to processing the requested input
+file.
+
+There was a further difference involving the relative screenfile path.
+The application appears to honor the relative path when run on Windows, while
+the invocation from Program/bin/Debug on Ubuntu resulted in the application
+looking for example.txt in that working directory.
+
+This path-handling difference is not investigated further here; copying the
+test input into the working directory was sufficient to continue the
+experiment:
+
+```
+cd Program/bin/Debug
+cp ../../../../../example.txt .
+mono teller_screen.exe -screenfile=example.txt
+```
+
+the application then ran successfully and produced the PNG, with the
+remaining issue being font availability:
+
+```text
+Font 'Courier New' not available in the system. Using 'Noto Sans' instead
+```
+
+![capture XWT Linux generated file](../../images/console7.png)
+
+
+Result: the old Xwt project can be built and executed on Ubuntu with the
+existing source and project structure. The main portability work consists of
+reconstructing the historical Mono, Xwt and GTK# runtime environment and
+providing an appropriate font; the rendering code itself did not require a
+Linux-specific rewrite
+
 
 #### Troubleshooting
 
@@ -209,6 +339,24 @@ System.Reflection.TargetInvocationException: Адресат вызова соз�
    в Xwt.Application.Initialize(String backendType, Boolean initializeToolkit)
    в Xwt.Application.Initialize(ToolkitType type)
    в Program.TellerScreen.Main() в c:\developer\sergueik\springboot_study\basic-imagemagick-tesseract-ocr\csharp\xwt\UI\TellerScreen.cs:строка 81
+```
+
+```sh
+cd Program/bin/Debug
+test -f ../../../../../example.txt && echo file exists
+```
+```text
+file exists
+```sh
+mono teller_screen.exe -screenfile=../../../../../example.txt
+```
+> NOTE apparenrtly the path resolution doe not work
+```text
+Unhandled Exception:
+System.IO.FileNotFoundException: Could not find file "/home/sergueik/src/springboot_study/basic-imagemagick-tesseract-ocr/csharp/xwt/Program/bin/Debug/example.txt"
+File name: '/home/sergueik/src/springboot_study/basic-imagemagick-tesseract-ocr/csharp/xwt/Program/bin/Debug/example.txt'
+  at System.IO.FileStream..ctor (System.String path, System.IO.FileMode mode, System.IO.FileAccess access, System.IO.FileShare share, System.Int32 bufferSize, System.Boolean anonymous, System.IO.FileOptions options) [0x0019e] in <d636f104d58046fd9b195699bcb1a744>:0 
+
 ```
 
 ### See Also:
