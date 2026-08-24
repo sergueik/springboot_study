@@ -8,12 +8,27 @@ docker pull minidocks/imagemagick
 docker pull jitesoft/tesseract-ocr
 ```
 
-* run code to generate 3270 screen mock for a given sceen text input 
+* run code to generate 3270 screen mock for a given sceen text input
 * run code to improve the bitmap quality with Image Magick and OCR with tecerct
 * evaluate, adjust model paramers
 
 =>  able to construct intelligent `ALT` text
 
+
+#### Components of the Pipeline
+
+
+* Labeled 3270 Screen Generator: custom
+
+| Implementation | Platform / OS | Status |
+|---|---|---|
+| Java | Ubuntu | ✅ |
+| C# / Windows Forms | Windows | ✅ |
+| C# / Xwt | Ubuntu / Mono / GTK | ✅ |
+| Python | Ubuntu | ✅ |
+
+* Image Quality Management: [ImageMagick](https://en.wikipedia.org/wiki/ImageMagick)
+* OCR: [Tesseract](https://en.wikipedia.org/wiki/Tesseract_(software))
 
 
 ### 3270 Terminal Text Extaction
@@ -53,14 +68,14 @@ reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" /v "%FONT_
 ![CICS login screen mock](images/console1.png)
 
 ```sh
-./scan_screenshot.sh images/console1.png 
+./scan_screenshot.sh images/console1.png
 ```
 result is printed to console:
 ```text
-Estimating resolution as 172 
-MOCK MAINFRAME LOGIN SCREEN 
-USER ID) ===> _ 
-PASSWORD ===> _. 
+Estimating resolution as 172
+MOCK MAINFRAME LOGIN SCREEN
+USER ID) ===> _
+PASSWORD ===> _.
 
 PF3=EXIT ENTER=CONT INUE
 ```
@@ -69,7 +84,7 @@ PF3=EXIT ENTER=CONT INUE
 ```sh
 mvn package
 pushd images
-java -jar ../target/example.teller-screen.jar 
+java -jar ../target/example.teller-screen.jar
 popd
 ```
 
@@ -96,7 +111,7 @@ export FONT_PATH=/usr/share/fonts/truetype/msttcorefonts/Courier_New.ttf
 ```sh
 mvn package
 pushd images
-java -jar ../target/example.teller-screen.jar 
+java -jar ../target/example.teller-screen.jar
 popd
 ```
 ![CICS login screen mock](images/console3.png)
@@ -267,7 +282,7 @@ For example, instead of merely identifying an image as a screenshot, the
 pipeline could describe the meaningful content of a 3270/CICS screen:
 
 ```text
-CICS login screen XY01. 
+CICS login screen XY01.
 The screen contains input fields for USER ID and PASSWORD,
 with PF3 assigned to EXIT and ENTER assigned to CONTINUE.
 ```
@@ -346,7 +361,7 @@ automated extraction / classification
    ├── potentially important ──► human review / owner
    │
    └── apparently disposable ──► no further action
-   
+
 ```
 ### The cost of manual archaeology
 
@@ -386,7 +401,7 @@ documents / screenshots / diagrams
        ▼             ▼
     move on       SME / owner
 ```
-    
+
 ### Accessibility and knowledge recovery
 
 Accessibility is one potential application of the extracted information.
@@ -475,7 +490,7 @@ Else --> End
 Can OCR recover the business process from the rendered diagram?
 
 ```sh
-./scan_screenshot.sh images/diagram1.png 
+./scan_screenshot.sh images/diagram1.png
 ```
 ```text
 Order value exceeds $10,000?
@@ -518,7 +533,7 @@ Process completed
 ```
 
 Observation:
-The extracted text reads like a business process description, 
+The extracted text reads like a business process description,
 but it no longer conveys the rule that determines which path is executed
 
 ### Findings
@@ -563,11 +578,11 @@ docker inspect jitesoft/tesseract-ocr | grep -i User
 
 missing dependency - :
 ```text
-java -jar target/example.teller-screen.jar 
+java -jar target/example.teller-screen.jar
 
-Exception in thread "main" java.lang.UnsatisfiedLinkError: 
-Can't load library: /usr/lib/jvm/java-11-openjdk-amd64/lib/libawt_xawt.so 
-at java.base/java.lang.ClassLoader.loadLibrary(ClassLoader.java:2638) 
+Exception in thread "main" java.lang.UnsatisfiedLinkError:
+Can't load library: /usr/lib/jvm/java-11-openjdk-amd64/lib/libawt_xawt.so
+at java.base/java.lang.ClassLoader.loadLibrary(ClassLoader.java:2638)
 at java.base/java.lang.Runtime.load0(Runtime.java:768)
 ```
 ```sh
@@ -599,9 +614,9 @@ sudo apt install openjdk-11-jdk
 ```
 
 The `libawt` error goes away
-but now need to tune the code to use 
+but now need to tune the code to use
 ```text
-ii  fonts-3270     2.3.1-1      all          monospaced font based on IBM 3270 
+ii  fonts-3270     2.3.1-1      all          monospaced font based on IBM 3270
 ```
 
 ```sh
@@ -694,7 +709,7 @@ WAP PF1O=LEFT PF11=RIGHT PF12=RETRIEVE
 ```
 
 ```
-cat example.text 
+cat example.text
 ```
 ```
                         MOCK L&F
@@ -745,7 +760,7 @@ mvn package
 mkdir results
 ```
 ```sh
-java -jar target/example.teller-screen.jar  -screenfile example.text  -outputfile images/console.png 
+java -jar target/example.teller-screen.jar  -screenfile example.text  -outputfile images/console.png
 ```
 ```sh
 ./scan_screenshot.sh  images/console.png | tee results/console.txt /dev/stderr
@@ -954,7 +969,7 @@ color fringing at high-contrast edges
           └─────────┼─────────┘
                     ▼
                OCR input
-``` 
+```
 ### Unrelated
 
 The next step is understanding what information exists, categorizing it, and identifying the relationships that make it valuable.
@@ -962,7 +977,7 @@ The next step is understanding what information exists, categorizing it, and ide
 ---
 
 ### See Also
-
+  * https://github.com/mono/xwt
   * https://www.bollynook.com/en/lyrics/19270/urvasi/
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -15,9 +15,9 @@ namespace Program {
 	
 	public partial class TellerScreen {
 
-		private static string outputfile = "console.png";
-		private static string textfile = null;
-		private static string screenfile = null;
+		private static string outputFile = "console.png";
+		private static string textFile = null;
+		private static string screenFile = null;
 		private static string foreground = null;
 		private static bool debug = false;
 		public static bool Debug { set { debug = value; } }
@@ -47,7 +47,7 @@ namespace Program {
 			// debug = Boolean.Parse(parseArgs.GetMacro("debug"));
 
 			if (parseArgs.GetMacro("outputfile") != String.Empty)
-				outputfile = parseArgs.GetMacro("outputfile");
+				outputFile = parseArgs.GetMacro("outputfile");
 
 			if (parseArgs.GetMacro("font") != String.Empty)
 				fontPath = parseArgs.GetMacro("font");
@@ -59,14 +59,14 @@ namespace Program {
 				// Application.Exit();
 			}
 			if ((parseArgs.GetMacro("screenfile") == String.Empty ) || false)  {
-				Console.Error.WriteLine("Usage: " + Assembly.GetExecutingAssembly().GetName().Name + " -screenfile=<filename> [-outputfile=<filename>] [-font=<font>] [-antialias] [-debug]");
+				Console.Error.WriteLine("Usage: " + Assembly.GetExecutingAssembly().GetName().Name + " -screenfile=<filename> [-outputFile=<filename>] [-font=<font>] [-antialias] [-debug]");
 				Environment.Exit(0);
 			}
 
 			if (parseArgs.GetMacro("screenfile") != String.Empty)
-				screenfile = parseArgs.GetMacro("screenfile");
+				screenFile = parseArgs.GetMacro("screenfile");
 			if (parseArgs.GetMacro("textfile") != String.Empty)
-				textfile = parseArgs.GetMacro("textfile");
+				textFile = parseArgs.GetMacro("textfile");
 			if (parseArgs.GetMacro("foreground") != String.Empty)
 				foreground = parseArgs.GetMacro("foreground");
 
@@ -74,8 +74,7 @@ namespace Program {
 				antialias = true;
 			// antialias = Boolean.Parse(parseArgs.GetMacro("antialias"));
 
-			var screenlines = new List<string>(File.ReadAllLines(screenfile));
-			var privateFontCollection = new PrivateFontCollection();
+			var screenLines = new List<string>(File.ReadAllLines(screenFile));
 
 			if (fontPath == null) {
 				string basePath = Environment.GetEnvironmentVariable("USERPROFILE");
@@ -86,6 +85,8 @@ namespace Program {
 					Path.Combine(new string[] {basePath, folder, filename})
 					: "/usr/share/fonts/opentype/3270/3270-Regular.otf";
 			}
+
+			var privateFontCollection = new PrivateFontCollection();
 			Font font = null;
 			try {
 				privateFontCollection.AddFontFile(fontPath);
@@ -113,12 +114,12 @@ namespace Program {
 			graphics.TextRenderingHint = antialias ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.SingleBitPerPixelGridFit;
 			
 			// foreground
-			var brush = new SolidBrush(ColorAliases.ContainsKey(foreground) ? ColorAliases[foreground] : Color.White);
+			var brush = new SolidBrush((foreground != null  && ColorAliases.ContainsKey(foreground) )? ColorAliases[foreground] : Color.White);
 		
 			graphics.DrawString("USER ID  ===> __________", font, brush, 30, 30);
 
-			for (int row = 0; row < screenlines.Count; row++) {
-				string line = screenlines[row];
+			for (int row = 0; row < screenLines.Count; row++) {
+				string line = screenLines[row];
 
 				for (int col = 0; col < line.Length; col++) {
 					var letter = line[col].ToString();
@@ -135,7 +136,8 @@ namespace Program {
 			}
 			// https://learn.microsoft.com/en-us/dotnet/api/system.drawing.bitmap?view=netframework-4.5
 			// https://learn.microsoft.com/en-us/dotnet/api/system.drawing.imaging.imageformat?view=netframework-4.5
-			bitmap.Save(outputfile, ImageFormat.Png);
+			bitmap.Save(outputFile, ImageFormat.Png);
+			Console.WriteLine(String.Format("Wrote \"{0}\"", outputFile));
 		}
 	}
 }

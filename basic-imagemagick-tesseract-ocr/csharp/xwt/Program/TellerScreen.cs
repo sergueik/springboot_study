@@ -15,9 +15,9 @@ namespace Program {
 	
 	public partial class TellerScreen {
 
-		private static string outputfile = "console.png";
-		private static string textfile = null;
-		private static string screenfile = null;
+		private static string outputFile = "console.png";
+		private static string textFile = null;
+		private static string screenFile = null;
 		private static string foreground = null;
 		private static bool debug = false;
 		public static bool Debug { set { debug = value; } }
@@ -62,13 +62,13 @@ namespace Program {
 			}
 
 			if (parseArgs.GetMacro("outputfile") != String.Empty)
-				outputfile = parseArgs.GetMacro("outputfile");
+				outputFile = parseArgs.GetMacro("outputfile");
 			if (parseArgs.GetMacro("font") != String.Empty)
 				fontPath = parseArgs.GetMacro("font");
 			if (parseArgs.GetMacro("screenfile") != String.Empty)
-				screenfile = parseArgs.GetMacro("screenfile");
+				screenFile = parseArgs.GetMacro("screenfile");
 			if (parseArgs.GetMacro("textfile") != String.Empty)
-				textfile = parseArgs.GetMacro("textfile");
+				textFile = parseArgs.GetMacro("textfile");
 			if (parseArgs.GetMacro("foreground") != String.Empty)
 				foreground = parseArgs.GetMacro("foreground");
 
@@ -76,11 +76,9 @@ namespace Program {
 				antialias = true;
 				// antialias = Boolean.Parse(parseArgs.GetMacro("antialias"));
 
-			var screenlines = new List<string>(File.ReadAllLines(screenfile));
+			var screenLines = new List<string>(File.ReadAllLines(screenFile));
 			
 			Application.Initialize(ToolkitType.Gtk);
-
-			string[] screenLines = File.ReadAllLines("example.txt");
 
 			if (fontPath == null) {
 				string basePath = Environment.GetEnvironmentVariable("USERPROFILE");
@@ -126,7 +124,7 @@ namespace Program {
 
 					textLayout.Font = font;
 
-					for (int row = 0; row < screenLines.Length; row++) {
+					for (int row = 0; row < screenLines.Count; row++) {
 						string line = screenLines[row];
 
 						for (int col = 0; col < line.Length; col++) {
@@ -138,7 +136,9 @@ namespace Program {
 					}
 
 					Image image = builder.ToBitmap();
-					image.Save(outputfile, ImageFileType.Png);
+					image.Save(outputFile, ImageFileType.Png);
+					Console.WriteLine(String.Format("Wrote \"{0}\"", outputFile));
+
 				}
 			}
 		}
