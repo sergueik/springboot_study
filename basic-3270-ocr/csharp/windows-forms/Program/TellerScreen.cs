@@ -79,7 +79,7 @@ namespace Program {
 			if (fontPath == null) {
 				string basePath = Environment.GetEnvironmentVariable("USERPROFILE");
 				string folder = "Downloads";
-				string filename = "3270NerdFontMono-Regular.ttf";
+				string filename = "";
 				fontPath = (Environment.GetEnvironmentVariables().Contains("FONT_PATH")) ?
 					Environment.GetEnvironmentVariable("FONT_PATH") : (Environment.GetEnvironmentVariables().Contains("WINDIR")) ? 
 					Path.Combine(new string[] {basePath, folder, filename})
@@ -89,10 +89,14 @@ namespace Program {
 			var privateFontCollection = new PrivateFontCollection();
 			Font font = null;
 			try {
+				if (debug)
+					Console.WriteLine("Using font {0}", fontPath);
 				privateFontCollection.AddFontFile(fontPath);
 				font = new Font(privateFontCollection.Families[0], 24, FontStyle.Regular, GraphicsUnit.Pixel);
 			} catch (Exception e){
 				System.Diagnostics.Debug.WriteLine("Exception :" + e.ToString());
+				if (debug)
+					Console.WriteLine("Exception :" + e.ToString());
 				font = new Font(FontFamily.GenericMonospace, 24);
 			}
 			Size textSize = TextRenderer.MeasureText("M", font);
@@ -132,8 +136,12 @@ namespace Program {
 					// x += jitterX;
 					// y += jitterY;
 
+				if (debug)
+					Console.Write(letter);
 					graphics.DrawString(letter, font, brush, x, y);
 				}
+				if (debug)
+					Console.Write(Environment.NewLine);
 			}
 			// https://learn.microsoft.com/en-us/dotnet/api/system.drawing.bitmap?view=netframework-4.5
 			// https://learn.microsoft.com/en-us/dotnet/api/system.drawing.imaging.imageformat?view=netframework-4.5

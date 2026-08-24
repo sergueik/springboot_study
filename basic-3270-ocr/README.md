@@ -32,6 +32,50 @@ Wrote ..\images\console3.png
 
 ![3270 Console](images/console3.png)
 
+
+```sh
+BASE_URL='https://github.com/ryanoasis/nerd-fonts'
+curl -skLo ~/Downloads/3270NerdFontMono-Regular.ttf "$BASE_URL/raw/refs/heads/master/patched-fonts/3270/3270NerdFontMono-Regular.ttf"
+```
+switch to Windows console (elevated)
+```cmd
+set FILENAME=3270NerdFontMono-Regular.ttf
+copy /y "%USERPROFILE%\Downloads\%FILENAME%" "C:\Windows\Fonts\"
+set FONT_NAME=3270 Nerd Font Mono
+reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" /v "%FONT_NAME% (TrueType)" /t REG_SZ /d "%FILENAME%" /f
+```
+```cmd
+.\teller_screen.exe -screenfile=..\..\..\..\..\input\example.txt -outputfile=..\..\..\..\..\images\console4.png -font=c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf -debug=true
+```
+```text
+Using font c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf
+                         MOCK L&F
+
+LOREM:  ___________                         IPSUM: _____________
+
+DOLOR:  __________                 AMET:  _____________
+
+AMET ====> _____________                 CONSECTETUR: _________
+
+ADIPISCING: __________      ELIT: __________
+SED: _________                              DO: _______________
+
+EIUSMOD: _____________       TEMPOR: _____________
+
+INCIDIDUNT: _________                     UT: _________
+
+LABORE: _____________        ET: _____________
+
+DOLORE: _________          MAGNA: _____________
+
+PF1=HELP  PF2=SPLIT  PF3=END  PF4=RETURN  PF5=RFIND  PF6=RCHANGE
+PF7=UP    PF8=DOWN   PF9=SWAP  PF10=LEFT  PF11=RIGHT  PF12=RETRIEVE
+
+.net
+Wrote "..\..\..\..\..\images\console2.png"
+
+```
+#### OCR
 ```sh
 docker pull minidocks/imagemagick
 docker pull jitesoft/tesseract-ocr
