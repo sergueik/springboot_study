@@ -34,7 +34,7 @@ namespace Program {
 		static readonly Dictionary<string, Color> ColorAliases = 
 			new Dictionary<string, Color>(StringComparer.OrdinalIgnoreCase) {
 				{ "lime", Color.Lime },
-				{ "ibm037", Color.Brown }
+				{ "brown", Color.Brown }
 			};
 		[STAThread]
 		public static void Main() {
@@ -118,6 +118,7 @@ namespace Program {
 		
 			graphics.DrawString("USER ID  ===> __________", font, brush, 30, 30);
 
+			screenLines.Add(".net");
 			for (int row = 0; row < screenLines.Count; row++) {
 				string line = screenLines[row];
 

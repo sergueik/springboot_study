@@ -119,11 +119,12 @@ def read_screen(filename):
         encoding="utf-8"
     ) as f:
 
-        return [
+        lines = [
             line.rstrip("\r\n")
             for line in f
         ]
-
+    lines.append("Python")
+    return lines
 
 def print_screen(screen, output=None):
     """

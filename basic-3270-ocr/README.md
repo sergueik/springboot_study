@@ -7,10 +7,9 @@ popd
 ```
 ```text
 Wrote ..\images\console1.png
-
 ```
+![3270 Console](images/console1.png)
 
-![3270 Console](images\console1.png)
 
 ```cmd
 pushd csharp/windows-forms
@@ -22,7 +21,7 @@ popd
 Wrote "..\..\..\..\..\images\console2.png"
 ```
 
-![3270 Console](images\console2.png)
+![3270 Console](images/console2.png)
 
 ```
 python teller_screen.py --screenfile ..\input\example.txt --outputfile ..\images\console3.png
@@ -31,14 +30,14 @@ python teller_screen.py --screenfile ..\input\example.txt --outputfile ..\images
 Wrote ..\images\console3.png
 ```
 
-![3270 Console](images\console3.png)
+![3270 Console](images/console3.png)
 
 ```sh
 docker pull minidocks/imagemagick
 docker pull jitesoft/tesseract-ocr
 ```
 
-> NOTE not using "$HOME" - it may easily be pointing to SMB drive
+> NOTE not using "$HOME" - it may easily be pointing to __SMB__ drive
 ```
 export WORKDIR=/c/Users/$USERNAME/Documents/images
 mkdir -p $WORKDIR
@@ -119,6 +118,101 @@ END PF4=RETURN PFS=RFIND PFO=RCHANGE
 SWAP PF1IQ=LEFT PF11=RIGHT PF12=RETRIEVE
 ```
 
+### Comparison
+
+The same sample screen was drawn by Java, .Net and Python using three (actually, 4) different rendering libraries
+The OCR results are shown below
+
+```sh
+./scan_screenshot.sh  images/console1.png
+```
+![3270 Console](images/console1.png)
+
+```text
+Estimating resolution as 173
+```
+```text
+OCK L&F
+
+ADIPISCING: ELIT:
+
+SED: 2 DO Le
+EIUSMOD: ~______ TEMPOR: ~______
+
+INCIDIDUNT: _________ UT: Li
+
+LABORE: ~_______ ET: ~
+
+DOLORE: MAGNA
+
+PF1=HELP PF2=SPLIT PF3=END PF4=RETURN PF5S=RFIND PFO=RCHANGE
+PF7=UP. PF8=DOWN PF9=SWAP PFIO=LEFT PF11=RIGHT PF12=RETRIEVE
+
+Java
+```
+
+
+```sh
+./scan_screenshot.sh  images/console2.png
+```
+![3270 Console](images/console2.png)
+
+```text
+USER ID
+
+NGE
+TRIEVE
+```
+> NOTE: the original image is stamped with : `.net` but it was not recognized by OCR
+```sh
+./scan_screenshot.sh  images/console3.png
+```
+![3270 Console](images/console3.png)
+```text
+Estimating resolution as 185
+```
+```
+MOCK L&F
+LOREM:
+DOLOR:
+AMET ====>
+
+INCIDIDUNT:
+LABORE:
+DOLORE:
+
+BESEHBLP BEZ=SPLIT BEA=EN
+Bere o 0 BeBSIAN | Se¥=Ka
+
+Python
+```
+```
+cat input/example.txt
+```
+```text
+                         MOCK L&F
+
+LOREM:  ___________                         IPSUM: _____________
+
+DOLOR:  __________                 AMET:  _____________
+
+AMET ====> _____________                 CONSECTETUR: _________
+
+ADIPISCING: __________      ELIT: __________
+SED: _________                              DO: _______________
+
+EIUSMOD: _____________       TEMPOR: _____________
+
+INCIDIDUNT: _________                     UT: _________
+
+LABORE: _____________        ET: _____________
+
+DOLORE: _________          MAGNA: _____________
+
+PF1=HELP  PF2=SPLIT  PF3=END  PF4=RETURN  PF5=RFIND  PF6=RCHANGE
+PF7=UP    PF8=DOWN   PF9=SWAP  PF10=LEFT  PF11=RIGHT  PF12=RETRIEVE
+
+```
 ### Troubleshooting
 
 The `jitesoft/tesseract-ocr:latest` image failed in __Docker Toolbox__ with:
@@ -136,4 +230,7 @@ Finally, the `:5.3.3-alpine` worked and successfully produced the __OCR__ output
 
 ### See Also
 
+
+---
 ### Author
+[Serguei Kouzmine](kouzmine_serguei@yahoo.com)

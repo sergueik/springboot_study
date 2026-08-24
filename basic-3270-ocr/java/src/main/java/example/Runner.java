@@ -96,6 +96,7 @@ public class Runner {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		screenLines.add("Java");
 		// To achieve a lookalike screenshot of Blue Prism IBM 3270 mainframe/CICS
 		// terminal emulator
 		// one may use the open-source TrueType font
@@ -217,7 +218,7 @@ public class Runner {
 	// Extremely simple CLI parser: -key value
 	private static Map<String, String> parseArgs(String[] args) {
 		if (String.join("", args).indexOf("debug") != -1) {
-			System.err.println("xxx");
+			System.err.println("args: " + String.join("", args));
 		}
 
 		Map<String, String> map = new HashMap<>();

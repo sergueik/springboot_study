@@ -77,7 +77,8 @@ namespace Program {
 				// antialias = Boolean.Parse(parseArgs.GetMacro("antialias"));
 
 			var screenLines = new List<string>(File.ReadAllLines(screenFile));
-			
+			screenLines.Add(".net (GTK)");
+
 			Application.Initialize(ToolkitType.Gtk);
 
 			if (fontPath == null) {
