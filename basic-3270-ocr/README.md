@@ -49,6 +49,8 @@ reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" /v "%FONT_
 ```
 ```text
 Using font c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf
+```
+```text
                          MOCK L&F
 
 LOREM:  ___________                         IPSUM: _____________
@@ -72,9 +74,12 @@ PF1=HELP  PF2=SPLIT  PF3=END  PF4=RETURN  PF5=RFIND  PF6=RCHANGE
 PF7=UP    PF8=DOWN   PF9=SWAP  PF10=LEFT  PF11=RIGHT  PF12=RETRIEVE
 
 .net
-Wrote "..\..\..\..\..\images\console2.png"
-
 ```
+```text
+Wrote "..\..\..\..\..\images\console2.png"
+```
+> NOTE: the text that is printed  to console is used to generate a fake TN3270 Tesminal window.
+
 #### OCR
 ```sh
 docker pull minidocks/imagemagick
@@ -271,10 +276,25 @@ the aggressive threading/runtime behavior. But it was - that did not resolve the
 Next, `:5.4.1-alpine` was tried, but it failed because of incompatible or missing `TIFF/WebP` runtime libraries required by `Leptonica`.
 
 Finally, the `:5.3.3-alpine` worked and successfully produced the __OCR__ output.
+### Following Steps
 
+__ImageMagick__: *Where is the interesting rectangle?*
+__Tesseract__: *What characters are inside it?*
+__ML/ranking__: *Which preprocessing variant gives the best result?*
+
+
+### Troubleshooting
+```text
+Using font C:\Users\kouzm\Downloads
+Exception :System.Runtime.InteropServices.ExternalException (0x80004005): A generic error occurred in GDI+.
+   at System.Drawing.Text.PrivateFontCollection.AddFontFile(String filename)
+   at Program.TellerScreen.Main() TellerScreen.cs:line 94
+```
 ### See Also
 
-
+  * [pure Javascript OCR](https://github.com/naptha/tesseract.js)
+  * https://github.com/tesseract-ocr/tessdoc/blob/main/Command-Line-Usage.md
+  
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

@@ -7,13 +7,15 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
- // note: not a Form
+// note: not a Form
 using System.Reflection;
 using Utils;
 
-namespace Program {
+namespace Program
+{
 	
-	public partial class TellerScreen {
+	public partial class TellerScreen
+	{
 
 		private static string outputFile = "console.png";
 		private static string textFile = null;
@@ -23,7 +25,7 @@ namespace Program {
 		public static bool Debug { set { debug = value; } }
 		private static bool antialias = false;
 		private static string fontPath = null;
-
+		private static string backgroundPath = null;
 		private static int rows = 24;
 		private static int cols = 80;
 		private static int width = 0;
@@ -37,7 +39,8 @@ namespace Program {
 				{ "brown", Color.Brown }
 			};
 		[STAThread]
-		public static void Main() {
+		public static void Main()
+		{
 			
 			var parseArgs = new ParseArgs(System.Environment.CommandLine);
 			// NOTE: have to set debug with value true, switch arguments are not supported
@@ -52,13 +55,16 @@ namespace Program {
 			if (parseArgs.GetMacro("font") != String.Empty)
 				fontPath = parseArgs.GetMacro("font");
 
+			if (parseArgs.GetMacro("background") != String.Empty)
+				backgroundPath = parseArgs.GetMacro("background");
+
 			if (parseArgs.GetMacro("version") != String.Empty) {
 				Console.Error.WriteLine("version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
 				Environment.Exit(0);
 				// https://stackoverflow.com/questions/12977924/how-do-i-properly-exit-a-c-sharp-application 
 				// Application.Exit();
 			}
-			if ((parseArgs.GetMacro("screenfile") == String.Empty ) || false)  {
+			if ((parseArgs.GetMacro("screenfile") == String.Empty) || false) {
 				Console.Error.WriteLine("Usage: " + Assembly.GetExecutingAssembly().GetName().Name + " -screenfile=<filename> [-outputFile=<filename>] [-font=<font>] [-antialias] [-debug]");
 				Environment.Exit(0);
 			}
@@ -79,24 +85,25 @@ namespace Program {
 			if (fontPath == null) {
 				string basePath = Environment.GetEnvironmentVariable("USERPROFILE");
 				string folder = "Downloads";
-				string filename = "";
+				string filename = "3270NerdFontMono-Regular.ttf";
 				fontPath = (Environment.GetEnvironmentVariables().Contains("FONT_PATH")) ?
 					Environment.GetEnvironmentVariable("FONT_PATH") : (Environment.GetEnvironmentVariables().Contains("WINDIR")) ? 
-					Path.Combine(new string[] {basePath, folder, filename})
+					Path.Combine(new string[] { basePath, folder, filename })
 					: "/usr/share/fonts/opentype/3270/3270-Regular.otf";
 			}
 
+
+			if (debug)
+				Console.WriteLine(String.Format("Using font \"{0}\"", fontPath));
 			var privateFontCollection = new PrivateFontCollection();
 			Font font = null;
 			try {
-				if (debug)
-					Console.WriteLine("Using font {0}", fontPath);
 				privateFontCollection.AddFontFile(fontPath);
 				font = new Font(privateFontCollection.Families[0], 24, FontStyle.Regular, GraphicsUnit.Pixel);
-			} catch (Exception e){
-				System.Diagnostics.Debug.WriteLine("Exception :" + e.ToString());
+			} catch (Exception e) {
 				if (debug)
-					Console.WriteLine("Exception :" + e.ToString());
+					Console.WriteLine(String.Format("Exception loading \"{0}\":{1}", fontPath, e.ToString()));
+				System.Diagnostics.Debug.WriteLine("Exception :" + e.ToString());
 				font = new Font(FontFamily.GenericMonospace, 24);
 			}
 			Size textSize = TextRenderer.MeasureText("M", font);
@@ -107,10 +114,37 @@ namespace Program {
 			width = left * 2 + cols * cellWidth;
 			height = top * 2 + rows * cellHeight;
 			
-			var bitmap = new Bitmap(width, height);
-			var graphics = Graphics.FromImage(bitmap);
+			// https://learn.microsoft.com/en-us/dotnet/api/system.drawing.graphics.fromimage?view=netframework-4.5
+			Graphics graphics = null;
+			Bitmap bitmap = null;
+			if (backgroundPath != null) {
+				// Create image.
+				Image imageFile = Image.FromFile(backgroundPath);
 
-			graphics.Clear(Color.Black);
+				// Create graphics object for alteration.
+				Graphics backgroundGraphics = Graphics.FromImage(imageFile);
+				bitmap = new Bitmap(imageFile.Width, imageFile.Height);
+				graphics = Graphics.FromImage(bitmap);
+				// Draw image
+				Console.WriteLine("Using custom background: " + backgroundPath);
+				var destinationRect = new RectangleF( 0, 0, width, height);
+				var sourceRect = new RectangleF(0, 0, imageFile.Width, imageFile.Height);
+
+				graphics.DrawImage(imageFile, destinationRect, sourceRect, GraphicsUnit.Pixel);
+			} else {
+				Console.WriteLine("Using default background");
+				try {
+					bitmap = new Bitmap(width, height);
+				} catch (ArgumentException e) {
+					// Unhandled Exception: System.ArgumentException: Parameter is not valid
+					// if width, height is zero
+					throw e;
+				}
+				graphics = Graphics.FromImage(bitmap);
+				graphics.Clear(Color.Black);
+			}
+
+
 			// https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.textrenderer?view=netframework-4.5
 			// https://learn.microsoft.com/en-us/dotnet/api/system.drawing.text.textrenderinghint?view=netframework-4.5
 			// graphics.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
@@ -118,11 +152,10 @@ namespace Program {
 			graphics.TextRenderingHint = antialias ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.SingleBitPerPixelGridFit;
 			
 			// foreground
-			var brush = new SolidBrush((foreground != null  && ColorAliases.ContainsKey(foreground) )? ColorAliases[foreground] : Color.White);
+			var brush = new SolidBrush((foreground != null && ColorAliases.ContainsKey(foreground)) ? ColorAliases[foreground] : Color.White);
 		
 			graphics.DrawString("USER ID  ===> __________", font, brush, 30, 30);
 
-			screenLines.Add(".net");
 			for (int row = 0; row < screenLines.Count; row++) {
 				string line = screenLines[row];
 
@@ -136,12 +169,8 @@ namespace Program {
 					// x += jitterX;
 					// y += jitterY;
 
-				if (debug)
-					Console.Write(letter);
 					graphics.DrawString(letter, font, brush, x, y);
 				}
-				if (debug)
-					Console.Write(Environment.NewLine);
 			}
 			// https://learn.microsoft.com/en-us/dotnet/api/system.drawing.bitmap?view=netframework-4.5
 			// https://learn.microsoft.com/en-us/dotnet/api/system.drawing.imaging.imageformat?view=netframework-4.5
