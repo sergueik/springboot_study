@@ -54,7 +54,7 @@ Using: default background
 Wrote "..\..\..\..\..\images\console4.png"
 ```
 ```cmd
-.\teller_screen.exe -screenfile=..\..\..\..\..\input\example.txt -outputfile=..\..\..\..\..\images\console8.png -font=c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf -debug=true -background=..\..\..\..\..\images\capture-app.png
+.\teller_screen.exe -screenfile=..\..\..\..\..\input\example.txt -outputfile=..\..\..\..\..\images\console8.png -font=c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf -debug=true -background=..\..\..\..\..\images\capture-app.png --top 250
 ```
 ```text
 Using font "c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf"

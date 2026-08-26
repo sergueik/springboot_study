@@ -7,15 +7,11 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-// note: not a Form
 using System.Reflection;
 using Utils;
 
-namespace Program
-{
-	
-	public partial class TellerScreen
-	{
+namespace Program {
+	public partial class TellerScreen {
 
 		private static string outputFile = "console.png";
 		private static string textFile = null;
@@ -30,18 +26,18 @@ namespace Program
 		private static int cols = 80;
 		private static int width = 0;
 		private static int height = 0;
-
+		private static int clientTop = 0;
+		private static int clientLeft = 0;
 		static readonly int left = 30;
 		static readonly int top = 30;
-		static readonly Dictionary<string, Color> ColorAliases = 
+		static readonly Dictionary<string, Color> ColorAliases =
 			new Dictionary<string, Color>(StringComparer.OrdinalIgnoreCase) {
 				{ "lime", Color.Lime },
 				{ "brown", Color.Brown }
 			};
 		[STAThread]
-		public static void Main()
-		{
-			
+		public static void Main() {
+
 			var parseArgs = new ParseArgs(System.Environment.CommandLine);
 			// NOTE: have to set debug with value true, switch arguments are not supported
 
@@ -61,13 +57,18 @@ namespace Program
 			if (parseArgs.GetMacro("version") != String.Empty) {
 				Console.Error.WriteLine("version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
 				Environment.Exit(0);
-				// https://stackoverflow.com/questions/12977924/how-do-i-properly-exit-a-c-sharp-application 
+				// https://stackoverflow.com/questions/12977924/how-do-i-properly-exit-a-c-sharp-application
 				// Application.Exit();
 			}
 			if ((parseArgs.GetMacro("screenfile") == String.Empty) || false) {
 				Console.Error.WriteLine("Usage: " + Assembly.GetExecutingAssembly().GetName().Name + " -screenfile=<filename> [-outputFile=<filename>] [-font=<font>] [-antialias] [-debug]");
 				Environment.Exit(0);
 			}
+			if (parseArgs.GetMacro("top") != String.Empty)
+				clientTop = Convert.ToInt32(parseArgs.GetMacro("top"));
+
+			if (parseArgs.GetMacro("left") != String.Empty)
+				clientLeft = Convert.ToInt32(parseArgs.GetMacro("left"));
 
 			if (parseArgs.GetMacro("screenfile") != String.Empty)
 				screenFile = parseArgs.GetMacro("screenfile");
@@ -87,17 +88,17 @@ namespace Program
 				string folder = "Downloads";
 				string filename = "3270NerdFontMono-Regular.ttf";
 				fontPath = (Environment.GetEnvironmentVariables().Contains("FONT_PATH")) ?
-					Environment.GetEnvironmentVariable("FONT_PATH") : (Environment.GetEnvironmentVariables().Contains("WINDIR")) ? 
+					Environment.GetEnvironmentVariable("FONT_PATH") : (Environment.GetEnvironmentVariables().Contains("WINDIR")) ?
 					Path.Combine(new string[] { basePath, folder, filename })
 					: "/usr/share/fonts/opentype/3270/3270-Regular.otf";
 			}
-
-
 			if (debug)
 				Console.WriteLine(String.Format("Using font \"{0}\"", fontPath));
 			var privateFontCollection = new PrivateFontCollection();
 			Font font = null;
 			try {
+				if (File.Exists(fontPath) == false)
+					throw new FileNotFoundException("Font file does not exist: " + fontPath, fontPath);
 				privateFontCollection.AddFontFile(fontPath);
 				font = new Font(privateFontCollection.Families[0], 24, FontStyle.Regular, GraphicsUnit.Pixel);
 			} catch (Exception e) {
@@ -113,35 +114,30 @@ namespace Program
 
 			width = left * 2 + cols * cellWidth;
 			height = top * 2 + rows * cellHeight;
-			
+
 			// https://learn.microsoft.com/en-us/dotnet/api/system.drawing.graphics.fromimage?view=netframework-4.5
 			Graphics graphics = null;
 			Bitmap bitmap = null;
-			if (backgroundPath != null) {
-				// Create image.
-				Image imageFile = Image.FromFile(backgroundPath);
+			try {
 
-				// Create graphics object for alteration.
-				Graphics backgroundGraphics = Graphics.FromImage(imageFile);
-				bitmap = new Bitmap(imageFile.Width, imageFile.Height);
+				// https://learn.microsoft.com/en-us/dotnet/api/system.drawing.graphics.fromimage?view=netframework-4.5
+				bitmap = (backgroundPath == null) ? new Bitmap(width, height) : new Bitmap(backgroundPath);
+
+				if (debug)
+					Console.WriteLine("Using: " + ((backgroundPath == null) ? "default background" : "custom background: " + backgroundPath));
 				graphics = Graphics.FromImage(bitmap);
-				// Draw image
-				Console.WriteLine("Using custom background: " + backgroundPath);
-				var destinationRect = new RectangleF( 0, 0, width, height);
-				var sourceRect = new RectangleF(0, 0, imageFile.Width, imageFile.Height);
-
-				graphics.DrawImage(imageFile, destinationRect, sourceRect, GraphicsUnit.Pixel);
-			} else {
-				Console.WriteLine("Using default background");
-				try {
-					bitmap = new Bitmap(width, height);
-				} catch (ArgumentException e) {
-					// Unhandled Exception: System.ArgumentException: Parameter is not valid
-					// if width, height is zero
-					throw e;
+				if (backgroundPath == null) {
+					graphics.Clear(Color.Black);
+					clientTop = 0;
+				} else {
+					if (clientTop == 0)
+						clientTop = 250;
 				}
-				graphics = Graphics.FromImage(bitmap);
-				graphics.Clear(Color.Black);
+
+			} catch (ArgumentException e) {
+				// Unhandled Exception: System.ArgumentException: Parameter is not valid
+				// if width, height is zero
+				throw e;
 			}
 
 
@@ -150,20 +146,18 @@ namespace Program
 			// graphics.TextRenderingHint = TextRenderingHint.SingleBitPerPixelGridFit;
 			// graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
 			graphics.TextRenderingHint = antialias ? TextRenderingHint.AntiAliasGridFit : TextRenderingHint.SingleBitPerPixelGridFit;
-			
+
 			// foreground
 			var brush = new SolidBrush((foreground != null && ColorAliases.ContainsKey(foreground)) ? ColorAliases[foreground] : Color.White);
-		
-			graphics.DrawString("USER ID  ===> __________", font, brush, 30, 30);
 
 			for (int row = 0; row < screenLines.Count; row++) {
 				string line = screenLines[row];
 
 				for (int col = 0; col < line.Length; col++) {
 					var letter = line[col].ToString();
-	
+
 					float x = left + col * cellWidth;
-					float y = top + row * cellHeight;
+					float y = top + row * cellHeight + clientTop ;
 
 					// Future:
 					// x += jitterX;

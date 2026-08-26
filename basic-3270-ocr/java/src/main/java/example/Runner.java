@@ -42,15 +42,14 @@ public class Runner {
 		Map<String, String> cli = parseArgs(args);
 
 		String outputFile = "console.png";
+		String backgroundPath = null;
 		String fontPath = null;
 		// reserved for future
 		String labelFile = "console.json";
 		String screenfile = null;
 		String page = "cp037"; // EBCDIC
-		Long words = 1L;
-		Long length = 1L;
-		String foregroundColor = null;
-		String backgroundColor = null;
+		int clientTop = 0;
+		int clientLeft = 0;
 		String degraded = null;
 
 		if (cli.containsKey("debug")) {
@@ -70,17 +69,17 @@ public class Runner {
 			outputFile = cli.get("outputfile");
 		if (cli.containsKey("screenfile"))
 			screenfile = cli.get("screenfile");
-		if (cli.containsKey("words"))
-			words = Long.parseLong(cli.get("words"));
+		if (cli.containsKey("top"))
+			clientTop = Integer.parseInt(cli.get("top"));
+		if (cli.containsKey("left"))
+			clientLeft = Integer.parseInt(cli.get("left"));
 
 		if (cli.containsKey("page"))
 			page = cli.get("page");
 		if (cli.containsKey("font"))
 			fontPath = cli.get("font");
 		if (cli.containsKey("background"))
-			backgroundColor = cli.get("background");
-		if (cli.containsKey("foreground"))
-			foregroundColor = cli.get("foreground");
+			backgroundPath = cli.get("background");
 		if (cli.containsKey("degraded"))
 			degraded = cli.get("degraded");
 		if (cli.containsKey("labelfile"))
@@ -96,7 +95,6 @@ public class Runner {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		screenLines.add("Java");
 		// To achieve a lookalike screenshot of Blue Prism IBM 3270 mainframe/CICS
 		// terminal emulator
 		// one may use the open-source TrueType font
@@ -130,14 +128,29 @@ public class Runner {
 		int width = LEFT * 2 + COLS * cellWidth;
 		int height = TOP * 2 + ROWS * cellHeight;
 
-		BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		// background image
+
+		BufferedImage bufferedImage;
+
+		if (backgroundPath != null) {
+			System.err.println(String.format("Loading background image %s", backgroundPath));
+			bufferedImage = ImageIO.read(new File(backgroundPath));
+		} else {
+			System.err.println("Loading plain background");
+			bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		}
 
 		Graphics2D graphics = bufferedImage.createGraphics();
 
-		// ---- Terminal appearance -------------------------------------
+		if (backgroundPath == null) {
+			// ---- Terminal appearance -------------------------------------
+			graphics.setColor(Color.BLACK);
+			graphics.fillRect(0, 0, width, height);
+		}
 
-		graphics.setColor(Color.BLACK);
-		graphics.fillRect(0, 0, width, height);
+		// Or black out the known client area . Commented until defined
+		// graphics.setColor(Color.BLACK);
+		// graphics.fillRect(clientX, clientY, clientWidth, clientHeight);
 
 		graphics.setFont(font);
 		graphics.setColor(Color.GREEN);
@@ -158,7 +171,7 @@ public class Runner {
 				String line = screenLines.get(row);
 
 				int x = LEFT;
-				int y = TOP + fontMetrics.getAscent() + row * cellHeight;
+				int y = clientTop + TOP + fontMetrics.getAscent() + row * cellHeight;
 
 				graphics.drawString(line, x, y);
 			}
@@ -178,8 +191,8 @@ public class Runner {
 
 					String letter = String.valueOf(line.charAt(col));
 
-					int x = LEFT + col * cellWidth;
-					int y = TOP + fontMetrics.getAscent() + row * cellHeight;
+					int x = clientLeft + LEFT + col * cellWidth;
+					int y = clientTop + TOP + fontMetrics.getAscent() + row * cellHeight;
 
 					/*
 					 * Future deliberate imperfection hooks:
@@ -218,7 +231,7 @@ public class Runner {
 	// Extremely simple CLI parser: -key value
 	private static Map<String, String> parseArgs(String[] args) {
 		if (String.join("", args).indexOf("debug") != -1) {
-			System.err.println("args: " + String.join("", args));
+			System.err.println("xxx");
 		}
 
 		Map<String, String> map = new HashMap<>();
