@@ -45,38 +45,38 @@ set FONT_NAME=3270 Nerd Font Mono
 reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" /v "%FONT_NAME% (TrueType)" /t REG_SZ /d "%FILENAME%" /f
 ```
 ```cmd
+pushd csharp\windows-forms\Program\bin\Debug
 .\teller_screen.exe -screenfile=..\..\..\..\..\input\example.txt -outputfile=..\..\..\..\..\images\console4.png -font=c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf -debug=true
 ```
 ```text
 Using font c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf
+Using: default background
+Wrote "..\..\..\..\..\images\console4.png"
+```
+```cmd
+.\teller_screen.exe -screenfile=..\..\..\..\..\input\example.txt -outputfile=..\..\..\..\..\images\console8.png -font=c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf -debug=true -background=..\..\..\..\..\images\capture-app.png
 ```
 ```text
-                         MOCK L&F
-
-LOREM:  ___________                         IPSUM: _____________
-
-DOLOR:  __________                 AMET:  _____________
-
-AMET ====> _____________                 CONSECTETUR: _________
-
-ADIPISCING: __________      ELIT: __________
-SED: _________                              DO: _______________
-
-EIUSMOD: _____________       TEMPOR: _____________
-
-INCIDIDUNT: _________                     UT: _________
-
-LABORE: _____________        ET: _____________
-
-DOLORE: _________          MAGNA: _____________
-
-PF1=HELP  PF2=SPLIT  PF3=END  PF4=RETURN  PF5=RFIND  PF6=RCHANGE
-PF7=UP    PF8=DOWN   PF9=SWAP  PF10=LEFT  PF11=RIGHT  PF12=RETRIEVE
-
-.net
+Using font "c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf"
+Using: custom background: ..\..\..\..\..\images\capture-app.png
+Wrote "..\..\..\..\..\images\console8.png"
 ```
+![Terminal Screen wirh border](images/console8.png)
+
+```sh
+./scan_screenshot.sh images/console8.png "-shave 0x200 -fuzz 10% -trim +repage "
+```
+![Terminal Screen wirh border](images/prepared.png)
+
 ```text
-Wrote "..\..\..\..\..\images\console2.png"
+LOREM: IPSUM: bel
+
+DOLOR: AMET
+
+ADIPISCING: ELIT: -
+s .
+
+EILUSMOD: TEMPOR: [2
 ```
 > NOTE: the text that is printed  to console is used to generate a fake TN3270 Tesminal window.
 
@@ -287,14 +287,17 @@ __ML/ranking__: *Which preprocessing variant gives the best result?*
 ```text
 Using font C:\Users\kouzm\Downloads
 Exception :System.Runtime.InteropServices.ExternalException (0x80004005): A generic error occurred in GDI+.
-   at System.Drawing.Text.PrivateFontCollection.AddFontFile(String filename)
+   at System.Drawing.Text.PrivateF  ontCollection.AddFontFile(String filename)
    at Program.TellerScreen.Main() TellerScreen.cs:line 94
 ```
 ### See Also
 
   * [pure Javascript OCR](https://github.com/naptha/tesseract.js)
   * https://github.com/tesseract-ocr/tessdoc/blob/main/Command-Line-Usage.md
-  
+  * https://usage.imagemagick.org/crop/#crop
+  * https://usage.imagemagick.org/basics/  
+  * https://github.com/ImageMagick/ImageMagick/discussions/5867
+
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)

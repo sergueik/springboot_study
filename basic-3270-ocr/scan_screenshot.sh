@@ -3,6 +3,7 @@ set -euo pipefail
 
 IMAGE="$1"
 OPTIONS_STRING="${2:-}"
+echo "OPTIONS_STRING=${OPTIONS_STRING}"
 
 if [ -n "${WINDIR:-}" ]; then
   WORKDIR="/c/Users/${USERNAME}/Documents/images"
@@ -32,16 +33,20 @@ cp "$IMAGE" "$WORKDIR/input.png"
 # A future ML/ranking loop can substitute or enumerate
 # alternative ImageMagick transformations here.
 #
-if [ ! -n "$OPTIONS_STRING" ] ; then 
+if [ ! -z "$OPTIONS_STRING" ] ; then 
+  echo "docker run --rm -v \"$WORKDIR:/work:Z\" minidocks/imagemagick magick /work/input.png $OPTIONS_STRING /work/prepared.png"
   docker run --rm -v "$WORKDIR:/work:Z" minidocks/imagemagick magick /work/input.png $OPTIONS_STRING /work/prepared.png
 else 
-  docker run --rm -v "$WORKDIR:/work:Z" minidocks/imagemagick magick /work/input.png  -colorspace Gray -density 300 /work/prepared.png
+  echo "docker run --rm -v \"$WORKDIR:/work:Z\" minidocks/imagemagick magick /work/input.png -colorspace Gray -density 300 /work/prepared.png"
+  docker run --rm -v "$WORKDIR:/work:Z" minidocks/imagemagick magick /work/input.png -colorspace Gray -density 300 /work/prepared.png
 fi
 
 [ -f "$WORKDIR/prepared.png" ] || {
   1>&2 echo "ERROR: ImageMagick $WORKDIR/prepared.png was not created"
   exit 1
 }
+echo "Prepared image: ${WORKDIR}/prepared.png"
+cp $WORKDIR/prepared.png ./images
 
 #
 # OCR
