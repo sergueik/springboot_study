@@ -97,8 +97,10 @@ namespace Program {
 			var privateFontCollection = new PrivateFontCollection();
 			Font font = null;
 			try {
-				if (File.Exists(fontPath) == false)
+				if (File.Exists(fontPath) == false){
+					Console.WriteLine(String.Format("Font file does not exist: \"{0}\" - using default font", fontPath));
 					throw new FileNotFoundException("Font file does not exist: " + fontPath, fontPath);
+				}
 				privateFontCollection.AddFontFile(fontPath);
 				font = new Font(privateFontCollection.Families[0], 24, FontStyle.Regular, GraphicsUnit.Pixel);
 			} catch (Exception e) {

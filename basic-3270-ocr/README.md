@@ -21,6 +21,16 @@ popd
 Wrote "..\..\..\..\..\images\console2.png"
 ```
 
+```cmd
+pushd csharp/windows-forms
+cd Program/bin/Debug
+.\teller_screen.exe -screenfile=..\..\..\..\..\input\example.txt -font -outputfile=..\..\..\..\..\images\console10.png
+popd
+```
+```text
+Wrote "..\..\..\..\..\images\console2.png"
+```
+
 ![3270 Console](images/console2.png)
 
 ```
@@ -289,6 +299,48 @@ Using font C:\Users\kouzm\Downloads
 Exception :System.Runtime.InteropServices.ExternalException (0x80004005): A generic error occurred in GDI+.
    at System.Drawing.Text.PrivateF  ontCollection.AddFontFile(String filename)
    at Program.TellerScreen.Main() TellerScreen.cs:line 94
+```
+
+```cmd
+del c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf
+.\teller_screen.exe -screenfile=..\..\..\..\..\input\example.txt -outputfile=..\..\..\..\..\images\console10.png -font=c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf
+```
+```text
+Using font "c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf"
+Exception loading "c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf":
+System.IO.FileNotFoundException: Font file does not exist: 
+c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf
+File name: 'c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf'
+   at Program.TellerScreen.Main() in c:\developer\sergueik\springboot_study\basic-3270-ocr\csharp\windows-forms\Program\TellerScreen.cs:line 101
+Using: default background
+```
+```cmd
+.\teller_screen.exe -screenfile=..\..\..\..\..\input\example.txt -outputfile=..\..\..\..\..\images\console10.png -font=c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf
+```
+```text
+Font file does not exist: "c:\Users\kouzm\Downloads\3270NerdFontMono-Regular.ttf" - using default font
+Wrote "..\..\..\..\..\images\console10.png"
+```
+
+> NOTE: the nuget error observed on some developer machines:
+```text
+"C:\Program Files\SharpDevelop\5.1\AddIns\Misc\PackageManagement\NuGet.exe" restore C:\developer\sergueik\springboot_study\basic-3270-ocr\csharp\xwt\teller_screen.sln
+Unable to find version '0.2.251' of package 'Xwt'.
+Unable to find version '0.2.251' of package 'Xwt.Gtk'.
+Unable to find version '0.2.251' of package 'Xwt.Gtk.Windows'.
+Exited with code: 1
+```
+on other:
+```text
+"C:\Program Files\SharpDevelop\5.1\AddIns\Misc\PackageManagement\NuGet.exe" restore C:\developer\sergueik\springboot_study\basic-3270-ocr\csharp\xwt\teller_screen.sln
+Installing 'Xwt.Gtk 0.2.251'.
+Installing 'Xwt 0.2.251'.
+Installing 'Xwt.Gtk.Windows 0.2.251'.
+Successfully installed 'Xwt.Gtk.Windows 0.2.251'.
+Successfully installed 'Xwt 0.2.251'.
+Successfully installed 'Xwt.Gtk 0.2.251'.
+Exited with code: 0
+
 ```
 ### See Also
 
