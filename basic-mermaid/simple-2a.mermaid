@@ -31,6 +31,7 @@ gitGraph
 
     checkout "frontend"
     merge main
+
     checkout "backend"
     merge main
     commit
@@ -38,11 +39,17 @@ gitGraph
     checkout main
     branch "super frontend"
     commit
+
     checkout "backend"
     commit
     commit
-    checkout "main"
+
+    checkout main
     merge "backend" tag: "version 2.0.0"
-    branch "super frontend"
+
+    checkout "super frontend"
     commit
-    merge "fronend" tag: "version 3.0.0"
+
+    checkout main
+    merge "frontend" tag: "version 3.0.0"
+

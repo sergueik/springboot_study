@@ -800,6 +800,7 @@ gitGraph
 
 ```
 ```code
+
 %%{init: {
     "theme": "base",
     "themeVariables": {
@@ -823,7 +824,7 @@ gitGraph
     commit
     commit
     commit
-
+ 
     checkout main
     branch "bugfix"
     commit
@@ -854,6 +855,8 @@ gitGraph
 
     checkout main
     merge "frontend" tag: "version 3.0.0"
+
+
 ```
 ```mermaid
 %%{init: {
@@ -879,7 +882,7 @@ gitGraph
     commit
     commit
     commit
-
+ 
     checkout main
     branch "bugfix"
     commit
@@ -910,6 +913,7 @@ gitGraph
 
     checkout main
     merge "frontend" tag: "version 3.0.0"
+
 ```
 The Git graph has now become considerably larger, but it is still well within reasonable bounds.
 
