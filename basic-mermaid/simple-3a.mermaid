@@ -1,0 +1,27 @@
+flowchart LR
+    START([Start])
+    SSN{SSN valid?}
+    END([End])
+
+    START --> SSN
+    SSN -- No --> END
+    SSN -- Yes --> PROCESSING
+
+    subgraph PROCESSING["Credit Processing"]
+        AGE{Age valid?}
+        CREDIT{Credit score?}
+        JUNIOR[Junior credit]
+        BASIC[Basic customer]
+        FAVORITE[Favorite customer]
+
+        AGE -- No --> JUNIOR
+        AGE -- Yes --> CREDIT
+
+        CREDIT -- Good --> FAVORITE
+        CREDIT -- Average --> BASIC
+        CREDIT -- Risky --> END
+
+        JUNIOR --> END
+        FAVORITE --> END
+        BASIC --> END
+    end

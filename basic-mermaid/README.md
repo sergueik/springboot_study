@@ -959,6 +959,143 @@ The table is useful when we want to walk through one particular scenario step by
 
 The Git graph remains useful when the scenario itself becomes more complex.
 
+### Fictional KYC Exaple
+```code
+flowchart LR
+        START([Start])
+        SSN{SSN valid?}
+        AGE{Age valid?}
+        END([End])
+
+        START --> SSN
+        SSN -- No --> END
+        SSN -- Yes --> AGE
+        AGE -- No --> END
+        AGE -- Yes --> PROCESSING
+
+    subgraph PROCESSING["Credit Processing"]
+        CREDIT{Credit score?}
+        BASIC[Basic customer]
+        FAVORITE[Favorite customer]
+
+        CREDIT -- Good --> FAVORITE
+        CREDIT -- Average --> BASIC
+        CREDIT -- Risky --> END
+        FAVORITE --> END
+        BASIC --> END
+    end
+
+
+```
+```mermaid
+flowchart LR
+        START([Start])
+        SSN{SSN valid?}
+        AGE{Age valid?}
+        END([End])
+
+        START --> SSN
+        SSN -- No --> END
+        SSN -- Yes --> AGE
+        AGE -- No --> END
+        AGE -- Yes --> PROCESSING
+
+    subgraph PROCESSING["Credit Processing"]
+        CREDIT{Credit score?}
+        BASIC[Basic customer]
+        FAVORITE[Favorite customer]
+
+        CREDIT -- Good --> FAVORITE
+        CREDIT -- Average --> BASIC
+        CREDIT -- Risky --> END
+        FAVORITE --> END
+        BASIC --> END
+    end
+
+
+```
+
+```code
+flowchart LR
+    START([Start])
+    SSN{SSN valid?}
+    END([End])
+
+    START --> SSN
+    SSN -- No --> END
+    SSN -- Yes --> PROCESSING
+
+    subgraph PROCESSING["Credit Processing"]
+        AGE{Age valid?}
+        CREDIT{Credit score?}
+        JUNIOR[Junior credit]
+        BASIC[Basic customer]
+        FAVORITE[Favorite customer]
+
+        AGE -- No --> JUNIOR
+        AGE -- Yes --> CREDIT
+
+        CREDIT -- Good --> FAVORITE
+        CREDIT -- Average --> BASIC
+        CREDIT -- Risky --> END
+
+        JUNIOR --> END
+        FAVORITE --> END
+        BASIC --> END
+    end
+
+```
+```mermaid
+flowchart LR
+    START([Start])
+    SSN{SSN valid?}
+    END([End])
+
+    START --> SSN
+    SSN -- No --> END
+    SSN -- Yes --> PROCESSING
+
+    subgraph PROCESSING["Credit Processing"]
+        AGE{Age valid?}
+        CREDIT{Credit score?}
+        JUNIOR[Junior credit]
+        BASIC[Basic customer]
+        FAVORITE[Favorite customer]
+
+        AGE -- No --> JUNIOR
+        AGE -- Yes --> CREDIT
+
+        CREDIT -- Good --> FAVORITE
+        CREDIT -- Average --> BASIC
+        CREDIT -- Risky --> END
+
+        JUNIOR --> END
+        FAVORITE --> END
+        BASIC --> END
+    end
+
+```
+
+Formal Rule way: **conditions** are *inputs* to the rule; **outcome** is the business *decision* produced by it.
+
+> Regular KYC
+> 
+> | Rule   | Conditions                                               | Outcome                |
+> | ------ | -------------------------------------------------------- | ---------------------- |
+> | KYC-01 | `SSN is invalid`                                         | **Reject application** |
+> | KYC-02 | `SSN is valid` AND `age is invalid`                      | **Reject application** |
+> | KYC-03 | `SSN is valid` AND `age is valid` AND `credit = Good`    | **Favorite customer**  |
+> | KYC-04 | `SSN is valid` AND `age is valid` AND `credit = Average` | **Basic customer**     |
+> | KYC-05 | `SSN is valid` AND `age is valid` AND `credit = Risky`   | **Reject application** |
+
+> CreditLandia KYC
+> | Rule   | Conditions                                               | Outcome                |
+> | ------ | -------------------------------------------------------- | ---------------------- |
+> | KYC-01 | `SSN is invalid`                                         | **Reject application** |
+> | KYC-02 | `SSN is valid` AND `age is invalid`                      | **Junior credit**      |
+> | KYC-03 | `SSN is valid` AND `age is valid` AND `credit = Good`    | **Favorite customer**  |
+> | KYC-04 | `SSN is valid` AND `age is valid` AND `credit = Average` | **Basic customer**     |
+> | KYC-05 | `SSN is valid` AND `age is valid` AND `credit = Risky`   | **Reject application** |
 
 ### Visual Studio Code Rendering
 

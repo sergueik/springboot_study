@@ -1,0 +1,47 @@
+graph LR
+    %% Define Step 1: Main branch start
+    main_start((Main Branch)) --> create_branch[("git checkout -b <br>feature-branch")]
+    
+    %% Define Step 2: Make changes
+    create_branch --> make_commits[["Make Local Changes & <br>Commit Regularly"]]
+    
+    %% Define Step 3: Open PR
+    make_commits --> push_origin[("git push origin <br>feature-branch")]
+    push_origin --> open_pr{{"Open Pull Request <br>on GitHub"}}
+    
+    %% Define Step 4: Discussion & Review loop
+    open_pr --> review_loop{Review Passes?}
+    review_loop -- No --> address_feedback[["Address Feedback <br>& Commit Again"]]
+    address_feedback --> open_pr
+    
+    %% Define Step 5: Merge
+    review_loop -- Yes --> merge_pr[/"Merge PR into Main <br>& Delete Branch"/]
+    
+    %% Define Step 6: Deploy
+graph LR
+    %% Define Step 1: Main branch start
+    main_start((Main Branch)) --> create_branch[("git checkout -b <br>feature-branch")]
+    
+    %% Define Step 2: Make changes
+    create_branch --> make_commits[["Make Local Changes & <br>Commit Regularly"]]
+    
+    %% Define Step 3: Open PR
+    make_commits --> push_origin[("git push origin <br>feature-branch")]
+    push_origin --> open_pr{{"Open Pull Request <br>on GitHub"}}
+    
+    %% Define Step 4: Discussion & Review loop
+    open_pr --> review_loop{Review Passes?}
+    review_loop -- No --> address_feedback[["Address Feedback <br>& Commit Again"]]
+    address_feedback --> open_pr
+    
+    %% Define Step 5: Merge
+    review_loop -- Yes --> merge_pr[/"Merge PR into Main <br>& Delete Branch"/]
+    
+    %% Define Step 6: Deploy
+    merge_pr --> deploy_prod((Deploy to <br>Production))
+
+    %% Apply quick color accents to start and end nodes
+    style main_start fill:#2da44e,stroke:#fff,stroke-width:2px,color:#fff
+    style deploy_prod fill:#8250df,stroke:#fff,stroke-width:2px,color:#fff
+    style review_loop fill:#bf8700,color:#fff
+
