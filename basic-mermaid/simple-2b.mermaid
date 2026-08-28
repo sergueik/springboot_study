@@ -1,0 +1,26 @@
+%%{init: {
+    "theme": "base",
+    "themeVariables": {
+        "git0": "#AAAAAA",
+        "git1": "#AAAAFF",
+        "git2": "#B5651D"
+    }
+}}%%
+
+gitGraph
+    commit tag: "version 1.0.0"
+
+    branch "frontend"
+    commit
+
+    checkout main
+    branch "backend"
+    commit
+    checkout "frontend"
+    commit
+    checkout "backend"
+    commit
+    commit
+ 
+
+

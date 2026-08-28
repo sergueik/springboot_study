@@ -664,6 +664,64 @@ No need to spell out the entire causal chain.
 
 ### GitGraph Example
 
+```code
+%%{init: {
+    "theme": "base",
+    "themeVariables": {
+        "git0": "#AAAAAA",
+        "git1": "#AAAAFF",
+        "git2": "#B5651D"
+    }
+}}%%
+
+gitGraph
+    commit tag: "version 1.0.0"
+
+    branch "frontend"
+    commit
+
+    checkout main
+    branch "backend"
+    commit
+    checkout "frontend"
+    commit
+    checkout "backend"
+    commit
+    commit
+ 
+
+
+
+```
+
+```mermaid
+%%{init: {
+    "theme": "base",
+    "themeVariables": {
+        "git0": "#AAAAAA",
+        "git1": "#AAAAFF",
+        "git2": "#B5651D"
+    }
+}}%%
+
+gitGraph
+    commit tag: "version 1.0.0"
+
+    branch "frontend"
+    commit
+
+    checkout main
+    branch "backend"
+    commit
+    checkout "frontend"
+    commit
+    checkout "backend"
+    commit
+    commit
+ 
+```
+
+
 | Time | Product / main | Frontend branch | Backend branch | Bugfix branch | Event |
 |------|----------------|-----------------|----------------|---------------|-------|
 | T0 | ● v1.0.0 | — | — | — | Version 1.0.0 released |
