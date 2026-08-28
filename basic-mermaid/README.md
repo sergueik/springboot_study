@@ -661,6 +661,339 @@ A browser/cloud Visio experience doesn't give Python the same local COM automati
 Historically, a Word document (and its OLE object hierarchy) could easily retain artifacts of the document's revision history, making some embeddings largely duplicates of one another.
 No need to spell out the entire causal chain.
 
+
+### GitGraph Example
+
+| Time | Product / main | Frontend branch | Backend branch | Bugfix branch | Event |
+|------|----------------|-----------------|----------------|---------------|-------|
+| T0 | ● v1.0.0 | — | — | — | Version 1.0.0 released |
+| T1 | ● | branch created | branch created | — | Two independent development streams start |
+| T2 | ● | F1 | B1 | — | Continuous build/test |
+| T3 | ● | F1 → F2 | B1 → B2 | — | Frontend progresses faster |
+| T4 | ● | F1 → F2 → F3 ✓ | B1 → B2 → B3 | — | Frontend feature complete |
+| T5 | ● | READY / waiting | B1 → B2 → B3 | branch created | Bug discovered |
+| T6 | ● | READY / waiting | continuing | X | Bugfix implemented and validated |
+| T7 | ● → X v1.1.0 | READY / waiting | continuing | merged | Bugfix merged to main; version 1.1.0 released |
+| T8 | ● → X | F1 → F2 → F3 → X | B1 → B2 → B3 → X | — | Bugfix merged into both active branches |
+| T9 | ● → X | READY AGAIN | B1 → B2 → B3 → B4 | — | Frontend immediately ready for release |
+| Time | Product / main | Frontend branch | Backend branch | Bugfix branch | Event |
+|------|----------------|-----------------|----------------|---------------|-------|
+| T0 | ● v1.0.0 | — | — | — | Version 1.0.0 released |
+| T1 | ● | branch created | branch created | — | Two independent development streams start |
+| T2 | ● | F1 | B1 | — | Continuous build/test |
+| T3 | ● | F1 → F2 | B1 → B2 | — | Frontend progresses faster |
+| T4 | ● | F1 → F2 → F3 ✓ | B1 → B2 → B3 | — | Frontend feature complete |
+| T5 | ● | READY / waiting | B1 → B2 → B3 | branch created | Bug discovered |
+| T6 | ● | READY / waiting | continuing | X | Bugfix implemented and validated |
+| T7 | ● → X v1.1.0 | READY / waiting | continuing | merged | Bugfix merged to main; version 1.1.0 released |
+| T8 | ● → X | F1 → F2 → F3 → X | B1 → B2 → B3 → X | — | Bugfix merged into both active branches |
+| T9 | ● → X | READY AGAIN | B1 → B2 → B3 → B4 | — | Frontend immediately ready for release |
+| T10 | ● → X → F v2.0.0 | merged | B1 → B2 → B3 → B4 | — | Frontend merged to main; version 2.0.0 released |
+| T11 | ● v2.0.0 | — | B1 → B2 → B3 → B4 → B5 | — | Backend development continues |
+| T12 | ● v2.0.0 | — | B1 → B2 → B3 → B4 → B5 → B6 | — | Backend continues accumulating commits || Time | Product / main | Frontend branch | Backend branch | Bugfix branch | Event |
+|------|----------------|-----------------|----------------|---------------|-------|
+| T0 | ● v1.0.0 | — | — | — | Version 1.0.0 released |
+| T1 | ● | branch created | branch created | — | Two independent development streams start |
+| T2 | ● | F1 | B1 | — | Continuous build/test |
+| T3 | ● | F1 → F2 | B1 → B2 | — | Frontend progresses faster |
+| T4 | ● | F1 → F2 → F3 ✓ | B1 → B2 → B3 | — | Frontend feature complete |
+| T5 | ● | READY / waiting | B1 → B2 → B3 | branch created | Bug discovered |
+| T6 | ● | READY / waiting | continuing | X | Bugfix implemented and validated |
+| T7 | ● → X v1.1.0 | READY / waiting | continuing | merged | Bugfix merged to main; version 1.1.0 released |
+| T8 | ● → X | F1 → F2 → F3 → X | B1 → B2 → B3 → X | — | Bugfix merged into both active branches |
+| T9 | ● → X | READY AGAIN | B1 → B2 → B3 → B4 | — | Frontend immediately ready for release |
+| T10 | ● → X → F v2.0.0 | merged | B1 → B2 → B3 → B4 | — | Frontend merged to main; version 2.0.0 released |
+| T11 | ● v2.0.0 | — | B1 → B2 → B3 → B4 → B5 | — | Backend development continues |
+| T12 | ● v2.0.0 | — | B1 → B2 → B3 → B4 → B5 → B6 | — | Backend continues accumulating commits |
+
+
+```code
+%%{init: {
+    "theme": "base",
+    "themeVariables": {
+        "git0": "#AAAAAA",
+        "git1": "#AAAAFF",
+        "git2": "#B5651D"
+    }
+}}%%
+
+gitGraph
+    commit tag: "version 1.0.0"
+
+    branch "frontend"
+    commit
+    commit
+    commit
+
+    checkout main
+    branch "backend"
+    commit
+    commit
+    commit
+
+    checkout main
+    branch "bugfix"
+    commit
+
+    checkout main
+    merge bugfix tag: "version 1.1.0"
+
+    checkout "frontend"
+    merge main
+    checkout "backend"
+    merge main
+    commit
+
+    checkout main
+    merge "frontend" tag: "version 2.0.0"
+    checkout "backend"
+    commit
+    commit
+
+
+
+```
+```mermaid
+%%{init: {
+    "theme": "base",
+    "themeVariables": {
+        "git0": "#AAAAAA",
+        "git1": "#AAAAFF",
+        "git2": "#B5651D"
+    }
+}}%%
+
+gitGraph
+    commit tag: "version 1.0.0"
+
+    branch "frontend"
+    commit
+    commit
+    commit
+
+    checkout main
+    branch "backend"
+    commit
+    commit
+    commit
+ 
+    checkout main
+    branch "bugfix"
+    commit
+
+    checkout main
+    merge bugfix tag: "version 1.1.0"
+
+    checkout "frontend"
+    merge main
+    checkout "backend"
+    merge main
+    commit
+
+    checkout main
+    merge "frontend" tag: "version 2.0.0"
+    checkout "backend"
+    commit
+    commit
+
+
+
+```
+```code
+%%{init: {
+    "theme": "base",
+    "themeVariables": {
+        "git0": "#AAAAAA",
+        "git1": "#AAAAFF",
+        "git2": "#B5651D",
+        "git3": "#E5822D"
+    }
+}}%%
+
+gitGraph
+    commit tag: "version 1.0.0"
+
+    branch "frontend"
+    commit
+    commit
+    commit
+
+    checkout main
+    branch "backend"
+    commit
+    commit
+    commit
+
+    checkout main
+    branch "bugfix"
+    commit
+
+    checkout main
+    merge bugfix tag: "version 1.1.0"
+
+    checkout "frontend"
+    merge main
+
+    checkout "backend"
+    merge main
+    commit
+
+    checkout main
+    branch "super frontend"
+    commit
+
+    checkout "backend"
+    commit
+    commit
+
+    checkout main
+    merge "backend" tag: "version 2.0.0"
+
+    checkout "super frontend"
+    commit
+
+    checkout main
+    merge "frontend" tag: "version 3.0.0"
+```
+```mermaid
+%%{init: {
+    "theme": "base",
+    "themeVariables": {
+        "git0": "#AAAAAA",
+        "git1": "#AAAAFF",
+        "git2": "#B5651D",
+        "git3": "#E5822D"
+    }
+}}%%
+
+gitGraph
+    commit tag: "version 1.0.0"
+
+    branch "frontend"
+    commit
+    commit
+    commit
+
+    checkout main
+    branch "backend"
+    commit
+    commit
+    commit
+
+    checkout main
+    branch "bugfix"
+    commit
+
+    checkout main
+    merge bugfix tag: "version 1.1.0"
+
+    checkout "frontend"
+    merge main
+
+    checkout "backend"
+    merge main
+    commit
+
+    checkout main
+    branch "super frontend"
+    commit
+
+    checkout "backend"
+    commit
+    commit
+
+    checkout main
+    merge "backend" tag: "version 2.0.0"
+
+    checkout "super frontend"
+    commit
+
+    checkout main
+    merge "frontend" tag: "version 3.0.0"
+```
+The Git graph has now become considerably larger, but it is still well within reasonable bounds.
+
+And the situation itself is entirely standard.
+
+The frontend turns out to depend on a feature in the backend — a feature that we originally expected to release later. Therefore we cannot proceed with the frontend release. The original frontend work is complete, but it has to wait.
+
+What do we do with the next frontend development effort?
+
+We create a new branch.
+
+The original frontend branch is effectively frozen, preserving the completed work until its backend dependency becomes available. New frontend development continues on the new branch. Meanwhile, backend development proceeds as usual.
+
+Business as usual.
+
+The graph grows because the history has grown. But the graph absorbs that additional complexity naturally: another branch, another line of development, and eventually another merge.
+
+A table, on the other hand, has to be redesigned to explain every new parallel stream.
+
+That is the difference between **telling the history** and **showing the history**.
+
+The table is useful when we want to walk through one particular scenario step by step.
+
+The Git graph remains useful when the scenario itself becomes more complex.
+
+The Git graph has now become considerably larger, but it is still well within reasonable bounds.
+
+And the situation itself is entirely standard.
+
+The frontend turns out to depend on a feature in the backend — a feature that we originally expected to release later. Therefore we cannot proceed with the frontend release. The original frontend work is complete, but it has to wait.
+
+What do we do with the next frontend development effort?
+
+We create a new branch.
+
+The original frontend branch is effectively frozen, preserving the completed work until its backend dependency becomes available. New frontend development continues on the new branch. Meanwhile, backend development proceeds as usual.
+
+Business as usual.
+
+The graph grows because the history has grown. But the graph absorbs that additional complexity naturally: another branch, another line of development, and eventually another merge.
+
+A table, on the other hand, has to be redesigned to explain every new parallel stream.
+
+That is the difference between **telling the history** and **showing the history**.
+
+The table is useful when we want to walk through one particular scenario step by step.
+
+The Git graph remains useful when the scenario itself becomes more complex.
+
+
+### Visual Studio Code Rendering
+
+__Visual Studio Code__ announces support __Mermaid__ natively starting with version [1.121](), which was released on __May__ __20__, __2026__.
+
+* it appears that something is still misconfigured in later release
+
+![capture version  1.134](screenshots/capture-vscode-1.134.png)
+
+One has to be extremely careful and limit oneself to battle-proven, classic Mermaid — otherwise a perfectly valid diagram may suddenly become “unsupported” depending on which Mermaid engine happens to be rendering it.
+
+
+
+```code
+graph TD;
+    A-->B;
+
+```
+that will render:
+
+```mermaid
+graph TD;
+    A-->B;
+
+```
+otherwise one will find in display preview mode:
+```text
+No diagram type detected matching given configuration for text
+```
+__Key Details__: 
+
+  * __Built-in Extension__: This update merged the popular third-party "Markdown Preview Mermaid Support" extension directly into the core editor as a built-in feature called Mermaid Markdown Features.
+  * __Where It Works__: You can render Mermaid diagrams automatically inside the standard Markdown preview panel and within notebook cells without downloading extra plugins.How to Use It: Simply write your diagram syntax inside a fenced code block labeled with mermaid:
+
+
 ### See Also
   * [github allows including diagrams in Markdown files with Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) - also embedded in GitLab, Gitea, Joplin, Notion.
 
@@ -710,8 +1043,14 @@ along with several other extensions
   * [Mermaid Wiki](https://mermaid.ai/open-source/intro/index.html)
   * [Live App](https://mermaid.live/) to learn practice
   * official __Mermaid Live Editor__ Docker image is hosted on [GitHub Container Registry](ghcr.io/mermaid-js/mermaid-live-editor/mermaid-live-editor) (__GHCR__)
-
-
+  * [samsmithnz/MermaidDotNet](https://github.com/samsmithnz/MermaidDotNet) - project to generate Mermaid graphs with .NET - apparently not standalone , but __MVC__/__Blazor__ rank app
+  * [FoggyBalrog/MermaidDotNet](https://github.com/FoggyBalrog/MermaidDotNet) - an .NET library to generate Mermaid diagrams code - build into as nuget package on `netstandard2.1` - with an impressive catalog of distict mermaid shapes
+  
+  
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
+
+Adina Bulau, Washington
+Reference #
+2026-08-26-56267
