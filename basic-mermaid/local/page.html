@@ -129,9 +129,31 @@ window.applyZoom=function(){
     }
 }
 
+function normalizeMermaidSource(source) {
+    source = source.trim();
+
+    let previous;
+
+    do {
+        previous = source;
+
+        // Peel one complete Markdown code-fence layer.
+        const match = source.match(
+            /^(`{3,})[^\r\n]*\r?\n([\s\S]*?)\r?\n\1$/
+        );
+
+        if (match) {
+            source = match[2].trim();
+        }
+    } while (source !== previous);
+
+    return source;
+}
+
 window.renderMermaid = function () {
 
-    const source = document.getElementById("diagramInput").value;
+    const source = normalizeMermaidSource( document.getElementById("diagramInput").value);
+
     const output = document.getElementById("output");
 
     try {
