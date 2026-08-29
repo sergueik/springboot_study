@@ -166,12 +166,47 @@ docker container prune -f
 docker image prune -f
 docker image rm $IMAGE node:22.12.0-alpine nginx:1.30.3-alpine3.23
 ```
+### NOTE
+
+**QA in the era of agentic development**
+
+As agentic coding makes implementation increasingly cheap, QA value shifts from code-level verification toward **product-level semantic understanding**: architecture awareness, knowledge of the product’s failure history, recognition of business-critical behavior, and the ability to identify risks that are not explicit in the current specification.
+
+This makes QA not less relevant, but potentially **more strategic**: the QA function becomes a source of accumulated product knowledge and an adversarial semantic layer around increasingly autonomous software development.
+
+
+Agentic development makes implementation increasingly cheap, shifting the value of QA toward the semantic layer: understanding product architecture, reconstructing intent behind requirements and failures, and recognizing risks from accumulated product history.
+
+QA therefore becomes both **an independent adversarial layer and a keeper of product wisdom**—preserving what is learned by digging from a visible symptom through its apparent cause to the actual RCA, and applying that knowledge to future changes.
+
+In this sense, QA plays for software failures a role somewhat analogous to semantic transcription for speech: **not merely recording what happened, but reconstructing what was actually meant or caused.**
+
+
+Transcribe reconstructs intent behind imperfect speech; QA reconstructs causality behind imperfect software behavior.
+
+A test failure is often just the surface manifestation. The real QA value begins when someone refuses to stop at:
+
+Test failed.”
+
+and keeps asking:
+
+  * Why?
+  * Why really?
+  * Why did the system allow this?
+  * Why didn't we see it earlier?
+  * What does this tell us about the product?
+
+That last answer is the thing worth __keeping__.
+
 ### See Also
 
 
   * [live](https://McMarius11.github.io/svgtovisio)
   * [related reddit discussion](https://www.reddit.com/r/drawio/comments/1r9j05c/free_tool_to_convert_between_visio_and_drawio/)
-
+  * __Google Transcribe__  latest speech-to-text model designed for precise and intelligent real-time transcription.
+    + [release new feature info](https://habr.com/ru/news/1075046/) (in Russian)
+ - the model able to understand not only the words, but also what the person meant to convey
+ + [original](https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5-transcribe/)
 
 ---  
 
