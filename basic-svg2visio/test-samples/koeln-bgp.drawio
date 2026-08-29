@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0" version="29.6.4">
+  <diagram id="Ql0wXxyiQUWX6-__BMDY" name="Seite-1">
+    <mxGraphModel dx="2946" dy="1111" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="koeln_outer" parent="1" style="rounded=1;arcSize=4;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#0c447c;fontSize=14;fontStyle=1;verticalAlign=top;opacity=30;" value="Köln – on-premises&#xa;Private AS 65001" vertex="1">
+          <mxGeometry height="760" width="900" x="20" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="pa_active" parent="1" style="rounded=1;arcSize=8;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#6f0000;fontSize=12;fontStyle=1;" value="PA NGFW – Active&#xa;Routing, Policy, NAT" vertex="1">
+          <mxGeometry height="56" width="250" x="60" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="pa_passive" parent="1" style="rounded=1;arcSize=8;fillColor=#f8cecc;strokeColor=#b85450;fontColor=#6f0000;fontSize=12;fontStyle=1;opacity=55;" value="PA NGFW – Passive&#xa;Sync via HA2-Link" vertex="1">
+          <mxGeometry height="56" width="250" x="630" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ha1" edge="1" parent="1" source="pa_active" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;startArrow=open;endFill=0;startFill=0;strokeColor=#b85450;fontColor=#b85450;fontSize=11;" target="pa_passive" value="HA1 control">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="310" y="96" />
+              <mxPoint x="630" y="96" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ha2" edge="1" parent="1" source="pa_active" style="edgeStyle=orthogonalEdgeStyle;dashed=1;endArrow=open;startArrow=open;endFill=0;startFill=0;strokeColor=#b85450;fontColor=#b85450;fontSize=11;" target="pa_passive" value="HA2 data sync">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="310" y="118" />
+              <mxPoint x="630" y="118" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vr_container" parent="1" style="rounded=1;arcSize=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#0c447c;fontSize=13;fontStyle=1;verticalAlign=top;opacity=25;" value="Virtual Router" vertex="1">
+          <mxGeometry height="148" width="820" x="60" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="bgp_process" parent="1" style="rounded=1;arcSize=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#0c447c;fontSize=12;fontStyle=1;align=center;" value="BGP Prozess&#xa;Router-ID: 10.0.0.2&#xa;Local AS: 65001&#xa;Graceful Restart: aktiv&#xa;Reflector: nein" vertex="1">
+          <mxGeometry height="100" width="260" x="80" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="route_map" parent="1" style="rounded=1;arcSize=8;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#0c447c;fontSize=12;fontStyle=1;align=center;" value="Route Map / Policy&#xa;Export: nur 10.10.0.0/16&#xa;Import: nur 10.20.0.0/16&#xa;Max-prefix: 200&#xa;Prefix-list: explicit permit" vertex="1">
+          <mxGeometry height="100" width="260" x="600" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="eth1_1" parent="1" style="rounded=1;arcSize=8;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=12;fontStyle=1;align=center;" value="eth1/1 – WAN Leitung 1&#xa;IP: 10.0.0.2/30&#xa;Neighbor: 10.0.0.1 (CE-1)&#xa;Remote-AS: 3320&#xa;MD5-Auth: aktiv" vertex="1">
+          <mxGeometry height="100" width="260" x="60" y="356" as="geometry" />
+        </mxCell>
+        <mxCell id="eth1_2" parent="1" style="rounded=1;arcSize=8;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=12;fontStyle=1;align=center;" value="eth1/2 – WAN Leitung 2&#xa;IP: 10.0.0.6/30&#xa;Neighbor: 10.0.0.5 (CE-2)&#xa;Remote-AS: 3320&#xa;MD5-Auth: aktiv" vertex="1">
+          <mxGeometry height="100" width="260" x="620" y="356" as="geometry" />
+        </mxCell>
+        <mxCell id="bgp_timer" parent="1" style="rounded=1;arcSize=8;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=12;fontStyle=1;align=center;" value="BGP Timer&#xa;Hold-Time: 30s&#xa;Keepalive: 10s&#xa;Connect-Retry: 60s" vertex="1">
+          <mxGeometry height="84" width="260" x="60" y="496" as="geometry" />
+        </mxCell>
+        <mxCell id="bfd" parent="1" style="rounded=1;arcSize=8;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=12;fontStyle=1;align=center;" value="BFD&#xa;Min-Interval: 300ms&#xa;Multiplier: 3&#xa;Failover unter 1s" vertex="1">
+          <mxGeometry height="84" width="260" x="620" y="496" as="geometry" />
+        </mxCell>
+        <mxCell id="pfad" parent="1" style="rounded=1;arcSize=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#0c447c;fontSize=12;fontStyle=1;align=center;" value="Pfadsteuerung&#xa;Leitung 1 bevorzugt: Local Preference 200 (inbound CE-1)  |  Leitung 2: Local Preference 100&#xa;Rückweg Azure → Köln: AS-Path Prepend auf Leitung 2  (65001 65001)" vertex="1">
+          <mxGeometry height="72" width="820" x="60" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="tunnel_mon" parent="1" style="rounded=1;arcSize=6;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=12;fontStyle=1;align=center;" value="Tunnel Monitor&#xa;Link-local 169.254.0.1 ↔ 169.254.0.2  ·  Failover-Action: fail-over" vertex="1">
+          <mxGeometry height="44" width="820" x="60" y="726" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="pa_active" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;strokeColor=#6c8ebf;strokeWidth=2;" target="vr_container" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="vr_container" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;strokeColor=#6c8ebf;strokeWidth=2;" target="eth1_1" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="vr_container" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;strokeColor=#6c8ebf;strokeWidth=2;" target="eth1_2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="eth1_1" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;strokeColor=#666666;" target="bgp_timer" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="eth1_2" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;strokeColor=#666666;" target="bfd" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="bgp_timer" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;strokeColor=#666666;" target="pfad" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="bfd" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;strokeColor=#666666;" target="pfad" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="pfad" style="edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;strokeColor=#666666;" target="tunnel_mon" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

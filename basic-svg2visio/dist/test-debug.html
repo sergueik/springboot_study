@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Debug Test</title></head>
+<body style="background:#1a1a2e;color:#e0e0e0;font-family:monospace;padding:2rem;">
+<h2>Debug: Script Loading Test</h2>
+<pre id="output">Testing...</pre>
+<script>
+var out = document.getElementById('output');
+function log(msg) { out.textContent += '\n' + msg; }
+
+window.onerror = function(msg, src, line, col, err) {
+    log('ERROR: ' + msg + ' (line ' + line + ')');
+    return true;
+};
+</script>
+<script>
+/* Test 1: inline class */
+class TestClass { constructor() { this.ok = true; } }
+log('1. Inline class: ' + (typeof TestClass !== 'undefined' ? 'OK' : 'FAIL'));
+</script>
+<script>
+/* Test 2: JSZip from CDN */
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+log('2. JSZip (CDN): ' + (typeof JSZip !== 'undefined' ? 'OK' : 'FAIL - CDN blocked'));
+</script>
+<script>
+/* Test 3: Define a parser class */
+class FakeParser {
+    constructor(s) { this.s = s; }
+    parse() { return { shapes: [], connectors: [], texts: [], viewBox: {x:0,y:0,width:800,height:600} }; }
+}
+log('3. FakeParser class: ' + (typeof FakeParser !== 'undefined' ? 'OK' : 'FAIL'));
+try {
+    var p = new FakeParser('test');
+    var r = p.parse();
+    log('4. FakeParser instance: OK (shapes=' + r.shapes.length + ')');
+} catch(e) {
+    log('4. FakeParser instance: FAIL - ' + e.message);
+}
+</script>
+<hr>
+<p>Open the browser console (F12) for more details.</p>
+<p>If tests 1, 3, 4 pass but 2 fails: CDN is blocked (use dist/index.html).</p>
+<p>If all fail: JavaScript is disabled or blocked.</p>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<mxfile host="app.diagrams.net" modified="2024-01-01T00:00:00.000Z" agent="test" version="22.0.0">
+  <diagram name="Page-1" id="page1">
+    <mxGraphModel dx="946" dy="469" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="800" pageHeight="600">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" value="Start" style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="340" y="20" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="Process Data" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="320" y="130" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4" value="Valid?" style="rhombus;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="340" y="240" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="Save Result" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="320" y="380" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="6" value="Handle Error" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="250" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="End" style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="340" y="490" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="endArrow=classic;strokeColor=#333333;" edge="1" source="2" target="3" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="endArrow=classic;strokeColor=#333333;" edge="1" source="3" target="4" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="Yes" style="endArrow=classic;strokeColor=#009900;" edge="1" source="4" target="5" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="No" style="endArrow=classic;strokeColor=#CC0000;" edge="1" source="4" target="6" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="endArrow=classic;strokeColor=#333333;" edge="1" source="5" target="7" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="endArrow=classic;strokeColor=#333333;" edge="1" source="6" target="3" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
