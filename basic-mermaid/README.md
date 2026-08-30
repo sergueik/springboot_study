@@ -688,10 +688,6 @@ gitGraph
     checkout "backend"
     commit
     commit
- 
-
-
-
 ```
 
 ```mermaid
@@ -718,7 +714,6 @@ gitGraph
     checkout "backend"
     commit
     commit
- 
 ```
 
 
@@ -807,9 +802,6 @@ gitGraph
     checkout "backend"
     commit
     commit
-
-
-
 ```
 ```mermaid
 %%{init: {
@@ -853,9 +845,6 @@ gitGraph
     checkout "backend"
     commit
     commit
-
-
-
 ```
 ```code
 
@@ -913,8 +902,6 @@ gitGraph
 
     checkout main
     merge "frontend" tag: "version 3.0.0"
-
-
 ```
 ```mermaid
 %%{init: {
@@ -971,7 +958,6 @@ gitGraph
 
     checkout main
     merge "frontend" tag: "version 3.0.0"
-
 ```
 The Git graph has now become considerably larger, but it is still well within reasonable bounds.
 
@@ -1020,6 +1006,71 @@ That is the difference between **telling the history** and **showing the history
 The table is useful when we want to walk through one particular scenario step by step.
 
 The Git graph remains useful when the scenario itself becomes more complex.
+
+
+The Ops Team can certainly keep this in Excel.
+In fact, there is nothing technically preventing them from doing so.
+
+The problem is that the history keeps developing while the spreadsheet is trying to describe it.
+
+More branches. More dependencies. More exceptions. More things waiting for other things.
+
+At some point, the spreadsheet doesn't become wrong. It simply becomes increasingly expensive to keep explaining.
+
+And eventually the clock strikes midnight.
+
+The carriage is still there, the Excel file is still there, and technically everything is still possible.
+
+But the Mermaid GitGraph is already showing what happened
+
+### Notes
+Nobody needs to study it. It communicates activity without demanding attention. A hall screen can show this indefinitely and people can glance at it without asking what happened.
+
+
+The third graph crosses the important threshold.
+
+Now it isn't just:
+
+Jane is working. Jack is working.
+
+It becomes:
+
+Jane's work depends on Jack's work.
+
+And your Halloween story is perfect for making that memorable:
+
+Jane asks Jack to fix the witch's tail on her costume because she can't reach it herself.
+
+Excel can certainly record all three situations. The issue isn't whether the data can be represented.
+
+It's that the third situation is naturally graph-shaped.
+
+Once Jane's branch depends on Jack's branch, you don't merely have another row of information. You have a relationship between two previously separate streams.
+
+that is the payoff of the three-graph progression. The Halloween story is not just decoration; it gives you a concrete miniature of the organizational problem:
+
+Jane cannot reach the witch's tail. Jack can fix it.
+Now the organization has to decide whether the tail is worth delaying the release for.
+
+And that is where the GitGraph becomes a useful operational picture rather than merely a developer visualization.
+
+You can have the presenter say, deadpan:
+
+“The war team now spends an hour deciding whether the witch's tail is worth fixing.”
+
+The paradox is:
+
+The more complex the situation becomes, the more valuable the better representation becomes — and the less feasible it becomes to introduce it.
+
+So the rational transition point is actually before the pain arrives.
+
+You could put it very simply in the comment:
+
+It is not enough to know that an alternative exists and promise to switch when the current approach becomes unmanageable. That is precisely when switching is most difficult. The low-complexity phase is the cheap time to introduce the better representation.
+
+Or, in your slightly more metaphorical style:
+
+Don't wait for the carriage to turn into a pumpkin before learning how to drive it.
 
 ### Fictional KYC Exaple
 ```code
@@ -1046,8 +1097,6 @@ flowchart LR
         FAVORITE --> END
         BASIC --> END
     end
-
-
 ```
 ```mermaid
 flowchart LR
@@ -1073,8 +1122,6 @@ flowchart LR
         FAVORITE --> END
         BASIC --> END
     end
-
-
 ```
 
 ```code
@@ -1105,7 +1152,6 @@ flowchart LR
         FAVORITE --> END
         BASIC --> END
     end
-
 ```
 ```mermaid
 flowchart LR
@@ -1135,7 +1181,6 @@ flowchart LR
         FAVORITE --> END
         BASIC --> END
     end
-
 ```
 
 Formal Rule way: **conditions** are *inputs* to the rule; **outcome** is the business *decision* produced by it.
@@ -1194,23 +1239,8 @@ __Key Details__:
 
 
 ### See Also
-  * [github allows including diagrams in Markdown files with Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) - also embedded in GitLab, Gitea, Joplin, Notion.
 
-```code
-  graph TD;
-      A-->B;
-      A-->C;
-      B-->D;
-      C-->D;
-```
-```mermaid
-  graph TD;
-      A-->B;
-      A-->C;
-      B-->D;
-      C-->D;
-```
-
+  * [github allows including diagrams in Markdown files with Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) since 2022 - also embedded in GitLab, Gitea, Joplin, Notion.
 There is an __Mermaid diagram previewer for Visual Studio Code__ [extension](https://marketplace.visualstudio.com/items?itemName=vstirbu.vscode-mermaid-preview)
 
 
@@ -1249,7 +1279,3 @@ along with several other extensions
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
-
-Adina Bulau, Washington
-Reference #
-2026-08-26-56267
