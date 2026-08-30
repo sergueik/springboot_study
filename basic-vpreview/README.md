@@ -2,13 +2,13 @@
 >
 > OK ?
 
-This isn't merely a *"Wake up, Neo. The Matrix has you"* / *Office refuses to start* moment. 
+This isn't merely a *"Wake up, Neo. The Matrix has you"* / *Office refuses to start* moment.
 
 The message is unusually honest: it is telling you that the `.EXE` is **not the application in the normal sense**.
 
-If the thing you found is [Free Visio Viewer](https://www.microsoft.com/en-us/microsoft-365/visio/free-visio-viewer) 
- (`VPREVIEW.EXE`), then the exotic behavior is intentional. 
- 
+If the thing you found is [Free Visio Viewer](https://www.microsoft.com/en-us/microsoft-365/visio/free-visio-viewer)
+ (`VPREVIEW.EXE`), then the exotic behavior is intentional.
+
 Microsoft documented it as an ActiveX control hosted by Internet Explorer, rather than a standalone viewer. A Microsoft Q&A answer explicitly says it was designed to run from within a browser, and contemporary testing confirms that launching VPREVIEW.EXE directly produces exactly that message.
 
 > CAUTION! Desktop app requires some kind of installation. Consider the risks!
@@ -24,7 +24,7 @@ flowchart LR
         END([End])
 
         START --> C
-        C -- No --> M 
+        C -- No --> M
         C -- Yes --> A
         M --> END
         A --> W
@@ -72,11 +72,14 @@ AddAccessDeniedAce
 <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
 
 ```
+> NOTE: the `HKEY_CLASSES_ROOT` is not  explicitly mapped
+> ```powershell
+> get-itemproperty -path "HKCR:\Typelib\{BA35B84E-A623-471B-8B09-6D72DD072F25}\1.5"
+> ```
+> ```text
+> get-itemproperty : Cannot find drive. A drive with the name 'HKCR' does not exist.
+> ```
 
-```powershell
-HKEY_CLASSES_ROOT\Typelib\{BA35B84E-A623-471B-8B09-6D72DD072F25}\1.5
-Microsoft Visio Viewer 15.0 Type Library
-```
 ```powershell
 $p = 'SOFTWARE\Classes\CLSID\{F8CF7A98-2C45-4c8d-9151-2D716989DDAB}\InprocServer32'
 get-itemproperty -path "HKLM:\${p}" -name '(default)'|select-object -expandproperty '(default)'
@@ -116,7 +119,7 @@ VisioViewer.Viewer
 > ```
 
 ```powershell
-p = 'SOFTWARE\Classes\Typelib\{BA35B84E-A623-471B-8B09-6D72DD072F25}\1.5\0\win32'
+$p = 'SOFTWARE\Classes\Typelib\{BA35B84E-A623-471B-8B09-6D72DD072F25}\1.5\0\win32'
 get-itemproperty -path "HKLM:\${p}" -name '(default)'|select-object -expandproperty '(default)'
 ```
 ```text
@@ -168,10 +171,80 @@ get-itemproperty -path "HKLM:\${p}" -name 'VPREVIEW.EXE'|select-object -expandpr
 
 ```powershell
 $o = New-Object -ComObject 'VisioViewer.Viewer.1'
-($o | Get-Member | SELECT-OBJECT -expandPROPERTY NAME ) -join ', '
+($o | Get-Member | SELECT-OBJECT -expandPROPERTY NAME ) -join [char]12
 ```
 ```text
-DisplayAbout, DisplayContextMenu, DisplayHelp, DisplayPropertyDialog, FollowHyperlink, GetErrorMessage, GetPageView, GetScrollbarInfo, Load, Paint, Pan, Render, SelectShape, SetPageView, Unload, ZoomToPoint, ZoomToRect, CustomPropertyCount, CustomPropertyName, CustomPropertyValue, HyperlinkAddress, HyperlinkCount, LayerColor, LayerColorOverride, LayerColorTrans, LayerDeleted, LayerName, LayerVisible, PageIDToIndex, PageIndexToID, PageName, ParentShape, ReviewerColor, ReviewerID, ReviewerInitial, ReviewerMarkupVisible, ReviewerName, ShapeAtPoint, ShapeIDToIndex, ShapeIndexToID, ShapeName, SubShapeAtPoint, AlertsEnabled, BackColor, BuildNumber, ContextMenuEnabled, CurrentPageIndex, DocumentLoaded, GridVisible, HighQualityRender, LastErrorCode, LayerCount, MajorVersionNumber, MarkupOverlaysVisible, MinorVersionNumber, PageColor, PageCount, PageTabsVisible, PageVisible, PreviewMode, PropertyDialogEnabled, ReviewerCount, ScrollbarsVisible, SelectedShapeIndex, ShapeCount, SizeGripVisible, SRC, ToolbarButtons, ToolbarCustomizable, ToolbarVisible, Zoom
+DisplayAbout
+DisplayContextMenu
+DisplayHelp
+DisplayPropertyDialog
+FollowHyperlink
+GetErrorMessage
+GetPageView
+GetScrollbarInfo
+Load
+Paint
+Pan
+Render
+SelectShape
+SetPageView
+Unload
+ZoomToPoint
+ZoomToRect
+CustomPropertyCount
+CustomPropertyName
+CustomPropertyValue
+HyperlinkAddress
+HyperlinkCount
+LayerColor
+LayerColorOverride
+LayerColorTrans
+LayerDeleted
+LayerName
+LayerVisible
+PageIDToIndex
+PageIndexToID
+PageName
+ParentShape
+ReviewerColor
+ReviewerID
+ReviewerInitial
+ReviewerMarkupVisible
+ReviewerName
+ShapeAtPoint
+ShapeIDToIndex
+ShapeIndexToID
+ShapeName
+SubShapeAtPoint
+AlertsEnabled
+BackColor
+BuildNumber
+ContextMenuEnabled
+CurrentPageIndex
+DocumentLoaded
+GridVisible
+HighQualityRender
+LastErrorCode
+LayerCount
+MajorVersionNumber
+MarkupOverlaysVisible
+MinorVersionNumber
+PageColor
+PageCount
+PageTabsVisible
+PageVisible
+PreviewMode
+PropertyDialogEnabled
+ReviewerCount
+ScrollbarsVisible
+SelectedShapeIndex
+ShapeCount
+SizeGripVisible
+SRC
+ToolbarButtons
+ToolbarCustomizable
+ToolbarVisible
+Zoom
 ```
 
 ```powershell
@@ -195,11 +268,11 @@ $form.ShowDialog()
 ```
 
 ```text
-New-Object : A constructor was not found. 
+New-Object : A constructor was not found.
 Cannot find an appropriate constructor for type System.Windows.Forms.AxHost.
 ```
 
-the trick is exactly what the API design suggests: *subclass* `AxHost`, 
+the trick is exactly what the API design suggests: *subclass* `AxHost`,
 then expose the base *protected* constructor through the new class *public* constructor.
 
 ```powershell
@@ -209,43 +282,286 @@ Add-Type -AssemblyName System.Drawing
 Add-Type @'
 using System.Windows.Forms;
 
-public class VisioAxHost : AxHost
-{
-    public VisioAxHost()
-        : base("{F8CF7A98-2C45-4c8d-9151-2D716989DDAB}")
-    {
-    }
+public class VisioAxHost : AxHost {
+    public VisioAxHost() : base("{F8CF7A98-2C45-4c8d-9151-2D716989DDAB}") { }
 }
-'@  -ReferencedAssemblies 'System.Windows.Forms.dll'
+'@ -ReferencedAssemblies 'System.Windows.Forms.dll'
 
 
-$form = New-Object System.Windows.Forms.Form
-$form.Text = 'Visio Viewer'
-$form.Width = 1000
-$form.Height = 700
+$f = New-Object System.Windows.Forms.Form
+$f.Text = 'Visio Viewer'
+$f.Width = 1000
+$f.Height = 700
 
-$viewer = New-Object VisioAxHost
-$viewer.Dock = [System.Windows.Forms.DockStyle]::Fill
+$v = New-Object VisioAxHost
+($v | Get-Member | select-object -expandproperty name | sort-object ) -join [char]12
+$v.Dock = [System.Windows.Forms.DockStyle]::Fill
 
-$form.Controls.Add($viewer)
+  $f_Load = $f.add_Load
+  $f_Load.Invoke({
+$o = $v.GetOcx()
+$p = (get-childitem -path "${env:USERPROFILE}\Downloads" -filter '*.vsdx'|select-object -last 1).FullName
 
-$form.ShowDialog()
+write-host ('Loading {0}' -f $p)
+$o.Load($p)
+write-host $o.DocumentLoaded
+write-host $o.PageName(0)
+  })
+$f.Controls.Add($v)
+
+$f.ShowDialog()
 
 ```
-
+```text
+AccessibilityObject
+AccessibleDefaultActionDescription
+AccessibleDescription
+AccessibleName
+AccessibleRole
+AllowDrop
+Anchor
+AutoScrollOffset
+AutoSize
+AutoSizeChanged
+BackColor
+BackColorChanged
+BackgroundImage
+BackgroundImageChanged
+BackgroundImageLayout
+BackgroundImageLayoutChanged
+BeginInit
+BeginInvoke
+BindingContext
+BindingContextChanged
+Bottom
+Bounds
+BringToFront
+CanFocus
+CanSelect
+Capture
+CausesValidation
+CausesValidationChanged
+ChangeUICues
+Click
+ClientRectangle
+ClientSize
+ClientSizeChanged
+CompanyName
+Container
+ContainingControl
+Contains
+ContainsFocus
+ContextMenu
+ContextMenuChanged
+ContextMenuStrip
+ContextMenuStripChanged
+ControlAdded
+ControlRemoved
+Controls
+CreateControl
+Created
+CreateGraphics
+CreateObjRef
+Cursor
+CursorChanged
+DataBindings
+DeviceDpi
+DisplayRectangle
+Dispose
+Disposed
+Disposing
+Dock
+DockChanged
+DoDragDrop
+DoubleClick
+DoVerb
+DpiChangedAfterParent
+DpiChangedBeforeParent
+DragDrop
+DragEnter
+DragLeave
+DragOver
+DrawToBitmap
+EditMode
+Enabled
+EnabledChanged
+EndInit
+EndInvoke
+Enter
+Equals
+FindForm
+Focus
+Focused
+Font
+FontChanged
+ForeColor
+ForeColorChanged
+GetAttributes
+GetChildAtPoint
+GetClassName
+GetComponentName
+GetContainerControl
+GetConverter
+GetDefaultEvent
+GetDefaultProperty
+GetEditor
+GetEvents
+GetHashCode
+GetLifetimeService
+GetNextControl
+GetOcx
+GetPreferredSize
+GetProperties
+GetPropertyOwner
+GetType
+GiveFeedback
+GotFocus
+Handle
+HandleCreated
+HandleDestroyed
+HasAboutBox
+HasChildren
+HasPropertyPages
+Height
+HelpRequested
+Hide
+ImeMode
+ImeModeChanged
+InitializeLifetimeService
+Invalidate
+Invalidated
+Invoke
+InvokeEditMode
+InvokeRequired
+IsAccessible
+IsDisposed
+IsHandleCreated
+IsMirrored
+KeyDown
+KeyPress
+KeyUp
+Layout
+LayoutEngine
+Leave
+Left
+Location
+LocationChanged
+LogicalToDeviceUnits
+LostFocus
+MakeDirty
+Margin
+MarginChanged
+MaximumSize
+MinimumSize
+MouseCaptureChanged
+MouseClick
+MouseDoubleClick
+MouseDown
+MouseEnter
+MouseHover
+MouseLeave
+MouseMove
+MouseUp
+MouseWheel
+Move
+Name
+OcxState
+OnDragDrop
+OnDragEnter
+OnDragLeave
+OnDragOver
+Padding
+PaddingChanged
+Paint
+Parent
+ParentChanged
+PerformLayout
+PointToClient
+PointToScreen
+PreferredSize
+PreProcessControlMessage
+PreProcessMessage
+PreviewKeyDown
+ProductName
+ProductVersion
+QueryAccessibilityHelp
+QueryContinueDrag
+RecreatingHandle
+RectangleToClient
+RectangleToScreen
+Refresh
+Region
+RegionChanged
+ResetBackColor
+ResetBindings
+ResetCursor
+ResetFont
+ResetForeColor
+ResetImeMode
+ResetRightToLeft
+ResetText
+Resize
+ResumeLayout
+Right
+RightToLeft
+RightToLeftChanged
+Scale
+ScaleBitmapLogicalToDevice
+Select
+SelectNextControl
+SendToBack
+SetBounds
+Show
+ShowAboutBox
+ShowPropertyPages
+Site
+Size
+SizeChanged
+StyleChanged
+SuspendLayout
+SystemColorsChanged
+TabIndex
+TabIndexChanged
+TabStop
+TabStopChanged
+Tag
+Text
+TextChanged
+Top
+TopLevelControl
+ToString
+Update
+UseWaitCursor
+Validated
+Validating
+Visible
+VisibleChanged
+Width
+WindowTarget
+```
 ```text
 WARNING: The generated type defines no public methods or properties.
 ```
-![Visio Viewer hosted](screenshots/caption-form.png)
+![Visio Viewer hosted](screenshots/capture-form.png)
 
-### Background 
+alternatively
 
-__Visio Viewer__ is an powerful [ActiveX control](https://en.wikipedia.org/wiki/ActiveX), 
+```powershell
+. .\loader.ps1 "${env:userprofile}\Downloads\diagram.vsdx"
+```
+```text
+Loading C:\Users\kouzm\Downloads\diagram.vsdx
+```
+
+![Visio Viewer Showing File](screenshots/capture-form-loaded.png)
+### Background
+
+__Visio Viewer__ is an powerful [ActiveX control](https://en.wikipedia.org/wiki/ActiveX),
 enabling one to render drawings *inside* __Internet Explorer__,
-and its __Viewer__ object is itself a programmable __ActiveX control__ 
-- a famous deprecated Microsoft software component based on the 
-[Component Object Model](https://en.wikipedia.org/wiki/Component_Object_Model) (__COM__) 
-introduced to add interactive features to 
+and its __Viewer__ object is itself a programmable __ActiveX control__
+- a famous deprecated Microsoft software component based on the
+[Component Object Model](https://en.wikipedia.org/wiki/Component_Object_Model) (__COM__)
+introduced to add interactive features to
 applications and web page in [Java Applet](https://en.wikipedia.org/wiki/Java_applet)-like fashion in 2000s.
 that can also be hosted in plain [Windows Forms](https://en.wikipedia.org/wiki/Windows_Forms) class.
 
@@ -328,10 +644,12 @@ classDiagram
 
  The host is providing an OLE/ActiveX container.
 
-Historically, the __Internet Explorer__ plays the top shell role 
+Historically, the __Internet Explorer__ plays the top shell role
 
- a browser-hosted ActiveX component, the “another program” isn't some mystical Microsoft Office process. 
+ a browser-hosted ActiveX component, the “another program” isn't some mystical Microsoft Office process.
 
+###  See Also
+  * https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5-transcribe/
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
