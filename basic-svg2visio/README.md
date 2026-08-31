@@ -1,6 +1,8 @@
 ### Info
 
-replica of [McMarius11/svgtovisio](https://github.com/McMarius11/svgtovisio) the standalone browser hosted __SVG__ & __Draw.io__ to __Visio__ Converter
+Replica of [McMarius11/svgtovisio](https://github.com/McMarius11/svgtovisio) the standalone browser hosted __SVG__ & __Draw.io__ to __Visio__ Converter
+useful for creating Visio resources *without* the __Visio__ itself
+
 
 ### Usage
 
@@ -13,78 +15,90 @@ IMAGE=svg2visio
 docker build -t $IMAGE -f Dockerfile .
 ```
 ```text
-docker build -t $IMAGE -f Dockerfile .
-Sending build context to Docker daemon  409.6kB
-Step 1/16 : FROM node:22.12.0-alpine AS builder
+Sending build context to Docker daemon  1.192MB
+Step 1/15 : FROM node:22.12.0-alpine AS builder
  ---> 3448d7ddbc59
-Step 2/16 : WORKDIR /app
- ---> Using cache
- ---> 69abba8f2619
-Step 3/16 : COPY package*.json /app/
- ---> Using cache
- ---> f7eb6028edb9
-Step 4/16 : ARG NPM_REGISTRY
- ---> Using cache
- ---> 91f431337aa8
-Step 5/16 : RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi
- ---> Using cache
- ---> 291bacf1504f
-Step 6/16 : RUN npm install || { cat /root/.npm/_logs/*.log; exit 1; }
- ---> Using cache
- ---> 3496d37d4270
-Step 7/16 : COPY app.js build.js index.html drawio-parser.js vsdx-builder.js test.js test-samples/ ./
- ---> 1e440d1cd4dc
-Step 8/16 : RUN node build.js
- ---> Running in a6dfadd6477e
+Step 2/15 : WORKDIR /app
+ ---> Running in cf76642e0bac
+Removing intermediate container cf76642e0bac
+ ---> 1edd1d0ab760
+Step 3/15 : COPY package*.json /app/
+ ---> c8a612bbf175
+Step 4/15 : ARG NPM_REGISTRY
+ ---> Running in bd5a1bc2e18f
+Removing intermediate container bd5a1bc2e18f
+ ---> aa04ca504fd3
+Step 5/15 : RUN if [ -n "$NPM_REGISTRY" ]; then npm config set registry "$NPM_REGISTRY"; fi
+ ---> Running in 6dcc84b1705d
+Removing intermediate container 6dcc84b1705d
+ ---> 409d7c0bd5f0
+Step 6/15 : RUN npm install || { cat /root/.npm/_logs/*.log; exit 1; }
+ ---> Running in a23bd4c675da
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'jsdom@29.0.1',
+npm warn EBADENGINE   required: { node: '^20.19.0 || ^22.13.0 || >=24.0.0' },
+npm warn EBADENGINE   current: { node: 'v22.12.0', npm: '10.9.0' }
+npm warn EBADENGINE }
+
+added 52 packages, and audited 53 packages in 8s
+
+8 packages are looking for funding
+  run `npm fund` for details
+
+1 high severity vulnerability
+
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details.
+npm notice
+npm notice New major version of npm available! 10.9.0 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
+Removing intermediate container a23bd4c675da
+ ---> 1a5ce95d8ba2
+Step 7/15 : COPY app.js build.js index.html *-parser.js vsdx-builder.js test.js test-samples/ ./
+ ---> 2c345a1b7427
+Step 8/15 : RUN node build.js
+ ---> Running in 3cbe8f56456c
 Inlined: jszip.min.js (95.3 KB)
 Inlined: pako.min.js (45.8 KB)
-WARNING: svg-parser.js not found
+Inlined: svg-parser.js (25.3 KB)
 Inlined: drawio-parser.js (14.1 KB)
 Inlined: vsdx-builder.js (27.6 KB)
 Inlined: app.js (13.0 KB)
 
-Built: dist/index.html (202.0 KB)
-Removing intermediate container a6dfadd6477e
- ---> f63177fc1666
-Step 9/16 : RUN node build.js
- ---> Running in 43a80e04b40c
-Inlined: jszip.min.js (95.3 KB)
-Inlined: pako.min.js (45.8 KB)
-WARNING: svg-parser.js not found
-Inlined: drawio-parser.js (14.1 KB)
-Inlined: vsdx-builder.js (27.6 KB)
-Inlined: app.js (13.0 KB)
-
-Built: dist/index.html (202.0 KB)
-Removing intermediate container 43a80e04b40c
- ---> 1ffb578f5d43
-Step 10/16 : FROM nginx:1.30.3-alpine3.23
+Built: dist/index.html (227.2 KB)
+Removing intermediate container 3cbe8f56456c
+ ---> 4a775be93f35
+Step 9/15 : FROM nginx:1.30.3-alpine3.23
  ---> d0701bd41f82
-Step 11/16 : WORKDIR /usr/share/nginx/html
- ---> Running in cbfb77b36510
-Removing intermediate container cbfb77b36510
- ---> d1f04cc1055f
-Step 12/16 : COPY --from=builder /app/dist/index.html ./
- ---> ca69ab2b7fc5
-Step 13/16 : COPY --from=builder /app/*js ./
- ---> bfb9e9ce26a8
-Step 14/16 : RUN  touch .nojekyll
- ---> Running in 90eecdd28338
-Removing intermediate container 90eecdd28338
- ---> af39794ff2e6
-Step 15/16 : EXPOSE 80
- ---> Running in 408fe8bdb10f
-Removing intermediate container 408fe8bdb10f
- ---> a97d06fb0d75
-Step 16/16 : CMD ["nginx", "-g", "daemon off;"]
- ---> Running in 31ef01cac884
-Removing intermediate container 31ef01cac884
- ---> 8ad353555803
-Successfully built 8ad353555803
-Successfully tagged mermaid-svg2visio:latest
+Step 10/15 : WORKDIR /usr/share/nginx/html
+ ---> Running in 2153ef848ea8
+Removing intermediate container 2153ef848ea8
+ ---> 9c300351b656
+Step 11/15 : COPY --from=builder /app/dist/index.html ./
+ ---> de642adf477e
+Step 12/15 : COPY --from=builder /app/*js ./
+ ---> dc11548d027f
+Step 13/15 : RUN  touch .nojekyll
+ ---> Running in 6dfe576d5340
+Removing intermediate container 6dfe576d5340
+ ---> 791e23de7407
+Step 14/15 : EXPOSE 80
+ ---> Running in cde655b8ced2
+Removing intermediate container cde655b8ced2
+ ---> 3f68d61c0686
+Step 15/15 : CMD ["nginx", "-g", "daemon off;"]
+ ---> Running in fb8eb250e46b
+Removing intermediate container fb8eb250e46b
+ ---> 2c4efd63f39c
+Successfully built 2c4efd63f39c
+Successfully tagged svg2visio:latest
 ```
 ```sh    
-NAME=$IMAGE
+NAME=svg2visio
 docker run --name $NAME -d -p 8080:80 $IMAGE
 ```
 
@@ -94,9 +108,10 @@ docker run --name $NAME -d -p 8080:80 $IMAGE
 
 Convert [SVG](https://en.wikipedia.org/wiki/SVG) diagrams and [Draw.io](https://en.wikipedia.org/wiki/Diagrams.net) files to editable legacy [Visio](https://en.wikipedia.org/wiki/Microsoft_Visio) `.vsdx` files (a well documented [DatadiagramML](https://github.com/slebok/zoo/blob/master/zoo/markup/graphical/datadiagramml/xform/README.txt) XML schema honoring successor of the original Visio's `VSD` proprietary binary-file format that is still the default here and there).
 
-### Note
+###NAME=svg2visio
+docker run --name $NAME -d -p 8080:80 $IMAGE
+ Note
 
-May be useful for creating Visio resources *without* the __Visio__ itself
 
  * Download the __Graphviz__ binaries from [Graphviz](https://graphviz.org/download/)
 
@@ -121,24 +136,20 @@ Use MS [Free Visio Viewer](https://www.microsoft.com/en-us/microsoft-365/visio/f
 > CAUTION! Desktop app requires some kind of installation. Consider the risks!
 > NOTE:  the default page contains *no* download link. The real download is available on [old page](https://www.microsoft.com/en-us/microsoft-365/blog/2012/11/28/download-the-free-microsoft-visio-viewer) [link](https://www.microsoft.com/en-us/download/details.aspx?id=35811)
 ```cmd
- curl -skLo ~/Downloads/visioviewer64bit.exe https://download.microsoft.com/download/a/6/8/a682a83b-4866-4f88-ae83-61388629a891/visioviewer64bit.exe
-
+curl -skLo ~/Downloads/visioviewer64bit.exe https://download.microsoft.com/download/a/6/8/a682a83b-4866-4f88-ae83-61388629a891/visioviewer64bit.exe
 ```
 ```text
-PS C:\Program Files\Microsoft Office\Office15> get-item .\VPREVIEW.EXE | select-object -property *
+write-host (get-item -path  "C:\Program Files\Microsoft Office\Office15\VPREVIEW.EXE" | select-object -property * | format-list |out-string)
 
 
-PSPath            : Microsoft.PowerShell.Core\FileSystem::C:\Program
-                    Files\Microsoft Office\Office15\VPREVIEW.EXE
-PSParentPath      : Microsoft.PowerShell.Core\FileSystem::C:\Program
-                    Files\Microsoft Office\Office15
+PSPath            : Microsoft.PowerShell.Core\FileSystem::C:\Program Files\Microsoft Office\Office15\VPREVIEW.EXE
+PSParentPath      : Microsoft.PowerShell.Core\FileSystem::C:\Program Files\Microsoft Office\Office15
 PSChildName       : VPREVIEW.EXE
 PSDrive           : C
 PSProvider        : Microsoft.PowerShell.Core\FileSystem
 PSIsContainer     : False
 Mode              : -a----
-VersionInfo       : File:             C:\Program Files\Microsoft
-                    Office\Office15\VPREVIEW.EXE
+VersionInfo       : File:             C:\Program Files\Microsoft Office\Office15\VPREVIEW.EXE
                     InternalName:     VPREVIEW.EXE
                     OriginalFilename: VPREVIEW.EXE
                     FileVersion:      15.0.4420.1017
@@ -146,11 +157,150 @@ VersionInfo       : File:             C:\Program Files\Microsoft
                     Product:          Microsoft Office 2013
                     ProductVersion:   15.0.4420.1017
                     Debug:            False
+                    Patched:          False
+                    PreRelease:       False
+                    PrivateBuild:     False
+                    SpecialBuild:     False
+                    Language:         Language Neutral
+
+BaseName          : VPREVIEW
+Target            : {}
+LinkType          :
+Name              : VPREVIEW.EXE
+Length            : 694928
+DirectoryName     : C:\Program Files\Microsoft Office\Office15
+Directory         : C:\Program Files\Microsoft Office\Office15
+IsReadOnly        : False
+Exists            : True
+FullName          : C:\Program Files\Microsoft Office\Office15\VPREVIEW.EXE
+Extension         : .EXE
+CreationTime      : 10/1/2012 8:35:08 PM
+CreationTimeUtc   : 10/2/2012 12:35:08 AM
+LastAccessTime    : 8/29/2026 9:53:57 AM
+LastAccessTimeUtc : 8/29/2026 1:53:57 PM
+LastWriteTime     : 10/1/2012 8:35:08 PM
+LastWriteTimeUtc  : 10/2/2012 12:35:08 AM
+Attributes        : Archive
+```
+![app launch error](screenshots/capture-visio-viewer-error.png)
+
+turns out the `VPREVIEW.EXE` isn't really a conventional standalone viewer application.
+
+The line "You betcha" is featured in the surreal final musical sequence of the 2014 dark comedy The Voices, occurring in an afterlife scene as Jerry reunites with his victims.
+
+
+It's essentially the executable/component that __Office__ / __IE__ uses to provide __Visio__ *preview*
+functionality, and it expects to be invoked exclusively through its Office integration/host mechanism.
+
+
+blind dump registry 
+```cmd
+reg.exe query HKCR /s | findstr /ic:"Visio Viewer"
+```
+```text
+    (Default)    REG_SZ    Visio Viewer CAD Drawing
+    (Default)    REG_SZ    Visio Viewer DWG Display
+    (Default)    REG_SZ    Visio Viewer DWG Display Creator
+    (Default)    REG_SZ    Visio Viewer CAD Drawing
+    ProductName    REG_SZ    Microsoft Visio Viewer 2013
+    DiskPrompt    REG_SZ    Microsoft Visio Viewer 2013
+    (Default)    REG_SZ    Microsoft Visio Viewer 15.0 Type Library
+    (Default)    REG_SZ    Visio Viewer DWG Display
+    (Default)    REG_SZ    Visio Viewer DWG Display
+    (Default)    REG_SZ    Visio Viewer DWG Display Creator
+    (Default)    REG_SZ    Visio Viewer DWG Display Creator
+    (Default)    REG_SZ    Visio Viewer CAD Drawing
+    (Default)    REG_SZ    Visio Viewer DWG Display
+    (Default)    REG_SZ    Visio Viewer DWG Display Creator
+    (Default)    REG_SZ    Microsoft Visio Viewer 15.0 Type Library
+```
+targeted registry peek
+
+```powershell
+HKEY_CLASSES_ROOT\Typelib\{BA35B84E-A623-471B-8B09-6D72DD072F25}\1.5
+Microsoft Visio Viewer 15.0 Type Library
+```
+```powershell
+$p = 'SOFTWARE\Classes\CLSID\{F8CF7A98-2C45-4c8d-9151-2D716989DDAB}\InprocServer32'
+get-itemproperty -path "HKLM:\${p}" -name '(default)'|select-object -expandproperty '(default)'
+```
+```text
+C:\PROGRA~1\MICROS~4\Office15\VVIEWER.DLL
+```
+```powershell
+get-itemproperty -path 'HKLM:\SOFTWARE\Classes\WOW6432Node\CLSID\{F8CF7A98-2C45-4c8d-9151-2D716989DDAB}\InprocServer32' -name '(default)'|select-object -expandproperty '(default)'
+```
+```text
+C:\PROGRA~1\MICROS~4\Office15\VVIEWER.DLL
 ```
 
-turns out the `VPREVIEW.EXE` isn't really a conventional standalone viewer application. It's essentially the executable/component that Office uses to provide Visio preview functionality, and it expects to be invoked through its Office integration/host mechanism.
+```powershell
+$p = 'SOFTWARE\Classes\CLSID\{F8CF7A98-2C45-4c8d-9151-2D716989DDAB}\VersionIndependentProgID'
+get-itemproperty -path "HKLM:\${p}" -name '(default)'|select-object -expandproperty '(default)'
+```
+```text
+VisioViewer.Viewer
+```
 
-![app launch error](screenshots/capture-visio-viewer-error.png)
+> NOTE: the following will fail
+> ```powershell
+> $p = 'SOFTWARE\Classes\CLSID\{F8CF7A98-2C45-4c8d-9151-2D716989DDAB}'
+> get-itemproperty -path "HKLM:\${p}" -name 'ProgID'|select-object -expandproperty 'ProgID'
+> ```
+> ```text
+> Property ProgID does not exist at path ...
+> ```
+
+```powershell
+p = 'SOFTWARE\Classes\Typelib\{BA35B84E-A623-471B-8B09-6D72DD072F25}\1.5\0\win32'
+get-itemproperty -path "HKLM:\${p}" -name '(default)'|select-object -expandproperty '(default)'
+```
+```text
+C:\PROGRA~1\MICROS~4\Office15\VVIEWER.DLL
+```
+
+```powershell
+$p = 'SOFTWARE\Classes\CLSID\{21E17C2F-AD3A-4b89-841F-09CFE02D16B7}\LocalServer32'
+get-itemproperty -path "HKLM:\${p}" -name '(default)'|select-object -expandproperty '(default)'
+```
+```text
+C:\PROGRA~1\MICROS~4\Office15\VPREVIEW.EXE
+```
+```powershell
+$p = 'SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_ADDON_MANAGEMENT'
+get-itemproperty -path "HKLM:\${p}" -name 'VPREVIEW.EXE'|select-object -expandproperty 'VPREVIEW.EXE'
+```
+```text
+1
+```
+
+```powershell
+$p = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_HTTP_USERNAME_PASSWORD_DISABLE'
+$p  = $p -replace 'HKEY_LOCAL_MACHINE\\', ''
+get-itemproperty -path "HKLM:\${p}" -name 'VPREVIEW.EXE'|select-object -expandproperty 'VPREVIEW.EXE'
+```
+```text
+1
+```
+
+```powershell
+$p = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_LOCALMACHINE_LOCKDOWN'
+$p  = $p -replace 'HKEY_LOCAL_MACHINE\\', ''
+get-itemproperty -path "HKLM:\${p}" -name 'VPREVIEW.EXE'|select-object -expandproperty 'VPREVIEW.EXE'
+```
+```text
+1
+```
+
+```powershell
+$p = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_RESTRICT_ACTIVEXINSTALL'
+$p  = $p -replace 'HKEY_LOCAL_MACHINE\\', ''
+get-itemproperty -path "HKLM:\${p}" -name 'VPREVIEW.EXE'|select-object -expandproperty 'VPREVIEW.EXE'
+```
+```text
+1
+```
+...more of the kind found under IE's own small *feature registry*, skipped
 
 ![app aprose render](screenshots/capture-aprose-viewer.png)
 
