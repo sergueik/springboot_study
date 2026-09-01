@@ -1237,6 +1237,181 @@ __Key Details__:
   * __Built-in Extension__: This update merged the popular third-party "Markdown Preview Mermaid Support" extension directly into the core editor as a built-in feature called Mermaid Markdown Features.
   * __Where It Works__: You can render Mermaid diagrams automatically inside the standard Markdown preview panel and within notebook cells without downloading extra plugins.How to Use It: Simply write your diagram syntax inside a fenced code block labeled with mermaid:
 
+### Build Notes
+
+Whenever you run an application in the cloud—whether it is SaaS, a serverless function (FaaS/Lambda), or a traditional web application—your code is ultimately running on some real computer somewhere
+
+You may not see or manage that computer yourself. The cloud provider may hide it behind layers of virtualization, containers, and orchestration. But "serverless" does not mean that there are no servers: it means that someone else manages the servers for you
+
+In practice, your application will typically be running inside a container, virtual machine, or similar isolated environment, which ultimately runs on physical hardware in a data center.
+
+The cloud is not magic. Whenever an application runs, somewhere there is a real computer doing the work.
+
+But getting an application onto that computer is another matter.
+
+Packaging the application
+
+When an application runs in a container, tools such as Docker—and, at a larger scale, Kubernetes—help arrange for the application to have what it needs to run.
+
+This usually means packaging or describing things such as:
+
+the application itself;
+its runtime and libraries;
+configuration;
+supporting processes and services.
+
+The exact division of responsibilities varies: Docker is commonly used to build and package container images, while Kubernetes is commonly used to decide where and how containers should run and to keep the desired number of them running.
+
+The browser is sometimes another invisible part of the application
+
+Web applications add another important twist.
+
+Part of a modern web application may not run in the container at all. It runs inside your browser.
+
+Web applications add another important twist.
+
+Part of a modern web application may not run in the container at all. It runs inside your browser.
+
+From the user's perspective, there is just "the application." But technically, part of it may be running on a server somewhere, while another part is running on the user's own computer, inside Chrome, Firefox, Edge, or another browser.
+
+Historically—and still very commonly—the browser part is delivered as JavaScript code.
+
+However, the code delivered to the browser is often not exactly the code the developer originally wrote.
+
+Before deployment, the frontend source code may go through another, rather cumbersome form of packaging or transformation: modules are combined, dependencies are included, code may be transpiled or minimized, and the result is turned into a set of files suitable for a browser to download.
+
+Eventually, those files have to come from somewhere.
+
+A very typical arrangement looks like this:
+```code
+    Developer's source code 
+       │
+       ▼
+    Frontend build process
+       │
+       ▼
+    JavaScript/CSS/HTML files
+       │
+       ▼
+    Web server/container
+       │
+       ▼ 
+    Browser
+       │ 
+       ▼ 
+    Application runs here too
+```
+
+Those frontend files may simply be stored directly inside the container running the web server. Or the browser may obtain information dynamically by making HTTP requests—often REST API calls—to another application running in a container.
+
+So what users perceive as one web application may actually consist of two cooperating pieces:
+
+
+So what users perceive as one web application may actually consist of two cooperating pieces:
+
+A backend, running somewhere in a container, VM, or other server environment.
+A frontend, running inside the user's browser.
+
+And both pieces had to be prepared, packaged, and delivered in some form before they could run.
+
+## The surprising case: sometimes the server can disappear
+
+For many web applications, we instinctively imagine a permanent connection between the application in the browser and a backend running somewhere in the cloud.
+
+But that is not always necessary.
+
+A browser-based application may first contact a web server only to download its initial payload: HTML, JavaScript, CSS, images, and other resources. After that, the application itself is running inside the browser.
+
+For a sufficiently self-contained application, once those files have been downloaded, the server has done its job.
+
+You could, in principle, turn off the container or VM that delivered the application and walk away. The application already loaded in the browser may continue working perfectly well.
+
+```
+Container / VM
+     │
+     │  "Here is the application"
+     ▼
+  Browser
+     │
+     │  application is now running here
+     ▼
+┌─────────────────┐
+│ JavaScript app  │
+│ running locally │
+└─────────────────┘
+
+     ▲
+     │
+Server can disappear
+without necessarily
+stopping the app
+```
+
+Of course, this only works for applications that do not continuously depend on a backend.
+
+Many applications still need a server for things such as:
+
+* fetching or saving shared data;
+* authentication;
+* communicating with other users;
+* accessing databases;
+* performing expensive computation.
+
+But there is a large class of "pure" browser-hosted applications where the backend's role is little more than delivering the application itself.
+
+In that case, the server is not really where the application *runs*. It is more like a delivery mechanism.
+
+The important distinction is:
+
+> **The server may be needed to deliver the application, without being needed to keep the application running.**
+
+Once loaded, the browser can become the application's actual runtime environment.
+
+
+#### Time Decouling
+
+## It does not even have to be eaten immediately
+
+Think of a restaurant.
+
+The fact that a meal is prepared after you order it does not mean that freshly prepared food is the only possible way to eat. You can also buy a prepared meal, put it in the refrigerator or freezer, and consume it later.
+
+The same idea applies to browser applications.
+
+A container may be started solely to prepare or serve the application's files. Once the browser has received them, those files do not necessarily have to be used immediately.
+
+They can be stored locally—effectively put "in the fridge"—and used later.
+
+So the sequence can be:
+
+```
+Container starts
+      │
+      ▼
+Application is prepared
+      │
+      ▼
+Browser downloads it
+      │
+      ▼
+Container stops
+      │
+      ▼
+Application waits locally
+      │
+      ▼
+User opens/runs it later
+```
+
+This means that the container's lifetime and the application's useful lifetime can be completely different.
+
+The container may exist for only a few seconds or minutes. The browser application it delivered may remain available for hours, days, or longer.
+
+A backend is therefore not always a restaurant kitchen continuously preparing food while you eat. Sometimes it is simply a place where a batch of prepared meals was made and handed out.
+
+> **The application can be prepared now, delivered now, and used much later—even after the container that prepared or delivered it no longer exists.**
+
+
 
 ### See Also
 
