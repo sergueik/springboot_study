@@ -1183,6 +1183,47 @@ curl -sLS 'https://hub.docker.com/v2/namespaces/linuxserver/repositories/dilling
 ```
 > NOTE Can write `jq '.[-10:]'` to fetch the last 10 *oldest* tags
 
+
+### Workaround Drive 
+
+```
+ grep -r 'src="/' ../dillinger/node_modules
+ ```
+ ```
+../dillinger/node_modules/angular/README.md:<script src="/node_modules/angular/angular.js"></script>
+../dillinger/node_modules/angular/README.md:<script src="/bower_components/angular/angular.js"></script>
+../dillinger/node_modules/connect-assets/README.md:<script src="/js/jquery-[hash].js"></script>
+../dillinger/node_modules/connect-assets/README.md:<script src="/js/jquery-[hash].js" async></script>
+../dillinger/node_modules/connect-assets/README.md:<img src="/assets/img/image-name-[hash].png">
+../dillinger/node_modules/connect-assets/test/helpers.js:        '<script src="/assets/blank.js"></script>\n' +
+../dillinger/node_modules/connect-assets/test/helpers.js:        '<script src="/assets/depends-on-blank.js"></script>'
+../dillinger/node_modules/connect-assets/test/helpers.js:        '<script src="/assets/asset.js"></script>'
+../dillinger/node_modules/connect-assets/test/helpers.js:        '<script src="/assets/asset.js" async></script>'
+../dillinger/node_modules/highlight.js/README.md:<script src="/path/to/highlight.pack.js"></script>
+../dillinger/node_modules/imurmurhash/README.md:<script type="text/javascript" src="/scripts/imurmurhash.min.js"></script>
+...
+
+```
+after packaging, only in `index.html`
+```html
+  <script src="/js/main.bundle.js" type="text/javascript" async></script>
+  <link href="/css/app.css" rel="stylesheet">
+```
+ and in `js/main.bundle.js`:
+
+```
+```
+but the latter is formatted with ultra long lines making it patch fragile:
+```sh
+sed '437,437p' js/main.bundle.js|wc -c
+```
+```text
+3547460
+```
+one can tolerate network,console errors:
+
+![error when running locally](screenshots/capture-devtools-network.png)
+
 ### See Also:
 
   * [joemccann/dillinger](https://hub.docker.com/r/joemccann/dillinger) (NOTE: latest releases __3.41.0__ are significantly heavier than __3.39.0__ or earlier
