@@ -661,6 +661,135 @@ A browser/cloud Visio experience doesn't give Python the same local COM automati
 Historically, a Word document (and its OLE object hierarchy) could easily retain artifacts of the document's revision history, making some embeddings largely duplicates of one another.
 No need to spell out the entire causal chain.
 
+__Visio processing__: Open and reconstruct the Visio document model → traverse pages/shapes/groups/connectors → resolve relationships and properties → only then extract or modify the semantic content.
+
+Visio has its own audiophile cable:
+
+“Five-nines oxygen-free copper. Silk insulation. Gold-coated screws. Air-gapped.”
+
+Audiophile-grade construction — namely:
+“Visio / Office: backward compatibility.”
+
+Not merely “legacy compatibility,” but an elaborate compatibility layer that silently preserves the 1990s-era OLE/COM internal machinery — itself a substantial artifact.
+
+And you pay that toll simply for using it, regardless of how much semantic content or contextual value you ultimately care about.
+
+![capture cable](screenshots/capture-audiophile-wire.png)
+
+The enterprise's knowledge may still be trapped in a format that must be preserved, but that does not mean the enterprise intends to keep authoring new knowledge in that format
+
+ou don't want to teach the AI how to keep making Office 97-compatible artifacts. You want to encode the organization's knowledge about what those artifacts mean and how to move forward from them.
+
+If a 10 MB Visio beast becomes a 500-line Mermaid flow, that's OK. The difference is not necessarily lost knowledge — much of it may have been legacy audiophile cable
+
+The 10 MB → 500 lines argument should not be generalized to the mainframe OS itself.
+
+Complexity of the platform is not evidence of equivalent complexity in the business process running on it.
+
+
+because the platform is doing extraordinarily sophisticated things.
+
+The assumption is incorrect
+
+“Look how incredibly complicated the machinery is. Therefore, what it supports must also be incredibly complicated.”
+
+Don't confuse the complexity of the preservation mechanism with the complexity of the knowledge being preserved.
+
+Office and other desktop applications offered automation
+
+historically Office automation target was largely:
+
+“How do I make a machine operate Office like a human operates Office?”
+
+rather than:
+
+“How do I extract the durable semantic information from an Office artifact?”
+
+That distinction matters enormously.
+
+The old automation model is essentially UI/procedural automation:
+
+Open document
+→ navigate to page
+→ select object
+→ select paragraph/line
+→ apply formatting
+→ save
+
+A great deal of Office automation was designed around operating the Office object model and reproducing user actions, rather than recovering a representation-independent semantic model of the document.
+
+It automates the interaction with the representation. Mermaid conversion is effectively  the inverse:
+
+→ Open artifact
+→ understand structure
+→ identify semantic objects
+→ infer relationships
+→ discard representational baggage
+→ produce a durable semantic representation
+
+
+|Old world|Modern extraction|AI/SKILL|
+|---------|-----------------|--------|
+|Automate the user|Extract the artifact|Understand the knowledge|
+|“Click this, select that”|“Parse this object”|“What does this mean?”|
+|Preserve representation|Normalize representation|Preserve intent|
+|How to operate it|How to read it|What to do with it|
+
+
+
+In a Unix environment, this is almost natural. One works in a shell and occasionally sshs somewhere and back. Line 100 on the terminal may have been printed by machine X and line 101 by machine Y. Nobody finds this conceptually disturbing.
+
+If the two lines need to be used together, one starts thinking about the payload — what information actually needs to cross the boundary.
+
+Cloud computing merely makes this separation impossible to ignore: the neighboring shell windows may be thousands of miles apart.
+
+Even on a single machine in 2026, however, Office, Visio, and Visual Studio — to varying degrees — still encourage the opposite mental model: the artifact, its application, its container, and its presentation remain one thing.
+
+ou can launch what looks like an entire IDE/Jupyter environment in a browser tab, but architecturally you know what happened:
+
+Browser
+   │
+   │ HTTP/WebSocket
+   ▼
+VM / container somewhere
+   │
+   ├── process
+   ├── filesystem
+   └── tiny web application
+
+The browser isn't emotionally attached to the IDE
+
+Cloud computing normalized the idea that the interface is not the system. Modern knowledge processing should do the same: the document is not the knowledge.
+
+he “emotionally attached” phrase works because IDE customization used to be a form of local ownership: your machine, your IDE, your plugins, your shortcuts, your carefully cultivated environment.
+
+The remote/browser model quietly dissolves that.
+
+
+In the past — what may soon be called the distant past — there was a whole curated ecosystem of IDE-savvy people. They knew the shortcuts, customized the menus, installed plugins, tuned the workspace, arranged the windows, and accumulated years of muscle memory around their IDE.
+
+It made sense. The IDE was your environment
+
+But when the IDE you are looking at may have been launched thirty seconds ago inside a VM 100 miles away — and may disappear when the session ends — the attachment starts looking rather peculiar.
+
+The browser doesn't care.
+
+It is displaying a service. Tomorrow that service may run somewhere else, on a different VM, in a different container, or use a completely different implementation. The browser still provides the window.
+
+The interface survived precisely because it wasn't required to own the machinery behind it.
+
+That is the same separation we should want for enterprise knowledge:
+
+Don't make the representation own the knowledge.
+
+The IDE is a particularly good demonstration because we have already accepted this principle operationally. Nobody insists that the browser preserve the filesystem, process model, VM, operating system, IDE installation, plugins, and physical machine merely because those things happen to be behind the tab.
+
+Yet with an Office artifact, we can still behave as though preserving the historical container is part of preserving the knowledge.
+
+The browser learned to let go of the IDE.
+Modernization needs to learn to let go of the container.
+
+Neatly: Unix taught us to think in payloads; cloud made location irrelevant; browsers separated interface from machinery; AI now gives us a plausible way to separate knowledge from its historical container
 
 ### GitGraph Example
 
