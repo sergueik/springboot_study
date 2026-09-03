@@ -1561,7 +1561,7 @@ along with several other extensions
   * [Mermaid winning the default drawing standard over PlantUML](https://habr.com/ru/news/1015912/)(in Russian):
   * [Github Doc on Creating diagrams](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams)
   * [Mermaid primer](https://habr.com/ru/articles/652867)(in Russian)
-  * [Mermaid User Guide](https://mermaid.ai/open-source/intro/getting-started.html)
+  * [Mermaid User Guide](https://mermaid.ai/open-source/intro/getting-started.html). NOTE: in the diagram examples under __Diagram Syntax__ section, watch for required version of Mermaid to prevent errors like `Error: No diagram type detected for text: treeView-beta` by release older than __v11.14.0__ 
   * [overview of creating flowcharts using Mermaid](https://ckeditor.com/blog/basic-overview-of-creating-flowcharts-using-mermaid/)
   * [diagrams in Markdown with Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) (redundant)
   * [list of Mermaid Tutorials](https://mermaid.ai/open-source/ecosystem/tutorials.html)
@@ -1578,6 +1578,7 @@ along with several other extensions
   * official __Mermaid Live Editor__ Docker image is hosted on [GitHub Container Registry](ghcr.io/mermaid-js/mermaid-live-editor/mermaid-live-editor) (__GHCR__)
   * [samsmithnz/MermaidDotNet](https://github.com/samsmithnz/MermaidDotNet) - project to generate Mermaid graphs with .NET - apparently not standalone , but __MVC__/__Blazor__ rank app
   * [FoggyBalrog/MermaidDotNet](https://github.com/FoggyBalrog/MermaidDotNet) - an .NET library to generate Mermaid diagrams code - build into as nuget package on `netstandard2.1` - with an impressive catalog of distict mermaid shapes
+  * [Mermaid Svelte Examples - Diagram Gallery](https://mermaid-cjv.pages.dev/examples)
   
   
 ---
