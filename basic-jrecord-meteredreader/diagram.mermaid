@@ -1,0 +1,13 @@
+
+flowchart TD
+    A["📼 ORIGINAL FILE"]
+    B["✂️ SPLITTER<br/>preserve physical byte ranges"]
+    C["📄 JSON"]
+    D["📼 MF BYTES<br/>original bytes"]
+    E["🔬 COMPARISON / TEST"]
+
+    A --> B
+    B --> C
+    B --> D
+    C --> E
+    D --> E

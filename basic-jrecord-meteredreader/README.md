@@ -21,11 +21,11 @@
 
 #### 2️⃣ Responsibilities
 
-- Split a **big file** into **N chunks** (`chunkFile`)  
-- Assign each chunk to a **ChunkWorker**  
-- Process chunks in parallel using a **fixed thread pool**  
-- Optionally log per-worker **lines processed / progress**  
-- Measure **throughput / elapsed time** to study acceleration vs chunk count and pool size  
+- Split a **big file** into **N chunks** (`chunkFile`)
+- Assign each chunk to a **ChunkWorker**
+- Process chunks in parallel using a **fixed thread pool**
+- Optionally log per-worker **lines processed / progress**
+- Measure **throughput / elapsed time** to study acceleration vs chunk count and pool size
 
 ---
 
@@ -40,8 +40,8 @@ You are explicitly targeting **performance prediction**:
 | Metrics | Wall-clock time, throughput |
 | Observation | Acceleration vs number of chunks / threads |
 
-- Expect **linear acceleration up to a point** (e.g., 10 threads + 10 chunks → ~10× speed improvement)  
-- Diminishing returns as chunks increase beyond a threshold (50 → 100 chunks)  
+- Expect **linear acceleration up to a point** (e.g., 10 threads + 10 chunks → ~10× speed improvement)
+- Diminishing returns as chunks increase beyond a threshold (50 → 100 chunks)
 
 This gives you **empirical insight** before committing to Spring Batch complexity.
 
@@ -49,13 +49,13 @@ This gives you **empirical insight** before committing to Spring Batch complexit
 
 #### 4️⃣ Advantages of freezing this version
 
-1. **Controlled benchmark**  
-   - Only parsing logic affects performance; no external Spring Batch metadata overhead  
-2. **Predictable behavior**  
-   - Every run is deterministic for given chunk/thread configuration  
-3. **Simple tuning knobs**  
-   - Adjust `chunkSize` and `poolSize` independently  
-4. **Baseline for next target**  
+1. **Controlled benchmark**
+   - Only parsing logic affects performance; no external Spring Batch metadata overhead
+2. **Predictable behavior**
+   - Every run is deterministic for given chunk/thread configuration
+3. **Simple tuning knobs**
+   - Adjust `chunkSize` and `poolSize` independently
+4. **Baseline for next target**
    - Provides a “speed ceiling” reference when you eventually migrate to Spring Batch
 
 
@@ -118,7 +118,7 @@ Run jmh benchmarks with -p copybookFile=example.cbl -p inputFile=example.bin -p 
 
 # Run progress: 0.00% complete, ETA 00:00:02
 # Fork: 1 of 1
-# Warmup Iteration   1: 
+# Warmup Iteration   1:
 ParseRecords copybook:example.cbl input:example.bin maxRows: 10
 {"CUSTOMER-ID":"AAAAAAAAAA","CUSTOMER-NAME":"7cb08291-3","ACCOUNT-NUMBER":"48787","ACCOUNT-TYPE":"AA","OPEN-DATE":"255479","BALANCE":"819.01","CREDIT-LIMIT":"0.00","STATUS-CODE":"A","LAST-ACTIVITY-DATE":"716164","RESERVED-FLAG":"A"}
 {"CUSTOMER-ID":"AAAAAAAAAA","CUSTOMER-NAME":"551b20ac-7","ACCOUNT-NUMBER":"41218","ACCOUNT-TYPE":"AA","OPEN-DATE":"255479","BALANCE":"6355.15","CREDIT-LIMIT":"0.00","STATUS-CODE":"A","LAST-ACTIVITY-DATE":"716164","RESERVED-FLAG":"A"}
@@ -132,7 +132,7 @@ ParseRecords copybook:example.cbl input:example.bin maxRows: 10
 {"CUSTOMER-ID":"AAAAAAAAAA","CUSTOMER-NAME":"f8fd2389-d","ACCOUNT-NUMBER":"15028","ACCOUNT-TYPE":"AA","OPEN-DATE":"255479","BALANCE":"9625.82","CREDIT-LIMIT":"0.00","STATUS-CODE":"A","LAST-ACTIVITY-DATE":"716164","RESERVED-FLAG":"A"}
 Processed 10 records in 128 ms
 3.095 ops/s
-Iteration   1: 
+Iteration   1:
 ParseRecords copybook:example.cbl input:example.bin maxRows: 10
 {"CUSTOMER-ID":"AAAAAAAAAA","CUSTOMER-NAME":"7cb08291-3","ACCOUNT-NUMBER":"48787","ACCOUNT-TYPE":"AA","OPEN-DATE":"255479","BALANCE":"819.01","CREDIT-LIMIT":"0.00","STATUS-CODE":"A","LAST-ACTIVITY-DATE":"716164","RESERVED-FLAG":"A"}
 {"CUSTOMER-ID":"AAAAAAAAAA","CUSTOMER-NAME":"551b20ac-7","ACCOUNT-NUMBER":"41218","ACCOUNT-TYPE":"AA","OPEN-DATE":"255479","BALANCE":"6355.15","CREDIT-LIMIT":"0.00","STATUS-CODE":"A","LAST-ACTIVITY-DATE":"716164","RESERVED-FLAG":"A"}
@@ -450,11 +450,11 @@ The console implementation (#1) allows direct control of chunking and threading 
 ### Reneisance
 
 
-   
+
 One is advised not to reconstruct the Copybook row's physical
 representation from the JRecord AbstractLine fields:
 nobody expects to reconstruct the orange from the juice.
-   
+
 ```code
 JRecord AbstractLine
         │
@@ -482,13 +482,13 @@ raw bytes
    └── unused / reserved bytes      💀
                                       │
                                       ▼
-                                     🗑️   
- 
+                                     🗑️
+
 ```
- 
+
 
 NIO provides direct positioning in a seekable file:
-native fast forward support 
+native fast forward support
 
 ```
                  N
@@ -504,7 +504,7 @@ native fast forward support
 ```
 Thus one can extend the JRecord reader with a lazy chunk/record
 representation:
-``` 
+```
 Record N
 
 📍 offset = N × R
@@ -519,8 +519,23 @@ Record N
         └──────────────► raw()
                               │
                               ▼
-                         ByteBuffer 
-```                         
+                         ByteBuffer
+```
+
+```mermaid
+flowchart TD
+    A["📼 ORIGINAL FILE"]
+    B["✂️ SPLITTER<br/>preserve physical byte ranges"]
+    C["📄 JSON"]
+    D["📼 MF BYTES<br/>original bytes"]
+    E["🔬 COMPARISON / TEST"]
+
+    A --> B
+    B --> C
+    B --> D
+    C --> E
+    D --> E
+```
 ### Cassette Recorder Analogy
 
 If you are in a room listening to music through an audiophile cable, you are observing the result of the tape being played. You cannot reconstruct the original cassette tape from what you hear, because the playback process has discarded information about the physical encoding of the tape.
@@ -539,7 +554,7 @@ Then, when somebody asks *"give me what was physically there for this abstract r
 I remember that this thing occupied bytes `137`–`284`.
 
 
-Moreover, 
+Moreover,
 That byte range is a recording, not necessarily a valid record.
 
 Playing that fragment back in isolation may not produce the same interpretation, because the original interpretation may depend on context that isn't contained in the fragment.
@@ -560,15 +575,46 @@ It means that coexistence should not be justified by an assumption such as:
 
 instead make the modernization boundary an explicit testable contract.
 
+> JRecord can give us a very nice modern representation of what the old system means. But “nice modern representation” and “lossless recording of the original physical artifact” are two different things
+
+“Sometimes COBOL looks like IBM was discovering OOP one engineering problem at a time.”
+
+`OCCURS`: *We don't have arrays yet, but we need arrays. Here is a way to describe repeated things*
+
+`REDEFINES`: *We don't have variants/unions yet, but we need multiple interpretations of the same storage*
+
+External indicators: *We need to know which interpretation is active, so that information will be stored somewhere else*
+
+the interesting potential test which answer will be __empirical__: 
+
+```code
+📼 ORIGINAL FILE
+       │
+       ▼
+  NIO byte slice
+       │
+       ▼
+   🧾 1 record
+   🧾 2 records
+   🧾 N records
+       │
+       ▼
+    JRecord
+       │
+       ▼
+   "does it digest?"
+
+```
+
 ### See Also:
 
- 
+
  * [cb2xml](https://github.com/bmTas/cb2xml)
  * [JRecord](https://github.com/bmTas/JRecord)
  * [CobolToJson](https://github.com/bmTas/CobolToJson)
  * [Sourceforge download](https://sourceforge.net/projects/coboltojson/) convert cobol Data Files to JSON
  * [Sourceforge download](https://sourceforge.net/projects/jrecord/files/JRecord/0.93.3/JRecord-0.93.3-src.zip/download) of JRecord jar bundle (old version)
- * [sourceforge project](https://sourceforge.net/projects/jrecord/) 
+ * [sourceforge project](https://sourceforge.net/projects/jrecord/)
  * [JRecord Wiki](https://sourceforge.net/p/jrecord/wiki/Home/)
  * [JRecord Discussion](https://sourceforge.net/p/jrecord/discussion/)
 
