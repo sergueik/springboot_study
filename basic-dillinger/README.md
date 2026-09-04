@@ -1284,6 +1284,14 @@ An earlier attempt was to have Copilot generate a replacement `theme-github.js`.
 
 This is a useful warning against "reimplementing" a missing dependency merely because its interface appears simple: the canonical Ace asset is preferable to a home-grown replacement whose internal behavior is not fully understood.
 
+### Retrospective
+
+In retrospect, the failed attempt to replace `theme-github.js` was a useful warning. The change initially looked almost trivial: supply the apparently missing theme file. The resulting defect, however, temporarily broke mouse/keyboard selection and made the editor effectively unusable.
+
+This makes more sense after looking at Dillinger as a whole: much of the application is concerned with the editor UI, CSS, and themes. A theme asset is therefore not necessarily an isolated piece of presentation code. It participates in a much larger runtime environment.
+
+The practical lesson is that a seemingly innocent patch should not be made before understanding the role of the component being replaced. In this case, obtaining the canonical Ace asset is considerably safer than attempting to recreate it.
+
 
 ### See Also:
 
