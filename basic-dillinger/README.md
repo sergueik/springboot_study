@@ -1,11 +1,12 @@
 ### Dillinger Live As Static
 
-Online Markdown Editor with Live Preview
+Online Markdown Editor with Live Preview refactored in a static page
 
 
 ![Live](screenshots/capture-live.png)
 
-Dillinger is a free online markdown editor with live preview, cloud sync, and zero signup friction.
+[Dillinger.io](https://dillinger.io/) (Real-World Markdown Editor) a.k.a. [joemccann/dillinger](https://github.com/joemccann/dillinger) - The last Markdown editor, ever - 
+is a free online markdown editor with live preview, cloud sync, and zero signup friction.
 
 ```
 Full Dillinger container
@@ -34,8 +35,7 @@ Full Dillinger container
 
 ### Background
 
-[Dillinger](https://www.markdownguide.org/tools/dillinger) - free, online, browser-based [AngularJS](https://en.wikipedia.org/wiki/AngularJS)
-powered HTML5 live [Markdown](https://en.wikipedia.org/wiki/Markdown) editor featuring a split-pane interface with real-time live preview.
+[Dillinger](https://www.markdownguide.org/tools/dillinger) - free, online, browser-based [AngularJS](https://en.wikipedia.org/wiki/AngularJS) powered HTML5 live [Markdown](https://en.wikipedia.org/wiki/Markdown) editor featuring a split-pane interface with real-time live preview.
 There is no need to download and install an application on computer.
 
 ```text
@@ -99,10 +99,22 @@ __Markdown__ isn't the invention of "documentation markup." It is one of the unu
 
 ### Usage
 
-
+* Pull relatively old tag to have a simpler solution with fewer dependencies to port
 
 ```sh
 docker pull linuxserver/dillinger:3.39.1
+```
+> NOTE The latest revisions of `joemccann/dillinger` are using [Next.js](https://en.wikipedia.org/wiki/Next.js) while originally if has been using plain [AngularJS](https://en.wikipedia.org/wiki/AngularJS)
+
+pull the source tree at selected tag:
+```sh
+git clone https://github.com/joemccann/dillinger origin
+pushd origin
+git fetch origin
+git checkout v3.39.1
+cp -r public/* ..
+popd
+rm -fr origin
 ```
 ```sh
 docker image ls
@@ -112,10 +124,14 @@ REPOSITORY              TAG                 IMAGE ID            CREATED         
 linuxserver/dillinger   3.39.1              ba7ab914577c        2 years ago         788MB
 ```
 ```sh
-docker run -d --name=linuxserver-dillinger -p 9090:8080 linuxserver/dillinger:3.39.1
+IMAGE=linuxserver/dillinger
+
+TAG=3.39.1
+NAME=linuxserver-dillinger 
+docker run -d --name=$NAME -p 9090:8080 $IMAGE:$TAG
 ```
 ```sh
-docker inspect linuxserver-dillinger |jq '.[0].Config.Entrypoint'
+docker inspect $NAME |jq '.[0].Config.Entrypoint'
 ```
 ```json
 [
@@ -123,8 +139,9 @@ docker inspect linuxserver-dillinger |jq '.[0].Config.Entrypoint'
 ]
 ```
 ```sh
-docker inspect linuxserver-dillinger |jq '.[0].Config.Cmd'
+docker inspect $NAME |jq '.[0].Config.Cmd'
 ```
+this will reveal
 ```
 null
 ```
@@ -133,10 +150,11 @@ null
 > **NOTE:** You can examine the container's `init` script if desired:
 >
 > ```sh
-> docker exec -it linuxserver-dillinger cat /init
+> NAME=linuxserver-dillinger 
+> docker exec -it $NAME cat /init
 > ```
 >
-> The important point is that the Dillinger application is ultimately
+> The important point is that the __Dillinger__ application is ultimately
 > running under Node.js:
 >
 > ```sh
@@ -166,20 +184,23 @@ null
 
 * try to copy locally
 ```sh
-docker cp linuxserver-dillinger:/app/dillinger/ .
+NAME=linuxserver-dillinger 
+docker cp $NAME:/app/dillinger/ .
 ```
-cannot continue - most of the files never copied:
+in Window Docker Toolbox host, this cannot continue - most of the files never copied:
 ```
 symlink \config\configs C:\...dillinger\configs: A required privilege is not held by the client.
 ```
 
 * copy locally
 ```sh
-docker exec -it linuxserver-dillinger tar cf /tmp/a.tar -C /app dillinger
+NAME=linuxserver-dillinger 
+docker exec -it $NAME tar cf /tmp/a.tar -C /app dillinger
 ```
 
 ```sh
-docker cp  linuxserver-dillinger:/tmp/a.tar .
+NAME=linuxserver-dillinger 
+docker cp $NAME:/tmp/a.tar .
 ```
 
 ```sh
@@ -199,23 +220,24 @@ tar: Exiting with failure status due to previous errors
 > NOTE: attempt to modify flags to let tar run quite does not work, but was unnecessary
 
 ```sh
- tar --ignore-command-error -xf a.tar
+tar --ignore-command-error -xf a.tar
 ```
 
 ```sh
- find ./dillinger/ -type f |wc -l
+find ./dillinger/ -type f |wc -l
 ```
 
 Examining `package.json` reveals imporant info:
 
-  * AngularJS 1.7.9
-  * Node 14 as the declared engine
-  * old Webpack/Gulp toolchain
+  * AngularJS __1.7.9__
+  * Node __14__ as the declared engine
+  * older [Webpack](https://en.wikipedia.org/wiki/Webpack)/[Gulp](https://en.wikipedia.org/wiki/Gulp.js) build/bundle toolchain
   * markdown-it
   * the large dependency set
 
 #### Run Application
 
+Assuming node.js is available can run the __Dillinger__ app locally
 ```sh
 node app
 ```
@@ -237,6 +259,7 @@ subst E: /d
 subst E: "%CD%"
 "C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir=C:\temp\chrome-file-test --allow-file-access-from-files file:///E:/index.html
 ```
+> NOTE one can simply "open" the `index.html` from explorer. In later versions one does not even need to switch to the `E:` drive 
 
 ![Run as File](screenshots/capture-file.png)
 
@@ -277,11 +300,6 @@ docker image rm linuxserver/dillinger:3.39.1
 docker-machine stop
 docker-machine rm default -f
 ```
-### NOTE
-
-The latest revisions of `joemccann/dillinger` are using [Next.js](https://en.wikipedia.org/wiki/Next.js) while originally if has been using plain
- [AngularJS](https://en.wikipedia.org/wiki/AngularJS)
-
 ### Technical Info
 
 ```sh
@@ -1188,8 +1206,8 @@ curl -sLS 'https://hub.docker.com/v2/namespaces/linuxserver/repositories/dilling
 
 ```
  grep -r 'src="/' ../dillinger/node_modules
- ```
- ```
+```
+```
 ../dillinger/node_modules/angular/README.md:<script src="/node_modules/angular/angular.js"></script>
 ../dillinger/node_modules/angular/README.md:<script src="/bower_components/angular/angular.js"></script>
 ../dillinger/node_modules/connect-assets/README.md:<script src="/js/jquery-[hash].js"></script>
@@ -1204,25 +1222,68 @@ curl -sLS 'https://hub.docker.com/v2/namespaces/linuxserver/repositories/dilling
 ...
 
 ```
-after packaging, only in `index.html`
+after packaging, absolute paths found only in `index.html`
 ```html
   <script src="/js/main.bundle.js" type="text/javascript" async></script>
   <link href="/css/app.css" rel="stylesheet">
 ```
- and in `js/main.bundle.js`:
-
-```
-```
-but the latter is formatted with ultra long lines making it patch fragile:
+and in `js/main.bundle.js`, but the latter is formatted with ultra long lines making it patch fragile:
 ```sh
 sed '437,437p' js/main.bundle.js|wc -c
 ```
 ```text
 3547460
 ```
-one can tolerate network,console errors:
+one can tolerate network, console errors without patching `theme-github.js`
 
 ![error when running locally](screenshots/capture-devtools-network.png)
+
+```sh
+grep -r theme .|grep gith| cut -f 1 -d ':' | sort -u
+```
+```text
+./js/base/base.controller.js
+./js/main.bundle.js
+./js/main.js
+./scss/vendor/highlight.js/_tomorrow.scss
+
+```
+there appears to be a number of hanging unsatisfied references in the `./js/base/base.controller.js`:
+
+```js
+const ace = require('brace')
+const bodyScrollLock = require('body-scroll-lock')
+require('brace/keybinding/vim')
+require('brace/keybinding/emacs')
+require('brace/mode/markdown')
+require('../documents/theme-dillinger')
+...
+$rootScope.editor.getSession().setMode('ace/mode/markdown')
+$rootScope.editor.setTheme('ace/theme/github')
+```
+
+apparently Dilloinger is embedding the [Ace Editor](https://ace.c9.io/) into a web application
+but somehow it is operational without providing those.
+
+Alternatively install directly canonical (on a host that has node.js or in container):
+```cmd
+call npm.cmd install ace-builds
+cp node_modules/ace-builds/src/theme-github.js .
+rm -fr node_modules
+```
+
+1. After packaging, the obvious absolute-path defects are in `index.html`.
+2. `main.bundle.js` also contains them, but patching it is impractical because of the 3.5 MB single line.
+3. `theme-github.js` is not necessarily worth patching if the only consequence is browser/network/console noise.
+4. Searching for `theme/github` reveals that the source has explicit Ace dependencies/references.
+5. The interesting observation is that __Dillinger__ can apparently operate despite those source-level references not being present in the packaged artifact.
+6. Installing ace-builds provides the canonical `theme-github.js` without having to reconstruct Dillinger's dependency tree.
+7. Using an older tag/source tree gives a much simpler AngularJS-era implementation to work with.
+
+An earlier attempt was to have Copilot generate a replacement `theme-github.js`. The resulting JavaScript was considerably more sophisticated than could be readily understood, reviewed, or confidently maintained by hand. More importantly, the replacement introduced a subtle runtime defect: the application temporarily lost normal mouse/keyboard selection, effectively making the editor unusable. The defect was subsequently patched in a later commit.
+
+This is a useful warning against "reimplementing" a missing dependency merely because its interface appears simple: the canonical Ace asset is preferable to a home-grown replacement whose internal behavior is not fully understood.
+
 
 ### See Also:
 
