@@ -349,7 +349,10 @@ Exited with code: 0
   * https://usage.imagemagick.org/crop/#crop
   * https://usage.imagemagick.org/basics/  
   * https://github.com/ImageMagick/ImageMagick/discussions/5867
-
+  * [Amazon Textract](https://aws.amazon.com/textract/)
+  * [Azure AI Document Intelligence (formerly known as Azure Form Recognizer)](https://azure.microsoft.com/en-us/products/ai-foundry/tools/document-intelligence)
+  * https://learn.microsoft.com/en-us/answers/questions/2169568/azure-document-intelligence-or-form-recognizer-pac
+  * [Google Cloud Document AI](https://cloud.google.com/document-ai)
 ---
 ### Author
 [Serguei Kouzmine](kouzmine_serguei@yahoo.com)
