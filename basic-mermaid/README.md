@@ -1540,20 +1540,16 @@ A backend is therefore not always a restaurant kitchen continuously preparing fo
 
 > **The application can be prepared now, delivered now, and used much later—even after the container that prepared or delivered it no longer exists.**
 
-
-
 ### See Also
 
   * [github allows including diagrams in Markdown files with Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) since 2022 - also embedded in GitLab, Gitea, Joplin, Notion.
-There is an __Mermaid diagram previewer for Visual Studio Code__ [extension](https://marketplace.visualstudio.com/items?itemName=vstirbu.vscode-mermaid-preview)
-
+There is an __Mermaid Diagram previewer for Visual Studio Code__ [extension](https://marketplace.visualstudio.com/items?itemName=vstirbu.vscode-mermaid-preview)
 
 ![Preview Mermaid](screenshots/capture-vscode3.png)
 
 along with several other extensions
 
 ![Available Extensions](screenshots/capture-vscode-extensions.png)
-
 
 ### Reconstruction Status
 
@@ -1566,20 +1562,21 @@ We focus on __bad citizens__ — the documents where the valuable visual artifac
   * __20/100__ — image is effectively a poor resolution thumbnail (e.g. 640x480);
     the presence of some business flow may be evident, but no labels letters or notes n are human-readable. Replacement Document needs to be explicitly requested if the business flow reconstuction is the goal
 
-
 Preparing a __manual reconstruction kit__ before you need it. The important part isn't having a sophisticated __Mermaid-to-Visio converter__; it's having a small aid collection such as:
 
   * Mermaid flow Visualization tool (the VS Code supports natively but tends to render full page width and require switch between default and preview tabs
   * elementary Mermaid shape annotations ( parentheses/brackets/curly-brace variants supporting conversion of Mermaid's default shapes can be nudged toward Visio-like look
   * state-machine and business-process examples
 
+In addition __VS Code__ provides one preview document regardless how many tabs are opened - selecting another document replaces the previous preview.
+As Ruby Rhod in The Fifth Element put it: __"I don't want one position. I want all positions."__
+This is particularly unfortunate when one is in a *creative mode*
 
-Mermaid flow visualization tool — VS Code supports Mermaid natively, but tends to render full-page width and requires switching between the source and preview tabs.
-Elementary Mermaid shape annotations — parentheses/brackets/curly-brace variants; enough syntax examples to nudge Mermaid's default shapes toward a Visio-like appearance.
-State-machine and business-process examples — Mermaid's defaults do not necessarily provide the accurate shapes, but the syntax can be patched once the nearby shape syntax is known.
+![capture mermaid edit ability of chat gpt](screenshots/capture-mermaid-in-chatgpt-panel.png)
 
 
 ---
+
 ### See Also:
 
   * [InjelliJ Mermain Plugin](https://www.jetbrains.com/help/idea/markdown.html#diagrams) (disabled by default and requires additional steps)
