@@ -1554,6 +1554,34 @@ along with several other extensions
 
 ![Available Extensions](screenshots/capture-vscode-extensions.png)
 
+
+### Reconstruction Status
+
+Most of documens are well authorted - genuine Visio is embedded in the PDD, automatically extractable. That path needs no reconstruction kit.
+
+We focus on __bad citizens__ — the documents where the valuable visual artifact survives only as an thumbnail pixel graphics image. 
+
+  * __20/20__ — image resolution os sufficient for a human to consttuct equivalent manually with busines semantics. The bitmap format still blocks OCR to reading beyond the graph node labels/ edge comments completely ignoring the shape, edge contents thus losing the business logic info. A better OCR/AI still does not reveal that info - that is limitation of the tool
+
+  * __20/100__ — image is effectively a poor resolution thumbnail (e.g. 640x480);
+    the presence of some business flow may be evident, but no labels letters or notes n are human-readable. Replacement Document needs to be explicitly requested if the business flow reconstuction is the goal
+
+
+Preparing a __manual reconstruction kit__ before you need it. The important part isn't having a sophisticated __Mermaid-to-Visio converter__; it's having a small aid collection such as:
+
+  * Mermaid flow Visualization tool (the VS Code supports natively but tends to render full page width and require switch between default and preview tabs
+  * elementary Mermaid shape annotations ( parentheses/brackets/curly-brace variants supporting conversion of Mermaid's default shapes can be nudged toward Visio-like look
+  * state-machine and business-process examples
+
+
+Mermaid flow visualization tool — VS Code supports Mermaid natively, but tends to render full-page width and requires switching between the source and preview tabs.
+Elementary Mermaid shape annotations — parentheses/brackets/curly-brace variants; enough syntax examples to nudge Mermaid's default shapes toward a Visio-like appearance.
+State-machine and business-process examples — Mermaid's defaults do not necessarily provide the accurate shapes, but the syntax can be patched once the nearby shape syntax is known.
+
+
+---
+### See Also:
+
   * [InjelliJ Mermain Plugin](https://www.jetbrains.com/help/idea/markdown.html#diagrams) (disabled by default and requires additional steps)
   * [Generate and view Mermaid diagrams with Copilot](https://www.youtube.com/watch?v=SgPYIfxk4Ok)
   * __GitHub Copilot__ __Chat__ natively renders and previews __Mermaid__ diagrams directly within its [cohat interface](https://mermaid.ai/docs/plugins/github-copilot)
