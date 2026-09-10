@@ -473,6 +473,27 @@ TypeError: Cannot read properties of undefined (reading 'first_line')
 - ⚠ Browser `file://` behavior still requires additional investigation.
 - ✅ HTTP deployment (nginx or any static web server) works correctly.
 
+
+### Where I Draw the Line
+
+(image: an absurdly thick, gold-plated, silk-wrapped $30,000 audiophile cable)
+
+This is where I burn my money.
+
+Five-nines oxygen-free copper.
+Gold-plated screws.
+Silk insulation.
+One-inch diameter.
+Handcrafted signal pathways.
+
+The signal travels through it in complete silence.
+
+And unlike containers, Kubernetes, serverless architecture, browser runtimes, or deployment pipelines...
+
+Here, I don't care about reality.
+
+I care about sound myths.
+
 ### See Also:
   * [Mermaid Live Editor](https://mermaid.live/edit): Online FlowChart & Diagrams Editor
   * [Diagram as Code: Comparing the Major Tools](https://diagrams.so/learn/diagram-as-code-comparison)
@@ -480,7 +501,7 @@ TypeError: Cannot read properties of undefined (reading 'first_line')
   * [MermaidJS and Graphviz side by side](https://www.devtoolsdaily.com/diagrams/graphviz_vs_mermaid/)
   * [Python MarkItDown: Convert Documents Into LLM-Ready Markdown](https://realpython.com/python-markitdown/)
   * [Complete markdown syntax guide and cheat sheet](https://dillinger.io/guide)
-
+  * [Svelte](https://en.wikipedia.org/wiki/Svelte)
 ---
 
 ### Author
