@@ -560,6 +560,123 @@ This project intentionally separates:
 
 to isolate and observe parser behavior under controlled conditions.
 
+### Byte Map
+
+One could draw a __COBOL__ copybook record layout map in which the physical bytes are the primary coordinate system, rather than the logical fields exposed by __JRecord__'s `AbstractRecord`
+
+For example:
+
+```code
+
+Physical record:  80 bytes
+                  |----|----|----|----|----|----|----|----|
+offset            00   10   20   30   40   50   60   70
+
+                  ┌───────────────┐
+00–03             │ RECORD-TYPE   │  PIC X(4)
+                  └───────────────┘
+04–09             │ FILLER / PAD  │  PIC X(6)       ██████
+10–17             │ ACCOUNT-NO    │  PIC X(8)
+18–19             │ binary /      │
+                  │ alignment     │                 ████
+20–29             │ CUSTOMER-NAME │  PIC X(10)
+30–31             │ FILLER        │  PIC XX         ██
+32–35             │ COMP-3 FIELD  │  S9(7) COMP-3
+36–39             │ reserved      │                 ████
+40–79             │ OCCURS / ...  │
+                  └───────────────┘
+```
+But I would make it more like a protocol analyzer than a __COBOL__ field diagram:
+```code
+                 physical bytes
+       0         10        20        30        40
+       │         │         │         │         │
+       ▼         ▼         ▼         ▼         ▼
+       ┌─────────┬─────────┬─────────┬─────────┬─────────
+       │ HEADER  │ ACCOUNT │  PAD    │ AMOUNT  │ ...
+       └─────────┴─────────┴─────────┴─────────┴─────────
+       ├─────────┤
+       │ semantic│
+       │ field   │
+                 ├─────────┤
+                 │ semantic│
+                 │ field   │
+                           ├───┤
+                           │???│
+```
+The important distinction would be to give every byte a role classification, for example:
+
+|Byte range|Physical role|Copybook representation|Survives?|
+|----------|-------------|-----------------------|---------|
+|0–3|**data**|`RECORD-TYPE PIC X(4)`|yes|
+|4–9|*padding*|`FILLER PIC X(6)`|often effectively no|
+|10–17|**data**|`ACCOUNT-NO PIC X(8)`|yes|
+|18–19|*alignment*/*reserved*|`FILLER`|no|
+|20–29|**data**|`CUSTOMER-NAME`|yes|
+|30–31|*reserved*|`FILLER`|no|
+|32–35|**encoded numeric**|`AMOUNT COMP-3`|yes, but representation changes|
+
+
+And this is where your earlier __JRecord__ concern becomes visually obvious.
+
+An `AbstractRecord` gives you something conceptually like a Java struct:
+
+```java
+RECORD-TYPE
+ACCOUNT-NO
+CUSTOMER-NAME
+AMOUNT
+```
+while the original record is actually:
+```code
+┌───────┬────────┬────────────┬──────┬────────────┬──────┬───────┐
+│ data  │ FILLER │    data    │ pad  │    data    │ pad  │ data  │
+└───────┴────────┴────────────┴──────┴────────────┴──────┴───────┘
+  4 B      6 B       8 B        2 B     10 B        2 B     4 B
+```
+So the record layout map preserves information that the logical object intentionally abstracts away.
+
+I would actually call this a __"physical record map"__
+
+That terminology makes the argument much stronger than saying *"JRecord **loses** filler."*
+
+It doesn't necessarily lose it in the sense of a bug. The abstraction is doing what it is designed to do.
+The problem occurs when someone subsequently assumes:
+
+> logical record representation = complete description of the physical file format
+
+Your map demonstrates that those are two different things.
+
+It could even have three layers:
+```code
+PHYSICAL BYTES
+────────────────────────────────────────────────────────────
+0000  [TYPE] [ FILLER / PAD ] [ACCOUNT ] [PAD] [NAME     ] ...
+             ▲                 ▲
+             │                 │
+             └── physically significant even though
+                 semantically insignificant
+```
+```code
+COPYBOOK
+────────────────────────────────────────────────────────────
+0000  RECORD-TYPE
+0004  FILLER X(6)
+0010  ACCOUNT-NO
+0018  FILLER X(2)
+0020  CUSTOMER-NAME
+...
+```
+```code
+JRECORD ABSTRACT RECORD
+────────────────────────────────────────────────────────────
+      RECORD-TYPE
+      ACCOUNT-NO
+      CUSTOMER-NAME
+      ...
+```
+That would make a very good architectural illustration of why blindly converting a mainframe record into __JSON__ is not necessarily a lossless transformation.
+
 ### See Also:
 
  
