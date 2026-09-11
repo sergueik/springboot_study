@@ -1,9 +1,9 @@
 ### Background
 
-A COBOL Copybook is a reusable file containing pre-written code structures—most commonly data declarations and record layouts—that can be inserted into multiple COBOL programs. Often a copybook resource  is pulled into the COBOL primary code using the `COPY` statement: 
+A COBOL Copybook is a reusable file containing pre-written code structures—most commonly data declarations and record layouts—that can be inserted into multiple COBOL programs. Often a copybook resource  is pulled into the COBOL primary code using the `COPY` statement:
 ```
    COPY CUSTOMER.CPY.
-```   
+```
 The mainframe compiler replaces the COPY statement with the actual contents of the copybook file at compilation time
 
 > NOTE: binary files generated from COBOL Copybook are often also, confusingly, called copybooks
@@ -16,7 +16,7 @@ There is no single universal IBM/mainframe-standard name for such artifacts; ter
 |`CUSTOMER.CPY` | COBOL source copybook (record layout definition)|
 |`CUSTOMER.dat` | serialized *customer* records (data conforming to the layout) |
 
-This avoids implying that  `CUSTOMER.dat` was generated *from* `CUSTOMER.CPY`. 
+This avoids implying that  `CUSTOMER.dat` was generated *from* `CUSTOMER.CPY`.
 The copybook is more like a __schema/contrac__t; the `.dat` file is an *instance of that schema*.
 
 For a mainframe audience, an even more idiomatic phrase might be:
@@ -389,7 +389,7 @@ in repeated runs will observe:
  Expected exception caught: No results for path: $['SAMPLE-REC'][0]['CREDIT_LIMIT']
  Expected exception caught: No results for path: $['SAMPLE-REC'][0]['LAST_ACTIVITY_DATE']
  Expected exception caught: No results for path: $['SAMPLE-REC'][0]['RESERVED_FLAG']
- Expected exception caught: No results for path: $['SAMPLE-REC'][0]['OPEN_DATE'] 
+ Expected exception caught: No results for path: $['SAMPLE-REC'][0]['OPEN_DATE']
  Expected exception caught: No results for path: $['SAMPLE-REC'][0]['STATUS_CODE']	
 
 ```
@@ -562,12 +562,12 @@ to isolate and observe parser behavior under controlled conditions.
 
 ### Byte Map
 
-One could draw a __COBOL__ copybook record layout map in which the physical bytes are the primary coordinate system, rather than the logical fields exposed by __JRecord__'s `AbstractRecord`
+One could draw a __COBOL__ Copybook record layout map in which the physical bytes are the primary coordinate system,
+rather than the logical fields exposed by __JRecord__ `AbstractRecord`
 
 For example:
 
 ```code
-
 Physical record:  80 bytes
                   |----|----|----|----|----|----|----|----|
 offset            00   10   20   30   40   50   60   70
@@ -601,8 +601,8 @@ But I would make it more like a protocol analyzer than a __COBOL__ field diagram
                  ├─────────┤
                  │ semantic│
                  │ field   │
-                           ├───┤
-                           │???│
+                           ├─────────┤
+                           │ ??????? │
 ```
 The important distinction would be to give every byte a role classification, for example:
 
@@ -632,13 +632,13 @@ while the original record is actually:
 ┌───────┬────────┬────────────┬──────┬────────────┬──────┬───────┐
 │ data  │ FILLER │    data    │ pad  │    data    │ pad  │ data  │
 └───────┴────────┴────────────┴──────┴────────────┴──────┴───────┘
-  4 B      6 B       8 B        2 B     10 B        2 B     4 B
+  ▒▒▒▒▒▒ ░░░░░░░░ ▒▒▒▒▒▒▒▒▒▒▒▒ ░░░░░░ ▒▒▒▒▒▒▒▒▒▒▒▒ ░░░░░░ ▒▒▒▒▒▒▒
 ```
 So the record layout map preserves information that the logical object intentionally abstracts away.
 
-I would actually call this a __"physical record map"__
+One could actually call this a __"physical record map"__
 
-That terminology makes the argument much stronger than saying *"JRecord **loses** filler."*
+That terminology makes the argument much stronger than stating *"JRecord **loses** filler."*
 
 It doesn't necessarily lose it in the sense of a bug. The abstraction is doing what it is designed to do.
 The problem occurs when someone subsequently assumes:
@@ -677,15 +677,106 @@ JRECORD ABSTRACT RECORD
 ```
 That would make a very good architectural illustration of why blindly converting a mainframe record into __JSON__ is not necessarily a lossless transformation.
 
+#### Java Analogy: Transient Properties
+
+__Java__ explicitly recognizes the distinction between the *in-memory* object model and the *external* representation by supporting `transient`:
+
+transient is a particularly nice example:
+```java
+class Customer {
+    String name;
+    String accountNumber;
+
+    transient String cachedDisplayName;
+}
+
+Conceptually, the object has:
+
+```code
+Java object:
+┌─────────────────────────┐
+│ name                    │
+│ accountNumber           │
+│ cachedDisplayName       │  ← exists in object
+└─────────────────────────┘
+             │
+             │ serialization / JSON representation
+             ▼
+External representation
+┌─────────────────────────┐
+│ name                    │
+│ accountNumber           │
+└─────────────────────────┘
+```
+
+So `cachedDisplayName` being absent from __JSON__ doesn't mean the field was "lost" from the object model.
+It means the __JSON__ contract says that this particular representation doesn't carry it.
+
+```code
+PHYSICAL RECORD / ABI
+┌──────┬────────┬────────┬──────┬──────────┐
+│ TYPE │ FILLER │ ACCT#  │ PAD  │  AMOUNT  │
+└──────┴────────┴────────┴──────┴──────────┘
+   │       │        │        │        │
+   │       │        │        │        │
+   └───────┴────────┴────────┴────────┴─────── interface contract
+                    │
+                    ▼
+              Abstract record
+              ┌────────────┐
+              │ TYPE       │
+              │ ACCT#      │
+              │ AMOUNT     │
+              └────────────┘
+                    │
+                    ▼
+                  JSON
+              ┌────────────┐
+              │ TYPE       │
+              │ ACCT#      │
+              │ AMOUNT     │
+              └────────────┘
+
+```
+
+good modern example: __FFI__ structs
+
+Suppose C says:
+```c
+struct X {
+    char  type;
+    char  reserved[3];
+    int   value;
+};
+```
+The three `reserved` bytes are not meaningless to the physical interface. They are part of the layout.
+
+A language binding might expose only:
+```c
+type
+value
+```
+but the __ABI__ still says:
+
+|offset   |    contents    |
+|---------|------------|
+|byte 0   |    type    |
+|byte 1–3 |    reserved|
+|byte 4–7 |    value   |
+
+
+When one serializes the language binding into some abstract representation and throw away the `reserved` region,
+one have not merely simplified the object but have discarded part of the interface description
+
 ### See Also:
 
- 
+
  * [cb2xml](https://github.com/bmTas/cb2xml)
  * [JRecord](https://github.com/bmTas/JRecord)
  * [CobolToJson](https://github.com/bmTas/CobolToJson)
  * [Sourceforge download](https://sourceforge.net/projects/coboltojson/) convert cobol Data Files to JSON
  * [Sourceforge download](https://sourceforge.net/projects/jrecord/files/JRecord/0.93.3/JRecord-0.93.3-src.zip/download) of JRecord jar bundle (old version)
- * [sourceforge project](https://sourceforge.net/projects/jrecord/) 
+ * [sourceforge project](https://sourceforge.net/projects/jrecord/)
  * [JRecord Wiki](https://sourceforge.net/p/jrecord/wiki/Home/)
  * [JRecord Discussion](https://sourceforge.net/p/jrecord/discussion/)
 
