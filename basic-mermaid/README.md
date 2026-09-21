@@ -1604,7 +1604,8 @@ This is particularly unfortunate when one is in a *creative mode*
   * [samsmithnz/MermaidDotNet](https://github.com/samsmithnz/MermaidDotNet) - project to generate Mermaid graphs with .NET - apparently not standalone , but __MVC__/__Blazor__ rank app
   * [FoggyBalrog/MermaidDotNet](https://github.com/FoggyBalrog/MermaidDotNet) - an .NET library to generate Mermaid diagrams code - build into as nuget package on `netstandard2.1` - with an impressive catalog of distict mermaid shapes
   * [Mermaid Svelte Examples - Diagram Gallery](https://mermaid-cjv.pages.dev/examples)
-  
+  * [color picker](https://coloris.js.org/)
+
   
 ---
 ### Author
