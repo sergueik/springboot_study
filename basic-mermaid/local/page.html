@@ -198,19 +198,21 @@ Mermaid Input
 
 <textarea id="diagramInput">
 
+
 flowchart LR
 
-Start((Start))
+Start(((Start)))
 
-Cond1{Condition}
+Cond1{"Condition 1"}
+Confirm([Confirm])
 
-Cond2{Condition}
+Cond2{"Condition 2"}
 
-Then1[Then]
+Then1[[Execute Process]]
 
-Then2[Else If]
+Message[/"Message"/]
 
-Else[Else]
+Database[("Database")]
 
 End((End))
 
@@ -218,17 +220,29 @@ Start --> Cond1
 
 Cond1 -->|Yes| Then1
 
+
 Cond1 -->|No| Cond2
 
-Cond2 -->|Yes| Then2
+subgraph SUBGRAPH2["Subgraph 2"]
 
-Cond2 -->|No| Else
+Then1 --> Confirm
 
-Then1 --> End
+end 
 
-Then2 --> End
+subgraph SUBGRAPH1["Subgraph 1"]
 
-Else --> End
+Cond2 -->|Yes| Message
+
+Cond2 -->|No| Database
+
+
+end
+
+Database --> End
+
+Message --> End
+
+Confirm -->|Done| End
 
 </textarea>
 

@@ -267,6 +267,11 @@ subst E: "%CD%"
 ```sh
 cygpath -wa .
 ```
+or 
+```sh
+cygpath -wa . | sed 's|\\|/|g' | awk '{print "file:///" $0 "/index.html"}' | clip
+```
+to create or updte the browser bookmark.
 
 if necessary can package the files and distribute
 

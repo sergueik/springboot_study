@@ -1513,7 +1513,7 @@ They can be stored locally—effectively put "in the fridge"—and used later.
 
 So the sequence can be:
 
-```
+```text
 Container starts
       │
       ▼
