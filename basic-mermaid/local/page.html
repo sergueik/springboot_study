@@ -149,20 +149,25 @@ window.renderMermaid = function() {
       document.getElementById('diagramInput').value
     );
     
-    const outputNode = document.getElementById('output');
-    const parentElement = document.getElementById('output').parentNode;
-    parentElement.removeChild(outputNode);
-    const newNode = document.createElement('div');
-    newNode.id = 'output';
-    parentElement.append(newNode); 
-
     const output = document.getElementById('output');
     
     try {
 
         mermaid.mermaidAPI.render( 'graph1', source,
             function(svgCode) {
+            
                 output.innerHTML = svgCode;
+
+                const svg = output.querySelector('svg');
+                console.log('Mermaid callback raw viewBox:', svg.getAttribute('viewBox'));
+
+                console.dir({
+                    x: svg.viewBox.baseVal.x,
+                    y: svg.viewBox.baseVal.y,
+                    width: svg.viewBox.baseVal.width,
+                    height: svg.viewBox.baseVal.height
+                });
+          
                 applyZoom();
             }
         );
@@ -203,24 +208,35 @@ window.renderMermaid = function() {
 		console.log( 'prepareSvgForExport clone source SVG metadata: ');
     console.dir( { width: svg.getAttribute('width'), height: svg.getAttribute('height'), viewBox: svg.getAttribute('viewBox'), xmlns: svg.getAttribute('xmlns')});
 
-  const viewBox = svg.viewBox.baseVal;
+    const viewBox = svg.viewBox.baseVal;
+    console.log( 'prepareSvgForExport clone viewBox: ');
+    console.dir(viewBox , {depth: null} );
 
-  if (viewBox && viewBox.width > 0 && viewBox.height > 0) {
 
-      svg.setAttribute("width", viewBox.width);
-      svg.setAttribute("height", viewBox.height);
+    console.log('prepareSvgForExport MERMAID SVG:');
+    console.dir({
+        viewBox: svg.getAttribute('viewBox'),
+        width: svg.getAttribute('width'),
+        height: svg.getAttribute('height'),
+        clientWidth: svg.clientWidth,
+        clientHeight: svg.clientHeight
+    });
 
-      svg.style.width = viewBox.width + "px";
-      svg.style.height = viewBox.height + "px";
-      svg.style.maxWidth = "none";
-      svg.style.transform = "none";
-  }
+    if (viewBox && viewBox.width > 0 && viewBox.height > 0) {
 
-  /*
+        svg.setAttribute('width', viewBox.width);
+        svg.setAttribute('height', viewBox.height);
 
-  * The browser's computed style is available for the original
-  * Mermaid SVG.  Copy the important SVG presentation properties
-  * onto the corresponding cloned elements.
+        svg.style.width = viewBox.width + 'px';
+        svg.style.height = viewBox.height + 'px';
+        svg.style.maxWidth = 'none';
+        svg.style.transform = 'none';
+    }
+
+    /*
+    * The browser's computed style is available for the original
+    * Mermaid SVG.  Copy the important SVG presentation properties
+    * onto the corresponding cloned elements.
     */
     const sourceElements = sourceSvg.querySelectorAll('*');
     const targetElements = svg.querySelectorAll('*');
@@ -367,33 +383,27 @@ window.renderMermaid = function() {
   return svg;
   }
 
-/*
-
-* Export the SVG currently displayed by Mermaid.
-  */
   window.exportSvg = async function() {
 
-    renderMermaid();
     const sourceSvg = document.querySelector('#output svg');
 
-    const data = sourceSvg.outerHTML;
-    console.log('exportSvg source length:', data.length);
-    console.log('exportSvg source fragment: ', data.substring(0,200));
-
     if (!sourceSvg) {
-      alert('No Mermaid SVG is currently rendered.');
-      return;
+        alert('No Mermaid SVG is currently rendered.');
+        return;
     }
 
-    const svg = prepareSvgForExport(sourceSvg);
+    const data = sourceSvg.outerHTML;
 
-		console.log( 'Export SVG metadata: ');
-    console.dir( { width: svg.getAttribute('width'), height: svg.getAttribute('height'), viewBox: svg.getAttribute('viewBox'), xmlns: svg.getAttribute('xmlns')});
-    await svgExport.downloadSvg( svg, 'Mermaid diagram');
+    console.log( 'exportSvg source length:', data.length );
 
+    console.log( 'exportSvg source fragment:',  data.substring(0, 200) );
+
+    const svg =  prepareSvgForExport(sourceSvg);
+
+    await svgExport.downloadSvg( svg, 'Mermaid diagram' );
   };
 
-  /*  Export PNG from the prepared SVG */
+
   window.exportPng = async function() {
 
     const sourceSvg = document.querySelector('#output svg');
@@ -405,7 +415,7 @@ window.renderMermaid = function() {
 
     const svg = prepareSvgForExport(sourceSvg);
 
-    await svgExport.downloadPng(svg,  'Mermaid diagram');
+    await svgExport.downloadPng(svg, 'Mermaid diagram');
   };
 
 
