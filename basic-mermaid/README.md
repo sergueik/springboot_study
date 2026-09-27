@@ -1774,6 +1774,58 @@ style="transform: none; transform-origin: 0px 0px; max-width: none;"
 ```
 
 
+at @cd3505bb
+```code
+graph
+
+A-->B
+B-->C
+C-->A
+```
+
+```mermaid
+graph
+
+A-->B
+B-->C
+C-->A
+```
+
+Mermaid callback console log:
+
+```text
+Mermaid callback raw viewBox: -7.999999046325684 -7.999998092651367 75.0625 215.85714721679688
+```
+```
+exported svg:
+
+```xml
+
+<?xml version="1.0" standalone="no"?>
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" 
+id="graph11790522217" 
+width="75.0625" 
+xmlns="http://www.w3.org/2000/svg" 
+style="max-width: none; transform: none; transform-origin: 0px 0px;" 
+viewBox="7 999999046325684 75.0625 215.8482208251953" 
+role="graphics-document document" 
+aria-roledescription="flowchart-v2" 
+height="215.8482208251953" preserveAspectRatio="none">
+...
+```
+
+![Caption Broken Export](local/Mermaid_diagram.svg)
+
+fixing the floating point bug in viewBox:
+
+```text
+viewBox="-7.999999046325684 -7.999998092651367 189.06251525878906 84.27678680419922"
+``` 
+
+makes it visible:
+
+![Caption Fixed Export](local/Fixed_Mermaid_diagram.svg)
+
 ---
 
 ### See Also:
