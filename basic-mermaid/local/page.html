@@ -1,11 +1,27 @@
 <!DOCTYPE html>
+
 <html>
 <head>
 <meta charset="UTF-8">
 
-
 <link rel="icon" type="image/png" href="favicon.png">
 <title>Ultra Basic Mermaid Renderer</title>
+
+<!-- Mermaid -->
+
+<script src="mermaid.min.js"></script>
+
+<!-- svg-exportJS dependencies, loaded piece-meal -->
+
+<script src="umd.js"></script>
+
+<script src="pdfkit.standalone.js"></script>
+
+<script src="blob-stream-browserify.js"></script>
+
+<script src="svg-to-pdfkit.js"></script>
+
+<script src="svg-export.umd.min.js"></script>
 
 <style>
 html, body {
@@ -31,110 +47,111 @@ body {
       inset 1px 1px 0 #f5f5f5,
       inset -1px -1px 0 #6e6e6e,
       0 4px 12px rgba(0,0,0,0.35);
-  padding:8px;
-  box-sizing:border-box;
+  padding: 8px;
+  box-sizing: border-box;
 }
 
-.titlebar{
-  background:linear-gradient(#d8d8d8,#a8a8a8);
-  border:1px solid #777;
-  padding:6px 10px;
-  margin-bottom:8px;
-  font-weight:bold;
+.titlebar {
+  background: linear-gradient(#d8d8d8,#a8a8a8);
+  border: 1px solid #777;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  font-weight: bold;
 }
 
-.split{
-  display:flex;
-  gap:8px;
-  height:calc(100% - 42px);
+.split {
+  display: flex;
+  gap: 8px;
+  height: calc(100% - 42px);
 }
 
-.pane-input{
-  flex:0 0 25%;
-  display:flex;
-  flex-direction:column;
-  min-width:220px;
+.pane-input {
+  flex: 0 0 25%;
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
 }
 
-.pane-output{
-  flex:0 0 75%;
-  display:flex;
-  flex-direction:column;
-  min-width:0;
+.pane-output {
+  flex: 0 0 75%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
-.panel-label{
-  font-size:13px;
-  font-weight:bold;
-  margin-bottom:4px;
+.panel-label {
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 4px;
 }
 
-textarea{
-  width:100%;
-  flex:1;
-  box-sizing:border-box;
-  background:#efefef;
-  border:2px inset #999;
-  font-family:Consolas,monospace;
-  padding:8px;
-  resize:vertical;
+textarea {
+  width: 100%;
+  flex: 1;
+  box-sizing: border-box;
+  background: #efefef;
+  border: 2px inset #999;
+  font-family: Consolas, monospace;
+  padding: 8px;
+  resize: vertical;
 }
 
-#output{
-  flex:1;
-  overflow:auto;
-  background:#f5f5f5;
-  border:2px inset #999;
-  padding:6px;
+#output {
+  flex: 1;
+  overflow: auto;
+  background: #f5f5f5;
+  border: 2px inset #999;
+  padding: 6px;
 }
 
-button{
-  padding:6px 12px;
-  margin-right:4px;
-  border:1px solid #666;
-  background:linear-gradient(#eeeeee,#bbbbbb);
-  cursor:pointer;
-  font-weight:bold;
+button {
+  padding: 6px 12px;
+  margin-right: 4px;
+  border: 1px solid #666;
+  background: linear-gradient(#eeeeee,#bbbbbb);
+  cursor: pointer;
+  font-weight: bold;
 }
 </style>
 
-<script src="mermaid.min.js">
-</script>
-
 <script>
 mermaid.initialize({
-    startOnLoad:false,
-    securityLevel:"loose"
+    startOnLoad: false,
+    securityLevel: "loose"
 });
 
-let scale=1;
+let scale = 1;
 
-window.zoomIn=function(){
-    scale+=0.1;
+window.zoomIn = function() {
+    scale += 0.1;
     applyZoom();
-}
+};
 
-window.zoomOut=function(){
-    scale=Math.max(0.2,scale-0.1);
+window.zoomOut = function() {
+    scale = Math.max(0.2, scale - 0.1);
     applyZoom();
-}
+};
 
-window.applyZoom=function(){
+window.applyZoom = function() {
 
-    const svg=document.querySelector("#output svg");
+    const svg = document.querySelector("#output svg");
 
-    if(svg){
-        svg.style.transform="scale("+scale+")";
-        svg.style.transformOrigin="0 0";
+    if (svg) {
+        svg.style.transform = "scale(" + scale + ")";
+        svg.style.transformOrigin = "0 0";
     }
-}
+};
 
 function normalizeMermaidSource(source) {
+
     source = source.trim();
 
     // Repeatedly peel an outer Markdown fence.
     for (;;) {
-        const outer = source.match( /^(`{3,})[^\r\n]*\r?\n([\s\S]*?)\r?\n\1/);
+
+        const outer = source.match(
+            /^(`{3,})[^\r\n]*\r?\n([\s\S]*?)\r?\n\1/
+        );
 
         if (!outer) {
             break;
@@ -146,9 +163,11 @@ function normalizeMermaidSource(source) {
     return source;
 }
 
-window.renderMermaid = function () {
+window.renderMermaid = function() {
 
-    const source = normalizeMermaidSource( document.getElementById("diagramInput").value);
+    const source = normalizeMermaidSource(
+        document.getElementById("diagramInput").value
+    );
 
     const output = document.getElementById("output");
 
@@ -167,16 +186,261 @@ window.renderMermaid = function () {
 
     } catch (e) {
 
-        output.innerHTML = "<pre>" + e + "</pre>";
+        output.innerHTML =
+            "<pre>" + String(e) + "</pre>";
 
-    }
 }
 
-// ---
+};
 
-window.onload=renderMermaid;
+/*
 
-</script>
+* Create an export copy of the Mermaid SVG.
+*
+* The SVG displayed in #output is NOT modified.
+*
+* Mermaid normally puts much of the appearance in a <style>
+* element.  Some SVG/PDF conversion paths do not process those
+* CSS rules in the same way as the browser.
+*
+* We therefore copy the SVG and inline the computed presentation
+* properties on the SVG elements.
+  */
+  function prepareSvgForExport(sourceSvg) {
+
+  const svg = sourceSvg.cloneNode(true);
+
+  const viewBox = svg.viewBox.baseVal;
+
+  if (viewBox && viewBox.width > 0 && viewBox.height > 0) {
+
+      svg.setAttribute("width", viewBox.width);
+      svg.setAttribute("height", viewBox.height);
+
+      svg.style.width = viewBox.width + "px";
+      svg.style.height = viewBox.height + "px";
+      svg.style.maxWidth = "none";
+      svg.style.transform = "none";
+  }
+
+  /*
+
+  * The browser's computed style is available for the original
+  * Mermaid SVG.  Copy the important SVG presentation properties
+  * onto the corresponding cloned elements.
+    */
+    const sourceElements = sourceSvg.querySelectorAll("*");
+    const targetElements = svg.querySelectorAll("*");
+
+  const properties = [
+  "fill",
+  "fill-opacity",
+  "stroke",
+  "stroke-width",
+  "stroke-opacity",
+  "stroke-dasharray",
+  "stroke-dashoffset",
+  "stroke-linecap",
+  "stroke-linejoin",
+  "opacity",
+  "font-family",
+  "font-size",
+  "font-weight",
+  "font-style",
+  "text-anchor",
+  "dominant-baseline"
+  ];
+
+  for (let i = 0; i < sourceElements.length; i++) {
+
+   const source = sourceElements[i];
+   const target = targetElements[i];
+
+   if (!target) {
+       continue;
+   }
+
+   const computed = window.getComputedStyle(source);
+
+   for (const property of properties) {
+
+       const value = computed.getPropertyValue(property);
+
+       if (value) {
+           target.style.setProperty(property, value);
+       }
+   }
+
+  }
+
+  /*
+
+  * Remove Mermaid's embedded CSS after the important computed
+  * properties have been copied to the individual elements.
+  *
+  * This makes the export SVG considerably less dependent on
+  * CSS selector processing by the downstream converter.
+    */
+    const styles = svg.querySelectorAll("style");
+
+  for (const style of styles) {
+  style.parentNode.removeChild(style);
+  }
+
+  /*
+
+  * Mermaid uses foreignObject for labels.
+  *
+  * svg-to-pdfkit/canvg may not render these reliably.
+  *
+  * Convert simple Mermaid labels to ordinary SVG <text>.
+    */
+    const foreignObjects = svg.querySelectorAll("foreignObject");
+
+  for (const foreignObject of foreignObjects) {
+   const sourceForeignObject =
+       sourceSvg.querySelectorAll("foreignObject")[
+           Array.prototype.indexOf.call(foreignObjects, foreignObject)
+       ];
+
+   let textContent = "";
+
+   if (sourceForeignObject) {
+       textContent = sourceForeignObject.textContent.trim();
+   } else {
+       textContent = foreignObject.textContent.trim();
+   }
+
+   if (!textContent) {
+       continue;
+   }
+
+   const parent = foreignObject.parentNode;
+
+   /*
+    * The surrounding <g class="label"> normally has a
+    * translate(...) transform.  Preserve that group and
+    * place a simple SVG text element where the foreignObject
+    * used to be.
+    */
+   const text = document.createElementNS(
+       "http://www.w3.org/2000/svg",
+       "text"
+   );
+
+   text.textContent = textContent;
+
+   const computed = window.getComputedStyle(
+       sourceForeignObject || foreignObject
+   );
+
+   text.setAttribute(
+       "font-family",
+       computed.fontFamily || "Arial"
+   );
+
+   text.setAttribute(
+       "font-size",
+       computed.fontSize || "16px"
+   );
+
+   text.setAttribute(
+       "fill",
+       computed.color || "#333"
+   );
+
+   text.setAttribute(
+       "text-anchor",
+       "middle"
+   );
+
+   /*
+    * Mermaid's foreignObject starts at x/y = 0 inside
+    * the label group.  Center the replacement text.
+    */
+   const width =
+       parseFloat(foreignObject.getAttribute("width")) || 0;
+
+   const height =
+       parseFloat(foreignObject.getAttribute("height")) || 19;
+
+   text.setAttribute("x", width / 2);
+   text.setAttribute("y", height * 0.75);
+
+   parent.replaceChild(text, foreignObject);
+ 
+  }
+
+  return svg;
+  }
+
+/*
+
+* Export the SVG currently displayed by Mermaid.
+  */
+  window.exportSvg = async function() {
+
+  const sourceSvg =
+  document.querySelector("#output svg");
+
+  if (!sourceSvg) {
+  alert("No Mermaid SVG is currently rendered.");
+  return;
+  }
+
+  const svg = prepareSvgForExport(sourceSvg);
+
+  await svgExport.downloadSvg(
+  svg,
+  "Mermaid diagram"
+  );
+  };
+
+/*
+
+* Export PNG from the prepared SVG.
+  */
+  window.exportPng = async function() {
+
+  const sourceSvg =
+  document.querySelector("#output svg");
+
+  if (!sourceSvg) {
+  alert("No Mermaid SVG is currently rendered.");
+  return;
+  }
+
+  const svg = prepareSvgForExport(sourceSvg);
+
+  await svgExport.downloadPng(
+  svg,
+  "Mermaid diagram"
+  );
+  };
+
+/*
+
+* Export PDF from the prepared SVG.
+  */
+  window.exportPdf = async function() {
+
+  const sourceSvg =
+  document.querySelector("#output svg");
+
+  if (!sourceSvg) {
+  alert("No Mermaid SVG is currently rendered.");
+  return;
+  }
+
+  const svg = prepareSvgForExport(sourceSvg);
+
+  await svgExport.downloadPdf(
+  svg,
+  "Mermaid diagram"
+  );
+  };
+
+window.onload = renderMermaid; </script>
 
 </head>
 
@@ -221,7 +485,7 @@ Cond1 -->|No| Cond2
 
 subgraph SUBGRAPH2["Subgraph 2"]
 Then1 --> Confirm
-end 
+end
 
 subgraph SUBGRAPH1["Subgraph 1"]
 Cond2 -->|Yes| Message
@@ -245,12 +509,10 @@ style Message fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
 style Database fill:#eeeeee,stroke:#555555,stroke-width:2px
 
 %% NOTE: the subgraph labels are case sensitive
-%% SUBGRAPH2 is not a node ID in the same sense as Start, Cond1, etc.
 style SUBGRAPH2 fill:#C9F7FF,stroke:#2e7d32,stroke-width:2px
 
-%% Uncommenting the following line creates a loose 
-%% node element 
-%% rather than styling the subgraph SUBGRAPH2:
+%% Uncommenting the following line creates a loose
+%% node element rather than styling the subgraph:
 %% style Subgraph2 fill:#FF8080,stroke:#8B0000,stroke-width:2px
 
 </textarea>
@@ -262,6 +524,12 @@ style SUBGRAPH2 fill:#C9F7FF,stroke:#2e7d32,stroke-width:2px
 <button onclick="zoomIn()">+</button>
 
 <button onclick="zoomOut()">-</button>
+
+<button onclick="exportSvg()">SVG</button>
+
+<button onclick="exportPng()">PNG</button>
+
+<button onclick="exportPdf()">PDF</button>
 
 </div>
 

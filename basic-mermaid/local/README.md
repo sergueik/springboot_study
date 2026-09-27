@@ -357,9 +357,23 @@ the latter "internal developer tool"  will likely never be approved:
 
 The tool itself (Mermaid rendering) is harmless. The path to obtaining the tool is what triggers concern
 
+### Printing
+
+Using  [sharonchoong/svg-exportJS](https://github.com/sharonchoong/svg-exportJS) - an vanilla javascript library to export svg charts from the DOM and download them as an SVG file, PDF, or raster image (JPEG, PNG) format. can be done all in browser
+
+
+![Printing](../screenshots/capture-print.png)
+
+
+  ✅ Entire Mermaid flow fits in the image, ✅natural size
+  ✅ Node shapes and shapes are preserved (this requires visibility of the styles)
+  ✅ Edges are preserved
+  ✅ Text is rendered
+  ⚠️  Due to measuring, there is a minor clipping issue with Subgraph label 
 
 ### See Also
 
+  * [exportJS demo page](https://sharonchoong.github.io/svg-exportJS/index.html)
   * [Mermaid npm packge](https://www.npmjs.com/package/mermaid)
   * [Mermaid CDN](https://cdnjs.com/libraries/mermaid) 
   * [collection of examples of diagrams and charts that can be created through mermaid](https://mermaid.ai/open-source/syntax/examples.html)
