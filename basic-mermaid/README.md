@@ -1731,6 +1731,49 @@ SVGRect
   y: -34.914283752441406
   [[Prototype]]:  SVGRect
 ```
+
+```javascript
+    console.log('BEFORE svgExport.downloadSvg');
+    console.log('attribute:', svg.getAttribute('viewBox'));
+
+    console.dir({
+        x: svg.viewBox.baseVal.x,
+        y: svg.viewBox.baseVal.y,
+        width: svg.viewBox.baseVal.width,
+        height: svg.viewBox.baseVal.height
+    });
+
+    console.log('outerHTML:', svg.outerHTML.substring(0, 500));
+
+    await svgExport.downloadSvg( svg, 'Mermaid diagram' );
+
+```
+Console log (second mermaid, the known bad view port one):
+```text
+BEFORE svgExport.downloadSvg
+page.html:407 attribute: -123.1875 -34.91428565979004 431.1875 279.98187255859375
+height: 279.98187255859375
+width: 431.1875
+x: -123.1875
+y: -34.914283752441406
+[[Prototype]]: Object
+
+```
+Exported SVG source fragment:
+```xml
+<?xml version="1.0" standalone="no"?>
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" 
+id="graph11790520405" 
+width="431.1875305175781" 
+xmlns="http://www.w3.org/2000/svg" height="279.9732360839844" 
+viewBox="123 1875 431.1875305175781 279.9732360839844" 
+role="graphics-document document" 
+aria-roledescription="gitGraph" 
+style="transform: none; transform-origin: 0px 0px; max-width: none;"
+ preserveAspectRatio="none">
+```
+
+
 ---
 
 ### See Also:
