@@ -153,7 +153,7 @@ window.renderMermaid = function() {
     
     try {
 
-        mermaid.mermaidAPI.render( 'graph1', source,
+        mermaid.mermaidAPI.render( 'graph1' + Math.floor(Date.now() / 1000) , source,
             function(svgCode) {
             
                 output.innerHTML = svgCode;
