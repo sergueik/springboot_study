@@ -7,21 +7,9 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <title>Ultra Basic Mermaid Renderer</title>
 
-<!-- Mermaid -->
-
 <script src="mermaid.min.js"></script>
 
-<!-- svg-exportJS dependencies, loaded piece-meal -->
-
-<script src="umd.js"></script>
-
-<script src="pdfkit.standalone.js"></script>
-
-<script src="blob-stream-browserify.js"></script>
-
-<script src="svg-to-pdfkit.js"></script>
-
-<script src="svg-export.umd.min.js"></script>
+<script src="svg-export.umd.standalone.min.js"></script>
 
 <style>
 html, body {
@@ -115,30 +103,22 @@ button {
 </style>
 
 <script>
-mermaid.initialize({
-    startOnLoad: false,
-    securityLevel: "loose"
-});
+
+mermaid.initialize({ startOnLoad: false,  securityLevel: 'loose' });
 
 let scale = 1;
 
-window.zoomIn = function() {
-    scale += 0.1;
-    applyZoom();
-};
+window.zoomIn = function() { scale += 0.1; applyZoom(); };
 
-window.zoomOut = function() {
-    scale = Math.max(0.2, scale - 0.1);
-    applyZoom();
-};
+window.zoomOut = function() {  scale = Math.max(0.2, scale - 0.1); applyZoom(); };
 
 window.applyZoom = function() {
 
-    const svg = document.querySelector("#output svg");
+    const svg = document.querySelector('#output svg');
 
     if (svg) {
-        svg.style.transform = "scale(" + scale + ")";
-        svg.style.transformOrigin = "0 0";
+        svg.style.transform = 'scale(' + scale + ')';
+        svg.style.transformOrigin = '0 0';
     }
 };
 
@@ -166,30 +146,31 @@ function normalizeMermaidSource(source) {
 window.renderMermaid = function() {
 
     const source = normalizeMermaidSource(
-        document.getElementById("diagramInput").value
+      document.getElementById('diagramInput').value
     );
+    
+    const outputNode = document.getElementById('output');
+    const parentElement = document.getElementById('output').parentNode;
+    parentElement.removeChild(outputNode);
+    const newNode = document.createElement('div');
+    newNode.id = 'output';
+    parentElement.append(newNode); 
 
-    const output = document.getElementById("output");
-
+    const output = document.getElementById('output');
+    
     try {
 
-        mermaid.mermaidAPI.render(
-            "graph1",
-            source,
+        mermaid.mermaidAPI.render( 'graph1', source,
             function(svgCode) {
-
                 output.innerHTML = svgCode;
                 applyZoom();
-
             }
         );
 
     } catch (e) {
-
-        output.innerHTML =
-            "<pre>" + String(e) + "</pre>";
-
-}
+      console.log('renderMermaid exception: ' + String(e));
+      output.innerHTML = '<pre>' + String(e) + '</pre>';
+    }
 
 };
 
@@ -208,7 +189,19 @@ window.renderMermaid = function() {
   */
   function prepareSvgForExport(sourceSvg) {
 
-  const svg = sourceSvg.cloneNode(true);
+    var data = sourceSvg.outerHTML;
+
+    console.log('prepareSvgForExport original source length:', data.length);
+    console.log('prepareSvgForExport original  source fragment: ', data.substring(0,200));
+
+    const svg = sourceSvg.cloneNode(true);
+
+    data = svg.outerHTML;
+    console.log('prepareSvgForExport clone source length:', data.length);
+    console.log('prepareSvgForExport clone source fragment: ', data.substring(0,200));
+
+		console.log( 'prepareSvgForExport clone source SVG metadata: ');
+    console.dir( { width: svg.getAttribute('width'), height: svg.getAttribute('height'), viewBox: svg.getAttribute('viewBox'), xmlns: svg.getAttribute('xmlns')});
 
   const viewBox = svg.viewBox.baseVal;
 
@@ -229,26 +222,26 @@ window.renderMermaid = function() {
   * Mermaid SVG.  Copy the important SVG presentation properties
   * onto the corresponding cloned elements.
     */
-    const sourceElements = sourceSvg.querySelectorAll("*");
-    const targetElements = svg.querySelectorAll("*");
+    const sourceElements = sourceSvg.querySelectorAll('*');
+    const targetElements = svg.querySelectorAll('*');
 
   const properties = [
-  "fill",
-  "fill-opacity",
-  "stroke",
-  "stroke-width",
-  "stroke-opacity",
-  "stroke-dasharray",
-  "stroke-dashoffset",
-  "stroke-linecap",
-  "stroke-linejoin",
-  "opacity",
-  "font-family",
-  "font-size",
-  "font-weight",
-  "font-style",
-  "text-anchor",
-  "dominant-baseline"
+    'fill',
+    'fill-opacity',
+    'stroke',
+    'stroke-width',
+    'stroke-opacity',
+    'stroke-dasharray',
+    'stroke-dashoffset',
+    'stroke-linecap',
+    'stroke-linejoin',
+    'opacity',
+    'font-family',
+    'font-size',
+    'font-weight',
+    'font-style',
+    'text-anchor',
+    'dominant-baseline'
   ];
 
   for (let i = 0; i < sourceElements.length; i++) {
@@ -284,7 +277,7 @@ window.renderMermaid = function() {
     const styles = svg.querySelectorAll("style");
 
   for (const style of styles) {
-  style.parentNode.removeChild(style);
+    style.parentNode.removeChild(style);
   }
 
   /*
@@ -295,15 +288,15 @@ window.renderMermaid = function() {
   *
   * Convert simple Mermaid labels to ordinary SVG <text>.
     */
-    const foreignObjects = svg.querySelectorAll("foreignObject");
+    const foreignObjects = svg.querySelectorAll('foreignObject');
 
   for (const foreignObject of foreignObjects) {
    const sourceForeignObject =
-       sourceSvg.querySelectorAll("foreignObject")[
+       sourceSvg.querySelectorAll('foreignObject')[
            Array.prototype.indexOf.call(foreignObjects, foreignObject)
        ];
 
-   let textContent = "";
+   let textContent = '';
 
    if (sourceForeignObject) {
        textContent = sourceForeignObject.textContent.trim();
@@ -318,14 +311,14 @@ window.renderMermaid = function() {
    const parent = foreignObject.parentNode;
 
    /*
-    * The surrounding <g class="label"> normally has a
+    * The surrounding <g class='label'> normally has a
     * translate(...) transform.  Preserve that group and
     * place a simple SVG text element where the foreignObject
     * used to be.
     */
    const text = document.createElementNS(
-       "http://www.w3.org/2000/svg",
-       "text"
+       'http://www.w3.org/2000/svg',
+       'text'
    );
 
    text.textContent = textContent;
@@ -335,23 +328,23 @@ window.renderMermaid = function() {
    );
 
    text.setAttribute(
-       "font-family",
-       computed.fontFamily || "Arial"
+       'font-family',
+       computed.fontFamily || 'Arial'
    );
 
    text.setAttribute(
-       "font-size",
-       computed.fontSize || "16px"
+       'font-size',
+       computed.fontSize || '16px'
    );
 
    text.setAttribute(
-       "fill",
-       computed.color || "#333"
+       'fill',
+       computed.color || '#333'
    );
 
    text.setAttribute(
-       "text-anchor",
-       "middle"
+       'text-anchor',
+       'middle'
    );
 
    /*
@@ -359,13 +352,13 @@ window.renderMermaid = function() {
     * the label group.  Center the replacement text.
     */
    const width =
-       parseFloat(foreignObject.getAttribute("width")) || 0;
+       parseFloat(foreignObject.getAttribute('width')) || 0;
 
    const height =
-       parseFloat(foreignObject.getAttribute("height")) || 19;
+       parseFloat(foreignObject.getAttribute('height')) || 19;
 
-   text.setAttribute("x", width / 2);
-   text.setAttribute("y", height * 0.75);
+   text.setAttribute('x', width / 2);
+   text.setAttribute('y', height * 0.75);
 
    parent.replaceChild(text, foreignObject);
  
@@ -380,65 +373,41 @@ window.renderMermaid = function() {
   */
   window.exportSvg = async function() {
 
-  const sourceSvg =
-  document.querySelector("#output svg");
+    renderMermaid();
+    const sourceSvg = document.querySelector('#output svg');
 
-  if (!sourceSvg) {
-  alert("No Mermaid SVG is currently rendered.");
-  return;
-  }
+    const data = sourceSvg.outerHTML;
+    console.log('exportSvg source length:', data.length);
+    console.log('exportSvg source fragment: ', data.substring(0,200));
 
-  const svg = prepareSvgForExport(sourceSvg);
+    if (!sourceSvg) {
+      alert('No Mermaid SVG is currently rendered.');
+      return;
+    }
 
-  await svgExport.downloadSvg(
-  svg,
-  "Mermaid diagram"
-  );
+    const svg = prepareSvgForExport(sourceSvg);
+
+		console.log( 'Export SVG metadata: ');
+    console.dir( { width: svg.getAttribute('width'), height: svg.getAttribute('height'), viewBox: svg.getAttribute('viewBox'), xmlns: svg.getAttribute('xmlns')});
+    await svgExport.downloadSvg( svg, 'Mermaid diagram');
+
   };
 
-/*
-
-* Export PNG from the prepared SVG.
-  */
+  /*  Export PNG from the prepared SVG */
   window.exportPng = async function() {
 
-  const sourceSvg =
-  document.querySelector("#output svg");
+    const sourceSvg = document.querySelector('#output svg');
 
-  if (!sourceSvg) {
-  alert("No Mermaid SVG is currently rendered.");
-  return;
-  }
+    if (!sourceSvg) {
+      alert('No Mermaid SVG is currently rendered.');
+      return;
+    }
 
-  const svg = prepareSvgForExport(sourceSvg);
+    const svg = prepareSvgForExport(sourceSvg);
 
-  await svgExport.downloadPng(
-  svg,
-  "Mermaid diagram"
-  );
+    await svgExport.downloadPng(svg,  'Mermaid diagram');
   };
 
-/*
-
-* Export PDF from the prepared SVG.
-  */
-  window.exportPdf = async function() {
-
-  const sourceSvg =
-  document.querySelector("#output svg");
-
-  if (!sourceSvg) {
-  alert("No Mermaid SVG is currently rendered.");
-  return;
-  }
-
-  const svg = prepareSvgForExport(sourceSvg);
-
-  await svgExport.downloadPdf(
-  svg,
-  "Mermaid diagram"
-  );
-  };
 
 window.onload = renderMermaid; </script>
 
@@ -462,59 +431,29 @@ Mermaid Input
 
 <textarea id="diagramInput">
 
-flowchart LR
+sequenceDiagram
+    participant Browser as Headless Chrome
+    participant Frontend as React SPA
+    participant Backend as Spring Boot
+    participant DB as Database
 
-Start(((Start)))
+    Browser->>Frontend: Load landing page
+    Frontend->>Frontend: Start React
 
-Cond1{"❓Condition 1"}
-Confirm(["📂Confirm"])
+    Frontend->>Backend: GET /health
 
-Cond2{"Condition 2"}
-
-Then1[["🔧 Execute Process"]]
-
-Message[/"📩 Message"/]
-
-Database[("📊 Database")]
-
-End((End))
-
-Start --> Cond1
-Cond1 -->|Yes| Then1
-Cond1 -->|No| Cond2
-
-subgraph SUBGRAPH2["Subgraph 2"]
-Then1 --> Confirm
-end
-
-subgraph SUBGRAPH1["Subgraph 1"]
-Cond2 -->|Yes| Message
-Cond2 -->|No| Database
-end
-
-Database --> End
-Message --> End
-Confirm -->|Done| End
-
-style Start fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
-style End fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
-
-style Cond1 fill:#fff3cd,stroke:#d39e00,stroke-width:2px
-style Cond2 fill:#fff3cd,stroke:#d39e00,stroke-width:2px
-
-style Then1 fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-style Confirm fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-
-style Message fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
-style Database fill:#eeeeee,stroke:#555555,stroke-width:2px
-
-%% NOTE: the subgraph labels are case sensitive
-style SUBGRAPH2 fill:#C9F7FF,stroke:#2e7d32,stroke-width:2px
-
-%% Uncommenting the following line creates a loose
-%% node element rather than styling the subgraph:
-%% style Subgraph2 fill:#FF8080,stroke:#8B0000,stroke-width:2px
-
+    alt Backend sleeping
+        Backend-->>Frontend: 503 Not Ready
+        Frontend->>Browser: Show waiting toast
+        Frontend->>Backend: Retry
+    else Backend ready
+        Backend-->>Frontend: 200 OK
+        Frontend->>Backend: Load data
+        Backend->>DB: Query
+        DB-->>Backend: Result
+        Backend-->>Frontend: JSON
+        Frontend->>Browser: Render application
+    end
 </textarea>
 
 <div style="margin-top:6px">
@@ -528,8 +467,6 @@ style SUBGRAPH2 fill:#C9F7FF,stroke:#2e7d32,stroke-width:2px
 <button onclick="exportSvg()">SVG</button>
 
 <button onclick="exportPng()">PNG</button>
-
-<button onclick="exportPdf()">PDF</button>
 
 </div>
 
