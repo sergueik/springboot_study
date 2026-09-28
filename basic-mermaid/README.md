@@ -1813,8 +1813,10 @@ aria-roledescription="flowchart-v2"
 height="215.8482208251953" preserveAspectRatio="none">
 ...
 ```
+<kbd>
+  <img src="local/Mermaid_diagram.svg" alt="Caption Broken Export">
+</kbd>
 
-![Caption Broken Export](local/Mermaid_diagram.svg)
 
 fixing the floating point bug in viewBox:
 
@@ -1824,7 +1826,9 @@ viewBox="-7.999999046325684 -7.999998092651367 189.06251525878906 84.27678680419
 
 makes it visible:
 
-![Caption Fixed Export](local/Fixed_Mermaid_diagram.svg)
+<kbd>
+  <img src="local/Fixed_Mermaid_diagram.svg" alt="Caption Fixed Export">
+</kbd>
 
 ---
 
