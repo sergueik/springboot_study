@@ -363,6 +363,63 @@ Warning: No loadimage plugin for "svg:cairo"
 ![CI Pipeline Design](screenshots/ci-pipeline-svg.png)
 
 
+### Troubleshooting
+zoom until becomes fully visible (every zoom in makes truncation less damaging):
+ Browser console log: 
+
+```text
+[ZOOM] after applyZoom scale=1.6000000000000005 cssTransform="scale(1.6)" viewBox="0.00 0.00 530.54 216.37" viewBox=0,0,530.5399780273438,216.3699951171875 rect=306.57,84.00,1908.34x778.27
+page.html:255 original: 0.00 0.00 530.54 216.37 normalized: 0 0 531 216
+```
+
+ - fully visible
+ 
+<kbd>
+  <img src="screenshots/svg_visible.png" alt="svg exported at 160% zoom -  fully visible">
+</kbd>
+
+raw svg XML header fragment 
+```xml
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 530.544921875 292.8571472167969" style="transform: scale(1.6); transform-origin: 0px 0px;" width="530.544921875" height="292.8571472167969" preserveAspectRatio="none"> 
+```
+ 
+ 
+ zoom back to `100%`. 
+ Browser console log: 
+``` text
+ [ZOOM] after applyZoom scale=1 cssTransform="scale(1)" viewBox="0.00 0.00 530.54 216.37" viewBox=0,0,530.5399780273438,216.3699951171875 rect=306.57,84.00,1215.00x495.51
+```
+NOTE:  svg truncated severily
+
+<kbd>
+  <img src="screenshots/svg_truncated_100.png" alt="svg exported at 100% zoom">
+</kbd>
+
+raw svg XML - note the height change.
+ 
+```xml 
+ <?xml version="1.0" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 530.544921875 183.0357208251953" style="transform: scale(1); transform-origin: 0px 0px;" width="530.544921875" height="183.0357208251953" preserveAspectRatio="none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(
+
+```
+
+downscaled to 50% 
+truncated worse:
+
+<kbd>
+  <img src="screenshots/svg_truncated_50.png" alt="svg exported at 50% zoom">
+</kbd>
+
+raw svg: XML
+```xml
+<?xml version="1.0" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 530.544921875 91.51786041259766" style="transform: scale(0.5); transform-origin: 0px 0px;" width="530.544921875" height="91.51786041259766" preserveAspectRatio="none">
+
+```
+
+NOTE: the PNG images are truncaterd too, in a different way - e.g. the png counterpart of the 160% scaled SVG  (which SVG explort appears non truncated) -  is truncated badly.
+
 ### See Also
  
   * [graphviz Node Shapes](https://graphviz.org/doc/info/shapes.html)
