@@ -369,13 +369,61 @@ Using  [sharonchoong/svg-exportJS](https://github.com/sharonchoong/svg-exportJS)
   ✅ Node shapes and shapes are preserved (this requires visibility of the styles)
   ✅ Edges are preserved
   ✅ Text is rendered
-  ⚠️  Due to measuring, there is a minor clipping issue with Subgraph label 
+  ⚠️  Due to measuring, there is a minor clipping issue with Subgraph label
+
+#### Setup
+
+* examine [svg-exportjs](https://github.com/sharonchoong/svg-exportJS) [demo page](https://sharonchoong.github.io/svg-exportJS/index.html) for latest dependency versions:
+
+```xml
+<!-- <script src=".https://cdn.jsdelivr.net/gh/sharonchoong/svg-exportJS@master/dist/umd/svg-export.umd.standalone.min.js"></script> -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvg/3.0.9/umd.js" integrity="sha512-Wu9XXg78PiNE0DI4Z80lFKlEpLq7yGjquc0I35Nz+sYmSs4/oNHaSW8ACStXBoXciqwTLnSINqToeWP3iNDGmQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfkit@0.13.0/js/pdfkit.standalone.js" integrity="sha256-41qk5dewLKulpzhP3H6G7mY+5q+vzxMaxolsOGmZD/8=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/blob-stream-browserify@0.1.3/index.js" integrity="sha256-bFrIR3MiIsKhM2EDZdTJ3eY7iSluq1W7e6dNVwScEYw=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-to-pdfkit@0.1.8/source.js" integrity="sha256-NaOoypZxJFnz2e4IeMtA9+UMZ5Fh85ljICcUts98jqY=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/svg-exportjs-browser@latest/dist/umd/svg-export.umd.min.js"></script>
+<!-- <script src="../dist/umd/svg-export.umd.min.js"></script> -->
+```
+* download all dependencies
+
+```sh
+FILENAME='pdfkit.standalone.js'
+URL='https://cdn.jsdelivr.net/npm/pdfkit@0.13.0/js/pdfkit.standalone.js'
+curl -skL -o $FILENAME $URL
+```
+```sh
+
+URL='https://cdnjs.cloudflare.com/ajax/libs/canvg/3.0.9/umd.js'
+FILENAME='umd.js'
+curl -skL -o $FILENAME $URL
+```
+```sh
+URL='https://cdn.jsdelivr.net/npm/blob-stream-browserify@0.1.3/index.js'
+FILENAME='blob-stream-browserify.js'
+curl -skL -o $FILENAME $URL
+```
+```sh
+URL='https://cdn.jsdelivr.net/npm/svg-to-pdfkit@0.1.8/source.js'
+FILENAME='svg-to-pdfkit.js'
+curl -skL -o $FILENAME $URL
+```
+```sh
+URL='https://cdn.jsdelivr.net/npm/svg-exportjs-browser@latest/dist/umd/svg-export.umd.min.js'
+FILENAME='svg-export.umd.min.js'
+curl -skL -o $FILENAME $URL
+```
+```sh
+URL='https://cdn.jsdelivr.net/gh/sharonchoong/svg-exportJS@master/dist/umd/svg-export.umd.standalone.min.js'
+FILENAME='svg-export.umd.standalone.min.js'
+curl -skL -o $FILENAME $URL
+```
 
 ### See Also
 
   * [exportJS demo page](https://sharonchoong.github.io/svg-exportJS/index.html)
-  * [Mermaid npm packge](https://www.npmjs.com/package/mermaid)
-  * [Mermaid CDN](https://cdnjs.com/libraries/mermaid) 
+  * [Mermaid npm package](https://www.npmjs.com/package/mermaid)
+  * [Mermaid CDN](https://cdnjs.com/libraries/mermaid)
   * [collection of examples of diagrams and charts that can be created through mermaid](https://mermaid.ai/open-source/syntax/examples.html)
   * [Mac vs PC - Box](https://www.youtube.com/watch?v=1PwiljBN5-8) commercial Justin Lon noticing regarding John Hodgman: *"it sounds like you have a lot of stuff to do before you do any stuff"*
 
