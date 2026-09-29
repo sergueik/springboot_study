@@ -359,7 +359,7 @@ The tool itself (Mermaid rendering) is harmless. The path to obtaining the tool 
 
 ### Printing
 
-Using  [sharonchoong/svg-exportJS](https://github.com/sharonchoong/svg-exportJS) - an vanilla javascript library to export svg charts from the DOM and download them as an SVG file, PDF, or raster image (JPEG, PNG) format. can be done all in browser
+Using [sharonchoong/svg-exportJS](https://github.com/sharonchoong/svg-exportJS) - an vanilla javascript library to export svg charts from the DOM and download them as an SVG file, PDF, or raster image (JPEG, PNG) format. can be done all in browser
 
 
 ![Printing](../screenshots/capture-print.png)
