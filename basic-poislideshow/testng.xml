@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Suite 1" verbose="10" configfailurepolicy="continue">
+  <parameter name="debug" value="false"/>
+  <test name="Parse Search Result" preserve-order="true" parallel="false">
+    <parameter name="selenium.browser" value="firefox"/>
+    <classes>
+      <class name="com.github.sergueik.testng.ExcelProviderTest">
+        <methods>
+          <include name="testWithExcel2007"/>
+          <include name="testWithExcel2003"/>
+        </methods>
+      </class>
+    </classes>
+  </test>
+</suite>
