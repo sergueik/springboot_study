@@ -13,14 +13,14 @@ In the past the packaging of PowerPoing components was done via [OLE Storage](ht
 ### Usage
 
 ```cmd
-mvn -DskipTests package install
+mvn -DskipTests clean package
 ```
 
 ```sh
 curl -skLO https://samplelib.com/ppt/sample-presentation.pptx
 ```
 ```text
-java -cp target\extractor-0.1.0SNAPSHOT.jar;target\lib\* example.Example sample-presentation.pptx 2>nul
+java -jar target\example.extractor.jar -filename sample-presentation.pptx 2>nul
 ```
 
 ```text

@@ -5,7 +5,7 @@
   <name>${project.groupId}:${project.artifactId}</name>
   <artifactId>extractor</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.0SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <url>http://maven.apache.org</url>
   <developers>
     <developer>
@@ -25,12 +25,12 @@
     <json.version>20231013</json.version>
     <json-path.version>2.9.0</json-path.version>
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-    <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
-    <!-- runs ant build.xml script embedded in the pom -->
+    <maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
     <poi.version>3.17</poi.version>
     <poiooxml.version>${poi.version}</poiooxml.version>
     <snakeyaml.version>2.0</snakeyaml.version>
     <mainClass>Example</mainClass>
+    <finalName>${project.groupId}.${project.artifactId}</finalName>
   </properties>
   <dependencies>
     <dependency>
@@ -123,104 +123,30 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.18</version>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>${maven-assembly-plugin.version}</version>
         <configuration>
-          <suiteXmlFiles>
-            <suiteXmlFile>testng.xml</suiteXmlFile>
-          </suiteXmlFiles>
+      <finalName>${finalName}</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <mainClass>${project.groupId}.${mainClass}</mainClass>
+            </manifest>
+          </archive>
         </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
-  <licenses>
-    <license>
-      <name>MIT License</name>
-      <url>http://www.opensource.org/licenses/mit-license.php</url>
-    </license>
-  </licenses>
-  <distributionManagement>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </repository>
-  </distributionManagement>
-  <description>TestNg data provider test annotation backed by various desktop spreadsheet data files through poi, google sheets via api, csv and json </description>
-  <profiles>
-    <profile>
-      <id>windows32</id>
-      <activation>
-        <os>
-          <family>windows</family>
-          <arch>x86</arch>
-        </os>
-      </activation>
-      <properties>
-        <build_os>win32</build_os>
-      </properties>
-    </profile>
-    <profile>
-      <id>windows64</id>
-      <activation>
-        <os>
-          <family>dos</family>
-          <arch>amd64</arch>
-        </os>
-      </activation>
-      <properties>
-        <build_os>win64</build_os>
-      </properties>
-    </profile>
-    <!-- NOTE: "//profiles/profile/id/text()" DOM value must be unique -->
-    <profile>
-    </profile>
-    <profile>
-      <id>windows64_2</id>
-      <activation>
-        <os>
-          <family>windows</family>
-          <arch>amd64</arch>
-        </os>
-      </activation>
-      <properties>
-        <build_os>win64</build_os>
-      </properties>
-    </profile>
-    <profile>
-      <id>mac64</id>
-      <activation>
-        <os>
-          <family>mac</family>
-          <arch>x86_64</arch>
-        </os>
-      </activation>
-      <properties>
-        <build_os>mac64</build_os>
-      </properties>
-    </profile>
-    <profile>
-      <id>unix32</id>
-      <activation>
-        <os>
-          <family>unix</family>
-          <arch>i386</arch>
-        </os>
-      </activation>
-      <properties>
-        <build_os>unix32</build_os>
-      </properties>
-    </profile>
-    <profile>
-      <id>unix64</id>
-      <activation>
-        <os>
-          <family>unix</family>
-          <arch>amd64</arch>
-        </os>
-      </activation>
-      <properties>
-        <build_os>unix64</build_os>
-      </properties>
-    </profile>
-  </profiles>
 </project>
