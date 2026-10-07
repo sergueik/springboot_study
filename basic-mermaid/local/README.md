@@ -409,10 +409,11 @@ FILENAME='svg-to-pdfkit.js'
 curl -skL -o $FILENAME $URL
 ```
 ```sh
-URL='https://cdn.jsdelivr.net/npm/svg-exportjs-browser@latest/dist/umd/svg-export.umd.min.js'
+URL='https://cdn.jsdelivr.net/npm/svg-exportjs-browser@2.1.0/dist/umd/svg-export.umd.min.js'
 FILENAME='svg-export.umd.min.js'
 curl -skL -o $FILENAME $URL
 ```
+> NOTE: we will not be using `svg-export.umd.standalone.min.js` temporarily
 ```sh
 URL='https://cdn.jsdelivr.net/gh/sharonchoong/svg-exportJS@master/dist/umd/svg-export.umd.standalone.min.js'
 FILENAME='svg-export.umd.standalone.min.js'
