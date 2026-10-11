@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Unleash Demo</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/css/main.css" th:href="@{/css/main.css}" />
+</head>
+<body>
+<div th:insert="fragments/header :: header"></div>
+
+<h1>Hello <span sec:authentication="name"></span> !</h1>
+
+<div th:if="${qotd != null}" th:class="qotdContainer">
+    <h2>Quote of the Day</h2>
+    <p th:text="${qotd.quote}" th:style="'font-style:italic'"></p>
+    <p th:text="${qotd.author}"></p>
+</div>
+
+<p><a href="/index" th:href="@{/index}">Back to home page</a></p>
+</body>
+</html>

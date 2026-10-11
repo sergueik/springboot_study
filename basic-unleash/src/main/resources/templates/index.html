@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <title>Unleash Demo</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/css/main.css" th:href="@{/css/main.css}" />
+</head>
+<body>
+<div th:insert="fragments/header :: header"></div>
+<ul>
+    <li>Go to the <a href="/user/index" th:href="@{/user/index}">user info page</a></li>
+    <li>Go to the <a href="/user/index" th:href="@{/user/greeting}">user greeting page</a></li>
+</ul>
+</body>
+</html>

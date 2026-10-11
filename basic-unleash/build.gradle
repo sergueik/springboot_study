@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.3.4.RELEASE'
+}
+
+group 'com.findinpath'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    def springBootVersion = '2.3.4.RELEASE'
+    def springSecurityVersion = '5.3.4.RELEASE'
+
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springBootVersion
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: springBootVersion
+    compile group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity5', version: '3.0.4.RELEASE'
+    compile group: 'org.springframework.security', name: 'spring-security-web', version: springSecurityVersion
+    compile group: 'org.springframework.security', name: 'spring-security-config', version: springSecurityVersion
+
+    compile group: 'no.finn.unleash', name:'unleash-client-java', version:'3.3.1'
+    compile group: 'nl.basjes.parse.useragent', name: 'yauaa', version: '5.19'
+
+}

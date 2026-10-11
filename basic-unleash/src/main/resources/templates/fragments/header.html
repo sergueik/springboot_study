@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<body>
+    <div th:if="${blueHeader}" th:class="headerContainer" th:fragment="header">
+        <header>
+            <div th:class="headerTitleContainer">
+                <img th:src="@{/img/logo.png}" th:class="logo"/>
+                <h2 th:class="headerTitle">Unleash</h2>
+            </div>
+            <div th:class="slider">
+                <div th:fragment="logout" class="logout" sec:authorize="isAuthenticated()">
+                    <div>
+                        <form action="#" th:action="@{/logout}" method="post">
+                            <input type="submit" value="Logout" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
+    <div th:if="not ${blueHeader}" th:fragment="header">
+        <header>
+            <div th:class="slider">
+                <div th:fragment="logout" class="logout" sec:authorize="isAuthenticated()">
+                    <div>
+                        <form action="#" th:action="@{/logout}" method="post">
+                            <input type="submit" value="Logout" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
+</body>
+</html>

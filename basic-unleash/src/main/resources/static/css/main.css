@@ -1,0 +1,53 @@
+body{
+    margin: 0;
+}
+
+.headerContainer{
+    background: #3f51b5;
+    color: #fff;
+    min-height: 35px;
+    padding: 2px 0;
+    width: 100%;
+}
+
+.headerContainer header{
+    display: flex;
+    flex-flow: row nowrap;
+    position: relative;
+    text-align: left;
+}
+
+.headerContainer .headerTitleContainer{
+    margin: 5px;
+    display: flex;
+    flex-flow: row nowrap;
+    height: 24px;
+}
+
+.logo {
+    height: 100%;
+    margin-right: 10px;
+}
+
+.headerTitle{
+    display: block;
+    font-size: 1.25em;
+    line-height: 18px;
+    margin: 0;
+    position: relative;
+}
+
+.headerContainer .slider{
+    position: relative;
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+p.error {
+    font-weight: bold;
+    color: red;
+}
+
+div.logout {
+    float: right;
+}
