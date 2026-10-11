@@ -13,6 +13,6 @@ spring:
 
 unleash:
   appName: demo
-  endpoint: http://192.168.99.100:4242/api/
+  endpoint: http://localhost:4242/api/
   fetchTogglesInterval: 10
   sendMetricsInterval: 10

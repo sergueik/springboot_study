@@ -1,8 +1,7 @@
 version: '3.6'
 services:
   unleash-server:
-    # need to pin
-    image: unleashorg/unleash-server:3.11.0 # 3.11.0-node14-alpine
+    image: unleashorg/unleash-server:3.11.0-node14-alpine
     ports:
       - 4242:4242
     environment:
@@ -13,7 +12,7 @@ services:
         condition: service_healthy
 
   postgres:
-    image: postgres:12.1-alpine # 12.1
+    image: postgres:12.1-alpine
     ports:
       - 5432:5432
     healthcheck:
