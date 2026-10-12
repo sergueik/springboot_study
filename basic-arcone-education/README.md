@@ -694,4 +694,37 @@ versus
 “What exactly are you going to achieve?”
 “Enterprise Profit Maximization.”
 
+### The “360” pitch: selling to the pain of legacy modernization
+
+Enrich360, Experience360, Exceptions360: the repeated suffix suggests
+completeness, but does not itself establish complete data coverage,
+end-to-end process ownership, or a unified technical architecture.
+
+In the context of banking modernization, the branding has an interesting
+target-audience effect. A bank maintaining decades-old software may be
+particularly receptive to promises of comprehensive intelligence,
+integration, and transformation without replacing the core.
+
+This is where the analogy to penis-enlargement advertising becomes
+rhetorically relevant. Both styles of promotion can address an audience
+already sensitized to a perceived deficiency and offer an appealingly
+simple, expansive-sounding answer. The analogy concerns the *persuasive
+mechanism*, not the technical quality of the product or the vendor's
+intentions.
+
+The commercial question is whether the promise survives contact with
+the architecture.
+
+- What exactly does each “360” product own?
+- Which authoritative systems supply its data?
+- What does the platform genuinely automate, and what remains human work?
+- Does it remove legacy dependencies, or add another layer around them?
+- Can the vendor demonstrate one complete, measurable, auditable business
+  outcome?
+
+The Coen-brothers-style punchline is: **pick the one right tool**—or
+demonstrate why several are necessary. Product names, connector counts,
+agent counts, and claims of 360-degree coverage are not substitutes for
+that evidence.
+
 
