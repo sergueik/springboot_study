@@ -144,6 +144,164 @@ visit the application landing page `http://localhost:8080/index`, login
 The definition:
 > __Feature Toggles__ _decouple_ deployment of code from release of new features
 
+### Troubleshooting
+
+* package and run without fixing the route to unleash server:
+```cmd
+java -jar  target\example.findinpath.jar
+
+```
+```txt
+2026-10-12 16:27:09.189  WARN 36208 --- [sh-api-executor] no.finn.unleash.event.UnleashSubscriber  : Could not post to Unleash API
+
+no.finn.unleash.UnleashException: Could not post to Unleash API
+        at no.finn.unleash.metric.UnleashMetricsSender.post(UnleashMetricsSender.java:107) ~[unleash-client-java-3.3.1.jar!/:3.3.1]
+        at no.finn.unleash.metric.UnleashMetricsSender.registerClient(UnleashMetricsSender.java:63) ~[unleash-client-java-3.3.1.jar!/:3.3.1]
+        at no.finn.unleash.metric.UnleashMetricServiceImpl.register(UnleashMetricServiceImpl.java:38) ~[unleash-client-java-3.3.1.jar!/:3.3.1]
+        at no.finn.unleash.DefaultUnleash.<init>(DefaultUnleash.java:63) ~[unleash-client-java-3.3.1.jar!/:3.3.1]
+        at no.finn.unleash.DefaultUnleash.<init>(DefaultUnleash.java:53) ~[unleash-client-java-3.3.1.jar!/:3.3.1]
+        at example.config.UnleashConfiguration.unleash(UnleashConfiguration.java:30) ~[classes!/:0.2.0-SNAPSHOT]
+        at example.config.UnleashConfiguration$$EnhancerBySpringCGLIB$$af6bc6b3.CGLIB$unleash$1(<generated>) ~[classes!/:0.2.0-SNAPSHOT]
+        at example.config.UnleashConfiguration$$EnhancerBySpringCGLIB$$af6bc6b3$$FastClassBySpringCGLIB$$c0941794.invoke(<generated>) ~[classes!/:0.2.0-SNAPSHOT]
+        at org.springframework.cglib.proxy.MethodProxy.invokeSuper(MethodProxy.java:244) ~[spring-core-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.context.annotation.ConfigurationClassEnhancer$BeanMethodInterceptor.intercept(ConfigurationClassEnhancer.java:331) ~[spring-context-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at example.config.UnleashConfiguration$$EnhancerBySpringCGLIB$$af6bc6b3.unleash(<generated>) ~[classes!/:0.2.0-SNAPSHOT]
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[na:na]
+        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+        at java.base/java.lang.reflect.Method.invoke(Method.java:566) ~[na:na]
+        at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:154) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:650) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:635) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1336) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1176) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:276) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1307) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1227) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:884) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:788) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:227) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1356) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1203) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:556) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:516) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:324) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:322) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:897) ~[spring-beans-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:879) ~[spring-context-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:551) ~[spring-context-5.2.9.RELEASE.jar!/:5.2.9.RELEASE]
+        at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:143) ~[spring-boot-2.3.4.RELEASE.jar!/:2.3.4.RELEASE]
+        at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:758) ~[spring-boot-2.3.4.RELEASE.jar!/:2.3.4.RELEASE]
+        at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:750) ~[spring-boot-2.3.4.RELEASE.jar!/:2.3.4.RELEASE]
+        at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397) ~[spring-boot-2.3.4.RELEASE.jar!/:2.3.4.RELEASE]
+        at org.springframework.boot.SpringApplication.run(SpringApplication.java:315) ~[spring-boot-2.3.4.RELEASE.jar!/:2.3.4.RELEASE]
+        at org.springframework.boot.SpringApplication.run(SpringApplication.java:1237) ~[spring-boot-2.3.4.RELEASE.jar!/:2.3.4.RELEASE]
+        at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226) ~[spring-boot-2.3.4.RELEASE.jar!/:2.3.4.RELEASE]
+        at example.Application.main(Application.java:10) ~[classes!/:0.2.0-SNAPSHOT]
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+        at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[na:na]
+        at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+        at java.base/java.lang.reflect.Method.invoke(Method.java:566) ~[na:na]
+        at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:49) ~[example.findinpath.jar:0.2.0-SNAPSHOT]
+        at org.springframework.boot.loader.Launcher.launch(Launcher.java:107) ~[example.findinpath.jar:0.2.0-SNAPSHOT]
+        at org.springframework.boot.loader.Launcher.launch(Launcher.java:58) ~[example.findinpath.jar:0.2.0-SNAPSHOT]
+        at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:88) ~[example.findinpath.jar:0.2.0-SNAPSHOT]
+Caused by: java.net.SocketTimeoutException: connect timed out
+        at java.base/java.net.PlainSocketImpl.waitForConnect(Native Method) ~[na:na]
+        at java.base/java.net.PlainSocketImpl.socketConnect(PlainSocketImpl.java:107) ~[na:na]
+        at java.base/java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:399) ~[na:na]
+        at java.base/java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:242) ~[na:na]
+        at java.base/java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:224) ~[na:na]
+        at java.base/java.net.Socket.connect(Socket.java:609) ~[na:na]
+        at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:177) ~[na:na]
+        at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:474) ~[na:na]
+        at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:569) ~[na:na]
+        at java.base/sun.net.www.http.HttpClient.<init>(HttpClient.java:242) ~[na:na]
+        at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:341) ~[na:na]
+        at java.base/sun.net.www.http.HttpClient.New(HttpClient.java:362) ~[na:na]
+        at java.base/sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1253) ~[na:na]
+        at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1187) ~[na:na]
+        at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1081) ~[na:na]
+        at java.base/sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:1015) ~[na:na]
+        at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream0(HttpURLConnection.java:1367) ~[na:na]
+        at java.base/sun.net.www.protocol.http.HttpURLConnection.getOutputStream(HttpURLConnection.java:1342) ~[na:na]
+        at no.finn.unleash.metric.UnleashMetricsSender.post(UnleashMetricsSender.java:97) ~[unleash-client-java-3.3.1.jar!/:3.3.1]
+        ... 58 common frames omitted
+
+2026-10-12 16:27:10.170  WARN 36208 --- [sh-api-executor] no.finn.unleash.event.UnleashSubscriber  : Could not fetch toggles
+2026-10-12 16:23:43.962  WARN 26544 --- [sh-api-executor] no.finn.unleash.event.UnleashSubscriber  : Could not post to Unleash API
+```
+
+```txt
+Caused by: java.net.SocketTimeoutException: connect timed out
+```
+in general, the success of the curl probe:
+```sh
+curl -sk http://192.168.99.100:4242/api/ | jq '.'
+```
+```json
+{
+  "name": "unleash-server",
+  "version": "3.11.0",
+  "uri": "/api",
+  "links": {
+    "admin": {
+      "uri": "/api/admin",
+      "links": {
+        "feature-toggles": {
+          "uri": "/api/admin/features"
+        },
+        "feature-archive": {
+          "uri": "/api/admin/archive"
+        },
+        "strategies": {
+          "uri": "/api/admin/strategies"
+        },
+        "events": {
+          "uri": "/api/admin/events"
+        },
+        "metrics": {
+          "uri": "/api/admin/metrics"
+        },
+        "state": {
+          "uri": "/api/admin/state"
+        },
+        "context": {
+          "uri": "/api/admin/context"
+        },
+        "tags": {
+          "uri": "/api/admin/tags"
+        },
+        "tag-types": {
+          "uri": "/api/admin/tag-types"
+        }
+      }
+    },
+    "client": {
+      "uri": "/api/client",
+      "links": {
+        "feature-toggles": {
+          "uri": "/api/client/features"
+        },
+        "register": {
+          "uri": "/api/client/register"
+        },
+        "metrics": {
+          "uri": "/api/client/metrics"
+        }
+      }
+    }
+  }
+}
+```
 ### Distorted Perpsective
 
 Exactly — and that changes how I would evaluate the Harness article.
